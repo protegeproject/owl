@@ -1,19 +1,22 @@
-<?xml version="1.0" encoding="windows-1252" ?>
 <rdf:RDF
     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
     xmlns:owl="http://www.w3.org/2002/07/owl#"
     xmlns="http://protege.stanford.edu/plugins/owl/protege#"
   xml:base="http://protege.stanford.edu/plugins/owl/protege">
+
   <owl:Ontology rdf:about="">
     <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >The Protege metadata ontology (in the version that is used inside Protege. Note that this is an OWL Full ontology, with annotation properties that have range and domain restrictions. However, the "official" online release of this file is OWL DL, so that ontologies that use Protege metadata annotations can still be shared as OWL DL.</rdfs:comment>
   </owl:Ontology>
+
   <owl:Class rdf:ID="DIRECTED-BINARY-RELATION">
     <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-    >The OWL equivalent of the Protege class for binary relations (used by the Graph Widget).</rdfs:comment>
+    >The Protege class for binary relations (used by the Graph Widget).</rdfs:comment>
   </owl:Class>
-  <owl:Class rdf:ID="PAL-Constraint"/>
+
+  <owl:Class rdf:ID="PAL-CONSTRAINT"/>
+
   <owl:ObjectProperty rdf:ID="allowedParent">
     <rdfs:range rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
     <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
@@ -21,26 +24,44 @@
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AnnotationProperty"/>
     <rdfs:domain rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
   </owl:ObjectProperty>
-  <owl:ObjectProperty rdf:ID="to">
+
+  <owl:ObjectProperty rdf:ID="TO">
     <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >The end object of a directed binary relation.</rdfs:comment>
   </owl:ObjectProperty>
-  <owl:ObjectProperty rdf:ID="from">
+  <owl:ObjectProperty rdf:ID="FROM">
     <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >The start object of a directed binary relation.</rdfs:comment>
   </owl:ObjectProperty>
-  <owl:DatatypeProperty rdf:ID="pal-name">
+
+  <owl:ObjectProperty rdf:ID="SLOT-CONSTRAINTS" />
+
+  <owl:DatatypeProperty rdf:ID="PAL-STATEMENT">
     <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
-    <rdfs:domain rdf:resource="#PAL-Constraint"/>
+    <rdfs:domain rdf:resource="#PAL-CONSTRAINT"/>
   </owl:DatatypeProperty>
-  <owl:DatatypeProperty rdf:ID="pal-statement">
+  <owl:DatatypeProperty rdf:ID="PAL-DESCRIPTION">
     <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
-    <rdfs:domain rdf:resource="#PAL-Constraint"/>
+    <rdfs:domain rdf:resource="#PAL-CONSTRAINT"/>
   </owl:DatatypeProperty>
-  <owl:DatatypeProperty rdf:ID="pal-range">
+  <owl:DatatypeProperty rdf:ID="PAL-NAME">
     <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
-    <rdfs:domain rdf:resource="#PAL-Constraint"/>
+    <rdfs:domain rdf:resource="#PAL-CONSTRAINT"/>
   </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="PAL-RANGE">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:domain rdf:resource="#PAL-CONSTRAINT"/>
+  </owl:DatatypeProperty>
+
+  <owl:DatatypeProperty rdf:ID="probeClass">
+    <rdfs:domain rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AnnotationProperty"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Specifies whether the class is marked as a probe class.</rdfs:comment>
+  </owl:DatatypeProperty>
+
   <owl:DatatypeProperty rdf:ID="readOnly">
     <rdfs:domain rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
@@ -49,6 +70,7 @@
     <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >Specifies whether the annotated property is read-only in the Protege UI.</rdfs:comment>
   </owl:DatatypeProperty>
+
   <owl:DatatypeProperty rdf:ID="todoPrefix">
     <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
     <rdfs:domain rdf:resource="http://www.w3.org/2002/07/owl#Ontology"/>
@@ -57,10 +79,7 @@
     >The prefix that is used to determine whether a property value is a "TODO" item.</rdfs:comment>
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AnnotationProperty"/>
   </owl:DatatypeProperty>
-  <owl:DatatypeProperty rdf:ID="pal-description">
-    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
-    <rdfs:domain rdf:resource="#PAL-Constraint"/>
-  </owl:DatatypeProperty>
+
   <owl:DatatypeProperty rdf:ID="defaultLanguage">
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AnnotationProperty"/>
@@ -69,6 +88,7 @@
     <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >Specifies the default language used for new string values in this ontology.</rdfs:comment>
   </owl:DatatypeProperty>
+
   <owl:FunctionalProperty rdf:ID="abstract">
     <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
     <rdfs:domain rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
@@ -77,6 +97,7 @@
     <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >Specifies whether a class can have instances (false) or not (true). This corresponds to the notion of abstract classes in general Protege or object-oriented languages.</rdfs:comment>
   </owl:FunctionalProperty>
+
   <owl:AnnotationProperty rdf:ID="excludedTest">
     <rdfs:domain rdf:resource="http://www.w3.org/2002/07/owl#Ontology"/>
     <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
@@ -84,14 +105,7 @@
     >Lists the names of those tests that are deactivated for this ontology.</rdfs:comment>
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
   </owl:AnnotationProperty>
-  <owl:AnnotationProperty rdf:ID="valuesComputer">
-    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-    >The name of a Java class that is used to compute values of this property automatically.</rdfs:comment>
-    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
-    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
-    <rdfs:domain rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
-    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
-  </owl:AnnotationProperty>
+
   <owl:AnnotationProperty rdf:ID="subclassesDisjoint">
     <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >Indicates whether all primitive subclasses of the annotated class shall be made disjoint by default.</rdfs:comment>
@@ -100,6 +114,7 @@
     <rdfs:domain rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
   </owl:AnnotationProperty>
+
   <owl:AnnotationProperty rdf:ID="todoProperty">
     <rdfs:range rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
     <rdfs:domain rdf:resource="http://www.w3.org/2002/07/owl#Ontology"/>
@@ -108,6 +123,7 @@
     >A reference to the property that shall be used for TODO annotations. The default value of this is owl:versionInfo.</rdfs:comment>
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
   </owl:AnnotationProperty>
+
   <owl:AnnotationProperty rdf:ID="usedLanguage">
     <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
     <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
@@ -116,5 +132,3 @@
     <rdfs:domain rdf:resource="http://www.w3.org/2002/07/owl#Ontology"/>
   </owl:AnnotationProperty>
 </rdf:RDF>
-
-<!-- Created with Protege (with OWL Plugin 1.1 beta, Build 127)  http://protege.stanford.edu -->
