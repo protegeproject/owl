@@ -28,10 +28,12 @@
   <owl:ObjectProperty rdf:ID="TO">
     <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >The end object of a directed binary relation.</rdfs:comment>
+    <rdfs:domain rdf:resource="http://protege.stanford.edu/plugins/owl/protege#DIRECTED-BINARY-RELATION"/>
   </owl:ObjectProperty>
   <owl:ObjectProperty rdf:ID="FROM">
     <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >The start object of a directed binary relation.</rdfs:comment>
+    <rdfs:domain rdf:resource="http://protege.stanford.edu/plugins/owl/protege#DIRECTED-BINARY-RELATION"/>
   </owl:ObjectProperty>
 
   <owl:ObjectProperty rdf:ID="SLOT-CONSTRAINTS" />
