@@ -1,16 +1,16 @@
-; Fri Jun 03 16:25:50 EST 2005
+; Thu Jun 23 09:34:54 EST 2005
 ; 
 ;+ (version "3.1")
-;+ (build "Build 195")
+;+ (build "Build 198")
 
 ([BROWSER_SLOT_NAMES] of  Property_List
 
 	(properties
-		[travel.owl_ProjectKB_Instance_6]
 		[travel.owl_ProjectKB_Instance_7]
 		[travel.owl_ProjectKB_Instance_8]
 		[travel.owl_ProjectKB_Instance_9]
-		[travel.owl_ProjectKB_Instance_10]))
+		[travel.owl_ProjectKB_Instance_10]
+		[travel.owl_ProjectKB_Instance_11]))
 
 ([CLSES_TAB] of  Widget
 
@@ -252,6 +252,37 @@
 	(label "Instances")
 	(property_list [Instance_88])
 	(widget_class_name "edu.stanford.smi.protege.widget.InstancesTab"))
+
+([KB_024013_Instance_0] of  Widget
+
+	(is_hidden TRUE)
+	(property_list [KB_024013_Instance_1])
+	(widget_class_name "edu.stanford.smi.protegex.queries_tab.QueriesTab"))
+
+([KB_024013_Instance_1] of  Property_List
+)
+
+([KB_024013_Instance_2] of  Widget
+
+	(is_hidden TRUE)
+	(property_list [KB_024013_Instance_3])
+	(widget_class_name "edu.stanford.smi.protegex.owl.swrl.ui.tab.SWRLTab"))
+
+([KB_024013_Instance_3] of  Property_List
+)
+
+([KB_024013_Instance_4] of  Widget
+
+	(height 0)
+	(is_hidden FALSE)
+	(name ":DIRECT-SUPERCLASSES")
+	(property_list [KB_024013_Instance_5])
+	(width 0)
+	(x 0)
+	(y 0))
+
+([KB_024013_Instance_5] of  Property_List
+)
 
 ([KB_140180_Instance_0] of  Widget
 
@@ -595,11 +626,6 @@
 
 ([KB_221055_Instance_71] of  Property_List
 )
-
-([KB_245625_Instance_0] of  String
-
-	(name "owl_file_name")
-	(string_value "travel.owl"))
 
 ([KB_301165_Instance_1013] of  Widget
 
@@ -1041,6 +1067,24 @@
 	(property_list [KB_635552_Instance_9]))
 
 ([KB_635552_Instance_9] of  Property_List
+)
+
+([KB_646337_Instance_0] of  Widget
+
+	(is_hidden TRUE)
+	(property_list [KB_646337_Instance_1])
+	(widget_class_name "edu.stanford.smi.protegex.queries_tab.QueriesTab"))
+
+([KB_646337_Instance_1] of  Property_List
+)
+
+([KB_646337_Instance_2] of  Widget
+
+	(is_hidden TRUE)
+	(property_list [KB_646337_Instance_3])
+	(widget_class_name "edu.stanford.smi.protegex.owl.swrl.ui.tab.SWRLTab"))
+
+([KB_646337_Instance_3] of  Property_List
 )
 
 ([KB_691299_Instance_398] of  Widget
@@ -3134,16 +3178,15 @@
 	(property_list [XY_Instance_195])
 	(widget_class_name "edu.stanford.smi.protege.widget.FormWidget"))
 
-([KB_852761_Instance_42] of  Widget
+([KB_822973_Instance_0] of  String
 
-	(height 124)
-	(is_hidden FALSE)
-	(label "DomainProperties")
-	(name ":DIRECT-TEMPLATE-SLOTS")
-	(widget_class_name "edu.stanford.smi.protege.widget.FormWidget")
-	(width 306)
-	(x 7)
-	(y 28))
+	(name "owl_file_name")
+	(string_value "travel.owl"))
+
+([KB_822973_Instance_1] of  String
+
+	(name "SwitchableClassDefinitionType")
+	(string_value "edu.stanford.smi.protegex.owl.ui.cls.LogicClassDefinitionWidget"))
 
 ([KB_868747_Instance_76] of  Widget
 
@@ -3684,7 +3727,7 @@
 	(is_hidden FALSE)
 	(label "Name")
 	(name ":NAME")
-	(property_list [travel_ProjectKB_Instance_5])
+	(property_list [travel_ProjectKB_Instance_6])
 	(widget_class_name "edu.stanford.smi.protege.widget.FormWidget")
 	(width 286)
 	(x 0)
@@ -7816,13 +7859,14 @@
 
 ([KB_941921_Instance_14] of  Widget
 
-	(height 0)
+	(height 220)
 	(is_hidden FALSE)
 	(name "rdfs:subClassOf")
 	(property_list [KB_941921_Instance_15])
-	(width 0)
+	(widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.RDFSSubClassOfWidget")
+	(width 210)
 	(x 0)
-	(y 0))
+	(y 160))
 
 ([KB_941921_Instance_15] of  Property_List
 )
@@ -7855,7 +7899,7 @@
 
 ([OWL_ProjectKB_Instance_3] of  Integer
 
-	(integer_value 275)
+	(integer_value 280)
 	(name "owl_build"))
 
 ([PAL_FORM_WIDGET] of  Widget
@@ -7993,7 +8037,8 @@
 		[KB_307200_Instance_22]
 		[KB_307200_Instance_23]
 		[OWL_ProjectKB_Instance_3]
-		[KB_245625_Instance_0]))
+		[KB_822973_Instance_0]
+		[KB_822973_Instance_1]))
 
 ([STANDARD_CLASS_FORM_WIDGET] of  Widget
 
@@ -8015,48 +8060,48 @@
 
 ([travel.owl_ProjectKB_Instance_10] of  String
 
+	(name ":PAL-CONSTRAINT")
+	(string_value "%3APAL-NAME"))
+
+([travel.owl_ProjectKB_Instance_11] of  String
+
 	(name "owl:Thing")
-	(string_value "%3ANAME"))
-
-([travel.owl_ProjectKB_Instance_6] of  String
-
-	(name "owl:Class")
 	(string_value "%3ANAME"))
 
 ([travel.owl_ProjectKB_Instance_7] of  String
 
-	(name ":META-CLASS")
+	(name "owl:Class")
 	(string_value "%3ANAME"))
 
 ([travel.owl_ProjectKB_Instance_8] of  String
 
-	(name ":INSTANCE-ANNOTATION")
-	(string_value "%3AANNOTATION-TEXT"))
+	(name ":META-CLASS")
+	(string_value "%3ANAME"))
 
 ([travel.owl_ProjectKB_Instance_9] of  String
 
-	(name ":PAL-CONSTRAINT")
-	(string_value "%3APAL-NAME"))
+	(name ":INSTANCE-ANNOTATION")
+	(string_value "%3AANNOTATION-TEXT"))
 
-([travel_ProjectKB_Instance_1] of  Widget
+([travel_ProjectKB_Instance_2] of  Widget
 
 	(is_hidden TRUE)
-	(property_list [travel_ProjectKB_Instance_2])
+	(property_list [travel_ProjectKB_Instance_3])
 	(widget_class_name "edu.stanford.smi.protegex.queries_tab.QueriesTab"))
 
-([travel_ProjectKB_Instance_2] of  Property_List
+([travel_ProjectKB_Instance_3] of  Property_List
 )
 
-([travel_ProjectKB_Instance_3] of  Widget
+([travel_ProjectKB_Instance_4] of  Widget
 
 	(is_hidden TRUE)
-	(property_list [travel_ProjectKB_Instance_4])
+	(property_list [travel_ProjectKB_Instance_5])
 	(widget_class_name "edu.stanford.smi.protegex.owl.swrl.ui.tab.SWRLTab"))
 
-([travel_ProjectKB_Instance_4] of  Property_List
+([travel_ProjectKB_Instance_5] of  Property_List
 )
 
-([travel_ProjectKB_Instance_5] of  Property_List
+([travel_ProjectKB_Instance_6] of  Property_List
 )
 
 ([XY_Instance_0] of  Property_List
@@ -8557,7 +8602,6 @@
 		[XY_Instance_410]
 		[XY_Instance_412]
 		[XY_Instance_413]
-		[XY_Instance_414]
 		[XY_Instance_422]
 		[XY_Instance_424]
 		[XY_Instance_426]
@@ -8571,7 +8615,8 @@
 		[KB_140180_Instance_289]
 		[KB_140180_Instance_291]
 		[KB_941921_Instance_10]
-		[KB_941921_Instance_14]))
+		[KB_941921_Instance_14]
+		[KB_024013_Instance_4]))
 
 ([XY_Instance_410] of  Widget
 
@@ -8687,18 +8732,17 @@
 
 ([XY_Instance_427] of  Widget
 
-	(height 160)
+	(height 220)
 	(label "OWL Properties")
 	(name ":DIRECT-TEMPLATE-SLOTS")
 	(property_list [XY_Instance_428])
-	(widget_class_name "edu.stanford.smi.protegex.owl.ui.clsproperties.ClassPropertiesWidget")
-	(width 320)
-	(x 240)
+	(widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.RDFPropertiesWidget")
+	(width 350)
+	(x 210)
 	(y 160))
 
 ([XY_Instance_428] of  Property_List
-
-	(properties [KB_852761_Instance_42]))
+)
 
 ([XY_Instance_429] of  Property_List
 

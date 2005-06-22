@@ -1,16 +1,16 @@
-; Fri Jun 03 16:26:15 EST 2005
+; Thu Jun 23 09:34:32 EST 2005
 ; 
 ;+ (version "3.1")
-;+ (build "Build 195")
+;+ (build "Build 198")
 
 ([BROWSER_SLOT_NAMES] of  Property_List
 
 	(properties
-		[pizza.owl_ProjectKB_Instance_50]
 		[pizza.owl_ProjectKB_Instance_51]
 		[pizza.owl_ProjectKB_Instance_52]
 		[pizza.owl_ProjectKB_Instance_53]
-		[pizza.owl_ProjectKB_Instance_54]))
+		[pizza.owl_ProjectKB_Instance_54]
+		[pizza.owl_ProjectKB_Instance_55]))
 
 ([CLSES_TAB] of  Widget
 
@@ -252,6 +252,37 @@
 	(label "Instances")
 	(property_list [Instance_88])
 	(widget_class_name "edu.stanford.smi.protege.widget.InstancesTab"))
+
+([KB_024013_Instance_0] of  Widget
+
+	(is_hidden TRUE)
+	(property_list [KB_024013_Instance_1])
+	(widget_class_name "edu.stanford.smi.protegex.queries_tab.QueriesTab"))
+
+([KB_024013_Instance_1] of  Property_List
+)
+
+([KB_024013_Instance_2] of  Widget
+
+	(is_hidden TRUE)
+	(property_list [KB_024013_Instance_3])
+	(widget_class_name "edu.stanford.smi.protegex.owl.swrl.ui.tab.SWRLTab"))
+
+([KB_024013_Instance_3] of  Property_List
+)
+
+([KB_024013_Instance_4] of  Widget
+
+	(height 0)
+	(is_hidden FALSE)
+	(name ":DIRECT-SUPERCLASSES")
+	(property_list [KB_024013_Instance_5])
+	(width 0)
+	(x 0)
+	(y 0))
+
+([KB_024013_Instance_5] of  Property_List
+)
 
 ([KB_140180_Instance_0] of  Widget
 
@@ -707,11 +738,6 @@
 	(property_list [XY_Instance_890])
 	(widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.OWLFormWidget"))
 
-([KB_466854_Instance_0] of  String
-
-	(name "owl_file_name")
-	(string_value "pizza.owl"))
-
 ([KB_484936_Instance_0] of  Widget
 
 	(is_hidden TRUE)
@@ -866,6 +892,16 @@
 	(width 318)
 	(x 7)
 	(y 28))
+
+([KB_570927_Instance_0] of  String
+
+	(name "owl_file_name")
+	(string_value "pizza.owl"))
+
+([KB_570927_Instance_1] of  String
+
+	(name "SwitchableClassDefinitionType")
+	(string_value "edu.stanford.smi.protegex.owl.ui.cls.LogicClassDefinitionWidget"))
 
 ([KB_575585_Instance_0] of  Widget
 
@@ -1041,6 +1077,24 @@
 	(property_list [KB_635552_Instance_9]))
 
 ([KB_635552_Instance_9] of  Property_List
+)
+
+([KB_646337_Instance_0] of  Widget
+
+	(is_hidden TRUE)
+	(property_list [KB_646337_Instance_1])
+	(widget_class_name "edu.stanford.smi.protegex.queries_tab.QueriesTab"))
+
+([KB_646337_Instance_1] of  Property_List
+)
+
+([KB_646337_Instance_2] of  Widget
+
+	(is_hidden TRUE)
+	(property_list [KB_646337_Instance_3])
+	(widget_class_name "edu.stanford.smi.protegex.owl.swrl.ui.tab.SWRLTab"))
+
+([KB_646337_Instance_3] of  Property_List
 )
 
 ([KB_691299_Instance_398] of  Widget
@@ -3134,17 +3188,6 @@
 	(property_list [XY_Instance_195])
 	(widget_class_name "edu.stanford.smi.protege.widget.FormWidget"))
 
-([KB_852761_Instance_42] of  Widget
-
-	(height 124)
-	(is_hidden FALSE)
-	(label "DomainProperties")
-	(name ":DIRECT-TEMPLATE-SLOTS")
-	(widget_class_name "edu.stanford.smi.protege.widget.FormWidget")
-	(width 306)
-	(x 7)
-	(y 28))
-
 ([KB_868747_Instance_76] of  Widget
 
 	(is_hidden FALSE)
@@ -3684,7 +3727,7 @@
 	(is_hidden FALSE)
 	(label "Name")
 	(name ":NAME")
-	(property_list [pizza_ProjectKB_Instance_31])
+	(property_list [pizza_ProjectKB_Instance_32])
 	(widget_class_name "edu.stanford.smi.protege.widget.FormWidget")
 	(width 286)
 	(x 0)
@@ -7816,13 +7859,14 @@
 
 ([KB_941921_Instance_14] of  Widget
 
-	(height 0)
+	(height 220)
 	(is_hidden FALSE)
 	(name "rdfs:subClassOf")
 	(property_list [KB_941921_Instance_15])
-	(width 0)
+	(widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.RDFSSubClassOfWidget")
+	(width 210)
 	(x 0)
-	(y 0))
+	(y 160))
 
 ([KB_941921_Instance_15] of  Property_List
 )
@@ -7855,7 +7899,7 @@
 
 ([OWL_ProjectKB_Instance_3] of  Integer
 
-	(integer_value 275)
+	(integer_value 280)
 	(name "owl_build"))
 
 ([PAL_FORM_WIDGET] of  Widget
@@ -7869,249 +7913,249 @@
 	(x 0)
 	(y 0))
 
-([pizza.owl_ProjectKB_Instance_50] of  String
+([pizza.owl_ProjectKB_Instance_51] of  String
 
 	(name "owl:Class")
 	(string_value "%3ANAME"))
 
-([pizza.owl_ProjectKB_Instance_51] of  String
+([pizza.owl_ProjectKB_Instance_52] of  String
 
 	(name ":META-CLASS")
 	(string_value "%3ANAME"))
 
-([pizza.owl_ProjectKB_Instance_52] of  String
+([pizza.owl_ProjectKB_Instance_53] of  String
 
 	(name ":INSTANCE-ANNOTATION")
 	(string_value "%3AANNOTATION-TEXT"))
 
-([pizza.owl_ProjectKB_Instance_53] of  String
+([pizza.owl_ProjectKB_Instance_54] of  String
 
 	(name ":PAL-CONSTRAINT")
 	(string_value "%3APAL-NAME"))
 
-([pizza.owl_ProjectKB_Instance_54] of  String
+([pizza.owl_ProjectKB_Instance_55] of  String
 
 	(name "owl:Thing")
 	(string_value "%3ANAME"))
 
-([pizza_ProjectKB_Instance_1] of  Widget
-
-	(is_hidden TRUE)
-	(property_list [pizza_ProjectKB_Instance_2])
-	(widget_class_name "edu.stanford.smi.protegex.queries_tab.QueriesTab"))
-
-([pizza_ProjectKB_Instance_10] of  Property_List
-)
-
-([pizza_ProjectKB_Instance_11] of  Widget
-
-	(is_hidden FALSE)
-	(name "protege:abstract")
-	(property_list [pizza_ProjectKB_Instance_12]))
-
-([pizza_ProjectKB_Instance_12] of  Property_List
-)
-
-([pizza_ProjectKB_Instance_13] of  Widget
-
-	(is_hidden FALSE)
-	(name "hasCountryOfOrigin")
-	(property_list [pizza_ProjectKB_Instance_14]))
-
-([pizza_ProjectKB_Instance_14] of  Property_List
-)
-
-([pizza_ProjectKB_Instance_15] of  Widget
-
-	(is_hidden FALSE)
-	(name "hasSpiciness")
-	(property_list [pizza_ProjectKB_Instance_16]))
-
-([pizza_ProjectKB_Instance_16] of  Property_List
-)
-
-([pizza_ProjectKB_Instance_17] of  Widget
-
-	(is_hidden FALSE)
-	(name "protege:probeClass")
-	(property_list [pizza_ProjectKB_Instance_18]))
-
-([pizza_ProjectKB_Instance_18] of  Property_List
-)
-
-([pizza_ProjectKB_Instance_19] of  Widget
-
-	(is_hidden FALSE)
-	(name "protege:readOnly")
-	(property_list [pizza_ProjectKB_Instance_20]))
-
-([pizza_ProjectKB_Instance_2] of  Property_List
-)
-
-([pizza_ProjectKB_Instance_20] of  Property_List
-)
-
-([pizza_ProjectKB_Instance_21] of  Widget
-
-	(is_hidden FALSE)
-	(name "hasIngredient")
-	(property_list [pizza_ProjectKB_Instance_22]))
-
-([pizza_ProjectKB_Instance_22] of  Property_List
-)
-
-([pizza_ProjectKB_Instance_23] of  Widget
+([pizza_ProjectKB_Instance_10] of  Widget
 
 	(is_hidden FALSE)
 	(name "isIngredientOf")
-	(property_list [pizza_ProjectKB_Instance_24]))
+	(property_list [pizza_ProjectKB_Instance_11]))
 
-([pizza_ProjectKB_Instance_24] of  Property_List
+([pizza_ProjectKB_Instance_11] of  Property_List
 )
 
-([pizza_ProjectKB_Instance_25] of  Widget
+([pizza_ProjectKB_Instance_12] of  Widget
 
 	(is_hidden FALSE)
 	(name "hasCountryOfOrigin")
-	(property_list [pizza_ProjectKB_Instance_26]))
+	(property_list [pizza_ProjectKB_Instance_13]))
 
-([pizza_ProjectKB_Instance_26] of  Property_List
+([pizza_ProjectKB_Instance_13] of  Property_List
 )
 
-([pizza_ProjectKB_Instance_27] of  Widget
-
-	(is_hidden FALSE)
-	(name "protege:allowedParent")
-	(property_list [pizza_ProjectKB_Instance_28]))
-
-([pizza_ProjectKB_Instance_28] of  Property_List
-)
-
-([pizza_ProjectKB_Instance_29] of  Widget
+([pizza_ProjectKB_Instance_14] of  Widget
 
 	(is_hidden FALSE)
 	(name "hasSpiciness")
-	(property_list [pizza_ProjectKB_Instance_30]))
+	(property_list [pizza_ProjectKB_Instance_15]))
 
-([pizza_ProjectKB_Instance_3] of  Widget
+([pizza_ProjectKB_Instance_15] of  Property_List
+)
+
+([pizza_ProjectKB_Instance_16] of  Widget
+
+	(is_hidden FALSE)
+	(name "protege:abstract")
+	(property_list [pizza_ProjectKB_Instance_17]))
+
+([pizza_ProjectKB_Instance_17] of  Property_List
+)
+
+([pizza_ProjectKB_Instance_18] of  Widget
+
+	(is_hidden FALSE)
+	(name "protege:probeClass")
+	(property_list [pizza_ProjectKB_Instance_19]))
+
+([pizza_ProjectKB_Instance_19] of  Property_List
+)
+
+([pizza_ProjectKB_Instance_2] of  Widget
 
 	(is_hidden TRUE)
-	(property_list [pizza_ProjectKB_Instance_4])
-	(widget_class_name "edu.stanford.smi.protegex.owl.swrl.ui.tab.SWRLTab"))
+	(property_list [pizza_ProjectKB_Instance_3])
+	(widget_class_name "edu.stanford.smi.protegex.queries_tab.QueriesTab"))
 
-([pizza_ProjectKB_Instance_30] of  Property_List
+([pizza_ProjectKB_Instance_20] of  Widget
+
+	(is_hidden FALSE)
+	(name "protege:readOnly")
+	(property_list [pizza_ProjectKB_Instance_21]))
+
+([pizza_ProjectKB_Instance_21] of  Property_List
 )
+
+([pizza_ProjectKB_Instance_22] of  Widget
+
+	(is_hidden FALSE)
+	(name "hasIngredient")
+	(property_list [pizza_ProjectKB_Instance_23]))
+
+([pizza_ProjectKB_Instance_23] of  Property_List
+)
+
+([pizza_ProjectKB_Instance_24] of  Widget
+
+	(is_hidden FALSE)
+	(name "isIngredientOf")
+	(property_list [pizza_ProjectKB_Instance_25]))
+
+([pizza_ProjectKB_Instance_25] of  Property_List
+)
+
+([pizza_ProjectKB_Instance_26] of  Widget
+
+	(is_hidden FALSE)
+	(name "hasCountryOfOrigin")
+	(property_list [pizza_ProjectKB_Instance_27]))
+
+([pizza_ProjectKB_Instance_27] of  Property_List
+)
+
+([pizza_ProjectKB_Instance_28] of  Widget
+
+	(is_hidden FALSE)
+	(name "hasSpiciness")
+	(property_list [pizza_ProjectKB_Instance_29]))
+
+([pizza_ProjectKB_Instance_29] of  Property_List
+)
+
+([pizza_ProjectKB_Instance_3] of  Property_List
+)
+
+([pizza_ProjectKB_Instance_30] of  Widget
+
+	(is_hidden FALSE)
+	(name "protege:allowedParent")
+	(property_list [pizza_ProjectKB_Instance_31]))
 
 ([pizza_ProjectKB_Instance_31] of  Property_List
 )
 
-([pizza_ProjectKB_Instance_32] of  Widget
+([pizza_ProjectKB_Instance_32] of  Property_List
+)
+
+([pizza_ProjectKB_Instance_33] of  Widget
 
 	(is_hidden FALSE)
 	(name "protege:todoProperty")
-	(property_list [pizza_ProjectKB_Instance_33]))
+	(property_list [pizza_ProjectKB_Instance_34]))
 
-([pizza_ProjectKB_Instance_33] of  Property_List
+([pizza_ProjectKB_Instance_34] of  Property_List
 )
 
-([pizza_ProjectKB_Instance_34] of  Widget
+([pizza_ProjectKB_Instance_35] of  Widget
 
 	(is_hidden FALSE)
 	(name "protege:defaultLanguage")
-	(property_list [pizza_ProjectKB_Instance_35]))
+	(property_list [pizza_ProjectKB_Instance_36]))
 
-([pizza_ProjectKB_Instance_35] of  Property_List
+([pizza_ProjectKB_Instance_36] of  Property_List
 )
 
-([pizza_ProjectKB_Instance_36] of  Widget
-
-	(is_hidden FALSE)
-	(name "hasSpiciness")
-	(property_list [pizza_ProjectKB_Instance_37]))
-
-([pizza_ProjectKB_Instance_37] of  Property_List
-)
-
-([pizza_ProjectKB_Instance_38] of  Widget
+([pizza_ProjectKB_Instance_37] of  Widget
 
 	(is_hidden FALSE)
 	(name "protege:excludedTest")
-	(property_list [pizza_ProjectKB_Instance_39]))
+	(property_list [pizza_ProjectKB_Instance_38]))
 
-([pizza_ProjectKB_Instance_39] of  Property_List
+([pizza_ProjectKB_Instance_38] of  Property_List
 )
 
-([pizza_ProjectKB_Instance_4] of  Property_List
-)
-
-([pizza_ProjectKB_Instance_40] of  Widget
+([pizza_ProjectKB_Instance_39] of  Widget
 
 	(is_hidden FALSE)
 	(name "protege:todoPrefix")
-	(property_list [pizza_ProjectKB_Instance_41]))
+	(property_list [pizza_ProjectKB_Instance_40]))
 
-([pizza_ProjectKB_Instance_41] of  Property_List
+([pizza_ProjectKB_Instance_4] of  Widget
+
+	(is_hidden TRUE)
+	(property_list [pizza_ProjectKB_Instance_5])
+	(widget_class_name "edu.stanford.smi.protegex.owl.swrl.ui.tab.SWRLTab"))
+
+([pizza_ProjectKB_Instance_40] of  Property_List
 )
 
-([pizza_ProjectKB_Instance_42] of  Widget
+([pizza_ProjectKB_Instance_41] of  Widget
 
 	(is_hidden FALSE)
 	(name "hasIngredient")
-	(property_list [pizza_ProjectKB_Instance_43]))
+	(property_list [pizza_ProjectKB_Instance_42]))
 
-([pizza_ProjectKB_Instance_43] of  Property_List
+([pizza_ProjectKB_Instance_42] of  Property_List
 )
 
-([pizza_ProjectKB_Instance_44] of  Widget
+([pizza_ProjectKB_Instance_43] of  Widget
 
 	(is_hidden FALSE)
 	(name "isIngredientOf")
-	(property_list [pizza_ProjectKB_Instance_45]))
+	(property_list [pizza_ProjectKB_Instance_44]))
 
-([pizza_ProjectKB_Instance_45] of  Property_List
+([pizza_ProjectKB_Instance_44] of  Property_List
 )
 
-([pizza_ProjectKB_Instance_46] of  Widget
-
-	(is_hidden FALSE)
-	(name "protege:usedLanguage")
-	(property_list [pizza_ProjectKB_Instance_47]))
-
-([pizza_ProjectKB_Instance_47] of  Property_List
-)
-
-([pizza_ProjectKB_Instance_48] of  Widget
+([pizza_ProjectKB_Instance_45] of  Widget
 
 	(is_hidden FALSE)
 	(name "hasCountryOfOrigin")
-	(property_list [pizza_ProjectKB_Instance_49]))
+	(property_list [pizza_ProjectKB_Instance_46]))
 
-([pizza_ProjectKB_Instance_49] of  Property_List
+([pizza_ProjectKB_Instance_46] of  Property_List
 )
 
-([pizza_ProjectKB_Instance_5] of  Widget
+([pizza_ProjectKB_Instance_47] of  Widget
+
+	(is_hidden FALSE)
+	(name "hasSpiciness")
+	(property_list [pizza_ProjectKB_Instance_48]))
+
+([pizza_ProjectKB_Instance_48] of  Property_List
+)
+
+([pizza_ProjectKB_Instance_49] of  Widget
+
+	(is_hidden FALSE)
+	(name "protege:usedLanguage")
+	(property_list [pizza_ProjectKB_Instance_50]))
+
+([pizza_ProjectKB_Instance_5] of  Property_List
+)
+
+([pizza_ProjectKB_Instance_50] of  Property_List
+)
+
+([pizza_ProjectKB_Instance_6] of  Widget
 
 	(is_hidden FALSE)
 	(name "protege:subclassesDisjoint")
-	(property_list [pizza_ProjectKB_Instance_6]))
+	(property_list [pizza_ProjectKB_Instance_7]))
 
-([pizza_ProjectKB_Instance_6] of  Property_List
+([pizza_ProjectKB_Instance_7] of  Property_List
 )
 
-([pizza_ProjectKB_Instance_7] of  Widget
+([pizza_ProjectKB_Instance_8] of  Widget
 
 	(is_hidden FALSE)
 	(name "hasIngredient")
-	(property_list [pizza_ProjectKB_Instance_8]))
+	(property_list [pizza_ProjectKB_Instance_9]))
 
-([pizza_ProjectKB_Instance_8] of  Property_List
+([pizza_ProjectKB_Instance_9] of  Property_List
 )
-
-([pizza_ProjectKB_Instance_9] of  Widget
-
-	(is_hidden FALSE)
-	(name "isIngredientOf")
-	(property_list [pizza_ProjectKB_Instance_10]))
 
 ([PROJECT] of  Project
 
@@ -8237,7 +8281,8 @@
 		[KB_307200_Instance_22]
 		[KB_307200_Instance_23]
 		[OWL_ProjectKB_Instance_3]
-		[KB_466854_Instance_0]))
+		[KB_570927_Instance_0]
+		[KB_570927_Instance_1]))
 
 ([STANDARD_CLASS_FORM_WIDGET] of  Widget
 
@@ -8616,15 +8661,15 @@
 		[KB_635552_Instance_22]
 		[KB_635552_Instance_24]
 		[KB_938545_Instance_8]
-		[pizza_ProjectKB_Instance_32]
-		[pizza_ProjectKB_Instance_34]
-		[pizza_ProjectKB_Instance_36]
-		[pizza_ProjectKB_Instance_38]
-		[pizza_ProjectKB_Instance_40]
-		[pizza_ProjectKB_Instance_42]
-		[pizza_ProjectKB_Instance_44]
-		[pizza_ProjectKB_Instance_46]
-		[pizza_ProjectKB_Instance_48]))
+		[pizza_ProjectKB_Instance_33]
+		[pizza_ProjectKB_Instance_35]
+		[pizza_ProjectKB_Instance_37]
+		[pizza_ProjectKB_Instance_39]
+		[pizza_ProjectKB_Instance_41]
+		[pizza_ProjectKB_Instance_43]
+		[pizza_ProjectKB_Instance_45]
+		[pizza_ProjectKB_Instance_47]
+		[pizza_ProjectKB_Instance_49]))
 
 ([XY_Instance_2] of  Widget
 
@@ -8764,7 +8809,6 @@
 		[XY_Instance_410]
 		[XY_Instance_412]
 		[XY_Instance_413]
-		[XY_Instance_414]
 		[XY_Instance_422]
 		[XY_Instance_424]
 		[XY_Instance_426]
@@ -8778,7 +8822,8 @@
 		[KB_140180_Instance_289]
 		[KB_140180_Instance_291]
 		[KB_941921_Instance_10]
-		[KB_941921_Instance_14]))
+		[KB_941921_Instance_14]
+		[KB_024013_Instance_4]))
 
 ([XY_Instance_410] of  Widget
 
@@ -8894,18 +8939,17 @@
 
 ([XY_Instance_427] of  Widget
 
-	(height 160)
+	(height 220)
 	(label "OWL Properties")
 	(name ":DIRECT-TEMPLATE-SLOTS")
 	(property_list [XY_Instance_428])
-	(widget_class_name "edu.stanford.smi.protegex.owl.ui.clsproperties.ClassPropertiesWidget")
-	(width 320)
-	(x 240)
+	(widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.RDFPropertiesWidget")
+	(width 350)
+	(x 210)
 	(y 160))
 
 ([XY_Instance_428] of  Property_List
-
-	(properties [KB_852761_Instance_42]))
+)
 
 ([XY_Instance_429] of  Property_List
 
@@ -8981,12 +9025,12 @@
 		[KB_938545_Instance_162]
 		[KB_221055_Instance_18]
 		[KB_221055_Instance_22]
-		[pizza_ProjectKB_Instance_19]
-		[pizza_ProjectKB_Instance_21]
-		[pizza_ProjectKB_Instance_23]
-		[pizza_ProjectKB_Instance_25]
-		[pizza_ProjectKB_Instance_27]
-		[pizza_ProjectKB_Instance_29]))
+		[pizza_ProjectKB_Instance_20]
+		[pizza_ProjectKB_Instance_22]
+		[pizza_ProjectKB_Instance_24]
+		[pizza_ProjectKB_Instance_26]
+		[pizza_ProjectKB_Instance_28]
+		[pizza_ProjectKB_Instance_30]))
 
 ([XY_Instance_463] of  Widget
 
@@ -9227,13 +9271,13 @@
 		[KB_635552_Instance_8]
 		[KB_941921_Instance_2]
 		[KB_941921_Instance_6]
-		[pizza_ProjectKB_Instance_5]
-		[pizza_ProjectKB_Instance_7]
-		[pizza_ProjectKB_Instance_9]
-		[pizza_ProjectKB_Instance_11]
-		[pizza_ProjectKB_Instance_13]
-		[pizza_ProjectKB_Instance_15]
-		[pizza_ProjectKB_Instance_17]))
+		[pizza_ProjectKB_Instance_6]
+		[pizza_ProjectKB_Instance_8]
+		[pizza_ProjectKB_Instance_10]
+		[pizza_ProjectKB_Instance_12]
+		[pizza_ProjectKB_Instance_14]
+		[pizza_ProjectKB_Instance_16]
+		[pizza_ProjectKB_Instance_18]))
 
 ([XY_Instance_541] of  Widget
 
