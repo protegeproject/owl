@@ -26,9 +26,6 @@
         <owl:intersectionOf rdf:parseType="Collection">
           <owl:Class rdf:ID="Destination"/>
           <owl:Restriction>
-            <owl:onProperty>
-              <owl:ObjectProperty rdf:ID="hasAccommodation"/>
-            </owl:onProperty>
             <owl:someValuesFrom>
               <owl:Class>
                 <owl:intersectionOf rdf:parseType="Collection">
@@ -37,6 +34,9 @@
                 </owl:intersectionOf>
               </owl:Class>
             </owl:someValuesFrom>
+            <owl:onProperty>
+              <owl:ObjectProperty rdf:ID="hasAccommodation"/>
+            </owl:onProperty>
           </owl:Restriction>
         </owl:intersectionOf>
       </owl:Class>
@@ -47,10 +47,10 @@
   <owl:Class rdf:ID="Capital">
     <rdfs:subClassOf>
       <owl:Restriction>
-        <owl:someValuesFrom rdf:resource="#Museums"/>
         <owl:onProperty>
           <owl:ObjectProperty rdf:ID="hasActivity"/>
         </owl:onProperty>
+        <owl:someValuesFrom rdf:resource="#Museums"/>
       </owl:Restriction>
     </rdfs:subClassOf>
     <rdfs:subClassOf>
@@ -68,12 +68,12 @@
   <owl:Class rdf:ID="NationalPark">
     <rdfs:subClassOf>
       <owl:Restriction>
-        <owl:someValuesFrom>
-          <owl:Class rdf:ID="Campground"/>
-        </owl:someValuesFrom>
         <owl:onProperty>
-          <owl:ObjectProperty rdf:about="#hasAccommodation"/>
+          <owl:ObjectProperty rdf:about="#hasActivity"/>
         </owl:onProperty>
+        <owl:someValuesFrom>
+          <owl:Class rdf:ID="Hiking"/>
+        </owl:someValuesFrom>
       </owl:Restriction>
     </rdfs:subClassOf>
     <rdfs:subClassOf>
@@ -81,12 +81,12 @@
     </rdfs:subClassOf>
     <rdfs:subClassOf>
       <owl:Restriction>
-        <owl:onProperty>
-          <owl:ObjectProperty rdf:about="#hasActivity"/>
-        </owl:onProperty>
         <owl:someValuesFrom>
-          <owl:Class rdf:ID="Hiking"/>
+          <owl:Class rdf:ID="Campground"/>
         </owl:someValuesFrom>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#hasAccommodation"/>
+        </owl:onProperty>
       </owl:Restriction>
     </rdfs:subClassOf>
   </owl:Class>
@@ -106,6 +106,9 @@
             </owl:onProperty>
           </owl:Restriction>
           <owl:Restriction>
+            <owl:onProperty>
+              <owl:ObjectProperty rdf:about="#hasActivity"/>
+            </owl:onProperty>
             <owl:someValuesFrom>
               <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
@@ -114,9 +117,6 @@
                 </owl:unionOf>
               </owl:Class>
             </owl:someValuesFrom>
-            <owl:onProperty>
-              <owl:ObjectProperty rdf:about="#hasActivity"/>
-            </owl:onProperty>
           </owl:Restriction>
         </owl:intersectionOf>
       </owl:Class>
@@ -168,10 +168,10 @@
             </owl:someValuesFrom>
           </owl:Restriction>
           <owl:Restriction>
-            <owl:someValuesFrom rdf:resource="#Sightseeing"/>
             <owl:onProperty>
               <owl:ObjectProperty rdf:about="#hasActivity"/>
             </owl:onProperty>
+            <owl:someValuesFrom rdf:resource="#Sightseeing"/>
           </owl:Restriction>
         </owl:intersectionOf>
       </owl:Class>
@@ -203,15 +203,15 @@
       <owl:Class rdf:ID="BedAndBreakfast"/>
     </owl:disjointWith>
     <rdfs:subClassOf>
-      <owl:Class rdf:ID="Accommodation"/>
-    </rdfs:subClassOf>
-    <rdfs:subClassOf>
       <owl:Restriction>
-        <owl:hasValue rdf:resource="#OneStarRating"/>
         <owl:onProperty>
           <owl:ObjectProperty rdf:about="#hasRating"/>
         </owl:onProperty>
+        <owl:hasValue rdf:resource="#OneStarRating"/>
       </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="Accommodation"/>
     </rdfs:subClassOf>
     <owl:disjointWith>
       <owl:Class rdf:about="#Hotel"/>
@@ -221,12 +221,12 @@
     <rdfs:subClassOf rdf:resource="#UrbanArea"/>
     <rdfs:subClassOf>
       <owl:Restriction>
-        <owl:onProperty>
-          <owl:ObjectProperty rdf:about="#hasAccommodation"/>
-        </owl:onProperty>
         <owl:someValuesFrom>
           <owl:Class rdf:ID="LuxuryHotel"/>
         </owl:someValuesFrom>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#hasAccommodation"/>
+        </owl:onProperty>
       </owl:Restriction>
     </rdfs:subClassOf>
   </owl:Class>
@@ -275,11 +275,11 @@
         <owl:intersectionOf rdf:parseType="Collection">
           <owl:Class rdf:about="#Destination"/>
           <owl:Restriction>
+            <owl:minCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+            >1</owl:minCardinality>
             <owl:onProperty>
               <owl:ObjectProperty rdf:about="#hasAccommodation"/>
             </owl:onProperty>
-            <owl:minCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
-            >1</owl:minCardinality>
           </owl:Restriction>
           <owl:Restriction>
             <owl:onProperty>
@@ -296,8 +296,8 @@
     <owl:disjointWith>
       <owl:Class rdf:about="#Sports"/>
     </owl:disjointWith>
-    <owl:disjointWith rdf:resource="#Relaxation"/>
     <owl:disjointWith rdf:resource="#Sightseeing"/>
+    <owl:disjointWith rdf:resource="#Relaxation"/>
     <rdfs:subClassOf rdf:resource="#Activity"/>
   </owl:Class>
   <owl:Class rdf:ID="Yoga">
@@ -445,4 +445,4 @@
   <City rdf:ID="Cairns"/>
 </rdf:RDF>
 
-<!-- Created with Protege (with OWL Plugin 2.1 beta, Build 275)  http://protege.stanford.edu -->
+<!-- Created with Protege (with OWL Plugin 2.1 beta, Build 280)  http://protege.stanford.edu -->

@@ -1,16 +1,16 @@
-; Fri Jun 03 16:28:15 EST 2005
+; Thu Jun 23 09:35:37 EST 2005
 ; 
 ;+ (version "3.1")
-;+ (build "Build 195")
+;+ (build "Build 198")
 
 ([BROWSER_SLOT_NAMES] of  Property_List
 
 	(properties
-		[family.swrl_ProjectKB_Instance_163]
 		[family.swrl_ProjectKB_Instance_164]
 		[family.swrl_ProjectKB_Instance_165]
 		[family.swrl_ProjectKB_Instance_166]
-		[family.swrl_ProjectKB_Instance_167]))
+		[family.swrl_ProjectKB_Instance_167]
+		[family.swrl_ProjectKB_Instance_168]))
 
 ([CLSES_TAB] of  Widget
 
@@ -19,741 +19,741 @@
 	(property_list [Instance_47])
 	(widget_class_name "edu.stanford.smi.protege.widget.ClsesTab"))
 
-([family.swrl_ProjectKB_Instance_1] of  Widget
+([family.swrl_ProjectKB_Instance_10] of  Property_List
+)
 
-	(is_hidden FALSE)
-	(name "swrl:Imp")
-	(property_list [family.swrl_ProjectKB_Instance_28])
-	(widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.OWLFormWidget"))
+([family.swrl_ProjectKB_Instance_100] of  Property_List
+)
 
-([family.swrl_ProjectKB_Instance_10] of  Widget
-
-	(is_hidden FALSE)
-	(name "swrl:arguments")
-	(property_list [family.swrl_ProjectKB_Instance_11]))
-
-([family.swrl_ProjectKB_Instance_100] of  Widget
+([family.swrl_ProjectKB_Instance_101] of  Widget
 
 	(is_hidden FALSE)
 	(name "swrlb:maxArgs")
-	(property_list [family.swrl_ProjectKB_Instance_101]))
+	(property_list [family.swrl_ProjectKB_Instance_102]))
 
-([family.swrl_ProjectKB_Instance_101] of  Property_List
+([family.swrl_ProjectKB_Instance_102] of  Property_List
 )
 
-([family.swrl_ProjectKB_Instance_102] of  Widget
-
-	(is_hidden FALSE)
-	(name "swrl:body")
-	(property_list [family.swrl_ProjectKB_Instance_103]))
-
-([family.swrl_ProjectKB_Instance_103] of  Property_List
-)
-
-([family.swrl_ProjectKB_Instance_104] of  Widget
+([family.swrl_ProjectKB_Instance_103] of  Widget
 
 	(is_hidden FALSE)
 	(name "swrl:dataRange")
-	(property_list [family.swrl_ProjectKB_Instance_105]))
+	(property_list [family.swrl_ProjectKB_Instance_104]))
 
-([family.swrl_ProjectKB_Instance_105] of  Property_List
+([family.swrl_ProjectKB_Instance_104] of  Property_List
 )
 
-([family.swrl_ProjectKB_Instance_106] of  Widget
-
-	(is_hidden FALSE)
-	(name "swrlb:minArgs")
-	(property_list [family.swrl_ProjectKB_Instance_107]))
-
-([family.swrl_ProjectKB_Instance_107] of  Property_List
-)
-
-([family.swrl_ProjectKB_Instance_108] of  Widget
-
-	(is_hidden FALSE)
-	(name "swrl:argument2")
-	(property_list [family.swrl_ProjectKB_Instance_109]))
-
-([family.swrl_ProjectKB_Instance_109] of  Property_List
-)
-
-([family.swrl_ProjectKB_Instance_11] of  Property_List
-)
-
-([family.swrl_ProjectKB_Instance_110] of  Widget
+([family.swrl_ProjectKB_Instance_105] of  Widget
 
 	(is_hidden FALSE)
 	(name "swrl:head")
-	(property_list [family.swrl_ProjectKB_Instance_111]))
+	(property_list [family.swrl_ProjectKB_Instance_106]))
 
-([family.swrl_ProjectKB_Instance_111] of  Property_List
+([family.swrl_ProjectKB_Instance_106] of  Property_List
 )
 
-([family.swrl_ProjectKB_Instance_112] of  Widget
+([family.swrl_ProjectKB_Instance_107] of  Widget
 
 	(is_hidden FALSE)
-	(name "swrl:builtin")
-	(property_list [family.swrl_ProjectKB_Instance_113]))
+	(name "swrlb:minArgs")
+	(property_list [family.swrl_ProjectKB_Instance_108]))
 
-([family.swrl_ProjectKB_Instance_113] of  Property_List
+([family.swrl_ProjectKB_Instance_108] of  Property_List
 )
 
-([family.swrl_ProjectKB_Instance_114] of  Widget
-
-	(is_hidden FALSE)
-	(name "swrl:propertyPredicate")
-	(property_list [family.swrl_ProjectKB_Instance_115]))
-
-([family.swrl_ProjectKB_Instance_115] of  Property_List
-)
-
-([family.swrl_ProjectKB_Instance_116] of  Widget
+([family.swrl_ProjectKB_Instance_109] of  Widget
 
 	(is_hidden FALSE)
 	(name "swrl:argument1")
-	(property_list [family.swrl_ProjectKB_Instance_117]))
+	(property_list [family.swrl_ProjectKB_Instance_110]))
 
-([family.swrl_ProjectKB_Instance_117] of  Property_List
-)
-
-([family.swrl_ProjectKB_Instance_118] of  Widget
-
-	(is_hidden FALSE)
-	(name "swrl:arguments")
-	(property_list [family.swrl_ProjectKB_Instance_119]))
-
-([family.swrl_ProjectKB_Instance_119] of  Property_List
-)
-
-([family.swrl_ProjectKB_Instance_12] of  Widget
-
-	(is_hidden FALSE)
-	(name "swrlb:minArgs")
-	(property_list [family.swrl_ProjectKB_Instance_13]))
-
-([family.swrl_ProjectKB_Instance_120] of  Widget
+([family.swrl_ProjectKB_Instance_11] of  Widget
 
 	(is_hidden FALSE)
 	(name "swrl:classPredicate")
-	(property_list [family.swrl_ProjectKB_Instance_121]))
+	(property_list [family.swrl_ProjectKB_Instance_12]))
 
-([family.swrl_ProjectKB_Instance_121] of  Property_List
+([family.swrl_ProjectKB_Instance_110] of  Property_List
 )
 
-([family.swrl_ProjectKB_Instance_122] of  Widget
-
-	(is_hidden FALSE)
-	(name "swrlb:args")
-	(property_list [family.swrl_ProjectKB_Instance_123]))
-
-([family.swrl_ProjectKB_Instance_123] of  Property_List
-)
-
-([family.swrl_ProjectKB_Instance_124] of  Widget
-
-	(is_hidden FALSE)
-	(name "swrlb:maxArgs")
-	(property_list [family.swrl_ProjectKB_Instance_125]))
-
-([family.swrl_ProjectKB_Instance_125] of  Property_List
-)
-
-([family.swrl_ProjectKB_Instance_126] of  Widget
+([family.swrl_ProjectKB_Instance_111] of  Widget
 
 	(is_hidden FALSE)
 	(name "swrl:body")
-	(property_list [family.swrl_ProjectKB_Instance_127]))
+	(property_list [family.swrl_ProjectKB_Instance_112]))
 
-([family.swrl_ProjectKB_Instance_127] of  Property_List
+([family.swrl_ProjectKB_Instance_112] of  Property_List
 )
 
-([family.swrl_ProjectKB_Instance_128] of  Widget
-
-	(is_hidden FALSE)
-	(name "swrl:dataRange")
-	(property_list [family.swrl_ProjectKB_Instance_129]))
-
-([family.swrl_ProjectKB_Instance_129] of  Property_List
-)
-
-([family.swrl_ProjectKB_Instance_13] of  Property_List
-)
-
-([family.swrl_ProjectKB_Instance_130] of  Widget
-
-	(is_hidden FALSE)
-	(name "swrlb:minArgs")
-	(property_list [family.swrl_ProjectKB_Instance_131]))
-
-([family.swrl_ProjectKB_Instance_131] of  Property_List
-)
-
-([family.swrl_ProjectKB_Instance_132] of  Widget
-
-	(is_hidden FALSE)
-	(name "swrl:argument2")
-	(property_list [family.swrl_ProjectKB_Instance_133]))
-
-([family.swrl_ProjectKB_Instance_133] of  Property_List
-)
-
-([family.swrl_ProjectKB_Instance_134] of  Widget
-
-	(is_hidden FALSE)
-	(name "swrl:head")
-	(property_list [family.swrl_ProjectKB_Instance_135]))
-
-([family.swrl_ProjectKB_Instance_135] of  Property_List
-)
-
-([family.swrl_ProjectKB_Instance_136] of  Widget
+([family.swrl_ProjectKB_Instance_113] of  Widget
 
 	(is_hidden FALSE)
 	(name "swrl:builtin")
-	(property_list [family.swrl_ProjectKB_Instance_137]))
+	(property_list [family.swrl_ProjectKB_Instance_114]))
 
-([family.swrl_ProjectKB_Instance_137] of  Property_List
+([family.swrl_ProjectKB_Instance_114] of  Property_List
 )
+
+([family.swrl_ProjectKB_Instance_115] of  Widget
+
+	(is_hidden FALSE)
+	(name "swrl:propertyPredicate")
+	(property_list [family.swrl_ProjectKB_Instance_116]))
+
+([family.swrl_ProjectKB_Instance_116] of  Property_List
+)
+
+([family.swrl_ProjectKB_Instance_117] of  Widget
+
+	(is_hidden FALSE)
+	(name "swrl:classPredicate")
+	(property_list [family.swrl_ProjectKB_Instance_118]))
+
+([family.swrl_ProjectKB_Instance_118] of  Property_List
+)
+
+([family.swrl_ProjectKB_Instance_119] of  Widget
+
+	(is_hidden FALSE)
+	(name "swrl:arguments")
+	(property_list [family.swrl_ProjectKB_Instance_120]))
+
+([family.swrl_ProjectKB_Instance_12] of  Property_List
+)
+
+([family.swrl_ProjectKB_Instance_120] of  Property_List
+)
+
+([family.swrl_ProjectKB_Instance_121] of  Widget
+
+	(is_hidden FALSE)
+	(name "swrl:argument2")
+	(property_list [family.swrl_ProjectKB_Instance_122]))
+
+([family.swrl_ProjectKB_Instance_122] of  Property_List
+)
+
+([family.swrl_ProjectKB_Instance_123] of  Widget
+
+	(is_hidden FALSE)
+	(name "swrlb:args")
+	(property_list [family.swrl_ProjectKB_Instance_124]))
+
+([family.swrl_ProjectKB_Instance_124] of  Property_List
+)
+
+([family.swrl_ProjectKB_Instance_125] of  Widget
+
+	(is_hidden FALSE)
+	(name "swrlb:maxArgs")
+	(property_list [family.swrl_ProjectKB_Instance_126]))
+
+([family.swrl_ProjectKB_Instance_126] of  Property_List
+)
+
+([family.swrl_ProjectKB_Instance_127] of  Widget
+
+	(is_hidden FALSE)
+	(name "swrl:dataRange")
+	(property_list [family.swrl_ProjectKB_Instance_128]))
+
+([family.swrl_ProjectKB_Instance_128] of  Property_List
+)
+
+([family.swrl_ProjectKB_Instance_129] of  Widget
+
+	(is_hidden FALSE)
+	(name "swrl:head")
+	(property_list [family.swrl_ProjectKB_Instance_130]))
+
+([family.swrl_ProjectKB_Instance_13] of  Widget
+
+	(is_hidden FALSE)
+	(name "swrl:arguments")
+	(property_list [family.swrl_ProjectKB_Instance_14]))
+
+([family.swrl_ProjectKB_Instance_130] of  Property_List
+)
+
+([family.swrl_ProjectKB_Instance_131] of  Widget
+
+	(is_hidden FALSE)
+	(name "swrlb:minArgs")
+	(property_list [family.swrl_ProjectKB_Instance_132]))
+
+([family.swrl_ProjectKB_Instance_132] of  Property_List
+)
+
+([family.swrl_ProjectKB_Instance_133] of  Widget
+
+	(is_hidden FALSE)
+	(name "swrl:argument1")
+	(property_list [family.swrl_ProjectKB_Instance_134]))
+
+([family.swrl_ProjectKB_Instance_134] of  Property_List
+)
+
+([family.swrl_ProjectKB_Instance_135] of  Widget
+
+	(is_hidden FALSE)
+	(name "swrl:body")
+	(property_list [family.swrl_ProjectKB_Instance_136]))
+
+([family.swrl_ProjectKB_Instance_136] of  Property_List
+)
+
+([family.swrl_ProjectKB_Instance_137] of  Widget
+
+	(is_hidden FALSE)
+	(name "swrl:builtin")
+	(property_list [family.swrl_ProjectKB_Instance_138]))
 
 ([family.swrl_ProjectKB_Instance_138] of  Property_List
 )
 
-([family.swrl_ProjectKB_Instance_139] of  Widget
+([family.swrl_ProjectKB_Instance_139] of  Property_List
+)
+
+([family.swrl_ProjectKB_Instance_14] of  Property_List
+)
+
+([family.swrl_ProjectKB_Instance_140] of  Widget
 
 	(is_hidden FALSE)
 	(name "swrl:propertyPredicate")
-	(property_list [family.swrl_ProjectKB_Instance_140]))
+	(property_list [family.swrl_ProjectKB_Instance_141]))
 
-([family.swrl_ProjectKB_Instance_14] of  Widget
-
-	(is_hidden FALSE)
-	(name "swrl:argument2")
-	(property_list [family.swrl_ProjectKB_Instance_15]))
-
-([family.swrl_ProjectKB_Instance_140] of  Property_List
+([family.swrl_ProjectKB_Instance_141] of  Property_List
 )
 
-([family.swrl_ProjectKB_Instance_141] of  Widget
-
-	(is_hidden FALSE)
-	(name "swrl:argument1")
-	(property_list [family.swrl_ProjectKB_Instance_142]))
-
-([family.swrl_ProjectKB_Instance_142] of  Property_List
-)
-
-([family.swrl_ProjectKB_Instance_143] of  Widget
-
-	(is_hidden FALSE)
-	(name "swrl:arguments")
-	(property_list [family.swrl_ProjectKB_Instance_144]))
-
-([family.swrl_ProjectKB_Instance_144] of  Property_List
-)
-
-([family.swrl_ProjectKB_Instance_145] of  Widget
+([family.swrl_ProjectKB_Instance_142] of  Widget
 
 	(is_hidden FALSE)
 	(name "swrl:classPredicate")
-	(property_list [family.swrl_ProjectKB_Instance_146]))
+	(property_list [family.swrl_ProjectKB_Instance_143]))
 
-([family.swrl_ProjectKB_Instance_146] of  Property_List
+([family.swrl_ProjectKB_Instance_143] of  Property_List
 )
 
-([family.swrl_ProjectKB_Instance_147] of  Widget
+([family.swrl_ProjectKB_Instance_144] of  Widget
 
 	(is_hidden FALSE)
-	(name "swrlb:args")
-	(property_list [family.swrl_ProjectKB_Instance_148]))
+	(name "swrl:arguments")
+	(property_list [family.swrl_ProjectKB_Instance_145]))
 
-([family.swrl_ProjectKB_Instance_148] of  Property_List
+([family.swrl_ProjectKB_Instance_145] of  Property_List
 )
 
-([family.swrl_ProjectKB_Instance_149] of  Widget
-
-	(is_hidden FALSE)
-	(name "swrlb:maxArgs")
-	(property_list [family.swrl_ProjectKB_Instance_150]))
-
-([family.swrl_ProjectKB_Instance_15] of  Property_List
-)
-
-([family.swrl_ProjectKB_Instance_150] of  Property_List
-)
-
-([family.swrl_ProjectKB_Instance_151] of  Widget
-
-	(is_hidden FALSE)
-	(name "swrl:body")
-	(property_list [family.swrl_ProjectKB_Instance_152]))
-
-([family.swrl_ProjectKB_Instance_152] of  Property_List
-)
-
-([family.swrl_ProjectKB_Instance_153] of  Widget
-
-	(is_hidden FALSE)
-	(name "swrl:dataRange")
-	(property_list [family.swrl_ProjectKB_Instance_154]))
-
-([family.swrl_ProjectKB_Instance_154] of  Property_List
-)
-
-([family.swrl_ProjectKB_Instance_155] of  Widget
-
-	(is_hidden FALSE)
-	(name "swrlb:minArgs")
-	(property_list [family.swrl_ProjectKB_Instance_156]))
-
-([family.swrl_ProjectKB_Instance_156] of  Property_List
-)
-
-([family.swrl_ProjectKB_Instance_157] of  Widget
+([family.swrl_ProjectKB_Instance_146] of  Widget
 
 	(is_hidden FALSE)
 	(name "swrl:argument2")
-	(property_list [family.swrl_ProjectKB_Instance_158]))
+	(property_list [family.swrl_ProjectKB_Instance_147]))
 
-([family.swrl_ProjectKB_Instance_158] of  Property_List
+([family.swrl_ProjectKB_Instance_147] of  Property_List
 )
 
-([family.swrl_ProjectKB_Instance_159] of  Widget
+([family.swrl_ProjectKB_Instance_148] of  Widget
+
+	(is_hidden FALSE)
+	(name "swrlb:args")
+	(property_list [family.swrl_ProjectKB_Instance_149]))
+
+([family.swrl_ProjectKB_Instance_149] of  Property_List
+)
+
+([family.swrl_ProjectKB_Instance_15] of  Widget
+
+	(is_hidden FALSE)
+	(name "swrl:argument2")
+	(property_list [family.swrl_ProjectKB_Instance_16]))
+
+([family.swrl_ProjectKB_Instance_150] of  Widget
+
+	(is_hidden FALSE)
+	(name "swrlb:maxArgs")
+	(property_list [family.swrl_ProjectKB_Instance_151]))
+
+([family.swrl_ProjectKB_Instance_151] of  Property_List
+)
+
+([family.swrl_ProjectKB_Instance_152] of  Widget
+
+	(is_hidden FALSE)
+	(name "swrl:dataRange")
+	(property_list [family.swrl_ProjectKB_Instance_153]))
+
+([family.swrl_ProjectKB_Instance_153] of  Property_List
+)
+
+([family.swrl_ProjectKB_Instance_154] of  Widget
 
 	(is_hidden FALSE)
 	(name "swrl:head")
-	(property_list [family.swrl_ProjectKB_Instance_160]))
+	(property_list [family.swrl_ProjectKB_Instance_155]))
 
-([family.swrl_ProjectKB_Instance_16] of  Widget
-
-	(is_hidden FALSE)
-	(name "swrl:head")
-	(property_list [family.swrl_ProjectKB_Instance_17]))
-
-([family.swrl_ProjectKB_Instance_160] of  Property_List
+([family.swrl_ProjectKB_Instance_155] of  Property_List
 )
 
-([family.swrl_ProjectKB_Instance_161] of  Widget
+([family.swrl_ProjectKB_Instance_156] of  Widget
+
+	(is_hidden FALSE)
+	(name "swrlb:minArgs")
+	(property_list [family.swrl_ProjectKB_Instance_157]))
+
+([family.swrl_ProjectKB_Instance_157] of  Property_List
+)
+
+([family.swrl_ProjectKB_Instance_158] of  Widget
+
+	(is_hidden FALSE)
+	(name "swrl:argument1")
+	(property_list [family.swrl_ProjectKB_Instance_159]))
+
+([family.swrl_ProjectKB_Instance_159] of  Property_List
+)
+
+([family.swrl_ProjectKB_Instance_16] of  Property_List
+)
+
+([family.swrl_ProjectKB_Instance_160] of  Widget
+
+	(is_hidden FALSE)
+	(name "swrl:body")
+	(property_list [family.swrl_ProjectKB_Instance_161]))
+
+([family.swrl_ProjectKB_Instance_161] of  Property_List
+)
+
+([family.swrl_ProjectKB_Instance_162] of  Widget
 
 	(is_hidden FALSE)
 	(name "swrl:builtin")
-	(property_list [family.swrl_ProjectKB_Instance_162]))
+	(property_list [family.swrl_ProjectKB_Instance_163]))
 
-([family.swrl_ProjectKB_Instance_162] of  Property_List
+([family.swrl_ProjectKB_Instance_163] of  Property_List
 )
 
-([family.swrl_ProjectKB_Instance_163] of  String
+([family.swrl_ProjectKB_Instance_164] of  String
 
 	(name "owl:Class")
 	(string_value "%3ANAME"))
 
-([family.swrl_ProjectKB_Instance_164] of  String
+([family.swrl_ProjectKB_Instance_165] of  String
 
 	(name ":META-CLASS")
 	(string_value "%3ANAME"))
 
-([family.swrl_ProjectKB_Instance_165] of  String
+([family.swrl_ProjectKB_Instance_166] of  String
 
 	(name ":INSTANCE-ANNOTATION")
 	(string_value "%3AANNOTATION-TEXT"))
 
-([family.swrl_ProjectKB_Instance_166] of  String
+([family.swrl_ProjectKB_Instance_167] of  String
 
 	(name ":PAL-CONSTRAINT")
 	(string_value "%3APAL-NAME"))
 
-([family.swrl_ProjectKB_Instance_167] of  String
+([family.swrl_ProjectKB_Instance_168] of  String
 
 	(name "owl:Thing")
 	(string_value "%3ANAME"))
 
-([family.swrl_ProjectKB_Instance_17] of  Property_List
-)
-
-([family.swrl_ProjectKB_Instance_18] of  Widget
+([family.swrl_ProjectKB_Instance_17] of  Widget
 
 	(is_hidden FALSE)
-	(name "swrl:classPredicate")
-	(property_list [family.swrl_ProjectKB_Instance_19]))
+	(name "swrlb:minArgs")
+	(property_list [family.swrl_ProjectKB_Instance_18]))
 
-([family.swrl_ProjectKB_Instance_19] of  Property_List
+([family.swrl_ProjectKB_Instance_18] of  Property_List
 )
 
-([family.swrl_ProjectKB_Instance_20] of  Widget
+([family.swrl_ProjectKB_Instance_19] of  Widget
 
 	(is_hidden FALSE)
-	(name "swrlb:args")
-	(property_list [family.swrl_ProjectKB_Instance_21]))
+	(name "swrl:argument1")
+	(property_list [family.swrl_ProjectKB_Instance_20]))
 
-([family.swrl_ProjectKB_Instance_21] of  Property_List
-)
-
-([family.swrl_ProjectKB_Instance_22] of  Widget
+([family.swrl_ProjectKB_Instance_2] of  Widget
 
 	(is_hidden FALSE)
-	(name "swrlb:maxArgs")
-	(property_list [family.swrl_ProjectKB_Instance_23]))
+	(name "swrl:Imp")
+	(property_list [family.swrl_ProjectKB_Instance_29])
+	(widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.OWLFormWidget"))
 
-([family.swrl_ProjectKB_Instance_23] of  Property_List
+([family.swrl_ProjectKB_Instance_20] of  Property_List
 )
 
-([family.swrl_ProjectKB_Instance_24] of  Widget
+([family.swrl_ProjectKB_Instance_21] of  Widget
 
 	(is_hidden FALSE)
 	(name "swrl:body")
-	(property_list [family.swrl_ProjectKB_Instance_25]))
+	(property_list [family.swrl_ProjectKB_Instance_22]))
 
-([family.swrl_ProjectKB_Instance_25] of  Property_List
+([family.swrl_ProjectKB_Instance_22] of  Property_List
 )
 
-([family.swrl_ProjectKB_Instance_26] of  Widget
+([family.swrl_ProjectKB_Instance_23] of  Widget
+
+	(is_hidden FALSE)
+	(name "swrlb:args")
+	(property_list [family.swrl_ProjectKB_Instance_24]))
+
+([family.swrl_ProjectKB_Instance_24] of  Property_List
+)
+
+([family.swrl_ProjectKB_Instance_25] of  Widget
+
+	(is_hidden FALSE)
+	(name "swrlb:maxArgs")
+	(property_list [family.swrl_ProjectKB_Instance_26]))
+
+([family.swrl_ProjectKB_Instance_26] of  Property_List
+)
+
+([family.swrl_ProjectKB_Instance_27] of  Widget
 
 	(is_hidden FALSE)
 	(name "swrl:builtin")
-	(property_list [family.swrl_ProjectKB_Instance_27]))
-
-([family.swrl_ProjectKB_Instance_27] of  Property_List
-)
+	(property_list [family.swrl_ProjectKB_Instance_28]))
 
 ([family.swrl_ProjectKB_Instance_28] of  Property_List
+)
+
+([family.swrl_ProjectKB_Instance_29] of  Property_List
 
 	(properties
-		[family.swrl_ProjectKB_Instance_29]
-		[family.swrl_ProjectKB_Instance_43]
-		[family.swrl_ProjectKB_Instance_46]
-		[family.swrl_ProjectKB_Instance_48]
-		[family.swrl_ProjectKB_Instance_50]
-		[family.swrl_ProjectKB_Instance_52]
-		[family.swrl_ProjectKB_Instance_54]
-		[family.swrl_ProjectKB_Instance_56]
-		[family.swrl_ProjectKB_Instance_58]
-		[family.swrl_ProjectKB_Instance_60]
-		[family.swrl_ProjectKB_Instance_62]
-		[family.swrl_ProjectKB_Instance_64]
-		[family.swrl_ProjectKB_Instance_66]
-		[family.swrl_ProjectKB_Instance_68]
-		[family.swrl_ProjectKB_Instance_72]
-		[family.swrl_ProjectKB_Instance_74]
-		[family.swrl_ProjectKB_Instance_76]
-		[family.swrl_ProjectKB_Instance_80]
-		[family.swrl_ProjectKB_Instance_82]
-		[family.swrl_ProjectKB_Instance_84]))
+		[family.swrl_ProjectKB_Instance_30]
+		[family.swrl_ProjectKB_Instance_44]
+		[family.swrl_ProjectKB_Instance_47]
+		[family.swrl_ProjectKB_Instance_49]
+		[family.swrl_ProjectKB_Instance_51]
+		[family.swrl_ProjectKB_Instance_53]
+		[family.swrl_ProjectKB_Instance_55]
+		[family.swrl_ProjectKB_Instance_57]
+		[family.swrl_ProjectKB_Instance_59]
+		[family.swrl_ProjectKB_Instance_63]
+		[family.swrl_ProjectKB_Instance_65]
+		[family.swrl_ProjectKB_Instance_67]
+		[family.swrl_ProjectKB_Instance_69]
+		[family.swrl_ProjectKB_Instance_71]
+		[family.swrl_ProjectKB_Instance_73]
+		[family.swrl_ProjectKB_Instance_77]
+		[family.swrl_ProjectKB_Instance_79]
+		[family.swrl_ProjectKB_Instance_81]
+		[family.swrl_ProjectKB_Instance_83]
+		[family.swrl_ProjectKB_Instance_85]))
 
-([family.swrl_ProjectKB_Instance_29] of  Widget
+([family.swrl_ProjectKB_Instance_30] of  Widget
 
 	(height 180)
 	(is_hidden FALSE)
 	(label "Name")
 	(name ":NAME")
-	(property_list [family.swrl_ProjectKB_Instance_30])
+	(property_list [family.swrl_ProjectKB_Instance_31])
 	(widget_class_name "edu.stanford.smi.protegex.owl.ui.metadata.RDFSNamedClassMetadataWidget")
 	(width 280)
 	(x 0)
 	(y 0))
 
-([family.swrl_ProjectKB_Instance_30] of  Property_List
+([family.swrl_ProjectKB_Instance_31] of  Property_List
 )
 
-([family.swrl_ProjectKB_Instance_4] of  Widget
-
-	(is_hidden FALSE)
-	(name "swrl:dataRange")
-	(property_list [family.swrl_ProjectKB_Instance_5]))
-
-([family.swrl_ProjectKB_Instance_43] of  Property_List
+([family.swrl_ProjectKB_Instance_44] of  Property_List
 
 	(name "layout properties")
 	(properties
-		[family.swrl_ProjectKB_Instance_44]
-		[family.swrl_ProjectKB_Instance_45]))
+		[family.swrl_ProjectKB_Instance_45]
+		[family.swrl_ProjectKB_Instance_46]))
 
-([family.swrl_ProjectKB_Instance_44] of  String
+([family.swrl_ProjectKB_Instance_45] of  String
 
 	(name "horizontal_stretcher")
 	(string_value "<<all>>"))
 
-([family.swrl_ProjectKB_Instance_45] of  String
+([family.swrl_ProjectKB_Instance_46] of  String
 
 	(name "vertical_stretcher")
 	(string_value "<<none>>"))
 
-([family.swrl_ProjectKB_Instance_46] of  Widget
+([family.swrl_ProjectKB_Instance_47] of  Widget
 
 	(height 180)
 	(is_hidden FALSE)
 	(name "protege:inferredType")
-	(property_list [family.swrl_ProjectKB_Instance_47])
+	(property_list [family.swrl_ProjectKB_Instance_48])
 	(widget_class_name "edu.stanford.smi.protegex.owl.ui.metadata.AnnotationsWidget")
 	(width 280)
 	(x 280)
 	(y 0))
 
-([family.swrl_ProjectKB_Instance_47] of  Property_List
+([family.swrl_ProjectKB_Instance_48] of  Property_List
 )
 
-([family.swrl_ProjectKB_Instance_48] of  Widget
+([family.swrl_ProjectKB_Instance_49] of  Widget
 
 	(is_hidden FALSE)
 	(name "owl:versionInfo")
-	(property_list [family.swrl_ProjectKB_Instance_49]))
+	(property_list [family.swrl_ProjectKB_Instance_50]))
 
-([family.swrl_ProjectKB_Instance_49] of  Property_List
-)
-
-([family.swrl_ProjectKB_Instance_5] of  Property_List
-)
-
-([family.swrl_ProjectKB_Instance_50] of  Widget
-
-	(is_hidden FALSE)
-	(name "rdfs:isDefinedBy")
-	(property_list [family.swrl_ProjectKB_Instance_51]))
-
-([family.swrl_ProjectKB_Instance_51] of  Property_List
-)
-
-([family.swrl_ProjectKB_Instance_52] of  Widget
-
-	(is_hidden FALSE)
-	(name "rdfs:comment")
-	(property_list [family.swrl_ProjectKB_Instance_53]))
-
-([family.swrl_ProjectKB_Instance_53] of  Property_List
-)
-
-([family.swrl_ProjectKB_Instance_54] of  Widget
-
-	(is_hidden FALSE)
-	(name "rdfs:seeAlso")
-	(property_list [family.swrl_ProjectKB_Instance_55]))
-
-([family.swrl_ProjectKB_Instance_55] of  Property_List
-)
-
-([family.swrl_ProjectKB_Instance_56] of  Widget
-
-	(is_hidden FALSE)
-	(name "rdfs:label")
-	(property_list [family.swrl_ProjectKB_Instance_57]))
-
-([family.swrl_ProjectKB_Instance_57] of  Property_List
-)
-
-([family.swrl_ProjectKB_Instance_58] of  Widget
+([family.swrl_ProjectKB_Instance_5] of  Widget
 
 	(is_hidden FALSE)
 	(name "swrl:dataRange")
-	(property_list [family.swrl_ProjectKB_Instance_59]))
+	(property_list [family.swrl_ProjectKB_Instance_6]))
 
-([family.swrl_ProjectKB_Instance_59] of  Property_List
+([family.swrl_ProjectKB_Instance_50] of  Property_List
 )
 
-([family.swrl_ProjectKB_Instance_6] of  Widget
+([family.swrl_ProjectKB_Instance_51] of  Widget
+
+	(is_hidden FALSE)
+	(name "rdfs:isDefinedBy")
+	(property_list [family.swrl_ProjectKB_Instance_52]))
+
+([family.swrl_ProjectKB_Instance_52] of  Property_List
+)
+
+([family.swrl_ProjectKB_Instance_53] of  Widget
+
+	(is_hidden FALSE)
+	(name "rdfs:comment")
+	(property_list [family.swrl_ProjectKB_Instance_54]))
+
+([family.swrl_ProjectKB_Instance_54] of  Property_List
+)
+
+([family.swrl_ProjectKB_Instance_55] of  Widget
+
+	(is_hidden FALSE)
+	(name "rdfs:seeAlso")
+	(property_list [family.swrl_ProjectKB_Instance_56]))
+
+([family.swrl_ProjectKB_Instance_56] of  Property_List
+)
+
+([family.swrl_ProjectKB_Instance_57] of  Widget
+
+	(is_hidden FALSE)
+	(name "rdfs:label")
+	(property_list [family.swrl_ProjectKB_Instance_58]))
+
+([family.swrl_ProjectKB_Instance_58] of  Property_List
+)
+
+([family.swrl_ProjectKB_Instance_59] of  Widget
+
+	(is_hidden FALSE)
+	(name "swrl:dataRange")
+	(property_list [family.swrl_ProjectKB_Instance_60]))
+
+([family.swrl_ProjectKB_Instance_6] of  Property_List
+)
+
+([family.swrl_ProjectKB_Instance_60] of  Property_List
+)
+
+([family.swrl_ProjectKB_Instance_61] of  Widget
+
+	(is_hidden FALSE)
+	(name "swrl:head")
+	(property_list [family.swrl_ProjectKB_Instance_62]))
+
+([family.swrl_ProjectKB_Instance_62] of  Property_List
+)
+
+([family.swrl_ProjectKB_Instance_63] of  Widget
 
 	(is_hidden FALSE)
 	(name "swrl:propertyPredicate")
-	(property_list [family.swrl_ProjectKB_Instance_7]))
+	(property_list [family.swrl_ProjectKB_Instance_64]))
 
-([family.swrl_ProjectKB_Instance_60] of  Widget
-
-	(is_hidden FALSE)
-	(name "swrl:propertyPredicate")
-	(property_list [family.swrl_ProjectKB_Instance_61]))
-
-([family.swrl_ProjectKB_Instance_61] of  Property_List
+([family.swrl_ProjectKB_Instance_64] of  Property_List
 )
 
-([family.swrl_ProjectKB_Instance_62] of  Widget
+([family.swrl_ProjectKB_Instance_65] of  Widget
 
 	(is_hidden FALSE)
-	(name "swrl:argument1")
-	(property_list [family.swrl_ProjectKB_Instance_63]))
+	(name "swrl:classPredicate")
+	(property_list [family.swrl_ProjectKB_Instance_66]))
 
-([family.swrl_ProjectKB_Instance_63] of  Property_List
+([family.swrl_ProjectKB_Instance_66] of  Property_List
 )
 
-([family.swrl_ProjectKB_Instance_64] of  Widget
+([family.swrl_ProjectKB_Instance_67] of  Widget
 
 	(is_hidden FALSE)
 	(name "swrl:arguments")
-	(property_list [family.swrl_ProjectKB_Instance_65]))
+	(property_list [family.swrl_ProjectKB_Instance_68]))
 
-([family.swrl_ProjectKB_Instance_65] of  Property_List
+([family.swrl_ProjectKB_Instance_68] of  Property_List
 )
 
-([family.swrl_ProjectKB_Instance_66] of  Widget
-
-	(is_hidden FALSE)
-	(name "swrlb:minArgs")
-	(property_list [family.swrl_ProjectKB_Instance_67]))
-
-([family.swrl_ProjectKB_Instance_67] of  Property_List
-)
-
-([family.swrl_ProjectKB_Instance_68] of  Widget
+([family.swrl_ProjectKB_Instance_69] of  Widget
 
 	(is_hidden FALSE)
 	(name "swrl:argument2")
-	(property_list [family.swrl_ProjectKB_Instance_69]))
+	(property_list [family.swrl_ProjectKB_Instance_70]))
 
-([family.swrl_ProjectKB_Instance_69] of  Property_List
-)
-
-([family.swrl_ProjectKB_Instance_7] of  Property_List
-)
-
-([family.swrl_ProjectKB_Instance_70] of  Widget
+([family.swrl_ProjectKB_Instance_7] of  Widget
 
 	(is_hidden FALSE)
 	(name "swrl:head")
-	(property_list [family.swrl_ProjectKB_Instance_71]))
+	(property_list [family.swrl_ProjectKB_Instance_8]))
 
-([family.swrl_ProjectKB_Instance_71] of  Property_List
+([family.swrl_ProjectKB_Instance_70] of  Property_List
 )
 
-([family.swrl_ProjectKB_Instance_72] of  Widget
+([family.swrl_ProjectKB_Instance_71] of  Widget
 
 	(is_hidden FALSE)
-	(name "swrl:classPredicate")
-	(property_list [family.swrl_ProjectKB_Instance_73]))
+	(name "swrlb:minArgs")
+	(property_list [family.swrl_ProjectKB_Instance_72]))
 
-([family.swrl_ProjectKB_Instance_73] of  Property_List
+([family.swrl_ProjectKB_Instance_72] of  Property_List
 )
 
-([family.swrl_ProjectKB_Instance_74] of  Widget
+([family.swrl_ProjectKB_Instance_73] of  Widget
+
+	(is_hidden FALSE)
+	(name "swrl:argument1")
+	(property_list [family.swrl_ProjectKB_Instance_74]))
+
+([family.swrl_ProjectKB_Instance_74] of  Property_List
+)
+
+([family.swrl_ProjectKB_Instance_75] of  Widget
+
+	(is_hidden FALSE)
+	(name "swrl:body")
+	(property_list [family.swrl_ProjectKB_Instance_76]))
+
+([family.swrl_ProjectKB_Instance_76] of  Property_List
+)
+
+([family.swrl_ProjectKB_Instance_77] of  Widget
 
 	(is_hidden FALSE)
 	(name "swrlb:args")
-	(property_list [family.swrl_ProjectKB_Instance_75]))
+	(property_list [family.swrl_ProjectKB_Instance_78]))
 
-([family.swrl_ProjectKB_Instance_75] of  Property_List
+([family.swrl_ProjectKB_Instance_78] of  Property_List
 )
 
-([family.swrl_ProjectKB_Instance_76] of  Widget
+([family.swrl_ProjectKB_Instance_79] of  Widget
 
 	(is_hidden FALSE)
 	(name "swrlb:maxArgs")
-	(property_list [family.swrl_ProjectKB_Instance_77]))
+	(property_list [family.swrl_ProjectKB_Instance_80]))
 
-([family.swrl_ProjectKB_Instance_77] of  Property_List
+([family.swrl_ProjectKB_Instance_8] of  Property_List
 )
 
-([family.swrl_ProjectKB_Instance_78] of  Widget
-
-	(is_hidden FALSE)
-	(name "swrl:body")
-	(property_list [family.swrl_ProjectKB_Instance_79]))
-
-([family.swrl_ProjectKB_Instance_79] of  Property_List
+([family.swrl_ProjectKB_Instance_80] of  Property_List
 )
 
-([family.swrl_ProjectKB_Instance_8] of  Widget
-
-	(is_hidden FALSE)
-	(name "swrl:argument1")
-	(property_list [family.swrl_ProjectKB_Instance_9]))
-
-([family.swrl_ProjectKB_Instance_80] of  Widget
+([family.swrl_ProjectKB_Instance_81] of  Widget
 
 	(is_hidden FALSE)
 	(name "swrl:builtin")
-	(property_list [family.swrl_ProjectKB_Instance_81]))
+	(property_list [family.swrl_ProjectKB_Instance_82]))
 
-([family.swrl_ProjectKB_Instance_81] of  Property_List
+([family.swrl_ProjectKB_Instance_82] of  Property_List
 )
 
-([family.swrl_ProjectKB_Instance_82] of  Widget
+([family.swrl_ProjectKB_Instance_83] of  Widget
 
 	(height 1)
 	(is_hidden TRUE)
 	(name "swrl:head")
-	(property_list [family.swrl_ProjectKB_Instance_83])
+	(property_list [family.swrl_ProjectKB_Instance_84])
 	(widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.SingleResourceWidget")
 	(width 1)
 	(x 5)
 	(y 5))
 
-([family.swrl_ProjectKB_Instance_83] of  Property_List
+([family.swrl_ProjectKB_Instance_84] of  Property_List
 )
 
-([family.swrl_ProjectKB_Instance_84] of  Widget
+([family.swrl_ProjectKB_Instance_85] of  Widget
 
 	(height 1)
 	(is_hidden TRUE)
 	(name "swrl:body")
-	(property_list [family.swrl_ProjectKB_Instance_85])
+	(property_list [family.swrl_ProjectKB_Instance_86])
 	(widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.SingleResourceWidget")
 	(width 1)
 	(x 5)
 	(y 5))
 
-([family.swrl_ProjectKB_Instance_85] of  Property_List
+([family.swrl_ProjectKB_Instance_86] of  Property_List
 )
 
-([family.swrl_ProjectKB_Instance_86] of  Widget
+([family.swrl_ProjectKB_Instance_87] of  Widget
 
 	(is_hidden TRUE)
-	(property_list [family.swrl_ProjectKB_Instance_87])
+	(property_list [family.swrl_ProjectKB_Instance_88])
 	(widget_class_name "edu.stanford.smi.protegex.queries_tab.QueriesTab"))
 
-([family.swrl_ProjectKB_Instance_87] of  Property_List
+([family.swrl_ProjectKB_Instance_88] of  Property_List
 )
 
-([family.swrl_ProjectKB_Instance_88] of  Widget
+([family.swrl_ProjectKB_Instance_89] of  Widget
 
 	(is_hidden FALSE)
-	(property_list [family.swrl_ProjectKB_Instance_89])
+	(property_list [family.swrl_ProjectKB_Instance_90])
 	(widget_class_name "edu.stanford.smi.protegex.owl.swrl.ui.tab.SWRLTab"))
 
-([family.swrl_ProjectKB_Instance_89] of  Property_List
-)
-
-([family.swrl_ProjectKB_Instance_9] of  Property_List
-)
-
-([family.swrl_ProjectKB_Instance_90] of  Widget
+([family.swrl_ProjectKB_Instance_9] of  Widget
 
 	(is_hidden FALSE)
 	(name "swrl:propertyPredicate")
-	(property_list [family.swrl_ProjectKB_Instance_91]))
+	(property_list [family.swrl_ProjectKB_Instance_10]))
 
-([family.swrl_ProjectKB_Instance_91] of  Property_List
+([family.swrl_ProjectKB_Instance_90] of  Property_List
 )
 
-([family.swrl_ProjectKB_Instance_92] of  Widget
+([family.swrl_ProjectKB_Instance_91] of  Widget
 
 	(is_hidden FALSE)
-	(name "swrl:argument1")
-	(property_list [family.swrl_ProjectKB_Instance_93]))
+	(name "swrl:propertyPredicate")
+	(property_list [family.swrl_ProjectKB_Instance_92]))
 
-([family.swrl_ProjectKB_Instance_93] of  Property_List
+([family.swrl_ProjectKB_Instance_92] of  Property_List
 )
 
-([family.swrl_ProjectKB_Instance_94] of  Widget
-
-	(is_hidden FALSE)
-	(name "swrl:arguments")
-	(property_list [family.swrl_ProjectKB_Instance_95]))
-
-([family.swrl_ProjectKB_Instance_95] of  Property_List
-)
-
-([family.swrl_ProjectKB_Instance_96] of  Widget
+([family.swrl_ProjectKB_Instance_93] of  Widget
 
 	(is_hidden FALSE)
 	(name "swrl:classPredicate")
-	(property_list [family.swrl_ProjectKB_Instance_97]))
+	(property_list [family.swrl_ProjectKB_Instance_94]))
 
-([family.swrl_ProjectKB_Instance_97] of  Property_List
+([family.swrl_ProjectKB_Instance_94] of  Property_List
 )
 
-([family.swrl_ProjectKB_Instance_98] of  Widget
+([family.swrl_ProjectKB_Instance_95] of  Widget
+
+	(is_hidden FALSE)
+	(name "swrl:arguments")
+	(property_list [family.swrl_ProjectKB_Instance_96]))
+
+([family.swrl_ProjectKB_Instance_96] of  Property_List
+)
+
+([family.swrl_ProjectKB_Instance_97] of  Widget
+
+	(is_hidden FALSE)
+	(name "swrl:argument2")
+	(property_list [family.swrl_ProjectKB_Instance_98]))
+
+([family.swrl_ProjectKB_Instance_98] of  Property_List
+)
+
+([family.swrl_ProjectKB_Instance_99] of  Widget
 
 	(is_hidden FALSE)
 	(name "swrlb:args")
-	(property_list [family.swrl_ProjectKB_Instance_99]))
-
-([family.swrl_ProjectKB_Instance_99] of  Property_List
-)
+	(property_list [family.swrl_ProjectKB_Instance_100]))
 
 ([FORMS_TAB] of  Widget
 
@@ -988,6 +988,37 @@
 	(label "Instances")
 	(property_list [Instance_88])
 	(widget_class_name "edu.stanford.smi.protege.widget.InstancesTab"))
+
+([KB_024013_Instance_0] of  Widget
+
+	(is_hidden TRUE)
+	(property_list [KB_024013_Instance_1])
+	(widget_class_name "edu.stanford.smi.protegex.queries_tab.QueriesTab"))
+
+([KB_024013_Instance_1] of  Property_List
+)
+
+([KB_024013_Instance_2] of  Widget
+
+	(is_hidden TRUE)
+	(property_list [KB_024013_Instance_3])
+	(widget_class_name "edu.stanford.smi.protegex.owl.swrl.ui.tab.SWRLTab"))
+
+([KB_024013_Instance_3] of  Property_List
+)
+
+([KB_024013_Instance_4] of  Widget
+
+	(height 0)
+	(is_hidden FALSE)
+	(name ":DIRECT-SUPERCLASSES")
+	(property_list [KB_024013_Instance_5])
+	(width 0)
+	(x 0)
+	(y 0))
+
+([KB_024013_Instance_5] of  Property_List
+)
 
 ([KB_140180_Instance_0] of  Widget
 
@@ -1332,6 +1363,16 @@
 ([KB_221055_Instance_71] of  Property_List
 )
 
+([KB_281781_Instance_0] of  String
+
+	(name "owl_file_name")
+	(string_value "family.swrl.owl"))
+
+([KB_281781_Instance_1] of  String
+
+	(name "SwitchableClassDefinitionType")
+	(string_value "edu.stanford.smi.protegex.owl.ui.cls.LogicClassDefinitionWidget"))
+
 ([KB_301165_Instance_1013] of  Widget
 
 	(is_hidden FALSE)
@@ -1598,11 +1639,6 @@
 	(x 7)
 	(y 28))
 
-([KB_573654_Instance_0] of  String
-
-	(name "owl_file_name")
-	(string_value "family.swrl.owl"))
-
 ([KB_575585_Instance_0] of  Widget
 
 	(is_hidden TRUE)
@@ -1777,6 +1813,24 @@
 	(property_list [KB_635552_Instance_9]))
 
 ([KB_635552_Instance_9] of  Property_List
+)
+
+([KB_646337_Instance_0] of  Widget
+
+	(is_hidden TRUE)
+	(property_list [KB_646337_Instance_1])
+	(widget_class_name "edu.stanford.smi.protegex.queries_tab.QueriesTab"))
+
+([KB_646337_Instance_1] of  Property_List
+)
+
+([KB_646337_Instance_2] of  Widget
+
+	(is_hidden TRUE)
+	(property_list [KB_646337_Instance_3])
+	(widget_class_name "edu.stanford.smi.protegex.owl.swrl.ui.tab.SWRLTab"))
+
+([KB_646337_Instance_3] of  Property_List
 )
 
 ([KB_691299_Instance_398] of  Widget
@@ -3870,17 +3924,6 @@
 	(property_list [XY_Instance_195])
 	(widget_class_name "edu.stanford.smi.protege.widget.FormWidget"))
 
-([KB_852761_Instance_42] of  Widget
-
-	(height 124)
-	(is_hidden FALSE)
-	(label "DomainProperties")
-	(name ":DIRECT-TEMPLATE-SLOTS")
-	(widget_class_name "edu.stanford.smi.protege.widget.FormWidget")
-	(width 306)
-	(x 7)
-	(y 28))
-
 ([KB_868747_Instance_76] of  Widget
 
 	(is_hidden FALSE)
@@ -4420,7 +4463,7 @@
 	(is_hidden FALSE)
 	(label "Name")
 	(name ":NAME")
-	(property_list [family.swrl_ProjectKB_Instance_138])
+	(property_list [family.swrl_ProjectKB_Instance_139])
 	(widget_class_name "edu.stanford.smi.protege.widget.FormWidget")
 	(width 286)
 	(x 0)
@@ -8552,13 +8595,14 @@
 
 ([KB_941921_Instance_14] of  Widget
 
-	(height 0)
+	(height 220)
 	(is_hidden FALSE)
 	(name "rdfs:subClassOf")
 	(property_list [KB_941921_Instance_15])
-	(width 0)
+	(widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.RDFSSubClassOfWidget")
+	(width 210)
 	(x 0)
-	(y 0))
+	(y 160))
 
 ([KB_941921_Instance_15] of  Property_List
 )
@@ -8591,7 +8635,7 @@
 
 ([OWL_ProjectKB_Instance_3] of  Integer
 
-	(integer_value 275)
+	(integer_value 280)
 	(name "owl_build"))
 
 ([PAL_FORM_WIDGET] of  Widget
@@ -8622,7 +8666,7 @@
 		[KB_938545_Instance_166]
 		[KB_713803_Instance_780]
 		[KB_868747_Instance_76]
-		[family.swrl_ProjectKB_Instance_1]
+		[family.swrl_ProjectKB_Instance_2]
 		[KB_938545_Instance_661]
 		[KB_938545_Instance_495]
 		[STANDARD_FACET_FORM_WIDGET]
@@ -8708,9 +8752,9 @@
 		[CLSES_TAB]
 		[INSTANCES_TAB]
 		[Instance_45]
-		[family.swrl_ProjectKB_Instance_86]
+		[family.swrl_ProjectKB_Instance_87]
 		[SLOTS_TAB]
-		[family.swrl_ProjectKB_Instance_88]))
+		[family.swrl_ProjectKB_Instance_89]))
 
 ([SLOTS_TAB] of  Widget
 
@@ -8728,7 +8772,8 @@
 		[KB_307200_Instance_22]
 		[KB_307200_Instance_23]
 		[OWL_ProjectKB_Instance_3]
-		[KB_573654_Instance_0]))
+		[KB_281781_Instance_0]
+		[KB_281781_Instance_1]))
 
 ([STANDARD_CLASS_FORM_WIDGET] of  Widget
 
@@ -9107,18 +9152,18 @@
 		[KB_635552_Instance_22]
 		[KB_635552_Instance_24]
 		[KB_938545_Instance_8]
-		[family.swrl_ProjectKB_Instance_139]
-		[family.swrl_ProjectKB_Instance_141]
-		[family.swrl_ProjectKB_Instance_143]
-		[family.swrl_ProjectKB_Instance_145]
-		[family.swrl_ProjectKB_Instance_147]
-		[family.swrl_ProjectKB_Instance_149]
-		[family.swrl_ProjectKB_Instance_151]
-		[family.swrl_ProjectKB_Instance_153]
-		[family.swrl_ProjectKB_Instance_155]
-		[family.swrl_ProjectKB_Instance_157]
-		[family.swrl_ProjectKB_Instance_159]
-		[family.swrl_ProjectKB_Instance_161]))
+		[family.swrl_ProjectKB_Instance_140]
+		[family.swrl_ProjectKB_Instance_142]
+		[family.swrl_ProjectKB_Instance_144]
+		[family.swrl_ProjectKB_Instance_146]
+		[family.swrl_ProjectKB_Instance_148]
+		[family.swrl_ProjectKB_Instance_150]
+		[family.swrl_ProjectKB_Instance_152]
+		[family.swrl_ProjectKB_Instance_154]
+		[family.swrl_ProjectKB_Instance_156]
+		[family.swrl_ProjectKB_Instance_158]
+		[family.swrl_ProjectKB_Instance_160]
+		[family.swrl_ProjectKB_Instance_162]))
 
 ([XY_Instance_2] of  Widget
 
@@ -9258,7 +9303,6 @@
 		[XY_Instance_410]
 		[XY_Instance_412]
 		[XY_Instance_413]
-		[XY_Instance_414]
 		[XY_Instance_422]
 		[XY_Instance_424]
 		[XY_Instance_426]
@@ -9272,7 +9316,8 @@
 		[KB_140180_Instance_289]
 		[KB_140180_Instance_291]
 		[KB_941921_Instance_10]
-		[KB_941921_Instance_14]))
+		[KB_941921_Instance_14]
+		[KB_024013_Instance_4]))
 
 ([XY_Instance_410] of  Widget
 
@@ -9388,18 +9433,17 @@
 
 ([XY_Instance_427] of  Widget
 
-	(height 160)
+	(height 220)
 	(label "OWL Properties")
 	(name ":DIRECT-TEMPLATE-SLOTS")
 	(property_list [XY_Instance_428])
-	(widget_class_name "edu.stanford.smi.protegex.owl.ui.clsproperties.ClassPropertiesWidget")
-	(width 320)
-	(x 240)
+	(widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.RDFPropertiesWidget")
+	(width 350)
+	(x 210)
 	(y 160))
 
 ([XY_Instance_428] of  Property_List
-
-	(properties [KB_852761_Instance_42]))
+)
 
 ([XY_Instance_429] of  Property_List
 
@@ -9475,18 +9519,18 @@
 		[KB_938545_Instance_162]
 		[KB_221055_Instance_18]
 		[KB_221055_Instance_22]
-		[family.swrl_ProjectKB_Instance_114]
-		[family.swrl_ProjectKB_Instance_116]
-		[family.swrl_ProjectKB_Instance_118]
-		[family.swrl_ProjectKB_Instance_120]
-		[family.swrl_ProjectKB_Instance_122]
-		[family.swrl_ProjectKB_Instance_124]
-		[family.swrl_ProjectKB_Instance_126]
-		[family.swrl_ProjectKB_Instance_128]
-		[family.swrl_ProjectKB_Instance_130]
-		[family.swrl_ProjectKB_Instance_132]
-		[family.swrl_ProjectKB_Instance_134]
-		[family.swrl_ProjectKB_Instance_136]))
+		[family.swrl_ProjectKB_Instance_115]
+		[family.swrl_ProjectKB_Instance_117]
+		[family.swrl_ProjectKB_Instance_119]
+		[family.swrl_ProjectKB_Instance_121]
+		[family.swrl_ProjectKB_Instance_123]
+		[family.swrl_ProjectKB_Instance_125]
+		[family.swrl_ProjectKB_Instance_127]
+		[family.swrl_ProjectKB_Instance_129]
+		[family.swrl_ProjectKB_Instance_131]
+		[family.swrl_ProjectKB_Instance_133]
+		[family.swrl_ProjectKB_Instance_135]
+		[family.swrl_ProjectKB_Instance_137]))
 
 ([XY_Instance_463] of  Widget
 
@@ -9727,18 +9771,18 @@
 		[KB_635552_Instance_8]
 		[KB_941921_Instance_2]
 		[KB_941921_Instance_6]
-		[family.swrl_ProjectKB_Instance_90]
-		[family.swrl_ProjectKB_Instance_92]
-		[family.swrl_ProjectKB_Instance_94]
-		[family.swrl_ProjectKB_Instance_96]
-		[family.swrl_ProjectKB_Instance_98]
-		[family.swrl_ProjectKB_Instance_100]
-		[family.swrl_ProjectKB_Instance_102]
-		[family.swrl_ProjectKB_Instance_104]
-		[family.swrl_ProjectKB_Instance_106]
-		[family.swrl_ProjectKB_Instance_108]
-		[family.swrl_ProjectKB_Instance_110]
-		[family.swrl_ProjectKB_Instance_112]))
+		[family.swrl_ProjectKB_Instance_91]
+		[family.swrl_ProjectKB_Instance_93]
+		[family.swrl_ProjectKB_Instance_95]
+		[family.swrl_ProjectKB_Instance_97]
+		[family.swrl_ProjectKB_Instance_99]
+		[family.swrl_ProjectKB_Instance_101]
+		[family.swrl_ProjectKB_Instance_103]
+		[family.swrl_ProjectKB_Instance_105]
+		[family.swrl_ProjectKB_Instance_107]
+		[family.swrl_ProjectKB_Instance_109]
+		[family.swrl_ProjectKB_Instance_111]
+		[family.swrl_ProjectKB_Instance_113]))
 
 ([XY_Instance_541] of  Widget
 
@@ -10485,18 +10529,18 @@
 		[KB_635552_Instance_30]
 		[KB_635552_Instance_32]
 		[KB_635552_Instance_34]
-		[family.swrl_ProjectKB_Instance_4]
-		[family.swrl_ProjectKB_Instance_6]
-		[family.swrl_ProjectKB_Instance_8]
-		[family.swrl_ProjectKB_Instance_10]
-		[family.swrl_ProjectKB_Instance_12]
-		[family.swrl_ProjectKB_Instance_14]
-		[family.swrl_ProjectKB_Instance_16]
-		[family.swrl_ProjectKB_Instance_18]
-		[family.swrl_ProjectKB_Instance_20]
-		[family.swrl_ProjectKB_Instance_22]
-		[family.swrl_ProjectKB_Instance_24]
-		[family.swrl_ProjectKB_Instance_26]))
+		[family.swrl_ProjectKB_Instance_5]
+		[family.swrl_ProjectKB_Instance_7]
+		[family.swrl_ProjectKB_Instance_9]
+		[family.swrl_ProjectKB_Instance_11]
+		[family.swrl_ProjectKB_Instance_13]
+		[family.swrl_ProjectKB_Instance_15]
+		[family.swrl_ProjectKB_Instance_17]
+		[family.swrl_ProjectKB_Instance_19]
+		[family.swrl_ProjectKB_Instance_21]
+		[family.swrl_ProjectKB_Instance_23]
+		[family.swrl_ProjectKB_Instance_25]
+		[family.swrl_ProjectKB_Instance_27]))
 
 ([XY_Instance_789] of  Widget
 
