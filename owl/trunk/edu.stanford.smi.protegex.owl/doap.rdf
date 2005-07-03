@@ -37,8 +37,8 @@
     <doap:release>
       <doap:Version>
         <doap:branch>stable</doap:branch>
-        <doap:created>2005-07-01</doap:created>
-        <doap:revision>283</doap:revision>
+        <doap:created>2005-07-03</doap:created>
+        <doap:revision>284</doap:revision>
       </doap:Version>
     </doap:release>
 
