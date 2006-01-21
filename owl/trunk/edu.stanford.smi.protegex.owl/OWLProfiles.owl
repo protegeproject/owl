@@ -233,7 +233,7 @@
     <rdfs:subClassOf>
       <owl:Class rdf:ID="StatementPattern"/>
     </rdfs:subClassOf>
-    <rdfs:label>RDF Schema</rdfs:label>
+    <rdfs:label>RDF Schema and OWL</rdfs:label>
   </owl:Class>
   <owl:Class rdf:ID="AllValuesFrom-Restrictions">
     <rdfs:subClassOf>
