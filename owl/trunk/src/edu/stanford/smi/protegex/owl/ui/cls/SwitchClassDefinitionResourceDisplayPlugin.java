@@ -1,0 +1,191 @@
+package edu.stanford.smi.protegex.owl.ui.cls;
+
+import edu.stanford.smi.protege.model.Model;
+import edu.stanford.smi.protege.model.Slot;
+import edu.stanford.smi.protege.plugin.PluginUtilities;
+import edu.stanford.smi.protege.util.ApplicationProperties;
+import edu.stanford.smi.protege.util.PropertyList;
+import edu.stanford.smi.protege.widget.ClsWidget;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
+import edu.stanford.smi.protegex.owl.model.RDFResource;
+import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
+import edu.stanford.smi.protegex.owl.model.project.OWLProject;
+import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
+import edu.stanford.smi.protegex.owl.ui.resourcedisplay.ResourceDisplay;
+import edu.stanford.smi.protegex.owl.ui.resourcedisplay.ResourceDisplayPlugin;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
+/**
+ * @author Holger Knublauch  <holger@knublauch.com>
+ */
+public class SwitchClassDefinitionResourceDisplayPlugin implements ResourceDisplayPlugin {
+
+    private final static String PROPERTY = "SwitchableClassDefinitionType";
+
+    public static boolean showWarning = true;
+
+
+    private SwitchableClassDefinitionWidget getSwitchableClassDefinitionWidget(JPanel hostPanel) {
+        Component c = hostPanel.getParent();
+        while (!(c instanceof ResourceDisplay)) {
+            c = c.getParent();
+        }
+        return searchForWidget(c);
+    }
+
+
+    private SwitchableClassDefinitionWidget searchForWidget(Component component) {
+        if(component instanceof SwitchableClassDefinitionWidget) {
+            return (SwitchableClassDefinitionWidget) component;
+        }
+        if(component instanceof Container) {
+            Component [] childComponents = ((Container) component).getComponents();
+            for(int i = 0; i < childComponents.length; i++) {
+                if(childComponents[i] instanceof SwitchableClassDefinitionWidget) {
+                    return (SwitchableClassDefinitionWidget) childComponents[i];
+                }
+            }
+            for(int i = 0; i < childComponents.length; i++) {
+                SwitchableClassDefinitionWidget widget = searchForWidget(childComponents[i]);
+                if(widget != null) {
+                    return widget;
+                }
+            }
+        }
+        return null;
+    }
+
+    public static String getDefaultClassView() {
+        return ApplicationProperties.getString(PROPERTY,
+                LogicClassDefinitionWidgetType.class.getName());
+    }
+
+
+    public void initResourceDisplay(RDFResource resource, JPanel hostPanel) {
+        if (resource instanceof OWLNamedClass) {
+            SwitchableClassDefinitionWidget widget = getSwitchableClassDefinitionWidget(hostPanel);
+            if (widget != null) {
+                OWLProject project = resource.getOWLModel().getOWLProject();
+                String className = project.getSettingsMap().getString(PROPERTY);
+                try {
+                    Class cls = PluginUtilities.forName(className);
+                    SwitchableType type = (SwitchableType) cls.newInstance();
+                    widget.setActiveType(type.getWidgetClassType());
+                }
+                catch (Exception ex) {
+                }
+                SwitchPanel switchPanel = new SwitchPanel(widget);
+                switchPanel.updateStatus();
+                hostPanel.add(switchPanel);
+            }
+        }
+    }
+
+
+    public static void setClassesView(PropertyList sources, String activeClassName) {
+        sources.setString(PROPERTY, activeClassName);
+    }
+
+
+    public static void setDefaultClassesView(String activeClassName) {
+        ApplicationProperties.setString(PROPERTY, activeClassName);
+    }
+
+
+    private class SwitchPanel extends JPanel {
+
+        private Map types2RadioButton = new HashMap();
+
+        private SwitchableClassDefinitionWidget widget;
+
+
+        SwitchPanel(final SwitchableClassDefinitionWidget widget) {
+            this.widget = widget;
+            setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
+            ButtonGroup group = new ButtonGroup();
+            final OWLModel owlModel = widget.getOWLModel();
+            for (Iterator it = widget.listSwitchableTypes(); it.hasNext();) {
+                final SwitchableType type = (SwitchableType) it.next();
+                if (type.isSuitable(owlModel)) {
+                    JRadioButton button = new JRadioButton(type.getButtonText());
+                    group.add(button);
+                    button.addActionListener(new ActionListener() {
+                        public void actionPerformed(ActionEvent e) {
+                            switchTo(type);
+                            owlModel.getOWLProject().getSettingsMap().setString(PROPERTY, type.getWidgetClassType().getName());
+                        }
+                    });
+                    add(button);
+                    add(Box.createHorizontalStrut(8));
+                    if (widget.getActiveWidgetClass() == type.getWidgetClassType()) {
+                        button.setSelected(true);
+                    }
+                    types2RadioButton.put(type, button);
+                }
+            }
+        }
+
+
+        private void switchTo(SwitchableType type) {
+            widget.setActiveType(type.getWidgetClassType());
+        }
+
+
+        public void updateStatus() {
+            RDFSNamedClass namedClass = (RDFSNamedClass) widget.getEditedResource();
+            Iterator it = types2RadioButton.keySet().iterator();
+            while (it.hasNext()) {
+                SwitchableType type = (SwitchableType) it.next();
+                JRadioButton button = getRadioButton(type);
+                if (namedClass != null && !type.isSufficientlyExpressive(namedClass)) {
+                    button.setEnabled(false);
+                    button.setToolTipText("The selected class uses OWL features that cannot be displayed with the " + type.getButtonText() + ".");
+                    if (button.isSelected()) {
+                        Iterator types = widget.listSwitchableTypes();
+                        while (types.hasNext()) {
+                            SwitchableType otherType = (SwitchableType) types.next();
+                            if (otherType != type && otherType.isSufficientlyExpressive(namedClass)) {
+                                JRadioButton otherButton = getRadioButton(otherType);
+                                otherButton.setSelected(true);
+                                switchTo(otherType);
+                                if (showWarning) {
+                                    ProtegeUI.getModalDialogFactory().showMessageDialog(namedClass.getOWLModel(),
+                                            "The class " + namedClass.getBrowserText() +
+                                                    " uses OWL features\nthat cannot be displayed with the " +
+                                                    type.getButtonText() + ".\nWe therefore switch to the " +
+                                                    otherType.getButtonText() + ".");
+                                    showWarning = false;
+                                }
+                                break;
+                            }
+                        }
+                    }
+                }
+                else {
+                    button.setEnabled(true);
+                    button.setToolTipText(null);
+                }
+            }
+        }
+
+
+        private JRadioButton getRadioButton(SwitchableType type) {
+            return (JRadioButton) types2RadioButton.get(type);
+        }
+
+        //public void actionPerformed(ActionEvent e) {
+        //    boolean propertyMode = propertyViewButton.isSelected();
+        //    widget.setPropertyMode(propertyMode);
+        //    final Project project = widget.getProject();
+        //    setClassesView(project.getSources(), propertyMode);
+        //}
+    }
+}

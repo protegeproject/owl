@@ -1,0 +1,105 @@
+package edu.stanford.smi.protegex.owl.repository.impl;
+
+import edu.stanford.smi.protegex.owl.repository.util.OntologyNameExtractor;
+import edu.stanford.smi.protegex.owl.jena.parser.ProtegeOWLParser;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+
+/**
+ * User: matthewhorridge<br>
+ * The University Of Manchester<br>
+ * Medical Informatics Group<br>
+ * Date: Sep 12, 2005<br><br>
+ * <p/>
+ * matthew.horridge@cs.man.ac.uk<br>
+ * www.cs.man.ac.uk/~horridgm<br><br>
+ */
+public class LocalFolderRepository extends AbstractLocalRepository {
+
+	public static final String RECURSIVE_FLAG = "Recursive";
+
+	private boolean recursive;
+
+    public LocalFolderRepository(File folder) {
+        this(folder, false);
+    }
+
+
+    public LocalFolderRepository(File folder, boolean forceReadOnly) {
+        this(folder, forceReadOnly, false);
+    }
+
+	public LocalFolderRepository(File folder, boolean forceReadOnly, boolean recursive) {
+		super(folder, forceReadOnly);
+		this.recursive = recursive;
+		refresh();
+	}
+
+    public void refresh() {
+        super.refresh();
+        update();
+    }
+
+
+    private void update() {
+        if (getFile().isDirectory() == false) {
+            if(ProtegeOWLParser.inUI) {
+	            System.out.println("[Local Folder Repository] The specified file must be a directory. (" + getFile() + ")");
+            }
+	        return;
+        }
+	    update(getFile());
+    }
+
+	private void update(File file) {
+		File [] files = file.listFiles();
+        for (int i = 0; i < files.length; i++) {
+            File currentFile = files[i];
+	        if(currentFile.isFile()) {
+				try {
+					checkFile(currentFile);
+				}
+				catch (IOException e) {
+					//e.printStackTrace();
+				}
+	        }
+	        else if(recursive && currentFile.isDirectory() && currentFile.isHidden() == false) {
+		        update(currentFile);
+	        }
+        }
+	}
+
+
+    private void checkFile(File file) throws IOException {
+        if (file.getName().endsWith(".owl") && file.isFile()) {
+            InputStream is = new FileInputStream(file);
+	        file.toURL();
+            OntologyNameExtractor extractor = new OntologyNameExtractor(is, file.toURI().toURL());
+            if (extractor.getOntologyName() != null) {
+                URI name = extractor.getOntologyName();
+                putOntology(name, file);
+            }
+        }
+    }
+
+
+	public String getRepositoryDescriptor() {
+		String descriptor = super.getRepositoryDescriptor();
+		if(descriptor != null) {
+			descriptor += "&" + RECURSIVE_FLAG + "=" + Boolean.toString(recursive);
+		}
+		return descriptor;
+	}
+
+
+    public String getRepositoryDescription() {
+        String description = "Local folder ";
+        return description += getFile().getPath();
+    }
+
+}
+
