@@ -1,0 +1,51 @@
+package edu.stanford.smi.protegex.owl.ui.dialogs;
+
+import edu.stanford.smi.protegex.owl.model.OWLModel;
+
+import java.awt.*;
+
+/**
+ * @author Holger Knublauch  <holger@knublauch.com>
+ */
+public abstract class AbstractModalDialogFactory implements ModalDialogFactory {
+
+    private static final String ERROR = "Error";
+
+    private static final String INFORMATION = "Information";
+
+
+    public int showDialog(Component parent, Component panel, String title, int mode) {
+        return showDialog(parent, panel, title, mode, null);
+    }
+
+
+    public int showDialog(Component parent, Component panel, String title, int mode, CloseCallback callback) {
+        return showDialog(parent, panel, title, mode, callback, true);
+    }
+
+
+    public void showErrorMessageDialog(OWLModel owlModel, String message) {
+        showErrorMessageDialog(owlModel, message, ERROR);
+    }
+
+
+    public void showErrorMessageDialog(Component parent, String message) {
+        showErrorMessageDialog(parent, message, ERROR);
+    }
+
+
+    public void showMessageDialog(OWLModel owlModel, String message) {
+        showMessageDialog(owlModel, message, INFORMATION);
+    }
+
+
+    public void showMessageDialog(Component parent, String message) {
+        showMessageDialog(parent, message, INFORMATION);
+    }
+
+
+    public void showThrowable(OWLModel owlModel, Throwable t) {
+        t.printStackTrace();
+        showErrorMessageDialog(owlModel, "Unexpected Error - please see console for stack trace.\n" + t.getMessage(), "Unexpected Error");
+    }
+}
