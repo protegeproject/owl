@@ -34,10 +34,10 @@
       <owl:Class>
         <owl:intersectionOf rdf:parseType="Collection">
           <owl:Restriction>
+            <owl:hasValue rdf:resource="#Female"/>
             <owl:onProperty>
               <owl:FunctionalProperty rdf:ID="hasSex"/>
             </owl:onProperty>
-            <owl:hasValue rdf:resource="#Female"/>
           </owl:Restriction>
           <owl:Class rdf:ID="Person"/>
         </owl:intersectionOf>
@@ -45,12 +45,6 @@
     </owl:equivalentClass>
   </owl:Class>
   <owl:Class rdf:ID="Aunt">
-    <rdfs:subClassOf>
-      <owl:Class rdf:ID="Relative"/>
-    </rdfs:subClassOf>
-    <owl:disjointWith>
-      <owl:Class rdf:ID="Uncle"/>
-    </owl:disjointWith>
     <owl:equivalentClass>
       <owl:Class>
         <owl:intersectionOf rdf:parseType="Collection">
@@ -58,11 +52,11 @@
           <owl:Class>
             <owl:unionOf rdf:parseType="Collection">
               <owl:Restriction>
-                <owl:minCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
-                >1</owl:minCardinality>
                 <owl:onProperty>
                   <owl:ObjectProperty rdf:ID="hasNephew"/>
                 </owl:onProperty>
+                <owl:minCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                >1</owl:minCardinality>
               </owl:Restriction>
               <owl:Restriction>
                 <owl:onProperty>
@@ -76,6 +70,12 @@
         </owl:intersectionOf>
       </owl:Class>
     </owl:equivalentClass>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Uncle"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="Relative"/>
+    </rdfs:subClassOf>
   </owl:Class>
   <owl:Class rdf:about="#Person">
     <owl:equivalentClass>
@@ -153,6 +153,7 @@
     </owl:equivalentClass>
   </owl:Class>
   <owl:Class rdf:about="#Uncle">
+    <rdfs:subClassOf rdf:resource="#Relative"/>
     <owl:equivalentClass>
       <owl:Class>
         <owl:intersectionOf rdf:parseType="Collection">
@@ -160,25 +161,24 @@
           <owl:Class>
             <owl:unionOf rdf:parseType="Collection">
               <owl:Restriction>
-                <owl:minCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
-                >1</owl:minCardinality>
                 <owl:onProperty>
                   <owl:ObjectProperty rdf:about="#hasNephew"/>
                 </owl:onProperty>
-              </owl:Restriction>
-              <owl:Restriction>
                 <owl:minCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
                 >1</owl:minCardinality>
+              </owl:Restriction>
+              <owl:Restriction>
                 <owl:onProperty>
                   <owl:ObjectProperty rdf:about="#hasNiece"/>
                 </owl:onProperty>
+                <owl:minCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                >1</owl:minCardinality>
               </owl:Restriction>
             </owl:unionOf>
           </owl:Class>
         </owl:intersectionOf>
       </owl:Class>
     </owl:equivalentClass>
-    <rdfs:subClassOf rdf:resource="#Relative"/>
     <rdfs:subClassOf>
       <owl:Restriction>
         <owl:hasValue rdf:resource="#Male"/>
@@ -190,6 +190,9 @@
     <owl:disjointWith rdf:resource="#Aunt"/>
   </owl:Class>
   <owl:Class rdf:ID="Sister">
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Brother"/>
+    </owl:disjointWith>
     <owl:equivalentClass>
       <owl:Class>
         <owl:intersectionOf rdf:parseType="Collection">
@@ -198,9 +201,6 @@
         </owl:intersectionOf>
       </owl:Class>
     </owl:equivalentClass>
-    <owl:disjointWith>
-      <owl:Class rdf:ID="Brother"/>
-    </owl:disjointWith>
   </owl:Class>
   <owl:Class rdf:about="#Child">
     <owl:equivalentClass>
@@ -223,10 +223,10 @@
       <owl:Class>
         <owl:intersectionOf rdf:parseType="Collection">
           <owl:Restriction>
+            <owl:hasValue rdf:resource="#Male"/>
             <owl:onProperty>
               <owl:FunctionalProperty rdf:about="#hasSex"/>
             </owl:onProperty>
-            <owl:hasValue rdf:resource="#Male"/>
           </owl:Restriction>
           <owl:Class rdf:about="#Person"/>
         </owl:intersectionOf>
@@ -234,7 +234,6 @@
     </owl:equivalentClass>
   </owl:Class>
   <owl:Class rdf:about="#Daugther">
-    <owl:disjointWith rdf:resource="#Son"/>
     <owl:equivalentClass>
       <owl:Class>
         <owl:intersectionOf rdf:parseType="Collection">
@@ -243,6 +242,7 @@
         </owl:intersectionOf>
       </owl:Class>
     </owl:equivalentClass>
+    <owl:disjointWith rdf:resource="#Son"/>
   </owl:Class>
   <owl:Class rdf:about="#Nephew">
     <owl:equivalentClass>
@@ -251,18 +251,18 @@
           <owl:Class>
             <owl:unionOf rdf:parseType="Collection">
               <owl:Restriction>
-                <owl:minCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
-                >1</owl:minCardinality>
                 <owl:onProperty>
                   <owl:ObjectProperty rdf:ID="hasUncle"/>
                 </owl:onProperty>
-              </owl:Restriction>
-              <owl:Restriction>
                 <owl:minCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
                 >1</owl:minCardinality>
+              </owl:Restriction>
+              <owl:Restriction>
                 <owl:onProperty>
                   <owl:ObjectProperty rdf:ID="hasAunt"/>
                 </owl:onProperty>
+                <owl:minCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                >1</owl:minCardinality>
               </owl:Restriction>
             </owl:unionOf>
           </owl:Class>
@@ -275,15 +275,16 @@
     </owl:disjointWith>
     <rdfs:subClassOf>
       <owl:Restriction>
-        <owl:hasValue rdf:resource="#Male"/>
         <owl:onProperty>
           <owl:FunctionalProperty rdf:about="#hasSex"/>
         </owl:onProperty>
+        <owl:hasValue rdf:resource="#Male"/>
       </owl:Restriction>
     </rdfs:subClassOf>
     <rdfs:subClassOf rdf:resource="#Relative"/>
   </owl:Class>
   <owl:Class rdf:about="#Niece">
+    <owl:disjointWith rdf:resource="#Nephew"/>
     <rdfs:subClassOf>
       <owl:Restriction>
         <owl:hasValue rdf:resource="#Female"/>
@@ -292,7 +293,6 @@
         </owl:onProperty>
       </owl:Restriction>
     </rdfs:subClassOf>
-    <owl:disjointWith rdf:resource="#Nephew"/>
     <owl:equivalentClass>
       <owl:Class>
         <owl:intersectionOf rdf:parseType="Collection">
@@ -336,11 +336,11 @@
       <owl:Class>
         <owl:intersectionOf rdf:parseType="Collection">
           <owl:Restriction>
+            <owl:minCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+            >1</owl:minCardinality>
             <owl:onProperty>
               <owl:ObjectProperty rdf:ID="hasChild"/>
             </owl:onProperty>
-            <owl:minCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
-            >1</owl:minCardinality>
           </owl:Restriction>
           <owl:Class rdf:about="#Person"/>
         </owl:intersectionOf>
@@ -349,8 +349,8 @@
   </owl:Class>
   <owl:ObjectProperty rdf:ID="hasConsort">
     <rdfs:domain rdf:resource="#Person"/>
-    <rdfs:range rdf:resource="#Person"/>
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#SymmetricProperty"/>
+    <rdfs:range rdf:resource="#Person"/>
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
   </owl:ObjectProperty>
   <owl:ObjectProperty rdf:about="#hasNephew">
@@ -425,8 +425,8 @@
     <rdfs:range rdf:resource="#Man"/>
   </owl:FunctionalProperty>
   <owl:FunctionalProperty rdf:about="#hasSex">
-    <rdfs:domain rdf:resource="#Person"/>
     <rdfs:range rdf:resource="#Gender"/>
+    <rdfs:domain rdf:resource="#Person"/>
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
   </owl:FunctionalProperty>
   <owl:FunctionalProperty rdf:ID="name">
@@ -440,13 +440,7 @@
     <name rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >Marilyn</name>
   </Woman>
-  <swrl:IndividualPropertyAtom>
-    <swrl:argument1>
-      <swrl:Variable rdf:ID="y"/>
-    </swrl:argument1>
-    <swrl:argument2 rdf:resource="#z"/>
-    <swrl:propertyPredicate rdf:resource="#hasSister"/>
-  </swrl:IndividualPropertyAtom>
+  <swrl:Variable rdf:ID="y"/>
   <Woman rdf:ID="F08">
     <name rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >Emily</name>
@@ -478,15 +472,15 @@
             </hasConsort>
             <name rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
             >Bill</name>
-            <hasSex rdf:resource="#Male"/>
             <hasChild>
               <Woman rdf:ID="F02">
                 <hasSex rdf:resource="#Female"/>
+                <hasParent rdf:resource="#M01"/>
                 <name rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                 >Catherine</name>
-                <hasParent rdf:resource="#M01"/>
               </Woman>
             </hasChild>
+            <hasSex rdf:resource="#Male"/>
           </Man>
         </hasParent>
         <hasChild>
@@ -525,100 +519,93 @@
   <swrl:Imp rdf:ID="Def-hasSon">
     <swrl:body>
       <swrl:AtomList>
+        <rdf:first>
+          <swrl:IndividualPropertyAtom>
+            <swrl:argument2 rdf:resource="#y"/>
+            <swrl:propertyPredicate rdf:resource="#hasChild"/>
+            <swrl:argument1>
+              <swrl:Variable rdf:ID="x"/>
+            </swrl:argument1>
+          </swrl:IndividualPropertyAtom>
+        </rdf:first>
         <rdf:rest>
           <swrl:AtomList>
             <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
             <rdf:first>
               <swrl:ClassAtom>
+                <swrl:argument1 rdf:resource="#x"/>
                 <swrl:classPredicate rdf:resource="#Man"/>
-                <swrl:argument1>
-                  <swrl:Variable rdf:ID="x"/>
-                </swrl:argument1>
               </swrl:ClassAtom>
             </rdf:first>
           </swrl:AtomList>
         </rdf:rest>
-        <rdf:first>
-          <swrl:IndividualPropertyAtom>
-            <swrl:propertyPredicate rdf:resource="#hasChild"/>
-            <swrl:argument1 rdf:resource="#x"/>
-            <swrl:argument2 rdf:resource="#y"/>
-          </swrl:IndividualPropertyAtom>
-        </rdf:first>
       </swrl:AtomList>
     </swrl:body>
     <swrl:head>
       <swrl:AtomList>
+        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <rdf:first>
           <swrl:IndividualPropertyAtom>
-            <swrl:propertyPredicate rdf:resource="#hasSon"/>
-            <swrl:argument2 rdf:resource="#y"/>
             <swrl:argument1 rdf:resource="#x"/>
+            <swrl:argument2 rdf:resource="#y"/>
+            <swrl:propertyPredicate rdf:resource="#hasSon"/>
           </swrl:IndividualPropertyAtom>
         </rdf:first>
-        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
       </swrl:AtomList>
     </swrl:head>
   </swrl:Imp>
   <swrl:Imp rdf:ID="Def-hasParent">
-    <swrl:body>
+    <swrl:head>
       <swrl:AtomList>
+        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <rdf:first>
           <swrl:IndividualPropertyAtom>
-            <swrl:argument1 rdf:resource="#y"/>
-            <swrl:propertyPredicate rdf:resource="#hasConsort"/>
             <swrl:argument2 rdf:resource="#z"/>
+            <swrl:propertyPredicate rdf:resource="#hasParent"/>
+            <swrl:argument1 rdf:resource="#x"/>
           </swrl:IndividualPropertyAtom>
         </rdf:first>
+      </swrl:AtomList>
+    </swrl:head>
+    <swrl:body>
+      <swrl:AtomList>
         <rdf:rest>
           <swrl:AtomList>
             <rdf:first>
               <swrl:IndividualPropertyAtom>
-                <swrl:argument1 rdf:resource="#x"/>
                 <swrl:argument2 rdf:resource="#y"/>
                 <swrl:propertyPredicate rdf:resource="#hasParent"/>
+                <swrl:argument1 rdf:resource="#x"/>
               </swrl:IndividualPropertyAtom>
             </rdf:first>
             <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
           </swrl:AtomList>
         </rdf:rest>
-      </swrl:AtomList>
-    </swrl:body>
-    <swrl:head>
-      <swrl:AtomList>
         <rdf:first>
           <swrl:IndividualPropertyAtom>
-            <swrl:propertyPredicate rdf:resource="#hasParent"/>
-            <swrl:argument1 rdf:resource="#x"/>
             <swrl:argument2 rdf:resource="#z"/>
+            <swrl:argument1 rdf:resource="#y"/>
+            <swrl:propertyPredicate rdf:resource="#hasConsort"/>
           </swrl:IndividualPropertyAtom>
         </rdf:first>
-        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
       </swrl:AtomList>
-    </swrl:head>
+    </swrl:body>
   </swrl:Imp>
   <swrl:Imp rdf:ID="Def-hasAunt">
     <swrl:head>
       <swrl:AtomList>
+        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <rdf:first>
           <swrl:IndividualPropertyAtom>
-            <swrl:argument2 rdf:resource="#z"/>
             <swrl:propertyPredicate rdf:resource="#hasAunt"/>
+            <swrl:argument2 rdf:resource="#z"/>
             <swrl:argument1 rdf:resource="#x"/>
           </swrl:IndividualPropertyAtom>
         </rdf:first>
-        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
       </swrl:AtomList>
     </swrl:head>
     <swrl:body>
       <swrl:AtomList>
-        <rdf:first>
-          <swrl:IndividualPropertyAtom>
-            <swrl:propertyPredicate rdf:resource="#hasParent"/>
-            <swrl:argument1 rdf:resource="#x"/>
-            <swrl:argument2 rdf:resource="#y"/>
-          </swrl:IndividualPropertyAtom>
-        </rdf:first>
         <rdf:rest>
           <swrl:AtomList>
             <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
@@ -631,74 +618,69 @@
             </rdf:first>
           </swrl:AtomList>
         </rdf:rest>
+        <rdf:first>
+          <swrl:IndividualPropertyAtom>
+            <swrl:propertyPredicate rdf:resource="#hasParent"/>
+            <swrl:argument2 rdf:resource="#y"/>
+            <swrl:argument1 rdf:resource="#x"/>
+          </swrl:IndividualPropertyAtom>
+        </rdf:first>
       </swrl:AtomList>
     </swrl:body>
   </swrl:Imp>
   <swrl:Imp rdf:ID="Def-hasUncle">
+    <swrl:head>
+      <swrl:AtomList>
+        <rdf:first>
+          <swrl:IndividualPropertyAtom>
+            <swrl:propertyPredicate rdf:resource="#hasUncle"/>
+            <swrl:argument1 rdf:resource="#x"/>
+            <swrl:argument2 rdf:resource="#z"/>
+          </swrl:IndividualPropertyAtom>
+        </rdf:first>
+        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+      </swrl:AtomList>
+    </swrl:head>
     <swrl:body>
       <swrl:AtomList>
+        <rdf:first>
+          <swrl:IndividualPropertyAtom>
+            <swrl:argument1 rdf:resource="#x"/>
+            <swrl:propertyPredicate rdf:resource="#hasParent"/>
+            <swrl:argument2 rdf:resource="#y"/>
+          </swrl:IndividualPropertyAtom>
+        </rdf:first>
         <rdf:rest>
           <swrl:AtomList>
             <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
             <rdf:first>
               <swrl:IndividualPropertyAtom>
                 <swrl:argument2 rdf:resource="#z"/>
-                <swrl:argument1 rdf:resource="#y"/>
                 <swrl:propertyPredicate rdf:resource="#hasBrother"/>
+                <swrl:argument1 rdf:resource="#y"/>
               </swrl:IndividualPropertyAtom>
             </rdf:first>
           </swrl:AtomList>
         </rdf:rest>
-        <rdf:first>
-          <swrl:IndividualPropertyAtom>
-            <swrl:argument2 rdf:resource="#y"/>
-            <swrl:propertyPredicate rdf:resource="#hasParent"/>
-            <swrl:argument1 rdf:resource="#x"/>
-          </swrl:IndividualPropertyAtom>
-        </rdf:first>
       </swrl:AtomList>
     </swrl:body>
-    <swrl:head>
-      <swrl:AtomList>
-        <rdf:first>
-          <swrl:IndividualPropertyAtom>
-            <swrl:propertyPredicate rdf:resource="#hasUncle"/>
-            <swrl:argument2 rdf:resource="#z"/>
-            <swrl:argument1 rdf:resource="#x"/>
-          </swrl:IndividualPropertyAtom>
-        </rdf:first>
-        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
-      </swrl:AtomList>
-    </swrl:head>
   </swrl:Imp>
   <swrl:Imp rdf:ID="Def-hasDaughter">
-    <swrl:head>
-      <swrl:AtomList>
-        <rdf:first>
-          <swrl:IndividualPropertyAtom>
-            <swrl:propertyPredicate rdf:resource="#hasDaughter"/>
-            <swrl:argument2 rdf:resource="#y"/>
-            <swrl:argument1 rdf:resource="#x"/>
-          </swrl:IndividualPropertyAtom>
-        </rdf:first>
-        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
-      </swrl:AtomList>
-    </swrl:head>
     <swrl:body>
       <swrl:AtomList>
         <rdf:first>
           <swrl:IndividualPropertyAtom>
-            <swrl:argument1 rdf:resource="#x"/>
-            <swrl:propertyPredicate rdf:resource="#hasChild"/>
             <swrl:argument2 rdf:resource="#y"/>
+            <swrl:propertyPredicate rdf:resource="#hasChild"/>
+            <swrl:argument1 rdf:resource="#x"/>
           </swrl:IndividualPropertyAtom>
         </rdf:first>
         <rdf:rest>
           <swrl:AtomList>
             <rdf:first>
               <swrl:ClassAtom>
-                <swrl:argument1 rdf:resource="#x"/>
                 <swrl:classPredicate rdf:resource="#Woman"/>
+                <swrl:argument1 rdf:resource="#x"/>
               </swrl:ClassAtom>
             </rdf:first>
             <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
@@ -706,6 +688,18 @@
         </rdf:rest>
       </swrl:AtomList>
     </swrl:body>
+    <swrl:head>
+      <swrl:AtomList>
+        <rdf:first>
+          <swrl:IndividualPropertyAtom>
+            <swrl:argument1 rdf:resource="#x"/>
+            <swrl:propertyPredicate rdf:resource="#hasDaughter"/>
+            <swrl:argument2 rdf:resource="#y"/>
+          </swrl:IndividualPropertyAtom>
+        </rdf:first>
+        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+      </swrl:AtomList>
+    </swrl:head>
   </swrl:Imp>
   <Woman rdf:ID="F06">
     <hasParent>
@@ -745,10 +739,10 @@
                 <hasSex rdf:resource="#Female"/>
               </Woman>
             </hasConsort>
-            <name rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-            >Johon</name>
             <hasChild rdf:resource="#M04"/>
             <hasSex rdf:resource="#Male"/>
+            <name rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >Johon</name>
           </Man>
         </hasParent>
         <hasChild rdf:resource="#F06"/>
@@ -776,25 +770,18 @@
   <swrl:Imp rdf:ID="Def-hasMother">
     <swrl:head>
       <swrl:AtomList>
+        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <rdf:first>
           <swrl:IndividualPropertyAtom>
-            <swrl:argument2 rdf:resource="#y"/>
             <swrl:propertyPredicate rdf:resource="#hasMother"/>
             <swrl:argument1 rdf:resource="#x"/>
+            <swrl:argument2 rdf:resource="#y"/>
           </swrl:IndividualPropertyAtom>
         </rdf:first>
-        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
       </swrl:AtomList>
     </swrl:head>
     <swrl:body>
       <swrl:AtomList>
-        <rdf:first>
-          <swrl:IndividualPropertyAtom>
-            <swrl:argument2 rdf:resource="#y"/>
-            <swrl:propertyPredicate rdf:resource="#hasParent"/>
-            <swrl:argument1 rdf:resource="#x"/>
-          </swrl:IndividualPropertyAtom>
-        </rdf:first>
         <rdf:rest>
           <swrl:AtomList>
             <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
@@ -806,6 +793,13 @@
             </rdf:first>
           </swrl:AtomList>
         </rdf:rest>
+        <rdf:first>
+          <swrl:IndividualPropertyAtom>
+            <swrl:propertyPredicate rdf:resource="#hasParent"/>
+            <swrl:argument1 rdf:resource="#x"/>
+            <swrl:argument2 rdf:resource="#y"/>
+          </swrl:IndividualPropertyAtom>
+        </rdf:first>
       </swrl:AtomList>
     </swrl:body>
   </swrl:Imp>
@@ -816,8 +810,8 @@
         <rdf:first>
           <swrl:IndividualPropertyAtom>
             <swrl:propertyPredicate rdf:resource="#hasBrother"/>
-            <swrl:argument2 rdf:resource="#y"/>
             <swrl:argument1 rdf:resource="#x"/>
+            <swrl:argument2 rdf:resource="#y"/>
           </swrl:IndividualPropertyAtom>
         </rdf:first>
       </swrl:AtomList>
@@ -826,20 +820,20 @@
       <swrl:AtomList>
         <rdf:rest>
           <swrl:AtomList>
-            <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
             <rdf:first>
               <swrl:ClassAtom>
-                <swrl:argument1 rdf:resource="#y"/>
                 <swrl:classPredicate rdf:resource="#Man"/>
+                <swrl:argument1 rdf:resource="#y"/>
               </swrl:ClassAtom>
             </rdf:first>
+            <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
           </swrl:AtomList>
         </rdf:rest>
         <rdf:first>
           <swrl:IndividualPropertyAtom>
+            <swrl:propertyPredicate rdf:resource="#hasSibling"/>
             <swrl:argument2 rdf:resource="#y"/>
             <swrl:argument1 rdf:resource="#x"/>
-            <swrl:propertyPredicate rdf:resource="#hasSibling"/>
           </swrl:IndividualPropertyAtom>
         </rdf:first>
       </swrl:AtomList>
@@ -848,6 +842,18 @@
   <swrl:Imp rdf:ID="Def-hasNiece">
     <swrl:body>
       <swrl:AtomList>
+        <rdf:rest>
+          <swrl:AtomList>
+            <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+            <rdf:first>
+              <swrl:IndividualPropertyAtom>
+                <swrl:argument1 rdf:resource="#y"/>
+                <swrl:propertyPredicate rdf:resource="#hasDaughter"/>
+                <swrl:argument2 rdf:resource="#z"/>
+              </swrl:IndividualPropertyAtom>
+            </rdf:first>
+          </swrl:AtomList>
+        </rdf:rest>
         <rdf:first>
           <swrl:IndividualPropertyAtom>
             <swrl:argument2 rdf:resource="#y"/>
@@ -855,18 +861,6 @@
             <swrl:argument1 rdf:resource="#x"/>
           </swrl:IndividualPropertyAtom>
         </rdf:first>
-        <rdf:rest>
-          <swrl:AtomList>
-            <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
-            <rdf:first>
-              <swrl:IndividualPropertyAtom>
-                <swrl:propertyPredicate rdf:resource="#hasDaughter"/>
-                <swrl:argument2 rdf:resource="#z"/>
-                <swrl:argument1 rdf:resource="#y"/>
-              </swrl:IndividualPropertyAtom>
-            </rdf:first>
-          </swrl:AtomList>
-        </rdf:rest>
       </swrl:AtomList>
     </swrl:body>
     <swrl:head>
@@ -874,9 +868,9 @@
         <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <rdf:first>
           <swrl:IndividualPropertyAtom>
-            <swrl:argument2 rdf:resource="#z"/>
-            <swrl:propertyPredicate rdf:resource="#hasNiece"/>
             <swrl:argument1 rdf:resource="#x"/>
+            <swrl:propertyPredicate rdf:resource="#hasNiece"/>
+            <swrl:argument2 rdf:resource="#z"/>
           </swrl:IndividualPropertyAtom>
         </rdf:first>
       </swrl:AtomList>
@@ -885,36 +879,36 @@
   <swrl:Imp rdf:ID="Def-hasSister">
     <swrl:body>
       <swrl:AtomList>
+        <rdf:first>
+          <swrl:IndividualPropertyAtom>
+            <swrl:argument2 rdf:resource="#y"/>
+            <swrl:propertyPredicate rdf:resource="#hasSibling"/>
+            <swrl:argument1 rdf:resource="#x"/>
+          </swrl:IndividualPropertyAtom>
+        </rdf:first>
         <rdf:rest>
           <swrl:AtomList>
             <rdf:first>
               <swrl:ClassAtom>
-                <swrl:argument1 rdf:resource="#y"/>
                 <swrl:classPredicate rdf:resource="#Woman"/>
+                <swrl:argument1 rdf:resource="#y"/>
               </swrl:ClassAtom>
             </rdf:first>
             <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
           </swrl:AtomList>
         </rdf:rest>
-        <rdf:first>
-          <swrl:IndividualPropertyAtom>
-            <swrl:propertyPredicate rdf:resource="#hasSibling"/>
-            <swrl:argument1 rdf:resource="#x"/>
-            <swrl:argument2 rdf:resource="#y"/>
-          </swrl:IndividualPropertyAtom>
-        </rdf:first>
       </swrl:AtomList>
     </swrl:body>
     <swrl:head>
       <swrl:AtomList>
-        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <rdf:first>
           <swrl:IndividualPropertyAtom>
             <swrl:argument2 rdf:resource="#y"/>
-            <swrl:propertyPredicate rdf:resource="#hasSister"/>
             <swrl:argument1 rdf:resource="#x"/>
+            <swrl:propertyPredicate rdf:resource="#hasSister"/>
           </swrl:IndividualPropertyAtom>
         </rdf:first>
+        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
       </swrl:AtomList>
     </swrl:head>
   </swrl:Imp>
@@ -947,17 +941,17 @@
                 <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
                 <rdf:first>
                   <swrl:DifferentIndividualsAtom>
-                    <swrl:argument2 rdf:resource="#z"/>
                     <swrl:argument1 rdf:resource="#x"/>
+                    <swrl:argument2 rdf:resource="#z"/>
                   </swrl:DifferentIndividualsAtom>
                 </rdf:first>
               </swrl:AtomList>
             </rdf:rest>
             <rdf:first>
               <swrl:IndividualPropertyAtom>
-                <swrl:propertyPredicate rdf:resource="#hasChild"/>
                 <swrl:argument2 rdf:resource="#y"/>
                 <swrl:argument1 rdf:resource="#z"/>
+                <swrl:propertyPredicate rdf:resource="#hasChild"/>
               </swrl:IndividualPropertyAtom>
             </rdf:first>
           </swrl:AtomList>
@@ -970,8 +964,8 @@
       <swrl:AtomList>
         <rdf:first>
           <swrl:IndividualPropertyAtom>
-            <swrl:argument1 rdf:resource="#x"/>
             <swrl:argument2 rdf:resource="#z"/>
+            <swrl:argument1 rdf:resource="#x"/>
             <swrl:propertyPredicate rdf:resource="#hasNephew"/>
           </swrl:IndividualPropertyAtom>
         </rdf:first>
@@ -982,8 +976,8 @@
       <swrl:AtomList>
         <rdf:first>
           <swrl:IndividualPropertyAtom>
-            <swrl:argument2 rdf:resource="#y"/>
             <swrl:propertyPredicate rdf:resource="#hasSibling"/>
+            <swrl:argument2 rdf:resource="#y"/>
             <swrl:argument1 rdf:resource="#x"/>
           </swrl:IndividualPropertyAtom>
         </rdf:first>
@@ -992,9 +986,9 @@
             <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
             <rdf:first>
               <swrl:IndividualPropertyAtom>
-                <swrl:argument1 rdf:resource="#y"/>
-                <swrl:propertyPredicate rdf:resource="#hasSon"/>
                 <swrl:argument2 rdf:resource="#z"/>
+                <swrl:propertyPredicate rdf:resource="#hasSon"/>
+                <swrl:argument1 rdf:resource="#y"/>
               </swrl:IndividualPropertyAtom>
             </rdf:first>
           </swrl:AtomList>
@@ -1008,9 +1002,9 @@
         <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <rdf:first>
           <swrl:IndividualPropertyAtom>
-            <swrl:argument1 rdf:resource="#x"/>
-            <swrl:argument2 rdf:resource="#y"/>
             <swrl:propertyPredicate rdf:resource="#hasFather"/>
+            <swrl:argument2 rdf:resource="#y"/>
+            <swrl:argument1 rdf:resource="#x"/>
           </swrl:IndividualPropertyAtom>
         </rdf:first>
       </swrl:AtomList>
@@ -1019,25 +1013,30 @@
       <swrl:AtomList>
         <rdf:rest>
           <swrl:AtomList>
-            <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
             <rdf:first>
               <swrl:ClassAtom>
-                <swrl:argument1 rdf:resource="#y"/>
                 <swrl:classPredicate rdf:resource="#Man"/>
+                <swrl:argument1 rdf:resource="#y"/>
               </swrl:ClassAtom>
             </rdf:first>
+            <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
           </swrl:AtomList>
         </rdf:rest>
         <rdf:first>
           <swrl:IndividualPropertyAtom>
-            <swrl:propertyPredicate rdf:resource="#hasParent"/>
             <swrl:argument1 rdf:resource="#x"/>
             <swrl:argument2 rdf:resource="#y"/>
+            <swrl:propertyPredicate rdf:resource="#hasParent"/>
           </swrl:IndividualPropertyAtom>
         </rdf:first>
       </swrl:AtomList>
     </swrl:body>
   </swrl:Imp>
+  <swrl:IndividualPropertyAtom>
+    <swrl:propertyPredicate rdf:resource="#hasSister"/>
+    <swrl:argument1 rdf:resource="#y"/>
+    <swrl:argument2 rdf:resource="#z"/>
+  </swrl:IndividualPropertyAtom>
 </rdf:RDF>
 
-<!-- Created with Protege (with OWL Plugin 2.1 beta, Build 280)  http://protege.stanford.edu -->
+<!-- Created with Protege (with OWL Plugin 2.2 beta, Build 290)  http://protege.stanford.edu -->
