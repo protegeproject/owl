@@ -1,0 +1,131 @@
+<?xml version="1.0"?>
+
+<!-- ================================================================ -->
+<!-- Protege-OWL build file for ant (build.xml)                       -->
+<!-- ================================================================ -->
+
+<!-- Send any questions, comments, fixes, etc. to "randy AT randykerber.com"
+  -->
+
+<project name="Protege-OWL" default="usage" basedir=".">
+
+    <property environment="env"/>
+
+    <property name = "src" value = "./src"/>
+    <property name = "classes" value = "./classes"/>
+    <property name = "lib" value = "./lib"/>
+    <property name = "dist" value = "./dist"/>
+    <property name = "jarfile" value = "${dist}/protege-owl.jar"/>
+    <property name = "etc" value = "./etc"/>
+    <property name = "plugin" value = "${dist}/edu.stanford.smi.protegex.owl"/>
+    <!-- ================================================================ -->
+    <!-- Creates the timestamp                                            -->
+    <!-- ================================================================ -->
+
+    <target name="init.time" depends="">
+        <tstamp/>
+    </target>
+
+    <target name="init" depends="init.time">
+        <path id="classpath.compile">
+            <fileset dir="${lib}"/>
+        </path>
+        <mkdir dir="${classes}"/>
+        <mkdir dir="${dist}"/>
+    </target>
+
+    <!-- ================================================================ -->
+    <!-- Build the classpath                                              -->
+    <!--                                                                  -->
+    <!-- ================================================================ -->
+
+    <!-- ================================================================ -->
+    <!-- Clean up build directories -->
+    <!-- ================================================================ -->
+
+    <target name="clean" depends="init" 
+            description="clean up all build related files and dirs">
+        <delete dir="${classes}"/>
+        <delete dir="${dist}"/>
+    </target>
+
+
+    <!-- ================================================================ -->
+    <!-- Compile the source code                                          -->
+    <!-- ================================================================ -->
+
+    <target name="compile" depends="init" description="compile the Java files">
+        <javac srcdir="${src}" destdir="${classes}" 
+               fork="yes" memoryInitialSize="50m"
+               memoryMaximumSize="200m" 
+               deprecation = "off">
+            <classpath refid="classpath.compile"/>
+        </javac>
+        <copy todir="${classes}/edu/stanford/smi/protegex/owl/jena" 
+              file="${src}/edu/stanford/smi/protegex/owl/jena/OWL.pprj"/>
+        <copy todir="${classes}/edu/stanford/smi/protegex/owl/jena" 
+              file="${src}/edu/stanford/smi/protegex/owl/jena/OWL-min.pprj"/>
+        <copy todir="${classes}/edu/stanford/smi/protegex/owl/database" 
+              file="${src}/edu/stanford/smi/protegex/owl/database/OWL.pprj"/>
+    </target>
+
+    <!-- ================================================================ -->
+    <!-- create the protege-owl.jar file                                  -->
+    <!-- ================================================================ -->
+
+    <target name="jar" depends="compile" description="Create the protege-owl.jar file">
+        <jar jarfile="${jarfile}"
+             manifest="${src}/META-INF/MANIFEST.MF">
+          <fileset dir="${classes}"/>
+          <fileset dir="${src}/">
+            <include name="**/*.gif"/>
+          </fileset>
+          <fileset dir="${src}/">
+            <include name="**/*.png"/>
+          </fileset>
+            <fileset dir="${src}/">
+                <include name="**/*.db"/>
+            </fileset>
+        </jar>
+    </target>
+
+    <!-- ================================================================ -->
+    <!-- Copy files into the Protege plugin directory                     -->
+    <!-- ================================================================ -->
+
+    <target name="plugin.dir" depends="jar" 
+            description="Make the directory that becomes a Protege plugin dir">
+        <delete dir="${plugin}"/>
+        <mkdir dir="${plugin}"/>
+
+        <copy todir="${plugin}">
+            <fileset file="${jarfile"/>
+            <fileset dir="${lib}">
+                <exclude name="looks.jar"/>
+                <exclude name="protege*.jar"/>
+            </fileset>
+            <fileset dir="${etc}">
+                <include name="plugin.properties"/>
+                <include name="ont-policy.rdf"/>
+                <include name="OWLProfiles.owl"/>
+                <include name="protege.owl"/>
+                <include name="swrl.owl"/>
+                <include name="swrlb.owl"/>
+                <exclude name="MANIFEST.MF"/>
+                <exclude name="OWL.pprj"/>
+            </fileset>
+        </copy>
+    </target>
+
+
+    <target name="plugin.zip" 
+            depends="plugin.dir" 
+            description="Create the protege-owl.zip file, containing the plugin dir">
+        <zip destfile="${dist}/protege-owl-plugin.zip">
+            <fileset dir="${dist}">
+                <include name="${plugin}/**"/>
+            </fileset>
+        </zip>
+    </target>
+
+</project>
