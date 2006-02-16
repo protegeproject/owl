@@ -77,7 +77,7 @@
 	<!-- Create the class package. -->
 	
 	<!-- =================================================================== -->
-	<target name = "jar" depends = "compile">
+	<target name = "jar" depends = "init">
 		<copy todir = "${build.dest}/edu/stanford/smi/protegex/owl/ui/icons">
 			<fileset dir = "${build.src}/edu/stanford/smi/protegex/owl/ui/icons/">
 				<include name = "**/*.png"/>
@@ -110,7 +110,11 @@
 		<copy file = "${build.src}/edu/stanford/smi/protegex/owl/model/classparser/manchester/ManchesterOWLParser.jj" todir = "${build.dest}/edu/stanford/smi/protegex/owl/model/classparser/manchester"/>
 		<copy file = "${build.src}/edu/stanford/smi/protegex/owl/model/classparser/dl/DLSyntaxParser.jj" todir = "${build.dest}/edu/stanford/smi/protegex/owl/model/classparser/dl"/>
 		<copy file = "${build.src}/edu/stanford/smi/protegex/owl/model/classparser/compact/CompactParser.jj" todir = "${build.dest}/edu/stanford/smi/protegex/owl/model/classparser/compact"/>
-		<jar jarfile = "${dist.dir}/protege-owl.jar" basedir = "${build.dest}" manifest = "${build.src}/meta-inf/manifest.mf"/>
+		<!-- <jar jarfile = "${dist.dir}/protege-owl.jar" basedir = "${build.dest}" manifest = "${build.src}/meta-inf/manifest.mf"/> -->
+		<jar destfile = "${dist.dir}/protege-owl.jar" manifest = "${build.src}/meta-inf/manifest.mf">    
+			<fileset dir = "${build.dest}"/>    
+			<fileset dir = "${etc.dir}" includes = "build.properties"/>  
+		</jar>
 	</target>
 	<!-- =================================================================== -->
 	
