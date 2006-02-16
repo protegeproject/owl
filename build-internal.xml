@@ -77,7 +77,7 @@
 	<!-- Create the class package. -->
 	
 	<!-- =================================================================== -->
-	<target name = "jar" depends = "init">
+	<target name = "jar" depends = "compile">
 		<copy todir = "${build.dest}/edu/stanford/smi/protegex/owl/ui/icons">
 			<fileset dir = "${build.src}/edu/stanford/smi/protegex/owl/ui/icons/">
 				<include name = "**/*.png"/>
