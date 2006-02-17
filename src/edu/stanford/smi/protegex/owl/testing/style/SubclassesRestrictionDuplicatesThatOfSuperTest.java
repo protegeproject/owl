@@ -101,7 +101,8 @@ public class SubclassesRestrictionDuplicatesThatOfSuperTest extends AbstractOWLT
         Collection restrs = new ArrayList();
         while (superclasses.hasNext()){
             RDFSClass superclass = (RDFSClass) superclasses.next();
-            if (superclass instanceof OWLNamedClass){
+            if (superclass instanceof OWLNamedClass &&
+                !superclass.equals(aClass)){
                 restrs.addAll(((OWLNamedClass)superclass).getRestrictions());
             }
         }
