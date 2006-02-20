@@ -23,9 +23,10 @@ import edu.stanford.smi.protegex.owl.ui.repository.UnresolvedImportUIHandler;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
-import org.xml.sax.InputSource;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Reader;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
@@ -97,7 +98,7 @@ public class ProtegeOWLParser {
 
 	private int tripleCount;
 
-	private AbstractTask task;
+//	private AbstractTask task;
 
 
 	public ProtegeOWLParser(OWLModel owlModel,
@@ -210,11 +211,12 @@ public class ProtegeOWLParser {
 	                        final ARPInvokation invokation)
 	        throws Exception {
 		owlModel.setGenerateEventsEnabled(false);
-		task = new AbstractTask("Loading " + ontologyName, false, owlModel.getTaskManager()) {
-			public void runTask()
-			        throws Exception {
-				setProgressIndeterminate(true);
-				setMessage("Loading triples...");
+//		task = new AbstractTask("Loading " + ontologyName, false, owlModel.getTaskManager()) {
+//			public void runTask()
+//			        throws Exception {
+//				setProgressIndeterminate(true);
+//				setMessage("Loading triples...");
+                System.out.println("Loading triples");
 				Set imports = owlModel.getAllImports();
 
 				// To avoid cyclic imports: mark this as already imported
@@ -265,9 +267,9 @@ public class ProtegeOWLParser {
 				activateSWRLFactoryIfNecessary(imports);
 				owlModel.setUndoEnabled(true);
 				System.out.println("... Loading completed after " + (System.currentTimeMillis() - startTime) + " ms");
-			};
-		};
-		owlModel.getTaskManager().run(task);
+//			};
+//		};
+//		owlModel.getTaskManager().run(task);
 		owlModel.setGenerateEventsEnabled(true);
 	}
 
@@ -780,9 +782,9 @@ public class ProtegeOWLParser {
 	private void runImport(final String uri,
 	                       final Set imports)
 	        throws Exception {
-		AbstractTask task = new AbstractTask("Importing " + uri, false, owlModel.getTaskManager()) {
-			public void runTask()
-			        throws Exception {
+//		AbstractTask task = new AbstractTask("Importing " + uri, false, owlModel.getTaskManager()) {
+//			public void runTask()
+//			        throws Exception {
 				if(imports.contains(uri) == false) {
 					imports.add(uri);
 					URI ontologyNameURI = null;
@@ -816,9 +818,9 @@ public class ProtegeOWLParser {
 						logger.logWarning("Ignoring import " + uri);
 					}
 				}
-			}
-		};
-		owlModel.getTaskManager().run(task);
+//			}
+//		};
+//		owlModel.getTaskManager().run(task);
 	}
 
 
@@ -944,9 +946,10 @@ public class ProtegeOWLParser {
 				tripleStore.add(subject, predicate, object);
 				logger.logTripleAdded(subject, predicate, object);
 				tripleCount++;
-				if(tripleCount % 5000 == 0 && task != null) {
-					task.setMessage("Loaded " + tripleCount + " triples");
-				}
+				if(tripleCount % 5000 == 0 /*&& task != null*/) {
+					//task.setMessage("Loaded " + tripleCount + " triples");
+                    System.out.println("Loaded " + tripleCount + " triples");
+                }
 			}
 		}
 
@@ -961,9 +964,10 @@ public class ProtegeOWLParser {
 			tripleStore.add(subject, predicate, object);
 			logger.logTripleAdded(subject, predicate, object);
 			tripleCount++;
-			if(tripleCount % 5000 == 0 && task != null) {
-				task.setMessage("Loaded " + tripleCount + " triples");
-			}
+			if(tripleCount % 5000 == 0 /*&& task != null*/) {
+				//task.setMessage("Loaded " + tripleCount + " triples");
+                System.out.println("Loaded " + tripleCount + " triples");
+            }
 		}
 	}
 

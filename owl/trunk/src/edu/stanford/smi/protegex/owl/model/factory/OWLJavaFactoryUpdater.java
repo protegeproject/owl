@@ -4,8 +4,6 @@ import edu.stanford.smi.protege.model.*;
 import edu.stanford.smi.protege.model.framestore.MergingNarrowFrameStore;
 import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
 import edu.stanford.smi.protegex.owl.jena.parser.ProtegeOWLParserException;
-import edu.stanford.smi.protegex.owl.model.AbstractTask;
-import edu.stanford.smi.protegex.owl.model.OWLModel;
 
 import java.util.*;
 
@@ -30,9 +28,9 @@ public class OWLJavaFactoryUpdater {
 
     public OWLJavaFactoryUpdater(final KnowledgeBase kb, final Collection frames) {
 
-        AbstractTask task = new AbstractTask("Running OWLJavaFactoryUpdater", true, ((OWLModel)kb).getTaskManager(), 0, frames.size()) {
-	        public void runTask()
-	                throws Exception {
+//        AbstractTask task = new AbstractTask("Running OWLJavaFactoryUpdater", true, ((OWLModel)kb).getTaskManager(), 0, frames.size()) {
+//	        public void runTask()
+//	                throws Exception {
 		        mnfs = MergingNarrowFrameStore.get(kb);
 
 				findMetaclasses(kb);
@@ -52,7 +50,7 @@ public class OWLJavaFactoryUpdater {
 //								log("" + count + ": Replacing " + instance.getName() + " from " + instance.getClass() + " to " + newInstance.getClass());
 //							}
 						}
-						setProgress(prog);
+//						setProgress(prog);
 					}
 				}
 				catch (ClassCastException ccx) {
@@ -77,15 +75,15 @@ public class OWLJavaFactoryUpdater {
 
 				//long endTime = System.currentTimeMillis();
 				//log("Completed after " + (endTime - startTime) + " ms for " + count + " frames.");
-	        }
-        };
-	    try {
-		    task.setProgressIndeterminate(false);
-		    ((OWLModel) kb).getTaskManager().run(task);
-	    }
-	    catch(Exception e) {
-		    e.printStackTrace();
-	    }
+//	        }
+//        };
+//	    try {
+//		    task.setProgressIndeterminate(false);
+//		    ((OWLModel) kb).getTaskManager().run(task);
+//	    }
+//	    catch(Exception e) {
+//		    e.printStackTrace();
+//	    }
     }
 
 
