@@ -68,26 +68,16 @@ public class ImportHelper {
      * initialisation code to prevent the GUI being reloaded
 	 */
 	public void importOntologies() throws Exception {
-		Set importedOntologies = doImport();
-		if(importedOntologies.size() > 0 && ProtegeOWLParser.inUI) {
-			doGUIReload();
-		}
+		importOntologies(true);
 	}
 
+    
     /**
      * Alternative method that allows the caller to block the GUI
      * reload (for example when initialising TabPlugins)
      * @param reloadGUI - false if no GUI reload is desired
      */
     public void importOntologies(boolean reloadGUI) throws Exception {
-        Set importedOntologies = doImport();
-		if(importedOntologies.size() > 0 && ProtegeOWLParser.inUI && reloadGUI) {
-			doGUIReload();
-		}
-    }
-
-
-    private Set doImport() throws Exception {
         Set importedOntologies = new HashSet();
 		for(Iterator it = ontologyURIs.iterator(); it.hasNext();) {
 			URI ontologyURI = (URI) it.next();
@@ -105,8 +95,11 @@ public class ImportHelper {
 				importedOntologies.add(ontologyURI);
 			}
 		}
-        return importedOntologies;
+		if(importedOntologies.size() > 0 && ProtegeOWLParser.inUI && reloadGUI) {
+			doGUIReload();
+		}
     }
+
 
     private void doGUIReload() {
         owlModel.getTripleStoreModel().updateEditableResourceState();
