@@ -23,14 +23,14 @@ import java.util.Set;
  */
 public class ImportHelper {
 
-	private JenaOWLModel owlModel;
+    private JenaOWLModel owlModel;
 
-	private Set ontologyURIs;
+    private Set ontologyURIs;
 
 
-	/**
-	 * Creates an import helper that will import ontologies into the
-	 * specified <code>OWLModel</code>.  The pattern of usage is:
+    /**
+     * Creates an import helper that will import ontologies into the
+     * specified <code>OWLModel</code>.  The pattern of usage is:
      * <ol>
      * <li>Create an instance specifying the <code>OWLModel</code> to be used
      * in the constructor</li>
@@ -41,37 +41,37 @@ public class ImportHelper {
      * </ol>
      *
      *
-	 */
-	public ImportHelper(JenaOWLModel owlModel) {
-		this.owlModel = owlModel;
-		ontologyURIs = new HashSet();
-	}
+     */
+    public ImportHelper(JenaOWLModel owlModel) {
+        this.owlModel = owlModel;
+        ontologyURIs = new HashSet();
+    }
 
 
-	/**
-	 * Adds an ontology to the set of ontologies that will be imported.  Note that
+    /**
+     * Adds an ontology to the set of ontologies that will be imported.  Note that
      * this does not actually import the ontologies - it merely adds them to the list
      * of ontologies to be imported.  To perform the actual imports, use the
      * <code>importOntologies()</code> method.
-	 *
-	 * @param ontologyURI The URI of the ontology to import
-	 */
-	public void addImport(URI ontologyURI) {
-		ontologyURIs.add(ontologyURI);
-	}
+     *
+     * @param ontologyURI The URI of the ontology to import
+     */
+    public void addImport(URI ontologyURI) {
+        ontologyURIs.add(ontologyURI);
+    }
 
 
-	/**
-	 * Imports the ontologies that this helper was asked to import.  If the
-	 * Protege-OWL Application GUI is being used, then the UI is reloaded.
+    /**
+     * Imports the ontologies that this helper was asked to import.  If the
+     * Protege-OWL Application GUI is being used, then the UI is reloaded.
      * Use the alternative <code>reloadGUI(boolean)</code> in TabWidget
      * initialisation code to prevent the GUI being reloaded
-	 */
-	public void importOntologies() throws Exception {
-		importOntologies(true);
-	}
+     */
+    public void importOntologies() throws Exception {
+        importOntologies(true);
+    }
 
-    
+
     /**
      * Alternative method that allows the caller to block the GUI
      * reload (for example when initialising TabPlugins)
@@ -79,32 +79,30 @@ public class ImportHelper {
      */
     public void importOntologies(boolean reloadGUI) throws Exception {
         Set importedOntologies = new HashSet();
-		for(Iterator it = ontologyURIs.iterator(); it.hasNext();) {
-			URI ontologyURI = (URI) it.next();
-			if(owlModel.getAllImports().contains(ontologyURI.toString()) == false) {
-				ProtegeOWLParser.addImport(owlModel, ontologyURI);
-				// Add the imported URI
-				for(Iterator ontIt = owlModel.getOWLOntologies().iterator(); ontIt.hasNext();) {
-					OWLOntology owlOntology = (OWLOntology) ontIt.next();
-					final TripleStore ts = owlModel.getTripleStoreModel().getActiveTripleStore();
-					if(owlModel.getTripleStoreModel().getHomeTripleStore(owlOntology) == ts) {
-						owlOntology.addImports(ontologyURI);
-						break;
-					}
-				}
-				importedOntologies.add(ontologyURI);
-			}
-		}
-		if(importedOntologies.size() > 0 && ProtegeOWLParser.inUI && reloadGUI) {
-			doGUIReload();
-		}
-    }
-
-
-    private void doGUIReload() {
-        owlModel.getTripleStoreModel().updateEditableResourceState();
-	    OWLMenuProjectPlugin.makeHiddenClsesWithSubclassesVisible(owlModel);
-		ProtegeUI.reloadUI(owlModel);
+        for(Iterator it = ontologyURIs.iterator(); it.hasNext();) {
+            URI ontologyURI = (URI) it.next();
+            if(owlModel.getAllImports().contains(ontologyURI.toString()) == false) {
+                ProtegeOWLParser.addImport(owlModel, ontologyURI);
+                // Add the imported URI
+                for(Iterator ontIt = owlModel.getOWLOntologies().iterator(); ontIt.hasNext();) {
+                    OWLOntology owlOntology = (OWLOntology) ontIt.next();
+                    final TripleStore ts = owlModel.getTripleStoreModel().getActiveTripleStore();
+                    if(owlModel.getTripleStoreModel().getHomeTripleStore(owlOntology) == ts) {
+                        owlOntology.addImports(ontologyURI);
+                        break;
+                    }
+                }
+                importedOntologies.add(ontologyURI);
+            }
+        }
+        
+        if(importedOntologies.size() > 0 && ProtegeOWLParser.inUI) {
+            owlModel.getTripleStoreModel().updateEditableResourceState();
+            OWLMenuProjectPlugin.makeHiddenClsesWithSubclassesVisible(owlModel);
+            if (reloadGUI){
+                ProtegeUI.reloadUI(owlModel);
+            }
+        }
     }
 }
 
