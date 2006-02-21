@@ -1,5 +1,6 @@
 package edu.stanford.smi.protegex.owl.ui.cls;
 
+import edu.stanford.smi.protege.util.CollectionUtilities;
 import edu.stanford.smi.protege.util.Selectable;
 import edu.stanford.smi.protege.util.SelectionEvent;
 import edu.stanford.smi.protege.util.SelectionListener;
@@ -76,6 +77,6 @@ public class ToggleSuperclassExplorerAction extends AbstractAction {
 
 
     private RDFSClass getSelectedClass() {
-        return (RDFSClass) selectable.getSelection().iterator().next();
+        return (RDFSClass) CollectionUtilities.getFirstItem(selectable.getSelection());
     }
 }
