@@ -13,6 +13,7 @@ import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.util.Collection;
 
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
@@ -77,6 +78,11 @@ public class ToggleSuperclassExplorerAction extends AbstractAction {
 
 
     private RDFSClass getSelectedClass() {
-        return (RDFSClass) CollectionUtilities.getFirstItem(selectable.getSelection());
+        RDFSClass selectedClass = null;
+        Collection sel = selectable.getSelection();
+        if (sel != null && sel.size()>0){
+            selectedClass = (RDFSClass) CollectionUtilities.getFirstItem(sel);
+        }
+        return selectedClass;
     }
 }
