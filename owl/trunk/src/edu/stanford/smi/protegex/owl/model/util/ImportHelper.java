@@ -64,10 +64,31 @@ public class ImportHelper {
 	/**
 	 * Imports the ontologies that this helper was asked to import.  If the
 	 * Protege-OWL Application GUI is being used, then the UI is reloaded.
+     * Use the alternative <code>reloadGUI(boolean)</code> in TabWidget
+     * initialisation code to prevent the GUI being reloaded
 	 */
-	public void importOntologies()
-	        throws Exception {
-		Set importedOntologies = new HashSet();
+	public void importOntologies() throws Exception {
+		Set importedOntologies = doImport();
+		if(importedOntologies.size() > 0 && ProtegeOWLParser.inUI) {
+			doGUIReload();
+		}
+	}
+
+    /**
+     * Alternative method that allows the caller to block the GUI
+     * reload (for example when initialising TabPlugins)
+     * @param reloadGUI - false if no GUI reload is desired
+     */
+    public void importOntologies(boolean reloadGUI) throws Exception {
+        Set importedOntologies = doImport();
+		if(importedOntologies.size() > 0 && ProtegeOWLParser.inUI && reloadGUI) {
+			doGUIReload();
+		}
+    }
+
+
+    private Set doImport() throws Exception {
+        Set importedOntologies = new HashSet();
 		for(Iterator it = ontologyURIs.iterator(); it.hasNext();) {
 			URI ontologyURI = (URI) it.next();
 			if(owlModel.getAllImports().contains(ontologyURI.toString()) == false) {
@@ -84,11 +105,13 @@ public class ImportHelper {
 				importedOntologies.add(ontologyURI);
 			}
 		}
-		if(importedOntologies.size() > 0 && ProtegeOWLParser.inUI) {
-			owlModel.getTripleStoreModel().updateEditableResourceState();
-			OWLMenuProjectPlugin.makeHiddenClsesWithSubclassesVisible(owlModel);
-			ProtegeUI.reloadUI(owlModel);
-		}
-	}
+        return importedOntologies;
+    }
+
+    private void doGUIReload() {
+        owlModel.getTripleStoreModel().updateEditableResourceState();
+	    OWLMenuProjectPlugin.makeHiddenClsesWithSubclassesVisible(owlModel);
+		ProtegeUI.reloadUI(owlModel);
+    }
 }
 
