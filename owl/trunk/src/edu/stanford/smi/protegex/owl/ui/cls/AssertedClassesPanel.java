@@ -18,6 +18,7 @@ import edu.stanford.smi.protegex.owl.ui.matrix.cls.ClassMatrixAction;
 import edu.stanford.smi.protegex.owl.ui.profiles.OWLProfiles;
 import edu.stanford.smi.protegex.owl.ui.profiles.ProfilesManager;
 import edu.stanford.smi.protegex.owl.ui.subsumption.AssertedSubsumptionTreePanel;
+import edu.stanford.smi.protegex.owl.ui.subsumption.HiddenClassesPanel;
 import edu.stanford.smi.protegex.owl.ui.subsumption.InferredSubsumptionTreePanel;
 import edu.stanford.smi.protegex.owl.ui.subsumption.SubsumptionTreePanel;
 
@@ -110,7 +111,16 @@ public class AssertedClassesPanel extends SelectableContainer implements Hierarc
                 }
             };
 
+            Action showHiddenAction = new AbstractAction("Explore hidden classes",
+                                                         OWLIcons.getViewIcon()) {
+                public void actionPerformed(ActionEvent e) {
+                    showHidden();
+                }
+            };
+
             subclassPane.getFinder().addButton(showInferredAction);
+            // @@TODO activate hidden classes panel
+            // subclassPane.getFinder().addButton(showHiddenAction);
         }
     }
 
@@ -340,6 +350,11 @@ public class AssertedClassesPanel extends SelectableContainer implements Hierarc
     public void showInferred() {
         InferredSubsumptionTreePanel inferredTreePanel = new InferredSubsumptionTreePanel(owlModel);
         hierarchyManager.addHierarchy(inferredTreePanel);
+    }
+
+    public void showHidden() {
+        HiddenClassesPanel hiddenTreePanel = new HiddenClassesPanel(owlModel.getOWLThingClass());
+        hierarchyManager.addHierarchy(hiddenTreePanel);
     }
 
 
