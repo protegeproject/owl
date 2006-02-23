@@ -17,8 +17,35 @@
     <property name = "dist" value = "./dist"/>
     <property name = "jarfile" value = "${dist}/protege-owl.jar"/>
     <property name = "etc" value = "./etc"/>
-    <property name = "plugin" value = "${dist}/edu.stanford.smi.protegex.owl"/>
-    <!-- ================================================================ -->
+	<property name = "owlplugin" value = "edu.stanford.smi.protegex.owl"/>
+    <property name = "plugin" value = "${dist}/${owlplugin}"/>
+	<property name = "debug" value = "off"/>
+	<property name = "source" value = "1.5"/>
+
+
+	<!-- =================================================================== -->
+	<!-- USAGE -->		
+	<!-- Instructions for using the build file -->	
+	<!-- =================================================================== -->
+	<target name = "usage" depends = "init">    
+		<echo message = ""/>
+		<echo message = "protege owl build instructions"/>
+		<echo message = "-------------------------------------------------------------"/>
+		<echo message = ""/>
+		<echo message = " available targets are:"/>
+		<echo message = ""/>	
+		<echo message = "   usage      --> provides help on using the build tool (default)"/>
+		<echo message = "   clean      --> cleans up all build related files and dirs"/>
+		<echo message = "   compile    --> compiles the source code"/>
+		<echo message = "   plugin.dir --> copies files into the Protege plugin directory"/>
+		<echo message = "   plugin.zip --> creates the protege-owl.zip file, containing the plugin dir"/>		
+		<echo message = ""/>
+		<echo message = "-------------------------------------------------------------"/>
+		<echo message = ""/>  
+	</target>
+
+	
+	<!-- ================================================================ -->
     <!-- Creates the timestamp                                            -->
     <!-- ================================================================ -->
 
@@ -54,11 +81,10 @@
     <!-- Compile the source code                                          -->
     <!-- ================================================================ -->
 
-    <target name="compile" depends="init" description="compile the Java files">
-        <javac srcdir="${src}" destdir="${classes}" 
-               fork="yes" memoryInitialSize="50m"
-               memoryMaximumSize="200m" 
-               deprecation = "off">
+    <target name="compile" depends="init" description="compile the Java files" >
+        <javac srcdir="${src}" destdir="${classes}"        	
+        	deprecation = "off"
+		    source = "${source}">
             <classpath refid="classpath.compile"/>
         </javac>
         <copy todir="${classes}/edu/stanford/smi/protegex/owl/jena" 
@@ -99,7 +125,7 @@
         <mkdir dir="${plugin}"/>
 
         <copy todir="${plugin}">
-            <fileset file="${jarfile"/>
+            <fileset file="${jarfile}"/>
             <fileset dir="${lib}">
                 <exclude name="looks.jar"/>
                 <exclude name="protege*.jar"/>
@@ -123,7 +149,7 @@
             description="Create the protege-owl.zip file, containing the plugin dir">
         <zip destfile="${dist}/protege-owl-plugin.zip">
             <fileset dir="${dist}">
-                <include name="${plugin}/**"/>
+                <include name="${owlplugin}/**"/>
             </fileset>
         </zip>
     </target>
