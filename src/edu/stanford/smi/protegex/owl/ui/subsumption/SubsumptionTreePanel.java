@@ -49,15 +49,17 @@ public abstract class SubsumptionTreePanel extends SelectableContainer implement
 
     public static final String TYPE = "Subclass Explorer";
 
+    public SubsumptionTreePanel(Cls root, Slot subclassesSlot, Slot superclassesSlot, boolean useInferredSuperclasses){
+        this (new SubsumptionTreeRoot(root, subclassesSlot), superclassesSlot, useInferredSuperclasses);
+    }
 
-    public SubsumptionTreePanel(Cls root, Slot subclassesSlot, Slot superclassesSlot, boolean useInferredSuperclasses) {
+    public SubsumptionTreePanel(LazyTreeRoot treeRoot, Slot superclassesSlot, boolean useInferredSuperclasses) {
         this.superclassesSlot = superclassesSlot;
         setPreferredSize(new Dimension(260, 400));
         setMinimumSize(new Dimension(100, 100));
-        owlModel = (OWLModel) root.getKnowledgeBase();
+        owlModel = (OWLModel) superclassesSlot.getKnowledgeBase();
         viewAction = createViewClsAction();
-        ClassTree tree = createSelectableTree(viewAction,
-                                              new SubsumptionTreeRoot(root, subclassesSlot));
+        ClassTree tree = createSelectableTree(viewAction, treeRoot);
         tree.setLargeModel(true);
         tree.setSelectionRow(0);
         tree.setAutoscrolls(true);
@@ -83,7 +85,7 @@ public abstract class SubsumptionTreePanel extends SelectableContainer implement
             }
         });
 
-        JLabel label = ComponentFactory.createLabel(root.getProject().getName(), Icons.getProjectIcon(), SwingConstants.LEFT);
+        JLabel label = ComponentFactory.createLabel(owlModel.getProject().getName(), Icons.getProjectIcon(), SwingConstants.LEFT);
         headerComponent = new HeaderComponent("CLASS BROWSER", "For Project", label);
 
         setLayout(new BorderLayout());
