@@ -75,12 +75,11 @@ public class ProtegeSettingsPanel extends JComponent {
                 URI uri = new URI(ProtegeNames.FILE);
                 importHelper.addImport(uri);
                 importHelper.importOntologies();
-                owlModel.getNamespaceManager().setPrefix(ProtegeNames.NS, ProtegeNames.PREFIX);
+                owlModel.getNamespaceManager().setPrefix(ProtegeNames.NS, ProtegeNames.PROTEGE_PREFIX);
                 userDefinedDatatypesCheckBox.setEnabled(true);
             } catch (Exception e) {
                 ProtegeUI.getModalDialogFactory().showErrorMessageDialog(owlModel, e.getMessage());
             }
-
         }
     }
 
