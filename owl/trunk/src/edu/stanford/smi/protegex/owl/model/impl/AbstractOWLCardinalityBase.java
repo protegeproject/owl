@@ -8,6 +8,8 @@ import edu.stanford.smi.protegex.owl.model.classparser.OWLClassParser;
 import edu.stanford.smi.protegex.owl.ui.profiles.OWLProfiles;
 import edu.stanford.smi.protegex.owl.ui.profiles.ProfilesManager;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Set;
 
 /**
@@ -59,9 +61,9 @@ public abstract class AbstractOWLCardinalityBase extends AbstractOWLRestriction
         if (object instanceof AbstractOWLCardinalityBase) {
             AbstractOWLCardinalityBase base = (AbstractOWLCardinalityBase) object;
             return getOperator() == base.getOperator() &&
-                    getCardinality() == base.getCardinality() &&
-                    getOnProperty().equalsStructurally(base.getOnProperty()) &&
-                    getQualifier().equalsStructurally(base.getQualifier());
+                   getCardinality() == base.getCardinality() &&
+                   getOnProperty().equalsStructurally(base.getOnProperty()) &&
+                   getQualifier().equalsStructurally(base.getQualifier());
         }
         return false;
     }
@@ -150,5 +152,12 @@ public abstract class AbstractOWLCardinalityBase extends AbstractOWLRestriction
 
     public void setValuesFrom(RDFSClass value) {
         setPropertyValue(getOWLModel().getOWLValuesFromProperty(), value);
+    }
+
+    public Collection getDependingClasses() {
+        if (isQualified()){
+            return Collections.singleton(getQualifier());
+        }
+        return Collections.EMPTY_LIST;
     }
 }
