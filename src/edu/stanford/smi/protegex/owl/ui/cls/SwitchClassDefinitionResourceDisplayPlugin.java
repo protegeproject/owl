@@ -1,11 +1,25 @@
 package edu.stanford.smi.protegex.owl.ui.cls;
 
-import edu.stanford.smi.protege.model.Model;
-import edu.stanford.smi.protege.model.Slot;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+
 import edu.stanford.smi.protege.plugin.PluginUtilities;
 import edu.stanford.smi.protege.util.ApplicationProperties;
+import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protege.util.PropertyList;
-import edu.stanford.smi.protege.widget.ClsWidget;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
@@ -15,18 +29,11 @@ import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
 import edu.stanford.smi.protegex.owl.ui.resourcedisplay.ResourceDisplay;
 import edu.stanford.smi.protegex.owl.ui.resourcedisplay.ResourceDisplayPlugin;
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
  */
 public class SwitchClassDefinitionResourceDisplayPlugin implements ResourceDisplayPlugin {
+    private final static Logger log = Log.getLogger(SwitchClassDefinitionResourceDisplayPlugin.class);
 
     private final static String PROPERTY = "SwitchableClassDefinitionType";
 
@@ -77,10 +84,16 @@ public class SwitchClassDefinitionResourceDisplayPlugin implements ResourceDispl
                 String className = project.getSettingsMap().getString(PROPERTY);
                 try {
                     Class cls = PluginUtilities.forName(className);
-                    SwitchableType type = (SwitchableType) cls.newInstance();
-                    widget.setActiveType(type.getWidgetClassType());
+                    if (cls != null) { 
+                      SwitchableType type = (SwitchableType) cls.newInstance();
+                      widget.setActiveType(type.getWidgetClassType());
+                    }
                 }
                 catch (Exception ex) {
+                  log.info("Exception caught in initResourceDisplay " + ex);
+                  if (log.isLoggable(Level.FINE)) {
+                    log.log(Level.FINE, "Exception caught", ex);
+                  }
                 }
                 SwitchPanel switchPanel = new SwitchPanel(widget);
                 switchPanel.updateStatus();
