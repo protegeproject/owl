@@ -342,11 +342,20 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     private RepositoryManager repositoryManager;
 
 
-    public AbstractOWLModel(KnowledgeBaseFactory factory, NamespaceManager namespaceManager) {
-        super(factory);
-        this.namespaceManager = namespaceManager;
-        namespaceManager.addNamespaceManagerListener(this);
+    public AbstractOWLModel(KnowledgeBaseFactory factory) {
+      super(factory);
+    }
 
+    public AbstractOWLModel(KnowledgeBaseFactory factory, 
+                            NamespaceManager namespaceManager) {
+      super(factory);
+      initialize(namespaceManager);
+    }
+
+    public void initialize(NamespaceManager namespaceManager) {
+       this.namespaceManager = namespaceManager;
+       namespaceManager.addNamespaceManagerListener(this);
+    
         setGenerateDeletingFrameEventsEnabled(true);
 
         MergingNarrowFrameStore mnfs = MergingNarrowFrameStore.get(this);
@@ -437,6 +446,9 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
         taskManager = new DefaultTaskManager();
         taskManager.setProgressDisplay(new NoopProgressDisplay());
+        if (super.getProject() != null) {
+          setProject(super.getProject());
+        }
     }
 
 
@@ -3128,29 +3140,31 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
 
     public void setProject(Project project) {
-        super.setProject(project);
-
+      super.setProject(project);
+      if (bootstrapped) {
+        
         setOWLProject(new DefaultOWLProject(project));
-
+        
         project.setPrettyPrintSlotWidgetLabels(false);
-
+        
         Slot nameSlot = getSlot(Model.Slot.NAME);
         getRootCls().setDirectBrowserSlotPattern(new BrowserSlotPattern(nameSlot));
-
+        
         project.setDefaultClsWidgetClassName(OWLFormWidget.class.getName());
-
+        
         project.setWidgetMapper(new OWLWidgetMapper(this));
-
+        
         if (project.isMultiUserServer()) {
-            FrameStoreManager fsm = getFrameStoreManager();
-            fsm.removeFrameStore(owlFrameStore);
-            owlFrameStore = null;
+          FrameStoreManager fsm = getFrameStoreManager();
+          fsm.removeFrameStore(owlFrameStore);
+          owlFrameStore = null;
         }
-
+        
         protegeClassificationStatusProperty.setVisible(false);
         protegeInferredSuperclassesProperty.setVisible(false);
         protegeInferredSubclassesProperty.setVisible(false);
         owlOntologyClass.setVisible(false);
+      }
     }
 
 
