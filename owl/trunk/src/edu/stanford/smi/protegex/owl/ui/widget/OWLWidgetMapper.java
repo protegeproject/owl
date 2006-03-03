@@ -1,22 +1,48 @@
 package edu.stanford.smi.protegex.owl.ui.widget;
 
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.Facet;
 import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protege.plugin.PluginUtilities;
-import edu.stanford.smi.protege.widget.*;
+import edu.stanford.smi.protege.util.Log;
+import edu.stanford.smi.protege.widget.BooleanListWidget;
+import edu.stanford.smi.protege.widget.CheckBoxWidget;
+import edu.stanford.smi.protege.widget.DefaultWidgetMapper;
+import edu.stanford.smi.protege.widget.DirectInstancesWidget;
+import edu.stanford.smi.protege.widget.FloatFieldWidget;
+import edu.stanford.smi.protege.widget.FloatListWidget;
+import edu.stanford.smi.protege.widget.InstanceFieldWidget;
+import edu.stanford.smi.protege.widget.InstanceListWidget;
+import edu.stanford.smi.protege.widget.IntegerFieldWidget;
+import edu.stanford.smi.protege.widget.IntegerListWidget;
+import edu.stanford.smi.protege.widget.StringListWidget;
+import edu.stanford.smi.protege.widget.TextAreaWidget;
+import edu.stanford.smi.protege.widget.TextFieldWidget;
+import edu.stanford.smi.protege.widget.UniqueStringWidget;
+import edu.stanford.smi.protege.widget.YellowStickyWidget;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
 
-import java.lang.reflect.Method;
-import java.util.*;
-
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
  */
 public class OWLWidgetMapper extends DefaultWidgetMapper {
+  private static Logger log = Log.getLogger(OWLWidgetMapper.class);
+  
+  // The empty catch blocks suggest that exceptions are very common in this 
+  // class.  How common?  Is this mechanism appropriate?
+  private static boolean warnedAboutExceptions = false;
 
     private static Map className2Metadata;
 
@@ -136,6 +162,14 @@ public class OWLWidgetMapper extends DefaultWidgetMapper {
                     }
                 }
                 catch (Exception ex) {
+                  // Empty catch blocks are really dangerous!
+                  if (!warnedAboutExceptions) {
+                    log.info("Exceptions caught in OWLWidgetMapper including " + ex);
+                    warnedAboutExceptions = true;
+                  }
+                  if (log.isLoggable(Level.FINE)) {
+                    log.log(Level.FINE, "Exception caught in OWLWidgetMapper", ex);
+                  }
                 }
             }
         }
@@ -168,10 +202,21 @@ public class OWLWidgetMapper extends DefaultWidgetMapper {
                 String metadataClassName = clsName + "Metadata";
                 try {
                     Class metadataClass = PluginUtilities.forName(metadataClassName, true);
+                    if (metadataClass == null) {
+                      return;
+                    }
                     Object metadata = metadataClass.newInstance();
                     className2Metadata.put(clsName, metadata);
                 }
                 catch (Exception ex) {
+                  // Empty catch blocks are really dangerous!
+                  if (!warnedAboutExceptions) {
+                    log.info("Exceptions found in OWLWidgetMapper including " + ex);
+                    warnedAboutExceptions = true;
+                  }
+                  if (log.isLoggable(Level.FINE)) {
+                    log.log(Level.FINE, "Exception caught", ex);
+                  }
                 }
             }
         }
