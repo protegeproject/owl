@@ -83,8 +83,9 @@
 
     <target name="compile" depends="init" description="compile the Java files" >
         <javac srcdir="${src}" destdir="${classes}"        	
-        	deprecation = "off"
-		    source = "${source}">
+               deprecation = "off"
+               debug = "${debug}"
+	       source = "${source}">
             <classpath refid="classpath.compile"/>
         </javac>
         <copy todir="${classes}/edu/stanford/smi/protegex/owl/jena" 
