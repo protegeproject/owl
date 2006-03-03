@@ -25,8 +25,7 @@ public class OWLDatabaseKnowledgeBaseFactory extends DatabaseKnowledgeBaseFactor
 
     public KnowledgeBase createKnowledgeBase(Collection errors) {
         ResourceSelectionAction.setActivated(false);
-        final OWLNamespaceManager namespaceManager = new OWLNamespaceManager();
-        return new OWLDatabaseModel(this, namespaceManager);
+        return new OWLDatabaseModel(this);
     }
 
 
@@ -70,14 +69,11 @@ public class OWLDatabaseKnowledgeBaseFactory extends DatabaseKnowledgeBaseFactor
                                   String password,
                                   Collection errors) {
 
-        AbstractOWLModel owlModel = (AbstractOWLModel) kb;
-
+        OWLDatabaseModel owlModel = (OWLDatabaseModel) kb;
+        
         super.loadKnowledgeBase(kb, driver, table, url, user, password, errors);
-
-        owlModel.updateProtegeMetaOntologyImported();
-        owlModel.adjustThing();
-        owlModel.adjustSystemClasses();
-        owlModel.getNamespaceManager().update();
+        
+        owlModel.initialize();
     }
 
 
