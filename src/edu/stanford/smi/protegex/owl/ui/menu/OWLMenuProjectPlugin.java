@@ -17,12 +17,11 @@ import edu.stanford.smi.protegex.owl.javacode.JavaCodeGeneratorResourceAction;
 import edu.stanford.smi.protegex.owl.jena.JenaKnowledgeBaseFactory;
 import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
-import edu.stanford.smi.protegex.owl.model.OWLNames;
 import edu.stanford.smi.protegex.owl.model.RDFNames;
 import edu.stanford.smi.protegex.owl.model.RDFSNames;
 import edu.stanford.smi.protegex.owl.model.project.OWLProject;
 import edu.stanford.smi.protegex.owl.model.util.XSDVisibility;
-import edu.stanford.smi.protegex.owl.ui.ProgressDisplayDialog;
+import edu.stanford.smi.protegex.owl.resource.OWLText;
 import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
 import edu.stanford.smi.protegex.owl.ui.actions.AbstractOWLModelAction;
 import edu.stanford.smi.protegex.owl.ui.actions.OWLModelAction;
@@ -274,7 +273,7 @@ public class OWLMenuProjectPlugin extends ProjectPluginAdapter {
                         "\nIf you think your project file is ok you just need to save the project" +
                         "\nusing this version to get rid of this warning in the future.");*/
             }
-            else if (build.intValue() < OWLNames.LATEST_COMPATIBLE_BUILD) {
+            else if (build.intValue() < OWLText.getLatestCompatibleBuild()) {
                 fix(owlModel);
                 /*
                 OWLUI.showMessageDialog("Warning: Your Protege project (pprj) file has been created with a" +
@@ -323,10 +322,10 @@ public class OWLMenuProjectPlugin extends ProjectPluginAdapter {
             ResourceActionManager.addResourceActionClass(JavaCodeGeneratorResourceAction.class);
 
             int buildNumber = Integer.parseInt(Text.getBuildNumber());
-            if (buildNumber < OWLNames.REQUIRED_PROTEGE_BUILD) {
+            if (buildNumber < OWLText.getRequiresProtegeBuild()) {
                 ProtegeUI.getModalDialogFactory().showMessageDialog(owlModel,
                         "Warning: This version of the OWL Plugin requires Protege 3.2 beta build " +
-                                OWLNames.REQUIRED_PROTEGE_BUILD + ",\nbut you currently have Protege " +
+                                OWLText.getRequiresProtegeBuild() + ",\nbut you currently have Protege " +
                                 Text.getVersion() + ", Build " + buildNumber + ". Please do a clean reinstall.");
             }
         }

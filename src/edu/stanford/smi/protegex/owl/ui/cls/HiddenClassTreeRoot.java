@@ -1,15 +1,14 @@
 package edu.stanford.smi.protegex.owl.ui.cls;
 
 import edu.stanford.smi.protege.model.Cls;
+import edu.stanford.smi.protege.model.Frame;
 import edu.stanford.smi.protege.ui.LazyTreeNodeFrameComparator;
 import edu.stanford.smi.protege.util.CollectionUtilities;
 import edu.stanford.smi.protege.util.LazyTreeNode;
 import edu.stanford.smi.protege.util.LazyTreeRoot;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.Iterator;
+import java.util.*;
 
 /**
  * @author Nick Drummond, Medical Informatics Group, University of Manchester
@@ -17,8 +16,20 @@ import java.util.Iterator;
  */
 public class HiddenClassTreeRoot extends LazyTreeRoot {
 
-    public HiddenClassTreeRoot(Cls root) {
-        super(root);
+    public HiddenClassTreeRoot(OWLModel owlModel) {
+        super(getHiddenFrames(owlModel));
+    }
+
+    private static Collection getHiddenFrames(OWLModel owlModel) {
+        Set<Frame> hiddenRoots = new HashSet();
+        Iterator<Frame> i = owlModel.getProject().getHiddenFrames().iterator();
+        while(i.hasNext()){
+            Frame f = i.next();
+            if (f instanceof Cls && f.isEditable()){
+                hiddenRoots.add(f);
+            }
+        }
+        return hiddenRoots;
     }
 
     public HiddenClassTreeRoot(Collection roots) {

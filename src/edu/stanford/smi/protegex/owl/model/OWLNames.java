@@ -12,15 +12,6 @@ import edu.stanford.smi.protege.model.Model;
  */
 public interface OWLNames {
 
-    public final static String VERSION = "2.2 beta";
-
-    public final static int BUILD = 291;
-
-    public final static int LATEST_COMPATIBLE_BUILD = 286;
-
-    public final static int REQUIRED_PROTEGE_BUILD = 242;
-
-
     public static interface Cls {
 
         public final static String ALL_DIFFERENT = "owl:AllDifferent";

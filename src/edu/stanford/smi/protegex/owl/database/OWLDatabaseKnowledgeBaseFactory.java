@@ -6,9 +6,7 @@ import edu.stanford.smi.protege.util.PropertyList;
 import edu.stanford.smi.protegex.owl.jena.JenaKnowledgeBaseFactory;
 import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
-import edu.stanford.smi.protegex.owl.model.OWLNames;
-import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
-import edu.stanford.smi.protegex.owl.model.impl.OWLNamespaceManager;
+import edu.stanford.smi.protegex.owl.resource.OWLText;
 import edu.stanford.smi.protegex.owl.storage.OWLKnowledgeBaseFactory;
 import edu.stanford.smi.protegex.owl.ui.resourceselection.ResourceSelectionAction;
 
@@ -70,9 +68,9 @@ public class OWLDatabaseKnowledgeBaseFactory extends DatabaseKnowledgeBaseFactor
                                   Collection errors) {
 
         OWLDatabaseModel owlModel = (OWLDatabaseModel) kb;
-        
+
         super.loadKnowledgeBase(kb, driver, table, url, user, password, errors);
-        
+
         owlModel.initialize();
     }
 
@@ -80,7 +78,7 @@ public class OWLDatabaseKnowledgeBaseFactory extends DatabaseKnowledgeBaseFactor
     public void saveKnowledgeBase(KnowledgeBase kb, PropertyList sources, Collection errors) {
         if (kb instanceof OWLModel) {
             OWLModel owlModel = (OWLModel) kb;
-            sources.setInteger(JenaKnowledgeBaseFactory.OWL_BUILD_PROPERTY, OWLNames.BUILD);
+            sources.setInteger(JenaKnowledgeBaseFactory.OWL_BUILD_PROPERTY, OWLText.getBuildNumber());
             if (owlModel instanceof JenaOWLModel) {
                 kb.removeFrameStore(owlModel.getOWLFrameStore());
             }

@@ -49,11 +49,27 @@ public abstract class SubsumptionTreePanel extends SelectableContainer implement
 
     public static final String TYPE = "Subclass Explorer";
 
-    public SubsumptionTreePanel(Cls root, Slot subclassesSlot, Slot superclassesSlot, boolean useInferredSuperclasses){
+
+    public SubsumptionTreePanel(Cls root,
+                                Slot subclassesSlot,
+                                Slot superclassesSlot,
+                                boolean useInferredSuperclasses){
         this (new SubsumptionTreeRoot(root, subclassesSlot), superclassesSlot, useInferredSuperclasses);
     }
 
-    public SubsumptionTreePanel(LazyTreeRoot treeRoot, Slot superclassesSlot, boolean useInferredSuperclasses) {
+    public SubsumptionTreePanel(LazyTreeRoot treeRoot,
+                                Slot superclassesSlot,
+                                boolean useInferredSuperclasses) {
+        this (treeRoot, superclassesSlot, useInferredSuperclasses,
+              new DefaultClassFind((OWLModel)superclassesSlot.getKnowledgeBase(),
+                                   Find.CONTAINS));
+    }
+
+    public SubsumptionTreePanel(LazyTreeRoot treeRoot,
+                                Slot superclassesSlot,
+                                boolean useInferredSuperclasses,
+                                Find findAlg) {
+
         this.superclassesSlot = superclassesSlot;
         setPreferredSize(new Dimension(260, 400));
         setMinimumSize(new Dimension(100, 100));
@@ -68,7 +84,7 @@ public abstract class SubsumptionTreePanel extends SelectableContainer implement
         JPanel mainPanel = new JPanel(new BorderLayout());
         mainPanel.add(new JScrollPane(tree), BorderLayout.CENTER);
 
-        FindAction fAction = new FindInDialogAction(new DefaultClassFind(owlModel, Find.CONTAINS),
+        FindAction fAction = new FindInDialogAction(findAlg,
                                                     Icons.getFindClsIcon(),
                                                     tree, true);
         ResourceFinder finder = new ResourceFinder(fAction);

@@ -111,17 +111,17 @@ public class AssertedClassesPanel extends SelectableContainer implements Hierarc
                 }
             };
 
-            Action showHiddenAction = new AbstractAction("Explore hidden classes",
-                                                         OWLIcons.getViewIcon()) {
-                public void actionPerformed(ActionEvent e) {
-                    showHidden();
-                }
-            };
-
             subclassPane.getFinder().addButton(showInferredAction);
-            // @@TODO activate hidden classes panel
-            // subclassPane.getFinder().addButton(showHiddenAction);
         }
+
+//        Action showHiddenAction = new AbstractAction("Explore hidden classes",
+//                                                     OWLIcons.getViewIcon()) {
+//            public void actionPerformed(ActionEvent e) {
+//                showHidden();
+//            }
+//        };
+//
+//        subclassPane.getFinder().addButton(showHiddenAction);
     }
 
 
@@ -352,8 +352,9 @@ public class AssertedClassesPanel extends SelectableContainer implements Hierarc
         hierarchyManager.addHierarchy(inferredTreePanel);
     }
 
+
     public void showHidden() {
-        HiddenClassesPanel hiddenTreePanel = new HiddenClassesPanel(owlModel.getOWLThingClass());
+        HiddenClassesPanel hiddenTreePanel = new HiddenClassesPanel(owlModel);
         hierarchyManager.addHierarchy(hiddenTreePanel);
     }
 

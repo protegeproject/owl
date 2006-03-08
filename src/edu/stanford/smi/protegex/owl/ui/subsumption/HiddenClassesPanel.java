@@ -1,11 +1,13 @@
 package edu.stanford.smi.protegex.owl.ui.subsumption;
 
-import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.Model;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
 import edu.stanford.smi.protegex.owl.model.RDFSClass;
 import edu.stanford.smi.protegex.owl.ui.cls.HiddenClassTreeRoot;
 import edu.stanford.smi.protegex.owl.ui.cls.Hierarchy;
+import edu.stanford.smi.protegex.owl.ui.search.finder.Find;
+import edu.stanford.smi.protegex.owl.ui.search.finder.HiddenClassFind;
 
 /**
  * @author Nick Drummond, Medical Informatics Group, University of Manchester
@@ -13,17 +15,19 @@ import edu.stanford.smi.protegex.owl.ui.cls.Hierarchy;
  */
 public class HiddenClassesPanel extends SubsumptionTreePanel {
 
-    private Cls root;
+    private OWLModel owlModel;
 
-    public HiddenClassesPanel(Cls root) {
-        super(new HiddenClassTreeRoot(root),
-              root.getKnowledgeBase().getSlot(Model.Slot.DIRECT_SUPERCLASSES),
-              false);
-        this.root = root;
+    public HiddenClassesPanel(OWLModel owlModel) {
+        super(new HiddenClassTreeRoot(owlModel),
+              owlModel.getSlot(Model.Slot.DIRECT_SUPERCLASSES),
+              false,
+              new HiddenClassFind(owlModel, Find.CONTAINS));
+        this.owlModel = owlModel;
+        getTree().setShowsRootHandles(true);
     }
 
     public Hierarchy createClone() {
-        return new HiddenClassesPanel(root);
+        return new HiddenClassesPanel(owlModel);
     }
 
     public String getTitle() {
