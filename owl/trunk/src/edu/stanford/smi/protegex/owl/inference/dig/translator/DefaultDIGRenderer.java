@@ -1258,26 +1258,22 @@ public class DefaultDIGRenderer implements DIGRenderer {
             if (inverseProperty == null) {
                 // Create FAKE inverse property
                 Element fakeInverseSlotElementDef = doc.createElement(DIGVocabulary.Tell.DEF_ROLE);
-
                 String fakeName = "*Inverse_of_" + property.getName();
-
                 fakeInverseSlotElementDef.setAttribute("name", fakeName);
-
                 parentNode.appendChild(fakeInverseSlotElementDef);
-
                 Element fakeInverseSlotElement = doc.createElement(DIGVocabulary.Language.RATOM);
-
                 fakeInverseSlotElement.setAttribute("name", fakeName);
-
                 final Element equalRoleElement = doc.createElement(DIGVocabulary.Tell.EQUAL_R);
-
-                equalRoleElement.appendChild(fakeInverseSlotElement);
-
+                renderAppropriateSlot(property, doc, equalRoleElement);
                 final Element inverseElement = doc.createElement(DIGVocabulary.Language.INVERSE);
-
+                inverseElement.appendChild(fakeInverseSlotElement);
                 equalRoleElement.appendChild(inverseElement);
-
                 parentNode.appendChild(equalRoleElement);
+                Element functionalElement = doc.createElement(DIGVocabulary.Tell.FUNCTIONAL);
+                Element fakeInverseSlotElement2 = doc.createElement(DIGVocabulary.Language.RATOM);
+                fakeInverseSlotElement2.setAttribute("name", fakeName);
+                functionalElement.appendChild(fakeInverseSlotElement2);
+                doc.getDocumentElement().appendChild(functionalElement);
             }
             else {
                 renderFunctionalSlot(inverseProperty, doc, parentNode);
