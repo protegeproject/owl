@@ -12,9 +12,9 @@ import edu.stanford.smi.protege.util.URIUtilities;
 import edu.stanford.smi.protegex.owl.database.OWLDatabaseModel;
 import edu.stanford.smi.protegex.owl.jena.parser.ProtegeOWLParser;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
-import edu.stanford.smi.protegex.owl.model.OWLNames;
 import edu.stanford.smi.protegex.owl.model.impl.OWLNamespaceManager;
 import edu.stanford.smi.protegex.owl.repository.util.RepositoryFileManager;
+import edu.stanford.smi.protegex.owl.resource.OWLText;
 import edu.stanford.smi.protegex.owl.storage.OWLKnowledgeBaseFactory;
 import edu.stanford.smi.protegex.owl.storage.ProtegeSaver;
 import edu.stanford.smi.protegex.owl.ui.ProgressDisplayDialog;
@@ -184,7 +184,7 @@ public class JenaKnowledgeBaseFactory implements OWLKnowledgeBaseFactory {
         String language = getOWLFileLanguage(sources);
         if (kb instanceof JenaOWLModel) {
             JenaOWLModel owlModel = (JenaOWLModel) kb;
-            sources.setInteger(OWL_BUILD_PROPERTY, OWLNames.BUILD);
+            sources.setInteger(OWL_BUILD_PROPERTY, OWLText.getBuildNumber());
             URI absoluteURI = getFileURI(sources, owlModel.getProject());
             owlModel.save(absoluteURI, language, errors);
             makeOWLFileNameRelativeIfPossible(owlModel.getProject());

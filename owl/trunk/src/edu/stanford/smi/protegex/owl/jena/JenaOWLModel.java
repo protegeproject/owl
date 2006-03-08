@@ -23,12 +23,16 @@ import edu.stanford.smi.protegex.owl.jena.protege2jena.Protege2Jena;
 import edu.stanford.smi.protegex.owl.jena.triplestore.JenaTripleStoreModel;
 import edu.stanford.smi.protegex.owl.jena.writersettings.JenaWriterSettings;
 import edu.stanford.smi.protegex.owl.jena.writersettings.WriterSettings;
-import edu.stanford.smi.protegex.owl.model.*;
+import edu.stanford.smi.protegex.owl.model.NamespaceManager;
+import edu.stanford.smi.protegex.owl.model.RDFList;
+import edu.stanford.smi.protegex.owl.model.RDFNames;
+import edu.stanford.smi.protegex.owl.model.RDFResource;
 import edu.stanford.smi.protegex.owl.model.factory.OWLJavaFactory;
 import edu.stanford.smi.protegex.owl.model.factory.OWLJavaFactoryUpdater;
 import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreModel;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreUtil;
+import edu.stanford.smi.protegex.owl.resource.OWLText;
 import edu.stanford.smi.protegex.owl.ui.widget.ModalProgressBarManager;
 import edu.stanford.smi.protegex.owl.writer.rdfxml.rdfwriter.OWLModelAllTripleStoresWriter;
 import edu.stanford.smi.protegex.owl.writer.rdfxml.util.ProtegeWriterSettings;
@@ -51,8 +55,8 @@ public class JenaOWLModel extends AbstractOWLModel implements OntModelProvider {
 
     public final static String COPYRIGHT =
             "<!-- Created with Protege (with OWL Plugin " +
-                    OWLNames.VERSION + ", Build " +
-                    OWLNames.BUILD + ")  http://protege.stanford.edu -->";
+                    OWLText.getVersion() + ", Build " +
+                    OWLText.getBuildNumber() + ")  http://protege.stanford.edu -->";
 
 
     public static boolean inUI = false;

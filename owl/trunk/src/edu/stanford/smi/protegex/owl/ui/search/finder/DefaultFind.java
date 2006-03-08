@@ -135,6 +135,7 @@ public class DefaultFind extends AbstractTableModel implements Find {
         }
 
         frames = owlModel.getMatchingFrames(searchProp, null, false, actualSearchString, MAX_MATCHES);
+
         if (frames != null) {
             for (Iterator j = frames.iterator(); j.hasNext();) {
                 Frame f = (Frame) j.next();
@@ -147,6 +148,7 @@ public class DefaultFind extends AbstractTableModel implements Find {
                 }
             }
         }
+
         return results;
     }
 
