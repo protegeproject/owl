@@ -106,6 +106,7 @@
 			</fileset>
 		</copy>
 		<copy file = "${build.src}/edu/stanford/smi/protegex/owl/database/OWL.pprj" todir = "${build.dest}/edu/stanford/smi/protegex/owl/database"/>
+		<copy file = "${build.src}/edu/stanford/smi/protegex/owl/resource/files/build.properties" todir = "${build.dest}/edu/stanford/smi/protegex/owl/resource/files"/>
 		<copy file = "${build.src}/edu/stanford/smi/protegex/owl/compactparser/OWLCompactParser.jj" todir = "${build.dest}/edu/stanford/smi/protegex/compactparser"/>
 		<copy file = "${build.src}/edu/stanford/smi/protegex/owl/model/classparser/manchester/ManchesterOWLParser.jj" todir = "${build.dest}/edu/stanford/smi/protegex/owl/model/classparser/manchester"/>
 		<copy file = "${build.src}/edu/stanford/smi/protegex/owl/model/classparser/dl/DLSyntaxParser.jj" todir = "${build.dest}/edu/stanford/smi/protegex/owl/model/classparser/dl"/>
