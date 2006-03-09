@@ -52,7 +52,7 @@
 			<entry key = "build.number.previous" default = "00" type = "int" operation = "+" pattern = "000"/>
 		</propertyfile>
 		<exec executable = "cmd.exe" dir = "${batch.files}" os = "${os}">
-			<arg line = "/c commit modified-by-automatic-build ../${project.name}/etc/build.properties"/>
+			<arg line = "/c commit modified-by-automatic-build ../${project.name}/build/src/edu/stanford/smi/protegex/owl/resource/files/build.properties"/>
 		</exec>
 	</target>
 	<!-- =================================================================== -->
