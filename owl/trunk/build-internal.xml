@@ -47,7 +47,7 @@
 			<arg line = "/c checkout ${svn.core.url}/${project.name}/trunk ../${project.name} --non-recursive"/>
 		</exec>
 		<!-- increment the build number -->
-		<propertyfile file = "./etc/build.properties">
+		<propertyfile file = "./build/src/edu/stanford/smi/protegex/owl/resource/files/build.properties">
 			<entry key = "build.number" default = "01" type = "int" operation = "+" pattern = "000"/>
 			<entry key = "build.number.previous" default = "00" type = "int" operation = "+" pattern = "000"/>
 		</propertyfile>
