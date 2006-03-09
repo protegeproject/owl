@@ -146,4 +146,12 @@ public abstract class AbstractOWLTestCase extends TestCase {
         owlModel = (JenaOWLModel) project.getKnowledgeBase();
         owlThing = owlModel.getOWLThingClass();
     }
+
+    protected void tearDown() throws Exception {
+        super.tearDown();
+        project.dispose();
+        project = null;
+        owlModel = null;
+        owlThing = null;
+    }
 }
