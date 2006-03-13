@@ -3,6 +3,7 @@ package edu.stanford.smi.protegex.owl.ui.components.literaltable;
 import edu.stanford.smi.protegex.owl.model.*;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreModel;
 import edu.stanford.smi.protegex.owl.ui.OWLLabeledComponent;
+import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
 import edu.stanford.smi.protegex.owl.ui.components.AddResourceAction;
 import edu.stanford.smi.protegex.owl.ui.components.AddablePropertyValuesComponent;
 import edu.stanford.smi.protegex.owl.ui.editors.PropertyValueEditor;
@@ -96,14 +97,23 @@ public class LiteralTableComponent extends AddablePropertyValuesComponent {
         else if (range instanceof OWLDataRange) {
             OWLDataRange dataRange = (OWLDataRange) range;
             RDFList oneOf = dataRange.getOneOf();
-            Object firstValue = null;
+            Object defaultValue = null;
             if (oneOf != null) {
-                Collection values = oneOf.getValues();
-                if (!values.isEmpty()) {
-                    firstValue = values.iterator().next();
+                RDFResource subj = getSubject();
+                RDFProperty pred = getPredicate();
+                Iterator values = oneOf.getValues().iterator();
+                while (values.hasNext() && defaultValue == null) {
+                    Object value = values.next();
+                    if (!subj.hasPropertyValue(pred, value)){
+                        defaultValue = value;
+                    }
+                }
+                if (defaultValue == null){
+                    ProtegeUI.getModalDialogFactory().showMessageDialog(getOWLModel(),
+                                                                        "You have already assigned all allowed values");
                 }
             }
-            return firstValue;
+            return defaultValue;
         }
         else if (property instanceof OWLObjectProperty) {
             return null;
@@ -116,7 +126,7 @@ public class LiteralTableComponent extends AddablePropertyValuesComponent {
 
     private void handleAddAction() {
         Object defaultValue = createDefaultValue();
-        if (!getObjects().contains(defaultValue)) {
+        if (defaultValue != null && !getObjects().contains(defaultValue)) {
             getSubject().addPropertyValue(getPredicate(), defaultValue);
             table.setSelectedRow(defaultValue);
             if (!"".equals(defaultValue)) {
