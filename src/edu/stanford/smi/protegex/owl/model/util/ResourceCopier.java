@@ -4,17 +4,11 @@ import edu.stanford.smi.protege.model.KnowledgeBase;
 import edu.stanford.smi.protege.model.Model;
 import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protegex.owl.model.*;
-import edu.stanford.smi.protegex.owl.model.impl.OWLUtil;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreModel;
-import edu.stanford.smi.protegex.owl.model.triplestore.impl.AbstractTripleStoreModel;
 import edu.stanford.smi.protegex.owl.model.visitor.OWLModelVisitorAdapter;
 
 import java.util.*;
-import java.net.MalformedURLException;
-
-import com.sun.org.apache.regexp.internal.CharacterArrayCharacterIterator;
-import com.sun.org.apache.regexp.internal.StringCharacterIterator;
 
 /**
  * A utility visitor class to copy resources by their slot values.
@@ -87,7 +81,7 @@ public class ResourceCopier extends OWLModelVisitorAdapter {
         visitResourceToBeReferenced(source);
     }
 
-    private void visitResourceToBeReferenced(RDFResource source){
+    protected void visitResourceToBeReferenced(RDFResource source){
         if (!source.isSystem()){
 
             OWLModel owlModel = source.getOWLModel();
