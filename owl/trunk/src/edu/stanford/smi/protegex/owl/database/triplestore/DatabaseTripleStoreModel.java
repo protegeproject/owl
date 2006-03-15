@@ -31,6 +31,24 @@ public class DatabaseTripleStoreModel extends AbstractTripleStoreModel {
             userTripleStore.setName("top");
         }
     }
+    
+    /**
+     * This is a constructor for the case when the model does not have a narrow frame store.
+     * 
+     * For example, server side OWL models do not have narrow frame stores.
+     * @param owlModel
+     * @param nfs
+     */
+    public DatabaseTripleStoreModel(OWLDatabaseModel owlModel, NarrowFrameStore nfs) {
+      super(owlModel);
+      this.owlModel = owlModel;
+      userTripleStore = new DatabaseTripleStore(owlModel, this, nfs);
+      systemTripleStore = userTripleStore;
+      ts.add(userTripleStore);
+      if (userTripleStore.getName() == null) {
+        userTripleStore.setName("top");
+      }
+    }
 
 
     public TripleStore createTripleStore(String name) {
