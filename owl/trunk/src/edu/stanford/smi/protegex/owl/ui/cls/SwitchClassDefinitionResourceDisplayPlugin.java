@@ -77,17 +77,27 @@ public class SwitchClassDefinitionResourceDisplayPlugin implements ResourceDispl
 
 
     public void initResourceDisplay(RDFResource resource, JPanel hostPanel) {
+        if (log.isLoggable(Level.FINE)) {
+          log.fine("Entering initResourceDisplay - " + resource + ", " + hostPanel);
+        }
         if (resource instanceof OWLNamedClass) {
             SwitchableClassDefinitionWidget widget = getSwitchableClassDefinitionWidget(hostPanel);
             if (widget != null) {
                 OWLProject project = resource.getOWLModel().getOWLProject();
                 String className = project.getSettingsMap().getString(PROPERTY);
                 try {
+                  if (className != null) {
                     Class cls = PluginUtilities.forName(className);
                     if (cls != null) { 
+                      if (log.isLoggable(Level.FINE)) {
+                        log.fine("New class = " + className);
+                      }
                       SwitchableType type = (SwitchableType) cls.newInstance();
                       widget.setActiveType(type.getWidgetClassType());
                     }
+                  } else if (log.isLoggable(Level.FINE)){
+                      log.fine("No SwitchableType class found for resource" + resource);
+                  }
                 }
                 catch (Exception ex) {
                   log.info("Exception caught in initResourceDisplay " + ex);
