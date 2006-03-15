@@ -1,20 +1,21 @@
 package edu.stanford.smi.protegex.owl.ui.metadatatab;
 
+import java.util.Collection;
+import java.util.Iterator;
+
+import javax.swing.JComponent;
+
 import edu.stanford.smi.protege.model.Project;
 import edu.stanford.smi.protege.ui.InstanceDisplay;
 import edu.stanford.smi.protegex.owl.model.OWLAllDifferent;
 import edu.stanford.smi.protegex.owl.model.OWLOntology;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
-import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreModel;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
+import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreModel;
 import edu.stanford.smi.protegex.owl.ui.cls.OWLClassesTab;
 import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
 import edu.stanford.smi.protegex.owl.ui.results.HostResourceDisplay;
 import edu.stanford.smi.protegex.owl.ui.widget.AbstractTabWidget;
-
-import javax.swing.*;
-import java.util.Collection;
-import java.util.Iterator;
 
 /**
  * The OWLMetadataTab is a tab in the OWL-Plugin.
@@ -36,7 +37,9 @@ public class OWLMetadataTab extends AbstractTabWidget implements HostResourceDis
 		    OWLOntology curOnt = (OWLOntology) it.next();
 		    TripleStoreModel tsm = getOWLModel().getTripleStoreModel();
 		    TripleStore activeTripleStore = tsm.getActiveTripleStore();
-            if(activeTripleStore.contains(curOnt, getOWLModel().getRDFTypeProperty(), getOWLModel().getOWLOntologyClass())) {
+		    if(activeTripleStore.contains(curOnt, 
+                                                   getOWLModel().getRDFTypeProperty(), 
+                                                   getOWLModel().getOWLOntologyClass())) {
 			    owlOntology = curOnt;
 			    break;
 		    }
