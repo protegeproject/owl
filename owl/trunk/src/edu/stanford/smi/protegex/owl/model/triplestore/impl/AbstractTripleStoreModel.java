@@ -33,7 +33,7 @@ public abstract class AbstractTripleStoreModel implements TripleStoreModel {
 
     private OWLModel owlModel;
 
-    protected List ts = new ArrayList();
+    protected List<TripleStore> ts = new ArrayList<TripleStore>();
 
 
     public AbstractTripleStoreModel(OWLModel owlModel) {
@@ -68,6 +68,12 @@ public abstract class AbstractTripleStoreModel implements TripleStoreModel {
 
 
     public TripleStore getActiveTripleStore() {
+        if (mnfs == null && ts.size() == 1) {
+          /**
+           * Probably a client talking to a server.
+           */
+          return ts.get(0);
+        }
         NarrowFrameStore activeFrameStore = mnfs.getActiveFrameStore();
         String name = activeFrameStore.getName();
         return getTripleStore(name);
@@ -121,7 +127,11 @@ public abstract class AbstractTripleStoreModel implements TripleStoreModel {
 
 
     public TripleStore getTopTripleStore() {
-        return (TripleStore) ts.get(1);
+      if (mnfs == null && ts.size() == 1) {
+        return ts.get(0);
+      } else {
+        return ts.get(1);
+      }
     }
 
 
