@@ -20,6 +20,7 @@ import edu.stanford.smi.protege.model.Project;
 import edu.stanford.smi.protege.model.framestore.AbstractFrameStoreInvocationHandler;
 import edu.stanford.smi.protege.model.framestore.EventGeneratorFrameStore;
 import edu.stanford.smi.protege.model.framestore.FrameStore;
+import edu.stanford.smi.protege.model.framestore.MergingNarrowFrameStore;
 import edu.stanford.smi.protegex.owl.database.triplestore.DatabaseTripleStoreModel;
 import edu.stanford.smi.protegex.owl.jena.Jena;
 import edu.stanford.smi.protegex.owl.jena.OntModelProvider;
@@ -51,6 +52,18 @@ public class OWLDatabaseModel
 
     public OWLDatabaseModel(KnowledgeBaseFactory factory) {
         super(factory);
+    }
+    
+    /**
+     * Initializes the OWLDatabaseModel in the case that it is a client of a remote server.
+     * 
+     * This is a little delicate because there is no database and no NarrowFrameStores.  
+     * Many of the assumptions of the OWLDatabaseModel class are invalid.
+     *
+     */
+    public void initializeClient() {
+      getOWLSystemFramesArray();
+      initialize();
     }
 
     public void initialize() {
@@ -143,6 +156,10 @@ public class OWLDatabaseModel
             tripleStoreModel = new DatabaseTripleStoreModel(this);
         }
         return tripleStoreModel;
+    }
+    
+    public void setTripleStoreModel(TripleStoreModel tripleStoreModel) {
+      this.tripleStoreModel = tripleStoreModel;
     }
 
 
