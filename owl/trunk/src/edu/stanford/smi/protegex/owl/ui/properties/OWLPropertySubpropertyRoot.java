@@ -123,7 +123,7 @@ public class OWLPropertySubpropertyRoot extends LazyTreeRoot {
 		this.owlModel.addResourceListener(resourceListener);
 	}
 
-	protected boolean isSuitable(RDFProperty rdfProperty) {
+	public boolean isSuitable(RDFProperty rdfProperty) {
 		return true;
 	}
 

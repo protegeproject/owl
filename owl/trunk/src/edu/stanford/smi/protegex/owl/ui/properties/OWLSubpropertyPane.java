@@ -1,15 +1,15 @@
 package edu.stanford.smi.protegex.owl.ui.properties;
 
+import edu.stanford.smi.protege.model.Frame;
 import edu.stanford.smi.protege.model.Project;
 import edu.stanford.smi.protege.resource.Icons;
 import edu.stanford.smi.protege.ui.SlotsTreeDragSourceListener;
-import edu.stanford.smi.protege.ui.SlotsTreeFinder;
 import edu.stanford.smi.protege.ui.SlotsTreeTarget;
 import edu.stanford.smi.protege.util.*;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLProperty;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
-import edu.stanford.smi.protegex.owl.model.framestore.OWLFrameStore;
+import edu.stanford.smi.protegex.owl.model.RDFResource;
 import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
 import edu.stanford.smi.protegex.owl.ui.ResourceRenderer;
 import edu.stanford.smi.protegex.owl.ui.actions.ResourceActionManager;
@@ -19,7 +19,7 @@ import edu.stanford.smi.protegex.owl.ui.matrix.property.PropertyMatrixAction;
 import edu.stanford.smi.protegex.owl.ui.profiles.OWLProfiles;
 import edu.stanford.smi.protegex.owl.ui.profiles.ProfilesManager;
 import edu.stanford.smi.protegex.owl.ui.properties.actions.CreateSubpropertyAction;
-import edu.stanford.smi.protegex.owl.ui.search.PropertiesTreeFinder;
+import edu.stanford.smi.protegex.owl.ui.results.HostResourceDisplay;
 import edu.stanford.smi.protegex.owl.ui.search.finder.*;
 import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
 import edu.stanford.smi.protegex.owl.ui.widget.WidgetUtilities;
@@ -44,7 +44,7 @@ import java.util.List;
  *
  * @author Holger Knublauch  <holger@knublauch.com>
  */
-public class OWLSubpropertyPane extends SelectableContainer {
+public class OWLSubpropertyPane extends SelectableContainer implements HostResourceDisplay {
 
     private Action createAnnotationOWLDatatypePropertyAction =
             new AbstractAction("Create annotation datatype property",
@@ -62,7 +62,7 @@ public class OWLSubpropertyPane extends SelectableContainer {
                     finally {
                         owlModel.endTransaction();
                     }
-                    setSelectedProperty(property);
+                    displayHostResource(property);
                 }
             };
 
@@ -83,7 +83,7 @@ public class OWLSubpropertyPane extends SelectableContainer {
                     finally {
                         owlModel.endTransaction();
                     }
-                    setSelectedProperty(property);
+                    displayHostResource(property);
                 }
             };
 
@@ -104,7 +104,7 @@ public class OWLSubpropertyPane extends SelectableContainer {
                     finally {
                         owlModel.endTransaction();
                     }
-                    setSelectedProperty(property);
+                    displayHostResource(property);
                 }
             };
 
@@ -126,7 +126,7 @@ public class OWLSubpropertyPane extends SelectableContainer {
                     finally {
                         owlModel.endTransaction();
                     }
-                    setSelectedProperty(property);
+                    displayHostResource(property);
                 }
             };
 
@@ -147,7 +147,7 @@ public class OWLSubpropertyPane extends SelectableContainer {
                     finally {
                         owlModel.endTransaction();
                     }
-                    setSelectedProperty(property);
+                    displayHostResource(property);
                 }
             };
 
@@ -179,6 +179,8 @@ public class OWLSubpropertyPane extends SelectableContainer {
 
     private OWLModel owlModel;
 
+    private OWLPropertySubpropertyRoot root;
+
     private Action viewPropertyAction = new ViewAction("View selected properties", this) {
         public void onView(Object o) {
             owlModel.getProject().show((RDFProperty) o);
@@ -197,7 +199,7 @@ public class OWLSubpropertyPane extends SelectableContainer {
 
         this.owlModel = owlModel;
 
-        LazyTreeRoot root = createRoot();
+        root = createRoot();
         SelectableTree tree = ComponentFactory.createSelectableTree(viewPropertyAction, root);
         tree.setCellRenderer(new ResourceRenderer());
         tree.setShowsRootHandles(true);
@@ -209,9 +211,17 @@ public class OWLSubpropertyPane extends SelectableContainer {
         labeledComponent.setBorder(ComponentUtilities.getAlignBorder());
         add(labeledComponent, BorderLayout.CENTER);
 
-        FindAction fAction = new FindInDialogAction(new DefaultPropertyFind(owlModel, Find.CONTAINS),
+        Find findAlg = new DefaultPropertyFind(owlModel, Find.CONTAINS){
+            protected boolean isValidFrameToSearch(Frame f) {
+                return super.isValidFrameToSearch(f) &&
+                       root.isSuitable((RDFProperty)f);
+            }
+        };
+
+        FindAction fAction = new FindInDialogAction(findAlg,
                                                     Icons.getFindSlotIcon(),
-                                                    null, true);
+                                                    this, true);
+
         ResourceFinder finder = new ResourceFinder(fAction);
         add(finder, BorderLayout.SOUTH);
         finder.addButton(new PropertyMatrixAction(owlModel));
@@ -236,9 +246,9 @@ public class OWLSubpropertyPane extends SelectableContainer {
         deleteButton.setDisabledIcon(((OverlayIcon) deleteButton.getIcon()).getGrayedIcon());
     }
 
-	protected String getHeaderLabel() {
-		return "Properties";
-	}
+    protected String getHeaderLabel() {
+        return "Properties";
+    }
 
 	protected Icon getHeaderIcon() {
 		return OWLIcons.getImageIcon("Properties");
@@ -304,47 +314,7 @@ public class OWLSubpropertyPane extends SelectableContainer {
     }
 
 
-    private SlotsTreeFinder createFinder(final OWLModel owlModel) {
-        return new PropertiesTreeFinder(owlModel, getTree()) {
-            protected StringMatcher getStringMatcher(final String text) {
-                return new SimpleStringMatcher(text) {
-                    public boolean isMatch(String value) {
-                        if (OWLFrameStore.isIgnorePrefixesInSearch(owlModel)) {
-                            Iterator it = owlModel.getNamespaceManager().getPrefixes().iterator();
-                            while (it.hasNext()) {
-                                String prefix = (String) it.next();
-                                StringMatcher matcher = new SimpleStringMatcher(prefix + ":" + text);
-                                if (matcher.isMatch(value)) {
-                                    return true;
-                                }
-                            }
-                        }
-                        return super.isMatch(value);
-                    }
-                };
-            }
-        };
-    }
-
-    /*protected Action createCollapseAllAction() {
-       return new AbstractAction("Collapse") {
-           public void actionPerformed(ActionEvent event) {
-               ComponentUtilities.fullSelectionCollapse(getTree());
-           }
-       };
-   }
-
-
-   protected Action createExpandAllAction() {
-       return new AbstractAction("Expand") {
-           public void actionPerformed(ActionEvent event) {
-               ComponentUtilities.fullSelectionExpand(getTree(), MAX_EXPANSIONS);
-           }
-       };
-   } */
-
-
-	protected Collection getActions() {
+    protected Collection getActions() {
 		ArrayList list = new ArrayList();
 		if (ProfilesManager.isFeatureSupported(owlModel, OWLProfiles.CreateRDFProperty)) {
             list.add(createRDFPropertyAction);
@@ -367,7 +337,8 @@ public class OWLSubpropertyPane extends SelectableContainer {
 		return list;
 	}
 
-    protected LazyTreeRoot createRoot() {
+
+    protected OWLPropertySubpropertyRoot createRoot() {
 	    return new OWLPropertySubpropertyRoot(getOWLModel());
     }
 
@@ -458,13 +429,6 @@ public class OWLSubpropertyPane extends SelectableContainer {
     }
 
 
-    public void setSelectedProperty(RDFProperty property) {
-        if (!getSelection().contains(property)) {
-            ComponentUtilities.setSelectedObjectPath(getTree(), getPath(property, new LinkedList()));
-        }
-    }
-
-
     private void setupDragAndDrop() {
         DragSource.getDefaultDragSource().createDefaultDragGestureRecognizer(getTree(),
                                                                              DnDConstants.ACTION_COPY_OR_MOVE, new SlotsTreeDragSourceListener());
@@ -474,5 +438,15 @@ public class OWLSubpropertyPane extends SelectableContainer {
 
     public void setDisplayParent(RDFProperty property) {
         ComponentUtilities.setDisplayParent(getTree(), property, new SuperslotTraverser());
+    }
+
+
+    public boolean displayHostResource(RDFResource resource) {
+        if (!getSelection().contains(resource)) {
+            ComponentUtilities.setSelectedObjectPath(getTree(),
+                                                     getPath((RDFProperty)resource,
+                                                             new LinkedList()));
+        }
+        return true;
     }
 }

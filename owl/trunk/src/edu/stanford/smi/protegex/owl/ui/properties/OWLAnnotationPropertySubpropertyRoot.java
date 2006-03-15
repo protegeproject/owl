@@ -1,7 +1,6 @@
 package edu.stanford.smi.protegex.owl.ui.properties;
 
 import edu.stanford.smi.protegex.owl.model.OWLModel;
-import edu.stanford.smi.protegex.owl.model.OWLObjectProperty;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
 
 import java.util.Collection;
@@ -34,9 +33,8 @@ public class OWLAnnotationPropertySubpropertyRoot extends OWLPropertySubproperty
 	}
 
 
-	protected boolean isSuitable(RDFProperty rdfProperty) {
-		boolean suitable = rdfProperty.isAnnotationProperty();
-		return suitable;
+	public boolean isSuitable(RDFProperty rdfProperty) {
+		return rdfProperty.isAnnotationProperty();
 	}
 }
 
