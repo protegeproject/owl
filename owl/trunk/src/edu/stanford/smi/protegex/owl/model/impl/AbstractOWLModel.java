@@ -2344,7 +2344,15 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     }
 
 
-    private Frame[] getOWLSystemFramesArray() {
+  /**
+   * Gets the array of OWL System frames.
+   * 
+   * An important side effect of this method is that it initializes
+   * several of the variables used by the AbstractOWLModel.
+   */
+
+    protected Frame[] getOWLSystemFramesArray() {
+        nameSlot = getSlot(Model.Slot.NAME);
         return new Frame[]{
                 owlAllValuesFromClass = getCls(OWLNames.Cls.ALL_VALUES_FROM_RESTRICTION),
                 anonymousClassMetaCls = getCls(OWLNames.Cls.ANONYMOUS_CLASS),
