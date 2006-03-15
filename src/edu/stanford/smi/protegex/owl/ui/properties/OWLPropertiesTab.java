@@ -5,7 +5,6 @@ import edu.stanford.smi.protege.util.CollectionUtilities;
 import edu.stanford.smi.protege.util.Selectable;
 import edu.stanford.smi.protege.util.SelectionEvent;
 import edu.stanford.smi.protege.util.SelectionListener;
-import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLProperty;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
@@ -58,13 +57,7 @@ public class OWLPropertiesTab extends AbstractTabWidget implements NavigationHis
     }
 
     public boolean displayHostResource(RDFResource resource) {
-        if (resource instanceof RDFProperty) {
-            owlHierarchiesPanel.setSelectedProperty((RDFProperty) resource);
-            return true;
-        }
-        else {
-            return false;
-        }
+        return owlHierarchiesPanel.displayHostResource(resource);
     }
 
 

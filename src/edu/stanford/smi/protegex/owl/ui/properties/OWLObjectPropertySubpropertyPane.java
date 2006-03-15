@@ -1,17 +1,11 @@
 package edu.stanford.smi.protegex.owl.ui.properties;
 
-import edu.stanford.smi.protege.util.LazyTreeRoot;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
-import edu.stanford.smi.protegex.owl.model.OWLProperty;
-import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
 import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
-import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
-import edu.stanford.smi.protegex.owl.ProtegeOWL;
 
 import javax.swing.*;
-import java.util.Collection;
 import java.util.ArrayList;
-import java.awt.event.ActionEvent;
+import java.util.Collection;
 
 /**
  * User: matthewhorridge<br>
@@ -30,7 +24,7 @@ public class OWLObjectPropertySubpropertyPane extends OWLSubpropertyPane {
 	}
 
 
-	protected LazyTreeRoot createRoot() {
+	protected OWLPropertySubpropertyRoot createRoot() {
 		return new OWLObjectPropertySubpropertyRoot(getOWLModel());
 	}
 

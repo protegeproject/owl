@@ -2,11 +2,10 @@ package edu.stanford.smi.protegex.owl.ui.properties;
 
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
-import edu.stanford.smi.protege.util.LazyTreeRoot;
 
 import javax.swing.*;
-import java.util.Collection;
 import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * User: matthewhorridge<br>
@@ -24,7 +23,7 @@ public class OWLDatatypePropertySubpropertyPane extends OWLSubpropertyPane {
 	}
 
 
-	protected LazyTreeRoot createRoot() {
+	protected OWLPropertySubpropertyRoot createRoot() {
 		return new OWLDatatypePropertySubpropertyRoot(getOWLModel());
 	}
 
@@ -48,6 +47,5 @@ public class OWLDatatypePropertySubpropertyPane extends OWLSubpropertyPane {
 		getDeletePropertyAction().putValue(Action.SMALL_ICON, OWLIcons.getDeleteIcon("OWLDatatypeProperty"));
 		return actions;
 	}
-
 }
 
