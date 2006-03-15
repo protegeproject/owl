@@ -1,12 +1,43 @@
 package edu.stanford.smi.protegex.owl.model.factory;
 
-import edu.stanford.smi.protege.model.*;
-import edu.stanford.smi.protege.model.framestore.DefaultFrameFactory;
-import edu.stanford.smi.protegex.owl.model.*;
-import edu.stanford.smi.protegex.owl.model.impl.*;
-
 import java.lang.reflect.Constructor;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Set;
+
+import edu.stanford.smi.protege.model.Cls;
+import edu.stanford.smi.protege.model.Frame;
+import edu.stanford.smi.protege.model.FrameID;
+import edu.stanford.smi.protege.model.Instance;
+import edu.stanford.smi.protege.model.KnowledgeBase;
+import edu.stanford.smi.protege.model.Model;
+import edu.stanford.smi.protege.model.SimpleInstance;
+import edu.stanford.smi.protege.model.Slot;
+import edu.stanford.smi.protege.model.framestore.DefaultFrameFactory;
+import edu.stanford.smi.protegex.owl.model.OWLClass;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.model.OWLNames;
+import edu.stanford.smi.protegex.owl.model.RDFNames;
+import edu.stanford.smi.protegex.owl.model.RDFResource;
+import edu.stanford.smi.protegex.owl.model.RDFSClass;
+import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
+import edu.stanford.smi.protegex.owl.model.RDFSNames;
+import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
+import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLAllDifferent;
+import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLDataRange;
+import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLDatatypeProperty;
+import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLIndividual;
+import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLNamedClass;
+import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLObjectProperty;
+import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLOntology;
+import edu.stanford.smi.protegex.owl.model.impl.DefaultRDFIndividual;
+import edu.stanford.smi.protegex.owl.model.impl.DefaultRDFList;
+import edu.stanford.smi.protegex.owl.model.impl.DefaultRDFProperty;
+import edu.stanford.smi.protegex.owl.model.impl.DefaultRDFSDatatype;
+import edu.stanford.smi.protegex.owl.model.impl.DefaultRDFSNamedClass;
+import edu.stanford.smi.protegex.owl.model.impl.DefaultRDFUntypedResource;
 
 /**
  * A DefaultFrameFactory that creates the proper Java objects for Protege frames.
@@ -18,7 +49,7 @@ public class OWLJavaFactory extends DefaultFrameFactory {
     /**
      * A Hashtable from Protege metaclass names to Java class names from this package
      */
-    private static Hashtable clsNames = new Hashtable();
+    private static Hashtable<String, String> clsNames = new Hashtable<String, String>();
 
 
     static {
