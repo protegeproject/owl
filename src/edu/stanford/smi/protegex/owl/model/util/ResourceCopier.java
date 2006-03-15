@@ -1,14 +1,45 @@
 package edu.stanford.smi.protegex.owl.model.util;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+
 import edu.stanford.smi.protege.model.KnowledgeBase;
 import edu.stanford.smi.protege.model.Model;
 import edu.stanford.smi.protege.model.Slot;
-import edu.stanford.smi.protegex.owl.model.*;
+import edu.stanford.smi.protegex.owl.model.OWLAllDifferent;
+import edu.stanford.smi.protegex.owl.model.OWLAllValuesFrom;
+import edu.stanford.smi.protegex.owl.model.OWLCardinality;
+import edu.stanford.smi.protegex.owl.model.OWLComplementClass;
+import edu.stanford.smi.protegex.owl.model.OWLDataRange;
+import edu.stanford.smi.protegex.owl.model.OWLDatatypeProperty;
+import edu.stanford.smi.protegex.owl.model.OWLEnumeratedClass;
+import edu.stanford.smi.protegex.owl.model.OWLHasValue;
+import edu.stanford.smi.protegex.owl.model.OWLIndividual;
+import edu.stanford.smi.protegex.owl.model.OWLIntersectionClass;
+import edu.stanford.smi.protegex.owl.model.OWLMaxCardinality;
+import edu.stanford.smi.protegex.owl.model.OWLMinCardinality;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
+import edu.stanford.smi.protegex.owl.model.OWLNames;
+import edu.stanford.smi.protegex.owl.model.OWLObjectProperty;
+import edu.stanford.smi.protegex.owl.model.OWLOntology;
+import edu.stanford.smi.protegex.owl.model.OWLSomeValuesFrom;
+import edu.stanford.smi.protegex.owl.model.OWLUnionClass;
+import edu.stanford.smi.protegex.owl.model.RDFIndividual;
+import edu.stanford.smi.protegex.owl.model.RDFList;
+import edu.stanford.smi.protegex.owl.model.RDFProperty;
+import edu.stanford.smi.protegex.owl.model.RDFResource;
+import edu.stanford.smi.protegex.owl.model.RDFSDatatype;
+import edu.stanford.smi.protegex.owl.model.RDFSLiteral;
+import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
+import edu.stanford.smi.protegex.owl.model.RDFSNames;
+import edu.stanford.smi.protegex.owl.model.RDFUntypedResource;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreModel;
 import edu.stanford.smi.protegex.owl.model.visitor.OWLModelVisitorAdapter;
-
-import java.util.*;
 
 /**
  * A utility visitor class to copy resources by their slot values.
