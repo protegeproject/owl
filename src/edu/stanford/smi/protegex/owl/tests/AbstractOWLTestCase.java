@@ -87,7 +87,7 @@ public abstract class AbstractOWLTestCase extends TestCase {
 
     public static URI getRemoteOntologyURI(String localFileName) {
         try {
-            return new URI("http://protege.stanford.edu/plugins/owl/testdata/" + localFileName);
+            return new URI("http://www.co-ode.org/ontologies/testset/" + localFileName);
         }
         catch (Exception ex) {
             ex.printStackTrace();
