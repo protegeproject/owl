@@ -1,45 +1,17 @@
 package edu.stanford.smi.protegex.owl.model.util;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
 
-import edu.stanford.smi.protege.model.KnowledgeBase;
 import edu.stanford.smi.protege.model.Model;
 import edu.stanford.smi.protege.model.Slot;
-import edu.stanford.smi.protegex.owl.model.OWLAllDifferent;
-import edu.stanford.smi.protegex.owl.model.OWLAllValuesFrom;
-import edu.stanford.smi.protegex.owl.model.OWLCardinality;
-import edu.stanford.smi.protegex.owl.model.OWLComplementClass;
-import edu.stanford.smi.protegex.owl.model.OWLDataRange;
-import edu.stanford.smi.protegex.owl.model.OWLDatatypeProperty;
-import edu.stanford.smi.protegex.owl.model.OWLEnumeratedClass;
-import edu.stanford.smi.protegex.owl.model.OWLHasValue;
-import edu.stanford.smi.protegex.owl.model.OWLIndividual;
-import edu.stanford.smi.protegex.owl.model.OWLIntersectionClass;
-import edu.stanford.smi.protegex.owl.model.OWLMaxCardinality;
-import edu.stanford.smi.protegex.owl.model.OWLMinCardinality;
-import edu.stanford.smi.protegex.owl.model.OWLModel;
-import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
-import edu.stanford.smi.protegex.owl.model.OWLNames;
-import edu.stanford.smi.protegex.owl.model.OWLObjectProperty;
-import edu.stanford.smi.protegex.owl.model.OWLOntology;
-import edu.stanford.smi.protegex.owl.model.OWLSomeValuesFrom;
-import edu.stanford.smi.protegex.owl.model.OWLUnionClass;
-import edu.stanford.smi.protegex.owl.model.RDFIndividual;
-import edu.stanford.smi.protegex.owl.model.RDFList;
-import edu.stanford.smi.protegex.owl.model.RDFProperty;
-import edu.stanford.smi.protegex.owl.model.RDFResource;
-import edu.stanford.smi.protegex.owl.model.RDFSDatatype;
-import edu.stanford.smi.protegex.owl.model.RDFSLiteral;
-import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
-import edu.stanford.smi.protegex.owl.model.RDFSNames;
-import edu.stanford.smi.protegex.owl.model.RDFUntypedResource;
+import edu.stanford.smi.protegex.owl.model.*;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreModel;
 import edu.stanford.smi.protegex.owl.model.visitor.OWLModelVisitorAdapter;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
 
 /**
  * A utility visitor class to copy resources by their slot values.
@@ -53,7 +25,7 @@ import edu.stanford.smi.protegex.owl.model.visitor.OWLModelVisitorAdapter;
  */
 public class ResourceCopier extends OWLModelVisitorAdapter {
 
-    private List copyStack = new LinkedList();
+    private RDFObject copy;
 
     protected static String[] doNotCopySlots = {
             Model.Slot.DIRECT_SUBCLASSES,
@@ -61,22 +33,21 @@ public class ResourceCopier extends OWLModelVisitorAdapter {
             RDFSNames.Slot.SUB_CLASS_OF,
             OWLNames.Slot.EQUIVALENT_CLASS,
             Model.Slot.NAME
-            //Model.Slot.DIRECT_TEMPLATE_SLOTS,
-            //Model.Slot.DIRECT_TYPES,
-            //RDFNames.Slot.TYPE,
-            //Model.Slot.DIRECT_INSTANCES
     };
+
+    private Collection doNotCopySlotsList;
+
+    private OWLModel owlModel;
+
 
     /**
      * Returns the last copy of the last visited resource.  Note
      * that repeatedly calling this method does not create
      * multiple copies.
      */
-    public RDFResource getCopy() {
-        return (RDFResource) copyStack.get(copyStack.size() - 1);
+    public RDFObject getCopy() {
+        return copy;
     }
-
-
 
     //////////////////////////////////// DO NOT copy the below - give a reference
 
@@ -115,41 +86,45 @@ public class ResourceCopier extends OWLModelVisitorAdapter {
     protected void visitResourceToBeReferenced(RDFResource source){
         if (!source.isSystem()){
 
-            OWLModel owlModel = source.getOWLModel();
+            if (source.getOWLModel() != owlModel){
+                owlModel = source.getOWLModel();
+            }
 
-            TripleStoreModel tsm = owlModel.getTripleStoreModel();
+            if (owlModel.getDefaultOWLOntology().getImports().size() > 0){
 
-            TripleStore ts = tsm.getHomeTripleStore(source);
-            TripleStore activeTs = tsm.getActiveTripleStore();
+                TripleStoreModel tsm = owlModel.getTripleStoreModel();
+                TripleStore ts = tsm.getHomeTripleStore(source);
+                TripleStore activeTs = tsm.getActiveTripleStore();
 
-            if (activeTs != ts){
+                if (activeTs != ts){
 
-                /* @@TODO the following should operate on the ts.getName()
-                   but this does always return the ontology name (xml:base) */
+                    /* @@TODO the following should operate on the ts.getName()
+                       but this does always return the ontology name (xml:base) */
 
-                String ns = ts.getDefaultNamespace();
-                String homeOntologyName = ns.substring(0, ns.length()-1);
+                    String ns = ts.getDefaultNamespace();
+                    String homeOntologyName = ns.substring(0, ns.length()-1);
 
-                ns = activeTs.getDefaultNamespace();
-                String activeOntologyName = ns.substring(0, ns.length()-1);
+                    ns = activeTs.getDefaultNamespace();
+                    String activeOntologyName = ns.substring(0, ns.length()-1);
 
-                OWLOntology activeOnt = owlModel.getOWLOntologyByURI(activeOntologyName);
+                    OWLOntology activeOnt = owlModel.getOWLOntologyByURI(activeOntologyName);
 
-                if (!activeOnt.getImports().contains(homeOntologyName)){
-                    activeOnt.addImports(homeOntologyName);
+                    if (!activeOnt.getImports().contains(homeOntologyName)){
+                        activeOnt.addImports(homeOntologyName);
+                    }
                 }
             }
         }
 
-        copyStack.add(source);
+        copy = source;
     }
 
     public void visitRDFSLiteral(RDFSLiteral source) {
-        copyStack.add(source);
+        copy = source;
     }
 
     public void visitRDFUntypedResource(RDFUntypedResource source) {
-        copyStack.add(source);
+        copy = source;
     }
 
     //////////////////////////////////// DO copy below
@@ -202,7 +177,7 @@ public class ResourceCopier extends OWLModelVisitorAdapter {
 
     public void visitRDFList(RDFList source) {
         if (source == source.getOWLModel().getRDFNil()) {
-            copyStack.add(source);
+            copy = source;
         }
         else {
             copyMultipleSlotValues(source, source.getOWLModel().createRDFList());
@@ -234,11 +209,14 @@ public class ResourceCopier extends OWLModelVisitorAdapter {
 
 
     public void copyMultipleSlotValues(RDFResource source, RDFResource target) {
-        KnowledgeBase kb = source.getOWLModel();
 
-        Collection doNotCopySlotsList = new ArrayList();
-        for (int i = 0; i < doNotCopySlots.length; i++) {
-            doNotCopySlotsList.add(kb.getSlot(doNotCopySlots[i]));
+        if (source.getOWLModel() != owlModel){
+            owlModel = source.getOWLModel();
+
+            doNotCopySlotsList = new HashSet();
+            for (int i = 0; i < doNotCopySlots.length; i++) {
+                doNotCopySlotsList.add(owlModel.getSlot(doNotCopySlots[i]));
+            }
         }
 
         // TODO: I think this could be replaced with kb.getOwnSlots(source).iterator() to
@@ -250,23 +228,36 @@ public class ResourceCopier extends OWLModelVisitorAdapter {
                 copySlotValues(source, target, slot);
             }
         }
-        copyStack.add(target);
+
+        copy = target;
     }
 
     public void copySlotValues(RDFResource source, RDFResource target, Slot slot) {
+
         Collection values = source.getDirectOwnSlotValues(slot);
+
         if ((values != null) && (values.size() > 0)) {
+
             // check if values themselves need to be cloned
-            Collection newvalues = new LinkedList();
+            Collection newvalues = new ArrayList(values.size());
+
             for (Iterator i = values.iterator(); i.hasNext();) {
+
                 Object value = i.next();
-                if (value instanceof RDFResource) {
-                    ((RDFResource) value).accept(this);
-                    value = (RDFResource) copyStack.get(copyStack.size() - 1);
+                if (value instanceof RDFObject) {
+                    ((RDFObject)value).accept(this);
+                    value = copy;
                 }
-                newvalues.add(value);
+                if (value != null){
+                    newvalues.add(value);
+                }
             }
-            target.setDirectOwnSlotValues(slot, newvalues);
+
+            if (newvalues.size() > 0){
+                target.setDirectOwnSlotValues(slot, newvalues);
+            }
         }
     }
 }
+
+
