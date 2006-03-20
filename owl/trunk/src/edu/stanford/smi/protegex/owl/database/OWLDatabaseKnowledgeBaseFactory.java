@@ -1,8 +1,22 @@
 package edu.stanford.smi.protegex.owl.database;
 
-import edu.stanford.smi.protege.model.*;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import edu.stanford.smi.protege.model.ClientInitializerKnowledgeBaseFactory;
+import edu.stanford.smi.protege.model.Cls;
+import edu.stanford.smi.protege.model.DefaultKnowledgeBase;
+import edu.stanford.smi.protege.model.Instance;
+import edu.stanford.smi.protege.model.KnowledgeBase;
+import edu.stanford.smi.protege.model.Slot;
+import edu.stanford.smi.protege.model.framestore.FrameStore;
+import edu.stanford.smi.protege.model.framestore.NarrowFrameStore;
 import edu.stanford.smi.protege.storage.database.DatabaseKnowledgeBaseFactory;
+import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protege.util.PropertyList;
+import edu.stanford.smi.protegex.owl.database.triplestore.DatabaseTripleStoreModel;
 import edu.stanford.smi.protegex.owl.jena.JenaKnowledgeBaseFactory;
 import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
@@ -10,16 +24,14 @@ import edu.stanford.smi.protegex.owl.resource.OWLText;
 import edu.stanford.smi.protegex.owl.storage.OWLKnowledgeBaseFactory;
 import edu.stanford.smi.protegex.owl.ui.resourceselection.ResourceSelectionAction;
 
-import java.util.Collection;
-import java.util.Iterator;
-
 /**
  * A DatabaseKnowledgeBaseFactory with an even longer name.
  *
  * @author Holger Knublauch  <holger@knublauch.com>
  */
 public class OWLDatabaseKnowledgeBaseFactory extends DatabaseKnowledgeBaseFactory
-        implements OWLKnowledgeBaseFactory {
+        implements OWLKnowledgeBaseFactory, ClientInitializerKnowledgeBaseFactory {
+    private static Logger log = Log.getLogger(OWLDatabaseKnowledgeBaseFactory.class);
 
     public KnowledgeBase createKnowledgeBase(Collection errors) {
         ResourceSelectionAction.setActivated(false);
@@ -28,7 +40,8 @@ public class OWLDatabaseKnowledgeBaseFactory extends DatabaseKnowledgeBaseFactor
 
 
     private void dump(Cls cls, String tabs) {
-        System.out.println(tabs + cls);
+      if (log.isLoggable(Level.FINE)) {
+        log.fine(tabs + cls);
         for (Iterator it = cls.getDirectSubclasses().iterator(); it.hasNext();) {
             Cls subCls = (Cls) it.next();
             if (!subCls.isEditable()) {
@@ -36,16 +49,17 @@ public class OWLDatabaseKnowledgeBaseFactory extends DatabaseKnowledgeBaseFactor
                     dump(subCls, tabs + "  ");
                 }
                 catch (Exception ex) {
-                    System.err.println("ERROR at " + cls + " / " + subCls);
+                    log.fine("ERROR at " + cls + " / " + subCls);
                     for (Iterator sit = subCls.getDirectSubclasses().iterator(); sit.hasNext();) {
                         Object o = (Object) sit.next();
-                        System.out.println("- " + o + " = " + (o instanceof Slot) + " " +
+                        log.fine("- " + o + " = " + (o instanceof Slot) + " " +
                                 ((Instance) o).getDirectType());
                     }
                     ex.printStackTrace();
                 }
             }
         }
+      }
     }
 
 
@@ -95,5 +109,17 @@ public class OWLDatabaseKnowledgeBaseFactory extends DatabaseKnowledgeBaseFactor
 
     protected void updateKnowledgeBase(DefaultKnowledgeBase kb) {
         // Overloaded to suppress super call
+    }
+
+
+    public void initializeClientKnowledgeBase(FrameStore fs, 
+                                              NarrowFrameStore nfs,
+                                              KnowledgeBase kb) { 
+      if (kb instanceof OWLDatabaseModel) {
+        OWLDatabaseModel owlModel = (OWLDatabaseModel) kb;
+        DatabaseTripleStoreModel tsm = new DatabaseTripleStoreModel(owlModel,nfs);
+        owlModel.setTripleStoreModel(tsm);
+        owlModel.initializeClient();
+      }
     }
 }
