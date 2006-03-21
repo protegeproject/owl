@@ -8,7 +8,7 @@ import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
  * @author Nick Drummond, Medical Informatics Group, University of Manchester
  *         20-Oct-2005
  */
-public class DefaultClassFind extends DefaultFind {
+public class DefaultClassFind extends ResultsViewModelFind {
 
     public DefaultClassFind(OWLModel owlModel, int type) {
         super(owlModel, type);

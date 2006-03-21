@@ -11,13 +11,15 @@ import javax.swing.*;
  */
 public class FindInPanelAction extends AbstractFindAction {
 
-    public FindInPanelAction(Find find, Icon icon, HostResourceDisplay hrd, boolean allowSave) {
+    RetainFindResultsPanel resultsPanel;
+
+    public FindInPanelAction(ResultsViewModelFind find, Icon icon, HostResourceDisplay hrd, boolean allowSave) {
         super(find, icon, hrd, allowSave);
     }
 
 
     protected void showResults(AbstractFindResultsView view) {
-        RetainFindResultsPanel resultsPanel = new RetainFindResultsPanel(find, view);
+        resultsPanel = new RetainFindResultsPanel(find, view);
         ResultsPanelManager.addResultsPanel(find.getModel(), resultsPanel, true);
     }
 }

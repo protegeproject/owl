@@ -8,8 +8,6 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.ArrayList;
-import java.util.Iterator;
 
 /**
  * A JPanel for modal dialogs that can be used to String-matching search for a certain
@@ -24,7 +22,7 @@ public class FindResultsPanel extends JComponent {
     private static final String SEARCH_PATTERN_LABEL = "Search Pattern";
     private static final String SAVE_RESULTS_LABEL = "Save Results";
 
-    private java.util.List renameListeners = new ArrayList();
+    //private java.util.List renameListeners = new ArrayList();
 
     private Find find;
 
@@ -97,7 +95,7 @@ public class FindResultsPanel extends JComponent {
         view.addKeyListener(new KeyAdapter() {
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                        e.consume();
+                    e.consume();
                 }
             }
 
@@ -135,7 +133,7 @@ public class FindResultsPanel extends JComponent {
 
         add(mainPanel, BorderLayout.CENTER);
 
-        fireResultsChanged();
+//        fireResultsChanged();
     }
 
 
@@ -164,30 +162,29 @@ public class FindResultsPanel extends JComponent {
 
     /**
      * Should run the search and refresh in a seperate thread
+     *
      * @param searchType
      */
     public void refresh(int searchType) {
         String string = textField.getText();
+        find.cancelSearch();
         find.startSearch(string, searchType);
-//        Map matches = find.getResults();
-//        view.setResults(matches);
-        fireResultsChanged();
     }
 
-
-    private void fireResultsChanged() {
-        for (Iterator i = renameListeners.iterator(); i.hasNext();) {
-            ((RenameListener) i.next()).rename(find.getSummaryText(), this);
-        }
-    }
+//    private void fireResultsChanged() {
+//        for (Iterator i = renameListeners.iterator(); i.hasNext();) {
+//            ((RenameListener) i.next()).rename(find.getSummaryText(), this);
+//        }
+//    }
 
     public void selectResource() {
         view.selectResource();
+        find.cancelSearch();
     }
 
-    public void addRenameListener(RenameListener listener) {
-        renameListeners.add(listener);
-    }
+//    public void addRenameListener(RenameListener listener) {
+//        renameListeners.add(listener);
+//    }
 
     public void requestFocus() {
         textField.requestFocus();
@@ -219,9 +216,9 @@ public class FindResultsPanel extends JComponent {
 
     private JComboBox createTypeCombo() {
         JComboBox combo = new JComboBox();
-        combo.setRenderer(new DefaultListCellRenderer(){
+        combo.setRenderer(new DefaultListCellRenderer() {
             public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-                value = Find.searchTypeString[((Integer)value).intValue()];
+                value = Find.searchTypeString[((Integer) value).intValue()];
                 return super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);    //To change body of overridden methods use File | Settings | File Templates.
             }
         });
@@ -230,11 +227,11 @@ public class FindResultsPanel extends JComponent {
         combo.addItem(new Integer(Find.ENDS_WITH));
         combo.addItem(new Integer(Find.EXACTLY_MATCHES));
         combo.setSelectedItem(new Integer(find.getSearchType()));
-        combo.addItemListener(new ItemListener(){
+        combo.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
-                int newValue = ((Integer)e.getItem()).intValue();
+                int newValue = ((Integer) e.getItem()).intValue();
                 int oldValue = FindResultsPanel.this.find.getSearchType();
-                if (oldValue != newValue){
+                if (oldValue != newValue) {
                     refresh(newValue);
                 }
             }
@@ -245,21 +242,21 @@ public class FindResultsPanel extends JComponent {
 
     private JCheckBox createSearchAsYouType() {
         JCheckBox cBox = new JCheckBox(new AbstractAction(SEARCH_AS_YOU_TYPE_LABEL) {
-        public void actionPerformed(ActionEvent e) {
-            refreshSearchAsYouType();
-        }
+            public void actionPerformed(ActionEvent e) {
+                refreshSearchAsYouType();
+            }
         });
         cBox.setSelected(searchAsYouType);
         return cBox;
     }
 
-    private void refreshSearchAsYouType(){
+    private void refreshSearchAsYouType() {
         searchAsYouType = searchAsYouTypeCheckbox.isSelected();
-            if (searchAsYouType) {
-                textField.getDocument().addDocumentListener(searchAsYouTypeListener);
-            }
-            else {
-                textField.getDocument().removeDocumentListener(searchAsYouTypeListener);
-            }
+        if (searchAsYouType) {
+            textField.getDocument().addDocumentListener(searchAsYouTypeListener);
+        }
+        else {
+            textField.getDocument().removeDocumentListener(searchAsYouTypeListener);
+        }
     }
 }

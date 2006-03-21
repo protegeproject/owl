@@ -18,7 +18,7 @@ public class FindResultsListView extends AbstractFindResultsView {
 
     private SelectableList list;
 
-    protected FindResultsListView(Find find, HostResourceDisplay hrd) {
+    protected FindResultsListView(ResultsViewModelFind find, HostResourceDisplay hrd) {
         super(hrd);
 
         setLayout(new BorderLayout(6, 6));
@@ -34,16 +34,6 @@ public class FindResultsListView extends AbstractFindResultsView {
     public RDFResource getSelectedResource() {
         return (RDFResource) CollectionUtilities.getFirstItem(list.getSelection());
     }
-
-//    public void setResults(Map results) {
-//        if ((results != null) && (results.size() > 0)) {
-//            list.setListData(results.keySet().toArray());
-//            list.setSelectionInterval(0, 0);
-//        }
-//        else {
-//            list.setListData(new Object[]{});
-//        }
-//    }
 
     public void addMouseListener(MouseListener l) {
         list.addMouseListener(l);

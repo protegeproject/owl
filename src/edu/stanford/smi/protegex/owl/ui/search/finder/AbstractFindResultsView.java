@@ -5,8 +5,6 @@ import edu.stanford.smi.protegex.owl.ui.results.HostResourceDisplay;
 import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
 
 import javax.swing.*;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseListener;
 
@@ -14,18 +12,12 @@ import java.awt.event.MouseListener;
  * @author Nick Drummond, Medical Informatics Group, University of Manchester
  *         19-Oct-2005
  */
-abstract class AbstractFindResultsView extends JComponent{
+abstract class AbstractFindResultsView extends JComponent {
 
     private HostResourceDisplay hostResourceDisplay;
 
     protected AbstractFindResultsView(HostResourceDisplay hostResourceDisplay) {
         this.hostResourceDisplay = hostResourceDisplay;
-
-        addComponentListener(new ComponentAdapter(){
-            public void componentShown(ComponentEvent e) {
-                System.out.println("FindResultsView.componentShown");
-            }
-        });
     }
 
     abstract RDFResource getSelectedResource();
