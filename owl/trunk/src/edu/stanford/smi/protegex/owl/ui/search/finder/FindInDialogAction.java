@@ -20,7 +20,10 @@ public class FindInDialogAction extends AbstractFindAction {
 
     AbstractFindResultsView view;
 
-    public FindInDialogAction(Find find, Icon icon, HostResourceDisplay hrd, boolean allowSave) {
+    FindResultsPanel resultsPanel;
+
+
+    public FindInDialogAction(ResultsViewModelFind find, Icon icon, HostResourceDisplay hrd, boolean allowSave) {
         super(find, icon, hrd, allowSave);
     }
 
@@ -29,11 +32,16 @@ public class FindInDialogAction extends AbstractFindAction {
 
         this.view = view;
 
-        FindResultsPanel resultsPanel = new FindResultsPanel(find, view);
+        resultsPanel = new FindResultsPanel(find, view);
+        find.addResultListener(new SearchAdapter() {
+            public void searchEvent(Find source) {
+                rename(source.getSummaryText());
+            }
+        });
 
-                // retain the size as changed by the user
+        // retain the size as changed by the user
         resultsPanel.setPreferredSize(savedSize);
-        resultsPanel.addComponentListener(new ComponentAdapter(){
+        resultsPanel.addComponentListener(new ComponentAdapter() {
             public void componentResized(ComponentEvent e) {
                 savedSize.setSize(e.getComponent().getWidth(),
                                   e.getComponent().getHeight());
@@ -42,36 +50,39 @@ public class FindInDialogAction extends AbstractFindAction {
 
         resultsPanel.setSaveResultsEnabled(allowSave);
 
-        resultsPanel.addRenameListener(new RenameListener() {
-            public void rename(String label, JComponent source) {
-                try {
-                    JDialog dialog = (JDialog) source.getTopLevelAncestor();
-                    if (dialog != null) { // because you cannot rename before its visible
-                        dialog.setTitle(label);
-                    }
-                }
-                catch (ClassCastException e) {
-                } // do nothing
-            }
-        });
-
         Component win = ProtegeUI.getTopLevelContainer(ProjectManager.getProjectManager().getCurrentProject());
 
         ModalDialogFactory fac = ProtegeUI.getModalDialogFactory();
         int result = fac.showDialog(win, resultsPanel, find.getSummaryText(),
                                     ModalDialogFactory.MODE_OK_CANCEL,
-                                    new ModalDialogFactory.CloseCallback(){
+                                    new ModalDialogFactory.CloseCallback() {
                                         public boolean canClose(int result) {
                                             boolean canClose = true;
-                                            if (result == ModalDialogFactory.OPTION_OK){
+                                            if (result == ModalDialogFactory.OPTION_OK) {
                                                 canClose = (FindInDialogAction.this.view.getSelectedResource() != null);
                                             }
                                             return canClose;
                                         }
                                     });
 
-        if (result == ModalDialogFactory.OPTION_OK) {
-            resultsPanel.selectResource();
+        switch (result) {
+            case ModalDialogFactory.OPTION_OK:
+                resultsPanel.selectResource();
+                break;
+            case ModalDialogFactory.OPTION_CANCEL:
+                find.cancelSearch();
+                break;
         }
+    }
+
+    private void rename(String name) {
+        try {
+            JDialog dialog = (JDialog) resultsPanel.getTopLevelAncestor();
+            if (dialog != null) { // because you cannot rename before its visible
+                dialog.setTitle(name);
+            }
+        }
+        catch (ClassCastException e) {
+        } // do nothing
     }
 }

@@ -12,7 +12,7 @@ import java.util.Iterator;
  * @author Nick Drummond, Medical Informatics Group, University of Manchester
  *         20-Oct-2005
  */
-public class DefaultIndividualFind extends DefaultFind {
+public class DefaultIndividualFind extends ResultsViewModelFind {
 
     public DefaultIndividualFind(OWLModel owlModel, int type) {
         super(owlModel, type);

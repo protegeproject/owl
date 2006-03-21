@@ -10,11 +10,10 @@ import edu.stanford.smi.protege.util.PropertyList;
 import edu.stanford.smi.protege.util.WizardPage;
 import edu.stanford.smi.protegex.owl.jena.parser.ProtegeOWLParser;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
-import edu.stanford.smi.protegex.owl.model.OWLOntology;
 import edu.stanford.smi.protegex.owl.model.ProtegeNames;
 import edu.stanford.smi.protegex.owl.model.XSPNames;
-import edu.stanford.smi.protegex.owl.model.util.XSDVisibility;
 import edu.stanford.smi.protegex.owl.model.util.ImportHelper;
+import edu.stanford.smi.protegex.owl.model.util.XSDVisibility;
 import edu.stanford.smi.protegex.owl.swrl.model.SWRLNames;
 import edu.stanford.smi.protegex.owl.swrl.ui.SWRLProjectPlugin;
 import edu.stanford.smi.protegex.owl.swrl.ui.tab.SWRLTab;
@@ -67,7 +66,6 @@ public class OWLFilesCreateProjectPlugin
     protected void addImports(Project project) {
         JenaOWLModel owlModel = (JenaOWLModel) project.getKnowledgeBase();
 
-        OWLOntology ontology = owlModel.getDefaultOWLOntology();
         if (imports.contains(SWRLNames.SWRL_IMPORT)) {
             Collection tabWidgetDescriptors = project.getTabWidgetDescriptors();
             WidgetDescriptor w = project.getTabWidgetDescriptor(SWRLTab.class.getName());
@@ -77,7 +75,7 @@ public class OWLFilesCreateProjectPlugin
             owlModel.getNamespaceManager().setPrefix(SWRLNames.SWRLB_NAMESPACE, SWRLNames.SWRLB_PREFIX);
         }
 
-	    ImportHelper importHelper = new ImportHelper(owlModel);
+        ImportHelper importHelper = new ImportHelper(owlModel);
         for (Iterator it = imports.iterator(); it.hasNext();) {
             String uri = (String) it.next();
             String prefix = (String) importPrefixes.get(uri);
@@ -85,26 +83,26 @@ public class OWLFilesCreateProjectPlugin
             if (!namespace.endsWith("#") && !namespace.endsWith("/")) {
                 namespace += "#";
             }
-                owlModel.getNamespaceManager().setPrefix(namespace, prefix);
-                if (namespace.equals(ProtegeNames.NS)) {
-                    owlModel.getNamespaceManager().setPrefix(XSPNames.NS, XSPNames.PREFIX);
-                }
-	        try {
-		        URI u = new URI(uri);
-		        importHelper.addImport(u);
-	        }
-	        catch(URISyntaxException e) {
-		        e.printStackTrace();
-	        }
-        }
-	    try {
-		    importHelper.importOntologies();
-	    }
-            catch (Exception ex) {
-                ex.printStackTrace();
-                ProtegeUI.getModalDialogFactory().showErrorMessageDialog(owlModel,
-                        "Could not load import:\n" + ex);
+            owlModel.getNamespaceManager().setPrefix(namespace, prefix);
+            if (namespace.equals(ProtegeNames.NS)) {
+                owlModel.getNamespaceManager().setPrefix(XSPNames.NS, XSPNames.PREFIX);
             }
+            try {
+                URI u = new URI(uri);
+                importHelper.addImport(u);
+            }
+            catch (URISyntaxException e) {
+                e.printStackTrace();
+            }
+        }
+        try {
+            importHelper.importOntologies();
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+            ProtegeUI.getModalDialogFactory().showErrorMessageDialog(owlModel,
+                                                                     "Could not load import:\n" + ex);
+        }
         if (imports.contains(SWRLNames.SWRL_IMPORT)) {
             SWRLProjectPlugin.adjustWidgets(project);
         }
@@ -158,7 +156,6 @@ public class OWLFilesCreateProjectPlugin
         handleErrors(errors);
         return project;
     }
-
 
 
     public boolean canCreateProject(KnowledgeBaseFactory factory, boolean useExistingSources) {
@@ -215,9 +212,9 @@ public class OWLFilesCreateProjectPlugin
         addViewSettings(sources);
     }
 
-	/**
-	 * @deprecated This method will soon be removed
-	 */
+    /**
+     * @deprecated This method will soon be removed
+     */
     public void setDublinCoreRedirectToDLVersion(boolean b) {
         // Do nothing
     }

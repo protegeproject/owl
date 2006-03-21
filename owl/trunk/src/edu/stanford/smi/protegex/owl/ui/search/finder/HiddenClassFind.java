@@ -8,15 +8,13 @@ import edu.stanford.smi.protegex.owl.model.OWLModel;
  * @author Nick Drummond, Medical Informatics Group, University of Manchester
  *         24-Feb-2006
  */
-public class HiddenClassFind extends DefaultFind{
+public class HiddenClassFind extends ResultsViewModelFind {
 
     public HiddenClassFind(OWLModel owlModel, int type) {
         super(owlModel, type);
     }
 
     protected boolean isValidFrameToSearch(Frame f) {
-        System.out.println("f = " + f);
-        System.out.println("f.isVisible() = " + f.isVisible());
         return f instanceof Cls && !f.isVisible();
     }
 

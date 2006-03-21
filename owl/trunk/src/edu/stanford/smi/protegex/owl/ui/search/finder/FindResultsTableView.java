@@ -19,9 +19,9 @@ public class FindResultsTableView extends AbstractFindResultsView {
 
     private JTable table;
 
-    private Find find;
+    private ResultsViewModelFind find;
 
-    protected FindResultsTableView(Find find, HostResourceDisplay hrd) {
+    protected FindResultsTableView(ResultsViewModelFind find, HostResourceDisplay hrd) {
         super(hrd);
 
         setLayout(new BorderLayout(6, 6));

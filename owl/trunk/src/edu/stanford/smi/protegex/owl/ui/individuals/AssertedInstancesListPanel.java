@@ -104,7 +104,7 @@ public class AssertedInstancesListPanel extends SelectableContainer implements D
         lc = new OWLLabeledComponent(null, ComponentFactory.createScrollPane(list));
         addButtons(viewAction, lc);
 
-        Find findAlg = new DefaultIndividualFind(owlModel, Find.CONTAINS) {
+        ResultsViewModelFind findAlg = new DefaultIndividualFind(owlModel, Find.CONTAINS) {
             protected boolean isValidFrameToSearch(Frame f) {
                 return (((SimpleListModel) list.getModel()).getValues()).contains(f) &&
                        super.isValidFrameToSearch(f);

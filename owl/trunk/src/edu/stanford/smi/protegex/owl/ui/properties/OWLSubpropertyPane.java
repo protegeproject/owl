@@ -211,10 +211,10 @@ public class OWLSubpropertyPane extends SelectableContainer implements HostResou
         labeledComponent.setBorder(ComponentUtilities.getAlignBorder());
         add(labeledComponent, BorderLayout.CENTER);
 
-        Find findAlg = new DefaultPropertyFind(owlModel, Find.CONTAINS){
+        ResultsViewModelFind findAlg = new DefaultPropertyFind(owlModel, Find.CONTAINS) {
             protected boolean isValidFrameToSearch(Frame f) {
                 return super.isValidFrameToSearch(f) &&
-                       root.isSuitable((RDFProperty)f);
+                       root.isSuitable((RDFProperty) f);
             }
         };
 
@@ -238,9 +238,9 @@ public class OWLSubpropertyPane extends SelectableContainer implements HostResou
 
         labeledComponent.setHeaderIcon(getHeaderIcon());
         WidgetUtilities.addViewButton(labeledComponent, viewPropertyAction);
-        for(Iterator it = getActions().iterator(); it.hasNext(); ) {
-	        Action curAction = (Action) it.next();
-	        labeledComponent.addHeaderButton(curAction);
+        for (Iterator it = getActions().iterator(); it.hasNext();) {
+            Action curAction = (Action) it.next();
+            labeledComponent.addHeaderButton(curAction);
         }
         JButton deleteButton = labeledComponent.addHeaderButton(deletePropertyAction);
         deleteButton.setDisabledIcon(((OverlayIcon) deleteButton.getIcon()).getGrayedIcon());
@@ -250,44 +250,44 @@ public class OWLSubpropertyPane extends SelectableContainer implements HostResou
         return "Properties";
     }
 
-	protected Icon getHeaderIcon() {
-		return OWLIcons.getImageIcon("Properties");
-	}
+    protected Icon getHeaderIcon() {
+        return OWLIcons.getImageIcon("Properties");
+    }
 
 
-	protected Action getCreateAnnotationOWLDatatypePropertyAction() {
-		return createAnnotationOWLDatatypePropertyAction;
-	}
+    protected Action getCreateAnnotationOWLDatatypePropertyAction() {
+        return createAnnotationOWLDatatypePropertyAction;
+    }
 
 
-	protected Action getCreateAnnotationOWLObjectPropertyAction() {
-		return createAnnotationOWLObjectPropertyAction;
-	}
+    protected Action getCreateAnnotationOWLObjectPropertyAction() {
+        return createAnnotationOWLObjectPropertyAction;
+    }
 
 
-	protected Action getCreateOWLDatatypePropertyAction() {
-		return createOWLDatatypePropertyAction;
-	}
+    protected Action getCreateOWLDatatypePropertyAction() {
+        return createOWLDatatypePropertyAction;
+    }
 
 
-	protected Action getCreateOWLObjectPropertyAction() {
-		return createOWLObjectPropertyAction;
-	}
+    protected Action getCreateOWLObjectPropertyAction() {
+        return createOWLObjectPropertyAction;
+    }
 
 
-	protected Action getCreateRDFPropertyAction() {
-		return createRDFPropertyAction;
-	}
+    protected Action getCreateRDFPropertyAction() {
+        return createRDFPropertyAction;
+    }
 
 
-	protected Action getCreateSubpropertyAction() {
-		return createSubpropertyAction;
-	}
+    protected Action getCreateSubpropertyAction() {
+        return createSubpropertyAction;
+    }
 
 
-	protected Action getDeletePropertyAction() {
-		return deletePropertyAction;
-	}
+    protected Action getDeletePropertyAction() {
+        return deletePropertyAction;
+    }
 
 
     public boolean contains(RDFProperty property) {
@@ -315,8 +315,8 @@ public class OWLSubpropertyPane extends SelectableContainer implements HostResou
 
 
     protected Collection getActions() {
-		ArrayList list = new ArrayList();
-		if (ProfilesManager.isFeatureSupported(owlModel, OWLProfiles.CreateRDFProperty)) {
+        ArrayList list = new ArrayList();
+        if (ProfilesManager.isFeatureSupported(owlModel, OWLProfiles.CreateRDFProperty)) {
             list.add(createRDFPropertyAction);
         }
         boolean datatypeSlots = ProfilesManager.isFeatureSupported(owlModel, OWLProfiles.Create_DatatypeProperty);
@@ -334,12 +334,12 @@ public class OWLSubpropertyPane extends SelectableContainer implements HostResou
         if (objectSlots) {
             list.add(createAnnotationOWLObjectPropertyAction);
         }
-		return list;
-	}
+        return list;
+    }
 
 
     protected OWLPropertySubpropertyRoot createRoot() {
-	    return new OWLPropertySubpropertyRoot(getOWLModel());
+        return new OWLPropertySubpropertyRoot(getOWLModel());
     }
 
 
@@ -444,7 +444,7 @@ public class OWLSubpropertyPane extends SelectableContainer implements HostResou
     public boolean displayHostResource(RDFResource resource) {
         if (!getSelection().contains(resource)) {
             ComponentUtilities.setSelectedObjectPath(getTree(),
-                                                     getPath((RDFProperty)resource,
+                                                     getPath((RDFProperty) resource,
                                                              new LinkedList()));
         }
         return true;

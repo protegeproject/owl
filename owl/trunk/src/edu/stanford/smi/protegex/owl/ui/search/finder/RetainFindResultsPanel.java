@@ -18,10 +18,12 @@ import java.awt.event.KeyEvent;
  * @author Nick Drummond, Medical Informatics Group, University of Manchester
  *         03-Oct-2005
  */
-public class RetainFindResultsPanel extends ResultsPanel implements RenameListener {
+public class RetainFindResultsPanel extends ResultsPanel {
 
     private FindResultsPanel resultsPanel;
+
     private String tabName = "Search";
+
 
     private Action refreshAction = new AbstractAction("Refresh", OWLIcons.getImageIcon("Refresh")) {
         public void actionPerformed(ActionEvent e) {
@@ -33,7 +35,11 @@ public class RetainFindResultsPanel extends ResultsPanel implements RenameListen
         super(find.getModel());
 
         resultsPanel = new FindResultsPanel(find, view);
-        resultsPanel.addRenameListener(this);
+        find.addResultListener(new SearchAdapter() {
+            public void searchEvent(Find source) {
+                rename(source.getSummaryText());
+            }
+        });
 
         setCenterComponent(resultsPanel);
 
@@ -56,7 +62,7 @@ public class RetainFindResultsPanel extends ResultsPanel implements RenameListen
         return tabName;
     }
 
-    public void rename(String label, JComponent source) {
+    private void rename(String label) {
         tabName = label;
         OWLModel omodel = (OWLModel) ProjectManager.getProjectManager().getCurrentProject().getKnowledgeBase();
         JTabbedPane t = ResultsPanelManager.getTabbedPane(omodel);
@@ -69,6 +75,7 @@ public class RetainFindResultsPanel extends ResultsPanel implements RenameListen
                 }
             }
         }
+        revalidate();
     }
 
     public void requestDispose(JComponent source) {

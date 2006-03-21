@@ -53,22 +53,22 @@ public abstract class SubsumptionTreePanel extends SelectableContainer implement
     public SubsumptionTreePanel(Cls root,
                                 Slot subclassesSlot,
                                 Slot superclassesSlot,
-                                boolean useInferredSuperclasses){
-        this (new SubsumptionTreeRoot(root, subclassesSlot), superclassesSlot, useInferredSuperclasses);
+                                boolean useInferredSuperclasses) {
+        this(new SubsumptionTreeRoot(root, subclassesSlot), superclassesSlot, useInferredSuperclasses);
     }
 
     public SubsumptionTreePanel(LazyTreeRoot treeRoot,
                                 Slot superclassesSlot,
                                 boolean useInferredSuperclasses) {
-        this (treeRoot, superclassesSlot, useInferredSuperclasses,
-              new DefaultClassFind((OWLModel)superclassesSlot.getKnowledgeBase(),
-                                   Find.CONTAINS));
+        this(treeRoot, superclassesSlot, useInferredSuperclasses,
+             new DefaultClassFind((OWLModel) superclassesSlot.getKnowledgeBase(),
+                                  Find.CONTAINS));
     }
 
     public SubsumptionTreePanel(LazyTreeRoot treeRoot,
                                 Slot superclassesSlot,
                                 boolean useInferredSuperclasses,
-                                Find findAlg) {
+                                ResultsViewModelFind findAlg) {
 
         this.superclassesSlot = superclassesSlot;
         setPreferredSize(new Dimension(260, 400));
