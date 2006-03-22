@@ -3,7 +3,6 @@ package edu.stanford.smi.protegex.owl.ui.search.finder;
 import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -50,11 +49,10 @@ public class ThreadedFind extends BasicFind {
 
         public void run() {
 
-            notifySearchStarted();
-
+            results.clear();
             allowRun = true;
 
-            results = new HashMap();
+            notifySearchStarted();
 
             if ((string != null) && (string.length() > 0)) {
 
