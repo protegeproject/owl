@@ -2,6 +2,7 @@ package edu.stanford.smi.protegex.owl.ui.cls;
 
 import edu.stanford.smi.protege.resource.LocalizedText;
 import edu.stanford.smi.protege.resource.ResourceKey;
+import edu.stanford.smi.protege.ui.ProjectManager;
 import edu.stanford.smi.protege.util.ComponentUtilities;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
 import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
@@ -9,9 +10,11 @@ import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
 import edu.stanford.smi.protegex.owl.ui.actions.ResourceAction;
 import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 
 /**
@@ -32,21 +35,18 @@ public class DeleteClassAction extends ResourceAction {
     public void actionPerformed(ActionEvent e) {
         ClassTreePanel classTreePanel = (ClassTreePanel) getComponent();
         Collection<RDFSNamedClass> clses = ComponentUtilities.getSelection(classTreePanel.getTree());
-        if (clses.size() > 1) {
-            performAction(clses, classTreePanel);
-        }
-        else {
-            RDFSNamedClass cls = (RDFSNamedClass) getResource();
-            performAction(cls, classTreePanel);
-        }
+        performAction(clses, classTreePanel);
     }
 
 
     private static boolean confirmDelete(Component parent) {
-        String text = LocalizedText.getText(ResourceKey.DIALOG_CONFIRM_DELETE_TEXT);
-        return ProtegeUI.getModalDialogFactory().showConfirmDialog(parent, text, "Confirm Delete");
+        boolean delete = true;
+        if (ProjectManager.getProjectManager().getCurrentProject().getDisplayConfirmationOnRemove()) {
+            String text = LocalizedText.getText(ResourceKey.DIALOG_CONFIRM_DELETE_TEXT);
+            delete = ProtegeUI.getModalDialogFactory().showConfirmDialog(parent, text, "Confirm Delete");
+        }
+        return delete;
     }
-
 
     public boolean isSuitable(Component component, RDFResource resource) {
         return component instanceof ClassTreePanel &&
@@ -56,14 +56,7 @@ public class DeleteClassAction extends ResourceAction {
 
 
     public static void performAction(RDFSNamedClass cls, ClassTreePanel classTreePanel) {
-        int instanceCount = cls.getInstanceCount(true);
-        if (instanceCount > 0) {
-            String text = LocalizedText.getText(ResourceKey.DELETE_CLASS_FAILED_DIALOG_TEXT);
-            ProtegeUI.getModalDialogFactory().showMessageDialog(cls.getOWLModel(), text);
-        }
-        else if (confirmDelete((Component) classTreePanel)) {
-            cls.delete();
-        }
+        performAction(Collections.singleton(cls), classTreePanel);
     }
 
 
@@ -79,9 +72,14 @@ public class DeleteClassAction extends ResourceAction {
                     ProtegeUI.getModalDialogFactory().showMessageDialog(cls.getOWLModel(), text);
                 }
                 else {
+                    JTree tree = classTreePanel.getTree();
+                    ComponentUtilities.removeSelection(tree);
                     cls.delete();
                 }
             }
+        }
+        else {
+            System.err.println("NONE");
         }
     }
 }
