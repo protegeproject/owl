@@ -78,8 +78,5 @@ public class DeleteClassAction extends ResourceAction {
                 }
             }
         }
-        else {
-            System.err.println("NONE");
-        }
     }
 }
