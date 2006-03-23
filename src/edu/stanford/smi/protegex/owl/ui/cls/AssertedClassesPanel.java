@@ -209,22 +209,7 @@ public class AssertedClassesPanel extends SelectableContainer implements Hierarc
 
 
     protected AllowableAction getDeleteClsAction() {
-        AllowableAction action = new AllowableAction("Delete selected class", OWLIcons.getDeleteClsIcon(), this) {
-
-            public void actionPerformed(ActionEvent e) {
-                RDFSNamedClass cls = (RDFSNamedClass) getSelectedClass();
-                DeleteClassAction.performAction(cls, AssertedClassesPanel.this);
-            }
-
-
-            public void onSelectionChange() {
-                updateDeleteActionState();
-            }
-        };
-        action.setEnabled(true);
-
-        action.putValue(Action.SMALL_ICON, OWLIcons.getDeleteClsIcon());
-        return action;
+        return new AllowableDeleteAction(this);
     }
 
 
@@ -366,6 +351,24 @@ public class AssertedClassesPanel extends SelectableContainer implements Hierarc
 
     protected void updateDeleteActionState() {
         if (deleteAction != null) {
+            deleteAction.onSelectionChange();
+        }
+    }
+
+    private class AllowableDeleteAction extends AllowableAction {
+
+        public AllowableDeleteAction(Selectable selectable) {
+            super("Delete selected class(es)",
+                  OWLIcons.getDeleteClsIcon(),
+                  selectable);
+        }
+
+        public void actionPerformed(ActionEvent e) {
+            DeleteClassAction.performAction(getSelection(),
+                                            AssertedClassesPanel.this);
+        }
+
+        public void onSelectionChange() {
             boolean isEditable = true;
             Iterator i = getSelection().iterator();
             while (i.hasNext()) {
@@ -375,7 +378,7 @@ public class AssertedClassesPanel extends SelectableContainer implements Hierarc
                     break;
                 }
             }
-            deleteAction.setAllowed(isEditable);
+            setAllowed(isEditable);
         }
     }
 }

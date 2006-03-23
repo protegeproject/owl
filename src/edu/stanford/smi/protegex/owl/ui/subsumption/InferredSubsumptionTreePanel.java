@@ -5,6 +5,7 @@ import com.hp.hpl.jena.ontology.Ontology;
 import com.hp.hpl.jena.util.FileUtils;
 import com.hp.hpl.jena.vocabulary.OWL;
 import edu.stanford.smi.protege.model.Cls;
+import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protege.util.LazyTreeRoot;
 import edu.stanford.smi.protegex.owl.jena.Jena;
 import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
@@ -17,6 +18,7 @@ import edu.stanford.smi.protegex.owl.ui.cls.ClassTree;
 import edu.stanford.smi.protegex.owl.ui.cls.Hierarchy;
 import edu.stanford.smi.protegex.owl.ui.cls.OWLClassesTab;
 import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
+import edu.stanford.smi.protegex.owl.ui.menu.OWLMenuProjectPlugin;
 import edu.stanford.smi.protegex.owl.ui.widget.ModalProgressBarManager;
 import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
 
@@ -67,7 +69,8 @@ public class InferredSubsumptionTreePanel extends SubsumptionTreePanel {
 
 
     public InferredSubsumptionTreePanel(OWLModel owlModel) {
-        super(owlModel.getOWLThingClass(), ((AbstractOWLModel) owlModel).getProtegeInferredSubclassesProperty(),
+        super(owlModel.getOWLThingClass(),
+              ((AbstractOWLModel) owlModel).getProtegeInferredSubclassesProperty(),
               ((AbstractOWLModel) owlModel).getProtegeInferredSuperclassesProperty(),
               true);
         this.owlModel = owlModel;
@@ -100,7 +103,7 @@ public class InferredSubsumptionTreePanel extends SubsumptionTreePanel {
 
 
     protected ClassTree createSelectableTree(Action viewAction, LazyTreeRoot root) {
-        return new MySelectableTree(viewAction, root);
+        return new InferredChangesClassTree(viewAction, root);
     }
 
 
@@ -181,60 +184,44 @@ public class InferredSubsumptionTreePanel extends SubsumptionTreePanel {
     }
 
 
-    private class MySelectableTree extends ClassTree {
+    private class InferredChangesClassTree extends ClassTree {
 
-        public MySelectableTree(Action viewAction, LazyTreeRoot root) {
-
+        public InferredChangesClassTree(Action viewAction, LazyTreeRoot root) {
             super(viewAction, root);
 
-            Cls rootCls = (Cls) root.getChildObjects().iterator().next();
-            RDFProperty property = ((OWLModel) rootCls.getKnowledgeBase()).getRDFProperty(ProtegeNames.Slot.INFERRED_SUPERCLASSES);
-
-            setCellRenderer(new ResourceRenderer(property) {
-
-                private Cls recentCls;
-
-
-                protected Color getTextColor() {
-                    ChangedClassesPanel ccp = ChangedClassesPanel.get(owlModel);
-                    if (ccp.contains(recentCls)) {
-                        return Color.blue;
-                    }
-                    return super.getTextColor();
-                }
-
-
-                protected void loadCls(Cls cls) {
-                    recentCls = cls;
-                    super.loadCls(cls);
-                }
-            });
+            RDFProperty property = owlModel.getRDFProperty(ProtegeNames.Slot.INFERRED_SUPERCLASSES);
+            setCellRenderer(new MovedResourcesRenderer(property));
         }
-
-
-        private String getTreeToolTipText(MouseEvent event, JTree tree) {
-            int row = tree.getRowForLocation(event.getX(), event.getY());
-            TreePath path = tree.getPathForRow(row);
-            if (path != null && path.getPathCount() > 0) {
-                SubsumptionTreeNode node = (SubsumptionTreeNode) path.getLastPathComponent();
-                Cls cls = node.getCls();
-                ChangedClassesPanel ccp = ChangedClassesPanel.get(owlModel);
-                String str = ccp.getChangeText(cls);
-                if (str == null) {
-                    return OWLUI.getOWLToolTipText((RDFSClass) cls);
-                }
-                else {
-                    return str;
-                }
-            }
-            else {
-                return null;
-            }
-        }
-
 
         public String getToolTipText(MouseEvent event) {
-            return getTreeToolTipText(event, this);
+            String str = null;
+            int row = getRowForLocation(event.getX(), event.getY());
+            TreePath path = getPathForRow(row);
+            if (path != null && path.getPathCount() > 0) {
+                SubsumptionTreeNode node = (SubsumptionTreeNode) path.getLastPathComponent();
+                RDFSClass cls = (RDFSClass) node.getCls();
+                ChangedClassesPanel ccp = ChangedClassesPanel.get(owlModel);
+                str = ccp.getChangeText(cls);
+                if (str == null && OWLMenuProjectPlugin.isProseActivated()) {
+                    str = OWLUI.getOWLToolTipText(cls);
+                }
+            }
+            return str;
+        }
+    }
+
+    private class MovedResourcesRenderer extends ResourceRenderer {
+
+        public MovedResourcesRenderer(Slot directSuperclassesSlot) {
+            super(directSuperclassesSlot);
+        }
+
+        protected Color getTextColor() {
+            ChangedClassesPanel ccp = ChangedClassesPanel.get(owlModel);
+            if (ccp.contains(loadedClass)) {
+                return Color.blue;
+            }
+            return super.getTextColor();
         }
     }
 }

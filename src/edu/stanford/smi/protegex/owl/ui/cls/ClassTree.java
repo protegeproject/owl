@@ -112,12 +112,12 @@ public class ClassTree extends SelectableTree implements TripleSelectable, HostR
 
             if (!getSelection().contains(resource)) {
 
-                Collection rootClses = (Collection)((LazyTreeRoot)getModel().getRoot()).getUserObject();
-                Collection allSupers = ((RDFSClass)resource).getSuperclasses(true);
+                Collection rootClses = getRoots();
+                Collection allSupers = ((RDFSClass) resource).getSuperclasses(true);
 
-                for (Iterator i = rootClses.iterator(); i.hasNext();){
-                    RDFSClass root = (RDFSClass)i.next();
-                    if (allSupers.contains(root)){
+                for (Iterator i = rootClses.iterator(); i.hasNext();) {
+                    RDFSClass root = (RDFSClass) i.next();
+                    if (allSupers.contains(root)) {
                         List objectPath = getPathToRoot((RDFSClass) resource, root, new LinkedList());
                         final TreePath path = ComponentUtilities.getTreePath(this, objectPath);
                         if (path != null) {
@@ -127,7 +127,7 @@ public class ClassTree extends SelectableTree implements TripleSelectable, HostR
                             cursor.hide();
                             result = true;
                         }
-                        else{
+                        else {
                             System.out.println("path = " + objectPath);
                         }
                     }
@@ -135,6 +135,10 @@ public class ClassTree extends SelectableTree implements TripleSelectable, HostR
             }
         }
         return result;
+    }
+
+    public Collection getRoots() {
+        return (Collection) ((LazyTreeRoot) getModel().getRoot()).getUserObject();
     }
 
     private List getPathToRoot(RDFSClass cls, RDFSClass rootCls, LinkedList list) {
