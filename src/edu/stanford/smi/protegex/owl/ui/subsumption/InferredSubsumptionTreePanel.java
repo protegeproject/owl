@@ -56,8 +56,6 @@ public class InferredSubsumptionTreePanel extends SubsumptionTreePanel {
         }
     };
 
-    private OWLModel owlModel;
-
     private Action saveInferredAction = new AbstractAction("Save inferred version as file...",
                                                            OWLIcons.getSaveInferredIcon()) {
         public void actionPerformed(ActionEvent e) {
@@ -73,7 +71,7 @@ public class InferredSubsumptionTreePanel extends SubsumptionTreePanel {
               ((AbstractOWLModel) owlModel).getProtegeInferredSubclassesProperty(),
               ((AbstractOWLModel) owlModel).getProtegeInferredSuperclassesProperty(),
               true);
-        this.owlModel = owlModel;
+
         assertAction.setEnabled(false);
         getLabeledComponent().addHeaderButton(assertAction);
         getLabeledComponent().addHeaderButton(displayChangedAction);
@@ -83,6 +81,7 @@ public class InferredSubsumptionTreePanel extends SubsumptionTreePanel {
 
     private void assertSelectedChange() {
         OWLNamedClass cls = getSelectedCls();
+        OWLModel owlModel = getOWLModel();
         ChangedClassesPanel ccp = ChangedClassesPanel.get(owlModel);
         try {
             owlModel.beginTransaction("Assert change for " + cls.getBrowserText());
@@ -136,6 +135,7 @@ public class InferredSubsumptionTreePanel extends SubsumptionTreePanel {
         JFileChooser fileChooser = new JFileChooser(".");
         if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
             File file = fileChooser.getSelectedFile();
+            OWLModel owlModel = getOWLModel();
             Collection clses = new ArrayList();
             for (Iterator it = owlModel.getUserDefinedOWLNamedClasses().iterator(); it.hasNext();) {
                 OWLNamedClass cls = (OWLNamedClass) it.next();
@@ -180,7 +180,7 @@ public class InferredSubsumptionTreePanel extends SubsumptionTreePanel {
         OWLNamedClass cls = getSelectedCls();
         assertAction.setEnabled(cls != null &&
                                 cls.getClassificationStatus() == OWLNames.CLASSIFICATION_STATUS_CONSISTENT_AND_CHANGED &&
-                                ChangedClassesPanel.get(owlModel).getTableModel().contains(cls));
+                                ChangedClassesPanel.get(getOWLModel()).getTableModel().contains(cls));
     }
 
 
@@ -189,7 +189,7 @@ public class InferredSubsumptionTreePanel extends SubsumptionTreePanel {
         public InferredChangesClassTree(Action viewAction, LazyTreeRoot root) {
             super(viewAction, root);
 
-            RDFProperty property = owlModel.getRDFProperty(ProtegeNames.Slot.INFERRED_SUPERCLASSES);
+            RDFProperty property = getOWLModel().getRDFProperty(ProtegeNames.Slot.INFERRED_SUPERCLASSES);
             setCellRenderer(new MovedResourcesRenderer(property));
         }
 
@@ -200,7 +200,7 @@ public class InferredSubsumptionTreePanel extends SubsumptionTreePanel {
             if (path != null && path.getPathCount() > 0) {
                 SubsumptionTreeNode node = (SubsumptionTreeNode) path.getLastPathComponent();
                 RDFSClass cls = (RDFSClass) node.getCls();
-                ChangedClassesPanel ccp = ChangedClassesPanel.get(owlModel);
+                ChangedClassesPanel ccp = ChangedClassesPanel.get(getOWLModel());
                 str = ccp.getChangeText(cls);
                 if (str == null && OWLMenuProjectPlugin.isProseActivated()) {
                     str = OWLUI.getOWLToolTipText(cls);
@@ -217,7 +217,7 @@ public class InferredSubsumptionTreePanel extends SubsumptionTreePanel {
         }
 
         protected Color getTextColor() {
-            ChangedClassesPanel ccp = ChangedClassesPanel.get(owlModel);
+            ChangedClassesPanel ccp = ChangedClassesPanel.get(getOWLModel());
             if (ccp.contains(loadedClass)) {
                 return Color.blue;
             }
