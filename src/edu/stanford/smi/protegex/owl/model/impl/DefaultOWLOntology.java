@@ -4,6 +4,8 @@ import edu.stanford.smi.protege.model.FrameID;
 import edu.stanford.smi.protege.model.KnowledgeBase;
 import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protegex.owl.model.*;
+import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
+import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreUtil;
 import edu.stanford.smi.protegex.owl.model.visitor.OWLModelVisitor;
 import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
 
@@ -42,8 +44,15 @@ public class DefaultOWLOntology extends DefaultRDFIndividual implements OWLOntol
 
 
     public void addImports(String uri) {
-        RDFUntypedResource resource = getOWLModel().getRDFUntypedResource(uri, true);
-        addImportsHelper(resource);
+        try {
+            TripleStore ts = getOWLModel().getTripleStoreModel().getTripleStoreByDefaultNamespace(uri + "#");
+            OWLOntology ont = (OWLOntology) TripleStoreUtil.getFirstOntology(getOWLModel(), ts);
+            addImportsHelper(ont);
+        }
+        catch (Exception e) {
+            RDFUntypedResource resource = getOWLModel().getRDFUntypedResource(uri, true);
+            addImportsHelper(resource);
+        }
     }
 
 
