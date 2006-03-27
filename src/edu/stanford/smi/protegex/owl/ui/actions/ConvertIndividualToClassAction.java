@@ -17,7 +17,7 @@ public class ConvertIndividualToClassAction extends ResourceAction {
 
     public ConvertIndividualToClassAction() {
         super("Convert individual to class",
-                OWLIcons.getCreateIcon(OWLIcons.PRIMITIVE_OWL_CLASS), null, true);
+              OWLIcons.getCreateIcon(OWLIcons.PRIMITIVE_OWL_CLASS), null, true);
     }
 
 
@@ -25,11 +25,11 @@ public class ConvertIndividualToClassAction extends ResourceAction {
         RDFIndividual instance = (RDFIndividual) getResource();
         String clsName = getClsName(instance);
         if (ProtegeUI.getModalDialogFactory().showConfirmDialog(getComponent(),
-                "This will create a new class " + clsName +
-                        " as a subclass of " + instance.getProtegeType().getName() + "\n" +
-                        "with restrictions that represent the values of the individual\n" +
-                        "and then make this individual an instance of the new class.",
-                "Confirm conversion")) {
+                                                                "This will create a new class " + clsName +
+                                                                " as a subclass of " + instance.getProtegeType().getName() + "\n" +
+                                                                "with restrictions that represent the values of the individual\n" +
+                                                                "and then make this individual an instance of the new class.",
+                                                                "Confirm conversion")) {
             OWLModel owlModel = instance.getOWLModel();
             try {
                 owlModel.beginTransaction("Convert individual " + instance.getBrowserText() + " to class");
@@ -66,8 +66,9 @@ public class ConvertIndividualToClassAction extends ResourceAction {
 
     public boolean isSuitable(Component component, RDFResource resource) {
         if (resource instanceof RDFIndividual &&
-                resource.isEditable() &&
-                !(resource instanceof SWRLIndividual)) {
+            resource.isEditable() &&
+            !(resource instanceof SWRLIndividual) &&
+            !(resource instanceof OWLOntology)) {
             return !resource.isAnonymous();
         }
         else {
