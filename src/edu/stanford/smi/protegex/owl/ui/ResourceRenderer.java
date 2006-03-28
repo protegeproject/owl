@@ -9,6 +9,7 @@ import edu.stanford.smi.protege.ui.FrameRenderer;
 import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
 import edu.stanford.smi.protegex.owl.model.*;
 import edu.stanford.smi.protegex.owl.model.classparser.manchester.ManchesterOWLParserUtil;
+import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLOntology;
 import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
 
 import javax.swing.*;
@@ -196,7 +197,7 @@ public class ResourceRenderer extends FrameRenderer {
             if (loadedInstance != null) {
                 OWLModel model = ((RDFResource) loadedInstance).getOWLModel();
                 if (loadedInstance.getDirectType() == model.getOWLOntologyClass()) {
-                    if (!loadedInstance.isEditable()) {
+                    if (!((DefaultOWLOntology) loadedInstance).isAssociatedTriplestoreEditable()) {
                         color = Color.GRAY;
                         graphics.setFont(graphics.getFont().deriveFont(Font.ITALIC));
                     }

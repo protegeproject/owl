@@ -125,7 +125,7 @@ public class DefaultOWLOntology extends DefaultRDFIndividual implements OWLOntol
 
     public Icon getIcon() {
         Icon icon = OWLIcons.getImageIcon("OWLOntology");
-        if (!isEditable() || !isActive()) {
+        if (!isAssociatedTriplestoreEditable() || !isActive()) {
             icon = OWLIcons.getReadOnlyIcon((ImageIcon) icon,
                                             OWLIcons.RDF_INDIVIDUAL_FRAME);
         }
@@ -200,7 +200,7 @@ public class DefaultOWLOntology extends DefaultRDFIndividual implements OWLOntol
         removeOwnSlotValue(slot, resource);
     }
 
-    public boolean isEditable() {
+    public boolean isAssociatedTriplestoreEditable() {
         boolean result = false;
         OWLModel owlModel = getOWLModel();
         TripleStore top = owlModel.getTripleStoreModel().getTopTripleStore();
