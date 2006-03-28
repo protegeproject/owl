@@ -14,7 +14,6 @@ import edu.stanford.smi.protege.widget.*;
 import edu.stanford.smi.protegex.owl.database.OWLDatabaseModel;
 import edu.stanford.smi.protegex.owl.model.*;
 import edu.stanford.smi.protegex.owl.model.project.OWLProject;
-import edu.stanford.smi.protegex.owl.prose.ProseGen;
 import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
 import edu.stanford.smi.protegex.owl.ui.actions.AbstractOWLModelAction;
 import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
@@ -216,14 +215,16 @@ public class OWLUI {
 
 
     public static String getOWLToolTipText(RDFSClass aClass) {
-        if (toolTipGenerator == null) {
-            return ProseGen.getProseAsString(aClass);
-        }
-        else {
-            return toolTipGenerator.getToolTipText(aClass);
-        }
+        return getOWLToolTipText((RDFResource) aClass);
     }
 
+    public static String getOWLToolTipText(RDFResource res) {
+        if (toolTipGenerator != null) {
+            return toolTipGenerator.getToolTipText(res);
+        }
+        System.out.println("LOST GENERATOR");
+        return null;
+    }
 
     public static OWLToolTipGenerator getOWLToolTipGenerator() {
         return toolTipGenerator;
@@ -622,7 +623,7 @@ public class OWLUI {
      * @deprecated use ProtegeUI.getModalDialogFactory()...
      */
     public static boolean showConfirmDialog(String message, String title) {
-        return ProtegeUI.getModalDialogFactory().showConfirmDialog((OWLModel)null, message, title);
+        return ProtegeUI.getModalDialogFactory().showConfirmDialog((OWLModel) null, message, title);
     }
 
 

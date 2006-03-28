@@ -1,37 +1,28 @@
 package edu.stanford.smi.protegex.owl.ui.cls;
 
-import edu.stanford.smi.protege.model.Cls;
-import edu.stanford.smi.protege.util.*;
+import edu.stanford.smi.protege.util.ComponentUtilities;
+import edu.stanford.smi.protege.util.LazyTreeNode;
+import edu.stanford.smi.protege.util.LazyTreeRoot;
+import edu.stanford.smi.protege.util.WaitCursor;
 import edu.stanford.smi.protegex.owl.model.*;
 import edu.stanford.smi.protegex.owl.model.triplestore.Triple;
 import edu.stanford.smi.protegex.owl.model.triplestore.impl.DefaultTriple;
 import edu.stanford.smi.protegex.owl.ui.TripleSelectable;
-import edu.stanford.smi.protegex.owl.ui.menu.OWLMenuProjectPlugin;
-import edu.stanford.smi.protegex.owl.ui.owltable.OWLTable;
 import edu.stanford.smi.protegex.owl.ui.results.HostResourceDisplay;
-import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
+import edu.stanford.smi.protegex.owl.ui.subsumption.TooltippedSelectableTree;
 
 import javax.swing.*;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.util.*;
 
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
  */
-public class ClassTree extends SelectableTree implements TripleSelectable, HostResourceDisplay {
+public class ClassTree extends TooltippedSelectableTree implements TripleSelectable, HostResourceDisplay {
 
     public ClassTree(Action doubleClickAction, LazyTreeRoot root) {
         super(doubleClickAction, root);
-        final int oldDelay = ToolTipManager.sharedInstance().getDismissDelay();
-        addMouseListener(new MouseAdapter() {
-            public void mouseExited(MouseEvent e) {
-                ToolTipManager.sharedInstance().setDismissDelay(oldDelay);
-            }
-        });
-        setToolTipText(""); // Dummy to initialize the mechanism
     }
 
 
@@ -79,28 +70,10 @@ public class ClassTree extends SelectableTree implements TripleSelectable, HostR
     }
 
 
-    public String getToolTipText(MouseEvent event) {
-        if (OWLMenuProjectPlugin.isProseActivated()) {
-            int row = getRowForLocation(event.getX(), event.getY());
-            if (row >= 0) {
-                TreePath path = getPathForRow(row);
-                if (path != null) {
-                    LazyTreeNode node = (LazyTreeNode) path.getLastPathComponent();
-                    Cls cls = (Cls) node.getUserObject();
-                    if (cls instanceof RDFSClass) {
-                        ToolTipManager.sharedInstance().setDismissDelay(OWLTable.INFINITE_TIME);
-                        return OWLUI.getOWLToolTipText((RDFSClass) cls);
-                    }
-                }
-            }
-        }
-        return null;
-    }
-
-
     public void setSelectedTriples(Collection triples) {
         // TODO
     }
+
 
     public boolean displayHostResource(RDFResource resource) {
 

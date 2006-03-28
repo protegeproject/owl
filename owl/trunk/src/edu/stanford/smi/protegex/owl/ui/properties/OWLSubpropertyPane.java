@@ -21,6 +21,7 @@ import edu.stanford.smi.protegex.owl.ui.profiles.ProfilesManager;
 import edu.stanford.smi.protegex.owl.ui.properties.actions.CreateSubpropertyAction;
 import edu.stanford.smi.protegex.owl.ui.results.HostResourceDisplay;
 import edu.stanford.smi.protegex.owl.ui.search.finder.*;
+import edu.stanford.smi.protegex.owl.ui.subsumption.TooltippedSelectableTree;
 import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
 import edu.stanford.smi.protegex.owl.ui.widget.WidgetUtilities;
 
@@ -200,7 +201,7 @@ public class OWLSubpropertyPane extends SelectableContainer implements HostResou
         this.owlModel = owlModel;
 
         root = createRoot();
-        SelectableTree tree = ComponentFactory.createSelectableTree(viewPropertyAction, root);
+        TooltippedSelectableTree tree = new TooltippedSelectableTree(viewPropertyAction, root);
         tree.setCellRenderer(new ResourceRenderer());
         tree.setShowsRootHandles(true);
         tree.setSelectionRow(0);

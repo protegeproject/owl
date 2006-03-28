@@ -1,11 +1,9 @@
 package edu.stanford.smi.protegex.owl.ui.subsumption;
 
-import edu.stanford.smi.protege.model.Cls;
-import edu.stanford.smi.protege.ui.ParentChildNode;
+import edu.stanford.smi.protege.util.LazyTreeNode;
 import edu.stanford.smi.protege.util.LazyTreeRoot;
 import edu.stanford.smi.protege.util.SelectableTree;
-import edu.stanford.smi.protegex.owl.model.RDFSClass;
-import edu.stanford.smi.protegex.owl.ui.menu.OWLMenuProjectPlugin;
+import edu.stanford.smi.protegex.owl.model.RDFResource;
 import edu.stanford.smi.protegex.owl.ui.owltable.OWLTable;
 import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
 
@@ -32,24 +30,19 @@ public class TooltippedSelectableTree extends SelectableTree {
 
 
     public String getToolTipText(MouseEvent event) {
-        if (OWLMenuProjectPlugin.isProseActivated()) {
-            int row = getRowForLocation(event.getX(), event.getY());
-            if (row >= 0) {
-                TreePath path = getPathForRow(row);
-                if (path != null) {
-                    Object last = path.getLastPathComponent();
-                    Cls cls = null;
-                    if (last instanceof ParentChildNode) {
-                        ParentChildNode node = (ParentChildNode) path.getLastPathComponent();
-                        cls = (Cls) node.getUserObject();
-                    }
-                    else if (last instanceof SubsumptionTreeNode) {
-                        cls = ((SubsumptionTreeNode) last).getCls();
-                    }
-                    if (cls instanceof RDFSClass) {
-                        ToolTipManager.sharedInstance().setDismissDelay(OWLTable.INFINITE_TIME);
-                        return OWLUI.getOWLToolTipText((RDFSClass) cls);
-                    }
+        int row = getRowForLocation(event.getX(), event.getY());
+        if (row >= 0) {
+            TreePath path = getPathForRow(row);
+            if (path != null) {
+                Object last = path.getLastPathComponent();
+                RDFResource res = null;
+                if (last instanceof LazyTreeNode) {
+                    LazyTreeNode node = (LazyTreeNode) path.getLastPathComponent();
+                    res = (RDFResource) node.getUserObject();
+                }
+                if (res != null) {
+                    ToolTipManager.sharedInstance().setDismissDelay(OWLTable.INFINITE_TIME);
+                    return OWLUI.getOWLToolTipText(res);
                 }
             }
         }

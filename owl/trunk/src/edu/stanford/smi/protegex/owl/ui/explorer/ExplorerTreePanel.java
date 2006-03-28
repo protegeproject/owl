@@ -12,6 +12,7 @@ import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
 import edu.stanford.smi.protegex.owl.ui.actions.ResourceActionManager;
 import edu.stanford.smi.protegex.owl.ui.cls.Hierarchy;
 import edu.stanford.smi.protegex.owl.ui.existential.ExistentialTreeNode;
+import edu.stanford.smi.protegex.owl.ui.subsumption.TooltippedSelectableTree;
 
 import javax.swing.*;
 import javax.swing.tree.TreeNode;
@@ -45,7 +46,7 @@ public class ExplorerTreePanel extends SelectableContainer implements Hierarchy 
 
     private RDFSClass root;
 
-    private SelectableTree tree;
+    private TooltippedSelectableTree tree;
 
     private String title;
 
@@ -92,10 +93,10 @@ public class ExplorerTreePanel extends SelectableContainer implements Hierarchy 
     }
 
 
-    private SelectableTree createTree() {
+    private TooltippedSelectableTree createTree() {
 
         ExplorerTreeRoot root = new ExplorerTreeRoot(this.root, filter);
-        SelectableTree tree = createSelectableTree(viewAction, root);
+        TooltippedSelectableTree tree = createSelectableTree(viewAction, root);
         tree.setSelectionRow(0);
         tree.setAutoscrolls(true);
         setSelectable(tree);
@@ -149,8 +150,8 @@ public class ExplorerTreePanel extends SelectableContainer implements Hierarchy 
     }
 
 
-    protected SelectableTree createSelectableTree(Action viewAction, LazyTreeRoot root) {
-        SelectableTree tree = new SelectableTree(viewAction, root);
+    protected TooltippedSelectableTree createSelectableTree(Action viewAction, LazyTreeRoot root) {
+        TooltippedSelectableTree tree = new TooltippedSelectableTree(viewAction, root);
         tree.setCellRenderer(FrameRenderer.createInstance());
         return tree;
     }
@@ -306,10 +307,10 @@ public class ExplorerTreePanel extends SelectableContainer implements Hierarchy 
 
     public void setDisplayParent(RDFSClass cls) {
         // AbstractTreeWidget.setDisplayParent(getTree(), cls);
-        SelectableTree tree = createTree();
-        Component oldTree = mainPanel.getComponent(0);
+        Component oldTree = tree;
         mainPanel.removeAll();
         ComponentUtilities.dispose(oldTree);
+        tree = createTree();
         mainPanel.add(BorderLayout.CENTER, new JScrollPane(tree));
     }
 

@@ -1,5 +1,7 @@
 package edu.stanford.smi.protegex.owl.ui.widget;
 
+import edu.stanford.smi.protegex.owl.model.RDFProperty;
+import edu.stanford.smi.protegex.owl.model.RDFResource;
 import edu.stanford.smi.protegex.owl.model.RDFSClass;
 
 /**
@@ -19,4 +21,14 @@ public interface OWLToolTipGenerator {
      * @return the text or null if there is no tool tip available for aClass
      */
     String getToolTipText(RDFSClass aClass);
+
+    /**
+     * Gets a tool tip text for a given RDFProperty.
+     *
+     * @param prop the RDFProperty to get the tool tip for
+     * @return the text or null if there is no tool tip available for prop
+     */
+    String getToolTipText(RDFProperty prop);
+
+    String getToolTipText(RDFResource res);
 }

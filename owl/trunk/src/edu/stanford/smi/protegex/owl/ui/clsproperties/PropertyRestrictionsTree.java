@@ -14,6 +14,7 @@ import edu.stanford.smi.protegex.owl.ui.code.OWLSymbolPanel;
 import edu.stanford.smi.protegex.owl.ui.code.OWLTextField;
 import edu.stanford.smi.protegex.owl.ui.code.SymbolEditorHandler;
 import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
+import edu.stanford.smi.protegex.owl.ui.owltable.OWLTable;
 import edu.stanford.smi.protegex.owl.ui.profiles.OWLProfiles;
 import edu.stanford.smi.protegex.owl.ui.profiles.ProfilesManager;
 import edu.stanford.smi.protegex.owl.ui.restrictions.RestrictionEditorPanel;
@@ -68,7 +69,7 @@ public class PropertyRestrictionsTree extends SelectableTree implements Disposab
     };
 
     private AllowableAction createRestrictionAction = new AllowableAction("Create restriction...",
-            OWLIcons.getCreateIcon(OWLIcons.OWL_RESTRICTION), this) {
+                                                                          OWLIcons.getCreateIcon(OWLIcons.OWL_RESTRICTION), this) {
 
         public void actionPerformed(ActionEvent e) {
             if (!isMixedClass() && (cls.isEditable() || cls.getDefinition() == null)) {
@@ -84,7 +85,7 @@ public class PropertyRestrictionsTree extends SelectableTree implements Disposab
 
 
     private Action deleteRestrictionAction = new AllowableAction("Delete restriction",
-            OWLIcons.getDeleteIcon(OWLIcons.OWL_RESTRICTION), this) {
+                                                                 OWLIcons.getDeleteIcon(OWLIcons.OWL_RESTRICTION), this) {
 
         public void actionPerformed(ActionEvent e) {
             Instance sel = getSelectedInstance();
@@ -107,7 +108,7 @@ public class PropertyRestrictionsTree extends SelectableTree implements Disposab
             if (sel instanceof OWLRestriction) {
                 if (sel.isEditable() && cls.equals(getHostCls((OWLRestriction) sel))) {
                     setAllowed(!isMixedClass() &&
-                            (cls.isEditable() || cls.getDefinition() == null));
+                               (cls.isEditable() || cls.getDefinition() == null));
                     return;
                 }
             }
@@ -149,6 +150,10 @@ public class PropertyRestrictionsTree extends SelectableTree implements Disposab
         setShowsRootHandles(true);
         model = new DefaultTreeModel(rootNode);
         setModel(model);
+
+        final int oldDelay = ToolTipManager.sharedInstance().getDismissDelay();
+        setToolTipText(""); // Dummy to initialize the mechanism
+
         addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
                 if (e.getClickCount() == 2) {
@@ -158,13 +163,20 @@ public class PropertyRestrictionsTree extends SelectableTree implements Disposab
                     }
                 }
             }
+
+            public void mouseExited(MouseEvent e) {
+                ToolTipManager.sharedInstance().setDismissDelay(oldDelay);
+            }
         });
+
         addChildNodes();
+
         addSelectionListener(new SelectionListener() {
             public void selectionChanged(SelectionEvent event) {
                 updateEditable();
             }
         });
+
         MyTreeCellEditor cellEditor = new MyTreeCellEditor();
         setCellEditor(cellEditor);
         cellEditor.addCellEditorListener(new CellEditorListener() {
@@ -182,15 +194,14 @@ public class PropertyRestrictionsTree extends SelectableTree implements Disposab
                 newNode = null;
             }
         });
+
         symbolPanel = new OWLSymbolPanel(owlModel, true, true);
         owlTextField = new OWLTextField(owlModel, symbolPanel) {
-
 
             protected void checkExpression(String text) throws Throwable {
                 RestrictionTreeNode node = (RestrictionTreeNode) getSelectedTreeNode();
                 node.checkExpression(text);
             }
-
 
             public Dimension getMinimumSize() {
                 Dimension dim = super.getMinimumSize();
@@ -199,11 +210,9 @@ public class PropertyRestrictionsTree extends SelectableTree implements Disposab
                 return new Dimension(width, dim.height);
             }
 
-
             public Dimension getPreferredSize() {
                 return getMinimumSize();
             }
-
 
             protected void stopEditing() {
                 PropertyRestrictionsTree.this.stopEditing();
@@ -211,6 +220,25 @@ public class PropertyRestrictionsTree extends SelectableTree implements Disposab
         };
     }
 
+    public String getToolTipText(MouseEvent event) {
+        int row = getRowForLocation(event.getX(), event.getY());
+        if (row >= 0) {
+            TreePath path = getPathForRow(row);
+            if (path != null) {
+                Object last = path.getLastPathComponent();
+                RDFResource res = null;
+                if (last instanceof DefaultMutableTreeNode) {
+                    DefaultMutableTreeNode node = (DefaultMutableTreeNode) path.getLastPathComponent();
+                    res = (RDFResource) node.getUserObject();
+                }
+                if (res != null) {
+                    ToolTipManager.sharedInstance().setDismissDelay(OWLTable.INFINITE_TIME);
+                    return OWLUI.getOWLToolTipText(res);
+                }
+            }
+        }
+        return null;
+    }
 
     private void addChildNodes() {
 
@@ -278,7 +306,7 @@ public class PropertyRestrictionsTree extends SelectableTree implements Disposab
             for (int i = 0; i < instances.length; i++) {
                 final RDFResource resource = instances[i];
                 menu.add(new AbstractAction("Navigate to " + resource.getBrowserText(),
-                        ProtegeUI.getIcon(resource)) {
+                                            ProtegeUI.getIcon(resource)) {
                     public void actionPerformed(ActionEvent e) {
                         navigateTo(resource);
                     }
@@ -360,7 +388,7 @@ public class PropertyRestrictionsTree extends SelectableTree implements Disposab
             newNode = new NewRestrictionTreeNode(metaCls, this);
             int index = -1;
             while (index + 1 < propertyTreeNode.getChildCount() &&
-                    !propertyTreeNode.getRestrictionTreeNode(index + 1).isInherited()) {
+                   !propertyTreeNode.getRestrictionTreeNode(index + 1).isInherited()) {
                 index++;
             }
             index++;
@@ -403,7 +431,7 @@ public class PropertyRestrictionsTree extends SelectableTree implements Disposab
         try {
             owlModel.beginTransaction("Create restriction at " + cls.getBrowserText());
             OWLRestriction newRestriction = RestrictionEditorPanel.showCreateDialog(this,
-                    cls, restrictionMetaCls, property);
+                                                                                    cls, restrictionMetaCls, property);
             if (newRestriction != null) {
                 final String browserText = newRestriction.getBrowserText();
                 Slot directSuperclassesSlot = ((KnowledgeBase) cls.getOWLModel()).getSlot(Model.Slot.DIRECT_SUPERCLASSES);
@@ -504,8 +532,8 @@ public class PropertyRestrictionsTree extends SelectableTree implements Disposab
         for (Iterator it = c.getSuperclasses(false).iterator(); it.hasNext();) {
             Cls superCls = (Cls) it.next();
             if (superCls instanceof RDFSNamedClass &&
-                    !reachedClses.contains(superCls) &&
-                    !owlThing.equals(superCls)) {
+                !reachedClses.contains(superCls) &&
+                !owlThing.equals(superCls)) {
                 superClses.add(superCls);
             }
         }
@@ -543,7 +571,7 @@ public class PropertyRestrictionsTree extends SelectableTree implements Disposab
             final RDFSClass definingClass = treeNode.getInheritedFromClass();
             if (treeNode.isInherited()) {
                 menu.add(new AbstractAction("Navigate to defining class (" +
-                        definingClass.getBrowserText() + ")", ProtegeUI.getIcon(definingClass)) {
+                                            definingClass.getBrowserText() + ")", ProtegeUI.getIcon(definingClass)) {
                     public void actionPerformed(ActionEvent e) {
                         navigateTo(definingClass);
                     }
@@ -864,9 +892,9 @@ public class PropertyRestrictionsTree extends SelectableTree implements Disposab
         String metaClsName = metaCls.getName();
         OWLModel owlModel = (OWLModel) metaCls.getKnowledgeBase();
         if (ProfilesManager.isFeatureSupported(owlModel, OWLProfiles.Qualified_Cardinality_Restrictions) ||
-                OWLNames.Cls.ALL_VALUES_FROM_RESTRICTION.equals(metaClsName) ||
-                OWLNames.Cls.SOME_VALUES_FROM_RESTRICTION.equals(metaClsName) ||
-                OWLNames.Cls.HAS_VALUE_RESTRICTION.equals(metaClsName)) {
+            OWLNames.Cls.ALL_VALUES_FROM_RESTRICTION.equals(metaClsName) ||
+            OWLNames.Cls.SOME_VALUES_FROM_RESTRICTION.equals(metaClsName) ||
+            OWLNames.Cls.HAS_VALUE_RESTRICTION.equals(metaClsName)) {
             showSymbolPanel(node.getParentNode().getRDFProperty(), metaCls, false);
         }
     }
@@ -874,7 +902,7 @@ public class PropertyRestrictionsTree extends SelectableTree implements Disposab
 
     private void updateCreateRestrictionActionAllowed() {
         boolean allowed = !isMixedClass() &&
-                (cls.isEditable() || cls.getDefinition() == null);
+                          (cls.isEditable() || cls.getDefinition() == null);
         createRestrictionAction.setAllowed(allowed);
     }
 
