@@ -20,7 +20,6 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Iterator;
 
 /**
  * User: matthewhorridge<br>
@@ -80,19 +79,23 @@ public class OntologyURIWidget extends AbstractPropertyWidget {
 
     public void setInstance(Instance instance) {
         super.setInstance(instance);
-        nameField.setEditable(isTopTripleStoreActive());
+        nameField.setEditable(isCurrentTripleStoreTop());
         updateOntologyName();
+    }
 
+    private boolean isCurrentTripleStoreTop() {
+        TripleStoreModel tsm = getOWLModel().getTripleStoreModel();
+        TripleStore ontHome = tsm.getHomeTripleStore(getEditedResource());
+        return tsm.getTopTripleStore().equals(ontHome);
     }
 
     private boolean isTopTripleStoreActive() {
-        TripleStoreModel tsm =getOWLModel().getTripleStoreModel();
+        TripleStoreModel tsm = getOWLModel().getTripleStoreModel();
         return tsm.getActiveTripleStore().equals(tsm.getTopTripleStore());
     }
 
-
     private boolean validateName() {
-        if(nameField.getText().length() == 0) {
+        if (nameField.getText().length() == 0) {
             return false;
         }
         try {
@@ -108,38 +111,18 @@ public class OntologyURIWidget extends AbstractPropertyWidget {
 
 
     private void updateOntologyName() {
-        //OWLOntology owlOntology = (OWLOntology) getInstance();
-        // TODO: Shouldn't have to get the default ontology here
-        OWLOntology ontology = getOWLModel().getDefaultOWLOntology();
-        for(Iterator it = getOWLModel().getOWLOntologies().iterator(); it.hasNext(); ) {
-            OWLOntology owlOntology = (OWLOntology) it.next();
-            TripleStoreModel tsm = getOWLModel().getTripleStoreModel();
-            TripleStore activeTS = tsm.getActiveTripleStore();
-            if(activeTS != null) {
-                if(activeTS.contains(owlOntology, getOWLModel().getRDFTypeProperty(), getOWLModel().getOWLOntologyClass())) {
-                    ontology = owlOntology;
-                    break;
-                }
-            }
-            else {
-                throw new IllegalStateException("The active triple store is null!");
-            }
+        OWLOntology ontology = (OWLOntology) getEditedResource();
+        if (ontology != null) {
+            nameField.setText(ontology.getURI());
         }
-
-        if(ontology != null) {
-            String uri = ontology.getURI();
-            nameField.setText(uri);
-        }
-        //String uri = TripleStoreUtil.getFirstOntology(getOWLModel(), getOWLModel().getTripleStoreModel().getActiveTripleStore()).getURI();
-        //nameField.setText(uri);
     }
 
 
     private void setDefaultNamespace() {
         if (validateName()) {
-            if(isTopTripleStoreActive()) {
+            if (isTopTripleStoreActive()) {
                 String nameSpace = nameField.getText();
-                if(nameSpace.endsWith("/") == false) {
+                if (nameSpace.endsWith("/") == false) {
                     nameSpace += "#";
                 }
                 getOWLModel().getNamespaceManager().setDefaultNamespace(nameSpace);
@@ -154,9 +137,9 @@ public class OntologyURIWidget extends AbstractPropertyWidget {
 
 
     private static final String TOOL_TIP_TEXT = "<html><body>This specifies the name of the ontology " +
-            "(also known as the logical URI).<br>" +
-            "The name is a URI that other ontologies will use to import<br>" +
-            "this ontology.  It is recommended that it resembles a http URL that points<br>" +
-            "to the location where the ontology can be downloaded from.</html></body>";
+                                                "(also known as the logical URI).<br>" +
+                                                "The name is a URI that other ontologies will use to import<br>" +
+                                                "this ontology.  It is recommended that it resembles a http URL that points<br>" +
+                                                "to the location where the ontology can be downloaded from.</html></body>";
 }
 

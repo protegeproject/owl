@@ -9,7 +9,6 @@ import edu.stanford.smi.protegex.owl.model.OWLOntology;
 import edu.stanford.smi.protegex.owl.ui.OWLLabeledComponent;
 import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
 import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
-import edu.stanford.smi.protegex.owl.ui.metadatatab.imports.ImportsPanel;
 import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
 
 import javax.swing.*;
@@ -71,14 +70,6 @@ public class PrefixesPanel extends JPanel implements Disposable {
 
     private JTextField defaultNamespaceField;
 
-    private ImportsPanel importsPanel;
-
-//    private Action makeDefaultAction = new AbstractAction("Make default namespace", Icons.getUpIcon()) {
-//        public void actionPerformed(ActionEvent e) {
-//            makeDefault();
-//        }
-//    };
-
     private NamespaceManagerAdapter namespaceManagerListener = new NamespaceManagerAdapter() {
         public void defaultNamespaceChanged(String oldValue, String newValue) {
             defaultNamespaceField.setText(newValue);
@@ -132,7 +123,6 @@ public class PrefixesPanel extends JPanel implements Disposable {
         table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             public void valueChanged(ListSelectionEvent e) {
                 enableActions();
-                synchronizeImportsPanel();
             }
         });
         tableModel.getNamespaceManager().addNamespaceManagerListener(namespaceManagerListener);
@@ -205,7 +195,7 @@ public class PrefixesPanel extends JPanel implements Disposable {
     private void enableActions() {
         int selIndex = table.getSelectedRow();
         final boolean enabled = selIndex >= 0 &&
-                tableModel.getNamespaceManager().isModifiable(tableModel.getPrefix(selIndex));
+                                tableModel.getNamespaceManager().isModifiable(tableModel.getPrefix(selIndex));
         //makeDefaultAction.setEnabled(enabled);
         removeAction.setEnabled(enabled);
     }
@@ -256,9 +246,9 @@ public class PrefixesPanel extends JPanel implements Disposable {
         OWLModel owlModel = ontology.getOWLModel();
         if (owlModel.getRDFResource(prefix + ":") instanceof OWLOntology) {
             ProtegeUI.getModalDialogFactory().showErrorMessageDialog(owlModel,
-                    "The prefix \"" + prefix + "\" is used by an owl:Ontology element\n" +
-                            "of an imported ontology.  Please remove the corresponding\n" +
-                            "import first, and then remove the prefix.");
+                                                                     "The prefix \"" + prefix + "\" is used by an owl:Ontology element\n" +
+                                                                     "of an imported ontology.  Please remove the corresponding\n" +
+                                                                     "import first, and then remove the prefix.");
         }
         else {
             NamespaceManager nsm = tableModel.getNamespaceManager();
@@ -276,11 +266,6 @@ public class PrefixesPanel extends JPanel implements Disposable {
     }
 
 
-    public void setImportsPanel(ImportsPanel importsPanel) {
-        this.importsPanel = importsPanel;
-    }
-
-
     public void setSelectedURI(String uri) {
         for (int i = 0; i < tableModel.getRowCount(); i++) {
             String namespace = tableModel.getNamespace(i);
@@ -293,21 +278,10 @@ public class PrefixesPanel extends JPanel implements Disposable {
     }
 
 
-    private void synchronizeImportsPanel() {
-        if (importsPanel != null) {
-            int sel = table.getSelectedRow();
-            if (sel >= 0 && sel < tableModel.getRowCount()) {
-                String namespace = tableModel.getNamespace(sel);
-                importsPanel.setSelectedNamespace(namespace);
-            }
-        }
+    public void setEnabled(boolean enabled) {
+        super.setEnabled(enabled);
+        addAction.setEnabled(enabled);
+        removeAction.setEnabled(enabled);
+        table.setEnabled(enabled);
     }
-
-
-	public void setEnabled(boolean enabled) {
-		super.setEnabled(enabled);
-		addAction.setEnabled(enabled);
-		removeAction.setEnabled(enabled);
-		table.setEnabled(enabled);
-	}
 }
