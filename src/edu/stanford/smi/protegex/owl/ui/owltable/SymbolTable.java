@@ -18,7 +18,6 @@ import edu.stanford.smi.protegex.owl.ui.code.SymbolEditorComponent;
 import edu.stanford.smi.protegex.owl.ui.code.SymbolErrorDisplay;
 import edu.stanford.smi.protegex.owl.ui.code.SymbolPanel;
 import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
-import edu.stanford.smi.protegex.owl.ui.menu.OWLMenuProjectPlugin;
 import edu.stanford.smi.protegex.owl.ui.results.ResultsPanelManager;
 
 import javax.swing.*;
@@ -48,7 +47,7 @@ public abstract class SymbolTable extends SelectableTable implements TripleSelec
 
     protected OWLTableAction editAnnotationsAction =
             new AbstractOWLTableAction("Edit Annotation Properties...",
-                    OWLIcons.getImageIcon("Annotation")) {
+                                       OWLIcons.getImageIcon("Annotation")) {
                 public void actionPerformed(ActionEvent e) {
                     editAnnotations();
                 }
@@ -66,7 +65,7 @@ public abstract class SymbolTable extends SelectableTable implements TripleSelec
 
     protected OWLTableAction editMultiLineAction =
             new AbstractOWLTableAction("Edit expression in multi-line editor...",
-                    Icons.getBlankIcon()) {
+                                       Icons.getBlankIcon()) {
                 public void actionPerformed(ActionEvent e) {
                     editMultiLine();
                 }
@@ -156,7 +155,7 @@ public abstract class SymbolTable extends SelectableTable implements TripleSelec
             for (int i = 0; i < resources.length; i++) {
                 final RDFResource targetResource = resources[i];
                 menu.add(new AbstractAction("Navigate to " + targetResource.getBrowserText(),
-                        ProtegeUI.getIcon(targetResource)) {
+                                            ProtegeUI.getIcon(targetResource)) {
                     public void actionPerformed(ActionEvent e) {
                         navigateTo(targetResource);
                     }
@@ -166,9 +165,9 @@ public abstract class SymbolTable extends SelectableTable implements TripleSelec
     }
 
 
-	public SymbolEditorComponent getSymbolEditorComponent() {
-		return symbolEditorComponent;
-	}
+    public SymbolEditorComponent getSymbolEditorComponent() {
+        return symbolEditorComponent;
+    }
 
 
     protected abstract Collection getNavigationMenuItems(RDFResource RDFResource);
@@ -369,14 +368,15 @@ public abstract class SymbolTable extends SelectableTable implements TripleSelec
     /**
      * Overloaded to treat a nasty Swing bug (returns sometimes values outside
      * of range etc).
-     * @return the (valid) indices of the selected values 
+     *
+     * @return the (valid) indices of the selected values
      */
     public int[] getSelectedRows() {
         int[] sels = super.getSelectedRows();
         List oks = new ArrayList();
         for (int i = 0; i < sels.length; i++) {
             int sel = sels[i];
-            if(sel >= 0 && sel < tableModel.getRowCount()) {
+            if (sel >= 0 && sel < tableModel.getRowCount()) {
                 oks.add(new Integer(sel));
             }
         }
@@ -384,7 +384,7 @@ public abstract class SymbolTable extends SelectableTable implements TripleSelec
         Iterator it = oks.iterator();
         for (int i = 0; it.hasNext(); i++) {
             Integer integer = (Integer) it.next();
-            result[i]  = integer.intValue();
+            result[i] = integer.intValue();
         }
         return result;
     }
@@ -445,17 +445,17 @@ public abstract class SymbolTable extends SelectableTable implements TripleSelec
 
     public String getToolTipText(MouseEvent event) {
         ToolTipManager.sharedInstance().setDismissDelay(INFINITE_TIME);
-        if (OWLMenuProjectPlugin.isProseActivated()) {
-            int rowCount = getModel().getRowCount();
-            for (int i = 0; i < rowCount; i++) {
-                Rectangle r = getCellRect(i, 0, false);
-                r.setSize(getWidth(), r.height);
-                if (r.contains(event.getPoint())) {
-                    RDFResource RDFResource = tableModel.getRDFResource(i);
-                    return getToolTipText(RDFResource);
-                }
+//        if (OWLMenuProjectPlugin.isProseActivated()) {
+        int rowCount = getModel().getRowCount();
+        for (int i = 0; i < rowCount; i++) {
+            Rectangle r = getCellRect(i, 0, false);
+            r.setSize(getWidth(), r.height);
+            if (r.contains(event.getPoint())) {
+                RDFResource RDFResource = tableModel.getRDFResource(i);
+                return getToolTipText(RDFResource);
             }
         }
+//        }
         return null;
     }
 
@@ -599,8 +599,8 @@ public abstract class SymbolTable extends SelectableTable implements TripleSelec
                     (columnModel.getSelectionModel().getAnchorSelectionIndex() == column);
             boolean hasFocus = (rowIsAnchor && colIsAnchor) && isFocusOwner();
             return renderer.getTableCellRendererComponent(this, RDFResource,
-                    isSelected, hasFocus,
-                    row, column);
+                                                          isSelected, hasFocus,
+                                                          row, column);
         }
         else {
             return super.prepareRenderer(renderer, row, column);

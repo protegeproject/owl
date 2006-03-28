@@ -1,7 +1,6 @@
 package edu.stanford.smi.protegex.owl.ui.individuals;
 
 import edu.stanford.smi.protege.util.DoubleClickActionAdapter;
-import edu.stanford.smi.protege.util.SelectableList;
 import edu.stanford.smi.protege.util.SimpleListModel;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
@@ -11,6 +10,7 @@ import edu.stanford.smi.protegex.owl.model.triplestore.Triple;
 import edu.stanford.smi.protegex.owl.model.triplestore.impl.DefaultTriple;
 import edu.stanford.smi.protegex.owl.ui.ResourceRenderer;
 import edu.stanford.smi.protegex.owl.ui.TripleSelectable;
+import edu.stanford.smi.protegex.owl.ui.components.TooltippedSelectableList;
 import edu.stanford.smi.protegex.owl.ui.results.HostResourceDisplay;
 
 import javax.swing.*;
@@ -21,12 +21,13 @@ import java.util.List;
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
  */
-public class InstancesList extends SelectableList implements TripleSelectable, HostResourceDisplay {
+public class InstancesList extends TooltippedSelectableList
+        implements TripleSelectable, HostResourceDisplay {
 
     private List classes = Collections.EMPTY_LIST;
 
-
     public InstancesList(Action action) {
+        super();
         setModel(new SimpleListModel());
         if (action != null) {
             addMouseListener(new DoubleClickActionAdapter(action));

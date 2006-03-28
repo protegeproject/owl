@@ -44,8 +44,8 @@ public abstract class OWLTable extends SymbolTable {
         public boolean isEnabledFor(RDFSClass cls, int rowIndex) {
             OWLTableModel tableModel = getOWLTableModel();
             return tableModel.isEditable() &&
-                    tableModel.getClass(rowIndex) != null &&
-                    tableModel.isDeleteEnabledFor(tableModel.getClass(rowIndex));
+                   tableModel.getClass(rowIndex) != null &&
+                   tableModel.isDeleteEnabledFor(tableModel.getClass(rowIndex));
         }
     };
 
@@ -78,7 +78,7 @@ public abstract class OWLTable extends SymbolTable {
 
     private OWLTableAction viewClsAction =
             new AbstractOWLTableAction("Edit/View named class...",
-                    OWLIcons.getViewIcon()) {
+                                       OWLIcons.getViewIcon()) {
                 public void actionPerformed(ActionEvent e) {
                     viewSelectedCls();
                 }
@@ -205,11 +205,9 @@ public abstract class OWLTable extends SymbolTable {
 
 
     protected String getToolTipText(RDFResource resource) {
-        if (resource instanceof RDFSClass) {
-            String str = OWLUI.getOWLToolTipText((RDFSClass) resource);
-            if (str != null && str.length() > 0) {
-                return str;
-            }
+        String str = OWLUI.getOWLToolTipText(resource);
+        if (str != null && str.length() > 0) {
+            return str;
         }
         return null;
     }

@@ -18,7 +18,6 @@ import edu.stanford.smi.protegex.owl.ui.cls.ClassTree;
 import edu.stanford.smi.protegex.owl.ui.cls.Hierarchy;
 import edu.stanford.smi.protegex.owl.ui.cls.OWLClassesTab;
 import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
-import edu.stanford.smi.protegex.owl.ui.menu.OWLMenuProjectPlugin;
 import edu.stanford.smi.protegex.owl.ui.widget.ModalProgressBarManager;
 import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
 
@@ -202,7 +201,7 @@ public class InferredSubsumptionTreePanel extends SubsumptionTreePanel {
                 RDFSClass cls = (RDFSClass) node.getCls();
                 ChangedClassesPanel ccp = ChangedClassesPanel.get(getOWLModel());
                 str = ccp.getChangeText(cls);
-                if (str == null && OWLMenuProjectPlugin.isProseActivated()) {
+                if (str == null /*&& OWLMenuProjectPlugin.isProseActivated()*/) {
                     str = OWLUI.getOWLToolTipText(cls);
                 }
             }

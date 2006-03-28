@@ -34,7 +34,10 @@ import edu.stanford.smi.protegex.owl.ui.navigation.NavigationHistoryManager;
 import edu.stanford.smi.protegex.owl.ui.navigation.TabNavigationHistorySelectable;
 import edu.stanford.smi.protegex.owl.ui.resourcedisplay.ResourceDisplay;
 import edu.stanford.smi.protegex.owl.ui.subsumption.ChangedClassesPanel;
+import edu.stanford.smi.protegex.owl.ui.tooltips.ClassDescriptionToolTipGenerator;
+import edu.stanford.smi.protegex.owl.ui.tooltips.HomeOntologyToolTipGenerator;
 import edu.stanford.smi.protegex.owl.ui.triplestore.TripleStoreSelectionAction;
+import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
 import edu.stanford.smi.protegex.owl.ui.widget.OWLWidgetMapper;
 
 import javax.swing.*;
@@ -54,7 +57,6 @@ public class OWLMenuProjectPlugin extends ProjectPluginAdapter {
     private final static String CHANGED_WIDGETS = "ChangedWidgets";
 
     private static JCheckBoxMenuItem proseBox;
-
 
     private OWLModelAction recentAction = null;
 
@@ -98,20 +100,28 @@ public class OWLMenuProjectPlugin extends ProjectPluginAdapter {
             }
         });
         helpMenu.add(syntaxHelpAction);
-        proseBox = new JCheckBoxMenuItem("Display prose as tool tip of OWL expressions", true); // OWLIcons.getImageIcon("Prose"),
+
+        // prose tooltips selector
+        proseBox = new JCheckBoxMenuItem("Display prose as tool tip of OWL expressions", true);
         helpMenu.add(proseBox);
-        proseBox.setSelected(Boolean.TRUE.equals(owlModel.getOWLProject().getSettingsMap().getBoolean(PROSE_PROPERTY)));
         proseBox.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 owlModel.getOWLProject().getSettingsMap().setBoolean(PROSE_PROPERTY, proseBox.isSelected());
+                if (proseBox.isSelected()) {
+                    OWLUI.setOWLToolTipGenerator(new ClassDescriptionToolTipGenerator());
+                }
+                else {
+                    OWLUI.setOWLToolTipGenerator(new HomeOntologyToolTipGenerator());
+                }
             }
         });
-//        if (owlModel instanceof JenaOWLModel) {
-//            JMenu projectMenu = menuBar.getMenu(2);
-//            tripleStoreSelectionAction = new TripleStoreSelectionAction(owlModel);
-//            projectMenu.addSeparator();
-//            projectMenu.add(tripleStoreSelectionAction);
-//        }
+        proseBox.setSelected(Boolean.TRUE.equals(owlModel.getOWLProject().getSettingsMap().getBoolean(PROSE_PROPERTY)));
+        if (proseBox.isSelected()) {
+            OWLUI.setOWLToolTipGenerator(new ClassDescriptionToolTipGenerator());
+        }
+        else {
+            OWLUI.setOWLToolTipGenerator(new HomeOntologyToolTipGenerator());
+        }
 
         // add OWLMenu to mainMenuBar
         menuBar.add(owlMenu, 3);
@@ -157,13 +167,6 @@ public class OWLMenuProjectPlugin extends ProjectPluginAdapter {
         manager.add(owlModel.getOWLThingClass());
         toolBar.add(manager.getBackAction());
         toolBar.add(manager.getForwardAction());
-
-        if (tripleStoreSelectionAction != null) {
-            toolBar.addSeparator();
-            JButton button = toolBar.add(tripleStoreSelectionAction);
-            tripleStoreSelectionAction.activateButton(button);
-            toolBar.add(tripleStoreSelectionAction.getLabelPanel());
-        }
 
         // Remove separators as first entries
         for (int i = 0; i < menuBar.getMenuCount(); i++) {
@@ -307,7 +310,6 @@ public class OWLMenuProjectPlugin extends ProjectPluginAdapter {
         KnowledgeBase kb = view.getProject().getKnowledgeBase();
         if (kb instanceof OWLModel) {
             OWLModel owlModel = (OWLModel) kb;
-
 
             ProtegeUI.register(view);
 
