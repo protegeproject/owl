@@ -106,12 +106,12 @@ public class OWLMenuProjectPlugin extends ProjectPluginAdapter {
                 owlModel.getOWLProject().getSettingsMap().setBoolean(PROSE_PROPERTY, proseBox.isSelected());
             }
         });
-        if (owlModel instanceof JenaOWLModel) {
-            JMenu projectMenu = menuBar.getMenu(2);
-            tripleStoreSelectionAction = new TripleStoreSelectionAction(owlModel);
-            projectMenu.addSeparator();
-            projectMenu.add(tripleStoreSelectionAction);
-        }
+//        if (owlModel instanceof JenaOWLModel) {
+//            JMenu projectMenu = menuBar.getMenu(2);
+//            tripleStoreSelectionAction = new TripleStoreSelectionAction(owlModel);
+//            projectMenu.addSeparator();
+//            projectMenu.add(tripleStoreSelectionAction);
+//        }
 
         // add OWLMenu to mainMenuBar
         menuBar.add(owlMenu, 3);
@@ -309,7 +309,6 @@ public class OWLMenuProjectPlugin extends ProjectPluginAdapter {
             OWLModel owlModel = (OWLModel) kb;
 
 
-
             ProtegeUI.register(view);
 
             if (owlModel instanceof JenaOWLModel) {
@@ -324,9 +323,9 @@ public class OWLMenuProjectPlugin extends ProjectPluginAdapter {
             int buildNumber = Integer.parseInt(Text.getBuildNumber());
             if (buildNumber < OWLText.getRequiresProtegeBuild()) {
                 ProtegeUI.getModalDialogFactory().showMessageDialog(owlModel,
-                        "Warning: This version of the OWL Plugin requires Protege 3.2 beta build " +
-                                OWLText.getRequiresProtegeBuild() + ",\nbut you currently have Protege " +
-                                Text.getVersion() + ", Build " + buildNumber + ". Please do a clean reinstall.");
+                                                                    "Warning: This version of the OWL Plugin requires Protege 3.2 beta build " +
+                                                                    OWLText.getRequiresProtegeBuild() + ",\nbut you currently have Protege " +
+                                                                    Text.getVersion() + ", Build " + buildNumber + ". Please do a clean reinstall.");
             }
         }
     }
@@ -430,8 +429,8 @@ public class OWLMenuProjectPlugin extends ProjectPluginAdapter {
                 Reference reference = (Reference) it.next();
                 Frame frame = reference.getFrame();
                 if (reference.getSlot().equals(rangeSlot) &&
-                        !systemFrames.contains(frame) &&
-                        !frame.getName().startsWith("protege:")) {
+                    !systemFrames.contains(frame) &&
+                    !frame.getName().startsWith("protege:")) {
                     return true;
                 }
             }
@@ -442,16 +441,16 @@ public class OWLMenuProjectPlugin extends ProjectPluginAdapter {
 
     public static void makeHiddenClsesWithSubclassesVisible(OWLModel owlModel) {
         if (owlModel.getOWLNamedClassClass().getSubclassCount() > 0 ||
-                owlModel.getRDFSNamedClassClass().getSubclassCount() > 2) {
+            owlModel.getRDFSNamedClassClass().getSubclassCount() > 2) {
             owlModel.getRDFSNamedClassClass().setVisible(true);
             owlModel.getOWLNamedClassClass().setVisible(true);
         }
         Set systemFrames = new HashSet(owlModel.getOWLSystemResources());
         if (owlModel.getOWLObjectPropertyClass().getSubclassCount() > 0 ||
-                owlModel.getOWLDatatypePropertyClass().getSubclassCount() > 0 ||
-                isUsedInRange(owlModel.getOWLObjectPropertyClass(), systemFrames) ||
-                isUsedInRange(owlModel.getOWLDatatypePropertyClass(), systemFrames) ||
-                isUsedInRange(owlModel.getRDFPropertyClass(), systemFrames)) {
+            owlModel.getOWLDatatypePropertyClass().getSubclassCount() > 0 ||
+            isUsedInRange(owlModel.getOWLObjectPropertyClass(), systemFrames) ||
+            isUsedInRange(owlModel.getOWLDatatypePropertyClass(), systemFrames) ||
+            isUsedInRange(owlModel.getRDFPropertyClass(), systemFrames)) {
             owlModel.getRDFPropertyClass().setVisible(true);
             owlModel.getOWLObjectPropertyClass().setVisible(true);
             owlModel.getOWLDatatypePropertyClass().setVisible(true);
@@ -476,7 +475,8 @@ public class OWLMenuProjectPlugin extends ProjectPluginAdapter {
      * from the file.
      * This call must be followed by <CODE>restoreWidgetsAfterSave()</CODE>
      * after save completed.
-     * @param owlModel  the OWLModel to adjust
+     *
+     * @param owlModel the OWLModel to adjust
      */
     public static void prepareWidgetsForSave(OWLModel owlModel) {
         Project p = owlModel.getProject();

@@ -4,6 +4,7 @@ import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.Instance;
 import edu.stanford.smi.protege.model.Project;
 import edu.stanford.smi.protege.model.Slot;
+import edu.stanford.smi.protege.resource.Colors;
 import edu.stanford.smi.protege.ui.HeaderComponent;
 import edu.stanford.smi.protege.ui.InstanceDisplay;
 import edu.stanford.smi.protege.util.ComponentFactory;
@@ -94,17 +95,17 @@ public class ResourceDisplay extends InstanceDisplay implements ResourcePanel {
 
     private TriplesComponent triplesComponent;
 
-	private Set actionRefreshProperties;
+    private Set actionRefreshProperties;
 
-	private PropertyValueListener propertyValueListener = new PropertyValueAdapter() {
-		public void propertyValueChanged(RDFResource resource,
-		                                 RDFProperty property,
-		                                 Collection oldValues) {
-			if(actionRefreshProperties.contains(property)) {
-				initInstanceDisplayActions(resource);
-			}
-		}
-	};
+    private PropertyValueListener propertyValueListener = new PropertyValueAdapter() {
+        public void propertyValueChanged(RDFResource resource,
+                                         RDFProperty property,
+                                         Collection oldValues) {
+            if (actionRefreshProperties.contains(property)) {
+                initInstanceDisplayActions(resource);
+            }
+        }
+    };
 
 
     public ResourceDisplay(Project project, boolean showHeader, boolean showHeaderLabel) {
@@ -119,12 +120,15 @@ public class ResourceDisplay extends InstanceDisplay implements ResourcePanel {
 
     public ResourceDisplay(Project project, int defaultType) {
         super(project);
-	    this.defaultType = defaultType;
-	    owlModel = (OWLModel) project.getKnowledgeBase();
-		actionRefreshProperties = new HashSet();
-	    if(defaultType == DEFAULT_TYPE_CLASS) {
-			actionRefreshProperties.add(owlModel.getRDFSSubClassOfProperty());
-		}
+        this.defaultType = defaultType;
+        owlModel = (OWLModel) project.getKnowledgeBase();
+
+        reworkHeaderComponent();
+
+        actionRefreshProperties = new HashSet();
+        if (defaultType == DEFAULT_TYPE_CLASS) {
+            actionRefreshProperties.add(owlModel.getRDFSSubClassOfProperty());
+        }
 
         centerComponent = (JComponent) getComponent(0);
         remove(centerComponent);
@@ -210,14 +214,15 @@ public class ResourceDisplay extends InstanceDisplay implements ResourcePanel {
     }
 
 
-    protected JComponent createHeaderComponent() {
-        instanceNameComponent = new InstanceNameComponent();
-        HeaderComponent hc = (HeaderComponent) super.createHeaderComponent();
-        Component comp = hc.getComponent();
-        Container cont = comp.getParent();
-        cont.remove(comp);
-        cont.add(BorderLayout.CENTER, instanceNameComponent);
-        return hc;
+    protected void reworkHeaderComponent() {
+        if (defaultType != ResourceDisplay.DEFAULT_TYPE_ONTOLOGY) {
+            instanceNameComponent = new InstanceNameComponent();
+            HeaderComponent hc = getHeaderComponent();
+            Component comp = hc.getComponent();
+            Container cont = comp.getParent();
+            cont.remove(comp);
+            cont.add(BorderLayout.CENTER, instanceNameComponent);
+        }
     }
 
 
@@ -267,7 +272,7 @@ public class ResourceDisplay extends InstanceDisplay implements ResourcePanel {
 
     public RDFResource getResource() {
         Instance instance = getCurrentInstance();
-        if(instance instanceof RDFResource) {
+        if (instance instanceof RDFResource) {
             return (RDFResource) instance;
         }
         else {
@@ -351,14 +356,18 @@ public class ResourceDisplay extends InstanceDisplay implements ResourcePanel {
 
     protected void loadHeader() {
         if (getCurrentInstance() == null) {
-            if (defaultType == ResourcePanel.DEFAULT_TYPE_CLASS) {
-                loadHeaderWithCls(null);
-            }
-            else if (defaultType == ResourcePanel.DEFAULT_TYPE_PROPERTY) {
-                loadHeaderWithSlot(null);
-            }
-            else {
-                loadHeaderWithSimpleInstance(null);
+            switch (defaultType) {
+                case ResourcePanel.DEFAULT_TYPE_CLASS:
+                    loadHeaderWithCls(null);
+                    break;
+                case ResourcePanel.DEFAULT_TYPE_PROPERTY:
+                    loadHeaderWithSlot(null);
+                    break;
+                case ResourcePanel.DEFAULT_TYPE_ONTOLOGY:
+                    loadHeaderWithOntology(null);
+                    break;
+                default:
+                    loadHeaderWithSimpleInstance(null);
             }
         }
         else {
@@ -372,8 +381,12 @@ public class ResourceDisplay extends InstanceDisplay implements ResourcePanel {
 
     protected void loadHeaderLabel(Instance instance) {
 
-        getInstanceNameComponent().setInstance(instance);
-        // super.loadHeaderLabel(instance);
+        if (instanceNameComponent != null) {
+            instanceNameComponent.setInstance(instance);
+        }
+        else {
+            super.loadHeaderLabel(instance);
+        }
 
         if (instance instanceof RDFResource) {
             RDFResource RDFResource = (RDFResource) instance;
@@ -395,11 +408,6 @@ public class ResourceDisplay extends InstanceDisplay implements ResourcePanel {
     }
 
 
-    protected void loadHeaderWithCls(Cls cls) {
-        super.loadHeaderWithCls(cls);
-    }
-
-
     protected void loadHeaderWithSimpleInstance(Instance instance) {
         super.loadHeaderWithSimpleInstance(instance);
         getHeaderComponent().setTitle("Individual Editor");
@@ -411,6 +419,14 @@ public class ResourceDisplay extends InstanceDisplay implements ResourcePanel {
         super.loadHeaderWithSlot(slot);
         getHeaderComponent().setTitle("Property Editor");
         getHeaderComponent().setComponentLabel("For Property:");
+    }
+
+
+    protected void loadHeaderWithOntology(OWLOntology owlOntology) {
+        super.loadHeaderWithSimpleInstance(owlOntology);
+        getHeaderComponent().setTitle("Ontology Editor");
+        getHeaderComponent().setComponentLabel("For Ontology:");
+        getHeaderComponent().setColor(Colors.getInstanceColor());
     }
 
 
@@ -504,14 +520,14 @@ public class ResourceDisplay extends InstanceDisplay implements ResourcePanel {
 
 
     public void setInstance(Instance instance) {
-        if(getCurrentInstance() instanceof RDFResource) {
-	        ((RDFResource) getCurrentInstance()).removePropertyValueListener(propertyValueListener);
-	    }
-	    if(instance instanceof RDFResource) {
-		    ((RDFResource) instance).addPropertyValueListener(propertyValueListener);
-	    }
+        if (getCurrentInstance() instanceof RDFResource) {
+            ((RDFResource) getCurrentInstance()).removePropertyValueListener(propertyValueListener);
+        }
+        if (instance instanceof RDFResource) {
+            ((RDFResource) instance).addPropertyValueListener(propertyValueListener);
+        }
 
-	    super.setInstance(instance);
+        super.setInstance(instance);
         if (triplesComponent != null) {
             if (instance instanceof RDFResource) {
                 triplesComponent.setSubject((RDFResource) instance);

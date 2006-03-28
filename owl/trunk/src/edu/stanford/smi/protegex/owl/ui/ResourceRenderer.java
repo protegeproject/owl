@@ -2,6 +2,7 @@ package edu.stanford.smi.protegex.owl.ui;
 
 import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.Frame;
+import edu.stanford.smi.protege.model.SimpleInstance;
 import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protege.resource.Colors;
 import edu.stanford.smi.protege.ui.FrameRenderer;
@@ -31,6 +32,8 @@ public class ResourceRenderer extends FrameRenderer {
 
     protected RDFSClass loadedClass;
 
+    protected SimpleInstance loadedInstance;
+
     public static final Color FOCUS_COLOR = new Color(128, 0, 255);
 
     private Slot directSuperclassesSlot;
@@ -47,7 +50,7 @@ public class ResourceRenderer extends FrameRenderer {
 
     private static final Color GREYED_LOGICAL_OPERAND_COLOR = new Color(120, 160, 245);
 
-	private static final Color COMMENT_COLOR = Color.GRAY;
+    private static final Color COMMENT_COLOR = Color.GRAY;
 
 
     public ResourceRenderer() {
@@ -139,54 +142,66 @@ public class ResourceRenderer extends FrameRenderer {
                                Point point,
                                Color color,
                                Dimension dimension) {
-        if (loadedClass instanceof OWLClass) {
-            if (color != null) {
-                graphics.setColor(color);
-            }
-            int y = (dimension.height + _fontMetrics.getAscent()) / 2 - 2; // -2 is a bizarre fudge factor that makes it look
-            // better!
-            StringTokenizer tok = new StringTokenizer(s, " ()[]{}", true);
-            while (tok.hasMoreTokens()) {
-                String curTok = tok.nextToken();
-                Color oldColor = graphics.getColor();
-                Font oldFont = graphics.getFont();
-	            Color highlightColor = null;
-	            int fontStyle = Font.PLAIN;
-	            if(loadedClass instanceof OWLAnonymousClass) {
-		            if(s.startsWith("//")) {
-			            highlightColor = COMMENT_COLOR;
-			            fontStyle = Font.ITALIC;
-		            }
-		            else {
-		                highlightColor = getTextColor(curTok);
-			            fontStyle = Font.BOLD;
-		            }
-	            }
-	            if (highlightColor != null) {
-                    graphics.setColor(highlightColor);
-                    graphics.setFont(graphics.getFont().deriveFont(fontStyle));
+        if (loadedClass != null) {
+            if (loadedClass instanceof OWLClass) {
+                if (color != null) {
+                    graphics.setColor(color);
                 }
-                else {
-                    OWLModel model = loadedClass.getOWLModel();
-                    if (model instanceof JenaOWLModel) {
-                        Frame f = model.getRDFResource(curTok);
-                        if (f instanceof OWLNamedClass) {
-                            if (((OWLNamedClass) f).isConsistent() == false) {
-                                graphics.setColor(Color.RED);
-                                graphics.setFont(graphics.getFont().deriveFont(Font.BOLD));
+                int y = (dimension.height + _fontMetrics.getAscent()) / 2 - 2; // -2 is a bizarre fudge factor that makes it look
+                // better!
+                StringTokenizer tok = new StringTokenizer(s, " ()[]{}", true);
+                while (tok.hasMoreTokens()) {
+                    String curTok = tok.nextToken();
+                    Color oldColor = graphics.getColor();
+                    Font oldFont = graphics.getFont();
+                    Color highlightColor = null;
+                    int fontStyle = Font.PLAIN;
+                    if (loadedClass instanceof OWLAnonymousClass) {
+                        if (s.startsWith("//")) {
+                            highlightColor = COMMENT_COLOR;
+                            fontStyle = Font.ITALIC;
+                        }
+                        else {
+                            highlightColor = getTextColor(curTok);
+                            fontStyle = Font.BOLD;
+                        }
+                    }
+                    if (highlightColor != null) {
+                        graphics.setColor(highlightColor);
+                        graphics.setFont(graphics.getFont().deriveFont(fontStyle));
+                    }
+                    else {
+                        OWLModel model = loadedClass.getOWLModel();
+                        if (model instanceof JenaOWLModel) {
+                            Frame f = model.getRDFResource(curTok);
+                            if (f instanceof OWLNamedClass) {
+                                if (((OWLNamedClass) f).isConsistent() == false) {
+                                    graphics.setColor(Color.RED);
+                                    graphics.setFont(graphics.getFont().deriveFont(Font.BOLD));
+                                }
                             }
                         }
                     }
+                    graphics.drawString(curTok, point.x, y);
+                    point.x += graphics.getFontMetrics().stringWidth(curTok);
+                    graphics.setColor(oldColor);
+                    graphics.setFont(oldFont);
                 }
-                graphics.drawString(curTok, point.x, y);
-                point.x += graphics.getFontMetrics().stringWidth(curTok);
-                graphics.setColor(oldColor);
-                graphics.setFont(oldFont);
-
-
+            }
+            else {
+                super.paintString(graphics, s, point, color, dimension);
             }
         }
         else {
+            if (loadedInstance != null) {
+                OWLModel model = ((RDFResource) loadedInstance).getOWLModel();
+                if (loadedInstance.getDirectType() == model.getOWLOntologyClass()) {
+                    if (!loadedInstance.isEditable()) {
+                        color = Color.GRAY;
+                        graphics.setFont(graphics.getFont().deriveFont(Font.ITALIC));
+                    }
+                }
+            }
             super.paintString(graphics, s, point, color, dimension);
         }
     }
@@ -202,6 +217,9 @@ public class ResourceRenderer extends FrameRenderer {
         super.load(o);
         if (o instanceof RDFSClass) {
             loadedClass = (RDFSClass) o;
+        }
+        else if (o instanceof SimpleInstance) {
+            loadedInstance = (SimpleInstance) o;
         }
     }
 
@@ -249,7 +267,7 @@ public class ResourceRenderer extends FrameRenderer {
             for (int i = 0; i < len; i++) {
                 if (i == 0 || !isOWLNameCharacter(str.charAt(i - 1))) {
                     if (str.regionMatches(i, browserText, 0, browserTextLen) &&
-                            (i + browserTextLen >= len || !isOWLNameCharacter(str.charAt(i + browserTextLen)))) {
+                        (i + browserTextLen >= len || !isOWLNameCharacter(str.charAt(i + browserTextLen)))) {
                         g.setColor(FOCUS_COLOR);
                         int x = baseX + _fontMetrics.stringWidth(str.substring(0, i));
                         int y = getHeight() - 1;

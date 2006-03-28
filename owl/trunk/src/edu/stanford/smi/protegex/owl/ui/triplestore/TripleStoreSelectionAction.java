@@ -1,11 +1,11 @@
 package edu.stanford.smi.protegex.owl.ui.triplestore;
 
 import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.model.OWLOntology;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreModel;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreUtil;
 import edu.stanford.smi.protegex.owl.repository.Repository;
-import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
 import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
 import edu.stanford.smi.protegex.owl.ui.resourceselection.DropDownOverlayIcon;
 
@@ -112,10 +112,12 @@ public class TripleStoreSelectionAction extends AbstractAction {
 
 
     private void updateLabel() {
-        TripleStoreTableModel tableModel = new TripleStoreTableModel(owlModel);
-        int row = tableModel.getSelectedTripleStoreRow();
-        if (row > 0) {
-            String file = (String) tableModel.getValueAt(row, TripleStoreTableModel.COL_URI);
+        //TripleStoreTableModel tableModel = new TripleStoreTableModel(owlModel);
+        //int row = tableModel.getSelectedTripleStoreRow();
+        TripleStore ts = owlModel.getTripleStoreModel().getActiveTripleStore();
+        OWLOntology ont = (OWLOntology) TripleStoreUtil.getFirstOntology(owlModel, ts);
+        if (ont != null) {
+            String file = ont.getURI();
             int index = file.lastIndexOf('/');
             if (index < 0) {
                 index = file.lastIndexOf('\\');

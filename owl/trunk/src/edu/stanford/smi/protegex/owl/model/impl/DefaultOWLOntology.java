@@ -7,10 +7,13 @@ import edu.stanford.smi.protegex.owl.model.*;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreUtil;
 import edu.stanford.smi.protegex.owl.model.visitor.OWLModelVisitor;
+import edu.stanford.smi.protegex.owl.repository.Repository;
+import edu.stanford.smi.protegex.owl.repository.RepositoryManager;
 import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
 
 import javax.swing.*;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -121,9 +124,12 @@ public class DefaultOWLOntology extends DefaultRDFIndividual implements OWLOntol
 
 
     public Icon getIcon() {
-        String str = "OWLOntology";
-        return isEditable() ? OWLIcons.getImageIcon(str) :
-                OWLIcons.getReadOnlyIcon(OWLIcons.getImageIcon(str), OWLIcons.RDF_INDIVIDUAL_FRAME);
+        Icon icon = OWLIcons.getImageIcon("OWLOntology");
+        if (!isEditable() || !isActive()) {
+            icon = OWLIcons.getReadOnlyIcon((ImageIcon) icon,
+                                            OWLIcons.RDF_INDIVIDUAL_FRAME);
+        }
+        return icon;
     }
 
 
@@ -192,5 +198,34 @@ public class DefaultOWLOntology extends DefaultRDFIndividual implements OWLOntol
     public void removePriorVersion(String resource) {
         edu.stanford.smi.protege.model.Slot slot = getKnowledgeBase().getSlot(OWLNames.Slot.PRIOR_VERSION);
         removeOwnSlotValue(slot, resource);
+    }
+
+    public boolean isEditable() {
+        boolean result = false;
+        OWLModel owlModel = getOWLModel();
+        TripleStore top = owlModel.getTripleStoreModel().getTopTripleStore();
+        if (this == TripleStoreUtil.getFirstOntology(owlModel, top)) {
+            result = true;
+        }
+        else {
+            RepositoryManager man = owlModel.getRepositoryManager();
+            URI ontURI = null;
+            try {
+                ontURI = new URI(getURI());
+                Repository rep = man.getRepository(ontURI);
+                if (rep != null) {
+                    result = rep.isWritable(ontURI);
+                }
+            }
+            catch (URISyntaxException e) {
+                e.printStackTrace();
+            }
+        }
+        return result;
+    }
+
+    private boolean isActive() {
+        TripleStore active = getOWLModel().getTripleStoreModel().getActiveTripleStore();
+        return this == TripleStoreUtil.getFirstOntology(getOWLModel(), active);
     }
 }

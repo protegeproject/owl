@@ -18,6 +18,8 @@ public interface ResourcePanel extends InferredModeWidget, Selectable {
 
     final static int DEFAULT_TYPE_INDIVIDUAL = 2;
 
+    final static int DEFAULT_TYPE_ONTOLOGY = 3;
+
 
     RDFResource getResource();
 

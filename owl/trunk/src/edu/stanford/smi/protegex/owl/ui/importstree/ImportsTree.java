@@ -1,28 +1,31 @@
 package edu.stanford.smi.protegex.owl.ui.importstree;
 
+import edu.stanford.smi.protege.util.ComponentUtilities;
 import edu.stanford.smi.protege.util.LazyTreeRoot;
+import edu.stanford.smi.protege.util.SelectableTree;
 import edu.stanford.smi.protegex.owl.model.OWLOntology;
+import edu.stanford.smi.protegex.owl.model.RDFResource;
 import edu.stanford.smi.protegex.owl.ui.ResourceRenderer;
+import edu.stanford.smi.protegex.owl.ui.results.HostResourceDisplay;
 
-import javax.swing.*;
 import javax.swing.tree.TreePath;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
  */
-public class ImportsTree extends JTree {
+public class ImportsTree extends SelectableTree implements HostResourceDisplay {
 
-    private OWLOntology ontology;
+    private static int MAX_EXPANSIONS = 50;
 
+    private OWLOntology rootOntology;
 
     public ImportsTree(OWLOntology rootOntology) {
-        super(new ImportsTreeRoot(rootOntology));
-        this.ontology = rootOntology;
+        super(null, new ImportsTreeRoot(rootOntology));
+        this.rootOntology = rootOntology;
         setCellRenderer(new ResourceRenderer());
         setRootVisible(false);
-        expandRow(0);
+        ComponentUtilities.fullSelectionExpand(this, MAX_EXPANSIONS);
     }
 
 
@@ -39,7 +42,7 @@ public class ImportsTree extends JTree {
 
 
     public OWLOntology getRootOntology() {
-        return ontology;
+        return rootOntology;
     }
 
 
@@ -61,6 +64,29 @@ public class ImportsTree extends JTree {
         else {
             LazyTreeRoot root = (LazyTreeRoot) getModel().getRoot();
             addResources(result, (ImportsTreeNode) root.getChildAt(0));
+        }
+        return result;
+    }
+
+
+    public boolean displayHostResource(RDFResource resource) {
+        boolean result = false;
+        if (resource instanceof OWLOntology) {
+
+            List importsPath = new ArrayList();
+            importsPath.add(resource);
+            Collection ontologies = rootOntology.getOWLModel().getOWLOntologies();
+            while (!importsPath.contains(rootOntology)) {
+                for (Iterator i = ontologies.iterator(); i.hasNext();) {
+                    OWLOntology ont = (OWLOntology) i.next();
+                    OWLOntology previous = (OWLOntology) importsPath.get(importsPath.size() - 1);
+                    if (ont.getImports().contains(previous.getURI().toString())) {
+                        importsPath.add(ont);
+                    }
+                }
+            }
+            setSelectionPath(ComponentUtilities.getTreePath(this, importsPath));
+            result = true;
         }
         return result;
     }
