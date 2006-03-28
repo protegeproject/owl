@@ -11,6 +11,7 @@ import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLOntology;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
+import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLOntology;
 import edu.stanford.smi.protegex.owl.model.impl.OWLUtil;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreModel;
@@ -94,8 +95,8 @@ public class ImportsTreePanel extends JPanel implements HostResourceDisplay, Dis
 
                     public void onSelectionChange() {
                         Collection sel = getSelection();
-                        setAllowed(sel.size() == 1 &&
-                                   ((OWLOntology) CollectionUtilities.getFirstItem(sel)).isEditable());
+                        DefaultOWLOntology ont = (DefaultOWLOntology) CollectionUtilities.getFirstItem(sel);
+                        setAllowed(sel.size() == 1 && ont.isAssociatedTriplestoreEditable());
                     }
                 });
 
