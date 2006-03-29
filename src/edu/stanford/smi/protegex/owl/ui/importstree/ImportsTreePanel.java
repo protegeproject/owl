@@ -78,7 +78,7 @@ public class ImportsTreePanel extends JPanel implements HostResourceDisplay, Dis
             public void onSelectionChange() {
                 Collection sel = getSelection();
                 DefaultOWLOntology ont = (DefaultOWLOntology) CollectionUtilities.getFirstItem(sel);
-                setAllowed(ont == getActiveOntology(ont.getOWLModel()));
+                setAllowed(ont == OWLUtil.getActiveOntology(ont.getOWLModel()));
             }
         };
     }
@@ -94,7 +94,7 @@ public class ImportsTreePanel extends JPanel implements HostResourceDisplay, Dis
             public void onSelectionChange() {
                 Collection sel = getSelection();
                 DefaultOWLOntology ont = (DefaultOWLOntology) CollectionUtilities.getFirstItem(sel);
-                setAllowed(ont == getActiveOntology(ont.getOWLModel()));
+                setAllowed(ont == OWLUtil.getActiveOntology(ont.getOWLModel()));
             }
         };
     }
@@ -217,7 +217,7 @@ public class ImportsTreePanel extends JPanel implements HostResourceDisplay, Dis
         OWLOntology ont = (OWLOntology) CollectionUtilities.getFirstItem(sel);
         OWLModel owlModel = ont.getOWLModel();
 
-        if (ont != getActiveOntology(owlModel)) {
+        if (ont != OWLUtil.getActiveOntology(owlModel)) {
             TripleStoreModel tsm = owlModel.getTripleStoreModel();
             TripleStore tripleStore = tsm.getHomeTripleStore(ont);
             TripleStoreUtil.switchTripleStore(owlModel, tripleStore);
@@ -226,21 +226,5 @@ public class ImportsTreePanel extends JPanel implements HostResourceDisplay, Dis
 
     public void dispose() {
         tree.dispose();
-    }
-
-    public OWLOntology getActiveOntology(OWLModel owlModel) {
-        OWLOntology owlOntology = owlModel.getDefaultOWLOntology();
-        for (Iterator it = owlModel.getOWLOntologies().iterator(); it.hasNext();) {
-            OWLOntology curOnt = (OWLOntology) it.next();
-            TripleStoreModel tsm = owlModel.getTripleStoreModel();
-            TripleStore activeTripleStore = tsm.getActiveTripleStore();
-            if (activeTripleStore.contains(curOnt,
-                                           owlModel.getRDFTypeProperty(),
-                                           owlModel.getOWLOntologyClass())) {
-                owlOntology = curOnt;
-                break;
-            }
-        }
-        return owlOntology;
     }
 }

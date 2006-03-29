@@ -6,7 +6,6 @@ import edu.stanford.smi.protege.model.Model;
 import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protege.model.framestore.MergingNarrowFrameStore;
 import edu.stanford.smi.protege.model.framestore.NarrowFrameStore;
-import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
@@ -53,9 +52,7 @@ public abstract class AbstractTripleStoreModel implements TripleStoreModel {
             }
         }
         OWLJavaFactoryUpdater.run(owlModel, resources);
-        if (owlModel instanceof JenaOWLModel) {
-            ((JenaOWLModel) owlModel).updateProtegeMetaOntologyImported();
-        }
+
         owlModel.setGenerateEventsEnabled(false);
         try {
             TripleChangePostProcessor.postProcess(owlModel);
@@ -69,10 +66,10 @@ public abstract class AbstractTripleStoreModel implements TripleStoreModel {
 
     public TripleStore getActiveTripleStore() {
         if (mnfs == null && ts.size() == 1) {
-          /**
-           * Probably a client talking to a server.
-           */
-          return ts.get(0);
+            /**
+             * Probably a client talking to a server.
+             */
+            return ts.get(0);
         }
         NarrowFrameStore activeFrameStore = mnfs.getActiveFrameStore();
         String name = activeFrameStore.getName();
@@ -127,11 +124,12 @@ public abstract class AbstractTripleStoreModel implements TripleStoreModel {
 
 
     public TripleStore getTopTripleStore() {
-      if (mnfs == null && ts.size() == 1) {
-        return ts.get(0);
-      } else {
-        return ts.get(1);
-      }
+        if (mnfs == null && ts.size() == 1) {
+            return ts.get(0);
+        }
+        else {
+            return ts.get(1);
+        }
     }
 
 
@@ -163,7 +161,7 @@ public abstract class AbstractTripleStoreModel implements TripleStoreModel {
         }
         try {
             URI uri = new URI(tripleStore.getName());
-	        return owlModel.getRepositoryManager().getRepository(uri).isWritable(uri);
+            return owlModel.getRepositoryManager().getRepository(uri).isWritable(uri);
             //return owlModel.getURIResolver().isEditableImport(uri);
         }
         catch (Exception ex) {

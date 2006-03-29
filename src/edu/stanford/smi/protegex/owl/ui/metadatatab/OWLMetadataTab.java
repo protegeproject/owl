@@ -6,6 +6,7 @@ import edu.stanford.smi.protege.util.SelectionEvent;
 import edu.stanford.smi.protege.util.SelectionListener;
 import edu.stanford.smi.protegex.owl.model.OWLOntology;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
+import edu.stanford.smi.protegex.owl.model.impl.OWLUtil;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreUtil;
 import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
@@ -52,7 +53,7 @@ public class OWLMetadataTab extends AbstractTabWidget implements HostResourceDis
         resourceDisplay = ProtegeUI.getResourcePanelFactory().createResourcePanel(getOWLModel(), ResourcePanel.DEFAULT_TYPE_ONTOLOGY);
 
 
-        OWLOntology activeOntology = importsTreePanel.getActiveOntology(getOWLModel());
+        OWLOntology activeOntology = OWLUtil.getActiveOntology(getOWLModel());
         if (activeOntology != null) {
             displayHostResource(activeOntology);
         }

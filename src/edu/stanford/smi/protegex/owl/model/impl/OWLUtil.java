@@ -5,12 +5,14 @@ import edu.stanford.smi.protege.model.framestore.MergingNarrowFrameStore;
 import edu.stanford.smi.protege.model.framestore.NarrowFrameStore;
 import edu.stanford.smi.protege.ui.FrameComparator;
 import edu.stanford.smi.protege.ui.ProjectManager;
+import edu.stanford.smi.protege.util.CollectionUtilities;
 import edu.stanford.smi.protegex.owl.model.*;
 import edu.stanford.smi.protegex.owl.model.classparser.OWLClassParser;
 import edu.stanford.smi.protegex.owl.model.event.PropertyValueAdapter;
 import edu.stanford.smi.protegex.owl.model.event.PropertyValueListener;
 import edu.stanford.smi.protegex.owl.model.event.ResourceAdapter;
 import edu.stanford.smi.protegex.owl.model.event.ResourceListener;
+import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreModel;
 import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
 import edu.stanford.smi.protegex.owl.ui.profiles.OWLProfiles;
@@ -458,7 +460,8 @@ public class OWLUtil {
         Iterator it = cls.getNamedSubclasses().iterator();
         while (it.hasNext()) {
             RDFSNamedClass subClass = (RDFSNamedClass) it.next();
-            if (subClass instanceof OWLNamedClass && ((OWLNamedClass) subClass).getDefinition() == null && subClass.isVisible()) {
+            if (subClass instanceof OWLNamedClass && ((OWLNamedClass) subClass).getDefinition() == null && subClass.isVisible())
+            {
                 subclasses.add(subClass);
             }
         }
@@ -716,8 +719,8 @@ public class OWLUtil {
     public static void setPropertyValue(RDFResource resource, RDFProperty property, Object value) {
         KnowledgeBase owlModel = resource.getOWLModel();
         owlModel.setOwnSlotValues(resource, property, value == null ?
-                                                      (Collection) Collections.EMPTY_LIST :
-                                                      Collections.singleton(value));
+                (Collection) Collections.EMPTY_LIST :
+                Collections.singleton(value));
     }
 
 
@@ -991,5 +994,41 @@ public class OWLUtil {
             }
         }
         return property.getRange();
+    }
+
+
+    public static boolean indirectlyImports(OWLOntology ontA, OWLOntology ontB) {
+        return indirectlyImportsHelper(ontA, ontB, CollectionUtilities.createCollection(ontA));
+    }
+
+    private static boolean indirectlyImportsHelper(OWLOntology ontA, OWLOntology ontB, Collection accumulator) {
+        boolean found = false;
+        for (Iterator<OWLOntology> i = ontA.getImportResources().iterator(); i.hasNext() && !found;) {
+            OWLOntology ontC = i.next();
+            if (ontC == ontB) {
+                found = true;
+            }
+            else if (!accumulator.contains(ontC)) {
+                accumulator.add(ontC);
+                found = indirectlyImportsHelper(ontC, ontB, accumulator);
+            }
+        }
+        return found;
+    }
+
+    public static OWLOntology getActiveOntology(OWLModel owlModel) {
+        OWLOntology owlOntology = owlModel.getDefaultOWLOntology();
+        for (Iterator it = owlModel.getOWLOntologies().iterator(); it.hasNext();) {
+            OWLOntology curOnt = (OWLOntology) it.next();
+            TripleStoreModel tsm = owlModel.getTripleStoreModel();
+            TripleStore activeTripleStore = tsm.getActiveTripleStore();
+            if (activeTripleStore.contains(curOnt,
+                                           owlModel.getRDFTypeProperty(),
+                                           owlModel.getOWLOntologyClass())) {
+                owlOntology = curOnt;
+                break;
+            }
+        }
+        return owlOntology;
     }
 }

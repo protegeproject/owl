@@ -289,8 +289,6 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
     private PropertyValueValidator propertyValueValidator = new DefaultPropertyValueValidator();
 
-    private boolean protegeMetaOntologyImported = false;
-
     public static final String DEFAULT_TODO_PREFIX = "TODO";
 
     public static final String[] DEFAULT_USED_LANGUAGES = {
@@ -1929,7 +1927,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
 
     public String getDefaultLanguage() {
-        if (protegeMetaOntologyImported) {
+        if (isProtegeMetaOntologyImported()) {
             RDFProperty metaSlot = getRDFProperty(ProtegeNames.getDefaultLanguageSlotName());
             if (metaSlot != null) {
                 OWLOntology oi = getDefaultOWLOntology();
@@ -2518,7 +2516,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
 
     public OWLDatatypeProperty getProtegeReadOnlyProperty() {
-        if (protegeMetaOntologyImported) {
+        if (isProtegeMetaOntologyImported()) {
             return (OWLDatatypeProperty) getSlot(ProtegeNames.getReadOnlySlotName());
         }
         else {
@@ -2650,7 +2648,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
 
     public RDFProperty getProtegeSubclassesDisjointProperty() {
-        if (protegeMetaOntologyImported) {
+        if (isProtegeMetaOntologyImported()) {
             if (protegeSubclassesDisjointProperty == null) {
                 protegeSubclassesDisjointProperty = getSlot(ProtegeNames.getSubclassesDisjointSlotName());
             }
@@ -3012,7 +3010,8 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
 
     public boolean isProtegeMetaOntologyImported() {
-        return protegeMetaOntologyImported;
+        return OWLUtil.indirectlyImports(getDefaultOWLOntology(),
+                                         getOWLOntologyByURI(ProtegeNames.FILE));
     }
 
 
@@ -3282,12 +3281,6 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
                 }
             }
         }
-    }
-
-
-    public void updateProtegeMetaOntologyImported() {
-        String slotName = ProtegeNames.getSubclassesDisjointSlotName();
-        protegeMetaOntologyImported = getSlot(slotName) != null;
     }
 
 
