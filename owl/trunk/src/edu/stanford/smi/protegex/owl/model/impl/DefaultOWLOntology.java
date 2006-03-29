@@ -48,13 +48,12 @@ public class DefaultOWLOntology extends DefaultRDFIndividual implements OWLOntol
 
     public void addImports(String uri) {
         try {
-            TripleStore ts = getOWLModel().getTripleStoreModel().getTripleStoreByDefaultNamespace(uri + "#");
+            TripleStore ts = getOWLModel().getTripleStoreModel().getTripleStore(uri);
             OWLOntology ont = (OWLOntology) TripleStoreUtil.getFirstOntology(getOWLModel(), ts);
             addImportsHelper(ont);
         }
         catch (Exception e) {
-            RDFUntypedResource resource = getOWLModel().getRDFUntypedResource(uri, true);
-            addImportsHelper(resource);
+            e.printStackTrace();
         }
     }
 
