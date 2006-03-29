@@ -45,22 +45,6 @@ public class ImportsTreePanel extends JPanel implements HostResourceDisplay, Dis
 
     private ImportsTree tree;
 
-    private Action addImportAction =
-            new AbstractAction("Import ontology...",
-                               OWLIcons.getAddIcon(OWLIcons.IMPORT)) {
-                public void actionPerformed(ActionEvent e) {
-                    addImport();
-                }
-            };
-
-    private Action createImportedTripleStoreAction =
-            new AbstractAction(CreateImportedTripleStorePanel.TITLE,
-                               OWLIcons.getCreateIcon(OWLIcons.IMPORT)) {
-                public void actionPerformed(ActionEvent e) {
-                    createImportedTripleStore();
-                }
-            };
-
     private OWLOntology rootOntology;
 
     public ImportsTreePanel(OWLOntology rootOntology) {
@@ -68,37 +52,10 @@ public class ImportsTreePanel extends JPanel implements HostResourceDisplay, Dis
         tree = new ImportsTree(rootOntology);
         OWLLabeledComponent lc = new OWLLabeledComponent("Ontologies",
                                                          new JScrollPane(tree));
-        lc.addHeaderButton(addImportAction);
-        lc.addHeaderButton(createImportedTripleStoreAction);
-
-        lc.addHeaderButton(
-                new AllowableAction("Remove import",
-                                    OWLIcons.getRemoveIcon(OWLIcons.IMPORT),
-                                    tree) {
-                    public void actionPerformed(ActionEvent e) {
-                        removeSelectedImport();
-                    }
-
-                    public boolean isAllowed() {
-                        return tree.getSelectionCount() == 1 &&
-                               tree.getSelectionRows()[0] != 0;
-                    }
-                });
-
-        lc.addHeaderButton(
-                new AllowableAction("Set active ontology",
-                                    OWLIcons.getImageIcon(OWLIcons.SELECT_ACTIVE_TRIPLESTORE),
-                                    tree) {
-                    public void actionPerformed(ActionEvent e) {
-                        setActiveOntology();
-                    }
-
-                    public void onSelectionChange() {
-                        Collection sel = getSelection();
-                        DefaultOWLOntology ont = (DefaultOWLOntology) CollectionUtilities.getFirstItem(sel);
-                        setAllowed(sel.size() == 1 && ont.isAssociatedTriplestoreEditable());
-                    }
-                });
+        lc.addHeaderButton(createAddImportAction());
+        lc.addHeaderButton(createAddEmptyImportAction());
+        lc.addHeaderButton(createRemoveImportAction());
+        lc.addHeaderButton(createSetActiveOntologyAction());
 
         lc.addHeaderButton(new DownloadImportsAction(tree));
 
@@ -108,6 +65,69 @@ public class ImportsTreePanel extends JPanel implements HostResourceDisplay, Dis
         add(BorderLayout.CENTER, lc);
 
         setPreferredSize(new Dimension(250, 300));
+    }
+
+    private Action createAddEmptyImportAction() {
+        return new AllowableAction(CreateImportedTripleStorePanel.TITLE,
+                                   OWLIcons.getCreateIcon(OWLIcons.IMPORT),
+                                   tree) {
+            public void actionPerformed(ActionEvent e) {
+                createImportedTripleStore();
+            }
+
+            public void onSelectionChange() {
+                Collection sel = getSelection();
+                DefaultOWLOntology ont = (DefaultOWLOntology) CollectionUtilities.getFirstItem(sel);
+                setAllowed(ont == getActiveOntology(ont.getOWLModel()));
+            }
+        };
+    }
+
+    private Action createAddImportAction() {
+        return new AllowableAction("Import ontology...",
+                                   OWLIcons.getAddIcon(OWLIcons.IMPORT),
+                                   tree) {
+            public void actionPerformed(ActionEvent e) {
+                addImport();
+            }
+
+            public void onSelectionChange() {
+                Collection sel = getSelection();
+                DefaultOWLOntology ont = (DefaultOWLOntology) CollectionUtilities.getFirstItem(sel);
+                setAllowed(ont == getActiveOntology(ont.getOWLModel()));
+            }
+        };
+    }
+
+    private Action createRemoveImportAction() {
+        return new AllowableAction("Remove import",
+                                   OWLIcons.getRemoveIcon(OWLIcons.IMPORT),
+                                   tree) {
+            public void actionPerformed(ActionEvent e) {
+                removeSelectedImport();
+            }
+
+            public void onSelectionChange() {
+                setAllowed(tree.getSelectionCount() == 1 &&
+                           tree.getSelectionRows()[0] != 0);
+            }
+        };
+    }
+
+    private Action createSetActiveOntologyAction() {
+        return new AllowableAction("Set active ontology",
+                                   OWLIcons.getImageIcon(OWLIcons.SELECT_ACTIVE_TRIPLESTORE),
+                                   tree) {
+            public void actionPerformed(ActionEvent e) {
+                setActiveOntology();
+            }
+
+            public void onSelectionChange() {
+                Collection sel = getSelection();
+                DefaultOWLOntology ont = (DefaultOWLOntology) CollectionUtilities.getFirstItem(sel);
+                setAllowed(sel.size() == 1 && ont.isAssociatedTriplestoreEditable());
+            }
+        };
     }
 
     protected HeaderComponent createOntologyBrowserHeader() {
