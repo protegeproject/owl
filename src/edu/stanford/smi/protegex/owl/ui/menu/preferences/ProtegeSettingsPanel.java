@@ -58,8 +58,7 @@ public class ProtegeSettingsPanel extends JComponent {
                 ProtegeUI.reloadUI(owlModel);
             }
         });
-        userDatatypesCBox.setEnabled(importMetaCBox.isSelected() &&
-                                     importMetaCBox.isEnabled());
+        userDatatypesCBox.setEnabled(importMetaCBox.isSelected());
         userDatatypesCBox.setSelected(ProtegeSettingsPanel.isUserDefinedDatatypesSupported(owlModel));
 
         setBorder(BorderFactory.createTitledBorder("Protege Features"));
