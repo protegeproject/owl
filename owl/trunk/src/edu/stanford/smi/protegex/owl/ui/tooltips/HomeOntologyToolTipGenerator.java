@@ -47,8 +47,11 @@ public class HomeOntologyToolTipGenerator implements OWLToolTipGenerator {
                         homeLocation = homeRep.getOntologyLocationDescription(homeOntURI);
                     }
                     else {
-                        homeLocation = "main ontology [" +
-                                       owlModel.getProject().getName() + "]";
+                        String projname = owlModel.getProject().getName();
+                        if (projname == null) {
+                            projname = "not yet saved";
+                        }
+                        homeLocation = "main ontology [" + projname + "]";
                     }
                     text += "<br><b>location:</b> " + homeLocation;
                 }
