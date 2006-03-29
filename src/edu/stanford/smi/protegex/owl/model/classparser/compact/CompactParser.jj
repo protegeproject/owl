@@ -805,17 +805,17 @@ Object DataType() :
     ( // User defined part
 	(
         (
-            (token=<OPENPAR>{minProp = owlModel.getRDFProperty(XSPNames.MIN_EXCLUSIVE);})
+            (token=<OPENPAR>{minProp = XSPNames.getRDFProperty(owlModel, XSPNames.XSP_MIN_EXCLUSIVE);})
             |
-            (token=<OPENSQPAR>{minProp=owlModel.getRDFProperty(XSPNames.MIN_INCLUSIVE);})
+            (token=<OPENSQPAR>{minProp=XSPNames.getRDFProperty(owlModel, XSPNames.XSP_MIN_INCLUSIVE);})
         )
         (((token=<INTEGER_LITERAL>{minVal = token.image;} | token=<FLOATING_POINT_LITERAL>{minVal = token.image;} | <UNBOUNDEDVAL>)))?
         ","
         (((token=<INTEGER_LITERAL>{maxVal = token.image;} | token=<FLOATING_POINT_LITERAL>{maxVal = token.image;} | <UNBOUNDEDVAL>)))?
         (
-            (token=<CLOSEPAR>{maxProp=owlModel.getRDFProperty(XSPNames.MAX_EXCLUSIVE);})
+            (token=<CLOSEPAR>{maxProp=XSPNames.getRDFProperty(owlModel, XSPNames.XSP_MAX_EXCLUSIVE);})
             |
-            (token=<CLOSESQPAR>{maxProp=owlModel.getRDFProperty(XSPNames.MAX_INCLUSIVE);})
+            (token=<CLOSESQPAR>{maxProp=XSPNames.getRDFProperty(owlModel, XSPNames.XSP_MAX_INCLUSIVE);})
         )
     ){
 		userDerived = true;
@@ -833,7 +833,7 @@ Object DataType() :
 		else {
 			if(create) {
 				RDFSDatatype udd = owlModel.createRDFSDatatype(owlModel.getNextAnonymousResourceName());
-				udd.setPropertyValue(owlModel.getRDFProperty(XSPNames.BASE), datatype);
+				udd.setPropertyValue(XSPNames.getRDFProperty(owlModel, XSPNames.XSP_BASE), datatype);
 				if(minProp != null && minVal != null) {
 					udd.setPropertyValue(minProp, owlModel.createRDFSLiteral(minVal, datatype));
 				}

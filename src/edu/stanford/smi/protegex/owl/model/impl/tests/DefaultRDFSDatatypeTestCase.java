@@ -48,7 +48,7 @@ public class DefaultRDFSDatatypeTestCase extends AbstractJenaTestCase {
     public void testGetBaseDatatype() throws Exception {
         loadRemoteOntologyWithProtegeMetadataOntology();
         RDFSDatatype datatype = owlModel.createRDFSDatatype("intOver18");
-        RDFProperty subDatatypeOfProperty = owlModel.getRDFProperty(XSPNames.BASE);
+        RDFProperty subDatatypeOfProperty = XSPNames.getRDFProperty(owlModel, XSPNames.XSP_BASE);
         datatype.setPropertyValue(subDatatypeOfProperty, owlModel.getXSDint());
         assertEquals(owlModel.getXSDint(), datatype.getBaseDatatype());
     }
@@ -58,11 +58,11 @@ public class DefaultRDFSDatatypeTestCase extends AbstractJenaTestCase {
         loadRemoteOntologyWithProtegeMetadataOntology();
         String name = owlModel.getNextAnonymousResourceName();
         RDFSDatatype datatype = owlModel.createRDFSDatatype(name);
-        RDFProperty subDatatypeOfProperty = owlModel.getRDFProperty(XSPNames.BASE);
+        RDFProperty subDatatypeOfProperty = XSPNames.getRDFProperty(owlModel, XSPNames.XSP_BASE);
         datatype.setPropertyValue(subDatatypeOfProperty, owlModel.getXSDint());
-        RDFProperty minInclusiveProperty = owlModel.getRDFProperty(XSPNames.MIN_INCLUSIVE);
+        RDFProperty minInclusiveProperty = XSPNames.getRDFProperty(owlModel, XSPNames.XSP_MIN_INCLUSIVE);
         datatype.setPropertyValue(minInclusiveProperty, new Integer(18));
-        RDFProperty maxInclusiveProperty = owlModel.getRDFProperty(XSPNames.MAX_INCLUSIVE);
+        RDFProperty maxInclusiveProperty = XSPNames.getRDFProperty(owlModel, XSPNames.XSP_MAX_INCLUSIVE);
         datatype.setPropertyValue(maxInclusiveProperty, new Integer(24));
         assertEquals(owlModel.createRDFSLiteral("24", owlModel.getXSDint()), datatype.getMaxInclusive());
         RDFProperty property = owlModel.createOWLDatatypeProperty("property");
@@ -73,9 +73,9 @@ public class DefaultRDFSDatatypeTestCase extends AbstractJenaTestCase {
 
     public void testParseClosedInterval() throws Exception {
         loadRemoteOntologyWithProtegeMetadataOntology();
-        RDFProperty subDatatypeOfProperty = owlModel.getRDFProperty(XSPNames.BASE);
-        RDFProperty minInclusiveProperty = owlModel.getRDFProperty(XSPNames.MIN_INCLUSIVE);
-        RDFProperty maxInclusiveProperty = owlModel.getRDFProperty(XSPNames.MAX_INCLUSIVE);
+        RDFProperty subDatatypeOfProperty = XSPNames.getRDFProperty(owlModel, XSPNames.XSP_BASE);
+        RDFProperty minInclusiveProperty = XSPNames.getRDFProperty(owlModel, XSPNames.XSP_MIN_INCLUSIVE);
+        RDFProperty maxInclusiveProperty = XSPNames.getRDFProperty(owlModel, XSPNames.XSP_MAX_INCLUSIVE);
         String expression = "xsd:int[18,24]";
         Map map = DefaultRDFSDatatype.parse(owlModel, expression);
         assertEquals(3, map.size());
@@ -87,8 +87,8 @@ public class DefaultRDFSDatatypeTestCase extends AbstractJenaTestCase {
 
     public void testParseOpenedInterval() throws Exception {
         loadRemoteOntologyWithProtegeMetadataOntology();
-        RDFProperty subDatatypeOfProperty = owlModel.getRDFProperty(XSPNames.BASE);
-        RDFProperty maxExclusiveProperty = owlModel.getRDFProperty(XSPNames.MAX_EXCLUSIVE);
+        RDFProperty subDatatypeOfProperty = XSPNames.getRDFProperty(owlModel, XSPNames.XSP_BASE);
+        RDFProperty maxExclusiveProperty = XSPNames.getRDFProperty(owlModel, XSPNames.XSP_MAX_EXCLUSIVE);
         String expression = "xsd:int(..,24)";
         Map map = DefaultRDFSDatatype.parse(owlModel, expression);
         assertEquals(2, map.size());

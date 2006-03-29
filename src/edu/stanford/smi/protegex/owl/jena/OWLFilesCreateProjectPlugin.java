@@ -85,7 +85,7 @@ public class OWLFilesCreateProjectPlugin
             }
             owlModel.getNamespaceManager().setPrefix(namespace, prefix);
             if (namespace.equals(ProtegeNames.NS)) {
-                owlModel.getNamespaceManager().setPrefix(XSPNames.NS, XSPNames.PREFIX);
+                owlModel.getNamespaceManager().setPrefix(XSPNames.NS, XSPNames.DEFAULT_PREFIX);
             }
             try {
                 URI u = new URI(uri);
