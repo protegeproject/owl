@@ -343,19 +343,19 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
 
     public AbstractOWLModel(KnowledgeBaseFactory factory) {
-      super(factory);
+        super(factory);
     }
 
-    public AbstractOWLModel(KnowledgeBaseFactory factory, 
+    public AbstractOWLModel(KnowledgeBaseFactory factory,
                             NamespaceManager namespaceManager) {
-      super(factory);
-      initialize(namespaceManager);
+        super(factory);
+        initialize(namespaceManager);
     }
 
     public void initialize(NamespaceManager namespaceManager) {
-       this.namespaceManager = namespaceManager;
-       namespaceManager.addNamespaceManagerListener(this);
-    
+        this.namespaceManager = namespaceManager;
+        namespaceManager.addNamespaceManagerListener(this);
+
         setGenerateDeletingFrameEventsEnabled(true);
 
         MergingNarrowFrameStore mnfs = MergingNarrowFrameStore.get(this);
@@ -399,7 +399,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
                 else {
                     String validName = getValidNamespaceFrameName(name);
                     return "The name \"" + name + "\" is not a valid OWL identifier.\n" +
-                            "You might want to use \"" + validName + "\" instead.";
+                           "You might want to use \"" + validName + "\" instead.";
                 }
             }
 
@@ -447,7 +447,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
         taskManager = new DefaultTaskManager();
         taskManager.setProgressDisplay(new NoopProgressDisplay());
         if (super.getProject() != null) {
-          setProject(super.getProject());
+            setProject(super.getProject());
         }
     }
 
@@ -511,7 +511,6 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
             return createRDFSLiteral(object);
         }
     }
-
 
 
     public List asRDFSLiterals(Collection values) {
@@ -633,7 +632,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
         anonymousRootCls.setDirectType(rdfsNamedClassClass);
 
         anonymousClassMetaCls = createSystemCls(OWLNames.Cls.ANONYMOUS_CLASS,
-                Collections.singleton(owlClassMetaCls), rdfsNamedClassClass);
+                                                Collections.singleton(owlClassMetaCls), rdfsNamedClassClass);
         anonymousClassMetaCls.setAbstract(true);
         owlEnumeratedClassClass = createSystemCls(OWLNames.Cls.ENUMERATED_CLASS, anonymousClassMetaCls);
 
@@ -658,11 +657,11 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
         owlInverseOfProperty.setAllowedClses(Collections.singleton(owlObjectPropertyClass));
 
         rdfsDatatypeClass = createSystemCls(RDFSNames.Cls.DATATYPE,
-                Collections.singleton(owlThingClass), rdfsNamedClassClass);
+                                            Collections.singleton(owlThingClass), rdfsNamedClassClass);
         initRDFDatatypes();
 
         owlAnnotationPropertyClass = createSystemCls(OWLNames.Cls.ANNOTATION_PROPERTY,
-                Collections.singleton(rdfPropertyClass), rdfsNamedClassClass);
+                                                     Collections.singleton(rdfPropertyClass), rdfsNamedClassClass);
 
         initInferredSlots();
 
@@ -744,16 +743,16 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
         rdfPropertyClass = getCls(RDFNames.Cls.PROPERTY);
 
         owlFunctionalPropertyClass = createSystemCls(OWLNames.Cls.FUNCTIONAL_PROPERTY,
-                Collections.singleton(rdfPropertyClass), rdfsNamedClassClass);
+                                                     Collections.singleton(rdfPropertyClass), rdfsNamedClassClass);
         owlInverseFunctionalPropertyClass = createSystemCls(OWLNames.Cls.INVERSE_FUNCTIONAL_PROPERTY,
-                Collections.singleton(rdfPropertyClass), rdfsNamedClassClass);
+                                                            Collections.singleton(rdfPropertyClass), rdfsNamedClassClass);
         owlSymmetricPropertyClass = createSystemCls(OWLNames.Cls.SYMMETRIC_PROPERTY,
-                Collections.singleton(rdfPropertyClass), rdfsNamedClassClass);
+                                                    Collections.singleton(rdfPropertyClass), rdfsNamedClassClass);
         owlTransitivePropertyClass = createSystemCls(OWLNames.Cls.TRANSITIVE_PROPERTY,
-                Collections.singleton(rdfPropertyClass), rdfsNamedClassClass);
+                                                     Collections.singleton(rdfPropertyClass), rdfsNamedClassClass);
 
         rdfExternalResourceClass = createSystemCls(RDFNames.Cls.EXTERNAL_RESOURCE,
-                Collections.singleton(getRootCls()), rdfsNamedClassClass);
+                                                   Collections.singleton(getRootCls()), rdfsNamedClassClass);
         owlResourceURIProperty = createSystemSlot(OWLNames.Slot.RESOURCE_URI, rdfPropertyClass);
         owlResourceURIProperty.setValueType(ValueType.STRING);
         owlResourceURIProperty.setAllowsMultipleValues(false);
@@ -802,9 +801,9 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
         rdfStatementClass.addDirectTemplateSlot(rdfSubjectProperty);
 
         owlDeprecatedClassClass = createSystemCls(OWLNames.Cls.DEPRECATED_CLASS,
-                Collections.singleton(rdfsNamedClassClass), rdfsNamedClassClass);
+                                                  Collections.singleton(rdfsNamedClassClass), rdfsNamedClassClass);
         owlDeprecatedPropertyClass = createSystemCls(OWLNames.Cls.DEPRECATED_PROPERTY,
-                Collections.singleton(rdfPropertyClass), rdfsNamedClassClass);
+                                                     Collections.singleton(rdfPropertyClass), rdfsNamedClassClass);
 
         owlDataRangeClass = createSystemCls(OWLNames.Cls.DATA_RANGE, getRootClses(), rdfsNamedClassClass);
 
@@ -820,8 +819,8 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
         adjustProtegeSystemFrames();
 
         if (!OWLNames.ClsID.THING.equals(((Cls) owlThingClass).getFrameID()) ||
-                !RDFSNames.ClsID.NAMED_CLASS.equals(rdfsNamedClassClass.getFrameID()) ||
-                !RDFNames.ClsID.PROPERTY.equals(rdfPropertyClass.getFrameID())) {
+            !RDFSNames.ClsID.NAMED_CLASS.equals(rdfsNamedClassClass.getFrameID()) ||
+            !RDFNames.ClsID.PROPERTY.equals(rdfPropertyClass.getFrameID())) {
             throw new RuntimeException("Fatal Metaclass Error: FrameIDs mismatch.  Perhaps a database rebuild required?");
         }
     }
@@ -829,7 +828,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
     private Slot createSystemSlot(String name, Cls type) {
         return createSlot(FrameID.createSystem(systemID++), name, Collections.singleton(type),
-                Collections.EMPTY_LIST, false);
+                          Collections.EMPTY_LIST, false);
     }
 
 
@@ -898,8 +897,8 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
     private void initOntologyMetaclass() {
         owlOntologyClass = createSystemCls(OWLNames.Cls.ONTOLOGY,
-                Collections.singleton(owlThingClass),
-                owlNamedClassClass);
+                                           Collections.singleton(owlThingClass),
+                                           owlNamedClassClass);
         owlOntologyPrefixesProperty = createSystemSlot(OWLNames.Slot.ONTOLOGY_PREFIXES, rdfPropertyClass);
         owlOntologyPrefixesProperty.setAllowsMultipleValues(true);
         owlOntologyPrefixesProperty.setValueType(ValueType.STRING);
@@ -935,13 +934,13 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
         owlAllValuesFromProperty = createSystemSlot(OWLNames.Slot.ALL_VALUES_FROM, rdfPropertyClass);
         owlAllValuesFromClass = createSystemCls(OWLNames.Cls.ALL_VALUES_FROM_RESTRICTION,
-                Collections.singleton(owlRestrictionClass), metaclass);
+                                                Collections.singleton(owlRestrictionClass), metaclass);
         owlAllValuesFromClass.addDirectTemplateSlot(owlAllValuesFromProperty);
 
         owlHasValueProperty = createSystemSlot(OWLNames.Slot.HAS_VALUE, rdfPropertyClass);
         owlHasValueProperty.setAllowsMultipleValues(false);
         owlHasValueClass = createSystemCls(OWLNames.Cls.HAS_VALUE_RESTRICTION,
-                Collections.singleton(owlRestrictionClass), metaclass);
+                                           Collections.singleton(owlRestrictionClass), metaclass);
         owlHasValueClass.addDirectTemplateSlot(owlHasValueProperty);
 
         final RDFSDatatype cardiRange = getXSDint();
@@ -950,7 +949,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
         owlMaxCardinalityProperty.setValueType(ValueType.INTEGER);
         owlMaxCardinalityProperty.setDirectOwnSlotValue(rdfsRangeProperty, cardiRange);
         owlMaxCardinalityClass = createSystemCls(OWLNames.Cls.MAX_CARDINALITY_RESTRICTION,
-                Collections.singleton(owlRestrictionClass), metaclass);
+                                                 Collections.singleton(owlRestrictionClass), metaclass);
         owlMaxCardinalityClass.addDirectTemplateSlot(owlMaxCardinalityProperty);
 
         owlMinCardinalityProperty = createSystemSlot(OWLNames.Slot.MIN_CARDINALITY, rdfPropertyClass);
@@ -958,7 +957,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
         owlMinCardinalityProperty.setValueType(ValueType.INTEGER);
         owlMinCardinalityProperty.setDirectOwnSlotValue(rdfsRangeProperty, cardiRange);
         owlMinCardinalityClass = createSystemCls(OWLNames.Cls.MIN_CARDINALITY_RESTRICTION,
-                Collections.singleton(owlRestrictionClass), metaclass);
+                                                 Collections.singleton(owlRestrictionClass), metaclass);
         owlMinCardinalityClass.addDirectTemplateSlot(owlMinCardinalityProperty);
 
         owlCardinalityProperty = createSystemSlot(OWLNames.Slot.CARDINALITY, rdfPropertyClass);
@@ -966,7 +965,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
         owlCardinalityProperty.setValueType(ValueType.INTEGER);
         owlCardinalityProperty.setDirectOwnSlotValue(rdfsRangeProperty, cardiRange);
         owlCardinalityClass = createSystemCls(OWLNames.Cls.CARDINALITY_RESTRICTION,
-                Collections.singleton(owlRestrictionClass), metaclass);
+                                              Collections.singleton(owlRestrictionClass), metaclass);
         owlCardinalityClass.addDirectTemplateSlot(owlCardinalityProperty);
 
         owlValuesFromProperty = createSystemSlot(OWLNames.Slot.VALUES_FROM, rdfPropertyClass);
@@ -978,7 +977,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
         owlSomeValuesFromProperty = createSystemSlot(OWLNames.Slot.SOME_VALUES_FROM, rdfPropertyClass);
         owlSomeValuesFromClass = createSystemCls(OWLNames.Cls.SOME_VALUES_FROM_RESTRICTION,
-                Collections.singleton(owlRestrictionClass), metaclass);
+                                                 Collections.singleton(owlRestrictionClass), metaclass);
         owlSomeValuesFromClass.addDirectTemplateSlot(owlSomeValuesFromProperty);
     }
 
@@ -1669,7 +1668,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
         for (Iterator it = kb.getInstances().iterator(); it.hasNext();) {
             Instance instance = (Instance) it.next();
             if (!(instance instanceof Cls) &&
-                    (instance.isEditable() || instance.isIncluded()) && !instance.isSystem()) {
+                (instance.isEditable() || instance.isIncluded()) && !instance.isSystem()) {
                 kb.deleteFrame(instance);
             }
         }
@@ -1737,7 +1736,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
         if (getNamespaceManager().getPrefix(ProtegeNames.NS) == null) {
             String prefix = "protege";
             getNamespaceManager().setPrefix(ProtegeNames.NS, prefix);
-            getNamespaceManager().setPrefix(XSPNames.NS, XSPNames.PREFIX);
+            getNamespaceManager().setPrefix(XSPNames.NS, XSPNames.DEFAULT_PREFIX);
         }
     }
 
@@ -1799,8 +1798,8 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
                         Collection elements = slotPattern.getElements();
                         final Slot slot = slotPattern.getFirstSlot();
                         if (elements.size() == 1 && slot != null &&
-                                !slot.equals(nameSlot) &&
-                                slot.getValueType() == ValueType.STRING) {
+                            !slot.equals(nameSlot) &&
+                            slot.getValueType() == ValueType.STRING) {
                             String defaultLanguage = getDefaultLanguage();
                             Collection values = null;
                             if (slot instanceof RDFProperty) {
@@ -1902,7 +1901,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     private Collection getClsesWithClassificationStatus(int status) {
         final Slot slot = getProtegeClassificationStatusProperty();
         Collection matches = getFramesWithValue(slot, null, false,
-                new Integer(status));
+                                                new Integer(status));
         List result = new ArrayList();
         for (Iterator it = matches.iterator(); it.hasNext();) {
             Frame frame = (Frame) it.next();
@@ -1994,8 +1993,8 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     public RepositoryManager getRepositoryManager() {
         if (repositoryManager == null) {
             repositoryManager = new RepositoryManager(this);
-	        RepositoryFileManager man = new RepositoryFileManager(this);
-	        man.loadGlobalRepositories();
+            RepositoryFileManager man = new RepositoryFileManager(this);
+            man.loadGlobalRepositories();
         }
         return repositoryManager;
     }
@@ -2344,12 +2343,12 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     }
 
 
-  /**
-   * Gets the array of OWL System frames.
-   * 
-   * An important side effect of this method is that it initializes
-   * several of the variables used by the AbstractOWLModel.
-   */
+    /**
+     * Gets the array of OWL System frames.
+     * <p/>
+     * An important side effect of this method is that it initializes
+     * several of the variables used by the AbstractOWLModel.
+     */
 
     protected Frame[] getOWLSystemFramesArray() {
         nameSlot = getSlot(Model.Slot.NAME);
@@ -2486,9 +2485,9 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
                 for (Iterator is = instances.iterator(); is.hasNext();) {
                     Instance instance = (Instance) is.next();
                     if (instance instanceof RDFIndividual &&
-                            !(instance instanceof OWLOntology) &&
-                            !(instance instanceof RDFList) &&
-                            !(instance instanceof OWLAllDifferent)) {
+                        !(instance instanceof OWLOntology) &&
+                        !(instance instanceof RDFList) &&
+                        !(instance instanceof OWLAllDifferent)) {
                         result.add(instance);
                     }
                 }
@@ -3024,11 +3023,11 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
     public boolean isTrueInstance(Instance instance) {
         return !(instance instanceof Slot) &&
-                !(instance instanceof Cls) &&
-                !(instance instanceof Facet) &&
-                !(instance instanceof OWLAllDifferent) &&
-                !(instance instanceof RDFList) &&
-                !(instance instanceof OWLOntology);
+               !(instance instanceof Cls) &&
+               !(instance instanceof Facet) &&
+               !(instance instanceof OWLAllDifferent) &&
+               !(instance instanceof RDFList) &&
+               !(instance instanceof OWLOntology);
     }
 
 
@@ -3074,8 +3073,8 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
 
     public Iterator listReferences(Object object, int maxResults) {
-        if(object instanceof DefaultRDFSLiteral) {
-            object = ((DefaultRDFSLiteral)object).getRawValue();
+        if (object instanceof DefaultRDFSLiteral) {
+            object = ((DefaultRDFSLiteral) object).getRawValue();
         }
         Iterator refs = getReferences(object, maxResults).iterator();
         List results = new ArrayList();
@@ -3148,31 +3147,31 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
 
     public void setProject(Project project) {
-      super.setProject(project);
-      if (bootstrapped) {
-        
-        setOWLProject(new DefaultOWLProject(project));
-        
-        project.setPrettyPrintSlotWidgetLabels(false);
-        
-        Slot nameSlot = getSlot(Model.Slot.NAME);
-        getRootCls().setDirectBrowserSlotPattern(new BrowserSlotPattern(nameSlot));
-        
-        project.setDefaultClsWidgetClassName(OWLFormWidget.class.getName());
-        
-        project.setWidgetMapper(new OWLWidgetMapper(this));
-        
-        if (project.isMultiUserServer()) {
-          FrameStoreManager fsm = getFrameStoreManager();
-          fsm.removeFrameStore(owlFrameStore);
-          owlFrameStore = null;
+        super.setProject(project);
+        if (bootstrapped) {
+
+            setOWLProject(new DefaultOWLProject(project));
+
+            project.setPrettyPrintSlotWidgetLabels(false);
+
+            Slot nameSlot = getSlot(Model.Slot.NAME);
+            getRootCls().setDirectBrowserSlotPattern(new BrowserSlotPattern(nameSlot));
+
+            project.setDefaultClsWidgetClassName(OWLFormWidget.class.getName());
+
+            project.setWidgetMapper(new OWLWidgetMapper(this));
+
+            if (project.isMultiUserServer()) {
+                FrameStoreManager fsm = getFrameStoreManager();
+                fsm.removeFrameStore(owlFrameStore);
+                owlFrameStore = null;
+            }
+
+            protegeClassificationStatusProperty.setVisible(false);
+            protegeInferredSuperclassesProperty.setVisible(false);
+            protegeInferredSubclassesProperty.setVisible(false);
+            owlOntologyClass.setVisible(false);
         }
-        
-        protegeClassificationStatusProperty.setVisible(false);
-        protegeInferredSuperclassesProperty.setVisible(false);
-        protegeInferredSubclassesProperty.setVisible(false);
-        owlOntologyClass.setVisible(false);
-      }
     }
 
 
@@ -3198,7 +3197,6 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
         this.taskManager = taskManager;
     }
 
-
     // OWLTestManager stuff -------------------------------------------------
 
     private final static String AUTO_REPAIR_ENABLED = "TestAutoRepairEnabled";
@@ -3218,7 +3216,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
         Collection tests = new ArrayList();
         Set disabledTestClasses = new HashSet();
         Iterator it = getOWLTestsSettingsMap().listKeys();
-        while(it.hasNext()) {
+        while (it.hasNext()) {
             disabledTestClasses.add(it.next());
         }
         for (int i = 0; i < classes.length; i++) {
@@ -3689,28 +3687,28 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
      */
     public void replacePrefixInInstances(String oldPrefix, String newPrefix) {
         // Need to go through each triple store
-	    TripleStoreModel tsm = getTripleStoreModel();
-	    TripleStore activeTripleStore = tsm.getActiveTripleStore();
-	    for(Iterator it = tsm.listUserTripleStores(); it.hasNext(); ) {
-			TripleStore curTripleStore = (TripleStore) it.next();
-		    tsm.setActiveTripleStore(curTripleStore);
-		    for(Iterator resIt = curTripleStore.listHomeResources(); resIt.hasNext(); ) {
-			    RDFResource resource = (RDFResource) resIt.next();
-				if(resource.getNamespacePrefix() != null &&
-				   resource.getNamespacePrefix().equals(oldPrefix)) {
-					String localName = resource.getLocalName();
-					String newName = localName;
-					if (newPrefix != null && newPrefix.length() > 0) {
-						newName = newPrefix + ":" + localName;
-					}
-					if (getFrame(newName) != null) {
-						newName = getUniqueFrameName(newName);
-					}
-					resource.setName(newName);
-				}
-		    }
-	    }
-	    tsm.setActiveTripleStore(activeTripleStore);
+        TripleStoreModel tsm = getTripleStoreModel();
+        TripleStore activeTripleStore = tsm.getActiveTripleStore();
+        for (Iterator it = tsm.listUserTripleStores(); it.hasNext();) {
+            TripleStore curTripleStore = (TripleStore) it.next();
+            tsm.setActiveTripleStore(curTripleStore);
+            for (Iterator resIt = curTripleStore.listHomeResources(); resIt.hasNext();) {
+                RDFResource resource = (RDFResource) resIt.next();
+                if (resource.getNamespacePrefix() != null &&
+                    resource.getNamespacePrefix().equals(oldPrefix)) {
+                    String localName = resource.getLocalName();
+                    String newName = localName;
+                    if (newPrefix != null && newPrefix.length() > 0) {
+                        newName = newPrefix + ":" + localName;
+                    }
+                    if (getFrame(newName) != null) {
+                        newName = getUniqueFrameName(newName);
+                    }
+                    resource.setName(newName);
+                }
+            }
+        }
+        tsm.setActiveTripleStore(activeTripleStore);
     }
 
 

@@ -25,14 +25,14 @@ public class DefaultRDFSDatatypeFactory implements RDFSDatatypeFactory {
 
     public RDFSDatatype createDatatype(RDFSDatatype baseType, String name) {
         RDFSDatatype datatype = owlModel.createRDFSDatatype(name);
-        RDFProperty property = owlModel.getRDFProperty(XSPNames.BASE);
+        RDFProperty property = XSPNames.getRDFProperty(owlModel, XSPNames.XSP_BASE);
         datatype.setPropertyValue(property, baseType);
         return datatype;
     }
 
 
     public void setLength(RDFSDatatype datatype, int value) {
-        RDFProperty property = owlModel.getRDFProperty(XSPNames.LENGTH);
+        RDFProperty property = XSPNames.getRDFProperty(owlModel, XSPNames.XSP_LENGTH);
         if (value >= 0) {
             datatype.setPropertyValue(property, new Integer(value));
         }
@@ -43,19 +43,19 @@ public class DefaultRDFSDatatypeFactory implements RDFSDatatypeFactory {
 
 
     public void setMaxExclusive(RDFSDatatype datatype, RDFSLiteral literal) {
-        RDFProperty property = owlModel.getRDFProperty(XSPNames.MAX_EXCLUSIVE);
+        RDFProperty property = XSPNames.getRDFProperty(owlModel, XSPNames.XSP_MAX_EXCLUSIVE);
         datatype.setPropertyValue(property, literal);
     }
 
 
     public void setMaxInclusive(RDFSDatatype datatype, RDFSLiteral literal) {
-        RDFProperty property = owlModel.getRDFProperty(XSPNames.MAX_INCLUSIVE);
+        RDFProperty property = XSPNames.getRDFProperty(owlModel, XSPNames.XSP_MAX_INCLUSIVE);
         datatype.setPropertyValue(property, literal);
     }
 
 
     public void setMaxLength(RDFSDatatype datatype, int value) {
-        RDFProperty property = owlModel.getRDFProperty(XSPNames.MAX_LENGTH);
+        RDFProperty property = XSPNames.getRDFProperty(owlModel, XSPNames.XSP_MAX_LENGTH);
         if (value >= 0) {
             datatype.setPropertyValue(property, new Integer(value));
         }
@@ -66,19 +66,19 @@ public class DefaultRDFSDatatypeFactory implements RDFSDatatypeFactory {
 
 
     public void setMinExclusive(RDFSDatatype datatype, RDFSLiteral literal) {
-        RDFProperty property = owlModel.getRDFProperty(XSPNames.MIN_EXCLUSIVE);
+        RDFProperty property = XSPNames.getRDFProperty(owlModel, XSPNames.XSP_MIN_EXCLUSIVE);
         datatype.setPropertyValue(property, literal);
     }
 
 
     public void setMinInclusive(RDFSDatatype datatype, RDFSLiteral literal) {
-        RDFProperty property = owlModel.getRDFProperty(XSPNames.MIN_INCLUSIVE);
+        RDFProperty property = XSPNames.getRDFProperty(owlModel, XSPNames.XSP_MIN_INCLUSIVE);
         datatype.setPropertyValue(property, literal);
     }
 
 
     public void setMinLength(RDFSDatatype datatype, int value) {
-        RDFProperty property = owlModel.getRDFProperty(XSPNames.MIN_LENGTH);
+        RDFProperty property = XSPNames.getRDFProperty(owlModel, XSPNames.XSP_MIN_LENGTH);
         if (value >= 0) {
             datatype.setPropertyValue(property, new Integer(value));
         }
@@ -89,7 +89,7 @@ public class DefaultRDFSDatatypeFactory implements RDFSDatatypeFactory {
 
 
     public void setPattern(RDFSDatatype datatype, String value) {
-        RDFProperty property = owlModel.getRDFProperty(XSPNames.PATTERN);
+        RDFProperty property = XSPNames.getRDFProperty(owlModel, XSPNames.XSP_PATTERN);
         datatype.setPropertyValue(property, value);
     }
 }

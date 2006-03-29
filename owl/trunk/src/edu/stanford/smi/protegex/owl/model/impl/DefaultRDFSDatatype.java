@@ -37,17 +37,17 @@ public class DefaultRDFSDatatype extends DefaultRDFIndividual implements RDFSDat
         if (object instanceof RDFSDatatype) {
             RDFSDatatype datatype = (RDFSDatatype) object;
             return datatype.getURI() == getURI() &&
-                    datatype.getMaxExclusive().equalsStructurally(getMaxExclusive()) &&
-                    datatype.getMinExclusive().equalsStructurally(getMinExclusive()) &&
-                    datatype.getMaxInclusive().equalsStructurally(getMaxInclusive()) &&
-                    datatype.getMinInclusive().equalsStructurally(getMinInclusive());
+                   datatype.getMaxExclusive().equalsStructurally(getMaxExclusive()) &&
+                   datatype.getMinExclusive().equalsStructurally(getMinExclusive()) &&
+                   datatype.getMaxInclusive().equalsStructurally(getMaxInclusive()) &&
+                   datatype.getMinInclusive().equalsStructurally(getMinInclusive());
         }
         return false;
     }
 
 
     public RDFSDatatype getBaseDatatype() {
-        RDFProperty property = getOWLModel().getRDFProperty(XSPNames.BASE);
+        RDFProperty property = XSPNames.getRDFProperty(getOWLModel(), XSPNames.XSP_BASE);
         if (property != null) {
             return (RDFSDatatype) getPropertyValue(property);
         }
@@ -55,7 +55,6 @@ public class DefaultRDFSDatatype extends DefaultRDFIndividual implements RDFSDat
             return null; // getBaseDatatypeXSD();
         }
     }
-
 
 //    private RDFSDatatype getBaseDatatypeXSD() {
 //        XSSimpleType simpleType = getXSSimpleType();
@@ -150,7 +149,6 @@ public class DefaultRDFSDatatype extends DefaultRDFIndividual implements RDFSDat
         }
     }
 
-
 //    private Number getFacetValue(String facetName) {
 //        XSSimpleType simpleType = getXSSimpleType();
 //        if (simpleType != null) {
@@ -211,46 +209,42 @@ public class DefaultRDFSDatatype extends DefaultRDFIndividual implements RDFSDat
 
 
     public int getLength() {
-        return getIntPropertyValue(XSPNames.LENGTH);
+        return getIntPropertyValue(XSPNames.getName(getOWLModel(), XSPNames.XSP_LENGTH));
     }
 
 
     public RDFSLiteral getMaxExclusive() {
-        return getPropertyValueLiteral(XSPNames.MAX_EXCLUSIVE);
-        // return getFacetValue(XSDNames.Facet.MAX_EXCLUSIVE);
+        return getPropertyValueLiteral(XSPNames.getName(getOWLModel(), XSPNames.XSP_MAX_EXCLUSIVE));
     }
 
 
     public RDFSLiteral getMaxInclusive() {
-        return getPropertyValueLiteral(XSPNames.MAX_INCLUSIVE);
-        // return getFacetValue(XSDNames.Facet.MAX_INCLUSIVE);
+        return getPropertyValueLiteral(XSPNames.getName(getOWLModel(), XSPNames.XSP_MAX_INCLUSIVE));
     }
 
 
     public int getMaxLength() {
-        return getIntPropertyValue(XSPNames.MAX_LENGTH);
+        return getIntPropertyValue(XSPNames.getName(getOWLModel(), XSPNames.XSP_MAX_LENGTH));
     }
 
 
     public RDFSLiteral getMinExclusive() {
-        return getPropertyValueLiteral(XSPNames.MIN_EXCLUSIVE);
-        // return getFacetValue(XSDNames.Facet.MIN_EXCLUSIVE);
+        return getPropertyValueLiteral(XSPNames.getName(getOWLModel(), XSPNames.XSP_MIN_EXCLUSIVE));
     }
 
 
     public RDFSLiteral getMinInclusive() {
-        return getPropertyValueLiteral(XSPNames.MIN_INCLUSIVE);
-        // return getFacetValue(XSDNames.Facet.MIN_INCLUSIVE);
+        return getPropertyValueLiteral(XSPNames.getName(getOWLModel(), XSPNames.XSP_MIN_INCLUSIVE));
     }
 
 
     public int getMinLength() {
-        return getIntPropertyValue(XSPNames.MIN_LENGTH);
+        return getIntPropertyValue(XSPNames.getName(getOWLModel(), XSPNames.XSP_MIN_LENGTH));
     }
 
 
     public String getPattern() {
-        RDFProperty property = getOWLModel().getRDFProperty(XSPNames.PATTERN);
+        RDFProperty property = XSPNames.getRDFProperty(getOWLModel(), XSPNames.XSP_PATTERN);
         if (property != null) {
             Object value = getPropertyValue(property);
             if (value != null) {
@@ -271,11 +265,9 @@ public class DefaultRDFSDatatype extends DefaultRDFIndividual implements RDFSDat
         }
     }
 
-
 //    private RDFProperty getSimpleTypeLiteralProperty() {
 //        return getOWLModel().getRDFSLabelProperty(); //
 //    }
-
 
 //    private XSSimpleType getXSSimpleType() {
 //        RDFProperty stlProperty = getSimpleTypeLiteralProperty();
@@ -405,8 +397,8 @@ public class DefaultRDFSDatatype extends DefaultRDFIndividual implements RDFSDat
         if (owlModel.isProtegeMetaOntologyImported()) {
             int index = 3;
             while (index < expression.length() &&
-                    expression.charAt(index) != '(' &&
-                    expression.charAt(index) != '[') {
+                   expression.charAt(index) != '(' &&
+                   expression.charAt(index) != '[') {
                 index++;
             }
             if (index < expression.length()) {
@@ -417,15 +409,15 @@ public class DefaultRDFSDatatype extends DefaultRDFIndividual implements RDFSDat
                     map.put(subDatatypeOfProperty, datatype);
                     RDFProperty minProperty = null;
                     if (expression.charAt(index) == '(') {
-                        minProperty = owlModel.getRDFProperty(XSPNames.MIN_EXCLUSIVE);
+                        minProperty = XSPNames.getRDFProperty(owlModel, XSPNames.XSP_MIN_EXCLUSIVE);
                     }
                     else {
-                        minProperty = owlModel.getRDFProperty(XSPNames.MIN_INCLUSIVE);
+                        minProperty = XSPNames.getRDFProperty(owlModel, XSPNames.XSP_MIN_INCLUSIVE);
                     }
                     String rest = expression.substring(index + 1).trim();
                     int minEnd = 0;
                     while (minEnd < rest.length() &&
-                            (Character.isDigit(rest.charAt(minEnd)) || rest.charAt(minEnd) == '.')) {
+                           (Character.isDigit(rest.charAt(minEnd)) || rest.charAt(minEnd) == '.')) {
                         minEnd++;
                     }
                     String min = rest.substring(0, minEnd);
@@ -441,12 +433,12 @@ public class DefaultRDFSDatatype extends DefaultRDFIndividual implements RDFSDat
                         rest = rest.substring(maxStart);
                         int maxEnd = 0;
                         while (maxEnd < rest.length() &&
-                                (Character.isDigit(rest.charAt(maxEnd)) || rest.charAt(maxEnd) == '.')) {
+                               (Character.isDigit(rest.charAt(maxEnd)) || rest.charAt(maxEnd) == '.')) {
                             maxEnd++;
                         }
-                        RDFProperty maxProperty = owlModel.getRDFProperty(XSPNames.MAX_INCLUSIVE);
+                        RDFProperty maxProperty = XSPNames.getRDFProperty(owlModel, XSPNames.XSP_MAX_INCLUSIVE);
                         if (rest.endsWith(")")) {
-                            maxProperty = owlModel.getRDFProperty(XSPNames.MAX_EXCLUSIVE);
+                            maxProperty = XSPNames.getRDFProperty(owlModel, XSPNames.XSP_MAX_EXCLUSIVE);
                         }
                         String max = rest.substring(0, maxEnd);
                         if (max.length() > 0 && Character.isDigit(max.charAt(0))) {

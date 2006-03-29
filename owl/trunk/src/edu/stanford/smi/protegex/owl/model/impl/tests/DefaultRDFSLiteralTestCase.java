@@ -139,7 +139,7 @@ public class DefaultRDFSLiteralTestCase extends AbstractJenaTestCase {
     public void testCreateLiteralWithAnonymousDatatype() throws Exception {
         loadRemoteOntologyWithProtegeMetadataOntology();
         RDFSDatatype datatype = owlModel.createRDFSDatatype(owlModel.getNextAnonymousResourceName());
-        RDFProperty subDatatypeOfProperty = owlModel.getRDFProperty(XSPNames.BASE);
+        RDFProperty subDatatypeOfProperty = XSPNames.getRDFProperty(owlModel, XSPNames.XSP_BASE);
         datatype.setPropertyValue(subDatatypeOfProperty, owlModel.getXSDint());
         RDFSLiteral literal = owlModel.createRDFSLiteral("10", datatype);
         assertEquals(owlModel.getXSDint(), literal.getDatatype());
