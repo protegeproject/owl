@@ -1,7 +1,5 @@
 package edu.stanford.smi.protegex.owl.database;
 
-import java.util.List;
-
 import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntModelSpec;
@@ -14,22 +12,16 @@ import com.hp.hpl.jena.vocabulary.OWL;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
 import com.hp.hpl.jena.vocabulary.ReasonerVocabulary;
-
 import edu.stanford.smi.protege.model.KnowledgeBaseFactory;
 import edu.stanford.smi.protege.model.Project;
 import edu.stanford.smi.protege.model.framestore.AbstractFrameStoreInvocationHandler;
 import edu.stanford.smi.protege.model.framestore.EventGeneratorFrameStore;
 import edu.stanford.smi.protege.model.framestore.FrameStore;
-import edu.stanford.smi.protege.model.framestore.MergingNarrowFrameStore;
 import edu.stanford.smi.protegex.owl.database.triplestore.DatabaseTripleStoreModel;
 import edu.stanford.smi.protegex.owl.jena.Jena;
 import edu.stanford.smi.protegex.owl.jena.OntModelProvider;
 import edu.stanford.smi.protegex.owl.jena.creator.JenaCreator;
-import edu.stanford.smi.protegex.owl.model.NamespaceManager;
-import edu.stanford.smi.protegex.owl.model.OWLNames;
-import edu.stanford.smi.protegex.owl.model.OWLOntology;
-import edu.stanford.smi.protegex.owl.model.RDFNames;
-import edu.stanford.smi.protegex.owl.model.RDFSNames;
+import edu.stanford.smi.protegex.owl.model.*;
 import edu.stanford.smi.protegex.owl.model.factory.OWLJavaFactory;
 import edu.stanford.smi.protegex.owl.model.framestore.LocalClassificationFrameStore;
 import edu.stanford.smi.protegex.owl.model.framestore.OWLFrameFactoryInvocationHandler;
@@ -38,14 +30,16 @@ import edu.stanford.smi.protegex.owl.model.impl.OWLNamespaceManager;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreModel;
 import edu.stanford.smi.protegex.owl.ui.widget.ModalProgressBarManager;
 
+import java.util.List;
+
 /**
  * An AbstractOWLModel with extra support for databases.
  *
  * @author Holger Knublauch  <holger@knublauch.com>
  */
-public class OWLDatabaseModel 
-  extends AbstractOWLModel 
-  implements OntModelProvider {
+public class OWLDatabaseModel
+        extends AbstractOWLModel
+        implements OntModelProvider {
 
     private TripleStoreModel tripleStoreModel;
 
@@ -53,17 +47,16 @@ public class OWLDatabaseModel
     public OWLDatabaseModel(KnowledgeBaseFactory factory) {
         super(factory);
     }
-    
+
     /**
      * Initializes the OWLDatabaseModel in the case that it is a client of a remote server.
-     * 
-     * This is a little delicate because there is no database and no NarrowFrameStores.  
+     * <p/>
+     * This is a little delicate because there is no database and no NarrowFrameStores.
      * Many of the assumptions of the OWLDatabaseModel class are invalid.
-     *
      */
     public void initializeClient() {
-      getOWLSystemFramesArray();
-      initialize();
+        getOWLSystemFramesArray();
+        initialize();
     }
 
     public void initialize() {
@@ -71,13 +64,10 @@ public class OWLDatabaseModel
         super.initialize(namespaceManager);
         initCustomFrameStores();
         setFrameFactory(new OWLJavaFactory(this));
-        
-        updateProtegeMetaOntologyImported();
         adjustThing();
         adjustSystemClasses();
         getNamespaceManager().update();
     }
-
 
 
     public OWLOntology getDefaultOWLOntology() {
@@ -96,7 +86,7 @@ public class OWLDatabaseModel
 
         long startTime = System.currentTimeMillis();
         JenaCreator creator = new JenaCreator(this, false, null,
-                new ModalProgressBarManager("Converting Ontology"));
+                                              new ModalProgressBarManager("Converting Ontology"));
         OntModel ontModel = creator.createOntModel();
         long endTime = System.currentTimeMillis();
         System.out.println("[OWLDatabaseModel.getOntModel] Duration " + (endTime - startTime));
@@ -108,7 +98,7 @@ public class OWLDatabaseModel
         // return new JenaDLConverter(getOntModel()).convertOntModel();
         long startTime = System.currentTimeMillis();
         JenaCreator creator = new JenaCreator(this, true, null,
-                new ModalProgressBarManager("Preparing Ontology"));
+                                              new ModalProgressBarManager("Preparing Ontology"));
         OntModel ontModel = creator.createOntModel();
         // ontModel.write(System.out, ModelLoader.langXMLAbbrev);
         long endTime = System.currentTimeMillis();
@@ -157,9 +147,9 @@ public class OWLDatabaseModel
         }
         return tripleStoreModel;
     }
-    
+
     public void setTripleStoreModel(TripleStoreModel tripleStoreModel) {
-      this.tripleStoreModel = tripleStoreModel;
+        this.tripleStoreModel = tripleStoreModel;
     }
 
 

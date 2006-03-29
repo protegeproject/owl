@@ -2,7 +2,9 @@ package edu.stanford.smi.protegex.owl.ui.menu.preferences;
 
 import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.model.OWLOntology;
 import edu.stanford.smi.protegex.owl.model.ProtegeNames;
+import edu.stanford.smi.protegex.owl.model.impl.OWLUtil;
 import edu.stanford.smi.protegex.owl.model.util.ImportHelper;
 import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
 
@@ -19,11 +21,11 @@ import java.net.URI;
  */
 public class ProtegeSettingsPanel extends JComponent {
 
-    private JCheckBox importProtegeOntologyCheckBox;
-
     private OWLModel owlModel;
 
-    private JCheckBox userDefinedDatatypesCheckBox;
+    private JCheckBox importMetaCBox;
+
+    private JCheckBox userDatatypesCBox;
 
     public final static String USER_DEFINED_DATATYPES = "edu.stanford.smi.protegex.owl.userDefinedDatatypes";
 
@@ -31,10 +33,10 @@ public class ProtegeSettingsPanel extends JComponent {
     ProtegeSettingsPanel(final JenaOWLModel owlModel) {
         this.owlModel = owlModel;
 
-        importProtegeOntologyCheckBox = new JCheckBox("Import Protege metadata ontology");
-        importProtegeOntologyCheckBox.addActionListener(new ActionListener() {
+        importMetaCBox = new JCheckBox("Import Protege metadata ontology");
+        importMetaCBox.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                if (importProtegeOntologyCheckBox.isSelected()) {
+                if (importMetaCBox.isSelected()) {
                     enableProtegeOntology();
                 }
                 else {
@@ -42,42 +44,53 @@ public class ProtegeSettingsPanel extends JComponent {
                 }
             }
         });
-        importProtegeOntologyCheckBox.setSelected(owlModel.getDefaultOWLOntology().getImports().contains(ProtegeNames.FILE));
+        if (owlModel.isProtegeMetaOntologyImported()) {
+            importMetaCBox.setSelected(true);
+            if (!isMetadataOntologyImportedDirectly(OWLUtil.getActiveOntology(owlModel))) {
+                importMetaCBox.setEnabled(false);
+            }
+        }
 
-        userDefinedDatatypesCheckBox = new JCheckBox("Support user-defined XML Schema datatypes (numeric ranges)");
-        userDefinedDatatypesCheckBox.addActionListener(new ActionListener() {
+        userDatatypesCBox = new JCheckBox("Support user-defined XML Schema datatypes (numeric ranges)");
+        userDatatypesCBox.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                setUserDefinedDatatypesSupported(owlModel, userDefinedDatatypesCheckBox.isSelected());
+                setUserDefinedDatatypesSupported(owlModel, userDatatypesCBox.isSelected());
                 ProtegeUI.reloadUI(owlModel);
             }
         });
-        updateUserDefinedDatatypesCheckBox();
+        userDatatypesCBox.setEnabled(importMetaCBox.isSelected() &&
+                                     importMetaCBox.isEnabled());
+        userDatatypesCBox.setSelected(ProtegeSettingsPanel.isUserDefinedDatatypesSupported(owlModel));
 
         setBorder(BorderFactory.createTitledBorder("Protege Features"));
         setLayout(new GridLayout(2, 1));
-        add(importProtegeOntologyCheckBox);
-        add(userDefinedDatatypesCheckBox);
+        add(importMetaCBox);
+        add(userDatatypesCBox);
     }
 
 
     private void disableProtegeOntology() {
-        if(owlModel.isProtegeMetaOntologyImported() == true) {
+        if (OWLUtil.confirmSaveAndReload(owlModel.getProject())) {
             owlModel.getDefaultOWLOntology().removeImports(ProtegeNames.FILE);
-            userDefinedDatatypesCheckBox.setEnabled(false);
+            OWLUtil.saveAndReloadProject();
         }
+
+        userDatatypesCBox.setSelected(false);
+        userDatatypesCBox.setEnabled(false);
     }
 
 
     private void enableProtegeOntology() {
-        if(owlModel.isProtegeMetaOntologyImported() == false) {
-            ImportHelper importHelper = new ImportHelper((JenaOWLModel)owlModel);
+        if (!owlModel.isProtegeMetaOntologyImported()) {
+            ImportHelper importHelper = new ImportHelper((JenaOWLModel) owlModel);
             try {
                 URI uri = new URI(ProtegeNames.FILE);
                 importHelper.addImport(uri);
                 importHelper.importOntologies();
                 owlModel.getNamespaceManager().setPrefix(ProtegeNames.NS, ProtegeNames.PROTEGE_PREFIX);
-                userDefinedDatatypesCheckBox.setEnabled(true);
-            } catch (Exception e) {
+                userDatatypesCBox.setEnabled(true);
+            }
+            catch (Exception e) {
                 ProtegeUI.getModalDialogFactory().showErrorMessageDialog(owlModel, e.getMessage());
             }
         }
@@ -94,8 +107,12 @@ public class ProtegeSettingsPanel extends JComponent {
     }
 
 
-    private void updateUserDefinedDatatypesCheckBox() {
-        userDefinedDatatypesCheckBox.setEnabled(importProtegeOntologyCheckBox.isSelected());
-        userDefinedDatatypesCheckBox.setSelected(ProtegeSettingsPanel.isUserDefinedDatatypesSupported(owlModel));
+    private boolean isMetadataOntologyImportedDirectly(OWLOntology ont) {
+        return ont.getImportResources().contains(getMetadataOnt());
+    }
+
+
+    private OWLOntology getMetadataOnt() {
+        return owlModel.getOWLOntologyByURI(ProtegeNames.FILE);
     }
 }
