@@ -20,7 +20,7 @@ import java.awt.event.KeyEvent;
  * @author Nick Drummond, Medical Informatics Group, University of Manchester
  *         17-Jan-2006
  */
-public class InstanceNameEditor extends JTextField{
+public class InstanceNameEditor extends JTextField {
 
     private DocumentChangedListener documentListener = new DocumentChangedListener() {
         public void insertUpdate(DocumentEvent event) {
@@ -45,6 +45,11 @@ public class InstanceNameEditor extends JTextField{
         public void nameChanged(FrameEvent event) {
             updateAll();
         }
+
+        public void deleted(FrameEvent event) {
+            instance = null;
+            updateAll();
+        }
     };
 
     private Instance instance;
@@ -62,13 +67,13 @@ public class InstanceNameEditor extends JTextField{
 
         addKeyListener(new KeyAdapter() {
             public void keyPressed(KeyEvent event) {
-                switch(event.getKeyCode()){
-                case KeyEvent.VK_ENTER:
-                    attemptCommit();
-                    break;
-                case KeyEvent.VK_ESCAPE:
-                    updateAll();
-                    break;
+                switch (event.getKeyCode()) {
+                    case KeyEvent.VK_ENTER:
+                        attemptCommit();
+                        break;
+                    case KeyEvent.VK_ESCAPE:
+                        updateAll();
+                        break;
                 }
             }
         });
@@ -90,7 +95,7 @@ public class InstanceNameEditor extends JTextField{
 
 
     protected void attemptCommit() {
-        if (instance != null) {
+        if (instance != null && !instance.isBeingDeleted()) {
             String newName = getText();
             if (isValidName(newName)) {
                 String oldName = instance.getName();
