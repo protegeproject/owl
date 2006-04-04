@@ -34,7 +34,7 @@ public interface RDFSClass extends ProtegeCls, RDFResource {
     /**
      * Creates a copy of anonymous classes which contain a completely new expression tree.
      * Named classes are NOT copied.
-     * 
+     *
      * @return a clone of this or the object itself for named classes
      */
     RDFSClass createClone();
@@ -52,6 +52,9 @@ public interface RDFSClass extends ProtegeCls, RDFResource {
     /**
      * Gets all OWLAnonymousClasses the life cycle of which depends on this.
      * These are deleted when this is deleted.
+     * <p/>
+     * From existing usage, it appears that only the direct anonymous
+     * classes are required to be returned - these are then iterated over
      *
      * @return a Collection of OWLAnonymousClass instances
      */
