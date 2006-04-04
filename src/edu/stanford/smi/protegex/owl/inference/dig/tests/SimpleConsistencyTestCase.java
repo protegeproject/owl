@@ -12,8 +12,12 @@ import java.net.URI;
  * @prowl.junit.dig
  */
 public class SimpleConsistencyTestCase extends AbstractDIGReasonerTestCase {
+    
 
     public void testDisjointSubclassInconsistency() throws Exception {
+        if (!reasonerInitialized()) {
+          return;
+        }
         loadTestOntology(new URI("file:./test/inconsistent.owl"));
         computeAndCheckInconsistentConcepts();
     }
