@@ -3,6 +3,7 @@ package edu.stanford.smi.protegex.owl.model.patcher;
 import edu.stanford.smi.protege.model.KnowledgeBase;
 import edu.stanford.smi.protege.model.Reference;
 import edu.stanford.smi.protegex.owl.model.*;
+import edu.stanford.smi.protegex.owl.model.framestore.OWLFrameStore;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultRDFProperty;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 
@@ -39,7 +40,8 @@ public class DefaultOWLModelPatcher implements OWLModelPatcher {
             }
         }
         RDFProperty dummy = new DefaultRDFProperty(kb, resource.getFrameID());
-        Iterator frames = resource.getOWLModel().getOWLFrameStore().getFramesWithAnyDirectOwnSlotValue(dummy).iterator();
+        OWLFrameStore owlFS = resource.getOWLModel().getOWLFrameStore();
+        Iterator frames = owlFS.getFramesWithAnyDirectOwnSlotValue(dummy).iterator();
         if (frames.hasNext()) {
             return resource.getOWLModel().getRDFPropertyClass();
         }
