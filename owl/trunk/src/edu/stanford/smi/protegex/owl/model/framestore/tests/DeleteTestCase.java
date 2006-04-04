@@ -1,5 +1,6 @@
 package edu.stanford.smi.protegex.owl.model.framestore.tests;
 
+import edu.stanford.smi.protege.model.Frame;
 import edu.stanford.smi.protege.model.Instance;
 import edu.stanford.smi.protegex.owl.model.*;
 import edu.stanford.smi.protegex.owl.tests.AbstractJenaTestCase;
@@ -50,7 +51,16 @@ public class DeleteTestCase extends AbstractJenaTestCase {
     public void testDeletePerson() {
         int count = owlModel.getClsCount();
         setup();
-        personCls.delete();  // Should delete everything
+        personCls.delete();  // Should delete all anonymous classes
         assertEquals(count + 1, owlModel.getClsCount());
+    }
+
+    public void testDeleteInstance() {
+        setup();
+        int count = owlModel.getInstanceCount(genderCls);
+        male.delete();
+        assertEquals(count - 1, owlModel.getInstanceCount(genderCls));
+        Frame test = owlModel.getFrame("male");
+        assertNull(test);
     }
 }
