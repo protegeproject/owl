@@ -78,7 +78,7 @@ public class ImportsTreePanel extends JPanel implements HostResourceDisplay, Dis
             public void onSelectionChange() {
                 Collection sel = getSelection();
                 DefaultOWLOntology ont = (DefaultOWLOntology) CollectionUtilities.getFirstItem(sel);
-                setAllowed(ont == OWLUtil.getActiveOntology(ont.getOWLModel()));
+                setAllowed(ont != null && ont == OWLUtil.getActiveOntology(ont.getOWLModel()));
             }
         };
     }
@@ -94,7 +94,7 @@ public class ImportsTreePanel extends JPanel implements HostResourceDisplay, Dis
             public void onSelectionChange() {
                 Collection sel = getSelection();
                 DefaultOWLOntology ont = (DefaultOWLOntology) CollectionUtilities.getFirstItem(sel);
-                setAllowed(ont == OWLUtil.getActiveOntology(ont.getOWLModel()));
+                setAllowed(ont != null && ont == OWLUtil.getActiveOntology(ont.getOWLModel()));
             }
         };
     }
