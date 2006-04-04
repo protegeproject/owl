@@ -1,26 +1,37 @@
 package edu.stanford.smi.protegex.owl.tests;
 
-import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
-import com.hp.hpl.jena.ontology.DatatypeProperty;
-import com.hp.hpl.jena.ontology.OntDocumentManager;
-import com.hp.hpl.jena.ontology.OntProperty;
-import com.hp.hpl.jena.ontology.OntResource;
-import com.hp.hpl.jena.rdf.model.*;
-import edu.stanford.smi.protege.model.Project;
-import edu.stanford.smi.protege.model.ValueType;
-import edu.stanford.smi.protegex.owl.jena.Jena;
-import edu.stanford.smi.protegex.owl.jena.JenaKnowledgeBaseFactory;
-import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
-import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
-import edu.stanford.smi.protegex.owl.model.impl.XMLSchemaDatatypes;
-import junit.framework.TestCase;
-
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Properties;
+
+import junit.framework.TestCase;
+
+import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
+import com.hp.hpl.jena.ontology.DatatypeProperty;
+import com.hp.hpl.jena.ontology.OntDocumentManager;
+import com.hp.hpl.jena.ontology.OntProperty;
+import com.hp.hpl.jena.ontology.OntResource;
+import com.hp.hpl.jena.rdf.model.Literal;
+import com.hp.hpl.jena.rdf.model.NodeIterator;
+import com.hp.hpl.jena.rdf.model.RDFNode;
+import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.Statement;
+import com.hp.hpl.jena.rdf.model.StmtIterator;
+
+import edu.stanford.smi.protege.model.Project;
+import edu.stanford.smi.protege.model.ValueType;
+import edu.stanford.smi.protege.util.ApplicationProperties;
+import edu.stanford.smi.protegex.owl.jena.Jena;
+import edu.stanford.smi.protegex.owl.jena.JenaKnowledgeBaseFactory;
+import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
+import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
+import edu.stanford.smi.protegex.owl.model.impl.XMLSchemaDatatypes;
 
 /**
  * The base class of various JUnit tests for OWL.
@@ -34,6 +45,8 @@ public abstract class AbstractOWLTestCase extends TestCase {
     protected Project project;
 
     protected OWLNamedClass owlThing;
+    
+    private static Properties junitProperties;
 
 
     public static void assertContains(Object value, Collection collection) {
@@ -154,4 +167,24 @@ public abstract class AbstractOWLTestCase extends TestCase {
         owlModel = null;
         owlThing = null;
     }
+    
+    public static Properties getJunitProperties() {
+      if (junitProperties != null) {
+        return junitProperties;
+      }
+      try {
+        Properties dbp = new Properties();
+        String dbPropertyFile = ApplicationProperties.getApplicationDirectory().getPath()
+                                   +  File.separator
+                                   + "junit.properties";
+        InputStream is = new FileInputStream(dbPropertyFile);
+        dbp.load(is);
+        junitProperties = dbp;
+        return junitProperties;
+      } catch (Exception e) {
+        return null;
+      }
+    }
+
+
 }
