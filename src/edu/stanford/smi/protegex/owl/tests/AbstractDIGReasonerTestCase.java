@@ -3,6 +3,14 @@
  */
 package edu.stanford.smi.protegex.owl.tests;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Properties;
+
+import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.inference.dig.exception.DIGReasonerException;
 import edu.stanford.smi.protegex.owl.inference.dig.reasoner.DIGReasonerIdentity;
 import edu.stanford.smi.protegex.owl.inference.protegeowl.ProtegeOWLReasoner;
@@ -14,20 +22,29 @@ import edu.stanford.smi.protegex.owl.inference.protegeowl.log.ReasonerLoggerList
 import edu.stanford.smi.protegex.owl.inference.protegeowl.task.ReasonerTaskEvent;
 import edu.stanford.smi.protegex.owl.inference.protegeowl.task.ReasonerTaskListener;
 import edu.stanford.smi.protegex.owl.inference.util.ReasonerUtil;
-import edu.stanford.smi.protegex.owl.model.*;
-
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
+import edu.stanford.smi.protegex.owl.model.OWLDatatypeProperty;
+import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
+import edu.stanford.smi.protegex.owl.model.OWLNames;
+import edu.stanford.smi.protegex.owl.model.RDFProperty;
+import edu.stanford.smi.protegex.owl.model.RDFSLiteral;
 
 /**
  * @author Nicolas Rouquette
  */
 public class AbstractDIGReasonerTestCase extends AbstractJenaTestCase {
+    public static final String REASONER_URL_PROPERTY = "junit.dig.url";
 
-    private static String REASONER_URL = "http://localhost:8081";
+    private static String REASONER_URL = null;
+    static {
+      try {
+        Properties jup = getJunitProperties();
+        if (jup != null) {
+          REASONER_URL = jup.getProperty(REASONER_URL_PROPERTY);
+        }
+      } catch (Exception e) {
+        Log.getLogger().info("Reasoner not configured - tests ignored.");
+      }
+    }
 
     private static String EXPECTED_CLASSIFICATION_PROPNAME = "expectedClassificationStatus";
 
@@ -55,12 +72,16 @@ public class AbstractDIGReasonerTestCase extends AbstractJenaTestCase {
         try {
             URI uri = new URI(url);
             reasoner_url = uri.toString();
-            System.out.println("# Reasoner URL = " + reasoner_url);
+            Log.getLogger().info("# Reasoner URL = " + reasoner_url);
         }
         catch (URISyntaxException e) {
             String message = "Reasoner URL is invalid: " + e.getMessage();
             fail(message);
         }
+    }
+    
+    protected boolean reasonerInitialized() {
+      return reasoner_url != null;
     }
 
 
@@ -82,7 +103,7 @@ public class AbstractDIGReasonerTestCase extends AbstractJenaTestCase {
 
         ReasonerTaskListener tlnsr = new ReasonerTaskListener() {
             public void addedToTask(ReasonerTaskEvent event) {
-                System.out.println(event.getSource().getMessage());
+                Log.getLogger().info(event.getSource().getMessage());
             }
 
 
