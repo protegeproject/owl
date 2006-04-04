@@ -41,7 +41,8 @@ public abstract class AbstractOWLCardinalityBase extends AbstractOWLRestriction
 
     public static void checkFillerText(String text, RDFProperty property) throws OWLClassParseException, NumberFormatException {
         text = text.trim();
-        if (ProfilesManager.isFeatureSupported(property.getOWLModel(), OWLProfiles.Qualified_Cardinality_Restrictions)) {
+        if (ProfilesManager.isFeatureSupported(property.getOWLModel(), OWLProfiles.Qualified_Cardinality_Restrictions))
+        {
             int spaceIndex = text.indexOf(' ');
             if (spaceIndex > 0) {
                 String qualifierString = text.substring(spaceIndex + 1);
@@ -155,8 +156,11 @@ public abstract class AbstractOWLCardinalityBase extends AbstractOWLRestriction
     }
 
     public Collection getDependingClasses() {
-        if (isQualified()){
-            return Collections.singleton(getQualifier());
+        if (isQualified()) {
+            RDFSClass qualifier = getQualifier();
+            if (qualifier.isAnonymous()) {
+                return Collections.singleton(qualifier);
+            }
         }
         return Collections.EMPTY_LIST;
     }
