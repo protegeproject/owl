@@ -1,14 +1,26 @@
 package edu.stanford.smi.protegex.owl.model.util.tests;
 
-import edu.stanford.smi.protegex.owl.model.*;
-import edu.stanford.smi.protegex.owl.model.util.CloneFactory;
-import edu.stanford.smi.protegex.owl.model.util.ResourceCopier;
-import edu.stanford.smi.protegex.owl.tests.AbstractJenaTestCase;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.logging.Level;
+
+import edu.stanford.smi.protege.util.Log;
+import edu.stanford.smi.protegex.owl.model.OWLAllValuesFrom;
+import edu.stanford.smi.protegex.owl.model.OWLComplementClass;
+import edu.stanford.smi.protegex.owl.model.OWLEnumeratedClass;
+import edu.stanford.smi.protegex.owl.model.OWLIndividual;
+import edu.stanford.smi.protegex.owl.model.OWLIntersectionClass;
+import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
+import edu.stanford.smi.protegex.owl.model.OWLObjectProperty;
+import edu.stanford.smi.protegex.owl.model.OWLSomeValuesFrom;
+import edu.stanford.smi.protegex.owl.model.OWLUnionClass;
+import edu.stanford.smi.protegex.owl.model.RDFList;
+import edu.stanford.smi.protegex.owl.model.RDFSClass;
+import edu.stanford.smi.protegex.owl.model.util.CloneFactory;
+import edu.stanford.smi.protegex.owl.model.util.ResourceCopier;
+import edu.stanford.smi.protegex.owl.tests.AbstractJenaTestCase;
 
 /**
  * @author Nick Drummond, Medical Informatics Group, University of Manchester
@@ -210,8 +222,8 @@ public class CloneFactoryTestCase extends AbstractJenaTestCase {
             owlModel.save(new File("out.owl").toURI());
         }
         catch (Exception e) {
-            e.printStackTrace();
-            fail();
+          Log.getLogger().log(Level.SEVERE, "Exception caught", e);
+          fail();
         }
     }
 }
