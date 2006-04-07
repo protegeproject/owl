@@ -1,12 +1,14 @@
 package edu.stanford.smi.protegex.owl.jena.parser;
 
-import edu.stanford.smi.protegex.owl.ProtegeOWL;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.logging.Level;
+
+import edu.stanford.smi.protege.util.Log;
+import edu.stanford.smi.protegex.owl.ProtegeOWL;
 
 /**
  * A Singleton that manages the list of namespaces (such as DC) that shall be
@@ -49,8 +51,8 @@ public class ImplicitImports {
                     }
                 }
                 catch (Exception ex) {
-                    System.err.println("[ImplicitImports]  Warning: Could not load " + file);
-                    ex.printStackTrace();
+                  Log.getLogger().warning("[ImplicitImports]  Warning: Could not load " + file);
+                    Log.getLogger().log(Level.WARNING, "Exception caught", ex);
                 }
             }
         }
