@@ -1,16 +1,18 @@
 package edu.stanford.smi.protegex.owl.ui.search.finder.tests;
 
-import edu.stanford.smi.protege.model.Cls;
-import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
-import edu.stanford.smi.protegex.owl.model.RDFSNames;
-import edu.stanford.smi.protegex.owl.tests.AbstractJenaTestCase;
-import edu.stanford.smi.protegex.owl.ui.search.finder.*;
-
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.regex.Pattern;
+
+import edu.stanford.smi.protege.model.Cls;
+import edu.stanford.smi.protege.util.Log;
+import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
+import edu.stanford.smi.protegex.owl.model.RDFSNames;
+import edu.stanford.smi.protegex.owl.tests.AbstractJenaTestCase;
+import edu.stanford.smi.protegex.owl.ui.search.finder.*;
 
 /**
  * @author Nick Drummond, Medical Informatics Group, University of Manchester
@@ -90,11 +92,11 @@ public class FindTestCase extends AbstractJenaTestCase {
                 owlModel.load(pizza, null);
             }
             catch (Exception e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+              Log.getLogger().log(Level.SEVERE, "Exception caught", e);
             }
         }
         catch (URISyntaxException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+          Log.getLogger().log(Level.SEVERE, "Exception caught", e);
         }
     }
 }
