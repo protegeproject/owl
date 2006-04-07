@@ -1,5 +1,8 @@
 package edu.stanford.smi.protegex.owl.javacode;
 
+import java.util.logging.Level;
+
+import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
 import edu.stanford.smi.protegex.owl.ui.actions.AbstractOWLModelAction;
@@ -35,7 +38,7 @@ public class JavaCodeGeneratorAction extends AbstractOWLModelAction {
                 ProtegeUI.getModalDialogFactory().showMessageDialog(owlModel, "Java code successfully generated.");
             }
             catch (Exception ex) {
-                ex.printStackTrace();
+                Log.getLogger().log(Level.SEVERE, "Exception caught", ex);
                 ProtegeUI.getModalDialogFactory().showErrorMessageDialog(owlModel,
                         "Could not create Java code:\n" + ex);
             }
