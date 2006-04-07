@@ -1,16 +1,37 @@
 package edu.stanford.smi.protegex.owl.inference.dig.translator;
 
-import edu.stanford.smi.protegex.owl.inference.dig.exception.DIGReasonerException;
-import edu.stanford.smi.protegex.owl.inference.dig.reasoner.DIGReasonerIdentity;
-import edu.stanford.smi.protegex.owl.model.*;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
+import java.util.Iterator;
+import java.util.logging.Level;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import java.util.Iterator;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+
+import edu.stanford.smi.protege.util.Log;
+import edu.stanford.smi.protegex.owl.inference.dig.exception.DIGReasonerException;
+import edu.stanford.smi.protegex.owl.inference.dig.reasoner.DIGReasonerIdentity;
+import edu.stanford.smi.protegex.owl.model.OWLAllValuesFrom;
+import edu.stanford.smi.protegex.owl.model.OWLCardinality;
+import edu.stanford.smi.protegex.owl.model.OWLComplementClass;
+import edu.stanford.smi.protegex.owl.model.OWLDatatypeProperty;
+import edu.stanford.smi.protegex.owl.model.OWLEnumeratedClass;
+import edu.stanford.smi.protegex.owl.model.OWLHasValue;
+import edu.stanford.smi.protegex.owl.model.OWLIntersectionClass;
+import edu.stanford.smi.protegex.owl.model.OWLMaxCardinality;
+import edu.stanford.smi.protegex.owl.model.OWLMinCardinality;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
+import edu.stanford.smi.protegex.owl.model.OWLObjectProperty;
+import edu.stanford.smi.protegex.owl.model.OWLProperty;
+import edu.stanford.smi.protegex.owl.model.OWLSomeValuesFrom;
+import edu.stanford.smi.protegex.owl.model.OWLUnionClass;
+import edu.stanford.smi.protegex.owl.model.RDFIndividual;
+import edu.stanford.smi.protegex.owl.model.RDFResource;
+import edu.stanford.smi.protegex.owl.model.RDFSClass;
 
 
 /**
@@ -48,7 +69,7 @@ public class DefaultDIGTranslator implements DIGTranslator {
             docBuilder = docBuilderFactory.newDocumentBuilder();
         }
         catch (ParserConfigurationException e) {
-            e.printStackTrace();
+          Log.getLogger().log(Level.SEVERE, "Exception caught", e);
         }
     }
 
