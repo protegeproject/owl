@@ -1,7 +1,16 @@
 package edu.stanford.smi.protegex.owl.ui.jena;
 
+import java.awt.Component;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.logging.Level;
+
+import jena.schemagen;
+
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.util.FileUtils;
+
+import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.javacode.JavaCodeGeneratorAction;
 import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
 import edu.stanford.smi.protegex.owl.jena.OntModelProvider;
@@ -10,11 +19,6 @@ import edu.stanford.smi.protegex.owl.model.project.OWLProject;
 import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
 import edu.stanford.smi.protegex.owl.ui.actions.AbstractOWLModelAction;
 import edu.stanford.smi.protegex.owl.ui.dialogs.ModalDialogFactory;
-import jena.schemagen;
-
-import java.awt.*;
-import java.io.File;
-import java.util.ArrayList;
 
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
@@ -55,7 +59,7 @@ public class JenaSchemagenAction extends AbstractOWLModelAction {
                 ProtegeUI.getModalDialogFactory().showMessageDialog(comp, "Schema generated to " + file + ".");
             }
             catch (Exception ex) {
-                ex.printStackTrace();
+                Log.getLogger().log(Level.SEVERE, "Exception caught", ex);
                 ProtegeUI.getModalDialogFactory().showErrorMessageDialog(comp, "Error: " + ex);
             }
         }
