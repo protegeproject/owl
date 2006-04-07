@@ -1,5 +1,19 @@
 package edu.stanford.smi.protegex.owl.ui.menu.code;
 
+import java.awt.Dimension;
+import java.awt.Font;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.util.logging.Level;
+
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+
+import org.apache.xml.serialize.OutputFormat;
+import org.apache.xml.serialize.XMLSerializer;
+import org.w3c.dom.Document;
+
+import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.inference.dig.exception.DIGReasonerException;
 import edu.stanford.smi.protegex.owl.inference.dig.translator.DIGTranslator;
 import edu.stanford.smi.protegex.owl.inference.dig.translator.DIGTranslatorFactory;
@@ -7,14 +21,6 @@ import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
 import edu.stanford.smi.protegex.owl.ui.actions.AbstractOWLModelAction;
 import edu.stanford.smi.protegex.owl.ui.dialogs.ModalDialogFactory;
-import org.apache.xml.serialize.OutputFormat;
-import org.apache.xml.serialize.XMLSerializer;
-import org.w3c.dom.Document;
-
-import javax.swing.*;
-import java.awt.*;
-import java.io.IOException;
-import java.io.StringWriter;
 
 /**
  * User: matthewhorridge<br>
@@ -56,10 +62,10 @@ public class DIGAction extends AbstractOWLModelAction {
                     "DIG Code", ModalDialogFactory.MODE_CLOSE);
         }
         catch (DIGReasonerException digEx) {
-            digEx.printStackTrace();
+            Log.getLogger().log(Level.SEVERE, "Exception caught", digEx);
         }
         catch (IOException ioEx) {
-            ioEx.printStackTrace();
+          Log.getLogger().log(Level.SEVERE, "Exception caught", ioEx);
         }
     }
 }
