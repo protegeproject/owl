@@ -1,6 +1,14 @@
 package edu.stanford.smi.protegex.owl.javacode;
 
+import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.util.logging.Level;
+
+import javax.swing.Action;
+import javax.swing.JTree;
+
 import edu.stanford.smi.protege.resource.Icons;
+import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
 import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
@@ -8,10 +16,6 @@ import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
 import edu.stanford.smi.protegex.owl.ui.actions.ResourceAction;
 import edu.stanford.smi.protegex.owl.ui.cls.ExtractTaxonomyAction;
 import edu.stanford.smi.protegex.owl.ui.dialogs.ModalDialogFactory;
-
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
 
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
@@ -41,7 +45,7 @@ public class JavaCodeGeneratorResourceAction extends ResourceAction {
                         "Java code successfully generated for " + cls.getLocalName() + ".");
             }
             catch (Exception ex) {
-                ex.printStackTrace();
+                Log.getLogger().log(Level.SEVERE, "Exception caught", ex);
                 ProtegeUI.getModalDialogFactory().showErrorMessageDialog(owlModel,
                         "Could not create Java code:\n" + ex);
             }
