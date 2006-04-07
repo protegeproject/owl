@@ -1,5 +1,8 @@
 package edu.stanford.smi.protegex.owl.ui.menu.code;
 
+import java.util.logging.Level;
+
+import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.emf.EMFGenerator;
 import edu.stanford.smi.protegex.owl.emf.EditableEMFGeneratorOptions;
 import edu.stanford.smi.protegex.owl.emf.ProjectBasedEMFGeneratorOptions;
@@ -36,7 +39,7 @@ public class EMFAction extends AbstractOWLModelAction {
                 ProtegeUI.getModalDialogFactory().showMessageDialog(owlModel, "EMF Interfaces generated.");
             }
             catch (Exception ex) {
-                ex.printStackTrace();
+                Log.getLogger().log(Level.SEVERE, "Exception caught", ex);
                 ProtegeUI.getModalDialogFactory().showErrorMessageDialog(owlModel,
                         "Could not create EMF code:\n" + ex);
             }
