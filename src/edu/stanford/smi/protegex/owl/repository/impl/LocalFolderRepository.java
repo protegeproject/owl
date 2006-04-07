@@ -1,13 +1,16 @@
 package edu.stanford.smi.protegex.owl.repository.impl;
 
-import edu.stanford.smi.protegex.owl.repository.util.OntologyNameExtractor;
-import edu.stanford.smi.protegex.owl.jena.parser.ProtegeOWLParser;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import edu.stanford.smi.protege.util.Log;
+import edu.stanford.smi.protegex.owl.jena.parser.ProtegeOWLParser;
+import edu.stanford.smi.protegex.owl.repository.util.OntologyNameExtractor;
 
 /**
  * User: matthewhorridge<br>
@@ -19,6 +22,7 @@ import java.net.URI;
  * www.cs.man.ac.uk/~horridgm<br><br>
  */
 public class LocalFolderRepository extends AbstractLocalRepository {
+    private static transient Logger log = Log.getLogger(LocalFolderRepository.class);
 
 	public static final String RECURSIVE_FLAG = "Recursive";
 
@@ -64,7 +68,7 @@ public class LocalFolderRepository extends AbstractLocalRepository {
 					checkFile(currentFile);
 				}
 				catch (IOException e) {
-					//e.printStackTrace();
+                                  Log.emptyCatchBlock(e);
 				}
 	        }
 	        else if(recursive && currentFile.isDirectory() && currentFile.isHidden() == false) {
