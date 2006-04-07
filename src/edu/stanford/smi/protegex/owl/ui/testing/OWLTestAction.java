@@ -1,12 +1,18 @@
 package edu.stanford.smi.protegex.owl.ui.testing;
 
-import edu.stanford.smi.protegex.owl.model.Task;
-import edu.stanford.smi.protegex.owl.model.TaskManager;
-import edu.stanford.smi.protegex.owl.testing.*;
-import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
-
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+
+import edu.stanford.smi.protege.util.Log;
+import edu.stanford.smi.protegex.owl.model.Task;
+import edu.stanford.smi.protegex.owl.model.TaskManager;
+import edu.stanford.smi.protegex.owl.testing.OWLModelTest;
+import edu.stanford.smi.protegex.owl.testing.OWLTest;
+import edu.stanford.smi.protegex.owl.testing.RDFPropertyTest;
+import edu.stanford.smi.protegex.owl.testing.RDFResourceTest;
+import edu.stanford.smi.protegex.owl.testing.RDFSClassTest;
+import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
 
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
@@ -52,7 +58,7 @@ public class OWLTestAction extends AbstractOWLModelTestAction {
                 }
             }
             catch (Exception ex) {
-                ex.printStackTrace();
+              Log.getLogger().log(Level.SEVERE, "Exception caught", ex);
             }
         }
         return results;
