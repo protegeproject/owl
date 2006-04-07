@@ -1,5 +1,17 @@
 package edu.stanford.smi.protegex.owl.ui.conditions;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import javax.swing.Icon;
+import javax.swing.table.AbstractTableModel;
+
 import edu.stanford.smi.protege.event.FrameAdapter;
 import edu.stanford.smi.protege.event.FrameEvent;
 import edu.stanford.smi.protege.event.FrameListener;
@@ -7,7 +19,21 @@ import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.KnowledgeBase;
 import edu.stanford.smi.protege.model.Model;
 import edu.stanford.smi.protege.model.Slot;
-import edu.stanford.smi.protegex.owl.model.*;
+import edu.stanford.smi.protege.util.Log;
+import edu.stanford.smi.protegex.owl.model.OWLAllValuesFrom;
+import edu.stanford.smi.protegex.owl.model.OWLAnonymousClass;
+import edu.stanford.smi.protegex.owl.model.OWLCardinalityBase;
+import edu.stanford.smi.protegex.owl.model.OWLHasValue;
+import edu.stanford.smi.protegex.owl.model.OWLIntersectionClass;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
+import edu.stanford.smi.protegex.owl.model.OWLNames;
+import edu.stanford.smi.protegex.owl.model.OWLRestriction;
+import edu.stanford.smi.protegex.owl.model.OWLSomeValuesFrom;
+import edu.stanford.smi.protegex.owl.model.RDFProperty;
+import edu.stanford.smi.protegex.owl.model.RDFResource;
+import edu.stanford.smi.protegex.owl.model.RDFSClass;
+import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
 import edu.stanford.smi.protegex.owl.model.classparser.OWLClassParser;
 import edu.stanford.smi.protegex.owl.model.event.ClassAdapter;
 import edu.stanford.smi.protegex.owl.model.event.ClassListener;
@@ -17,10 +43,6 @@ import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
 import edu.stanford.smi.protegex.owl.ui.owltable.OWLTableModel;
 import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
 
-import javax.swing.*;
-import javax.swing.table.AbstractTableModel;
-import java.util.*;
-
 /**
  * The TableModel used by the AssertedConditionsWidget.
  *
@@ -28,6 +50,7 @@ import java.util.*;
  */
 public class ConditionsTableModel extends AbstractTableModel
         implements ConditionsTableConstants, OWLTableModel {
+    private static transient Logger log = Log.getLogger(ConditionsTableModel.class);
 
     private ClassListener classListener = new ClassAdapter() {
         public void subclassAdded(RDFSClass cls, RDFSClass subclass) {
@@ -977,7 +1000,7 @@ public class ConditionsTableModel extends AbstractTableModel
                 setValueAt(rowIndex, owlModel, text);
             }
             catch (Exception ex) {
-                // ex.printStackTrace();
+              Log.emptyCatchBlock(ex);
             }
         }
     }
