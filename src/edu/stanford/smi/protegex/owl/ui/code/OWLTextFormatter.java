@@ -1,19 +1,22 @@
 package edu.stanford.smi.protegex.owl.ui.code;
 
-import edu.stanford.smi.protegex.owl.model.OWLModel;
-import edu.stanford.smi.protegex.owl.model.classdisplay.OWLClassDisplay;
-import edu.stanford.smi.protegex.owl.model.classdisplay.OWLClassDisplayFactory;
-import edu.stanford.smi.protegex.owl.model.classparser.compact.CompactParserUtil;
-
-import javax.swing.*;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.JTextComponent;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.StringTokenizer;
+import java.util.logging.Level;
+
+import javax.swing.AbstractAction;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.JTextComponent;
+
+import edu.stanford.smi.protege.util.Log;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.model.classdisplay.OWLClassDisplay;
+import edu.stanford.smi.protegex.owl.model.classdisplay.OWLClassDisplayFactory;
+import edu.stanford.smi.protegex.owl.model.classparser.compact.CompactParserUtil;
 
 /**
  * A static utility class for JTextComponents with specific features to edit OWL
@@ -191,7 +194,7 @@ public class OWLTextFormatter {
                 textComponent.getDocument().insertString(offset, "" + c, null);
             }
             catch (BadLocationException ex) {
-                ex.printStackTrace();
+              Log.getLogger().log(Level.SEVERE, "Exception caught", ex);
             }
         }
     }
