@@ -1,14 +1,64 @@
 package edu.stanford.smi.protegex.owl.jena.parser;
 
-import com.hp.hpl.jena.rdf.arp.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Reader;
+import java.net.URI;
+import java.net.URL;
+import java.net.URLConnection;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.xml.sax.ErrorHandler;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
+
+import com.hp.hpl.jena.rdf.arp.ALiteral;
+import com.hp.hpl.jena.rdf.arp.ARP;
+import com.hp.hpl.jena.rdf.arp.ARPHandlers;
+import com.hp.hpl.jena.rdf.arp.AResource;
+import com.hp.hpl.jena.rdf.arp.NamespaceHandler;
+import com.hp.hpl.jena.rdf.arp.StatementHandler;
 import com.hp.hpl.jena.vocabulary.RDFS;
-import edu.stanford.smi.protege.model.*;
+
+import edu.stanford.smi.protege.model.Cls;
+import edu.stanford.smi.protege.model.Frame;
+import edu.stanford.smi.protege.model.FrameID;
+import edu.stanford.smi.protege.model.Instance;
+import edu.stanford.smi.protege.model.KnowledgeBase;
+import edu.stanford.smi.protege.model.Model;
+import edu.stanford.smi.protege.model.Reference;
+import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protege.model.framestore.MergingNarrowFrameStore;
+import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.jena.Jena;
 import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
-import edu.stanford.smi.protegex.owl.model.*;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
+import edu.stanford.smi.protegex.owl.model.OWLNames;
+import edu.stanford.smi.protegex.owl.model.OWLOntology;
+import edu.stanford.smi.protegex.owl.model.RDFNames;
+import edu.stanford.smi.protegex.owl.model.RDFProperty;
+import edu.stanford.smi.protegex.owl.model.RDFResource;
+import edu.stanford.smi.protegex.owl.model.RDFSDatatype;
+import edu.stanford.smi.protegex.owl.model.RDFSLiteral;
+import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
+import edu.stanford.smi.protegex.owl.model.RDFUntypedResource;
 import edu.stanford.smi.protegex.owl.model.factory.OWLJavaFactoryUpdater;
-import edu.stanford.smi.protegex.owl.model.impl.*;
+import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLNamedClass;
+import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLOntology;
+import edu.stanford.smi.protegex.owl.model.impl.DefaultRDFList;
+import edu.stanford.smi.protegex.owl.model.impl.DefaultRDFProperty;
+import edu.stanford.smi.protegex.owl.model.impl.DefaultRDFSLiteral;
 import edu.stanford.smi.protegex.owl.model.patcher.DefaultOWLModelPatcher;
 import edu.stanford.smi.protegex.owl.model.patcher.OWLModelPatcher;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
@@ -20,17 +70,6 @@ import edu.stanford.smi.protegex.owl.repository.RepositoryManager;
 import edu.stanford.smi.protegex.owl.swrl.model.SWRLNames;
 import edu.stanford.smi.protegex.owl.swrl.model.factory.SWRLJavaFactory;
 import edu.stanford.smi.protegex.owl.ui.repository.UnresolvedImportUIHandler;
-import org.xml.sax.ErrorHandler;
-import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Reader;
-import java.net.URI;
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.*;
 
 /**
  * An OWL parser that reads an OWL stream triple-by-triple and writes the
@@ -41,6 +80,7 @@ import java.util.*;
  * @author Matthew Horridge
  */
 public class ProtegeOWLParser {
+        private static transient Logger log = Log.getLogger(ProtegeOWLParser.class);
 
 	private int count = 29920;
 
@@ -211,11 +251,6 @@ public class ProtegeOWLParser {
 	                        final ARPInvokation invokation)
 	        throws Exception {
 		owlModel.setGenerateEventsEnabled(false);
-//		task = new AbstractTask("Loading " + ontologyName, false, owlModel.getTaskManager()) {
-//			public void runTask()
-//			        throws Exception {
-//				setProgressIndeterminate(true);
-//				setMessage("Loading triples...");
                 System.out.println("Loading triples");
 				Set imports = owlModel.getAllImports();
 
@@ -792,7 +827,7 @@ public class ProtegeOWLParser {
 						ontologyNameURI = new URI(uri);
 					}
 					catch(Exception ex) {
-						ex.printStackTrace();
+                                          Log.getLogger().log(Level.SEVERE, "Exception caught", ex);
 					}
 					Repository repository = getRepository(owlModel, ProtegeOWLParser.this.tripleStore, ontologyNameURI);
 					if(repository != null) {
@@ -848,22 +883,22 @@ public class ProtegeOWLParser {
 
 		public void error(SAXParseException exception)
 		        throws SAXException {
-			System.err.println("Error");
-			exception.printStackTrace();
+                  Log.getLogger().log(Level.SEVERE, "Error", exception);
 		}
 
 
 		public void fatalError(SAXParseException exception)
 		        throws SAXException {
-			System.err.println("Fatal Error");
-			exception.printStackTrace();
+                  Log.getLogger().log(Level.SEVERE, "Fatal Error", exception);
 		}
 
 
 		public void warning(SAXParseException exception)
 		        throws SAXException {
 			logger.logWarning(exception.toString());
-			// exception.printStackTrace();
+                        if (log.isLoggable(Level.FINE)) {
+                          Log.getLogger().log(Level.FINE, "Exception caught", exception);
+                        }
 		}
 	}
 
