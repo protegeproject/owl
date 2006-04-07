@@ -1,12 +1,23 @@
 package edu.stanford.smi.protegex.owl.inference.dig.reasoner;
 
-import edu.stanford.smi.protegex.owl.inference.dig.exception.DIGError;
-import edu.stanford.smi.protegex.owl.inference.dig.exception.DIGErrorException;
-import edu.stanford.smi.protegex.owl.inference.dig.exception.DIGReasonerException;
-import edu.stanford.smi.protegex.owl.inference.dig.reasoner.logger.DIGLogger;
-import edu.stanford.smi.protegex.owl.inference.dig.translator.DIGTranslator;
-import edu.stanford.smi.protegex.owl.inference.dig.translator.DIGTranslatorFactory;
-import edu.stanford.smi.protegex.owl.inference.dig.translator.DIGVocabulary;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Reader;
+import java.io.StringWriter;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
 import org.apache.xml.serialize.OutputFormat;
 import org.apache.xml.serialize.XMLSerializer;
 import org.w3c.dom.Document;
@@ -15,16 +26,14 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.logging.Logger;
+import edu.stanford.smi.protege.util.Log;
+import edu.stanford.smi.protegex.owl.inference.dig.exception.DIGError;
+import edu.stanford.smi.protegex.owl.inference.dig.exception.DIGErrorException;
+import edu.stanford.smi.protegex.owl.inference.dig.exception.DIGReasonerException;
+import edu.stanford.smi.protegex.owl.inference.dig.reasoner.logger.DIGLogger;
+import edu.stanford.smi.protegex.owl.inference.dig.translator.DIGTranslator;
+import edu.stanford.smi.protegex.owl.inference.dig.translator.DIGTranslatorFactory;
+import edu.stanford.smi.protegex.owl.inference.dig.translator.DIGVocabulary;
 
 /**
  * User: matthewhorridge<br>
@@ -61,7 +70,7 @@ public class DefaultDIGReasoner implements DIGReasoner {
 		    reasonerURL = new URL("http://localhost:8080");
 	    }
 	    catch(MalformedURLException e) {
-		    e.printStackTrace();
+              Log.getLogger().log(Level.SEVERE, "Exception caught", e);
 	    }
 	    // this.connection = connection;
 
@@ -80,7 +89,7 @@ public class DefaultDIGReasoner implements DIGReasoner {
 
         }
         catch (ParserConfigurationException e) {
-            e.printStackTrace();
+          Log.getLogger().log(Level.SEVERE, "Exception caught", e);
         }
     }
 
@@ -96,7 +105,7 @@ public class DefaultDIGReasoner implements DIGReasoner {
 		    reasonerURL = new URL(url);
 	    }
 	    catch(MalformedURLException e) {
-		    e.printStackTrace();
+              Log.getLogger().log(Level.SEVERE, "Exception caught", e);
 	    }
     }
 
@@ -279,7 +288,7 @@ public class DefaultDIGReasoner implements DIGReasoner {
             serializer.serialize(doc);
         }
         catch (IOException e) {
-            e.printStackTrace();
+          Log.getLogger().log(Level.SEVERE, "Exception caught", e);
         }
         Logger.getLogger(DIGReasoner.LOGGER_NAME).info(writer.getBuffer().toString());
 
