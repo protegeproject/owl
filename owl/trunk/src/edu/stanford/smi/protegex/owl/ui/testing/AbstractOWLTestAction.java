@@ -1,17 +1,31 @@
 package edu.stanford.smi.protegex.owl.ui.testing;
 
-import edu.stanford.smi.protegex.owl.model.*;
-import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
-import edu.stanford.smi.protegex.owl.testing.*;
-import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
-import edu.stanford.smi.protegex.owl.ui.results.ResultsPanelManager;
-import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
-
-import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
+
+import javax.swing.AbstractAction;
+import javax.swing.Icon;
+
+import edu.stanford.smi.protege.util.Log;
+import edu.stanford.smi.protegex.owl.model.AbstractTask;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.model.OWLProperty;
+import edu.stanford.smi.protegex.owl.model.RDFResource;
+import edu.stanford.smi.protegex.owl.model.RDFSClass;
+import edu.stanford.smi.protegex.owl.model.Task;
+import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
+import edu.stanford.smi.protegex.owl.testing.OWLModelTest;
+import edu.stanford.smi.protegex.owl.testing.OWLTest;
+import edu.stanford.smi.protegex.owl.testing.OWLTestManager;
+import edu.stanford.smi.protegex.owl.testing.RDFPropertyTest;
+import edu.stanford.smi.protegex.owl.testing.RDFResourceTest;
+import edu.stanford.smi.protegex.owl.testing.RDFSClassTest;
+import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
+import edu.stanford.smi.protegex.owl.ui.results.ResultsPanelManager;
+import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
 
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
@@ -66,7 +80,7 @@ public abstract class AbstractOWLTestAction extends AbstractAction {
 		    owlModel.getTaskManager().run(task);
 	    }
 	    catch(Exception e) {
-		    e.printStackTrace();
+              Log.getLogger().log(Level.SEVERE, "Exception caught", e);
 	    }
     }
 
