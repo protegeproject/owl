@@ -1,12 +1,15 @@
 package edu.stanford.smi.protegex.owlx.examples;
 
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.logging.Level;
+
+import edu.stanford.smi.protege.util.Log;
+import edu.stanford.smi.protegex.owl.ProtegeOWL;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
 import edu.stanford.smi.protegex.owl.model.RDFSLiteral;
-import edu.stanford.smi.protegex.owl.ProtegeOWL;
 
-import java.util.Collection;
-import java.util.Iterator;
 
 /**
  * User: matthewhorridge<br>
@@ -37,7 +40,7 @@ public class RDFSLabelExamples {
 			}
 		}
 		catch(Exception e) {
-			e.printStackTrace();
+                  Log.getLogger().log(Level.SEVERE, "Exception caught", e);
 		}
 	}
 }
