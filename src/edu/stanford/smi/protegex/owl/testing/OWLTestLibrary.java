@@ -1,10 +1,19 @@
 package edu.stanford.smi.protegex.owl.testing;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.logging.Level;
+
 import edu.stanford.smi.protege.plugin.PluginUtilities;
+import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
-
-import java.util.*;
 
 /**
  * A static utility class that manages the available OWLTests on this machine.
@@ -36,7 +45,7 @@ public class OWLTestLibrary {
             return (OWLTest) clazz.newInstance();
         }
         catch (Exception ex) {
-            ex.printStackTrace();
+            Log.getLogger().log(Level.SEVERE, "Exception caught", ex);
             return null;
         }
     }
