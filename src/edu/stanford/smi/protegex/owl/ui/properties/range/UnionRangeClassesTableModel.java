@@ -1,7 +1,23 @@
 package edu.stanford.smi.protegex.owl.ui.properties.range;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.logging.Level;
+
+import javax.swing.Icon;
+import javax.swing.table.AbstractTableModel;
+
 import edu.stanford.smi.protege.model.Cls;
-import edu.stanford.smi.protegex.owl.model.*;
+import edu.stanford.smi.protege.util.Log;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
+import edu.stanford.smi.protegex.owl.model.OWLProperty;
+import edu.stanford.smi.protegex.owl.model.OWLUnionClass;
+import edu.stanford.smi.protegex.owl.model.RDFProperty;
+import edu.stanford.smi.protegex.owl.model.RDFResource;
+import edu.stanford.smi.protegex.owl.model.RDFSClass;
 import edu.stanford.smi.protegex.owl.model.classparser.OWLClassParser;
 import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
 import edu.stanford.smi.protegex.owl.ui.owltable.OWLTableModel;
@@ -9,13 +25,6 @@ import edu.stanford.smi.protegex.owl.ui.profiles.OWLProfiles;
 import edu.stanford.smi.protegex.owl.ui.profiles.ProfilesManager;
 import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
 import edu.stanford.smi.protegex.owl.ui.widget.PropertyWidget;
-
-import javax.swing.*;
-import javax.swing.table.AbstractTableModel;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
 
 /**
  * An AbstractTableModel that represents each of the classes in the union range
@@ -336,7 +345,7 @@ class UnionRangeClassesTableModel extends AbstractTableModel
             }
         }
         catch (Exception ex) {
-            ex.printStackTrace();
+            Log.getLogger().log(Level.SEVERE, "Exception caught", ex);
         }
     }
 }
