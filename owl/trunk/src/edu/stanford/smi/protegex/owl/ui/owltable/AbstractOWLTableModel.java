@@ -1,6 +1,16 @@
 package edu.stanford.smi.protegex.owl.ui.owltable;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.logging.Level;
+
+import javax.swing.Icon;
+import javax.swing.table.AbstractTableModel;
+
 import edu.stanford.smi.protege.model.Cls;
+import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
@@ -8,13 +18,6 @@ import edu.stanford.smi.protegex.owl.model.RDFSClass;
 import edu.stanford.smi.protegex.owl.model.event.ClassAdapter;
 import edu.stanford.smi.protegex.owl.model.event.ClassListener;
 import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
-
-import javax.swing.*;
-import javax.swing.table.AbstractTableModel;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
 
 /**
  * An AbstractTableModel that represents superclasses/equivalent classes with one row.
@@ -301,7 +304,7 @@ public abstract class AbstractOWLTableModel extends AbstractTableModel
                 setValueAt(rowIndex, cls.getOWLModel(), text);
             }
             catch (Exception ex) {
-                ex.printStackTrace();
+              Log.getLogger().log(Level.SEVERE, "Exception caught", ex);
             }
         }
     }
