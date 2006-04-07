@@ -1,9 +1,18 @@
 package edu.stanford.smi.protegex.owl.ui.actions.triple;
 
-import edu.stanford.smi.protege.plugin.PluginUtilities;
-import edu.stanford.smi.protegex.owl.model.triplestore.Triple;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
 
-import java.util.*;
+import edu.stanford.smi.protege.plugin.PluginUtilities;
+import edu.stanford.smi.protege.util.Log;
+import edu.stanford.smi.protegex.owl.model.triplestore.Triple;
 
 /**
  * A singleton managing the available TripleActions.
@@ -62,7 +71,7 @@ public class TripleActionManager {
             }
             catch (Exception ex) {
                 System.err.println("[TripleActionManager] Fatal Error: Could not create TripleAction for " + clazz);
-                ex.printStackTrace();
+                Log.getLogger().log(Level.SEVERE, "Exception caught", ex);
             }
         }
         return action;
