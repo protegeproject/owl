@@ -1,5 +1,10 @@
 package edu.stanford.smi.protegex.owl.storage;
 
+import java.net.URI;
+import java.util.logging.Level;
+
+import javax.swing.JOptionPane;
+
 import edu.stanford.smi.protege.Application;
 import edu.stanford.smi.protege.model.KnowledgeBaseFactory;
 import edu.stanford.smi.protege.model.Project;
@@ -7,6 +12,7 @@ import edu.stanford.smi.protege.plugin.AbstractCreateProjectPlugin;
 import edu.stanford.smi.protege.plugin.CreateProjectWizard;
 import edu.stanford.smi.protege.storage.clips.ClipsKnowledgeBaseFactory;
 import edu.stanford.smi.protege.util.FileUtilities;
+import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protege.util.PropertyList;
 import edu.stanford.smi.protege.util.WizardPage;
 import edu.stanford.smi.protegex.owl.ProtegeOWL;
@@ -16,9 +22,6 @@ import edu.stanford.smi.protegex.owl.jena.importer.OWLImporter;
 import edu.stanford.smi.protegex.owl.jena.parser.ProtegeOWLParser;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.ui.jena.ProtegeFromOWLFilesWizardPage;
-
-import javax.swing.*;
-import java.net.URI;
 
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
@@ -49,7 +52,7 @@ public class ProtegeFromOWLFilesCreateProjectPlugin
                 new OWLImporter(owlModel, project.getKnowledgeBase());
             }
             catch (Exception ex) {
-                ex.printStackTrace();
+                Log.getLogger().log(Level.SEVERE, "Exception caught", ex);
                 JOptionPane.showMessageDialog(Application.getMainWindow(),
                         "Could not load " + fileURI + "\n" + ex,
                         "Error",
