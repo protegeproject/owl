@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.logging.Level;
 
 import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.Frame;
@@ -16,6 +17,7 @@ import edu.stanford.smi.protege.model.Model;
 import edu.stanford.smi.protege.model.SimpleInstance;
 import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protege.model.framestore.DefaultFrameFactory;
+import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.model.OWLClass;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLNames;
@@ -110,7 +112,7 @@ public class OWLJavaFactory extends DefaultFrameFactory {
             }
             catch (Exception ex) {
                 System.err.println("[OWLJavaFactory] Fatal Error: Could not create Java object for " + javaInterface);
-                ex.printStackTrace();
+                Log.getLogger().log(Level.SEVERE, "Exception caught", ex);
                 return resource;
             }
         }
@@ -175,9 +177,9 @@ public class OWLJavaFactory extends DefaultFrameFactory {
             });
         }
         catch (Exception ex) {
-            System.err.println("[OWLJavaFactory] Fatal Error: Could not find constructor for " + javaInterface);
-            ex.printStackTrace();
-            return null;
+          Log.getLogger().severe("[OWLJavaFactory] Fatal Error: Could not find constructor for " + javaInterface);
+          Log.getLogger().log(Level.SEVERE, "Exception caught", ex);
+          return null;
         }
     }
 
@@ -247,7 +249,7 @@ public class OWLJavaFactory extends DefaultFrameFactory {
         }
         catch (Exception ex) {
             System.err.println("Fatal Error: Could not create Cls from OWL metaclass " + javaClassName);
-            ex.printStackTrace();
+            Log.getLogger().log(Level.SEVERE, "Exception caught", ex);
             return new DefaultOWLNamedClass(owlModel, id);
         }
     }
