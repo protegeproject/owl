@@ -1,10 +1,14 @@
 package edu.stanford.smi.protegex.owl.ui.widget;
 
+import java.util.logging.Level;
+
+import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
+
 import edu.stanford.smi.protege.Application;
 import edu.stanford.smi.protege.util.ComponentUtilities;
+import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.jena.creator.ProgressDisplay;
-
-import javax.swing.*;
 
 /**
  * An object managing a ModalProgressBarDialog serving as ProgressDisplay.
@@ -25,7 +29,7 @@ public class ModalProgressBarManager implements ProgressDisplay {
             Thread.sleep(1);
         }
         catch (InterruptedException e) {
-            e.printStackTrace();
+          Log.getLogger().log(Level.SEVERE, "Exception caught", e);
         }
     }
 
@@ -36,7 +40,7 @@ public class ModalProgressBarManager implements ProgressDisplay {
             Thread.sleep(1);
         }
         catch (InterruptedException e) {
-            e.printStackTrace();  //To change body of catch statement use Options | File Templates.
+          Log.getLogger().log(Level.SEVERE, "Exception caught", e);
         }
     }
 
@@ -47,7 +51,7 @@ public class ModalProgressBarManager implements ProgressDisplay {
                 Thread.sleep(1);
             }
             catch (InterruptedException e) {
-                e.printStackTrace();  //To change body of catch statement use Options | File Templates.
+              Log.getLogger().log(Level.SEVERE, "Exception caught", e);
             }
         }
     }
