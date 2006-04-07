@@ -1,10 +1,18 @@
 package edu.stanford.smi.protegex.owl.ui.clsdesc;
 
+import java.util.logging.Level;
+
 import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.KnowledgeBase;
 import edu.stanford.smi.protege.model.Model;
 import edu.stanford.smi.protege.model.Slot;
-import edu.stanford.smi.protegex.owl.model.*;
+import edu.stanford.smi.protege.util.Log;
+import edu.stanford.smi.protegex.owl.model.OWLAnonymousClass;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.model.OWLRestriction;
+import edu.stanford.smi.protegex.owl.model.RDFProperty;
+import edu.stanford.smi.protegex.owl.model.RDFSClass;
+import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
 import edu.stanford.smi.protegex.owl.model.classparser.OWLClassParser;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLNamedClass;
 import edu.stanford.smi.protegex.owl.ui.owltable.AbstractOWLTableModel;
@@ -106,7 +114,7 @@ public class PropertiesSuperclassesTableModel extends AbstractOWLTableModel impl
             }
         }
         catch (Exception ex) {
-            ex.printStackTrace();
+          Log.getLogger().log(Level.SEVERE, "Exception caught", ex);
         }
     }
 }
