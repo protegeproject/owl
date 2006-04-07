@@ -1,16 +1,24 @@
 package edu.stanford.smi.protegex.owl.repository.impl;
 
-import edu.stanford.smi.protegex.owl.jena.parser.ProtegeOWLParser;
-import edu.stanford.smi.protegex.owl.repository.Repository;
-import edu.stanford.smi.protegex.owl.repository.factory.RepositoryFactory;
-import edu.stanford.smi.protegex.owl.repository.util.OntologyNameExtractor;
-
-import java.io.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import edu.stanford.smi.protege.util.Log;
+import edu.stanford.smi.protegex.owl.jena.parser.ProtegeOWLParser;
+import edu.stanford.smi.protegex.owl.repository.Repository;
+import edu.stanford.smi.protegex.owl.repository.factory.RepositoryFactory;
+import edu.stanford.smi.protegex.owl.repository.util.OntologyNameExtractor;
 
 /**
  * User: matthewhorridge<br>
@@ -22,6 +30,7 @@ import java.util.Collections;
  * www.cs.man.ac.uk/~horridgm<br><br>
  */
 public class HTTPRepository implements Repository {
+    private static transient Logger log = Log.getLogger(HTTPRepository.class);
 
     private URL ontologyURL;
 
@@ -69,7 +78,7 @@ public class HTTPRepository implements Repository {
             System.setErr(oldErr);
         }
         catch (IOException e) {
-            e.printStackTrace();
+          Log.getLogger().log(Level.SEVERE, "Exception caught", e);
         }
     }
 
@@ -132,8 +141,8 @@ public class HTTPRepository implements Repository {
             return file.canWrite();
         }
         catch (Exception e) {
-            //e.printStackTrace();
-            return false;
+          Log.emptyCatchBlock(e);
+          return false;
         }
     }
 
@@ -147,7 +156,7 @@ public class HTTPRepository implements Repository {
                 os = new FileOutputStream(file);
             }
             catch (URISyntaxException e) {
-                e.printStackTrace();
+              Log.getLogger().log(Level.SEVERE, "Exception caught", e);
             }
         }
         return os;
