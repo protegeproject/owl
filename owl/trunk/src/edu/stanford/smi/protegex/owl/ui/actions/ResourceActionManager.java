@@ -1,13 +1,25 @@
 package edu.stanford.smi.protegex.owl.ui.actions;
 
+import java.awt.Component;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.logging.Level;
+
+import javax.swing.JMenu;
+import javax.swing.JPopupMenu;
+import javax.swing.JToolBar;
+
 import edu.stanford.smi.protege.plugin.PluginUtilities;
 import edu.stanford.smi.protege.util.ComponentFactory;
+import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
-
-import javax.swing.*;
-import java.awt.*;
-import java.util.*;
-import java.util.List;
 
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
@@ -117,7 +129,7 @@ public class ResourceActionManager {
         }
         catch (Exception ex) {
             System.err.println("[ResourceActionManager] Fatal Error: Could not create ResourceAction for " + clazz);
-            ex.printStackTrace();
+            Log.getLogger().log(Level.SEVERE, "Exception caught", ex);
             return null;
         }
     }
@@ -131,8 +143,7 @@ public class ResourceActionManager {
                 map.put(clazz, action);
             }
             catch (Exception ex) {
-                System.err.println("[ResourceActionManager] Fatal Error: Could not create ResourceAction for " + clazz);
-                ex.printStackTrace();
+              Log.getLogger().log(Level.SEVERE, "[ResourceActionManager] Fatal Error: Could not create ResourceAction for " + clazz, ex);
             }
         }
         return action;
