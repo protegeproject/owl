@@ -1,7 +1,17 @@
 package edu.stanford.smi.protegex.owl.ui.menu;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+import java.util.logging.Level;
+
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.tidy.Checker;
+
+import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.jena.Jena;
 import edu.stanford.smi.protegex.owl.jena.OntModelProvider;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
@@ -9,13 +19,6 @@ import edu.stanford.smi.protegex.owl.repository.Repository;
 import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
 import edu.stanford.smi.protegex.owl.ui.actions.AbstractOWLModelAction;
 import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
-
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * An Action that allows to validate the OWL sublanguage of the current Jena ontology.
@@ -50,7 +53,7 @@ public class ValidatorAction extends AbstractOWLModelAction {
                 }
             }
             catch (URISyntaxException e) {
-                e.printStackTrace();
+              Log.getLogger().log(Level.SEVERE, "Exception caught", e);
             }
         }
 
