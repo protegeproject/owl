@@ -1,9 +1,16 @@
 package edu.stanford.smi.protegex.owl.ui.actions;
 
-import edu.stanford.smi.protege.plugin.PluginUtilities;
-import edu.stanford.smi.protegex.owl.model.OWLModel;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.List;
+import java.util.logging.Level;
 
-import java.util.*;
+import edu.stanford.smi.protege.plugin.PluginUtilities;
+import edu.stanford.smi.protege.util.Log;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
 
 /**
  * A singleton managing the available OWLModelActions.
@@ -84,7 +91,7 @@ public class OWLModelActionManager {
         }
         catch (Exception ex) {
             System.err.println("[OWLModelActionManager] Fatal Error: Could not create OWLModelAction for " + clazz);
-            ex.printStackTrace();
+            Log.getLogger().log(Level.SEVERE, "Exception caught", ex);
             return null;
         }
     }
