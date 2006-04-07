@@ -1,8 +1,10 @@
 package edu.stanford.smi.protegex.owl.ui.dialogs;
 
-import edu.stanford.smi.protegex.owl.model.OWLModel;
+import java.awt.Component;
+import java.util.logging.Level;
 
-import java.awt.*;
+import edu.stanford.smi.protege.util.Log;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
 
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
@@ -45,7 +47,7 @@ public abstract class AbstractModalDialogFactory implements ModalDialogFactory {
 
 
     public void showThrowable(OWLModel owlModel, Throwable t) {
-        t.printStackTrace();
+        Log.getLogger().log(Level.SEVERE, "Exception caught", t);
         showErrorMessageDialog(owlModel, "Unexpected Error - please see console for stack trace.\n" + t.getMessage(), "Unexpected Error");
     }
 }
