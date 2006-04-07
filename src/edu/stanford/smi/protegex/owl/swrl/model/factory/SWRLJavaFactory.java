@@ -1,18 +1,36 @@
 package edu.stanford.smi.protegex.owl.swrl.model.factory;
 
-import edu.stanford.smi.protege.model.*;
-import edu.stanford.smi.protegex.owl.model.OWLModel;
-import edu.stanford.smi.protegex.owl.model.factory.OWLJavaFactory;
-import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
-import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLNamedClass;
-import edu.stanford.smi.protegex.owl.swrl.model.SWRLNames;
-import edu.stanford.smi.protegex.owl.swrl.model.impl.*;
-
 import java.lang.reflect.Constructor;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.logging.Level;
+
+import edu.stanford.smi.protege.model.Cls;
+import edu.stanford.smi.protege.model.DefaultSimpleInstance;
+import edu.stanford.smi.protege.model.Frame;
+import edu.stanford.smi.protege.model.FrameID;
+import edu.stanford.smi.protege.model.KnowledgeBase;
+import edu.stanford.smi.protege.model.SimpleInstance;
+import edu.stanford.smi.protege.util.Log;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.model.factory.OWLJavaFactory;
+import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
+import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLNamedClass;
+import edu.stanford.smi.protegex.owl.swrl.model.SWRLNames;
+import edu.stanford.smi.protegex.owl.swrl.model.impl.DefaultSWRLAtom;
+import edu.stanford.smi.protegex.owl.swrl.model.impl.DefaultSWRLAtomList;
+import edu.stanford.smi.protegex.owl.swrl.model.impl.DefaultSWRLBuiltin;
+import edu.stanford.smi.protegex.owl.swrl.model.impl.DefaultSWRLBuiltinAtom;
+import edu.stanford.smi.protegex.owl.swrl.model.impl.DefaultSWRLClassAtom;
+import edu.stanford.smi.protegex.owl.swrl.model.impl.DefaultSWRLDataRangeAtom;
+import edu.stanford.smi.protegex.owl.swrl.model.impl.DefaultSWRLDatavaluedPropertyAtom;
+import edu.stanford.smi.protegex.owl.swrl.model.impl.DefaultSWRLDifferentIndividualsAtom;
+import edu.stanford.smi.protegex.owl.swrl.model.impl.DefaultSWRLImp;
+import edu.stanford.smi.protegex.owl.swrl.model.impl.DefaultSWRLIndividualPropertyAtom;
+import edu.stanford.smi.protegex.owl.swrl.model.impl.DefaultSWRLSameIndividualAtom;
+import edu.stanford.smi.protegex.owl.swrl.model.impl.DefaultSWRLVariable;
 
 public class SWRLJavaFactory extends OWLJavaFactory {
 
@@ -96,7 +114,7 @@ public class SWRLJavaFactory extends OWLJavaFactory {
                 }
                 catch (Exception e) {
                     System.err.println("Fatal Error: Could not create SimpleInstance from OWL metaclass " + c.getName());
-                    e.printStackTrace();
+                    Log.getLogger().log(Level.SEVERE, "Exception caught", e);
                     return new DefaultSimpleInstance(owlModel, id);
                 } // try
 
@@ -136,7 +154,7 @@ public class SWRLJavaFactory extends OWLJavaFactory {
                 }
                 catch (Exception e) {
                     System.err.println("Fatal Error: Could not create Cls from OWL metaclass " + javaClassName);
-                    e.printStackTrace();
+                    Log.getLogger().log(Level.SEVERE, "Exception caught", e);
                     return new DefaultOWLNamedClass(owlModel, id);
                 } // try
             } // if
@@ -157,7 +175,7 @@ public class SWRLJavaFactory extends OWLJavaFactory {
         }
         catch (Exception ex) {
             System.err.println("Fatal Error: Could not create Cls from OWL metaclass " + javaClassName);
-            ex.printStackTrace();
+            Log.getLogger().log(Level.SEVERE, "Exception caught", ex);
             return new DefaultOWLNamedClass(owlModel, id);
         }
     }
