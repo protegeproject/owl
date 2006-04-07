@@ -35,7 +35,9 @@ public class OWLDatabaseKnowledgeBaseFactory extends DatabaseKnowledgeBaseFactor
 
     public KnowledgeBase createKnowledgeBase(Collection errors) {
         ResourceSelectionAction.setActivated(false);
-        return new OWLDatabaseModel(this);
+        OWLDatabaseModel kb = new OWLDatabaseModel(this);
+        // kb.getOWLSystemResources(); <<-- I don't think that this is needed
+        return kb;
     }
 
 
@@ -55,7 +57,7 @@ public class OWLDatabaseKnowledgeBaseFactory extends DatabaseKnowledgeBaseFactor
                         log.fine("- " + o + " = " + (o instanceof Slot) + " " +
                                 ((Instance) o).getDirectType());
                     }
-                    ex.printStackTrace();
+                    Log.getLogger().log(Level.SEVERE, "Exception caught", ex);
                 }
             }
         }
