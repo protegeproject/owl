@@ -1,23 +1,22 @@
 package edu.stanford.smi.protegex.owl.ui.metadatatab.imports.emptyimport;
 
-import edu.stanford.smi.protegex.owl.ProtegeOWL;
-import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
-import edu.stanford.smi.protegex.owl.jena.parser.ProtegeOWLParser;
-import edu.stanford.smi.protegex.owl.model.OWLModel;
-import edu.stanford.smi.protegex.owl.model.OWLOntology;
-import edu.stanford.smi.protegex.owl.model.util.ImportHelper;
-import edu.stanford.smi.protegex.owl.repository.RepositoryManager;
-import edu.stanford.smi.protegex.owl.repository.impl.LocalFileRepository;
-import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
-import edu.stanford.smi.protegex.owl.ui.menu.OWLMenuProjectPlugin;
-import edu.stanford.smi.protegex.owl.ui.wizard.OWLWizard;
-import edu.stanford.smi.protegex.owl.writer.rdfxml.rdfwriter.OWLModelWriter;
-
-import javax.swing.*;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 import java.net.URI;
+import java.util.logging.Level;
+
+import javax.swing.JComponent;
+
+import edu.stanford.smi.protege.util.Log;
+import edu.stanford.smi.protegex.owl.ProtegeOWL;
+import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.model.util.ImportHelper;
+import edu.stanford.smi.protegex.owl.repository.RepositoryManager;
+import edu.stanford.smi.protegex.owl.repository.impl.LocalFileRepository;
+import edu.stanford.smi.protegex.owl.ui.wizard.OWLWizard;
+import edu.stanford.smi.protegex.owl.writer.rdfxml.rdfwriter.OWLModelWriter;
 
 /**
  * User: matthewhorridge<br>
@@ -65,7 +64,7 @@ public class EmptyImportWizard extends OWLWizard {
             }
         }
         catch (Exception e) {
-            e.printStackTrace();
+          Log.getLogger().log(Level.SEVERE, "Exception caught", e);
         }
     }
 
