@@ -1,12 +1,19 @@
 package edu.stanford.smi.protegex.owl.jena;
 
+import java.io.File;
+import java.net.URI;
+import java.util.Collection;
+import java.util.logging.Level;
+
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.util.FileUtils;
+
 import edu.stanford.smi.protege.Application;
 import edu.stanford.smi.protege.model.KnowledgeBase;
 import edu.stanford.smi.protege.model.KnowledgeBaseSourcesEditor;
 import edu.stanford.smi.protege.model.Project;
 import edu.stanford.smi.protege.util.ApplicationProperties;
+import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protege.util.PropertyList;
 import edu.stanford.smi.protege.util.URIUtilities;
 import edu.stanford.smi.protegex.owl.database.OWLDatabaseModel;
@@ -19,10 +26,6 @@ import edu.stanford.smi.protegex.owl.storage.OWLKnowledgeBaseFactory;
 import edu.stanford.smi.protegex.owl.storage.ProtegeSaver;
 import edu.stanford.smi.protegex.owl.ui.ProgressDisplayDialog;
 import edu.stanford.smi.protegex.owl.ui.resourceselection.ResourceSelectionAction;
-
-import java.io.File;
-import java.net.URI;
-import java.util.Collection;
 
 /**
  * A backend for OWL based on the Jena2 API.
@@ -108,7 +111,7 @@ public class JenaKnowledgeBaseFactory implements OWLKnowledgeBaseFactory {
             }
         }
         catch (Exception ex) {
-            ex.printStackTrace();
+          Log.getLogger().log(Level.SEVERE, "Exception caught", ex);
         }
         return null;
     }
