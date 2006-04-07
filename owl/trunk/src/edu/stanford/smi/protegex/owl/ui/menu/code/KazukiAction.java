@@ -1,9 +1,24 @@
 package edu.stanford.smi.protegex.owl.ui.menu.code;
 
+import java.awt.Component;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.StringTokenizer;
+import java.util.logging.Level;
+
+import org.daml.kazuki.ClassCatalog;
+import org.daml.kazuki.Datatypes;
+import org.daml.kazuki.GenerateInterface;
+import org.daml.kazuki.VocabularyCatalog;
+
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntModelSpec;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
+
+import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.javacode.JavaCodeGeneratorAction;
 import edu.stanford.smi.protegex.owl.jena.OntModelProvider;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
@@ -12,17 +27,6 @@ import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
 import edu.stanford.smi.protegex.owl.ui.actions.AbstractOWLModelAction;
 import edu.stanford.smi.protegex.owl.ui.dialogs.ModalDialogFactory;
 import edu.stanford.smi.protegex.owl.ui.jena.JenaSchemagenAction;
-import org.daml.kazuki.ClassCatalog;
-import org.daml.kazuki.Datatypes;
-import org.daml.kazuki.GenerateInterface;
-import org.daml.kazuki.VocabularyCatalog;
-
-import java.awt.*;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.StringTokenizer;
 
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
@@ -77,7 +81,7 @@ public class KazukiAction extends AbstractOWLModelAction {
                 }
                 catch (Exception ex) {
                     if (i > 0) {
-                        ex.printStackTrace();
+                        Log.getLogger().log(Level.SEVERE, "Exception caught", ex);
                         ProtegeUI.getModalDialogFactory().showErrorMessageDialog(comp, "Error: " + ex);
                     }
                 }
