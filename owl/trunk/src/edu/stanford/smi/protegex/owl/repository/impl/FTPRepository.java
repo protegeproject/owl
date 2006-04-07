@@ -1,19 +1,29 @@
 package edu.stanford.smi.protegex.owl.repository.impl;
 
-import com.enterprisedt.net.ftp.FTPClient;
-import com.enterprisedt.net.ftp.FTPException;
-import edu.stanford.smi.protege.util.LabeledComponent;
-import edu.stanford.smi.protegex.owl.repository.Repository;
-import edu.stanford.smi.protegex.owl.repository.util.OntologyNameExtractor;
-
-import javax.swing.*;
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.logging.Level;
+
+import javax.swing.JOptionPane;
+import javax.swing.JPasswordField;
+
+import com.enterprisedt.net.ftp.FTPClient;
+import com.enterprisedt.net.ftp.FTPException;
+
+import edu.stanford.smi.protege.util.LabeledComponent;
+import edu.stanford.smi.protege.util.Log;
+import edu.stanford.smi.protegex.owl.repository.Repository;
+import edu.stanford.smi.protegex.owl.repository.util.OntologyNameExtractor;
 
 /**
  * User: matthewhorridge<br>
@@ -78,10 +88,10 @@ public class FTPRepository implements Repository {
             localCopy = new File(localURI);
         }
         catch (URISyntaxException e) {
-            e.printStackTrace();
+          Log.getLogger().log(Level.SEVERE, "Exception caught", e);
         }
         catch (MalformedURLException e) {
-            e.printStackTrace();
+          Log.getLogger().log(Level.SEVERE, "Exception caught", e);
         }
     }
 
@@ -105,10 +115,10 @@ public class FTPRepository implements Repository {
             System.out.println(extractor.getOntologyName());
         }
         catch (IOException e) {
-            e.printStackTrace();
+          Log.getLogger().log(Level.SEVERE, "Exception caught", e);
         }
         catch (FTPException e) {
-            e.printStackTrace();
+          Log.getLogger().log(Level.SEVERE, "Exception caught", e);
         }
     }
 
@@ -130,10 +140,10 @@ public class FTPRepository implements Repository {
 
         }
         catch (IOException e) {
-            e.printStackTrace();
+          Log.getLogger().log(Level.SEVERE, "Exception caught", e);
         }
         catch (FTPException e) {
-            e.printStackTrace();
+          Log.getLogger().log(Level.SEVERE, "Exception caught", e);
         }
     }
 
@@ -259,20 +269,9 @@ public class FTPRepository implements Repository {
             FTPRepository rep = new FTPRepository(uri, pd);
             rep.ftpGet();
             rep.ftpPut();
-//			URI ontName = new URI("http://www.cs.man.ac.uk/~horridgm/ontologies/TeachingFlattened.owl");
-//			try {
-//				OutputStream os = rep.getOutputStream(ontName);
-//				BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os));
-//				writer.write("Test!");
-//				writer.flush();
-//				writer.close();
-//			}
-//			catch(IOException e) {
-//				e.printStackTrace();
-//			}
         }
         catch (URISyntaxException e) {
-            e.printStackTrace();
+          Log.getLogger().log(Level.SEVERE, "Exception caught", e);
         }
     }
 }
