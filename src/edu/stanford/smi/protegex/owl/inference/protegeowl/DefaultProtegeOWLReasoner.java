@@ -1,8 +1,13 @@
 package edu.stanford.smi.protegex.owl.inference.protegeowl;
 
+import java.util.Collection;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import edu.stanford.smi.protege.event.ProjectAdapter;
 import edu.stanford.smi.protege.event.ProjectEvent;
 import edu.stanford.smi.protege.event.ProjectListener;
+import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.inference.dig.exception.DIGError;
 import edu.stanford.smi.protegex.owl.inference.dig.exception.DIGReasonerException;
 import edu.stanford.smi.protegex.owl.inference.dig.reasoner.DIGReasoner;
@@ -13,12 +18,45 @@ import edu.stanford.smi.protegex.owl.inference.dig.reasoner.logger.DIGLoggerList
 import edu.stanford.smi.protegex.owl.inference.protegeowl.log.ErrorMessageLogRecord;
 import edu.stanford.smi.protegex.owl.inference.protegeowl.log.ReasonerLogRecordFactory;
 import edu.stanford.smi.protegex.owl.inference.protegeowl.log.ReasonerLogger;
-import edu.stanford.smi.protegex.owl.inference.protegeowl.task.*;
+import edu.stanford.smi.protegex.owl.inference.protegeowl.task.ClassifyTaxonomyTask;
+import edu.stanford.smi.protegex.owl.inference.protegeowl.task.GetAncestorConceptsTask;
+import edu.stanford.smi.protegex.owl.inference.protegeowl.task.GetConceptIntersectionSuperclassesTask;
+import edu.stanford.smi.protegex.owl.inference.protegeowl.task.GetConceptSatisfiableTask;
+import edu.stanford.smi.protegex.owl.inference.protegeowl.task.GetDescendantConceptsTask;
+import edu.stanford.smi.protegex.owl.inference.protegeowl.task.GetEquivalentConceptsTask;
+import edu.stanford.smi.protegex.owl.inference.protegeowl.task.GetIndividualInferredTypesTask;
+import edu.stanford.smi.protegex.owl.inference.protegeowl.task.GetIndividualsBelongingToConceptTask;
+import edu.stanford.smi.protegex.owl.inference.protegeowl.task.GetSubConceptsTask;
+import edu.stanford.smi.protegex.owl.inference.protegeowl.task.GetSubsumptionRelationshipTask;
+import edu.stanford.smi.protegex.owl.inference.protegeowl.task.GetSuperConceptsTask;
+import edu.stanford.smi.protegex.owl.inference.protegeowl.task.IsConceptIntersectionSatisfiableTask;
+import edu.stanford.smi.protegex.owl.inference.protegeowl.task.IsDisjointToTask;
+import edu.stanford.smi.protegex.owl.inference.protegeowl.task.IsSubsumedByTask;
+import edu.stanford.smi.protegex.owl.inference.protegeowl.task.ReasonerTask;
+import edu.stanford.smi.protegex.owl.inference.protegeowl.task.ReasonerTaskAdapter;
+import edu.stanford.smi.protegex.owl.inference.protegeowl.task.ReasonerTaskEvent;
+import edu.stanford.smi.protegex.owl.inference.protegeowl.task.ReasonerTaskListener;
+import edu.stanford.smi.protegex.owl.inference.protegeowl.task.SynchronizeReasonerTask;
+import edu.stanford.smi.protegex.owl.inference.protegeowl.task.UpdateEquivalentClassesTask;
+import edu.stanford.smi.protegex.owl.inference.protegeowl.task.UpdateInconsistentClassesTask;
+import edu.stanford.smi.protegex.owl.inference.protegeowl.task.UpdateInferredHierarchyTask;
+import edu.stanford.smi.protegex.owl.inference.protegeowl.task.UpdateInferredTypesTask;
 import edu.stanford.smi.protegex.owl.inference.util.TimeDifference;
-import edu.stanford.smi.protegex.owl.model.*;
-import edu.stanford.smi.protegex.owl.model.event.*;
-
-import java.util.Collection;
+import edu.stanford.smi.protegex.owl.model.OWLClass;
+import edu.stanford.smi.protegex.owl.model.OWLIndividual;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.model.RDFProperty;
+import edu.stanford.smi.protegex.owl.model.RDFResource;
+import edu.stanford.smi.protegex.owl.model.RDFSClass;
+import edu.stanford.smi.protegex.owl.model.event.ClassAdapter;
+import edu.stanford.smi.protegex.owl.model.event.ClassListener;
+import edu.stanford.smi.protegex.owl.model.event.ModelAdapter;
+import edu.stanford.smi.protegex.owl.model.event.ModelListener;
+import edu.stanford.smi.protegex.owl.model.event.PropertyAdapter;
+import edu.stanford.smi.protegex.owl.model.event.PropertyListener;
+import edu.stanford.smi.protegex.owl.model.event.PropertyValueAdapter;
+import edu.stanford.smi.protegex.owl.model.event.PropertyValueListener;
+import edu.stanford.smi.protegex.owl.model.event.ResourceAdapter;
 
 /**
  * User: matthewhorridge<br>
@@ -30,7 +68,7 @@ import java.util.Collection;
  * www.cs.man.ac.uk/~horridgm<br><br>
  */
 public class DefaultProtegeOWLReasoner implements ProtegeOWLReasoner {
-
+    private static transient Logger log = Log.getLogger(DefaultProtegeOWLReasoner.class);
 
     private DIGReasoner reasoner;
 
@@ -55,7 +93,7 @@ public class DefaultProtegeOWLReasoner implements ProtegeOWLReasoner {
                     model = null;
                 }
                 catch (DIGReasonerException e) {
-                    e.printStackTrace();
+                  Log.getLogger().log(Level.SEVERE, "Exception caught", e);
                 }
             }
         }
@@ -273,7 +311,7 @@ public class DefaultProtegeOWLReasoner implements ProtegeOWLReasoner {
             }
         }
         catch (DIGReasonerException e) {
-            e.printStackTrace();
+          Log.getLogger().log(Level.SEVERE, "Exception caught", e);
         }
     }
 
@@ -353,8 +391,10 @@ public class DefaultProtegeOWLReasoner implements ProtegeOWLReasoner {
             id = reasoner.getIdentity();
         }
         catch (DIGReasonerException e) {
-            System.out.println(e.getMessage());
-	        //e.printStackTrace();
+          Log.getLogger().severe(e.getMessage());
+          if (log.isLoggable(Level.FINE)) {
+            log.log(Level.FINE, "Exception caught", e);
+          }
         }
 
         return id;
