@@ -1,17 +1,49 @@
 package edu.stanford.smi.protegex.owl.writer.rdfxml.renderer;
 
+import java.io.IOException;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.TreeSet;
+import java.util.logging.Level;
+
 import edu.stanford.smi.protege.ui.FrameComparator;
-import edu.stanford.smi.protegex.owl.model.*;
+import edu.stanford.smi.protege.util.Log;
+import edu.stanford.smi.protegex.owl.model.OWLAllDifferent;
+import edu.stanford.smi.protegex.owl.model.OWLAllValuesFrom;
+import edu.stanford.smi.protegex.owl.model.OWLCardinality;
+import edu.stanford.smi.protegex.owl.model.OWLCardinalityBase;
+import edu.stanford.smi.protegex.owl.model.OWLComplementClass;
+import edu.stanford.smi.protegex.owl.model.OWLDataRange;
+import edu.stanford.smi.protegex.owl.model.OWLEnumeratedClass;
+import edu.stanford.smi.protegex.owl.model.OWLHasValue;
+import edu.stanford.smi.protegex.owl.model.OWLIndividual;
+import edu.stanford.smi.protegex.owl.model.OWLIntersectionClass;
+import edu.stanford.smi.protegex.owl.model.OWLMaxCardinality;
+import edu.stanford.smi.protegex.owl.model.OWLMinCardinality;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.model.OWLNAryLogicalClass;
+import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
+import edu.stanford.smi.protegex.owl.model.OWLNames;
+import edu.stanford.smi.protegex.owl.model.OWLOntology;
+import edu.stanford.smi.protegex.owl.model.OWLQuantifierRestriction;
+import edu.stanford.smi.protegex.owl.model.OWLRestriction;
+import edu.stanford.smi.protegex.owl.model.OWLSomeValuesFrom;
+import edu.stanford.smi.protegex.owl.model.OWLUnionClass;
+import edu.stanford.smi.protegex.owl.model.RDFExternalResource;
+import edu.stanford.smi.protegex.owl.model.RDFIndividual;
+import edu.stanford.smi.protegex.owl.model.RDFList;
+import edu.stanford.smi.protegex.owl.model.RDFNames;
+import edu.stanford.smi.protegex.owl.model.RDFResource;
+import edu.stanford.smi.protegex.owl.model.RDFSClass;
+import edu.stanford.smi.protegex.owl.model.RDFSDatatype;
+import edu.stanford.smi.protegex.owl.model.RDFSLiteral;
+import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
+import edu.stanford.smi.protegex.owl.model.RDFSNames;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 import edu.stanford.smi.protegex.owl.model.visitor.OWLModelVisitorAdapter;
 import edu.stanford.smi.protegex.owl.model.visitor.Visitable;
 import edu.stanford.smi.protegex.owl.writer.rdfxml.util.Util;
 import edu.stanford.smi.protegex.owl.writer.xml.XMLWriter;
-
-import java.io.IOException;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.TreeSet;
 
 /**
  * User: matthewhorridge<br>
@@ -74,7 +106,7 @@ public class RDFResourceRenderer extends OWLModelVisitorAdapter {
             writer.writeEndElement(); // end of owl:AllDifferent
         }
         catch (IOException e) {
-            e.printStackTrace();
+          Log.getLogger().log(Level.SEVERE, "Exception caught", e);
         }
     }
 
@@ -94,7 +126,7 @@ public class RDFResourceRenderer extends OWLModelVisitorAdapter {
             writer.writeEndElement();
         }
         catch (IOException e) {
-            e.printStackTrace();
+          Log.getLogger().log(Level.SEVERE, "Exception caught", e);
         }
     }
 
@@ -124,7 +156,7 @@ public class RDFResourceRenderer extends OWLModelVisitorAdapter {
 
         }
         catch (IOException e) {
-            e.printStackTrace();
+          Log.getLogger().log(Level.SEVERE, "Exception caught", e);
         }
     }
 
@@ -150,7 +182,7 @@ public class RDFResourceRenderer extends OWLModelVisitorAdapter {
 
         }
         catch (IOException e) {
-            e.printStackTrace();
+          Log.getLogger().log(Level.SEVERE, "Exception caught", e);
         }
     }
 
@@ -180,7 +212,7 @@ public class RDFResourceRenderer extends OWLModelVisitorAdapter {
             writer.writeEndElement(); // end of owl:Restriction
         }
         catch (IOException e) {
-            e.printStackTrace();
+          Log.getLogger().log(Level.SEVERE, "Exception caught", e);
         }
     }
 
@@ -202,7 +234,7 @@ public class RDFResourceRenderer extends OWLModelVisitorAdapter {
 
         }
         catch (IOException e) {
-            e.printStackTrace();
+          Log.getLogger().log(Level.SEVERE, "Exception caught", e);
         }
     }
 
@@ -229,7 +261,7 @@ public class RDFResourceRenderer extends OWLModelVisitorAdapter {
             writer.writeEndElement(); // End of named class
         }
         catch (IOException e) {
-            e.printStackTrace();
+          Log.getLogger().log(Level.SEVERE, "Exception caught", e);
         }
     }
 
@@ -256,7 +288,7 @@ public class RDFResourceRenderer extends OWLModelVisitorAdapter {
             writer.writeEndElement(); // end of owl:DataRange
         }
         catch (IOException e) {
-            e.printStackTrace();
+          Log.getLogger().log(Level.SEVERE, "Exception caught", e);
         }
     }
 
@@ -268,7 +300,7 @@ public class RDFResourceRenderer extends OWLModelVisitorAdapter {
             writer.writeEndElement(); // end of external resource
         }
         catch (IOException e) {
-            e.printStackTrace();
+          Log.getLogger().log(Level.SEVERE, "Exception caught", e);
         }
     }
 
@@ -284,7 +316,7 @@ public class RDFResourceRenderer extends OWLModelVisitorAdapter {
             }
         }
         catch (IOException e) {
-            e.printStackTrace();
+          Log.getLogger().log(Level.SEVERE, "Exception caught", e);
         }
     }
 
@@ -297,7 +329,7 @@ public class RDFResourceRenderer extends OWLModelVisitorAdapter {
             writer.writeEndElement(); // end of individual
         }
         catch (IOException e) {
-            e.printStackTrace();
+          Log.getLogger().log(Level.SEVERE, "Exception caught", e);
         }
     }
 
@@ -315,7 +347,7 @@ public class RDFResourceRenderer extends OWLModelVisitorAdapter {
             writer.writeEndElement(); // end of rdfs:Class
         }
         catch (IOException e) {
-            e.printStackTrace();
+          Log.getLogger().log(Level.SEVERE, "Exception caught", e);
         }
     }
 
@@ -328,7 +360,7 @@ public class RDFResourceRenderer extends OWLModelVisitorAdapter {
             writer.writeEndElement(); // end of owl:onProperty
         }
         catch (IOException e) {
-            e.printStackTrace();
+          Log.getLogger().log(Level.SEVERE, "Exception caught", e);
         }
     }
 
@@ -344,7 +376,7 @@ public class RDFResourceRenderer extends OWLModelVisitorAdapter {
             writer.writeEndElement(); // end of owl:Restriction
         }
         catch (IOException e) {
-            e.printStackTrace();
+          Log.getLogger().log(Level.SEVERE, "Exception caught", e);
         }
     }
 
@@ -365,7 +397,7 @@ public class RDFResourceRenderer extends OWLModelVisitorAdapter {
             writer.writeEndElement(); // End of owl:Class
         }
         catch (IOException e) {
-            e.printStackTrace();
+          Log.getLogger().log(Level.SEVERE, "Exception caught", e);
         }
     }
 
@@ -386,7 +418,7 @@ public class RDFResourceRenderer extends OWLModelVisitorAdapter {
             writer.writeEndElement(); // End of owl:Restriction
         }
         catch (IOException e) {
-            e.printStackTrace();
+          Log.getLogger().log(Level.SEVERE, "Exception caught", e);
         }
     }
 
@@ -419,7 +451,7 @@ public class RDFResourceRenderer extends OWLModelVisitorAdapter {
             }
         }
         catch (IOException e) {
-            e.printStackTrace();
+          Log.getLogger().log(Level.SEVERE, "Exception caught", e);
         }
     }
 
