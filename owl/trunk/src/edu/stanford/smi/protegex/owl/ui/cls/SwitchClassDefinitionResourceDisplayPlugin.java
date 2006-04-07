@@ -100,10 +100,7 @@ public class SwitchClassDefinitionResourceDisplayPlugin implements ResourceDispl
                   }
                 }
                 catch (Exception ex) {
-                  log.info("Exception caught in initResourceDisplay " + ex);
-                  if (log.isLoggable(Level.FINE)) {
-                    log.log(Level.FINE, "Exception caught", ex);
-                  }
+                  Log.emptyCatchBlock(ex);
                 }
                 SwitchPanel switchPanel = new SwitchPanel(widget);
                 switchPanel.updateStatus();
