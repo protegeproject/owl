@@ -1,25 +1,50 @@
 package edu.stanford.smi.protegex.owl.ui.clsdesc.manchester;
 
-import edu.stanford.smi.protege.Application;
-import edu.stanford.smi.protege.ui.FrameRenderer;
-import edu.stanford.smi.protegex.owl.model.OWLModel;
-import edu.stanford.smi.protegex.owl.model.RDFResource;
-import edu.stanford.smi.protegex.owl.model.classparser.manchester.ManchesterOWLParserUtil;
-import edu.stanford.smi.protegex.owl.ui.code.*;
-import edu.stanford.smi.protegex.owl.ui.resourceselection.ResourceIgnoreCaseComparator;
-
-import javax.swing.*;
-import javax.swing.event.CaretEvent;
-import javax.swing.event.CaretListener;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-import javax.swing.text.*;
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Window;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
+import java.util.logging.Level;
+
+import javax.swing.JComboBox;
+import javax.swing.JList;
+import javax.swing.JTextPane;
+import javax.swing.event.CaretEvent;
+import javax.swing.event.CaretListener;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultHighlighter;
+import javax.swing.text.Highlighter;
+import javax.swing.text.Style;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyledDocument;
+import javax.swing.text.View;
+
+import edu.stanford.smi.protege.Application;
+import edu.stanford.smi.protege.ui.FrameRenderer;
+import edu.stanford.smi.protege.util.Log;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.model.RDFResource;
+import edu.stanford.smi.protegex.owl.model.classparser.manchester.ManchesterOWLParserUtil;
+import edu.stanford.smi.protegex.owl.ui.code.OWLResourceNameMatcher;
+import edu.stanford.smi.protegex.owl.ui.code.OWLTextFormatter;
+import edu.stanford.smi.protegex.owl.ui.code.ResourceNameMatcher;
+import edu.stanford.smi.protegex.owl.ui.code.SymbolEditorHandler;
+import edu.stanford.smi.protegex.owl.ui.code.SymbolErrorDisplay;
+import edu.stanford.smi.protegex.owl.ui.code.SyntaxConverter;
+import edu.stanford.smi.protegex.owl.ui.resourceselection.ResourceIgnoreCaseComparator;
 
 /**
  * User: matthewhorridge<br>
@@ -200,34 +225,6 @@ public class ManchesterOWLTextPane extends JTextPane implements KeyListener {
         closeComboBox();
     }
 
-//    public void backspace() {
-//        String selText = getSelectedText();
-//        if (selText != null && selText.length() > 0) {
-//            int start = getSelectionStart();
-//            try {
-//                getDocument().remove(start, getSelectionEnd() - start);
-//            }
-//            catch (BadLocationException ex) {
-//                ex.printStackTrace();
-//            }
-//            setCaretPosition(start);
-//        }
-//        else {
-//            int pos = getCaretPosition();
-//            if (pos > 0) {
-//                try {
-//                    getDocument().remove(pos - 1, 1);
-//                }
-//                catch (BadLocationException ex) {
-//                    ex.printStackTrace();
-//                }
-//                setCaretPosition(pos - 1);
-//            }
-//        }
-//        updateErrorDisplay();
-//        requestFocus();
-//    }
-
 
     /**
      * Used for error checking during input.
@@ -382,7 +379,7 @@ public class ManchesterOWLTextPane extends JTextPane implements KeyListener {
                 setCaretPosition(start + caretOffset);
             }
             catch (BadLocationException ex) {
-                ex.printStackTrace();
+              Log.getLogger().log(Level.SEVERE, "Exception caught", ex);
             }
         }
         else {
@@ -392,7 +389,7 @@ public class ManchesterOWLTextPane extends JTextPane implements KeyListener {
                 setCaretPosition(pos + caretOffset);
             }
             catch (BadLocationException ex) {
-                ex.printStackTrace();
+              Log.getLogger().log(Level.SEVERE, "Exception caught", ex);
             }
         }
         updateErrorDisplay();
@@ -678,7 +675,7 @@ public class ManchesterOWLTextPane extends JTextPane implements KeyListener {
             }
         }
         catch (BadLocationException e) {
-            e.printStackTrace();
+          Log.getLogger().log(Level.SEVERE, "Exception caught", e);
         }
     }
 
@@ -697,7 +694,7 @@ public class ManchesterOWLTextPane extends JTextPane implements KeyListener {
             }
         }
         catch (BadLocationException e) {
-            e.printStackTrace();
+          Log.getLogger().log(Level.SEVERE, "Exception caught", e);
         }
     }
 
@@ -746,7 +743,7 @@ public class ManchesterOWLTextPane extends JTextPane implements KeyListener {
             }
         }
         catch (BadLocationException e) {
-            e.printStackTrace();
+            Log.getLogger().log(Level.SEVERE, "Exception caught", e);
             return pos;
         }
         return pos;
