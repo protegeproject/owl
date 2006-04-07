@@ -22,10 +22,6 @@ import java.util.logging.Logger;
 public class OWLWidgetMapper extends DefaultWidgetMapper {
   private static Logger log = Log.getLogger(OWLWidgetMapper.class);
   
-  // The empty catch blocks suggest that exceptions are very common in this 
-  // class.  How common?  Is this mechanism appropriate?
-  private static boolean warnedAboutExceptions = false;
-
     private static Map className2Metadata;
 
 
@@ -145,13 +141,7 @@ public class OWLWidgetMapper extends DefaultWidgetMapper {
                 }
                 catch (Exception ex) {
                   // Empty catch blocks are really dangerous!
-                  if (!warnedAboutExceptions) {
-                    log.info("Exceptions caught in OWLWidgetMapper including " + ex);
-                    warnedAboutExceptions = true;
-                  }
-                  if (log.isLoggable(Level.FINE)) {
-                    log.log(Level.FINE, "Exception caught in OWLWidgetMapper", ex);
-                  }
+                  Log.emptyCatchBlock(ex);
                 }
             }
         }
@@ -190,14 +180,7 @@ public class OWLWidgetMapper extends DefaultWidgetMapper {
                     }
                 }
                 catch (Exception ex) {
-                  // Empty catch blocks are really dangerous!
-                  if (!warnedAboutExceptions) {
-                    log.info("Exceptions found in OWLWidgetMapper including " + ex);
-                    warnedAboutExceptions = true;
-                  }
-                  if (log.isLoggable(Level.FINE)) {
-                    log.log(Level.FINE, "Exception caught", ex);
-                  }
+                  Log.emptyCatchBlock(ex);
                 }
             }
         }
