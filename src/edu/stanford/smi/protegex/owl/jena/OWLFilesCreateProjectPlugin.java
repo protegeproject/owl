@@ -1,11 +1,22 @@
 package edu.stanford.smi.protegex.owl.jena;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import edu.stanford.smi.protege.model.KnowledgeBaseFactory;
 import edu.stanford.smi.protege.model.Project;
 import edu.stanford.smi.protege.model.WidgetDescriptor;
 import edu.stanford.smi.protege.plugin.AbstractCreateProjectPlugin;
 import edu.stanford.smi.protege.plugin.CreateProjectWizard;
 import edu.stanford.smi.protege.util.FileUtilities;
+import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protege.util.PropertyList;
 import edu.stanford.smi.protege.util.WizardPage;
 import edu.stanford.smi.protegex.owl.jena.parser.ProtegeOWLParser;
@@ -25,16 +36,13 @@ import edu.stanford.smi.protegex.owl.ui.metadatatab.OntologyURIWizardPage;
 import edu.stanford.smi.protegex.owl.ui.profiles.ProfileSelectionWizardPage;
 import edu.stanford.smi.protegex.owl.ui.profiles.ProfilesManager;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.*;
-
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
  */
 public class OWLFilesCreateProjectPlugin
         extends AbstractCreateProjectPlugin
         implements OWLFilesPlugin {
+    private static transient Logger log = Log.getLogger(OWLFilesCreateProjectPlugin.class);
 
     private Class defaultClassView;
 
@@ -92,14 +100,14 @@ public class OWLFilesCreateProjectPlugin
                 importHelper.addImport(u);
             }
             catch (URISyntaxException e) {
-                e.printStackTrace();
+                log.log(Level.SEVERE, "Exception caught", e);
             }
         }
         try {
             importHelper.importOntologies();
         }
         catch (Exception ex) {
-            ex.printStackTrace();
+            log.log(Level.SEVERE, "Exception caught", ex);
             ProtegeUI.getModalDialogFactory().showErrorMessageDialog(owlModel,
                                                                      "Could not load import:\n" + ex);
         }
@@ -198,6 +206,7 @@ public class OWLFilesCreateProjectPlugin
                         return new URI(uri);
                     }
                     catch (Exception ex) {
+                      Log.emptyCatchBlock(ex);
                     }
                 }
             }
