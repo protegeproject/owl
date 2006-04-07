@@ -1,5 +1,20 @@
 package edu.stanford.smi.protegex.owl.ui.triplestore;
 
+import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.net.URI;
+import java.util.logging.Level;
+
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.JButton;
+import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JLabel;
+import javax.swing.JPopupMenu;
+
+import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLOntology;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
@@ -8,13 +23,6 @@ import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreUtil;
 import edu.stanford.smi.protegex.owl.repository.Repository;
 import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
 import edu.stanford.smi.protegex.owl.ui.resourceselection.DropDownOverlayIcon;
-
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.net.URI;
 
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
@@ -98,7 +106,7 @@ public class TripleStoreSelectionAction extends AbstractAction {
                 }
             }
             catch (Exception ex) {
-                ex.printStackTrace();
+              Log.getLogger().log(Level.SEVERE, "Exception caught", ex);
             }
         }
 
