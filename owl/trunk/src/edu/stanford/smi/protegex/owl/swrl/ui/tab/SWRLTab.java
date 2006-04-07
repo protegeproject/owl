@@ -1,24 +1,27 @@
 package edu.stanford.smi.protegex.owl.swrl.ui.tab;
 
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.net.URI;
+import java.util.Collection;
+import java.util.logging.Level;
+
+import javax.swing.JButton;
+import javax.swing.JLabel;
+
 import edu.stanford.smi.protege.model.Project;
+import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protege.widget.AbstractTabWidget;
 import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
-import edu.stanford.smi.protegex.owl.jena.parser.ProtegeOWLParser;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
-import edu.stanford.smi.protegex.owl.model.OWLOntology;
 import edu.stanford.smi.protegex.owl.model.util.ImportHelper;
 import edu.stanford.smi.protegex.owl.swrl.model.SWRLNames;
 import edu.stanford.smi.protegex.owl.swrl.ui.SWRLProjectPlugin;
 import edu.stanford.smi.protegex.owl.swrl.ui.icons.SWRLIcons;
 import edu.stanford.smi.protegex.owl.swrl.ui.table.SWRLTablePanel;
 import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
-
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.net.URI;
-import java.util.Collection;
 
 /**
  * A tab widget displaying all SWRL rules in the current ontology.
@@ -45,7 +48,7 @@ public class SWRLTab extends AbstractTabWidget {
             ProtegeUI.getModalDialogFactory().showErrorMessageDialog(owlModel,
                     "Could not activate SWRL support:\n" + ex +
                             ".\nYour project might be in an inconsistent state now.");
-            ex.printStackTrace();
+            Log.getLogger().log(Level.SEVERE, "Exception caught", ex);
         }
         SWRLProjectPlugin.adjustWidgets(getProject());
         ProtegeUI.reloadUI(getProject());
