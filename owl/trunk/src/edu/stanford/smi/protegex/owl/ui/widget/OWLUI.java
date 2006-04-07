@@ -1,5 +1,30 @@
 package edu.stanford.smi.protegex.owl.ui.widget;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.logging.Level;
+
+import javax.swing.Action;
+import javax.swing.BorderFactory;
+import javax.swing.Icon;
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JFileChooser;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JToolBar;
+import javax.swing.text.JTextComponent;
+
 import edu.stanford.smi.protege.action.Copy;
 import edu.stanford.smi.protege.action.Cut;
 import edu.stanford.smi.protege.action.InsertUnicodeCharacterAction;
@@ -9,20 +34,30 @@ import edu.stanford.smi.protege.model.Project;
 import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protege.ui.Finder;
 import edu.stanford.smi.protege.ui.ProjectView;
-import edu.stanford.smi.protege.util.*;
-import edu.stanford.smi.protege.widget.*;
+import edu.stanford.smi.protege.util.CollectionUtilities;
+import edu.stanford.smi.protege.util.ComponentFactory;
+import edu.stanford.smi.protege.util.ExtensionFilter;
+import edu.stanford.smi.protege.util.Log;
+import edu.stanford.smi.protege.util.PopupMenuMouseListener;
+import edu.stanford.smi.protege.util.StringUtilities;
+import edu.stanford.smi.protege.widget.ClsesTab;
+import edu.stanford.smi.protege.widget.FormWidget;
+import edu.stanford.smi.protege.widget.InstancesTab;
+import edu.stanford.smi.protege.widget.SlotWidget;
+import edu.stanford.smi.protege.widget.SlotsTab;
+import edu.stanford.smi.protege.widget.TabWidget;
 import edu.stanford.smi.protegex.owl.database.OWLDatabaseModel;
-import edu.stanford.smi.protegex.owl.model.*;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
+import edu.stanford.smi.protegex.owl.model.RDFProperty;
+import edu.stanford.smi.protegex.owl.model.RDFResource;
+import edu.stanford.smi.protegex.owl.model.RDFSClass;
+import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
 import edu.stanford.smi.protegex.owl.model.project.OWLProject;
 import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
 import edu.stanford.smi.protegex.owl.ui.actions.AbstractOWLModelAction;
 import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
 import edu.stanford.smi.protegex.owl.ui.results.HostResourceDisplay;
-
-import javax.swing.*;
-import javax.swing.text.JTextComponent;
-import java.awt.*;
-import java.util.*;
 
 /**
  * A collection of global utilities for OWL user interface components.
@@ -262,7 +297,7 @@ public class OWLUI {
 
 
     public static void handleError(OWLModel owlModel, Throwable t) {
-        t.printStackTrace();
+        Log.getLogger().log(Level.SEVERE, "Exception caught", t);
         ProtegeUI.getModalDialogFactory().
                 showErrorMessageDialog(owlModel,
                                        "Internal Error: " + t +
