@@ -1,6 +1,14 @@
 package edu.stanford.smi.protegex.owl.ui.repository.wizard;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.logging.Level;
+
+import javax.swing.JComponent;
+
 import edu.stanford.smi.protege.plugin.PluginUtilities;
+import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protege.util.Wizard;
 import edu.stanford.smi.protegex.owl.ProtegeOWL;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
@@ -10,11 +18,6 @@ import edu.stanford.smi.protegex.owl.ui.repository.wizard.impl.LocalFileReposito
 import edu.stanford.smi.protegex.owl.ui.repository.wizard.impl.LocalFolderRepositoryCreatorWizardPlugin;
 import edu.stanford.smi.protegex.owl.ui.repository.wizard.impl.RelativeFolderRepositoryCreatorWizardPlugin;
 import edu.stanford.smi.protegex.owl.ui.wizard.OWLWizard;
-
-import javax.swing.*;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
 
 /**
  * User: matthewhorridge<br>
@@ -48,10 +51,10 @@ public class RepositoryWizard extends OWLWizard {
                 plugins.add(cls.newInstance());
             }
             catch (InstantiationException e) {
-                e.printStackTrace();
+              Log.getLogger().log(Level.SEVERE, "Exception caught", e);
             }
             catch (IllegalAccessException e) {
-                e.printStackTrace();
+              Log.getLogger().log(Level.SEVERE, "Exception caught", e);
             }
         }
         addPage(new SelectRepositoryTypeWizardPage(this, owlModel));
