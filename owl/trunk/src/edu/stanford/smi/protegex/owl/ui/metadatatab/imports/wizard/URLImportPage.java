@@ -1,14 +1,17 @@
 package edu.stanford.smi.protegex.owl.ui.metadatatab.imports.wizard;
 
-import edu.stanford.smi.protege.util.LabeledComponent;
-import edu.stanford.smi.protege.util.WizardPage;
-
-import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-import java.awt.*;
+import java.awt.BorderLayout;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.logging.Level;
+
+import javax.swing.JTextField;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+
+import edu.stanford.smi.protege.util.LabeledComponent;
+import edu.stanford.smi.protege.util.Log;
+import edu.stanford.smi.protege.util.WizardPage;
 
 /**
  * User: matthewhorridge<br>
@@ -61,7 +64,7 @@ public class URLImportPage extends AbstractImportStartWizardPage {
 			getImportWizard().getImportData().addImportEntry(new URLImportEntry(url));
 		}
 		catch(MalformedURLException e) {
-			e.printStackTrace();
+                  Log.getLogger().log(Level.SEVERE, "Exception caught", e);
 		}
 	}
 
