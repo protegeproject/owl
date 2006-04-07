@@ -1,12 +1,26 @@
 package edu.stanford.smi.protegex.owl.inference.ui;
 
+import java.awt.Component;
+import java.awt.Frame;
+import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import javax.swing.SwingUtilities;
+
 import edu.stanford.smi.protege.model.Project;
 import edu.stanford.smi.protege.ui.ProjectView;
+import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.inference.dig.exception.DIGReasonerException;
 import edu.stanford.smi.protegex.owl.inference.dig.reasoner.DIGReasonerIdentity;
 import edu.stanford.smi.protegex.owl.inference.protegeowl.ProtegeOWLReasoner;
 import edu.stanford.smi.protegex.owl.inference.protegeowl.ReasonerManager;
-import edu.stanford.smi.protegex.owl.inference.protegeowl.log.*;
+import edu.stanford.smi.protegex.owl.inference.protegeowl.log.ReasonerLogRecord;
+import edu.stanford.smi.protegex.owl.inference.protegeowl.log.ReasonerLogRecordFactory;
+import edu.stanford.smi.protegex.owl.inference.protegeowl.log.ReasonerLogger;
+import edu.stanford.smi.protegex.owl.inference.protegeowl.log.ReasonerLoggerListener;
+import edu.stanford.smi.protegex.owl.inference.protegeowl.log.ReasonerLoggerUtil;
+import edu.stanford.smi.protegex.owl.inference.protegeowl.log.WarningMessageLogRecord;
 import edu.stanford.smi.protegex.owl.inference.protegeowl.task.ReasonerTaskEvent;
 import edu.stanford.smi.protegex.owl.inference.protegeowl.task.ReasonerTaskListener;
 import edu.stanford.smi.protegex.owl.inference.util.ReasonerPreferences;
@@ -14,10 +28,6 @@ import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
 import edu.stanford.smi.protegex.owl.ui.cls.OWLClassesTab;
 import edu.stanford.smi.protegex.owl.ui.results.ResultsPanelManager;
 import edu.stanford.smi.protegex.owl.ui.testing.OWLTestResultsPanel;
-
-import javax.swing.*;
-import java.awt.*;
-import java.util.ArrayList;
 
 /**
  * User: matthewhorridge<br>
@@ -33,6 +43,7 @@ import java.util.ArrayList;
  * also pop up a dialog with a progress bar and reasoner log.
  */
 public class ReasonerActionRunner {
+    private static transient Logger log = Log.getLogger(ReasonerActionRunner.class);
 
     /**
      * The progress dialog that will be poped up
@@ -195,7 +206,6 @@ public class ReasonerActionRunner {
                         }
                     });
 
-                    //e1.printStackTrace();
 
                     // The reasoner may have disabled the kb events.
                     // Check that they are enabled - if not enable them
@@ -220,7 +230,7 @@ public class ReasonerActionRunner {
         catch (Exception e) {
             dlg.setOKButtonEnabled(true);
             dlg.setProgressIndeterminate(false);
-            //e.printStackTrace();
+            Log.emptyCatchBlock(e);
         }
     }
 
