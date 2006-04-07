@@ -1,36 +1,43 @@
 package edu.stanford.smi.protegex.owl.ui.metadatatab.imports;
 
-import edu.stanford.smi.protege.util.Disposable;
-import edu.stanford.smi.protege.util.LabeledComponent;
-import edu.stanford.smi.protege.util.Wizard;
-import edu.stanford.smi.protegex.owl.jena.Jena;
-import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
-import edu.stanford.smi.protegex.owl.jena.parser.ProtegeOWLParser;
-import edu.stanford.smi.protegex.owl.model.OWLModel;
-import edu.stanford.smi.protegex.owl.model.OWLOntology;
-import edu.stanford.smi.protegex.owl.model.util.ImportHelper;
-import edu.stanford.smi.protegex.owl.model.impl.OWLUtil;
-import edu.stanford.smi.protegex.owl.repository.Repository;
-import edu.stanford.smi.protegex.owl.ui.OWLLabeledComponent;
-import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
-import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
-import edu.stanford.smi.protegex.owl.ui.importstree.ImportsTreePanel;
-import edu.stanford.smi.protegex.owl.ui.menu.OWLMenuProjectPlugin;
-import edu.stanford.smi.protegex.owl.ui.metadatatab.imports.emptyimport.EmptyImportWizard;
-import edu.stanford.smi.protegex.owl.ui.metadatatab.imports.wizard.AddedPrefixesTable;
-import edu.stanford.smi.protegex.owl.ui.metadatatab.imports.wizard.ImportEntry;
-import edu.stanford.smi.protegex.owl.ui.metadatatab.imports.wizard.ImportWizard;
-import edu.stanford.smi.protegex.owl.ui.metadatatab.prefixes.PrefixesPanel;
-
-import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.logging.Level;
+
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JViewport;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+
+import edu.stanford.smi.protege.util.Disposable;
+import edu.stanford.smi.protege.util.LabeledComponent;
+import edu.stanford.smi.protege.util.Log;
+import edu.stanford.smi.protege.util.Wizard;
+import edu.stanford.smi.protegex.owl.jena.Jena;
+import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.model.OWLOntology;
+import edu.stanford.smi.protegex.owl.model.impl.OWLUtil;
+import edu.stanford.smi.protegex.owl.model.util.ImportHelper;
+import edu.stanford.smi.protegex.owl.repository.Repository;
+import edu.stanford.smi.protegex.owl.ui.OWLLabeledComponent;
+import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
+import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
+import edu.stanford.smi.protegex.owl.ui.importstree.ImportsTreePanel;
+import edu.stanford.smi.protegex.owl.ui.metadatatab.imports.emptyimport.EmptyImportWizard;
+import edu.stanford.smi.protegex.owl.ui.metadatatab.imports.wizard.AddedPrefixesTable;
+import edu.stanford.smi.protegex.owl.ui.metadatatab.imports.wizard.ImportEntry;
+import edu.stanford.smi.protegex.owl.ui.metadatatab.imports.wizard.ImportWizard;
+import edu.stanford.smi.protegex.owl.ui.metadatatab.prefixes.PrefixesPanel;
 
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
@@ -124,7 +131,7 @@ public class ImportsPanel extends JPanel implements Disposable {
 		    }
 	    }
 	    catch(Exception e) {
-		    e.printStackTrace();
+              Log.getLogger().log(Level.SEVERE, "Exception caught", e);
 	    }
     }
 
