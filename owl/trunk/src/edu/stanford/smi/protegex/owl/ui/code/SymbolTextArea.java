@@ -1,17 +1,8 @@
 package edu.stanford.smi.protegex.owl.ui.code;
 
-import edu.stanford.smi.protege.model.Frame;
-import edu.stanford.smi.protege.ui.FrameRenderer;
-import edu.stanford.smi.protegex.owl.model.*;
-import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLIntersectionClass;
-import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLUnionClass;
-import edu.stanford.smi.protegex.owl.ui.resourceselection.ResourceIgnoreCaseComparator;
-
-import javax.swing.*;
-import javax.swing.event.CaretEvent;
-import javax.swing.event.CaretListener;
-import javax.swing.text.BadLocationException;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -19,6 +10,27 @@ import java.awt.event.KeyListener;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
+
+import javax.swing.CellEditor;
+import javax.swing.JComboBox;
+import javax.swing.JTextArea;
+import javax.swing.SwingUtilities;
+import javax.swing.event.CaretEvent;
+import javax.swing.event.CaretListener;
+import javax.swing.text.BadLocationException;
+
+import edu.stanford.smi.protege.model.Frame;
+import edu.stanford.smi.protege.ui.FrameRenderer;
+import edu.stanford.smi.protege.util.Log;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.model.OWLNAryLogicalClass;
+import edu.stanford.smi.protegex.owl.model.OWLUnionClass;
+import edu.stanford.smi.protegex.owl.model.RDFResource;
+import edu.stanford.smi.protegex.owl.model.RDFSClass;
+import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLIntersectionClass;
+import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLUnionClass;
+import edu.stanford.smi.protegex.owl.ui.resourceselection.ResourceIgnoreCaseComparator;
 
 /**
  * A remake of OWLTextField, but with JTextArea as base class.
@@ -98,7 +110,7 @@ public abstract class SymbolTextArea extends JTextArea
                 getDocument().remove(start, getSelectionEnd() - start);
             }
             catch (BadLocationException ex) {
-                ex.printStackTrace();
+              Log.getLogger().log(Level.SEVERE, "Exception caught", ex);
             }
             setCaretPosition(start);
         }
@@ -109,7 +121,7 @@ public abstract class SymbolTextArea extends JTextArea
                     getDocument().remove(pos - 1, 1);
                 }
                 catch (BadLocationException ex) {
-                    ex.printStackTrace();
+                  Log.getLogger().log(Level.SEVERE, "Exception caught", ex);
                 }
                 setCaretPosition(pos - 1);
             }
@@ -291,7 +303,7 @@ public abstract class SymbolTextArea extends JTextArea
                 setCaretPosition(start + caretOffset);
             }
             catch (BadLocationException ex) {
-                ex.printStackTrace();
+              Log.getLogger().log(Level.SEVERE, "Exception caught", ex);
             }
         }
         else {
@@ -301,7 +313,7 @@ public abstract class SymbolTextArea extends JTextArea
                 setCaretPosition(pos + caretOffset);
             }
             catch (BadLocationException ex) {
-                ex.printStackTrace();
+              Log.getLogger().log(Level.SEVERE, "Exception caught", ex);
             }
         }
         updateErrorDisplay();
