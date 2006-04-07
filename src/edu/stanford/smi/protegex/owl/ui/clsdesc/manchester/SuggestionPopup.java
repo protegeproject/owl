@@ -1,17 +1,43 @@
 package edu.stanford.smi.protegex.owl.ui.clsdesc.manchester;
 
-import edu.stanford.smi.protegex.owl.model.OWLModel;
-import edu.stanford.smi.protegex.owl.model.classparser.OWLClassParseException;
-import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
+import java.awt.BorderLayout;
+import java.awt.Graphics;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.Window;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+import java.awt.event.HierarchyEvent;
+import java.awt.event.HierarchyListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.util.Collection;
+import java.util.logging.Level;
 
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
+import javax.swing.JPanel;
+import javax.swing.JWindow;
+import javax.swing.SwingUtilities;
+import javax.swing.Timer;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.JTextComponent;
-import java.awt.*;
-import java.awt.event.*;
-import java.util.Collection;
+
+import edu.stanford.smi.protege.util.Log;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.model.classparser.OWLClassParseException;
+import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
 
 /**
  * User: matthewhorridge<br>
@@ -191,7 +217,7 @@ public class SuggestionPopup extends JWindow {
 
         }
         catch (BadLocationException e1) {
-            e1.printStackTrace();
+          Log.getLogger().log(Level.SEVERE, "Exception caught", e1);
         }
     }
 
