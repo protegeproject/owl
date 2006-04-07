@@ -1,21 +1,25 @@
 package edu.stanford.smi.protegex.owl.ui.cls;
 
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.logging.Level;
+
+import javax.swing.JPanel;
+
 import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.Facet;
 import edu.stanford.smi.protege.model.Model;
 import edu.stanford.smi.protege.model.Slot;
+import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protege.widget.Widget;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
 import edu.stanford.smi.protegex.owl.ui.resourcedisplay.ResourceDisplay;
 import edu.stanford.smi.protegex.owl.ui.widget.MultiWidgetPropertyWidget;
 import edu.stanford.smi.protegex.owl.ui.widget.PropertyWidget;
-
-import javax.swing.*;
-import java.awt.*;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 
 /**
  * A MultiWidgetPropertyWidget used as main widget on the OWLClassesTab,
@@ -55,7 +59,7 @@ public class SwitchableClassDefinitionWidget extends MultiWidgetPropertyWidget {
             }
             catch (Exception ex) {
                 System.err.println("[SwitchableClassDefinitionWidget] " + ex);
-                ex.printStackTrace();
+                Log.getLogger().log(Level.SEVERE, "Exception caught", ex);
             }
         }
     }
