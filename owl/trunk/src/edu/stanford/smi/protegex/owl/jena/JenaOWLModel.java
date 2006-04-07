@@ -1,5 +1,21 @@
 package edu.stanford.smi.protegex.owl.jena;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintStream;
+import java.io.Reader;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.charset.Charset;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.logging.Level;
+
 import com.hp.hpl.jena.graph.Graph;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntModelSpec;
@@ -13,9 +29,11 @@ import com.hp.hpl.jena.reasoner.dig.DIGReasonerFactory;
 import com.hp.hpl.jena.shared.PrefixMapping;
 import com.hp.hpl.jena.util.FileUtils;
 import com.hp.hpl.jena.vocabulary.ReasonerVocabulary;
+
 import edu.stanford.smi.protege.model.Instance;
 import edu.stanford.smi.protege.model.KnowledgeBaseFactory;
 import edu.stanford.smi.protege.model.framestore.MergingNarrowFrameStore;
+import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protege.util.SystemUtilities;
 import edu.stanford.smi.protegex.owl.jena.creator.JenaCreator;
 import edu.stanford.smi.protegex.owl.jena.parser.ProtegeOWLParser;
@@ -37,14 +55,6 @@ import edu.stanford.smi.protegex.owl.ui.widget.ModalProgressBarManager;
 import edu.stanford.smi.protegex.owl.writer.rdfxml.rdfwriter.OWLModelAllTripleStoresWriter;
 import edu.stanford.smi.protegex.owl.writer.rdfxml.util.ProtegeWriterSettings;
 import edu.stanford.smi.protegex.owl.writer.xml.XMLWriterPreferences;
-
-import java.io.*;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.nio.charset.Charset;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Map;
 
 /**
  * An OWLModel that can be synchronized with a Jena OntModel.
@@ -258,7 +268,7 @@ public class JenaOWLModel extends AbstractOWLModel implements OntModelProvider {
             load(uri, language);
         }
         catch (Throwable t) {
-            t.printStackTrace();
+            Log.getLogger().log(Level.SEVERE, "Exception caught", t);
             URI errorURI = ProtegeOWLParser.getErrorURI();
             if (errorURI != null) {
                 int lineNumber = ProtegeOWLParser.getErrorLineNumber();
@@ -325,7 +335,7 @@ public class JenaOWLModel extends AbstractOWLModel implements OntModelProvider {
             }
             catch (Exception ex) {
                 errors.add("Failed to use Protege2Jena: " + ex + "\nPlease see Java console for error details and possibly\nreport this error to protege-owl@smi.stanford.edu");
-                ex.printStackTrace();
+                Log.getLogger().log(Level.SEVERE, "Exception caught", ex);
             }
         }
         else if (getWriterSettings() instanceof ProtegeWriterSettings) {
@@ -361,7 +371,7 @@ public class JenaOWLModel extends AbstractOWLModel implements OntModelProvider {
             save(file, ontModel, language, namespace);
         }
         catch (Throwable t) {
-            t.printStackTrace();
+            Log.getLogger().log(Level.SEVERE, "Exception caught", t);
             errors.add(t);
         }
     }
@@ -382,7 +392,7 @@ public class JenaOWLModel extends AbstractOWLModel implements OntModelProvider {
             save(os, ontModel, language, namespace);
         }
         catch (Throwable t) {
-            t.printStackTrace();
+            Log.getLogger().log(Level.SEVERE, "Exception caught", t);
             errors.add(t);
         }
     }
@@ -443,7 +453,7 @@ public class JenaOWLModel extends AbstractOWLModel implements OntModelProvider {
             getOWLProject().getSettingsMap().setString(JenaKnowledgeBaseFactory.OWL_FILE_LANGUAGE_PROPERTY, FileUtils.langXMLAbbrev);
             getOWLProject().getSettingsMap().setString(JenaKnowledgeBaseFactory.OWL_FILE_URI_PROPERTY, uri.toString());
         } catch (URISyntaxException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            Log.getLogger().log(Level.SEVERE, "Exception caught", e);
         }
     }
 
