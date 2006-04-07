@@ -1,11 +1,18 @@
 package edu.stanford.smi.protegex.owl.repository.util;
 
-import org.apache.xerces.parsers.SAXParser;
-import org.xml.sax.*;
-
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.logging.Level;
+
+import org.apache.xerces.parsers.SAXParser;
+import org.xml.sax.Attributes;
+import org.xml.sax.ContentHandler;
+import org.xml.sax.InputSource;
+import org.xml.sax.Locator;
+import org.xml.sax.SAXException;
+
+import edu.stanford.smi.protege.util.Log;
 
 /**
  * User: matthewhorridge<br>
@@ -99,7 +106,7 @@ public class XMLBaseExtractor {
                             attURL = new URI(atts.getValue(i));
                         }
                         catch (URISyntaxException e) {
-                            e.printStackTrace();
+                            Log.getLogger().log(Level.SEVERE, "Exception caught", e);
                         }
                         xmlBase = attURL;
                     }
