@@ -1,13 +1,20 @@
 package edu.stanford.smi.protegex.owl.repository.factory;
 
-import edu.stanford.smi.protege.plugin.PluginUtilities;
-import edu.stanford.smi.protegex.owl.model.OWLModel;
-import edu.stanford.smi.protegex.owl.repository.Repository;
-import edu.stanford.smi.protegex.owl.repository.impl.*;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.logging.Level;
+
+import edu.stanford.smi.protege.plugin.PluginUtilities;
+import edu.stanford.smi.protege.util.Log;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.repository.Repository;
+import edu.stanford.smi.protegex.owl.repository.impl.DublinCoreDLVersionRedirectRepositoryFactoryPlugin;
+import edu.stanford.smi.protegex.owl.repository.impl.FTPRepositoryFactoryPlugin;
+import edu.stanford.smi.protegex.owl.repository.impl.HTTPRepositoryFactoryPlugin;
+import edu.stanford.smi.protegex.owl.repository.impl.LocalFileRepositoryFactoryPlugin;
+import edu.stanford.smi.protegex.owl.repository.impl.LocalFolderRepositoryFactoryPlugin;
+import edu.stanford.smi.protegex.owl.repository.impl.RelativeFolderRepositoryFactoryPlugin;
 
 /**
  * User: matthewhorridge<br>
@@ -40,10 +47,10 @@ public class RepositoryFactory {
                 factories.add(cls.newInstance());
             }
             catch (InstantiationException e) {
-                e.printStackTrace();
+              Log.getLogger().log(Level.SEVERE, "Exception caught", e);
             }
             catch (IllegalAccessException e) {
-                e.printStackTrace();
+              Log.getLogger().log(Level.SEVERE, "Exception caught", e);
             }
         }
     }
