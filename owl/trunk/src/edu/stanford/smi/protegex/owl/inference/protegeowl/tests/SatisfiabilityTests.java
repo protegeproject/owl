@@ -1,5 +1,8 @@
 package edu.stanford.smi.protegex.owl.inference.protegeowl.tests;
 
+import java.util.logging.Level;
+
+import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.inference.dig.exception.DIGReasonerException;
 import edu.stanford.smi.protegex.owl.inference.protegeowl.ProtegeOWLReasoner;
 import edu.stanford.smi.protegex.owl.inference.protegeowl.ReasonerManager;
@@ -27,7 +30,7 @@ public class SatisfiabilityTests extends AbstractJenaTestCase {
         }
         catch (DIGReasonerException e) {
             fail(e.getMessage());
-            e.printStackTrace();
+            Log.getLogger().log(Level.SEVERE, "Exception caught", e);
         }
     }
 
@@ -39,7 +42,7 @@ public class SatisfiabilityTests extends AbstractJenaTestCase {
         }
         catch (DIGReasonerException e) {
             fail(e.getMessage());
-            e.printStackTrace();
+            Log.getLogger().log(Level.SEVERE, "Exception caught", e);
         }
     }
 
@@ -58,7 +61,7 @@ public class SatisfiabilityTests extends AbstractJenaTestCase {
         }
         catch (DIGReasonerException e) {
             fail(e.getMessage());
-            e.printStackTrace();
+            Log.getLogger().log(Level.SEVERE, "Exception caught", e);
         }
     }
 
@@ -76,7 +79,7 @@ public class SatisfiabilityTests extends AbstractJenaTestCase {
         }
         catch (DIGReasonerException e) {
             fail(e.getMessage());
-            e.printStackTrace();
+            Log.getLogger().log(Level.SEVERE, "Exception caught", e);
         }
     }
 
