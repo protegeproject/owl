@@ -1,13 +1,19 @@
 package edu.stanford.smi.protegex.owl.model.triplestore.impl;
 
-import edu.stanford.smi.protege.model.*;
+import java.util.Iterator;
+import java.util.logging.Level;
+
+import edu.stanford.smi.protege.model.Cls;
+import edu.stanford.smi.protege.model.Frame;
+import edu.stanford.smi.protege.model.FrameID;
+import edu.stanford.smi.protege.model.KnowledgeBase;
+import edu.stanford.smi.protege.model.Model;
+import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultRDFProperty;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreModel;
-
-import java.util.Iterator;
 
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
@@ -55,7 +61,7 @@ class AddAnonymousClassPropertyPropertyHandler extends AbstractAddPropertyValueH
                 });
             }
             catch (Exception ex) {
-                ex.printStackTrace();
+              Log.getLogger().log(Level.SEVERE, "Exception caught", ex);
             }
             tripleStoreModel.replaceJavaObject(subject);
             // ProtegeOWLParser.resourceName2Frame.put(ProtegeOWLParser.currentNode, subject);
