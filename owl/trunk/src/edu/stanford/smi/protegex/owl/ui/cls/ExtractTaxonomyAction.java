@@ -1,14 +1,6 @@
 package edu.stanford.smi.protegex.owl.ui.cls;
 
-import edu.stanford.smi.protege.model.Cls;
-import edu.stanford.smi.protege.resource.Icons;
-import edu.stanford.smi.protegex.owl.model.RDFResource;
-import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
-import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
-import edu.stanford.smi.protegex.owl.ui.actions.ResourceAction;
-
-import javax.swing.*;
-import java.awt.*;
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.FileWriter;
@@ -16,6 +8,17 @@ import java.io.PrintWriter;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.logging.Level;
+
+import javax.swing.JFileChooser;
+
+import edu.stanford.smi.protege.model.Cls;
+import edu.stanford.smi.protege.resource.Icons;
+import edu.stanford.smi.protege.util.Log;
+import edu.stanford.smi.protegex.owl.model.RDFResource;
+import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
+import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
+import edu.stanford.smi.protegex.owl.ui.actions.ResourceAction;
 
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
@@ -48,7 +51,7 @@ public class ExtractTaxonomyAction extends ResourceAction {
                         "Taxonomy has been exported to " + file);
             }
             catch (Exception ex) {
-                ex.printStackTrace();
+                Log.getLogger().log(Level.SEVERE, "Exception caught", ex);
                 ProtegeUI.getModalDialogFactory().showErrorMessageDialog(getOWLModel(),
                         "File could not be exported:\n" + ex);
             }
