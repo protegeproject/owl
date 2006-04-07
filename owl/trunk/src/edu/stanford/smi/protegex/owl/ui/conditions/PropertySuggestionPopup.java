@@ -1,18 +1,29 @@
 package edu.stanford.smi.protegex.owl.ui.conditions;
 
-import edu.stanford.smi.protege.util.LabeledComponent;
-import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
-import edu.stanford.smi.protegex.owl.model.RDFProperty;
-import edu.stanford.smi.protegex.owl.ui.ResourceRenderer;
-
-import javax.swing.*;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.JTextComponent;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Point;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Set;
+import java.util.logging.Level;
+
+import javax.swing.AbstractAction;
+import javax.swing.BorderFactory;
+import javax.swing.JList;
+import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
+import javax.swing.JWindow;
+import javax.swing.SwingUtilities;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.JTextComponent;
+
+import edu.stanford.smi.protege.util.LabeledComponent;
+import edu.stanford.smi.protege.util.Log;
+import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
+import edu.stanford.smi.protegex.owl.model.RDFProperty;
+import edu.stanford.smi.protegex.owl.ui.ResourceRenderer;
 
 /**
  * User: matthewhorridge<br>
@@ -109,7 +120,7 @@ public class PropertySuggestionPopup {
 				textComponent.getDocument().insertString(textComponent.getCaretPosition(), selProperty.getName(), null);
 			}
 			catch(BadLocationException e) {
-				e.printStackTrace();
+                          Log.getLogger().log(Level.SEVERE, "Exception caught", e);
 			}
 		}
 	}
