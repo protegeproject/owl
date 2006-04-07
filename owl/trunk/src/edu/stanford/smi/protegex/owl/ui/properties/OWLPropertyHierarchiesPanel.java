@@ -1,11 +1,26 @@
 package edu.stanford.smi.protegex.owl.ui.properties;
 
+import java.awt.BorderLayout;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.logging.Level;
+
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTabbedPane;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+
 import edu.stanford.smi.protege.resource.Colors;
 import edu.stanford.smi.protege.resource.Icons;
 import edu.stanford.smi.protege.resource.LocalizedText;
 import edu.stanford.smi.protege.resource.ResourceKey;
 import edu.stanford.smi.protege.ui.HeaderComponent;
 import edu.stanford.smi.protege.util.ComponentFactory;
+import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protege.util.Selectable;
 import edu.stanford.smi.protege.util.SelectionEvent;
 import edu.stanford.smi.protege.util.SelectionListener;
@@ -15,15 +30,6 @@ import edu.stanford.smi.protegex.owl.model.OWLObjectProperty;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
 import edu.stanford.smi.protegex.owl.ui.results.HostResourceDisplay;
-
-import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-import java.awt.*;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
 
 /**
  * User: matthewhorridge<br>
@@ -139,7 +145,7 @@ public class OWLPropertyHierarchiesPanel extends JPanel
             f.show();
         }
         catch(Exception e) {
-            e.printStackTrace();
+          Log.getLogger().log(Level.SEVERE, "Exception caught", e);
         }
     }
 
