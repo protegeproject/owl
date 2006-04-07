@@ -1,10 +1,20 @@
 package edu.stanford.smi.protegex.owl.ui.resourcedisplay;
 
-import edu.stanford.smi.protege.plugin.PluginUtilities;
-import edu.stanford.smi.protegex.owl.model.RDFResource;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.logging.Level;
 
-import javax.swing.*;
-import java.util.*;
+import javax.swing.JPanel;
+
+import edu.stanford.smi.protege.plugin.PluginUtilities;
+import edu.stanford.smi.protege.util.Log;
+import edu.stanford.smi.protegex.owl.model.RDFResource;
 
 /**
  * The manager of all InstanceDisplayPlugins.
@@ -40,7 +50,7 @@ public class ResourceDisplayPluginManager {
             }
             catch (Exception ex) {
                 System.err.println("[ResourceDisplayPluginManager] Fatal Error: Could not create Plugin for " + clazz);
-                ex.printStackTrace();
+                Log.getLogger().log(Level.SEVERE, "Exception caught", ex);
             }
         }
         return plugin;
