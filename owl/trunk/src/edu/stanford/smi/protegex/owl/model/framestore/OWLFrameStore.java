@@ -1,15 +1,59 @@
 package edu.stanford.smi.protegex.owl.model.framestore;
 
-import edu.stanford.smi.protege.model.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+import java.util.logging.Level;
+
+import edu.stanford.smi.protege.model.Cls;
+import edu.stanford.smi.protege.model.Facet;
+import edu.stanford.smi.protege.model.Frame;
+import edu.stanford.smi.protege.model.FrameID;
+import edu.stanford.smi.protege.model.Instance;
+import edu.stanford.smi.protege.model.Model;
+import edu.stanford.smi.protege.model.Reference;
+import edu.stanford.smi.protege.model.SimpleInstance;
+import edu.stanford.smi.protege.model.Slot;
+import edu.stanford.smi.protege.model.ValueType;
 import edu.stanford.smi.protege.model.framestore.DeleteSimplificationFrameStore;
 import edu.stanford.smi.protege.model.framestore.FrameStore;
 import edu.stanford.smi.protege.model.framestore.FrameStoreAdapter;
-import edu.stanford.smi.protegex.owl.model.*;
-import edu.stanford.smi.protegex.owl.model.impl.*;
+import edu.stanford.smi.protege.util.Log;
+import edu.stanford.smi.protegex.owl.model.OWLAnonymousClass;
+import edu.stanford.smi.protegex.owl.model.OWLDataRange;
+import edu.stanford.smi.protegex.owl.model.OWLIntersectionClass;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
+import edu.stanford.smi.protegex.owl.model.OWLNames;
+import edu.stanford.smi.protegex.owl.model.OWLObjectProperty;
+import edu.stanford.smi.protegex.owl.model.OWLProperty;
+import edu.stanford.smi.protegex.owl.model.OWLQuantifierRestriction;
+import edu.stanford.smi.protegex.owl.model.OWLRestriction;
+import edu.stanford.smi.protegex.owl.model.OWLUnionClass;
+import edu.stanford.smi.protegex.owl.model.RDFList;
+import edu.stanford.smi.protegex.owl.model.RDFProperty;
+import edu.stanford.smi.protegex.owl.model.RDFResource;
+import edu.stanford.smi.protegex.owl.model.RDFSClass;
+import edu.stanford.smi.protegex.owl.model.RDFSDatatype;
+import edu.stanford.smi.protegex.owl.model.RDFSLiteral;
+import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
+import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
+import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLAllValuesFrom;
+import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLCardinality;
+import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLHasValue;
+import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLMaxCardinality;
+import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLMinCardinality;
+import edu.stanford.smi.protegex.owl.model.impl.DefaultRDFSLiteral;
+import edu.stanford.smi.protegex.owl.model.impl.OWLUtil;
+import edu.stanford.smi.protegex.owl.model.impl.XMLSchemaDatatypes;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreUtil;
-
-import java.util.*;
 
 /**
  * A FrameStore with specific support for OWL ontologies.
@@ -1022,7 +1066,7 @@ public class OWLFrameStore extends FrameStoreAdapter {
             throw new Exception();
         }
         catch (Exception ex) {
-            ex.printStackTrace();
+          Log.getLogger().log(Level.SEVERE, "Exception caught", ex);
         }
     }
 
