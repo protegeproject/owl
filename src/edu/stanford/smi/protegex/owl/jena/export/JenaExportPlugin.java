@@ -1,11 +1,19 @@
 package edu.stanford.smi.protegex.owl.jena.export;
 
+import java.io.File;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.logging.Level;
+
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.util.FileUtils;
+
 import edu.stanford.smi.protege.model.KnowledgeBase;
 import edu.stanford.smi.protege.model.Project;
 import edu.stanford.smi.protege.plugin.ExportPlugin;
 import edu.stanford.smi.protege.ui.ProjectManager;
+import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protege.util.WaitCursor;
 import edu.stanford.smi.protegex.owl.database.OWLDatabaseModel;
 import edu.stanford.smi.protegex.owl.jena.JenaFilePanel;
@@ -15,11 +23,6 @@ import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.storage.ProtegeSaver;
 import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
 import edu.stanford.smi.protegex.owl.ui.dialogs.ModalDialogFactory;
-
-import java.io.File;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.Collection;
 
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
@@ -51,7 +54,7 @@ public class JenaExportPlugin implements ExportPlugin {
                     exportProject(project.getKnowledgeBase(), filePath);
                 }
                 catch (Exception ex) {
-                    ex.printStackTrace();
+                    Log.getLogger().log(Level.SEVERE, "Exception caught", ex);
                     ProtegeUI.getModalDialogFactory().showErrorMessageDialog(panel,
                             "Export failed. Please see console for details.\n" + ex);
                 }
