@@ -1,14 +1,37 @@
 package edu.stanford.smi.protegex.owl.writer.rdfxml.renderer;
 
-import edu.stanford.smi.protegex.owl.model.*;
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.logging.Level;
+
+import edu.stanford.smi.protege.util.Log;
+import edu.stanford.smi.protegex.owl.model.OWLAllValuesFrom;
+import edu.stanford.smi.protegex.owl.model.OWLCardinality;
+import edu.stanford.smi.protegex.owl.model.OWLComplementClass;
+import edu.stanford.smi.protegex.owl.model.OWLDatatypeProperty;
+import edu.stanford.smi.protegex.owl.model.OWLEnumeratedClass;
+import edu.stanford.smi.protegex.owl.model.OWLHasValue;
+import edu.stanford.smi.protegex.owl.model.OWLIndividual;
+import edu.stanford.smi.protegex.owl.model.OWLIntersectionClass;
+import edu.stanford.smi.protegex.owl.model.OWLMaxCardinality;
+import edu.stanford.smi.protegex.owl.model.OWLMinCardinality;
+import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
+import edu.stanford.smi.protegex.owl.model.OWLNames;
+import edu.stanford.smi.protegex.owl.model.OWLObjectProperty;
+import edu.stanford.smi.protegex.owl.model.OWLSomeValuesFrom;
+import edu.stanford.smi.protegex.owl.model.OWLUnionClass;
+import edu.stanford.smi.protegex.owl.model.RDFIndividual;
+import edu.stanford.smi.protegex.owl.model.RDFNames;
+import edu.stanford.smi.protegex.owl.model.RDFProperty;
+import edu.stanford.smi.protegex.owl.model.RDFResource;
+import edu.stanford.smi.protegex.owl.model.RDFSClass;
+import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
+import edu.stanford.smi.protegex.owl.model.RDFSNames;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 import edu.stanford.smi.protegex.owl.model.visitor.OWLModelVisitorAdapter;
 import edu.stanford.smi.protegex.owl.writer.rdfxml.util.Util;
 import edu.stanford.smi.protegex.owl.writer.xml.XMLWriter;
-
-import java.io.IOException;
-import java.util.HashSet;
-import java.util.Iterator;
 
 /**
  * User: matthewhorridge<br>
@@ -213,7 +236,7 @@ public class RDFAxiomRenderer extends OWLModelVisitorAdapter {
             writer.writeEndElement(); // end of getRDFType element
         }
         catch (IOException e) {
-            e.printStackTrace();
+          Log.getLogger().log(Level.SEVERE, "Exception caught", e);
         }
     }
 
@@ -245,7 +268,7 @@ public class RDFAxiomRenderer extends OWLModelVisitorAdapter {
             writer.writeEndElement(); // End of property
         }
         catch (IOException e) {
-            e.printStackTrace();
+          Log.getLogger().log(Level.SEVERE, "Exception caught", e);
         }
     }
 
@@ -265,7 +288,7 @@ public class RDFAxiomRenderer extends OWLModelVisitorAdapter {
             writer.writeEndElement(); // end of owl:Class
         }
         catch (IOException e) {
-            e.printStackTrace();
+          Log.getLogger().log(Level.SEVERE, "Exception caught", e);
         }
     }
 
