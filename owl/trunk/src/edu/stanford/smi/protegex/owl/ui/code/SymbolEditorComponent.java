@@ -1,11 +1,14 @@
 package edu.stanford.smi.protegex.owl.ui.code;
 
-import edu.stanford.smi.protegex.owl.model.OWLModel;
+import java.util.logging.Level;
 
-import javax.swing.*;
+import javax.swing.JComponent;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.JTextComponent;
+
+import edu.stanford.smi.protege.util.Log;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
 
 /**
  * User: matthewhorridge<br>
@@ -111,7 +114,7 @@ public abstract class SymbolEditorComponent extends JComponent implements Symbol
                 doc.remove(caretPos - 1, 1);
             }
             catch (BadLocationException e) {
-                e.printStackTrace();
+              Log.getLogger().log(Level.SEVERE, "Exception caught", e);
             }
         }
     }
@@ -138,7 +141,7 @@ public abstract class SymbolEditorComponent extends JComponent implements Symbol
             textComponent.setCaretPosition(caretPos + caretOffset);
         }
         catch (BadLocationException e) {
-            e.printStackTrace();
+          Log.getLogger().log(Level.SEVERE, "Exception caught", e);
         }
     }
 }
