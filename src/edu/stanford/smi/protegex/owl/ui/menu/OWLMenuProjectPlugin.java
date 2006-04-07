@@ -1,7 +1,43 @@
 package edu.stanford.smi.protegex.owl.ui.menu;
 
-import edu.stanford.smi.protege.action.*;
-import edu.stanford.smi.protege.model.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.StringTokenizer;
+import java.util.logging.Level;
+
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.Icon;
+import javax.swing.JButton;
+import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
+import javax.swing.JToolBar;
+
+import edu.stanford.smi.protege.action.ArchiveProject;
+import edu.stanford.smi.protege.action.Copy;
+import edu.stanford.smi.protege.action.CreateProject;
+import edu.stanford.smi.protege.action.Cut;
+import edu.stanford.smi.protege.action.OpenProject;
+import edu.stanford.smi.protege.action.Paste;
+import edu.stanford.smi.protege.action.RedoAction;
+import edu.stanford.smi.protege.action.RevertProject;
+import edu.stanford.smi.protege.action.SaveProject;
+import edu.stanford.smi.protege.action.UndoAction;
+import edu.stanford.smi.protege.model.Cls;
+import edu.stanford.smi.protege.model.Frame;
+import edu.stanford.smi.protege.model.KnowledgeBase;
+import edu.stanford.smi.protege.model.Model;
+import edu.stanford.smi.protege.model.Project;
+import edu.stanford.smi.protege.model.Reference;
+import edu.stanford.smi.protege.model.Slot;
+import edu.stanford.smi.protege.model.WidgetDescriptor;
 import edu.stanford.smi.protege.plugin.ProjectPluginAdapter;
 import edu.stanford.smi.protege.resource.LocalizedText;
 import edu.stanford.smi.protege.resource.ResourceKey;
@@ -10,6 +46,7 @@ import edu.stanford.smi.protege.ui.ProjectMenuBar;
 import edu.stanford.smi.protege.ui.ProjectToolBar;
 import edu.stanford.smi.protege.ui.ProjectView;
 import edu.stanford.smi.protege.util.ComponentFactory;
+import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protege.util.StandardAction;
 import edu.stanford.smi.protege.util.SystemUtilities;
 import edu.stanford.smi.protegex.owl.database.OWLDatabaseModel;
@@ -39,12 +76,6 @@ import edu.stanford.smi.protegex.owl.ui.tooltips.HomeOntologyToolTipGenerator;
 import edu.stanford.smi.protegex.owl.ui.triplestore.TripleStoreSelectionAction;
 import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
 import edu.stanford.smi.protegex.owl.ui.widget.OWLWidgetMapper;
-
-import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.util.*;
 
 /**
  * A ProjectPlugin that makes a couple of initializing adjustments to
@@ -291,7 +322,7 @@ public class OWLMenuProjectPlugin extends ProjectPluginAdapter {
                     absoluteFormsLoader.loadAll();
                 }
                 catch (Exception ex) {
-                    ex.printStackTrace();
+                  Log.getLogger().log(Level.SEVERE, "Exception caught", ex);
                 }
             }
         }
@@ -354,7 +385,7 @@ public class OWLMenuProjectPlugin extends ProjectPluginAdapter {
                     generator.generateFiles(value);
                 }
                 catch (Exception ex) {
-                    ex.printStackTrace();
+                    Log.getLogger().log(Level.SEVERE, "Exception caught", ex);
                     System.err.println("Warning: Could not save .forms files");
                 }
 
