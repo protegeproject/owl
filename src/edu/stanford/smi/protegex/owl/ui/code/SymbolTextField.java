@@ -1,22 +1,28 @@
 package edu.stanford.smi.protegex.owl.ui.code;
 
-import edu.stanford.smi.protege.model.Frame;
-import edu.stanford.smi.protege.ui.FrameRenderer;
-import edu.stanford.smi.protegex.owl.model.OWLModel;
-import edu.stanford.smi.protegex.owl.model.RDFResource;
-import edu.stanford.smi.protegex.owl.ui.resourceselection.ResourceIgnoreCaseComparator;
-
-import javax.swing.*;
-import javax.swing.event.CaretEvent;
-import javax.swing.event.CaretListener;
-import javax.swing.text.BadLocationException;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Level;
+
+import javax.swing.JComboBox;
+import javax.swing.JTextField;
+import javax.swing.event.CaretEvent;
+import javax.swing.event.CaretListener;
+import javax.swing.text.BadLocationException;
+
+import edu.stanford.smi.protege.model.Frame;
+import edu.stanford.smi.protege.ui.FrameRenderer;
+import edu.stanford.smi.protege.util.Log;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.model.RDFResource;
+import edu.stanford.smi.protegex.owl.ui.resourceselection.ResourceIgnoreCaseComparator;
 
 /**
  * A JTextField with special support for editing expressions in languages like
@@ -113,7 +119,7 @@ public abstract class SymbolTextField extends JTextField
                 getDocument().remove(start, getSelectionEnd() - start);
             }
             catch (BadLocationException ex) {
-                ex.printStackTrace();
+                Log.getLogger().log(Level.SEVERE, "Exception caught", ex);
             }
             setCaretPosition(start);
         }
@@ -124,7 +130,7 @@ public abstract class SymbolTextField extends JTextField
                     getDocument().remove(pos - 1, 1);
                 }
                 catch (BadLocationException ex) {
-                    ex.printStackTrace();
+                   Log.getLogger().log(Level.SEVERE, "Exception caught", ex);
                 }
                 setCaretPosition(pos - 1);
             }
@@ -290,7 +296,7 @@ public abstract class SymbolTextField extends JTextField
                 setCaretPosition(start + caretOffset);
             }
             catch (BadLocationException ex) {
-                ex.printStackTrace();
+                Log.getLogger().log(Level.SEVERE, "Exception caught", ex);
             }
         }
         else {
@@ -300,7 +306,7 @@ public abstract class SymbolTextField extends JTextField
                 setCaretPosition(pos + caretOffset);
             }
             catch (BadLocationException ex) {
-                ex.printStackTrace();
+              Log.getLogger().log(Level.SEVERE, "Exception caught", ex);
             }
         }
         updateErrorDisplay();
