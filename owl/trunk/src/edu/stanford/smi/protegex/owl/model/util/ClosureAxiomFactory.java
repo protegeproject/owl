@@ -1,9 +1,28 @@
 package edu.stanford.smi.protegex.owl.model.util;
 
-import edu.stanford.smi.protegex.owl.model.*;
-import edu.stanford.smi.protegex.owl.model.classparser.OWLClassParser;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+import java.util.logging.Level;
 
-import java.util.*;
+import edu.stanford.smi.protege.util.Log;
+import edu.stanford.smi.protegex.owl.model.OWLAllValuesFrom;
+import edu.stanford.smi.protegex.owl.model.OWLAnonymousClass;
+import edu.stanford.smi.protegex.owl.model.OWLExistentialRestriction;
+import edu.stanford.smi.protegex.owl.model.OWLHasValue;
+import edu.stanford.smi.protegex.owl.model.OWLIntersectionClass;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
+import edu.stanford.smi.protegex.owl.model.OWLObjectProperty;
+import edu.stanford.smi.protegex.owl.model.OWLRestriction;
+import edu.stanford.smi.protegex.owl.model.OWLSomeValuesFrom;
+import edu.stanford.smi.protegex.owl.model.OWLUnionClass;
+import edu.stanford.smi.protegex.owl.model.RDFProperty;
+import edu.stanford.smi.protegex.owl.model.RDFSClass;
+import edu.stanford.smi.protegex.owl.model.classparser.OWLClassParser;
 
 /**
  * A utility for creating and detecting closure axioms.
@@ -115,7 +134,7 @@ public class ClosureAxiomFactory {
                 filler = parser.parseClass(owlModel, expression);
             }
             catch (Exception ex) {
-                ex.printStackTrace();
+              Log.getLogger().log(Level.SEVERE, "Exception caught", ex);
             }
         }
         else {
@@ -127,7 +146,7 @@ public class ClosureAxiomFactory {
                     unionCls.addOperand(fillerCls);
                 }
                 catch (Exception ex) {
-                    ex.printStackTrace();
+                  Log.getLogger().log(Level.SEVERE, "Exception caught", ex);
                 }
             }
             filler = unionCls;
