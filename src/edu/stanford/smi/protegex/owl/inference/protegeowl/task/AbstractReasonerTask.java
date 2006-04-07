@@ -1,5 +1,12 @@
 package edu.stanford.smi.protegex.owl.inference.protegeowl.task;
 
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.inference.dig.exception.DIGReasonerException;
 import edu.stanford.smi.protegex.owl.inference.dig.reasoner.DIGReasonerIdentity;
 import edu.stanford.smi.protegex.owl.inference.dig.translator.DIGTranslator;
@@ -7,10 +14,6 @@ import edu.stanford.smi.protegex.owl.inference.dig.translator.DIGTranslatorFacto
 import edu.stanford.smi.protegex.owl.inference.protegeowl.ProtegeOWLReasoner;
 import edu.stanford.smi.protegex.owl.inference.protegeowl.log.ReasonerLogRecord;
 import edu.stanford.smi.protegex.owl.inference.protegeowl.log.ReasonerLogger;
-
-import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import java.util.Iterator;
 
 /**
  * User: matthewhorridge<br>
@@ -26,6 +29,7 @@ import java.util.Iterator;
  * simultaneously notify listeners of state changes.
  */
 public abstract class AbstractReasonerTask implements ReasonerTask {
+    private static transient Logger log = Log.getLogger(AbstractReasonerTask.class);
 
     private ArrayList listeners;
 
@@ -53,8 +57,7 @@ public abstract class AbstractReasonerTask implements ReasonerTask {
             translator.setReasonerIdentity(id);
         }
         catch (DIGReasonerException e) {
-            // Squelch Exception!
-	        //e.printStackTrace();
+          Log.emptyCatchBlock(e);
         }
     }
 
