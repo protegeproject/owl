@@ -1,14 +1,20 @@
 package edu.stanford.smi.protegex.owl.swrl.ui.code;
 
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.util.logging.Level;
+
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+
 import edu.stanford.smi.protege.ui.InstanceDisplay;
+import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.swrl.model.SWRLImp;
 import edu.stanford.smi.protegex.owl.swrl.parser.SWRLParser;
 import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
 import edu.stanford.smi.protegex.owl.ui.dialogs.ModalDialogFactory;
-
-import javax.swing.*;
-import java.awt.*;
 
 /**
  * A panel which can be used to edit an OWL expression in a multi-line dialog.
@@ -107,7 +113,7 @@ public class SWRLTextAreaPanel extends JPanel implements ModalDialogFactory.Clos
             }
             catch (Exception ex) {
                 System.err.println("[SWRLTextAreaPanel]  Fatal error");
-                ex.printStackTrace();
+                Log.getLogger().log(Level.SEVERE, "Exception caught", ex);
             }
         }
         return false;
