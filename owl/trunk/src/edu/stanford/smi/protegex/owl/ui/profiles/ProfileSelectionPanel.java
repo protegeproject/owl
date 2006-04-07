@@ -1,23 +1,44 @@
 package edu.stanford.smi.protegex.owl.ui.profiles;
 
-import com.hp.hpl.jena.ontology.OntClass;
-import com.hp.hpl.jena.ontology.OntModel;
-import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.vocabulary.RDFS;
-import edu.stanford.smi.protege.util.ComponentFactory;
-import edu.stanford.smi.protegex.owl.model.OWLModel;
-import edu.stanford.smi.protegex.owl.testing.OWLDLTest;
-import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
-import edu.stanford.smi.protegex.owl.ui.icons.OverlayIcon;
-import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
-
-import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.io.File;
+import java.util.logging.Level;
+
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.Icon;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JFileChooser;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.JTextField;
+import javax.swing.JToolBar;
+
+import com.hp.hpl.jena.ontology.OntClass;
+import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.vocabulary.RDFS;
+
+import edu.stanford.smi.protege.util.ComponentFactory;
+import edu.stanford.smi.protege.util.Log;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.testing.OWLDLTest;
+import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
+import edu.stanford.smi.protegex.owl.ui.icons.OverlayIcon;
+import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
 
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
@@ -215,7 +236,7 @@ public class ProfileSelectionPanel extends JPanel {
             }
         }
         catch (Exception ex) {
-            ex.printStackTrace();
+            Log.getLogger().log(Level.SEVERE, "Exception caught", ex);
             OWLUI.showErrorMessageDialog("Could not create profile file " + fileName + ":\n" + ex,
                     "Error");
         }
