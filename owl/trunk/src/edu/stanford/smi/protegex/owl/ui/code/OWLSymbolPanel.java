@@ -1,7 +1,18 @@
 package edu.stanford.smi.protegex.owl.ui.code;
 
+import java.awt.event.ActionEvent;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.logging.Level;
+
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.JButton;
+import javax.swing.JToolBar;
+
 import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.Slot;
+import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.compactparser.TokenMgrError;
 import edu.stanford.smi.protegex.owl.model.OWLDatatypeProperty;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
@@ -15,11 +26,6 @@ import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
 import edu.stanford.smi.protegex.owl.ui.profiles.OWLProfiles;
 import edu.stanford.smi.protegex.owl.ui.profiles.ProfilesManager;
 import edu.stanford.smi.protegex.owl.ui.resourceselection.ResourceSelectionAction;
-
-import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.util.ArrayList;
-import java.util.Collection;
 
 /**
  * A JPanel hosting buttons that accellerate editing of OWL expressions.
@@ -165,7 +171,7 @@ public class OWLSymbolPanel extends SymbolPanel {
         }
         else {
             message = ex.toString();
-            ex.printStackTrace();
+            Log.getLogger().log(Level.SEVERE, "Exception caught", ex);
         }
         return message;
     }
