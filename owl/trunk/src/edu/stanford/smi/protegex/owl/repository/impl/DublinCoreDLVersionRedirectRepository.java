@@ -1,8 +1,5 @@
 package edu.stanford.smi.protegex.owl.repository.impl;
 
-import edu.stanford.smi.protegex.owl.jena.parser.ProtegeOWLParser;
-import edu.stanford.smi.protegex.owl.repository.Repository;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -12,6 +9,11 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.logging.Level;
+
+import edu.stanford.smi.protege.util.Log;
+import edu.stanford.smi.protegex.owl.jena.parser.ProtegeOWLParser;
+import edu.stanford.smi.protegex.owl.repository.Repository;
 
 /**
  * User: matthewhorridge<br>
@@ -41,10 +43,10 @@ public class DublinCoreDLVersionRedirectRepository implements Repository {
             redirectURL = new URL(DC_ALT);
         }
         catch (MalformedURLException e) {
-            e.printStackTrace();
+          Log.getLogger().log(Level.SEVERE, "Exception caught", e);
         }
         catch (URISyntaxException e) {
-            e.printStackTrace();
+          Log.getLogger().log(Level.SEVERE, "Exception caught", e);
         }
     }
 
