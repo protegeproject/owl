@@ -1,16 +1,21 @@
 package edu.stanford.smi.protegex.owl.ui.triplestore;
 
+import java.awt.BorderLayout;
+import java.awt.GridLayout;
+import java.net.URI;
+import java.util.logging.Level;
+
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+
 import edu.stanford.smi.protege.util.LabeledComponent;
+import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protege.util.URIField;
 import edu.stanford.smi.protege.util.Validatable;
 import edu.stanford.smi.protegex.owl.jena.Jena;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreModel;
 import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
-
-import javax.swing.*;
-import java.awt.*;
-import java.net.URI;
 
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
@@ -42,7 +47,7 @@ public abstract class AddTripleStorePanel extends JPanel implements Validatable 
             add(BorderLayout.CENTER, mainPanel);
         }
         catch (Exception ex) {
-            ex.printStackTrace();
+          Log.getLogger().log(Level.SEVERE, "Exception caught", ex);
         }
     }
 
