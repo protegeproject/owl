@@ -1,5 +1,24 @@
 package edu.stanford.smi.protegex.owl.ui.query;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.Map;
+import java.util.logging.Level;
+
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.Icon;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableModel;
+
+import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.RDFObject;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
@@ -9,16 +28,6 @@ import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
 import edu.stanford.smi.protegex.owl.ui.ResourceRenderer;
 import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
 import edu.stanford.smi.protegex.owl.ui.results.ResultsPanel;
-
-import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableColumn;
-import javax.swing.table.TableModel;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.util.Map;
 
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
@@ -127,7 +136,7 @@ public class SPARQLResultsPanel extends ResultsPanel {
             }
         }
         catch (Exception ex) {
-            // ex.printStackTrace();
+            Log.getLogger().log(Level.SEVERE, "Exception caught", ex);
             ProtegeUI.getModalDialogFactory().showErrorMessageDialog(owlModel,
                     "Query failed:\n" + ex.getMessage());
         }
