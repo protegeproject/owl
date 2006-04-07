@@ -1,12 +1,14 @@
 package edu.stanford.smi.protegex.owl.repository.impl;
 
-import edu.stanford.smi.protegex.owl.model.OWLModel;
-import edu.stanford.smi.protegex.owl.repository.Repository;
-import edu.stanford.smi.protegex.owl.repository.factory.RepositoryFactoryPlugin;
-
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.logging.Level;
+
+import edu.stanford.smi.protege.util.Log;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.repository.Repository;
+import edu.stanford.smi.protegex.owl.repository.factory.RepositoryFactoryPlugin;
 
 /**
  * User: matthewhorridge<br>
@@ -49,10 +51,10 @@ public class RelativeFolderRepositoryFactoryPlugin implements RepositoryFactoryP
 
         }
         catch (MalformedURLException e) {
-            e.printStackTrace();
+            Log.getLogger().log(Level.SEVERE, "Exception caught", e);
         }
         catch (URISyntaxException e) {
-            e.printStackTrace();
+          Log.getLogger().log(Level.SEVERE, "Exception caught", e);
         }
         return null;
     }
