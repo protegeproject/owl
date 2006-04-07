@@ -1,9 +1,5 @@
 package edu.stanford.smi.protegex.owl.repository.impl;
 
-import edu.stanford.smi.protegex.owl.jena.parser.ProtegeOWLParser;
-import edu.stanford.smi.protegex.owl.repository.Repository;
-import edu.stanford.smi.protegex.owl.repository.util.OntologyNameExtractor;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -12,6 +8,12 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.logging.Level;
+
+import edu.stanford.smi.protege.util.Log;
+import edu.stanford.smi.protegex.owl.jena.parser.ProtegeOWLParser;
+import edu.stanford.smi.protegex.owl.repository.Repository;
+import edu.stanford.smi.protegex.owl.repository.util.OntologyNameExtractor;
 
 /**
  * User: matthewhorridge<br>
@@ -56,7 +58,7 @@ public class ForcedURLRetrievalRepository implements Repository {
                     uri = new URI(url.toString());
                 }
                 catch (URISyntaxException e) {
-                    e.printStackTrace();
+                  Log.getLogger().log(Level.SEVERE, "Exception caught", e);
                 }
             }
             else {
