@@ -1,5 +1,11 @@
 package edu.stanford.smi.protegex.owl.database;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.logging.Level;
+
 import edu.stanford.smi.protege.model.KnowledgeBaseFactory;
 import edu.stanford.smi.protege.model.Project;
 import edu.stanford.smi.protege.model.framestore.MergingNarrowFrameStore;
@@ -9,11 +15,6 @@ import edu.stanford.smi.protege.util.WizardPage;
 import edu.stanford.smi.protegex.owl.jena.JenaKnowledgeBaseFactory;
 import edu.stanford.smi.protegex.owl.jena.parser.ProtegeOWLParser;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
 
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
@@ -44,7 +45,7 @@ public class CreateOWLDatabaseFromFileProjectPlugin extends CreateOWLDatabasePro
             }
             catch (Exception ex) {
                 Log.getLogger().severe("Could not load OWL file into database: " + ex);
-                ex.printStackTrace();
+                Log.getLogger().log(Level.SEVERE, "Exception caught", ex);
                 errors.add(ex);
             }
             owlModel.resetTripleStoreModel();
