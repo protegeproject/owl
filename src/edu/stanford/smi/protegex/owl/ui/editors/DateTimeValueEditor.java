@@ -1,8 +1,21 @@
 package edu.stanford.smi.protegex.owl.ui.editors;
 
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.logging.Level;
+
+import javax.swing.JFormattedTextField;
+import javax.swing.JPanel;
+
 import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
 import com.toedter.calendar.JCalendar;
+
 import edu.stanford.smi.protege.util.LabeledComponent;
+import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
@@ -10,13 +23,6 @@ import edu.stanford.smi.protegex.owl.model.RDFSLiteral;
 import edu.stanford.smi.protegex.owl.model.impl.XMLSchemaDatatypes;
 import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
 import edu.stanford.smi.protegex.owl.ui.dialogs.ModalDialogFactory;
-
-import javax.swing.*;
-import java.awt.*;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
 
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
@@ -76,7 +82,7 @@ public class DateTimeValueEditor implements PropertyValueEditor {
             }
         }
         catch (Exception ex) {
-            ex.printStackTrace();
+            Log.getLogger().log(Level.SEVERE, "Exception caught", ex);
             return null;
         }
     }
