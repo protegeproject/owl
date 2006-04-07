@@ -1,5 +1,6 @@
 package edu.stanford.smi.protegex.owl.tests;
 
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -9,6 +10,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
+import java.util.logging.Level;
 
 import junit.framework.TestCase;
 
@@ -27,6 +29,7 @@ import com.hp.hpl.jena.rdf.model.StmtIterator;
 import edu.stanford.smi.protege.model.Project;
 import edu.stanford.smi.protege.model.ValueType;
 import edu.stanford.smi.protege.util.ApplicationProperties;
+import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.jena.Jena;
 import edu.stanford.smi.protegex.owl.jena.JenaKnowledgeBaseFactory;
 import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
@@ -103,7 +106,7 @@ public abstract class AbstractOWLTestCase extends TestCase {
             return new URI("http://www.co-ode.org/ontologies/testset/" + localFileName);
         }
         catch (Exception ex) {
-            ex.printStackTrace();
+            Log.getLogger().log(Level.SEVERE, "Exception caught", ex);
             return null;
         }
     }
