@@ -40,9 +40,6 @@ OWLModelAction: True
 Name: edu/stanford/smi/protegex/owl/javacode/JavaCodeGeneratorAction.class
 OWLModelAction: True
 
-Name: edu/stanford/smi/protegex/owl/ui/importstree/ImportsTreeAction.class
-OWLModelAction: True
-
 Name: edu/stanford/smi/protegex/owl/ui/jena/JenaSchemagenAction.class
 OWLModelAction: True
 
