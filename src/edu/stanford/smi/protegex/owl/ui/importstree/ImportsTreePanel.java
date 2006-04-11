@@ -77,8 +77,10 @@ public class ImportsTreePanel extends JPanel implements HostResourceDisplay, Dis
 
             public void onSelectionChange() {
                 Collection sel = getSelection();
-                DefaultOWLOntology ont = (DefaultOWLOntology) CollectionUtilities.getFirstItem(sel);
-                setAllowed(ont != null && ont == OWLUtil.getActiveOntology(ont.getOWLModel()));
+                RDFResource ont = (RDFResource) CollectionUtilities.getFirstItem(sel);
+                setAllowed(ont != null &&
+                           ont instanceof OWLOntology &&
+                           ont == OWLUtil.getActiveOntology(ont.getOWLModel()));
             }
         };
     }
@@ -93,8 +95,10 @@ public class ImportsTreePanel extends JPanel implements HostResourceDisplay, Dis
 
             public void onSelectionChange() {
                 Collection sel = getSelection();
-                DefaultOWLOntology ont = (DefaultOWLOntology) CollectionUtilities.getFirstItem(sel);
-                setAllowed(ont != null && ont == OWLUtil.getActiveOntology(ont.getOWLModel()));
+                RDFResource ont = (RDFResource) CollectionUtilities.getFirstItem(sel);
+                setAllowed(ont != null &&
+                           ont instanceof OWLOntology &&
+                           ont == OWLUtil.getActiveOntology(ont.getOWLModel()));
             }
         };
     }
@@ -124,8 +128,10 @@ public class ImportsTreePanel extends JPanel implements HostResourceDisplay, Dis
 
             public void onSelectionChange() {
                 Collection sel = getSelection();
-                DefaultOWLOntology ont = (DefaultOWLOntology) CollectionUtilities.getFirstItem(sel);
-                setAllowed(sel.size() == 1 && ont.isAssociatedTriplestoreEditable());
+                RDFResource ont = (RDFResource) CollectionUtilities.getFirstItem(sel);
+                setAllowed(sel.size() == 1 &&
+                           ont instanceof DefaultOWLOntology &&
+                           ((DefaultOWLOntology) ont).isAssociatedTriplestoreEditable());
             }
         };
     }
@@ -193,7 +199,7 @@ public class ImportsTreePanel extends JPanel implements HostResourceDisplay, Dis
     }
 
     private void removeSelectedImport() {
-        OWLOntology sel = (OWLOntology) CollectionUtilities.getFirstItem(tree.getSelectedResources());
+        RDFResource sel = (RDFResource) CollectionUtilities.getFirstItem(tree.getSelectedResources());
         if (sel != null) {
             if (OWLUtil.confirmSaveAndReload(rootOntology.getProject())) {
                 String uri = sel.getURI();
