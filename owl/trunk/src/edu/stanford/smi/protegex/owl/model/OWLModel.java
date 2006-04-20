@@ -16,6 +16,7 @@ import edu.stanford.smi.protegex.owl.model.validator.PropertyValueValidator;
 import edu.stanford.smi.protegex.owl.repository.RepositoryManager;
 import edu.stanford.smi.protegex.owl.testing.OWLTestManager;
 
+import java.net.URI;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -481,9 +482,10 @@ public interface OWLModel extends ProtegeKnowledgeBase, OWLTestManager {
     /**
      * Creates a new Triple.  This method should be used instead of creating an instance
      * of DefaultTriple directly.  The model is not changed at all by this.
-     * @param subject  the subject of the Triple
-     * @param predicate  the predicate of the Triple
-     * @param object  the object of the Triple
+     *
+     * @param subject   the subject of the Triple
+     * @param predicate the predicate of the Triple
+     * @param object    the object of the Triple
      * @return a new Triple
      */
     Triple createTriple(RDFResource subject, RDFProperty predicate, Object object);
@@ -569,6 +571,7 @@ public interface OWLModel extends ProtegeKnowledgeBase, OWLTestManager {
     /**
      * Gets all properties that have owl:Thing as their domain.
      * This includes all properties that have no domain statement at all.
+     *
      * @return a Collection of RDFProperties
      */
     Collection getDomainlessProperties();
@@ -695,6 +698,7 @@ public interface OWLModel extends ProtegeKnowledgeBase, OWLTestManager {
 
     /**
      * Gets the associated OWLProject, which can be used to store project-specific settings.
+     *
      * @return the OWLProject (never null)
      */
     OWLProject getOWLProject();
@@ -1005,12 +1009,19 @@ public interface OWLModel extends ProtegeKnowledgeBase, OWLTestManager {
 
 
     /**
+     * @deprecated use #getOWLOntologyByURI(URI uri)
+     *             DO NOT PASS IN THE URI OF AN UNRESOLVED IMPORT AS THIS WILL
+     *             CAUSE A Class Cast Exception
+     */
+    OWLOntology getOWLOntologyByURI(String uri);
+
+    /**
      * Gets the OWLOntology with a given URI.
      *
      * @param uri the URI to look up
-     * @return the OWLOntology or null if it does not exist yet
+     * @return the OWLOntology or OWLIndividual or null if it does not exist yet
      */
-    OWLOntology getOWLOntologyByURI(String uri);
+    RDFResource getOWLOntologyByURI(URI uri);
 
 
     OWLNamedClass getOWLOntologyClass();
@@ -1695,8 +1706,9 @@ public interface OWLModel extends ProtegeKnowledgeBase, OWLTestManager {
     /**
      * Finds all references to a given object, i.e. all triples that have the given
      * object as their object.
-     * @param object  the object to look for
-     * @param maxResults  the maximum number of expected results
+     *
+     * @param object     the object to look for
+     * @param maxResults the maximum number of expected results
      * @return an Iterator of type Tuple
      */
     Iterator listReferences(Object object, int maxResults);
@@ -1792,7 +1804,8 @@ public interface OWLModel extends ProtegeKnowledgeBase, OWLTestManager {
 
     /**
      * Sets the associated OWLProject.
-     * @param owlProject  the new OWLProject
+     *
+     * @param owlProject the new OWLProject
      * @see #getOWLProject
      */
     void setOWLProject(OWLProject owlProject);
@@ -1816,7 +1829,8 @@ public interface OWLModel extends ProtegeKnowledgeBase, OWLTestManager {
 
     /**
      * Sets the TaskManager.
-     * @param taskManager  the new TaskManager (not null)
+     *
+     * @param taskManager the new TaskManager (not null)
      * @see #getTaskManager
      */
     void setTaskManager(TaskManager taskManager);

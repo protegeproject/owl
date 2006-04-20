@@ -4,6 +4,7 @@ package edu.stanford.smi.protegex.owl.model.util;
 import edu.stanford.smi.protege.model.Model;
 import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protegex.owl.model.*;
+import edu.stanford.smi.protegex.owl.model.impl.OWLUtil;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreModel;
 import edu.stanford.smi.protegex.owl.model.visitor.OWLModelVisitorAdapter;
@@ -83,33 +84,30 @@ public class ResourceCopier extends OWLModelVisitorAdapter {
         visitResourceToBeReferenced(source);
     }
 
-    protected void visitResourceToBeReferenced(RDFResource source){
-        if (!source.isSystem()){
+    protected void visitResourceToBeReferenced(RDFResource source) {
+        if (!source.isSystem()) {
 
-            if (source.getOWLModel() != owlModel){
+            if (source.getOWLModel() != owlModel) {
                 owlModel = source.getOWLModel();
             }
 
-            if (owlModel.getDefaultOWLOntology().getImports().size() > 0){
+            if (owlModel.getDefaultOWLOntology().getImports().size() > 0) {
 
                 TripleStoreModel tsm = owlModel.getTripleStoreModel();
                 TripleStore ts = tsm.getHomeTripleStore(source);
                 TripleStore activeTs = tsm.getActiveTripleStore();
 
-                if (activeTs != ts){
+                if (activeTs != ts) {
 
                     /* @@TODO the following should operate on the ts.getName()
                        but this does always return the ontology name (xml:base) */
 
                     String ns = ts.getDefaultNamespace();
-                    String homeOntologyName = ns.substring(0, ns.length()-1);
+                    String homeOntologyName = ns.substring(0, ns.length() - 1);
 
-                    ns = activeTs.getDefaultNamespace();
-                    String activeOntologyName = ns.substring(0, ns.length()-1);
+                    OWLOntology activeOnt = OWLUtil.getActiveOntology(owlModel);
 
-                    OWLOntology activeOnt = owlModel.getOWLOntologyByURI(activeOntologyName);
-
-                    if (!activeOnt.getImports().contains(homeOntologyName)){
+                    if (!activeOnt.getImports().contains(homeOntologyName)) {
                         activeOnt.addImports(homeOntologyName);
                     }
                 }
@@ -210,7 +208,7 @@ public class ResourceCopier extends OWLModelVisitorAdapter {
 
     public void copyMultipleSlotValues(RDFResource source, RDFResource target) {
 
-        if (source.getOWLModel() != owlModel){
+        if (source.getOWLModel() != owlModel) {
             owlModel = source.getOWLModel();
 
             doNotCopySlotsList = new HashSet();
@@ -245,15 +243,15 @@ public class ResourceCopier extends OWLModelVisitorAdapter {
 
                 Object value = i.next();
                 if (value instanceof RDFObject) {
-                    ((RDFObject)value).accept(this);
+                    ((RDFObject) value).accept(this);
                     value = copy;
                 }
-                if (value != null){
+                if (value != null) {
                     newvalues.add(value);
                 }
             }
 
-            if (newvalues.size() > 0){
+            if (newvalues.size() > 0) {
                 target.setDirectOwnSlotValues(slot, newvalues);
             }
         }

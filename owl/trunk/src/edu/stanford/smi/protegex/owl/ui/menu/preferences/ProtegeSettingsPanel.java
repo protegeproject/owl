@@ -1,9 +1,11 @@
 package edu.stanford.smi.protegex.owl.ui.menu.preferences;
 
+import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLOntology;
 import edu.stanford.smi.protegex.owl.model.ProtegeNames;
+import edu.stanford.smi.protegex.owl.model.RDFResource;
 import edu.stanford.smi.protegex.owl.model.impl.OWLUtil;
 import edu.stanford.smi.protegex.owl.model.util.ImportHelper;
 import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
@@ -13,6 +15,8 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.logging.Level;
 
 /**
  * A JComponent that allows to specify Protege specific features in an OWLModel.
@@ -111,7 +115,15 @@ public class ProtegeSettingsPanel extends JComponent {
     }
 
 
-    private OWLOntology getMetadataOnt() {
-        return owlModel.getOWLOntologyByURI(ProtegeNames.FILE);
+    private RDFResource getMetadataOnt() {
+        RDFResource result = null;
+        try {
+            URI metaURI = new URI(ProtegeNames.FILE);
+            result = owlModel.getOWLOntologyByURI(metaURI);
+        }
+        catch (URISyntaxException e) {
+            Log.getLogger().log(Level.SEVERE, "Exception caught", e);
+        }
+        return result;
     }
 }
