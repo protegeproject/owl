@@ -5,7 +5,6 @@ import edu.stanford.smi.protege.model.framestore.MergingNarrowFrameStore;
 import edu.stanford.smi.protege.model.framestore.NarrowFrameStore;
 import edu.stanford.smi.protege.ui.FrameComparator;
 import edu.stanford.smi.protege.ui.ProjectManager;
-import edu.stanford.smi.protege.util.CollectionUtilities;
 import edu.stanford.smi.protegex.owl.model.*;
 import edu.stanford.smi.protegex.owl.model.classparser.OWLClassParser;
 import edu.stanford.smi.protegex.owl.model.event.PropertyValueAdapter;
@@ -996,35 +995,6 @@ public class OWLUtil {
         return property.getRange();
     }
 
-
-    /**
-     * Does an ontology import another through the dependency tree
-     *
-     * @param ontA the ontology we are querying
-     * @param ontB the ontology we are looking for
-     * @return true if ontA (indirectly) imports ontB
-     */
-    public static boolean indirectlyImports(OWLOntology ontA, OWLOntology ontB) {
-        return indirectlyImportsHelper(ontA, ontB, CollectionUtilities.createCollection(ontA));
-    }
-
-    private static boolean indirectlyImportsHelper(OWLOntology ontA, OWLOntology ontB, Collection accumulator) {
-        boolean found = false;
-        for (Iterator<RDFResource> i = ontA.getImportResources().iterator(); i.hasNext() && !found;) {
-            RDFResource res = i.next();
-            if (res instanceof OWLOntology) {
-                OWLOntology ontC = (OWLOntology) res;
-                if (ontC == ontB) {
-                    found = true;
-                }
-                else if (!accumulator.contains(ontC)) {
-                    accumulator.add(ontC);
-                    found = indirectlyImportsHelper(ontC, ontB, accumulator);
-                }
-            }
-        }
-        return found;
-    }
 
     public static OWLOntology getActiveOntology(OWLModel owlModel) {
         OWLOntology owlOntology = owlModel.getDefaultOWLOntology();

@@ -16,7 +16,7 @@ public class LoadImportsTestCase extends AbstractJenaTestCase {
     public void testLoadImports() throws Exception {
         loadRemoteOntology("import-demo.owl");
         assertEquals("http://protege.stanford.edu/plugins/owl/owl-library/import-demo.owl#",
-                owlModel.getNamespaceManager().getDefaultNamespace());
+                     owlModel.getNamespaceManager().getDefaultNamespace());
         OWLNamedClass riqClass = owlModel.getOWLNamedClass("RottnestIslandQuokka");
         assertNotNull(riqClass);
         assertTrue(riqClass.isEditable());
@@ -31,7 +31,8 @@ public class LoadImportsTestCase extends AbstractJenaTestCase {
             Object o = it.next();
             assertTrue(o instanceof String);
         }
-        OWLOntology oi = owlModel.getOWLOntologyByURI("http://protege.stanford.edu/plugins/owl/owl-library/koala.owl");
+        URI koalaURI = new URI("http://protege.stanford.edu/plugins/owl/owl-library/koala.owl");
+        RDFResource oi = owlModel.getOWLOntologyByURI(koalaURI);
         assertContains(oi, ontologies);
         assertEquals("koala:", oi.getName());
         assertTrue(oi.isIncluded());
