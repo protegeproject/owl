@@ -5,6 +5,7 @@ import java.awt.Component;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Collection;
 import java.util.logging.Level;
 
 import javax.swing.JPanel;
@@ -15,6 +16,7 @@ import edu.stanford.smi.protege.model.Model;
 import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protege.widget.Widget;
+import edu.stanford.smi.protege.plugin.PluginUtilities;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
 import edu.stanford.smi.protegex.owl.ui.resourcedisplay.ResourceDisplay;
@@ -48,6 +50,21 @@ public class SwitchableClassDefinitionWidget extends MultiWidgetPropertyWidget {
                 Model.Slot.DIRECT_INSTANCES,
                 Model.Slot.DIRECT_SUBCLASSES
         };
+
+        // get plugins and add them to the register
+        Collection<Class> clses = new ArrayList(PluginUtilities.getClassesWithAttribute("ClassView", "True"));
+        for(Class cls : clses){
+            try {
+                registerSwitchableType((SwitchableType)cls.newInstance());
+            } catch (InstantiationException e) {
+                Log.getLogger().log(Level.SEVERE, "Exception caught", e);
+            } catch (IllegalAccessException e) {
+                Log.getLogger().log(Level.SEVERE, "Exception caught", e);
+            } catch (ClassCastException e){
+                System.err.println("[SwitchableClassDefinitionWidget] plugin " + cls.getName() +
+                " must implement SwitchableType - ignored");
+            }
+        }
 
         int s = 0;
         for (Iterator it = registry.iterator(); it.hasNext();) {
