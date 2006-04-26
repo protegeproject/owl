@@ -12,7 +12,7 @@ import java.awt.*;
  *
  * @author Holger Knublauch  <holger@knublauch.com>
  */
-abstract class AbstractClassDefinitionWidget extends MultiWidgetPropertyWidget {
+public abstract class AbstractClassDefinitionWidget extends MultiWidgetPropertyWidget {
 
     protected DisjointClassesWidget disjointClassesWidget;
 
@@ -32,7 +32,7 @@ abstract class AbstractClassDefinitionWidget extends MultiWidgetPropertyWidget {
 
     protected class MySplitPane extends JSplitPane {
 
-        MySplitPane(int orientation, Component leftComponent, Component rightComponent, double resizeWeight) {
+        public MySplitPane(int orientation, Component leftComponent, Component rightComponent, double resizeWeight) {
             super(orientation, leftComponent, rightComponent);
             setDividerSize(2);
             setBorder(null);
