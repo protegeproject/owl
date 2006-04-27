@@ -1,28 +1,11 @@
 package edu.stanford.smi.protegex.owl.model.util;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-import java.util.logging.Level;
-
 import edu.stanford.smi.protege.util.Log;
-import edu.stanford.smi.protegex.owl.model.OWLAllValuesFrom;
-import edu.stanford.smi.protegex.owl.model.OWLAnonymousClass;
-import edu.stanford.smi.protegex.owl.model.OWLExistentialRestriction;
-import edu.stanford.smi.protegex.owl.model.OWLHasValue;
-import edu.stanford.smi.protegex.owl.model.OWLIntersectionClass;
-import edu.stanford.smi.protegex.owl.model.OWLModel;
-import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
-import edu.stanford.smi.protegex.owl.model.OWLObjectProperty;
-import edu.stanford.smi.protegex.owl.model.OWLRestriction;
-import edu.stanford.smi.protegex.owl.model.OWLSomeValuesFrom;
-import edu.stanford.smi.protegex.owl.model.OWLUnionClass;
-import edu.stanford.smi.protegex.owl.model.RDFProperty;
-import edu.stanford.smi.protegex.owl.model.RDFSClass;
+import edu.stanford.smi.protegex.owl.model.*;
 import edu.stanford.smi.protegex.owl.model.classparser.OWLClassParser;
+
+import java.util.*;
+import java.util.logging.Level;
 
 /**
  * A utility for creating and detecting closure axioms.
@@ -56,21 +39,18 @@ public class ClosureAxiomFactory {
                 cl.addOperand(allValuesFrom);
                 root.delete();
                 namedClass.addEquivalentClass(cl);
-            }
-            else {
+            } else {
                 namedClass.addSuperclass(allValuesFrom);
             }
             return allValuesFrom;
-        }
-        else {
+        } else {
             if (owner.hasEquivalentClass(restriction) && owner.equals(namedClass)) {
                 OWLIntersectionClass intersectionCls = owlModel.createOWLIntersectionClass();
                 intersectionCls.addOperand(restriction.createClone());
                 intersectionCls.addOperand(allValuesFrom);
                 restriction.delete();
                 namedClass.addEquivalentClass(intersectionCls);
-            }
-            else {
+            } else {
                 namedClass.addSuperclass(allValuesFrom);
             }
             return allValuesFrom;
@@ -91,9 +71,87 @@ public class ClosureAxiomFactory {
         if (candidates.hasNext()) {
             return (OWLAllValuesFrom) candidates.next();  // TODO: Wrong!
         }
-        else {
-            return null;
+        return null;
+    }
+
+    /**
+     * Use to find a potential restriction as a base for adding closure on a particular property
+     * Will only return universals that have a named class or
+     * union of named classes as filler
+     *
+     * @param namedClass the base class to be searched
+     * @param prop       will also search for universals on the superproperties of that given
+     * @return the first suitable restriction for the given property or null
+     */
+    public static OWLAllValuesFrom getClosureAxiom(OWLNamedClass namedClass,
+                                                   RDFProperty prop) {
+        Iterator<OWLAllValuesFrom> candidates = getUniversals(namedClass);
+        while (candidates.hasNext()) {
+            OWLAllValuesFrom current = candidates.next();
+            if (current.getOnProperty() == prop ||
+                    prop.isSubpropertyOf(current.getOnProperty(), true)) {
+                RDFResource filler = current.getFiller();
+                if (filler instanceof RDFSNamedClass) {
+                    return current;
+                } else if (filler instanceof OWLUnionClass) {
+                    boolean allNamed = true;
+                    Iterator ops = ((OWLUnionClass) filler).getOperands().iterator();
+                    while (ops.hasNext() && allNamed) {
+                        if (!(ops.next() instanceof RDFSNamedClass)) {
+                            allNamed = false;
+                        }
+                    }
+                    if (allNamed) {
+                        return current;
+                    }
+                }
+            }
         }
+        return null;
+    }
+
+    /**
+     * Use to find a closure axiom for a given property (that already contains the
+     * given filler)
+     *
+     * @param namedClass the base class to be searched
+     * @param prop       will also search for universals on the superproperties of that given
+     * @param filler     will search the fillers to find one that contains this resource
+     * @return the first universal restriction that matches both property
+     */
+    public static OWLAllValuesFrom getClosureAxiom(OWLNamedClass namedClass,
+                                                   RDFProperty prop,
+                                                   RDFResource filler) {
+        Iterator<OWLAllValuesFrom> candidates = getUniversals(namedClass);
+        while (candidates.hasNext()) {
+            OWLAllValuesFrom current = candidates.next();
+            RDFProperty onProp = current.getOnProperty();
+            if (onProp == prop || prop.isSubpropertyOf(onProp, true)) {
+                RDFResource currentfiller = current.getFiller();
+                if (currentfiller instanceof OWLUnionClass &&
+                        ((OWLUnionClass) currentfiller).getOperands().contains(filler)) {
+                    return current;
+                } else if (currentfiller.equals(filler)) {
+                    return current;
+                }
+            }
+        }
+        return null;
+    }
+
+    private static Iterator<OWLAllValuesFrom> getUniversals(OWLNamedClass namedClass) {
+        List candidates = new ArrayList();
+        Iterator it = namedClass.getSuperclasses(true).iterator();
+        while (it.hasNext()) {
+            RDFSClass superclass = (RDFSClass) it.next();
+            if (superclass instanceof OWLAllValuesFrom) {
+                OWLAllValuesFrom allValuesFrom = (OWLAllValuesFrom) superclass;
+                if (!allValuesFrom.getEquivalentClasses().contains(namedClass)) {
+                    candidates.add(allValuesFrom);
+                }
+            }
+        }
+        return candidates.iterator();
     }
 
 
@@ -108,8 +166,7 @@ public class ClosureAxiomFactory {
                     candidates.add(operand);
                 }
             }
-        }
-        else {
+        } else {
             Iterator it = namedClass.getSuperclasses(true).iterator();
             while (it.hasNext()) {
                 RDFSClass superclass = (RDFSClass) it.next();
@@ -134,10 +191,9 @@ public class ClosureAxiomFactory {
                 filler = parser.parseClass(owlModel, expression);
             }
             catch (Exception ex) {
-              Log.getLogger().log(Level.SEVERE, "Exception caught", ex);
+                Log.getLogger().log(Level.SEVERE, "Exception caught", ex);
             }
-        }
-        else {
+        } else {
             OWLUnionClass unionCls = owlModel.createOWLUnionClass();
             for (Iterator it = existentials.iterator(); it.hasNext();) {
                 String expression = (String) it.next();
@@ -146,7 +202,7 @@ public class ClosureAxiomFactory {
                     unionCls.addOperand(fillerCls);
                 }
                 catch (Exception ex) {
-                  Log.getLogger().log(Level.SEVERE, "Exception caught", ex);
+                    Log.getLogger().log(Level.SEVERE, "Exception caught", ex);
                 }
             }
             filler = unionCls;
@@ -164,8 +220,7 @@ public class ClosureAxiomFactory {
                     String fillerText = restriction.getFillerText();
                     if (restriction instanceof OWLSomeValuesFrom) {
                         set.add(fillerText);
-                    }
-                    else if (restriction instanceof OWLHasValue) {
+                    } else if (restriction instanceof OWLHasValue) {
                         set.add("{" + fillerText + "}");
                     }
                 }
