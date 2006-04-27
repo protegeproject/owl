@@ -1,5 +1,9 @@
 package edu.stanford.smi.protegex.owl.database;
 
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntModelSpec;
@@ -12,16 +16,22 @@ import com.hp.hpl.jena.vocabulary.OWL;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
 import com.hp.hpl.jena.vocabulary.ReasonerVocabulary;
+
 import edu.stanford.smi.protege.model.KnowledgeBaseFactory;
 import edu.stanford.smi.protege.model.Project;
 import edu.stanford.smi.protege.model.framestore.AbstractFrameStoreInvocationHandler;
 import edu.stanford.smi.protege.model.framestore.EventGeneratorFrameStore;
 import edu.stanford.smi.protege.model.framestore.FrameStore;
+import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.database.triplestore.DatabaseTripleStoreModel;
 import edu.stanford.smi.protegex.owl.jena.Jena;
 import edu.stanford.smi.protegex.owl.jena.OntModelProvider;
 import edu.stanford.smi.protegex.owl.jena.creator.JenaCreator;
-import edu.stanford.smi.protegex.owl.model.*;
+import edu.stanford.smi.protegex.owl.model.NamespaceManager;
+import edu.stanford.smi.protegex.owl.model.OWLNames;
+import edu.stanford.smi.protegex.owl.model.OWLOntology;
+import edu.stanford.smi.protegex.owl.model.RDFNames;
+import edu.stanford.smi.protegex.owl.model.RDFSNames;
 import edu.stanford.smi.protegex.owl.model.factory.OWLJavaFactory;
 import edu.stanford.smi.protegex.owl.model.framestore.LocalClassificationFrameStore;
 import edu.stanford.smi.protegex.owl.model.framestore.OWLFrameFactoryInvocationHandler;
@@ -29,8 +39,6 @@ import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
 import edu.stanford.smi.protegex.owl.model.impl.OWLNamespaceManager;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreModel;
 import edu.stanford.smi.protegex.owl.ui.widget.ModalProgressBarManager;
-
-import java.util.List;
 
 /**
  * An AbstractOWLModel with extra support for databases.
@@ -40,6 +48,7 @@ import java.util.List;
 public class OWLDatabaseModel
         extends AbstractOWLModel
         implements OntModelProvider {
+    private static transient Logger log = Log.getLogger(OWLDatabaseModel.class);
 
     private TripleStoreModel tripleStoreModel;
 
