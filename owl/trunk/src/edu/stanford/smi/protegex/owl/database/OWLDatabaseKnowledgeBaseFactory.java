@@ -33,6 +33,11 @@ public class OWLDatabaseKnowledgeBaseFactory extends DatabaseKnowledgeBaseFactor
         implements OWLKnowledgeBaseFactory, ClientInitializerKnowledgeBaseFactory {
     private static Logger log = Log.getLogger(OWLDatabaseKnowledgeBaseFactory.class);
 
+    public OWLDatabaseKnowledgeBaseFactory() {
+     	setOwlMode(true);
+    }
+
+
     public KnowledgeBase createKnowledgeBase(Collection errors) {
         ResourceSelectionAction.setActivated(false);
         OWLDatabaseModel kb = new OWLDatabaseModel(this);
