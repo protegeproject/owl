@@ -2,6 +2,7 @@ package edu.stanford.smi.protegex.owl.ui.conditions;
 
 import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.resource.Icons;
+import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.model.*;
 import edu.stanford.smi.protegex.owl.model.triplestore.Triple;
 import edu.stanford.smi.protegex.owl.model.triplestore.impl.DefaultTriple;
@@ -407,6 +408,7 @@ public class ConditionsTable extends OWLTable
                 }
             }
             catch (Exception ex) {
+              Log.emptyCatchBlock(ex);
                 // Ignore: User has clicked somewhere else on the table while editing invalid expression
             }
         }
