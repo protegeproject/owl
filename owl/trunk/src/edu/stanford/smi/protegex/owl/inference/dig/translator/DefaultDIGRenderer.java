@@ -1091,9 +1091,8 @@ public class DefaultDIGRenderer implements DIGRenderer {
 
         Iterator directDomainIt = directDomain.iterator();
 
-        //Element domainOrElement = doc.createElement(DIGVocabulary.Language.OR);
-
         Element domainElement = doc.createElement(DIGVocabulary.Tell.DOMAIN);
+
 
         RDFSClass rootCls = property.getOWLModel().getOWLThingClass();
         while (directDomainIt.hasNext()) {
@@ -1101,14 +1100,12 @@ public class DefaultDIGRenderer implements DIGRenderer {
 
             if (curObj instanceof OWLClass) {
                 if (!rootCls.equals(curObj)) {
-                    renderAppropriateCls((OWLClass) curObj, doc, domainElement);
-                }
-            }
-        }
 
-        if (domainElement.getChildNodes().getLength() > 0) {
-            if (renderAppropriateSlot(property, doc, domainElement)) {
-                parentNode.appendChild(domainElement);
+                    if (renderAppropriateSlot(property, doc, domainElement)) {
+                        parentNode.appendChild(domainElement);
+                        renderAppropriateCls((OWLClass) curObj, doc, domainElement);
+                    }
+                }
             }
         }
     }
