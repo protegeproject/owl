@@ -57,38 +57,27 @@ public class DefaultDIGRenderer implements DIGRenderer {
 
         if (aClass instanceof OWLNamedClass) {
             b = render((OWLNamedClass) aClass, doc, parentNode);
-        }
-        else if (aClass instanceof OWLSomeValuesFrom) {
+        } else if (aClass instanceof OWLSomeValuesFrom) {
             b = render((OWLSomeValuesFrom) aClass, doc, parentNode);
-        }
-        else if (aClass instanceof OWLAllValuesFrom) {
+        } else if (aClass instanceof OWLAllValuesFrom) {
             b = render((OWLAllValuesFrom) aClass, doc, parentNode);
-        }
-        else if (aClass instanceof OWLHasValue) {
+        } else if (aClass instanceof OWLHasValue) {
             b = render((OWLHasValue) aClass, doc, parentNode);
-        }
-        else if (aClass instanceof OWLMinCardinality) {
+        } else if (aClass instanceof OWLMinCardinality) {
             b = render((OWLMinCardinality) aClass, doc, parentNode);
-        }
-        else if (aClass instanceof OWLMaxCardinality) {
+        } else if (aClass instanceof OWLMaxCardinality) {
             b = render((OWLMaxCardinality) aClass, doc, parentNode);
-        }
-        else if (aClass instanceof OWLCardinality) {
+        } else if (aClass instanceof OWLCardinality) {
             b = render((OWLCardinality) aClass, doc, parentNode);
-        }
-        else if (aClass instanceof OWLIntersectionClass) {
+        } else if (aClass instanceof OWLIntersectionClass) {
             b = render((OWLIntersectionClass) aClass, doc, parentNode);
-        }
-        else if (aClass instanceof OWLUnionClass) {
+        } else if (aClass instanceof OWLUnionClass) {
             b = render((OWLUnionClass) aClass, doc, parentNode);
-        }
-        else if (aClass instanceof OWLComplementClass) {
+        } else if (aClass instanceof OWLComplementClass) {
             b = render((OWLComplementClass) aClass, doc, parentNode);
-        }
-        else if (aClass instanceof OWLEnumeratedClass) {
+        } else if (aClass instanceof OWLEnumeratedClass) {
             b = render((OWLEnumeratedClass) aClass, doc, parentNode);
-        }
-        else {
+        } else {
             logErrorOrWarning(aClass,
                     "Don't know how to render the type: " + aClass.getClass().getName(),
                     "Ignoring this type and attempting to continue.");
@@ -105,8 +94,7 @@ public class DefaultDIGRenderer implements DIGRenderer {
 
         if (slot instanceof OWLObjectProperty) {
             ret = render((OWLObjectProperty) slot, doc, parentNode);
-        }
-        else if (slot instanceof OWLDatatypeProperty) {
+        } else if (slot instanceof OWLDatatypeProperty) {
             ret = render((OWLDatatypeProperty) slot, doc, parentNode);
         }
 
@@ -146,8 +134,7 @@ public class DefaultDIGRenderer implements DIGRenderer {
                         RDFIndividual curInstance = (RDFIndividual) distinctMembersIt.next();
                         render(curInstance, doc, allDifferentElement);
                     }
-                }
-                else {
+                } else {
                     renderFakedDifferentFrom(curOWLAllDifferent.getDistinctMembers(), doc, parentNode);
                 }
             }
@@ -225,8 +212,7 @@ public class DefaultDIGRenderer implements DIGRenderer {
             if (curProperty.isAnnotationProperty() == false) {
                 if (curProperty instanceof OWLObjectProperty) {
                     curDefPropElement = doc.createElement(DIGVocabulary.Tell.DEF_ROLE);
-                }
-                else {
+                } else {
                     curDefPropElement = doc.createElement(DIGVocabulary.Tell.DEF_ATTRIBUTE);
                 }
 
@@ -267,19 +253,16 @@ public class DefaultDIGRenderer implements DIGRenderer {
             OWLModel model = cls.getOWLModel();
             if (cls.equals(model.getOWLThingClass()) == true) {
                 element = doc.createElement(DIGVocabulary.Language.TOP);
-            }
-            else if (cls.equals(model.getOWLNothing()) == true) {
+            } else if (cls.equals(model.getOWLNothing()) == true) {
                 element = doc.createElement(DIGVocabulary.Language.BOTTOM);
-            }
-            else {
+            } else {
                 String name = cls.getName();
                 element = doc.createElement(DIGVocabulary.Language.CATOM);
                 element.setAttribute("name", name);
             }
 
             parentNode.appendChild(element);
-        }
-        else {
+        } else {
             ret = false;
         }
 
@@ -299,8 +282,7 @@ public class DefaultDIGRenderer implements DIGRenderer {
         if (ret == true) {
             // Delegate to the quantifier restriction render method
             ret = render((OWLQuantifierRestriction) someRestriction, doc, parentNode);
-        }
-        else {
+        } else {
             logErrorOrWarning(someRestriction,
                     "Existential (some values from) restrictions are not\n" +
                             "supported by this reasoner.",
@@ -323,8 +305,7 @@ public class DefaultDIGRenderer implements DIGRenderer {
         if (ret == true) {
             // Delegate to the quantifier restriction render method
             ret = render((OWLQuantifierRestriction) allRestriction, doc, parentNode);
-        }
-        else {
+        } else {
             logErrorOrWarning(allRestriction,
                     "Universal (all values from) restrictions are not\n" +
                             "supported by this reasoner.",
@@ -343,8 +324,7 @@ public class DefaultDIGRenderer implements DIGRenderer {
         boolean ret = true;
         if (quantifierRestriction.getFiller() instanceof RDFSClass) {
             ret = renderQuantifierObjectRestriction(quantifierRestriction, doc, parentNode);
-        }
-        else {
+        } else {
             ret = renderQuantifierDataRestriction(quantifierRestriction, doc, parentNode);
         }
 
@@ -366,8 +346,7 @@ public class DefaultDIGRenderer implements DIGRenderer {
         // type of restriction
         if (quantifierRestriction instanceof OWLSomeValuesFrom) {
             elementName = DIGVocabulary.Language.SOME;
-        }
-        else {
+        } else {
             // Must be an ALL restriction
             elementName = DIGVocabulary.Language.ALL;
         }
@@ -413,7 +392,7 @@ public class DefaultDIGRenderer implements DIGRenderer {
 // Process each value
             while (valuesIt.hasNext()) {
                 final RDFSLiteral curValue = quantifierRestriction.getOWLModel().asRDFSLiteral(valuesIt.next());
-	            DIGDataTypes digDataTypes = DIGDataTypes.getInstance(quantifierRestriction.getOWLModel());
+                DIGDataTypes digDataTypes = DIGDataTypes.getInstance(quantifierRestriction.getOWLModel());
 // Ensure that we can support the value type
                 if (digDataTypes.isSupported(curValue)) {
 // Render each value as a value restriction along the
@@ -426,8 +405,7 @@ public class DefaultDIGRenderer implements DIGRenderer {
                     if (ret == true) {
                         element.appendChild(valueRestrictionElement);
                     }
-                }
-                else {
+                } else {
 // Ignore this restriction
                     ret = false;
                     logErrorOrWarning(quantifierRestriction,
@@ -436,8 +414,7 @@ public class DefaultDIGRenderer implements DIGRenderer {
                     break;
                 }
             }
-        }
-        else {
+        } else {
 // We should be able to represent sVF|aVF (xs:DATATYPE) but we can't
             logErrorOrWarning(quantifierRestriction,
                     "The current version of the DIG interface does not support\n" + "quantifier restrictions on datatype properties.",
@@ -478,7 +455,7 @@ public class DefaultDIGRenderer implements DIGRenderer {
             // Object restriction - the filler must be an individual
             // for the ontology to be in OWL-DL.
 
-	        if (hasRestriction.getHasValue() instanceof RDFIndividual) {
+            if (hasRestriction.getHasValue() instanceof RDFIndividual) {
                 // A hasValue restriction can only be rendered as a
                 // someValuesFrom restriction, with an enumeration class
                 // of the individual that is the filler.
@@ -498,8 +475,7 @@ public class DefaultDIGRenderer implements DIGRenderer {
                                 // Add our iset to the someValuesFrom element
                                 element.appendChild(isetElement);
                             }
-                        }
-                        else {
+                        } else {
                             logErrorOrWarning(hasRestriction,
                                     "Has value restrictions are not supported by this reasoner.\n" +
                                             "(Indirectly caused by no support for individual enumerations).",
@@ -508,16 +484,14 @@ public class DefaultDIGRenderer implements DIGRenderer {
                         }
 
                     }
-                }
-                else {
+                } else {
                     logErrorOrWarning(hasRestriction,
                             "Has value restrictions are not supported by this reasoner.\n" +
                                     "(Indirectly caused by no support for existential restrictions).",
                             "Ignoring this restriction and attempting to continue.");
                     ret = false;
                 }
-            }
-            else {
+            } else {
                 // The filler is not an individual.
                 // Log an error and mark that we will ignore
                 // this restriction
@@ -527,14 +501,13 @@ public class DefaultDIGRenderer implements DIGRenderer {
                         "The ontology is in OWL-FULL.\n" + "This is because the filler for a hasValue object property\n" + "restriction is not an individual.",
                         "Ignoring restriction and attempting to continue.");
             }
-        }
-        else {
-	        // DIG 1.1 does not support this.
-                ret = false;
-                logErrorOrWarning(hasRestriction,
-                        "DIG 1.1 (The language used to communicate with the reasoner)\n" +
-                                "does not support hasValue restrictions on datatype properties\n",
-                        "Ignoring restriction and attempting to continue.");
+        } else {
+            // DIG 1.1 does not support this.
+            ret = false;
+            logErrorOrWarning(hasRestriction,
+                    "DIG 1.1 (The language used to communicate with the reasoner)\n" +
+                            "does not support hasValue restrictions on datatype properties\n",
+                    "Ignoring restriction and attempting to continue.");
 
         }
 
@@ -556,8 +529,7 @@ public class DefaultDIGRenderer implements DIGRenderer {
         // Check thay min cardi restrictions are supported
         if (isSupportedLanguageElement(DIGVocabulary.Language.ATLEAST) == true) {
             ret = render(minCardiRestriction, doc, parentNode, DIGVocabulary.Language.ATLEAST);
-        }
-        else {
+        } else {
             ret = false;
             logErrorOrWarning(minCardiRestriction,
                     "Minimum cardinality restrictions are not supported by this reasoner.",
@@ -575,8 +547,7 @@ public class DefaultDIGRenderer implements DIGRenderer {
         boolean ret = true;
         if (isSupportedLanguageElement(DIGVocabulary.Language.ATMOST) == true) {
             ret = render(maxCardiRestriction, doc, parentNode, DIGVocabulary.Language.ATMOST);
-        }
-        else {
+        } else {
             ret = false;
             logErrorOrWarning(maxCardiRestriction,
                     "Maximum cardinality restrictions are not supported by this reasoner.",
@@ -600,8 +571,7 @@ public class DefaultDIGRenderer implements DIGRenderer {
             Element andElement = doc.createElement(DIGVocabulary.Language.AND);
             if (isSupportedLanguageElement(DIGVocabulary.Language.ATLEAST) == true) {
                 ret = render(cardiRestriction, doc, andElement, DIGVocabulary.Language.ATLEAST);
-            }
-            else {
+            } else {
                 ret = false;
                 logErrorOrWarning(cardiRestriction,
                         "Cardinality restrictions are not supported by this reasoner.\n" +
@@ -612,8 +582,7 @@ public class DefaultDIGRenderer implements DIGRenderer {
             if (ret == true) {
                 if (isSupportedLanguageElement(DIGVocabulary.Language.ATMOST) == true) {
                     ret = render(cardiRestriction, doc, andElement, DIGVocabulary.Language.ATMOST);
-                }
-                else {
+                } else {
                     ret = false;
                     logErrorOrWarning(cardiRestriction,
                             "Cardinality restrictions are not supported by this reasoner.\n" +
@@ -625,8 +594,7 @@ public class DefaultDIGRenderer implements DIGRenderer {
             if (ret == true) {
                 parentNode.appendChild(andElement);
             }
-        }
-        else {
+        } else {
             ret = false;
             logErrorOrWarning(cardiRestriction,
                     "Cardinality restrictions are not supported by this reasoner.\n" +
@@ -665,8 +633,7 @@ public class DefaultDIGRenderer implements DIGRenderer {
                 logErrorOrWarning(cardinalityRestriction,
                         "The property " + property.getBrowserText() + " is transitive.\n" + "OWL-DL does not allow transitive properties to be used\n" + "is cardinality restrictions.",
                         "Ignoring this restriction and attempting to continue.");
-            }
-            else {
+            } else {
                 // Check that the inverse is not transitive
                 Slot inverseSlot = property.getInverseProperty();
 
@@ -681,8 +648,7 @@ public class DefaultDIGRenderer implements DIGRenderer {
                 }
             }
 
-        }
-        else {
+        } else {
             // Can't render cardianlity on datatype properties as there
             // is no way (it seems) to translate this into DIG 1.1
             ret = false;
@@ -719,8 +685,7 @@ public class DefaultDIGRenderer implements DIGRenderer {
         boolean ret = true;
         if (isSupportedLanguageElement(DIGVocabulary.Language.OR) == true) {
             ret = render(unionCls, doc, parentNode, DIGVocabulary.Language.OR);
-        }
-        else {
+        } else {
             ret = false;
             logErrorOrWarning(unionCls,
                     "Union classes (disjunctions) are not supported by this reasoner.",
@@ -738,8 +703,7 @@ public class DefaultDIGRenderer implements DIGRenderer {
         boolean ret = true;
         if (isSupportedLanguageElement(DIGVocabulary.Language.NOT) == true) {
             ret = render(complementCls, doc, parentNode, DIGVocabulary.Language.NOT);
-        }
-        else {
+        } else {
             ret = false;
             logErrorOrWarning(complementCls,
                     "Complement classes are not supported by this reasoner.",
@@ -756,8 +720,7 @@ public class DefaultDIGRenderer implements DIGRenderer {
         boolean ret = true;
         if (isSupportedLanguageElement(DIGVocabulary.Language.AND) == true) {
             ret = render(intersectionCls, doc, parentNode, DIGVocabulary.Language.AND);
-        }
-        else {
+        } else {
             ret = false;
             logErrorOrWarning(intersectionCls,
                     "Intersection classes (conjunctions) are not supported by this reasoner.",
@@ -778,8 +741,7 @@ public class DefaultDIGRenderer implements DIGRenderer {
         Collection operands = null;
         if (logicalCls instanceof OWLNAryLogicalClass) {
             operands = ((OWLNAryLogicalClass) logicalCls).getOperands();
-        }
-        else {
+        } else {
             operands = Collections.singleton(((OWLComplementClass) logicalCls).getComplement());
         }
         Iterator operandsIt = operands.iterator();
@@ -794,8 +756,7 @@ public class DefaultDIGRenderer implements DIGRenderer {
                     break;
                 }
 
-            }
-            else {
+            } else {
                 logErrorOrWarning(logicalCls,
                         "Intersection, Union and Complement classes may only\n" +
                                 "contain operands that are OWL Classes.",
@@ -844,8 +805,7 @@ public class DefaultDIGRenderer implements DIGRenderer {
                         // this enumeration class
                         break;
                     }
-                }
-                else {
+                } else {
                     logErrorOrWarning(enumerationCls,
                             "The ontology is in OWL-Full.\n" + "Enumerated classes can only be made up of enumerations\n" + "of individuals.",
                             "Ignoring enumerated class.");
@@ -858,8 +818,7 @@ public class DefaultDIGRenderer implements DIGRenderer {
             if (ret == true) {
                 parentNode.appendChild(element);
             }
-        }
-        else {
+        } else {
             ret = false;
             logErrorOrWarning(enumerationCls,
                     "Enumeration classes are not supported by this reasoner.",
@@ -885,8 +844,7 @@ public class DefaultDIGRenderer implements DIGRenderer {
             element.setAttribute("name", slot.getName());
 
             parentNode.appendChild(element);
-        }
-        else {
+        } else {
             ret = false;
         }
 
@@ -903,12 +861,10 @@ public class DefaultDIGRenderer implements DIGRenderer {
                 Element element = doc.createElement(DIGVocabulary.Language.ATTRIBUTE);
                 element.setAttribute("name", slot.getName());
                 parentNode.appendChild(element);
-            }
-            else {
+            } else {
                 ret = false;
             }
-        }
-        else {
+        } else {
             ret = false;
             logErrorOrWarning(slot,
                     "Datatype properties are not supported by this reasoner.",
@@ -947,55 +903,55 @@ public class DefaultDIGRenderer implements DIGRenderer {
 
         // I guess that we could check if implies is supported.
         // (But it would be a desparate situation if it isn't!!)
-		boolean ignoreNecessaryConditions = DIGTranslatorPreferences.getInstance().isIgnoreNecessaryConditionsOnDefinedClasses();
-	    if((cls.isDefinedClass() && ignoreNecessaryConditions) == false) {
-		    // Render superclasses (as implications)
-		    Collection directPureSuperClses = cls.getPureSuperclasses();
-		    Iterator directPureSuperClsesIt = directPureSuperClses.iterator();
+        boolean ignoreNecessaryConditions = DIGTranslatorPreferences.getInstance().isIgnoreNecessaryConditionsOnDefinedClasses();
+        if ((cls.isDefinedClass() && ignoreNecessaryConditions) == false) {
+            // Render superclasses (as implications)
+            Collection directPureSuperClses = cls.getPureSuperclasses();
+            Iterator directPureSuperClsesIt = directPureSuperClses.iterator();
 
-		    while (directPureSuperClsesIt.hasNext()) {
-		        final RDFSClass curSuperClass = (RDFSClass) directPureSuperClsesIt.next();
-		        if (curSuperClass.equals(curSuperClass.getOWLModel().getOWLThingClass()) == false) {
-			        final ClassCommenter commenter = new ClassCommenter(cls.getOWLModel());
-			        if(commenter.isCommentedOut(curSuperClass) == false) {
-				        final Element impliesElement = doc.createElement(DIGVocabulary.Tell.IMPLIES_C);
-				        ret = render(cls, doc, impliesElement);
-				        if (ret == true) {
-				            ret = renderAppropriateCls((RDFSClass) curSuperClass, doc, impliesElement);
-				            if (ret == true) {
-				                parentNode.appendChild(impliesElement);
-				            }
-				        }
-			        }
-		        }
-		    }
+            while (directPureSuperClsesIt.hasNext()) {
+                final RDFSClass curSuperClass = (RDFSClass) directPureSuperClsesIt.next();
+                if (curSuperClass.equals(curSuperClass.getOWLModel().getOWLThingClass()) == false) {
+                    final ClassCommenter commenter = new ClassCommenter(cls.getOWLModel());
+                    if (commenter.isCommentedOut(curSuperClass) == false) {
+                        final Element impliesElement = doc.createElement(DIGVocabulary.Tell.IMPLIES_C);
+                        ret = render(cls, doc, impliesElement);
+                        if (ret == true) {
+                            ret = renderAppropriateCls((RDFSClass) curSuperClass, doc, impliesElement);
+                            if (ret == true) {
+                                parentNode.appendChild(impliesElement);
+                            }
+                        }
+                    }
+                }
+            }
 
-		     // Render disjoint classes
-			Collection disjointClses = cls.getDisjointClasses();
+            // Render disjoint classes
+            Collection disjointClses = cls.getDisjointClasses();
 
-			Iterator disjointClsesIt = disjointClses.iterator();
+            Iterator disjointClsesIt = disjointClses.iterator();
 
-			while (disjointClsesIt.hasNext()) {
-				final RDFSClass curDisjointClass = (RDFSClass) disjointClsesIt.next();
-				if((curDisjointClass.getEquivalentClasses().size() > 0 &&
-				    ignoreNecessaryConditions) == false) {
-					final ClassCommenter commenter = new ClassCommenter(cls.getOWLModel());
-					if(commenter.isCommentedOut(curDisjointClass) == false) {
-				    final Element disjointElement = doc.createElement(DIGVocabulary.Tell.DISJOINT);
-						ret = render(cls, doc, disjointElement);
-						if (ret == true) {
-							ret = renderAppropriateCls(curDisjointClass, doc, disjointElement);
+            while (disjointClsesIt.hasNext()) {
+                final RDFSClass curDisjointClass = (RDFSClass) disjointClsesIt.next();
+                if ((curDisjointClass.getEquivalentClasses().size() > 0 &&
+                        ignoreNecessaryConditions) == false) {
+                    final ClassCommenter commenter = new ClassCommenter(cls.getOWLModel());
+                    if (commenter.isCommentedOut(curDisjointClass) == false) {
+                        final Element disjointElement = doc.createElement(DIGVocabulary.Tell.DISJOINT);
+                        ret = render(cls, doc, disjointElement);
+                        if (ret == true) {
+                            ret = renderAppropriateCls(curDisjointClass, doc, disjointElement);
 
-							if (ret = true) {
-								parentNode.appendChild(disjointElement);
-							}
-						}
-					}
-				}
-			}
-	    }
+                            if (ret = true) {
+                                parentNode.appendChild(disjointElement);
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
-	    // Render equivalent classes
+        // Render equivalent classes
         Collection equivalentClses = cls.getEquivalentClasses();
 
         Iterator equivalentClsesIt = equivalentClses.iterator();
@@ -1003,29 +959,27 @@ public class DefaultDIGRenderer implements DIGRenderer {
         while (equivalentClsesIt.hasNext()) {
             final RDFSClass curEquivClass = (RDFSClass) equivalentClsesIt.next();
             ClassCommenter commenter = new ClassCommenter(cls.getOWLModel());
-	        if(commenter.isCommentedOut(curEquivClass) == false) {
-		        final Element equalElement = doc.createElement(DIGVocabulary.Tell.EQUAL_C);
-		                    ret = render(cls, doc, equalElement);
-		                    if (ret == true) {
-		                        // Racer does not seem to like it if equivalent classes
-		                        // aren't nested inside an AND element
-		                        Element andElement;
-		                        if (curEquivClass instanceof OWLIntersectionClass == false) {
-		                            andElement = doc.createElement(DIGVocabulary.Language.AND);
-		                            ret = renderAppropriateCls(curEquivClass, doc, andElement);
-		                            equalElement.appendChild(andElement);
-		                        }
-		                        else {
-		                            ret = renderAppropriateCls(curEquivClass, doc, equalElement);
-		                        }
+            if (commenter.isCommentedOut(curEquivClass) == false) {
+                final Element equalElement = doc.createElement(DIGVocabulary.Tell.EQUAL_C);
+                ret = render(cls, doc, equalElement);
+                if (ret == true) {
+                    // Racer does not seem to like it if equivalent classes
+                    // aren't nested inside an AND element
+                    Element andElement;
+                    if (curEquivClass instanceof OWLIntersectionClass == false) {
+                        andElement = doc.createElement(DIGVocabulary.Language.AND);
+                        ret = renderAppropriateCls(curEquivClass, doc, andElement);
+                        equalElement.appendChild(andElement);
+                    } else {
+                        ret = renderAppropriateCls(curEquivClass, doc, equalElement);
+                    }
 
-		                        if (ret = true) {
-		                            parentNode.appendChild(equalElement);
-		                        }
-		                    }
-	        }
+                    if (ret = true) {
+                        parentNode.appendChild(equalElement);
+                    }
+                }
+            }
         }
-
 
 
     }
@@ -1133,11 +1087,11 @@ public class DefaultDIGRenderer implements DIGRenderer {
                                     Document doc,
                                     Node parentNode)
             throws DIGReasonerException {
-        Collection directDomain = property.getUnionDomain();
+        Collection directDomain = property.getDomains(false);
 
         Iterator directDomainIt = directDomain.iterator();
 
-        Element domainOrElement = doc.createElement(DIGVocabulary.Language.OR);
+        //Element domainOrElement = doc.createElement(DIGVocabulary.Language.OR);
 
         Element domainElement = doc.createElement(DIGVocabulary.Tell.DOMAIN);
 
@@ -1145,17 +1099,15 @@ public class DefaultDIGRenderer implements DIGRenderer {
         while (directDomainIt.hasNext()) {
             final Object curObj = directDomainIt.next();
 
-            if (curObj instanceof OWLNamedClass) {
+            if (curObj instanceof OWLClass) {
                 if (!rootCls.equals(curObj)) {
-                    render((OWLNamedClass) curObj, doc, domainOrElement);
+                    renderAppropriateCls((OWLClass) curObj, doc, domainElement);
                 }
             }
         }
 
-        if (domainOrElement.getChildNodes().getLength() > 0) {
+        if (domainElement.getChildNodes().getLength() > 0) {
             if (renderAppropriateSlot(property, doc, domainElement)) {
-                domainElement.appendChild(domainOrElement);
-
                 parentNode.appendChild(domainElement);
             }
         }
@@ -1190,10 +1142,9 @@ public class DefaultDIGRenderer implements DIGRenderer {
                     parentNode.appendChild(rangeElement);
                 }
             }
-        }
-        else {
+        } else {
             // Datatype property
-			RDFSDatatype datatype = property.getRangeDatatype();
+            RDFSDatatype datatype = property.getRangeDatatype();
             DIGDataTypes digDataTypes = DIGDataTypes.getInstance(property.getOWLModel());
 
             if (digDataTypes.isSupported(datatype) == true) {
@@ -1204,8 +1155,7 @@ public class DefaultDIGRenderer implements DIGRenderer {
                 if (ret == true) {
                     parentNode.appendChild(rangeElement);
                 }
-            }
-            else {
+            } else {
                 logErrorOrWarning(property,
                         "DIG 1.1 (The language used to communicate with the reasoner)\n" + "does not support the range specified for the datatype property\n" + property.getBrowserText() + ".",
                         "Ignoring this range on this property.");
@@ -1252,8 +1202,7 @@ public class DefaultDIGRenderer implements DIGRenderer {
             logErrorOrWarning(property,
                     "The ontology is in OWL-Full.\n" + "This has been caused by the property " + property.getBrowserText() + "\n" + "being transitive and inverse functional.",
                     "Ignoring inverse functional characteristic on this property\n" + "and attempting to continue.");
-        }
-        else {
+        } else {
             // Inverse property must be marked as functional
             if (inverseProperty == null) {
                 // Create FAKE inverse property
@@ -1274,8 +1223,7 @@ public class DefaultDIGRenderer implements DIGRenderer {
                 fakeInverseSlotElement2.setAttribute("name", fakeName);
                 functionalElement.appendChild(fakeInverseSlotElement2);
                 doc.getDocumentElement().appendChild(functionalElement);
-            }
-            else {
+            } else {
                 renderFunctionalSlot(inverseProperty, doc, parentNode);
             }
         }
@@ -1392,8 +1340,7 @@ public class DefaultDIGRenderer implements DIGRenderer {
                         }
                     }
                 }
-            }
-            else {
+            } else {
                 //	renderFakeSameAs(sameAs, doc, parentNode);
                 logErrorOrWarning(instance,
                         "SameAs construct for individuals is not supported\n" +
@@ -1418,8 +1365,7 @@ public class DefaultDIGRenderer implements DIGRenderer {
                     }
                 }
 
-            }
-            else {
+            } else {
                 Iterator differentFromIt = differentFrom.iterator();
                 ArrayList allDifferentList = new ArrayList();
                 allDifferentList.add(instance);
@@ -1455,19 +1401,17 @@ public class DefaultDIGRenderer implements DIGRenderer {
                                 }
 
                             }
-                        }
-                        else {
+                        } else {
                             logErrorOrWarning(instance,
                                     "The ontology is in OWL-Full.\n" + "The filler for an object property relationship is not\n" + "an individual.",
                                     "Ignoring this relationship and attempting to continue.");
                         }
                     }
-                }
-                else {
+                } else {
                     for (Iterator it = instance.getPropertyValueLiterals(curProp).iterator(); it.hasNext();) {
-	                    OWLModel owlModel = curProp.getOWLModel();
+                        OWLModel owlModel = curProp.getOWLModel();
                         DIGDataTypes digDataTypes = DIGDataTypes.getInstance(owlModel);
-	                    Object curValue = it.next();
+                        Object curValue = it.next();
                         RDFSLiteral value = owlModel.asRDFSLiteral(curValue);
                         if (digDataTypes.isSupported(value)) {
                             Element valueElement = doc.createElement(DIGVocabulary.Tell.VALUE);
@@ -1484,8 +1428,7 @@ public class DefaultDIGRenderer implements DIGRenderer {
                                     parentNode.appendChild(valueElement);
                                 }
                             }
-                        }
-                        else {
+                        } else {
                             logErrorOrWarning(instance,
                                     "The current version of DIG (the language used to communicate)\n" + "with the reasoner) does not support the datatype used in the\n" + curProp.getBrowserText() + " relationship.",
                                     "Ignoring this relationship and attempting to continue.");
@@ -1566,8 +1509,7 @@ public class DefaultDIGRenderer implements DIGRenderer {
             throws DIGReasonerException {
         if (ReasonerPreferences.getInstance().isWarningAsErrors()) {
             throw new DIGReasonerException(message);
-        }
-        else {
+        } else {
             String msg;
 
             msg = message + "\n" + recoveryMessage;
