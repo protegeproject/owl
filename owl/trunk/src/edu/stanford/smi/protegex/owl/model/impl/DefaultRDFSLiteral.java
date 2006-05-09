@@ -80,8 +80,8 @@ public class DefaultRDFSLiteral implements RDFSLiteral {
             datatype = owlModel.getXSDfloat();
         }
         else if (value instanceof String) {
-            if(((String)value).startsWith(DATATYPE_PREFIX)) {
-                return new DefaultRDFSLiteral(owlModel, (String)value);
+            if (((String) value).startsWith(DATATYPE_PREFIX)) {
+                return new DefaultRDFSLiteral(owlModel, (String) value);
             }
             datatype = owlModel.getXSDstring();
         }
@@ -97,7 +97,7 @@ public class DefaultRDFSLiteral implements RDFSLiteral {
         }
         else {
             throw new IllegalArgumentException("Value type " + value.getClass() +
-                    " of value \"" + value + "\" cannot be mapped into default RDFSDatatype.");
+                                               " of value \"" + value + "\" cannot be mapped into default RDFSDatatype.");
         }
         return new DefaultRDFSLiteral(owlModel, getRawValue(String.valueOf(value), datatype));
     }
@@ -178,11 +178,17 @@ public class DefaultRDFSLiteral implements RDFSLiteral {
 
 
     public String getLanguage() {
+        String lang = null;
         if (rawValue.startsWith(LANGUAGE_PREFIX)) {
             int endIndex = rawValue.indexOf(SEPARATOR);
-            return rawValue.substring(2, endIndex);
+            if (endIndex > 0) {
+                lang = rawValue.substring(2, endIndex);
+            }
+            else {
+                lang = rawValue.substring(2);
+            }
         }
-        return null;
+        return lang;
     }
 
 
