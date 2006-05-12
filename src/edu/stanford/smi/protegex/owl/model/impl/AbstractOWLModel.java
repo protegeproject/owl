@@ -3036,9 +3036,23 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     }
 
 
+    /*
+     * This fix is incomplete.  It should be completed before being merged back into the
+     * head.  The intention is that we do not continually as the knowledge base whether there
+     * is a frame with a particular name.  This can be expensive in the case that there is no
+     * such frame because caching the result is difficult.
+     * 
+     * The problem with this fix is that the stored result is not updated when the protege 
+     * ontology is imported.
+     */
+    private Boolean protegeMetaOntologyImported = null;
+    
     public boolean isProtegeMetaOntologyImported() {
+      if (protegeMetaOntologyImported == null) {
         String slotName = ProtegeNames.getSubclassesDisjointSlotName();
-        return getSlot(slotName) != null;
+        protegeMetaOntologyImported = Boolean.valueOf(getSlot(slotName) != null);
+      }
+      return protegeMetaOntologyImported;
     }
 
 
