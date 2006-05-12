@@ -18,7 +18,7 @@ public class CreateMetaClassesTestCase extends AbstractJenaCreatorTestCase {
 
     public void testCreateMetaClass() {
         OWLNamedClass metaCls = (OWLNamedClass) owlModel.createCls("Meta",
-                Collections.singleton(owlModel.getOWLNamedClassClass()));
+                                                                   Collections.singleton(owlModel.getOWLNamedClassClass()));
         OntModel newModel = runJenaCreator();
         OntClass metaClass = newModel.getOntClass(metaCls.getURI());
         assertEquals(OWL.Class, metaClass.getSuperClass());
@@ -27,7 +27,7 @@ public class CreateMetaClassesTestCase extends AbstractJenaCreatorTestCase {
 
     public void testCreateMetaClassInstance() {
         OWLNamedClass metaCls = (OWLNamedClass) owlModel.createCls("Meta",
-                Collections.singleton(owlModel.getOWLNamedClassClass()));
+                                                                   Collections.singleton(owlModel.getOWLNamedClassClass()));
         OWLDatatypeProperty slot = owlModel.createOWLDatatypeProperty("author", owlModel.getXSDstring());
         slot.addUnionDomainClass(metaCls);
         OWLNamedClass cls = owlModel.createOWLNamedClass("Cls", metaCls);
@@ -36,7 +36,7 @@ public class CreateMetaClassesTestCase extends AbstractJenaCreatorTestCase {
         OntModel newModel = runJenaCreator();
         OntClass metaClass = newModel.getOntClass(metaCls.getURI());
         OntClass ontClass = newModel.getOntClass(cls.getURI());
-        assertEquals(metaClass, ontClass.getRDFType());
+        assertContains(metaClass, ontClass.listRDFTypes(false));
         OntProperty ontProperty = newModel.getOntProperty(slot.getURI());
         assertHasValue(ontClass, ontProperty, ValueType.STRING, "A");
     }
@@ -44,9 +44,9 @@ public class CreateMetaClassesTestCase extends AbstractJenaCreatorTestCase {
 
     public void testCreateMetaSlot() {
         OWLNamedClass datatypeSlotMetaCls = (OWLNamedClass) owlModel.createCls("DatatypeMetaSlot",
-                Collections.singleton(owlModel.getCls(OWLNames.Cls.DATATYPE_PROPERTY)));
+                                                                               Collections.singleton(owlModel.getCls(OWLNames.Cls.DATATYPE_PROPERTY)));
         OWLNamedClass objectSlotMetaCls = (OWLNamedClass) owlModel.createCls("ObjectMetaSlot",
-                Collections.singleton(owlModel.getCls(OWLNames.Cls.OBJECT_PROPERTY)));
+                                                                             Collections.singleton(owlModel.getCls(OWLNames.Cls.OBJECT_PROPERTY)));
         OntModel newModel = runJenaCreator();
         OntClass datatypeMetaClass = newModel.getOntClass(datatypeSlotMetaCls.getURI());
         OntClass objectMetaClass = newModel.getOntClass(objectSlotMetaCls.getURI());
@@ -57,7 +57,7 @@ public class CreateMetaClassesTestCase extends AbstractJenaCreatorTestCase {
 
     public void testCreateMetaSlotInstance() {
         OWLNamedClass metaCls = (OWLNamedClass) owlModel.createCls("DatatypeMetaSlot",
-                Collections.singleton(owlModel.getCls(OWLNames.Cls.DATATYPE_PROPERTY)));
+                                                                   Collections.singleton(owlModel.getCls(OWLNames.Cls.DATATYPE_PROPERTY)));
         OWLDatatypeProperty slot = owlModel.createOWLDatatypeProperty("author", owlModel.getXSDstring());
         slot.addUnionDomainClass(metaCls);
         OWLDatatypeProperty instance = (OWLDatatypeProperty) owlModel.createSlot("Cls", metaCls);
