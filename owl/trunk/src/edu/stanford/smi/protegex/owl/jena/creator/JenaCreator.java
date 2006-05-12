@@ -167,8 +167,8 @@ public class JenaCreator {
                 RDFProperty property = (RDFProperty) it.next();
                 if (!isSystemOwnSlot(rdfResource, property) || property.isAnnotationProperty()) {
                     if (rdfResource instanceof RDFIndividual &&
-                            property instanceof OWLObjectProperty &&
-                            rdfResource.getPropertyValueCount(property) > 0) {
+                        property instanceof OWLObjectProperty &&
+                        rdfResource.getPropertyValueCount(property) > 0) {
                         java.util.List list = (java.util.List) todoIndividualsWithObjectProperties.get(rdfResource);
                         if (list == null) {
                             list = new ArrayList();
@@ -228,7 +228,7 @@ public class JenaCreator {
             superClasses.removeAll(namedCls.getInferredEquivalentClasses());
         }
         if (superClasses.size() > 0 &&
-                (superClasses.size() > 1 || !superClasses.iterator().next().equals(owlModel.getOWLThingClass()))) {
+            (superClasses.size() > 1 || !superClasses.iterator().next().equals(owlModel.getOWLThingClass()))) {
             for (Iterator it = superClasses.iterator(); it.hasNext();) {
                 Cls superCls = (Cls) it.next();
                 RDFSClass superClass = (RDFSClass) superCls;
@@ -323,11 +323,11 @@ public class JenaCreator {
             RDFSLiteral literal = (RDFSLiteral) value;
             if (literal.getLanguage() != null) {
                 return ontModel.createLiteral(literal.getString(),
-                        literal.getLanguage());
+                                              literal.getLanguage());
             }
             else {
                 return ontModel.createTypedLiteral(literal.getString(),
-                        XMLSchemaDatatypes.getRDFDatatype(literal.getDatatype()));
+                                                   XMLSchemaDatatypes.getRDFDatatype(literal.getDatatype()));
             }
         }
         else {
@@ -446,9 +446,15 @@ public class JenaCreator {
             progressDisplay.setProgressValue(classProgressCount / (double) classCount);
         }
         OntClass ontClass = ontModel.createClass(rdfsClass.getURI());
-        if (!forReasoning && !owlModel.getOWLNamedClassClass().equals(rdfsClass.getProtegeType())) {
-            OntClass metaClass = getOntClass((RDFSClass) rdfsClass.getProtegeType());
-            ontClass.setRDFType(metaClass);
+        if (!forReasoning) {
+
+            // add any further types (for possibly multiple metaclasses
+            for (Iterator types = rdfsClass.getRDFTypes().iterator(); types.hasNext();) {
+                RDFSClass type = (RDFSClass) types.next();
+                if (!owlModel.getOWLNamedClassClass().equals(type)) {
+                    ontClass.addRDFType(getOntClass(type));
+                }
+            }
         }
         if (rdfsClass.isDeprecated()) {
             ontClass.addRDFType(OWL.DeprecatedClass);
@@ -716,7 +722,7 @@ public class JenaCreator {
             if (rdfsClass.isIncluded()) {
                 Resource resource = ontModel.getResource(rdfsClass.getURI());
                 if (!resource.hasProperty(RDF.type, RDFS.Class) &&
-                        !resource.hasProperty(RDF.type, OWL.Class)) {
+                    !resource.hasProperty(RDF.type, OWL.Class)) {
                     owlFullModel.add(ontModel.getResource(rdfsClass.getURI()), RDF.type, OWL.Class);
                 }
             }
