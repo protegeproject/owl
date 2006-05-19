@@ -6,6 +6,7 @@ import edu.stanford.smi.protegex.owl.ui.actions.ResourceAction;
 import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
 import edu.stanford.smi.protegex.owl.ui.profiles.OWLProfiles;
 import edu.stanford.smi.protegex.owl.ui.profiles.ProfilesManager;
+import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -47,6 +48,7 @@ public class CreateSubclassAction extends ResourceAction {
 
 
     public static void performAction(Collection superclasses, ClassTreePanel classTreePanel) {
+    	RDFSNamedClass cls = null;
         RDFSNamedClass superclass = (RDFSNamedClass) superclasses.iterator().next();
         OWLModel owlModel = superclass.getOWLModel();
         RDFSClass type = superclass.getProtegeType();
@@ -56,16 +58,24 @@ public class CreateSubclassAction extends ResourceAction {
                 type = owlModel.getRDFSNamedClassClass();
             }
         }
-        owlModel.beginTransaction("Create subclass of type " + type.getBrowserText());
-        String name = owlModel.createNewResourceName(AbstractOWLModel.DEFAULT_CLASS_NAME);
-        RDFSNamedClass cls = owlModel.createRDFSNamedClass(name, superclasses, type);
-        if (cls instanceof OWLNamedClass) {
-            for (Iterator it = superclasses.iterator(); it.hasNext();) {
-                RDFSNamedClass s = (RDFSNamedClass) it.next();
-                ((OWLNamedClass) cls).addInferredSuperclass(s);
+        
+        try {
+            owlModel.beginTransaction("Create subclass of type " + type.getBrowserText());
+            String name = owlModel.createNewResourceName(AbstractOWLModel.DEFAULT_CLASS_NAME);
+            cls = owlModel.createRDFSNamedClass(name, superclasses, type);
+            if (cls instanceof OWLNamedClass) {
+                for (Iterator it = superclasses.iterator(); it.hasNext();) {
+                    RDFSNamedClass s = (RDFSNamedClass) it.next();
+                    ((OWLNamedClass) cls).addInferredSuperclass(s);
+                }
             }
-        }
-        owlModel.endTransaction();
-        classTreePanel.setSelectedClass(cls);
+            owlModel.endTransaction();
+		} catch (Exception e) {
+			owlModel.endTransaction(false);
+			OWLUI.handleError(owlModel, e);
+		}
+        
+        if (cls != null) 
+        	classTreePanel.setSelectedClass(cls);
     }
 }
