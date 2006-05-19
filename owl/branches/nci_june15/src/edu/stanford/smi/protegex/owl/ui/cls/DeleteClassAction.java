@@ -4,11 +4,13 @@ import edu.stanford.smi.protege.resource.LocalizedText;
 import edu.stanford.smi.protege.resource.ResourceKey;
 import edu.stanford.smi.protege.ui.ProjectManager;
 import edu.stanford.smi.protege.util.ComponentUtilities;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
 import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
 import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
 import edu.stanford.smi.protegex.owl.ui.actions.ResourceAction;
 import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
+import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
 
 import javax.swing.*;
 import java.awt.*;
@@ -74,7 +76,12 @@ public class DeleteClassAction extends ResourceAction {
                 else {
                     JTree tree = classTreePanel.getTree();
                     ComponentUtilities.removeSelection(tree);
-                    cls.delete();
+                    //TODO: should this be done in a transaction?
+                    try {
+                    	cls.delete();
+					} catch (Exception e) {						
+						OWLUI.handleError(null, e);
+					}                    
                 }
             }
         }
