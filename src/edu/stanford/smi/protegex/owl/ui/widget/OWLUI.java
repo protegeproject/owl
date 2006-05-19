@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -298,14 +299,40 @@ public class OWLUI {
 
     public static void handleError(OWLModel owlModel, Throwable t) {
         Log.getLogger().log(Level.SEVERE, "Exception caught", t);
-        ProtegeUI.getModalDialogFactory().
+        
+        //TODO: find a nicer way to handle SQL exceptions        
+        SQLException sqlEx = null;
+
+        if (t instanceof SQLException) 
+        	sqlEx = (SQLException) t;
+        else if (t.getCause() instanceof SQLException)
+        	sqlEx = (SQLException) t.getCause();
+        
+        if (t!= null)
+        	//TODO:	check if you can use the sql exception state rather than this
+        	if (t.getMessage().contains("Lock")) {
+        		ProtegeUI.getModalDialogFactory().showErrorMessageDialog(owlModel,
+        				"Database table is currently locked by a different user." +
+        				"\nPlease retry the operation later.", "Locked ontology");
+        	} else {
+        		ProtegeUI.getModalDialogFactory().showErrorMessageDialog(owlModel,
+						"A database error has occured: " + sqlEx +
+						"\nPlease see Java console for details, and possibly report" +
+                        "\nthis on our OWL mailing lists." +
+                        "\nhttp://protege.stanford.edu/community/lists.html",
+                        "Database Error");
+        	}
+        else {        
+        	ProtegeUI.getModalDialogFactory().
                 showErrorMessageDialog(owlModel,
                                        "Internal Error: " + t +
                                        "\nPlease see Java console for details, and possibly report" +
-                                       "\nthis to the Protege-OWL developers (holger@knublauch.com)." +
+                                       "\nthis on our OWL mailing lists." +
+                                       "\nhttp://protege.stanford.edu/community/lists.html" +
                                        "\nYour ontology may now no longer be in a consistent state, and" +
                                        "\nyou may want to save this version under a different name.",
                                        "Internal Protege-OWL Error");
+        }
     }
 
 
