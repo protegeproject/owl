@@ -6,8 +6,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.swing.Icon;
 import javax.swing.table.AbstractTableModel;
@@ -50,7 +48,6 @@ import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
  */
 public class ConditionsTableModel extends AbstractTableModel
         implements ConditionsTableConstants, OWLTableModel {
-    private static transient Logger log = Log.getLogger(ConditionsTableModel.class);
 
     private ClassListener classListener = new ClassAdapter() {
         public void subclassAdded(RDFSClass cls, RDFSClass subclass) {

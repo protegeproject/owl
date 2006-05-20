@@ -1,0 +1,32 @@
+
+  protected class IntegerLiteralInfo extends LiteralInfo
+  {
+    private int i;
+
+    public IntegerLiteralInfo(int i) { this.i = i; }
+    public int getInteger() { return i; }
+  } // IntegerLiteralInfo
+
+  protected class StringLiteralInfo extends LiteralInfo
+  {
+    private String s;
+
+    public StringLiteralInfo(String s) { this.s = s; }
+    public String getString() { return s; }
+  } // StringLiteralInfo
+
+  protected class FloatLiteralInfo extends LiteralInfo
+  {
+    private float f;
+
+    public FloatLiteralInfo(float f) { this.f = f; }
+    public float getFloat() { return f; }
+  } // FloatLiteralInfo
+
+  protected class BooleanLiteralInfo extends LiteralInfo
+  {
+    private boolean b;
+
+    public BooleanLiteralInfo(boolean b) { this.b = b; }
+    public boolean getBoolean() { return b; }
+  } // BooleanLiteralInfo
