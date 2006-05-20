@@ -1,18 +1,18 @@
 package edu.stanford.smi.protegex.owl.ui.search.finder.tests;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.regex.Pattern;
-
 import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
 import edu.stanford.smi.protegex.owl.model.RDFSNames;
 import edu.stanford.smi.protegex.owl.tests.AbstractJenaTestCase;
 import edu.stanford.smi.protegex.owl.ui.search.finder.*;
+
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.regex.Pattern;
 
 /**
  * @author Nick Drummond, Medical Informatics Group, University of Manchester
@@ -21,7 +21,24 @@ import edu.stanford.smi.protegex.owl.ui.search.finder.*;
 public class FindTestCase extends AbstractJenaTestCase {
 
     boolean complete = false;
-    ThreadedFind findAlg;
+    Find findAlg;
+
+    SearchListener searchResultListener = new SearchAdapter() {
+        public void resultsUpdatedEvent(int numResults, Find source) {
+        }
+
+        public void searchCompleteEvent(int numResults, Find source) {
+            complete = true;
+        }
+
+        public void searchCancelledEvent(Find source) {
+            fail();
+            complete = true;
+        }
+
+        public void searchStartedEvent(Find source) {
+        }
+    };
 
     public void testThreadedSpeed() {
         loadPizza();
@@ -30,51 +47,37 @@ public class FindTestCase extends AbstractJenaTestCase {
         metaCls.setDirectBrowserSlot(owlModel.getRDFProperty(RDFSNames.Slot.LABEL));
         findAlg = new ThreadedFind(owlModel, Find.CONTAINS);
 
-        findAlg.addResultListener(new SearchAdapter() {
-            public void resultsUpdatedEvent(int numResults, Find source) {
-                System.out.println("updated: " + Thread.currentThread());
-                System.out.println(" count = " + findAlg.getResultCount());
-            }
+        findAlg.addResultListener(searchResultListener);
 
-            public void searchCompleteEvent(int numResults, Find source) {
-                System.out.println("complete: " + Thread.currentThread());
-                complete = true;
-            }
-
-            public void searchCancelledEvent(Find source) {
-                System.out.println("cancelled: " + Thread.currentThread());
-                complete = true;
-            }
-
-            public void searchStartedEvent(Find source) {
-                System.out.println("started: " + Thread.currentThread());
-            }
-        });
-
-        System.out.println("Starting timer");
         long startTime = System.currentTimeMillis();
 
-        for (int i = 0; i < 1; i++) {
+        for (int i = 0; i < 100; i++) {
+            complete = false;
             findAlg.startSearch("p");
             while (!complete) {
                 Thread.yield();
             }
-            System.out.print("WOW");
         }
 
         long timeTaken = System.currentTimeMillis() - startTime;
-        System.out.println("time = " + timeTaken);
+        System.out.println("100 searches took " + timeTaken + "ms");
     }
 
     public void testFindDoesNotPickUpLanguageTags() {
         loadPizza();
         Cls metaCls = owlModel.getOWLNamedClassMetaClassCls();
         metaCls.setDirectBrowserSlot(owlModel.getRDFProperty(RDFSNames.Slot.LABEL));
-        Find findAlg = new DefaultClassFind(owlModel, Find.CONTAINS);
+        findAlg = new DefaultClassFind(owlModel, Find.CONTAINS);
 
+        findAlg.addResultListener(searchResultListener);
+
+        complete = false;
         findAlg.startSearch("p");
-        Map results = findAlg.getResults();
+        while (!complete) {
+            Thread.yield();
+        }
 
+        Map results = findAlg.getResults();
         System.out.println("results = " + results);
         assertTrue(results.size() > 0);
         for (Iterator i = results.values().iterator(); i.hasNext();) {
@@ -92,11 +95,11 @@ public class FindTestCase extends AbstractJenaTestCase {
                 owlModel.load(pizza, null);
             }
             catch (Exception e) {
-              Log.getLogger().log(Level.SEVERE, "Exception caught", e);
+                Log.getLogger().log(Level.SEVERE, "Exception caught", e);
             }
         }
         catch (URISyntaxException e) {
-          Log.getLogger().log(Level.SEVERE, "Exception caught", e);
+            Log.getLogger().log(Level.SEVERE, "Exception caught", e);
         }
     }
 }

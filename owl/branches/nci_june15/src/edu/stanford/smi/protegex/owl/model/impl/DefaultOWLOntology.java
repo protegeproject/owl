@@ -46,14 +46,22 @@ public class DefaultOWLOntology extends DefaultRDFIndividual implements OWLOntol
     }
 
 
+    /**
+     * Imprtant - for usage see <CODE>OWLOntology</CODE>
+     *
+     * @param uri
+     */
     public void addImports(String uri) {
-        try {
-            TripleStore ts = getOWLModel().getTripleStoreModel().getTripleStore(uri);
+
+        TripleStore ts = getOWLModel().getTripleStoreModel().getTripleStore(uri);
+        if (ts != null) {
             OWLOntology ont = (OWLOntology) TripleStoreUtil.getFirstOntology(getOWLModel(), ts);
             addImportsHelper(ont);
         }
-        catch (Exception e) {
-            e.printStackTrace();
+        else {
+            RDFUntypedResource resource = getOWLModel().getRDFUntypedResource(uri, true);
+            addImportsHelper(resource);
+            // @@TODO we should probably ALWAYS create an owl:Ontology (but not sure if this will have negative side-effects)
         }
     }
 

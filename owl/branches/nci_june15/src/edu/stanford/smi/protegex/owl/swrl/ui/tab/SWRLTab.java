@@ -1,6 +1,7 @@
 package edu.stanford.smi.protegex.owl.swrl.ui.tab;
 
 import java.awt.BorderLayout;
+import java.awt.GridLayout;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -57,12 +58,12 @@ public class SWRLTab extends AbstractTabWidget {
     public void initialize() {
         setLabel("SWRL Rules");
         setIcon(SWRLIcons.getImpsIcon());
-        setLayout(new BorderLayout());
+        setLayout(new GridLayout(2, 1));
         if (getKnowledgeBase() instanceof OWLModel) {
             OWLModel owlModel = (OWLModel) getKnowledgeBase();
             if (SWRLProjectPlugin.isSWRLImported(owlModel)) {
-                panel = new SWRLTablePanel(owlModel, null);
-                add(BorderLayout.CENTER, panel);
+                panel = new SWRLTablePanel(owlModel, null, this);
+                add(panel);
             }
             else {
                 setLayout(new FlowLayout());
