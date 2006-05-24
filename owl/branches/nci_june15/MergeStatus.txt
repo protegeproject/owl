@@ -1,4 +1,4 @@
-Initial revision copied from http://smi-protege/repos/protege/owl/trunk
+Initial revision copied from  http://smi-protege/repos/protege/owl/trunk 
 Initial Revision = 1866
 Merged up to revision = 1956  But I will  need another merge...
 Merge to revision = 1963
