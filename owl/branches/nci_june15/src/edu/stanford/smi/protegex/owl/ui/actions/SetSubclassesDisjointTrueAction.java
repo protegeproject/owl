@@ -42,12 +42,11 @@ public class SetSubclassesDisjointTrueAction extends RefactorResourceAction {
                         ((OWLNamedClass) subCls).setSubclassesDisjoint(true);
                     }
                 }
+                owlModel.commitTransaction();
             }
             catch (Exception ex) {
+            	owlModel.rollbackTransaction();            	
                 OWLUI.handleError(owlModel, ex);
-            }
-            finally {
-                owlModel.endTransaction();
             }
         }
     }

@@ -69,9 +69,9 @@ public class CreateSubclassAction extends ResourceAction {
                     ((OWLNamedClass) cls).addInferredSuperclass(s);
                 }
             }
-            owlModel.endTransaction();
+            owlModel.commitTransaction();
 		} catch (Exception e) {
-			owlModel.endTransaction(false);
+			owlModel.rollbackTransaction();
 			OWLUI.handleError(owlModel, e);
 		}
         

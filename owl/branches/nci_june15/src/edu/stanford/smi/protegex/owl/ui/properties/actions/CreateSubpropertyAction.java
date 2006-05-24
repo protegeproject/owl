@@ -72,12 +72,11 @@ public class CreateSubpropertyAction extends ResourceAction {
                     ((OWLProperty) superProperty).isInverseFunctional()) {
                 ((OWLProperty) subproperty).setInverseFunctional(true);
             }
+            owlModel.commitTransaction();
         }
         catch (Exception ex) {
+        	owlModel.rollbackTransaction();
             OWLUI.handleError(owlModel, ex);
-        }
-        finally {
-            owlModel.endTransaction();
         }
         pane.extendSelection(subproperty);
     }

@@ -145,23 +145,28 @@ public class SelectClassPanel extends SelectableContainer{
 
             OWLNamedClass superclass = ((OWLNamedClass)CollectionUtilities.getFirstItem(getSelection()));
             OWLModel owlModel = superclass.getOWLModel();
-            owlModel.beginTransaction("Create subclass of class " + superclass.getBrowserText());
-            String name = owlModel.createNewResourceName(AbstractOWLModel.DEFAULT_CLASS_NAME);
-            RDFSClass superclassType = superclass.getRDFType();
-            if(superclassType == null) {
-                superclassType = superclass.getProtegeType();
-            }
-            RDFSNamedClass cls = owlModel.createRDFSNamedClass(name,
-                                                               Collections.singleton(superclass),
-                                                               superclassType);
+            try {
+                owlModel.beginTransaction("Create subclass of class " + superclass.getBrowserText());
+                String name = owlModel.createNewResourceName(AbstractOWLModel.DEFAULT_CLASS_NAME);
+                RDFSClass superclassType = superclass.getRDFType();
+                if(superclassType == null) {
+                    superclassType = superclass.getProtegeType();
+                }
+                RDFSNamedClass cls = owlModel.createRDFSNamedClass(name,
+                                                                   Collections.singleton(superclass),
+                                                                   superclassType);
 
-            ClassTree tree = (ClassTree)getSelectable();
-            OWLUI.selectResource(cls, tree);
-            int row = tree.getSelectionRows()[0];
-            tree.setEditable(true);
-            tree.startEditingAtPath(tree.getPathForRow(row));
+                ClassTree tree = (ClassTree)getSelectable();
+                OWLUI.selectResource(cls, tree);
+                int row = tree.getSelectionRows()[0];
+                tree.setEditable(true);
+                tree.startEditingAtPath(tree.getPathForRow(row));
 
-            owlModel.endTransaction();
+                owlModel.commitTransaction();				
+			} catch (Exception ex) {
+				owlModel.rollbackTransaction();
+				OWLUI.handleError(owlModel, ex);
+			}
         }
 
         public void onSelectionChange() {
@@ -184,28 +189,33 @@ public class SelectClassPanel extends SelectableContainer{
             OWLNamedClass sibling = ((OWLNamedClass)CollectionUtilities.getFirstItem(getSelection()));
             Collection parents = sibling.getNamedSuperclasses();
             if (!parents.isEmpty()) {
-                OWLModel owlModel = sibling.getOWLModel();
-                owlModel.beginTransaction("Create sibling of class " + sibling.getBrowserText());
-                String name = owlModel.createNewResourceName(AbstractOWLModel.DEFAULT_CLASS_NAME);
-                RDFSClass siblingType = sibling.getRDFType();
-                if(siblingType == null) {
-                    siblingType = sibling.getProtegeType();
-                }
-                RDFSNamedClass cls = owlModel.createRDFSNamedClass(name, parents, siblingType);
-                if (cls instanceof OWLNamedClass) {
-                    for (Iterator it = parents.iterator(); it.hasNext();) {
-                        RDFSNamedClass s = (RDFSNamedClass) it.next();
-                        ((OWLNamedClass) cls).addInferredSuperclass(s);
+                OWLModel owlModel = sibling.getOWLModel();              
+                try {
+                    owlModel.beginTransaction("Create sibling of class " + sibling.getBrowserText());
+                    String name = owlModel.createNewResourceName(AbstractOWLModel.DEFAULT_CLASS_NAME);
+                    RDFSClass siblingType = sibling.getRDFType();
+                    if(siblingType == null) {
+                        siblingType = sibling.getProtegeType();
                     }
-                }
+                    RDFSNamedClass cls = owlModel.createRDFSNamedClass(name, parents, siblingType);
+                    if (cls instanceof OWLNamedClass) {
+                        for (Iterator it = parents.iterator(); it.hasNext();) {
+                            RDFSNamedClass s = (RDFSNamedClass) it.next();
+                            ((OWLNamedClass) cls).addInferredSuperclass(s);
+                        }
+                    }
 
-                ClassTree tree = (ClassTree)getSelectable();
-                OWLUI.selectResource(cls, tree);
-                int row = tree.getSelectionRows()[0];
-                tree.setEditable(true);
-                tree.startEditingAtPath(tree.getPathForRow(row));
-
-                owlModel.endTransaction();
+                    ClassTree tree = (ClassTree)getSelectable();
+                    OWLUI.selectResource(cls, tree);
+                    int row = tree.getSelectionRows()[0];
+                    tree.setEditable(true);
+                    tree.startEditingAtPath(tree.getPathForRow(row));                    
+					owlModel.commitTransaction();
+				} catch (Exception ex) {
+					//TODO: check if exception is not treated somewhere else in code
+					owlModel.rollbackTransaction();
+					OWLUI.handleError(owlModel, ex);
+				}
             }
         }
 

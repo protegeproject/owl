@@ -29,12 +29,11 @@ public class ConvertToDefinedClassAction extends ResourceAction {
             final OWLNamedClass cls = (OWLNamedClass) getResource();
             getOWLModel().beginTransaction("Convert " + cls.getBrowserText() + " to defined class");
             performAction(cls);
+            getOWLModel().commitTransaction();
         }
         catch (Exception ex) {
+        	getOWLModel().rollbackTransaction();
             OWLUI.handleError(getOWLModel(), ex);
-        }
-        finally {
-            getOWLModel().endTransaction();
         }
     }
 

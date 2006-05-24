@@ -108,20 +108,7 @@ public interface OWLModel extends ProtegeKnowledgeBase, OWLTestManager {
      */
     void addResourceListener(ResourceListener listener);
 
-
-    /**
-     * Tells the system that one or more edit actions will follow which should
-     * be handled as a unit for undo.  Editing components should wrap set/add/remove
-     * calls to any resource in a <CODE>beginTransaction() - endTransaction()</CODE>
-     * block.
-     *
-     * @param name the human-readable name of the following transaction
-     * @return true
-     * @see #endTransaction()
-     */
-    boolean beginTransaction(String name);
-
-
+  
     OWLDatatypeProperty createAnnotationOWLDatatypeProperty(String name);
 
 
@@ -491,16 +478,7 @@ public interface OWLModel extends ProtegeKnowledgeBase, OWLTestManager {
     Triple createTriple(RDFResource subject, RDFProperty predicate, Object object);
 
 
-    /**
-     * Ends the recently opened transaction and commits the state.
-     *
-     * @return true
-     * @see #beginTransaction
-     */
-    boolean endTransaction();
-
-
-    boolean endTransaction(boolean doCommit);
+   
 
 
     /**

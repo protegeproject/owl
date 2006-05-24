@@ -7,6 +7,7 @@ import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
 import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
 import edu.stanford.smi.protegex.owl.ui.profiles.OWLProfiles;
 import edu.stanford.smi.protegex.owl.ui.profiles.ProfilesManager;
+import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -36,12 +37,17 @@ public class CreatePropertyAction extends AbstractAction {
 
     public void actionPerformed(ActionEvent e) {
         OWLModel owlModel = type.getOWLModel();
-        owlModel.beginTransaction("Create new " + type.getBrowserText());
-        String name = type.getOWLModel().createNewResourceName(baseName);
-        RDFProperty property = (RDFProperty) type.createInstance(name);
-        callBack.propertyCreated(property);
-        property.getProject().show(property);
-        owlModel.endTransaction();
+        try {
+            owlModel.beginTransaction("Create new " + type.getBrowserText());
+            String name = type.getOWLModel().createNewResourceName(baseName);
+            RDFProperty property = (RDFProperty) type.createInstance(name);
+            callBack.propertyCreated(property);
+            property.getProject().show(property);
+            owlModel.commitTransaction();			
+		} catch (Exception ex) {
+			owlModel.rollbackTransaction();
+			OWLUI.handleError(owlModel, ex);
+		}
     }
 
 

@@ -101,12 +101,11 @@ public class EditableExistentialTreePanel extends ExistentialTreePanel {
                 owlModel.beginTransaction("Add existential relationship " + getExistentialProperty().getBrowserText() +
                         " between " + selCls.getBrowserText() + " and " + cls.getBrowserText());
                 selCls.addSuperclass(owlModel.createOWLSomeValuesFrom(getExistentialProperty(), (OWLNamedClass) cls));
+                owlModel.commitTransaction();
             }
             catch (Exception ex) {
+            	owlModel.rollbackTransaction();
                 OWLUI.handleError(owlModel, ex);
-            }
-            finally {
-                owlModel.endTransaction();
             }
             selectChildNode(cls);
         }

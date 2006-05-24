@@ -87,12 +87,11 @@ public class DisjointClassesTableModel extends AbstractTableModel
                     namedCls.addDisjointClass(getEditedCls()); // Add inverse direction
                 }
             }
+            owlModel.commitTransaction();
         }
         catch (Exception ex) {
+        	owlModel.rollbackTransaction();
             OWLUI.handleError(owlModel, ex);
-        }
-        finally {
-            owlModel.endTransaction();
         }
     }
 
@@ -136,12 +135,11 @@ public class DisjointClassesTableModel extends AbstractTableModel
             }
             cls.removeDisjointClass(disjointClass);
             fireTableRowsDeleted(index, index);
+            owlModel.commitTransaction();
         }
         catch (Exception ex) {
+        	owlModel.rollbackTransaction();
             OWLUI.handleError(owlModel, ex);
-        }
-        finally {
-            owlModel.endTransaction();
         }
     }
 
@@ -366,12 +364,11 @@ public class DisjointClassesTableModel extends AbstractTableModel
             if (oldClass != null) {
                 cls.removeDisjointClass(oldClass);
             }
+            owlModel.commitTransaction();
         }
         catch (Exception ex) {
+        	owlModel.rollbackTransaction();
             OWLUI.handleError(owlModel, ex);
-        }
-        finally {
-            owlModel.endTransaction();
         }
     }
 }

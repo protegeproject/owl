@@ -25,12 +25,11 @@ public class SetDeprecatedTrueAction extends RefactorResourceAction {
         try {
             getOWLModel().beginTransaction("" + getValue(Action.NAME) + " from " + getResource().getBrowserText());
             ((Deprecatable) getResource()).setDeprecated(true);
+            getOWLModel().commitTransaction();
         }
         catch (Exception ex) {
+        	getOWLModel().rollbackTransaction();
             OWLUI.handleError(getOWLModel(), ex);
-        }
-        finally {
-            getOWLModel().endTransaction();
         }
     }
 

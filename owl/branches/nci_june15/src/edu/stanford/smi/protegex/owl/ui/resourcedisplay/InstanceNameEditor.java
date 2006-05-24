@@ -5,6 +5,7 @@ import edu.stanford.smi.protege.event.FrameEvent;
 import edu.stanford.smi.protege.event.FrameListener;
 import edu.stanford.smi.protege.model.Instance;
 import edu.stanford.smi.protege.util.DocumentChangedListener;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
 
 import javax.swing.*;
@@ -100,7 +101,12 @@ public class InstanceNameEditor extends JTextField {
             if (isValidName(newName)) {
                 String oldName = instance.getName();
                 if (!oldName.equals(newName)) {
-                    instance.setName(newName);
+                	try {
+                		instance.setName(newName);
+					} catch (Exception e) {
+						OWLUI.handleError(((OWLModel)instance.getKnowledgeBase()),e);
+					}
+                    
                 }
             }
         }

@@ -376,12 +376,11 @@ public class ConditionsTableModel extends AbstractTableModel
             owlModel.beginTransaction("Delete condition " + getClass(index).getBrowserText() +
                     " from " + getEditedCls().getBrowserText());
             deleteRow(index, false);
+            owlModel.commitTransaction();
         }
         catch (Exception ex) {
+        	owlModel.rollbackTransaction();
             OWLUI.handleError(owlModel, ex);
-        }
-        finally {
-            owlModel.endTransaction();
         }
     }
 
@@ -1097,12 +1096,11 @@ public class ConditionsTableModel extends AbstractTableModel
             else if (newClass instanceof OWLAnonymousClass) {
                 newClass.delete();
             }
+            owlModel.commitTransaction();
         }
         catch (Exception ex) {
+        	owlModel.rollbackTransaction();
             OWLUI.handleError(owlModel, ex);
-        }
-        finally {
-            owlModel.endTransaction();
         }
     }
 

@@ -80,6 +80,7 @@ public class PropertyRestrictionsTreeWidget extends AbstractPropertyWidget {
 
 
     private RDFProperty createProperty(RDFSNamedClass propertyMetaclass, RDFSClass cls) {
+    	RDFProperty property = null;
         try {
             beginTransaction("Create new " + propertyMetaclass.getBrowserText());
             String baseName = propertyMetaclass.getName();
@@ -88,18 +89,17 @@ public class PropertyRestrictionsTreeWidget extends AbstractPropertyWidget {
                 baseName = baseName.substring(index + 1);
             }
             String name = ((AbstractOWLModel) getKnowledgeBase()).createNewResourceName(baseName);
-            RDFProperty property = (RDFProperty) propertyMetaclass.createInstance(name);
+            property = (RDFProperty) propertyMetaclass.createInstance(name);
             property.setDomainDefined(true);
             property.addUnionDomainClass(cls);
-            return property;
+            commitTransaction();            
         }
         catch (Exception ex) {
-            OWLUI.handleError(getOWLModel(), ex);
-            return null;
+        	rollbackTransaction();
+            OWLUI.handleError(getOWLModel(), ex);            
         }
-        finally {
-            endTransaction();
-        }
+        return property;
+        
     }
 
 
@@ -166,12 +166,11 @@ public class PropertyRestrictionsTreeWidget extends AbstractPropertyWidget {
                     if (property instanceof RDFProperty) {
                         ((RDFProperty) property).synchronizeDomainAndRangeOfInverse();
                     }
+                    owlModel.commitTransaction();
                 }
                 catch (Exception ex) {
+                	owlModel.rollbackTransaction();
                     OWLUI.handleError(owlModel, ex);
-                }
-                finally {
-                    owlModel.endTransaction();
                 }
             }
 
