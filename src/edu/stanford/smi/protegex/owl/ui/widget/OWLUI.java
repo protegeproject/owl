@@ -297,32 +297,11 @@ public class OWLUI {
     }
 
 
-    public static void handleError(OWLModel owlModel, Throwable t) {
-        Log.getLogger().log(Level.SEVERE, "Exception caught", t);
+    public static void handleError(OWLModel owlModel, Throwable t) {      
         
-        //TODO: find a nicer way to handle SQL exceptions        
-        SQLException sqlEx = null;
-
-        if (t instanceof SQLException) 
-        	sqlEx = (SQLException) t;
-        else if (t.getCause() instanceof SQLException)
-        	sqlEx = (SQLException) t.getCause();
-        
-        if (t!= null)
-        	//TODO:	check if you can use the sql exception state rather than this
-        	if (t.getMessage()!=null && t.getMessage().contains("Lock")) {
-        		ProtegeUI.getModalDialogFactory().showErrorMessageDialog(owlModel,
-        				"Database table is currently locked by a different user." +
-        				"\nPlease retry the operation later.", "Locked ontology");
-        	} else {
-        		ProtegeUI.getModalDialogFactory().showErrorMessageDialog(owlModel,
-						"A database error has occured: " + sqlEx +
-						"\nPlease see Java console for details, and possibly report" +
-                        "\nthis on our OWL mailing lists." +
-                        "\nhttp://protege.stanford.edu/community/lists.html",
-                        "Database Error");
-        	}
-        else {        
+        if (!handleSQLException(owlModel, t)) {
+        	Log.getLogger().log(Level.SEVERE, "Exception caught", t);
+        	
         	ProtegeUI.getModalDialogFactory().
                 showErrorMessageDialog(owlModel,
                                        "Internal Error: " + t +
@@ -336,6 +315,35 @@ public class OWLUI {
     }
 
 
+    private static boolean handleSQLException(OWLModel owlModel, Throwable t) {
+    	//TODO: find a nicer way to handle SQL exceptions  
+    	Throwable sqlEx = t;
+   	 	boolean foundSqlEx = false;
+    	
+    	while (!foundSqlEx) {
+    		if (sqlEx instanceof SQLException) {
+             	if (sqlEx.getMessage()!=null && sqlEx.getMessage().contains("Lock")) {
+             		ProtegeUI.getModalDialogFactory().showErrorMessageDialog(owlModel,
+             				"Database table is currently locked by a different user." +
+             				"\nPlease retry the operation later.", "Locked ontology");
+             	} else {
+             		ProtegeUI.getModalDialogFactory().showErrorMessageDialog(owlModel,
+     						"A database error has occured: " + sqlEx +
+     						"\nPlease see Java console for details, and possibly report" +
+                             "\nthis on our OWL mailing lists." +
+                             "\nhttp://protege.stanford.edu/community/lists.html",
+                             "Database Error");
+             	}
+    			
+             	foundSqlEx = true;
+             	break;
+    		}
+    		sqlEx = sqlEx.getCause();
+    	}
+
+    	return foundSqlEx;	
+    }
+    
     public static boolean isConfirmationNeeded(OWLModel owlModel) {
         return owlModel instanceof OWLDatabaseModel || owlModel.getProject().isMultiUserClient();
     }
