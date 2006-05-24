@@ -310,7 +310,7 @@ public class OWLUI {
         
         if (t!= null)
         	//TODO:	check if you can use the sql exception state rather than this
-        	if (t.getMessage().contains("Lock")) {
+        	if (t.getMessage()!=null && t.getMessage().contains("Lock")) {
         		ProtegeUI.getModalDialogFactory().showErrorMessageDialog(owlModel,
         				"Database table is currently locked by a different user." +
         				"\nPlease retry the operation later.", "Locked ontology");
