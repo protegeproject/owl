@@ -113,7 +113,7 @@ public class NewRestrictionTreeNode extends RestrictionTreeNode {
             if (definition != null) {
                 if (definition instanceof OWLIntersectionClass) {
                     ((OWLIntersectionClass) definition).addOperand(restriction);
-                    owlModel.endTransaction();
+                    owlModel.commitTransaction();
                     tree.refill(); // Needed because no event is issued
                 }
                 else {
@@ -121,18 +121,18 @@ public class NewRestrictionTreeNode extends RestrictionTreeNode {
                     intersectionCls.addOperand(definition.createClone());
                     intersectionCls.addOperand(restriction);
                     cls.setDefinition(intersectionCls);
-                    owlModel.endTransaction();
+                    owlModel.commitTransaction();
                 }
             }
             else {
                 cls.addSuperclass(restriction);
-                owlModel.endTransaction();
+                owlModel.commitTransaction();
             }
             tree.setSelectedRestriction(restriction);
         }
         catch (Exception ex) {
-            OWLUI.handleError(owlModel, ex);
-            owlModel.endTransaction();
+        	owlModel.rollbackTransaction();
+            OWLUI.handleError(owlModel, ex);            
         }
     }
 }

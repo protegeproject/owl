@@ -92,12 +92,11 @@ public class AddCoveringAxiomAction extends ResourceAction {
                     unionClass.addOperand(c);
                 }
                 namedClass.addEquivalentClass(unionClass);
+                owlModel.commitTransaction();
             }
             catch (Exception ex) {
+            	owlModel.rollbackTransaction();
                 OWLUI.handleError(owlModel, ex);
-            }
-            finally {
-                owlModel.endTransaction();
             }
         }
         else {

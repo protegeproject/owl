@@ -28,12 +28,11 @@ public class CreateCloneAction extends ResourceAction {
         try {
             owlModel.beginTransaction("Create clone of " + namedCls.getBrowserText());
             c = createClone(namedCls);
+            owlModel.commitTransaction();
         }
         catch (Exception ex) {
+        	owlModel.rollbackTransaction();        
             OWLUI.handleError(owlModel, ex);
-        }
-        finally {
-            owlModel.endTransaction();
         }
         ((ClassTreePanel) getComponent()).setSelectedClass(c);
     }

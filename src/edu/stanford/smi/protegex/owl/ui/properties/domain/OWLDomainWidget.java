@@ -118,12 +118,11 @@ public class OWLDomainWidget extends AbstractPropertyWidget {
                 }
             }
             property.synchronizeDomainAndRangeOfInverse();
+            commitTransaction();
         }
         catch (Exception ex) {
+        	rollbackTransaction();
             OWLUI.handleError(getOWLModel(), ex);
-        }
-        finally {
-            endTransaction();
         }
     }
 

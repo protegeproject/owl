@@ -98,12 +98,11 @@ public class InferredSubsumptionTreePanel extends SubsumptionTreePanel {
         try {
             owlModel.beginTransaction("Assert change for " + cls.getBrowserText());
             ccp.getTableModel().assertChange(cls);
+            owlModel.commitTransaction();           
         }
         catch (Exception ex) {
+        	owlModel.rollbackTransaction();
             OWLUI.handleError(owlModel, ex);
-        }
-        finally {
-            owlModel.endTransaction();
         }
     }
 

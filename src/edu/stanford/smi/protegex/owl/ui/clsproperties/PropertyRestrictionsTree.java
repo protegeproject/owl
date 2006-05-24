@@ -93,12 +93,11 @@ public class PropertyRestrictionsTree extends SelectableTree implements Disposab
             try {
                 owlModel.beginTransaction("Delete restriction " + sel.getBrowserText());
                 sel.delete();
+                owlModel.commitTransaction();
             }
             catch (Exception ex) {
+            	owlModel.rollbackTransaction();
                 OWLUI.handleError(owlModel, ex);
-            }
-            finally {
-                owlModel.endTransaction();
             }
         }
 
@@ -448,12 +447,11 @@ public class PropertyRestrictionsTree extends SelectableTree implements Disposab
                     addRestrictionToDefinition(newRestriction);
                 }
             }
+            owlModel.commitTransaction();           
         }
         catch (Exception ex) {
+        	owlModel.rollbackTransaction();
             OWLUI.handleError(owlModel, ex);
-        }
-        finally {
-            owlModel.endTransaction();
         }
     }
 

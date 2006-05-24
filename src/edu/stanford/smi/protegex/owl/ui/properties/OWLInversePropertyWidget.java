@@ -28,11 +28,16 @@ public class OWLInversePropertyWidget extends AbstractPropertyWidget {
             OWLIcons.getAddIcon(OWLIcons.OWL_OBJECT_PROPERTY), false) {
 
         public void resourceSelected(RDFResource resource) {
-            beginTransaction("Set inverse property");
-            final OWLProperty inverseProperty = (OWLProperty) resource;
-            adjustDomainAndRange((OWLProperty) getEditedResource(), inverseProperty);
-            setInverseProperty(inverseProperty);
-            endTransaction();
+        	try {
+                beginTransaction("Set inverse property");
+                final OWLProperty inverseProperty = (OWLProperty) resource;
+                adjustDomainAndRange((OWLProperty) getEditedResource(), inverseProperty);
+                setInverseProperty(inverseProperty);
+                commitTransaction();				
+			} catch (Exception e) {
+				rollbackTransaction();
+				// TODO: handle exception
+			}
         }
 
 
@@ -121,12 +126,11 @@ public class OWLInversePropertyWidget extends AbstractPropertyWidget {
             if (forwardProperty.isAnnotationProperty() && !inverseProperty.isAnnotationProperty()) {
                 inverseProperty.addProtegeType(forwardProperty.getOWLModel().getOWLAnnotationPropertyClass());
             }
+            commitTransaction();
         }
         catch (Exception ex) {
+        	rollbackTransaction();
             OWLUI.handleError(getOWLModel(), ex);
-        }
-        finally {
-            endTransaction();
         }
         return inverseProperty;
     }

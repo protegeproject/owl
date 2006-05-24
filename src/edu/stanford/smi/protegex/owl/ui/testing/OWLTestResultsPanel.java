@@ -229,12 +229,11 @@ public class OWLTestResultsPanel extends ResultsPanel
             if (repaired) {
                 tableModel.removeRow(row);
             }
+            owlModel.commitTransaction();
         }
         catch (Exception ex) {
+        	owlModel.rollbackTransaction();
             OWLUI.handleError(owlModel, ex);
-        }
-        finally {
-            owlModel.endTransaction();
         }
     }
 
@@ -251,12 +250,11 @@ public class OWLTestResultsPanel extends ResultsPanel
                     if (repaired) {
                         tableModel.removeRow(i);
                     }
+                    owlModel.commitTransaction();
                 }
                 catch (Exception ex) {
+                	owlModel.rollbackTransaction();
                     OWLUI.handleError(owlModel, ex);
-                }
-                finally {
-                    owlModel.endTransaction();
                 }
             }
         }

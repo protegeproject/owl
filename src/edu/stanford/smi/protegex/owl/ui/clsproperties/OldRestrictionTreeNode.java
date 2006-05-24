@@ -94,12 +94,11 @@ public class OldRestrictionTreeNode extends RestrictionTreeNode {
                     owlModel.beginTransaction("Change restriction filler of " +
                             getRestriction().getBrowserText() + " to " + expr);
                     getRestriction().setFillerText(expr);
+                    owlModel.commitTransaction();
                 }
                 catch (Exception ex) {
+                	owlModel.rollbackTransaction();
                     OWLUI.handleError(owlModel, ex);
-                }
-                finally {
-                    owlModel.endTransaction();
                 }
                 updateConditionsWidget();
             }

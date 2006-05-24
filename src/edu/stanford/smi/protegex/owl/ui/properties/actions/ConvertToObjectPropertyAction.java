@@ -32,12 +32,11 @@ public class ConvertToObjectPropertyAction extends ResourceAction {
             getOWLModel().beginTransaction("Convert " + property.getBrowserText() + " to owl:DatatypeProperty");
             property.setRange(null);
             property.setProtegeType(type);
+            getOWLModel().commitTransaction();
         }
         catch (Exception ex) {
+        	getOWLModel().rollbackTransaction();
             OWLUI.handleError(getOWLModel(), ex);
-        }
-        finally {
-            getOWLModel().endTransaction();
         }
     }
 

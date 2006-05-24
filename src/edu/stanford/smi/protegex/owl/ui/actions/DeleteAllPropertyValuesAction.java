@@ -48,12 +48,11 @@ public class DeleteAllPropertyValuesAction extends AbstractAction {
                     resource.removePropertyValue(property, val);
                 }
             }
+            owlModel.commitTransaction();
         }
         catch (Exception ex) {
+        	owlModel.rollbackTransaction();
             OWLUI.handleError(owlModel, ex);
-        }
-        finally {
-            owlModel.endTransaction();
         }
     }
 }

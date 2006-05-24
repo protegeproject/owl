@@ -128,6 +128,7 @@ public abstract class OWLTableTransferHandler extends TransferHandler {
         }
         int result = index;
         try {
+        	//TODO: Urgent! Check if transactions always get closed!!
             owlModel.beginTransaction("Drag and drop in classes/conditions");
             String[] values = clsesText.split("\n");
             for (int i = 0; i < values.length; i++) {

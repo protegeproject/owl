@@ -78,12 +78,20 @@ public class ChangedClassesTableModel extends AbstractTableModel implements Disp
 
 
     private void assertChanges(Collection items) {
-        owlModel.beginTransaction("Assert classification changes");
-        for (Iterator it = items.iterator(); it.hasNext();) {
-            ChangedClassItem item = (ChangedClassItem) it.next();
-            assertChange(item);
-        }
-        owlModel.endTransaction();
+    	try {
+            owlModel.beginTransaction("Assert classification changes");
+            for (Iterator it = items.iterator(); it.hasNext();) {
+                ChangedClassItem item = (ChangedClassItem) it.next();
+                assertChange(item);
+            }
+            owlModel.commitTransaction();			
+		} catch (Exception e) {
+			owlModel.rollbackTransaction();
+			// TODO: check whether you need to rethrow exception
+			RuntimeException re = new RuntimeException(e.getMessage());
+			re.initCause(e);
+			throw(re);
+		}
     }
 
 

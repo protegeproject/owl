@@ -103,12 +103,11 @@ public class AddClassToDomainAction extends ResourceSelectionAction {
                     property.addUnionDomainClass(cls);
                 }
                 property.synchronizeDomainAndRangeOfInverse();
+                owlModel.commitTransaction();
             }
             catch (Exception ex) {
+            	owlModel.rollbackTransaction();
                 OWLUI.handleError(owlModel, ex);
-            }
-            finally {
-                owlModel.endTransaction();
             }
         }
         else {

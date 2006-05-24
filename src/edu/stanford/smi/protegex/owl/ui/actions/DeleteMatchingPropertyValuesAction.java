@@ -51,12 +51,11 @@ public class DeleteMatchingPropertyValuesAction extends AbstractAction {
                     resource.removePropertyValue(property, value);
                 }
             }
+            owlModel.commitTransaction();
         }
         catch (Exception ex) {
+        	owlModel.rollbackTransaction();
             OWLUI.handleError(owlModel, ex);
-        }
-        finally {
-            owlModel.endTransaction();
         }
     }
 }

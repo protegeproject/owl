@@ -34,12 +34,11 @@ public class PrefixesPanel extends JPanel implements Disposable {
             try {
                 owlModel.beginTransaction("Add new namespace prefix");
                 addPrefix();
+                owlModel.commitTransaction();
             }
             catch (Exception ex) {
+            	owlModel.rollbackTransaction();
                 OWLUI.handleError(owlModel, ex);
-            }
-            finally {
-                owlModel.endTransaction();
             }
         }
     };
@@ -224,15 +223,18 @@ public class PrefixesPanel extends JPanel implements Disposable {
             String prefix = tableModel.getPrefix(row);
             NamespaceManager nsm = tableModel.getNamespaceManager();
             String namespace = nsm.getNamespaceForPrefix(prefix);
-            owlModel.beginTransaction("Make " + namespace + " the default namespace");
-            nsm.setDefaultNamespace(namespace);
-            nsm.removePrefix(prefix);
+            try {
+                owlModel.beginTransaction("Make " + namespace + " the default namespace");
+                nsm.setDefaultNamespace(namespace);
+                nsm.removePrefix(prefix);
+                owlModel.commitTransaction();
+			} catch (Exception e) {
+				owlModel.rollbackTransaction();
+				OWLUI.handleError(owlModel, e);
+			}
         }
         catch (Exception ex) {
             OWLUI.handleError(owlModel, ex);
-        }
-        finally {
-            owlModel.endTransaction();
         }
     }
 
@@ -255,12 +257,11 @@ public class PrefixesPanel extends JPanel implements Disposable {
             try {
                 owlModel.beginTransaction("Remove namespace prefix " + prefix);
                 nsm.removePrefix(prefix);
+                owlModel.commitTransaction();
             }
             catch (Exception ex) {
+            	owlModel.rollbackTransaction();
                 OWLUI.handleError(owlModel, ex);
-            }
-            finally {
-                owlModel.endTransaction();
             }
         }
     }

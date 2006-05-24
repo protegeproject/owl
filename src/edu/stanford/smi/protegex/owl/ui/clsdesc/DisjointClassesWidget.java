@@ -59,12 +59,11 @@ public class DisjointClassesWidget extends ClassDescriptionWidget {
                         }
                     }
                 }
+                commitTransaction();
             }
             catch (Exception ex) {
+            	rollbackTransaction();
                 OWLUI.handleError(getOWLModel(), ex);
-            }
-            finally {
-                endTransaction();
             }
         }
     }
@@ -189,12 +188,11 @@ public class DisjointClassesWidget extends ClassDescriptionWidget {
                         }
                     }
                 }
+                commitTransaction();
             }
             catch (Exception ex) {
+            	rollbackTransaction();
                 OWLUI.handleError(getOWLModel(), ex);
-            }
-            finally {
-                endTransaction();
             }
         }
     }

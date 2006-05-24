@@ -93,12 +93,11 @@ public class AssertedConditionsWidget extends AbstractConditionsWidget {
                 table.addRestriction(newRestriction);
                 table.ensureEditedClassSelectedInExplorer(owlClassesTab);
             }
+            commitTransaction();
         }
         catch (Exception ex) {
+        	rollbackTransaction();
             OWLUI.handleError(getOWLModel(), ex);
-        }
-        finally {
-            endTransaction();
         }
     }
 
@@ -118,12 +117,11 @@ public class AssertedConditionsWidget extends AbstractConditionsWidget {
                 table.addRestriction(newRestriction);
                 table.ensureEditedClassSelectedInExplorer(owlClassesTab);
             }
+            commitTransaction();
         }
         catch (Exception ex) {
+        	rollbackTransaction();
             OWLUI.handleError(getOWLModel(), ex);
-        }
-        finally {
-            endTransaction();
         }
     }
 

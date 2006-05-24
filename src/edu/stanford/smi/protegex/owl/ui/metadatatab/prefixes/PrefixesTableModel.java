@@ -199,12 +199,11 @@ public class PrefixesTableModel extends AbstractTableModel implements Disposable
         try {
             owlModel.beginTransaction("Change namespace of " + prefix + " to " + value);
             owlModel.getNamespaceManager().setPrefix(value, prefix);
+            owlModel.commitTransaction();
         }
         catch (Exception ex) {
+        	owlModel.rollbackTransaction();
             OWLUI.handleError(owlModel, ex);
-        }
-        finally {
-            owlModel.endTransaction();
         }
     }
 
@@ -214,12 +213,11 @@ public class PrefixesTableModel extends AbstractTableModel implements Disposable
         try {
             owlModel.beginTransaction("Change prefix of " + namespace + " to " + value);
             owlModel.getNamespaceManager().setPrefix(namespace, value);
+            owlModel.commitTransaction();           
         }
         catch (Exception ex) {
+        	owlModel.rollbackTransaction();
             OWLUI.handleError(owlModel, ex);
-        }
-        finally {
-            owlModel.endTransaction();
         }
     }
 }
