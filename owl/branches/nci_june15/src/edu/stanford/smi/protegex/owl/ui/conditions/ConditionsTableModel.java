@@ -87,9 +87,9 @@ public class ConditionsTableModel extends AbstractTableModel
     /**
      * One Item object for each row
      */
-    private List items = new ArrayList();
+    private List<ConditionsTableItem> items = new ArrayList<ConditionsTableItem>();
 
-    private Collection listenedToClses = new ArrayList();
+    private Collection<RDFSClass> listenedToClses = new ArrayList<RDFSClass>();
 
     private OWLModel owlModel;
 
@@ -526,7 +526,7 @@ public class ConditionsTableModel extends AbstractTableModel
             if (superCls instanceof OWLNamedClass && !superCls.equals(hostClass)) {
                 OWLNamedClass namedSuperclass = (OWLNamedClass) superCls;
                 fillInheritedItems(namedSuperclass, coveredClses);
-                listenedToClses.add(superCls);
+                listenedToClses.add((RDFSClass) superCls);
                 namedSuperclass.addClassListener(classListener);
                 ((Cls) namedSuperclass).addFrameListener(frameListener);
             }
