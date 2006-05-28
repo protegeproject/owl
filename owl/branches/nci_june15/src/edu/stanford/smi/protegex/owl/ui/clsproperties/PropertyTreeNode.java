@@ -55,9 +55,25 @@ public class PropertyTreeNode extends DefaultMutableTreeNode
         property.addPropertyValueListener(valueListener);
     }
 
-
+    public PropertyTreeNode(PropertyRestrictionsTree tree, 
+                            OWLNamedClass cls, 
+                            RDFProperty property, 
+                            boolean inherited,
+                            List<ExpressionInfo<OWLRestriction>> restrictions) {
+      setUserObject(property);
+      this.inherited = inherited;
+      this.cls = cls;
+      this.tree = tree;
+      addChildNodes(restrictions);
+      property.addPropertyValueListener(valueListener);
+    }
+    
     private void addChildNodes() {
         List<ExpressionInfo<OWLRestriction>> restrictions = getRestrictions();
+        addChildNodes(restrictions);
+    }
+    
+    private void addChildNodes(List<ExpressionInfo<OWLRestriction>> restrictions) {
         for (ExpressionInfo<OWLRestriction> ri : restrictions) {
             OWLRestriction restriction = ri.getExpression();
             RDFSClass inheritedFromClass = ri.getDirectNamedClass();
