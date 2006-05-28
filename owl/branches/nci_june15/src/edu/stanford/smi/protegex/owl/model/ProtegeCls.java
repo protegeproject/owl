@@ -108,7 +108,7 @@ public interface ProtegeCls extends ProtegeInstance, Cls {
      * @see RDFSClass#getSuperclasses (false)
      * @deprecated
      */
-    Collection getDirectSuperclasses();
+    Collection<Cls> getDirectSuperclasses();
 
 
     /**
