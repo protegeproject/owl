@@ -21,6 +21,8 @@ import edu.stanford.smi.protegex.owl.ui.restrictions.RestrictionEditorPanel;
 import edu.stanford.smi.protegex.owl.ui.restrictions.RestrictionKindRenderer;
 import edu.stanford.smi.protegex.owl.ui.results.ResultsPanelManager;
 import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
+import edu.stanford.smi.protegex.owl.util.ExpressionInfo;
+import edu.stanford.smi.protegex.owl.util.ExpressionInfoUtils;
 
 import javax.swing.*;
 import javax.swing.event.CellEditorListener;
@@ -240,48 +242,57 @@ public class PropertyRestrictionsTree extends SelectableTree implements Disposab
     }
 
     private void addChildNodes() {
-
-        if (cls != null && !cls.equals(cls.getOWLModel().getOWLThingClass())) {
-
-            Collection domainProperties = cls.getUnionDomainProperties(true);
-
-            // Breadth-First Search into tree
-            List list = new ArrayList();
-            list.add(cls);
-            Set reachedClses = new HashSet();
-            boolean inherited = false;
-            Set doneProperties = new HashSet();
-            while (!list.isEmpty()) {
-
-                RDFSNamedClass c = (RDFSNamedClass) list.get(0);
-                reachedClses.add(c);
-                list.remove(0);
-
-                addNodesForDirectUnionDomainProperty(c, domainProperties, doneProperties, inherited);
-
-                List superClses = getNextSuperclasses(c, reachedClses);
-                list.addAll(superClses);
-                inherited = true;
-            }
-
-            Set associatedProperties = cls.getAssociatedProperties();
-            associatedProperties.removeAll(doneProperties);
-            for (Iterator it = associatedProperties.iterator(); it.hasNext();) {
-                RDFProperty rdfProperty = (RDFProperty) it.next();
-                if (rdfProperty.isVisible()) {
-                    PropertyTreeNode node = new PropertyTreeNode(this, cls, rdfProperty, inherited);
-                    rootNode.add(node);
-                    addNodesForSubproperties(rdfProperty, doneProperties, domainProperties);
-                }
-            }
-
-            sortPropertyTreeNodes();
-
-            updateCreateRestrictionActionAllowed();
+      List<ExpressionInfo<OWLRestriction>> restrictions = new ArrayList<ExpressionInfo<OWLRestriction>>();
+      if (cls != null && !cls.equals(cls.getOWLModel().getOWLThingClass())) {
+        Collection directSlots = cls.getOwnSlots();
+        for (RDFSNamedClass superClass : getNamedSuperclassesClosure(cls)) {
+          if (superClass instanceof OWLNamedClass) {
+            restrictions.addAll(ExpressionInfoUtils.getDirectContainingRestrictions((OWLNamedClass) superClass));
+          }
         }
-        expandPath(new TreePath(rootNode));
+        Map<RDFProperty, List<ExpressionInfo<OWLRestriction>>> propertyMap = 
+          new HashMap<RDFProperty, List<ExpressionInfo<OWLRestriction>>>();
+        for (ExpressionInfo<OWLRestriction> restrictionInfo : restrictions) {
+          OWLRestriction restriction = restrictionInfo.getExpression();
+          RDFProperty property = restriction.getOnProperty();
+          List<ExpressionInfo<OWLRestriction>> propertyRestrictions = propertyMap.get(property);
+          if (propertyRestrictions == null) {
+            propertyRestrictions = new ArrayList<ExpressionInfo<OWLRestriction>>();
+            propertyMap.put(property, propertyRestrictions);
+          }
+          propertyRestrictions.add(restrictionInfo);
+        }
+        for (RDFProperty property : propertyMap.keySet()) {
+          PropertyTreeNode node = new PropertyTreeNode(this, 
+                                                       cls, 
+                                                       property, 
+                                                       !directSlots.contains(property),
+                                                       propertyMap.get(property));
+          rootNode.add(node);
+        }
+      }
+      expandPath(new TreePath(rootNode));
+    }
+    
+    private Set<RDFSNamedClass> getNamedSuperclassesClosure(RDFSNamedClass c) {
+      Set<RDFSNamedClass> results = new HashSet<RDFSNamedClass>();
+      addNamedSuperclassesClosure(c, results);
+      return results;
     }
 
+    private void addNamedSuperclassesClosure(RDFSNamedClass c, Set<RDFSNamedClass> results) {
+      OWLNamedClass owlThing = c.getOWLModel().getOWLThingClass();
+      if (c.equals(owlThing)) {
+        return;
+      } else {
+        results.add(c);
+      }
+      for (Cls cls : c.getDirectSuperclasses()) {
+        if (cls instanceof RDFSNamedClass && !cls.equals(owlThing) && !results.contains(cls)) {
+          addNamedSuperclassesClosure((RDFSNamedClass) cls, results);
+        }
+      }
+    }
 
     void addCreateRestrictionActions(JPopupMenu menu) {
         if (!isMixedClass()) {
