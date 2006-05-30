@@ -320,7 +320,7 @@ public class OWLUI {
     	Throwable sqlEx = t;
    	 	boolean foundSqlEx = false;
     	
-    	while (!foundSqlEx) {
+    	while (!foundSqlEx && sqlEx != null) {
     		if (sqlEx instanceof SQLException) {
              	if (sqlEx.getMessage()!=null && sqlEx.getMessage().contains("Lock")) {
              		ProtegeUI.getModalDialogFactory().showErrorMessageDialog(owlModel,
