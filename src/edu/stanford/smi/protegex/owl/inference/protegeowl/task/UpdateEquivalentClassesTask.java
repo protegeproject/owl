@@ -1,5 +1,6 @@
 package edu.stanford.smi.protegex.owl.inference.protegeowl.task;
 
+import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.inference.dig.exception.DIGReasonerException;
 import edu.stanford.smi.protegex.owl.inference.dig.translator.DIGQueryResponse;
 import edu.stanford.smi.protegex.owl.inference.protegeowl.ProtegeOWLReasoner;
@@ -102,43 +103,57 @@ public class UpdateEquivalentClassesTask extends AbstractReasonerTask {
 
         kb.setGenerateEventsEnabled(false);
 
-        kb.beginTransaction("Compute and update equivalent classes");
-
-        Iterator responseIt = getTranslator().getDIGQueryResponseIterator(kb, responseDoc);
-
-        while (responseIt.hasNext()) {
-            doAbortCheck();
-
-            final DIGQueryResponse response = (DIGQueryResponse) responseIt.next();
-            final String curQueryID = response.getID();
-            final OWLNamedClass curNamedCls = kb.getOWLNamedClass(curQueryID);
-
-            if (curNamedCls != null) {
-                if (curNamedCls.isConsistent()) {
-                    Iterator clsesIt;
-
-                    clsesIt = response.getConcepts().iterator();
-
-                    while (clsesIt.hasNext()) {
-                        final OWLNamedClass curSuperCls = (OWLNamedClass) clsesIt.next();
-
-                        if (curSuperCls.equals(curNamedCls) == false) {
-                            if (curNamedCls.getInferredSuperclasses().contains(curSuperCls) == false) {
-                                curNamedCls.addInferredSuperclass(curSuperCls);
-                            }
-
-                            if (curSuperCls.getInferredSuperclasses().contains(curNamedCls) == false) {
-                                curSuperCls.addInferredSuperclass(curNamedCls);
-                            }
-                        }
-                    }
-                }
-            }
-
-            setProgress(getProgress() + 1);
+        try {
+	        kb.beginTransaction("Compute and update equivalent classes");
+	
+	        Iterator responseIt = getTranslator().getDIGQueryResponseIterator(kb, responseDoc);
+	
+	        while (responseIt.hasNext()) {
+	            doAbortCheck();
+	
+	            final DIGQueryResponse response = (DIGQueryResponse) responseIt.next();
+	            final String curQueryID = response.getID();
+	            final OWLNamedClass curNamedCls = kb.getOWLNamedClass(curQueryID);
+	
+	            if (curNamedCls != null) {
+	                if (curNamedCls.isConsistent()) {
+	                    Iterator clsesIt;
+	
+	                    clsesIt = response.getConcepts().iterator();
+	
+	                    while (clsesIt.hasNext()) {
+	                        final OWLNamedClass curSuperCls = (OWLNamedClass) clsesIt.next();
+	
+	                        if (curSuperCls.equals(curNamedCls) == false) {
+	                            if (curNamedCls.getInferredSuperclasses().contains(curSuperCls) == false) {
+	                                curNamedCls.addInferredSuperclass(curSuperCls);
+	                            }
+	
+	                            if (curSuperCls.getInferredSuperclasses().contains(curNamedCls) == false) {
+	                                curSuperCls.addInferredSuperclass(curNamedCls);
+	                            }
+	                        }
+	                    }
+	                }
+	            }
+	
+	            setProgress(getProgress() + 1);
+	        }
+	
+	        kb.commitTransaction();
         }
-
-        kb.endTransaction();
+        catch (DIGReasonerException e) {
+        	kb.rollbackTransaction();
+        	throw e;
+        }
+        catch (Exception e) {
+        	kb.rollbackTransaction();
+        	Log.getLogger().warning("Exception in transaction. Rollback. Exception: " + e.getMessage());
+        	RuntimeException re = new RuntimeException();
+        	re.initCause(e);
+        	throw re;
+		}
+        
         kb.setGenerateEventsEnabled(true);
 
         td.markEnd();

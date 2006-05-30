@@ -1,5 +1,6 @@
 package edu.stanford.smi.protegex.owl.inference.protegeowl.task;
 
+import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.inference.dig.exception.DIGReasonerException;
 import edu.stanford.smi.protegex.owl.inference.protegeowl.ProtegeOWLReasoner;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
@@ -37,9 +38,18 @@ public class ResetInferredHierarchyTask extends AbstractReasonerTask {
 
         OWLModel kb = protegeOWLReasoner.getKnowledgeBase();
         kb.setGenerateEventsEnabled(false);
-        kb.beginTransaction("Reset inferred hierarchy");
-        OWLUtil.resetComputedSuperclasses(kb);
-        kb.endTransaction();
+       
+        try {
+        	kb.beginTransaction("Reset inferred hierarchy");
+        	OWLUtil.resetComputedSuperclasses(kb);        	
+        	kb.commitTransaction();
+        } catch (Exception e) {
+        	kb.rollbackTransaction();
+        	Log.getLogger().warning("Exception in transaction. Rollback. Exception: " + e.getMessage());
+        	RuntimeException re = new RuntimeException();
+        	re.initCause(e);
+        	throw re;
+        }
         kb.setGenerateEventsEnabled(true);
 
         setProgressIndeterminate(false);

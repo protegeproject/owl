@@ -1,5 +1,6 @@
 package edu.stanford.smi.protegex.owl.inference.protegeowl.task;
 
+import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.inference.dig.exception.DIGReasonerException;
 import edu.stanford.smi.protegex.owl.inference.dig.translator.DIGQueryResponse;
 import edu.stanford.smi.protegex.owl.inference.protegeowl.ProtegeOWLReasoner;
@@ -102,51 +103,64 @@ public class UpdateInferredHierarchyTask extends AbstractReasonerTask {
         td.markStart();
 
         kb.setGenerateEventsEnabled(false);
-        kb.beginTransaction("Compute and update inferred class hierarchy");
-
-        for (Iterator it = getTranslator().getDIGQueryResponseIterator(kb, responseDoc); it.hasNext();) {
-
-            doAbortCheck();
-
-            final DIGQueryResponse response = (DIGQueryResponse) it.next();
-
-            final String curQueryID = response.getID();
-
-            final OWLNamedClass curNamedCls = kb.getOWLNamedClass(curQueryID);
-
-            if (curNamedCls != null) {
-                if (curNamedCls.isConsistent()) {
-
-                    final Collection infSuperClses = response.getConcepts();
-
-                    for (Iterator clsesIt = infSuperClses.iterator(); clsesIt.hasNext();) {
-                        final RDFSClass curSuperClass = (RDFSClass) clsesIt.next();
-                        // We don't want to assign invisible super classes!
-                        if (curSuperClass.isVisible() == true) {
-                            curNamedCls.addInferredSuperclass(curSuperClass);
-                        }
-                    }
-
-                    final Collection namedDirSuperCles = curNamedCls.getNamedSuperclasses();
-
-                    if (namedDirSuperCles.containsAll(infSuperClses) == false ||
-                            infSuperClses.containsAll(namedDirSuperCles) == false) {
-                        curNamedCls.setClassificationStatus(OWLNames.CLASSIFICATION_STATUS_CONSISTENT_AND_CHANGED);
-                    }
-                    else {
-                        curNamedCls.setClassificationStatus(OWLNames.CLASSIFICATION_STATUS_CONSISTENT_AND_UNCHANGED);
-                    }
-                }
-                else {
-                    for (Iterator namedDirSuperClsIt = curNamedCls.getNamedSuperclasses().iterator(); namedDirSuperClsIt.hasNext();) {
-                        curNamedCls.addInferredSuperclass((RDFSClass) namedDirSuperClsIt.next());
-                    }
-                }
-            }
-
-            setProgress(getProgress() + 1);
+        try {
+	        kb.beginTransaction("Compute and update inferred class hierarchy");
+	
+	        for (Iterator it = getTranslator().getDIGQueryResponseIterator(kb, responseDoc); it.hasNext();) {
+	
+	            doAbortCheck();
+	
+	            final DIGQueryResponse response = (DIGQueryResponse) it.next();
+	
+	            final String curQueryID = response.getID();
+	
+	            final OWLNamedClass curNamedCls = kb.getOWLNamedClass(curQueryID);
+	
+	            if (curNamedCls != null) {
+	                if (curNamedCls.isConsistent()) {
+	
+	                    final Collection infSuperClses = response.getConcepts();
+	
+	                    for (Iterator clsesIt = infSuperClses.iterator(); clsesIt.hasNext();) {
+	                        final RDFSClass curSuperClass = (RDFSClass) clsesIt.next();
+	                        // We don't want to assign invisible super classes!
+	                        if (curSuperClass.isVisible() == true) {
+	                            curNamedCls.addInferredSuperclass(curSuperClass);
+	                        }
+	                    }
+	
+	                    final Collection namedDirSuperCles = curNamedCls.getNamedSuperclasses();
+	
+	                    if (namedDirSuperCles.containsAll(infSuperClses) == false ||
+	                            infSuperClses.containsAll(namedDirSuperCles) == false) {
+	                        curNamedCls.setClassificationStatus(OWLNames.CLASSIFICATION_STATUS_CONSISTENT_AND_CHANGED);
+	                    }
+	                    else {
+	                        curNamedCls.setClassificationStatus(OWLNames.CLASSIFICATION_STATUS_CONSISTENT_AND_UNCHANGED);
+	                    }
+	                }
+	                else {
+	                    for (Iterator namedDirSuperClsIt = curNamedCls.getNamedSuperclasses().iterator(); namedDirSuperClsIt.hasNext();) {
+	                        curNamedCls.addInferredSuperclass((RDFSClass) namedDirSuperClsIt.next());
+	                    }
+	                }
+	            }
+	
+	            setProgress(getProgress() + 1);
+	        }
+	        kb.commitTransaction();
         }
-        kb.endTransaction();
+        catch (DIGReasonerException e) {
+        	kb.rollbackTransaction();
+        	throw e;
+        }
+        catch (Exception e) {
+        	kb.rollbackTransaction();
+        	Log.getLogger().warning("Exception in transaction. Rollback. Exception: " + e.getMessage());
+        	RuntimeException re = new RuntimeException();
+        	re.initCause(e);
+        	throw re;
+		}
         kb.setGenerateEventsEnabled(true);
 
         td.markEnd();
