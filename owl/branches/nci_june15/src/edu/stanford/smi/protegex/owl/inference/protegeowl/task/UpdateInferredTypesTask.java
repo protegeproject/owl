@@ -2,6 +2,7 @@ package edu.stanford.smi.protegex.owl.inference.protegeowl.task;
 
 import edu.stanford.smi.protege.model.KnowledgeBase;
 import edu.stanford.smi.protege.model.Slot;
+import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.inference.dig.exception.DIGReasonerException;
 import edu.stanford.smi.protegex.owl.inference.dig.translator.DIGQueryResponse;
 import edu.stanford.smi.protegex.owl.inference.protegeowl.ProtegeOWLReasoner;
@@ -105,43 +106,56 @@ public class UpdateInferredTypesTask extends AbstractReasonerTask {
         // Disable the events as we may not be updating protege
         // from the event dispatch thread
         kb.setGenerateEventsEnabled(false);
-        kb.beginTransaction("Compute and update inferred types");
-        Iterator responseIt = getTranslator().getDIGQueryResponseIterator(kb, responseDoc);
-
-
-        Slot inferredTypesSlot = kb.getRDFProperty(ProtegeNames.Slot.INFERRED_TYPE);
-        Slot classificationStatusSlot = ((AbstractOWLModel) kb).getProtegeClassificationStatusProperty();
-
-        while (responseIt.hasNext()) {
-            final DIGQueryResponse curResponse = (DIGQueryResponse) responseIt.next();
-            final RDFIndividual curInd = kb.getRDFIndividual(curResponse.getID());
-
-            if (curInd != null) {
-                // Check the inferred types and asserted types
-                // if there is a mismatch between the two then
-                // mark the classification status of the individual
-                // as changed. (MH - 15/09/04)
-                final Collection inferredTypes = curResponse.getConcepts();
-                if (inferredTypes.size() == 0) {
-                    inferredTypes.add(curInd.getOWLModel().getOWLThingClass());
-                }
-                final Collection assertedTypes = curInd.getProtegeTypes();
-                KnowledgeBase k = kb;
-                k.setOwnSlotValues(curInd, inferredTypesSlot, inferredTypes);
-
-                if (inferredTypes.containsAll(assertedTypes) == false &&
-                        assertedTypes.containsAll(inferredTypes) == false) {
-                    k.setOwnSlotValues(curInd, classificationStatusSlot, Collections.singleton(new Integer(OWLNames.CLASSIFICATION_STATUS_CONSISTENT_AND_CHANGED)));
-                }
-                else {
-                    k.setOwnSlotValues(curInd, classificationStatusSlot, Collections.singleton(new Integer(OWLNames.CLASSIFICATION_STATUS_CONSISTENT_AND_UNCHANGED)));
-                }
-            }
-
-            setProgress(getProgress() + 1);
-            doAbortCheck();
+        try {
+	        kb.beginTransaction("Compute and update inferred types");
+	        Iterator responseIt = getTranslator().getDIGQueryResponseIterator(kb, responseDoc);
+	
+	
+	        Slot inferredTypesSlot = kb.getRDFProperty(ProtegeNames.Slot.INFERRED_TYPE);
+	        Slot classificationStatusSlot = ((AbstractOWLModel) kb).getProtegeClassificationStatusProperty();
+	
+	        while (responseIt.hasNext()) {
+	            final DIGQueryResponse curResponse = (DIGQueryResponse) responseIt.next();
+	            final RDFIndividual curInd = kb.getRDFIndividual(curResponse.getID());
+	
+	            if (curInd != null) {
+	                // Check the inferred types and asserted types
+	                // if there is a mismatch between the two then
+	                // mark the classification status of the individual
+	                // as changed. (MH - 15/09/04)
+	                final Collection inferredTypes = curResponse.getConcepts();
+	                if (inferredTypes.size() == 0) {
+	                    inferredTypes.add(curInd.getOWLModel().getOWLThingClass());
+	                }
+	                final Collection assertedTypes = curInd.getProtegeTypes();
+	                KnowledgeBase k = kb;
+	                k.setOwnSlotValues(curInd, inferredTypesSlot, inferredTypes);
+	
+	                if (inferredTypes.containsAll(assertedTypes) == false &&
+	                        assertedTypes.containsAll(inferredTypes) == false) {
+	                    k.setOwnSlotValues(curInd, classificationStatusSlot, Collections.singleton(new Integer(OWLNames.CLASSIFICATION_STATUS_CONSISTENT_AND_CHANGED)));
+	                }
+	                else {
+	                    k.setOwnSlotValues(curInd, classificationStatusSlot, Collections.singleton(new Integer(OWLNames.CLASSIFICATION_STATUS_CONSISTENT_AND_UNCHANGED)));
+	                }
+	            }
+	
+	            setProgress(getProgress() + 1);
+	            doAbortCheck();
+	        }
+	        kb.commitTransaction();
         }
-        kb.endTransaction();
+        catch (DIGReasonerException e) {
+        	kb.rollbackTransaction();
+        	throw e;
+        }
+        catch (Exception e) {
+        	kb.rollbackTransaction();
+        	Log.getLogger().warning("Exception in transaction. Rollback. Exception: " + e.getMessage());
+        	RuntimeException re = new RuntimeException();
+        	re.initCause(e);
+        	throw re;
+		}
         kb.setGenerateEventsEnabled(true);
 
         td.markEnd();

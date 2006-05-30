@@ -1,5 +1,6 @@
 package edu.stanford.smi.protegex.owl.inference.protegeowl.task;
 
+import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.inference.dig.exception.DIGReasonerException;
 import edu.stanford.smi.protegex.owl.inference.dig.translator.DIGQueryResponse;
 import edu.stanford.smi.protegex.owl.inference.protegeowl.ProtegeOWLReasoner;
@@ -115,58 +116,71 @@ public class UpdateInconsistentClassesTask extends AbstractReasonerTask {
 
         kb.setGenerateEventsEnabled(false);
 
-        kb.beginTransaction("Compute and mark inconsistent classes");
-
-        // Get an iterator which we can use to
-        // traverse the query responses
-        Iterator responseIt = getTranslator().getDIGQueryResponseIterator(kb, responseDoc);
-
-
-        DIGQueryResponse response;
-
-        String queryID;
-
-        ReasonerLogRecord icParentRecord = null;
-
-        while (responseIt.hasNext()) {
-            doAbortCheck();
-
-            response = (DIGQueryResponse) responseIt.next();
-
-            queryID = response.getID();
-
-            final OWLNamedClass curNamedCls = kb.getOWLNamedClass(queryID);
-
-            if (curNamedCls != null) {
-                if (response.getBoolean() == true) {
-                    curNamedCls.setClassificationStatus(OWLNames.CLASSIFICATION_STATUS_CONSISTENT_AND_UNCHANGED);
-                    curNamedCls.removeInferredSuperclass(curNamedCls.getOWLModel().getOWLNamedClass(OWLNames.Cls.NOTHING));
-                }
-                else {
-                    if (icParentRecord == null) {
-                        icParentRecord = ReasonerLogRecordFactory.getInstance().createInformationMessageLogRecord("Inconsistent concepts",
-                                parentRecord);
-                        postLogRecord(icParentRecord);
-                    }
-
-                    postLogRecord(ReasonerLogRecordFactory.getInstance().createConceptConsistencyLogRecord(curNamedCls,
-                            false,
-                            icParentRecord));
-                    curNamedCls.setClassificationStatus(OWLNames.CLASSIFICATION_STATUS_INCONSISTENT);
-                    curNamedCls.addInferredSuperclass(curNamedCls.getOWLModel().getOWLNamedClass(OWLNames.Cls.NOTHING));
-                }
-            }
-
-            setProgress(getProgress() + 1);
+        try {
+	        kb.beginTransaction("Compute and mark inconsistent classes");
+	
+	        // Get an iterator which we can use to
+	        // traverse the query responses
+	        Iterator responseIt = getTranslator().getDIGQueryResponseIterator(kb, responseDoc);
+	
+	
+	        DIGQueryResponse response;
+	
+	        String queryID;
+	
+	        ReasonerLogRecord icParentRecord = null;
+	
+	        while (responseIt.hasNext()) {
+	            doAbortCheck();
+	
+	            response = (DIGQueryResponse) responseIt.next();
+	
+	            queryID = response.getID();
+	
+	            final OWLNamedClass curNamedCls = kb.getOWLNamedClass(queryID);
+	
+	            if (curNamedCls != null) {
+	                if (response.getBoolean() == true) {
+	                    curNamedCls.setClassificationStatus(OWLNames.CLASSIFICATION_STATUS_CONSISTENT_AND_UNCHANGED);
+	                    curNamedCls.removeInferredSuperclass(curNamedCls.getOWLModel().getOWLNamedClass(OWLNames.Cls.NOTHING));
+	                }
+	                else {
+	                    if (icParentRecord == null) {
+	                        icParentRecord = ReasonerLogRecordFactory.getInstance().createInformationMessageLogRecord("Inconsistent concepts",
+	                                parentRecord);
+	                        postLogRecord(icParentRecord);
+	                    }
+	
+	                    postLogRecord(ReasonerLogRecordFactory.getInstance().createConceptConsistencyLogRecord(curNamedCls,
+	                            false,
+	                            icParentRecord));
+	                    curNamedCls.setClassificationStatus(OWLNames.CLASSIFICATION_STATUS_INCONSISTENT);
+	                    curNamedCls.addInferredSuperclass(curNamedCls.getOWLModel().getOWLNamedClass(OWLNames.Cls.NOTHING));
+	                }
+	            }
+	
+	            setProgress(getProgress() + 1);
+	        }
+	
+	        td.markEnd();
+	
+	        postLogRecord(ReasonerLogRecordFactory.getInstance().createInformationMessageLogRecord("Time to update Protege-OWL = " + td,
+	                parentRecord));
+	
+	        setTaskCompleted();
+	        kb.commitTransaction();
+        }        
+        catch (DIGReasonerException e) {
+        	kb.rollbackTransaction();
+        	throw e;
         }
-
-        td.markEnd();
-
-        postLogRecord(ReasonerLogRecordFactory.getInstance().createInformationMessageLogRecord("Time to update Protege-OWL = " + td,
-                parentRecord));
-
-        setTaskCompleted();
-        kb.endTransaction();
+        catch (Exception e) {
+        	kb.rollbackTransaction();
+        	Log.getLogger().warning("Exception in transaction. Rollback. Exception: " + e.getMessage());
+        	RuntimeException re = new RuntimeException();
+        	re.initCause(e);
+        	throw re;
+		}
         kb.setGenerateEventsEnabled(true);
     }
 
