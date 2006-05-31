@@ -65,11 +65,11 @@ public abstract class AbstractTripleStoreModel implements TripleStoreModel {
 
 
     public TripleStore getActiveTripleStore() {
-        if (mnfs == null && ts.size() == 1) {
+        if (mnfs == null) {
             /**
              * Probably a client talking to a server.
              */
-            return ts.get(0);
+            return ts.get(1);
         }
         NarrowFrameStore activeFrameStore = mnfs.getActiveFrameStore();
         String name = activeFrameStore.getName();
