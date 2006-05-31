@@ -120,11 +120,12 @@ public class OWLDatabaseKnowledgeBaseFactory extends DatabaseKnowledgeBaseFactor
 
 
     public void initializeClientKnowledgeBase(FrameStore fs, 
-                                              NarrowFrameStore nfs,
+                                              NarrowFrameStore systemNfs,
+                                              NarrowFrameStore userNfs,
                                               KnowledgeBase kb) { 
       if (kb instanceof OWLDatabaseModel) {
         OWLDatabaseModel owlModel = (OWLDatabaseModel) kb;
-        DatabaseTripleStoreModel tsm = new DatabaseTripleStoreModel(owlModel,nfs);
+        DatabaseTripleStoreModel tsm = new DatabaseTripleStoreModel(owlModel,systemNfs, userNfs);
         owlModel.setTripleStoreModel(tsm);
         owlModel.initializeClient();
       }
