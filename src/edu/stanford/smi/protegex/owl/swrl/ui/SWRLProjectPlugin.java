@@ -1,5 +1,7 @@
 package edu.stanford.smi.protegex.owl.swrl.ui;
 
+import edu.stanford.smi.protege.event.WidgetEvent;
+import edu.stanford.smi.protege.event.WidgetListener;
 import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.Model;
 import edu.stanford.smi.protege.model.Project;
@@ -28,32 +30,29 @@ import java.awt.*;
  * @author Holger Knublauch  <holger@knublauch.com>
  */
 public class SWRLProjectPlugin extends ProjectPluginAdapter {
-
-    public static void adjustWidgets(Project project) {
-        Cls impCls = project.getKnowledgeBase().getCls(SWRLNames.Cls.IMP);
-        if (impCls != null) {
-            ClsWidget w = project.getDesignTimeClsWidget(impCls);
-            
-            if (w == null)
-            	return;
-            
-            Slot s1 = project.getKnowledgeBase().getSlot(SWRLNames.Slot.HEAD);
-            if (s1 != null) {
-            	w.replaceWidget(s1, null);
-            }
-
-            Slot s2 = project.getKnowledgeBase().getSlot(SWRLNames.Slot.BODY);
-            if (s2 != null) {
-            	w.replaceWidget(s2, null);
-            }
-            
-            Slot s3 = project.getKnowledgeBase().getSlot(Model.Slot.NAME);
-            if (s3 != null) {
-            	w.replaceWidget(s3, RDFSNamedClassMetadataWidget.class.getName());           
-            }
-            
-            w.relayout();
-        }
+    
+     public static void adjustWidgets(Project project) {
+            Cls impCls = project.getKnowledgeBase().getCls(SWRLNames.Cls.IMP);
+            if (impCls != null) {
+                ClsWidget w = project.getDesignTimeClsWidget(impCls);
+                WidgetDescriptor d = w.getDescriptor();
+                WidgetDescriptor headWidget = d.getPropertyList().getWidgetDescriptor(SWRLNames.Slot.HEAD);
+                if (headWidget != null) {
+                    headWidget.setBounds(new Rectangle(5, 5, 1, 1));
+                    headWidget.setVisible(false);
+                }
+                WidgetDescriptor bodyWidget = d.getPropertyList().getWidgetDescriptor(SWRLNames.Slot.BODY);
+                if (bodyWidget != null) {
+                    bodyWidget.setBounds(new Rectangle(5, 5, 1, 1));
+                    bodyWidget.setVisible(false);
+                }
+                WidgetDescriptor nameWidget = d.getPropertyList().getWidgetDescriptor(Model.Slot.NAME);
+                if (nameWidget != null) {
+                    nameWidget.setWidgetClassName(RDFSNamedClassMetadataWidget.class.getName());
+                }
+               
+                ((FormWidget) w).setModified(true);
+            }   
     }
 
 
