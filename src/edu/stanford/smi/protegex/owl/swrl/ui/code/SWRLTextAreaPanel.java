@@ -55,7 +55,9 @@ public class SWRLTextAreaPanel extends JPanel implements ModalDialogFactory.Clos
         id.setInstance(imp);
         setLayout(new BorderLayout(0, 8));
         add(BorderLayout.NORTH, id);
-        add(BorderLayout.CENTER, new JScrollPane(textArea));
+        JScrollPane sp = new JScrollPane(textArea);
+        sp.setPreferredSize(new Dimension(100,100));
+        add(BorderLayout.CENTER, sp);
         add(BorderLayout.SOUTH, symbolPanel);
         //setPreferredSize(new Dimension(600, 400));
     }
