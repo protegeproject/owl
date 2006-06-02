@@ -22,6 +22,7 @@ import edu.stanford.smi.protegex.owl.jena.parser.ProtegeOWLParser;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLOntology;
 import edu.stanford.smi.protegex.owl.model.factory.OWLJavaFactoryUpdater;
+import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 import edu.stanford.smi.protegex.owl.model.util.ImportHelper;
 import edu.stanford.smi.protegex.owl.swrl.model.SWRLNames;
 import edu.stanford.smi.protegex.owl.swrl.model.factory.SWRLJavaFactory;
@@ -44,13 +45,20 @@ public class SWRLTab extends AbstractTabWidget {
     private void activateSWRL() {
         JenaOWLModel owlModel = (JenaOWLModel) getKnowledgeBase();
         try {
-            ProtegeOWLParser.addImport(owlModel, new URI(SWRLNames.SWRL_IMPORT));
+            owlModel.getNamespaceManager().setPrefix(new URI(SWRLNames.SWRL_NAMESPACE), SWRLNames.SWRL_PREFIX);
+            owlModel.getNamespaceManager().setPrefix(new URI(SWRLNames.SWRLB_NAMESPACE), SWRLNames.SWRLB_PREFIX);
+
+        	ProtegeOWLParser.addImport(owlModel, new URI(SWRLNames.SWRL_IMPORT));
             ProtegeOWLParser.addImport(owlModel, new URI(SWRLNames.SWRLB_IMPORT));
             owlModel.getDefaultOWLOntology().addImports(new URI(SWRLNames.SWRL_IMPORT));
             owlModel.getDefaultOWLOntology().addImports (new URI(SWRLNames.SWRLB_IMPORT));
+   
             activateSWRLFactoryIfNecessary(owlModel);
+            System.out.println(owlModel.getNamespaceManager().getPrefixes());
             
             SWRLProjectPlugin.adjustWidgets(getProject());
+            owlModel.getTripleStoreModel().updateEditableResourceState();
+            
             ProtegeUI.reloadUI(getProject());
         }
         catch (Exception ex) {
@@ -61,6 +69,7 @@ public class SWRLTab extends AbstractTabWidget {
         }
     }
 
+    
     public void initialize() {
         setLabel("SWRL Rules");
         setIcon(SWRLIcons.getImpsIcon());
