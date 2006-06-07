@@ -693,10 +693,10 @@ public class OWLUtil {
 
     public static Collection getPropertyValues(RDFResource resource, RDFProperty property, boolean includingSubproperties) {
         if (includingSubproperties) {
-            return resource.getOWLModel().getOWLFrameStore().getOwnSlotValuesConverting(resource, property);
+            return getOwnSlotValuesConverting(resource, property);
         }
         else {
-            return resource.getOWLModel().getOWLFrameStore().getDirectOwnSlotValuesConverting(resource, property);
+            return getDirectOwnSlotValuesConverting( resource, property);
         }
     }
 
@@ -737,9 +737,6 @@ public class OWLUtil {
     }
 
 
-    public static Collection getPropertyValueLiterals(RDFResource resource, RDFProperty property) {
-        return ((AbstractOWLModel) resource.getOWLModel()).getPropertyValueLiterals(resource, property);
-    }
 
 
     public static RDFSLiteral getPropertyValueLiteral(RDFResource resource, RDFProperty property) {
@@ -1011,4 +1008,88 @@ public class OWLUtil {
         }
         return owlOntology;
     }
+    
+    public static List getDirectOwnSlotValuesConverting(Frame frame, Slot slot) {
+      OWLModel owlModel = (OWLModel) frame.getKnowledgeBase();
+      final List values = frame.getDirectOwnSlotValues(slot);
+      if (!values.isEmpty() && frame instanceof RDFResource && slot instanceof RDFProperty) {
+          for (Iterator it = values.iterator(); it.hasNext();) {
+              final Object o = it.next();
+              if (o instanceof String && DefaultRDFSLiteral.isRawValue((String) o)) {
+                  return convertInternalFormatToRDFSLiterals(owlModel, values);
+              }
+          }
+      }
+      return values;
+    }
+    
+    
+    public static Collection getOwnSlotValuesConverting(Frame frame, Slot slot) {
+      OWLModel owlModel = (OWLModel) frame.getKnowledgeBase();
+      Collection values = frame.getOwnSlotValues(slot);
+      return getConvertedValues(owlModel, values);
+  }
+
+    
+    public static Collection getConvertedValues(OWLModel owlModel, Collection values) {
+      if (!values.isEmpty()) {
+          for (Iterator it = values.iterator(); it.hasNext();) {
+              Object o = it.next();
+              if (o instanceof String && DefaultRDFSLiteral.isRawValue((String) o)) {
+                  return convertInternalFormatToRDFSLiterals(owlModel, values);
+              }
+          }
+      }
+      return values;
+  }
+
+    
+    private static List convertInternalFormatToRDFSLiterals(OWLModel owlModel, Collection values) {
+      List result = new LinkedList();
+      for (Iterator it = values.iterator(); it.hasNext();) {
+          Object o = it.next();
+          if (o instanceof String) {
+              final String str = (String) o;
+              if (DefaultRDFSLiteral.isRawValue(str)) {
+                  result.add(new DefaultRDFSLiteral(owlModel, str));
+              }
+              else {
+                  result.add(o);
+              }
+          }
+          else {
+              result.add(o);
+          }
+      }
+      return result;
+  }
+    
+    public static List getLiteralValues(OWLModel owlModel, final List values) {
+      List result = new ArrayList();
+      for (Iterator it = values.iterator(); it.hasNext();) {
+          Object o = it.next();
+          if (o instanceof RDFSLiteral) {
+              result.add(o);
+          }
+          else {
+              result.add(owlModel.createRDFSLiteral(o));
+          }
+      }
+      return result;
+  }
+
+
+
+  public static List getPropertyValueLiterals(RDFResource frame, RDFProperty slot) {
+      OWLModel owlModel = frame.getOWLModel();
+      final List values = new ArrayList(OWLUtil.getPropertyValues(frame, slot, false));
+      if (!values.isEmpty()) {
+          return getLiteralValues(owlModel, values);
+      }
+      else {
+          return values;
+      }
+  }
+
+ 
 }
