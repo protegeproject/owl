@@ -128,7 +128,7 @@ public class OWLDatabaseKnowledgeBaseFactory extends DatabaseKnowledgeBaseFactor
         DatabaseTripleStoreModel tsm = new DatabaseTripleStoreModel(owlModel,systemNfs, userNfs);
         owlModel.setTripleStoreModel(tsm);
         owlModel.initializeClient();
-        owlModel.setOWLFrameStoreEnabled(false);
+        owlModel.adjustClientFrameStores();
       }
     }
 }
