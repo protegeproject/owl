@@ -3,6 +3,7 @@ package edu.stanford.smi.protegex.owl.model;
 import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.Frame;
 import edu.stanford.smi.protege.model.ValueType;
+import edu.stanford.smi.protege.model.framestore.FrameStore;
 import edu.stanford.smi.protegex.owl.model.classdisplay.OWLClassDisplay;
 import edu.stanford.smi.protegex.owl.model.classparser.OWLClassParser;
 import edu.stanford.smi.protegex.owl.model.event.*;
@@ -1018,6 +1019,12 @@ public interface OWLModel extends ProtegeKnowledgeBase, OWLTestManager {
      * Provides low level access to some internal Protege detail - normally not needed.
      */
     OWLFrameStore getOWLFrameStore();
+    
+    /*
+     * The head frame store - prefered over getOWLFrameStore when the head is really all
+     * that is wanted.
+     */
+    public FrameStore getHeadFrameStore();
 
 
     /**
