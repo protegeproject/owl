@@ -1,15 +1,20 @@
 package edu.stanford.smi.protegex.owl.model.patcher;
 
-import edu.stanford.smi.protege.model.KnowledgeBase;
-import edu.stanford.smi.protege.model.Reference;
-import edu.stanford.smi.protegex.owl.model.*;
-import edu.stanford.smi.protegex.owl.model.framestore.OWLFrameStore;
-import edu.stanford.smi.protegex.owl.model.impl.DefaultRDFProperty;
-import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
-
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+
+import edu.stanford.smi.protege.model.KnowledgeBase;
+import edu.stanford.smi.protege.model.Reference;
+import edu.stanford.smi.protege.model.framestore.FrameStore;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.model.OWLNames;
+import edu.stanford.smi.protegex.owl.model.RDFProperty;
+import edu.stanford.smi.protegex.owl.model.RDFResource;
+import edu.stanford.smi.protegex.owl.model.RDFSClass;
+import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
+import edu.stanford.smi.protegex.owl.model.impl.DefaultRDFProperty;
+import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
@@ -40,8 +45,8 @@ public class DefaultOWLModelPatcher implements OWLModelPatcher {
             }
         }
         RDFProperty dummy = new DefaultRDFProperty(kb, resource.getFrameID());
-        OWLFrameStore owlFS = resource.getOWLModel().getOWLFrameStore();
-        Iterator frames = owlFS.getFramesWithAnyDirectOwnSlotValue(dummy).iterator();
+        FrameStore fs = resource.getOWLModel().getHeadFrameStore();
+        Iterator frames = fs.getFramesWithAnyDirectOwnSlotValue(dummy).iterator();
         if (frames.hasNext()) {
             return resource.getOWLModel().getRDFPropertyClass();
         }
