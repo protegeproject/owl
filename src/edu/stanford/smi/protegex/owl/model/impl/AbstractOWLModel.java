@@ -595,6 +595,10 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
             insertFrameStore(owlFrameStore);
         }
     }
+    
+    public void setOWLFrameStoreEnabled(boolean enabled) {
+      getFrameStoreManager().setEnabled(owlFrameStore, enabled);
+    }
 
 
     private Cls createSystemCls(String name, Cls superclass) {
