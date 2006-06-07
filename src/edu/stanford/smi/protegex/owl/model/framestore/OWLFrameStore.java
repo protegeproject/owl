@@ -232,47 +232,9 @@ public class OWLFrameStore extends FrameStoreAdapter {
     }
 
 
-    private List convertInternalFormatToRDFSLiterals(Collection values) {
-        List result = new LinkedList();
-        for (Iterator it = values.iterator(); it.hasNext();) {
-            Object o = it.next();
-            if (o instanceof String) {
-                final String str = (String) o;
-                if (DefaultRDFSLiteral.isRawValue(str)) {
-                    result.add(new DefaultRDFSLiteral(owlModel, str));
-                }
-                else {
-                    result.add(o);
-                }
-            }
-            else {
-                result.add(o);
-            }
-        }
-        return result;
-    }
+ 
 
-
-    private List convertRDFSLiteralsToInternalFormat(Collection values) {
-        final List result = new LinkedList();
-        for (Iterator it = values.iterator(); it.hasNext();) {
-            final Object o = it.next();
-            if (o instanceof RDFSLiteral) {
-                final DefaultRDFSLiteral literal = (DefaultRDFSLiteral) o;
-                final Object optimized = literal.getPlainValue();
-                if (optimized != null) {
-                    result.add(optimized);
-                }
-                else {
-                    result.add(literal.getRawValue());
-                }
-            }
-            else {
-                result.add(o);
-            }
-        }
-        return result;
-    }
+ 
 
 
     private void copyFacetValuesIntoOWLNamedClass(RDFSNamedClass cls, OWLRestriction restriction) {
@@ -715,92 +677,28 @@ public class OWLFrameStore extends FrameStoreAdapter {
         return null;
     }
 
-
-    public List getDirectOwnSlotValuesConverting(Frame frame, Slot slot) {
-        final List values = super.getDirectOwnSlotValues(frame, slot);
-        if (!values.isEmpty() && frame instanceof RDFResource && slot instanceof RDFProperty) {
-            for (Iterator it = values.iterator(); it.hasNext();) {
-                final Object o = it.next();
-                if (o instanceof String && DefaultRDFSLiteral.isRawValue((String) o)) {
-                    return convertInternalFormatToRDFSLiterals(values);
-                }
-            }
-        }
-        return values;
+    
+    private List convertRDFSLiteralsToInternalFormat(Collection values) {
+      final List result = new LinkedList();
+      for (Iterator it = values.iterator(); it.hasNext();) {
+          final Object o = it.next();
+          if (o instanceof RDFSLiteral) {
+              final DefaultRDFSLiteral literal = (DefaultRDFSLiteral) o;
+              final Object optimized = literal.getPlainValue();
+              if (optimized != null) {
+                  result.add(optimized);
+              }
+              else {
+                  result.add(literal.getRawValue());
+              }
+          }
+          else {
+              result.add(o);
+          }
+      }
+      return result;
     }
-
-
-    public List getPropertyValueLiterals(RDFResource frame, RDFProperty slot) {
-        final List values = new ArrayList(OWLUtil.getPropertyValues(frame, slot, false));
-        if (!values.isEmpty()) {
-            return getLiteralValues(values);
-        }
-        else {
-            return values;
-        }
-    }
-
-
-    public List getLiteralValues(final List values) {
-        List result = new ArrayList();
-        for (Iterator it = values.iterator(); it.hasNext();) {
-            Object o = it.next();
-            if (o instanceof RDFSLiteral) {
-                result.add(o);
-            }
-            else {
-                result.add(owlModel.createRDFSLiteral(o));
-            }
-        }
-        return result;
-    }
-
-    /*public List getDirectOwnSlotValues(Frame frame, Slot slot) {
-       List result = super.getDirectOwnSlotValues(frame, slot);
-       return flattenList(result);
-   }
-
-
-   public Collection getOwnSlotValues(Frame frame, Slot slot) {
-       Collection results = super.getOwnSlotValues(frame, slot);
-       return flattenList(results);
-   }
-
-
-   private List flattenList(Collection results) {
-       if(results.size() == 1) {
-           Object value = results.iterator().next();
-           if(value instanceof RDFList) {
-               return ((RDFList)value).getValues();
-           }
-       }
-       if(results instanceof List) {
-           return (List) results;
-       }
-       else {
-           return new ArrayList(results);
-       }
-   } */
-
-
-    public Collection getOwnSlotValuesConverting(Frame frame, Slot slot) {
-        Collection values = super.getOwnSlotValues(frame, slot);
-        return getConvertedValues(values);
-    }
-
-
-    public Collection getConvertedValues(Collection values) {
-        if (!values.isEmpty()) {
-            for (Iterator it = values.iterator(); it.hasNext();) {
-                Object o = it.next();
-                if (o instanceof String && DefaultRDFSLiteral.isRawValue((String) o)) {
-                    return convertInternalFormatToRDFSLiterals(values);
-                }
-            }
-        }
-        return values;
-    }
-
+    
 
     public Set getClsesWithMatchingBrowserText(String value, Collection superclasses, int maxMatches) {
         Set results = new HashSet();
