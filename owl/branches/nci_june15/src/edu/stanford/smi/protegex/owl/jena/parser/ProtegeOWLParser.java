@@ -643,12 +643,12 @@ public class ProtegeOWLParser {
 						RDFUntypedResource externalResource = (RDFUntypedResource) kb.getFrame(name);
 						if(uri2NameConverter.isTemporaryRDFResourceName(name)) {
 							String uri = uri2NameConverter.getURIFromTemporaryName(name);
-							owlModel.getOWLFrameStore().setFrameName(externalResource, uri);
+							owlModel.getHeadFrameStore().setFrameName(externalResource, uri);
 						}
 						else {
 							String uri = owlModel.getURIForResourceName(name);
 							if(uri != null && !name.equals(uri)) {
-								owlModel.getOWLFrameStore().setFrameName(externalResource, uri);
+								owlModel.getHeadFrameStore().setFrameName(externalResource, uri);
 							}
 						}
 						// System.out.println("External Resource for " + uri);
@@ -725,7 +725,7 @@ public class ProtegeOWLParser {
 				}
 			}
 			RDFProperty dummy = new DefaultRDFProperty(owlModel, resource.getFrameID());
-			Iterator frames = owlModel.getOWLFrameStore().getFramesWithAnyDirectOwnSlotValue(dummy).iterator();
+			Iterator frames = owlModel.getHeadFrameStore().getFramesWithAnyDirectOwnSlotValue(dummy).iterator();
 			if(frames.hasNext()) {
 				if(runImplicitImport(resource, imports, us)) {
 					return true;
