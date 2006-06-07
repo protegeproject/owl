@@ -29,7 +29,7 @@ public abstract class AbstractTripleStoreTestCase extends AbstractJenaTestCase {
         if (name == null) {
             name = owlModel.getNextAnonymousResourceName();
         }
-        owlModel.getOWLFrameStore().setFrameName(frame, name);
+        owlModel.getHeadFrameStore().setFrameName(frame, name);
         return frame;
     }
 
