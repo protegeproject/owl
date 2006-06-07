@@ -11,6 +11,7 @@ import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
 import edu.stanford.smi.protegex.owl.model.factory.OWLJavaFactoryUpdater;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultRDFSLiteral;
+import edu.stanford.smi.protegex.owl.model.impl.OWLUtil;
 import edu.stanford.smi.protegex.owl.model.triplestore.Triple;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreModel;
@@ -90,7 +91,7 @@ public abstract class AbstractTripleStoreModel implements TripleStoreModel {
 
     public Collection getPropertyValues(RDFResource resource, RDFProperty property) {
         Collection values = mnfs.getValues(resource, property, null, false);
-        return owlModel.getOWLFrameStore().getConvertedValues(values);
+        return OWLUtil.getConvertedValues(owlModel, values);
     }
 
 
