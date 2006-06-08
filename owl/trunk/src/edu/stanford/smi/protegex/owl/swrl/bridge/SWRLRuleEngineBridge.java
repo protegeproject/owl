@@ -6,32 +6,7 @@
 
 // SWRLRuleEngineBridge
 //
-// This class provides a bridge between an OWL model with SWRL rules and a rule engine. Its goal is to provide the infrastructure necessary
-// to incorporate rule engines into Protege-OWL to execute SWRL rules. The bridge provides mechanisms to: (1) import SWRL rules and
-// relevant OWL classes, individuals and properties from an OWL model; (2) write that knowledge to a rule engine; (3) allow the rule engine
-// to perform inference and to assert its new knowledge back to the bridge; and (4) insert that asserted knowledge into an OWL model. An
-// implementation will subclass this class to provide methods to represent SWRL rules, and OWL classes, properties and individuals within
-// the target rule engine and will also provide a method to peform inference using that knowledge. See "Specializing the Bridge for a Target
-// Rule Engine" comment below for an explanation of how to specialize this class.
-//
-// The following public methods can be used to interact with this class:
-// 
-// SWRLRuleEngineBridge: Constructor that takes an OWL model.
-//
-// importSWRLRulesAndOWLKnowledge: Import all SWRL rules and relevant OWL knowledge from the OWL model.
-//
-// exportSWRLRulesAndOWLKnowledge: Write imported rules and OWL knowledge to the target rule system.
-//
-// runRuleEngine: This is an abstract method and must be defined by the target implementation for a particular rule engine to perform
-// inference using the rules and knowledge exported to the rule engine. The rule engine will generate new inferences and supply them to the
-// bridge.
-//
-// writeAssertedIndividualsAndProperties2OWL: Transfer the asserted knowledge to the OWL model.
-//
-// resetBridge: Clear all knowledge from the bridge and the target rule system.
-//
-// resetRuleEngine: Clear all exported knowledge from the target rule system and reset it. Any assertions made by the rule engine are also
-// removed from the bridge.
+// cf. http://protege.cim3.net/cgi-bin/wiki.pl?SWRLRuleEngineBridgeFAQ for detailed documentation of this class.
 
 package edu.stanford.smi.protegex.owl.swrl.bridge;
 
@@ -47,39 +22,14 @@ import java.net.URL;
 
 public abstract class SWRLRuleEngineBridge
 {
-  // Specializing the Bridge for a Target Rule Engine
-  // 
-  // A target implementation for a particular rule engine must define the six abstract methods listed below. The class
-  // edu.stanford.smi.protegex.owl.swrl.jess.SWRLJessBridge in the standard Protege-OWL distribution provides an example implementation for
-  // the Jess rule engine.
-  //
-  // Internally, the bridge uses Info objects to store generic representations of all rules and relevant OWL knowledge. This representation
-  // is used to bridge between SWRL rules and OWL knowledge and the representation used by the target rule engine. A target implementation
-  // must be able to take Info objects for SWRL rules and OWL classes, properties and individuals and represent them in the rule engine's
-  // native format.  A following four methods must be implemented to perform this task. Each "define" methods must take an Info object
-  // of the appropriate type and produces an internal representation of that object.
-
   protected abstract void defineRule(RuleInfo ruleInfo) throws SWRLRuleEngineBridgeException;
   protected abstract void defineClass(ClassInfo classInfo) throws SWRLRuleEngineBridgeException;
   protected abstract void defineProperty(PropertyInfo propertyInfo) throws SWRLRuleEngineBridgeException;
   protected abstract void defineIndividual(IndividualInfo individualInfo) throws SWRLRuleEngineBridgeException;
 
-  // The initializeRuleEngine method must prepare the rule engine. It may be called multiple times so should also act as a reset method.
   protected abstract void initializeRuleEngine() throws SWRLRuleEngineBridgeException;
 
-  // Finally, the runRuleEngine method performs inference. 
   public abstract void runRuleEngine() throws SWRLRuleEngineBridgeException;
-
-  // As inference is carried out in the runRuleEngine method, new knowledge will be generated. This knowledge will consist of class
-  // membership assertions for existing individuals and new property assertions for existing individuals. These assertions can be passed to
-  // the bridge using the assertProperty and assertIndividual methods.
-
-  // assertProperty:
-  //
-  // Method called by a target rule engine when asserting a property. The propertyName is the name of the property; the subjectName is the
-  // names of the individual to which this property will be attached; the predicate will be an individual name in the case of an object
-  // property and a literal value in the case of a datatype property. String literal values do not have to be enclosed in quotes - the
-  // bridge will be able to determine the type of the literal and assign it appropriately.
 
   public void assertProperty(String propertyName, String subjectName, String predicateValue) throws SWRLRuleEngineBridgeException
   { 
@@ -95,53 +45,11 @@ public abstract class SWRLRuleEngineBridge
     assertedProperties.add(propertyInfo); 
   } // assertProperty
 
-  // assertIndividual: 
-  //
-  // Method called by a target rule engine when asserting new new class membership information for an existing individual.
   public void assertIndividual(String individualName, String className) throws SWRLRuleEngineBridgeException 
   {
     IndividualInfo individualInfo = new IndividualInfo(individualName, className);
     assertedIndividuals.add(individualInfo); 
   } // assertIndividual
-
-  // invokeSWRLBuiltIn:
-  //
-  // SWRL provides a built-ins, which are predicates that take a number of arguments. A target rule engine can decide to implement built-ins
-  // natively for efficiency, or it can invoke Java-defined built-ins using the method invokeSWRLBuiltIn. A dynamic loading mechanism is
-  // supported by the bridge to locate implementations of built-ins at run time. The rule engine can call invokeSWRLBuiltIn with the
-  // namespace and the name of the builtIn (e.g., swrlb and greaterThan) and the bridge will attempt to resolve it to a Java method that
-  // implements that built-in. If no Java method is found, an UnresolvedBuiltInException is thrown back to the invoking rule engine.
-  // Similarly, if a built-in name does not resolve to a valid SWRL built-in, an InvalidBuiltInNameException is thrown. The arguments are a
-  // list of Argument objects.  An Argument may be one of LiteralInfo, which stores literal data, and IndividualInfo, which contains the
-  // name of an OWL individual (see definitions below).
-  //
-  // Users wishing to provide implementations of particular built-in methods need to define a class called SWRLBuiltInMethodsImpl that
-  // contains the methods defining the appropriate built-ins. This class must implement the interface SWRLBuiltInMethods. This interface
-  // acts as a structurng mechanism - it does not define any methods. The package name of the implementation class should be the namespace
-  // qualifier of the built-ins preceded by 'edu.stanford.smi.protegex.owl.swrl.bridge.builtins'. For example, the standard SWRL built-in
-  // greaterThan that is qualified by the namespace 'swrlb' should be defined as a method called 'greaterThan' in the class
-  // SWRLBuiltInMethodsImpl located in the the edu.stanford.smi.protegex.owl.swrl.bridge.builtins.swrlb Java package. To ensure that
-  // Protege-OWL can find this class at run time, a JAR containing this class should be placed in the Protege-OWL plugins directory. Protege
-  // will automatically add this JAR file to the applications class path so that a class loader will be able to load this class.
-  //
-  // The implementation of a built-in method in the SWRLBuiltInMethods class should have a signature of the form:
-  //
-  // public static boolean <builtInName>(List arguments) throws BuiltInException
-  //
-  // The arguments parameter is a list of Argument objects. The method implementation should check that the correct number of arguments are
-  // passed to the method and that the arguments are of the correct type. There is a utility class called SWRLBuiltInUtil in the
-  // edu.stanford.smi.protegex.owl.swrl.bridge.builtins package that contains a large set of methods for argument processing for built-in
-  // methods. An example SWRLBuiltInMethodsImpl class that implements most of the swrlb built-ins can be found in the
-  // edu.stanford.smi.protegex.owl.swrl.bridge.builtins.swrlb package.
-  //
-  // The exception class BuiltInException has four concrete exception subclasses that can be thrown by a built-in method implementation:
-  // InvalidBuiltInArgumentNumberException, InvalidBuiltInArgumentException, LiteralConversionException, and
-  // BuiltInNotImplementedException. The InvalidBuiltInArgumentNumberException should be used to indicate that an incorrect number of
-  // arguments have been passed to the built-in; InvalidBuiltInArgumentException should be used to indicate that an argument of the wrong
-  // type has been passed; LiteralConversionException should be used to indicate that a literal argument is not of the correct type;
-  // finally, BuiltInNotImplementedException should be used to indicate that a built-in (or variants of it for a particular argument type)
-  // has not been implemnented. As mentioned above, the SWRLBuiltInUtil class has utility methods that can be used for to perfore argument
-  // checking within built-ins.
 
   public boolean invokeSWRLBuiltIn(String builtInName, List arguments) throws BuiltInException
   {
@@ -155,9 +63,7 @@ public abstract class SWRLRuleEngineBridge
     if (!isBuiltIn(builtInName)) throw new InvalidBuiltInNameException(builtInName);
     
     // First, find the class that defines the Java method (if we have not already cached it). 
-
     try { 
-
       colonIndex = builtInName.indexOf(':');
       if (colonIndex != -1) {
         namespaceName = builtInName.substring(0, colonIndex - 1);
@@ -190,19 +96,11 @@ public abstract class SWRLRuleEngineBridge
     } catch (Exception e) {
       throw new UnresolvedBuiltInException("Cannot invoke built-in method '" + builtInMethodName + "' in namespace '" 
                                            + namespaceName + "'. Exception: " + e.getMessage());
-      
     } // try
 
     return result.booleanValue();
-
   } // invokeSWRLBuiltIn
   
-  // Info classes are used to store generic representations of all SWRL rules and relevant OWL knowledge.  SWRL rules and OWL classes,
-  // properties, and individuals are represented using these objects; components of SWRL rules, such as atoms, literals and variables, are
-  // also represented. For example, the ClassInfo class is used to represent information about an OWL class. An implementation for a
-  // specific rule engines must be able to translate these Info classes into the native format of the engine. These objects are stored in
-  // the following collections and hash maps. 
-
   // RuleInfo objects representing imported SWRL rules.
   private List importedSWRLRules; 
 
@@ -226,8 +124,6 @@ public abstract class SWRLRuleEngineBridge
 
   // Holds class instances implementing built-ins.
   private HashMap builtInMethodsClassInstances;
-
-  // See comments at beginning of this file for an explanation of the public methods in this class.
 
   protected SWRLRuleEngineBridge(OWLModel owlModel) throws SWRLRuleEngineBridgeException
   {
@@ -447,8 +343,6 @@ public abstract class SWRLRuleEngineBridge
       String propertyName = (String)iterator.next();
       importOWLProperty(propertyName);
     } // while
-    System.err.println("importedPropertyNames: " + importedPropertyNames);
-    System.err.println("importedProperties: " + importedProperties);
   } // importProperties
 
   private void importOWLProperty(String propertyName) throws SWRLRuleEngineBridgeException
