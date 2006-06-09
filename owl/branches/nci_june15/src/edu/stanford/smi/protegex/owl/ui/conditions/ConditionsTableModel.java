@@ -1,5 +1,6 @@
 package edu.stanford.smi.protegex.owl.ui.conditions;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -10,6 +11,9 @@ import java.util.List;
 import javax.swing.Icon;
 import javax.swing.table.AbstractTableModel;
 
+import com.hp.hpl.jena.vocabulary.OWL;
+
+import edu.stanford.smi.protege.action.DetachCurrentView;
 import edu.stanford.smi.protege.event.FrameAdapter;
 import edu.stanford.smi.protege.event.FrameEvent;
 import edu.stanford.smi.protege.event.FrameListener;
@@ -17,6 +21,8 @@ import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.KnowledgeBase;
 import edu.stanford.smi.protege.model.Model;
 import edu.stanford.smi.protege.model.Slot;
+import edu.stanford.smi.protege.server.framestore.RemoteClientFrameStore;
+import edu.stanford.smi.protege.ui.ProjectManager;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.model.OWLAllValuesFrom;
 import edu.stanford.smi.protegex.owl.model.OWLAnonymousClass;
@@ -28,16 +34,19 @@ import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
 import edu.stanford.smi.protegex.owl.model.OWLNames;
 import edu.stanford.smi.protegex.owl.model.OWLRestriction;
 import edu.stanford.smi.protegex.owl.model.OWLSomeValuesFrom;
+import edu.stanford.smi.protegex.owl.model.RDFList;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
 import edu.stanford.smi.protegex.owl.model.RDFSClass;
 import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
+import edu.stanford.smi.protegex.owl.model.classparser.OWLClassParseException;
 import edu.stanford.smi.protegex.owl.model.classparser.OWLClassParser;
 import edu.stanford.smi.protegex.owl.model.event.ClassAdapter;
 import edu.stanford.smi.protegex.owl.model.event.ClassListener;
 import edu.stanford.smi.protegex.owl.model.impl.AbstractRDFSClass;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLIntersectionClass;
 import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
+import edu.stanford.smi.protegex.owl.ui.clsproperties.OldRestrictionTreeNode;
 import edu.stanford.smi.protegex.owl.ui.owltable.OWLTableModel;
 import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
 
@@ -48,25 +57,27 @@ import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
  */
 public class ConditionsTableModel extends AbstractTableModel
         implements ConditionsTableConstants, OWLTableModel {
+	
+	boolean inEditing = false;
 
     private ClassListener classListener = new ClassAdapter() {
-        public void subclassAdded(RDFSClass cls, RDFSClass subclass) {
-            refill();
+        public void subclassAdded(RDFSClass cls, RDFSClass subclass) {        	
+        		refill();
         }
 
 
-        public void subclassRemoved(RDFSClass cls, RDFSClass subclass) {
-            refill();
+        public void subclassRemoved(RDFSClass cls, RDFSClass subclass) {       	
+        		refill();
         }
 
 
-        public void superclassAdded(RDFSClass cls, RDFSClass superclass) {
-            refill();
+        public void superclassAdded(RDFSClass cls, RDFSClass superclass) {        	
+        		refill();
         }
 
 
-        public void superclassRemoved(RDFSClass cls, RDFSClass superclass) {
-            refill();
+        public void superclassRemoved(RDFSClass cls, RDFSClass superclass) {        	
+        		refill();
         }
     };
 
@@ -153,8 +164,9 @@ public class ConditionsTableModel extends AbstractTableModel
             return 1;
         }
         else {  */
-        ConditionsTableItem item = ConditionsTableItem.createNew(getType(selectedRow));
-        int index = selectedRow + 1;
+    	ConditionsTableItem item = ConditionsTableItem.createNew(getType(selectedRow));
+        
+    	int index = selectedRow + 1;
         addItem(index, item);
         fireTableRowsInserted(index, index);
         return index;
@@ -284,6 +296,7 @@ public class ConditionsTableModel extends AbstractTableModel
 
 
     public boolean addRowAllowMove(RDFSClass aClass, int selectedRow) {
+    	//System.out.println("In addRowAllowMove " + aClass.getBrowserText() + " Row: " + selectedRow);
         if (aClass.equals(hostClass) ||
                 (!isCreateEnabledAt(selectedRow) && aClass instanceof OWLAnonymousClass) ||
                 (!isAddEnabledAt(selectedRow) && aClass instanceof OWLNamedClass)) {
@@ -555,7 +568,7 @@ public class ConditionsTableModel extends AbstractTableModel
                     for (Iterator oit = operands.iterator(); oit.hasNext();) {
                         RDFSClass operand = (RDFSClass) oit.next();
                         if (operand instanceof OWLAnonymousClass) {
-                            addItemUnlessOverloaded(operand, originCls);
+                            addItemUnlessOverloaded(operand, originCls);  
                         }
                     }
                 }
@@ -922,6 +935,8 @@ public class ConditionsTableModel extends AbstractTableModel
 
 
     private void refill() {
+    	if (inEditing)
+    		return;
         items.clear();
         removeListeners();
         fillItems();
@@ -930,6 +945,8 @@ public class ConditionsTableModel extends AbstractTableModel
 
 
     public void refresh() {
+    	if (inEditing)
+    		return;
         items.clear();
         if (hostClass != null) {
             fillItems();
@@ -1004,107 +1021,194 @@ public class ConditionsTableModel extends AbstractTableModel
 
     public void setValueAt(int rowIndex, OWLModel owlModel, String parsableText)
             throws Exception {
+    	
+    	RDFSClass newRestriction = null;    	
+    	RDFSClass oldRestriction = (RDFSClass) getClass(rowIndex);
 
-        try {
-            owlModel.beginTransaction("Set condition at " + getEditedCls().getBrowserText() + " to " + parsableText);
-            OWLClassParser parser = owlModel.getOWLClassDisplay().getParser();
-            RDFSClass newClass = parser.parseClass(owlModel, parsableText);
-            if (getEditedCls().equals(newClass)) {
-                return;
-            }
-            String newBrowserText = newClass.getBrowserText();
-            RDFSClass oldClass = (RDFSClass) getClass(rowIndex);
-            Slot directSuperclassesSlot = ((KnowledgeBase) owlModel).getSlot(Model.Slot.DIRECT_SUPERCLASSES);
-            if (oldClass == null) {
-                if (((AbstractRDFSClass) hostClass).hasPropertyValueWithBrowserText(directSuperclassesSlot, newBrowserText)) {
-                    handleDuplicateEntry(newClass);
-                    return;
-                }
-                items.remove(rowIndex);
-                previouslyEditedCls = newClass;
-                if (!addRow(newClass, rowIndex - 1) && newClass instanceof OWLAnonymousClass) {
-                    newClass.delete();
-                }
-            }
-            else if (!oldClass.getBrowserText().equals(newBrowserText)) {
-                if (((AbstractRDFSClass) hostClass).hasPropertyValueWithBrowserText(directSuperclassesSlot, newBrowserText)) {
-                    handleDuplicateEntry(newClass);
-                    return;
-                }
-                int type = getType(rowIndex);
-                if (type == TYPE_SUPERCLASS) {
-                    hostClass.addSuperclass(newClass);
-                    if (oldClass != null) {
-                        hostClass.removeSuperclass(oldClass);
-                    }
-                }
-                else { // Definition
-                    DefaultOWLIntersectionClass definition = (DefaultOWLIntersectionClass) getDefinition(rowIndex);
-                    if (definition != null) {
-                        if (definition.hasOperandWithBrowserText(newBrowserText)) {
-                            handleDuplicateEntry(newClass);
-                            return;
-                        }
-                        OWLIntersectionClass copy = owlModel.createOWLIntersectionClass();
-                        for (Iterator it = definition.getOperands().iterator(); it.hasNext();) {
-                            RDFSClass operand = (RDFSClass) it.next();
-                            if (operand.equals(oldClass)) {
-                                copy.addOperand(newClass);
-                            }
-                            else {
-                                copy.addOperand(operand.createClone());
-                            }
-                        }
-                        if (oldClass == null) {
-                            copy.addOperand(newClass);
-                        }
-                        else if (oldClass instanceof RDFSNamedClass) {
-                            hostClass.removeSuperclass(oldClass);
-                        }
-                        hostClass.addEquivalentClass(copy); // Changed 1
-                        definition.delete();              // Changed 2
-                        if (newClass instanceof RDFSNamedClass) {
-                            hostClass.addSuperclass(newClass);
-                        }
-                    }
-                    else {
-                        hostClass.addEquivalentClass(newClass);
-                        if (oldClass != null) {
-                            hostClass.removeSuperclass(oldClass);
-                            if (oldClass instanceof RDFSNamedClass && oldClass.isSubclassOf(hostClass)) {
-                                oldClass.removeSuperclass(hostClass);
-                                if (oldClass.getNamedSuperclasses().isEmpty()) {
-                                    oldClass.addSuperclass(owlModel.getOWLThingClass());
-                                }
-                            }
-                        }
-                        if (newClass instanceof OWLIntersectionClass) {
-                            for (Iterator it = ((OWLIntersectionClass) newClass).getOperands().iterator(); it.hasNext();) {
-                                RDFSClass operand = (RDFSClass) it.next();
-                                if (operand instanceof RDFSNamedClass && !hostClass.isSubclassOf(operand)) {
-                                    hostClass.addSuperclass(operand);
-                                }
-                            }
-                        }
-                    }
-                }
-                if (!hostClass.hasNamedSuperclass()) {
-                    hostClass.addSuperclass(owlModel.getOWLThingClass());
-                }
-                previouslyEditedCls = newClass;
-            }
-            else if (newClass instanceof OWLAnonymousClass) {
-                newClass.delete();
-            }
+    	try {
+			owlModel.beginTransaction("Set condition at " + getEditedCls().getBrowserText() + " to " + parsableText);
+			
+			try {
+				OWLClassParser parser = owlModel.getOWLClassDisplay().getParser();
+				newRestriction = parser.parseClass(owlModel, parsableText);
+				
+		    	if ((oldRestriction!=null && oldRestriction.equals(newRestriction)) || getEditedCls().equals(newRestriction)) {
+		    		owlModel.rollbackTransaction();
+		    		return;
+		    	}
+			}
+            catch (OWLClassParseException e) {
+            	owlModel.rollbackTransaction();
+    			Log.getLogger().warning("Error at parsing restriction: " + parsableText);
+    			ProtegeUI.getModalDialogFactory().showErrorMessageDialog(owlModel, "Error at parsing restriction: " + parsableText, "Parse Error");
+    			return;
+    		}
+            
+            inEditing = true;     
+            
+            //this is where the editing is done
+            handleAddOrReplaceRestriction(newRestriction, rowIndex);
+            
+            inEditing = false;
+            refresh();
+
             owlModel.commitTransaction();
-        }
-        catch (Exception ex) {
-        	owlModel.rollbackTransaction();
-            OWLUI.handleError(owlModel, ex);
-        }
+		} 
+		catch (Exception e) {
+			owlModel.rollbackTransaction();
+			OWLUI.handleError(owlModel, e);
+		}
     }
 
 
+    /**
+     * This method handles the addion or replacement of a restriction 
+     * in the Conditions Table.  
+     * @param newRestriction
+     * @param selectedRow
+     * @return true - if a new restriction was added/replaced; false - otherwise
+     * 
+     */
+    private boolean handleAddOrReplaceRestriction(RDFSClass newRestriction, int selectedRow) {
+    	//System.out.println("In handleAddOrReplaceRestriction. Old restr: " + getClass(selectedRow) + " New rest." + newRestriction.getBrowserText() + " Row: " + selectedRow);
+        if (newRestriction.equals(hostClass) || (!isCreateEnabledAt(selectedRow) && newRestriction instanceof OWLAnonymousClass) ||
+                (!isAddEnabledAt(selectedRow) && newRestriction instanceof OWLNamedClass)) {
+            return false;
+        }
+        
+        RDFSClass oldRestriction = getClass(selectedRow);
+        
+        // treat superclasses
+        if (getType(selectedRow) == TYPE_SUPERCLASS) {
+            hostClass.addSuperclass(newRestriction);
+            if (oldRestriction != null)
+            	hostClass.removeSuperclass(oldRestriction);
+            return true;
+        }  
+        
+        if (!isDefinition(selectedRow))
+        	return false;
+        
+        //treat equivalent classes        
+        if (newRestriction.equals(owlModel.getOWLThingClass())) {
+            return false;  // don't allow to add owl:Thing to any definition
+        }
+ /*       if (isSeparator(selectedRow)) {
+            selectedRow = selectedRow + 1;
+        }*/
+        
+        OWLIntersectionClass definitionContext = getDefinitionContext(selectedRow);
+        
+        if (definitionContext != null) { // new restriction is part of an owl:intersection        	
+        	if (oldRestriction != null) { // replacing an old restriction
+        		
+        		// if the old and new restrictions have the same browser text, don't do anything
+        		if (oldRestriction.getBrowserText().equals(newRestriction.getBrowserText())) 
+        			return false;
+        		
+				boolean replaceSucceeded = OWLClassUtil.replaceOperand(definitionContext, oldRestriction, newRestriction);
+				
+				if (replaceSucceeded) {
+					if (oldRestriction instanceof OWLAnonymousClass)
+						deleteOldRestriction(oldRestriction);
+					return true;
+				}
+				return false;
+			}
+        	else { //adding a new operand to the intersection
+        		definitionContext.addOperand(newRestriction);
+        		return true;
+        	}
+        }
+        else {
+        	oldRestriction = getClassContext(selectedRow); 
+        	
+        	if (oldRestriction == null) { // no restriction was in this equivalent block before
+        		hostClass.addEquivalentClass(newRestriction);
+        		return true;
+        	} else { //there is an equivalent class that needs to be converted in an owl:intersection 
+	        	OWLIntersectionClass newDefinition = owlModel.createOWLIntersectionClass();
+	            newDefinition.addOperand(oldRestriction);
+	            newDefinition.addOperand(newRestriction);
+	                
+	            //why is this necessary?
+	            hostClass.removeSuperclass(oldRestriction);
+	        	hostClass.addEquivalentClass(newDefinition);
+	        	
+	            if (oldRestriction instanceof OWLNamedClass) {
+	              	oldRestriction.removeSuperclass(hostClass);	        
+	            }
+	            return true;
+	       }
+        }
+    }
+
+    
+    
+    /**
+     * This method computes whether a certain row belongs to a definition block 
+     * and if yes it returns the corresponding intersection class
+     * If none is found, it returns null.
+     * @param selectedRow
+     * @return defintion class (OWLIntersectionClass) if found, or null otherwise
+     */
+    private OWLIntersectionClass getDefinitionContext(int selectedRow) {
+    	OWLIntersectionClass definitionContext = (OWLIntersectionClass) getDefinition(selectedRow);
+        
+    	if (definitionContext != null)
+    		return definitionContext;
+    	
+    	// check the next row
+    	if (selectedRow < items.size()) {
+    		definitionContext = getDefinition(selectedRow+1);
+
+    		if (definitionContext != null)
+    			return definitionContext;
+    	}
+    	
+    	// check previous row
+    	if (selectedRow > 0)
+    		definitionContext = getDefinition(selectedRow-1);
+   	
+		return definitionContext;
+	}
+
+    
+    private RDFSClass getClassContext(int selectedRow) {
+    	RDFSClass rdfsClass = getClass(selectedRow);
+    	
+    	if (rdfsClass != null)
+    		return rdfsClass;
+    	
+    	//check next row
+    	if (selectedRow < items.size()) {
+    		rdfsClass = getClass(selectedRow +1);
+    		
+    		if (rdfsClass != null ) 
+    			return rdfsClass;
+    	}
+    	
+    	//check previous row
+    	if (selectedRow > 0) 
+    		rdfsClass = getClass(selectedRow - 1);    	
+    	    	
+    	return rdfsClass;
+    }
+
+	/**
+	 * This method deletes the old restriction that has been replaced by
+	 * a newer restriction. It may need to do some clean up and preparation
+	 * before deletion.
+	 * 
+	 * @param restriction
+	 */
+    private void deleteOldRestriction(RDFSClass restriction) {
+    	// commented out the code if delete is very slow		 
+    	// and treat deletion of old, unused restriction in another place (in a different thread?)
+    	//Log.getLogger().warning("Old restriction: " + restriction.getBrowserText() + " should be deleted");
+    	 restriction.delete();
+    }
+    
     /**
      * Sorts the items according to their <CODE>compareTo</CODE> method.
      *

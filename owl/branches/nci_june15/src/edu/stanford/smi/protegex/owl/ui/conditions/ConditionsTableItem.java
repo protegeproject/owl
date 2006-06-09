@@ -51,7 +51,12 @@ public class ConditionsTableItem implements ConditionsTableConstants, Comparable
         this.isNew = isNew;
     }
 
-
+    public void dispose() {
+        this.aClass = null;
+        this.definition = null;        
+        this.originCls = null;        
+    }
+    
     /**
      * Sorts according to the following order:
      * 1) Equivalent classes > superclasses > inherited superclasses
