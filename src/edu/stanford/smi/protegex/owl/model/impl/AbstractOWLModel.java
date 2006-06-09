@@ -102,6 +102,7 @@ import edu.stanford.smi.protegex.owl.model.event.PropertyValueListener;
 import edu.stanford.smi.protegex.owl.model.event.ResourceAdapter;
 import edu.stanford.smi.protegex.owl.model.event.ResourceListener;
 import edu.stanford.smi.protegex.owl.model.factory.OWLJavaFactory;
+import edu.stanford.smi.protegex.owl.model.framestore.OWLDeleteSimplificationFrameStore;
 import edu.stanford.smi.protegex.owl.model.framestore.OWLFrameFactoryInvocationHandler;
 import edu.stanford.smi.protegex.owl.model.framestore.OWLFrameStore;
 import edu.stanford.smi.protegex.owl.model.framestore.OWLFrameStoreManager;
@@ -676,10 +677,17 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     public void adjustClientFrameStores() {
       FrameStoreManager fsm = getFrameStoreManager();
       fsm.setEnabled(owlFrameStore, false);
+
       FrameStore owlConverter = fsm.getFrameStoreFromClass(OWLFrameFactoryInvocationHandler.class);
-      if (owlConverter  != null) {
+      if (owlConverter != null) {
         fsm.setEnabled(owlConverter, false);
       }
+      
+      FrameStore owlDeleteSimplificationFS = fsm.getFrameStoreFromClass(OWLDeleteSimplificationFrameStore.class);
+      if (owlDeleteSimplificationFS != null) {
+        fsm.setEnabled(owlDeleteSimplificationFS, false);
+      }
+
     }
 
 
