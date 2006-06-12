@@ -40,7 +40,11 @@ public class FindResultsTableView extends AbstractFindResultsView {
         tc.setMinWidth(40);
         tc.setMaxWidth(40);
 
-        add(table, BorderLayout.CENTER);
+        JScrollPane scroller = new JScrollPane(table);
+        scroller.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        scroller.getViewport().setBackground(table.getBackground());
+
+        add(scroller, BorderLayout.CENTER);
     }
 
     public RDFResource getSelectedResource() {

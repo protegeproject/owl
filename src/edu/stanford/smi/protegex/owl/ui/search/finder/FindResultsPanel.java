@@ -117,10 +117,6 @@ public class FindResultsPanel extends JComponent {
         searchAsYouTypeCheckbox = createSearchAsYouType();
         refreshSearchAsYouType();
 
-        final JScrollPane scrollPane = new JScrollPane(view);
-        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-        scrollPane.getViewport().setBackground(view.getBackground());
-
         JPanel northPanel = new JPanel();
         northPanel.add(new JLabel(SEARCH_PATTERN_LABEL));
         northPanel.add(searchTypeCombo);
@@ -129,7 +125,7 @@ public class FindResultsPanel extends JComponent {
 
         mainPanel = new JPanel(new BorderLayout());
         mainPanel.add(northPanel, BorderLayout.NORTH);
-        mainPanel.add(scrollPane, BorderLayout.CENTER);
+        mainPanel.add(view, BorderLayout.CENTER);
 
         add(mainPanel, BorderLayout.CENTER);
 
@@ -147,8 +143,7 @@ public class FindResultsPanel extends JComponent {
                 saveResultButton = new JButton(saveResultsAction);
                 mainPanel.add(saveResultButton, BorderLayout.SOUTH);
             }
-        }
-        else {
+        } else {
             if (saveResultButton != null) {
                 mainPanel.remove(saveResultButton);
                 saveResultButton = null;
@@ -254,8 +249,7 @@ public class FindResultsPanel extends JComponent {
         searchAsYouType = searchAsYouTypeCheckbox.isSelected();
         if (searchAsYouType) {
             textField.getDocument().addDocumentListener(searchAsYouTypeListener);
-        }
-        else {
+        } else {
             textField.getDocument().removeDocumentListener(searchAsYouTypeListener);
         }
     }

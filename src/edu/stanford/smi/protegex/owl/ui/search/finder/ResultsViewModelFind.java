@@ -7,7 +7,6 @@ import javax.swing.*;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 import javax.swing.table.AbstractTableModel;
-import javax.swing.table.TableModel;
 import java.util.*;
 
 /**
@@ -17,7 +16,7 @@ import java.util.*;
  *         03-Oct-2005
  */
 public class ResultsViewModelFind extends AbstractTableModel
-        implements Find, ListModel, TableModel {
+        implements Find, ListModel {
 
     protected List orderedKeys; // used for sorting alphabetically
 
@@ -33,7 +32,7 @@ public class ResultsViewModelFind extends AbstractTableModel
         findAlg = new ThreadedFind(owlModel, type) {
             protected boolean isValidFrameToSearch(Frame f) {
                 return super.isValidFrameToSearch(f) &&
-                       ResultsViewModelFind.this.isValidFrameToSearch(f);
+                        ResultsViewModelFind.this.isValidFrameToSearch(f);
             }
         };
 
@@ -49,8 +48,7 @@ public class ResultsViewModelFind extends AbstractTableModel
     public int getSize() {
         if (orderedKeys != null) {
             return orderedKeys.size();
-        }
-        else {
+        } else {
             return 0;
         }
     }
@@ -92,8 +90,7 @@ public class ResultsViewModelFind extends AbstractTableModel
             Object key = orderedKeys.get(rowIndex);
             FindResult item = (FindResult) map.get(key);
             return item.get(columnIndex);
-        }
-        else {
+        } else {
             return null;
         }
     }
@@ -106,7 +103,7 @@ public class ResultsViewModelFind extends AbstractTableModel
 
         // notify list listeners
         ListDataEvent e = new ListDataEvent(this, ListDataEvent.CONTENTS_CHANGED,
-                                            0, getSize());
+                0, getSize());
         for (Iterator i = listeners.iterator(); i.hasNext();) {
             ((ListDataListener) i.next()).contentsChanged(e);
         }

@@ -6,6 +6,7 @@ import edu.stanford.smi.protegex.owl.model.RDFResource;
 import edu.stanford.smi.protegex.owl.ui.ResourceRenderer;
 import edu.stanford.smi.protegex.owl.ui.results.HostResourceDisplay;
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseListener;
@@ -28,7 +29,11 @@ public class FindResultsListView extends AbstractFindResultsView {
 
         list.setCellRenderer(ResourceRenderer.createInstance());
 
-        add(list, BorderLayout.CENTER);
+        final JScrollPane scrollPane = new JScrollPane(list);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        scrollPane.getViewport().setBackground(list.getBackground());
+
+        add(scrollPane, BorderLayout.CENTER);
     }
 
     public RDFResource getSelectedResource() {
