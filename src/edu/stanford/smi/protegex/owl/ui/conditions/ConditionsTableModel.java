@@ -11,6 +11,8 @@ import java.util.List;
 import javax.swing.Icon;
 import javax.swing.table.AbstractTableModel;
 
+import sun.security.krb5.internal.crypto.s;
+
 import com.hp.hpl.jena.vocabulary.OWL;
 
 import edu.stanford.smi.protege.action.DetachCurrentView;
@@ -45,6 +47,8 @@ import edu.stanford.smi.protegex.owl.model.event.ClassAdapter;
 import edu.stanford.smi.protegex.owl.model.event.ClassListener;
 import edu.stanford.smi.protegex.owl.model.impl.AbstractRDFSClass;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLIntersectionClass;
+import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLNamedClass;
+import edu.stanford.smi.protegex.owl.model.impl.OWLUtil;
 import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
 import edu.stanford.smi.protegex.owl.ui.clsproperties.OldRestrictionTreeNode;
 import edu.stanford.smi.protegex.owl.ui.owltable.OWLTableModel;
@@ -283,31 +287,39 @@ public class ConditionsTableModel extends AbstractTableModel
      * @param selectedRow the row to add to
      * @return true if the row has been added
      */
-    public boolean addRow(RDFSClass aClass, int selectedRow) {
-        String browserText = aClass.getBrowserText();
-        if (isDefinition(selectedRow) ||
-                !((AbstractRDFSClass) hostClass).hasPropertyValueWithBrowserText(((KnowledgeBase) owlModel).getSlot(Model.Slot.DIRECT_SUPERCLASSES), browserText)) {
-            return addRowAllowMove(aClass, selectedRow);
-        }
-        else {
-            return false;
-        }
+    public boolean addRow(RDFSClass aClass, int selectedRow) {       
+        return addRowAllowMove(aClass, selectedRow);       
     }
 
 
     public boolean addRowAllowMove(RDFSClass aClass, int selectedRow) {
-    	//System.out.println("In addRowAllowMove " + aClass.getBrowserText() + " Row: " + selectedRow);
+    	System.out.println("In addRowAllowMove " + aClass.getBrowserText() + " Row: " + selectedRow);
         if (aClass.equals(hostClass) ||
                 (!isCreateEnabledAt(selectedRow) && aClass instanceof OWLAnonymousClass) ||
                 (!isAddEnabledAt(selectedRow) && aClass instanceof OWLNamedClass)) {
             return false;
         }
+        
+        inEditing = true;
+        boolean succeded = handleAddRestriction(aClass, selectedRow);
+        inEditing = false;
+        
+        if (succeded)
+        	refresh();
+        
+        return succeded;
+    }
 
-        int type = getType(selectedRow);
-        if (type == TYPE_SUPERCLASS) {
+    
+    private boolean handleAddRestriction(RDFSClass aClass, int selectedRow) {
+        //handle superclasses
+        if (getType(selectedRow) == TYPE_SUPERCLASS) {
             hostClass.addSuperclass(aClass);
+            return true;
         }
-        else if (isDefinition(selectedRow)) { // Definition
+        
+        //handle definitions (equivalent classes)
+        if (isDefinition(selectedRow)) { // Definition
             if (aClass.equals(owlModel.getOWLThingClass())) {
                 return false;  // Don't allow to add owl:Thing to any definition
             }
@@ -315,72 +327,67 @@ public class ConditionsTableModel extends AbstractTableModel
                 selectedRow++;
             }
             DefaultOWLIntersectionClass definition = (DefaultOWLIntersectionClass) getDefinition(selectedRow);
-            if (definition != null) {
+            if (definition != null) { //there is already a definition which is an intersection; add the new operand
                 String browserText = aClass.getBrowserText();
                 if (definition.hasOperandWithBrowserText(browserText)) {
                     return false;
                 }
-                OWLIntersectionClass copy = (OWLIntersectionClass) definition.createClone();
-                copy.addOperand(aClass);
-                hostClass.addEquivalentClass(copy);  // Was swapped with line below
-                definition.delete();                 // Was swapped with line above
-            }
-            else {
+                
+                definition.addOperand(aClass);
+            } else 	{ 
                 RDFSClass oldEquivalentClass = (RDFSClass) getClass(selectedRow);
-                if (oldEquivalentClass != null) {
+                if (oldEquivalentClass != null) { //there is one class in the definition, create an intersection and add the old and new classes to it
                     if (oldEquivalentClass.getBrowserText().equals(aClass.getBrowserText())) {
                         return false;
                     }
-                    OWLModel owlModel = aClass.getOWLModel();
+                    
+                    RDFSClass clonedOldEquivalentClass = oldEquivalentClass;
+                    
+                    if (oldEquivalentClass instanceof OWLAnonymousClass) 
+                    	clonedOldEquivalentClass = oldEquivalentClass.createClone();
+                    
                     OWLIntersectionClass newDefinition = owlModel.createOWLIntersectionClass();
-                    newDefinition.addOperand(oldEquivalentClass.createClone());
-                    newDefinition.addOperand(aClass);
-                    hostClass.removeSuperclass(oldEquivalentClass);
-                    if (oldEquivalentClass instanceof OWLNamedClass) {
-                        oldEquivalentClass.removeSuperclass(hostClass);
-                    }
+                    newDefinition.addOperand(clonedOldEquivalentClass);
+                    newDefinition.addOperand(aClass);                
+                    
                     hostClass.addEquivalentClass(newDefinition);
+                    hostClass.removeEquivalentClass(oldEquivalentClass);
                 }
                 else {
                     hostClass.addEquivalentClass(aClass);
                 }
             }
         }
-        return true;
+       return true;    	
     }
 
-
     private boolean deleteDefinitionRow(int index) {
+    	if (!isDefinition(index))
+    		return false;
+    	
         RDFSClass rowClass = (RDFSClass) getClass(index);
-        if (isDefinition(index)) {
-            OWLIntersectionClass definition = getDefinition(index);
-            if (definition != null) {
-                Collection operands = new ArrayList(definition.getOperands());
-                if (operands.size() == 2) {
-                    operands.remove(rowClass);
-                    RDFSClass remainder = (RDFSClass) operands.iterator().next();
-                    RDFSClass copy = remainder.createClone();
-                    hostClass.addEquivalentClass(copy);
-                    definition.delete();
-                }
-                else {
-                    OWLModel owlModel = rowClass.getOWLModel();
-                    operands.remove(rowClass);
-                    OWLIntersectionClass newDefinition = owlModel.createOWLIntersectionClass();
-                    for (Iterator it = operands.iterator(); it.hasNext();) {
-                        RDFSClass oldOperand = (RDFSClass) it.next();
-                        newDefinition.addOperand(oldOperand.createClone());
-                    }
-                    hostClass.addEquivalentClass(newDefinition);
-                    definition.delete();
-                }
-                if (!hostClass.hasNamedSuperclass()) {
-                    hostClass.addSuperclass(owlModel.getOWLThingClass());
-                }
-                return true;
-            }
+        
+        OWLIntersectionClass definition = getDefinition(index);
+        
+        if (definition == null)
+        	return false;
+        
+        Collection operands = new ArrayList(definition.getOperands());
+        if (operands.size() == 2) {
+            operands.remove(rowClass);
+            RDFSClass remainder = (RDFSClass) operands.iterator().next();
+            RDFSClass copy = remainder.createClone();
+            hostClass.addEquivalentClass(copy);
+            definition.delete();
         }
-        return false;
+        else {
+        	definition.removeOperand(rowClass);
+        }
+        
+        if (!hostClass.hasNamedSuperclass()) {
+            hostClass.addSuperclass(owlModel.getOWLThingClass());
+        }
+        return true;
     }
 
 
@@ -388,7 +395,14 @@ public class ConditionsTableModel extends AbstractTableModel
         try {
             owlModel.beginTransaction("Delete condition " + getClass(index).getBrowserText() +
                     " from " + getEditedCls().getBrowserText());
+            
+            inEditing = true;
+            
             deleteRow(index, false);
+            
+            inEditing = false;
+            refresh();
+            
             owlModel.commitTransaction();
         }
         catch (Exception ex) {
@@ -402,28 +416,24 @@ public class ConditionsTableModel extends AbstractTableModel
         RDFSClass rowClass = (RDFSClass) getClass(index);
         boolean definition = getDefinition(index) != null;
         boolean isDefinition = isDefinition(index);
+        
         boolean deleted = deleteDefinitionRow(index);
+        
         if (!deleted && isDefinition && rowClass instanceof OWLNamedClass && forceDelete) {
             rowClass.removeSuperclass(hostClass);
             rowClass.removeSuperclass(hostClass);
         }
         else if (hostClass.isSubclassOf(rowClass)) {
             if (!getNamedDefinitionClses(definition).contains(rowClass) || forceDelete) {
-                if (rowClass instanceof RDFSNamedClass) {
-                    int namedSuperclassCount = hostClass.getNamedSuperclasses().size();
-                    if (namedSuperclassCount == 1) {
-                        hostClass.addSuperclass(owlModel.getOWLThingClass());
-                    }
-                    if (!rowClass.equals(owlModel.getOWLThingClass())) {
-                        hostClass.removeSuperclass(rowClass);
-                    }
-                    else {  // owl:Thing deleted as superclass
-                        Collection nss = new HashSet(hostClass.getNamedSuperclasses());
-                        nss.remove(rowClass);
-                        if (nss.size() > 0) {
-                            hostClass.removeSuperclass(rowClass);
-                        }
-                    }
+                if (rowClass instanceof RDFSNamedClass) { //Remove a named class               	
+                	hostClass.removeSuperclass(rowClass);
+                	
+                	HashSet superClses  = new HashSet(hostClass.getNamedSuperclasses());
+                	
+                	//be sure that owl:Thing is in there if there is no other superclass
+                	
+                	if (superClses.size() == 0)
+                		hostClass.addSuperclass(owlModel.getOWLThingClass());                	
                 }
                 else {
                     hostClass.removeSuperclass(rowClass);
@@ -560,6 +570,7 @@ public class ConditionsTableModel extends AbstractTableModel
 
 
     private void fillInheritedAnonymousClses(OWLNamedClass originCls, Collection coveredClses) {
+    	addInheritedSeparator();
         for (Iterator it = originCls.getSuperclasses(false).iterator(); it.hasNext();) {
             Cls ss = (Cls) it.next();
             if (ss instanceof OWLAnonymousClass) {
@@ -567,13 +578,15 @@ public class ConditionsTableModel extends AbstractTableModel
                     Collection operands = ((OWLIntersectionClass) ss).getOperands();
                     for (Iterator oit = operands.iterator(); oit.hasNext();) {
                         RDFSClass operand = (RDFSClass) oit.next();
-                        if (operand instanceof OWLAnonymousClass) {
-                            addItemUnlessOverloaded(operand, originCls);  
+                        if (operand instanceof OWLAnonymousClass) {                            
+                            //addItemUnlessOverloaded(operand, originCls);
+                            items.add(ConditionsTableItem.createInherited(operand, originCls));
                         }
                     }
                 }
-                else if (!coveredClses.contains(ss)) {
-                    addItemUnlessOverloaded((OWLAnonymousClass) ss, originCls);
+                else if (!coveredClses.contains(ss)) {                    
+                    //addItemUnlessOverloaded((OWLAnonymousClass) ss, originCls);
+                	items.add(ConditionsTableItem.createInherited((OWLAnonymousClass)ss, originCls));
                 }
             }
         }
@@ -1093,9 +1106,6 @@ public class ConditionsTableModel extends AbstractTableModel
         if (newRestriction.equals(owlModel.getOWLThingClass())) {
             return false;  // don't allow to add owl:Thing to any definition
         }
- /*       if (isSeparator(selectedRow)) {
-            selectedRow = selectedRow + 1;
-        }*/
         
         OWLIntersectionClass definitionContext = getDefinitionContext(selectedRow);
         
@@ -1126,18 +1136,21 @@ public class ConditionsTableModel extends AbstractTableModel
         	if (oldRestriction == null) { // no restriction was in this equivalent block before
         		hostClass.addEquivalentClass(newRestriction);
         		return true;
-        	} else { //there is an equivalent class that needs to be converted in an owl:intersection 
+        	} else { //there is an equivalent class that needs to be converted in an owl:intersection
+        		
+        		RDFSClass clonedOldRestrcition = oldRestriction;
+        		
+        		if (oldRestriction instanceof OWLAnonymousClass) {
+        			clonedOldRestrcition = oldRestriction.createClone();
+        		}
+        		
 	        	OWLIntersectionClass newDefinition = owlModel.createOWLIntersectionClass();
-	            newDefinition.addOperand(oldRestriction);
+	            newDefinition.addOperand(clonedOldRestrcition);
 	            newDefinition.addOperand(newRestriction);
-	                
-	            //why is this necessary?
-	            hostClass.removeSuperclass(oldRestriction);
-	        	hostClass.addEquivalentClass(newDefinition);
-	        	
-	            if (oldRestriction instanceof OWLNamedClass) {
-	              	oldRestriction.removeSuperclass(hostClass);	        
-	            }
+	            
+	            hostClass.addEquivalentClass(newDefinition);
+	            hostClass.removeEquivalentClass(oldRestriction);
+	            	            	        	
 	            return true;
 	       }
         }
@@ -1273,4 +1286,5 @@ public class ConditionsTableModel extends AbstractTableModel
             getItem(i).setLocalIndex(i - startRow);
         }
     }
+    
 }
