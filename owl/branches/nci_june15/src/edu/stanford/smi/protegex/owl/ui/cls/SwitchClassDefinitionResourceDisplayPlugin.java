@@ -16,10 +16,12 @@ import javax.swing.ButtonGroup;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 
+import edu.stanford.smi.protege.model.Instance;
 import edu.stanford.smi.protege.plugin.PluginUtilities;
 import edu.stanford.smi.protege.util.ApplicationProperties;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protege.util.PropertyList;
+import edu.stanford.smi.protege.widget.SlotWidget;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
@@ -140,7 +142,8 @@ public class SwitchClassDefinitionResourceDisplayPlugin implements ResourceDispl
                     button.addActionListener(new ActionListener() {
                         public void actionPerformed(ActionEvent e) {
                             switchTo(type);
-                            owlModel.getOWLProject().getSettingsMap().setString(PROPERTY, type.getWidgetClassType().getName());
+                            owlModel.getOWLProject().getSettingsMap().setString(PROPERTY, type.getWidgetClassType().getName());         
+                            widget.setInstance(widget.getEditedResource());
                         }
                     });
                     add(button);
@@ -207,5 +210,7 @@ public class SwitchClassDefinitionResourceDisplayPlugin implements ResourceDispl
         //    final Project project = widget.getProject();
         //    setClassesView(project.getSources(), propertyMode);
         //}
+        
+    
     }
 }
