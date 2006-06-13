@@ -1,5 +1,8 @@
 
-// This class provides mechanisms for rule systems to get screen real estate in the SWRL Tab.
+// TODO: Jess is loaded explicitly here. We need a discovery mechanism using the manifest.
+// TODO: should this be in the ui subpackage?
+
+// This class provides mechanisms for rule engines to register themselves and to get screen real estate in the SWRL Tab.
 
 package edu.stanford.smi.protegex.owl.swrl.bridge;
 
@@ -19,14 +22,14 @@ public class SWRLRuleEngineManager
 
   static {
 
-    try { // Hack until we can do a proper class load wit the manifest
+    try { // TODO:  Hack until we can do a proper class load with the manifest
       Class.forName("edu.stanford.smi.protegex.owl.swrl.bridge.jess.ui.SWRLJessTab");
     } catch (ClassNotFoundException e) {
-      System.err.println("Could not find Jess Tab class");
+      System.err.println("Could not find the edu.stanford.smi.protegex.owl.swrl.bridge.jess.ui.SWRLJessTab class");
     } // 
   } // static
 
-  // Called by each rule system as it is loaded to inform the adapter of  presence.
+  // Called by each rule system as it is loaded to inform the adapter of its presence.
   public static void registerRuleEngine(String ruleEngineName, String toolTip, Icon icon, SWRLRuleEngineGUIAdapter guiAdapter)
   {
     if (registeredRuleEngines.containsKey(ruleEngineName)) registeredRuleEngines.remove(ruleEngineName);
@@ -44,52 +47,63 @@ public class SWRLRuleEngineManager
   public static void unregisterEngine(String ruleEngineName)
   {
     if (registeredRuleEngines.containsKey(ruleEngineName)) {
-      if (isVisible(ruleEngineName)) hideRuleEngine(ruleEngineName);
+      if (isVisible(ruleEngineName)) hideRuleEngine(ruleEngineName, true);
       registeredRuleEngines.remove(ruleEngineName);
     } // if
   } // unregisterEngine
 
   public static boolean isVisible(String ruleEngineName) 
   { 
-    return ruleEngineName.equals(visibleRuleEngineName);
+    return !visibleRuleEngineName.equals("") && ruleEngineName.equals(visibleRuleEngineName);
   } // isVisible
 
   public static void showRuleEngine(String ruleEngineName, SWRLTab swrlTab, OWLModel owlModel)
   {
-    if (!ruleEngineName.equals(visibleRuleEngineName)) {
+    if (!isVisible(ruleEngineName)) {
 
-      hideRuleEngine(visibleRuleEngineName);
+      if (hideRuleEngine(visibleRuleEngineName)) { // Hide may fail if uses does not confirm it.
       
-      if (registeredRuleEngines.containsKey(ruleEngineName)) {
-        RuleEngineRegistrationInfo info = (RuleEngineRegistrationInfo)registeredRuleEngines.get(ruleEngineName);
-        Container ruleEngineGUI;
-        
-        ruleEngineGUI = info.getGUIAdapter().createRuleEngineGUI(owlModel);
-
-        if (ruleEngineGUI != null) {
-          swrlTab.add(ruleEngineGUI);
-          swrlTab.validate();
-          swrlTab.setVisible(true);
-          visibleRuleEngineName = ruleEngineName;
-        } else {
-          makeTextPanel(swrlTab, "Unable to activate the " + ruleEngineName + " rule engine.");
+        if (registeredRuleEngines.containsKey(ruleEngineName)) {
+          
+          RuleEngineRegistrationInfo info = (RuleEngineRegistrationInfo)registeredRuleEngines.get(ruleEngineName);
+          Container ruleEngineGUI;
+          
+          ruleEngineGUI = info.getGUIAdapter().createRuleEngineGUI(owlModel);
+          
+          if (ruleEngineGUI != null) {
+            swrlTab.add(ruleEngineGUI);
+            swrlTab.validate(); swrlTab.setVisible(true);
+            visibleRuleEngineName = ruleEngineName;
+          } else {
+            makeTextPanel(swrlTab, "Unable to activate the " + ruleEngineName + " rule engine.");
+          } // if
         } // if
       } // if
     } // if
   } // showRuleEngine
 
-  public static void hideRuleEngine(String ruleEngineName)
+  public static boolean hideRuleEngine(String ruleEngineName)
   {
-    if (ruleEngineName.equals(visibleRuleEngineName)) {
+    return hideRuleEngine(ruleEngineName, false);
+  } // hideRuleEngine
+
+  private static boolean hideRuleEngine(String ruleEngineName, boolean force)
+  {
+    if (isVisible(ruleEngineName)) {
+
+      if (!force && (JOptionPane.showConfirmDialog(null, "Do you really want to disable the " + ruleEngineName + " rule engine?", "Disable " + ruleEngineName,
+                                                   JOptionPane.YES_NO_OPTION) != JOptionPane.YES_OPTION)) return false;
+
       if (registeredRuleEngines.containsKey(ruleEngineName)) {
         RuleEngineRegistrationInfo info = (RuleEngineRegistrationInfo)registeredRuleEngines.get(ruleEngineName);
-        Container swrlTab = info.getGUIAdapter().getRuleEngineGUI().getParent();
-        info.getGUIAdapter().getRuleEngineGUI().setVisible(false);
-        swrlTab.remove(info.getGUIAdapter().getRuleEngineGUI());
+        Container ruleEngineGUI = info.getGUIAdapter().getRuleEngineGUI();
+        Container swrlTab = ruleEngineGUI.getParent();
+        swrlTab.remove(ruleEngineGUI);
         swrlTab.validate(); swrlTab.setVisible(true);
         visibleRuleEngineName = "";
       } // if
     } // if
+    return true;
   } // hideRuleEngine
   
   public static class RuleEngineRegistrationInfo

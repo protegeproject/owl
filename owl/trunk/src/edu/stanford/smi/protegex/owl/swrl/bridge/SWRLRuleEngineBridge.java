@@ -42,13 +42,14 @@ public abstract class SWRLRuleEngineBridge
 
     propertyInfo = new PropertyInfo(propertyName, subject, predicate);
 
-    assertedProperties.add(propertyInfo); 
+    if (!assertedProperties.contains(propertyInfo)) assertedProperties.add(propertyInfo); 
   } // assertProperty
 
   public void assertIndividual(String individualName, String className) throws SWRLRuleEngineBridgeException 
   {
     IndividualInfo individualInfo = new IndividualInfo(individualName, className);
-    assertedIndividuals.add(individualInfo); 
+
+    if (!assertedIndividuals.contains(individualInfo)) assertedIndividuals.add(individualInfo); 
   } // assertIndividual
 
   public boolean invokeSWRLBuiltIn(String builtInName, List arguments) throws BuiltInException

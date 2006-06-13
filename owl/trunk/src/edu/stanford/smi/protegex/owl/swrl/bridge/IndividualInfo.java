@@ -76,5 +76,21 @@ public class IndividualInfo extends Info implements Argument
     return "Individual(name: " + getName() + ", classNames: " + classNames + ")";
   } // toString
 
+  public boolean equals(Object obj)
+  {
+    if(this == obj) return true;
+    if((obj == null) || (obj.getClass() != this.getClass())) return false;
+    IndividualInfo info = (IndividualInfo)obj;
+    return (getName() == info.getName() || (getName() != null && getName().equals(info.getName()))) && 
+      (classNames == info.classNames || (classNames != null && classNames.equals(info.classNames)));
+  } // equals
+
+  public int hashCode()
+  {
+    int hash = 7;
+    hash = hash + (null == getName() ? 0 : getName().hashCode());
+    hash = hash + (null == classNames ? 0 : classNames.hashCode());
+    return hash;
+  } // hashCode
   
 } // IndividualInfo
