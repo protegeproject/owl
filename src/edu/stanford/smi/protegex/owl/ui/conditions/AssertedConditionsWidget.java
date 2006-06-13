@@ -2,6 +2,7 @@ package edu.stanford.smi.protegex.owl.ui.conditions;
 
 import edu.stanford.smi.protege.model.*;
 import edu.stanford.smi.protege.util.LabeledComponent;
+import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.model.*;
 import edu.stanford.smi.protegex.owl.model.classdisplay.OWLClassDisplay;
 import edu.stanford.smi.protegex.owl.ui.cls.OWLClassesTab;
@@ -83,26 +84,35 @@ public class AssertedConditionsWidget extends AbstractConditionsWidget {
 
 
     private void createRestriction() {
+    	OWLRestriction newRestriction = null;
         OWLClassesTab owlClassesTab = table.getOWLClsesTab();
         table.selectNecessaryIfNothingSelected();
+        
         Cls metaCls = getKnowledgeBase().getCls(OWLNames.Cls.SOME_VALUES_FROM_RESTRICTION);
         try {
             beginTransaction("Create restriction at " + getEditedCls().getBrowserText());
-            OWLRestriction newRestriction = RestrictionEditorPanel.showCreateDialog(table, getEditedCls(), metaCls);
-            if (newRestriction != null) {
-                table.addRestriction(newRestriction);
-                table.ensureEditedClassSelectedInExplorer(owlClassesTab);
-            }
+            newRestriction = RestrictionEditorPanel.showCreateDialog(table, getEditedCls(), metaCls);
+            if (newRestriction != null) 
+                table.addRestriction(newRestriction);                
+            
             commitTransaction();
         }
         catch (Exception ex) {
         	rollbackTransaction();
             OWLUI.handleError(getOWLModel(), ex);
         }
+        
+        try {
+            if (newRestriction !=null)
+            	table.ensureEditedClassSelectedInExplorer(owlClassesTab);			
+		} catch (Exception e) {
+			Log.getLogger().warning("Cannot select in class tree: " + tableModel.getEditedCls());
+		}
     }
 
 
     private void deriveRestriction() {
+    	OWLRestriction newRestriction = null;
         OWLRestriction restriction = (OWLRestriction) table.getSelectedCls();
         Cls metaCls = restriction.getProtegeType();
         OWLProperty property = (OWLProperty) restriction.getOnProperty();
@@ -110,19 +120,25 @@ public class AssertedConditionsWidget extends AbstractConditionsWidget {
         try {
             beginTransaction("Derive restriction from " + restriction.getBrowserText() +
                     " at " + getEditedCls().getBrowserText());
-            OWLRestriction newRestriction =
-                    RestrictionEditorPanel.showCreateDialog(table, getEditedCls(), metaCls, property, fillerText);
-            if (newRestriction != null) {
-                OWLClassesTab owlClassesTab = table.getOWLClsesTab();
-                table.addRestriction(newRestriction);
-                table.ensureEditedClassSelectedInExplorer(owlClassesTab);
-            }
+            newRestriction = RestrictionEditorPanel.showCreateDialog(table, getEditedCls(), metaCls, property, fillerText);
+            if (newRestriction != null)               
+                table.addRestriction(newRestriction);               
+            
             commitTransaction();
         }
         catch (Exception ex) {
         	rollbackTransaction();
             OWLUI.handleError(getOWLModel(), ex);
         }
+        
+        try {
+        	if (newRestriction != null) {
+        		OWLClassesTab owlClassesTab = table.getOWLClsesTab();
+        		table.ensureEditedClassSelectedInExplorer(owlClassesTab);
+        	}
+		} catch (Exception e) {
+			Log.getLogger().warning("Cannot select in class tree: " + tableModel.getEditedCls());
+		}
     }
 
 
