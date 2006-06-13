@@ -37,7 +37,7 @@ public abstract class MultiWidgetPropertyWidget extends AbstractPropertyWidget {
      */
     private JPanel allPanel = new JPanel(new GridLayout(2, 1));
 
-    private FrameListener valueListener = new FrameAdapter() {
+    protected FrameListener valueListener = new FrameAdapter() {
         public void ownSlotValueChanged(FrameEvent event) {
             Slot slot = event.getSlot();
             for (Iterator it = widgets.iterator(); it.hasNext();) {
@@ -49,7 +49,7 @@ public abstract class MultiWidgetPropertyWidget extends AbstractPropertyWidget {
         }
     };
 
-    private Instance instance;
+    protected Instance instance;
 
     /**
      * The JTabbedPane the widgets reside in
@@ -318,5 +318,9 @@ public abstract class MultiWidgetPropertyWidget extends AbstractPropertyWidget {
                 }
             }
         }
+    }
+    
+    public Instance getMultiWidgetInstance(){
+    	return instance;
     }
 }
