@@ -10,21 +10,29 @@ import edu.stanford.smi.protegex.owl.swrl.model.*;
 
 public abstract class IndividualsAtomInfo extends AtomInfo
 {
-  private IndividualInfo argument1, argument2;
+  private Argument argument1, argument2;
   
-  public IndividualsAtomInfo(SWRLIndividualsAtom individualsAtom, String name) throws SWRLRuleEngineBridgeException
+  public IndividualsAtomInfo(SWRLIndividualsAtom atom, String name) throws SWRLRuleEngineBridgeException
   {
     super(name);
 
-    argument1 = new IndividualInfo((OWLIndividual)individualsAtom.getArgument1());
-    argument2 = new IndividualInfo((OWLIndividual)individualsAtom.getArgument2());
-    
-    // If argument1 or argument2 are individuals, add their names to the referenced individuals list.
-    if (argument1 instanceof IndividualInfo) addReferencedIndividualName(argument1.getName());
-    if (argument2 instanceof IndividualInfo) addReferencedIndividualName(argument2.getName());
+    if (atom.getArgument1() instanceof SWRLVariable) {
+      argument1 = new VariableInfo((SWRLVariable)atom.getArgument1());
+    } else if (atom.getArgument1() instanceof OWLIndividual) {
+      argument1 = new IndividualInfo((OWLIndividual)atom.getArgument1());
+      addReferencedIndividualName(argument1.getName());
+    } else throw new InvalidResourceNameException("Invalid argument 1 " + atom.getArgument1().getName() + " passed to atom.");
+
+    if (atom.getArgument2() instanceof SWRLVariable) {
+      argument2 = new VariableInfo((SWRLVariable)atom.getArgument2());
+    } else if (atom.getArgument2() instanceof OWLIndividual) {
+      argument2 = new IndividualInfo((OWLIndividual)atom.getArgument2());
+      addReferencedIndividualName(argument2.getName());
+    } else throw new InvalidResourceNameException("Invalid argument 1 " + atom.getArgument2().getName() + " passed to atom.");
+
   } // IndividualsAtomInfo
   
-  public IndividualInfo getArgument1() { return argument1; }
-  public IndividualInfo getArgument2() { return argument2; }
+  public Argument getArgument1() { return argument1; }
+  public Argument getArgument2() { return argument2; }
 } // IndividualsAtomInfo
 

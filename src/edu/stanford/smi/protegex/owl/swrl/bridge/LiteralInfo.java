@@ -107,4 +107,25 @@ public class LiteralInfo extends Info implements Argument
   public boolean isFloat() { return plainValue instanceof Float; }
   public boolean isDouble() { return plainValue instanceof Double; }
   public boolean isString() { return plainValue instanceof String; }
+
+  public boolean equals(Object obj)
+  {
+    if(this == obj) return true;
+    if((obj == null) || (obj.getClass() != this.getClass())) return false;
+    LiteralInfo info = (LiteralInfo)obj;
+    return (getName() == info.getName() || (getName() != null && getName().equals(info.getName()))) &&
+      (isNumeric == info.isNumeric()) &&
+      ((plainValue == info.plainValue) || (plainValue != null && info.plainValue != null && 
+                                           plainValue.toString().equals(info.plainValue.toString())));
+  } // equals
+
+  public int hashCode()
+  {
+    int hash = 66;
+    hash = hash + (null == getName() ? 0 : getName().hashCode());
+    hash = hash + (isNumeric ? 0 : 1);
+    hash = hash + (null == plainValue ? 0 : plainValue.toString().hashCode());
+    return hash;
+  } // hashCode
+
 } // LiteralInfo

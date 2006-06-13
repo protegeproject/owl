@@ -22,7 +22,6 @@ public class ClassAtomInfo extends AtomInfo
     
     if (atom.getArgument1() instanceof SWRLVariable) {
       argument1 = new VariableInfo((SWRLVariable)atom.getArgument1());
-      
     } else if (atom.getArgument1() instanceof OWLIndividual) {
       argument1 = new IndividualInfo((OWLIndividual)atom.getArgument1());
       addReferencedIndividualName(argument1.getName());
