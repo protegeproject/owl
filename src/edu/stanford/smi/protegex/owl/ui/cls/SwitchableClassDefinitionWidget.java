@@ -12,9 +12,11 @@ import javax.swing.JPanel;
 
 import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.Facet;
+import edu.stanford.smi.protege.model.Instance;
 import edu.stanford.smi.protege.model.Model;
 import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protege.util.Log;
+import edu.stanford.smi.protege.widget.SlotWidget;
 import edu.stanford.smi.protege.widget.Widget;
 import edu.stanford.smi.protege.plugin.PluginUtilities;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
@@ -161,4 +163,25 @@ public class SwitchableClassDefinitionWidget extends MultiWidgetPropertyWidget {
             }
         }
     }
+    
+    @Override
+    public void setInstance(Instance newInstance) {
+        if (instance != null) {
+            instance.removeFrameListener(valueListener);
+        }
+        for (Iterator it = listWidgets(); it.hasNext();) {
+            SlotWidget widget = (SlotWidget) it.next();
+            if (getActiveWidgetClass().equals(widget.getClass())) {
+            	widget.setInstance(newInstance);
+            }
+        }
+        instance = newInstance;
+        
+        if (instance != null) {
+            instance.addFrameListener(valueListener);
+        }
+    }
+    
+    
+    
 }
