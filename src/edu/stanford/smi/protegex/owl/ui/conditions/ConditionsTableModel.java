@@ -11,7 +11,6 @@ import java.util.List;
 import javax.swing.Icon;
 import javax.swing.table.AbstractTableModel;
 
-import sun.security.krb5.internal.crypto.s;
 
 import com.hp.hpl.jena.vocabulary.OWL;
 
