@@ -233,12 +233,6 @@ public class OWLFrameStore extends FrameStoreAdapter {
         }
     }
 
-
- 
-
- 
-
-
     private void copyFacetValuesIntoOWLNamedClass(RDFSNamedClass cls, OWLRestriction restriction) {
         Class clazz = restriction.getClass();
         RestrictionUpdater ru = (RestrictionUpdater) class2Updater.get(clazz);
