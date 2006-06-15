@@ -2,10 +2,10 @@ package edu.stanford.smi.protegex.owl.database;
 
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import edu.stanford.smi.protege.model.ClientInitializerKnowledgeBaseFactory;
 import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.DefaultKnowledgeBase;
 import edu.stanford.smi.protege.model.Instance;
@@ -13,6 +13,7 @@ import edu.stanford.smi.protege.model.KnowledgeBase;
 import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protege.model.framestore.FrameStore;
 import edu.stanford.smi.protege.model.framestore.NarrowFrameStore;
+import edu.stanford.smi.protege.server.ClientInitializerKnowledgeBaseFactory;
 import edu.stanford.smi.protege.storage.database.DatabaseKnowledgeBaseFactory;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protege.util.PropertyList;
@@ -20,6 +21,7 @@ import edu.stanford.smi.protegex.owl.database.triplestore.DatabaseTripleStoreMod
 import edu.stanford.smi.protegex.owl.jena.JenaKnowledgeBaseFactory;
 import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.model.RDFResource;
 import edu.stanford.smi.protegex.owl.resource.OWLText;
 import edu.stanford.smi.protegex.owl.storage.OWLKnowledgeBaseFactory;
 import edu.stanford.smi.protegex.owl.ui.resourceselection.ResourceSelectionAction;
@@ -131,4 +133,5 @@ public class OWLDatabaseKnowledgeBaseFactory extends DatabaseKnowledgeBaseFactor
         owlModel.adjustClientFrameStores();
       }
     }
+
 }
