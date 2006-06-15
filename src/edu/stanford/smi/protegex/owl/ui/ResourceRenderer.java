@@ -233,9 +233,9 @@ public class ResourceRenderer extends FrameRenderer {
             if (cls instanceof OWLAnonymousClass) {
                 addAnnotationFlag(this, cls);
             }
-            else if (directSuperclassesSlot != null && cls instanceof OWLNamedClass) {
+           /* else if (directSuperclassesSlot != null && cls instanceof OWLNamedClass) {
                 addNamedEquivalentClses((OWLNamedClass) cls);
-            }
+            }*/
             if (cls instanceof Deprecatable && ((Deprecatable) cls).isDeprecated()) {
                 addIcon(OWLIcons.getDeprecatedIcon());
             }
