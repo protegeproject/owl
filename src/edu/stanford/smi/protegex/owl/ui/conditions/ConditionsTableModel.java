@@ -345,6 +345,8 @@ public class ConditionsTableModel extends AbstractTableModel
             } else 	{ 
                 RDFSClass oldEquivalentClass = (RDFSClass) getClass(selectedRow);
                 if (oldEquivalentClass != null) { //there is one class in the definition, create an intersection and add the old and new classes to it
+                	System.out.println(getValueAt(selectedRow, getSymbolColumnIndex()));
+                	
                     if (oldEquivalentClass.getBrowserText().equals(aClass.getBrowserText())) {
                         return false;
                     }
@@ -362,10 +364,10 @@ public class ConditionsTableModel extends AbstractTableModel
                     
                     ConditionsTableItem oldItem = ConditionsTableItem.createSufficient(clonedOldEquivalentClass,ConditionsTableConstants.TYPE_DEFINITION_BASE, newDefinition);
     	            ConditionsTableItem newItem = ConditionsTableItem.createSufficient(aClass,ConditionsTableConstants.TYPE_DEFINITION_BASE, newDefinition);
-            		
-    	            replaceRowItem(selectedRow, newItem);
+            		    	         
     	            replaceRowItem(getClassRow(oldEquivalentClass), oldItem);
-                    
+    	            insertRowItem(selectedRow, newItem);
+    	                                
                     hostClass.removeEquivalentClass(oldEquivalentClass);
                 }
                 else {
