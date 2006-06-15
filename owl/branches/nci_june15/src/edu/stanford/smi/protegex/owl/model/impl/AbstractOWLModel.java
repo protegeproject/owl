@@ -1805,11 +1805,15 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
 
     public void deleteCls(Cls cls) {
+    	
+    	//This code was moved in OWLFrameStore.deleteAnonymousClass
+    	/*
         if (cls instanceof OWLAnonymousClass && cls.getDirectSubclassCount() == 1) {
-            Cls subCls = (Cls) cls.getDirectSubclasses().iterator().next();
-            subCls.removeDirectSuperclass(cls);  // Will call delete again
-            return;
-        }
+            Cls subCls = (Cls) cls.getDirectSubclasses().iterator().next();            
+           	subCls.removeDirectSuperclass(cls);  // Will call delete again
+           	return;
+        }*/
+    	
         /*if (cls instanceof OWLEnumeratedClass && cls.getDirectInstanceCount() > 0) {
             for (Iterator it = new ArrayList(cls.getDirectInstances()).iterator(); it.hasNext();) {
                 Instance instance = (Instance) it.next();
