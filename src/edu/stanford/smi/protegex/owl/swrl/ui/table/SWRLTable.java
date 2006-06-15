@@ -2,9 +2,7 @@ package edu.stanford.smi.protegex.owl.swrl.ui.table;
 
 import edu.stanford.smi.protege.model.Instance;
 import edu.stanford.smi.protege.util.Disposable;
-import edu.stanford.smi.protegex.owl.model.OWLModel;
-import edu.stanford.smi.protegex.owl.model.RDFProperty;
-import edu.stanford.smi.protegex.owl.model.RDFResource;
+import edu.stanford.smi.protegex.owl.model.*;
 import edu.stanford.smi.protegex.owl.swrl.model.SWRLImp;
 import edu.stanford.smi.protegex.owl.swrl.model.SWRLIndividual;
 import edu.stanford.smi.protegex.owl.swrl.ui.code.SWRLSymbolPanel;
@@ -87,7 +85,11 @@ public class SWRLTable extends SymbolTable implements Disposable {
     protected String getToolTipText(RDFResource rdfResource) {
         if (rdfResource instanceof SWRLImp) {
             RDFProperty commentSlot = getOWLModel().getRDFSCommentProperty();
-            return (String) rdfResource.getPropertyValue(commentSlot);
+	    Object value = rdfResource.getPropertyValue(commentSlot);
+	    // A comment is stored as a String if no language is specified, as an RDFSLiteral otherwise.
+	    if (value instanceof String) return (String)value;
+	    else if (value instanceof RDFSLiteral) return ((RDFSLiteral)value).toString();
+	    else return null; // Should not happen
         }
         else {
             return null;
