@@ -176,7 +176,7 @@ public class OWLSubclassPane extends SelectableContainer implements ClassTreePan
 
 
     private void setSelectedClassDelegate(Cls cls) {
-        if (!getSelection().contains(cls)) {
+        if (!getSelection().contains(cls) && !cls.isDeleted()) {
             Collection path = ModelUtilities.getPathToRoot(cls);
             setSelectedObjectPath(getTree(), path);
         }
