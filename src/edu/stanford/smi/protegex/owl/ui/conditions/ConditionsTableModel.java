@@ -429,8 +429,11 @@ public class ConditionsTableModel extends AbstractTableModel
             owlModel.commitTransaction();
         }
         catch (Exception ex) {
-        	owlModel.rollbackTransaction();
-            OWLUI.handleError(owlModel, ex);
+        	inEditing = false;
+        	
+        	owlModel.rollbackTransaction();        	
+        	
+        	OWLUI.handleError(owlModel, ex);        	
         }
     }
 
@@ -1099,7 +1102,10 @@ public class ConditionsTableModel extends AbstractTableModel
             owlModel.commitTransaction();
 		} 
 		catch (Exception e) {
-			owlModel.rollbackTransaction();
+			inEditing = false;
+			
+			owlModel.rollbackTransaction();					
+			
 			OWLUI.handleError(owlModel, e);
 		}
     }
@@ -1208,7 +1214,6 @@ public class ConditionsTableModel extends AbstractTableModel
 	            replaceRowItem(getClassRow(oldRestriction), oldItem);
 				
 	            hostClass.removeEquivalentClass(oldRestriction);
-
 	            
 	            return true;
 	       }
