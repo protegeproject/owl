@@ -180,7 +180,7 @@ public class ConditionsTableModel extends AbstractTableModel
 
     private void addItem(int index, ConditionsTableItem item) {
         items.add(index, item);
-        updateLocalIndices();
+        //updateLocalIndices();
     }
 
 
@@ -344,12 +344,7 @@ public class ConditionsTableModel extends AbstractTableModel
                 
             } else 	{ 
                 RDFSClass oldEquivalentClass = (RDFSClass) getClass(selectedRow);
-                if (oldEquivalentClass != null) { //there is one class in the definition, create an intersection and add the old and new classes to it
-                	System.out.println(getValueAt(selectedRow, getSymbolColumnIndex()));
-                	
-                    if (oldEquivalentClass.getBrowserText().equals(aClass.getBrowserText())) {
-                        return false;
-                    }
+                if (oldEquivalentClass != null) { //there is one class in the definition, create an intersection and add the old and new classes to it               	
                     
                     RDFSClass clonedOldEquivalentClass = oldEquivalentClass;
                     
@@ -420,7 +415,7 @@ public class ConditionsTableModel extends AbstractTableModel
 
 
     public void deleteRow(int index) {
-        try {
+        try {        	
             owlModel.beginTransaction("Delete condition " + getClass(index).getBrowserText() +
                     " from " + getEditedCls().getBrowserText());
             
@@ -1011,7 +1006,7 @@ public class ConditionsTableModel extends AbstractTableModel
                 fireTableRowsDeleted(i, i);
             }
         }
-        updateLocalIndices();
+        //updateLocalIndices();
     }
 
 
@@ -1151,7 +1146,11 @@ public class ConditionsTableModel extends AbstractTableModel
         if (definitionContext != null) { // new restriction is part of an owl:intersection        	
         	if (oldRestriction != null) { // replacing an old restriction
         		
-        		// if the old and new restrictions have the same browser text, don't do anything
+        		// if the old and new restrictions have the same browser text, don't do anything           	
+                if (oldRestriction.getBrowserText().equals(newRestriction.getBrowserText())) {
+                    return false;
+                }
+        		
         		if (oldRestriction.getBrowserText().equals(newRestriction.getBrowserText())) 
         			return false;
         		
@@ -1305,10 +1304,10 @@ public class ConditionsTableModel extends AbstractTableModel
      * Sorts the items according to their <CODE>compareTo</CODE> method.
      *
      * @see ConditionsTableItem#compareTo
-     */
-    private void sortItems() {
+     */    
+	private void sortItems() {
         Collections.sort(items);
-        updateLocalIndices();
+        //updateLocalIndices();
     }
 
 
@@ -1346,24 +1345,6 @@ public class ConditionsTableModel extends AbstractTableModel
         replaceItemType(typeB, typeA);
         replaceItemType(-10, typeB);
         sortItems();
-    }
-
-
-    private void updateLocalIndices() {
-        int row = 0;
-        for (Iterator it = items.iterator(); it.hasNext(); row++) {
-            ConditionsTableItem item = (ConditionsTableItem) it.next();
-            if (item.isSeparator()) {
-                updateLocalIndices(row + 1);
-            }
-        }
-    }
-
-
-    private void updateLocalIndices(int startRow) {
-        for (int i = startRow; i < items.size() && !getItem(i).isSeparator(); i++) {
-            getItem(i).setLocalIndex(i - startRow);
-        }
     }
     
 }

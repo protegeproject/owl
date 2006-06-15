@@ -22,12 +22,6 @@ public class ConditionsTableItem implements ConditionsTableConstants, Comparable
 
     private boolean isNew;
 
-    /**
-     * The index of this row inside its block.  This is 0 for the first row
-     * below each separator
-     */
-    private int localIndex;
-
     private OWLNamedClass originCls;
 
     private int type;
@@ -37,6 +31,8 @@ public class ConditionsTableItem implements ConditionsTableConstants, Comparable
     public static final String NECESSARY = "NECESSARY ";
 
     public static final String SUFFICIENT = "NECESSARY & SUFFICIENT ";
+
+	private static List owlRestrictionMetaClses = null;
 
 
     private ConditionsTableItem(RDFSClass aClass,
@@ -131,11 +127,12 @@ public class ConditionsTableItem implements ConditionsTableConstants, Comparable
         OWLRestriction restriction = (OWLRestriction) aClass;
         RDFProperty property = restriction.getOnProperty();
         RDFProperty otherProperty = otherCls.getOnProperty();
-        if (property.equals(otherProperty)) {
-            final OWLModel owlModel = aClass.getOWLModel();
-            List metaClses = Arrays.asList(owlModel.getOWLRestrictionMetaclasses());
-            int clsIndex = metaClses.indexOf(restriction.getProtegeType());
-            int otherIndex = metaClses.indexOf(otherCls.getProtegeType());
+        if (property.equals(otherProperty)) {            
+             if (owlRestrictionMetaClses == null) {            	 
+            	 owlRestrictionMetaClses = Arrays.asList(aClass.getOWLModel().getOWLRestrictionMetaclasses());
+             }            
+			int clsIndex = owlRestrictionMetaClses.indexOf(restriction.getProtegeType());
+            int otherIndex = owlRestrictionMetaClses.indexOf(otherCls.getProtegeType());
             return new Integer(clsIndex).compareTo(new Integer(otherIndex));
         }
         else {
@@ -232,12 +229,6 @@ public class ConditionsTableItem implements ConditionsTableConstants, Comparable
     boolean isSeparator() {
         return aClass == null && !isNew();
     }
-
-
-    void setLocalIndex(int value) {
-        this.localIndex = value;
-    }
-
 
     void setType(int value) {
         this.type = value;
