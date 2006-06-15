@@ -2672,8 +2672,8 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     }
 
 
-    public Collection getRDFSDatatypes() {
-        List results = new ArrayList();
+    public Collection<RDFResource> getRDFSDatatypes() {
+        List<RDFResource> results = new ArrayList<RDFResource>();
         Iterator it = rdfsDatatypeClass.getDirectInstances().iterator();
         while (it.hasNext()) {
             RDFResource datatype = (RDFResource) it.next();
@@ -3883,4 +3883,5 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     public RDFProperty getOWLDistinctMembersProperty() {
         return (RDFProperty) owlDistinctMembersProperty;
     }
+
 }
