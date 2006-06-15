@@ -27,26 +27,27 @@ public class LocalClassificationFrameStore extends FrameStoreAdapter {
     /**
      * Slot -> instancesMap
      */
-    private Map slotsMap = new HashMap();
+    private Map<Slot, Map<Frame, List>> slotsMap = new HashMap<Slot, Map<Frame, List>>();
 
 
     public LocalClassificationFrameStore(OWLModel owlModel) {
         this.owlModel = owlModel;
-        slotsMap.put(owlModel.getRDFProperty(ProtegeNames.Slot.CLASSIFICATION_STATUS), new HashMap());
-        slotsMap.put(owlModel.getRDFProperty(ProtegeNames.Slot.INFERRED_TYPE), new HashMap());
-        slotsMap.put(owlModel.getRDFProperty(ProtegeNames.Slot.INFERRED_SUBCLASSES), new HashMap());
-        slotsMap.put(owlModel.getRDFProperty(ProtegeNames.Slot.INFERRED_SUPERCLASSES), new HashMap());
+        slotsMap.put(owlModel.getRDFProperty(ProtegeNames.Slot.CLASSIFICATION_STATUS), new HashMap<Frame, List>());
+        slotsMap.put(owlModel.getRDFProperty(ProtegeNames.Slot.INFERRED_TYPE), new HashMap<Frame, List>());
+        slotsMap.put(owlModel.getRDFProperty(ProtegeNames.Slot.INFERRED_SUBCLASSES), new HashMap<Frame, List>());
+        slotsMap.put(owlModel.getRDFProperty(ProtegeNames.Slot.INFERRED_SUPERCLASSES), new HashMap<Frame, List>());
     }
 
 
     public void deleteCls(Cls cls) {
-        for (Iterator it = slotsMap.keySet().iterator(); it.hasNext();) {
-            Slot slot = (Slot) it.next();
-            Map instancesMap = (Map) slotsMap.get(slot);
+        for (Iterator<Slot> it = slotsMap.keySet().iterator(); it.hasNext();) {
+            Slot slot = it.next();
+            Map<Frame, List> instancesMap = slotsMap.get(slot);
             instancesMap.remove(cls);
-            for (Iterator jt = new ArrayList(instancesMap.keySet()).iterator(); jt.hasNext();) {
-                Frame frame = (Frame) jt.next();
-                Collection values = (Collection) instancesMap.get(frame);
+            for (Iterator<Frame> jt = new ArrayList<Frame>(instancesMap.keySet()).iterator(); 
+                 jt.hasNext();) {
+                Frame frame = jt.next();
+                Collection values = instancesMap.get(frame);
                 if (values.contains(cls)) {
                     List newValues = new ArrayList(values);
                     newValues.remove(cls);
@@ -69,9 +70,9 @@ public class LocalClassificationFrameStore extends FrameStoreAdapter {
 
 
     public List getDirectOwnSlotValues(Frame frame, Slot slot) {
-        final Map instancesMap = (Map) slotsMap.get(slot);
+        final Map<Frame,List> instancesMap = slotsMap.get(slot);
         if (instancesMap != null) {
-            final List values = (List) instancesMap.get(frame);
+            final List values = instancesMap.get(frame);
             if (values == null) {
                 return Collections.EMPTY_LIST;
             }
@@ -86,7 +87,7 @@ public class LocalClassificationFrameStore extends FrameStoreAdapter {
 
 
     public int getDirectOwnSlotValuesCount(Frame frame, Slot slot) {
-        final Map instancesMap = (Map) slotsMap.get(slot);
+        final Map<Frame, List> instancesMap = slotsMap.get(slot);
         if (instancesMap != null) {
             return getDirectOwnSlotValues(frame, slot).size();
         }
@@ -108,12 +109,12 @@ public class LocalClassificationFrameStore extends FrameStoreAdapter {
 
 
     public Set getFramesWithDirectOwnSlotValue(Slot slot, Object value) {
-        final Map instancesMap = (Map) slotsMap.get(slot);
+        final Map<Frame, List> instancesMap = slotsMap.get(slot);
         if (instancesMap != null) {
-            final Set result = new HashSet();
-            for (Iterator it = instancesMap.keySet().iterator(); it.hasNext();) {
-                final Object key = it.next();
-                final Collection values = (Collection) instancesMap.get(key);
+            final Set<Frame> result = new HashSet<Frame>();
+            for (Iterator<Frame> it = instancesMap.keySet().iterator(); it.hasNext();) {
+                final Frame key = it.next();
+                final Collection values = instancesMap.get(key);
                 if (values != null && values.contains(value)) {
                     result.add(key);
                 }
@@ -127,7 +128,7 @@ public class LocalClassificationFrameStore extends FrameStoreAdapter {
 
 
     public void setDirectOwnSlotValues(Frame frame, Slot slot, Collection values) {
-        final Map instancesMap = (Map) slotsMap.get(slot);
+        final Map<Frame, List> instancesMap = slotsMap.get(slot);
         if (instancesMap != null) {
             if (values.isEmpty()) {
                 instancesMap.remove(frame);
