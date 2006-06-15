@@ -1131,8 +1131,9 @@ public class ConditionsTableModel extends AbstractTableModel
         // treat superclasses
         if (getType(selectedRow) == TYPE_SUPERCLASS) {
             hostClass.addSuperclass(newRestriction);
+          
             ConditionsTableItem item = ConditionsTableItem.create(newRestriction, TYPE_SUPERCLASS);
-            insertRowItem(selectedRow, item);
+            replaceRowItem(selectedRow, item);
             
             if (oldRestriction != null)
             	hostClass.removeSuperclass(oldRestriction);
@@ -1210,9 +1211,9 @@ public class ConditionsTableModel extends AbstractTableModel
 	            ConditionsTableItem oldItem = ConditionsTableItem.createSufficient(clonedOldRestrcition,ConditionsTableConstants.TYPE_DEFINITION_BASE, newDefinition);
 	            ConditionsTableItem newItem = ConditionsTableItem.createSufficient(newRestriction,ConditionsTableConstants.TYPE_DEFINITION_BASE, newDefinition);
         		
-	            replaceRowItem(selectedRow, newItem);
 	            replaceRowItem(getClassRow(oldRestriction), oldItem);
-				
+	            replaceRowItem(selectedRow, newItem);
+	            				
 	            hostClass.removeEquivalentClass(oldRestriction);
 	            
 	            return true;
