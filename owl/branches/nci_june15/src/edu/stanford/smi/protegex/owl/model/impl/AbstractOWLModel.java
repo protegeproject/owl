@@ -1883,87 +1883,77 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
 
     public synchronized String getBrowserText(Instance instance) {
-        if (instance instanceof RDFResource) {
-            if (instance instanceof OWLAnonymousClass) {
-                return instance.getBrowserText();
-            }
-            else if (instance.isDeleted()) {
-                return "<deleted>";
-            }
-            else {
-                Cls directType = instance.getDirectType();
-                if (getProject() == null) {
-                    return getName(instance);
-                }
-                else if (directType == null) {
-                    return getMissingTypeString(instance);
-                }
-                else {
-                    BrowserSlotPattern slotPattern = getProject().getBrowserSlotPattern(instance.getDirectType());
-                    if (slotPattern == null) {
-                        return getDisplaySlotNotSetString(instance);
-                    }
-                    else {
-                        String value = null;
-                        Collection elements = slotPattern.getElements();
-                        final Slot slot = slotPattern.getFirstSlot();
-                        if (elements.size() == 1 && slot != null &&
-                            !slot.equals(nameSlot) &&
-                            slot.getValueType() == ValueType.STRING) {
-                            String defaultLanguage = getDefaultLanguage();
-                            Collection values = null;
-                            if (slot instanceof RDFProperty) {
-                                values = ((RDFResource) instance).getPropertyValues((RDFProperty) slot);
-                            }
-                            else {
-                                values = instance.getOwnSlotValues(slot);
-                            }
-                            if (defaultLanguage != null) {
-                                Iterator it = values.iterator();
-                                while (it.hasNext()) {
-                                    Object rawText = it.next();
-                                    if (rawText instanceof RDFSLiteral) {
-                                        RDFSLiteral literal = (RDFSLiteral) rawText;
-                                        if (defaultLanguage.equals(literal.getLanguage())) {
-                                            value = literal.getString();
-                                            break;
-                                        }
-                                    }
-                                }
-                            }
-                            if (value == null) {
-                                Iterator it = values.iterator();
-                                while (it.hasNext()) {
-                                    Object rawText = it.next();
-                                    if (rawText instanceof RDFSLiteral) {
-                                        RDFSLiteral literal = (RDFSLiteral) rawText;
-                                        if (literal.getLanguage() == null) {
-                                            value = literal.getString();
-                                            break;
-                                        }
-                                    }
-                                    else {
-                                        value = rawText.toString();
-                                        break;
-                                    }
-                                }
-                            }
-                        }
-                        else {
-                            value = slotPattern.getBrowserText(instance);
-                        }
-                        if (value == null) {
-                            value = getDisplaySlotPatternValueNotSetString(instance, slotPattern);
-                        }
-                        return value;
-                    }
-                }
-            }
-        }
-        else {
-            return super.getBrowserText(instance);
-        }
-    }
+    	
+    	if (!(instance instanceof RDFResource))
+    		return super.getBrowserText(instance);
+
+    	if (instance.isDeleted()) 
+            return "<deleted>";
+    	
+    	if (instance instanceof OWLAnonymousClass)
+    		return instance.getBrowserText();
+    	
+    	if (getProject() == null)
+             return getName(instance);   
+            
+       	Cls directType = instance.getDirectType();
+
+       	if (directType == null)
+        	return getMissingTypeString(instance);
+                	
+         BrowserSlotPattern slotPattern = getProject().getBrowserSlotPattern(directType);
+         
+         if (slotPattern == null)
+        	 return getDisplaySlotNotSetString(instance);
+                  
+         final Slot slot = slotPattern.getFirstSlot();
+         
+         if (slotPattern.getElements().size() == 1 && slot != null && !slot.equals(nameSlot) && slot.getValueType() == ValueType.STRING) {
+        	 
+        	 Collection values = null;
+             if (slot instanceof RDFProperty)
+            	 values = ((RDFResource) instance).getPropertyValues((RDFProperty) slot);
+             else 
+            	 values = instance.getOwnSlotValues(slot);
+                     
+             String langText = getLangBrowserText(values, getDefaultLanguage());
+             
+             if (langText != null)
+            	 return langText;
+             
+             return getDisplaySlotPatternValueNotSetString(instance, slotPattern); 
+         }
+         
+         return slotPattern.getBrowserText(instance);         
+	}
+    
+    
+    private String getLangBrowserText(Collection values, String defaultLanguage) {
+    	String browserText = null;
+    	
+    	for (Iterator iter = values.iterator(); iter.hasNext();) {
+			Object value = iter.next();
+			
+			if (defaultLanguage == null) { 
+				if (value instanceof String)
+					return (String) value;
+				else if (value instanceof RDFSLiteral && ((RDFSLiteral)value).getLanguage() == null) {
+					String text = ((RDFSLiteral)value).getString();
+					if (text != null)
+						return text;
+				}				
+			} else { //default language is not null
+				if (value instanceof RDFSLiteral && ((RDFSLiteral)value).getLanguage().equals(defaultLanguage)) {
+					String text = ((RDFSLiteral)value).getString();
+					if (text != null)
+						return text;
+				} else if (value instanceof String)
+					browserText = (String) value; //in this way it will always remember the last one if several
+			}		
+		}    	
+		return browserText;
+	}
+	
 
 
     public Collection getChangedInferredClasses() {
