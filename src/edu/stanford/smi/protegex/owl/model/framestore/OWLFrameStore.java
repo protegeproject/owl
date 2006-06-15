@@ -27,8 +27,10 @@ import edu.stanford.smi.protege.model.framestore.FrameStoreAdapter;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.model.OWLAnonymousClass;
 import edu.stanford.smi.protegex.owl.model.OWLDataRange;
+import edu.stanford.smi.protegex.owl.model.OWLEnumeratedClass;
 import edu.stanford.smi.protegex.owl.model.OWLIntersectionClass;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.model.OWLNAryLogicalClass;
 import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
 import edu.stanford.smi.protegex.owl.model.OWLNames;
 import edu.stanford.smi.protegex.owl.model.OWLObjectProperty;
@@ -319,8 +321,18 @@ public class OWLFrameStore extends FrameStoreAdapter {
 
 
     private void deleteAnonymousClass(OWLAnonymousClass cls) {
-        Collection refs = cls.getReferringAnonymousClasses();
-        deleteDependingListInstances(cls);
+       
+    	//moved from AbstractOWLModel
+    	if (cls.getDirectSubclassCount() == 1) {
+            Cls subCls = (Cls) cls.getDirectSubclasses().iterator().next();            
+            subCls.removeDirectSuperclass(cls);  // Will call delete again           
+        }
+    	//end moved
+    	
+        //Collection refs = cls.getReferringAnonymousClasses();
+        //deleteDependingListInstances(cls);
+        Collection<RDFSClass> refs = getReferringAnonymousClassesAndDeleteDependingListInstances(cls);
+    	
         if (refs.size() > 0) {
             deleteAnonymousClses(refs);  // Will also delete cls
         }
@@ -329,6 +341,48 @@ public class OWLFrameStore extends FrameStoreAdapter {
         }
     }
 
+    
+    /**
+     * This method has been artificially introduce to avoid a double call to getReferences()
+     * @param cls
+     * @return
+     */
+    private Set<RDFSClass> getReferringAnonymousClassesAndDeleteDependingListInstances(OWLAnonymousClass cls) {
+        final Slot directSubclassesSlot = ((Cls) cls).getKnowledgeBase().getSlot(Model.Slot.DIRECT_SUBCLASSES);
+        final RDFProperty rdfFirstProperty = cls.getOWLModel().getRDFFirstProperty();
+        final RDFList nil = owlModel.getRDFNil();
+        
+        Set<RDFSClass> result = new HashSet<RDFSClass>();        
+        
+        for (Iterator it = cls.getReferences().iterator(); it.hasNext();) {
+            Reference reference = (Reference) it.next();
+            Frame frame = reference.getFrame();
+            Slot slot = reference.getSlot();
+            
+            if (frame instanceof OWLAnonymousClass) {
+                if (!directSubclassesSlot.equals(slot)) {
+                    result.add((RDFSClass) frame);
+                }
+            } else if (frame instanceof RDFList && rdfFirstProperty.equals(slot)) {
+                RDFList list = (RDFList) frame;
+                RDFList start = list.getStart();
+                OWLUtil.getReferringLogicalClasses(start, result); //very expensive call
+                
+                // Delete RDFList nodes that have the value as rdf:first               
+                if (!nil.equals(list)) {
+                	deleteListInstance(list);
+                }
+            }
+        }
+
+        // Delete any RDFLists that are direct own slot values of the instance
+        if (cls instanceof RDFResource) {
+            deleteRDFListsThatArePropertyValues((RDFResource) cls);
+        }
+        
+        return result;
+    }
+    
 
     private void deleteAnonymousClses(Collection clses) {
         deleteAnonymousClasses(clses, Collections.EMPTY_LIST);
