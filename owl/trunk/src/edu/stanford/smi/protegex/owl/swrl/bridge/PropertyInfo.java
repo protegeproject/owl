@@ -95,6 +95,7 @@ public class PropertyInfo extends Info
   } // hashCode
 
   // Utility method to create a list of PropertyInfo objects for every subject/predicate combination for a particular OWL property.
+  // TODO: this is very inefficient
 
   public static List buildPropertyInfoList(OWLModel owlModel, String propertyName) throws SWRLRuleEngineBridgeException
   {
@@ -115,7 +116,11 @@ public class PropertyInfo extends Info
 
       Iterator individualsIterator = rdfsClass.getInstances(true).iterator();
       while (individualsIterator.hasNext()) {
-        OWLIndividual domainIndividual = (OWLIndividual)individualsIterator.next();
+        Object object = individualsIterator.next();
+
+        // TODO: hack - need to fix this (could return metaclasses, for example) and think about OWL DL/Full issues. 
+        if (!(object instanceof OWLIndividual)) continue; 
+        OWLIndividual domainIndividual = (OWLIndividual)object;
         
           if (domainIndividual.hasPropertyValue(property)) {
             if (property.isObjectProperty()) {
