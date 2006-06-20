@@ -23,15 +23,9 @@ public class LiteralInfo extends Info implements Argument
   public LiteralInfo(Object o)
   {
     super("<A literal>");
-    plainValue = o.toString();
-    isNumeric = o instanceof Number;
-  } // LiteralInfo
 
-  public LiteralInfo(String value)
-  {
-    super("<A literal>");
-    plainValue = value;
-    isNumeric = false;
+    plainValue = o;
+    isNumeric = (o instanceof Number);
   } // LiteralInfo
 
   public LiteralInfo(boolean value)
@@ -55,11 +49,20 @@ public class LiteralInfo extends Info implements Argument
     isNumeric = true;
   } // LiteralInfo
 
+  public LiteralInfo(double value)
+  {
+    super("<A literal>");
+    plainValue = new Double(value);
+    isNumeric = true;
+  } // LiteralInfo
+
   public String getValue() { return plainValue.toString(); }
   public boolean isNumeric() { return isNumeric; }
 
   public boolean getBoolean() { return Boolean.valueOf(getValue()); }
   public String getString() { return getValue(); }
+
+  public String toString() { return getString(); }
 
   public int getInt() throws LiteralConversionException 
   {

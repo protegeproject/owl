@@ -11,7 +11,10 @@
 package edu.stanford.smi.protegex.owl.swrl.bridge;
 
 import edu.stanford.smi.protegex.owl.model.*;
+import edu.stanford.smi.protegex.owl.model.factory.OWLJavaFactoryUpdater;
+import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
 import edu.stanford.smi.protegex.owl.swrl.model.*;
+import edu.stanford.smi.protegex.owl.swrl.model.factory.SWRLJavaFactory;
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.*;
 import edu.stanford.smi.protegex.owl.swrl.bridge.builtins.*;
 
@@ -67,7 +70,7 @@ public abstract class SWRLRuleEngineBridge
     try { 
       colonIndex = builtInName.indexOf(':');
       if (colonIndex != -1) {
-        namespaceName = builtInName.substring(0, colonIndex - 1);
+        namespaceName = builtInName.substring(0, colonIndex);
         builtInMethodName = builtInName.substring(colonIndex + 1, builtInName.length());
         className = "edu.stanford.smi.protegex.owl.swrl.bridge.builtins." + namespaceName + ".SWRLBuiltInMethodsImpl";
       } else { // No namespace - try the base built-ins package. Ordinarily, built-ins should not be located here.
@@ -80,22 +83,19 @@ public abstract class SWRLRuleEngineBridge
         swrlBuiltInMethods = (SWRLBuiltInMethods)builtInMethodsClassInstances.get(namespaceName);
         swrlBuiltInMethodsClass = swrlBuiltInMethods.getClass();
       } else { // Class not loaded.
-        String classpath = System.getProperty("java.class.path");
-        
-        ClassLoader loader = new URLClassLoader(new URL[] { new URL(classpath) });
-        swrlBuiltInMethodsClass = loader.loadClass(className);
+        swrlBuiltInMethodsClass = Class.forName(className);
 
-        if (swrlBuiltInMethodsClass.isInstance(swrlBuiltInMethods)) 
-          swrlBuiltInMethods = (SWRLBuiltInMethods)swrlBuiltInMethodsClass.newInstance();
-        else throw new InvalidBuiltInMethodsImplementationClass(className);
+        swrlBuiltInMethods = (SWRLBuiltInMethods)swrlBuiltInMethodsClass.newInstance();
+        //else throw new InvalidBuiltInMethodsImplementationClass(className);
 
         builtInMethodsClassInstances.put(namespaceName, swrlBuiltInMethods);
+
       } // if
       method = swrlBuiltInMethodsClass.getMethod(builtInMethodName, new Class[] { List.class });
       result = (Boolean)method.invoke(swrlBuiltInMethods, new Object[] { arguments });
       
     } catch (Exception e) {
-      throw new UnresolvedBuiltInException("Cannot invoke built-in method '" + builtInMethodName + "' in namespace '" 
+      throw new UnresolvedBuiltInException("Error invoking built-in method '" + builtInMethodName + "' in namespace '" 
                                            + namespaceName + "'. Exception: " + e.getMessage());
     } // try
 
@@ -148,6 +148,10 @@ public abstract class SWRLRuleEngineBridge
     assertedProperties = new ArrayList(); 
 
     builtInMethodsClassInstances = new HashMap();
+
+    SWRLJavaFactory factory = new SWRLJavaFactory(owlModel);
+    owlModel.setOWLJavaFactory(factory);
+    if(owlModel instanceof JenaOWLModel) OWLJavaFactoryUpdater.run((JenaOWLModel)owlModel);
 
   } // SWRLRuleEngineBridge
 
@@ -327,7 +331,7 @@ public abstract class SWRLRuleEngineBridge
     Iterator iterator = rdfsClass.getInstances(true).iterator();
     while (iterator.hasNext()) {
       Object o = iterator.next();
-      if (o instanceof OWLIndividual) { // TODO: what else would it be and why?
+      if (o instanceof OWLIndividual) { // TODO: may not be OWLIndividual. Should we detect attempts to use OWL Full?
         OWLIndividual individual = (OWLIndividual)o;
         String individualName = individual.getName();
         IndividualInfo individualInfo = new IndividualInfo(owlModel, individualName);
