@@ -135,19 +135,9 @@ public class SWRLBuiltInUtil
 
   public static void checkThatArgumentIsALiteral(String builtInName, int argumentNumber, List arguments) throws InvalidBuiltInArgumentException
   {
-    if (!(arguments.get(argumentNumber - 1) instanceof LiteralInfo)) 
+    if (!(arguments.get(argumentNumber) instanceof LiteralInfo)) 
       throw new InvalidBuiltInArgumentException(builtInName, argumentNumber, "Expecting literal");
   } // checkThatArgumentIsALiteral
-
-  public static boolean isArgumentALiteral(int argumentNumber, List arguments) 
-  {
-    return (arguments.get(argumentNumber - 1) instanceof LiteralInfo);
-  } // checkThatArgumentIsALiteral
-
-  public static LiteralInfo getArgumentAsALiteral(int argumentNumber, List arguments) throws InvalidBuiltInArgumentException
-  {
-    return (LiteralInfo)arguments.get(argumentNumber);
-  } // getArgumentAsALiteral
 
   public static void checkThatArgumentIsNumeric(String builtInName, int argumentNumber, List arguments) throws InvalidBuiltInArgumentException
   {
@@ -168,7 +158,7 @@ public class SWRLBuiltInUtil
 
   public static void checkThatArgumentIsAnIndividualName(String builtInName, int argumentNumber, List arguments) throws InvalidBuiltInArgumentException
   {
-    if (!(arguments.get(argumentNumber - 1) instanceof IndividualInfo)) 
+    if (!(arguments.get(argumentNumber) instanceof IndividualInfo)) 
       throw new InvalidBuiltInArgumentException(builtInName, argumentNumber, "Expecting individual name");
   } // checkThatArgumentIsAnIndividualName
 
@@ -202,8 +192,7 @@ public class SWRLBuiltInUtil
 
   public static boolean isArgumentAnInteger(int argumentNumber, List arguments) throws InvalidBuiltInArgumentException
   {
-    if (isArgumentALiteral(argumentNumber, arguments)) 
-      return (getArgumentAsALiteral(argumentNumber, arguments).isInteger());
+    if (isArgumentALiteral(argumentNumber, arguments)) return (getArgumentAsALiteral(argumentNumber, arguments).isInteger());
     else return false;
   } // isArgumentAnInteger
 
@@ -213,6 +202,16 @@ public class SWRLBuiltInUtil
 
     return getArgumentAsALiteral(argumentNumber, arguments).getInt();
   } // getArgumentAsAnInteger
+
+  public static boolean isArgumentALiteral(int argumentNumber, List arguments) 
+  {
+    return (arguments.get(argumentNumber) instanceof LiteralInfo);
+  } // checkThatArgumentIsALiteral
+
+  public static LiteralInfo getArgumentAsALiteral(int argumentNumber, List arguments) throws InvalidBuiltInArgumentException
+  {
+    return (LiteralInfo)arguments.get(argumentNumber);
+  } // getArgumentAsALiteral
 
   // Longs
 
