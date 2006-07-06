@@ -111,42 +111,42 @@ public class SWRLTab extends AbstractTabWidget {
         
  
 
-	private void activateSWRLFactoryIfNecessary(OWLModel owlModel) {	
-		SWRLJavaFactory factory = new SWRLJavaFactory(owlModel);
-		owlModel.setOWLJavaFactory(factory);
-		if(owlModel instanceof JenaOWLModel) {
-			OWLJavaFactoryUpdater.run((JenaOWLModel) owlModel);
-		}	
-	}
+  private void activateSWRLFactoryIfNecessary(OWLModel owlModel) {	
+    SWRLJavaFactory factory = new SWRLJavaFactory(owlModel);
+    owlModel.setOWLJavaFactory(factory);
+    if(owlModel instanceof JenaOWLModel) {
+      OWLJavaFactoryUpdater.run((JenaOWLModel) owlModel);
+    }	
+  }
 
-    private boolean isSWRLImported(OWLModel owlModel) {
-    	boolean swrlFound = false;
-    	boolean swrlbFound = false;
-    	    	
-    	Iterator iter = owlModel.getOWLOntologies().iterator();
-    	
-    	try {
-			while (iter.hasNext() && !(swrlbFound && swrlFound)) {
-				OWLOntology ont = (OWLOntology) iter.next();
-				if (ont.getNamespace().equals(SWRLNames.SWRL_NAMESPACE))
-					swrlFound = true;
+  private boolean isSWRLImported(OWLModel owlModel) {
+    boolean swrlFound = false;
+    boolean swrlbFound = false;
+    
+    Iterator iter = owlModel.getOWLOntologies().iterator();
+    
+    try {
+      while (iter.hasNext() && !(swrlbFound && swrlFound)) {
+        OWLOntology ont = (OWLOntology) iter.next();
+        if (ont.getNamespace().equals(SWRLNames.SWRL_NAMESPACE))
+          swrlFound = true;
 				if (ont.getNamespace().equals(SWRLNames.SWRLB_NAMESPACE))
-					swrlbFound = true;				
-			}
-		} catch (Exception e) {
-			// TODO: handle exception
-		}
-		return swrlFound && swrlbFound;
-	}
-
-	public static boolean isSuitable(Project p, Collection errors) {
-        if (p.getKnowledgeBase() instanceof OWLModel) {
-            return true;
-        }
-        else {
-            errors.add("This tab can only be used with OWL projects.");
-            return false;
-        }
+                                  swrlbFound = true;				
+      }
+    } catch (Exception e) {
+      // TODO: handle exception
     }
-
+    return swrlFound && swrlbFound;
+  }
+  
+  public static boolean isSuitable(Project p, Collection errors) {
+    if (p.getKnowledgeBase() instanceof OWLModel) {
+      return true;
+    }
+    else {
+      errors.add("This tab can only be used with OWL projects.");
+      return false;
+    }
+  }
+  
 }

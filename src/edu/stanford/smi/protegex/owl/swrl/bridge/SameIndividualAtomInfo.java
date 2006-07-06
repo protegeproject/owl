@@ -3,9 +3,8 @@
 
 package edu.stanford.smi.protegex.owl.swrl.bridge;
 
-import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.*;
-
-import edu.stanford.smi.protegex.owl.swrl.model.*;
+import edu.stanford.smi.protegex.owl.swrl.model.SWRLSameIndividualAtom;
+import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.SWRLRuleEngineBridgeException;
 
 public class SameIndividualAtomInfo extends IndividualsAtomInfo 
 {

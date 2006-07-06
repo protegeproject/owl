@@ -44,7 +44,7 @@ public class PropertyInfo extends Info
   {
     OWLProperty property;
     OWLIndividual individual;
-    RDFObject rdfObject;
+    Object object;
     
     if (getName().equalsIgnoreCase("sameAs")) property = (OWLProperty)owlModel.getOWLSameAsProperty();
     else if (getName().equalsIgnoreCase("differentFrom")) property = (OWLProperty)owlModel.getOWLDifferentFromProperty();
@@ -56,13 +56,16 @@ public class PropertyInfo extends Info
     if (individual == null) throw new InvalidIndividualNameException(subject.getName());
     
     if (property.isObjectProperty()) {
-      rdfObject = owlModel.getOWLIndividual(predicate.getName());
-      if (rdfObject == null) throw new InvalidIndividualNameException(predicate.getName());
-    } else { // is a Datatype property.
-      rdfObject = owlModel.asRDFSLiteral(((LiteralInfo)predicate).getValue());
-    } // if
-    
-    individual.addPropertyValue(property, rdfObject);
+      object = owlModel.getOWLIndividual(predicate.getName());
+      if (object == null) throw new InvalidIndividualNameException(predicate.getName());
+    } else { // Is a datatype property, so will be held in a LiteralInfo.
+      // In Protege-OWL RDFS literals without a selected language are stored as String objects.
+      LiteralInfo literal = (LiteralInfo)predicate;
+      if (literal.isString()) object = literal.getValue();
+      else object = owlModel.asRDFSLiteral(literal.getValue());
+    } // if    
+
+    if (!individual.hasPropertyValue(property, object, true)) individual.addPropertyValue(property, object);
   } // writeAssertedProperty2OWL
 
   public String toString()

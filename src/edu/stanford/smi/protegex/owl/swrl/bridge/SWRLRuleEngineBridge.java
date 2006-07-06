@@ -1,7 +1,5 @@
 
-// TODO: debug dynamic built-in loading
 // TODO: check that built-in methods in the Impl class throw BuiltInException
-// TODO: BuiltIns
 // TODO: DataRange
 
 // SWRLRuleEngineBridge
@@ -11,10 +9,7 @@
 package edu.stanford.smi.protegex.owl.swrl.bridge;
 
 import edu.stanford.smi.protegex.owl.model.*;
-import edu.stanford.smi.protegex.owl.model.factory.OWLJavaFactoryUpdater;
-import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
 import edu.stanford.smi.protegex.owl.swrl.model.*;
-import edu.stanford.smi.protegex.owl.swrl.model.factory.SWRLJavaFactory;
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.*;
 import edu.stanford.smi.protegex.owl.swrl.bridge.builtins.*;
 
@@ -46,6 +41,7 @@ public abstract class SWRLRuleEngineBridge
     propertyInfo = new PropertyInfo(propertyName, subject, predicate);
 
     if (!assertedProperties.contains(propertyInfo)) assertedProperties.add(propertyInfo); 
+
   } // assertProperty
 
   public void assertIndividual(String individualName, String className) throws SWRLRuleEngineBridgeException 
@@ -148,10 +144,6 @@ public abstract class SWRLRuleEngineBridge
     assertedProperties = new ArrayList(); 
 
     builtInMethodsClassInstances = new HashMap();
-
-    SWRLJavaFactory factory = new SWRLJavaFactory(owlModel);
-    owlModel.setOWLJavaFactory(factory);
-    if(owlModel instanceof JenaOWLModel) OWLJavaFactoryUpdater.run((JenaOWLModel)owlModel);
 
   } // SWRLRuleEngineBridge
 

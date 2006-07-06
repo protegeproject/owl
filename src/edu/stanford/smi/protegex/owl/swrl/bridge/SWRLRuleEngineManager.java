@@ -10,6 +10,9 @@ import edu.stanford.smi.protegex.owl.swrl.bridge.ui.SWRLRuleEngineGUIAdapter;
 import edu.stanford.smi.protegex.owl.swrl.ui.tab.SWRLTab;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 
+import edu.stanford.smi.protege.model.Project;
+import edu.stanford.smi.protege.event.*;
+
 import java.util.*;
 import java.util.logging.*;
 import javax.swing.*;
@@ -19,6 +22,16 @@ public class SWRLRuleEngineManager
 {
   private static HashMap registeredRuleEngines = new HashMap();
   private static String visibleRuleEngineName = "";
+
+  private static ProjectListener projectListener = new ProjectAdapter() 
+  {
+    public void projectClosed(ProjectEvent event) 
+    { 
+      Project project = (Project)event.getSource();
+      project.removeProjectListener(projectListener);
+      visibleRuleEngineName = "";
+    } // projectClosed
+    }; 
 
   static {
 
@@ -59,9 +72,11 @@ public class SWRLRuleEngineManager
 
   public static void showRuleEngine(String ruleEngineName, SWRLTab swrlTab, OWLModel owlModel)
   {
+    owlModel.getProject().addProjectListener(projectListener);
+
     if (!isVisible(ruleEngineName)) {
 
-      if (hideRuleEngine(visibleRuleEngineName)) { // Hide may fail if uses does not confirm it.
+      if (hideRuleEngine(visibleRuleEngineName)) { // Hide may fail if user does not confirm it.
       
         if (registeredRuleEngines.containsKey(ruleEngineName)) {
           
@@ -72,15 +87,18 @@ public class SWRLRuleEngineManager
           
           if (ruleEngineGUI != null) {
             swrlTab.add(ruleEngineGUI);
-            swrlTab.validate(); swrlTab.setVisible(true);
+            swrlTab.setVisible(false); swrlTab.setVisible(true); // Who knows?
             visibleRuleEngineName = ruleEngineName;
-          } else {
-            makeTextPanel(swrlTab, "Unable to activate the " + ruleEngineName + " rule engine.");
-          } // if
+          } else  makeTextPanel(swrlTab, "Unable to activate the " + ruleEngineName + " rule engine.");
         } // if
       } // if
     } // if
   } // showRuleEngine
+
+  public static void hideVisibleRuleEngine()
+  {
+    hideRuleEngine(visibleRuleEngineName, true);
+  } // hideVisibleRuleEngine
 
   public static boolean hideRuleEngine(String ruleEngineName)
   {
@@ -99,7 +117,7 @@ public class SWRLRuleEngineManager
         Container ruleEngineGUI = info.getGUIAdapter().getRuleEngineGUI();
         Container swrlTab = ruleEngineGUI.getParent();
         swrlTab.remove(ruleEngineGUI);
-        swrlTab.validate(); swrlTab.setVisible(true);
+        swrlTab.setVisible(false); swrlTab.setVisible(true); // Who knows?
         visibleRuleEngineName = "";
       } // if
     } // if

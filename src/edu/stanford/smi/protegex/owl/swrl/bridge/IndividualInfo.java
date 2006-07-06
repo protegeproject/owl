@@ -14,14 +14,14 @@ import java.util.*;
 
 public class IndividualInfo extends Info implements Argument
 {
-  private List classNames;
+  private Collection classNames;
     
   // Constructor used when creating an info object from an OWL individual.
   public IndividualInfo(OWLIndividual individual) throws SWRLRuleEngineBridgeException
   {
     super(individual.getName());
 
-    classNames = rdfResources2NamesList(individual.getRDFTypes());
+    classNames = getDefiningClassNames(individual);
   } // IndividualInfo
 
   // Constructor used when creating an info object from an individual name.
@@ -32,7 +32,7 @@ public class IndividualInfo extends Info implements Argument
     OWLIndividual individual = owlModel.getOWLIndividual(individualName);
     if (individual == null) throw new InvalidIndividualNameException(individualName);
 
-    classNames = rdfResources2NamesList(individual.getRDFTypes());
+    classNames = getDefiningClassNames(individual);
   } // IndividualInfo
   
   // Constructor used when asserting new individual class membership information from an assertion made in a target rule engine.
@@ -44,14 +44,14 @@ public class IndividualInfo extends Info implements Argument
     classNames.add(className);
   } // IndividualInfo        
 
-  // Constructor used when creating an individual to pass as an argument.
+  // Constructor used when creating an individual to pass as an argument to a built-in.
   public IndividualInfo(String individualName)
   {
     super(individualName);
     classNames = new ArrayList();
   } // IndividualInfo
   
-  public List getClassNames() { return classNames; }
+  public Collection getClassNames() { return classNames; }
   
   public void write2OWL(OWLModel owlModel) throws SWRLRuleEngineBridgeException
   {
@@ -66,7 +66,7 @@ public class IndividualInfo extends Info implements Argument
     while (classNamesIterator.hasNext()) {
       String className = (String)classNamesIterator.next();
       RDFSClass rdfsClass = owlModel.getOWLNamedClass(className);
-      individual.addRDFType(rdfsClass);
+      if (!individual.hasRDFType(rdfsClass)) individual.addRDFType(rdfsClass);
     } // while
     
   } // write2OWL
@@ -92,5 +92,27 @@ public class IndividualInfo extends Info implements Argument
     hash = hash + (null == classNames ? 0 : classNames.hashCode());
     return hash;
   } // hashCode
+
+  // Build up a list of all names of classes that define this individual. Not straightforward because getRDFTypes only returns asserted
+  // types and does not include superclasses.
+  private Collection getDefiningClassNames(OWLIndividual individual) throws SWRLRuleEngineBridgeException
+  {
+    HashSet definingClassNames = new HashSet();
+
+    Iterator assertedClassesIterator = individual.getRDFTypes().iterator(); // Could be more than one asserted type
+    while (assertedClassesIterator.hasNext()) {
+      RDFSClass assertedClass = (RDFSClass)assertedClassesIterator.next();
+      definingClassNames.add(assertedClass.getName());
+
+      Iterator superClassesIterator = assertedClass.getNamedSuperclasses(true).iterator();
+      while (superClassesIterator.hasNext()) {
+        RDFSClass superClass = (RDFSClass)superClassesIterator.next();
+        definingClassNames.add(superClass.getName());
+      } // while
+    } // while
+
+    return definingClassNames;
+  } // getDefiningClassNames    
+
   
 } // IndividualInfo

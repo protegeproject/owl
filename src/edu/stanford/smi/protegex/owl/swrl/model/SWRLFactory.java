@@ -4,17 +4,22 @@ import edu.stanford.smi.protegex.owl.model.*;
 import edu.stanford.smi.protegex.owl.swrl.parser.SWRLParseException;
 import edu.stanford.smi.protegex.owl.swrl.parser.SWRLParser;
 
+import edu.stanford.smi.protegex.owl.model.factory.OWLJavaFactoryUpdater;
+import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
+import edu.stanford.smi.protegex.owl.swrl.model.factory.SWRLJavaFactory;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 
 /**
- * A utility class that can (and should) be used to create and access
- * SWRL related objects in the ontology.
+ * A utility class that can (and should) be used to create and access SWRL related objects in the ontology.
+ *
+ * cf. http://protege.cim3.net/cgi-bin/wiki.pl?SWRLFactoryFAQ for documentation on using this class.
  *
  * @author Martin O'Connor  <moconnor@smi.stanford.edu>
- * @author Holger Knublauch  <holger@knublauch.com>
- */
+ * @author Holger Knublauch <holger@knublauch.com> */
+
 public class SWRLFactory {
 
     private OWLNamedClass atomListCls;
@@ -49,6 +54,11 @@ public class SWRLFactory {
         impCls = owlModel.getOWLNamedClass(SWRLNames.Cls.IMP);
         individualPropertyAtom = owlModel.getOWLNamedClass(SWRLNames.Cls.INDIVIDUAL_PROPERTY_ATOM);
         sameIndividualAtomCls = owlModel.getOWLNamedClass(SWRLNames.Cls.SAME_INDIVIDUAL_ATOM);
+        
+        // Activate OWL-Java mappings.
+        SWRLJavaFactory factory = new SWRLJavaFactory(owlModel);
+        owlModel.setOWLJavaFactory(factory);
+        if(owlModel instanceof JenaOWLModel) OWLJavaFactoryUpdater.run((JenaOWLModel)owlModel);
     } // SWRLFactory
 
 
