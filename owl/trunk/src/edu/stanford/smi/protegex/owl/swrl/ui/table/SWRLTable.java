@@ -62,10 +62,10 @@ public class SWRLTable extends SymbolTable implements Disposable {
         Set set = imp.getReferencedInstances();
         Collection result = new ArrayList();
         for (Iterator it = set.iterator(); it.hasNext();) {
-            Instance instance = (Instance) it.next();
-            if (!(instance instanceof SWRLIndividual)) {
-                result.add(instance);
-            }
+          RDFResource resource = (RDFResource)it.next();
+          if (!(resource instanceof SWRLIndividual)) {
+            result.add(resource);
+          }
         }
         return result;
     }

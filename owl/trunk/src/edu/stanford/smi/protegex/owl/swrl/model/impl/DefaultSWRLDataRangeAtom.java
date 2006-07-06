@@ -7,6 +7,7 @@ import edu.stanford.smi.protegex.owl.model.RDFObject;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
 import edu.stanford.smi.protegex.owl.swrl.model.SWRLDataRangeAtom;
 import edu.stanford.smi.protegex.owl.swrl.model.SWRLNames;
+import edu.stanford.smi.protegex.owl.swrl.model.SWRLVariable;
 
 import java.util.Set;
 
@@ -23,7 +24,7 @@ public class DefaultSWRLDataRangeAtom extends DefaultSWRLAtom implements SWRLDat
 
     public void getReferencedInstances(Set set) {
         Object argument1 = getArgument1();
-        if (argument1 != null) {
+        if (argument1 != null && argument1 instanceof SWRLVariable) {
             set.add(argument1);
         }
         Instance dataRange = getDataRange();
@@ -72,7 +73,7 @@ public class DefaultSWRLDataRangeAtom extends DefaultSWRLAtom implements SWRLDat
 
         if (getDataRange() == null || getArgument1() == null) return super.getBrowserText();
 
-        s += getDataRange().getBrowserText() + "(";
+        s += "xsd:" + getDataRange().getBrowserText() + "(";
 
         RDFObject dObject = getArgument1();
 

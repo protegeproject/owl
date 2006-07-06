@@ -1,6 +1,6 @@
 
-// Implementations for SWRL built-in methods defined in for the http://www.w3.org/2003/11/swrlb namespace. These built-ins are documented
-// here: http://www.daml.org/2004/04/swrl/builtins.html.
+// Implementations for SWRL built-in methods defined in for the built-ins listed in http://www.w3.org/2003/11/swrlb. These built-ins are
+// documented here: http://www.daml.org/2004/04/swrl/builtins.html.
 //
 // TODO: Only integer math operations supported at the moment - use generics to make more general. Several string methods are not
 // implemented. Built-ins for date, time, duration, URIs and lists not implemented.
@@ -364,7 +364,7 @@ public class SWRLBuiltInMethodsImpl implements SWRLBuiltInMethods
     SWRLBuiltInUtil.checkThatAllArgumentsAreOfAnOrderedType(builtInName, arguments);
 
     if (SWRLBuiltInUtil.isArgumentAString(0, arguments)) {
-
+   
       String s1 = SWRLBuiltInUtil.getArgumentAsAString(builtInName, 0, arguments);
       String s2 = SWRLBuiltInUtil.getArgumentAsAString(builtInName, 1, arguments); // Performs type checking.
 
