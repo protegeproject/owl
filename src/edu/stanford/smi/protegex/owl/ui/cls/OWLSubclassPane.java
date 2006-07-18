@@ -214,6 +214,7 @@ public class OWLSubclassPane extends SelectableContainer implements ClassTreePan
             final WaitCursor cursor = new WaitCursor(tree);
             tree.scrollPathToVisible(path);
             tree.setSelectionPath(path);
+            tree.updateUI();
             cursor.hide();
         }
     }
