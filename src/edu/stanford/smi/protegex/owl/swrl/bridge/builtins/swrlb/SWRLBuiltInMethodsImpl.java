@@ -2,8 +2,10 @@
 // Implementations for SWRL built-in methods defined in for the built-ins listed in http://www.w3.org/2003/11/swrlb. These built-ins are
 // documented here: http://www.daml.org/2004/04/swrl/builtins.html.
 //
-// TODO: Only integer math operations supported at the moment - use generics to make more general. Several string methods are not
-// implemented. Built-ins for date, time, duration, URIs and lists not implemented.
+// TODO: built-ins cannot set parameter values
+// TODO: only integer math operations supported - use generics to make more general. 
+// TODO: several string methods are not implemented. 
+// TODO: built-ins for date, time, duration, URIs and lists are not implemented.
 
 package edu.stanford.smi.protegex.owl.swrl.bridge.builtins.swrlb;
 
@@ -18,51 +20,53 @@ import java.lang.Math.*;
 
 public class SWRLBuiltInMethodsImpl implements SWRLBuiltInMethods
 {
-  private static String SWRLB_GREATER_THAN = "greaterThan";
-  private static String SWRLB_LESS_THAN = "lessThan";
-  private static String SWRLB_EQUAL = "equal";
-  private static String SWRLB_NOT_EQUAL = "notEqual";
-  private static String SWRLB_LESS_THAN_OR_EQUAL = "lessThanOrEqual";
+  private static String SWRLB_NAMESPACE = "swrlb";
 
-  // TODO: The following math operations are implemented for integers only.
+  private static String SWRLB_GREATER_THAN = SWRLB_NAMESPACE + ":" + "greaterThan";
+  private static String SWRLB_LESS_THAN = SWRLB_NAMESPACE + ":" + "lessThan";
+  private static String SWRLB_EQUAL = SWRLB_NAMESPACE + ":" + "equal";
+  private static String SWRLB_NOT_EQUAL = SWRLB_NAMESPACE + ":" + "notEqual";
+  private static String SWRLB_LESS_THAN_OR_EQUAL = SWRLB_NAMESPACE + ":" + "lessThanOrEqual";
 
-  private static String SWRLB_ADD = "add";
-  private static String SWRLB_SUBTRACT = "subtract";
-  private static String SWRLB_MULTIPLY = "multiply";
-  private static String SWRLB_DIVIDE = "divide";
-  private static String SWRLB_INTEGER_DIVIDE = "integerDivide";
-  private static String SWRLB_MOD = "mod";
-  private static String SWRLB_POW = "pow";
-  private static String SWRLB_UNARY_PLUS = "unaryPlus";
-  private static String SWRLB_UNARY_MINUS = "unaryMinus";
-  private static String SWRLB_ABS = "abs";
-  private static String SWRLB_CEILING = "ceiling";
-  private static String SWRLB_FLOOR = "floor";
-  private static String SWRLB_ROUND = "round";
-  private static String SWRLB_ROUND_HALF_TO_EVEN = "roundHalfToEven"; // TODO: not implemented
-  private static String SWRLB_SIN = "sin";
-  private static String SWRLB_COS = "cos";
-  private static String SWRLB_TAN = "tan";
+  // TODO: The following mathematical operations are not yet implemented.
 
-  private static String SWRLB_BOOLEAN_NOT = "booleanNot";
+  private static String SWRLB_ADD = SWRLB_NAMESPACE + ":" + "add";
+  private static String SWRLB_SUBTRACT = SWRLB_NAMESPACE + ":" + "subtract";
+  private static String SWRLB_MULTIPLY = SWRLB_NAMESPACE + ":" + "multiply";
+  private static String SWRLB_DIVIDE = SWRLB_NAMESPACE + ":" + "divide";
+  private static String SWRLB_INTEGER_DIVIDE = SWRLB_NAMESPACE + ":" + "integerDivide";
+  private static String SWRLB_MOD = SWRLB_NAMESPACE + ":" + "mod";
+  private static String SWRLB_POW = SWRLB_NAMESPACE + ":" + "pow";
+  private static String SWRLB_UNARY_PLUS = SWRLB_NAMESPACE + ":" + "unaryPlus";
+  private static String SWRLB_UNARY_MINUS = SWRLB_NAMESPACE + ":" + "unaryMinus";
+  private static String SWRLB_ABS = SWRLB_NAMESPACE + ":" + "abs";
+  private static String SWRLB_CEILING = SWRLB_NAMESPACE + ":" + "ceiling";
+  private static String SWRLB_FLOOR = SWRLB_NAMESPACE + ":" + "floor";
+  private static String SWRLB_ROUND = SWRLB_NAMESPACE + ":" + "round";
+  private static String SWRLB_ROUND_HALF_TO_EVEN = SWRLB_NAMESPACE + ":" + "roundHalfToEven"; // TODO: not implemented
+  private static String SWRLB_SIN = SWRLB_NAMESPACE + ":" + "sin";
+  private static String SWRLB_COS = SWRLB_NAMESPACE + ":" + "cos";
+  private static String SWRLB_TAN = SWRLB_NAMESPACE + ":" + "tan";
 
-  private static String SWRLB_STRING_EQUAL_IGNORECASE = "stringEqualIgnoreCase";
-  private static String SWRLB_STRING_CONCAT = "stringConcat";
-  private static String SWRLB_SUBSTRING = "substring";
-  private static String SWRLB_STRING_LENGTH = "stringLength";
-  private static String SWRLB_NORMALIZE_SPACE = "normalizeSpace"; // TODO: not implemented
-  private static String SWRLB_UPPER_CASE = "upperCase";
-  private static String SWRLB_LOWER_CASE = "lowerCase";
-  private static String SWRLB_TRANSLATE = "translate"; // TODO: not implemented
-  private static String SWRLB_CONTAINS = "contains";
-  private static String SWRLB_CONTAINS_IGNORE_CASE = "containsIgnoreCase";
-  private static String SWRLB_STARTS_WITH = "startsWith";
-  private static String SWRLB_ENDS_WITH = "endsWith";
-  private static String SWRLB_SUBSTRING_BEFORE = "substringBefore"; // TODO: not implemented
-  private static String SWRLB_SUBSTRING_AFTER = "substringAfter"; 
-  private static String SWRLB_MATCHES = "matches"; // TODO: not implemented
-  private static String SWRLB_REPLACE = "replace"; // TODO: not implemented
-  private static String SWRLB_TOKENIZE = "tokenize"; // TODO: not implemented
+  private static String SWRLB_BOOLEAN_NOT = SWRLB_NAMESPACE + ":" + "booleanNot";
+
+  private static String SWRLB_STRING_EQUAL_IGNORECASE = SWRLB_NAMESPACE + ":" + "stringEqualIgnoreCase";
+  private static String SWRLB_STRING_CONCAT = SWRLB_NAMESPACE + ":" + "stringConcat";
+  private static String SWRLB_SUBSTRING = SWRLB_NAMESPACE + ":" + "substring";
+  private static String SWRLB_STRING_LENGTH = SWRLB_NAMESPACE + ":" + "stringLength";
+  private static String SWRLB_NORMALIZE_SPACE = SWRLB_NAMESPACE + ":" + "normalizeSpace"; // TODO: not implemented
+  private static String SWRLB_UPPER_CASE = SWRLB_NAMESPACE + ":" + "upperCase";
+  private static String SWRLB_LOWER_CASE = SWRLB_NAMESPACE + ":" + "lowerCase";
+  private static String SWRLB_TRANSLATE = SWRLB_NAMESPACE + ":" + "translate"; // TODO: not implemented
+  private static String SWRLB_CONTAINS = SWRLB_NAMESPACE + ":" + "contains";
+  private static String SWRLB_CONTAINS_IGNORE_CASE = SWRLB_NAMESPACE + ":" + "containsIgnoreCase";
+  private static String SWRLB_STARTS_WITH = SWRLB_NAMESPACE + ":" + "startsWith";
+  private static String SWRLB_ENDS_WITH = SWRLB_NAMESPACE + ":" + "endsWith";
+  private static String SWRLB_SUBSTRING_BEFORE = SWRLB_NAMESPACE + ":" + "substringBefore"; // TODO: not implemented
+  private static String SWRLB_SUBSTRING_AFTER = SWRLB_NAMESPACE + ":" + "substringAfter"; 
+  private static String SWRLB_MATCHES = SWRLB_NAMESPACE + ":" + "matches"; // TODO: not implemented
+  private static String SWRLB_REPLACE = SWRLB_NAMESPACE + ":" + "replace"; // TODO: not implemented
+  private static String SWRLB_TOKENIZE = SWRLB_NAMESPACE + ":" + "tokenize"; // TODO: not implemented
   
   // Built-ins for comparison, defined in Section 8.1. of http://www.daml.org/2004/04/swrl/builtins.html.
 
@@ -382,6 +386,7 @@ public class SWRLBuiltInMethodsImpl implements SWRLBuiltInMethods
 
       if (l1 < l2) result = -1; else if (l1 > l2) result = 1; else result = 0;
     } else if (SWRLBuiltInUtil.isArgumentAFloat(0, arguments)) {
+
       float f1 = SWRLBuiltInUtil.getArgumentAsAFloat(builtInName, 0, arguments);
       float f2 = SWRLBuiltInUtil.getArgumentAsAFloat(builtInName, 1, arguments); // Performs type checking.
 
@@ -402,31 +407,32 @@ public class SWRLBuiltInMethodsImpl implements SWRLBuiltInMethods
     return (compareTwoArgumentsOfOrderedType(builtInName, arguments) < 0);
   } // lessThan
 
-  // TODO: this only supports integers at the moment. Need to rewrite this using generics so it will support all types.
+  // TODO: as written this method only supports integers at the moment. Need to rewrite this using generics so it will support all types.
+  // TODO: this does not support assigning of values to arguments.
 
   private boolean mathOperation(String builtInName, List arguments) throws BuiltInException
   {
     Iterator iterator;
-    int argumentNumber, argument1, argument2, argument3;
+    int argumentNumber;
+    int argument1, argument2, argument3;
     boolean result;
 
-    if (!SWRLBuiltInUtil.areAllArgumentsIntegers(builtInName, arguments))
-      throw new BuiltInNotImplementedException(builtInName, "for non integer types");
+    if (!SWRLBuiltInUtil.areAllArgumentsIntegers(builtInName, arguments)) 
+      throw new BuiltInNotImplementedException(builtInName, "Only built-ins with all integer arguments are supported at the moment");
 
     // Argument number checking will have been performed by invoking method.
-
     argument1 = SWRLBuiltInUtil.getArgumentAsAnInteger(builtInName, 0, arguments);
 
     if (builtInName.equalsIgnoreCase(SWRLB_ADD)) {
       int sum = 0;
-      for (argumentNumber = 1; argumentNumber <= arguments.size(); argumentNumber++) {
+      for (argumentNumber = 1; argumentNumber < arguments.size(); argumentNumber++) {
         sum += SWRLBuiltInUtil.getArgumentAsAnInteger(builtInName, argumentNumber, arguments);
       } // for
 
       return (argument1 == sum);
     } else if (builtInName.equalsIgnoreCase(SWRLB_MULTIPLY)) {
       int product = 0;
-      for (argumentNumber = 1; argumentNumber <= arguments.size(); argumentNumber++) {
+      for (argumentNumber = 1; argumentNumber < arguments.size(); argumentNumber++) {
         product *= SWRLBuiltInUtil.getArgumentAsAnInteger(builtInName, argumentNumber, arguments);
       } // for
 
