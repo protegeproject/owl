@@ -72,6 +72,7 @@ public class OWLFormsTab extends FormsTab implements HostResourceDisplay {
                     final WaitCursor cursor = new WaitCursor(this);
                     theTree.scrollPathToVisible(path);
                     theTree.setSelectionPath(path);
+                    theTree.updateUI();
                     cursor.hide();
                     return true;
                 }
