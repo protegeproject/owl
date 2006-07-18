@@ -194,6 +194,7 @@ public class ReasonerProgressModalDialog extends JDialog {
         model.insertNodeInto(node, parentNode, parentNode.getChildCount());
         tree.expandPath(new TreePath(parentNode.getPath()));
         tree.scrollPathToVisible(new TreePath(root.getLastLeaf().getPath()));
+        tree.updateUI();
     }
 
 
