@@ -208,13 +208,15 @@ public class OWLSubclassPane extends SelectableContainer implements ClassTreePan
     }
 
 
-    private void setSelectedObjectPath(final JTree tree, Collection objectPath) {
-        final TreePath path = ComponentUtilities.getTreePath(tree, objectPath);
+    private void setSelectedObjectPath(final JTree tree, Collection objectPath) {    	
+        final TreePath path = ComponentUtilities.getTreePath(tree, objectPath);        
+        
         if (path != null) {
-            final WaitCursor cursor = new WaitCursor(tree);
-            tree.scrollPathToVisible(path);
+        	final WaitCursor cursor = new WaitCursor(tree);       	
+            tree.scrollPathToVisible(path);          
             tree.setSelectionPath(path);
             cursor.hide();
+            tree.updateUI();
         }
     }
 

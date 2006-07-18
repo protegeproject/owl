@@ -342,6 +342,7 @@ public abstract class SubsumptionTreePanel extends SelectableContainer implement
                     }
                 }
                 tree.setSelectionPaths(array);
+                tree.updateUI();
             }
             else {
                 Collection path = ModelUtilities.getPathToRoot(cls);

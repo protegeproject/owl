@@ -97,6 +97,7 @@ public class ClassTree extends TooltippedSelectableTree implements TripleSelecta
                             final WaitCursor cursor = new WaitCursor(this);
                             this.scrollPathToVisible(path);
                             this.setSelectionPath(path);
+                            this.updateUI();
                             cursor.hide();
                             result = true;
                         }
