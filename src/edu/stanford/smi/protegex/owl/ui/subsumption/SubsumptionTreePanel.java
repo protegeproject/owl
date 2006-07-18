@@ -339,6 +339,7 @@ public abstract class SubsumptionTreePanel extends SelectableContainer implement
                     array[i] = path;
                     if (i == 0) {
                         tree.scrollPathToVisible(path);
+                        tree.updateUI();
                     }
                 }
                 tree.setSelectionPaths(array);
