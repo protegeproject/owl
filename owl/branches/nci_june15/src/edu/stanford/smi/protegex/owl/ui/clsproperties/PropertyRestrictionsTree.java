@@ -410,7 +410,7 @@ public class PropertyRestrictionsTree extends SelectableTree implements Disposab
                     newNode
             });
             setSelectionPath(path);
-            scrollPathToVisible(path);
+            scrollPathToVisible(path);            
             startEditingAtPath(path);
             owlTextField.setCaretPosition(0);
         }

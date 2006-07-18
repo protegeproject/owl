@@ -1,5 +1,6 @@
 package edu.stanford.smi.protegex.owl.ui.cls;
 
+import edu.stanford.smi.protege.util.LazyTreeNode;
 import edu.stanford.smi.protegex.owl.model.*;
 import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
 import edu.stanford.smi.protegex.owl.ui.actions.ResourceAction;
@@ -66,8 +67,9 @@ public class CreateSiblingClassAction extends ResourceAction {
 				OWLUI.handleError(owlModel, e);
 			}
 			
-			if (cls != null)
-				classTreePanel.setSelectedClass(cls);
+			if (cls != null) 
+				classTreePanel.setSelectedClass(cls);			
+			
         }
     }
 }
