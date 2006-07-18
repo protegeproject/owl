@@ -411,6 +411,56 @@ public class SWRLParser {
     } // parseDObjectList
 
 
+  private RDFObject parseDObject() throws SWRLParseException {
+    RDFObject parsedEntity = null;
+    String parsedString;
+    
+    parsedString = getNextNonSpaceToken("Expecting variable or literal.");
+
+    if (parsedString.equals("?")) {
+      
+      // The parsed entity is a variable
+      String variableName = getNextNonSpaceToken("Expected variable name");
+      
+      checkThatIdentifierIsValid(variableName);
+      
+      if (tokenizer.hasMoreTokens()) {
+        if (!inHead) variables.add(variableName);
+        else if (!variables.contains(variableName))
+          throw new SWRLParseException("Variable '" + variableName + "' referred to in consequent not present in antecedent.");
+      } // if
+      
+      if (!parseOnly) parsedEntity = getSWRLVariable(variableName);
+    } else if (parsedString.equals("\"")) { // The parsed entity is a string
+      String stringValue = getNextStringToken("Expected a string.");
+      if (!parseOnly) parsedEntity = owlModel.createRDFSLiteral(stringValue, owlModel.getXSDstring());
+      checkAndSkipToken("\"", "Expected \" to close string.");
+    } // if
+    // According to the XSD spec, xsd:boolean's have the lexical space: {true, false, 1, 0}. We don't allow {1, 0} since these are parsed
+    // as xsd:int's.
+    else if (parsedString.startsWith("t") || parsedString.startsWith("T") || parsedString.startsWith("f") || parsedString.startsWith("F")) {
+      if (tokenizer.hasMoreTokens()) {
+        if (parsedString.equalsIgnoreCase("true") || parsedString.equalsIgnoreCase("false")) {
+          if (!parseOnly) parsedEntity = owlModel.createRDFSLiteral(parsedString, owlModel.getXSDboolean());
+        } else throw new SWRLParseException("Invalid literal: '" + parsedString + "'.");
+      } // if
+    } else { // Is it an integer or a float then? TODO: what about doubles or longs?
+      int integerValue;
+          float floatValue;
+          try {
+            integerValue = Integer.decode(parsedString).intValue();
+            if (!parseOnly) parsedEntity = owlModel.createRDFSLiteral(parsedString, owlModel.getXSDint());
+          } catch (NumberFormatException e1) {
+            try {
+              floatValue = Float.parseFloat(parsedString);
+              if (!parseOnly) parsedEntity = owlModel.createRDFSLiteral(parsedString, owlModel.getXSDfloat());
+            } catch (NumberFormatException e2) { throw new SWRLParseException("Invalid data literal: '" + parsedString + "'."); }
+          } // try
+    } // if
+        
+    return parsedEntity;
+  } // parseDObject
+
     private RDFResource parseIObject()
             throws SWRLParseException {
         RDFResource parsedEntity = null;
@@ -433,7 +483,6 @@ public class SWRLParser {
             if (!parseOnly) parsedEntity = getSWRLVariable(variableName);
         }
         else { // The entity is an individual name
-
             if (!isValidIndividualName(parsedString) && tokenizer.hasMoreTokens())
                 throw new SWRLParseException("Invalid individual name: '" + parsedString + "'.");
             if (!parseOnly) parsedEntity = getIndividual(parsedString);
@@ -452,58 +501,6 @@ public class SWRLParser {
 
     if ((resource != null) && !(resource instanceof SWRLVariable)) throw new SWRLParseException("Invalid variable name: '" + variableName + "'. Cannot use name of existing OWL class, property, or individual.");
   } // checkThatVariableNameIsValid
-
-  private RDFObject parseDObject() throws SWRLParseException {
-    RDFObject parsedEntity = null;
-    String parsedString;
-    
-    parsedString = getNextNonSpaceToken("Expecting variable or literal.");
-
-    if (parsedString.equals("?")) {
-      
-      // The parsed entity is a variable
-      String variableName = getNextNonSpaceToken("Expected variable name");
-      
-      checkThatIdentifierIsValid(variableName);
-      
-      if (tokenizer.hasMoreTokens()) {
-        if (!inHead) variables.add(variableName);
-        else if (!variables.contains(variableName))
-          throw new SWRLParseException("Variable '" + variableName + "' referred to in consequent not present in antecedent.");
-      } // if
-      
-      if (!parseOnly) parsedEntity = getSWRLVariable(variableName);
-    } else if (parsedString.equals("\"")) {
-      // The parsed entity is a string
-      String stringValue = getNextStringToken("Expected a string.");
-      if (!parseOnly) parsedEntity = owlModel.createRDFSLiteral(stringValue, owlModel.getXSDstring());
-      checkAndSkipToken("\"", "Expected \" to close string.");
-    } // if
-    // According to the XSD spec, xsd:boolean's have the lexical space {true, false, 1, 0}. We don't allow {1, 0} since these are parsed
-    // as xsd:int's.
-    else if (parsedString.startsWith("t") || parsedString.startsWith("T") || 
-             parsedString.startsWith("f") || parsedString.startsWith("F")) {
-      if (tokenizer.hasMoreTokens()) {
-        if (parsedString.equalsIgnoreCase("true") || parsedString.equalsIgnoreCase("false")) {
-          if (!parseOnly) parsedEntity = owlModel.createRDFSLiteral(parsedString, owlModel.getXSDboolean());
-        } else throw new SWRLParseException("Invalid literal: '" + parsedString + "'.");
-      } // if
-    } else { // Is it an integer or a float then?
-      int integerValue;
-          float floatValue;
-          try {
-            integerValue = Integer.decode(parsedString).intValue();
-            if (!parseOnly) parsedEntity = owlModel.createRDFSLiteral(parsedString, owlModel.getXSDint());
-          } catch (NumberFormatException e1) {
-            try {
-              floatValue = Float.parseFloat(parsedString);
-              if (!parseOnly) parsedEntity = owlModel.createRDFSLiteral(parsedString, owlModel.getXSDfloat());
-            } catch (NumberFormatException e2) { throw new SWRLParseException("Invalid data literal: '" + parsedString + "'."); }
-          } // try
-    } // if
-        
-    return parsedEntity;
-  } // parseDObject
 
 
     private boolean isSameAs(String identifier)
