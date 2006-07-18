@@ -20,13 +20,17 @@ public abstract class IndividualsAtomInfo extends AtomInfo
     else if (atom.getArgument1() instanceof OWLIndividual) {
       argument1 = new IndividualInfo((OWLIndividual)atom.getArgument1());
       addReferencedIndividualName(argument1.getName());
-    } else throw new SWRLRuleEngineBridgeException("Unexpected argument #1 to atom '" + atom.getBrowserText() + "'. Expecting variable or individual, got instance of" + atom.getArgument1().getClass() + ".");
+    } else throw new SWRLRuleEngineBridgeException("Unexpected argument #1 to atom '" + atom.getBrowserText() + 
+                                                   "'. Expecting variable or individual, got instance of " + 
+                                                   atom.getArgument1().getClass() + ".");
 
     if (atom.getArgument2() instanceof SWRLVariable) argument2 = new VariableInfo((SWRLVariable)atom.getArgument2());
     else if (atom.getArgument2() instanceof OWLIndividual) {
       argument2 = new IndividualInfo((OWLIndividual)atom.getArgument2());
       addReferencedIndividualName(argument2.getName());
-    } else throw new SWRLRuleEngineBridgeException("Unexpected argument #2 to atom '" + atom.getBrowserText() + "'. Expecting variable or individual, got instance of" + atom.getArgument2().getClass() + ".");
+    } else throw new SWRLRuleEngineBridgeException("Unexpected argument #2 to atom '" + atom.getBrowserText() + 
+                                                   "'. Expecting variable or individual, got instance of " + 
+                                                   atom.getArgument2().getClass() + ".");
 
   } // IndividualsAtomInfo
   

@@ -3,11 +3,19 @@
 
 package edu.stanford.smi.protegex.owl.swrl.bridge;
 
-import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.*;
-
-import edu.stanford.smi.protegex.owl.model.*;
-
-import java.util.*;
+import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.SWRLRuleEngineBridgeException;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.model.OWLProperty;
+import edu.stanford.smi.protegex.owl.model.RDFProperty;
+import edu.stanford.smi.protegex.owl.model.OWLIndividual;
+import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.InvalidPropertyNameException;
+import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.InvalidIndividualNameException;
+import edu.stanford.smi.protegex.owl.model.OWLNames;
+import edu.stanford.smi.protegex.owl.model.RDFSClass;
+import edu.stanford.smi.protegex.owl.model.RDFSLiteral;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Iterator;
 
 public class PropertyInfo extends Info
 {
@@ -98,35 +106,35 @@ public class PropertyInfo extends Info
   } // hashCode
 
   // Utility method to create a list of PropertyInfo objects for every subject/predicate combination for a particular OWL property.
-  // TODO: this is very inefficient
+  // TODO: This is incredibly inefficient. Need to add a method to the OWLModel to get individuals with a particular property.
 
   public static List buildPropertyInfoList(OWLModel owlModel, String propertyName) throws SWRLRuleEngineBridgeException
   {
+    RDFProperty property;
     PropertyInfo propertyInfo;
     List propertyInfoList = new ArrayList();
     List domainClassNames, rangeClassNames;
     Argument subject, predicate;
 
-    OWLProperty property = owlModel.getOWLProperty(propertyName);
+    property = owlModel.getRDFProperty(propertyName);
     if (property == null) throw new InvalidPropertyNameException(propertyName);
-
+    
     domainClassNames = rdfResources2NamesList(property.getUnionDomain());
     rangeClassNames = rdfResources2NamesList(property.getUnionRangeClasses());
 
     Iterator domainsIterator = property.getUnionDomain().iterator();
     while (domainsIterator.hasNext()) {
       RDFSClass rdfsClass = (RDFSClass)domainsIterator.next();
-
+        
       Iterator individualsIterator = rdfsClass.getInstances(true).iterator();
       while (individualsIterator.hasNext()) {
         Object object = individualsIterator.next();
-
-        // TODO: hack - need to fix this (could return metaclasses, for example) and think about OWL DL/Full issues. 
-        if (!(object instanceof OWLIndividual)) continue; 
+        
+        if (!(object instanceof OWLIndividual)) continue; // Deal only with OWL individuals (could return metaclass, for example)
         OWLIndividual domainIndividual = (OWLIndividual)object;
         
           if (domainIndividual.hasPropertyValue(property)) {
-            if (property.isObjectProperty()) {
+            if (property.hasObjectRange()) {
               Iterator individualValuesIterator = domainIndividual.getPropertyValues(property).iterator();
               while (individualValuesIterator.hasNext()) {
                 OWLIndividual rangeIndividual = (OWLIndividual)individualValuesIterator.next();
@@ -148,9 +156,8 @@ public class PropertyInfo extends Info
           } // if
       } // while
     } // while
-
-    return propertyInfoList;
     
+    return propertyInfoList;
   } // buildPropertyInfoList
 
 } // PropertyInfo
