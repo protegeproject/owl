@@ -401,6 +401,7 @@ public class PropertyRestrictionsTree extends SelectableTree implements Disposab
             });
             setSelectionPath(path);
             scrollPathToVisible(path);
+            updateUI();
             startEditingAtPath(path);
             owlTextField.setCaretPosition(0);
         }
