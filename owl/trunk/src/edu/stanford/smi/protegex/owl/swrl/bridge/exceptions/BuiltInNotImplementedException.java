@@ -10,7 +10,7 @@ public class BuiltInNotImplementedException extends BuiltInException
 
   public BuiltInNotImplementedException(String builtInName, String message) 
   { 
-    super("BuiltIn " + builtInName + " not yet implemented - " + message); 
+    super("Built-in '" + builtInName + "' not yet implemented. " + message); 
   } // BuiltInNotImplementedException
 } // BuiltInNotImplementedException
 
