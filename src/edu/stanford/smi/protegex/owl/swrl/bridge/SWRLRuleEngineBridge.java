@@ -307,7 +307,7 @@ public abstract class SWRLRuleEngineBridge
       atomInfo = new ClassAtomInfo((SWRLClassAtom)swrlAtom);
       if (!referencedClassNames.contains(atomInfo.getName())) referencedClassNames.add(atomInfo.getName());
     } else if (swrlAtom instanceof SWRLDatavaluedPropertyAtom) {
-      atomInfo = new DatavaluedPropertyAtomInfo((SWRLDatavaluedPropertyAtom)swrlAtom);
+      atomInfo = new DatavaluedPropertyAtomInfo(owlModel, (SWRLDatavaluedPropertyAtom)swrlAtom);
       if (!referencedPropertyNames.contains(atomInfo.getName())) referencedPropertyNames.add(atomInfo.getName());
     } else if (swrlAtom instanceof SWRLIndividualPropertyAtom) {
       atomInfo = new IndividualPropertyAtomInfo((SWRLIndividualPropertyAtom)swrlAtom);
@@ -317,7 +317,7 @@ public abstract class SWRLRuleEngineBridge
     } else if (swrlAtom instanceof SWRLDifferentIndividualsAtom) {
       atomInfo = new DifferentIndividualsAtomInfo((SWRLDifferentIndividualsAtom)swrlAtom);
     } else if (swrlAtom instanceof SWRLBuiltinAtom) 
-      atomInfo = new BuiltInAtomInfo((SWRLBuiltinAtom)swrlAtom);
+      atomInfo = new BuiltInAtomInfo(owlModel, (SWRLBuiltinAtom)swrlAtom);
     else if (swrlAtom instanceof SWRLDataRangeAtom) 
       atomInfo = new DataRangeAtomInfo((SWRLDataRangeAtom)swrlAtom);
     else throw new InvalidSWRLAtomException(swrlAtom.getBrowserText());

@@ -164,8 +164,7 @@ public class SWRLBuiltInUtil
 
   public static boolean isArgumentNumeric(int argumentNumber, List arguments) throws InvalidBuiltInArgumentException
   {
-    if (isArgumentALiteral(argumentNumber, arguments))
-      return getArgumentAsALiteral(argumentNumber, arguments).isNumeric();
+    if (isArgumentALiteral(argumentNumber, arguments)) return getArgumentAsALiteral(argumentNumber, arguments).isNumeric();
     else return false;
   } // isArgumentNumeric
 

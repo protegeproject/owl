@@ -8,12 +8,13 @@ import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.SWRLRuleEngineBridge
 import edu.stanford.smi.protegex.owl.swrl.model.SWRLVariable;
 import edu.stanford.smi.protegex.owl.model.OWLIndividual;
 import edu.stanford.smi.protegex.owl.model.RDFSLiteral;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
 
 public class DatavaluedPropertyAtomInfo extends AtomInfo
 {
   private Argument argument1, argument2;
   
-  public DatavaluedPropertyAtomInfo(SWRLDatavaluedPropertyAtom atom) 
+  public DatavaluedPropertyAtomInfo(OWLModel owlModel, SWRLDatavaluedPropertyAtom atom) 
     throws SWRLRuleEngineBridgeException
   {
     super(atom.getPropertyPredicate().getName());
@@ -23,7 +24,7 @@ public class DatavaluedPropertyAtomInfo extends AtomInfo
     else throw new SWRLRuleEngineBridgeException("Unexpected argument #1 to datavalued property atom '" + atom.getBrowserText() + "'. Expecting variable or individual, got instance of" + atom.getArgument1().getClass() + ".");
 
     if (atom.getArgument2() instanceof SWRLVariable) argument2 = new VariableInfo((SWRLVariable)atom.getArgument2());
-    else if (atom.getArgument2() instanceof RDFSLiteral) argument2 = new LiteralInfo((RDFSLiteral)atom.getArgument2());
+    else if (atom.getArgument2() instanceof RDFSLiteral) argument2 = new LiteralInfo(owlModel, (RDFSLiteral)atom.getArgument2());
     else throw new SWRLRuleEngineBridgeException("Unexpected argument #2 to datavalued property atom '" + atom.getBrowserText()  + "'. Expecting variable or literal, got instance of" + atom.getArgument2().getClass() + ".");
 
     // If argument1 is an individual, add its name to the referenced individuals list for this atom.

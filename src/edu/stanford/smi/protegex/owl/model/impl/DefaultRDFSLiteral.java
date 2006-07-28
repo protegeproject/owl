@@ -196,6 +196,10 @@ public class DefaultRDFSLiteral implements RDFSLiteral {
         return Long.parseLong(getString());
     }
 
+    public short getShort() {
+      return Short.parseShort(getString());
+    } 
+
 
     public Object getPlainValue() {
         String lang = getLanguage();
