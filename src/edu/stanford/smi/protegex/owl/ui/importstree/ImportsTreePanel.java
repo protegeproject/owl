@@ -112,8 +112,8 @@ public class ImportsTreePanel extends JPanel implements HostResourceDisplay, Dis
             }
 
             public void onSelectionChange() {
-                setAllowed(tree.getSelectionCount() == 1 &&
-                           tree.getSelectionRows()[0] != 0);
+                //setAllowed(tree.getSelectionCount() == 1 && tree.getSelectionRows()[0] != 0);
+            	setAllowed(tree.getSelectionCount() == 1);
             }
         };
     }
