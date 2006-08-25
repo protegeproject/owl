@@ -41,14 +41,13 @@ public class SWRLTab extends AbstractTabWidget {
 
     private SWRLTablePanel panel;
 
-
     private void activateSWRL() {
         JenaOWLModel owlModel = (JenaOWLModel) getKnowledgeBase();
         try {
             owlModel.getNamespaceManager().setPrefix(new URI(SWRLNames.SWRL_NAMESPACE), SWRLNames.SWRL_PREFIX);
             owlModel.getNamespaceManager().setPrefix(new URI(SWRLNames.SWRLB_NAMESPACE), SWRLNames.SWRLB_PREFIX);
 
-        	ProtegeOWLParser.addImport(owlModel, new URI(SWRLNames.SWRL_IMPORT));
+            ProtegeOWLParser.addImport(owlModel, new URI(SWRLNames.SWRL_IMPORT));
             ProtegeOWLParser.addImport(owlModel, new URI(SWRLNames.SWRLB_IMPORT));
             owlModel.getDefaultOWLOntology().addImports(new URI(SWRLNames.SWRL_IMPORT));
             owlModel.getDefaultOWLOntology().addImports (new URI(SWRLNames.SWRLB_IMPORT));
@@ -68,7 +67,6 @@ public class SWRLTab extends AbstractTabWidget {
             Log.getLogger().log(Level.SEVERE, "Exception caught", ex);
         }
     }
-
     
     public void initialize() {
         setLabel("SWRL Rules");

@@ -16,21 +16,25 @@ public abstract class IndividualsAtomInfo extends AtomInfo
   {
     super(name);
 
-    if (atom.getArgument1() instanceof SWRLVariable) argument1 = new VariableInfo((SWRLVariable)atom.getArgument1());
-    else if (atom.getArgument1() instanceof OWLIndividual) {
+    if (atom.getArgument1() instanceof SWRLVariable) {
+      SWRLVariable variable = (SWRLVariable)atom.getArgument1();
+      argument1 = new VariableInfo(variable);
+      addReferencedVariableName(variable.getName());
+    } else if (atom.getArgument1() instanceof OWLIndividual) {
       argument1 = new IndividualInfo((OWLIndividual)atom.getArgument1());
       addReferencedIndividualName(argument1.getName());
     } else throw new SWRLRuleEngineBridgeException("Unexpected argument #1 to atom '" + atom.getBrowserText() + 
-                                                   "'. Expecting variable or individual, got instance of " + 
-                                                   atom.getArgument1().getClass() + ".");
+                                                   "'. Expecting variable or individual, got instance of " + atom.getArgument1().getClass() + ".");
 
-    if (atom.getArgument2() instanceof SWRLVariable) argument2 = new VariableInfo((SWRLVariable)atom.getArgument2());
-    else if (atom.getArgument2() instanceof OWLIndividual) {
+    if (atom.getArgument2() instanceof SWRLVariable) {
+      SWRLVariable variable = (SWRLVariable)atom.getArgument2();
+      argument2 = new VariableInfo(variable);
+      addReferencedVariableName(variable.getName());
+    } else if (atom.getArgument2() instanceof OWLIndividual) {
       argument2 = new IndividualInfo((OWLIndividual)atom.getArgument2());
       addReferencedIndividualName(argument2.getName());
     } else throw new SWRLRuleEngineBridgeException("Unexpected argument #2 to atom '" + atom.getBrowserText() + 
-                                                   "'. Expecting variable or individual, got instance of " + 
-                                                   atom.getArgument2().getClass() + ".");
+                                                   "'. Expecting variable or individual, got instance of " + atom.getArgument2().getClass() + ".");
 
   } // IndividualsAtomInfo
   

@@ -21,8 +21,11 @@ public class ClassAtomInfo extends AtomInfo
 
     argumentName = atom.getArgument1().getName();
     
-    if (atom.getArgument1() instanceof SWRLVariable) argument1 = new VariableInfo((SWRLVariable)atom.getArgument1());
-    else if (atom.getArgument1() instanceof OWLIndividual) {
+    if (atom.getArgument1() instanceof SWRLVariable) {
+      SWRLVariable variable = (SWRLVariable)atom.getArgument1();
+      argument1 = new VariableInfo(variable);
+      addReferencedVariableName(variable.getName());
+    } else if (atom.getArgument1() instanceof OWLIndividual) {
       argument1 = new IndividualInfo((OWLIndividual)atom.getArgument1());
       addReferencedIndividualName(argument1.getName());
     } else throw new SWRLRuleEngineBridgeException("Unexpected argument to class atom '" + atom.getBrowserText() + "'. Expecting variable or individual, got instance of" + atom.getArgument1().getClass() + ".");

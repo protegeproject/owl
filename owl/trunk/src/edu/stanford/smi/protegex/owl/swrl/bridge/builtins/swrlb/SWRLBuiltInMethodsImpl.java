@@ -1,9 +1,6 @@
 
-// Implementations for SWRL built-in methods defined in for the built-ins listed in http://www.w3.org/2003/11/swrlb. These built-ins are
-// documented here: http://www.daml.org/2004/04/swrl/builtins.html.
-//
-// TODO: built-ins cannot set parameter values
 // TODO: only integer math operations supported - use generics to make more general. 
+// TODO: roundHalfToEven math operation not implemented
 // TODO: several string methods are not implemented. 
 // TODO: built-ins for date, time, duration, URIs and lists are not implemented.
 
@@ -18,6 +15,12 @@ import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.*;
 import java.util.*;
 import java.lang.Math.*;
 
+/**
+ ** Implementations for SWRL built-in methods defined in for the built-ins listed <a href="http://www.w3.org/2003/11/swrlb">here</a>. These
+ ** built-ins are documented <a href="http://www.daml.org/2004/04/swrl/builtins.html">here</a>. <p>
+ **
+ ** See <a href="http://protege.cim3.net/cgi-bin/wiki.pl?SWRLBuiltInBridge">here</a> for documentation on defining SWRL built-in methods.
+ */
 public class SWRLBuiltInMethodsImpl implements SWRLBuiltInMethods
 {
   private static String SWRLB_NAMESPACE = "swrlb";
@@ -28,7 +31,7 @@ public class SWRLBuiltInMethodsImpl implements SWRLBuiltInMethods
   private static String SWRLB_NOT_EQUAL = SWRLB_NAMESPACE + ":" + "notEqual";
   private static String SWRLB_LESS_THAN_OR_EQUAL = SWRLB_NAMESPACE + ":" + "lessThanOrEqual";
 
-  // TODO: The following mathematical operations are not yet implemented.
+  // TODO: The following mathematical operations are only implemented for integers
 
   private static String SWRLB_ADD = SWRLB_NAMESPACE + ":" + "add";
   private static String SWRLB_SUBTRACT = SWRLB_NAMESPACE + ":" + "subtract";
@@ -215,9 +218,24 @@ public class SWRLBuiltInMethodsImpl implements SWRLBuiltInMethods
 
   public boolean booleanNot(List arguments) throws BuiltInException
   {
+    boolean result;
+
     SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(SWRLB_BOOLEAN_NOT, 2, arguments.size());
 
-    return !equal(SWRLB_BOOLEAN_NOT, arguments);
+    if (SWRLBuiltInUtil.isExpectingAssignment(SWRLB_BOOLEAN_NOT, arguments)) {
+      if (!SWRLBuiltInUtil.areAllArgumentsBooleans(SWRLB_BOOLEAN_NOT, arguments.subList(1, arguments.size())))
+        throw new InvalidBuiltInArgumentException(SWRLB_BOOLEAN_NOT, 1, "Expecting a Boolean");
+
+      boolean operationResult = !SWRLBuiltInUtil.getArgumentAsABoolean(SWRLB_BOOLEAN_NOT, 1, arguments);
+      arguments.set(0, new LiteralInfo(operationResult)); // Assign the result to the first parameter
+      result = true;
+    } else {
+      if (!SWRLBuiltInUtil.areAllArgumentsBooleans(SWRLB_BOOLEAN_NOT, arguments))
+        throw new InvalidBuiltInArgumentException(SWRLB_BOOLEAN_NOT, "Expecting all Boolean arguments");
+
+      result = !equal(SWRLB_BOOLEAN_NOT, arguments);
+    } // if
+    return result;
   } // booleanNot
 
   // Built-ins for Strings. cf. Section 8.4 of http://www.daml.org/2004/04/swrl/builtins.html
@@ -225,6 +243,11 @@ public class SWRLBuiltInMethodsImpl implements SWRLBuiltInMethods
   public boolean stringEqualIgnoreCase(List arguments) throws BuiltInException
   {
     String argument1, argument2;
+
+    if (SWRLBuiltInUtil.isExpectingAssignment(SWRLB_STRING_EQUAL_IGNORECASE, arguments)) 
+      throw new InvalidBuiltInArgumentException(SWRLB_STRING_EQUAL_IGNORECASE, 0, 
+                                                "Comparison built-ins do not support assignment. Unbound variable used");
+
     SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(SWRLB_STRING_EQUAL_IGNORECASE, 2, arguments.size());
 
     argument1 = SWRLBuiltInUtil.getArgumentAsAString(SWRLB_STRING_EQUAL_IGNORECASE, 0, arguments);
@@ -235,76 +258,123 @@ public class SWRLBuiltInMethodsImpl implements SWRLBuiltInMethods
 
   public boolean stringConcat(List arguments) throws BuiltInException
   {
-    String argument1, concatenated;
+    String operationResult = "";
+    boolean result;
+
     SWRLBuiltInUtil.checkNumberOfArgumentsAtLeast(SWRLB_STRING_CONCAT, 2, arguments.size());
 
-    argument1 = SWRLBuiltInUtil.getArgumentAsAString(SWRLB_STRING_CONCAT, 0, arguments);
-
-    concatenated = "";
-    for (int argumentNumber = 1; argumentNumber <= arguments.size(); argumentNumber++) {
-      concatenated = concatenated.concat(SWRLBuiltInUtil.getArgumentAsAString(SWRLB_STRING_CONCAT, argumentNumber, arguments));
+    for (int argumentNumber = 1; argumentNumber < arguments.size(); argumentNumber++) { // Exception thrown if argument is not a string.
+      operationResult = operationResult.concat(SWRLBuiltInUtil.getArgumentAsAString(SWRLB_STRING_CONCAT, argumentNumber, arguments));
     } // for
 
-    return argument1.equals(concatenated);
+    if (SWRLBuiltInUtil.isExpectingAssignment(SWRLB_STRING_CONCAT, arguments)) {
+      arguments.set(0, new LiteralInfo(operationResult)); // Assign the result to the first parameter
+      result = true;
+    } else {
+      String argument1 = SWRLBuiltInUtil.getArgumentAsAString(SWRLB_STRING_CONCAT, 0, arguments);
+      result =  argument1.equals(operationResult);
+    } //if
+
+    return result;
   } // stringConcat
 
   public boolean substring(List arguments) throws BuiltInException
   {
-    String argument1, argument2;
+    String argument2, operationResult;
     int startIndex, length;
+    boolean result;
 
     SWRLBuiltInUtil.checkNumberOfArgumentsAtLeast(SWRLB_SUBSTRING, 3, arguments.size());
     SWRLBuiltInUtil.checkNumberOfArgumentsAtMost(SWRLB_SUBSTRING, 4, arguments.size());
 
-    argument1 = SWRLBuiltInUtil.getArgumentAsAString(SWRLB_SUBSTRING, 0, arguments);
     argument2 = SWRLBuiltInUtil.getArgumentAsAString(SWRLB_SUBSTRING, 1, arguments);
     startIndex = SWRLBuiltInUtil.getArgumentAsAnInteger(SWRLB_SUBSTRING, 2, arguments);
 
     if (arguments.size() == 4) {
       length = SWRLBuiltInUtil.getArgumentAsAnInteger(SWRLB_SUBSTRING, 3, arguments);
-      return argument1.equals(argument2.substring(startIndex, length));
-    } else return argument1.equals(argument2.substring(startIndex));
+      operationResult = argument2.substring(startIndex, length);
+    } else operationResult = argument2.substring(startIndex);
+
+    if (SWRLBuiltInUtil.isExpectingAssignment(SWRLB_SUBSTRING, arguments)) {
+      arguments.set(0, new LiteralInfo(operationResult)); // Assign the result to the first parameter
+      result = true;
+    } else {
+      String argument1 = SWRLBuiltInUtil.getArgumentAsAString(SWRLB_SUBSTRING, 0, arguments);
+      result =  argument1.equals(operationResult);
+    } //if
+    return result;
   } // substring
 
   public boolean stringLength(List arguments) throws BuiltInException
   {
-    String argument1;
-    int length;
+    String argument2;
+    boolean result;
+    int operationResult;
 
     SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(SWRLB_STRING_LENGTH, 2, arguments.size());
 
-    argument1 = SWRLBuiltInUtil.getArgumentAsAString(SWRLB_STRING_LENGTH, 0, arguments);
-    length = SWRLBuiltInUtil.getArgumentAsAnInteger(SWRLB_STRING_LENGTH, 1, arguments);
+    argument2 = SWRLBuiltInUtil.getArgumentAsAString(SWRLB_SUBSTRING, 1, arguments);
+    operationResult = argument2.length();
 
-    return argument1.length() == length;
+    if (SWRLBuiltInUtil.isExpectingAssignment(SWRLB_STRING_LENGTH, arguments)) {
+      arguments.set(0, new LiteralInfo(operationResult)); // Assign the result to the first parameter
+      result = true;
+    } else {
+      String argument1 = SWRLBuiltInUtil.getArgumentAsAString(SWRLB_SUBSTRING, 0, arguments);
+      result = argument1.length() == operationResult;
+    } //if
+    return result;
   } // stringLength
 
   public boolean upperCase(List arguments) throws BuiltInException
   {
-    String argument1, argument2;
+    String argument2, operationResult;
+    boolean result;
+
     SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(SWRLB_UPPER_CASE, 2, arguments.size());
 
-    argument1 = SWRLBuiltInUtil.getArgumentAsAString(SWRLB_UPPER_CASE, 0, arguments);
     argument2 = SWRLBuiltInUtil.getArgumentAsAString(SWRLB_UPPER_CASE, 1, arguments);
+    operationResult = argument2.toUpperCase();
 
-    return argument1.equals(argument2.toUpperCase());
+    if (SWRLBuiltInUtil.isExpectingAssignment(SWRLB_UPPER_CASE, arguments)) {
+      arguments.set(0, new LiteralInfo(operationResult)); // Assign the result to the first parameter
+      result = true;
+    } else {
+      String argument1 = SWRLBuiltInUtil.getArgumentAsAString(SWRLB_UPPER_CASE, 0, arguments);
+      result = argument1.equals(operationResult);
+    } //if
+    return result;
   } // upperCase
 
   public boolean lowerCase(List arguments) throws BuiltInException
   {
-    String argument1, argument2;
+    String argument2, operationResult;
+    boolean result;
+
     SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(SWRLB_LOWER_CASE, 2, arguments.size());
 
-    argument1 = SWRLBuiltInUtil.getArgumentAsAString(SWRLB_LOWER_CASE, 0, arguments);
     argument2 = SWRLBuiltInUtil.getArgumentAsAString(SWRLB_LOWER_CASE, 1, arguments);
 
-    return argument1.equals(argument2.toLowerCase());
+    operationResult = argument2.toLowerCase();
+
+    if (SWRLBuiltInUtil.isExpectingAssignment(SWRLB_LOWER_CASE, arguments)) {
+      arguments.set(0, new LiteralInfo(operationResult)); // Assign the result to the first parameter
+      result = true;
+    } else {
+      String argument1 = SWRLBuiltInUtil.getArgumentAsAString(SWRLB_LOWER_CASE, 0, arguments);
+      result = argument1.equals(operationResult);
+    } //if
+    return result;
   } // lowerCase
 
   public boolean contains(List arguments) throws BuiltInException
   {
     String argument1, argument2;
+
     SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(SWRLB_CONTAINS, 2, arguments.size());
+
+    if (SWRLBuiltInUtil.isExpectingAssignment(SWRLB_CONTAINS, arguments)) 
+      throw new InvalidBuiltInArgumentException(SWRLB_CONTAINS, 0, "Built-in does not support assignment. Unbound variable used");
 
     argument1 = SWRLBuiltInUtil.getArgumentAsAString(SWRLB_CONTAINS, 0, arguments);
     argument2 = SWRLBuiltInUtil.getArgumentAsAString(SWRLB_CONTAINS, 1, arguments);
@@ -315,7 +385,11 @@ public class SWRLBuiltInMethodsImpl implements SWRLBuiltInMethods
   public boolean containsIgnoreCase(List arguments) throws BuiltInException
   {
     String argument1, argument2;
+
     SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(SWRLB_CONTAINS_IGNORE_CASE, 2, arguments.size());
+
+    if (SWRLBuiltInUtil.isExpectingAssignment(SWRLB_CONTAINS_IGNORE_CASE, arguments)) 
+      throw new InvalidBuiltInArgumentException(SWRLB_CONTAINS_IGNORE_CASE, 0, "Built-in does not support assignment. Unbound variable used");
 
     argument1 = SWRLBuiltInUtil.getArgumentAsAString(SWRLB_CONTAINS_IGNORE_CASE, 0, arguments);
     argument2 = SWRLBuiltInUtil.getArgumentAsAString(SWRLB_CONTAINS_IGNORE_CASE, 1, arguments);
@@ -326,7 +400,11 @@ public class SWRLBuiltInMethodsImpl implements SWRLBuiltInMethods
   public boolean startsWith(List arguments) throws BuiltInException
   {
     String argument1, argument2;
+
     SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(SWRLB_STARTS_WITH, 2, arguments.size());
+
+    if (SWRLBuiltInUtil.isExpectingAssignment(SWRLB_CONTAINS_IGNORE_CASE, arguments)) 
+      throw new InvalidBuiltInArgumentException(SWRLB_CONTAINS_IGNORE_CASE, 0, "Built-in does not support assignment. Unbound variable used");
 
     argument1 = SWRLBuiltInUtil.getArgumentAsAString(SWRLB_STARTS_WITH, 0, arguments);
     argument2 = SWRLBuiltInUtil.getArgumentAsAString(SWRLB_STARTS_WITH, 1, arguments);
@@ -338,6 +416,9 @@ public class SWRLBuiltInMethodsImpl implements SWRLBuiltInMethods
   {
     String argument1, argument2;
     SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(SWRLB_ENDS_WITH, 2, arguments.size());
+
+    if (SWRLBuiltInUtil.isExpectingAssignment(SWRLB_ENDS_WITH, arguments)) 
+      throw new InvalidBuiltInArgumentException(SWRLB_ENDS_WITH, 0, "Built-in does not support assignment. Unbound variable used");
 
     argument1 = SWRLBuiltInUtil.getArgumentAsAString(SWRLB_ENDS_WITH, 0, arguments);
     argument2 = SWRLBuiltInUtil.getArgumentAsAString(SWRLB_ENDS_WITH, 1, arguments);
@@ -351,6 +432,9 @@ public class SWRLBuiltInMethodsImpl implements SWRLBuiltInMethods
   {
     SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(builtInName, 2, arguments.size());
 
+    if (SWRLBuiltInUtil.isExpectingAssignment(builtInName, arguments)) 
+      throw new InvalidBuiltInArgumentException(builtInName, 0, "Comparison built-ins do not support assignment. Unbound variable used");
+
     if (SWRLBuiltInUtil.isArgumentABoolean(0, arguments)) {
       boolean b1 = SWRLBuiltInUtil.getArgumentAsABoolean(builtInName, 0, arguments);
       boolean b2 = SWRLBuiltInUtil.getArgumentAsABoolean(builtInName, 1, arguments); // Performs type checking.
@@ -362,31 +446,26 @@ public class SWRLBuiltInMethodsImpl implements SWRLBuiltInMethods
   private static int compareTwoArgumentsOfOrderedType(String builtInName, List arguments) throws BuiltInException
   {
     int result = 0; // Should be assigned by end of method.
-
+    
     SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(builtInName, 2, arguments.size());
-
     SWRLBuiltInUtil.checkThatAllArgumentsAreOfAnOrderedType(builtInName, arguments);
 
-    if (SWRLBuiltInUtil.isArgumentAString(0, arguments)) {
-   
+    if (SWRLBuiltInUtil.isArgumentAString(0, arguments)) {   
       String s1 = SWRLBuiltInUtil.getArgumentAsAString(builtInName, 0, arguments);
       String s2 = SWRLBuiltInUtil.getArgumentAsAString(builtInName, 1, arguments); // Performs type checking.
 
       return s1.compareTo(s2);
     } else if (SWRLBuiltInUtil.isArgumentAnInteger(0, arguments)) {
-
       int i1 = SWRLBuiltInUtil.getArgumentAsAnInteger(builtInName, 0, arguments);
       int i2 = SWRLBuiltInUtil.getArgumentAsAnInteger(builtInName, 1, arguments); // Performs type checking.
 
       if (i1 < i2) result = -1; else if (i1 > i2) result = 1; else result = 0;
     } else if (SWRLBuiltInUtil.isArgumentALong(0, arguments)) {
-
       long l1 = SWRLBuiltInUtil.getArgumentAsALong(builtInName, 0, arguments);
       long l2 = SWRLBuiltInUtil.getArgumentAsALong(builtInName, 1, arguments); // Performs type checking.
 
       if (l1 < l2) result = -1; else if (l1 > l2) result = 1; else result = 0;
     } else if (SWRLBuiltInUtil.isArgumentAFloat(0, arguments)) {
-
       float f1 = SWRLBuiltInUtil.getArgumentAsAFloat(builtInName, 0, arguments);
       float f2 = SWRLBuiltInUtil.getArgumentAsAFloat(builtInName, 1, arguments); // Performs type checking.
 
@@ -407,105 +486,94 @@ public class SWRLBuiltInMethodsImpl implements SWRLBuiltInMethods
     return (compareTwoArgumentsOfOrderedType(builtInName, arguments) < 0);
   } // lessThan
 
-  // TODO: as written this method only supports integers at the moment. Need to rewrite this using generics so it will support all types.
-  // TODO: this does not support assigning of values to arguments.
-
+  // TODO: This method only supports integers at the moment. Need to rewrite this using generics so it will support all types.
   private boolean mathOperation(String builtInName, List arguments) throws BuiltInException
   {
     Iterator iterator;
-    int argumentNumber;
-    int argument1, argument2, argument3;
-    boolean result;
+    int argumentNumber, argument1 = 0, argument2, argument3;
+    int operationResult = -1; 
+    boolean result = false, isExpectingAssignment = false;
 
-    if (!SWRLBuiltInUtil.areAllArgumentsIntegers(builtInName, arguments)) 
-      throw new BuiltInNotImplementedException(builtInName, "Only built-ins with all integer arguments are supported at the moment");
+    if (SWRLBuiltInUtil.isExpectingAssignment(builtInName, arguments)) isExpectingAssignment = true;
+
+    if (isExpectingAssignment) {
+      if (!SWRLBuiltInUtil.areAllArgumentsIntegers(builtInName, arguments.subList(1, arguments.size())))
+        throw new BuiltInNotImplementedException(builtInName, "Only built-ins with all integer arguments are supported at the moment");
+    } else {
+      if (!SWRLBuiltInUtil.areAllArgumentsIntegers(builtInName, arguments)) 
+        throw new BuiltInNotImplementedException(builtInName, "Only built-ins with all integer arguments are supported at the moment");
+    } // if
 
     // Argument number checking will have been performed by invoking method.
-    argument1 = SWRLBuiltInUtil.getArgumentAsAnInteger(builtInName, 0, arguments);
+    if (!isExpectingAssignment) argument1 = SWRLBuiltInUtil.getArgumentAsAnInteger(builtInName, 0, arguments);
 
     if (builtInName.equalsIgnoreCase(SWRLB_ADD)) {
-      int sum = 0;
+      operationResult = 0;
       for (argumentNumber = 1; argumentNumber < arguments.size(); argumentNumber++) {
-        sum += SWRLBuiltInUtil.getArgumentAsAnInteger(builtInName, argumentNumber, arguments);
+        operationResult += SWRLBuiltInUtil.getArgumentAsAnInteger(builtInName, argumentNumber, arguments);
       } // for
-
-      return (argument1 == sum);
     } else if (builtInName.equalsIgnoreCase(SWRLB_MULTIPLY)) {
-      int product = 0;
+      operationResult = 1;
       for (argumentNumber = 1; argumentNumber < arguments.size(); argumentNumber++) {
-        product *= SWRLBuiltInUtil.getArgumentAsAnInteger(builtInName, argumentNumber, arguments);
+        operationResult *= SWRLBuiltInUtil.getArgumentAsAnInteger(builtInName, argumentNumber, arguments);
       } // for
-
-      return (argument1 == product);
     } else if (builtInName.equalsIgnoreCase(SWRLB_SUBTRACT)) {
       argument2 = SWRLBuiltInUtil.getArgumentAsAnInteger(builtInName, 1, arguments);
       argument3 = SWRLBuiltInUtil.getArgumentAsAnInteger(builtInName, 2, arguments);
-
-      result = (argument1 == (argument2 - argument3));
     } else if (builtInName.equalsIgnoreCase(SWRLB_DIVIDE)) {
       argument2 = SWRLBuiltInUtil.getArgumentAsAnInteger(builtInName, 1, arguments);
       argument3 = SWRLBuiltInUtil.getArgumentAsAnInteger(builtInName, 2, arguments);
-
-      result = (argument1 == (argument2 / argument3));
+      operationResult = (argument2 / argument3);
     } else if (builtInName.equalsIgnoreCase(SWRLB_INTEGER_DIVIDE)) {
       argument2 = SWRLBuiltInUtil.getArgumentAsAnInteger(builtInName, 1, arguments);
       argument3 = SWRLBuiltInUtil.getArgumentAsAnInteger(builtInName, 2, arguments);
-
-      if (argument3 == 0) result = false;
-      else if (argument3 >= 0) result = (argument1 == (argument2 + argument3 + 1 / argument3));
-      else result = (argument1 == (argument2 / argument3));
+      if (argument3 == 0) throw new InvalidBuiltInArgumentException(builtInName, 2, "Zero passed as divisor");
+      if (argument3 >= 0) operationResult = argument2 + argument3 + 1 / argument3;
+      else operationResult = argument2 / argument3;
     } else if (builtInName.equalsIgnoreCase(SWRLB_MOD)) {
       argument2 = SWRLBuiltInUtil.getArgumentAsAnInteger(builtInName, 1, arguments);
       argument3 = SWRLBuiltInUtil.getArgumentAsAnInteger(builtInName, 2, arguments);
-
-      result = (argument1 == (argument2 % argument3));
+      operationResult = argument2 % argument3;
     } else if (builtInName.equalsIgnoreCase(SWRLB_POW)) {
       argument2 = SWRLBuiltInUtil.getArgumentAsAnInteger(builtInName, 1, arguments);
       argument3 = SWRLBuiltInUtil.getArgumentAsAnInteger(builtInName, 2, arguments);
-
-      result = (argument1 == (int)java.lang.Math.pow(argument2, argument3));
+      operationResult = (int)java.lang.Math.pow(argument2, argument3);
     } else if (builtInName.equalsIgnoreCase(SWRLB_UNARY_PLUS)) {
       argument2 = SWRLBuiltInUtil.getArgumentAsAnInteger(builtInName, 1, arguments);
-
-      result = (argument1 == argument2);
+      operationResult = argument2;
     } else if (builtInName.equalsIgnoreCase(SWRLB_UNARY_MINUS)) {
       argument2 = SWRLBuiltInUtil.getArgumentAsAnInteger(builtInName, 1, arguments);
-
-      result = (argument1 == -argument2);
+      operationResult = -argument2;
     } else if (builtInName.equalsIgnoreCase(SWRLB_ABS)) {
       argument2 = SWRLBuiltInUtil.getArgumentAsAnInteger(builtInName, 1, arguments);
-
-      result = (argument1 == java.lang.Math.abs(argument2));
+      operationResult = java.lang.Math.abs(argument2);
     } else if (builtInName.equalsIgnoreCase(SWRLB_CEILING)) {
       argument2 = SWRLBuiltInUtil.getArgumentAsAnInteger(builtInName, 1, arguments);
-
-      result = (argument1 == (int)java.lang.Math.ceil(argument2));
+      operationResult = (int)java.lang.Math.ceil(argument2);
     } else if (builtInName.equalsIgnoreCase(SWRLB_FLOOR)) {
       argument2 = SWRLBuiltInUtil.getArgumentAsAnInteger(builtInName, 1, arguments);
-
-      result = (argument1 == (int)java.lang.Math.floor(argument2));
+      operationResult = (int)java.lang.Math.floor(argument2);
     } else if (builtInName.equalsIgnoreCase(SWRLB_ROUND)) {
       argument2 = SWRLBuiltInUtil.getArgumentAsAnInteger(builtInName, 1, arguments);
-
-      result = (argument1 == (int)java.lang.Math.rint(argument2));
+      operationResult = (int)java.lang.Math.rint(argument2);
     } else if (builtInName.equalsIgnoreCase(SWRLB_ROUND_HALF_TO_EVEN)) {
       argument2 = SWRLBuiltInUtil.getArgumentAsAnInteger(builtInName, 1, arguments);
-
-      result = false; // TODO
       throw new BuiltInNotImplementedException(SWRLB_ROUND_HALF_TO_EVEN);
     } else if (builtInName.equalsIgnoreCase(SWRLB_SIN)) {
       argument2 = SWRLBuiltInUtil.getArgumentAsAnInteger(builtInName, 1, arguments);
-
-      result = (argument1 == (int)java.lang.Math.sin(argument2));
+      operationResult = (int)java.lang.Math.sin(argument2);
     } else if (builtInName.equalsIgnoreCase(SWRLB_COS)) {
       argument2 = SWRLBuiltInUtil.getArgumentAsAnInteger(builtInName, 1, arguments);
-
-      result = (argument1 == (int)java.lang.Math.cos(argument2));
+      operationResult = (int)java.lang.Math.cos(argument2);
     } else if (builtInName.equalsIgnoreCase(SWRLB_TAN)) {
       argument2 = SWRLBuiltInUtil.getArgumentAsAnInteger(builtInName, 1, arguments);
-
-      result = (argument1 == (int)java.lang.Math.tan(argument2));
+      operationResult = (int)java.lang.Math.tan(argument2);
     } else throw new InvalidBuiltInNameException(builtInName);
+    
+    if (isExpectingAssignment) {
+      arguments.set(0, new LiteralInfo(operationResult)); // Assign the result to the first parameter
+      result = true;
+    } else result = (argument1 == operationResult);
 
     return result;
   } // mathOperation
