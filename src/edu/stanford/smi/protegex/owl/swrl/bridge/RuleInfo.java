@@ -7,7 +7,7 @@ import java.util.*;
 
 public class RuleInfo extends Info
 {
-  private List body, head; // List of AtomInfo objects.
+  private List body, head; // Lists of AtomInfo objects.
   
   public RuleInfo(String ruleName)
   {
@@ -18,6 +18,8 @@ public class RuleInfo extends Info
   
   public void addBodyAtom(AtomInfo atomInfo) { body.add(atomInfo); } 
   public void addHeadAtom(AtomInfo atomInfo) { head.add(atomInfo); } 
-  public List getHead() { return head; }
-  public List getBody() { return body; }
+  public void setHeadAtoms(List head) { this.head = head; }
+  public void setBodyAtoms(List body) { this.body = body; }
+  public List getHeadAtoms() { return head; }
+  public List getBodyAtoms() { return body; }
 } // RuleInfo

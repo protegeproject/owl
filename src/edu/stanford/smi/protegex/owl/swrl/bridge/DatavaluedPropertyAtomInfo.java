@@ -19,13 +19,21 @@ public class DatavaluedPropertyAtomInfo extends AtomInfo
   {
     super(atom.getPropertyPredicate().getName());
 
-    if (atom.getArgument1() instanceof SWRLVariable) argument1 = new VariableInfo((SWRLVariable)atom.getArgument1());
-    else if (atom.getArgument1() instanceof OWLIndividual) argument1 = new IndividualInfo((OWLIndividual)atom.getArgument1());
-    else throw new SWRLRuleEngineBridgeException("Unexpected argument #1 to datavalued property atom '" + atom.getBrowserText() + "'. Expecting variable or individual, got instance of" + atom.getArgument1().getClass() + ".");
+    if (atom.getArgument1() instanceof SWRLVariable) {
+      SWRLVariable variable = (SWRLVariable)atom.getArgument1();
+      argument1 = new VariableInfo(variable);
+      addReferencedVariableName(variable.getName());
+    } else if (atom.getArgument1() instanceof OWLIndividual) argument1 = new IndividualInfo((OWLIndividual)atom.getArgument1());
+    else throw new SWRLRuleEngineBridgeException("Unexpected argument #1 to datavalued property atom '" + atom.getBrowserText() + 
+                                                 "'. Expecting variable or individual, got instance of" + atom.getArgument1().getClass() + ".");
 
-    if (atom.getArgument2() instanceof SWRLVariable) argument2 = new VariableInfo((SWRLVariable)atom.getArgument2());
-    else if (atom.getArgument2() instanceof RDFSLiteral) argument2 = new LiteralInfo(owlModel, (RDFSLiteral)atom.getArgument2());
-    else throw new SWRLRuleEngineBridgeException("Unexpected argument #2 to datavalued property atom '" + atom.getBrowserText()  + "'. Expecting variable or literal, got instance of" + atom.getArgument2().getClass() + ".");
+    if (atom.getArgument2() instanceof SWRLVariable) {
+      SWRLVariable variable = (SWRLVariable)atom.getArgument2();
+      argument2 = new VariableInfo(variable);
+      addReferencedVariableName(variable.getName());
+    } else if (atom.getArgument2() instanceof RDFSLiteral) argument2 = new LiteralInfo(owlModel, (RDFSLiteral)atom.getArgument2());
+    else throw new SWRLRuleEngineBridgeException("Unexpected argument #2 to datavalued property atom '" + atom.getBrowserText()  + 
+                                                 "'. Expecting variable or literal, got instance of" + atom.getArgument2().getClass() + ".");
 
     // If argument1 is an individual, add its name to the referenced individuals list for this atom.
     if (argument1 instanceof IndividualInfo) addReferencedIndividualName(argument1.getName());

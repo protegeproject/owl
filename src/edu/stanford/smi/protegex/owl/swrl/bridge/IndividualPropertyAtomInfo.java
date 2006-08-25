@@ -17,12 +17,18 @@ public class IndividualPropertyAtomInfo extends AtomInfo
   {
     super(atom.getPropertyPredicate().getName());
     
-    if (atom.getArgument1() instanceof SWRLVariable) argument1 = new VariableInfo((SWRLVariable)atom.getArgument1());
-    else if (atom.getArgument1() instanceof OWLIndividual) argument1 = new IndividualInfo((OWLIndividual)atom.getArgument1());
+    if (atom.getArgument1() instanceof SWRLVariable) {
+      SWRLVariable variable = (SWRLVariable)atom.getArgument1();
+      argument1 = new VariableInfo(variable);
+      addReferencedVariableName(variable.getName());
+    } else if (atom.getArgument1() instanceof OWLIndividual) argument1 = new IndividualInfo((OWLIndividual)atom.getArgument1());
     else throw new SWRLRuleEngineBridgeException("Unexpected argument #1 to individual property atom '" + atom.getBrowserText() + "'. Expecting variable or individual, got instance of " + atom.getArgument1().getClass() + ".");
 
-    if (atom.getArgument2() instanceof SWRLVariable) argument2 = new VariableInfo((SWRLVariable)atom.getArgument2());
-    else if (atom.getArgument2() instanceof OWLIndividual) argument2 = new IndividualInfo((OWLIndividual)atom.getArgument2());
+    if (atom.getArgument2() instanceof SWRLVariable) {
+      SWRLVariable variable = (SWRLVariable)atom.getArgument2();
+      argument2 = new VariableInfo(variable);
+      addReferencedVariableName(variable.getName());
+    } else if (atom.getArgument2() instanceof OWLIndividual) argument2 = new IndividualInfo((OWLIndividual)atom.getArgument2());
     else throw new SWRLRuleEngineBridgeException("Unexpected argument #2 to individual property atom '" + atom.getBrowserText() + "'. Expecting variable or individual, got instance of " + atom.getArgument2().getClass() + ".");
 
     // If argument1 or 2 is an individual, add its name to the referenced individuals list for this atom.
@@ -31,6 +37,5 @@ public class IndividualPropertyAtomInfo extends AtomInfo
   } // IndividualPropertyAtomInfo
   
   public Argument getArgument1() { return argument1; }
-  public Argument getArgument2() { return argument2; }
-  
+  public Argument getArgument2() { return argument2; }  
 } // IndividualPropertyAtomInfo

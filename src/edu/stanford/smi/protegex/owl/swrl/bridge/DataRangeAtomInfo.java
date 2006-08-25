@@ -16,7 +16,7 @@ public class DataRangeAtomInfo extends AtomInfo
   public DataRangeAtomInfo(SWRLDataRangeAtom dataRangeAtom) throws SWRLRuleEngineBridgeException
   { 
     super("DataRangeAtom");
-    // TODO
+    // TODO: and don't forget to call addReferencedVariableName, and addReferencedIndividualName if appropriate
     throw new NotImplementedException("SWRL data range atoms not implemented.");
   } // DataRangeAtomInfo
 

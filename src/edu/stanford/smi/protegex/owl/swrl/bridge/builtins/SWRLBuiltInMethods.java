@@ -1,7 +1,7 @@
 
 package edu.stanford.smi.protegex.owl.swrl.bridge.builtins;
 
-// A class defining any SWRL built-in methods must implement this interface. cf. comments on method invokeSWRLBuiltIn() in
-// SWRLRuleEngineBridge.java.
-
+/** An interface that must be used by any class defining SWRL built-in methods. See <a
+ *  href="http://protege.cim3.net/cgi-bin/wiki.pl?SWRLBuiltInBridge">here</a> for documentation on defining SWRL built-in methods.
+ */
 public interface SWRLBuiltInMethods {}

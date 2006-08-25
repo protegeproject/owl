@@ -1,10 +1,5 @@
 
-// TODO: check that built-in methods in the Impl class throw BuiltInException
 // TODO: DataRange
-
-// SWRLRuleEngineBridge
-//
-// cf. http://protege.cim3.net/cgi-bin/wiki.pl?SWRLRuleEngineBridgeFAQ for detailed documentation of this class.
 
 package edu.stanford.smi.protegex.owl.swrl.bridge;
 
@@ -18,14 +13,19 @@ import java.lang.reflect.*;
 import java.net.URLClassLoader;
 import java.net.URL;
 
+/**
+ ** The SWRL Rule Engine Bridge provides a mechanism to incorporate rule engines into Protege-OWL to execute SWRL rules. <p>
+ **
+ ** Detailed documentation for this class can be found <a href="http://protege.cim3.net/cgi-bin/wiki.pl?SWRLRuleEngineBridgeFAQ">here</a>.
+ */
 public abstract class SWRLRuleEngineBridge
 {
   protected abstract void defineRule(RuleInfo ruleInfo) throws SWRLRuleEngineBridgeException;
   protected abstract void defineClass(ClassInfo classInfo) throws SWRLRuleEngineBridgeException;
   protected abstract void defineProperty(PropertyInfo propertyInfo) throws SWRLRuleEngineBridgeException;
   protected abstract void defineIndividual(IndividualInfo individualInfo) throws SWRLRuleEngineBridgeException;
-  protected abstract void defineSameAsRestriction(SameAsRestrictionInfo sameAsRestrictionInfo) throws SWRLRuleEngineBridgeException;
-  protected abstract void defineDifferentFromRestriction(DifferentFromRestrictionInfo differentFromRestrictionInfo) throws SWRLRuleEngineBridgeException;
+  protected abstract void defineRestriction(RestrictionInfo restrictionInfo) throws SWRLRuleEngineBridgeException;
+
   protected abstract void initializeRuleEngine() throws SWRLRuleEngineBridgeException;
 
   public abstract void runRuleEngine() throws SWRLRuleEngineBridgeException;
@@ -54,6 +54,111 @@ public abstract class SWRLRuleEngineBridge
 
   // Holds class instances implementing built-ins.
   private HashMap builtInMethodsClassInstances;
+
+  protected SWRLRuleEngineBridge(OWLModel owlModel) throws SWRLRuleEngineBridgeException
+  {
+    this.owlModel = owlModel;
+
+    importedSWRLRules = new ArrayList();
+
+    referencedClassNames = new ArrayList();
+    referencedIndividualNames = new ArrayList();
+    referencedPropertyNames = new ArrayList();
+
+    importedClasses = new HashMap();
+    importedIndividuals = new HashMap(); 
+    importedProperties= new ArrayList(); 
+    importedPropertyNames = new ArrayList();
+    importedRestrictions = new ArrayList();
+
+    exportedClassNames = new ArrayList();
+    exportedIndividualNames = new ArrayList();
+
+    assertedIndividuals = new ArrayList(); 
+    assertedProperties = new ArrayList(); 
+
+    builtInMethodsClassInstances = new HashMap();
+  } // SWRLRuleEngineBridge
+
+  public void importSWRLRulesAndOWLKnowledge() throws SWRLRuleEngineBridgeException
+  {
+    resetRuleEngine();
+
+    if (!owlModel.getInconsistentClasses().isEmpty()) 
+      throw new InconsistentKnowledgeBaseException("Cannot import rules from an inconsistent knowledge base");
+
+    importSWRLRules(); // Fills in importedSWRLRules, referencedClassNames, referencedPropertyNames, and referencedIndividualNames
+
+    importOWLClasses(referencedClassNames); // Import all referenced classes (and their superclasses and subclasses).
+    importOWLProperties(referencedPropertyNames); // Import all referenced properties (and the necessary classes).
+    importOWLIndividuals(referencedIndividualNames); // Import all referenced individuals (and their classes).
+
+    importAllOWLIndividualsOfClasses(referencedClassNames); // Import all individuals that are members of imported classes.
+
+    importOWLRestrictions();
+  } // importSWRLRulesAndOWLKnowledge
+
+  public void exportSWRLRulesAndOWLKnowledge() throws SWRLRuleEngineBridgeException
+  {
+    exportOWLClasses();
+    exportOWLIndividuals();
+    exportOWLProperties();
+    exportOWLRestrictions();
+    exportSWRLRules();
+  } // exportSWRLRulesAndOWLKnowledge
+
+  // Asserted individuals and properties can then be written back to OWL.
+
+  public void writeAssertedIndividualsAndProperties2OWL() throws SWRLRuleEngineBridgeException
+  {
+    writeAssertedIndividuals2OWL();
+    writeAssertedProperties2OWL();
+  } // writeAssertedIndividualsAndProperties2OWL
+
+  public void resetBridge() throws SWRLRuleEngineBridgeException
+  {
+    importedSWRLRules.clear();
+
+    referencedClassNames.clear();
+    referencedPropertyNames.clear();
+    referencedIndividualNames.clear();
+
+    importedClasses.clear();
+    importedProperties.clear();
+    importedPropertyNames.clear();
+    importedIndividuals.clear();
+    importedRestrictions.clear();
+
+    clearExportedAndAssertedKnowledge();
+
+    resetRuleEngine();
+  } // resetBridge
+
+  public void resetRuleEngine() throws SWRLRuleEngineBridgeException
+  {
+    initializeRuleEngine();
+    clearExportedAndAssertedKnowledge();
+  } // resetRuleEngine
+
+  public OWLModel getOWLModel() { return owlModel; }
+
+  // Convenience methods to display bridge activity.
+  public int getNumberOfImportedSWRLRules() { return importedSWRLRules.size(); }
+  public int getNumberOfImportedClasses() { return importedClasses.size(); }
+  public int getNumberOfImportedIndividuals() { return importedIndividuals.size(); }
+  public int getNumberOfImportedProperties() { return importedProperties.size(); }
+  public int getNumberOfImportedRestrictions() { return importedRestrictions.size(); }
+  public int getNumberOfAssertedIndividuals() { return assertedIndividuals.size(); }
+  public int getNumberOfAssertedProperties() { return assertedProperties.size(); }
+
+  // Convenience methods for subclasses who may wish to display the contents of the bridge.
+  protected List getImportedSWRLRules() { return importedSWRLRules; }
+  protected List getImportedClasses() { return new ArrayList(importedClasses.values()); }
+  protected List getImportedIndividuals() { return new ArrayList(importedIndividuals.values()); }
+  protected List getImportedProperties() { return importedProperties; }
+  protected List getImportedRestrictions() { return importedRestrictions; }
+  protected List getAssertedIndividuals() { return assertedIndividuals; }
+  protected List getAssertedProperties() { return assertedProperties; }
 
   public void assertProperty(String propertyName, String subjectName, String predicateValue) throws SWRLRuleEngineBridgeException
   { 
@@ -160,108 +265,6 @@ public abstract class SWRLRuleEngineBridge
     return swrlBuiltInMethods;
   } // loadSWRLBuiltInMethodsImpl
 
-  protected SWRLRuleEngineBridge(OWLModel owlModel) throws SWRLRuleEngineBridgeException
-  {
-    this.owlModel = owlModel;
-
-    importedSWRLRules = new ArrayList();
-
-    referencedClassNames = new ArrayList();
-    referencedIndividualNames = new ArrayList();
-    referencedPropertyNames = new ArrayList();
-
-    importedClasses = new HashMap();
-    importedIndividuals = new HashMap(); 
-    importedProperties= new ArrayList(); 
-    importedPropertyNames = new ArrayList();
-    importedRestrictions = new ArrayList();
-
-    exportedClassNames = new ArrayList();
-    exportedIndividualNames = new ArrayList();
-
-    assertedIndividuals = new ArrayList(); 
-    assertedProperties = new ArrayList(); 
-
-    builtInMethodsClassInstances = new HashMap();
-  } // SWRLRuleEngineBridge
-
-  public void importSWRLRulesAndOWLKnowledge() throws SWRLRuleEngineBridgeException
-  {
-    resetRuleEngine();
-
-    if (!owlModel.getInconsistentClasses().isEmpty()) 
-      throw new InconsistentKnowledgeBaseException("Cannot import rules from an inconsistent knowledge base");
-
-    importSWRLRules(); // Fills in importedSWRLRules, referencedClassNames, referencedPropertyNames, and referencedIndividualNames
-
-    importOWLClasses(referencedClassNames); // Import all referenced classes (and their superclasses and subclasses).
-    importOWLProperties(referencedPropertyNames); // Import all referenced properties (and the necessary classes).
-    importOWLIndividuals(referencedIndividualNames); // Import all referenced individuals (and their classes).
-
-    importAllOWLIndividualsOfClasses(referencedClassNames); // Import all individuals that are members of imported classes.
-
-    importOWLRestrictions();
-  } // importSWRLRulesAndOWLKnowledge
-
-  public void exportSWRLRulesAndOWLKnowledge() throws SWRLRuleEngineBridgeException
-  {
-    exportOWLClasses();
-    exportOWLIndividuals();
-    exportOWLProperties();
-    exportOWLRestrictions();
-    exportSWRLRules();
-  } // exportSWRLRulesAndOWLKnowledge
-
-  // Asserted individuals and properties can then be written back to OWL.
-
-  public void writeAssertedIndividualsAndProperties2OWL() throws SWRLRuleEngineBridgeException
-  {
-    writeAssertedIndividuals2OWL();
-    writeAssertedProperties2OWL();
-  } // writeAssertedIndividualsAndProperties2OWL
-
-  public void resetBridge() throws SWRLRuleEngineBridgeException
-  {
-    importedSWRLRules.clear();
-
-    referencedClassNames.clear();
-    referencedPropertyNames.clear();
-    referencedIndividualNames.clear();
-
-    importedClasses.clear();
-    importedProperties.clear();
-    importedPropertyNames.clear();
-    importedIndividuals.clear();
-    importedRestrictions.clear();
-
-    clearExportedAndAssertedKnowledge();
-
-    resetRuleEngine();
-  } // resetBridge
-
-  public void resetRuleEngine() throws SWRLRuleEngineBridgeException
-  {
-    initializeRuleEngine();
-    clearExportedAndAssertedKnowledge();
-  } // resetRuleEngine
-
-  // Convenience methods to display bridge activity.
-  public int getNumberOfImportedSWRLRules() { return importedSWRLRules.size(); }
-  public int getNumberOfImportedClasses() { return importedClasses.size(); }
-  public int getNumberOfImportedIndividuals() { return importedIndividuals.size(); }
-  public int getNumberOfImportedProperties() { return importedProperties.size(); }
-  public int getNumberOfImportedRestrictions() { return importedRestrictions.size(); }
-  public int getNumberOfAssertedIndividuals() { return assertedIndividuals.size(); }
-  public int getNumberOfAssertedProperties() { return assertedProperties.size(); }
-
-  // Convenience methods for subclasses who may wish to display the contents of the bridge.
-  protected List getImportedSWRLRules() { return importedSWRLRules; }
-  protected List getImportedClasses() { return new ArrayList(importedClasses.values()); }
-  protected List getImportedIndividuals() { return new ArrayList(importedIndividuals.values()); }
-  protected List getImportedProperties() { return importedProperties; }
-  protected List getImportedRestrictions() { return importedRestrictions; }
-  protected List getAssertedIndividuals() { return assertedIndividuals; }
-  protected List getAssertedProperties() { return assertedProperties; }
 
   private void importSWRLRules() throws SWRLRuleEngineBridgeException
   {
@@ -281,25 +284,29 @@ public abstract class SWRLRuleEngineBridge
   {
     RuleInfo ruleInfo;
     Iterator iterator;
+    List bodyAtoms = new ArrayList();
+    List headAtoms = new ArrayList();
 
     ruleInfo = new RuleInfo(rule.getName());
-
-    iterator = rule.getHead().getValues().iterator();
-    while (iterator.hasNext()) {
-      SWRLAtom swrlAtom = (SWRLAtom)iterator.next();
-      ruleInfo.addHeadAtom(processSWRLAtom(swrlAtom));
-    } // while 
 
     iterator = rule.getBody().getValues().iterator();
     while (iterator.hasNext()) {
       SWRLAtom swrlAtom = (SWRLAtom)iterator.next();
-      ruleInfo.addBodyAtom(processSWRLAtom(swrlAtom));
+      ruleInfo.addBodyAtom(processSWRLAtom(swrlAtom, false));
     } // while 
+
+    iterator = rule.getHead().getValues().iterator();
+    while (iterator.hasNext()) {
+      SWRLAtom swrlAtom = (SWRLAtom)iterator.next();
+      ruleInfo.addHeadAtom(processSWRLAtom(swrlAtom, true));
+    } // while 
+
+    preProcessAtoms(ruleInfo);
 
     importedSWRLRules.add(ruleInfo);
   } // importSWRLRule
 
-  private AtomInfo processSWRLAtom(SWRLAtom swrlAtom) throws SWRLRuleEngineBridgeException
+  private AtomInfo processSWRLAtom(SWRLAtom swrlAtom, boolean isConsequent) throws SWRLRuleEngineBridgeException
   {
     AtomInfo atomInfo;
     
@@ -316,9 +323,11 @@ public abstract class SWRLRuleEngineBridge
       atomInfo = new SameIndividualAtomInfo((SWRLSameIndividualAtom)swrlAtom);
     } else if (swrlAtom instanceof SWRLDifferentIndividualsAtom) {
       atomInfo = new DifferentIndividualsAtomInfo((SWRLDifferentIndividualsAtom)swrlAtom);
-    } else if (swrlAtom instanceof SWRLBuiltinAtom) 
+    } else if (swrlAtom instanceof SWRLBuiltinAtom) {
+      if (isConsequent) 
+        throw new SWRLRuleEngineBridgeException("Attempt to use built-in ('" + swrlAtom.getBrowserText() + "') in rule consequent.");
       atomInfo = new BuiltInAtomInfo(owlModel, (SWRLBuiltinAtom)swrlAtom);
-    else if (swrlAtom instanceof SWRLDataRangeAtom) 
+    } else if (swrlAtom instanceof SWRLDataRangeAtom) 
       atomInfo = new DataRangeAtomInfo((SWRLDataRangeAtom)swrlAtom);
     else throw new InvalidSWRLAtomException(swrlAtom.getBrowserText());
 
@@ -420,8 +429,7 @@ public abstract class SWRLRuleEngineBridge
     importOWLClasses(individualInfo.getClassNames());
   } // importedIndividual
 
-  // Apart from sameAs and differentFrom, we do not import any OWL restrictions at the moment.
-  // TODO: check that sameAs and differentFrom restrictions do not contradict each other.
+  // We only import owl:SameAs, owl:differentFrom, and owl:AddDifferent at the moment.
   private void importOWLRestrictions() throws SWRLRuleEngineBridgeException
   {
     importOWLSameAsRestrictions();
@@ -478,7 +486,6 @@ public abstract class SWRLRuleEngineBridge
     } // while
   } // importOWLSameAsRestrictions
 
-  // Take the all differents lists and construct of differentFrom name pairs.
   private void importOWLAllDifferents() throws SWRLRuleEngineBridgeException
   {
     Collection allDifferents = owlModel.getOWLAllDifferents();
@@ -487,18 +494,14 @@ public abstract class SWRLRuleEngineBridge
       Iterator allDifferentsIterator = allDifferents.iterator();
       while (allDifferentsIterator.hasNext()) {
         OWLAllDifferent owlAllDifferent = (OWLAllDifferent)allDifferentsIterator.next();
-        List individualMemberNames = new ArrayList();
+        AllDifferentRestrictionInfo allDifferentRestrictionInfo = new AllDifferentRestrictionInfo();
+
         Iterator individualsIterator = owlAllDifferent.getDistinctMembers().iterator();
         while (individualsIterator.hasNext()) {
           RDFIndividual individual = (RDFIndividual)individualsIterator.next();
-          String individualName = individual.getName();
-          Iterator individualMemberNamesIterator = individualMemberNames.iterator();
-          while (individualMemberNamesIterator.hasNext()) {
-            String individualMemberName = (String)individualMemberNamesIterator.next();
-            importedRestrictions.add(new DifferentFromRestrictionInfo(individualName, individualMemberName));
-          } // while
-          individualMemberNames.add(individualName);
+          allDifferentRestrictionInfo.addIndividualName(individual.getName());
         } // while
+        importedRestrictions.add(allDifferentRestrictionInfo);
       } // while
     } // if
   } // importOWLAllDifferents
@@ -523,14 +526,13 @@ public abstract class SWRLRuleEngineBridge
     } // while
   } // exportOWLClasses
 
-  // Superclasses must be defined before subclasses.
   private void exportOWLClass(ClassInfo classInfo) throws SWRLRuleEngineBridgeException
   {
     String className = classInfo.getName();
     Collection superClassNames = classInfo.getDirectSuperClassNames();
     
     if (!exportedClassNames.contains(className)) { // See if it is already defined.
-      if (!superClassNames.isEmpty()) {
+      if (!superClassNames.isEmpty()) { // Superclasses must be defined before subclasses.
         Iterator iterator = superClassNames.iterator();
         while (iterator.hasNext()) {
           String superClassName = (String)iterator.next();
@@ -572,10 +574,7 @@ public abstract class SWRLRuleEngineBridge
     Iterator iterator = importedRestrictions.iterator();
     while (iterator.hasNext()) {
       RestrictionInfo restrictionInfo = (RestrictionInfo)iterator.next();
-      if (restrictionInfo instanceof SameAsRestrictionInfo) 
-        defineSameAsRestriction((SameAsRestrictionInfo)restrictionInfo);
-      else if (restrictionInfo instanceof DifferentFromRestrictionInfo) 
-        defineDifferentFromRestriction((DifferentFromRestrictionInfo)restrictionInfo);
+      defineRestriction(restrictionInfo);
     } // while
   } // exportOWLRestrictions
 
@@ -598,6 +597,75 @@ public abstract class SWRLRuleEngineBridge
       individualInfo.write2OWL(owlModel);
     } // while
   } // writeAssertedIndividuals2OWL
+  
+  // Built-ins that assign their first argument require special processing.
+  //
+  // TODO: move to RuleInfo.java?
+  private void preProcessAtoms(RuleInfo ruleInfo) throws SWRLRuleEngineBridgeException
+  {
+    Iterator iterator;
+    List bodyAtoms = new ArrayList();
+    List headAtoms = new ArrayList();
+    List nonBuiltInBodyAtoms = new ArrayList();
+    List builtInAtoms = new ArrayList();
+    List builtInWithoutAssignmentAtoms = new ArrayList(); // Built-in that do not assign their first parameter.
+    List builtInWithAssignmentAtoms = new ArrayList(); // Built-in that assign their first parameter.
+    List variableNamesUsedByNonBuiltInAtoms = new ArrayList();
+    List assignedBuiltInVariableNames = new ArrayList(); // Names of variables assigned by built-ins.
+
+    // Process the body atoms and build up list of built-in and non built-in atoms.
+    iterator = ruleInfo.getBodyAtoms().iterator();
+    while (iterator.hasNext()) {
+      AtomInfo atomInfo = (AtomInfo)iterator.next();
+      if (atomInfo instanceof BuiltInAtomInfo) builtInAtoms.add(atomInfo);
+      else {
+        nonBuiltInBodyAtoms.add(atomInfo);
+        variableNamesUsedByNonBuiltInAtoms.addAll(atomInfo.getReferencedVariableNames()); // This may generate duplicates, but this is ok.
+      } // if
+    } // while
+
+    // Process the built-in atoms and determine if they assign their first argument. Also check that all built-in variable references are
+    // valid.
+    iterator = builtInAtoms.iterator();
+    while (iterator.hasNext()) {
+      BuiltInAtomInfo builtInAtomInfo = (BuiltInAtomInfo)iterator.next();
+
+      List variableNamesUsedByBuiltIn = builtInAtomInfo.getReferencedVariableNames();
+      if (builtInAtomInfo.isFirstArgumentAVariable()) { 
+        String firstArgumentVariableName = builtInAtomInfo.getFirstArgumentVariableName();
+
+        // If the first argument that is a variable is not used by any non built-in atom, we assume that the built-in is going to assign it.
+        if (!variableNamesUsedByNonBuiltInAtoms.contains(firstArgumentVariableName)) {
+          // Check to make sure more than one built-in does not assign the same variable.
+          if (assignedBuiltInVariableNames.contains(firstArgumentVariableName)) 
+            throw new SWRLRuleEngineBridgeException("Attempt to set variable ?" + firstArgumentVariableName + " for second time by built-in '" 
+                                                    + builtInAtomInfo.getName() + "'.");
+          assignedBuiltInVariableNames.add(firstArgumentVariableName);
+          
+          builtInWithAssignmentAtoms.add(builtInAtomInfo);
+          variableNamesUsedByBuiltIn.remove(0); // Remove assigned variable name from the list used to check that all variables are predefined.
+        } else  builtInWithoutAssignmentAtoms.add(builtInAtomInfo);
+      } else builtInWithoutAssignmentAtoms.add(builtInAtomInfo);
+
+      // Check that all variable names used by a built-in are defined by at least one non built-in atom (with the exception of the first
+      // variable parameter of built-ins that assign their first parameter).
+      Iterator variableNameIterator = variableNamesUsedByBuiltIn.iterator();
+      while (variableNameIterator.hasNext()) {
+        String variableName = (String)variableNameIterator.next();
+        if (!variableNamesUsedByNonBuiltInAtoms.contains(variableName))
+          throw new SWRLRuleEngineBridgeException("Variable ?" + variableName + " in by built-in '" + builtInAtomInfo.getName() + 
+                                                  "' used before definition.");
+      } // while
+    } // while
+    bodyAtoms.addAll(nonBuiltInBodyAtoms);
+    bodyAtoms.addAll(builtInWithoutAssignmentAtoms);
+
+    headAtoms.addAll(builtInWithAssignmentAtoms);
+    headAtoms.addAll(ruleInfo.getHeadAtoms());
+
+    ruleInfo.setBodyAtoms(bodyAtoms);
+    ruleInfo.setHeadAtoms(headAtoms);
+  } // preProcessAtoms
 
   private void clearExportedAndAssertedKnowledge() 
   {

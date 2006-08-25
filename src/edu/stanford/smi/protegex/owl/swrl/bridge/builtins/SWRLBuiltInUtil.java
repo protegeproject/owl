@@ -1,7 +1,4 @@
 
-// Utility methods that can be used in implementations of
-// built-ins. cf. edu.stanford.smi.protegex.owl.swrl.builtins.swrlb.SWRLBuiltInMethodsImpl.java for example usage.
-//
 // TODO: This could be made significantly shorter using generics.
 // TODO: change the isArgument/areAllArgument methods to not throw exceptions.
 
@@ -14,8 +11,16 @@ import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.*;
 
 import java.util.List;
 
+/**
+ ** Class containing utility methods that can be used in built-in implementations. 
+ */
 public class SWRLBuiltInUtil
 {
+  public static boolean isExpectingAssignment(String builtInName, List arguments)
+  {
+    return !arguments.isEmpty() && arguments.get(0) == null;
+  } // isExpectingAssignment
+
   public static void checkNumberOfArgumentsEqualTo(String builtInName, int expecting, int actual) throws InvalidBuiltInArgumentNumberException
   {
     if (expecting != actual)
