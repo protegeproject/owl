@@ -1,18 +1,45 @@
 package edu.stanford.smi.protegex.owl.model.framestore;
 
-import edu.stanford.smi.protege.event.*;
-import edu.stanford.smi.protege.model.*;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
+
+import edu.stanford.smi.protege.event.ClsEvent;
+import edu.stanford.smi.protege.event.FacetEvent;
+import edu.stanford.smi.protege.event.FrameEvent;
+import edu.stanford.smi.protege.event.InstanceEvent;
+import edu.stanford.smi.protege.event.KnowledgeBaseEvent;
+import edu.stanford.smi.protege.event.SlotEvent;
+import edu.stanford.smi.protege.model.Cls;
+import edu.stanford.smi.protege.model.Facet;
+import edu.stanford.smi.protege.model.Frame;
+import edu.stanford.smi.protege.model.FrameID;
+import edu.stanford.smi.protege.model.Instance;
+import edu.stanford.smi.protege.model.KnowledgeBase;
+import edu.stanford.smi.protege.model.Model;
+import edu.stanford.smi.protege.model.Reference;
+import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protege.model.framestore.AbstractFrameStoreInvocationHandler;
 import edu.stanford.smi.protege.model.framestore.ReferenceImpl;
+import edu.stanford.smi.protege.model.query.Query;
+import edu.stanford.smi.protege.model.query.QueryCallback;
+import edu.stanford.smi.protege.model.query.QueryCallbackClone;
 import edu.stanford.smi.protege.util.AbstractEvent;
-import edu.stanford.smi.protegex.owl.model.*;
+import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
+import edu.stanford.smi.protegex.owl.model.OWLNames;
+import edu.stanford.smi.protegex.owl.model.RDFList;
+import edu.stanford.smi.protegex.owl.model.RDFNames;
+import edu.stanford.smi.protegex.owl.model.RDFProperty;
+import edu.stanford.smi.protegex.owl.model.RDFSClass;
+import edu.stanford.smi.protegex.owl.model.RDFSNames;
 import edu.stanford.smi.protegex.owl.model.factory.OWLJavaFactory;
 import edu.stanford.smi.protegex.owl.model.factory.OWLJavaFactoryUpdater;
 import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLNamedClass;
-
-import java.lang.reflect.Method;
-import java.util.*;
 
 /**
  * A FrameStoreInvocationHandler that uses a DefaultOWLFrameFactory to replace all
@@ -29,7 +56,7 @@ public class OWLFrameFactoryInvocationHandler extends AbstractFrameStoreInvocati
 
     private static OWLFrameFactoryInvocationHandler recentInstance;
 
-    private static Set systemClses = new HashSet();
+    private static Set<String> systemClses = new HashSet<String>();
 
     private Cls thingCls;
 
@@ -202,6 +229,16 @@ public class OWLFrameFactoryInvocationHandler extends AbstractFrameStoreInvocati
     protected Object handleInvoke(Method method, Object[] args) {
         final Object result = invoke(method, args);
         return convert(result);
+    }
+    
+    protected void executeQuery(Query q, QueryCallback qc) {
+      QueryCallback mycallback = new QueryCallbackClone(qc) {
+        public void provideQueryResults(Set<Frame> results) {
+          convert(results);
+          super.provideQueryResults(results);
+        }
+      };
+      getDelegate().executeQuery(q, mycallback);
     }
 
 
