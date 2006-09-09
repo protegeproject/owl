@@ -1,17 +1,15 @@
-
-// Info object to wrap XML Schema datatype literals when passing them to and from built-in methods. Also provides a central place to valdate
-// the content of complex types, such as datetimes etc.
-
+// Info object to wrap XML Schema datatype literals when passing
+// them to and from built-in methods. Also provides a central place to
+// validate the content of complex types, such as datetimes, etc.
 package edu.stanford.smi.protegex.owl.swrl.bridge;
 
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.*;
-
 import edu.stanford.smi.protegex.owl.model.*;
 
 public class LiteralInfo extends Info implements Argument
 {
   private Object value;
-  
+
   public LiteralInfo(OWLModel owlModel, RDFSLiteral literal)
     throws LiteralConversionException
   {
@@ -34,7 +32,7 @@ public class LiteralInfo extends Info implements Argument
     else if ((datatype == owlModel.getXSDduration())) value = new Duration(literal.getString());
     else if ((datatype == owlModel.getXSDdateTime())) value = new DateTime(literal.getString());
     else if ((datatype == owlModel.getXSDdate())) value = new Date(literal.getString());
-    else throw new LiteralConversionException("Cannot create LiteralInfo object for RDFS literal '" + literal.getString() 
+    else throw new LiteralConversionException("Cannot create LiteralInfo object for RDFS literal '" + literal.getString()
                                               + "' of type " + datatype + ".");
   } // LiteralInfo
 
@@ -86,12 +84,12 @@ public class LiteralInfo extends Info implements Argument
     this.value = value;
   } // LiteralInfo
 
-  public int getInt() { return isInteger() ? ((Integer)value).intValue() : null; }
-  public boolean getBoolean() { return isBoolean() ? ((Boolean)value).booleanValue() : null; }
-  public long getLong() { return isLong() ? ((Long)value).longValue() : null; }
-  public float getFloat() { return isFloat() ? ((Float)value).floatValue() : null; }
-  public double getDouble() { return isDouble() ? ((Double)value).doubleValue() : null; }
-  public short getShort() { return isShort() ? ((Short)value).shortValue() : null; }
+  public int getInt() { return isInteger() ? ((Integer)value).intValue() : -1; }
+  public boolean getBoolean() { return isBoolean() ? ((Boolean)value).booleanValue() : false; }
+  public long getLong() { return isLong() ? ((Long)value).longValue() : -1; }
+  public float getFloat() { return isFloat() ? ((Float)value).floatValue() : -1; }
+  public double getDouble() { return isDouble() ? ((Double)value).doubleValue() : -1; }
+  public short getShort() { return isShort() ? ((Short)value).shortValue() : -1; }
   public String getString() { return isString() ? (String)value : null; }
   public Time getTime() { return isTime() ? (Time)value : null; }
   public Date getDate() { return isDate() ? (Date)value : null; }
@@ -112,9 +110,9 @@ public class LiteralInfo extends Info implements Argument
   public boolean isTime() { return value instanceof Time; }
   public boolean isDate() { return value instanceof Date; }
   public boolean isDateTime() { return value instanceof DateTime; }
-  public boolean isDuration() { return value instanceof Duration;} 
+  public boolean isDuration() { return value instanceof Duration;}
   public boolean isAnyURI() { return value instanceof AnyURI; }
-  public boolean isBase64Binary() { return value instanceof Base64Binary;} 
+  public boolean isBase64Binary() { return value instanceof Base64Binary;}
   public boolean isDecimal() { return value instanceof Decimal; }
   public boolean isByte() { return value instanceof Byte; }
 
@@ -126,7 +124,7 @@ public class LiteralInfo extends Info implements Argument
     if(this == obj) return true;
     if((obj == null) || (obj.getClass() != this.getClass())) return false;
     LiteralInfo info = (LiteralInfo)obj;
-    return (getName() == info.getName() || (getName() != null && getName().equals(info.getName()))) && 
+    return (getName() == info.getName() || (getName() != null && getName().equals(info.getName()))) &&
            (value != null && info.value != null && value.toString().equals(info.value.toString()));
   } // equals
 
@@ -143,8 +141,8 @@ public class LiteralInfo extends Info implements Argument
     private String content;
 
     public ComplexXSDType(String content) throws LiteralConversionException
-    { 
-      this.content = content; 
+    {
+      this.content = content;
       validate();
     } // ComplexXSDType
 
@@ -155,73 +153,73 @@ public class LiteralInfo extends Info implements Argument
 
   // TODO: implement proper validate methods for these types.
 
-  public class Time extends ComplexXSDType 
-  { 
-    public Time(String content) throws LiteralConversionException { super(content); } 
-    protected void validate() throws LiteralConversionException 
+  public class Time extends ComplexXSDType
+  {
+    public Time(String content) throws LiteralConversionException { super(content); }
+    protected void validate() throws LiteralConversionException
     {
       if (getContent() == null) throw new LiteralConversionException("Null content for Time literal.");
     }  // validate
   } // Time
 
-  public class Date extends ComplexXSDType 
-  { 
-    public Date(String content) throws LiteralConversionException { super(content); } 
-    protected void validate() throws LiteralConversionException 
+  public class Date extends ComplexXSDType
+  {
+    public Date(String content) throws LiteralConversionException { super(content); }
+    protected void validate() throws LiteralConversionException
     {
       if (getContent() == null) throw new LiteralConversionException("Null content for Time literal.");
     }  // validate
   } // Date
 
-  public class DateTime extends ComplexXSDType 
-  { 
-    public DateTime(String content) throws LiteralConversionException { super(content); } 
-    protected void validate() throws LiteralConversionException 
+  public class DateTime extends ComplexXSDType
+  {
+    public DateTime(String content) throws LiteralConversionException { super(content); }
+    protected void validate() throws LiteralConversionException
     {
       if (getContent() == null) throw new LiteralConversionException("Null content for DateTime literal.");
     }  // validate
   } // DateTime
 
-  public class Duration extends ComplexXSDType 
-  { 
-    public Duration(String content) throws LiteralConversionException { super(content); } 
-    protected void validate() throws LiteralConversionException 
+  public class Duration extends ComplexXSDType
+  {
+    public Duration(String content) throws LiteralConversionException { super(content); }
+    protected void validate() throws LiteralConversionException
     {
       if (getContent() == null) throw new LiteralConversionException("Null content for Duration literal.");
     }  // validate
   } // Duration
 
-  public class AnyURI extends ComplexXSDType 
-  { 
-    public AnyURI(String content) throws LiteralConversionException { super(content); } 
-    protected void validate() throws LiteralConversionException 
+  public class AnyURI extends ComplexXSDType
+  {
+    public AnyURI(String content) throws LiteralConversionException { super(content); }
+    protected void validate() throws LiteralConversionException
     {
       if (getContent() == null) throw new LiteralConversionException("Null content for AnyURI literal.");
     }  // validate
   } // AnyURI
 
-  public class Base64Binary extends ComplexXSDType 
-  { 
-    public Base64Binary(String content) throws LiteralConversionException { super(content); } 
-    protected void validate() throws LiteralConversionException 
+  public class Base64Binary extends ComplexXSDType
+  {
+    public Base64Binary(String content) throws LiteralConversionException { super(content); }
+    protected void validate() throws LiteralConversionException
     {
       if (getContent() == null) throw new LiteralConversionException("Null content for Base64Binary literal.");
     }  // validate
   } // Base64Binary
 
-  public class Decimal extends ComplexXSDType 
-  { 
-    public Decimal(String content) throws LiteralConversionException { super(content); } 
-    protected void validate() throws LiteralConversionException 
+  public class Decimal extends ComplexXSDType
+  {
+    public Decimal(String content) throws LiteralConversionException { super(content); }
+    protected void validate() throws LiteralConversionException
     {
       if (getContent() == null) throw new LiteralConversionException("Null content for Decimal literal.");
     }  // validate
   } // Decimal
 
-  public class Byte extends ComplexXSDType 
-  { 
-    public Byte(String content) throws LiteralConversionException { super(content); } 
-    protected void validate() throws LiteralConversionException 
+  public class Byte extends ComplexXSDType
+  {
+    public Byte(String content) throws LiteralConversionException { super(content); }
+    protected void validate() throws LiteralConversionException
     {
       if (getContent() == null) throw new LiteralConversionException("Null content for Byte literal.");
     }  // validate
