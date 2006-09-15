@@ -155,4 +155,14 @@ public class ResourceActionManager {
         clses.addAll(userDefinedClasses);
         return (Class[]) clses.toArray(new Class[0]);
     }
+    
+    
+    public static void setResourceActionsEnabled(JPopupMenu menu, boolean enabled) {            	
+    	for (int i=0; i < menu.getComponentCount();i++) {
+			Object item = menu.getComponent(i);			
+			if (item instanceof Component) {
+				((Component)item).setEnabled(enabled);
+			}
+		}  
+    }
 }
