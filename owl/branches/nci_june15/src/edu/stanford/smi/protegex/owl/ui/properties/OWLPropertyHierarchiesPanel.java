@@ -18,6 +18,8 @@ import edu.stanford.smi.protege.resource.Colors;
 import edu.stanford.smi.protege.resource.Icons;
 import edu.stanford.smi.protege.resource.LocalizedText;
 import edu.stanford.smi.protege.resource.ResourceKey;
+import edu.stanford.smi.protege.server.framestore.RemoteClientFrameStore;
+import edu.stanford.smi.protege.server.metaproject.impl.OperationImpl;
 import edu.stanford.smi.protege.ui.HeaderComponent;
 import edu.stanford.smi.protege.util.ComponentFactory;
 import edu.stanford.smi.protege.util.Log;
@@ -170,5 +172,14 @@ public class OWLPropertyHierarchiesPanel extends JPanel
         }
         return result;
     }
+    
+    public void setEnabled(boolean enabled) {
+    	enabled = enabled && RemoteClientFrameStore.isOperationAllowed(owlModel, OperationImpl.PROPERTY_TAB_WRITE);
+    	objectPropertyHierarchy.setEnabled(enabled);
+    	datatypePropertyHierarchy.setEnabled(enabled);
+    	annotationPropertyHierarchy.setEnabled(enabled);
+    	allPropertiesHierarchy.setEnabled(enabled);
+    	super.setEnabled(enabled);
+    };
 }
 
