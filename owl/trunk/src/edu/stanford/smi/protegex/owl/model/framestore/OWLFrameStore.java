@@ -54,6 +54,7 @@ import edu.stanford.smi.protegex.owl.model.impl.OWLUtil;
 import edu.stanford.smi.protegex.owl.model.impl.XMLSchemaDatatypes;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreUtil;
+import edu.stanford.smi.protegex.owl.util.OWLFrameStoreUtils;
 
 /**
  * A FrameStore with specific support for OWL ontologies.
@@ -232,27 +233,6 @@ public class OWLFrameStore extends FrameStoreAdapter {
     }
 
 
-    private List convertInternalFormatToRDFSLiterals(Collection values) {
-        List result = new LinkedList();
-        for (Iterator it = values.iterator(); it.hasNext();) {
-            Object o = it.next();
-            if (o instanceof String) {
-                final String str = (String) o;
-                if (DefaultRDFSLiteral.isRawValue(str)) {
-                    result.add(new DefaultRDFSLiteral(owlModel, str));
-                }
-                else {
-                    result.add(o);
-                }
-            }
-            else {
-                result.add(o);
-            }
-        }
-        return result;
-    }
-
-
     private List convertRDFSLiteralsToInternalFormat(Collection values) {
         final List result = new LinkedList();
         for (Iterator it = values.iterator(); it.hasNext();) {
@@ -272,38 +252,6 @@ public class OWLFrameStore extends FrameStoreAdapter {
             }
         }
         return result;
-    }
-
-
-    private void copyFacetValuesIntoOWLNamedClass(RDFSNamedClass cls, OWLRestriction restriction) {
-        Class clazz = restriction.getClass();
-        RestrictionUpdater ru = (RestrictionUpdater) class2Updater.get(clazz);
-        if (ru != null) {
-            facetHandlingBlocked = true;
-            ru.copyFacetValuesIntoNamedClass(cls, restriction);
-            facetHandlingBlocked = false;
-        }
-    }
-
-
-    private void copyFacetValuesIntoOWLNamedClass(OWLRestriction restriction) {
-        if (restriction.getSubclasses(false).size() == 1) {
-            RDFSNamedClass namedCls = (RDFSNamedClass) restriction.getSubclasses(false).toArray()[0];
-            copyFacetValuesIntoOWLNamedClass(namedCls, restriction);
-        }
-    }
-
-
-    public void copyFacetValuesIntoNamedClses() {
-        boolean oldUndo = owlModel.isUndoEnabled();
-        owlModel.setUndoEnabled(false);
-        for (Iterator it = ((AbstractOWLModel) owlModel).getRDFSClasses().iterator(); it.hasNext();) {
-            Cls cls = (Cls) it.next();
-            if (cls instanceof OWLRestriction) {  // Convert restrictions into facet overrides
-                copyFacetValuesIntoOWLNamedClass((OWLRestriction) cls);
-            }
-        }
-        owlModel.setUndoEnabled(oldUndo);
     }
 
 
@@ -716,19 +664,6 @@ public class OWLFrameStore extends FrameStoreAdapter {
     }
 
 
-    public List getDirectOwnSlotValuesConverting(Frame frame, Slot slot) {
-        final List values = super.getDirectOwnSlotValues(frame, slot);
-        if (!values.isEmpty() && frame instanceof RDFResource && slot instanceof RDFProperty) {
-            for (Iterator it = values.iterator(); it.hasNext();) {
-                final Object o = it.next();
-                if (o instanceof String && DefaultRDFSLiteral.isRawValue((String) o)) {
-                    return convertInternalFormatToRDFSLiterals(values);
-                }
-            }
-        }
-        return values;
-    }
-
 
     public List getPropertyValueLiterals(RDFResource frame, RDFProperty slot) {
         final List values = new ArrayList(OWLUtil.getPropertyValues(frame, slot, false));
@@ -781,26 +716,6 @@ public class OWLFrameStore extends FrameStoreAdapter {
            return new ArrayList(results);
        }
    } */
-
-
-    public Collection getOwnSlotValuesConverting(Frame frame, Slot slot) {
-        Collection values = super.getOwnSlotValues(frame, slot);
-        return getConvertedValues(values);
-    }
-
-
-    public Collection getConvertedValues(Collection values) {
-        if (!values.isEmpty()) {
-            for (Iterator it = values.iterator(); it.hasNext();) {
-                Object o = it.next();
-                if (o instanceof String && DefaultRDFSLiteral.isRawValue((String) o)) {
-                    return convertInternalFormatToRDFSLiterals(values);
-                }
-            }
-        }
-        return values;
-    }
-
 
     public Set getClsesWithMatchingBrowserText(String value, Collection superclasses, int maxMatches) {
         Set results = new HashSet();
@@ -1127,6 +1042,35 @@ public class OWLFrameStore extends FrameStoreAdapter {
         }
     }
 
+    public void copyFacetValuesIntoNamedClses() {
+      boolean oldUndo = owlModel.isUndoEnabled();
+      owlModel.setUndoEnabled(false);
+      for (Iterator it = ((AbstractOWLModel) owlModel).getRDFSClasses().iterator(); it.hasNext();) {
+          Cls cls = (Cls) it.next();
+          if (cls instanceof OWLRestriction) {  // Convert restrictions into facet overrides
+              copyFacetValuesIntoOWLNamedClass((OWLRestriction) cls);
+          }
+      }
+      owlModel.setUndoEnabled(oldUndo);
+    }
+    
+    private void copyFacetValuesIntoOWLNamedClass(OWLRestriction restriction) {
+      if (restriction.getSubclasses(false).size() == 1) {
+          RDFSNamedClass namedCls = (RDFSNamedClass) restriction.getSubclasses(false).toArray()[0];
+          copyFacetValuesIntoOWLNamedClass(namedCls, restriction);
+      }
+    }
+    
+    private void copyFacetValuesIntoOWLNamedClass(RDFSNamedClass cls, OWLRestriction restriction) {
+      Class clazz = restriction.getClass();
+      RestrictionUpdater ru = (RestrictionUpdater) class2Updater.get(clazz);
+      if (ru != null) {
+          facetHandlingBlocked = true;
+          ru.copyFacetValuesIntoNamedClass(cls, restriction);
+          facetHandlingBlocked = false;
+      }
+    }
+    
 
     private void updatePropertyAllowedClasses(RDFProperty property, Collection values) {
         ((Slot) property).setValueType(ValueType.INSTANCE);
