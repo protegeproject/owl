@@ -19,6 +19,9 @@ import java.util.Iterator;
 public class AnnotationsComponent extends AbstractTriplesComponent {
 
     private Action deleteRowAction;
+    private Action createValueAction;
+    private Action todoAction;
+    private Action addResourceAction;
 
 
     public AnnotationsComponent(RDFProperty predicate) {
@@ -27,8 +30,7 @@ public class AnnotationsComponent extends AbstractTriplesComponent {
 
 
     protected void addButtons(LabeledComponent lc) {
-        lc.addHeaderButton(new CreateValueAction(getTable(), "Create new annotation value", OWLIcons.getCreateIcon(OWLIcons.ANNOTATION)) {
-
+        createValueAction = new CreateValueAction(getTable(), "Create new annotation value", OWLIcons.getCreateIcon(OWLIcons.ANNOTATION)) {
 
             public Collection getSelectableResources() {
                 TriplesTableModel tableModel = table.getTableModel();
@@ -57,13 +59,21 @@ public class AnnotationsComponent extends AbstractTriplesComponent {
                 }
                 return properties;
             }
-        });
-        lc.addHeaderButton(new AddTodoAction((AnnotationsTable) getTable()));
-        lc.addHeaderButton(new AddResourceAction(getTable()) {
+        };
+        
+        lc.addHeaderButton(createValueAction);
+        
+        todoAction = new AddTodoAction((AnnotationsTable) getTable());
+        
+        lc.addHeaderButton(todoAction);
+
+        addResourceAction = new AddResourceAction(getTable()) {
             protected Collection getAllowedProperties(OWLModel owlModel) {
                 return owlModel.getOWLAnnotationProperties();
             }
-        });
+        };
+        
+        lc.addHeaderButton(addResourceAction);
         deleteRowAction = new DeleteTripleAction(getTable(), "Delete selected annotation", OWLIcons.getDeleteIcon(OWLIcons.ANNOTATION));
         deleteRowAction.setEnabled(false);
         lc.addHeaderButton(deleteRowAction);
@@ -88,6 +98,16 @@ public class AnnotationsComponent extends AbstractTriplesComponent {
         if (row >= 0) {
             deleteRowEnabled = tableModel.isDeleteEnabled(row);
         }
-        deleteRowAction.setEnabled(deleteRowEnabled);
+        deleteRowAction.setEnabled(isEnabled() && deleteRowEnabled);   
     }
+    
+   
+    public void setEnabled(boolean enabled) {    	
+    	createValueAction.setEnabled(enabled);
+    	addResourceAction.setEnabled(enabled);
+    	todoAction.setEnabled(enabled);
+    	deleteRowAction.setEnabled(enabled);
+    	getTable().setEnabled(enabled);
+    	super.setEnabled(enabled);
+    };
 }
