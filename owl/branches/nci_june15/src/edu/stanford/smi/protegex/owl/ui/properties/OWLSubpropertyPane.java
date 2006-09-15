@@ -3,6 +3,8 @@ package edu.stanford.smi.protegex.owl.ui.properties;
 import edu.stanford.smi.protege.model.Frame;
 import edu.stanford.smi.protege.model.Project;
 import edu.stanford.smi.protege.resource.Icons;
+import edu.stanford.smi.protege.server.framestore.RemoteClientFrameStore;
+import edu.stanford.smi.protege.server.metaproject.impl.OperationImpl;
 import edu.stanford.smi.protege.ui.SlotsTreeDragSourceListener;
 import edu.stanford.smi.protege.ui.SlotsTreeTarget;
 import edu.stanford.smi.protege.util.*;
@@ -12,6 +14,7 @@ import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
 import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
 import edu.stanford.smi.protegex.owl.ui.ResourceRenderer;
+import edu.stanford.smi.protegex.owl.ui.actions.ResourceAction;
 import edu.stanford.smi.protegex.owl.ui.actions.ResourceActionManager;
 import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
 import edu.stanford.smi.protegex.owl.ui.icons.OverlayIcon;
@@ -168,7 +171,7 @@ public class OWLSubpropertyPane extends SelectableContainer implements HostResou
         public void onSelectionChange() {
             RDFProperty slot = (RDFProperty) CollectionUtilities.getFirstItem(this.getSelection());
             if (slot != null) {
-                setAllowed(slot.isEditable());
+                setAllowed(slot.isEditable() && isEnabled());
             }
         }
     };
@@ -384,6 +387,7 @@ public class OWLSubpropertyPane extends SelectableContainer implements HostResou
             RDFProperty slot = (RDFProperty) CollectionUtilities.getFirstItem(selection);
             menu = new JPopupMenu();
             ResourceActionManager.addResourceActions(menu, this, slot);
+            ResourceActionManager.setResourceActionsEnabled(menu, isEnabled());           
         }
         return menu;
     }
@@ -447,4 +451,16 @@ public class OWLSubpropertyPane extends SelectableContainer implements HostResou
         }
         return true;
     }
+    
+    public void setEnabled(boolean enabled) {
+    	enabled = enabled && RemoteClientFrameStore.isOperationAllowed(getOWLModel(), OperationImpl.PROPERTY_TAB_WRITE);
+    	createAnnotationOWLDatatypePropertyAction.setEnabled(enabled);
+    	createAnnotationOWLObjectPropertyAction.setEnabled(enabled);
+    	createOWLDatatypePropertyAction.setEnabled(enabled);
+    	createOWLObjectPropertyAction.setEnabled(enabled);
+    	createRDFPropertyAction.setEnabled(enabled);
+    	createSubpropertyAction.setEnabled(enabled);
+    	deletePropertyAction.setEnabled(enabled);    
+    	super.setEnabled(enabled);
+    };
 }
