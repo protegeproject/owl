@@ -1,6 +1,8 @@
 package edu.stanford.smi.protegex.owl.ui.properties;
 
 import edu.stanford.smi.protege.model.Project;
+import edu.stanford.smi.protege.server.framestore.RemoteClientFrameStore;
+import edu.stanford.smi.protege.server.metaproject.impl.OperationImpl;
 import edu.stanford.smi.protege.util.*;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
@@ -10,6 +12,7 @@ import edu.stanford.smi.protegex.owl.ui.OWLLabeledComponent;
 import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
 import edu.stanford.smi.protegex.owl.ui.ResourceRenderer;
 import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
+import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
 
 import javax.swing.*;
 import java.awt.*;
@@ -150,18 +153,22 @@ public class OWLSuperpropertiesPanel extends SelectableContainer {
 
 
     private void removeProperties(Collection superproperties) {
-        //try {
-        owlModel.beginTransaction("Remove superproperties from " + property);
-        Iterator i = superproperties.iterator();
-        while (i.hasNext()) {
-            RDFProperty superslot = (RDFProperty) i.next();
-            property.removeSuperproperty(superslot);
+    	//TT:this was commented out. Why?
+        try {
+        	owlModel.beginTransaction("Remove superproperties from " + property);
+        	Iterator i = superproperties.iterator();
+        	while (i.hasNext()) {
+        		RDFProperty superslot = (RDFProperty) i.next();
+        		property.removeSuperproperty(superslot);
+        	}
+        	owlModel.commitTransaction();
+        } catch(Exception ex) {
+        	owlModel.rollbackTransaction();
+        	OWLUI.handleError(owlModel, ex);        	
         }
+        
         updateModel();
-        //}
-        //finally {
-        //    owlModel.endTransaction();
-        //}
+        
     }
 
 
@@ -174,7 +181,7 @@ public class OWLSuperpropertiesPanel extends SelectableContainer {
             this.property.addPropertyListener(propertyListener);
         }
         updateModel();
-        addAction.setEnabled(property != null && property.isEditable());
+        addAction.setEnabled(property != null && property.isEditable() && isEnabled());      
         list.setSelectedValue(parent, true);
     }
 
@@ -187,7 +194,24 @@ public class OWLSuperpropertiesPanel extends SelectableContainer {
     private void updateModel() {
         Collection properties = (property == null) ? Collections.EMPTY_LIST : property.getSuperproperties(false);
         ListModel model = new SimpleListModel(properties);
-        list.setModel(model);
+        list.setModel(model);       
         repaint();
     }
+    
+    
+    @Override
+    public void onSelectionChange() {
+    	addAction.setEnabled(property != null && property.isEditable() && isEnabled());
+    	removeAction.setEnabled(getSelection().size() >0 && property != null && property.isEditable() && isEnabled());
+    	super.onSelectionChange();
+    }
+    
+    @Override
+    public void setEnabled(boolean enabled) {
+    	enabled = enabled && RemoteClientFrameStore.isOperationAllowed(owlModel, OperationImpl.PROPERTY_TAB_WRITE);
+    	addAction.setEnabled(enabled);
+    	removeAction.setEnabled(enabled);
+    	super.setEnabled(enabled);
+    }   
+    
 }
