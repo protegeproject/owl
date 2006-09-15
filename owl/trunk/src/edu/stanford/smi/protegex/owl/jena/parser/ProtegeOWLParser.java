@@ -725,7 +725,7 @@ public class ProtegeOWLParser {
 				}
 			}
 			RDFProperty dummy = new DefaultRDFProperty(owlModel, resource.getFrameID());
-			Iterator frames = owlModel.getOWLFrameStore().getFramesWithAnyDirectOwnSlotValue(dummy).iterator();
+			Iterator frames = owlModel.getHeadFrameStore().getFramesWithAnyDirectOwnSlotValue(dummy).iterator();
 			if(frames.hasNext()) {
 				if(runImplicitImport(resource, imports, us)) {
 					return true;
