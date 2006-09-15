@@ -1820,7 +1820,12 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
                 instance.removeDirectType(cls);
             }
         } */
-        super.deleteCls(cls);
+        //super.deleteCls(cls);
+    	
+    	//TODO: TT Check whether this works fine!
+    	// I had to delegate this to the framestore, so that the deletion takes place on the server, rather than the client.     
+    	getHeadFrameStore().deleteCls(cls);
+    	cls.markDeleted(true);    	
     }
 
 
