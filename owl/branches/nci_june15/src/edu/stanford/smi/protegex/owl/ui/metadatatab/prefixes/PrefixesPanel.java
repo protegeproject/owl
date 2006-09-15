@@ -196,7 +196,7 @@ public class PrefixesPanel extends JPanel implements Disposable {
         final boolean enabled = selIndex >= 0 &&
                                 tableModel.getNamespaceManager().isModifiable(tableModel.getPrefix(selIndex));
         //makeDefaultAction.setEnabled(enabled);
-        removeAction.setEnabled(enabled);
+        removeAction.setEnabled(enabled && isEnabled());
     }
 
 
@@ -279,10 +279,10 @@ public class PrefixesPanel extends JPanel implements Disposable {
     }
 
 
-    public void setEnabled(boolean enabled) {
-        super.setEnabled(enabled);
+    public void setEnabled(boolean enabled) {        
         addAction.setEnabled(enabled);
         removeAction.setEnabled(enabled);
         table.setEnabled(enabled);
+        super.setEnabled(enabled);
     }
 }
