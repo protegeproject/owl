@@ -1,23 +1,35 @@
 package edu.stanford.smi.protegex.owl.ui.properties;
 
 import edu.stanford.smi.protege.model.Project;
+import edu.stanford.smi.protege.model.Slot;
+import edu.stanford.smi.protege.server.framestore.RemoteClientFrameStore;
+import edu.stanford.smi.protege.server.metaproject.impl.OperationImpl;
 import edu.stanford.smi.protege.util.CollectionUtilities;
 import edu.stanford.smi.protege.util.Selectable;
 import edu.stanford.smi.protege.util.SelectionEvent;
 import edu.stanford.smi.protege.util.SelectionListener;
+import edu.stanford.smi.protege.widget.AbstractSlotWidget;
+import edu.stanford.smi.protege.widget.ClsWidget;
+import edu.stanford.smi.protege.widget.FormWidget;
+import edu.stanford.smi.protege.widget.SlotWidget;
 import edu.stanford.smi.protegex.owl.model.OWLProperty;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
 import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
+import edu.stanford.smi.protegex.owl.ui.actions.ResourceActionManager;
 import edu.stanford.smi.protegex.owl.ui.cls.OWLClassesTab;
 import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
 import edu.stanford.smi.protegex.owl.ui.navigation.NavigationHistoryTabWidget;
+import edu.stanford.smi.protegex.owl.ui.properties.types.OWLObjectPropertyTypesWidget;
+import edu.stanford.smi.protegex.owl.ui.resourcedisplay.ResourceDisplay;
 import edu.stanford.smi.protegex.owl.ui.resourcedisplay.ResourcePanel;
+import edu.stanford.smi.protegex.owl.ui.widget.AbstractPropertyWidget;
 import edu.stanford.smi.protegex.owl.ui.widget.AbstractTabWidget;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.Collection;
+import java.util.Iterator;
 
 /**
  * The tab to edit RDFProperties.
@@ -73,6 +85,7 @@ public class OWLPropertiesTab extends AbstractTabWidget implements NavigationHis
         if (!owlHierarchiesPanel.getSelection().isEmpty()) {
             transmitSelection();
         }
+        setEnabled(true);
     }
 
 
@@ -98,5 +111,16 @@ public class OWLPropertiesTab extends AbstractTabWidget implements NavigationHis
     private void transmitSelection() {
         RDFProperty selection = (RDFProperty) CollectionUtilities.getFirstItem(owlHierarchiesPanel.getSelection());
         resourcePanel.setResource(selection);
+        //tt: maybe delete this
+        ((ResourceDisplay)resourcePanel).setEnabled(isEnabled());        
+    }
+    
+   
+    @Override
+    public void setEnabled(boolean enabled) { 
+    	enabled = enabled && RemoteClientFrameStore.isOperationAllowed(getOWLModel(), OperationImpl.PROPERTY_TAB_WRITE);
+    	owlHierarchiesPanel.setEnabled(enabled);
+    	((ResourceDisplay)resourcePanel).setEnabled(enabled);
+    	super.setEnabled(enabled);
     }
 }
