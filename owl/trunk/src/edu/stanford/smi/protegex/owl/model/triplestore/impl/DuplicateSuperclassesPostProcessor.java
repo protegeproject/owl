@@ -15,14 +15,18 @@ class DuplicateSuperclassesPostProcessor {
 
 
     DuplicateSuperclassesPostProcessor(OWLModel owlModel) {
-        owlModel.getOWLFrameStore().setSuperclassSynchronizationBlocked(true);
+        if (owlModel.getOWLFrameStore() != null) {
+          owlModel.getOWLFrameStore().setSuperclassSynchronizationBlocked(true);
+        }
         Collection clses = owlModel.getUserDefinedOWLNamedClasses();
         Iterator it = clses.iterator();
         while (it.hasNext()) {
             OWLNamedClass cls = (OWLNamedClass) it.next();
             removeDuplicateSuperclasses(cls);
         }
-        owlModel.getOWLFrameStore().setSuperclassSynchronizationBlocked(false);
+        if (owlModel.getOWLFrameStore() != null) {
+          owlModel.getOWLFrameStore().setSuperclassSynchronizationBlocked(false);
+        }
     }
 
 

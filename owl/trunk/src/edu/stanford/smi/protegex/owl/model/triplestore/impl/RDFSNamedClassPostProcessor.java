@@ -28,7 +28,9 @@ class RDFSNamedClassPostProcessor {
 
         RDFProperty owlOneOfProperty = owlModel.getOWLOneOfProperty();
 
-        owlModel.getOWLFrameStore().setSuperclassSynchronizationBlocked(true);
+        if (owlModel.getOWLFrameStore() != null) {
+          owlModel.getOWLFrameStore().setSuperclassSynchronizationBlocked(true);
+        }
         Collection clses = owlModel.getUserDefinedRDFSNamedClasses();
         Iterator it = clses.iterator();
         while (it.hasNext()) {
@@ -41,7 +43,9 @@ class RDFSNamedClassPostProcessor {
                 updateDirectSuperclasses(cls);
             }
         }
-        owlModel.getOWLFrameStore().setSuperclassSynchronizationBlocked(false);
+        if (owlModel.getOWLFrameStore() != null) {
+          owlModel.getOWLFrameStore().setSuperclassSynchronizationBlocked(false);
+        }
         if (((AbstractOWLModel) owlModel).isProtegeMetaOntologyImported()) {
             updateProtegeFeatures(clses);
         }

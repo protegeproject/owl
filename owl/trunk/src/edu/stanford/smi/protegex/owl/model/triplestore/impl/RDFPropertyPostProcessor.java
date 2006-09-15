@@ -75,10 +75,12 @@ class RDFPropertyPostProcessor {
      * @param slot the slot to update
      */
     private void updateDirectDomain(Slot slot) {
-
-        boolean oldValue = owlModel.getOWLFrameStore().suppressUpdateRDFSDomain;
-        owlModel.getOWLFrameStore().suppressUpdateRDFSDomain = true;
-
+        boolean oldValue = false;
+        if (owlModel.getOWLFrameStore() != null) {
+          oldValue = owlModel.getOWLFrameStore().suppressUpdateRDFSDomain;
+          owlModel.getOWLFrameStore().suppressUpdateRDFSDomain = true;
+        }
+        
         Collection newDirectDomain = new ArrayList();
 
         Collection domains = slot.getDirectOwnSlotValues(owlModel.getRDFSDomainProperty());
@@ -115,7 +117,9 @@ class RDFPropertyPostProcessor {
                 kb.getRootCls().addDirectTemplateSlot(slot);
             }
         }
-        owlModel.getOWLFrameStore().suppressUpdateRDFSDomain = oldValue;
+        if (owlModel.getOWLFrameStore() != null) {
+          owlModel.getOWLFrameStore().suppressUpdateRDFSDomain = oldValue;
+        }
     }
 
 
