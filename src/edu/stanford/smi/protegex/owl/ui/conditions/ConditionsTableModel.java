@@ -55,11 +55,14 @@ import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
 
 /**
  * The TableModel used by the AssertedConditionsWidget.
- *
+ * 
  * @author Holger Knublauch  <holger@knublauch.com>
  */
 public class ConditionsTableModel extends AbstractTableModel
         implements ConditionsTableConstants, OWLTableModel {
+	
+	//TT:2006-08-03: Do a cache with the snapshot of the conditionstable model at the beginning and
+	//work on this one! It's crazy to ask for the same information about a class several times!
 	
     private ClassListener classListener = new ClassAdapter() {
         public void subclassAdded(RDFSClass cls, RDFSClass subclass) {        	
@@ -184,6 +187,8 @@ public class ConditionsTableModel extends AbstractTableModel
     }
 
 
+    //TODO: TT - this mehtod has to be re-written to be more efficient. Currently it is
+    // not used.
     /**
      * Adds a given Item, unless it represents a restriction that has been overloaded
      * in the existing entries.  A restriction is overloaded iff a restriction of the
@@ -299,9 +304,13 @@ public class ConditionsTableModel extends AbstractTableModel
             return false;
         }
         
-        inEditing = true;
+        inEditing = true;       
+       
         boolean succeded = handleAddRestriction(aClass, selectedRow);
+        
         inEditing = false;
+        
+        refill();
         
         return succeded;
     }
@@ -315,9 +324,6 @@ public class ConditionsTableModel extends AbstractTableModel
             if (isSeparator(selectedRow)) {
                 selectedRow++;
             }
-            
-            ConditionsTableItem item = ConditionsTableItem.create(aClass, TYPE_SUPERCLASS);
-            insertRowItem(selectedRow, item);
             
             return true;
         }
@@ -339,9 +345,11 @@ public class ConditionsTableModel extends AbstractTableModel
                 
                 definition.addOperand(aClass);
                 
-                ConditionsTableItem item = ConditionsTableItem.createSufficient(aClass, TYPE_DEFINITION_BASE, definition);
-                insertRowItem(selectedRow, item);
-                
+                //ensure it is added as a superclass if it is a named class
+                if (aClass instanceof OWLNamedClass) {
+                	hostClass.addDirectSuperclass(aClass);
+                }
+               
             } else 	{ 
                 RDFSClass oldEquivalentClass = (RDFSClass) getClass(selectedRow);
                 if (oldEquivalentClass != null) { //there is one class in the definition, create an intersection and add the old and new classes to it               	
@@ -357,19 +365,13 @@ public class ConditionsTableModel extends AbstractTableModel
                     
                     hostClass.addEquivalentClass(newDefinition);
                     
-                    ConditionsTableItem oldItem = ConditionsTableItem.createSufficient(clonedOldEquivalentClass,ConditionsTableConstants.TYPE_DEFINITION_BASE, newDefinition);
-    	            ConditionsTableItem newItem = ConditionsTableItem.createSufficient(aClass,ConditionsTableConstants.TYPE_DEFINITION_BASE, newDefinition);
-            		    	         
-    	            replaceRowItem(getClassRow(oldEquivalentClass), oldItem);
-    	            insertRowItem(selectedRow, newItem);
-    	                                
                     hostClass.removeEquivalentClass(oldEquivalentClass);
+                    
+                    if (clonedOldEquivalentClass instanceof OWLNamedClass)
+                    	hostClass.addDirectSuperclass(clonedOldEquivalentClass);
                 }
                 else {
                     hostClass.addEquivalentClass(aClass);
-                    
-                    ConditionsTableItem item = ConditionsTableItem.createSufficient(aClass,ConditionsTableConstants.TYPE_DEFINITION_BASE, null);
-                    insertRowItem(selectedRow, item);
                     
                 }
             }
@@ -377,6 +379,10 @@ public class ConditionsTableModel extends AbstractTableModel
        return true;    	
     }
 
+    /**
+     * @param index
+     * @return
+     */
     private boolean deleteDefinitionRow(int index) {
     	if (!isDefinition(index))
     		return false;
@@ -385,8 +391,12 @@ public class ConditionsTableModel extends AbstractTableModel
         
         OWLIntersectionClass definition = getDefinition(index);
         
-        if (definition == null)
-        	return false;
+        if (definition == null) {//only one equivalent class        	
+        	hostClass.removeEquivalentClass(rowClass);        	
+        	return true;        	
+        } 
+        	
+        	//return false;
         
         Collection operands = new ArrayList(definition.getOperands());
         if (operands.size() == 2) {
@@ -396,15 +406,10 @@ public class ConditionsTableModel extends AbstractTableModel
             RDFSClass copy = remainder.createClone();
             hostClass.addEquivalentClass(copy);
             
-            deleteRowItem(index);                        
-            ConditionsTableItem item = ConditionsTableItem.createSufficient(copy,ConditionsTableConstants.TYPE_DEFINITION_BASE, null);
-            replaceRowItem(getClassRow(remainder), item);
-            
             definition.delete();
         }
         else {
         	definition.removeOperand(rowClass);
-        	deleteRowItem(index);
         }
         
         if (!hostClass.hasNamedSuperclass()) {
@@ -423,8 +428,7 @@ public class ConditionsTableModel extends AbstractTableModel
             
             deleteRow(index, false);
             
-            inEditing = false;
-           // refresh();
+            inEditing = false;           
             
             owlModel.commitTransaction();
         }
@@ -434,6 +438,8 @@ public class ConditionsTableModel extends AbstractTableModel
         	owlModel.rollbackTransaction();        	
         	
         	OWLUI.handleError(owlModel, ex);        	
+        } finally {
+        	refill();
         }
     }
 
@@ -444,17 +450,15 @@ public class ConditionsTableModel extends AbstractTableModel
         boolean isDefinition = isDefinition(index);
         
         boolean deleted = deleteDefinitionRow(index);
-        
+                
         if (!deleted && isDefinition && rowClass instanceof OWLNamedClass && forceDelete) {            
             rowClass.removeSuperclass(hostClass);
-            
-            deleteRowItem(index);
+                        
         }
         else if (hostClass.isSubclassOf(rowClass)) {
             if (!getNamedDefinitionClses(definition).contains(rowClass) || forceDelete) {
                 if (rowClass instanceof RDFSNamedClass) { //Remove a named class               	
-                	hostClass.removeSuperclass(rowClass);
-                	deleteRowItem(index);
+                	hostClass.removeSuperclass(rowClass);            
                 	
                 	HashSet superClses  = new HashSet(hostClass.getNamedSuperclasses());
                 	
@@ -464,13 +468,11 @@ public class ConditionsTableModel extends AbstractTableModel
                 		RDFSClass owlThing = owlModel.getOWLThingClass();
                 		hostClass.addSuperclass(owlThing);
                 		
-                		ConditionsTableItem itemNew = ConditionsTableItem.create(owlThing, TYPE_SUPERCLASS);
-                		insertRowItem(index, itemNew);
+                		ConditionsTableItem itemNew = ConditionsTableItem.create(owlThing, TYPE_SUPERCLASS);                		
                 	}
                 }
                 else {
-                    hostClass.removeSuperclass(rowClass);
-                    deleteRowItem(index);
+                    hostClass.removeSuperclass(rowClass);                   
                 }
             }
         }
@@ -612,7 +614,8 @@ public class ConditionsTableModel extends AbstractTableModel
                     Collection operands = ((OWLIntersectionClass) ss).getOperands();
                     for (Iterator oit = operands.iterator(); oit.hasNext();) {
                         RDFSClass operand = (RDFSClass) oit.next();
-                        if (operand instanceof OWLAnonymousClass) {                            
+                        if (operand instanceof OWLAnonymousClass) {
+                        	// commented out for performance reasons
                             //addItemUnlessOverloaded(operand, originCls);
                             items.add(ConditionsTableItem.createInherited(operand, originCls));
                         }
@@ -981,16 +984,16 @@ public class ConditionsTableModel extends AbstractTableModel
     }
 
 
-    private void refill() {
+    private void refill() {    	
     	if (inEditing)
-    		return;
+    		return;    	
         items.clear();
         removeListeners();
         fillItems();
         fireTableDataChanged();
     }
-
-
+   
+    
     public void refresh() {
     	if (inEditing)
     		return;
@@ -1008,8 +1011,7 @@ public class ConditionsTableModel extends AbstractTableModel
                 items.remove(i);
                 fireTableRowsDeleted(i, i);
             }
-        }
-        //updateLocalIndices();
+        }        
     }
 
 
@@ -1091,14 +1093,13 @@ public class ConditionsTableModel extends AbstractTableModel
     			return;
     		}
             
-            inEditing = true;     
+            inEditing = true;      
             
             //this is where the editing is done
             handleAddOrReplaceRestriction(newRestriction, rowIndex);
             
             inEditing = false;
-          //  refresh();
-
+            
             owlModel.commitTransaction();
 		} 
 		catch (Exception e) {
@@ -1107,6 +1108,8 @@ public class ConditionsTableModel extends AbstractTableModel
 			owlModel.rollbackTransaction();					
 			
 			OWLUI.handleError(owlModel, e);
+		} finally {
+			refill();
 		}
     }
 
@@ -1131,10 +1134,7 @@ public class ConditionsTableModel extends AbstractTableModel
         // treat superclasses
         if (getType(selectedRow) == TYPE_SUPERCLASS) {
             hostClass.addSuperclass(newRestriction);
-          
-            ConditionsTableItem item = ConditionsTableItem.create(newRestriction, TYPE_SUPERCLASS);
-            replaceRowItem(selectedRow, item);
-            
+                    
             if (oldRestriction != null)
             	hostClass.removeSuperclass(oldRestriction);
             return true;
@@ -1163,11 +1163,7 @@ public class ConditionsTableModel extends AbstractTableModel
         		
 				boolean replaceSucceeded = OWLClassUtil.replaceOperand(definitionContext, oldRestriction, newRestriction);
 				
-				if (replaceSucceeded) {
-					
-					ConditionsTableItem item = ConditionsTableItem.createSufficient(newRestriction,ConditionsTableConstants.TYPE_DEFINITION_BASE, definitionContext);
-					replaceRowItem(selectedRow, item);					
-					
+				if (replaceSucceeded) {					
 					if (oldRestriction instanceof OWLAnonymousClass)
 						deleteOldRestriction(oldRestriction);		
 					return true;
@@ -1177,9 +1173,11 @@ public class ConditionsTableModel extends AbstractTableModel
         	else { //adding a new operand to the intersection
         		 		
         		definitionContext.addOperand(newRestriction);
-
-        		ConditionsTableItem item = ConditionsTableItem.createSufficient(newRestriction,ConditionsTableConstants.TYPE_DEFINITION_BASE, definitionContext);
-				insertRowItem(selectedRow, item);	
+        		
+        		//ensure that if the new restriction is a named class, it is also added to the direct superclasses
+        		if (newRestriction instanceof OWLNamedClass) {
+        			hostClass.addDirectSuperclass(newRestriction);
+        		}
         		
         		return true;
         	}
@@ -1189,9 +1187,6 @@ public class ConditionsTableModel extends AbstractTableModel
         	
         	if (oldRestriction == null) { // no restriction was in this equivalent block before
         		hostClass.addEquivalentClass(newRestriction);
-
-        		ConditionsTableItem item = ConditionsTableItem.createSufficient(newRestriction,ConditionsTableConstants.TYPE_DEFINITION_BASE, null);
-				insertRowItem(selectedRow, item);	
 
         		return true;
         	} else { //there is an equivalent class that needs to be converted in an owl:intersection
@@ -1207,40 +1202,18 @@ public class ConditionsTableModel extends AbstractTableModel
 	            newDefinition.addOperand(newRestriction);
 	            
 	            hostClass.addEquivalentClass(newDefinition);
-	            
-	            ConditionsTableItem oldItem = ConditionsTableItem.createSufficient(clonedOldRestrcition,ConditionsTableConstants.TYPE_DEFINITION_BASE, newDefinition);
-	            ConditionsTableItem newItem = ConditionsTableItem.createSufficient(newRestriction,ConditionsTableConstants.TYPE_DEFINITION_BASE, newDefinition);
-        		
-	            replaceRowItem(getClassRow(oldRestriction), oldItem);
-	            replaceRowItem(selectedRow, newItem);
 	            				
 	            hostClass.removeEquivalentClass(oldRestriction);
+	            
+	            //ensure that if the oldRestriction was a named class, it is still a superclass of the host class
+	            if (clonedOldRestrcition instanceof OWLNamedClass) {
+	            	hostClass.addDirectSuperclass(clonedOldRestrcition);
+	            }
 	            
 	            return true;
 	       }
         }
     }
-
-    
-    
-    private void insertRowItem(int selectedRow, ConditionsTableItem item) {
-		items.add(selectedRow, item);
-		fireTableRowsInserted(selectedRow, selectedRow);
-	}
-
-
-	private void replaceRowItem(int selectedRow, ConditionsTableItem item) {
-    	items.set(selectedRow, item);					
-		fireTableRowsUpdated(selectedRow, selectedRow);	
-	}
-
-    private void deleteRowItem(int selectedRow) {
-    	if (selectedRow < 0)
-    		return;
-		items.remove(selectedRow);
-		fireTableRowsDeleted(selectedRow, selectedRow);
-	}
-	
 
 	/**
      * This method computes whether a certain row belongs to a definition block 
