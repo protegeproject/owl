@@ -433,11 +433,11 @@ public class ConditionsTableModel extends AbstractTableModel
             owlModel.commitTransaction();
         }
         catch (Exception ex) {
+        	owlModel.rollbackTransaction();
+        	
         	inEditing = false;
         	
-        	owlModel.rollbackTransaction();        	
-        	
-        	OWLUI.handleError(owlModel, ex);        	
+        	OWLUI.handleError(owlModel, ex);	
         } finally {
         	refill();
         }
@@ -1102,10 +1102,10 @@ public class ConditionsTableModel extends AbstractTableModel
             
             owlModel.commitTransaction();
 		} 
-		catch (Exception e) {
-			inEditing = false;
+		catch (Exception e) {		
+			owlModel.rollbackTransaction();
 			
-			owlModel.rollbackTransaction();					
+			inEditing = false;
 			
 			OWLUI.handleError(owlModel, e);
 		} finally {
@@ -1183,6 +1183,12 @@ public class ConditionsTableModel extends AbstractTableModel
         	}
         }
         else {
+        	if (oldRestriction != null) { //one single restiction in the equivalent block, replace it with the new one
+        		hostClass.addEquivalentClass(newRestriction);
+        		hostClass.removeEquivalentClass(oldRestriction);
+        		return true;
+        	}
+        	
         	oldRestriction = getClassContext(selectedRow); 
         	
         	if (oldRestriction == null) { // no restriction was in this equivalent block before
@@ -1213,6 +1219,11 @@ public class ConditionsTableModel extends AbstractTableModel
 	            return true;
 	       }
         }
+    }
+    
+    
+    private void replaceRestriction() {
+    	
     }
 
 	/**
