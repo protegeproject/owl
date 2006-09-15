@@ -581,7 +581,10 @@ public class ResourceDisplay extends InstanceDisplay implements ResourcePanel {
     
     public void setEnabled(boolean enabled) {
     	edu.stanford.smi.protege.widget.WidgetUtilities.setEnabledInstanceDisplay(this, enabled);
-    	instanceNameComponent.setEnabled(enabled);
+    	
+    	if (instanceNameComponent != null)
+    		instanceNameComponent.setEnabled(enabled);
+    	
     	super.setEnabled(enabled);    	
     };
     
