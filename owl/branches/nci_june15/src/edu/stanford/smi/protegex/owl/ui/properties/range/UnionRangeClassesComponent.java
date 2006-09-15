@@ -4,6 +4,8 @@ import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.KnowledgeBase;
 import edu.stanford.smi.protege.model.Model;
 import edu.stanford.smi.protege.model.Slot;
+import edu.stanford.smi.protege.server.framestore.RemoteClientFrameStore;
+import edu.stanford.smi.protege.server.metaproject.impl.OperationImpl;
 import edu.stanford.smi.protege.ui.FrameComparator;
 import edu.stanford.smi.protege.util.LabeledComponent;
 import edu.stanford.smi.protegex.owl.model.*;
@@ -183,7 +185,7 @@ public class UnionRangeClassesComponent extends JComponent {
 
 
                 public boolean isEnabledFor(RDFSClass cls, int rowIndex) {
-                    return cls != null && tableModel.isDeleteEnabledFor(cls);
+                    return cls != null && tableModel.isDeleteEnabledFor(cls) && isEnabled();
                 }
             };
 
@@ -264,4 +266,13 @@ public class UnionRangeClassesComponent extends JComponent {
         table.hideSymbolPanel();
         tableModel.refill();
     }
+    
+    public void setEnabled(boolean enabled) {
+    	enabled = enabled && RemoteClientFrameStore.isOperationAllowed(owlModel, OperationImpl.PROPERTY_TAB_WRITE);
+    	table.setEnabled(enabled);
+    	addAction.setEnabled(enabled);
+    	createAction.setEnabled(enabled);
+    	deleteAction.setEnabled(enabled);    	
+    	super.setEnabled(enabled);
+    };
 }
