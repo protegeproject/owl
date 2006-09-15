@@ -141,5 +141,11 @@ public class OntologyURIWidget extends AbstractPropertyWidget {
                                                 "The name is a URI that other ontologies will use to import<br>" +
                                                 "this ontology.  It is recommended that it resembles a http URL that points<br>" +
                                                 "to the location where the ontology can be downloaded from.</html></body>";
+    
+    public void setEnabled(boolean enabled) {
+    	nameField.setEnabled(enabled);
+    	nameField.setEditable(enabled);
+    	super.setEnabled(enabled);
+    };
 }
 
