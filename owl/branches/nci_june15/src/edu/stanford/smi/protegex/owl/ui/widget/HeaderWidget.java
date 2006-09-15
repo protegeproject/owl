@@ -38,6 +38,7 @@ public class HeaderWidget extends AbstractSlotWidget {
 
         component = newComponent;
         component.setSubject((RDFResource) getInstance());
+        component.setEnabled(isEnabled());
         add(BorderLayout.CENTER, component);
         revalidate();
     }
@@ -95,4 +96,11 @@ public class HeaderWidget extends AbstractSlotWidget {
             component.setSubject(resource);
         }
     }
+    
+	@Override
+	public void setEnabled(boolean enabled) {
+		component.setEnabled(enabled);	
+		super.setEnabled(enabled);
+	}
+	
 }
