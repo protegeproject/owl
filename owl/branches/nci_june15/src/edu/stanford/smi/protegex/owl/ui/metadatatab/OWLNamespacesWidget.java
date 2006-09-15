@@ -51,6 +51,11 @@ public class OWLNamespacesWidget extends AbstractPropertyWidget {
             revalidate();
         }
         TripleStoreModel tsm = getOWLModel().getTripleStoreModel();
-        panel.setEnabled(tsm.getActiveTripleStore() == tsm.getTopTripleStore());
+        panel.setEnabled(tsm.getActiveTripleStore() == tsm.getTopTripleStore() && isEnabled());
     }
+    
+    public void setEnabled(boolean enabled) {
+    	panel.setEnabled(enabled);
+    	super.setEnabled(enabled);
+    };
 }
