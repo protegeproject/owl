@@ -16,6 +16,7 @@ import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreModel;
 import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
 import edu.stanford.smi.protegex.owl.ui.profiles.OWLProfiles;
 import edu.stanford.smi.protegex.owl.ui.profiles.ProfilesManager;
+import edu.stanford.smi.protegex.owl.util.OWLFrameStoreUtils;
 
 import java.net.URI;
 import java.util.*;
@@ -691,14 +692,19 @@ public class OWLUtil {
     }
 
 
+    @SuppressWarnings("deprecation")
     public static Collection getPropertyValues(RDFResource resource, RDFProperty property, boolean includingSubproperties) {
+        OWLModel owlModel = resource.getOWLModel();
+        Collection values;
         if (includingSubproperties) {
-            return resource.getOWLModel().getOWLFrameStore().getOwnSlotValuesConverting(resource, property);
+          values = owlModel.getOwnSlotValues(resource, property);
         }
         else {
-            return resource.getOWLModel().getOWLFrameStore().getDirectOwnSlotValuesConverting(resource, property);
+          values = owlModel.getDirectOwnSlotValues(resource, property);
         }
+        return OWLFrameStoreUtils.convertValueListToRDFLiterals(owlModel, values);
     }
+
 
 
     public static Iterator listPropertyValues(RDFResource resource, RDFProperty property, boolean includingSubproperties) {
