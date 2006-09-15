@@ -47,6 +47,8 @@ public abstract class AbstractTriplesComponent extends AbstractPropertyValuesCom
     private TriplesTableModel tableModel;
 
     private Action viewValueAction;
+    
+    private boolean enabled = true; 
 
 
     public AbstractTriplesComponent(RDFProperty predicate) {
@@ -83,7 +85,7 @@ public abstract class AbstractTriplesComponent extends AbstractPropertyValuesCom
 
         table.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
-                if (e.getClickCount() == 2) {
+                if (e.getClickCount() == 2 && isEnabled()) {                	
                     handleTableDoubleClick();
                 }
             }
@@ -245,7 +247,7 @@ public abstract class AbstractTriplesComponent extends AbstractPropertyValuesCom
             JTextArea textArea = new JTextArea(value.toString());
             textArea.setLineWrap(true);
             textArea.setWrapStyleWord(true);
-            textArea.setEnabled(tableModel.isCellEditable(row, TriplesTableModel.COL_VALUE));
+            //textArea.setEnabled(tableModel.isCellEditable(row, TriplesTableModel.COL_VALUE));
             Component comp = new JScrollPane(textArea);
             LabeledComponent lc = new LabeledComponent(name, comp);
             lc.setPreferredSize(new Dimension(400, 400));
@@ -275,4 +277,16 @@ public abstract class AbstractTriplesComponent extends AbstractPropertyValuesCom
         }
         return true;
     }
+
+
+	public boolean isEnabled() {
+		return enabled;
+	}
+
+
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
+	}
+    
+    
 }
