@@ -1,23 +1,106 @@
 package edu.stanford.smi.protegex.owl.model.impl;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import junit.framework.Assert;
+
 import com.hp.hpl.jena.datatypes.TypeMapper;
 import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
 import com.hp.hpl.jena.rdf.model.impl.Util;
 import com.hp.hpl.jena.vocabulary.OWL;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
-import edu.stanford.smi.protege.model.*;
+
+import edu.stanford.smi.protege.model.BrowserSlotPattern;
+import edu.stanford.smi.protege.model.Cls;
+import edu.stanford.smi.protege.model.DefaultKnowledgeBase;
+import edu.stanford.smi.protege.model.Facet;
+import edu.stanford.smi.protege.model.Frame;
+import edu.stanford.smi.protege.model.FrameID;
+import edu.stanford.smi.protege.model.FrameNameValidator;
+import edu.stanford.smi.protege.model.Instance;
+import edu.stanford.smi.protege.model.KnowledgeBase;
+import edu.stanford.smi.protege.model.KnowledgeBaseFactory;
+import edu.stanford.smi.protege.model.Model;
+import edu.stanford.smi.protege.model.Project;
+import edu.stanford.smi.protege.model.Reference;
+import edu.stanford.smi.protege.model.Slot;
+import edu.stanford.smi.protege.model.SystemFrames;
+import edu.stanford.smi.protege.model.ValueType;
+import edu.stanford.smi.protege.model.framestore.FrameStore;
 import edu.stanford.smi.protege.model.framestore.FrameStoreManager;
 import edu.stanford.smi.protege.model.framestore.MergingNarrowFrameStore;
 import edu.stanford.smi.protege.model.framestore.NarrowFrameStore;
 import edu.stanford.smi.protege.util.CollectionUtilities;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.jena.graph.JenaModelFactory;
-import edu.stanford.smi.protegex.owl.model.*;
+import edu.stanford.smi.protegex.owl.model.DefaultTaskManager;
+import edu.stanford.smi.protegex.owl.model.NamespaceManager;
+import edu.stanford.smi.protegex.owl.model.NamespaceManagerListener;
+import edu.stanford.smi.protegex.owl.model.OWLAllDifferent;
+import edu.stanford.smi.protegex.owl.model.OWLAllValuesFrom;
+import edu.stanford.smi.protegex.owl.model.OWLAnonymousClass;
+import edu.stanford.smi.protegex.owl.model.OWLCardinality;
+import edu.stanford.smi.protegex.owl.model.OWLComplementClass;
+import edu.stanford.smi.protegex.owl.model.OWLDataRange;
+import edu.stanford.smi.protegex.owl.model.OWLDatatypeProperty;
+import edu.stanford.smi.protegex.owl.model.OWLEnumeratedClass;
+import edu.stanford.smi.protegex.owl.model.OWLHasValue;
+import edu.stanford.smi.protegex.owl.model.OWLIndividual;
+import edu.stanford.smi.protegex.owl.model.OWLIntersectionClass;
+import edu.stanford.smi.protegex.owl.model.OWLMaxCardinality;
+import edu.stanford.smi.protegex.owl.model.OWLMinCardinality;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
+import edu.stanford.smi.protegex.owl.model.OWLNames;
+import edu.stanford.smi.protegex.owl.model.OWLObjectProperty;
+import edu.stanford.smi.protegex.owl.model.OWLOntology;
+import edu.stanford.smi.protegex.owl.model.OWLProperty;
+import edu.stanford.smi.protegex.owl.model.OWLSomeValuesFrom;
+import edu.stanford.smi.protegex.owl.model.OWLUnionClass;
+import edu.stanford.smi.protegex.owl.model.ProtegeNames;
+import edu.stanford.smi.protegex.owl.model.RDFExternalResource;
+import edu.stanford.smi.protegex.owl.model.RDFIndividual;
+import edu.stanford.smi.protegex.owl.model.RDFList;
+import edu.stanford.smi.protegex.owl.model.RDFNames;
+import edu.stanford.smi.protegex.owl.model.RDFObject;
+import edu.stanford.smi.protegex.owl.model.RDFProperty;
+import edu.stanford.smi.protegex.owl.model.RDFResource;
+import edu.stanford.smi.protegex.owl.model.RDFSClass;
+import edu.stanford.smi.protegex.owl.model.RDFSDatatype;
+import edu.stanford.smi.protegex.owl.model.RDFSDatatypeFactory;
+import edu.stanford.smi.protegex.owl.model.RDFSLiteral;
+import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
+import edu.stanford.smi.protegex.owl.model.RDFSNames;
+import edu.stanford.smi.protegex.owl.model.RDFUntypedResource;
+import edu.stanford.smi.protegex.owl.model.TaskManager;
+import edu.stanford.smi.protegex.owl.model.XSDNames;
+import edu.stanford.smi.protegex.owl.model.XSPNames;
 import edu.stanford.smi.protegex.owl.model.classdisplay.OWLClassDisplay;
 import edu.stanford.smi.protegex.owl.model.classdisplay.OWLClassDisplayFactory;
 import edu.stanford.smi.protegex.owl.model.classparser.OWLClassParser;
-import edu.stanford.smi.protegex.owl.model.event.*;
+import edu.stanford.smi.protegex.owl.model.event.ClassAdapter;
+import edu.stanford.smi.protegex.owl.model.event.ClassListener;
+import edu.stanford.smi.protegex.owl.model.event.ModelAdapter;
+import edu.stanford.smi.protegex.owl.model.event.ModelListener;
+import edu.stanford.smi.protegex.owl.model.event.PropertyAdapter;
+import edu.stanford.smi.protegex.owl.model.event.PropertyListener;
+import edu.stanford.smi.protegex.owl.model.event.PropertyValueAdapter;
+import edu.stanford.smi.protegex.owl.model.event.PropertyValueListener;
+import edu.stanford.smi.protegex.owl.model.event.ResourceAdapter;
+import edu.stanford.smi.protegex.owl.model.event.ResourceListener;
 import edu.stanford.smi.protegex.owl.model.factory.OWLJavaFactory;
 import edu.stanford.smi.protegex.owl.model.framestore.OWLFrameStore;
 import edu.stanford.smi.protegex.owl.model.framestore.OWLFrameStoreManager;
@@ -39,13 +122,6 @@ import edu.stanford.smi.protegex.owl.testing.OWLTest;
 import edu.stanford.smi.protegex.owl.testing.OWLTestLibrary;
 import edu.stanford.smi.protegex.owl.ui.widget.OWLFormWidget;
 import edu.stanford.smi.protegex.owl.ui.widget.OWLWidgetMapper;
-import junit.framework.Assert;
-
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
@@ -1086,7 +1162,14 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
      * This method must be called after a file has been loaded.
      */
     public void copyFacetValuesIntoNamedClses() {
+      /*
+       * This is a little awkward - but I guess if there is no OWL Frame Store then we shouldn't
+       * be doing this.  This happens in server client mode - maybe it should be turned off on the 
+       * clients.
+       */
+      if (owlFrameStore != null) {
         owlFrameStore.copyFacetValuesIntoNamedClses();
+      }
     }
 
 
@@ -2324,7 +2407,6 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     public OWLFrameStore getOWLFrameStore() {
         return owlFrameStore;
     }
-
 
     public RDFSNamedClass getOWLFunctionalPropertyClass() {
         return (RDFSNamedClass) owlFunctionalPropertyClass;
