@@ -578,4 +578,12 @@ public class ResourceDisplay extends InstanceDisplay implements ResourcePanel {
         }
         triplesComponent.setSubject((RDFResource) getCurrentInstance());
     }
+    
+    public void setEnabled(boolean enabled) {
+    	edu.stanford.smi.protege.widget.WidgetUtilities.setEnabledInstanceDisplay(this, enabled);
+    	instanceNameComponent.setEnabled(enabled);
+    	super.setEnabled(enabled);    	
+    };
+    
+   
 }
