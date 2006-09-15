@@ -4,9 +4,12 @@ import edu.stanford.smi.protege.event.FrameAdapter;
 import edu.stanford.smi.protege.event.FrameEvent;
 import edu.stanford.smi.protege.event.FrameListener;
 import edu.stanford.smi.protege.model.*;
+import edu.stanford.smi.protege.server.framestore.RemoteClientFrameStore;
+import edu.stanford.smi.protege.server.metaproject.impl.OperationImpl;
 import edu.stanford.smi.protege.ui.FrameRenderer;
 import edu.stanford.smi.protege.util.*;
 import edu.stanford.smi.protegex.owl.model.*;
+import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
 import edu.stanford.smi.protegex.owl.ui.OWLLabeledComponent;
 import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
 import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
@@ -318,8 +321,15 @@ public class OWLInversePropertyWidget extends AbstractPropertyWidget {
             ValueType type = ((Slot) resource).getValueType();
             editable = equals(type, ValueType.INSTANCE) || equals(type, ValueType.CLS);
         }
-        createAction.setAllowed(editable);
-        addAction.setEnabled(editable);
-        removeAction.setAllowed(editable);
+        setEnabled(editable);
+    }
+    
+    @Override
+    public void setEnabled(boolean enabled) {
+    	enabled = enabled && RemoteClientFrameStore.isOperationAllowed(getOWLModel(), OperationImpl.PROPERTY_TAB_WRITE);
+        createAction.setAllowed(enabled);
+        addAction.setEnabled(enabled);
+        removeAction.setAllowed(enabled);    	
+    	super.setEnabled(enabled);
     }
 }
