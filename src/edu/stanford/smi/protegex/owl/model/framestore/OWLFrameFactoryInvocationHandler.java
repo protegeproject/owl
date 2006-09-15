@@ -233,9 +233,9 @@ public class OWLFrameFactoryInvocationHandler extends AbstractFrameStoreInvocati
     
     protected void executeQuery(Query q, QueryCallback qc) {
       QueryCallback mycallback = new QueryCallbackClone(qc) {
+        @SuppressWarnings("unchecked")
         public void provideQueryResults(Set<Frame> results) {
-          convert(results);
-          super.provideQueryResults(results);
+          super.provideQueryResults((Set) convert(results));
         }
       };
       getDelegate().executeQuery(q, mycallback);
