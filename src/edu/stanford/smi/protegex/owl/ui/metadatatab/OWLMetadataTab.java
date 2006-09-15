@@ -1,6 +1,8 @@
 package edu.stanford.smi.protegex.owl.ui.metadatatab;
 
 import edu.stanford.smi.protege.model.Project;
+import edu.stanford.smi.protege.server.framestore.RemoteClientFrameStore;
+import edu.stanford.smi.protege.server.metaproject.impl.OperationImpl;
 import edu.stanford.smi.protege.util.CollectionUtilities;
 import edu.stanford.smi.protege.util.SelectionEvent;
 import edu.stanford.smi.protege.util.SelectionListener;
@@ -13,6 +15,7 @@ import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
 import edu.stanford.smi.protegex.owl.ui.cls.OWLClassesTab;
 import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
 import edu.stanford.smi.protegex.owl.ui.importstree.ImportsTreePanel;
+import edu.stanford.smi.protegex.owl.ui.resourcedisplay.ResourceDisplay;
 import edu.stanford.smi.protegex.owl.ui.resourcedisplay.ResourcePanel;
 import edu.stanford.smi.protegex.owl.ui.results.HostResourceDisplay;
 import edu.stanford.smi.protegex.owl.ui.widget.AbstractTabWidget;
@@ -44,6 +47,7 @@ public class OWLMetadataTab extends AbstractTabWidget implements HostResourceDis
                 Collection sel = importsTreePanel.getImportsTree().getSelectedResources();
                 RDFResource res = (RDFResource) CollectionUtilities.getFirstItem(sel);
                 resourceDisplay.setResource(res);
+                ((ResourceDisplay)resourceDisplay).setEnabled(isEnabled());
             }
         };
 
@@ -82,11 +86,11 @@ public class OWLMetadataTab extends AbstractTabWidget implements HostResourceDis
 
 
     public void initialize() {
-
         //setLabel("Metadata (" + );
         setIcon(OWLIcons.getImageIcon("Metadata"));
         JComponent comp = createMainPanel();
         add(comp);
+        setEnabled(true);
     }
 
     public String getLabel() {
@@ -134,4 +138,11 @@ public class OWLMetadataTab extends AbstractTabWidget implements HostResourceDis
     public boolean displayHostResource(RDFResource resource) {
         return importsTreePanel.displayHostResource(resource);
     }
+    
+    public void setEnabled(boolean enabled) {
+    	enabled = enabled && RemoteClientFrameStore.isOperationAllowed(getOWLModel(), OperationImpl.ONTOLOGY_TAB_WRITE);
+    	((ResourceDisplay)resourceDisplay).setEnabled(enabled);
+    	importsTreePanel.setEnabled(enabled);
+    	super.setEnabled(enabled);
+    };
 }
