@@ -1,6 +1,8 @@
 package edu.stanford.smi.protegex.owl.ui.properties.domain;
 
 import edu.stanford.smi.protege.model.*;
+import edu.stanford.smi.protege.server.framestore.RemoteClientFrameStore;
+import edu.stanford.smi.protege.server.metaproject.impl.OperationImpl;
 import edu.stanford.smi.protege.util.*;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
@@ -53,7 +55,7 @@ public class OWLDomainWidget extends AbstractPropertyWidget {
             }
         });
         addAction = new AddClassToDomainAction(this);
-        updateActions();
+                        
         lc.addHeaderButton(addAction);
         removeAction = new AllowableAction("Remove from Domain",
                                            OWLIcons.getRemoveIcon(OWLIcons.PRIMITIVE_OWL_CLASS), table) {
@@ -80,9 +82,11 @@ public class OWLDomainWidget extends AbstractPropertyWidget {
                         }
                     }
                 }
-                setAllowed(allowed);
+                //setAllowed(allowed);
+                setEnabled(allowed);
             }
         };
+        updateActions();        
         lc.addHeaderButton(removeAction);
         setLayout(new BorderLayout());
         add(BorderLayout.CENTER, lc);
@@ -128,7 +132,8 @@ public class OWLDomainWidget extends AbstractPropertyWidget {
 
 
     public void setEditable(boolean b) {
-        super.setEditable(b);
+        super.setEditable(b);       
+        table.setEnabled(b);         
         addAction.setEnabled(b);
         removeAction.setAllowed(b);
     }
@@ -156,6 +161,14 @@ public class OWLDomainWidget extends AbstractPropertyWidget {
     private void updateActions() {
         RDFProperty property = tableModel.getSlot();
         boolean enabled = property != null && property.isEditable();
-        addAction.setEnabled(enabled);
+        setEnabled(enabled);
     }
+    
+    public void setEnabled(boolean enabled) {
+    	enabled = enabled && RemoteClientFrameStore.isOperationAllowed(getOWLModel(), OperationImpl.PROPERTY_TAB_WRITE);
+    	addAction.setEnabled(enabled);
+    	removeAction.setAllowed(enabled);
+    	table.setEnabled(enabled);
+    	super.setEnabled(enabled);
+    };
 }
