@@ -1,5 +1,12 @@
 package edu.stanford.smi.protegex.owl.model.triplestore.impl;
 
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+
 import edu.stanford.smi.protege.model.Instance;
 import edu.stanford.smi.protege.model.KnowledgeBase;
 import edu.stanford.smi.protege.model.Model;
@@ -15,9 +22,7 @@ import edu.stanford.smi.protegex.owl.model.triplestore.Triple;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreModel;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreUtil;
-
-import java.net.URI;
-import java.util.*;
+import edu.stanford.smi.protegex.owl.util.OWLFrameStoreUtils;
 
 /**
  * A base class for the two default TripleStoreModel implementations.
@@ -90,7 +95,7 @@ public abstract class AbstractTripleStoreModel implements TripleStoreModel {
 
     public Collection getPropertyValues(RDFResource resource, RDFProperty property) {
         Collection values = mnfs.getValues(resource, property, null, false);
-        return owlModel.getOWLFrameStore().getConvertedValues(values);
+        return OWLFrameStoreUtils.convertValueListToRDFLiterals(owlModel, values);
     }
 
 
