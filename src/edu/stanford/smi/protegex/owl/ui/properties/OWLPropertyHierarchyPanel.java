@@ -1,5 +1,7 @@
 package edu.stanford.smi.protegex.owl.ui.properties;
 
+import edu.stanford.smi.protege.server.framestore.RemoteClientFrameStore;
+import edu.stanford.smi.protege.server.metaproject.impl.OperationImpl;
 import edu.stanford.smi.protege.util.SelectionListener;
 import edu.stanford.smi.protege.util.SelectionEvent;
 import edu.stanford.smi.protege.util.CollectionUtilities;
@@ -56,5 +58,12 @@ public class OWLPropertyHierarchyPanel extends JPanel {
 	public OWLSuperpropertiesPanel getSuperpropertiesPanel() {
 		return superpropertiesPanel;
 	}
+	
+	public void setEnabled(boolean enabled) {
+		enabled = enabled && RemoteClientFrameStore.isOperationAllowed(subpropertyPane.getOWLModel(), OperationImpl.PROPERTY_TAB_WRITE);
+		subpropertyPane.setEnabled(enabled);
+		superpropertiesPanel.setEnabled(enabled);
+		super.setEnabled(enabled);
+	};
 }
 
