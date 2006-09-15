@@ -29,7 +29,7 @@ public class OWLFrameFactoryInvocationHandler extends AbstractFrameStoreInvocati
 
     private static OWLFrameFactoryInvocationHandler recentInstance;
 
-    private static Set systemClses = new HashSet();
+    private static Set<String> systemClses = new HashSet<String>();
 
     private Cls thingCls;
 
