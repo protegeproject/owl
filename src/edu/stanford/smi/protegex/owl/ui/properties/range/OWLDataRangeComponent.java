@@ -1,5 +1,7 @@
 package edu.stanford.smi.protegex.owl.ui.properties.range;
 
+import edu.stanford.smi.protege.server.framestore.RemoteClientFrameStore;
+import edu.stanford.smi.protege.server.metaproject.impl.OperationImpl;
 import edu.stanford.smi.protege.util.LabeledComponent;
 import edu.stanford.smi.protegex.owl.model.*;
 import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
@@ -143,7 +145,16 @@ public class OWLDataRangeComponent extends JComponent {
 
 
     private void updateActions(boolean editable) {
+    	editable = editable && RemoteClientFrameStore.isOperationAllowed(rangeWidget.getOWLModel(), OperationImpl.PROPERTY_TAB_WRITE);
         createAction.setEnabled(editable);
         deleteAction.setEnabled(editable && list.getSelectedValue() != null);
     }
+    
+    public void setEnabled(boolean enabled) {
+    	enabled = enabled && RemoteClientFrameStore.isOperationAllowed(rangeWidget.getOWLModel(), OperationImpl.PROPERTY_TAB_WRITE);
+    	createAction.setEnabled(enabled);
+    	deleteAction.setEnabled(enabled);
+    	setEditable(enabled);
+    	super.setEnabled(enabled);
+    };
 }
