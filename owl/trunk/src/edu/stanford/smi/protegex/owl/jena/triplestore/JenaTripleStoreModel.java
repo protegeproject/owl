@@ -25,6 +25,13 @@ public class JenaTripleStoreModel extends AbstractTripleStoreModel {
         this.owlModel = owlModel;
         initTripleStores();
     }
+    
+    public JenaTripleStoreModel(JenaOWLModel owlModel, NarrowFrameStore frameStore) {
+      super(owlModel);
+      this.owlModel = owlModel;
+      ts.add(new JenaTripleStore(owlModel, frameStore, this));
+      owlModel.resetJenaModel();
+    }
 
 
     public TripleStore createTripleStore(String name) {
