@@ -54,7 +54,6 @@ import edu.stanford.smi.protegex.owl.model.impl.OWLUtil;
 import edu.stanford.smi.protegex.owl.model.impl.XMLSchemaDatatypes;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreUtil;
-import edu.stanford.smi.protegex.owl.util.OWLFrameStoreUtils;
 
 /**
  * A FrameStore with specific support for OWL ontologies.
@@ -109,12 +108,12 @@ public class OWLFrameStore extends FrameStoreAdapter {
     /**
      * A Hashtable from Java restriction Class objects to the responsible RestrictionUpdaters
      */
-    private Hashtable class2Updater = new Hashtable();
+    private Hashtable<Class, AbstractRestrictionUpdater> class2Updater = new Hashtable<Class, AbstractRestrictionUpdater>();
 
     /**
      * A Hashtable from Facets to the responsible RestrictionUpdaters
      */
-    private Hashtable facet2Updater = new Hashtable();
+    private Hashtable<Facet, AbstractRestrictionUpdater> facet2Updater = new Hashtable<Facet, AbstractRestrictionUpdater>();
 
     /**
      * A flag to prevent infinite recursion when a superclass has been added or removed
