@@ -324,8 +324,6 @@ public abstract class SWRLRuleEngineBridge
     } else if (swrlAtom instanceof SWRLDifferentIndividualsAtom) {
       atomInfo = new DifferentIndividualsAtomInfo((SWRLDifferentIndividualsAtom)swrlAtom);
     } else if (swrlAtom instanceof SWRLBuiltinAtom) {
-      if (isConsequent) 
-        throw new SWRLRuleEngineBridgeException("Attempt to use built-in ('" + swrlAtom.getBrowserText() + "') in rule consequent.");
       atomInfo = new BuiltInAtomInfo(owlModel, (SWRLBuiltinAtom)swrlAtom);
     } else if (swrlAtom instanceof SWRLDataRangeAtom) 
       atomInfo = new DataRangeAtomInfo((SWRLDataRangeAtom)swrlAtom);
