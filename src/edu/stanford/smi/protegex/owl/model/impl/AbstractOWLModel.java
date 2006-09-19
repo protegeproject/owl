@@ -3269,7 +3269,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
             project.setWidgetMapper(new OWLWidgetMapper(this));
 
-            if (project.isMultiUserServer()) {
+            if (project.isMultiUserClient()) {
                 FrameStoreManager fsm = getFrameStoreManager();
                 fsm.removeFrameStore(owlFrameStore);
                 owlFrameStore = null;
