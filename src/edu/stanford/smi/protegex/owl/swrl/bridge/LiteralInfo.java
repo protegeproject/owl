@@ -1,11 +1,13 @@
-// Info object to wrap XML Schema datatype literals when passing
-// them to and from built-in methods. Also provides a central place to
-// validate the content of complex types, such as datetimes, etc.
+
 package edu.stanford.smi.protegex.owl.swrl.bridge;
 
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.*;
 import edu.stanford.smi.protegex.owl.model.*;
 
+/*
+** Info object to wrap XML Schema datatype literals. This class is used primarily when passing literals to and from built-in methods. Also
+** provides a central place to validate the content of complex types, such as datetimes, etc.
+*/
 public class LiteralInfo extends Info implements Argument
 {
   private Object value;
@@ -119,23 +121,6 @@ public class LiteralInfo extends Info implements Argument
   public boolean isNumeric() { return value instanceof Number; }
   public String toString() { return value.toString(); }
 
-  public boolean equals(Object obj)
-  {
-    if(this == obj) return true;
-    if((obj == null) || (obj.getClass() != this.getClass())) return false;
-    LiteralInfo info = (LiteralInfo)obj;
-    return (getName() == info.getName() || (getName() != null && getName().equals(info.getName()))) &&
-           (value != null && info.value != null && value.toString().equals(info.value.toString()));
-  } // equals
-
-  public int hashCode()
-  {
-    int hash = 66;
-    hash = hash + (null == getName() ? 0 : getName().hashCode());
-    hash = hash + (null == value ? 0 : value.toString().hashCode());
-    return hash;
-  } // hashCode
-
   public abstract class ComplexXSDType
   {
     private String content;
@@ -224,5 +209,22 @@ public class LiteralInfo extends Info implements Argument
       if (getContent() == null) throw new LiteralConversionException("Null content for Byte literal.");
     }  // validate
   } // Byte
+
+  public boolean equals(Object obj)
+  {
+    if(this == obj) return true;
+    if((obj == null) || (obj.getClass() != this.getClass())) return false;
+    LiteralInfo info = (LiteralInfo)obj;
+    return (getName() == info.getName() || (getName() != null && getName().equals(info.getName()))) &&
+           (value != null && info.value != null && value.toString().equals(info.value.toString()));
+  } // equals
+
+  public int hashCode()
+  {
+    int hash = 66;
+    hash = hash + (null == getName() ? 0 : getName().hashCode());
+    hash = hash + (null == value ? 0 : value.toString().hashCode());
+    return hash;
+  } // hashCode
 
 } // LiteralInfo
