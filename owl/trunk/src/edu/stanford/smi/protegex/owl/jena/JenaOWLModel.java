@@ -177,6 +177,9 @@ public class JenaOWLModel extends AbstractOWLModel implements OntModelProvider {
         return Jena.cloneOntModel(getOntModel(), spec);
     }
 
+    public void setTripleStoreModel(TripleStoreModel tsm) {
+      tripleStoreModel = tsm;
+    }
 
     public TripleStoreModel getTripleStoreModel() {
         if (tripleStoreModel == null) {
