@@ -9,15 +9,20 @@ import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.util.FileUtils;
 
 import edu.stanford.smi.protege.Application;
+import edu.stanford.smi.protege.model.ClientInitializerKnowledgeBaseFactory;
 import edu.stanford.smi.protege.model.KnowledgeBase;
 import edu.stanford.smi.protege.model.KnowledgeBaseSourcesEditor;
 import edu.stanford.smi.protege.model.Project;
+import edu.stanford.smi.protege.model.framestore.FrameStore;
+import edu.stanford.smi.protege.model.framestore.NarrowFrameStore;
 import edu.stanford.smi.protege.util.ApplicationProperties;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protege.util.PropertyList;
 import edu.stanford.smi.protege.util.URIUtilities;
 import edu.stanford.smi.protegex.owl.database.OWLDatabaseModel;
+import edu.stanford.smi.protegex.owl.database.triplestore.DatabaseTripleStoreModel;
 import edu.stanford.smi.protegex.owl.jena.parser.ProtegeOWLParser;
+import edu.stanford.smi.protegex.owl.jena.triplestore.JenaTripleStoreModel;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.impl.OWLNamespaceManager;
 import edu.stanford.smi.protegex.owl.repository.util.RepositoryFileManager;
@@ -32,7 +37,7 @@ import edu.stanford.smi.protegex.owl.ui.resourceselection.ResourceSelectionActio
  *
  * @author Holger Knublauch  <holger@knublauch.com>
  */
-public class JenaKnowledgeBaseFactory implements OWLKnowledgeBaseFactory {
+public class JenaKnowledgeBaseFactory implements OWLKnowledgeBaseFactory, ClientInitializerKnowledgeBaseFactory {
 
     public static final String JENA_SYNCHRONIZED = JenaKnowledgeBaseFactory.class.getName() + ".synchronized";
 
@@ -244,5 +249,15 @@ public class JenaKnowledgeBaseFactory implements OWLKnowledgeBaseFactory {
             filePath += ".owl";
         }
         sources.setString(OWL_FILE_URI_PROPERTY, filePath);
+    }
+    
+    public void initializeClientKnowledgeBase(FrameStore fs, 
+                                              NarrowFrameStore nfs,
+                                              KnowledgeBase kb) { 
+      if (kb instanceof OWLModel) {
+        JenaOWLModel owlModel = (JenaOWLModel) kb;
+        JenaTripleStoreModel tsm = new JenaTripleStoreModel(owlModel,nfs);
+        owlModel.setTripleStoreModel(tsm);
+      }
     }
 }
