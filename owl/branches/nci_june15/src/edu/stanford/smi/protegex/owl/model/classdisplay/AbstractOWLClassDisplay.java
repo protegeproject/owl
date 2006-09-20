@@ -13,8 +13,6 @@ import java.util.Iterator;
  */
 public abstract class AbstractOWLClassDisplay implements OWLClassDisplay {
 
-	private RDFProperty commentedOutProperty;
-
 	public AbstractOWLClassDisplay() {
 
 	}
