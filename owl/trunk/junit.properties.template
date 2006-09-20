@@ -1,0 +1,17 @@
+
+#
+# WARNING - setting the following will cause ant to overwrite the
+#           protege-owl.jar in the Protege directory with the latest
+#           built protege-owl.jar.  This is needed for the junit tests.
+#
+
+junit.protege.dir=/home/tredmond/dev/Protege_3.2_beta
+
+
+#==---==---==---==---==---==---==---==---==---==---==---==---==---==---==---==
+# URL for the reasoner
+# if a dig reasoner is running for the tests set the url for the reaonser here.
+#
+
+junit.dig.url=http://localhost:8081
+
