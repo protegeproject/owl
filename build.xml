@@ -15,14 +15,16 @@
     <property name = "classes" value = "./classes"/>
     <property name = "lib" value = "./lib"/>
     <property name = "dist" value = "./dist"/>
-    <property name = "jarfile" value = "${dist}/protege-owl.jar"/>
     <property name = "etc" value = "./etc"/>
-	<property name = "owlplugin" value = "edu.stanford.smi.protegex.owl"/>
+    <property name = "owlplugin" value = "edu.stanford.smi.protegex.owl"/>
     <property name = "plugin" value = "${dist}/${owlplugin}"/>
-	<property name = "debug" value = "on"/>
-	<property name = "source" value = "1.5"/>
-	<property name = "deprecation" value = "off"/>
+    <property name = "pluginName" value="protege-owl"/>
+    <property name = "debug" value = "on"/>
+    <property name = "source" value = "1.5"/>
+    <property name = "deprecation" value = "off"/>
+    <property name = "jarfile" value = "${dist}/${pluginName}.jar"/>
 
+    <property name = "junit" value = "./junit"/>
 
 	<!-- =================================================================== -->
 	<!-- USAGE -->		
@@ -152,11 +154,50 @@
     <target name="plugin.zip" 
             depends="plugin.dir" 
             description="Create the protege-owl.zip file, containing the plugin dir">
-        <zip destfile="${dist}/protege-owl-plugin.zip">
+        <zip destfile="${dist}/${pluginName}.zip">
             <fileset dir="${dist}">
                 <include name="${owlplugin}/**"/>
             </fileset>
         </zip>
     </target>
+
+
+    <target name = "junit-compile" depends = "jar">
+       <javac srcdir = "${junit}" destdir = "${classes}" debug = "on">
+         <classpath refid = "classpath.compile"/>
+         <classpath>
+            <pathelement location = "${jarfile}"/>
+         </classpath>
+      </javac>
+   </target>
+
+   <target name = "junit" 
+           description = "run the tests (anybody can do it)"
+           depends = "junit-compile">
+     <property file="junit.properties"/>
+     <copy file = "${jarfile}"
+           todir = "${junit.protege.dir}/plugins/${owlplugin}"
+           overwrite="yes"/>
+     <junit haltonfailure = "on" 
+            printsummary="withOutAndErr"
+            dir = "." fork = "yes">
+        <classpath>
+           <pathelement location="${classes}"/>
+           <pathelement location = "${lib}/protege.jar"/>
+           <fileset
+              dir="${junit.protege.dir}/plugins/edu.stanford.smi.protegex.owl">
+              <include name = "**/*.jar"/>
+           </fileset>
+        </classpath>
+        <jvmarg value="-Dprotege.dir=${junit.protege.dir}"/>
+        <batchtest>
+           <fileset dir="${junit}">
+             <include name = "**/*TestCase.java"/>
+             <exclude name = "**/*Abstract*.java"/>
+           </fileset>
+        </batchtest>
+     </junit>
+   </target>
+
 
 </project>
