@@ -1192,6 +1192,12 @@ public interface OWLModel extends ProtegeKnowledgeBase, OWLTestManager {
      */
     RDFProperty getRDFRestProperty();
 
+    /**
+     * Gets the meta class that represents some values from restrictions.
+     * 
+     * @return the class of all somevaluesfrom restrictions.
+     */
+    RDFSNamedClass getOWLSomeValuesFromRestrictionClass();
 
     /**
      * Gets the metaclasses of the available OWLRestriction kinds.
