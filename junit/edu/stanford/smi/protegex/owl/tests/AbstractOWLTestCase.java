@@ -177,9 +177,7 @@ public abstract class AbstractOWLTestCase extends TestCase {
       }
       try {
         Properties dbp = new Properties();
-        String dbPropertyFile = ApplicationProperties.getApplicationDirectory().getPath()
-                                   +  File.separator
-                                   + "junit.properties";
+        String dbPropertyFile = "junit.properties";
         InputStream is = new FileInputStream(dbPropertyFile);
         dbp.load(is);
         junitProperties = dbp;
