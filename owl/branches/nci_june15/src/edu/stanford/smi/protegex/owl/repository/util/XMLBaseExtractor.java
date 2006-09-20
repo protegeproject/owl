@@ -46,9 +46,10 @@ public class XMLBaseExtractor {
         try {
             parser.parse(new InputSource(is));
         }
-        finally {
-            return xmlBase;
+        catch (Throwable t) {
+          Log.emptyCatchBlock(t);
         }
+        return xmlBase;
     }
 
 
