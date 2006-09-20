@@ -2695,6 +2695,10 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
         }
         return xmlLiteralType;
     }
+    
+    public RDFSNamedClass getOWLSomeValuesFromRestrictionClass() {
+      return (RDFSNamedClass) owlSomeValuesFromClass;
+    }
 
 
     public RDFSNamedClass[] getOWLRestrictionMetaclasses() {
