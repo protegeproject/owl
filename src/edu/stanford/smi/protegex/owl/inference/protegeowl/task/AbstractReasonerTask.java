@@ -3,8 +3,6 @@ package edu.stanford.smi.protegex.owl.inference.protegeowl.task;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.inference.dig.exception.DIGReasonerException;
@@ -29,7 +27,6 @@ import edu.stanford.smi.protegex.owl.inference.protegeowl.log.ReasonerLogger;
  * simultaneously notify listeners of state changes.
  */
 public abstract class AbstractReasonerTask implements ReasonerTask {
-    private static transient Logger log = Log.getLogger(AbstractReasonerTask.class);
 
     private ArrayList listeners;
 
