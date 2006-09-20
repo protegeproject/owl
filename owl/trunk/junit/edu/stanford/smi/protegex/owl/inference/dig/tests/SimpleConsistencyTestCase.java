@@ -18,7 +18,7 @@ public class SimpleConsistencyTestCase extends AbstractDIGReasonerTestCase {
         if (!reasonerInitialized()) {
           return;
         }
-        loadTestOntology(new URI("file:./test/inconsistent.owl"));
+        loadTestOntology(new URI("file:./junit/projects/inconsistent.owl"));
         computeAndCheckInconsistentConcepts();
     }
 }
