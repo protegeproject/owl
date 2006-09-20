@@ -20,17 +20,12 @@ import java.util.Set;
 public abstract class AbstractOWLCardinalityBase extends AbstractOWLRestriction
         implements OWLCardinalityBase {
 
-    private final char operatorChar;
-
-
     public AbstractOWLCardinalityBase(KnowledgeBase kb, FrameID id, char operatorChar) {
         super(kb, id);
-        this.operatorChar = operatorChar;
     }
 
 
     AbstractOWLCardinalityBase(char operatorChar) {
-        this.operatorChar = operatorChar;
     }
 
 
