@@ -74,11 +74,15 @@ public class ProtegeGraphTestCase extends AbstractJenaTestCase {
                 null,
                 RDF.type.getNode(),
                 null);
-        assertTrue(it.hasNext());
-        Triple triple = (Triple) it.next();
-        assertEquals(c.getURI(), triple.getSubject().getURI());
-        assertEquals(RDF.type.getURI(), triple.getPredicate().getURI());
-        assertEquals(OWL.Class.getURI(), triple.getObject().getURI());
+        while (it.hasNext()) {
+          Triple triple = (Triple) it.next();
+          if (c.getURI().equals(triple.getSubject().getURI()) && 
+              RDF.type.getURI().equals(triple.getPredicate().getURI()) && 
+              OWL.Class.getURI().equals(triple.getObject().getURI())) {
+            return;
+          }
+        }
+        fail();
     }
 
 
