@@ -3,6 +3,7 @@ package edu.stanford.smi.protegex.owl.model.triplestore.impl;
 import edu.stanford.smi.protege.model.*;
 import edu.stanford.smi.protege.util.CollectionUtilities;
 import edu.stanford.smi.protegex.owl.model.*;
+import edu.stanford.smi.protegex.owl.model.framestore.OWLFrameStore;
 import edu.stanford.smi.protegex.owl.model.impl.XMLSchemaDatatypes;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreUtil;
 
@@ -75,9 +76,13 @@ class RDFPropertyPostProcessor {
      * @param slot the slot to update
      */
     private void updateDirectDomain(Slot slot) {
-
-        boolean oldValue = owlModel.getOWLFrameStore().suppressUpdateRDFSDomain;
-        owlModel.getOWLFrameStore().suppressUpdateRDFSDomain = true;
+      
+        OWLFrameStore owlFrameStore = owlModel.getOWLFrameStore();
+        boolean oldSuppressUpdateRDFSDomain = true;
+        if (owlFrameStore != null) {
+          oldSuppressUpdateRDFSDomain = owlFrameStore.suppressUpdateRDFSDomain;
+          owlModel.getOWLFrameStore().suppressUpdateRDFSDomain = true;
+        }
 
         Collection newDirectDomain = new ArrayList();
 
@@ -115,7 +120,9 @@ class RDFPropertyPostProcessor {
                 kb.getRootCls().addDirectTemplateSlot(slot);
             }
         }
-        owlModel.getOWLFrameStore().suppressUpdateRDFSDomain = oldValue;
+        if (owlFrameStore != null) {
+          owlFrameStore.suppressUpdateRDFSDomain = oldSuppressUpdateRDFSDomain;
+        }
     }
 
 

@@ -4,6 +4,7 @@ import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.KnowledgeBase;
 import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protegex.owl.model.*;
+import edu.stanford.smi.protegex.owl.model.framestore.OWLFrameStore;
 import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreUtil;
 
@@ -27,8 +28,11 @@ class RDFSNamedClassPostProcessor {
         this.kb = owlModel;
 
         RDFProperty owlOneOfProperty = owlModel.getOWLOneOfProperty();
+        OWLFrameStore owlFrameStore = owlModel.getOWLFrameStore();
 
-        owlModel.getOWLFrameStore().setSuperclassSynchronizationBlocked(true);
+        if (owlFrameStore != null) {
+          owlFrameStore.setSuperclassSynchronizationBlocked(true);
+        }
         Collection clses = owlModel.getUserDefinedRDFSNamedClasses();
         Iterator it = clses.iterator();
         while (it.hasNext()) {
@@ -41,7 +45,9 @@ class RDFSNamedClassPostProcessor {
                 updateDirectSuperclasses(cls);
             }
         }
-        owlModel.getOWLFrameStore().setSuperclassSynchronizationBlocked(false);
+        if (owlFrameStore != null) {
+          owlFrameStore.setSuperclassSynchronizationBlocked(false);
+        }
         if (((AbstractOWLModel) owlModel).isProtegeMetaOntologyImported()) {
             updateProtegeFeatures(clses);
         }
