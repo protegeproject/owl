@@ -14,7 +14,7 @@
     <property name = "src" value = "./src"/>
     <property name = "classes" value = "./classes"/>
     <property name = "lib" value = "./lib"/>
-    <property name = "dist" value = "./dist"/>
+    <property name = "dist" value = "./plugins"/>
     <property name = "etc" value = "./etc"/>
     <property name = "owlplugin" value = "edu.stanford.smi.protegex.owl"/>
     <property name = "plugin" value = "${dist}/${owlplugin}"/>
@@ -77,6 +77,7 @@
             description="clean up all build related files and dirs">
         <delete dir="${classes}"/>
         <delete dir="${dist}"/>
+        <delete dir="logs"/>
     </target>
 
 
@@ -171,13 +172,29 @@
       </javac>
    </target>
 
+   <!--
+     My experience is that "ant junit" provides almost no debugging
+     information when things go wrong.  (This was not true in my
+     previous job and I don't know the difference. log4j??)  When there is a
+     problem I generally use my development environment to debug
+     faulting junit.  For scripting problems with the junits the options
+
+        filtertrace="false" 
+        showoutput="true"
+
+     give a little more information.  Also when you know that some
+     junits are failing, removing the option 
+
+        haltonfailure = "on" 
+
+     is helpful for showing all the failures.  But in the committed
+     version I think that this option is very important because it
+     means that the developer will never mistakenly believe that
+     junits have succeeded.
+       -->
    <target name = "junit" 
            description = "run the tests (anybody can do it)"
-           depends = "junit-compile">
-     <property file="junit.properties"/>
-     <copy file = "${jarfile}"
-           todir = "${junit.protege.dir}/plugins/${owlplugin}"
-           overwrite="yes"/>
+           depends = "plugin.dir,junit-compile">
      <junit haltonfailure = "on" 
             printsummary="withOutAndErr"
             dir = "." fork = "yes">
@@ -185,11 +202,10 @@
            <pathelement location="${classes}"/>
            <pathelement location = "${lib}/protege.jar"/>
            <fileset
-              dir="${junit.protege.dir}/plugins/edu.stanford.smi.protegex.owl">
+              dir="${plugin}">
               <include name = "**/*.jar"/>
            </fileset>
         </classpath>
-        <jvmarg value="-Dprotege.dir=${junit.protege.dir}"/>
         <batchtest>
            <fileset dir="${junit}">
              <include name = "**/*TestCase.java"/>
