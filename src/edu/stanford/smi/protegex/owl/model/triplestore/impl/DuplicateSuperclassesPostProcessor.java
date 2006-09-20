@@ -5,6 +5,7 @@ import edu.stanford.smi.protegex.owl.model.OWLAnonymousClass;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
 import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
+import edu.stanford.smi.protegex.owl.model.framestore.OWLFrameStore;
 
 import java.util.*;
 
@@ -15,14 +16,19 @@ class DuplicateSuperclassesPostProcessor {
 
 
     DuplicateSuperclassesPostProcessor(OWLModel owlModel) {
-        owlModel.getOWLFrameStore().setSuperclassSynchronizationBlocked(true);
+        OWLFrameStore owlFrameStore = owlModel.getOWLFrameStore();
+        if (owlFrameStore != null) {
+          owlFrameStore.setSuperclassSynchronizationBlocked(true);
+        }
         Collection clses = owlModel.getUserDefinedOWLNamedClasses();
         Iterator it = clses.iterator();
         while (it.hasNext()) {
             OWLNamedClass cls = (OWLNamedClass) it.next();
             removeDuplicateSuperclasses(cls);
         }
-        owlModel.getOWLFrameStore().setSuperclassSynchronizationBlocked(false);
+        if (owlFrameStore != null) {
+          owlModel.getOWLFrameStore().setSuperclassSynchronizationBlocked(false);
+        }
     }
 
 
