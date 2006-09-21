@@ -14,7 +14,7 @@ import java.util.Collections;
  * @author Nick Drummond, Medical Informatics Group, University of Manchester
  *         19-Jan-2006
  */
-public class SelectClassPanelTestCase extends AbstractJenaTestCase{
+public class SelectClassPanelFailedTestCase extends AbstractJenaTestCase{
 
     public void testWithOwlThingRoot(){
 
