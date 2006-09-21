@@ -15,7 +15,7 @@ import edu.stanford.smi.protegex.owl.tests.AbstractJenaTestCase;
  * matthew.horridge@cs.man.ac.uk<br>
  * www.cs.man.ac.uk/~horridgm<br><br>
  */
-public class DLSyntaxBrowserTextTests extends AbstractJenaTestCase {
+public class DLSyntaxBrowserTextTestCase extends AbstractJenaTestCase {
 
     private static final String CLS_A = "ClsA";
 
