@@ -11,7 +11,7 @@ import java.util.Collection;
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
  */
-public class OWLClassRendererFactoryTestCase extends AbstractJenaTestCase {
+public class OWLClassRendererFactoryFailedTestCase extends AbstractJenaTestCase {
 
     public void testDefault() {
         assertTrue(OWLClassDisplayFactory.getDefaultDisplay() instanceof ManchesterOWLClassDisplay);
