@@ -42,7 +42,7 @@ public class JenaTripleStore extends AbstractTripleStore {
     public Iterator listTriples() {
 	    // TODO: This could be optimised so that a custom Iterator is used.
         KnowledgeBase kb = owlModel;
-        Collection ignoreProperties = new HashSet();
+        Collection<Slot> ignoreProperties = new HashSet<Slot>();
         ignoreProperties.add(owlModel.getRDFProperty(OWLNames.Slot.ONTOLOGY_PREFIXES));
         ignoreProperties.add(kb.getSlot(Model.Slot.DIRECT_INSTANCES));
         ignoreProperties.add(kb.getSlot(Model.Slot.DIRECT_TYPES));
