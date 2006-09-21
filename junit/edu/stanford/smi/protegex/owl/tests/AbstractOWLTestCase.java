@@ -42,6 +42,7 @@ import edu.stanford.smi.protegex.owl.model.impl.XMLSchemaDatatypes;
  * @author Holger Knublauch  <holger@knublauch.com>
  */
 public abstract class AbstractOWLTestCase extends TestCase {
+    public final static String TEST_ONTOLOGY_LOCATION_PROPERTY = "junit.testontologies";
 
     protected JenaOWLModel owlModel;
 
@@ -103,7 +104,8 @@ public abstract class AbstractOWLTestCase extends TestCase {
 
     public static URI getRemoteOntologyURI(String localFileName) {
         try {
-            return new URI("http://www.co-ode.org/ontologies/testset/" + localFileName);
+            String ontologyLoc = getJunitProperties().getProperty(TEST_ONTOLOGY_LOCATION_PROPERTY, "http://www.co-ode.org/ontologies/testset/");
+            return new URI(ontologyLoc + localFileName);
         }
         catch (Exception ex) {
             Log.getLogger().log(Level.SEVERE, "Exception caught", ex);
