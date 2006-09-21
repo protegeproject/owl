@@ -198,7 +198,8 @@
      <junit haltonfailure = "on" 
             printsummary="withOutAndErr"
             dir = "." fork = "yes">
-        <classpath>
+      <jvmarg value="-Xmx300M"/>
+      <classpath>
            <pathelement location="${classes}"/>
            <pathelement location = "${lib}/protege.jar"/>
            <fileset
@@ -210,6 +211,7 @@
            <fileset dir="${junit}">
              <include name = "**/*TestCase.java"/>
              <exclude name = "**/*Abstract*.java"/>
+             <exclude name = "**/*FailedTestCase.java"/>
            </fileset>
         </batchtest>
      </junit>
