@@ -9,7 +9,7 @@ import java.util.Iterator;
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
  */
-public class LoadURNNamespacesTestCase extends AbstractJenaTestCase {
+public class LoadURNNamespacesFailedTestCase extends AbstractJenaTestCase {
 
     public void testLoadOntologyMetadata() throws Exception {
         loadRemoteOntology("alix/java.owl");
