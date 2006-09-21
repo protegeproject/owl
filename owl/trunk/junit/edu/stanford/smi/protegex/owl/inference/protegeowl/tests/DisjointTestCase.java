@@ -7,7 +7,6 @@ import edu.stanford.smi.protegex.owl.inference.dig.exception.DIGReasonerExceptio
 import edu.stanford.smi.protegex.owl.inference.protegeowl.ProtegeOWLReasoner;
 import edu.stanford.smi.protegex.owl.inference.protegeowl.ReasonerManager;
 import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
-import edu.stanford.smi.protegex.owl.tests.AbstractJenaTestCase;
 
 /**
  * User: matthewhorridge<br>
@@ -20,9 +19,11 @@ import edu.stanford.smi.protegex.owl.tests.AbstractJenaTestCase;
  *
  * @prowl.junit.dig
  */
-public class DisjointTests extends AbstractJenaTestCase {
+public class DisjointTestCase extends AbstractProtegeOwlTestCase {
 
     private static ProtegeOWLReasoner reasoner;
+    
+
 
 
     public void testDisjointClassesQuery() {

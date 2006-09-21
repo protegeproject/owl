@@ -9,7 +9,6 @@ import edu.stanford.smi.protegex.owl.inference.protegeowl.ProtegeOWLReasoner;
 import edu.stanford.smi.protegex.owl.inference.protegeowl.ReasonerManager;
 import edu.stanford.smi.protegex.owl.model.OWLIndividual;
 import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
-import edu.stanford.smi.protegex.owl.tests.AbstractJenaTestCase;
 
 /**
  * User: matthewhorridge<br>
@@ -22,9 +21,9 @@ import edu.stanford.smi.protegex.owl.tests.AbstractJenaTestCase;
  *
  * @prowl.junit.dig
  */
-public class IndividualTests extends AbstractJenaTestCase {
+public class IndividualTestCase extends AbstractProtegeOwlTestCase {
 
-
+  
     public void testTypesQuery() {
         try {
             OWLNamedClass clsA = owlModel.createOWLNamedClass("A");
