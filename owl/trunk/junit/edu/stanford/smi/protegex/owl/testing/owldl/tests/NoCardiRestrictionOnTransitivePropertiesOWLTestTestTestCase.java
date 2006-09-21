@@ -8,7 +8,7 @@ import edu.stanford.smi.protegex.owl.tests.AbstractJenaTestCase;
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
  */
-public class NoCardiRestrictionOnTransitivePropertiesOWLTestTestTest extends AbstractJenaTestCase {
+public class NoCardiRestrictionOnTransitivePropertiesOWLTestTestTestCase extends AbstractJenaTestCase {
 
     public void testReport() {
         OWLObjectProperty superSlot = owlModel.createOWLObjectProperty("super");
