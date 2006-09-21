@@ -34,7 +34,7 @@ import edu.stanford.smi.protegex.owl.model.RDFSLiteral;
 public class AbstractDIGReasonerTestCase extends AbstractJenaTestCase {
     public static final String REASONER_URL_PROPERTY = "junit.dig.url";
 
-    private static String REASONER_URL = null;
+    public static String REASONER_URL = null;
     static {
       try {
         Properties jup = getJunitProperties();
