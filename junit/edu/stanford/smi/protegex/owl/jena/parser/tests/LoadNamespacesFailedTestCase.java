@@ -21,7 +21,7 @@ import java.util.*;
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
  */
-public class LoadNamespacesTestCase extends AbstractJenaTestCase {
+public class LoadNamespacesFailedTestCase extends AbstractJenaTestCase {
 
     private URI tempSavedFileURI = new File(ProtegeOWL.getPluginFolder(), "temp.owl").toURI();
 
@@ -38,12 +38,12 @@ public class LoadNamespacesTestCase extends AbstractJenaTestCase {
     public void testLoadOntologyWithSameDefaultNSAndXMLBase() throws Exception {
         loadRemoteOntology("namespaces/nsAndBaseSame.owl");
 
-        Map expectedNamespaces = new HashMap();
+        Map<String, String> expectedNamespaces = new HashMap<String, String>();
         expectedNamespaces.put("Class_1", TEST_1);
         expectedNamespaces.put("Class_2", TEST_1);
         expectedNamespaces.put("Class_3", TEST_2);
 
-        Map expectedPrefixes = new HashMap();
+        Map<String, String> expectedPrefixes = new HashMap<String, String>();
         expectedPrefixes.put("Class_1", null);
         expectedPrefixes.put("Class_2", null);
         expectedPrefixes.put("Class_3", TEST_2_PREFIX);
@@ -65,12 +65,12 @@ public class LoadNamespacesTestCase extends AbstractJenaTestCase {
     public void testLoadOntologyWithDifferentDefaultNSAndXMLBase() throws Exception {
         loadRemoteOntology("namespaces/nsAndBaseDiff.owl");
 
-        Map expectedNamespaces = new HashMap();
+        Map<String, String> expectedNamespaces = new HashMap<String, String>();
         expectedNamespaces.put("Class_1", TEST_1);
         expectedNamespaces.put("Class_2", TEST_1);
         expectedNamespaces.put("Class_3", TEST_2);
 
-        Map expectedPrefixes = new HashMap();
+        Map<String, String> expectedPrefixes = new HashMap<String, String>();
         expectedPrefixes.put("Class_1", AUTO_1_PREFIX);
         expectedPrefixes.put("Class_2", AUTO_1_PREFIX);
         expectedPrefixes.put("Class_3", TEST_2_PREFIX);
@@ -88,12 +88,12 @@ public class LoadNamespacesTestCase extends AbstractJenaTestCase {
     public void testLoadOntologyWithNoDefaultNSOrXMLBase() throws Exception {
         loadRemoteOntology("namespaces/noDefaultNSNoBase.owl");
 
-        Map expectedNamespaces = new HashMap();
+        Map<String, String> expectedNamespaces = new HashMap<String, String>();
         expectedNamespaces.put("Class_1", TEST_1);
         expectedNamespaces.put("Class_2", TEST_1);
         expectedNamespaces.put("Class_3", TEST_2);
 
-        Map expectedPrefixes = new HashMap();
+        Map<String, String> expectedPrefixes = new HashMap<String, String>();
         expectedPrefixes.put("Class_1", AUTO_1_PREFIX);
         expectedPrefixes.put("Class_2", AUTO_1_PREFIX);
         expectedPrefixes.put("Class_3", TEST_2_PREFIX);
@@ -136,11 +136,15 @@ public class LoadNamespacesTestCase extends AbstractJenaTestCase {
         assertNotNull(owlModel.getDefaultOWLOntology());
     }
 
-    private void assertOntologyIsAsExpected(Map expectedNamespaces, Map expectedPrefixes) {
+    private void assertOntologyIsAsExpected(Map<String, String> expectedNamespaces, Map<String, String> expectedPrefixes) {
+        final Object lock = new Object();
         Find find = new DefaultClassFind(owlModel, Find.ENDS_WITH);
         find.addResultListener(new SearchAdapter() {
             public void searchCompleteEvent(int numResults, Find source) {
+              synchronized (lock) {
                 searching = false;
+                lock.notifyAll();
+              }
             }
         });
 
@@ -149,8 +153,15 @@ public class LoadNamespacesTestCase extends AbstractJenaTestCase {
             System.out.println("current = " + current);
             searching = true;
             find.startSearch(current);
-            while (searching) {
-                Thread.yield();
+            synchronized (lock) {
+              while (searching) {
+                try {
+                  lock.wait();
+                } catch (InterruptedException e) {
+                  e.printStackTrace();
+                  fail();
+                }
+              }
             }
 
             Set results = find.getResultResources();
