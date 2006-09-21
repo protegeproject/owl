@@ -12,7 +12,7 @@ import edu.stanford.smi.protegex.owl.tests.AbstractJenaTestCase;
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
  */
-public class SWRLJavaFactoryTestCase extends AbstractJenaTestCase {
+public class SWRLJavaFactoryFailedTestCase extends AbstractJenaTestCase {
 
 
     public void testFrameFactoryInstalled() throws Exception {
