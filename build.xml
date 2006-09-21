@@ -78,6 +78,8 @@
         <delete dir="${classes}"/>
         <delete dir="${dist}"/>
         <delete dir="logs"/>
+        <delete file="out.owl"/>
+        <delete file="out.repository"/>
     </target>
 
 
