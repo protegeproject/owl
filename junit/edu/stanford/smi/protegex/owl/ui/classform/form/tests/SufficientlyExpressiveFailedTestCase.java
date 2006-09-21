@@ -10,7 +10,7 @@ import edu.stanford.smi.protegex.owl.ui.classform.form.ClassFormSwitchableType;
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
  */
-public class SufficientlyExpressiveTestCase extends AbstractJenaTestCase {
+public class SufficientlyExpressiveFailedTestCase extends AbstractJenaTestCase {
 
     public void testRDFSNamedClass() {
         RDFSNamedClass namedClass = owlModel.createRDFSNamedClass("Class");
