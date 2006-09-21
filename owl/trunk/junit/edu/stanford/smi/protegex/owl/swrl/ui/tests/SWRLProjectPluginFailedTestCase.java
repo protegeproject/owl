@@ -8,7 +8,7 @@ import edu.stanford.smi.protegex.owl.tests.AbstractJenaTestCase;
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
  */
-public class SWRLProjectPluginTestCase extends AbstractJenaTestCase {
+public class SWRLProjectPluginFailedTestCase extends AbstractJenaTestCase {
 
     public void testFrameFactoryIsInstalled() throws Exception {
         JenaKnowledgeBaseFactory.useStandalone = false;
