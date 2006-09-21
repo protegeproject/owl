@@ -45,8 +45,10 @@ import edu.stanford.smi.protegex.owl.inference.dig.translator.DIGVocabulary;
  * www.cs.man.ac.uk/~horridgm<br><br>
  */
 public class DefaultDIGReasoner implements DIGReasoner {
+  public static final String DEFAULT_URL_PROPERTY = "protege.dig.url";
+  private static final String defaultURL = System.getProperty(DEFAULT_URL_PROPERTY, "http://localhost:8080");
 
-	private URL reasonerURL;
+  private URL reasonerURL;
 
     private DocumentBuilderFactory docBuilderFactory;
 
@@ -67,7 +69,7 @@ public class DefaultDIGReasoner implements DIGReasoner {
     public DefaultDIGReasoner() {
         translator = DIGTranslatorFactory.getInstance().createTranslator();
 	    try {
-		    reasonerURL = new URL("http://localhost:8080");
+		    reasonerURL = new URL(defaultURL);
 	    }
 	    catch(MalformedURLException e) {
               Log.getLogger().log(Level.SEVERE, "Exception caught", e);
