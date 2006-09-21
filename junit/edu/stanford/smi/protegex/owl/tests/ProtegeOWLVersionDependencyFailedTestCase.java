@@ -10,11 +10,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
-public class ProtegeOWLVersionDependencyTestCase extends TestCase {
+public class ProtegeOWLVersionDependencyFailedTestCase extends TestCase {
 
     private static Properties props;
 
-    private static String buildFile = "build.properties";
+    private static String buildFile = "resource/files/build.properties";
 
     private static String jena_major = "prowl.dependencies.jena.major_version";
 
