@@ -9,7 +9,7 @@ import java.util.Collections;
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
  */
-public class SynonymSearchTestCase extends AbstractJenaTestCase {
+public class SynonymSearchFailedTestCase extends AbstractJenaTestCase {
 
     public void testSetSynonymSlots() {
         assertSize(0, owlModel.getSearchSynonymProperties());
