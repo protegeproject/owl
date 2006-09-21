@@ -10,7 +10,7 @@ import java.util.Collections;
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
  */
-public class DefaultSWRLImpTestCase extends AbstractSWRLTestCase {
+public class DefaultSWRLImpFailedTestCase extends AbstractSWRLTestCase {
 
     public void testCreateClone() {
         OWLNamedClass cls = owlModel.createOWLNamedClass("Cls");
