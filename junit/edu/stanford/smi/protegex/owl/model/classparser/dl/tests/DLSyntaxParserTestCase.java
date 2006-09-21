@@ -14,7 +14,7 @@ import edu.stanford.smi.protegex.owl.model.*;
  * matthew.horridge@cs.man.ac.uk<br>
  * www.cs.man.ac.uk/~horridgm<br><br>
  */
-public class DLSyntaxParserTests extends AbstractJenaTestCase {
+public class DLSyntaxParserTestCase extends AbstractJenaTestCase {
 
 
     protected void setUp() throws Exception {
