@@ -11,7 +11,7 @@ import java.net.URI;
  * matthew.horridge@cs.man.ac.uk<br>
  * www.cs.man.ac.uk/~horridgm<br><br>
  */
-public class RDFXMLWriterOntologyTestCases extends AbstractRDFXMLWriterTestCases {
+public class RDFXMLWriterOntologyFailedTestCase extends AbstractRDFXMLWriterTestCases {
 
     public void testKAOntology() {
         doOntology("http://protege.stanford.edu/plugins/owl/owl-library/ka.owl");
