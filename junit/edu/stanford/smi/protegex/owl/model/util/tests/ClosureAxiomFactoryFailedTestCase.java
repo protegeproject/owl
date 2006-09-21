@@ -7,7 +7,7 @@ import edu.stanford.smi.protegex.owl.tests.AbstractJenaTestCase;
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
  */
-public class ClosureAxiomFactoryTestCase extends AbstractJenaTestCase {
+public class ClosureAxiomFactoryFailedTestCase extends AbstractJenaTestCase {
 
 
     public void testAddClosureAxiomToPrimitiveClass() {
