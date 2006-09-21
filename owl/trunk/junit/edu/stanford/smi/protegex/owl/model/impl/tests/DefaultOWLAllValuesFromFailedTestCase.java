@@ -8,7 +8,7 @@ import edu.stanford.smi.protegex.owl.tests.AbstractJenaTestCase;
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
  */
-public class DefaultOWLAllValuesFromTestCase extends AbstractJenaTestCase {
+public class DefaultOWLAllValuesFromFailedTestCase extends AbstractJenaTestCase {
 
     public void testCheckFiller() throws Exception {
         OWLDatatypeProperty datatypeProperty = owlModel.createOWLDatatypeProperty("property");
