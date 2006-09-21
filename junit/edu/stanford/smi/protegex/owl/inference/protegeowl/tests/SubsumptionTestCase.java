@@ -5,10 +5,12 @@ import java.util.logging.Level;
 
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.inference.dig.exception.DIGReasonerException;
+import edu.stanford.smi.protegex.owl.inference.dig.reasoner.DefaultDIGReasoner;
 import edu.stanford.smi.protegex.owl.inference.protegeowl.ProtegeOWLReasoner;
 import edu.stanford.smi.protegex.owl.inference.protegeowl.ReasonerManager;
 import edu.stanford.smi.protegex.owl.model.OWLClass;
 import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
+import edu.stanford.smi.protegex.owl.tests.AbstractDIGReasonerTestCase;
 import edu.stanford.smi.protegex.owl.tests.AbstractJenaTestCase;
 
 /**
@@ -22,7 +24,9 @@ import edu.stanford.smi.protegex.owl.tests.AbstractJenaTestCase;
  *
  * @prowl.junit.dig
  */
-public class SubsumptionTests extends AbstractJenaTestCase {
+public class SubsumptionTestCase extends AbstractProtegeOwlTestCase {
+  
+
 
     public void testSubsumptionQuery() {
         try {
