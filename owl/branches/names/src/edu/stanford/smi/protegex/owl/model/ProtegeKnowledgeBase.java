@@ -150,20 +150,20 @@ public interface ProtegeKnowledgeBase extends KnowledgeBase {
     /**
      * @deprecated not needed
      */
-    Instance createInstance(FrameID id, String name, Cls directType, boolean initializeDefaults);
+    Instance createInstance(FrameID id, Cls directType, boolean initializeDefaults);
 
 
     /**
      * @deprecated not needed
      */
-    Instance createInstance(FrameID id, String name, Collection directTypes, boolean initializeDefaults);
+    Instance createInstance(FrameID id, Collection directTypes, boolean initializeDefaults);
 
 
     /**
      * @see RDFSClass#createInstance
      * @deprecated
      */
-    SimpleInstance createSimpleInstance(FrameID id, String name, Collection directTypes, boolean initializeDefaults);
+    SimpleInstance createSimpleInstance(FrameID id, Collection directTypes, boolean initializeDefaults);
 
 
     /**
@@ -694,14 +694,6 @@ public interface ProtegeKnowledgeBase extends KnowledgeBase {
      * @deprecated not needed
      */
     void setDefaultSlotMetaCls(Cls cls);
-
-
-    /**
-     * @see RDFResource#setName
-     * @deprecated
-     */
-    void setFrameName(Frame oldFrame, String newFrameName);
-
 
     boolean setUndoEnabled(boolean enabled);
 
