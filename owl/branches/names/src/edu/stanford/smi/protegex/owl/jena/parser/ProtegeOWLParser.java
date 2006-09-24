@@ -82,7 +82,6 @@ import edu.stanford.smi.protegex.owl.ui.repository.UnresolvedImportUIHandler;
 public class ProtegeOWLParser {
         private static transient Logger log = Log.getLogger(ProtegeOWLParser.class);
 
-	private int count = 29920;
 
 	/**
 	 * The default namespace to use if the current file does not define one by itself.
@@ -153,12 +152,6 @@ public class ProtegeOWLParser {
 		rdfFirstProperty = owlModel.getRDFFirstProperty();
 		rdfRestProperty = owlModel.getRDFRestProperty();
 		if(incremental) {
-			int max = count;
-			for(Iterator it = owlModel.getRDFResources().iterator(); it.hasNext();) {
-				RDFResource resource = (RDFResource) it.next();
-				max = Math.max(max, ((Instance) resource).getFrameID().getLocalPart());
-			}
-			count = max + 1;
 			populateUntypedResourcesMap();
 		}
 		logger = createLogger();
@@ -427,7 +420,7 @@ public class ProtegeOWLParser {
 
 
 	private RDFResource createRDFResource(String name) {
-		FrameID id = FrameID.createLocal(count++);
+		FrameID id = new FrameID(name);
 		RDFResource r = null;
 		if(owlNamedClassClass.equals(currentType)) {
 			r = new DefaultOWLNamedClass(owlModel, id);
@@ -441,7 +434,6 @@ public class ProtegeOWLParser {
 		if(name == null) {
 			name = owlModel.getNextAnonymousResourceName();
 		}
-		tripleStore.setRDFResourceName(r, name);
 		return r;
 	}
 
@@ -643,12 +635,12 @@ public class ProtegeOWLParser {
 						RDFUntypedResource externalResource = (RDFUntypedResource) kb.getFrame(name);
 						if(uri2NameConverter.isTemporaryRDFResourceName(name)) {
 							String uri = uri2NameConverter.getURIFromTemporaryName(name);
-							owlModel.getOWLFrameStore().setFrameName(externalResource, uri);
+							throw new UnsupportedOperationException("owlModel.getOWLFrameStore().setFrameName(externalResource, uri)");
 						}
 						else {
 							String uri = owlModel.getURIForResourceName(name);
 							if(uri != null && !name.equals(uri)) {
-								owlModel.getOWLFrameStore().setFrameName(externalResource, uri);
+								throw new UnsupportedOperationException("owlModel.getOWLFrameStore().setFrameName(externalResource, uri)");
 							}
 						}
 						// System.out.println("External Resource for " + uri);
@@ -937,10 +929,9 @@ public class ProtegeOWLParser {
 						defaultNamespace = currentDefaultNamespace;
 						prefix2Namespace.put("", defaultNamespace);
 					}
-					FrameID id = FrameID.createLocal(count++);
-					ontology = new DefaultOWLOntology(owlModel, id);
 					String tempName = uri2NameConverter.getTemporaryRDFResourceName(defaultNamespace);
-					tripleStore.setRDFResourceName(ontology, tempName);
+					FrameID id = new FrameID(tempName);
+					ontology = new DefaultOWLOntology(owlModel, id);
 					tripleStore.add(ontology, owlModel.getRDFTypeProperty(), owlModel.getOWLOntologyClass());
 					tripleStore.getNarrowFrameStore().addValues(ontology,
 					                                            ((KnowledgeBase) owlModel).getSlot(OWLNames.Slot.ONTOLOGY_PREFIXES),
