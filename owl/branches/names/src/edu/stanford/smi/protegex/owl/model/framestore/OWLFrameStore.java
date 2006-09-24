@@ -254,8 +254,8 @@ public class OWLFrameStore extends FrameStoreAdapter {
     }
 
 
-    public Cls createCls(FrameID id, String name, Collection directTypes, Collection directSuperclasses, boolean loadDefaults) {
-        Cls cls = super.createCls(id, name, directTypes, directSuperclasses, loadDefaults);
+    public Cls createCls(FrameID id, Collection directTypes, Collection directSuperclasses, boolean loadDefaults) {
+        Cls cls = super.createCls(id, directTypes, directSuperclasses, loadDefaults);
         if (cls instanceof OWLNamedClass && cls.isEditable()) {
             for (Iterator it = directSuperclasses.iterator(); it.hasNext();) {
                 Cls superCls = (Cls) it.next();
