@@ -2,6 +2,7 @@ package edu.stanford.smi.protegex.owl.ui.importstree;
 
 import edu.stanford.smi.protege.util.ComponentUtilities;
 import edu.stanford.smi.protege.util.LazyTreeRoot;
+import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protege.util.SelectableTree;
 import edu.stanford.smi.protegex.owl.model.OWLOntology;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
@@ -71,7 +72,7 @@ public class ImportsTree extends SelectableTree implements HostResourceDisplay {
 
     public boolean displayHostResource(RDFResource resource) {
     	if (rootOntology == null) {
-    		Log.getLogger.warning("Root ontology = null!");    		
+    		Log.getLogger().warning("Root ontology = null!");    		
     		return true;
     	}
     	
