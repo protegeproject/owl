@@ -25,7 +25,7 @@ public interface RDFSNames {
 
     public interface ClsID {
 
-        FrameID NAMED_CLASS = FrameID.createSystem(9003);
+        FrameID NAMED_CLASS = new FrameID(Cls.NAMED_CLASS);
     }
 
     public static interface Slot {
