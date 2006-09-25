@@ -1,1 +1,3 @@
 Copied protege-owl head at revision 3852
+Merged to owl/branches/names at revision 3886
+
