@@ -279,8 +279,8 @@ public class OWLFrameStore extends FrameStoreAdapter {
     }
 
 
-    public Slot createSlot(FrameID id, String name, Collection directTypes, Collection directSuperslots, boolean loadDefaults) {
-        Slot slot = super.createSlot(id, name, directTypes, directSuperslots, loadDefaults);
+    public Slot createSlot(FrameID id, Collection directTypes, Collection directSuperslots, boolean loadDefaults) {
+        Slot slot = super.createSlot(id, directTypes, directSuperslots, loadDefaults);
         if (slot instanceof RDFProperty) {
             RDFProperty rdfProperty = (RDFProperty) slot;
             slot.setAllowsMultipleValues(true);
@@ -294,8 +294,8 @@ public class OWLFrameStore extends FrameStoreAdapter {
     }
 
 
-    public SimpleInstance createSimpleInstance(FrameID id, String name, Collection directTypes, boolean loadDefaults) {
-        SimpleInstance instance = super.createSimpleInstance(id, name, directTypes, loadDefaults);
+    public SimpleInstance createSimpleInstance(FrameID id, Collection directTypes, boolean loadDefaults) {
+        SimpleInstance instance = super.createSimpleInstance(id, directTypes, loadDefaults);
         if (instance instanceof RDFResource && !directTypes.contains(owlModel.getRDFUntypedResourcesClass())) {
             instance.setDirectOwnSlotValues(owlModel.getRDFTypeProperty(), directTypes);
         }
