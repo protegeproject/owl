@@ -249,7 +249,7 @@ public class SWRLTableModel extends AbstractTableModel implements Disposable, Sy
                     }
                 }
                 else {
-                    imp.setName(newName);
+                    throw new UnsupportedOperationException("imp.setName(newName)");
                 }
             }
             else {
