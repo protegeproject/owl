@@ -113,7 +113,7 @@ public interface ProtegeKnowledgeBase extends KnowledgeBase {
     /**
      * @deprecated not needed in OWL
      */
-    Cls createCls(FrameID id, String name, Collection parents, Collection metaClses, boolean initializeDefaults);
+    Cls createCls(FrameID id, Collection parents, Collection metaClses, boolean initializeDefaults);
 
 
     /**
