@@ -12,8 +12,6 @@ import edu.stanford.smi.protegex.owl.tests.AbstractJenaTestCase;
  */
 public abstract class AbstractTripleStoreTestCase extends AbstractJenaTestCase {
 
-    private int frameIDCount = 19999;
-
     protected RDFProperty rdfTypeProperty;
 
     protected TripleStore ts;
@@ -25,19 +23,12 @@ public abstract class AbstractTripleStoreTestCase extends AbstractJenaTestCase {
 
 
     protected RDFResource createRDFResource(String name) {
-        RDFResource frame = new DefaultRDFProperty(owlModel, createFrameID());
+        RDFResource frame = new DefaultRDFProperty(owlModel, new FrameID(name));
         if (name == null) {
             name = owlModel.getNextAnonymousResourceName();
         }
-        owlModel.getOWLFrameStore().setFrameName(frame, name);
         return frame;
     }
-
-
-    protected FrameID createFrameID() {
-        return FrameID.createLocal(frameIDCount++);
-    }
-
 
     protected void setUp() throws Exception {
         super.setUp();
