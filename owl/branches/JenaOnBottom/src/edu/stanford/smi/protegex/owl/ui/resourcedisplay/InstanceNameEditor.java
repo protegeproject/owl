@@ -100,7 +100,7 @@ public class InstanceNameEditor extends JTextField {
             if (isValidName(newName)) {
                 String oldName = instance.getName();
                 if (!oldName.equals(newName)) {
-                    instance.setName(newName);
+                    throw new UnsupportedOperationException("instance.setName(newName)");
                 }
             }
         }

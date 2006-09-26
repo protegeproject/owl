@@ -63,7 +63,7 @@ public class SplitClassesIntoImportedTripleStorePanel extends CreateTripleStoreP
                 if (!resource.isAnonymous() && resource.getName().indexOf(':') < 0) {  // Default namespace
                     String newName = prefix + ":" + resource.getName();
                     if (getOWLModel().getRDFResource(newName) == null) {
-                        resource.setName(newName);
+                        throw new UnsupportedOperationException("resource.setName(newName)");
                     }
                 }
             }
