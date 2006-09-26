@@ -116,7 +116,7 @@ public class CreateValueAction extends ResourceSelectionAction {
                 }
                 owlModel.getNamespaceManager().setPrefix(ns, prefix);
                 OWLOntology ontology = (OWLOntology) resource;
-                ontology.setName(prefix + ":");
+                throw new UnsupportedOperationException("ontology.setName(prefix + ':')");
             }
             else if (resource instanceof RDFUntypedResource) {
                 OWLUtil.assignUniqueURI((RDFUntypedResource) resource);
