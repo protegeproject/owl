@@ -10,19 +10,33 @@ import edu.stanford.smi.protegex.owl.model.visitor.OWLModelVisitor;
 import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
 
 import javax.swing.*;
+
+import com.hp.hpl.jena.rdf.model.Resource;
+
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Set;
 
 public class DefaultRDFIndividual extends DefaultSimpleInstance implements RDFIndividual {
+  
+  Resource r;
 
 
     public DefaultRDFIndividual(KnowledgeBase kb, FrameID id) {
         super(kb, id);
     }
+    
+    public DefaultRDFIndividual(KnowledgeBase kb, Resource r) {
+      super(kb, new FrameID(r.isAnon() ? r.getId().getLabelString() : r.getURI()));
+      this.r = r;
+    }
 
 
     public DefaultRDFIndividual() {
+    }
+    
+    public Resource getJenaResource() {
+      return r;
     }
 
 

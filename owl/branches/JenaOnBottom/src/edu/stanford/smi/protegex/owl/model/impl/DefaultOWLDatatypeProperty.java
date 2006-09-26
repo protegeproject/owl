@@ -8,6 +8,8 @@ import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
 
 import javax.swing.*;
 
+import com.hp.hpl.jena.rdf.model.Property;
+
 /**
  * The default implementation of the OWLDatatypeProperty interface.
  *
@@ -24,6 +26,10 @@ public class DefaultOWLDatatypeProperty extends AbstractOWLProperty implements O
 
 
     public DefaultOWLDatatypeProperty() {
+    }
+    
+    public DefaultOWLDatatypeProperty(KnowledgeBase kb, Property p) {
+      super(kb, p);
     }
 
 

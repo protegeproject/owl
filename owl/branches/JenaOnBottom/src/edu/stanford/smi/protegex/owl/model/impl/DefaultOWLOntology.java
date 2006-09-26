@@ -1,23 +1,33 @@
 package edu.stanford.smi.protegex.owl.model.impl;
 
-import edu.stanford.smi.protege.model.FrameID;
-import edu.stanford.smi.protege.model.KnowledgeBase;
-import edu.stanford.smi.protege.model.Slot;
-import edu.stanford.smi.protegex.owl.model.*;
-import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
-import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreUtil;
-import edu.stanford.smi.protegex.owl.model.visitor.OWLModelVisitor;
-import edu.stanford.smi.protegex.owl.repository.Repository;
-import edu.stanford.smi.protegex.owl.repository.RepositoryManager;
-import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
-
-import javax.swing.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+
+import com.hp.hpl.jena.rdf.model.Resource;
+
+import edu.stanford.smi.protege.model.FrameID;
+import edu.stanford.smi.protege.model.KnowledgeBase;
+import edu.stanford.smi.protege.model.Slot;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.model.OWLNames;
+import edu.stanford.smi.protegex.owl.model.OWLOntology;
+import edu.stanford.smi.protegex.owl.model.RDFExternalResource;
+import edu.stanford.smi.protegex.owl.model.RDFObject;
+import edu.stanford.smi.protegex.owl.model.RDFResource;
+import edu.stanford.smi.protegex.owl.model.RDFUntypedResource;
+import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
+import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreUtil;
+import edu.stanford.smi.protegex.owl.model.visitor.OWLModelVisitor;
+import edu.stanford.smi.protegex.owl.repository.Repository;
+import edu.stanford.smi.protegex.owl.repository.RepositoryManager;
+import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
 
 /**
  * The default implementation of the OWLObjectProperty interface.
@@ -28,6 +38,10 @@ public class DefaultOWLOntology extends DefaultRDFIndividual implements OWLOntol
 
     public DefaultOWLOntology(KnowledgeBase kb, FrameID id) {
         super(kb, id);
+    }
+    
+    public DefaultOWLOntology(KnowledgeBase kb, Resource o) {
+      super(kb, o);
     }
 
 

@@ -10,6 +10,10 @@ import edu.stanford.smi.protegex.owl.model.visitor.OWLModelVisitor;
 import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
 
 import javax.swing.*;
+
+import com.hp.hpl.jena.rdf.model.Property;
+import com.hp.hpl.jena.rdf.model.Resource;
+
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -22,6 +26,10 @@ public class DefaultOWLObjectProperty extends AbstractOWLProperty implements OWL
 
     public DefaultOWLObjectProperty(KnowledgeBase kb, FrameID id) {
         super(kb, id);
+    }
+    
+    public DefaultOWLObjectProperty(KnowledgeBase kb, Property p) {
+      super(kb, p);
     }
 
 
