@@ -30,7 +30,7 @@ public class DefaultTripleStoreTestCase extends AbstractJenaTestCase {
 
         NarrowFrameStore nfs = ((JenaTripleStore) systemStore).getNarrowFrameStore();
         nfs.getValues(owlModel.getOWLThingClass(), owlModel.getSlot(Model.Slot.DIRECT_TYPES), null, false);
-        RDFProperty aldi = new DefaultRDFProperty(owlModel, FrameID.createLocal(99998));
+        RDFProperty aldi = new DefaultRDFProperty(owlModel, new FrameID("frame_1999998"));
         nfs.addValues(aldi, aldi, null, false, Collections.singleton("Value"));
     }
 
