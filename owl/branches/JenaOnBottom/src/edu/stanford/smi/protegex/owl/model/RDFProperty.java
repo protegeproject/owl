@@ -3,6 +3,10 @@ package edu.stanford.smi.protegex.owl.model;
 import edu.stanford.smi.protegex.owl.model.event.PropertyListener;
 
 import javax.swing.*;
+
+import com.hp.hpl.jena.ontology.OntProperty;
+import com.hp.hpl.jena.rdf.model.Property;
+
 import java.util.Collection;
 
 /**
@@ -12,6 +16,8 @@ import java.util.Collection;
  * @author Holger Knublauch  <holger@knublauch.com>
  */
 public interface RDFProperty extends ProtegeSlot, RDFResource, Deprecatable {
+  
+    Property getJenaResource();
 
 
     /**
