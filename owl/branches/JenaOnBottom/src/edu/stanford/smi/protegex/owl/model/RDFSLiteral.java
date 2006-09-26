@@ -1,5 +1,8 @@
 package edu.stanford.smi.protegex.owl.model;
 
+import com.hp.hpl.jena.rdf.model.Literal;
+import com.hp.hpl.jena.rdf.model.RDFNode;
+
 import edu.stanford.smi.protegex.owl.model.visitor.Visitable;
 
 /**
@@ -9,6 +12,8 @@ import edu.stanford.smi.protegex.owl.model.visitor.Visitable;
  * @author Holger Knublauch  <holger@knublauch.com>
  */
 public interface RDFSLiteral extends Comparable, RDFObject, Visitable {
+	
+	public Literal getJenaResource();
 
 
     /**
