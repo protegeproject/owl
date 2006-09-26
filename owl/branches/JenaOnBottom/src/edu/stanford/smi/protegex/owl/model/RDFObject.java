@@ -1,5 +1,7 @@
 package edu.stanford.smi.protegex.owl.model;
 
+import com.hp.hpl.jena.rdf.model.RDFNode;
+
 import edu.stanford.smi.protegex.owl.model.visitor.Visitable;
 
 /**
@@ -9,6 +11,8 @@ import edu.stanford.smi.protegex.owl.model.visitor.Visitable;
  * @author Holger Knublauch  <holger@knublauch.com>
  */
 public interface RDFObject extends Visitable {
+	
+	RDFNode getJenaResource();
 
     String getBrowserText();
 
