@@ -146,9 +146,9 @@ public class OWLFrameFactoryInvocationHandler extends AbstractFrameStoreInvocati
                 return thingCls;
             }
             if ((instance.isSystem() &&
-                    instance.getFrameID().getLocalPart() < 9000 &&
+                    /* instance.getFrameID().getLocalPart() < 9000 && */
                     !Model.ClsID.DIRECTED_BINARY_RELATION.equals(instance.getFrameID())) || instance instanceof RDFSClass) { // && systemClses.contains(instance.getName())) {
-                if (owlNamedClassClass.equals(instance)) {
+            	if (owlNamedClassClass.equals(instance)) {
                     return owlNamedClassClass;
                 }
                 return instance; //new DefaultCls(instance.getKnowledgeBase(), instance.getFrameID());
