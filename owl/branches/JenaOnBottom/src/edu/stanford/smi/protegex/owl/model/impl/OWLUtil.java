@@ -72,7 +72,7 @@ public class OWLUtil {
         while (owlModel.getRDFUntypedResource(prefix + index + suffix, false) != null) {
             index++;
         }
-        eri.setName(prefix + index + suffix);
+        throw new UnsupportedOperationException("eri.setName(prefix + index + suffix)");
     }
 
 
