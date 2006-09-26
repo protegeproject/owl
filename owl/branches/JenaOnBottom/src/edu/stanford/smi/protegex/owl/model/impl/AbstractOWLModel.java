@@ -658,7 +658,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
 
     public void adjustThing() {
-        getRootCls().setName(OWLNames.Cls.THING);
+    		throw new UnsupportedOperationException("getRootCls().setName(OWLNames.Cls.THING)");
     }
 
 
@@ -679,7 +679,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
 
     private Cls createSystemCls(String name, Collection superclasses, Cls type) {
-        return createCls(FrameID.createSystem(systemID++), name, superclasses, Collections.singleton(type), false);
+        return createCls(new FrameID(name), superclasses, Collections.singleton(type), false);
     }
 
 
@@ -740,7 +740,8 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
         owlInverseOfProperty = getSlot(Model.Slot.INVERSE);
         owlInverseOfProperty.setDirectType(rdfPropertyClass);
         owlInverseOfProperty = getSlot(Model.Slot.INVERSE);   // Re-get
-        owlInverseOfProperty.setName(OWLNames.Slot.INVERSE_OF);
+        throw new UnsupportedOperationException("Fix system classes - owlInverseOfProperty.setName(OWLNames.Slot.INVERSE_OF)");
+   /*
         owlInverseOfProperty.setValueType(ValueType.INSTANCE);
         owlInverseOfProperty.setAllowedClses(Collections.singleton(owlObjectPropertyClass));
 
@@ -793,7 +794,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
         // rdfs:subPropertyOf
         rdfsSubPropertyOfProperty = getSlot(Model.Slot.DIRECT_SUPERSLOTS);
-        rdfsSubPropertyOfProperty.setName(RDFSNames.Slot.SUB_PROPERTY_OF);
+        throw new UnsupportedOperationException("fix system classes - rdfsSubPropertyOfProperty.setName(RDFSNames.Slot.SUB_PROPERTY_OF)");
         rdfsSubPropertyOfProperty.setDirectType(rdfPropertyClass);
         rdfsSubPropertyOfProperty = (RDFProperty) getSlot(RDFSNames.Slot.SUB_PROPERTY_OF);
 
@@ -911,11 +912,12 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
             !RDFNames.ClsID.PROPERTY.equals(rdfPropertyClass.getFrameID())) {
             throw new RuntimeException("Fatal Metaclass Error: FrameIDs mismatch.  Perhaps a database rebuild required?");
         }
+        */
     }
 
 
     private Slot createSystemSlot(String name, Cls type) {
-        return createSlot(FrameID.createSystem(systemID++), name, Collections.singleton(type),
+        return createSlot(new FrameID(name), Collections.singleton(type),
                           Collections.EMPTY_LIST, false);
     }
 
@@ -971,7 +973,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
 
     private Instance createSystemInstance(String name, Cls type) {
-        return createInstance(FrameID.createSystem(systemID++), name, type, false);
+        return createInstance(new FrameID(name), type, false);
     }
 
 
@@ -1257,10 +1259,10 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
 
     public synchronized Cls createCls(FrameID id,
-                                      String name,
                                       Collection directSuperclasses,
                                       Collection directTypes,
                                       boolean loadDefaults) {
+    	    String name = id.getName();
         if (bootstrapped) {
             if (name == null) {
                 if (isDefaultAnonymousType(directTypes)) {
@@ -1269,10 +1271,11 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
                 else {
                     name = createUniqueNewFrameName(DEFAULT_CLASS_NAME);
                 }
+                id = new FrameID(name);
             }
             // name = getValidNamespaceFrameName(name);
         }
-        return super.createCls(id, name, directSuperclasses, directTypes, loadDefaults);
+        return super.createCls(id, directSuperclasses, directTypes, loadDefaults);
     }
 
 
@@ -1399,7 +1402,8 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     }
 
 
-    public synchronized Instance createInstance(FrameID id, String name, Collection directTypes, boolean initializeDefaults) {
+    public synchronized Instance createInstance(FrameID id, Collection directTypes, boolean initializeDefaults) {
+    	    String name = id.getName();
         if (name == null) {
             if (isDefaultAnonymousType(directTypes)) {
                 name = getNextAnonymousResourceName();
@@ -1410,8 +1414,9 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
                     name = createNewResourceName(((RDFSClass) firstType).getLocalName());
                 }
             }
+            id = new FrameID(name);
         }
-        return super.createInstance(id, name, directTypes, initializeDefaults);
+        return super.createInstance(id, directTypes, initializeDefaults);
     }
 
 
@@ -3806,7 +3811,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
                     if (getFrame(newName) != null) {
                         newName = getUniqueFrameName(newName);
                     }
-                    resource.setName(newName);
+                    throw new UnsupportedOperationException("resource.setName(newName)");
                 }
             }
         }
