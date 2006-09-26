@@ -1,6 +1,8 @@
 package edu.stanford.smi.protegex.owl.model.impl;
 
 import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
+import com.hp.hpl.jena.rdf.model.Literal;
+
 import edu.stanford.smi.protegex.owl.model.*;
 import edu.stanford.smi.protegex.owl.model.visitor.OWLModelVisitor;
 
@@ -15,6 +17,8 @@ public class DefaultRDFSLiteral implements RDFSLiteral {
     private OWLModel owlModel;
 
     private String rawValue;
+    
+    private Literal r;
 
     private static final String DATATYPE_PREFIX = "~@";
 
@@ -26,6 +30,25 @@ public class DefaultRDFSLiteral implements RDFSLiteral {
     public DefaultRDFSLiteral(OWLModel owlModel, String rawValue) {
         this.owlModel = owlModel;
         this.rawValue = rawValue;
+    }
+    
+    public DefaultRDFSLiteral(OWLModel owlModel, Literal value) {
+      this.owlModel = owlModel;
+      r = value;
+      if (!(r.getValue() instanceof String)) {
+        throw new UnsupportedOperationException();
+      }
+      String s = r.getString();
+      if (r.getLanguage().equals("")) {
+        rawValue = s;
+      }
+      else {
+        rawValue = LANGUAGE_PREFIX + r.getLanguage() + SEPARATOR + s;
+      }
+    }
+    
+    public Literal getJenaResource() {
+      return r;
     }
 
 
