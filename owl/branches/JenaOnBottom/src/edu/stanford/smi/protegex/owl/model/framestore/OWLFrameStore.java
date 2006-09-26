@@ -254,8 +254,8 @@ public class OWLFrameStore extends FrameStoreAdapter {
     }
 
 
-    public Cls createCls(FrameID id, String name, Collection directTypes, Collection directSuperclasses, boolean loadDefaults) {
-        Cls cls = super.createCls(id, name, directTypes, directSuperclasses, loadDefaults);
+    public Cls createCls(FrameID id, Collection directTypes, Collection directSuperclasses, boolean loadDefaults) {
+        Cls cls = super.createCls(id, directTypes, directSuperclasses, loadDefaults);
         if (cls instanceof OWLNamedClass && cls.isEditable()) {
             for (Iterator it = directSuperclasses.iterator(); it.hasNext();) {
                 Cls superCls = (Cls) it.next();
@@ -279,8 +279,8 @@ public class OWLFrameStore extends FrameStoreAdapter {
     }
 
 
-    public Slot createSlot(FrameID id, String name, Collection directTypes, Collection directSuperslots, boolean loadDefaults) {
-        Slot slot = super.createSlot(id, name, directTypes, directSuperslots, loadDefaults);
+    public Slot createSlot(FrameID id, Collection directTypes, Collection directSuperslots, boolean loadDefaults) {
+        Slot slot = super.createSlot(id, directTypes, directSuperslots, loadDefaults);
         if (slot instanceof RDFProperty) {
             RDFProperty rdfProperty = (RDFProperty) slot;
             slot.setAllowsMultipleValues(true);
@@ -294,8 +294,8 @@ public class OWLFrameStore extends FrameStoreAdapter {
     }
 
 
-    public SimpleInstance createSimpleInstance(FrameID id, String name, Collection directTypes, boolean loadDefaults) {
-        SimpleInstance instance = super.createSimpleInstance(id, name, directTypes, loadDefaults);
+    public SimpleInstance createSimpleInstance(FrameID id, Collection directTypes, boolean loadDefaults) {
+        SimpleInstance instance = super.createSimpleInstance(id, directTypes, loadDefaults);
         if (instance instanceof RDFResource && !directTypes.contains(owlModel.getRDFUntypedResourcesClass())) {
             instance.setDirectOwnSlotValues(owlModel.getRDFTypeProperty(), directTypes);
         }
