@@ -1,7 +1,31 @@
 package edu.stanford.smi.protegex.owl.model.impl;
 
-import edu.stanford.smi.protege.model.*;
-import edu.stanford.smi.protegex.owl.model.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
+
+import com.hp.hpl.jena.rdf.model.Resource;
+
+import edu.stanford.smi.protege.model.Cls;
+import edu.stanford.smi.protege.model.DefaultCls;
+import edu.stanford.smi.protege.model.Facet;
+import edu.stanford.smi.protege.model.Frame;
+import edu.stanford.smi.protege.model.FrameID;
+import edu.stanford.smi.protege.model.KnowledgeBase;
+import edu.stanford.smi.protege.model.Model;
+import edu.stanford.smi.protege.model.Slot;
+import edu.stanford.smi.protegex.owl.model.OWLAnonymousClass;
+import edu.stanford.smi.protegex.owl.model.OWLIntersectionClass;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
+import edu.stanford.smi.protegex.owl.model.ProtegeNames;
+import edu.stanford.smi.protegex.owl.model.RDFProperty;
+import edu.stanford.smi.protegex.owl.model.RDFResource;
+import edu.stanford.smi.protegex.owl.model.RDFSClass;
+import edu.stanford.smi.protegex.owl.model.RDFSLiteral;
+import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
 import edu.stanford.smi.protegex.owl.model.event.ClassAdapter;
 import edu.stanford.smi.protegex.owl.model.event.ClassListener;
 import edu.stanford.smi.protegex.owl.model.event.PropertyValueListener;
@@ -9,24 +33,31 @@ import edu.stanford.smi.protegex.owl.model.event.ResourceListener;
 import edu.stanford.smi.protegex.owl.model.util.ResourceCopier;
 import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
 
-import java.util.*;
-
 /**
  * A basic implementation of the RDFSClass interface that provides support for disjoint classes.
  *
  * @author Holger Knublauch  <holger@knublauch.com>
  */
 public abstract class AbstractRDFSClass extends DefaultCls implements RDFSClass {
-
+	
+  private Resource r;
 
     public AbstractRDFSClass(KnowledgeBase kb, FrameID id) {
         super(kb, id);
+    }
+    
+    public AbstractRDFSClass(KnowledgeBase kb, Resource r) {
+      super(kb, new FrameID(r.isAnon() ? r.getId().getLabelString() : r.getURI()));
+      this.r = r;
     }
 
 
     AbstractRDFSClass() {
     }
 
+    public Resource getJenaResource() {
+      return  r;
+    }
 
     protected void addAnonymousClses(Collection target, Collection clses) {
         for (Iterator it = clses.iterator(); it.hasNext();) {

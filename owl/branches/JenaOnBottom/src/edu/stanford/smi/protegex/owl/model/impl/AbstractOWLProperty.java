@@ -7,6 +7,9 @@ import edu.stanford.smi.protegex.owl.model.*;
 import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
 
 import javax.swing.*;
+
+import com.hp.hpl.jena.rdf.model.Property;
+
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -23,6 +26,10 @@ public abstract class AbstractOWLProperty extends DefaultRDFProperty implements 
 
 
     AbstractOWLProperty() {
+    }
+    
+    public AbstractOWLProperty(KnowledgeBase kb, Property p) {
+      super(kb, p);
     }
 
 

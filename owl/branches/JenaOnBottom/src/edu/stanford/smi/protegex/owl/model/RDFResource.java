@@ -8,12 +8,16 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Set;
 
+import com.hp.hpl.jena.rdf.model.Resource;
+
 /**
  * The base interface for various OWL classes, slots and instances.
  *
  * @author Holger Knublauch  <holger@knublauch.com>
  */
 public interface RDFResource extends ProtegeInstance, RDFObject, Visitable {
+	
+	public Resource getJenaResource();
 
     /**
      * Adds an rdfs:comment to this resource.
@@ -692,17 +696,6 @@ public interface RDFResource extends ProtegeInstance, RDFObject, Visitable {
 
 
     void setInferredTypes(Collection types);
-
-
-    /**
-     * Sets the Protege name of this resource.
-     * The new name must be valid, i.e. be well-formed and only refer
-     * to valid namespace prefixes.  The new name must also be unique.
-     *
-     * @param newName the name name of this
-     * @see #getName
-     */
-    void setName(String newName);
 
 
     void setPropertyValue(RDFProperty property, Object value);

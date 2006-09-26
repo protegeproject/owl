@@ -10,6 +10,10 @@ import edu.stanford.smi.protegex.owl.model.visitor.OWLModelVisitor;
 import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
 
 import javax.swing.*;
+
+import com.hp.hpl.jena.ontology.OntProperty;
+import com.hp.hpl.jena.rdf.model.Property;
+
 import java.util.*;
 
 /**
@@ -18,14 +22,25 @@ import java.util.*;
  * @author Holger Knublauch  <holger@knublauch.com>
  */
 public class DefaultRDFProperty extends DefaultSlot implements RDFProperty {
+  
+  private Property r;
 
 
     public DefaultRDFProperty(KnowledgeBase kb, FrameID id) {
         super(kb, id);
     }
+    
+    public DefaultRDFProperty(KnowledgeBase kb, Property r) {
+      super(kb, new FrameID(r.isAnon() ? r.getId().getLabelString() : r.getURI()));
+      this.r = r;
+    }
 
 
     public DefaultRDFProperty() {
+    }
+    
+    public Property getJenaResource() {
+      return r;
     }
 
 
