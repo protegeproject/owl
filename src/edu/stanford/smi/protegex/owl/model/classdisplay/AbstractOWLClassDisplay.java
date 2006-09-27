@@ -43,7 +43,8 @@ public abstract class AbstractOWLClassDisplay implements OWLClassDisplay {
 	protected String getCommentText(RDFSClass cls) {
 		if(cls.isAnonymous()) {
 			if(cls.getOWLModel().isProtegeMetaOntologyImported()) {
-				if(cls.getPropertyValue(cls.getOWLModel().getRDFProperty(ProtegeNames.Slot.IS_COMMENTED_OUT)) != null) {
+                                  RDFProperty isCommmentedOut = cls.getOWLModel().getRDFProperty(ProtegeNames.Slot.IS_COMMENTED_OUT);
+				if(isCommmentedOut != null && cls.getPropertyValue(isCommmentedOut) != null) {
 					return "// ";
 				}
 			}
