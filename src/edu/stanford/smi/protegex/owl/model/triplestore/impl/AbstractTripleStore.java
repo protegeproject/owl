@@ -149,6 +149,10 @@ public abstract class AbstractTripleStore implements ProtegeTripleAdder, TripleS
         }
         return null;
     }
+    
+    public FrameID generateFrameID() {
+        return  frameStore.generateFrameID();
+    }
 
 
     public NarrowFrameStore getNarrowFrameStore() {
