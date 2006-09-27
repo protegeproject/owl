@@ -1,13 +1,14 @@
 package edu.stanford.smi.protegex.owl.model.triplestore;
 
+import java.util.Comparator;
+import java.util.Iterator;
+
+import edu.stanford.smi.protege.model.FrameID;
 import edu.stanford.smi.protege.model.framestore.NarrowFrameStore;
 import edu.stanford.smi.protegex.owl.model.NamespaceMap;
 import edu.stanford.smi.protegex.owl.model.RDFObject;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
-
-import java.util.Comparator;
-import java.util.Iterator;
 
 /**
  * An interface for low-level access to the single triples in an OWLModel.
@@ -19,6 +20,8 @@ import java.util.Iterator;
  * @author Holger Knublauch  <holger@knublauch.com>
  */
 public interface TripleStore extends NamespaceMap {
+    
+    FrameID generateFrameID();
 
     void add(Triple triple);
 
