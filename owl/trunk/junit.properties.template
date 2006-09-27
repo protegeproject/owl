@@ -21,3 +21,13 @@ junit.dig.url=http://localhost:8081
 #  NEEDS WORK...
 
 #junit.testongologies=http://www.co-ode.org/ontologies/testset/
+
+
+#--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==
+# The server test depends on the rmi_registry to be running.  The
+# server tests are disabled if there is no pointer to the location of
+# the jar file. 
+#
+
+
+junit.server.protege.jar=file:///Users/tredmond/dev/workspaces/protege-head/dist/protege.jar
