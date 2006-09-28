@@ -1,16 +1,24 @@
 package edu.stanford.smi.protegex.owl.repository.impl;
 
-import edu.stanford.smi.protegex.owl.repository.Repository;
-import edu.stanford.smi.protegex.owl.repository.util.OntologyNameExtractor;
-import edu.stanford.smi.protegex.owl.repository.util.RepositoryUtil;
-
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+
+import edu.stanford.smi.protege.util.Log;
+import edu.stanford.smi.protegex.owl.repository.Repository;
+import edu.stanford.smi.protegex.owl.repository.util.OntologyNameExtractor;
+import edu.stanford.smi.protegex.owl.repository.util.RepositoryUtil;
 
 /**
  * User: matthewhorridge<br>
@@ -153,9 +161,10 @@ public abstract class AbstractLocalRepository implements Repository {
             ontologyName = extractor.getOntologyName();
             System.setErr(oldErr);
         }
-        finally {
-            return ontologyName;
+        catch (Exception e) {
+            Log.getLogger().log(Level.INFO,"Error processing file " + file, e);
         }
+        return ontologyName;
     }
 
 
