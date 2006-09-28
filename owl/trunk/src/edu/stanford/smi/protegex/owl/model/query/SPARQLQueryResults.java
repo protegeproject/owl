@@ -94,34 +94,37 @@ public class SPARQLQueryResults implements QueryResults {
         for (int i = 0; i < vars.size(); i++) {
             String varName = (String) vars.get(i);
             RDFNode varNode = soln.get(varName);
-            if (varNode instanceof Literal) {
-                Literal literal = (Literal) varNode;
-                RDFSDatatype datatype = owlModel.getRDFSDatatypeByURI(literal.getDatatypeURI());
-                String lexical = literal.getLexicalForm();
-                RDFSLiteral protegeLiteral = owlModel.createRDFSLiteral(lexical, datatype);
-                map.put(varName, protegeLiteral);
-            }
-            else {
-                String str = varNode.toString();
-                String name = null;
-                if (owlModel.isAnonymousResourceName(str)) {
-                    name = str;
-                }
-                else {
-                    name = ((AbstractOWLModel) owlModel).getFrameNameForURI(str, false);
-                }
-                if (name != null) {
-                    RDFResource resource = owlModel.getRDFResource(name);
-                    if (resource != null) {
-                        map.put(varName, resource);
-                    }
-                    else {
-                        map.put(varName, owlModel.createRDFSLiteral(str));
-                    }
-                }
-                else {
-                    map.put(varName, owlModel.createRDFSLiteral(str));
-                }
+            
+            if (varNode != null) {
+	           if (varNode instanceof Literal) {
+	                Literal literal = (Literal) varNode;
+	                RDFSDatatype datatype = owlModel.getRDFSDatatypeByURI(literal.getDatatypeURI());
+	                String lexical = literal.getLexicalForm();
+	                RDFSLiteral protegeLiteral = owlModel.createRDFSLiteral(lexical, datatype);
+	                map.put(varName, protegeLiteral);
+	            }
+	            else {
+	                String str = varNode.toString();
+	                String name = null;
+	                if (owlModel.isAnonymousResourceName(str)) {
+	                    name = str;
+	                }
+	                else {
+	                    name = ((AbstractOWLModel) owlModel).getFrameNameForURI(str, false);
+	                }
+	                if (name != null) {
+	                    RDFResource resource = owlModel.getRDFResource(name);
+	                    if (resource != null) {
+	                        map.put(varName, resource);
+	                    }
+	                    else {
+	                        map.put(varName, owlModel.createRDFSLiteral(str));
+	                    }
+	                }
+	                else {
+	                    map.put(varName, owlModel.createRDFSLiteral(str));
+	                }
+	            }
             }
         }
         return map;
