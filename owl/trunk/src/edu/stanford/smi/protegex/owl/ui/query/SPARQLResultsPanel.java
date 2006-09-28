@@ -18,6 +18,8 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
 
+import com.hp.hpl.jena.query.QueryException;
+
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.RDFObject;
@@ -121,7 +123,11 @@ public class SPARQLResultsPanel extends ResultsPanel {
 
     public void executeQuery(String queryText) {
         try {
-            QueryResults results = owlModel.executeSPARQLQuery(queryText);
+            table.setModel(new DefaultTableModel());
+            table.revalidate();
+
+        	QueryResults results = owlModel.executeSPARQLQuery(queryText);
+                       
             if (results.hasNext()) {
                 TableModel tableModel = createTableModel(results);
                 table.setModel(tableModel);
@@ -135,6 +141,11 @@ public class SPARQLResultsPanel extends ResultsPanel {
                 ProtegeUI.getModalDialogFactory().showMessageDialog(owlModel, "No matches found.");
             }
         }
+        catch (QueryException ex){
+        	//Log.getLogger().log(Level.WARNING, "Exception caught", ex);
+        	ProtegeUI.getModalDialogFactory().showErrorMessageDialog(owlModel,
+                    "Query parse error:\n" + ex.getMessage());        	
+		}
         catch (Exception ex) {
             Log.getLogger().log(Level.SEVERE, "Exception caught", ex);
             ProtegeUI.getModalDialogFactory().showErrorMessageDialog(owlModel,
