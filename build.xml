@@ -198,16 +198,20 @@
            description = "run the tests (anybody can do it)"
            depends = "plugin.dir,junit-compile">
      <junit printsummary="withOutAndErr"
-            dir = "." fork = "yes"
+            dir = "." 
+            fork = "yes"
             haltonfailure = "on" 
             haltonerror = "on">
-            
       <jvmarg value="-Xmx300M"/>
       <classpath>
            <pathelement location="${classes}"/>
            <pathelement location = "${lib}/protege.jar"/>
            <fileset
               dir="${plugin}">
+              <include name = "**/*.jar"/>
+           </fileset>
+           <fileset
+              dir="dbdrivers">
               <include name = "**/*.jar"/>
            </fileset>
         </classpath>
