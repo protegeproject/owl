@@ -36,7 +36,7 @@ public class LoadRDFPropertiesTestCase extends AbstractJenaTestCase {
 
 
     public void testLoadFunctionalProperties() throws Exception {
-        loadTestOntology(new URI("http://www.owl-ontologies.com/travel.owl"));
+        loadTestOntology(new URI(getRemoteOntologyRoot() + "travel.owl"));
         RDFProperty hasCityProperty = owlModel.getRDFProperty("hasCity");
         Collection types = hasCityProperty.getProtegeTypes();
         assertSize(2, types);

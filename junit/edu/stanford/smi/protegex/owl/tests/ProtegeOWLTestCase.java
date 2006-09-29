@@ -15,14 +15,14 @@ import java.net.URL;
 public class ProtegeOWLTestCase extends TestCase {
 
     public void testLoadFromInputStream() throws Exception {
-        InputStream is = new URL("http://www.owl-ontologies.com/travel.owl").openStream();
+        InputStream is = new URL(AbstractOWLTestCase.getRemoteOntologyRoot() + "travel.owl").openStream();
         JenaOWLModel owlModel = ProtegeOWL.createJenaOWLModelFromInputStream(is);
         assertEquals(34, owlModel.getUserDefinedOWLNamedClasses().size());
     }
 
 
     public void testLoadFromReader() throws Exception {
-        InputStream is = new URL("http://www.owl-ontologies.com/travel.owl").openStream();
+        InputStream is = new URL(AbstractOWLTestCase.getRemoteOntologyRoot() + "travel.owl").openStream();
         Reader reader = new InputStreamReader(is);
         JenaOWLModel owlModel = ProtegeOWL.createJenaOWLModelFromReader(reader);
         assertEquals(34, owlModel.getUserDefinedOWLNamedClasses().size());

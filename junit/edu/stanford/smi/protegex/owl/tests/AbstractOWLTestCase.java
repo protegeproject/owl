@@ -99,11 +99,16 @@ public abstract class AbstractOWLTestCase extends TestCase {
     protected void dumpRDF() {
         Jena.dumpRDF(owlModel.getOntModel());
     }
+    
+    public static String getRemoteOntologyRoot() {
+      return getJunitProperties().getProperty(TEST_ONTOLOGY_LOCATION_PROPERTY, 
+                                              "http://protege.stanford.edu/junitOntologies/testset/");
+    }
 
 
     public static URI getRemoteOntologyURI(String localFileName) {
         try {
-            String ontologyLoc = getJunitProperties().getProperty(TEST_ONTOLOGY_LOCATION_PROPERTY, "http://www.co-ode.org/ontologies/testset/");
+            String ontologyLoc = getRemoteOntologyRoot();
             return new URI(ontologyLoc + localFileName);
         }
         catch (Exception ex) {
