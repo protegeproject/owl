@@ -41,7 +41,7 @@ public class CreateOntologiesTestCase extends AbstractProtege2JenaTestCase {
 
 
     public void testOntologyWithUglyNamespace() throws Exception {
-        owlModel.getDefaultOWLOntology().addImports("http://www.owl-ontologies.com/travel.owl");
+        owlModel.getDefaultOWLOntology().addImports(getRemoteOntologyRoot() + "travel.owl");
         owlModel.createOWLNamedClass("Cls");
         String namespace = "http://aldi.de/ont/";
         owlModel.getNamespaceManager().setDefaultNamespace(namespace);

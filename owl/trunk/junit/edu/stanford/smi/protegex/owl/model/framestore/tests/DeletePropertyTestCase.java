@@ -46,7 +46,7 @@ public class DeletePropertyTestCase extends AbstractJenaTestCase {
 
 
     public void testDeleteEquivalentClassOnPropertyDeleteFromFile() throws Exception {
-        loadTestOntology(new URI("http://www.owl-ontologies.com/travel.owl"));
+        loadTestOntology(new URI(getRemoteOntologyRoot() + "travel.owl"));
         OWLNamedClass cls = owlModel.getOWLNamedClass("BudgetHotelDestination");
         assertTrue(cls.isDefinedClass());
         RDFProperty s = owlModel.getRDFSSubClassOfProperty();

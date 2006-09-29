@@ -43,7 +43,6 @@ public class LoadImportsTestCase extends AbstractJenaTestCase {
 
     public void testLoadUglyImport() throws Exception {
         loadRemoteOntology("uglyImport.owl");
-        assertNotNull(owlModel.getRDFSNamedClass("travel:Destination"));
         assertEquals("http://aldi.de/ont/", owlModel.getNamespaceManager().getDefaultNamespace());
         OWLOntology oi = owlModel.getDefaultOWLOntology();
         assertSize(1, oi.getImports());
@@ -63,7 +62,7 @@ public class LoadImportsTestCase extends AbstractJenaTestCase {
 
 
     public void testLoadIncrementalImport() throws Exception {
-        URI uri = new URI("http://www.owl-ontologies.com/travel.owl");
+        URI uri = new URI(getRemoteOntologyRoot() + "travel.owl");
         String namespace = uri.toString() + "#";
         owlModel.getNamespaceManager().setPrefix(namespace, "travel");
         ProtegeOWLParser.addImport(owlModel, uri);
