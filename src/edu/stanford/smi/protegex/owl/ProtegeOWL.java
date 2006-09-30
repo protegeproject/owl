@@ -2,10 +2,15 @@ package edu.stanford.smi.protegex.owl;
 
 import com.hp.hpl.jena.util.FileUtils;
 import edu.stanford.smi.protege.Application;
+import edu.stanford.smi.protege.model.KnowledgeBase;
 import edu.stanford.smi.protege.model.Project;
 import edu.stanford.smi.protege.util.ApplicationProperties;
+import edu.stanford.smi.protege.util.PropertyList;
+import edu.stanford.smi.protege.util.URIUtilities;
 import edu.stanford.smi.protegex.owl.jena.JenaKnowledgeBaseFactory;
 import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.repository.util.RepositoryFileManager;
 
 import java.io.File;
 import java.io.InputStream;
@@ -34,16 +39,19 @@ public class ProtegeOWL {
      * @return a new OWLModel
      */
     public static JenaOWLModel createJenaOWLModel() {
-        final JenaKnowledgeBaseFactory factory = new JenaKnowledgeBaseFactory();
-        Collection errors = new ArrayList();
-        Project project = Project.createNewProject(factory, errors);
-        project.setKnowledgeBaseFactory(factory);
-        project.createDomainKnowledgeBase(factory, errors, false);
-        return (JenaOWLModel) project.getKnowledgeBase();
-    }
-
-
-    public static JenaOWLModel createJenaOWLModelFromInputStream(InputStream is) throws Exception {
+		final JenaKnowledgeBaseFactory factory = new JenaKnowledgeBaseFactory();
+		Collection errors = new ArrayList();
+		Project project = Project.createNewProject(factory, errors);
+		// TODO TT: I commented out the following lines, they are duplicate with
+		// the createNewProject call. They should be removed in the release, if
+		// all tests pass.
+		// project.setKnowledgeBaseFactory(factory);
+		// project.createDomainKnowledgeBase(factory, errors, false);
+		return (JenaOWLModel) project.getKnowledgeBase();
+	}
+   
+    
+    public static JenaOWLModel createJenaOWLModelFromInputStream(InputStream is) throws Exception {    	
         JenaOWLModel owlModel = ProtegeOWL.createJenaOWLModel();
         owlModel.load(is, FileUtils.langXMLAbbrev);
         return owlModel;
@@ -59,10 +67,28 @@ public class ProtegeOWL {
 
     public static JenaOWLModel createJenaOWLModelFromURI(String uri) throws Exception {
         JenaOWLModel owlModel = ProtegeOWL.createJenaOWLModel();
+        
+        Project project = owlModel.getProject();
+        if (project != null) {
+        	JenaKnowledgeBaseFactory.setOWLFileName(project.getSources(),uri);
+        }
+               
+        URI urii = URIUtilities.createURI(uri);
+        loadRepositories(owlModel, urii);
         owlModel.load(new URI(uri), FileUtils.langXMLAbbrev);
         return owlModel;
     }
 
+    //TODO: TT - This code is duplicated with the JenaKnowledgeBaseFactory.
+    // Check whether it can be reused.
+    private static void loadRepositories(OWLModel owlModel, URI uri) {
+        String owlFilePath = uri.getPath();
+        File f = new File(owlFilePath);
+        // Load any project repositories
+        RepositoryFileManager man = new RepositoryFileManager(owlModel);
+        man.loadProjectRepositories();
+    }
+    
 
     /**
      * Gets the plugin folder, which is the subfolder plugins/edu.stanford.smi.protegex.owl
