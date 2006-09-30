@@ -1,11 +1,16 @@
 package edu.stanford.smi.protegex.owl.jena.parser.tests;
 
+import java.util.Iterator;
+
 import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.Instance;
-import edu.stanford.smi.protegex.owl.model.*;
+import edu.stanford.smi.protege.util.Log;
+import edu.stanford.smi.protegex.owl.model.OWLDatatypeProperty;
+import edu.stanford.smi.protegex.owl.model.OWLIntersectionClass;
+import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
+import edu.stanford.smi.protegex.owl.model.OWLObjectProperty;
+import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
 import edu.stanford.smi.protegex.owl.tests.AbstractJenaTestCase;
-
-import java.util.Iterator;
 
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
@@ -107,10 +112,10 @@ public class LoadKoalaTestCase extends AbstractJenaTestCase {
                 return;
             }
         }
-        System.err.println("Superclasses of " + aClass.getBrowserText() + ":");
+        Log.getLogger().warning("Superclasses of " + aClass.getBrowserText() + ":");
         for (Iterator it = aClass.getSuperclasses(false).iterator(); it.hasNext();) {
             Cls cls = (Cls) it.next();
-            System.out.println("- " + cls.getBrowserText());
+            Log.getLogger().info("- " + cls.getBrowserText());
         }
         assertTrue(aClass.getBrowserText() + " does not have superclass " + expression, false);
     }

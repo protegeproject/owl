@@ -96,7 +96,7 @@ public class AbstractDIGReasonerTestCase extends AbstractJenaTestCase {
             public void logRecordPosted(ReasonerLogRecord reasonerLogRecord) {
                 if (reasonerLogRecord instanceof MessageLogRecord) {
                     MessageLogRecord msgLog = (MessageLogRecord) reasonerLogRecord;
-                    System.out.println(msgLog.getMessage());
+                    Log.getLogger().info(msgLog.getMessage());
                 }
             }
         };
@@ -108,32 +108,32 @@ public class AbstractDIGReasonerTestCase extends AbstractJenaTestCase {
 
 
             public void progressChanged(ReasonerTaskEvent event) {
-                System.out.println(event.getSource().getMessage());
+                Log.getLogger().info(event.getSource().getMessage());
             }
 
 
             public void progressIndeterminateChanged(ReasonerTaskEvent event) {
-                System.out.println(event.getSource().getMessage());
+                Log.getLogger().info(event.getSource().getMessage());
             }
 
 
             public void descriptionChanged(ReasonerTaskEvent event) {
-                System.out.println(event.getSource().getMessage());
+                Log.getLogger().info(event.getSource().getMessage());
             }
 
 
             public void messageChanged(ReasonerTaskEvent event) {
-                System.out.println(event.getSource().getMessage());
+                Log.getLogger().info(event.getSource().getMessage());
             }
 
 
             public void taskFailed(ReasonerTaskEvent event) {
-                System.out.println(event.getSource().getMessage());
+                Log.getLogger().info(event.getSource().getMessage());
             }
 
 
             public void taskCompleted(ReasonerTaskEvent event) {
-                System.out.println(event.getSource().getMessage());
+                Log.getLogger().info(event.getSource().getMessage());
             }
         };
 
@@ -150,7 +150,7 @@ public class AbstractDIGReasonerTestCase extends AbstractJenaTestCase {
         // about the reasoner, such as its name and version,
         // and the tell and ask operations that it supports.
         DIGReasonerIdentity reasonerIdentity = reasoner.getIdentity();
-        System.out.println("# Connected to " + reasonerIdentity.getName());
+        Log.getLogger().info("# Connected to " + reasonerIdentity.getName());
     }
 
 
@@ -162,7 +162,7 @@ public class AbstractDIGReasonerTestCase extends AbstractJenaTestCase {
                 if (property instanceof OWLDatatypeProperty) {
                     if (property.getLocalName().compareTo(EXPECTED_CLASSIFICATION_PROPNAME) == 0) {
                         expectedClassificationProperty = property;
-                        System.out.println("# Found annotation property: " + expectedClassificationProperty.getLocalName());
+                        Log.getLogger().info("# Found annotation property: " + expectedClassificationProperty.getLocalName());
                     }
                 }
             }
@@ -211,7 +211,7 @@ public class AbstractDIGReasonerTestCase extends AbstractJenaTestCase {
                                 clsStatus == OWLNames.CLASSIFICATION_STATUS_CONSISTENT_AND_UNCHANGED;
 
 
-                System.out.println("# Consistency of '" + clsName + "' is expected="
+                Log.getLogger().info("# Consistency of '" + clsName + "' is expected="
                         + expectedConsistency + " actual=" + actualConsistency);
                 ++numberExpectations;
                 actualExpectations += (expectedConsistency == actualConsistency) ? 1 : 0;

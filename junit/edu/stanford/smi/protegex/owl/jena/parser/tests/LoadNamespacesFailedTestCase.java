@@ -1,9 +1,19 @@
 package edu.stanford.smi.protegex.owl.jena.parser.tests;
 
+import java.io.File;
+import java.net.URI;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+
 import com.hp.hpl.jena.vocabulary.OWL;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
+
 import edu.stanford.smi.protege.util.CollectionUtilities;
+import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.ProtegeOWL;
 import edu.stanford.smi.protegex.owl.model.NamespaceManager;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
@@ -13,10 +23,6 @@ import edu.stanford.smi.protegex.owl.tests.AbstractJenaTestCase;
 import edu.stanford.smi.protegex.owl.ui.search.finder.DefaultClassFind;
 import edu.stanford.smi.protegex.owl.ui.search.finder.Find;
 import edu.stanford.smi.protegex.owl.ui.search.finder.SearchAdapter;
-
-import java.io.File;
-import java.net.URI;
-import java.util.*;
 
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
@@ -53,7 +59,7 @@ public class LoadNamespacesFailedTestCase extends AbstractJenaTestCase {
                      owlModel.getDefaultOWLOntology().getURI());
 
         owlModel.save(tempSavedFileURI);
-        System.out.println("saved to " + tempSavedFileURI);
+        Log.getLogger().info("saved to " + tempSavedFileURI);
 
         loadTestOntology(tempSavedFileURI);
 
@@ -78,7 +84,7 @@ public class LoadNamespacesFailedTestCase extends AbstractJenaTestCase {
         assertOntologyIsAsExpected(expectedNamespaces, expectedPrefixes);
 
         owlModel.save(tempSavedFileURI);
-        System.out.println("saved to " + tempSavedFileURI);
+        Log.getLogger().info("saved to " + tempSavedFileURI);
 
         loadTestOntology(tempSavedFileURI);
 
@@ -103,7 +109,7 @@ public class LoadNamespacesFailedTestCase extends AbstractJenaTestCase {
                      owlModel.getDefaultOWLOntology().getURI());
 
         owlModel.save(tempSavedFileURI);
-        System.out.println("saved to " + tempSavedFileURI);
+        Log.getLogger().info("saved to " + tempSavedFileURI);
 
         loadTestOntology(tempSavedFileURI);
 
@@ -150,7 +156,7 @@ public class LoadNamespacesFailedTestCase extends AbstractJenaTestCase {
 
         for (Iterator i = expectedNamespaces.keySet().iterator(); i.hasNext();) {
             String current = (String) i.next();
-            System.out.println("current = " + current);
+            Log.getLogger().info("current = " + current);
             searching = true;
             find.startSearch(current);
             synchronized (lock) {
@@ -167,7 +173,7 @@ public class LoadNamespacesFailedTestCase extends AbstractJenaTestCase {
             Set results = find.getResultResources();
             assertTrue(results.size() > 0);
             OWLNamedClass c = (OWLNamedClass) CollectionUtilities.getFirstItem(results);
-            System.out.println("current URI = " + c.getURI());
+            Log.getLogger().info("current URI = " + c.getURI());
             assertNotNull(c);
             assertEquals(expectedNamespaces.get(current), c.getNamespace());
             assertEquals(expectedPrefixes.get(current), c.getNamespacePrefix());
