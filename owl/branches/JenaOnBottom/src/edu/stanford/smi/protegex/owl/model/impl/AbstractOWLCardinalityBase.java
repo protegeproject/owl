@@ -12,6 +12,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
 
+import com.hp.hpl.jena.ontology.Restriction;
+
 /**
  * The base class of MaxCardi and OWLMinCardinality.
  *
@@ -26,6 +28,11 @@ public abstract class AbstractOWLCardinalityBase extends AbstractOWLRestriction
     public AbstractOWLCardinalityBase(KnowledgeBase kb, FrameID id, char operatorChar) {
         super(kb, id);
         this.operatorChar = operatorChar;
+    }
+    
+    public AbstractOWLCardinalityBase(KnowledgeBase kb, Restriction r, char operatorChar) {
+      super(kb,r);
+      this.operatorChar = operatorChar;
     }
 
 

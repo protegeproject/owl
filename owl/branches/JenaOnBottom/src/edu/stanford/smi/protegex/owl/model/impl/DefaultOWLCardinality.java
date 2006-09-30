@@ -1,5 +1,7 @@
 package edu.stanford.smi.protegex.owl.model.impl;
 
+import com.hp.hpl.jena.ontology.CardinalityRestriction;
+
 import edu.stanford.smi.protege.model.FrameID;
 import edu.stanford.smi.protege.model.KnowledgeBase;
 import edu.stanford.smi.protegex.owl.model.OWLCardinality;
@@ -25,6 +27,16 @@ public class DefaultOWLCardinality extends AbstractOWLCardinalityBase
     public DefaultOWLCardinality(KnowledgeBase kb, FrameID id) {
         super(kb, id, OPERATOR);
     }
+    
+    public DefaultOWLCardinality(KnowledgeBase kb, CardinalityRestriction r) {
+      super(kb, r, OPERATOR);
+    }
+    
+    public CardinalityRestriction getJenaResource() {
+      return (CardinalityRestriction)  super.getJenaResource();
+    }
+    
+    
 
 
     public DefaultOWLCardinality() {

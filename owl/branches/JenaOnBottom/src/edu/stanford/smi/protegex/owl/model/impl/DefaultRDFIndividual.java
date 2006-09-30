@@ -19,7 +19,7 @@ import java.util.Set;
 
 public class DefaultRDFIndividual extends DefaultSimpleInstance implements RDFIndividual {
   
-  Resource r;
+    Resource r;
 
 
     public DefaultRDFIndividual(KnowledgeBase kb, FrameID id) {

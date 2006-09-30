@@ -8,6 +8,8 @@ import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
 
 import javax.swing.*;
 
+import com.hp.hpl.jena.rdf.model.Resource;
+
 /**
  * The default implementation of RDFUntypedResource.
  *
@@ -17,6 +19,10 @@ public class DefaultRDFUntypedResource extends DefaultRDFIndividual implements R
 
     public DefaultRDFUntypedResource(KnowledgeBase kb, FrameID id) {
         super(kb, id);
+    }
+    
+    public DefaultRDFUntypedResource(KnowledgeBase kb, Resource r) {
+      super(kb, r);
     }
 
 

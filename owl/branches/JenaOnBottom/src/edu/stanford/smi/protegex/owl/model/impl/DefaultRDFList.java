@@ -17,6 +17,14 @@ public class DefaultRDFList extends DefaultRDFIndividual implements RDFList {
     public DefaultRDFList(KnowledgeBase kb, FrameID id) {
         super(kb, id);
     }
+    
+    public DefaultRDFList(KnowledgeBase kb, com.hp.hpl.jena.rdf.model.RDFList r) {
+      super(kb, r);
+    }
+    
+    public com.hp.hpl.jena.rdf.model.RDFList getJenaResource() {
+      return (com.hp.hpl.jena.rdf.model.RDFList) super.getJenaResource();
+    }
 
 
     public DefaultRDFList() {

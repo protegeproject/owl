@@ -7,9 +7,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.hp.hpl.jena.ontology.CardinalityRestriction;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Property;
+import com.hp.hpl.jena.rdf.model.RDFList;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.vocabulary.OWL;
@@ -19,10 +21,10 @@ import com.hp.hpl.jena.vocabulary.RDFS;
 import edu.stanford.smi.protege.model.Facet;
 import edu.stanford.smi.protege.model.Frame;
 import edu.stanford.smi.protege.model.FrameID;
-import edu.stanford.smi.protege.model.KnowledgeBase;
 import edu.stanford.smi.protege.model.Reference;
 import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protege.model.SystemFrames;
+import edu.stanford.smi.protege.model.framestore.ClosureUtils;
 import edu.stanford.smi.protege.model.framestore.NarrowFrameStore;
 import edu.stanford.smi.protege.model.query.Query;
 import edu.stanford.smi.protege.server.RemoteSession;
@@ -31,16 +33,22 @@ import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.RDFObject;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
+import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLCardinality;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLDatatypeProperty;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLObjectProperty;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLOntology;
+import edu.stanford.smi.protegex.owl.model.impl.DefaultRDFList;
+import edu.stanford.smi.protegex.owl.model.impl.DefaultRDFProperty;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultRDFSLiteral;
+import edu.stanford.smi.protegex.owl.model.impl.DefaultRDFUntypedResource;
 
 public class JenaFrameStore implements NarrowFrameStore {
   private Map<RemoteSession, Integer> transactionNesting = new HashMap<RemoteSession, Integer>();
   private OWLModel protegeKb;
   private OntModel model;
   private boolean inConversion = false;
+  
+  public static final String LITERAL_ID_PREFIX = "@Literal:";  
   
   private List<SlotPropertyMapping> mappings;
   
@@ -72,12 +80,11 @@ public class JenaFrameStore implements NarrowFrameStore {
     return nesting;
   }
   
-  private RDFObject buildFrame(RDFNode node) {
-    if (node instanceof Literal) {
-      return new DefaultRDFSLiteral(protegeKb, (Literal) node);
-    }
-    Resource resource = (Resource) node;
+  private RDFResource buildFrame(Resource resource) {
     Set types = resource.listProperties(RDF.type).toSet();
+    if (resource.canAs(CardinalityRestriction.class)) {
+      return new DefaultOWLCardinality(protegeKb, (CardinalityRestriction) resource);
+    }
     if (types.contains(OWL.Ontology)) {
       return new DefaultOWLOntology(protegeKb, resource);
     }
@@ -91,7 +98,13 @@ public class JenaFrameStore implements NarrowFrameStore {
         return new DefaultOWLDatatypeProperty(protegeKb, (Property) resource.as(Property.class));
       }
     }
-    throw new RuntimeException("Could not build protege frame from from jena node - " + node);
+    if (types.contains(RDF.Property)) {
+      new DefaultRDFProperty(protegeKb,  (Property) resource.as(Property.class));
+    }
+    if (types.contains(RDF.List)) {
+      return new DefaultRDFList(protegeKb, (RDFList) resource.as(RDFList.class));
+    }
+    return new DefaultRDFUntypedResource(protegeKb, resource);
   }
   
   private SlotPropertyMapping slot2Mapping(Slot slot) {
@@ -214,23 +227,21 @@ public class JenaFrameStore implements NarrowFrameStore {
   }
 
   public void deleteFrame(Frame frame) {
-    
-    // TODO Auto-generated method stub
+    if (frame instanceof RDFResource) {
+      ((RDFResource) frame).delete();
+    }
   }
 
   public Set executeQuery(Query query) {
-    // TODO Auto-generated method stub
-    return null;
+    throw new UnsupportedOperationException("not implemented yet");
   }
 
   public Set getClosure(Frame frame, Slot slot, Facet facet, boolean isTemplate) {
-    // TODO Auto-generated method stub
-    return null;
+    return ClosureUtils.calculateClosure(this, frame, slot, facet, isTemplate);
   }
 
   public int getClsCount() {
-    // TODO Auto-generated method stub
-    return 0;
+    return model.listClasses().toSet().size();
   }
 
   public NarrowFrameStore getDelegate() {
@@ -242,17 +253,18 @@ public class JenaFrameStore implements NarrowFrameStore {
   }
 
   public Frame getFrame(FrameID id) {
-    // TODO Auto-generated method stub
-    return null;
+    String name = id.getName();
+    Resource resource = model.getResource(name)
+    if (resource != null) {
+      return buildFrame(resource);
+    }
   }
 
   public int getFrameCount() {
-    // TODO Auto-generated method stub
-    return 0;
+    return model.listSubjects().toSet().size();
   }
 
   public Set<Frame> getFrames() {
-    // TODO Auto-generated method stub
     return null;
   }
 

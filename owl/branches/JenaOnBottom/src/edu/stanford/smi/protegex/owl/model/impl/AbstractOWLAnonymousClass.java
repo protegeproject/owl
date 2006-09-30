@@ -1,5 +1,16 @@
 package edu.stanford.smi.protegex.owl.model.impl;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
+
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+
+import com.hp.hpl.jena.ontology.OntResource;
+
 import edu.stanford.smi.protege.model.FrameID;
 import edu.stanford.smi.protege.model.KnowledgeBase;
 import edu.stanford.smi.protege.model.Reference;
@@ -8,9 +19,6 @@ import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
 import edu.stanford.smi.protegex.owl.model.RDFList;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
-
-import javax.swing.*;
-import java.util.*;
 
 /**
  * A base implementation of OWLAnonymousClass.
@@ -24,6 +32,10 @@ public abstract class AbstractOWLAnonymousClass extends AbstractRDFSClass
     public AbstractOWLAnonymousClass(KnowledgeBase kb, FrameID id) {
         super(kb, id);
         // setVisible(false);
+    }
+    
+    public AbstractOWLAnonymousClass(KnowledgeBase kb, OntResource r) {
+      super(kb, r);
     }
 
 

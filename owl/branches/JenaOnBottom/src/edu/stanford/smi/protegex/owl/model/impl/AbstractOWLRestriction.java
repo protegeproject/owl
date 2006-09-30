@@ -1,5 +1,7 @@
 package edu.stanford.smi.protegex.owl.model.impl;
 
+import com.hp.hpl.jena.ontology.Restriction;
+
 import edu.stanford.smi.protege.model.FrameID;
 import edu.stanford.smi.protege.model.KnowledgeBase;
 import edu.stanford.smi.protegex.owl.model.OWLNames;
@@ -17,6 +19,10 @@ public abstract class AbstractOWLRestriction extends AbstractOWLAnonymousClass i
 
     public AbstractOWLRestriction(KnowledgeBase kb, FrameID id) {
         super(kb, id);
+    }
+    
+    public AbstractOWLRestriction(KnowledgeBase kb, Restriction r) {
+      super(kb, r);
     }
 
 

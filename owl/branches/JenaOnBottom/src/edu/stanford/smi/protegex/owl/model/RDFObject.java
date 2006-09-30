@@ -12,7 +12,7 @@ import edu.stanford.smi.protegex.owl.model.visitor.Visitable;
  */
 public interface RDFObject extends Visitable {
 	
-	RDFNode getJenaResource();
+    RDFNode getJenaResource();
 
     String getBrowserText();
 
