@@ -60,7 +60,7 @@ public class FindTestCase extends AbstractJenaTestCase {
         }
 
         long timeTaken = System.currentTimeMillis() - startTime;
-        System.out.println("100 searches took " + timeTaken + "ms");
+        Log.getLogger().info("100 searches took " + timeTaken + "ms");
     }
 
     public void testFindDoesNotPickUpLanguageTags() {
@@ -78,7 +78,7 @@ public class FindTestCase extends AbstractJenaTestCase {
         }
 
         Map results = findAlg.getResults();
-        System.out.println("results = " + results);
+        Log.getLogger().info("results = " + results);
         assertTrue(results.size() > 0);
         for (Iterator i = results.values().iterator(); i.hasNext();) {
             FindResult result = (FindResult) i.next();

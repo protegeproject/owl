@@ -24,20 +24,20 @@ public abstract class AbstractRDFXMLWriterTestCases extends AbstractJenaTestCase
     protected void doCheck() {
         try {
             OntModel ontModel1 = Protege2Jena.createOntModel(owlModel);
-            //           System.out.println("Jena writer ------------------------------------------------\n");
+            //           Log.getLogger().info("Jena writer ------------------------------------------------\n");
             //           Jena.dumpRDF(ontModel1);
-            //           System.out.println("\n");
+            //           Log.getLogger().info("\n");
 
             StringWriter writer = new StringWriter();
             OWLModelWriter omw = new OWLModelWriter(owlModel, owlModel.getTripleStoreModel().getActiveTripleStore(), writer);
             omw.write();
-//            System.out.println("Native writer ----------------------------------------------\n");
-//            System.out.println(writer.getBuffer().toString());
-//            System.out.println("\n");
+//            Log.getLogger().info("Native writer ----------------------------------------------\n");
+//            Log.getLogger().info(writer.getBuffer().toString());
+//            Log.getLogger().info("\n");
 
             OWLModel model = ProtegeOWL.createJenaOWLModelFromReader(new StringReader(writer.getBuffer().toString()));
             OntModel ontModel2 = Protege2Jena.createOntModel(model);
-//            System.out.println("Jena writer (from reload) ----------------------------------------------\n");
+//            Log.getLogger().info("Jena writer (from reload) ----------------------------------------------\n");
 //          Jena.dumpRDF(ontModel2);
 
             assertTrue(ontModel1.isIsomorphicWith(ontModel2));

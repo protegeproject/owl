@@ -1,9 +1,19 @@
 package edu.stanford.smi.protegex.owl.model.classparser.dl.tests;
 
-import edu.stanford.smi.protegex.owl.tests.AbstractJenaTestCase;
+import edu.stanford.smi.protege.util.Log;
+import edu.stanford.smi.protegex.owl.model.OWLAllValuesFrom;
+import edu.stanford.smi.protegex.owl.model.OWLCardinality;
+import edu.stanford.smi.protegex.owl.model.OWLClass;
+import edu.stanford.smi.protegex.owl.model.OWLComplementClass;
+import edu.stanford.smi.protegex.owl.model.OWLEnumeratedClass;
+import edu.stanford.smi.protegex.owl.model.OWLIntersectionClass;
+import edu.stanford.smi.protegex.owl.model.OWLMaxCardinality;
+import edu.stanford.smi.protegex.owl.model.OWLMinCardinality;
+import edu.stanford.smi.protegex.owl.model.OWLSomeValuesFrom;
+import edu.stanford.smi.protegex.owl.model.OWLUnionClass;
 import edu.stanford.smi.protegex.owl.model.classparser.dl.DLSyntaxParser;
 import edu.stanford.smi.protegex.owl.model.classparser.dl.ParseException;
-import edu.stanford.smi.protegex.owl.model.*;
+import edu.stanford.smi.protegex.owl.tests.AbstractJenaTestCase;
 
 /**
  * Author: Matthew Horridge<br>
@@ -32,7 +42,7 @@ public class DLSyntaxParserTestCase extends AbstractJenaTestCase {
     private void parsePass(String expression, Class c) {
         try {
             OWLClass cls = DLSyntaxParser.parseExpression(owlModel, expression, true);
-            System.out.println("Class: " + cls.getBrowserText());
+            Log.getLogger().info("Class: " + cls.getBrowserText());
             assertTrue(c.isInstance(cls));
         } catch (ParseException e) {
             fail(e.getMessage());

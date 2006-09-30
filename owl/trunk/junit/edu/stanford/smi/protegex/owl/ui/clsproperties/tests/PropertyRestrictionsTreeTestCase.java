@@ -1,13 +1,20 @@
 package edu.stanford.smi.protegex.owl.ui.clsproperties.tests;
 
+import java.util.Enumeration;
+
+import javax.swing.tree.DefaultMutableTreeNode;
+
 import edu.stanford.smi.protege.model.Frame;
-import edu.stanford.smi.protegex.owl.model.*;
+import edu.stanford.smi.protege.util.Log;
+import edu.stanford.smi.protegex.owl.model.OWLCardinality;
+import edu.stanford.smi.protegex.owl.model.OWLIntersectionClass;
+import edu.stanford.smi.protegex.owl.model.OWLMinCardinality;
+import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
+import edu.stanford.smi.protegex.owl.model.OWLObjectProperty;
+import edu.stanford.smi.protegex.owl.model.OWLRestriction;
 import edu.stanford.smi.protegex.owl.tests.AbstractJenaTestCase;
 import edu.stanford.smi.protegex.owl.ui.clsproperties.PropertyRestrictionsTree;
 import edu.stanford.smi.protegex.owl.ui.clsproperties.PropertyTreeNode;
-
-import javax.swing.tree.DefaultMutableTreeNode;
-import java.util.Enumeration;
 
 public class PropertyRestrictionsTreeTestCase extends AbstractJenaTestCase {
 
@@ -35,13 +42,13 @@ public class PropertyRestrictionsTreeTestCase extends AbstractJenaTestCase {
 
 
     private void printErrorTree(DefaultMutableTreeNode root) {
-        System.out.println("Structure of failed tree:");
+        Log.getLogger().info("Structure of failed tree:");
         Enumeration e = root.preorderEnumeration();
         e.nextElement();
         while (e.hasMoreElements()) {
             DefaultMutableTreeNode next = (DefaultMutableTreeNode) e.nextElement();
             Object obj = next.getUserObject();
-            System.out.println(" - " + (obj instanceof Frame ? ((Frame) obj).getBrowserText() : obj.toString()));
+            Log.getLogger().info(" - " + (obj instanceof Frame ? ((Frame) obj).getBrowserText() : obj.toString()));
         }
     }
 

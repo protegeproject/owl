@@ -1,14 +1,15 @@
 package edu.stanford.smi.protegex.owl.ui.dialogs.test;
 
+import java.util.Collection;
+import java.util.Collections;
+
+import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
 import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
 import edu.stanford.smi.protegex.owl.tests.AbstractJenaTestCase;
 import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
 import edu.stanford.smi.protegex.owl.ui.dialogs.ModalDialogFactory;
 import edu.stanford.smi.protegex.owl.ui.dialogs.SelectClassPanel;
-
-import java.util.Collection;
-import java.util.Collections;
 
 /**
  * @author Nick Drummond, Medical Informatics Group, University of Manchester
@@ -30,7 +31,7 @@ public class SelectClassPanelFailedTestCase extends AbstractJenaTestCase{
             clses = panel.getSelection();
         }
 
-        System.out.println("selected = " + clses);
+        Log.getLogger().info("selected = " + clses);
     }
 
     public void testWithARoot(){
@@ -47,7 +48,7 @@ public class SelectClassPanelFailedTestCase extends AbstractJenaTestCase{
             clses = panel.getSelection();
         }
 
-        System.out.println("selected = " + clses);
+        Log.getLogger().info("selected = " + clses);
     }
 
     private void createTestOntology(){

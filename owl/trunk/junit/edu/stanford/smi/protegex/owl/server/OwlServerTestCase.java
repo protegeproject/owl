@@ -5,6 +5,7 @@ import edu.stanford.smi.protege.model.KnowledgeBase;
 import edu.stanford.smi.protege.model.Project;
 import edu.stanford.smi.protege.server.RemoteProjectManager;
 import edu.stanford.smi.protege.server.Server_Test;
+import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.tests.AbstractJenaTestCase;
 
 public class OwlServerTestCase extends AbstractJenaTestCase {
@@ -29,7 +30,7 @@ public class OwlServerTestCase extends AbstractJenaTestCase {
     assertNotNull(p);
     KnowledgeBase kb = p.getKnowledgeBase();
     Cls cls = kb.getCls("Pizza");
-    System.out.println("found " + cls + " with frame id = " + cls.getFrameID());
+    Log.getLogger().info("found " + cls + " with frame id = " + cls.getFrameID());
     assertNotNull(cls);
     p.dispose();
   }
