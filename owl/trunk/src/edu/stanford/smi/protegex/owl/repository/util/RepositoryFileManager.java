@@ -2,7 +2,10 @@ package edu.stanford.smi.protegex.owl.repository.util;
 
 import edu.stanford.smi.protege.model.Project;
 import edu.stanford.smi.protege.plugin.PluginUtilities;
+import edu.stanford.smi.protege.util.Log;
+import edu.stanford.smi.protege.util.URIUtilities;
 import edu.stanford.smi.protegex.owl.ProtegeOWL;
+import edu.stanford.smi.protegex.owl.jena.JenaKnowledgeBaseFactory;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.repository.Repository;
 import edu.stanford.smi.protegex.owl.repository.RepositoryManager;
@@ -171,6 +174,17 @@ public class RepositoryFileManager {
         Project project = model.getProject();
         if (project != null) {
             URI projectURI = project.getProjectURI();
+            
+            //If the project does not have a name, try to retrieve the repository file from the owl file path
+            try {
+                if (projectURI == null && project.getKnowledgeBaseFactory() instanceof JenaKnowledgeBaseFactory) {
+                	String owlFileUriString = JenaKnowledgeBaseFactory.getOWLFilePath(project.getSources());
+                	projectURI = URIUtilities.createURI(owlFileUriString);
+                }				
+			} catch (Exception e) {
+				Log.getLogger().warning("Failed to find repository file for " + project);
+			}
+            
             if (projectURI != null) {
                 return getProjectRepositoryFile(projectURI);
             }
