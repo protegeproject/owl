@@ -1,5 +1,6 @@
 package edu.stanford.smi.protegex.owl.repository.impl;
 
+import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.repository.Repository;
 import edu.stanford.smi.protegex.owl.repository.util.OntologyNameExtractor;
 import edu.stanford.smi.protegex.owl.repository.util.RepositoryUtil;
@@ -152,10 +153,10 @@ public abstract class AbstractLocalRepository implements Repository {
             OntologyNameExtractor extractor = new OntologyNameExtractor(fis, file.toURI().toURL());
             ontologyName = extractor.getOntologyName();
             System.setErr(oldErr);
+        } catch (Exception e) {
+          Log.emptyCatchBlock(e);
         }
-        finally {
-            return ontologyName;
-        }
+        return ontologyName;
     }
 
 
