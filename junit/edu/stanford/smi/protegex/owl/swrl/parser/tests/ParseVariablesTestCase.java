@@ -6,7 +6,7 @@ import edu.stanford.smi.protegex.owl.swrl.parser.SWRLParser;
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
  */
-public class ParseVariablesFailedTestCase extends AbstractSWRLTestCase {
+public class ParseVariablesTestCase extends AbstractSWRLTestCase {
 
     public void testCreateAndReuse() throws Exception {
         owlModel.createOWLNamedClass("Cls");
