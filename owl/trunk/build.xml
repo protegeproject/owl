@@ -10,6 +10,8 @@
 <project name="Protege-OWL" default="usage" basedir=".">
 
     <property environment="env"/>
+    <property file = "local.properties"/>  
+
 
     <property name = "src" value = "./src"/>
     <property name = "classes" value = "./classes"/>
@@ -23,6 +25,8 @@
     <property name = "source" value = "1.5"/>
     <property name = "deprecation" value = "off"/>
     <property name = "jarfile" value = "${dist}/${pluginName}.jar"/>
+    <property name = "manchesterParseDir"
+              value = "${src}/edu/stanford/smi/protegex/owl/model/classparser/manchester"/>
 
     <property name = "junit" value = "./junit"/>
 
@@ -81,6 +85,25 @@
         <delete file="out.owl"/>
         <delete file="out.repository"/>
     </target>
+
+    <target name="javacc-manchester">
+       <delete file="${manchesterParseDir}/JavaCharStream.java"/>
+       <delete file="${manchesterParseDir}/ManchesterOWLParser.java"/>
+       <delete file="${manchesterParseDir}/ManchesterOWLParserConstants.java"/>
+       <delete file="${manchesterParseDir}/ManchesterOWLParserTokenManager.java"/>
+       <delete file="${manchesterParseDir}/ParseException.java"/>
+       <delete file="${manchesterParseDir}/Token.java"/>
+       <delete file="${manchesterParseDir}/TokenMgrError.java"/>
+       <!-- Run JavaCC on Parser.jj to regenerate files that were deleted in above step. -->
+       <javacc javacchome = "${javacc.home}/bin/lib" 
+               target = "${manchesterParseDir}/ManchesterOWLParser.jj"
+               outputdirectory = "${manchesterParseDir}"/>
+    </target>
+
+    <!-- =================================================================== -->
+    <target name = "javacc" depends = "javacc-manchester">
+    </target>
+
 
 
     <!-- ================================================================ -->
