@@ -10,7 +10,7 @@ import java.util.Collections;
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
  */
-public class DeleteImpFailedTestCase extends AbstractSWRLTestCase {
+public class DeleteImpTestCase extends AbstractSWRLTestCase {
 
     public void testDeleteVariable() {
         OWLNamedClass cls = owlModel.createOWLNamedClass("Cls");
