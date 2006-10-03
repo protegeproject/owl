@@ -158,7 +158,7 @@ public class DLSyntaxBrowserTextGenerator implements OWLModelVisitor {
     }
 
     public void visitOWLDatatypeProperty(OWLDatatypeProperty owlDatatypeProperty) {
-        write(owlDatatypeProperty.getName());
+        write(owlDatatypeProperty.getBrowserText());
     }
 
     public void visitOWLEnumeratedClass(OWLEnumeratedClass owlEnumeratedClass) {
@@ -201,7 +201,7 @@ public class DLSyntaxBrowserTextGenerator implements OWLModelVisitor {
     }
 
     public void visitOWLIndividual(OWLIndividual owlIndividual) {
-        write(owlIndividual.getName());
+        write(owlIndividual.getBrowserText());
     }
 
     public void visitOWLIntersectionClass(OWLIntersectionClass owlIntersectionClass) {
@@ -224,12 +224,12 @@ public class DLSyntaxBrowserTextGenerator implements OWLModelVisitor {
 
     public void visitOWLNamedClass(OWLNamedClass owlNamedClass) {
         push(owlNamedClass);
-        write(owlNamedClass.getName());
+        write(owlNamedClass.getBrowserText());
         pop();
     }
 
     public void visitOWLObjectProperty(OWLObjectProperty owlObjectProperty) {
-        write(owlObjectProperty.getName());
+        write(owlObjectProperty.getBrowserText());
     }
 
     public void visitOWLOntology(OWLOntology owlOntology) {
@@ -253,7 +253,7 @@ public class DLSyntaxBrowserTextGenerator implements OWLModelVisitor {
     }
 
     public void visitRDFIndividual(RDFIndividual rdfIndividual) {
-        write(rdfIndividual.getName());
+        write(rdfIndividual.getBrowserText());
     }
 
     public void visitRDFList(RDFList rdfList) {
@@ -261,7 +261,7 @@ public class DLSyntaxBrowserTextGenerator implements OWLModelVisitor {
     }
 
     public void visitRDFProperty(RDFProperty rdfProperty) {
-        write(rdfProperty.getName());
+        write(rdfProperty.getBrowserText());
     }
 
     public void visitRDFSLiteral(RDFSLiteral rdfsLiteral) {
