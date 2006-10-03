@@ -64,21 +64,7 @@ public class OWLFormsTab extends FormsTab implements HostResourceDisplay {
     }
 
     public boolean displayHostResource(RDFResource resource) {
-        if (resource instanceof RDFSClass) {
-            if (!getSelection().contains(resource)) {
-                java.util.List objectPath = getPathToRoot((RDFSClass) resource, new LinkedList());
-                final TreePath path = ComponentUtilities.getTreePath(theTree, objectPath);
-                if (path != null) {
-                    final WaitCursor cursor = new WaitCursor(this);
-                    theTree.scrollPathToVisible(path);
-                    theTree.setSelectionPath(path);
-                    theTree.updateUI();
-                    cursor.hide();
-                    return true;
-                }
-            }
-        }
-        return false;
+       return OWLUI.setSelectedNodeInTree(theTree, resource);
     }
 
     private java.util.List getPathToRoot(RDFSClass cls, LinkedList list) {
