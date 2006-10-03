@@ -10,6 +10,7 @@ import edu.stanford.smi.protegex.owl.model.impl.OWLUtil;
 import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
 import edu.stanford.smi.protegex.owl.ui.ResourceRenderer;
 import edu.stanford.smi.protegex.owl.ui.actions.ResourceActionManager;
+import edu.stanford.smi.protegex.owl.ui.components.ComponentUtil;
 import edu.stanford.smi.protegex.owl.ui.existential.ExistentialAction;
 import edu.stanford.smi.protegex.owl.ui.search.finder.*;
 import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
@@ -176,10 +177,8 @@ public class OWLSubclassPane extends SelectableContainer implements ClassTreePan
 
 
     private void setSelectedClassDelegate(Cls cls) {
-        if (!getSelection().contains(cls)) {
-            Collection path = ModelUtilities.getPathToRoot(cls);
-            setSelectedObjectPath(getTree(), path);
-        }
+	    if (cls instanceof RDFResource)
+	       	OWLUI.setSelectedNodeInTree(tree, (RDFResource)cls);
     }
 
 
@@ -207,20 +206,7 @@ public class OWLSubclassPane extends SelectableContainer implements ClassTreePan
         setSelectedClassesDelegate(clses);
     }
 
-
-    private void setSelectedObjectPath(final JTree tree, Collection objectPath) {
-        final TreePath path = ComponentUtilities.getTreePath(tree, objectPath);
-        if (path != null) {
-            final WaitCursor cursor = new WaitCursor(tree);
-            tree.scrollPathToVisible(path);
-            tree.setSelectionPath(path);
-            tree.updateUI();
-            cursor.hide();
-        }
-    }
-
-
-    protected void setupDragAndDrop() {
+   protected void setupDragAndDrop() {
         if (OWLUI.isDragAndDropSupported(owlModel)) {
             final JTree tree = (JTree) getSelectable();
             DragSource.getDefaultDragSource().createDefaultDragGestureRecognizer(tree,
