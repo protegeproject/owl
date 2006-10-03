@@ -18,6 +18,7 @@ import edu.stanford.smi.protegex.owl.ui.cls.ClassTreePanel;
 import edu.stanford.smi.protegex.owl.ui.cls.Hierarchy;
 import edu.stanford.smi.protegex.owl.ui.cls.ToggleSuperclassExplorerAction;
 import edu.stanford.smi.protegex.owl.ui.search.finder.*;
+import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
 import edu.stanford.smi.protegex.owl.ui.widget.WidgetUtilities;
 
 import javax.swing.*;
@@ -327,28 +328,7 @@ public abstract class SubsumptionTreePanel extends SelectableContainer implement
 
 
     public void setSelectedClass(RDFSClass cls) {
-        if (!getSelection().contains(cls)) {
-            if (cls instanceof OWLNamedClass) {
-                Collection paths = getPathsToRoot((OWLNamedClass) cls);
-                JTree tree = getTree();
-                TreePath[] array = new TreePath[paths.size()];
-                int i = 0;
-                for (Iterator it = paths.iterator(); it.hasNext(); i++) {
-                    java.util.List list = (java.util.List) it.next();
-                    TreePath path = ComponentUtilities.getTreePath(tree, list);
-                    array[i] = path;
-                    if (i == 0) {
-                        tree.scrollPathToVisible(path);
-                        tree.updateUI();
-                    }
-                }
-                tree.setSelectionPaths(array);
-            }
-            else {
-                Collection path = ModelUtilities.getPathToRoot(cls);
-                ComponentUtilities.setSelectedObjectPath(getTree(), path);
-            }
-        }
+    	OWLUI.setSelectedNodeInTree((SelectableTree) getTree(),cls);
     }
 
 
