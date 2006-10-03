@@ -25,8 +25,11 @@
     <property name = "source" value = "1.5"/>
     <property name = "deprecation" value = "off"/>
     <property name = "jarfile" value = "${dist}/${pluginName}.jar"/>
+
     <property name = "manchesterParseDir"
               value = "${src}/edu/stanford/smi/protegex/owl/model/classparser/manchester"/>
+    <property name = "dlParseDir"
+              value = "${src}/edu/stanford/smi/protegex/owl/model/classparser/dl"/>
 
     <property name = "junit" value = "./junit"/>
 
@@ -86,6 +89,21 @@
         <delete file="out.repository"/>
     </target>
 
+    <target name="javacc-dl">
+       <delete file="${dlParseDir}/DLSyntaxParser.java"/>
+       <delete file="${dlParseDir}/DLSyntaxParserConstants.java"/>
+       <delete file="${dlParseDir}/DLSyntaxParserTokenManager.java"/>
+       <delete file="${dlParseDir}/JavaCharStream.java"/>
+       <delete file="${dlParseDir}/ParseException.java"/>
+       <delete file="${dlParseDir}/Token.java"/>
+       <delete file="${dlParseDir}/TokenMgrError.java"/>
+       <!-- Run JavaCC on Parser.jj to regenerate files that were deleted in above step. -->
+       <javacc javacchome = "${javacc.home}/bin/lib" 
+               target = "${dlParseDir}/DLSyntaxParser.jj"
+               outputdirectory = "${dlParseDir}"/>
+    </target>
+
+
     <target name="javacc-manchester">
        <delete file="${manchesterParseDir}/JavaCharStream.java"/>
        <delete file="${manchesterParseDir}/ManchesterOWLParser.java"/>
@@ -101,7 +119,7 @@
     </target>
 
     <!-- =================================================================== -->
-    <target name = "javacc" depends = "javacc-manchester">
+    <target name = "javacc" depends = "javacc-manchester,javacc-dl">
     </target>
 
 
