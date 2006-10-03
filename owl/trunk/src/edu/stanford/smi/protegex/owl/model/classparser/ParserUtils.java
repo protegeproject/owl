@@ -10,10 +10,12 @@ import edu.stanford.smi.protege.model.Instance;
 import edu.stanford.smi.protege.model.KnowledgeBase;
 import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protegex.owl.model.OWLClass;
+import edu.stanford.smi.protegex.owl.model.OWLDatatypeProperty;
+import edu.stanford.smi.protegex.owl.model.OWLIndividual;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.model.OWLObjectProperty;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
-import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultRDFSLiteral;
 
 public class ParserUtils {
@@ -23,12 +25,29 @@ public class ParserUtils {
     return getFrameByName(model, name, null);
   }
   
-  public static OWLClass getOWLClassFromName(OWLModel model, String name) {
-    return (OWLClass) getFrameByName(model, name, false);
+  public static OWLClass getOWLClassFromName(OWLModel model, String name) 
+  throws AmbiguousNameException {
+    return (OWLClass) getFrameByName(model, name, OWLClass.class);
   }
   
-  public static RDFProperty getRDFPropertyFromName(OWLModel model, String name) {
-    return (RDFProperty) getFrameByName(model, name, true);
+  public static RDFProperty getRDFPropertyFromName(OWLModel model, String name) 
+  throws AmbiguousNameException {
+    return (RDFProperty) getFrameByName(model, name, RDFProperty.class);
+  }
+  
+  public static OWLDatatypeProperty getOWLDatatypePropertyFromName(OWLModel model, String name) 
+  throws AmbiguousNameException {
+    return (OWLDatatypeProperty) getFrameByName(model, name, OWLDatatypeProperty.class);
+  }
+  
+  public static OWLObjectProperty getOWLObjectPropertyFromName(OWLModel model, String name) 
+  throws AmbiguousNameException {
+    return (OWLObjectProperty) getFrameByName(model, name, OWLObjectProperty.class);
+  }
+  
+  public static OWLIndividual getOWLIndividualFromName(OWLModel model, String  name)  
+  throws AmbiguousNameException {
+    return (OWLIndividual) getFrameByName(model, name, OWLIndividual.class); 
   }
   
   /**
@@ -47,10 +66,10 @@ public class ParserUtils {
   @SuppressWarnings("unchecked")
   private static RDFResource getFrameByName(OWLModel model, 
                                             String name, 
-                                            Boolean isProperty) 
+                                            Class targetClass) 
   throws AmbiguousNameException {
     RDFResource resource = (RDFResource) ((KnowledgeBase) model).getFrame(name);
-    if (resource != null && resourceCorrectlyTyped(resource, isProperty)) {
+    if (resource != null && resourceCorrectlyTyped(resource, targetClass)) {
       return resource;
     }
     else {
@@ -63,12 +82,9 @@ public class ParserUtils {
                                                                    false, 
                                                                    DefaultRDFSLiteral.getRawValue(name, lang));
     for (Object o : frames) {
-      if (resourceCorrectlyTyped((Frame) o, isProperty) && displaysWithRDFSLabel(model, (Instance) o)) {
+      if (resourceCorrectlyTyped((Frame) o, targetClass) && displaysWithRDFSLabel(model, (Instance) o)) {
         if (resource != null) {
-          throw new AmbiguousNameException("Multiple " 
-                                           + (isProperty == null ? "resources" : 
-                                               (isProperty ? "properties " : "classes "))
-                                           + " share the same name "  + name);
+          throw new AmbiguousNameException("Multiple resourcese share the same name "  + name);
         }
         resource = (RDFResource) o;
       }
@@ -83,12 +99,9 @@ public class ParserUtils {
                                                           false, 
                                                           DefaultRDFSLiteral.getRawValue(name, (String) null));
       for (Object o : frames) {
-        if (resourceCorrectlyTyped(resource, isProperty) && displaysWithRDFSLabel(model, (Instance) o)) {
+        if (resourceCorrectlyTyped((Frame) o, targetClass) && displaysWithRDFSLabel(model, (Instance) o)) {
           if (resource != null) {
-            throw new AmbiguousNameException("After falling back to the null language multiple"
-                                             + (isProperty == null ? "resources" : 
-                                                 (isProperty ? "properties " : "classes "))
-                                             + " share the same name "  + name);
+            throw new AmbiguousNameException("After falling back to the null language multiple resources share the same name " + name);
           }
           resource = (RDFResource) o;
         }
@@ -105,11 +118,10 @@ public class ParserUtils {
   }
   
   @SuppressWarnings("unchecked")
-  private static boolean resourceCorrectlyTyped(Frame resource, Boolean isProperty) {
-    if (isProperty == null) {
+  private static boolean resourceCorrectlyTyped(Frame resource, Class targetClass) {
+    if (targetClass == null) {
       return true;
     }
-    Class targetClass = isProperty ? RDFProperty.class : RDFSNamedClass.class;
     return targetClass.isAssignableFrom(resource.getClass());
   }
 }
