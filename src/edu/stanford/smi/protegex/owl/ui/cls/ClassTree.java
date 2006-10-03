@@ -1,5 +1,8 @@
 package edu.stanford.smi.protegex.owl.ui.cls;
 
+import edu.stanford.smi.protege.model.Cls;
+import edu.stanford.smi.protege.model.ModelUtilities;
+import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protege.util.ComponentUtilities;
 import edu.stanford.smi.protege.util.LazyTreeNode;
 import edu.stanford.smi.protege.util.LazyTreeRoot;
@@ -10,6 +13,7 @@ import edu.stanford.smi.protegex.owl.model.triplestore.impl.DefaultTriple;
 import edu.stanford.smi.protegex.owl.ui.TripleSelectable;
 import edu.stanford.smi.protegex.owl.ui.results.HostResourceDisplay;
 import edu.stanford.smi.protegex.owl.ui.subsumption.TooltippedSelectableTree;
+import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
 
 import javax.swing.*;
 import javax.swing.tree.TreeNode;
@@ -76,39 +80,7 @@ public class ClassTree extends TooltippedSelectableTree implements TripleSelecta
 
 
     public boolean displayHostResource(RDFResource resource) {
-
-        boolean result = false;
-
-        if (resource instanceof RDFSClass) {
-
-            //@@TODO this is currently only implemented for the asserted superclasses
-
-            if (!getSelection().contains(resource)) {
-
-                Collection rootClses = getRoots();
-                Collection allSupers = ((RDFSClass) resource).getSuperclasses(true);
-
-                for (Iterator i = rootClses.iterator(); i.hasNext();) {
-                    RDFSClass root = (RDFSClass) i.next();
-                    if (allSupers.contains(root)) {
-                        List objectPath = getPathToRoot((RDFSClass) resource, root, new LinkedList());
-                        final TreePath path = ComponentUtilities.getTreePath(this, objectPath);
-                        if (path != null) {
-                            final WaitCursor cursor = new WaitCursor(this);
-                            this.scrollPathToVisible(path);
-                            this.setSelectionPath(path);
-                            this.updateUI();
-                            cursor.hide();
-                            result = true;
-                        }
-                        else {
-                            System.out.println("path = " + objectPath);
-                        }
-                    }
-                }
-            }
-        }
-        return result;
+        return OWLUI.setSelectedNodeInTree(this, resource);
     }
 
     public Collection getRoots() {
@@ -116,10 +88,13 @@ public class ClassTree extends TooltippedSelectableTree implements TripleSelecta
     }
 
     private List getPathToRoot(RDFSClass cls, RDFSClass rootCls, LinkedList list) {
+   	
         list.add(0, cls);
         Collection superclasses = cls.getSuperclasses(false);
         for (Iterator it = superclasses.iterator(); it.hasNext();) {
             RDFSClass superclass = (RDFSClass) it.next();
+            if (list.contains(superclass))
+            	continue;
             if (superclass.equals(rootCls)) {
                 list.add(0, superclass);
                 return list;
@@ -131,4 +106,5 @@ public class ClassTree extends TooltippedSelectableTree implements TripleSelecta
         }
         return list;
     }
+  
 }
