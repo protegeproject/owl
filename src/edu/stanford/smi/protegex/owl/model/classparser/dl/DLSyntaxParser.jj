@@ -164,7 +164,7 @@ TOKEN :
 		matchedToken.kind = DATATYPE_ID;
     }
     else {
-        Frame f = owlModel.getFrame(matchedToken.image);
+        Frame f = ParserUtils.getFrameByName(owlModel, matchedToken.image);
         if(f instanceof OWLClass) {
             matchedToken.kind = CLASS_ID;
         }
@@ -318,7 +318,11 @@ OWLClass OWLNamedClass() :
 }
 {
     t=<CLASS_ID> {
-        return owlModel.getOWLNamedClass(t.image);
+      try {
+        return ParserUtils.getOWLClassFromName(owlModel, t.image);
+      } catch (AmbiguousNameException ex) {
+        throw new ParseException(ex.getMessage());
+      }
     }
 }
 
@@ -709,7 +713,14 @@ OWLDatatypeProperty DatatypeProperty() :
     OWLDatatypeProperty prop;
 }
 {
-    t=<DATATYPE_PROPERTY_ID>{prop = owlModel.getOWLDatatypeProperty(t.image); return prop;}
+    t=<DATATYPE_PROPERTY_ID>{
+      try {
+        prop = ParserUtils.getOWLDatatypePropertyFromName(owlModel, t.image);
+      } catch (AmbiguousNameException ex) {
+        throw new ParseException(ex.getMessage());
+      }
+      return prop;
+    }
 }
 
 OWLObjectProperty ObjectProperty() :
@@ -718,7 +729,14 @@ OWLObjectProperty ObjectProperty() :
     OWLObjectProperty prop;
 }
 {
-    t=<OBJECT_PROPERTY_ID>{prop = owlModel.getOWLObjectProperty(t.image); return prop;}
+    t=<OBJECT_PROPERTY_ID>{
+       try {
+           prop = ParserUtils.getOWLObjectPropertyFromName(owlModel, t.image); 
+       } catch (AmbiguousNameException ex) {
+                  throw new ParseException(ex.getMessage());
+       }
+       return prop;
+    }
 }
 
 OWLIndividual Individual() :
@@ -726,7 +744,13 @@ OWLIndividual Individual() :
     Token t;
 }
 {
-    t=<INDIVIDUAL_ID>{return owlModel.getOWLIndividual(t.image);}
+    t=<INDIVIDUAL_ID>{
+       try {
+        return ParserUtils.getOWLIndividualFromName(owlModel, t.image);
+       } catch (AmbiguousNameException ex) {
+          throw new ParseException(ex.getMessage());
+       } 
+    }
 }
 
 
