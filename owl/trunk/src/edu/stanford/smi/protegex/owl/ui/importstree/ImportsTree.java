@@ -73,7 +73,7 @@ public class ImportsTree extends SelectableTree implements HostResourceDisplay {
     public boolean displayHostResource(RDFResource resource) {
     	if (rootOntology == null) {
     		Log.getLogger().warning("Root ontology = null!");    		
-    		return true;
+    		return false;
     	}
     	
         boolean result = false;
