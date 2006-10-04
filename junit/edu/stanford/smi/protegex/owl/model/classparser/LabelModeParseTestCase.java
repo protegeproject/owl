@@ -79,6 +79,7 @@ public class LabelModeParseTestCase extends TestCase {
   throws edu.stanford.smi.protegex.owl.model.classparser.dl.ParseException {
     OWLModel model = getKb();
     assertNotNull(DLSyntaxParser.parseExpression(model, "* f (C & ? f E)", true));
+    assertNotNull(DLSyntaxParser.parseExpression(model, "* f (C & ( ? f E ))", true));
   }
   
   public void testDLSyntaxParserEnumerations() 
