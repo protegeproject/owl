@@ -500,7 +500,7 @@ public class DLSyntaxParser implements DLSyntaxParserConstants {
     ArrayList individuals = new ArrayList();
     jj_consume_token(39);
     ind = Individual();
-                     individuals.add(ind);
+         individuals.add(ind);
     label_3:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -512,8 +512,8 @@ public class DLSyntaxParser implements DLSyntaxParserConstants {
         break label_3;
       }
       ind = Individual();
+               individuals.add(ind);
     }
-                                                                  individuals.add(ind);
     jj_consume_token(40);
         {if (true) return owlModel.createOWLEnumeratedClass(individuals);}
     throw new Error("Missing return statement in function");

@@ -685,7 +685,10 @@ OWLClass OWLEnumeratedClass() :
 {
     (
     "{"
-    ind=Individual(){individuals.add(ind);}(((ind=Individual())*){individuals.add(ind);})
+        ind=Individual()
+        {individuals.add(ind);}
+        ((ind=Individual()
+            {  individuals.add(ind); })*)
     "}"
     )
     {
