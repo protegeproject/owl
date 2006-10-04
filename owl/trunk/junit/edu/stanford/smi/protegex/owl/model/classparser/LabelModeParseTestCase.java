@@ -88,9 +88,16 @@ public class LabelModeParseTestCase extends TestCase {
     OWLEnumeratedClass c;
     c = (OWLEnumeratedClass) DLSyntaxParser.parseExpression(model, "{ e1 e2 e3 e4 }", true);
     assertEquals(c.getOneOf().size(),4);
-    assertTrue(c.getOneOf().contains(((KnowledgeBase) model).getFrame("e1")));
-    assertTrue(c.getOneOf().contains(((KnowledgeBase) model).getFrame("e2")));   
-    assertTrue(c.getOneOf().contains(((KnowledgeBase) model).getFrame("e3"))); 
-    assertTrue(c.getOneOf().contains(((KnowledgeBase) model).getFrame("e4")));
+    assertTrue(c.getOneOf().contains(((KnowledgeBase) model).getFrame("XSB0030")));
+    assertTrue(c.getOneOf().contains(((KnowledgeBase) model).getFrame("XSB0031")));   
+    assertTrue(c.getOneOf().contains(((KnowledgeBase) model).getFrame("XSB0032"))); 
+    assertTrue(c.getOneOf().contains(((KnowledgeBase) model).getFrame("XSB0033")));
+    
+    c = (OWLEnumeratedClass) DLSyntaxParser.parseExpression(model, "{ e1 e2 e3 XSB0033 }", true);
+    assertEquals(c.getOneOf().size(),4);
+    assertTrue(c.getOneOf().contains(((KnowledgeBase) model).getFrame("XSB0030")));
+    assertTrue(c.getOneOf().contains(((KnowledgeBase) model).getFrame("XSB0031")));   
+    assertTrue(c.getOneOf().contains(((KnowledgeBase) model).getFrame("XSB0032"))); 
+    assertTrue(c.getOneOf().contains(((KnowledgeBase) model).getFrame("XSB0033")));
   }
 }
