@@ -301,6 +301,8 @@ OWLClass IntersectionClassOperand() :
     (
     cls=OWLNamedClass()
     |
+    "(" cls=OWLUnionClass() ")"
+    |
     cls=OWLRestriction()
     |
     cls=OWLComplementClass()
