@@ -636,7 +636,7 @@ Object OWLHasValueValueBooleanOrInstance() :
             return Boolean.FALSE;
         }
         else {
-            RDFResource instance = owlModel.getRDFResourceByNameOrBrowserText(id);
+            RDFResource instance = ParserUtils.getRDFResourceFromName(owlModel, id);
             if(instance == null) {
                 nextCouldBeInstance = true;
                 nextCouldBeSlot = true;
@@ -687,7 +687,7 @@ RDFSClass OWLEnumeratedClass() :
 {
     "{" (instanceText=Identifier()
     {
-        Instance instance = owlModel.getRDFResourceByNameOrBrowserText(instanceText);
+        Instance instance = (Instance) ParserUtils.getFrameFromName(owlModel,  instanceText);
         if(OWLUtil.hasOWLDLProfile(owlModel) && (instance instanceof Cls || instance instanceof Slot)) {
             instance = null;
         }
