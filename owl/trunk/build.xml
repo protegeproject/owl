@@ -30,6 +30,8 @@
               value = "${src}/edu/stanford/smi/protegex/owl/model/classparser/manchester"/>
     <property name = "dlParseDir"
               value = "${src}/edu/stanford/smi/protegex/owl/model/classparser/dl"/>
+    <property name = "compactParseDir"
+              value = "${src}/edu/stanford/smi/protegex/owl/model/classparser/compact"/>
 
     <property name = "junit" value = "./junit"/>
 
@@ -89,6 +91,21 @@
         <delete file="out.repository"/>
     </target>
 
+    <target name="javacc-compact">
+       <delete file="${compactParseDir}/CompactParser.java"/>
+       <delete file="${compactParseDir}/CompactParserConstants.java"/>
+       <delete file="${compactParseDir}/CompactParserTokenManager.java"/>
+       <delete file="${compactParseDir}/JavaCharStream.java"/>
+       <delete file="${compactParseDir}/ParseException.java"/>
+       <delete file="${compactParseDir}/Token.java"/>
+       <delete file="${compactParseDir}/TokenMgrError.java"/>
+       <!-- Run JavaCC on Parser.jj to regenerate files that were deleted in above step. -->
+       <javacc javacchome = "${javacc.home}/bin/lib" 
+               target = "${compactParseDir}/CompactParser.jj"
+               outputdirectory = "${compactParseDir}"/>
+    </target>
+
+
     <target name="javacc-dl">
        <delete file="${dlParseDir}/DLSyntaxParser.java"/>
        <delete file="${dlParseDir}/DLSyntaxParserConstants.java"/>
@@ -119,7 +136,8 @@
     </target>
 
     <!-- =================================================================== -->
-    <target name = "javacc" depends = "javacc-manchester,javacc-dl">
+    <target name = "javacc" 
+            depends = "javacc-manchester,javacc-dl,javacc-compact">
     </target>
 
 
