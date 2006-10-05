@@ -1,4 +1,4 @@
-; Wed Oct 04 11:07:22 PDT 2006
+; Wed Oct 04 15:12:26 PDT 2006
 ; 
 ;+ (version "3.2")
 ;+ (build "Build 339")
@@ -6,15 +6,15 @@
 ([BROWSER_SLOT_NAMES] of  Property_List
 
 	(properties
-		[parseWithLables_ProjectKB_Instance_10130]
-		[parseWithLables_ProjectKB_Instance_10131]
-		[parseWithLables_ProjectKB_Instance_10132]
-		[parseWithLables_ProjectKB_Instance_10133]
-		[parseWithLables_ProjectKB_Instance_10134]
-		[parseWithLables_ProjectKB_Instance_10135]
-		[parseWithLables_ProjectKB_Instance_10136]
-		[parseWithLables_ProjectKB_Instance_10137]
-		[parseWithLables_ProjectKB_Instance_10138]))
+		[parseWithLables_ProjectKB_Instance_10096]
+		[parseWithLables_ProjectKB_Instance_10097]
+		[parseWithLables_ProjectKB_Instance_10098]
+		[parseWithLables_ProjectKB_Instance_10099]
+		[parseWithLables_ProjectKB_Instance_10100]
+		[parseWithLables_ProjectKB_Instance_10101]
+		[parseWithLables_ProjectKB_Instance_10102]
+		[parseWithLables_ProjectKB_Instance_10103]
+		[parseWithLables_ProjectKB_Instance_10104]))
 
 ([CLSES_TAB] of  Widget
 
@@ -7075,47 +7075,47 @@
 	(property_list [parseWithLables_ProjectKB_Instance_11])
 	(widget_class_name "edu.stanford.smi.RemoteKBTab.WordNetTab"))
 
-([parseWithLables_ProjectKB_Instance_10130] of  String
+([parseWithLables_ProjectKB_Instance_10096] of  String
 
 	(name "owl:DatatypeProperty")
 	(string_value "rdfs%3Alabel"))
 
-([parseWithLables_ProjectKB_Instance_10131] of  String
-
-	(name "XSB0004")
-	(string_value "%3ANAME"))
-
-([parseWithLables_ProjectKB_Instance_10132] of  String
-
-	(name "owl:Class")
-	(string_value "rdfs%3Alabel"))
-
-([parseWithLables_ProjectKB_Instance_10133] of  String
+([parseWithLables_ProjectKB_Instance_10097] of  String
 
 	(name "owl:ObjectProperty")
 	(string_value "rdfs%3Alabel"))
 
-([parseWithLables_ProjectKB_Instance_10134] of  String
+([parseWithLables_ProjectKB_Instance_10098] of  String
+
+	(name "owl:Class")
+	(string_value "rdfs%3Alabel"))
+
+([parseWithLables_ProjectKB_Instance_10099] of  String
+
+	(name "XSB0004")
+	(string_value "rdfs%3Alabel"))
+
+([parseWithLables_ProjectKB_Instance_10100] of  String
 
 	(name ":INSTANCE-ANNOTATION")
 	(string_value "%3AANNOTATION-TEXT"))
 
-([parseWithLables_ProjectKB_Instance_10135] of  String
+([parseWithLables_ProjectKB_Instance_10101] of  String
 
 	(name ":PAL-CONSTRAINT")
 	(string_value "%3APAL-NAME"))
 
-([parseWithLables_ProjectKB_Instance_10136] of  String
+([parseWithLables_ProjectKB_Instance_10102] of  String
 
 	(name "owl:Thing")
-	(string_value "%3ANAME"))
+	(string_value "rdfs%3Alabel"))
 
-([parseWithLables_ProjectKB_Instance_10137] of  String
+([parseWithLables_ProjectKB_Instance_10103] of  String
 
 	(name ":META-CLASS")
 	(string_value "%3ANAME"))
 
-([parseWithLables_ProjectKB_Instance_10138] of  String
+([parseWithLables_ProjectKB_Instance_10104] of  String
 
 	(name "rdfs:Class")
 	(string_value "%3ANAME"))
@@ -7127,7 +7127,7 @@
 
 	(is_hidden TRUE)
 	(property_list [parseWithLables_ProjectKB_Instance_13])
-	(widget_class_name "edu.stanford.smi.protegex.psm.PSMTab"))
+	(widget_class_name "edu.stanford.smi.protegex.changes.ChangesTab"))
 
 ([parseWithLables_ProjectKB_Instance_13] of  Property_List
 )
@@ -7136,7 +7136,7 @@
 
 	(is_hidden TRUE)
 	(property_list [parseWithLables_ProjectKB_Instance_15])
-	(widget_class_name "edu.stanford.smi.protegex.changes.ChangesTab"))
+	(widget_class_name "edu.stanford.smi.protegex.psm.PSMTab"))
 
 ([parseWithLables_ProjectKB_Instance_15] of  Property_List
 )
@@ -7262,13 +7262,13 @@
 
 	(is_hidden TRUE)
 	(property_list [parseWithLables_ProjectKB_Instance_5])
-	(widget_class_name "JessTab.JessTab"))
+	(widget_class_name "script.ProtegeScriptTab"))
 
 ([parseWithLables_ProjectKB_Instance_40] of  Widget
 
 	(is_hidden TRUE)
 	(property_list [parseWithLables_ProjectKB_Instance_41])
-	(widget_class_name "edu.stanford.smi.protege.ui.broswerid.ClsesAndInstancesIDTab"))
+	(widget_class_name "edu.stanford.smi.protege.server.plugin.ServerStatsPlugin"))
 
 ([parseWithLables_ProjectKB_Instance_41] of  Property_List
 )
@@ -7277,7 +7277,7 @@
 
 	(is_hidden TRUE)
 	(property_list [parseWithLables_ProjectKB_Instance_43])
-	(widget_class_name "edu.stanford.smi.protege.server.plugin.ServerStatsPlugin"))
+	(widget_class_name "InternalKBTab"))
 
 ([parseWithLables_ProjectKB_Instance_43] of  Property_List
 )
@@ -7316,7 +7316,7 @@
 
 	(is_hidden TRUE)
 	(property_list [parseWithLables_ProjectKB_Instance_7])
-	(widget_class_name "script.ProtegeScriptTab"))
+	(widget_class_name "JessTab.JessTab"))
 
 ([parseWithLables_ProjectKB_Instance_7] of  Property_List
 )
@@ -7338,12 +7338,12 @@
 		[KB_713803_Instance_693]
 		[KB_313796_Instance_943]
 		[KB_938545_Instance_495]
-		[STANDARD_CLASS_FORM_WIDGET]
 		[KB_713803_Instance_303]
+		[STANDARD_CLASS_FORM_WIDGET]
 		[KB_313796_Instance_852]
 		[Instance_1005]
-		[KB_301165_Instance_1013]
 		[Instance_581]
+		[KB_301165_Instance_1013]
 		[KB_938545_Instance_412]
 		[KB_764103_Instance_545]
 		[KB_713803_Instance_390]
@@ -7385,14 +7385,14 @@
 		"xsd:base64Binary"
 		"rdfs:Container"
 		"owl:Ontology"
-		":TO"
-		"xsd:gMonthDay"
 		"owl:DataRange"
+		"xsd:gMonthDay"
+		":TO"
 		"xsd:NMTOKEN"
-		"xsd:QName"
 		"xsd:unsignedInt"
-		"owl:FunctionalProperty"
+		"xsd:QName"
 		"xsd:long"
+		"owl:FunctionalProperty"
 		"owl:onProperty"
 		":SYSTEM-CLASS"
 		"xsd:language"
@@ -7415,40 +7415,40 @@
 		"rdf:rest"
 		"xsd:decimal"
 		"rdf:subject"
+		"rdf:value"
 		"owl:sameAs"
 		"owl:SymmetricProperty"
 		"xsd:Name"
-		"rdf:value"
 		"xsd:byte"
-		"owl:differentFrom"
 		"owl:AllDifferent"
+		"owl:differentFrom"
 		"owl:Nothing"
-		"owl:cardinality"
 		"owl:InverseFunctionalProperty"
+		"owl:cardinality"
 		"xsd:nonNegativeInteger"
 		"rdf:Statement"
-		":FROM"
 		"rdfs:Literal"
-		"owl:disjointWith"
+		":FROM"
 		"xsd:anySimpleType"
+		"owl:disjointWith"
 		"owl:minCardinality"
 		"xsd:ID"
 		"xsd:gDay"
 		"xsd:gYearMonth"
-		"xsd:NCName"
 		"owl:distinctMembers"
+		"xsd:NCName"
 		"xsd:nonPositiveInteger"
 		"rdfs:Datatype"
-		":DIRECTED-BINARY-RELATION"
-		"xsd:token"
 		"owl:TransitiveProperty"
-		"xsd:IDREF"
-		"xsd:ENTITY"
+		"xsd:token"
+		":DIRECTED-BINARY-RELATION"
 		"xsd:normalizedString"
+		"xsd:ENTITY"
+		"xsd:IDREF"
 		"xsd:gMonth"
-		"rdf:type"
-		"owl:oneOf"
 		"owl:maxCardinality"
+		"owl:oneOf"
+		"rdf:type"
 		"rdf:object")
 	(journaling_enabled FALSE)
 	(next_frame_number 0)
