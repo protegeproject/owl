@@ -45,6 +45,11 @@ public class ParserUtils {
     return (OWLObjectProperty) getFrameByName(model, name, OWLObjectProperty.class);
   }
   
+  public static RDFResource getRDFResourceFromName(OWLModel model, String name) 
+  throws AmbiguousNameException {
+    return (RDFResource) getFrameByName(model, name, RDFResource.class);
+  }
+  
   public static OWLIndividual getOWLIndividualFromName(OWLModel model, String  name)  
   throws AmbiguousNameException {
     return (OWLIndividual) getFrameByName(model, name, OWLIndividual.class); 
