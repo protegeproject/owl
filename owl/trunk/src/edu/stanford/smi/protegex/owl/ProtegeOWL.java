@@ -72,19 +72,13 @@ public class ProtegeOWL {
         if (project != null) {
         	JenaKnowledgeBaseFactory.setOWLFileName(project.getSources(),uri);
         }
-               
-        URI urii = URIUtilities.createURI(uri);
-        loadRepositories(owlModel, urii);
+    
+        loadRepositories(owlModel);
         owlModel.load(new URI(uri), FileUtils.langXMLAbbrev);
         return owlModel;
     }
 
-    //TODO: TT - This code is duplicated with the JenaKnowledgeBaseFactory.
-    // Check whether it can be reused.
-    private static void loadRepositories(OWLModel owlModel, URI uri) {
-        String owlFilePath = uri.getPath();
-        File f = new File(owlFilePath);
-        // Load any project repositories
+    private static void loadRepositories(OWLModel owlModel) {
         RepositoryFileManager man = new RepositoryFileManager(owlModel);
         man.loadProjectRepositories();
     }
