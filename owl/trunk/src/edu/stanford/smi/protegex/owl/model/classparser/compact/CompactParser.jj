@@ -373,7 +373,7 @@ RDFSClass IDClass() :
 {
     id=Identifier()
     {
-        Frame frame = ((KnowledgeBase)owlModel).getFrame(id);
+        Frame frame = ParserUtils.getFrameByName(owlModel, id);
         if(frame instanceof RDFSClass) {
             return (RDFSClass) frame;
         }
@@ -606,7 +606,7 @@ Object OWLHasValueValueBooleanOrInstance() :
             return Boolean.FALSE;
         }
         else {
-            RDFResource instance = owlModel.getRDFResourceByNameOrBrowserText(id);
+            RDFResource instance = ParserUtils.getRDFResourceFromName(owlModel, id);
             if(instance == null) {
                 nextCouldBeInstance = true;
                 nextCouldBeSlot = true;
@@ -657,7 +657,7 @@ RDFSClass OWLEnumeratedClass() :
 {
     "{" (instanceText=Identifier()
     {
-        Instance instance = owlModel.getRDFResourceByNameOrBrowserText(instanceText);
+        Instance instance = (Instance) ParserUtils.getFrameByName(owlModel, instanceText);
         if(OWLUtil.hasOWLDLProfile(owlModel) && (instance instanceof Cls || instance instanceof Slot)) {
             instance = null;
         }
