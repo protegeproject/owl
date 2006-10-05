@@ -569,7 +569,7 @@ public class ManchesterOWLParser implements ManchesterOWLParserConstants {
         break label_3;
       }
       instanceText = Identifier();
-        Instance instance = (Instance) ParserUtils.getFrameFromName(owlModel,  instanceText);
+        Instance instance = (Instance) ParserUtils.getFrameByName(owlModel,  instanceText);
         if(OWLUtil.hasOWLDLProfile(owlModel) && (instance instanceof Cls || instance instanceof Slot)) {
             instance = null;
         }
