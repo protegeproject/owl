@@ -521,7 +521,7 @@ public class ManchesterOWLParser implements ManchesterOWLParserConstants {
             {if (true) return Boolean.FALSE;}
         }
         else {
-            RDFResource instance = owlModel.getRDFResourceByNameOrBrowserText(id);
+            RDFResource instance = ParserUtils.getRDFResourceFromName(owlModel, id);
             if(instance == null) {
                 nextCouldBeInstance = true;
                 nextCouldBeSlot = true;
@@ -569,7 +569,7 @@ public class ManchesterOWLParser implements ManchesterOWLParserConstants {
         break label_3;
       }
       instanceText = Identifier();
-        Instance instance = owlModel.getRDFResourceByNameOrBrowserText(instanceText);
+        Instance instance = (Instance) ParserUtils.getFrameFromName(owlModel,  instanceText);
         if(OWLUtil.hasOWLDLProfile(owlModel) && (instance instanceof Cls || instance instanceof Slot)) {
             instance = null;
         }
