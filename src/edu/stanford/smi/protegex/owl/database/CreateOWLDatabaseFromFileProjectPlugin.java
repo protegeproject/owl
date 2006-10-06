@@ -11,6 +11,7 @@ import edu.stanford.smi.protege.model.Project;
 import edu.stanford.smi.protege.model.framestore.MergingNarrowFrameStore;
 import edu.stanford.smi.protege.plugin.CreateProjectWizard;
 import edu.stanford.smi.protege.util.Log;
+import edu.stanford.smi.protege.util.MessageError;
 import edu.stanford.smi.protege.util.WizardPage;
 import edu.stanford.smi.protegex.owl.jena.JenaKnowledgeBaseFactory;
 import edu.stanford.smi.protegex.owl.jena.parser.ProtegeOWLParser;
@@ -44,9 +45,10 @@ public class CreateOWLDatabaseFromFileProjectPlugin extends CreateOWLDatabasePro
                 parser.run(ontologyFileURI);
             }
             catch (Exception ex) {
-                Log.getLogger().severe("Could not load OWL file into database: " + ex);
+            	String message = "Could not load OWL file into database";
+                Log.getLogger().severe(message);
                 Log.getLogger().log(Level.SEVERE, "Exception caught", ex);
-                errors.add(ex);
+                errors.add(new MessageError(ex, message));
             }
             owlModel.resetTripleStoreModel();
             handleErrors(errors);
