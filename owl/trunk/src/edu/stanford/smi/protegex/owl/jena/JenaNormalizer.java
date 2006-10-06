@@ -13,6 +13,8 @@ import com.hp.hpl.jena.vocabulary.OWL;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
 import edu.stanford.smi.protege.util.ApplicationProperties;
+import edu.stanford.smi.protege.util.Log;
+import edu.stanford.smi.protege.util.MessageError;
 import edu.stanford.smi.protegex.owl.model.NamespaceManager;
 import edu.stanford.smi.protegex.owl.model.ProtegeNames;
 import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
@@ -371,9 +373,11 @@ public class JenaNormalizer {
         for (Iterator it = ontProperty.listSuperProperties(true); it.hasNext();) {
             OntProperty superProperty = (OntProperty) it.next();
             if (visited.contains(superProperty)) {
-                errors.add("Error: Property " + ontProperty +
+            	String message = "Error: Property " + ontProperty +
                         " has a cyclic superproperty relation with " + superProperty +
-                        " - please use owl:equivalentProperty instead!");
+                        " - please use owl:equivalentProperty instead!";
+            	Log.getLogger().warning(message);
+            	errors.add(new MessageError(message));
             }
             else {
                 Set newSet = new HashSet(visited);
