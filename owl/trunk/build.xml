@@ -229,6 +229,7 @@
          <classpath refid = "classpath.compile"/>
          <classpath>
             <pathelement location = "${jarfile}"/>
+            <pathelement location = "${lib}/protege-test.jar"/>
          </classpath>
       </javac>
    </target>
@@ -265,6 +266,7 @@
       <classpath>
            <pathelement location="${classes}"/>
            <pathelement location = "${lib}/protege.jar"/>
+           <pathelement location = "${lib}/protege-test.jar"/>
            <fileset
               dir="${plugin}">
               <include name = "**/*.jar"/>
