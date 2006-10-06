@@ -17,6 +17,7 @@ import edu.stanford.smi.protege.model.framestore.FrameStore;
 import edu.stanford.smi.protege.model.framestore.NarrowFrameStore;
 import edu.stanford.smi.protege.util.ApplicationProperties;
 import edu.stanford.smi.protege.util.Log;
+import edu.stanford.smi.protege.util.MessageError;
 import edu.stanford.smi.protege.util.PropertyList;
 import edu.stanford.smi.protege.util.URIUtilities;
 import edu.stanford.smi.protegex.owl.database.OWLDatabaseModel;
@@ -174,7 +175,9 @@ public class JenaKnowledgeBaseFactory implements OWLKnowledgeBaseFactory, Client
 
         }
         else {
-            errors.add("This plugin can currently only load OWL files into OWL projects");
+        	String message = "This plugin can currently only load OWL files into OWL projects";
+        	errors.add(new MessageError(message));
+        	Log.getLogger().severe(message);
         }
     }
 
