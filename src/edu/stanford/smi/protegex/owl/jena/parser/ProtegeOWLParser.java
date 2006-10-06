@@ -27,6 +27,7 @@ import com.hp.hpl.jena.rdf.arp.ARP;
 import com.hp.hpl.jena.rdf.arp.ARPHandlers;
 import com.hp.hpl.jena.rdf.arp.AResource;
 import com.hp.hpl.jena.rdf.arp.NamespaceHandler;
+import com.hp.hpl.jena.rdf.arp.ParseException;
 import com.hp.hpl.jena.rdf.arp.StatementHandler;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
@@ -91,8 +92,12 @@ public class ProtegeOWLParser {
 	private Frame currentType;
 
 	private static int errorLineNumber;
+	
+	private static int errorColumnNumber;
+	
+	private static String errorMessage;
 
-	private static URI errorURI;
+	private static String errorOntology;
 
 	/**
 	 * A rather ugly flag that can be activated to prompt the user if a local
@@ -143,7 +148,7 @@ public class ProtegeOWLParser {
 	                        boolean incremental) {
 		errorLineNumber = -1;
 		tripleCount = 0;
-		errorURI = null;
+		errorOntology = null;
 		this.owlModel = owlModel;
 		this.kb = owlModel;
 		this.tripleStoreModel = owlModel.getTripleStoreModel();
@@ -257,7 +262,21 @@ public class ProtegeOWLParser {
 				if(tripleStore.contains(defaultOntology, owlModel.getRDFTypeProperty(), owlModel.getOWLOntologyClass())) {
 					defaultOntology.delete();
 				}
-				invokation.invokeARP(arp);
+				
+				//TODO: This method does not seem to throw an exception
+				// Investigate this further.
+				try {
+					invokation.invokeARP(arp);
+				} catch (ParseException ex) {
+					errorOntology = ontologyName;
+					errorMessage = ex.getMessage();
+					errorLineNumber = ex.getLineNumber();
+					errorColumnNumber = ex.getColumnNumber();
+					throw ex;
+				} catch (Exception ex) {
+					Log.getLogger().log(Level.WARNING, "Exception caught", ex);
+				}
+				
 				if(owlModel.getRDFResource(":") == null) {
 					createDefaultNamespace(tripleStore);
 				}
@@ -449,14 +468,22 @@ public class ProtegeOWLParser {
 	}
 
 
+	
 	/**
-	 * Gets the URI of the most recently parsed file.  This can be used to diagnose
-	 * where an exception has occured
-	 *
-	 * @return the URI or null
+	 * @deprecated Always return null. Use getErrorOntology().
 	 */
 	public static URI getErrorURI() {
-		return errorURI;
+		return null;
+	}
+	
+	/**
+	 * Gets the ontolog name of the most recently parsed file.  This can be used to diagnose
+	 * where an exception has occured
+	 *
+	 * @return the ontology name or null
+	 */
+	public static String getErrorOntology() {
+		return errorOntology;
 	}
 
 
@@ -1097,5 +1124,15 @@ public class ProtegeOWLParser {
 		else {
 			return url.openStream();
 		}
+	}
+
+
+	public static int getErrorColumnNumber() {
+		return errorColumnNumber;
+	}
+
+
+	public static String getErrorMessage() {
+		return errorMessage;
 	}
 }
