@@ -19,6 +19,7 @@ import java.util.logging.Level;
 import com.hp.hpl.jena.graph.Graph;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntModelSpec;
+import com.hp.hpl.jena.rdf.arp.ParseException;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.RDFWriter;
@@ -34,6 +35,7 @@ import edu.stanford.smi.protege.model.Instance;
 import edu.stanford.smi.protege.model.KnowledgeBaseFactory;
 import edu.stanford.smi.protege.model.framestore.MergingNarrowFrameStore;
 import edu.stanford.smi.protege.util.Log;
+import edu.stanford.smi.protege.util.MessageError;
 import edu.stanford.smi.protege.util.SystemUtilities;
 import edu.stanford.smi.protegex.owl.jena.creator.JenaCreator;
 import edu.stanford.smi.protegex.owl.jena.parser.ProtegeOWLParser;
@@ -271,20 +273,41 @@ public class JenaOWLModel extends AbstractOWLModel implements OntModelProvider {
             load(uri, language);
         }
         catch (Throwable t) {
-            Log.getLogger().log(Level.SEVERE, "Exception caught", t);
-            URI errorURI = ProtegeOWLParser.getErrorURI();
-            if (errorURI != null) {
-                int lineNumber = ProtegeOWLParser.getErrorLineNumber();
-                errors.add("Error in line " + lineNumber + " of " + errorURI);
+            Log.getLogger().log(Level.SEVERE, "Error at loading file "+uri, t);
+            
+            String message = "Errors at loading OWL file " + uri + "\n";
+            
+            String errorOntology = ProtegeOWLParser.getErrorOntology();
+            if (errorOntology != null) {            	
+                message = message + "    Jena parse error on ontology " + errorOntology + 
+                " at line " + ProtegeOWLParser.getErrorLineNumber() +
+        		" column " + ProtegeOWLParser.getErrorColumnNumber() + ".\n";            	
+            	message = message + "    Jena parse error message: " + ProtegeOWLParser.getErrorMessage() + "\n";   		
+                
             }
-            errors.add(t);
-            errors.add("Please consider running the file through an RDF or OWL validation service such as");
-            errors.add("  - RDF Validator: http://www.w3.org/RDF/Validator");
-            errors.add("  - OWL Validator: http://phoebus.cs.man.ac.uk:9999/OWL/Validator");
+            
+            if (t instanceof ParseException) {
+            	ParseException ex = (ParseException) t;
+
+            	message = message + "    Jena parse error at line " + ex.getLineNumber() +
+        		" column " + ex.getColumnNumber() + ".\n";            	
+            	message = message + "    Jena parse error message: " + ex.getMessage() +
+            		" (Jena error number " + ex.getErrorNumber() + ")\n";
+            }
+            
+            message = message + "\nPlease consider running the file through an RDF or OWL validation service such as:";
+            message = message + "\n  - RDF Validator: http://www.w3.org/RDF/Validator";
+            message = message + "\n  - OWL Validator: http://phoebus.cs.man.ac.uk:9999/OWL/Validator";
             if (getNamespaceManager().getPrefix("http://protege.stanford.edu/system#") != null ||
                     getNamespaceManager().getPrefix("http://protege.stanford.edu/kb#") != null) {
-                errors.add("This file seems to have been created with the frame-based Protege RDF Backend. Please try to use the RDF Backend of Protege to open this file and then export it to OWL using Export to Format...");
+                message = message + "\nThis file seems to have been created with the frame-based Protege RDF Backend. " +
+                		"Please try to use the RDF Backend of Protege to open this file and then export it to OWL " +
+                		"using Export to Format...";
             }
+            
+            Log.getLogger().log(Level.SEVERE, message);
+      
+         	errors.add(new MessageError(new Exception(t), message));
         }
     }
 
@@ -337,8 +360,9 @@ public class JenaOWLModel extends AbstractOWLModel implements OntModelProvider {
                 Protege2Jena.saveAll(this, fileURI, language);
             }
             catch (Exception ex) {
-                errors.add("Failed to use Protege2Jena: " + ex + "\nPlease see Java console for error details and possibly\nreport this error to protege-owl@smi.stanford.edu");
-                Log.getLogger().log(Level.SEVERE, "Exception caught", ex);
+            	String message = "Failed to save file " + fileURI + " using Protege2Jena."; 
+            	Log.getLogger().log(Level.SEVERE, message, ex);
+                errors.add(new MessageError(ex, message));                
             }
         }
         else if (getWriterSettings() instanceof ProtegeWriterSettings) {
@@ -350,9 +374,10 @@ public class JenaOWLModel extends AbstractOWLModel implements OntModelProvider {
                         ws.isSortAlphabetically());
                 writer.write();
             }
-            catch (Exception e) {
-
-                errors.add("Failed to save model: " + e);
+            catch (Exception ex) {
+               	String message = "Failed to save file " + fileURI; 
+            	Log.getLogger().log(Level.SEVERE, message, ex);
+                errors.add(new MessageError(ex, message));
             }
         }
     }
@@ -374,8 +399,9 @@ public class JenaOWLModel extends AbstractOWLModel implements OntModelProvider {
             save(file, ontModel, language, namespace);
         }
         catch (Throwable t) {
-            Log.getLogger().log(Level.SEVERE, "Exception caught", t);
-            errors.add(t);
+           	String message = "Failed to save file " + fileURI; 
+        	Log.getLogger().log(Level.SEVERE, message, t);
+            errors.add(new MessageError(new Exception(t), message));
         }
     }
 
@@ -395,8 +421,9 @@ public class JenaOWLModel extends AbstractOWLModel implements OntModelProvider {
             save(os, ontModel, language, namespace);
         }
         catch (Throwable t) {
-            Log.getLogger().log(Level.SEVERE, "Exception caught", t);
-            errors.add(t);
+           	String message = "Failed to save file to output stream"; 
+        	Log.getLogger().log(Level.SEVERE, message, t);
+            errors.add(new MessageError(new Exception(t), message));
         }
     }
 
