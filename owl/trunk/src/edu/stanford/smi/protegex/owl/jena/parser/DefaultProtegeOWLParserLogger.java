@@ -1,5 +1,6 @@
 package edu.stanford.smi.protegex.owl.jena.parser;
 
+import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
 
@@ -31,12 +32,12 @@ public class DefaultProtegeOWLParserLogger implements ProtegeOWLParserLogger {
         // System.out.println(" + " + subject.getName() + " " + predicate.getName() + " " + object);
         //}
         if ((++count % 10000) == 0) {
-            System.out.println(PREFIX + "Triple " + count);
+            Log.getLogger().info(PREFIX + "Triple " + count);
         }
     }
 
 
     public void logWarning(String message) {
-        System.err.println(PREFIX + "Warning: " + message);
+        Log.getLogger().warning(PREFIX + "Warning: " + message);
     }
 }
