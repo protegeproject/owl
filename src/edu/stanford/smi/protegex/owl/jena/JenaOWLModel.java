@@ -275,13 +275,14 @@ public class JenaOWLModel extends AbstractOWLModel implements OntModelProvider {
         catch (Throwable t) {
             Log.getLogger().log(Level.SEVERE, "Error at loading file "+uri, t);
             
-            String message = "Errors at loading OWL file from " + uri + "\n";
-            
             Collection parseErrors = ProtegeOWLParser.getErrors(); 
             if (parseErrors != null && parseErrors.size() > 0) {
             	errors.addAll(parseErrors);
-            }           
+            }
             
+            errors.add(t);
+            
+            String message = "Errors at loading OWL file from " + uri + "\n";
             message = message + "\nPlease consider running the file through an RDF or OWL validation service such as:";
             message = message + "\n  - RDF Validator: http://www.w3.org/RDF/Validator";
             message = message + "\n  - OWL Validator: http://phoebus.cs.man.ac.uk:9999/OWL/Validator";
@@ -291,10 +292,8 @@ public class JenaOWLModel extends AbstractOWLModel implements OntModelProvider {
                 		"Please try to use the RDF Backend of Protege to open this file and then export it to OWL " +
                 		"using Export to Format...";
             }
-            
-            Log.getLogger().log(Level.SEVERE, message);
-      
-         	errors.add(new MessageError(new Exception(t), message));
+   
+         	errors.add(new MessageError(message));
         }
     }
 
