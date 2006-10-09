@@ -12,6 +12,8 @@ import java.util.List;
 
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
+ * TT: This class does not seems to be used anymore.
+ * Consider for clean-up.
  */
 public class ImportsTableModel extends AbstractTableModel implements Disposable {
 
