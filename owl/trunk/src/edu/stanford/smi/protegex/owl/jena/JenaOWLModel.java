@@ -275,25 +275,12 @@ public class JenaOWLModel extends AbstractOWLModel implements OntModelProvider {
         catch (Throwable t) {
             Log.getLogger().log(Level.SEVERE, "Error at loading file "+uri, t);
             
-            String message = "Errors at loading OWL file " + uri + "\n";
+            String message = "Errors at loading OWL file from " + uri + "\n";
             
-            String errorOntology = ProtegeOWLParser.getErrorOntology();
-            if (errorOntology != null) {            	
-                message = message + "    Jena parse error on ontology " + errorOntology + 
-                " at line " + ProtegeOWLParser.getErrorLineNumber() +
-        		" column " + ProtegeOWLParser.getErrorColumnNumber() + ".\n";            	
-            	message = message + "    Jena parse error message: " + ProtegeOWLParser.getErrorMessage() + "\n";   		
-                
-            }
-            
-            if (t instanceof ParseException) {
-            	ParseException ex = (ParseException) t;
-
-            	message = message + "    Jena parse error at line " + ex.getLineNumber() +
-        		" column " + ex.getColumnNumber() + ".\n";            	
-            	message = message + "    Jena parse error message: " + ex.getMessage() +
-            		" (Jena error number " + ex.getErrorNumber() + ")\n";
-            }
+            Collection parseErrors = ProtegeOWLParser.getErrors(); 
+            if (parseErrors != null && parseErrors.size() > 0) {
+            	errors.addAll(parseErrors);
+            }           
             
             message = message + "\nPlease consider running the file through an RDF or OWL validation service such as:";
             message = message + "\n  - RDF Validator: http://www.w3.org/RDF/Validator";
