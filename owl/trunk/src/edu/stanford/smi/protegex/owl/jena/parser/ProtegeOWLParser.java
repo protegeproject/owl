@@ -43,6 +43,7 @@ import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protege.model.framestore.MergingNarrowFrameStore;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protege.util.MessageError;
+import edu.stanford.smi.protege.util.URIUtilities;
 import edu.stanford.smi.protegex.owl.jena.Jena;
 import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
@@ -95,7 +96,7 @@ public class ProtegeOWLParser {
 	
 	private static Collection errors;
 
-	private static String errorOntology;
+	private static URI errorOntologyURI;
 
 	/**
 	 * A rather ugly flag that can be activated to prompt the user if a local
@@ -146,7 +147,7 @@ public class ProtegeOWLParser {
 	                        boolean incremental) {
 	
 		tripleCount = 0;
-		errorOntology = null;
+		errorOntologyURI = null;
 		errors = new ArrayList();
 		
 		this.owlModel = owlModel;
@@ -175,10 +176,8 @@ public class ProtegeOWLParser {
 	 */
 	public void run(final URI uri)
 	        throws Exception {
-		errors = new ArrayList();
 		
-		URL url = new URL(uri.toString());
-		
+		URL url = new URL(uri.toString());		
 		ProtegeOWLParser.this.run(getInputStream(url), url.toString());
 	}
 
@@ -195,6 +194,7 @@ public class ProtegeOWLParser {
 	public void run(final InputStream is,
 	                final String xmlBase)
 	        throws Exception {
+		
 		run(xmlBase, createARPInvokation(is, xmlBase));
 	}
 
@@ -213,6 +213,7 @@ public class ProtegeOWLParser {
 	public void run(final Reader reader,
 	                final String xmlBase)
 	        throws Exception {
+		
 		run(xmlBase, createARPInvokation(reader, xmlBase));
 	}
 
@@ -220,6 +221,10 @@ public class ProtegeOWLParser {
 	protected void run(final String uri,
 	                   final ARPInvokation invokation)
 	        throws Exception {
+		
+		errors = new ArrayList();
+		errorOntologyURI = null;
+		
 		loadTriples(owlModel.getTripleStoreModel().getActiveTripleStore(), uri, invokation);
 	}
 
@@ -229,6 +234,7 @@ public class ProtegeOWLParser {
 		ARPInvokation invokation = new ARPInvokation() {
 			public void invokeARP(ARP arp)
 			        throws Exception {
+				
 				arp.load(inputStream, uri);
 				inputStream.close();
 			}
@@ -241,10 +247,10 @@ public class ProtegeOWLParser {
 	                                          final String uri) {
 		ARPInvokation invokation = new ARPInvokation() {
 			public void invokeARP(ARP arp)
-			        throws Exception {
-				arp.load(reader, uri);
+			        throws Exception {				
+				arp.getOptions().setDefaultErrorMode();
 				
-				arp.getOptions().setStrictErrorMode();
+				arp.load(reader, uri);
 					
 				reader.close();
 			}
@@ -278,8 +284,10 @@ public class ProtegeOWLParser {
 					defaultOntology.delete();
 				}
 				
+				errorOntologyURI = URIUtilities.createURI(ontologyName);
+				
 				invokation.invokeARP(arp);
-						
+								
 				if(owlModel.getRDFResource(":") == null) {
 					createDefaultNamespace(tripleStore);
 				}
@@ -322,6 +330,8 @@ public class ProtegeOWLParser {
 				activateSWRLFactoryIfNecessary(imports);
 				
 				owlModel.setUndoEnabled(true);
+				
+				errorOntologyURI = null;
 				
 				Log.getLogger().info("... Loading completed after " + (System.currentTimeMillis() - startTime) + " ms");
 //			};
@@ -475,24 +485,13 @@ public class ProtegeOWLParser {
 
 	
 	/**
-	 * @deprecated Always return null. Use getErrorOntology().
-	 */
-	public static URI getErrorURI() {
-		return null;
-	}
-	
-	/**
-	 * Gets the ontolog name of the most recently parsed file.  This can be used to diagnose
-	 * where an exception has occured
-	 * FIXME: Currently it returns null. This will be fixed soon (this week: 10.09-13)
-	 * @return the ontology name or null
+	 * Gets the ontology name of the most recently parsed file.  This can be used to diagnose
+	 * where an exception has occured.	 
+	 * @return the error ontology URI or null
 	 */	
-	//TODO : make it public after fix
-	private static String getErrorOntology() {
-		return null;
-		//return errorOntology;
+	public static URI getErrorURI() {
+		return errorOntologyURI;
 	}
-
 
 	private RDFResource findResource(String name) {
 		for(Iterator it = tripleStores.iterator(); it.hasNext();) {
@@ -936,10 +935,11 @@ public class ProtegeOWLParser {
 		}
 		
 		protected void saveErrors(SAXParseException ex, boolean isError) {			
-				
-			String message = (isError ? "An error " : "A warning ") + "occurred at parsing the OWL file at ";
 			
-           	message = message + "line " + ex.getLineNumber() + " and column " + ex.getColumnNumber() + ".\n";            	
+			String message = (isError ? "An error " : "A warning ") + "occurred at parsing the OWL file ";
+			
+			message = message + "\n\n    " + errorOntologyURI + "\n\n";
+           	message = message + "    at line " + ex.getLineNumber() + " and column " + ex.getColumnNumber() + ".\n";            	
         	message = message + "    Jena parse error message: " + ex.getMessage();
         	
         	Log.getLogger().log(isError ? Level.SEVERE : Level.WARNING, message, ex);
