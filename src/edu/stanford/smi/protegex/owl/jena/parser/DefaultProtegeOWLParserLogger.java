@@ -19,8 +19,8 @@ public class DefaultProtegeOWLParserLogger implements ProtegeOWLParserLogger {
         String msg = PREFIX + "Importing " + uri;
         if (!uri.equals(physicalURL)) {
             msg += " (from " + physicalURL + ")";
-        }
-        System.out.println(msg);
+        }       
+        Log.getLogger().info(msg);
     }
 
 
