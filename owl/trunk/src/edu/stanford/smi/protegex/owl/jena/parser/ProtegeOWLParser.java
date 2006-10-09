@@ -29,6 +29,7 @@ import com.hp.hpl.jena.rdf.arp.AResource;
 import com.hp.hpl.jena.rdf.arp.NamespaceHandler;
 import com.hp.hpl.jena.rdf.arp.ParseException;
 import com.hp.hpl.jena.rdf.arp.StatementHandler;
+import com.hp.hpl.jena.rdf.arp.impl.DefaultErrorHandler;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
 import edu.stanford.smi.protege.model.Cls;
@@ -41,6 +42,7 @@ import edu.stanford.smi.protege.model.Reference;
 import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protege.model.framestore.MergingNarrowFrameStore;
 import edu.stanford.smi.protege.util.Log;
+import edu.stanford.smi.protege.util.MessageError;
 import edu.stanford.smi.protegex.owl.jena.Jena;
 import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
@@ -90,12 +92,8 @@ public class ProtegeOWLParser {
 	private String currentDefaultNamespace;
 
 	private Frame currentType;
-
-	private static int errorLineNumber;
 	
-	private static int errorColumnNumber;
-	
-	private static String errorMessage;
+	private static Collection errors;
 
 	private static String errorOntology;
 
@@ -146,19 +144,25 @@ public class ProtegeOWLParser {
 
 	public ProtegeOWLParser(OWLModel owlModel,
 	                        boolean incremental) {
-		errorLineNumber = -1;
+	
 		tripleCount = 0;
 		errorOntology = null;
+		errors = new ArrayList();
+		
 		this.owlModel = owlModel;
 		this.kb = owlModel;
 		this.tripleStoreModel = owlModel.getTripleStoreModel();
 		this.rdfTypeProperty = owlModel.getRDFTypeProperty();
+		
 		rdfFirstProperty = owlModel.getRDFFirstProperty();
 		rdfRestProperty = owlModel.getRDFRestProperty();
+		
 		if(incremental) {
 			populateUntypedResourcesMap();
 		}
+		
 		logger = createLogger();
+		
 		owlNamedClassClass = owlModel.getOWLNamedClassClass();
 		uri2NameConverter = createURI2NameConverter(owlModel, incremental);
 	}
@@ -171,7 +175,10 @@ public class ProtegeOWLParser {
 	 */
 	public void run(final URI uri)
 	        throws Exception {
+		errors = new ArrayList();
+		
 		URL url = new URL(uri.toString());
+		
 		ProtegeOWLParser.this.run(getInputStream(url), url.toString());
 	}
 
@@ -236,6 +243,9 @@ public class ProtegeOWLParser {
 			public void invokeARP(ARP arp)
 			        throws Exception {
 				arp.load(reader, uri);
+				
+				arp.getOptions().setStrictErrorMode();
+					
 				reader.close();
 			}
 		};
@@ -248,56 +258,54 @@ public class ProtegeOWLParser {
 	                        final ARPInvokation invokation)
 	        throws Exception {
 		owlModel.setGenerateEventsEnabled(false);
-                System.out.println("Loading triples");
+                Log.getLogger().info("Loading triples");
+                
 				Set imports = owlModel.getAllImports();
 
 				// To avoid cyclic imports: mark this as already imported
 				addNamespaceToImports(ontologyName, imports);
 				currentDefaultNamespace = ontologyName;
+				
 				ProtegeOWLParser.this.tripleStore = tripleStore;
 				tripleStores.addAll(tripleStoreModel.getTripleStores());
+				
 				ARP arp = createARP();
+				
 				long startTime = System.currentTimeMillis();
+				
 				OWLOntology defaultOntology = owlModel.getDefaultOWLOntology();
 				if(tripleStore.contains(defaultOntology, owlModel.getRDFTypeProperty(), owlModel.getOWLOntologyClass())) {
 					defaultOntology.delete();
 				}
 				
-				//TODO: This method does not seem to throw an exception
-				// Investigate this further.
-				try {
-					invokation.invokeARP(arp);
-				} catch (ParseException ex) {
-					errorOntology = ontologyName;
-					errorMessage = ex.getMessage();
-					errorLineNumber = ex.getLineNumber();
-					errorColumnNumber = ex.getColumnNumber();
-					throw ex;
-				} catch (Exception ex) {
-					Log.getLogger().log(Level.WARNING, "Exception caught", ex);
-				}
-				
+				invokation.invokeARP(arp);
+						
 				if(owlModel.getRDFResource(":") == null) {
 					createDefaultNamespace(tripleStore);
 				}
+				
 				String dns = owlModel.getNamespaceManager().getDefaultNamespace();
 				if(dns != null) {
 					addNamespaceToImports(dns, imports);
 				}
-
 				processImports(tripleStore, imports);
+				
 				long endTime = System.currentTimeMillis();
-				System.out.println("[ProtegeOWLParser] Completed triple loading after " + (endTime - startTime) + " ms");
+				
+				Log.getLogger().info("[ProtegeOWLParser] Completed triple loading after " + (endTime - startTime) + " ms");
+				
 				do {
 					tripleStoreModel.setActiveTripleStore(tripleStore);
 					owlModel.getNamespaceManager().update();
 					owlModel.flushCache();
 				}
 				while(runImplicitImports(imports));
+				
 				owlModel.setUndoEnabled(false);
 
 				// Assign rdf:List to any untyped lists
 				new RDFListPostProcessor(owlModel);
+				
 				tripleStoreModel.setActiveTripleStore(tripleStore);
 				uri2NameConverter.updateInternalState();
 
@@ -310,9 +318,12 @@ public class ProtegeOWLParser {
 				TripleStoreUtil.updateFrameInclusion(MergingNarrowFrameStore.get(owlModel),
 				                                     ((KnowledgeBase) owlModel).getSlot(Model.Slot.NAME));
 				endTime = System.currentTimeMillis();
+				
 				activateSWRLFactoryIfNecessary(imports);
+				
 				owlModel.setUndoEnabled(true);
-				System.out.println("... Loading completed after " + (System.currentTimeMillis() - startTime) + " ms");
+				
+				Log.getLogger().info("... Loading completed after " + (System.currentTimeMillis() - startTime) + " ms");
 //			};
 //		};
 //		owlModel.getTaskManager().run(task);
@@ -354,7 +365,7 @@ public class ProtegeOWLParser {
 
 	protected ARP createARP() {
 		ARP arp = new ARP();
-		ARPHandlers handlers = new ARPHandlers();
+		ARPHandlers handlers = arp.getHandlers();
 		handlers.setStatementHandler(new MyStatementHandler());
 		handlers.setErrorHandler(new MyErrorHandler());
 		handlers.setNamespaceHandler(new MyNamespaceHandler());
@@ -462,12 +473,6 @@ public class ProtegeOWLParser {
 		return new DefaultURI2NameConverter(owlModel, logger, incremental);
 	}
 
-
-	public static int getErrorLineNumber() {
-		return errorLineNumber;
-	}
-
-
 	
 	/**
 	 * @deprecated Always return null. Use getErrorOntology().
@@ -479,11 +484,13 @@ public class ProtegeOWLParser {
 	/**
 	 * Gets the ontolog name of the most recently parsed file.  This can be used to diagnose
 	 * where an exception has occured
-	 *
+	 * FIXME: Currently it returns null. This will be fixed soon (this week: 10.09-13)
 	 * @return the ontology name or null
-	 */
-	public static String getErrorOntology() {
-		return errorOntology;
+	 */	
+	//TODO : make it public after fix
+	private static String getErrorOntology() {
+		return null;
+		//return errorOntology;
 	}
 
 
@@ -841,21 +848,25 @@ public class ProtegeOWLParser {
 //			        throws Exception {
 				if(imports.contains(uri) == false) {
 					imports.add(uri);
+					
 					URI ontologyNameURI = null;
 					try {
 						ontologyNameURI = new URI(uri);
 					}
 					catch(Exception ex) {
-                                          Log.getLogger().log(Level.SEVERE, "Exception caught", ex);
+                        Log.getLogger().log(Level.SEVERE, "Exception caught", ex);
 					}
+					
 					Repository repository = getRepository(owlModel, ProtegeOWLParser.this.tripleStore, ontologyNameURI);
 					if(repository != null) {
 						currentDefaultNamespace = uri;
 						ProtegeOWLParser.this.tripleStore = tripleStoreModel.createTripleStore(uri);
 						tripleStores.add(ProtegeOWLParser.this.tripleStore);
 						tripleStoreModel.setActiveTripleStore(ProtegeOWLParser.this.tripleStore);
+						
 						ARP arp = createARP();
 						logger.logImport(uri, repository.getOntologyLocationDescription(ontologyNameURI));
+						
 						InputStream is = repository.getInputStream(ontologyNameURI);
 						// Double check we can get an input stream to read from
 						if(is != null) {
@@ -892,7 +903,10 @@ public class ProtegeOWLParser {
 		this.uri2NameConverter = converter;
 	}
 
-
+	public static Collection getErrors() {
+		return errors;
+	}
+	
 	/**
 	 * *****************************************************************************
 	 * ARP Interface Implementations
@@ -902,23 +916,38 @@ public class ProtegeOWLParser {
 
 		public void error(SAXParseException exception)
 		        throws SAXException {
-                  Log.getLogger().log(Level.SEVERE, "Error", exception);
+			saveErrors(exception);
 		}
 
 
 		public void fatalError(SAXParseException exception)
 		        throws SAXException {
-                  Log.getLogger().log(Level.SEVERE, "Fatal Error", exception);
+			saveErrors(exception);
 		}
 
 
 		public void warning(SAXParseException exception)
 		        throws SAXException {
-			logger.logWarning(exception.toString());
-                        if (log.isLoggable(Level.FINE)) {
-                          Log.getLogger().log(Level.FINE, "Exception caught", exception);
-                        }
+            saveErrors(exception, false);
 		}
+		
+		protected void saveErrors(SAXParseException ex) {
+			saveErrors(ex, true);
+		}
+		
+		protected void saveErrors(SAXParseException ex, boolean isError) {			
+				
+			String message = (isError ? "An error " : "A warning ") + "occurred at parsing the OWL file at ";
+			
+           	message = message + "line " + ex.getLineNumber() + " and column " + ex.getColumnNumber() + ".\n";            	
+        	message = message + "    Jena parse error message: " + ex.getMessage();
+        	
+        	Log.getLogger().log(isError ? Level.SEVERE : Level.WARNING, message, ex);
+        	
+        	errors.add(new MessageError(ex, message));
+					            
+		}
+						
 	}
 
 	private class MyNamespaceHandler implements NamespaceHandler {
@@ -1002,7 +1031,7 @@ public class ProtegeOWLParser {
 				tripleCount++;
 				if(tripleCount % 5000 == 0 /*&& task != null*/) {
 					//task.setMessage("Loaded " + tripleCount + " triples");
-                    System.out.println("Loaded " + tripleCount + " triples");
+                    Log.getLogger().info("Loaded " + tripleCount + " triples");
                 }
 			}
 		}
@@ -1020,7 +1049,7 @@ public class ProtegeOWLParser {
 			tripleCount++;
 			if(tripleCount % 5000 == 0 /*&& task != null*/) {
 				//task.setMessage("Loaded " + tripleCount + " triples");
-                System.out.println("Loaded " + tripleCount + " triples");
+                Log.getLogger().info("Loaded " + tripleCount + " triples");
             }
 		}
 	}
@@ -1084,12 +1113,16 @@ public class ProtegeOWLParser {
 		Repository rep = getRepository(owlModel, activeTripleStore, ontologyName);
 		if(rep != null) {
 			TripleStore ts = owlModel.getTripleStoreModel().createTripleStore(ontologyName.toString());
+			
 			ProtegeOWLParser parser = new ProtegeOWLParser(owlModel, true);
+			
 			if(prefixForDefaultNamespace != null) {
 				parser.setPrefixForDefaultNamespace(prefixForDefaultNamespace);
 			}
 			InputStream is = rep.getInputStream(ontologyName);
+			
 			parser.loadTriples(ts, ontologyName.toString(), parser.createARPInvokation(is, ontologyName.toString()));
+			
 			owlModel.getTripleStoreModel().setActiveTripleStore(activeTripleStore);
 			owlModel.getOWLFrameStore().copyFacetValuesIntoNamedClses();
 		}
@@ -1126,13 +1159,4 @@ public class ProtegeOWLParser {
 		}
 	}
 
-
-	public static int getErrorColumnNumber() {
-		return errorColumnNumber;
-	}
-
-
-	public static String getErrorMessage() {
-		return errorMessage;
-	}
 }
