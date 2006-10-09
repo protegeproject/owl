@@ -1,5 +1,6 @@
 package edu.stanford.smi.protegex.owl.model.triplestore.impl;
 
+import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 
@@ -57,6 +58,6 @@ public class TripleChangePostProcessor {
 
 
     private static void log(String str) {
-        System.out.println("[TripleChangePostProcessor] " + str);
+        Log.getLogger().info("[TripleChangePostProcessor] " + str);
     }
 }
