@@ -41,6 +41,8 @@ import edu.stanford.smi.protegex.owl.ui.metadatatab.prefixes.PrefixesPanel;
 
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
+ * TT: This class is not referenced from anywhere in the code.
+ * We should consider it for clean-up.
  */
 public class ImportsPanel extends JPanel implements Disposable {
 
