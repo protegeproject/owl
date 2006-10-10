@@ -869,6 +869,8 @@ public class ProtegeOWLParser {
 						InputStream is = repository.getInputStream(ontologyNameURI);
 						// Double check we can get an input stream to read from
 						if(is != null) {
+							errorOntologyURI = ontologyNameURI;
+							
 							arp.load(is, uri);
 							// Do imports for this import
 							processImports(ProtegeOWLParser.this.tripleStore, imports);
@@ -936,7 +938,7 @@ public class ProtegeOWLParser {
 		
 		protected void saveErrors(SAXParseException ex, boolean isError) {			
 			
-			String message = (isError ? "An error " : "A warning ") + "occurred at parsing the OWL file ";
+			String message = (isError ? "An error " : "A warning ") + "occurred at parsing the OWL ontology ";
 			
 			message = message + "\n\n    " + errorOntologyURI + "\n\n";
            	message = message + "    at line " + ex.getLineNumber() + " and column " + ex.getColumnNumber() + ".\n";            	
