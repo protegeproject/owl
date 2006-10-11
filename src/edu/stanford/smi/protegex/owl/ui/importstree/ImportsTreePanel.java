@@ -10,6 +10,7 @@ import edu.stanford.smi.protege.util.*;
 import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLOntology;
+import edu.stanford.smi.protegex.owl.model.ProtegeNames;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLOntology;
 import edu.stanford.smi.protegex.owl.model.impl.OWLUtil;
@@ -175,6 +176,7 @@ public class ImportsTreePanel extends JPanel implements HostResourceDisplay, Dis
             if (wizard.execute() == Wizard.RESULT_FINISH) {
                 ImportHelper importHelper = new ImportHelper((JenaOWLModel) owlModel);
                 Collection prefixes = new ArrayList(owlModel.getNamespaceManager().getPrefixes());
+                
                 for (Iterator it = wizard.getImportData().getImportEntries().iterator(); it.hasNext();) {
                     ImportEntry importEntry = (ImportEntry) it.next();
                     Repository rep = importEntry.getRepositoryToAdd();
@@ -185,6 +187,10 @@ public class ImportsTreePanel extends JPanel implements HostResourceDisplay, Dis
                     importHelper.addImport(ontologyURI);
                 }
                 importHelper.importOntologies();
+                
+                //TODO: This should be moved in the import code
+                owlModel.getNamespaceManager().setPrefix(ProtegeNames.NS, ProtegeNames.PROTEGE_PREFIX);
+                
                 Collection addedPrefixes = new ArrayList(owlModel.getNamespaceManager().getPrefixes());
                 addedPrefixes.removeAll(prefixes);
                 if (addedPrefixes.size() > 0) {
