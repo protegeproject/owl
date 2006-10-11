@@ -295,6 +295,12 @@ public class JenaOWLModel extends AbstractOWLModel implements OntModelProvider {
    
          	errors.add(new MessageError(message));
         }
+        
+        //TODO: Improve this.
+        Collection parseErrors = ProtegeOWLParser.getErrors(); 
+        if (parseErrors != null && parseErrors.size() > 0) {
+        	errors.addAll(parseErrors);
+        }
     }
 
 
