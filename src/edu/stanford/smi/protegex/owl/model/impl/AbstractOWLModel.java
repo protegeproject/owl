@@ -3886,5 +3886,42 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     public RDFProperty getOWLDistinctMembersProperty() {
         return (RDFProperty) owlDistinctMembersProperty;
     }
+    
+    public void setDirectOwnSlotValues(Frame frame, Slot slot, Collection values) {
+
+        final int valueCount = values.size();
+        if (valueCount > 0) {
+            for (Iterator it = values.iterator(); it.hasNext();) {
+                Object o = it.next();
+                if (o instanceof RDFSLiteral) {
+                    values = convertRDFSLiteralsToInternalFormat(values);
+                    break;
+                }
+            }
+        }
+        super.setDirectOwnSlotValues(frame, slot, values);
+    }
+    
+    private List convertRDFSLiteralsToInternalFormat(Collection values) {
+      final List result = new LinkedList();
+      for (Iterator it = values.iterator(); it.hasNext();) {
+          final Object o = it.next();
+          if (o instanceof RDFSLiteral) {
+              final DefaultRDFSLiteral literal = (DefaultRDFSLiteral) o;
+              final Object optimized = literal.getPlainValue();
+              if (optimized != null) {
+                  result.add(optimized);
+              }
+              else {
+                  result.add(literal.getRawValue());
+              }
+          }
+          else {
+              result.add(o);
+          }
+      }
+      return result;
+    }
+    
 
 }
