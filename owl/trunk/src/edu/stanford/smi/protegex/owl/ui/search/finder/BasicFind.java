@@ -1,10 +1,22 @@
 package edu.stanford.smi.protegex.owl.ui.search.finder;
 
-import edu.stanford.smi.protege.model.Frame;
-import edu.stanford.smi.protege.model.Slot;
-import edu.stanford.smi.protegex.owl.model.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-import java.util.*;
+import edu.stanford.smi.protege.model.Frame;
+import edu.stanford.smi.protege.model.KnowledgeBase;
+import edu.stanford.smi.protege.model.Slot;
+import edu.stanford.smi.protegex.owl.model.OWLIndividual;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
+import edu.stanford.smi.protegex.owl.model.OWLProperty;
+import edu.stanford.smi.protegex.owl.model.RDFResource;
 
 /**
  * @author Nick Drummond, Medical Informatics Group, University of Manchester
@@ -14,63 +26,103 @@ public class BasicFind implements Find {
 
     private static final int MAX_MATCHES = -1;
 
-    protected OWLModel owlModel;
+    OWLModel owlModel;
 
-    protected Map results = new HashMap();
+    private Map<RDFResource, FindResult> results = new HashMap<RDFResource, FindResult>();
+    
+    private String string;
 
-    protected String string;
+    private int searchType;
 
-    protected int searchType;
-
-    private List listeners;
+    private List<SearchListener> listeners;
 
     private boolean running = false;
+
+    private Object lock;
 
     public BasicFind(OWLModel owlModel, int type) {
         this.owlModel = owlModel;
         this.searchType = type;
+        lock = owlModel;
     }
 
     public void startSearch(String s) {
-        startSearch(s, this.searchType);
+        startSearch(s, searchType);
     }
 
     public void startSearch(String s, int type) {
-
+      try {
+        synchronized (lock) {
+          if (!aborted()) { 
+            string = s;
+            searchType = type;
+            results.clear();
+            running = true;
+          } else {
+            return;
+          }
+        }
         notifySearchStarted();
+        
+        if ((s != null) && (s.length() > 0)) {
 
-        string = s;
-        searchType = type;
+          List searchProps = getSearchProperties();
 
-        results.clear();
-
-        if ((string != null) && (string.length() > 0)) {
-            List searchProps = getSearchProperties();
-
-            for (Iterator i = searchProps.iterator(); i.hasNext();) {
-                results.putAll(searchOnSlot((Slot) i.next(), string, null, searchType));
+          for (Iterator i = searchProps.iterator(); i.hasNext() && !aborted();) {
+            Map<RDFResource, FindResult> res = searchOnSlot((Slot) i.next(), s, null, type);
+            synchronized (lock) {
+              results.putAll(res);
             }
-            String lang = owlModel.getDefaultLanguage();
-            if (lang != null) {
-                for (Iterator i = searchProps.iterator(); i.hasNext();) {
-                    Slot slot = (Slot) i.next();
-                    if (!slot.equals(owlModel.getNameSlot())) {
-                        results.putAll(searchOnSlot(slot, string, lang, searchType));
-                    }
+            notifyResultsUpdated();
+          }
+          String lang = owlModel.getDefaultLanguage();
+          if (lang != null) {
+            for (Iterator i = searchProps.iterator(); i.hasNext() && !aborted();) {
+              Slot slot = (Slot) i.next();
+              if (!slot.equals(((KnowledgeBase) owlModel).getNameSlot())) {
+                Map<RDFResource, FindResult> res = searchOnSlot(slot, s, lang, type);
+                synchronized (lock) {
+                  results.putAll(res);
                 }
+                notifyResultsUpdated();
+              }
             }
+          }
         }
 
-        notifySearchComplete();
+        if (!aborted()) {
+          notifySearchComplete();
+        }
+        else {
+          notifySearchCancelled();
+        }
+      } finally {
+        synchronized (lock) {
+          running = false;
+        }
+      }
     }
 
     public void cancelSearch() {
+      throw new UnsupportedOperationException("Can't abort non-threaded search");
     }
 
-    protected Map searchOnSlot(Slot searchProp, String searchStr,
-                               String lang, int searchType) {
+    protected boolean aborted() {
+      return false;
+    }
+    
+    public boolean isRunning() {
+      synchronized (lock) {
+        return running;
+      }
+    }
 
-        Map slotResults = new HashMap();
+    protected Map<RDFResource, FindResult> searchOnSlot(Slot searchProp, 
+                                                        String searchStr,
+                                                        String lang, 
+                                                        int searchType) {
+
+        Map<RDFResource, FindResult> slotResults = new HashMap<RDFResource, FindResult>();
 
         Collection frames = null;
 
@@ -92,7 +144,7 @@ public class BasicFind implements Find {
                 break;
         }
 
-        frames = owlModel.getMatchingFrames(searchProp, null, false, actualSearchString, BasicFind.MAX_MATCHES);
+        frames = ((KnowledgeBase) owlModel).getMatchingFrames(searchProp, null, false, actualSearchString, BasicFind.MAX_MATCHES);
 
         if (frames != null) {
             for (Iterator j = frames.iterator(); j.hasNext();) {
@@ -130,34 +182,47 @@ public class BasicFind implements Find {
         return searchProps;
     }
 
+    /*
+     * If the following calls are expensive we can build thread-safe Map and Set objects
+     * to use.
+     */
 
     public Map<RDFResource, FindResult> getResults() {
-        return results;
+      synchronized (lock) {
+        return new HashMap<RDFResource, FindResult>(results);
+      }
     }
 
     public Set getResultResources() {
-        return results.keySet();
+      synchronized (lock) {
+        return new HashSet(results.keySet());
+      }
     }
 
 
     public int getResultCount() {
+      synchronized (lock) {
         return results.size();
+      }
     }
 
 
     public String getSummaryText() {
-        if (running) {
-            return "Searching for \"" + string + "\" : (" + results.size() + " matches)";
+      synchronized (lock) {
+        if (isRunning()) {
+          return "Searching for \"" + string + "\" : (" + results.size() + " matches)";
         }
         else {
-
-            return "Results for \"" + string + "\" : (" + results.size() + " matches)";
+          return "Results for \"" + string + "\" : (" + results.size() + " matches)";
         }
+      }
     }
 
 
     public String getLastSearch() {
+      synchronized  (lock) {
         return string;
+      }
     }
 
 
@@ -175,7 +240,6 @@ public class BasicFind implements Find {
         return getSearchProperties().size();
     }
 
-
     /**
      * Only look at classes, properties and individuals
      *
@@ -190,59 +254,66 @@ public class BasicFind implements Find {
     }
 
     public int getSearchType() {
+      synchronized (lock) {
         return searchType;
+      }
     }
-
+    
     protected void notifySearchStarted() {
-        running = true;
+      synchronized (lock) {
         for (Iterator i = listeners.iterator(); i.hasNext();) {
             SearchListener l = (SearchListener) i.next();
             l.searchStartedEvent(this);
             l.searchEvent(this);
         }
-        Thread.yield();
+      }
     }
 
     protected void notifyResultsUpdated() {
-        for (Iterator i = listeners.iterator(); i.hasNext();) {
-            SearchListener l = (SearchListener) i.next();
+      synchronized (lock) {
+        for (Iterator<SearchListener> i = listeners.iterator(); i.hasNext();) {
+            SearchListener l = i.next();
             l.resultsUpdatedEvent(results.size(), this);
             l.searchEvent(this);
         }
-        Thread.yield();
+      }
     }
 
     protected void notifySearchComplete() {
-        running = false;
-        for (Iterator i = listeners.iterator(); i.hasNext();) {
-            SearchListener l = (SearchListener) i.next();
+      synchronized (lock) {
+        for (Iterator<SearchListener> i = listeners.iterator(); i.hasNext();) {
+            SearchListener l = i.next();
             l.searchCompleteEvent(results.size(), this);
             l.searchEvent(this);
         }
-        Thread.yield();
+      }
     }
 
     protected void notifySearchCancelled() {
-        for (Iterator i = listeners.iterator(); i.hasNext();) {
-            SearchListener l = (SearchListener) i.next();
+      synchronized (lock) {
+        for (Iterator<SearchListener> i = listeners.iterator(); i.hasNext();) {
+            SearchListener l = i.next();
             l.searchCancelledEvent(this);
             l.searchEvent(this);
         }
-        running = false;
-        Thread.yield();
+      }
     }
 
     public void addResultListener(SearchListener l) {
+      synchronized (lock) {
         if (listeners == null) {
-            listeners = new ArrayList();
+            listeners = new ArrayList<SearchListener>();
         }
         listeners.add(l);
+      }
     }
 
     public boolean removeResultListener(SearchListener l) {
+      synchronized (lock) {
         if (listeners != null) {
             return listeners.remove(l);
         }
         return false;
+      }
     }
 }
