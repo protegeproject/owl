@@ -1,11 +1,11 @@
 package edu.stanford.smi.protegex.owl.ui.search.finder;
 
-import edu.stanford.smi.protege.model.Slot;
-import edu.stanford.smi.protegex.owl.model.OWLModel;
-
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
+
+import edu.stanford.smi.protege.util.ExclusiveRunnable;
+import edu.stanford.smi.protege.util.Log;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
 
 /**
  * @author Nick Drummond, Medical Informatics Group, University of Manchester
@@ -13,75 +13,65 @@ import java.util.Map;
  */
 public class ThreadedFind extends BasicFind {
 
-    Thread searchThread;
-    DoFind currentfind;
+    private Thread searchThread;
+    private DoFind currentfind;
+    private Object lock;
 
     public ThreadedFind(OWLModel owlModel, int type) {
         super(owlModel, type);
+        lock = owlModel;
+        currentfind = new DoFind();
     }
 
+    /**
+     * Starts the search.
+     * 
+     * Note that this routine  will wait for any previous searches to complete.
+     * 
+     * @param s The string to search for.
+     * @param type The type of search.
+     * 
+     */
     public void startSearch(String s, int type) {
-        string = s;
-
-        searchType = type;
-
-        currentfind = new DoFind();
+      synchronized (lock) {
+        currentfind.setString(s);
+        currentfind.setType(type);
 
         searchThread = new Thread(currentfind);
 
         searchThread.start();
+      }      
+    }
+    
+    private void startSuperSearch(String s, int type) {
+      super.startSearch(s, type);
+    }
+    
+    protected boolean aborted() {
+      return currentfind.isAborted();
     }
 
     public void cancelSearch() {
-        if (searchThread != null && searchThread.isAlive()) {
-            currentfind.stop();
-        }
-        super.cancelSearch();
+      if (currentfind != null) {
+        currentfind.abort();
+        currentfind.waitForShutdown();
+      }
     }
-
-    class DoFind implements Runnable {
-
-        private boolean allowRun;
-
-        public void stop() {
-            allowRun = false;
-        }
-
-        public void run() {
-
-            results.clear();
-            allowRun = true;
-
-            notifySearchStarted();
-
-            if ((string != null) && (string.length() > 0)) {
-
-                List searchProps = getSearchProperties();
-
-                for (Iterator i = searchProps.iterator(); i.hasNext() && allowRun;) {
-                    Map res = searchOnSlot((Slot) i.next(), string, null, searchType);
-                    results.putAll(res);
-                    notifyResultsUpdated();
-                }
-                String lang = owlModel.getDefaultLanguage();
-                if (lang != null) {
-                    for (Iterator i = searchProps.iterator(); i.hasNext() && allowRun;) {
-                        Slot slot = (Slot) i.next();
-                        if (!slot.equals(owlModel.getNameSlot())) {
-                            Map res = searchOnSlot(slot, string, lang, searchType);
-                            results.putAll(res);
-                            notifyResultsUpdated();
-                        }
-                    }
-                }
-            }
-
-            if (allowRun) {
-                notifySearchComplete();
-            }
-            else {
-                notifySearchCancelled();
-            }
-        }
+    
+    class DoFind extends ExclusiveRunnable {
+      private String string;
+      private int searchType;
+      
+      public void setString(String string) {
+        this.string = string;
+      }
+      
+      public void setType(int searchType) {
+        this.searchType = searchType; 
+      }
+      
+      public void execute() {
+        startSuperSearch(string, searchType);
+      }
     }
 }
