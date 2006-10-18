@@ -40,6 +40,8 @@ public class AssertedInstancesListPanel extends SelectableContainer implements D
 
     private AllowableAction createAction;
 
+    private AllowableAction createBnodeAction;
+    
     private AllowableAction copyAction;
 
     private AllowableAction deleteAction;
@@ -178,6 +180,7 @@ public class AssertedInstancesListPanel extends SelectableContainer implements D
         c.addHeaderButton(createCreateAction());
         c.addHeaderButton(createCopyAction());
         c.addHeaderButton(createDeleteAction());
+        c.addHeaderButton(createBNodeCreateAction());
     }
 
 
@@ -237,6 +240,26 @@ public class AssertedInstancesListPanel extends SelectableContainer implements D
         return createAction;
     }
 
+    
+    protected Action createBNodeCreateAction() {
+        createAction = new CreateAction("Create anonymous instance", OWLIcons.getCreateIndividualIcon(OWLIcons.RDF_ANON_INDIVIDUAL)) {
+            public void onCreate() {
+                if (!classes.isEmpty()) {
+                	String name = owlModel.getNextAnonymousResourceName();
+                    Instance instance = owlModel.createInstance(name, classes);
+                    if (instance instanceof Cls) {
+                        Cls newCls = (Cls) instance;
+                        if (newCls.getDirectSuperclassCount() == 0) {
+                            newCls.addDirectSuperclass(owlModel.getOWLThingClass());
+                        }
+                    }
+                    list.setSelectedValue(instance, true);
+                }
+            }
+        };
+        return createAction;
+    }
+    
 
     protected Action createConfigureAction() {
         return new ConfigureAction() {
