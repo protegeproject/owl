@@ -55,7 +55,11 @@ public class ResultsViewModelFind extends AbstractTableModel
 
 
     public synchronized Object getElementAt(int index) {
+      if (index < orderedKeys.size()) {
         return orderedKeys.get(index);
+      } else {
+        return null;
+      }
     }
 
 
