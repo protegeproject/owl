@@ -1,6 +1,8 @@
 package edu.stanford.smi.protegex.owl.javacode;
 
 import edu.stanford.smi.protegex.owl.model.*;
+import edu.stanford.smi.protegex.owl.swrl.model.SWRLFactory;
+import edu.stanford.smi.protegex.owl.swrl.model.SWRLNames;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -57,8 +59,13 @@ public class JavaCodeGenerator {
     public void createAll() throws IOException {
         for (Iterator it = owlModel.getUserDefinedRDFSNamedClasses().iterator(); it.hasNext();) {
             RDFSNamedClass aClass = (RDFSNamedClass) it.next();
-            createInterface(aClass);
-            createImplementation(aClass);
+            
+            // Filter out SWRL classes
+            // Is there a better way of filtering out the SWRL classes?
+            if (!aClass.getNamespace().equals(SWRLNames.SWRL_NAMESPACE)) {            
+            	createInterface(aClass);
+            	createImplementation(aClass);
+            }
         }
         createFactoryClass();
     }
@@ -95,24 +102,26 @@ public class JavaCodeGenerator {
         printWriter.println("        this.owlModel = owlModel;");
         printWriter.println("    }");
         for (Iterator it = owlModel.getUserDefinedRDFSNamedClasses().iterator(); it.hasNext();) {
-            RDFSNamedClass cls = (RDFSNamedClass) it.next();
-            String interfaceName = getInterfaceName(cls);
-            printWriter.println();
-            printWriter.println();
-            printWriter.println("    public RDFSNamedClass get" + interfaceName + "Class() {");
-            printWriter.println("        final String uri = \"" + cls.getURI() + "\";");
-            printWriter.println("        final String name = owlModel.getResourceNameForURI(uri);");
-            printWriter.println("        return owlModel.getRDFSNamedClass(name);");
-            printWriter.println("    }");
-            printWriter.println();
-            printWriter.println("    public " + interfaceName + " create" + interfaceName + "(String name) {");
-            printWriter.println("        final RDFSNamedClass cls = get" + interfaceName + "Class();");
-            printWriter.println("        return (" + interfaceName + ") cls.createInstance(name).as(" + interfaceName + ".class);");
-            printWriter.println("    }");
-            printWriter.println();
-            printWriter.println("    public " + interfaceName + " get" + interfaceName + "(String name) {");
-            printWriter.println("        return (" + interfaceName + ") owlModel.getRDFResource(name).as(" + interfaceName + ".class);");
-            printWriter.println("    }");
+            RDFSNamedClass cls = (RDFSNamedClass) it.next();            
+            if (!cls.getNamespace().equals(SWRLNames.SWRL_NAMESPACE)) {  
+	            String interfaceName = getInterfaceName(cls);
+	            printWriter.println();
+	            printWriter.println();
+	            printWriter.println("    public RDFSNamedClass get" + interfaceName + "Class() {");
+	            printWriter.println("        final String uri = \"" + cls.getURI() + "\";");
+	            printWriter.println("        final String name = owlModel.getResourceNameForURI(uri);");
+	            printWriter.println("        return owlModel.getRDFSNamedClass(name);");
+	            printWriter.println("    }");
+	            printWriter.println();
+	            printWriter.println("    public " + interfaceName + " create" + interfaceName + "(String name) {");
+	            printWriter.println("        final RDFSNamedClass cls = get" + interfaceName + "Class();");
+	            printWriter.println("        return (" + interfaceName + ") cls.createInstance(name).as(" + interfaceName + ".class);");
+	            printWriter.println("    }");
+	            printWriter.println();
+	            printWriter.println("    public " + interfaceName + " get" + interfaceName + "(String name) {");
+	            printWriter.println("        return (" + interfaceName + ") owlModel.getRDFResource(name).as(" + interfaceName + ".class);");
+	            printWriter.println("    }");
+            }
         }
         printWriter.println("}");
     }
