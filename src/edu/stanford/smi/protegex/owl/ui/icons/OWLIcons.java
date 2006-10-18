@@ -162,6 +162,8 @@ public class OWLIcons {
     public static final String RDF_DATATYPE = "RDFSDatatype";
 
     public static final String RDF_INDIVIDUAL = "RDFIndividual";
+    
+    public static final String RDF_ANON_INDIVIDUAL = "RDFAnonIndividual";    
 
     public static final String RDF_INDIVIDUAL_FRAME = "RDFIndividualFrame";
 
