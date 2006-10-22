@@ -2,7 +2,6 @@ package edu.stanford.smi.protegex.owl.storage;
 
 import java.net.URI;
 
-import edu.stanford.smi.protege.model.KnowledgeBase;
 import edu.stanford.smi.protege.model.Project;
 import edu.stanford.smi.protege.test.APITestCase;
 import edu.stanford.smi.protege.util.URIUtilities;
