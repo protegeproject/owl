@@ -234,6 +234,17 @@
       </javac>
    </target>
 
+  <target name = "checkJunitConfiguration" depends = "junit-compile">
+    <java classname = "edu.stanford.smi.protegex.owl.junit_config.CheckConfiguration">
+      <classpath>
+        <pathelement location="${classes}"/>
+        <pathelement location = "${lib}/protege.jar"/>
+        <pathelement location = "${lib}/protege-test.jar"/>
+        <pathelement location = "${lib}/junit.jar"/>
+      </classpath>
+    </java>
+  </target>
+
    <!--
      My experience is that "ant junit" provides almost no debugging
      information when things go wrong.  (This was not true in my
@@ -256,7 +267,7 @@
        -->
    <target name = "junit" 
            description = "run the tests (anybody can do it)"
-           depends = "plugin.dir,junit-compile">
+           depends = "plugin.dir,junit-compile,checkJunitConfiguration">
      <junit printsummary="withOutAndErr"
             dir = "." 
             fork = "yes"
