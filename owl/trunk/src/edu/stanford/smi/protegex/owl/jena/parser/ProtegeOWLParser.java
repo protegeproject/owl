@@ -177,7 +177,7 @@ public class ProtegeOWLParser {
 	public void run(final URI uri)
 	        throws Exception {
 		
-		URL url = new URL(uri.toString());		
+		URL url = uri.toURL();		
 		ProtegeOWLParser.this.run(getInputStream(url), url.toString());
 	}
 
