@@ -40,7 +40,7 @@ public class AssertedInstancesListPanel extends SelectableContainer implements D
 
     private AllowableAction createAction;
 
-    private AllowableAction createBnodeAction;
+    private AllowableAction createAnonymousAction;
     
     private AllowableAction copyAction;
 
@@ -180,7 +180,7 @@ public class AssertedInstancesListPanel extends SelectableContainer implements D
         c.addHeaderButton(createCreateAction());
         c.addHeaderButton(createCopyAction());
         c.addHeaderButton(createDeleteAction());
-        c.addHeaderButton(createBNodeCreateAction());
+        c.addHeaderButton(createCreateAnonymousAction());
     }
 
 
@@ -241,8 +241,8 @@ public class AssertedInstancesListPanel extends SelectableContainer implements D
     }
 
     
-    protected Action createBNodeCreateAction() {
-        createAction = new CreateAction("Create anonymous instance", OWLIcons.getCreateIndividualIcon(OWLIcons.RDF_ANON_INDIVIDUAL)) {
+    protected Action createCreateAnonymousAction() {
+        createAnonymousAction = new CreateAction("Create anonymous instance", OWLIcons.getCreateIndividualIcon(OWLIcons.RDF_ANON_INDIVIDUAL)) {
             public void onCreate() {
                 if (!classes.isEmpty()) {
                 	String name = owlModel.getNextAnonymousResourceName();
@@ -257,7 +257,7 @@ public class AssertedInstancesListPanel extends SelectableContainer implements D
                 }
             }
         };
-        return createAction;
+        return createAnonymousAction;
     }
     
 
@@ -559,8 +559,10 @@ public class AssertedInstancesListPanel extends SelectableContainer implements D
 
 
     private void updateButtons() {
-        Cls cls = (Cls) CollectionUtilities.getFirstItem(classes);
+        Cls cls = (Cls) CollectionUtilities.getFirstItem(classes);        
         createAction.setEnabled(cls == null ? false : cls.isConcrete());
+        createAnonymousAction.setEnabled(cls == null ? false : cls.isConcrete());
+        
         Instance instance = (Instance) getSoleSelection();
         boolean allowed = instance != null && instance instanceof SimpleInstance;
         copyAction.setAllowed(allowed);
