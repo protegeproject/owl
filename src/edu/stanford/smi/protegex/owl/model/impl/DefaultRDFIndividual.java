@@ -32,14 +32,15 @@ public class DefaultRDFIndividual extends DefaultSimpleInstance implements RDFIn
 
 
     public Icon getIcon() {
+    	String iconName = (isAnonymous() ? OWLIcons.RDF_ANON_INDIVIDUAL : OWLIcons.RDF_INDIVIDUAL); 
         return isEditable() ?
-                OWLIcons.getImageIcon(OWLIcons.RDF_INDIVIDUAL) :
-                OWLIcons.getReadOnlyIndividualIcon(OWLIcons.getImageIcon(OWLIcons.RDF_INDIVIDUAL));
+                OWLIcons.getImageIcon(iconName) :
+                OWLIcons.getReadOnlyIndividualIcon(OWLIcons.getImageIcon(iconName));
     }
 
 
     public String getIconName() {
-        return OWLIcons.RDF_INDIVIDUAL;
+        return (isAnonymous() ? OWLIcons.RDF_ANON_INDIVIDUAL : OWLIcons.RDF_INDIVIDUAL);
     }
     // RDFResource implementation methods --------------------------------------------------------
 
