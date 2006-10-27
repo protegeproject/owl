@@ -30,6 +30,7 @@ import edu.stanford.smi.protege.action.RedoAction;
 import edu.stanford.smi.protege.action.RevertProject;
 import edu.stanford.smi.protege.action.SaveProject;
 import edu.stanford.smi.protege.action.UndoAction;
+import edu.stanford.smi.protege.model.BrowserSlotPattern;
 import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.Frame;
 import edu.stanford.smi.protege.model.KnowledgeBase;
@@ -76,6 +77,7 @@ import edu.stanford.smi.protegex.owl.ui.tooltips.HomeOntologyToolTipGenerator;
 import edu.stanford.smi.protegex.owl.ui.triplestore.TripleStoreSelectionAction;
 import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
 import edu.stanford.smi.protegex.owl.ui.widget.OWLWidgetMapper;
+import edu.stanford.smi.protegex.owl.util.OWLBrowserSlotPattern;
 
 /**
  * A ProjectPlugin that makes a couple of initializing adjustments to
@@ -281,6 +283,10 @@ public class OWLMenuProjectPlugin extends ProjectPluginAdapter {
     public void afterCreate(Project p) {
         final KnowledgeBase kb = p.getKnowledgeBase();
         if (kb instanceof OWLModel) {
+        	
+            //added TT:
+            fixBrowserSlotPatterns(p);           
+    	
             //p.setWidgetMapper(new OWLWidgetMapper((OWLModel) p.getKnowledgeBase()));
             OWLModel owlModel = (OWLModel) kb;
             if (owlModel instanceof OWLDatabaseModel) {
@@ -297,6 +303,10 @@ public class OWLMenuProjectPlugin extends ProjectPluginAdapter {
             owlModel.getNamespaceManager().update();
             makeHiddenClsesWithSubclassesVisible(owlModel);
             project.setWidgetMapper(new OWLWidgetMapper(owlModel));
+            
+            //added TT:
+            fixBrowserSlotPatterns(project);           
+            
             Integer build = owlModel.getOWLProject().getSettingsMap().getInteger(JenaKnowledgeBaseFactory.OWL_BUILD_PROPERTY);
             if (build == null) {
                 fix(owlModel);
@@ -329,7 +339,20 @@ public class OWLMenuProjectPlugin extends ProjectPluginAdapter {
     }
 
 
-    public void afterSave(Project p) {
+    private void fixBrowserSlotPatterns(Project project) {
+    	Collection customizedClasses = project.getClsesWithDirectBrowserSlots();
+    	
+    	for (Iterator iter = customizedClasses.iterator(); iter.hasNext();) {
+			Cls cls = (Cls) iter.next();
+		
+			BrowserSlotPattern browserPattern = project.getBrowserSlotPattern(cls);
+	        if (browserPattern != null && !(browserPattern instanceof OWLBrowserSlotPattern))
+	        	cls.setDirectBrowserSlotPattern(new OWLBrowserSlotPattern(browserPattern.getElements()));
+		}
+	}
+
+
+	public void afterSave(Project p) {
         if (p.getKnowledgeBase() instanceof OWLModel) {
             OWLModel owlModel = ((OWLModel) p.getKnowledgeBase());
             restoreWidgetsAfterSave(owlModel);
