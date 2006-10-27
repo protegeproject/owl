@@ -36,11 +36,11 @@ public class ResetInferredHierarchyTask extends AbstractReasonerTask {
         setProgressIndeterminate(true);
 
         OWLModel kb = protegeOWLReasoner.getKnowledgeBase();
-        kb.setGenerateEventsEnabled(false);
+        boolean eventsEnabled = kb.setGenerateEventsEnabled(false);
         kb.beginTransaction("Reset inferred hierarchy");
         OWLUtil.resetComputedSuperclasses(kb);
         kb.endTransaction();
-        kb.setGenerateEventsEnabled(true);
+        kb.setGenerateEventsEnabled(eventsEnabled);
 
         setProgressIndeterminate(false);
         setTaskCompleted();

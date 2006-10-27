@@ -100,8 +100,8 @@ public class UpdateInferredHierarchyTask extends AbstractReasonerTask {
         setMessage("Updating Protege-OWL...");
 
         td.markStart();
-
-        kb.setGenerateEventsEnabled(false);
+        
+        boolean eventsEnabled = kb.setGenerateEventsEnabled(false);
         kb.beginTransaction("Compute and update inferred class hierarchy");
 
         for (Iterator it = getTranslator().getDIGQueryResponseIterator(kb, responseDoc); it.hasNext();) {
@@ -147,7 +147,7 @@ public class UpdateInferredHierarchyTask extends AbstractReasonerTask {
             setProgress(getProgress() + 1);
         }
         kb.endTransaction();
-        kb.setGenerateEventsEnabled(true);
+        kb.setGenerateEventsEnabled(eventsEnabled);
 
         td.markEnd();
 
