@@ -8,6 +8,8 @@ import edu.stanford.smi.protegex.owl.model.event.PropertyValueListener;
 import edu.stanford.smi.protegex.owl.model.event.ResourceListener;
 import edu.stanford.smi.protegex.owl.model.util.ResourceCopier;
 import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
+import edu.stanford.smi.protegex.owl.ui.menu.OWLBackwardsCompatibilityProjectFixups;
+import edu.stanford.smi.protegex.owl.util.OWLBrowserSlotPattern;
 
 import java.util.*;
 
@@ -738,4 +740,13 @@ public abstract class AbstractRDFSClass extends DefaultCls implements RDFSClass 
     public void setProtegeTypes(Collection types) {
         OWLUtil.setProtegeTypes(this, types);
     }
+    
+    
+    public void setDirectBrowserSlotPattern(BrowserSlotPattern slotPattern) {
+    	if ((slotPattern!= null) && !(slotPattern instanceof OWLBrowserSlotPattern))
+    		slotPattern = new OWLBrowserSlotPattern(slotPattern.getElements());
+    	
+        getDefaultKnowledgeBase().setDirectBrowserSlotPattern(this, slotPattern);
+    }
+    
 }
