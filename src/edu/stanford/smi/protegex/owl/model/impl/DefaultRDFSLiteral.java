@@ -15,20 +15,22 @@ public class DefaultRDFSLiteral implements RDFSLiteral {
     private OWLModel owlModel;
 
     private String rawValue;
+    
+    private String language;
 
     private static final String DATATYPE_PREFIX = "~@";
 
     private static final String LANGUAGE_PREFIX = "~#";
 
-    private static final char SEPARATOR = ' ';
+    private static final char SEPARATOR = ' ';    
 
 
     public DefaultRDFSLiteral(OWLModel owlModel, String rawValue) {
-        this.owlModel = owlModel;
-        this.rawValue = rawValue;
+    	this.owlModel = owlModel;
+    	this.rawValue = rawValue;
+        this.language = getLanguageFromRawValue();
     }
-
-
+    
     public void accept(OWLModelVisitor visitor) {
         visitor.visitRDFSLiteral(this);
     }
@@ -108,7 +110,7 @@ public class DefaultRDFSLiteral implements RDFSLiteral {
 
 
     public static RDFSLiteral create(OWLModel owlModel, String text, String language) {
-        return new DefaultRDFSLiteral(owlModel, getRawValue(text, language));
+    	return new DefaultRDFSLiteral(owlModel, getRawValue(text, language));       
     }
 
 
@@ -176,8 +178,11 @@ public class DefaultRDFSLiteral implements RDFSLiteral {
         return Integer.parseInt(getString().trim());
     }
 
-
     public String getLanguage() {
+    	return language;
+    }
+    
+    protected String getLanguageFromRawValue() {
         String lang = null;
         if (rawValue.startsWith(LANGUAGE_PREFIX)) {
             int endIndex = rawValue.indexOf(SEPARATOR);
@@ -283,12 +288,12 @@ public class DefaultRDFSLiteral implements RDFSLiteral {
     }
 
 
-    public final static String getRawValue(String text, String language) {
-        if (language == null || language.length() == 0) {
+    public final static String getRawValue(String text, String lang) {
+        if (lang == null || lang.length() == 0) {
             return text;
         }
         else {
-            return LANGUAGE_PREFIX + language + SEPARATOR + text;
+            return LANGUAGE_PREFIX + lang + SEPARATOR + text;
         }
     }
 
