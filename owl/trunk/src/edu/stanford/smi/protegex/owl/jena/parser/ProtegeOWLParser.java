@@ -263,7 +263,8 @@ public class ProtegeOWLParser {
 	                        final String ontologyName,
 	                        final ARPInvokation invokation)
 	        throws Exception {
-		owlModel.setGenerateEventsEnabled(false);
+				boolean eventsEnabled = owlModel.setGenerateEventsEnabled(false);
+		
                 Log.getLogger().info("Loading triples");
                 
 				Set imports = owlModel.getAllImports();
@@ -337,7 +338,7 @@ public class ProtegeOWLParser {
 //			};
 //		};
 //		owlModel.getTaskManager().run(task);
-		owlModel.setGenerateEventsEnabled(true);
+		owlModel.setGenerateEventsEnabled(eventsEnabled);
 	}
 
 
