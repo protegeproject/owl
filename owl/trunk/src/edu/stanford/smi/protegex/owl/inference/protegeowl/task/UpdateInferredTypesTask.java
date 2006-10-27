@@ -104,7 +104,7 @@ public class UpdateInferredTypesTask extends AbstractReasonerTask {
 
         // Disable the events as we may not be updating protege
         // from the event dispatch thread
-        kb.setGenerateEventsEnabled(false);
+        boolean eventsEnabled = kb.setGenerateEventsEnabled(false);        
         kb.beginTransaction("Compute and update inferred types");
         Iterator responseIt = getTranslator().getDIGQueryResponseIterator(kb, responseDoc);
 
@@ -142,7 +142,7 @@ public class UpdateInferredTypesTask extends AbstractReasonerTask {
             doAbortCheck();
         }
         kb.endTransaction();
-        kb.setGenerateEventsEnabled(true);
+        kb.setGenerateEventsEnabled(eventsEnabled);
 
         td.markEnd();
         postLogRecord(ReasonerLogRecordFactory.getInstance().createInformationMessageLogRecord("Time to update Protege-OWL = " + td,

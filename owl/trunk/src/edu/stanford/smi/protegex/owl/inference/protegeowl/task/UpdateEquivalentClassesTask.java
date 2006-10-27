@@ -99,8 +99,8 @@ public class UpdateEquivalentClassesTask extends AbstractReasonerTask {
         setMessage("Updating Protege-OWL...");
 
         td.markStart();
-
-        kb.setGenerateEventsEnabled(false);
+        
+        boolean eventsEnabled = kb.setGenerateEventsEnabled(false);
 
         kb.beginTransaction("Compute and update equivalent classes");
 
@@ -139,7 +139,7 @@ public class UpdateEquivalentClassesTask extends AbstractReasonerTask {
         }
 
         kb.endTransaction();
-        kb.setGenerateEventsEnabled(true);
+        kb.setGenerateEventsEnabled(eventsEnabled);
 
         td.markEnd();
         postLogRecord(ReasonerLogRecordFactory.getInstance().createInformationMessageLogRecord("Time to update Protege-OWL = " + td,
