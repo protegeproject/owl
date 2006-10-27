@@ -349,7 +349,7 @@ public class AssertedInstancesListPanel extends SelectableContainer implements D
 
 
     protected Action createSetDisplaySlotMultipleAction() {
-        return new AbstractAction("Multple Slots...") {
+        return new AbstractAction("Multiple Slots...") {
             public void actionPerformed(ActionEvent event) {
                 Cls cls = getSoleAllowedCls();
                 BrowserSlotPattern currentPattern = getSoleAllowedCls().getBrowserSlotPattern();
