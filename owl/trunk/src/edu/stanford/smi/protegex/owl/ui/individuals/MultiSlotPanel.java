@@ -4,6 +4,7 @@ import edu.stanford.smi.protege.model.BrowserSlotPattern;
 import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.ui.FrameRenderer;
 import edu.stanford.smi.protege.util.ComponentFactory;
+import edu.stanford.smi.protegex.owl.util.OWLBrowserSlotPattern;
 
 import javax.swing.*;
 import java.awt.*;
@@ -110,6 +111,6 @@ public class MultiSlotPanel extends JPanel {
                 }
             }
         }
-        return new BrowserSlotPattern(elements);
+        return new OWLBrowserSlotPattern(elements);
     }
 }
