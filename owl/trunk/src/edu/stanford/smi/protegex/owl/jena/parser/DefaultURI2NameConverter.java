@@ -241,10 +241,12 @@ public class DefaultURI2NameConverter implements URI2NameConverter {
 
 
     protected boolean isPreferredPrefix(String prefix, String uri) {
-        return prefix.equals(OWLNames.OWL_PREFIX) ||
-                prefix.equals(RDFNames.RDF_PREFIX) ||
-                prefix.equals(RDFSNames.RDFS_PREFIX) ||
-                prefix.equals(SWRLNames.SWRL_PREFIX);  // Override ugly "ruleml" prefix
+        return
+        	prefix.equals(ProtegeNames.PROTEGE_PREFIX) ||
+        	prefix.equals(OWLNames.OWL_PREFIX) ||
+            prefix.equals(RDFNames.RDF_PREFIX) ||
+            prefix.equals(RDFSNames.RDFS_PREFIX) ||
+            prefix.equals(SWRLNames.SWRL_PREFIX); // Override ugly "ruleml" prefix                  
     }
 
 
