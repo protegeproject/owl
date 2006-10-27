@@ -462,6 +462,9 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
         }
         this.namespaceManager = namespaceManager;
         namespaceManager.addNamespaceManagerListener(this);
+        
+        boolean eventEnabled = setGenerateEventsEnabled(false);
+        
         setGenerateDeletingFrameEventsEnabled(true);
 
         // resetSystemFrames();
@@ -539,6 +542,9 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
         if (super.getProject() != null) {
             setProject(super.getProject());
         }
+        
+        setGenerateEventsEnabled(eventEnabled);
+        
     }
 
 
@@ -696,7 +702,8 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
      * Creates the OWL metamodel.
      */
     public void bootstrap() {
-
+    	boolean eventsEnabled = setGenerateEventsEnabled(false);
+    	
         nameSlot = getSlot(Model.Slot.NAME);
         Cls standardCls = getCls(Model.Cls.STANDARD_CLASS);
 
@@ -913,6 +920,8 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
             !RDFNames.ClsID.PROPERTY.equals(rdfPropertyClass.getFrameID())) {
             throw new RuntimeException("Fatal Metaclass Error: FrameIDs mismatch.  Perhaps a database rebuild required?");
         }
+        
+        setGenerateEventsEnabled(eventsEnabled);
     }
 
 
