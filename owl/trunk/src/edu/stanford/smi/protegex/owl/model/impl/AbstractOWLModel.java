@@ -19,6 +19,7 @@ import junit.framework.Assert;
 import com.hp.hpl.jena.datatypes.TypeMapper;
 import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
 import com.hp.hpl.jena.rdf.model.impl.Util;
+import com.hp.hpl.jena.reasoner.rdfsReasoner1.BRWRule;
 import com.hp.hpl.jena.vocabulary.OWL;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
@@ -122,6 +123,7 @@ import edu.stanford.smi.protegex.owl.testing.OWLTest;
 import edu.stanford.smi.protegex.owl.testing.OWLTestLibrary;
 import edu.stanford.smi.protegex.owl.ui.widget.OWLFormWidget;
 import edu.stanford.smi.protegex.owl.ui.widget.OWLWidgetMapper;
+import edu.stanford.smi.protegex.owl.util.OWLBrowserSlotPattern;
 
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
@@ -1868,89 +1870,40 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
 
     public synchronized String getBrowserText(Instance instance) {
-        if (instance instanceof RDFResource) {
-            if (instance instanceof OWLAnonymousClass) {
-                return instance.getBrowserText();
-            }
-            else if (instance.isDeleted()) {
-                return "<deleted>";
-            }
-            else {
-                Cls directType = instance.getDirectType();
-                if (getProject() == null) {
-                    return getName(instance);
-                }
-                else if (directType == null) {
-                    return getMissingTypeString(instance);
-                }
-                else {
-                    BrowserSlotPattern slotPattern = getProject().getBrowserSlotPattern(instance.getDirectType());
-                    if (slotPattern == null) {
-                        return getDisplaySlotNotSetString(instance);
-                    }
-                    else {
-                        String value = null;
-                        Collection elements = slotPattern.getElements();
-                        final Slot slot = slotPattern.getFirstSlot();
-                        if (elements.size() == 1 && slot != null &&
-                            !slot.equals(nameSlot) &&
-                            slot.getValueType() == ValueType.STRING) {
-                            String defaultLanguage = getDefaultLanguage();
-                            Collection values = null;
-                            if (slot instanceof RDFProperty) {
-                                values = ((RDFResource) instance).getPropertyValues((RDFProperty) slot);
-                            }
-                            else {
-                                values = instance.getOwnSlotValues(slot);
-                            }
-                            if (defaultLanguage != null) {
-                                Iterator it = values.iterator();
-                                while (it.hasNext()) {
-                                    Object rawText = it.next();
-                                    if (rawText instanceof RDFSLiteral) {
-                                        RDFSLiteral literal = (RDFSLiteral) rawText;
-                                        if (defaultLanguage.equals(literal.getLanguage())) {
-                                            value = literal.getString();
-                                            break;
-                                        }
-                                    }
-                                }
-                            }
-                            if (value == null) {
-                                Iterator it = values.iterator();
-                                while (it.hasNext()) {
-                                    Object rawText = it.next();
-                                    if (rawText instanceof RDFSLiteral) {
-                                        RDFSLiteral literal = (RDFSLiteral) rawText;
-                                        if (literal.getLanguage() == null) {
-                                            value = literal.getString();
-                                            break;
-                                        }
-                                    }
-                                    else {
-                                        value = rawText.toString();
-                                        break;
-                                    }
-                                }
-                            }
-                        }
-                        else {
-                            value = slotPattern.getBrowserText(instance);
-                        }
-                        if (value == null) {
-                            value = getDisplaySlotPatternValueNotSetString(instance, slotPattern);
-                        }
-                        return value;
-                    }
-                }
-            }
-        }
-        else {
-            return super.getBrowserText(instance);
-        }
-    }
+    	
+    	if (!(instance instanceof RDFResource))
+    		return super.getBrowserText(instance);
 
+    	if (instance.isDeleted()) 
+            return "<deleted>";
+    	
+    	if (instance instanceof OWLAnonymousClass)
+    		return instance.getBrowserText();
+    	
+    	if (getProject() == null)
+             return getName(instance);   
+            
+       	Cls directType = instance.getDirectType();
 
+       	if (directType == null)
+        	return getMissingTypeString(instance);
+          
+       	BrowserSlotPattern slotPattern;
+       	
+       	try {
+       		slotPattern = (OWLBrowserSlotPattern) getProject().getBrowserSlotPattern(directType);
+       	} catch(Exception e) {
+       		slotPattern = getProject().getBrowserSlotPattern(directType);
+       		//Log.getLogger().warning("Non-OWL browser slot for: " + directType);
+       	}
+                        
+         if (slotPattern == null)
+        	 return getDisplaySlotNotSetString(instance);
+         
+         return slotPattern.getBrowserText(instance);         
+	}
+
+    
     public Collection getChangedInferredClasses() {
         return getClsesWithClassificationStatus(OWLNames.CLASSIFICATION_STATUS_CONSISTENT_AND_CHANGED);
     }
@@ -3262,8 +3215,10 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
             project.setPrettyPrintSlotWidgetLabels(false);
 
-            Slot nameSlot = getSlot(Model.Slot.NAME);
-            getRootCls().setDirectBrowserSlotPattern(new BrowserSlotPattern(nameSlot));
+            Slot nameSlot = getSlot(Model.Slot.NAME);                       
+            //getRootCls().setDirectBrowserSlotPattern(new BrowserSlotPattern(nameSlot));
+          
+           	getRootCls().setDirectBrowserSlotPattern(new OWLBrowserSlotPattern(nameSlot));
 
             project.setDefaultClsWidgetClassName(OWLFormWidget.class.getName());
 
