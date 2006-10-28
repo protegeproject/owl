@@ -44,6 +44,7 @@ import edu.stanford.smi.protege.model.framestore.MergingNarrowFrameStore;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protege.util.MessageError;
 import edu.stanford.smi.protege.util.URIUtilities;
+import edu.stanford.smi.protegex.owl.database.OWLDatabaseModel;
 import edu.stanford.smi.protegex.owl.jena.Jena;
 import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
@@ -85,6 +86,8 @@ import edu.stanford.smi.protegex.owl.ui.repository.UnresolvedImportUIHandler;
  */
 public class ProtegeOWLParser {
         private static transient Logger log = Log.getLogger(ProtegeOWLParser.class);
+        
+        private boolean importing = false;
 
 	/**
 	 * The default namespace to use if the current file does not define one by itself.
@@ -264,7 +267,6 @@ public class ProtegeOWLParser {
 	                        final ARPInvokation invokation)
 	        throws Exception {
 				boolean eventsEnabled = owlModel.setGenerateEventsEnabled(false);
-		
                 Log.getLogger().info("Loading triples");
                 
 				Set imports = owlModel.getAllImports();
@@ -286,7 +288,8 @@ public class ProtegeOWLParser {
 				}
 				
 				errorOntologyURI = URIUtilities.createURI(ontologyName);
-				
+                                
+				setImporting(false);
 				invokation.invokeARP(arp);
 								
 				if(owlModel.getRDFResource(":") == null) {
@@ -297,6 +300,7 @@ public class ProtegeOWLParser {
 				if(dns != null) {
 					addNamespaceToImports(dns, imports);
 				}
+                                setImporting(true);
 				processImports(tripleStore, imports);
 				
 				long endTime = System.currentTimeMillis();
@@ -979,7 +983,10 @@ public class ProtegeOWLParser {
 
 
 		public void endPrefixMapping(String prefix) {
-			if(ontology == null) {
+                        if (importsWillBeMerged() && isImporting()) {
+                          return;
+                        }
+			if (ontology == null) {
 				ontology = TripleStoreUtil.getFirstOntology(owlModel, tripleStore);
 				if(ontology == null) {
 					String defaultNamespace = (String) prefix2Namespace.get("");
@@ -1000,11 +1007,11 @@ public class ProtegeOWLParser {
 				}
 			}
 			String namespace = (String) prefix2Namespace.get(prefix);
-			if(namespace != null) {
+                        if (namespace != null) {
 				//System.out.println("- Registering \"" + prefix + "\" : " + namespace);
 				replaceNamespace(tripleStore, ontology, prefix, namespace);
 				owlModel.getNamespaceManager().update();
-			}
+                        }
 		}
 	}
 
@@ -1161,5 +1168,18 @@ public class ProtegeOWLParser {
 			return url.openStream();
 		}
 	}
+        
+        private boolean importsWillBeMerged() {
+          return owlModel instanceof OWLDatabaseModel;
+        }
+        
+        private void setImporting(boolean importing) {
+          this.importing = importing;
+        }
+        
+        private boolean isImporting() {
+          return importing;
+        }
 
 }
+
