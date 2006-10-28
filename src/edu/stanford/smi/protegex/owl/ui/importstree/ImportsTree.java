@@ -82,11 +82,15 @@ public class ImportsTree extends SelectableTree implements HostResourceDisplay {
             List importsPath = new ArrayList();
             importsPath.add(resource);
             Collection ontologies = rootOntology.getOWLModel().getOWLOntologies();
-            while (!importsPath.contains(rootOntology)) {
+            boolean progress = true;
+            while (!importsPath.contains(rootOntology) && progress) {
+                progress = false;
                 for (Iterator i = ontologies.iterator(); i.hasNext();) {
                     OWLOntology ont = (OWLOntology) i.next();
                     OWLOntology previous = (OWLOntology) importsPath.get(importsPath.size() - 1);
-                    if (ont.getImports().contains(previous.getURI().toString())) {
+                    if (ont.getImports().contains(previous.getURI().toString()) &&
+                        !importsPath.contains(ont)) {
+                        progress = true;
                         importsPath.add(ont);
                     }
                 }
