@@ -14,7 +14,6 @@ import java.util.logging.Level;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.Icon;
-import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
@@ -86,26 +85,17 @@ import edu.stanford.smi.protegex.owl.util.OWLBrowserSlotPattern;
  * @author Holger Knublauch  <holger@knublauch.com>
  */
 public class OWLMenuProjectPlugin extends ProjectPluginAdapter {
-
     private final static String CHANGED_WIDGETS = "ChangedWidgets";
-
     private static JCheckBoxMenuItem proseBox;
-
     private OWLModelAction recentAction = null;
-
     private SyntaxHelpAction syntaxHelpAction = new SyntaxHelpAction();
-
     private TripleStoreSelectionAction tripleStoreSelectionAction;
-
     public static final String MENU_NAME = AbstractOWLModelAction.OWL_MENU;
-
     public static final String PROSE_PROPERTY = "OWL-Prose";
-
 
     private void addToolBarButton(JToolBar toolBar, Action action) {
         ComponentFactory.addToolBarButton(toolBar, action);
     }
-
 
     private void addToolBarButton(JToolBar toolBar, Action action, Icon icon) {
         action.putValue(Action.SMALL_ICON, icon);
@@ -113,9 +103,7 @@ public class OWLMenuProjectPlugin extends ProjectPluginAdapter {
         addToolBarButton(toolBar, action);
     }
 
-
     private void adjustMenuAndToolBar(final OWLModel owlModel, final ProjectMenuBar menuBar, final ProjectToolBar toolBar) {
-
         JMenu owlMenu = new JMenu(AbstractOWLModelAction.OWL_MENU);
         owlMenu.setMnemonic(KeyEvent.VK_O);
 
@@ -125,18 +113,29 @@ public class OWLMenuProjectPlugin extends ProjectPluginAdapter {
         JMenu toolsMenu = new JMenu(AbstractOWLModelAction.TOOLS_MENU);
         toolsMenu.setMnemonic(KeyEvent.VK_T);
 
+	// Get the Help menu.
         JMenu helpMenu = menuBar.getMenu(menuBar.getMenuCount() - 1);
-        helpMenu.addSeparator();
-        helpMenu.add(new AbstractAction("Protege-OWL Tutorial...") {
+
+        // Disable and/or remove some of the Core Protege Help menu items.
+        disableHelpMenuItem(menuBar, ResourceKey.HELP_MENU_ONTOLOGIES_101);
+        disableHelpMenuItem(menuBar, ResourceKey.HELP_MENU_PLUGINS);
+        disableHelpMenuItem(menuBar, ResourceKey.HELP_MENU_ICONS);
+        disableHelpMenuItem(menuBar, ResourceKey.HELP_MENU_FAQ);
+        disableHelpMenuItem(menuBar, ResourceKey.HELP_MENU_GETTING_STARTED);
+        disableHelpMenuItem(menuBar, ResourceKey.HELP_MENU_USERS_GUIDE);
+        helpMenu.remove(0);
+
+        // Insert some Help menu items, specific to Protege-OWL.
+        helpMenu.insert(new AbstractAction("Prot\u00E9g\u00E9-OWL Tutorial...") {
             public void actionPerformed(ActionEvent e) {
                 SystemUtilities.showHTML("http://www.co-ode.org/resources/tutorials/");
             }
-        });
-        helpMenu.add(syntaxHelpAction);
+        }, 0);
+        helpMenu.insert(syntaxHelpAction, 1);
 
         // prose tooltips selector
         proseBox = new JCheckBoxMenuItem("Display prose as tool tip of OWL expressions", true);
-        helpMenu.add(proseBox);
+        helpMenu.insert(proseBox, 2);
         proseBox.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 owlModel.getOWLProject().getSettingsMap().setBoolean(PROSE_PROPERTY, proseBox.isSelected());
@@ -166,14 +165,6 @@ public class OWLMenuProjectPlugin extends ProjectPluginAdapter {
         disableProjectMenuItem(menuBar, ResourceKey.PROJECT_MERGE_INCLUDED);
         disableProjectMenuItem(menuBar, ResourceKey.PROJECT_SHOW_INCLUDED);
         disableProjectMenuItem(menuBar, ResourceKey.PROJECT_INCLUDE);
-
-        disableHelpMenuItem(menuBar, ResourceKey.HELP_MENU_ONTOLOGIES_101);
-        disableHelpMenuItem(menuBar, ResourceKey.HELP_MENU_PLUGINS);
-        disableHelpMenuItem(menuBar, ResourceKey.HELP_MENU_ICONS);
-        disableHelpMenuItem(menuBar, ResourceKey.HELP_MENU_FAQ);
-        disableHelpMenuItem(menuBar, ResourceKey.HELP_MENU_GETTING_STARTED);
-        disableHelpMenuItem(menuBar, ResourceKey.HELP_MENU_USERS_GUIDE);
-        helpMenu.remove(0);
 
         disableMenuItem(menuBar, ResourceKey.MENUBAR_PROJECT, ResourceKey.PROJECT_METRICS, false);
 
@@ -213,7 +204,6 @@ public class OWLMenuProjectPlugin extends ProjectPluginAdapter {
         }
     }
 
-
     private void addOWLModelActionToMenuBar(OWLModelAction action, OWLModel owlModel, ProjectMenuBar menuBar) {
         StringTokenizer tokenizer = new StringTokenizer(action.getMenubarPath(), "/", false);
         if (tokenizer.hasMoreElements()) {
@@ -241,7 +231,6 @@ public class OWLMenuProjectPlugin extends ProjectPluginAdapter {
         recentAction = action;
     }
 
-
     private void addOWLModelActionToToolBar(OWLModelAction action, OWLModel owlModel, ProjectToolBar toolBar) {
         Action a = createAction(action, owlModel);
         if (a != null) {
@@ -255,9 +244,7 @@ public class OWLMenuProjectPlugin extends ProjectPluginAdapter {
         recentAction = action;
     }
 
-
     private void adjustToolBar(JToolBar toolBar) {
-
         toolBar.removeAll();
 
         addToolBarButton(toolBar, new CreateProject(true), OWLIcons.getImageIcon("File"));
@@ -279,14 +266,13 @@ public class OWLMenuProjectPlugin extends ProjectPluginAdapter {
         toolBar.addSeparator();
     }
 
-
     public void afterCreate(Project p) {
         final KnowledgeBase kb = p.getKnowledgeBase();
         if (kb instanceof OWLModel) {
-        	
+
             //added TT:
-            fixBrowserSlotPatterns(p);           
-    	
+            fixBrowserSlotPatterns(p);
+
             //p.setWidgetMapper(new OWLWidgetMapper((OWLModel) p.getKnowledgeBase()));
             OWLModel owlModel = (OWLModel) kb;
             if (owlModel instanceof OWLDatabaseModel) {
@@ -295,7 +281,6 @@ public class OWLMenuProjectPlugin extends ProjectPluginAdapter {
         }
     }
 
-
     public void afterLoad(Project project) {
         KnowledgeBase kb = project.getKnowledgeBase();
         if (kb instanceof OWLModel) {
@@ -303,10 +288,10 @@ public class OWLMenuProjectPlugin extends ProjectPluginAdapter {
             owlModel.getNamespaceManager().update();
             makeHiddenClsesWithSubclassesVisible(owlModel);
             project.setWidgetMapper(new OWLWidgetMapper(owlModel));
-            
+
             //added TT:
-            fixBrowserSlotPatterns(project);           
-            
+            fixBrowserSlotPatterns(project);
+
             Integer build = owlModel.getOWLProject().getSettingsMap().getInteger(JenaKnowledgeBaseFactory.OWL_BUILD_PROPERTY);
             if (build == null) {
                 fix(owlModel);
@@ -338,19 +323,17 @@ public class OWLMenuProjectPlugin extends ProjectPluginAdapter {
         }
     }
 
-
     private void fixBrowserSlotPatterns(Project project) {
     	Collection customizedClasses = project.getClsesWithDirectBrowserSlots();
-    	
+
     	for (Iterator iter = customizedClasses.iterator(); iter.hasNext();) {
 			Cls cls = (Cls) iter.next();
-		
+
 			BrowserSlotPattern browserPattern = project.getBrowserSlotPattern(cls);
 	        if (browserPattern != null && !(browserPattern instanceof OWLBrowserSlotPattern))
 	        	cls.setDirectBrowserSlotPattern(new OWLBrowserSlotPattern(browserPattern.getElements()));
 		}
 	}
-
 
 	public void afterSave(Project p) {
         if (p.getKnowledgeBase() instanceof OWLModel) {
@@ -358,7 +341,6 @@ public class OWLMenuProjectPlugin extends ProjectPluginAdapter {
             restoreWidgetsAfterSave(owlModel);
         }
     }
-
 
     public void afterShow(ProjectView view, ProjectToolBar toolBar, ProjectMenuBar menuBar) {
         KnowledgeBase kb = view.getProject().getKnowledgeBase();
@@ -386,7 +368,6 @@ public class OWLMenuProjectPlugin extends ProjectPluginAdapter {
         }
     }
 
-
     public void beforeClose(Project p) {
         if (p.getKnowledgeBase() instanceof OWLModel) {
             ProjectView view = ProtegeUI.getProjectView(p);
@@ -396,7 +377,6 @@ public class OWLMenuProjectPlugin extends ProjectPluginAdapter {
             ChangedClassesPanel.dispose((OWLModel) p.getKnowledgeBase());
         }
     }
-
 
     public void beforeSave(Project p) {
         if (p.getKnowledgeBase() instanceof OWLModel) {
@@ -419,21 +399,17 @@ public class OWLMenuProjectPlugin extends ProjectPluginAdapter {
         }
     }
 
-
     private Action createAction(final OWLModelAction owlModelAction, final OWLModel owlModel) {
         return new OWLModelActionAction(owlModelAction, owlModel);
     }
-
 
     private void disableHelpMenuItem(ProjectMenuBar menuBar, ResourceKey resourceKey) {
         disableMenuItem(menuBar, ResourceKey.MENUBAR_HELP, resourceKey, false);
     }
 
-
     private void disableProjectMenuItem(ProjectMenuBar menuBar, ResourceKey resourceKey) {
         disableMenuItem(menuBar, ResourceKey.MENUBAR_PROJECT, resourceKey, true);
     }
-
 
     private void disableMenuItem(ProjectMenuBar menuBar, ResourceKey menuKey,
                                  ResourceKey resourceKey, boolean removeTrailingSeparator) {
@@ -454,7 +430,6 @@ public class OWLMenuProjectPlugin extends ProjectPluginAdapter {
         }
     }
 
-
     private void fix(OWLModel owlModel) {
         if (!owlModel.getProject().isMultiUserClient()) {
             OWLBackwardsCompatibilityProjectFixups.fix(owlModel);
@@ -462,11 +437,9 @@ public class OWLMenuProjectPlugin extends ProjectPluginAdapter {
         }
     }
 
-
     public static boolean isProseActivated() {
         return proseBox != null && proseBox.isSelected();
     }
-
 
     /**
      * Checks whether a given class is used somewhere as a range of a property.
@@ -494,7 +467,6 @@ public class OWLMenuProjectPlugin extends ProjectPluginAdapter {
         return false;
     }
 
-
     public static void makeHiddenClsesWithSubclassesVisible(OWLModel owlModel) {
         if (owlModel.getOWLNamedClassClass().getSubclassCount() > 0 ||
             owlModel.getRDFSNamedClassClass().getSubclassCount() > 2) {
@@ -518,13 +490,11 @@ public class OWLMenuProjectPlugin extends ProjectPluginAdapter {
         makeVisibleIfSubclassesExist(owlModel.getRDFSNamedClass(RDFNames.Cls.STATEMENT), systemFrames);
     }
 
-
     private static void makeVisibleIfSubclassesExist(Cls cls, Set systemFrames) {
         if (cls.getDirectSubclassCount() > 0 || isUsedInRange(cls, systemFrames)) {
             cls.setVisible(true);
         }
     }
-
 
     /**
      * Should be called prior to saving a Project in order to remove widgets
@@ -550,7 +520,6 @@ public class OWLMenuProjectPlugin extends ProjectPluginAdapter {
         }
         owlModel.getOWLProject().setSessionObject(CHANGED_WIDGETS, widgets);
     }
-
 
     public static void restoreWidgetsAfterSave(OWLModel owlModel) {
         OWLProject owlProject = owlModel.getOWLProject();

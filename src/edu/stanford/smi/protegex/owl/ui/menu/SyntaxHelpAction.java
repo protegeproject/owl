@@ -15,7 +15,7 @@ import java.awt.event.ActionEvent;
 public class SyntaxHelpAction extends AbstractAction {
 
     public SyntaxHelpAction() {
-        super("Protege OWL Syntax...", OWLIcons.getImageIcon("Help"));
+        super("Prot\u00E9g\u00E9-OWL Syntax...", OWLIcons.getImageIcon("Help"));
     }
 
 
@@ -29,7 +29,7 @@ public class SyntaxHelpAction extends AbstractAction {
 
         JFrame parent = new JFrame();
         JDialog dialog = new JDialog(parent);
-        dialog.setTitle("Protege OWL Syntax");
+        dialog.setTitle("Prot\u00E9g\u00E9-OWL Syntax");
         JLabel label = new JLabel(OWLIcons.getImageIcon("CompactSyntax.png"));
         Container contentPane = dialog.getContentPane();
         contentPane.setLayout(new BorderLayout());
