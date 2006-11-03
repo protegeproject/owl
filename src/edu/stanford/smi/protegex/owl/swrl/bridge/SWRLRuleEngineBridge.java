@@ -100,12 +100,17 @@ public abstract class SWRLRuleEngineBridge
 
   public void exportSWRLRulesAndOWLKnowledge() throws SWRLRuleEngineBridgeException
   {
-    exportOWLClasses();
-    exportOWLIndividuals();
-    exportOWLProperties();
-    exportOWLRestrictions();
+    exportOWLKnowledge(); // Knowledge should be exported before rules because rules may used concepts defined in knowledge.
     exportSWRLRules();
   } // exportSWRLRulesAndOWLKnowledge
+
+    public void exportOWLKnowledge() throws SWRLRuleEngineBridgeException
+    {
+	exportOWLClasses();
+	exportOWLIndividuals();
+	exportOWLProperties();
+	exportOWLRestrictions();
+    } // exportOWLKnowledge
 
   // Asserted individuals and properties can then be written back to OWL.
 
@@ -181,7 +186,8 @@ public abstract class SWRLRuleEngineBridge
     if (!assertedIndividuals.contains(individualInfo)) assertedIndividuals.add(individualInfo); 
   } // assertIndividual
 
-  public boolean invokeSWRLBuiltIn(String builtInName, List arguments) throws BuiltInException
+  // The rule name is included to allow generation of more meaningful errors.
+  public boolean invokeSWRLBuiltIn(String ruleName, String builtInName, List arguments) throws BuiltInException
   {
     SWRLBuiltInMethods swrlBuiltInMethods = null;
     Class swrlBuiltInMethodsClass = null;
@@ -190,7 +196,7 @@ public abstract class SWRLRuleEngineBridge
     int colonIndex;
     Boolean result = false;
 
-    if (!isBuiltIn(builtInName)) throw new InvalidBuiltInNameException(builtInName);
+    if (!isBuiltIn(builtInName)) throw new InvalidBuiltInNameException(ruleName, builtInName);
     
     colonIndex = builtInName.indexOf(':');
     if (colonIndex != -1) {
@@ -205,31 +211,34 @@ public abstract class SWRLRuleEngineBridge
     
     if (builtInMethodsClassInstances.containsKey(namespaceName)) { // Find the implementation
       swrlBuiltInMethods = (SWRLBuiltInMethods)builtInMethodsClassInstances.get(namespaceName);
-    } else { // Implementation class not loaded - load it.
-      swrlBuiltInMethods = loadSWRLBuiltInMethodsImpl(namespaceName, className);
+    } else { // Implementation class not loaded - load it, and cache it.
+      swrlBuiltInMethods = loadSWRLBuiltInMethodsImpl(ruleName, namespaceName, className);
       builtInMethodsClassInstances.put(namespaceName, swrlBuiltInMethods);
     } // if
 
-    method = resolveBuiltInMethod(namespaceName, builtInMethodName, swrlBuiltInMethods); // Find the method.
-    checkBuiltInMethod(namespaceName, builtInMethodName, method); // Check signature of method.
+    method = resolveBuiltInMethod(ruleName, namespaceName, builtInMethodName, swrlBuiltInMethods); // Find the method.
+    checkBuiltInMethodSignature(ruleName, namespaceName, builtInMethodName, method); // Check signature of method.
     
     try { // Invoke the built-in method.
       result = (Boolean)method.invoke(swrlBuiltInMethods, new Object[] { arguments });
     } catch (InvocationTargetException e) { // The built-in implementation threw an exception.
       Throwable targetException = e.getTargetException();
       if (targetException instanceof BuiltInException) { // A BuiltInException was thrown by the built-in.
-        throw (BuiltInException)targetException;
+        throw new BuiltInException("Exception thrown by built-in '" + builtInName + "' in rule '" + ruleName + "': " 
+                                   + targetException.getMessage(), targetException);
       } else if (targetException instanceof RuntimeException) { // A runtime exception was thrown by the built-in.
-        throw new BuiltInMethodRuntimeException(namespaceName, builtInMethodName, targetException.getMessage(), targetException);
+        throw new BuiltInMethodRuntimeException(ruleName, builtInName, targetException.getMessage(), targetException);
       } // if 
     } catch (Exception e) { // Should be one of IllegalAccessException or IllegalArgumentException
-      throw new BuiltInException("Internal bridge exception when invoking built-in method '" + builtInMethodName + "' in namespace '"  
-                                 + namespaceName + "'. Exception: " + e.toString(), e);        
+      throw new BuiltInException("Internal bridge exception when invoking built-in method '" + builtInName + "' in rule '" + 
+                                 ruleName + "'. Exception: " + e.toString(), e);        
     } // try
+    checkForUnboundArgument(ruleName, builtInName, arguments); // Make sure built-in did not leave any arguments unbound.
+
     return result.booleanValue();
   } // invokeSWRLBuiltIn
   
-  private Method resolveBuiltInMethod(String namespaceName, String builtInMethodName, SWRLBuiltInMethods swrlBuiltInMethods)
+  private Method resolveBuiltInMethod(String ruleName, String namespaceName, String builtInMethodName, SWRLBuiltInMethods swrlBuiltInMethods)
     throws UnresolvedBuiltInMethodException
   {
     Method method;
@@ -237,13 +246,13 @@ public abstract class SWRLRuleEngineBridge
     try { 
       method = swrlBuiltInMethods.getClass().getMethod(builtInMethodName, new Class[] { List.class });
     } catch (Exception e) {
-      throw new UnresolvedBuiltInMethodException(namespaceName, builtInMethodName, e.getMessage());
+      throw new UnresolvedBuiltInMethodException(ruleName, namespaceName, builtInMethodName, e.getMessage());
     } // try
 
     return method;
   } // resolveBuiltInMethod
 
-  private SWRLBuiltInMethods loadSWRLBuiltInMethodsImpl(String namespaceName, String className) 
+  private SWRLBuiltInMethods loadSWRLBuiltInMethodsImpl(String ruleName, String namespaceName, String className) 
     throws UnresolvedBuiltInClassException, IncompatibleBuiltInClassException
   {
     Class swrlBuiltInMethodsClass;
@@ -252,19 +261,18 @@ public abstract class SWRLRuleEngineBridge
     try {
       swrlBuiltInMethodsClass = Class.forName(className);
     } catch (Exception e) {
-      throw new UnresolvedBuiltInClassException(namespaceName, e.getMessage());
+      throw new UnresolvedBuiltInClassException(ruleName, namespaceName, e.getMessage());
     } // try
 
-    checkBuiltInClass(namespaceName, swrlBuiltInMethodsClass); // Check implementation class for compatibility.
+    checkBuiltInMethodsClassCompatibility(ruleName, namespaceName, swrlBuiltInMethodsClass); // Check implementation class for compatibility.
 
     try {
       swrlBuiltInMethods = (SWRLBuiltInMethods)swrlBuiltInMethodsClass.newInstance();
     } catch (Exception e) {
-      throw new UnresolvedBuiltInClassException(namespaceName, e.getMessage());
+      throw new UnresolvedBuiltInClassException(ruleName, namespaceName, e.getMessage());
     } // try
     return swrlBuiltInMethods;
   } // loadSWRLBuiltInMethodsImpl
-
 
   private void importSWRLRules() throws SWRLRuleEngineBridgeException
   {
@@ -287,21 +295,19 @@ public abstract class SWRLRuleEngineBridge
     List bodyAtoms = new ArrayList();
     List headAtoms = new ArrayList();
 
-    ruleInfo = new RuleInfo(rule.getName());
-
     iterator = rule.getBody().getValues().iterator();
     while (iterator.hasNext()) {
       SWRLAtom swrlAtom = (SWRLAtom)iterator.next();
-      ruleInfo.addBodyAtom(processSWRLAtom(swrlAtom, false));
+      bodyAtoms.add(processSWRLAtom(swrlAtom, false));
     } // while 
 
     iterator = rule.getHead().getValues().iterator();
     while (iterator.hasNext()) {
       SWRLAtom swrlAtom = (SWRLAtom)iterator.next();
-      ruleInfo.addHeadAtom(processSWRLAtom(swrlAtom, true));
+      headAtoms.add(processSWRLAtom(swrlAtom, true));
     } // while 
 
-    preProcessAtoms(ruleInfo);
+    ruleInfo = new RuleInfo(rule.getName(), bodyAtoms, headAtoms);
 
     importedSWRLRules.add(ruleInfo);
   } // importSWRLRule
@@ -435,7 +441,7 @@ public abstract class SWRLRuleEngineBridge
     importOWLAllDifferents();
   } // importOWLRestrictions
 
-  // TODO: This is incredibly inefficient. Need to add a method to the OWLModel to get individuals with a particular property.
+  // TODO: This is incredibly inefficient. Need to use method in the OWLModel to get individuals with a particular property.
   private void importOWLSameAsRestrictions() throws SWRLRuleEngineBridgeException
   {
     RDFProperty sameAsProperty = owlModel.getOWLSameAsProperty();
@@ -459,7 +465,7 @@ public abstract class SWRLRuleEngineBridge
     } // while
   } // importOWLSameAsRestrictions
 
-  // TODO: This is incredibly inefficient (and almost duplicates previous method). Need to add a method to the OWLModel to get individuals
+  // TODO: This is incredibly inefficient (and almost duplicates previous method). Need to use method in the OWLModel to get individuals
   // with a particular property.
   private void importOWLDifferentFromRestrictions() throws SWRLRuleEngineBridgeException
   {
@@ -504,7 +510,7 @@ public abstract class SWRLRuleEngineBridge
     } // if
   } // importOWLAllDifferents
 
-  private void exportSWRLRules() throws SWRLRuleEngineBridgeException
+  public void exportSWRLRules() throws SWRLRuleEngineBridgeException
   {
     Iterator iterator = importedSWRLRules.iterator();
 
@@ -513,6 +519,23 @@ public abstract class SWRLRuleEngineBridge
       defineRule(ruleInfo);
     } // while
   } // exportSWRLRules
+
+  public void exportSWRLRules(List ruleNames) throws SWRLRuleEngineBridgeException
+  {
+    Iterator iterator = importedSWRLRules.iterator();
+
+    while (iterator.hasNext()) {
+      RuleInfo ruleInfo = (RuleInfo)iterator.next();
+      if (ruleNames.contains(ruleInfo.getName())) defineRule(ruleInfo);
+    } // while
+  } // exportSWRLRules
+
+  public void exportSWRLRule(String ruleName) throws SWRLRuleEngineBridgeException
+  {
+    List ruleNames = new ArrayList();
+    ruleNames.add(ruleName);
+    exportSWRLRules(ruleNames);
+  } // exportSWRLRule
 
   private void exportOWLClasses() throws SWRLRuleEngineBridgeException
   {
@@ -596,75 +619,6 @@ public abstract class SWRLRuleEngineBridge
     } // while
   } // writeAssertedIndividuals2OWL
   
-  // Built-ins that assign their first argument require special processing.
-  //
-  // TODO: move to RuleInfo.java?
-  private void preProcessAtoms(RuleInfo ruleInfo) throws SWRLRuleEngineBridgeException
-  {
-    Iterator iterator;
-    List bodyAtoms = new ArrayList();
-    List headAtoms = new ArrayList();
-    List nonBuiltInBodyAtoms = new ArrayList();
-    List builtInAtoms = new ArrayList();
-    List builtInWithoutAssignmentAtoms = new ArrayList(); // Built-in that do not assign their first parameter.
-    List builtInWithAssignmentAtoms = new ArrayList(); // Built-in that assign their first parameter.
-    List variableNamesUsedByNonBuiltInAtoms = new ArrayList();
-    List assignedBuiltInVariableNames = new ArrayList(); // Names of variables assigned by built-ins.
-
-    // Process the body atoms and build up list of built-in and non built-in atoms.
-    iterator = ruleInfo.getBodyAtoms().iterator();
-    while (iterator.hasNext()) {
-      AtomInfo atomInfo = (AtomInfo)iterator.next();
-      if (atomInfo instanceof BuiltInAtomInfo) builtInAtoms.add(atomInfo);
-      else {
-        nonBuiltInBodyAtoms.add(atomInfo);
-        variableNamesUsedByNonBuiltInAtoms.addAll(atomInfo.getReferencedVariableNames()); // This may generate duplicates, but this is ok.
-      } // if
-    } // while
-
-    // Process the built-in atoms and determine if they assign their first argument. Also check that all built-in variable references are
-    // valid.
-    iterator = builtInAtoms.iterator();
-    while (iterator.hasNext()) {
-      BuiltInAtomInfo builtInAtomInfo = (BuiltInAtomInfo)iterator.next();
-
-      List variableNamesUsedByBuiltIn = builtInAtomInfo.getReferencedVariableNames();
-      if (builtInAtomInfo.isFirstArgumentAVariable()) { 
-        String firstArgumentVariableName = builtInAtomInfo.getFirstArgumentVariableName();
-
-        // If the first argument that is a variable is not used by any non built-in atom, we assume that the built-in is going to assign it.
-        if (!variableNamesUsedByNonBuiltInAtoms.contains(firstArgumentVariableName)) {
-          // Check to make sure more than one built-in does not assign the same variable.
-          if (assignedBuiltInVariableNames.contains(firstArgumentVariableName)) 
-            throw new SWRLRuleEngineBridgeException("Attempt to set variable ?" + firstArgumentVariableName + " for second time by built-in '" 
-                                                    + builtInAtomInfo.getName() + "'.");
-          assignedBuiltInVariableNames.add(firstArgumentVariableName);
-          
-          builtInWithAssignmentAtoms.add(builtInAtomInfo);
-          variableNamesUsedByBuiltIn.remove(0); // Remove assigned variable name from the list used to check that all variables are predefined.
-        } else  builtInWithoutAssignmentAtoms.add(builtInAtomInfo);
-      } else builtInWithoutAssignmentAtoms.add(builtInAtomInfo);
-
-      // Check that all variable names used by a built-in are defined by at least one non built-in atom (with the exception of the first
-      // variable parameter of built-ins that assign their first parameter).
-      Iterator variableNameIterator = variableNamesUsedByBuiltIn.iterator();
-      while (variableNameIterator.hasNext()) {
-        String variableName = (String)variableNameIterator.next();
-        if (!variableNamesUsedByNonBuiltInAtoms.contains(variableName))
-          throw new SWRLRuleEngineBridgeException("Variable ?" + variableName + " in by built-in '" + builtInAtomInfo.getName() + 
-                                                  "' used before definition.");
-      } // while
-    } // while
-    bodyAtoms.addAll(nonBuiltInBodyAtoms);
-    bodyAtoms.addAll(builtInWithoutAssignmentAtoms);
-
-    headAtoms.addAll(builtInWithAssignmentAtoms);
-    headAtoms.addAll(ruleInfo.getHeadAtoms());
-
-    ruleInfo.setBodyAtoms(bodyAtoms);
-    ruleInfo.setHeadAtoms(headAtoms);
-  } // preProcessAtoms
-
   private void clearExportedAndAssertedKnowledge() 
   {
     exportedClassNames.clear();
@@ -690,24 +644,32 @@ public abstract class SWRLRuleEngineBridge
     return property.isObjectProperty();
   } // isObjectProperty
 
-  private void checkBuiltInMethod(String namespaceName, String builtInMethodName, Method method) throws IncompatibleBuiltInMethodException
+  private void checkBuiltInMethodSignature(String ruleName, String namespaceName, String builtInMethodName, Method method) 
+      throws IncompatibleBuiltInMethodException
   {
     Class exceptionTypes[];
 
     if (method.getReturnType() != Boolean.TYPE) 
-      throw new IncompatibleBuiltInMethodException(namespaceName, builtInMethodName, "Method does not return a boolean.");
+      throw new IncompatibleBuiltInMethodException(ruleName, namespaceName, builtInMethodName, "Method does not return a boolean.");
 
     exceptionTypes = method.getExceptionTypes();
 
     if ((exceptionTypes.length != 1) || (exceptionTypes[0] != BuiltInException.class))
-      throw new IncompatibleBuiltInMethodException(namespaceName, builtInMethodName, 
+      throw new IncompatibleBuiltInMethodException(ruleName, namespaceName, builtInMethodName, 
                                                    "Built-in method must throw a single exception of type BuiltInException.");
-  } // checkBuiltInMethod
+  } // checkBuiltInMethodSignature
 
-  private void checkBuiltInClass(String namespaceName, Class cls) throws IncompatibleBuiltInClassException
+  private void checkBuiltInMethodsClassCompatibility(String ruleName, String namespaceName, Class cls) throws IncompatibleBuiltInClassException
   {
     if (!SWRLBuiltInMethods.class.isAssignableFrom(cls)) 
-      throw new IncompatibleBuiltInClassException(namespaceName, cls.getName(), "Class does not implement SWRLBuiltInMethods.");
-  } // checkBuiltInMethod
+      throw new IncompatibleBuiltInClassException(ruleName, namespaceName, cls.getName(), "Class does not implement SWRLBuiltInMethods.");
+  } // checkBuiltInMethodsClassCompatibility
+
+  private void checkForUnboundArgument(String ruleName, String builtInName, List arguments) throws BuiltInException
+  {
+    if (arguments.contains(null)) // An unbound argument is indicated by a null for an argument value.
+      throw new BuiltInException("Built-in '" + builtInName + "' in rule '" + ruleName + "' " +
+                                 "returned with unbound argument number " + arguments.indexOf(null) + ".");
+  } // checkForUnboundArgument
   
 } // SWRLRuleEngineBridge

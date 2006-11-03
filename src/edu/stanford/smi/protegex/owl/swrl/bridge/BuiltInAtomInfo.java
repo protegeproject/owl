@@ -1,6 +1,4 @@
 
-// Info object representing a SWRL built-in atom. 
-
 package edu.stanford.smi.protegex.owl.swrl.bridge;
 
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.*;
@@ -10,9 +8,13 @@ import edu.stanford.smi.protegex.owl.swrl.model.*;
 
 import java.util.*;
 
+/*
+** Info object representing a SWRL built-in atom. 
+*/
 public class BuiltInAtomInfo extends AtomInfo
 {
   private List arguments; // List of Argument objects.
+  private List unboundArgumentNumbers = new ArrayList(); // List of Integer objects containing positions of any unbound arguments.
   
   public BuiltInAtomInfo(OWLModel owlModel, SWRLBuiltinAtom builtInAtom) throws SWRLRuleEngineBridgeException
   {
@@ -22,20 +24,37 @@ public class BuiltInAtomInfo extends AtomInfo
   } // BuiltInAtomInfo
   
   public List getArguments() { return arguments; }
+  public int getNumberOfArguments() { return arguments.size(); }
 
-  public boolean isFirstArgumentAVariable()
-  {
-    return !arguments.isEmpty() && arguments.get(0) instanceof VariableInfo;
-  } // isFirstArgumentAVariable
+  public boolean hasUnboundArguments() { return !unboundArgumentNumbers.isEmpty(); }
+  public List getUnboundArgumentNumbers() { return unboundArgumentNumbers; }
+  public void addUnboundArgumentNumber(int argumentNumber) { unboundArgumentNumbers.add(new Integer(argumentNumber)); }
 
-  public String getFirstArgumentVariableName() throws SWRLRuleEngineBridgeException
+  public List getUnboundArgumentVariableNames() throws SWRLRuleEngineBridgeException
+  {  
+    Iterator iterator = unboundArgumentNumbers.iterator();
+    List result = new ArrayList();
+
+    while (iterator.hasNext()) {
+      int argumentNumber = ((Integer)iterator.next()).intValue();
+      result.add(getArgumentVariableName(argumentNumber));
+    } // while
+    return result;
+  } // getUnboundArgumentVariableNames
+
+  public boolean isArgumentAVariable(int argumentNumber)
   {
-    if (!isFirstArgumentAVariable())
-      throw new SWRLRuleEngineBridgeException("Expecting a variable as the first parameter of built-in '" + getName() + "'");
+    return (argumentNumber >= 0) && (argumentNumber < arguments.size()) && arguments.get(argumentNumber) instanceof VariableInfo;
+  } // isArgumentAVariable
+
+  public String getArgumentVariableName(int argumentNumber) throws SWRLRuleEngineBridgeException
+  {
+    if (!isArgumentAVariable(argumentNumber))
+      throw new SWRLRuleEngineBridgeException("Expecting a variable for argument #" + argumentNumber + " to built-in '" + getName() + "'");
     
-    return (String)((VariableInfo)arguments.get(0)).getName();
-  } // getFirstArgumentVariableName
-  
+    return ((VariableInfo)arguments.get(argumentNumber)).getName();
+  } // getArgumentVariableName
+
   private List buildInfoList(OWLModel owlModel, SWRLBuiltinAtom builtInAtom) throws SWRLRuleEngineBridgeException
   {
     List result = new ArrayList();

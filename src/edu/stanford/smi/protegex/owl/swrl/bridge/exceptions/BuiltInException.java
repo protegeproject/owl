@@ -6,5 +6,4 @@ public class BuiltInException extends SWRLRuleEngineBridgeException
   public BuiltInException(String message) { super(message); } 
 
   public BuiltInException(String message, Throwable cause) { super(message, cause); }
-
 } // BuiltInException
