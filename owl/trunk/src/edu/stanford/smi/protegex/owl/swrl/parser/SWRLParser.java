@@ -21,7 +21,7 @@ public class SWRLParser {
   private SWRLFactory swrlFactory;
   private boolean parseOnly;
   private StringTokenizer tokenizer;
-  private String delimiters = " ?\n\t()[],#\"" + AND_CHAR + IMP_CHAR;
+    private String delimiters = " ?\n\t()[],#\"" + AND_CHAR + IMP_CHAR; // Note space.
   private Collection xmlSchemaSymbols = XMLSchemaDatatypes.getSlotSymbols();
   private HashSet variables;
   private boolean inHead = false;
@@ -449,7 +449,7 @@ public class SWRLParser {
     if (tokenizer.hasMoreTokens()) {
       if (!inHead) variables.add(variableName);
       else if (!variables.contains(variableName))
-        throw new SWRLParseException("Variable '" + variableName + "' referred to in consequent not present in antecedent.");
+        throw new SWRLParseException("Variable '" + variableName + "' referred to in consequent is not present in antecedent.");
     } // if      
     if (!parseOnly) parsedEntity = getSWRLVariable(variableName);
     return parsedEntity;
@@ -506,7 +506,9 @@ public class SWRLParser {
     
     resource = owlModel.getRDFResource(variableName);
 
-    if ((resource != null) && !(resource instanceof SWRLVariable)) throw new SWRLParseException("Invalid variable name: '" + variableName + "'. Cannot use name of existing OWL class, property, or individual.");
+    if ((resource != null) && !(resource instanceof SWRLVariable)) 
+	throw new SWRLParseException("Invalid variable name: '" + variableName + 
+				     "'. Cannot use name of existing OWL class, property, or individual.");
   } // checkThatVariableNameIsValid
 
   private boolean isSameAs(String identifier) throws SWRLParseException 
@@ -521,7 +523,7 @@ public class SWRLParser {
 
   private boolean isOWLClassName(String identifier) throws SWRLParseException 
   {
-    return owlModel.getRDFResource(identifier) instanceof RDFSNamedClass;
+    return owlModel.getRDFResource(identifier) instanceof OWLNamedClass;
   } // isOWLClassName
 
   private boolean isOWLObjectPropertyName(String identifier) throws SWRLParseException 
