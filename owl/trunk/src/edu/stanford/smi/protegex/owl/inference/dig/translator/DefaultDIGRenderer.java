@@ -409,7 +409,7 @@ public class DefaultDIGRenderer implements DIGRenderer {
 // Ignore this restriction
                     ret = false;
                     logErrorOrWarning(quantifierRestriction,
-                            "The enuerated datatypes filler contains an unsupported\n" + "datatype (" + curValue + ").",
+                            "The enumerated datatypes filler contains an unsupported\n" + "datatype (" + curValue + ").",
                             "Ignoring this restriction and attempting to continue.");
                     break;
                 }
