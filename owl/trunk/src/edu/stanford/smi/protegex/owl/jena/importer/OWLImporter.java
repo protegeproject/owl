@@ -333,7 +333,7 @@ public class OWLImporter {
     private boolean isRelevantOwnSlot(Slot slot) {
         return (slot instanceof RDFProperty &&
                 slot.isEditable() &&
-                !slot.getName().startsWith("protege:")) ||
+                !slot.getName().startsWith(ProtegeNames.PREFIX)) ||
                 Model.Slot.CONSTRAINTS.equals(slot.getName()) ||
                 Model.Slot.PAL_DESCRIPTION.equals(slot.getName()) ||
                 Model.Slot.PAL_NAME.equals(slot.getName()) ||
