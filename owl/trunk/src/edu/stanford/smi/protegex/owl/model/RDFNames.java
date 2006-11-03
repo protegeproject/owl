@@ -19,7 +19,7 @@ public interface RDFNames {
 
         final static String DESCRIPTION = "rdf:Description";
 
-        final static String EXTERNAL_RESOURCE = "protege:ExternalResource";
+        final static String EXTERNAL_RESOURCE = ProtegeNames.PREFIX +  "ExternalResource";
 
         final static String LIST = "rdf:List";
 

@@ -128,7 +128,7 @@ public interface OWLNames {
 
         public final static String SOME_VALUES_FROM = "owl:someValuesFrom";
 
-        public final static String SUBCLASSES_DISJOINT = "protege:subclassesDisjoint";
+        public final static String SUBCLASSES_DISJOINT = ProtegeNames.PREFIX + "subclassesDisjoint";
 
         public final static String VALUES_FROM = "owl:valuesFrom";
 

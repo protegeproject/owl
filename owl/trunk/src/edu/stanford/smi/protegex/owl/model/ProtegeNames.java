@@ -18,17 +18,17 @@ public class ProtegeNames {
 
     public static interface Slot {
 
-        final static String ABSTRACT = "protege:abstract";
+        final static String ABSTRACT = PREFIX + "abstract";
 
-        final static String CLASSIFICATION_STATUS = "protege:classificationStatus";
+        final static String CLASSIFICATION_STATUS = PREFIX + "classificationStatus";
 
-        final static String INFERRED_TYPE = "protege:inferredType";
+        final static String INFERRED_TYPE = PREFIX + "inferredType";
 
-        final static String INFERRED_SUBCLASSES = "protege:inferredSuperclassOf";
+        final static String INFERRED_SUBCLASSES = PREFIX + "inferredSuperclassOf";
 
-        final static String INFERRED_SUPERCLASSES = "protege:inferredSubclassOf";
+        final static String INFERRED_SUPERCLASSES = PREFIX + "inferredSubclassOf";
 
-	    final static String IS_COMMENTED_OUT = "protege:isCommentedOut";
+	    final static String IS_COMMENTED_OUT = PREFIX + "isCommentedOut";
     }
 
     public static String FILE = "http://protege.stanford.edu/plugins/owl/protege";
