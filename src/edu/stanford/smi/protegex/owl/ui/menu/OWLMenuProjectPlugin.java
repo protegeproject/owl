@@ -54,6 +54,7 @@ import edu.stanford.smi.protegex.owl.javacode.JavaCodeGeneratorResourceAction;
 import edu.stanford.smi.protegex.owl.jena.JenaKnowledgeBaseFactory;
 import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.model.ProtegeNames;
 import edu.stanford.smi.protegex.owl.model.RDFNames;
 import edu.stanford.smi.protegex.owl.model.RDFSNames;
 import edu.stanford.smi.protegex.owl.model.project.OWLProject;
@@ -459,7 +460,7 @@ public class OWLMenuProjectPlugin extends ProjectPluginAdapter {
                 Frame frame = reference.getFrame();
                 if (reference.getSlot().equals(rangeSlot) &&
                     !systemFrames.contains(frame) &&
-                    !frame.getName().startsWith("protege:")) {
+                    !frame.getName().startsWith(ProtegeNames.PREFIX)) {
                     return true;
                 }
             }
