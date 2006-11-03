@@ -101,7 +101,7 @@ public class AbsoluteFormsGenerator {
     private void createFormWidget(Model model, RDFSNamedClass cls, boolean all) {
         if (all || project.hasCustomizedDescriptor(cls)) {
             ClsWidget widget = project.getDesignTimeClsWidget(cls);
-            if (widget != null && !cls.getName().startsWith("protege:")) {
+            if (widget != null && !cls.getName().startsWith(ProtegeNames.PREFIX)) {
                 createFormWidget(model, cls, widget);
             }
         }
