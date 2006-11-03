@@ -7,10 +7,9 @@ import edu.stanford.smi.protegex.owl.swrl.parser.SWRLParser;
 import edu.stanford.smi.protegex.owl.model.factory.OWLJavaFactoryUpdater;
 import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
 import edu.stanford.smi.protegex.owl.swrl.model.factory.SWRLJavaFactory;
+import edu.stanford.smi.protegex.owl.swrl.model.SWRLImp;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
+import java.util.*;
 
 /**
  * A utility class that can (and should) be used to create and access SWRL related objects in the ontology.
@@ -261,4 +260,20 @@ public class SWRLFactory {
         RDFSClass variableCls = owlModel.getRDFSNamedClass(SWRLNames.Cls.VARIABLE);
         return variableCls.getInstances(true);
     }
+
+  public Collection getReferencedImps(RDFResource rdfResource)
+  {
+    Collection result = new ArrayList();
+
+    if (rdfResource != null) {
+      Iterator iterator = getImps().iterator();
+      while (iterator.hasNext()) {
+        SWRLImp imp = (SWRLImp)iterator.next();
+        Set set = imp.getReferencedInstances();
+        if (set.contains(rdfResource) && !result.contains(imp)) result.add(imp);
+      } // while
+    } // if
+    return result;
+  } // getReferencedImps
+
 } // SWRLFactory
