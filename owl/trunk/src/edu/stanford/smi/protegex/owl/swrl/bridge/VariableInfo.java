@@ -9,7 +9,7 @@ import edu.stanford.smi.protegex.owl.swrl.model.SWRLVariable;
 
 public class VariableInfo extends Info implements Argument
 {
-  private Argument builtInResult = null; // Used if a built-in assigne a value to a variable.
+  private Argument builtInResult = null; // Used if a built-in binds a value to a variable.
 
   public VariableInfo(SWRLVariable variable) { super(variable.getName()); }
 

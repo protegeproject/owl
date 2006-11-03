@@ -1,6 +1,5 @@
 
 // TODO: This could be made significantly shorter using generics.
-// TODO: change the isArgument/areAllArgument methods to not throw exceptions.
 
 package edu.stanford.smi.protegex.owl.swrl.bridge.builtins;
 
@@ -12,31 +11,26 @@ import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.*;
 import java.util.List;
 
 /**
- ** Class containing utility methods that can be used in built-in implementations. 
+ ** Class containing utility methods that can be used in built-in method implementations. 
  */
 public class SWRLBuiltInUtil
 {
-  public static boolean isExpectingAssignment(String builtInName, List arguments)
+  public static void checkNumberOfArgumentsEqualTo(String builtInName, int expecting, int actual) 
+    throws InvalidBuiltInArgumentNumberException
   {
-    return !arguments.isEmpty() && arguments.get(0) == null;
-  } // isExpectingAssignment
-
-  public static void checkNumberOfArgumentsEqualTo(String builtInName, int expecting, int actual) throws InvalidBuiltInArgumentNumberException
-  {
-    if (expecting != actual)
-      throw new InvalidBuiltInArgumentNumberException(builtInName, expecting, actual);
+    if (expecting != actual) throw new InvalidBuiltInArgumentNumberException(builtInName, expecting, actual);
   } // checkNumberOfArgumentsEqualTo
 
-  public static void checkNumberOfArgumentsAtLeast(String builtInName, int expectingAtLeast, int actual) throws InvalidBuiltInArgumentNumberException
+  public static void checkNumberOfArgumentsAtLeast(String builtInName, int expectingAtLeast, int actual) 
+    throws InvalidBuiltInArgumentNumberException
   {
-    if (actual < expectingAtLeast) 
-      throw new InvalidBuiltInArgumentNumberException(builtInName, expectingAtLeast, actual, "at least");
+    if (actual < expectingAtLeast) throw new InvalidBuiltInArgumentNumberException(builtInName, expectingAtLeast, actual, "at least");
   } // checkNumberOfArgumentsAtLeast
 
-  public static void checkNumberOfArgumentsAtMost(String builtInName, int expectingAtMost, int actual) throws InvalidBuiltInArgumentNumberException
+  public static void checkNumberOfArgumentsAtMost(String builtInName, int expectingAtMost, int actual) 
+    throws InvalidBuiltInArgumentNumberException
   {
-    if (actual > expectingAtMost) 
-      throw new InvalidBuiltInArgumentNumberException(builtInName, expectingAtMost, actual, "at most");
+    if (actual > expectingAtMost) throw new InvalidBuiltInArgumentNumberException(builtInName, expectingAtMost, actual, "at most");
   } // checkNumberOfArgumentsAtMost
 
   public static void checkThatAllArgumentsAreLiterals(String builtInName, List arguments) throws InvalidBuiltInArgumentException
@@ -71,14 +65,16 @@ public class SWRLBuiltInUtil
     return true;
   } // areAllArgumentsLongs
 
-  public static boolean areAllArgumentsDoubles(String builtInName, List arguments) throws InvalidBuiltInArgumentException, LiteralConversionException
+  public static boolean areAllArgumentsDoubles(String builtInName, List arguments)
+    throws InvalidBuiltInArgumentException, LiteralConversionException
   {
     for (int argumentNumber = 0; argumentNumber < arguments.size(); argumentNumber++) 
       if (!isArgumentADouble(argumentNumber, arguments)) return false;
     return true;
   } // areAllArgumentsDoubles
 
-  public static boolean areAllArgumentsBooleans(String builtInName, List arguments) throws InvalidBuiltInArgumentException, LiteralConversionException
+  public static boolean areAllArgumentsBooleans(String builtInName, List arguments) 
+    throws InvalidBuiltInArgumentException, LiteralConversionException
   {
     for (int argumentNumber = 0; argumentNumber < arguments.size(); argumentNumber++) 
       if (!isArgumentABoolean(argumentNumber, arguments)) return false;
@@ -285,7 +281,8 @@ public class SWRLBuiltInUtil
 
   // Booleans
 
-  public static void checkThatArgumentIsABoolean(String builtInName, int argumentNumber, List arguments) throws InvalidBuiltInArgumentException
+  public static void checkThatArgumentIsABoolean(String builtInName, int argumentNumber, List arguments) 
+    throws InvalidBuiltInArgumentException
   {
     if (!isArgumentABoolean(argumentNumber, arguments))
       throw new InvalidBuiltInArgumentException(builtInName, argumentNumber, "Expecting boolean literal");
@@ -293,8 +290,7 @@ public class SWRLBuiltInUtil
 
   public static boolean isArgumentABoolean(int argumentNumber, List arguments) throws InvalidBuiltInArgumentException
   {
-    if (isArgumentALiteral(argumentNumber, arguments)) 
-      return (getArgumentAsALiteral(argumentNumber, arguments).isBoolean());
+    if (isArgumentALiteral(argumentNumber, arguments)) return (getArgumentAsALiteral(argumentNumber, arguments).isBoolean());
     else return false;
   } // isArgumentABoolean
 
@@ -315,8 +311,7 @@ public class SWRLBuiltInUtil
 
   public static boolean isArgumentAString(int argumentNumber, List arguments) throws InvalidBuiltInArgumentException
   {
-    if (isArgumentALiteral(argumentNumber, arguments)) 
-      return (getArgumentAsALiteral(argumentNumber, arguments).isString());
+    if (isArgumentALiteral(argumentNumber, arguments)) return (getArgumentAsALiteral(argumentNumber, arguments).isString());
     else return false;
   } // isArgumentAString
 
@@ -326,5 +321,40 @@ public class SWRLBuiltInUtil
 
     return getArgumentAsALiteral(argumentNumber, arguments).getString();
   } // getArgumentAsAString
+
+  // Unbound argument processing methods.
+
+  public static boolean hasUnboundArguments(String builtInName, List arguments) 
+  {
+    return !arguments.isEmpty() && arguments.contains(null); // An argument is unbound if its value is null.
+  } // hasUnboundArguments
+
+  public static boolean isUnboundArgument(String builtInName, List arguments, int argumentNumber)
+  {
+    return (argumentNumber >= 0) && (argumentNumber < arguments.size()) && (arguments.get(argumentNumber) == null);
+  } // isUnboundArgument
+
+  /*
+  ** Get 0-offset position of first unbound argument; return -1 if no unbound arguments are found.
+  */
+  public static int getFirstUnboundArgument(String builtInName, List arguments)
+  {
+    if (hasUnboundArguments(builtInName, arguments)) return arguments.indexOf(null);
+    else return -1;
+  } // getFirstUnboundArgument
+
+  public static void checkForUnboundArguments(String builtInName, List arguments) throws BuiltInException
+  {
+    if (hasUnboundArguments(builtInName, arguments))
+      throw new BuiltInException("Built-in '" + builtInName + "' does not support variable binding. Unbound variable used for argument #" +
+                                 getFirstUnboundArgument(builtInName, arguments) + ".");
+  } // checkForUnboundArguments
+
+  public static void checkForUnboundNonFirstArguments(String builtInName, List arguments) throws BuiltInException
+  {
+    if (hasUnboundArguments(builtInName, arguments.subList(1, arguments.size())))
+      throw new BuiltInException("Built-in '" + builtInName + "' supports variable binding only for the first argument. " +
+                                 "Unbound variable used in other arguments.");
+  } // checkForUnboundArguments
 
 } // SWRLBuiltInUtil

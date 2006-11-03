@@ -1,5 +1,7 @@
 
-// Info object representing an argument (to a built-in or atom), which will be one of IndividualInfo, VariableInfo, or LiteralInfo.
+// Object representing an argument to an atom (and, as a
+// consequence, to a built-in). It will be one of IndividualInfo,
+// VariableInfo, or LiteralInfo.
 
 package edu.stanford.smi.protegex.owl.swrl.bridge;
 

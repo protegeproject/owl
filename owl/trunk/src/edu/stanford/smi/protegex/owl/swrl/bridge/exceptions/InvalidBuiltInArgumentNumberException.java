@@ -10,7 +10,7 @@ public class InvalidBuiltInArgumentNumberException extends BuiltInException
 
   public InvalidBuiltInArgumentNumberException(String builtInName, int expecting, int actual, String message) 
   { 
-    super("Invalid number of arguments for built-in " + builtInName + " - expecting " + message + " " + expecting + ", got " + actual);
+    super("Invalid number of arguments for built-in '" + builtInName + "' - expecting " + message + " " + expecting + ", got " + actual);
   } // InvalidBuiltInArgumentNumberException
 
 } // InvalidBuiltInArgumentNumberException

@@ -12,7 +12,7 @@ import java.util.*;
 
 // An individual can be an argument to an atom or a built-in.
 
-public class IndividualInfo extends Info implements Argument
+public class IndividualInfo extends Info implements Argument, Value
 {
   private Collection classNames;
     
