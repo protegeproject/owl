@@ -4,7 +4,7 @@
 	<property file = "../global.properties"/>
 
 	<property name = "project.name" value = "owl"/>
-	<property name = "project.name.javadoc" value = "Protege-OWL"/>
+	<property name = "project.name.javadoc" value = "Protege-OWL ${version}"/>
 	<property name = "build.dir" value = "./build"/>
 	<property name = "build.dest" value = "${build.dir}/classes"/>
 	<property name = "build.src" value = "${build.dir}/src"/>
@@ -121,6 +121,12 @@
 	<target name = "javadoc" depends = "init">
 		<mkdir dir = "${build.javadoc}"/>
 		<javadoc destdir = "${build.javadoc}" doctitle = "${project.name.javadoc}" header = "${project.name.javadoc}" footer = "${project.name.javadoc}" windowtitle = "${project.name.javadoc}" author = "true" source = "1.5">
+			<bottom><![CDATA[
+					<small>
+					<a href=mailto:protege-owl@lists.stanford.edu>Submit a bug report or feature request</a><br>
+					${copyright}
+					</small>]]>
+			</bottom>
 			<packageset dir = "${build.src}">                
 				<include name = "edu/**"/>                
 			</packageset>            
@@ -141,10 +147,10 @@
 	<!-- =================================================================== -->
 	<target name = "dist" depends = "init">
 		<zip zipfile = "${dist.dir}/protege-owl-src-${version}.zip" update = "no">
-			<zipfileset dir = "${build.src}" prefix = "Protege-OWL/src"/>
-			<zipfileset dir = "${build.javadoc}" prefix = "Protege-OWL/docs/apidocs"/>
-			<zipfileset dir = "${etc.dir}" prefix = "Protege-OWL/etc"/>
-			<zipfileset dir = "${lib.dir}" includes = "*.jar" prefix = "Protege-OWL/lib"/>
+			<zipfileset dir = "${build.src}" prefix = "Protege-OWL ${version}/src"/>
+			<zipfileset dir = "${build.javadoc}" prefix = "Protege-OWL ${version}/docs/apidocs"/>
+			<zipfileset dir = "${etc.dir}" prefix = "Protege-OWL ${version}/etc"/>
+			<zipfileset dir = "${lib.dir}" includes = "*.jar" prefix = "Protege-OWL ${version}/lib"/>
 		</zip>
 	</target>
 
