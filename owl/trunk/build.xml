@@ -35,6 +35,8 @@
 
     <property name = "junit" value = "./junit"/>
 
+    <property name = "protegeCoreLib" value = "${lib}"/>
+
 	<!-- =================================================================== -->
 	<!-- USAGE -->		
 	<!-- Instructions for using the build file -->	
@@ -65,7 +67,20 @@
         <tstamp/>
     </target>
 
-    <target name="init" depends="init.time">
+    <target name = "checkProtegeLibs">
+      <fail message = "check the protegeCoreLib property. It should point to the location of the protege.jar and protege-test.jar libraries">
+        <condition>
+          <not>
+            <and>
+              <available file="${protegeCoreLib}/protege.jar" type = "file"/>
+              <available file="${protegeCoreLib}/protege-test.jar" type = "file"/>
+            </and>
+          </not>
+        </condition>
+      </fail>
+    </target>
+
+    <target name="init" depends="init.time,checkProtegeLibs">
         <path id="classpath.compile">
             <fileset dir="${lib}"/>
         </path>
@@ -229,7 +244,7 @@
          <classpath refid = "classpath.compile"/>
          <classpath>
             <pathelement location = "${jarfile}"/>
-            <pathelement location = "${lib}/protege-test.jar"/>
+            <pathelement location = "${protegeCoreLib}/protege-test.jar"/>
          </classpath>
       </javac>
    </target>
@@ -238,8 +253,8 @@
     <java classname = "edu.stanford.smi.protegex.owl.junit_config.CheckConfiguration">
       <classpath>
         <pathelement location="${classes}"/>
-        <pathelement location = "${lib}/protege.jar"/>
-        <pathelement location = "${lib}/protege-test.jar"/>
+        <pathelement location = "${protegeCoreLib}/protege.jar"/>
+        <pathelement location = "${protegeCoreLib}/protege-test.jar"/>
         <pathelement location = "${lib}/junit.jar"/>
       </classpath>
     </java>
@@ -276,8 +291,8 @@
       <jvmarg value="-Xmx300M"/>
       <classpath>
            <pathelement location="${classes}"/>
-           <pathelement location = "${lib}/protege.jar"/>
-           <pathelement location = "${lib}/protege-test.jar"/>
+           <pathelement location = "${protegeCoreLib}/protege.jar"/>
+           <pathelement location = "${protegeCoreLib}/protege-test.jar"/>
            <fileset
               dir="${plugin}">
               <include name = "**/*.jar"/>
