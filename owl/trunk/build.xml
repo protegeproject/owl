@@ -35,6 +35,11 @@
 
     <property name = "junit" value = "./junit"/>
 
+    <!-- This property must point to the location of the protege.jar and    -->
+    <!-- protege-test.jar libraries.  We are making the default assumption  -->
+    <!-- that people will copy the protege.jar and protege-test.jar files   -->
+    <!-- into the protege owl library directory.  This is not a great       -->
+    <!-- assumption but I don't know a better one.                          -->
     <property name = "protegeCoreLib" value = "${lib}"/>
 
 	<!-- =================================================================== -->
@@ -275,6 +280,7 @@
      junits are failing, removing the option 
 
         haltonfailure = "on" 
+        haltonerror   = "on"
 
      is helpful for showing all the failures.  But in the committed
      version I think that this option is very important because it
