@@ -82,7 +82,8 @@
 
     <target name="init" depends="init.time,checkProtegeLibs">
         <path id="classpath.compile">
-            <fileset dir="${lib}"/>
+          <pathelement location = "${protegeCoreLib}/protege.jar"/>
+          <fileset dir="${lib}"/>
         </path>
         <mkdir dir="${classes}"/>
         <mkdir dir="${dist}"/>
