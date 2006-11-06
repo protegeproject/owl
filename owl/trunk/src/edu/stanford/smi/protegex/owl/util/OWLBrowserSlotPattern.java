@@ -26,6 +26,10 @@ import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
  *
  */
 public class OWLBrowserSlotPattern extends BrowserSlotPattern{
+
+	public OWLBrowserSlotPattern(BrowserSlotPattern pattern) {
+		super(pattern.getElements());
+	}
 	
 	public OWLBrowserSlotPattern(List elements) {
 		super(elements);		
