@@ -34,6 +34,7 @@ import edu.stanford.smi.protege.action.Copy;
 import edu.stanford.smi.protege.action.Cut;
 import edu.stanford.smi.protege.action.InsertUnicodeCharacterAction;
 import edu.stanford.smi.protege.action.Paste;
+import edu.stanford.smi.protege.model.BrowserSlotPattern;
 import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.Frame;
 import edu.stanford.smi.protege.model.KnowledgeBase;
@@ -70,6 +71,7 @@ import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
 import edu.stanford.smi.protegex.owl.ui.actions.AbstractOWLModelAction;
 import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
 import edu.stanford.smi.protegex.owl.ui.results.HostResourceDisplay;
+import edu.stanford.smi.protegex.owl.util.OWLBrowserSlotPattern;
 
 /**
  * A collection of global utilities for OWL user interface components.
@@ -314,7 +316,7 @@ public class OWLUI {
                 showErrorMessageDialog(owlModel,
                                        "Internal Error: " + t +
                                        "\nPlease see Java console for details, and possibly report" +
-                                       "\nthis to the Protege-OWL developers (holger@knublauch.com)." +
+                                       "\nthis to the Protege-OWL mailing list." +
                                        "\nYour ontology may now no longer be in a consistent state, and" +
                                        "\nyou may want to save this version under a different name.",
                                        "Internal Protege-OWL Error");
@@ -843,4 +845,34 @@ public class OWLUI {
         return new TreePath(nodePath.toArray());
     }
 
+    
+    public static void fixBrowserSlotPatterns(Project project) {
+    	Collection customizedClasses = project.getClsesWithDirectBrowserSlots();
+
+    	for (Iterator iter = customizedClasses.iterator(); iter.hasNext();) {
+			Cls cls = (Cls) iter.next();
+			fixBrowserSlotPattern(project, cls);			
+		}
+	}
+    
+    public static OWLBrowserSlotPattern fixBrowserSlotPattern(Project project, Cls cls) {
+    	if (cls == null)
+    		return null;
+    	
+    	BrowserSlotPattern browserPattern = project.getBrowserSlotPattern(cls);    	
+    	if (browserPattern == null)
+    		return null;
+    	
+    	OWLBrowserSlotPattern owlBrowswePattern = null;
+    	
+        if (browserPattern instanceof OWLBrowserSlotPattern)
+        	owlBrowswePattern = (OWLBrowserSlotPattern) browserPattern;
+        else {
+        	owlBrowswePattern = new OWLBrowserSlotPattern(browserPattern);
+        	cls.setDirectBrowserSlotPattern(owlBrowswePattern);
+        }
+        
+        return owlBrowswePattern;       
+    }
+    
 }
