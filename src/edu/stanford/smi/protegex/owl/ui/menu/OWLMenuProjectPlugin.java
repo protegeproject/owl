@@ -272,7 +272,7 @@ public class OWLMenuProjectPlugin extends ProjectPluginAdapter {
         if (kb instanceof OWLModel) {
 
             //added TT:
-            fixBrowserSlotPatterns(p);
+            OWLUI.fixBrowserSlotPatterns(p);
 
             //p.setWidgetMapper(new OWLWidgetMapper((OWLModel) p.getKnowledgeBase()));
             OWLModel owlModel = (OWLModel) kb;
@@ -291,7 +291,7 @@ public class OWLMenuProjectPlugin extends ProjectPluginAdapter {
             project.setWidgetMapper(new OWLWidgetMapper(owlModel));
 
             //added TT:
-            fixBrowserSlotPatterns(project);
+            OWLUI.fixBrowserSlotPatterns(project);
 
             Integer build = owlModel.getOWLProject().getSettingsMap().getInteger(JenaKnowledgeBaseFactory.OWL_BUILD_PROPERTY);
             if (build == null) {
@@ -323,18 +323,6 @@ public class OWLMenuProjectPlugin extends ProjectPluginAdapter {
             }
         }
     }
-
-    private void fixBrowserSlotPatterns(Project project) {
-    	Collection customizedClasses = project.getClsesWithDirectBrowserSlots();
-
-    	for (Iterator iter = customizedClasses.iterator(); iter.hasNext();) {
-			Cls cls = (Cls) iter.next();
-
-			BrowserSlotPattern browserPattern = project.getBrowserSlotPattern(cls);
-	        if (browserPattern != null && !(browserPattern instanceof OWLBrowserSlotPattern))
-	        	cls.setDirectBrowserSlotPattern(new OWLBrowserSlotPattern(browserPattern.getElements()));
-		}
-	}
 
 	public void afterSave(Project p) {
         if (p.getKnowledgeBase() instanceof OWLModel) {
