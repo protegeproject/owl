@@ -1990,16 +1990,14 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     }
 
 
-    public String getDefaultLanguage() {
-        if (isProtegeMetaOntologyImported()) {
-            RDFProperty metaSlot = getRDFProperty(ProtegeNames.getDefaultLanguageSlotName());
-            if (metaSlot != null) {
-                OWLOntology oi = getDefaultOWLOntology();
-                if (oi != null) {
-                    String value = (String) oi.getPropertyValue(metaSlot);
-                    if (value != null && value.length() > 0) {
-                        return value;
-                    }
+    public String getDefaultLanguage() {        
+        RDFProperty metaSlot = getRDFProperty(ProtegeNames.getDefaultLanguageSlotName());
+        if (metaSlot != null) {
+            OWLOntology oi = getDefaultOWLOntology();
+            if (oi != null) {
+                String value = (String) oi.getPropertyValue(metaSlot);
+                if (value != null && value.length() > 0) {
+                    return value;
                 }
             }
         }
@@ -2591,13 +2589,8 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     }
 
 
-    public OWLDatatypeProperty getProtegeReadOnlyProperty() {
-        if (isProtegeMetaOntologyImported()) {
-            return (OWLDatatypeProperty) getSlot(ProtegeNames.getReadOnlySlotName());
-        }
-        else {
-            return null;
-        }
+    public OWLDatatypeProperty getProtegeReadOnlyProperty() {   
+    	return (OWLDatatypeProperty) getSlot(ProtegeNames.getReadOnlySlotName());   
     }
 
 
@@ -2724,13 +2717,11 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
 
     public RDFProperty getProtegeSubclassesDisjointProperty() {
-        if (isProtegeMetaOntologyImported()) {
-            if (protegeSubclassesDisjointProperty == null) {
-                protegeSubclassesDisjointProperty = getSlot(ProtegeNames.getSubclassesDisjointSlotName());
-            }
-            return (RDFProperty) protegeSubclassesDisjointProperty;
+    	//TT: is it safe to cache this value? What if an import is added/removed? 
+    	if (protegeSubclassesDisjointProperty == null) {
+    		protegeSubclassesDisjointProperty = getSlot(ProtegeNames.getSubclassesDisjointSlotName());
         }
-        return null;
+        return (RDFProperty) protegeSubclassesDisjointProperty;
     }
 
 
@@ -2783,19 +2774,17 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     }
 
 
-    public String[] getUsedLanguages() {
-        if (isProtegeMetaOntologyImported()) {
-            RDFProperty metaSlot = getRDFProperty(ProtegeNames.getUsedLanguagesSlotName());
-            if (metaSlot != null) {
-                OWLOntology oi = getDefaultOWLOntology();
-                if (oi != null) {
-                    Collection values = oi.getPropertyValues(metaSlot);
-                    if (values.size() > 0) {
-                        return (String[]) values.toArray(new String[0]);
-                    }
+    public String[] getUsedLanguages() {      
+        RDFProperty metaSlot = getRDFProperty(ProtegeNames.getUsedLanguagesSlotName());
+        if (metaSlot != null) {
+            OWLOntology oi = getDefaultOWLOntology();
+            if (oi != null) {
+                Collection values = oi.getPropertyValues(metaSlot);
+                if (values.size() > 0) {
+                    return (String[]) values.toArray(new String[0]);
                 }
             }
-        }
+        }      
         return DEFAULT_USED_LANGUAGES;
     }
 
@@ -3088,14 +3077,19 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     public boolean isProtegeMetaOntologyImported() {
     	//TT: this should be reimplemented in a more efficient way
     	//Should use a listener on the ontology imports and a class field
-        //String slotName = ProtegeNames.getSubclassesDisjointSlotName();
-        //return getSlot(slotName) != null;
-    	for (Iterator iter = getAllImports().iterator(); iter.hasNext();) {
+    	
+    	//TT: Nice implementation, but I don't know how efficient it is.    	
+    	/*
+        for (Iterator iter = getAllImports().iterator(); iter.hasNext();) {
 			String uriImport = (String) iter.next();
 			if (uriImport.equals(ProtegeNames.FILE))	
 				return true;
 		}
     	return false;
+    	*/
+        String slotName = ProtegeNames.getSubclassesDisjointSlotName();
+        return getSlot(slotName) != null;
+
     }
 
 
