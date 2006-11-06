@@ -46,6 +46,7 @@ import edu.stanford.smi.protege.model.framestore.MergingNarrowFrameStore;
 import edu.stanford.smi.protege.model.framestore.NarrowFrameStore;
 import edu.stanford.smi.protege.util.CollectionUtilities;
 import edu.stanford.smi.protege.util.Log;
+import edu.stanford.smi.protege.util.URIUtilities;
 import edu.stanford.smi.protegex.owl.jena.graph.JenaModelFactory;
 import edu.stanford.smi.protegex.owl.model.DefaultTaskManager;
 import edu.stanford.smi.protegex.owl.model.NamespaceManager;
@@ -122,6 +123,7 @@ import edu.stanford.smi.protegex.owl.repository.util.RepositoryFileManager;
 import edu.stanford.smi.protegex.owl.testing.OWLTest;
 import edu.stanford.smi.protegex.owl.testing.OWLTestLibrary;
 import edu.stanford.smi.protegex.owl.ui.widget.OWLFormWidget;
+import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
 import edu.stanford.smi.protegex.owl.ui.widget.OWLWidgetMapper;
 import edu.stanford.smi.protegex.owl.util.OWLBrowserSlotPattern;
 
@@ -1897,11 +1899,14 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
        	if (directType == null)
         	return getMissingTypeString(instance);
           
-       	BrowserSlotPattern slotPattern;
+       	BrowserSlotPattern slotPattern = null;
        	
        	try {
        		slotPattern = (OWLBrowserSlotPattern) getProject().getBrowserSlotPattern(directType);
-       	} catch(Exception e) {
+       	} catch (ClassCastException e) {
+			slotPattern = OWLUI.fixBrowserSlotPattern(getProject(), directType);			
+			//Log.getLogger().warning("Non-OWL browser slot for: " + directType + " ... Convert it to OWLBrowserSlotPattern");
+		} catch(Exception e) {
        		slotPattern = getProject().getBrowserSlotPattern(directType);
        		//Log.getLogger().warning("Non-OWL browser slot for: " + directType);
        	}
@@ -3081,8 +3086,16 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
 
     public boolean isProtegeMetaOntologyImported() {
-        String slotName = ProtegeNames.getSubclassesDisjointSlotName();
-        return getSlot(slotName) != null;
+    	//TT: this should be reimplemented in a more efficient way
+    	//Should use a listener on the ontology imports and a class field
+        //String slotName = ProtegeNames.getSubclassesDisjointSlotName();
+        //return getSlot(slotName) != null;
+    	for (Iterator iter = getAllImports().iterator(); iter.hasNext();) {
+			String uriImport = (String) iter.next();
+			if (uriImport.equals(ProtegeNames.FILE))	
+				return true;
+		}
+    	return false;
     }
 
 
@@ -3387,8 +3400,15 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
         }
     }
 
-
+    
     public String getFrameNameForURI(String uri, boolean generatePrefix) {
+    	//TT: this method is wrong!! It needs to be reimplemented
+    	
+    	if (!URIUtilities.isAbsoluteURI(uri)) {
+    		Frame frame = getFrame(uri);
+    		return (frame == null ? null : frame.getName());
+    	}
+    	
         String localName = getLocalNameForURI(uri);
         String namespace = getNamespaceForURI(uri);
         final NamespaceManager nsm = getNamespaceManager();
@@ -3420,6 +3440,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
             prefix = newPrefix;
             // throw new IllegalArgumentException("Unknown prefix for URI " + uri);
         }
+        
         if (localName != null) {
             return prefix + ":" + localName;
         }
