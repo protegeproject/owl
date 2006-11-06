@@ -15,10 +15,8 @@ public class ClassCommenter {
 
 	private RDFProperty isCommentedOutProperty;
 
-	public ClassCommenter(OWLModel owlModel) {
-		if(owlModel.isProtegeMetaOntologyImported()) {
-			isCommentedOutProperty = owlModel.getRDFProperty(ProtegeNames.Slot.IS_COMMENTED_OUT);
-		}
+	public ClassCommenter(OWLModel owlModel) {		
+		isCommentedOutProperty = owlModel.getRDFProperty(ProtegeNames.Slot.IS_COMMENTED_OUT);		
 	}
 
 	public boolean isCommentedOut(RDFSClass cls) {
