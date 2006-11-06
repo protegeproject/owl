@@ -748,5 +748,15 @@ public abstract class AbstractRDFSClass extends DefaultCls implements RDFSClass 
     	
         getDefaultKnowledgeBase().setDirectBrowserSlotPattern(this, slotPattern);
     }
+
+    @Override
+    public OWLBrowserSlotPattern getBrowserSlotPattern() {
+    	BrowserSlotPattern pattern = super.getBrowserSlotPattern(); 
+    	
+    	if (pattern instanceof OWLBrowserSlotPattern)
+    		return (OWLBrowserSlotPattern) pattern;
+    	    	
+    	return new OWLBrowserSlotPattern(pattern);    		
+    }
     
 }
