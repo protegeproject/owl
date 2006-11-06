@@ -94,7 +94,7 @@ public class OWLDomainWidget extends AbstractPropertyWidget {
                slot.getName().equals(Model.Slot.DIRECT_DOMAIN);
     }
 
-
+    //TT: This method does the wrong thing. Should be fixed.
     private void removeFromDomain(RDFSClass cls, RDFProperty property) {
         try {
             beginTransaction("Remove " + cls.getBrowserText() + " from the domain of " + property.getBrowserText());
@@ -111,7 +111,7 @@ public class OWLDomainWidget extends AbstractPropertyWidget {
                         property.setDomain((RDFSClass) classes.iterator().next());
                     }
                     else {
-                        System.out.println("classes = " + classes);
+                       // System.out.println("classes = " + classes);
                         RDFSClass domain = cls.getOWLModel().createOWLUnionClass(classes);
                         property.setDomain(domain);
                     }
