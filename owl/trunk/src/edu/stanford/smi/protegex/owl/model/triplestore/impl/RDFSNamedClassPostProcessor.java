@@ -111,11 +111,11 @@ class RDFSNamedClassPostProcessor {
     private void updateProtegeFeatures(Collection clses) {
         Slot abstractSlot = owlModel.getRDFProperty(ProtegeNames.Slot.ABSTRACT);
         for (Iterator it = clses.iterator(); it.hasNext();) {
-            Cls cls = (Cls) it.next();
-            if (Boolean.TRUE.equals(cls.getDirectOwnSlotValue(abstractSlot))) {
+            Cls cls = (Cls) it.next();                  
+           if (abstractSlot != null && Boolean.TRUE.equals(cls.getDirectOwnSlotValue(abstractSlot))) {
                 TripleStoreUtil.ensureActiveTripleStore((RDFResource) cls);
                 cls.setAbstract(true);
-            }
+            }            
         }
     }
 }
