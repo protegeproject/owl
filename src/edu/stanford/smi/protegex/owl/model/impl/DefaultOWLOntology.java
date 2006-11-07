@@ -145,7 +145,10 @@ public class DefaultOWLOntology extends DefaultRDFIndividual implements OWLOntol
         List results = new ArrayList();
         for (Iterator it = resources.iterator(); it.hasNext();) {
             Object o = it.next();
-            results.add(((RDFResource) o).getURI());
+            //TODO: Database inclusion problem
+            if (o instanceof RDFResource) {
+            	results.add(((RDFResource) o).getURI());
+            }
         }
         return results;
     }
