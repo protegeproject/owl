@@ -86,8 +86,7 @@ import edu.stanford.smi.protegex.owl.ui.repository.UnresolvedImportUIHandler;
  */
 public class ProtegeOWLParser {
         private static transient Logger log = Log.getLogger(ProtegeOWLParser.class);
-        
-        private boolean importing = false;
+             
 
 	/**
 	 * The default namespace to use if the current file does not define one by itself.
@@ -287,9 +286,8 @@ public class ProtegeOWLParser {
 					defaultOntology.delete();
 				}
 				
-				errorOntologyURI = URIUtilities.createURI(ontologyName);
-                                
-				setImporting(false);
+				errorOntologyURI = URIUtilities.createURI(ontologyName);                        
+				
 				invokation.invokeARP(arp);
 								
 				if(owlModel.getRDFResource(":") == null) {
@@ -300,7 +298,7 @@ public class ProtegeOWLParser {
 				if(dns != null) {
 					addNamespaceToImports(dns, imports);
 				}
-                                setImporting(true);
+                
 				processImports(tripleStore, imports);
 				
 				long endTime = System.currentTimeMillis();
@@ -811,6 +809,12 @@ public class ProtegeOWLParser {
 	private void processImports(TripleStore tripleStore,
 	                            Set imports)
 	        throws Exception {
+		
+		//TODO: This is wrong and will be fixed when db inclusion will work.
+		if (owlModel instanceof OWLDatabaseModel) {
+			return;
+		}
+		
 		prefixForDefaultNamespace = null;
 		RDFProperty owlImportsProperty = owlModel.getRDFProperty(OWLNames.Slot.IMPORTS);
 		Iterator ontologies = tripleStore.listSubjects(owlImportsProperty);
@@ -983,9 +987,6 @@ public class ProtegeOWLParser {
 
 
 		public void endPrefixMapping(String prefix) {
-                        if (importsWillBeMerged() && isImporting()) {
-                          return;
-                        }
 			if (ontology == null) {
 				ontology = TripleStoreUtil.getFirstOntology(owlModel, tripleStore);
 				if(ontology == null) {
@@ -1168,18 +1169,7 @@ public class ProtegeOWLParser {
 			return url.openStream();
 		}
 	}
-        
-        private boolean importsWillBeMerged() {
-          return owlModel instanceof OWLDatabaseModel;
-        }
-        
-        private void setImporting(boolean importing) {
-          this.importing = importing;
-        }
-        
-        private boolean isImporting() {
-          return importing;
-        }
+
 
 }
 
