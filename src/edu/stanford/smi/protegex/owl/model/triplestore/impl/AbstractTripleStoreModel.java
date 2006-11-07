@@ -58,12 +58,12 @@ public abstract class AbstractTripleStoreModel implements TripleStoreModel {
         }
         OWLJavaFactoryUpdater.run(owlModel, resources);
 
-        owlModel.setGenerateEventsEnabled(false);
+        boolean enabled = owlModel.setGenerateEventsEnabled(false);
         try {
             TripleChangePostProcessor.postProcess(owlModel);
         }
         finally {
-            owlModel.setGenerateEventsEnabled(true);
+            owlModel.setGenerateEventsEnabled(enabled);
         }
         owlModel.flushCache();
     }
