@@ -127,6 +127,8 @@ public interface OWLModel extends ProtegeKnowledgeBase, OWLTestManager {
 
 
     OWLObjectProperty createAnnotationOWLObjectProperty(String name);
+    
+    RDFProperty createAnnotationProperty(String name);
 
 
     /**
