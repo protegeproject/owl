@@ -1246,6 +1246,12 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
         ((Slot) property).addDirectType(owlAnnotationPropertyClass);
         return property;
     }
+    
+    public RDFProperty createAnnotationProperty(String name) {
+        RDFProperty annotation = createRDFProperty(name);
+        ((Slot) annotation).addDirectType(owlAnnotationPropertyClass);
+        return annotation;
+    }
 
 
     public OWLCardinality createOWLCardinality() {
