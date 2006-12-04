@@ -10,6 +10,7 @@ public class AnnotationTestCase extends AbstractJenaTestCase {
         RDFProperty annotation = owlModel.createAnnotationProperty(annotationName);
         assertFalse(annotation.hasProtegeType((RDFSClass) owlModel.getOWLDatatypePropertyMetaClassCls()));
         assertFalse(annotation.hasProtegeType((RDFSClass) owlModel.getOWLObjectPropertyMetaClassCls()));
+        assertEquals(annotation, owlModel.getRDFProperty(annotationName));
         try {
             owlModel = reload((JenaOWLModel) owlModel);
         } catch (Exception e) {
@@ -18,6 +19,12 @@ public class AnnotationTestCase extends AbstractJenaTestCase {
         annotation = owlModel.getRDFProperty(annotationName);
         assertFalse(annotation.hasProtegeType((RDFSClass) owlModel.getOWLDatatypePropertyMetaClassCls()));
         assertFalse(annotation.hasProtegeType((RDFSClass) owlModel.getOWLObjectPropertyMetaClassCls()));
+        try {
+            owlModel.getRDFProperty(annotationName);
+        }
+        catch (Exception e) {
+            assertFalse(true);
+        }
     }
 
 }
