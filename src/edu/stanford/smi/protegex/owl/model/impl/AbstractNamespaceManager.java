@@ -15,7 +15,7 @@ import java.util.Collection;
  */
 public abstract class AbstractNamespaceManager implements NamespaceManager {
 
-    private Collection listeners = new ArrayList();
+    private Collection<NamespaceManagerListener> listeners = new ArrayList<NamespaceManagerListener>();
 
     protected OWLModel owlModel;
 
