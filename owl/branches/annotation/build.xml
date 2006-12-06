@@ -40,13 +40,14 @@
     <!-- that people will copy the protege.jar and protege-test.jar files   -->
     <!-- into the protege owl library directory.  This is not a great       -->
     <!-- assumption but I don't know a better one.                          -->
-    <property name = "protegeCoreLib" value = "${lib}"/>
+    <property name = "protegeCoreLib" value = "../protege-head/dist"/>
+
 
 	<!-- =================================================================== -->
 	<!-- USAGE -->		
 	<!-- Instructions for using the build file -->	
 	<!-- =================================================================== -->
-	<target name = "usage" depends = "init">    
+	<target name = "usage">
 		<echo message = ""/>
 		<echo message = "protege owl build instructions"/>
 		<echo message = "-------------------------------------------------------------"/>
@@ -205,6 +206,23 @@
         </jar>
     </target>
 
+    <target name = "update" depends = "jar">
+      <fail message = "set the protege.dir variable to do an install">
+         <condition>
+            <not>
+               <and>
+                  <isset property="protege.dir"/>
+                  <available file="${protege.dir}"
+                             type="dir"/>
+               </and>
+            </not>
+         </condition>
+      </fail>
+      <copy file="${jarfile}"
+            todir = "${protege.dir}/plugins/${owlplugin}"
+            overwrite = "true"/>
+   </target>
+
     <!-- ================================================================ -->
     <!-- Copy files into the Protege plugin directory                     -->
     <!-- ================================================================ -->
@@ -243,6 +261,23 @@
             </fileset>
         </zip>
     </target>
+
+    <target name = "install" depends = "plugin.zip">
+      <fail message = "set the protege.dir variable to do an install">
+         <condition>
+            <not>
+               <and>
+                  <isset property="protege.dir"/>
+                  <available file="${protege.dir}"
+                             type="dir"/>
+               </and>
+            </not>
+         </condition>
+      </fail>
+      <unzip src="${dist}/${pluginName}.zip" 
+             dest = "${protege.dir}/plugins"
+             overwrite = "true"/>
+   </target>
 
 
     <target name = "junit-compile" depends = "jar">
