@@ -138,10 +138,7 @@ class RDFPropertyPostProcessor {
             }
         }
         if (hasNoOtherType) {
-            if (types.contains(owlModel.getOWLAnnotationPropertyClass())) {
-                newType = owlModel.getOWLDatatypePropertyClass();
-            }
-            property.addDirectType(newType);
+          property.addDirectType(newType);
         }
 
         // Ensure that the special types are at the end of the types list
