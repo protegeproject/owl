@@ -205,6 +205,24 @@
         </jar>
     </target>
 
+    <target name = "update" depends = "jar">
+      <fail message = "set the protege.dir variable to do an install">
+         <condition>
+            <not>
+               <and>
+                  <isset property="protege.dir"/>
+                  <available file="${protege.dir}"
+                             type="dir"/>
+               </and>
+            </not>
+         </condition>
+      </fail>
+      <copy file="${jarfile}"
+            todir = "${protege.dir}/plugins/${owlplugin}"
+            overwrite = "true"/>
+   </target>
+
+
     <!-- ================================================================ -->
     <!-- Copy files into the Protege plugin directory                     -->
     <!-- ================================================================ -->
@@ -243,6 +261,24 @@
             </fileset>
         </zip>
     </target>
+
+
+    <target name = "install" depends = "plugin.zip">
+      <fail message = "set the protege.dir variable to do an install">
+         <condition>
+            <not>
+               <and>
+                  <isset property="protege.dir"/>
+                  <available file="${protege.dir}"
+                             type="dir"/>
+               </and>
+            </not>
+         </condition>
+      </fail>
+      <unzip src="${dist}/${pluginName}.zip" 
+             dest = "${protege.dir}/plugins"
+             overwrite = "true"/>
+   </target>
 
 
     <target name = "junit-compile" depends = "jar">
