@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
+import java.net.NoRouteToHostException;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
@@ -297,21 +298,24 @@ public class OWLUI {
     }
 
 
-    public static void handleError(OWLModel owlModel, Throwable t) {      
-        
-        if (!handleSQLException(owlModel, t)) {
-        	Log.getLogger().log(Level.SEVERE, "Exception caught", t);
-        	
-        	ProtegeUI.getModalDialogFactory().
-                showErrorMessageDialog(owlModel,
-                                       "Internal Error: " + t +
-                                       "\nPlease see Java console for details, and possibly report" +
-                                       "\nthis on our OWL mailing lists." +
-                                       "\nhttp://protege.stanford.edu/community/lists.html" +
-                                       "\nYour ontology may now no longer be in a consistent state, and" +
-                                       "\nyou may want to save this version under a different name.",
-                                       "Internal Protege-OWL Error");
+    public static void handleError(OWLModel owlModel, Throwable t) {  
+        if (!(handleSQLException(owlModel, t)  ||
+                handleConnectionLostException(owlModel, t))) {
+            handleDefaultException(owlModel, t);
         }
+    }
+    
+    private static void handleDefaultException(OWLModel owlModel, Throwable t) {
+        Log.getLogger().log(Level.SEVERE, "Exception caught", t);
+        ProtegeUI.getModalDialogFactory().
+            showErrorMessageDialog(owlModel,
+                                   "Internal Error: " + t +
+                                   "\nPlease see Java console for details, and possibly report" +
+                                   "\nthis on our OWL mailing lists." +
+                                   "\nhttp://protege.stanford.edu/community/lists.html" +
+                                   "\nYour ontology may now no longer be in a consistent state, and" +
+                                   "\nyou may want to save this version under a different name.",
+                                   "Internal Protege-OWL Error");
     }
 
 
@@ -342,6 +346,31 @@ public class OWLUI {
     	}
 
     	return foundSqlEx;	
+    }
+    
+    private static long lastConnectFailureTime = -1;
+    private static long CONNECT_NOTIFICATION_TIMEOUT = 30000; // 30 seconds
+    private static boolean handleConnectionLostException(OWLModel owlModel, Throwable t) {
+        for (; t!= null; t = t.getCause()) {
+            if (t instanceof java.net.ConnectException || 
+                    t instanceof java.rmi.ConnectException || 
+                    t instanceof NoRouteToHostException) {
+                if (lastConnectFailureTime == -1 || 
+                        lastConnectFailureTime - System.currentTimeMillis() < CONNECT_NOTIFICATION_TIMEOUT) {
+                    ProtegeUI.getModalDialogFactory().showErrorMessageDialog(owlModel,
+                                                                            "Connection Problem - could be that the server is down or a problem with the network.\n" +
+                                                                            "See the console for details", 
+                                                                            "Connection failure");
+                    Log.getLogger().log(Level.WARNING, "Connection failure", t);
+                }
+                else {
+                    Log.getLogger().warning("Recurring connection problem" + t);
+                }
+                lastConnectFailureTime = System.currentTimeMillis();
+                return true;
+            }
+        }
+        return false;
     }
     
     public static boolean isConfirmationNeeded(OWLModel owlModel) {
