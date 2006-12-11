@@ -10,6 +10,8 @@ import edu.stanford.smi.protegex.owl.inference.util.ReasonerUtil;
 import edu.stanford.smi.protegex.owl.inference.util.TimeDifference;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
+import edu.stanford.smi.protegex.owl.model.OWLNames;
+
 import org.w3c.dom.Document;
 
 import java.util.Collection;
@@ -132,6 +134,7 @@ public class UpdateEquivalentClassesTask extends AbstractReasonerTask {
 	                            if (curSuperCls.getInferredSuperclasses().contains(curNamedCls) == false) {
 	                                curSuperCls.addInferredSuperclass(curNamedCls);
 	                            }
+                                curNamedCls.setClassificationStatus(OWLNames.CLASSIFICATION_STATUS_CONSISTENT_AND_CHANGED);
 	                        }
 	                    }
 	                }
