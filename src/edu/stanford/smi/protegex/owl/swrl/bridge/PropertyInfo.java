@@ -1,33 +1,29 @@
 
-// Info object representing an OWL property. 
-
 package edu.stanford.smi.protegex.owl.swrl.bridge;
 
+import edu.stanford.smi.protegex.owl.model.*;
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.SWRLRuleEngineBridgeException;
-import edu.stanford.smi.protegex.owl.model.OWLModel;
-import edu.stanford.smi.protegex.owl.model.OWLProperty;
-import edu.stanford.smi.protegex.owl.model.RDFProperty;
-import edu.stanford.smi.protegex.owl.model.OWLIndividual;
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.InvalidPropertyNameException;
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.InvalidIndividualNameException;
-import edu.stanford.smi.protegex.owl.model.OWLNames;
-import edu.stanford.smi.protegex.owl.model.RDFSClass;
-import edu.stanford.smi.protegex.owl.model.RDFSLiteral;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Iterator;
 
+import java.util.*;
+
+/*
+** Info object representing an OWL property. 
+*/
 public class PropertyInfo extends Info
 {
+  // There is an equals method defined on this class.
+  private String propertyName;
   private Argument subject, predicate;
-  private List domainClassNames, rangeClassNames;
+  private Set<String> domainClassNames, rangeClassNames;
   
   // Constructor used when creating a PropertyInfo object from an OWL property.
-  public PropertyInfo(String propertyName, Argument subject, Argument predicate, List domainClassNames, List rangeClassNames) 
+  public PropertyInfo(String propertyName, Argument subject, Argument predicate, 
+		      Set<String> domainClassNames, Set<String> rangeClassNames) 
     throws SWRLRuleEngineBridgeException
   {
-    super(propertyName);
-    
+    this.propertyName = propertyName;    
     this.subject= subject;
     this.predicate = predicate;
     this.domainClassNames = domainClassNames;
@@ -37,35 +33,39 @@ public class PropertyInfo extends Info
   // Constructor used when creating a PropertyInfo object from an assertion made by a target rule engine. 
   public PropertyInfo(String propertyName, Argument subject, Argument predicate) throws SWRLRuleEngineBridgeException
   {
-    super(propertyName);
+    this.propertyName = propertyName;    
 
-    this.subject= subject;
+    this.subject = subject;
     this.predicate = predicate;
   } // PropertyInfo
   
+  public String getPropertyName() { return propertyName; }
   public Argument getSubject() { return subject; }
   public Argument getPredicate() { return predicate; }
-  public List getDomainClassNames() { return domainClassNames; }
-  public List getRangeClassNames() { return rangeClassNames; }
+  public Set<String> getDomainClassNames() { return domainClassNames; }
+  public Set<String> getRangeClassNames() { return rangeClassNames; }
   
   public void write2OWL(OWLModel owlModel) throws SWRLRuleEngineBridgeException
   {
+    IndividualInfo individualInfo;
     OWLProperty property;
     OWLIndividual individual;
     Object object;
     
-    if (getName().equalsIgnoreCase("sameAs")) property = (OWLProperty)owlModel.getOWLSameAsProperty();
-    else if (getName().equalsIgnoreCase("differentFrom")) property = (OWLProperty)owlModel.getOWLDifferentFromProperty();
-    else property = owlModel.getOWLProperty(getName());
+    if (getPropertyName().equalsIgnoreCase("sameAs")) property = (OWLProperty)owlModel.getOWLSameAsProperty();
+    else if (getPropertyName().equalsIgnoreCase("differentFrom")) property = (OWLProperty)owlModel.getOWLDifferentFromProperty();
+    else property = owlModel.getOWLProperty(getPropertyName());
     
-    if (property == null) throw new InvalidPropertyNameException(getName());
+    if (property == null) throw new InvalidPropertyNameException(getPropertyName());
     
-    individual = owlModel.getOWLIndividual(subject.getName());
-    if (individual == null) throw new InvalidIndividualNameException(subject.getName());
+    individualInfo = (IndividualInfo)subject;
+    individual = owlModel.getOWLIndividual(individualInfo.getIndividualName());
+    if (individual == null) throw new InvalidIndividualNameException(individualInfo.getIndividualName());
     
     if (property.isObjectProperty()) {
-      object = owlModel.getOWLIndividual(predicate.getName());
-      if (object == null) throw new InvalidIndividualNameException(predicate.getName());
+	individualInfo = (IndividualInfo)predicate;
+	object = owlModel.getOWLIndividual(individualInfo.getIndividualName());
+	if (object == null) throw new InvalidIndividualNameException(individualInfo.getIndividualName());
     } else { // Is a datatype property, so will be held in a LiteralInfo.
       // In Protege-OWL RDFS literals without a selected language are stored as String objects.
       LiteralInfo literalInfo = (LiteralInfo)predicate;
@@ -78,7 +78,7 @@ public class PropertyInfo extends Info
 
   public String toString()
   {
-    return "Property(name: " + getName() + ", subject: " + subject + ", predicate: " + predicate + ", domainClassNames: " + 
+    return "Property(name: " + getPropertyName() + ", subject: " + subject + ", predicate: " + predicate + ", domainClassNames: " + 
       domainClassNames + ", rangeClassNames: " + rangeClassNames + ")";
   } // toString
 
@@ -87,7 +87,7 @@ public class PropertyInfo extends Info
     if(this == obj) return true;
     if((obj == null) || (obj.getClass() != this.getClass())) return false;
     PropertyInfo info = (PropertyInfo)obj;
-    return (getName() == info.getName() || (getName() != null && getName().equals(info.getName()))) && 
+    return (getPropertyName() == info.getPropertyName() || (getPropertyName() != null && getPropertyName().equals(info.getPropertyName()))) && 
       (subject == info.subject || (subject != null && subject.equals(info.subject))) &&
       (predicate == info.predicate || (predicate != null && predicate.equals(info.predicate))) &&
       (domainClassNames == info.domainClassNames || (domainClassNames != null && domainClassNames.equals(info.domainClassNames))) &&
@@ -97,7 +97,7 @@ public class PropertyInfo extends Info
   public int hashCode()
   {
     int hash = 767;
-    hash = hash + (null == getName() ? 0 : getName().hashCode());
+    hash = hash + (null == getPropertyName() ? 0 : getPropertyName().hashCode());
     hash = hash + (null == subject ? 0 : subject.hashCode());
     hash = hash + (null == predicate ? 0 : predicate.hashCode());
     hash = hash + (null == domainClassNames ? 0 : domainClassNames.hashCode());
@@ -105,22 +105,22 @@ public class PropertyInfo extends Info
     return hash;
   } // hashCode
 
-  // Utility method to create a list of PropertyInfo objects for every subject/predicate combination for a particular OWL property.
+  // Utility method to create a collection of PropertyInfo objects for every subject/predicate combination for a particular OWL property.
   // TODO: This is incredibly inefficient. Need to add a method to the OWLModel to get individuals with a particular property.
 
-  public static List buildPropertyInfoList(OWLModel owlModel, String propertyName) throws SWRLRuleEngineBridgeException
+  public static List<PropertyInfo> buildPropertyInfoList(OWLModel owlModel, String propertyName) throws SWRLRuleEngineBridgeException
   {
     RDFProperty property;
     PropertyInfo propertyInfo;
-    List propertyInfoList = new ArrayList();
-    List domainClassNames, rangeClassNames;
+    List<PropertyInfo> propertyInfoList = new ArrayList<PropertyInfo>();
+    Set<String> domainClassNames, rangeClassNames;
     Argument subject, predicate;
 
     property = owlModel.getRDFProperty(propertyName);
     if (property == null) throw new InvalidPropertyNameException(propertyName);
     
-    domainClassNames = rdfResources2NamesList(property.getUnionDomain());
-    rangeClassNames = rdfResources2NamesList(property.getUnionRangeClasses());
+    domainClassNames = rdfResources2Names(property.getUnionDomain());
+    rangeClassNames = rdfResources2Names(property.getUnionRangeClasses());
 
     Iterator domainsIterator = property.getUnionDomain().iterator();
     while (domainsIterator.hasNext()) {

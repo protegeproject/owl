@@ -7,7 +7,6 @@ public class DifferentFromRestrictionInfo extends RestrictionInfo
   
   public DifferentFromRestrictionInfo(String individualName1, String individualName2) 
   { 
-    super("differentFrom");
     this.individualName1 = individualName1; 
     this.individualName2 = individualName2; 
   } // DifferentFromRestrictionInfo

@@ -20,50 +20,40 @@ import edu.stanford.smi.protegex.owl.ui.metadata.RDFSNamedClassMetadataWidget;
 import java.awt.*;
 
 /**
- * A Project Plugin that does some initialization after a SWRL project
- * has been loaded.  The idea is that SWRL support is activated iff
- * the ontology imports the SWRL namespace.  This triggers the installation
- * of a specific FrameFactory so that SWRL-specific API classes are used
- * automatically.
+ * A Project Plugin that does some initialization after a SWRL project has been loaded.  The idea is that SWRL support is activated iff the
+ * ontology imports the SWRL namespace.  This triggers the installation of a specific FrameFactory so that SWRL-specific API classes are
+ * used automatically.
  *
  * @author Martin O'Connor  <moconnor@smi.stanford.edu>
  * @author Holger Knublauch  <holger@knublauch.com>
  */
-public class SWRLProjectPlugin extends ProjectPluginAdapter {
-    
-     public static void adjustWidgets(Project project) {
-            Cls impCls = project.getKnowledgeBase().getCls(SWRLNames.Cls.IMP);
-            if (impCls != null) {
-                ClsWidget w = project.getDesignTimeClsWidget(impCls);
-                WidgetDescriptor d = w.getDescriptor();
-                WidgetDescriptor headWidget = d.getPropertyList().getWidgetDescriptor(SWRLNames.Slot.HEAD);
-                if (headWidget != null) {
-                    headWidget.setBounds(new Rectangle(5, 5, 1, 1));
-                    headWidget.setVisible(false);
-                }
-                WidgetDescriptor bodyWidget = d.getPropertyList().getWidgetDescriptor(SWRLNames.Slot.BODY);
-                if (bodyWidget != null) {
-                    bodyWidget.setBounds(new Rectangle(5, 5, 1, 1));
-                    bodyWidget.setVisible(false);
-                }
-                WidgetDescriptor nameWidget = d.getPropertyList().getWidgetDescriptor(Model.Slot.NAME);
-                if (nameWidget != null) {
-                    nameWidget.setWidgetClassName(RDFSNamedClassMetadataWidget.class.getName());
-                }
-               
-                ((FormWidget) w).setModified(true);
-            }   
-    }
+public class SWRLProjectPlugin extends ProjectPluginAdapter 
+{
+  public static void adjustWidgets(Project project) 
+  {
+    Cls impCls = project.getKnowledgeBase().getCls(SWRLNames.Cls.IMP);
+    if (impCls != null) {
+      ClsWidget w = project.getDesignTimeClsWidget(impCls);
+      WidgetDescriptor d = w.getDescriptor();
+      WidgetDescriptor headWidget = d.getPropertyList().getWidgetDescriptor(SWRLNames.Slot.HEAD);
+      if (headWidget != null) {
+        headWidget.setBounds(new Rectangle(5, 5, 1, 1));
+        headWidget.setVisible(false);
+      }
+      WidgetDescriptor bodyWidget = d.getPropertyList().getWidgetDescriptor(SWRLNames.Slot.BODY);
+      if (bodyWidget != null) {
+        bodyWidget.setBounds(new Rectangle(5, 5, 1, 1));
+        bodyWidget.setVisible(false);
+      }
+      WidgetDescriptor nameWidget = d.getPropertyList().getWidgetDescriptor(Model.Slot.NAME);
+      if (nameWidget != null) {
+        nameWidget.setWidgetClassName(RDFSNamedClassMetadataWidget.class.getName());
+      }
+      ((FormWidget) w).setModified(true);
+    }   
+  }
+  
+  public void afterLoad(Project p) { adjustWidgets(p); }
 
-
-    public void afterLoad(Project p) {
-        adjustWidgets(p);
-    }
-
-
-    public static boolean isSWRLImported(OWLModel owlModel) {
-        return owlModel.getOWLJavaFactory() instanceof SWRLJavaFactory;
-    }
-    
-    
-}
+  public static boolean isSWRLImported(OWLModel owlModel) { return owlModel.getOWLJavaFactory() instanceof SWRLJavaFactory; }
+} // SWRLProjectPlugin

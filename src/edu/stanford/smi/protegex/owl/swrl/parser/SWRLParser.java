@@ -444,7 +444,7 @@ public class SWRLParser {
   {
     RDFResource parsedEntity = null;
     String variableName = getNextNonSpaceToken("Expected variable name");      
-    checkThatIdentifierIsValid(variableName);
+    checkThatVariableNameIsValid(variableName);
     
     if (tokenizer.hasMoreTokens()) {
       if (!inHead) variables.add(variableName);

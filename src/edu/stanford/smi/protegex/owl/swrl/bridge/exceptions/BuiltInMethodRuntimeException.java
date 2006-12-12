@@ -5,6 +5,6 @@ public class BuiltInMethodRuntimeException extends BuiltInException
 {
   public BuiltInMethodRuntimeException(String ruleName, String builtInName, String message, Throwable cause) 
   { 
-    super("Runtime exception in built-in '" + builtInName + "'in rule '" + ruleName + "': " + message, cause); 
+    super("Runtime exception in built-in '" + builtInName + "' in rule '" + ruleName + "': " + message, cause); 
   } // BuiltInMethodRuntimeException
 } // BuiltInMethodRuntimeException

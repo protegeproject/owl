@@ -7,29 +7,30 @@ package edu.stanford.smi.protegex.owl.swrl.bridge;
 import edu.stanford.smi.protegex.owl.swrl.model.*;
 import edu.stanford.smi.protegex.owl.swrl.model.SWRLVariable;
 
-public class VariableInfo extends Info implements Argument
+public abstract class VariableInfo extends Info implements Argument
 {
-  private Argument builtInResult = null; // Used if a built-in binds a value to a variable.
+  // There is an equals methods defined for this class.
+  private String variableName;
 
-  public VariableInfo(SWRLVariable variable) { super(variable.getName()); }
+  public VariableInfo(SWRLVariable variable) 
+  { 
+    variableName = variable.getName();
+  } // VariableInfo
 
-  public void setBuiltInResult(Argument builtInResult) { this.builtInResult = builtInResult; }
-  public Argument getBuiltInResult() { return builtInResult; }
+  public String getVariableName() { return variableName; }
 
   public boolean equals(Object obj)
   {
     if(this == obj) return true;
     if((obj == null) || (obj.getClass() != this.getClass())) return false;
     VariableInfo info = (VariableInfo)obj;
-    return ((getName() == info.getName() || (getName() != null && getName().equals(info.getName()))) &&
-            ((builtInResult == info.builtInResult) || (builtInResult != null && builtInResult.equals(info.builtInResult))));
+    return (getVariableName() == info.getVariableName() || getVariableName() != null && getVariableName().equals(info.getVariableName()));
   } // equals
 
   public int hashCode()
   {
     int hash = 78;
-    hash = hash + (null == getName() ? 0 : getName().hashCode());
-    hash = hash + (null == builtInResult ? 0 : builtInResult.hashCode());
+    hash = hash + (null == getVariableName() ? 0 : getVariableName().hashCode());
     return hash;
   } // hashCode
 

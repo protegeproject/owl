@@ -1,7 +1,7 @@
 package edu.stanford.smi.protegex.owl.swrl.ui.table;
 
-import edu.stanford.smi.protegex.owl.swrl.bridge.SWRLRuleEngineManager;
-import edu.stanford.smi.protegex.owl.swrl.bridge.ui.ViewRuleEngineAction;
+import edu.stanford.smi.protegex.owl.swrl.bridge.BridgePluginManager;
+import edu.stanford.smi.protegex.owl.swrl.bridge.ui.ViewPluginAction;
 import edu.stanford.smi.protegex.owl.swrl.ui.tab.SWRLTab;
 
 import edu.stanford.smi.protege.util.Disposable;
@@ -16,17 +16,14 @@ import java.awt.*;
 import java.util.*;
 
 /**
- * A JPanel consisting of a SWRLTable and buttons to create
- * and delete rules.
+ * A JPanel consisting of a SWRLTable and buttons to create and delete rules. It may have buttons to activate/deactivate any registered rule
+ * engined.
  */
-public class SWRLTablePanel extends JPanel implements Disposable {
-
-    private EditRuleAction editRuleAction;
-
-    private SWRLTable table;
-
-    private SWRLTableModel tableModel;
-
+public class SWRLTablePanel extends JPanel implements Disposable 
+{
+  private EditRuleAction editRuleAction;
+  private SWRLTable table;
+  private SWRLTableModel tableModel;
 
   // Called when the table panel is in a results panel.
   public SWRLTablePanel(OWLModel owlModel, RDFResource resource) 
@@ -40,23 +37,17 @@ public class SWRLTablePanel extends JPanel implements Disposable {
     LabeledComponent lc = initialize(owlModel, resource);
 
     // Iterate through all registered rule engine and add an enable button for each one.
-    Iterator iterator = SWRLRuleEngineManager.getRegisteredRuleEngines().iterator();
-    while (iterator.hasNext()) {
-      SWRLRuleEngineManager.RuleEngineRegistrationInfo info = (SWRLRuleEngineManager.RuleEngineRegistrationInfo)iterator.next();
-      lc.addHeaderButton(new ViewRuleEngineAction(info.getRuleEngineName(), info.getToolTip(), info.getIcon(), swrlTab, owlModel));
+    for (BridgePluginManager.PluginRegistrationInfo info : BridgePluginManager.getRegisteredPlugins()) {
+      lc.addHeaderButton(new ViewPluginAction(info.getPluginName(), info.getToolTip(), info.getIcon(), swrlTab, owlModel));
       add(BorderLayout.CENTER, lc);
-    } // while
+    } // for
   } // SWRLTablePanel
 
-  public void dispose() {
-    table.dispose();
-  }
+  public void dispose() { table.dispose(); }
 
-  private LabeledComponent initialize(OWLModel owlModel, RDFResource RDFResource) {
-    
-    tableModel = RDFResource == null ?
-      new SWRLTableModel(owlModel) :
-      new SWRLTableModel(RDFResource);
+  private LabeledComponent initialize(OWLModel owlModel, RDFResource RDFResource) 
+  {
+    tableModel = RDFResource == null ? new SWRLTableModel(owlModel) : new SWRLTableModel(RDFResource);
     table = new SWRLTable(tableModel, owlModel);
     
     JScrollPane scrollPane = new JScrollPane(table);
@@ -71,8 +62,7 @@ public class SWRLTablePanel extends JPanel implements Disposable {
     
     setLayout(new BorderLayout());
     add(BorderLayout.CENTER, lc);
-
+    
     return lc;
   } // initialize
-
-}
+} // SWRLTablePanel

@@ -1,5 +1,5 @@
 
-// Info object representing an OWL individual. 
+
 
 package edu.stanford.smi.protegex.owl.swrl.bridge;
 
@@ -10,16 +10,19 @@ import edu.stanford.smi.protegex.owl.swrl.model.*;
 
 import java.util.*;
 
-// An individual can be an argument to an atom or a built-in.
-
-public class IndividualInfo extends Info implements Argument, Value
+/* 
+** Info object representing an OWL individual. 
+*/
+public class IndividualInfo extends Info implements Argument, ObjectValue, Comparable
 {
-  private Collection classNames;
+  // equals() method defined in this class.
+  private String individualName;  
+  private Set<String> classNames;
     
   // Constructor used when creating an info object from an OWL individual.
   public IndividualInfo(OWLIndividual individual) throws SWRLRuleEngineBridgeException
   {
-    super(individual.getName());
+    individualName = individual.getName();
 
     classNames = getDefiningClassNames(individual);
   } // IndividualInfo
@@ -27,7 +30,7 @@ public class IndividualInfo extends Info implements Argument, Value
   // Constructor used when creating an info object from an individual name.
   public IndividualInfo(OWLModel owlModel, String individualName) throws SWRLRuleEngineBridgeException
   {
-    super(individualName);
+    this.individualName = individualName;
 
     OWLIndividual individual = owlModel.getOWLIndividual(individualName);
     if (individual == null) throw new InvalidIndividualNameException(individualName);
@@ -38,81 +41,78 @@ public class IndividualInfo extends Info implements Argument, Value
   // Constructor used when asserting new individual class membership information from an assertion made in a target rule engine.
   public IndividualInfo(String individualName, String className) throws SWRLRuleEngineBridgeException
   {
-    super(individualName);
+    this.individualName = individualName;
 
-    classNames = new ArrayList();
+    classNames = new HashSet<String>();
     classNames.add(className);
   } // IndividualInfo        
 
   // Constructor used when creating an individual to pass as an argument to a built-in.
   public IndividualInfo(String individualName)
   {
-    super(individualName);
-    classNames = new ArrayList();
+    this.individualName = individualName;
+    classNames = new HashSet<String>();
   } // IndividualInfo
-  
-  public Collection getClassNames() { return classNames; }
+
+  public String getIndividualName() { return individualName; }
+  public Set<String> getClassNames() { return classNames; }
   
   public void write2OWL(OWLModel owlModel) throws SWRLRuleEngineBridgeException
   {
     OWLIndividual individual;
-    Iterator classNamesIterator;
     
-    individual = owlModel.getOWLIndividual(getName());
-    if (individual == null) throw new InvalidIndividualNameException(getName());
-    
-    classNamesIterator = getClassNames().iterator();
-    
-    while (classNamesIterator.hasNext()) {
-      String className = (String)classNamesIterator.next();
+    individual = owlModel.getOWLIndividual(getIndividualName());
+    if (individual == null) throw new InvalidIndividualNameException(getIndividualName());
+
+    for (String className : getClassNames()) {
       RDFSClass rdfsClass = owlModel.getOWLNamedClass(className);
       if (!individual.hasRDFType(rdfsClass)) individual.addRDFType(rdfsClass);
-    } // while
-    
+    } // for
   } // write2OWL
 
-  public String toString()
-  {
-    return "Individual(name: " + getName() + ", classNames: " + classNames + ")";
-  } // toString
+  public String toString() { return getIndividualName(); }
 
   public boolean equals(Object obj)
   {
     if(this == obj) return true;
     if((obj == null) || (obj.getClass() != this.getClass())) return false;
     IndividualInfo info = (IndividualInfo)obj;
-    return (getName() == info.getName() || (getName() != null && getName().equals(info.getName()))) && 
+    return (getIndividualName() == info.getIndividualName() || (getIndividualName() != null && getIndividualName().equals(info.getIndividualName()))) && 
       (classNames == info.classNames || (classNames != null && classNames.equals(info.classNames)));
   } // equals
 
   public int hashCode()
   {
     int hash = 7;
-    hash = hash + (null == getName() ? 0 : getName().hashCode());
+    hash = hash + (null == getIndividualName() ? 0 : getIndividualName().hashCode());
     hash = hash + (null == classNames ? 0 : classNames.hashCode());
     return hash;
   } // hashCode
 
+  public int compareTo(Object o)
+  {
+    return individualName.compareTo((String)o);
+  } // compareTo
+
   // Build up a list of all names of classes that define this individual. Not straightforward because getRDFTypes only returns asserted
   // types and does not include superclasses.
-  private Collection getDefiningClassNames(OWLIndividual individual) throws SWRLRuleEngineBridgeException
+  private Set<String> getDefiningClassNames(OWLIndividual individual) throws SWRLRuleEngineBridgeException
   {
-    HashSet definingClassNames = new HashSet();
+    Set<String> definingClassNames = new HashSet<String>();
 
     Iterator assertedClassesIterator = individual.getRDFTypes().iterator(); // Could be more than one asserted type
     while (assertedClassesIterator.hasNext()) {
       RDFSClass assertedClass = (RDFSClass)assertedClassesIterator.next();
-      definingClassNames.add(assertedClass.getName());
+      if (!definingClassNames.contains(assertedClass.getName())) definingClassNames.add(assertedClass.getName());
 
       Iterator superClassesIterator = assertedClass.getNamedSuperclasses(true).iterator();
       while (superClassesIterator.hasNext()) {
         RDFSClass superClass = (RDFSClass)superClassesIterator.next();
-        definingClassNames.add(superClass.getName());
+      if (!definingClassNames.contains(superClass.getName())) definingClassNames.add(superClass.getName());
       } // while
     } // while
 
     return definingClassNames;
   } // getDefiningClassNames    
-
   
 } // IndividualInfo

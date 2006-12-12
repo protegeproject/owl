@@ -12,33 +12,40 @@ import edu.stanford.smi.protegex.owl.model.OWLModel;
 
 public class DatavaluedPropertyAtomInfo extends AtomInfo
 {
-  private Argument argument1, argument2;
+    private String propertyName;
+    private Argument argument1, argument2;
   
   public DatavaluedPropertyAtomInfo(OWLModel owlModel, SWRLDatavaluedPropertyAtom atom) 
     throws SWRLRuleEngineBridgeException
   {
-    super(atom.getPropertyPredicate().getName());
+    propertyName = atom.getPropertyPredicate().getName();
 
     if (atom.getArgument1() instanceof SWRLVariable) {
       SWRLVariable variable = (SWRLVariable)atom.getArgument1();
-      argument1 = new VariableInfo(variable);
-      addReferencedVariableName(variable.getName());
+      ObjectVariableInfo argument = new ObjectVariableInfo(variable);
+      addReferencedVariable(variable.getName(), argument);
+      argument1 = argument;
     } else if (atom.getArgument1() instanceof OWLIndividual) argument1 = new IndividualInfo((OWLIndividual)atom.getArgument1());
     else throw new SWRLRuleEngineBridgeException("Unexpected argument #1 to datavalued property atom '" + atom.getBrowserText() + 
-                                                 "'. Expecting variable or individual, got instance of" + atom.getArgument1().getClass() + ".");
+                                                 "'. Expecting variable or individual, got instance of " + atom.getArgument1().getClass() + ".");
 
     if (atom.getArgument2() instanceof SWRLVariable) {
       SWRLVariable variable = (SWRLVariable)atom.getArgument2();
-      argument2 = new VariableInfo(variable);
-      addReferencedVariableName(variable.getName());
+      DatatypeVariableInfo argument = new DatatypeVariableInfo(variable);
+      addReferencedVariable(variable.getName(), argument);
+      argument2 = argument;
     } else if (atom.getArgument2() instanceof RDFSLiteral) argument2 = new LiteralInfo(owlModel, (RDFSLiteral)atom.getArgument2());
     else throw new SWRLRuleEngineBridgeException("Unexpected argument #2 to datavalued property atom '" + atom.getBrowserText()  + 
-                                                 "'. Expecting variable or literal, got instance of" + atom.getArgument2().getClass() + ".");
+                                                 "'. Expecting variable or literal, got instance of " + atom.getArgument2().getClass() + ".");
 
     // If argument1 is an individual, add its name to the referenced individuals list for this atom.
-    if (argument1 instanceof IndividualInfo) addReferencedIndividualName(argument1.getName());
+    if (argument1 instanceof IndividualInfo) {
+	IndividualInfo individualInfo = (IndividualInfo)argument1;
+	addReferencedIndividualName(individualInfo.getIndividualName());
+    } // if
   } // DatavaluedPropertyAtomInfo
-  
+
+  public String getPropertyName() { return propertyName; }  
   public Argument getArgument1() { return argument1; }
   public Argument getArgument2() { return argument2; }
 } // DatavaluedPropertyAtomInfo
