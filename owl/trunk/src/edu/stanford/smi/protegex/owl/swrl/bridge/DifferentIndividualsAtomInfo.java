@@ -12,6 +12,6 @@ public class DifferentIndividualsAtomInfo extends IndividualsAtomInfo
   public DifferentIndividualsAtomInfo(SWRLDifferentIndividualsAtom differentIndividualsAtom) 
     throws SWRLRuleEngineBridgeException
   { 
-    super(differentIndividualsAtom, "differentFrom"); 
+    super(differentIndividualsAtom); 
   } // DifferentIndividualsAtomInfo
 } // DifferentIndividualsAtomInfo

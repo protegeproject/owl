@@ -14,10 +14,14 @@ import edu.stanford.smi.protegex.owl.ui.owltable.SymbolTable;
 
 import javax.swing.*;
 import javax.swing.table.TableColumn;
+import javax.swing.event.ListSelectionEvent;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Set;
+
+//TODO: temp hack
+import edu.stanford.smi.protegex.owl.swrl.bridge.BridgePluginManager;
 
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
@@ -33,24 +37,18 @@ public class SWRLTable extends SymbolTable implements Disposable {
         expressionColumn.setPreferredWidth(700);
         setDefaultRenderer(SWRLImp.class, new ResourceRenderer());
     }
-
-
     protected SymbolEditorComponent createSymbolEditorComponent(OWLModel model,
                                                                 SymbolErrorDisplay errorDisplay) {
         return new SWRLSymbolEditor(model, errorDisplay);
     }
-
-
     public void dispose() {
         SWRLTableModel tableModel = (SWRLTableModel) getSymbolTableModel();
         tableModel.dispose();
     }
 
-
     protected String editMultiLine(RDFResource input) {
         return null;  // TODO
     }
-
 
     protected Icon getDefaultCellEditorIcon(RDFResource RDFResource) {
         return SWRLIcons.getImpIcon();
@@ -96,6 +94,15 @@ public class SWRLTable extends SymbolTable implements Disposable {
         }
     }
 
+    public void valueChanged(ListSelectionEvent e)
+    {
+	super.valueChanged(e);
+
+        SWRLTableModel tableModel = (SWRLTableModel) getSymbolTableModel();
+	String selectedRuleName = (String)tableModel.getValueAt(e.getLastIndex(), 0);
+	//TODO: hack - need a more elegant solution. Also lastIndex does not always work.
+	BridgePluginManager.setSelectedRuleName(selectedRuleName);
+    } // valueChanged
 
     public void replaceImp(SWRLImp oldImp, SWRLImp newImp) {
         SWRLTableModel tableModel = (SWRLTableModel) getSymbolTableModel();

@@ -78,7 +78,6 @@
           <not>
             <and>
               <available file="${protegeCoreLib}/protege.jar" type = "file"/>
-              <available file="${protegeCoreLib}/protege-test.jar" type = "file"/>
             </and>
           </not>
         </condition>

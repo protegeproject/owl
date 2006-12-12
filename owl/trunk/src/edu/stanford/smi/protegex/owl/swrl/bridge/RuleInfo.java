@@ -9,18 +9,29 @@ import java.util.*;
 
 public class RuleInfo extends Info
 {
-  private List body, head; // Lists of AtomInfo objects.
+  private String ruleName;
+  private List<AtomInfo> body, head; // Lists of AtomInfo objects.
+  private Set<String> referencedObjectVariableNames, referencedDatatypeVariableNames;
   
-  public RuleInfo(String ruleName, List bodyAtoms, List headAtoms) throws SWRLRuleEngineBridgeException
+  public RuleInfo(String ruleName, List<AtomInfo> bodyAtoms, List<AtomInfo> headAtoms) throws SWRLRuleEngineBridgeException
   {
-    super(ruleName);
+    this.ruleName = ruleName;
     body = bodyAtoms;
     head = headAtoms;
+    buildReferencedVariableNames();
     processBindingBuiltInAtoms();
   } // RuleInfo
   
-  public List getHeadAtoms() { return head; }
-  public List getBodyAtoms() { return body; }
+  public String getRuleName() { return ruleName; }
+  public List<AtomInfo> getHeadAtoms() { return head; }
+  public List<AtomInfo> getBodyAtoms() { return body; }
+  public boolean isObjectVariable(String variableName) { return referencedObjectVariableNames.contains(variableName); }
+  public boolean isDatatypeVariable(String variableName) { return referencedDatatypeVariableNames.contains(variableName); }
+
+  public List<BuiltInAtomInfo> getBuiltInAtomsFromHead(Set<String> builtInNames) throws SWRLRuleEngineBridgeException 
+    { return getBuiltInAtoms(head, builtInNames); }
+  public List<BuiltInAtomInfo> getBuiltInAtomsFromBody(Set<String> builtInNames) throws SWRLRuleEngineBridgeException 
+    { return getBuiltInAtoms(body, builtInNames); }
 
   // Find all built-in atoms with unbound arguments and tell them which of their arguments are unbound.
   //
@@ -50,26 +61,22 @@ public class RuleInfo extends Info
   //
   private void processBindingBuiltInAtoms() throws SWRLRuleEngineBridgeException
   {
-    List bodyBuiltInAtoms = new ArrayList(), bodyNonBuiltInAtoms = new ArrayList();
-    List variableNamesUsedByNonBuiltInBodyAtoms = new ArrayList();
-    List boundBuiltInVariableNames = new ArrayList(); // Names of variables bound by built-ins in this rule.
-    Iterator iterator;
+    List<BuiltInAtomInfo> bodyBuiltInAtoms = new ArrayList<BuiltInAtomInfo>();
+    List<AtomInfo> bodyNonBuiltInAtoms = new ArrayList<AtomInfo>();
+    Set<String> variableNamesUsedByNonBuiltInBodyAtoms = new HashSet<String>();
+    Set<String> boundBuiltInVariableNames = new HashSet<String>(); // Names of variables bound by built-ins in this rule.
  
     // Process the body atoms and build up list of (1) built-in body atoms, and (2) the variables used by non-built body in atoms.
-    iterator = getBodyAtoms().iterator();
-    while (iterator.hasNext()) {
-      AtomInfo atomInfo = (AtomInfo)iterator.next();
-      if (atomInfo instanceof BuiltInAtomInfo) bodyBuiltInAtoms.add(atomInfo);
+    for (AtomInfo atomInfo : getBodyAtoms()) {
+      if (atomInfo instanceof BuiltInAtomInfo) bodyBuiltInAtoms.add((BuiltInAtomInfo)atomInfo);
       else {
         bodyNonBuiltInAtoms.add(atomInfo);
         variableNamesUsedByNonBuiltInBodyAtoms.addAll(atomInfo.getReferencedVariableNames()); // This may generate duplicates, but this is ok.
       } // if
-    } // while
+    } // for
 
     // Process the body built-in atoms and determine if they bind any of their arguments.
-    iterator = bodyBuiltInAtoms.iterator();
-    while (iterator.hasNext()) {
-      BuiltInAtomInfo builtInAtomInfo = (BuiltInAtomInfo)iterator.next();
+    for (BuiltInAtomInfo builtInAtomInfo : bodyBuiltInAtoms) {
       // Read through all the argumends of the built-in and determine if they are unbound.
       for (int argumentNumber = 0; argumentNumber < builtInAtomInfo.getNumberOfArguments(); argumentNumber++) {
         if (builtInAtomInfo.isArgumentAVariable(argumentNumber)) { 
@@ -85,13 +92,35 @@ public class RuleInfo extends Info
           } // if
         } // if
       } // for
-    } // while
+    } // for
 
     // If we have built-in atoms, construct a new head with built-in atoms moved them to the end of the list. Some rule engines (e.g., JESS)
     // expect variables used as parameters to functions to have been defined before their use in a left to right fashion.
-    if (!bodyBuiltInAtoms.isEmpty()) {
-      body = bodyNonBuiltInAtoms; body.addAll(bodyBuiltInAtoms);
-    } // if
+    if (!bodyBuiltInAtoms.isEmpty()) body = bodyNonBuiltInAtoms; body.addAll(bodyBuiltInAtoms);
   } // processBindingBuiltInAtoms
+
+  private List<BuiltInAtomInfo> getBuiltInAtoms(List<AtomInfo> atoms, Set<String> builtInNames) throws SWRLRuleEngineBridgeException
+  {
+    List<BuiltInAtomInfo> result = new ArrayList<BuiltInAtomInfo>();
+    
+    for (AtomInfo atomInfo : atoms) {
+      if (atomInfo instanceof BuiltInAtomInfo) {
+        BuiltInAtomInfo builtInAtomInfo = (BuiltInAtomInfo)atomInfo;
+        if (builtInNames.contains(builtInAtomInfo.getBuiltInName())) result.add(builtInAtomInfo);
+        } // if
+    } // for
+    return result;
+  } // getBuiltInAtoms
+
+  private void buildReferencedVariableNames()
+  {
+    referencedObjectVariableNames = new HashSet<String>();
+    referencedDatatypeVariableNames = new HashSet<String>();
+    
+    for (AtomInfo atomInfo : getBodyAtoms()) {
+      referencedDatatypeVariableNames.addAll(atomInfo.getReferencedDatatypeVariableNames());
+      referencedObjectVariableNames.addAll(atomInfo.getReferencedObjectVariableNames());
+    } // for
+  } // buildReferencedVariableNames
   
 } // RuleInfo

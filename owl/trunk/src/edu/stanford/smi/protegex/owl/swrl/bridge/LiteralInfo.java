@@ -8,15 +8,12 @@ import edu.stanford.smi.protegex.owl.model.*;
 ** Info object to wrap XML Schema datatype literals. This class is used primarily when passing literals to and from built-in methods. Also
 ** provides a central place to validate the content of complex types, such as datetimes, etc.
 */
-public class LiteralInfo extends Info implements Argument
+public class LiteralInfo extends Info implements Argument, DatatypeValue, Comparable
 {
-  private Object value;
+  private Object value; // This value object should implement comparable.
 
-  public LiteralInfo(OWLModel owlModel, RDFSLiteral literal)
-    throws LiteralConversionException
+  public LiteralInfo(OWLModel owlModel, RDFSLiteral literal) throws DatatypeConversionException
   {
-    super("<An RDFS-based literal>");
-
     RDFSDatatype datatype = literal.getDatatype();
 
     if ((datatype == owlModel.getXSDint()) || (datatype == owlModel.getXSDinteger()))  value = new Integer(literal.getInt());
@@ -34,73 +31,49 @@ public class LiteralInfo extends Info implements Argument
     else if ((datatype == owlModel.getXSDduration())) value = new Duration(literal.getString());
     else if ((datatype == owlModel.getXSDdateTime())) value = new DateTime(literal.getString());
     else if ((datatype == owlModel.getXSDdate())) value = new Date(literal.getString());
-    else throw new LiteralConversionException("Cannot create LiteralInfo object for RDFS literal '" + literal.getString()
-                                              + "' of type " + datatype + ".");
+    else throw new DatatypeConversionException("Cannot create LiteralInfo object for RDFS literal '" + literal.getString()
+                                               + "' of type '" + datatype + "'.");
   } // LiteralInfo
 
   public LiteralInfo(String s)
   {
-    super("<A string literal>");
     value = s;
   } // LiteralInfo
 
   public LiteralInfo(Number n)
   {
-    super("<A number literal>");
     value = n;
   } // LiteralInfo
 
   public LiteralInfo(boolean b)
   {
-    super("<A boolean literal>");
     value = new Boolean(b);
   } // LiteralInfo
 
   public LiteralInfo(int i)
   {
-    super("<An integer literal>");
     value = new Integer(i);
   } // LiteralInfo
 
   public LiteralInfo(float f)
   {
-    super("<A float literal>");
     value = new Float(f);
   } // LiteralInfo
 
   public LiteralInfo(double d)
   {
-    super("<A double literal>");
     value = new Double(d);
   } // LiteralInfo
 
   public LiteralInfo(short s)
   {
-    super("<A short literal>");
     value = new Short(s);
   } // LiteralInfo
 
   public LiteralInfo(ComplexXSDType value)
   {
-    super("<A complex XSD literal>");
     this.value = value;
   } // LiteralInfo
-
-  public int getInt() { return isInteger() ? ((Integer)value).intValue() : -1; }
-  public boolean getBoolean() { return isBoolean() ? ((Boolean)value).booleanValue() : false; }
-  public long getLong() { return isLong() ? ((Long)value).longValue() : -1; }
-  public float getFloat() { return isFloat() ? ((Float)value).floatValue() : -1; }
-  public double getDouble() { return isDouble() ? ((Double)value).doubleValue() : -1; }
-  public short getShort() { return isShort() ? ((Short)value).shortValue() : -1; }
-  public String getString() { return isString() ? (String)value : null; }
-  public Time getTime() { return isTime() ? (Time)value : null; }
-  public Date getDate() { return isDate() ? (Date)value : null; }
-  public DateTime getDateTime() { return isDateTime() ? (DateTime)value : null; }
-  public Duration getDuration() { return isDuration() ? (Duration)value : null; }
-  public AnyURI getAnyURI() { return isAnyURI() ? (AnyURI)value : null; }
-  public Base64Binary getBase64Binary() { return isBase64Binary() ? (Base64Binary)value : null; }
-  public Decimal getDecimal() { return isDecimal() ? (Decimal)value : null; }
-  public Byte getByte() { return isByte() ? (Byte)value : null; }
 
   public boolean isInteger() { return value instanceof Integer; }
   public boolean isLong() { return value instanceof Long; }
@@ -109,122 +82,142 @@ public class LiteralInfo extends Info implements Argument
   public boolean isDouble() { return value instanceof Double; }
   public boolean isShort() { return value instanceof Short; }
   public boolean isString() { return value instanceof String; }
-  public boolean isTime() { return value instanceof Time; }
-  public boolean isDate() { return value instanceof Date; }
-  public boolean isDateTime() { return value instanceof DateTime; }
-  public boolean isDuration() { return value instanceof Duration;}
-  public boolean isAnyURI() { return value instanceof AnyURI; }
-  public boolean isBase64Binary() { return value instanceof Base64Binary;}
-  public boolean isDecimal() { return value instanceof Decimal; }
-  public boolean isByte() { return value instanceof Byte; }
+  public boolean isTime() { return value instanceof edu.stanford.smi.protegex.owl.swrl.bridge.Time; }
+  public boolean isDate() { return value instanceof edu.stanford.smi.protegex.owl.swrl.bridge.Date; }
+  public boolean isDateTime() { return value instanceof edu.stanford.smi.protegex.owl.swrl.bridge.DateTime; }
+  public boolean isDuration() { return value instanceof edu.stanford.smi.protegex.owl.swrl.bridge.Duration;}
+  public boolean isAnyURI() { return value instanceof edu.stanford.smi.protegex.owl.swrl.bridge.AnyURI; }
+  public boolean isBase64Binary() { return value instanceof edu.stanford.smi.protegex.owl.swrl.bridge.Base64Binary;}
+  public boolean isDecimal() { return value instanceof edu.stanford.smi.protegex.owl.swrl.bridge.Decimal; }
+  public boolean isByte() { return value instanceof edu.stanford.smi.protegex.owl.swrl.bridge.Byte; }
+
+  public int getInt() throws DatatypeConversionException 
+  {
+    if (!isInteger()) 
+      throw new DatatypeConversionException("Cannot convert datatype value of type '" + value.getClass().getCanonicalName() + "' to int"); 
+    return ((Integer)value).intValue(); 
+  } // getInt
+
+  public boolean getBoolean() throws DatatypeConversionException 
+  { 
+    if (!isBoolean()) 
+      throw new DatatypeConversionException("Cannot convert datatype value of type '" + value.getClass().getCanonicalName() + "' to boolean"); 
+    return ((Boolean)value).booleanValue(); 
+  } // getBoolean
+
+  public long getLong() throws DatatypeConversionException 
+  { 
+    if (!isLong()) 
+      throw new DatatypeConversionException("Cannot convert datatype value of type '" + value.getClass().getCanonicalName() + "' to long"); 
+    return ((Long)value).longValue(); 
+  } // getLong
+
+  public float getFloat() throws DatatypeConversionException 
+  { 
+    if (!isFloat()) 
+      throw new DatatypeConversionException("Cannot convert datatype value of type '" + value.getClass().getCanonicalName() + "' to float"); 
+    return ((Float)value).floatValue(); 
+  } // getFloat
+
+  public double getDouble() throws DatatypeConversionException 
+  { 
+    if (!isDouble()) 
+      throw new DatatypeConversionException("Cannot convert datatype value of type '" + value.getClass().getCanonicalName() + "' to fouble"); 
+    return ((Double)value).doubleValue(); 
+  } // getDouble
+
+  public short getShort() throws DatatypeConversionException 
+  { 
+    if (!isShort()) 
+      throw new DatatypeConversionException("Cannot convert datatype value of type '" + value.getClass().getCanonicalName() + "' to sqhort"); 
+    return ((Short)value).shortValue(); 
+  } // getShort
+
+  public String getString() throws DatatypeConversionException 
+  { 
+    if (!isString()) 
+      throw new DatatypeConversionException("Cannot convert datatype value of type '" + value.getClass().getCanonicalName() + "' to String"); 
+    return (String)value; 
+  } // getString
+
+  public edu.stanford.smi.protegex.owl.swrl.bridge.Time getTime() throws DatatypeConversionException 
+  {
+    if (!isTime()) 
+      throw new DatatypeConversionException("Cannot convert datatype value of type '" + value.getClass().getCanonicalName() + "' to Time"); 
+    return (edu.stanford.smi.protegex.owl.swrl.bridge.Time)value;
+  } // getTime
+
+  public edu.stanford.smi.protegex.owl.swrl.bridge.Date getDate() throws DatatypeConversionException 
+  {
+    if (!isDate()) 
+      throw new DatatypeConversionException("Cannot convert datatype value of type '" + value.getClass().getCanonicalName() + "' to Date"); 
+    return (edu.stanford.smi.protegex.owl.swrl.bridge.Date)value;
+  } // getDate
+
+  public edu.stanford.smi.protegex.owl.swrl.bridge.DateTime getDateTime() throws DatatypeConversionException 
+  { 
+    if (!isDateTime()) 
+      throw new DatatypeConversionException("Cannot convert datatype value of type '" + value.getClass().getCanonicalName() + "' to DateTime"); 
+
+    return (edu.stanford.smi.protegex.owl.swrl.bridge.DateTime)value;
+  } // getDateTime
+
+  public edu.stanford.smi.protegex.owl.swrl.bridge.Duration getDuration() throws DatatypeConversionException
+  {
+    if (!isDuration()) 
+      throw new DatatypeConversionException("Cannot convert datatype value of type '" + value.getClass().getCanonicalName() + "' to Duration"); 
+    return  (edu.stanford.smi.protegex.owl.swrl.bridge.Duration)value; 
+  } // getDuration
+
+  public edu.stanford.smi.protegex.owl.swrl.bridge.AnyURI getAnyURI() throws DatatypeConversionException 
+  {
+    if (!isAnyURI()) 
+      throw new DatatypeConversionException("Cannot convert datatype value of type '" + value.getClass().getCanonicalName() + "' to AnyURI"); 
+    return (edu.stanford.smi.protegex.owl.swrl.bridge.AnyURI)value;
+  } // getAnyURI
+
+  public edu.stanford.smi.protegex.owl.swrl.bridge.Base64Binary getBase64Binary() throws DatatypeConversionException 
+  {
+    if (!isBase64Binary()) 
+      throw new DatatypeConversionException("Cannot convert datatype value of type '" + value.getClass().getCanonicalName() + "' to Base64Binary"); 
+    return (edu.stanford.smi.protegex.owl.swrl.bridge.Base64Binary)value;
+  } // getBase64Binary
+
+  public edu.stanford.smi.protegex.owl.swrl.bridge.Decimal getDecimal() throws DatatypeConversionException 
+  {
+    if (!isDecimal()) 
+      throw new DatatypeConversionException("Cannot convert datatype value of type '" + value.getClass().getCanonicalName() + "' to Decimal"); 
+    return (edu.stanford.smi.protegex.owl.swrl.bridge.Decimal)value;
+  } // getDecimal
+
+  public edu.stanford.smi.protegex.owl.swrl.bridge.Byte getByte() throws DatatypeConversionException 
+  {
+    if (!isByte()) 
+      throw new DatatypeConversionException("Cannot convert datatype value of type '" + value.getClass().getCanonicalName() + "' to Byte"); 
+    return (edu.stanford.smi.protegex.owl.swrl.bridge.Byte)value;
+  } // getByte
 
   public boolean isNumeric() { return value instanceof Number; }
   public String toString() { return value.toString(); }
-
-  public abstract class ComplexXSDType
-  {
-    private String content;
-
-    public ComplexXSDType(String content) throws LiteralConversionException
-    {
-      this.content = content;
-      validate();
-    } // ComplexXSDType
-
-    public String getContent() { return content; }
-
-    protected abstract void validate() throws LiteralConversionException;
-  } // ComplexXSDType
-
-  // TODO: implement proper validate methods for these types.
-
-  public class Time extends ComplexXSDType
-  {
-    public Time(String content) throws LiteralConversionException { super(content); }
-    protected void validate() throws LiteralConversionException
-    {
-      if (getContent() == null) throw new LiteralConversionException("Null content for Time literal.");
-    }  // validate
-  } // Time
-
-  public class Date extends ComplexXSDType
-  {
-    public Date(String content) throws LiteralConversionException { super(content); }
-    protected void validate() throws LiteralConversionException
-    {
-      if (getContent() == null) throw new LiteralConversionException("Null content for Time literal.");
-    }  // validate
-  } // Date
-
-  public class DateTime extends ComplexXSDType
-  {
-    public DateTime(String content) throws LiteralConversionException { super(content); }
-    protected void validate() throws LiteralConversionException
-    {
-      if (getContent() == null) throw new LiteralConversionException("Null content for DateTime literal.");
-    }  // validate
-  } // DateTime
-
-  public class Duration extends ComplexXSDType
-  {
-    public Duration(String content) throws LiteralConversionException { super(content); }
-    protected void validate() throws LiteralConversionException
-    {
-      if (getContent() == null) throw new LiteralConversionException("Null content for Duration literal.");
-    }  // validate
-  } // Duration
-
-  public class AnyURI extends ComplexXSDType
-  {
-    public AnyURI(String content) throws LiteralConversionException { super(content); }
-    protected void validate() throws LiteralConversionException
-    {
-      if (getContent() == null) throw new LiteralConversionException("Null content for AnyURI literal.");
-    }  // validate
-  } // AnyURI
-
-  public class Base64Binary extends ComplexXSDType
-  {
-    public Base64Binary(String content) throws LiteralConversionException { super(content); }
-    protected void validate() throws LiteralConversionException
-    {
-      if (getContent() == null) throw new LiteralConversionException("Null content for Base64Binary literal.");
-    }  // validate
-  } // Base64Binary
-
-  public class Decimal extends ComplexXSDType
-  {
-    public Decimal(String content) throws LiteralConversionException { super(content); }
-    protected void validate() throws LiteralConversionException
-    {
-      if (getContent() == null) throw new LiteralConversionException("Null content for Decimal literal.");
-    }  // validate
-  } // Decimal
-
-  public class Byte extends ComplexXSDType
-  {
-    public Byte(String content) throws LiteralConversionException { super(content); }
-    protected void validate() throws LiteralConversionException
-    {
-      if (getContent() == null) throw new LiteralConversionException("Null content for Byte literal.");
-    }  // validate
-  } // Byte
 
   public boolean equals(Object obj)
   {
     if(this == obj) return true;
     if((obj == null) || (obj.getClass() != this.getClass())) return false;
     LiteralInfo info = (LiteralInfo)obj;
-    return (getName() == info.getName() || (getName() != null && getName().equals(info.getName()))) &&
-           (value != null && info.value != null && value.toString().equals(info.value.toString()));
+    return (value != null && info.value != null && value.toString().equals(info.value.toString()));
   } // equals
 
   public int hashCode()
   {
     int hash = 66;
-    hash = hash + (null == getName() ? 0 : getName().hashCode());
     hash = hash + (null == value ? 0 : value.toString().hashCode());
     return hash;
   } // hashCode
+
+  public int compareTo(Object o) 
+  {
+    return  ((Comparable)o).compareTo(o); // Will throw a ClassCastException if o's class does not implement Comparable.
+  } // compareTo
 
 } // LiteralInfo

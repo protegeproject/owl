@@ -1,19 +1,17 @@
 
 package edu.stanford.smi.protegex.owl.swrl.bridge;
 
-import java.util.List;
-import java.util.ArrayList;
+import java.util.*;
 
 public class AllDifferentRestrictionInfo extends RestrictionInfo
 {
-  List individualNames;
+  Set<String> individualNames;
   
   public AllDifferentRestrictionInfo() 
   { 
-    super("allDifferent");
-    individualNames = new ArrayList();
+    individualNames = new HashSet<String>();
   } // AllDifferentRestrictionInfo
   
-  public List getIndividualNames() { return individualNames; }
+  public Set<String> getIndividualNames() { return individualNames; }
   public void addIndividualName(String individualName) { individualNames.add(individualName); }
 } // AllDifferentRestrictionInfo

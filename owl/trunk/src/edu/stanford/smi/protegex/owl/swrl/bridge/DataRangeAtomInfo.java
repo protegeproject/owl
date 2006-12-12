@@ -11,11 +11,10 @@ import java.util.List;
 
 public class DataRangeAtomInfo extends AtomInfo
 {
-  private List literals; // List of LiteralInfo objects.
+  private List<LiteralInfo> literals;
   
   public DataRangeAtomInfo(SWRLDataRangeAtom dataRangeAtom) throws SWRLRuleEngineBridgeException
   { 
-    super("DataRangeAtom");
     // TODO: and don't forget to call addReferencedVariableName, and addReferencedIndividualName if appropriate
     throw new NotImplementedException("SWRL data range atoms not implemented.");
   } // DataRangeAtomInfo

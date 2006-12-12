@@ -12,25 +12,26 @@ import edu.stanford.smi.protegex.owl.model.OWLIndividual;
 public class ClassAtomInfo extends AtomInfo
 {
   private Argument argument1;
+  private String className;
   
   public ClassAtomInfo(SWRLClassAtom atom) throws SWRLRuleEngineBridgeException
   {
-    super(atom.getClassPredicate().getName());
-
-    String argumentName;
-
-    argumentName = atom.getArgument1().getName();
+    String argumentName = atom.getArgument1().getName();
+    className = atom.getClassPredicate().getName();
     
     if (atom.getArgument1() instanceof SWRLVariable) {
       SWRLVariable variable = (SWRLVariable)atom.getArgument1();
-      argument1 = new VariableInfo(variable);
-      addReferencedVariableName(variable.getName());
+      ObjectVariableInfo argument = new ObjectVariableInfo(variable);
+      addReferencedVariable(variable.getName(), argument);
+      argument1 = argument;
     } else if (atom.getArgument1() instanceof OWLIndividual) {
-      argument1 = new IndividualInfo((OWLIndividual)atom.getArgument1());
-      addReferencedIndividualName(argument1.getName());
+      IndividualInfo argument = new IndividualInfo((OWLIndividual)atom.getArgument1());
+      addReferencedIndividualName(argument.getIndividualName());
+      argument1 = argument;
     } else throw new SWRLRuleEngineBridgeException("Unexpected argument to class atom '" + atom.getBrowserText() + "'. Expecting variable or individual, got instance of" + atom.getArgument1().getClass() + ".");
   } // ClassAtomInfo
   
+  public String getClassName() { return className; }
   public Argument getArgument1() { return argument1; }
 } // ClassAtomInfo
 

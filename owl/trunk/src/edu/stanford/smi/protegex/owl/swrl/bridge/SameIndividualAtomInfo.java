@@ -10,6 +10,6 @@ public class SameIndividualAtomInfo extends IndividualsAtomInfo
 {
   public SameIndividualAtomInfo(SWRLSameIndividualAtom sameIndividualAtom) throws SWRLRuleEngineBridgeException
   { 
-    super(sameIndividualAtom, "sameAs"); 
+    super(sameIndividualAtom); 
   } // SameIndividualAtomInfo
 } // SameIndividualAtomInfo

@@ -7,29 +7,57 @@ import java.util.*;
 
 public class AtomInfo extends Info 
 {
-  private List referencedIndividualNames;
-  private List referencedVariableNames;
+  private Set<String> referencedIndividualNames;
+  private HashMap<String, VariableInfo> referencedVariables;
 
-  public AtomInfo(String name) 
+  public AtomInfo() 
   { 
-    super(name); 
-    referencedIndividualNames = new ArrayList();
-    referencedVariableNames = new ArrayList();
+    referencedIndividualNames = new HashSet<String>();
+    referencedVariables = new HashMap<String, VariableInfo>();
   } // ArrayList
 
   public boolean hasReferencedIndividuals() { return referencedIndividualNames.size() != 0; }
-  public List getReferencedIndividualNames() { return referencedIndividualNames; }
-  public boolean hasReferencedVariables() { return referencedVariableNames.size() != 0; }
-  public List getReferencedVariableNames() { return referencedVariableNames; }
+  public Set<String> getReferencedIndividualNames() { return referencedIndividualNames; }
+  public boolean hasReferencedVariables() { return referencedVariables.size() != 0; }
+  public Set<String> getReferencedVariableNames() { return referencedVariables.keySet(); }
 
+  public Set<String> getReferencedObjectVariableNames() 
+  {
+    Set<String> result = new HashSet<String>();
+    
+    for (String variableName: getReferencedVariableNames()) {
+      if (isReferencedObjectVariable(variableName)) result.add(variableName);
+    } // for
+    return result;
+  } // getReferencedObjectVariableNames
+  
+  public Set<String> getReferencedDatatypeVariableNames() 
+  {
+    Set<String> result = new HashSet<String>();
+    
+    for (String variableName: getReferencedVariableNames()) {
+      if (isReferencedDatatypeVariable(variableName)) result.add(variableName);
+    } // while
+    return result;
+  } // getReferencedDatatypeVariableNames
+  
+  public boolean isReferencedObjectVariable(String variableName) 
+  { 
+    return referencedVariables.containsKey(variableName) && referencedVariables.get(variableName) instanceof ObjectVariableInfo; 
+  } // isReferencedObjectVariable
+  
+  public boolean isReferencedDatatypeVariable(String variableName) 
+  { 
+    return referencedVariables.containsKey(variableName) && referencedVariables.get(variableName) instanceof DatatypeVariableInfo; 
+  }
+  
   protected void addReferencedIndividualName(String individualName) 
   { 
     if (!referencedIndividualNames.contains(individualName)) referencedIndividualNames.add(individualName); 
   } // addReferencedIndividualName
-
-  protected void addReferencedVariableName(String variableName) 
+  
+  protected void addReferencedVariable(String variableName, VariableInfo variableInfo) 
   { 
-    if (!referencedIndividualNames.contains(variableName)) referencedVariableNames.add(variableName); 
-  } // addReferencedVariableName
-
+    if (!referencedVariables.containsKey(variableName)) referencedVariables.put(variableName, variableInfo); 
+  } // addReferencedVariable
 } // AtomInfo

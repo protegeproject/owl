@@ -22,7 +22,7 @@ import java.lang.Math.*;
  **
  ** See <a href="http://protege.cim3.net/cgi-bin/wiki.pl?SWRLBuiltInBridge">here</a> for documentation on defining SWRL built-in libraries.
  */
-public class SWRLBuiltInMethodsImpl implements SWRLBuiltInMethods
+public class SWRLBuiltInLibraryImpl implements SWRLBuiltInLibrary
 {
   private static String SWRLB_NAMESPACE = "swrlb";
 
@@ -72,126 +72,130 @@ public class SWRLBuiltInMethodsImpl implements SWRLBuiltInMethods
   private static String SWRLB_MATCHES = SWRLB_NAMESPACE + ":" + "matches"; // TODO: not implemented
   private static String SWRLB_REPLACE = SWRLB_NAMESPACE + ":" + "replace"; // TODO: not implemented
   private static String SWRLB_TOKENIZE = SWRLB_NAMESPACE + ":" + "tokenize"; // TODO: not implemented
+
+  private SWRLRuleEngineBridge bridge;
+
+  public void initialize(SWRLRuleEngineBridge bridge) { this.bridge = bridge; }
   
   // Built-ins for comparison, defined in Section 8.1. of http://www.daml.org/2004/04/swrl/builtins.html.
 
-  public boolean greaterThan(List arguments) throws BuiltInException
+  public boolean greaterThan(List<Argument> arguments) throws BuiltInException
   {
     return (compareTwoArgumentsOfOrderedType(SWRLB_GREATER_THAN, arguments) > 0);
   } // greaterThan
 
-  public boolean lessThan(List arguments) throws BuiltInException
+  public boolean lessThan(List<Argument> arguments) throws BuiltInException
   {
     return (compareTwoArgumentsOfOrderedType(SWRLB_LESS_THAN, arguments) < 0);
   } // greaterThan
 
-  public boolean equal(List arguments) throws BuiltInException
+  public boolean equal(List<Argument> arguments) throws BuiltInException
   {
     return equal(SWRLB_EQUAL, arguments);
   } // equal
 
-  public boolean notEqual(List arguments) throws BuiltInException
+  public boolean notEqual(List<Argument> arguments) throws BuiltInException
   {
     return !equal(SWRLB_NOT_EQUAL, arguments);
   } // notEqual
 
-  public boolean lessThanOrEqual(List arguments) throws BuiltInException
+  public boolean lessThanOrEqual(List<Argument> arguments) throws BuiltInException
   {
     return equal(arguments) || lessThan(arguments);
   } // lessThanOrEqual
 
-  public boolean greaterThanOrEqual(List arguments) throws BuiltInException
+  public boolean greaterThanOrEqual(List<Argument> arguments) throws BuiltInException
   {
     return equal(arguments) || greaterThan(arguments);
   } // greaterThanOrEqual
 
   // Math Built-ins, defined in Section 8.2. of http://www.daml.org/2004/04/swrl/builtins.html.
   
-  public boolean add(List arguments) throws BuiltInException
+  public boolean add(List<Argument> arguments) throws BuiltInException
   {
     SWRLBuiltInUtil.checkNumberOfArgumentsAtLeast(SWRLB_ADD, 2, arguments.size());
 
     return mathOperation(SWRLB_ADD, arguments); 
   } // add
 
-  public boolean subtract(List arguments) throws BuiltInException
+  public boolean subtract(List<Argument> arguments) throws BuiltInException
   {
     SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(SWRLB_SUBTRACT, 3, arguments.size());
 
     return mathOperation(SWRLB_SUBTRACT, arguments);
   } // subtract
 
-  public boolean multiply(List arguments) throws BuiltInException
+  public boolean multiply(List<Argument> arguments) throws BuiltInException
   {
     SWRLBuiltInUtil.checkNumberOfArgumentsAtLeast(SWRLB_MULTIPLY, 2, arguments.size());
 
     return mathOperation(SWRLB_MULTIPLY, arguments);
   } // multiply
 
-  public boolean divide(List arguments) throws BuiltInException
+  public boolean divide(List<Argument> arguments) throws BuiltInException
   {
     SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(SWRLB_DIVIDE, 3, arguments.size());
 
     return mathOperation(SWRLB_DIVIDE, arguments);
   } // divide
 
-  public boolean integerDivide(List arguments) throws BuiltInException
+  public boolean integerDivide(List<Argument> arguments) throws BuiltInException
   {
     SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(SWRLB_INTEGER_DIVIDE, 3, arguments.size());
 
     return mathOperation(SWRLB_INTEGER_DIVIDE, arguments);
   } // integerDivide
 
-  public boolean mod(List arguments) throws BuiltInException
+  public boolean mod(List<Argument> arguments) throws BuiltInException
   {
     SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(SWRLB_MOD, 3, arguments.size());
 
     return mathOperation(SWRLB_MOD, arguments);
   } // mod
 
-  public boolean pow(List arguments) throws BuiltInException
+  public boolean pow(List<Argument> arguments) throws BuiltInException
   {
     SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(SWRLB_POW, 3, arguments.size());
 
     return mathOperation(SWRLB_POW, arguments);
   } // pow
 
-  public boolean unaryPlus(List arguments) throws BuiltInException
+  public boolean unaryPlus(List<Argument> arguments) throws BuiltInException
   {
     SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(SWRLB_UNARY_PLUS, 2, arguments.size());
 
     return mathOperation(SWRLB_UNARY_PLUS, arguments);
   } // unaryPlus
 
-  public boolean unaryMinus(List arguments) throws BuiltInException
+  public boolean unaryMinus(List<Argument> arguments) throws BuiltInException
   {
     SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(SWRLB_UNARY_MINUS, 2, arguments.size());
 
     return mathOperation(SWRLB_UNARY_MINUS, arguments);
   } // unaryMinus
 
-  public boolean abs(List arguments) throws BuiltInException
+  public boolean abs(List<Argument> arguments) throws BuiltInException
   {
     SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(SWRLB_ABS, 2, arguments.size());
 
     return mathOperation(SWRLB_ABS, arguments);
   } // abs
 
-  public boolean ceiling(List arguments) throws BuiltInException
+  public boolean ceiling(List<Argument> arguments) throws BuiltInException
   {
     SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(SWRLB_CEILING, 2, arguments.size());
 
     return mathOperation(SWRLB_CEILING, arguments);
   } // ceiling
 
-  public boolean floor(List arguments) throws BuiltInException
+  public boolean floor(List<Argument> arguments) throws BuiltInException
   {
     SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(SWRLB_FLOOR, 2, arguments.size());
 
     return mathOperation(SWRLB_FLOOR, arguments);
   } // floor
 
-  public boolean round(List arguments) throws BuiltInException
+  public boolean round(List<Argument> arguments) throws BuiltInException
   {
     SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(SWRLB_ROUND, 2, arguments.size());
 
@@ -200,21 +204,21 @@ public class SWRLBuiltInMethodsImpl implements SWRLBuiltInMethods
 
   // TODO: roundHalfToEven not implemented
 
-  public boolean sin(List arguments) throws BuiltInException
+  public boolean sin(List<Argument> arguments) throws BuiltInException
   {
     SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(SWRLB_SIN, 2, arguments.size());
 
     return mathOperation(SWRLB_SIN, arguments);
   } // sin
 
-  public boolean cos(List arguments) throws BuiltInException
+  public boolean cos(List<Argument> arguments) throws BuiltInException
   {
     SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(SWRLB_COS, 2, arguments.size());
 
     return mathOperation(SWRLB_COS, arguments);
   } // cos
 
-  public boolean tan(List arguments) throws BuiltInException
+  public boolean tan(List<Argument> arguments) throws BuiltInException
   {
     SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(SWRLB_TAN, 2, arguments.size());
 
@@ -223,14 +227,14 @@ public class SWRLBuiltInMethodsImpl implements SWRLBuiltInMethods
 
   // Built-ins for Booleans. cf. Section 8.3 of http://www.daml.org/2004/04/swrl/builtins.html
 
-  public boolean booleanNot(List arguments) throws BuiltInException
+  public boolean booleanNot(List<Argument> arguments) throws BuiltInException
   {
     boolean result;
 
     SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(SWRLB_BOOLEAN_NOT, 2, arguments.size());
     SWRLBuiltInUtil.checkForUnboundNonFirstArguments(SWRLB_BOOLEAN_NOT, arguments);
 
-    if (SWRLBuiltInUtil.isUnboundArgument(SWRLB_BOOLEAN_NOT, arguments, 0)) {
+    if (SWRLBuiltInUtil.isUnboundArgument(SWRLB_BOOLEAN_NOT, 0, arguments)) {
       if (!SWRLBuiltInUtil.areAllArgumentsBooleans(SWRLB_BOOLEAN_NOT, arguments.subList(1, arguments.size())))
         throw new InvalidBuiltInArgumentException(SWRLB_BOOLEAN_NOT, 1, "Expecting a Boolean");
 
@@ -248,7 +252,7 @@ public class SWRLBuiltInMethodsImpl implements SWRLBuiltInMethods
 
   // Built-ins for Strings. cf. Section 8.4 of http://www.daml.org/2004/04/swrl/builtins.html
   
-  public boolean stringEqualIgnoreCase(List arguments) throws BuiltInException
+  public boolean stringEqualIgnoreCase(List<Argument> arguments) throws BuiltInException
   {
     String argument1, argument2;
 
@@ -261,7 +265,7 @@ public class SWRLBuiltInMethodsImpl implements SWRLBuiltInMethods
     return argument1.equalsIgnoreCase(argument2);
   } // stringEqualIgnoreCase
 
-  public boolean stringConcat(List arguments) throws BuiltInException
+  public boolean stringConcat(List<Argument> arguments) throws BuiltInException
   {
     String operationResult = "";
     boolean result;
@@ -273,7 +277,7 @@ public class SWRLBuiltInMethodsImpl implements SWRLBuiltInMethods
       operationResult = operationResult.concat(SWRLBuiltInUtil.getArgumentAsAString(SWRLB_STRING_CONCAT, argumentNumber, arguments));
     } // for
 
-    if (SWRLBuiltInUtil.hasUnboundArguments(SWRLB_STRING_CONCAT, arguments)) {
+    if (SWRLBuiltInUtil.isUnboundArgument(SWRLB_STRING_CONCAT, 0, arguments)) {
       arguments.set(0, new LiteralInfo(operationResult)); // Bind the result to the first parameter
       result = true;
     } else {
@@ -284,7 +288,7 @@ public class SWRLBuiltInMethodsImpl implements SWRLBuiltInMethods
     return result;
   } // stringConcat
 
-  public boolean substring(List arguments) throws BuiltInException
+  public boolean substring(List<Argument> arguments) throws BuiltInException
   {
     String argument2, operationResult;
     int startIndex, length;
@@ -312,7 +316,7 @@ public class SWRLBuiltInMethodsImpl implements SWRLBuiltInMethods
     return result;
   } // substring
 
-  public boolean stringLength(List arguments) throws BuiltInException
+  public boolean stringLength(List<Argument> arguments) throws BuiltInException
   {
     String argument2;
     boolean result;
@@ -334,7 +338,7 @@ public class SWRLBuiltInMethodsImpl implements SWRLBuiltInMethods
     return result;
   } // stringLength
 
-  public boolean upperCase(List arguments) throws BuiltInException
+  public boolean upperCase(List<Argument> arguments) throws BuiltInException
   {
     String argument2, operationResult;
     boolean result;
@@ -355,7 +359,7 @@ public class SWRLBuiltInMethodsImpl implements SWRLBuiltInMethods
     return result;
   } // upperCase
 
-  public boolean lowerCase(List arguments) throws BuiltInException
+  public boolean lowerCase(List<Argument> arguments) throws BuiltInException
   {
     String argument2, operationResult;
     boolean result;
@@ -377,7 +381,7 @@ public class SWRLBuiltInMethodsImpl implements SWRLBuiltInMethods
     return result;
   } // lowerCase
 
-  public boolean contains(List arguments) throws BuiltInException
+  public boolean contains(List<Argument> arguments) throws BuiltInException
   {
     String argument1, argument2;
 
@@ -390,7 +394,7 @@ public class SWRLBuiltInMethodsImpl implements SWRLBuiltInMethods
     return argument1.lastIndexOf(argument2) != -1;
   } // contains
 
-  public boolean containsIgnoreCase(List arguments) throws BuiltInException
+  public boolean containsIgnoreCase(List<Argument> arguments) throws BuiltInException
   {
     String argument1, argument2;
 
@@ -406,7 +410,7 @@ public class SWRLBuiltInMethodsImpl implements SWRLBuiltInMethods
     return argument1.toLowerCase().lastIndexOf(argument2.toLowerCase()) != -1;
   } // containsIgnoreCase
 
-  public boolean startsWith(List arguments) throws BuiltInException
+  public boolean startsWith(List<Argument> arguments) throws BuiltInException
   {
     String argument1, argument2;
 
@@ -419,7 +423,7 @@ public class SWRLBuiltInMethodsImpl implements SWRLBuiltInMethods
     return argument1.startsWith(argument2);
   } // startsWith
 
-  public boolean endsWith(List arguments) throws BuiltInException
+  public boolean endsWith(List<Argument> arguments) throws BuiltInException
   {
     String argument1, argument2;
 
@@ -434,7 +438,7 @@ public class SWRLBuiltInMethodsImpl implements SWRLBuiltInMethods
 
   // Private methods.
 
-  private boolean equal(String builtInName, List arguments) throws BuiltInException
+  private boolean equal(String builtInName, List<Argument> arguments) throws BuiltInException
   {
     SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(builtInName, 2, arguments.size());
 
@@ -449,7 +453,7 @@ public class SWRLBuiltInMethodsImpl implements SWRLBuiltInMethods
     } else return compareTwoArgumentsOfOrderedType(builtInName, arguments) == 0;
   } // equal
 
-  private static int compareTwoArgumentsOfOrderedType(String builtInName, List arguments) throws BuiltInException
+  private static int compareTwoArgumentsOfOrderedType(String builtInName, List<Argument> arguments) throws BuiltInException
   {
     int result = 0; // Should be assigned by end of method.
     
@@ -487,22 +491,21 @@ public class SWRLBuiltInMethodsImpl implements SWRLBuiltInMethods
     return result;
   } // greaterThan
 
-  private boolean lessThan(String builtInName, List arguments) throws BuiltInException
+  private boolean lessThan(String builtInName, List<Argument> arguments) throws BuiltInException
   {
     return (compareTwoArgumentsOfOrderedType(builtInName, arguments) < 0);
   } // lessThan
 
   // TODO: This method only supports integers at the moment. Need to rewrite this using generics so it will support all types.
-  private boolean mathOperation(String builtInName, List arguments) throws BuiltInException
+  private boolean mathOperation(String builtInName, List<Argument> arguments) throws BuiltInException
   {
-    Iterator iterator;
     int argumentNumber, argument1 = 0, argument2, argument3;
     int operationResult = -1; 
     boolean result = false, hasUnbound1stArgument = false;
 
     SWRLBuiltInUtil.checkForUnboundNonFirstArguments(builtInName, arguments); // Only supports binding of first argument at the moment.
 
-    if (SWRLBuiltInUtil.isUnboundArgument(builtInName, arguments, 0)) hasUnbound1stArgument = true;
+    if (SWRLBuiltInUtil.isUnboundArgument(builtInName, 0, arguments)) hasUnbound1stArgument = true;
 
     if (hasUnbound1stArgument) {
       if (!SWRLBuiltInUtil.areAllArgumentsIntegers(builtInName, arguments.subList(1, arguments.size())))
@@ -528,6 +531,7 @@ public class SWRLBuiltInMethodsImpl implements SWRLBuiltInMethods
     } else if (builtInName.equalsIgnoreCase(SWRLB_SUBTRACT)) {
       argument2 = SWRLBuiltInUtil.getArgumentAsAnInteger(builtInName, 1, arguments);
       argument3 = SWRLBuiltInUtil.getArgumentAsAnInteger(builtInName, 2, arguments);
+      operationResult = argument2 - argument3;
     } else if (builtInName.equalsIgnoreCase(SWRLB_DIVIDE)) {
       argument2 = SWRLBuiltInUtil.getArgumentAsAnInteger(builtInName, 1, arguments);
       argument3 = SWRLBuiltInUtil.getArgumentAsAnInteger(builtInName, 2, arguments);
@@ -586,4 +590,4 @@ public class SWRLBuiltInMethodsImpl implements SWRLBuiltInMethods
     return result;
   } // mathOperation
 
-} // SWRLBuiltInMethods
+} // SWRLBuiltInLibraryImpl

@@ -7,7 +7,6 @@ public class SameAsRestrictionInfo extends RestrictionInfo
   
   public SameAsRestrictionInfo(String individualName1, String individualName2) 
   { 
-    super("sameAs");
     this.individualName1 = individualName1; 
     this.individualName2 = individualName2; 
   } // SameAsRestrictionInfo
