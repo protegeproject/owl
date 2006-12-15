@@ -318,7 +318,7 @@ public class OWLMenuProjectPlugin extends ProjectPluginAdapter {
                     absoluteFormsLoader.loadAll();
                 }
                 catch (Exception ex) {
-                  Log.getLogger().log(Level.SEVERE, "Exception caught", ex);
+                  Log.getLogger().log(Level.SEVERE, "Exception caught at loading absolute forms", ex);
                 }
             }
         }
@@ -376,9 +376,9 @@ public class OWLMenuProjectPlugin extends ProjectPluginAdapter {
                 try {
                     generator.generateFiles(value);
                 }
-                catch (Exception ex) {
-                    Log.getLogger().log(Level.SEVERE, "Exception caught", ex);
-                    System.err.println("Warning: Could not save .forms files");
+                catch (Exception ex) {                 
+                    Log.getLogger().warning("Could not save .forms files");
+                    Log.getLogger().log(Level.WARNING, "Exception caught", ex);
                 }
 
                 if (AbsoluteFormsLoader.useNewFormMechanism_DontUseThisMethod()) {
