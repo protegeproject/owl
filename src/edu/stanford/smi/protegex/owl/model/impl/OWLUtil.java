@@ -5,6 +5,10 @@ import edu.stanford.smi.protege.model.framestore.MergingNarrowFrameStore;
 import edu.stanford.smi.protege.model.framestore.NarrowFrameStore;
 import edu.stanford.smi.protege.ui.FrameComparator;
 import edu.stanford.smi.protege.ui.ProjectManager;
+import edu.stanford.smi.protege.util.FileUtilities;
+import edu.stanford.smi.protege.util.Log;
+import edu.stanford.smi.protege.util.URIUtilities;
+import edu.stanford.smi.protegex.owl.jena.JenaKnowledgeBaseFactory;
 import edu.stanford.smi.protegex.owl.model.*;
 import edu.stanford.smi.protegex.owl.model.classparser.OWLClassParser;
 import edu.stanford.smi.protegex.owl.model.event.PropertyValueAdapter;
@@ -20,6 +24,7 @@ import edu.stanford.smi.protegex.owl.util.OWLFrameStoreUtils;
 
 import java.net.URI;
 import java.util.*;
+import java.util.logging.Level;
 
 /**
  * A collection of static utility methods for OWL classes.
@@ -1017,4 +1022,33 @@ public class OWLUtil {
         }
         return owlOntology;
     }
+    
+    public static URI getOWLFileURI(OWLModel owlModel) {
+        try {
+        	Project project = owlModel.getProject();
+            String owlURI = JenaKnowledgeBaseFactory.getOWLFilePath(project.getSources());
+            if (owlURI.startsWith("http://")) {
+                return new URI(owlURI);
+            }
+            else {
+                URI projectURI = project.getProjectURI();
+                if (projectURI == null) {
+                    //return new File(owlURI).toURI();
+                    return new URI(owlURI);
+                }
+                else {
+                    URI projectDirURI = project.getProjectDirectoryURI();
+                    URI rel = URIUtilities.relativize(projectDirURI, new URI(owlURI));
+                    URI result = projectURI.resolve(rel);
+                    return result;
+                }
+            }
+        }
+        catch (Exception ex) {
+          Log.getLogger().log(Level.SEVERE, "Exception caught", ex);
+        }
+        return null;
+    }
+    
+    
 }
