@@ -50,7 +50,11 @@ public class LiteralTableComponent extends AddablePropertyValuesComponent {
 
 
     public LiteralTableComponent(RDFProperty predicate) {
-        super(predicate);
+    	this(predicate, null);
+    }
+    
+    public LiteralTableComponent(RDFProperty predicate, String label) {
+        super(predicate, label);
         table = new LiteralTable(predicate);
         table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             public void valueChanged(ListSelectionEvent e) {
@@ -66,7 +70,7 @@ public class LiteralTableComponent extends AddablePropertyValuesComponent {
         });
         JScrollPane scrollPane = new JScrollPane(table);
         scrollPane.getViewport().setBackground(Color.white);
-        OWLLabeledComponent lc = new OWLLabeledComponent(getLabel(), scrollPane);
+        OWLLabeledComponent lc = new OWLLabeledComponent((label == null ? getLabel():label), scrollPane);
         lc.addHeaderButton(viewAction);
         lc.addHeaderButton(addAction);
         if (!(predicate instanceof OWLProperty) && predicate.getRange() == null) {

@@ -26,9 +26,12 @@ public class DataRangeFieldComponent extends AbstractPropertyValuesComponent {
         }
     };
 
-
     public DataRangeFieldComponent(RDFProperty predicate) {
-        super(predicate);
+    	this(predicate, null);
+    }
+
+    public DataRangeFieldComponent(RDFProperty predicate, String label) {
+        super(predicate, label);
 
         comboBox = new JComboBox();
         comboBox.addActionListener(new ActionListener() {
@@ -36,9 +39,8 @@ public class DataRangeFieldComponent extends AbstractPropertyValuesComponent {
                 assignComboBoxValue();
             }
         });
-
-        String label = getLabel();
-        OWLLabeledComponent lc = new OWLLabeledComponent(label, comboBox);
+     
+        OWLLabeledComponent lc = new OWLLabeledComponent((label == null ? getLabel():label), comboBox);
         lc.addHeaderButton(deleteAction);
 
         add(BorderLayout.CENTER, lc);

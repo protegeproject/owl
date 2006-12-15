@@ -15,12 +15,12 @@ public class DataRangeFieldWidget extends AbstractPropertyValuesWidget {
 
     public DataRangeFieldWidget() {
         setPreferredColumns(2);
-        setPreferredRows(1);
+        setPreferredRows(1);        
     }
 
 
     protected PropertyValuesComponent createComponent(RDFProperty predicate) {
-        return new DataRangeFieldComponent(predicate);
+        return new DataRangeFieldComponent(predicate, getLabel());
     }
 
 

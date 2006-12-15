@@ -28,16 +28,19 @@ public class MultiResourceComponent extends AddablePropertyValuesComponent {
         }
     };
 
-
     public MultiResourceComponent(RDFProperty predicate, boolean symmetric) {
-        super(predicate);
+    	this(predicate, symmetric, null);
+    }
+    
+    public MultiResourceComponent(RDFProperty predicate, boolean symmetric, String label) {
+        super(predicate, label);
         list = new MultiResourceList(predicate, symmetric);
         list.addListSelectionListener(new ListSelectionListener() {
             public void valueChanged(ListSelectionEvent e) {
                 updateActions();
             }
         });
-        OWLLabeledComponent lc = new OWLLabeledComponent(getLabel(), new JScrollPane(list));
+        OWLLabeledComponent lc = new OWLLabeledComponent((label == null ? getLabel():label), new JScrollPane(list));
         createAction = createCreateAction();
         if (createAction != null) {
             lc.addHeaderButton(createAction);

@@ -50,7 +50,11 @@ public abstract class AbstractSingleLiteralComponent extends AbstractPropertyVal
 
 
     public AbstractSingleLiteralComponent(RDFProperty predicate) {
-        super(predicate);
+    	this(predicate, null);
+    }
+    
+    public AbstractSingleLiteralComponent(RDFProperty predicate, String label) {
+        super(predicate, label);
 
         final OWLModel owlModel = getOWLModel();
         this.datatypeComboBox = ComponentUtil.createDatatypeComboBox(owlModel);
@@ -92,7 +96,7 @@ public abstract class AbstractSingleLiteralComponent extends AbstractPropertyVal
         mainPanel.add(BorderLayout.EAST, datatypeComboBox);
         textComponentHolder = createTextComponentHolder(textComponent);
         mainPanel.add(BorderLayout.CENTER, textComponentHolder);
-        OWLLabeledComponent lc = new OWLLabeledComponent(getLabel(), mainPanel);
+        OWLLabeledComponent lc = new OWLLabeledComponent((label == null ? getLabel():label), mainPanel);
         lc.addHeaderButton(viewAction);
         lc.addHeaderButton(deleteAction);
         if (textComponentHolder instanceof JScrollPane) {

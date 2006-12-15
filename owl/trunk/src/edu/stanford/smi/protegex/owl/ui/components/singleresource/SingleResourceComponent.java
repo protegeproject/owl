@@ -56,9 +56,14 @@ public class SingleResourceComponent extends AbstractPropertyValuesComponent imp
 
     private Action setAction = new SetResourceAction(this);
 
-
+    
     public SingleResourceComponent(RDFProperty predicate) {
-        super(predicate);
+    	this(predicate, null);
+	}
+    
+
+    public SingleResourceComponent(RDFProperty predicate, String label) {
+        super(predicate, label);
 
         list = ComponentFactory.createSingleItemList(new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
@@ -76,7 +81,7 @@ public class SingleResourceComponent extends AbstractPropertyValuesComponent imp
             protected void setSelection(JComponent c, int x, int y) {
             }
         });
-        OWLLabeledComponent lc = new OWLLabeledComponent(getLabel(), list);
+        OWLLabeledComponent lc = new OWLLabeledComponent((label == null ? getLabel():label), list);
         lc.addHeaderButton(createAction);
         lc.addHeaderButton(setAction);
         lc.addHeaderButton(removeAction);

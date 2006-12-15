@@ -20,13 +20,20 @@ public abstract class AbstractPropertyValuesComponent extends JComponent impleme
     private final RDFProperty predicate;
 
     private RDFResource subject;
+    
+    private String label;
 
 
     protected AbstractPropertyValuesComponent(RDFProperty predicate) {
-        this.predicate = predicate;
-        setLayout(new BorderLayout());
+    	this(predicate, null);
     }
 
+    protected AbstractPropertyValuesComponent(RDFProperty predicate, String label) {
+        this.predicate = predicate;
+        setLayout(new BorderLayout());
+        this.label = label;
+    }
+    
 
     protected PropertyValueEditor getEditor(Object value) {
         final RDFResource subject = getSubject();
@@ -36,12 +43,16 @@ public abstract class AbstractPropertyValuesComponent extends JComponent impleme
 
 
     protected String getLabel() {
-        RDFProperty property = getPredicate();
-        String text = property.getBrowserText();
-        if (getOWLModel().getProject().getPrettyPrintSlotWidgetLabels()) {
-            text = StringUtilities.symbolToLabel(text);
-        }
-        return text;
+    	if (label == null) {
+	        RDFProperty property = getPredicate();
+	        String text = property.getBrowserText();
+	        if (getOWLModel().getProject().getPrettyPrintSlotWidgetLabels()) {
+	            text = StringUtilities.symbolToLabel(text);
+	        }
+	        return text;
+	    }
+    	
+    	return label;
     }
 
 
