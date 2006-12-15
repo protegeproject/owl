@@ -12,11 +12,14 @@ import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.KnowledgeBase;
 import edu.stanford.smi.protege.model.Project;
 import edu.stanford.smi.protege.model.Slot;
+import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protege.widget.ClsWidget;
 import edu.stanford.smi.protege.widget.SlotWidget;
 import edu.stanford.smi.protegex.owl.jena.Jena;
+import edu.stanford.smi.protegex.owl.jena.JenaKnowledgeBaseFactory;
 import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
 import edu.stanford.smi.protegex.owl.model.*;
+import edu.stanford.smi.protegex.owl.model.impl.OWLUtil;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 import edu.stanford.smi.protegex.owl.repository.Repository;
 
@@ -117,6 +120,7 @@ public class AbsoluteFormsGenerator {
         while (it.hasNext()) {
             Slot slot = (Slot) it.next();
             SlotWidget slotWidget = clsWidget.getSlotWidget(slot);
+                       
             if (slotWidget != null) {
                 String widgetClassName = slotWidget.getDescriptor().getWidgetClassName();
                 String typeURI = widgetClassMapper.getWidgetClassURI(widgetClassName);
@@ -139,6 +143,9 @@ public class AbsoluteFormsGenerator {
                 if (type.equals(FormsNames.Widget)) {
                     widget.addProperty(ProtegeFormsNames.javaClassName, widgetClassName);
                 }
+                
+                OWLWidgetPropertyListUtil.createOWLPropertyList(widget, slotWidget.getDescriptor().getPropertyList());
+                
                 Resource layoutData = model.createResource(null, AbsoluteLayoutNames.AbsoluteLayoutData);
                 widget.addProperty(FormsNames.layoutData, layoutData);
                 Rectangle bounds = slotWidget.getDescriptor().getBounds();
@@ -219,6 +226,8 @@ public class AbsoluteFormsGenerator {
 
 
     public void generateFiles(String option) throws Exception {
+    	OutputStream os = null;
+    	
         Iterator it = owlModel.getTripleStoreModel().listUserTripleStores();
         while (it.hasNext()) {
             TripleStore ts = (TripleStore) it.next();
@@ -226,35 +235,39 @@ public class AbsoluteFormsGenerator {
             URI ontologyFileURI = new URI(ts.getName());
             URI formsFileURI = new URI(formsFileName);
             Repository rep = owlModel.getRepositoryManager().getRepository(ontologyFileURI);
+
             if (rep != null) {
-                if (rep.isWritable(ontologyFileURI)) {
-                    System.out.println("Saving .forms model " + formsFileURI + " to " +
-                            rep.getOntologyLocationDescription(formsFileURI));
-                    OutputStream os = rep.getOutputStream(formsFileURI);
-                    Model model = createModel(ts, ALL.equals(option));
-                    String language = FileUtils.langXMLAbbrev;
-                    PrintStream ps = new PrintStream(os);
-                    String namespace = model.getNsPrefixURI("");
-                    RDFWriter writer = model.getWriter(language);
-                    Jena.prepareWriter(writer, language, namespace);
-                    writer.write(model, ps, namespace);
-                    os.close();
+                if (rep.isWritable(ontologyFileURI) && rep.contains(formsFileURI)) {
+                    Log.getLogger().info("Saving .forms model " + formsFileURI + " to " + rep.getOntologyLocationDescription(formsFileURI));
+                    os = rep.getOutputStream(formsFileURI);             
                 }
             }
-            else if (ts == owlModel.getTripleStoreModel().getTopTripleStore() && owlModel instanceof JenaOWLModel) {
+            
+            if (os == null && owlModel instanceof JenaOWLModel && ts == owlModel.getTripleStoreModel().getTopTripleStore()) {
                 String path = ((JenaOWLModel) owlModel).getOWLFilePath() + SUFFIX;
+            	URI ontologyURI = OWLUtil.getOWLFileURI(owlModel);
+            	           	
+            	if (ontologyURI != null)
+            		path = ontologyURI.getPath() + AbsoluteFormsGenerator.SUFFIX;
+            	
                 File file = new File(path);
-                System.out.println("Saving .forms model " + formsFileURI + " to " + file);
-                OutputStream os = new FileOutputStream(file);
-                Model model = createModel(ts, ALL.equals(option));
-                String language = FileUtils.langXMLAbbrev;
-                PrintStream ps = new PrintStream(os);
-                String namespace = model.getNsPrefixURI("");
-                RDFWriter writer = model.getWriter(language);
-                Jena.prepareWriter(writer, language, namespace);
-                writer.write(model, ps, namespace);
-                os.close();
+                Log.getLogger().info("Saving forms for model " + formsFileURI + " to " + file);
+                os = new FileOutputStream(file);
+                
+            } 
+            
+            //write file
+            if (os != null) {
+	            Model model = createModel(ts, ALL.equals(option));
+	            String language = FileUtils.langXMLAbbrev;
+	            PrintStream ps = new PrintStream(os);
+	            String namespace = model.getNsPrefixURI("");
+	            RDFWriter writer = model.getWriter(language);
+	            Jena.prepareWriter(writer, language, namespace);
+	            writer.write(model, ps, namespace);
+	            os.close();
             }
+            
         }
 
         // saveSystemForms(option);
@@ -263,7 +276,7 @@ public class AbsoluteFormsGenerator {
 
     private void saveSystemForms(String option) throws IOException {
         File file = new File(FILE_NAME);
-        System.out.println("Saving system forms model to " + file);
+        Log.getLogger().info("Saving system forms model to " + file);
         OutputStream os = new FileOutputStream(file);
         TripleStore ts = owlModel.getTripleStoreModel().getTripleStore(0);
         Model model = createModel(ts, ALL.equals(option));
