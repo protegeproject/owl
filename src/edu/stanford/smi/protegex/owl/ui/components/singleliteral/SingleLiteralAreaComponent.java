@@ -11,10 +11,13 @@ import java.awt.*;
  */
 public class SingleLiteralAreaComponent extends AbstractSingleLiteralComponent {
 
-    public SingleLiteralAreaComponent(RDFProperty predicate) {
-        super(predicate);
+    public SingleLiteralAreaComponent(RDFProperty predicate, String label) {
+        super(predicate, label);
     }
-
+    
+    public SingleLiteralAreaComponent(RDFProperty predicate) {
+        this(predicate, null);
+    }
 
     protected JTextComponent createTextComponent() {
         JTextArea textArea = new JTextArea();

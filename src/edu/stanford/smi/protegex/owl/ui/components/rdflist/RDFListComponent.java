@@ -207,7 +207,11 @@ public class RDFListComponent extends AbstractPropertyValuesComponent implements
 
 
     public RDFListComponent(RDFProperty predicate) {
-        super(predicate);
+    	this(predicate, null);
+    }
+    
+    public RDFListComponent(RDFProperty predicate, String label) {
+        super(predicate, label);
         addAction.setEnabled(false);
         listModel = new DefaultListModel();
         list = new JList(listModel);
@@ -224,7 +228,7 @@ public class RDFListComponent extends AbstractPropertyValuesComponent implements
                 }
             }
         });
-        OWLLabeledComponent lc = new OWLLabeledComponent(getLabel(), new JScrollPane(list));
+        OWLLabeledComponent lc = new OWLLabeledComponent((label == null ? getLabel():label), new JScrollPane(list));
         lc.addHeaderButton(createAction);
         lc.addHeaderButton(addAction);
         lc.addHeaderButton(moveUpAction);

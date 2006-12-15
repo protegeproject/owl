@@ -13,10 +13,14 @@ public class SingleLiteralComponent extends AbstractSingleLiteralComponent {
 
 
     public SingleLiteralComponent(RDFProperty predicate) {
-        super(predicate);
+        this(predicate, null);
     }
 
-
+    public SingleLiteralComponent(RDFProperty predicate, String label) {
+    	super(predicate, label);
+	}
+    
+    
     protected JTextComponent createTextComponent() {
         return new JTextField();
     }
