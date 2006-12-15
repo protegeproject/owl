@@ -1,6 +1,7 @@
 package edu.stanford.smi.protegex.owl.ui.forms;
 
 import com.hp.hpl.jena.ontology.OntClass;
+import com.hp.hpl.jena.ontology.OntDocumentManager;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.*;
 import com.hp.hpl.jena.util.FileUtils;
@@ -11,17 +12,26 @@ import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.Project;
 import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protege.model.WidgetDescriptor;
+import edu.stanford.smi.protege.plugin.PluginUtilities;
 import edu.stanford.smi.protege.util.ApplicationProperties;
+import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protege.util.PropertyList;
+import edu.stanford.smi.protege.util.URIUtilities;
 import edu.stanford.smi.protege.widget.ClsWidget;
 import edu.stanford.smi.protege.widget.SlotWidget;
 import edu.stanford.smi.protegex.owl.ProtegeOWL;
+import edu.stanford.smi.protegex.owl.jena.JenaKnowledgeBaseFactory;
 import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.model.OWLOntology;
 import edu.stanford.smi.protegex.owl.model.ProtegeNames;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
+import edu.stanford.smi.protegex.owl.model.impl.OWLUtil;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 import edu.stanford.smi.protegex.owl.repository.Repository;
+import edu.stanford.smi.protegex.owl.repository.impl.LocalFileRepository;
+import edu.stanford.smi.protegex.owl.repository.impl.LocalFolderRepository;
+import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
 
 import java.awt.*;
 import java.io.File;
@@ -29,7 +39,10 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 
 /**
@@ -58,6 +71,26 @@ public class AbsoluteFormsLoader {
 
     public void load(InputStream is) throws IOException {
         OntModel model = ModelFactory.createOntologyModel();
+        
+        //tell Jena where the local form ontologies are
+               
+        String protegeOWLDir = null;
+        if (ProtegeOWL.getPluginFolder().exists()) {        	
+        	try {
+				protegeOWLDir = (new URI(ProtegeOWL.getPluginFolder().getAbsolutePath())).toString();
+			} catch (URISyntaxException e) {				
+				Log.getLogger().warning("Error at retrieving Protege OWL plugin folder.");
+			}
+        }
+        
+        if (protegeOWLDir != null) {
+        	OntDocumentManager docManager = model.getDocumentManager();
+        
+        	docManager.addAltEntry(ProtegeFormsNames.PROTEGE_FORMS_ONTOLOGY, protegeOWLDir + File.separator +  ProtegeFormsNames.PROTEGE_FORMS_FILENAME);
+        	docManager.addAltEntry(ProtegeFormsNames.ABSOLUTE_FORMS_ONTOLOGY, protegeOWLDir + File.separator+ File.separator + ProtegeFormsNames.ABSOLUTE_FORMS_FILENAME);
+        	docManager.addAltEntry(ProtegeFormsNames.FORMS_ONTOLOGY, protegeOWLDir + File.separator + ProtegeFormsNames.FORMS_FILENAME);
+        }
+        
         model.read(is, "http://dummy.de/aldi.owl", FileUtils.langXMLAbbrev);
         is.close();
 
@@ -66,7 +99,7 @@ public class AbsoluteFormsLoader {
 
         Iterator formWidgets = formWidgetClass.listInstances();
         while (formWidgets.hasNext()) {
-            Resource formWidget = (Resource) formWidgets.next();
+            Resource formWidget = (Resource) formWidgets.next();            
             addFormWidget(formWidget);
         }
         project.clearCachedWidgets();
@@ -75,45 +108,47 @@ public class AbsoluteFormsLoader {
 
     public void loadAll() throws Exception {
 
-        File systemFormsFile = new File(ProtegeOWL.getPluginFolder(), AbsoluteFormsGenerator.FILE_NAME);
-        if (systemFormsFile.exists()) {
-            System.out.println("Loading system forms from " + systemFormsFile);
-            load(new FileInputStream(systemFormsFile));
-        }
+		File systemFormsFile = new File(ProtegeOWL.getPluginFolder(), AbsoluteFormsGenerator.FILE_NAME);
+		if (systemFormsFile.exists()) {
+			Log.getLogger().info("Loading system forms from " + systemFormsFile);
+			load(new FileInputStream(systemFormsFile));
+		}
+		
 
-        Iterator it = owlModel.getTripleStoreModel().listUserTripleStores();
-        while (it.hasNext()) {
-            TripleStore ts = (TripleStore) it.next();
-            URI ontologyFileURI = new URI(ts.getName());
-            Repository rep = owlModel.getRepositoryManager().getRepository(ontologyFileURI);
-            String formsFileName = AbsoluteFormsGenerator.getFormsFileURI(ts, owlModel);
-            URI formsFileURI = new URI(formsFileName);
-            if (rep != null) {
-                if (rep.contains(formsFileURI)) {
-                    System.out.println("Adding forms from " + formsFileURI);
-                    load(rep.getInputStream(formsFileURI));
-                }
-            }
-            else {
-                try {
-                    File file = null;
-                    if (ts == owlModel.getTripleStoreModel().getTopTripleStore()) {
-                        formsFileName = ((JenaOWLModel) owlModel).getOWLFilePath() + AbsoluteFormsGenerator.SUFFIX;
-                        file = new File(formsFileName);
-                    }
-                    else {
-                        file = new File(formsFileURI);
-                    }
-                    if (file.exists()) {
-                        System.out.println("Adding forms from " + file);
-                        load(new FileInputStream(file));
-                    }
-                }
-                catch (Exception ex) {
-                    // Ignore
-                }
-            }
-        }
+		ArrayList loadedForms = new ArrayList<String>();
+		loadRecursive(owlModel.getDefaultOWLOntology(), loadedForms);
+		
+		//load form for top ontology
+		if (!loadedForms.contains(owlModel.getDefaultOWLOntology().getURI()))
+			loadForm(owlModel.getTripleStoreModel().getTopTripleStore());
+	}
+
+
+    private void loadRecursive(OWLOntology ont, Collection visited) {
+    	visited.add(ont.getURI());
+    	
+    	Collection imports = ont.getImportResources();    	
+    	
+    	for (Iterator iter = imports.iterator(); iter.hasNext();) {
+			Object importOnt = iter.next();
+			
+			if (importOnt instanceof OWLOntology) {
+				if (!visited.contains(((OWLOntology)importOnt).getURI()))
+					loadRecursive((OWLOntology) importOnt, visited);
+			} else {
+				Log.getLogger().warning("Imported ontology not found: " + importOnt);
+			}			
+		}
+    	
+    	try {
+			
+    		TripleStore ts = owlModel.getTripleStoreModel().getTripleStore(ont.getURI());			
+			loadForm(ts);
+			
+		} catch (Exception ex) {
+			Log.getLogger().warning("Absolute forms not found.");
+		}
+    	
     }
 
 
@@ -164,12 +199,13 @@ public class AbsoluteFormsLoader {
             }
         }
         if (slotName != null) {
-            Slot slot = project.getKnowledgeBase().getSlot(slotName);
+            Slot slot = project.getKnowledgeBase().getSlot(slotName);            
             String widgetClassName = getWidgetClassName(widgetResource);
             if (widgetClassName != null) {
                 clsWidget.replaceWidget(slot, widgetClassName);
                 SlotWidget slotWidget = clsWidget.getSlotWidget(slot);
                 setWidgetBounds(slotWidget.getDescriptor(), widgetResource);
+                OWLWidgetPropertyListUtil.loadFormsProperties(slotWidget, widgetResource);
             }
         }
     }
@@ -191,6 +227,11 @@ public class AbsoluteFormsLoader {
         if (typeStatement != null) {
             Resource type = typeStatement.getResource();
             Statement classNameStmt = type.getProperty(ProtegeFormsNames.javaClassName);
+            
+            if (classNameStmt == null) {
+            	classNameStmt = widgetResource.getProperty(ProtegeFormsNames.javaClassName);
+            }
+            
             if (classNameStmt != null) {
                 return classNameStmt.getString();
             }
@@ -218,9 +259,10 @@ public class AbsoluteFormsLoader {
 
 
     public static void main(String[] args) throws Exception {
-        OWLModel owlModel = ProtegeOWL.createJenaOWLModelFromInputStream(new FileInputStream("travel.owl"));
+        //OWLModel owlModel = ProtegeOWL.createJenaOWLModelFromInputStream(new FileInputStream("travel.owl"));
+    	OWLModel owlModel = ProtegeOWL.createJenaOWLModelFromInputStream(new FileInputStream("/work/protege/projects/test_forms_owl/imported.owl"));
         AbsoluteFormsLoader loader = new AbsoluteFormsLoader(owlModel);
-        loader.load(new File("travel.owl.forms").toURL());
+        loader.load(new File("/work/protege/projects/test_forms_owl/imported.owl.forms").toURL());
     }
 
 
@@ -230,4 +272,66 @@ public class AbsoluteFormsLoader {
     public static boolean useNewFormMechanism_DontUseThisMethod() {
         return ApplicationProperties.getBooleanProperty("NewOWLFormsMechanism", false);
     }
+    
+    
+    private void loadForm(TripleStore ts) throws Exception {
+    	if (ts == null)
+    		return;
+    
+    	//try to get the forms file from the same location as the ontology
+    	if (ts == owlModel.getTripleStoreModel().getTopTripleStore()) {
+    		URI owlFileURI = OWLUtil.getOWLFileURI(owlModel);
+    		
+    		//put this is a try catch?
+    		if (owlFileURI != null) {    		
+	            String formsFileName = owlFileURI.toString() + AbsoluteFormsGenerator.SUFFIX;
+	            File file = new File(new URI(formsFileName));
+	            
+	            if (file.exists()) {
+	            	Log.getLogger().info("Loading forms from " + file);
+	            	load(new FileInputStream(file));
+	            	return;
+	            }
+	        }
+    	}
+                
+    	URI formsFileURI = new URI(AbsoluteFormsGenerator.getFormsFileURI(ts, owlModel));
+    	
+    	//try to load the forms file by using the repositories
+    	Repository rep = owlModel.getRepositoryManager().getRepository(formsFileURI);
+		
+    	if (rep != null) {
+    		//If there is already a repository entry for the form file, use it
+    		if (rep.contains(formsFileURI)) {
+    			Log.getLogger().info("Loading forms from " + formsFileURI);
+    			load(rep.getInputStream(formsFileURI));
+    			return;
+    		}
+    	}
+
+    	URI ontologyFileURI = new URI(ts.getName());
+    	
+		//check whether there is a local folder repository and look for the forms file there
+		Repository ontologyRep = owlModel.getRepositoryManager().getRepository(ontologyFileURI);
+		
+		if (ontologyRep != null && (ontologyRep instanceof LocalFolderRepository)) {
+			//the location of the ontology
+			String location = ontologyRep.getOntologyLocationDescription(ontologyFileURI);
+			
+			if (location != null) {				
+	            String formsFileName = location + AbsoluteFormsGenerator.SUFFIX;
+	            URI formsFileLocalURI = URIUtilities.createURI(formsFileName); 
+	            File file = new File(formsFileLocalURI);
+	            
+	            if (file.exists()) {
+	            	Log.getLogger().info("Loading forms from " + file);
+	            	load(new FileInputStream(file));
+	            	return;
+	            }				
+			}    			
+    	}   	
+    	
+	}
+  
+
 }
