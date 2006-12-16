@@ -44,6 +44,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.logging.Level;
 
 /**
  * An object capable of loading forms files into a Protege Project.
@@ -161,6 +162,9 @@ public class AbsoluteFormsLoader {
                 Cls cls = project.getKnowledgeBase().getCls(forClassName);
                 if (cls != null) {
                     ClsWidget clsWidget = project.getDesignTimeClsWidget(cls);
+                    
+                    resetClsWidgetForm(cls);
+                    
                     WidgetDescriptor wd = clsWidget.getDescriptor();
                     // wd.setName(forClassName);
                     wd.setDirectlyCustomizedByUser(true);
@@ -179,7 +183,8 @@ public class AbsoluteFormsLoader {
     }
 
 
-    private void addFormWidget(ClsWidget clsWidget, Resource widgetResource) {
+
+	private void addFormWidget(ClsWidget clsWidget, Resource widgetResource) {
         Statement forPropertyStmt = widgetResource.getProperty(FormsNames.forProperty);
         String slotName = null;
         if (forPropertyStmt != null) {
@@ -210,6 +215,31 @@ public class AbsoluteFormsLoader {
         }
     }
 
+	
+
+    private void resetClsWidgetForm(Cls cls) {
+    	ClsWidget clsWidget = project.getDesignTimeClsWidget(cls);
+    	
+    	if (clsWidget == null)
+    		return;
+    	
+    	for (Iterator iter = cls.getTemplateSlots().iterator(); iter.hasNext();) {
+			Slot slot = (Slot) iter.next();
+			
+			try {
+				SlotWidget slotWidget = clsWidget.getSlotWidget(slot);
+				
+				if (slotWidget != null)
+					clsWidget.replaceWidget(slot, null);
+				
+			} catch (Exception e) {
+				Log.getLogger().log(Level.WARNING, "Couldn't remove slot widget for slot " + slot + " from class form " + cls);
+			}
+			
+		}	
+	}
+
+	
 
     private int getInt(Resource widgetResource, Property property) {
         Statement s = widgetResource.getProperty(property);
