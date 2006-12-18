@@ -70,6 +70,7 @@ public class AnnotationsValueEditor extends AbstractCellEditor implements TableC
         sp.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         multiLineHolder = new AnnotationsTableCellHolder(sp, BorderLayout.CENTER);
         textField = new JTextField();
+        OWLUI.addCopyPastePopup(textField);
         singleLineHolder = new AnnotationsTableCellHolder(textField, BorderLayout.CENTER);
     }
 
