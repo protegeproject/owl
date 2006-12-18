@@ -41,6 +41,7 @@ import edu.stanford.smi.protege.model.Model;
 import edu.stanford.smi.protege.model.Reference;
 import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protege.model.framestore.MergingNarrowFrameStore;
+import edu.stanford.smi.protege.util.ApplicationProperties;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protege.util.MessageError;
 import edu.stanford.smi.protege.util.URIUtilities;
@@ -85,8 +86,9 @@ import edu.stanford.smi.protegex.owl.ui.repository.UnresolvedImportUIHandler;
  * @author Matthew Horridge
  */
 public class ProtegeOWLParser {
-        private static transient Logger log = Log.getLogger(ProtegeOWLParser.class);
-             
+    private static transient Logger log = Log.getLogger(ProtegeOWLParser.class);
+    
+    private final static String JENA_ERROR_LEVEL_PROPERTY = "jena.parser.error_level";          
 
 	/**
 	 * The default namespace to use if the current file does not define one by itself.
@@ -237,6 +239,7 @@ public class ProtegeOWLParser {
 			public void invokeARP(ARP arp)
 			        throws Exception {
 				
+				setErrorLevel(arp);
 				arp.load(inputStream, uri);
 				inputStream.close();
 			}
@@ -249,17 +252,30 @@ public class ProtegeOWLParser {
 	                                          final String uri) {
 		ARPInvokation invokation = new ARPInvokation() {
 			public void invokeARP(ARP arp)
-			        throws Exception {				
-				arp.getOptions().setDefaultErrorMode();
+			        throws Exception {
 				
-				arp.load(reader, uri);
-					
+				setErrorLevel(arp);				
+				arp.load(reader, uri);					
 				reader.close();
 			}
 		};
 		return invokation;
 	}
 
+	private void setErrorLevel(ARP arp) {
+		String errorLevel = ApplicationProperties.getApplicationOrSystemProperty(ProtegeOWLParser.JENA_ERROR_LEVEL_PROPERTY, "lax");
+
+		if (errorLevel.equalsIgnoreCase("default")) {
+			arp.getOptions().setDefaultErrorMode();
+		} else if (errorLevel.equalsIgnoreCase("lax")) {
+			arp.getOptions().setLaxErrorMode();
+		} else if (errorLevel.equalsIgnoreCase("strict")) {
+			arp.getOptions().setStrictErrorMode();
+		} else {
+			arp.getOptions().setLaxErrorMode();
+		}				
+	}
+	
 
 	public void loadTriples(final TripleStore tripleStore,
 	                        final String ontologyName,
