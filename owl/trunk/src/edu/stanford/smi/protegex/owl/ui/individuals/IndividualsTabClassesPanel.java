@@ -1,7 +1,15 @@
 package edu.stanford.smi.protegex.owl.ui.individuals;
 
+import java.awt.BorderLayout;
+import java.util.Collection;
+
+import javax.swing.Action;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPopupMenu;
+import javax.swing.JTree;
+
 import edu.stanford.smi.protege.model.Cls;
-import edu.stanford.smi.protege.model.ModelUtilities;
 import edu.stanford.smi.protege.resource.Colors;
 import edu.stanford.smi.protege.resource.Icons;
 import edu.stanford.smi.protege.resource.LocalizedText;
@@ -9,15 +17,26 @@ import edu.stanford.smi.protege.resource.ResourceKey;
 import edu.stanford.smi.protege.ui.FrameRenderer;
 import edu.stanford.smi.protege.ui.HeaderComponent;
 import edu.stanford.smi.protege.ui.ParentChildRoot;
-import edu.stanford.smi.protege.util.*;
+import edu.stanford.smi.protege.util.ComponentFactory;
+import edu.stanford.smi.protege.util.ComponentUtilities;
+import edu.stanford.smi.protege.util.LabeledComponent;
+import edu.stanford.smi.protege.util.PopupMenuMouseListener;
+import edu.stanford.smi.protege.util.SelectableContainer;
+import edu.stanford.smi.protege.util.ViewAction;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.model.RDFResource;
+import edu.stanford.smi.protegex.owl.model.RDFSClass;
 import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
+import edu.stanford.smi.protegex.owl.ui.actions.ResourceActionManager;
 import edu.stanford.smi.protegex.owl.ui.cls.ClassTree;
-import edu.stanford.smi.protegex.owl.ui.search.finder.*;
-
-import javax.swing.*;
-import java.awt.*;
-import java.util.Collection;
+import edu.stanford.smi.protegex.owl.ui.cls.ClassTreePanel;
+import edu.stanford.smi.protegex.owl.ui.search.finder.DefaultClassFind;
+import edu.stanford.smi.protegex.owl.ui.search.finder.DefaultIndividualFind;
+import edu.stanford.smi.protegex.owl.ui.search.finder.Find;
+import edu.stanford.smi.protegex.owl.ui.search.finder.FindAction;
+import edu.stanford.smi.protegex.owl.ui.search.finder.FindInDialogAction;
+import edu.stanford.smi.protegex.owl.ui.search.finder.ResourceFinder;
+import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
 
 /**
  * The class tree display on the individuals tab.
@@ -25,7 +44,7 @@ import java.util.Collection;
  * @author Holger Knublauch  <holger@knublauch.com>
  * @author Ray Fergerson <fergerson@smi.stanford.edu>
  */
-public class IndividualsTabClassesPanel extends SelectableContainer {
+public class IndividualsTabClassesPanel extends SelectableContainer implements ClassTreePanel {
 
     private ClassTree classTree;
 
@@ -60,6 +79,36 @@ public class IndividualsTabClassesPanel extends SelectableContainer {
         renderer.setDisplayDirectInstanceCount(true);
         classTree.setCellRenderer(renderer);
         classTree.setSelectionRow(0);
+        
+        
+        classTree.setCellRenderer(new InferredInstancesCountRenderer());
+        classTree.addMouseListener(new PopupMenuMouseListener(classTree) {
+            protected JPopupMenu getPopupMenu() {
+                Collection sel = classTree.getSelection();
+                if (sel.size() == 1) {
+                    JPopupMenu menu = new JPopupMenu();
+                    Cls cls = (Cls) sel.iterator().next();
+                    if (cls instanceof RDFResource) {
+                        ResourceActionManager.addResourceActions(menu, IndividualsTabClassesPanel.this, (RDFResource) cls);
+                        if (menu.getComponentCount() > 0) {
+                            return menu;
+                        }
+                    }
+                }
+                return null;
+            }
+
+
+            protected void setSelection(JComponent c, int x, int y) {
+                int row = classTree.getRowForLocation(x, y);
+                if (row >= 0) {
+                    classTree.setSelectionRow(row);
+                }
+            }
+        });
+        
+        
+        
         String classHiearchyLabel = LocalizedText.getText(ResourceKey.CLASS_BROWSER_HIERARCHY_LABEL);
         LabeledComponent c = new LabeledComponent(classHiearchyLabel, ComponentFactory.createScrollPane(classTree));
         c.setBorder(ComponentUtilities.getAlignBorder());
@@ -109,7 +158,35 @@ public class IndividualsTabClassesPanel extends SelectableContainer {
 
 
     public void setSelectedClass(RDFSNamedClass cls) {
-        Collection path = ModelUtilities.getPathToRoot(cls);
-        ComponentUtilities.setSelectedObjectPath(classTree, path);
+    	OWLUI.setSelectedNodeInTree(classTree, cls);
+    }
+
+
+	public void setSelectedClass(RDFSClass cls) {
+		OWLUI.setSelectedNodeInTree(classTree, cls);		
+	}
+
+
+	public JTree getTree() {		
+		return classTree;
+	}
+	
+    private class InferredInstancesCountRenderer extends FrameRenderer {
+
+        InferredInstancesCountRenderer() {
+            setDisplayDirectInstanceCount(true);
+        }
+
+
+        protected String getInstanceCountString(Cls cls) {
+            if (cls instanceof RDFSNamedClass) {
+                RDFSNamedClass c = (RDFSNamedClass) cls;
+                int inferredInstanceCount = c.getInferredInstanceCount();
+                if (inferredInstanceCount > 0) {
+                    return "  (" + cls.getDirectInstanceCount() + " / " + inferredInstanceCount + ")";
+                }
+            }
+            return super.getInstanceCountString(cls);
+        }
     }
 }
