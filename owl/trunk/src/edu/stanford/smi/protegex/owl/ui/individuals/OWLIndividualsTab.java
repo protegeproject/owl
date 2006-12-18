@@ -209,58 +209,13 @@ public class OWLIndividualsTab extends AbstractTabWidget implements NavigationHi
         setClsTree(classesPanel.getDropComponent());
         setLabel("Individuals");
         setIcon(OWLIcons.getImageIcon(OWLIcons.RDF_INDIVIDUALS));
-        final SelectableTree tree = (SelectableTree) classesPanel.getDropComponent();
-        tree.setCellRenderer(new InferredInstancesCountRenderer());
-        tree.addMouseListener(new PopupMenuMouseListener(tree) {
-            protected JPopupMenu getPopupMenu() {
-                Collection sel = tree.getSelection();
-                if (sel.size() == 1) {
-                    JPopupMenu menu = new JPopupMenu();
-                    Cls cls = (Cls) sel.iterator().next();
-                    if (cls instanceof RDFResource) {
-                        ResourceActionManager.addResourceActions(menu, tree, (RDFResource) cls);
-                        if (menu.getComponentCount() > 0) {
-                            return menu;
-                        }
-                    }
-                }
-                return null;
-            }
 
-
-            protected void setSelection(JComponent c, int x, int y) {
-                int row = tree.getRowForLocation(x, y);
-                if (row >= 0) {
-                    tree.setSelectionRow(row);
-                }
-            }
-        });
         adjustInstancesDisplayPanel();
     }
 
 
     public static boolean isSuitable(Project p, Collection errors) {
         return OWLClassesTab.isSuitable(p, errors);
-    }
-
-
-    private class InferredInstancesCountRenderer extends FrameRenderer {
-
-        InferredInstancesCountRenderer() {
-            setDisplayDirectInstanceCount(true);
-        }
-
-
-        protected String getInstanceCountString(Cls cls) {
-            if (cls instanceof RDFSNamedClass) {
-                RDFSNamedClass c = (RDFSNamedClass) cls;
-                int inferredInstanceCount = c.getInferredInstanceCount();
-                if (inferredInstanceCount > 0) {
-                    return "  (" + cls.getDirectInstanceCount() + " / " + inferredInstanceCount + ")";
-                }
-            }
-            return super.getInstanceCountString(cls);
-        }
     }
 
 
