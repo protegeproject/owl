@@ -232,28 +232,6 @@ public class OWLFrameStore extends FrameStoreAdapter {
     }
 
 
-    private List convertRDFSLiteralsToInternalFormat(Collection values) {
-        final List result = new LinkedList();
-        for (Iterator it = values.iterator(); it.hasNext();) {
-            final Object o = it.next();
-            if (o instanceof RDFSLiteral) {
-                final DefaultRDFSLiteral literal = (DefaultRDFSLiteral) o;
-                final Object optimized = literal.getPlainValue();
-                if (optimized != null) {
-                    result.add(optimized);
-                }
-                else {
-                    result.add(literal.getRawValue());
-                }
-            }
-            else {
-                result.add(o);
-            }
-        }
-        return result;
-    }
-
-
     public Cls createCls(FrameID id, String name, Collection directTypes, Collection directSuperclasses, boolean loadDefaults) {
         Cls cls = super.createCls(id, name, directTypes, directSuperclasses, loadDefaults);
         if (cls instanceof OWLNamedClass && cls.isEditable()) {
@@ -904,15 +882,7 @@ public class OWLFrameStore extends FrameStoreAdapter {
     public void setDirectOwnSlotValues(Frame frame, Slot slot, Collection values) {
 
         final int valueCount = values.size();
-        if (valueCount > 0) {
-            for (Iterator it = values.iterator(); it.hasNext();) {
-                Object o = it.next();
-                if (o instanceof RDFSLiteral) {
-                    values = convertRDFSLiteralsToInternalFormat(values);
-                    break;
-                }
-            }
-        }
+        
         if (!allowDuplicateOwnSlotValues &&
             valueCount > 1 &&
             valueCount != new HashSet(values).size()) {
