@@ -34,6 +34,7 @@ public class BridgePluginManager
       Project project = (Project)event.getSource();
       project.removeProjectListener(projectListener);
       visiblePluginName = "";
+      selectedRuleName = "";
     } // projectClosed
   }; 
   
@@ -54,6 +55,7 @@ public class BridgePluginManager
   } // static
 
   public static String getSelectedRuleName() { return selectedRuleName; }
+  public static boolean hasSelectedRule() { return !selectedRuleName.equals(""); }
   public static void setSelectedRuleName(String ruleName) { selectedRuleName = ruleName; }
 
   // Called by each plugin as it is loaded to inform the adapter of its presence.

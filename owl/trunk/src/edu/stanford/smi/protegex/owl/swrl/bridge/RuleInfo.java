@@ -10,28 +10,28 @@ import java.util.*;
 public class RuleInfo extends Info
 {
   private String ruleName;
-  private List<AtomInfo> body, head; // Lists of AtomInfo objects.
+  private List<AtomInfo> bodyAtoms, headAtoms;
   private Set<String> referencedObjectVariableNames, referencedDatatypeVariableNames;
   
   public RuleInfo(String ruleName, List<AtomInfo> bodyAtoms, List<AtomInfo> headAtoms) throws SWRLRuleEngineBridgeException
   {
     this.ruleName = ruleName;
-    body = bodyAtoms;
-    head = headAtoms;
+    this.bodyAtoms = bodyAtoms;
+    this.headAtoms = headAtoms;
     buildReferencedVariableNames();
-    processBindingBuiltInAtoms();
+    processBodyAtoms();
   } // RuleInfo
   
   public String getRuleName() { return ruleName; }
-  public List<AtomInfo> getHeadAtoms() { return head; }
-  public List<AtomInfo> getBodyAtoms() { return body; }
+  public List<AtomInfo> getHeadAtoms() { return headAtoms; }
+  public List<AtomInfo> getBodyAtoms() { return bodyAtoms; }
   public boolean isObjectVariable(String variableName) { return referencedObjectVariableNames.contains(variableName); }
   public boolean isDatatypeVariable(String variableName) { return referencedDatatypeVariableNames.contains(variableName); }
 
   public List<BuiltInAtomInfo> getBuiltInAtomsFromHead(Set<String> builtInNames) throws SWRLRuleEngineBridgeException 
-    { return getBuiltInAtoms(head, builtInNames); }
+    { return getBuiltInAtoms(headAtoms, builtInNames); }
   public List<BuiltInAtomInfo> getBuiltInAtomsFromBody(Set<String> builtInNames) throws SWRLRuleEngineBridgeException 
-    { return getBuiltInAtoms(body, builtInNames); }
+    { return getBuiltInAtoms(bodyAtoms, builtInNames); }
 
   // Find all built-in atoms with unbound arguments and tell them which of their arguments are unbound.
   //
@@ -59,7 +59,7 @@ public class RuleInfo extends Info
   //
   // In these cases, the unbound ?dollars variable is in the second and third argument positions, respectively.
   //
-  private void processBindingBuiltInAtoms() throws SWRLRuleEngineBridgeException
+  private void processBodyAtoms() throws SWRLRuleEngineBridgeException
   {
     List<BuiltInAtomInfo> bodyBuiltInAtoms = new ArrayList<BuiltInAtomInfo>();
     List<AtomInfo> bodyNonBuiltInAtoms = new ArrayList<AtomInfo>();
@@ -94,10 +94,28 @@ public class RuleInfo extends Info
       } // for
     } // for
 
-    // If we have built-in atoms, construct a new head with built-in atoms moved them to the end of the list. Some rule engines (e.g., JESS)
+    // If we have built-in atoms, construct a new head with built-in atoms moved to the end of the list. Some rule engines (e.g., Jess)
     // expect variables used as parameters to functions to have been defined before their use in a left to right fashion.
-    if (!bodyBuiltInAtoms.isEmpty()) body = bodyNonBuiltInAtoms; body.addAll(bodyBuiltInAtoms);
-  } // processBindingBuiltInAtoms
+    bodyAtoms = processBodyNonBuiltInAtoms(bodyNonBuiltInAtoms);
+    bodyAtoms.addAll(bodyBuiltInAtoms);
+  } // processBodyAtoms
+
+  private List<AtomInfo> processBodyNonBuiltInAtoms(List<AtomInfo> bodyNonBuiltInAtoms)
+  {
+    List<AtomInfo> bodyClassAtoms = new ArrayList(); 
+    List<AtomInfo> bodyNonClassNonBuiltInAtoms = new ArrayList();
+    List<AtomInfo> result = new ArrayList();
+
+    for (AtomInfo atomInfo : bodyNonBuiltInAtoms) {
+      if (atomInfo instanceof ClassAtomInfo) bodyClassAtoms.add(atomInfo);
+      else bodyNonClassNonBuiltInAtoms.add(atomInfo);
+    } // for
+    
+    result.addAll(bodyNonClassNonBuiltInAtoms);
+    result.addAll(bodyClassAtoms);
+
+    return result;
+  } // processBodyNonBuiltInAtoms
 
   private List<BuiltInAtomInfo> getBuiltInAtoms(List<AtomInfo> atoms, Set<String> builtInNames) throws SWRLRuleEngineBridgeException
   {
