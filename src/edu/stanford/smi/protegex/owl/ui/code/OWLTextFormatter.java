@@ -29,23 +29,31 @@ public class OWLTextFormatter {
     private static OWLClassDisplay display = OWLClassDisplayFactory.getDefaultDisplay();
 
 
-    private final static String[][] charMap = {
-            {"<", display.getOWLMaxCardinalitySymbol()},
-            {"=", display.getOWLCardinalitySymbol()},
-            {">", display.getOWLMinCardinalitySymbol()},
-            {"*", display.getOWLAllValuesFromSymbol()},
-            {"?", display.getOWLSomeValuesFromSymbol()},
-            {"$", display.getOWLHasValueSymbol()},
-            {"!", display.getOWLComplementOfSymbol()},
-            {"&", display.getOWLIntersectionOfSymbol()},
-            {"|", display.getOWLUnionOfSymbol()}
-    };
+    private static String[][] charMap;
 
-    private final static Hashtable symbolMap = new Hashtable();
+    private static Hashtable<String, String> symbolMap = new Hashtable<String, String>();
 
 
     // Fill the default abbreviations
     static {
+        updateDisplay(OWLClassDisplayFactory.getDefaultDisplay());
+    }
+
+    public static void updateDisplay(OWLClassDisplay display) {
+        String [][] newCharMap = {
+                {"<", display.getOWLMaxCardinalitySymbol()},
+                {"=", display.getOWLCardinalitySymbol()},
+                {">", display.getOWLMinCardinalitySymbol()},
+                {"*", display.getOWLAllValuesFromSymbol()},
+                {"?", display.getOWLSomeValuesFromSymbol()},
+                {"$", display.getOWLHasValueSymbol()},
+                {"!", display.getOWLComplementOfSymbol()},
+                {"&", display.getOWLIntersectionOfSymbol()},
+                {"|", display.getOWLUnionOfSymbol()}
+        };
+        charMap = newCharMap;
+        
+        symbolMap.clear();
         symbolMap.put("all", "" + display.getOWLAllValuesFromSymbol());
         symbolMap.put("allValuesFrom", "" + display.getOWLAllValuesFromSymbol());
         symbolMap.put("forall", "" + display.getOWLAllValuesFromSymbol());
@@ -60,7 +68,6 @@ public class OWLTextFormatter {
         symbolMap.put("or", "" + display.getOWLUnionOfSymbol());
         symbolMap.put("not", "" + display.getOWLComplementOfSymbol());
     }
-
 
     public static String getDisplayString(String str) {
         int originalLength = str.length();
