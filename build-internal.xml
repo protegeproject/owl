@@ -152,6 +152,11 @@
 			<zipfileset dir = "${etc.dir}" prefix = "Protege-OWL ${version}/etc"/>
 			<zipfileset dir = "${lib.dir}" includes = "*.jar" prefix = "Protege-OWL ${version}/lib"/>
 		</zip>
+		<zip zipfile = "${dist.dir}/protege-owl-bin-${version}.zip" update = "no">
+			<zipfileset dir = "${dist.dir}" includes = "protege-owl.jar"/>
+			<zipfileset dir = "${lib.dir}"/>
+			<zipfileset dir = "${etc.dir}" excludes = "doap.rdf"/>
+		</zip>
 	</target>
 
 	<!-- =================================================================== -->
