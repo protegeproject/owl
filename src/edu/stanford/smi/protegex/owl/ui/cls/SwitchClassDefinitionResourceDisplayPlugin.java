@@ -42,9 +42,10 @@ public class SwitchClassDefinitionResourceDisplayPlugin implements ResourceDispl
 
     private SwitchableClassDefinitionWidget getSwitchableClassDefinitionWidget(JPanel hostPanel) {
         Component c = hostPanel.getParent();
-        while (!(c instanceof ResourceDisplay)) {
+        while (c != null && !(c instanceof ResourceDisplay)) {
             c = c.getParent();
         }
+        if (c == null) return null;
         return searchForWidget(c);
     }
 
