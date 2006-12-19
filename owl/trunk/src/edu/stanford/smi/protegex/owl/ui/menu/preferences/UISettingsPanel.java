@@ -35,6 +35,8 @@ public class UISettingsPanel extends JComponent {
     private boolean initialDDValue;
 
     private OWLModel owlModel;
+    
+    private boolean owlClassDisplayModified;
 
 
     public UISettingsPanel(OWLModel aOWLModel) {
@@ -71,6 +73,7 @@ public class UISettingsPanel extends JComponent {
                     OWLClassDisplayFactory.setDefaultDisplay(display);
                     owlModel.setOWLClassDisplay(display);
                     OWLTextFormatter.updateDisplay(display);
+                    owlClassDisplayModified = true;
                 }
             });
         }
@@ -133,6 +136,8 @@ public class UISettingsPanel extends JComponent {
         setLayout(new BorderLayout(8, 0));
         add(BorderLayout.CENTER, leftPanel);
         add(BorderLayout.EAST, rightPanel);
+        
+        owlClassDisplayModified = false;
     }
 
 
@@ -144,7 +149,8 @@ public class UISettingsPanel extends JComponent {
 
     public boolean getRequiresReloadUI() {
         return initialDDValue != dragAndDropCheckBox.isSelected() ||
-                !initialStyle.equals(iconsComboBox.getSelectedItem());
+                !initialStyle.equals(iconsComboBox.getSelectedItem()) ||
+                owlClassDisplayModified;
     }
 
 
