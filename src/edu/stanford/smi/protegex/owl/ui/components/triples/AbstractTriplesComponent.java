@@ -216,10 +216,11 @@ public abstract class AbstractTriplesComponent extends AbstractPropertyValuesCom
             ProtegeUI.show((RDFResource) value);
         }
         else {
-            RDFProperty property = tableModel.getPredicate(row);
+        	RDFProperty property = tableModel.getPredicate(row);                
+            
             RDFResource subject = tableModel.getSubject();
             PropertyValueEditor editor = PropertyValueEditorManager.getEditor(subject, property, value);
-            if(editor != null) {
+            if(editor != null && !property.isReadOnly()) {
                 Object newValue = editor.editValue(this, subject, property, value);
                 if(newValue != null) {
                     tableModel.setValue(newValue, row);
