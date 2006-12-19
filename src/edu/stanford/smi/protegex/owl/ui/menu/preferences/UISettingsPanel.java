@@ -4,6 +4,7 @@ import edu.stanford.smi.protege.util.ApplicationProperties;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.classdisplay.OWLClassDisplay;
 import edu.stanford.smi.protegex.owl.model.classdisplay.OWLClassDisplayFactory;
+import edu.stanford.smi.protegex.owl.ui.code.OWLTextFormatter;
 import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
 import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
 
@@ -69,6 +70,7 @@ public class UISettingsPanel extends JComponent {
                     OWLClassDisplay display = OWLClassDisplayFactory.getDisplay(c);
                     OWLClassDisplayFactory.setDefaultDisplay(display);
                     owlModel.setOWLClassDisplay(display);
+                    OWLTextFormatter.updateDisplay(display);
                 }
             });
         }
