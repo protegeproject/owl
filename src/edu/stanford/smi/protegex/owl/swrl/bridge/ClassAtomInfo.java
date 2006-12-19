@@ -28,7 +28,8 @@ public class ClassAtomInfo extends AtomInfo
       IndividualInfo argument = new IndividualInfo((OWLIndividual)atom.getArgument1());
       addReferencedIndividualName(argument.getIndividualName());
       argument1 = argument;
-    } else throw new SWRLRuleEngineBridgeException("Unexpected argument to class atom '" + atom.getBrowserText() + "'. Expecting variable or individual, got instance of" + atom.getArgument1().getClass() + ".");
+    } else throw new SWRLRuleEngineBridgeException("Unexpected argument to class atom '" + atom.getBrowserText() + "'. Expecting " +
+                                                   "variable or individual, got instance of" + atom.getArgument1().getClass() + ".");
   } // ClassAtomInfo
   
   public String getClassName() { return className; }

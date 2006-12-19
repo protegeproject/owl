@@ -590,12 +590,12 @@ public abstract class SWRLRuleEngineBridge
 
   private void exportOWLRestrictions() throws SWRLRuleEngineBridgeException
   {
-      for (RestrictionInfo restrictionInfo : importedRestrictions) defineRestriction(restrictionInfo);
+    for (RestrictionInfo restrictionInfo : importedRestrictions) defineRestriction(restrictionInfo);
   } // exportOWLRestrictions
 
   private void writeAssertedProperties2OWL() throws SWRLRuleEngineBridgeException
   {
-      for (PropertyInfo propertyInfo : assertedProperties) propertyInfo.write2OWL(owlModel);
+    for (PropertyInfo propertyInfo : assertedProperties) propertyInfo.write2OWL(owlModel);
   } // writeAssertedProperties2OWL
 
   private void writeAssertedIndividuals2OWL() throws SWRLRuleEngineBridgeException
