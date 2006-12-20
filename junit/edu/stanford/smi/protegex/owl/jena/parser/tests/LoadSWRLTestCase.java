@@ -16,7 +16,7 @@ import java.util.List;
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
  */
-public class LoadSWRLFailedTestCase extends AbstractJenaTestCase {
+public class LoadSWRLTestCase extends AbstractJenaTestCase {
 
 
     public void testAddSWRLImport() throws Exception {
