@@ -15,6 +15,10 @@ public interface SWRLNames extends OWLNames {
   
   public final static String SWRLB_IMPORT = "http://www.w3.org/2003/11/swrlb";
   
+  public final static String SWRL_ALT_IMPORT = "http://www.daml.org/rules/proposal/swrl.owl";
+  
+  public final static String SWRLB_ALT_IMPORT = "http://www.daml.org/rules/proposal/swrlb.owl";
+  
   public final static String SWRL_NAMESPACE = "http://www.w3.org/2003/11/swrl#";
   
   public final static String SWRLB_NAMESPACE = "http://www.w3.org/2003/11/swrlb#";
