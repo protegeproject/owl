@@ -417,17 +417,18 @@ public abstract class SWRLRuleEngineBridge
 
   private void importOWLProperty(String propertyName) throws SWRLRuleEngineBridgeException
   {
+    OWLProperty property = owlModel.getOWLProperty(propertyName);
+    if (property == null) throw new InvalidPropertyNameException(propertyName);
+    
     if (!importedPropertyNames.contains(propertyName)) {
       List<PropertyInfo> propertyInfoList = PropertyInfo.buildPropertyInfoList(owlModel, propertyName);
       importedProperties.addAll(propertyInfoList);
       importedPropertyNames.add(propertyName);
-      
-      if (!propertyInfoList.isEmpty()) {
-        PropertyInfo propertyInfo = propertyInfoList.get(0); // All info objects will hold the same domain and range classes.
-        
-        importOWLClasses(propertyInfo.getDomainClassNames());
-        importOWLClasses(propertyInfo.getRangeClassNames());
-      } // if
+
+      importOWLClasses(Info.rdfResources2Names(property.getUnionDomain()));
+      importOWLClasses(Info.rdfResources2Names(property.getUnionRangeClasses()));
+      importOWLProperties(Info.rdfResources2Names(property.getSuperproperties(true)));
+      importOWLProperties(Info.rdfResources2Names(property.getSubproperties(true)));
     } // if
   } // importProperty
 

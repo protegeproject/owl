@@ -16,11 +16,12 @@ public class PropertyInfo extends Info
   // There is an equals method defined on this class.
   private String propertyName;
   private Argument subject, predicate;
-  private Set<String> domainClassNames, rangeClassNames;
+  private Set<String> domainClassNames, rangeClassNames, superPropertyNames, subPropertyNames;
   
   // Constructor used when creating a PropertyInfo object from an OWL property.
   public PropertyInfo(String propertyName, Argument subject, Argument predicate, 
-		      Set<String> domainClassNames, Set<String> rangeClassNames) 
+		      Set<String> domainClassNames, Set<String> rangeClassNames,
+                      Set<String> superPropertyNames, Set<String> subPropertyNames) 
     throws SWRLRuleEngineBridgeException
   {
     this.propertyName = propertyName;    
@@ -28,15 +29,20 @@ public class PropertyInfo extends Info
     this.predicate = predicate;
     this.domainClassNames = domainClassNames;
     this.rangeClassNames = rangeClassNames;
+    this.superPropertyNames = superPropertyNames;
+    this.subPropertyNames = subPropertyNames;
   } // PropertyInfo
   
   // Constructor used when creating a PropertyInfo object from an assertion made by a target rule engine. 
   public PropertyInfo(String propertyName, Argument subject, Argument predicate) throws SWRLRuleEngineBridgeException
   {
     this.propertyName = propertyName;    
-
     this.subject = subject;
     this.predicate = predicate;
+    this.domainClassNames = new HashSet<String>();
+    this.rangeClassNames = new HashSet<String>();
+    this.superPropertyNames = new HashSet<String>();
+    this.subPropertyNames = new HashSet<String>();
   } // PropertyInfo
   
   public String getPropertyName() { return propertyName; }
@@ -44,6 +50,8 @@ public class PropertyInfo extends Info
   public Argument getPredicate() { return predicate; }
   public Set<String> getDomainClassNames() { return domainClassNames; }
   public Set<String> getRangeClassNames() { return rangeClassNames; }
+  public Set<String> getSuperPropertyNames() { return superPropertyNames; }
+  public Set<String> getSubPropertyNames() { return subPropertyNames; }
   
   public void write2OWL(OWLModel owlModel) throws SWRLRuleEngineBridgeException
   {
@@ -79,7 +87,7 @@ public class PropertyInfo extends Info
   public String toString()
   {
     return "Property(name: " + getPropertyName() + ", subject: " + subject + ", predicate: " + predicate + ", domainClassNames: " + 
-      domainClassNames + ", rangeClassNames: " + rangeClassNames + ")";
+      domainClassNames + ", rangeClassNames: " + rangeClassNames + ", superPropertyNames: " + superPropertyNames + ")";
   } // toString
 
   public boolean equals(Object obj)
@@ -106,21 +114,23 @@ public class PropertyInfo extends Info
   } // hashCode
 
   // Utility method to create a collection of PropertyInfo objects for every subject/predicate combination for a particular OWL property.
-  // TODO: This is incredibly inefficient. Need to add a method to the OWLModel to get individuals with a particular property.
+  // TODO: This is incredibly inefficient. Need to use method in the OWLModel to get individuals with a particular property.
 
   public static List<PropertyInfo> buildPropertyInfoList(OWLModel owlModel, String propertyName) throws SWRLRuleEngineBridgeException
   {
-    RDFProperty property;
+    OWLProperty property;
     PropertyInfo propertyInfo;
     List<PropertyInfo> propertyInfoList = new ArrayList<PropertyInfo>();
-    Set<String> domainClassNames, rangeClassNames;
+    Set<String> domainClassNames, rangeClassNames, superPropertyNames, subPropertyNames;
     Argument subject, predicate;
 
-    property = owlModel.getRDFProperty(propertyName);
+    property = owlModel.getOWLProperty(propertyName);
     if (property == null) throw new InvalidPropertyNameException(propertyName);
     
     domainClassNames = rdfResources2Names(property.getUnionDomain());
     rangeClassNames = rdfResources2Names(property.getUnionRangeClasses());
+    superPropertyNames = rdfResources2Names(property.getSuperproperties(true));
+    subPropertyNames = rdfResources2Names(property.getSubproperties(true));
 
     Iterator domainsIterator = property.getUnionDomain().iterator();
     while (domainsIterator.hasNext()) {
@@ -140,7 +150,7 @@ public class PropertyInfo extends Info
                 OWLIndividual rangeIndividual = (OWLIndividual)individualValuesIterator.next();
                 subject = new IndividualInfo(domainIndividual.getName());
                 predicate = new IndividualInfo(rangeIndividual.getName());
-                propertyInfo = new PropertyInfo(propertyName, subject, predicate, domainClassNames, rangeClassNames);
+                propertyInfo = new PropertyInfo(propertyName, subject, predicate, domainClassNames, rangeClassNames, superPropertyNames, subPropertyNames);
                 propertyInfoList.add(propertyInfo);
               } // while
             } else { // DatatypeProperty
@@ -149,7 +159,7 @@ public class PropertyInfo extends Info
                 RDFSLiteral literal = (RDFSLiteral)literalsIterator.next();
                 subject = new IndividualInfo(domainIndividual.getName());
                 predicate = new LiteralInfo(owlModel, literal);
-                propertyInfo = new PropertyInfo(propertyName, subject, predicate, domainClassNames, rangeClassNames);
+                propertyInfo = new PropertyInfo(propertyName, subject, predicate, domainClassNames, rangeClassNames, superPropertyNames, subPropertyNames);
                 propertyInfoList.add(propertyInfo);
               } // while
             } // if
