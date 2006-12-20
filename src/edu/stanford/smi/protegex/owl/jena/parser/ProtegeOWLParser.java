@@ -347,9 +347,9 @@ public class ProtegeOWLParser {
 				// TT:ensure that the triple store of the default ontology has the right name set
 				// TODO: This check should not be here! The default ontology should never be null!
 				// This is caused by a problem in the namespace code
-				if (owlModel.getDefaultOWLOntology() != null)
+				if (owlModel.getRDFResource(":") != null && owlModel.getRDFResource(":") instanceof OWLOntology) {
 					tripleStoreModel.getTopTripleStore().setName(owlModel.getDefaultOWLOntology().getURI());
-				
+				}
 				endTime = System.currentTimeMillis();
 				
 				activateSWRLFactoryIfNecessary(imports);
