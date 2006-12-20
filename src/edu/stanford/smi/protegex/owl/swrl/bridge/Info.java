@@ -12,8 +12,8 @@ import java.util.*;
 
 public abstract class Info 
 {
-  // Convenience method.
-  protected static Set<String> rdfResources2Names(Collection<RDFResource> resources) 
+  // Convenience method. TODO: Should be somewhere else.
+  public static Set<String> rdfResources2Names(Collection<RDFResource> resources) 
   {
     Set<String> result = new HashSet<String>();
     
