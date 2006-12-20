@@ -367,7 +367,7 @@ public class ProtegeOWLParser {
 
 
 	private void activateSWRLFactoryIfNecessary(Set imports) {
-		if(imports.contains(SWRLNames.SWRL_IMPORT)) {
+		if(imports.contains(SWRLNames.SWRL_IMPORT) || imports.contains(SWRLNames.SWRL_ALT_IMPORT)) {
 			SWRLJavaFactory factory = new SWRLJavaFactory(owlModel);
 			owlModel.setOWLJavaFactory(factory);
 			if(owlModel instanceof JenaOWLModel) {
