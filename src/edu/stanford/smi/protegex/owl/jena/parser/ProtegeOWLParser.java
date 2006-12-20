@@ -344,8 +344,11 @@ public class ProtegeOWLParser {
 				tripleStoreModel.endTripleStoreChanges();
 				TripleStoreUtil.updateFrameInclusion(MergingNarrowFrameStore.get(owlModel),
 				                                     ((KnowledgeBase) owlModel).getSlot(Model.Slot.NAME));
-				// TT:ensure that the triple store of the default ontology has the right name set				
-				tripleStoreModel.getTopTripleStore().setName(owlModel.getDefaultOWLOntology().getURI());
+				// TT:ensure that the triple store of the default ontology has the right name set
+				// TODO: This check should not be here! The default ontology should never be null!
+				// This is caused by a problem in the namespace code
+				if (owlModel.getDefaultOWLOntology() != null)
+					tripleStoreModel.getTopTripleStore().setName(owlModel.getDefaultOWLOntology().getURI());
 				
 				endTime = System.currentTimeMillis();
 				
