@@ -15,6 +15,8 @@ public abstract class ComplexXSDType implements Comparable
 
   public String getContent() { return content; }
 
+  public String toString() { return content; }
+
   public int compareTo(Object o)
   {
     return content.compareTo(((ComplexXSDType)o).getContent()); // Will throw a ClassCastException if o's class does not implement Comparable

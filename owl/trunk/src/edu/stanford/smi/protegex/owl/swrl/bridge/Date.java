@@ -11,4 +11,5 @@ public class Date extends ComplexXSDType
     if (getContent() == null) throw new DatatypeConversionException("Null content for Time literal.");
     // TODO: validate
   } // validate
+
 } // Date

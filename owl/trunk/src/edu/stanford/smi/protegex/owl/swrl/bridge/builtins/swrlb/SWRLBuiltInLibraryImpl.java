@@ -445,7 +445,7 @@ public class SWRLBuiltInLibraryImpl implements SWRLBuiltInLibrary
     if (SWRLBuiltInUtil.hasUnboundArguments(builtInName, arguments)) 
       throw new InvalidBuiltInArgumentException(builtInName, 0, "Comparison built-ins do not support binding. Unbound variable used");
 
-    if (SWRLBuiltInUtil.isArgumentABoolean(0, arguments)) {
+    if (SWRLBuiltInUtil.isArgumentABoolean(builtInName, 0, arguments)) {
       boolean b1 = SWRLBuiltInUtil.getArgumentAsABoolean(builtInName, 0, arguments);
       boolean b2 = SWRLBuiltInUtil.getArgumentAsABoolean(builtInName, 1, arguments); // Performs type checking.
       
@@ -461,27 +461,27 @@ public class SWRLBuiltInLibraryImpl implements SWRLBuiltInLibrary
     SWRLBuiltInUtil.checkForUnboundArguments(builtInName, arguments);
     SWRLBuiltInUtil.checkThatAllArgumentsAreOfAnOrderedType(builtInName, arguments);
 
-    if (SWRLBuiltInUtil.isArgumentAString(0, arguments)) {   
+    if (SWRLBuiltInUtil.isArgumentAString(builtInName, 0, arguments)) {   
       String s1 = SWRLBuiltInUtil.getArgumentAsAString(builtInName, 0, arguments);
       String s2 = SWRLBuiltInUtil.getArgumentAsAString(builtInName, 1, arguments); // Performs type checking.
 
       return s1.compareTo(s2);
-    } else if (SWRLBuiltInUtil.isArgumentAnInteger(0, arguments)) {
+    } else if (SWRLBuiltInUtil.isArgumentAnInteger(builtInName, 0, arguments)) {
       int i1 = SWRLBuiltInUtil.getArgumentAsAnInteger(builtInName, 0, arguments);
       int i2 = SWRLBuiltInUtil.getArgumentAsAnInteger(builtInName, 1, arguments); // Performs type checking.
 
       if (i1 < i2) result = -1; else if (i1 > i2) result = 1; else result = 0;
-    } else if (SWRLBuiltInUtil.isArgumentALong(0, arguments)) {
+    } else if (SWRLBuiltInUtil.isArgumentALong(builtInName, 0, arguments)) {
       long l1 = SWRLBuiltInUtil.getArgumentAsALong(builtInName, 0, arguments);
       long l2 = SWRLBuiltInUtil.getArgumentAsALong(builtInName, 1, arguments); // Performs type checking.
 
       if (l1 < l2) result = -1; else if (l1 > l2) result = 1; else result = 0;
-    } else if (SWRLBuiltInUtil.isArgumentAFloat(0, arguments)) {
+    } else if (SWRLBuiltInUtil.isArgumentAFloat(builtInName, 0, arguments)) {
       float f1 = SWRLBuiltInUtil.getArgumentAsAFloat(builtInName, 0, arguments);
       float f2 = SWRLBuiltInUtil.getArgumentAsAFloat(builtInName, 1, arguments); // Performs type checking.
 
       if (f1 < f2) result = -1; else if (f1 > f2) result = 1; else result = 0;
-    } else if (SWRLBuiltInUtil.isArgumentADouble(0, arguments)) {
+    } else if (SWRLBuiltInUtil.isArgumentADouble(builtInName, 0, arguments)) {
       double d1 = SWRLBuiltInUtil.getArgumentAsADouble(builtInName, 0, arguments);
       double d2 = SWRLBuiltInUtil.getArgumentAsADouble(builtInName, 1, arguments); // Performs type checking.
 

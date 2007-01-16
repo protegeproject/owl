@@ -1,3 +1,4 @@
+
 package edu.stanford.smi.protegex.owl.swrl.ui.code;
 
 import edu.stanford.smi.protegex.owl.model.OWLModel;
@@ -29,7 +30,7 @@ public class SWRLResourceNameMatcher implements ResourceNameMatcher {
     public List getMatchingResources(String prefix, String leftString, OWLModel owlModel) {
         List resources = new ArrayList();
         if (leftString.endsWith("?")) {
-            for (Iterator it = owlModel.getRDFSNamedClass(SWRLNames.Cls.VARIABLE).getInstances(true).iterator(); it.hasNext();) {
+            for (Iterator it = owlModel.getOWLNamedClass(SWRLNames.Cls.VARIABLE).getInstances(true).iterator(); it.hasNext();) {
                 SWRLVariable var = (SWRLVariable) it.next();
                 if (var.getName().startsWith(prefix)) {
                     resources.add(var);
@@ -37,9 +38,9 @@ public class SWRLResourceNameMatcher implements ResourceNameMatcher {
             }
         }
         else if (prefix.length() > 0) {
-            OWLResourceNameMatcher.getMatchingRDFSNamedClasses(prefix, resources, owlModel);
-            OWLResourceNameMatcher.getMatchingRDFIndividuals(prefix, resources, owlModel);
-            OWLResourceNameMatcher.getMatchingRDFProperties(prefix, resources, owlModel);
+            OWLResourceNameMatcher.getMatchingOWLNamedClasses(prefix, resources, owlModel);
+            OWLResourceNameMatcher.getMatchingOWLIndividuals(prefix, resources, owlModel);
+            OWLResourceNameMatcher.getMatchingOWLProperties(prefix, resources, owlModel);
         }
         return resources;
     }
