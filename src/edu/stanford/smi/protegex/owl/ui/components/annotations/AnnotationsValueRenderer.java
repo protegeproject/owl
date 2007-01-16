@@ -1,5 +1,6 @@
 package edu.stanford.smi.protegex.owl.ui.components.annotations;
 
+import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
 import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
 
@@ -68,24 +69,39 @@ public class AnnotationsValueRenderer implements TableCellRenderer {
                 table.setRowHeight(row, rowHeight);
             }
         }
+
+        Object prop = table.getValueAt(row,	AnnotationsTableModel.COL_PROPERTY);
+        boolean enabled = true;
+
+        if (prop != null && prop instanceof RDFProperty) {
+        	enabled = !((RDFProperty) prop).isReadOnly();
+        }
+
+        
         if (col == AnnotationsTableModel.COL_PROPERTY) {
+        	label.setEnabled(enabled);
             return getResourceComponent((RDFResource) o, selected, hasFocus);
         }
-        else if (col == AnnotationsTableModel.COL_VALUE) {
-            if (o instanceof RDFResource) {
-                return getResourceComponent((RDFResource) o, selected, hasFocus);
-            }
-            else {
-                textArea.setText(o != null ? o.toString() : "");
-                plainTextPropertyValHolder.setColors(selected, hasFocus);
-                return plainTextPropertyValHolder;
-            }
+        
+
+        if (col == AnnotationsTableModel.COL_VALUE) {
+
+        	if (o instanceof RDFResource) {
+        		label.setEnabled(enabled);
+        		return getResourceComponent((RDFResource) o, selected, hasFocus);
+        	} 
+        	
+        	textArea.setEnabled(enabled);
+        	textArea.setText(o != null ? o.toString() : "");
+        	plainTextPropertyValHolder.setColors(selected, hasFocus);
+        	return plainTextPropertyValHolder;
+        	
         }
-        else {
-            langLabel.setText(o != null ? o.toString() : "");
-            langHolder.setColors(selected, hasFocus);
-            return langHolder;
-        }
+        
+        langHolder.setEnabled(enabled);
+        langLabel.setText(o != null ? o.toString() : "");
+        langHolder.setColors(selected, hasFocus);
+        return langHolder;
     }
 
 
