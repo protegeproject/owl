@@ -38,7 +38,9 @@ public class TooltippedSelectableTree extends SelectableTree {
                 RDFResource res = null;
                 if (last instanceof LazyTreeNode) {
                     LazyTreeNode node = (LazyTreeNode) path.getLastPathComponent();
-                    res = (RDFResource) node.getUserObject();
+                    if (res instanceof RDFResource) {
+                    	res = (RDFResource) node.getUserObject();
+                    }
                 }
                 if (res != null) {
                     ToolTipManager.sharedInstance().setDismissDelay(OWLTable.INFINITE_TIME);
