@@ -44,6 +44,18 @@ public class OWLResourceNameMatcher implements ResourceNameMatcher {
         return frames;
     }
 
+  public static void getMatchingOWLNamedClasses(String prefix, List result, OWLModel owlModel)
+  {
+    List localResult = new ArrayList(); 
+    Iterator iterator;
+
+    getMatchingRDFSNamedClasses(prefix, localResult, owlModel);
+    iterator = localResult.iterator();
+    while (iterator.hasNext()) {
+      RDFSNamedClass aClass = (RDFSNamedClass)iterator.next();
+      if (aClass instanceof OWLNamedClass) result.add(aClass);
+    } // while
+  } // getMatchingOWLNamedClasses
 
     public static void getMatchingRDFSNamedClasses(String prefix, List result, OWLModel owlModel) {
         if (prefix.length() == 0) {
@@ -76,6 +88,19 @@ public class OWLResourceNameMatcher implements ResourceNameMatcher {
     }
 
 
+  public static void getMatchingOWLProperties(String prefix, List result, OWLModel owlModel)
+  {
+    List localResult = new ArrayList(); 
+    Iterator iterator;
+
+    getMatchingRDFProperties(prefix, localResult, owlModel);
+    iterator = localResult.iterator();
+    while (iterator.hasNext()) {
+      RDFProperty aProperty = (RDFProperty)iterator.next();
+      if (aProperty instanceof OWLProperty) result.add(aProperty);
+    } // while
+  } // getMatchingOWLProperties
+
     public static void getMatchingRDFProperties(String prefix, List result, OWLModel owlModel) {
         Collection matches = owlModel.getResourceNameMatches(prefix + "*", SCALABLE_FRAME_COUNT);
         for (Iterator it = matches.iterator(); it.hasNext();) {
@@ -85,6 +110,20 @@ public class OWLResourceNameMatcher implements ResourceNameMatcher {
             }
         }
     }
+
+
+  public static void getMatchingOWLIndividuals(String prefix, List result, OWLModel owlModel)
+  {
+    List localResult = new ArrayList(); 
+    Iterator iterator;
+
+    getMatchingRDFIndividuals(prefix, localResult, owlModel);
+    iterator = localResult.iterator();
+    while (iterator.hasNext()) {
+      RDFIndividual anIndividual = (RDFIndividual)iterator.next();
+      if (anIndividual instanceof OWLIndividual) result.add(anIndividual);
+    } // while
+  } // getMatchingOWLIndividuals
 
 
     public static void getMatchingRDFIndividuals(String prefix, List result, OWLModel owlModel) {

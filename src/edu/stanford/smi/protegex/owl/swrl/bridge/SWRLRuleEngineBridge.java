@@ -240,11 +240,13 @@ public abstract class SWRLRuleEngineBridge
                                    + targetException.getMessage(), targetException);
       } else if (targetException instanceof RuntimeException) { // A runtime exception was thrown by the built-in.
         throw new BuiltInMethodRuntimeException(ruleName, builtInName, targetException.getMessage(), targetException);
-      } // if 
+      } else throw new BuiltInException("Unknown exception thrown by built-in method '" + builtInName + "' in rule '" + 
+                                        ruleName + "'. Exception: " + e.toString(), e);
     } catch (Exception e) { // Should be one of IllegalAccessException or IllegalArgumentException
       throw new BuiltInException("Internal bridge exception when invoking built-in method '" + builtInName + "' in rule '" + 
                                  ruleName + "'. Exception: " + e.getMessage(), e);        
     } // try
+
     checkForUnboundArgument(ruleName, builtInName, arguments); // Make sure built-in did not leave any arguments unbound.
 
     return result.booleanValue();
@@ -660,7 +662,7 @@ public abstract class SWRLRuleEngineBridge
   {
     if (arguments.contains(null)) // An unbound argument is indicated by a null for an argument value.
       throw new BuiltInException("Built-in '" + builtInName + "' in rule '" + ruleName + "' " +
-                                 "returned with unbound argument number " + arguments.indexOf(null) + ".");
+                                 "returned with unbound argument number " + arguments.indexOf(null));
   } // checkForUnboundArgument
   
 } // SWRLRuleEngineBridge

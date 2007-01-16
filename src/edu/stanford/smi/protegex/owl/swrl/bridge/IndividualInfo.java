@@ -1,6 +1,4 @@
 
-
-
 package edu.stanford.smi.protegex.owl.swrl.bridge;
 
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.*;
@@ -47,7 +45,7 @@ public class IndividualInfo extends Info implements Argument, ObjectValue, Compa
     classNames.add(className);
   } // IndividualInfo        
 
-  // Constructor used when creating an individual to pass as an argument to a built-in.
+  // Constructor used when creating an individual to pass as an argument to a built-in or to return as an argument from a built-in.
   public IndividualInfo(String individualName)
   {
     this.individualName = individualName;

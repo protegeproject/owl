@@ -33,324 +33,308 @@ public class SWRLBuiltInUtil
     if (actual > expectingAtMost) throw new InvalidBuiltInArgumentNumberException(builtInName, expectingAtMost, actual, "at most");
   } // checkNumberOfArgumentsAtMost
 
-  public static void checkThatAllArgumentsAreLiterals(String builtInName, List<Argument> arguments) throws InvalidBuiltInArgumentException
+  public static void checkThatAllArgumentsAreLiterals(String builtInName, List<Argument> arguments) throws BuiltInException
   {
     for (int argumentNumber = 0; argumentNumber < arguments.size(); argumentNumber++) 
       checkThatArgumentIsALiteral(builtInName, argumentNumber, arguments);
   } // checkThatAllArgumentsAreLiterals
 
-  public static void checkThatAllArgumentsAreNumeric(String builtInName, List<Argument> arguments) throws InvalidBuiltInArgumentException
+  public static void checkThatAllArgumentsAreNumeric(String builtInName, List<Argument> arguments) throws BuiltInException
   {
     for (int argumentNumber = 0; argumentNumber < arguments.size(); argumentNumber++) 
       checkThatArgumentIsNumeric(builtInName, argumentNumber, arguments);
   } // checkThatAllArgumentsAreNumeric
 
-  public static void checkThatAllArgumentsAreIntegers(String builtInName, List<Argument> arguments) throws InvalidBuiltInArgumentException
+  public static void checkThatAllArgumentsAreIntegers(String builtInName, List<Argument> arguments) throws BuiltInException
   {
     for (int argumentNumber = 0; argumentNumber < arguments.size(); argumentNumber++) 
       checkThatArgumentIsAnInteger(builtInName, argumentNumber, arguments);
   } // checkThatAllArgumentsAreIntegers
 
-  public static boolean areAllArgumentsIntegers(String builtInName, List<Argument> arguments) throws InvalidBuiltInArgumentException
+  public static boolean areAllArgumentsIntegers(String builtInName, List<Argument> arguments) throws BuiltInException
   {
     for (int argumentNumber = 0; argumentNumber < arguments.size(); argumentNumber++) 
-      if (!isArgumentAnInteger(argumentNumber, arguments)) return false;
+      if (!isArgumentAnInteger(builtInName, argumentNumber, arguments)) return false;
     return true;
   } // areAllArgumentsIntegers
 
-  public static boolean areAllArgumentsLongs(String builtInName, List<Argument> arguments) throws InvalidBuiltInArgumentException
+  public static boolean areAllArgumentsLongs(String builtInName, List<Argument> arguments) throws BuiltInException
   {
     for (int argumentNumber = 0; argumentNumber < arguments.size(); argumentNumber++) 
-      if (!isArgumentALong(argumentNumber, arguments)) return false;
+      if (!isArgumentALong(builtInName, argumentNumber, arguments)) return false;
     return true;
   } // areAllArgumentsLongs
 
-  public static boolean areAllArgumentsDoubles(String builtInName, List<Argument> arguments)
-    throws InvalidBuiltInArgumentException, DatatypeConversionException
+  public static boolean areAllArgumentsDoubles(String builtInName, List<Argument> arguments) throws BuiltInException
   {
     for (int argumentNumber = 0; argumentNumber < arguments.size(); argumentNumber++) 
-      if (!isArgumentADouble(argumentNumber, arguments)) return false;
+      if (!isArgumentADouble(builtInName, argumentNumber, arguments)) return false;
     return true;
   } // areAllArgumentsDoubles
 
-  public static boolean areAllArgumentsBooleans(String builtInName, List<Argument> arguments) 
-    throws InvalidBuiltInArgumentException, DatatypeConversionException
+  public static boolean areAllArgumentsBooleans(String builtInName, List<Argument> arguments) throws BuiltInException
   {
     for (int argumentNumber = 0; argumentNumber < arguments.size(); argumentNumber++) 
-      if (!isArgumentABoolean(argumentNumber, arguments)) return false;
+      if (!isArgumentABoolean(builtInName, argumentNumber, arguments)) return false;
     return true;
   } // areAllArgumentsBooleans
 
-  public static boolean areAllArgumentLiterals(String builtInName, List<Argument> arguments) throws InvalidBuiltInArgumentException
+  public static boolean areAllArgumentLiterals(String builtInName, List<Argument> arguments) throws BuiltInException
   {
     for (int argumentNumber = 0; argumentNumber < arguments.size(); argumentNumber++) 
-      if (!isArgumentALiteral(argumentNumber, arguments)) return false;
+      if (!isArgumentALiteral(builtInName, argumentNumber, arguments)) return false;
     return true;
   } // areAllArgumentsIntegers
 
-  public static boolean areAllArgumentsFloats(String builtInName, List<Argument> arguments) 
-    throws InvalidBuiltInArgumentException, DatatypeConversionException
+  public static boolean areAllArgumentsFloats(String builtInName, List<Argument> arguments) throws BuiltInException
   {
     for (int argumentNumber = 0; argumentNumber < arguments.size(); argumentNumber++) 
-      if (!isArgumentAFloat(argumentNumber, arguments)) return false;
+      if (!isArgumentAFloat(builtInName, argumentNumber, arguments)) return false;
     return true;
   } // areAllArgumentsFloats
 
-  public static boolean areAllArgumentsNumeric(String builtInName, List<Argument> arguments) throws InvalidBuiltInArgumentException
+  public static boolean areAllArgumentsNumeric(String builtInName, List<Argument> arguments) throws BuiltInException
   {
     for (int argumentNumber = 0; argumentNumber < arguments.size(); argumentNumber++) 
-      if (!isArgumentNumeric(argumentNumber, arguments)) return false;
+      if (!isArgumentNumeric(builtInName, argumentNumber, arguments)) return false;
     return true;
   } // areAllArgumentsNumeric
 
-  public static boolean areAllArgumentsStrings(String builtInName, List<Argument> arguments) throws InvalidBuiltInArgumentException
+  public static boolean areAllArgumentsStrings(String builtInName, List<Argument> arguments) throws BuiltInException
   {
     for (int argumentNumber = 0; argumentNumber < arguments.size(); argumentNumber++) 
-      if (!isArgumentAString(argumentNumber, arguments)) return false;
+      if (!isArgumentAString(builtInName, argumentNumber, arguments)) return false;
     return true;
   } // areAllArgumentsStrings
 
-  public static boolean areAllArgumentsOfAnOrderedType(String builtInName, List<Argument> arguments) throws InvalidBuiltInArgumentException
+  public static boolean areAllArgumentsOfAnOrderedType(String builtInName, List<Argument> arguments) throws BuiltInException
   {
     for (int argumentNumber = 0; argumentNumber < arguments.size(); argumentNumber++) 
-      if (!isArgumentOfAnOrderedType(argumentNumber, arguments)) return false;
+      if (!isArgumentOfAnOrderedType(builtInName, argumentNumber, arguments)) return false;
     return true;
   } // areAllArgumentsOfAnOrderedType
 
-  public static void checkThatAllArgumentsAreFloats(String builtInName, List<Argument> arguments) 
-    throws InvalidBuiltInArgumentException, DatatypeConversionException
+  public static void checkThatAllArgumentsAreFloats(String builtInName, List<Argument> arguments) throws BuiltInException
   {
     for (int argumentNumber = 0; argumentNumber < arguments.size(); argumentNumber++) 
       checkThatArgumentIsAFloat(builtInName, argumentNumber, arguments);
   } // checkThatAllArgumentsAreFloats
 
-  public static void checkThatAllArgumentsAreStrings(String builtInName, List<Argument> arguments) 
-    throws DatatypeConversionException, InvalidBuiltInArgumentException
+  public static void checkThatAllArgumentsAreStrings(String builtInName, List<Argument> arguments) throws BuiltInException
   {
     for (int argumentNumber = 0; argumentNumber < arguments.size(); argumentNumber++) 
       checkThatArgumentIsAString(builtInName, argumentNumber, arguments);
   } // checkThatAllArgumentsAreStrings
 
-  public static void checkThatAllArgumentsAreOfAnOrderedType(String builtInName, List<Argument> arguments) 
-     throws InvalidBuiltInArgumentException
+  public static void checkThatAllArgumentsAreOfAnOrderedType(String builtInName, List<Argument> arguments) throws BuiltInException
   {
     for (int argumentNumber = 0; argumentNumber < arguments.size(); argumentNumber++) 
       checkThatArgumentIsOfAnOrderedType(builtInName, argumentNumber, arguments);
   } // checkThatAllArgumentsAreOfAnOrderedType
 
-  public static void checkThatArgumentIsALiteral(String builtInName, int argumentNumber, List<Argument> arguments) 
-    throws InvalidBuiltInArgumentException
+  public static void checkThatArgumentIsALiteral(String builtInName, int argumentNumber, List<Argument> arguments) throws BuiltInException
   {
     if (!(arguments.get(argumentNumber) instanceof LiteralInfo)) 
       throw new InvalidBuiltInArgumentException(builtInName, argumentNumber, "Expecting literal");
   } // checkThatArgumentIsALiteral
 
-  public static void checkThatArgumentIsNumeric(String builtInName, int argumentNumber, List<Argument> arguments) 
-    throws InvalidBuiltInArgumentException
+  public static void checkThatArgumentIsNumeric(String builtInName, int argumentNumber, List<Argument> arguments) throws BuiltInException
   {
-    if (!isArgumentNumeric(argumentNumber, arguments))
+    if (!isArgumentNumeric(builtInName, argumentNumber, arguments))
       throw new InvalidBuiltInArgumentException(builtInName, argumentNumber, "Expecting numeric literal");
   } // checkThatArgumentIsNumeric
 
-  public static void checkThatArgumentIsOfAnOrderedType(String builtInName, int argumentNumber, List<Argument> arguments) 
-    throws InvalidBuiltInArgumentException
+  public static void checkThatArgumentIsOfAnOrderedType(String builtInName, int argumentNumber, List<Argument> arguments) throws BuiltInException
   {
-    if (!isArgumentOfAnOrderedType(argumentNumber, arguments))
+    if (!isArgumentOfAnOrderedType(builtInName, argumentNumber, arguments))
       throw new InvalidBuiltInArgumentException(builtInName, argumentNumber, "Expecting ordered type");
   } // checkThatArgumentIsOfAnOrderedType
 
-  public static boolean isArgumentOfAnOrderedType(int argumentNumber, List<Argument> arguments) 
-    throws InvalidBuiltInArgumentException
+  public static boolean isArgumentOfAnOrderedType(String builtInName, int argumentNumber, List<Argument> arguments) throws BuiltInException
   {
-    return (isArgumentNumeric(argumentNumber, arguments) || isArgumentAString(argumentNumber, arguments));
+    return (isArgumentNumeric(builtInName, argumentNumber, arguments) || isArgumentAString(builtInName, argumentNumber, arguments));
   } // isArgumentOfAnOrderedType
 
-  public static void checkThatArgumentIsAnIndividualName(String builtInName, int argumentNumber, List<Argument> arguments) 
-    throws InvalidBuiltInArgumentException
+  public static void checkThatArgumentIsAnIndividualName(String builtInName, int argumentNumber, List<Argument> arguments) throws BuiltInException
   {
     if (!(arguments.get(argumentNumber) instanceof IndividualInfo)) 
       throw new InvalidBuiltInArgumentException(builtInName, argumentNumber, "Expecting individual name");
   } // checkThatArgumentIsAnIndividualName
 
-  public static boolean isArgumentNumeric(int argumentNumber, List<Argument> arguments) throws InvalidBuiltInArgumentException
+  public static boolean isArgumentNumeric(String builtInName, int argumentNumber, List<Argument> arguments) throws BuiltInException
   {
-    if (isArgumentALiteral(argumentNumber, arguments)) return getArgumentAsALiteral(argumentNumber, arguments).isNumeric();
+    if (isArgumentALiteral(builtInName, argumentNumber, arguments)) return getArgumentAsALiteral(builtInName, argumentNumber, arguments).isNumeric();
     else return false;
   } // isArgumentNumeric
 
-  public static boolean isArgumentNonNumeric(int argumentNumber, List<Argument> arguments) throws InvalidBuiltInArgumentException
+  public static boolean isArgumentNonNumeric(String builtInName, int argumentNumber, List<Argument> arguments) throws BuiltInException
   {
-    if (isArgumentALiteral(argumentNumber, arguments))
-      return !getArgumentAsALiteral(argumentNumber, arguments).isNumeric();
+    if (isArgumentALiteral(builtInName, argumentNumber, arguments))
+      return !getArgumentAsALiteral(builtInName, argumentNumber, arguments).isNumeric();
     else return false;
   } // isArgumentNonNumeric
 
-  public static void checkThatArgumentIsNonNumeric(String builtInName, int argumentNumber, List<Argument> arguments) 
-    throws InvalidBuiltInArgumentException
+  public static void checkThatArgumentIsNonNumeric(String builtInName, int argumentNumber, List<Argument> arguments) throws BuiltInException
   {
-    if (!isArgumentNonNumeric(argumentNumber, arguments))
+    if (!isArgumentNonNumeric(builtInName, argumentNumber, arguments))
       throw new InvalidBuiltInArgumentException(builtInName, argumentNumber, "Expecting non-numeric literal");
   } // checkThatArgumentIsNonNumeric
 
   // Integers
   
-  public static void checkThatArgumentIsAnInteger(String builtInName, int argumentNumber, List<Argument> arguments) 
-    throws InvalidBuiltInArgumentException
+  public static void checkThatArgumentIsAnInteger(String builtInName, int argumentNumber, List<Argument> arguments) throws BuiltInException
   {
-    if (!isArgumentAnInteger(argumentNumber, arguments))
+    if (!isArgumentAnInteger(builtInName, argumentNumber, arguments))
       throw new InvalidBuiltInArgumentException(builtInName, argumentNumber, "Expecting integer literal");
   } // checkThatArgumentIsAnInteger
 
-  public static boolean isArgumentAnInteger(int argumentNumber, List<Argument> arguments) throws InvalidBuiltInArgumentException
+  public static boolean isArgumentAnInteger(String builtInName, int argumentNumber, List<Argument> arguments) throws BuiltInException
   {
-    if (isArgumentALiteral(argumentNumber, arguments)) return (getArgumentAsALiteral(argumentNumber, arguments).isInteger());
+    if (isArgumentALiteral(builtInName, argumentNumber, arguments)) return (getArgumentAsALiteral(builtInName, argumentNumber, arguments).isInteger());
     else return false;
   } // isArgumentAnInteger
 
-  public static int getArgumentAsAnInteger(String builtInName, int argumentNumber, List<Argument> arguments) 
-    throws InvalidBuiltInArgumentException, DatatypeConversionException
+  public static int getArgumentAsAnInteger(String builtInName, int argumentNumber, List<Argument> arguments) throws BuiltInException
   {
     checkThatArgumentIsAnInteger(builtInName, argumentNumber, arguments);
 
-    return getArgumentAsALiteral(argumentNumber, arguments).getInt();
+    return getArgumentAsALiteral(builtInName, argumentNumber, arguments).getInt();
   } // getArgumentAsAnInteger
 
-  public static boolean isArgumentALiteral(int argumentNumber, List<Argument> arguments) 
+  public static boolean isArgumentALiteral(String builtInName, int argumentNumber, List<Argument> arguments) throws BuiltInException
   {
+    checkThatArgumentIsBound(builtInName, argumentNumber, arguments);
+
     return (arguments.get(argumentNumber) instanceof LiteralInfo);
   } // checkThatArgumentIsALiteral
 
-  public static LiteralInfo getArgumentAsALiteral(int argumentNumber, List<Argument> arguments) throws InvalidBuiltInArgumentException
+  public static LiteralInfo getArgumentAsALiteral(String builtInName, int argumentNumber, List<Argument> arguments) throws BuiltInException
   {
+    checkThatArgumentIsALiteral(builtInName, argumentNumber, arguments);
+
     return (LiteralInfo)arguments.get(argumentNumber);
   } // getArgumentAsALiteral
 
   // Longs
 
-  public static void checkThatArgumentIsALong(String builtInName, int argumentNumber, List<Argument> arguments) 
-    throws InvalidBuiltInArgumentException
+  public static void checkThatArgumentIsALong(String builtInName, int argumentNumber, List<Argument> arguments) throws BuiltInException
   {
-    if (!isArgumentALong(argumentNumber, arguments))
+    if (!isArgumentALong(builtInName, argumentNumber, arguments))
       throw new InvalidBuiltInArgumentException(builtInName, argumentNumber, "Expecting long literal");
   } // checkThatArgumentIsALong
 
-  public static boolean isArgumentALong(int argumentNumber, List<Argument> arguments) throws InvalidBuiltInArgumentException
+  public static boolean isArgumentALong(String builtInName, int argumentNumber, List<Argument> arguments) throws BuiltInException
   {
-    if (isArgumentALiteral(argumentNumber, arguments)) 
-      return (getArgumentAsALiteral(argumentNumber, arguments).isLong());
+    if (isArgumentALiteral(builtInName, argumentNumber, arguments)) 
+      return (getArgumentAsALiteral(builtInName, argumentNumber, arguments).isLong());
     else return false;
   } // isArgumentALong
 
-  public static long getArgumentAsALong(String builtInName, int argumentNumber, List<Argument> arguments) 
-    throws InvalidBuiltInArgumentException, DatatypeConversionException
+  public static long getArgumentAsALong(String builtInName, int argumentNumber, List<Argument> arguments) throws BuiltInException
   {
     checkThatArgumentIsALong(builtInName, argumentNumber, arguments);
 
-    return getArgumentAsALiteral(argumentNumber, arguments).getLong();
+    return getArgumentAsALiteral(builtInName, argumentNumber, arguments).getLong();
   } // getArgumentAsALong
 
   // Floats
 
-  public static void checkThatArgumentIsAFloat(String builtInName, int argumentNumber, List<Argument> arguments) 
-    throws InvalidBuiltInArgumentException, DatatypeConversionException
+  public static void checkThatArgumentIsAFloat(String builtInName, int argumentNumber, List<Argument> arguments) throws BuiltInException
   {
-    if (!isArgumentAFloat(argumentNumber, arguments))
+    if (!isArgumentAFloat(builtInName, argumentNumber, arguments))
       throw new InvalidBuiltInArgumentException(builtInName, argumentNumber, "Expecting float literal");
   } // checkThatArgumentIsAFloat
 
-  public static boolean isArgumentAFloat(int argumentNumber, List<Argument> arguments) 
-    throws InvalidBuiltInArgumentException, DatatypeConversionException
+  public static boolean isArgumentAFloat(String builtInName, int argumentNumber, List<Argument> arguments) throws BuiltInException
   {
-    if (isArgumentALiteral(argumentNumber, arguments)) 
-      return (getArgumentAsALiteral(argumentNumber, arguments).isFloat());
+    if (isArgumentALiteral(builtInName, argumentNumber, arguments)) 
+      return (getArgumentAsALiteral(builtInName, argumentNumber, arguments).isFloat());
     else return false;
   } // isArgumentAFloat
 
-  public static float getArgumentAsAFloat(String builtInName, int argumentNumber, List<Argument> arguments) 
-    throws InvalidBuiltInArgumentException, DatatypeConversionException
+  public static float getArgumentAsAFloat(String builtInName, int argumentNumber, List<Argument> arguments) throws BuiltInException
   {
     checkThatArgumentIsAFloat(builtInName, argumentNumber, arguments);
 
-    return getArgumentAsALiteral(argumentNumber, arguments).getFloat();
+    return getArgumentAsALiteral(builtInName, argumentNumber, arguments).getFloat();
   } // getArgumentAsAFloat
 
   // Double
 
-  public static void checkThatArgumentIsADouble(String builtInName, int argumentNumber, List<Argument> arguments) 
-    throws InvalidBuiltInArgumentException, DatatypeConversionException
+  public static void checkThatArgumentIsADouble(String builtInName, int argumentNumber, List<Argument> arguments) throws BuiltInException
   {
-    if (!isArgumentADouble(argumentNumber, arguments))
+    if (!isArgumentADouble(builtInName, argumentNumber, arguments))
       throw new InvalidBuiltInArgumentException(builtInName, argumentNumber, "Expecting float literal");
   } // checkThatArgumentIsADouble
 
-  public static boolean isArgumentADouble(int argumentNumber, List<Argument> arguments) 
-    throws InvalidBuiltInArgumentException, DatatypeConversionException
+  public static boolean isArgumentADouble(String builtInName, int argumentNumber, List<Argument> arguments) throws BuiltInException
   {
-    if (isArgumentALiteral(argumentNumber, arguments)) 
-      return (getArgumentAsALiteral(argumentNumber, arguments).isDouble());
+    if (isArgumentALiteral(builtInName, argumentNumber, arguments)) 
+      return (getArgumentAsALiteral(builtInName, argumentNumber, arguments).isDouble());
     else return false;
   } // isArgumentADouble
 
-  public static double getArgumentAsADouble(String builtInName, int argumentNumber, List<Argument> arguments) 
-    throws InvalidBuiltInArgumentException, DatatypeConversionException
+  public static double getArgumentAsADouble(String builtInName, int argumentNumber, List<Argument> arguments) throws BuiltInException
   {
     checkThatArgumentIsADouble(builtInName, argumentNumber, arguments);
 
-    return getArgumentAsALiteral(argumentNumber, arguments).getDouble();
+    return getArgumentAsALiteral(builtInName, argumentNumber, arguments).getDouble();
   } // getArgumentAsADouble
 
   // Booleans
 
-  public static void checkThatArgumentIsABoolean(String builtInName, int argumentNumber, List<Argument> arguments) 
-    throws InvalidBuiltInArgumentException
+  public static void checkThatArgumentIsABoolean(String builtInName, int argumentNumber, List<Argument> arguments) throws BuiltInException
   {
-    if (!isArgumentABoolean(argumentNumber, arguments))
+    if (!isArgumentABoolean(builtInName, argumentNumber, arguments))
       throw new InvalidBuiltInArgumentException(builtInName, argumentNumber, "Expecting boolean literal");
   } // checkThatArgumentIsABoolean
 
-  public static boolean isArgumentABoolean(int argumentNumber, List<Argument> arguments) throws InvalidBuiltInArgumentException
+  public static boolean isArgumentABoolean(String builtInName, int argumentNumber, List<Argument> arguments) throws BuiltInException
   {
-    if (isArgumentALiteral(argumentNumber, arguments)) return (getArgumentAsALiteral(argumentNumber, arguments).isBoolean());
+    if (isArgumentALiteral(builtInName, argumentNumber, arguments)) return (getArgumentAsALiteral(builtInName, argumentNumber, arguments).isBoolean());
     else return false;
   } // isArgumentABoolean
 
-  public static boolean getArgumentAsABoolean(String builtInName, int argumentNumber, List<Argument> arguments) 
-    throws DatatypeConversionException, InvalidBuiltInArgumentException
+  public static boolean getArgumentAsABoolean(String builtInName, int argumentNumber, List<Argument> arguments) throws BuiltInException
   {
     checkThatArgumentIsABoolean(builtInName, argumentNumber, arguments);
 
-    return getArgumentAsALiteral(argumentNumber, arguments).getBoolean();
+    return getArgumentAsALiteral(builtInName, argumentNumber, arguments).getBoolean();
   } // getArgumentAsABoolean
 
   // Strings
 
-  public static void checkThatArgumentIsAString(String builtInName, int argumentNumber, List<Argument> arguments) 
-    throws DatatypeConversionException, InvalidBuiltInArgumentException
+  public static void checkThatArgumentIsAString(String builtInName, int argumentNumber, List<Argument> arguments) throws BuiltInException
   {
-    if (!isArgumentAString(argumentNumber, arguments))
+    if (!isArgumentAString(builtInName, argumentNumber, arguments))
       throw new InvalidBuiltInArgumentException(builtInName, argumentNumber, "Expecting string literal");
   } // checkThatArgumentIsAString
 
-  public static boolean isArgumentAString(int argumentNumber, List<Argument> arguments) throws InvalidBuiltInArgumentException
+  public static boolean isArgumentAString(String builtInName, int argumentNumber, List<Argument> arguments) throws BuiltInException
   {
-    if (isArgumentALiteral(argumentNumber, arguments)) return (getArgumentAsALiteral(argumentNumber, arguments).isString());
+    if (isArgumentALiteral(builtInName, argumentNumber, arguments)) return (getArgumentAsALiteral(builtInName, argumentNumber, arguments).isString());
     else return false;
   } // isArgumentAString
 
-  public static String getArgumentAsAString(String builtInName, int argumentNumber, List<Argument> arguments) 
-    throws DatatypeConversionException, InvalidBuiltInArgumentException
+  public static String getArgumentAsAString(String builtInName, int argumentNumber, List<Argument> arguments) throws BuiltInException
   {
     checkThatArgumentIsAString(builtInName, argumentNumber, arguments);
 
-    return getArgumentAsALiteral(argumentNumber, arguments).getString();
+    return getArgumentAsALiteral(builtInName, argumentNumber, arguments).getString();
   } // getArgumentAsAString
 
   // Unbound argument processing methods.
 
-  public static boolean hasUnboundArguments(String builtInName, List<Argument> arguments) 
+  public static boolean hasUnboundArguments(String builtInName, List<Argument> arguments) throws BuiltInException
   {
     return !arguments.isEmpty() && arguments.contains(null); // An argument is unbound if its value is null.
   } // hasUnboundArguments
+
+  public static void checkThatArgumentIsBound(String builtInName, int argumentNumber, List<Argument> arguments) throws BuiltInException
+  {
+    if (isUnboundArgument(builtInName, argumentNumber, arguments)) 
+      throw new BuiltInException("Built-in '" + builtInName + "' is not expecting an unbound argument for argument #" + argumentNumber + ".");
+  } // checkThatArgumentIsBound
 
   public static boolean isUnboundArgument(String builtInName, int argumentNumber, List<Argument> arguments)
   {
@@ -360,7 +344,7 @@ public class SWRLBuiltInUtil
   /*
   ** Get 0-offset position of first unbound argument; return -1 if no unbound arguments are found.
   */
-  public static int getFirstUnboundArgument(String builtInName, List<Argument> arguments)
+  public static int getFirstUnboundArgument(String builtInName, List<Argument> arguments) throws BuiltInException
   {
     if (hasUnboundArguments(builtInName, arguments)) return arguments.indexOf(null);
     else return -1;
