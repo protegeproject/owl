@@ -1,6 +1,7 @@
 package edu.stanford.smi.protegex.owl.ui.components.triples;
 
 import edu.stanford.smi.protege.model.Project;
+import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protege.ui.FrameRenderer;
 import edu.stanford.smi.protege.util.PopupMenuMouseListener;
 import edu.stanford.smi.protegex.owl.model.*;
@@ -53,8 +54,30 @@ public class TriplesTable extends JTable implements TripleDisplay {
         TableColumn propertyColumn = getColumnModel().getColumn(TriplesTableModel.COL_PROPERTY);
         TableColumn valueColumn = getColumnModel().getColumn(TriplesTableModel.COL_VALUE);
         TableColumn languageColumn = getColumnModel().getColumn(tableModel.getColumnCount() - 1);
-        propertyColumn.setCellRenderer(new FrameRenderer());
-        valueColumn.setCellRenderer(new ResourceRenderer());
+        
+        propertyColumn.setCellRenderer(new FrameRenderer() {
+        	@Override
+        	protected void loadSlot(Slot slot) {
+        		super.loadSlot(slot);        		
+        		setGrayedText(((RDFProperty)slot).isReadOnly());
+        	}
+        });
+        
+        valueColumn.setCellRenderer(new ResourceRenderer() {
+        	
+        	@Override
+        	public Component getTableCellRendererComponent(JTable table, Object value, boolean selected, boolean hasFocus, int row, int col) {
+        		Component comp = super.getTableCellRendererComponent(table, value, selected, hasFocus, row, col);
+        		
+        		Object prop = table.getValueAt(row, TriplesTableModel.COL_PROPERTY); 
+        		if (prop != null && prop instanceof RDFProperty) {
+        			comp.setEnabled(((RDFProperty)prop).isReadOnly());
+        		}
+        		return comp ;
+        	}
+
+        });
+        
         OWLModel owlModel = (OWLModel) project.getKnowledgeBase();
         JComboBox comboBox = ComponentUtil.createLangCellEditor(owlModel, this);
         languageColumn.setCellEditor(new DefaultCellEditor(comboBox));
@@ -72,6 +95,7 @@ public class TriplesTable extends JTable implements TripleDisplay {
         getTableHeader().setReorderingAllowed(false);
         setShowGrid(false);
         setRowMargin(0);
+        
         setIntercellSpacing(new Dimension(0, 0));
         setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         propertyColumn.setPreferredWidth(100);
