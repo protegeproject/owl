@@ -6,11 +6,13 @@ import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Iterator;
 
+import com.hp.hpl.jena.graph.GetTriple;
 import com.hp.hpl.jena.rdf.arp.ALiteral;
 import com.hp.hpl.jena.rdf.arp.AResource;
 import com.hp.hpl.jena.vocabulary.OWL;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
+import com.ibm.icu.impl.UBiDiProps;
 
 import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.DefaultKnowledgeBase;
@@ -40,27 +42,18 @@ import edu.stanford.smi.protege.model.Model;
 import edu.stanford.smi.protege.model.framestore.SimpleFrameStore;
 
 
+ // TODO: ClassCastException at sortSubclasses
+ // TODO: Put owl:Thing as superclass to all classes without superclass
+ // TODO: Add not-implemented facets/prop (range)
+ // TODO: Create AnnotationProperty class as subclass of AbstractOWLPropertyClass, set isAnnotation to true, and false for the rest
+ // TODO: Use getFrame from the NFS
+ // TODO: Complete the FrameCreatorUtility.createClassWithTYpe with the rest of type
+ // TODO: Try to use reflection to see how fast it is
+ // TODO: Try to create Java objects as soon as possible (by using heuristics) 
+ // TODO: Try to process remaining undef triples by using heuristics
+ 
+
 public class TripleFrameCache {
-	private final static HashSet<String> restrictionPredicates = new HashSet<String>();  
-	
-	static {
-		restrictionPredicates.add(OWL.someValuesFrom.getURI());
-		restrictionPredicates.add(OWL.allValuesFrom.getURI());
-		restrictionPredicates.add(OWL.hasValue.getURI());
-		restrictionPredicates.add(OWL.maxCardinality.getURI());
-		restrictionPredicates.add(OWL.minCardinality.getURI());
-		restrictionPredicates.add(OWL.cardinality.getURI());
-	}
-	
-	private final static HashSet<String> logicalPredicates = new HashSet<String>();
-	
-	static {
-		logicalPredicates.add(OWL.intersectionOf.getURI());
-		logicalPredicates.add(OWL.unionOf.getURI());
-		logicalPredicates.add(OWL.complementOf.getURI());
-		logicalPredicates.add(OWL.oneOf.getURI());
-	}
-	
 	
 	UndefTripleManager undefTripleManager = new UndefTripleManager();
 
@@ -78,74 +71,294 @@ public class TripleFrameCache {
 		
 		FrameCreatorUtility.setSimpleFrameStore((SimpleFrameStore)((DefaultKnowledgeBase)owlModel).getTerminalFrameStore());
 		
-		FrameCreatorUtility.initOWLModel(this.owlModel);
+		//FrameCreatorUtility.initOWLModel(this.owlModel);
 	}
 	
 	
 	public boolean processTriple(AResource subj, AResource pred, AResource obj, boolean alreadyInUndef) {
+		//System.out.println(subj + " " + pred + " " + obj);
 		
-		//move this to a common place
-		if (pred.getURI().equals(RDF.first.getURI()) || pred.getURI().equals(RDF.rest.getURI())) {
-			createRDFList(subj, pred, obj, alreadyInUndef);
-		};
-		
-		if (logicalPredicates.contains(pred.getURI())) {
-			return createLogicalClass(subj, pred, obj, alreadyInUndef);
-			//remove the isAnonymous condition
-		} else if (pred.getURI().equals(RDF.type.getURI()) && !subj.isAnonymous()) {
-			return createFrameWithType(subj, pred, obj, alreadyInUndef);			
-		} else if (pred.getURI().equals(RDFS.subClassOf.getURI())) {
-			return createSubclassOf(subj, pred, obj, alreadyInUndef);
-		} else if (pred.getURI().equals(RDFS.subPropertyOf.getURI())) {
-			return createSubpropertyOf(subj, pred, obj, alreadyInUndef);
-		} else if (restrictionPredicates.contains(pred.getURI())) {
-			return createRestriction(subj, pred, obj, alreadyInUndef);
-		} else {
-			//System.out.println("*** Create directly " + subj + " " + pred + " " + obj + " already in undef: " + alreadyInUndef);
-			return addFrameSlotValue(subj, pred, obj, alreadyInUndef);
-		}	
-		
-		
-		//return false;		
-	}
+		String predName = ParserUtility.getResourceName(pred);		
+		Slot predSlot = (Slot) owlModel.getFrame(predName);
 
-	public boolean processTriple(AResource subj, AResource pred, ALiteral lit, boolean alreadyInUndef) {
-		return createRDFSLiteral(subj, pred, lit, alreadyInUndef);
-		
-	}
-	
-	//reimplement this method
-	private boolean createRDFSLiteral(AResource subj, AResource pred, ALiteral lit, boolean alreadyInUndef) {
-		Frame frame = getFrame(getResourceName(subj), subj, pred, lit, alreadyInUndef);
-		
-		if (frame == null)
+		if (predSlot == null) {
+			if (!alreadyInUndef) {
+				undefTripleManager.addUndefTriple(new UndefTriple(subj, pred, obj, predName));
+			}
 			return false;
+		}
+
+		//do some checks if it already exists and is twice defined?
+		String subjName = ParserUtility.getResourceName(subj);
+		Frame subjFrame = owlModel.getFrame(subjName);
 		
-		Slot prop = (Slot) getFrame(getResourceName(pred), subj, pred, lit, alreadyInUndef);
+		String objName = ParserUtility.getResourceName(obj);
+		Frame objFrame = owlModel.getFrame(objName);
+
 		
-		if (prop == null) {
+		//creation
+		if (predName.equals(RDF.type.getURI()) ) {
+			if (objName.equals(OWL.Restriction.getURI())) {
+				return true;
+			}
+			
+			if (subj.isAnonymous() && objName.equals(OWL.Class.getURI())) {
+				return true;
+			}
+			
+			if (objFrame == null) {
+				addUndefTriple(subj, pred, obj, objName, alreadyInUndef);
+				return false;
+			}
+			
+			subjFrame = createFrameWithType(subjName, (Cls)objFrame, subj.isAnonymous());			
+		}//split this in two conditions and two methods
+		else if (predName.equals(RDF.first.getURI()) || predName.equals(RDF.rest.getURI())) {
+			createRDFList(subjName, predName, objName);
+		} else	if (OWLFramesMapping.getLogicalPredicatesNames().contains(predName)) {
+			subjFrame = createLogicalClass(subjName, predName);
+		} else if (OWLFramesMapping.getRestrictionPredicatesNames().contains(predName)) {
+			subjFrame = createRestriction(subjName, predName);
+		}
+		
+		//do this nicer
+		subjFrame = owlModel.getFrame(subjName);		
+		objFrame = owlModel.getFrame(objName);
+		
+		
+		//checking and adding to undefined
+		if (subjFrame == null) {
+			addUndefTriple(subj, pred, obj, subjName, alreadyInUndef);
+			//System.out.println("^^^ Should add undef triple: " + subj + " " + pred + " " + obj + " undef:" + subjName);
 			return false;
 		}
 		
-		return addFrameSlotValue(subj, pred, lit, alreadyInUndef);
-			
+		
+		if (objFrame == null) {
+			addUndefTriple(subj, pred, obj, objName, alreadyInUndef);
+			//System.out.println("^^^ Should add undef triple: " + subj + " " + pred + " " + obj + " undef:" + objName);
+			return false;
+		}
+
+		//add fillers
+		
+		//do some try catch?
+		
+		//add what it is really in the triple
+		FrameCreatorUtility.addOwnSlotValue(subjFrame, predSlot, objFrame);
+		//add frame correspondent
+		String frameMapSlot = OWLFramesMapping.getFramesSlotMapName(predName);
+		if (frameMapSlot != null) {
+			FrameCreatorUtility.addOwnSlotValue(subjFrame, owlModel.getSlot(frameMapSlot), objFrame);
+		}
+		//add frame pair (inverse) correspondent
+		String frameMapInvSlot = OWLFramesMapping.getFramesInvSlotMapName(predName);
+		if (frameMapInvSlot != null) {
+			FrameCreatorUtility.addOwnSlotValue(objFrame, owlModel.getSlot(frameMapInvSlot), subjFrame);
+		}
+		
+		return true;
+							
 	}
 
 
 
-	private Frame getFrame(String frameName, AResource subj, AResource pred, ALiteral lit, boolean alreadyInUndef) {
-		Frame frame = owlModel.getFrame(frameName);
-		if (frame == null) {
+	private void addUndefTriple(AResource subj, AResource pred, AResource obj, String undefName, boolean alreadyInUndef) {
+		if (!alreadyInUndef) {
+			undefTripleManager.addUndefTriple(new UndefTriple(subj, pred, obj, undefName)); //check this!!
+		}		
+	}
+
+	public boolean processTriple(AResource subj, AResource pred, ALiteral lit, boolean alreadyInUndef) {
+		//System.out.println(subj + " " + pred + " " + lit);
+		
+		String predName = ParserUtility.getResourceName(pred);		
+		Slot predSlot = (Slot) owlModel.getFrame(predName);
+
+		if (predSlot == null) {
 			if (!alreadyInUndef) {
-				undefTripleManager.addUndefTriple(new UndefTriple(subj, pred, lit, frameName));				
+				undefTripleManager.addUndefTriple(new UndefTriple(subj, pred, lit, predName));
 			}
-			return null;
+			return false;
+		}
+
+		//do some checks if it already exists and is twice defined?
+		String subjName = ParserUtility.getResourceName(subj);
+		Frame subjFrame = owlModel.getFrame(subjName);
+
+		//checking and adding to undefined
+		if (subjFrame == null) {
+			if (!alreadyInUndef) {
+				undefTripleManager.addUndefTriple(new UndefTriple(subj, pred, lit, subjName));
+			}
+			return false;
+		}
+		
+		RDFSLiteral rdfsLiteral = createRDFSLiteral(lit, (RDFProperty) predSlot);
+		
+		if (rdfsLiteral == null) {
+			return false;
+		}
+		
+		//add what it is really in the triple
+		FrameCreatorUtility.addOwnSlotValue(subjFrame, predSlot, rdfsLiteral);
+		
+		return true;
+		
+	}
+	
+	
+	
+	//reimplement this method
+
+	//special treatment of RDFList. Move this to a utility class
+	private void createRDFList(String subjName, String predName, String objName) {
+		
+		Frame subjList = owlModel.getFrame(subjName);
+		
+		//applies both for rdf:fist and rdf:rest
+		if (subjList == null) {
+			//move this to a RDFListCreator
+			FrameID id = tripleStore.generateFrameID();
+			
+			Frame listFrame = FrameCreatorUtility.createFrameWithType(owlModel, id, subjName, RDF.List.getURI(), true);
+			
+			if (listFrame != null) {
+				checkUndefinedResources(subjName);
+			}
+		}
+
+		if (!predName.equals(RDF.rest.getURI())) {
+			return;
+		}
+		
+		Frame objList = owlModel.getFrame(objName);
+		
+		if (objList == null) {
+			//move this to a RDFListCreator
+			FrameID id = tripleStore.generateFrameID();
+
+			Frame listFrame = FrameCreatorUtility.createFrameWithType(owlModel, id, objName, RDF.List.getURI(), true);
+			
+			if (listFrame != null) {
+				checkUndefinedResources(objName);
+			}					
+		}		
+	}
+
+	
+		
+	private Frame createFrameWithType(String frameUri, Cls type, boolean isSubjAnon) {
+	
+		Frame frame = owlModel.getFrame(frameUri);
+		
+		if (frame != null)
+			return frame;
+					
+		FrameID id = tripleStore.getNarrowFrameStore().generateFrameID();
+
+		frame = FrameCreatorUtility.createFrameWithType(owlModel, id, frameUri, type, isSubjAnon);
+
+		if (frame != null) {
+			checkUndefinedResources(frameUri);
 		}
 		
 		return frame;
 	}
+	
+	private Frame createRestriction(String restrName, String predName) {
+		Frame restriction = owlModel.getFrame(restrName);
+		
+		if (restriction != null)
+			return restriction;
+		
+		FrameID id = tripleStore.generateFrameID();
+		restriction = RestrictionCreatorUtility.createRestriction(owlModel, id, restrName, predName);
+		
+		if (restriction != null){		
+			checkUndefinedResources(restrName);
+		}
+						
+		return restriction;
+	}
+	
 
-	//method copied from old parser. Clean it!
+	private Frame createLogicalClass(String logClassName, String predName) {
+		Frame logClass = owlModel.getFrame(logClassName);
+		
+		if (logClass != null)
+			return logClass;
+		
+		FrameID id = tripleStore.generateFrameID();
+		logClass = LogicalClassCreatorUtility.createLogicalClass(owlModel, id, logClassName, predName);
+		
+		if (logClass != null){		
+			checkUndefinedResources(logClassName);
+		}
+						
+		return logClass;
+	}
+
+	
+	
+
+	private void checkUndefinedResources(String uri) {
+		Collection undefTriples = undefTripleManager.getUndefTriples(uri); 
+		
+		for (Iterator iter = undefTriples.iterator(); iter.hasNext();) {
+			UndefTriple undefTriple = (UndefTriple) iter.next();
+			
+			Object obj = undefTriple.getTripleObj();
+			
+			boolean success = false;
+			
+			if (obj instanceof AResource) {			
+				success = processTriple(undefTriple.getTripleSubj(), undefTriple.getTriplePred(), (AResource) undefTriple.getTripleObj(), true);
+			} else if (obj instanceof ALiteral) {
+				success = processTriple(undefTriple.getTripleSubj(), undefTriple.getTriplePred(), (ALiteral) undefTriple.getTripleObj(), true);
+			}
+						
+			if (success) {			
+				iter.remove();
+				undefTripleManager.removeUndefTriple(uri, undefTriple);
+			}
+		}
+		
+	}
+	
+
+	public UndefTripleManager getUndefTripleManager() {
+		return undefTripleManager;
+	}
+	
+
+
+	public void processUndefTriples() {
+		for (Iterator iter = getUndefTripleManager().getUndefTriples().iterator(); iter.hasNext();) {
+			UndefTriple undefTriple = (UndefTriple) iter.next();
+			
+			boolean success = false;
+			
+			Object obj = undefTriple.getTripleObj();
+			
+			if (obj instanceof AResource) {			
+				success = processTriple(undefTriple.getTripleSubj(), undefTriple.getTriplePred(), (AResource) undefTriple.getTripleObj(), true);
+			} else if (obj instanceof ALiteral) {
+				success = processTriple(undefTriple.getTripleSubj(), undefTriple.getTriplePred(), (ALiteral) undefTriple.getTripleObj(), true);
+			}		
+			
+			if (success) {
+				getUndefTripleManager().removeUndefTriple(undefTriple.getUndef(), undefTriple);
+			}
+			
+		}
+		
+	}
+
+
+	
+	//move somewhere
+	// copied from old parser
 	private RDFSLiteral createRDFSLiteral(ALiteral literal, RDFProperty property) {
 		if(literal.getLang() != null && literal.getLang().length() > 0) {
 			//return owlModel.createRDFSLiteral(literal.toString(), literal.getLang());
@@ -176,243 +389,6 @@ public class TripleFrameCache {
 			}
 		}
 	}
-
-	private boolean createSubpropertyOf(AResource subj, AResource pred, AResource obj, boolean alreadyInUndef) {
-		Slot superSlot = (Slot) getFrame(getResourceName(obj), subj, pred, obj, alreadyInUndef);
-		
-		//poate trebe testat daca e deja adaugat
-		Slot slot = (Slot) getFrame(getResourceName(subj), subj, pred, obj, (superSlot == null) | alreadyInUndef);
-			
-		//maybe this can be done in a centralized fashion
-		if (FrameCreatorUtility.createSubpropertyOf(slot, superSlot)) {
-			//update also the rdfs:subPropertyOf
-			return FrameCreatorUtility.addOwnSlotValue(slot, owlModel.getSlot(OWLFramesMapping.getFramesSlotMapName(getResourceName(pred))), superSlot);
-		}
-		
-		return false;
-	}
-
-	//special treatment of RDFList. Move this to a utility class
-	private void createRDFList(AResource subj, AResource pred, AResource obj, boolean alreadyInUndef) {
-		Cls rdfListMetaClass = owlModel.getCls(RDFNames.Cls.LIST);
-		
-		//if (rdfListMetaClass == null)
-		
-		Frame subjList = owlModel.getFrame(getResourceName(subj));
-		
-		//applies both for rdf:fist and rdf:rest
-		if (subjList == null) {
-			//move this to a RDFListCreator
-			FrameID id = tripleStore.generateFrameID();
-			subjList = new DefaultRDFList(owlModel, id);
-			
-			FrameCreatorUtility.setFrameName(subjList, getResourceName(subj));
-			FrameCreatorUtility.setInstanceType((Instance) subjList, rdfListMetaClass);
-			
-			checkUndefinedResources(getResourceName(subj));
-		}
-
-		if (!pred.getURI().equals(RDF.rest)) {
-			return;
-		}
-		
-		Frame objList = owlModel.getFrame(getResourceName(obj));
-		
-		if (objList == null) {
-			//move this to a RDFListCreator
-			FrameID id = tripleStore.generateFrameID();
-			objList = new DefaultRDFList(owlModel, id);
-			
-			FrameCreatorUtility.setFrameName(objList, getResourceName(obj));
-			FrameCreatorUtility.setInstanceType((Instance) objList, rdfListMetaClass);
-			
-			checkUndefinedResources(getResourceName(obj));
-		}	
-		
-	}
-
-	private boolean addFrameSlotValue(AResource subj, AResource pred, AResource obj, boolean alreadyInUndef) {
-		boolean owlPropAddSuccess = false;
-		boolean framesSlotAddSuccess = true;
-		
-		Frame frame = getFrame(getResourceName(subj), subj, pred, obj, alreadyInUndef);
-		
-		Slot slot = (Slot) getFrame(getResourceName(pred), subj, pred, obj, alreadyInUndef);
-		
-		Frame value = getFrame(getResourceName(obj), subj, pred, obj, alreadyInUndef);
-		
-		owlPropAddSuccess = FrameCreatorUtility.addOwnSlotValue(frame, slot, value);
-		
-		String framesEquivalentSlotName = OWLFramesMapping.getFramesSlotMapName(getResourceName(pred));
-			
-		if (framesEquivalentSlotName != null) {
-			Slot frameSlot = owlModel.getSlot(framesEquivalentSlotName);
-			framesSlotAddSuccess = FrameCreatorUtility.addOwnSlotValue(frame, frameSlot, value);
-		}
-		
-		return owlPropAddSuccess & framesSlotAddSuccess;			
-	}
-	
-	
-	private boolean addFrameSlotValue(AResource subj, AResource pred, ALiteral lit, boolean alreadyInUndef) {
-	
-		Frame frame = getFrame(getResourceName(subj), subj, pred, lit, alreadyInUndef);
-		
-		Slot slot = (Slot) getFrame(getResourceName(pred), subj, pred, lit, alreadyInUndef);
-		
-		RDFSLiteral literal = createRDFSLiteral(lit, (RDFProperty) slot);
-		
-		return FrameCreatorUtility.addOwnSlotValue(frame, slot, literal);			
-		
-	}
-	
-
-	private boolean createRestriction(AResource subj, AResource pred, AResource obj, boolean alreadyInUndef) {
-		FrameID id = tripleStore.generateFrameID();
-		Frame restriction = RestrictionCreatorUtility.createRestriction(owlModel, id, getResourceName(subj), getResourceName(pred));
-		
-		if (restriction == null)
-			return false;
-		
-		checkUndefinedResources(getResourceName(subj));
-		
-		Frame filler = getFrame(getResourceName(obj), subj, pred, obj, alreadyInUndef);
-		
-		return RestrictionCreatorUtility.addRestrictionFiller(owlModel, restriction, filler, pred.getURI());
-	}
-
-
-	private boolean createLogicalClass(AResource subj, AResource pred, AResource obj, boolean alreadyInUndef) {
-		FrameID id = tripleStore.generateFrameID();
-		Frame logicalClass = LogicalClassCreatorUtility.createLogicalClass(owlModel, id, getResourceName(subj), getResourceName(pred));
-		
-		if (logicalClass == null)
-			return false;
-		
-		checkUndefinedResources(getResourceName(subj));
-		
-		Frame filler = getFrame(getResourceName(obj), subj, pred, obj, alreadyInUndef);
-		
-		return LogicalClassCreatorUtility.addLogicalFiller(owlModel, logicalClass, filler, pred.getURI());		
-	}
-	
-
-	private boolean createFrameWithType(AResource subj, AResource pred, AResource obj, boolean alreadyInUndef) {
-		
-		//test for restrictions
-		if (obj.getURI().equals(OWL.Restriction.getURI())) {
-			//discard the triple for now
-			//you could put it into a cache and check at the end whether all the restrictions are well defined
-			System.out.println("\tIgnoring type triple for restriction: " + subj +" " + pred + " " + obj);
-			return true;
-		}	
-		
-		Frame type = getFrame(getResourceName(obj), subj, pred, obj, alreadyInUndef);
-		
-		if (type == null)
-			return false;
-		
-		if (!(type instanceof Cls) && !(type instanceof Slot)) {
-			Log.getLogger().warning("Attempt to create an individual " + subj.getURI() + " of " + obj.getURI() + " , but the latter is not a class.");
-			return false;
-		}
-		
-			
-		return createFrameWithType(getResourceName(subj), getResourceName(obj));
-	}
-		
-
-	private boolean createFrameWithType(String frameUri, String typeUri) {
-		Frame frame = owlModel.getFrame(frameUri);
-		
-		if (frame == null) {					
-			FrameID id = tripleStore.getNarrowFrameStore().generateFrameID();
-						
-			frame = FrameCreatorUtility.createFrameWithType(owlModel, id, frameUri, typeUri);
-						
-			if (frame != null) {
-				checkUndefinedResources(frameUri);
-			}
-		}
-		
-		return (frame != null);
-	}
-		
-
-	private void checkUndefinedResources(String uri) {
-		Collection undefTriples = undefTripleManager.getUndefTriples(uri); 
-		
-		for (Iterator iter = undefTriples.iterator(); iter.hasNext();) {
-			UndefTriple undefTriple = (UndefTriple) iter.next();
-			boolean success = processTriple(undefTriple.getTripleSubj(), undefTriple.getTriplePred(), undefTriple.getTripleObj(), true);
-			
-			//FIXME! concurrent modification exception
-			if (success)
-				//undefTripleManager.removeUndefTriple(uri, undefTriple);
-				iter.remove();
-		}
-		
-	}
-	
-	private boolean createSubclassOf(AResource subj, AResource pred, AResource obj, boolean alreadyInUndef) {
-	
-		Cls superCls = (Cls) getFrame(getResourceName(obj), subj, pred, obj, alreadyInUndef);
-			
-		//poate trebe testat daca e deja adaugat
-		Cls cls = (Cls) getFrame(getResourceName(subj), subj, pred, obj, (superCls == null) | alreadyInUndef);
-			
-		//maybe this can be done in a centralized fashion
-		if (FrameCreatorUtility.createSubclassOf(cls, superCls)) {
-			//update also the rdfs:SubclassOf
-			return FrameCreatorUtility.addOwnSlotValue(cls, owlModel.getSlot(OWLFramesMapping.getFramesSlotMapName(getResourceName(pred))), superCls);
-		}
-		
-		return false;
-	}
-	
-
-	public UndefTripleManager getUndefTripleManager() {
-		return undefTripleManager;
-	}
-	
-
-	private Frame getFrame(String frameName, AResource subj, AResource pred, AResource obj, boolean alreadyInUndef){
-		Frame frame = owlModel.getFrame(frameName);
-		if (frame == null) {
-			if (!alreadyInUndef) {
-				undefTripleManager.addUndefTriple(new UndefTriple(subj, pred, obj, frameName));				
-			}
-			return null;
-		}
-		
-		return frame;
-	}
-
-	public void processUndefTriples() {
-		for (Iterator iter = getUndefTripleManager().getUndefTriples().iterator(); iter.hasNext();) {
-			UndefTriple undefTriple = (UndefTriple) iter.next();
-			
-			boolean success = (undefTriple.getTripleObj() == null) ? processTriple(undefTriple.getTripleSubj(), undefTriple.getTriplePred(), undefTriple.getTripleLiteral(), true):
-				processTriple(undefTriple.getTripleSubj(), undefTriple.getTriplePred(), undefTriple.getTripleObj(), true);
-			
-			if (success) {
-				getUndefTripleManager().removeUndefTriple(undefTriple.getUndef(), undefTriple);
-			}
-			
-		}
-		
-	}
-
-	//move to some utility class
-	public static String getResourceName(AResource resource) {
-		if (resource.isAnonymous()) {			
-			return AbstractOWLModel.ANONYMOUS_BASE + resource.getAnonymousID();
-		} else {
-			return resource.getURI();
-		}
-	}
-
-
 	
 
 }

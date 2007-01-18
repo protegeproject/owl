@@ -8,9 +8,15 @@ import java.util.Iterator;
 
 public class UndefTripleManager {
 	HashMap<String, Collection<UndefTriple>> undefTriplesMap = new HashMap<String, Collection<UndefTriple>>();
+	
 
-	public void addUndefTriple(UndefTriple triple) {
+	public void addUndefTriple(UndefTriple triple) {		
 		//System.out.println(" +++ Adding undef triple: " + triple);
+		
+		if (undefTriplesMap.keySet().size() % 5000 == 0) {
+			System.out.println("*** Undef triples count: " + undefTriplesMap.keySet().size());
+		}
+		
 		Collection<UndefTriple> undefTriples = getUndefTriples(triple.getUndef());
 		undefTriples.add(triple);
 		undefTriplesMap.put(triple.getUndef(), undefTriples);
@@ -40,7 +46,12 @@ public class UndefTripleManager {
 		//System.out.println(" --- Removing undef triple: " + undefTriple);
 		Collection<UndefTriple> undefTriples = getUndefTriples(uri);		
 		undefTriples.remove(undefTriple);
-		undefTriplesMap.put(uri, undefTriples);
+		
+		if (undefTriples.isEmpty()) {
+			undefTriplesMap.remove(uri);
+		} else {
+			undefTriplesMap.put(uri, undefTriples);
+		}
 	}
 	
 	public void dumpUndefTriples() {
