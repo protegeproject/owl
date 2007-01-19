@@ -10,6 +10,8 @@
 <project name="Protege-OWL" default="usage" basedir=".">
 
     <property environment="env"/>
+    <property name="protege.home" value="${env.PROTEGE_HOME}"/>
+
     <property file = "local.properties"/>  
 
 
@@ -34,6 +36,7 @@
               value = "${src}/edu/stanford/smi/protegex/owl/model/classparser/compact"/>
 
     <property name = "junit" value = "./junit"/>
+
 
 	<!-- =================================================================== -->
 	<!-- USAGE -->		
@@ -61,14 +64,67 @@
     <!-- Creates the timestamp                                            -->
     <!-- ================================================================ -->
 
-    <target name="init.time" depends="">
+    <!-- 
+       #  ********** Finding Protege Libraries. *************
+       # 
+       #  We are using an approach that allows developers to decide
+       #  whether to hand copy the needed jars into the lib directory or
+       #  to point them to a protege installation.
+      -->
+    <target name="checkProtegeHome">
+      <condition property="protege.home.set">
+        <available file="${protege.home}/protege.jar" type="file"/>
+      </condition>
+    </target>
+    
+    <target name="useProtegeHome" depends="checkProtegeHome" 
+            if="protege.home.set">
+      <echo message="Using Protege Home = ${protege.home} to find protege jars"/>
+      <property name="protege.lib" value="${protege.home}/protege.jar"/>
+    </target>
+    
+    <target name="useLibDir" depends="checkProtegeHome" 
+            unless="protege.home.set">
+       <echo message="Using lib dir to find protege jars"/>
+      <property name="protege.lib" value="${lib}/protege.jar"/>
+    </target>
+
+
+    <target name = "checkProtegeLibs" depends="useProtegeHome, useLibDir">
+      <condition property="libs.found">
+        <and>
+          <available file="${protege.lib}" type = "file"/>
+        </and>
+      </condition>
+      <path id="classpath.compile">
+        <pathelement location = "${protege.lib}"/>
+        <fileset dir="${lib}"/>
+      </path>
+
+    </target>
+
+    <target name="checkProtegeLibsAndReport" depends="checkProtegeLibs"
+            unless="libs.found">
+      <echo message="Missing protege libraries.  You can either "/>
+      <echo message="set the PROTEGE_HOME environment variable to a"/>
+      <echo message="protege installation directory where the"/>
+      <echo message="appropriate plugins have been installed or copy the"/>
+      <echo message="needed jars into the lib directory"/>
+      <echo message="The jar file in question is protege.jar."/>
+      <fail message="build aborted."/>
+    </target>
+      
+   <!-- 
+     #  ********** Finding Protege Libraries Done. *************
+     -->
+	
+
+
+    <target name="init.time" depends="checkProtegeLibsAndReport">
         <tstamp/>
     </target>
 
-    <target name="init" depends="init.time">
-        <path id="classpath.compile">
-            <fileset dir="${lib}"/>
-        </path>
+    <target name="init" depends="init.time,checkProtegeLibs">
         <mkdir dir="${classes}"/>
         <mkdir dir="${dist}"/>
     </target>
@@ -184,6 +240,22 @@
         </jar>
     </target>
 
+    <target name = "update" depends = "jar">
+      <fail message = "The Protege Home variable must be set for an install">
+         <condition>
+            <not>
+               <and>
+                  <isset property="protege.home.set"/>
+               </and>
+            </not>
+         </condition>
+      </fail>
+      <copy file="${jarfile}"
+            todir = "${protege.home}/plugins/${owlplugin}"
+            overwrite = "true"/>
+   </target>
+
+
     <!-- ================================================================ -->
     <!-- Copy files into the Protege plugin directory                     -->
     <!-- ================================================================ -->
@@ -224,15 +296,42 @@
     </target>
 
 
+    <target name = "install" depends = "plugin.zip">
+      <fail message = "set the protege.dir variable to do an install">
+         <condition>
+            <not>
+               <and>
+                  <isset property="protege.dir"/>
+                  <available file="${protege.dir}"
+                             type="dir"/>
+               </and>
+            </not>
+         </condition>
+      </fail>
+      <unzip src="${dist}/${pluginName}.zip" 
+             dest = "${protege.dir}/plugins"
+             overwrite = "true"/>
+   </target>
+
+
     <target name = "junit-compile" depends = "jar">
        <javac srcdir = "${junit}" destdir = "${classes}" debug = "on">
          <classpath refid = "classpath.compile"/>
          <classpath>
             <pathelement location = "${jarfile}"/>
-            <pathelement location = "${lib}/protege-test.jar"/>
          </classpath>
       </javac>
    </target>
+
+  <target name = "checkJunitConfiguration" depends = "junit-compile">
+    <java classname = "edu.stanford.smi.protegex.owl.junit_config.CheckConfiguration">
+      <classpath>
+        <pathelement location="${classes}"/>
+        <pathelement location = "${protege.home}/protege.jar"/>
+        <pathelement location = "${lib}/junit.jar"/>
+      </classpath>
+    </java>
+  </target>
 
    <!--
      My experience is that "ant junit" provides almost no debugging
@@ -248,6 +347,7 @@
      junits are failing, removing the option 
 
         haltonfailure = "on" 
+        haltonerror   = "on"
 
      is helpful for showing all the failures.  But in the committed
      version I think that this option is very important because it
@@ -256,7 +356,7 @@
        -->
    <target name = "junit" 
            description = "run the tests (anybody can do it)"
-           depends = "plugin.dir,junit-compile">
+           depends = "plugin.dir,junit-compile,checkJunitConfiguration">
      <junit printsummary="withOutAndErr"
             dir = "." 
             fork = "yes"
@@ -265,8 +365,7 @@
       <jvmarg value="-Xmx300M"/>
       <classpath>
            <pathelement location="${classes}"/>
-           <pathelement location = "${lib}/protege.jar"/>
-           <pathelement location = "${lib}/protege-test.jar"/>
+           <pathelement location = "${protege.home}/protege.jar"/>
            <fileset
               dir="${plugin}">
               <include name = "**/*.jar"/>
