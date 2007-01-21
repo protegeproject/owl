@@ -77,7 +77,7 @@ public class OWLFrameFactoryInvocationHandler extends AbstractFrameStoreInvocati
     }
 
 
-    private Object convert(Object o) {
+    public Object convert(Object o) {
         if (o instanceof Collection) {
             return convertCollection((Collection) o);
         }
