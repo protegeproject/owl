@@ -38,14 +38,14 @@ public class AssertedClassesPanel extends SelectableContainer implements Hierarc
     protected HeaderComponent classBrowserHeader;
 
 
-    private Action createSiblingClassAction = new AbstractAction(CreateSiblingClassAction.TEXT,
+    protected Action createSiblingClassAction = new AbstractAction(CreateSiblingClassAction.TEXT,
                                                                  OWLIcons.getCreateIcon(OWLIcons.SIBLING_CLASS)) {
         public void actionPerformed(ActionEvent e) {
             createSibling();
         }
     };
 
-    private Action createSubClassAction = new AbstractAction("Create subclass",
+    protected Action createSubClassAction = new AbstractAction("Create subclass",
                                                              OWLIcons.getCreateIcon(OWLIcons.SUB_CLASS, 4)) {
         public void actionPerformed(ActionEvent e) {
             createSubclass();
@@ -94,7 +94,7 @@ public class AssertedClassesPanel extends SelectableContainer implements Hierarc
         this.hierarchyManager = hierarchyManager;
         labeledComponent.addHeaderButton(createSubClassAction);
         labeledComponent.addHeaderButton(createSiblingClassAction);
-        createSiblingClassAction.setEnabled(false);
+        //createSiblingClassAction.setEnabled(false);
         labeledComponent.addHeaderButton(deleteAction);
 
         // the existential and inferred trees
@@ -112,6 +112,10 @@ public class AssertedClassesPanel extends SelectableContainer implements Hierarc
             };
 
             subclassPane.getFinder().addButton(showInferredAction);
+            
+            updateSiblingActionState();
+            
+            
         }
 
 //        Action showHiddenAction = new AbstractAction("Explore hidden classes",
@@ -125,7 +129,13 @@ public class AssertedClassesPanel extends SelectableContainer implements Hierarc
     }
 
 
-    /**
+    protected void updateSiblingActionState() {
+    	RDFSClass selClass = getSelectedClass();    	
+        createSiblingClassAction.setEnabled((selClass == null) ? false :  (!owlModel.getOWLThingClass().equals(selClass)) );		
+	}
+
+
+	/**
      * @deprecated
      */
     protected OWLSubclassPane createSubclassPane(Action viewAction,
@@ -146,6 +156,7 @@ public class AssertedClassesPanel extends SelectableContainer implements Hierarc
                 if (subclassPane.getSelection().size() == 1) {
                     Cls cls = (Cls) subclassPane.getSelection().iterator().next();
                     createSiblingClassAction.setEnabled(!owlModel.getOWLThingClass().equals(cls));
+                                       
                     if (cls instanceof OWLNamedClass) {
                         existentialAction.setEnabled(true);
                         existentialAction.setCls((OWLNamedClass) cls);
@@ -181,7 +192,7 @@ public class AssertedClassesPanel extends SelectableContainer implements Hierarc
     }
 
 
-    private void createSibling() {
+    protected void createSibling() {
         Collection siblings = subclassPane.getSelection();
         if (siblings.size() == 1) {
             RDFSNamedClass sibling = (RDFSNamedClass) siblings.iterator().next();
@@ -190,7 +201,7 @@ public class AssertedClassesPanel extends SelectableContainer implements Hierarc
     }
 
 
-    private void createSubclass() {
+    protected void createSubclass() {
         Collection parents = subclassPane.getSelection();
         if (!parents.isEmpty()) {
             CreateSubclassAction.performAction(parents, this);
@@ -241,7 +252,7 @@ public class AssertedClassesPanel extends SelectableContainer implements Hierarc
     }
 
 
-    public Collection getSelection() {
+    public Collection getSelection() {    	
         return ((Selectable) getDisplayedComponent()).getSelection();
     }
 
