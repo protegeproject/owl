@@ -190,6 +190,11 @@ public class TriplesTable extends JTable implements TripleDisplay {
     public TableCellEditor getCellEditor(int row, int column) {
         TriplesTableModel tableModel = (TriplesTableModel) getModel();
         RDFProperty property = tableModel.getPredicate(row);
+        
+        if (property.isReadOnly()) {
+        	return null;
+        }
+        
         RDFResource range = property.getRange();
         if (property.getOWLModel().getXSDboolean().equals(range)) {
             JComboBox comboBox = new JComboBox(new Boolean[]{
