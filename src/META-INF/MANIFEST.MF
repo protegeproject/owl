@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Created-By: 1.4.2_01 (Sun Microsystems Inc.)
 
-Name: com/ebay/protegeplugins/defaultvalues/DefaultValuesProjectPlugin.class
+Name: com/ebay/protege/client/plugin/autofilling/DefaultValuesProjectPlugin.class
 Project-Plugin: True
 
 Name: com/ebay/protege/client/plugin/mactaxonomy/ui/MACOWLClassesTab.class
