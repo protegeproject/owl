@@ -233,7 +233,7 @@ public abstract class AbstractTriplesComponent extends AbstractPropertyValuesCom
 
             for (Iterator it = plugins.iterator(); it.hasNext();) {
                 AnnotationsWidgetPlugin plugin = (AnnotationsWidgetPlugin) it.next();
-                if (plugin.canEdit(subject, property, value)) {
+                if (!property.isReadOnly() && plugin.canEdit(subject, property, value)) {
                     Object newValue = plugin.editValue(null, subject, property, value);
                     if (newValue != null) {
                         tableModel.setValue(newValue, row);
