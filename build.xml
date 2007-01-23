@@ -10,6 +10,8 @@
 <project name="Protege-OWL" default="usage" basedir=".">
 
     <property environment="env"/>
+    <property name="protege.home" value="${env.PROTEGE_HOME}"/>
+
     <property file = "local.properties"/>  
 
 
@@ -35,12 +37,6 @@
 
     <property name = "junit" value = "./junit"/>
 
-    <!-- This property must point to the location of the protege.jar and    -->
-    <!-- protege-test.jar libraries.  We are making the default assumption  -->
-    <!-- that people will copy the protege.jar and protege-test.jar files   -->
-    <!-- into the protege owl library directory.  This is not a great       -->
-    <!-- assumption but I don't know a better one.                          -->
-    <property name = "protegeCoreLib" value = "${lib}"/>
 
 	<!-- =================================================================== -->
 	<!-- USAGE -->		
@@ -68,27 +64,67 @@
     <!-- Creates the timestamp                                            -->
     <!-- ================================================================ -->
 
-    <target name="init.time" depends="">
+    <!-- 
+       #  ********** Finding Protege Libraries. *************
+       # 
+       #  We are using an approach that allows developers to decide
+       #  whether to hand copy the needed jars into the lib directory or
+       #  to point them to a protege installation.
+      -->
+    <target name="checkProtegeHome">
+      <condition property="protege.home.set">
+        <available file="${protege.home}/protege.jar" type="file"/>
+      </condition>
+    </target>
+    
+    <target name="useProtegeHome" depends="checkProtegeHome" 
+            if="protege.home.set">
+      <echo message="Using Protege Home = ${protege.home} to find protege jars"/>
+      <property name="protege.lib" value="${protege.home}/protege.jar"/>
+    </target>
+    
+    <target name="useLibDir" depends="checkProtegeHome" 
+            unless="protege.home.set">
+       <echo message="Using lib dir to find protege jars"/>
+      <property name="protege.lib" value="${lib}/protege.jar"/>
+    </target>
+
+
+    <target name = "checkProtegeLibs" depends="useProtegeHome, useLibDir">
+      <condition property="libs.found">
+        <and>
+          <available file="${protege.lib}" type = "file"/>
+        </and>
+      </condition>
+      <path id="classpath.compile">
+        <pathelement location = "${protege.lib}"/>
+        <fileset dir="${lib}"/>
+      </path>
+
+    </target>
+
+    <target name="checkProtegeLibsAndReport" depends="checkProtegeLibs"
+            unless="libs.found">
+      <echo message="Missing protege libraries.  You can either "/>
+      <echo message="set the PROTEGE_HOME environment variable to a"/>
+      <echo message="protege installation directory where the"/>
+      <echo message="appropriate plugins have been installed or copy the"/>
+      <echo message="needed jars into the lib directory"/>
+      <echo message="The jar file in question is protege.jar."/>
+      <fail message="build aborted."/>
+    </target>
+      
+   <!-- 
+     #  ********** Finding Protege Libraries Done. *************
+     -->
+	
+
+
+    <target name="init.time" depends="checkProtegeLibsAndReport">
         <tstamp/>
     </target>
 
-    <target name = "checkProtegeLibs">
-      <fail message = "check the protegeCoreLib property. It should point to the location of the protege.jar and protege-test.jar libraries">
-        <condition>
-          <not>
-            <and>
-              <available file="${protegeCoreLib}/protege.jar" type = "file"/>
-            </and>
-          </not>
-        </condition>
-      </fail>
-    </target>
-
     <target name="init" depends="init.time,checkProtegeLibs">
-        <path id="classpath.compile">
-          <pathelement location = "${protegeCoreLib}/protege.jar"/>
-          <fileset dir="${lib}"/>
-        </path>
         <mkdir dir="${classes}"/>
         <mkdir dir="${dist}"/>
     </target>
@@ -205,19 +241,17 @@
     </target>
 
     <target name = "update" depends = "jar">
-      <fail message = "set the protege.dir variable to do an install">
+      <fail message = "The Protege Home variable must be set for an install">
          <condition>
             <not>
                <and>
-                  <isset property="protege.dir"/>
-                  <available file="${protege.dir}"
-                             type="dir"/>
+                  <isset property="protege.home.set"/>
                </and>
             </not>
          </condition>
       </fail>
       <copy file="${jarfile}"
-            todir = "${protege.dir}/plugins/${owlplugin}"
+            todir = "${protege.home}/plugins/${owlplugin}"
             overwrite = "true"/>
    </target>
 
@@ -285,7 +319,6 @@
          <classpath refid = "classpath.compile"/>
          <classpath>
             <pathelement location = "${jarfile}"/>
-            <pathelement location = "${protegeCoreLib}/protege-test.jar"/>
          </classpath>
       </javac>
    </target>
@@ -294,8 +327,7 @@
     <java classname = "edu.stanford.smi.protegex.owl.junit_config.CheckConfiguration">
       <classpath>
         <pathelement location="${classes}"/>
-        <pathelement location = "${protegeCoreLib}/protege.jar"/>
-        <pathelement location = "${protegeCoreLib}/protege-test.jar"/>
+        <pathelement location = "${protege.home}/protege.jar"/>
         <pathelement location = "${lib}/junit.jar"/>
       </classpath>
     </java>
@@ -333,8 +365,7 @@
       <jvmarg value="-Xmx300M"/>
       <classpath>
            <pathelement location="${classes}"/>
-           <pathelement location = "${protegeCoreLib}/protege.jar"/>
-           <pathelement location = "${protegeCoreLib}/protege-test.jar"/>
+           <pathelement location = "${protege.home}/protege.jar"/>
            <fileset
               dir="${plugin}">
               <include name = "**/*.jar"/>
