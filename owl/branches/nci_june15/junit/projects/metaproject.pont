@@ -1,85 +1,78 @@
-; Wed Sep 27 12:42:02 PDT 2006
+; Tue Jan 30 17:59:01 PST 2007
 ; 
-;+ (version "3.2")
-;+ (build "Build 339")
+;+ (version "3.2.1")
+;+ (build "Build 365")
 
 
 (defclass %3ACLIPS_TOP_LEVEL_SLOT_CLASS "Fake class to save top-level slot information"
 	(is-a USER)
 	(role abstract)
-	(single-slot owner
+	(multislot member
 		(type INSTANCE)
 ;+		(allowed-classes User)
+;+		(inverse-slot group)
+		(create-accessor read-write))
+	(single-slot location
+		(type STRING)
 ;+		(cardinality 0 1)
 		(create-accessor read-write))
-	(multislot groups
+	(multislot allowedOperation
 		(type INSTANCE)
-;+		(allowed-classes Group)
-;+		(inverse-slot members)
+;+		(allowed-classes Operation)
 		(create-accessor read-write))
 	(single-slot name_
 		(type STRING)
+;+		(cardinality 0 1)
+		(create-accessor read-write))
+	(multislot allowedGroupOperation
+		(type INSTANCE)
+;+		(allowed-classes GroupOperation)
+		(create-accessor read-write))
+	(single-slot owner
+		(type INSTANCE)
+;+		(allowed-classes User)
 ;+		(cardinality 0 1)
 		(create-accessor read-write))
 	(single-slot description
 		(type STRING)
 ;+		(cardinality 0 1)
 		(create-accessor read-write))
-	(single-slot location
-		(type STRING)
+	(single-slot allowedGroup
+		(type INSTANCE)
+;+		(allowed-classes Group)
 ;+		(cardinality 0 1)
 		(create-accessor read-write))
-	(multislot writers
+	(multislot group
 		(type INSTANCE)
-;+		(allowed-classes Group User)
+;+		(allowed-classes Group)
+;+		(inverse-slot member)
 		(create-accessor read-write))
 	(single-slot password
 		(type STRING)
 ;+		(cardinality 0 1)
-		(create-accessor read-write))
-	(multislot readers
-		(type INSTANCE)
-;+		(allowed-classes Group User)
-		(create-accessor read-write))
-	(multislot members
-		(type INSTANCE)
-;+		(allowed-classes Group User)
-;+		(inverse-slot groups)
-		(create-accessor read-write))
-	(single-slot KB_6760_00007
-		(type STRING)
-;+		(cardinality 0 1)
-		(create-accessor read-write))
-	(single-slot KB_6760_00010
-		(type STRING)
-;+		(cardinality 0 1)
 		(create-accessor read-write)))
 
-(defclass Project
+(defclass Project "This class represents the class of all projects.  When the server reads this ontology, it examines each instance of this class and attempts to load the project associated with that instance.  The only two fields that the server examines are the location, which represents the location of the project file in the file system (relative paths  are allowed) and the name, which represents the string thhat is shown to the user so the user  can choose a project to edit."
 	(is-a USER)
 	(role concrete)
-	(multislot writers
-		(type INSTANCE)
-;+		(allowed-classes Group User)
-		(create-accessor read-write))
 	(single-slot owner
 		(type INSTANCE)
 ;+		(allowed-classes User)
+;+		(cardinality 0 1)
+		(create-accessor read-write))
+	(single-slot location
+		(type STRING)
 ;+		(cardinality 0 1)
 		(create-accessor read-write))
 	(single-slot name_
 		(type STRING)
 ;+		(cardinality 0 1)
 		(create-accessor read-write))
-	(single-slot description
-		(type STRING)
-;+		(cardinality 0 1)
-		(create-accessor read-write))
-	(multislot readers
+	(multislot allowedGroupOperation
 		(type INSTANCE)
-;+		(allowed-classes Group User)
+;+		(allowed-classes GroupOperation)
 		(create-accessor read-write))
-	(single-slot location
+	(single-slot description
 		(type STRING)
 ;+		(cardinality 0 1)
 		(create-accessor read-write)))
@@ -87,13 +80,29 @@
 (defclass User
 	(is-a USER)
 	(role concrete)
+	(multislot group
+		(type INSTANCE)
+;+		(allowed-classes Group)
+		(create-accessor read-write))
+	(single-slot name_
+		(type STRING)
+;+		(cardinality 0 1)
+		(create-accessor read-write))
 	(single-slot password
 		(type STRING)
 ;+		(cardinality 0 1)
 		(create-accessor read-write))
-	(multislot groups
+	(single-slot description
+		(type STRING)
+;+		(cardinality 0 1)
+		(create-accessor read-write)))
+
+(defclass Group "Groups of users for the convenience of the policy administrator.  If a group is called World then it will implicitly be assumed that it  includes every user."
+	(is-a USER)
+	(role concrete)
+	(multislot member
 		(type INSTANCE)
-;+		(allowed-classes Group)
+;+		(allowed-classes User)
 		(create-accessor read-write))
 	(single-slot name_
 		(type STRING)
@@ -104,7 +113,7 @@
 ;+		(cardinality 0 1)
 		(create-accessor read-write)))
 
-(defclass Group
+(defclass Operation "An operation that occurs during the lifecycle of a project that should be subject to access control.  For example, the READ operation implies the ability to view a project and the EDIT operation implies the ability to read and modify a project."
 	(is-a USER)
 	(role concrete)
 	(single-slot name_
@@ -114,8 +123,17 @@
 	(single-slot description
 		(type STRING)
 ;+		(cardinality 0 1)
-		(create-accessor read-write))
-	(multislot members
+		(create-accessor read-write)))
+
+(defclass GroupOperation
+	(is-a USER)
+	(role concrete)
+	(single-slot allowedGroup
 		(type INSTANCE)
-;+		(allowed-classes Group User)
+;+		(allowed-classes Group)
+;+		(cardinality 0 1)
+		(create-accessor read-write))
+	(multislot allowedOperation
+		(type INSTANCE)
+;+		(allowed-classes Operation)
 		(create-accessor read-write)))
