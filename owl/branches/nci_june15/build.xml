@@ -297,19 +297,19 @@
 
 
     <target name = "install" depends = "plugin.zip">
-      <fail message = "set the protege.dir variable to do an install">
+      <fail message = "set the protege.home variable to do an install">
          <condition>
             <not>
                <and>
-                  <isset property="protege.dir"/>
-                  <available file="${protege.dir}"
+                  <isset property="protege.home"/>
+                  <available file="${protege.home}"
                              type="dir"/>
                </and>
             </not>
          </condition>
       </fail>
       <unzip src="${dist}/${pluginName}.zip" 
-             dest = "${protege.dir}/plugins"
+             dest = "${protege.home}/plugins"
              overwrite = "true"/>
    </target>
 
@@ -327,7 +327,7 @@
     <java classname = "edu.stanford.smi.protegex.owl.junit_config.CheckConfiguration">
       <classpath>
         <pathelement location="${classes}"/>
-        <pathelement location = "${protege.home}/protege.jar"/>
+        <pathelement location = "${protege.lib}"/>
         <pathelement location = "${lib}/junit.jar"/>
       </classpath>
     </java>
@@ -365,7 +365,7 @@
       <jvmarg value="-Xmx300M"/>
       <classpath>
            <pathelement location="${classes}"/>
-           <pathelement location = "${protege.home}/protege.jar"/>
+           <pathelement location = "${protege.lib}"/>
            <fileset
               dir="${plugin}">
               <include name = "**/*.jar"/>
