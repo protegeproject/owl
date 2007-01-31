@@ -1180,7 +1180,9 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
      * This method must be called after a file has been loaded.
      */
     public void copyFacetValuesIntoNamedClses() {
-        getOWLFrameStore().copyFacetValuesIntoNamedClses();
+    		if (getOWLFrameStore() != null) {
+    			getOWLFrameStore().copyFacetValuesIntoNamedClses();
+    		}
     }
 
 
