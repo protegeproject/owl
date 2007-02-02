@@ -49,4 +49,10 @@ public class AnnotationsTableCellHolder extends JPanel {
             setForeground(TABLE_FOREGROUND);
         }
     }
+    
+    @Override
+    public void setEnabled(boolean enabled) {
+    	component.setEnabled(enabled);
+    	super.setEnabled(enabled);
+    }
 }

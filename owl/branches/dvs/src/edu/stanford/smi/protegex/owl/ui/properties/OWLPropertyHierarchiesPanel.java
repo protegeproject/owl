@@ -170,5 +170,13 @@ public class OWLPropertyHierarchiesPanel extends JPanel
         }
         return result;
     }
+    
+    public void setEnabled(boolean enabled) {    	
+    	objectPropertyHierarchy.setEnabled(enabled);
+    	datatypePropertyHierarchy.setEnabled(enabled);
+    	annotationPropertyHierarchy.setEnabled(enabled);
+    	allPropertiesHierarchy.setEnabled(enabled);
+    	super.setEnabled(enabled);
+    };
 }
 

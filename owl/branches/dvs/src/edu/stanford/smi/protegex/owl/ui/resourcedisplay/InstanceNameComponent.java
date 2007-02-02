@@ -144,4 +144,9 @@ public class InstanceNameComponent extends JPanel implements Disposable {
     protected void commitChanges() {
         textField.attemptCommit();
     }
+    
+    public void setEnabled(boolean enabled) {
+    	setEditable(enabled);
+    	super.setEnabled(enabled);
+    };
 }

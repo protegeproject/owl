@@ -44,7 +44,7 @@ public class AnnotationsTable extends TriplesTable {
 	    propertyColumn.setPreferredWidth(200);
 		// Lang Column (always the last column)
 	    TableColumn langColumn = getColumnModel().getColumn(getColumnCount() - 1);
-        langColumn.setCellRenderer(renderer);
+        //langColumn.setCellRenderer(renderer);
         langColumn.setCellEditor(new AnnotationsLangEditor(owlModel, this));
         // Set the default row height to be that of a text field
         setRowHeight(new JTextField().getPreferredSize().height);

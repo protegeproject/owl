@@ -720,4 +720,16 @@ public abstract class SymbolTable extends SelectableTable implements TripleSelec
         desktop.setLayer(symbolPanel, JLayeredPane.POPUP_LAYER.intValue());
         desktop.add(symbolPanel);
     }
+    
+    @Override
+    public void setEnabled(boolean enabled) {    
+    	super.setEnabled(enabled);
+    	    	
+    	for (Iterator iter = actions.iterator(); iter.hasNext();) {
+			OWLTableAction action = (OWLTableAction) iter.next();
+			if (action != null) {
+				action.setEnabled(enabled);
+			}
+		}
+    }
 }

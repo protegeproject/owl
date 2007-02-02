@@ -27,11 +27,14 @@ import java.awt.event.ActionEvent;
 public class HeaderWidget extends AbstractSlotWidget {
 
     private AbstractTriplesComponent component;
-
+    private AbstractAction switchToTriplesAction;
+    private AbstractAction switchToAnnotationsAction;
 
     public void activate(AbstractTriplesComponent newComponent) {
-
+    	boolean isEnabled = true;
+    	
         if (component != null) {
+        	isEnabled = component.isEnabled();
             removeAll();
             ComponentUtilities.dispose(component);
         }
@@ -39,6 +42,8 @@ public class HeaderWidget extends AbstractSlotWidget {
         component = newComponent;
         component.setSubject((RDFResource) getInstance());
         add(BorderLayout.CENTER, component);
+        
+        component.setEnabled(isEnabled);
         revalidate();
     }
 
@@ -50,28 +55,31 @@ public class HeaderWidget extends AbstractSlotWidget {
                 super.addButtons(lc);
                 lc.addHeaderSeparator();
                 lc.addHeaderSeparator();
-                lc.addHeaderButton(new AbstractAction("Switch to Triples", OWLIcons.getImageIcon(OWLIcons.TRIPLES)) {
+                switchToTriplesAction = new AbstractAction("Switch to Triples", OWLIcons.getImageIcon(OWLIcons.TRIPLES)) {
                     public void actionPerformed(ActionEvent e) {
                         activateTriplesComponent();
                     }
-                });
+                };
+                
+                lc.addHeaderButton(switchToTriplesAction);
             }
         });
     }
 
 
-    public void activateTriplesComponent() {
+    public void activateTriplesComponent() {    	
         RDFProperty property = (RDFProperty) getSlot();
         activate(new TriplesComponent(property) {
             protected void addButtons(LabeledComponent lc) {
                 super.addButtons(lc);
                 lc.addHeaderSeparator();
                 lc.addHeaderSeparator();
-                lc.addHeaderButton(new AbstractAction("Switch to Annotations", OWLIcons.getImageIcon(OWLIcons.ANNOTATIONS_TABLE)) {
+                switchToAnnotationsAction = new AbstractAction("Switch to Annotations", OWLIcons.getImageIcon(OWLIcons.ANNOTATIONS_TABLE)) {
                     public void actionPerformed(ActionEvent e) {
                         activateAnnotationsComponent();
                     }
-                });
+                };
+                lc.addHeaderButton(switchToAnnotationsAction);
             }
         });
     }
@@ -92,7 +100,28 @@ public class HeaderWidget extends AbstractSlotWidget {
         super.setInstance(newInstance);
         if (newInstance instanceof RDFResource) {
             RDFResource resource = (RDFResource) newInstance;
-            component.setSubject(resource);
+            component.setSubject(resource);          
         }
     }
+    
+	@Override
+	public void setEnabled(boolean enabled) {
+		component.setEnabled(enabled);	
+		super.setEnabled(enabled);
+	}
+
+
+	public AbstractTriplesComponent getComponent() {
+		return component;
+	}
+
+
+	public AbstractAction getSwitchToTriplesAction() {
+		return switchToTriplesAction;
+	}
+
+
+	public AbstractAction getSwitchToAnnotationsAction() {
+		return switchToAnnotationsAction;
+	}
 }

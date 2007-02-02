@@ -129,4 +129,12 @@ public class PropertiesSuperclassesWidget extends ClassDescriptionWidget {
             }
         }
     }
+    
+    @Override
+    public void setEnabled(boolean enabled) {    
+    	super.setEnabled(enabled);
+    	
+    	addRowAction.setEnabled(enabled);
+    	createRowAction.setEnabled(enabled);
+    }
 }

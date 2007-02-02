@@ -47,6 +47,11 @@ public abstract class AbstractTriplesComponent extends AbstractPropertyValuesCom
     private TriplesTableModel tableModel;
 
     private Action viewValueAction;
+    
+    private boolean enabled = true; 
+    
+    private MouseListener doubleClickMouseListener;
+
 
 
     public AbstractTriplesComponent(RDFProperty predicate) {
@@ -81,13 +86,14 @@ public abstract class AbstractTriplesComponent extends AbstractPropertyValuesCom
             }
         });
 
-        table.addMouseListener(new MouseAdapter() {
+        doubleClickMouseListener = new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
                 if (e.getClickCount() == 2) {
                     handleTableDoubleClick();
                 }
-            }
-        });
+            }}; 
+        
+        table.addMouseListener(doubleClickMouseListener);
 
         // forces any current editing to stop if the window closes
         addContainerListener(new ContainerAdapter(){
@@ -159,7 +165,7 @@ public abstract class AbstractTriplesComponent extends AbstractPropertyValuesCom
     }
 
 
-    private void handleTableDoubleClick() {
+    public void handleTableDoubleClick() {
         int selIndex = table.getSelectedRow();
         if (selIndex >= 0 && selIndex < tableModel.getRowCount() && viewValueAction.isEnabled()) {
             viewValue();
@@ -276,4 +282,21 @@ public abstract class AbstractTriplesComponent extends AbstractPropertyValuesCom
         }
         return true;
     }
+ 
+    
+	public boolean isEnabled() {
+		return enabled;
+	}
+
+
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
+	}
+
+
+	public MouseListener getDoubleClickMouseListener() {
+		return doubleClickMouseListener;
+	}
+    
+ 
 }

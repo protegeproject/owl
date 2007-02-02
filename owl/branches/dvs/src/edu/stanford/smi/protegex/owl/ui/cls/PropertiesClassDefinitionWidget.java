@@ -48,4 +48,12 @@ public class PropertiesClassDefinitionWidget extends AbstractClassDefinitionWidg
         allPanel.setLayout(new BorderLayout());
         allPanel.add(BorderLayout.CENTER, mainPanel);
     }
+    
+    @Override
+    public void setEnabled(boolean b) {    
+    	super.setEnabled(b);
+    	
+    	propertyRestrictionsTreeWidget.setEnabled(b);
+    	superclassesWidget.setEnabled(b);
+    }
 }

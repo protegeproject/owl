@@ -160,4 +160,12 @@ public class ConditionsWidget extends AbstractPropertyWidget implements Inferred
     protected void updateBorder(Collection values) {
         setBorder(null);
     }
+    
+    
+    @Override
+    public void setEnabled(boolean enabled) {    
+    	super.setEnabled(enabled);
+    	
+    	currentWidget.setEnabled(enabled);
+    }
 }

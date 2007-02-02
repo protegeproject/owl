@@ -137,7 +137,7 @@ public abstract class OWLTable extends SymbolTable {
                         if (sel >= 0 && sel < tableModel.getRowCount()) {
                             RDFSClass superclass = tableModel.getClass(sel);
                             boolean enabled = action.isEnabledFor(superclass, sel);
-                            action.setEnabled(enabled);
+                            action.setEnabled(enabled && isEnabled());
                         }
                         else {
                             action.setEnabled(false);
@@ -158,7 +158,7 @@ public abstract class OWLTable extends SymbolTable {
                                 }
                             }
                         }
-                        action.setEnabled(en && one);
+                        action.setEnabled(en && one && isEnabled());
                     }
                 }
                 else {
@@ -242,4 +242,5 @@ public abstract class OWLTable extends SymbolTable {
     private void viewSelectedCls() {
         editAnnotations();
     }
+
 }

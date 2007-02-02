@@ -56,5 +56,11 @@ public class OWLPropertyHierarchyPanel extends JPanel {
 	public OWLSuperpropertiesPanel getSuperpropertiesPanel() {
 		return superpropertiesPanel;
 	}
+	
+	public void setEnabled(boolean enabled) {		
+		subpropertyPane.setEnabled(enabled);
+		superpropertiesPanel.setEnabled(enabled);
+		super.setEnabled(enabled);
+	};
 }
 

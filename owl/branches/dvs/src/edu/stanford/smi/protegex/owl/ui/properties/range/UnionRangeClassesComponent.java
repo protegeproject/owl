@@ -264,4 +264,12 @@ public class UnionRangeClassesComponent extends JComponent {
         table.hideSymbolPanel();
         tableModel.refill();
     }
+    
+    public void setEnabled(boolean enabled) {    	
+    	table.setEnabled(enabled);
+    	addAction.setEnabled(enabled);
+    	createAction.setEnabled(enabled);
+    	deleteAction.setEnabled(enabled);    	
+    	super.setEnabled(enabled);
+    };
 }

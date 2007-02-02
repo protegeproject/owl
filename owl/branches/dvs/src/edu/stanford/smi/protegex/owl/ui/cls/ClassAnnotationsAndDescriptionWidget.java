@@ -73,4 +73,17 @@ public class ClassAnnotationsAndDescriptionWidget extends MultiWidgetPropertyWid
         }
         return false;
     }
+    
+    @Override
+    public void setEnabled(boolean b) {    
+    	super.setEnabled(b);
+    	
+    	headerWidget.setEnabled(b);
+    	switchableClassDefinitionWidget.setEnabled(b);
+    }
+
+
+	public HeaderWidget getHeaderWidget() {
+		return headerWidget;
+	}
 }

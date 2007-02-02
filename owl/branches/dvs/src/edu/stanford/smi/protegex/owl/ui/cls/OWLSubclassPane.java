@@ -40,6 +40,8 @@ public class OWLSubclassPane extends SelectableContainer implements ClassTreePan
     private ClassTree tree;
 
     private ResourceFinder finder;
+    
+    private TreePopupMenuMouseListener popupListener;
 
 
     /**
@@ -71,18 +73,41 @@ public class OWLSubclassPane extends SelectableContainer implements ClassTreePan
         add(BorderLayout.SOUTH, finder);
         setupDragAndDrop();
         getTree().setCellRenderer(FrameRenderer.createInstance());
-        getTree().addMouseListener(new TreePopupMenuMouseListener(tree) {
-            public JPopupMenu getPopupMenu() {
-                return OWLSubclassPane.this.getPopupMenu();
-            }
-        });
-        this.owlModel = owlModel;
+        
+        popupListener = createTreePopupListener();
+        
+        getTree().addMouseListener(popupListener);
+        
+        //this.owlModel = owlModel;
         Slot directSuperclassesSlot = ((KnowledgeBase) owlModel).getSlot(Model.Slot.DIRECT_SUPERCLASSES);
         ((JTree) getSelectable()).setCellRenderer(new ResourceRenderer(directSuperclassesSlot));
     }
 
 
-    protected JPopupMenu createPopupMenu() {
+    public TreePopupMenuMouseListener createTreePopupListener() {
+    	
+    	if (popupListener != null) {
+    		tree.removeMouseListener(popupListener);
+    	}
+    	
+    	TreePopupMenuMouseListener listener = new TreePopupMenuMouseListener(tree) {
+            public JPopupMenu getPopupMenu() {
+                return OWLSubclassPane.this.getPopupMenu();
+            }
+        };	
+        
+    	return listener;
+	}
+
+
+
+    public TreePopupMenuMouseListener getTreePopupListener() {
+    	return popupListener;    	
+	}
+
+    
+    
+	protected JPopupMenu createPopupMenu() {
         Collection sel = getSelection();
         if (sel.size() == 1) {
             Cls cls = (Cls) sel.iterator().next();

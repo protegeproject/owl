@@ -450,4 +450,15 @@ public class OWLSubpropertyPane extends SelectableContainer implements HostResou
         }
         return true;
     }
+    
+    public void setEnabled(boolean enabled) {    	
+    	createAnnotationOWLDatatypePropertyAction.setEnabled(enabled);
+    	createAnnotationOWLObjectPropertyAction.setEnabled(enabled);
+    	createOWLDatatypePropertyAction.setEnabled(enabled);
+    	createOWLObjectPropertyAction.setEnabled(enabled);
+    	createRDFPropertyAction.setEnabled(enabled);
+    	createSubpropertyAction.setEnabled(enabled);
+    	deletePropertyAction.setEnabled(enabled);    
+    	super.setEnabled(enabled);
+    };
 }

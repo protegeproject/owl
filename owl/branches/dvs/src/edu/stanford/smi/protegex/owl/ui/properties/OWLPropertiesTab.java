@@ -12,6 +12,7 @@ import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
 import edu.stanford.smi.protegex.owl.ui.cls.OWLClassesTab;
 import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
 import edu.stanford.smi.protegex.owl.ui.navigation.NavigationHistoryTabWidget;
+import edu.stanford.smi.protegex.owl.ui.resourcedisplay.ResourceDisplay;
 import edu.stanford.smi.protegex.owl.ui.resourcedisplay.ResourcePanel;
 import edu.stanford.smi.protegex.owl.ui.widget.AbstractTabWidget;
 
@@ -98,5 +99,12 @@ public class OWLPropertiesTab extends AbstractTabWidget implements NavigationHis
     private void transmitSelection() {
         RDFProperty selection = (RDFProperty) CollectionUtilities.getFirstItem(owlHierarchiesPanel.getSelection());
         resourcePanel.setResource(selection);
+    }
+    
+    @Override
+    public void setEnabled(boolean enabled) {    	
+    	owlHierarchiesPanel.setEnabled(enabled);
+    	((ResourceDisplay)resourcePanel).setEnabled(enabled);
+    	super.setEnabled(enabled);
     }
 }

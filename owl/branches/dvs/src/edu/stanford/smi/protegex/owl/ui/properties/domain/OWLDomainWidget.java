@@ -159,4 +159,11 @@ public class OWLDomainWidget extends AbstractPropertyWidget {
         boolean enabled = property != null && property.isEditable();
         addAction.setEnabled(enabled);
     }
+    
+    public void setEnabled(boolean enabled) {    	
+    	addAction.setEnabled(enabled);
+    	removeAction.setAllowed(enabled);
+    	table.setEnabled(enabled);
+    	super.setEnabled(enabled);
+    };
 }

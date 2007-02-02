@@ -16,10 +16,12 @@ import java.util.Iterator;
  * @author Holger Knublauch  <holger@knublauch.com>
  */
 public class TriplesComponent extends AbstractTriplesComponent {
-
-
+    
     private Action deleteRowAction;
-
+    private Action createObjectPropertyValueAction;
+    private Action createDatatypePropertyValueAction;
+    private Action todoAction;
+    private Action addResourceAction;
 
     public TriplesComponent(RDFProperty predicate) {
         this(predicate, "Triples", OWLIcons.getImageIcon(OWLIcons.TRIPLES));
@@ -30,9 +32,9 @@ public class TriplesComponent extends AbstractTriplesComponent {
         super(predicate, label, icon);
     }
 
-
+    
     protected void addButtons(LabeledComponent lc) {
-        lc.addHeaderButton(new CreateValueAction(getTable(), "Create datatype property value...", OWLIcons.getCreateIndividualIcon(OWLIcons.DATATYPE_TRIPLE)) {
+    	createDatatypePropertyValueAction = new CreateValueAction(getTable(), "Create datatype property value...", OWLIcons.getCreateIndividualIcon(OWLIcons.DATATYPE_TRIPLE)) {
             protected Collection getAllowedProperties(OWLModel owlModel) {
                 Collection results = new ArrayList();
                 Iterator it = owlModel.getRDFProperties().iterator();
@@ -50,8 +52,11 @@ public class TriplesComponent extends AbstractTriplesComponent {
                 results.remove(owlModel.getRDFProperty(Model.Slot.PAL_STATEMENT));
                 return results;
             }
-        });
-        lc.addHeaderButton(new CreateValueAction(getTable(), "Create object property value...", OWLIcons.getCreateIndividualIcon(OWLIcons.RDF_INDIVIDUAL)) {
+        };
+        
+        lc.addHeaderButton(createDatatypePropertyValueAction);
+        
+        createObjectPropertyValueAction = new CreateValueAction(getTable(), "Create object property value...", OWLIcons.getCreateIndividualIcon(OWLIcons.RDF_INDIVIDUAL)) {
             protected Collection getAllowedProperties(OWLModel owlModel) {
                 Collection results = new ArrayList();
                 Iterator it = super.getAllowedProperties(owlModel).iterator();
@@ -64,11 +69,15 @@ public class TriplesComponent extends AbstractTriplesComponent {
                 }
                 return results;
             }
-        });
-        lc.addHeaderButton(new AddResourceAction(getTable()));
+        };
+        lc.addHeaderButton(createObjectPropertyValueAction);
+        
+        addResourceAction = new AddResourceAction(getTable());
+        lc.addHeaderButton(addResourceAction);
+        
         deleteRowAction = new DeleteTripleAction(getTable());
         lc.addHeaderButton(deleteRowAction);
-        deleteRowAction.setEnabled(false);
+        
     }
 
 
@@ -87,7 +96,6 @@ public class TriplesComponent extends AbstractTriplesComponent {
         return false;
     }
 
-
     protected void updateActions() {
         super.updateActions();
         final int row = getTable().getSelectedRow();
@@ -96,6 +104,15 @@ public class TriplesComponent extends AbstractTriplesComponent {
         if (row >= 0) {
             deleteRowEnabled = tableModel.isDeleteEnabled(row);
         }
-        deleteRowAction.setEnabled(deleteRowEnabled);
+        deleteRowAction.setEnabled(isEnabled() && deleteRowEnabled);
     }
+    
+    public void setEnabled(boolean enabled) {    	
+    	createDatatypePropertyValueAction.setEnabled(enabled);
+    	createObjectPropertyValueAction.setEnabled(enabled);
+    	addResourceAction.setEnabled(enabled);
+    	deleteRowAction.setEnabled(enabled);
+    	getTable().setEnabled(enabled);
+    	super.setEnabled(enabled);
+    };
 }

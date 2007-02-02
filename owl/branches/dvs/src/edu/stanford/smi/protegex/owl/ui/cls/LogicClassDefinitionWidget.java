@@ -40,4 +40,15 @@ public class LogicClassDefinitionWidget extends AbstractClassDefinitionWidget {
         allPanel.setLayout(new BorderLayout());
         allPanel.add(BorderLayout.CENTER, mainPanel);
     }
+    
+    @Override
+    public void setEnabled(boolean b) {    
+    	super.setEnabled(b);
+    	
+    	conditionsWidget.setEnabled(b);
+    	if (clsPropertiesWidget != null) {
+    		clsPropertiesWidget.setEnabled(b);
+    	}
+    }
+    
 }

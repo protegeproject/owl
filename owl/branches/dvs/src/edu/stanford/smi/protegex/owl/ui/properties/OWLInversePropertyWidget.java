@@ -318,4 +318,12 @@ public class OWLInversePropertyWidget extends AbstractPropertyWidget {
         addAction.setEnabled(editable);
         removeAction.setAllowed(editable);
     }
+    
+    @Override
+    public void setEnabled(boolean enabled) {    	
+        createAction.setAllowed(enabled);
+        addAction.setEnabled(enabled);
+        removeAction.setAllowed(enabled);    	
+    	super.setEnabled(enabled);
+    }
 }

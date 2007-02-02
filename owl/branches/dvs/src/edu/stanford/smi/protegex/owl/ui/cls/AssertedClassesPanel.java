@@ -219,7 +219,11 @@ public class AssertedClassesPanel extends SelectableContainer implements Hierarc
     }
 
 
-    protected AllowableAction getDeleteClsAction() {
+    public AllowableAction getDeleteClsAction() {
+    	if (deleteAction != null) {
+    		return deleteAction;
+    	}
+    		
         return new AllowableDeleteAction(this);
     }
 

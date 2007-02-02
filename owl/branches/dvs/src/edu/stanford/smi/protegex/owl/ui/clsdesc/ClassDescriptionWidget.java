@@ -133,4 +133,13 @@ public abstract class ClassDescriptionWidget extends AbstractPropertyWidget {
             table.setCls(null);
         }
     }
+    
+    @Override
+    public void setEnabled(boolean enabled) {    
+    	super.setEnabled(enabled);
+    	
+    	table.setEnabled(enabled);
+    	
+    	
+    }
 }

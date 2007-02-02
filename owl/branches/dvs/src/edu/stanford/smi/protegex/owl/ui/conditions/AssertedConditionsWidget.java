@@ -215,4 +215,14 @@ public class AssertedConditionsWidget extends AbstractConditionsWidget {
             addNamedClassAction.setEnabled(!thing);
         }
     }
+    
+    @Override
+    public void setEnabled(boolean enabled) {    
+    	super.setEnabled(enabled);
+    	
+    	createExpressionAction.setEnabled(enabled);
+    	createRestrictionAction.setEnabled(enabled);
+    	addNamedClassAction.setEnabled(enabled);
+    	deleteAction.setEnabled(enabled);
+    }
 }
