@@ -236,6 +236,16 @@ public abstract class MultiWidgetPropertyWidget extends AbstractPropertyWidget {
             }
         }
     }
+    
+    public void setEnabled(boolean b) {
+        super.setEnabled(b);
+        for (Iterator it = widgets.iterator(); it.hasNext();) {
+            SlotWidget slotWidget = (SlotWidget) it.next();
+            if (slotWidget instanceof AbstractSlotWidget) {
+                ((AbstractSlotWidget) slotWidget).setEnabled(b);
+            }
+        }
+    }
 
 
     /**

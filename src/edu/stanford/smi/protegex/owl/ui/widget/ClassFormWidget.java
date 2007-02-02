@@ -50,5 +50,11 @@ public class ClassFormWidget extends AbstractPropertyWidget {
             classForm.setNamedClass(null);
         }
     }
+    
+    @Override
+    public void setEnabled(boolean enabled) {    
+    	super.setEnabled(enabled);
+    	classForm.setEnabled(enabled);
+    }
 }
 

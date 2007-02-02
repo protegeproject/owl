@@ -129,4 +129,11 @@ public abstract class AbstractConditionsWidget extends AbstractPropertyWidget
             }
         }
     }
+    
+    @Override
+    public void setEnabled(boolean enabled) {    
+    	super.setEnabled(enabled);
+    	
+    	table.setEnabled(enabled);
+    }
 }

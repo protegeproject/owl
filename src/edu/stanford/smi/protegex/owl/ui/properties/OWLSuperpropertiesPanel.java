@@ -190,4 +190,11 @@ public class OWLSuperpropertiesPanel extends SelectableContainer {
         list.setModel(model);
         repaint();
     }
+    
+    @Override
+    public void setEnabled(boolean enabled) {    	
+    	addAction.setEnabled(enabled);
+    	removeAction.setEnabled(enabled);
+    	super.setEnabled(enabled);
+    } 
 }

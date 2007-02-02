@@ -3,6 +3,7 @@ package edu.stanford.smi.protegex.owl.ui.clsdesc;
 import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.Facet;
 import edu.stanford.smi.protege.model.Slot;
+import edu.stanford.smi.protege.util.LabeledComponent;
 import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
 import edu.stanford.smi.protegex.owl.model.OWLNames;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
@@ -212,6 +213,18 @@ public class DisjointClassesWidget extends ClassDescriptionWidget {
     }
 
 
+    public void setEnabled(boolean enabled) {
+        super.setEditable(enabled);
+        LabeledComponent lc = (LabeledComponent) getComponent(0);
+        for (Iterator it = lc.getHeaderButtonActions().iterator(); it.hasNext();) {
+            Action action = (Action) it.next();
+            action.setEnabled(enabled);
+        }
+        getTable().setEnabled(enabled);
+        getTable().enableActions();
+    }
+    
+    
     private class SiblingsPanel extends JPanel {
 
         private JRadioButton mutuallyRadioButton;

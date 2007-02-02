@@ -271,4 +271,12 @@ public class OWLRangeWidget extends AbstractPropertyWidget {
             }
         }
     }
+    
+    
+    public void setEnabled(boolean enabled) {    
+    	classesComponent.setEnabled(enabled);
+    	dataRangeComponent.setEnabled(enabled);
+    	super.setEnabled(enabled);
+    }
+
 }

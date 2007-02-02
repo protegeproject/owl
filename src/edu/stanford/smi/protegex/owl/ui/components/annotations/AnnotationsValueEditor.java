@@ -1,7 +1,9 @@
 package edu.stanford.smi.protegex.owl.ui.components.annotations;
 
+import edu.stanford.smi.protegex.owl.model.OWLDataRange;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
+import edu.stanford.smi.protegex.owl.model.RDFResource;
 import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
 
 import javax.swing.*;
@@ -13,7 +15,9 @@ import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
+import java.util.Collection;
 import java.util.EventObject;
+import java.util.Iterator;
 
 /**
  * User: matthewhorridge<br>
@@ -34,7 +38,9 @@ public class AnnotationsValueEditor extends AbstractCellEditor implements TableC
 
     private AnnotationsTableCellHolder singleLineHolder;
 
-    private JTextComponent textComponent;
+    private JComponent editorComponent;
+            
+    private AnnotationsTableCellHolder comboBoxHolder;
 
     private JTable table;
 
@@ -72,11 +78,18 @@ public class AnnotationsValueEditor extends AbstractCellEditor implements TableC
         textField = new JTextField();
         OWLUI.addCopyPastePopup(textField);
         singleLineHolder = new AnnotationsTableCellHolder(textField, BorderLayout.CENTER);
+
     }
 
 
     public Object getCellEditorValue() {
-        return textComponent.getText().trim();
+    	if (editorComponent instanceof JTextComponent) {
+    		return ((JTextComponent)editorComponent).getText().trim();
+    	} else if (editorComponent instanceof JComboBox) {
+    		return ((JComboBox)editorComponent).getSelectedItem();
+    	} else {
+    		return editorComponent.toString();
+    	}
     }
 
 
@@ -86,35 +99,77 @@ public class AnnotationsValueEditor extends AbstractCellEditor implements TableC
                                                  final int row,
                                                  final int column) {
         RDFProperty property = (RDFProperty) table.getValueAt(row, AnnotationsTableModel.COL_PROPERTY);
-        if (AnnotationsTable.isMultiLineProperty(property)) {
+        
+        if (property.isReadOnly()) {
+        	return null;
+        }
+        
+        RDFResource range = property.getRange();
+        if (property.getOWLModel().getXSDboolean().equals(range)) {
+        	        	
+            JComboBox comboBox = new JComboBox(new Boolean[]{
+                    Boolean.FALSE,
+                    Boolean.TRUE
+            });
+            
+            editorComponent = comboBox;
+        	
+            return comboBox;
+        }
+        
+        else if (range instanceof OWLDataRange) {
+            Collection allowedValues = getOWLDataRangeValues(property, value);
+            
+            if (allowedValues == null || allowedValues.size() == 0) {
+            	return null;
+            }
+            
+            JComboBox comboBox = new JComboBox(allowedValues.toArray());
+            
+            comboBox.setSelectedItem(value);
+            
+            editorComponent = comboBox;
+            focusTextField();
+            
+            return comboBox;
+  
+        }     
+        
+        else if (AnnotationsTable.isMultiLineProperty(property)) {
             textArea.setText(value != null ? value.toString() : "");
             int rowHeight = getRowHeight(table, row);
             if (table.getRowHeight(row) != rowHeight) {
                 table.setRowHeight(row, rowHeight);
             }
-            textComponent = textArea;
+            editorComponent = textArea;
             focusTextField();
             return multiLineHolder;
         }
         else {
             textField.setText(value != null ? value.toString() : "");
-            textComponent = textField;
+            editorComponent = textField;
             focusTextField();
             return singleLineHolder;
         }
     }
 
 
-    private void focusTextField() {
+    protected Collection getOWLDataRangeValues(RDFProperty property, Object value) {		
+    	RDFResource range = property.getRange();
+		return ((OWLDataRange) range).getOneOfValues();
+	}
+
+
+	private void focusTextField() {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                textComponent.requestFocus();
+                editorComponent.requestFocus();
             }
         });
     }
 
 
-	public boolean isCellEditable(EventObject e) {
+	public boolean isCellEditable(EventObject e) {		
 		// Only edit cell if the user has double
 		// clicked it.
 		if(e instanceof MouseEvent) {
@@ -122,7 +177,7 @@ public class AnnotationsValueEditor extends AbstractCellEditor implements TableC
 		}
 		else {
 			return super.isCellEditable(e);
-		}
+		}		
 	}
 
 
@@ -145,6 +200,11 @@ public class AnnotationsValueEditor extends AbstractCellEditor implements TableC
         }
         return preferredHeight;
     }
+
+
+	public JTable getTable() {
+		return table;
+	}
 
 
 }

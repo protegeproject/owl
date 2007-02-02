@@ -413,4 +413,5 @@ public class ConditionsTable extends OWLTable
             }
         }
     }
+    
 }

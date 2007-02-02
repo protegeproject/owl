@@ -69,7 +69,7 @@ public class TriplesTable extends JTable implements TripleDisplay {
         	public Component getTableCellRendererComponent(JTable table, Object value, boolean selected, boolean hasFocus, int row, int col) {
         		Component comp = super.getTableCellRendererComponent(table, value, selected, hasFocus, row, col);
         		
-        		Object prop = table.getValueAt(row, TriplesTableModel.COL_PROPERTY); 
+        		Object prop = table.getValueAt(row, TriplesTableModel.COL_PROPERTY);
         		if (prop != null && prop instanceof RDFProperty) {
         			comp.setEnabled(((RDFProperty)prop).isReadOnly());
         		}
@@ -188,6 +188,7 @@ public class TriplesTable extends JTable implements TripleDisplay {
 
 
     public TableCellEditor getCellEditor(int row, int column) {
+    	/*
         TriplesTableModel tableModel = (TriplesTableModel) getModel();
         RDFProperty property = tableModel.getPredicate(row);
         
@@ -196,7 +197,7 @@ public class TriplesTable extends JTable implements TripleDisplay {
         }
         
         RDFResource range = property.getRange();
-        if (property.getOWLModel().getXSDboolean().equals(range)) {
+       if (property.getOWLModel().getXSDboolean().equals(range)) {
             JComboBox comboBox = new JComboBox(new Boolean[]{
                     Boolean.FALSE,
                     Boolean.TRUE
@@ -206,11 +207,14 @@ public class TriplesTable extends JTable implements TripleDisplay {
         else if (range instanceof OWLDataRange) {
             Collection allowedValues = ((OWLDataRange) range).getOneOfValues();
             JComboBox comboBox = new JComboBox(allowedValues.toArray());
-            return new DefaultCellEditor(comboBox);
+            return super.getCellEditor(row, column);
+//            return new DefaultCellEditor(comboBox);
         }
         else {
             return super.getCellEditor(row, column);
         }
+        */
+    	return super.getCellEditor(row, column);
     }
 
 

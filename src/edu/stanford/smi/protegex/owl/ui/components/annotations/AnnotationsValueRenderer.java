@@ -20,7 +20,7 @@ import java.awt.*;
  */
 public class AnnotationsValueRenderer implements TableCellRenderer {
 
-    private JTextArea textArea;
+    protected JTextArea textArea;
 
     private JLabel label;
 
@@ -92,6 +92,7 @@ public class AnnotationsValueRenderer implements TableCellRenderer {
         	} 
         	
         	textArea.setEnabled(enabled);
+        	
         	textArea.setText(o != null ? o.toString() : "");
         	plainTextPropertyValHolder.setColors(selected, hasFocus);
         	return plainTextPropertyValHolder;

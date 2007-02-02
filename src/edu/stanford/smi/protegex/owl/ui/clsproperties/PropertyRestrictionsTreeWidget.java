@@ -335,4 +335,16 @@ public class PropertyRestrictionsTreeWidget extends AbstractPropertyWidget {
             updateTreeDisplayRestrictions();
         }
     }
+    
+    @Override
+    public void setEnabled(boolean enabled) {    
+    	super.setEnabled(enabled);
+    	addPropertyAction.setEnabled(enabled);
+    	createDatatypePropertyAction.setEnabled(enabled);
+    	createObjectPropertyAction.setEnabled(enabled);
+    	createRDFPropertyAction.setEnabled(enabled);
+    	removeAction.setEnabled(enabled);
+    	tree.getCreateRestrictionAction().setEnabled(enabled);
+    	tree.getDeleteRestrictionAction().setEnabled(enabled);
+    }
 }

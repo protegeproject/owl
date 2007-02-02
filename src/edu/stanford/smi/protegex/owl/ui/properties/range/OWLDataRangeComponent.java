@@ -146,4 +146,11 @@ public class OWLDataRangeComponent extends JComponent {
         createAction.setEnabled(editable);
         deleteAction.setEnabled(editable && list.getSelectedValue() != null);
     }
+    
+    public void setEnabled(boolean enabled) {    	
+    	createAction.setEnabled(enabled);
+    	deleteAction.setEnabled(enabled);
+    	setEditable(enabled);
+    	super.setEnabled(enabled);
+    };
 }
