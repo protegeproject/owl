@@ -35,10 +35,10 @@ public class RuleInfo extends Info
 
   // Find all built-in atoms with unbound arguments and tell them which of their arguments are unbound.
   //
-  // If a variable passed as a parameter to a body built-in is unbound when the built-in is called then we assume that the built-in is going
-  // to assign a value to that variable. (Head built-in atoms will never bind their variable argument because head variables will always be
-  // bound because of SWRL's safety requirement.) We can determine that a variable passed to a built-in is unbound if it is not referenced
-  // in any non built-in atom in the rule body or is not bound by another built-in. For example, in the rule:
+  // If an unbound variable is passed as a parameter to a body built-in then we assume that the built-in is going to assign a value to
+  // it. (Head built-in atoms will never bind their variable arguments because head variables will always be bound due to SWRL's safety
+  // requirement.) We can determine that a variable passed to a built-in is unbound if it is not referenced in any non built-in atom in the
+  // rule body or is not bound by another built-in. For example, in the rule:
   //
   // Person(?p) ^ hasSalaryInPounds(?p, ?pounds) ^ swrlb:multiply(?dollars, ?pounds, ?1.6) -> hasSalaryInDollars(?p, ?dollars)
   // 

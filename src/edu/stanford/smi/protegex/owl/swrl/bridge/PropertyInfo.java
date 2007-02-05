@@ -71,9 +71,9 @@ public class PropertyInfo extends Info
     if (individual == null) throw new InvalidIndividualNameException(individualInfo.getIndividualName());
     
     if (property.isObjectProperty()) {
-	individualInfo = (IndividualInfo)predicate;
-	object = owlModel.getOWLIndividual(individualInfo.getIndividualName());
-	if (object == null) throw new InvalidIndividualNameException(individualInfo.getIndividualName());
+      individualInfo = (IndividualInfo)predicate;
+      object = owlModel.getOWLIndividual(individualInfo.getIndividualName());
+      if (object == null) throw new InvalidIndividualNameException(individualInfo.getIndividualName());
     } else { // Is a datatype property, so will be held in a LiteralInfo.
       // In Protege-OWL RDFS literals without a selected language are stored as String objects.
       LiteralInfo literalInfo = (LiteralInfo)predicate;

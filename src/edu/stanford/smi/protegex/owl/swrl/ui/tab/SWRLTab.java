@@ -47,11 +47,14 @@ public class SWRLTab extends AbstractTabWidget
     try {
       owlModel.getNamespaceManager().setPrefix(new URI(SWRLNames.SWRL_NAMESPACE), SWRLNames.SWRL_PREFIX);
       owlModel.getNamespaceManager().setPrefix(new URI(SWRLNames.SWRLB_NAMESPACE), SWRLNames.SWRLB_PREFIX);
+      owlModel.getNamespaceManager().setPrefix(new URI(SWRLNames.SWRLX_NAMESPACE), SWRLNames.SWRLX_PREFIX);
       
       ProtegeOWLParser.addImport(owlModel, new URI(SWRLNames.SWRL_IMPORT));
       ProtegeOWLParser.addImport(owlModel, new URI(SWRLNames.SWRLB_IMPORT));
+      ProtegeOWLParser.addImport(owlModel, new URI(SWRLNames.SWRLX_IMPORT));
       owlModel.getDefaultOWLOntology().addImports(new URI(SWRLNames.SWRL_IMPORT));
-      owlModel.getDefaultOWLOntology().addImports (new URI(SWRLNames.SWRLB_IMPORT));
+      owlModel.getDefaultOWLOntology().addImports(new URI(SWRLNames.SWRLB_IMPORT));
+      owlModel.getDefaultOWLOntology().addImports(new URI(SWRLNames.SWRLX_IMPORT));
       
       activateSWRLFactoryIfNecessary(owlModel);
       System.out.println(owlModel.getNamespaceManager().getPrefixes());
