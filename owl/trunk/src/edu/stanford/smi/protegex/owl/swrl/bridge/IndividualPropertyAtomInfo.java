@@ -42,7 +42,7 @@ public class IndividualPropertyAtomInfo extends AtomInfo
     } // if
 
     if (argument2 instanceof IndividualInfo) {
-	IndividualInfo individualInfo = (IndividualInfo)argument1;
+	IndividualInfo individualInfo = (IndividualInfo)argument2;
 	addReferencedIndividualName(individualInfo.getIndividualName());
     } // if
   } // IndividualPropertyAtomInfo

@@ -134,6 +134,8 @@ public class SWRLBuiltInUtil
 
   public static void checkThatArgumentIsALiteral(String builtInName, int argumentNumber, List<Argument> arguments) throws BuiltInException
   {
+    checkArgumentNumber(builtInName, argumentNumber, arguments);
+
     if (!(arguments.get(argumentNumber) instanceof LiteralInfo)) 
       throw new InvalidBuiltInArgumentException(builtInName, argumentNumber, "Expecting literal");
   } // checkThatArgumentIsALiteral
@@ -155,11 +157,31 @@ public class SWRLBuiltInUtil
     return (isArgumentNumeric(builtInName, argumentNumber, arguments) || isArgumentAString(builtInName, argumentNumber, arguments));
   } // isArgumentOfAnOrderedType
 
-  public static void checkThatArgumentIsAnIndividualName(String builtInName, int argumentNumber, List<Argument> arguments) throws BuiltInException
+  public static boolean isArgumentAnIndividual(String builtInName, int argumentNumber, List<Argument> arguments) throws BuiltInException
   {
-    if (!(arguments.get(argumentNumber) instanceof IndividualInfo)) 
-      throw new InvalidBuiltInArgumentException(builtInName, argumentNumber, "Expecting individual name");
-  } // checkThatArgumentIsAnIndividualName
+    checkArgumentNumber(builtInName, argumentNumber, arguments);
+
+    return arguments.get(argumentNumber) instanceof IndividualInfo;
+  } // isArgumentAnIndividual
+
+  public static void checkThatArgumentIsAnIndividual(String builtInName, int argumentNumber, List<Argument> arguments) throws BuiltInException
+  {
+    if (!isArgumentAnIndividual(builtInName, argumentNumber, arguments))
+      throw new InvalidBuiltInArgumentException(builtInName, argumentNumber, "Expecting individual");
+  } // checkThatArgumentIsAnIndividual
+
+  public static String getArgumentAsAnIndividualName(String builtInName, int argumentNumber, List<Argument> arguments) throws BuiltInException
+  {
+    checkThatArgumentIsAnIndividual(builtInName, argumentNumber, arguments);
+
+    return ((IndividualInfo)arguments.get(argumentNumber)).getIndividualName();
+  } // getArgumentAsAnIndividualName
+
+  public static void checkArgumentNumber(String builtInName, int argumentNumber, List<Argument> arguments) throws BuiltInException
+  {
+    if ((argumentNumber < 0) || (argumentNumber >= arguments.size()))
+      throw new BuiltInException("Argument number #" + argumentNumber + " out of bounds for built-in '" + builtInName + "'");
+  } // checkArgumentNumber
 
   public static boolean isArgumentNumeric(String builtInName, int argumentNumber, List<Argument> arguments) throws BuiltInException
   {
@@ -312,7 +334,8 @@ public class SWRLBuiltInUtil
 
   public static boolean isArgumentAString(String builtInName, int argumentNumber, List<Argument> arguments) throws BuiltInException
   {
-    if (isArgumentALiteral(builtInName, argumentNumber, arguments)) return (getArgumentAsALiteral(builtInName, argumentNumber, arguments).isString());
+    if (isArgumentALiteral(builtInName, argumentNumber, arguments)) 
+      return getArgumentAsALiteral(builtInName, argumentNumber, arguments).isString();
     else return false;
   } // isArgumentAString
 
