@@ -38,7 +38,7 @@ import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
  * Full documentation is available <a href="http://protege.cim3.net/cgi-bin/wiki.pl?SWRLTab">here</a>.
  */
 public class SWRLTab extends AbstractTabWidget 
-{
+{ 
   private SWRLTablePanel panel = null;
   
   private void activateSWRL() 
@@ -48,21 +48,15 @@ public class SWRLTab extends AbstractTabWidget
       owlModel.getNamespaceManager().setPrefix(new URI(SWRLNames.SWRL_NAMESPACE), SWRLNames.SWRL_PREFIX);
       owlModel.getNamespaceManager().setPrefix(new URI(SWRLNames.SWRLB_NAMESPACE), SWRLNames.SWRLB_PREFIX);
       owlModel.getNamespaceManager().setPrefix(new URI(SWRLNames.SWRLX_NAMESPACE), SWRLNames.SWRLX_PREFIX);
+  
+      ImportHelper importHelper = new ImportHelper((JenaOWLModel)getKnowledgeBase());
       
-      ProtegeOWLParser.addImport(owlModel, new URI(SWRLNames.SWRL_IMPORT));
-      ProtegeOWLParser.addImport(owlModel, new URI(SWRLNames.SWRLB_IMPORT));
-      ProtegeOWLParser.addImport(owlModel, new URI(SWRLNames.SWRLX_IMPORT));
-      owlModel.getDefaultOWLOntology().addImports(new URI(SWRLNames.SWRL_IMPORT));
-      owlModel.getDefaultOWLOntology().addImports(new URI(SWRLNames.SWRLB_IMPORT));
-      owlModel.getDefaultOWLOntology().addImports(new URI(SWRLNames.SWRLX_IMPORT));
+      importHelper.addImport(new URI(SWRLNames.SWRL_IMPORT));     
+      importHelper.addImport(new URI(SWRLNames.SWRLB_IMPORT));
+      importHelper.addImport(new URI(SWRLNames.SWRLX_IMPORT));
       
-      activateSWRLFactoryIfNecessary(owlModel);
-      System.out.println(owlModel.getNamespaceManager().getPrefixes());
+      importHelper.importOntologies();
       
-      SWRLProjectPlugin.adjustWidgets(getProject());
-      owlModel.getTripleStoreModel().updateEditableResourceState();
-      
-      ProtegeUI.reloadUI(getProject());
     }
     catch (Exception ex) {
       ProtegeUI.getModalDialogFactory().showErrorMessageDialog(owlModel,
