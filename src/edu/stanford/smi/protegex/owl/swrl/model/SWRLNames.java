@@ -21,7 +21,7 @@ public interface SWRLNames extends OWLNames {
   
   public final static String SWRL_NAMESPACE = "http://www.w3.org/2003/11/swrl#";
   public final static String SWRLB_NAMESPACE = "http://www.w3.org/2003/11/swrlb#";
-  public final static String SWRLX_NAMESPACE = "http://swrl.stanford.edu/swrlx#";
+  public final static String SWRLX_NAMESPACE = "http://swrl.stanford.edu/swrlx.owl#";
   
   public final static String SWRL_PREFIX = "swrl";
   public final static String SWRLB_PREFIX = "swrlb";
