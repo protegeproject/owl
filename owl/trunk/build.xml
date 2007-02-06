@@ -18,10 +18,11 @@
     <property name = "src" value = "./src"/>
     <property name = "classes" value = "./classes"/>
     <property name = "lib" value = "./lib"/>
-    <property name = "dist" value = "./plugins"/>
+    <property name = "dist" value = "./dist"/>
+    <property name = "plugins" value = "./plugins"/>
     <property name = "etc" value = "./etc"/>
     <property name = "owlplugin" value = "edu.stanford.smi.protegex.owl"/>
-    <property name = "plugin" value = "${dist}/${owlplugin}"/>
+    <property name = "plugin" value = "${plugins}/${owlplugin}"/>
     <property name = "pluginName" value="protege-owl"/>
     <property name = "debug" value = "on"/>
     <property name = "source" value = "1.5"/>
@@ -60,10 +61,6 @@
 	</target>
 
 	
-	<!-- ================================================================ -->
-    <!-- Creates the timestamp                                            -->
-    <!-- ================================================================ -->
-
     <!-- 
        #  ********** Finding Protege Libraries. *************
        # 
@@ -119,6 +116,10 @@
      -->
 	
 
+    <!-- ================================================================ -->
+    <!-- Creates the timestamp                                            -->
+    <!-- ================================================================ -->
+
 
     <target name="init.time" depends="checkProtegeLibsAndReport">
         <tstamp/>
@@ -127,6 +128,7 @@
     <target name="init" depends="init.time,checkProtegeLibs">
         <mkdir dir="${classes}"/>
         <mkdir dir="${dist}"/>
+        <mkdir dir="${plugins}"/>
     </target>
 
     <!-- ================================================================ -->
@@ -142,6 +144,7 @@
             description="clean up all build related files and dirs">
         <delete dir="${classes}"/>
         <delete dir="${dist}"/>
+        <delete dir="${plugins}"/>
         <delete dir="logs"/>
         <delete file="out.owl"/>
         <delete file="out.repository"/>
@@ -289,7 +292,7 @@
             depends="plugin.dir" 
             description="Create the protege-owl.zip file, containing the plugin dir">
         <zip destfile="${dist}/${pluginName}.zip">
-            <fileset dir="${dist}">
+            <fileset dir="${plugins}">
                 <include name="${owlplugin}/**"/>
             </fileset>
         </zip>
@@ -297,19 +300,15 @@
 
 
     <target name = "install" depends = "plugin.zip">
-      <fail message = "set the protege.dir variable to do an install">
+      <fail message = "set the protege.home variable to do an install">
          <condition>
             <not>
-               <and>
-                  <isset property="protege.dir"/>
-                  <available file="${protege.dir}"
-                             type="dir"/>
-               </and>
+              <isset property="protege.home.set"/>
             </not>
          </condition>
       </fail>
       <unzip src="${dist}/${pluginName}.zip" 
-             dest = "${protege.dir}/plugins"
+             dest = "${protege.home}/plugins"
              overwrite = "true"/>
    </target>
 
@@ -327,7 +326,7 @@
     <java classname = "edu.stanford.smi.protegex.owl.junit_config.CheckConfiguration">
       <classpath>
         <pathelement location="${classes}"/>
-        <pathelement location = "${protege.home}/protege.jar"/>
+        <pathelement location = "${protege.lib}"/>
         <pathelement location = "${lib}/junit.jar"/>
       </classpath>
     </java>
@@ -365,7 +364,7 @@
       <jvmarg value="-Xmx300M"/>
       <classpath>
            <pathelement location="${classes}"/>
-           <pathelement location = "${protege.home}/protege.jar"/>
+           <pathelement location = "${protege.lib}"/>
            <fileset
               dir="${plugin}">
               <include name = "**/*.jar"/>
