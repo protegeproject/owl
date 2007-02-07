@@ -170,9 +170,11 @@ public class JenaKnowledgeBaseFactory implements OWLKnowledgeBaseFactory, Client
         if (kb instanceof JenaOWLModel) {
 	        final JenaOWLModel owlModel = (JenaOWLModel) kb;
             final URI absoluteURI = getFileURI(sources, owlModel.getProject());
+
+            JenaKnowledgeBaseFactory.setOWLFileName(sources, absoluteURI.toString());
+                        
 		    loadRepositories(owlModel, absoluteURI);
 			owlModel.load(absoluteURI, language, errors);
-
         }
         else {
         	String message = "This plugin can currently only load OWL files into OWL projects";
@@ -182,9 +184,7 @@ public class JenaKnowledgeBaseFactory implements OWLKnowledgeBaseFactory, Client
     }
 
 
-    private void loadRepositories(OWLModel owlModel, URI uri) {
-        String owlFilePath = uri.getPath();
-        File f = new File(owlFilePath);
+    private void loadRepositories(OWLModel owlModel, URI uri) {    	
         // Load any project repositories
         RepositoryFileManager man = new RepositoryFileManager(owlModel);
         man.loadProjectRepositories();
