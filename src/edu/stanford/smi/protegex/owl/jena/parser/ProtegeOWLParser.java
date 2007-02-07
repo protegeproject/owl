@@ -9,6 +9,7 @@ import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -296,6 +297,7 @@ public class ProtegeOWLParser {
 				ARP arp = createARP();
 				
 				long startTime = System.currentTimeMillis();
+				Log.getLogger().info("Start processing ontology: " + ontologyName + " Time: " + (new Date()));
 				
 				OWLOntology defaultOntology = owlModel.getDefaultOWLOntology();
 				if(tripleStore.contains(defaultOntology, owlModel.getRDFTypeProperty(), owlModel.getOWLOntologyClass())) {
@@ -350,6 +352,10 @@ public class ProtegeOWLParser {
 				if (owlModel.getRDFResource(":") != null && owlModel.getRDFResource(":") instanceof OWLOntology) {
 					tripleStoreModel.getTopTripleStore().setName(owlModel.getDefaultOWLOntology().getURI());
 				}
+				
+				//added TT - I don't know if this is needed
+				owlModel.getNamespaceManager().update();
+				
 				endTime = System.currentTimeMillis();
 				
 				activateSWRLFactoryIfNecessary(imports);
