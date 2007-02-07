@@ -8,6 +8,8 @@ import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
 import edu.stanford.smi.protegex.owl.ui.menu.OWLMenuProjectPlugin;
 
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -25,7 +27,7 @@ public class ImportHelper {
 
     private JenaOWLModel owlModel;
 
-    private Set ontologyURIs;
+    private Collection ontologyURIs;
 
 
     /**
@@ -44,7 +46,7 @@ public class ImportHelper {
      */
     public ImportHelper(JenaOWLModel owlModel) {
         this.owlModel = owlModel;
-        ontologyURIs = new HashSet();
+        ontologyURIs = new ArrayList();
     }
 
 
@@ -78,7 +80,7 @@ public class ImportHelper {
      * @param reloadGUI - false if no GUI reload is desired
      */
     public void importOntologies(boolean reloadGUI) throws Exception {
-        Set importedOntologies = new HashSet();
+        ArrayList importedOntologies = new ArrayList();
         for(Iterator it = ontologyURIs.iterator(); it.hasNext();) {
             URI ontologyURI = (URI) it.next();
             if(owlModel.getAllImports().contains(ontologyURI.toString()) == false) {
