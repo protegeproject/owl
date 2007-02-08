@@ -13,6 +13,8 @@ public class SameAsRestrictionInfo extends RestrictionInfo
   
   public String getIndividualName1() { return individualName1; }
   public String getIndividualName2() { return individualName2; }
+
+  public String toString() { return "sameAs(" + individualName1 + ", " + individualName2 + ")"; }
 } // SameAsRestrictionInfo
 
 

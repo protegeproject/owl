@@ -177,6 +177,20 @@ public class SWRLBuiltInUtil
     return ((IndividualInfo)arguments.get(argumentNumber)).getIndividualName();
   } // getArgumentAsAnIndividualName
 
+  public static String getArgumentAsAClassName(String builtInName, int argumentNumber, List<Argument> arguments) throws BuiltInException
+  {
+    checkThatArgumentIsAClass(builtInName, argumentNumber, arguments);
+
+    return ((ClassInfo)arguments.get(argumentNumber)).getClassName();
+  } // getArgumentAsAClassName
+
+  public static String getArgumentAsAPropertyName(String builtInName, int argumentNumber, List<Argument> arguments) throws BuiltInException
+  {
+    checkThatArgumentIsAProperty(builtInName, argumentNumber, arguments);
+
+    return ((PropertyInfo)arguments.get(argumentNumber)).getPropertyName();
+  } // getArgumentAsAPropertyName
+
   public static void checkArgumentNumber(String builtInName, int argumentNumber, List<Argument> arguments) throws BuiltInException
   {
     if ((argumentNumber < 0) || (argumentNumber >= arguments.size()))
@@ -228,7 +242,33 @@ public class SWRLBuiltInUtil
     checkThatArgumentIsBound(builtInName, argumentNumber, arguments);
 
     return (arguments.get(argumentNumber) instanceof LiteralInfo);
-  } // checkThatArgumentIsALiteral
+  } // isArgumentALiteral
+
+  public static boolean isArgumentAProperty(String builtInName, int argumentNumber, List<Argument> arguments) throws BuiltInException
+  {
+    checkThatArgumentIsBound(builtInName, argumentNumber, arguments);
+
+    return (arguments.get(argumentNumber) instanceof PropertyInfo);
+  } // isArgumentAProperty
+
+  public static void checkThatArgumentIsAProperty(String builtInName, int argumentNumber, List<Argument> arguments) throws BuiltInException
+  {
+    if (!isArgumentAProperty(builtInName, argumentNumber, arguments))
+      throw new InvalidBuiltInArgumentException(builtInName, argumentNumber, "Expecting property");
+  } // checkThatArgumentIsAProperty
+
+  public static boolean isArgumentAClass(String builtInName, int argumentNumber, List<Argument> arguments) throws BuiltInException
+  {
+    checkThatArgumentIsBound(builtInName, argumentNumber, arguments);
+
+    return (arguments.get(argumentNumber) instanceof ClassInfo);
+  } // isArgumentAClass
+
+  public static void checkThatArgumentIsAClass(String builtInName, int argumentNumber, List<Argument> arguments) throws BuiltInException
+  {
+    if (!isArgumentAClass(builtInName, argumentNumber, arguments))
+      throw new InvalidBuiltInArgumentException(builtInName, argumentNumber, "Expecting class");
+  } // checkThatArgumentIsAClass
 
   public static LiteralInfo getArgumentAsALiteral(String builtInName, int argumentNumber, List<Argument> arguments) throws BuiltInException
   {

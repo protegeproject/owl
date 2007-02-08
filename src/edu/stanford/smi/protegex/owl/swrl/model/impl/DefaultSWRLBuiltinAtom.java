@@ -49,14 +49,20 @@ public class DefaultSWRLBuiltinAtom extends DefaultSWRLAtom implements SWRLBuilt
     } // setArgument1
 
 
-    public SWRLBuiltin getBuiltin() {
-        return (SWRLBuiltin) getPropertyValue(getOWLModel().getRDFProperty(SWRLNames.Slot.BUILTIN));
-    } // SWRLBuiltin
+  public SWRLBuiltin getBuiltin() 
+  {
+    Object propertyValue = getPropertyValue(getOWLModel().getRDFProperty(SWRLNames.Slot.BUILTIN));
+    if (propertyValue instanceof SWRLBuiltin) return (SWRLBuiltin)propertyValue;
+    else {
+      if (propertyValue != null) System.err.println("Expecting SWRLBuiltin in DefaultSWRLBuiltinAtom, got: " + propertyValue);
+      return null;
+    } // else
 
+  } // SWRLBuiltin
 
-    public void setBuiltin(SWRLBuiltin swrlBuiltin) {
-        setPropertyValue(getOWLModel().getRDFProperty(SWRLNames.Slot.BUILTIN), swrlBuiltin);
-    } // swrlBuiltin
+  public void setBuiltin(SWRLBuiltin swrlBuiltin) {
+    setPropertyValue(getOWLModel().getRDFProperty(SWRLNames.Slot.BUILTIN), swrlBuiltin);
+  } // swrlBuiltin
 
 
     public String getBrowserText() {

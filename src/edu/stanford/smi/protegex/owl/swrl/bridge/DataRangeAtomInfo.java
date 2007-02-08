@@ -13,7 +13,7 @@ public class DataRangeAtomInfo extends AtomInfo
 {
   private List<LiteralInfo> literals;
   
-  public DataRangeAtomInfo(SWRLDataRangeAtom dataRangeAtom) throws SWRLRuleEngineBridgeException
+  public DataRangeAtomInfo(SWRLDataRangeAtom atom) throws SWRLRuleEngineBridgeException
   { 
     // TODO: and don't forget to call addReferencedVariableName, and addReferencedIndividualName if appropriate
     throw new NotImplementedException("SWRL data range atoms not implemented.");

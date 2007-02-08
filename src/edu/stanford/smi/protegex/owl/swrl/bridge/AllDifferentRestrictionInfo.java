@@ -14,4 +14,14 @@ public class AllDifferentRestrictionInfo extends RestrictionInfo
   
   public Set<String> getIndividualNames() { return individualNames; }
   public void addIndividualName(String individualName) { individualNames.add(individualName); }
+
+  public String toString() 
+  {
+    String representation = "allDifferents(";
+
+    for (String individualName : individualNames) representation += "|" + individualName;
+
+    return representation + ")";
+  } // toString
+      
 } // AllDifferentRestrictionInfo

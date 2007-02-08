@@ -30,6 +30,15 @@ public class ClassInfo extends Info implements Argument, ClassValue, Comparable
     } // if
     
   } // ClassInfo
+
+  // Constructor used when creating a ClassInfo object to pass as a built-in argument
+  public ClassInfo(String className)
+  {
+    this.className = className;
+
+    directSuperClassNames = new HashSet<String>();
+    directSubClassNames = new HashSet<String>();
+  } // ClassInfo
   
   public String getClassName() { return className; }
   public Set<String> getDirectSuperClassNames() { return directSuperClassNames; }

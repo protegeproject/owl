@@ -58,9 +58,16 @@ public class DefaultSWRLDataRangeAtom extends DefaultSWRLAtom implements SWRLDat
     } // setArgument1
 
 
-    public RDFResource getDataRange() {
-        return (RDFResource) getPropertyValue(getOWLModel().getRDFProperty(SWRLNames.Slot.DATA_RANGE));
-    } // getDataRange
+  public RDFResource getDataRange() 
+  {
+    Object propertyValue = getPropertyValue(getOWLModel().getRDFProperty(SWRLNames.Slot.DATA_RANGE));
+    if (propertyValue instanceof RDFResource) return (RDFResource)propertyValue;
+    else {
+      if (propertyValue != null) System.err.println("Expecting RDFSResource in DefaultSWRLDataRangeAtom, got: " + propertyValue);
+      return null;
+    } // else
+
+  } // getDataRange
 
 
     public void setDataRange(RDFResource instance) {

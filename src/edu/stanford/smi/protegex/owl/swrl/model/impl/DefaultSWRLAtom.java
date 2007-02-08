@@ -7,13 +7,18 @@ import edu.stanford.smi.protegex.owl.swrl.model.SWRLAtom;
 
 public abstract class DefaultSWRLAtom extends DefaultOWLIndividual implements SWRLAtom {
 
-    public DefaultSWRLAtom(KnowledgeBase kb, FrameID id) {
-        super(kb, id);
-    } // DefaultSWRLAtom
-
-
-    public DefaultSWRLAtom() {
-    }
+  public DefaultSWRLAtom(KnowledgeBase kb, FrameID id) 
+  {
+    super(kb, id);
+  } // DefaultSWRLAtom
+    
+  public DefaultSWRLAtom() {}
+  
+  // Should only be the getBrowserText of a child finds the atom to be in an invalid state.
+  public String getBrowserText() 
+  {
+    return "<INVALID_ATOM>";
+  } // getBrowserText
 
 } // DefaultSWRLAtom
 

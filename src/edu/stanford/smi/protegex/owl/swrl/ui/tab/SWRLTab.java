@@ -21,6 +21,7 @@ import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
 import edu.stanford.smi.protegex.owl.jena.parser.ProtegeOWLParser;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLOntology;
+import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.factory.OWLJavaFactoryUpdater;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 import edu.stanford.smi.protegex.owl.model.util.ImportHelper;
@@ -56,7 +57,12 @@ public class SWRLTab extends AbstractTabWidget
       importHelper.addImport(new URI(SWRLNames.SWRLX_IMPORT));
       
       importHelper.importOntologies();
-      
+
+      // Make ":TO" and ":FROM" visible for dynamic expansion.
+      RDFProperty to = owlModel.getOWLObjectProperty(edu.stanford.smi.protege.model.Model.Slot.TO);
+      to.setVisible(true);
+      RDFProperty from = owlModel.getOWLObjectProperty(edu.stanford.smi.protege.model.Model.Slot.FROM);
+      from.setVisible(true);
     }
     catch (Exception ex) {
       ProtegeUI.getModalDialogFactory().showErrorMessageDialog(owlModel,

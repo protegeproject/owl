@@ -16,8 +16,9 @@ public class ClassAtomInfo extends AtomInfo
   
   public ClassAtomInfo(SWRLClassAtom atom) throws SWRLRuleEngineBridgeException
   {
-    String argumentName = atom.getArgument1().getName();
-    className = atom.getClassPredicate().getName();
+    className = (atom.getClassPredicate() != null) ? atom.getClassPredicate().getName() : null;
+
+    if (className == null) throw new SWRLRuleEngineBridgeException("Empty class name in SWRLClassAtom: " + atom);
     
     if (atom.getArgument1() instanceof SWRLVariable) {
       SWRLVariable variable = (SWRLVariable)atom.getArgument1();
@@ -29,7 +30,7 @@ public class ClassAtomInfo extends AtomInfo
       addReferencedIndividualName(argument.getIndividualName());
       argument1 = argument;
     } else throw new SWRLRuleEngineBridgeException("Unexpected argument to class atom '" + atom.getBrowserText() + "'. Expecting " +
-                                                   "variable or individual, got instance of" + atom.getArgument1().getClass() + ".");
+                                                   "variable or individual, got instance of " + atom.getArgument1().getClass() + ".");
   } // ClassAtomInfo
   
   public String getClassName() { return className; }

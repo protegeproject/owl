@@ -13,10 +13,11 @@ public class IndividualPropertyAtomInfo extends AtomInfo
     private String propertyName;
     private Argument argument1, argument2;
 
-  public IndividualPropertyAtomInfo(SWRLIndividualPropertyAtom atom) 
-    throws SWRLRuleEngineBridgeException
+  public IndividualPropertyAtomInfo(SWRLIndividualPropertyAtom atom) throws SWRLRuleEngineBridgeException
   {
-    propertyName = atom.getPropertyPredicate().getName();
+    propertyName = (atom.getPropertyPredicate() != null) ? atom.getPropertyPredicate().getName() : null;
+
+    if (propertyName == null) throw new SWRLRuleEngineBridgeException("Empty property name in SWRLIndividualPropertyAtom: " + atom);
     
     if (atom.getArgument1() instanceof SWRLVariable) {
       SWRLVariable variable = (SWRLVariable)atom.getArgument1();

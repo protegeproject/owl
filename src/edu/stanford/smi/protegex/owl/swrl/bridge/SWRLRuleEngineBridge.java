@@ -62,10 +62,9 @@ public abstract class SWRLRuleEngineBridge
   // Holds class instances implementing built-ins.
   private HashMap<String, SWRLBuiltInLibrary> builtInLibraryClassInstances;
 
-  // Name of rule currently invoking a built-in method. Valid only when a built-in currently being invoked.
+  // Name of rule currently invoking a built-in method. Valid only when a built-in currently being invoked. 
   private String currentBuiltInInvokingRuleName = "";
-
-  public String getCurrentBuiltInInvokingRuleName() { return currentBuiltInInvokingRuleName; }
+  private int currentBuiltInInvokingIndex = -1;
 
   protected SWRLRuleEngineBridge(OWLModel owlModel) throws SWRLRuleEngineBridgeException
   {
@@ -112,13 +111,11 @@ public abstract class SWRLRuleEngineBridge
    */
   public void exportSWRLRulesAndOWLKnowledge() throws SWRLRuleEngineBridgeException
   {
-    //    exportOWLKnowledge(); // Knowledge should be exported before rules because rules may used concepts defined in knowledge.
-    exportOWLClasses();
+    exportOWLClasses(); // Classes should be exported before rules because rules usually use class definitions.
     exportSWRLRules();
     exportOWLIndividuals();
     exportOWLProperties();
     exportOWLRestrictions();
-
   } // exportSWRLRulesAndOWLKnowledge
 
   /*
@@ -178,6 +175,9 @@ public abstract class SWRLRuleEngineBridge
     clearExportedAndAssertedKnowledge();
   } // resetRuleEngine
 
+  // These methods will typically be used by built-in implementations.
+  public String getCurrentBuiltInInvokingRuleName() { return currentBuiltInInvokingRuleName; }
+  public int getCurrentBuiltInInvokingIndex() { return currentBuiltInInvokingIndex; }
   /*
    * Get the OWL model associated with this bridge.
    */
@@ -236,7 +236,7 @@ public abstract class SWRLRuleEngineBridge
   **
   ** See <a href="http://protege.cim3.net/cgi-bin/wiki.pl?SWRLRuleEngineBridgeFAQ#nid6QF">here</a> for documentaton.
   */
-  protected boolean invokeSWRLBuiltIn(String ruleName, String builtInName, List<Argument> arguments) throws BuiltInException
+  protected boolean invokeSWRLBuiltIn(String ruleName, String builtInName, int builtInIndex, List<Argument> arguments) throws BuiltInException
   {
     SWRLBuiltInLibrary swrlBuiltInLibrary = null;
     Class swrlBuiltInLibraryClass = null;
@@ -247,7 +247,7 @@ public abstract class SWRLRuleEngineBridge
 
     if (!isBuiltIn(builtInName)) throw new InvalidBuiltInNameException(ruleName, builtInName);
 
-    currentBuiltInInvokingRuleName = ruleName;
+    currentBuiltInInvokingRuleName = ruleName; currentBuiltInInvokingIndex = builtInIndex;
     
     colonIndex = builtInName.indexOf(':');
     if (colonIndex != -1) {
@@ -288,6 +288,8 @@ public abstract class SWRLRuleEngineBridge
     } // try
 
     checkForUnboundArgument(ruleName, builtInName, arguments); // Make sure built-in did not leave any arguments unbound.
+
+    currentBuiltInInvokingRuleName = ""; currentBuiltInInvokingIndex = -1;
 
     return result.booleanValue();
   } // invokeSWRLBuiltIn
@@ -517,14 +519,12 @@ public abstract class SWRLRuleEngineBridge
 
   private void importOWLIndividual(String individualName) throws SWRLRuleEngineBridgeException
   {
-    if (!importedIndividuals.containsKey(individualName)) return;
-    
-    IndividualInfo individualInfo = new IndividualInfo(owlModel, individualName);
-    
-    importedIndividuals.put(individualName, individualInfo);
-
-    importOWLClasses(individualInfo.getClassNames());
-  } // importedIndividual
+    if (!importedIndividuals.containsKey(individualName)) {
+      IndividualInfo individualInfo = new IndividualInfo(owlModel, individualName);
+      importedIndividuals.put(individualName, individualInfo);
+      importOWLClasses(individualInfo.getClassNames());
+    } // if
+  } // importOWLIndividual
 
   // We only import owl:SameAs, owl:differentFrom, and owl:AddDifferent at the moment.
   private void importOWLRestrictions() throws SWRLRuleEngineBridgeException
@@ -591,15 +591,18 @@ public abstract class SWRLRuleEngineBridge
       Iterator allDifferentsIterator = allDifferents.iterator();
       while (allDifferentsIterator.hasNext()) {
         OWLAllDifferent owlAllDifferent = (OWLAllDifferent)allDifferentsIterator.next();
-        AllDifferentRestrictionInfo allDifferentRestrictionInfo = new AllDifferentRestrictionInfo();
 
-        Iterator individualsIterator = owlAllDifferent.getDistinctMembers().iterator();
-        while (individualsIterator.hasNext()) {
-          RDFIndividual individual = (RDFIndividual)individualsIterator.next();
-          allDifferentRestrictionInfo.addIndividualName(individual.getName());
+        if (owlAllDifferent.getDistinctMembers().size() != 0) {
+          AllDifferentRestrictionInfo allDifferentRestrictionInfo = new AllDifferentRestrictionInfo();
+          
+          Iterator individualsIterator = owlAllDifferent.getDistinctMembers().iterator();
+          while (individualsIterator.hasNext()) {
+            RDFIndividual individual = (RDFIndividual)individualsIterator.next();
+            allDifferentRestrictionInfo.addIndividualName(individual.getName());
+          } // while
+          importedRestrictions.add(allDifferentRestrictionInfo);
+        } // if
         } // while
-        importedRestrictions.add(allDifferentRestrictionInfo);
-      } // while
     } // if
   } // importOWLAllDifferents
 

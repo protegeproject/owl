@@ -43,9 +43,15 @@ public class DefaultSWRLClassAtom extends DefaultSWRLAtom implements SWRLClassAt
     } // setArgument1
 
 
-    public RDFSClass getClassPredicate() {
-        return (RDFSClass) getPropertyValue(getOWLModel().getRDFProperty(SWRLNames.Slot.CLASS_PREDICATE));
-    } // getClassPredicate
+  public RDFSClass getClassPredicate() 
+  {
+    Object propertyValue = getPropertyValue(getOWLModel().getRDFProperty(SWRLNames.Slot.CLASS_PREDICATE));
+    if (propertyValue instanceof RDFSClass) return (RDFSClass)propertyValue;
+    else {
+      if (propertyValue != null) System.err.println("Expecting RDFSClass in DefaultSWRLClassAtom, got: " + propertyValue);
+      return null;
+    } // else
+  } // getClassPredicate
 
 
     public void setClassPredicate(RDFSClass aClass) {

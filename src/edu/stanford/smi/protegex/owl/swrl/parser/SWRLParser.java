@@ -407,6 +407,10 @@ public class SWRLParser {
     else { // The entity is an individual name or literal
       if (isValidIndividualName(parsedString)) {
         if (!parseOnly) parsedEntity = getIndividual(parsedString);
+      } else if (isValidClassName(parsedString)) {
+        if (!parseOnly) parsedEntity = getClass(parsedString);
+      } else if (isValidPropertyName(parsedString)) {
+        if (!parseOnly) parsedEntity = getProperty(parsedString);
       } else parsedEntity = parseLiteral(parsedString);
     } // if
     
@@ -554,7 +558,9 @@ public class SWRLParser {
 
   private boolean isValidIdentifier(String s) 
   {
-    if (s.length() == 0 || !Character.isJavaIdentifierStart(s.charAt(0))) return false;
+    if (s.length() == 0) return false;
+
+    if (!Character.isJavaIdentifierStart(s.charAt(0)) && s.charAt(0) != ':') return false; // HACK to deal with ":TO" and ":FROM".
 
     for (int i = 1; i < s.length(); i++) {
       char c = s.charAt(i);
@@ -575,18 +581,52 @@ public class SWRLParser {
     else return false;
   } // isValidIndividualName
 
+  private boolean isValidClassName(String name) throws SWRLParseException 
+  {
+    RDFResource resource = owlModel.getRDFResource(name);
+
+    if (resource == null) return false;
+
+    if (resource instanceof OWLNamedClass) return true;
+    else return false;
+  } // isValidClassName
+
+  private boolean isValidPropertyName(String name) throws SWRLParseException 
+  {
+    RDFResource resource = owlModel.getRDFResource(name);
+
+    if (resource == null) return false;
+
+    if (resource instanceof OWLProperty) return true;
+    else return false;
+  } // isValidPropertyName
+
   private RDFResource getIndividual(String name) throws SWRLParseException 
   {
     RDFResource resource = owlModel.getRDFResource(name);
 
-    if (resource == null) throw new SWRLParseException("'" + name + "' is not a valid individual name");
+    if (resource == null || (!(resource instanceof OWLIndividual))) throw new SWRLParseException("'" + name + "' is not a valid individual name");
 
-    if (resource instanceof SWRLVariable) 
-      throw new SWRLParseException("'" + name + "' is the name of an OWL individual representing a SWRL variable - " +
-                                   "it cannot be referenced directly in a SWRL rule");
     return resource;
   } // getIndividual
 
+  private RDFResource getClass(String name) throws SWRLParseException 
+  {
+    RDFResource resource = owlModel.getRDFResource(name);
+
+    if (resource == null || (!(resource instanceof OWLNamedClass))) throw new SWRLParseException("'" + name + "' is not a valid class name");
+
+    return resource;
+  } // getClass
+
+  private RDFResource getProperty(String name) throws SWRLParseException 
+  {
+    RDFResource resource = owlModel.getRDFResource(name);
+
+    if (resource == null || (!(resource instanceof OWLProperty))) throw new SWRLParseException("'" + name + "' is not a valid property name");
+
+    return resource;
+  } // getProperty
 
   private SWRLVariable getSWRLVariable(String name) throws SWRLParseException 
   {
