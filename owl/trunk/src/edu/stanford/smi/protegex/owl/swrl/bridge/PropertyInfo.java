@@ -11,7 +11,7 @@ import java.util.*;
 /*
 ** Info object representing an OWL property. 
 */
-public class PropertyInfo extends Info
+public class PropertyInfo extends Info implements Argument
 {
   // There is an equals method defined on this class.
   private String propertyName;
@@ -19,35 +19,50 @@ public class PropertyInfo extends Info
   private Set<String> domainClassNames, rangeClassNames, superPropertyNames, subPropertyNames;
   
   // Constructor used when creating a PropertyInfo object from an OWL property.
-  public PropertyInfo(String propertyName, Argument subject, Argument predicate, 
-		      Set<String> domainClassNames, Set<String> rangeClassNames,
-                      Set<String> superPropertyNames, Set<String> subPropertyNames) 
+  public PropertyInfo(String propertyName, Argument subject, Argument predicate, Set<String> domainClassNames, 
+                      Set<String> rangeClassNames, Set<String> superPropertyNames, Set<String> subPropertyNames) 
     throws SWRLRuleEngineBridgeException
-  {
-    this.propertyName = propertyName;    
-    this.subject= subject;
-    this.predicate = predicate;
-    this.domainClassNames = domainClassNames;
-    this.rangeClassNames = rangeClassNames;
-    this.superPropertyNames = superPropertyNames;
-    this.subPropertyNames = subPropertyNames;
-  } // PropertyInfo
-  
-  // Constructor used when creating a PropertyInfo object from an assertion made by a target rule engine. 
-  public PropertyInfo(String propertyName, Argument subject, Argument predicate) throws SWRLRuleEngineBridgeException
   {
     this.propertyName = propertyName;    
     this.subject = subject;
     this.predicate = predicate;
-    this.domainClassNames = new HashSet<String>();
-    this.rangeClassNames = new HashSet<String>();
-    this.superPropertyNames = new HashSet<String>();
-    this.subPropertyNames = new HashSet<String>();
+    initialize();
+  } // PropertyInfo
+  
+  // Constructor used when creating a PropertyInfo object from an assertion made by a target rule engine or to pass as built-in arguments.
+  public PropertyInfo(String propertyName, Argument subject, Argument predicate) 
+  {
+    this.propertyName = propertyName;    
+    this.subject = subject;
+    this.predicate = predicate;
+
+    initialize();
+  } // PropertyInfo
+
+  // Constructors used when creating a PropertyInfo object from a property name in a rule.
+  public PropertyInfo(OWLProperty property) 
+  {
+    this.propertyName = property.getName();    
+    this.subject = null;
+    this.predicate = null;
+
+    initialize();
+  } // PropertyInfo
+
+  public PropertyInfo(String propertyName) 
+  {
+    this.propertyName = propertyName;    
+    this.subject = null;
+    this.predicate = null;
+
+    initialize();
   } // PropertyInfo
   
   public String getPropertyName() { return propertyName; }
   public Argument getSubject() { return subject; }
   public Argument getPredicate() { return predicate; }
+  public boolean hasSubject() { return subject != null; }
+  public boolean hasPredicate() { return predicate != null; }
   public Set<String> getDomainClassNames() { return domainClassNames; }
   public Set<String> getRangeClassNames() { return rangeClassNames; }
   public Set<String> getSuperPropertyNames() { return superPropertyNames; }
@@ -169,5 +184,13 @@ public class PropertyInfo extends Info
     
     return propertyInfoList;
   } // buildPropertyInfoList
+
+  private void initialize()
+  {
+    this.domainClassNames = new HashSet<String>();
+    this.rangeClassNames = new HashSet<String>();
+    this.superPropertyNames = new HashSet<String>();
+    this.subPropertyNames = new HashSet<String>();
+  } // initialize
 
 } // PropertyInfo

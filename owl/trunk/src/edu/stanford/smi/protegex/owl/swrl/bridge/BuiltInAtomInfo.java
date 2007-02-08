@@ -17,11 +17,13 @@ public class BuiltInAtomInfo extends AtomInfo
   private List<Argument> arguments; 
   private Collection<Integer> unboundArgumentNumbers = new ArrayList<Integer>(); // List containing positions of any unbound arguments.
   
-  public BuiltInAtomInfo(OWLModel owlModel, SWRLBuiltinAtom builtInAtom) throws SWRLRuleEngineBridgeException
+  public BuiltInAtomInfo(OWLModel owlModel, SWRLBuiltinAtom atom) throws SWRLRuleEngineBridgeException
   {
-    builtInName = builtInAtom.getBuiltin().getName();
+    builtInName = (atom.getBuiltin() != null) ? atom.getBuiltin().getName() : null;
 
-    arguments = buildArgumentList(owlModel, builtInAtom);
+    if (builtInName == null) throw new SWRLRuleEngineBridgeException("Empty built-in name in SWRLBuiltinAtom: " + atom);
+
+    arguments = buildArgumentList(owlModel, atom);
   } // BuiltInAtomInfo
 
   public String getBuiltInName() { return builtInName; }  
@@ -74,6 +76,12 @@ public class BuiltInAtomInfo extends AtomInfo
         OWLIndividual individual = (OWLIndividual)o;
         result.add(new IndividualInfo(individual));
         addReferencedIndividualName(individual.getName());
+      } else  if (o instanceof OWLNamedClass) {
+        OWLNamedClass cls = (OWLNamedClass)o;
+        result.add(new ClassInfo(owlModel, cls.getName()));
+      } else  if (o instanceof OWLProperty) {
+        OWLProperty property = (OWLProperty)o;
+        result.add(new PropertyInfo(property));
       } else  if (o instanceof RDFSLiteral) result.add(new LiteralInfo(owlModel, (RDFSLiteral)o));
       else  if (o instanceof Number) result.add(new LiteralInfo((Number)o));
       else  if (o instanceof String) result.add(new LiteralInfo((String)o));

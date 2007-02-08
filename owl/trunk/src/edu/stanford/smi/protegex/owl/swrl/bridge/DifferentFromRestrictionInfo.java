@@ -13,4 +13,6 @@ public class DifferentFromRestrictionInfo extends RestrictionInfo
   
   public String getIndividualName1() { return individualName1; }
   public String getIndividualName2() { return individualName2; }
+
+  public String toString() { return "differentFrom(" + individualName1 + ", " + individualName2 + ")"; }
 } // DifferentFromRestrictionInfo

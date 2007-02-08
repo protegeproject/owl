@@ -17,7 +17,9 @@ public class IndividualInfo extends Info implements Argument, ObjectValue, Compa
   private String individualName;  
   private Set<String> classNames;
     
-  // Constructor used when creating an info object from an OWL individual.
+  /*
+  ** Constructor used when creating an info object from an OWL individual.
+  */
   public IndividualInfo(OWLIndividual individual) throws SWRLRuleEngineBridgeException
   {
     individualName = individual.getName();
@@ -25,7 +27,9 @@ public class IndividualInfo extends Info implements Argument, ObjectValue, Compa
     classNames = getDefiningClassNames(individual);
   } // IndividualInfo
 
-  // Constructor used when creating an info object from an individual name.
+  /*
+  ** Constructor used when creating an info object from an individual name.
+  */
   public IndividualInfo(OWLModel owlModel, String individualName) throws SWRLRuleEngineBridgeException
   {
     this.individualName = individualName;
@@ -36,7 +40,9 @@ public class IndividualInfo extends Info implements Argument, ObjectValue, Compa
     classNames = getDefiningClassNames(individual);
   } // IndividualInfo
   
-  // Constructor used when asserting new individual class membership information from an assertion made in a target rule engine.
+  /*
+  ** Constructor used when asserting new individual class membership information from an assertion made in a target rule engine.
+  */
   public IndividualInfo(String individualName, String className) throws SWRLRuleEngineBridgeException
   {
     this.individualName = individualName;
@@ -45,7 +51,9 @@ public class IndividualInfo extends Info implements Argument, ObjectValue, Compa
     classNames.add(className);
   } // IndividualInfo        
 
-  // Constructor used when creating an individual to pass as an argument to a built-in or to return as an argument from a built-in.
+  /*
+  ** Constructor used when creating an individual to pass as an argument to a built-in or to return as an argument from a built-in.
+  */
   public IndividualInfo(String individualName)
   {
     this.individualName = individualName;
@@ -57,14 +65,15 @@ public class IndividualInfo extends Info implements Argument, ObjectValue, Compa
   
   public void write2OWL(OWLModel owlModel) throws SWRLRuleEngineBridgeException
   {
-    OWLIndividual individual;
-    
-    individual = owlModel.getOWLIndividual(getIndividualName());
+    OWLIndividual individual = owlModel.getOWLIndividual(getIndividualName());
+
     if (individual == null) throw new InvalidIndividualNameException(getIndividualName());
 
     for (String className : getClassNames()) {
       RDFSClass rdfsClass = owlModel.getOWLNamedClass(className);
-      if (!individual.hasRDFType(rdfsClass)) individual.addRDFType(rdfsClass);
+      if (!individual.hasRDFType(rdfsClass)) 
+        if (individual.hasRDFType(owlModel.getOWLThingClass())) individual.setRDFType(rdfsClass);
+        else individual.addRDFType(rdfsClass);
     } // for
   } // write2OWL
 

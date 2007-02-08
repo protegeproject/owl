@@ -60,9 +60,15 @@ public class DefaultSWRLDatavaluedPropertyAtom extends DefaultSWRLAtom implement
     } // setArgument2
 
 
-    public OWLDatatypeProperty getPropertyPredicate() {
-        return (OWLDatatypeProperty) getDirectOwnSlotValue(getOWLModel().getRDFProperty(SWRLNames.Slot.PROPERTY_PREDICATE));
-    } // getPropertyPredicate
+  public OWLDatatypeProperty getPropertyPredicate() 
+  {
+    Object propertyValue = getDirectOwnSlotValue(getOWLModel().getRDFProperty(SWRLNames.Slot.PROPERTY_PREDICATE));
+    if (propertyValue instanceof OWLDatatypeProperty) return (OWLDatatypeProperty)propertyValue;
+    else {
+      if (propertyValue != null) System.err.println("Expecting OWLDatatypeProperty in DefaultSWRLDatavaluedPropertyAtom, got: " + propertyValue);
+      return null;
+    } // else
+  } // getPropertyPredicate
 
 
     public void setPropertyPredicate(OWLDatatypeProperty datatypeSlot) {

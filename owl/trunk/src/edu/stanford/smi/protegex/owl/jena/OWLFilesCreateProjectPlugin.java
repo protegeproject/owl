@@ -81,6 +81,7 @@ public class OWLFilesCreateProjectPlugin
             project.setTabWidgetDescriptorOrder(tabWidgetDescriptors);
             owlModel.getNamespaceManager().setPrefix(SWRLNames.SWRL_NAMESPACE, SWRLNames.SWRL_PREFIX);
             owlModel.getNamespaceManager().setPrefix(SWRLNames.SWRLB_NAMESPACE, SWRLNames.SWRLB_PREFIX);
+            owlModel.getNamespaceManager().setPrefix(SWRLNames.SWRLX_NAMESPACE, SWRLNames.SWRLX_PREFIX);
         }
 
         ImportHelper importHelper = new ImportHelper(owlModel);
