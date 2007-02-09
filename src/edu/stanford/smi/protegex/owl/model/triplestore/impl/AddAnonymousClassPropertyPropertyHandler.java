@@ -77,6 +77,7 @@ class AddAnonymousClassPropertyPropertyHandler extends AbstractAddPropertyValueH
             TripleStore tripleStore = (TripleStore) it.next();
             for (Iterator vit = tripleStore.listObjects(subject, directTypesSlot); vit.hasNext();) {
                 RDFResource type = (RDFResource) vit.next();
+                vit.remove();
                 tripleStore.remove(subject, directTypesSlot, type);
                 tripleStore.remove(type, directInstancesSlot, subject);
             }
