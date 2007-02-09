@@ -29,11 +29,13 @@ import edu.stanford.smi.protege.model.query.Query;
 import edu.stanford.smi.protege.model.query.QueryCallback;
 import edu.stanford.smi.protege.model.query.QueryCallbackClone;
 import edu.stanford.smi.protege.util.AbstractEvent;
+import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
 import edu.stanford.smi.protegex.owl.model.OWLNames;
 import edu.stanford.smi.protegex.owl.model.RDFList;
 import edu.stanford.smi.protegex.owl.model.RDFNames;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
+import edu.stanford.smi.protegex.owl.model.RDFResource;
 import edu.stanford.smi.protegex.owl.model.RDFSClass;
 import edu.stanford.smi.protegex.owl.model.RDFSNames;
 import edu.stanford.smi.protegex.owl.model.factory.OWLJavaFactory;
@@ -52,15 +54,9 @@ public class OWLFrameFactoryInvocationHandler extends AbstractFrameStoreInvocati
 
     private OWLJavaFactory ff;
 
-    private OWLNamedClass owlNamedClassClass;
-
     private static OWLFrameFactoryInvocationHandler recentInstance;
 
     private static Set<String> systemClses = new HashSet<String>();
-
-    private Cls thingCls;
-
-    private OWLJavaFactoryUpdater updater;
 
 
     static {
@@ -74,6 +70,7 @@ public class OWLFrameFactoryInvocationHandler extends AbstractFrameStoreInvocati
 
     public OWLFrameFactoryInvocationHandler() {
         recentInstance = this;
+        Log.getLogger().warning("Called constructor of " + this.getClass() + ". This should not be called in the new database version.");
     }
 
 
@@ -162,59 +159,10 @@ public class OWLFrameFactoryInvocationHandler extends AbstractFrameStoreInvocati
 
 
     public Instance convertInstance(Instance instance) {
-        if (ff == null) {
-            final AbstractOWLModel owlModel = (AbstractOWLModel) instance.getKnowledgeBase();
-            ff = new OWLJavaFactory(owlModel);
-            owlNamedClassClass = new DefaultOWLNamedClass(owlModel, OWLNames.ClsID.NAMED_CLASS);
-            thingCls = new DefaultOWLNamedClass(owlModel, Model.ClsID.THING);
-        }
-        if (instance instanceof Cls) {
-            if (Model.ClsID.THING.equals(instance.getFrameID())) {
-                return thingCls;
-            }
-            if ((instance.isSystem() &&
-                    instance.getFrameID().getLocalPart() < 9000 &&
-                    !Model.ClsID.DIRECTED_BINARY_RELATION.equals(instance.getFrameID())) || instance instanceof RDFSClass) { // && systemClses.contains(instance.getName())) {
-                if (owlNamedClassClass.equals(instance)) {
-                    return owlNamedClassClass;
-                }
-                return instance; //new DefaultCls(instance.getKnowledgeBase(), instance.getFrameID());
-            }
-            else if (isDefaultNamedCls(instance)) {
-                return new DefaultOWLNamedClass(instance.getKnowledgeBase(), instance.getFrameID());
-            }
-            return ff.createCls(instance.getFrameID(), instance.getDirectTypes());
-        }
-        else if (instance instanceof Slot) {
-            Collection directTypes = instance.getDirectTypes();
-            Slot slot = ff.createSlot(instance.getFrameID(), directTypes);
-            if (!(slot instanceof RDFProperty) && !slot.isSystem() && !directTypes.isEmpty()) {
-                if (updater == null) {
-                    updater = new OWLJavaFactoryUpdater(slot.getKnowledgeBase(), Collections.singleton(slot));
-                }
-                return updater.createNewFrame(slot);
-            }
-            else {
-                return slot;
-            }
-        }
-        else if (instance instanceof Facet) {
-            return ff.createFacet(instance.getFrameID(), instance.getDirectTypes());
-        }
-        else {
-            if (instance == null) {
-                return null;
-            }
-            else {
-                Collection directTypes = instance.getDirectTypes();
-                if (directTypes.isEmpty() && instance instanceof RDFList) {
-                    return instance;
-                }
-                else {
-                    return ff.createSimpleInstance(instance.getFrameID(), directTypes);
-                }
-            }
-        }
+    	if (!(instance instanceof RDFResource)) {
+    		Log.getLogger().warning(instance + "not instance of RDFResource.");
+    	}
+    	return instance;       
     }
 
 
@@ -250,12 +198,13 @@ public class OWLFrameFactoryInvocationHandler extends AbstractFrameStoreInvocati
     }
 
 
+    //TT: should we deprecate this?
     /**
      * Sets the FrameFactory that shall be used for frame generation in the
      * most recently created OWLFrameFactoryInvocationHandler.
      *
      * @param ff the (subclass of) OWLJavaFactory
-     */
+     */    
     public final static void setFrameFactory(OWLJavaFactory ff) {
         recentInstance.ff = ff;
     }
