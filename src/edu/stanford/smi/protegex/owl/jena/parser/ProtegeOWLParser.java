@@ -40,6 +40,7 @@ import edu.stanford.smi.protege.model.Reference;
 import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protege.model.framestore.MergingNarrowFrameStore;
 import edu.stanford.smi.protege.util.Log;
+import edu.stanford.smi.protegex.owl.database.OWLDatabaseModel;
 import edu.stanford.smi.protegex.owl.jena.Jena;
 import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
@@ -427,7 +428,8 @@ public class ProtegeOWLParser {
 
 
 	private RDFResource createRDFResource(String name) {
-		FrameID id = FrameID.createLocal(count++);
+		FrameID id = tripleStore.getNarrowFrameStore().generateFrameID();
+		
 		RDFResource r = null;
 		if(owlNamedClassClass.equals(currentType)) {
 			r = new DefaultOWLNamedClass(owlModel, id);
@@ -570,9 +572,12 @@ public class ProtegeOWLParser {
 	                              String namespace) {
 		RDFProperty property = ontology.getOWLModel().getRDFProperty(OWLNames.Slot.ONTOLOGY_PREFIXES);
 		Collection values = ontology.getPropertyValues(property);
-		for(Iterator it = values.iterator(); it.hasNext();) {
+		
+		Collection copyOfValues = new ArrayList(values);
+		
+		for(Iterator it = copyOfValues.iterator(); it.hasNext();) {
 			String value = (String) it.next();
-			if(value.startsWith(prefix + ":")) {
+			if(value.startsWith(prefix + ":")) {				
 				ontology.removePropertyValue(property, value);
 			}
 		}
