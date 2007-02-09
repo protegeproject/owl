@@ -982,4 +982,14 @@ public class DefaultRDFProperty extends DefaultSlot implements RDFProperty {
         visitor.visitRDFProperty(this);
     }
 
+    @Override
+    public String toString() {
+        StringBuffer buffer = new StringBuffer();
+        buffer.append(this.getClass().getSimpleName());
+        buffer.append("(");
+        buffer.append(getName());
+        buffer.append(")");
+        return buffer.toString();
+    }
+    
 }
