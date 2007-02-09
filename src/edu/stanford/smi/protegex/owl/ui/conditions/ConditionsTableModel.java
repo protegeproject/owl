@@ -606,7 +606,6 @@ public class ConditionsTableModel extends AbstractTableModel
 
 
     private void fillInheritedAnonymousClses(OWLNamedClass originCls, Collection coveredClses) {
-    	addInheritedSeparator();
         for (Iterator it = originCls.getSuperclasses(false).iterator(); it.hasNext();) {
             Cls ss = (Cls) it.next();
             if (ss instanceof OWLAnonymousClass) {
@@ -615,15 +614,22 @@ public class ConditionsTableModel extends AbstractTableModel
                     for (Iterator oit = operands.iterator(); oit.hasNext();) {
                         RDFSClass operand = (RDFSClass) oit.next();
                         if (operand instanceof OWLAnonymousClass) {
-                        	// commented out for performance reasons
-                            //addItemUnlessOverloaded(operand, originCls);
-                            items.add(ConditionsTableItem.createInherited(operand, originCls));
+                  		/* TT:
+						 * The following line should be commented out if the performance is bad
+    	              	 * The following line adds the inherited conditons to the table
+						 */
+						  addItemUnlessOverloaded(operand, originCls);
+                          // items.add(ConditionsTableItem.createInherited(operand, originCls));
                         }
                     }
                 }
-                else if (!coveredClses.contains(ss)) {                  
-                    //addItemUnlessOverloaded((OWLAnonymousClass) ss, originCls);
-                	items.add(ConditionsTableItem.createInherited((OWLAnonymousClass)ss, originCls));
+                else if (!coveredClses.contains(ss)) {
+                  	/* TT:
+					 * The following line should be commented out if the performance is bad
+                  	 * The following line adds the inherited conditons to the table
+					 */
+                    addItemUnlessOverloaded((OWLAnonymousClass) ss, originCls);
+                   // items.add(ConditionsTableItem.createInherited((OWLAnonymousClass)ss, originCls));
                 }
             }
         }
