@@ -28,6 +28,7 @@ import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.DefaultKnowledgeBase;
 import edu.stanford.smi.protege.model.Facet;
 import edu.stanford.smi.protege.model.Frame;
+import edu.stanford.smi.protege.model.FrameFactory;
 import edu.stanford.smi.protege.model.FrameID;
 import edu.stanford.smi.protege.model.FrameNameValidator;
 import edu.stanford.smi.protege.model.Instance;
@@ -43,6 +44,7 @@ import edu.stanford.smi.protege.model.framestore.FrameStore;
 import edu.stanford.smi.protege.model.framestore.FrameStoreManager;
 import edu.stanford.smi.protege.model.framestore.MergingNarrowFrameStore;
 import edu.stanford.smi.protege.model.framestore.NarrowFrameStore;
+import edu.stanford.smi.protege.model.framestore._FrameStorePackage_Test;
 import edu.stanford.smi.protege.util.CollectionUtilities;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.jena.graph.JenaModelFactory;
@@ -426,12 +428,18 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
     public AbstractOWLModel(KnowledgeBaseFactory factory) {
         super(factory);
+
+        setFrameFactory(new OWLJavaFactory(this));
+        
         resetSystemFrames();
     }
 
     public AbstractOWLModel(KnowledgeBaseFactory factory,
                             NamespaceManager namespaceManager) {
         super(factory);
+
+        setFrameFactory(new OWLJavaFactory(this));
+        
         resetSystemFrames();
         initialize(namespaceManager);
     }
@@ -440,7 +448,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
         MergingNarrowFrameStore mnfs = MergingNarrowFrameStore.get(this);
         if (mnfs == null) {
             adjustThing();
-            initOWLFrameFactoryInvocationHandler();
+
             String name = getRootCls().getDirectType().getName();
             if (name.equals(Model.Cls.STANDARD_CLASS)) {
                 bootstrap();
@@ -450,7 +458,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
             NarrowFrameStore systemFrameStore = mnfs.getSystemFrameStore();
             NarrowFrameStore oldActiveFrameStore = mnfs.setActiveFrameStore(systemFrameStore);
             adjustThing();
-            initOWLFrameFactoryInvocationHandler();
+           
             bootstrap();
             mnfs.setActiveFrameStore(oldActiveFrameStore);
         }
@@ -677,11 +685,6 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     public void adjustClientFrameStores() {
       FrameStoreManager fsm = getFrameStoreManager();
       fsm.setEnabled(owlFrameStore, false);
-
-      FrameStore owlConverter = fsm.getFrameStoreFromClass(OWLFrameFactoryInvocationHandler.class);
-      if (owlConverter != null) {
-        fsm.setEnabled(owlConverter, false);
-      }
       
       FrameStore owlDeleteSimplificationFS = fsm.getFrameStoreFromClass(OWLDeleteSimplificationFrameStore.class);
       if (owlDeleteSimplificationFS != null) {
@@ -1371,7 +1374,14 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
         getNamespaceManager().setPrefix(XSDDatatype.XSD + "#", RDFNames.XSD_PREFIX);
     }
 
-
+    //added by TT: It was missing in the initialization and set only too late
+    //it seems that it is not working! It expects the Frame FrameFactory
+    /*
+    @Override
+    protected FrameFactory createFrameFactory() {
+    	return new OWLJavaFactory(this);
+    }*/
+    
     protected FrameStoreManager createFrameStoreManager() {
         return new OWLFrameStoreManager(this);
     }
