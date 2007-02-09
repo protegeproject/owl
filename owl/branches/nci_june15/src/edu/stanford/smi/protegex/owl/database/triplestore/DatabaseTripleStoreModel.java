@@ -11,8 +11,6 @@ import edu.stanford.smi.protegex.owl.model.triplestore.impl.TripleChangePostProc
  */
 public class DatabaseTripleStoreModel extends AbstractTripleStoreModel {
 
-    private OWLDatabaseModel owlModel;
-
     private TripleStore systemTripleStore;
 
     private DatabaseTripleStore userTripleStore;
@@ -20,7 +18,7 @@ public class DatabaseTripleStoreModel extends AbstractTripleStoreModel {
 
     public DatabaseTripleStoreModel(OWLDatabaseModel owlModel) {
         super(owlModel);
-        this.owlModel = owlModel;
+       
         NarrowFrameStore frameStore = mnfs.getActiveFrameStore();
         userTripleStore = new DatabaseTripleStore(owlModel, this, frameStore);
         NarrowFrameStore systemFrameStore = mnfs.getSystemFrameStore();
@@ -45,7 +43,7 @@ public class DatabaseTripleStoreModel extends AbstractTripleStoreModel {
                                     NarrowFrameStore systemNfs, 
                                     NarrowFrameStore userNfs) {
         super(owlModel);
-        this.owlModel = owlModel;
+       
         userTripleStore = new DatabaseTripleStore(owlModel, this, userNfs);
         systemTripleStore = new DatabaseTripleStore(owlModel, this, systemNfs);
         ts.add(systemTripleStore);
@@ -63,13 +61,6 @@ public class DatabaseTripleStoreModel extends AbstractTripleStoreModel {
 
     public void deleteTripleStore(TripleStore tripleStore) {
     }
-
-
-    public void endTripleStoreChanges() {
-        owlModel.flushCache();
-        TripleChangePostProcessor.postProcess(owlModel);
-    }
-
 
     public TripleStore getTripleStoreByDefaultNamespace(String namespace) {
         return userTripleStore;
