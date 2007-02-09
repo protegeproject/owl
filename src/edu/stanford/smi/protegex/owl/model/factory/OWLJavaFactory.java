@@ -1,6 +1,7 @@
 package edu.stanford.smi.protegex.owl.model.factory;
 
 import java.lang.reflect.Constructor;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -9,6 +10,10 @@ import java.util.Set;
 import java.util.logging.Level;
 
 import edu.stanford.smi.protege.model.Cls;
+import edu.stanford.smi.protege.model.DefaultCls;
+import edu.stanford.smi.protege.model.DefaultFacet;
+import edu.stanford.smi.protege.model.DefaultSimpleInstance;
+import edu.stanford.smi.protege.model.DefaultSlot;
 import edu.stanford.smi.protege.model.Frame;
 import edu.stanford.smi.protege.model.FrameID;
 import edu.stanford.smi.protege.model.Instance;
@@ -28,12 +33,23 @@ import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
 import edu.stanford.smi.protegex.owl.model.RDFSNames;
 import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLAllDifferent;
+import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLAllValuesFrom;
+import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLCardinality;
+import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLComplementClass;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLDataRange;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLDatatypeProperty;
+import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLEnumeratedClass;
+import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLHasValue;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLIndividual;
+import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLIntersectionClass;
+import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLMaxCardinality;
+import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLMinCardinality;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLNamedClass;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLObjectProperty;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLOntology;
+import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLSomeValuesFrom;
+import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLUnionClass;
+import edu.stanford.smi.protegex.owl.model.impl.DefaultRDFExternalResource;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultRDFIndividual;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultRDFList;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultRDFProperty;
@@ -47,7 +63,7 @@ import edu.stanford.smi.protegex.owl.model.impl.DefaultRDFUntypedResource;
  * @author Holger Knublauch  <holger@knublauch.com>
  */
 public class OWLJavaFactory extends DefaultFrameFactory {
-
+	
     /**
      * A Hashtable from Protege metaclass names to Java class names from this package
      */
@@ -88,6 +104,8 @@ public class OWLJavaFactory extends DefaultFrameFactory {
 
 
     private final static String CLASSNAME_PREFIX = "edu.stanford.smi.protegex.owl.model.impl.Default";
+    
+    private static final Class[] CONSTRUCTOR_PARAMETERS = { KnowledgeBase.class, FrameID.class };
 
     private AbstractOWLModel owlModel;
 
@@ -97,6 +115,86 @@ public class OWLJavaFactory extends DefaultFrameFactory {
         this.owlModel = owlModel;
     }
 
+    
+    @Override
+    public Frame createFrameFromClassId(int javaClassId, FrameID id) {
+        Frame frame = null;
+        
+        //copied from DefaultFramefactory
+        switch (javaClassId) {
+            case DEFAULT_CLS_JAVA_CLASS_ID:
+                frame = createCls(id, DefaultCls.class);
+                break;
+            case DEFAULT_SLOT_JAVA_CLASS_ID:
+                frame = createSlot(id, DefaultSlot.class);
+                break;
+            case DEFAULT_FACET_JAVA_CLASS_ID:
+                frame = createFacet(id, DefaultFacet.class);
+                break;
+            case DEFAULT_SIMPLE_INSTANCE_JAVA_CLASS_ID:
+                frame = createSimpleInstance(id, DefaultSimpleInstance.class);
+                break;                
+        }
+        
+        //TT: should this be rewritten?
+        if (frame != null) {
+        	return frame;
+        }
+        
+        Class javaType = null;
+        
+        try {
+			javaType = FrameTypeId2OWLJavaClass.getJavaClass(javaClassId);
+		} catch (Exception e) {
+			//this should never happen!
+			Log.getLogger().log(Level.WARNING, "Error at creating Java class with Java Frame type id: " + javaClassId , e);
+		}
+        
+		if (javaType == null) {
+			throw new RuntimeException("Invalid java class id: " + javaClassId);
+		}
+      				
+        return createInstance(id, javaType);
+    }
+    
+    
+    @Override
+    public int getJavaClassId(Frame frame) {	
+    	int javaClassId = 0;
+    	
+      	// The order of checking the type is very important!!! 
+    	// The most specific Java types are tested first and only after that 
+    	// the more generic ones. 
+        
+    	for (Iterator iter = FrameTypeId2OWLJavaClass.getOrderedJavaClasses().iterator(); iter.hasNext();) {
+    		try {
+    			Class javaType = (Class) iter.next();
+    			if (javaType.isInstance(frame)) {
+    				return FrameTypeId2OWLJavaClass.getFrameTypeId(javaType);
+    			}
+			} catch (Exception e) {
+				// this should never happen!
+				Log.getLogger().log(Level.WARNING, "Error at getting the Java class Id for: " + frame , e);
+			}
+		}
+
+    	return super.getJavaClassId(frame);
+    
+    }
+    
+    
+    private Instance createInstance(FrameID id, Class type) {
+        Instance instance = null;
+        try {
+            Constructor constructor = type.getConstructor(CONSTRUCTOR_PARAMETERS);
+            instance = (Instance) constructor.newInstance(new Object[] { owlModel, id });
+        } catch (Exception e) {
+            Log.getLogger().severe(Log.toString(e));
+        }
+        return instance;
+    }
+    
+    
 
     public RDFResource as(RDFResource resource, Class javaInterface) {
         if (javaInterface.isAssignableFrom(resource.getClass())) {
@@ -205,7 +303,8 @@ public class OWLJavaFactory extends DefaultFrameFactory {
      * @param directTypes
      * @return the new Cls object
      */
-    public Cls createCls(FrameID id, Collection directTypes) {
+    public Cls createCls(FrameID id, Collection directTypes) { 	
+    	
         if (id.equals(Model.ClsID.THING)) {
             return new DefaultOWLNamedClass(owlModel, id);
         }
