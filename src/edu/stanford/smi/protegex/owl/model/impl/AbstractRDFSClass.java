@@ -738,4 +738,16 @@ public abstract class AbstractRDFSClass extends DefaultCls implements RDFSClass 
     public void setProtegeTypes(Collection types) {
         OWLUtil.setProtegeTypes(this, types);
     }
+    
+    @Override
+    public String toString() {
+        StringBuffer buffer = new StringBuffer();       
+        buffer.append(this.getClass().getSimpleName());
+        buffer.append("(");
+        buffer.append(getName());
+        buffer.append(", ");
+        buffer.append(getFrameID());
+        buffer.append(")");
+        return buffer.toString();    	
+    }
 }
