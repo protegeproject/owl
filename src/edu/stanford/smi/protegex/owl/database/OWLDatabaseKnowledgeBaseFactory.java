@@ -6,8 +6,10 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import edu.stanford.smi.protege.Application;
 import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.DefaultKnowledgeBase;
+import edu.stanford.smi.protege.model.FrameFactory;
 import edu.stanford.smi.protege.model.Instance;
 import edu.stanford.smi.protege.model.KnowledgeBase;
 import edu.stanford.smi.protege.model.Slot;
@@ -15,15 +17,21 @@ import edu.stanford.smi.protege.model.framestore.FrameStore;
 import edu.stanford.smi.protege.model.framestore.NarrowFrameStore;
 import edu.stanford.smi.protege.server.ClientInitializerKnowledgeBaseFactory;
 import edu.stanford.smi.protege.storage.database.DatabaseKnowledgeBaseFactory;
+import edu.stanford.smi.protege.storage.database.IncludingDatabaseAdapter;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protege.util.PropertyList;
 import edu.stanford.smi.protegex.owl.database.triplestore.DatabaseTripleStoreModel;
 import edu.stanford.smi.protegex.owl.jena.JenaKnowledgeBaseFactory;
 import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
+import edu.stanford.smi.protegex.owl.jena.parser.ProtegeOWLParser;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
+import edu.stanford.smi.protegex.owl.model.factory.OWLJavaFactory;
+import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
+import edu.stanford.smi.protegex.owl.model.impl.OWLNamespaceManager;
 import edu.stanford.smi.protegex.owl.resource.OWLText;
 import edu.stanford.smi.protegex.owl.storage.OWLKnowledgeBaseFactory;
+import edu.stanford.smi.protegex.owl.ui.ProgressDisplayDialog;
 import edu.stanford.smi.protegex.owl.ui.resourceselection.ResourceSelectionAction;
 
 /**
@@ -35,16 +43,20 @@ public class OWLDatabaseKnowledgeBaseFactory extends DatabaseKnowledgeBaseFactor
         implements OWLKnowledgeBaseFactory, ClientInitializerKnowledgeBaseFactory {
     private static Logger log = Log.getLogger(OWLDatabaseKnowledgeBaseFactory.class);
 
+    
     public OWLDatabaseKnowledgeBaseFactory() {
      	setOwlMode(true);
     }
 
 
-    public KnowledgeBase createKnowledgeBase(Collection errors) {
+    public KnowledgeBase createKnowledgeBase(Collection errors) {   	
+    	
+	    ProtegeOWLParser.inUI = Application.getWelcomeDialog() != null;              
         ResourceSelectionAction.setActivated(false);
-        OWLDatabaseModel kb = new OWLDatabaseModel(this);
-        // kb.getOWLSystemResources(); <<-- I don't think that this is needed
-        return kb;
+              
+        OWLDatabaseModel owlModel = new OWLDatabaseModel(this);
+       	   
+        return owlModel;    	 	
     }
 
 
@@ -97,6 +109,28 @@ public class OWLDatabaseKnowledgeBaseFactory extends DatabaseKnowledgeBaseFactor
         owlModel.initialize();
     }
 
+    protected void initializeKB(KnowledgeBase kb, 
+    		String driver, 
+    		String url, 
+    		String user, 
+    		String password,
+    		String table,
+    		boolean isInclude) {
+
+    	AbstractOWLModel dkb = (AbstractOWLModel) kb;
+    	
+    	FrameFactory factory = dkb.getFrameFactory();
+    	
+    	if (!(factory instanceof OWLJavaFactory)) {
+    		Log.getLogger().warning("Adapting the java factory to OWLJavaFactory");
+    		factory = new OWLJavaFactory(dkb);
+    	}
+    	
+    	//TT remove IDA?
+    	IncludingDatabaseAdapter ida = getIncludingDatabaseAdapter(dkb);
+    	ida.initialize(factory, driver, url, user, password, table, isInclude);
+    	kb.flushCache();
+    }    
 
     public void saveKnowledgeBase(KnowledgeBase kb, PropertyList sources, Collection errors) {
         if (kb instanceof OWLModel) {

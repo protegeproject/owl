@@ -22,6 +22,7 @@ import edu.stanford.smi.protege.model.Project;
 import edu.stanford.smi.protege.model.framestore.AbstractFrameStoreInvocationHandler;
 import edu.stanford.smi.protege.model.framestore.EventGeneratorFrameStore;
 import edu.stanford.smi.protege.model.framestore.FrameStore;
+import edu.stanford.smi.protege.model.framestore.MergingNarrowFrameStore;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.database.triplestore.DatabaseTripleStoreModel;
 import edu.stanford.smi.protegex.owl.jena.Jena;
@@ -33,6 +34,7 @@ import edu.stanford.smi.protegex.owl.model.OWLOntology;
 import edu.stanford.smi.protegex.owl.model.RDFNames;
 import edu.stanford.smi.protegex.owl.model.RDFSNames;
 import edu.stanford.smi.protegex.owl.model.factory.OWLJavaFactory;
+import edu.stanford.smi.protegex.owl.model.factory.OWLJavaFactoryUpdater;
 import edu.stanford.smi.protegex.owl.model.framestore.LocalClassificationFrameStore;
 import edu.stanford.smi.protegex.owl.model.framestore.OWLFrameFactoryInvocationHandler;
 import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
@@ -53,11 +55,22 @@ public class OWLDatabaseModel
     private TripleStoreModel tripleStoreModel;
 
 
-    public OWLDatabaseModel(KnowledgeBaseFactory factory) {
+    public OWLDatabaseModel(KnowledgeBaseFactory factory) {    	
         super(factory);
     }
 
-    /**
+    // added by TT
+    /*
+    public OWLDatabaseModel(OWLDatabaseKnowledgeBaseFactory factory, OWLNamespaceManager namespaceManager) {
+        super(factory, namespaceManager);
+        OWLJavaFactoryUpdater.run(this);
+        //maybe remove the following two lines
+        //MergingNarrowFrameStore mnfs = MergingNarrowFrameStore.get(this);
+        //mnfs.setTopFrameStore(mnfs.getActiveFrameStore().getName());
+	}
+	*/
+
+	/**
      * Initializes the OWLDatabaseModel in the case that it is a client of a remote server.
      * <p/>
      * This is a little delicate because there is no database and no NarrowFrameStores.
@@ -69,12 +82,15 @@ public class OWLDatabaseModel
     }
 
     public void initialize() {
+    	setFrameFactory(new OWLJavaFactory(this));
+        
         final OWLNamespaceManager namespaceManager = new OWLNamespaceManager();
         super.initialize(namespaceManager);
+
         initCustomFrameStores();
-        setFrameFactory(new OWLJavaFactory(this));
         adjustThing();
         adjustSystemClasses();
+        
         getNamespaceManager().update();
     }
 
@@ -180,6 +196,7 @@ public class OWLDatabaseModel
     }
 
 
+    //TT this method should not be called
     public void initOWLFrameFactoryInvocationHandler() {
         Class clazz = OWLFrameFactoryInvocationHandler.class;
         FrameStore frameFactoryInvocationFrameStore = AbstractFrameStoreInvocationHandler.newInstance(clazz, this);
