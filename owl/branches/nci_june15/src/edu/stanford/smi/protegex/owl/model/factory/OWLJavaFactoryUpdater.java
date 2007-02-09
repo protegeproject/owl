@@ -16,6 +16,7 @@ import edu.stanford.smi.protege.model.Model;
 import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protege.model.framestore.MergingNarrowFrameStore;
 import edu.stanford.smi.protege.util.Log;
+import edu.stanford.smi.protegex.owl.database.OWLDatabaseModel;
 import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
 import edu.stanford.smi.protegex.owl.jena.parser.ProtegeOWLParserException;
 
@@ -192,4 +193,9 @@ public class OWLJavaFactoryUpdater {
     public static void run(JenaOWLModel owlModel) {
         new OWLJavaFactoryUpdater(owlModel);
     }
+    
+    public static void run(OWLDatabaseModel owlModel) {
+        new OWLJavaFactoryUpdater(owlModel);
+    }
+
 }
