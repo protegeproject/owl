@@ -38,26 +38,29 @@ class AddRDFTypePropertyHandler extends AbstractAddPropertyValueHandler {
     }
 
 
+
     public void handleAdd(RDFResource subject, Object object) {
         // Don't add owl:Class if this already has a type (e.g., :OWL-COMPLEMENT-CLASS)
-        // System.out.println("Adding " + object + " to types of " + subject);
+        
         Collection oldValues = adder.getSlotValues(subject, directTypesSlot);
+
         if (oldValues.isEmpty()) {
             tripleStoreModel.setHomeTripleStore(subject, tripleStore);
         }
+        
         if (!object.equals(owlClassClass)) {
             if (adder.addValue(subject, directTypesSlot, object)) {
                 adder.addValueFast((Instance) object, directInstancesSlot, subject);
             }
-        }
-        else if (oldValues.isEmpty()) {
+        } else if (oldValues.isEmpty()) {
             if (adder.addValue(subject, directTypesSlot, object)) {
                 adder.addValueFast((Instance) object, directInstancesSlot, subject);
             }
-        }
+        }     
+        
         if (oldValues.size() == 1 && oldValues.contains(untypedResourceClass)) {
             ((Instance) subject).removeDirectType(untypedResourceClass);
             tripleStoreModel.setHomeTripleStore(subject, tripleStore);
-        }
+        } 
     }
 }
