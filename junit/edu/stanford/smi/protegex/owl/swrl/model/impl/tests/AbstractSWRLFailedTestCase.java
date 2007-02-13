@@ -7,7 +7,7 @@ import edu.stanford.smi.protegex.owl.tests.AbstractJenaTestCase;
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
  */
-public abstract class AbstractSWRLTestCase extends AbstractJenaTestCase {
+public abstract class AbstractSWRLFailedTestCase extends AbstractJenaTestCase {
 
     protected SWRLFactory factory;
 
