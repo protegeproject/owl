@@ -16,8 +16,8 @@ import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protege.model.framestore.FrameStore;
 import edu.stanford.smi.protege.model.framestore.NarrowFrameStore;
 import edu.stanford.smi.protege.server.ClientInitializerKnowledgeBaseFactory;
+import edu.stanford.smi.protege.storage.database.DatabaseFrameDb;
 import edu.stanford.smi.protege.storage.database.DatabaseKnowledgeBaseFactory;
-import edu.stanford.smi.protege.storage.database.IncludingDatabaseAdapter;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protege.util.PropertyList;
 import edu.stanford.smi.protegex.owl.database.triplestore.DatabaseTripleStoreModel;
@@ -127,8 +127,8 @@ public class OWLDatabaseKnowledgeBaseFactory extends DatabaseKnowledgeBaseFactor
     	}
     	
     	//TT remove IDA?
-    	IncludingDatabaseAdapter ida = getIncludingDatabaseAdapter(dkb);
-    	ida.initialize(factory, driver, url, user, password, table, isInclude);
+    	DatabaseFrameDb db = getDatabaseFrameDb(dkb);
+    	db.initialize(factory, driver, url, user, password, table, isInclude);
     	kb.flushCache();
     }    
 
