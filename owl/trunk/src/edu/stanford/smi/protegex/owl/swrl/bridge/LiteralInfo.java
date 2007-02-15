@@ -4,9 +4,12 @@ package edu.stanford.smi.protegex.owl.swrl.bridge;
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.*;
 import edu.stanford.smi.protegex.owl.model.*;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
+
 /*
-** Info object to wrap XML Schema datatype literals. This class is used primarily when passing literals to and from built-in methods. Also
-** provides a central place to validate the content of complex types, such as datetimes, etc.
+** Info object to wrap Java and XML Schema datatype literals. This class is used primarily when passing literals to and from built-in
+** methods. Also provides a central place to validate the content of complex XSD types, such as datetimes, etc.
 */
 public class LiteralInfo extends Info implements Argument, DatatypeValue, Comparable
 {
@@ -75,13 +78,20 @@ public class LiteralInfo extends Info implements Argument, DatatypeValue, Compar
     this.value = value;
   } // LiteralInfo
 
+  public boolean isString() { return value instanceof String; }
+
+  // Java Numeber types
   public boolean isInteger() { return value instanceof Integer; }
   public boolean isLong() { return value instanceof Long; }
   public boolean isBoolean() { return value instanceof Boolean; }
   public boolean isFloat() { return value instanceof Float; }
   public boolean isDouble() { return value instanceof Double; }
   public boolean isShort() { return value instanceof Short; }
-  public boolean isString() { return value instanceof String; }
+  public boolean isByte() { return value instanceof Byte; }
+  public boolean isBigDecimal() { return value instanceof BigDecimal; }
+  public boolean isBigInteger() { return value instanceof BigInteger; }
+  
+  // XSD types
   public boolean isTime() { return value instanceof edu.stanford.smi.protegex.owl.swrl.bridge.Time; }
   public boolean isDate() { return value instanceof edu.stanford.smi.protegex.owl.swrl.bridge.Date; }
   public boolean isDateTime() { return value instanceof edu.stanford.smi.protegex.owl.swrl.bridge.DateTime; }
@@ -89,7 +99,6 @@ public class LiteralInfo extends Info implements Argument, DatatypeValue, Compar
   public boolean isAnyURI() { return value instanceof edu.stanford.smi.protegex.owl.swrl.bridge.AnyURI; }
   public boolean isBase64Binary() { return value instanceof edu.stanford.smi.protegex.owl.swrl.bridge.Base64Binary;}
   public boolean isDecimal() { return value instanceof edu.stanford.smi.protegex.owl.swrl.bridge.Decimal; }
-  public boolean isByte() { return value instanceof edu.stanford.smi.protegex.owl.swrl.bridge.Byte; }
 
   public int getInt() throws DatatypeConversionException 
   {
@@ -190,15 +199,49 @@ public class LiteralInfo extends Info implements Argument, DatatypeValue, Compar
     return (edu.stanford.smi.protegex.owl.swrl.bridge.Decimal)value;
   } // getDecimal
 
-  public edu.stanford.smi.protegex.owl.swrl.bridge.Byte getByte() throws DatatypeConversionException 
+  public Byte getByte() throws DatatypeConversionException 
   {
     if (!isByte()) 
       throw new DatatypeConversionException("Cannot convert datatype value of type '" + value.getClass().getCanonicalName() + "' to Byte"); 
-    return (edu.stanford.smi.protegex.owl.swrl.bridge.Byte)value;
+    return (Byte)value;
   } // getByte
+
+  public BigDecimal getBigDecimal() throws DatatypeConversionException 
+  {
+    if (!isBigDecimal()) 
+      throw new DatatypeConversionException("Cannot convert datatype value of type '" + value.getClass().getCanonicalName() + "' to BigDecimal"); 
+    return (BigDecimal)value;
+  } // getBigDecimal
+
+  public BigInteger getBigInteger() throws DatatypeConversionException 
+  {
+    if (!isBigInteger()) 
+      throw new DatatypeConversionException("Cannot convert datatype value of type '" + value.getClass().getCanonicalName() + "' to BigInteger"); 
+    return (BigInteger)value;
+  } // getBigInteger
 
   public boolean isNumeric() { return value instanceof Number; }
   public String toString() { return value.toString(); }
+
+  // The Protege-OWL implementation
+  public RDFSLiteral asRDFSLiteral(OWLModel owlModel) throws DatatypeConversionException
+  {
+    RDFSLiteral literal = null;
+
+    if (isString()) literal = owlModel.asRDFSLiteral(getString());
+    else if (isInteger()) literal = owlModel.asRDFSLiteral(getInt());
+    else if (isLong()) literal = owlModel.asRDFSLiteral(getLong());
+    else if (isBoolean()) literal = owlModel.asRDFSLiteral(getBoolean());
+    else if (isFloat()) literal = owlModel.asRDFSLiteral(getFloat());
+    else if (isDouble()) literal = owlModel.asRDFSLiteral(getDouble());
+    else if (isShort()) literal = owlModel.asRDFSLiteral(getShort());
+    else if (isBigDecimal()) literal = owlModel.asRDFSLiteral(getBigDecimal());
+    else if (isBigDecimal()) literal = owlModel.asRDFSLiteral(getBigDecimal());
+    else if (isByte()) literal = owlModel.asRDFSLiteral(getByte());
+    else throw new DatatypeConversionException("Cannot convert LiteralInfo with value '" + value + "' to RDFSLiteral.");
+
+    return literal;
+  } // asRDFSLiteral
 
   public boolean equals(Object obj)
   {

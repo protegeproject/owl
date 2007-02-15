@@ -57,7 +57,7 @@ public abstract class SWRLRuleEngineBridge
   private Set<PropertyInfo> assertedProperties; 
 
   // Info objects representing created individuals.
-  private Set<IndividualInfo> createdIndividuals;
+  private HashMap<String, IndividualInfo> createdIndividuals;
 
   // Holds class instances implementing built-ins.
   private HashMap<String, SWRLBuiltInLibrary> builtInLibraryClassInstances;
@@ -175,9 +175,6 @@ public abstract class SWRLRuleEngineBridge
     clearExportedAndAssertedKnowledge();
   } // resetRuleEngine
 
-  // These methods will typically be used by built-in implementations.
-  public String getCurrentBuiltInInvokingRuleName() { return currentBuiltInInvokingRuleName; }
-  public int getCurrentBuiltInInvokingIndex() { return currentBuiltInInvokingIndex; }
   /*
    * Get the OWL model associated with this bridge.
    */
@@ -193,6 +190,12 @@ public abstract class SWRLRuleEngineBridge
   public int getNumberOfAssertedProperties() { return assertedProperties.size(); }
   public int getNumberOfCreatedIndividuals() { return createdIndividuals.size(); }
 
+  public boolean isCreatedIndividual(String individualName) { return createdIndividuals.containsKey(individualName); }
+
+  // These methods will typically be used by built-in implementations when displaying error messages.
+  public String getCurrentBuiltInInvokingRuleName() { return currentBuiltInInvokingRuleName; }
+  public int getCurrentBuiltInInvokingIndex() { return currentBuiltInInvokingIndex; }
+
   // Convenience methods for subclasses that may wish to display the contents of the bridge.
   protected Collection<RuleInfo> getImportedSWRLRules() { return new ArrayList<RuleInfo>(importedSWRLRules.values()); }
   protected Collection<ClassInfo> getImportedClasses() { return new ArrayList<ClassInfo>(importedClasses.values()); }
@@ -201,33 +204,21 @@ public abstract class SWRLRuleEngineBridge
   protected Collection<RestrictionInfo> getImportedRestrictions() { return importedRestrictions; }
   protected Collection<IndividualInfo> getAssertedIndividuals() { return assertedIndividuals; }
   protected Collection<PropertyInfo> getAssertedProperties() { return assertedProperties; }
-  protected Collection<IndividualInfo> getCreatedIndividuals() { return createdIndividuals; }
+  protected Collection<IndividualInfo> getCreatedIndividuals() { return new ArrayList(createdIndividuals.values()); }
 
   /*
   ** Assert an OWL property from a rule engine.
   */
-  protected void assertProperty(String propertyName, String subjectName, String predicateValue) 
-    throws SWRLRuleEngineBridgeException
+  protected void assertProperty(PropertyInfo propertyInfo) throws SWRLRuleEngineBridgeException
   { 
-    PropertyInfo propertyInfo;
-    Argument subject, predicate;
-
-    subject = new IndividualInfo(subjectName);
-    if (isObjectProperty(propertyName)) predicate = new IndividualInfo(predicateValue);
-    else predicate = new LiteralInfo(predicateValue);
-
-    propertyInfo = new PropertyInfo(propertyName, subject, predicate);
-
     assertedProperties.add(propertyInfo); 
   } // assertProperty
 
   /*
   ** Assert an OWL individual from a rule engine.
   */
-  protected void assertIndividual(String individualName, String className) throws SWRLRuleEngineBridgeException 
+  protected void assertIndividual(IndividualInfo individualInfo) throws SWRLRuleEngineBridgeException 
   {
-    IndividualInfo individualInfo = new IndividualInfo(individualName, className);
-
     assertedIndividuals.add(individualInfo); 
   } // assertIndividual
 
@@ -304,20 +295,20 @@ public abstract class SWRLRuleEngineBridge
     String individualName = owlModel.createNewResourceName("SWRLCreated");
     IndividualInfo individualInfo = new IndividualInfo(individualName, OWLNames.Cls.THING);
     
-    createdIndividuals.add(individualInfo); 
+    createdIndividuals.put(individualName, individualInfo); 
     defineIndividual(individualInfo); // Export the individual to the rule engine.
 
     return individualInfo;
   } // createIndividual
 
   /*
-  ** Create OWL individuals for the individuals generated during rule excution.
+  ** Create OWL individuals for the individuals (represented by info objects) generated during rule excution.
   */
   private void createCreatedIndividuals() throws SWRLRuleEngineBridgeException
   {
     OWLNamedClass owlThingClass = owlModel.getOWLThingClass();
 
-    for (IndividualInfo individualInfo: createdIndividuals) {
+    for (IndividualInfo individualInfo: createdIndividuals.values()) {
       String individualName = individualInfo.getIndividualName();
       if (owlModel.getOWLIndividual(individualName) != null) continue; // We have already created it.
       RDFResource individual = owlThingClass.createInstance(individualName);
@@ -764,7 +755,7 @@ public abstract class SWRLRuleEngineBridge
     assertedIndividuals = new HashSet<IndividualInfo>(); 
     assertedProperties = new HashSet<PropertyInfo>(); 
 
-    createdIndividuals = new HashSet<IndividualInfo>();
+    createdIndividuals = new HashMap<String, IndividualInfo>();
 
     builtInLibraryClassInstances = new HashMap<String, SWRLBuiltInLibrary>();
   } // initialize

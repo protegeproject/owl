@@ -1,3 +1,4 @@
+
 package edu.stanford.smi.protegex.owl.swrl.model.impl;
 
 import edu.stanford.smi.protege.model.*;
@@ -8,6 +9,7 @@ import edu.stanford.smi.protegex.owl.swrl.parser.SWRLParseException;
 import edu.stanford.smi.protegex.owl.swrl.parser.SWRLParser;
 import edu.stanford.smi.protegex.owl.swrl.ui.icons.SWRLIcons;
 import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
+import edu.stanford.smi.protegex.owl.swrl.model.impl.SWRLUtil;
 
 import javax.swing.*;
 import java.util.Collection;
@@ -85,72 +87,65 @@ public class DefaultSWRLImp extends DefaultOWLIndividual implements SWRLImp {
     }
 
 
-    public Set getReferencedInstances() {
-        Set set = new HashSet();
-        getReferencedInstances(set);
-        return set;
+  public Set getReferencedInstances() 
+  {
+    Set set = new HashSet();
+    getReferencedInstances(set);
+    return set;
+  }
+
+  public void getReferencedInstances(Set set) 
+  {
+    SWRLAtomList head = getHead();
+    if (head != null) {
+      set.add(head);
+      head.getReferencedInstances(set);
     }
-
-
-    public void getReferencedInstances(Set set) {
-        SWRLAtomList head = getHead();
-        if (head != null) {
-            set.add(head);
-            head.getReferencedInstances(set);
-        }
-        SWRLAtomList body = getBody();
-        if (body != null) {
-            set.add(body);
-            body.getReferencedInstances(set);
-        }
+    SWRLAtomList body = getBody();
+    if (body != null) {
+      set.add(body);
+      body.getReferencedInstances(set);
     }
+  }
 
+  public SWRLAtomList getBody() 
+  {
+    return (SWRLAtomList) getPropertyValue(getOWLModel().getRDFProperty(SWRLNames.Slot.BODY));
+  } // getBody
 
-    public SWRLAtomList getBody() {
-        return (SWRLAtomList) getPropertyValue(getOWLModel().getRDFProperty(SWRLNames.Slot.BODY));
-    } // getBody
+  public void setBody(SWRLAtomList swrlAtomList) 
+  {
+    setPropertyValue(getOWLModel().getRDFProperty(SWRLNames.Slot.BODY), swrlAtomList);
+  } // setBody
+  
+  public String getBrowserText() 
+  {
+    SWRLAtomList body = getBody();
+    SWRLAtomList head = getHead();
+    String s = "";
 
+    if (head == null && body == null) {
+      s += "<EMPTY_RULE>";
+    } else {
+      s += SWRLUtil.getSWRLBrowserText(body, "BODY");
+      s += " " + SWRLParser.IMP_CHAR + " ";
+      s += SWRLUtil.getSWRLBrowserText(head, "HEAD");
+    } // if
 
-    public void setBody(SWRLAtomList swrlAtomList) {
-        setPropertyValue(getOWLModel().getRDFProperty(SWRLNames.Slot.BODY), swrlAtomList);
-    } // setBody
+    return s;
+  } // toString
 
+  public void setHead(SWRLAtomList swrlAtomList) 
+  {
+    setPropertyValue(getOWLModel().getRDFProperty(SWRLNames.Slot.HEAD), swrlAtomList);
+  } // setHead
 
-    public String getBrowserText() {
-
-        SWRLAtomList body = getBody();
-        SWRLAtomList head = getHead();
-        if (body == null) {
-            if (head == null) {
-                return "<empty rule>";
-            }
-            else {
-                return head.getBrowserText();
-            }
-        }
-        else {
-            String s = body.getBrowserText() + "  " + SWRLParser.IMP_CHAR + "  ";
-            if (head == null) {
-                return s + "<null>";
-            }
-            else {
-                return s += head.getBrowserText();
-            }
-        }
-    } // toString
-
-
-    public void setHead(SWRLAtomList swrlAtomList) {
-        setPropertyValue(getOWLModel().getRDFProperty(SWRLNames.Slot.HEAD), swrlAtomList);
-    } // setHead
-
-
-    public void setExpression(String parsableText) throws SWRLParseException {
-        SWRLParser parser = new SWRLParser(getOWLModel());
-        parser.parse(parsableText);
-        deleteHeadAndBody();
-        parser.setParseOnly(false);
-        parser.parse(parsableText, this);
-    }
-
+  public void setExpression(String parsableText) throws SWRLParseException 
+  {
+    SWRLParser parser = new SWRLParser(getOWLModel());
+    parser.parse(parsableText);
+    deleteHeadAndBody();
+    parser.setParseOnly(false);
+    parser.parse(parsableText, this);
+  }
 } // DefaultSWRLImp

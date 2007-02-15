@@ -13,31 +13,28 @@ import edu.stanford.smi.protegex.owl.ui.code.SymbolTextArea;
  */
 public class SWRLTextArea extends SymbolTextArea {
 
-    public SWRLTextArea(OWLModel owlModel, SymbolErrorDisplay errorDisplay) {
-        super(owlModel, errorDisplay, new SWRLResourceNameMatcher(), new SWRLSyntaxConverter(owlModel));
-        SWRLTextField.initKeymap(this);
+  public SWRLTextArea(OWLModel owlModel, SymbolErrorDisplay errorDisplay) 
+  {
+    super(owlModel, errorDisplay, new SWRLResourceNameMatcher(), new SWRLSyntaxConverter(owlModel));
+    SWRLTextField.initKeymap(this);
+  }
+
+  protected void checkUniCodeExpression(String uniCodeText) throws Throwable 
+  {
+    SWRLParser parser = new SWRLParser(getOWLModel());
+    try {
+      parser.parse(uniCodeText);
     }
+    catch (SWRLIncompleteRuleException e) {
+      // Ignore incomplete rules on input checking. (Unlike SymbolTextField, SymbolTextArea only calls checkUniCodeExpression when it
+      // is checking an expression for errors, not when it is determining if an expression can be saved.
+    } // try
+  } // checkUniCodeExpression
 
-
-    protected void checkUniCodeExpression(String uniCodeText) throws Throwable {
-        SWRLParser parser = new SWRLParser(getOWLModel());
-        try {
-            parser.parse(uniCodeText);
-        }
-        catch (SWRLIncompleteRuleException e) {
-            // Ignore incomplete rules on input checking. (Unlike
-            // SymbolTextField, SymbolTextArea only calls
-            // checkUniCodeExpression when it is checking an expression
-            // for errors, not when it is determining if an expression
-            // can be saved.
-        } // try
-    } // checkUniCodeExpression
-
-
-    public void reformatText() {
-        String text = getText();
-        text = text.replaceAll("" + SWRLParser.AND_CHAR + "  ", "" + SWRLParser.AND_CHAR + "\n");
-        text = text.replaceAll("" + SWRLParser.IMP_CHAR, "\n  " + SWRLParser.IMP_CHAR);
-        setText(text);
-    }
+  public void reformatText() {
+    String text = getText();
+    text = text.replaceAll("" + SWRLParser.AND_CHAR + "  ", "" + SWRLParser.AND_CHAR + "\n");
+    text = text.replaceAll("" + SWRLParser.IMP_CHAR, "\n  " + SWRLParser.IMP_CHAR);
+    setText(text);
+  }
 }

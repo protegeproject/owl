@@ -273,8 +273,8 @@ public class SWRLBuiltInLibraryImpl implements SWRLBuiltInLibrary
     SWRLBuiltInUtil.checkNumberOfArgumentsAtLeast(SWRLB_STRING_CONCAT, 2, arguments.size());
     SWRLBuiltInUtil.checkForUnboundNonFirstArguments(SWRLB_STRING_CONCAT, arguments);
 
-    for (int argumentNumber = 1; argumentNumber < arguments.size(); argumentNumber++) { // Exception thrown if argument is not a string.
-      operationResult = operationResult.concat(SWRLBuiltInUtil.getArgumentAsAString(SWRLB_STRING_CONCAT, argumentNumber, arguments));
+    for (int argumentNumber = 1; argumentNumber < arguments.size(); argumentNumber++) { // Exception thrown if argument is not a literal.
+      operationResult = operationResult.concat(SWRLBuiltInUtil.getArgumentAsALiteral(SWRLB_STRING_CONCAT, argumentNumber, arguments).toString());
     } // for
 
     if (SWRLBuiltInUtil.isUnboundArgument(SWRLB_STRING_CONCAT, 0, arguments)) {

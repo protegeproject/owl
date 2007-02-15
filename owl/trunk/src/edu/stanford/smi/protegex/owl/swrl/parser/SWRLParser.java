@@ -21,7 +21,7 @@ public class SWRLParser {
   private SWRLFactory swrlFactory;
   private boolean parseOnly;
   private StringTokenizer tokenizer;
-    private String delimiters = " ?\n\t()[],#\"" + AND_CHAR + IMP_CHAR; // Note space.
+    private String delimiters = " ?\n\t()[],\"" + AND_CHAR + IMP_CHAR; // Note space.
   private Collection xmlSchemaSymbols = XMLSchemaDatatypes.getSlotSymbols();
   private HashSet variables;
   private boolean inHead = false;
@@ -556,6 +556,7 @@ public class SWRLParser {
     if (!isValidIdentifier(identifier)) throw new SWRLParseException("Invalid identifier: '" + identifier + "'.");
   } // checkThatIdentifierIsValid
 
+  // Possible valid identifiers include 'http://swrl.stanford.edu/swrlx.owl#createIndividual'.
   private boolean isValidIdentifier(String s) 
   {
     if (s.length() == 0) return false;
@@ -564,7 +565,7 @@ public class SWRLParser {
 
     for (int i = 1; i < s.length(); i++) {
       char c = s.charAt(i);
-      if (!(Character.isJavaIdentifierPart(c) || c == ':' || c == '-')) {
+      if (!(Character.isJavaIdentifierPart(c) || c == ':' || c == '-' || c == '#' || c == '/' || c == '.')) {
         return false;
       } // if
     } // for
@@ -577,8 +578,7 @@ public class SWRLParser {
 
     if (resource == null) return false;
 
-    if (resource instanceof OWLIndividual) return true;
-    else return false;
+    return (resource instanceof OWLIndividual);
   } // isValidIndividualName
 
   private boolean isValidClassName(String name) throws SWRLParseException 

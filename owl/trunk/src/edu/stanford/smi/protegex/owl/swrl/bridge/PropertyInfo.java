@@ -83,8 +83,9 @@ public class PropertyInfo extends Info implements Argument
     
     individualInfo = (IndividualInfo)subject;
     individual = owlModel.getOWLIndividual(individualInfo.getIndividualName());
+
     if (individual == null) throw new InvalidIndividualNameException(individualInfo.getIndividualName());
-    
+
     if (property.isObjectProperty()) {
       individualInfo = (IndividualInfo)predicate;
       object = owlModel.getOWLIndividual(individualInfo.getIndividualName());
@@ -92,8 +93,8 @@ public class PropertyInfo extends Info implements Argument
     } else { // Is a datatype property, so will be held in a LiteralInfo.
       // In Protege-OWL RDFS literals without a selected language are stored as String objects.
       LiteralInfo literalInfo = (LiteralInfo)predicate;
-      if (literalInfo.isString()) object = literalInfo.getString();
-      else object = owlModel.asRDFSLiteral(literalInfo.getString());
+      if (literalInfo.isString()) object = literalInfo.getString(); // Store strings as String objects, not RDFSLiteral objects.
+      object = literalInfo.asRDFSLiteral(owlModel); // Will throw exception if it cannot convert.
     } // if    
 
     if (!individual.hasPropertyValue(property, object, true)) individual.addPropertyValue(property, object);
@@ -162,11 +163,16 @@ public class PropertyInfo extends Info implements Argument
             if (property.hasObjectRange()) {
               Iterator individualValuesIterator = domainIndividual.getPropertyValues(property).iterator();
               while (individualValuesIterator.hasNext()) {
-                OWLIndividual rangeIndividual = (OWLIndividual)individualValuesIterator.next();
-                subject = new IndividualInfo(domainIndividual.getName());
-                predicate = new IndividualInfo(rangeIndividual.getName());
-                propertyInfo = new PropertyInfo(propertyName, subject, predicate, domainClassNames, rangeClassNames, superPropertyNames, subPropertyNames);
-                propertyInfoList.add(propertyInfo);
+                RDFResource resource = (RDFResource)individualValuesIterator.next();
+                if (resource instanceof OWLIndividual) {
+                  OWLIndividual rangeIndividual = (OWLIndividual)resource;
+                  subject = new IndividualInfo(domainIndividual.getName());
+                  predicate = new IndividualInfo(rangeIndividual.getName());
+                  propertyInfo = new PropertyInfo(propertyName, subject, predicate, domainClassNames, rangeClassNames, superPropertyNames, subPropertyNames);
+                  propertyInfoList.add(propertyInfo);
+                } else {
+                  System.err.println("Unknown property value resource: " + resource);
+                } // if
               } // while
             } else { // DatatypeProperty
               Iterator literalsIterator = domainIndividual.getPropertyValueLiterals(property).iterator();

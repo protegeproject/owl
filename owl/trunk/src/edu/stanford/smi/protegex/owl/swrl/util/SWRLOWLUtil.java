@@ -262,8 +262,7 @@ public class SWRLOWLUtil
     if (propertyValue instanceof Boolean) {
       Boolean b = (Boolean)propertyValue;
       if (b.booleanValue()) result = "true"; else result = "false";
-    } else if (propertyValue instanceof String) result = (String)propertyValue;
-     else throwException("Property value for " + property.getName() + " in individual " + individual.getName() + " is not a String.");
+    } else result = propertyValue.toString();
 
     return result;
   } // getDatavaluedPropertyValueAsString
