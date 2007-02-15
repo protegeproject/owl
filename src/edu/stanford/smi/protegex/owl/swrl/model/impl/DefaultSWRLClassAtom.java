@@ -4,9 +4,12 @@ import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.FrameID;
 import edu.stanford.smi.protege.model.KnowledgeBase;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
+import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.RDFSClass;
+import edu.stanford.smi.protegex.owl.model.RDFObject;
 import edu.stanford.smi.protegex.owl.swrl.model.SWRLClassAtom;
 import edu.stanford.smi.protegex.owl.swrl.model.SWRLNames;
+import edu.stanford.smi.protegex.owl.swrl.model.impl.SWRLUtil;
 
 import java.util.Set;
 
@@ -47,10 +50,7 @@ public class DefaultSWRLClassAtom extends DefaultSWRLAtom implements SWRLClassAt
   {
     Object propertyValue = getPropertyValue(getOWLModel().getRDFProperty(SWRLNames.Slot.CLASS_PREDICATE));
     if (propertyValue instanceof RDFSClass) return (RDFSClass)propertyValue;
-    else {
-      if (propertyValue != null) System.err.println("Expecting RDFSClass in DefaultSWRLClassAtom, got: " + propertyValue);
-      return null;
-    } // else
+    else return null;
   } // getClassPredicate
 
 
@@ -59,18 +59,16 @@ public class DefaultSWRLClassAtom extends DefaultSWRLAtom implements SWRLClassAt
     } // setClassPredicate
 
 
-    public String getBrowserText() {
+  public String getBrowserText() 
+  {
+    Object aClass = getPropertyValue(getOWLModel().getRDFProperty(SWRLNames.Slot.CLASS_PREDICATE));
+    RDFResource argument = getArgument1();
 
-        RDFSClass aClass = getClassPredicate();
-        String clsStr = aClass != null ?
-                aClass.getNestedBrowserText() : "<classPredicate>";
-        RDFResource argument = getArgument1();
-        String argStr = argument != null ?
-                argument.getBrowserText() : "<argument1>";
+    String clsStr = SWRLUtil.getSWRLBrowserText(aClass, "CLASS");
+    String argStr = SWRLUtil.getSWRLBrowserText(argument, "ARGUMENT1");
 
-        return clsStr + "(" + argStr + ")";
-
-    } // getBrowserText
+    return clsStr + "(" + argStr + ")";
+  } // getBrowserText
 
 } // DefaultSWRLClassAtom
 

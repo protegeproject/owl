@@ -37,54 +37,58 @@ public class DefaultSWRLIndividualPropertyAtom extends DefaultSWRLAtom implement
     }
 
 
-    public RDFResource getArgument1() {
-        return (RDFResource) getPropertyValue(getOWLModel().getRDFProperty(SWRLNames.Slot.ARGUMENT1));
-    } // getArgument1
+  public RDFResource getArgument1() 
+  {
+    return (RDFResource) getPropertyValue(getOWLModel().getRDFProperty(SWRLNames.Slot.ARGUMENT1));
+  } // getArgument1
 
 
-    public void setArgument1(RDFResource iObject) {
-        setPropertyValue(getOWLModel().getRDFProperty(SWRLNames.Slot.ARGUMENT1), iObject);
-    } // setArgument1
+  public void setArgument1(RDFResource iObject) 
+  {
+    setPropertyValue(getOWLModel().getRDFProperty(SWRLNames.Slot.ARGUMENT1), iObject);
+  } // setArgument1
 
 
-    public RDFResource getArgument2() {
-        return (RDFResource) getPropertyValue(getOWLModel().getRDFProperty(SWRLNames.Slot.ARGUMENT2));
-    } // getArgument2
+  public RDFResource getArgument2() 
+  {
+    return (RDFResource) getPropertyValue(getOWLModel().getRDFProperty(SWRLNames.Slot.ARGUMENT2));
+  } // getArgument2
 
 
-    public void setArgument2(RDFResource iObject) {
-        setPropertyValue(getOWLModel().getRDFProperty(SWRLNames.Slot.ARGUMENT2), iObject);
-    } // setArgument2
-
+  public void setArgument2(RDFResource iObject) 
+  {
+    setPropertyValue(getOWLModel().getRDFProperty(SWRLNames.Slot.ARGUMENT2), iObject);
+  } // setArgument2
 
   public OWLObjectProperty getPropertyPredicate() 
   {
     Object propertyValue = getPropertyValue(getOWLModel().getRDFProperty(SWRLNames.Slot.PROPERTY_PREDICATE));
+  
     if (propertyValue instanceof OWLObjectProperty) return (OWLObjectProperty)propertyValue;
-    else {
-      if (propertyValue != null) System.err.println("Expecting OWLObjectProperty in DefaultSWRLIndividualPropertyAtom, got: " + propertyValue);
-      return null;
-    } // else
+    else return null;
   } // getPropertyPredicate
 
+  public void setPropertyPredicate(OWLObjectProperty objectSlot) 
+  {
+    setPropertyValue(getOWLModel().getRDFProperty(SWRLNames.Slot.PROPERTY_PREDICATE), objectSlot);
+  } // setPropertyPredicate
 
-    public void setPropertyPredicate(OWLObjectProperty objectSlot) {
-        setPropertyValue(getOWLModel().getRDFProperty(SWRLNames.Slot.PROPERTY_PREDICATE), objectSlot);
-    } // setPropertyPredicate
+  public String getBrowserText() 
+  {
+    Object propertyPredicate = getPropertyValue(getOWLModel().getRDFProperty(SWRLNames.Slot.PROPERTY_PREDICATE));
+    RDFResource argument1 = getArgument1();
+    RDFResource argument2 = getArgument2();
+    String s = "";
 
-
-    public String getBrowserText() {
-        String s = "";
-
-        if (getPropertyPredicate() == null || getArgument1() == null || getArgument2() == null) return super.getBrowserText();
-
-        s += getPropertyPredicate().getBrowserText() + "(";
-        s += getArgument1().getBrowserText() + ", ";
-        s += getArgument2().getBrowserText() + ")";
-
-        return s;
-
-    } // getBrowserText
+    s += SWRLUtil.getSWRLBrowserText(propertyPredicate, "PROPERTY");
+    s += "(";
+    s += SWRLUtil.getSWRLBrowserText(argument1, "ARGUMENT1");
+    s += ", ";
+    s += SWRLUtil.getSWRLBrowserText(argument2, "ARGUMENT2");
+    s += ")";
+    
+    return s;
+  } // getBrowserText
 
 } // DefaultSWRLIndividualPropertyAtom
 

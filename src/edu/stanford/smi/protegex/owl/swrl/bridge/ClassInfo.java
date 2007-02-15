@@ -1,6 +1,4 @@
 
-// Info object representing an OWL class. 
-
 package edu.stanford.smi.protegex.owl.swrl.bridge;
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.*;
 
@@ -8,6 +6,9 @@ import edu.stanford.smi.protegex.owl.model.*;
 
 import java.util.*;
 
+/*
+** Info object representing an OWL class. 
+*/
 public class ClassInfo extends Info implements Argument, ClassValue, Comparable
 {
   // equals() method defined in this class.

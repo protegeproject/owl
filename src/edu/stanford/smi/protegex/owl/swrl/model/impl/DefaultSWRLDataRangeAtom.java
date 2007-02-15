@@ -61,35 +61,31 @@ public class DefaultSWRLDataRangeAtom extends DefaultSWRLAtom implements SWRLDat
   public RDFResource getDataRange() 
   {
     Object propertyValue = getPropertyValue(getOWLModel().getRDFProperty(SWRLNames.Slot.DATA_RANGE));
-    if (propertyValue instanceof RDFResource) return (RDFResource)propertyValue;
-    else {
-      if (propertyValue != null) System.err.println("Expecting RDFSResource in DefaultSWRLDataRangeAtom, got: " + propertyValue);
-      return null;
-    } // else
 
+    if (propertyValue instanceof RDFResource) return (RDFResource)propertyValue;
+    else return null;
   } // getDataRange
 
+  public void setDataRange(RDFResource instance) 
+  {
+    setPropertyValue(getOWLModel().getRDFProperty(SWRLNames.Slot.DATA_RANGE), instance);
+  } // setDataRange
 
-    public void setDataRange(RDFResource instance) {
-        setPropertyValue(getOWLModel().getRDFProperty(SWRLNames.Slot.DATA_RANGE), instance);
-    } // setDataRange
 
-
-    public String getBrowserText() {
-        String s = "";
-
-        if (getDataRange() == null || getArgument1() == null) return super.getBrowserText();
-
-        s += "xsd:" + getDataRange().getBrowserText() + "(";
-
-        RDFObject dObject = getArgument1();
-
-        s += SWRLUtil.getSWRLBrowserText(dObject) + ")";
-
-        return s;
-
-    } // getBrowserText
-
+  public String getBrowserText() 
+  {
+    Object dataRange = getPropertyValue(getOWLModel().getRDFProperty(SWRLNames.Slot.DATA_RANGE));
+    RDFObject dObject = getArgument1();
+    String s = "";
+    
+    s += SWRLUtil.getSWRLBrowserText(dataRange, "DATA_RANGE");
+    s += "(";
+    s += SWRLUtil.getSWRLBrowserText(dObject, "ARGUMENT1");
+    s += ")";
+    
+    return s;
+  } // getBrowserText
+  
 } // DefaultSWRLDataRangeAtom
 
 

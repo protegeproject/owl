@@ -13,7 +13,8 @@ import java.util.*;
 */
 public class IndividualInfo extends Info implements Argument, ObjectValue, Comparable
 {
-  // equals() method defined in this class.
+  // NOTE: equals() method defined in this class.
+
   private String individualName;  
   private Set<String> classNames;
     
@@ -43,7 +44,7 @@ public class IndividualInfo extends Info implements Argument, ObjectValue, Compa
   /*
   ** Constructor used when asserting new individual class membership information from an assertion made in a target rule engine.
   */
-  public IndividualInfo(String individualName, String className) throws SWRLRuleEngineBridgeException
+  public IndividualInfo(String individualName, String className) 
   {
     this.individualName = individualName;
 

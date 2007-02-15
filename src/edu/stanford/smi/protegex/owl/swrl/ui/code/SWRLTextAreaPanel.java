@@ -100,24 +100,22 @@ public class SWRLTextAreaPanel extends JPanel implements ModalDialogFactory.Clos
     }
 
 
-    public String getResultAsString() {
-        return textArea.getText();
-    }
+    public String getResultAsString() { return textArea.getText(); }
 
-
-    public static boolean showEditDialog(Component parent, OWLModel owlModel, SWRLImp imp) {
-        SWRLTextAreaPanel panel = new SWRLTextAreaPanel(owlModel, imp);
-        String title = "Edit SWRL Rule";
-        if (ProtegeUI.getModalDialogFactory().showDialog(parent, panel, title, ModalDialogFactory.MODE_OK_CANCEL, panel) == ModalDialogFactory.OPTION_OK) {
-            try {
-                imp.setExpression(panel.getResultAsString());
-                return true;
-            }
-            catch (Exception ex) {
-                System.err.println("[SWRLTextAreaPanel]  Fatal error");
-                Log.getLogger().log(Level.SEVERE, "Exception caught", ex);
-            }
-        }
-        return false;
+  public static boolean showEditDialog(Component parent, OWLModel owlModel, SWRLImp imp) 
+  {
+    SWRLTextAreaPanel panel = new SWRLTextAreaPanel(owlModel, imp);
+    String title = "Edit SWRL Rule";
+    if (ProtegeUI.getModalDialogFactory().showDialog(parent, panel, title, ModalDialogFactory.MODE_OK_CANCEL, panel) == ModalDialogFactory.OPTION_OK) {
+      try {
+        imp.setExpression(panel.getResultAsString());
+        return true;
+      }
+      catch (Exception ex) {
+        System.err.println("[SWRLTextAreaPanel]  Fatal error");
+        Log.getLogger().log(Level.SEVERE, "Exception caught", ex);
+      }
     }
+    return false;
+  }
 }
