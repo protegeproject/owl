@@ -24,6 +24,7 @@ import edu.stanford.smi.protege.model.Model;
 import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protege.server.framestore.RemoteClientFrameStore;
 import edu.stanford.smi.protege.ui.ProjectManager;
+import edu.stanford.smi.protege.util.ApplicationProperties;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.model.OWLAllValuesFrom;
 import edu.stanford.smi.protegex.owl.model.OWLAnonymousClass;
@@ -61,6 +62,9 @@ import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
 public class ConditionsTableModel extends AbstractTableModel
         implements ConditionsTableConstants, OWLTableModel {
 	
+	private static final String SHOW_INHERITED_RESTRICTIONS = "restriction.show.inherited";
+
+
 	//TT:2006-08-03: Do a cache with the snapshot of the conditionstable model at the beginning and
 	//work on this one! It's crazy to ask for the same information about a class several times!
 	
@@ -606,6 +610,10 @@ public class ConditionsTableModel extends AbstractTableModel
 
 
     private void fillInheritedAnonymousClses(OWLNamedClass originCls, Collection coveredClses) {
+    	String showInheritedRestrictionsString = ApplicationProperties.getApplicationOrSystemProperty(SHOW_INHERITED_RESTRICTIONS, "false");
+    	
+    	boolean showInheritedRestrictions = (showInheritedRestrictionsString.equals("true"));
+    	
         for (Iterator it = originCls.getSuperclasses(false).iterator(); it.hasNext();) {
             Cls ss = (Cls) it.next();
             if (ss instanceof OWLAnonymousClass) {
@@ -618,8 +626,12 @@ public class ConditionsTableModel extends AbstractTableModel
 						 * The following line should be commented out if the performance is bad
     	              	 * The following line adds the inherited conditons to the table
 						 */
-						  addItemUnlessOverloaded(operand, originCls);
-                          // items.add(ConditionsTableItem.createInherited(operand, originCls));
+                        if (showInheritedRestrictions) {
+                        	addItemUnlessOverloaded(operand, originCls);
+                        } else {
+                        	items.add(ConditionsTableItem.createInherited(operand, originCls));
+                        }
+                        
                         }
                     }
                 }
@@ -628,7 +640,12 @@ public class ConditionsTableModel extends AbstractTableModel
 					 * The following line should be commented out if the performance is bad
                   	 * The following line adds the inherited conditons to the table
 					 */
-                    addItemUnlessOverloaded((OWLAnonymousClass) ss, originCls);
+                    if (showInheritedRestrictions) {
+                    	addItemUnlessOverloaded((OWLAnonymousClass) ss, originCls);
+                    } else {
+                    	items.add(ConditionsTableItem.createInherited((OWLAnonymousClass)ss, originCls));
+                    }
+                    //addItemUnlessOverloaded((OWLAnonymousClass) ss, originCls);
                    // items.add(ConditionsTableItem.createInherited((OWLAnonymousClass)ss, originCls));
                 }
             }
