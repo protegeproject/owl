@@ -144,7 +144,7 @@ public class AbsoluteFormsGenerator {
                     widget.addProperty(ProtegeFormsNames.javaClassName, widgetClassName);
                 }
                 
-                OWLWidgetPropertyListUtil.createOWLPropertyList(widget, slotWidget.getDescriptor().getPropertyList());
+                OWLWidgetPropertyListUtil.createOWLPropertyList(owlModel, widget, slotWidget.getDescriptor().getPropertyList());
                 
                 Resource layoutData = model.createResource(null, AbsoluteLayoutNames.AbsoluteLayoutData);
                 widget.addProperty(FormsNames.layoutData, layoutData);

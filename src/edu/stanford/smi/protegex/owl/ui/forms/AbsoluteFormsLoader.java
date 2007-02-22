@@ -210,7 +210,7 @@ public class AbsoluteFormsLoader {
                 clsWidget.replaceWidget(slot, widgetClassName);
                 SlotWidget slotWidget = clsWidget.getSlotWidget(slot);
                 setWidgetBounds(slotWidget.getDescriptor(), widgetResource);
-                OWLWidgetPropertyListUtil.loadFormsProperties(slotWidget, widgetResource);
+                OWLWidgetPropertyListUtil.loadFormsProperties(owlModel, slotWidget, widgetResource);
             }
         }
     }
