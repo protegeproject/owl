@@ -8,19 +8,19 @@ import edu.stanford.smi.protegex.owl.swrl.model.*;
 
 import java.util.*;
 
-/* 
-** Info object representing an OWL individual. 
-*/
-public class IndividualInfo extends Info implements Argument, ObjectValue, Comparable
+/**
+ ** Info object representing an OWL individual. 
+ */
+public class IndividualInfo extends Info implements Argument, Comparable
 {
   // NOTE: equals() method defined in this class.
 
   private String individualName;  
   private Set<String> classNames;
     
-  /*
-  ** Constructor used when creating an info object from an OWL individual.
-  */
+  /**
+   ** Constructor used when creating an info object from an OWL individual.
+   */
   public IndividualInfo(OWLIndividual individual) throws SWRLRuleEngineBridgeException
   {
     individualName = individual.getName();
@@ -28,9 +28,9 @@ public class IndividualInfo extends Info implements Argument, ObjectValue, Compa
     classNames = getDefiningClassNames(individual);
   } // IndividualInfo
 
-  /*
-  ** Constructor used when creating an info object from an individual name.
-  */
+  /**
+   ** Constructor used when creating an info object from an individual name.
+   */
   public IndividualInfo(OWLModel owlModel, String individualName) throws SWRLRuleEngineBridgeException
   {
     this.individualName = individualName;
@@ -41,9 +41,9 @@ public class IndividualInfo extends Info implements Argument, ObjectValue, Compa
     classNames = getDefiningClassNames(individual);
   } // IndividualInfo
   
-  /*
-  ** Constructor used when asserting new individual class membership information from an assertion made in a target rule engine.
-  */
+  /**
+   ** Constructor used when asserting new individual class membership information from an assertion made in a target rule engine.
+   */
   public IndividualInfo(String individualName, String className) 
   {
     this.individualName = individualName;
@@ -52,9 +52,9 @@ public class IndividualInfo extends Info implements Argument, ObjectValue, Compa
     classNames.add(className);
   } // IndividualInfo        
 
-  /*
-  ** Constructor used when creating an individual to pass as an argument to a built-in or to return as an argument from a built-in.
-  */
+  /**
+   ** Constructor used when creating an individual to pass as an argument to a built-in or to return as an argument from a built-in.
+   */
   public IndividualInfo(String individualName)
   {
     this.individualName = individualName;

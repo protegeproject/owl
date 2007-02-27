@@ -1,4 +1,5 @@
 
+
 package edu.stanford.smi.protegex.owl.swrl.bridge;
 
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.*;
@@ -6,69 +7,69 @@ import edu.stanford.smi.protegex.owl.swrl.bridge.*;
 
 import java.util.*;
 
-/*
-** This class implements the interfaces Result and ResultGenerator. It can be used to generate a result structure and populate it with data;
-** it can also be used to retrieve those data from the result.
-**
-** This class operates in three phases:
-**
-** Configuration Phase: In this phase the structure of the result is defined. This phase opened by a call to the configure() method (which
-** will also clear any existing data). In this phase the columns are defined; aggregation or ordering is also specified in this phase. This
-** phase is closed by a call to the configured() method.
-**
-** Preparation Phase: In this phase data are added to the result. This phase is implicitly opened by the call to the configured() method. It
-** is closed by a call to the prepared() method.
-**
-** The interface ResultGenerator defines the calls used in these two phases.
-**
-** Processing Phase: In this phase data may be retrieved from the result. This phase is implicitly opened by the call to the closed()
-** method.
-**
-** The interface Result defines the calls used in the processing phase.
-**
-** An example configuration and data generation would be as follows:
-**
-** Result result = new ResultImpl("TestResult");
-**
-** result.addSelectedIndividualColumn("name");
-** result.addAggregateColumn("average", ResultGenerator.AvgAggregateFunction);
-**
-** result.configured();
-**
-** result.openRow();
-** result.addData(new IndividualInfo("Fred"));
-** result.addData(new LiteralInfo(27));
-** result.closeRow();
-**
-** result.openRow();
-** result.addData(new IndividualInfo("Joe"));
-** result.addData(new LiteralInfo(34));
-** result.closeRow();
-**
-** result.openRow();
-** result.addData(new IndividualInfo("Joe"));
-** result.addData(new LiteralInfo(21));
-** result.closeRow();
-**
-** result.prepared();
-**
-** The result is now available for reading. The interface Result defines the accessor methods. A row consists of a sequence of
-** objects defined by the interface Value. There are two possible types of values: DatatypeValue, represinting literals, and 
-** ObjectValue, represening OWL individuals.
-**
-** while (result.hasNext()) {
-**  ObjectValue nameValue = result.getObjectValue("name");
-**  DatatypeValue averageValue = result.getDatatypeValue("average");
-**  System.out.println("Name: " + nameValue.getIndividualName());
-**  System.out.println("Average: " + averageValue.getInt());
-** } // while
-*/ 
+/**
+ ** This class implements the interfaces Result and ResultGenerator. It can be used to generate a result structure and populate it with data;
+ ** it can also be used to retrieve those data from the result.
+ **
+ ** This class operates in three phases:
+ **
+ ** Configuration Phase: In this phase the structure of the result is defined. This phase opened by a call to the configure() method (which
+ ** will also clear any existing data). In this phase the columns are defined; aggregation or ordering is also specified in this phase. This
+ ** phase is closed by a call to the configured() method.
+ **
+ ** Preparation Phase: In this phase data are added to the result. This phase is implicitly opened by the call to the configured() method. It
+ ** is closed by a call to the prepared() method.
+ **
+ ** The interface ResultGenerator defines the calls used in these two phases.
+ **
+ ** Processing Phase: In this phase data may be retrieved from the result. This phase is implicitly opened by the call to the closed()
+ ** method.
+ **
+ ** The interface Result defines the calls used in the processing phase.
+ **
+ ** An example configuration and data generation would be as follows:
+ **
+ ** Result result = new ResultImpl("TestResult");
+ **
+ ** result.addSelectedIndividualColumn("name");
+ ** result.addAggregateColumn("average", ResultGenerator.AvgAggregateFunction);
+ **
+ ** result.configured();
+ **
+ ** result.openRow();
+ ** result.addData(new IndividualInfo("Fred"));
+ ** result.addData(new LiteralInfo(27));
+ ** result.closeRow();
+ **
+ ** result.openRow();
+ ** result.addData(new IndividualInfo("Joe"));
+ ** result.addData(new LiteralInfo(34));
+ ** result.closeRow();
+ **
+ ** result.openRow();
+ ** result.addData(new IndividualInfo("Joe"));
+ ** result.addData(new LiteralInfo(21));
+ ** result.closeRow();
+ **
+ ** result.prepared();
+ **
+ ** The result is now available for reading. The interface Result defines the accessor methods. A row consists of a list of objects defined
+ ** by the interface ResultValue. There are four possible types of values (1) DatatypeValue, representing literals; (2) ObjectValue,
+ ** representing OWL individuals; (3) ClassValue, representing OWL classes; and (4) PropertyValue, representing OWL properties.
+ **
+ ** while (result.hasNext()) {
+ **  ObjectValue nameValue = result.getObjectValue("name");
+ **  DatatypeValue averageValue = result.getDatatypeValue("average");
+ **  System.out.println("Name: " + nameValue.getIndividualName());
+ **  System.out.println("Average: " + averageValue.getInt());
+ ** } // while
+ */ 
 public class ResultImpl implements ResultGenerator, Result
 {
   private List<String> allColumnNames, selectedColumnNames, datatypeColumnNames, orderByColumnNames, displayColumnNames;
   private HashMap<String, String> aggregateColumns; // Map of (name, function) pairs
-  private List<List<Value>> rows; // List of List of Value objects.
-  private List<Value> rowData; // List of Value objects used when assembling a row.
+  private List<List<ResultValue>> rows; // List of List of ResultValue objects.
+  private List<ResultValue> rowData; // List of ResultValue objects used when assembling a row.
   private int numberOfColumns, rowIndex, rowDataIndex;
   private boolean isConfigured, isPrepared, isRowOpen, isOrdered, isDescending, isDistinct, hasAggregates;
   private RowComparator rowComparator;
@@ -104,7 +105,7 @@ public class ResultImpl implements ResultGenerator, Result
 
     // The following variables will not be externally valid until prepared() is called.
     rowIndex = -1; // If there are no rows in the final result, it will remain at -1.
-    rows = new ArrayList<List<Value>>();
+    rows = new ArrayList<List<ResultValue>>();
   } // prepare
 
   public void setIsOrdered() throws ResultException
@@ -230,12 +231,12 @@ public class ResultImpl implements ResultGenerator, Result
     throwExceptionIfNotConfigured(); throwExceptionIfAlreadyPrepared(); throwExceptionIfRowOpen();
 
     rowDataIndex = 0;
-    rowData = new ArrayList<Value>();
+    rowData = new ArrayList<ResultValue>();
 
     isRowOpen = true;
   } // openRow
 
-  public void addRowData(Value value) throws ResultException
+  public void addRowData(ResultValue value) throws ResultException
   {
     throwExceptionIfNotConfigured(); throwExceptionIfAlreadyPrepared(); throwExceptionIfRowNotOpen();
 
@@ -312,14 +313,14 @@ public class ResultImpl implements ResultGenerator, Result
     return (rowIndex != -1 && rowIndex < getNumberOfRows() - 1);
   } // hasNext
     
-  public List<Value> getRow() throws ResultException
+  public List<ResultValue> getRow() throws ResultException
   {
     throwExceptionIfNotConfigured(); throwExceptionIfNotPrepared();
 
     return (List)rows.get(rowIndex);
   } // getRow
 
-  public Value getValue(String columnName) throws ResultException
+  public ResultValue getValue(String columnName) throws ResultException
   {
     List row;
     int columnIndex;
@@ -331,10 +332,10 @@ public class ResultImpl implements ResultGenerator, Result
     columnIndex = allColumnNames.indexOf(columnName);
     
     row = (List)rows.get(rowIndex);
-    return (Value)row.get(columnIndex);
+    return (ResultValue)row.get(columnIndex);
   } // getColumnValue
   
-  public Value getValue(int columnIndex) throws ResultException
+  public ResultValue getValue(int columnIndex) throws ResultException
   {
     List row;
 
@@ -343,64 +344,107 @@ public class ResultImpl implements ResultGenerator, Result
     checkColumnIndex(columnIndex);
     
     row = (List)rows.get(rowIndex);
-    return (Value)row.get(columnIndex);
+    return (ResultValue)row.get(columnIndex);
   } // getColumnValue
 
-    public Value getValue(int columnIndex, int rowIndex) 
-	throws ResultException
-    {
-	Value value = null;
+  public ResultValue getValue(int columnIndex, int rowIndex)throws ResultException
+  {
+    ResultValue value = null;
+    
+    throwExceptionIfNotConfigured(); throwExceptionIfNotPrepared();
+    checkColumnIndex(columnIndex); checkRowIndex(rowIndex); 
+    
+    return (ResultValue)((List)rows.get(rowIndex)).get(columnIndex);
+  } // getValue
+  
+  public ObjectValue getObjectValue(String columnName) throws ResultException
+  {
+    if (!hasObjectValue(columnName)) 
+      throw new InvalidColumnTypeException("Expecting ObjectValue type for column '" + columnName + "'.");
+    return (ObjectValue)getValue(columnName);
+  } // getObjectValue
+  
+  public ObjectValue getObjectValue(int columnIndex) throws ResultException
+  {
+    return getObjectValue(getColumnName(columnIndex));
+  } // getObjectValue
+  
+  public DatatypeValue getDatatypeValue(String columnName) throws ResultException
+  {
+    if (!hasDatatypeValue(columnName)) 
+      throw new InvalidColumnTypeException("Expecting DatatypeValue type for column '" + columnName + "'.");
+    return (DatatypeValue)getValue(columnName);
+  } // getDatatypeValue
 
-	throwExceptionIfNotConfigured(); throwExceptionIfNotPrepared();
-	checkColumnIndex(columnIndex); checkRowIndex(rowIndex); 
+  public ClassValue getClassValue(String columnName) throws ResultException
+  {
+    if (!hasClassValue(columnName)) 
+      throw new InvalidColumnTypeException("Expecting ClassValue type for column '" + columnName + "'.");
+    return (ClassValue)getValue(columnName);
+  } // getClassValue
 
-	return (Value)((List)rows.get(rowIndex)).get(columnIndex);
-    } // getValue
+  public ClassValue getClassValue(int columnIndex) throws ResultException
+  {
+    return getClassValue(getColumnName(columnIndex));
+  } // getClassValue
 
-    public ObjectValue getObjectValue(String columnName) throws ResultException
-    {
-	if (!hasObjectValue(columnName)) 
-	    throw new InvalidColumnTypeException("Expecting ObjectValue type for column '" + columnName + "'.");
-	return (ObjectValue)getValue(columnName);
-    } // getObjectValue
+  public PropertyValue getPropertyValue(int columnIndex) throws ResultException
+  {
+    return getPropertyValue(getColumnName(columnIndex));
+  } // getPropertyValue
 
-    public ObjectValue getObjectValue(int columnIndex) throws ResultException
-    {
-	return getObjectValue(getColumnName(columnIndex));
-    } // getObjectValue
+  public PropertyValue getPropertyValue(String columnName) throws ResultException
+  {
+    if (!hasPropertyValue(columnName)) 
+      throw new InvalidColumnTypeException("Expecting PropertyValue type for column '" + columnName + "'.");
+    return (PropertyValue)getValue(columnName);
+  } // getPropertyValue
+  
+  public DatatypeValue getDatatypeValue(int columnIndex) throws ResultException
+  {
+    return getDatatypeValue(getColumnName(columnIndex));
+  } // getDatatypeValue
+  
+  public boolean hasObjectValue(String columnName) throws ResultException
+  {
+    return !datatypeColumnNames.contains(columnName);
+  } // hasObjectValue
+  
+  public boolean hasObjectValue(int columnIndex) throws ResultException
+  {
+    return !datatypeColumnNames.contains(getColumnName(columnIndex));
+  } // hasObjectValue
+  
+  public boolean hasDatatypeValue(String columnName) throws ResultException
+  {
+    return datatypeColumnNames.contains(columnName);
+  } // hasDatatypeValue
+  
+  public boolean hasDatatypeValue(int columnIndex) throws ResultException
+  {
+    return datatypeColumnNames.contains(getColumnName(columnIndex));
+  } // hasDatatypeValue
 
-    public DatatypeValue getDatatypeValue(String columnName) throws ResultException
-    {
-	if (!hasDatatypeValue(columnName)) 
-	    throw new InvalidColumnTypeException("Expecting DatatypeValue type for column '" + columnName + "'.");
-	return (DatatypeValue)getValue(columnName);
-    } // getDatatypeValue
+  public boolean hasClassValue(String columnName) throws ResultException
+  {
+    return false; // TODO
+  } // hasClassValue
+  
+  public boolean hasClassValue(int columnIndex) throws ResultException
+  {
+    return false; // TODO
+  } // hasClassValue
 
-    public DatatypeValue getDatatypeValue(int columnIndex) throws ResultException
-    {
-	return getDatatypeValue(getColumnName(columnIndex));
-    } // getDatatypeValue
-
-    public boolean hasObjectValue(String columnName) throws ResultException
-    {
-	return !datatypeColumnNames.contains(columnName);
-    } // hasObjectValue
-
-    public boolean hasObjectValue(int columnIndex) throws ResultException
-    {
-	return !datatypeColumnNames.contains(getColumnName(columnIndex));
-    } // hasObjectValue
-
-    public boolean hasDatatypeValue(String columnName) throws ResultException
-    {
-	return datatypeColumnNames.contains(columnName);
-    } // hasDatatypeValue
-
-    public boolean hasDatatypeValue(int columnIndex) throws ResultException
-    {
-	return datatypeColumnNames.contains(getColumnName(columnIndex));
-    } // hasDatatypeValue
-
+  public boolean hasPropertyValue(String columnName) throws ResultException
+  {
+    return false; // TODO
+  } // hasPropertyValue
+  
+  public boolean hasPropertyValue(int columnIndex) throws ResultException
+  {
+    return false; // TODO
+  } // hasPropertyValue
+  
   // Phase verification exception throwing methods.
   
   private void throwExceptionIfNotConfigured() throws ResultException
@@ -492,25 +536,25 @@ public class ResultImpl implements ResultGenerator, Result
     checkIsDatatypeValue(getColumnName(columnIndex)); 
   } // checkIsDatatypeValue
 
-  private boolean isNumericValue(Value value)
+  private boolean isNumericValue(ResultValue value)
   {
     return ((value instanceof DatatypeValue) || (((DatatypeValue)value).isNumeric()));
   } // isNumericValue
 
-  private List<List<Value>> distinct(List<List<Value>> rows)
+  private List<List<ResultValue>> distinct(List<List<ResultValue>> rows)
   {
-    List<List<Value>> result = new ArrayList<List<Value>>();
+    List<List<ResultValue>> result = new ArrayList<List<ResultValue>>();
     RowComparator rowComparator = new RowComparator(allColumnNames, true); // Look at the entire row.
 
-    for (List<Value> row : rows) if (Collections.binarySearch(result, row, rowComparator) < 0) result.add(row);
+    for (List<ResultValue> row : rows) if (Collections.binarySearch(result, row, rowComparator) < 0) result.add(row);
 
     return result;
   } // killDuplicateRows
 
-  private List<List<Value>> aggregate(List<List<Value>> rows, List<String> allColumnNames, HashMap<String, String> aggregateColumns)
+  private List<List<ResultValue>> aggregate(List<List<ResultValue>> rows, List<String> allColumnNames, HashMap<String, String> aggregateColumns)
     throws ResultException
   {
-    List<List<Value>> result = new ArrayList<List<Value>>();
+    List<List<ResultValue>> result = new ArrayList<List<ResultValue>>();
     RowComparator rowComparator = new RowComparator(allColumnNames, selectedColumnNames, true); 
     // Key is index of aggregated row in result, value is hash map of aggregate column name to list of original values.
     HashMap<Integer, HashMap<String, List<DatatypeValue>>> aggregatesMap = new HashMap<Integer, HashMap<String, List<DatatypeValue>>>();
@@ -519,7 +563,7 @@ public class ResultImpl implements ResultGenerator, Result
     DatatypeValue value;
     int rowIndex;
 
-    for (List<Value> row : rows) {
+    for (List<ResultValue> row : rows) {
       rowIndex = Collections.binarySearch(result, row, rowComparator);
       if (rowIndex < 0) { // Row with same values for non aggregated columns not yet present in result.
         aggregateRowMap = new HashMap<String, List<DatatypeValue>>();
@@ -545,7 +589,7 @@ public class ResultImpl implements ResultGenerator, Result
     } // for
 
     rowIndex = 0;
-    for (List<Value> row : result) {
+    for (List<ResultValue> row : result) {
       aggregateRowMap = aggregatesMap.get(new Integer(rowIndex));
 
       for (String aggregateColumnName : aggregateColumns.keySet()) {
@@ -590,7 +634,7 @@ public class ResultImpl implements ResultGenerator, Result
   } // count
 
   // Quick and dirty: all checking left to the Java runtime.
-  private class RowComparator implements Comparator<List<Value>>
+  private class RowComparator implements Comparator<List<ResultValue>>
   {
     private List<Integer> orderByColumnIndexes;
     private boolean ascending;
@@ -607,7 +651,7 @@ public class ResultImpl implements ResultGenerator, Result
       for (String columnName : allColumnNames) orderByColumnIndexes.add(allColumnNames.indexOf(columnName));
     } // RowComparator
 
-    public int compare(List<Value> row1, List<Value> row2) 
+    public int compare(List<ResultValue> row1, List<ResultValue> row2) 
     {
       for (Integer columnIndex : orderByColumnIndexes) {
         int result = ((Comparable)row1.get(columnIndex)).compareTo(((Comparable)row2.get(columnIndex)));

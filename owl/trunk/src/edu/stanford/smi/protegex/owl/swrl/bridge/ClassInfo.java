@@ -1,14 +1,17 @@
 
 package edu.stanford.smi.protegex.owl.swrl.bridge;
+
+import edu.stanford.smi.protegex.owl.swrl.util.SWRLOWLUtil;
+import edu.stanford.smi.protegex.owl.swrl.exceptions.SWRLOWLUtilException;
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.*;
 
 import edu.stanford.smi.protegex.owl.model.*;
 
 import java.util.*;
 
-/*
-** Info object representing an OWL class. 
-*/
+/**
+ ** Info object representing an OWL class. 
+ */
 public class ClassInfo extends Info implements Argument, ClassValue, Comparable
 {
   // equals() method defined in this class.
@@ -26,10 +29,10 @@ public class ClassInfo extends Info implements Argument, ClassValue, Comparable
       directSuperClassNames = new HashSet<String>();
       directSubClassNames = new HashSet<String>();
     } else {
-      directSuperClassNames = rdfResources2Names(owlNamedClass.getNamedSuperclasses());
-      directSubClassNames = rdfResources2Names(owlNamedClass.getNamedSubclasses());
+      directSuperClassNames = SWRLOWLUtil.rdfResources2Names(owlNamedClass.getNamedSuperclasses());
+      directSubClassNames = SWRLOWLUtil.rdfResources2Names(owlNamedClass.getNamedSubclasses());
     } // if
-    
+
   } // ClassInfo
 
   // Constructor used when creating a ClassInfo object to pass as a built-in argument

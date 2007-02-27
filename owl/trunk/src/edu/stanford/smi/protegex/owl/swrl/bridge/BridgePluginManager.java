@@ -1,10 +1,14 @@
 
 // TODO: Jess rule engine and SWRL query tab are loaded explicitly here. We need a discovery mechanism using the manifest.
-// TODO: Should this be in the ui subpackage?
+// TODO: A bit sloppy. GUI code should be refactored to ui subdirectory.
 
-/*
-** This class provides mechanisms for plugins to register themselves and to get screen real estate in the SWRLTab.
-*/
+/**
+ ** This class provides mechanisms for SWRLTab plugins to register themselves and to get screen real estate under the SWRL editor in the
+ ** SWRL tab. <p>
+ **
+ ** Documentation on using this class can be found <a
+ ** href="http://protege.stanford.edu/download/prerelease_javadoc_owl/edu/stanford/smi/protegex/owl/swrl/bridge/BridgePluginManager.html">here</a>.
+ */
 package edu.stanford.smi.protegex.owl.swrl.bridge;
 
 import edu.stanford.smi.protegex.owl.swrl.bridge.ui.SWRLPluginGUIAdapter;
@@ -36,7 +40,7 @@ public class BridgePluginManager
       visiblePluginName = "";
       selectedRuleName = "";
     } // projectClosed
-  }; 
+  };
   
   static {
 

@@ -7,6 +7,8 @@ import edu.stanford.smi.protegex.owl.model.*;
 import edu.stanford.smi.protegex.owl.swrl.model.*;
 import edu.stanford.smi.protegex.owl.swrl.bridge.*;
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.*;
+import edu.stanford.smi.protegex.owl.swrl.util.SWRLOWLUtil;
+import edu.stanford.smi.protegex.owl.swrl.exceptions.*;
 
 import java.util.List;
 
@@ -32,6 +34,13 @@ public class SWRLBuiltInUtil
   {
     if (actual > expectingAtMost) throw new InvalidBuiltInArgumentNumberException(builtInName, expectingAtMost, actual, "at most");
   } // checkNumberOfArgumentsAtMost
+
+  public static void checkNumberOfArgumentsInRange(String builtInName, int expectingAtLeast, int expectingAtMost, int actual) 
+    throws InvalidBuiltInArgumentNumberException
+  {
+    if (actual > expectingAtMost || actual < expectingAtLeast)
+      throw new InvalidBuiltInArgumentNumberException(builtInName, expectingAtMost, actual, expectingAtLeast + " to");
+  } // checkNumberOfArgumentsInRange
 
   public static void checkThatAllArgumentsAreLiterals(String builtInName, List<Argument> arguments) throws BuiltInException
   {
@@ -137,19 +146,22 @@ public class SWRLBuiltInUtil
     checkArgumentNumber(builtInName, argumentNumber, arguments);
 
     if (!(arguments.get(argumentNumber) instanceof LiteralInfo)) 
-      throw new InvalidBuiltInArgumentException(builtInName, argumentNumber, "Expecting literal");
+      throw new InvalidBuiltInArgumentException(builtInName, argumentNumber,
+                                                makeInvalidArgumentTypeMessage(arguments.get(argumentNumber), "literal"));
   } // checkThatArgumentIsALiteral
 
   public static void checkThatArgumentIsNumeric(String builtInName, int argumentNumber, List<Argument> arguments) throws BuiltInException
   {
     if (!isArgumentNumeric(builtInName, argumentNumber, arguments))
-      throw new InvalidBuiltInArgumentException(builtInName, argumentNumber, "Expecting numeric literal");
+      throw new InvalidBuiltInArgumentException(builtInName, argumentNumber,
+                                                makeInvalidArgumentTypeMessage(arguments.get(argumentNumber), "numeric"));
   } // checkThatArgumentIsNumeric
 
   public static void checkThatArgumentIsOfAnOrderedType(String builtInName, int argumentNumber, List<Argument> arguments) throws BuiltInException
   {
     if (!isArgumentOfAnOrderedType(builtInName, argumentNumber, arguments))
-      throw new InvalidBuiltInArgumentException(builtInName, argumentNumber, "Expecting ordered type");
+      throw new InvalidBuiltInArgumentException(builtInName, argumentNumber,
+                                                makeInvalidArgumentTypeMessage(arguments.get(argumentNumber), "ordered type"));
   } // checkThatArgumentIsOfAnOrderedType
 
   public static boolean isArgumentOfAnOrderedType(String builtInName, int argumentNumber, List<Argument> arguments) throws BuiltInException
@@ -166,8 +178,10 @@ public class SWRLBuiltInUtil
 
   public static void checkThatArgumentIsAnIndividual(String builtInName, int argumentNumber, List<Argument> arguments) throws BuiltInException
   {
-    if (!isArgumentAnIndividual(builtInName, argumentNumber, arguments))
-      throw new InvalidBuiltInArgumentException(builtInName, argumentNumber, "Expecting individual");
+    if (!isArgumentAnIndividual(builtInName, argumentNumber, arguments)) {
+      throw new InvalidBuiltInArgumentException(builtInName, argumentNumber, 
+                                                makeInvalidArgumentTypeMessage(arguments.get(argumentNumber), "individual"));
+    } // if
   } // checkThatArgumentIsAnIndividual
 
   public static String getArgumentAsAnIndividualName(String builtInName, int argumentNumber, List<Argument> arguments) throws BuiltInException
@@ -213,7 +227,8 @@ public class SWRLBuiltInUtil
   public static void checkThatArgumentIsNonNumeric(String builtInName, int argumentNumber, List<Argument> arguments) throws BuiltInException
   {
     if (!isArgumentNonNumeric(builtInName, argumentNumber, arguments))
-      throw new InvalidBuiltInArgumentException(builtInName, argumentNumber, "Expecting non-numeric literal");
+      throw new InvalidBuiltInArgumentException(builtInName, argumentNumber, 
+                                                makeInvalidArgumentTypeMessage(arguments.get(argumentNumber), "non-numeric"));
   } // checkThatArgumentIsNonNumeric
 
   // Integers
@@ -221,12 +236,14 @@ public class SWRLBuiltInUtil
   public static void checkThatArgumentIsAnInteger(String builtInName, int argumentNumber, List<Argument> arguments) throws BuiltInException
   {
     if (!isArgumentAnInteger(builtInName, argumentNumber, arguments))
-      throw new InvalidBuiltInArgumentException(builtInName, argumentNumber, "Expecting integer literal");
+      throw new InvalidBuiltInArgumentException(builtInName, argumentNumber,
+                                                makeInvalidArgumentTypeMessage(arguments.get(argumentNumber), "integer"));
   } // checkThatArgumentIsAnInteger
 
   public static boolean isArgumentAnInteger(String builtInName, int argumentNumber, List<Argument> arguments) throws BuiltInException
   {
-    if (isArgumentALiteral(builtInName, argumentNumber, arguments)) return (getArgumentAsALiteral(builtInName, argumentNumber, arguments).isInteger());
+    if (isArgumentALiteral(builtInName, argumentNumber, arguments)) 
+      return (getArgumentAsALiteral(builtInName, argumentNumber, arguments).isInteger());
     else return false;
   } // isArgumentAnInteger
 
@@ -254,7 +271,8 @@ public class SWRLBuiltInUtil
   public static void checkThatArgumentIsAProperty(String builtInName, int argumentNumber, List<Argument> arguments) throws BuiltInException
   {
     if (!isArgumentAProperty(builtInName, argumentNumber, arguments))
-      throw new InvalidBuiltInArgumentException(builtInName, argumentNumber, "Expecting property");
+      throw new InvalidBuiltInArgumentException(builtInName, argumentNumber,
+                                                makeInvalidArgumentTypeMessage(arguments.get(argumentNumber), "property"));
   } // checkThatArgumentIsAProperty
 
   public static boolean isArgumentAClass(String builtInName, int argumentNumber, List<Argument> arguments) throws BuiltInException
@@ -267,7 +285,8 @@ public class SWRLBuiltInUtil
   public static void checkThatArgumentIsAClass(String builtInName, int argumentNumber, List<Argument> arguments) throws BuiltInException
   {
     if (!isArgumentAClass(builtInName, argumentNumber, arguments))
-      throw new InvalidBuiltInArgumentException(builtInName, argumentNumber, "Expecting class");
+      throw new InvalidBuiltInArgumentException(builtInName, argumentNumber,
+                                                makeInvalidArgumentTypeMessage(arguments.get(argumentNumber), "class"));
   } // checkThatArgumentIsAClass
 
   public static LiteralInfo getArgumentAsALiteral(String builtInName, int argumentNumber, List<Argument> arguments) throws BuiltInException
@@ -282,7 +301,8 @@ public class SWRLBuiltInUtil
   public static void checkThatArgumentIsALong(String builtInName, int argumentNumber, List<Argument> arguments) throws BuiltInException
   {
     if (!isArgumentALong(builtInName, argumentNumber, arguments))
-      throw new InvalidBuiltInArgumentException(builtInName, argumentNumber, "Expecting long literal");
+      throw new InvalidBuiltInArgumentException(builtInName, argumentNumber, 
+                                                makeInvalidArgumentTypeMessage(arguments.get(argumentNumber), "long"));
   } // checkThatArgumentIsALong
 
   public static boolean isArgumentALong(String builtInName, int argumentNumber, List<Argument> arguments) throws BuiltInException
@@ -304,7 +324,8 @@ public class SWRLBuiltInUtil
   public static void checkThatArgumentIsAFloat(String builtInName, int argumentNumber, List<Argument> arguments) throws BuiltInException
   {
     if (!isArgumentAFloat(builtInName, argumentNumber, arguments))
-      throw new InvalidBuiltInArgumentException(builtInName, argumentNumber, "Expecting float literal");
+      throw new InvalidBuiltInArgumentException(builtInName, argumentNumber,
+                                                makeInvalidArgumentTypeMessage(arguments.get(argumentNumber), "float"));
   } // checkThatArgumentIsAFloat
 
   public static boolean isArgumentAFloat(String builtInName, int argumentNumber, List<Argument> arguments) throws BuiltInException
@@ -326,7 +347,8 @@ public class SWRLBuiltInUtil
   public static void checkThatArgumentIsADouble(String builtInName, int argumentNumber, List<Argument> arguments) throws BuiltInException
   {
     if (!isArgumentADouble(builtInName, argumentNumber, arguments))
-      throw new InvalidBuiltInArgumentException(builtInName, argumentNumber, "Expecting float literal");
+      throw new InvalidBuiltInArgumentException(builtInName, argumentNumber, 
+                                                makeInvalidArgumentTypeMessage(arguments.get(argumentNumber), "double"));
   } // checkThatArgumentIsADouble
 
   public static boolean isArgumentADouble(String builtInName, int argumentNumber, List<Argument> arguments) throws BuiltInException
@@ -348,12 +370,14 @@ public class SWRLBuiltInUtil
   public static void checkThatArgumentIsABoolean(String builtInName, int argumentNumber, List<Argument> arguments) throws BuiltInException
   {
     if (!isArgumentABoolean(builtInName, argumentNumber, arguments))
-      throw new InvalidBuiltInArgumentException(builtInName, argumentNumber, "Expecting boolean literal");
+      throw new InvalidBuiltInArgumentException(builtInName, argumentNumber,
+                                                makeInvalidArgumentTypeMessage(arguments.get(argumentNumber), "boolean"));
   } // checkThatArgumentIsABoolean
 
   public static boolean isArgumentABoolean(String builtInName, int argumentNumber, List<Argument> arguments) throws BuiltInException
   {
-    if (isArgumentALiteral(builtInName, argumentNumber, arguments)) return (getArgumentAsALiteral(builtInName, argumentNumber, arguments).isBoolean());
+    if (isArgumentALiteral(builtInName, argumentNumber, arguments)) 
+      return (getArgumentAsALiteral(builtInName, argumentNumber, arguments).isBoolean());
     else return false;
   } // isArgumentABoolean
 
@@ -369,7 +393,8 @@ public class SWRLBuiltInUtil
   public static void checkThatArgumentIsAString(String builtInName, int argumentNumber, List<Argument> arguments) throws BuiltInException
   {
     if (!isArgumentAString(builtInName, argumentNumber, arguments))
-      throw new InvalidBuiltInArgumentException(builtInName, argumentNumber, "Expecting string literal");
+      throw new InvalidBuiltInArgumentException(builtInName, argumentNumber, 
+                                                makeInvalidArgumentTypeMessage(arguments.get(argumentNumber), "string"));
   } // checkThatArgumentIsAString
 
   public static boolean isArgumentAString(String builtInName, int argumentNumber, List<Argument> arguments) throws BuiltInException
@@ -404,9 +429,9 @@ public class SWRLBuiltInUtil
     return (argumentNumber >= 0) && (argumentNumber < arguments.size()) && (arguments.get(argumentNumber) == null);
   } // isUnboundArgument
 
-  /*
-  ** Get 0-offset position of first unbound argument; return -1 if no unbound arguments are found.
-  */
+  /**
+   ** Get 0-offset position of first unbound argument; return -1 if no unbound arguments are found.
+   */
   public static int getFirstUnboundArgument(String builtInName, List<Argument> arguments) throws BuiltInException
   {
     if (hasUnboundArguments(builtInName, arguments)) return arguments.indexOf(null);
@@ -426,5 +451,74 @@ public class SWRLBuiltInUtil
       throw new BuiltInException("Built-in '" + builtInName + "' supports variable binding only for the first argument. " +
                                  "Unbound variable used in other arguments.");
   } // checkForUnboundArguments
+
+  private static String makeInvalidArgumentTypeMessage(Argument argument, String expectedTypeName)
+  {
+    String message = "Expecting " + expectedTypeName + ", got ";
+    if (argument == null) message += "unbound argument";
+    else {
+      if (argument instanceof ClassInfo) {
+        ClassInfo classInfo = (ClassInfo)argument;
+        message += "class with name '" + classInfo.getClassName() + "'";
+      } else if (argument instanceof PropertyInfo) {
+        PropertyInfo propertyInfo = (PropertyInfo)argument;
+        message += "property with name '" + propertyInfo.getPropertyName() + "'";
+      } else if (argument instanceof IndividualInfo) {
+        IndividualInfo individualInfo = (IndividualInfo)argument;
+        message += "individual with name '" + individualInfo.getIndividualName() + "'";
+      } else if (argument instanceof LiteralInfo) {
+        LiteralInfo literalInfo = (LiteralInfo)argument;
+        message += "literal with value '" + literalInfo.toString() + "' of type '" + literalInfo.getValueClassName() + "'";
+      } else message += "unknown type '" + argument.getClass().getName() + "'";
+    } // if
+    return message;
+  } // makeInvalidArgumentTypeMessage
+
+  /**
+   ** Take an bound Argument object with types ClassInfo, PropertyInfo, IndividualInfo, or LiteralInfo and return it as a property value
+   ** representation. Class, property and individual info objects are represented strings containing their names. Literal objects are
+   ** represented as the appropriate Java type. Primitive XSD datatypes that do not have a corresponding Java type are not yet supported.
+   */
+  public static Object getArgumentAsAPropertyValue(String builtInName, int argumentNumber, List<Argument> arguments) throws BuiltInException
+  {
+    Argument argument;
+    Object result = null;
+
+    SWRLBuiltInUtil.checkThatArgumentIsBound(builtInName, argumentNumber, arguments);
+
+    argument = arguments.get(argumentNumber);
+
+    if (argument instanceof ClassInfo) {
+      ClassInfo classInfo = (ClassInfo)argument;
+      result = classInfo.getClassName();
+    } else if (argument instanceof PropertyInfo) {
+      PropertyInfo propertyInfo = (PropertyInfo)argument;
+      result = propertyInfo.getPropertyName();
+    } else if (argument instanceof IndividualInfo) {
+      IndividualInfo individualInfo = (IndividualInfo)argument;
+      result = individualInfo.getIndividualName();
+    } else if (argument instanceof LiteralInfo) {
+      LiteralInfo literalInfo = (LiteralInfo)argument;
+      if (literalInfo.isNumeric()) result = literalInfo.getNumber();
+      else if (literalInfo.isString()) result = literalInfo.getString();
+      else throw new BuiltInException("LiteralInfo of type '" + literalInfo.getValueClassName() + "' with value '" + 
+                                      literalInfo.toString() + "' not supported. Only strings and number literals supported.");
+    } else throw new BuiltInException("Argument '" + argument + "' of unknown type '" + argument.getClass().getName() + "'.");
+
+    return result;
+  } // getArgumentAsAPropertyValue
+
+  /*
+  ** Create a string that represents a unique invocation pattern for a built-in. 
+  */
+  public static String createInvocationPattern(String builtInName, List<Argument> arguments, SWRLRuleEngineBridge bridge)
+    throws BuiltInException
+  {
+    String pattern = bridge.getCurrentBuiltInInvokingRuleName() + "." + bridge.getCurrentBuiltInInvokingIndex();
+
+    for (int i = 0; i < arguments.size(); i++) pattern += "." + getArgumentAsAPropertyValue(builtInName, i, arguments);
+
+    return pattern;
+  } // createInvocationPattern
 
 } // SWRLBuiltInUtil

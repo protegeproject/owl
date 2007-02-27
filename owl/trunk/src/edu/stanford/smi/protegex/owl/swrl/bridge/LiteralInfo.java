@@ -2,19 +2,25 @@
 package edu.stanford.smi.protegex.owl.swrl.bridge;
 
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.*;
+import edu.stanford.smi.protegex.owl.swrl.bridge.xsd.*;
 import edu.stanford.smi.protegex.owl.model.*;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
-/*
-** Info object to wrap Java and XML Schema datatype literals. This class is used primarily when passing literals to and from built-in
-** methods. Also provides a central place to validate the content of complex XSD types, such as datetimes, etc.
-*/
-public class LiteralInfo extends Info implements Argument, DatatypeValue, Comparable
+/**
+ ** Info object to wrap Java and XML Schema primitve datatype literals.
+ **
+ ** For the moment we do not support (1) RDFSLiteral language tags, and (2) the types: byte[], and primitive XSD types Decimal, GDay,
+ ** GYear, GMonth, GMonthDay, QName, HexBinary, and NOTATION.
+ */
+public class LiteralInfo extends Info implements Argument, Comparable, DatatypeValue
 {
   private Object value; // This value object should implement comparable.
 
+  /*
+  ** Convert an RDFSLiteral to a LiteralInfo. 
+  */
   public LiteralInfo(OWLModel owlModel, RDFSLiteral literal) throws DatatypeConversionException
   {
     RDFSDatatype datatype = literal.getDatatype();
@@ -29,7 +35,6 @@ public class LiteralInfo extends Info implements Argument, DatatypeValue, Compar
     else if ((datatype == owlModel.getXSDtime())) value = new Time(literal.getString());
     else if ((datatype == owlModel.getXSDanyURI())) value = new AnyURI(literal.getString());
     else if ((datatype == owlModel.getXSDbase64Binary())) value = new Base64Binary(literal.getString());
-    else if ((datatype == owlModel.getXSDdecimal())) value = new Decimal(literal.getString());
     else if ((datatype == owlModel.getXSDbyte())) value = new Byte(literal.getString());
     else if ((datatype == owlModel.getXSDduration())) value = new Duration(literal.getString());
     else if ((datatype == owlModel.getXSDdateTime())) value = new DateTime(literal.getString());
@@ -73,14 +78,17 @@ public class LiteralInfo extends Info implements Argument, DatatypeValue, Compar
     value = new Short(s);
   } // LiteralInfo
 
-  public LiteralInfo(ComplexXSDType value)
+  public LiteralInfo(PrimitiveXSDType value)
   {
     this.value = value;
   } // LiteralInfo
 
+  // Java String type
   public boolean isString() { return value instanceof String; }
 
-  // Java Numeber types
+  // Java Number types
+  public boolean isNumeric() { return value instanceof Number; }
+
   public boolean isInteger() { return value instanceof Integer; }
   public boolean isLong() { return value instanceof Long; }
   public boolean isBoolean() { return value instanceof Boolean; }
@@ -91,14 +99,44 @@ public class LiteralInfo extends Info implements Argument, DatatypeValue, Compar
   public boolean isBigDecimal() { return value instanceof BigDecimal; }
   public boolean isBigInteger() { return value instanceof BigInteger; }
   
-  // XSD types
-  public boolean isTime() { return value instanceof edu.stanford.smi.protegex.owl.swrl.bridge.Time; }
-  public boolean isDate() { return value instanceof edu.stanford.smi.protegex.owl.swrl.bridge.Date; }
-  public boolean isDateTime() { return value instanceof edu.stanford.smi.protegex.owl.swrl.bridge.DateTime; }
-  public boolean isDuration() { return value instanceof edu.stanford.smi.protegex.owl.swrl.bridge.Duration;}
-  public boolean isAnyURI() { return value instanceof edu.stanford.smi.protegex.owl.swrl.bridge.AnyURI; }
-  public boolean isBase64Binary() { return value instanceof edu.stanford.smi.protegex.owl.swrl.bridge.Base64Binary;}
-  public boolean isDecimal() { return value instanceof edu.stanford.smi.protegex.owl.swrl.bridge.Decimal; }
+  // Primitive XSD types
+  public boolean isPrimitiveXSDType() { return value instanceof edu.stanford.smi.protegex.owl.swrl.bridge.xsd.PrimitiveXSDType; }
+
+  public boolean isTime() { return value instanceof edu.stanford.smi.protegex.owl.swrl.bridge.xsd.Time; }
+  public boolean isDate() { return value instanceof edu.stanford.smi.protegex.owl.swrl.bridge.xsd.Date; }
+  public boolean isDateTime() { return value instanceof edu.stanford.smi.protegex.owl.swrl.bridge.xsd.DateTime; }
+  public boolean isDuration() { return value instanceof edu.stanford.smi.protegex.owl.swrl.bridge.xsd.Duration;}
+  public boolean isAnyURI() { return value instanceof edu.stanford.smi.protegex.owl.swrl.bridge.xsd.AnyURI; }
+  public boolean isBase64Binary() { return value instanceof edu.stanford.smi.protegex.owl.swrl.bridge.xsd.Base64Binary; }
+  public boolean isHexBinary() { return value instanceof edu.stanford.smi.protegex.owl.swrl.bridge.xsd.HexBinary; }
+  public boolean isGMonth() { return value instanceof edu.stanford.smi.protegex.owl.swrl.bridge.xsd.GMonth; }
+  public boolean isGYear() { return value instanceof edu.stanford.smi.protegex.owl.swrl.bridge.xsd.GYear; }
+  public boolean isGYearMonth() { return value instanceof edu.stanford.smi.protegex.owl.swrl.bridge.xsd.GYearMonth; }
+  public boolean isGDay() { return value instanceof edu.stanford.smi.protegex.owl.swrl.bridge.xsd.GDay; }
+  public boolean isGMonthDay() { return value instanceof edu.stanford.smi.protegex.owl.swrl.bridge.xsd.GMonthDay; }
+  public boolean isNOTATION() { return value instanceof edu.stanford.smi.protegex.owl.swrl.bridge.xsd.NOTATION; }
+  public boolean isQName() { return value instanceof edu.stanford.smi.protegex.owl.swrl.bridge.xsd.QName; }
+
+  public String getString() throws DatatypeConversionException 
+  { 
+    if (!isString()) 
+      throw new DatatypeConversionException("Cannot convert datatype value of type '" + value.getClass().getCanonicalName() + "' to String"); 
+    return (String)value; 
+  } // getString
+
+  public Number getNumber() throws DatatypeConversionException 
+  { 
+    if (!isNumeric()) 
+      throw new DatatypeConversionException("Cannot convert datatype value of type '" + value.getClass().getCanonicalName() + "' to Number"); 
+    return (Number)value; 
+  } // getNumber
+
+  public PrimitiveXSDType getPrimitiveXSDType() throws DatatypeConversionException 
+  { 
+    if (!isPrimitiveXSDType()) 
+      throw new DatatypeConversionException("Cannot convert datatype value of type '" + value.getClass().getCanonicalName() + "' to PrimitiveXSDType"); 
+    return (PrimitiveXSDType)value; 
+  } // getPrimitiveXSDType
 
   public int getInt() throws DatatypeConversionException 
   {
@@ -131,79 +169,22 @@ public class LiteralInfo extends Info implements Argument, DatatypeValue, Compar
   public double getDouble() throws DatatypeConversionException 
   { 
     if (!isDouble()) 
-      throw new DatatypeConversionException("Cannot convert datatype value of type '" + value.getClass().getCanonicalName() + "' to fouble"); 
+      throw new DatatypeConversionException("Cannot convert datatype value of type '" + value.getClass().getCanonicalName() + "' to double"); 
     return ((Double)value).doubleValue(); 
   } // getDouble
 
   public short getShort() throws DatatypeConversionException 
   { 
     if (!isShort()) 
-      throw new DatatypeConversionException("Cannot convert datatype value of type '" + value.getClass().getCanonicalName() + "' to sqhort"); 
+      throw new DatatypeConversionException("Cannot convert datatype value of type '" + value.getClass().getCanonicalName() + "' to short"); 
     return ((Short)value).shortValue(); 
   } // getShort
 
-  public String getString() throws DatatypeConversionException 
-  { 
-    if (!isString()) 
-      throw new DatatypeConversionException("Cannot convert datatype value of type '" + value.getClass().getCanonicalName() + "' to String"); 
-    return (String)value; 
-  } // getString
-
-  public edu.stanford.smi.protegex.owl.swrl.bridge.Time getTime() throws DatatypeConversionException 
-  {
-    if (!isTime()) 
-      throw new DatatypeConversionException("Cannot convert datatype value of type '" + value.getClass().getCanonicalName() + "' to Time"); 
-    return (edu.stanford.smi.protegex.owl.swrl.bridge.Time)value;
-  } // getTime
-
-  public edu.stanford.smi.protegex.owl.swrl.bridge.Date getDate() throws DatatypeConversionException 
-  {
-    if (!isDate()) 
-      throw new DatatypeConversionException("Cannot convert datatype value of type '" + value.getClass().getCanonicalName() + "' to Date"); 
-    return (edu.stanford.smi.protegex.owl.swrl.bridge.Date)value;
-  } // getDate
-
-  public edu.stanford.smi.protegex.owl.swrl.bridge.DateTime getDateTime() throws DatatypeConversionException 
-  { 
-    if (!isDateTime()) 
-      throw new DatatypeConversionException("Cannot convert datatype value of type '" + value.getClass().getCanonicalName() + "' to DateTime"); 
-
-    return (edu.stanford.smi.protegex.owl.swrl.bridge.DateTime)value;
-  } // getDateTime
-
-  public edu.stanford.smi.protegex.owl.swrl.bridge.Duration getDuration() throws DatatypeConversionException
-  {
-    if (!isDuration()) 
-      throw new DatatypeConversionException("Cannot convert datatype value of type '" + value.getClass().getCanonicalName() + "' to Duration"); 
-    return  (edu.stanford.smi.protegex.owl.swrl.bridge.Duration)value; 
-  } // getDuration
-
-  public edu.stanford.smi.protegex.owl.swrl.bridge.AnyURI getAnyURI() throws DatatypeConversionException 
-  {
-    if (!isAnyURI()) 
-      throw new DatatypeConversionException("Cannot convert datatype value of type '" + value.getClass().getCanonicalName() + "' to AnyURI"); 
-    return (edu.stanford.smi.protegex.owl.swrl.bridge.AnyURI)value;
-  } // getAnyURI
-
-  public edu.stanford.smi.protegex.owl.swrl.bridge.Base64Binary getBase64Binary() throws DatatypeConversionException 
-  {
-    if (!isBase64Binary()) 
-      throw new DatatypeConversionException("Cannot convert datatype value of type '" + value.getClass().getCanonicalName() + "' to Base64Binary"); 
-    return (edu.stanford.smi.protegex.owl.swrl.bridge.Base64Binary)value;
-  } // getBase64Binary
-
-  public edu.stanford.smi.protegex.owl.swrl.bridge.Decimal getDecimal() throws DatatypeConversionException 
-  {
-    if (!isDecimal()) 
-      throw new DatatypeConversionException("Cannot convert datatype value of type '" + value.getClass().getCanonicalName() + "' to Decimal"); 
-    return (edu.stanford.smi.protegex.owl.swrl.bridge.Decimal)value;
-  } // getDecimal
-
-  public Byte getByte() throws DatatypeConversionException 
+  public byte getByte() throws DatatypeConversionException 
   {
     if (!isByte()) 
-      throw new DatatypeConversionException("Cannot convert datatype value of type '" + value.getClass().getCanonicalName() + "' to Byte"); 
-    return (Byte)value;
+      throw new DatatypeConversionException("Cannot convert datatype value of type '" + value.getClass().getCanonicalName() + "' to byte"); 
+    return ((Byte)value).byteValue();
   } // getByte
 
   public BigDecimal getBigDecimal() throws DatatypeConversionException 
@@ -220,10 +201,111 @@ public class LiteralInfo extends Info implements Argument, DatatypeValue, Compar
     return (BigInteger)value;
   } // getBigInteger
 
-  public boolean isNumeric() { return value instanceof Number; }
+  // Primitive XSD Types
+
+  public edu.stanford.smi.protegex.owl.swrl.bridge.xsd.Time getTime() throws DatatypeConversionException 
+  {
+    if (!isTime()) 
+      throw new DatatypeConversionException("Cannot convert datatype value of type '" + value.getClass().getName() + "' to Time"); 
+    return (edu.stanford.smi.protegex.owl.swrl.bridge.xsd.Time)value;
+  } // getTime
+
+  public edu.stanford.smi.protegex.owl.swrl.bridge.xsd.Date getDate() throws DatatypeConversionException 
+  {
+    if (!isDate()) 
+      throw new DatatypeConversionException("Cannot convert datatype value of type '" + value.getClass().getName() + "' to Date"); 
+    return (edu.stanford.smi.protegex.owl.swrl.bridge.xsd.Date)value;
+  } // getDate
+
+  public edu.stanford.smi.protegex.owl.swrl.bridge.xsd.DateTime getDateTime() throws DatatypeConversionException 
+  { 
+    if (!isDateTime()) 
+      throw new DatatypeConversionException("Cannot convert datatype value of type '" + value.getClass().getName() + "' to DateTime"); 
+
+    return (edu.stanford.smi.protegex.owl.swrl.bridge.xsd.DateTime)value;
+  } // getDateTime
+
+  public edu.stanford.smi.protegex.owl.swrl.bridge.xsd.Duration getDuration() throws DatatypeConversionException
+  {
+    if (!isDuration()) 
+      throw new DatatypeConversionException("Cannot convert datatype value of type '" + value.getClass().getName() + "' to Duration"); 
+    return  (edu.stanford.smi.protegex.owl.swrl.bridge.xsd.Duration)value; 
+  } // getDuration
+
+  public edu.stanford.smi.protegex.owl.swrl.bridge.xsd.AnyURI getAnyURI() throws DatatypeConversionException 
+  {
+    if (!isAnyURI()) 
+      throw new DatatypeConversionException("Cannot convert datatype value of type '" + value.getClass().getName() + "' to AnyURI"); 
+    return (edu.stanford.smi.protegex.owl.swrl.bridge.xsd.AnyURI)value;
+  } // getAnyURI
+
+  public edu.stanford.smi.protegex.owl.swrl.bridge.xsd.HexBinary getHexBinary() throws DatatypeConversionException 
+  {
+    if (!isHexBinary()) 
+      throw new DatatypeConversionException("Cannot convert datatype value of type '" + value.getClass().getName() + "' to HexBinary"); 
+    return (edu.stanford.smi.protegex.owl.swrl.bridge.xsd.HexBinary)value;
+  } // getHexBinary
+
+  public edu.stanford.smi.protegex.owl.swrl.bridge.xsd.Base64Binary getBase64Binary() throws DatatypeConversionException 
+  {
+    if (!isBase64Binary()) 
+      throw new DatatypeConversionException("Cannot convert datatype value of type '" + value.getClass().getName() + "' to Base64Binary"); 
+    return (edu.stanford.smi.protegex.owl.swrl.bridge.xsd.Base64Binary)value;
+  } // getBase64Binary
+
+  public edu.stanford.smi.protegex.owl.swrl.bridge.xsd.GDay getGDay() throws DatatypeConversionException 
+  {
+    if (!isGDay()) 
+      throw new DatatypeConversionException("Cannot convert datatype value of type '" + value.getClass().getName() + "' to GDay"); 
+    return (edu.stanford.smi.protegex.owl.swrl.bridge.xsd.GDay)value;
+  } // getGDay
+
+  public edu.stanford.smi.protegex.owl.swrl.bridge.xsd.GYearMonth getGYearMonth() throws DatatypeConversionException 
+  {
+    if (!isGYearMonth()) 
+      throw new DatatypeConversionException("Cannot convert datatype value of type '" + value.getClass().getName() + "' to GYearMonth"); 
+    return (edu.stanford.smi.protegex.owl.swrl.bridge.xsd.GYearMonth)value;
+  } // getGYearMonth
+
+  public edu.stanford.smi.protegex.owl.swrl.bridge.xsd.GMonth getGMonth() throws DatatypeConversionException 
+  {
+    if (!isGMonth()) 
+      throw new DatatypeConversionException("Cannot convert datatype value of type '" + value.getClass().getName() + "' to GMonth"); 
+    return (edu.stanford.smi.protegex.owl.swrl.bridge.xsd.GMonth)value;
+  } // getGMonth
+
+  public edu.stanford.smi.protegex.owl.swrl.bridge.xsd.GMonthDay getGMonthDay() throws DatatypeConversionException 
+  {
+    if (!isGMonthDay()) 
+      throw new DatatypeConversionException("Cannot convert datatype value of type '" + value.getClass().getName() + "' to GMonthDay"); 
+    return (edu.stanford.smi.protegex.owl.swrl.bridge.xsd.GMonthDay)value;
+  } // getGMonthDay
+
+  public edu.stanford.smi.protegex.owl.swrl.bridge.xsd.GYear getGYear() throws DatatypeConversionException 
+  {
+    if (!isGYear()) 
+      throw new DatatypeConversionException("Cannot convert datatype value of type '" + value.getClass().getName() + "' to GYear"); 
+    return (edu.stanford.smi.protegex.owl.swrl.bridge.xsd.GYear)value;
+  } // getGYear
+
+  public edu.stanford.smi.protegex.owl.swrl.bridge.xsd.NOTATION getNOTATION() throws DatatypeConversionException 
+  {
+    if (!isNOTATION()) 
+      throw new DatatypeConversionException("Cannot convert datatype value of type '" + value.getClass().getName() + "' to NOTATION"); 
+    return (edu.stanford.smi.protegex.owl.swrl.bridge.xsd.NOTATION)value;
+  } // getNOTATION
+
+  public edu.stanford.smi.protegex.owl.swrl.bridge.xsd.QName getQName() throws DatatypeConversionException 
+  {
+    if (!isQName()) 
+      throw new DatatypeConversionException("Cannot convert datatype value of type '" + value.getClass().getName() + "' to QName"); 
+    return (edu.stanford.smi.protegex.owl.swrl.bridge.xsd.QName)value;
+  } // getQName
+
   public String toString() { return value.toString(); }
 
-  // The Protege-OWL implementation
+  public Object getValueClassName() { return value.getClass().getName(); }
+
   public RDFSLiteral asRDFSLiteral(OWLModel owlModel) throws DatatypeConversionException
   {
     RDFSLiteral literal = null;
@@ -236,7 +318,7 @@ public class LiteralInfo extends Info implements Argument, DatatypeValue, Compar
     else if (isDouble()) literal = owlModel.asRDFSLiteral(getDouble());
     else if (isShort()) literal = owlModel.asRDFSLiteral(getShort());
     else if (isBigDecimal()) literal = owlModel.asRDFSLiteral(getBigDecimal());
-    else if (isBigDecimal()) literal = owlModel.asRDFSLiteral(getBigDecimal());
+    else if (isBigInteger()) literal = owlModel.asRDFSLiteral(getBigInteger());
     else if (isByte()) literal = owlModel.asRDFSLiteral(getByte());
     else throw new DatatypeConversionException("Cannot convert LiteralInfo with value '" + value + "' to RDFSLiteral.");
 
