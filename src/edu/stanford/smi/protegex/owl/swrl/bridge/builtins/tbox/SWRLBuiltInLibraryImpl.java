@@ -32,6 +32,7 @@ public class SWRLBuiltInLibraryImpl implements SWRLBuiltInLibrary
   public static String SWRLTBoxIsFunctionalProperty = SWRLTBoxNamespace + ":" + "isFunctionalProperty";
   public static String SWRLTBoxIsInverseFunctionalProperty = SWRLTBoxNamespace + ":" + "isInverseFunctionalProperty";
   public static String SWRLTBoxIsAnnotationProperty = SWRLTBoxNamespace + ":" + "isAnnotationProperty";
+
   public static String SWRLTBoxIsDirectSuperClassOf = SWRLTBoxNamespace + ":" + "isDirectSuperClassOf";
   public static String SWRLTBoxIsSuperClassOf = SWRLTBoxNamespace + ":" + "isSuperClassOf";
   public static String SWRLTBoxIsDirectSubClassOf = SWRLTBoxNamespace + ":" + "isDirectSubClassOf";

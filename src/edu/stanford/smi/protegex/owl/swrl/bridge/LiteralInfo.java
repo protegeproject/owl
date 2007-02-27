@@ -184,7 +184,7 @@ public class LiteralInfo extends Info implements Argument, Comparable, DatatypeV
   {
     if (!isByte()) 
       throw new DatatypeConversionException("Cannot convert datatype value of type '" + value.getClass().getCanonicalName() + "' to byte"); 
-    return ((Byte)value).byteValue();
+    return ((java.lang.Byte)value).byteValue();
   } // getByte
 
   public BigDecimal getBigDecimal() throws DatatypeConversionException 
