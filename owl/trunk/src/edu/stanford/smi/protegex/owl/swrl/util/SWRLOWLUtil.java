@@ -220,7 +220,6 @@ public class SWRLOWLUtil
     return (subProperty != null && property != null && subProperty.isSubpropertyOf(property, false));
   } // isDirectSubPropertyOf
 
-
   public static boolean isDirectSubClassOf(OWLModel owlModel, String subClassName, String className, boolean mustExist) 
     throws SWRLOWLUtilException
   {
@@ -228,6 +227,15 @@ public class SWRLOWLUtil
     OWLNamedClass cls = getClass(owlModel, className, mustExist);
 
     return (subClass != null && cls != null && subClass.isSubclassOf(cls));
+  } // isDirectSubclassOf
+
+  public static boolean isSubClassOf(OWLModel owlModel, String subClassName, String className, boolean mustExist) 
+    throws SWRLOWLUtilException
+  {
+    OWLNamedClass subClass = getClass(owlModel, subClassName, mustExist);
+    OWLNamedClass cls = getClass(owlModel, className, mustExist);
+
+    return (subClass != null && cls != null && cls.getSubclasses().contains(subClass));
   } // isDirectSubclassOf
 
   public static boolean isDirectSuperClassOf(OWLModel owlModel, String superClassName, String className, boolean mustExist) 
@@ -238,6 +246,15 @@ public class SWRLOWLUtil
 
     return (superClass != null && cls != null && cls.isSubclassOf(superClass)); // No isSuperclassOf call
   } // isDirectSuperclassOf
+
+  public static boolean isSuperClassOf(OWLModel owlModel, String superClassName, String className, boolean mustExist) 
+    throws SWRLOWLUtilException
+  {
+    OWLNamedClass superClass = getClass(owlModel, superClassName, mustExist);
+    OWLNamedClass cls = getClass(owlModel, className, mustExist);
+
+    return (superClass != null && cls != null && cls.getSuperclasses(true).contains(superClass));
+  } // isSuperclassOf
 
   public static int getNumberOfIndividualsOfClass(OWLModel owlModel, String className, boolean mustExist) throws SWRLOWLUtilException
   {

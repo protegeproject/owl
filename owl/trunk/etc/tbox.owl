@@ -9,15 +9,21 @@
     xmlns:owl="http://www.w3.org/2002/07/owl#"
   xml:base="http://swrl.stanford.edu/tbox.owl">
   <owl:Ontology rdf:about=""/>
-  <swrl:Builtin rdf:ID="isDirectSubClassOf"/>
+  <swrl:Builtin rdf:ID="isDisjointWith"/>
   <swrl:Builtin rdf:ID="isDirectSuperPropertyOf"/>
+  <swrl:Builtin rdf:ID="isSubPropertyOf"/>
   <swrl:Builtin rdf:ID="isDirectSuperClassOf"/>
-  <swrl:Builtin rdf:ID="isAnnotationProperty"/>
+  <swrl:Builtin rdf:ID="isEquivalentTo"/>
   <swrl:Builtin rdf:ID="isDirectSubPropertyOf"/>
-  <swrl:Builtin rdf:ID="isTransitiveProperty"/>
   <swrl:Builtin rdf:ID="isFunctionalProperty"/>
+  <swrl:Builtin rdf:ID="isSuperPropertyOf"/>
+  <swrl:Builtin rdf:ID="isDirectSubClassOf"/>
+  <swrl:Builtin rdf:ID="isSubClassOf"/>
+  <swrl:Builtin rdf:ID="isSuperClassOf"/>
+  <swrl:Builtin rdf:ID="isAnnotationProperty"/>
+  <swrl:Builtin rdf:ID="isTransitiveProperty"/>
   <swrl:Builtin rdf:ID="isSymmetricProperty"/>
   <swrl:Builtin rdf:ID="isInverseFunctionalProperty"/>
 </rdf:RDF>
 
-<!-- Created with Protege (with OWL Plugin 3.3, Build 371)  http://protege.stanford.edu -->
+<!-- Created with Protege (with OWL Plugin 3.3, Build 372)  http://protege.stanford.edu -->
