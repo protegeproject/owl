@@ -8,9 +8,9 @@ import edu.stanford.smi.protegex.owl.swrl.model.*;
 
 import java.util.*;
 
-/*
-** Info object representing a SWRL built-in atom. 
-*/
+/**
+ ** Info object representing a SWRL built-in atom. 
+ */
 public class BuiltInAtomInfo extends AtomInfo
 {
   private String builtInName;

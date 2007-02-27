@@ -1,7 +1,6 @@
 
 package edu.stanford.smi.protegex.owl.swrl.bridge;
 
-import edu.stanford.smi.protegex.owl.swrl.bridge.Value;
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.ResultException;
 
 import java.util.List;
@@ -32,7 +31,7 @@ public interface ResultGenerator
     void configured() throws ResultException;
 
     void openRow() throws ResultException;
-    void addRowData(Value value) throws ResultException;
+    void addRowData(ResultValue value) throws ResultException;
     void closeRow() throws ResultException;
 
     boolean isRowOpen();

@@ -12,15 +12,5 @@ import java.util.*;
 
 public abstract class Info 
 {
-  // Convenience method. TODO: Should be somewhere else.
-  public static Set<String> rdfResources2Names(Collection<RDFResource> resources) 
-  {
-    Set<String> result = new HashSet<String>();
-    
-    for (RDFResource resource : resources) result.add(resource.getName());
-
-    return result;
-  } // rdfResources2Names            
-
 } // Info
 

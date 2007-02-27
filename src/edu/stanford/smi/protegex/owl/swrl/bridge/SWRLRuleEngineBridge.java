@@ -5,6 +5,7 @@ package edu.stanford.smi.protegex.owl.swrl.bridge;
 
 import edu.stanford.smi.protegex.owl.model.*;
 import edu.stanford.smi.protegex.owl.swrl.model.*;
+import edu.stanford.smi.protegex.owl.swrl.util.*;
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.*;
 import edu.stanford.smi.protegex.owl.swrl.bridge.builtins.*;
 
@@ -28,8 +29,12 @@ public abstract class SWRLRuleEngineBridge
 
   protected abstract void initializeRuleEngine() throws SWRLRuleEngineBridgeException;
 
+  protected abstract void generateBuiltInBinding(String ruleName, String builtInName, int builtInIndex, List<Argument> arguments) 
+    throws BuiltInException;
+
   public abstract void runRuleEngine() throws SWRLRuleEngineBridgeException;
 
+  // Private state.
   private static String BuiltInLibraryPackageBaseName = "edu.stanford.smi.protegex.owl.swrl.bridge.builtins.";
   private static String BuiltInLibraryInitializeMethodName = "initialize";
 
@@ -72,9 +77,9 @@ public abstract class SWRLRuleEngineBridge
     initialize();
   } // SWRLRuleEngineBridge
 
-  /*
-   * Load rules and knowledge from OWL into bridge, send them to a rule engine, run the rule engine, and write any inferred knowledge back
-   * to OWL. 
+  /**
+   ** Load rules and knowledge from OWL into bridge, send them to a rule engine, run the rule engine, and write any inferred knowledge back
+   ** to OWL.
    */
   public void infer() throws SWRLRuleEngineBridgeException
   {
@@ -84,9 +89,9 @@ public abstract class SWRLRuleEngineBridge
     writeAssertedIndividualsAndProperties2OWL();
   } // infer
 
-  /*
-   * Load rules and knowledge from OWL into bridge. All existing bridge rules and knowledge will first be cleared and the associated rule
-   * engine will be reset.
+  /**
+   ** Load rules and knowledge from OWL into bridge. All existing bridge rules and knowledge will first be cleared and the associated rule
+   ** engine will be reset.
    */
   public void importSWRLRulesAndOWLKnowledge() throws SWRLRuleEngineBridgeException
   {
@@ -106,8 +111,8 @@ public abstract class SWRLRuleEngineBridge
     importOWLRestrictions();
   } // importSWRLRulesAndOWLKnowledge
 
-  /*
-   * Send rules and knowledge stored in bridge to a rule engine.
+  /**
+   ** Send rules and knowledge stored in bridge to a rule engine.
    */
   public void exportSWRLRulesAndOWLKnowledge() throws SWRLRuleEngineBridgeException
   {
@@ -118,8 +123,8 @@ public abstract class SWRLRuleEngineBridge
     exportOWLRestrictions();
   } // exportSWRLRulesAndOWLKnowledge
 
-  /*
-   * Send knowledge (excluding SWRL rules) stored in bridge to a rule engine.
+  /**
+   ** Send knowledge (excluding SWRL rules) stored in bridge to a rule engine.
    */
   public void exportOWLKnowledge() throws SWRLRuleEngineBridgeException
   {
@@ -129,8 +134,8 @@ public abstract class SWRLRuleEngineBridge
     exportOWLRestrictions();
   } // exportOWLKnowledge
 
-  /*
-   * Write knowledge inferred by rule engine back to OWL.
+  /**
+   ** Write knowledge inferred by rule engine back to OWL.
    */
   public void writeAssertedIndividualsAndProperties2OWL() throws SWRLRuleEngineBridgeException
   {
@@ -140,8 +145,8 @@ public abstract class SWRLRuleEngineBridge
     writeAssertedProperties2OWL();
   } // writeAssertedIndividualsAndProperties2OWL
 
-  /*
-   * Clear all knowledge from bridge.
+  /**
+   ** Clear all knowledge from bridge.
    */
   public void resetBridge() throws SWRLRuleEngineBridgeException
   {
@@ -166,8 +171,8 @@ public abstract class SWRLRuleEngineBridge
     invokeAllBuiltInLibrariesInitializeMethod();
   } // resetBridge
 
-  /*
-   * Clear all knowledge from rule engine, deleted asserted knowledge from the bridge, and leave imported bridge knowledge intact.
+  /**
+   **  Clear all knowledge from rule engine, deleted asserted knowledge from the bridge, and leave imported bridge knowledge intact.
    */
   public void resetRuleEngine() throws SWRLRuleEngineBridgeException
   {
@@ -175,8 +180,8 @@ public abstract class SWRLRuleEngineBridge
     clearExportedAndAssertedKnowledge();
   } // resetRuleEngine
 
-  /*
-   * Get the OWL model associated with this bridge.
+  /**
+   ** Get the OWL model associated with this bridge.
    */
   public OWLModel getOWLModel() { return owlModel; }
 
@@ -206,27 +211,27 @@ public abstract class SWRLRuleEngineBridge
   protected Collection<PropertyInfo> getAssertedProperties() { return assertedProperties; }
   protected Collection<IndividualInfo> getCreatedIndividuals() { return new ArrayList(createdIndividuals.values()); }
 
-  /*
-  ** Assert an OWL property from a rule engine.
-  */
+  /**
+   ** Assert an OWL property from a rule engine.
+   */
   protected void assertProperty(PropertyInfo propertyInfo) throws SWRLRuleEngineBridgeException
   { 
     assertedProperties.add(propertyInfo); 
   } // assertProperty
 
-  /*
-  ** Assert an OWL individual from a rule engine.
-  */
+  /**
+   ** Assert an OWL individual from a rule engine.
+   */
   protected void assertIndividual(IndividualInfo individualInfo) throws SWRLRuleEngineBridgeException 
   {
     assertedIndividuals.add(individualInfo); 
   } // assertIndividual
 
-  /*
-  ** Invoke a SWRL built-in from a rule engine. <p>
-  **
-  ** See <a href="http://protege.cim3.net/cgi-bin/wiki.pl?SWRLRuleEngineBridgeFAQ#nid6QF">here</a> for documentaton.
-  */
+  /**
+   ** Invoke a SWRL built-in from a rule engine. <p>
+   **
+   ** See <a href="http://protege.cim3.net/cgi-bin/wiki.pl?SWRLRuleEngineBridgeFAQ#nid6QF">here</a> for documentaton.
+   */
   protected boolean invokeSWRLBuiltIn(String ruleName, String builtInName, int builtInIndex, List<Argument> arguments) throws BuiltInException
   {
     SWRLBuiltInLibrary swrlBuiltInLibrary = null;
@@ -234,6 +239,7 @@ public abstract class SWRLRuleEngineBridge
     String namespaceName = "", builtInMethodName = "", className;
     Method method;
     int colonIndex;
+    boolean hasUnboundArguments = hasUnboundArguments(arguments);
     Boolean result = false;
 
     if (!isBuiltIn(builtInName)) throw new InvalidBuiltInNameException(ruleName, builtInName);
@@ -278,18 +284,21 @@ public abstract class SWRLRuleEngineBridge
                                  ruleName + "'. Exception: " + e.getMessage(), e);        
     } // try
 
-    checkForUnboundArgument(ruleName, builtInName, arguments); // Make sure built-in did not leave any arguments unbound.
+    if (result && hasUnboundArguments) {
+      checkForUnboundArgument(ruleName, builtInName, arguments); // Ensure it did not leave any arguments unbound if it evaluated to true.
+      generateBuiltInBindings(ruleName, builtInName, builtInIndex, arguments); // Inform rule engine of results.
+    } // if
 
     currentBuiltInInvokingRuleName = ""; currentBuiltInInvokingIndex = -1;
 
     return result.booleanValue();
   } // invokeSWRLBuiltIn
   
-  /*
-  ** Method used to create a bridge individual of type owl:Thing. This method will typically be invoked from within a built-in. An OWL
-  ** individual is not created at this point - instead an info object is generated for the individual in the bridge and the individual is
-  ** exported to the rule engine. The individual is given a unique name that can be used later if an OWL individual is created for it.
-  */
+  /**
+   ** Method used to create a bridge individual of type owl:Thing. This method will typically be invoked from within a built-in. An OWL
+   ** individual is not created at this point - instead an info object is generated for the individual in the bridge and the individual is
+   ** exported to the rule engine. The individual is given a unique name that can be used later if an OWL individual is created for it.
+   */
   public IndividualInfo createIndividual() throws SWRLRuleEngineBridgeException
   {
     String individualName = owlModel.createNewResourceName("SWRLCreated");
@@ -301,9 +310,9 @@ public abstract class SWRLRuleEngineBridge
     return individualInfo;
   } // createIndividual
 
-  /*
-  ** Create OWL individuals for the individuals (represented by info objects) generated during rule excution.
-  */
+  /**
+   ** Create OWL individuals for the individuals (represented by info objects) generated during rule execution.
+   */
   private void createCreatedIndividuals() throws SWRLRuleEngineBridgeException
   {
     OWLNamedClass owlThingClass = owlModel.getOWLThingClass();
@@ -316,15 +325,28 @@ public abstract class SWRLRuleEngineBridge
     } // for
   } // createCreatedIndividuals
 
+  /**
+   ** Invoke the initialize() method for each registered built-in library.
+   */
   private void invokeBuiltInLibraryInitializeMethod(SWRLBuiltInLibrary swrlBuiltInLibrary) throws BuiltInException
   {
     try {
       Method method = 
 		swrlBuiltInLibrary.getClass().getMethod(BuiltInLibraryInitializeMethodName, new Class[] {SWRLRuleEngineBridge.class});
       method.invoke(swrlBuiltInLibrary, new Object[] {this});
-    } catch (Exception e) {
-      throw new BuiltInException("Internal bridge exception when invoking initialize method: " + e.getMessage(), e);
-      // TODO: deal with exceptions thrown by method itself.
+    } catch (InvocationTargetException e) {
+      Throwable targetException = e.getTargetException();
+      if (targetException instanceof RuntimeException)
+        throw new BuiltInException("Error inside of initialize method in built-in library '" +
+                                   swrlBuiltInLibrary.getClass().getName() + "': " + targetException.getMessage() + 
+                                   ". Library may now be in an inconsistent state.", targetException);
+      else 
+        throw new BuiltInException("Internal bridge exception when invoking initialize method for built-in library '" +
+                                   swrlBuiltInLibrary.getClass().getName() + "': " + targetException.getMessage(), targetException);
+    } catch (NoSuchMethodException e) {
+      throw new BuiltInException("No initialize method defined in built-in library '" + swrlBuiltInLibrary.getClass().getName());
+    } catch (IllegalAccessException e) {
+      throw new BuiltInException("No access to initialize method defined in built-in library '" + swrlBuiltInLibrary.getClass().getName());
     } // try
   } // invokeBuiltInLibraryInitializeMethod
   
@@ -496,10 +518,10 @@ public abstract class SWRLRuleEngineBridge
       importedProperties.addAll(propertyInfoList);
       importedPropertyNames.add(propertyName);
 
-      importOWLClasses(Info.rdfResources2Names(property.getUnionDomain()));
-      importOWLClasses(Info.rdfResources2Names(property.getUnionRangeClasses()));
-      importOWLProperties(Info.rdfResources2Names(property.getSuperproperties(true)));
-      importOWLProperties(Info.rdfResources2Names(property.getSubproperties(true)));
+      importOWLClasses(SWRLOWLUtil.rdfResources2Names(property.getUnionDomain()));
+      importOWLClasses(SWRLOWLUtil.rdfResources2Names(property.getUnionRangeClasses()));
+      importOWLProperties(SWRLOWLUtil.rdfResources2Names(property.getSuperproperties(true)));
+      importOWLProperties(SWRLOWLUtil.rdfResources2Names(property.getSubproperties(true)));
     } // if
   } // importProperty
 
@@ -730,10 +752,88 @@ public abstract class SWRLRuleEngineBridge
 
   private void checkForUnboundArgument(String ruleName, String builtInName, List<Argument> arguments) throws BuiltInException
   {
-    if (arguments.contains(null)) // An unbound argument is indicated by a null for an argument value.
-      throw new BuiltInException("Built-in '" + builtInName + "' in rule '" + ruleName + "' " +
-                                 "returned with unbound argument number " + arguments.indexOf(null));
+    int argumentNumber = 0;
+
+    for (Argument argument : arguments) {
+      if (argument == null) // An unbound argument is indicated by a null for an argument value.
+        throw new BuiltInException("Built-in '" + builtInName + "' in rule '" + ruleName + "' " +
+                                   "returned with unbound argument #" + argumentNumber);
+      else if (argument instanceof MultiArgument && ((MultiArgument)argument).hasNoArguments())
+        throw new BuiltInException("Built-in '" + builtInName + "' in rule '" + ruleName + "' " +
+                                   "returned with empty multi-argument #" + argumentNumber);
+      argumentNumber++;
+    } // for
   } // checkForUnboundArgument
+
+  private void generateBuiltInBindings(String ruleName, String builtInName, int builtInIndex, List<Argument> arguments)
+    throws BuiltInException
+  {
+    List<Integer> multiArgumentIndexes = getMultiArgumentIndexes(arguments);
+    
+    if (multiArgumentIndexes.isEmpty()) 
+      generateBuiltInBinding(ruleName, builtInName, builtInIndex, arguments); // No multi-arguments - do a simple bind
+    else {
+      List<Integer> multiArgumentCounts = new ArrayList();
+      List<Integer> multiArgumentSizes = new ArrayList();
+      List<Argument> argumentsPattern;
+
+      for (int i = 0; i < multiArgumentIndexes.size(); i++) multiArgumentCounts.add(new Integer(0));
+      for (int i = 0; i < multiArgumentIndexes.size(); i++) {
+        MultiArgument multiArgument = (MultiArgument)arguments.get(multiArgumentIndexes.get(i).intValue());
+        multiArgumentSizes.add(new Integer(multiArgument.getNumberOfArguments()));
+      } // for
+
+      do {
+        argumentsPattern = generateArgumentsPattern(arguments, multiArgumentCounts);
+        generateBuiltInBinding(ruleName, builtInName, builtInIndex, argumentsPattern); // Call the rule engine method.
+      } while (!nextMultiArgumentCounts(multiArgumentCounts, multiArgumentSizes));
+    } // if
+  } // generateBuiltInBindings
+
+  private boolean nextMultiArgumentCounts(List<Integer> multiArgumentCounts, List<Integer> multiArgumentSizes)
+  {
+    if (multiArgumentSizes.isEmpty()) return true;
+    
+    if (nextMultiArgumentCounts(multiArgumentCounts.subList(1, multiArgumentCounts.size()), 
+                                multiArgumentSizes.subList(1, multiArgumentSizes.size()))) {
+      // No more permutations of rest of list so increment this count and if we are not at the end set rest of the list to begin at 0 again.
+      int count = multiArgumentCounts.get(0).intValue();
+      int size = multiArgumentSizes.get(0).intValue();
+      
+      if (++count == size) return true;
+
+      multiArgumentCounts.set(0, new Integer(count));
+
+      for (int i = 1; i < multiArgumentCounts.size(); i++) multiArgumentCounts.set(i, new Integer(0));
+    } // if
+    return false;
+  } // nextMultiArgumentCounts
+
+  private List<Argument> generateArgumentsPattern(List<Argument> arguments, List<Integer> multiArgumentCounts)
+  {
+    List<Argument> result = new ArrayList();
+    int multiArgumentIndex = 0;
+
+    for (Argument argument: arguments) {
+      if (argument instanceof MultiArgument) {
+        MultiArgument multiArgument = (MultiArgument)argument;
+        result.add(multiArgument.getArguments().get((multiArgumentCounts.get(multiArgumentIndex).intValue())));
+        multiArgumentIndex++;
+      } else result.add(argument);
+    } // for
+
+    return result;
+  } // generateArgumentsPattern
+    
+  private List<Integer> getMultiArgumentIndexes(List<Argument> arguments)
+  {
+    List<Integer> result = new ArrayList();
+
+    for (int i = 0; i < arguments.size(); i++) 
+      if (arguments.get(i) instanceof MultiArgument) result.add(new Integer(i));
+
+    return result;
+  } // getMultiArgumentIndexes
 
   private void initialize()
   {
@@ -759,5 +859,10 @@ public abstract class SWRLRuleEngineBridge
 
     builtInLibraryClassInstances = new HashMap<String, SWRLBuiltInLibrary>();
   } // initialize
+
+  private boolean hasUnboundArguments(List<Argument> arguments) 
+  {
+    return arguments.contains(null);
+  } // hasUnboundArguments
   
 } // SWRLRuleEngineBridge

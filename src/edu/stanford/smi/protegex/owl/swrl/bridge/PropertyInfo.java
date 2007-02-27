@@ -2,15 +2,14 @@
 package edu.stanford.smi.protegex.owl.swrl.bridge;
 
 import edu.stanford.smi.protegex.owl.model.*;
-import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.SWRLRuleEngineBridgeException;
-import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.InvalidPropertyNameException;
-import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.InvalidIndividualNameException;
+import edu.stanford.smi.protegex.owl.swrl.util.SWRLOWLUtil;
+import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.*;
 
 import java.util.*;
 
-/*
-** Info object representing an OWL property. 
-*/
+/**
+ ** Info object representing an OWL property. 
+ */
 public class PropertyInfo extends Info implements Argument
 {
   // There is an equals method defined on this class.
@@ -143,10 +142,10 @@ public class PropertyInfo extends Info implements Argument
     property = owlModel.getOWLProperty(propertyName);
     if (property == null) throw new InvalidPropertyNameException(propertyName);
     
-    domainClassNames = rdfResources2Names(property.getUnionDomain());
-    rangeClassNames = rdfResources2Names(property.getUnionRangeClasses());
-    superPropertyNames = rdfResources2Names(property.getSuperproperties(true));
-    subPropertyNames = rdfResources2Names(property.getSubproperties(true));
+    domainClassNames = SWRLOWLUtil.rdfResources2Names(property.getUnionDomain());
+    rangeClassNames = SWRLOWLUtil.rdfResources2Names(property.getUnionRangeClasses());
+    superPropertyNames = SWRLOWLUtil.rdfResources2Names(property.getSuperproperties(true));
+    subPropertyNames = SWRLOWLUtil.rdfResources2Names(property.getSubproperties(true));
 
     Iterator domainsIterator = property.getUnionDomain().iterator();
     while (domainsIterator.hasNext()) {

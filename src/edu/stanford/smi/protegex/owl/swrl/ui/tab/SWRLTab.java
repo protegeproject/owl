@@ -1,3 +1,4 @@
+
 package edu.stanford.smi.protegex.owl.swrl.ui.tab;
 
 import java.awt.BorderLayout;
@@ -49,12 +50,16 @@ public class SWRLTab extends AbstractTabWidget
       owlModel.getNamespaceManager().setPrefix(new URI(SWRLNames.SWRL_NAMESPACE), SWRLNames.SWRL_PREFIX);
       owlModel.getNamespaceManager().setPrefix(new URI(SWRLNames.SWRLB_NAMESPACE), SWRLNames.SWRLB_PREFIX);
       owlModel.getNamespaceManager().setPrefix(new URI(SWRLNames.SWRLX_NAMESPACE), SWRLNames.SWRLX_PREFIX);
+      owlModel.getNamespaceManager().setPrefix(new URI(SWRLNames.SWRLTBOX_NAMESPACE), SWRLNames.SWRLTBOX_PREFIX);
+      owlModel.getNamespaceManager().setPrefix(new URI(SWRLNames.SWRLABOX_NAMESPACE), SWRLNames.SWRLABOX_PREFIX);
   
       ImportHelper importHelper = new ImportHelper((JenaOWLModel)getKnowledgeBase());
       
       importHelper.addImport(new URI(SWRLNames.SWRL_IMPORT));     
       importHelper.addImport(new URI(SWRLNames.SWRLB_IMPORT));
       importHelper.addImport(new URI(SWRLNames.SWRLX_IMPORT));
+      importHelper.addImport(new URI(SWRLNames.SWRLTBOX_IMPORT));
+      importHelper.addImport(new URI(SWRLNames.SWRLABOX_IMPORT));
       
       importHelper.importOntologies();
 

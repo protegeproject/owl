@@ -1,12 +1,13 @@
 
-// Info object representing a SWRL rule.
-
 package edu.stanford.smi.protegex.owl.swrl.bridge;
 
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.SWRLRuleEngineBridgeException;
 
 import java.util.*;
 
+/**
+ ** Info object representing a SWRL rule.
+ */
 public class RuleInfo extends Info
 {
   private String ruleName;
@@ -33,32 +34,11 @@ public class RuleInfo extends Info
   public List<BuiltInAtomInfo> getBuiltInAtomsFromBody(Set<String> builtInNames) throws SWRLRuleEngineBridgeException 
     { return getBuiltInAtoms(bodyAtoms, builtInNames); }
 
-  // Find all built-in atoms with unbound arguments and tell them which of their arguments are unbound.
-  //
-  // If an unbound variable is passed as a parameter to a body built-in then we assume that the built-in is going to assign a value to
-  // it. (Head built-in atoms will never bind their variable arguments because head variables will always be bound due to SWRL's safety
-  // requirement.) We can determine that a variable passed to a built-in is unbound if it is not referenced in any non built-in atom in the
-  // rule body or is not bound by another built-in. For example, in the rule:
-  //
-  // Person(?p) ^ hasSalaryInPounds(?p, ?pounds) ^ swrlb:multiply(?dollars, ?pounds, ?1.6) -> hasSalaryInDollars(?p, ?dollars)
-  // 
-  // the ?dollars variable in the first argument position is unbound in the swrlb:multiply built-in. 
-  //
-  // The following rule shows an example of a built-in binding a variable that is later used as a bound value by another built-in: 
-  //
-  // Rectangle(?r) ^ hasWidth(?r, ?w) ^ hasHeight(?r, ?h) ^ swrlb:multiply(?area, ?w, ?h) ^ swrlb:greaterThan(?area, 10) ->
-  // LargeRectangle(?r)
-  // 
-  // greaterThan and the like must never bind??!! Can't find out before hand so exception will only be throw at run time. User should know
-  // and position accordingly left to right.
-  //
-  // Unbound variabled can occur in any position. For example, the same rule can be expressed in the following ways:
-  //
-  // Person(?p) ^ hasSalaryInPounds(?p, ?pounds) ^ swrlb:divide(?pounds, ?dollars, ?1.6) -> hasSalaryInDollars(?p, ?dollars)
-  // Person(?p) ^ hasSalaryInPounds(?p, ?pounds) ^ swrlb:multiply(1.6, ?pounds, ?dollars) -> hasSalaryInDollars(?p, ?dollars)
-  //
-  // In these cases, the unbound ?dollars variable is in the second and third argument positions, respectively.
-  //
+  /**
+   ** Find all built-in atoms with unbound arguments and tell them which of their arguments are unbound by setting each non bound parameter
+   ** to null. See <a href="http://protege.cim3.net/cgi-bin/wiki.pl?SWRLBuiltInBridge#nid88T">here</a> for a discussion of the role of this
+   ** method.
+   */
   private void processBodyAtoms() throws SWRLRuleEngineBridgeException
   {
     List<BuiltInAtomInfo> bodyBuiltInAtoms = new ArrayList<BuiltInAtomInfo>();
