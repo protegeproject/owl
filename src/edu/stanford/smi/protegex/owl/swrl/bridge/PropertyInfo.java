@@ -25,7 +25,10 @@ public class PropertyInfo extends Info implements Argument
     this.propertyName = propertyName;    
     this.subject = subject;
     this.predicate = predicate;
-    initialize();
+    this.domainClassNames = domainClassNames;
+    this.rangeClassNames = rangeClassNames;
+    this.superPropertyNames = superPropertyNames;
+    this.subPropertyNames = subPropertyNames;
   } // PropertyInfo
   
   // Constructor used when creating a PropertyInfo object from an assertion made by a target rule engine or to pass as built-in arguments.
@@ -167,10 +170,11 @@ public class PropertyInfo extends Info implements Argument
                   OWLIndividual rangeIndividual = (OWLIndividual)resource;
                   subject = new IndividualInfo(domainIndividual.getName());
                   predicate = new IndividualInfo(rangeIndividual.getName());
-                  propertyInfo = new PropertyInfo(propertyName, subject, predicate, domainClassNames, rangeClassNames, superPropertyNames, subPropertyNames);
+                  propertyInfo = new PropertyInfo(propertyName, subject, predicate, domainClassNames, rangeClassNames, 
+                                                  superPropertyNames, subPropertyNames);
                   propertyInfoList.add(propertyInfo);
                 } else {
-                  System.err.println("Unknown property value resource: " + resource);
+                  System.err.println("Unknown property value resource: " + resource); // TODO: Orphan resources in OWL file. Ignore?
                 } // if
               } // while
             } else { // DatatypeProperty
@@ -179,7 +183,8 @@ public class PropertyInfo extends Info implements Argument
                 RDFSLiteral literal = (RDFSLiteral)literalsIterator.next();
                 subject = new IndividualInfo(domainIndividual.getName());
                 predicate = new LiteralInfo(owlModel, literal);
-                propertyInfo = new PropertyInfo(propertyName, subject, predicate, domainClassNames, rangeClassNames, superPropertyNames, subPropertyNames);
+                propertyInfo = new PropertyInfo(propertyName, subject, predicate, domainClassNames, rangeClassNames, 
+                                                superPropertyNames, subPropertyNames);
                 propertyInfoList.add(propertyInfo);
               } // while
             } // if
