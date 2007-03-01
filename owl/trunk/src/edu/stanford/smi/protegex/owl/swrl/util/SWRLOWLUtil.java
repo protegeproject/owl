@@ -101,6 +101,14 @@ public class SWRLOWLUtil
     return getClass(owlModel, className, true);
   } // getClass
 
+  public static boolean isIndividualOfClass(OWLModel owlModel, String individualName, String className) throws SWRLOWLUtilException
+  {
+    OWLNamedClass cls = getClass(owlModel, className);
+    OWLIndividual individual = getIndividual(owlModel, individualName);
+
+    return individual.hasRDFType(cls, true);
+  } // getClass
+
   public static OWLIndividual getIndividual(OWLModel owlModel, OWLNamedClass cls, boolean mustExist, int mustHaveExactlyN)
     throws SWRLOWLUtilException
   {
@@ -130,6 +138,7 @@ public class SWRLOWLUtil
   public static OWLProperty getProperty(OWLModel owlModel, String propertyName, boolean mustExist) throws SWRLOWLUtilException
   {
     OWLProperty property = owlModel.getOWLProperty(propertyName);
+
     if (mustExist && property == null) throwException("No '" + propertyName + "' property in ontology.");
 
     return property;
@@ -326,6 +335,11 @@ public class SWRLOWLUtil
     return (property != null && property.isObjectProperty());
   } // isObjectProperty
 
+  public static boolean isObjectProperty(OWLModel owlModel, String propertyName) throws SWRLOWLUtilException
+  {
+    return isObjectProperty(owlModel, propertyName, true);
+  } // isObjectProperty
+
   public static boolean isTransitiveProperty(OWLModel owlModel, String propertyName, boolean mustExist) throws SWRLOWLUtilException
   {
     OWLProperty property = getProperty(owlModel, propertyName, mustExist);
@@ -370,6 +384,11 @@ public class SWRLOWLUtil
     return individual;
   } // getIndividual
 
+  public static OWLIndividual getIndividual(OWLModel owlModel, String individualName) throws SWRLOWLUtilException
+  {
+    return getIndividual(owlModel, individualName, true);
+  } // getIndividual
+
   public static boolean isClassName(OWLModel owlModel, String className)
   {
     return (className != null && owlModel.getRDFResource(className) instanceof OWLNamedClass);
@@ -402,6 +421,8 @@ public class SWRLOWLUtil
     OWLIndividual individual = getIndividual(owlModel, individualName, mustExist); // Will throw an exception if mustExist is true.
     int numberOfPropertyValues = 0;
 
+    if (propertyValue == null) throwException("Null value for property '" + propertyName + "' for OWL individual '" + individualName + "'.");
+
     for (Object value : individual.getPropertyValues(property)) {
       if (value instanceof RDFResource) {
         RDFResource resource = (RDFResource)value;
@@ -420,7 +441,9 @@ public class SWRLOWLUtil
   {
     OWLProperty property = owlModel.getOWLProperty(propertyName);
 
+    if (individual == null) throwException("Null value for individual");
     if (property == null) throwException("No '" + propertyName + "' property in ontology.");
+    if (propertyValue == null) throwException("Null value for property '" + propertyName + "' for OWL individual '" + individual.getName() + "'.");
 
     individual.addPropertyValue(property, propertyValue);
   } // addPropertyValue
@@ -489,7 +512,23 @@ public class SWRLOWLUtil
   {
     OWLProperty property = getProperty(owlModel, propertyName, mustExist);
 
+    if (property == null) return null;
+
     return getDatavaluedPropertyValueAsString(owlModel, individual, property, mustExist);
+  } // getDatavaluedPropertyValueAsString
+
+  public static String getDatavaluedPropertyValueAsString(OWLModel owlModel, OWLIndividual individual, String propertyName, 
+                                                          boolean mustExist, String defaultValue)
+    throws SWRLOWLUtilException
+  {
+    OWLProperty property = getProperty(owlModel, propertyName, mustExist);
+    String propertValueAsString;
+
+    if (property == null) return defaultValue;
+
+    propertValueAsString = getDatavaluedPropertyValueAsString(owlModel, individual, property, mustExist);
+
+    return propertValueAsString == null ? defaultValue : propertValueAsString;
   } // getDatavaluedPropertyValueAsString
 
   public static String getDatavaluedPropertyValueAsString(OWLModel owlModel, OWLIndividual individual, OWLProperty property, boolean mustExist)
@@ -498,11 +537,11 @@ public class SWRLOWLUtil
     Object propertyValue = getDatavaluedPropertyValue(owlModel, individual, property, mustExist);
     String result = null;
 
-    if (!mustExist && propertyValue == null) return null;
-
     if (propertyValue instanceof Boolean) {
       Boolean b = (Boolean)propertyValue;
       if (b.booleanValue()) result = "true"; else result = "false";
+    } if (propertyValue == null) {
+      result = null;
     } else result = propertyValue.toString();
 
     return result;
@@ -513,7 +552,7 @@ public class SWRLOWLUtil
   {
     Object propertyValue = getDatavaluedPropertyValue(owlModel, individual, propertyName, mustExist);
 
-    if (!mustExist && propertyValue == null) return null;
+    if (propertyValue == null) return null;
 
     if (!(propertyValue instanceof Boolean)) {
       throwException("Property value for '" + propertyName + "' associated with individual '" + individual.getName() 

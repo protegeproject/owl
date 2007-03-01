@@ -237,10 +237,10 @@ public abstract class SWRLRuleEngineBridge
     SWRLBuiltInLibrary swrlBuiltInLibrary = null;
     Class swrlBuiltInLibraryClass = null;
     String namespaceName = "", builtInMethodName = "", className;
-    Method method;
-    int colonIndex;
     boolean hasUnboundArguments = hasUnboundArguments(arguments);
     Boolean result = false;
+    Method method;
+    int colonIndex;
 
     if (!isBuiltIn(builtInName)) throw new InvalidBuiltInNameException(ruleName, builtInName);
 
@@ -654,11 +654,10 @@ public abstract class SWRLRuleEngineBridge
     
     if (!exportedClassNames.contains(className)) { // See if it is already defined.
       if (!superClassNames.isEmpty()) { // Superclasses must be defined before subclasses.
-
-	  for (String superClassName : superClassNames) {
-	      ClassInfo superClassInfo = importedClasses.get(superClassName);
-	      exportOWLClass(superClassInfo);
-	  } // for
+        for (String superClassName : superClassNames) {
+          ClassInfo superClassInfo = importedClasses.get(superClassName);
+          exportOWLClass(superClassInfo);
+        } // for
       } // if
       defineClass(classInfo);
       exportedClassNames.add(className);
@@ -667,10 +666,10 @@ public abstract class SWRLRuleEngineBridge
 
   private void exportOWLProperties() throws SWRLRuleEngineBridgeException
   {
-      for (PropertyInfo propertyInfo : importedProperties) {
-	  String propertyName = propertyInfo.getPropertyName();
-	  defineProperty(propertyInfo);
-      } // for
+    for (PropertyInfo propertyInfo : importedProperties) {
+      String propertyName = propertyInfo.getPropertyName();
+      defineProperty(propertyInfo);
+    } // for
   } // exportOWLProperties
 
   private void exportOWLIndividuals() throws SWRLRuleEngineBridgeException
