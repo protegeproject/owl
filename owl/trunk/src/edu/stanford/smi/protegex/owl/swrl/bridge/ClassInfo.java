@@ -16,7 +16,7 @@ public class ClassInfo extends Info implements Argument, ClassValue, Comparable
 {
   // equals() method defined in this class.
   private String className;
-  private Set<String> directSuperClassNames, directSubClassNames;
+  private Set<String> directSuperClassNames, directSubClassNames, equivalentClassNames;
     
   public ClassInfo(OWLModel owlModel, String className) throws SWRLRuleEngineBridgeException
   {
@@ -31,6 +31,7 @@ public class ClassInfo extends Info implements Argument, ClassValue, Comparable
     } else {
       directSuperClassNames = SWRLOWLUtil.rdfResources2Names(owlNamedClass.getNamedSuperclasses());
       directSubClassNames = SWRLOWLUtil.rdfResources2Names(owlNamedClass.getNamedSubclasses());
+      equivalentClassNames = SWRLOWLUtil.rdfResources2Names(owlNamedClass.getEquivalentClasses());
     } // if
 
   } // ClassInfo
@@ -42,15 +43,18 @@ public class ClassInfo extends Info implements Argument, ClassValue, Comparable
 
     directSuperClassNames = new HashSet<String>();
     directSubClassNames = new HashSet<String>();
+    equivalentClassNames = new HashSet<String>();
   } // ClassInfo
   
   public String getClassName() { return className; }
   public Set<String> getDirectSuperClassNames() { return directSuperClassNames; }
   public Set<String> getDirectSubClassNames() { return directSubClassNames; }
+  public Set<String> getEquivalentClassNames() { return equivalentClassNames; }
 
   public String toString()
   {
-    return "Class(name: " + getClassName() + ", directSubClassNames: " + directSubClassNames + ", directSuperClassNames: " + directSuperClassNames+")";
+    return "Class(name: " + getClassName() + ", directSubClassNames: " + directSubClassNames + 
+                  ", directSuperClassNames: " + directSuperClassNames + ", equivalentClassNames: " + equivalentClassNames + ")";
   } // toString
 
   public boolean equals(Object obj)
@@ -62,7 +66,9 @@ public class ClassInfo extends Info implements Argument, ClassValue, Comparable
       (directSuperClassNames == info.directSuperClassNames || (directSuperClassNames != null 
                                                                && directSuperClassNames.equals(info.directSuperClassNames))) &&
       (directSubClassNames == info.directSubClassNames || (directSubClassNames != null 
-                                                           && directSubClassNames.equals(info.directSubClassNames)));
+                                                           && directSubClassNames.equals(info.directSubClassNames))) && 
+      (equivalentClassNames == info.equivalentClassNames || (equivalentClassNames != null 
+                                                           && equivalentClassNames.equals(info.equivalentClassNames)));
   } // equals
 
   public int hashCode()
@@ -71,6 +77,7 @@ public class ClassInfo extends Info implements Argument, ClassValue, Comparable
     hash = hash + (null == getClassName() ? 0 : getClassName().hashCode());
     hash = hash + (null == directSuperClassNames ? 0 : directSuperClassNames.hashCode());
     hash = hash + (null == directSubClassNames ? 0 : directSubClassNames.hashCode());
+    hash = hash + (null == equivalentClassNames ? 0 : equivalentClassNames.hashCode());
     return hash;
   } // hashCode
 

@@ -535,11 +535,14 @@ public abstract class SWRLRuleEngineBridge
     if (!importedIndividuals.containsKey(individualName)) {
       IndividualInfo individualInfo = new IndividualInfo(owlModel, individualName);
       importedIndividuals.put(individualName, individualInfo);
-      importOWLClasses(individualInfo.getClassNames());
+      importOWLClasses(individualInfo.getDefiningClassNames());
+      importOWLClasses(individualInfo.getDefiningSuperClassNames());
+      importOWLClasses(individualInfo.getDefiningEquivalentClassNames());
     } // if
   } // importOWLIndividual
 
-  // We only import owl:SameAs, owl:differentFrom, and owl:AddDifferent at the moment.
+  // We only import owl:SameAs, owl:differentFrom, and owl:AllDifferent, owl:equivalentProperty. owl:equivalentClass resrictions at the
+  // moment. We support owl:equivalentProperty and owl:equivalentClass restrictions indirectly.
   private void importOWLRestrictions() throws SWRLRuleEngineBridgeException
   {
     importOWLSameAsRestrictions();
