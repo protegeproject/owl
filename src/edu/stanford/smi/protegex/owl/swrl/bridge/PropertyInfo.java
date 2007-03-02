@@ -15,11 +15,12 @@ public class PropertyInfo extends Info implements Argument
   // There is an equals method defined on this class.
   private String propertyName;
   private Argument subject, predicate;
-  private Set<String> domainClassNames, rangeClassNames, superPropertyNames, subPropertyNames;
+  private Set<String> domainClassNames, rangeClassNames, superPropertyNames, subPropertyNames, equivalentPropertyNames;
   
   // Constructor used when creating a PropertyInfo object from an OWL property.
   public PropertyInfo(String propertyName, Argument subject, Argument predicate, Set<String> domainClassNames, 
-                      Set<String> rangeClassNames, Set<String> superPropertyNames, Set<String> subPropertyNames) 
+                      Set<String> rangeClassNames, Set<String> superPropertyNames, Set<String> subPropertyNames,
+                      Set<String> equivalentPropertyNames) 
     throws SWRLRuleEngineBridgeException
   {
     this.propertyName = propertyName;    
@@ -29,6 +30,7 @@ public class PropertyInfo extends Info implements Argument
     this.rangeClassNames = rangeClassNames;
     this.superPropertyNames = superPropertyNames;
     this.subPropertyNames = subPropertyNames;
+    this.equivalentPropertyNames = equivalentPropertyNames;
   } // PropertyInfo
   
   // Constructor used when creating a PropertyInfo object from an assertion made by a target rule engine or to pass as built-in arguments.
@@ -69,6 +71,7 @@ public class PropertyInfo extends Info implements Argument
   public Set<String> getRangeClassNames() { return rangeClassNames; }
   public Set<String> getSuperPropertyNames() { return superPropertyNames; }
   public Set<String> getSubPropertyNames() { return subPropertyNames; }
+  public Set<String> getEquivalentPropertyNames() { return equivalentPropertyNames; }
   
   public void write2OWL(OWLModel owlModel) throws SWRLRuleEngineBridgeException
   {
@@ -105,7 +108,8 @@ public class PropertyInfo extends Info implements Argument
   public String toString()
   {
     return "Property(name: " + getPropertyName() + ", subject: " + subject + ", predicate: " + predicate + ", domainClassNames: " + 
-      domainClassNames + ", rangeClassNames: " + rangeClassNames + ", superPropertyNames: " + superPropertyNames + ")";
+      domainClassNames + ", rangeClassNames: " + rangeClassNames + ", superPropertyNames: " + superPropertyNames + ", " +
+       "equivalentPropertyNames: " + equivalentPropertyNames + ")";
   } // toString
 
   public boolean equals(Object obj)
@@ -117,7 +121,8 @@ public class PropertyInfo extends Info implements Argument
       (subject == info.subject || (subject != null && subject.equals(info.subject))) &&
       (predicate == info.predicate || (predicate != null && predicate.equals(info.predicate))) &&
       (domainClassNames == info.domainClassNames || (domainClassNames != null && domainClassNames.equals(info.domainClassNames))) &&
-      (rangeClassNames == info.rangeClassNames || (rangeClassNames != null && rangeClassNames.equals(info.rangeClassNames)));
+      (rangeClassNames == info.rangeClassNames || (rangeClassNames != null && rangeClassNames.equals(info.rangeClassNames))) &&
+      (equivalentPropertyNames == info.equivalentPropertyNames || (equivalentPropertyNames != null && equivalentPropertyNames.equals(info.equivalentPropertyNames)));
   } // equals
 
   public int hashCode()
@@ -128,6 +133,7 @@ public class PropertyInfo extends Info implements Argument
     hash = hash + (null == predicate ? 0 : predicate.hashCode());
     hash = hash + (null == domainClassNames ? 0 : domainClassNames.hashCode());
     hash = hash + (null == rangeClassNames ? 0 : rangeClassNames.hashCode());
+    hash = hash + (null == equivalentPropertyNames ? 0 : equivalentPropertyNames.hashCode());
     return hash;
   } // hashCode
 
@@ -139,7 +145,7 @@ public class PropertyInfo extends Info implements Argument
     OWLProperty property;
     PropertyInfo propertyInfo;
     List<PropertyInfo> propertyInfoList = new ArrayList<PropertyInfo>();
-    Set<String> domainClassNames, rangeClassNames, superPropertyNames, subPropertyNames;
+    Set<String> domainClassNames, rangeClassNames, superPropertyNames, subPropertyNames, equivalentPropertyNames;
     Argument subject, predicate;
 
     property = owlModel.getOWLProperty(propertyName);
@@ -149,6 +155,7 @@ public class PropertyInfo extends Info implements Argument
     rangeClassNames = SWRLOWLUtil.rdfResources2Names(property.getUnionRangeClasses());
     superPropertyNames = SWRLOWLUtil.rdfResources2Names(property.getSuperproperties(true));
     subPropertyNames = SWRLOWLUtil.rdfResources2Names(property.getSubproperties(true));
+    equivalentPropertyNames = SWRLOWLUtil.rdfResources2Names(property.getEquivalentProperties());
 
     Iterator domainsIterator = property.getUnionDomain().iterator();
     while (domainsIterator.hasNext()) {
@@ -171,7 +178,7 @@ public class PropertyInfo extends Info implements Argument
                   subject = new IndividualInfo(domainIndividual.getName());
                   predicate = new IndividualInfo(rangeIndividual.getName());
                   propertyInfo = new PropertyInfo(propertyName, subject, predicate, domainClassNames, rangeClassNames, 
-                                                  superPropertyNames, subPropertyNames);
+                                                  superPropertyNames, subPropertyNames, equivalentPropertyNames);
                   propertyInfoList.add(propertyInfo);
                 } else {
                   System.err.println("Unknown property value resource: " + resource); // TODO: Orphan resources in OWL file. Ignore?
@@ -184,7 +191,7 @@ public class PropertyInfo extends Info implements Argument
                 subject = new IndividualInfo(domainIndividual.getName());
                 predicate = new LiteralInfo(owlModel, literal);
                 propertyInfo = new PropertyInfo(propertyName, subject, predicate, domainClassNames, rangeClassNames, 
-                                                superPropertyNames, subPropertyNames);
+                                                superPropertyNames, subPropertyNames, equivalentPropertyNames);
                 propertyInfoList.add(propertyInfo);
               } // while
             } // if
@@ -197,10 +204,11 @@ public class PropertyInfo extends Info implements Argument
 
   private void initialize()
   {
-    this.domainClassNames = new HashSet<String>();
-    this.rangeClassNames = new HashSet<String>();
-    this.superPropertyNames = new HashSet<String>();
-    this.subPropertyNames = new HashSet<String>();
+    domainClassNames = new HashSet<String>();
+    rangeClassNames = new HashSet<String>();
+    superPropertyNames = new HashSet<String>();
+    subPropertyNames = new HashSet<String>();
+    equivalentPropertyNames = new HashSet<String>();
   } // initialize
 
 } // PropertyInfo
