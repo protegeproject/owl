@@ -126,10 +126,10 @@ public class SWRLQueryControlPanel extends JPanel
           if (ruleName == null || ruleName.equals("")) textArea.append("No rule selected.\n");
           else {
             result = bridge.getQueryResult(ruleName);
-            if (result == null) textArea.append("Rule '" + ruleName + "' does not have any query built-ins or did not generate any result.\n");
+            if (result == null) textArea.append("Rule '" + ruleName + "' does not have any query built-ins and/or did not generate any result.\n");
             else {
               if (result.getNumberOfRows() == 0) {
-                textArea.append("No results for query '" + ruleName + "'.\n");
+                textArea.append("Empty result for query '" + ruleName + "'.\n");
                 // TODO: kill or update tab it is exists
               } else textArea.append("See tab to review results of query '" + ruleName + "'.\n");
               if  (resultPanels.containsKey(ruleName)) resultPanel = resultPanels.get(ruleName);
