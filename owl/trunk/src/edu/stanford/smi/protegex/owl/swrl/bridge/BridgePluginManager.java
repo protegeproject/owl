@@ -59,11 +59,11 @@ public class BridgePluginManager
 
   public static String getSelectedRuleName() { return selectedRuleName; }
   public static boolean hasSelectedRule() { return !selectedRuleName.equals(""); }
+
   public static void setSelectedRuleName(String ruleName) 
   { 
-    System.err.println("setSelectedRuleName: " + ruleName);
     selectedRuleName = ruleName; 
-  }
+  } // setSelectedRuleName
 
   // Called by each plugin as it is loaded to inform the adapter of its presence.
   public static void registerPlugin(String pluginName, String toolTip, Icon icon, SWRLPluginGUIAdapter guiAdapter)
