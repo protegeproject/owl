@@ -173,7 +173,7 @@ public abstract class SWRLRuleEngineBridge
   } // resetRuleEngine
 
   /**
-   **  Get the results from a rule containing query built-ins.
+   **  Get the results from a rule containing query built-ins. Null is retured if there are no results.
    */
   public Result getQueryResult(String ruleName) throws ResultException
   {
@@ -746,6 +746,6 @@ public abstract class SWRLRuleEngineBridge
     } // try
 
     if (queryLibrary != null) queryLibrary.clearQueryResults();
-  } // getQueryResult
+  } // clearQueryResults
   
 } // SWRLRuleEngineBridge
