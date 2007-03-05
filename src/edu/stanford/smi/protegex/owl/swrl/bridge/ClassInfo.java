@@ -2,6 +2,7 @@
 package edu.stanford.smi.protegex.owl.swrl.bridge;
 
 import edu.stanford.smi.protegex.owl.swrl.util.SWRLOWLUtil;
+import edu.stanford.smi.protegex.owl.swrl.bridge.query.*;
 import edu.stanford.smi.protegex.owl.swrl.exceptions.SWRLOWLUtilException;
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.*;
 
@@ -12,7 +13,7 @@ import java.util.*;
 /**
  ** Info object representing an OWL class. 
  */
-public class ClassInfo extends Info implements Argument, ClassValue, Comparable
+public class ClassInfo extends Info implements Argument, ClassValue
 {
   // equals() method defined in this class.
   private String className;
@@ -51,11 +52,7 @@ public class ClassInfo extends Info implements Argument, ClassValue, Comparable
   public Set<String> getDirectSubClassNames() { return directSubClassNames; }
   public Set<String> getEquivalentClassNames() { return equivalentClassNames; }
 
-  public String toString()
-  {
-    return "Class(name: " + getClassName() + ", directSubClassNames: " + directSubClassNames + 
-                  ", directSuperClassNames: " + directSuperClassNames + ", equivalentClassNames: " + equivalentClassNames + ")";
-  } // toString
+  public String toString() { return getClassName(); }
 
   public boolean equals(Object obj)
   {
@@ -83,7 +80,7 @@ public class ClassInfo extends Info implements Argument, ClassValue, Comparable
 
   public int compareTo(Object o)
   {
-    return className.compareTo((String)o);
+    return className.compareTo(((ClassInfo)o).getClassName());
   } // compareTo
 
 } // ClassInfo

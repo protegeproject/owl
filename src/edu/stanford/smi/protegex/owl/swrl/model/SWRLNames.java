@@ -16,24 +16,28 @@ public interface SWRLNames extends OWLNames {
   public final static String SWRLX_IMPORT = "http://swrl.stanford.edu/swrlx.owl";
   public final static String SWRLTBOX_IMPORT = "http://swrl.stanford.edu/tbox.owl";
   public final static String SWRLABOX_IMPORT = "http://swrl.stanford.edu/abox.owl";
+  public final static String SWRLQUERY_IMPORT = "http://swrl.stanford.edu/query.owl";
   
   public final static String SWRL_ALT_IMPORT = "http://www.daml.org/rules/proposal/swrl.owl";
   public final static String SWRLB_ALT_IMPORT = "http://www.daml.org/rules/proposal/swrlb.owl";
   public final static String SWRLX_ALT_IMPORT = "http://swrl.stanford.edu/swrlx.owl";
   public final static String SWRLTBOX_ALT_IMPORT = "http://swrl.stanford.edu/tbox.owl";
   public final static String SWRLABOX_ALT_IMPORT = "http://swrl.stanford.edu/abox.owl";
+  public final static String SWRLQUERY_ALT_IMPORT = "http://swrl.stanford.edu/query.owl";
   
   public final static String SWRL_NAMESPACE = "http://www.w3.org/2003/11/swrl#";
   public final static String SWRLB_NAMESPACE = "http://www.w3.org/2003/11/swrlb#";
   public final static String SWRLX_NAMESPACE = "http://swrl.stanford.edu/swrlx.owl#";
   public final static String SWRLTBOX_NAMESPACE = "http://swrl.stanford.edu/tbox.owl#";
   public final static String SWRLABOX_NAMESPACE = "http://swrl.stanford.edu/abox.owl#";
+  public final static String SWRLQUERY_NAMESPACE = "http://swrl.stanford.edu/query.owl#";
   
   public final static String SWRL_PREFIX = "swrl";
   public final static String SWRLB_PREFIX = "swrlb";
   public final static String SWRLX_PREFIX = "swrlx";
   public final static String SWRLTBOX_PREFIX = "tbox";
   public final static String SWRLABOX_PREFIX = "abox";
+  public final static String SWRLQUERY_PREFIX = "query";
   
   public static interface Cls {
     

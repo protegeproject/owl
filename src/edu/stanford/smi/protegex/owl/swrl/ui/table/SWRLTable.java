@@ -28,7 +28,6 @@ import edu.stanford.smi.protegex.owl.swrl.bridge.BridgePluginManager;
  */
 public class SWRLTable extends SymbolTable implements Disposable {
 
-
     public SWRLTable(SWRLTableModel tableModel, OWLModel owlModel) {
         super(tableModel, owlModel, true, new SWRLSymbolPanel(owlModel, true, true));
         TableColumn nameColumn = getColumnModel().getColumn(SWRLTableModel.COL_NAME);
@@ -96,12 +95,13 @@ public class SWRLTable extends SymbolTable implements Disposable {
 
     public void valueChanged(ListSelectionEvent e)
     {
-	super.valueChanged(e);
+      super.valueChanged(e);
 
-        SWRLTableModel tableModel = (SWRLTableModel) getSymbolTableModel();
-	String selectedRuleName = (String)tableModel.getValueAt(e.getLastIndex(), 0);
-	//TODO: hack - need a more elegant solution. Also lastIndex does not always work.
-	BridgePluginManager.setSelectedRuleName(selectedRuleName);
+
+      SWRLTableModel tableModel = (SWRLTableModel)getSymbolTableModel();
+
+      String selectedRuleName = (String)tableModel.getValueAt(getSelectedRow(), 0);
+      BridgePluginManager.setSelectedRuleName(selectedRuleName);
     } // valueChanged
 
     public void replaceImp(SWRLImp oldImp, SWRLImp newImp) {
@@ -113,7 +113,6 @@ public class SWRLTable extends SymbolTable implements Disposable {
         }
         oldImp.deleteImp();
     }
-
 
     public void setSelectedRow(RDFResource RDFResource) {
         SWRLTableModel tableModel = (SWRLTableModel) getSymbolTableModel();

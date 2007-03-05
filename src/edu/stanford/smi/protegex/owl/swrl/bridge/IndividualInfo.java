@@ -4,6 +4,7 @@ package edu.stanford.smi.protegex.owl.swrl.bridge;
 import edu.stanford.smi.protegex.owl.swrl.util.SWRLOWLUtil;
 import edu.stanford.smi.protegex.owl.swrl.exceptions.*;
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.*;
+import edu.stanford.smi.protegex.owl.swrl.bridge.query.*;
 
 import edu.stanford.smi.protegex.owl.model.*;
 import edu.stanford.smi.protegex.owl.swrl.model.*;
@@ -13,7 +14,7 @@ import java.util.*;
 /**
  ** Info object representing an OWL individual. 
  */
-public class IndividualInfo extends Info implements Argument, Comparable
+public class IndividualInfo extends Info implements Argument, ObjectValue
 {
   // NOTE: equals() method defined in this class.
 
@@ -125,7 +126,7 @@ public class IndividualInfo extends Info implements Argument, Comparable
 
   public int compareTo(Object o)
   {
-    return individualName.compareTo((String)o);
+    return individualName.compareTo(((IndividualInfo)o).getIndividualName());
   } // compareTo
 
   private void initialize()

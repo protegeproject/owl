@@ -19,6 +19,8 @@ public abstract class VariableInfo extends Info implements Argument
 
   public String getVariableName() { return variableName; }
 
+  public String toString() { return "?" + getVariableName(); }
+
   public boolean equals(Object obj)
   {
     if(this == obj) return true;

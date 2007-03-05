@@ -1,7 +1,8 @@
 
-package edu.stanford.smi.protegex.owl.swrl.bridge;
+package edu.stanford.smi.protegex.owl.swrl.bridge.query;
 
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.DatatypeConversionException;
+import edu.stanford.smi.protegex.owl.swrl.bridge.xsd.*;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -10,10 +11,13 @@ public interface DatatypeValue extends ResultValue
 {
   // Java types
   boolean isString();
+
+  boolean isBoolean();
+
   boolean isNumeric();
+
   boolean isInteger();
   boolean isLong();
-  boolean isBoolean();
   boolean isFloat();
   boolean isDouble();
   boolean isShort();
@@ -22,9 +26,11 @@ public interface DatatypeValue extends ResultValue
   boolean isBigInteger();
 
   String getString() throws DatatypeConversionException;
+
+  boolean getBoolean() throws DatatypeConversionException;
+
   int getInt() throws DatatypeConversionException;
   long getLong() throws DatatypeConversionException;
-  boolean getBoolean() throws DatatypeConversionException;
   float getFloat() throws DatatypeConversionException;
   double getDouble() throws DatatypeConversionException;
   short getShort() throws DatatypeConversionException;
