@@ -1,11 +1,12 @@
 
+package edu.stanford.smi.protegex.owl.swrl.bridge.query;
 
-package edu.stanford.smi.protegex.owl.swrl.bridge;
-
-import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.*;
 import edu.stanford.smi.protegex.owl.swrl.bridge.*;
+import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.*;
+import edu.stanford.smi.protegex.owl.swrl.bridge.query.exceptions.*;
 
 import java.util.*;
+import java.math.*;
 
 /**
  ** This class implements the interfaces Result and ResultGenerator. It can be used to generate a result structure and populate it with data;
@@ -53,7 +54,7 @@ import java.util.*;
  **
  ** result.prepared();
  **
- ** The result is now available for reading. The interface Result defines the accessor methods. A row consists of a list of objects defined
+ ** The result is now available for reading. The interface Result defines the assessor methods. A row consists of a list of objects defined
  ** by the interface ResultValue. There are four possible types of values (1) DatatypeValue, representing literals; (2) ObjectValue,
  ** representing OWL individuals; (3) ClassValue, representing OWL classes; and (4) PropertyValue, representing OWL properties.
  **
@@ -66,11 +67,12 @@ import java.util.*;
  */ 
 public class ResultImpl implements ResultGenerator, Result
 {
-  private List<String> allColumnNames, selectedColumnNames, datatypeColumnNames, orderByColumnNames, displayColumnNames;
-  private HashMap<String, String> aggregateColumns; // Map of (name, function) pairs
+  private List<String> allColumnNames, displayColumnNames;
+  private List<Integer> selectedColumnIndexes, orderByColumnIndexes;
+  private HashMap<Integer, String> aggregateColumnIndexes; // Map of (index, function) pairs
   private List<List<ResultValue>> rows; // List of List of ResultValue objects.
   private List<ResultValue> rowData; // List of ResultValue objects used when assembling a row.
-  private int numberOfColumns, rowIndex, rowDataIndex;
+  private int numberOfColumns, rowIndex, rowDataColumnIndex;
   private boolean isConfigured, isPrepared, isRowOpen, isOrdered, isDescending, isDistinct, hasAggregates;
   private RowComparator rowComparator;
 
@@ -95,10 +97,9 @@ public class ResultImpl implements ResultGenerator, Result
     
     // The following variables will not be externally valid until configured() is called. 
     allColumnNames = new ArrayList<String>();
-    aggregateColumns = new HashMap<String, String>();
-    selectedColumnNames = new ArrayList<String>();
-    datatypeColumnNames = new ArrayList<String>();
-    orderByColumnNames = new ArrayList<String>();
+    aggregateColumnIndexes = new HashMap<Integer, String>();
+    selectedColumnIndexes = new ArrayList<Integer>();
+    orderByColumnIndexes = new ArrayList<Integer>();
     displayColumnNames = new ArrayList<String>();
 
     numberOfColumns = 0; isOrdered = isDescending = isDistinct = false;
@@ -122,25 +123,11 @@ public class ResultImpl implements ResultGenerator, Result
     isDescending = true;
   } // setIsDescending
 
-  public void addSelectedObjectColumn(String columnName) throws ResultException
+  public void addSelectedColumn(String columnName) throws ResultException
   {
     throwExceptionIfAlreadyConfigured();
 
-    System.err.println("addSelectedObjectColumn: " + columnName);
-
-    selectedColumnNames.add(columnName);
-    allColumnNames.add(columnName);
-    numberOfColumns++;
-  } // addSelectedIndividualColumn
-
-  public void addSelectedDatatypeColumn(String columnName) throws ResultException
-  {
-    throwExceptionIfAlreadyConfigured();
-    
-    System.err.println("addSelectedDatatypeColumn: " + columnName);
-
-    selectedColumnNames.add(columnName);
-    datatypeColumnNames.add(columnName);
+    selectedColumnIndexes.add(new Integer(numberOfColumns));
     allColumnNames.add(columnName);
     numberOfColumns++;
   } // addSelectedIndividualColumn
@@ -151,11 +138,8 @@ public class ResultImpl implements ResultGenerator, Result
 
     checkAggregateFunctionName(aggregateFunctionName);
 
-    System.err.println("addAggregateColumn: " + aggregateColumnName + ", function = " + aggregateFunctionName);
-    
-    aggregateColumns.put(aggregateColumnName, aggregateFunctionName);
+    aggregateColumnIndexes.put(new Integer(numberOfColumns), aggregateFunctionName);
     allColumnNames.add(aggregateColumnName);
-    datatypeColumnNames.add(aggregateColumnName); // Can only aggregate over datatype values.
     numberOfColumns++;
   } // addAggregateColumn
   
@@ -163,34 +147,32 @@ public class ResultImpl implements ResultGenerator, Result
   {
     throwExceptionIfAlreadyConfigured();
 
-    System.err.println("addOrderByColumn: " + orderByColumnName);
-    
-    orderByColumnNames.add(orderByColumnName);
+    int index = allColumnNames.indexOf(orderByColumnName);
+
+    if (index < 0) throw new ResultException("Ordered column '" + orderByColumnName + "' must first be selected");
+
+    orderByColumnIndexes.add(new Integer(index));
   } // addOrderByColumn
     
   public void setColumnDisplayName(String columnName) throws ResultException
   {
-    System.err.println("setColumnDisplayName: " + columnName);
-
     displayColumnNames.add(columnName);
   } // setColumnDisplayName
 
   public void configured() throws ResultException
   {
-    Set<String> aggregateColumnNames = aggregateColumns.keySet();
-
     throwExceptionIfAlreadyConfigured();
 
-    if (containsOneOf(selectedColumnNames, aggregateColumnNames))
+    if (containsOneOf(selectedColumnIndexes, aggregateColumnIndexes.keySet()))
       throw new InvalidQueryException("Aggregate columns cannot also be selected columns");
-    if (!selectedColumnNames.containsAll(orderByColumnNames))
+    if (!selectedColumnIndexes.containsAll(orderByColumnIndexes))
       throw new InvalidQueryException("All ordered columns must be selected");
-    if (containsOneOf(aggregateColumnNames, orderByColumnNames))
+    if (containsOneOf(aggregateColumnIndexes.keySet(), orderByColumnIndexes))
       throw new InvalidQueryException("Ordered columns cannot be aggregate columns");
     	    
-    rowComparator = new RowComparator(allColumnNames, orderByColumnNames, isOrdered && !isDescending);
+    rowComparator = new RowComparator(allColumnNames, orderByColumnIndexes, isOrdered && !isDescending);
 
-    hasAggregates = !aggregateColumnNames.isEmpty();
+    hasAggregates = !aggregateColumnIndexes.isEmpty();
 
     isConfigured = true;
   } // configured
@@ -230,7 +212,7 @@ public class ResultImpl implements ResultGenerator, Result
   {
     throwExceptionIfNotConfigured(); throwExceptionIfAlreadyPrepared(); throwExceptionIfRowOpen();
 
-    rowDataIndex = 0;
+    rowDataColumnIndex = 0;
     rowData = new ArrayList<ResultValue>();
 
     isRowOpen = true;
@@ -240,18 +222,17 @@ public class ResultImpl implements ResultGenerator, Result
   {
     throwExceptionIfNotConfigured(); throwExceptionIfAlreadyPrepared(); throwExceptionIfRowNotOpen();
 
-    if (rowDataIndex == getNumberOfColumns()) throw new ResultStateException("Attempt to add data beyond the end of a row");
+    if (rowDataColumnIndex == getNumberOfColumns()) throw new ResultStateException("Attempt to add data beyond the end of a row");
 
-    System.err.println("addRowData: rowDataIndex: " + rowDataIndex + ", value: " + value);
-
-    if (aggregateColumns.keySet().contains(allColumnNames.get(rowDataIndex))) 
-      if (!isNumericValue(value))
-        throw new ResultException("Attempt to add non numeric value '" + value + "' to aggregate column '" + allColumnNames.get(rowDataIndex) + "'.");
-
+    if (aggregateColumnIndexes.containsKey(new Integer(rowDataColumnIndex)) && 
+        (!aggregateColumnIndexes.get(new Integer(rowDataColumnIndex)).equals(CountAggregateFunction)) && 
+        (!isNumericValue(value)))
+        throw new ResultException("Attempt to add non numeric value '" + value + "' to min, max, sum, or avg aggregate column '" + 
+                                  allColumnNames.get(rowDataColumnIndex) + "'");
     rowData.add(value);
-    rowDataIndex++;
+    rowDataColumnIndex++;
 
-    if (rowDataIndex == getNumberOfColumns()) closeRow();
+    if (rowDataColumnIndex == getNumberOfColumns()) closeRow();
   } // addData    
 
   public void closeRow() throws ResultException
@@ -260,8 +241,6 @@ public class ResultImpl implements ResultGenerator, Result
 
     rows.add(rowData);
 
-    System.err.println("close row: size: " + rows.size());
-
     isRowOpen = false;
   } // closeRow
 
@@ -269,14 +248,13 @@ public class ResultImpl implements ResultGenerator, Result
   {
     throwExceptionIfNotConfigured(); throwExceptionIfAlreadyPrepared(); throwExceptionIfRowOpen();
 
+    isPrepared = true;
     if (getNumberOfRows() > 0) rowIndex = 0;
 
-    if (!orderByColumnNames.isEmpty()) Collections.sort(rows, rowComparator);
+    if (!orderByColumnIndexes.isEmpty()) Collections.sort(rows, rowComparator);
 
-    if (hasAggregates) rows = aggregate(rows, allColumnNames, aggregateColumns); // Aggregation implies killing distinct rows.
+    if (hasAggregates) rows = aggregate(rows, allColumnNames, aggregateColumnIndexes); // Aggregation implies killing distinct rows.
     else if (isDistinct) rows = distinct(rows);
-
-    isPrepared = true;
   } // prepared
 
   // Methods used to retrieve data after result has been prepared.
@@ -360,7 +338,7 @@ public class ResultImpl implements ResultGenerator, Result
   public ObjectValue getObjectValue(String columnName) throws ResultException
   {
     if (!hasObjectValue(columnName)) 
-      throw new InvalidColumnTypeException("Expecting ObjectValue type for column '" + columnName + "'.");
+      throw new InvalidColumnTypeException("Expecting ObjectValue type for column '" + columnName + "'");
     return (ObjectValue)getValue(columnName);
   } // getObjectValue
   
@@ -372,14 +350,14 @@ public class ResultImpl implements ResultGenerator, Result
   public DatatypeValue getDatatypeValue(String columnName) throws ResultException
   {
     if (!hasDatatypeValue(columnName)) 
-      throw new InvalidColumnTypeException("Expecting DatatypeValue type for column '" + columnName + "'.");
+      throw new InvalidColumnTypeException("Expecting DatatypeValue type for column '" + columnName + "'");
     return (DatatypeValue)getValue(columnName);
   } // getDatatypeValue
 
   public ClassValue getClassValue(String columnName) throws ResultException
   {
     if (!hasClassValue(columnName)) 
-      throw new InvalidColumnTypeException("Expecting ClassValue type for column '" + columnName + "'.");
+      throw new InvalidColumnTypeException("Expecting ClassValue type for column '" + columnName + "'");
     return (ClassValue)getValue(columnName);
   } // getClassValue
 
@@ -396,7 +374,7 @@ public class ResultImpl implements ResultGenerator, Result
   public PropertyValue getPropertyValue(String columnName) throws ResultException
   {
     if (!hasPropertyValue(columnName)) 
-      throw new InvalidColumnTypeException("Expecting PropertyValue type for column '" + columnName + "'.");
+      throw new InvalidColumnTypeException("Expecting PropertyValue type for column '" + columnName + "'");
     return (PropertyValue)getValue(columnName);
   } // getPropertyValue
   
@@ -407,43 +385,63 @@ public class ResultImpl implements ResultGenerator, Result
   
   public boolean hasObjectValue(String columnName) throws ResultException
   {
-    return !datatypeColumnNames.contains(columnName);
+    return getValue(columnName) instanceof ObjectValue;
   } // hasObjectValue
   
   public boolean hasObjectValue(int columnIndex) throws ResultException
   {
-    return !datatypeColumnNames.contains(getColumnName(columnIndex));
+    return getValue(columnIndex) instanceof ObjectValue;
   } // hasObjectValue
   
   public boolean hasDatatypeValue(String columnName) throws ResultException
   {
-    return datatypeColumnNames.contains(columnName);
+    return getValue(columnName) instanceof DatatypeValue;
   } // hasDatatypeValue
   
   public boolean hasDatatypeValue(int columnIndex) throws ResultException
   {
-    return datatypeColumnNames.contains(getColumnName(columnIndex));
+    return getValue(columnIndex) instanceof DatatypeValue;
   } // hasDatatypeValue
 
   public boolean hasClassValue(String columnName) throws ResultException
   {
-    return false; // TODO
+    return getValue(columnName) instanceof ClassValue;
   } // hasClassValue
   
   public boolean hasClassValue(int columnIndex) throws ResultException
   {
-    return false; // TODO
+    return getValue(columnIndex) instanceof ClassValue;
   } // hasClassValue
 
   public boolean hasPropertyValue(String columnName) throws ResultException
   {
-    return false; // TODO
+    return getValue(columnName) instanceof PropertyValue;
   } // hasPropertyValue
   
   public boolean hasPropertyValue(int columnIndex) throws ResultException
   {
-    return false; // TODO
+    return getValue(columnIndex) instanceof PropertyValue;
   } // hasPropertyValue
+
+  public String toString()
+  {
+    String result = "";
+
+    result += "[isConfigured: " + isConfigured + ", isPrepared: " + isPrepared + ", isRowOpen: " + isRowOpen +
+              ", isOrdered: " + isOrdered + ", isDescending " + isDescending + ", isDistinct: " + isDistinct + 
+              ", hasAggregates: " + hasAggregates + "]\n";
+
+    for (List<ResultValue> row : rows) {
+      for (ResultValue value : row) {
+        result += "" + value + " ";
+      } // for
+      result += "\n";
+    } // for
+
+    result += "--------------------------------------------------------------------------------\n";
+      
+    return result;
+  } // toString      
   
   // Phase verification exception throwing methods.
   
@@ -464,7 +462,7 @@ public class ResultImpl implements ResultGenerator, Result
 
   private void throwExceptionIfAlreadyPrepared() throws ResultException
   {
-    if (isPrepared()) throw new ResultStateException("Attempt to add data to prepared result");
+    if (isPrepared()) throw new ResultStateException("Attempt to modify prepared result");
   } // throwExceptionIfAlreadyConfigured
 
   private void checkColumnName(String columnName) throws InvalidColumnNameException
@@ -515,26 +513,38 @@ public class ResultImpl implements ResultGenerator, Result
     return false;
   } // containsOneOf
 
-  private void checkIsObjectValue(String columnName) throws ResultException
-  {
-    if (!hasObjectValue(columnName)) throw new InvalidColumnTypeException("Expecting ObjectValue type for column '" + columnName + "'.");
-  } // checkIsObjectValue
-
-  private void checkIsObjectValue(int columnIndex) throws ResultException
-  {
-    checkIsObjectValue(getColumnName(columnIndex)); // getColumnName will throw InvalidColumnIndexException if appropriate.
-  } // checkIsObjectValue
-
   private void checkIsDatatypeValue(String columnName) throws ResultException
   {
     if (!hasDatatypeValue(columnName)) 
-      throw new InvalidColumnTypeException("Expecting DatatypeValue type for column '" + columnName + "'.");
+      throw new InvalidColumnTypeException("Expecting DatatypeValue type for column '" + columnName + "'");
   } // checkIsDatatypeValue
 
   private void checkIsDatatypeValue(int columnIndex) throws ResultException
   {
     checkIsDatatypeValue(getColumnName(columnIndex)); 
   } // checkIsDatatypeValue
+
+  private void checkIsObjectValue(String columnName) throws ResultException
+  {
+    if (!hasObjectValue(columnName)) 
+      throw new InvalidColumnTypeException("Expecting ObjectValue type for column '" + columnName + "'");
+  } // checkIsObjectValue
+
+  private void checkIsObjectValue(int columnIndex) throws ResultException
+  {
+    checkIsObjectValue(getColumnName(columnIndex)); 
+  } // checkIsObjectValue
+
+  private void checkIsClassValue(String columnName) throws ResultException
+  {
+    if (!hasClassValue(columnName)) 
+      throw new InvalidColumnTypeException("Expecting ClassValue type for column '" + columnName + "'");
+  } // checkIsClassValue
+
+  private void checkIsClassValue(int columnIndex) throws ResultException
+  {
+    checkIsClassValue(getColumnName(columnIndex)); 
+  } // checkIsClassValue
 
   private boolean isNumericValue(ResultValue value)
   {
@@ -551,38 +561,40 @@ public class ResultImpl implements ResultGenerator, Result
     return result;
   } // killDuplicateRows
 
-  private List<List<ResultValue>> aggregate(List<List<ResultValue>> rows, List<String> allColumnNames, HashMap<String, String> aggregateColumns)
+  // TODO: not very efficient
+  private List<List<ResultValue>> aggregate(List<List<ResultValue>> rows, List<String> allColumnNames, 
+                                            HashMap<Integer, String> aggregateColumnIndexes)
     throws ResultException
   {
     List<List<ResultValue>> result = new ArrayList<List<ResultValue>>();
-    RowComparator rowComparator = new RowComparator(allColumnNames, selectedColumnNames, true); 
-    // Key is index of aggregated row in result, value is hash map of aggregate column name to list of original values.
-    HashMap<Integer, HashMap<String, List<DatatypeValue>>> aggregatesMap = new HashMap<Integer, HashMap<String, List<DatatypeValue>>>();
-    HashMap<String, List<DatatypeValue>> aggregateRowMap; // Map of column names to value lists; used to accuumulate values for aggregation.
-    List<DatatypeValue> values;
-    DatatypeValue value;
+    RowComparator rowComparator = new RowComparator(allColumnNames, selectedColumnIndexes, true); 
+    // Key is index of aggregated row in result, value is hash map of aggregate column index to list of original values.
+    HashMap<Integer, HashMap<Integer, List<ResultValue>>> aggregatesMap = new HashMap<Integer, HashMap<Integer, List<ResultValue>>>();
+    HashMap<Integer, List<ResultValue>> aggregateRowMap; // Map of column indexes to value lists; used to accumulate values for aggregation.
+    List<ResultValue> values;
+    ResultValue value;
     int rowIndex;
 
     for (List<ResultValue> row : rows) {
-      rowIndex = Collections.binarySearch(result, row, rowComparator);
-      if (rowIndex < 0) { // Row with same values for non aggregated columns not yet present in result.
-        aggregateRowMap = new HashMap<String, List<DatatypeValue>>();
+      rowIndex = Collections.binarySearch(result, row, rowComparator); // Find a row with the same values for non aggregated columns.
 
-        for (String aggregateColumnName : aggregateColumns.keySet()) {
-          values = new ArrayList<DatatypeValue>();
-          value = (DatatypeValue)row.get(allColumnNames.indexOf(aggregateColumnName)); // We will have checked earlier to ensure its type.
+      if (rowIndex < 0) { // Row with same values for non aggregated columns not yet present in result.
+        aggregateRowMap = new HashMap<Integer, List<ResultValue>>();
+
+        for (Integer aggregateColumnIndex : aggregateColumnIndexes.keySet()) {
+          values = new ArrayList<ResultValue>();
+          value = row.get(aggregateColumnIndex.intValue());
           values.add(value);
-          aggregateRowMap.put(aggregateColumnName, values);        
+          aggregateRowMap.put(aggregateColumnIndex, values);
         } // for
         aggregatesMap.put(new Integer(result.size()), aggregateRowMap);
         result.add(row);
-        
+        Collections.sort(result, rowComparator); // binary search is expecting a sorted list
       } else { // We found a row that has the same values for the non aggregated columns.
         aggregateRowMap = aggregatesMap.get(new Integer(rowIndex));
-        
-        for (String aggregateColumnName : aggregateColumns.keySet()) {
-          values = aggregateRowMap.get(aggregateColumnName);
-          value = (DatatypeValue)row.get(allColumnNames.indexOf(aggregateColumnName)); // We will have checked earlier to ensure its type.
+        for (Integer aggregateColumnIndex : aggregateColumnIndexes.keySet()) {
+          values = aggregateRowMap.get(aggregateColumnIndex);
+          value = row.get(aggregateColumnIndex); 
           values.add(value);
         } // for
       } // if
@@ -592,43 +604,123 @@ public class ResultImpl implements ResultGenerator, Result
     for (List<ResultValue> row : result) {
       aggregateRowMap = aggregatesMap.get(new Integer(rowIndex));
 
-      for (String aggregateColumnName : aggregateColumns.keySet()) {
-        String aggregateFunctionName = aggregateColumns.get(aggregateColumnName);
-        values = aggregateRowMap.get(aggregateColumnName);
+      for (Integer aggregateColumnIndex : aggregateColumnIndexes.keySet()) {
+        String aggregateFunctionName = aggregateColumnIndexes.get(aggregateColumnIndex);
+        values = aggregateRowMap.get(aggregateColumnIndex);
 
+        // We have checked in addRowData that only numeric data are added for sum, max, min, and avg
         if (aggregateFunctionName.equalsIgnoreCase(MinAggregateFunction)) value = min(values);
         else if (aggregateFunctionName.equalsIgnoreCase(MaxAggregateFunction)) value = max(values);
         else if (aggregateFunctionName.equalsIgnoreCase(SumAggregateFunction)) value = sum(values);
         else if (aggregateFunctionName.equalsIgnoreCase(AvgAggregateFunction)) value = avg(values);
         else if (aggregateFunctionName.equalsIgnoreCase(CountAggregateFunction)) value = count(values);
-        else throw new InvalidAggregateFunctionNameException("Invalid aggregate function '" + aggregateFunctionName + "'.");
+        else throw new InvalidAggregateFunctionNameException("Invalid aggregate function '" + aggregateFunctionName + "'");
+
+        row.set(aggregateColumnIndex.intValue(), value);
       } // for
       rowIndex++;
     } // for
+
     return result;
   } // distinct
 
-  private DatatypeValue min(List<DatatypeValue> values) throws ResultException
+  private DatatypeValue min(List<ResultValue> values) throws ResultException
   {
-    return new LiteralInfo(-1); // TODO
+    DatatypeValue result = null, value;
+
+    if (values.isEmpty()) throw new ResultException("Empty aggregate list for '" + MinAggregateFunction + "'");
+
+    for (ResultValue resultValue : values) {
+
+      if (!(resultValue instanceof DatatypeValue))
+        throw new ResultException("Attempt to use '" + MinAggregateFunction + "' aggregate on non datatype '" + resultValue + "'");
+
+      value = (DatatypeValue)resultValue;
+
+      if (!value.isNumeric()) 
+        throw new ResultException("Attempt to use '" + MinAggregateFunction + "' aggregate on non numeric datatype '" + value + "'");
+
+      if (result == null) result = value;
+      else if (value.compareTo(result) < 0) result = value;
+    } // for
+
+    return result;
   } // min
 
-  private DatatypeValue max(List<DatatypeValue> values) throws ResultException
+  private DatatypeValue max(List<ResultValue> values) throws ResultException
   {
-    return new LiteralInfo(-1); // TODO
+    DatatypeValue result = null, value;
+
+    if (values.isEmpty()) throw new ResultException("Empty aggregate list for '" + MaxAggregateFunction + "'");
+
+    for (ResultValue resultValue : values) {
+
+      if (!(resultValue instanceof DatatypeValue))
+        throw new ResultException("Attempt to use '" + MaxAggregateFunction + "' aggregate on non datatype '" + resultValue + "'");
+
+      value = (DatatypeValue)resultValue;
+
+      if (!value.isNumeric()) 
+        throw new ResultException("Attempt to use '" + MaxAggregateFunction + "' aggregate on non numeric datatype '" + value + "'");
+
+      if (result == null) result = value;
+      else if (value.compareTo(result) > 0) result = value;
+    } // for
+
+    return result;
   } // max
 
-  private DatatypeValue sum(List<DatatypeValue> values) throws ResultException
+  // We return a BigDecimal object for the moment.
+  private DatatypeValue sum(List<ResultValue> values) throws ResultException
   {
-    return new LiteralInfo(-1); // TODO
+    BigDecimal sum = new BigDecimal(0), value;
+
+    if (values.isEmpty()) throw new ResultException("Empty aggregate list for '" + SumAggregateFunction + "'");
+
+    for (ResultValue resultValue : values) {
+
+      if (!(resultValue instanceof DatatypeValue))
+        throw new ResultException("Attempt to use '" + SumAggregateFunction + "' aggregate on non datatype '" + resultValue + "'");
+
+      try {
+        value = new BigDecimal(((DatatypeValue)resultValue).toString());
+      } catch (NumberFormatException e) {
+        throw new ResultException("Attempt to use '" + SumAggregateFunction + "' aggregate on non numeric datatype '" + resultValue + "'");
+      } // try
+
+      sum = sum.add(value);
+    } // for
+
+    return new LiteralInfo(sum);
   } // sum
 
-  private DatatypeValue avg(List<DatatypeValue> values) throws ResultException
+  // We return a BigDecimal object for the moment.
+  private DatatypeValue avg(List<ResultValue> values) throws ResultException
   {
-    return new LiteralInfo(-1); // TODO
-  } // avg
+    BigDecimal sum = new BigDecimal(0), value;
+    int count = 0;
 
-  private DatatypeValue count(List<DatatypeValue> values) throws ResultException
+    if (values.isEmpty()) throw new ResultException("Empty aggregate list for '" + AvgAggregateFunction + "'");
+
+    for (ResultValue resultValue : values) {
+
+      if (!(resultValue instanceof DatatypeValue))
+        throw new ResultException("Attempt to use '" + AvgAggregateFunction + "' aggregate on non datatype '" + resultValue + "'");
+
+      try {
+        value = new BigDecimal(((DatatypeValue)resultValue).toString());
+      } catch (NumberFormatException e) {
+        throw new ResultException("Attempt to use '" + AvgAggregateFunction + "' aggregate on non numeric datatype '" + resultValue + "'");
+      } // try
+
+      count++;
+      sum = sum.add(value);
+    } // for
+
+    return new LiteralInfo(sum.divide(new BigDecimal(count), BigDecimal.ROUND_DOWN));
+  } // sum
+
+  private DatatypeValue count(List<ResultValue> values) throws ResultException
   {
     return new LiteralInfo(values.size());
   } // count
@@ -639,15 +731,17 @@ public class ResultImpl implements ResultGenerator, Result
     private List<Integer> orderByColumnIndexes;
     private boolean ascending;
     
-    public RowComparator(List<String> allColumnNames, List<String> orderByColumnNames, boolean ascending)
+    public RowComparator(List<String> allColumnNames, List<Integer> orderByColumnIndexes, boolean ascending)
     {
       this.ascending = ascending;
-      for (String columnName : orderByColumnNames) orderByColumnIndexes.add(allColumnNames.indexOf(columnName));
+      this.orderByColumnIndexes = orderByColumnIndexes;
     } // RowComparator
     
     public RowComparator(List<String> allColumnNames, boolean ascending)
     {
       this.ascending = ascending;
+      orderByColumnIndexes = new ArrayList<Integer>();
+
       for (String columnName : allColumnNames) orderByColumnIndexes.add(allColumnNames.indexOf(columnName));
     } // RowComparator
 
@@ -657,6 +751,7 @@ public class ResultImpl implements ResultGenerator, Result
         int result = ((Comparable)row1.get(columnIndex)).compareTo(((Comparable)row2.get(columnIndex)));
         if (result != 0) if (ascending) return result; else return -result;
       } // for
+
       return 0;
     } // compare
   } // RowComparator

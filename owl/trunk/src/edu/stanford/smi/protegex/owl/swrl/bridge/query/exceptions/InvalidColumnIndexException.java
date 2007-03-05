@@ -1,5 +1,5 @@
 
-package edu.stanford.smi.protegex.owl.swrl.bridge.exceptions;
+package edu.stanford.smi.protegex.owl.swrl.bridge.query.exceptions;
 
 public class InvalidColumnIndexException extends ResultException
 {

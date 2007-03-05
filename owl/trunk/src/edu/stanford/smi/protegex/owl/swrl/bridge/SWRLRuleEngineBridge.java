@@ -5,14 +5,13 @@ package edu.stanford.smi.protegex.owl.swrl.bridge;
 
 import edu.stanford.smi.protegex.owl.model.*;
 import edu.stanford.smi.protegex.owl.swrl.model.*;
+import edu.stanford.smi.protegex.owl.swrl.bridge.query.*;
+import edu.stanford.smi.protegex.owl.swrl.bridge.query.exceptions.ResultException;
 import edu.stanford.smi.protegex.owl.swrl.util.*;
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.*;
 import edu.stanford.smi.protegex.owl.swrl.bridge.builtins.*;
 
 import java.util.*;
-import java.lang.reflect.*;
-import java.net.URLClassLoader;
-import java.net.URL;
 
 /**
  ** The SWRL Rule Engine Bridge provides a mechanism to incorporate rule engines into Protege-OWL to execute SWRL rules. <p>
@@ -33,10 +32,6 @@ public abstract class SWRLRuleEngineBridge
     throws BuiltInException;
 
   public abstract void runRuleEngine() throws SWRLRuleEngineBridgeException;
-
-  // Private state.
-  private static String BuiltInLibraryPackageBaseName = "edu.stanford.smi.protegex.owl.swrl.bridge.builtins.";
-  private static String BuiltInLibraryInitializeMethodName = "initialize";
 
   protected OWLModel owlModel; // Holds the OWL model that is associated with this bridge.
 
@@ -63,9 +58,6 @@ public abstract class SWRLRuleEngineBridge
 
   // Info objects representing created individuals.
   private HashMap<String, IndividualInfo> createdIndividuals;
-
-  // Holds class instances implementing built-ins.
-  private HashMap<String, SWRLBuiltInLibrary> builtInLibraryClassInstances;
 
   // Name of rule currently invoking a built-in method. Valid only when a built-in currently being invoked. 
   private String currentBuiltInInvokingRuleName = "";
@@ -168,7 +160,7 @@ public abstract class SWRLRuleEngineBridge
 
     resetRuleEngine();
 
-    invokeAllBuiltInLibrariesInitializeMethod();
+    clearQueryResults();
   } // resetBridge
 
   /**
@@ -179,6 +171,22 @@ public abstract class SWRLRuleEngineBridge
     initializeRuleEngine();
     clearExportedAndAssertedKnowledge();
   } // resetRuleEngine
+
+  /**
+   **  Get the results from a rule containing query built-ins.
+   */
+  public Result getQueryResult(String ruleName) throws ResultException
+  {
+    QueryLibrary queryLibrary = null;
+
+    try {
+      queryLibrary = (QueryLibrary)BuiltInLibraryManager.getBuiltInLibrary(QueryNames.QueryNamespace);
+    } catch (InvalidBuiltInLibraryNameException e) {
+      throw new ResultException("Query subsystem not activated because rules do not contain query built-ins.");
+    } // try
+
+    return queryLibrary.getQueryResult(ruleName);
+  } // getQueryResult
 
   /**
    ** Get the OWL model associated with this bridge.
@@ -234,56 +242,15 @@ public abstract class SWRLRuleEngineBridge
    */
   protected boolean invokeSWRLBuiltIn(String ruleName, String builtInName, int builtInIndex, List<Argument> arguments) throws BuiltInException
   {
-    SWRLBuiltInLibrary swrlBuiltInLibrary = null;
-    Class swrlBuiltInLibraryClass = null;
-    String namespaceName = "", builtInMethodName = "", className;
     boolean hasUnboundArguments = hasUnboundArguments(arguments);
-    Boolean result = false;
-    Method method;
-    int colonIndex;
+    boolean result;
 
     if (!isBuiltIn(builtInName)) throw new InvalidBuiltInNameException(ruleName, builtInName);
 
     currentBuiltInInvokingRuleName = ruleName; currentBuiltInInvokingIndex = builtInIndex;
-    
-    colonIndex = builtInName.indexOf(':');
-    if (colonIndex != -1) {
-      namespaceName = builtInName.substring(0, colonIndex);
-      builtInMethodName = builtInName.substring(colonIndex + 1, builtInName.length());
-      className = BuiltInLibraryPackageBaseName + namespaceName + ".SWRLBuiltInLibraryImpl";
-    } else { // No namespace - try the base built-ins package. Ordinarily, built-ins should not be located here.
-      namespaceName = "";
-      builtInMethodName = builtInName;
-      className = BuiltInLibraryPackageBaseName + "SWRLBuiltInLibraryImpl";
-    } // if
-    
-    if (builtInLibraryClassInstances.containsKey(namespaceName)) { // Find the implementation
-      swrlBuiltInLibrary = (SWRLBuiltInLibrary)builtInLibraryClassInstances.get(namespaceName);
-    } else { // Implementation class not loaded - load it, call the initialize method, and cache it.
-      swrlBuiltInLibrary = loadSWRLBuiltInLibraryImpl(ruleName, namespaceName, className);
-      builtInLibraryClassInstances.put(namespaceName, swrlBuiltInLibrary);
-      invokeBuiltInLibraryInitializeMethod(swrlBuiltInLibrary);
-    } // if
 
-    method = resolveBuiltInMethod(ruleName, namespaceName, builtInMethodName, swrlBuiltInLibrary); // Find the method.
-    checkBuiltInMethodSignature(ruleName, namespaceName, builtInMethodName, method); // Check signature of method.
+    result = BuiltInLibraryManager.invokeSWRLBuiltIn(this, ruleName, builtInName, builtInIndex, arguments);
     
-    try { // Invoke the built-in method.
-      result = (Boolean)method.invoke(swrlBuiltInLibrary, new Object[] { arguments });
-    } catch (InvocationTargetException e) { // The built-in implementation threw an exception.
-      Throwable targetException = e.getTargetException();
-      if (targetException instanceof BuiltInException) { // A BuiltInException was thrown by the built-in.
-        throw new BuiltInException("Exception thrown by built-in '" + builtInName + "' in rule '" + ruleName + "': " 
-                                   + targetException.getMessage(), targetException);
-      } else if (targetException instanceof RuntimeException) { // A runtime exception was thrown by the built-in.
-        throw new BuiltInMethodRuntimeException(ruleName, builtInName, targetException.getMessage(), targetException);
-      } else throw new BuiltInException("Unknown exception thrown by built-in method '" + builtInName + "' in rule '" + 
-                                        ruleName + "'. Exception: " + e.toString(), e);
-    } catch (Exception e) { // Should be one of IllegalAccessException or IllegalArgumentException
-      throw new BuiltInException("Internal bridge exception when invoking built-in method '" + builtInName + "' in rule '" + 
-                                 ruleName + "'. Exception: " + e.getMessage(), e);        
-    } // try
-
     if (result && hasUnboundArguments) {
       checkForUnboundArgument(ruleName, builtInName, arguments); // Ensure it did not leave any arguments unbound if it evaluated to true.
       generateBuiltInBindings(ruleName, builtInName, builtInIndex, arguments); // Inform rule engine of results.
@@ -291,7 +258,7 @@ public abstract class SWRLRuleEngineBridge
 
     currentBuiltInInvokingRuleName = ""; currentBuiltInInvokingIndex = -1;
 
-    return result.booleanValue();
+    return result;
   } // invokeSWRLBuiltIn
   
   /**
@@ -324,72 +291,6 @@ public abstract class SWRLRuleEngineBridge
       if (individual == null) throw new SWRLRuleEngineBridgeException("Cannot create OWL individual '" + individualName + "'.");
     } // for
   } // createCreatedIndividuals
-
-  /**
-   ** Invoke the initialize() method for each registered built-in library.
-   */
-  private void invokeBuiltInLibraryInitializeMethod(SWRLBuiltInLibrary swrlBuiltInLibrary) throws BuiltInException
-  {
-    try {
-      Method method = 
-		swrlBuiltInLibrary.getClass().getMethod(BuiltInLibraryInitializeMethodName, new Class[] {SWRLRuleEngineBridge.class});
-      method.invoke(swrlBuiltInLibrary, new Object[] {this});
-    } catch (InvocationTargetException e) {
-      Throwable targetException = e.getTargetException();
-      if (targetException instanceof RuntimeException)
-        throw new BuiltInException("Error inside of initialize method in built-in library '" +
-                                   swrlBuiltInLibrary.getClass().getName() + "': " + targetException.getMessage() + 
-                                   ". Library may now be in an inconsistent state.", targetException);
-      else 
-        throw new BuiltInException("Internal bridge exception when invoking initialize method for built-in library '" +
-                                   swrlBuiltInLibrary.getClass().getName() + "': " + targetException.getMessage(), targetException);
-    } catch (NoSuchMethodException e) {
-      throw new BuiltInException("No initialize method defined in built-in library '" + swrlBuiltInLibrary.getClass().getName());
-    } catch (IllegalAccessException e) {
-      throw new BuiltInException("No access to initialize method defined in built-in library '" + swrlBuiltInLibrary.getClass().getName());
-    } // try
-  } // invokeBuiltInLibraryInitializeMethod
-  
-  private void invokeAllBuiltInLibrariesInitializeMethod() throws SWRLRuleEngineBridgeException
-  {
-    for (SWRLBuiltInLibrary library : builtInLibraryClassInstances.values()) invokeBuiltInLibraryInitializeMethod(library);
-  } // invokeAllBuiltInMethodsInitializeMethod
-
-  private Method resolveBuiltInMethod(String ruleName, String namespaceName, String builtInMethodName, SWRLBuiltInLibrary swrlBuiltInLibrary)
-    throws UnresolvedBuiltInMethodException
-  {
-    Method method;
-
-    try { 
-      method = swrlBuiltInLibrary.getClass().getMethod(builtInMethodName, new Class[] { List.class });
-    } catch (Exception e) {
-      throw new UnresolvedBuiltInMethodException(ruleName, namespaceName, builtInMethodName, e.getMessage());
-    } // try
-
-    return method;
-  } // resolveBuiltInMethod
-
-  private SWRLBuiltInLibrary loadSWRLBuiltInLibraryImpl(String ruleName, String namespaceName, String className) 
-    throws UnresolvedBuiltInClassException, IncompatibleBuiltInClassException
-  {
-    Class swrlBuiltInLibraryClass;
-    SWRLBuiltInLibrary swrlBuiltInLibrary;
-
-    try {
-      swrlBuiltInLibraryClass = Class.forName(className);
-    } catch (Exception e) {
-      throw new UnresolvedBuiltInClassException(ruleName, namespaceName, e.getMessage());
-    } // try
-
-    checkBuiltInMethodsClassCompatibility(ruleName, namespaceName, swrlBuiltInLibraryClass); // Check implementation class for compatibility.
-
-    try {
-      swrlBuiltInLibrary = (SWRLBuiltInLibrary)swrlBuiltInLibraryClass.newInstance();
-    } catch (Exception e) {
-      throw new UnresolvedBuiltInClassException(ruleName, namespaceName, e.getMessage());
-    } // try
-    return swrlBuiltInLibrary;
-  } // loadSWRLBuiltInLibraryImpl
 
   private void importSWRLRules() throws SWRLRuleEngineBridgeException
   {
@@ -512,7 +413,7 @@ public abstract class SWRLRuleEngineBridge
   {
     OWLProperty property = owlModel.getOWLProperty(propertyName);
     if (property == null) throw new InvalidPropertyNameException(propertyName);
-    
+
     if (!importedPropertyNames.contains(propertyName)) {
       List<PropertyInfo> propertyInfoList = PropertyInfo.buildPropertyInfoList(owlModel, propertyName);
       importedProperties.addAll(propertyInfoList);
@@ -541,8 +442,8 @@ public abstract class SWRLRuleEngineBridge
     } // if
   } // importOWLIndividual
 
-  // We only import owl:SameAs, owl:differentFrom, and owl:AllDifferent, owl:equivalentProperty. owl:equivalentClass resrictions at the
-  // moment. We support owl:equivalentProperty and owl:equivalentClass restrictions indirectly.
+  // We only import owl:SameAs, owl:differentFrom, and owl:AllDifferent, owl:equivalentProperty, owl:equivalentClass resrictions at the
+  // moment. We support owl:equivalentProperty and owl:equivalentClass restrictions indirectly through the IndividualInfo class.
   private void importOWLRestrictions() throws SWRLRuleEngineBridgeException
   {
     importOWLSameAsRestrictions();
@@ -721,37 +622,6 @@ public abstract class SWRLRuleEngineBridge
     return property.isObjectProperty();
   } // isObjectProperty
 
-  private void checkBuiltInMethodSignature(String ruleName, String namespaceName, String builtInMethodName, Method method) 
-      throws IncompatibleBuiltInMethodException
-  {
-    Class exceptionTypes[];
-    Type parameterTypes[];
-
-    if (method.getReturnType() != Boolean.TYPE) 
-      throw new IncompatibleBuiltInMethodException(ruleName, namespaceName, builtInMethodName, "Method does not return a boolean.");
-
-    exceptionTypes = method.getExceptionTypes();
-
-    if ((exceptionTypes.length != 1) || (exceptionTypes[0] != BuiltInException.class))
-      throw new IncompatibleBuiltInMethodException(ruleName, namespaceName, builtInMethodName, 
-                                                   "Method must throw a single exception of type BuiltInException");
-
-    parameterTypes = method.getGenericParameterTypes();
-
-    if ((parameterTypes.length != 1) || (!(parameterTypes[0] instanceof ParameterizedType)) || 
-        (((ParameterizedType)parameterTypes[0]).getRawType() != List.class) ||
-        (((ParameterizedType)parameterTypes[0]).getActualTypeArguments().length != 1) ||
-        (((ParameterizedType)parameterTypes[0]).getActualTypeArguments()[0] != Argument.class))
-      throw new IncompatibleBuiltInMethodException(ruleName, namespaceName, builtInMethodName, 
-                                                   "Method must accept a single List of Argument objects");
-  } // checkBuiltInMethodSignature
-
-  private void checkBuiltInMethodsClassCompatibility(String ruleName, String namespaceName, Class cls) throws IncompatibleBuiltInClassException
-  {
-    if (!SWRLBuiltInLibrary.class.isAssignableFrom(cls)) 
-      throw new IncompatibleBuiltInClassException(ruleName, namespaceName, cls.getName(), "Class does not implement SWRLBuiltInLibrary.");
-  } // checkBuiltInMethodsClassCompatibility
-
   private void checkForUnboundArgument(String ruleName, String builtInName, List<Argument> arguments) throws BuiltInException
   {
     int argumentNumber = 0;
@@ -858,13 +728,24 @@ public abstract class SWRLRuleEngineBridge
     assertedProperties = new HashSet<PropertyInfo>(); 
 
     createdIndividuals = new HashMap<String, IndividualInfo>();
-
-    builtInLibraryClassInstances = new HashMap<String, SWRLBuiltInLibrary>();
   } // initialize
 
   private boolean hasUnboundArguments(List<Argument> arguments) 
   {
     return arguments.contains(null);
   } // hasUnboundArguments
+
+  private void clearQueryResults()
+  {
+    QueryLibrary queryLibrary = null;
+
+    try {
+      queryLibrary = (QueryLibrary)BuiltInLibraryManager.getBuiltInLibrary(QueryNames.QueryNamespace);
+    } catch (InvalidBuiltInLibraryNameException e) {
+      // Not activated.
+    } // try
+
+    if (queryLibrary != null) queryLibrary.clearQueryResults();
+  } // getQueryResult
   
 } // SWRLRuleEngineBridge

@@ -53,14 +53,17 @@ public class BridgePluginManager
     try { // TODO:  Hack until we can do a proper class load with the manifest
       Class.forName("edu.stanford.smi.protegex.owl.swrl.bridge.query.ui.SWRLQueryTab");
     } catch (ClassNotFoundException e) {
-      // TODO: commented out until SWRLQueryTab is offically provided with the Protege-OWL distribution.
-      //System.err.println("SWRLQueryTab load failed: Could not find the edu.stanford.smi.protegex.owl.swrl.bridge.query.ui.SWRLQueryTab class.");
+      System.err.println("SWRLQueryTab load failed: Could not find the edu.stanford.smi.protegex.owl.swrl.bridge.query.ui.SWRLQueryTab class.");
     } // 
   } // static
 
   public static String getSelectedRuleName() { return selectedRuleName; }
   public static boolean hasSelectedRule() { return !selectedRuleName.equals(""); }
-  public static void setSelectedRuleName(String ruleName) { selectedRuleName = ruleName; }
+  public static void setSelectedRuleName(String ruleName) 
+  { 
+    System.err.println("setSelectedRuleName: " + ruleName);
+    selectedRuleName = ruleName; 
+  }
 
   // Called by each plugin as it is loaded to inform the adapter of its presence.
   public static void registerPlugin(String pluginName, String toolTip, Icon icon, SWRLPluginGUIAdapter guiAdapter)

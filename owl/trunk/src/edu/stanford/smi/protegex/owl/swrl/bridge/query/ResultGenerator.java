@@ -1,7 +1,7 @@
 
-package edu.stanford.smi.protegex.owl.swrl.bridge;
+package edu.stanford.smi.protegex.owl.swrl.bridge.query;
 
-import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.ResultException;
+import edu.stanford.smi.protegex.owl.swrl.bridge.query.exceptions.ResultException;
 
 import java.util.List;
 
@@ -15,8 +15,7 @@ public interface ResultGenerator
 
     void initialize();
 
-    void addSelectedDatatypeColumn(String columnName) throws ResultException;
-    void addSelectedObjectColumn(String columnName) throws ResultException;
+    void addSelectedColumn(String columnName) throws ResultException;
     void addAggregateColumn(String columnName, String aggregateFunctionName) throws ResultException;
     void addOrderByColumn(String columnName) throws ResultException;
 

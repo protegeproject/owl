@@ -4,13 +4,14 @@ package edu.stanford.smi.protegex.owl.swrl.bridge;
 import edu.stanford.smi.protegex.owl.model.*;
 import edu.stanford.smi.protegex.owl.swrl.util.SWRLOWLUtil;
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.*;
+import edu.stanford.smi.protegex.owl.swrl.bridge.query.*;
 
 import java.util.*;
 
 /**
  ** Info object representing an OWL property. 
  */
-public class PropertyInfo extends Info implements Argument
+public class PropertyInfo extends Info implements Argument, PropertyValue
 {
   // There is an equals method defined on this class.
   private String propertyName;
@@ -105,12 +106,7 @@ public class PropertyInfo extends Info implements Argument
     if (!individual.hasPropertyValue(property, object, true)) individual.addPropertyValue(property, object);
   } // writeAssertedProperty2OWL
 
-  public String toString()
-  {
-    return "Property(name: " + getPropertyName() + ", subject: " + subject + ", predicate: " + predicate + ", domainClassNames: " + 
-      domainClassNames + ", rangeClassNames: " + rangeClassNames + ", superPropertyNames: " + superPropertyNames + ", " +
-       "equivalentPropertyNames: " + equivalentPropertyNames + ")";
-  } // toString
+  public String toString() { return getPropertyName(); }
 
   public boolean equals(Object obj)
   {
@@ -137,6 +133,11 @@ public class PropertyInfo extends Info implements Argument
     return hash;
   } // hashCode
 
+  public int compareTo(Object o)
+  {
+    return propertyName.compareTo(((PropertyInfo)o).getPropertyName());
+  } // compareTo
+
   // Utility method to create a collection of PropertyInfo objects for every subject/predicate combination for a particular OWL property.
   // TODO: This is incredibly inefficient. Need to use method in the OWLModel to get individuals with a particular property.
 
@@ -150,8 +151,9 @@ public class PropertyInfo extends Info implements Argument
 
     property = owlModel.getOWLProperty(propertyName);
     if (property == null) throw new InvalidPropertyNameException(propertyName);
-    
+
     domainClassNames = SWRLOWLUtil.rdfResources2Names(property.getUnionDomain());
+
     rangeClassNames = SWRLOWLUtil.rdfResources2Names(property.getUnionRangeClasses());
     superPropertyNames = SWRLOWLUtil.rdfResources2Names(property.getSuperproperties(true));
     subPropertyNames = SWRLOWLUtil.rdfResources2Names(property.getSubproperties(true));
@@ -164,11 +166,12 @@ public class PropertyInfo extends Info implements Argument
       Iterator individualsIterator = rdfsClass.getInstances(true).iterator();
       while (individualsIterator.hasNext()) {
         Object object = individualsIterator.next();
-        
+
         if (!(object instanceof OWLIndividual)) continue; // Deal only with OWL individuals (could return metaclass, for example)
         OWLIndividual domainIndividual = (OWLIndividual)object;
         
           if (domainIndividual.hasPropertyValue(property)) {
+
             if (property.hasObjectRange()) {
               Iterator individualValuesIterator = domainIndividual.getPropertyValues(property).iterator();
               while (individualValuesIterator.hasNext()) {

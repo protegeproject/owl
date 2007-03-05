@@ -3,6 +3,7 @@ package edu.stanford.smi.protegex.owl.swrl.bridge;
 
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.*;
 import edu.stanford.smi.protegex.owl.swrl.bridge.xsd.*;
+import edu.stanford.smi.protegex.owl.swrl.bridge.query.*;
 import edu.stanford.smi.protegex.owl.model.*;
 
 import java.math.BigDecimal;
@@ -14,13 +15,13 @@ import java.math.BigInteger;
  ** For the moment we do not support (1) RDFSLiteral language tags, and (2) the types: byte[], and primitive XSD types Decimal, GDay,
  ** GYear, GMonth, GMonthDay, QName, HexBinary, and NOTATION.
  */
-public class LiteralInfo extends Info implements Argument, Comparable, DatatypeValue
+public class LiteralInfo extends Info implements Argument, DatatypeValue
 {
-  private Object value; // This value object should implement comparable.
+  private Object value; // This value object should implement Comparable.
 
-  /*
-  ** Convert an RDFSLiteral to a LiteralInfo. 
-  */
+  /**
+   ** Convert an RDFSLiteral to a LiteralInfo. 
+   */
   public LiteralInfo(OWLModel owlModel, RDFSLiteral literal) throws DatatypeConversionException
   {
     RDFSDatatype datatype = literal.getDatatype();
@@ -86,12 +87,13 @@ public class LiteralInfo extends Info implements Argument, Comparable, DatatypeV
   // Java String type
   public boolean isString() { return value instanceof String; }
 
+  public boolean isBoolean() { return value instanceof Boolean; }
+
   // Java Number types
   public boolean isNumeric() { return value instanceof Number; }
 
   public boolean isInteger() { return value instanceof Integer; }
   public boolean isLong() { return value instanceof Long; }
-  public boolean isBoolean() { return value instanceof Boolean; }
   public boolean isFloat() { return value instanceof Float; }
   public boolean isDouble() { return value instanceof Double; }
   public boolean isShort() { return value instanceof Short; }
@@ -305,6 +307,7 @@ public class LiteralInfo extends Info implements Argument, Comparable, DatatypeV
   public String toString() { return value.toString(); }
 
   public Object getValueClassName() { return value.getClass().getName(); }
+  public Object getValue() { return value; }
 
   public RDFSLiteral asRDFSLiteral(OWLModel owlModel) throws DatatypeConversionException
   {
@@ -342,7 +345,7 @@ public class LiteralInfo extends Info implements Argument, Comparable, DatatypeV
 
   public int compareTo(Object o) 
   {
-    return  ((Comparable)o).compareTo(o); // Will throw a ClassCastException if o's class does not implement Comparable.
+    return  ((Comparable)value).compareTo(((LiteralInfo)o).getValue()); // Will throw a ClassCastException if o's class does not implement Comparable.
   } // compareTo
 
 } // LiteralInfo
