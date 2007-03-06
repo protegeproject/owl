@@ -4,14 +4,11 @@ package edu.stanford.smi.protegex.owl.swrl.bridge.query.ui;
 import edu.stanford.smi.protegex.owl.swrl.bridge.*;
 import edu.stanford.smi.protegex.owl.swrl.bridge.query.exceptions.*;
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.*;
-import edu.stanford.smi.protegex.owl.swrl.bridge.jess.*;
 import edu.stanford.smi.protegex.owl.swrl.bridge.ui.*;
 
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.swrl.model.*;
 import edu.stanford.smi.protegex.owl.swrl.bridge.query.ui.icons.QueryIcons;
-
-import jess.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -23,30 +20,19 @@ public class SWRLQueryTab extends JTabbedPane implements SWRLPluginGUIAdapter
     BridgePluginManager.registerPlugin("SWRLQueryTab", "Activate/deactivate SWRLQueryTab", QueryIcons.getQueryIcon(), new SWRLQueryTab());
   } // static
 
-  private SWRLJessBridge bridge;
+  private SWRLRuleEngineBridge bridge;
 
   public Container getPluginGUI() { return this; }
 
   public Container createPluginGUI(OWLModel owlModel)
   {
-    Rete rete;
-
-    // TODO: eventually pop up window to select an engine from a list.
+    // TODO: Eventually pop up window to select an engine from a list.
 
     try {
-      rete = new Rete();
-    } catch (NoClassDefFoundError e) {
-      return makeErrorWindow("Error loading Jess. Is jess.jar in the Protege-OWL plugins directory?\n" + 
-                             "It should be in the ./plugins/edu.stanford.smi.protegex.owl subdirectory of the Protege installation directory.");
-    } catch (Exception e) {
-      return makeErrorWindow("Error loading Jess: " + e.getMessage());
-    } // try
-
-    try {
-      bridge = new SWRLJessBridge(owlModel, rete);
+      bridge = RuleEngineFactory.createRuleEngine(owlModel);
     } catch (SWRLRuleEngineBridgeException e) {
-      System.err.println("Error initializing the SWRL to Jess bridge: " + e.toString());
-      return makeErrorWindow("Error initializing the SWRL to Jess bridge: " + e.toString());
+      System.err.println("Error finding a rule engine bridge: " + e.toString());
+      return makeErrorWindow("Error finding a rule engine bridge: " + e.toString());
     } // try
 
     removeAll();

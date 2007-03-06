@@ -45,9 +45,10 @@ public class BridgePluginManager
   static {
 
     try { // TODO:  Hack until we can do a proper class load with the manifest
+      Class.forName("edu.stanford.smi.protegex.owl.swrl.bridge.jess.SWRLJessBridge");
       Class.forName("edu.stanford.smi.protegex.owl.swrl.bridge.jess.ui.SWRLJessTab");
     } catch (ClassNotFoundException e) {
-      System.err.println("SWRLJessTab load failed: Could not find the edu.stanford.smi.protegex.owl.swrl.bridge.jess.ui.SWRLJessTab class.");
+      System.err.println("SWRLJessBridge load failed: Could not find the edu.stanford.smi.protegex.owl.swrl.bridge.jess.SWRLJessBridge class.");
     } // 
 
     try { // TODO:  Hack until we can do a proper class load with the manifest
@@ -55,6 +56,7 @@ public class BridgePluginManager
     } catch (ClassNotFoundException e) {
       System.err.println("SWRLQueryTab load failed: Could not find the edu.stanford.smi.protegex.owl.swrl.bridge.query.ui.SWRLQueryTab class.");
     } // 
+
   } // static
 
   public static String getSelectedRuleName() { return selectedRuleName; }
@@ -72,7 +74,7 @@ public class BridgePluginManager
 
     registeredPlugins.put(pluginName, new PluginRegistrationInfo(pluginName, toolTip, icon, guiAdapter));
 
-    System.err.println("Registering " + pluginName + " with SWRL bridge.");
+    System.err.println("Plugin '" + pluginName + "' registered with the SWRLTab plugin manager.");
   } // registerPlugin
 
   public static Collection<PluginRegistrationInfo> getRegisteredPlugins() { return registeredPlugins.values(); }
