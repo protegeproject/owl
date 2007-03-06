@@ -29,7 +29,7 @@ public class RuleEngineFactory
   } // registerRuleEngine
 
   public static boolean isRuleEngineRegistered(String ruleEngineName) { return registeredRuleEngines.containsKey(ruleEngineName); }
-  public static Set<String> getRegisteredRuleEngines() { return registeredRuleEngines.keySet(); }
+  public static Set<String> getRegisteredRuleEngineNames() { return registeredRuleEngines.keySet(); }
 
   /**
    ** Create an instance of a rule engine - a random registered engine is returned. If no engines are registered, a
@@ -48,11 +48,18 @@ public class RuleEngineFactory
   {
     SWRLRuleEngineBridge bridge = null;
 
+    System.err.println("createRuleEngine: " + ruleEngineName);
+
     if (registeredRuleEngines.containsKey(ruleEngineName)) bridge = registeredRuleEngines.get(ruleEngineName).create(owlModel);
     else throw new InvalidRuleEngineNameException(ruleEngineName);
 
     return bridge;
   } // createRuleEngine
+
+  public static void unregisterRuleEngine(String ruleEngineName)
+  {
+    if (registeredRuleEngines.containsKey(ruleEngineName)) registeredRuleEngines.remove(ruleEngineName);
+  } // unregisterRuleEngine
 
   public interface Creator
   {
