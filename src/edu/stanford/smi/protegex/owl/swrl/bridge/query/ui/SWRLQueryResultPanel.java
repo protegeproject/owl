@@ -106,7 +106,7 @@ public class SWRLQueryResultPanel extends JPanel
       
       try {
         result = bridge.getQueryResult(ruleName);
-        count = result.getNumberOfRows(); 
+        count = (result == null) ? 0 : result.getNumberOfRows(); 
       } catch (ResultException e) {
         System.err.println("Exception getting row count: " + e);
       } // try
@@ -121,7 +121,7 @@ public class SWRLQueryResultPanel extends JPanel
       
       try {
         result = bridge.getQueryResult(ruleName);
-        count = result.getNumberOfColumns(); 
+        count = (result == null) ? 0 : result.getNumberOfRows(); 
       } catch (ResultException e) {
         System.err.println("Exception getting column count: " + e);
       } // try
@@ -136,7 +136,7 @@ public class SWRLQueryResultPanel extends JPanel
       
       try {
         result = bridge.getQueryResult(ruleName);
-        columnName = result.getColumnName(columnIndex); 
+        columnName = (result == null) ? "" : result.getColumnName(columnIndex); 
       } catch (ResultException e) {
         System.err.println("Exception getting column name: " + e);
         columnName = "Exception: " + e.getMessage();
@@ -151,7 +151,7 @@ public class SWRLQueryResultPanel extends JPanel
       
       try { 
         result = bridge.getQueryResult(ruleName);
-        value =  result.getValue(column, row);
+        value = (result == null) ? null : result.getValue(column, row);
       } catch (ResultException e) { 
         System.err.println("Exception getting value: " + e);
         value = e.getMessage(); 
