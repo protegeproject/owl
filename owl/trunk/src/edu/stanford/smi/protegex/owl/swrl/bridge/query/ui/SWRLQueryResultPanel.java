@@ -8,8 +8,6 @@ import edu.stanford.smi.protegex.owl.swrl.bridge.query.exceptions.*;
 
 import edu.stanford.smi.protegex.owl.swrl.bridge.builtins.query.SWRLBuiltInLibraryImpl;
 
-import edu.stanford.smi.protegex.owl.swrl.bridge.jess.*;
-
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.swrl.model.*;
 
@@ -23,12 +21,14 @@ public class SWRLQueryResultPanel extends JPanel
 {
   private String ruleName;
   private SWRLRuleEngineBridge bridge;
+  private SWRLQueryControlPanel controlPanel;
   private SWRLQueryResultModel swrlQueryResultModel;
   private JTable table;
 
-  public SWRLQueryResultPanel(SWRLRuleEngineBridge bridge, String ruleName) 
+  public SWRLQueryResultPanel(SWRLRuleEngineBridge bridge, SWRLQueryControlPanel controlPanel, String ruleName) 
   {
     this.ruleName = ruleName;
+    this.controlPanel = controlPanel;
     this.bridge = bridge;
     
     swrlQueryResultModel = new SWRLQueryResultModel();
@@ -44,8 +44,8 @@ public class SWRLQueryResultPanel extends JPanel
     JButton closeTabButton = createButton("Close", "Close the tab for this rule", new CloseTabActionListener());
     buttonsPanel.add(closeTabButton);
     
-    JButton saveRuleButton = createButton("Save...", "Save the result", new SaveRuleActionListener());
-    buttonsPanel.add(saveRuleButton);
+    JButton saveResultButton = createButton("Save...", "Save the result", new SaveResultActionListener());
+    buttonsPanel.add(saveResultButton);
     
     JScrollPane scrollPane = new JScrollPane(table);
     JViewport viewPort = scrollPane.getViewport();
@@ -67,7 +67,7 @@ public class SWRLQueryResultPanel extends JPanel
         bridge.exportSWRLRulesAndOWLKnowledge();
         bridge.runRuleEngine();
       } catch (SWRLRuleEngineBridgeException e) {
-        System.err.println("Exception rerunning bridge: " + e.getMessage());
+        controlPanel.appendText("Exception running rules: " + e.getMessage() + "\n");
       } // try
       validate();
     } // ActionPerformed
@@ -77,15 +77,17 @@ public class SWRLQueryResultPanel extends JPanel
   {
     public void actionPerformed(ActionEvent event) 
     {
+      controlPanel.removeResultPanel(ruleName);
+      controlPanel.appendText("'" + ruleName + "' tab closed.\n");
     } // ActionPerformed
   } // CloseTabActionListener
   
-  private class SaveRuleActionListener implements ActionListener
+  private class SaveResultActionListener implements ActionListener
   {
     public void actionPerformed(ActionEvent event) 
     {
     } // ActionPerformed
-  } // SaveRuleActionListener
+  } // SaveResultActionListener
   
   private JButton createButton(String text, String toolTipText, ActionListener listener)
   {
@@ -108,7 +110,7 @@ public class SWRLQueryResultPanel extends JPanel
         result = bridge.getQueryResult(ruleName);
         count = (result == null) ? 0 : result.getNumberOfRows(); 
       } catch (ResultException e) {
-        System.err.println("Exception getting row count: " + e);
+        controlPanel.appendText("Exception getting row count in model: " + e + "\n");
       } // try
 
       return count;
@@ -121,9 +123,9 @@ public class SWRLQueryResultPanel extends JPanel
       
       try {
         result = bridge.getQueryResult(ruleName);
-        count = (result == null) ? 0 : result.getNumberOfRows(); 
+        count = (result == null) ? 0 : result.getNumberOfColumns(); 
       } catch (ResultException e) {
-        System.err.println("Exception getting column count: " + e);
+        controlPanel.appendText("Exception getting column count in model: " + e + "\n");
       } // try
 
       return count;
@@ -138,7 +140,7 @@ public class SWRLQueryResultPanel extends JPanel
         result = bridge.getQueryResult(ruleName);
         columnName = (result == null) ? "" : result.getColumnName(columnIndex); 
       } catch (ResultException e) {
-        System.err.println("Exception getting column name: " + e);
+        controlPanel.appendText("Exception getting column name in model: " + e + "\n");
         columnName = "Exception: " + e.getMessage();
       } // try
       return columnName;
@@ -153,7 +155,7 @@ public class SWRLQueryResultPanel extends JPanel
         result = bridge.getQueryResult(ruleName);
         value = (result == null) ? null : result.getValue(column, row);
       } catch (ResultException e) { 
-        System.err.println("Exception getting value: " + e);
+        controlPanel.appendText("Exception getting value in model: " + e + "\n");
         value = e.getMessage(); 
       } // try
       

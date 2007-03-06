@@ -3,8 +3,6 @@ package edu.stanford.smi.protegex.owl.swrl.bridge.query.ui;
 
 import edu.stanford.smi.protegex.owl.swrl.bridge.query.*;
 
-import edu.stanford.smi.protegex.owl.swrl.bridge.jess.*;
-
 import edu.stanford.smi.protegex.owl.swrl.bridge.builtins.query.SWRLBuiltInLibraryImpl;
 
 import edu.stanford.smi.protegex.owl.model.OWLModel;
@@ -21,14 +19,13 @@ import java.util.*;
 
 public class SWRLQueryControlPanel extends JPanel 
 {
-  private SWRLJessBridge bridge;
+  private SWRLRuleEngineBridge bridge;
   private HashMap<String, SWRLQueryResultPanel> resultPanels;
-
+  private JTextArea textArea;
   private static int MaximumOpenResultPanels = 8;
 
-  public SWRLQueryControlPanel(SWRLJessBridge bridge) 
+  public SWRLQueryControlPanel(SWRLRuleEngineBridge bridge) 
   {
-    JTextArea textArea;
     JPanel panel;
     JButton button;
 
@@ -46,17 +43,31 @@ public class SWRLQueryControlPanel extends JPanel
     
     panel = new JPanel(new FlowLayout());
 
-    button = createButton("Run", "Run the selected SWRL rule", new RunRuleActionListener(bridge, textArea, this));
+    button = createButton("Run Rules", "Run all SWRL rules", new RunRuleActionListener(bridge, textArea, this));
     panel.add(button);
 
     add(BorderLayout.SOUTH, panel);
 
     textArea.append("SWRLQueryTab\n\n");
     textArea.append("See http://protege.cim3.net/cgi-bin/wiki.pl?SWRLQueryTab for documentation.\n\n");
-    textArea.append("Executing queries in this tab does not modify the ontology.\n");
-    textArea.append("Select a rule with query built-ins from the list above and press the Run button.\n");
-    textArea.append("If the rule generates a result, the result will appear in a new tab.\n");
+    textArea.append("Executing rules in this tab does not modify the ontology.\n\n");
+    textArea.append("Select a rule with query built-ins from the list above and press the 'Run Rules' button.\n");
+    textArea.append("If the selected rule generates a result, the result will appear in a new tab.\n\n");
   } // SWRLQueryControlPanel
+
+  public void appendText(String text)
+  {
+    textArea.append(text);
+  } // appendText
+
+  public void removeResultPanel(String ruleName)
+  {
+    if (resultPanels.containsKey(ruleName)) {
+      SWRLQueryResultPanel resultPanel = resultPanels.get(ruleName);
+      resultPanels.remove(ruleName);
+      ((JTabbedPane)getParent()).remove(resultPanel);
+    } // if
+  } // if
 
   private JButton createButton(String text, String toolTipText, ActionListener listener)
   {
@@ -88,11 +99,11 @@ public class SWRLQueryControlPanel extends JPanel
 
   private class ListenerBase
   {
-    protected SWRLJessBridge bridge;
+    protected SWRLRuleEngineBridge bridge;
     protected JTextArea textArea;
     protected SWRLQueryControlPanel controlPanel;
 
-    public ListenerBase(SWRLJessBridge bridge, JTextArea textArea, SWRLQueryControlPanel controlPanel)
+    public ListenerBase(SWRLRuleEngineBridge bridge, JTextArea textArea, SWRLQueryControlPanel controlPanel)
     {
       this.bridge = bridge;
       this.textArea = textArea;
@@ -102,7 +113,7 @@ public class SWRLQueryControlPanel extends JPanel
 
   private class RunRuleActionListener extends ListenerBase implements ActionListener
   {
-    public RunRuleActionListener(SWRLJessBridge bridge, JTextArea textArea, SWRLQueryControlPanel controlPanel) 
+    public RunRuleActionListener(SWRLRuleEngineBridge bridge, JTextArea textArea, SWRLQueryControlPanel controlPanel) 
     { super(bridge, textArea, controlPanel); }
     
     public void actionPerformed(ActionEvent event) 
@@ -127,22 +138,26 @@ public class SWRLQueryControlPanel extends JPanel
           if (ruleName == null || ruleName.equals("")) textArea.append("No rule selected.\n");
           else {
             result = bridge.getQueryResult(ruleName);
-            if (result == null) textArea.append("Rule '" + ruleName + "' does not have any query built-ins and/or did not generate any result.\n");
-            else {
-              if (result.getNumberOfRows() == 0) {
-                textArea.append("Empty result for query '" + ruleName + "'.\n");
-                // TODO: kill or update tab if it exists
-              } else textArea.append("See tab to review results of query '" + ruleName + "'.\n");
-              if  (resultPanels.containsKey(ruleName)) resultPanel = resultPanels.get(ruleName);
-              else {
-                resultPanel = new SWRLQueryResultPanel(bridge, ruleName);
+            if (result == null || result.getNumberOfRows() == 0) {
+              textArea.append("Rule '" + ruleName + "' does not have any query built-ins and/or did not generate any result.\n");
+              if  (resultPanels.containsKey(ruleName)) {
+                resultPanel = resultPanels.get(ruleName);
+                resultPanels.remove(resultPanel);
+                ((JTabbedPane)getParent()).remove(resultPanel);
+              } // if
+            } else { // A result was returned
+              textArea.append("See the '" + ruleName + "' tab to review results of the query.\n");
+              
+              if  (resultPanels.containsKey(ruleName)) resultPanel = resultPanels.get(ruleName); // Existing tab found
+              else { // Create new tab
+                resultPanel = new SWRLQueryResultPanel(bridge, controlPanel, ruleName);
                 resultPanels.put(ruleName, resultPanel);
                 ((JTabbedPane)getParent()).addTab(ruleName, SWRLIcons.getImpsIcon(), resultPanel, "Result Panel for rule '" + ruleName + "'");
               } // if
               resultPanel.validate();
               controlPanel.getParent().validate();
-            } // else
-          } // else
+            } // if
+          } // if
 	} catch (SWRLRuleEngineBridgeException e) {
           textArea.append("Exception getting result for rule '" + ruleName + "': " + e.getMessage() + "\n");
 	} // try
