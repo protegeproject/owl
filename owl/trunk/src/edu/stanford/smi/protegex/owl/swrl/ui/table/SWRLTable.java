@@ -1,3 +1,4 @@
+
 package edu.stanford.smi.protegex.owl.swrl.ui.table;
 
 import edu.stanford.smi.protege.model.Instance;
@@ -96,12 +97,13 @@ public class SWRLTable extends SymbolTable implements Disposable {
     public void valueChanged(ListSelectionEvent e)
     {
       super.valueChanged(e);
-
-
+      int selectedRow = getSelectedRow();
       SWRLTableModel tableModel = (SWRLTableModel)getSymbolTableModel();
 
-      String selectedRuleName = (String)tableModel.getValueAt(getSelectedRow(), 0);
-      BridgePluginManager.setSelectedRuleName(selectedRuleName);
+      if (selectedRow != -1) {
+        String selectedRuleName = (String)tableModel.getValueAt(selectedRow, 0);
+        BridgePluginManager.setSelectedRuleName(selectedRuleName);
+      } // if
     } // valueChanged
 
     public void replaceImp(SWRLImp oldImp, SWRLImp newImp) {

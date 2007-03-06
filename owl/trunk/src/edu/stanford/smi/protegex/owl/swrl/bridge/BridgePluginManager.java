@@ -131,13 +131,14 @@ public class BridgePluginManager
         PluginRegistrationInfo info = registeredPlugins.get(pluginName);
         Container pluginGUI = info.getGUIAdapter().getPluginGUI();
         SWRLTab swrlTab = (SWRLTab)pluginGUI.getParent();
-        swrlTab.setVisible(false); 
-        swrlTab.remove(pluginGUI);
-        swrlTab.reconfigure();
-        swrlTab.setVisible(true);
-        visiblePluginName = "";
-
+        if (swrlTab != null) {
+          swrlTab.setVisible(false); 
+          swrlTab.remove(pluginGUI);
+          swrlTab.reconfigure();
+          swrlTab.setVisible(true);
+        } // if
         if (info.hasOWLModel()) info.getOWLModel().getProject().removeProjectListener(projectListener); 
+        visiblePluginName = "";
       } // if
     } // if
     return true;
