@@ -21,7 +21,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Set;
 
-//TODO: temp hack
 import edu.stanford.smi.protegex.owl.swrl.bridge.BridgePluginManager;
 
 /**
