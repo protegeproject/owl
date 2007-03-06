@@ -124,8 +124,8 @@ public class SWRLQueryControlPanel extends JPanel
       Result result = null;
       
       if (resultPanels.size() == MaximumOpenResultPanels) {
-        textArea.append("A maximum of " + MaximumOpenResultPanels + " may be open at once.\n");
-        textArea.append("Please close an existing panel to display a panel for this rule.\n");
+        textArea.append("A maximum of " + MaximumOpenResultPanels + " result tabs may be open at once. ");
+        textArea.append("Please close an existing tab to display results for the selected rule.\n");
       } else {
 	try {
           bridge.resetBridge();
