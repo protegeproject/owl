@@ -53,6 +53,7 @@ public class SWRLQueryControlPanel extends JPanel
 
     textArea.append("SWRLQueryTab\n\n");
     textArea.append("See http://protege.cim3.net/cgi-bin/wiki.pl?SWRLQueryTab for documentation.\n\n");
+    textArea.append("Executing queries in this tab does not modify the ontology.\n");
     textArea.append("Select a rule with query built-ins from the list above and press the Run button.\n");
     textArea.append("If the rule generates a result, the result will appear in a new tab.\n");
   } // SWRLQueryControlPanel
@@ -130,7 +131,7 @@ public class SWRLQueryControlPanel extends JPanel
             else {
               if (result.getNumberOfRows() == 0) {
                 textArea.append("Empty result for query '" + ruleName + "'.\n");
-                // TODO: kill or update tab it is exists
+                // TODO: kill or update tab if it exists
               } else textArea.append("See tab to review results of query '" + ruleName + "'.\n");
               if  (resultPanels.containsKey(ruleName)) resultPanel = resultPanels.get(ruleName);
               else {
