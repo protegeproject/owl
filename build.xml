@@ -4,8 +4,6 @@
 <!-- Protege-OWL build file for ant (build.xml)                       -->
 <!-- ================================================================ -->
 
-<!-- Send any questions, comments, fixes, etc. to "randy AT randykerber.com"
-  -->
 
 <project name="Protege-OWL" default="usage" basedir=".">
 
