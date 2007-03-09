@@ -27,7 +27,7 @@ public class ConvertToDefinedClassAction extends ResourceAction {
     public void actionPerformed(ActionEvent e) {
         try {
             final OWLNamedClass cls = (OWLNamedClass) getResource();
-            getOWLModel().beginTransaction("Convert " + cls.getBrowserText() + " to defined class");
+            getOWLModel().beginTransaction("Convert " + cls.getBrowserText() + " to defined class", (cls == null ? null : cls.getName()));
             performAction(cls);
             getOWLModel().commitTransaction();
         }

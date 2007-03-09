@@ -25,9 +25,11 @@ public class CreateCloneAction extends ResourceAction {
         OWLNamedClass namedCls = (OWLNamedClass) getResource();
         OWLNamedClass c = null;
         OWLModel owlModel = namedCls.getOWLModel();
+        //TT: This is may be dangerous.. Needs some testing
+        String cloneName = CloneFactory.getNextAvailableCloneName(namedCls);
         try {
-            owlModel.beginTransaction("Create clone of " + namedCls.getBrowserText());
-            c = createClone(namedCls);
+            owlModel.beginTransaction("Create clone of " + namedCls.getBrowserText(), cloneName);
+            c = createClone(namedCls, cloneName);
             owlModel.commitTransaction();
         }
         catch (Exception ex) {
@@ -39,6 +41,10 @@ public class CreateCloneAction extends ResourceAction {
 
     public static OWLNamedClass createClone(OWLNamedClass oldCls) {
         return CloneFactory.cloneOWLNamedClass(oldCls);
+    }
+    
+    public static OWLNamedClass createClone(OWLNamedClass oldCls, String cloneName) {
+        return CloneFactory.cloneOWLNamedClass(oldCls, cloneName);
     }
 
 //    public static OWLNamedClass createClone(OWLNamedClass oldCls) {

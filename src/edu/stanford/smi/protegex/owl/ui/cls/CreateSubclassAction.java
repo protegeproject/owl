@@ -59,9 +59,9 @@ public class CreateSubclassAction extends ResourceAction {
             }
         }
         
+        String name = owlModel.createNewResourceName(AbstractOWLModel.DEFAULT_CLASS_NAME);
         try {
-            owlModel.beginTransaction("Create subclass of type " + type.getBrowserText());
-            String name = owlModel.createNewResourceName(AbstractOWLModel.DEFAULT_CLASS_NAME);
+            owlModel.beginTransaction("Create subclass of type " + type.getBrowserText(), name);            
             cls = owlModel.createRDFSNamedClass(name, superclasses, type);
             if (cls instanceof OWLNamedClass) {
                 for (Iterator it = superclasses.iterator(); it.hasNext();) {
