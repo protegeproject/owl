@@ -37,7 +37,7 @@ public class DisjointClassesWidget extends ClassDescriptionWidget {
         if (noDialog || ProtegeUI.getModalDialogFactory().showDialog(this, siblingsPanel,
                 "Add siblings to disjoints", ModalDialogFactory.MODE_OK_CANCEL) == ModalDialogFactory.OPTION_OK) {
             try {
-                beginTransaction("Add siblings to disjoints of " + getEditedCls().getBrowserText());
+                beginTransaction("Add siblings to disjoints of " + getEditedCls().getBrowserText(), getEditedCls().getName());
                 mutuallyIsDefault = siblingsPanel.isMutuallySelected();
                 OWLNamedClass editedCls = getEditedCls();
                 if (mutuallyIsDefault) {
@@ -163,7 +163,7 @@ public class DisjointClassesWidget extends ClassDescriptionWidget {
                 "Remove siblings from disjoints", ModalDialogFactory.MODE_OK_CANCEL) == ModalDialogFactory.OPTION_OK) {
             try {
                 beginTransaction("Remove siblings from disjoints of " +
-                        getEditedCls().getBrowserText());
+                        getEditedCls().getBrowserText(), getEditedCls().getName());
                 mutuallyIsDefault = siblingsPanel.isMutuallySelected();
                 OWLNamedClass editedCls = getEditedCls();
                 if (mutuallyIsDefault) {
