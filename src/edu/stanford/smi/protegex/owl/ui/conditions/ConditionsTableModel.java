@@ -424,9 +424,11 @@ public class ConditionsTableModel extends AbstractTableModel
 
 
     public void deleteRow(int index) {
-        try {        	
+        try {
+        	RDFSClass rdfsClass = getEditedCls();
+        		
             owlModel.beginTransaction("Delete condition " + getClass(index).getBrowserText() +
-                    " from " + getEditedCls().getBrowserText());
+                    " from " + rdfsClass.getBrowserText(), rdfsClass.getName());
             
             inEditing = true;
             
@@ -1098,7 +1100,7 @@ public class ConditionsTableModel extends AbstractTableModel
     	RDFSClass oldRestriction = (RDFSClass) getClass(rowIndex);
 
     	try {
-			owlModel.beginTransaction("Set condition at " + getEditedCls().getBrowserText() + " to " + parsableText);
+			owlModel.beginTransaction("Set condition at " + getEditedCls().getBrowserText() + " to " + parsableText, getEditedCls().getName());
 			
 			try {
 				OWLClassParser parser = owlModel.getOWLClassDisplay().getParser();
