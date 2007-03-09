@@ -32,7 +32,7 @@ public class ConvertToPrimitiveClassAction extends ResourceAction {
        
         try {
             final OWLNamedClass cls = (OWLNamedClass) getResource();
-            getOWLModel().beginTransaction("Convert " + cls.getBrowserText() + " to primitive class");
+            getOWLModel().beginTransaction("Convert " + cls.getBrowserText() + " to primitive class", (cls == null ? null : cls.getName()));
             performAction(cls);
             getOWLModel().commitTransaction();
         }

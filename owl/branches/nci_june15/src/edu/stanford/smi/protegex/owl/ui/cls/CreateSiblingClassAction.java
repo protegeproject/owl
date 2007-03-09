@@ -46,10 +46,11 @@ public class CreateSiblingClassAction extends ResourceAction {
         Collection parents = sibling.getNamedSuperclasses();
         if (!parents.isEmpty()) {
             OWLModel owlModel = sibling.getOWLModel();
-            owlModel.beginTransaction("Create sibling of class " + sibling.getBrowserText());
+            String name = owlModel.createNewResourceName(AbstractOWLModel.DEFAULT_CLASS_NAME);
             
-            try {
-                String name = owlModel.createNewResourceName(AbstractOWLModel.DEFAULT_CLASS_NAME);
+            owlModel.beginTransaction("Create sibling of class " + sibling.getBrowserText(), name);
+            
+            try {                
                 RDFSClass siblingType = sibling.getRDFType();
                 if(siblingType == null) {
                     siblingType = sibling.getProtegeType();
