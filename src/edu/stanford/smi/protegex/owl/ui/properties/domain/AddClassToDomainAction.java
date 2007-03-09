@@ -83,7 +83,7 @@ public class AddClassToDomainAction extends ResourceSelectionAction {
         String msg = checkCls(cls);
         if (msg == null) {
             try {
-                owlModel.beginTransaction("Add " + resource.getBrowserText() + " to the domain of " + property.getBrowserText());
+                owlModel.beginTransaction("Add " + resource.getBrowserText() + " to the domain of " + property.getBrowserText(), property.getName());
                 if (((Slot) property).getDirectOwnSlotValue(((KnowledgeBase) owlModel).getSlot(Model.Slot.DIRECT_DOMAIN)) == null) {
                     property.addUnionDomainClass(cls);
                     for (Iterator it = property.getSuperproperties(true).iterator(); it.hasNext();) {

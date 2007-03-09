@@ -101,7 +101,7 @@ public class OWLDomainWidget extends AbstractPropertyWidget {
 
     private void removeFromDomain(RDFSClass cls, RDFProperty property) {
         try {
-            beginTransaction("Remove " + cls.getBrowserText() + " from the domain of " + property.getBrowserText());
+            beginTransaction("Remove " + cls.getBrowserText() + " from the domain of " + property.getBrowserText(), property.getName());
             if (property.isDomainDefined()) {
                 property.removeUnionDomainClass(cls);
 //                if (property.getUnionDomain(true).size() == 0){
