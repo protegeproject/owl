@@ -33,7 +33,7 @@ public class ConvertIndividualToClassAction extends ResourceAction {
                                                                 "Confirm conversion")) {
             OWLModel owlModel = instance.getOWLModel();
             try {
-                owlModel.beginTransaction("Convert individual " + instance.getBrowserText() + " to class");
+                owlModel.beginTransaction("Convert individual " + instance.getBrowserText() + " to class", clsName);
                 performAction(instance);
                 owlModel.commitTransaction();
             }
