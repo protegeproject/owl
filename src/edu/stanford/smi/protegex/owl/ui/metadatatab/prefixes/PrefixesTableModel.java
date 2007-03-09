@@ -197,7 +197,7 @@ public class PrefixesTableModel extends AbstractTableModel implements Disposable
     private void setNamespaceOfPrefix(String prefix, String value) {
         OWLModel owlModel = ontology.getOWLModel();
         try {
-            owlModel.beginTransaction("Change namespace of " + prefix + " to " + value);
+            owlModel.beginTransaction("Change namespace of " + prefix + " to " + value, ontology.getName());
             owlModel.getNamespaceManager().setPrefix(value, prefix);
             owlModel.commitTransaction();
         }
@@ -211,7 +211,7 @@ public class PrefixesTableModel extends AbstractTableModel implements Disposable
     private void setPrefixOfNamespace(String namespace, String value) {
         OWLModel owlModel = ontology.getOWLModel();
         try {
-            owlModel.beginTransaction("Change prefix of " + namespace + " to " + value);
+            owlModel.beginTransaction("Change prefix of " + namespace + " to " + value, ontology.getName());
             owlModel.getNamespaceManager().setPrefix(namespace, value);
             owlModel.commitTransaction();           
         }
