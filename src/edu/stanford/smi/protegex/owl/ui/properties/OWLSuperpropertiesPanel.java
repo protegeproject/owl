@@ -155,7 +155,7 @@ public class OWLSuperpropertiesPanel extends SelectableContainer {
     private void removeProperties(Collection superproperties) {
     	//TT:this was commented out. Why?
         try {
-        	owlModel.beginTransaction("Remove superproperties from " + property);
+        	owlModel.beginTransaction("Remove superproperties from " + property, property.getName());
         	Iterator i = superproperties.iterator();
         	while (i.hasNext()) {
         		RDFProperty superslot = (RDFProperty) i.next();

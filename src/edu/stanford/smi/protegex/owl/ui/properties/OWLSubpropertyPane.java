@@ -56,8 +56,8 @@ public class OWLSubpropertyPane extends SelectableContainer implements HostResou
                 public void actionPerformed(ActionEvent e) {
                     OWLProperty property = null;
                     try {
-                        owlModel.beginTransaction(getValue(Action.NAME).toString());
-                        String name = owlModel.createNewResourceName(AbstractOWLModel.DEFAULT_ANNOTATION_PROPERTY_NAME);
+                    	String name = owlModel.createNewResourceName(AbstractOWLModel.DEFAULT_ANNOTATION_PROPERTY_NAME);
+                        owlModel.beginTransaction(getValue(Action.NAME).toString(), name);                        
                         property = owlModel.createAnnotationOWLDatatypeProperty(name);
                         owlModel.commitTransaction();                       
                     }
@@ -76,8 +76,8 @@ public class OWLSubpropertyPane extends SelectableContainer implements HostResou
                 public void actionPerformed(ActionEvent e) {
                     RDFProperty property = null;
                     try {
-                        owlModel.beginTransaction(getValue(Action.NAME).toString());
-                        String name = owlModel.createNewResourceName(AbstractOWLModel.DEFAULT_ANNOTATION_PROPERTY_NAME);
+                    	String name = owlModel.createNewResourceName(AbstractOWLModel.DEFAULT_ANNOTATION_PROPERTY_NAME);
+                        owlModel.beginTransaction(getValue(Action.NAME).toString(), name);                        
                         property = owlModel.createAnnotationOWLObjectProperty(name);
                         owlModel.commitTransaction();
                     }
@@ -95,8 +95,8 @@ public class OWLSubpropertyPane extends SelectableContainer implements HostResou
                 public void actionPerformed(ActionEvent e) {
                     OWLProperty property = null;
                     try {
-                        owlModel.beginTransaction(getValue(Action.NAME).toString());
-                        String name = owlModel.createNewResourceName(AbstractOWLModel.DEFAULT_DATATYPE_PROPERTY_NAME);
+                    	String name = owlModel.createNewResourceName(AbstractOWLModel.DEFAULT_DATATYPE_PROPERTY_NAME);
+                        owlModel.beginTransaction(getValue(Action.NAME).toString(), name);                        
                         property = owlModel.createOWLDatatypeProperty(name);
                         property.setDomainDefined(false);
                         owlModel.commitTransaction();
@@ -116,8 +116,8 @@ public class OWLSubpropertyPane extends SelectableContainer implements HostResou
                 public void actionPerformed(ActionEvent e) {
                     OWLProperty property = null;
                     try {
-                        owlModel.beginTransaction(getValue(Action.NAME).toString());
-                        String name = owlModel.createNewResourceName(AbstractOWLModel.DEFAULT_OBJECT_PROPERTY_NAME);
+                    	String name = owlModel.createNewResourceName(AbstractOWLModel.DEFAULT_OBJECT_PROPERTY_NAME);
+                        owlModel.beginTransaction(getValue(Action.NAME).toString(), name);                        
                         property = owlModel.createOWLObjectProperty(name);
                         property.setDomainDefined(false);
                         owlModel.commitTransaction();
@@ -137,8 +137,8 @@ public class OWLSubpropertyPane extends SelectableContainer implements HostResou
                 public void actionPerformed(ActionEvent e) {
                     RDFProperty property = null;
                     try {
-                        owlModel.beginTransaction(getValue(Action.NAME).toString());
-                        String name = owlModel.createNewResourceName(AbstractOWLModel.DEFAULT_PROPERTY_NAME);
+                    	String name = owlModel.createNewResourceName(AbstractOWLModel.DEFAULT_PROPERTY_NAME);
+                        owlModel.beginTransaction(getValue(Action.NAME).toString(), name);                        
                         property = owlModel.createRDFProperty(name);
                         owlModel.commitTransaction();
                     }
