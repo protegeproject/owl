@@ -37,9 +37,9 @@ public class CreatePropertyAction extends AbstractAction {
 
     public void actionPerformed(ActionEvent e) {
         OWLModel owlModel = type.getOWLModel();
+        String name = type.getOWLModel().createNewResourceName(baseName);
         try {
-            owlModel.beginTransaction("Create new " + type.getBrowserText());
-            String name = type.getOWLModel().createNewResourceName(baseName);
+            owlModel.beginTransaction("Create new " + type.getBrowserText(), name);            
             RDFProperty property = (RDFProperty) type.createInstance(name);
             callBack.propertyCreated(property);
             property.getProject().show(property);

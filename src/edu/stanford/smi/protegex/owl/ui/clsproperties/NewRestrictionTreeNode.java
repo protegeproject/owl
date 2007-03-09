@@ -102,7 +102,7 @@ public class NewRestrictionTreeNode extends RestrictionTreeNode {
             OWLNamedClass cls = getParentNode().getRestrictedClass();
             owlModel.beginTransaction("Add restriction on property " +
                     getParentNode().getRDFProperty().getBrowserText() +
-                    " at class " + cls.getBrowserText());
+                    " at class " + cls.getBrowserText(), cls.getName());
             Cls anonRootCls = ((KnowledgeBase) owlModel).getCls(OWLNames.Cls.ANONYMOUS_ROOT);
             OWLRestriction restriction = (OWLRestriction) kb.createCls(null,
                     Collections.singleton(anonRootCls), metaCls);

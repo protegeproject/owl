@@ -161,7 +161,7 @@ public class PropertyRestrictionsTreeWidget extends AbstractPropertyWidget {
                 RDFProperty property = (RDFProperty) o;
                 RDFSClass cls = (RDFSClass) getEditedResource();
                 try {
-                    owlModel.beginTransaction("Remove " + cls.getBrowserText() + " from the domain of " + property.getBrowserText());
+                    owlModel.beginTransaction("Remove " + cls.getBrowserText() + " from the domain of " + property.getBrowserText(), property.getName());
                     property.removeUnionDomainClass(cls);
                     if (property instanceof RDFProperty) {
                         ((RDFProperty) property).synchronizeDomainAndRangeOfInverse();
