@@ -67,6 +67,7 @@ public abstract class SWRLRuleEngineBridge
   {
     this.owlModel = owlModel;
     initialize();
+    BuiltInLibraryManager.invokeAllBuiltInLibrariesInitializeMethod(this);
   } // SWRLRuleEngineBridge
 
   /**
