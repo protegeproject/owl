@@ -32,7 +32,8 @@ public class OWLInversePropertyWidget extends AbstractPropertyWidget {
 
         public void resourceSelected(RDFResource resource) {
         	try {
-                beginTransaction("Set inverse property");
+                beginTransaction("Set inverse property of " + getEditedResource().getBrowserText() + 
+                		" to " + resource.getBrowserText(), getEditedResource().getName());
                 final OWLProperty inverseProperty = (OWLProperty) resource;
                 adjustDomainAndRange((OWLProperty) getEditedResource(), inverseProperty);
                 setInverseProperty(inverseProperty);
@@ -110,7 +111,8 @@ public class OWLInversePropertyWidget extends AbstractPropertyWidget {
         OWLProperty inverseProperty = null;
         try {
             OWLProperty forwardProperty = (OWLProperty) getEditedResource();
-            beginTransaction("Create inverse property for " + forwardProperty.getName());
+            //TT: Maybe this should be on the inverse property, not on the forward one
+            beginTransaction("Create inverse property for " + forwardProperty.getName(), forwardProperty.getName());
             String propertyName = "";
             String prefix = forwardProperty.getNamespacePrefix();
             if (prefix != null && prefix.length() > 0) {
