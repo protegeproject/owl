@@ -146,8 +146,10 @@ public class SelectClassPanel extends SelectableContainer{
             OWLNamedClass superclass = ((OWLNamedClass)CollectionUtilities.getFirstItem(getSelection()));
             OWLModel owlModel = superclass.getOWLModel();
             try {
-                owlModel.beginTransaction("Create subclass of class " + superclass.getBrowserText());
-                String name = owlModel.createNewResourceName(AbstractOWLModel.DEFAULT_CLASS_NAME);
+            	String name = owlModel.createNewResourceName(AbstractOWLModel.DEFAULT_CLASS_NAME);
+            	
+                owlModel.beginTransaction("Create subclass of class " + superclass.getBrowserText(), name);
+                
                 RDFSClass superclassType = superclass.getRDFType();
                 if(superclassType == null) {
                     superclassType = superclass.getProtegeType();
@@ -191,8 +193,9 @@ public class SelectClassPanel extends SelectableContainer{
             if (!parents.isEmpty()) {
                 OWLModel owlModel = sibling.getOWLModel();              
                 try {
-                    owlModel.beginTransaction("Create sibling of class " + sibling.getBrowserText());
-                    String name = owlModel.createNewResourceName(AbstractOWLModel.DEFAULT_CLASS_NAME);
+                	String name = owlModel.createNewResourceName(AbstractOWLModel.DEFAULT_CLASS_NAME);
+                	
+                    owlModel.beginTransaction("Create sibling of class " + sibling.getBrowserText(), name);                    
                     RDFSClass siblingType = sibling.getRDFType();
                     if(siblingType == null) {
                         siblingType = sibling.getProtegeType();
