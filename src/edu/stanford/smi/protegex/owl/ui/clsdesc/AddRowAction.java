@@ -38,7 +38,7 @@ class AddRowAction extends ResourceSelectionAction {
         OWLModel owlModel = resource.getOWLModel();
         try {
             owlModel.beginTransaction(getValue(Action.NAME) + " " + resource.getBrowserText() +
-                    " to " + table.getEditedCls().getBrowserText());
+                    " to " + table.getEditedCls().getBrowserText(), table.getEditedCls().getName());
             table.addCls((RDFSClass) resource);
             owlModel.commitTransaction();
         }

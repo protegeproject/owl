@@ -79,7 +79,7 @@ public class DisjointClassesTableModel extends AbstractTableModel
         }
         try {
             owlModel.beginTransaction("Add " + rdfsClass.getBrowserText() +
-                    " to disjoint classes of " + getEditedCls().getBrowserText());
+                    " to disjoint classes of " + getEditedCls().getBrowserText(), getEditedCls().getName());
             getEditedCls().addDisjointClass(rdfsClass);
             if (rdfsClass instanceof OWLNamedClass && rdfsClass.isEditable()) {
                 OWLNamedClass namedCls = (OWLNamedClass) rdfsClass;
@@ -126,7 +126,7 @@ public class DisjointClassesTableModel extends AbstractTableModel
         OWLModel owlModel = disjointClass.getOWLModel();
         try {
             owlModel.beginTransaction("Delete disjoint class " + disjointClass.getBrowserText() +
-                    " from " + getEditedCls().getBrowserText());
+                    " from " + getEditedCls().getBrowserText(), getEditedCls().getName());
             if (disjointClass instanceof OWLNamedClass && disjointClass.isEditable()) {
                 OWLNamedClass namedCls = (OWLNamedClass) disjointClass;
                 if (namedCls.getDisjointClasses().contains(getEditedCls())) {
@@ -359,7 +359,7 @@ public class DisjointClassesTableModel extends AbstractTableModel
     private void setValueAt(RDFSClass newClass, RDFSClass oldClass) {
         OWLModel owlModel = newClass.getOWLModel();
         try {
-            owlModel.beginTransaction("Change disjoint class to " + newClass.getBrowserText());
+            owlModel.beginTransaction("Change disjoint class to " + newClass.getBrowserText(), getEditedCls().getName());
             addDisjointClass(newClass);
             if (oldClass != null) {
                 cls.removeDisjointClass(oldClass);
