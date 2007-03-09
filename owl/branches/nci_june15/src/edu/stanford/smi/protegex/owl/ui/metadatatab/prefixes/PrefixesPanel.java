@@ -32,7 +32,7 @@ public class PrefixesPanel extends JPanel implements Disposable {
         public void actionPerformed(ActionEvent e) {
             OWLModel owlModel = ontology.getOWLModel();
             try {
-                owlModel.beginTransaction("Add new namespace prefix");
+                owlModel.beginTransaction("Add new namespace prefix", ontology.getName());
                 addPrefix();
                 owlModel.commitTransaction();
             }
@@ -224,7 +224,7 @@ public class PrefixesPanel extends JPanel implements Disposable {
             NamespaceManager nsm = tableModel.getNamespaceManager();
             String namespace = nsm.getNamespaceForPrefix(prefix);
             try {
-                owlModel.beginTransaction("Make " + namespace + " the default namespace");
+                owlModel.beginTransaction("Make " + namespace + " the default namespace", ontology.getName());
                 nsm.setDefaultNamespace(namespace);
                 nsm.removePrefix(prefix);
                 owlModel.commitTransaction();
@@ -255,7 +255,7 @@ public class PrefixesPanel extends JPanel implements Disposable {
         else {
             NamespaceManager nsm = tableModel.getNamespaceManager();
             try {
-                owlModel.beginTransaction("Remove namespace prefix " + prefix);
+                owlModel.beginTransaction("Remove namespace prefix " + prefix, ontology.getName());
                 nsm.removePrefix(prefix);
                 owlModel.commitTransaction();
             }
