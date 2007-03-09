@@ -37,7 +37,7 @@ public class AddPropertyAction extends ResourceSelectionAction {
         RDFSClass rootCls = cls.getOWLModel().getOWLThingClass();
         OWLModel owlModel = resource.getOWLModel();
         try {
-            owlModel.beginTransaction("Add " + cls.getBrowserText() + " to the domain of " + property.getBrowserText());
+            owlModel.beginTransaction("Add " + cls.getBrowserText() + " to the domain of " + property.getBrowserText(), property.getName());
             if (property.getUnionDomain(false).contains(rootCls)) {
                 property.removeUnionDomainClass(rootCls);
             }

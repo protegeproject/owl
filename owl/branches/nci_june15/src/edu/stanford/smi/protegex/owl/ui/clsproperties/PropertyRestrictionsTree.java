@@ -93,7 +93,7 @@ public class PropertyRestrictionsTree extends SelectableTree implements Disposab
             Instance sel = getSelectedInstance();
             OWLModel owlModel = (OWLModel) sel.getKnowledgeBase();
             try {
-                owlModel.beginTransaction("Delete restriction " + sel.getBrowserText());
+                owlModel.beginTransaction("Delete restriction " + sel.getBrowserText() + " from class " + cls.getBrowserText(), cls.getName());
                 sel.delete();
                 owlModel.commitTransaction();
             }
@@ -439,7 +439,7 @@ public class PropertyRestrictionsTree extends SelectableTree implements Disposab
     private void createRestrictionFromDialog(Cls restrictionMetaCls, RDFProperty property) {
         OWLModel owlModel = cls.getOWLModel();
         try {
-            owlModel.beginTransaction("Create restriction at " + cls.getBrowserText());
+            owlModel.beginTransaction("Create restriction at " + cls.getBrowserText(), cls.getName());
             OWLRestriction newRestriction = RestrictionEditorPanel.showCreateDialog(this,
                                                                                     cls, restrictionMetaCls, property);
             if (newRestriction != null) {
