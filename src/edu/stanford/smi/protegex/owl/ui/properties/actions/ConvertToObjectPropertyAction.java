@@ -29,7 +29,7 @@ public class ConvertToObjectPropertyAction extends ResourceAction {
         RDFSClass type = getOWLModel().getOWLObjectPropertyClass();
         final RDFProperty property = (RDFProperty) getResource();
         try {
-            getOWLModel().beginTransaction("Convert " + property.getBrowserText() + " to owl:DatatypeProperty");
+            getOWLModel().beginTransaction("Convert " + property.getBrowserText() + " to owl:DatatypeProperty", property.getName());
             property.setRange(null);
             property.setProtegeType(type);
             getOWLModel().commitTransaction();
