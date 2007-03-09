@@ -39,7 +39,7 @@ public class DeleteAllPropertyValuesAction extends AbstractAction {
     public void actionPerformed(ActionEvent e) {
         OWLModel owlModel = property.getOWLModel();
         try {
-            owlModel.beginTransaction((String) getValue(Action.NAME));
+            owlModel.beginTransaction((String) getValue(Action.NAME), (property == null ? null : property.getName()));
             for (Iterator it = targetFrames.iterator(); it.hasNext();) {
                 RDFResource resource = (RDFResource) it.next();
                 Collection values = resource.getPropertyValues(property);

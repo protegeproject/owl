@@ -44,7 +44,7 @@ public class DeleteMatchingPropertyValuesAction extends AbstractAction {
         OWLModel owlModel = property.getOWLModel();
         try {
             owlModel.beginTransaction("Delete annotation " + value +
-                    " from property " + property.getBrowserText() + " at multiple " + type);
+                    " from property " + property.getBrowserText() + " at multiple " + type, (property == null ? null : property.getName()));
             for (Iterator it = targetFrames.iterator(); it.hasNext();) {
                 RDFResource resource = (RDFResource) it.next();
                 if (resource.getPropertyValues(property).contains(value)) {

@@ -34,7 +34,7 @@ public class SetSubclassesDisjointTrueAction extends RefactorResourceAction {
         else {
             try {
                 OWLNamedClass cls = (OWLNamedClass) getResource();
-                owlModel.beginTransaction("" + getValue(Action.NAME) + " at " + cls.getBrowserText());
+                owlModel.beginTransaction("" + getValue(Action.NAME) + " at " + cls.getBrowserText(), (cls == null ? null : cls.getName()));
                 cls.setSubclassesDisjoint(true);
                 for (Iterator it = cls.getSubclasses(true).iterator(); it.hasNext();) {
                     RDFSClass subCls = (RDFSClass) it.next();
