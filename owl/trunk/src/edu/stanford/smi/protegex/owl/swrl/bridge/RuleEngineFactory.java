@@ -48,8 +48,6 @@ public class RuleEngineFactory
   {
     SWRLRuleEngineBridge bridge = null;
 
-    System.err.println("createRuleEngine: " + ruleEngineName);
-
     if (registeredRuleEngines.containsKey(ruleEngineName)) bridge = registeredRuleEngines.get(ruleEngineName).create(owlModel);
     else throw new InvalidRuleEngineNameException(ruleEngineName);
 

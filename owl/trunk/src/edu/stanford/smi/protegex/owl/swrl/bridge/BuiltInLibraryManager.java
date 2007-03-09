@@ -121,7 +121,7 @@ public abstract class BuiltInLibraryManager
     } // try
   } // invokeBuiltInLibraryInitializeMethod
   
-  private static void invokeAllBuiltInLibrariesInitializeMethod(SWRLRuleEngineBridge bridge) throws SWRLRuleEngineBridgeException
+  public static void invokeAllBuiltInLibrariesInitializeMethod(SWRLRuleEngineBridge bridge) throws SWRLRuleEngineBridgeException
   {
     for (SWRLBuiltInLibrary library : builtInLibraryClassInstances.values()) invokeBuiltInLibraryInitializeMethod(bridge, library);
   } // invokeAllBuiltInMethodsInitializeMethod
