@@ -90,7 +90,7 @@ public class AssertedConditionsWidget extends AbstractConditionsWidget {
         
         Cls metaCls = getKnowledgeBase().getCls(OWLNames.Cls.SOME_VALUES_FROM_RESTRICTION);
         try {
-            beginTransaction("Create restriction at " + getEditedCls().getBrowserText());
+            beginTransaction("Create restriction at " + getEditedCls().getBrowserText(), getEditedCls().getName());
             newRestriction = RestrictionEditorPanel.showCreateDialog(table, getEditedCls(), metaCls);
             if (newRestriction != null) 
                 table.addRestriction(newRestriction);                
@@ -119,7 +119,7 @@ public class AssertedConditionsWidget extends AbstractConditionsWidget {
         String fillerText = restriction.getFillerText();
         try {
             beginTransaction("Derive restriction from " + restriction.getBrowserText() +
-                    " at " + getEditedCls().getBrowserText());
+                    " at " + getEditedCls().getBrowserText(), getEditedCls().getName());
             newRestriction = RestrictionEditorPanel.showCreateDialog(table, getEditedCls(), metaCls, property, fillerText);
             if (newRestriction != null)               
                 table.addRestriction(newRestriction);               
