@@ -641,7 +641,10 @@ public class OWLFrameStore extends FrameStoreAdapter {
     }
 
 
-
+    
+    /**
+     * @deprecated This method was moved into AbstractOWLModel.
+     */
     public List getPropertyValueLiterals(RDFResource frame, RDFProperty slot) {
         final List values = new ArrayList(OWLUtil.getPropertyValues(frame, slot, false));
         if (!values.isEmpty()) {
@@ -652,7 +655,9 @@ public class OWLFrameStore extends FrameStoreAdapter {
         }
     }
 
-
+    /**
+     * @deprecated This method was moved into AbstractOWLModel
+     */     
     public List getLiteralValues(final List values) {
         List result = new ArrayList();
         for (Iterator it = values.iterator(); it.hasNext();) {
