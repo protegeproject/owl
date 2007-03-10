@@ -12,8 +12,6 @@
 	<property name = "build.javadoc" value = "${docs.dir}/apidocs"/>
 	<property name = "dist.dir" value = "./dist"/>
 	<property name = "lib.dir" value = "./lib"/>
-	<property name = "includeAntRuntime" value = "no"/>
-	<property name = "optimize" value = "on"/>
 
 	<target name = "init">
 		<tstamp/>
@@ -62,7 +60,7 @@
 	<!-- COMPILE -->
 	<!-- =================================================================== -->
 	<target name = "compile" depends = "prepare-src">
-		<javac srcdir = "${build.src}" destdir = "${build.dest}" optimize = "${optimize}" includeAntRuntime = "${includeAntRuntime}" source = "1.5">
+		<javac srcdir = "${build.src}" destdir = "${build.dest}" debug = "on" debuglevel = "lines" optimize = "on" includeAntRuntime = "no" source = "1.5">
 			<classpath>
 				<pathelement path = "${protege.jar}"/>
 				<fileset dir = "${lib.dir}">
