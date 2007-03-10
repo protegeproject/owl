@@ -3809,12 +3809,28 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
 
     public Collection getPropertyValueLiterals(RDFResource resource, RDFProperty property) {
-        return owlFrameStore.getPropertyValueLiterals(resource, property);
+        final List values = new ArrayList(OWLUtil.getPropertyValues(resource, property, false));
+        if (!values.isEmpty()) {
+            return getValueLiterals(values);
+        }
+        else {
+            return values;
+        }        
     }
 
 
     public List getValueLiterals(List values) {
-        return owlFrameStore.getLiteralValues(values);
+        List result = new ArrayList();
+        for (Iterator it = values.iterator(); it.hasNext();) {
+            Object o = it.next();
+            if (o instanceof RDFSLiteral) {
+                result.add(o);
+            }
+            else {
+                result.add(createRDFSLiteral(o));
+            }
+        }
+        return result;        
     }
 
 
