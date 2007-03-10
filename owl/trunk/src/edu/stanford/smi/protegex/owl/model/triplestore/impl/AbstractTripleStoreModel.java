@@ -13,6 +13,7 @@ import edu.stanford.smi.protege.model.Model;
 import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protege.model.framestore.MergingNarrowFrameStore;
 import edu.stanford.smi.protege.model.framestore.NarrowFrameStore;
+import edu.stanford.smi.protege.util.CollectionUtilities;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
@@ -158,6 +159,15 @@ public abstract class AbstractTripleStoreModel implements TripleStoreModel {
 
     public boolean isEditableTripleStore(TripleStore tripleStore) {
         int index = ts.indexOf(tripleStore);
+        
+       	//TT: This has to be checked whether it is working right.
+        if (mnfs == null && ts.size() == 1) {
+            /**
+             * Probably a client talking to a server.
+             */
+            return true;
+        }
+                
         if (index == 0) {
             return false;
         }
@@ -191,6 +201,14 @@ public abstract class AbstractTripleStoreModel implements TripleStoreModel {
 
 
     public Iterator listUserTripleStores() {
+    	//TT: This has to be checked whether it is working right.
+        if (mnfs == null && ts.size() == 1) {
+            /**
+             * Probably a client talking to a server.
+             */
+            return CollectionUtilities.createCollection(ts.get(0)).iterator();
+        }
+        
         Iterator it = getTripleStores().iterator();
         it.next();
         return it;
