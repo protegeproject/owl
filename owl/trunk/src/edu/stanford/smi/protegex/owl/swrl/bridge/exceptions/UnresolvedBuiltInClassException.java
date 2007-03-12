@@ -5,6 +5,6 @@ public class UnresolvedBuiltInClassException extends BuiltInException
 {
   public UnresolvedBuiltInClassException(String ruleName, String namespaceName, String message) 
   { 
-     super("Unresolved built-in class for namespace '" + namespaceName + "' in rule '" + ruleName + "': " + message);
+     super("unresolved built-in class for namespace '" + namespaceName + "' in rule '" + ruleName + "': " + message);
   } // UnresolvedBuiltInClassException
 } // UnresolvedBuiltInClassException

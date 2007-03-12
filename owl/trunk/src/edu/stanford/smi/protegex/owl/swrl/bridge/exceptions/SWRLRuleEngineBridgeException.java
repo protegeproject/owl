@@ -1,4 +1,4 @@
-
+  
 package edu.stanford.smi.protegex.owl.swrl.bridge.exceptions;
 
 public class SWRLRuleEngineBridgeException extends Throwable

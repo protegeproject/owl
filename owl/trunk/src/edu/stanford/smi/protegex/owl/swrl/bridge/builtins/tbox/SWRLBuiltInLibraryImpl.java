@@ -58,8 +58,8 @@ public class SWRLBuiltInLibraryImpl implements SWRLBuiltInLibrary
    */
   public boolean isTransitiveProperty(List<Argument> arguments) throws BuiltInException
   {
-    SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(SWRLTBoxIsTransitiveProperty, 1, arguments.size());
-    String propertyName = SWRLBuiltInUtil.getArgumentAsAPropertyName(SWRLTBoxIsTransitiveProperty, 0, arguments);
+    SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(1, arguments.size());
+    String propertyName = SWRLBuiltInUtil.getArgumentAsAPropertyName(0, arguments);
 
     boolean result = false;
     try {
@@ -76,8 +76,8 @@ public class SWRLBuiltInLibraryImpl implements SWRLBuiltInLibrary
    */
   public boolean isSymmetricProperty(List<Argument> arguments) throws BuiltInException
   {
-    SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(SWRLTBoxIsSymmetricProperty, 1, arguments.size());
-    String propertyName = SWRLBuiltInUtil.getArgumentAsAPropertyName(SWRLTBoxIsSymmetricProperty, 0, arguments);
+    SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(1, arguments.size());
+    String propertyName = SWRLBuiltInUtil.getArgumentAsAPropertyName(0, arguments);
 
     boolean result = false;
     try {
@@ -94,8 +94,8 @@ public class SWRLBuiltInLibraryImpl implements SWRLBuiltInLibrary
    */
   public boolean isFunctionalProperty(List<Argument> arguments) throws BuiltInException
   {
-    SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(SWRLTBoxIsFunctionalProperty, 1, arguments.size());
-    String propertyName = SWRLBuiltInUtil.getArgumentAsAPropertyName(SWRLTBoxIsFunctionalProperty, 0, arguments);
+    SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(1, arguments.size());
+    String propertyName = SWRLBuiltInUtil.getArgumentAsAPropertyName(0, arguments);
 
     boolean result = false;
     try {
@@ -112,8 +112,8 @@ public class SWRLBuiltInLibraryImpl implements SWRLBuiltInLibrary
    */
   public boolean isAnnotationProperty(List<Argument> arguments) throws BuiltInException
   {
-    SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(SWRLTBoxIsAnnotationProperty, 1, arguments.size());
-    String propertyName = SWRLBuiltInUtil.getArgumentAsAPropertyName(SWRLTBoxIsAnnotationProperty, 0, arguments);
+    SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(1, arguments.size());
+    String propertyName = SWRLBuiltInUtil.getArgumentAsAPropertyName(0, arguments);
 
     boolean result = false;
     try {
@@ -130,8 +130,8 @@ public class SWRLBuiltInLibraryImpl implements SWRLBuiltInLibrary
    */
   public boolean isInverseFunctionalProperty(List<Argument> arguments) throws BuiltInException
   {
-    SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(SWRLTBoxIsInverseFunctionalProperty, 1, arguments.size());
-    String propertyName = SWRLBuiltInUtil.getArgumentAsAPropertyName(SWRLTBoxIsInverseFunctionalProperty, 0, arguments);
+    SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(1, arguments.size());
+    String propertyName = SWRLBuiltInUtil.getArgumentAsAPropertyName(0, arguments);
 
     boolean result = false;
     try {
@@ -149,7 +149,7 @@ public class SWRLBuiltInLibraryImpl implements SWRLBuiltInLibrary
    */
   public boolean isEquivalentTo(List<Argument> arguments) throws BuiltInException
   {
-    throw new BuiltInNotImplementedException(SWRLTBoxIsEquivalentTo, "");
+    throw new BuiltInNotImplementedException(SWRLTBoxIsEquivalentTo);
   } // isEquivalentTo
 
   /**
@@ -158,7 +158,7 @@ public class SWRLBuiltInLibraryImpl implements SWRLBuiltInLibrary
    */
   public boolean isDisjointWith(List<Argument> arguments) throws BuiltInException
   {
-    throw new BuiltInNotImplementedException(SWRLTBoxIsDisjointWith, "");
+    throw new BuiltInNotImplementedException(SWRLTBoxIsDisjointWith);
   } // isDisjointWith
 
   /**
@@ -239,10 +239,10 @@ public class SWRLBuiltInLibraryImpl implements SWRLBuiltInLibrary
     String className;
     boolean result = false;
 
-    SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(builtInName, 2, arguments.size());
+    SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(2, arguments.size());
 
-    superClassArgumentUnbound = SWRLBuiltInUtil.isUnboundArgument(builtInName, 0, arguments);
-    className = SWRLBuiltInUtil.getArgumentAsAClassName(builtInName, 1, arguments);
+    superClassArgumentUnbound = SWRLBuiltInUtil.isUnboundArgument(0, arguments);
+    className = SWRLBuiltInUtil.getArgumentAsAClassName(1, arguments);
 
     try {
       if (superClassArgumentUnbound) {
@@ -256,7 +256,7 @@ public class SWRLBuiltInLibraryImpl implements SWRLBuiltInLibrary
           result = true;
         } // if
       } else {
-        String superClassName = SWRLBuiltInUtil.getArgumentAsAClassName(builtInName, 0, arguments);
+        String superClassName = SWRLBuiltInUtil.getArgumentAsAClassName(0, arguments);
         if (transitive) result = SWRLOWLUtil.isSuperClassOf(owlModel, superClassName, className, true);
         else result = SWRLOWLUtil.isDirectSuperClassOf(owlModel, superClassName, className, true);
       } // if
@@ -273,10 +273,10 @@ public class SWRLBuiltInLibraryImpl implements SWRLBuiltInLibrary
     String className;
     boolean result = false;
 
-    SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(builtInName, 2, arguments.size());
+    SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(2, arguments.size());
 
-    subClassArgumentUnbound = SWRLBuiltInUtil.isUnboundArgument(builtInName, 0, arguments);
-    className = SWRLBuiltInUtil.getArgumentAsAClassName(builtInName, 1, arguments);
+    subClassArgumentUnbound = SWRLBuiltInUtil.isUnboundArgument(0, arguments);
+    className = SWRLBuiltInUtil.getArgumentAsAClassName(1, arguments);
 
     try {
       if (subClassArgumentUnbound) {
@@ -290,7 +290,7 @@ public class SWRLBuiltInLibraryImpl implements SWRLBuiltInLibrary
           result = true;
         } // if
       } else {
-        String subClassName = SWRLBuiltInUtil.getArgumentAsAClassName(builtInName, 0, arguments);
+        String subClassName = SWRLBuiltInUtil.getArgumentAsAClassName(0, arguments);
         if (transitive) result = SWRLOWLUtil.isSubClassOf(owlModel, subClassName, className, true);
         else  result = SWRLOWLUtil.isDirectSubClassOf(owlModel, subClassName, className, true);
       } // if
@@ -307,9 +307,9 @@ public class SWRLBuiltInLibraryImpl implements SWRLBuiltInLibrary
     String propertyName;
     boolean result = false;
 
-    SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(builtInName, 2, arguments.size());
-    subPropertyArgumentUnbound = SWRLBuiltInUtil.isUnboundArgument(builtInName, 0, arguments);
-    propertyName = SWRLBuiltInUtil.getArgumentAsAPropertyName(builtInName, 1, arguments);
+    SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(2, arguments.size());
+    subPropertyArgumentUnbound = SWRLBuiltInUtil.isUnboundArgument(0, arguments);
+    propertyName = SWRLBuiltInUtil.getArgumentAsAPropertyName(1, arguments);
 
     try {
       if (subPropertyArgumentUnbound) {
@@ -323,7 +323,7 @@ public class SWRLBuiltInLibraryImpl implements SWRLBuiltInLibrary
           result = true;
         } // if
       } else {
-        String subPropertyName = SWRLBuiltInUtil.getArgumentAsAPropertyName(builtInName, 0, arguments);
+        String subPropertyName = SWRLBuiltInUtil.getArgumentAsAPropertyName(0, arguments);
         if (transitive) result = SWRLOWLUtil.isSubPropertyOf(owlModel, subPropertyName, propertyName, true);
         else result = SWRLOWLUtil.isDirectSubPropertyOf(owlModel, subPropertyName, propertyName, true);
       } // if
@@ -340,9 +340,9 @@ public class SWRLBuiltInLibraryImpl implements SWRLBuiltInLibrary
     String propertyName;
     boolean result = false;
 
-    SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(builtInName, 2, arguments.size());
-    superPropertyArgumentUnbound = SWRLBuiltInUtil.isUnboundArgument(builtInName, 0, arguments);
-    propertyName = SWRLBuiltInUtil.getArgumentAsAPropertyName(builtInName, 1, arguments);
+    SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(2, arguments.size());
+    superPropertyArgumentUnbound = SWRLBuiltInUtil.isUnboundArgument(0, arguments);
+    propertyName = SWRLBuiltInUtil.getArgumentAsAPropertyName(1, arguments);
 
     try {
       if (superPropertyArgumentUnbound) {
@@ -356,7 +356,7 @@ public class SWRLBuiltInLibraryImpl implements SWRLBuiltInLibrary
           result = true;
         } // if
       } else {
-        String superPropertyName = SWRLBuiltInUtil.getArgumentAsAPropertyName(builtInName, 0, arguments);
+        String superPropertyName = SWRLBuiltInUtil.getArgumentAsAPropertyName(0, arguments);
         if (transitive) result = SWRLOWLUtil.isSuperPropertyOf(owlModel, superPropertyName, propertyName, true);
         else result = SWRLOWLUtil.isDirectSuperPropertyOf(owlModel, superPropertyName, propertyName, true);
       } // if
@@ -367,4 +367,4 @@ public class SWRLBuiltInLibraryImpl implements SWRLBuiltInLibrary
     return result;
   } // isSuperPropertyOf
 
-} // SWRLBuiltInLibrary
+} // SWRLBuiltInLibraryImpl
