@@ -152,14 +152,14 @@ public class PropertyInfo extends Info implements Argument, PropertyValue
     property = owlModel.getOWLProperty(propertyName);
     if (property == null) throw new InvalidPropertyNameException(propertyName);
 
-    domainClassNames = SWRLOWLUtil.rdfResources2Names(property.getUnionDomain());
+    domainClassNames = SWRLOWLUtil.rdfResources2Names(property.getUnionDomain(true));
 
     rangeClassNames = SWRLOWLUtil.rdfResources2Names(property.getUnionRangeClasses());
     superPropertyNames = SWRLOWLUtil.rdfResources2Names(property.getSuperproperties(true));
     subPropertyNames = SWRLOWLUtil.rdfResources2Names(property.getSubproperties(true));
     equivalentPropertyNames = SWRLOWLUtil.rdfResources2Names(property.getEquivalentProperties());
 
-    Iterator domainsIterator = property.getUnionDomain().iterator();
+    Iterator domainsIterator = property.getUnionDomain(true).iterator();
     while (domainsIterator.hasNext()) {
       RDFSClass rdfsClass = (RDFSClass)domainsIterator.next();
         
