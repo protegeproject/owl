@@ -47,16 +47,16 @@ public class SWRLBuiltInLibraryImpl implements SWRLBuiltInLibrary
     boolean propertyValueSupplied = (arguments.size() == 3);
     boolean result = false;
 
-    SWRLBuiltInUtil.checkNumberOfArgumentsInRange(SWRLABoxHasPropertyValue, 2, 3, arguments.size());
-    SWRLBuiltInUtil.checkThatArgumentIsAnIndividual(SWRLABoxHasPropertyValue, 0, arguments);
-    SWRLBuiltInUtil.checkThatArgumentIsAProperty(SWRLABoxHasPropertyValue, 1, arguments);
+    SWRLBuiltInUtil.checkNumberOfArgumentsInRange(2, 3, arguments.size());
+    SWRLBuiltInUtil.checkThatArgumentIsAnIndividual(0, arguments);
+    SWRLBuiltInUtil.checkThatArgumentIsAProperty(1, arguments);
 
-    individualName = SWRLBuiltInUtil.getArgumentAsAnIndividualName(SWRLABoxHasPropertyValue, 0, arguments);
-    propertyName = SWRLBuiltInUtil.getArgumentAsAPropertyName(SWRLABoxHasPropertyValue, 1, arguments);
+    individualName = SWRLBuiltInUtil.getArgumentAsAnIndividualName(0, arguments);
+    propertyName = SWRLBuiltInUtil.getArgumentAsAPropertyName(1, arguments);
 
     try {
       if (propertyValueSupplied) {
-        propertyValue = SWRLBuiltInUtil.getArgumentAsAPropertyValue(SWRLABoxHasPropertyValue, 2, arguments);
+        propertyValue = SWRLBuiltInUtil.getArgumentAsAPropertyValue(2, arguments);
         result = SWRLOWLUtil.getNumberOfPropertyValues(owlModel, individualName, propertyName, propertyValue, true) != 0;
       } else
         result = SWRLOWLUtil.getNumberOfPropertyValues(owlModel, individualName, propertyName, true) != 0;
@@ -80,25 +80,25 @@ public class SWRLBuiltInLibraryImpl implements SWRLBuiltInLibrary
     boolean propertyValueSupplied = (arguments.size() == 4);
     boolean result = false;
 
-    SWRLBuiltInUtil.checkNumberOfArgumentsInRange(SWRLABoxHasNumberOfPropertyValues, 3, 4, arguments.size());
-    SWRLBuiltInUtil.checkThatArgumentIsAnIndividual(SWRLABoxHasNumberOfPropertyValues, 1, arguments);
-    SWRLBuiltInUtil.checkThatArgumentIsAProperty(SWRLABoxHasNumberOfPropertyValues, 2, arguments);
+    SWRLBuiltInUtil.checkNumberOfArgumentsInRange(3, 4, arguments.size());
+    SWRLBuiltInUtil.checkThatArgumentIsAnIndividual(1, arguments);
+    SWRLBuiltInUtil.checkThatArgumentIsAProperty(2, arguments);
 
-    individualName = SWRLBuiltInUtil.getArgumentAsAnIndividualName(SWRLABoxHasNumberOfPropertyValues, 1, arguments);
-    propertyName = SWRLBuiltInUtil.getArgumentAsAPropertyName(SWRLABoxHasNumberOfPropertyValues, 2, arguments);
+    individualName = SWRLBuiltInUtil.getArgumentAsAnIndividualName(1, arguments);
+    propertyName = SWRLBuiltInUtil.getArgumentAsAPropertyName(2, arguments);
 
     try {
       if (propertyValueSupplied) {
-        propertyValue = SWRLBuiltInUtil.getArgumentAsAPropertyValue(SWRLABoxHasNumberOfPropertyValues, 3, arguments);
+        propertyValue = SWRLBuiltInUtil.getArgumentAsAPropertyValue(3, arguments);
         numberOfPropertyValues = SWRLOWLUtil.getNumberOfPropertyValues(owlModel, individualName, propertyName, propertyValue, true);
       } else 
         numberOfPropertyValues = SWRLOWLUtil.getNumberOfPropertyValues(owlModel, individualName, propertyName, true);
 
-      if (SWRLBuiltInUtil.isUnboundArgument(SWRLABoxHasNumberOfPropertyValues, 0, arguments)) {
+      if (SWRLBuiltInUtil.isUnboundArgument(0, arguments)) {
         arguments.set(0, new LiteralInfo(numberOfPropertyValues)); // Bind the result to the first parameter      
         result = true;
       } else {
-        result = (numberOfPropertyValues == SWRLBuiltInUtil.getArgumentAsAnInteger(SWRLABoxHasNumberOfPropertyValues, 0, arguments));
+        result = (numberOfPropertyValues == SWRLBuiltInUtil.getArgumentAsAnInteger(0, arguments));
       } // if
     } catch (SWRLOWLUtilException e) {
       throw new BuiltInException(e.getMessage());
@@ -114,10 +114,10 @@ public class SWRLBuiltInLibraryImpl implements SWRLBuiltInLibrary
     String className;
     boolean result = false;
 
-    SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(SWRLABoxHasIndividuals, 1, arguments.size());
-    SWRLBuiltInUtil.checkThatArgumentIsAClass(SWRLABoxHasIndividuals, 0, arguments);
+    SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(1, arguments.size());
+    SWRLBuiltInUtil.checkThatArgumentIsAClass(0, arguments);
 
-    className = SWRLBuiltInUtil.getArgumentAsAClassName(SWRLABoxHasIndividuals, 0, arguments);
+    className = SWRLBuiltInUtil.getArgumentAsAClassName(0, arguments);
 
     try {
       result = (SWRLOWLUtil.getNumberOfIndividualsOfClass(owlModel, className, true) != 0);
@@ -137,18 +137,18 @@ public class SWRLBuiltInLibraryImpl implements SWRLBuiltInLibrary
     int numberOfIndividuals;
     boolean result = false;
 
-    SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(SWRLABoxHasNumberOfIndividuals, 2, arguments.size());
-    SWRLBuiltInUtil.checkThatArgumentIsAClass(SWRLABoxHasNumberOfIndividuals, 1, arguments);
+    SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(2, arguments.size());
+    SWRLBuiltInUtil.checkThatArgumentIsAClass(1, arguments);
 
-    className = SWRLBuiltInUtil.getArgumentAsAClassName(SWRLABoxHasNumberOfIndividuals, 1, arguments);
+    className = SWRLBuiltInUtil.getArgumentAsAClassName(1, arguments);
 
     try {
-      if (SWRLBuiltInUtil.isUnboundArgument(SWRLABoxHasNumberOfIndividuals, 0, arguments)) {
+      if (SWRLBuiltInUtil.isUnboundArgument(0, arguments)) {
         numberOfIndividuals = SWRLOWLUtil.getNumberOfIndividualsOfClass(owlModel, className, true);
         arguments.set(0, new LiteralInfo(numberOfIndividuals)); // Bind the result to the first parameter      
         result = true;
       } else {
-        numberOfIndividuals = SWRLBuiltInUtil.getArgumentAsAnInteger(SWRLABoxHasNumberOfIndividuals, 0, arguments);
+        numberOfIndividuals = SWRLBuiltInUtil.getArgumentAsAnInteger(0, arguments);
         result = (numberOfIndividuals == SWRLOWLUtil.getNumberOfIndividualsOfClass(owlModel, className, true));
       } // if
     } catch (SWRLOWLUtilException e) {
@@ -157,4 +157,4 @@ public class SWRLBuiltInLibraryImpl implements SWRLBuiltInLibrary
     return result;
   } // hasNumberOfIndividuals
 
-} // SWRLBuiltInLibrary
+} // SWRLBuiltInLibraryImpl

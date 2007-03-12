@@ -3,14 +3,14 @@ package edu.stanford.smi.protegex.owl.swrl.bridge.exceptions;
 
 public class InvalidBuiltInArgumentException extends BuiltInException
 {
-  public InvalidBuiltInArgumentException(String builtInName, int argumentNumber, String message) 
+  public InvalidBuiltInArgumentException(int argumentNumber, String message) 
   { 
-    super(message + " for argument #" + argumentNumber + " in built-in '" + builtInName + "'"); 
+    super(message + " for argument #" + argumentNumber);
   } // InvalidBuiltInArgumentException
 
-  public InvalidBuiltInArgumentException(String builtInName, String message) 
+  public InvalidBuiltInArgumentException(String message) 
   { 
-    super(message + " for1 built-in '" + builtInName + "'"); 
+    super(message);
   } // InvalidBuiltInArgumentException
 
 } // InvalidBuiltInArgumentException

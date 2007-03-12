@@ -68,8 +68,8 @@ public class SWRLBuiltInLibraryImpl implements SWRLBuiltInLibrary, QueryLibrary
   
   public boolean select(List<Argument> arguments) throws BuiltInException
   {
-    SWRLBuiltInUtil.checkForUnboundArguments(QuerySelect, arguments);
-    SWRLBuiltInUtil.checkNumberOfArgumentsAtLeast(QuerySelect, 1, arguments.size());
+    SWRLBuiltInUtil.checkForUnboundArguments(arguments);
+    SWRLBuiltInUtil.checkNumberOfArgumentsAtLeast(1, arguments.size());
     
     ResultImpl result = getResult(bridge.getCurrentBuiltInInvokingRuleName());
 
@@ -81,7 +81,7 @@ public class SWRLBuiltInLibraryImpl implements SWRLBuiltInLibrary, QueryLibrary
       else if (argument instanceof IndividualInfo) result.addRowData((ObjectValue)argument);
       else if (argument instanceof ClassInfo) result.addRowData((ClassValue)argument);
       else if (argument instanceof PropertyInfo) result.addRowData((PropertyValue)argument);
-      else throw new InvalidBuiltInArgumentException(QuerySelect, argumentIndex, "unknown type '" + argument.getClass() + "'");
+      else throw new InvalidBuiltInArgumentException(argumentIndex, "unknown type '" + argument.getClass() + "'");
       argumentIndex++;
     } // for
     
@@ -90,8 +90,8 @@ public class SWRLBuiltInLibraryImpl implements SWRLBuiltInLibrary, QueryLibrary
   
   public boolean count(List<Argument> arguments) throws BuiltInException
   {
-    SWRLBuiltInUtil.checkForUnboundArguments(QueryCount, arguments);
-    SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(QueryCount, 1, arguments.size());
+    SWRLBuiltInUtil.checkForUnboundArguments(arguments);
+    SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(1, arguments.size());
 
     ResultImpl result = getResult(bridge.getCurrentBuiltInInvokingRuleName());
     Argument argument = (Argument)arguments.get(0);
@@ -102,15 +102,15 @@ public class SWRLBuiltInLibraryImpl implements SWRLBuiltInLibrary, QueryLibrary
     else if (argument instanceof IndividualInfo) result.addRowData((ObjectValue)argument);
     else if (argument instanceof ClassInfo) result.addRowData((ClassValue)argument);
     else if (argument instanceof PropertyInfo) result.addRowData((PropertyValue)argument);
-    else throw new InvalidBuiltInArgumentException(QueryCount, 0, "unknown type '" + argument.getClass() + "'");
+    else throw new InvalidBuiltInArgumentException(0, "unknown type '" + argument.getClass() + "'");
     
     return true;
   } // count
 
   public boolean min(List<Argument> arguments) throws BuiltInException
   {
-    SWRLBuiltInUtil.checkForUnboundArguments(QueryMin, arguments);
-    SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(QueryMin, 1, arguments.size());
+    SWRLBuiltInUtil.checkForUnboundArguments(arguments);
+    SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(1, arguments.size());
 
     ResultImpl result = getResult(bridge.getCurrentBuiltInInvokingRuleName());
     Argument argument = (Argument)arguments.get(0);
@@ -118,15 +118,15 @@ public class SWRLBuiltInLibraryImpl implements SWRLBuiltInLibrary, QueryLibrary
     if (!result.isConfigured()) throwInternalQueryException("built-in '" + QueryMin + "' called on unconfigured result");
 
     if (argument instanceof LiteralInfo && ((LiteralInfo)argument).isNumeric()) result.addRowData((DatatypeValue)argument);
-    else throw new InvalidBuiltInArgumentException(QueryMin, 0, "expecting numeric literal, got '" + argument + "'");
+    else throw new InvalidBuiltInArgumentException(0, "expecting numeric literal, got '" + argument + "'");
     
     return true;
   } // count
 
   public boolean max(List<Argument> arguments) throws BuiltInException
   {
-    SWRLBuiltInUtil.checkForUnboundArguments(QueryMax, arguments);
-    SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(QueryMax, 1, arguments.size());
+    SWRLBuiltInUtil.checkForUnboundArguments(arguments);
+    SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(1, arguments.size());
 
     ResultImpl result = getResult(bridge.getCurrentBuiltInInvokingRuleName());
     Argument argument = (Argument)arguments.get(0);
@@ -134,15 +134,15 @@ public class SWRLBuiltInLibraryImpl implements SWRLBuiltInLibrary, QueryLibrary
     if (!result.isConfigured()) throwInternalQueryException("built-in '" + QueryMax + "' called on unconfigured result");
 
     if (argument instanceof LiteralInfo && ((LiteralInfo)argument).isNumeric()) result.addRowData((DatatypeValue)argument);
-    else throw new InvalidBuiltInArgumentException(QueryMax, 0, "expecting numeric literal, got '" + argument + "'");
+    else throw new InvalidBuiltInArgumentException(0, "expecting numeric literal, got '" + argument + "'");
     
     return true;
   } // count
 
   public boolean sum(List<Argument> arguments) throws BuiltInException
   {
-    SWRLBuiltInUtil.checkForUnboundArguments(QuerySum, arguments);
-    SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(QuerySum, 1, arguments.size());
+    SWRLBuiltInUtil.checkForUnboundArguments(arguments);
+    SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(1, arguments.size());
 
     ResultImpl result = getResult(bridge.getCurrentBuiltInInvokingRuleName());
     Argument argument = (Argument)arguments.get(0);
@@ -150,15 +150,15 @@ public class SWRLBuiltInLibraryImpl implements SWRLBuiltInLibrary, QueryLibrary
     if (!result.isConfigured()) throwInternalQueryException("built-in '" + QuerySum + "' called on unconfigured result");
 
     if (argument instanceof LiteralInfo && ((LiteralInfo)argument).isNumeric()) result.addRowData((DatatypeValue)argument);
-    else throw new InvalidBuiltInArgumentException(QuerySum, 0, "expecting numeric literal, got '" + argument + "'");
+    else throw new InvalidBuiltInArgumentException(0, "expecting numeric literal, got '" + argument + "'");
     
     return true;
   } // count
 
   public boolean avg(List<Argument> arguments) throws BuiltInException
   {
-    SWRLBuiltInUtil.checkForUnboundArguments(QueryAvg, arguments);
-    SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(QueryAvg, 1, arguments.size());
+    SWRLBuiltInUtil.checkForUnboundArguments(arguments);
+    SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(1, arguments.size());
 
     ResultImpl result = getResult(bridge.getCurrentBuiltInInvokingRuleName());
     Argument argument = (Argument)arguments.get(0);
@@ -166,7 +166,7 @@ public class SWRLBuiltInLibraryImpl implements SWRLBuiltInLibrary, QueryLibrary
     if (!result.isConfigured()) throwInternalQueryException("built-in '" + QueryAvg + "' called on unconfigured result");
 
     if (argument instanceof LiteralInfo && ((LiteralInfo)argument).isNumeric()) result.addRowData((DatatypeValue)argument);
-    else throw new InvalidBuiltInArgumentException(QueryAvg, 0, "expecting numeric literal, got '" + argument + "'");
+    else throw new InvalidBuiltInArgumentException(0, "expecting numeric literal, got '" + argument + "'");
     
     return true;
   } // count
@@ -246,7 +246,7 @@ public class SWRLBuiltInLibraryImpl implements SWRLBuiltInLibrary, QueryLibrary
       result.openRow();
     } catch (SWRLRuleEngineBridgeException e) {
       e.printStackTrace(); // TODO
-      throw new BuiltInException("Error configuring rule '" + ruleName + "': " + e.getMessage());
+      throw new BuiltInException("error configuring rule '" + ruleName + "': " + e.getMessage());
     } // try
 
     return result;
@@ -256,14 +256,14 @@ public class SWRLBuiltInLibraryImpl implements SWRLBuiltInLibrary, QueryLibrary
   {
     ResultImpl result = getResult(bridge.getCurrentBuiltInInvokingRuleName());
     
-    SWRLBuiltInUtil.checkForUnboundArguments(QueryDisplayNames, arguments);
-    SWRLBuiltInUtil.checkNumberOfArgumentsAtLeast(QueryDisplayNames, 1, arguments.size());
-    SWRLBuiltInUtil.checkThatAllArgumentsAreStrings(QueryDisplayNames, arguments);
+    SWRLBuiltInUtil.checkForUnboundArguments(arguments);
+    SWRLBuiltInUtil.checkNumberOfArgumentsAtLeast(1, arguments.size());
+    SWRLBuiltInUtil.checkThatAllArgumentsAreStrings(arguments);
     
     if (!result.isConfigured()) throwInternalQueryException("Unconfigured result");
     
     for (int i = 0; i < arguments.size(); i++) {
-      String displayName = SWRLBuiltInUtil.getArgumentAsAString(QueryDisplayNames, i, arguments);
+      String displayName = SWRLBuiltInUtil.getArgumentAsAString(i, arguments);
       result.setColumnDisplayName(displayName);
     } // for
     
@@ -272,7 +272,7 @@ public class SWRLBuiltInLibraryImpl implements SWRLBuiltInLibrary, QueryLibrary
 
   private void throwInternalQueryException(String message) throws BuiltInException
   {
-    throw new BuiltInException("Internal query exception: " + message);
+    throw new BuiltInException("internal query exception: " + message);
   } // throwInternalQueryException
 
 } // SWRLBuiltInLibraryImpl

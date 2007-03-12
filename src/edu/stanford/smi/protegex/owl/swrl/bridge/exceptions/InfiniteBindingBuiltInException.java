@@ -3,13 +3,13 @@ package edu.stanford.smi.protegex.owl.swrl.bridge.exceptions;
 
 public class InfiniteBindingBuiltInException extends BuiltInException 
 {
-  public InfiniteBindingBuiltInException(String builtInName) 
+  public InfiniteBindingBuiltInException() 
   { 
-    super("Infinite bindings would be required for invocation of built-in '" + builtInName + "'"); 
+    super("infinite bindings would be required to satisfy this built-in predicate");
   } // InfiniteBindingBuiltInException
 
   public InfiniteBindingBuiltInException(String builtInName, String message) 
   { 
-    super("Infinite bindings would be required for invoation of built-in '" + builtInName + "': " + message); 
+    super("infinite bindings would be required to satisfy this built-in predicate: " + message); 
   } // InfiniteBindingBuiltInException
 } // InfiniteBindingBuiltInException

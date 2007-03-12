@@ -42,11 +42,11 @@ public class SWRLBuiltInLibraryImpl implements SWRLBuiltInLibrary
    */
   public boolean createOWLThing(List<Argument> arguments) throws BuiltInException
   {
-    SWRLBuiltInUtil.checkNumberOfArgumentsAtLeast(SWRLXCreateOWLThing, 2, arguments.size());
+    SWRLBuiltInUtil.checkNumberOfArgumentsAtLeast(2, arguments.size());
 
-    if (SWRLBuiltInUtil.isUnboundArgument(SWRLXCreateOWLThing, 0, arguments)) {
+    if (SWRLBuiltInUtil.isUnboundArgument(0, arguments)) {
       String createInvocationPattern 
-        = SWRLBuiltInUtil.createInvocationPattern(SWRLXCreateOWLThing, arguments.subList(1, arguments.size()), bridge);
+        = SWRLBuiltInUtil.createInvocationPattern(arguments.subList(1, arguments.size()), bridge);
       IndividualInfo individualInfo = null;
 
       if (createInvocationMap.containsKey(createInvocationPattern)) 
@@ -55,7 +55,7 @@ public class SWRLBuiltInLibraryImpl implements SWRLBuiltInLibrary
         try {
           individualInfo = bridge.createIndividual();
         } catch (SWRLRuleEngineBridgeException e) {
-          throw new BuiltInException("Error calling bridge to create OWL individual: " + e.getMessage());
+          throw new BuiltInException("error calling bridge to create OWL individual: " + e.getMessage());
         } // 
         createInvocationMap.put(createInvocationPattern, individualInfo);
       } // if
@@ -65,4 +65,4 @@ public class SWRLBuiltInLibraryImpl implements SWRLBuiltInLibrary
     return true;
   } // createOWLThing
 
-} // SWRLBuiltInLibrary
+} // SWRLBuiltInLibraryImpl
