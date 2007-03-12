@@ -11,9 +11,11 @@ import edu.stanford.smi.protegex.owl.swrl.bridge.builtins.query.SWRLBuiltInLibra
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.swrl.model.*;
 
+import java.io.*;
 import javax.swing.*;
 import java.awt.*;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.JFileChooser;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -24,6 +26,7 @@ public class SWRLQueryResultPanel extends JPanel
   private SWRLQueryControlPanel controlPanel;
   private SWRLQueryResultModel swrlQueryResultModel;
   private JTable table;
+  private static File currentDirectory = null;
 
   public SWRLQueryResultPanel(SWRLRuleEngineBridge bridge, SWRLQueryControlPanel controlPanel, String ruleName) 
   {
@@ -38,13 +41,13 @@ public class SWRLQueryResultPanel extends JPanel
     
     JPanel buttonsPanel = new JPanel(new FlowLayout());
     
-    JButton runRuleButton = createButton("Run rule", "Execute the SWRL rule", new RunRuleActionListener());
+    JButton runRuleButton = createButton("Run Rules", "Execute all the SWRL rules", new RunRuleActionListener());
     buttonsPanel.add(runRuleButton);
     
     JButton closeTabButton = createButton("Close", "Close the tab for this rule", new CloseTabActionListener());
     buttonsPanel.add(closeTabButton);
     
-    JButton saveResultButton = createButton("Save...", "Save the result", new SaveResultActionListener());
+    JButton saveResultButton = createButton("Save as CSV...", "Save the result as a CSV file...", new SaveResultActionListener());
     buttonsPanel.add(saveResultButton);
     
     JScrollPane scrollPane = new JScrollPane(table);
@@ -84,11 +87,67 @@ public class SWRLQueryResultPanel extends JPanel
   
   private class SaveResultActionListener implements ActionListener
   {
+    private JFileChooser chooser;
+
+    public SaveResultActionListener()
+    {
+      chooser = new JFileChooser();
+      chooser.setCurrentDirectory(null);
+    } // SaveResultActionListener
+
     public void actionPerformed(ActionEvent event) 
     {
+      saveResults();
     } // ActionPerformed
+
+    private void saveResults() 
+    {
+      int returnValue = chooser.showOpenDialog(controlPanel);
+      File selectedFile = null;
+      FileWriter writer = null;
+      Result result = null;
+      int numberOfColumns;
+      
+      try {
+        if (returnValue == JFileChooser.APPROVE_OPTION) {
+          selectedFile = chooser.getSelectedFile();
+          currentDirectory = chooser.getCurrentDirectory();
+          writer = new FileWriter(selectedFile);
+          result = bridge.getQueryResult(ruleName);
+
+          if (result != null) {
+            numberOfColumns = result.getNumberOfColumns();
+            
+            for (int i = 0; i < numberOfColumns; i++) {
+              if (i != 0) writer.write(", ");
+              writer.write(result.getColumnName(i));
+            } // for
+            writer.write("\n");
+            
+            while (result.hasNext()) {
+              for (int i = 0; i < numberOfColumns; i++) {
+                ResultValue value = result.getValue(i);
+                if (i != 0) writer.write(", ");
+                if (value instanceof DatatypeValue && ((DatatypeValue)value).isString()) writer.write("\"" + value + "\"");
+                else writer.write("" + value);
+              } // for
+              writer.write("\n");
+              result.next();
+            } // while
+            result.reset();
+            writer.close();
+            controlPanel.appendText("Sucessfully saved the results of rule '" + ruleName + "' to CSV file '" + selectedFile.getPath() + "'.\n");
+          } // if
+        } // if
+      } catch (Throwable e) {
+        JOptionPane.showMessageDialog(null, "Error saving file '" + selectedFile.getPath() + "': " + e.getMessage(), "Error saving file",
+                                      JOptionPane.ERROR_MESSAGE);
+      } // try
+    } // saveResults
+    
   } // SaveResultActionListener
   
+
   private JButton createButton(String text, String toolTipText, ActionListener listener)
   {
     JButton button = new JButton(text);

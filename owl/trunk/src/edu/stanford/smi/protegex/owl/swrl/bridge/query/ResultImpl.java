@@ -275,25 +275,21 @@ public class ResultImpl implements ResultGenerator, Result
   
   public void next() throws ResultException
   {
-    throwExceptionIfNotConfigured(); throwExceptionIfNotPrepared();
+    throwExceptionIfNotConfigured(); throwExceptionIfNotPrepared(); throwExceptionIfAtEndOfResult();
 
-    if (getNumberOfRows() == 0) throw new ResultStateException("Attempt to process empty result");
-    
-    if (!hasNext()) throw new ResultException("Attempt to process past end of result");
-
-    if (rowIndex != -1 && rowIndex < getNumberOfRows() - 1) rowIndex++;
+    if (rowIndex != -1 && rowIndex < getNumberOfRows()) rowIndex++;
   } // next
   
   public boolean hasNext() throws ResultException
   { 
     throwExceptionIfNotConfigured(); throwExceptionIfNotPrepared();
 
-    return (rowIndex != -1 && rowIndex < getNumberOfRows() - 1);
+    return (rowIndex != -1 && rowIndex < getNumberOfRows());
   } // hasNext
     
   public List<ResultValue> getRow() throws ResultException
   {
-    throwExceptionIfNotConfigured(); throwExceptionIfNotPrepared();
+    throwExceptionIfNotConfigured(); throwExceptionIfNotPrepared(); throwExceptionIfAtEndOfResult();
 
     return (List)rows.get(rowIndex);
   } // getRow
@@ -303,7 +299,7 @@ public class ResultImpl implements ResultGenerator, Result
     List row;
     int columnIndex;
     
-    throwExceptionIfNotConfigured(); throwExceptionIfNotPrepared();
+    throwExceptionIfNotConfigured(); throwExceptionIfNotPrepared(); throwExceptionIfAtEndOfResult();
 
     checkColumnName(columnName);
     
@@ -317,7 +313,7 @@ public class ResultImpl implements ResultGenerator, Result
   {
     List row;
 
-    throwExceptionIfNotConfigured(); throwExceptionIfNotPrepared();
+    throwExceptionIfNotConfigured(); throwExceptionIfNotPrepared(); throwExceptionIfAtEndOfResult();
 
     checkColumnIndex(columnIndex);
     
@@ -329,7 +325,8 @@ public class ResultImpl implements ResultGenerator, Result
   {
     ResultValue value = null;
     
-    throwExceptionIfNotConfigured(); throwExceptionIfNotPrepared();
+    throwExceptionIfNotConfigured(); throwExceptionIfNotPrepared(); throwExceptionIfAtEndOfResult();
+
     checkColumnIndex(columnIndex); checkRowIndex(rowIndex); 
     
     return (ResultValue)((List)rows.get(rowIndex)).get(columnIndex);
@@ -449,6 +446,11 @@ public class ResultImpl implements ResultGenerator, Result
   {
     if (!isConfigured()) throw new ResultStateException("Attempt to add data to unconfigured result");
   } // throwExceptionIfNotConfigured
+
+  private void throwExceptionIfAtEndOfResult() throws ResultException
+  {
+    if (!hasNext()) throw new ResultStateException("Attempt to get data after end of result reached");
+  } // throwExceptionIfAtEndOfResult
 
   private void throwExceptionIfNotPrepared() throws ResultException
   {
