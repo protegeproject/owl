@@ -2,6 +2,7 @@ package edu.stanford.smi.protegex.owl.model.framestore;
 
 import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.Slot;
+import edu.stanford.smi.protege.model.Transaction;
 import edu.stanford.smi.protege.model.framestore.DeleteSimplificationFrameStore;
 import edu.stanford.smi.protege.util.transaction.TransactionMonitor;
 
@@ -19,7 +20,7 @@ public class OWLDeleteSimplificationFrameStore extends DeleteSimplificationFrame
         }
         else {
         	//TT: This is a little bit cheating, but harmless...
-            beginTransaction("Remove template slot from class " + cls + TransactionMonitor.APPLY_TO_TRAILER_STRING +
+            beginTransaction("Remove template slot from class " + cls + Transaction.APPLY_TO_TRAILER_STRING +
             		(cls == null ? null : cls.getName()));
             getDelegate().removeDirectTemplateSlot(cls, slot);
             commitTransaction();
