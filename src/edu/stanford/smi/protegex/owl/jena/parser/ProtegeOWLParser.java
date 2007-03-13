@@ -1188,6 +1188,10 @@ public class ProtegeOWLParser {
 	        throws IOException {
 		if(url.getProtocol().equals("http")) {
 			URLConnection conn = url.openConnection();
+						
+			conn.setConnectTimeout(ApplicationProperties.getUrlConnectTimeout());
+			conn.setReadTimeout(ApplicationProperties.getUrlConnectReadTimeout());
+			
 			conn.setRequestProperty("Accept", "application/rdf+xml");
 			conn.addRequestProperty("Accept", "text/xml");
 			conn.addRequestProperty("Accept", "*/*");
