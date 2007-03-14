@@ -48,8 +48,15 @@ public class RuleEngineFactory
   {
     SWRLRuleEngineBridge bridge = null;
 
-    if (registeredRuleEngines.containsKey(ruleEngineName)) bridge = registeredRuleEngines.get(ruleEngineName).create(owlModel);
-    else throw new InvalidRuleEngineNameException(ruleEngineName);
+    if (registeredRuleEngines.containsKey(ruleEngineName)) {
+
+      try {
+        bridge = registeredRuleEngines.get(ruleEngineName).create(owlModel);
+      } catch (Throwable e) {
+        throw new SWRLRuleEngineBridgeException("Error creating rule engine '" + ruleEngineName + "': " + e.getMessage());
+      } // try
+
+    } else throw new InvalidRuleEngineNameException(ruleEngineName);
 
     return bridge;
   } // createRuleEngine

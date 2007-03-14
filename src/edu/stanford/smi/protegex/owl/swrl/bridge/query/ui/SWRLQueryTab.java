@@ -31,8 +31,8 @@ public class SWRLQueryTab extends JTabbedPane implements SWRLPluginGUIAdapter
     try {
       bridge = RuleEngineFactory.createRuleEngine(owlModel);
     } catch (SWRLRuleEngineBridgeException e) {
-      System.err.println("Error finding a rule engine bridge: " + e.toString());
-      return makeErrorWindow("Error finding a rule engine bridge: " + e.toString());
+      System.err.println(e.toString());
+      return makeErrorWindow(e.toString());
     } // try
 
     removeAll();

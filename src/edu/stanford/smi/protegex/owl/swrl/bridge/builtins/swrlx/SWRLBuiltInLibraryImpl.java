@@ -45,12 +45,10 @@ public class SWRLBuiltInLibraryImpl implements SWRLBuiltInLibrary
     SWRLBuiltInUtil.checkNumberOfArgumentsAtLeast(2, arguments.size());
 
     if (SWRLBuiltInUtil.isUnboundArgument(0, arguments)) {
-      String createInvocationPattern 
-        = SWRLBuiltInUtil.createInvocationPattern(arguments.subList(1, arguments.size()), bridge);
+      String createInvocationPattern  = SWRLBuiltInUtil.createInvocationPattern(arguments.subList(1, arguments.size()), bridge);
       IndividualInfo individualInfo = null;
 
-      if (createInvocationMap.containsKey(createInvocationPattern)) 
-        individualInfo = createInvocationMap.get(createInvocationPattern);
+      if (createInvocationMap.containsKey(createInvocationPattern)) individualInfo = createInvocationMap.get(createInvocationPattern);
       else {
         try {
           individualInfo = bridge.createIndividual();

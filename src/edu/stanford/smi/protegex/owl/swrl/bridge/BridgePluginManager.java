@@ -45,17 +45,19 @@ public class BridgePluginManager
   static {
 
     try { // TODO:  Hack until we can do a proper class load with the manifest
+      Class.forName("jess.Rete");
       Class.forName("edu.stanford.smi.protegex.owl.swrl.bridge.jess.SWRLJessBridge");
       Class.forName("edu.stanford.smi.protegex.owl.swrl.bridge.jess.ui.SWRLJessTab");
     } catch (ClassNotFoundException e) {
-      System.err.println("SWRLJessBridge load failed: Could not find the edu.stanford.smi.protegex.owl.swrl.bridge.jess.SWRLJessBridge class.");
-    } // 
+      System.err.println("SWRLJessBridge load failed: Could not find jess.Rete - or an error occured on initialization");
+    } // try
 
     try { // TODO:  Hack until we can do a proper class load with the manifest
+      Class.forName("jess.Rete");
       Class.forName("edu.stanford.smi.protegex.owl.swrl.bridge.query.ui.SWRLQueryTab");
     } catch (ClassNotFoundException e) {
-      System.err.println("SWRLQueryTab load failed: Could not find the edu.stanford.smi.protegex.owl.swrl.bridge.query.ui.SWRLQueryTab class.");
-    } // 
+      System.err.println("SWRLQueryTab load failed: Could not find jess.Rete - or an error occured on initialization");
+    } // try
 
   } // static
 

@@ -76,6 +76,7 @@ public abstract class SWRLRuleEngineBridge
    */
   public void infer() throws SWRLRuleEngineBridgeException
   {
+    resetBridge();
     importSWRLRulesAndOWLKnowledge();
     exportSWRLRulesAndOWLKnowledge();
     runRuleEngine();
@@ -143,25 +144,23 @@ public abstract class SWRLRuleEngineBridge
    */
   public void resetBridge() throws SWRLRuleEngineBridgeException
   {
-    importedSWRLRules.clear();
+    resetRuleEngine();
 
+    BuiltInLibraryManager.invokeAllBuiltInLibrariesInitializeMethod(this);
+
+    clearQueryResults();
+
+    importedSWRLRules.clear();
     referencedClassNames.clear();
     referencedPropertyNames.clear();
     referencedIndividualNames.clear();
-
     importedClasses.clear();
     importedProperties.clear();
     importedPropertyNames.clear();
     importedIndividuals.clear();
     importedRestrictions.clear();
-
     createdIndividuals.clear();
-
     clearExportedAndAssertedKnowledge();
-
-    resetRuleEngine();
-
-    clearQueryResults();
   } // resetBridge
 
   /**

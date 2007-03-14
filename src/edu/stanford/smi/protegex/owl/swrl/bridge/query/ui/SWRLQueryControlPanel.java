@@ -43,7 +43,7 @@ public class SWRLQueryControlPanel extends JPanel
     
     panel = new JPanel(new FlowLayout());
 
-    button = createButton("Run Rules", "Run all SWRL rules", new RunRuleActionListener(bridge, textArea, this));
+    button = createButton("Run Rules", "Run all SWRL rules", new RunRuleActionListener(textArea, this));
     panel.add(button);
 
     add(BorderLayout.SOUTH, panel);
@@ -99,13 +99,11 @@ public class SWRLQueryControlPanel extends JPanel
 
   private class ListenerBase
   {
-    protected SWRLRuleEngineBridge bridge;
     protected JTextArea textArea;
     protected SWRLQueryControlPanel controlPanel;
 
-    public ListenerBase(SWRLRuleEngineBridge bridge, JTextArea textArea, SWRLQueryControlPanel controlPanel)
+    public ListenerBase(JTextArea textArea, SWRLQueryControlPanel controlPanel)
     {
-      this.bridge = bridge;
       this.textArea = textArea;
       this.controlPanel = controlPanel;
     } // ListenerBase
@@ -113,8 +111,8 @@ public class SWRLQueryControlPanel extends JPanel
 
   private class RunRuleActionListener extends ListenerBase implements ActionListener
   {
-    public RunRuleActionListener(SWRLRuleEngineBridge bridge, JTextArea textArea, SWRLQueryControlPanel controlPanel) 
-    { super(bridge, textArea, controlPanel); }
+    public RunRuleActionListener(JTextArea textArea, SWRLQueryControlPanel controlPanel) 
+    { super(textArea, controlPanel); }
     
     public void actionPerformed(ActionEvent event) 
     {
