@@ -1,6 +1,5 @@
 
 // TODO: only integer math operations supported 
-// TODO: roundHalfToEven math operation not implemented
 // TODO: several string methods are not implemented. 
 // TODO: built-ins for date, time, duration, URIs and lists are not implemented.
 
@@ -48,7 +47,7 @@ public class SWRLBuiltInLibraryImpl implements SWRLBuiltInLibrary
   private static String SWRLB_CEILING = SWRLB_NAMESPACE + ":" + "ceiling";
   private static String SWRLB_FLOOR = SWRLB_NAMESPACE + ":" + "floor";
   private static String SWRLB_ROUND = SWRLB_NAMESPACE + ":" + "round";
-  private static String SWRLB_ROUND_HALF_TO_EVEN = SWRLB_NAMESPACE + ":" + "roundHalfToEven"; // TODO: not implemented
+  private static String SWRLB_ROUND_HALF_TO_EVEN = SWRLB_NAMESPACE + ":" + "roundHalfToEven";
   private static String SWRLB_SIN = SWRLB_NAMESPACE + ":" + "sin";
   private static String SWRLB_COS = SWRLB_NAMESPACE + ":" + "cos";
   private static String SWRLB_TAN = SWRLB_NAMESPACE + ":" + "tan";
@@ -212,7 +211,12 @@ public class SWRLBuiltInLibraryImpl implements SWRLBuiltInLibrary
     return mathOperation(SWRLB_ROUND, arguments);
   } // round
 
-  // TODO: roundHalfToEven not implemented
+  public boolean roundHalfToEven(List<Argument> arguments) throws BuiltInException
+  {
+    SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(2, arguments.size());
+
+    return mathOperation(SWRLB_ROUND_HALF_TO_EVEN, arguments);
+  } // roundHalfToEven
 
   public boolean sin(List<Argument> arguments) throws BuiltInException
   {
@@ -556,6 +560,9 @@ public class SWRLBuiltInLibraryImpl implements SWRLBuiltInLibrary
       argument2 = SWRLBuiltInUtil.getArgumentAsAnInteger(1, arguments);
       operationResult = (int)java.lang.Math.floor(argument2);
     } else if (builtInName.equalsIgnoreCase(SWRLB_ROUND)) {
+      argument2 = SWRLBuiltInUtil.getArgumentAsAnInteger(1, arguments);
+      operationResult = (int)java.lang.Math.rint(argument2);
+    } else if (builtInName.equalsIgnoreCase(SWRLB_ROUND_HALF_TO_EVEN)) {
       argument2 = SWRLBuiltInUtil.getArgumentAsAnInteger(1, arguments);
       operationResult = (int)java.lang.Math.rint(argument2);
     } else if (builtInName.equalsIgnoreCase(SWRLB_ROUND_HALF_TO_EVEN)) {
