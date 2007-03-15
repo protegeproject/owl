@@ -1,5 +1,4 @@
 
-// TODO: only integer math operations supported 
 // TODO: several string methods are not implemented. 
 // TODO: built-ins for date, time, duration, URIs and lists are not implemented.
 
@@ -16,8 +15,8 @@ import java.lang.Math.*;
 
 /**
  ** Implementations library for the core SWRL built-in methods. These built-ins are defined <a
- ** href="http://www.w3.org/2003/11/swrlb">here</a>, and are documented <a
- ** href="http://www.daml.org/2004/04/swrl/builtins.html">here</a>. <p>
+ ** href="http://www.daml.org/2004/04/swrl/builtins.html">here</a> and are documented <a
+ ** href="http://protege.cim3.net/cgi-bin/wiki.pl?CoreSWRLBuiltIns">here</a>.
  **
  ** See <a href="http://protege.cim3.net/cgi-bin/wiki.pl?SWRLBuiltInBridge">here</a> for documentation on defining SWRL built-in libraries.
  */
@@ -31,8 +30,6 @@ public class SWRLBuiltInLibraryImpl implements SWRLBuiltInLibrary
   private static String SWRLB_NOT_EQUAL = SWRLB_NAMESPACE + ":" + "notEqual";
   private static String SWRLB_LESS_THAN_OR_EQUAL = SWRLB_NAMESPACE + ":" + "lessThanOrEqual";
   private static String SWRLB_GREATER_THAN_OR_EQUAL = SWRLB_NAMESPACE + ":" + "greaterThanOrEqual";
-
-  // TODO: The following mathematical operations are only implemented for integers
 
   private static String SWRLB_ADD = SWRLB_NAMESPACE + ":" + "add";
   private static String SWRLB_SUBTRACT = SWRLB_NAMESPACE + ":" + "subtract";
@@ -490,97 +487,71 @@ public class SWRLBuiltInLibraryImpl implements SWRLBuiltInLibrary
     return result;
   } // greaterThan
 
-  // TODO: This method only supports integers at the moment. Need to rewrite this using generics so it will support all types.
   private boolean mathOperation(String builtInName, List<Argument> arguments) throws BuiltInException
   {
-    int argumentNumber, argument1 = 0, argument2, argument3;
-    int operationResult = -1; 
+    int argumentNumber;
+    double argument1 = 0.0, argument2, argument3, operationResult = 0.0; 
     boolean result = false, hasUnbound1stArgument = false;
 
     SWRLBuiltInUtil.checkForUnboundNonFirstArguments(arguments); // Only supports binding of first argument at the moment.
 
     if (SWRLBuiltInUtil.isUnboundArgument(0, arguments)) hasUnbound1stArgument = true;
 
-    if (hasUnbound1stArgument) {
-      if (!SWRLBuiltInUtil.areAllArgumentsIntegers(arguments.subList(1, arguments.size())))
-        throw new BuiltInNotImplementedException("only built-ins with all integer arguments are supported at the moment");
-    } else {
-      if (!SWRLBuiltInUtil.areAllArgumentsIntegers(arguments)) 
-        throw new BuiltInNotImplementedException("only built-ins with all integer arguments are supported at the moment");
-    } // if
-
     // Argument number checking will have been performed by invoking method.
-    if (!hasUnbound1stArgument) argument1 = SWRLBuiltInUtil.getArgumentAsAnInteger(0, arguments);
+    if (!hasUnbound1stArgument) argument1 = SWRLBuiltInUtil.getArgumentAsADouble(0, arguments);
+    argument2 = SWRLBuiltInUtil.getArgumentAsADouble(1, arguments);
 
     if (builtInName.equalsIgnoreCase(SWRLB_ADD)) {
-      operationResult = 0;
+      operationResult = 0.0;
       for (argumentNumber = 1; argumentNumber < arguments.size(); argumentNumber++) {
-        operationResult += SWRLBuiltInUtil.getArgumentAsAnInteger(argumentNumber, arguments);
+        operationResult += SWRLBuiltInUtil.getArgumentAsADouble(argumentNumber, arguments);
       } // for
     } else if (builtInName.equalsIgnoreCase(SWRLB_MULTIPLY)) {
-      operationResult = 1;
+      operationResult = 1.0;
       for (argumentNumber = 1; argumentNumber < arguments.size(); argumentNumber++) {
-        operationResult *= SWRLBuiltInUtil.getArgumentAsAnInteger(argumentNumber, arguments);
+        operationResult *= SWRLBuiltInUtil.getArgumentAsADouble(argumentNumber, arguments);
       } // for
     } else if (builtInName.equalsIgnoreCase(SWRLB_SUBTRACT)) {
-      argument2 = SWRLBuiltInUtil.getArgumentAsAnInteger(1, arguments);
-      argument3 = SWRLBuiltInUtil.getArgumentAsAnInteger(2, arguments);
+      argument3 = SWRLBuiltInUtil.getArgumentAsADouble(2, arguments);
       operationResult = argument2 - argument3;
     } else if (builtInName.equalsIgnoreCase(SWRLB_DIVIDE)) {
-      argument2 = SWRLBuiltInUtil.getArgumentAsAnInteger(1, arguments);
-      argument3 = SWRLBuiltInUtil.getArgumentAsAnInteger(2, arguments);
+      argument3 = SWRLBuiltInUtil.getArgumentAsADouble(2, arguments);
       operationResult = (argument2 / argument3);
     } else if (builtInName.equalsIgnoreCase(SWRLB_INTEGER_DIVIDE)) {
-      argument2 = SWRLBuiltInUtil.getArgumentAsAnInteger(1, arguments);
-      argument3 = SWRLBuiltInUtil.getArgumentAsAnInteger(2, arguments);
+      argument3 = SWRLBuiltInUtil.getArgumentAsADouble(2, arguments);
       if (argument3 == 0) throw new InvalidBuiltInArgumentException(2, "zero passed as divisor");
       if (argument3 >= 0) operationResult = argument2 + argument3 + 1 / argument3;
       else operationResult = argument2 / argument3;
     } else if (builtInName.equalsIgnoreCase(SWRLB_MOD)) {
-      argument2 = SWRLBuiltInUtil.getArgumentAsAnInteger(1, arguments);
-      argument3 = SWRLBuiltInUtil.getArgumentAsAnInteger(2, arguments);
+      argument3 = SWRLBuiltInUtil.getArgumentAsADouble(2, arguments);
       operationResult = argument2 % argument3;
     } else if (builtInName.equalsIgnoreCase(SWRLB_POW)) {
-      argument2 = SWRLBuiltInUtil.getArgumentAsAnInteger(1, arguments);
-      argument3 = SWRLBuiltInUtil.getArgumentAsAnInteger(2, arguments);
+      argument3 = SWRLBuiltInUtil.getArgumentAsADouble(2, arguments);
       operationResult = (int)java.lang.Math.pow(argument2, argument3);
-    } else if (builtInName.equalsIgnoreCase(SWRLB_UNARY_PLUS)) {
-      argument2 = SWRLBuiltInUtil.getArgumentAsAnInteger(1, arguments);
-      operationResult = argument2;
-    } else if (builtInName.equalsIgnoreCase(SWRLB_UNARY_MINUS)) {
-      argument2 = SWRLBuiltInUtil.getArgumentAsAnInteger(1, arguments);
-      operationResult = -argument2;
-    } else if (builtInName.equalsIgnoreCase(SWRLB_ABS)) {
-      argument2 = SWRLBuiltInUtil.getArgumentAsAnInteger(1, arguments);
-      operationResult = java.lang.Math.abs(argument2);
-    } else if (builtInName.equalsIgnoreCase(SWRLB_CEILING)) {
-      argument2 = SWRLBuiltInUtil.getArgumentAsAnInteger(1, arguments);
-      operationResult = (int)java.lang.Math.ceil(argument2);
-    } else if (builtInName.equalsIgnoreCase(SWRLB_FLOOR)) {
-      argument2 = SWRLBuiltInUtil.getArgumentAsAnInteger(1, arguments);
-      operationResult = (int)java.lang.Math.floor(argument2);
-    } else if (builtInName.equalsIgnoreCase(SWRLB_ROUND)) {
-      argument2 = SWRLBuiltInUtil.getArgumentAsAnInteger(1, arguments);
-      operationResult = (int)java.lang.Math.rint(argument2);
-    } else if (builtInName.equalsIgnoreCase(SWRLB_ROUND_HALF_TO_EVEN)) {
-      argument2 = SWRLBuiltInUtil.getArgumentAsAnInteger(1, arguments);
-      operationResult = (int)java.lang.Math.rint(argument2);
-    } else if (builtInName.equalsIgnoreCase(SWRLB_ROUND_HALF_TO_EVEN)) {
-      argument2 = SWRLBuiltInUtil.getArgumentAsAnInteger(1, arguments);
-      throw new BuiltInNotImplementedException(SWRLB_ROUND_HALF_TO_EVEN);
-    } else if (builtInName.equalsIgnoreCase(SWRLB_SIN)) {
-      argument2 = SWRLBuiltInUtil.getArgumentAsAnInteger(1, arguments);
-      operationResult = (int)java.lang.Math.sin(argument2);
-    } else if (builtInName.equalsIgnoreCase(SWRLB_COS)) {
-      argument2 = SWRLBuiltInUtil.getArgumentAsAnInteger(1, arguments);
-      operationResult = (int)java.lang.Math.cos(argument2);
-    } else if (builtInName.equalsIgnoreCase(SWRLB_TAN)) {
-      argument2 = SWRLBuiltInUtil.getArgumentAsAnInteger(1, arguments);
-      operationResult = (int)java.lang.Math.tan(argument2);
-    } else throw new InvalidBuiltInNameException(builtInName);
+    } else if (builtInName.equalsIgnoreCase(SWRLB_UNARY_PLUS)) operationResult = argument2;
+    else if (builtInName.equalsIgnoreCase(SWRLB_UNARY_MINUS)) operationResult = -argument2;
+    else if (builtInName.equalsIgnoreCase(SWRLB_ABS)) operationResult = java.lang.Math.abs(argument2);
+    else if (builtInName.equalsIgnoreCase(SWRLB_CEILING)) operationResult = java.lang.Math.ceil(argument2);
+    else if (builtInName.equalsIgnoreCase(SWRLB_FLOOR)) operationResult = java.lang.Math.floor(argument2);
+    else if (builtInName.equalsIgnoreCase(SWRLB_ROUND)) operationResult = java.lang.Math.rint(argument2);
+    else if (builtInName.equalsIgnoreCase(SWRLB_ROUND)) operationResult = java.lang.Math.rint(argument2);
+    else if (builtInName.equalsIgnoreCase(SWRLB_ROUND_HALF_TO_EVEN)) operationResult = java.lang.Math.rint(argument2);
+    else if (builtInName.equalsIgnoreCase(SWRLB_SIN)) operationResult = java.lang.Math.sin(argument2);
+    else if (builtInName.equalsIgnoreCase(SWRLB_COS)) operationResult = java.lang.Math.cos(argument2);
+    else if (builtInName.equalsIgnoreCase(SWRLB_TAN)) operationResult = java.lang.Math.tan(argument2);
+    else throw new InvalidBuiltInNameException(builtInName);
     
-    if (hasUnbound1stArgument) {
-      arguments.set(0, new LiteralInfo(operationResult)); // Bind the result to the first argument.
+    if (hasUnbound1stArgument) { // Bind the result to the first argument.
+      if (SWRLBuiltInUtil.isShortMostPreciseArgument(arguments.subList(1, arguments.size()))) 
+        arguments.set(0, new LiteralInfo((short)operationResult)); 
+      else if (SWRLBuiltInUtil.isIntegerMostPreciseArgument(arguments.subList(1, arguments.size()))) 
+        arguments.set(0, new LiteralInfo((int)operationResult));
+      else if (SWRLBuiltInUtil.isFloatMostPreciseArgument(arguments.subList(1, arguments.size()))) 
+        arguments.set(0, new LiteralInfo((float)operationResult));
+      else if (SWRLBuiltInUtil.isLongMostPreciseArgument(arguments.subList(1, arguments.size()))) 
+        arguments.set(0, new LiteralInfo((long)operationResult));
+      else arguments.set(0, new LiteralInfo((double)operationResult));
+
       result = true;
     } else result = (argument1 == operationResult);
 

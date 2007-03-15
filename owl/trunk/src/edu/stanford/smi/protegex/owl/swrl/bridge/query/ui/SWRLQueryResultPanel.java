@@ -41,8 +41,8 @@ public class SWRLQueryResultPanel extends JPanel
     
     JPanel buttonsPanel = new JPanel(new FlowLayout());
     
-    JButton runRuleButton = createButton("Run Rules", "Execute all the SWRL rules", new RunRuleActionListener());
-    buttonsPanel.add(runRuleButton);
+    JButton runRulesButton = createButton("Run Rules", "Execute all the SWRL rules", new RunRulesActionListener());
+    buttonsPanel.add(runRulesButton);
     
     JButton closeTabButton = createButton("Close", "Close the tab for this rule", new CloseTabActionListener());
     buttonsPanel.add(closeTabButton);
@@ -60,7 +60,7 @@ public class SWRLQueryResultPanel extends JPanel
   
   public void validate() { swrlQueryResultModel.fireTableStructureChanged(); super.validate(); }
   
-  private class RunRuleActionListener implements ActionListener
+  private class RunRulesActionListener implements ActionListener
   {
     public void actionPerformed(ActionEvent event) 
     {
@@ -82,7 +82,7 @@ public class SWRLQueryResultPanel extends JPanel
         controlPanel.removeAllPanels();
       } // try
     } // ActionPerformed
-  } // RunRuleActionListener
+  } // RunRulesActionListener
   
   private class CloseTabActionListener implements ActionListener
   {
@@ -206,7 +206,6 @@ public class SWRLQueryResultPanel extends JPanel
       try {
         result = bridge.getQueryResult(ruleName);
         columnName = (result == null) ? "" : result.getColumnName(columnIndex); 
-        System.err.println("columnIndex: " + columnIndex + ",  columnName: " + columnName);
       } catch (ResultException e) {
         controlPanel.appendText("Exception getting column name in model: " + e + "\n");
         columnName = "Exception: " + e.getMessage();
