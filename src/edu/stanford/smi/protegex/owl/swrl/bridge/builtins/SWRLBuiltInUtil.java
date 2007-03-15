@@ -9,6 +9,8 @@ import edu.stanford.smi.protegex.owl.swrl.util.SWRLOWLUtil;
 import edu.stanford.smi.protegex.owl.swrl.exceptions.*;
 
 import java.util.List;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 
 /**
  ** Class containing utility methods that can be used in built-in method implementations. 
@@ -58,6 +60,13 @@ public class SWRLBuiltInUtil
       checkThatArgumentIsAnInteger(argumentNumber, arguments);
   } // checkThatAllArgumentsAreIntegers
 
+  public static boolean areAllArgumentsShorts(List<Argument> arguments) throws BuiltInException
+  {
+    for (int argumentNumber = 0; argumentNumber < arguments.size(); argumentNumber++) 
+      if (!isArgumentAShort(argumentNumber, arguments)) return false;
+    return true;
+  } // areAllArgumentsShorts
+
   public static boolean areAllArgumentsIntegers(List<Argument> arguments) throws BuiltInException
   {
     for (int argumentNumber = 0; argumentNumber < arguments.size(); argumentNumber++) 
@@ -72,12 +81,49 @@ public class SWRLBuiltInUtil
     return true;
   } // areAllArgumentsLongs
 
+  public static boolean areAllArgumentsFloats(List<Argument> arguments) throws BuiltInException
+  {
+    for (int argumentNumber = 0; argumentNumber < arguments.size(); argumentNumber++) 
+      if (!isArgumentAFloat(argumentNumber, arguments)) return false;
+    return true;
+  } // areAllArgumentsFloats
+
   public static boolean areAllArgumentsDoubles(List<Argument> arguments) throws BuiltInException
   {
     for (int argumentNumber = 0; argumentNumber < arguments.size(); argumentNumber++) 
       if (!isArgumentADouble(argumentNumber, arguments)) return false;
     return true;
   } // areAllArgumentsDoubles
+
+  public static boolean isShortMostPreciseArgument(List<Argument> arguments) throws BuiltInException
+  {
+    for (int argumentNumber = 0; argumentNumber < arguments.size(); argumentNumber++) 
+      if (isArgumentAnInteger(argumentNumber, arguments) || isArgumentALong(argumentNumber, arguments) || 
+          isArgumentAFloat(argumentNumber, arguments) || isArgumentADouble(argumentNumber, arguments)) return false;
+    return true;
+  } // isIntegerMostPreciseArgument
+
+  public static boolean isIntegerMostPreciseArgument(List<Argument> arguments) throws BuiltInException
+  {
+    for (int argumentNumber = 0; argumentNumber < arguments.size(); argumentNumber++) 
+      if (isArgumentALong(argumentNumber, arguments) || isArgumentAFloat(argumentNumber, arguments) ||
+          isArgumentADouble(argumentNumber, arguments)) return false;
+    return true;
+  } // isIntegerMostPreciseArgument
+
+  public static boolean isFloatMostPreciseArgument(List<Argument> arguments) throws BuiltInException
+  {
+    for (int argumentNumber = 0; argumentNumber < arguments.size(); argumentNumber++) 
+      if (isArgumentADouble(argumentNumber, arguments) || isArgumentALong(argumentNumber, arguments)) return false;
+    return true;
+  } // isLongMostPreciseArgument
+
+  public static boolean isLongMostPreciseArgument(List<Argument> arguments) throws BuiltInException
+  {
+    for (int argumentNumber = 0; argumentNumber < arguments.size(); argumentNumber++) 
+      if (isArgumentADouble(argumentNumber, arguments)) return false;
+    return true;
+  } // isLongMostPreciseArgument
 
   public static boolean areAllArgumentsBooleans(List<Argument> arguments) throws BuiltInException
   {
@@ -92,13 +138,6 @@ public class SWRLBuiltInUtil
       if (!isArgumentALiteral(argumentNumber, arguments)) return false;
     return true;
   } // areAllArgumentsIntegers
-
-  public static boolean areAllArgumentsFloats(List<Argument> arguments) throws BuiltInException
-  {
-    for (int argumentNumber = 0; argumentNumber < arguments.size(); argumentNumber++) 
-      if (!isArgumentAFloat(argumentNumber, arguments)) return false;
-    return true;
-  } // areAllArgumentsFloats
 
   public static boolean areAllArgumentsNumeric(List<Argument> arguments) throws BuiltInException
   {
@@ -247,10 +286,36 @@ public class SWRLBuiltInUtil
 
   public static int getArgumentAsAnInteger(int argumentNumber, List<Argument> arguments) throws BuiltInException
   {
-    checkThatArgumentIsAnInteger(argumentNumber, arguments);
-
-    return getArgumentAsALiteral(argumentNumber, arguments).getInt();
+    return getArgumentAsALiteral(argumentNumber, arguments).getInt(); // Will throw DatatypeConversionException if invalid.
   } // getArgumentAsAnInteger
+
+  // Shorts
+
+  public static boolean isArgumentAShort(int argumentNumber, List<Argument> arguments) throws BuiltInException
+  {
+    if (isArgumentALiteral(argumentNumber, arguments)) 
+      return (getArgumentAsALiteral(argumentNumber, arguments).isShort());
+    else return false;
+  } // isArgumentAShort
+
+  public static int getArgumentAsAShort(int argumentNumber, List<Argument> arguments) throws BuiltInException
+  {
+    return getArgumentAsALiteral(argumentNumber, arguments).getInt(); // Will throw DatatypeConversionException if invalid.
+  } // getArgumentAsAShort
+
+  // BigDecimal
+
+  public static BigDecimal getArgumentAsABigDecimal(int argumentNumber, List<Argument> arguments) throws BuiltInException
+  {
+    return getArgumentAsALiteral(argumentNumber, arguments).getBigDecimal(); // Will throw DatatypeConversionException if invalid.
+  } // getArgumentAsABigDecimal
+
+  // BigInteger
+
+  public static BigInteger getArgumentAsABigInteger(int argumentNumber, List<Argument> arguments) throws BuiltInException
+  {
+    return getArgumentAsALiteral(argumentNumber, arguments).getBigInteger(); // Will throw DatatypeConversionException if invalid.
+  } // getArgumentAsABigInteger
 
   public static boolean isArgumentALiteral(int argumentNumber, List<Argument> arguments) throws BuiltInException
   {
@@ -312,9 +377,7 @@ public class SWRLBuiltInUtil
 
   public static long getArgumentAsALong(int argumentNumber, List<Argument> arguments) throws BuiltInException
   {
-    checkThatArgumentIsALong(argumentNumber, arguments);
-
-    return getArgumentAsALiteral(argumentNumber, arguments).getLong();
+    return getArgumentAsALiteral(argumentNumber, arguments).getLong(); // Will throw DatatypeConversionException if invalid.
   } // getArgumentAsALong
 
   // Floats
@@ -335,9 +398,7 @@ public class SWRLBuiltInUtil
 
   public static float getArgumentAsAFloat(int argumentNumber, List<Argument> arguments) throws BuiltInException
   {
-    checkThatArgumentIsAFloat(argumentNumber, arguments);
-
-    return getArgumentAsALiteral(argumentNumber, arguments).getFloat();
+    return getArgumentAsALiteral(argumentNumber, arguments).getFloat(); // Will throw DatatypeConversionException if invalid.
   } // getArgumentAsAFloat
 
   // Double
@@ -358,9 +419,7 @@ public class SWRLBuiltInUtil
 
   public static double getArgumentAsADouble(int argumentNumber, List<Argument> arguments) throws BuiltInException
   {
-    checkThatArgumentIsADouble(argumentNumber, arguments);
-
-    return getArgumentAsALiteral(argumentNumber, arguments).getDouble();
+    return getArgumentAsALiteral(argumentNumber, arguments).getDouble(); // Will throw DatatypeConversionException if invalid.
   } // getArgumentAsADouble
 
   // Booleans
