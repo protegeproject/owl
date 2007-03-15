@@ -5,6 +5,9 @@ import edu.stanford.smi.protegex.owl.swrl.bridge.query.exceptions.ResultExceptio
 
 import java.util.List;
 
+/**
+ ** Interface to configure a result and add data to it. See the Result class for detailed comments.
+ */
 public interface ResultGenerator
 {
     static String MinAggregateFunction = "min"; 
@@ -24,7 +27,7 @@ public interface ResultGenerator
     boolean isOrdered();
     boolean isDescending();
 
-    void setColumnDisplayName(String columnName) throws ResultException;
+    void addColumnDisplayName(String columnName) throws ResultException;
 
     boolean isConfigured();
     void configured() throws ResultException;

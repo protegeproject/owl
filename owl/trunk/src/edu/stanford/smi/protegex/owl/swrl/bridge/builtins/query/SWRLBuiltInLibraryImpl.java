@@ -1,4 +1,6 @@
 
+// TODO: orderBy/orderByDescending not yet implemented
+
 package edu.stanford.smi.protegex.owl.swrl.bridge.builtins.query;
 
 import edu.stanford.smi.protegex.owl.swrl.bridge.query.*;
@@ -13,7 +15,8 @@ import edu.stanford.smi.protegex.owl.swrl.bridge.query.exceptions.*;
 import java.util.*;
 
 /**
- ** Implementation library for SWRL query built-ins.
+ ** Implementation library for SWRL query built-ins. See <a href="http://protege.cim3.net/cgi-bin/wiki.pl?SWRLQueryBuiltIns">here</a> for
+ ** documentation on this built-in library.
  */
 public class SWRLBuiltInLibraryImpl implements SWRLBuiltInLibrary, QueryLibrary
 {
@@ -26,12 +29,11 @@ public class SWRLBuiltInLibraryImpl implements SWRLBuiltInLibrary, QueryLibrary
   private static String QueryMax = QueryNamespace + ":" + "max";
   private static String QuerySum = QueryNamespace + ":" + "sum";
   private static String QueryOrderBy = QueryNamespace + ":" + "orderBy";
-  private static String QueryAscending = QueryNamespace + ":" + "ascending";
-  private static String QueryDescending = QueryNamespace + ":" + "descending";
+  private static String QueryOrderByDescending = QueryNamespace + ":" + "orderByDescending";
   private static String QueryDisplayNames = QueryNamespace + ":" + "displayNames";
   
   private static String queryBuiltInNamesArray[] = { QuerySelect, QueryCount, QueryAvg, QueryMin, QueryMax, QuerySum,
-                                                     QueryOrderBy, QueryAscending, QueryDescending, QueryDisplayNames };
+                                                     QueryOrderBy, QueryOrderByDescending, QueryDisplayNames };
   private static Set<String> queryBuiltInNames;
 
   private HashMap<String, ResultImpl> results;
@@ -61,11 +63,14 @@ public class SWRLBuiltInLibraryImpl implements SWRLBuiltInLibrary, QueryLibrary
     return result;
   } // getQueryResult
   
+  /**
+   ** Clear all query results.
+   */
   public void clearQueryResults()
   {
     results = new HashMap<String, ResultImpl>();
   } // clearQueryResults
-  
+
   public boolean select(List<Argument> arguments) throws BuiltInException
   {
     SWRLBuiltInUtil.checkForUnboundArguments(arguments);
@@ -96,7 +101,7 @@ public class SWRLBuiltInLibraryImpl implements SWRLBuiltInLibrary, QueryLibrary
     ResultImpl result = getResult(bridge.getCurrentBuiltInInvokingRuleName());
     Argument argument = (Argument)arguments.get(0);
     
-    if (!result.isConfigured()) throwInternalQueryException("built-in '" + QueryCount + "' called on unconfigured result");
+    if (!result.isConfigured()) throwInternalQueryException("built-in called on unconfigured result");
 
     if (argument instanceof LiteralInfo) result.addRowData((DatatypeValue)argument);
     else if (argument instanceof IndividualInfo) result.addRowData((ObjectValue)argument);
@@ -115,7 +120,7 @@ public class SWRLBuiltInLibraryImpl implements SWRLBuiltInLibrary, QueryLibrary
     ResultImpl result = getResult(bridge.getCurrentBuiltInInvokingRuleName());
     Argument argument = (Argument)arguments.get(0);
     
-    if (!result.isConfigured()) throwInternalQueryException("built-in '" + QueryMin + "' called on unconfigured result");
+    if (!result.isConfigured()) throwInternalQueryException("built-in called on unconfigured result");
 
     if (argument instanceof LiteralInfo && ((LiteralInfo)argument).isNumeric()) result.addRowData((DatatypeValue)argument);
     else throw new InvalidBuiltInArgumentException(0, "expecting numeric literal, got '" + argument + "'");
@@ -131,7 +136,7 @@ public class SWRLBuiltInLibraryImpl implements SWRLBuiltInLibrary, QueryLibrary
     ResultImpl result = getResult(bridge.getCurrentBuiltInInvokingRuleName());
     Argument argument = (Argument)arguments.get(0);
     
-    if (!result.isConfigured()) throwInternalQueryException("built-in '" + QueryMax + "' called on unconfigured result");
+    if (!result.isConfigured()) throwInternalQueryException("built-in called on unconfigured result");
 
     if (argument instanceof LiteralInfo && ((LiteralInfo)argument).isNumeric()) result.addRowData((DatatypeValue)argument);
     else throw new InvalidBuiltInArgumentException(0, "expecting numeric literal, got '" + argument + "'");
@@ -147,7 +152,7 @@ public class SWRLBuiltInLibraryImpl implements SWRLBuiltInLibrary, QueryLibrary
     ResultImpl result = getResult(bridge.getCurrentBuiltInInvokingRuleName());
     Argument argument = (Argument)arguments.get(0);
     
-    if (!result.isConfigured()) throwInternalQueryException("built-in '" + QuerySum + "' called on unconfigured result");
+    if (!result.isConfigured()) throwInternalQueryException("built-in called on unconfigured result");
 
     if (argument instanceof LiteralInfo && ((LiteralInfo)argument).isNumeric()) result.addRowData((DatatypeValue)argument);
     else throw new InvalidBuiltInArgumentException(0, "expecting numeric literal, got '" + argument + "'");
@@ -163,7 +168,7 @@ public class SWRLBuiltInLibraryImpl implements SWRLBuiltInLibrary, QueryLibrary
     ResultImpl result = getResult(bridge.getCurrentBuiltInInvokingRuleName());
     Argument argument = (Argument)arguments.get(0);
     
-    if (!result.isConfigured()) throwInternalQueryException("built-in '" + QueryAvg + "' called on unconfigured result");
+    if (!result.isConfigured()) throwInternalQueryException("built-in called on unconfigured result");
 
     if (argument instanceof LiteralInfo && ((LiteralInfo)argument).isNumeric()) result.addRowData((DatatypeValue)argument);
     else throw new InvalidBuiltInArgumentException(0, "expecting numeric literal, got '" + argument + "'");
@@ -171,6 +176,11 @@ public class SWRLBuiltInLibraryImpl implements SWRLBuiltInLibrary, QueryLibrary
     return true;
   } // count
   
+  public boolean displayNames(List<Argument> arguments) throws BuiltInException
+  {   
+    return true;
+  } // displayNames
+
   private ResultImpl getResult(String ruleName) throws BuiltInException
   {
     ResultImpl result;
@@ -238,6 +248,11 @@ public class SWRLBuiltInLibraryImpl implements SWRLBuiltInLibrary, QueryLibrary
               columnName = "avg(?" + builtInVariableInfo.getVariableName() + ")";
             } else columnName = "avg[" + argument + "]";
             result.addAggregateColumn(columnName, ResultGenerator.AvgAggregateFunction);
+          } else if (builtInName.equalsIgnoreCase(QueryDisplayNames)) {
+            if (argument instanceof LiteralInfo && ((LiteralInfo)argument).isString()) {
+              LiteralInfo literalInfo = (LiteralInfo)argument;
+              result.addColumnDisplayName(literalInfo.getString());
+            } else throw new BuiltInException("only string literals allowed as column names - found '" + argument + "'");
           } // if
           argumentIndex++;
         } // for
@@ -245,31 +260,12 @@ public class SWRLBuiltInLibraryImpl implements SWRLBuiltInLibrary, QueryLibrary
       result.configured();
       result.openRow();
     } catch (SWRLRuleEngineBridgeException e) {
-      e.printStackTrace(); // TODO
-      throw new BuiltInException("error configuring rule '" + ruleName + "': " + e.getMessage());
+      throw new BuiltInException("error configuring result for rule '" + ruleName + "': " + e.getMessage());
     } // try
 
     return result;
   } // configureResult
   
-  public boolean displayNames(List<Argument> arguments) throws BuiltInException
-  {
-    ResultImpl result = getResult(bridge.getCurrentBuiltInInvokingRuleName());
-    
-    SWRLBuiltInUtil.checkForUnboundArguments(arguments);
-    SWRLBuiltInUtil.checkNumberOfArgumentsAtLeast(1, arguments.size());
-    SWRLBuiltInUtil.checkThatAllArgumentsAreStrings(arguments);
-    
-    if (!result.isConfigured()) throwInternalQueryException("Unconfigured result");
-    
-    for (int i = 0; i < arguments.size(); i++) {
-      String displayName = SWRLBuiltInUtil.getArgumentAsAString(i, arguments);
-      result.setColumnDisplayName(displayName);
-    } // for
-    
-    return true;
-  } // displayNames
-
   private void throwInternalQueryException(String message) throws BuiltInException
   {
     throw new BuiltInException("internal query exception: " + message);
