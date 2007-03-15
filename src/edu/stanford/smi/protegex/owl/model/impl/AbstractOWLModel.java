@@ -614,19 +614,8 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     public List asRDFSLiterals(Collection values) {
         List result = new LinkedList();
         for (Iterator it = values.iterator(); it.hasNext();) {
-            Object o = it.next();
-            if (o instanceof String) {
-                final String str = (String) o;
-                if (DefaultRDFSLiteral.isRawValue(str)) {
-                    result.add(new DefaultRDFSLiteral(this, str));
-                }
-                else {
-                    result.add(createRDFSLiteral(o));
-                }
-            }
-            else {
-                result.add(o);
-            }
+        	Object o = it.next();
+        	result.add(asRDFObject(o));  
         }
         return result;
     }
