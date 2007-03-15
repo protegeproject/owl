@@ -64,15 +64,23 @@ public class SWRLQueryResultPanel extends JPanel
   {
     public void actionPerformed(ActionEvent event) 
     {
+      Result result;
+
       try {
         bridge.resetBridge();
         bridge.importSWRLRulesAndOWLKnowledge();
         bridge.exportSWRLRulesAndOWLKnowledge();
         bridge.runRuleEngine();
+
+        result = bridge.getQueryResult(ruleName);
+        if (result == null || result.getNumberOfRows() == 0) {
+          controlPanel.appendText("No result returned for rule '" + ruleName + "' - closing tab.\n");
+          controlPanel.removeResultPanel(ruleName);
+        } else validate();
       } catch (SWRLRuleEngineBridgeException e) {
-        controlPanel.appendText("Exception running rules: " + e.getMessage() + "\n");
+        controlPanel.appendText("Exception running rules - all results panels closed.\n" + e.getMessage() + "\n");
+        controlPanel.removeAllPanels();
       } // try
-      validate();
     } // ActionPerformed
   } // RunRuleActionListener
   
@@ -198,6 +206,7 @@ public class SWRLQueryResultPanel extends JPanel
       try {
         result = bridge.getQueryResult(ruleName);
         columnName = (result == null) ? "" : result.getColumnName(columnIndex); 
+        System.err.println("columnIndex: " + columnIndex + ",  columnName: " + columnName);
       } catch (ResultException e) {
         controlPanel.appendText("Exception getting column name in model: " + e + "\n");
         columnName = "Exception: " + e.getMessage();

@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
 <rdf:RDF
     xmlns:swrlb="http://www.w3.org/2003/11/swrlb#"
+    xmlns="http://swrl.stanford.edu/query.owl#"
     xmlns:swrl="http://www.w3.org/2003/11/swrl#"
     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
@@ -9,6 +10,10 @@
   xml:base="http://swrl.stanford.edu/query.owl">
   <owl:Ontology rdf:about=""/>
   <swrl:Builtin rdf:ID="count">
+    <swrlb:args rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+    >1</swrlb:args>
+  </swrl:Builtin>
+  <swrl:Builtin rdf:ID="sum">
     <swrlb:args rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
     >1</swrlb:args>
   </swrl:Builtin>
@@ -24,30 +29,14 @@
     <swrlb:minArgs rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
     >1</swrlb:minArgs>
   </swrl:Builtin>
-  <swrl:Builtin rdf:ID="orderBy">
-    <swrlb:minArgs rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
-    >1</swrlb:minArgs>
-  </swrl:Builtin>
-  <swrl:Builtin rdf:ID="ascending">
-    <swrlb:args rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
-    >0</swrlb:args>
-  </swrl:Builtin>
   <swrl:Builtin rdf:ID="displayNames">
     <swrlb:minArgs rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
     >1</swrlb:minArgs>
-  </swrl:Builtin>
-  <swrl:Builtin rdf:ID="sum">
-    <swrlb:args rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
-    >1</swrlb:args>
   </swrl:Builtin>
   <swrl:Builtin rdf:ID="min">
     <swrlb:args rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
     >1</swrlb:args>
   </swrl:Builtin>
-  <swrl:Builtin rdf:ID="descending">
-    <swrlb:args rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
-    >0</swrlb:args>
-  </swrl:Builtin>
 </rdf:RDF>
 
-<!-- Created with Protege (with OWL Plugin 3.2, Build 355)  http://protege.stanford.edu -->
+<!-- Created with Protege (with OWL Plugin 3.3, Build 385)  http://protege.stanford.edu -->

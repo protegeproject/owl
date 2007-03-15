@@ -67,7 +67,7 @@ import java.math.*;
  */ 
 public class ResultImpl implements ResultGenerator, Result
 {
-  private List<String> allColumnNames, displayColumnNames;
+  private List<String> allColumnNames, columnDisplayNames;
   private List<Integer> selectedColumnIndexes, orderByColumnIndexes;
   private HashMap<Integer, String> aggregateColumnIndexes; // Map of (index, function) pairs
   private List<List<ResultValue>> rows; // List of List of ResultValue objects.
@@ -100,7 +100,7 @@ public class ResultImpl implements ResultGenerator, Result
     aggregateColumnIndexes = new HashMap<Integer, String>();
     selectedColumnIndexes = new ArrayList<Integer>();
     orderByColumnIndexes = new ArrayList<Integer>();
-    displayColumnNames = new ArrayList<String>();
+    columnDisplayNames = new ArrayList<String>();
 
     numberOfColumns = 0; isOrdered = isDescending = isDistinct = false;
 
@@ -154,10 +154,13 @@ public class ResultImpl implements ResultGenerator, Result
     orderByColumnIndexes.add(new Integer(index));
   } // addOrderByColumn
     
-  public void setColumnDisplayName(String columnName) throws ResultException
+  public void addColumnDisplayName(String columnName) throws ResultException
   {
-    displayColumnNames.add(columnName);
-  } // setColumnDisplayName
+    if (columnName.length() == 0 || columnName.indexOf(',') != -1) 
+      throw new ResultException("invalid column name '" + columnName + "' - no commas or empty names allowed");
+
+    columnDisplayNames.add(columnName);
+  } // addColumnDisplayName
 
   public void configured() throws ResultException
   {
@@ -190,20 +193,26 @@ public class ResultImpl implements ResultGenerator, Result
     return numberOfColumns; 
   } // getNumberOfColumns
   
-  public List getColumnNames() throws ResultException
+  public List<String> getColumnNames() throws ResultException
   {
-    throwExceptionIfNotConfigured();
+    List<String> result = new ArrayList<String>();
 
-    return allColumnNames; 
+    throwExceptionIfNotConfigured();
+    
+    if (columnDisplayNames.size() < getNumberOfColumns()) {
+      result.addAll(columnDisplayNames);
+      result.addAll(allColumnNames.subList(columnDisplayNames.size(), allColumnNames.size()));
+    } else result.addAll(columnDisplayNames);
+
+    return result;
   } // getColumnNames
   
   public String getColumnName(int columnIndex) throws ResultException
   {
-    throwExceptionIfNotConfigured();
+    throwExceptionIfNotConfigured(); checkColumnIndex(columnIndex);
 
-    checkColumnIndex(columnIndex);
-    
-    return allColumnNames.get(columnIndex);
+    if (columnIndex < columnDisplayNames.size()) return columnDisplayNames.get(columnIndex);
+    else return allColumnNames.get(columnIndex);
   } // getColumnName
 
   // Methods used to add data after result has been configured.

@@ -184,7 +184,7 @@ public class PropertyInfo extends Info implements Argument, PropertyValue
                                                   superPropertyNames, subPropertyNames, equivalentPropertyNames);
                   propertyInfoList.add(propertyInfo);
                 } else {
-                  System.err.println("Unknown property value resource: " + resource); // TODO: Orphan resources in OWL file. Ignore?
+                  //System.err.println("Unknown property value resource: " + resource); // TODO: Orphan resources in OWL file. Ignore?
                 } // if
               } // while
             } else { // DatatypeProperty
