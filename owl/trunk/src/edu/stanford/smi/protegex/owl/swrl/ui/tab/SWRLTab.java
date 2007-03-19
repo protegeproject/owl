@@ -35,7 +35,7 @@ import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
 
 /**
  * A tab widget that holds the <a href="http://protege.cim3.net/cgi-bin/wiki.pl?SWRLEditorFAQ">SWRL Editor</a> and other plugins that work
- * with SWRL rules. This tab serves as the entry point to all of the software components that work with SWRL in Protege-OWL. <p>
+ * with SWRL rules. This tab serves as the entry point to all of the GUI-based software components that work with SWRL in Protege-OWL. <p>
  *
  * Full documentation is available <a href="http://protege.cim3.net/cgi-bin/wiki.pl?SWRLTab">here</a>.
  */
@@ -70,8 +70,7 @@ public class SWRLTab extends AbstractTabWidget
       to.setVisible(true);
       RDFProperty from = owlModel.getOWLObjectProperty(edu.stanford.smi.protege.model.Model.Slot.FROM);
       from.setVisible(true);
-    }
-    catch (Exception ex) {
+    } catch (Exception ex) {
       ProtegeUI.getModalDialogFactory().showErrorMessageDialog(owlModel,
                                                                "Could not activate SWRL support:\n" + ex +
                                                                ".\nYour project might be in an inconsistent state now.");

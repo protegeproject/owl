@@ -18,38 +18,40 @@ import java.util.*;
  ** Implementation library for SWRL query built-ins. See <a href="http://protege.cim3.net/cgi-bin/wiki.pl?SWRLQueryBuiltIns">here</a> for
  ** documentation on this built-in library.
  */
-public class SWRLBuiltInLibraryImpl implements SWRLBuiltInLibrary, QueryLibrary
+public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary implements QueryLibrary
 {
-  public static String QueryNamespace = QueryNames.QueryNamespace;
+  private static String QueryLibraryName = "SWRLQueryBuiltIns";
+
+  public static String Prefix = QueryNames.QueryPrefix + ":";
   
-  private static String QuerySelect = QueryNamespace + ":" + "select";
-  private static String QueryCount = QueryNamespace + ":" + "count";
-  private static String QueryAvg = QueryNamespace + ":" + "avg";
-  private static String QueryMin = QueryNamespace + ":" + "min";
-  private static String QueryMax = QueryNamespace + ":" + "max";
-  private static String QuerySum = QueryNamespace + ":" + "sum";
-  private static String QueryOrderBy = QueryNamespace + ":" + "orderBy";
-  private static String QueryOrderByDescending = QueryNamespace + ":" + "orderByDescending";
-  private static String QueryDisplayNames = QueryNamespace + ":" + "displayNames";
+  private static String QuerySelect = Prefix + "select";
+  private static String QueryCount = Prefix + "count";
+  private static String QueryAvg = Prefix + "avg";
+  private static String QueryMin = Prefix + "min";
+  private static String QueryMax = Prefix + "max";
+  private static String QuerySum = Prefix + "sum";
+  private static String QueryOrderBy = Prefix + "orderBy";
+  private static String QueryOrderByDescending = Prefix + "orderByDescending";
+  private static String QueryDisplayNames = Prefix + "displayNames";
   
   private static String queryBuiltInNamesArray[] = { QuerySelect, QueryCount, QueryAvg, QueryMin, QueryMax, QuerySum,
                                                      QueryOrderBy, QueryOrderByDescending, QueryDisplayNames };
   private static Set<String> queryBuiltInNames;
 
   private HashMap<String, ResultImpl> results;
-  private SWRLRuleEngineBridge bridge;
 
-  public void initialize(SWRLRuleEngineBridge bridge)
+  public SWRLBuiltInLibraryImpl() { super(QueryLibraryName); }
+
+  public void reset()
   {
-    this.bridge = bridge;
     results = new HashMap<String, ResultImpl>();
-    queryBuiltInNames = new HashSet<String>();
 
+    queryBuiltInNames = new HashSet<String>();
     for (String builtInName : queryBuiltInNamesArray) queryBuiltInNames.add(builtInName);
-  } // initialize
+  } // reset
 
   /**
-   ** Get a result object for a particular rule. Return null if no result generated for this rule.
+   ** Get a result object for a particular rule. Return null if no result is generated for this rule.
    */
   public Result getQueryResult(String ruleName) throws ResultException
   {
@@ -63,20 +65,12 @@ public class SWRLBuiltInLibraryImpl implements SWRLBuiltInLibrary, QueryLibrary
     return result;
   } // getQueryResult
   
-  /**
-   ** Clear all query results.
-   */
-  public void clearQueryResults()
-  {
-    results = new HashMap<String, ResultImpl>();
-  } // clearQueryResults
-
   public boolean select(List<Argument> arguments) throws BuiltInException
   {
     SWRLBuiltInUtil.checkForUnboundArguments(arguments);
     SWRLBuiltInUtil.checkNumberOfArgumentsAtLeast(1, arguments.size());
     
-    ResultImpl result = getResult(bridge.getCurrentBuiltInInvokingRuleName());
+    ResultImpl result = getResult(getInvokingRuleName());
 
     if (!result.isRowOpen()) result.openRow();
 
@@ -98,7 +92,7 @@ public class SWRLBuiltInLibraryImpl implements SWRLBuiltInLibrary, QueryLibrary
     SWRLBuiltInUtil.checkForUnboundArguments(arguments);
     SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(1, arguments.size());
 
-    ResultImpl result = getResult(bridge.getCurrentBuiltInInvokingRuleName());
+    ResultImpl result = getResult(getInvokingRuleName());
     Argument argument = (Argument)arguments.get(0);
     
     if (!result.isConfigured()) throwInternalQueryException("built-in called on unconfigured result");
@@ -117,7 +111,7 @@ public class SWRLBuiltInLibraryImpl implements SWRLBuiltInLibrary, QueryLibrary
     SWRLBuiltInUtil.checkForUnboundArguments(arguments);
     SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(1, arguments.size());
 
-    ResultImpl result = getResult(bridge.getCurrentBuiltInInvokingRuleName());
+    ResultImpl result = getResult(getInvokingRuleName());
     Argument argument = (Argument)arguments.get(0);
     
     if (!result.isConfigured()) throwInternalQueryException("built-in called on unconfigured result");
@@ -133,7 +127,7 @@ public class SWRLBuiltInLibraryImpl implements SWRLBuiltInLibrary, QueryLibrary
     SWRLBuiltInUtil.checkForUnboundArguments(arguments);
     SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(1, arguments.size());
 
-    ResultImpl result = getResult(bridge.getCurrentBuiltInInvokingRuleName());
+    ResultImpl result = getResult(getInvokingRuleName());
     Argument argument = (Argument)arguments.get(0);
     
     if (!result.isConfigured()) throwInternalQueryException("built-in called on unconfigured result");
@@ -149,7 +143,7 @@ public class SWRLBuiltInLibraryImpl implements SWRLBuiltInLibrary, QueryLibrary
     SWRLBuiltInUtil.checkForUnboundArguments(arguments);
     SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(1, arguments.size());
 
-    ResultImpl result = getResult(bridge.getCurrentBuiltInInvokingRuleName());
+    ResultImpl result = getResult(getInvokingRuleName());
     Argument argument = (Argument)arguments.get(0);
     
     if (!result.isConfigured()) throwInternalQueryException("built-in called on unconfigured result");
@@ -165,7 +159,7 @@ public class SWRLBuiltInLibraryImpl implements SWRLBuiltInLibrary, QueryLibrary
     SWRLBuiltInUtil.checkForUnboundArguments(arguments);
     SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(1, arguments.size());
 
-    ResultImpl result = getResult(bridge.getCurrentBuiltInInvokingRuleName());
+    ResultImpl result = getResult(getInvokingRuleName());
     Argument argument = (Argument)arguments.get(0);
     
     if (!result.isConfigured()) throwInternalQueryException("built-in called on unconfigured result");
@@ -202,7 +196,7 @@ public class SWRLBuiltInLibraryImpl implements SWRLBuiltInLibrary, QueryLibrary
 
     try {
       result = new ResultImpl();
-      ruleInfo = bridge.getRuleInfo(ruleName);
+      ruleInfo = getInvokingBridge().getRuleInfo(ruleName);
 
       for (BuiltInAtomInfo builtInAtomInfo : ruleInfo.getBuiltInAtomsFromHead(queryBuiltInNames)) {
         String builtInName = builtInAtomInfo.getBuiltInName();

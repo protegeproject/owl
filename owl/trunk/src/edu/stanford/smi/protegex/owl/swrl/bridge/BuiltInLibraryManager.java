@@ -15,7 +15,6 @@ import java.net.URL;
 public abstract class BuiltInLibraryManager
 {
   private static String BuiltInLibraryPackageBaseName = "edu.stanford.smi.protegex.owl.swrl.bridge.builtins.";
-  private static String BuiltInLibraryInitializeMethodName = "initialize";
 
   // Holds class instances implementing built-ins.
   private static HashMap<String, SWRLBuiltInLibrary> builtInLibraryClassInstances;
@@ -28,119 +27,124 @@ public abstract class BuiltInLibraryManager
    ** Find the implementation classes for a built-in library. Returns null if it does not find anything. A library will only be valid after
    ** it is loaded.
    */
-  public static SWRLBuiltInLibrary getBuiltInLibrary(String libraryNamespace) throws InvalidBuiltInLibraryNameException
+  public static SWRLBuiltInLibrary getBuiltInLibraryByPrefix(String prefix) throws InvalidBuiltInLibraryNameException
   {
     SWRLBuiltInLibrary swrlBuiltInLibrary = null;
 
-    if (builtInLibraryClassInstances.containsKey(libraryNamespace)) 
-      swrlBuiltInLibrary = (SWRLBuiltInLibrary)builtInLibraryClassInstances.get(libraryNamespace);
-    else throw new InvalidBuiltInLibraryNameException(libraryNamespace);
+    if (builtInLibraryClassInstances.containsKey(prefix)) swrlBuiltInLibrary = (SWRLBuiltInLibrary)builtInLibraryClassInstances.get(prefix);
+    else throw new InvalidBuiltInLibraryNameException(prefix);
 
     return swrlBuiltInLibrary;
-  } // getBuiltInLibrary
+  } // getBuiltInLibraryByPrefix
+
+  public static Set<String> getBuiltInLibraryPrefixes() { return builtInLibraryClassInstances.keySet(); }
 
   /**
-   ** Invoke a built-in. This method should not be called from a rule engine - instead the invokeSWRLBuiltIn method in the bridge
-   ** should be used.
+   ** Invoke a built-in. This method is called from the invokeSWRLBuiltIn method in the bridge and should not be called directly from a rule
+   ** engine. 
    */
   public static boolean invokeSWRLBuiltIn(SWRLRuleEngineBridge bridge, String ruleName, String builtInName, int builtInIndex, 
                                           List<Argument> arguments) 
     throws BuiltInException
   {
-    SWRLBuiltInLibrary swrlBuiltInLibrary = null;
-    Class swrlBuiltInLibraryClass = null;
-    String namespaceName = "", builtInMethodName = "", className;
-    Boolean result = false;
+    boolean result = false;
+    SWRLBuiltInLibrary library = null;
+    String implementationClassName, prefix, builtInMethodName;
     Method method;
+
+    prefix = getPrefixName(builtInName);
+    implementationClassName = getBuiltInLibraryImplementationClassName(prefix);
+    builtInMethodName = getBuiltInMethodName(prefix, builtInName);
+    library = loadBuiltInLibrary(ruleName, prefix, implementationClassName);
+    method = resolveBuiltInMethod(ruleName, library, prefix, builtInMethodName); // Find the method.
+    checkBuiltInMethodSignature(ruleName, prefix, builtInMethodName, method); // Check signature of method.
+    result = library.invokeMethod(method, bridge, ruleName, builtInName, builtInIndex, arguments);
+
+    return result;
+  } // invokeSWRLBuiltIn
+
+  private static SWRLBuiltInLibrary loadBuiltInLibrary(String ruleName, String prefix, String implementationClassName) 
+    throws BuiltInException
+  {
+    SWRLBuiltInLibrary library;
+
+    if (builtInLibraryClassInstances.containsKey(prefix)) { // Find the implementation
+      library = (SWRLBuiltInLibrary)builtInLibraryClassInstances.get(prefix);
+    } else { // Implementation class not loaded - load it, call the reset method, and cache it.
+      library = loadBuiltInLibraryImpl(ruleName, prefix, implementationClassName);
+      builtInLibraryClassInstances.put(prefix, library);
+      invokeBuiltInLibraryResetMethod(library);
+    } // if
+    return library;
+  } // loadBuiltInLibrary
+
+  private static String getPrefixName(String builtInName) 
+  {
+    String prefix;
     int colonIndex;
 
     colonIndex = builtInName.indexOf(':');
     if (colonIndex != -1) {
-      namespaceName = builtInName.substring(0, colonIndex);
-      builtInMethodName = builtInName.substring(colonIndex + 1, builtInName.length());
-      className = BuiltInLibraryPackageBaseName + namespaceName + ".SWRLBuiltInLibraryImpl";
-    } else { // No namespace - try the base built-ins package. Ordinarily, built-ins should not be located here.
-      namespaceName = "";
-      builtInMethodName = builtInName;
-      className = BuiltInLibraryPackageBaseName + "SWRLBuiltInLibraryImpl";
-    } // if
-    
-    if (builtInLibraryClassInstances.containsKey(namespaceName)) { // Find the implementation
-      swrlBuiltInLibrary = (SWRLBuiltInLibrary)builtInLibraryClassInstances.get(namespaceName);
-    } else { // Implementation class not loaded - load it, call the initialize method, and cache it.
-      swrlBuiltInLibrary = loadBuiltInLibraryImpl(ruleName, namespaceName, className);
-      builtInLibraryClassInstances.put(namespaceName, swrlBuiltInLibrary);
-      invokeBuiltInLibraryInitializeMethod(bridge, swrlBuiltInLibrary);
+      prefix = builtInName.substring(0, colonIndex);
+    } else { // No prefix - try the base built-ins package. Ordinarily, built-ins should not be located here.
+      prefix = "";
     } // if
 
-    method = resolveBuiltInMethod(ruleName, namespaceName, builtInMethodName, swrlBuiltInLibrary); // Find the method.
-    checkBuiltInMethodSignature(ruleName, namespaceName, builtInMethodName, method); // Check signature of method.
-    
-    try { // Invoke the built-in method.
-      result = (Boolean)method.invoke(swrlBuiltInLibrary, new Object[] { arguments });
-    } catch (InvocationTargetException e) { // The built-in implementation threw an exception.
-      Throwable targetException = e.getTargetException();
-      if (targetException instanceof BuiltInException) { // A BuiltInException was thrown by the built-in.
-        throw new BuiltInException("Exception thrown by built-in '" + builtInName + "' in rule '" + ruleName + "': " 
-                                   + targetException.getMessage(), targetException);
-      } else if (targetException instanceof RuntimeException) { // A runtime exception was thrown by the built-in.
-        throw new BuiltInMethodRuntimeException(ruleName, builtInName, targetException.getMessage(), targetException);
-      } else throw new BuiltInException("Unknown exception thrown by built-in method '" + builtInName + "' in rule '" + 
-                                        ruleName + "'. Exception: " + e.toString(), e);
-    } catch (Exception e) { // Should be one of IllegalAccessException or IllegalArgumentException
-      throw new BuiltInException("Internal bridge exception when invoking built-in method '" + builtInName + "' in rule '" + 
-                                 ruleName + "'. Exception: " + e.getMessage(), e);        
-    } // try
+    return prefix;
+  } // getPrefixName
 
-    return result.booleanValue();
-  } // invokeSWRLBuiltIn
+  private static String getBuiltInLibraryImplementationClassName(String prefix)
+  {
+    String className;
+
+    if (prefix.equals("")) className = BuiltInLibraryPackageBaseName + "SWRLBuiltInLibraryImpl";
+    else  className = BuiltInLibraryPackageBaseName + prefix + ".SWRLBuiltInLibraryImpl";
+
+    return className;
+  } // getBuiltInLibraryImplementationClassName
+
+  private static String getBuiltInMethodName(String prefix, String builtInName)
+  {
+    String builtInMethodName;
+
+    if (prefix.equals("")) builtInMethodName = builtInName;
+    else builtInMethodName = builtInName.substring(prefix.length() + 1, builtInName.length());
+
+    return builtInMethodName;
+  } // getBuiltInMethodName
 
   /**
-   ** Invoke the initialize() method for each registered built-in library.
+   ** Invoke the reset() method for each registered built-in library.
    */
-  private static void invokeBuiltInLibraryInitializeMethod(SWRLRuleEngineBridge bridge, SWRLBuiltInLibrary swrlBuiltInLibrary) 
-    throws BuiltInException
+  private static void invokeBuiltInLibraryResetMethod(SWRLBuiltInLibrary library) throws BuiltInException
   {
     try {
-      Method method = 
-		swrlBuiltInLibrary.getClass().getMethod(BuiltInLibraryInitializeMethodName, new Class[] {SWRLRuleEngineBridge.class});
-      method.invoke(swrlBuiltInLibrary, new Object[] {bridge});
-    } catch (InvocationTargetException e) {
-      Throwable targetException = e.getTargetException();
-      if (targetException instanceof RuntimeException)
-        throw new BuiltInException("Error inside of initialize method in built-in library '" +
-                                   swrlBuiltInLibrary.getClass().getName() + "': " + targetException.getMessage() + 
-                                   ". Library may now be in an inconsistent state.", targetException);
-      else 
-        throw new BuiltInException("Internal bridge exception when invoking initialize method for built-in library '" +
-                                   swrlBuiltInLibrary.getClass().getName() + "': " + targetException.getMessage(), targetException);
-    } catch (NoSuchMethodException e) {
-      throw new BuiltInException("No initialize method defined in built-in library '" + swrlBuiltInLibrary.getClass().getName());
-    } catch (IllegalAccessException e) {
-      throw new BuiltInException("No access to initialize method defined in built-in library '" + swrlBuiltInLibrary.getClass().getName());
+      library.reset();
+    } catch (Exception e) {
+      throw new BuiltInException("error calling reset method in built-in library '" + library.getClass().getName() + "'");
     } // try
-  } // invokeBuiltInLibraryInitializeMethod
+  } // invokeBuiltInLibraryResetMethod
   
-  public static void invokeAllBuiltInLibrariesInitializeMethod(SWRLRuleEngineBridge bridge) throws SWRLRuleEngineBridgeException
+  public static void invokeAllBuiltInLibrariesResetMethod() throws SWRLRuleEngineBridgeException
   {
-    for (SWRLBuiltInLibrary library : builtInLibraryClassInstances.values()) invokeBuiltInLibraryInitializeMethod(bridge, library);
-  } // invokeAllBuiltInMethodsInitializeMethod
+    for (SWRLBuiltInLibrary library : builtInLibraryClassInstances.values()) invokeBuiltInLibraryResetMethod(library);
+  } // invokeAllBuiltInLibrariesResetMethod
 
-  private static Method resolveBuiltInMethod(String ruleName, String namespaceName, String builtInMethodName, SWRLBuiltInLibrary swrlBuiltInLibrary)
+  private static Method resolveBuiltInMethod(String ruleName, SWRLBuiltInLibrary library, String prefix, String builtInName)
     throws UnresolvedBuiltInMethodException
   {
     Method method;
 
     try { 
-      method = swrlBuiltInLibrary.getClass().getMethod(builtInMethodName, new Class[] { List.class });
+      method = library.getClass().getMethod(builtInName, new Class[] { List.class });
     } catch (Exception e) {
-      throw new UnresolvedBuiltInMethodException(ruleName, namespaceName, builtInMethodName, e.getMessage());
+      throw new UnresolvedBuiltInMethodException(ruleName, prefix, builtInName, e.getMessage());
     } // try
 
     return method;
   } // resolveBuiltInMethod
 
-  private static SWRLBuiltInLibrary loadBuiltInLibraryImpl(String ruleName, String namespaceName, String className) 
+  private static SWRLBuiltInLibrary loadBuiltInLibraryImpl(String ruleName, String prefix, String className) 
     throws UnresolvedBuiltInClassException, IncompatibleBuiltInClassException
   {
     Class swrlBuiltInLibraryClass;
@@ -149,33 +153,34 @@ public abstract class BuiltInLibraryManager
     try {
       swrlBuiltInLibraryClass = Class.forName(className);
     } catch (Exception e) {
-      throw new UnresolvedBuiltInClassException(ruleName, namespaceName, e.getMessage());
+      throw new UnresolvedBuiltInClassException(ruleName, prefix, e.getMessage());
     } // try
 
-    checkBuiltInMethodsClassCompatibility(ruleName, namespaceName, swrlBuiltInLibraryClass); // Check implementation class for compatibility.
+    checkBuiltInMethodsClassCompatibility(ruleName, prefix, swrlBuiltInLibraryClass); // Check implementation class for compatibility.
 
     try {
       swrlBuiltInLibrary = (SWRLBuiltInLibrary)swrlBuiltInLibraryClass.newInstance();
     } catch (Exception e) {
-      throw new UnresolvedBuiltInClassException(ruleName, namespaceName, e.getMessage());
+      throw new UnresolvedBuiltInClassException(ruleName, prefix, e.getMessage());
     } // try
+
     return swrlBuiltInLibrary;
   } // loadBuiltInLibraryImpl
 
-  private static void checkBuiltInMethodSignature(String ruleName, String namespaceName, String builtInMethodName, Method method) 
+  private static void checkBuiltInMethodSignature(String ruleName, String prefix, String builtInName, Method method) 
       throws IncompatibleBuiltInMethodException
   {
     Class exceptionTypes[];
     Type parameterTypes[];
 
     if (method.getReturnType() != Boolean.TYPE) 
-      throw new IncompatibleBuiltInMethodException(ruleName, namespaceName, builtInMethodName, "Method does not return a boolean.");
+      throw new IncompatibleBuiltInMethodException(ruleName, prefix, builtInName, "method must return a boolean");
 
     exceptionTypes = method.getExceptionTypes();
 
     if ((exceptionTypes.length != 1) || (exceptionTypes[0] != BuiltInException.class))
-      throw new IncompatibleBuiltInMethodException(ruleName, namespaceName, builtInMethodName, 
-                                                   "Method must throw a single exception of type BuiltInException");
+      throw new IncompatibleBuiltInMethodException(ruleName, prefix, builtInName, 
+                                                   "built-in must throw a single exception of type BuiltInException");
 
     parameterTypes = method.getGenericParameterTypes();
 
@@ -183,14 +188,14 @@ public abstract class BuiltInLibraryManager
         (((ParameterizedType)parameterTypes[0]).getRawType() != List.class) ||
         (((ParameterizedType)parameterTypes[0]).getActualTypeArguments().length != 1) ||
         (((ParameterizedType)parameterTypes[0]).getActualTypeArguments()[0] != Argument.class))
-      throw new IncompatibleBuiltInMethodException(ruleName, namespaceName, builtInMethodName, 
-                                                   "Method must accept a single List of Argument objects");
+      throw new IncompatibleBuiltInMethodException(ruleName, prefix, builtInName, 
+                                                   "built-in must accept a single List of Argument objects");
   } // checkBuiltInMethodSignature
 
-  private static void checkBuiltInMethodsClassCompatibility(String ruleName, String namespaceName, Class cls) throws IncompatibleBuiltInClassException
+  private static void checkBuiltInMethodsClassCompatibility(String ruleName, String prefix, Class cls) throws IncompatibleBuiltInClassException
   {
     if (!SWRLBuiltInLibrary.class.isAssignableFrom(cls)) 
-      throw new IncompatibleBuiltInClassException(ruleName, namespaceName, cls.getName(), "Class does not implement SWRLBuiltInLibrary.");
+      throw new IncompatibleBuiltInClassException(ruleName, prefix, cls.getName(), "class does not implement SWRLBuiltInLibrary");
   } // checkBuiltInMethodsClassCompatibility
 
 } // BuiltInLibraryManager

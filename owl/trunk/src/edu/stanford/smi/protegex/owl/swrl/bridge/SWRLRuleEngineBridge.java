@@ -59,15 +59,11 @@ public abstract class SWRLRuleEngineBridge
   // Info objects representing created individuals.
   private HashMap<String, IndividualInfo> createdIndividuals;
 
-  // Name of rule currently invoking a built-in method. Valid only when a built-in currently being invoked. 
-  private String currentBuiltInInvokingRuleName = "";
-  private int currentBuiltInInvokingIndex = -1;
-
   protected SWRLRuleEngineBridge(OWLModel owlModel) throws SWRLRuleEngineBridgeException
   {
     this.owlModel = owlModel;
     initialize();
-    BuiltInLibraryManager.invokeAllBuiltInLibrariesInitializeMethod(this);
+    BuiltInLibraryManager.invokeAllBuiltInLibrariesResetMethod();
   } // SWRLRuleEngineBridge
 
   /**
@@ -146,9 +142,7 @@ public abstract class SWRLRuleEngineBridge
   {
     resetRuleEngine();
 
-    BuiltInLibraryManager.invokeAllBuiltInLibrariesInitializeMethod(this);
-
-    clearQueryResults();
+    BuiltInLibraryManager.invokeAllBuiltInLibrariesResetMethod();
 
     importedSWRLRules.clear();
     referencedClassNames.clear();
@@ -178,9 +172,9 @@ public abstract class SWRLRuleEngineBridge
   public Result getQueryResult(String ruleName) throws ResultException
   {
     QueryLibrary queryLibrary = null;
-
+    
     try {
-      queryLibrary = (QueryLibrary)BuiltInLibraryManager.getBuiltInLibrary(QueryNames.QueryNamespace);
+      queryLibrary = (QueryLibrary)BuiltInLibraryManager.getBuiltInLibraryByPrefix(QueryNames.QueryPrefix);
     } catch (InvalidBuiltInLibraryNameException e) {
       throw new ResultException("Query subsystem not activated because rules do not contain query built-ins.");
     } // try
@@ -204,10 +198,6 @@ public abstract class SWRLRuleEngineBridge
   public int getNumberOfCreatedIndividuals() { return createdIndividuals.size(); }
 
   public boolean isCreatedIndividual(String individualName) { return createdIndividuals.containsKey(individualName); }
-
-  // These methods will typically be used by built-in implementations when displaying error messages.
-  public String getCurrentBuiltInInvokingRuleName() { return currentBuiltInInvokingRuleName; }
-  public int getCurrentBuiltInInvokingIndex() { return currentBuiltInInvokingIndex; }
 
   // Convenience methods for subclasses that may wish to display the contents of the bridge.
   protected Collection<RuleInfo> getImportedSWRLRules() { return new ArrayList<RuleInfo>(importedSWRLRules.values()); }
@@ -247,16 +237,12 @@ public abstract class SWRLRuleEngineBridge
 
     if (!isBuiltIn(builtInName)) throw new InvalidBuiltInNameException(ruleName, builtInName);
 
-    currentBuiltInInvokingRuleName = ruleName; currentBuiltInInvokingIndex = builtInIndex;
-
     result = BuiltInLibraryManager.invokeSWRLBuiltIn(this, ruleName, builtInName, builtInIndex, arguments);
     
     if (result && hasUnboundArguments) {
       checkForUnboundArgument(ruleName, builtInName, arguments); // Ensure it did not leave any arguments unbound if it evaluated to true.
       generateBuiltInBindings(ruleName, builtInName, builtInIndex, arguments); // Inform rule engine of results.
     } // if
-
-    currentBuiltInInvokingRuleName = ""; currentBuiltInInvokingIndex = -1;
 
     return result;
   } // invokeSWRLBuiltIn
@@ -367,6 +353,7 @@ public abstract class SWRLRuleEngineBridge
     RDFSNamedClass rdfsNamedClass = owlModel.getRDFSNamedClass(className);
     if (rdfsNamedClass == null) throw new InvalidClassNameException(className);
     if (rdfsNamedClass.isMetaclass()) return;    
+    if (rdfsNamedClass.isAnonymous()) return;    
 
     if (!importedClasses.containsKey(className)) {
       ClassInfo classInfo = new ClassInfo(owlModel, className);
@@ -734,18 +721,5 @@ public abstract class SWRLRuleEngineBridge
   {
     return arguments.contains(null);
   } // hasUnboundArguments
-
-  private void clearQueryResults()
-  {
-    QueryLibrary queryLibrary = null;
-
-    try {
-      queryLibrary = (QueryLibrary)BuiltInLibraryManager.getBuiltInLibrary(QueryNames.QueryNamespace);
-    } catch (InvalidBuiltInLibraryNameException e) {
-      // Not activated.
-    } // try
-
-    if (queryLibrary != null) queryLibrary.clearQueryResults();
-  } // clearQueryResults
   
 } // SWRLRuleEngineBridge

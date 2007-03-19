@@ -18,23 +18,14 @@ import java.util.*;
  **
  ** See <a href="http://protege.cim3.net/cgi-bin/wiki.pl?SWRLBuiltInBridge">here</a> for documentation on defining SWRL built-in libraries.
  */
-public class SWRLBuiltInLibraryImpl implements SWRLBuiltInLibrary
+public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
 {
-  private static String SWRLABoxNamespace = "abox";
+  private static String SWRLABoxLibraryName = "SWRLABoxBuiltIns";
+  private static String SWRLABoxPrefix = "abox:";
 
-  public static String SWRLABoxHasPropertyValue = SWRLABoxNamespace + ":" + "hasPropertyValue";
-  public static String SWRLABoxHasNumberOfPropertyValues = SWRLABoxNamespace + ":" + "hasNumberOfPropertyValues";
-  public static String SWRLABoxHasIndividuals = SWRLABoxNamespace + ":" + "hasIndividuals";
-  public static String SWRLABoxHasNumberOfIndividuals = SWRLABoxNamespace + ":" + "hasNumberOfIndividuals";
+  public SWRLBuiltInLibraryImpl() { super(SWRLABoxLibraryName); }
 
-  private SWRLRuleEngineBridge bridge;
-  private OWLModel owlModel;
-
-  public void initialize(SWRLRuleEngineBridge bridge) 
-  { 
-    this.bridge = bridge; 
-    owlModel = bridge.getOWLModel();
-  } // initialize
+  public void reset() {}
 
   /**
    ** Returns true if the individual named by the first parameter has at least one value for the property named by the second parameter. If
@@ -57,9 +48,9 @@ public class SWRLBuiltInLibraryImpl implements SWRLBuiltInLibrary
     try {
       if (propertyValueSupplied) {
         propertyValue = SWRLBuiltInUtil.getArgumentAsAPropertyValue(2, arguments);
-        result = SWRLOWLUtil.getNumberOfPropertyValues(owlModel, individualName, propertyName, propertyValue, true) != 0;
+        result = SWRLOWLUtil.getNumberOfPropertyValues(getInvokingBridge().getOWLModel(), individualName, propertyName, propertyValue, true) != 0;
       } else
-        result = SWRLOWLUtil.getNumberOfPropertyValues(owlModel, individualName, propertyName, true) != 0;
+        result = SWRLOWLUtil.getNumberOfPropertyValues(getInvokingBridge().getOWLModel(), individualName, propertyName, true) != 0;
     } catch (SWRLOWLUtilException e) {
       throw new BuiltInException(e.getMessage());
     } // try
@@ -90,9 +81,9 @@ public class SWRLBuiltInLibraryImpl implements SWRLBuiltInLibrary
     try {
       if (propertyValueSupplied) {
         propertyValue = SWRLBuiltInUtil.getArgumentAsAPropertyValue(3, arguments);
-        numberOfPropertyValues = SWRLOWLUtil.getNumberOfPropertyValues(owlModel, individualName, propertyName, propertyValue, true);
+        numberOfPropertyValues = SWRLOWLUtil.getNumberOfPropertyValues(getInvokingBridge().getOWLModel(), individualName, propertyName, propertyValue, true);
       } else 
-        numberOfPropertyValues = SWRLOWLUtil.getNumberOfPropertyValues(owlModel, individualName, propertyName, true);
+        numberOfPropertyValues = SWRLOWLUtil.getNumberOfPropertyValues(getInvokingBridge().getOWLModel(), individualName, propertyName, true);
 
       if (SWRLBuiltInUtil.isUnboundArgument(0, arguments)) {
         arguments.set(0, new LiteralInfo(numberOfPropertyValues)); // Bind the result to the first parameter      
@@ -120,7 +111,7 @@ public class SWRLBuiltInLibraryImpl implements SWRLBuiltInLibrary
     className = SWRLBuiltInUtil.getArgumentAsAClassName(0, arguments);
 
     try {
-      result = (SWRLOWLUtil.getNumberOfIndividualsOfClass(owlModel, className, true) != 0);
+      result = (SWRLOWLUtil.getNumberOfIndividualsOfClass(getInvokingBridge().getOWLModel(), className, true) != 0);
     } catch (SWRLOWLUtilException e) {
       throw new BuiltInException(e.getMessage());
     } // try
@@ -144,12 +135,12 @@ public class SWRLBuiltInLibraryImpl implements SWRLBuiltInLibrary
 
     try {
       if (SWRLBuiltInUtil.isUnboundArgument(0, arguments)) {
-        numberOfIndividuals = SWRLOWLUtil.getNumberOfIndividualsOfClass(owlModel, className, true);
+        numberOfIndividuals = SWRLOWLUtil.getNumberOfIndividualsOfClass(getInvokingBridge().getOWLModel(), className, true);
         arguments.set(0, new LiteralInfo(numberOfIndividuals)); // Bind the result to the first parameter      
         result = true;
       } else {
         numberOfIndividuals = SWRLBuiltInUtil.getArgumentAsAnInteger(0, arguments);
-        result = (numberOfIndividuals == SWRLOWLUtil.getNumberOfIndividualsOfClass(owlModel, className, true));
+        result = (numberOfIndividuals == SWRLOWLUtil.getNumberOfIndividualsOfClass(getInvokingBridge().getOWLModel(), className, true));
       } // if
     } catch (SWRLOWLUtilException e) {
       throw new BuiltInException(e.getMessage());

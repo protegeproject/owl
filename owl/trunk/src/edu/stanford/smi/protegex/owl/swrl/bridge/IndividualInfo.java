@@ -138,7 +138,10 @@ public class IndividualInfo extends Info implements Argument, ObjectValue
 
   private void buildDefiningClassNames(OWLIndividual individual) 
   { 
-    definingClassNames = SWRLOWLUtil.rdfResources2Names(individual.getRDFTypes());
+    for (Object o : individual.getRDFTypes()) {
+      RDFSClass cls = (RDFSClass)o; 
+      if (!cls.isAnonymous()) definingClassNames.add(cls.getName());
+    } // for
   } // buildDefiningClassNames
 
   private void buildDefiningSuperClassNames(OWLIndividual individual) 
@@ -149,6 +152,7 @@ public class IndividualInfo extends Info implements Argument, ObjectValue
       Iterator superClassesIterator = definingClass.getNamedSuperclasses(true).iterator();
       while (superClassesIterator.hasNext()) {
         RDFSClass superClass = (RDFSClass)superClassesIterator.next();
+        if (superClass.isAnonymous()) continue;
         if (!definingSuperClassNames.contains(superClass.getName())) definingSuperClassNames.add(superClass.getName());
       } // while
     } // while
@@ -162,6 +166,7 @@ public class IndividualInfo extends Info implements Argument, ObjectValue
       Iterator equlvalentClassesIterator = definingClass.getEquivalentClasses().iterator();
       while (equlvalentClassesIterator.hasNext()) {
         RDFSClass equlvalentClass = (RDFSClass)equlvalentClassesIterator.next();
+        if (equlvalentClass.isAnonymous()) continue;
         if (!definingEquivalentClassNames.contains(equlvalentClass.getName())) definingEquivalentClassNames.add(equlvalentClass.getName());
       } // while
     } // while

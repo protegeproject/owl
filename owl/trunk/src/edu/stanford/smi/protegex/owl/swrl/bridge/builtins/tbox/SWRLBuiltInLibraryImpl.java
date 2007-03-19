@@ -23,35 +23,15 @@ import java.util.*;
  **
  ** See <a href="http://protege.cim3.net/cgi-bin/wiki.pl?SWRLBuiltInBridge">here</a> for documentation on defining SWRL built-in libraries.
  */
-public class SWRLBuiltInLibraryImpl implements SWRLBuiltInLibrary
+public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
 {
-  private static String SWRLTBoxNamespace = "tbox";
+  private static String SWRLTBoxLibraryName = "SWRLTBoxBuiltIns";
 
-  public static String SWRLTBoxIsTransitiveProperty = SWRLTBoxNamespace + ":" + "isTransitiveProperty";
-  public static String SWRLTBoxIsSymmetricProperty = SWRLTBoxNamespace + ":" + "isSymmetricProperty";
-  public static String SWRLTBoxIsFunctionalProperty = SWRLTBoxNamespace + ":" + "isFunctionalProperty";
-  public static String SWRLTBoxIsInverseFunctionalProperty = SWRLTBoxNamespace + ":" + "isInverseFunctionalProperty";
-  public static String SWRLTBoxIsAnnotationProperty = SWRLTBoxNamespace + ":" + "isAnnotationProperty";
+  private static String SWRLTBoxPrefix = "tbox:";
 
-  public static String SWRLTBoxIsDirectSuperClassOf = SWRLTBoxNamespace + ":" + "isDirectSuperClassOf";
-  public static String SWRLTBoxIsSuperClassOf = SWRLTBoxNamespace + ":" + "isSuperClassOf";
-  public static String SWRLTBoxIsDirectSubClassOf = SWRLTBoxNamespace + ":" + "isDirectSubClassOf";
-  public static String SWRLTBoxIsSubClassOf = SWRLTBoxNamespace + ":" + "isSubClassOf";
-  public static String SWRLTBoxIsDirectSubPropertyOf = SWRLTBoxNamespace + ":" + "isDirectSubPropertyOf";
-  public static String SWRLTBoxIsSubPropertyOf = SWRLTBoxNamespace + ":" + "isSubPropertyOf";
-  public static String SWRLTBoxIsDirectSuperPropertyOf = SWRLTBoxNamespace + ":" + "isDirectSuperPropertyOf";
-  public static String SWRLTBoxIsSuperPropertyOf = SWRLTBoxNamespace + ":" + "isSuperPropertyOf";
-  public static String SWRLTBoxIsDisjointWith = SWRLTBoxNamespace + ":" + "isDisjointWith";
-  public static String SWRLTBoxIsEquivalentTo = SWRLTBoxNamespace + ":" + "isEquivalentTo";
+  public SWRLBuiltInLibraryImpl() { super(SWRLTBoxLibraryName); }
 
-  private SWRLRuleEngineBridge bridge;
-  private OWLModel owlModel;
-
-  public void initialize(SWRLRuleEngineBridge bridge) 
-  { 
-    this.bridge = bridge; 
-    owlModel = bridge.getOWLModel();
-  } // initialize
+  public void reset() {}
 
   /**
    ** Determine if a single property argument is transitive.
@@ -63,7 +43,7 @@ public class SWRLBuiltInLibraryImpl implements SWRLBuiltInLibrary
 
     boolean result = false;
     try {
-      result = SWRLOWLUtil.isTransitiveProperty(owlModel, propertyName, true);
+      result = SWRLOWLUtil.isTransitiveProperty(getInvokingBridge().getOWLModel(), propertyName, true);
     } catch (SWRLOWLUtilException e) {
       throw new BuiltInException(e.getMessage());
     } // try
@@ -81,7 +61,7 @@ public class SWRLBuiltInLibraryImpl implements SWRLBuiltInLibrary
 
     boolean result = false;
     try {
-      result = SWRLOWLUtil.isSymmetricProperty(owlModel, propertyName, true);
+      result = SWRLOWLUtil.isSymmetricProperty(getInvokingBridge().getOWLModel(), propertyName, true);
     } catch (SWRLOWLUtilException e) {
       throw new BuiltInException(e.getMessage());
     } // try
@@ -99,7 +79,7 @@ public class SWRLBuiltInLibraryImpl implements SWRLBuiltInLibrary
 
     boolean result = false;
     try {
-      result = SWRLOWLUtil.isFunctionalProperty(owlModel, propertyName, true);
+      result = SWRLOWLUtil.isFunctionalProperty(getInvokingBridge().getOWLModel(), propertyName, true);
     } catch (SWRLOWLUtilException e) {
       throw new BuiltInException(e.getMessage());
     } // try
@@ -117,7 +97,7 @@ public class SWRLBuiltInLibraryImpl implements SWRLBuiltInLibrary
 
     boolean result = false;
     try {
-      result = SWRLOWLUtil.isAnnotationProperty(owlModel, propertyName, true);
+      result = SWRLOWLUtil.isAnnotationProperty(getInvokingBridge().getOWLModel(), propertyName, true);
     } catch (SWRLOWLUtilException e) {
       throw new BuiltInException(e.getMessage());
     } // try
@@ -135,7 +115,7 @@ public class SWRLBuiltInLibraryImpl implements SWRLBuiltInLibrary
 
     boolean result = false;
     try {
-      result = SWRLOWLUtil.isInverseFunctionalProperty(owlModel, propertyName, true);
+      result = SWRLOWLUtil.isInverseFunctionalProperty(getInvokingBridge().getOWLModel(), propertyName, true);
     } catch (SWRLOWLUtilException e) {
       throw new BuiltInException(e.getMessage());
     } // try
@@ -149,7 +129,7 @@ public class SWRLBuiltInLibraryImpl implements SWRLBuiltInLibrary
    */
   public boolean isEquivalentTo(List<Argument> arguments) throws BuiltInException
   {
-    throw new BuiltInNotImplementedException(SWRLTBoxIsEquivalentTo);
+    throw new BuiltInNotImplementedException(SWRLTBoxPrefix + "isEquivalentTo");
   } // isEquivalentTo
 
   /**
@@ -158,7 +138,7 @@ public class SWRLBuiltInLibraryImpl implements SWRLBuiltInLibrary
    */
   public boolean isDisjointWith(List<Argument> arguments) throws BuiltInException
   {
-    throw new BuiltInNotImplementedException(SWRLTBoxIsDisjointWith);
+    throw new BuiltInNotImplementedException(SWRLTBoxPrefix + "isDisjointWith");
   } // isDisjointWith
 
   /**
@@ -167,7 +147,7 @@ public class SWRLBuiltInLibraryImpl implements SWRLBuiltInLibrary
    */
   public boolean isDirectSubPropertyOf(List<Argument> arguments) throws BuiltInException
   {
-    return isSubPropertyOf(SWRLTBoxIsDirectSubPropertyOf, arguments, false);
+    return isSubPropertyOf(arguments, false);
   } // isDirectSubPropertyOf
 
   /**
@@ -176,7 +156,7 @@ public class SWRLBuiltInLibraryImpl implements SWRLBuiltInLibrary
    */
   public boolean isSubPropertyOf(List<Argument> arguments) throws BuiltInException
   {
-    return isSubPropertyOf(SWRLTBoxIsDirectSubPropertyOf, arguments, true);
+    return isSubPropertyOf(arguments, true);
   } // isSubPropertyOf
 
   /**
@@ -185,7 +165,7 @@ public class SWRLBuiltInLibraryImpl implements SWRLBuiltInLibrary
    */
   public boolean isDirectSuperPropertyOf(List<Argument> arguments) throws BuiltInException
   {
-    return isSuperPropertyOf(SWRLTBoxIsDirectSuperPropertyOf, arguments, false);
+    return isSuperPropertyOf(arguments, false);
   } // isDirectSuperPropertyOf
 
   /**
@@ -194,7 +174,7 @@ public class SWRLBuiltInLibraryImpl implements SWRLBuiltInLibrary
    */
   public boolean isSuperPropertyOf(List<Argument> arguments) throws BuiltInException
   {
-    return isSuperPropertyOf(SWRLTBoxIsSuperPropertyOf, arguments, true);
+    return isSuperPropertyOf(arguments, true);
   } // isSuperPropertyOf
 
   /**
@@ -203,7 +183,7 @@ public class SWRLBuiltInLibraryImpl implements SWRLBuiltInLibrary
    */
   public boolean isDirectSubClassOf(List<Argument> arguments) throws BuiltInException
   {
-    return isSubClassOf(SWRLTBoxIsDirectSubClassOf, arguments, false);
+    return isSubClassOf(arguments, false);
   } // isDirectSubClassOf
 
   /**
@@ -212,7 +192,7 @@ public class SWRLBuiltInLibraryImpl implements SWRLBuiltInLibrary
    */
   public boolean isSubClassOf(List<Argument> arguments) throws BuiltInException
   {
-    return isSubClassOf(SWRLTBoxIsSubClassOf, arguments, true);
+    return isSubClassOf(arguments, true);
   } // isSubClassOf
 
   /**
@@ -221,7 +201,7 @@ public class SWRLBuiltInLibraryImpl implements SWRLBuiltInLibrary
    */
   public boolean isDirectSuperClassOf(List<Argument> arguments) throws BuiltInException
   {
-    return isSuperClassOf(SWRLTBoxIsDirectSuperClassOf, arguments, false);
+    return isSuperClassOf(arguments, false);
   } // isDirectSuperClassOf
 
   /**
@@ -230,10 +210,10 @@ public class SWRLBuiltInLibraryImpl implements SWRLBuiltInLibrary
    */
   public boolean isSuperClassOf(List<Argument> arguments) throws BuiltInException
   {
-    return isSuperClassOf(SWRLTBoxIsSuperClassOf, arguments, true);
+    return isSuperClassOf(arguments, true);
   } // isSuperClassOf
 
-  private boolean isSuperClassOf(String builtInName, List<Argument> arguments, boolean transitive) throws BuiltInException
+  private boolean isSuperClassOf(List<Argument> arguments, boolean transitive) throws BuiltInException
   {
     boolean superClassArgumentUnbound = false;
     String className;
@@ -247,8 +227,8 @@ public class SWRLBuiltInLibraryImpl implements SWRLBuiltInLibrary
     try {
       if (superClassArgumentUnbound) {
         List<OWLNamedClass> superClasses;
-        if (transitive) superClasses = SWRLOWLUtil.getSuperClassesOf(owlModel, className);
-        else superClasses = SWRLOWLUtil.getDirectSuperClassesOf(owlModel, className);
+        if (transitive) superClasses = SWRLOWLUtil.getSuperClassesOf(getInvokingBridge().getOWLModel(), className);
+        else superClasses = SWRLOWLUtil.getDirectSuperClassesOf(getInvokingBridge().getOWLModel(), className);
         if (!superClasses.isEmpty()) {
           MultiArgument multiArgument = new MultiArgument();
           for (OWLNamedClass superClass : superClasses) multiArgument.addArgument(new ClassInfo(superClass.getName()));
@@ -257,8 +237,8 @@ public class SWRLBuiltInLibraryImpl implements SWRLBuiltInLibrary
         } // if
       } else {
         String superClassName = SWRLBuiltInUtil.getArgumentAsAClassName(0, arguments);
-        if (transitive) result = SWRLOWLUtil.isSuperClassOf(owlModel, superClassName, className, true);
-        else result = SWRLOWLUtil.isDirectSuperClassOf(owlModel, superClassName, className, true);
+        if (transitive) result = SWRLOWLUtil.isSuperClassOf(getInvokingBridge().getOWLModel(), superClassName, className, true);
+        else result = SWRLOWLUtil.isDirectSuperClassOf(getInvokingBridge().getOWLModel(), superClassName, className, true);
       } // if
     } catch (SWRLOWLUtilException e) {
       throw new BuiltInException(e.getMessage());
@@ -267,7 +247,7 @@ public class SWRLBuiltInLibraryImpl implements SWRLBuiltInLibrary
     return result;
   } // isSuperClassOf
 
-  private boolean isSubClassOf(String builtInName, List<Argument> arguments, boolean transitive) throws BuiltInException
+  private boolean isSubClassOf(List<Argument> arguments, boolean transitive) throws BuiltInException
   {
     boolean subClassArgumentUnbound = false;
     String className;
@@ -281,8 +261,8 @@ public class SWRLBuiltInLibraryImpl implements SWRLBuiltInLibrary
     try {
       if (subClassArgumentUnbound) {
         List<OWLNamedClass> subClasses;
-        if (transitive) subClasses = SWRLOWLUtil.getSubClassesOf(owlModel, className);
-        else subClasses = SWRLOWLUtil.getDirectSubClassesOf(owlModel, className);
+        if (transitive) subClasses = SWRLOWLUtil.getSubClassesOf(getInvokingBridge().getOWLModel(), className);
+        else subClasses = SWRLOWLUtil.getDirectSubClassesOf(getInvokingBridge().getOWLModel(), className);
         if (!subClasses.isEmpty()) {
           MultiArgument multiArgument = new MultiArgument();
           for (OWLNamedClass subClass : subClasses) multiArgument.addArgument(new ClassInfo(subClass.getName()));
@@ -291,8 +271,8 @@ public class SWRLBuiltInLibraryImpl implements SWRLBuiltInLibrary
         } // if
       } else {
         String subClassName = SWRLBuiltInUtil.getArgumentAsAClassName(0, arguments);
-        if (transitive) result = SWRLOWLUtil.isSubClassOf(owlModel, subClassName, className, true);
-        else  result = SWRLOWLUtil.isDirectSubClassOf(owlModel, subClassName, className, true);
+        if (transitive) result = SWRLOWLUtil.isSubClassOf(getInvokingBridge().getOWLModel(), subClassName, className, true);
+        else  result = SWRLOWLUtil.isDirectSubClassOf(getInvokingBridge().getOWLModel(), subClassName, className, true);
       } // if
     } catch (SWRLOWLUtilException e) {
       throw new BuiltInException(e.getMessage());
@@ -301,7 +281,7 @@ public class SWRLBuiltInLibraryImpl implements SWRLBuiltInLibrary
     return result;
   } // isSubClassOf
 
-  private boolean isSubPropertyOf(String builtInName, List<Argument> arguments, boolean transitive) throws BuiltInException
+  private boolean isSubPropertyOf(List<Argument> arguments, boolean transitive) throws BuiltInException
   {
     boolean subPropertyArgumentUnbound = false;
     String propertyName;
@@ -314,8 +294,8 @@ public class SWRLBuiltInLibraryImpl implements SWRLBuiltInLibrary
     try {
       if (subPropertyArgumentUnbound) {
         List<OWLProperty> subProperties;
-        if (transitive) subProperties = SWRLOWLUtil.getSubPropertiesOf(owlModel, propertyName);
-        else subProperties = SWRLOWLUtil.getDirectSubPropertiesOf(owlModel, propertyName);
+        if (transitive) subProperties = SWRLOWLUtil.getSubPropertiesOf(getInvokingBridge().getOWLModel(), propertyName);
+        else subProperties = SWRLOWLUtil.getDirectSubPropertiesOf(getInvokingBridge().getOWLModel(), propertyName);
         if (!subProperties.isEmpty()) {
           MultiArgument multiArgument = new MultiArgument();
           for (OWLProperty subProperty : subProperties) multiArgument.addArgument(new PropertyInfo(subProperty.getName()));
@@ -324,8 +304,8 @@ public class SWRLBuiltInLibraryImpl implements SWRLBuiltInLibrary
         } // if
       } else {
         String subPropertyName = SWRLBuiltInUtil.getArgumentAsAPropertyName(0, arguments);
-        if (transitive) result = SWRLOWLUtil.isSubPropertyOf(owlModel, subPropertyName, propertyName, true);
-        else result = SWRLOWLUtil.isDirectSubPropertyOf(owlModel, subPropertyName, propertyName, true);
+        if (transitive) result = SWRLOWLUtil.isSubPropertyOf(getInvokingBridge().getOWLModel(), subPropertyName, propertyName, true);
+        else result = SWRLOWLUtil.isDirectSubPropertyOf(getInvokingBridge().getOWLModel(), subPropertyName, propertyName, true);
       } // if
     } catch (SWRLOWLUtilException e) {
       throw new BuiltInException(e.getMessage());
@@ -334,7 +314,7 @@ public class SWRLBuiltInLibraryImpl implements SWRLBuiltInLibrary
     return result;
   } // isSubPropertyOf
 
-  private boolean isSuperPropertyOf(String builtInName, List<Argument> arguments, boolean transitive) throws BuiltInException
+  private boolean isSuperPropertyOf(List<Argument> arguments, boolean transitive) throws BuiltInException
   {
     boolean superPropertyArgumentUnbound = false;
     String propertyName;
@@ -347,8 +327,8 @@ public class SWRLBuiltInLibraryImpl implements SWRLBuiltInLibrary
     try {
       if (superPropertyArgumentUnbound) {
         List<OWLProperty> superProperties;
-        if (transitive) superProperties = SWRLOWLUtil.getSuperPropertiesOf(owlModel, propertyName);
-        else superProperties = SWRLOWLUtil.getDirectSuperPropertiesOf(owlModel, propertyName);
+        if (transitive) superProperties = SWRLOWLUtil.getSuperPropertiesOf(getInvokingBridge().getOWLModel(), propertyName);
+        else superProperties = SWRLOWLUtil.getDirectSuperPropertiesOf(getInvokingBridge().getOWLModel(), propertyName);
         if (!superProperties.isEmpty()) {
           MultiArgument multiArgument = new MultiArgument();
           for (OWLProperty superProperty : superProperties) multiArgument.addArgument(new PropertyInfo(superProperty.getName()));
@@ -357,8 +337,8 @@ public class SWRLBuiltInLibraryImpl implements SWRLBuiltInLibrary
         } // if
       } else {
         String superPropertyName = SWRLBuiltInUtil.getArgumentAsAPropertyName(0, arguments);
-        if (transitive) result = SWRLOWLUtil.isSuperPropertyOf(owlModel, superPropertyName, propertyName, true);
-        else result = SWRLOWLUtil.isDirectSuperPropertyOf(owlModel, superPropertyName, propertyName, true);
+        if (transitive) result = SWRLOWLUtil.isSuperPropertyOf(getInvokingBridge().getOWLModel(), superPropertyName, propertyName, true);
+        else result = SWRLOWLUtil.isDirectSuperPropertyOf(getInvokingBridge().getOWLModel(), superPropertyName, propertyName, true);
       } // if
     } catch (SWRLOWLUtilException e) {
       throw new BuiltInException(e.getMessage());
