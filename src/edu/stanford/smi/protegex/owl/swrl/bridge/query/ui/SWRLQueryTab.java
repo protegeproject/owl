@@ -29,7 +29,7 @@ public class SWRLQueryTab extends JTabbedPane implements SWRLPluginGUIAdapter
     // TODO: Eventually pop up window to select an engine from a list.
 
     try {
-      bridge = RuleEngineFactory.createRuleEngine(owlModel);
+      bridge = BridgeFactory.createBridge(owlModel);
     } catch (SWRLRuleEngineBridgeException e) {
       System.err.println(e.toString());
       return makeErrorWindow(e.toString());

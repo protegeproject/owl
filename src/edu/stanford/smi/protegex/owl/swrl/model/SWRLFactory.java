@@ -48,7 +48,7 @@ public class SWRLFactory
   {
     this.owlModel = owlModel;
 
-    if (!(owlModel.getAllImports().contains(SWRLNames.SWRL_IMPORT)))
+    if (!(owlModel.getAllImports().contains(SWRLNames.SWRL_IMPORT) || owlModel.getAllImports().contains(SWRLNames.SWRL_ALT_IMPORT)))
       System.err.println("Attempt to create SWRLFactory with an OWL model that does not import SWRL.");
 
     atomListCls = owlModel.getOWLNamedClass(SWRLNames.Cls.ATOM_LIST);

@@ -13,7 +13,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 
 /**
- ** Class containing utility methods that can be used in built-in method implementations. 
+ ** Class containing argument processing utility methods that can be used in built-in method implementations.
  */
 public class SWRLBuiltInUtil
 {
@@ -533,8 +533,9 @@ public class SWRLBuiltInUtil
 
   /**
    ** Take an bound Argument object with types ClassInfo, PropertyInfo, IndividualInfo, or LiteralInfo and return it as a property value
-   ** representation. Class, property and individual info objects are represented strings containing their names. Literal objects are
-   ** represented as the appropriate Java type. Primitive XSD datatypes that do not have a corresponding Java type are not yet supported.
+   ** representation. Class, property and individual info objects are represented by strings containing their class, property or individual
+   ** names, respectively; literal objects are represented by the appropriate Java type. Primitive XSD datatypes that do not have a
+   ** corresponding Java type are not yet supported.
    */
   public static Object getArgumentAsAPropertyValue(int argumentNumber, List<Argument> arguments) throws BuiltInException
   {
@@ -565,13 +566,13 @@ public class SWRLBuiltInUtil
     return result;
   } // getArgumentAsAPropertyValue
 
-  /*
-  ** Create a string that represents a unique invocation pattern for a built-in. 
-  */
-  public static String createInvocationPattern(List<Argument> arguments, SWRLRuleEngineBridge bridge)
-    throws BuiltInException
+  /**
+   ** Create a string that represents a unique invocation pattern for a built-in for a bridge/rule/built-in/argument combination.  
+   */
+  public static String createInvocationPattern(SWRLRuleEngineBridge invokingBridge, String invokingRuleName, int invokingBuiltInIndex,
+                                               List<Argument> arguments) throws BuiltInException
   {
-    String pattern = bridge.getCurrentBuiltInInvokingRuleName() + "." + bridge.getCurrentBuiltInInvokingIndex();
+    String pattern = "" + invokingBridge.hashCode() + "." + invokingRuleName + "." + invokingBuiltInIndex;
 
     for (int i = 0; i < arguments.size(); i++) pattern += "." + getArgumentAsAPropertyValue(i, arguments);
 

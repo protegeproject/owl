@@ -76,7 +76,7 @@ public class BridgePluginManager
 
     registeredPlugins.put(pluginName, new PluginRegistrationInfo(pluginName, toolTip, icon, guiAdapter));
 
-    System.err.println("Plugin '" + pluginName + "' registered with the SWRLTab plugin manager.");
+    System.out.println("Plugin '" + pluginName + "' registered with the SWRLTab plugin manager.");
   } // registerPlugin
 
   public static Collection<PluginRegistrationInfo> getRegisteredPlugins() { return registeredPlugins.values(); }

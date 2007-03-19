@@ -20,58 +20,60 @@ import java.lang.Math.*;
  **
  ** See <a href="http://protege.cim3.net/cgi-bin/wiki.pl?SWRLBuiltInBridge">here</a> for documentation on defining SWRL built-in libraries.
  */
-public class SWRLBuiltInLibraryImpl implements SWRLBuiltInLibrary
+public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
 {
-  private static String SWRLB_NAMESPACE = "swrlb";
+  private static String SWRLBLibraryName = "SWRLCoreBuiltIns";
 
-  private static String SWRLB_GREATER_THAN = SWRLB_NAMESPACE + ":" + "greaterThan";
-  private static String SWRLB_LESS_THAN = SWRLB_NAMESPACE + ":" + "lessThan";
-  private static String SWRLB_EQUAL = SWRLB_NAMESPACE + ":" + "equal";
-  private static String SWRLB_NOT_EQUAL = SWRLB_NAMESPACE + ":" + "notEqual";
-  private static String SWRLB_LESS_THAN_OR_EQUAL = SWRLB_NAMESPACE + ":" + "lessThanOrEqual";
-  private static String SWRLB_GREATER_THAN_OR_EQUAL = SWRLB_NAMESPACE + ":" + "greaterThanOrEqual";
+  private static String SWRLBPrefix = "swrlb:";
 
-  private static String SWRLB_ADD = SWRLB_NAMESPACE + ":" + "add";
-  private static String SWRLB_SUBTRACT = SWRLB_NAMESPACE + ":" + "subtract";
-  private static String SWRLB_MULTIPLY = SWRLB_NAMESPACE + ":" + "multiply";
-  private static String SWRLB_DIVIDE = SWRLB_NAMESPACE + ":" + "divide";
-  private static String SWRLB_INTEGER_DIVIDE = SWRLB_NAMESPACE + ":" + "integerDivide";
-  private static String SWRLB_MOD = SWRLB_NAMESPACE + ":" + "mod";
-  private static String SWRLB_POW = SWRLB_NAMESPACE + ":" + "pow";
-  private static String SWRLB_UNARY_PLUS = SWRLB_NAMESPACE + ":" + "unaryPlus";
-  private static String SWRLB_UNARY_MINUS = SWRLB_NAMESPACE + ":" + "unaryMinus";
-  private static String SWRLB_ABS = SWRLB_NAMESPACE + ":" + "abs";
-  private static String SWRLB_CEILING = SWRLB_NAMESPACE + ":" + "ceiling";
-  private static String SWRLB_FLOOR = SWRLB_NAMESPACE + ":" + "floor";
-  private static String SWRLB_ROUND = SWRLB_NAMESPACE + ":" + "round";
-  private static String SWRLB_ROUND_HALF_TO_EVEN = SWRLB_NAMESPACE + ":" + "roundHalfToEven";
-  private static String SWRLB_SIN = SWRLB_NAMESPACE + ":" + "sin";
-  private static String SWRLB_COS = SWRLB_NAMESPACE + ":" + "cos";
-  private static String SWRLB_TAN = SWRLB_NAMESPACE + ":" + "tan";
+  private static String SWRLB_GREATER_THAN = SWRLBPrefix + "greaterThan";
+  private static String SWRLB_LESS_THAN = SWRLBPrefix + "lessThan";
+  private static String SWRLB_EQUAL = SWRLBPrefix + "equal";
+  private static String SWRLB_NOT_EQUAL = SWRLBPrefix + "notEqual";
+  private static String SWRLB_LESS_THAN_OR_EQUAL = SWRLBPrefix + "lessThanOrEqual";
+  private static String SWRLB_GREATER_THAN_OR_EQUAL = SWRLBPrefix + "greaterThanOrEqual";
 
-  private static String SWRLB_BOOLEAN_NOT = SWRLB_NAMESPACE + ":" + "booleanNot";
+  private static String SWRLB_ADD = SWRLBPrefix + "add";
+  private static String SWRLB_SUBTRACT = SWRLBPrefix + "subtract";
+  private static String SWRLB_MULTIPLY = SWRLBPrefix + "multiply";
+  private static String SWRLB_DIVIDE = SWRLBPrefix + "divide";
+  private static String SWRLB_INTEGER_DIVIDE = SWRLBPrefix + "integerDivide";
+  private static String SWRLB_MOD = SWRLBPrefix + "mod";
+  private static String SWRLB_POW = SWRLBPrefix + "pow";
+  private static String SWRLB_UNARY_PLUS = SWRLBPrefix + "unaryPlus";
+  private static String SWRLB_UNARY_MINUS = SWRLBPrefix + "unaryMinus";
+  private static String SWRLB_ABS = SWRLBPrefix + "abs";
+  private static String SWRLB_CEILING = SWRLBPrefix + "ceiling";
+  private static String SWRLB_FLOOR = SWRLBPrefix + "floor";
+  private static String SWRLB_ROUND = SWRLBPrefix + "round";
+  private static String SWRLB_ROUND_HALF_TO_EVEN = SWRLBPrefix + "roundHalfToEven";
+  private static String SWRLB_SIN = SWRLBPrefix + "sin";
+  private static String SWRLB_COS = SWRLBPrefix + "cos";
+  private static String SWRLB_TAN = SWRLBPrefix + "tan";
 
-  private static String SWRLB_STRING_EQUAL_IGNORECASE = SWRLB_NAMESPACE + ":" + "stringEqualIgnoreCase";
-  private static String SWRLB_STRING_CONCAT = SWRLB_NAMESPACE + ":" + "stringConcat";
-  private static String SWRLB_SUBSTRING = SWRLB_NAMESPACE + ":" + "substring";
-  private static String SWRLB_STRING_LENGTH = SWRLB_NAMESPACE + ":" + "stringLength";
-  private static String SWRLB_NORMALIZE_SPACE = SWRLB_NAMESPACE + ":" + "normalizeSpace"; // TODO: not implemented
-  private static String SWRLB_UPPER_CASE = SWRLB_NAMESPACE + ":" + "upperCase";
-  private static String SWRLB_LOWER_CASE = SWRLB_NAMESPACE + ":" + "lowerCase";
-  private static String SWRLB_TRANSLATE = SWRLB_NAMESPACE + ":" + "translate"; // TODO: not implemented
-  private static String SWRLB_CONTAINS = SWRLB_NAMESPACE + ":" + "contains";
-  private static String SWRLB_CONTAINS_IGNORE_CASE = SWRLB_NAMESPACE + ":" + "containsIgnoreCase";
-  private static String SWRLB_STARTS_WITH = SWRLB_NAMESPACE + ":" + "startsWith";
-  private static String SWRLB_ENDS_WITH = SWRLB_NAMESPACE + ":" + "endsWith";
-  private static String SWRLB_SUBSTRING_BEFORE = SWRLB_NAMESPACE + ":" + "substringBefore"; // TODO: not implemented
-  private static String SWRLB_SUBSTRING_AFTER = SWRLB_NAMESPACE + ":" + "substringAfter"; 
-  private static String SWRLB_MATCHES = SWRLB_NAMESPACE + ":" + "matches"; // TODO: not implemented
-  private static String SWRLB_REPLACE = SWRLB_NAMESPACE + ":" + "replace"; // TODO: not implemented
-  private static String SWRLB_TOKENIZE = SWRLB_NAMESPACE + ":" + "tokenize"; // TODO: not implemented
+  private static String SWRLB_BOOLEAN_NOT = SWRLBPrefix + "booleanNot";
 
-  private SWRLRuleEngineBridge bridge;
+  private static String SWRLB_STRING_EQUAL_IGNORECASE = SWRLBPrefix + "stringEqualIgnoreCase";
+  private static String SWRLB_STRING_CONCAT = SWRLBPrefix + "stringConcat";
+  private static String SWRLB_SUBSTRING = SWRLBPrefix + "substring";
+  private static String SWRLB_STRING_LENGTH = SWRLBPrefix + "stringLength";
+  private static String SWRLB_NORMALIZE_SPACE = SWRLBPrefix + "normalizeSpace"; // TODO: not implemented
+  private static String SWRLB_UPPER_CASE = SWRLBPrefix + "upperCase";
+  private static String SWRLB_LOWER_CASE = SWRLBPrefix + "lowerCase";
+  private static String SWRLB_TRANSLATE = SWRLBPrefix + "translate"; // TODO: not implemented
+  private static String SWRLB_CONTAINS = SWRLBPrefix + "contains";
+  private static String SWRLB_CONTAINS_IGNORE_CASE = SWRLBPrefix + "containsIgnoreCase";
+  private static String SWRLB_STARTS_WITH = SWRLBPrefix + "startsWith";
+  private static String SWRLB_ENDS_WITH = SWRLBPrefix + "endsWith";
+  private static String SWRLB_SUBSTRING_BEFORE = SWRLBPrefix + "substringBefore"; // TODO: not implemented
+  private static String SWRLB_SUBSTRING_AFTER = SWRLBPrefix + "substringAfter"; 
+  private static String SWRLB_MATCHES = SWRLBPrefix + "matches"; // TODO: not implemented
+  private static String SWRLB_REPLACE = SWRLBPrefix + "replace"; // TODO: not implemented
+  private static String SWRLB_TOKENIZE = SWRLBPrefix + "tokenize"; // TODO: not implemented
 
-  public void initialize(SWRLRuleEngineBridge bridge) { this.bridge = bridge; }
+  public SWRLBuiltInLibraryImpl() { super(SWRLBLibraryName); }
+
+  public void reset() {}
   
   // Built-ins for comparison, defined in Section 8.1. of http://www.daml.org/2004/04/swrl/builtins.html.
 
@@ -533,7 +535,6 @@ public class SWRLBuiltInLibraryImpl implements SWRLBuiltInLibrary
     else if (builtInName.equalsIgnoreCase(SWRLB_ABS)) operationResult = java.lang.Math.abs(argument2);
     else if (builtInName.equalsIgnoreCase(SWRLB_CEILING)) operationResult = java.lang.Math.ceil(argument2);
     else if (builtInName.equalsIgnoreCase(SWRLB_FLOOR)) operationResult = java.lang.Math.floor(argument2);
-    else if (builtInName.equalsIgnoreCase(SWRLB_ROUND)) operationResult = java.lang.Math.rint(argument2);
     else if (builtInName.equalsIgnoreCase(SWRLB_ROUND)) operationResult = java.lang.Math.rint(argument2);
     else if (builtInName.equalsIgnoreCase(SWRLB_ROUND_HALF_TO_EVEN)) operationResult = java.lang.Math.rint(argument2);
     else if (builtInName.equalsIgnoreCase(SWRLB_SIN)) operationResult = java.lang.Math.sin(argument2);

@@ -18,23 +18,18 @@ import java.util.*;
  **
  ** See <a href="http://protege.cim3.net/cgi-bin/wiki.pl?SWRLBuiltInBridge">here</a> for documentation on defining SWRL built-in libraries.
  */
-public class SWRLBuiltInLibraryImpl implements SWRLBuiltInLibrary
+public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
 {
-  private static String SWRLXNamespace = "swrlx";
-
-  public static String SWRLXCreateOWLThing = SWRLXNamespace + ":" + "createIndividual";
-
-  private SWRLRuleEngineBridge bridge;
-  private OWLModel owlModel;
+  private static String SWRLXLibraryName = "SWRLExtensionsBuiltIns";
 
   private HashMap<String, IndividualInfo> createInvocationMap;
 
-  public void initialize(SWRLRuleEngineBridge bridge) 
-  { 
-    this.bridge = bridge; 
-    owlModel = bridge.getOWLModel();
+  public SWRLBuiltInLibraryImpl() { super(SWRLXLibraryName); }
+
+  public void reset() 
+  {
     createInvocationMap = new HashMap<String, IndividualInfo>();
-  } // initialize
+  } // reset
 
   /**
    ** For every pattern of second and subsequent arguments, create an OWL individual of type OWL:Thing and bind it to the first argument. If
@@ -45,13 +40,16 @@ public class SWRLBuiltInLibraryImpl implements SWRLBuiltInLibrary
     SWRLBuiltInUtil.checkNumberOfArgumentsAtLeast(2, arguments.size());
 
     if (SWRLBuiltInUtil.isUnboundArgument(0, arguments)) {
-      String createInvocationPattern  = SWRLBuiltInUtil.createInvocationPattern(arguments.subList(1, arguments.size()), bridge);
+      String createInvocationPattern 
+        = SWRLBuiltInUtil.createInvocationPattern(getInvokingBridge(), getInvokingRuleName(), getInvokingBuiltInIndex(), 
+                                                  arguments.subList(1, arguments.size()));
+
       IndividualInfo individualInfo = null;
 
       if (createInvocationMap.containsKey(createInvocationPattern)) individualInfo = createInvocationMap.get(createInvocationPattern);
       else {
         try {
-          individualInfo = bridge.createIndividual();
+          individualInfo = getInvokingBridge().createIndividual();
         } catch (SWRLRuleEngineBridgeException e) {
           throw new BuiltInException("error calling bridge to create OWL individual: " + e.getMessage());
         } // 
