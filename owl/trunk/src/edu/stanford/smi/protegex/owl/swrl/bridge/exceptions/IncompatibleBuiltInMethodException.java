@@ -3,9 +3,10 @@ package edu.stanford.smi.protegex.owl.swrl.bridge.exceptions;
 
 public class IncompatibleBuiltInMethodException extends BuiltInException 
 {
-  public IncompatibleBuiltInMethodException(String ruleName, String namespaceName, String builtInMethodName, String message) 
+  public IncompatibleBuiltInMethodException(String ruleName, String prefix, String builtInMethodName, String message) 
   { 
-    super("incompatible built-in method '" + namespaceName + ":" + builtInMethodName + "' used in rule '" + ruleName + "': " + message);
+    super("incompatible Java method defined for built-in'" + prefix + ":" + builtInMethodName + "' (used in rule '" + ruleName + "'): " 
+          + message);
   } //IncompatibleBuiltInMethodException
 
 } // IncompatibleBuiltInMethodException
