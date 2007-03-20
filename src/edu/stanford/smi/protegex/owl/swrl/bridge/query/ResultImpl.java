@@ -73,7 +73,7 @@ public class ResultImpl implements ResultGenerator, Result
   private List<List<ResultValue>> rows; // List of List of ResultValue objects.
   private List<ResultValue> rowData; // List of ResultValue objects used when assembling a row.
   private int numberOfColumns, rowIndex, rowDataColumnIndex;
-  private boolean isConfigured, isPrepared, isRowOpen, isOrdered, isDescending, isDistinct, hasAggregates;
+  private boolean isConfigured, isPrepared, isRowOpen, isOrdered, isAscending, isDistinct, hasAggregates;
   private RowComparator rowComparator;
 
   public static String aggregateFunctionNames[] = { MinAggregateFunction, MaxAggregateFunction, SumAggregateFunction,
@@ -102,26 +102,12 @@ public class ResultImpl implements ResultGenerator, Result
     orderByColumnIndexes = new ArrayList<Integer>();
     columnDisplayNames = new ArrayList<String>();
 
-    numberOfColumns = 0; isOrdered = isDescending = isDistinct = false;
+    numberOfColumns = 0; isOrdered = isAscending = isDistinct = false;
 
     // The following variables will not be externally valid until prepared() is called.
     rowIndex = -1; // If there are no rows in the final result, it will remain at -1.
     rows = new ArrayList<List<ResultValue>>();
   } // prepare
-
-  public void setIsOrdered() throws ResultException
-  {
-    throwExceptionIfAlreadyConfigured();
-
-    isOrdered = true;
-  } // setIsOrdered
-
-  public void setIsDescending() throws ResultException
-  {
-    throwExceptionIfAlreadyConfigured();
-
-    isDescending = true;
-  } // setIsDescending
 
   public void addSelectedColumn(String columnName) throws ResultException
   {
@@ -143,9 +129,16 @@ public class ResultImpl implements ResultGenerator, Result
     numberOfColumns++;
   } // addAggregateColumn
   
-  public void addOrderByColumn(String orderByColumnName) throws ResultException
+  public void addOrderByColumn(String orderByColumnName, boolean ascending) throws ResultException
   {
     throwExceptionIfAlreadyConfigured();
+
+    if (isOrdered && (isAscending != ascending)) 
+      if (isAscending) throw new ResultException("attempt to order column '" + orderByColumnName + "' ascending when descending was previously selected");
+      else throw new ResultException("attempt to order column '" + orderByColumnName + "' descending when ascending was previously selected");
+
+    isOrdered = true;
+    isAscending = ascending;
 
     int index = allColumnNames.indexOf(orderByColumnName);
 
@@ -173,7 +166,7 @@ public class ResultImpl implements ResultGenerator, Result
     if (containsOneOf(aggregateColumnIndexes.keySet(), orderByColumnIndexes))
       throw new InvalidQueryException("Ordered columns cannot be aggregate columns");
     	    
-    rowComparator = new RowComparator(allColumnNames, orderByColumnIndexes, isOrdered && !isDescending);
+    rowComparator = new RowComparator(allColumnNames, orderByColumnIndexes, isOrdered && isAscending);
 
     hasAggregates = !aggregateColumnIndexes.isEmpty();
 
@@ -184,7 +177,7 @@ public class ResultImpl implements ResultGenerator, Result
 
   public boolean isPrepared() { return isPrepared; }
   public boolean isOrdered() { return isOrdered; }
-  public boolean isDescending() { return isDescending; }
+  public boolean isAscending() { return isAscending; }
 
   public int getNumberOfColumns() throws ResultException
   {
@@ -260,9 +253,9 @@ public class ResultImpl implements ResultGenerator, Result
     isPrepared = true;
     if (getNumberOfRows() > 0) rowIndex = 0;
 
-    if (!orderByColumnIndexes.isEmpty()) Collections.sort(rows, rowComparator);
+    if (isOrdered) rows = orderBy(rows, allColumnNames, orderByColumnIndexes, isAscending);
 
-    if (hasAggregates) rows = aggregate(rows, allColumnNames, aggregateColumnIndexes); // Aggregation implies killing distinct rows.
+    if (hasAggregates) rows = aggregate(rows, allColumnNames, aggregateColumnIndexes); // Aggregation implies killing duplicate rows.
     else if (isDistinct) rows = distinct(rows);
   } // prepared
 
@@ -434,7 +427,7 @@ public class ResultImpl implements ResultGenerator, Result
     String result = "";
 
     result += "[isConfigured: " + isConfigured + ", isPrepared: " + isPrepared + ", isRowOpen: " + isRowOpen +
-              ", isOrdered: " + isOrdered + ", isDescending " + isDescending + ", isDistinct: " + isDistinct + 
+              ", isOrdered: " + isOrdered + ", isAscending " + isAscending + ", isDistinct: " + isDistinct + 
               ", hasAggregates: " + hasAggregates + "]\n";
 
     for (List<ResultValue> row : rows) {
@@ -570,7 +563,7 @@ public class ResultImpl implements ResultGenerator, Result
     for (List<ResultValue> row : rows) if (Collections.binarySearch(result, row, rowComparator) < 0) result.add(row);
 
     return result;
-  } // killDuplicateRows
+  } // distinct
 
   // TODO: not very efficient
   private List<List<ResultValue>> aggregate(List<List<ResultValue>> rows, List<String> allColumnNames, 
@@ -633,7 +626,19 @@ public class ResultImpl implements ResultGenerator, Result
     } // for
 
     return result;
-  } // distinct
+  } // aggregate
+
+  private List<List<ResultValue>> orderBy(List<List<ResultValue>> rows, List<String> allColumnNames, 
+                                          List<Integer> orderByColumnIndexes, boolean ascending)
+    throws ResultException
+  {
+    List<List<ResultValue>> result = new ArrayList<List<ResultValue>>(rows);
+    RowComparator rowComparator = new RowComparator(allColumnNames, orderByColumnIndexes, ascending); 
+
+    Collections.sort(result, rowComparator);
+
+    return result;
+  } // orderBy
 
   private DatatypeValue min(List<ResultValue> values) throws ResultException
   {
