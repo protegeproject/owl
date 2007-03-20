@@ -73,6 +73,7 @@ public class SWRLQueryControlPanel extends JPanel
   public void removeAllPanels()
   {
     for (SWRLQueryResultPanel resultPanel : resultPanels.values()) ((JTabbedPane)getParent()).remove(resultPanel);
+    resultPanels = new HashMap();
   } // if
 
   private JButton createButton(String text, String toolTipText, ActionListener listener)

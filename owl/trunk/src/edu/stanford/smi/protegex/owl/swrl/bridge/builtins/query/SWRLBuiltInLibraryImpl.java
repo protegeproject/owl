@@ -1,6 +1,4 @@
 
-// TODO: orderBy/orderByDescending not yet implemented
-
 package edu.stanford.smi.protegex.owl.swrl.bridge.builtins.query;
 
 import edu.stanford.smi.protegex.owl.swrl.bridge.query.*;
@@ -169,11 +167,23 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary implements QueryL
     
     return true;
   } // count
+
+  // The use of displayNames, orderBy, orderByDescending is handled at initial processing by configureResult().
   
   public boolean displayNames(List<Argument> arguments) throws BuiltInException
   {   
     return true;
   } // displayNames
+
+  public boolean orderBy(List<Argument> arguments) throws BuiltInException
+  {   
+    return true;
+  } // orderBy
+
+  public boolean orderByDescending(List<Argument> arguments) throws BuiltInException
+  {   
+    return true;
+  } // orderByDescending
 
   private ResultImpl getResult(String ruleName) throws BuiltInException
   {
@@ -242,11 +252,23 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary implements QueryL
               columnName = "avg(?" + builtInVariableInfo.getVariableName() + ")";
             } else columnName = "avg[" + argument + "]";
             result.addAggregateColumn(columnName, ResultGenerator.AvgAggregateFunction);
+          } else if (builtInName.equalsIgnoreCase(QueryOrderBy)) {
+            if (!(argument instanceof BuiltInVariableInfo)) 
+              throw new BuiltInException("only variables allowed for ordered columns - found '" + argument + "'");
+            builtInVariableInfo = (BuiltInVariableInfo)argument;
+            columnName = "?" + builtInVariableInfo.getVariableName();
+            result.addOrderByColumn(columnName, true);
+          } else if (builtInName.equalsIgnoreCase(QueryOrderByDescending)) {
+            if (!(argument instanceof BuiltInVariableInfo)) 
+              throw new BuiltInException("only variables allowed for ordered columns - found '" + argument + "'");
+            builtInVariableInfo = (BuiltInVariableInfo)argument;
+            columnName = "?" + builtInVariableInfo.getVariableName();
+            result.addOrderByColumn(columnName, false);
           } else if (builtInName.equalsIgnoreCase(QueryDisplayNames)) {
             if (argument instanceof LiteralInfo && ((LiteralInfo)argument).isString()) {
               LiteralInfo literalInfo = (LiteralInfo)argument;
               result.addColumnDisplayName(literalInfo.getString());
-            } else throw new BuiltInException("only string literals allowed as column names - found '" + argument + "'");
+            } else throw new BuiltInException("only string literals allowed as column display names - found '" + argument + "'");
           } // if
           argumentIndex++;
         } // for

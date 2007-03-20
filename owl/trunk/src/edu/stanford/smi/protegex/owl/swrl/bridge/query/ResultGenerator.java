@@ -20,12 +20,10 @@ public interface ResultGenerator
 
     void addSelectedColumn(String columnName) throws ResultException;
     void addAggregateColumn(String columnName, String aggregateFunctionName) throws ResultException;
-    void addOrderByColumn(String columnName) throws ResultException;
+    void addOrderByColumn(String columnName, boolean ascending) throws ResultException;
 
-    void setIsOrdered() throws ResultException;
-    void setIsDescending() throws ResultException;
     boolean isOrdered();
-    boolean isDescending();
+    boolean isAscending();
 
     void addColumnDisplayName(String columnName) throws ResultException;
 
