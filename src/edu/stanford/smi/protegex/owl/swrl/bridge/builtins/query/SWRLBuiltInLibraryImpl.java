@@ -92,9 +92,9 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary implements QueryL
 
     ResultImpl result = getResult(getInvokingRuleName());
     Argument argument = (Argument)arguments.get(0);
-    
-    if (!result.isConfigured()) throwInternalQueryException("built-in called on unconfigured result");
 
+    if (!result.isRowOpen()) result.openRow();
+    
     if (argument instanceof LiteralInfo) result.addRowData((DatatypeValue)argument);
     else if (argument instanceof IndividualInfo) result.addRowData((ObjectValue)argument);
     else if (argument instanceof ClassInfo) result.addRowData((ClassValue)argument);
@@ -111,9 +111,9 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary implements QueryL
 
     ResultImpl result = getResult(getInvokingRuleName());
     Argument argument = (Argument)arguments.get(0);
-    
-    if (!result.isConfigured()) throwInternalQueryException("built-in called on unconfigured result");
 
+    if (!result.isRowOpen()) result.openRow();
+    
     if (argument instanceof LiteralInfo && ((LiteralInfo)argument).isNumeric()) result.addRowData((DatatypeValue)argument);
     else throw new InvalidBuiltInArgumentException(0, "expecting numeric literal, got '" + argument + "'");
     
@@ -128,7 +128,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary implements QueryL
     ResultImpl result = getResult(getInvokingRuleName());
     Argument argument = (Argument)arguments.get(0);
     
-    if (!result.isConfigured()) throwInternalQueryException("built-in called on unconfigured result");
+    if (!result.isRowOpen()) result.openRow();
 
     if (argument instanceof LiteralInfo && ((LiteralInfo)argument).isNumeric()) result.addRowData((DatatypeValue)argument);
     else throw new InvalidBuiltInArgumentException(0, "expecting numeric literal, got '" + argument + "'");
@@ -144,7 +144,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary implements QueryL
     ResultImpl result = getResult(getInvokingRuleName());
     Argument argument = (Argument)arguments.get(0);
     
-    if (!result.isConfigured()) throwInternalQueryException("built-in called on unconfigured result");
+    if (!result.isRowOpen()) result.openRow();
 
     if (argument instanceof LiteralInfo && ((LiteralInfo)argument).isNumeric()) result.addRowData((DatatypeValue)argument);
     else throw new InvalidBuiltInArgumentException(0, "expecting numeric literal, got '" + argument + "'");
@@ -160,7 +160,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary implements QueryL
     ResultImpl result = getResult(getInvokingRuleName());
     Argument argument = (Argument)arguments.get(0);
     
-    if (!result.isConfigured()) throwInternalQueryException("built-in called on unconfigured result");
+    if (!result.isRowOpen()) result.openRow();
 
     if (argument instanceof LiteralInfo && ((LiteralInfo)argument).isNumeric()) result.addRowData((DatatypeValue)argument);
     else throw new InvalidBuiltInArgumentException(0, "expecting numeric literal, got '" + argument + "'");
