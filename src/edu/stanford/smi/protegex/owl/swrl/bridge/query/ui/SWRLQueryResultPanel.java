@@ -41,15 +41,15 @@ public class SWRLQueryResultPanel extends JPanel
     
     JPanel buttonsPanel = new JPanel(new FlowLayout());
     
-    JButton runRulesButton = createButton("Run Rules", "Execute all the SWRL rules", new RunRulesActionListener());
+    JButton saveResultButton = createButton("Save as CSV...", "Save the result as a CSV file...", new SaveResultActionListener());
+    buttonsPanel.add(saveResultButton);
+
+    JButton runRulesButton = createButton("Rerun", "Execute all the SWRL rules", new RunRulesActionListener());
     buttonsPanel.add(runRulesButton);
     
     JButton closeTabButton = createButton("Close", "Close the tab for this rule", new CloseTabActionListener());
     buttonsPanel.add(closeTabButton);
-    
-    JButton saveResultButton = createButton("Save as CSV...", "Save the result as a CSV file...", new SaveResultActionListener());
-    buttonsPanel.add(saveResultButton);
-    
+        
     JScrollPane scrollPane = new JScrollPane(table);
     JViewport viewPort = scrollPane.getViewport();
     viewPort.setBackground(table.getBackground());

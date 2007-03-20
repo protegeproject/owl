@@ -52,33 +52,46 @@ public abstract class SWRLBuiltInLibrary
 
   public abstract void reset() throws BuiltInException;
 
-  public synchronized boolean invokeMethod(Method method, SWRLRuleEngineBridge bridge, 
-                                           String ruleName, String builtInName, int builtInIndex, List<Argument> arguments) 
+  public void invokeResetMethod(SWRLRuleEngineBridge bridge) throws BuiltInException
+  {
+    synchronized (this) {
+      invokingBridge = bridge;
+
+      reset();
+
+      invokingBridge = null;
+    } // synchronized
+  } // invokeResetMethod
+
+  public boolean invokeBuiltInMethod(Method method, SWRLRuleEngineBridge bridge, 
+                                                  String ruleName, String builtInName, int builtInIndex, List<Argument> arguments) 
     throws BuiltInException
   {
     Boolean result = null;
 
-    invokingBridge = bridge; invokingRuleName = ruleName; invokingBuiltInIndex = builtInIndex; 
-
-    try { // Invoke the built-in method.
-      result = (Boolean)method.invoke(this, new Object[] { arguments });
-    } catch (InvocationTargetException e) { // The built-in implementation threw an exception.
-      Throwable targetException = e.getTargetException();
-      if (targetException instanceof BuiltInException) { // A BuiltInException was thrown by the built-in.
-        throw new BuiltInException("Exception thrown by built-in '" + builtInName + "' in rule '" + ruleName + "': " 
-                                   + targetException.getMessage(), targetException);
-      } else if (targetException instanceof RuntimeException) { // A runtime exception was thrown by the built-in.
-        throw new BuiltInMethodRuntimeException(ruleName, builtInName, targetException.getMessage(), targetException);
-      } else throw new BuiltInException("Unknown exception thrown by built-in method '" + builtInName + "' in rule '" + 
-                                        ruleName + "'. Exception: " + e.toString(), e);
-    } catch (Exception e) { // Should be one of IllegalAccessException or IllegalArgumentException
-      throw new BuiltInException("Internal bridge exception when invoking built-in method '" + builtInName + "' in rule '" + 
-                                 ruleName + "'. Exception: " + e.getMessage(), e);        
-    } // try
-
-    invokingBridge = null; invokingRuleName = ""; invokingBuiltInIndex = -1;
+    synchronized(this) {
+      invokingBridge = bridge; invokingRuleName = ruleName; invokingBuiltInIndex = builtInIndex; 
+      
+      try { // Invoke the built-in method.
+        result = (Boolean)method.invoke(this, new Object[] { arguments });
+      } catch (InvocationTargetException e) { // The built-in implementation threw an exception.
+        Throwable targetException = e.getTargetException();
+        if (targetException instanceof BuiltInException) { // A BuiltInException was thrown by the built-in.
+          throw new BuiltInException("Exception thrown by built-in '" + builtInName + "' in rule '" + ruleName + "': " 
+                                     + targetException.getMessage(), targetException);
+        } else if (targetException instanceof RuntimeException) { // A runtime exception was thrown by the built-in.
+          throw new BuiltInMethodRuntimeException(ruleName, builtInName, targetException.getMessage(), targetException);
+        } else throw new BuiltInException("Unknown exception thrown by built-in method '" + builtInName + "' in rule '" + 
+                                          ruleName + "'. Exception: " + e.toString(), e);
+      } catch (Exception e) { // Should be one of IllegalAccessException or IllegalArgumentException
+        throw new BuiltInException("Internal bridge exception when invoking built-in method '" + builtInName + "' in rule '" + 
+                                   ruleName + "'. Exception: " + e.getMessage(), e);        
+      } // try
+      
+      invokingBridge = null; invokingRuleName = ""; invokingBuiltInIndex = -1;
+    } // synchronized
 
     return result.booleanValue();
-  } // invokeMethod
+  } // invokeBuiltInMethod
 
 } // SWRLBuiltInLibrary

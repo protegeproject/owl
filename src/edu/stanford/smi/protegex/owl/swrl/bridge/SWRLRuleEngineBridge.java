@@ -63,7 +63,7 @@ public abstract class SWRLRuleEngineBridge
   {
     this.owlModel = owlModel;
     initialize();
-    BuiltInLibraryManager.invokeAllBuiltInLibrariesResetMethod();
+    BuiltInLibraryManager.invokeAllBuiltInLibrariesResetMethod(this);
   } // SWRLRuleEngineBridge
 
   /**
@@ -142,7 +142,7 @@ public abstract class SWRLRuleEngineBridge
   {
     resetRuleEngine();
 
-    BuiltInLibraryManager.invokeAllBuiltInLibrariesResetMethod();
+    BuiltInLibraryManager.invokeAllBuiltInLibrariesResetMethod(this);
 
     importedSWRLRules.clear();
     referencedClassNames.clear();

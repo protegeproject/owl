@@ -55,15 +55,16 @@ public abstract class BuiltInLibraryManager
     prefix = getPrefixName(builtInName);
     implementationClassName = getBuiltInLibraryImplementationClassName(prefix);
     builtInMethodName = getBuiltInMethodName(prefix, builtInName);
-    library = loadBuiltInLibrary(ruleName, prefix, implementationClassName);
+    library = loadBuiltInLibrary(bridge, ruleName, prefix, implementationClassName);
     method = resolveBuiltInMethod(ruleName, library, prefix, builtInMethodName); // Find the method.
     checkBuiltInMethodSignature(ruleName, prefix, builtInMethodName, method); // Check signature of method.
-    result = library.invokeMethod(method, bridge, ruleName, builtInName, builtInIndex, arguments);
+    result = library.invokeBuiltInMethod(method, bridge, ruleName, builtInName, builtInIndex, arguments);
 
     return result;
   } // invokeSWRLBuiltIn
 
-  private static SWRLBuiltInLibrary loadBuiltInLibrary(String ruleName, String prefix, String implementationClassName) 
+  private static SWRLBuiltInLibrary loadBuiltInLibrary(SWRLRuleEngineBridge bridge, String ruleName, String prefix, 
+                                                       String implementationClassName)
     throws BuiltInException
   {
     SWRLBuiltInLibrary library;
@@ -73,7 +74,7 @@ public abstract class BuiltInLibraryManager
     } else { // Implementation class not loaded - load it, call the reset method, and cache it.
       library = loadBuiltInLibraryImpl(ruleName, prefix, implementationClassName);
       builtInLibraryClassInstances.put(prefix, library);
-      invokeBuiltInLibraryResetMethod(library);
+      invokeBuiltInLibraryResetMethod(bridge, library);
     } // if
     return library;
   } // loadBuiltInLibrary
@@ -116,18 +117,18 @@ public abstract class BuiltInLibraryManager
   /**
    ** Invoke the reset() method for each registered built-in library.
    */
-  private static void invokeBuiltInLibraryResetMethod(SWRLBuiltInLibrary library) throws BuiltInException
+  private static void invokeBuiltInLibraryResetMethod(SWRLRuleEngineBridge bridge, SWRLBuiltInLibrary library) throws BuiltInException
   {
     try {
-      library.reset();
+      library.invokeResetMethod(bridge);
     } catch (Exception e) {
-      throw new BuiltInException("error calling reset method in built-in library '" + library.getClass().getName() + "'");
+      throw new BuiltInException("error calling 'reset' method in built-in library '" + library.getClass().getName() + "'");
     } // try
   } // invokeBuiltInLibraryResetMethod
   
-  public static void invokeAllBuiltInLibrariesResetMethod() throws SWRLRuleEngineBridgeException
+  public static void invokeAllBuiltInLibrariesResetMethod(SWRLRuleEngineBridge bridge) throws SWRLRuleEngineBridgeException
   {
-    for (SWRLBuiltInLibrary library : builtInLibraryClassInstances.values()) invokeBuiltInLibraryResetMethod(library);
+    for (SWRLBuiltInLibrary library : builtInLibraryClassInstances.values()) invokeBuiltInLibraryResetMethod(bridge, library);
   } // invokeAllBuiltInLibrariesResetMethod
 
   private static Method resolveBuiltInMethod(String ruleName, SWRLBuiltInLibrary library, String prefix, String builtInName)
@@ -174,13 +175,13 @@ public abstract class BuiltInLibraryManager
     Type parameterTypes[];
 
     if (method.getReturnType() != Boolean.TYPE) 
-      throw new IncompatibleBuiltInMethodException(ruleName, prefix, builtInName, "method must return a boolean");
+      throw new IncompatibleBuiltInMethodException(ruleName, prefix, builtInName, "Java method must return a boolean");
 
     exceptionTypes = method.getExceptionTypes();
 
     if ((exceptionTypes.length != 1) || (exceptionTypes[0] != BuiltInException.class))
       throw new IncompatibleBuiltInMethodException(ruleName, prefix, builtInName, 
-                                                   "built-in must throw a single exception of type BuiltInException");
+                                                   "Java method must throw a single exception of type BuiltInException");
 
     parameterTypes = method.getGenericParameterTypes();
 
@@ -189,13 +190,14 @@ public abstract class BuiltInLibraryManager
         (((ParameterizedType)parameterTypes[0]).getActualTypeArguments().length != 1) ||
         (((ParameterizedType)parameterTypes[0]).getActualTypeArguments()[0] != Argument.class))
       throw new IncompatibleBuiltInMethodException(ruleName, prefix, builtInName, 
-                                                   "built-in must accept a single List of Argument objects");
+                                                   "Java method must accept a single List of Argument objects");
   } // checkBuiltInMethodSignature
 
-  private static void checkBuiltInMethodsClassCompatibility(String ruleName, String prefix, Class cls) throws IncompatibleBuiltInClassException
+  private static void checkBuiltInMethodsClassCompatibility(String ruleName, String prefix, Class cls) 
+    throws IncompatibleBuiltInClassException
   {
     if (!SWRLBuiltInLibrary.class.isAssignableFrom(cls)) 
-      throw new IncompatibleBuiltInClassException(ruleName, prefix, cls.getName(), "class does not implement SWRLBuiltInLibrary");
+      throw new IncompatibleBuiltInClassException(ruleName, prefix, cls.getName(), "Java class does not implement SWRLBuiltInLibrary");
   } // checkBuiltInMethodsClassCompatibility
 
 } // BuiltInLibraryManager
