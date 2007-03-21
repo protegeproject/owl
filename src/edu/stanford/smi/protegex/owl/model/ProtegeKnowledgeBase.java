@@ -778,12 +778,6 @@ public interface ProtegeKnowledgeBase extends KnowledgeBase {
     /**
      * @deprecated not needed
      */
-    void setUserName(String name);
-
-
-    /**
-     * @deprecated not needed
-     */
     void setValueChecking(boolean b);
 
 
