@@ -25,6 +25,8 @@ public class OWLWidgetPropertyListUtil {
 
 	public static final String GRAPHWIDGET_NAME_SEPARATOR = "_";
 	
+	public static final String GRAPHWIDGET_REIFIED_RELATIONSHIP_PROPERTY_NAME = "slotForRelations";
+	
 	public static Resource createOWLPropertyList(OWLModel owlModel, Resource widget, PropertyList widgetPropertyList) {
 		if (widgetPropertyList == null || widgetPropertyList.getNames().size() == 0)
 			return null;
@@ -48,7 +50,17 @@ public class OWLWidgetPropertyListUtil {
 	    	javaClassName = javaClassNameStmt.getString();
 	    }
 		
-		String stringValue = widgetPropertyList.getString(widgetPropName);		
+		String stringValue = widgetPropertyList.getString(widgetPropName);
+		
+		//Treat the reified relationships differently, because they are stored differently by GraphWidget
+		if (widgetPropName.equals(GRAPHWIDGET_REIFIED_RELATIONSHIP_PROPERTY_NAME)) {			
+			Resource resource = formsPropList.getModel().createResource(null, FormsNames.String);
+			resource.addProperty(FormsNames.name, widgetPropName);
+			resource.addProperty(FormsNames.string_value, getAbsoluteReifiedRelationshipValue(owlModel, stringValue));
+			formsPropList.addProperty(FormsNames.properties, resource);
+			return;
+		}
+		
 		if (stringValue != null){
 			Resource resource = formsPropList.getModel().createResource(null, FormsNames.String);
 			resource.addProperty(FormsNames.name, getAbsoluteWidgetPropertyName(owlModel, widgetPropName, javaClassName));
@@ -87,7 +99,7 @@ public class OWLWidgetPropertyListUtil {
 		}		
 	}
 
-	
+
 	/**
 	 * Handle the GraphWidget specially because of the naming problem
 	 * @param owlModel
@@ -163,7 +175,12 @@ public class OWLWidgetPropertyListUtil {
         	if (nameStmt != null) {
         		Statement valueStmt = resource.getProperty(FormsNames.string_value);
         		if (valueStmt != null) {
-        			slotWidget.getDescriptor().getPropertyList().setString(getLocalWidgetPropertyName(owlModel, nameStmt.getString(), javaClassName), valueStmt.getString());        			
+        			//make a special case of reified relationships
+        			if (nameStmt.getString().equals(GRAPHWIDGET_REIFIED_RELATIONSHIP_PROPERTY_NAME)) {
+        				slotWidget.getDescriptor().getPropertyList().setString(nameStmt.getString(), getLocalReifiedRelationshipValue(owlModel, valueStmt.getString()));
+        			} else {        			
+        				slotWidget.getDescriptor().getPropertyList().setString(getLocalWidgetPropertyName(owlModel, nameStmt.getString(), javaClassName), valueStmt.getString());
+        			}
         			return;
         		}
         	}
@@ -220,4 +237,32 @@ public class OWLWidgetPropertyListUtil {
 		return (localClassName == null ? widgetPropName : localClassName + afterSeparatorPropName);
 	}
 
+	
+	
+	private static String getAbsoluteReifiedRelationshipValue(OWLModel owlModel, String stringValue) {
+		String absolutePropName = stringValue;
+		
+		try {
+			absolutePropName = owlModel.getURIForResourceName(stringValue);
+		} catch (Exception e) {
+			return absolutePropName;
+		}
+		
+		return absolutePropName;
+	}
+
+	private static String getLocalReifiedRelationshipValue(OWLModel owlModel, String absoluteStringValue) {
+		String localPropName = absoluteStringValue;
+		
+		try {
+			localPropName = owlModel.getResourceNameForURI(absoluteStringValue);
+		} catch (Exception e) {
+			return localPropName;
+		}
+		
+		return localPropName;
+	}
+
+	
+	
 }
