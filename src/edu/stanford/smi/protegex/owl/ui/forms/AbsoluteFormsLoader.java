@@ -78,9 +78,11 @@ public class AbsoluteFormsLoader {
         String protegeOWLDir = null;
         if (ProtegeOWL.getPluginFolder().exists()) {        	
         	try {
-				protegeOWLDir = (new URI(ProtegeOWL.getPluginFolder().getAbsolutePath())).toString();
-			} catch (URISyntaxException e) {				
-				Log.getLogger().warning("Error at retrieving Protege OWL plugin folder.");
+				//protegeOWLDir = (new URI(ProtegeOWL.getPluginFolder().getAbsolutePath())).toString();
+        		protegeOWLDir = ProtegeOWL.getPluginFolder().getAbsoluteFile().toURI().toString();
+			} catch (Exception e) {
+				Log.getLogger().warning("Error at retrieving Protege OWL plugin folder. Expected to be at: " + 
+						ProtegeOWL.getPluginFolder().getAbsoluteFile());
 			}
         }
         
@@ -88,7 +90,7 @@ public class AbsoluteFormsLoader {
         	OntDocumentManager docManager = model.getDocumentManager();
         
         	docManager.addAltEntry(ProtegeFormsNames.PROTEGE_FORMS_ONTOLOGY, protegeOWLDir + File.separator +  ProtegeFormsNames.PROTEGE_FORMS_FILENAME);
-        	docManager.addAltEntry(ProtegeFormsNames.ABSOLUTE_FORMS_ONTOLOGY, protegeOWLDir + File.separator+ File.separator + ProtegeFormsNames.ABSOLUTE_FORMS_FILENAME);
+        	docManager.addAltEntry(ProtegeFormsNames.ABSOLUTE_FORMS_ONTOLOGY, protegeOWLDir + File.separator + ProtegeFormsNames.ABSOLUTE_FORMS_FILENAME);
         	docManager.addAltEntry(ProtegeFormsNames.FORMS_ONTOLOGY, protegeOWLDir + File.separator + ProtegeFormsNames.FORMS_FILENAME);
         }
         
