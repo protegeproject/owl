@@ -125,7 +125,9 @@
 
 
     <target name="init.time">
-        <tstamp/>
+	  <tstamp>
+         <format property="build.time" pattern="MM/dd/yyyy hh:mm aa"/>
+      </tstamp>
     </target>
 
     <target name="init" depends="init.time">
@@ -228,8 +230,14 @@
     <!-- ================================================================ -->
 
     <target name="jar" depends="compile" description="Create the protege-owl.jar file">
+        <copy todir="${build}" file="${src}/META-INF/MANIFEST.MF" overwrite="true"/>
+        <manifest file="${build}/MANIFEST.MF" 
+                  mode = "update">
+           <attribute name="Built-By" value = "${user.name}"/>
+           <attribute name="Build-Date" value = "${build.time}"/>
+        </manifest>
         <jar jarfile="${jarfile}"
-             manifest="${src}/META-INF/MANIFEST.MF">
+             manifest="${build}/MANIFEST.MF">
           <fileset dir="${classes}"/>
           <fileset dir="${src}/">
             <include name="**/*.gif"/>
