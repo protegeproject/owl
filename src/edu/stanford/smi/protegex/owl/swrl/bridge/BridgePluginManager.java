@@ -63,11 +63,13 @@ public class BridgePluginManager
 
   public static String getSelectedRuleName() { return selectedRuleName; }
   public static boolean hasSelectedRule() { return !selectedRuleName.equals(""); }
+  public static void setSelectedRuleName(String ruleName) { selectedRuleName = ruleName; }
 
-  public static void setSelectedRuleName(String ruleName) 
-  { 
-    selectedRuleName = ruleName; 
-  } // setSelectedRuleName
+  public static Collection<PluginRegistrationInfo> getRegisteredPlugins() { return registeredPlugins.values(); }
+
+  public static void hideVisiblePlugin() { hidePlugin(visiblePluginName, true); }
+  public static boolean hidePlugin(String pluginName) { return hidePlugin(pluginName, false); }
+  public static boolean isVisible(String pluginName) { return !visiblePluginName.equals("") && pluginName.equals(visiblePluginName); } 
 
   // Called by each plugin as it is loaded to inform the adapter of its presence.
   public static void registerPlugin(String pluginName, String toolTip, Icon icon, SWRLPluginGUIAdapter guiAdapter)
@@ -79,8 +81,6 @@ public class BridgePluginManager
     System.out.println("Plugin '" + pluginName + "' registered with the SWRLTab plugin manager.");
   } // registerPlugin
 
-  public static Collection<PluginRegistrationInfo> getRegisteredPlugins() { return registeredPlugins.values(); }
-
   public static void unregisterPlugin(String pluginName)
   {
     if (registeredPlugins.containsKey(pluginName)) {
@@ -88,11 +88,6 @@ public class BridgePluginManager
       registeredPlugins.remove(pluginName);
     } // if
   } // unregisterEngine
-
-  public static boolean isVisible(String pluginName) 
-  { 
-    return !visiblePluginName.equals("") && pluginName.equals(visiblePluginName);
-  } // isVisible
 
   public static void showPlugin(String pluginName, SWRLTab swrlTab, OWLModel owlModel)
   {
@@ -117,10 +112,6 @@ public class BridgePluginManager
     } // if
     owlModel.getProject().addProjectListener(projectListener);
   } // showPlugin
-
-  public static void hideVisiblePlugin() { hidePlugin(visiblePluginName, true); }
-
-  public static boolean hidePlugin(String pluginName) { return hidePlugin(pluginName, false); }
 
   private static boolean hidePlugin(String pluginName, boolean force)
   {

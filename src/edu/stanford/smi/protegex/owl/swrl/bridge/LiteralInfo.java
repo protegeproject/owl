@@ -64,6 +64,11 @@ public class LiteralInfo extends Info implements Argument, DatatypeValue
     value = new Integer(i);
   } // LiteralInfo
 
+  public LiteralInfo(long l)
+  {
+    value = new Long(l);
+  } // LiteralInfo
+
   public LiteralInfo(float f)
   {
     value = new Float(f);

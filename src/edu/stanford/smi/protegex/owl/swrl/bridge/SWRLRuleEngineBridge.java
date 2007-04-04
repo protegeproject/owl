@@ -167,19 +167,21 @@ public abstract class SWRLRuleEngineBridge
   } // resetRuleEngine
 
   /**
-   **  Get the results from a rule containing query built-ins. Null is retured if there are no results.
+   **  Get the results from a rule containing query built-ins. Null is retured if there are no results or if the query subsystem is not
+   **  activated.
    */
   public Result getQueryResult(String ruleName) throws ResultException
   {
     QueryLibrary queryLibrary = null;
+    Result result = null;
     
     try {
       queryLibrary = (QueryLibrary)BuiltInLibraryManager.getBuiltInLibraryByPrefix(QueryNames.QueryPrefix);
+      result = queryLibrary.getQueryResult(ruleName);
     } catch (InvalidBuiltInLibraryNameException e) {
-      throw new ResultException("Query subsystem not activated because rules do not contain query built-ins.");
     } // try
 
-    return queryLibrary.getQueryResult(ruleName);
+    return result;
   } // getQueryResult
 
   /**

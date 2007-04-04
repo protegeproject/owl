@@ -144,7 +144,7 @@ public class SWRLQueryResultPanel extends JPanel
             } // while
             result.reset();
             writer.close();
-            controlPanel.appendText("Sucessfully saved the results of rule '" + ruleName + "' to CSV file '" + selectedFile.getPath() + "'.\n");
+            controlPanel.appendText("Sucessfully saved results of rule '" + ruleName + "' to CSV file '" + selectedFile.getPath() + "'.\n");
           } // if
         } // if
       } catch (Throwable e) {

@@ -89,6 +89,10 @@ public class ResultImpl implements ResultGenerator, Result
   public boolean isRowOpen() { return isRowOpen; }
   public boolean isDistinct() { return isDistinct; }
 
+  public boolean isPrepared() { return isPrepared; }
+  public boolean isOrdered() { return isOrdered; }
+  public boolean isAscending() { return isAscending; }
+
   public void initialize()
   {
     isConfigured = false;
@@ -118,33 +122,33 @@ public class ResultImpl implements ResultGenerator, Result
     numberOfColumns++;
   } // addSelectedIndividualColumn
 
-  public void addAggregateColumn(String aggregateColumnName, String aggregateFunctionName) throws ResultException
+  public void addAggregateColumn(String columnName, String aggregateFunctionName) throws ResultException
   {
     throwExceptionIfAlreadyConfigured();
 
     checkAggregateFunctionName(aggregateFunctionName);
 
     aggregateColumnIndexes.put(new Integer(numberOfColumns), aggregateFunctionName);
-    allColumnNames.add(aggregateColumnName);
+    allColumnNames.add(columnName);
     numberOfColumns++;
   } // addAggregateColumn
   
-  public void addOrderByColumn(String orderByColumnName, boolean ascending) throws ResultException
+  public void addOrderByColumn(int orderedColumnIndex, boolean ascending) throws ResultException
   {
     throwExceptionIfAlreadyConfigured();
 
+    if (orderedColumnIndex < 0 || orderedColumnIndex >= allColumnNames.size()) 
+      throw new ResultException("ordered column index " + orderedColumnIndex + "out of range");
+
     if (isOrdered && (isAscending != ascending)) 
-      if (isAscending) throw new ResultException("attempt to order column '" + orderByColumnName + "' ascending when descending was previously selected");
-      else throw new ResultException("attempt to order column '" + orderByColumnName + "' descending when ascending was previously selected");
+      if (isAscending) 
+        throw new ResultException("attempt to order column '" + allColumnNames.get(orderedColumnIndex) + "' ascending when descending was previously selected");
+      else throw new ResultException("attempt to order column '" + allColumnNames.get(orderedColumnIndex) + "' descending when ascending was previously selected");
 
     isOrdered = true;
     isAscending = ascending;
 
-    int index = allColumnNames.indexOf(orderByColumnName);
-
-    if (index < 0) throw new ResultException("Ordered column '" + orderByColumnName + "' must first be selected");
-
-    orderByColumnIndexes.add(new Integer(index));
+    orderByColumnIndexes.add(new Integer(orderedColumnIndex));
   } // addOrderByColumn
     
   public void addColumnDisplayName(String columnName) throws ResultException
@@ -159,13 +163,11 @@ public class ResultImpl implements ResultGenerator, Result
   {
     throwExceptionIfAlreadyConfigured();
 
+    // We will already have checked that all ordered columns or selected or aggregated.
+
     if (containsOneOf(selectedColumnIndexes, aggregateColumnIndexes.keySet()))
-      throw new InvalidQueryException("Aggregate columns cannot also be selected columns");
-    if (!selectedColumnIndexes.containsAll(orderByColumnIndexes))
-      throw new InvalidQueryException("All ordered columns must be selected");
-    if (containsOneOf(aggregateColumnIndexes.keySet(), orderByColumnIndexes))
-      throw new InvalidQueryException("Ordered columns cannot be aggregate columns");
-    	    
+      throw new InvalidQueryException("aggregate columns cannot also be selected columns");
+
     rowComparator = new RowComparator(allColumnNames, orderByColumnIndexes, isOrdered && isAscending);
 
     hasAggregates = !aggregateColumnIndexes.isEmpty();
@@ -175,9 +177,7 @@ public class ResultImpl implements ResultGenerator, Result
 
   // Methods used to retrieve result structure after result has been configured.
 
-  public boolean isPrepared() { return isPrepared; }
-  public boolean isOrdered() { return isOrdered; }
-  public boolean isAscending() { return isAscending; }
+  public void setIsDistinct() { isDistinct = true; }
 
   public int getNumberOfColumns() throws ResultException
   {
@@ -229,7 +229,7 @@ public class ResultImpl implements ResultGenerator, Result
     if (aggregateColumnIndexes.containsKey(new Integer(rowDataColumnIndex)) && 
         (!aggregateColumnIndexes.get(new Integer(rowDataColumnIndex)).equals(CountAggregateFunction)) && 
         (!isNumericValue(value)))
-        throw new ResultException("Attempt to add non numeric value '" + value + "' to min, max, sum, or avg aggregate column '" + 
+        throw new ResultException("attempt to add non numeric value '" + value + "' to min, max, sum, or avg aggregate column '" + 
                                   allColumnNames.get(rowDataColumnIndex) + "'");
     rowData.add(value);
     rowDataColumnIndex++;
@@ -555,12 +555,15 @@ public class ResultImpl implements ResultGenerator, Result
     return ((value instanceof DatatypeValue) || (((DatatypeValue)value).isNumeric()));
   } // isNumericValue
 
+  // TODO: fix - very inefficient
   private List<List<ResultValue>> distinct(List<List<ResultValue>> rows)
   {
+    List<List<ResultValue>> localRows = new ArrayList<List<ResultValue>>(rows);
     List<List<ResultValue>> result = new ArrayList<List<ResultValue>>();
     RowComparator rowComparator = new RowComparator(allColumnNames, true); // Look at the entire row.
 
-    for (List<ResultValue> row : rows) if (Collections.binarySearch(result, row, rowComparator) < 0) result.add(row);
+    Collections.sort(localRows, rowComparator); // binary search is expecting a sorted list
+    for (List<ResultValue> row : localRows) if (Collections.binarySearch(result, row, rowComparator) < 0) result.add(row);
 
     return result;
   } // distinct
@@ -644,17 +647,17 @@ public class ResultImpl implements ResultGenerator, Result
   {
     DatatypeValue result = null, value;
 
-    if (values.isEmpty()) throw new ResultException("Empty aggregate list for '" + MinAggregateFunction + "'");
+    if (values.isEmpty()) throw new ResultException("empty aggregate list for '" + MinAggregateFunction + "'");
 
     for (ResultValue resultValue : values) {
 
       if (!(resultValue instanceof DatatypeValue))
-        throw new ResultException("Attempt to use '" + MinAggregateFunction + "' aggregate on non datatype '" + resultValue + "'");
+        throw new ResultException("attempt to use '" + MinAggregateFunction + "' aggregate on non datatype '" + resultValue + "'");
 
       value = (DatatypeValue)resultValue;
 
       if (!value.isNumeric()) 
-        throw new ResultException("Attempt to use '" + MinAggregateFunction + "' aggregate on non numeric datatype '" + value + "'");
+        throw new ResultException("attempt to use '" + MinAggregateFunction + "' aggregate on non numeric datatype '" + value + "'");
 
       if (result == null) result = value;
       else if (value.compareTo(result) < 0) result = value;
@@ -667,17 +670,17 @@ public class ResultImpl implements ResultGenerator, Result
   {
     DatatypeValue result = null, value;
 
-    if (values.isEmpty()) throw new ResultException("Empty aggregate list for '" + MaxAggregateFunction + "'");
+    if (values.isEmpty()) throw new ResultException("empty aggregate list for '" + MaxAggregateFunction + "'");
 
     for (ResultValue resultValue : values) {
 
       if (!(resultValue instanceof DatatypeValue))
-        throw new ResultException("Attempt to use '" + MaxAggregateFunction + "' aggregate on non datatype '" + resultValue + "'");
+        throw new ResultException("attempt to use '" + MaxAggregateFunction + "' aggregate on non datatype '" + resultValue + "'");
 
       value = (DatatypeValue)resultValue;
 
       if (!value.isNumeric()) 
-        throw new ResultException("Attempt to use '" + MaxAggregateFunction + "' aggregate on non numeric datatype '" + value + "'");
+        throw new ResultException("attempt to use '" + MaxAggregateFunction + "' aggregate on non numeric datatype '" + value + "'");
 
       if (result == null) result = value;
       else if (value.compareTo(result) > 0) result = value;
@@ -691,17 +694,17 @@ public class ResultImpl implements ResultGenerator, Result
   {
     BigDecimal sum = new BigDecimal(0), value;
 
-    if (values.isEmpty()) throw new ResultException("Empty aggregate list for '" + SumAggregateFunction + "'");
+    if (values.isEmpty()) throw new ResultException("empty aggregate list for '" + SumAggregateFunction + "'");
 
     for (ResultValue resultValue : values) {
 
       if (!(resultValue instanceof DatatypeValue))
-        throw new ResultException("Attempt to use '" + SumAggregateFunction + "' aggregate on non datatype '" + resultValue + "'");
+        throw new ResultException("attempt to use '" + SumAggregateFunction + "' aggregate on non datatype '" + resultValue + "'");
 
       try {
         value = new BigDecimal(((DatatypeValue)resultValue).toString());
       } catch (NumberFormatException e) {
-        throw new ResultException("Attempt to use '" + SumAggregateFunction + "' aggregate on non numeric datatype '" + resultValue + "'");
+        throw new ResultException("attempt to use '" + SumAggregateFunction + "' aggregate on non numeric datatype '" + resultValue + "'");
       } // try
 
       sum = sum.add(value);
@@ -716,17 +719,17 @@ public class ResultImpl implements ResultGenerator, Result
     BigDecimal sum = new BigDecimal(0), value;
     int count = 0;
 
-    if (values.isEmpty()) throw new ResultException("Empty aggregate list for '" + AvgAggregateFunction + "'");
+    if (values.isEmpty()) throw new ResultException("empty aggregate list for '" + AvgAggregateFunction + "'");
 
     for (ResultValue resultValue : values) {
 
       if (!(resultValue instanceof DatatypeValue))
-        throw new ResultException("Attempt to use '" + AvgAggregateFunction + "' aggregate on non datatype '" + resultValue + "'");
+        throw new ResultException("attempt to use '" + AvgAggregateFunction + "' aggregate on non datatype '" + resultValue + "'");
 
       try {
         value = new BigDecimal(((DatatypeValue)resultValue).toString());
       } catch (NumberFormatException e) {
-        throw new ResultException("Attempt to use '" + AvgAggregateFunction + "' aggregate on non numeric datatype '" + resultValue + "'");
+        throw new ResultException("attempt to use '" + AvgAggregateFunction + "' aggregate on non numeric datatype '" + resultValue + "'");
       } // try
 
       count++;

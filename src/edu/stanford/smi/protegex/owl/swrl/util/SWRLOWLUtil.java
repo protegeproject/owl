@@ -82,7 +82,7 @@ public class SWRLOWLUtil
 
     OWLIndividual individual = cls.createOWLIndividual(individualName);
 
-    if (individual == null) throwException("Could not create individual '" + individualName + "' of class '" + className + "'.");
+    if (individual == null) throwException("Could not create individual '" + individualName + "' of class '" + className + "'");
 
     return individual;
   } // createIndividualOfClass
@@ -91,7 +91,7 @@ public class SWRLOWLUtil
   {
     OWLNamedClass cls = owlModel.getOWLNamedClass(className);
 
-    if (mustExist && cls == null) throwException("No '" + className + "' class in ontology.");
+    if (mustExist && cls == null) throwException("No '" + className + "' class in ontology");
 
     return cls;
   } // getClass
@@ -115,10 +115,10 @@ public class SWRLOWLUtil
     OWLIndividual individual = null;
 
     if (mustExist && cls.getInstanceCount(true) == 0) 
-      throwException("No individuals of class '" + cls.getName() + "' in ontology.");
+      throwException("No individuals of class '" + cls.getName() + "' in ontology");
     else if (cls.getInstanceCount(true) != mustHaveExactlyN) 
       throwException("Expecting exactly " + mustHaveExactlyN + " individuals of class '" + cls.getName() + "' in ontology. Got " +
-                     cls.getInstanceCount(true) + ".");
+                     cls.getInstanceCount(true) + "");
 
     return (OWLIndividual)cls.getInstances(true).iterator().next();
   } // getIndividual
@@ -139,7 +139,7 @@ public class SWRLOWLUtil
   {
     OWLProperty property = owlModel.getOWLProperty(propertyName);
 
-    if (mustExist && property == null) throwException("No '" + propertyName + "' property in ontology.");
+    if (mustExist && property == null) throwException("No '" + propertyName + "' property in ontology");
 
     return property;
   } // getProperty
@@ -152,7 +152,7 @@ public class SWRLOWLUtil
   public static OWLDatatypeProperty getDatatypeProperty(OWLModel owlModel, String propertyName, boolean mustExist) throws SWRLOWLUtilException
   {
     OWLDatatypeProperty property = owlModel.getOWLDatatypeProperty(propertyName);
-    if (mustExist && property == null) throwException("No '" + propertyName + "' datatype property in ontology.");
+    if (mustExist && property == null) throwException("No '" + propertyName + "' datatype property in ontology");
 
     return property;
   } // getDatatypeProperty
@@ -161,7 +161,7 @@ public class SWRLOWLUtil
   {
     OWLObjectProperty property = owlModel.getOWLObjectProperty(propertyName);
 
-    if (mustExist && property == null) throwException("No '" + propertyName + "' object property in ontology.");
+    if (mustExist && property == null) throwException("No '" + propertyName + "' object property in ontology");
 
     return property;
   } // getObjectProperty
@@ -379,7 +379,7 @@ public class SWRLOWLUtil
   {
     OWLIndividual individual = owlModel.getOWLIndividual(individualName);
 
-    if (mustExist && individual == null) throwException("No individual named '" + individualName + "' in ontology.");
+    if (mustExist && individual == null) throwException("No individual named '" + individualName + "' in ontology");
 
     return individual;
   } // getIndividual
@@ -421,7 +421,7 @@ public class SWRLOWLUtil
     OWLIndividual individual = getIndividual(owlModel, individualName, mustExist); // Will throw an exception if mustExist is true.
     int numberOfPropertyValues = 0;
 
-    if (propertyValue == null) throwException("Null value for property '" + propertyName + "' for OWL individual '" + individualName + "'.");
+    if (propertyValue == null) throwException("Null value for property '" + propertyName + "' for OWL individual '" + individualName + "'");
 
     for (Object value : individual.getPropertyValues(property)) {
       if (value instanceof RDFResource) {
@@ -442,8 +442,8 @@ public class SWRLOWLUtil
     OWLProperty property = owlModel.getOWLProperty(propertyName);
 
     if (individual == null) throwException("Null value for individual");
-    if (property == null) throwException("No '" + propertyName + "' property in ontology.");
-    if (propertyValue == null) throwException("Null value for property '" + propertyName + "' for OWL individual '" + individual.getName() + "'.");
+    if (property == null) throwException("No '" + propertyName + "' property in ontology");
+    if (propertyValue == null) throwException("Null value for property '" + propertyName + "' for OWL individual '" + individual.getName() + "'");
 
     individual.addPropertyValue(property, propertyValue);
   } // addPropertyValue
@@ -476,7 +476,7 @@ public class SWRLOWLUtil
     OWLIndividual propertyValue = (OWLIndividual)individual.getPropertyValue(property);
 
     if (mustExist && propertyValue == null) {
-      throwException("No property '" + propertyName + "' associated with individual '" + individual.getName() + "'.");
+      throwException("No property '" + propertyName + "' associated with individual '" + individual.getName() + "'");
     } // if    
 
     return propertyValue;
@@ -489,7 +489,7 @@ public class SWRLOWLUtil
     Object propertyValue = individual.getPropertyValue(property);
 
     if (mustExist && propertyValue == null) {
-      throwException("No property '" + propertyName + "' associated with individual '" + individual.getName() + "'.");
+      throwException("No property '" + propertyName + "' associated with individual '" + individual.getName() + "'");
     } // if    
 
     return propertyValue;
@@ -501,11 +501,77 @@ public class SWRLOWLUtil
     Object propertyValue = individual.getPropertyValue(property);
 
     if (mustExist && propertyValue == null) {
-      throwException("No property '" + property.getName() + "' associated with individual '" + individual.getName() + "'.");
+      throwException("No property '" + property.getName() + "' associated with individual '" + individual.getName() + "'");
     } // if    
 
     return propertyValue;
   } // getDatavaluedPropertyValue
+
+  public static int getDatavaluedPropertyValueAsInteger(OWLModel owlModel, OWLIndividual individual, String propertyName, boolean mustExist)
+    throws SWRLOWLUtilException
+  {
+    String s = getDatavaluedPropertyValueAsString(owlModel, individual, propertyName, mustExist);
+    int result = -1;
+
+    try {
+      result = Integer.parseInt(s);
+    } catch (NumberFormatException e) {
+      throw new SWRLOWLUtilException("Cannot convert property value '" + s + "' of property '" + propertyName + 
+                                     "' associated with individual '" + individual.getName() + "' to integer");
+    } // try
+    return result;
+  } // getDatavaluedPropertyValueAsInteger
+
+  public static int getDatavaluedPropertyValueAsInteger(OWLModel owlModel, String individualName, String propertyName, boolean mustExist)
+    throws SWRLOWLUtilException
+  {
+    return getDatavaluedPropertyValueAsInteger(owlModel, getIndividual(owlModel, individualName), propertyName, mustExist);
+  } // getDatavaluedPropertyValueAsInteger
+
+  public static int getDatavaluedPropertyValueAsInteger(OWLModel owlModel, OWLIndividual individual, String propertyName)
+    throws SWRLOWLUtilException
+  {
+    return getDatavaluedPropertyValueAsInteger(owlModel, individual, propertyName, true);
+  } // getDatavaluedPropertyValueAsInteger
+
+  public static int getDatavaluedPropertyValueAsInteger(OWLModel owlModel, String individualName, String propertyName)
+    throws SWRLOWLUtilException
+  {
+    return getDatavaluedPropertyValueAsInteger(owlModel, getIndividual(owlModel, individualName), propertyName, true);
+  } // getDatavaluedPropertyValueAsInteger
+
+  public static long getDatavaluedPropertyValueAsLong(OWLModel owlModel, OWLIndividual individual, String propertyName, boolean mustExist)
+    throws SWRLOWLUtilException
+  {
+    String s = getDatavaluedPropertyValueAsString(owlModel, individual, propertyName, mustExist);
+    long result = -1;
+
+    try {
+      result = Long.parseLong(s);
+    } catch (NumberFormatException e) {
+      throw new SWRLOWLUtilException("Cannot convert property value '" + s + "' of property '" + propertyName + 
+                                     "' associated with individual '" + individual.getName() + "' to long");
+    } // try
+    return result;
+  } // getDatavaluedPropertyValueAsLong
+
+  public static long getDatavaluedPropertyValueAsLong(OWLModel owlModel, String individualName, String propertyName, boolean mustExist)
+    throws SWRLOWLUtilException
+  {
+    return getDatavaluedPropertyValueAsLong(owlModel, getIndividual(owlModel, individualName), propertyName, mustExist);
+  } // getDatavaluedPropertyValueAsLong
+
+  public static long getDatavaluedPropertyValueAsLong(OWLModel owlModel, OWLIndividual individual, String propertyName)
+    throws SWRLOWLUtilException
+  {
+    return getDatavaluedPropertyValueAsLong(owlModel, individual, propertyName, true);
+  } // getDatavaluedPropertyValueAsLong
+
+  public static long getDatavaluedPropertyValueAsLong(OWLModel owlModel, String individualName, String propertyName)
+    throws SWRLOWLUtilException
+  {
+    return getDatavaluedPropertyValueAsLong(owlModel, getIndividual(owlModel, individualName), propertyName, true);
+  } // getDatavaluedPropertyValueAsLong
 
   public static String getDatavaluedPropertyValueAsString(OWLModel owlModel, OWLIndividual individual, String propertyName, boolean mustExist)
     throws SWRLOWLUtilException
@@ -517,6 +583,26 @@ public class SWRLOWLUtil
     return getDatavaluedPropertyValueAsString(owlModel, individual, property, mustExist);
   } // getDatavaluedPropertyValueAsString
 
+  public static String getDatavaluedPropertyValueAsString(OWLModel owlModel, String individualName, String propertyName, 
+                                                          boolean mustExist, String defaultValue)
+    throws SWRLOWLUtilException
+  {
+    return getDatavaluedPropertyValueAsString(owlModel, getIndividual(owlModel, individualName), propertyName, mustExist, defaultValue);
+  } // getDatavaluedPropertyValueAsString
+
+  public static String getDatavaluedPropertyValueAsString(OWLModel owlModel, String individualName, String propertyName)
+    throws SWRLOWLUtilException
+  {
+    return getDatavaluedPropertyValueAsString(owlModel, getIndividual(owlModel, individualName), propertyName, true);
+  } // getDatavaluedPropertyValueAsString
+
+  public static String getDatavaluedPropertyValueAsString(OWLModel owlModel, String individualName, String propertyName, 
+                                                          boolean mustExist)
+    throws SWRLOWLUtilException
+  {
+    return getDatavaluedPropertyValueAsString(owlModel, getIndividual(owlModel, individualName), propertyName, mustExist);
+  } // getDatavaluedPropertyValueAsString
+    
   public static String getDatavaluedPropertyValueAsString(OWLModel owlModel, OWLIndividual individual, String propertyName, 
                                                           boolean mustExist, String defaultValue)
     throws SWRLOWLUtilException
@@ -547,6 +633,18 @@ public class SWRLOWLUtil
     return result;
   } // getDatavaluedPropertyValueAsString
 
+  public static Boolean getDatavaluedPropertyValueAsBoolean(OWLModel owlModel, String individualName, String propertyName, boolean mustExist)
+    throws SWRLOWLUtilException
+  {
+    return getDatavaluedPropertyValueAsBoolean(owlModel, getIndividual(owlModel, individualName), propertyName, mustExist);
+  } // getDatavaluedPropertyValueAsBoolean
+
+  public static Boolean getDatavaluedPropertyValueAsBoolean(OWLModel owlModel, String individualName, String propertyName)
+    throws SWRLOWLUtilException
+  {
+    return getDatavaluedPropertyValueAsBoolean(owlModel, getIndividual(owlModel, individualName), propertyName, true);
+  } // getDatavaluedPropertyValueAsBoolean
+
   public static Boolean getDatavaluedPropertyValueAsBoolean(OWLModel owlModel, OWLIndividual individual, String propertyName, boolean mustExist)
     throws SWRLOWLUtilException
   {
@@ -556,7 +654,7 @@ public class SWRLOWLUtil
 
     if (!(propertyValue instanceof Boolean)) {
       throwException("Property value for '" + propertyName + "' associated with individual '" + individual.getName() 
-                                 + "' is not a Boolean.");
+                                 + "' is not a Boolean");
     } // if
 
     return (Boolean)propertyValue;
@@ -570,7 +668,7 @@ public class SWRLOWLUtil
     if (propertyValue == null) return null;
 
     if (!(propertyValue instanceof Boolean))
-      throwException("Property value for " + property.getName() + " in individual " + individual.getName() + " is not a Boolean.");
+      throwException("Property value for " + property.getName() + " in individual " + individual.getName() + " is not a Boolean");
 
     return (Boolean)propertyValue;
   } // getDatavaluedPropertyValueAsBoolean
@@ -579,6 +677,12 @@ public class SWRLOWLUtil
     throws SWRLOWLUtilException
   {
     return getDatavaluedPropertyValueAsCollection(owlModel, individual, propertyName, false);
+  } // getDatavaluedPropertyValueAsCollection
+
+  public static Collection getDatavaluedPropertyValueAsCollection(OWLModel owlModel, String individualName, String propertyName)
+    throws SWRLOWLUtilException
+  {
+    return getDatavaluedPropertyValueAsCollection(owlModel, getIndividual(owlModel, individualName), propertyName, true);
   } // getDatavaluedPropertyValueAsCollection
 
   public static Collection getDatavaluedPropertyValueAsCollection(OWLModel owlModel, OWLIndividual individual, String propertyName,
@@ -592,7 +696,7 @@ public class SWRLOWLUtil
     if (propertyValue instanceof RDFSLiteral) result.add(propertyValue);
     else if (propertyValue instanceof Collection) result = (Collection)propertyValue;
     else throwException("Property value for '" + propertyName + "' associated with individual '" + individual.getName() + 
-                                    "' is not a Collection.");
+                        "' is not a Collection");
 
     return result;
   } // getDatavaluedPropertyValueAsCollection
@@ -608,7 +712,7 @@ public class SWRLOWLUtil
     if (propertyValue instanceof RDFSLiteral) result.add(propertyValue);
     else if (propertyValue instanceof Collection) result = (Collection)propertyValue;
     else throwException("Property value for '" + property.getName() + "' associated with individual '" + individual.getName() + 
-                        "' is not a Collection.");
+                        "' is not a Collection");
 
     return result;
   } // getDatavaluedPropertyValueAsCollection
@@ -673,7 +777,14 @@ public class SWRLOWLUtil
   {
     Set<String> result = new HashSet<String>();
     
-    for (RDFResource resource : resources) result.add(resource.getName());
+    // TODO: bug in Property.getUnionDomain that causes it to return non RDFResource objects so we need to work around it.
+    // for (RDFResource resource : resources) result.add(resource.getName());
+
+    Iterator iterator = resources.iterator();
+    while (iterator.hasNext()) {
+      Object o = iterator.next();
+      if (o instanceof RDFResource) result.add(((RDFResource)o).getName());
+    } // if
 
     return result;
   } // rdfResources2Names            
@@ -689,7 +800,7 @@ public class SWRLOWLUtil
     while (iterator.hasNext()) {
       Object object = iterator.next();
 
-      if (!(object instanceof RDFResource)) throwException("rdfResources2NamesList passed non-resource object '" + object + "'.");
+      if (!(object instanceof RDFResource)) throwException("rdfResources2NamesList passed non-resource object '" + object + "'");
 
       resource = (RDFResource)object;
       result.add(resource.getName());

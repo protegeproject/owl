@@ -556,7 +556,7 @@ public class SWRLParser {
     if (!isValidIdentifier(identifier)) throw new SWRLParseException("Invalid identifier: '" + identifier + "'.");
   } // checkThatIdentifierIsValid
 
-  // Possible valid identifiers include 'http://swrl.stanford.edu/swrlx.owl#createIndividual'.
+  // Possible valid identifiers include 'http://swrl.stanford.edu/ontolgies/built-ins/3.3/swrlx.owl#createIndividual'.
   private boolean isValidIdentifier(String s) 
   {
     if (s.length() == 0) return false;
