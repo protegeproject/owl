@@ -139,7 +139,7 @@ public class PropertyInfo extends Info implements Argument, PropertyValue
   } // compareTo
 
   // Utility method to create a collection of PropertyInfo objects for every subject/predicate combination for a particular OWL property.
-  // TODO: This is incredibly inefficient. Need to use method in the OWLModel to get individuals with a particular property.
+  // TODO: This is incredibly inefficient. 
 
   public static List<PropertyInfo> buildPropertyInfoList(OWLModel owlModel, String propertyName) throws SWRLRuleEngineBridgeException
   {
@@ -153,52 +153,53 @@ public class PropertyInfo extends Info implements Argument, PropertyValue
     if (property == null) throw new InvalidPropertyNameException(propertyName);
 
     domainClassNames = SWRLOWLUtil.rdfResources2Names(property.getUnionDomain(true));
-
     rangeClassNames = SWRLOWLUtil.rdfResources2Names(property.getUnionRangeClasses());
     superPropertyNames = SWRLOWLUtil.rdfResources2Names(property.getSuperproperties(true));
     subPropertyNames = SWRLOWLUtil.rdfResources2Names(property.getSubproperties(true));
     equivalentPropertyNames = SWRLOWLUtil.rdfResources2Names(property.getEquivalentProperties());
 
+
     Iterator domainsIterator = property.getUnionDomain(true).iterator();
     while (domainsIterator.hasNext()) {
-      RDFSClass rdfsClass = (RDFSClass)domainsIterator.next();
+      Object object1 = domainsIterator.next();
+      if (!(object1 instanceof RDFSClass)) continue; // Should only return RDFResource object, but...
+      RDFSClass rdfsClass = (RDFSClass)object1;
         
       Iterator individualsIterator = rdfsClass.getInstances(true).iterator();
       while (individualsIterator.hasNext()) {
-        Object object = individualsIterator.next();
-
-        if (!(object instanceof OWLIndividual)) continue; // Deal only with OWL individuals (could return metaclass, for example)
-        OWLIndividual domainIndividual = (OWLIndividual)object;
+        Object object2 = individualsIterator.next();          
+        if (!(object2 instanceof OWLIndividual)) continue; // Deal only with OWL individuals (could return metaclass, for example)
+        OWLIndividual domainIndividual = (OWLIndividual)object2;
         
-          if (domainIndividual.hasPropertyValue(property)) {
-
-            if (property.hasObjectRange()) {
-              Iterator individualValuesIterator = domainIndividual.getPropertyValues(property).iterator();
-              while (individualValuesIterator.hasNext()) {
-                RDFResource resource = (RDFResource)individualValuesIterator.next();
-                if (resource instanceof OWLIndividual) {
-                  OWLIndividual rangeIndividual = (OWLIndividual)resource;
-                  subject = new IndividualInfo(domainIndividual.getName());
-                  predicate = new IndividualInfo(rangeIndividual.getName());
-                  propertyInfo = new PropertyInfo(propertyName, subject, predicate, domainClassNames, rangeClassNames, 
-                                                  superPropertyNames, subPropertyNames, equivalentPropertyNames);
-                  propertyInfoList.add(propertyInfo);
-                } else {
-                  //System.err.println("Unknown property value resource: " + resource); // TODO: Orphan resources in OWL file. Ignore?
-                } // if
-              } // while
-            } else { // DatatypeProperty
-              Iterator literalsIterator = domainIndividual.getPropertyValueLiterals(property).iterator();
-              while (literalsIterator.hasNext()) {
-                RDFSLiteral literal = (RDFSLiteral)literalsIterator.next();
+        if (domainIndividual.hasPropertyValue(property)) {
+          
+          if (property.hasObjectRange()) {
+            Iterator individualValuesIterator = domainIndividual.getPropertyValues(property).iterator();
+            while (individualValuesIterator.hasNext()) {
+              RDFResource resource = (RDFResource)individualValuesIterator.next();
+              if (resource instanceof OWLIndividual) {
+                OWLIndividual rangeIndividual = (OWLIndividual)resource;
                 subject = new IndividualInfo(domainIndividual.getName());
-                predicate = new LiteralInfo(owlModel, literal);
+                predicate = new IndividualInfo(rangeIndividual.getName());
                 propertyInfo = new PropertyInfo(propertyName, subject, predicate, domainClassNames, rangeClassNames, 
                                                 superPropertyNames, subPropertyNames, equivalentPropertyNames);
                 propertyInfoList.add(propertyInfo);
-              } // while
-            } // if
+              } else {
+                //System.err.println("Unknown property value resource: " + resource); // TODO: Orphan resources in OWL file. Ignore?
+              } // if
+            } // while
+          } else { // DatatypeProperty
+            Iterator literalsIterator = domainIndividual.getPropertyValueLiterals(property).iterator();
+            while (literalsIterator.hasNext()) {
+              RDFSLiteral literal = (RDFSLiteral)literalsIterator.next();
+              subject = new IndividualInfo(domainIndividual.getName());
+              predicate = new LiteralInfo(owlModel, literal);
+              propertyInfo = new PropertyInfo(propertyName, subject, predicate, domainClassNames, rangeClassNames, 
+                                              superPropertyNames, subPropertyNames, equivalentPropertyNames);
+              propertyInfoList.add(propertyInfo);
+            } // while
           } // if
+        } // if
       } // while
     } // while
     

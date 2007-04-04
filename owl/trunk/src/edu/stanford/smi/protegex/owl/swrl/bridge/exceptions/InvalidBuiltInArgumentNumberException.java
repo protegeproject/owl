@@ -5,12 +5,12 @@ public class InvalidBuiltInArgumentNumberException extends BuiltInException
 {
   public InvalidBuiltInArgumentNumberException(int expecting, int actual) 
   { 
-    super("Invalid number of arguments - expecting " + expecting + " argument(s), got " + actual);
+    super("invalid number of arguments - expecting " + expecting + " argument(s), got " + actual);
   } // InvalidBuiltInArgumentNumberException
 
   public InvalidBuiltInArgumentNumberException(int expecting, int actual, String message) 
   { 
-    super("Invalid number of arguments - expecting " + message + " " + expecting + " argument(s), got " + actual);
+    super("invalid number of arguments - expecting " + message + " " + expecting + " argument(s), got " + actual);
   } // InvalidBuiltInArgumentNumberException
 
 } // InvalidBuiltInArgumentNumberException

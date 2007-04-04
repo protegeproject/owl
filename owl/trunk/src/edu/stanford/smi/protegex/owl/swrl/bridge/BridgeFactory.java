@@ -18,6 +18,15 @@ public class BridgeFactory
     registeredBridges = new HashMap<String, BridgeCreator>();
   } // static
 
+  static {
+
+    try { // TODO:  Hack until we can do a proper class load with the manifest
+      Class.forName("edu.stanford.smi.protegex.owl.swrl.bridge.jess.SWRLJessBridge");
+    } catch (ClassNotFoundException e) {
+      System.err.println("SWRLJessBridge load failed");
+    } // try
+  } // static
+
   public static void registerBridge(String bridgeName, BridgeCreator bridgeCreator)
   {
     if (registeredBridges.containsKey(bridgeName)) {

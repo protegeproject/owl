@@ -144,7 +144,7 @@ public class SWRLQueryControlPanel extends JPanel
           else {
             result = bridge.getQueryResult(ruleName);
             if (result == null || result.getNumberOfRows() == 0) {
-              textArea.append("Rule '" + ruleName + "' does not have any query built-ins and/or did not generate any result.\n");
+              textArea.append("Rule '" + ruleName + "' did not generate any result.\n");
               if  (resultPanels.containsKey(ruleName)) {
                 resultPanel = resultPanels.get(ruleName);
                 resultPanels.remove(resultPanel);
@@ -164,7 +164,7 @@ public class SWRLQueryControlPanel extends JPanel
             } // if
           } // if
 	} catch (SWRLRuleEngineBridgeException e) {
-          textArea.append("Exception getting result for rule '" + ruleName + "': " + e.getMessage() + "\n");
+          textArea.append("Exception getting result for rule '" + ruleName + "': " + e.getMessage() + ".\n");
 	} // try
       } // if
     } // ActionPerformed
