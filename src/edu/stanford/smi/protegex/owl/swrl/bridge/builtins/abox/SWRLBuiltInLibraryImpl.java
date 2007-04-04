@@ -28,10 +28,10 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
   public void reset() {}
 
   /**
-   ** Returns true if the individual named by the first parameter has at least one value for the property named by the second parameter. If
-   ** a third parameter is supplied, match only property values that are equal to that parameter.
+   ** Returns true if the individual named by the first argument has at least one value for the property named by the second parameter. If
+   ** a third argument is supplied, match only property values that are equal to that argument.
    */
-  public boolean hasPropertyValue(List<Argument> arguments) throws BuiltInException
+  public boolean hasProperty(List<Argument> arguments) throws BuiltInException
   {
     String individualName, propertyName;
     Object propertyValue = null;
@@ -55,15 +55,15 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
       throw new BuiltInException(e.getMessage());
     } // try
     return result;
-  } // hasPropertyValue
+  } // hasProperty
 
   /**
-   ** Returns true if the individual named by the second parameter has the number of values specified by the first parameter for the
-   ** property named by the third parameter. If a fourth parameter is supplied, match only property values that are equal to that
-   ** parameter. If the first parameter is unbound when the built-in is called, it is bound to the actual number of property values for the
+   ** Returns true if the individual named by the second argument has the number of values specified by the first argument for the
+   ** property named by the third argument. If a fourth argument is supplied, match only property values that are equal to that
+   ** argument. If the first argument is unbound when the built-in is called, it is bound to the actual number of property values for the
    ** property for the specified individual.
    */
-  public boolean hasNumberOfPropertyValues(List<Argument> arguments) throws BuiltInException
+  public boolean hasNumberOfProperties(List<Argument> arguments) throws BuiltInException
   {
     String individualName, propertyName;
     Object propertyValue = null;
@@ -86,7 +86,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
         numberOfPropertyValues = SWRLOWLUtil.getNumberOfPropertyValues(getInvokingBridge().getOWLModel(), individualName, propertyName, true);
 
       if (SWRLBuiltInUtil.isUnboundArgument(0, arguments)) {
-        arguments.set(0, new LiteralInfo(numberOfPropertyValues)); // Bind the result to the first parameter      
+        arguments.set(0, new LiteralInfo(numberOfPropertyValues)); // Bind the result to the first argument      
         result = true;
       } else {
         result = (numberOfPropertyValues == SWRLBuiltInUtil.getArgumentAsAnInteger(0, arguments));
@@ -95,10 +95,10 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
       throw new BuiltInException(e.getMessage());
     } // try
     return result;
-  } // hasNumberOfPropertyValues
+  } // hasNumberOfProperties
 
   /**
-   ** Returns true if the class named by the first parameter has at least one individual.
+   ** Returns true if the class named by the first argument has at least one individual.
    */
   public boolean hasIndividuals(List<Argument> arguments) throws BuiltInException
   {
@@ -119,8 +119,8 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
   } // hasIndividuals
 
   /**
-   ** Returns true if the class named by the second parameter has the number of individuals specified by the first parameter. If the first
-   ** parameter is unbound when the built-in is called, it is bound to the actual number of individuals of the specified class.
+   ** Returns true if the class named by the second argument has the number of individuals specified by the first argument. If the first
+   ** argument is unbound when the built-in is called, it is bound to the actual number of individuals of the specified class.
    */
   public boolean hasNumberOfIndividuals(List<Argument> arguments) throws BuiltInException
   {
@@ -136,7 +136,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
     try {
       if (SWRLBuiltInUtil.isUnboundArgument(0, arguments)) {
         numberOfIndividuals = SWRLOWLUtil.getNumberOfIndividualsOfClass(getInvokingBridge().getOWLModel(), className, true);
-        arguments.set(0, new LiteralInfo(numberOfIndividuals)); // Bind the result to the first parameter      
+        arguments.set(0, new LiteralInfo(numberOfIndividuals)); // Bind the result to the first argument      
         result = true;
       } else {
         numberOfIndividuals = SWRLBuiltInUtil.getArgumentAsAnInteger(0, arguments);

@@ -16,8 +16,9 @@ public abstract class SWRLBuiltInLibrary
 {
   private String libraryName;
 
-  // Bridge, rule and index within rule of built-in currently invoking its associated Java implementation. These are valid only when a
-  // built-in currently being invoked so should only be retrieved through their asociated accessor methods from within a built-in.
+  // Bridge, rule and index within rule of built-in currently invoking its associated Java implementation. The invokingRuleName and
+  // invokingBuiltInIndex variables are valid only when a built-in currently being invoked so should only be retrieved through their
+  // asociated accessor methods from within a built-in; the invokingBridge method is valid only in built-ins and in the reset method.
   private SWRLRuleEngineBridge invokingBridge;
   private String invokingRuleName = "";
   private int invokingBuiltInIndex = -1;
@@ -77,15 +78,15 @@ public abstract class SWRLBuiltInLibrary
       } catch (InvocationTargetException e) { // The built-in implementation threw an exception.
         Throwable targetException = e.getTargetException();
         if (targetException instanceof BuiltInException) { // A BuiltInException was thrown by the built-in.
-          throw new BuiltInException("Exception thrown by built-in '" + builtInName + "' in rule '" + ruleName + "': " 
+          throw new BuiltInException("exception thrown by built-in '" + builtInName + "' in rule '" + ruleName + "': " 
                                      + targetException.getMessage(), targetException);
         } else if (targetException instanceof RuntimeException) { // A runtime exception was thrown by the built-in.
           throw new BuiltInMethodRuntimeException(ruleName, builtInName, targetException.getMessage(), targetException);
-        } else throw new BuiltInException("Unknown exception thrown by built-in method '" + builtInName + "' in rule '" + 
+        } else throw new BuiltInException("unknown exception thrown by built-in method '" + builtInName + "' in rule '" + 
                                           ruleName + "'. Exception: " + e.toString(), e);
       } catch (Exception e) { // Should be one of IllegalAccessException or IllegalArgumentException
-        throw new BuiltInException("Internal bridge exception when invoking built-in method '" + builtInName + "' in rule '" + 
-                                   ruleName + "'. Exception: " + e.getMessage(), e);        
+        throw new BuiltInException("internal bridge exception when invoking built-in method '" + builtInName + "' in rule '" + 
+                                   ruleName + "': " + e.getMessage(), e);        
       } // try
       
       invokingBridge = null; invokingRuleName = ""; invokingBuiltInIndex = -1;

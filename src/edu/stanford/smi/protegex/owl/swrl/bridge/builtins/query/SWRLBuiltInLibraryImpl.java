@@ -23,6 +23,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary implements QueryL
   public static String Prefix = QueryNames.QueryPrefix + ":";
   
   private static String QuerySelect = Prefix + "select";
+  private static String QuerySelectDistinct = Prefix + "selectDistinct";
   private static String QueryCount = Prefix + "count";
   private static String QueryAvg = Prefix + "avg";
   private static String QueryMin = Prefix + "min";
@@ -30,10 +31,10 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary implements QueryL
   private static String QuerySum = Prefix + "sum";
   private static String QueryOrderBy = Prefix + "orderBy";
   private static String QueryOrderByDescending = Prefix + "orderByDescending";
-  private static String QueryDisplayNames = Prefix + "displayNames";
+  private static String QueryColumnNames = Prefix + "columnNames";
   
-  private static String queryBuiltInNamesArray[] = { QuerySelect, QueryCount, QueryAvg, QueryMin, QueryMax, QuerySum,
-                                                     QueryOrderBy, QueryOrderByDescending, QueryDisplayNames };
+  private static String queryBuiltInNamesArray[] = { QuerySelect, QuerySelectDistinct, QueryCount, QueryAvg, QueryMin, QueryMax, QuerySum,
+                                                     QueryOrderBy, QueryOrderByDescending, QueryColumnNames };
   private static Set<String> queryBuiltInNames;
 
   private HashMap<String, ResultImpl> results;
@@ -84,6 +85,11 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary implements QueryL
     
     return true;
   } // select
+
+  public boolean selectDistinct(List<Argument> arguments) throws BuiltInException
+  {
+    return select(arguments);
+  } // selectDistinct
   
   public boolean count(List<Argument> arguments) throws BuiltInException
   {
@@ -168,12 +174,12 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary implements QueryL
     return true;
   } // count
 
-  // The use of displayNames, orderBy, orderByDescending is handled at initial processing by configureResult().
+  // The use of columnNames, orderBy, orderByDescending is handled at initial processing by configureResult().
   
-  public boolean displayNames(List<Argument> arguments) throws BuiltInException
+  public boolean columnNames(List<Argument> arguments) throws BuiltInException
   {   
     return true;
-  } // displayNames
+  } // columnNames
 
   public boolean orderBy(List<Argument> arguments) throws BuiltInException
   {   
@@ -204,7 +210,9 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary implements QueryL
     ResultImpl result;
     RuleInfo ruleInfo;
 
+
     try {
+      List<String> selectedVariableNames = new ArrayList<String>();
       result = new ResultImpl();
       ruleInfo = getInvokingBridge().getRuleInfo(ruleName);
 
@@ -213,62 +221,87 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary implements QueryL
 
         for (Argument argument :  builtInAtomInfo.getArguments()) {
           BuiltInVariableInfo builtInVariableInfo;
-          String columnName;
-          int argumentIndex = 0;
+          String variableName, columnName;
+          int argumentIndex = 0, columnIndex;
 
           if (builtInName.equalsIgnoreCase(QuerySelect)) {
             if (argument instanceof BuiltInVariableInfo) {
               builtInVariableInfo = (BuiltInVariableInfo)argument;
-              columnName = "?" + builtInVariableInfo.getVariableName();
+              variableName = builtInVariableInfo.getVariableName();
+              columnName = "?" + variableName;
+              selectedVariableNames.add(variableName);
             } else columnName = "[" + argument + "]";
             result.addSelectedColumn(columnName);
+          } else if (builtInName.equalsIgnoreCase(QuerySelectDistinct)) {
+            if (argument instanceof BuiltInVariableInfo) {
+              builtInVariableInfo = (BuiltInVariableInfo)argument;
+              variableName = builtInVariableInfo.getVariableName();
+              columnName = "count(?" + variableName + ")";
+              selectedVariableNames.add(variableName);
+            } else columnName = "[" + argument + "]";
+            result.addSelectedColumn(columnName);
+            result.setIsDistinct();
           } else if (builtInName.equalsIgnoreCase(QueryCount)) {
             if (argument instanceof BuiltInVariableInfo) {
               builtInVariableInfo = (BuiltInVariableInfo)argument;
-              columnName = "count(?" + builtInVariableInfo.getVariableName() + ")";
+              variableName = builtInVariableInfo.getVariableName();
+              columnName = "count(?" + variableName + ")";
+              selectedVariableNames.add(variableName);
             } else columnName = "[" + argument + "]";
             result.addAggregateColumn(columnName, ResultGenerator.CountAggregateFunction);
           } else if (builtInName.equalsIgnoreCase(QueryMin)) {
             if (argument instanceof BuiltInVariableInfo) {
               builtInVariableInfo = (BuiltInVariableInfo)argument;
-              columnName = "min(?" + builtInVariableInfo.getVariableName() + ")";
+              variableName = builtInVariableInfo.getVariableName();
+              columnName = "min(?" + variableName + ")";
+              selectedVariableNames.add(variableName);
             } else columnName = "min[" + argument + "]";
             result.addAggregateColumn(columnName, ResultGenerator.MinAggregateFunction);
           } else if (builtInName.equalsIgnoreCase(QueryMax)) {
             if (argument instanceof BuiltInVariableInfo) {
               builtInVariableInfo = (BuiltInVariableInfo)argument;
-              columnName = "max(?" + builtInVariableInfo.getVariableName() + ")";
+              variableName = builtInVariableInfo.getVariableName();
+              columnName = "max(?" + variableName + ")";
+              selectedVariableNames.add(variableName);
             } else columnName = "max[" + argument + "]";
             result.addAggregateColumn(columnName, ResultGenerator.MaxAggregateFunction);
           } else if (builtInName.equalsIgnoreCase(QuerySum)) {
             if (argument instanceof BuiltInVariableInfo) {
               builtInVariableInfo = (BuiltInVariableInfo)argument;
-              columnName = "sum(?" + builtInVariableInfo.getVariableName() + ")";
+              variableName = builtInVariableInfo.getVariableName();
+              columnName = "sum(?" + variableName + ")";
+              selectedVariableNames.add(variableName);
             } else columnName = "sum[" + argument + "]";
             result.addAggregateColumn(columnName, ResultGenerator.SumAggregateFunction);
           } else if (builtInName.equalsIgnoreCase(QueryAvg)) {
             if (argument instanceof BuiltInVariableInfo) {
               builtInVariableInfo = (BuiltInVariableInfo)argument;
-              columnName = "avg(?" + builtInVariableInfo.getVariableName() + ")";
+              variableName = builtInVariableInfo.getVariableName();
+              columnName = "avg(?" + variableName + ")";
+              selectedVariableNames.add(variableName);
             } else columnName = "avg[" + argument + "]";
             result.addAggregateColumn(columnName, ResultGenerator.AvgAggregateFunction);
           } else if (builtInName.equalsIgnoreCase(QueryOrderBy)) {
             if (!(argument instanceof BuiltInVariableInfo)) 
               throw new BuiltInException("only variables allowed for ordered columns - found '" + argument + "'");
             builtInVariableInfo = (BuiltInVariableInfo)argument;
-            columnName = "?" + builtInVariableInfo.getVariableName();
-            result.addOrderByColumn(columnName, true);
+            variableName = builtInVariableInfo.getVariableName();
+            columnIndex = selectedVariableNames.indexOf(variableName);
+            if (columnIndex != -1) result.addOrderByColumn(columnIndex, true);
+            else throw new BuiltInException("variable ?" + variableName + " must be selected before it can be ordered");
           } else if (builtInName.equalsIgnoreCase(QueryOrderByDescending)) {
             if (!(argument instanceof BuiltInVariableInfo)) 
               throw new BuiltInException("only variables allowed for ordered columns - found '" + argument + "'");
             builtInVariableInfo = (BuiltInVariableInfo)argument;
-            columnName = "?" + builtInVariableInfo.getVariableName();
-            result.addOrderByColumn(columnName, false);
-          } else if (builtInName.equalsIgnoreCase(QueryDisplayNames)) {
+            variableName = builtInVariableInfo.getVariableName();
+            columnIndex = selectedVariableNames.indexOf(variableName);
+            if (columnIndex != -1) result.addOrderByColumn(columnIndex, false);
+            else throw new BuiltInException("variable ?" + variableName + " must be selected before it can be ordered");
+          } else if (builtInName.equalsIgnoreCase(QueryColumnNames)) {
             if (argument instanceof LiteralInfo && ((LiteralInfo)argument).isString()) {
               LiteralInfo literalInfo = (LiteralInfo)argument;
               result.addColumnDisplayName(literalInfo.getString());
-            } else throw new BuiltInException("only string literals allowed as column display names - found '" + argument + "'");
+            } else throw new BuiltInException("only string literals allowed as column names - found '" + argument + "'");
           } // if
           argumentIndex++;
         } // for

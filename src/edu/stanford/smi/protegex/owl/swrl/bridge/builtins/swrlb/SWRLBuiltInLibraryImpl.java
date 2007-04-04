@@ -438,16 +438,416 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
 
   public boolean endsWith(List<Argument> arguments) throws BuiltInException
   {
-    String argument1, argument2;
-
     SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(2, arguments.size());
     SWRLBuiltInUtil.checkForUnboundArguments(arguments);
 
-    argument1 = SWRLBuiltInUtil.getArgumentAsAString(0, arguments);
-    argument2 = SWRLBuiltInUtil.getArgumentAsAString(1, arguments);
+    String argument1 = SWRLBuiltInUtil.getArgumentAsAString(0, arguments);
+    String argument2 = SWRLBuiltInUtil.getArgumentAsAString(1, arguments);
 
     return argument1.endsWith(argument2);
   } // endsWith
+
+  public boolean translate(List<Argument> arguments) throws BuiltInException
+  {
+    boolean result = false;
+
+    if (result) throw new BuiltInNotImplementedException("swrlb:translate");
+
+    return result;
+  } // translate
+
+  public boolean normalizeSpace(List<Argument> arguments) throws BuiltInException
+  {
+    boolean result = false;
+
+    if (result) throw new BuiltInNotImplementedException("swrlb:normalizeSpace");
+
+    return result;
+  } // normalizeSpace
+
+  public boolean substringBefore(List<Argument> arguments) throws BuiltInException
+  {
+    boolean result = false;
+
+    if (result) throw new BuiltInNotImplementedException("swrlb:substringBefore");
+
+    return result;
+  } // substringBefore
+
+  public boolean matches(List<Argument> arguments) throws BuiltInException
+  {
+    boolean result = false;
+
+    if (result) throw new BuiltInNotImplementedException("swrlb:matches");
+
+    return result;
+  } // matches
+
+  public boolean replace(List<Argument> arguments) throws BuiltInException
+  {
+    boolean result = false;
+
+    if (result) throw new BuiltInNotImplementedException("swrlb:replace");
+
+    return result;
+  } // replace
+
+  public boolean tokenize(List<Argument> arguments) throws BuiltInException
+  {
+    boolean result = false;
+
+    if (result) throw new BuiltInNotImplementedException("swrlb:tokenize");
+
+    return result;
+  } // tokenize
+
+  // Built-ins for date, time and duration.
+
+  public boolean yearMonthDuration(List<Argument> arguments) throws BuiltInException
+  {
+    boolean result = false;
+
+    if (result) throw new BuiltInNotImplementedException("swrlb:yearMonthDuration");
+
+    return result;
+  } // yearMonthDuration
+
+  public boolean dayTimeDuration(List<Argument> arguments) throws BuiltInException
+  {
+    boolean result = false;
+
+    if (result) throw new BuiltInNotImplementedException("swrlb:dayTimeDuration");
+
+    return result;
+  } // dayTimeDuration
+
+  public boolean dateTime(List<Argument> arguments) throws BuiltInException
+  {
+    boolean result = false;
+
+    if (result) throw new BuiltInNotImplementedException("swrlb:dateTime");
+
+    return result;
+  } // dateTime
+
+  public boolean date(List<Argument> arguments) throws BuiltInException
+  {
+    boolean result = false;
+
+    if (result) throw new BuiltInNotImplementedException("swrlb:date");
+
+    return result;
+  } // date
+
+  public boolean time(List<Argument> arguments) throws BuiltInException
+  {
+    boolean result = false;
+
+    if (result) throw new BuiltInNotImplementedException("swrlb:time");
+
+    return result;
+  } // time
+
+  public boolean addYearMonthDurations(List<Argument> arguments) throws BuiltInException
+  {
+    boolean result = false;
+
+    if (result) throw new BuiltInNotImplementedException("swrlb:addYearMonthDurations");
+
+    return result;
+  } // addYearMonthDurations
+
+  public boolean subtractYearMonthDurations(List<Argument> arguments) throws BuiltInException
+  {
+    boolean result = false;
+
+    if (result) throw new BuiltInNotImplementedException("swrlb:subtractYearMonthDurations");
+
+    return result;
+  } // subtractYearMonthDurations
+
+  public boolean multiplyYearMonthDuration(List<Argument> arguments) throws BuiltInException
+  {
+    boolean result = false;
+
+    if (result) throw new BuiltInNotImplementedException("swrlb:multiplyYearMonthDuration");
+
+    return result;
+  } // multiplyYearMonthDuration
+
+  public boolean divideYearMonthDurations(List<Argument> arguments) throws BuiltInException
+  {
+    boolean result = false;
+
+    if (result) throw new BuiltInNotImplementedException("swrlb:divideYearMonthDurations");
+
+    return result;
+  } // divideYearMonthDurations
+
+  public boolean addDayTimeDurations(List<Argument> arguments) throws BuiltInException
+  {
+    boolean result = false;
+
+    if (result) throw new BuiltInNotImplementedException("swrlb:addDayTimeDurations");
+
+    return result;
+  } // addDayTimeDurations
+
+  public boolean subtractDayTimeDurations(List<Argument> arguments) throws BuiltInException
+  {
+    boolean result = false;
+
+    if (result) throw new BuiltInNotImplementedException("swrlb:subtractDayTimeDurations");
+
+    return result;
+  } // subtractDayTimeDurations
+
+  public boolean multiplyDayTimeDurations(List<Argument> arguments) throws BuiltInException
+  {
+    boolean result = false;
+
+    if (result) throw new BuiltInNotImplementedException("swrlb:multiplyDayTimeDurations");
+
+    return result;
+  } // multiplyDayTimeDurations
+
+  public boolean divideDayTimeDuration(List<Argument> arguments) throws BuiltInException
+  {
+    boolean result = false;
+
+    if (result) throw new BuiltInNotImplementedException("swrlb:divideDayTimeDuration");
+
+    return result;
+  } // divideDayTimeDuration
+
+  public boolean subtractDates(List<Argument> arguments) throws BuiltInException
+  {
+    boolean result = false;
+
+    if (result) throw new BuiltInNotImplementedException("swrlb:subtractDates");
+
+    return result;
+  } // subtractDates
+
+  public boolean subtractTimes(List<Argument> arguments) throws BuiltInException
+  {
+    boolean result = false;
+
+    if (result) throw new BuiltInNotImplementedException("swrlb:subtractTimes");
+
+    return result;
+  } // subtractTimes
+
+  public boolean addYearMonthDurationToDateTime(List<Argument> arguments) throws BuiltInException
+  {
+    boolean result = false;
+
+    if (result) throw new BuiltInNotImplementedException("swrlb:addYearMonthDurationToDateTime");
+
+    return result;
+  } // addYearMonthDurationToDateTime
+
+  public boolean addDayTimeDurationToDateTime(List<Argument> arguments) throws BuiltInException
+  {
+    boolean result = false;
+
+    if (result) throw new BuiltInNotImplementedException("swrlb:addDayTimeDurationToDateTime");
+
+    return result;
+  } // addDayTimeDurationToDateTime
+
+  public boolean subtractYearMonthDurationFromDateTime(List<Argument> arguments) throws BuiltInException
+  {
+    boolean result = false;
+
+    if (result) throw new BuiltInNotImplementedException("swrlb:subtractYearMonthDurationFromDateTime");
+
+    return result;
+  } // subtractYearMonthDurationFromDateTime
+
+  public boolean subtractDayTimeDurationFromDateTime(List<Argument> arguments) throws BuiltInException
+  {
+    boolean result = false;
+
+    if (result) throw new BuiltInNotImplementedException("swrlb:subtractDayTimeDurationFromDateTime");
+
+    return result;
+  } // subtractDayTimeDurationFromDateTime
+
+  public boolean addYearMonthDurationToDate(List<Argument> arguments) throws BuiltInException
+  {
+    boolean result = false;
+
+    if (result) throw new BuiltInNotImplementedException("swrlb:addYearMonthDurationToDate");
+
+    return result;
+  } // addYearMonthDurationToDate
+
+  public boolean addDayTimeDurationToDate(List<Argument> arguments) throws BuiltInException
+  {
+    boolean result = false;
+
+    if (result) throw new BuiltInNotImplementedException("swrlb:addDayTimeDurationToDate");
+
+    return result;
+  } // addDayTimeDurationToDate
+
+  public boolean subtractYearMonthDurationFromDate(List<Argument> arguments) throws BuiltInException
+  {
+    boolean result = false;
+
+    if (result) throw new BuiltInNotImplementedException("swrlb:subtractYearMonthDurationFromDate");
+
+    return result;
+  } // subtractYearMonthDurationFromDate
+
+  public boolean subtractDayTimeDurationFromDate(List<Argument> arguments) throws BuiltInException
+  {
+    boolean result = false;
+
+    if (result) throw new BuiltInNotImplementedException("swrlb:subtractDayTimeDurationFromDate");
+
+    return result;
+  } // subtractDayTimeDurationFromDate
+
+  public boolean addDayTimeDurationToTime(List<Argument> arguments) throws BuiltInException
+  {
+    boolean result = false;
+
+    if (result) throw new BuiltInNotImplementedException("swrlb:addDayTimeDurationToTime");
+
+    return result;
+  } // addDayTimeDurationToTime
+
+  public boolean subtractDayTimeDurationFromTime(List<Argument> arguments) throws BuiltInException
+  {
+    boolean result = false;
+
+    if (result) throw new BuiltInNotImplementedException("swrlb:subtractDayTimeDurationFromTime");
+
+    return result;
+  } // 
+
+  public boolean subtractDateTimesYieldingYearMonthDuration(List<Argument> arguments) throws BuiltInException
+  {
+    boolean result = false;
+
+    if (result) throw new BuiltInNotImplementedException("swrlb:subtractDateTimesYieldingYearMonthDuration");
+
+    return result;
+  } // subtractDateTimesYieldingYearMonthDuration
+
+  public boolean subtractDateTimesYieldingDayTimeDuration (List<Argument> arguments) throws BuiltInException
+  {
+    boolean result = false;
+
+    if (result) throw new BuiltInNotImplementedException("swrlb:subtractDateTimesYieldingDayTimeDuration");
+
+    return result;
+  } // subtractDateTimesYieldingDayTimeDuration 
+
+  // Built-ins for URIs
+
+  public boolean resolveURI(List<Argument> arguments) throws BuiltInException
+  {
+    boolean result = false;
+
+    if (result) throw new BuiltInNotImplementedException("swrlb:resolveURI");
+
+    return result;
+  } // resolveURI
+
+  public boolean anyURI(List<Argument> arguments) throws BuiltInException
+  {
+    boolean result = false;
+
+    if (result) throw new BuiltInNotImplementedException("swrlb:anyURI");
+
+    return result;
+  } // anyURI
+
+  // Built-ins for Lists
+
+  public boolean listConcat(List<Argument> arguments) throws BuiltInException
+  {
+    boolean result = false;
+
+    if (result) throw new BuiltInNotImplementedException("swrlb:listConcat");
+
+    return result;
+  } // listConcat
+
+  public boolean listIntersection(List<Argument> arguments) throws BuiltInException
+  {
+    boolean result = false;
+
+    if (result) throw new BuiltInNotImplementedException("swrlb:listIntersection");
+
+    return result;
+  } // listIntersection
+
+  public boolean listSubtraction(List<Argument> arguments) throws BuiltInException
+  {
+    boolean result = false;
+
+    if (result) throw new BuiltInNotImplementedException("swrlb:listSubtraction");
+
+    return result;
+  } // listSubtraction
+
+  public boolean member(List<Argument> arguments) throws BuiltInException
+  {
+    boolean result = false;
+
+    if (result) throw new BuiltInNotImplementedException("swrlb:member");
+
+    return result;
+  } // member 
+
+  public boolean length(List<Argument> arguments) throws BuiltInException
+  {
+    boolean result = false;
+
+    if (result) throw new BuiltInNotImplementedException("swrlb:length");
+
+    return result;
+  } // length
+
+  public boolean first(List<Argument> arguments) throws BuiltInException
+  {
+    boolean result = false;
+
+    if (result) throw new BuiltInNotImplementedException("swrlb:firsr");
+
+    return result;
+  } // first
+
+  public boolean rest(List<Argument> arguments) throws BuiltInException
+  {
+    boolean result = false;
+
+    if (result) throw new BuiltInNotImplementedException("swrlb:rest");
+
+    return result;
+  } // rest
+
+  public boolean sublist(List<Argument> arguments) throws BuiltInException
+  {
+    boolean result = false;
+
+    if (result) throw new BuiltInNotImplementedException("swrlb:sublist");
+
+    return result;
+  } // sublist
+
+  public boolean empty(List<Argument> arguments) throws BuiltInException
+  {
+    boolean result = false;
+
+    if (result) throw new BuiltInNotImplementedException("swrlb:empty");
+
+    return result;
+  } // empty
 
   // Private methods.
 
