@@ -229,8 +229,8 @@
         <copy todir="${build}" file="${src}/META-INF/MANIFEST.MF" overwrite="true"/>
         <manifest file="${build}/MANIFEST.MF" 
                   mode = "update">
-           <attribute name="Built By" value = "${user.name}"/>
-           <attribute name="Build Date" value = "${build.time}"/>
+           <attribute name="Built-By" value = "${user.name}"/>
+           <attribute name="Build-Date" value = "${build.time}"/>
         </manifest>
         <jar jarfile="${jarfile}"
              manifest="${build}/MANIFEST.MF">
