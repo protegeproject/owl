@@ -164,7 +164,7 @@ public class SWRLQueryControlPanel extends JPanel
             } // if
           } // if
 	} catch (SWRLRuleEngineBridgeException e) {
-          textArea.append("Exception getting result for rule '" + ruleName + "': " + e.getMessage() + ".\n");
+          textArea.append("Exception running rules '" + ruleName + "': " + e.getMessage() + ".\n");
 	} // try
       } // if
     } // ActionPerformed
