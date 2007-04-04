@@ -16,10 +16,11 @@
 
 
     <property name = "src" value = "./src"/>
-    <property name = "classes" value = "./classes"/>
     <property name = "lib" value = "./lib"/>
-    <property name = "dist" value = "./dist"/>
-    <property name = "plugins" value = "./plugins"/>
+    <property name = "build" value = "./build"/>
+    <property name = "classes" value = "${build}/classes"/>
+    <property name = "dist" value = "${build}/dist"/>
+    <property name = "plugins" value = "${build}/plugins"/>
     <property name = "etc" value = "./etc"/>
     <property name = "owlplugin" value = "edu.stanford.smi.protegex.owl"/>
     <property name = "plugin" value = "${plugins}/${owlplugin}"/>
@@ -122,7 +123,9 @@
 
 
     <target name="init.time" depends="checkProtegeLibsAndReport">
-        <tstamp/>
+	  <tstamp>
+         <format property="build.time" pattern="MM/dd/yyyy hh:mm aa"/>
+      </tstamp>
     </target>
 
     <target name="init" depends="init.time,checkProtegeLibs">
@@ -142,12 +145,7 @@
 
     <target name="clean" depends="init" 
             description="clean up all build related files and dirs">
-        <delete dir="${classes}"/>
-        <delete dir="${dist}"/>
-        <delete dir="${plugins}"/>
-        <delete dir="logs"/>
-        <delete file="out.owl"/>
-        <delete file="out.repository"/>
+        <delete dir="${build}"/>
     </target>
 
     <target name="javacc-compact">
@@ -228,8 +226,14 @@
     <!-- ================================================================ -->
 
     <target name="jar" depends="compile" description="Create the protege-owl.jar file">
+        <copy todir="${build}" file="${src}/META-INF/MANIFEST.MF" overwrite="true"/>
+        <manifest file="${build}/MANIFEST.MF" 
+                  mode = "update">
+           <attribute name="Built By" value = "${user.name}"/>
+           <attribute name="Build Date" value = "${build.time}"/>
+        </manifest>
         <jar jarfile="${jarfile}"
-             manifest="${src}/META-INF/MANIFEST.MF">
+             manifest="${build}/MANIFEST.MF">
           <fileset dir="${classes}"/>
           <fileset dir="${src}/">
             <include name="**/*.gif"/>
@@ -330,6 +334,11 @@
         <pathelement location = "${lib}/junit.jar"/>
       </classpath>
     </java>
+    <copy todir = "${build}/junit/projects">
+       <fileset dir="${junit}/projects"/>
+    </copy>
+    <copy file = "junit.properties" todir = "${build}"/>
+
   </target>
 
    <!--
@@ -357,7 +366,7 @@
            description = "run the tests (anybody can do it)"
            depends = "plugin.dir,junit-compile,checkJunitConfiguration">
      <junit printsummary="withOutAndErr"
-            dir = "." 
+            dir = "${build}" 
             fork = "yes"
             haltonfailure = "on" 
             haltonerror = "on">
