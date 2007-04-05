@@ -1,0 +1,68 @@
+; Wed Sep 27 12:42:02 PDT 2006
+; 
+;+ (version "3.2")
+;+ (build "Build 339")
+
+([metaproject_Instance_0] of  Project
+
+	(description "An owl file project in server-client mode.")
+	(location "junit/projects/pizza.owl.pprj")
+	(name "Pizza")
+	(owner [metaproject_Instance_1]))
+
+([metaproject_Instance_1] of  User
+
+	(groups
+		[projects_00016]
+		[projects_00018]
+		[projects_00022])
+	(name "Timothy Redmond")
+	(password "timothy"))
+
+([projects_00014] of  User
+
+	(groups [projects_00016])
+	(name "Ray Fergerson")
+	(password "claudia"))
+
+([projects_00015] of  User
+
+	(groups [projects_00018])
+	(name "Jennifer Vendetti")
+	(password "jenny"))
+
+([projects_00016] of  Group
+
+	(members
+		[projects_00019]
+		[projects_00014]
+		[metaproject_Instance_1])
+	(name "Developers"))
+
+([projects_00018] of  Group
+
+	(members
+		[projects_00019]
+		[projects_00015]
+		[metaproject_Instance_1])
+	(name "Staff"))
+
+([projects_00019] of  User
+
+	(groups
+		[projects_00018]
+		[projects_00016])
+	(name "Natasha Noy")
+	(password "natalia"))
+
+([projects_00022] of  Group
+
+	(description "A special group that implicitly contains all people")
+	(members [metaproject_Instance_1])
+	(name "World"))
+
+([projects_00023] of  User
+
+	(description "Special user that is only a member of world.")
+	(name "Guest")
+	(password "guest"))
