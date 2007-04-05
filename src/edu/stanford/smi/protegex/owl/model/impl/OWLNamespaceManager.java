@@ -222,7 +222,7 @@ public class OWLNamespaceManager extends AbstractNamespaceManager {
         Instance defaultOntology = null;
         TripleStoreModel tsm = owlModel.getTripleStoreModel();
         if (!ontologies.isEmpty()) {
-            if (tsm != null && owlModel instanceof JenaOWLModel) {
+            if (tsm != null) {
                 TripleStore tripleStore = tsm.getTopTripleStore();
                 defaultOntology = TripleStoreUtil.getFirstOntology(owlModel, tripleStore);
             }
