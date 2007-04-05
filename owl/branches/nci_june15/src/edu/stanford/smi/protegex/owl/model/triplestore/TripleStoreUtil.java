@@ -48,19 +48,24 @@ public class TripleStoreUtil {
 
 
     public static RDFResource getFirstOntology(OWLModel owlModel, TripleStore tripleStore) {
-        RDFSNamedClass owlOntologyClass = owlModel.getOWLOntologyClass();
-        Iterator ontologies = tripleStore.listSubjects(owlModel.getRDFTypeProperty(), owlOntologyClass);
-        if (ontologies.hasNext()) {
-            Frame next = (Frame) ontologies.next();
-            if (next instanceof RDFResource) {
-                return (RDFResource) next;
+        if (!(owlModel instanceof OWLDatabaseModel)) { // there is only one ontology in this triple store.
+            RDFSNamedClass owlOntologyClass = owlModel.getOWLOntologyClass();
+            Iterator ontologies = tripleStore.listSubjects(owlModel.getRDFTypeProperty(), owlOntologyClass);
+            if (ontologies.hasNext()) {
+                Frame next = (Frame) ontologies.next();
+                if (next instanceof RDFResource) {
+                    return (RDFResource) next;
+                }
+                else {
+                    return new DefaultOWLOntology(owlModel, next.getFrameID());
+                }
             }
             else {
-                return new DefaultOWLOntology(owlModel, next.getFrameID());
+                return null;
             }
         }
-        else {
-            return null;
+        else { // there is only one triple store but it contains multiple ontologies.
+            return owlModel.getDefaultOWLOntology();
         }
     }
 
