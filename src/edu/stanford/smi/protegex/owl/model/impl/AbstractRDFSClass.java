@@ -1,6 +1,7 @@
 package edu.stanford.smi.protegex.owl.model.impl;
 
 import edu.stanford.smi.protege.model.*;
+import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.model.*;
 import edu.stanford.smi.protegex.owl.model.event.ClassAdapter;
 import edu.stanford.smi.protegex.owl.model.event.ClassListener;
@@ -10,6 +11,7 @@ import edu.stanford.smi.protegex.owl.model.util.ResourceCopier;
 import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
 
 import java.util.*;
+import java.util.logging.Level;
 
 /**
  * A basic implementation of the RDFSClass interface that provides support for disjoint classes.
@@ -57,9 +59,20 @@ public abstract class AbstractRDFSClass extends DefaultCls implements RDFSClass 
 
 
     public RDFSClass createClone() {
-        ResourceCopier copier = new ResourceCopier();
-        accept(copier);
-        return (RDFSClass) copier.getCopy();
+    	RDFSClass clone = null;
+    	
+    	try {
+    		getOWLModel().beginTransaction("Created clone of " + this.getBrowserText());
+            ResourceCopier copier = new ResourceCopier();
+            accept(copier);
+            
+            clone = (RDFSClass) copier.getCopy();
+            getOWLModel().commitTransaction();
+		} catch (Exception e) {
+			getOWLModel().rollbackTransaction();
+			Log.getLogger().log(Level.WARNING, "There were errors while creating clone of " + this, e);
+		}
+        return clone;
     }
 
 
