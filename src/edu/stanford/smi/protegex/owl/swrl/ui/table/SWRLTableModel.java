@@ -225,7 +225,6 @@ public class SWRLTableModel extends AbstractTableModel implements Disposable, Sy
         SWRLImp imp = getImp(rowIndex);
         if (columnIndex == COL_EXPRESSION) {
             String text = (String) aValue;
-            SWRLParser parser = new SWRLParser(owlModel);
             try {
                 imp.setExpression(text);
                 if (!isSuitable(imp)) {

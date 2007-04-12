@@ -18,9 +18,9 @@ import java.util.*;
  */
 public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
 {
-  public static String TemporalLibraryName = "SWRLTemporalBuiltIns";
+  public static final String TemporalLibraryName = "SWRLTemporalBuiltIns";
   
-  public static String Prefix = "temporal";
+  public static final String Prefix = "temporal";
   
   private static String TemporalDuration = Prefix + ":"  + "duration";
   private static String TemporalEquals = Prefix + ":"  + "equals";

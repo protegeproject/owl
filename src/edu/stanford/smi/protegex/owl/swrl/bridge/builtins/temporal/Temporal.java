@@ -4,7 +4,7 @@ package edu.stanford.smi.protegex.owl.swrl.bridge.builtins.temporal;
 import edu.stanford.smi.protegex.owl.swrl.bridge.builtins.temporal.exceptions.*;
 
 // TODO: Some code in here is really awful (e.g., convertGranuleCount). Need to fix.
-// TODO: replace granularity definitions with enums
+// TODO: replace granularity integer definitions with enums
 
 import java.sql.*;
 import java.util.*;
@@ -62,7 +62,7 @@ public class Temporal
   private static final String[] stringGranularityRepresentation = { "years","months","days","hours","minutes","seconds","milliseconds" };
 
   // Individual routines will adjust February for leap years.
-  public static final int[] days_in_month = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
+  private static final int[] days_in_month = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
 
   // Days up until a month. Routine convertMonth2Granularity will adjust for leap years.
   private static final long[] days_to_month = {
@@ -259,6 +259,13 @@ public class Temporal
 
     return result;
   } // convertGranuleCount
+
+  public static int getDaysInMonth(long monthCount) throws TemporalException
+  {
+    checkMonthCount(monthCount);
+
+    return days_in_month[(int)monthCount - 1];
+  } // getDaysInMonth
 
   public static boolean isLeapYear(long yearCount) 
   { 

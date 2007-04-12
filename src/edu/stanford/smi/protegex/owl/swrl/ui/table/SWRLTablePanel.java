@@ -8,7 +8,6 @@ import edu.stanford.smi.protege.util.Disposable;
 import edu.stanford.smi.protege.util.LabeledComponent;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
-import edu.stanford.smi.protegex.owl.swrl.ui.actions.EditRuleAction;
 import edu.stanford.smi.protegex.owl.ui.OWLLabeledComponent;
 
 import javax.swing.*;
@@ -21,7 +20,6 @@ import java.util.*;
  */
 public class SWRLTablePanel extends JPanel implements Disposable 
 {
-  private EditRuleAction editRuleAction;
   private SWRLTable table;
   private SWRLTableModel tableModel;
 

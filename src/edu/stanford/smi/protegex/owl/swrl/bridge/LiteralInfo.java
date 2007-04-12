@@ -26,17 +26,17 @@ public class LiteralInfo extends Info implements Argument, DatatypeValue
   {
     RDFSDatatype datatype = literal.getDatatype();
 
-    if ((datatype == owlModel.getXSDint()) || (datatype == owlModel.getXSDinteger()))  value = new Integer(literal.getInt());
-    else if (datatype == owlModel.getXSDshort()) value = new Short(literal.getShort());
-    else if (datatype == owlModel.getXSDlong()) value = new Long(literal.getLong());
-    else if (datatype == owlModel.getXSDboolean()) value = new Boolean(literal.getBoolean());
-    else if (datatype == owlModel.getXSDfloat()) value = new Float(literal.getFloat());
-    else if (datatype == owlModel.getXSDdouble()) value = new Double(literal.getDouble());
-    else if ((datatype == owlModel.getXSDstring())) value = new String(literal.getString());
+    if ((datatype == owlModel.getXSDint()) || (datatype == owlModel.getXSDinteger()))  value = Integer.valueOf(literal.getInt());
+    else if (datatype == owlModel.getXSDshort()) value = Short.valueOf(literal.getShort());
+    else if (datatype == owlModel.getXSDlong()) value = Long.valueOf(literal.getLong());
+    else if (datatype == owlModel.getXSDboolean()) value = Boolean.valueOf(literal.getBoolean());
+    else if (datatype == owlModel.getXSDfloat()) value = Float.valueOf(literal.getFloat());
+    else if (datatype == owlModel.getXSDdouble()) value = Double.valueOf(literal.getDouble());
+    else if ((datatype == owlModel.getXSDstring())) value = String.valueOf(literal.getString());
     else if ((datatype == owlModel.getXSDtime())) value = new Time(literal.getString());
     else if ((datatype == owlModel.getXSDanyURI())) value = new AnyURI(literal.getString());
     else if ((datatype == owlModel.getXSDbase64Binary())) value = new Base64Binary(literal.getString());
-    else if ((datatype == owlModel.getXSDbyte())) value = new Byte(literal.getString());
+    else if ((datatype == owlModel.getXSDbyte())) value = Byte.valueOf(literal.getString());
     else if ((datatype == owlModel.getXSDduration())) value = new Duration(literal.getString());
     else if ((datatype == owlModel.getXSDdateTime())) value = new DateTime(literal.getString());
     else if ((datatype == owlModel.getXSDdate())) value = new Date(literal.getString());
@@ -56,32 +56,32 @@ public class LiteralInfo extends Info implements Argument, DatatypeValue
 
   public LiteralInfo(boolean b)
   {
-    value = new Boolean(b);
+    value = Boolean.valueOf(b);
   } // LiteralInfo
 
   public LiteralInfo(int i)
   {
-    value = new Integer(i);
+    value = Integer.valueOf(i);
   } // LiteralInfo
 
   public LiteralInfo(long l)
   {
-    value = new Long(l);
+    value = Long.valueOf(l);
   } // LiteralInfo
 
   public LiteralInfo(float f)
   {
-    value = new Float(f);
+    value = Float.valueOf(f);
   } // LiteralInfo
 
   public LiteralInfo(double d)
   {
-    value = new Double(d);
+    value = Double.valueOf(d);
   } // LiteralInfo
 
   public LiteralInfo(short s)
   {
-    value = new Short(s);
+    value = Short.valueOf(s);
   } // LiteralInfo
 
   public LiteralInfo(PrimitiveXSDType value)
@@ -385,7 +385,7 @@ public class LiteralInfo extends Info implements Argument, DatatypeValue
     return hash;
   } // hashCode
 
-  public int compareTo(Object o) 
+  public int compareTo(Object o)
   {
     return  ((Comparable)value).compareTo(((LiteralInfo)o).getValue()); // Will throw a ClassCastException if o's class does not implement Comparable.
   } // compareTo

@@ -43,9 +43,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
       String createInvocationPattern 
         = SWRLBuiltInUtil.createInvocationPattern(getInvokingBridge(), getInvokingRuleName(), getInvokingBuiltInIndex(), 
                                                   arguments.subList(1, arguments.size()));
-
       IndividualInfo individualInfo = null;
-
       if (createInvocationMap.containsKey(createInvocationPattern)) individualInfo = createInvocationMap.get(createInvocationPattern);
       else {
         try {

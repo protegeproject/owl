@@ -32,8 +32,8 @@ public class BuiltInAtomInfo extends AtomInfo
 
   public boolean hasUnboundArguments() { return !unboundArgumentNumbers.isEmpty(); }
   public Collection<Integer> getUnboundArgumentNumbers() { return unboundArgumentNumbers; }
-  public void addUnboundArgumentNumber(int argumentNumber) { unboundArgumentNumbers.add(new Integer(argumentNumber)); }
-  public boolean isUnboundArgument(int argumentNumber) { return unboundArgumentNumbers.contains(new Integer(argumentNumber)); }
+  public void addUnboundArgumentNumber(int argumentNumber) { unboundArgumentNumbers.add(Integer.valueOf(argumentNumber)); }
+  public boolean isUnboundArgument(int argumentNumber) { return unboundArgumentNumbers.contains(Integer.valueOf(argumentNumber)); }
 
   public Set<String> getUnboundArgumentVariableNames() throws SWRLRuleEngineBridgeException
   {  

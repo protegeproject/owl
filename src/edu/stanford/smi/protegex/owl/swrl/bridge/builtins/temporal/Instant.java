@@ -314,10 +314,10 @@ public class Instant
   } // finished_by
 
   // Take a list of instants and remove dulicate identical elements.
-  public List coalesce(List instants, int granularity) throws TemporalException
+  public List<Instant> coalesce(List<Instant> instants, int granularity) throws TemporalException
   {
     Instant i1, i2;
-    List resultList = new ArrayList();
+    List<Instant> resultList = new ArrayList<Instant>();
 
     // Loop through each instant in the list trying to merge with other instants.
     while (!instants.isEmpty()) {

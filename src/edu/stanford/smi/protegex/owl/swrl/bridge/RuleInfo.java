@@ -82,9 +82,9 @@ public class RuleInfo extends Info
 
   private List<AtomInfo> processBodyNonBuiltInAtoms(List<AtomInfo> bodyNonBuiltInAtoms)
   {
-    List<AtomInfo> bodyClassAtoms = new ArrayList(); 
-    List<AtomInfo> bodyNonClassNonBuiltInAtoms = new ArrayList();
-    List<AtomInfo> result = new ArrayList();
+    List<AtomInfo> bodyClassAtoms = new ArrayList<AtomInfo>(); 
+    List<AtomInfo> bodyNonClassNonBuiltInAtoms = new ArrayList<AtomInfo>();
+    List<AtomInfo> result = new ArrayList<AtomInfo>();
 
     for (AtomInfo atomInfo : bodyNonBuiltInAtoms) {
       if (atomInfo instanceof ClassAtomInfo) bodyClassAtoms.add(atomInfo);

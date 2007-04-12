@@ -11,7 +11,7 @@ import java.util.List;
 
 public class DataRangeAtomInfo extends AtomInfo
 {
-  private List<LiteralInfo> literals;
+  //private List<LiteralInfo> literals;
   
   public DataRangeAtomInfo(SWRLDataRangeAtom atom) throws SWRLRuleEngineBridgeException
   { 
