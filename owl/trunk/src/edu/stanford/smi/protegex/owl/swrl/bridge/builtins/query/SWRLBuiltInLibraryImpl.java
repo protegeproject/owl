@@ -20,7 +20,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary implements QueryL
 {
   private static String QueryLibraryName = "SWRLQueryBuiltIns";
 
-  public static String Prefix = QueryNames.QueryPrefix + ":";
+  public static final String Prefix = QueryNames.QueryPrefix + ":";
   
   private static String QuerySelect = Prefix + "select";
   private static String QuerySelectDistinct = Prefix + "selectDistinct";
@@ -35,7 +35,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary implements QueryL
   
   private static String queryBuiltInNamesArray[] = { QuerySelect, QuerySelectDistinct, QueryCount, QueryAvg, QueryMin, QueryMax, QuerySum,
                                                      QueryOrderBy, QueryOrderByDescending, QueryColumnNames };
-  private static Set<String> queryBuiltInNames;
+  private Set<String> queryBuiltInNames;
 
   private HashMap<String, ResultImpl> results;
 

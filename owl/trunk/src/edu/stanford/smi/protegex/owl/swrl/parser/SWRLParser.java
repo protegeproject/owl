@@ -300,9 +300,7 @@ public class SWRLParser {
   {
     SWRLBuiltin builtin;
     SWRLAtom atom = null;
-    List objects = new ArrayList();
-
-    objects = parseObjectList(); // Swallows ')'
+    List objects = parseObjectList(); // Swallows ')'
 
     if (!parseOnly) {
       builtin = swrlFactory.getBuiltin(identifier);

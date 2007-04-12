@@ -17,10 +17,7 @@ import java.util.*;
  * A utility class that can (and should) be used to create and access SWRL related objects in an ontology.
  *
  * See <a href="http://protege.cim3.net/cgi-bin/wiki.pl?SWRLFactoryFAQ">here</a> for documentation on using this class.
- *
- * @author Martin O'Connor  <moconnor@smi.stanford.edu>
- * @author Holger Knublauch <holger@knublauch.com> */
-
+ */
 public class SWRLFactory 
 {
   private OWLNamedClass atomListCls;

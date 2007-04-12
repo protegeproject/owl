@@ -5,6 +5,7 @@ import edu.stanford.smi.protegex.owl.swrl.bridge.builtins.temporal.exceptions.*;
 
 import java.text.SimpleDateFormat;
 import java.util.StringTokenizer;
+import java.util.Arrays;
 import java.text.ParsePosition;
 import java.sql.Timestamp;
 
@@ -25,9 +26,9 @@ public abstract class DatetimeStringProcessor
   {
     this.dateFormat = dateFormat;
     this.delimiters = delimiters;
-    this.gTokenIndex = gTokenIndex;
-    this.datetimeRoundUpPadding = datetimeRoundUpPadding;
-    this.datetimeRoundDownPadding = datetimeRoundDownPadding;
+    this.gTokenIndex = (int[])gTokenIndex.clone();
+    this.datetimeRoundUpPadding = (String[])datetimeRoundUpPadding.clone();
+    this.datetimeRoundDownPadding = (String[])datetimeRoundDownPadding.clone();
   } // DatetimeStringProcessor
 
   protected abstract String constructDatetimeString(long milliseconds) throws TemporalException;
@@ -72,7 +73,7 @@ public abstract class DatetimeStringProcessor
   public void checkDatetimeString(String datetimeString) throws TemporalException
   {
     String localDatetimeString = datetimeString.trim();
-    java.util.Date date = dateFormat.parse(datetimeString, new ParsePosition(0));
+    java.util.Date date = dateFormat.parse(localDatetimeString, new ParsePosition(0));
 
     if (date == null) Temporal.throwInvalidDatetimeStringException(datetimeString);
   } // checkDatetimeString
@@ -130,7 +131,7 @@ public abstract class DatetimeStringProcessor
 	token = tokenizer.nextToken().trim();
 	monthCount = Long.parseLong(token);
         Temporal.checkMonthCount(monthCount);
-	daysInMonth = Temporal.days_in_month[(int)monthCount - 1];
+	daysInMonth = Temporal.getDaysInMonth(monthCount);
 	if (Temporal.isLeapYear(yearCount) && (monthCount == 2)) daysInMonth++;
 	result = localDatetimeString + "-" + daysInMonth + datetimeRoundUpPadding[Temporal.DAYS];
       } // if
@@ -206,10 +207,5 @@ public abstract class DatetimeStringProcessor
 
     return result;
   } // getTimeComponent
-
-  private String padDatetimeString(String datetimeString) throws TemporalException
-  {
-    return padDatetimeString(datetimeString, false);
-  } // padDatetimeString
 
 } // DatetimeStringProcessor

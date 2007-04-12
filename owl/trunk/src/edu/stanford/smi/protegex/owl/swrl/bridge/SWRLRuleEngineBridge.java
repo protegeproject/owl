@@ -12,13 +12,14 @@ import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.*;
 import edu.stanford.smi.protegex.owl.swrl.bridge.builtins.*;
 
 import java.util.*;
+import java.io.Serializable;
 
 /**
  ** The SWRL Rule Engine Bridge provides a mechanism to incorporate rule engines into Protege-OWL to execute SWRL rules. <p>
  **
  ** Detailed documentation for this class can be found <a href="http://protege.cim3.net/cgi-bin/wiki.pl?SWRLRuleEngineBridgeFAQ">here</a>.
  */
-public abstract class SWRLRuleEngineBridge
+public abstract class SWRLRuleEngineBridge implements Serializable
 {
   protected abstract void defineRule(RuleInfo ruleInfo) throws SWRLRuleEngineBridgeException;
   protected abstract void defineClass(ClassInfo classInfo) throws SWRLRuleEngineBridgeException;
@@ -209,7 +210,7 @@ public abstract class SWRLRuleEngineBridge
   protected Collection<RestrictionInfo> getImportedRestrictions() { return importedRestrictions; }
   protected Collection<IndividualInfo> getAssertedIndividuals() { return assertedIndividuals; }
   protected Collection<PropertyInfo> getAssertedProperties() { return assertedProperties; }
-  protected Collection<IndividualInfo> getCreatedIndividuals() { return new ArrayList(createdIndividuals.values()); }
+  protected Collection<IndividualInfo> getCreatedIndividuals() { return new ArrayList<IndividualInfo>(createdIndividuals.values()); }
 
   /**
    ** Assert an OWL property from a rule engine.
@@ -617,10 +618,10 @@ public abstract class SWRLRuleEngineBridge
 
     for (Argument argument : arguments) {
       if (argument == null) // An unbound argument is indicated by a null for an argument value.
-        throw new BuiltInException("Built-in '" + builtInName + "' in rule '" + ruleName + "' " +
+        throw new BuiltInException("built-in '" + builtInName + "' in rule '" + ruleName + "' " +
                                    "returned with unbound argument #" + argumentNumber);
       else if (argument instanceof MultiArgument && ((MultiArgument)argument).hasNoArguments())
-        throw new BuiltInException("Built-in '" + builtInName + "' in rule '" + ruleName + "' " +
+        throw new BuiltInException("built-in '" + builtInName + "' in rule '" + ruleName + "' " +
                                    "returned with empty multi-argument #" + argumentNumber);
       argumentNumber++;
     } // for
@@ -634,14 +635,14 @@ public abstract class SWRLRuleEngineBridge
     if (multiArgumentIndexes.isEmpty()) 
       generateBuiltInBinding(ruleName, builtInName, builtInIndex, arguments); // No multi-arguments - do a simple bind
     else {
-      List<Integer> multiArgumentCounts = new ArrayList();
-      List<Integer> multiArgumentSizes = new ArrayList();
+      List<Integer> multiArgumentCounts = new ArrayList<Integer>();
+      List<Integer> multiArgumentSizes = new ArrayList<Integer>();
       List<Argument> argumentsPattern;
 
-      for (int i = 0; i < multiArgumentIndexes.size(); i++) multiArgumentCounts.add(new Integer(0));
+      for (int i = 0; i < multiArgumentIndexes.size(); i++) multiArgumentCounts.add(Integer.valueOf(0));
       for (int i = 0; i < multiArgumentIndexes.size(); i++) {
         MultiArgument multiArgument = (MultiArgument)arguments.get(multiArgumentIndexes.get(i).intValue());
-        multiArgumentSizes.add(new Integer(multiArgument.getNumberOfArguments()));
+        multiArgumentSizes.add(Integer.valueOf(multiArgument.getNumberOfArguments()));
       } // for
 
       do {
@@ -663,16 +664,16 @@ public abstract class SWRLRuleEngineBridge
       
       if (++count == size) return true;
 
-      multiArgumentCounts.set(0, new Integer(count));
+      multiArgumentCounts.set(0, Integer.valueOf(count));
 
-      for (int i = 1; i < multiArgumentCounts.size(); i++) multiArgumentCounts.set(i, new Integer(0));
+      for (int i = 1; i < multiArgumentCounts.size(); i++) multiArgumentCounts.set(i, Integer.valueOf(0));
     } // if
     return false;
   } // nextMultiArgumentCounts
 
   private List<Argument> generateArgumentsPattern(List<Argument> arguments, List<Integer> multiArgumentCounts)
   {
-    List<Argument> result = new ArrayList();
+    List<Argument> result = new ArrayList<Argument>();
     int multiArgumentIndex = 0;
 
     for (Argument argument: arguments) {
@@ -688,10 +689,10 @@ public abstract class SWRLRuleEngineBridge
     
   private List<Integer> getMultiArgumentIndexes(List<Argument> arguments)
   {
-    List<Integer> result = new ArrayList();
+    List<Integer> result = new ArrayList<Integer>();
 
     for (int i = 0; i < arguments.size(); i++) 
-      if (arguments.get(i) instanceof MultiArgument) result.add(new Integer(i));
+      if (arguments.get(i) instanceof MultiArgument) result.add(Integer.valueOf(i));
 
     return result;
   } // getMultiArgumentIndexes

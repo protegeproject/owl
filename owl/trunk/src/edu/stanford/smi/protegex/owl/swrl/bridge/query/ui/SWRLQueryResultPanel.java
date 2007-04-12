@@ -150,6 +150,7 @@ public class SWRLQueryResultPanel extends JPanel
       } catch (Throwable e) {
         JOptionPane.showMessageDialog(null, "Error saving file '" + selectedFile.getPath() + "': " + e.getMessage(), "Error saving file",
                                       JOptionPane.ERROR_MESSAGE);
+        // TODO: findbugs - stream not closed on all paths
       } // try
     } // saveResults
     

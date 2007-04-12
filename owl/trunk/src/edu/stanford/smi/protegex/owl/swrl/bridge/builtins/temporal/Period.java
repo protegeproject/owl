@@ -10,7 +10,7 @@ import java.io.Serializable;
 /*
 ** Class representing an interval of time.
 */
-public class Period implements Serializable
+public class Period
 {
   // Both instants will have the same granularity so we do not store the granularity separately.
   private Instant startInstant, finishInstant;
@@ -476,12 +476,12 @@ public class Period implements Serializable
   // other, producing a new period list.
 
   // This routine modifies the periods list that it has been passed so this list should not be used again.
-  public List coalesce(List periods, int granularity) throws TemporalException
+  public List<Period> coalesce(List<Period> periods, int granularity) throws TemporalException
   {
     Iterator iterator;
     Period p1, p2;
     boolean periodMerged;
-    List resultList = new ArrayList();
+    List<Period> resultList = new ArrayList<Period>();
 
     // Loop through each period in the list trying to merge with other periods.
     while (!periods.isEmpty()) {

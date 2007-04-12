@@ -43,7 +43,7 @@ public class SWRLOWLUtil
     try {
       owlModel = ProtegeOWL.createJenaOWLModel();
     } catch (Exception e) {
-      new SWRLOWLUtilException("Error creating Jena OWL model: " + e.getMessage());
+      throw new SWRLOWLUtilException("Error creating Jena OWL model: " + e.getMessage());
     } // try
 
     return owlModel;
@@ -57,7 +57,7 @@ public class SWRLOWLUtil
       importHelper.addImport(importUri);
       importHelper.importOntologies(false);
     } catch (Exception e) {
-      new SWRLOWLUtilException("Error importing OWL file '" + importOWLFileName + "': " + e.getMessage());
+      throwException("Error importing OWL file '" + importOWLFileName + "': " + e.getMessage());
     } // try
   } // importOWLFile
 
@@ -244,7 +244,7 @@ public class SWRLOWLUtil
     OWLNamedClass subClass = getClass(owlModel, subClassName, mustExist);
     OWLNamedClass cls = getClass(owlModel, className, mustExist);
 
-    return (subClass != null && cls != null && cls.getSubclasses().contains(subClass));
+    return (subClass != null && cls != null && cls.getSubclasses().contains(subClass)); // TODO: uses deprecated getSubclasses
   } // isDirectSubclassOf
 
   public static boolean isDirectSuperClassOf(OWLModel owlModel, String superClassName, String className, boolean mustExist) 
@@ -516,8 +516,8 @@ public class SWRLOWLUtil
     try {
       result = Integer.parseInt(s);
     } catch (NumberFormatException e) {
-      throw new SWRLOWLUtilException("Cannot convert property value '" + s + "' of property '" + propertyName + 
-                                     "' associated with individual '" + individual.getName() + "' to integer");
+      throwException("Cannot convert property value '" + s + "' of property '" + propertyName + 
+                     "' associated with individual '" + individual.getName() + "' to integer");
     } // try
     return result;
   } // getDatavaluedPropertyValueAsInteger
@@ -773,7 +773,7 @@ public class SWRLOWLUtil
     return new ArrayList<OWLProperty>(property.getSuperproperties(true));
   } // getSuperPropertiesOf
 
-  public static Set<String> rdfResources2Names(Collection<RDFResource> resources) 
+  public static Set<String> rdfResources2Names(Collection resources) 
   {
     Set<String> result = new HashSet<String>();
     

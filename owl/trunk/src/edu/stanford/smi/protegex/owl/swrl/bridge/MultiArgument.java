@@ -10,7 +10,7 @@ public class MultiArgument implements Argument
 
   public MultiArgument()
   {
-    arguments = new ArrayList();
+    arguments = new ArrayList<Argument>();
   } // MultiArgument
 
   public MultiArgument(List<Argument> arguments)

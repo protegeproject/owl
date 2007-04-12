@@ -78,6 +78,7 @@ public class PropertyInfo extends Info implements Argument, PropertyValue
   {
     IndividualInfo individualInfo;
     OWLProperty property;
+    RDFProperty firstSuperProperty = null, firstInverseSuperProperty = null, inverseProperty = null;
     OWLIndividual individual;
     Object object;
     
@@ -103,7 +104,16 @@ public class PropertyInfo extends Info implements Argument, PropertyValue
       object = literalInfo.asRDFSLiteral(owlModel); // Will throw exception if it cannot convert.
     } // if    
 
-    if (!individual.hasPropertyValue(property, object, true)) individual.addPropertyValue(property, object);
+    firstSuperProperty = property.getFirstSuperproperty();
+    if (property.isInverseFunctional()) inverseProperty = property.getInverseProperty();
+    firstInverseSuperProperty = (inverseProperty == null) ? null : inverseProperty.getFirstSuperproperty();
+
+    // We have to make sure that any super properties do not have this value and also that any inverse properties (and their
+    // superproperties) do not have this value.
+    if (!((firstSuperProperty != null && individual.hasPropertyValue(firstSuperProperty, object, true)) ||
+          (firstInverseSuperProperty != null && ((OWLIndividual)object).hasPropertyValue(firstInverseSuperProperty, individual, true)) ||
+          individual.hasPropertyValue(property, object, true)))
+      individual.addPropertyValue(property, object);    
   } // writeAssertedProperty2OWL
 
   public String toString() { return getPropertyName(); }

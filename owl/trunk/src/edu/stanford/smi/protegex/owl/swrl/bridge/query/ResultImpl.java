@@ -7,6 +7,7 @@ import edu.stanford.smi.protegex.owl.swrl.bridge.query.exceptions.*;
 
 import java.util.*;
 import java.math.*;
+import java.io.Serializable;
 
 /**
  ** This class implements the interfaces Result and ResultGenerator. It can be used to generate a result structure and populate it with data;
@@ -74,10 +75,9 @@ public class ResultImpl implements ResultGenerator, Result
   private List<ResultValue> rowData; // List of ResultValue objects used when assembling a row.
   private int numberOfColumns, rowIndex, rowDataColumnIndex;
   private boolean isConfigured, isPrepared, isRowOpen, isOrdered, isAscending, isDistinct, hasAggregates;
-  private RowComparator rowComparator;
 
-  public static String aggregateFunctionNames[] = { MinAggregateFunction, MaxAggregateFunction, SumAggregateFunction,
-						    AvgAggregateFunction, CountAggregateFunction };
+  private static final String aggregateFunctionNames[] = { MinAggregateFunction, MaxAggregateFunction, SumAggregateFunction,
+                                                           AvgAggregateFunction, CountAggregateFunction };
   public ResultImpl() 
   {
     initialize();
@@ -117,7 +117,7 @@ public class ResultImpl implements ResultGenerator, Result
   {
     throwExceptionIfAlreadyConfigured();
 
-    selectedColumnIndexes.add(new Integer(numberOfColumns));
+    selectedColumnIndexes.add(Integer.valueOf(numberOfColumns));
     allColumnNames.add(columnName);
     numberOfColumns++;
   } // addSelectedIndividualColumn
@@ -128,7 +128,7 @@ public class ResultImpl implements ResultGenerator, Result
 
     checkAggregateFunctionName(aggregateFunctionName);
 
-    aggregateColumnIndexes.put(new Integer(numberOfColumns), aggregateFunctionName);
+    aggregateColumnIndexes.put(Integer.valueOf(numberOfColumns), aggregateFunctionName);
     allColumnNames.add(columnName);
     numberOfColumns++;
   } // addAggregateColumn
@@ -148,7 +148,7 @@ public class ResultImpl implements ResultGenerator, Result
     isOrdered = true;
     isAscending = ascending;
 
-    orderByColumnIndexes.add(new Integer(orderedColumnIndex));
+    orderByColumnIndexes.add(Integer.valueOf(orderedColumnIndex));
   } // addOrderByColumn
     
   public void addColumnDisplayName(String columnName) throws ResultException
@@ -167,8 +167,6 @@ public class ResultImpl implements ResultGenerator, Result
 
     if (containsOneOf(selectedColumnIndexes, aggregateColumnIndexes.keySet()))
       throw new InvalidQueryException("aggregate columns cannot also be selected columns");
-
-    rowComparator = new RowComparator(allColumnNames, orderByColumnIndexes, isOrdered && isAscending);
 
     hasAggregates = !aggregateColumnIndexes.isEmpty();
 
@@ -226,8 +224,8 @@ public class ResultImpl implements ResultGenerator, Result
 
     if (rowDataColumnIndex == getNumberOfColumns()) throw new ResultStateException("Attempt to add data beyond the end of a row");
 
-    if (aggregateColumnIndexes.containsKey(new Integer(rowDataColumnIndex)) && 
-        (!aggregateColumnIndexes.get(new Integer(rowDataColumnIndex)).equals(CountAggregateFunction)) && 
+    if (aggregateColumnIndexes.containsKey(Integer.valueOf(rowDataColumnIndex)) && 
+        (!aggregateColumnIndexes.get(Integer.valueOf(rowDataColumnIndex)).equals(CountAggregateFunction)) && 
         (!isNumericValue(value)))
         throw new ResultException("attempt to add non numeric value '" + value + "' to min, max, sum, or avg aggregate column '" + 
                                   allColumnNames.get(rowDataColumnIndex) + "'");
@@ -517,39 +515,6 @@ public class ResultImpl implements ResultGenerator, Result
     return false;
   } // containsOneOf
 
-  private void checkIsDatatypeValue(String columnName) throws ResultException
-  {
-    if (!hasDatatypeValue(columnName)) 
-      throw new InvalidColumnTypeException("Expecting DatatypeValue type for column '" + columnName + "'");
-  } // checkIsDatatypeValue
-
-  private void checkIsDatatypeValue(int columnIndex) throws ResultException
-  {
-    checkIsDatatypeValue(getColumnName(columnIndex)); 
-  } // checkIsDatatypeValue
-
-  private void checkIsObjectValue(String columnName) throws ResultException
-  {
-    if (!hasObjectValue(columnName)) 
-      throw new InvalidColumnTypeException("Expecting ObjectValue type for column '" + columnName + "'");
-  } // checkIsObjectValue
-
-  private void checkIsObjectValue(int columnIndex) throws ResultException
-  {
-    checkIsObjectValue(getColumnName(columnIndex)); 
-  } // checkIsObjectValue
-
-  private void checkIsClassValue(String columnName) throws ResultException
-  {
-    if (!hasClassValue(columnName)) 
-      throw new InvalidColumnTypeException("Expecting ClassValue type for column '" + columnName + "'");
-  } // checkIsClassValue
-
-  private void checkIsClassValue(int columnIndex) throws ResultException
-  {
-    checkIsClassValue(getColumnName(columnIndex)); 
-  } // checkIsClassValue
-
   private boolean isNumericValue(ResultValue value)
   {
     return ((value instanceof DatatypeValue) || (((DatatypeValue)value).isNumeric()));
@@ -594,11 +559,11 @@ public class ResultImpl implements ResultGenerator, Result
           values.add(value);
           aggregateRowMap.put(aggregateColumnIndex, values);
         } // for
-        aggregatesMap.put(new Integer(result.size()), aggregateRowMap);
+        aggregatesMap.put(Integer.valueOf(result.size()), aggregateRowMap);
         result.add(row);
         Collections.sort(result, rowComparator); // binary search is expecting a sorted list
       } else { // We found a row that has the same values for the non aggregated columns.
-        aggregateRowMap = aggregatesMap.get(new Integer(rowIndex));
+        aggregateRowMap = aggregatesMap.get(Integer.valueOf(rowIndex));
         for (Integer aggregateColumnIndex : aggregateColumnIndexes.keySet()) {
           values = aggregateRowMap.get(aggregateColumnIndex);
           value = row.get(aggregateColumnIndex); 
@@ -609,7 +574,7 @@ public class ResultImpl implements ResultGenerator, Result
 
     rowIndex = 0;
     for (List<ResultValue> row : result) {
-      aggregateRowMap = aggregatesMap.get(new Integer(rowIndex));
+      aggregateRowMap = aggregatesMap.get(Integer.valueOf(rowIndex));
 
       for (Integer aggregateColumnIndex : aggregateColumnIndexes.keySet()) {
         String aggregateFunctionName = aggregateColumnIndexes.get(aggregateColumnIndex);
@@ -745,7 +710,7 @@ public class ResultImpl implements ResultGenerator, Result
   } // count
 
   // Quick and dirty: all checking left to the Java runtime.
-  private class RowComparator implements Comparator<List<ResultValue>>
+  private static class RowComparator implements Comparator<List<ResultValue>>, Serializable
   {
     private List<Integer> orderByColumnIndexes;
     private boolean ascending;
