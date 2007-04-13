@@ -1,8 +1,10 @@
 
-// cf. http://listserv.manchester.ac.uk/cgi-bin/wa?A2=ind0611&L=dig-wg&T=0&P=754
+// TODO: a lot of repetition here
 // TODO: additional methods to think about:
+// cf. http://listserv.manchester.ac.uk/cgi-bin/wa?A2=ind0611&L=dig-wg&T=0&P=754
 //
 // isDisjointWith, isEquivalentTo for classes and properties.
+// 
 
 package edu.stanford.smi.protegex.owl.swrl.bridge.builtins.tbox;
 
@@ -32,6 +34,116 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
   public SWRLBuiltInLibraryImpl() { super(SWRLTBoxLibraryName); }
 
   public void reset() {}
+
+  /**
+   ** Determine if a single property argument is an OWL property. If the argument is unbound, bind it to all OWL properties in an ontology.
+   */
+  public boolean isProperty(List<Argument> arguments) throws BuiltInException
+  {
+    SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(1, arguments.size());
+    boolean isUnboundArgument = SWRLBuiltInUtil.isUnboundArgument(0, arguments);   
+    boolean result = false;
+
+    try {
+      if (isUnboundArgument) {
+        MultiArgument multiArgument = new MultiArgument();
+        for (OWLProperty property : SWRLOWLUtil.getUserDefinedOWLProperties(getInvokingBridge().getOWLModel()))
+          multiArgument.addArgument(new PropertyInfo(property.getName()));
+        arguments.set(0, multiArgument);
+        result = true;
+      } else {
+        String propertyName = SWRLBuiltInUtil.getArgumentAsAPropertyName(0, arguments);
+        result = SWRLOWLUtil.isProperty(getInvokingBridge().getOWLModel(), propertyName, false);
+      } // if
+    } catch (SWRLOWLUtilException e) {
+      throw new BuiltInException(e.getMessage());
+    } // try
+
+    return result;
+  } // isProperty
+
+  /**
+   ** Determine if a single argument is an OWL object property. If the argument is unbound, bind it to all OWL object properties in an
+   ** ontology.
+   */
+  public boolean isObjectProperty(List<Argument> arguments) throws BuiltInException
+  {
+    SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(1, arguments.size());
+    boolean isUnboundArgument = SWRLBuiltInUtil.isUnboundArgument(0, arguments);   
+    boolean result = false;
+
+    try {
+      if (isUnboundArgument) {
+        MultiArgument multiArgument = new MultiArgument();
+        for (OWLProperty property : SWRLOWLUtil.getUserDefinedOWLObjectProperties(getInvokingBridge().getOWLModel()))
+          multiArgument.addArgument(new PropertyInfo(property.getName()));
+        arguments.set(0, multiArgument);
+        result = true;
+      } else {
+        String propertyName = SWRLBuiltInUtil.getArgumentAsAPropertyName(0, arguments);
+        result = SWRLOWLUtil.isObjectProperty(getInvokingBridge().getOWLModel(), propertyName, false);
+      } // if
+    } catch (SWRLOWLUtilException e) {
+      throw new BuiltInException(e.getMessage());
+    } // try
+
+    return result;
+  } // isObjectProperty
+
+  /**
+   ** Determine if a single argument is an OWL datatype property. If the argument is unbound, bind it to all OWL datatype
+   ** properties in an ontology.
+   */
+  public boolean isDatatypeProperty(List<Argument> arguments) throws BuiltInException
+  {
+    SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(1, arguments.size());
+    boolean isUnboundArgument = SWRLBuiltInUtil.isUnboundArgument(0, arguments);   
+    boolean result = false;
+
+    try {
+      if (isUnboundArgument) {
+        MultiArgument multiArgument = new MultiArgument();
+        for (OWLProperty property : SWRLOWLUtil.getUserDefinedOWLDatatypeProperties(getInvokingBridge().getOWLModel()))
+          multiArgument.addArgument(new PropertyInfo(property.getName()));
+        arguments.set(0, multiArgument);
+        result = true;
+      } else {
+        String propertyName = SWRLBuiltInUtil.getArgumentAsAPropertyName(0, arguments);
+        result = SWRLOWLUtil.isDatatypeProperty(getInvokingBridge().getOWLModel(), propertyName, false);
+      } // if
+    } catch (SWRLOWLUtilException e) {
+      throw new BuiltInException(e.getMessage());
+    } // try
+
+    return result;
+  } // isDatatypeProperty
+
+  /**
+   ** Determine if a single argument is an OWL named class. If the argument is unbound, bind it to all OWL named classes in an ontology.
+   */
+  public boolean isClass(List<Argument> arguments) throws BuiltInException
+  {
+    SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(1, arguments.size());
+    boolean isUnboundArgument = SWRLBuiltInUtil.isUnboundArgument(0, arguments);   
+    boolean result = false;
+
+    try {
+      if (isUnboundArgument) {
+        MultiArgument multiArgument = new MultiArgument();
+        for (OWLNamedClass cls : SWRLOWLUtil.getUserDefinedOWLNamedClasses(getInvokingBridge().getOWLModel()))
+          multiArgument.addArgument(new PropertyInfo(cls.getName()));
+        arguments.set(0, multiArgument);
+        result = true;
+      } else {
+        String className = SWRLBuiltInUtil.getArgumentAsAClassName(0, arguments);
+        result = SWRLOWLUtil.isClass(getInvokingBridge().getOWLModel(), className, false);
+      } // if
+    } catch (SWRLOWLUtilException e) {
+      throw new BuiltInException(e.getMessage());
+    } // try
+
+    return result;
+  } // isClass
 
   /**
    ** Determine if a single property argument is transitive.

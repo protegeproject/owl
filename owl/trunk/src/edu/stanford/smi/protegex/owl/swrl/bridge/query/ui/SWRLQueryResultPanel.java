@@ -78,7 +78,7 @@ public class SWRLQueryResultPanel extends JPanel
           controlPanel.removeResultPanel(ruleName);
         } else validate();
       } catch (SWRLRuleEngineBridgeException e) {
-        controlPanel.appendText("Exception running rules - all results panels closed.\n" + e.getMessage() + "\n");
+        controlPanel.appendText("All results panels closed - exception running rules: " + e.getMessage() + "\n");
         controlPanel.removeAllPanels();
       } // try
     } // ActionPerformed

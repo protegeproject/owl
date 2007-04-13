@@ -15,21 +15,21 @@ import java.io.Serializable;
  **
  ** This class operates in three phases:
  **
- ** Configuration Phase: In this phase the structure of the result is defined. This phase opened by a call to the configure() method (which
+ ** (1) Configuration Phase: In this phase the structure of the result is defined. This phase opened by a call to the configure() method (which
  ** will also clear any existing data). In this phase the columns are defined; aggregation or ordering is also specified in this phase. This
  ** phase is closed by a call to the configured() method.
  **
- ** Preparation Phase: In this phase data are added to the result. This phase is implicitly opened by the call to the configured() method. It
+ ** (2) Preparation Phase: In this phase data are added to the result. This phase is implicitly opened by the call to the configured() method. It
  ** is closed by a call to the prepared() method.
  **
  ** The interface ResultGenerator defines the calls used in these two phases.
  **
- ** Processing Phase: In this phase data may be retrieved from the result. This phase is implicitly opened by the call to the closed()
+ ** (3) Processing Phase: In this phase data may be retrieved from the result. This phase is implicitly opened by the call to the closed()
  ** method.
  **
  ** The interface Result defines the calls used in the processing phase.
  **
- ** An example configuration and data generation would be as follows:
+ ** An example configuration and data generation is:
  **
  ** Result result = new ResultImpl("TestResult");
  **
@@ -138,12 +138,13 @@ public class ResultImpl implements ResultGenerator, Result
     throwExceptionIfAlreadyConfigured();
 
     if (orderedColumnIndex < 0 || orderedColumnIndex >= allColumnNames.size()) 
-      throw new ResultException("ordered column index " + orderedColumnIndex + "out of range");
+      throw new ResultException("ordered column index " + orderedColumnIndex + " out of range");
 
-    if (isOrdered && (isAscending != ascending)) 
+    if (isOrdered && (isAscending != ascending)) {
       if (isAscending) 
         throw new ResultException("attempt to order column '" + allColumnNames.get(orderedColumnIndex) + "' ascending when descending was previously selected");
       else throw new ResultException("attempt to order column '" + allColumnNames.get(orderedColumnIndex) + "' descending when ascending was previously selected");
+    } // if
 
     isOrdered = true;
     isAscending = ascending;
@@ -163,7 +164,7 @@ public class ResultImpl implements ResultGenerator, Result
   {
     throwExceptionIfAlreadyConfigured();
 
-    // We will already have checked that all ordered columns or selected or aggregated.
+    // We will already have checked that all ordered columns are selected or aggregated
 
     if (containsOneOf(selectedColumnIndexes, aggregateColumnIndexes.keySet()))
       throw new InvalidQueryException("aggregate columns cannot also be selected columns");
@@ -173,7 +174,7 @@ public class ResultImpl implements ResultGenerator, Result
     isConfigured = true;
   } // configured
 
-  // Methods used to retrieve result structure after result has been configured.
+  // Methods used to retrieve the result structure after the result has been configured
 
   public void setIsDistinct() { isDistinct = true; }
 
@@ -206,7 +207,7 @@ public class ResultImpl implements ResultGenerator, Result
     else return allColumnNames.get(columnIndex);
   } // getColumnName
 
-  // Methods used to add data after result has been configured.
+  // Methods used to add data after result has been configured
 
   public void openRow() throws ResultException
   {
@@ -251,13 +252,13 @@ public class ResultImpl implements ResultGenerator, Result
     isPrepared = true;
     if (getNumberOfRows() > 0) rowIndex = 0;
 
-    if (isOrdered) rows = orderBy(rows, allColumnNames, orderByColumnIndexes, isAscending);
-
-    if (hasAggregates) rows = aggregate(rows, allColumnNames, aggregateColumnIndexes); // Aggregation implies killing duplicate rows.
+    if (hasAggregates) rows = aggregate(rows, allColumnNames, aggregateColumnIndexes); // Aggregation implies killing duplicate rows
     else if (isDistinct) rows = distinct(rows);
+
+    if (isOrdered) rows = orderBy(rows, allColumnNames, orderByColumnIndexes, isAscending);
   } // prepared
 
-  // Methods used to retrieve data after result has been prepared.
+  // Methods used to retrieve data after result has been prepared
 
   public int getNumberOfRows() throws ResultException
   { 
@@ -291,7 +292,7 @@ public class ResultImpl implements ResultGenerator, Result
   {
     throwExceptionIfNotConfigured(); throwExceptionIfNotPrepared(); throwExceptionIfAtEndOfResult();
 
-    return (List)rows.get(rowIndex);
+    return (List<ResultValue>)rows.get(rowIndex);
   } // getRow
 
   public ResultValue getValue(String columnName) throws ResultException
@@ -440,7 +441,7 @@ public class ResultImpl implements ResultGenerator, Result
     return result;
   } // toString      
   
-  // Phase verification exception throwing methods.
+  // Phase verification exception throwing methods
   
   private void throwExceptionIfNotConfigured() throws ResultException
   {

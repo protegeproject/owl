@@ -31,7 +31,7 @@ public class SWRLQueryControlPanel extends JPanel
 
     this.bridge = bridge;
 
-    resultPanels = new HashMap();
+    resultPanels = new HashMap<String, SWRLQueryResultPanel>();
 
     setLayout(new BorderLayout());
 
@@ -73,7 +73,7 @@ public class SWRLQueryControlPanel extends JPanel
   public void removeAllPanels()
   {
     for (SWRLQueryResultPanel resultPanel : resultPanels.values()) ((JTabbedPane)getParent()).remove(resultPanel);
-    resultPanels = new HashMap();
+    resultPanels = new HashMap<String, SWRLQueryResultPanel>();
   } // if
 
   private JButton createButton(String text, String toolTipText, ActionListener listener)
@@ -164,7 +164,8 @@ public class SWRLQueryControlPanel extends JPanel
             } // if
           } // if
 	} catch (SWRLRuleEngineBridgeException e) {
-          textArea.append("Exception running rules '" + ruleName + "': " + e.getMessage() + ".\n");
+          if (ruleName.equals("")) textArea.append("Exception running rules:" + e.getMessage() + "\n");
+          else textArea.append("Exception when running rule '" + ruleName + "': " + e.getMessage() + "\n");
 	} // try
       } // if
     } // ActionPerformed
