@@ -10,37 +10,38 @@
   xml:base="http://swrl.stanford.edu/ontologies/built-ins/3.3/abox.owl">
   <owl:Ontology rdf:about=""/>
   <swrl:Builtin rdf:ID="hasProperty">
+    <swrlb:maxArgs rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+    >2</swrlb:maxArgs>
     <swrlb:args rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
     >2</swrlb:args>
     <swrlb:minArgs rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
     >2</swrlb:minArgs>
-    <swrlb:maxArgs rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
-    >2</swrlb:maxArgs>
   </swrl:Builtin>
   <swrl:Builtin rdf:ID="hasIndividuals">
-    <swrlb:args rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
-    >1</swrlb:args>
-    <swrlb:maxArgs rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
-    >1</swrlb:maxArgs>
     <swrlb:minArgs rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
     >1</swrlb:minArgs>
-  </swrl:Builtin>
-  <swrl:Builtin rdf:ID="hasNumberOfIndividuals">
-    <swrlb:minArgs rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
-    >2</swrlb:minArgs>
     <swrlb:maxArgs rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
-    >2</swrlb:maxArgs>
+    >1</swrlb:maxArgs>
     <swrlb:args rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
-    >2</swrlb:args>
+    >1</swrlb:args>
   </swrl:Builtin>
-  <swrl:Builtin rdf:ID="hasNumberOfProperties">
+  <swrl:Builtin rdf:ID="hasNumberOfPropertyValues">
+    <swrlb:maxArgs rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+    >3</swrlb:maxArgs>
     <swrlb:args rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
     >3</swrlb:args>
     <swrlb:minArgs rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
     >3</swrlb:minArgs>
+  </swrl:Builtin>
+  <swrl:Builtin rdf:ID="isIndividual"/>
+  <swrl:Builtin rdf:ID="hasNumberOfIndividuals">
+    <swrlb:args rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+    >2</swrlb:args>
     <swrlb:maxArgs rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
-    >3</swrlb:maxArgs>
+    >2</swrlb:maxArgs>
+    <swrlb:minArgs rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+    >2</swrlb:minArgs>
   </swrl:Builtin>
 </rdf:RDF>
 
-<!-- Created with Protege (with OWL Plugin 3.3, Build 385)  http://protege.stanford.edu -->
+<!-- Created with Protege (with OWL Plugin 3.3, Build 394)  http://protege.stanford.edu -->
