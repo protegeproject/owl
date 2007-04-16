@@ -114,6 +114,11 @@ public class SWRLOWLUtil
     return (OWLIndividual)cls.getInstances(true).iterator().next();
   } // getIndividual
 
+  public static Set<OWLIndividual> getAllIndividuals(OWLModel owlModel) throws SWRLOWLUtilException
+  {
+    return new HashSet<OWLIndividual>(owlModel.getOWLIndividuals());
+  } // getAllIndividuals
+
   public static Set<OWLIndividual> getIndividuals(OWLModel owlModel, String className) throws SWRLOWLUtilException
   {
     OWLNamedClass cls = getClass(owlModel, className);
@@ -462,6 +467,38 @@ public class SWRLOWLUtil
 
     return individual.getPropertyValues(property).size();
   } // getNumberOfPropertyValues
+
+  public static Set<OWLProperty> getPropertiesOfIndividual(OWLModel owlModel, String individualName) 
+    throws SWRLOWLUtilException
+  { 
+    OWLIndividual individual = getIndividual(owlModel, individualName, true);
+    HashSet<OWLProperty> properties = new HashSet<OWLProperty>();
+    Collection rdfProperties = individual.getRDFProperties();
+
+    Iterator iterator = rdfProperties.iterator();
+    while (iterator.hasNext()) {
+      RDFProperty property = (RDFProperty)iterator.next();
+      if (property instanceof OWLProperty) properties.add((OWLProperty)property);
+    } // while
+
+    return properties;
+  } // getPropertiesOfIndividual
+
+  public static Set<OWLProperty> getPossiblePropertiesOfIndividual(OWLModel owlModel, String individualName) 
+    throws SWRLOWLUtilException
+  { 
+    OWLIndividual individual = getIndividual(owlModel, individualName, true);
+    HashSet<OWLProperty> properties = new HashSet<OWLProperty>();
+    Collection rdfProperties = individual.getPossibleRDFProperties();
+
+    Iterator iterator = rdfProperties.iterator();
+    while (iterator.hasNext()) {
+      RDFProperty property = (RDFProperty)iterator.next();
+      if (property instanceof OWLProperty) properties.add((OWLProperty)property);
+    } // while
+
+    return properties;
+  } // getPossiblePropertiesOfIndividual
 
   public static int getNumberOfPropertyValues(OWLModel owlModel, String individualName, 
                                               String propertyName, Object propertyValue, boolean mustExist) 

@@ -28,25 +28,63 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
   public void reset() {}
 
   /**
+   ** Determine if a single argument is an OWL individual. If the argument is unbound, bind it to all OWL individuals in an ontology.
+   */
+  public boolean isIndividual(List<Argument> arguments) throws BuiltInException
+  {
+    SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(1, arguments.size());
+    boolean isUnboundArgument = SWRLBuiltInUtil.isUnboundArgument(0, arguments);   
+    boolean result = false;
+
+    try {
+      if (isUnboundArgument) {
+        MultiArgument multiArgument = new MultiArgument();
+        for (OWLIndividual individual : SWRLOWLUtil.getAllIndividuals(getInvokingBridge().getOWLModel()))
+          multiArgument.addArgument(new IndividualInfo(individual.getName()));
+        arguments.set(0, multiArgument);
+        result = true;
+      } else {
+        String individualName = SWRLBuiltInUtil.getArgumentAsAnIndividualName(0, arguments);
+        result = SWRLOWLUtil.isIndividual(getInvokingBridge().getOWLModel(), individualName, false);
+      } // if
+    } catch (SWRLOWLUtilException e) {
+      throw new BuiltInException(e.getMessage());
+    } // try
+
+    return result;
+  } // isIndividual
+
+  /**
    ** Returns true if the individual named by the first argument has at least one value for the property named by the second parameter. If
-   ** a third argument is supplied, match only property values that are equal to that argument.
+   ** the second argument in unbound, bind it to all the properties that have at least one value for this individual. If the second argument
+   ** is bound, an optional third argument can be supplied supplied to restrict the result to property values that are equal to the value
+   ** specified by this argument.
    */
   public boolean hasProperty(List<Argument> arguments) throws BuiltInException
   {
-    String individualName, propertyName;
+    String individualName, propertyName = null;
     Object propertyValue = null;
     boolean propertyValueSupplied = (arguments.size() == 3);
-    boolean result = false;
+    boolean isUnboundPropertyArgument, result = false;
 
     SWRLBuiltInUtil.checkNumberOfArgumentsInRange(2, 3, arguments.size());
-    SWRLBuiltInUtil.checkThatArgumentIsAnIndividual(0, arguments);
-    SWRLBuiltInUtil.checkThatArgumentIsAProperty(1, arguments);
-
     individualName = SWRLBuiltInUtil.getArgumentAsAnIndividualName(0, arguments);
-    propertyName = SWRLBuiltInUtil.getArgumentAsAPropertyName(1, arguments);
+
+    isUnboundPropertyArgument = SWRLBuiltInUtil.isUnboundArgument(1, arguments);   
+
+    if (isUnboundPropertyArgument && propertyValueSupplied) 
+      throw new BuiltInException("no value argument permitted with unbound property argument");
+
+    if (!isUnboundPropertyArgument) propertyName = SWRLBuiltInUtil.getArgumentAsAPropertyName(1, arguments);
 
     try {
-      if (propertyValueSupplied) {
+      if (isUnboundPropertyArgument) {
+        MultiArgument multiArgument = new MultiArgument();
+        for (OWLProperty property : SWRLOWLUtil.getPropertiesOfIndividual(getInvokingBridge().getOWLModel(), individualName))
+          multiArgument.addArgument(new PropertyInfo(property.getName()));
+        arguments.set(1, multiArgument);
+        result = true;        
+      } else if (propertyValueSupplied) {
         propertyValue = SWRLBuiltInUtil.getArgumentAsAPropertyValue(2, arguments);
         result = SWRLOWLUtil.getNumberOfPropertyValues(getInvokingBridge().getOWLModel(), individualName, propertyName, propertyValue, true) != 0;
       } else
@@ -54,6 +92,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
     } catch (SWRLOWLUtilException e) {
       throw new BuiltInException(e.getMessage());
     } // try
+
     return result;
   } // hasProperty
 
@@ -63,7 +102,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
    ** argument. If the first argument is unbound when the built-in is called, it is bound to the actual number of property values for the
    ** property for the specified individual.
    */
-  public boolean hasNumberOfProperties(List<Argument> arguments) throws BuiltInException
+  public boolean hasNumberOfPropertyValues(List<Argument> arguments) throws BuiltInException
   {
     String individualName, propertyName;
     Object propertyValue = null;
@@ -95,7 +134,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
       throw new BuiltInException(e.getMessage());
     } // try
     return result;
-  } // hasNumberOfProperties
+  } // hasNumberOfPropertyValues
 
   /**
    ** Returns true if the class named by the first argument has at least one individual.
