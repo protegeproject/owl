@@ -3,3 +3,22 @@ Initial Revision = 1866
 Merged up to revision = 1956  But I will  need another merge...
 Merge to revision = 1963
 Merge to revision = 2041
+
+Starting the merge process:
+     svn cp $q/branches/nci_june15 $q/branches/merged  - revision 5935
+        (q=http://smi-protege/repos/protege/owl)
+        I can account for the revisions (I also removed the old
+        version of merged.common) - nobody else has done anything.
+     
+     svn rm $q/branches/merged/$swrl - revision 5936
+     svn cp $q/trunk/$swrl $q/branches/merged/$swrl - revision 5937
+        (swrl=src/edu/stanford/smi/protegex/owl/swrl)
+
+     Check out the merged branch
+
+     The nci_june15 branch was merged to trunk@2041 so this is where I will
+     start the diffs.
+
+     svn merge $q/trunk@2041 $q/trunk@5937 .
+
+There was no other svn activity during this process.
