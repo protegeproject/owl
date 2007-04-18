@@ -4,8 +4,6 @@
 <!-- Protege-OWL build file for ant (build.xml)                       -->
 <!-- ================================================================ -->
 
-<!-- Send any questions, comments, fixes, etc. to "randy AT randykerber.com"
-  -->
 
 <project name="Protege-OWL" default="usage" basedir=".">
 
@@ -30,6 +28,11 @@
     <property name = "deprecation" value = "off"/>
     <property name = "jarfile" value = "${dist}/${pluginName}.jar"/>
 
+
+    <property name = "debug" value = "on"/>
+    <property name = "source" value = "1.5"/>
+    <property name = "deprecation" value = "off"/>
+
     <property name = "manchesterParseDir"
               value = "${src}/edu/stanford/smi/protegex/owl/model/classparser/manchester"/>
     <property name = "dlParseDir"
@@ -38,6 +41,7 @@
               value = "${src}/edu/stanford/smi/protegex/owl/model/classparser/compact"/>
 
     <property name = "junit" value = "./junit"/>
+
 
 
 	<!-- =================================================================== -->
@@ -121,14 +125,15 @@
     <!-- Creates the timestamp                                            -->
     <!-- ================================================================ -->
 
-
-    <target name="init.time" depends="checkProtegeLibsAndReport">
+  <target name="init.time" depends="checkProtegeLibsAndReport">
 	  <tstamp>
          <format property="build.time" pattern="MM/dd/yyyy hh:mm aa"/>
       </tstamp>
     </target>
 
-    <target name="init" depends="init.time,checkProtegeLibs">
+
+    <target name="init" depends="init.time">
+        <mkdir dir="${build}"/>
         <mkdir dir="${classes}"/>
         <mkdir dir="${dist}"/>
         <mkdir dir="${plugins}"/>
@@ -203,12 +208,14 @@
     <!-- Compile the source code                                          -->
     <!-- ================================================================ -->
 
-    <target name="compile" depends="init" description="compile the Java files" >
+    <target name="compile" depends="init,checkProtegeLibsAndReport" 
+            description="compile the Java files" >
         <javac srcdir="${src}" destdir="${classes}"        	
                deprecation = "${deprecation}"
                debug = "${debug}"
 	       source = "${source}">
             <classpath refid="classpath.compile"/>
+            <compilerarg value="-Xlint:all"/>
         </javac>
         <copy todir="${classes}/edu/stanford/smi/protegex/owl/jena" 
               file="${src}/edu/stanford/smi/protegex/owl/jena/OWL.pprj"/>
@@ -302,7 +309,6 @@
         </zip>
     </target>
 
-
     <target name = "install" depends = "plugin.zip">
       <fail message = "set the protege.home variable to do an install">
          <condition>
@@ -324,21 +330,21 @@
             <pathelement location = "${jarfile}"/>
          </classpath>
       </javac>
+      <copy todir = "${build}/junit/projects">
+        <fileset dir="${junit}/projects"/>
+      </copy>
+      <copy file = "junit.properties" todir = "${build}"/>
    </target>
 
   <target name = "checkJunitConfiguration" depends = "junit-compile">
-    <java classname = "edu.stanford.smi.protegex.owl.junit_config.CheckConfiguration">
+    <java classname = "edu.stanford.smi.protegex.owl.junit_config.CheckConfiguration"
+          dir="${build}" fork="true">
       <classpath>
         <pathelement location="${classes}"/>
         <pathelement location = "${protege.lib}"/>
         <pathelement location = "${lib}/junit.jar"/>
       </classpath>
     </java>
-    <copy todir = "${build}/junit/projects">
-       <fileset dir="${junit}/projects"/>
-    </copy>
-    <copy file = "junit.properties" todir = "${build}"/>
-
   </target>
 
    <!--
@@ -392,6 +398,5 @@
         </batchtest>
      </junit>
    </target>
-
 
 </project>
