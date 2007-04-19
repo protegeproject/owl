@@ -34,11 +34,11 @@ public interface RDFSLiteral extends Comparable, RDFObject, Visitable {
      */
     RDFSDatatype getDatatype();
 
-
     double getDouble();
 
-
     float getFloat();
+
+    short getShort();
 
 
     /**
