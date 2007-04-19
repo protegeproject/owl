@@ -110,12 +110,12 @@ public class OWLFrameStore extends FrameStoreAdapter {
     /**
      * A Hashtable from Java restriction Class objects to the responsible RestrictionUpdaters
      */
-    private Hashtable class2Updater = new Hashtable();
+    private Hashtable<Class, AbstractRestrictionUpdater> class2Updater = new Hashtable<Class, AbstractRestrictionUpdater>();
 
     /**
      * A Hashtable from Facets to the responsible RestrictionUpdaters
      */
-    private Hashtable facet2Updater = new Hashtable();
+    private Hashtable<Facet, AbstractRestrictionUpdater> facet2Updater = new Hashtable<Facet, AbstractRestrictionUpdater>();
 
     /**
      * A flag to prevent infinite recursion when a superclass has been added or removed
@@ -233,25 +233,6 @@ public class OWLFrameStore extends FrameStoreAdapter {
         }
     }
 
-    private void copyFacetValuesIntoOWLNamedClass(RDFSNamedClass cls, OWLRestriction restriction) {
-        Class clazz = restriction.getClass();
-        RestrictionUpdater ru = (RestrictionUpdater) class2Updater.get(clazz);
-        if (ru != null) {
-            facetHandlingBlocked = true;
-            ru.copyFacetValuesIntoNamedClass(cls, restriction);
-            facetHandlingBlocked = false;
-        }
-    }
-
-
-    private void copyFacetValuesIntoOWLNamedClass(OWLRestriction restriction) {
-        if (restriction.getSubclasses(false).size() == 1) {
-            RDFSNamedClass namedCls = (RDFSNamedClass) restriction.getSubclasses(false).toArray()[0];
-            copyFacetValuesIntoOWLNamedClass(namedCls, restriction);
-        }
-    }
-
-
     public void copyFacetValuesIntoNamedClses() {
         boolean oldUndo = owlModel.isUndoEnabled();
         owlModel.setUndoEnabled(false);
@@ -262,9 +243,26 @@ public class OWLFrameStore extends FrameStoreAdapter {
             }
         }
         owlModel.setUndoEnabled(oldUndo);
-    }
-
-
+      }
+      
+      private void copyFacetValuesIntoOWLNamedClass(OWLRestriction restriction) {
+        if (restriction.getSubclasses(false).size() == 1) {
+            RDFSNamedClass namedCls = (RDFSNamedClass) restriction.getSubclasses(false).toArray()[0];
+            copyFacetValuesIntoOWLNamedClass(namedCls, restriction);
+        }
+      }
+      
+      private void copyFacetValuesIntoOWLNamedClass(RDFSNamedClass cls, OWLRestriction restriction) {
+        Class clazz = restriction.getClass();
+        RestrictionUpdater ru = (RestrictionUpdater) class2Updater.get(clazz);
+        if (ru != null) {
+            facetHandlingBlocked = true;
+            ru.copyFacetValuesIntoNamedClass(cls, restriction);
+            facetHandlingBlocked = false;
+        }
+      }
+      
+      
     public Cls createCls(FrameID id, String name, Collection directTypes, Collection directSuperclasses, boolean loadDefaults) {
         Cls cls = super.createCls(id, name, directTypes, directSuperclasses, loadDefaults);
         if (cls instanceof OWLNamedClass && cls.isEditable()) {
@@ -726,7 +724,51 @@ public class OWLFrameStore extends FrameStoreAdapter {
         return null;
     }
 
+ 
 
+    /**
+     * @deprecated This method was moved into AbstractOWLModel
+     */     
+    public List getLiteralValues(final List values) {
+        List result = new ArrayList();
+        for (Iterator it = values.iterator(); it.hasNext();) {
+            Object o = it.next();
+            if (o instanceof RDFSLiteral) {
+                result.add(o);
+            }
+            else {
+                result.add(owlModel.createRDFSLiteral(o));
+            }
+        }
+        return result;
+    }
+
+    /*public List getDirectOwnSlotValues(Frame frame, Slot slot) {
+       List result = super.getDirectOwnSlotValues(frame, slot);
+       return flattenList(result);
+   }
+
+
+   public Collection getOwnSlotValues(Frame frame, Slot slot) {
+       Collection results = super.getOwnSlotValues(frame, slot);
+       return flattenList(results);
+   }
+
+
+   private List flattenList(Collection results) {
+       if(results.size() == 1) {
+           Object value = results.iterator().next();
+           if(value instanceof RDFList) {
+               return ((RDFList)value).getValues();
+           }
+       }
+       if(results instanceof List) {
+           return (List) results;
+       }
+       else {
+           return new ArrayList(results);
+       }
+   } */
 
     public Set getClsesWithMatchingBrowserText(String value, Collection superclasses, int maxMatches) {
         Set results = new HashSet();
@@ -916,6 +958,7 @@ public class OWLFrameStore extends FrameStoreAdapter {
     public void setDirectOwnSlotValues(Frame frame, Slot slot, Collection values) {
 
         final int valueCount = values.size();
+
         if (!allowDuplicateOwnSlotValues &&
             valueCount > 1 &&
             valueCount != new HashSet(values).size()) {
