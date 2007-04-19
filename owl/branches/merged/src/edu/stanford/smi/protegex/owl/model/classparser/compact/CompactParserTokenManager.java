@@ -1030,14 +1030,12 @@ StringBuffer image;
 int jjimageLen;
 int lengthOfMatch;
 protected char curChar;
-public CompactParserTokenManager(JavaCharStream stream)
-{
+public CompactParserTokenManager(JavaCharStream stream){
    if (JavaCharStream.staticFlag)
       throw new Error("ERROR: Cannot use a static CharStream class with a non-static lexical analyzer.");
    input_stream = stream;
 }
-public CompactParserTokenManager(JavaCharStream stream, int lexState)
-{
+public CompactParserTokenManager(JavaCharStream stream, int lexState){
    this(stream);
    SwitchTo(lexState);
 }
@@ -1237,9 +1235,8 @@ void MoreLexicalActions()
    {
       case 12 :
          if (image == null)
-              image = new StringBuffer(new String(input_stream.GetSuffix(jjimageLen)));
-         else
-            image.append(input_stream.GetSuffix(jjimageLen));
+            image = new StringBuffer();
+         image.append(input_stream.GetSuffix(jjimageLen));
          jjimageLen = 0;
                    input_stream.backup(1);
          break;
@@ -1253,8 +1250,7 @@ void TokenLexicalActions(Token matchedToken)
    {
       case 23 :
         if (image == null)
-            image = new StringBuffer(new String(input_stream.GetSuffix(jjimageLen + (lengthOfMatch = jjmatchedPos + 1))));
-         else
+            image = new StringBuffer();
             image.append(input_stream.GetSuffix(jjimageLen + (lengthOfMatch = jjmatchedPos + 1)));
     if(CompactParser.getDatatypeNameChecker().isDatatypeName(matchedToken.image)) {
                 matchedToken.kind = DATATYPEID;
