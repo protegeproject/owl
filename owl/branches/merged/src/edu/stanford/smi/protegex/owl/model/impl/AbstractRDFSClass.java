@@ -1,17 +1,39 @@
 package edu.stanford.smi.protegex.owl.model.impl;
 
-import edu.stanford.smi.protege.model.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.logging.Level;
+
+import edu.stanford.smi.protege.model.BrowserSlotPattern;
+import edu.stanford.smi.protege.model.Cls;
+import edu.stanford.smi.protege.model.DefaultCls;
+import edu.stanford.smi.protege.model.Facet;
+import edu.stanford.smi.protege.model.Frame;
+import edu.stanford.smi.protege.model.FrameID;
+import edu.stanford.smi.protege.model.KnowledgeBase;
+import edu.stanford.smi.protege.model.Model;
+import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protege.util.Log;
-import edu.stanford.smi.protegex.owl.model.*;
+import edu.stanford.smi.protegex.owl.model.OWLAnonymousClass;
+import edu.stanford.smi.protegex.owl.model.OWLIntersectionClass;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
+import edu.stanford.smi.protegex.owl.model.ProtegeNames;
+import edu.stanford.smi.protegex.owl.model.RDFProperty;
+import edu.stanford.smi.protegex.owl.model.RDFResource;
+import edu.stanford.smi.protegex.owl.model.RDFSClass;
+import edu.stanford.smi.protegex.owl.model.RDFSLiteral;
+import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
 import edu.stanford.smi.protegex.owl.model.event.ClassAdapter;
 import edu.stanford.smi.protegex.owl.model.event.ClassListener;
 import edu.stanford.smi.protegex.owl.model.event.PropertyValueListener;
 import edu.stanford.smi.protegex.owl.model.event.ResourceListener;
 import edu.stanford.smi.protegex.owl.model.util.ResourceCopier;
 import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
-
-import java.util.*;
-import java.util.logging.Level;
+import edu.stanford.smi.protegex.owl.util.OWLBrowserSlotPattern;
 
 /**
  * A basic implementation of the RDFSClass interface that provides support for disjoint classes.
@@ -751,7 +773,7 @@ public abstract class AbstractRDFSClass extends DefaultCls implements RDFSClass 
     public void setProtegeTypes(Collection types) {
         OWLUtil.setProtegeTypes(this, types);
     }
-    
+
     @Override
     public String toString() {
         StringBuffer buffer = new StringBuffer();       
@@ -763,4 +785,23 @@ public abstract class AbstractRDFSClass extends DefaultCls implements RDFSClass 
         buffer.append(")");
         return buffer.toString();    	
     }
+
+    
+    public void setDirectBrowserSlotPattern(BrowserSlotPattern slotPattern) {
+    	if ((slotPattern!= null) && !(slotPattern instanceof OWLBrowserSlotPattern))
+    		slotPattern = new OWLBrowserSlotPattern(slotPattern.getElements());
+    	
+        getDefaultKnowledgeBase().setDirectBrowserSlotPattern(this, slotPattern);
+    }
+
+    @Override
+    public OWLBrowserSlotPattern getBrowserSlotPattern() {
+    	BrowserSlotPattern pattern = super.getBrowserSlotPattern(); 
+    	
+    	if (pattern instanceof OWLBrowserSlotPattern)
+    		return (OWLBrowserSlotPattern) pattern;
+    	    	
+    	return new OWLBrowserSlotPattern(pattern);    		
+    }
+
 }
