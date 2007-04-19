@@ -9,15 +9,22 @@ import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.util.FileUtils;
 
 import edu.stanford.smi.protege.Application;
+
 import edu.stanford.smi.protege.model.KnowledgeBase;
 import edu.stanford.smi.protege.model.KnowledgeBaseSourcesEditor;
 import edu.stanford.smi.protege.model.Project;
+import edu.stanford.smi.protege.model.framestore.FrameStore;
+import edu.stanford.smi.protege.model.framestore.NarrowFrameStore;
+import edu.stanford.smi.protege.server.ClientInitializerKnowledgeBaseFactory;
 import edu.stanford.smi.protege.util.ApplicationProperties;
 import edu.stanford.smi.protege.util.Log;
+import edu.stanford.smi.protege.util.MessageError;
 import edu.stanford.smi.protege.util.PropertyList;
 import edu.stanford.smi.protege.util.URIUtilities;
 import edu.stanford.smi.protegex.owl.database.OWLDatabaseModel;
+import edu.stanford.smi.protegex.owl.database.triplestore.DatabaseTripleStoreModel;
 import edu.stanford.smi.protegex.owl.jena.parser.ProtegeOWLParser;
+import edu.stanford.smi.protegex.owl.jena.triplestore.JenaTripleStoreModel;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.impl.OWLNamespaceManager;
 import edu.stanford.smi.protegex.owl.repository.util.RepositoryFileManager;
@@ -32,7 +39,7 @@ import edu.stanford.smi.protegex.owl.ui.resourceselection.ResourceSelectionActio
  *
  * @author Holger Knublauch  <holger@knublauch.com>
  */
-public class JenaKnowledgeBaseFactory implements OWLKnowledgeBaseFactory {
+public class JenaKnowledgeBaseFactory implements OWLKnowledgeBaseFactory, ClientInitializerKnowledgeBaseFactory {
 
     public static final String JENA_SYNCHRONIZED = JenaKnowledgeBaseFactory.class.getName() + ".synchronized";
 
@@ -164,19 +171,21 @@ public class JenaKnowledgeBaseFactory implements OWLKnowledgeBaseFactory {
         if (kb instanceof JenaOWLModel) {
 	        final JenaOWLModel owlModel = (JenaOWLModel) kb;
             final URI absoluteURI = getFileURI(sources, owlModel.getProject());
+
+            JenaKnowledgeBaseFactory.setOWLFileName(sources, absoluteURI.toString());
+                        
 		    loadRepositories(owlModel, absoluteURI);
 			owlModel.load(absoluteURI, language, errors);
-
         }
         else {
-            errors.add("This plugin can currently only load OWL files into OWL projects");
+        	String message = "This plugin can currently only load OWL files into OWL projects";
+        	errors.add(new MessageError(message));
+        	Log.getLogger().severe(message);
         }
     }
 
 
-    private void loadRepositories(OWLModel owlModel, URI uri) {
-        String owlFilePath = uri.getPath();
-        File f = new File(owlFilePath);
+    private void loadRepositories(OWLModel owlModel, URI uri) {    	
         // Load any project repositories
         RepositoryFileManager man = new RepositoryFileManager(owlModel);
         man.loadProjectRepositories();
@@ -244,5 +253,18 @@ public class JenaKnowledgeBaseFactory implements OWLKnowledgeBaseFactory {
             filePath += ".owl";
         }
         sources.setString(OWL_FILE_URI_PROPERTY, filePath);
+    }
+    
+    // TODO - does this really work?  Should we do something with the systemNfs argument?
+    // Try a file mode owl project on the server.
+    public void initializeClientKnowledgeBase(FrameStore fs, 
+    		                                  NarrowFrameStore systemNfs,
+                                              NarrowFrameStore nfs,
+                                              KnowledgeBase kb) { 
+      if (kb instanceof OWLModel) {
+        JenaOWLModel owlModel = (JenaOWLModel) kb;
+        JenaTripleStoreModel tsm = new JenaTripleStoreModel(owlModel,nfs);
+        owlModel.setTripleStoreModel(tsm);
+      }
     }
 }
