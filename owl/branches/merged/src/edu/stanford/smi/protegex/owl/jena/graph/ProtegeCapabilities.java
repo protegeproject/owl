@@ -46,4 +46,9 @@ public class ProtegeCapabilities implements Capabilities {
     public boolean sizeAccurate() {
         return false;
     }
+
+
+    public boolean handlesLiteralTyping() {
+      return false;
+    }
 }
