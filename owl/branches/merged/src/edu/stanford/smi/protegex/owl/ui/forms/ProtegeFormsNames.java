@@ -18,6 +18,23 @@ public class ProtegeFormsNames {
     /** <p>The namespace of the vocabulary as a string</p> */
     public static final String NS = "http://www.owl-ontologies.com/forms/protege.owl#";
     
+    public static final String NAME = "http://www.owl-ontologies.com/forms/protege.owl";
+    
+    public static final String PROTEGE_FORMS_ONTOLOGY = "http://www.owl-ontologies.com/forms/protege.owl";
+    
+    public static final String ABSOLUTE_FORMS_ONTOLOGY = "http://www.owl-ontologies.com/forms/absolute.owl";
+    
+    public static final String FORMS_ONTOLOGY = "http://www.owl-ontologies.com/forms/forms.owl";
+    
+    public static final String FORMS_RELATIVE_DIR = "forms";
+    
+    public static final String PROTEGE_FORMS_FILENAME = "protegeForms.owl";
+    
+    public static final String ABSOLUTE_FORMS_FILENAME = "absolute.owl";
+    
+    public static final String FORMS_FILENAME = "forms.owl";
+    
+    
     /** <p>The namespace of the vocabulary as a string</p>
      *  @see #NS */
     public static String getURI() {return NS;}
@@ -26,7 +43,7 @@ public class ProtegeFormsNames {
     public static final Resource NAMESPACE = m_model.createResource( NS );
     
     public static final DatatypeProperty javaClassName = m_model.createDatatypeProperty( "http://www.owl-ontologies.com/forms/protege.owl#javaClassName" );
-    
+        
     public static final OntClass HeaderWidget = m_model.createClass( "http://www.owl-ontologies.com/forms/protege.owl#HeaderWidget" );
     
     public static final OntClass SingleResourceWidget = m_model.createClass( "http://www.owl-ontologies.com/forms/protege.owl#SingleResourceWidget" );

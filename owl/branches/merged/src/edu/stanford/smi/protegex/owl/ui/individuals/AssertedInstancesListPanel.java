@@ -40,6 +40,8 @@ public class AssertedInstancesListPanel extends SelectableContainer implements D
 
     private AllowableAction createAction;
 
+    private AllowableAction createAnonymousAction;
+    
     private AllowableAction copyAction;
 
     private AllowableAction deleteAction;
@@ -178,6 +180,7 @@ public class AssertedInstancesListPanel extends SelectableContainer implements D
         c.addHeaderButton(createCreateAction());
         c.addHeaderButton(createCopyAction());
         c.addHeaderButton(createDeleteAction());
+        c.addHeaderButton(createCreateAnonymousAction());
     }
 
 
@@ -237,6 +240,26 @@ public class AssertedInstancesListPanel extends SelectableContainer implements D
         return createAction;
     }
 
+    
+    protected Action createCreateAnonymousAction() {
+        createAnonymousAction = new CreateAction("Create anonymous instance", OWLIcons.getCreateIndividualIcon(OWLIcons.RDF_ANON_INDIVIDUAL)) {
+            public void onCreate() {
+                if (!classes.isEmpty()) {
+                	String name = owlModel.getNextAnonymousResourceName();
+                    Instance instance = owlModel.createInstance(name, classes);
+                    if (instance instanceof Cls) {
+                        Cls newCls = (Cls) instance;
+                        if (newCls.getDirectSuperclassCount() == 0) {
+                            newCls.addDirectSuperclass(owlModel.getOWLThingClass());
+                        }
+                    }
+                    list.setSelectedValue(instance, true);
+                }
+            }
+        };
+        return createAnonymousAction;
+    }
+    
 
     protected Action createConfigureAction() {
         return new ConfigureAction() {
@@ -326,7 +349,7 @@ public class AssertedInstancesListPanel extends SelectableContainer implements D
 
 
     protected Action createSetDisplaySlotMultipleAction() {
-        return new AbstractAction("Multple Slots...") {
+        return new AbstractAction("Multiple Slots...") {
             public void actionPerformed(ActionEvent event) {
                 Cls cls = getSoleAllowedCls();
                 BrowserSlotPattern currentPattern = getSoleAllowedCls().getBrowserSlotPattern();
@@ -536,8 +559,10 @@ public class AssertedInstancesListPanel extends SelectableContainer implements D
 
 
     private void updateButtons() {
-        Cls cls = (Cls) CollectionUtilities.getFirstItem(classes);
+        Cls cls = (Cls) CollectionUtilities.getFirstItem(classes);        
         createAction.setEnabled(cls == null ? false : cls.isConcrete());
+        createAnonymousAction.setEnabled(cls == null ? false : cls.isConcrete());
+        
         Instance instance = (Instance) getSoleSelection();
         boolean allowed = instance != null && instance instanceof SimpleInstance;
         copyAction.setAllowed(allowed);

@@ -9,9 +9,12 @@ import edu.stanford.smi.protegex.owl.model.RDFResource;
 public abstract class AddablePropertyValuesComponent extends AbstractPropertyValuesComponent {
 
     protected AddablePropertyValuesComponent(RDFProperty predicate) {
-        super(predicate);
+        this(predicate, null);
     }
 
+    protected AddablePropertyValuesComponent(RDFProperty predicate, String label) {
+    	super(predicate, label);
+    }
 
     public void addObject(RDFResource resource, boolean symmetric) {
         getSubject().addPropertyValue(getPredicate(), resource);

@@ -22,7 +22,7 @@ public class SingleResourceWidget extends AbstractPropertyValuesWidget {
 
 
     protected PropertyValuesComponent createComponent(RDFProperty predicate) {
-        return new SingleResourceComponent(predicate);
+        return new SingleResourceComponent(predicate, getLabel());
     }
 
 

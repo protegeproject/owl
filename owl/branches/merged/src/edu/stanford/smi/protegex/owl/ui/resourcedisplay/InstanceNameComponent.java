@@ -5,6 +5,7 @@ import edu.stanford.smi.protege.event.FrameEvent;
 import edu.stanford.smi.protege.event.FrameListener;
 import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.Instance;
+import edu.stanford.smi.protege.ui.SpringUtilities;
 import edu.stanford.smi.protege.util.ComponentFactory;
 import edu.stanford.smi.protege.util.Disposable;
 
@@ -39,12 +40,15 @@ public class InstanceNameComponent extends JPanel implements Disposable {
         leftLabel = ComponentFactory.createLabel();
         rightLabel = ComponentFactory.createLabel();
         textField = new InstanceNameEditor();
-
-        FlowLayout layout = new FlowLayout(FlowLayout.LEFT, 2, 2);
+        
+        SpringLayout layout = new SpringLayout();
         setLayout(layout);
+
         add(leftLabel);
         add(textField);
         add(rightLabel);
+        
+        SpringUtilities.makeCompactGrid(this, 1, 3, 0, 0, 5,0);
     }
 
 

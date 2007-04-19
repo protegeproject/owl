@@ -20,7 +20,7 @@ public class SingleLiteralWidget extends AbstractPropertyValuesWidget {
 
 
     protected PropertyValuesComponent createComponent(RDFProperty predicate) {
-        return new SingleLiteralComponent(predicate);
+        return new SingleLiteralComponent(predicate, getLabel());
     }
 
 

@@ -5,12 +5,18 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
+
 import java.net.NoRouteToHostException;
 import java.sql.SQLException;
+
+import java.util.ArrayList;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 
@@ -25,22 +31,32 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JToolBar;
+import javax.swing.JTree;
 import javax.swing.text.JTextComponent;
+import javax.swing.tree.TreePath;
 
 import edu.stanford.smi.protege.action.Copy;
 import edu.stanford.smi.protege.action.Cut;
 import edu.stanford.smi.protege.action.InsertUnicodeCharacterAction;
 import edu.stanford.smi.protege.action.Paste;
+import edu.stanford.smi.protege.model.BrowserSlotPattern;
 import edu.stanford.smi.protege.model.Cls;
+import edu.stanford.smi.protege.model.Frame;
+import edu.stanford.smi.protege.model.KnowledgeBase;
+import edu.stanford.smi.protege.model.Model;
+import edu.stanford.smi.protege.model.ModelUtilities;
 import edu.stanford.smi.protege.model.Project;
 import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protege.ui.Finder;
 import edu.stanford.smi.protege.ui.ProjectView;
 import edu.stanford.smi.protege.util.CollectionUtilities;
 import edu.stanford.smi.protege.util.ComponentFactory;
+import edu.stanford.smi.protege.util.ComponentUtilities;
 import edu.stanford.smi.protege.util.ExtensionFilter;
+import edu.stanford.smi.protege.util.LazyTreeNode;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protege.util.PopupMenuMouseListener;
+import edu.stanford.smi.protege.util.SelectableTree;
 import edu.stanford.smi.protege.util.StringUtilities;
 import edu.stanford.smi.protege.widget.ClsesTab;
 import edu.stanford.smi.protege.widget.FormWidget;
@@ -60,6 +76,7 @@ import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
 import edu.stanford.smi.protegex.owl.ui.actions.AbstractOWLModelAction;
 import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
 import edu.stanford.smi.protegex.owl.ui.results.HostResourceDisplay;
+import edu.stanford.smi.protegex.owl.util.OWLBrowserSlotPattern;
 
 /**
  * A collection of global utilities for OWL user interface components.
@@ -306,16 +323,17 @@ public class OWLUI {
     }
     
     private static void handleDefaultException(OWLModel owlModel, Throwable t) {
-        Log.getLogger().log(Level.SEVERE, "Exception caught", t);
-        ProtegeUI.getModalDialogFactory().
-            showErrorMessageDialog(owlModel,
-                                   "Internal Error: " + t +
-                                   "\nPlease see Java console for details, and possibly report" +
-                                   "\nthis on our OWL mailing lists." +
-                                   "\nhttp://protege.stanford.edu/community/lists.html" +
-                                   "\nYour ontology may now no longer be in a consistent state, and" +
-                                   "\nyou may want to save this version under a different name.",
-                                   "Internal Protege-OWL Error");
+    	Log.getLogger().log(Level.SEVERE, "Exception caught", t);
+    	ProtegeUI.getModalDialogFactory().
+
+    	showErrorMessageDialog(owlModel,
+    			"Internal Error: " + t +
+    			"\nPlease see Java console for details, and possibly report" +
+    			"\nthis on our OWL mailing lists." +
+    			"\nhttp://protege.stanford.edu/community/lists.html" +
+    			"\nYour ontology may now no longer be in a consistent state, and" +
+    			"\nyou may want to save this version under a different name.",
+    	"Internal Protege-OWL Error");
     }
 
 
@@ -748,4 +766,181 @@ public class OWLUI {
     public static boolean isUnsuitableTab(String className) {
         return unsuitableTabs.contains(className);
     }
+ 
+    /**
+     * Computes all paths from a resource to the root node (owl:Thing) by navigating the direct-superclasses slot.
+     * @param resource - the resource    
+     * @return a collection of the paths from the resource to the root (owl:Thing), which contain instances of RDFResource
+     */
+    public static Collection getPathsToRoot(RDFResource resource) {
+    	return getPathsToRoot(resource, null);
+    }
+
+    /**
+     * Computes all paths from a resource to the root node (owl:Thing) by navigating on the navigationSlot.
+     * @param resource - the resource
+     * @param navigationSlot - the navigation slot (if null, the direct superclasses slot is used)     * 
+     * @return a collection of the paths from the resource to the root (owl:Thing), which contain instances of RDFResource
+     */
+    public static Collection getPathsToRoot(RDFResource resource, Slot navigationSlot) {
+    	return getPathsToRoot(resource, navigationSlot, null);
+    }
+    
+    /**
+     * Computes all paths from a resource to the root node (owl:Thing) by navigating on the navigationSlot.
+     * @param resource - the resource
+     * @param navigationSlot - the navigation slot (if null, the direct superclasses slot is used)
+     * @param resourceClass - a filter for the returned paths - only elements of this type are returned in the path
+     * @return a collection of the paths from the resource to the root (owl:Thing), which contain instances of resourceClass
+     */
+    public static Collection getPathsToRoot(RDFResource resource, Slot navigationSlot, Class resourceClass) {        
+    	if (navigationSlot == null)
+    		navigationSlot = ((KnowledgeBase)resource.getOWLModel()).getSlot(Model.Slot.DIRECT_SUPERCLASSES);
+  
+    	if (resourceClass == null)
+    		resourceClass = RDFResource.class;
+    	
+    	Collection results = new ArrayList();
+        getPathsToRoot(resource, navigationSlot, resourceClass, new LinkedList(), results);
+        return results;
+    }
+
+    private static void getPathsToRoot(RDFResource resource, Slot navigationSlot, Class resourceClass, List path, Collection pathLists) {    	
+        path.add(0, resource);
+        
+        Cls rootCls = resource.getOWLModel().getOWLThingClass();        
+        Collection parents = ((Frame) resource).getDirectOwnSlotValues(navigationSlot);
+        
+        for (Iterator it = parents.iterator(); it.hasNext();) {
+            Frame parent = (Frame) it.next();           
+           
+            if (parent.equals(rootCls)) {
+            	List copyPathList = new ArrayList<RDFResource>(path);
+                copyPathList.add(0, parent);
+                pathLists.add(copyPathList);               
+            } else if (!path.contains(parent)) {
+                    if (ModelUtilities.isVisibleInGUI(parent) && resourceClass.isInstance(parent)) {                    	
+                    	List copyPath = new ArrayList(path);
+                        getPathsToRoot((RDFResource) parent, navigationSlot, resourceClass, copyPath, pathLists);
+                    }
+            }
+        }
+    }
+
+    /**
+     * Selects an RDF resource in a selectable class-subclass tree.
+     * @param tree - a SelectableTree
+     * @param resource - the resources that will be selected    
+     * @return true - if node was selected, false otherwise.
+     */
+    public static boolean setSelectedNodeInTree(SelectableTree tree, RDFResource resource) {
+    	return setSelectedNodeInTree(tree, resource, null);
+    }
+    
+    /**
+     * Selects an RDF resource in a selectable tree.
+     * @param tree - a SelectableTree
+     * @param resource - the resources that will be selected
+     * @param navigationSlot - the upwards navigation slot of the tree (if null, then the direct superclasses slot is used)    
+     * @return true - if node was selected, false otherwise.
+     */   
+    public static boolean setSelectedNodeInTree(SelectableTree tree, RDFResource resource, Slot navigationSlot) {
+    	return setSelectedNodeInTree(tree, resource, navigationSlot, null);
+    }
+    
+    /**
+     * Selects an RDF resource in a selectable tree.
+     * @param tree - a SelectableTree
+     * @param resource - the resources that will be selected
+     * @param navigationSlot - the upwards navigation slot of the tree (if null, then the direct superclasses slot is used)
+     * @param resourceClass - a filter for the classes in the searched class path (if null, then the RDFResource.class is used)
+     * @return true - if node was selected, false otherwise.
+     */
+    public static boolean setSelectedNodeInTree(SelectableTree tree, RDFResource resource, Slot navigationSlot, Class resourceClass) {    	
+    	boolean selected = false;
+    	
+    	if (resourceClass == null)
+    		resourceClass = RDFResource.class;
+    	
+        if (!tree.getSelection().contains(resource)) {        	
+            if (resourceClass.isInstance(resource)) {
+                Collection paths = getPathsToRoot(resource);
+              
+                TreePath[] array = new TreePath[paths.size()];
+                int i = 0;
+                for (Iterator it = paths.iterator(); it.hasNext(); i++) {
+                    java.util.List list = (java.util.List) it.next();
+                    TreePath path = getTreePath(tree, list);
+                    if (path != null)
+                    	array[i] = path;                    
+                }
+                
+               if (array.length > 0) {
+            	   tree.scrollPathToVisible(array[0]);
+            	   tree.updateUI();
+            	   selected = true;
+               }
+                
+               tree.setSelectionPaths(array);
+            }
+            else {
+            	//TODO: (TT) Fix later, perhaps.
+                Collection path = ModelUtilities.getPathToRoot((Cls)resource);
+                if (path.size() > 0)
+                	selected = true;
+                ComponentUtilities.setSelectedObjectPath(tree, path);
+            }
+        }
+        
+        return selected;
+    }
+    
+    
+    public static TreePath getTreePath(JTree tree, Collection objectPath) {
+        Collection nodePath = new LinkedList();
+        LazyTreeNode node = (LazyTreeNode) tree.getModel().getRoot();
+        nodePath.add(node);
+        Iterator i = objectPath.iterator();
+        while (i.hasNext()) {
+            Object userObject = i.next();
+            node = ComponentUtilities.getChildNode(node, userObject);
+            if (node == null) {
+               // Log.getLogger().warning("Child node not found: " + userObject);
+                return null;
+            }
+            nodePath.add(node);
+        }
+        return new TreePath(nodePath.toArray());
+    }
+
+    
+    public static void fixBrowserSlotPatterns(Project project) {
+    	Collection customizedClasses = project.getClsesWithDirectBrowserSlots();
+
+    	for (Iterator iter = customizedClasses.iterator(); iter.hasNext();) {
+			Cls cls = (Cls) iter.next();
+			fixBrowserSlotPattern(project, cls);			
+		}
+	}
+    
+    public static OWLBrowserSlotPattern fixBrowserSlotPattern(Project project, Cls cls) {
+    	if (cls == null)
+    		return null;
+    	
+    	BrowserSlotPattern browserPattern = project.getBrowserSlotPattern(cls);    	
+    	if (browserPattern == null)
+    		return null;
+    	
+    	OWLBrowserSlotPattern owlBrowswePattern = null;
+    	
+        if (browserPattern instanceof OWLBrowserSlotPattern)
+        	owlBrowswePattern = (OWLBrowserSlotPattern) browserPattern;
+        else {
+        	owlBrowswePattern = new OWLBrowserSlotPattern(browserPattern);
+        	cls.setDirectBrowserSlotPattern(owlBrowswePattern);
+        }
+        
+        return owlBrowswePattern;       
+    }
+    
 }
