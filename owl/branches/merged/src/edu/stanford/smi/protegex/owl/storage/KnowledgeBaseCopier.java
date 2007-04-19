@@ -55,7 +55,9 @@ public class KnowledgeBaseCopier {
         createFacets();
         createSlots();
         createInstances();
+        // TODO TT: This is causing infinite looping in certain cases. Check what's going on
         createFacetOverrides();
+        // TODO TT: This is causing infinite looping in certain cases. Check what's going on
         setOwnSlotValues();
         for (Iterator it = todoSlots.keySet().iterator(); it.hasNext();) {
             Slot oldSlot = (Slot) it.next();
@@ -216,7 +218,8 @@ public class KnowledgeBaseCopier {
     }
 
 
-    protected Cls getNewCls(Cls oldCls) {
+    protected Cls getNewCls(Cls oldCls) {    	
+    	boolean instanceOfItself = false;
         Cls newCls = (Cls) frameMap.get(oldCls);
         if (newCls == null) {
             newCls = target.getCls(oldCls.getName());
@@ -225,7 +228,13 @@ public class KnowledgeBaseCopier {
             newCls = target.getCls(newCls.getName()); // Re-get it if Java type has changed
         }
         if (newCls == null) {
-            Cls newType = getNewCls(oldCls.getDirectType());
+        	Cls newType = target.getCls(OWLNames.Cls.NAMED_CLASS);
+        	if (oldCls.equals(oldCls.getDirectType())) {
+        		System.err.println("Warning: Class " + oldCls + " is an instance of itself.");
+        		instanceOfItself = true;
+        	} else {
+        		newType = getNewCls(oldCls.getDirectType());
+        	}
             if (newType == null) {
                 System.err.println("ERROR: No type for " + oldCls);
                 newType = oldCls.getKnowledgeBase().getCls(OWLNames.Cls.NAMED_CLASS);
@@ -234,6 +243,9 @@ public class KnowledgeBaseCopier {
             newCls = createCls(oldCls.getName(), newType);
             registerFrame(oldCls, newCls);
             addExtraDirectTypes(oldCls, newCls);
+            //if instance of itself, then add itself as a type
+            if (instanceOfItself)
+            	newCls.addDirectType(newCls);
             for (Iterator it = oldCls.getDirectSuperclasses().iterator(); it.hasNext();) {
                 Cls oldSuperCls = (Cls) it.next();
                 Cls newSuperCls = getNewCls(oldSuperCls);
