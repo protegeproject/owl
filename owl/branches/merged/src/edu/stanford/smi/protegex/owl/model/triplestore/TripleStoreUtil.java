@@ -64,7 +64,7 @@ public class TripleStoreUtil {
                 return null;
             }
         }
-        else { // there is only one triple store but it contains multiple ontologies.
+        else { // there is only one triple store but it contains multiple ontology instances
             return owlModel.getDefaultOWLOntology();
         }
     }
