@@ -28,7 +28,6 @@ import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.DefaultKnowledgeBase;
 import edu.stanford.smi.protege.model.Facet;
 import edu.stanford.smi.protege.model.Frame;
-import edu.stanford.smi.protege.model.FrameFactory;
 import edu.stanford.smi.protege.model.FrameID;
 import edu.stanford.smi.protege.model.FrameNameValidator;
 import edu.stanford.smi.protege.model.Instance;
@@ -44,9 +43,9 @@ import edu.stanford.smi.protege.model.framestore.FrameStore;
 import edu.stanford.smi.protege.model.framestore.FrameStoreManager;
 import edu.stanford.smi.protege.model.framestore.MergingNarrowFrameStore;
 import edu.stanford.smi.protege.model.framestore.NarrowFrameStore;
-import edu.stanford.smi.protege.model.framestore._FrameStorePackage_Test;
 import edu.stanford.smi.protege.util.CollectionUtilities;
 import edu.stanford.smi.protege.util.Log;
+import edu.stanford.smi.protege.util.URIUtilities;
 import edu.stanford.smi.protegex.owl.jena.graph.JenaModelFactory;
 import edu.stanford.smi.protegex.owl.model.DefaultTaskManager;
 import edu.stanford.smi.protegex.owl.model.NamespaceManager;
@@ -105,7 +104,6 @@ import edu.stanford.smi.protegex.owl.model.event.ResourceAdapter;
 import edu.stanford.smi.protegex.owl.model.event.ResourceListener;
 import edu.stanford.smi.protegex.owl.model.factory.OWLJavaFactory;
 import edu.stanford.smi.protegex.owl.model.framestore.OWLDeleteSimplificationFrameStore;
-import edu.stanford.smi.protegex.owl.model.framestore.OWLFrameFactoryInvocationHandler;
 import edu.stanford.smi.protegex.owl.model.framestore.OWLFrameStore;
 import edu.stanford.smi.protegex.owl.model.framestore.OWLFrameStoreManager;
 import edu.stanford.smi.protegex.owl.model.project.DefaultOWLProject;
@@ -125,7 +123,10 @@ import edu.stanford.smi.protegex.owl.repository.util.RepositoryFileManager;
 import edu.stanford.smi.protegex.owl.testing.OWLTest;
 import edu.stanford.smi.protegex.owl.testing.OWLTestLibrary;
 import edu.stanford.smi.protegex.owl.ui.widget.OWLFormWidget;
+import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
 import edu.stanford.smi.protegex.owl.ui.widget.OWLWidgetMapper;
+import edu.stanford.smi.protegex.owl.util.OWLBrowserSlotPattern;
+
 
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
@@ -470,6 +471,9 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
         }
         this.namespaceManager = namespaceManager;
         namespaceManager.addNamespaceManagerListener(this);
+        
+        boolean eventEnabled = setGenerateEventsEnabled(false);
+        
         setGenerateDeletingFrameEventsEnabled(true);
 
         // resetSystemFrames();
@@ -547,6 +551,9 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
         if (super.getProject() != null) {
             setProject(super.getProject());
         }
+        
+        setGenerateEventsEnabled(eventEnabled);
+        
     }
 
 
@@ -614,19 +621,8 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     public List asRDFSLiterals(Collection values) {
         List result = new LinkedList();
         for (Iterator it = values.iterator(); it.hasNext();) {
-            Object o = it.next();
-            if (o instanceof String) {
-                final String str = (String) o;
-                if (DefaultRDFSLiteral.isRawValue(str)) {
-                    result.add(new DefaultRDFSLiteral(this, str));
-                }
-                else {
-                    result.add(createRDFSLiteral(o));
-                }
-            }
-            else {
-                result.add(o);
-            }
+        	Object o = it.next();
+        	result.add(asRDFObject(o));  
         }
         return result;
     }
@@ -715,7 +711,8 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
      * Creates the OWL metamodel.
      */
     public void bootstrap() {
-
+    	boolean eventsEnabled = setGenerateEventsEnabled(false);
+    	
         nameSlot = getSlot(Model.Slot.NAME);
         Cls standardCls = getCls(Model.Cls.STANDARD_CLASS);
 
@@ -932,6 +929,8 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
             !RDFNames.ClsID.PROPERTY.equals(rdfPropertyClass.getFrameID())) {
             throw new RuntimeException("Fatal Metaclass Error: FrameIDs mismatch.  Perhaps a database rebuild required?");
         }
+        
+        setGenerateEventsEnabled(eventsEnabled);
     }
 
 
@@ -1183,9 +1182,14 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
      * This method must be called after a file has been loaded.
      */
     public void copyFacetValuesIntoNamedClses() {
-    		if (getOWLFrameStore() != null) {
-    			getOWLFrameStore().copyFacetValuesIntoNamedClses();
-    		}
+      /*
+       * This is a little awkward - but I guess if there is no OWL Frame Store then we shouldn't
+       * be doing this.  This happens in server client mode - maybe it should be turned off on the 
+       * clients.
+       */
+      if (owlFrameStore != null) {
+    	  owlFrameStore.copyFacetValuesIntoNamedClses();
+      }
     }
 
 
@@ -1897,8 +1901,8 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     public Cls getAnonymousRootCls() {
         return anonymousRootCls;
     }
-
-
+    
+ 
     public synchronized String getBrowserText(Instance instance) {
     	
     	if (!(instance instanceof RDFResource))
@@ -1917,62 +1921,31 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
        	if (directType == null)
         	return getMissingTypeString(instance);
-                	
-         BrowserSlotPattern slotPattern = getProject().getBrowserSlotPattern(directType);
-         
+          
+       	BrowserSlotPattern slotPattern = null;
+       	       	
+       	try {
+       		slotPattern = (OWLBrowserSlotPattern) getProject().getBrowserSlotPattern(directType);
+       	} catch (ClassCastException e) {
+       		try {
+			slotPattern = OWLUI.fixBrowserSlotPattern(getProject(), directType);			
+			//Log.getLogger().warning("Non-OWL browser slot for: " + directType + " ... Convert it to OWLBrowserSlotPattern");
+       		} catch (Exception ex) {
+       			Log.getLogger().log(Level.WARNING, "Error at getting browser slot pattern for " + instance, ex);
+       		}
+		} catch(Exception e) {
+       		slotPattern = getProject().getBrowserSlotPattern(directType);
+       		//Log.getLogger().warning("Non-OWL browser slot for: " + directType);
+       	}
+                        
          if (slotPattern == null)
         	 return getDisplaySlotNotSetString(instance);
-                  
-         final Slot slot = slotPattern.getFirstSlot();
-         
-         if (slotPattern.getElements().size() == 1 && slot != null && !slot.equals(nameSlot) && slot.getValueType() == ValueType.STRING) {
-        	 
-        	 Collection values = null;
-             if (slot instanceof RDFProperty)
-            	 values = ((RDFResource) instance).getPropertyValues((RDFProperty) slot);
-             else 
-            	 values = instance.getOwnSlotValues(slot);
-                     
-             String langText = getLangBrowserText(values, getDefaultLanguage());
-             
-             if (langText != null)
-            	 return langText;
-             
-             return getDisplaySlotPatternValueNotSetString(instance, slotPattern); 
-         }
          
          return slotPattern.getBrowserText(instance);         
 	}
-    
-    
-    private String getLangBrowserText(Collection values, String defaultLanguage) {
-    	String browserText = null;
-    	
-    	for (Iterator iter = values.iterator(); iter.hasNext();) {
-			Object value = iter.next();
-			
-			if (defaultLanguage == null) { 
-				if (value instanceof String)
-					return (String) value;
-				else if (value instanceof RDFSLiteral && ((RDFSLiteral)value).getLanguage() == null) {
-					String text = ((RDFSLiteral)value).getString();
-					if (text != null)
-						return text;
-				}				
-			} else { //default language is not null
-				if (value instanceof RDFSLiteral && ((RDFSLiteral)value).getLanguage().equals(defaultLanguage)) {
-					String text = ((RDFSLiteral)value).getString();
-					if (text != null)
-						return text;
-				} else if (value instanceof String)
-					browserText = (String) value; //in this way it will always remember the last one if several
-			}		
-		}    	
-		return browserText;
-	}
-	
 
-
+    
+ 
     public Collection getChangedInferredClasses() {
         return getClsesWithClassificationStatus(OWLNames.CLASSIFICATION_STATUS_CONSISTENT_AND_CHANGED);
     }
@@ -2045,16 +2018,14 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     }
 
 
-    public String getDefaultLanguage() {
-        if (isProtegeMetaOntologyImported()) {
-            RDFProperty metaSlot = getRDFProperty(ProtegeNames.getDefaultLanguageSlotName());
-            if (metaSlot != null) {
-                OWLOntology oi = getDefaultOWLOntology();
-                if (oi != null) {
-                    String value = (String) oi.getPropertyValue(metaSlot);
-                    if (value != null && value.length() > 0) {
-                        return value;
-                    }
+    public String getDefaultLanguage() {        
+        RDFProperty metaSlot = getRDFProperty(ProtegeNames.getDefaultLanguageSlotName());
+        if (metaSlot != null) {
+            OWLOntology oi = getDefaultOWLOntology();
+            if (oi != null) {
+                String value = (String) oi.getPropertyValue(metaSlot);
+                if (value != null && value.length() > 0) {
+                    return value;
                 }
             }
         }
@@ -2430,7 +2401,6 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
         return owlFrameStore;
     }
 
-
     public RDFSNamedClass getOWLFunctionalPropertyClass() {
         return (RDFSNamedClass) owlFunctionalPropertyClass;
     }
@@ -2647,13 +2617,8 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     }
 
 
-    public OWLDatatypeProperty getProtegeReadOnlyProperty() {
-        if (isProtegeMetaOntologyImported()) {
-            return (OWLDatatypeProperty) getSlot(ProtegeNames.getReadOnlySlotName());
-        }
-        else {
-            return null;
-        }
+    public OWLDatatypeProperty getProtegeReadOnlyProperty() {   
+    	return (OWLDatatypeProperty) getSlot(ProtegeNames.getReadOnlySlotName());   
     }
 
 
@@ -2784,13 +2749,11 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
 
     public RDFProperty getProtegeSubclassesDisjointProperty() {
-        if (isProtegeMetaOntologyImported()) {
-            if (protegeSubclassesDisjointProperty == null) {
-                protegeSubclassesDisjointProperty = getSlot(ProtegeNames.getSubclassesDisjointSlotName());
-            }
-            return (RDFProperty) protegeSubclassesDisjointProperty;
+    	//TT: is it safe to cache this value? What if an import is added/removed? 
+    	if (protegeSubclassesDisjointProperty == null) {
+    		protegeSubclassesDisjointProperty = getSlot(ProtegeNames.getSubclassesDisjointSlotName());
         }
-        return null;
+        return (RDFProperty) protegeSubclassesDisjointProperty;
     }
 
 
@@ -2843,19 +2806,17 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     }
 
 
-    public String[] getUsedLanguages() {
-        if (isProtegeMetaOntologyImported()) {
-            RDFProperty metaSlot = getRDFProperty(ProtegeNames.getUsedLanguagesSlotName());
-            if (metaSlot != null) {
-                OWLOntology oi = getDefaultOWLOntology();
-                if (oi != null) {
-                    Collection values = oi.getPropertyValues(metaSlot);
-                    if (values.size() > 0) {
-                        return (String[]) values.toArray(new String[0]);
-                    }
+    public String[] getUsedLanguages() {      
+        RDFProperty metaSlot = getRDFProperty(ProtegeNames.getUsedLanguagesSlotName());
+        if (metaSlot != null) {
+            OWLOntology oi = getDefaultOWLOntology();
+            if (oi != null) {
+                Collection values = oi.getPropertyValues(metaSlot);
+                if (values.size() > 0) {
+                    return (String[]) values.toArray(new String[0]);
                 }
             }
-        }
+        }      
         return DEFAULT_USED_LANGUAGES;
     }
 
@@ -3154,14 +3115,30 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
      * The problem with this fix is that the stored result is not updated when the protege 
      * ontology is imported.
      */
-    private Boolean protegeMetaOntologyImported = null;
+     /*
+      * TT: The fix should be easy, but it needs to be tested. We can keep the flag from below 
+      * and when we import in the ImportHelper, we set this flag, if necessary.
+      * We should do this fix soon.
+      */
+    		
+    // private Boolean protegeMetaOntologyImported = null;
     
+   
     public boolean isProtegeMetaOntologyImported() {
-      if (protegeMetaOntologyImported == null) {
+    	//TT: this should be reimplemented in a more efficient way
+    	//Should use a listener on the ontology imports and a class field
+    	
+    	//TT: Nice implementation, but I don't know how efficient it is.    	
+    	/*
+        for (Iterator iter = getAllImports().iterator(); iter.hasNext();) {
+			String uriImport = (String) iter.next();
+			if (uriImport.equals(ProtegeNames.FILE))	
+				return true;
+		}
+    	return false;
+    	*/
         String slotName = ProtegeNames.getSubclassesDisjointSlotName();
-        protegeMetaOntologyImported = Boolean.valueOf(getSlot(slotName) != null);
-      }
-      return protegeMetaOntologyImported;
+        return getSlot(slotName) != null;
     }
 
 
@@ -3303,14 +3280,16 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
             project.setPrettyPrintSlotWidgetLabels(false);
 
-            Slot nameSlot = getSlot(Model.Slot.NAME);
-            getRootCls().setDirectBrowserSlotPattern(new BrowserSlotPattern(nameSlot));
+            Slot nameSlot = getSlot(Model.Slot.NAME);                       
+            //getRootCls().setDirectBrowserSlotPattern(new BrowserSlotPattern(nameSlot));
+          
+           	getRootCls().setDirectBrowserSlotPattern(new OWLBrowserSlotPattern(nameSlot));
 
             project.setDefaultClsWidgetClassName(OWLFormWidget.class.getName());
 
             project.setWidgetMapper(new OWLWidgetMapper(this));
 
-            if (project.isMultiUserServer()) {
+            if (project.isMultiUserClient()) {
                 FrameStoreManager fsm = getFrameStoreManager();
                 fsm.removeFrameStore(getOWLFrameStore());
                 owlFrameStore = null;
@@ -3464,8 +3443,15 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
         }
     }
 
-
+    
     public String getFrameNameForURI(String uri, boolean generatePrefix) {
+    	//TT: this method is wrong!! It needs to be reimplemented
+    	
+    	if (!URIUtilities.isAbsoluteURI(uri)) {
+    		Frame frame = getFrame(uri);
+    		return (frame == null ? null : frame.getName());
+    	}
+    	
         String localName = getLocalNameForURI(uri);
         String namespace = getNamespaceForURI(uri);
         final NamespaceManager nsm = getNamespaceManager();
@@ -3497,6 +3483,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
             prefix = newPrefix;
             // throw new IllegalArgumentException("Unknown prefix for URI " + uri);
         }
+        
         if (localName != null) {
             return prefix + ":" + localName;
         }
@@ -3871,12 +3858,28 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
 
     public Collection getPropertyValueLiterals(RDFResource resource, RDFProperty property) {
-        return OWLUtil.getPropertyValueLiterals(resource, property);
+        final List values = new ArrayList(OWLUtil.getPropertyValues(resource, property, false));
+        if (!values.isEmpty()) {
+            return getValueLiterals(values);
+        }
+        else {
+            return values;
+        }
     }
 
-
-    public List getValueLiterals(OWLModel owlModel, List values) {
-        return OWLUtil.getLiteralValues(owlModel, values);
+    
+    public List getValueLiterals(List values) {
+        List result = new ArrayList();
+        for (Iterator it = values.iterator(); it.hasNext();) {
+            Object o = it.next();
+            if (o instanceof RDFSLiteral) {
+                result.add(o);
+            }
+            else {
+                result.add(createRDFSLiteral(o));
+            }
+        }
+        return result;
     }
 
 
@@ -3934,6 +3937,5 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
       }
       return result;
     }
-    
 
 }
