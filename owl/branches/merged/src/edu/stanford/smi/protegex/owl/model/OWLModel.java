@@ -1014,18 +1014,17 @@ public interface OWLModel extends ProtegeKnowledgeBase, OWLTestManager {
      */
     Collection getOWLOntologyProperties();
 
+    /**
+     * Provides low level access to some internal Protege detail - normally not needed.
+     * 
+     * This call is preferred over getOWLFrameStore() whenever possible.
+     */
+    FrameStore getHeadFrameStore();
 
     /**
      * Provides low level access to some internal Protege detail - normally not needed.
      */
     OWLFrameStore getOWLFrameStore();
-    
-    /*
-     * The head frame store - prefered over getOWLFrameStore when the head is really all
-     * that is wanted.
-     */
-    public FrameStore getHeadFrameStore();
-
 
     /**
      * Gets those Instances in the ontology that are instances of a OWLNamedClass.
