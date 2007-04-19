@@ -1,11 +1,19 @@
 package edu.stanford.smi.protegex.owl.model.triplestore.impl;
 
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+
 import edu.stanford.smi.protege.model.Instance;
 import edu.stanford.smi.protege.model.KnowledgeBase;
 import edu.stanford.smi.protege.model.Model;
 import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protege.model.framestore.MergingNarrowFrameStore;
 import edu.stanford.smi.protege.model.framestore.NarrowFrameStore;
+import edu.stanford.smi.protege.util.CollectionUtilities;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
@@ -16,9 +24,7 @@ import edu.stanford.smi.protegex.owl.model.triplestore.Triple;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreModel;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreUtil;
-
-import java.net.URI;
-import java.util.*;
+import edu.stanford.smi.protegex.owl.util.OWLFrameStoreUtils;
 
 /**
  * A base class for the two default TripleStoreModel implementations.
@@ -54,12 +60,12 @@ public abstract class AbstractTripleStoreModel implements TripleStoreModel {
         }
         OWLJavaFactoryUpdater.run(owlModel, resources);
 
-        owlModel.setGenerateEventsEnabled(false);
+        boolean enabled = owlModel.setGenerateEventsEnabled(false);
         try {
             TripleChangePostProcessor.postProcess(owlModel);
         }
         finally {
-            owlModel.setGenerateEventsEnabled(true);
+            owlModel.setGenerateEventsEnabled(enabled);
         }
         owlModel.flushCache();
     }
@@ -91,7 +97,7 @@ public abstract class AbstractTripleStoreModel implements TripleStoreModel {
 
     public Collection getPropertyValues(RDFResource resource, RDFProperty property) {
         Collection values = mnfs.getValues(resource, property, null, false);
-        return OWLUtil.getConvertedValues(owlModel, values);
+        return OWLFrameStoreUtils.convertValueListToRDFLiterals(owlModel, values);
     }
 
 
@@ -154,6 +160,15 @@ public abstract class AbstractTripleStoreModel implements TripleStoreModel {
 
     public boolean isEditableTripleStore(TripleStore tripleStore) {
         int index = ts.indexOf(tripleStore);
+        
+       	//TT: This has to be checked whether it is working right.
+        if (mnfs == null && ts.size() == 1) {
+            /**
+             * Probably a client talking to a server.
+             */
+            return true;
+        }
+                
         if (index == 0) {
             return false;
         }
@@ -187,6 +202,14 @@ public abstract class AbstractTripleStoreModel implements TripleStoreModel {
 
 
     public Iterator listUserTripleStores() {
+    	//TT: This has to be checked whether it is working right.
+        if (mnfs == null && ts.size() == 1) {
+            /**
+             * Probably a client talking to a server.
+             */
+            return CollectionUtilities.createCollection(ts.get(0)).iterator();
+        }
+        
         Iterator it = getTripleStores().iterator();
         it.next();
         return it;
