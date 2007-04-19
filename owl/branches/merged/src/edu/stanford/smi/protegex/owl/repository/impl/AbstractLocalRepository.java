@@ -153,13 +153,11 @@ public abstract class AbstractLocalRepository implements Repository {
             OntologyNameExtractor extractor = new OntologyNameExtractor(fis, file.toURI().toURL());
             ontologyName = extractor.getOntologyName();
             System.setErr(oldErr);
+        } catch (Exception e) {
+          Log.emptyCatchBlock(e);
         }
-        catch (Throwable t) {
-          Log.emptyCatchBlock(t);
-        }
+
         return ontologyName;
     }
-
-
 }
 
