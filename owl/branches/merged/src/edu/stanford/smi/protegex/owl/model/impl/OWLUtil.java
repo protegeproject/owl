@@ -5,6 +5,10 @@ import edu.stanford.smi.protege.model.framestore.MergingNarrowFrameStore;
 import edu.stanford.smi.protege.model.framestore.NarrowFrameStore;
 import edu.stanford.smi.protege.ui.FrameComparator;
 import edu.stanford.smi.protege.ui.ProjectManager;
+import edu.stanford.smi.protege.util.FileUtilities;
+import edu.stanford.smi.protege.util.Log;
+import edu.stanford.smi.protege.util.URIUtilities;
+import edu.stanford.smi.protegex.owl.jena.JenaKnowledgeBaseFactory;
 import edu.stanford.smi.protegex.owl.model.*;
 import edu.stanford.smi.protegex.owl.model.classparser.OWLClassParser;
 import edu.stanford.smi.protegex.owl.model.event.PropertyValueAdapter;
@@ -16,9 +20,11 @@ import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreModel;
 import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
 import edu.stanford.smi.protegex.owl.ui.profiles.OWLProfiles;
 import edu.stanford.smi.protegex.owl.ui.profiles.ProfilesManager;
+import edu.stanford.smi.protegex.owl.util.OWLFrameStoreUtils;
 
 import java.net.URI;
 import java.util.*;
+import java.util.logging.Level;
 
 /**
  * A collection of static utility methods for OWL classes.
@@ -691,14 +697,19 @@ public class OWLUtil {
     }
 
 
+    @SuppressWarnings("deprecation")
     public static Collection getPropertyValues(RDFResource resource, RDFProperty property, boolean includingSubproperties) {
+        OWLModel owlModel = resource.getOWLModel();
+        Collection values;
         if (includingSubproperties) {
-            return getOwnSlotValuesConverting(resource, property);
+          values = owlModel.getOwnSlotValues(resource, property);
         }
         else {
-            return getDirectOwnSlotValuesConverting( resource, property);
+          values = owlModel.getDirectOwnSlotValues(resource, property);
         }
+        return OWLFrameStoreUtils.convertValueListToRDFLiterals(owlModel, values);
     }
+
 
 
     public static Iterator listPropertyValues(RDFResource resource, RDFProperty property, boolean includingSubproperties) {
@@ -737,6 +748,9 @@ public class OWLUtil {
     }
 
 
+    public static Collection getPropertyValueLiterals(RDFResource resource, RDFProperty property) {
+        return ((AbstractOWLModel) resource.getOWLModel()).getPropertyValueLiterals(resource, property);
+    }
 
 
     public static RDFSLiteral getPropertyValueLiteral(RDFResource resource, RDFProperty property) {
@@ -1009,87 +1023,32 @@ public class OWLUtil {
         return owlOntology;
     }
     
-    public static List getDirectOwnSlotValuesConverting(Frame frame, Slot slot) {
-      OWLModel owlModel = (OWLModel) frame.getKnowledgeBase();
-      final List values = frame.getDirectOwnSlotValues(slot);
-      if (!values.isEmpty() && frame instanceof RDFResource && slot instanceof RDFProperty) {
-          for (Iterator it = values.iterator(); it.hasNext();) {
-              final Object o = it.next();
-              if (o instanceof String && DefaultRDFSLiteral.isRawValue((String) o)) {
-                  return convertInternalFormatToRDFSLiterals(owlModel, values);
-              }
-          }
-      }
-      return values;
+    public static URI getOWLFileURI(OWLModel owlModel) {
+        try {
+        	Project project = owlModel.getProject();
+            String owlURI = JenaKnowledgeBaseFactory.getOWLFilePath(project.getSources());
+            if (owlURI.startsWith("http://")) {
+                return new URI(owlURI);
+            }
+            else {
+                URI projectURI = project.getProjectURI();
+                if (projectURI == null) {
+                    //return new File(owlURI).toURI();
+                    return new URI(owlURI);
+                }
+                else {
+                    URI projectDirURI = project.getProjectDirectoryURI();
+                    URI rel = URIUtilities.relativize(projectDirURI, new URI(owlURI));
+                    URI result = projectURI.resolve(rel);
+                    return result;
+                }
+            }
+        }
+        catch (Exception ex) {
+          Log.getLogger().log(Level.SEVERE, "Exception caught", ex);
+        }
+        return null;
     }
     
     
-    public static Collection getOwnSlotValuesConverting(Frame frame, Slot slot) {
-      OWLModel owlModel = (OWLModel) frame.getKnowledgeBase();
-      Collection values = frame.getOwnSlotValues(slot);
-      return getConvertedValues(owlModel, values);
-  }
-
-    
-    public static Collection getConvertedValues(OWLModel owlModel, Collection values) {
-      if (!values.isEmpty()) {
-          for (Iterator it = values.iterator(); it.hasNext();) {
-              Object o = it.next();
-              if (o instanceof String && DefaultRDFSLiteral.isRawValue((String) o)) {
-                  return convertInternalFormatToRDFSLiterals(owlModel, values);
-              }
-          }
-      }
-      return values;
-  }
-
-    
-    private static List convertInternalFormatToRDFSLiterals(OWLModel owlModel, Collection values) {
-      List result = new LinkedList();
-      for (Iterator it = values.iterator(); it.hasNext();) {
-          Object o = it.next();
-          if (o instanceof String) {
-              final String str = (String) o;
-              if (DefaultRDFSLiteral.isRawValue(str)) {
-                  result.add(new DefaultRDFSLiteral(owlModel, str));
-              }
-              else {
-                  result.add(o);
-              }
-          }
-          else {
-              result.add(o);
-          }
-      }
-      return result;
-  }
-    
-    public static List getLiteralValues(OWLModel owlModel, final List values) {
-      List result = new ArrayList();
-      for (Iterator it = values.iterator(); it.hasNext();) {
-          Object o = it.next();
-          if (o instanceof RDFSLiteral) {
-              result.add(o);
-          }
-          else {
-              result.add(owlModel.createRDFSLiteral(o));
-          }
-      }
-      return result;
-  }
-
-
-
-  public static List getPropertyValueLiterals(RDFResource frame, RDFProperty slot) {
-      OWLModel owlModel = frame.getOWLModel();
-      final List values = new ArrayList(OWLUtil.getPropertyValues(frame, slot, false));
-      if (!values.isEmpty()) {
-          return getLiteralValues(owlModel, values);
-      }
-      else {
-          return values;
-      }
-  }
-
- 
 }
