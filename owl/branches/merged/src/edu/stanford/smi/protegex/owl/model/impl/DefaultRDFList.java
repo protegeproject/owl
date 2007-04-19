@@ -130,7 +130,7 @@ public class DefaultRDFList extends DefaultRDFIndividual implements RDFList {
 
     public List getValueLiterals() {
         List values = getValues();
-        return ((AbstractOWLModel) getOWLModel()).getValueLiterals(getOWLModel(), values);
+        return ((AbstractOWLModel) getOWLModel()).getValueLiterals(values);
     }
 
 
