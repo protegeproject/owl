@@ -19,6 +19,7 @@ import edu.stanford.smi.protege.server.ClientInitializerKnowledgeBaseFactory;
 import edu.stanford.smi.protege.storage.database.DatabaseFrameDb;
 import edu.stanford.smi.protege.storage.database.DatabaseKnowledgeBaseFactory;
 import edu.stanford.smi.protege.util.Log;
+import edu.stanford.smi.protege.util.MessageError;
 import edu.stanford.smi.protege.util.PropertyList;
 import edu.stanford.smi.protegex.owl.database.triplestore.DatabaseTripleStoreModel;
 import edu.stanford.smi.protegex.owl.jena.JenaKnowledgeBaseFactory;
@@ -145,7 +146,9 @@ public class OWLDatabaseKnowledgeBaseFactory extends DatabaseKnowledgeBaseFactor
             }
         }
         else {
-            errors.add("You can only save OWL projects to OWL Database format.");
+        	String message = "You can only save OWL projects to OWL Database format.";
+            errors.add(new MessageError(message));
+            Log.getLogger().severe(message);
         }
     }
 
