@@ -37,7 +37,7 @@ public class ResetInferredHierarchyTask extends AbstractReasonerTask {
         setProgressIndeterminate(true);
 
         OWLModel kb = protegeOWLReasoner.getKnowledgeBase();
-        kb.setGenerateEventsEnabled(false);
+        boolean eventsEnabled = kb.setGenerateEventsEnabled(false);
        
         try {
         	kb.beginTransaction("Reset inferred hierarchy");
@@ -50,7 +50,7 @@ public class ResetInferredHierarchyTask extends AbstractReasonerTask {
         	re.initCause(e);
         	throw re;
         }
-        kb.setGenerateEventsEnabled(true);
+        kb.setGenerateEventsEnabled(eventsEnabled);
 
         setProgressIndeterminate(false);
         setTaskCompleted();

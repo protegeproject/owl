@@ -101,8 +101,8 @@ public class UpdateInferredHierarchyTask extends AbstractReasonerTask {
         setMessage("Updating Protege-OWL...");
 
         td.markStart();
-
-        kb.setGenerateEventsEnabled(false);
+        
+        boolean eventsEnabled = kb.setGenerateEventsEnabled(false);
         try {
 	        kb.beginTransaction("Compute and update inferred class hierarchy");
 	
@@ -161,7 +161,7 @@ public class UpdateInferredHierarchyTask extends AbstractReasonerTask {
         	re.initCause(e);
         	throw re;
 		}
-        kb.setGenerateEventsEnabled(true);
+        kb.setGenerateEventsEnabled(eventsEnabled);
 
         td.markEnd();
 

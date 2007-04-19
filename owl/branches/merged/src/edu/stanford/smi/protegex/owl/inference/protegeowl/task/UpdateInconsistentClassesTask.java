@@ -114,7 +114,7 @@ public class UpdateInconsistentClassesTask extends AbstractReasonerTask {
 
         td.markStart();
 
-        kb.setGenerateEventsEnabled(false);
+        boolean eventsEnabled = kb.setGenerateEventsEnabled(false);        
 
         try {
 	        kb.beginTransaction("Compute and mark inconsistent classes");
@@ -181,7 +181,7 @@ public class UpdateInconsistentClassesTask extends AbstractReasonerTask {
         	re.initCause(e);
         	throw re;
 		}
-        kb.setGenerateEventsEnabled(true);
+        kb.setGenerateEventsEnabled(eventsEnabled);
     }
 
 
