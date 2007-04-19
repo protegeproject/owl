@@ -116,6 +116,11 @@ public class DLSyntaxParser implements DLSyntaxParserConstants {
     case CLASS_ID:
       cls = OWLNamedClass();
       break;
+    case OPENPAR:
+      jj_consume_token(OPENPAR);
+      cls = OWLUnionClass();
+      jj_consume_token(CLOSEPAR);
+      break;
     case 33:
     case 34:
     case 35:
@@ -141,7 +146,11 @@ public class DLSyntaxParser implements DLSyntaxParserConstants {
   final public OWLClass OWLNamedClass() throws ParseException {
     Token t;
     t = jj_consume_token(CLASS_ID);
-        {if (true) return owlModel.getOWLNamedClass(t.image);}
+      try {
+        {if (true) return ParserUtils.getOWLClassFromName(owlModel, t.image);}
+      } catch (AmbiguousNameException ex) {
+        {if (true) throw new ParseException(ex.getMessage());}
+      }
     throw new Error("Missing return statement in function");
   }
 
@@ -496,7 +505,7 @@ public class DLSyntaxParser implements DLSyntaxParserConstants {
     ArrayList individuals = new ArrayList();
     jj_consume_token(39);
     ind = Individual();
-                     individuals.add(ind);
+         individuals.add(ind);
     label_3:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -508,8 +517,8 @@ public class DLSyntaxParser implements DLSyntaxParserConstants {
         break label_3;
       }
       ind = Individual();
+               individuals.add(ind);
     }
-                                                                  individuals.add(ind);
     jj_consume_token(40);
         {if (true) return owlModel.createOWLEnumeratedClass(individuals);}
     throw new Error("Missing return statement in function");
@@ -526,7 +535,12 @@ public class DLSyntaxParser implements DLSyntaxParserConstants {
     Token t;
     OWLDatatypeProperty prop;
     t = jj_consume_token(DATATYPE_PROPERTY_ID);
-                             prop = owlModel.getOWLDatatypeProperty(t.image); {if (true) return prop;}
+      try {
+        prop = ParserUtils.getOWLDatatypePropertyFromName(owlModel, t.image);
+      } catch (AmbiguousNameException ex) {
+        {if (true) throw new ParseException(ex.getMessage());}
+      }
+      {if (true) return prop;}
     throw new Error("Missing return statement in function");
   }
 
@@ -534,14 +548,23 @@ public class DLSyntaxParser implements DLSyntaxParserConstants {
     Token t;
     OWLObjectProperty prop;
     t = jj_consume_token(OBJECT_PROPERTY_ID);
-                           prop = owlModel.getOWLObjectProperty(t.image); {if (true) return prop;}
+       try {
+           prop = ParserUtils.getOWLObjectPropertyFromName(owlModel, t.image);
+       } catch (AmbiguousNameException ex) {
+                  {if (true) throw new ParseException(ex.getMessage());}
+       }
+       {if (true) return prop;}
     throw new Error("Missing return statement in function");
   }
 
   final public OWLIndividual Individual() throws ParseException {
     Token t;
     t = jj_consume_token(INDIVIDUAL_ID);
-                      {if (true) return owlModel.getOWLIndividual(t.image);}
+       try {
+        {if (true) return ParserUtils.getOWLIndividualFromName(owlModel, t.image);}
+       } catch (AmbiguousNameException ex) {
+          {if (true) throw new ParseException(ex.getMessage());}
+       }
     throw new Error("Missing return statement in function");
   }
 
@@ -591,14 +614,17 @@ public class DLSyntaxParser implements DLSyntaxParserConstants {
       jj_la1_1();
    }
    private static void jj_la1_0() {
-      jj_la1_0 = new int[] {0x80000000,0x0,0x2000000,0x0,0xc000000,0xc000000,0x4000000,0x8000000,0x2000040,0x4000000,0x8000000,0x2000040,0x4000000,0x8000000,0x2000040,0x10000000,0x2000040,};
+      jj_la1_0 = new int[] {0x80000000,0x0,0x2000040,0x0,0xc000000,0xc000000,0x4000000,0x8000000,0x2000040,0x4000000,0x8000000,0x2000040,0x4000000,0x8000000,0x2000040,0x10000000,0x2000040,};
    }
    private static void jj_la1_1() {
       jj_la1_1 = new int[] {0x0,0x1,0xfe,0x3e,0x0,0x0,0x0,0x0,0xc0,0x0,0x0,0xc0,0x0,0x0,0xc0,0x0,0xc0,};
    }
 
   public DLSyntaxParser(java.io.InputStream stream) {
-    jj_input_stream = new JavaCharStream(stream, 1, 1);
+     this(stream, null);
+  }
+  public DLSyntaxParser(java.io.InputStream stream, String encoding) {
+    try { jj_input_stream = new JavaCharStream(stream, encoding, 1, 1); } catch(java.io.UnsupportedEncodingException e) { throw new RuntimeException(e); }
     token_source = new DLSyntaxParserTokenManager(jj_input_stream);
     token = new Token();
     jj_ntk = -1;
@@ -607,7 +633,10 @@ public class DLSyntaxParser implements DLSyntaxParserConstants {
   }
 
   public void ReInit(java.io.InputStream stream) {
-    jj_input_stream.ReInit(stream, 1, 1);
+     ReInit(stream, null);
+  }
+  public void ReInit(java.io.InputStream stream, String encoding) {
+    try { jj_input_stream.ReInit(stream, encoding, 1, 1); } catch(java.io.UnsupportedEncodingException e) { throw new RuntimeException(e); }
     token_source.ReInit(jj_input_stream);
     token = new Token();
     jj_ntk = -1;
