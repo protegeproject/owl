@@ -34,7 +34,7 @@ public class RDFXMLWriterOntologyFailedTestCase extends AbstractRDFXMLWriterTest
 
 
     public void testKoalaOntology() {
-        doOntology("http://protege.stanford.edu/plugins/owl/owl-library/koala.owl");
+        doOntology("http://protege.cim3.net/file/pub/ontologies/koala/koala.owl");
     }
 
 
