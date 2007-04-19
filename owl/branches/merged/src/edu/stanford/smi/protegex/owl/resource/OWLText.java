@@ -26,6 +26,10 @@ public final class OWLText {
         }
     }
 
+    public static String getName() {
+        return props.getProperty("name", "Prot\u00E9g\u00E9-OWL");
+    }
+
     public static String getBuildInfo() {
         return "Build " + getBuildNumber();
     }
