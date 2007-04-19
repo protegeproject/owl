@@ -310,6 +310,7 @@ public class OWLJavaFactory extends DefaultFrameFactory {
         }
         final Cls rdfsClsMetaCls = owlModel.getRDFSClassMetaClassCls();
         final Cls namedClsMetaCls = owlModel.getOWLNamedClassMetaClassCls();
+        boolean isRDFSNamedClass = false;
         for (Iterator it = directTypes.iterator(); it.hasNext();) {
             final Instance metaCls = (Instance) it.next();
             final String metaClsName = metaCls.getName();
@@ -323,16 +324,19 @@ public class OWLJavaFactory extends DefaultFrameFactory {
                         return new DefaultOWLNamedClass(owlModel, id); // handle subclasses of OWLNamedClass
                     }
                     if (((Cls) metaCls).hasSuperclass(rdfsClsMetaCls)) {
-                        return new DefaultRDFSNamedClass(owlModel, id); // handle subclasses of RDFSNamedClass
+                      isRDFSNamedClass = true;   // handle subclasses of RDFSNamedClass
                     }
                 }
-                else {
-                    return new DefaultOWLNamedClass(owlModel, id);  // Robust but ugly guess
+                else { // when do I get here exactly?
+                  return new DefaultOWLNamedClass(owlModel, id); // Robust but ugly guess
                 }
             }
             else if (metaCls.equals(owlModel.getOWLDeprecatedClassClass())) {
-                return new DefaultRDFSNamedClass(owlModel, id);
+                isRDFSNamedClass = true;
             }
+        }
+        if (isRDFSNamedClass) {
+          return new DefaultRDFSNamedClass(owlModel, id); 
         }
         return super.createCls(id, directTypes);
     }
@@ -387,6 +391,7 @@ public class OWLJavaFactory extends DefaultFrameFactory {
         final Cls datatypeSlotMetaCls = owlModel.getOWLDatatypePropertyClass();
         final Cls objectSlotMetaCls = owlModel.getOWLObjectPropertyClass();
         final Cls rdfSlotMetaCls = owlModel.getRDFPropertyClass();
+        boolean isRDFProperty = false;
         for (Iterator it = directTypes.iterator(); it.hasNext();) {
             Cls metaCls = (Cls) it.next();
             if (metaCls.equals(datatypeSlotMetaCls) || metaCls.hasSuperclass(datatypeSlotMetaCls)) {
@@ -395,9 +400,12 @@ public class OWLJavaFactory extends DefaultFrameFactory {
             else if (metaCls.equals(objectSlotMetaCls) || metaCls.hasSuperclass(objectSlotMetaCls)) {
                 return new DefaultOWLObjectProperty(owlModel, id);
             }
-            else if (metaCls.equals(rdfSlotMetaCls) || metaCls.hasSuperclass(rdfSlotMetaCls)) {
-                return new DefaultRDFProperty(owlModel, id);
+            else if (!isRDFProperty && (metaCls.equals(rdfSlotMetaCls) || metaCls.hasSuperclass(rdfSlotMetaCls))) {
+                isRDFProperty = true;
             }
+        }
+        if (isRDFProperty) {
+          return new DefaultRDFProperty(owlModel, id);
         }
         return super.createSlot(id, directTypes);
     }
