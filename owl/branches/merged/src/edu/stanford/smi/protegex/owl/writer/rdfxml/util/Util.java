@@ -1,16 +1,28 @@
 package edu.stanford.smi.protegex.owl.writer.rdfxml.util;
 
-import edu.stanford.smi.protegex.owl.model.*;
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
+
+import edu.stanford.smi.protege.model.Slot;
+import edu.stanford.smi.protegex.owl.model.NamespaceManager;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.model.OWLNames;
+import edu.stanford.smi.protegex.owl.model.OWLOntology;
+import edu.stanford.smi.protegex.owl.model.ProtegeNames;
+import edu.stanford.smi.protegex.owl.model.RDFExternalResource;
+import edu.stanford.smi.protegex.owl.model.RDFNames;
+import edu.stanford.smi.protegex.owl.model.RDFProperty;
+import edu.stanford.smi.protegex.owl.model.RDFResource;
+import edu.stanford.smi.protegex.owl.model.RDFSLiteral;
+import edu.stanford.smi.protegex.owl.model.RDFSNames;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 import edu.stanford.smi.protegex.owl.model.visitor.Visitable;
 import edu.stanford.smi.protegex.owl.writer.rdfxml.renderer.RDFResourceRenderer;
 import edu.stanford.smi.protegex.owl.writer.rdfxml.renderer.Vocab;
 import edu.stanford.smi.protegex.owl.writer.xml.XMLWriter;
 import edu.stanford.smi.protegex.owl.writer.xml.XMLWriterNamespaceManager;
-
-import java.io.IOException;
-import java.util.HashSet;
-import java.util.Iterator;
 
 /**
  * User: matthewhorridge<br>
@@ -26,11 +38,11 @@ import java.util.Iterator;
  */
 public class Util {
 
-    private static HashSet excludedPropertyNames;
+    private static Set<String> excludedPropertyNames;
 
 
     static {
-        excludedPropertyNames = new HashSet();
+        excludedPropertyNames = new HashSet<String>();
         // We handle subclassOf in a special way, so
         // that we can also deal with equivalent classes
         // using an equivalent class statement rather
