@@ -27,7 +27,7 @@ class DuplicateSuperclassesPostProcessor {
             removeDuplicateSuperclasses(cls);
         }
         if (owlFrameStore != null) {
-          owlModel.getOWLFrameStore().setSuperclassSynchronizationBlocked(false);
+          owlFrameStore.setSuperclassSynchronizationBlocked(false);
         }
     }
 

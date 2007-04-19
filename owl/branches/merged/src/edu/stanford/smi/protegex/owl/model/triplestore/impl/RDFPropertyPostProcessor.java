@@ -83,7 +83,6 @@ class RDFPropertyPostProcessor {
           oldSuppressUpdateRDFSDomain = owlFrameStore.suppressUpdateRDFSDomain;
           owlModel.getOWLFrameStore().suppressUpdateRDFSDomain = true;
         }
-
         Collection newDirectDomain = new ArrayList();
 
         Collection domains = slot.getDirectOwnSlotValues(owlModel.getRDFSDomainProperty());

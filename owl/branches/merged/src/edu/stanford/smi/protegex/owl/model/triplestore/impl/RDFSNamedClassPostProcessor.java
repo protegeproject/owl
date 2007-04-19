@@ -28,10 +28,9 @@ class RDFSNamedClassPostProcessor {
         this.kb = owlModel;
 
         RDFProperty owlOneOfProperty = owlModel.getOWLOneOfProperty();
-        OWLFrameStore owlFrameStore = owlModel.getOWLFrameStore();
 
-        if (owlFrameStore != null) {
-          owlFrameStore.setSuperclassSynchronizationBlocked(true);
+        if (owlModel.getOWLFrameStore() != null) {
+          owlModel.getOWLFrameStore().setSuperclassSynchronizationBlocked(true);
         }
         Collection clses = owlModel.getUserDefinedRDFSNamedClasses();
         Iterator it = clses.iterator();
@@ -45,8 +44,8 @@ class RDFSNamedClassPostProcessor {
                 updateDirectSuperclasses(cls);
             }
         }
-        if (owlFrameStore != null) {
-          owlFrameStore.setSuperclassSynchronizationBlocked(false);
+        if (owlModel.getOWLFrameStore() != null) {
+          owlModel.getOWLFrameStore().setSuperclassSynchronizationBlocked(false);
         }
         if (((AbstractOWLModel) owlModel).isProtegeMetaOntologyImported()) {
             updateProtegeFeatures(clses);
@@ -113,11 +112,11 @@ class RDFSNamedClassPostProcessor {
     private void updateProtegeFeatures(Collection clses) {
         Slot abstractSlot = owlModel.getRDFProperty(ProtegeNames.Slot.ABSTRACT);
         for (Iterator it = clses.iterator(); it.hasNext();) {
-            Cls cls = (Cls) it.next();
-            if (Boolean.TRUE.equals(cls.getDirectOwnSlotValue(abstractSlot))) {
+            Cls cls = (Cls) it.next();                  
+           if (abstractSlot != null && Boolean.TRUE.equals(cls.getDirectOwnSlotValue(abstractSlot))) {
                 TripleStoreUtil.ensureActiveTripleStore((RDFResource) cls);
                 cls.setAbstract(true);
-            }
+            }            
         }
     }
 }
