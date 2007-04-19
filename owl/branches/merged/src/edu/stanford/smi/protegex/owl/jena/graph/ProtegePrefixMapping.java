@@ -125,4 +125,9 @@ public class ProtegePrefixMapping implements PrefixMapping {
     public PrefixMapping lock() {
         throw new RuntimeException("Not supported yet");
     }
+
+
+    public boolean samePrefixMappingAs(PrefixMapping arg0) {
+      throw new UnsupportedOperationException("Not implemented yet");
+    }
 }
