@@ -19,6 +19,7 @@ import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreModel;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreUtil;
 import edu.stanford.smi.protegex.owl.model.util.ImportHelper;
 import edu.stanford.smi.protegex.owl.repository.Repository;
+import edu.stanford.smi.protegex.owl.swrl.ui.SWRLProjectPlugin;
 import edu.stanford.smi.protegex.owl.ui.OWLLabeledComponent;
 import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
 import edu.stanford.smi.protegex.owl.ui.dialogs.ModalDialogFactory;
@@ -197,6 +198,12 @@ public class ImportsTreePanel extends JPanel implements HostResourceDisplay, Dis
                     Component topLevelContainer = ProtegeUI.getTopLevelContainer(owlModel.getProject());
                     AddedPrefixesTable.showDialog(topLevelContainer, owlModel, addedPrefixes);
                 }
+                
+            	if (SWRLProjectPlugin.isSWRLImported(owlModel)) {
+            		SWRLProjectPlugin.adjustGUI(owlModel.getProject());
+            	}
+            	
+            	ProtegeUI.reloadUI(owlModel);
             }
         }
         catch (Exception e) {
