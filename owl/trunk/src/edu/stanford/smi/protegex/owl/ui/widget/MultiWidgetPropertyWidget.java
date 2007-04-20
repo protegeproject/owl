@@ -71,8 +71,8 @@ public abstract class MultiWidgetPropertyWidget extends AbstractPropertyWidget {
      * Constructs a new MultiWidgetPropertyWidget.  This calls <CODE>addNestedWidget</CODE>.
      */
     public MultiWidgetPropertyWidget() {
-        tabbedPane.setBorder(BorderFactory.createEmptyBorder(3, 5, 5, 4));
-        tabbedPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
+       // tabbedPane.setBorder(BorderFactory.createEmptyBorder(3, 5, 5, 4));
+        //tabbedPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
         createNestedWidgets();
     }
 
