@@ -1,17 +1,17 @@
 package edu.stanford.smi.protegex.owl.ui.metadata;
 
+import java.awt.Dimension;
+
+import javax.swing.JToolBar;
+import javax.swing.SwingUtilities;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+
 import edu.stanford.smi.protege.model.Instance;
-import edu.stanford.smi.protege.util.ComponentFactory;
 import edu.stanford.smi.protege.util.ComponentUtilities;
-import edu.stanford.smi.protege.util.LabeledComponent;
 import edu.stanford.smi.protege.widget.InstanceNameWidget;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
 import edu.stanford.smi.protegex.owl.ui.refactoring.RenameAcrossFilesAction;
-
-import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-import java.awt.*;
 
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
@@ -36,11 +36,7 @@ public class RDFResourceNameWidget extends InstanceNameWidget {
 
     public void initialize() {
         super.initialize();
-        LabeledComponent lc = ((LabeledComponent) getComponent(0));
-        toolBar = ComponentFactory.createToolBar();
-        JButton renameAcrossFilesButton = ComponentFactory.addToolBarButton(toolBar, renameAcrossFilesAction);
-        renameAcrossFilesButton.setPreferredSize(new Dimension(20, 20));
-        lc.setLayout(new BorderLayout());
+
         getTextField().getDocument().addDocumentListener(new DocumentListener() {
             public void insertUpdate(DocumentEvent e) {
                 if (getTextField().getText().indexOf(' ') > 0) {
