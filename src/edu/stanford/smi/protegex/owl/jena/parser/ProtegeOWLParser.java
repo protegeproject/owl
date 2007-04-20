@@ -107,7 +107,7 @@ public class ProtegeOWLParser {
 	 * A rather ugly flag that can be activated to prompt the user if a local
 	 * file was found as a possible import redirection.
 	 */
-	public static boolean inUI = false;
+	//public static boolean inUI = false;
 
 	private boolean isRDFList = false;
 
