@@ -1,23 +1,24 @@
 package edu.stanford.smi.protegex.owl.swrl.ui;
 
-import edu.stanford.smi.protege.event.WidgetEvent;
-import edu.stanford.smi.protege.event.WidgetListener;
+import java.util.Collection;
+
 import edu.stanford.smi.protege.model.Cls;
+import edu.stanford.smi.protege.model.KnowledgeBase;
 import edu.stanford.smi.protege.model.Model;
 import edu.stanford.smi.protege.model.Project;
 import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protege.model.WidgetDescriptor;
 import edu.stanford.smi.protege.plugin.ProjectPluginAdapter;
-import edu.stanford.smi.protege.widget.AbstractSlotWidget;
+import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protege.widget.ClsWidget;
 import edu.stanford.smi.protege.widget.FormWidget;
 import edu.stanford.smi.protege.widget.SlotWidget;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.swrl.model.SWRLNames;
 import edu.stanford.smi.protegex.owl.swrl.model.factory.SWRLJavaFactory;
+import edu.stanford.smi.protegex.owl.swrl.ui.tab.SWRLTab;
+import edu.stanford.smi.protegex.owl.ui.metadata.NameDocumentationWidget;
 import edu.stanford.smi.protegex.owl.ui.metadata.RDFSNamedClassMetadataWidget;
-
-import java.awt.*;
 
 /**
  * A Project Plugin that does some initialization after a SWRL project has been loaded.  The idea is that SWRL support is activated iff the
@@ -29,31 +30,91 @@ import java.awt.*;
  */
 public class SWRLProjectPlugin extends ProjectPluginAdapter 
 {
-  public static void adjustWidgets(Project project) 
-  {
-    Cls impCls = project.getKnowledgeBase().getCls(SWRLNames.Cls.IMP);
-    if (impCls != null) {
-      ClsWidget w = project.getDesignTimeClsWidget(impCls);
-      WidgetDescriptor d = w.getDescriptor();
-      WidgetDescriptor headWidget = d.getPropertyList().getWidgetDescriptor(SWRLNames.Slot.HEAD);
-      if (headWidget != null) {
-        headWidget.setBounds(new Rectangle(5, 5, 1, 1));
-        headWidget.setVisible(false);
-      }
-      WidgetDescriptor bodyWidget = d.getPropertyList().getWidgetDescriptor(SWRLNames.Slot.BODY);
-      if (bodyWidget != null) {
-        bodyWidget.setBounds(new Rectangle(5, 5, 1, 1));
-        bodyWidget.setVisible(false);
-      }
-      WidgetDescriptor nameWidget = d.getPropertyList().getWidgetDescriptor(Model.Slot.NAME);
-      if (nameWidget != null) {
-        nameWidget.setWidgetClassName(RDFSNamedClassMetadataWidget.class.getName());
-      }
-      ((FormWidget) w).setModified(true);
-    }   
-  }
-  
-  public void afterLoad(Project p) { adjustWidgets(p); }
+	public static void adjustWidgets(Project project) 
+	{
+		KnowledgeBase kb = project.getKnowledgeBase();
 
-  public static boolean isSWRLImported(OWLModel owlModel) { return owlModel.getOWLJavaFactory() instanceof SWRLJavaFactory; }
-} // SWRLProjectPlugin
+		Cls impCls = kb.getCls(SWRLNames.Cls.IMP);
+
+		if (impCls == null) {
+			return;
+		}
+
+		try {
+			removeAllSlotWidgets(impCls);
+			
+			Slot nameSlot = kb.getSlot(Model.Slot.NAME);
+			ClsWidget clsWidget = project.getDesignTimeClsWidget(impCls);   
+			clsWidget.replaceWidget(nameSlot, NameDocumentationWidget.class.getName());
+			//clsWidget.replaceWidget(nameSlot, RDFSNamedClassMetadataWidget.class.getName());
+			
+			((FormWidget)clsWidget).setModified(true);
+			
+			clsWidget.relayout();			
+		} catch (Exception e) {
+			Log.getLogger().warning("Error at configuring SWRL forms");
+		}
+		
+	}   
+
+
+	private static void removeAllSlotWidgets(Cls cls) {
+		if (cls == null) {
+			return;
+		}
+
+		ClsWidget clsWidget = cls.getProject().getDesignTimeClsWidget(cls);
+
+		Collection<Slot> templateSlots = cls.getTemplateSlots();
+
+		for (Slot slot : templateSlots) {
+			SlotWidget slotWidget = clsWidget.getSlotWidget(slot);
+			if (slotWidget != null) {
+				clsWidget.replaceWidget(slot, null);
+			}
+		}
+
+		((FormWidget)clsWidget).setModified(true);
+	}
+
+	public void afterLoad(Project p) {
+		adjustGUI(p);
+	}
+		
+
+	public static void adjustGUI(Project p) {
+		if (!isSWRLPresent(p)) {
+			return;
+		}
+		
+		adjustWidgets(p);
+		addSWRLTab(p);
+	}
+	
+	private static void addSWRLTab(Project p) {
+		WidgetDescriptor swrlTabDescriptor = p.getTabWidgetDescriptor(SWRLTab.class.getName());
+		
+		swrlTabDescriptor.setVisible(true);		
+	}
+	
+	private static boolean isSWRLPresent(Project project) {
+		KnowledgeBase kb = project.getKnowledgeBase();
+
+		if (!(kb instanceof OWLModel)) {
+			return false;
+		}
+		
+		Cls impCls = kb.getCls(SWRLNames.Cls.IMP);
+
+		if (impCls == null) {
+			return false;
+		}
+		
+		return true;
+	}
+
+
+	public static boolean isSWRLImported(OWLModel owlModel) { 
+		return owlModel.getOWLJavaFactory() instanceof SWRLJavaFactory; 
+	}
+} 
