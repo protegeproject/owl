@@ -50,11 +50,18 @@ public class NameDocumentationWidget extends MultiWidgetPropertyWidget {
 
     public void initialize() {
         super.initialize();
+        setPreferredColumns(2);
+        setPreferredRows(2);
+        /*
         nameWidget.removeAll();
         JTextComponent textComponent = nameWidget.getTextComponent();
         nameWidget.add(BorderLayout.CENTER, textComponent);
-        nameWidget.add(BorderLayout.EAST, nameWidget.getToolBar());
+        if (nameWidget.getToolBar() != null) {
+        	nameWidget.add(BorderLayout.EAST, nameWidget.getToolBar());
+        }
+        
         setAllMode(true);
+        */
     }
 
 
