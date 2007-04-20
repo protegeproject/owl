@@ -3,7 +3,9 @@ package edu.stanford.smi.protegex.owl.model.util;
 import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
 import edu.stanford.smi.protegex.owl.jena.parser.ProtegeOWLParser;
 import edu.stanford.smi.protegex.owl.model.OWLOntology;
+import edu.stanford.smi.protegex.owl.model.impl.OWLUtil;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
+import edu.stanford.smi.protegex.owl.swrl.ui.SWRLProjectPlugin;
 import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
 import edu.stanford.smi.protegex.owl.ui.menu.OWLMenuProjectPlugin;
 
@@ -98,7 +100,7 @@ public class ImportHelper {
             }
         }
         
-        if(importedOntologies.size() > 0 && ProtegeOWLParser.inUI) {
+        if(importedOntologies.size() > 0 && OWLUtil.runsWithGUI(owlModel)) {
             owlModel.getTripleStoreModel().updateEditableResourceState();
             OWLMenuProjectPlugin.makeHiddenClsesWithSubclassesVisible(owlModel);
             if (reloadGUI){
