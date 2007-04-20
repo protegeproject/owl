@@ -3,7 +3,6 @@ package edu.stanford.smi.protegex.owl.swrl.ui.code;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.GridLayout;
 import java.util.logging.Level;
 
 import javax.swing.JPanel;
@@ -16,6 +15,7 @@ import edu.stanford.smi.protegex.owl.swrl.model.SWRLImp;
 import edu.stanford.smi.protegex.owl.swrl.parser.SWRLParser;
 import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
 import edu.stanford.smi.protegex.owl.ui.dialogs.ModalDialogFactory;
+import edu.stanford.smi.protegex.owl.ui.resourcedisplay.ResourceDisplay;
 
 /**
  * A panel which can be used to edit an OWL expression in a multi-line dialog.
@@ -50,13 +50,14 @@ public class SWRLTextAreaPanel extends JPanel implements ModalDialogFactory.Clos
             textArea.reformatText();
         }
         symbolPanel.setSymbolEditor(textArea);
+        symbolPanel.setPreferredSize(new Dimension(100,65));
 
-        InstanceDisplay id = new InstanceDisplay(anOWLModel.getProject(), false, false);
+        InstanceDisplay id = new InstanceDisplay(anOWLModel.getProject(), false, false);        
         id.setInstance(imp);
         setLayout(new BorderLayout(0, 8));
         add(BorderLayout.NORTH, id);
         JScrollPane sp = new JScrollPane(textArea);
-        sp.setPreferredSize(new Dimension(100,250));
+        sp.setPreferredSize(new Dimension(100,120));
         add(BorderLayout.CENTER, sp);
         add(BorderLayout.SOUTH, symbolPanel);
         //setPreferredSize(new Dimension(600, 400));
