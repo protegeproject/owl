@@ -5,6 +5,7 @@ import edu.stanford.smi.protege.model.framestore.MergingNarrowFrameStore;
 import edu.stanford.smi.protege.model.framestore.NarrowFrameStore;
 import edu.stanford.smi.protege.ui.FrameComparator;
 import edu.stanford.smi.protege.ui.ProjectManager;
+import edu.stanford.smi.protege.ui.ProjectView;
 import edu.stanford.smi.protege.util.FileUtilities;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protege.util.URIUtilities;
@@ -1048,6 +1049,23 @@ public class OWLUtil {
           Log.getLogger().log(Level.SEVERE, "Exception caught", ex);
         }
         return null;
+    }
+    
+
+    public static boolean runsWithGUI(OWLModel owlModel) {
+    	Project project = owlModel.getProject();
+    	
+    	if (project == null) {
+    		return false;
+    	}    	  	
+    	
+    	ProjectView projectView = ProjectManager.getProjectManager().getCurrentProjectView();
+    	
+    	if (projectView == null) {
+    		return false;
+    	}
+        //TT: How does this behave in client-server?
+    	return project.equals(projectView.getProject());  
     }
     
     
