@@ -30,6 +30,7 @@ import edu.stanford.smi.protegex.owl.ui.metadata.RDFSNamedClassMetadataWidget;
  */
 public class SWRLProjectPlugin extends ProjectPluginAdapter 
 {
+	@SuppressWarnings("deprecation")
 	public static void adjustWidgets(Project project) 
 	{
 		KnowledgeBase kb = project.getKnowledgeBase();
