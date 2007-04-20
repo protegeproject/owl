@@ -50,14 +50,14 @@ public class SWRLTextAreaPanel extends JPanel implements ModalDialogFactory.Clos
             textArea.reformatText();
         }
         symbolPanel.setSymbolEditor(textArea);
-        symbolPanel.setPreferredSize(new Dimension(100,65));
+        //symbolPanel.setPreferredSize(new Dimension(100,));
 
         InstanceDisplay id = new InstanceDisplay(anOWLModel.getProject(), false, false);        
         id.setInstance(imp);
         setLayout(new BorderLayout(0, 8));
         add(BorderLayout.NORTH, id);
         JScrollPane sp = new JScrollPane(textArea);
-        sp.setPreferredSize(new Dimension(100,120));
+        sp.setPreferredSize(new Dimension(100,200));
         add(BorderLayout.CENTER, sp);
         add(BorderLayout.SOUTH, symbolPanel);
         //setPreferredSize(new Dimension(600, 400));
