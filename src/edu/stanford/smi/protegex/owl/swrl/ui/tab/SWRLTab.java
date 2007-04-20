@@ -115,6 +115,8 @@ public class SWRLTab extends AbstractTabWidget
       panel = new SWRLTablePanel(owlModel, null, this);
       add(panel);
     }        
+    
+    SWRLProjectPlugin.adjustGUI(getProject());
   } // initialize 
 
   public void reconfigure()
