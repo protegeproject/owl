@@ -112,9 +112,7 @@ public class OWLFilesCreateProjectPlugin
             ProtegeUI.getModalDialogFactory().showErrorMessageDialog(owlModel,
                                                                      "Could not load import:\n" + ex);
         }
-        if (imports.contains(SWRLNames.SWRL_IMPORT)) {
-            SWRLProjectPlugin.adjustWidgets(project);
-        }
+
         if (!imports.isEmpty()) {
             owlModel.getTripleStoreModel().updateEditableResourceState();
         }
@@ -137,18 +135,16 @@ public class OWLFilesCreateProjectPlugin
     }
 
 
-    protected Project buildNewProject(KnowledgeBaseFactory factory) {
-        ProtegeOWLParser.inUI = true;
+    protected Project buildNewProject(KnowledgeBaseFactory factory) {        
         Project project = buildNewProject2(factory);
         if (project != null) {
             OWLModel owlModel = (OWLModel) project.getKnowledgeBase();
             OWLMenuProjectPlugin.makeHiddenClsesWithSubclassesVisible(owlModel);
             if (SWRLProjectPlugin.isSWRLImported(owlModel)) {
-                SWRLProjectPlugin.adjustWidgets(project);
+                SWRLProjectPlugin.adjustGUI(project);
             }
             XSDVisibility.updateVisibility(owlModel);
-        }
-        ProtegeOWLParser.inUI = true;
+        }        
         return project;
     }
 
