@@ -472,3 +472,8 @@ OWLTest: True
 Name: edu/stanford/smi/protegex/owl/testing/style/SubclassesRestrictionDuplicatesThatOfSuperTest.class
 OWLTest: True
 
+Name: edu.stanford.smi.protegex.owl.swrl.ui.widget.SWRLRuleSlotWidget.class
+Slot-Widget: True
+
+
+
