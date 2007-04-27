@@ -67,8 +67,8 @@ public class SWRLRuleSlotWidget extends AbstractSlotWidget {
 		        String uniCodeText = getText();		        
 		        try {
 		            checkUniCodeExpression(uniCodeText);
-		            getErrorSymbolDisplay().displayError((Throwable) null);
-		            swrlTextAreaLabeledComponent.setHeaderLabel(SWRL_RULE_INCOMPLETE_LABEL);
+		            getErrorSymbolDisplay().displayError((Throwable) null);		            
+		            swrlTextAreaLabeledComponent.setHeaderLabel(getWidgetIncompleteOrOKTitle());
 		            setBackground(Color.white);
 		            setNormalBorder();
 		        }
@@ -96,6 +96,14 @@ public class SWRLRuleSlotWidget extends AbstractSlotWidget {
 		add(swrlTextAreaLabeledComponent);
 	}
 
+	protected String getWidgetIncompleteOrOKTitle() {
+		String newRule = swrlTextArea.getText().trim();
+        
+		String oldRule = ruleExpressionInKb.trim();
+		
+		return (newRule.equals(oldRule) ? SWRL_RULE_LABEL : SWRL_RULE_INCOMPLETE_LABEL);
+	}
+	
 	@Override
 	public void setInstance(Instance newInstance) {
 		
@@ -111,11 +119,9 @@ public class SWRLRuleSlotWidget extends AbstractSlotWidget {
 		swrlTextAreaLabeledComponent.setHeaderLabel(SWRL_RULE_LABEL);
 		
 		ruleExpressionInKb = imp == null ? "" : imp.getBrowserText();		
-		swrlTextArea.setText(ruleExpressionInKb);
+		ruleExpressionInKb = SWRLTextArea.reformatText(ruleExpressionInKb);
 		
-		//do we want this?
-		swrlTextArea.reformatText();
-		ruleExpressionInKb = swrlTextArea.getText();
+		swrlTextArea.setText(ruleExpressionInKb);
 	}
 
 
