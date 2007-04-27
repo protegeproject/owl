@@ -240,7 +240,7 @@ public abstract class SymbolTextArea extends JTextArea
 
 
     private boolean handleDown() {
-        if (comboBox != null && comboBox.isVisible()) {
+    	 if (isComboBoxVisible()) { 
             int index = comboBox.getSelectedIndex();
             if (index < comboBox.getItemCount() - 1) {
                 comboBox.setSelectedIndex(index + 1);
@@ -476,7 +476,7 @@ public abstract class SymbolTextArea extends JTextArea
     }
 
 
-    private void updateErrorDisplay() {
+    protected void updateErrorDisplay() {
         String uniCodeText = getText();
         try {
             checkUniCodeExpression(uniCodeText);
@@ -487,5 +487,9 @@ public abstract class SymbolTextArea extends JTextArea
             errorDisplay.setErrorFlag(true);
             setBackground(new Color(240, 240, 240));
         }
+    }
+    
+    public SymbolErrorDisplay getErrorSymbolDisplay() {
+    	return errorDisplay;
     }
 }
