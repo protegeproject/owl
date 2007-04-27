@@ -70,11 +70,14 @@ public class OWLFormWidget extends FormWidget {
 
 
     protected boolean isSuitable(WidgetDescriptor d, Cls cls, Slot slot) {
+    	
         if (slot instanceof RDFProperty && cls instanceof RDFSNamedClass) {
             String className = d.getWidgetClassName();
             if (className != null && OWLWidgetMapper.isIncompatibleWidgetName(className)) {
                 return false;
             }
+            //TT: Why is this code here? I commented it out
+            /*
             Boolean disabledByUser = d.getPropertyList().getBoolean(DISABLED_BY_USER);
             if (className == null && !Boolean.TRUE.equals(disabledByUser)) {
                 RDFProperty owlProperty = (RDFProperty) slot;
@@ -83,7 +86,9 @@ public class OWLFormWidget extends FormWidget {
                     return !OWLWidgetUtil.isRestrictedProperty(namedClass, owlProperty);
                 }
             }
+            */
         }
+        
         return super.isSuitable(d, cls, slot);
     }
 
