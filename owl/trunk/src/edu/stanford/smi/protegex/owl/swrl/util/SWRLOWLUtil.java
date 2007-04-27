@@ -80,9 +80,21 @@ public class SWRLOWLUtil
   {
     OWLNamedClass cls = getClass(owlModel, className);
 
+    return createIndividualOfClass(owlModel, cls, individualName);
+  } // createIndividualOfClass
+
+  public static OWLIndividual createIndividualOfClass(OWLModel owlModel, OWLNamedClass cls)
+    throws SWRLOWLUtilException
+  {
+    return createIndividualOfClass(owlModel, cls, null);
+  } // createIndividualOfClass
+
+  public static OWLIndividual createIndividualOfClass(OWLModel owlModel, OWLNamedClass cls, String individualName)
+    throws SWRLOWLUtilException
+  {
     OWLIndividual individual = cls.createOWLIndividual(individualName);
 
-    if (individual == null) throwException("could not create individual '" + individualName + "' of class '" + className + "'");
+    if (individual == null) throwException("could not create individual '" + individualName + "' of class '" + cls.getName() + "'");
 
     return individual;
   } // createIndividualOfClass
@@ -322,6 +334,11 @@ public class SWRLOWLUtil
     return (property != null && property.isObjectProperty());
   } // isObjectProperty
 
+  public static boolean isOWLIndividual(OWLModel owlModel, String individualName)
+  {
+    return owlModel.getOWLIndividual(individualName) != null;
+  } // isOWLIndividual
+
   public static boolean isObjectProperty(OWLModel owlModel, String propertyName) throws SWRLOWLUtilException
   {
     return isObjectProperty(owlModel, propertyName, true);
@@ -393,6 +410,32 @@ public class SWRLOWLUtil
         
     return resource instanceof OWLNamedClass ? (OWLNamedClass)resource : null;
   } // getClass
+
+  public Set<OWLNamedClass> getClassesOfIndividual(OWLModel owlModel, String individualName) throws SWRLOWLUtilException
+  {
+    return getClassesOfIndividual(owlModel, individualName, true);
+  } // getClassesOfIndividual
+
+  public Set<OWLNamedClass> getClassesOfIndividual(OWLModel owlModel, String individualName, boolean mustExist) 
+    throws SWRLOWLUtilException  
+  {
+    OWLIndividual individual = getIndividual(owlModel, individualName, mustExist);
+    
+    return individual == null ? new HashSet<OWLNamedClass>() : getClassesOfIndividual(owlModel, individual);
+  } // getClassesOfIndividual
+
+  public Set<OWLNamedClass> getClassesOfIndividual(OWLModel owlModel, OWLIndividual individual) throws SWRLOWLUtilException
+  {
+    Set<OWLNamedClass> result = new HashSet<OWLNamedClass>();
+    Collection types = individual.getRDFTypes();
+    Iterator iterator = types.iterator();
+    while (iterator.hasNext()) {
+      RDFResource resource = (RDFResource)iterator.next();
+      if (resource instanceof OWLNamedClass) result.add((OWLNamedClass)resource);
+    } // while
+
+    return result;
+  } // getClassesOfIndividual
 
   public static OWLProperty getProperty(OWLModel owlModel, String propertyName, boolean mustExist) throws SWRLOWLUtilException
   {
@@ -894,6 +937,21 @@ public class SWRLOWLUtil
     } // while
     return result;
   } // rdfResources2NamesList            
+
+  public static boolean hasInconsistentClasses(OWLModel owlModel) 
+  {
+    return !owlModel.getInconsistentClasses().isEmpty();
+  } // hasInconsistentClasses
+
+  public static String createNewResourceName(OWLModel owlModel, String prefix) 
+  {
+    return owlModel.createNewResourceName(prefix);
+  } // createNewResourceName
+
+  public static OWLNamedClass getOWLThingClass(OWLModel owlModel) 
+  {
+    return owlModel.getOWLThingClass();
+  } // getOWLThingClass
 
   private static void throwException(String message) throws SWRLOWLUtilException
   {

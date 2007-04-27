@@ -71,7 +71,10 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
   public boolean finishedBy(List<Argument> arguments) throws BuiltInException { return temporalOperation(TemporalFinishedBy, arguments); }
 
   /**
-   ** Accepts either three or four arguments. The first argument is a duration and the last is a granularity. 
+   ** Accepts either three or four arguments. Returns true if the first duration argument is equal to the difference between two timestamps
+   ** at the granularity specified by the final argument. The timestamps are specified as either a mixture of two ValidInstant or datetime
+   ** arguments or in single ValidPeriod argument. If the duration argument is unbound, it is assigned to the time difference between the
+   ** two timestamps.
    */
   public boolean duration(List<Argument> arguments) throws BuiltInException
   {
