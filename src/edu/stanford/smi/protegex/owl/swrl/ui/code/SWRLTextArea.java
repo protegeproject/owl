@@ -1,7 +1,5 @@
 package edu.stanford.smi.protegex.owl.swrl.ui.code;
 
-import java.awt.Font;
-
 import javax.swing.UIManager;
 
 import edu.stanford.smi.protegex.owl.model.OWLModel;
