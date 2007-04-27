@@ -74,10 +74,12 @@ public class TriplesTable extends JTable implements TripleDisplay {
         setRowMargin(0);
         setIntercellSpacing(new Dimension(0, 0));
         setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        
         propertyColumn.setPreferredWidth(100);
         valueColumn.setPreferredWidth(200);
         languageColumn.setPreferredWidth(60);
         languageColumn.setMaxWidth(100);
+        
 
         addMouseListener(new PopupMenuMouseListener(this) {
             protected JPopupMenu getPopupMenu() {
