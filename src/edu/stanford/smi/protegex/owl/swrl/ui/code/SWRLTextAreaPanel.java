@@ -125,9 +125,10 @@ public class SWRLTextAreaPanel extends JPanel implements ModalDialogFactory.Clos
     		public void windowClosing(WindowEvent e) {	
     			
     			if (hasChangedRule(display)) {
-    				int ret = ModalDialog.showMessageDialog(display, "Rule has not been saved. If you continue, " +
-    						"\nchanges will be lost.\n" +
-    						"Do you want to continue?", 
+    				int ret = ModalDialog.showMessageDialog(display,
+    						"Rule has not been saved, probably because rule is invalid.\n" +
+    						"If you continue changes will be lost.\n\n" +
+    						"Do you want to continue?",
     						"Rule not saved", ModalDialog.MODE_YES_NO);
     				
     				if (ret == ModalDialog.OPTION_NO) {
