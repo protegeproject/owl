@@ -5,10 +5,6 @@ import java.awt.Color;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.util.Collection;
 
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -19,8 +15,6 @@ import edu.stanford.smi.protege.model.Instance;
 import edu.stanford.smi.protege.model.KnowledgeBase;
 import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protege.util.LabeledComponent;
-import edu.stanford.smi.protege.util.Log;
-import edu.stanford.smi.protege.util.ModalDialog;
 import edu.stanford.smi.protege.widget.AbstractSlotWidget;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.swrl.model.SWRLImp;
@@ -32,7 +26,8 @@ import edu.stanford.smi.protegex.owl.swrl.ui.code.SWRLTextArea;
 
 public class SWRLRuleSlotWidget extends AbstractSlotWidget {
 	private static final String SWRL_RULE_LABEL = "SWRL Rule";
-	private static final String SWRL_RULE_NOT_SAVED_LABEL = "SWRL Rule - NOT SAVED!";
+	private static final String SWRL_RULE_INVALID_LABEL = "SWRL Rule - Invalid rule - not savable";
+	private static final String SWRL_RULE_INCOMPLETE_LABEL = "SWRL Rule - Incomplete rule - not savable";
 	
 	private SWRLTextArea swrlTextArea;
 	private LabeledComponent swrlTextAreaLabeledComponent;
@@ -69,18 +64,18 @@ public class SWRLRuleSlotWidget extends AbstractSlotWidget {
 		
 		swrlTextArea = new SWRLTextArea(owlModel, symbolPanel) {
 		    protected void updateErrorDisplay() {
-		        String uniCodeText = getText();
-		        swrlTextAreaLabeledComponent.setHeaderLabel(ruleExpressionInKb.equals(getText()) ? 
-		        		SWRL_RULE_LABEL : SWRL_RULE_NOT_SAVED_LABEL);
+		        String uniCodeText = getText();		        
 		        try {
 		            checkUniCodeExpression(uniCodeText);
 		            getErrorSymbolDisplay().displayError((Throwable) null);
+		            swrlTextAreaLabeledComponent.setHeaderLabel(SWRL_RULE_INCOMPLETE_LABEL);
 		            setBackground(Color.white);
 		            setNormalBorder();
 		        }
 		        catch (Throwable ex) {
 		            getErrorSymbolDisplay().setErrorFlag(true);
 		            getErrorSymbolDisplay().displayError(ex.getMessage());
+		            swrlTextAreaLabeledComponent.setHeaderLabel(SWRL_RULE_INVALID_LABEL);
 		            setBackground(new Color(240, 240, 240));
 		            setInvalidValueBorder();
 		        }
@@ -140,7 +135,7 @@ public class SWRLRuleSlotWidget extends AbstractSlotWidget {
 			setInvalidValueBorder();
 			swrlTextArea.getErrorSymbolDisplay().displayError(e);
 			
-			swrlTextAreaLabeledComponent.setHeaderLabel(SWRL_RULE_NOT_SAVED_LABEL);			
+			swrlTextAreaLabeledComponent.setHeaderLabel(SWRL_RULE_INVALID_LABEL);			
 			return false;
 		}
 		return true;
