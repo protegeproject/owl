@@ -19,7 +19,9 @@ import java.util.Set;
 
 public class DefaultSWRLImp extends DefaultOWLIndividual implements SWRLImp {
 
-    public DefaultSWRLImp(KnowledgeBase kb, FrameID id) {
+    public static final String EMPTY_RULE_TEXT = "<EMPTY_RULE>";
+
+	public DefaultSWRLImp(KnowledgeBase kb, FrameID id) {
         super(kb, id);
     }
 
@@ -125,7 +127,7 @@ public class DefaultSWRLImp extends DefaultOWLIndividual implements SWRLImp {
     String s = "";
 
     if (head == null && body == null) {
-      s += "<EMPTY_RULE>";
+      s += EMPTY_RULE_TEXT;
     } else {
       s += SWRLUtil.getSWRLBrowserText(body, "BODY");
       s += " " + SWRLParser.IMP_CHAR + " ";
