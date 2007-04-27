@@ -1,5 +1,9 @@
 package edu.stanford.smi.protegex.owl.swrl.ui.code;
 
+import java.awt.Font;
+
+import javax.swing.UIManager;
+
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.swrl.parser.SWRLIncompleteRuleException;
 import edu.stanford.smi.protegex.owl.swrl.parser.SWRLParser;
@@ -16,6 +20,9 @@ public class SWRLTextArea extends SymbolTextArea {
   public SWRLTextArea(OWLModel owlModel, SymbolErrorDisplay errorDisplay) 
   {
     super(owlModel, errorDisplay, new SWRLResourceNameMatcher(), new SWRLSyntaxConverter(owlModel));
+           
+    setFont(UIManager.getFont("TextArea.font"));
+    
     SWRLTextField.initKeymap(this);
   }
 
@@ -33,8 +40,16 @@ public class SWRLTextArea extends SymbolTextArea {
 
   public void reformatText() {
     String text = getText();
-    text = text.replaceAll("" + SWRLParser.AND_CHAR + "  ", "" + SWRLParser.AND_CHAR + "\n");
-    text = text.replaceAll("" + SWRLParser.IMP_CHAR, "\n  " + SWRLParser.IMP_CHAR);
+    
+    text = reformatText(text);
+    
     setText(text);
+  }
+  
+  public static String reformatText(String text) {
+	    text = text.replaceAll("" + SWRLParser.AND_CHAR + "  ", "" + SWRLParser.AND_CHAR + "\n");
+	    text = text.replaceAll("" + SWRLParser.IMP_CHAR, "\n  " + SWRLParser.IMP_CHAR);
+	    
+	    return text;
   }
 }
