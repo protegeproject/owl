@@ -137,9 +137,6 @@ public class SWRLRuleSlotWidget extends AbstractSlotWidget {
 			
 			swrlTextAreaLabeledComponent.setHeaderLabel(SWRL_RULE_LABEL);
 		} catch (SWRLParseException e) {
-			Log.getLogger().warning("Error at parsing SWRL rule " + (swrlTextArea == null ? "" : swrlTextArea.getText()) +
-					". Error message: " + e.getMessage());
-			
 			setInvalidValueBorder();
 			swrlTextArea.getErrorSymbolDisplay().displayError(e);
 			
