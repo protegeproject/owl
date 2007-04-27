@@ -27,7 +27,7 @@ import edu.stanford.smi.protegex.owl.swrl.ui.code.SWRLTextArea;
 public class SWRLRuleSlotWidget extends AbstractSlotWidget {
 	private static final String SWRL_RULE_LABEL = "SWRL Rule";
 	private static final String SWRL_RULE_INVALID_LABEL = "SWRL Rule - Invalid rule - not savable";
-	private static final String SWRL_RULE_INCOMPLETE_LABEL = "SWRL Rule - Incomplete rule - not savable";
+	private static final String SWRL_RULE_INCOMPLETE_LABEL = "SWRL Rule";
 	
 	private SWRLTextArea swrlTextArea;
 	private LabeledComponent swrlTextAreaLabeledComponent;
