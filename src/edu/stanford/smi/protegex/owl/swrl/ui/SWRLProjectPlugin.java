@@ -1,7 +1,5 @@
 package edu.stanford.smi.protegex.owl.swrl.ui;
 
-import java.util.Collection;
-
 import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.KnowledgeBase;
 import edu.stanford.smi.protege.model.Model;
@@ -12,13 +10,13 @@ import edu.stanford.smi.protege.plugin.ProjectPluginAdapter;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protege.widget.ClsWidget;
 import edu.stanford.smi.protege.widget.FormWidget;
-import edu.stanford.smi.protege.widget.SlotWidget;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.model.ProtegeNames;
 import edu.stanford.smi.protegex.owl.swrl.model.SWRLNames;
 import edu.stanford.smi.protegex.owl.swrl.model.factory.SWRLJavaFactory;
 import edu.stanford.smi.protegex.owl.swrl.ui.tab.SWRLTab;
+import edu.stanford.smi.protegex.owl.swrl.ui.widget.SWRLRuleSlotWidget;
 import edu.stanford.smi.protegex.owl.ui.metadata.NameDocumentationWidget;
-import edu.stanford.smi.protegex.owl.ui.metadata.RDFSNamedClassMetadataWidget;
 
 /**
  * A Project Plugin that does some initialization after a SWRL project has been loaded.  The idea is that SWRL support is activated iff the
@@ -42,41 +40,35 @@ public class SWRLProjectPlugin extends ProjectPluginAdapter
 		}
 
 		try {
-			removeAllSlotWidgets(impCls);
 			
-			Slot nameSlot = kb.getSlot(Model.Slot.NAME);
 			ClsWidget clsWidget = project.getDesignTimeClsWidget(impCls);   
-			clsWidget.replaceWidget(nameSlot, NameDocumentationWidget.class.getName());
+	
+			Slot nameSlot = kb.getSlot(Model.Slot.NAME);						
 			//clsWidget.replaceWidget(nameSlot, RDFSNamedClassMetadataWidget.class.getName());
+			clsWidget.replaceWidget(nameSlot, null);
 			
+			Slot inferredTypeSlot = kb.getSlot(ProtegeNames.Slot.INFERRED_TYPE);		
+			clsWidget.replaceWidget(inferredTypeSlot, null);			
+
+			Slot headSlot = kb.getSlot(SWRLNames.Slot.HEAD);
+			clsWidget.replaceWidget(headSlot, null);
+			
+			Slot bodySlot = kb.getSlot(SWRLNames.Slot.BODY);
+			clsWidget.replaceWidget(bodySlot, null);
+						
+			clsWidget.replaceWidget(nameSlot, NameDocumentationWidget.class.getName());
+			clsWidget.replaceWidget(bodySlot, SWRLRuleSlotWidget.class.getName());
+			
+			((FormWidget)clsWidget).setVerticalStretcher(SWRLNames.Slot.BODY);
+			((FormWidget)clsWidget).setHorizontalStretcher(FormWidget.STRETCH_ALL);
 			((FormWidget)clsWidget).setModified(true);
 			
-			clsWidget.relayout();			
 		} catch (Exception e) {
-			Log.getLogger().warning("Error at configuring SWRL forms");
+			Log.getLogger().warning("Error at configuring SWRL forms: " + e.getMessage());
 		}
 		
 	}   
 
-
-	private static void removeAllSlotWidgets(Cls cls) {
-		if (cls == null) {
-			return;
-		}
-
-		ClsWidget clsWidget = cls.getProject().getDesignTimeClsWidget(cls);
-
-		Collection<Slot> templateSlots = cls.getTemplateSlots();
-
-		for (Slot slot : templateSlots) {
-			SlotWidget slotWidget = clsWidget.getSlotWidget(slot);
-			if (slotWidget != null) {
-				clsWidget.replaceWidget(slot, null);
-			}
-		}
-
-		((FormWidget)clsWidget).setModified(true);
-	}
 
 	public void afterLoad(Project p) {
 		adjustGUI(p);
@@ -97,6 +89,7 @@ public class SWRLProjectPlugin extends ProjectPluginAdapter
 		
 		swrlTabDescriptor.setVisible(true);		
 	}
+	
 	
 	private static boolean isSWRLPresent(Project project) {
 		KnowledgeBase kb = project.getKnowledgeBase();
