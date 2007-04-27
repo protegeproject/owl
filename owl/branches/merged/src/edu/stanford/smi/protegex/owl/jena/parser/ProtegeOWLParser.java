@@ -328,38 +328,39 @@ public class ProtegeOWLParser {
 				}
 				while(runImplicitImports(imports));
 				
-				owlModel.setUndoEnabled(false);
+				boolean oldUndo = owlModel.setUndoEnabled(false);
 
-				// Assign rdf:List to any untyped lists
-				new RDFListPostProcessor(owlModel);
-				
-				tripleStoreModel.setActiveTripleStore(tripleStore);
-				uri2NameConverter.updateInternalState();
+				try {
+				    // Assign rdf:List to any untyped lists
+				    new RDFListPostProcessor(owlModel);
 
-				// Replace all temporary names with the final ones
-				replaceTemporaryNames();
-				owlModel.getNamespaceManager().update();
+				    tripleStoreModel.setActiveTripleStore(tripleStore);
+				    uri2NameConverter.updateInternalState();
 
-				// Clean up the temporary mess
-				tripleStoreModel.endTripleStoreChanges();
-				TripleStoreUtil.updateFrameInclusion(MergingNarrowFrameStore.get(owlModel),
-				                                     ((KnowledgeBase) owlModel).getSlot(Model.Slot.NAME));
-				// TT:ensure that the triple store of the default ontology has the right name set
-				// TODO: This check should not be here! The default ontology should never be null!
-				// This is caused by a problem in the namespace code
-				if (owlModel.getRDFResource(":") != null && owlModel.getRDFResource(":") instanceof OWLOntology) {
-					tripleStoreModel.getTopTripleStore().setName(owlModel.getDefaultOWLOntology().getURI());
+				    // Replace all temporary names with the final ones
+				    replaceTemporaryNames();
+				    owlModel.getNamespaceManager().update();
+
+				    // Clean up the temporary mess
+				    tripleStoreModel.endTripleStoreChanges();
+				    TripleStoreUtil.updateFrameInclusion(MergingNarrowFrameStore.get(owlModel),
+				                                         ((KnowledgeBase) owlModel).getSlot(Model.Slot.NAME));
+				    // TT:ensure that the triple store of the default ontology has the right name set
+				    // TODO: This check should not be here! The default ontology should never be null!
+				    // This is caused by a problem in the namespace code
+				    if (owlModel.getRDFResource(":") != null && owlModel.getRDFResource(":") instanceof OWLOntology) {
+				        tripleStoreModel.getTopTripleStore().setName(owlModel.getDefaultOWLOntology().getURI());
+				    }
+
+				    //added TT - I don't know if this is needed
+				    owlModel.getNamespaceManager().update();
+
+				    endTime = System.currentTimeMillis();
+
+				    activateSWRLFactoryIfNecessary(imports);
+				} finally {
+				    owlModel.setUndoEnabled(oldUndo);
 				}
-				
-				//added TT - I don't know if this is needed
-				owlModel.getNamespaceManager().update();
-				
-				endTime = System.currentTimeMillis();
-				
-				activateSWRLFactoryIfNecessary(imports);
-				
-				owlModel.setUndoEnabled(true);
-				
 				errorOntologyURI = null;
 				
 				Log.getLogger().info("... Loading completed after " + (System.currentTimeMillis() - startTime) + " ms");
