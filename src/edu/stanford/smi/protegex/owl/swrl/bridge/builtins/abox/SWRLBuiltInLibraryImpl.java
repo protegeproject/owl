@@ -42,7 +42,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
         for (OWLIndividual individual : SWRLOWLUtil.getAllIndividuals(getInvokingBridge().getOWLModel()))
           multiArgument.addArgument(new IndividualInfo(individual.getName()));
         arguments.set(0, multiArgument);
-        result = true;
+        result = !multiArgument.hasNoArguments();
       } else {
         String individualName = SWRLBuiltInUtil.getArgumentAsAnIndividualName(0, arguments);
         result = SWRLOWLUtil.isIndividual(getInvokingBridge().getOWLModel(), individualName, false);
@@ -83,7 +83,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
         for (OWLProperty property : SWRLOWLUtil.getPropertiesOfIndividual(getInvokingBridge().getOWLModel(), individualName))
           multiArgument.addArgument(new PropertyInfo(property.getName()));
         arguments.set(1, multiArgument);
-        result = true;        
+        result = !multiArgument.hasNoArguments();
       } else if (propertyValueSupplied) {
         propertyValue = SWRLBuiltInUtil.getArgumentAsAPropertyValue(2, arguments);
         result = SWRLOWLUtil.getNumberOfPropertyValues(getInvokingBridge().getOWLModel(), individualName, propertyName, propertyValue, true) != 0;

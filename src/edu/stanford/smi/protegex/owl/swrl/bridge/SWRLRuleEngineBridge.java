@@ -8,6 +8,8 @@ import edu.stanford.smi.protegex.owl.swrl.model.*;
 import edu.stanford.smi.protegex.owl.swrl.bridge.query.*;
 import edu.stanford.smi.protegex.owl.swrl.bridge.query.exceptions.ResultException;
 import edu.stanford.smi.protegex.owl.swrl.util.*;
+import edu.stanford.smi.protegex.owl.swrl.util.*;
+import edu.stanford.smi.protegex.owl.swrl.exceptions.*;
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.*;
 import edu.stanford.smi.protegex.owl.swrl.bridge.builtins.*;
 
@@ -88,8 +90,8 @@ public abstract class SWRLRuleEngineBridge implements Serializable
   {
     resetRuleEngine();
 
-    if (!owlModel.getInconsistentClasses().isEmpty()) 
-      throw new InconsistentKnowledgeBaseException("Cannot import rules from an inconsistent knowledge base");
+    if (SWRLOWLUtil.hasInconsistentClasses(owlModel))
+      throw new InconsistentKnowledgeBaseException("cannot import rules from an inconsistent knowledge base");
 
     importSWRLRules(); // Fills in importedSWRLRules, referencedClassNames, referencedPropertyNames, and referencedIndividualNames
 
@@ -257,7 +259,7 @@ public abstract class SWRLRuleEngineBridge implements Serializable
    */
   public IndividualInfo createIndividual() throws SWRLRuleEngineBridgeException
   {
-    String individualName = owlModel.createNewResourceName("SWRLCreated");
+    String individualName = SWRLOWLUtil.createNewResourceName(owlModel, "SWRLCreated");
     IndividualInfo individualInfo = new IndividualInfo(individualName, OWLNames.Cls.THING);
     
     createdIndividuals.put(individualName, individualInfo); 
@@ -271,13 +273,14 @@ public abstract class SWRLRuleEngineBridge implements Serializable
    */
   private void createCreatedIndividuals() throws SWRLRuleEngineBridgeException
   {
-    OWLNamedClass owlThingClass = owlModel.getOWLThingClass();
-
     for (IndividualInfo individualInfo: createdIndividuals.values()) {
       String individualName = individualInfo.getIndividualName();
-      if (owlModel.getOWLIndividual(individualName) != null) continue; // We have already created it.
-      RDFResource individual = owlThingClass.createInstance(individualName);
-      if (individual == null) throw new SWRLRuleEngineBridgeException("Cannot create OWL individual '" + individualName + "'.");
+      if (SWRLOWLUtil.isOWLIndividual(owlModel, individualName)) continue; // We have already created it.
+      try {
+        OWLIndividual individual = SWRLOWLUtil.createIndividualOfClass(owlModel, SWRLOWLUtil.getOWLThingClass(owlModel), individualName);
+      } catch (SWRLOWLUtilException e) {
+        throw new SWRLRuleEngineBridgeException("cannot create OWL individual '" + individualName + "': " + e.getMessage());
+      } // try
     } // for
   } // createCreatedIndividuals
 

@@ -50,7 +50,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
         for (OWLProperty property : SWRLOWLUtil.getUserDefinedOWLProperties(getInvokingBridge().getOWLModel()))
           multiArgument.addArgument(new PropertyInfo(property.getName()));
         arguments.set(0, multiArgument);
-        result = true;
+        result = !multiArgument.hasNoArguments();
       } else {
         String propertyName = SWRLBuiltInUtil.getArgumentAsAPropertyName(0, arguments);
         result = SWRLOWLUtil.isProperty(getInvokingBridge().getOWLModel(), propertyName, false);
@@ -78,7 +78,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
         for (OWLProperty property : SWRLOWLUtil.getUserDefinedOWLObjectProperties(getInvokingBridge().getOWLModel()))
           multiArgument.addArgument(new PropertyInfo(property.getName()));
         arguments.set(0, multiArgument);
-        result = true;
+        result = !multiArgument.hasNoArguments();
       } else {
         String propertyName = SWRLBuiltInUtil.getArgumentAsAPropertyName(0, arguments);
         result = SWRLOWLUtil.isObjectProperty(getInvokingBridge().getOWLModel(), propertyName, false);
@@ -106,7 +106,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
         for (OWLProperty property : SWRLOWLUtil.getUserDefinedOWLDatatypeProperties(getInvokingBridge().getOWLModel()))
           multiArgument.addArgument(new PropertyInfo(property.getName()));
         arguments.set(0, multiArgument);
-        result = true;
+        result = !multiArgument.hasNoArguments();
       } else {
         String propertyName = SWRLBuiltInUtil.getArgumentAsAPropertyName(0, arguments);
         result = SWRLOWLUtil.isDatatypeProperty(getInvokingBridge().getOWLModel(), propertyName, false);
@@ -133,7 +133,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
         for (OWLNamedClass cls : SWRLOWLUtil.getUserDefinedOWLNamedClasses(getInvokingBridge().getOWLModel()))
           multiArgument.addArgument(new PropertyInfo(cls.getName()));
         arguments.set(0, multiArgument);
-        result = true;
+        result = !multiArgument.hasNoArguments();
       } else {
         String className = SWRLBuiltInUtil.getArgumentAsAClassName(0, arguments);
         result = SWRLOWLUtil.isClass(getInvokingBridge().getOWLModel(), className, false);
@@ -345,7 +345,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
           MultiArgument multiArgument = new MultiArgument();
           for (OWLNamedClass superClass : superClasses) multiArgument.addArgument(new ClassInfo(superClass.getName()));
           arguments.set(0, multiArgument);
-          result = true;
+        result = !multiArgument.hasNoArguments();
         } // if
       } else {
         String superClassName = SWRLBuiltInUtil.getArgumentAsAClassName(0, arguments);
@@ -379,7 +379,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
           MultiArgument multiArgument = new MultiArgument();
           for (OWLNamedClass subClass : subClasses) multiArgument.addArgument(new ClassInfo(subClass.getName()));
           arguments.set(0, multiArgument);
-          result = true;
+        result = !multiArgument.hasNoArguments();
         } // if
       } else {
         String subClassName = SWRLBuiltInUtil.getArgumentAsAClassName(0, arguments);
@@ -412,7 +412,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
           MultiArgument multiArgument = new MultiArgument();
           for (OWLProperty subProperty : subProperties) multiArgument.addArgument(new PropertyInfo(subProperty.getName()));
           arguments.set(0, multiArgument);
-          result = true;
+          result = !multiArgument.hasNoArguments();
         } // if
       } else {
         String subPropertyName = SWRLBuiltInUtil.getArgumentAsAPropertyName(0, arguments);
@@ -445,7 +445,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
           MultiArgument multiArgument = new MultiArgument();
           for (OWLProperty superProperty : superProperties) multiArgument.addArgument(new PropertyInfo(superProperty.getName()));
           arguments.set(0, multiArgument);
-          result = true;
+          result = !multiArgument.hasNoArguments();
         } // if
       } else {
         String superPropertyName = SWRLBuiltInUtil.getArgumentAsAPropertyName(0, arguments);

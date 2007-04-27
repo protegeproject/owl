@@ -13,7 +13,8 @@ import java.text.SimpleDateFormat;
 
 /** 
  ** A class that supports temporal operations using the Gregorian calendar. In instance of this class is supplied with a
- ** DatetimeStringProcessor that governs how timestamps are converted to and from datetime strings. 
+ ** DatetimeStringProcessor that governs how timestamps are converted to and from datetime strings. Apart from the granularity constants,
+ ** users should generally not use this class directly but should instead use the Instant and Period classes in this package.
  */
 public class Temporal
 {
@@ -148,8 +149,8 @@ public class Temporal
   } // getStringGranularityRepresentation
 
   /**
-   ** Take a granule count (from the beginning of calendar time, i.e., '0000-01-01 00:00:00.000') at any granularity and convert it to a
-   ** Timestamp. Timestamps record time as milliseconds from January 1st 1970.
+   ** Take a granule count (from the beginning of calendar time, i.e., '0000-01-01 00:00:00.000' in JDBC timestamp format) at any
+   ** granularity and convert it to a Timestamp. Java Timestamps record time as milliseconds from January 1st 1970.
    */
   public static java.sql.Timestamp granuleCount2Timestamp(long granuleCount, int granularity) throws TemporalException
   {
@@ -167,7 +168,9 @@ public class Temporal
     return new java.sql.Timestamp(granuleCountInMilliSeconds);
   } // granuleCount2Timestamp
 
-  // Take a timestamp and return the number of granules at the specified granularity since 1 C.E.
+  /**
+   ** Take a timestamp and return the number of granules at the specified granularity since 1 C.E.
+   */
   public long timestamp2GranuleCount(Timestamp timestamp, int granularity) throws TemporalException
   {
     GregorianCalendar gc = new GregorianCalendar();
@@ -196,7 +199,9 @@ public class Temporal
     return resultGranuleCount;
   } // timestamp2GranuleCount
 
-  // Take a full specification datetime and return the number of granules at the specified granularity since 1 C.E.
+  /**
+   ** Take a full specification datetime and return the number of granules at the specified granularity since 1 C.E.
+   */
   public long datetimeString2GranuleCount(String datetimeString, int granularity) throws TemporalException
   {
     long years, months, days, hours, minutes, seconds, milliseconds;
@@ -223,7 +228,9 @@ public class Temporal
     return resultGranuleCount;
   } // datetimeString2GranuleCount
 
-  // Convert a granule count from one granularity to another. See the comment before conversion_table for an explanation.
+  /**
+   ** Convert a granule count from one granularity to another. 
+   */
   public static long convertGranuleCount(long granuleCount, int from_granularity, int to_granularity) throws TemporalException
   {
     long result, dayCount, monthCount, localGranuleCount, leapOffsetGranuleCount = 0;
@@ -593,7 +600,7 @@ public class Temporal
     return leapGranules;
   } // leapGranulesUpToMonth    
 
-  // Calculate the number of leap years up until a granule count specified at any granularity. TODO: very, very inefficient.
+  // Calculate the number of leap years up until a granule count specified at any granularity. TODO: rewrite - very, very inefficient
   private static long leapYearsUpToGranuleCount(long granuleCount, int granularity) throws TemporalException
   {
     long yearCount, granulesInYearToFeb29th, granulesInYear, granulesInDay, cumulativeGranuleCount, leapYearCount = 0;
