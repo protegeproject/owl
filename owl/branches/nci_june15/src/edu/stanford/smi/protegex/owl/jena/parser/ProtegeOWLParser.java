@@ -284,24 +284,27 @@ public class ProtegeOWLParser {
 					owlModel.flushCache();
 				}
 				while(runImplicitImports(imports));
-				owlModel.setUndoEnabled(false);
+				boolean oldUndo = owlModel.setUndoEnabled(false);
 
-				// Assign rdf:List to any untyped lists
-				new RDFListPostProcessor(owlModel);
-				tripleStoreModel.setActiveTripleStore(tripleStore);
-				uri2NameConverter.updateInternalState();
+				try {
+				    // Assign rdf:List to any untyped lists
+				    new RDFListPostProcessor(owlModel);
+				    tripleStoreModel.setActiveTripleStore(tripleStore);
+				    uri2NameConverter.updateInternalState();
 
-				// Replace all temporary names with the final ones
-				replaceTemporaryNames();
-				owlModel.getNamespaceManager().update();
+				    // Replace all temporary names with the final ones
+				    replaceTemporaryNames();
+				    owlModel.getNamespaceManager().update();
 
-				// Clean up the temporary mess
-				tripleStoreModel.endTripleStoreChanges();
-				TripleStoreUtil.updateFrameInclusion(MergingNarrowFrameStore.get(owlModel),
-				                                     ((KnowledgeBase) owlModel).getSlot(Model.Slot.NAME));
-				endTime = System.currentTimeMillis();
-				activateSWRLFactoryIfNecessary(imports);
-				owlModel.setUndoEnabled(true);
+				    // Clean up the temporary mess
+				    tripleStoreModel.endTripleStoreChanges();
+				    TripleStoreUtil.updateFrameInclusion(MergingNarrowFrameStore.get(owlModel),
+				                                         ((KnowledgeBase) owlModel).getSlot(Model.Slot.NAME));
+				    endTime = System.currentTimeMillis();
+				    activateSWRLFactoryIfNecessary(imports);
+				} finally {
+				    owlModel.setUndoEnabled(oldUndo);
+				}
 				System.out.println("... Loading completed after " + (System.currentTimeMillis() - startTime) + " ms");
 //			};
 //		};
