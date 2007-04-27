@@ -255,13 +255,16 @@ public class OWLFrameStore extends FrameStoreAdapter {
     public void copyFacetValuesIntoNamedClses() {
         boolean oldUndo = owlModel.isUndoEnabled();
         owlModel.setUndoEnabled(false);
-        for (Iterator it = ((AbstractOWLModel) owlModel).getRDFSClasses().iterator(); it.hasNext();) {
-            Cls cls = (Cls) it.next();
-            if (cls instanceof OWLRestriction) {  // Convert restrictions into facet overrides
-                copyFacetValuesIntoOWLNamedClass((OWLRestriction) cls);
+        try {
+            for (Iterator it = ((AbstractOWLModel) owlModel).getRDFSClasses().iterator(); it.hasNext();) {
+                Cls cls = (Cls) it.next();
+                if (cls instanceof OWLRestriction) {  // Convert restrictions into facet overrides
+                    copyFacetValuesIntoOWLNamedClass((OWLRestriction) cls);
+                }
             }
+        } finally {
+            owlModel.setUndoEnabled(oldUndo);
         }
-        owlModel.setUndoEnabled(oldUndo);
     }
 
 
