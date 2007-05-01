@@ -10,26 +10,32 @@ import java.util.Set;
  */
 public interface SWRLImp extends SWRLIndividual 
 {
-    SWRLImp createClone();
-
-    /**
-     * Deletes this and all depending objects of the rule.
+  SWRLImp createClone();
+  
+  /**
+   * Deletes this and all depending objects of the rule.
+   */
+  void deleteImp();
+  Set getReferencedInstances();
+  SWRLAtomList getBody();
+  void setBody(SWRLAtomList swrlAtomList);
+  SWRLAtomList getHead();
+  void setHead(SWRLAtomList swrlAtomList);
+  
+  /**
+   * Tries to parse the given text to create head and body
+   * of this Imp.  This will replace the old content.
+   * This method can be used to implement editing of existing
+   * rules without deleting them.
+   *
+   * @param parsableText a SWRL expression
      */
-    void deleteImp();
-    Set getReferencedInstances();
-    SWRLAtomList getBody();
-    void setBody(SWRLAtomList swrlAtomList);
-    SWRLAtomList getHead();
-    void setHead(SWRLAtomList swrlAtomList);
+  void setExpression(String parsableText) throws SWRLParseException;
+  
+  // Annotation-driven methods
+  boolean isEnabled();
+  void enable();
+  void disable();
 
-    /**
-     * Tries to parse the given text to create head and body
-     * of this Imp.  This will replace the old content.
-     * This method can be used to implement editing of existing
-     * rules without deleting them.
-     *
-     * @param parsableText a SWRL expression
-     */
-    void setExpression(String parsableText) throws SWRLParseException;
 } // SWRLImp
 

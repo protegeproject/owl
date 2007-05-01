@@ -337,4 +337,22 @@ public class SWRLFactory
     return result;
   } // getReferencedImps
 
+  public void enableAll()
+  {
+    Iterator iterator = getImps().iterator();
+    while (iterator.hasNext()) {
+      SWRLImp imp = (SWRLImp)iterator.next();
+      imp.enable();
+    } // while
+  } // enableAll
+
+  public void disableAll()
+  {
+    Iterator iterator = getImps().iterator();
+    while (iterator.hasNext()) {
+      SWRLImp imp = (SWRLImp)iterator.next();
+      imp.disable();
+    } // while
+  } // disable
+
 } // SWRLFactory

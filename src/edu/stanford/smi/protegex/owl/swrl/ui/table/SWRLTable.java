@@ -14,7 +14,8 @@ import edu.stanford.smi.protegex.owl.ui.code.SymbolErrorDisplay;
 import edu.stanford.smi.protegex.owl.ui.owltable.SymbolTable;
 
 import javax.swing.*;
-import javax.swing.table.TableColumn;
+import javax.swing.table.*;
+import java.awt.event.*;
 import javax.swing.event.ListSelectionEvent;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -28,17 +29,21 @@ import edu.stanford.smi.protegex.owl.swrl.bridge.BridgePluginManager;
  */
 public class SWRLTable extends SymbolTable implements Disposable {
 
-    public SWRLTable(SWRLTableModel tableModel, OWLModel owlModel) {
-        super(tableModel, owlModel, true, new SWRLSymbolPanel(owlModel, true, true));
-        TableColumn nameColumn = getColumnModel().getColumn(SWRLTableModel.COL_NAME);
-        TableColumn expressionColumn = getColumnModel().getColumn(SWRLTableModel.COL_EXPRESSION);
-        nameColumn.setPreferredWidth(150);
-        expressionColumn.setPreferredWidth(700);
-        setDefaultRenderer(SWRLImp.class, new ResourceRenderer());
-    }
-    protected SymbolEditorComponent createSymbolEditorComponent(OWLModel model,
-                                                                SymbolErrorDisplay errorDisplay) {
-        return new SWRLSymbolEditor(model, errorDisplay);
+  public SWRLTable(SWRLTableModel tableModel, OWLModel owlModel) {
+    super(tableModel, owlModel, true, new SWRLSymbolPanel(owlModel, true, true));
+    TableColumn enabledColumn = getColumnModel().getColumn(SWRLTableModel.COL_ENABLED);
+    TableColumn nameColumn = getColumnModel().getColumn(SWRLTableModel.COL_NAME);
+    TableColumn expressionColumn = getColumnModel().getColumn(SWRLTableModel.COL_EXPRESSION);
+    enabledColumn.setMaxWidth(60);
+    nameColumn.setPreferredWidth(100);
+    expressionColumn.setPreferredWidth(700);
+    //    setDefaultRenderer(SWRLImp.class, new ResourceRenderer());
+    //enabledColumn.setCellEditor(new DefaultCellEditor(new JCheckBox()));
+  }
+
+  protected SymbolEditorComponent createSymbolEditorComponent(OWLModel model, SymbolErrorDisplay errorDisplay) 
+  {
+    return new SWRLSymbolEditor(model, errorDisplay);
     }
     public void dispose() {
         SWRLTableModel tableModel = (SWRLTableModel) getSymbolTableModel();
@@ -95,17 +100,20 @@ public class SWRLTable extends SymbolTable implements Disposable {
 
     public void valueChanged(ListSelectionEvent e)
     {
-      super.valueChanged(e);
       int selectedRow = getSelectedRow();
+      int selectedColumn = getSelectedColumn();
       SWRLTableModel tableModel = (SWRLTableModel)getSymbolTableModel();
 
+      super.valueChanged(e);
+
       if (selectedRow != -1) {
-        String selectedRuleName = (String)tableModel.getValueAt(selectedRow, 0);
+        String selectedRuleName = (String)tableModel.getValueAt(selectedRow, SWRLTableModel.COL_NAME);
         BridgePluginManager.setSelectedRuleName(selectedRuleName);
       } // if
+
     } // valueChanged
 
-    public void replaceImp(SWRLImp oldImp, SWRLImp newImp) {
+      public void replaceImp(SWRLImp oldImp, SWRLImp newImp) {
         SWRLTableModel tableModel = (SWRLTableModel) getSymbolTableModel();
         int index = tableModel.indexOf(oldImp);
         if (tableModel.indexOf(newImp) >= 0) {
@@ -115,9 +123,41 @@ public class SWRLTable extends SymbolTable implements Disposable {
         oldImp.deleteImp();
     }
 
-    public void setSelectedRow(RDFResource RDFResource) {
-        SWRLTableModel tableModel = (SWRLTableModel) getSymbolTableModel();
-        int index = tableModel.indexOf((SWRLImp) RDFResource);
-        setSelectedRow(index);
-    }
-}
+  public void setSelectedRow(RDFResource RDFResource) {
+    SWRLTableModel tableModel = (SWRLTableModel) getSymbolTableModel();
+    int index = tableModel.indexOf((SWRLImp) RDFResource);
+    setSelectedRow(index);
+  }
+
+  protected JPopupMenu createPopupMenu() 
+  {
+    JPopupMenu popup = super.createPopupMenu();
+    
+    if (popup == null) popup = new JPopupMenu();
+    popup.add(new EnableAllRulesAction());
+    popup.add(new DisableAllRulesAction());
+
+    return popup;
+  } // createPopupMenu
+
+  private class EnableAllRulesAction extends AbstractAction
+  {
+    public EnableAllRulesAction() { super("Enable all rules"); }
+
+    public void actionPerformed(ActionEvent e)
+    {
+      ((SWRLTableModel)getSymbolTableModel()).enableAll();
+    } // actionPerformed
+  } // EnableAllRulesAction
+
+  private class DisableAllRulesAction extends AbstractAction
+  {
+    public DisableAllRulesAction() { super("Disable all rules"); }
+
+    public void actionPerformed(ActionEvent e)
+    {
+      ((SWRLTableModel)getSymbolTableModel()).disableAll();
+    } // actionPerformed
+  } // DisableAllRulesAction
+
+} // SWRLTable

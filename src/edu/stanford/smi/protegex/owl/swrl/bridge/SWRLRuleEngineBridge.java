@@ -294,7 +294,7 @@ public abstract class SWRLRuleEngineBridge implements Serializable
     Iterator iterator = rules.iterator();
     while (iterator.hasNext()) {
       SWRLImp rule = (SWRLImp)iterator.next();
-      importSWRLRule(rule);
+      if (rule.isEnabled()) importSWRLRule(rule);
     } // while
   } // importSWRLRules
 

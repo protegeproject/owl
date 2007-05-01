@@ -23,18 +23,20 @@ import java.util.*;
  */
 public class SWRLTableModel extends AbstractTableModel implements Disposable, SymbolTableModel 
 {
-  public final static int COL_NAME = 0;
-  public final static int COL_EXPRESSION = 1;
-  public final static int COL_COUNT = 2;
+  public final static int COL_ENABLED = 0;
+  public final static int COL_NAME = 1;
+  public final static int COL_EXPRESSION = 2;
+  public final static int COL_COUNT = 3;
   
   private List imps = new ArrayList();
   private RDFResource rdfResource;
   private OWLModel owlModel;
+  private SWRLFactory factory;
   
   public SWRLTableModel(OWLModel owlModel) 
   {
     this.owlModel = owlModel;
-    SWRLFactory factory = new SWRLFactory(owlModel);
+    factory = new SWRLFactory(owlModel);
     imps.addAll(factory.getImps());
     sortImps();
     initClsListener();
@@ -44,13 +46,13 @@ public class SWRLTableModel extends AbstractTableModel implements Disposable, Sy
   {
     this.rdfResource = resource;
     owlModel = resource.getOWLModel();
+    factory = new SWRLFactory(owlModel);
     addReferencingImps(resource);
     sortImps();
     initClsListener();
   } // SWRLTableModel
   
   public void dispose() { owlModel.getRDFSNamedClass(SWRLNames.Cls.IMP).removeClassListener(clsListener); }
-  public Class getColumnClass(int columnIndex) { return String.class; }
   public int getColumnCount() { return COL_COUNT; }
   public Icon getIcon(RDFResource resource) { return ProtegeUI.getIcon(resource);  }
   public SWRLImp getImp(int row) { return (SWRLImp)imps.get(row); }
@@ -61,9 +63,16 @@ public class SWRLTableModel extends AbstractTableModel implements Disposable, Sy
   public int getRowCount() { return imps.size(); }
   public int indexOf(SWRLImp imp) { return imps.indexOf(imp); }
 
+  public Class getColumnClass(int column) 
+  {
+    if (column == COL_ENABLED) return Boolean.class;
+    else return String.class;
+  } // getColumnClass
+
   public String getColumnName(int column) 
   {
-    if (column == COL_NAME)  return "Name";
+    if (column == COL_ENABLED)  return "Enabled";
+    else if (column == COL_NAME)  return "Name";
     else if (column == COL_EXPRESSION) return "Expression";
     else return null;
   } // getColumnName
@@ -72,12 +81,13 @@ public class SWRLTableModel extends AbstractTableModel implements Disposable, Sy
   {
     if (columnIndex == getSymbolColumnIndex()) return getImp(rowIndex).getBrowserText();
     else if (columnIndex == COL_NAME) return getImp(rowIndex).getName();
+    else if (columnIndex == COL_ENABLED) return new Boolean(getImp(rowIndex).isEnabled());
     else return null;
   } // getValueAt
   
   public boolean isCellEditable(int rowIndex, int columnIndex) 
   {
-    if (columnIndex == COL_NAME || columnIndex == COL_EXPRESSION) {
+    if (columnIndex == COL_ENABLED || columnIndex == COL_NAME || columnIndex == COL_EXPRESSION) {
       SWRLImp imp = getImp(rowIndex);
       return imp.isEditable();
     } else return false;
@@ -108,7 +118,11 @@ public class SWRLTableModel extends AbstractTableModel implements Disposable, Sy
         } else imp.setName(newName);
       }
       else ProtegeUI.getModalDialogFactory().showErrorMessageDialog(owlModel, newName + " is not a valid rule name.");
-    } // uif
+    } else if (columnIndex == COL_ENABLED) {
+      Boolean enabled = (Boolean)aValue;
+      if (enabled.booleanValue()) imp.enable(); 
+      else imp.disable();
+    } // if
   } // setValueAt
 
   public void setRowOf(SWRLImp imp, int index) 
@@ -119,6 +133,28 @@ public class SWRLTableModel extends AbstractTableModel implements Disposable, Sy
     imps.add(index, imp);
     fireTableRowsInserted(index, index);
   } // setRowOf
+
+  public void enableAll() 
+  { 
+    Iterator iterator = imps.iterator();
+    while (iterator.hasNext()) {
+      SWRLImp imp = (SWRLImp)iterator.next();
+      imp.enable();
+    } // while
+
+    fireTableRowsUpdated(0, getRowCount());
+  } // enableAll
+
+  public void disableAll() 
+  { 
+    Iterator iterator = imps.iterator();
+    while (iterator.hasNext()) {
+      SWRLImp imp = (SWRLImp)iterator.next();
+      imp.disable();
+    } // while
+    fireTableRowsUpdated(0, getRowCount());
+  } // disableAll
+
 
   private void addReferencingImps(RDFResource rdfResource) 
   {
