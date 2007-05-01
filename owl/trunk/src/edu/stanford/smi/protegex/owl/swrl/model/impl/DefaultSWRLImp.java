@@ -2,8 +2,8 @@
 package edu.stanford.smi.protegex.owl.swrl.model.impl;
 
 import edu.stanford.smi.protege.model.*;
-import edu.stanford.smi.protegex.owl.model.OWLModel;
-import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLIndividual;
+import edu.stanford.smi.protegex.owl.model.*;
+import edu.stanford.smi.protegex.owl.model.impl.*;
 import edu.stanford.smi.protegex.owl.swrl.model.*;
 import edu.stanford.smi.protegex.owl.swrl.parser.SWRLParseException;
 import edu.stanford.smi.protegex.owl.swrl.parser.SWRLParser;
@@ -17,32 +17,45 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-public class DefaultSWRLImp extends DefaultOWLIndividual implements SWRLImp {
+public class DefaultSWRLImp extends DefaultOWLIndividual implements SWRLImp 
+{
+  public static final String EMPTY_RULE_TEXT = "<EMPTY_RULE>";
+  private boolean isEnabled;
 
-    public static final String EMPTY_RULE_TEXT = "<EMPTY_RULE>";
+  public DefaultSWRLImp(KnowledgeBase kb, FrameID id) 
+  {
+    super(kb, id);
+    isEnabled = getIsEnabledAnnotation();
+  } // DefaultSWRLImp
 
-	public DefaultSWRLImp(KnowledgeBase kb, FrameID id) {
-        super(kb, id);
+  public DefaultSWRLImp() 
+  {
+    isEnabled = getIsEnabledAnnotation();
+  } // DefaultSWRLImp
+
+  public SWRLImp createClone() {
+    String text = getBrowserText();
+    OWLModel owlModel = (OWLModel) getKnowledgeBase();
+    SWRLParser parser = new SWRLParser(owlModel);
+    parser.setParseOnly(false);
+    try {
+      return parser.parse(text);
     }
-
-
-    public DefaultSWRLImp() {
+    catch (Exception ex) {
+      return null;  // Cannot happen
     }
+  }
 
-
-    public SWRLImp createClone() {
-        String text = getBrowserText();
-        OWLModel owlModel = (OWLModel) getKnowledgeBase();
-        SWRLParser parser = new SWRLParser(owlModel);
-        parser.setParseOnly(false);
-        try {
-            return parser.parse(text);
-        }
-        catch (Exception ex) {
-            return null;  // Cannot happen
-        }
-    }
-
+  private boolean getIsEnabledAnnotation()
+  {
+    OWLProperty property = getOWLModel().getOWLProperty(SWRLNames.Annotations.IS_ENABLED);
+    if (property == null) return true;
+    Object value = getPropertyValue(property);
+    if (value == null) return true;
+    if (!(value instanceof Boolean)) return true; // Should not happen
+    
+    return ((Boolean)value).booleanValue();
+  } // getIsEnabledAnnotation
 
     private void deleteHeadAndBody() {
         Slot directInstancesSlot = getKnowledgeBase().getSlot(Model.Slot.DIRECT_INSTANCES);
@@ -150,4 +163,28 @@ public class DefaultSWRLImp extends DefaultOWLIndividual implements SWRLImp {
     parser.setParseOnly(false);
     parser.parse(parsableText, this);
   }
+
+  public boolean isEnabled() 
+  { 
+    return isEnabled;
+  } // isEnabled
+
+  public void enable() 
+  { 
+    OWLProperty property = getOWLModel().getOWLProperty(SWRLNames.Annotations.IS_ENABLED);
+
+    if (property != null) setPropertyValue(property, Boolean.TRUE);
+    
+    isEnabled = true;
+  } // enable
+
+  public void disable() 
+  { 
+    OWLProperty property = getOWLModel().getOWLProperty(SWRLNames.Annotations.IS_ENABLED);
+
+    if (property != null) setPropertyValue(property, Boolean.FALSE);
+
+    isEnabled = false;
+  } // disable
+
 } // DefaultSWRLImp

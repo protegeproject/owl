@@ -49,6 +49,7 @@ public class SWRLTab extends AbstractTabWidget
     try {
       owlModel.getNamespaceManager().setPrefix(new URI(SWRLNames.SWRL_NAMESPACE), SWRLNames.SWRL_PREFIX);
       owlModel.getNamespaceManager().setPrefix(new URI(SWRLNames.SWRLB_NAMESPACE), SWRLNames.SWRLB_PREFIX);
+      owlModel.getNamespaceManager().setPrefix(new URI(SWRLNames.SWRLA_NAMESPACE), SWRLNames.SWRLA_PREFIX);
       owlModel.getNamespaceManager().setPrefix(new URI(SWRLNames.SWRLX_NAMESPACE), SWRLNames.SWRLX_PREFIX);
       owlModel.getNamespaceManager().setPrefix(new URI(SWRLNames.SWRLTBOX_NAMESPACE), SWRLNames.SWRLTBOX_PREFIX);
       owlModel.getNamespaceManager().setPrefix(new URI(SWRLNames.SWRLABOX_NAMESPACE), SWRLNames.SWRLABOX_PREFIX);
@@ -59,6 +60,7 @@ public class SWRLTab extends AbstractTabWidget
       
       importHelper.addImport(new URI(SWRLNames.SWRL_IMPORT));     
       importHelper.addImport(new URI(SWRLNames.SWRLB_IMPORT));
+      importHelper.addImport(new URI(SWRLNames.SWRLA_IMPORT));
       importHelper.addImport(new URI(SWRLNames.SWRLX_IMPORT));
       importHelper.addImport(new URI(SWRLNames.SWRLTBOX_IMPORT));
       importHelper.addImport(new URI(SWRLNames.SWRLABOX_IMPORT));
@@ -74,8 +76,8 @@ public class SWRLTab extends AbstractTabWidget
       from.setVisible(true);
     } catch (Exception ex) {
       ProtegeUI.getModalDialogFactory().showErrorMessageDialog(owlModel,
-                                                               "Could not activate SWRL support:\n" + ex +
-                                                               ".\nYour project might be in an inconsistent state now.");
+                                                               "Could not activate SWRLTab: " + ex +
+                                                               "\n. Your project might be in an inconsistent state now.");
       Log.getLogger().log(Level.SEVERE, "Exception caught", ex);
     }
   }
