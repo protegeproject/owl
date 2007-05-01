@@ -2,6 +2,7 @@ package edu.stanford.smi.protegex.owl.swrl.ui.code;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
@@ -169,13 +170,16 @@ public class SWRLTextAreaPanel extends JPanel implements ModalDialogFactory.Clos
 			}
     	});
         
-        frame.getContentPane().add(display, BorderLayout.CENTER);        
-        ComponentUtilities.pack(frame);
+    
         display.setResizeVertically(true);
-
-        ComponentUtilities.center(frame);       
         
-        frame.setTitle(SWRL_RULE_PANEL_TITLE);
+        frame.getContentPane().add(display, BorderLayout.CENTER);        
+        
+        frame.setPreferredSize(new Dimension(500, 500));
+        frame.setTitle(SWRL_RULE_PANEL_TITLE);        
+        
+        ComponentUtilities.pack(frame);
+        ComponentUtilities.center(frame);
         frame.setVisible(true);
         
         return frame;
