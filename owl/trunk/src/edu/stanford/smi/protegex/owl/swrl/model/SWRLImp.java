@@ -8,32 +8,19 @@ import java.util.Set;
  * @author Martin O'Connor  <moconnor@smi.stanford.edu>
  * @author Holger Knublauch  <holger@knublauch.com>
  */
-public interface SWRLImp extends SWRLIndividual {
-
-
+public interface SWRLImp extends SWRLIndividual 
+{
     SWRLImp createClone();
-
 
     /**
      * Deletes this and all depending objects of the rule.
      */
     void deleteImp();
-
-
     Set getReferencedInstances();
-
-
     SWRLAtomList getBody();
-
-
     void setBody(SWRLAtomList swrlAtomList);
-
-
     SWRLAtomList getHead();
-
-
     void setHead(SWRLAtomList swrlAtomList);
-
 
     /**
      * Tries to parse the given text to create head and body
@@ -44,6 +31,5 @@ public interface SWRLImp extends SWRLIndividual {
      * @param parsableText a SWRL expression
      */
     void setExpression(String parsableText) throws SWRLParseException;
-
 } // SWRLImp
 

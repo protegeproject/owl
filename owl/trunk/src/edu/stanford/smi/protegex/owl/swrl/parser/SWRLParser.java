@@ -21,7 +21,7 @@ public class SWRLParser {
   private SWRLFactory swrlFactory;
   private boolean parseOnly;
   private StringTokenizer tokenizer;
-    private String delimiters = " ?\n\t()[],\"" + AND_CHAR + IMP_CHAR; // Note space.
+  private String delimiters = " ?\n\t()[],\"" + AND_CHAR + IMP_CHAR; // Note space.
   private Collection xmlSchemaSymbols = XMLSchemaDatatypes.getSlotSymbols();
   private HashSet variables;
   private boolean inHead = false;
@@ -34,9 +34,28 @@ public class SWRLParser {
     variables = new HashSet();
   } // SWRLParser
 
-  public void setParseOnly(boolean parseOnly) {
-    this.parseOnly = parseOnly;
-  } // setParseOnly
+  public void setParseOnly(boolean parseOnly) { this.parseOnly = parseOnly; } 
+
+  /**
+   ** If the rule is correct and incomplete return 'true'; if the rule has errors or is correct and complete, return 'false'.
+   */
+  public boolean isCorrectAndIncomplete(String rule)
+  {
+    boolean oldParseOnly = parseOnly;
+    boolean result = false;
+
+    setParseOnly(true);
+
+    try {
+      parse(rule);
+    } catch (SWRLParseException e) {
+      if (e instanceof SWRLIncompleteRuleException) result = true;
+    } // catch
+
+    setParseOnly(oldParseOnly);
+
+    return result;
+  } // isCorrectAndIncomplete
 
   // This parser will throw a SWRLParseException if it finds errors in the supplied rule. If the rule is correct but incomplete, a
   // SWRLIncompleteRuleException (which is a subclass of SWRLParseException) will be thrown.
@@ -257,7 +276,7 @@ public class SWRLParser {
     
     if (!parseOnly) {
       OWLObjectProperty objectProperty = owlModel.getOWLObjectProperty(identifier);
-      if (objectProperty == null) throw new SWRLParseException("no datatype slot found for IndividualPropertyAtom: " + identifier);
+      if (objectProperty == null) throw new SWRLParseException("no datatype property found for IndividualPropertyAtom: " + identifier);
       atom = swrlFactory.createIndividualPropertyAtom(objectProperty, iObject1, iObject2);
     } // if
     
@@ -271,7 +290,7 @@ public class SWRLParser {
     RDFResource iObject;
     RDFObject dObject;
     SWRLAtom atom = null;
-    OWLDatatypeProperty datatypeSlot;
+    OWLDatatypeProperty datatypeProperty;
     String token, errorMessage = "Expecting literal qualification symbol '#' or closing parenthesis after second parameter of DatavaluedPropertyAtom' ";
     
     iObject = parseIObject();
@@ -289,8 +308,8 @@ public class SWRLParser {
     } else if (!token.equals(")")) throw new SWRLParseException(errorMessage + identifier + "'.");
     
     if (!parseOnly) {
-      datatypeSlot = owlModel.getOWLDatatypeProperty(identifier);
-      atom = swrlFactory.createDatavaluedPropertyAtom(datatypeSlot, iObject, dObject);
+      datatypeProperty = owlModel.getOWLDatatypeProperty(identifier);
+      atom = swrlFactory.createDatavaluedPropertyAtom(datatypeProperty, iObject, dObject);
     } // if
     
     return atom;

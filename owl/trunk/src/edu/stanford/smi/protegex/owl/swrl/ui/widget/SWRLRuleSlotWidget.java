@@ -18,7 +18,9 @@ import edu.stanford.smi.protege.util.LabeledComponent;
 import edu.stanford.smi.protege.widget.AbstractSlotWidget;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.swrl.model.SWRLImp;
+import edu.stanford.smi.protegex.owl.swrl.model.impl.DefaultSWRLImp;
 import edu.stanford.smi.protegex.owl.swrl.model.SWRLNames;
+import edu.stanford.smi.protegex.owl.swrl.parser.SWRLParser;
 import edu.stanford.smi.protegex.owl.swrl.parser.SWRLParseException;
 import edu.stanford.smi.protegex.owl.swrl.ui.SWRLProjectPlugin;
 import edu.stanford.smi.protegex.owl.swrl.ui.code.SWRLSymbolPanel;
@@ -26,13 +28,14 @@ import edu.stanford.smi.protegex.owl.swrl.ui.code.SWRLTextArea;
 
 public class SWRLRuleSlotWidget extends AbstractSlotWidget {
 	private static final String SWRL_RULE_LABEL = "SWRL Rule";
-	private static final String SWRL_RULE_INVALID_LABEL = "SWRL Rule - Invalid rule - not savable";
-	private static final String SWRL_RULE_INCOMPLETE_LABEL = "SWRL Rule";
+	private static final String SWRL_RULE_INVALID_LABEL = "SWRL Rule: invalid rule - not savable!";
+	private static final String SWRL_RULE_INCOMPLETE_LABEL = "SWRL Rule: incomplete rule - not yet savable";
 	
 	private SWRLTextArea swrlTextArea;
 	private LabeledComponent swrlTextAreaLabeledComponent;
 	
 	private String ruleExpressionInKb = new String();
+        private SWRLParser parser;
 
 	private FocusListener _focusListener = new FocusAdapter() {
 		public void focusLost(FocusEvent event) {
@@ -45,6 +48,8 @@ public class SWRLRuleSlotWidget extends AbstractSlotWidget {
 
 		setPreferredColumns(4);
 		setPreferredRows(5);
+
+                parser = new SWRLParser((OWLModel)getKnowledgeBase());
 	}
 
 
@@ -98,10 +103,11 @@ public class SWRLRuleSlotWidget extends AbstractSlotWidget {
 
 	protected String getWidgetIncompleteOrOKTitle() {
 		String newRule = swrlTextArea.getText().trim();
-        
-		String oldRule = ruleExpressionInKb.trim();
+                String oldRule = ruleExpressionInKb.trim();
 		
-		return (newRule.equals(oldRule) ? SWRL_RULE_LABEL : SWRL_RULE_INCOMPLETE_LABEL);
+                if (newRule.equals(oldRule)) return SWRL_RULE_LABEL;
+                else return (parser.isCorrectAndIncomplete(newRule) ? SWRL_RULE_INCOMPLETE_LABEL : SWRL_RULE_LABEL);
+
 	}
 	
 	@Override
@@ -121,7 +127,12 @@ public class SWRLRuleSlotWidget extends AbstractSlotWidget {
 		ruleExpressionInKb = imp == null ? "" : imp.getBrowserText();		
 		ruleExpressionInKb = SWRLTextArea.reformatText(ruleExpressionInKb);
 		
-		swrlTextArea.setText(ruleExpressionInKb);
+                if (ruleExpressionInKb.equals(DefaultSWRLImp.EMPTY_RULE_TEXT)) swrlTextArea.setText("");
+                else swrlTextArea.setText(ruleExpressionInKb);
+
+                swrlTextArea.getErrorSymbolDisplay().displayError((Throwable) null);
+                swrlTextArea.setBackground(Color.white);
+                setNormalBorder();
 	}
 
 
