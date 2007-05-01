@@ -46,10 +46,10 @@ public class SWRLRuleSlotWidget extends AbstractSlotWidget {
 	public void initialize() {
 		buildGUI();
 
-		setPreferredColumns(4);
+		setPreferredColumns(2);
 		setPreferredRows(5);
 
-                parser = new SWRLParser((OWLModel)getKnowledgeBase());
+        parser = new SWRLParser((OWLModel)getKnowledgeBase());
 	}
 
 
