@@ -68,7 +68,7 @@ public abstract class AbstractRDFSClass extends DefaultCls implements RDFSClass 
             
             clone = (RDFSClass) copier.getCopy();
             getOWLModel().commitTransaction();
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			getOWLModel().rollbackTransaction();
 			Log.getLogger().log(Level.WARNING, "There were errors while creating clone of " + this, e);
 		}
