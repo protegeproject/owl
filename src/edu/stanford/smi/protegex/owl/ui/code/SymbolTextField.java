@@ -94,9 +94,8 @@ public abstract class SymbolTextField extends JTextField
         String text = getText();
         int pos = getCaretPosition();
         int i = pos - 1;
-        while (i >= 0 && isIdChar(text.charAt(i))) {
-            i--;
-        }
+        while (i >= 0 && (isIdChar(text.charAt(i)) && text.charAt(i) == '?')) i--;
+
         String prefix = text.substring(i + 1, pos);
         RDFResource resource = ((RDFResource) comboBox.getSelectedItem());
         extendPartialName(prefix, resourceNameMatcher.getInsertString(resource));

@@ -86,10 +86,11 @@ public abstract class SymbolTextArea extends JTextArea
         String text = getText();
         int pos = getCaretPosition();
         int i = pos - 1;
-        while (i >= 0 && SymbolTextField.isIdChar(text.charAt(i))) {
+        while (i >= 0 && (SymbolTextField.isIdChar(text.charAt(i))) || text.charAt(i) == '?') {
             i--;
         }
         String prefix = text.substring(i + 1, pos);
+
         extendPartialName(prefix, ((Frame) comboBox.getSelectedItem()).getBrowserText());
         updateErrorDisplay();
         closeComboBox();
@@ -178,9 +179,8 @@ public abstract class SymbolTextArea extends JTextArea
         String text = getText();
         int pos = getCaretPosition();
         int i = pos - 1;
-        while (i >= 0 && SymbolTextField.isIdChar(text.charAt(i))) {
-            i--;
-        }
+        while (i >= 0 && SymbolTextField.isIdChar(text.charAt(i))) i--;
+
         String prefix = text.substring(i + 1, pos);
         String leftString = text.substring(0, i + 1);
         List resources = resourceNameMatcher.getMatchingResources(prefix, leftString, owlModel);

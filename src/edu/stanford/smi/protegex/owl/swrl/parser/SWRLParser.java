@@ -510,7 +510,9 @@ public class SWRLParser {
               long longValue = Long.parseLong(parsedString);
               if (!parseOnly) parsedEntity = owlModel.createRDFSLiteral(parsedString, owlModel.getXSDlong());
             } catch (Exception e5) { 
-              throw new SWRLParseException("Invalid literal '" + parsedString + "'."); 
+              String errorMessage = "Invalid literal '" + parsedString + "'.";
+              if (parseOnly) throw new SWRLIncompleteRuleException(errorMessage);
+              else throw new SWRLParseException(errorMessage);
             } // try
           } // try
         } // try
