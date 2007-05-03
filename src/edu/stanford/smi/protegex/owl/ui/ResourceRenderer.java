@@ -1,0 +1,293 @@
+package edu.stanford.smi.protegex.owl.ui;
+
+import edu.stanford.smi.protege.model.Cls;
+import edu.stanford.smi.protege.model.Frame;
+import edu.stanford.smi.protege.model.SimpleInstance;
+import edu.stanford.smi.protege.model.Slot;
+import edu.stanford.smi.protege.resource.Colors;
+import edu.stanford.smi.protege.ui.FrameRenderer;
+import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
+import edu.stanford.smi.protegex.owl.model.*;
+import edu.stanford.smi.protegex.owl.model.classparser.manchester.ManchesterOWLParserUtil;
+import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLOntology;
+import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
+
+import javax.swing.*;
+import java.awt.*;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.StringTokenizer;
+
+/**
+ * A FrameRenderer which displays a small A behind those anonymous classes
+ * that do have annotation properties.
+ *
+ * @author Holger Knublauch  <holger@knublauch.com>
+ */
+public class ResourceRenderer extends FrameRenderer {
+
+    /**
+     * The Frame that is focused, i.e. displayed with a frame around it
+     */
+    private Frame focusedFrame;
+
+    protected RDFSClass loadedClass;
+
+    protected SimpleInstance loadedInstance;
+
+    public static final Color FOCUS_COLOR = new Color(128, 0, 255);
+
+    private Slot directSuperclassesSlot;
+
+    private HashMap colorMap;
+
+    private HashMap greyedColorMap;
+
+    private static final Color RESTRICTION_KEYWORD_COLOR = Color.MAGENTA.darker();
+
+    private static final Color GREYED_RESTRICTION_KEYWORD_COLOR = new Color(180, 100, 200);
+
+    private static final Color LOGICAL_OPERAND_KEYWORD_COLOR = Color.CYAN.darker();
+
+    private static final Color GREYED_LOGICAL_OPERAND_COLOR = new Color(120, 160, 245);
+
+    private static final Color COMMENT_COLOR = Color.GRAY;
+
+
+    public ResourceRenderer() {
+        this(null);
+    }
+
+
+    public ResourceRenderer(Slot directSuperclassesSlot) {
+        this.directSuperclassesSlot = directSuperclassesSlot;
+        setDisplayHiddenIcon(false);
+        colorMap = new HashMap();
+        greyedColorMap = new HashMap();
+        addKeyword(ManchesterOWLParserUtil.getMinKeyword(), RESTRICTION_KEYWORD_COLOR, GREYED_RESTRICTION_KEYWORD_COLOR);
+        addKeyword(ManchesterOWLParserUtil.getExactKeyword(), RESTRICTION_KEYWORD_COLOR, GREYED_RESTRICTION_KEYWORD_COLOR);
+        addKeyword(ManchesterOWLParserUtil.getMaxKeyword(), RESTRICTION_KEYWORD_COLOR, GREYED_RESTRICTION_KEYWORD_COLOR);
+        addKeyword(ManchesterOWLParserUtil.getSomeKeyword(), RESTRICTION_KEYWORD_COLOR, GREYED_RESTRICTION_KEYWORD_COLOR);
+        addKeyword(ManchesterOWLParserUtil.getAllKeyword(), RESTRICTION_KEYWORD_COLOR, GREYED_RESTRICTION_KEYWORD_COLOR);
+        addKeyword(ManchesterOWLParserUtil.getHasKeyword(), RESTRICTION_KEYWORD_COLOR, GREYED_RESTRICTION_KEYWORD_COLOR);
+        addKeyword(ManchesterOWLParserUtil.getAndKeyword(), LOGICAL_OPERAND_KEYWORD_COLOR, GREYED_LOGICAL_OPERAND_COLOR);
+        addKeyword(ManchesterOWLParserUtil.getOrKeyword(), LOGICAL_OPERAND_KEYWORD_COLOR, GREYED_LOGICAL_OPERAND_COLOR);
+        addKeyword(ManchesterOWLParserUtil.getNotKeyword(), LOGICAL_OPERAND_KEYWORD_COLOR, GREYED_LOGICAL_OPERAND_COLOR);
+
+    }
+
+
+    protected void addKeyword(String keyWord, Color color, Color greyedColor) {
+        colorMap.put(keyWord, color);
+        colorMap.put(keyWord.toLowerCase(), color);
+        colorMap.put(keyWord.toUpperCase(), color);
+        greyedColorMap.put(keyWord, greyedColor);
+        greyedColorMap.put(keyWord.toLowerCase(), greyedColor);
+        greyedColorMap.put(keyWord.toUpperCase(), greyedColor);
+    }
+
+
+    public static void addAnnotationFlag(FrameRenderer renderer, Cls cls) {
+        for (Iterator it = cls.getKnowledgeBase().getSlots().iterator(); it.hasNext();) {
+            Slot slot = (Slot) it.next();
+            if (slot instanceof OWLProperty && ((OWLProperty) slot).isAnnotationProperty()) {
+                if (cls.getDirectOwnSlotValues(slot).size() > 0) {
+                    renderer.appendIcon(OWLIcons.getImageIcon("Annotations"));
+                    return;
+                }
+            }
+        }
+    }
+
+
+    private void addInverseSlot(Slot slot) {
+        Slot inverse = slot.getInverseSlot();
+        if (inverse != null) {
+            appendText(" " + (char) 0x2194 + " " + inverse.getBrowserText());
+        }
+    }
+
+
+    private void addNamedEquivalentClses(OWLNamedClass cls) {
+        for (Iterator it = ((Cls) cls).getDirectOwnSlotValues(directSuperclassesSlot).iterator(); it.hasNext();) {
+            Cls nextCls = (Cls) it.next();
+            if (nextCls instanceof OWLNamedClass) {
+                OWLNamedClass otherCls = (OWLNamedClass) nextCls;
+                if (((Cls) otherCls).getDirectOwnSlotValues(directSuperclassesSlot).contains(cls)) {
+                    appendText(" " + (char) 0x2261 + " " + otherCls.getBrowserText());
+                }
+            }
+        }
+    }
+
+
+    protected Icon getClsIcon(Cls cls) {
+        return cls.getIcon();
+    }
+
+
+    private Color getTextColor(String text) {
+        Color c = null;
+        if (_grayedText == false) {
+            c = (Color) colorMap.get(text);
+        }
+        else {
+            c = (Color) greyedColorMap.get(text);
+        }
+        return c;
+    }
+
+
+    protected void paintString(Graphics graphics,
+                               String s,
+                               Point point,
+                               Color color,
+                               Dimension dimension) {
+        if (loadedClass != null) {
+            if (loadedClass instanceof OWLClass) {
+                if (color != null) {
+                    graphics.setColor(color);
+                }
+                int y = (dimension.height + _fontMetrics.getAscent()) / 2 - 2; // -2 is a bizarre fudge factor that makes it look
+                // better!
+                StringTokenizer tok = new StringTokenizer(s, " ()[]{}", true);
+                while (tok.hasMoreTokens()) {
+                    String curTok = tok.nextToken();
+                    Color oldColor = graphics.getColor();
+                    Font oldFont = graphics.getFont();
+                    Color highlightColor = null;
+                    int fontStyle = Font.PLAIN;
+                    if (loadedClass instanceof OWLAnonymousClass) {
+                        if (s.startsWith("//")) {
+                            highlightColor = COMMENT_COLOR;
+                            fontStyle = Font.ITALIC;
+                        }
+                        else {
+                            highlightColor = getTextColor(curTok);
+                            fontStyle = Font.BOLD;
+                        }
+                    }
+                    if (highlightColor != null) {
+                        graphics.setColor(highlightColor);
+                        graphics.setFont(graphics.getFont().deriveFont(fontStyle));
+                    }
+                    else {
+                        OWLModel model = loadedClass.getOWLModel();
+                        if (model instanceof JenaOWLModel) {
+                            Frame f = model.getRDFResource(curTok);
+                            if (f instanceof OWLNamedClass) {
+                                if (((OWLNamedClass) f).isConsistent() == false) {
+                                    graphics.setColor(Color.RED);
+                                    graphics.setFont(graphics.getFont().deriveFont(Font.BOLD));
+                                }
+                            }
+                        }
+                    }
+                    graphics.drawString(curTok, point.x, y);
+                    point.x += graphics.getFontMetrics().stringWidth(curTok);
+                    graphics.setColor(oldColor);
+                    graphics.setFont(oldFont);
+                }
+            }
+            else {
+                super.paintString(graphics, s, point, color, dimension);
+            }
+        }
+        else {
+            if (loadedInstance != null) {
+                OWLModel model = ((RDFResource) loadedInstance).getOWLModel();
+                if (loadedInstance.getDirectType() == model.getOWLOntologyClass()) {
+                    if (!((DefaultOWLOntology) loadedInstance).isAssociatedTriplestoreEditable()) {
+                        color = Color.GRAY;
+                        graphics.setFont(graphics.getFont().deriveFont(Font.ITALIC));
+                    }
+                }
+            }
+            super.paintString(graphics, s, point, color, dimension);
+        }
+    }
+
+
+    protected void loadCls(Cls cls) {
+        setMainIcon(getClsIcon(cls));
+        loadClsAfterIcon(cls);
+    }
+
+
+    public void load(Object o) {
+        super.load(o);
+        if (o instanceof RDFSClass) {
+            loadedClass = (RDFSClass) o;
+        }
+        else if (o instanceof SimpleInstance) {
+            loadedInstance = (SimpleInstance) o;
+        }
+    }
+
+
+    protected void loadClsAfterIcon(Cls cls) {
+        setMainText(cls.getBrowserText());
+        appendText(getInstanceCountString(cls));
+        setBackgroundSelectionColor(Colors.getClsSelectionColor());
+        if (cls instanceof RDFSClass) {
+            if (cls instanceof OWLAnonymousClass) {
+                addAnnotationFlag(this, cls);
+            }
+           /* else if (directSuperclassesSlot != null && cls instanceof OWLNamedClass) {
+                addNamedEquivalentClses((OWLNamedClass) cls);
+            }*/
+            if (cls instanceof Deprecatable && ((Deprecatable) cls).isDeprecated()) {
+                addIcon(OWLIcons.getDeprecatedIcon());
+            }
+            loadedClass = (RDFSClass) cls;
+        }
+        else {
+            loadedClass = null;
+        }
+    }
+
+
+    protected void loadSlot(Slot slot) {
+        super.loadSlot(slot);
+        addInverseSlot(slot);
+        if (slot instanceof Deprecatable && ((Deprecatable) slot).isDeprecated()) {
+            addIcon(OWLIcons.getDeprecatedIcon());
+        }
+    }
+
+
+    public void paint(Graphics g) {
+        super.paint(g);
+        if (loadedClass != null && focusedFrame != null) {
+            int ICON_TEXT_GAP = 3;
+            int baseX = ICON_TEXT_GAP + getMainIcon().getIconWidth();
+            String str = getMainText();
+            int len = str.length();
+            String browserText = focusedFrame.getBrowserText();
+            int browserTextLen = browserText.length();
+            for (int i = 0; i < len; i++) {
+                if (i == 0 || !isOWLNameCharacter(str.charAt(i - 1))) {
+                    if (str.regionMatches(i, browserText, 0, browserTextLen) &&
+                        (i + browserTextLen >= len || !isOWLNameCharacter(str.charAt(i + browserTextLen)))) {
+                        g.setColor(FOCUS_COLOR);
+                        int x = baseX + _fontMetrics.stringWidth(str.substring(0, i));
+                        int y = getHeight() - 1;
+                        int width = _fontMetrics.stringWidth(browserText);
+                        g.drawRect(x - 1, 0, width + 2, y);
+                        i += browserTextLen;
+                    }
+                }
+            }
+        }
+    }
+
+
+    private boolean isOWLNameCharacter(char c) {
+        return Character.isJavaIdentifierPart(c) || c == '-';
+    }
+
+
+    public void setFocusedFrame(Frame frame) {
+        focusedFrame = frame;
+    }
+}
