@@ -43,8 +43,7 @@ public class ProtegeFromOWLFilesCreateProjectPlugin
     }
 
 
-    protected Project buildNewProject(KnowledgeBaseFactory factory) {
-        ProtegeOWLParser.inUI = true;
+    protected Project buildNewProject(KnowledgeBaseFactory factory) {        
         Project project = super.buildNewProject(factory);
         if (project != null) {
             try {
@@ -58,8 +57,7 @@ public class ProtegeFromOWLFilesCreateProjectPlugin
                         "Error",
                         JOptionPane.ERROR_MESSAGE);
             }
-        }
-        ProtegeOWLParser.inUI = true;
+        }        
         return project;
     }
 
