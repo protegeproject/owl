@@ -86,10 +86,11 @@ public abstract class SymbolTextArea extends JTextArea
         String text = getText();
         int pos = getCaretPosition();
         int i = pos - 1;
-        while (i >= 0 && SymbolTextField.isIdChar(text.charAt(i))) {
+        while (i >= 0 && (SymbolTextField.isIdChar(text.charAt(i))) || text.charAt(i) == '?') {
             i--;
         }
         String prefix = text.substring(i + 1, pos);
+
         extendPartialName(prefix, ((Frame) comboBox.getSelectedItem()).getBrowserText());
         updateErrorDisplay();
         closeComboBox();
@@ -178,9 +179,8 @@ public abstract class SymbolTextArea extends JTextArea
         String text = getText();
         int pos = getCaretPosition();
         int i = pos - 1;
-        while (i >= 0 && SymbolTextField.isIdChar(text.charAt(i))) {
-            i--;
-        }
+        while (i >= 0 && SymbolTextField.isIdChar(text.charAt(i))) i--;
+
         String prefix = text.substring(i + 1, pos);
         String leftString = text.substring(0, i + 1);
         List resources = resourceNameMatcher.getMatchingResources(prefix, leftString, owlModel);
@@ -240,7 +240,7 @@ public abstract class SymbolTextArea extends JTextArea
 
 
     private boolean handleDown() {
-        if (comboBox != null && comboBox.isVisible()) {
+    	 if (isComboBoxVisible()) { 
             int index = comboBox.getSelectedIndex();
             if (index < comboBox.getItemCount() - 1) {
                 comboBox.setSelectedIndex(index + 1);
@@ -476,7 +476,7 @@ public abstract class SymbolTextArea extends JTextArea
     }
 
 
-    private void updateErrorDisplay() {
+    protected void updateErrorDisplay() {
         String uniCodeText = getText();
         try {
             checkUniCodeExpression(uniCodeText);
@@ -487,5 +487,9 @@ public abstract class SymbolTextArea extends JTextArea
             errorDisplay.setErrorFlag(true);
             setBackground(new Color(240, 240, 240));
         }
+    }
+    
+    public SymbolErrorDisplay getErrorSymbolDisplay() {
+    	return errorDisplay;
     }
 }
