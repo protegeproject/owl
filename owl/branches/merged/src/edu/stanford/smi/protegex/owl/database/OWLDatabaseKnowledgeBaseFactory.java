@@ -51,8 +51,7 @@ public class OWLDatabaseKnowledgeBaseFactory extends DatabaseKnowledgeBaseFactor
 
 
     public KnowledgeBase createKnowledgeBase(Collection errors) {   	
-    	
-	    ProtegeOWLParser.inUI = Application.getWelcomeDialog() != null;              
+    	         
         ResourceSelectionAction.setActivated(false);
               
         OWLDatabaseModel owlModel = new OWLDatabaseModel(this);
