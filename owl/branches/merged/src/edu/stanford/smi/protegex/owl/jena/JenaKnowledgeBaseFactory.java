@@ -8,22 +8,19 @@ import java.util.logging.Level;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.util.FileUtils;
 
-import edu.stanford.smi.protege.Application;
-
 import edu.stanford.smi.protege.model.KnowledgeBase;
 import edu.stanford.smi.protege.model.KnowledgeBaseSourcesEditor;
 import edu.stanford.smi.protege.model.Project;
 import edu.stanford.smi.protege.model.framestore.FrameStore;
 import edu.stanford.smi.protege.model.framestore.NarrowFrameStore;
 import edu.stanford.smi.protege.server.ClientInitializerKnowledgeBaseFactory;
+import edu.stanford.smi.protege.ui.ProjectManager;
 import edu.stanford.smi.protege.util.ApplicationProperties;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protege.util.MessageError;
 import edu.stanford.smi.protege.util.PropertyList;
 import edu.stanford.smi.protege.util.URIUtilities;
 import edu.stanford.smi.protegex.owl.database.OWLDatabaseModel;
-import edu.stanford.smi.protegex.owl.database.triplestore.DatabaseTripleStoreModel;
-import edu.stanford.smi.protegex.owl.jena.parser.ProtegeOWLParser;
 import edu.stanford.smi.protegex.owl.jena.triplestore.JenaTripleStoreModel;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.impl.OWLNamespaceManager;
@@ -75,13 +72,14 @@ public class JenaKnowledgeBaseFactory implements OWLKnowledgeBaseFactory, Client
 
 
     public KnowledgeBase createKnowledgeBase(Collection errors) {
-	    ProtegeOWLParser.inUI = Application.getWelcomeDialog() != null;
-        useStandalone = ProtegeOWLParser.inUI == false;
+    	//have to test this in a different way..
+    	boolean inUI = ProjectManager.getProjectManager().getCurrentProjectView() == null;
+        useStandalone = inUI == false;
         OWLNamespaceManager namespaceManager = new OWLNamespaceManager();
         ResourceSelectionAction.setActivated(true);
 	    JenaOWLModel owlModel = new JenaOWLModel(this, namespaceManager);
         owlModel.getRepositoryManager().addDefaultRepositories();
-	    if(ProtegeOWLParser.inUI) {
+	    if(inUI) {
 		    owlModel.getTaskManager().setProgressDisplay(new ProgressDisplayDialog());
 	    }
         return owlModel;
