@@ -33,20 +33,26 @@ public class AnnotationsTable extends TriplesTable {
 
     public AnnotationsTable(Project project, AnnotationsTableModel model) {
         super(project, model, "annotation");
+       
         TableColumn valueColumn = getColumnModel().getColumn(TriplesTableModel.COL_VALUE);
         AnnotationsValueRenderer renderer = new AnnotationsValueRenderer();
+        
         OWLModel owlModel = (OWLModel) project.getKnowledgeBase();
+        
         valueColumn.setCellRenderer(renderer);
         valueColumn.setCellEditor(new AnnotationsValueEditor(owlModel, this));
-	    valueColumn.setPreferredWidth(800);
+	    valueColumn.setPreferredWidth(600);
+	    
 	    TableColumn propertyColumn = getColumnModel().getColumn(AnnotationsTableModel.COL_PROPERTY);
 	    propertyColumn.setCellRenderer(renderer);
 	    propertyColumn.setPreferredWidth(200);
-		// Lang Column (always the last column)
+		
+	    // Lang Column (always the last column)
 	    TableColumn langColumn = getColumnModel().getColumn(getColumnCount() - 1);
         langColumn.setCellRenderer(renderer);
         langColumn.setCellEditor(new AnnotationsLangEditor(owlModel, this));
         // Set the default row height to be that of a text field
+        
         setRowHeight(new JTextField().getPreferredSize().height);
         setGridColor(Color.LIGHT_GRAY);
         setShowGrid(true);
