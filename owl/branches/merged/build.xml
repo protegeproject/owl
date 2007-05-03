@@ -215,7 +215,7 @@
                debug = "${debug}"
 	       source = "${source}">
             <classpath refid="classpath.compile"/>
-            <compilerarg value="-Xlint:all"/>
+          <!--  <compilerarg value="-Xlint:all"/> -->
         </javac>
         <copy todir="${classes}/edu/stanford/smi/protegex/owl/jena" 
               file="${src}/edu/stanford/smi/protegex/owl/jena/OWL.pprj"/>
