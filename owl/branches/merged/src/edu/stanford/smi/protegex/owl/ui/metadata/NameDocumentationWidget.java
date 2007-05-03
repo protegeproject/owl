@@ -1,5 +1,12 @@
 package edu.stanford.smi.protegex.owl.ui.metadata;
 
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.util.List;
+
+import javax.swing.JPanel;
+
 import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.Facet;
 import edu.stanford.smi.protege.model.Model;
@@ -7,11 +14,6 @@ import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.RDFSNames;
 import edu.stanford.smi.protegex.owl.ui.widget.MultiWidgetPropertyWidget;
-
-import javax.swing.*;
-import javax.swing.text.JTextComponent;
-import java.awt.*;
-import java.util.List;
 
 /**
  * A combined widget with name and documentation side by side.
@@ -31,7 +33,8 @@ public class NameDocumentationWidget extends MultiWidgetPropertyWidget {
         nameWidget = new RDFResourceNameWidget();
         addNestedWidget(nameWidget, Model.Slot.NAME, "Name", "Name");
 
-        textAreaWidget = new AnnotationTextAreaWidget(); //new OWLCommentsWidget();
+        textAreaWidget = new AnnotationTextAreaWidget(); //new OWLCommentsWidget();   
+        
         addNestedWidget(textAreaWidget, RDFSNames.Slot.COMMENT, "Comment", "Comment");
     }
 
@@ -50,11 +53,8 @@ public class NameDocumentationWidget extends MultiWidgetPropertyWidget {
 
     public void initialize() {
         super.initialize();
-        nameWidget.removeAll();
-        JTextComponent textComponent = nameWidget.getTextComponent();
-        nameWidget.add(BorderLayout.CENTER, textComponent);
-        nameWidget.add(BorderLayout.EAST, nameWidget.getToolBar());
-        setAllMode(true);
+        setPreferredColumns(2);
+        setPreferredRows(2);
     }
 
 
