@@ -22,3 +22,13 @@ Starting the merge process:
      svn merge $q/trunk@2041 $q/trunk@5937 .
 
 There was no other svn activity during this process.
+
+ PREPARING to move  to the trunk
+
+ p=http://smi-protege/repos/protege/owl
+swrl=src/edu/stanford/smi/protegex/owl/swrl
+svn rm $p/branches/merged/$swrl
+svn copy $p/trunk/$swrl $p/branches/merged/$swrl
+svn update
+  revision = 6261
+svn merge $p/trunk@5937 $p/trunk@6240 . 
