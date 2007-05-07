@@ -80,13 +80,17 @@ public abstract class SymbolTextArea extends JTextArea
         });
         setFont(getFont().deriveFont((float) 16));
     }
+    
+    public JComboBox getComboBox() {
+        return comboBox;
+    }
 
 
-    private void acceptSelectedFrame() {
+    protected void acceptSelectedFrame() {
         String text = getText();
         int pos = getCaretPosition();
         int i = pos - 1;
-        while (i >= 0 && (SymbolTextField.isIdChar(text.charAt(i))) || text.charAt(i) == '?') {
+        while (i >= 0 && SymbolTextField.isIdChar(text.charAt(i))) {
             i--;
         }
         String prefix = text.substring(i + 1, pos);
@@ -146,7 +150,7 @@ public abstract class SymbolTextArea extends JTextArea
     protected abstract void checkUniCodeExpression(String text) throws Throwable;
 
 
-    private void closeComboBox() {
+    protected void closeComboBox() {
         removeAll();
     }
 
@@ -165,7 +169,7 @@ public abstract class SymbolTextArea extends JTextArea
     }
 
 
-    private void extendPartialName(String prefix, String fullName) {
+    protected void extendPartialName(String prefix, String fullName) {
         try {
             getDocument().remove(getCaretPosition() - prefix.length(), prefix.length());
             getDocument().insertString(getCaretPosition(), fullName, null);
