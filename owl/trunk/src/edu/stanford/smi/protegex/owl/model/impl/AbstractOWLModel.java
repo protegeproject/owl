@@ -3291,8 +3291,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
             if (project.isMultiUserClient()) {
                 FrameStoreManager fsm = getFrameStoreManager();
-                fsm.removeFrameStore(getOWLFrameStore());
-                owlFrameStore = null;
+                fsm.setEnabled(getOWLFrameStore(), false);
             }
 
             protegeClassificationStatusProperty.setVisible(false);
