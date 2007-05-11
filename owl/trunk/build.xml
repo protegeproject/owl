@@ -288,10 +288,7 @@
             <fileset dir="${etc}">
                 <include name="plugin.properties"/>
                 <include name="ont-policy.rdf"/>
-                <include name="OWLProfiles.owl"/>
-                <include name="protege.owl"/>
-                <include name="swrl.owl"/>
-                <include name="swrlb.owl"/>
+                <include name="*.owl"/>
                 <exclude name="MANIFEST.MF"/>
                 <exclude name="OWL.pprj"/>
             </fileset>
