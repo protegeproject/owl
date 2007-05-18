@@ -1,6 +1,8 @@
 package edu.stanford.smi.protegex.owl.ui.components.triples;
 
 import com.hp.hpl.jena.datatypes.xsd.impl.XMLLiteralType;
+
+import edu.stanford.smi.protege.model.Instance;
 import edu.stanford.smi.protege.ui.FrameComparator;
 import edu.stanford.smi.protegex.owl.model.*;
 import edu.stanford.smi.protegex.owl.model.event.PropertyValueAdapter;
@@ -311,7 +313,7 @@ public class TriplesTableModel extends AbstractTableModel {
                     }
                 }
                 OWLModel owlModel = property.getOWLModel();
-                return (property instanceof OWLDatatypeProperty &&
+                return ((property instanceof OWLDatatypeProperty || (property.isAnnotationProperty() && !(value instanceof Instance))) &&
                         !property.isReadOnly() &&
                         owlModel.getTripleStoreModel().isActiveTriple(subject, property, value)) ||
                        getDefaultProperties().contains(property) && value == null;
