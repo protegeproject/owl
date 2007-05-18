@@ -139,12 +139,16 @@ class RDFPropertyPostProcessor {
                 newType = owlModel.getOWLObjectPropertyClass();
             }
         }
+        
+        /*
+	    // TT: Comment this out for support for simple annotation types
         if (hasNoOtherType) {
             if (types.contains(owlModel.getOWLAnnotationPropertyClass())) {
                 newType = owlModel.getOWLDatatypePropertyClass();
             }
             property.addDirectType(newType);
         }
+        */
 
         // Ensure that the special types are at the end of the types list
         if (property.getDirectTypes().size() > 1) {
