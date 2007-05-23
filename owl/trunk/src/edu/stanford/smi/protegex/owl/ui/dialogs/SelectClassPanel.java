@@ -171,8 +171,8 @@ public class SelectClassPanel extends SelectableContainer{
 			}
         }
 
-        public void onSelectionChange() {
-            OWLNamedClass superclass = ((OWLNamedClass)CollectionUtilities.getFirstItem(getSelection()));
+        public void onSelectionChange() {        
+        	RDFSClass superclass = ((RDFSClass)CollectionUtilities.getFirstItem(getSelection()));
             setAllowed(superclass instanceof RDFSNamedClass);
         }
     }
@@ -223,7 +223,7 @@ public class SelectClassPanel extends SelectableContainer{
         }
 
         public void onSelectionChange() {
-            OWLNamedClass siblingclass = ((OWLNamedClass)CollectionUtilities.getFirstItem(getSelection()));
+            RDFSClass siblingclass = ((RDFSClass)CollectionUtilities.getFirstItem(getSelection()));
             ClassTree tree = (ClassTree)getSelectable();
             LazyTreeRoot root = (LazyTreeRoot)tree.getModel().getRoot();
             Collection roots = (Collection)root.getUserObject();
