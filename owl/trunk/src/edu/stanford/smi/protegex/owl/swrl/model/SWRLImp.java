@@ -37,5 +37,11 @@ public interface SWRLImp extends SWRLIndividual
   void enable();
   void disable();
 
+  Set<String> getRuleGroupNames();
+  boolean addRuleGroup(String name); // Return true on successful addition
+  boolean removeRuleGroup(String name); // Return true on successful deletion
+  boolean isInRuleGroups(Set<String> names);
+  boolean isInRuleGroup(String name);
+
 } // SWRLImp
 

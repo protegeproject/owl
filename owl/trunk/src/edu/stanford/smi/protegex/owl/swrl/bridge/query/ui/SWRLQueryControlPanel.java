@@ -100,6 +100,7 @@ public class SWRLQueryControlPanel extends JPanel
   {
     JTextArea textArea = new JTextArea(10, 80);
     textArea.setLineWrap(true);
+    textArea.setBackground(Color.WHITE);
     textArea.setEditable(false);
     return textArea;
   } // createTextArea

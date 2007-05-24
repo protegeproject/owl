@@ -46,12 +46,13 @@ public class SWRLTextArea extends SymbolTextArea {
     setText(text);
   }
   
-  public static String reformatText(String text) {
-	    text = text.replaceAll("" + SWRLParser.AND_CHAR + "  ", "" + SWRLParser.AND_CHAR + "\n");
-	    text = text.replaceAll("" + SWRLParser.IMP_CHAR, "\n  " + SWRLParser.IMP_CHAR);
-	    
-	    return text;
-  }
+  public static String reformatText(String text) 
+  {
+    text = text.replaceAll("" + SWRLParser.AND_CHAR + "  ", "" + SWRLParser.AND_CHAR + "\n");
+    text = text.replaceAll("" + SWRLParser.IMP_CHAR, "\n  " + SWRLParser.IMP_CHAR);
+    
+    return text;
+  } // reformatText
   
   protected void acceptSelectedFrame() {
       String text = getText();

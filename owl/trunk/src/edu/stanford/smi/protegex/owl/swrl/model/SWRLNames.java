@@ -99,7 +99,10 @@ public interface SWRLNames extends OWLNames {
 
   public static interface Annotations {
     
-    public final static String IS_ENABLED = "swrla:isEnabled";
+    public final static String IS_RULE_ENABLED = "swrla:isRuleEnabled";
+    public final static String IS_RULE_GROUP_ENABLED = "swrla:isRuleGroupEnabled";
+    public final static String RULE_GROUP = "swrla:RuleGroup";
+    public final static String HAS_RULE_GROUP = "swrla:hasRuleGroup";
   } // Annotations
 
 } // SWRLNames

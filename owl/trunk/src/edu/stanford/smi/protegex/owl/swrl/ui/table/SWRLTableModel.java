@@ -26,6 +26,7 @@ public class SWRLTableModel extends AbstractTableModel implements Disposable, Sy
   public final static int COL_ENABLED = 0;
   public final static int COL_NAME = 1;
   public final static int COL_EXPRESSION = 2;
+
   public final static int COL_COUNT = 3;
   
   private List imps = new ArrayList();
@@ -66,7 +67,7 @@ public class SWRLTableModel extends AbstractTableModel implements Disposable, Sy
   public Class getColumnClass(int column) 
   {
     if (column == COL_ENABLED) return Boolean.class;
-    else return String.class;
+    else return super.getColumnClass(column);
   } // getColumnClass
 
   public String getColumnName(int column) 

@@ -88,12 +88,24 @@ public abstract class SWRLRuleEngineBridge implements Serializable
    */
   public void importSWRLRulesAndOWLKnowledge() throws SWRLRuleEngineBridgeException
   {
+    importSWRLRulesAndOWLKnowledge(new HashSet<String>());
+  } // importSWRLRulesAndOWLKnowledge
+
+  public void importSWRLRulesAndOWLKnowledge(String ruleGroupName) throws SWRLRuleEngineBridgeException
+  {
+    Set<String> ruleGroupNames = new HashSet<String>();
+    ruleGroupNames.add(ruleGroupName);
+    importSWRLRulesAndOWLKnowledge(ruleGroupNames);
+  } // importSWRLRulesAndOWLKnowledge
+
+  public void importSWRLRulesAndOWLKnowledge(Set<String> ruleGroupNames) throws SWRLRuleEngineBridgeException
+  {
     resetRuleEngine();
 
     if (SWRLOWLUtil.hasInconsistentClasses(owlModel))
       throw new InconsistentKnowledgeBaseException("cannot import rules from an inconsistent knowledge base");
 
-    importSWRLRules(); // Fills in importedSWRLRules, referencedClassNames, referencedPropertyNames, and referencedIndividualNames
+    importSWRLRules(ruleGroupNames); // Fills in importedSWRLRules, referencedClassNames, referencedPropertyNames, and referencedIndividualNames
 
     importOWLClasses(referencedClassNames); // Import all referenced classes (and their superclasses and subclasses).
     importOWLProperties(referencedPropertyNames); // Import all referenced properties (and the necessary classes).
@@ -284,17 +296,17 @@ public abstract class SWRLRuleEngineBridge implements Serializable
     } // for
   } // createCreatedIndividuals
 
-  private void importSWRLRules() throws SWRLRuleEngineBridgeException
+  private void importSWRLRules(Set<String> ruleGroupNames) throws SWRLRuleEngineBridgeException
   {
     SWRLFactory factory = new SWRLFactory(owlModel);;
-    Collection rules = factory.getImps();
+    Collection rules = factory.getEnabledImps(ruleGroupNames);
 
     if (rules == null) return;
 
     Iterator iterator = rules.iterator();
     while (iterator.hasNext()) {
       SWRLImp rule = (SWRLImp)iterator.next();
-      if (rule.isEnabled()) importSWRLRule(rule);
+      importSWRLRule(rule);
     } // while
   } // importSWRLRules
 
