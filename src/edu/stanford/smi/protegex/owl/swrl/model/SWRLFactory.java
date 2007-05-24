@@ -21,26 +21,16 @@ import java.util.*;
 public class SWRLFactory 
 {
   private OWLNamedClass atomListCls;
-  
   private OWLNamedClass builtinAtomCls;
-  
   private OWLNamedClass classAtomCls;
-  
   private OWLNamedClass dataRangeAtomCls;
-  
   private OWLNamedClass dataValuedPropertyAtomCls;
-  
   private OWLNamedClass differentIndividualsAtomCls;
-  
   private OWLNamedClass impCls;
-
   private OWLNamedClass individualPropertyAtom;
-  
-  private OWLModel owlModel;
-  
   private OWLNamedClass sameIndividualAtomCls;
-  
-  
+  private OWLModel owlModel;
+
   public SWRLFactory(OWLModel owlModel) 
   {
     this.owlModel = owlModel;
@@ -242,16 +232,44 @@ public class SWRLFactory
     } // createBuiltin
 
 
-    public Collection getBuiltins() {
-        RDFSNamedClass builtinCls = owlModel.getRDFSNamedClass(SWRLNames.Cls.BUILTIN);
-        return builtinCls.getInstances(true);
-    }
+  public Collection getBuiltins() {
+    RDFSNamedClass builtinCls = owlModel.getRDFSNamedClass(SWRLNames.Cls.BUILTIN);
+    return builtinCls.getInstances(true);
+  }
 
+  public Collection getImps() 
+  {
+    RDFSClass impCls = owlModel.getRDFSNamedClass(SWRLNames.Cls.IMP);
+    return impCls.getInstances(true);
+  } // getImps
 
-    public Collection getImps() {
-        RDFSClass impCls = owlModel.getRDFSNamedClass(SWRLNames.Cls.IMP);
-        return impCls.getInstances(true);
-    }
+  public Collection getEnabledImps() { return getImps(new HashSet<String>(), true); }
+  public Collection getEnabledImps(Set<String> ruleGroupNames) { return getImps(ruleGroupNames, true); }
+
+  public Collection getEnabledImps(String ruleGroupName) 
+  { 
+    Set<String> ruleGroupNames = new HashSet<String>();
+    ruleGroupNames.add(ruleGroupName);
+    return getImps(ruleGroupNames, true); 
+  } // getEnabledImps
+
+  // If the ruleGroupNames is empty, return all imps.
+  private Collection getImps(Set<String> ruleGroupNames, boolean isEnabled) 
+  {
+    Collection result = new ArrayList();
+    Collection imps = getImps();
+
+    if (imps != null) {
+      Iterator iterator = imps.iterator();
+      while (iterator.hasNext()) {
+        SWRLImp imp = (SWRLImp)iterator.next();
+        if (ruleGroupNames.isEmpty() || imp.isInRuleGroups(ruleGroupNames)) {
+          if (imp.isEnabled() == isEnabled) result.add(imp);
+        } // if
+      } // while
+    } // if
+    return result;
+  } // getImps
 
   public void deleteImps()
   {
@@ -337,22 +355,36 @@ public class SWRLFactory
     return result;
   } // getReferencedImps
 
-  public void enableAll()
+  public void enableAll() { enableStatusUpdate(new HashSet<String>(), true); }
+  public void disableAll() { enableStatusUpdate(new HashSet<String>(), false); }
+
+  public void enableAll(Set<String> ruleGroupNames) { enableStatusUpdate(ruleGroupNames, true); }
+  public void disableAll(Set<String> ruleGroupNames) { enableStatusUpdate(ruleGroupNames, false); }
+
+  public void enableAll(String ruleGroupName) 
+  {
+    Set<String> ruleGroupNames = new HashSet<String>();
+    ruleGroupNames.add(ruleGroupName);
+    enableStatusUpdate(ruleGroupNames, true); 
+  } // enable
+
+  public void disableAll(String ruleGroupName) 
+  {
+    Set<String> ruleGroupNames = new HashSet<String>();
+    ruleGroupNames.add(ruleGroupName);
+    enableStatusUpdate(ruleGroupNames, false); 
+  } // enable
+
+  private void enableStatusUpdate(Set<String> ruleGroupNames, boolean enable)
   {
     Iterator iterator = getImps().iterator();
     while (iterator.hasNext()) {
       SWRLImp imp = (SWRLImp)iterator.next();
-      imp.enable();
+      if (ruleGroupNames.isEmpty() || imp.isInRuleGroups(ruleGroupNames)) {
+        if (enable) imp.enable(); else imp.disable();
+      } // if
     } // while
   } // enableAll
 
-  public void disableAll()
-  {
-    Iterator iterator = getImps().iterator();
-    while (iterator.hasNext()) {
-      SWRLImp imp = (SWRLImp)iterator.next();
-      imp.disable();
-    } // while
-  } // disable
 
 } // SWRLFactory
