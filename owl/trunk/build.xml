@@ -213,7 +213,8 @@
         <javac srcdir="${src}" destdir="${classes}"        	
                deprecation = "${deprecation}"
                debug = "${debug}"
-	       source = "${source}">
+	       source = "${source}"
+               includeAntRuntime="false">
             <classpath refid="classpath.compile"/>
           <!--  <compilerarg value="-Xlint:all"/> -->
         </javac>
@@ -321,7 +322,8 @@
 
 
     <target name = "junit-compile" depends = "jar">
-       <javac srcdir = "${junit}" destdir = "${classes}" debug = "on">
+       <javac srcdir = "${junit}" destdir = "${classes}" debug = "on"
+              includeAntRuntime="false">
          <classpath refid = "classpath.compile"/>
          <classpath>
             <pathelement location = "${jarfile}"/>
