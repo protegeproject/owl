@@ -46,12 +46,14 @@ public class PropertyTreeNode extends DefaultMutableTreeNode
     };
 
 
-    public PropertyTreeNode(PropertyRestrictionsTree tree, OWLNamedClass cls, RDFProperty property, boolean inherited) {
+    public PropertyTreeNode(PropertyRestrictionsTree tree, 
+                            OWLNamedClass cls, 
+                            RDFProperty property, 
+                            boolean inherited) {
         setUserObject(property);
         this.inherited = inherited;
         this.cls = cls;
         this.tree = tree;
-        addChildNodes();
         property.addPropertyValueListener(valueListener);
     }
 
