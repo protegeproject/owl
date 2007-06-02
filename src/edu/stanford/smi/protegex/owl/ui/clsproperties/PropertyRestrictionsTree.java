@@ -242,36 +242,80 @@ public class PropertyRestrictionsTree extends SelectableTree implements Disposab
     }
 
     private void addChildNodes() {
-      List<ExpressionInfo<OWLRestriction>> restrictions = new ArrayList<ExpressionInfo<OWLRestriction>>();
-      if (cls != null && !cls.equals(cls.getOWLModel().getOWLThingClass())) {
-        Collection directSlots = cls.getOwnSlots();
+        Set<RDFProperty> doneProperties = new HashSet<RDFProperty>();
+        if (cls != null && !cls.equals(cls.getOWLModel().getOWLThingClass())) {
+            addRestrictionChildNodes(doneProperties);
+            addDomainChildNodes(doneProperties);
+            sortPropertyTreeNodes();
+        }
+    }
+    
+    private void addDomainChildNodes(Set<RDFProperty> doneProperties) {
+
+        // Breadth-First Search into tree
+        List<RDFSNamedClass> list = new ArrayList<RDFSNamedClass>();
+        list.add(cls);
+        Set<RDFSNamedClass> reachedClses = new HashSet<RDFSNamedClass>();
+        boolean inherited = false;
+        while (!list.isEmpty()) {
+
+            RDFSNamedClass c = (RDFSNamedClass) list.get(0);
+            reachedClses.add(c);
+            list.remove(0);
+
+            addNodesForDirectUnionDomainProperty(c, doneProperties, inherited);
+
+            List superClses = getNextSuperclasses(c, reachedClses);
+            list.addAll(superClses);
+            inherited = true;
+        }
+    }
+    
+    private void addRestrictionChildNodes(Set<RDFProperty> doneProperties) {
+        List<ExpressionInfo<OWLRestriction>> restrictions = new ArrayList<ExpressionInfo<OWLRestriction>>();
+
+        Collection<RDFProperty> directProperties = new ArrayList<RDFProperty>();
+        for (Slot s : ((Cls) cls).getDirectTemplateSlots()) {
+            if (s instanceof RDFProperty) {
+                directProperties.add((RDFProperty) s);
+            }
+        }
         for (RDFSNamedClass superClass : getNamedSuperclassesClosure(cls)) {
-          if (superClass instanceof OWLNamedClass) {
-            restrictions.addAll(ExpressionInfoUtils.getDirectContainingRestrictions((OWLNamedClass) superClass));
-          }
+            if (superClass instanceof OWLNamedClass) {
+                List<ExpressionInfo<OWLRestriction>> myRestrictions = 
+                    ExpressionInfoUtils.getDirectContainingRestrictions((OWLNamedClass) superClass);
+                restrictions.addAll(myRestrictions);
+                if (superClass.equals(cls)) {
+                    for (ExpressionInfo<OWLRestriction> myRestriction : myRestrictions) {
+                        directProperties.add(myRestriction.getExpression().getOnProperty());
+                    }
+                }
+            }
         }
         Map<RDFProperty, List<ExpressionInfo<OWLRestriction>>> propertyMap = 
-          new HashMap<RDFProperty, List<ExpressionInfo<OWLRestriction>>>();
+            new HashMap<RDFProperty, List<ExpressionInfo<OWLRestriction>>>();
         for (ExpressionInfo<OWLRestriction> restrictionInfo : restrictions) {
-          OWLRestriction restriction = restrictionInfo.getExpression();
-          RDFProperty property = restriction.getOnProperty();
-          List<ExpressionInfo<OWLRestriction>> propertyRestrictions = propertyMap.get(property);
-          if (propertyRestrictions == null) {
-            propertyRestrictions = new ArrayList<ExpressionInfo<OWLRestriction>>();
-            propertyMap.put(property, propertyRestrictions);
-          }
-          propertyRestrictions.add(restrictionInfo);
+            OWLRestriction restriction = restrictionInfo.getExpression();
+            RDFProperty property = restriction.getOnProperty();
+            List<ExpressionInfo<OWLRestriction>> propertyRestrictions = propertyMap.get(property);
+            if (propertyRestrictions == null) {
+                propertyRestrictions = new ArrayList<ExpressionInfo<OWLRestriction>>();
+                propertyMap.put(property, propertyRestrictions);
+            }
+            propertyRestrictions.add(restrictionInfo);
         }
         for (RDFProperty property : propertyMap.keySet()) {
-          PropertyTreeNode node = new PropertyTreeNode(this, 
-                                                       cls, 
-                                                       property, 
-                                                       !directSlots.contains(property),
-                                                       propertyMap.get(property));
-          rootNode.add(node);
+            if (!doneProperties.contains(property)) {
+                doneProperties.add(property);
+                PropertyTreeNode node = new PropertyTreeNode(this, 
+                                                             cls, 
+                                                             property, 
+                                                             !directProperties.contains(property),
+                                                             propertyMap.get(property));
+                rootNode.add(node);
+            }
         }
-      }
-      expandPath(new TreePath(rootNode));
+        expandPath(new TreePath(rootNode));
     }
     
     private Set<RDFSNamedClass> getNamedSuperclassesClosure(RDFSNamedClass c) {
@@ -326,13 +370,14 @@ public class PropertyRestrictionsTree extends SelectableTree implements Disposab
     }
 
 
-    private void addNodesForDirectUnionDomainProperty(RDFSNamedClass c, Collection allowedProperties,
-                                                      Set doneProperties, boolean inherited) {
-        List properties = new ArrayList();
+    private void addNodesForDirectUnionDomainProperty(RDFSNamedClass c, 
+                                                      Set<RDFProperty> doneProperties, 
+                                                      boolean inherited) {
+        List<RDFProperty> properties = new ArrayList<RDFProperty>();
         for (Iterator it = c.getUnionDomainProperties().iterator(); it.hasNext();) {
             RDFProperty property = (RDFProperty) it.next();
             if (!doneProperties.contains(property)) {
-                if (!property.isAnnotationProperty() && allowedProperties.contains(property)) {
+                if (!property.isAnnotationProperty()) {
                     properties.add(property);
                 }
             }
@@ -342,10 +387,6 @@ public class PropertyRestrictionsTree extends SelectableTree implements Disposab
             PropertyTreeNode node = new PropertyTreeNode(this, cls, rdfProperty, inherited);
             rootNode.add(node);
             doneProperties.add(rdfProperty);
-        }
-        for (Iterator it = properties.iterator(); it.hasNext();) {
-            RDFProperty rdfProperty = (RDFProperty) it.next();
-            addNodesForSubproperties(rdfProperty, doneProperties, allowedProperties);
         }
     }
 
