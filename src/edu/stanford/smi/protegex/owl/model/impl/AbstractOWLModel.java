@@ -622,7 +622,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
         List result = new LinkedList();
         for (Iterator it = values.iterator(); it.hasNext();) {
         	Object o = it.next();
-        	result.add(asRDFObject(o));  
+        	result.add(asRDFSLiteral(o));  
         }
         return result;
     }
@@ -1941,7 +1941,12 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
          if (slotPattern == null)
         	 return getDisplaySlotNotSetString(instance);
          
-         return slotPattern.getBrowserText(instance);         
+         String value = slotPattern.getBrowserText(instance);
+         if (value == null) {
+             value = getDisplaySlotPatternValueNotSetString(instance, slotPattern);
+         }
+         
+         return value;
 	}
 
     
