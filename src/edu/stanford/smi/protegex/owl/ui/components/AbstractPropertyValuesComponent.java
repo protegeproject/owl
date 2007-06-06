@@ -22,7 +22,8 @@ public abstract class AbstractPropertyValuesComponent extends JComponent impleme
     private RDFResource subject;
     
     private String label;
-
+    
+    private boolean editable = true;
 
     protected AbstractPropertyValuesComponent(RDFProperty predicate) {
     	this(predicate, null);
@@ -174,4 +175,12 @@ public abstract class AbstractPropertyValuesComponent extends JComponent impleme
     protected void showResource(RDFResource resource) {
         getOWLModel().getProject().show(resource);
     }
+        
+	public boolean isEditable() {
+		return editable;
+	}
+
+	public void setEditable(boolean editable) {
+		this.editable = editable;
+	}
 }
