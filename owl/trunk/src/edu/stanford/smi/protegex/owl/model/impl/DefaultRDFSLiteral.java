@@ -82,9 +82,9 @@ public class DefaultRDFSLiteral implements RDFSLiteral {
             datatype = owlModel.getXSDfloat();
         }
         else if (value instanceof String) {
-            if (((String) value).startsWith(DATATYPE_PREFIX)) {
-                return new DefaultRDFSLiteral(owlModel, (String) value);
-            }
+        	if (isRawValue((String)value)) {
+        		return new DefaultRDFSLiteral(owlModel, (String)value);
+        	}
             datatype = owlModel.getXSDstring();
         }
         else if (value instanceof byte[]) {
@@ -153,8 +153,13 @@ public class DefaultRDFSLiteral implements RDFSLiteral {
             if ("XMLLiteral".equals(localName)) {
                 return owlModel.getRDFXMLLiteralType();
             }
+            //TT: hack for user defined data types. Find a better solution.
             else {
-                return owlModel.getRDFSDatatypeByName(RDFNames.XSD_PREFIX + ":" + localName);
+            	RDFSDatatype datatype = owlModel.getRDFSDatatypeByName(RDFNames.XSD_PREFIX + ":" + localName);            		
+            	if (datatype == null) {
+            		datatype = owlModel.getRDFSDatatypeByName(localName); 
+            	}
+            	return datatype;
             }
         }
         else if (rawValue.startsWith(LANGUAGE_PREFIX)) {
@@ -275,7 +280,7 @@ public class DefaultRDFSLiteral implements RDFSLiteral {
     }
 
 
-    public final static String getRawValue(String lexicalValue, RDFSDatatype datatype) {
+    public final static String getRawValue(String lexicalValue, RDFSDatatype datatype) {   	
         if (datatype.equals(datatype.getOWLModel().getXSDboolean())) {
             if ("1".equals(lexicalValue)) {
                 lexicalValue = Boolean.TRUE.toString();
