@@ -73,7 +73,7 @@ public class JenaKnowledgeBaseFactory implements OWLKnowledgeBaseFactory, Client
 
     public KnowledgeBase createKnowledgeBase(Collection errors) {
     	//have to test this in a different way..
-    	boolean inUI = ProjectManager.getProjectManager().getCurrentProjectView() == null;
+    	boolean inUI = ProjectManager.getProjectManager().getCurrentProjectView() != null;
         useStandalone = inUI == false;
         OWLNamespaceManager namespaceManager = new OWLNamespaceManager();
         ResourceSelectionAction.setActivated(true);
