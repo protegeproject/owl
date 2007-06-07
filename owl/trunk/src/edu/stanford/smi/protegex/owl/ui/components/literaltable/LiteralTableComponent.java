@@ -1,6 +1,7 @@
 package edu.stanford.smi.protegex.owl.ui.components.literaltable;
 
 import edu.stanford.smi.protegex.owl.model.*;
+import edu.stanford.smi.protegex.owl.model.impl.DefaultRDFSLiteral;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreModel;
 import edu.stanford.smi.protegex.owl.ui.OWLLabeledComponent;
 import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
@@ -133,7 +134,13 @@ public class LiteralTableComponent extends AddablePropertyValuesComponent {
         if (defaultValue != null && !getObjects().contains(defaultValue)) {
             getSubject().addPropertyValue(getPredicate(), defaultValue);
             table.setSelectedRow(defaultValue);
-            if (!"".equals(defaultValue)) {
+            
+            if (defaultValue instanceof DefaultRDFSLiteral && ((DefaultRDFSLiteral)defaultValue).getDatatype().equals(getOWLModel().getXSDstring())) {
+            	table.editCell(defaultValue);
+            	return;
+            }
+                        
+            if (!defaultValue.equals("")) {
                 final Iterator it = PropertyValueEditorManager.listEditors();
                 while (it.hasNext()) {
                     PropertyValueEditor editor = (PropertyValueEditor) it.next();
@@ -215,29 +222,35 @@ public class LiteralTableComponent extends AddablePropertyValuesComponent {
 
     private void updateActionsState() {
         int[] sel = table.getSelectedRows();
-        boolean deleteEnabled = table.getTableModel().isDeleteEnabled(sel);
+        boolean deleteEnabled = isEditable() && table.getTableModel().isDeleteEnabled(sel);
         deleteAction.setEnabled(deleteEnabled);
 
-        TripleStoreModel tsm = getOWLModel().getTripleStoreModel();
-        boolean viewEnabled = false;
-        if (sel.length == 1) {
-            Object object = table.getTableModel().getObject(sel[0]);
-            if (object instanceof RDFResource) {
-                viewEnabled = true;
-            }
-            else {
-                if (getSubject().getAllValuesFromOnTypes(getPredicate()) instanceof OWLDataRange) {
-                    viewEnabled = false;
-                }
-                else {
-                    PropertyValueEditor editor = getEditor(object);
-                    if (editor != null) {
-                        viewEnabled = tsm.isActiveTriple(getSubject(), getPredicate(), object);
-                    }
-                }
-            }
+        if (!isEditable()) {
+        	viewAction.setEnabled(false);
+        } else {        
+	        boolean viewEnabled = false;
+	        if (sel.length == 1) {
+	            Object object = table.getTableModel().getObject(sel[0]);
+	            if (object instanceof RDFResource) {
+	                viewEnabled = true;
+	            }
+	            else {
+	                if (getSubject().getAllValuesFromOnTypes(getPredicate()) instanceof OWLDataRange) {
+	                    viewEnabled = false;
+	                }
+	                else {
+	                    PropertyValueEditor editor = getEditor(object);
+	                    if (editor != null) {
+	                    	TripleStoreModel tsm = getOWLModel().getTripleStoreModel();
+	                        viewEnabled = tsm.isActiveTriple(getSubject(), getPredicate(), object);
+	                    }
+	                }
+	            }
+	        }
+	        viewAction.setEnabled(viewEnabled);
         }
-        viewAction.setEnabled(viewEnabled);
+        
+        addAction.setEnabled(isEditable());        
     }
 
 
