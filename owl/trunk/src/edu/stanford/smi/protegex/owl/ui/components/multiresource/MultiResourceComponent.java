@@ -19,6 +19,8 @@ import java.awt.event.ActionEvent;
 public class MultiResourceComponent extends AddablePropertyValuesComponent {
 
     private Action createAction;
+    
+    private Action addAction;
 
     private MultiResourceList list;
 
@@ -45,7 +47,7 @@ public class MultiResourceComponent extends AddablePropertyValuesComponent {
         if (createAction != null) {
             lc.addHeaderButton(createAction);
         }
-        AddResourceAction addAction = createAddAction(symmetric);
+        addAction = createAddAction(symmetric);
         if (addAction != null) {
             lc.addHeaderButton(addAction);
         }
@@ -97,9 +99,15 @@ public class MultiResourceComponent extends AddablePropertyValuesComponent {
 
 
     private void updateActions() {
+    	boolean isEditable = isEditable();
+    	
         if (createAction != null) {
-            createAction.setEnabled(isCreateEnabled());
+            createAction.setEnabled(isEditable && isCreateEnabled());
         }
-        removeAction.setEnabled(list.isRemoveEnabled());
+        removeAction.setEnabled(isEditable && list.isRemoveEnabled());
+        
+        addAction.setEnabled(isEditable);        
     }
+    
+    
 }
