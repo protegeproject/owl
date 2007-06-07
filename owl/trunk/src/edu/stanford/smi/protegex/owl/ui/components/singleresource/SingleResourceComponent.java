@@ -5,6 +5,8 @@ import edu.stanford.smi.protege.model.Instance;
 import edu.stanford.smi.protege.model.KnowledgeBase;
 import edu.stanford.smi.protege.ui.FrameRenderer;
 import edu.stanford.smi.protege.util.*;
+import edu.stanford.smi.protege.widget.ReadOnlyWidgetConfigurationPanel;
+import edu.stanford.smi.protege.widget.WidgetConfigurationPanel;
 import edu.stanford.smi.protegex.owl.model.*;
 import edu.stanford.smi.protegex.owl.model.event.PropertyValueAdapter;
 import edu.stanford.smi.protegex.owl.model.event.PropertyValueListener;
@@ -200,9 +202,11 @@ public class SingleResourceComponent extends AbstractPropertyValuesComponent imp
 
 
     private void updateActions() {
-        createAction.setEnabled(isCreateEnabled());
-        setAction.setEnabled(isSetEnabled());
-        removeAction.setEnabled(isRemoveEnabled());
+    	boolean isEditable = isEditable();
+    	
+        createAction.setEnabled(isEditable && isCreateEnabled());
+        setAction.setEnabled(isEditable && isSetEnabled());
+        removeAction.setEnabled(isEditable && isRemoveEnabled());
     }
 
 
@@ -230,4 +234,6 @@ public class SingleResourceComponent extends AbstractPropertyValuesComponent imp
         updateActions();
         updateList();
     }
+  
+
 }
