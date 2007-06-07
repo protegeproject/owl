@@ -2,10 +2,13 @@ package edu.stanford.smi.protegex.owl.ui.widget;
 
 import edu.stanford.smi.protege.model.Instance;
 import edu.stanford.smi.protege.widget.AbstractSlotWidget;
+import edu.stanford.smi.protege.widget.ReadOnlyWidgetConfigurationPanel;
+import edu.stanford.smi.protege.widget.WidgetConfigurationPanel;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
+import edu.stanford.smi.protegex.owl.ui.components.AbstractPropertyValuesComponent;
 import edu.stanford.smi.protegex.owl.ui.components.PropertyValuesComponent;
 
 import java.awt.*;
@@ -29,6 +32,10 @@ public abstract class AbstractPropertyValuesWidget extends AbstractSlotWidget {
     public void initialize() {
         component = createComponent((RDFProperty) getSlot());
         add((Component) component);
+        
+        if (component instanceof AbstractPropertyValuesComponent) {
+    		((AbstractPropertyValuesComponent)component).setEditable(!isReadOnlyConfiguredWidget());
+    	}
     }
 
 
@@ -90,4 +97,26 @@ public abstract class AbstractPropertyValuesWidget extends AbstractSlotWidget {
             }
         }
     }
+    
+    @Override
+    public void setEditable(boolean b) {
+    	b = b && !isReadOnlyConfiguredWidget();    	
+    	
+    	if (component instanceof AbstractPropertyValuesComponent) {
+    		((AbstractPropertyValuesComponent)component).setEditable(b);
+    	}
+    	
+    	super.setEditable(b);
+    }
+    
+    //maybe move up
+    @Override
+    public WidgetConfigurationPanel createWidgetConfigurationPanel() {
+    	WidgetConfigurationPanel confPanel = super.createWidgetConfigurationPanel();
+    	
+    	confPanel.addTab("Options", new ReadOnlyWidgetConfigurationPanel(this));
+    	
+    	return confPanel;
+    }
+    
 }
