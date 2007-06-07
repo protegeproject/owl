@@ -257,7 +257,7 @@ public abstract class AbstractSingleLiteralComponent extends AbstractPropertyVal
     public void setSubject(RDFResource subject) {
         super.setSubject(subject);
         updateComboBoxVisibility();
-        boolean editable = hasOnlyEditableValues();
+        boolean editable = isEditable() && hasOnlyEditableValues();
         boolean b = editable && hasOnlyActiveValues() && subject.getHasValuesOnTypes(getPredicate()).isEmpty();
         textComponent.setEditable(b);
         booleanComboBox.setEnabled(b);
@@ -266,13 +266,26 @@ public abstract class AbstractSingleLiteralComponent extends AbstractPropertyVal
 
 
     private void updateActionStatus() {
-        boolean editable = hasOnlyEditableValues();
+        boolean editable = isEditable() && hasOnlyEditableValues();
         deleteAction.setEnabled(getSubject() != null &&
                 getSubject().getPropertyValue(getPredicate()) != null &&
                 editable);
         final Object object = getObject();
-        PropertyValueEditor editor = getEditor(object);
+        PropertyValueEditor editor = getEditor(object);        
         viewAction.setEnabled(editable && editor != null);
+        
+        if (datatypeComboBox != null) {
+        	datatypeComboBox.setEnabled(isEditable());
+        }
+        
+        if (booleanComboBox != null) {
+        	booleanComboBox.setEnabled(isEditable());
+        }
+        
+        if (textComponent != null) {
+        	textComponent.setEditable(isEditable());
+        }
+        
     }
 
 
