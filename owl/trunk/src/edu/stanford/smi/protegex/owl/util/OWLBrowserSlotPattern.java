@@ -102,12 +102,12 @@ public class OWLBrowserSlotPattern extends BrowserSlotPattern{
 				text = instance.getName();
 		} else { // single value
 			Object o = CollectionUtilities.getFirstItem(values);
-			if (o == null)
-				return instance.getName();
 
 			text = getText(o, instance, defaultLang);
-			if (text == null)
-				text = instance.getName();
+			if (text == null) {
+				//text = instance.getName();
+				text = "";
+			}
 		}
 
 		return text;
@@ -172,7 +172,8 @@ public class OWLBrowserSlotPattern extends BrowserSlotPattern{
 				return text;
 			}
 		} else { //default language is not null
-			if (rdfsValue.getLanguage().equals(defaultLanguage)) {
+			String lang = rdfsValue.getLanguage();
+			if (lang != null && lang.equals(defaultLanguage)) {
 				String text = ((RDFSLiteral)value).getString();				
 				return text;
 			} 
