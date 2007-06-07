@@ -7,6 +7,8 @@ import edu.stanford.smi.protege.model.Facet;
 import edu.stanford.smi.protege.model.Instance;
 import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protege.util.LabeledComponent;
+import edu.stanford.smi.protege.widget.ReadOnlyWidgetConfigurationPanel;
+import edu.stanford.smi.protege.widget.WidgetConfigurationPanel;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
 import edu.stanford.smi.protegex.owl.model.RDFSDatatype;
@@ -107,6 +109,7 @@ public class OWLDateWidget extends AbstractPropertyWidget {
                 }
             }
         });
+        
         setLayout(new BorderLayout());
         lc = new LabeledComponent(getRDFProperty().getBrowserText(), getCenterComponent());
         lc.addHeaderButton(setAction);
@@ -125,7 +128,7 @@ public class OWLDateWidget extends AbstractPropertyWidget {
 
     protected void setValue(String s) {
         Date date = getDate(s);
-        dateChooser.setDate(date);
+        dateChooser.setDate(date);    
     }
 
 
@@ -140,7 +143,7 @@ public class OWLDateWidget extends AbstractPropertyWidget {
 
 
     public void setEnabled(boolean enabled) {
-        super.setEnabled(enabled);
+        super.setEnabled(!isReadOnlyConfiguredWidget() && enabled);
         updateComponents();
     }
 
@@ -164,23 +167,35 @@ public class OWLDateWidget extends AbstractPropertyWidget {
 
 
     protected void updateComponents() {
+    	boolean isEditable = !isReadOnlyConfiguredWidget();
+    	
         RDFResource resource = getEditedResource();
         RDFProperty property = getRDFProperty();
         if (resource != null && property != null && resource.isEditable()) {
             boolean value = resource.getPropertyValue(property) != null;
-            setAction.setEnabled(!value);
-            deleteAction.setEnabled(value);
-            dateChooser.setEnabled(value);
+            setAction.setEnabled(isEditable && !value);
+            deleteAction.setEnabled(isEditable && value);
+            //dateChooser.setEnabled(isEditable && value);
+            enableDateChooser(isEditable && value);
             lc.revalidate();
         }
         else {
             setAction.setEnabled(false);
             deleteAction.setEnabled(false);
-            dateChooser.setEnabled(false);
+            //dateChooser.setEnabled(false);
+            enableDateChooser(false);
         }
+          
+        
     }
 
-
+    private void enableDateChooser(boolean enable) {    	 
+    	 for (Component comp : dateChooser.getComponents()) {
+    		 comp.setEnabled(enable);
+    	 }
+    }
+    
+    
     private boolean ignoreUpdate = false;
 
 
@@ -191,6 +206,16 @@ public class OWLDateWidget extends AbstractPropertyWidget {
         }
     }
 
+    
+    @Override
+    public WidgetConfigurationPanel createWidgetConfigurationPanel() {
+    	WidgetConfigurationPanel confPanel = super.createWidgetConfigurationPanel();
+    	
+    	confPanel.addTab("Options", new ReadOnlyWidgetConfigurationPanel(this));
+    	
+    	return confPanel;
+    }
+    
 
     /**
      * @param cls
