@@ -507,12 +507,14 @@ public class RDFListComponent extends AbstractPropertyValuesComponent implements
 
 
     private void updateActions() {
-        addAction.setEnabled(isAddEnabled());
-        createAction.setEnabled(isCreateEnabled());
-        deleteAction.setEnabled(isDeleteEnabled());
-        moveDownAction.setEnabled(isMoveDownEnabled());
-        moveUpAction.setEnabled(isMoveUpEnabled());
-        removeAction.setEnabled(isRemoveEnabled());
+    	boolean isEditable = isEditable();
+    	
+        addAction.setEnabled(isEditable && isAddEnabled());
+        createAction.setEnabled(isEditable && isCreateEnabled());
+        deleteAction.setEnabled(isEditable && isDeleteEnabled());
+        moveDownAction.setEnabled(isEditable && isMoveDownEnabled());
+        moveUpAction.setEnabled(isEditable && isMoveUpEnabled());
+        removeAction.setEnabled(isEditable && isRemoveEnabled());
     }
 
 
