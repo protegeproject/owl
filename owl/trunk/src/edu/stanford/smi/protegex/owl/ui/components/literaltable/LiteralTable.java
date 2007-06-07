@@ -1,15 +1,26 @@
 package edu.stanford.smi.protegex.owl.ui.components.literaltable;
 
-import edu.stanford.smi.protegex.owl.model.*;
-import edu.stanford.smi.protegex.owl.ui.ResourceRenderer;
-import edu.stanford.smi.protegex.owl.ui.components.ComponentUtil;
-import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
+import java.awt.Component;
 
-import javax.swing.*;
+import javax.swing.DefaultCellEditor;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JComboBox;
+import javax.swing.JTable;
+import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
+import javax.swing.event.ChangeEvent;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableColumn;
-import java.awt.*;
+
+import edu.stanford.smi.protegex.owl.model.OWLDataRange;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.model.RDFProperty;
+import edu.stanford.smi.protegex.owl.model.RDFResource;
+import edu.stanford.smi.protegex.owl.model.RDFSDatatype;
+import edu.stanford.smi.protegex.owl.ui.ResourceRenderer;
+import edu.stanford.smi.protegex.owl.ui.components.ComponentUtil;
+import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
 
 /**
  * A JTable to view/edit an RDFSLiteralTableModel.
@@ -83,8 +94,7 @@ public class LiteralTable extends JTable {
             });
         }
     }
-
-
+    
     public TableCellEditor getCellEditor(int row, int column) {
         if (column == LiteralTableModel.COL_VALUE) {
             RDFResource resource = tableModel.getSubject();
@@ -120,6 +130,8 @@ public class LiteralTable extends JTable {
 
 
     public void setSubject(RDFResource subject) {
+    	stopEditing();
+    	
         tableModel.setSubject(subject);
         updateCellEditor();
     }
@@ -141,4 +153,5 @@ public class LiteralTable extends JTable {
             typeColumn.setCellEditor(new DefaultCellEditor(datatypeComboBox));
         }
     }
+    
 }
