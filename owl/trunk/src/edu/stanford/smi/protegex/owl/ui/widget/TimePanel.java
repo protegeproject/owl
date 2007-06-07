@@ -139,4 +139,13 @@ public class TimePanel extends JPanel {
 
         void timeChanged(TimePanel timePanel);
     }
+    
+    @Override
+    public void setEnabled(boolean enabled) {
+    	hoursField.setEnabled(enabled);
+    	minutesField.setEnabled(enabled);
+    	secondsField.setEnabled(enabled);
+    	
+    	super.setEnabled(enabled);
+    }
 }
