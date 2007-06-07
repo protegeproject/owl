@@ -76,7 +76,7 @@ public abstract class AbstractTripleStoreModel implements TripleStoreModel {
             /**
              * Probably a client talking to a server.
              */
-            return ts.get(1);
+            return ts.get(ts.size() - 1);
         }
         NarrowFrameStore activeFrameStore = mnfs.getActiveFrameStore();
         String name = activeFrameStore.getName();
@@ -108,7 +108,7 @@ public abstract class AbstractTripleStoreModel implements TripleStoreModel {
 
     public TripleStore getTripleStore(String name) {
         if (name == null) {
-            return (TripleStore) ts.get(1);
+            return getActiveTripleStore();
         }
         for (Iterator it = ts.iterator(); it.hasNext();) {
             TripleStore tripleStore = (TripleStore) it.next();
@@ -132,9 +132,15 @@ public abstract class AbstractTripleStoreModel implements TripleStoreModel {
 
     public TripleStore getTopTripleStore() {
         if (mnfs == null && ts.size() == 1) {
+            /*
+             * Server-client mode and the server is using file mode.
+             */
             return ts.get(0);
         }
         else {
+            /*
+             * Either standalone or Server-client and the server is using database mode.
+             */
             return ts.get(1);
         }
     }
@@ -162,11 +168,15 @@ public abstract class AbstractTripleStoreModel implements TripleStoreModel {
         int index = ts.indexOf(tripleStore);
         
        	//TT: This has to be checked whether it is working right.
-        if (mnfs == null && ts.size() == 1) {
+        if (mnfs == null) {
             /**
              * Probably a client talking to a server.
              */
-            return true;
+            if (index == ts.size() - 1) {
+                return true;
+            } else  {
+                return false;
+            }
         }
                 
         if (index == 0) {
@@ -205,13 +215,13 @@ public abstract class AbstractTripleStoreModel implements TripleStoreModel {
     	//TT: This has to be checked whether it is working right.
         if (mnfs == null && ts.size() == 1) {
             /**
-             * Probably a client talking to a server.
+             * Probably a client talking to a server and server is using database mode.
              */
             return CollectionUtilities.createCollection(ts.get(0)).iterator();
         }
         
         Iterator it = getTripleStores().iterator();
-        it.next();
+        it.next(); // drop the system triple store.
         return it;
     }
 
