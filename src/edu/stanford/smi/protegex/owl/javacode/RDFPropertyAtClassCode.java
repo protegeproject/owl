@@ -1,5 +1,8 @@
 package edu.stanford.smi.protegex.owl.javacode;
 
+import java.util.Collection;
+
+import edu.stanford.smi.protege.util.CollectionUtilities;
 import edu.stanford.smi.protegex.owl.model.*;
 
 /**
@@ -57,6 +60,14 @@ public class RDFPropertyAtClassCode implements Comparable {
         }
         else if (range instanceof RDFSNamedClass) {
             return new RDFSClassCode((RDFSNamedClass) range).getJavaName();
+        } else if (range instanceof OWLAnonymousClass) {
+        	RDFResource propRange = property.getRange();
+        	
+        	if (propRange != null && propRange instanceof RDFSNamedClass) {
+        		return new RDFSClassCode((RDFSNamedClass) propRange).getJavaName();
+        	} else {
+        		return "Object";
+        	}
         }
         else {
             return "Object";
