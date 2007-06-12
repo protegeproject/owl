@@ -1,6 +1,7 @@
 package edu.stanford.smi.protegex.owl.ui.owltable;
 
 import edu.stanford.smi.protege.model.Cls;
+import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.model.OWLAnonymousClass;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
@@ -12,6 +13,7 @@ import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
+import java.util.logging.Level;
 
 /**
  * A TransferHandler for transferring parsable OWL expressions with an OWLTable.
@@ -128,6 +130,10 @@ public abstract class OWLTableTransferHandler extends TransferHandler {
         }
         int result = index;
         try {
+            Log.getLogger().log(Level.WARNING, 
+                                "Using dangerous drag and drop operation.  Report the following stack trace to a developer",
+                                new Exception("Dangerous drag and drop"));
+            
         	//TODO: Urgent! Check if transactions always get closed!!
             owlModel.beginTransaction("Drag and drop in classes/conditions");
             String[] values = clsesText.split("\n");
