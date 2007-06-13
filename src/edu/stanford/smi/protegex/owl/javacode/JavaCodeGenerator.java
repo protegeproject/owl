@@ -1,7 +1,6 @@
 package edu.stanford.smi.protegex.owl.javacode;
 
 import edu.stanford.smi.protegex.owl.model.*;
-import edu.stanford.smi.protegex.owl.swrl.model.SWRLFactory;
 import edu.stanford.smi.protegex.owl.swrl.model.SWRLNames;
 
 import java.io.File;
@@ -168,6 +167,7 @@ public class JavaCodeGenerator {
         perhapsAddImportJavaUtil(code, printWriter);
         String pack = options.getPackage();
         if (pack != null) {
+        	printWriter.println("import " + pack + "." + getInterfaceNamePossiblyAbstract(aClass) + ";");
             printWriter.println("import " + pack + ".*;");
             printWriter.println();
         }
@@ -413,13 +413,13 @@ public class JavaCodeGenerator {
             if (propertyCode.isPrimitive()) {
                 String t = null;
                 if ("int".equals(javaTypeName)) {
-                    t = "Integer";
+                    t = "java.lang.Integer";
                 }
                 else if ("boolean".equals(javaTypeName)) {
-                    t = "Boolean";
+                    t = "java.lang.Boolean";
                 }
                 else {
-                    t = "Float";
+                    t = "java.lang.Float";
                 }
                 printWriter.println("        setPropertyValue(" + getProperty + ", new " + t + "(" + varName + "));");
             }
