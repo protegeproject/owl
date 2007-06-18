@@ -75,6 +75,7 @@ import edu.stanford.smi.protegex.owl.ui.subsumption.ChangedClassesPanel;
 import edu.stanford.smi.protegex.owl.ui.tooltips.ClassDescriptionToolTipGenerator;
 import edu.stanford.smi.protegex.owl.ui.tooltips.HomeOntologyToolTipGenerator;
 import edu.stanford.smi.protegex.owl.ui.triplestore.TripleStoreSelectionAction;
+import edu.stanford.smi.protegex.owl.ui.widget.OWLToolTipGenerator;
 import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
 import edu.stanford.smi.protegex.owl.ui.widget.OWLWidgetMapper;
 import edu.stanford.smi.protegex.owl.util.OWLBrowserSlotPattern;
@@ -149,11 +150,11 @@ public class OWLMenuProjectPlugin extends ProjectPluginAdapter {
             }
         });
         proseBox.setSelected(Boolean.TRUE.equals(owlModel.getOWLProject().getSettingsMap().getBoolean(PROSE_PROPERTY)));
-        if (proseBox.isSelected()) {
-            OWLUI.setOWLToolTipGenerator(new ClassDescriptionToolTipGenerator());
-        }
-        else {
-            OWLUI.setOWLToolTipGenerator(new HomeOntologyToolTipGenerator());
+        
+        OWLToolTipGenerator toolTipGenerator = OWLUI.getOWLToolTipGenerator();
+        //TT: Temporary solution. This is kind of hacky, but needed for the case in which a tab widget sets its own tooltip generator
+        if (toolTipGenerator == null || toolTipGenerator instanceof ClassDescriptionToolTipGenerator || toolTipGenerator instanceof HomeOntologyToolTipGenerator) {        
+            OWLUI.setOWLToolTipGenerator(proseBox.isSelected() ? new ClassDescriptionToolTipGenerator() : new HomeOntologyToolTipGenerator());
         }
 
         // add OWLMenu to mainMenuBar
@@ -364,6 +365,7 @@ public class OWLMenuProjectPlugin extends ProjectPluginAdapter {
                 ProtegeUI.unregister(view);
             }
             ChangedClassesPanel.dispose((OWLModel) p.getKnowledgeBase());
+            OWLUI.setOWLToolTipGenerator(null);
         }
     }
 
