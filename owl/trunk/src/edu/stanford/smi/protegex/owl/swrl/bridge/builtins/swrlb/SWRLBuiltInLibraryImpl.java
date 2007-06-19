@@ -1,6 +1,5 @@
 
-// TODO: several string methods are not implemented. 
-// TODO: built-ins for date, time, duration, URIs and lists are not implemented.
+// TODO: several string methods are not implemented.  TODO: built-ins for date, time, duration, URIs, and lists are not implemented.
 
 package edu.stanford.smi.protegex.owl.swrl.bridge.builtins.swrlb;
 
@@ -952,7 +951,6 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
       else if (SWRLBuiltInUtil.isLongMostPreciseArgument(arguments.subList(1, arguments.size()))) 
         arguments.set(0, new LiteralInfo((long)operationResult));
       else arguments.set(0, new LiteralInfo((double)operationResult));
-
       result = true;
     } else result = (argument1 == operationResult);
 

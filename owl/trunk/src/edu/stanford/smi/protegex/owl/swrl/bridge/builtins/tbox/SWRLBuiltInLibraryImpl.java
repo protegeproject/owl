@@ -131,7 +131,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
       if (isUnboundArgument) {
         MultiArgument multiArgument = new MultiArgument();
         for (OWLNamedClass cls : SWRLOWLUtil.getUserDefinedOWLNamedClasses(getInvokingBridge().getOWLModel()))
-          multiArgument.addArgument(new PropertyInfo(cls.getName()));
+          multiArgument.addArgument(new ClassInfo(cls.getName()));
         arguments.set(0, multiArgument);
         result = !multiArgument.hasNoArguments();
       } else {

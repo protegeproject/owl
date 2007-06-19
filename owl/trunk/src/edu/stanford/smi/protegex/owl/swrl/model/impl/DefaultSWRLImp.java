@@ -222,7 +222,6 @@ public class DefaultSWRLImp extends DefaultOWLIndividual implements SWRLImp
   { 
     if (ruleGroupNames.isEmpty()) {
       if (ruleEnabledProperty != null) setPropertyValue(ruleEnabledProperty, Boolean.FALSE);
-      System.err.println("disable: " + ruleEnabledProperty);
       isRuleEnabled = false;
     } else {
       for (String ruleGroupName : ruleGroupNames) {
