@@ -346,7 +346,10 @@ public class LiteralInfo extends Info implements Argument, DatatypeValue
     return (edu.stanford.smi.protegex.owl.swrl.bridge.xsd.QName)value;
   } // getQName
 
-  public String toString() { return value.toString(); }
+  public String toString() 
+  {
+    return "" + value;
+  } // toString
 
   public Object getValueClassName() { return value.getClass().getName(); }
   public Object getValue() { return value; }

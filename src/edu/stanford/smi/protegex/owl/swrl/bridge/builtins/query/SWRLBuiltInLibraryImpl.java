@@ -68,7 +68,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary implements QueryL
   {
     SWRLBuiltInUtil.checkForUnboundArguments(arguments);
     SWRLBuiltInUtil.checkNumberOfArgumentsAtLeast(1, arguments.size());
-    
+
     ResultImpl result = getResult(getInvokingRuleName());
 
     if (!result.isRowOpen()) result.openRow();
@@ -83,7 +83,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary implements QueryL
       argumentIndex++;
     } // for
     
-    return true;
+    return false;
   } // select
 
   public boolean selectDistinct(List<Argument> arguments) throws BuiltInException
@@ -107,7 +107,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary implements QueryL
     else if (argument instanceof PropertyInfo) result.addRowData((PropertyValue)argument);
     else throw new InvalidBuiltInArgumentException(0, "unknown type '" + argument.getClass() + "'");
     
-    return true;
+    return false;
   } // count
 
   public boolean min(List<Argument> arguments) throws BuiltInException
@@ -123,7 +123,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary implements QueryL
     if (argument instanceof LiteralInfo && ((LiteralInfo)argument).isNumeric()) result.addRowData((DatatypeValue)argument);
     else throw new InvalidBuiltInArgumentException(0, "expecting numeric literal, got '" + argument + "'");
     
-    return true;
+    return false;
   } // count
 
   public boolean max(List<Argument> arguments) throws BuiltInException
@@ -139,7 +139,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary implements QueryL
     if (argument instanceof LiteralInfo && ((LiteralInfo)argument).isNumeric()) result.addRowData((DatatypeValue)argument);
     else throw new InvalidBuiltInArgumentException(0, "expecting numeric literal, got '" + argument + "'");
     
-    return true;
+    return false;
   } // count
 
   public boolean sum(List<Argument> arguments) throws BuiltInException
@@ -155,7 +155,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary implements QueryL
     if (argument instanceof LiteralInfo && ((LiteralInfo)argument).isNumeric()) result.addRowData((DatatypeValue)argument);
     else throw new InvalidBuiltInArgumentException(0, "expecting numeric literal, got '" + argument + "'");
     
-    return true;
+    return false;
   } // count
 
   public boolean avg(List<Argument> arguments) throws BuiltInException
@@ -171,24 +171,24 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary implements QueryL
     if (argument instanceof LiteralInfo && ((LiteralInfo)argument).isNumeric()) result.addRowData((DatatypeValue)argument);
     else throw new InvalidBuiltInArgumentException(0, "expecting numeric literal, got '" + argument + "'");
     
-    return true;
+    return false;
   } // count
 
   // The use of columnNames, orderBy, orderByDescending is handled at initial processing by configureResult().
   
   public boolean columnNames(List<Argument> arguments) throws BuiltInException
   {   
-    return true;
+    return false;
   } // columnNames
 
   public boolean orderBy(List<Argument> arguments) throws BuiltInException
   {   
-    return true;
+    return false;
   } // orderBy
 
   public boolean orderByDescending(List<Argument> arguments) throws BuiltInException
   {   
-    return true;
+    return false;
   } // orderByDescending
 
   private ResultImpl getResult(String ruleName) throws BuiltInException

@@ -221,7 +221,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
   } // getArgumentAsAGranularity
 
   private Instant getValidInstant(OWLModel owlModel, String individualName, int granularity) 
-   throws BuiltInException, TemporalException, SWRLOWLUtilException
+    throws BuiltInException, TemporalException, SWRLOWLUtilException
   {
     String datetimeString = SWRLOWLUtil.getDatavaluedPropertyValueAsString(owlModel, individualName, HasTimePropertyName);
 
@@ -229,7 +229,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
   } // getValidInstant
 
   private Period getValidPeriod(OWLModel owlModel, String individualName, int granularity) 
-   throws BuiltInException, TemporalException, SWRLOWLUtilException
+    throws BuiltInException, TemporalException, SWRLOWLUtilException
   {
     String startDatetimeString = SWRLOWLUtil.getDatavaluedPropertyValueAsString(owlModel, individualName, HasStartTimePropertyName);
     String finishDatetimeString = SWRLOWLUtil.getDatavaluedPropertyValueAsString(owlModel, individualName, HasFinishTimePropertyName);
@@ -238,7 +238,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
   } // getValidPeriod
 
   private int getGranularity(OWLModel owlModel, String individualName) 
-   throws BuiltInException, TemporalException, SWRLOWLUtilException
+    throws BuiltInException, TemporalException, SWRLOWLUtilException
   {
     return SWRLOWLUtil.getDatavaluedPropertyValueAsInteger(owlModel, individualName, HasGranularityPropertyName);
   } // getGranularity
