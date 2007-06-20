@@ -4,6 +4,7 @@ import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.resource.OWLText;
 import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
 import edu.stanford.smi.protegex.owl.ui.actions.AbstractOWLModelAction;
+import edu.stanford.smi.protegex.owl.ui.actions.OWLModelActionConstants;
 
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
@@ -11,7 +12,7 @@ import edu.stanford.smi.protegex.owl.ui.actions.AbstractOWLModelAction;
 public class OWLPluginVersionInfoAction extends AbstractOWLModelAction {
 
     public String getMenubarPath() {
-        return "Help";
+        return OWLModelActionConstants.HELP_GROUP;
     }
 
     public String getName() {
