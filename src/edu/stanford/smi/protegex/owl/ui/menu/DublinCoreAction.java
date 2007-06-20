@@ -3,6 +3,7 @@ package edu.stanford.smi.protegex.owl.ui.menu;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
 import edu.stanford.smi.protegex.owl.ui.actions.AbstractOWLModelAction;
+import edu.stanford.smi.protegex.owl.ui.actions.OWLModelActionConstants;
 import edu.stanford.smi.protegex.owl.ui.repository.ShowRepositoryEditorAction;
 
 import javax.swing.*;
@@ -13,7 +14,7 @@ import javax.swing.*;
 public class DublinCoreAction extends AbstractOWLModelAction {
 
     public String getMenubarPath() {
-        return OWL_MENU + PATH_SEPARATOR + ShowRepositoryEditorAction.GROUP;
+        return OWL_MENU + PATH_SEPARATOR + OWLModelActionConstants.REPOSITORY_GROUP;
     }
 
 
