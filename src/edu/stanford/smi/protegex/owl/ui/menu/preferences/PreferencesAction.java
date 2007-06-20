@@ -3,6 +3,8 @@ package edu.stanford.smi.protegex.owl.ui.menu.preferences;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
 import edu.stanford.smi.protegex.owl.ui.actions.AbstractOWLModelAction;
+import edu.stanford.smi.protegex.owl.ui.actions.OWLModelAction;
+import edu.stanford.smi.protegex.owl.ui.actions.OWLModelActionConstants;
 import edu.stanford.smi.protegex.owl.ui.dialogs.ModalDialogFactory;
 
 public class PreferencesAction extends AbstractOWLModelAction {
@@ -14,7 +16,7 @@ public class PreferencesAction extends AbstractOWLModelAction {
 
 
     public String getMenubarPath() {
-        return OWL_MENU + PATH_SEPARATOR + "ZZZ"; // Make sure this remains at the end of the menu
+        return OWL_MENU + PATH_SEPARATOR + OWLModelActionConstants.PREFERENCES_GROUP;
     }
 
 
