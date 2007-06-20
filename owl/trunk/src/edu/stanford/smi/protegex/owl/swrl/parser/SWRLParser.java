@@ -13,8 +13,8 @@ import java.util.*;
  * @author Martin O'Connor  <moconnor@smi.stanford.edu>
  * @author Holger Knublauch  <holger@knublauch.com>
  */
-public class SWRLParser {
-
+public class SWRLParser 
+{
   public final static char AND_CHAR = '\u2227';   // ^
   public final static char IMP_CHAR = '\u2192';   // >
   private OWLModel owlModel;
@@ -143,7 +143,7 @@ public class SWRLParser {
       enumeratedList = parseDObjectList();
       isEnumeratedList = true;
     } // if
-    
+
     if (isEnumeratedList) checkAndSkipToken("(", "Expecting parameters enclosed in parentheses for data range atom.");
     else checkAndSkipToken("(", "Expecting parameters enclosed in parentheses for atom '" + identifier + "'.");
     

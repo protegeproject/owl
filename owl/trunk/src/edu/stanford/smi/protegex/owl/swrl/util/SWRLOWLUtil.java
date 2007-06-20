@@ -953,6 +953,21 @@ public class SWRLOWLUtil
     return owlModel.getOWLThingClass();
   } // getOWLThingClass
 
+  public static RDFProperty getOWLSameAsProperty(OWLModel owlModel)
+  {
+    return owlModel.getOWLSameAsProperty();
+  } // getOWLSameAsProperty
+
+  public static RDFProperty getOWLDifferentFromProperty(OWLModel owlModel)
+  {
+    return owlModel.getOWLDifferentFromProperty();
+  } // getOWLDifferentFromProperty
+
+  public static Collection getOWLAllDifferents(OWLModel owlModel)
+  {
+    return owlModel.getOWLAllDifferents();
+  } // getOWLAllDifferents
+
   private static void throwException(String message) throws SWRLOWLUtilException
   {
     throw new SWRLOWLUtilException(message);

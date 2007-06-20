@@ -447,20 +447,44 @@ public abstract class SWRLRuleEngineBridge implements Serializable
     } // if
   } // importOWLIndividual
 
-  // We only import owl:SameAs, owl:differentFrom, and owl:AllDifferent, owl:equivalentProperty, owl:equivalentClass resrictions at the
+  // We only import owl:SameAs, owl:differentFrom, and owl:AllDifferent, owl:equivalentProperty, owl:equivalentClass restrictions at the
   // moment. We support owl:equivalentProperty and owl:equivalentClass restrictions indirectly through the IndividualInfo class.
   private void importOWLRestrictions() throws SWRLRuleEngineBridgeException
   {
-    importOWLSameAsRestrictions();
-    importOWLDifferentFromRestrictions();
-    importOWLAllDifferents();
+    importSameAsRestrictions();
+    importDifferentFromRestrictions();
+    importAllDifferentsRestrictions();
+    /*
+    importCardinalityRestrictions();
+    importMinCardinalityRestrictions();
+    importMaxCardinalityRestrictions();
+
+    importFunctionalPropertyRestrictions();
+    importInverseFunctionalPropertyRestrictions();
+    importTransitivePropertyRestrictions();
+    importSymmetricPropertyRestrictions();
+
+    importAllValuesFromRestrictions();
+    importSomeValuesFromRestrictions();
+
+    importIntersectionOfRestrictions();
+    importUnionOfRestrictions();
+
+    importOneOfRestictions();
+
+    importComplementOfRestrictions();
+    importDisjointWithRestrictions();
+    importInverseOfRestrictions();
+
+    importHasValueRestrictions();
+    */
   } // importOWLRestrictions
 
   // TODO: This is incredibly inefficient. Need to use method in the OWLModel to get individuals with a particular property.
-  private void importOWLSameAsRestrictions() throws SWRLRuleEngineBridgeException
+  private void importSameAsRestrictions() throws SWRLRuleEngineBridgeException
   {
-    RDFProperty sameAsProperty = owlModel.getOWLSameAsProperty();
-    RDFSClass owlThingCls = owlModel.getOWLNamedClass(OWLNames.Cls.THING);
+    RDFProperty sameAsProperty = SWRLOWLUtil.getOWLSameAsProperty(owlModel);
+    RDFSClass owlThingCls = SWRLOWLUtil.getOWLThingClass(owlModel);
 
     Iterator individualsIterator1 = owlThingCls.getInstances(true).iterator();
     while (individualsIterator1.hasNext()) {
@@ -478,14 +502,14 @@ public abstract class SWRLRuleEngineBridge implements Serializable
         } // while
       } // if
     } // while
-  } // importOWLSameAsRestrictions
+  } // importSameAsRestrictions
 
   // TODO: This is incredibly inefficient (and almost duplicates previous method). Need to use method in the OWLModel to get individuals
   // with a particular property.
-  private void importOWLDifferentFromRestrictions() throws SWRLRuleEngineBridgeException
+  private void importDifferentFromRestrictions() throws SWRLRuleEngineBridgeException
   {
-    RDFProperty differentFromProperty = owlModel.getOWLDifferentFromProperty();
-    RDFSClass owlThingCls = owlModel.getOWLNamedClass(OWLNames.Cls.THING);
+    RDFProperty differentFromProperty = SWRLOWLUtil.getOWLDifferentFromProperty(owlModel);
+    RDFSClass owlThingCls = SWRLOWLUtil.getOWLThingClass(owlModel);
 
     Iterator individualsIterator1 = owlThingCls.getInstances(true).iterator();
     while (individualsIterator1.hasNext()) {
@@ -503,11 +527,11 @@ public abstract class SWRLRuleEngineBridge implements Serializable
         } // while
       } // if
     } // while
-  } // importOWLSameAsRestrictions
+  } // importDifferentFromRestrictions
 
-  private void importOWLAllDifferents() throws SWRLRuleEngineBridgeException
+  private void importAllDifferentsRestrictions() throws SWRLRuleEngineBridgeException
   {
-    Collection allDifferents = owlModel.getOWLAllDifferents();
+    Collection allDifferents = SWRLOWLUtil.getOWLAllDifferents(owlModel);
 
     if (!allDifferents.isEmpty()) {
       Iterator allDifferentsIterator = allDifferents.iterator();
@@ -526,7 +550,7 @@ public abstract class SWRLRuleEngineBridge implements Serializable
         } // if
         } // while
     } // if
-  } // importOWLAllDifferents
+  } // importAllDifferentsRestrictions
 
   public void exportSWRLRules() throws SWRLRuleEngineBridgeException
   {
