@@ -488,4 +488,12 @@ public class JenaOWLModel extends AbstractOWLModel implements OntModelProvider {
             getOWLProject().getSettingsMap().remove(WRITER_SETTINGS_PROPERTY);
         }
     }
+    
+    @Override
+    public synchronized void dispose() {
+    	tripleStoreModel.dispose();
+    	tripleStoreModel = null;
+    	
+    	super.dispose();
+    }
 }
