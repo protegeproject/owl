@@ -5,6 +5,7 @@ import java.util.Iterator;
 
 import edu.stanford.smi.protege.model.FrameID;
 import edu.stanford.smi.protege.model.framestore.NarrowFrameStore;
+import edu.stanford.smi.protege.util.Disposable;
 import edu.stanford.smi.protegex.owl.model.NamespaceMap;
 import edu.stanford.smi.protegex.owl.model.RDFObject;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
@@ -19,7 +20,7 @@ import edu.stanford.smi.protegex.owl.model.RDFResource;
  *
  * @author Holger Knublauch  <holger@knublauch.com>
  */
-public interface TripleStore extends NamespaceMap {
+public interface TripleStore extends NamespaceMap, Disposable {
     
     FrameID generateFrameID();
 
@@ -131,4 +132,11 @@ public interface TripleStore extends NamespaceMap {
      * Debugging only.
      */
     void dump();
+    
+    
+    /**
+     * Disposes this triple store. Called by the triple store manager when an 
+     * OWL model is disposed.
+     */
+    void dispose();
 }
