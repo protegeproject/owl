@@ -3942,4 +3942,16 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
       return result;
     }
 
+    @Override
+    public synchronized void dispose() {    	
+    	super.dispose();
+    	owlFrameStore = null;
+    	namespaceManager = null;
+    	jenaModel = null;
+    	owlProject = null;
+    	
+    	repositoryManager = null;
+    	taskManager = null;
+    }
+    
 }
