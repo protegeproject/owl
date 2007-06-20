@@ -171,4 +171,10 @@ public class OWLDomainWidget extends AbstractPropertyWidget {
     	table.setEnabled(enabled);
     	super.setEnabled(enabled);
     };
+    
+    @Override
+    public void dispose() {
+    	tableModel.dispose();
+    	super.dispose();
+    }
 }
