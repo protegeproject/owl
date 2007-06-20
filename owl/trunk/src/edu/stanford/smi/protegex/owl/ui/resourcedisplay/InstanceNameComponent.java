@@ -1,5 +1,11 @@
 package edu.stanford.smi.protegex.owl.ui.resourcedisplay;
 
+import java.util.Iterator;
+
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.SpringLayout;
+
 import edu.stanford.smi.protege.event.FrameAdapter;
 import edu.stanford.smi.protege.event.FrameEvent;
 import edu.stanford.smi.protege.event.FrameListener;
@@ -8,10 +14,6 @@ import edu.stanford.smi.protege.model.Instance;
 import edu.stanford.smi.protege.ui.SpringUtilities;
 import edu.stanford.smi.protege.util.ComponentFactory;
 import edu.stanford.smi.protege.util.Disposable;
-
-import javax.swing.*;
-import java.awt.*;
-import java.util.Iterator;
 
 /**
  * A Component that can be used to display type(s) and name of an Instance.
