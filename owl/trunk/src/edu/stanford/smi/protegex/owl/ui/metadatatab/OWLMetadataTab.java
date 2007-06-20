@@ -78,9 +78,7 @@ public class OWLMetadataTab extends AbstractTabWidget implements HostResourceDis
 //        }
 
         importsTreePanel.getImportsTree().removeSelectionListener(treeSelectionListener);
-
-        resourceDisplay = null;
-        importsTreePanel = null;
+        
         treeSelectionListener = null;
     }
 
