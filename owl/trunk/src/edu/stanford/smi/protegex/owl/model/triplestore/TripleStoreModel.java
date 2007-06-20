@@ -2,6 +2,7 @@ package edu.stanford.smi.protegex.owl.model.triplestore;
 
 import edu.stanford.smi.protege.model.Instance;
 import edu.stanford.smi.protege.model.Slot;
+import edu.stanford.smi.protege.util.Disposable;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
 
@@ -14,7 +15,7 @@ import java.util.List;
  *
  * @author Holger Knublauch  <holger@knublauch.com>
  */
-public interface TripleStoreModel {
+public interface TripleStoreModel extends Disposable{
 
 
     /**
@@ -209,4 +210,12 @@ public interface TripleStoreModel {
      * is relevant (e.g. in a user interface) after changes of the active TripleStore.
      */
     void updateEditableResourceState();
+    
+    
+    /**
+     * Cleans up all the triple stores managed by this.
+     * This is called when an OWLModel is disposed (e.g. at project close in the UI).
+     */
+    void dispose();
+    
 }
