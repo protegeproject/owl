@@ -4,6 +4,7 @@ import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.testing.OWLTestManager;
 import edu.stanford.smi.protegex.owl.ui.actions.AbstractOWLModelAction;
 import edu.stanford.smi.protegex.owl.ui.actions.OWLModelAction;
+import edu.stanford.smi.protegex.owl.ui.actions.OWLModelActionConstants;
 import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
 
 /**
@@ -25,7 +26,7 @@ public abstract class AbstractOWLModelTestAction extends AbstractOWLTestAction i
 
 
     public String getMenubarPath() {
-        return AbstractOWLModelAction.OWL_MENU + PATH_SEPARATOR + getToolbarPath();
+    	return AbstractOWLModelAction.OWL_MENU + PATH_SEPARATOR + OWLModelActionConstants.OWL_TESTS_GROUP;
     }
 
 
