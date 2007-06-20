@@ -253,4 +253,17 @@ public abstract class AbstractTripleStoreModel implements TripleStoreModel {
         Slot nameSlot = ((KnowledgeBase) owlModel).getSlot(Model.Slot.NAME);
         TripleStoreUtil.updateFrameInclusion(mnfs, nameSlot);
     }
+    
+    public void dispose() {
+    	for (TripleStore tripleStore : ts) {
+			tripleStore.dispose();
+		}
+    	
+    	if (mnfs != null) {
+    		mnfs.close();
+    	}
+    	
+    	ts.clear();
+    	ts = null;
+    }
 }
