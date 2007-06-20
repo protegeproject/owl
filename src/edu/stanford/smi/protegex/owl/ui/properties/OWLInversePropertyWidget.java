@@ -287,7 +287,7 @@ public class OWLInversePropertyWidget extends AbstractPropertyWidget {
             oldInstance.removeFrameListener(frameListener);
         }
         super.setInstance(newInstance);
-        if (newInstance != null && !isSlotAtCls()) {
+        if (newInstance != null && !isSlotAtCls()) {        	
             newInstance.addFrameListener(frameListener);
         }
     }
@@ -333,5 +333,15 @@ public class OWLInversePropertyWidget extends AbstractPropertyWidget {
         addAction.setEnabled(enabled);
         removeAction.setAllowed(enabled);    	
     	super.setEnabled(enabled);
+    }
+    
+    @Override
+    public void dispose() {
+    	Instance resource = getEditedResource();
+    	 if (resource != null && !isSlotAtCls()) {         	
+         	resource.removeFrameListener(frameListener);
+         }
+    	    	
+    	super.dispose();
     }
 }
