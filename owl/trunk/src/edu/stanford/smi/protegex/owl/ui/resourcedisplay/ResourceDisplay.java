@@ -257,6 +257,9 @@ public class ResourceDisplay extends InstanceDisplay implements ResourcePanel {
         if (triplesComponent != null) {
             triplesComponent.dispose();
         }
+        testInstanceAction = null;
+     
+        owlModel = null;
     }
 
 
