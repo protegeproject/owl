@@ -18,6 +18,7 @@ import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.repository.Repository;
 import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
 import edu.stanford.smi.protegex.owl.ui.actions.AbstractOWLModelAction;
+import edu.stanford.smi.protegex.owl.ui.actions.OWLModelActionConstants;
 import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
 
 /**
@@ -26,12 +27,9 @@ import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
  * @author Daniel Stoeckli <stoeckli@smi.stanford.edu>
  */
 public class ValidatorAction extends AbstractOWLModelAction {
-
-    // private JFileChooser fileChooser;
-
-
+		
     public String getMenubarPath() {
-        return TOOLS_MENU + PATH_SEPARATOR + "Validation";
+        return TOOLS_MENU;
     }
 
 
