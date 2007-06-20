@@ -121,6 +121,10 @@ public abstract class MultiWidgetPropertyWidget extends AbstractPropertyWidget {
             SlotWidget widget = (SlotWidget) it.next();
             widget.dispose();
         }
+        
+      //  widgets = null;
+        widgetContainers = null;
+        
         if (instance != null) {
             instance.removeFrameListener(valueListener);
         }
