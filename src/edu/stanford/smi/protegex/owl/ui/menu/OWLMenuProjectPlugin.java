@@ -91,7 +91,6 @@ public class OWLMenuProjectPlugin extends ProjectPluginAdapter {
     private static JCheckBoxMenuItem proseBox;
     private OWLModelAction recentAction = null;
     private SyntaxHelpAction syntaxHelpAction = new SyntaxHelpAction();
-    private TripleStoreSelectionAction tripleStoreSelectionAction;
     public static final String MENU_NAME = AbstractOWLModelAction.OWL_MENU;
     public static final String PROSE_PROPERTY = "OWL-Prose";
 
@@ -366,6 +365,7 @@ public class OWLMenuProjectPlugin extends ProjectPluginAdapter {
             }
             ChangedClassesPanel.dispose((OWLModel) p.getKnowledgeBase());
             OWLUI.setOWLToolTipGenerator(null);
+            proseBox = null;            
         }
     }
 
