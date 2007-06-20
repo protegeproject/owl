@@ -387,4 +387,10 @@ public abstract class AbstractTripleStore implements ProtegeTripleAdder, TripleS
             System.out.println(" - " + it.next());
         }
     }
+    
+    public void dispose() {
+    	addPropertyValueHandlers.clear();
+    	addPropertyValueHandlers = null;
+    	
+    }
 }
