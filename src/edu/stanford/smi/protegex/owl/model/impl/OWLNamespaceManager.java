@@ -12,6 +12,7 @@ import edu.stanford.smi.protegex.owl.model.NamespaceManagerListener;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLNames;
 import edu.stanford.smi.protegex.owl.model.OWLOntology;
+import edu.stanford.smi.protegex.owl.model.ProtegeNames;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreModel;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreUtil;
@@ -129,7 +130,7 @@ public class OWLNamespaceManager extends AbstractNamespaceManager {
 
 
     private void removePrefixHelper(String prefix) {
-	    String value = prefix + ":" + getNamespaceForPrefix(prefix);
+	    String value = prefix + ProtegeNames.PREFIX_LOCALNAME_SEPARATOR + getNamespaceForPrefix(prefix);
 	    for(Iterator it = owlModel.getOWLOntologies().iterator(); it.hasNext(); ) {
 		    Instance curOntology = (Instance) it.next();
 		    curOntology.removeOwnSlotValue(prefixesSlot, value);
