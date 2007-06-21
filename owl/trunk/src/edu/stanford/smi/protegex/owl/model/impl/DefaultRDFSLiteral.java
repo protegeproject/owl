@@ -155,7 +155,7 @@ public class DefaultRDFSLiteral implements RDFSLiteral {
             }
             //TT: hack for user defined data types. Find a better solution.
             else {
-            	RDFSDatatype datatype = owlModel.getRDFSDatatypeByName(RDFNames.XSD_PREFIX + ":" + localName);            		
+            	RDFSDatatype datatype = owlModel.getRDFSDatatypeByName(RDFNames.XSD_PREFIX + ProtegeNames.PREFIX_LOCALNAME_SEPARATOR + localName);            		
             	if (datatype == null) {
             		datatype = owlModel.getRDFSDatatypeByName(localName); 
             	}
