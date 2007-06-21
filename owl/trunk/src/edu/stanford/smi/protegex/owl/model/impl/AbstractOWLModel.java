@@ -971,7 +971,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
             com.hp.hpl.jena.datatypes.RDFDatatype type = (com.hp.hpl.jena.datatypes.RDFDatatype) it.next();
             String uri = type.getURI();
             if (uri.startsWith(XSDDatatype.XSD)) {
-                String name = RDFNames.XSD_PREFIX + ":" + uri.substring(XSDDatatype.XSD.length() + 1);
+                String name = RDFNames.XSD_PREFIX + ProtegeNames.PREFIX_LOCALNAME_SEPARATOR + uri.substring(XSDDatatype.XSD.length() + 1);
                 createSystemInstance(name, rdfsDatatypeClass);
             }
         }
@@ -984,7 +984,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     private void fillDatatypeSet(XSDDatatype[] types, Set set) {
         for (int i = 0; i < types.length; i++) {
             XSDDatatype datatype = types[i];
-            String name = RDFNames.XSD_PREFIX + ":" + datatype.getURI().substring(XSDDatatype.XSD.length() + 1);
+            String name = RDFNames.XSD_PREFIX + ProtegeNames.PREFIX_LOCALNAME_SEPARATOR + datatype.getURI().substring(XSDDatatype.XSD.length() + 1);
             set.add(getFrame(name));
         }
     }
@@ -1199,7 +1199,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
             if (namespace != null) {
                 String prefix = getNamespaceManager().getPrefix(namespace);
                 if (prefix != null && prefix.length() > 0) {
-                    return getUniqueFrameName(prefix + ":" + partialLocalName);
+                    return getUniqueFrameName(prefix + ProtegeNames.PREFIX_LOCALNAME_SEPARATOR + partialLocalName);
                 }
             }
         }
@@ -1369,7 +1369,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
 
     protected void createDefaultOWLOntologyReally() {
-        Instance ontology = createInstance(":", owlOntologyClass);
+        Instance ontology = createInstance(ProtegeNames.DEFAULT_ONTOLOGY, owlOntologyClass);
         ontology.setDirectOwnSlotValue(rdfTypeProperty, owlOntologyClass);
         getNamespaceManager().setDefaultNamespace(OWLNamespaceManager.DEFAULT_DEFAULT_NAMESPACE);
         getNamespaceManager().setPrefix(RDF.getURI(), RDFNames.RDF_PREFIX);
@@ -2039,7 +2039,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
 
     public OWLOntology getDefaultOWLOntology() {
-        return (OWLOntology) getFrame(":");
+        return (OWLOntology) getFrame(ProtegeNames.DEFAULT_ONTOLOGY);
     }
 
 
@@ -2365,7 +2365,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
             uriString += "#";
         }
         String prefix = getNamespaceManager().getPrefix(uriString);
-        String name = prefix != null ? (prefix + ":") : ":";
+        String name = prefix != null ? (prefix + ":") : ProtegeNames.DEFAULT_ONTOLOGY;
         return (RDFResource) getRDFResource(name);
     }
 
@@ -2557,7 +2557,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
 
     public RDFProperty getProtegeAllowedParentProperty() {
-        return getRDFProperty(ProtegeNames.PROTEGE_PREFIX + ":" + ProtegeNames.ALLOWED_PARENT);
+        return getRDFProperty(ProtegeNames.PROTEGE_PREFIX + ProtegeNames.PREFIX_LOCALNAME_SEPARATOR + ProtegeNames.ALLOWED_PARENT);
     }
 
 
@@ -3439,7 +3439,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
                 return prefix + ":";
             }
             else if (match.equals(getNamespaceManager().getDefaultNamespace())) {
-                return ":";
+                return ProtegeNames.DEFAULT_ONTOLOGY;
             }
             else {
                 return getFrameNameForURI(uri, true);
@@ -3461,7 +3461,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
         final NamespaceManager nsm = getNamespaceManager();
         if (nsm.getDefaultNamespace().equals(namespace)) {
             if (localName == null) {
-                return ":";
+                return ProtegeNames.DEFAULT_ONTOLOGY;
             }
             else {
                 return localName;
@@ -3489,7 +3489,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
         }
         
         if (localName != null) {
-            return prefix + ":" + localName;
+            return prefix + ProtegeNames.PREFIX_LOCALNAME_SEPARATOR + localName;
         }
         else {
             return prefix + ":";
@@ -3833,7 +3833,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
                     String localName = resource.getLocalName();
                     String newName = localName;
                     if (newPrefix != null && newPrefix.length() > 0) {
-                        newName = newPrefix + ":" + localName;
+                        newName = newPrefix + ProtegeNames.PREFIX_LOCALNAME_SEPARATOR + localName;
                     }
                     if (getFrame(newName) != null) {
                         newName = getUniqueFrameName(newName);
