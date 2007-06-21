@@ -23,7 +23,8 @@ import java.util.logging.Level;
 public class SWRLFactory 
 {
   private OWLNamedClass atomListCls, builtinAtomCls, classAtomCls, dataRangeAtomCls, dataValuedPropertyAtomCls,
-                        differentIndividualsAtomCls, impCls, individualPropertyAtomCls, sameIndividualAtomCls;
+                        differentIndividualsAtomCls, impCls, individualPropertyAtomCls, sameIndividualAtomCls,
+                        atomCls, variableCls, builtInCls;
   private OWLObjectProperty bodyProperty, headProperty, argumentsProperty, builtInProperty, argument1Property, argument2Property,
                             classPredicateProperty, propertyPredicateProperty, dataRangeProperty;
   private OWLModel owlModel;
@@ -58,6 +59,9 @@ public class SWRLFactory
 		impCls = getOrCreateOWLNamedClass(SWRLNames.Cls.IMP);
 		individualPropertyAtomCls = getOrCreateOWLNamedClass(SWRLNames.Cls.INDIVIDUAL_PROPERTY_ATOM);
 		sameIndividualAtomCls = getOrCreateOWLNamedClass(SWRLNames.Cls.SAME_INDIVIDUAL_ATOM);
+		builtInCls = getOrCreateOWLNamedClass(SWRLNames.Cls.BUILTIN);
+		atomCls = getOrCreateOWLNamedClass(SWRLNames.Cls.ATOM);
+		variableCls = getOrCreateOWLNamedClass(SWRLNames.Cls.VARIABLE);
 
 		bodyProperty = getOrCreateOWLObjectProperty(SWRLNames.Slot.BODY);
 		headProperty = getOrCreateOWLObjectProperty(SWRLNames.Slot.HEAD);
@@ -425,7 +429,8 @@ public class SWRLFactory
     return  (resource instanceof SWRLAtomList) || (resource instanceof SWRLBuiltinAtom) || (resource instanceof SWRLClassAtom) || 
             (resource instanceof SWRLDataRangeAtom) || (resource instanceof SWRLDatavaluedPropertyAtom) ||
             (resource instanceof SWRLDifferentIndividualsAtom) || (resource instanceof SWRLImp) || 
-            (resource instanceof SWRLIndividualPropertyAtom) || (resource instanceof SWRLSameIndividualAtom);
+            (resource instanceof SWRLIndividualPropertyAtom) || (resource instanceof SWRLSameIndividualAtom) || 
+            (resource instanceof SWRLBuiltin) || (resource instanceof SWRLAtom) || (resource instanceof SWRLVariable);
   } // isSWRLResource
 
   private void enableStatusUpdate(Set<String> ruleGroupNames, boolean enable)
@@ -439,5 +444,59 @@ public class SWRLFactory
     } // while
   } // enableAll
 
+  public Collection<RDFSNamedClass> getSWRLClasses() {
+	  ArrayList<RDFSNamedClass> swrlClasses = new ArrayList<RDFSNamedClass>();
+	  swrlClasses.add(atomListCls);		
+	  swrlClasses.add(builtinAtomCls);    
+	  swrlClasses.add(classAtomCls);
+	  swrlClasses.add(dataRangeAtomCls);
+	  swrlClasses.add(dataValuedPropertyAtomCls);
+	  swrlClasses.add(differentIndividualsAtomCls);
+	  swrlClasses.add(impCls);
+	  swrlClasses.add(individualPropertyAtomCls);
+	  swrlClasses.add(sameIndividualAtomCls);
+	  swrlClasses.add(builtInCls);
+	  swrlClasses.add(atomCls);
+	  swrlClasses.add(variableCls);
+	  
+	  return swrlClasses;
+  }
+  
+  public Collection<RDFProperty> getSWRLProperties() {
+	  ArrayList<RDFProperty> swrlProperties = new ArrayList<RDFProperty>();
+	  swrlProperties.add(bodyProperty);
+	  swrlProperties.add(headProperty);
+	  swrlProperties.add(argumentsProperty);
+	  swrlProperties.add(builtInProperty);
+	  swrlProperties.add(argument1Property);
+	  swrlProperties.add(argument2Property);
+	  swrlProperties.add(classPredicateProperty);
+	  swrlProperties.add(propertyPredicateProperty);
+	  swrlProperties.add(dataRangeProperty);
+	  
+	  return swrlProperties;
+  }
+  
+  public Collection<RDFProperty> getSWRLBProperties(){
+	  ArrayList<RDFProperty> swrlbProperties = new ArrayList<RDFProperty>();
+	  	  
+	  RDFProperty swrlbArgs = owlModel.getRDFProperty(SWRLNames.Slot.ARGS);
+	  if (swrlbArgs != null) {
+		  swrlbProperties.add(swrlbArgs);
+	  }
+	  
+	  RDFProperty swrlbMinArgs = owlModel.getRDFProperty(SWRLNames.Slot.MIN_ARGS);
+	  if (swrlbMinArgs != null) {
+		  swrlbProperties.add(swrlbMinArgs);
+	  }
+
+	  RDFProperty swrlbMaxArgs = owlModel.getRDFProperty(SWRLNames.Slot.MAX_ARGS);
+	  if (swrlbMaxArgs != null) {
+		  swrlbProperties.add(swrlbMaxArgs);
+	  }
+
+	  return swrlbProperties;
+  }
+  
 
 } // SWRLFactory
