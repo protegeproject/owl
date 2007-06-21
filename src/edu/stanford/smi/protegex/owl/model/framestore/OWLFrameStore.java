@@ -38,6 +38,7 @@ import edu.stanford.smi.protegex.owl.model.OWLProperty;
 import edu.stanford.smi.protegex.owl.model.OWLQuantifierRestriction;
 import edu.stanford.smi.protegex.owl.model.OWLRestriction;
 import edu.stanford.smi.protegex.owl.model.OWLUnionClass;
+import edu.stanford.smi.protegex.owl.model.ProtegeNames;
 import edu.stanford.smi.protegex.owl.model.RDFList;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
@@ -780,7 +781,7 @@ public class OWLFrameStore extends FrameStoreAdapter {
             Iterator it = owlModel.getNamespaceManager().getPrefixes().iterator();
             while (it.hasNext()) {
                 String prefix = (String) it.next();
-                results.addAll(super.getClsesWithMatchingBrowserText(prefix + ":" + value, superclasses, maxMatches));
+                results.addAll(super.getClsesWithMatchingBrowserText(prefix + ProtegeNames.PREFIX_LOCALNAME_SEPARATOR + value, superclasses, maxMatches));
             }
         }
         return results;
@@ -792,7 +793,7 @@ public class OWLFrameStore extends FrameStoreAdapter {
             Iterator it = owlModel.getNamespaceManager().getPrefixes().iterator();
             while (it.hasNext()) {
                 String prefix = (String) it.next();
-                results.addAll(super.getFramesWithMatchingDirectOwnSlotValue(slot, prefix + ":" + value, maxMatches));
+                results.addAll(super.getFramesWithMatchingDirectOwnSlotValue(slot, prefix + ProtegeNames.PREFIX_LOCALNAME_SEPARATOR + value, maxMatches));
             }
         }
         return results;
@@ -806,7 +807,7 @@ public class OWLFrameStore extends FrameStoreAdapter {
             Iterator it = owlModel.getNamespaceManager().getPrefixes().iterator();
             while (it.hasNext()) {
                 String prefix = (String) it.next();
-                results.addAll(super.getMatchingReferences(prefix + ":" + value, maxMatches));
+                results.addAll(super.getMatchingReferences(prefix + ProtegeNames.PREFIX_LOCALNAME_SEPARATOR + value, maxMatches));
             }
         }
         return results;
