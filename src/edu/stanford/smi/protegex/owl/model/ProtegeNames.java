@@ -12,9 +12,14 @@ import com.hp.hpl.jena.ontology.OntModel;
  */
 public class ProtegeNames {
 
+	public final static String PREFIX_LOCALNAME_SEPARATOR = ":";
+
+	public final static String DEFAULT_ONTOLOGY = ":";
+
     public static String PROTEGE_PREFIX = "protege";
 
     public final static String PREFIX = PROTEGE_PREFIX + ":";
+
 
     public static interface Slot {
 
@@ -112,4 +117,6 @@ public class ProtegeNames {
     public static String getUsedLanguagesSlotName() {
         return PREFIX + USED_LANGUAGE;
     }
+
+
 }
