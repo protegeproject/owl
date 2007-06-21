@@ -51,6 +51,7 @@ import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
 import edu.stanford.smi.protegex.owl.model.OWLNames;
 import edu.stanford.smi.protegex.owl.model.OWLOntology;
+import edu.stanford.smi.protegex.owl.model.ProtegeNames;
 import edu.stanford.smi.protegex.owl.model.RDFNames;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
@@ -306,7 +307,7 @@ public class ProtegeOWLParser {
 				
 				invokation.invokeARP(arp);
 								
-				if(owlModel.getRDFResource(":") == null) {
+				if(owlModel.getRDFResource(ProtegeNames.DEFAULT_ONTOLOGY) == null) {
 					createDefaultNamespace(tripleStore);
 				}
 				
@@ -348,7 +349,7 @@ public class ProtegeOWLParser {
 				    // TT:ensure that the triple store of the default ontology has the right name set
 				    // TODO: This check should not be here! The default ontology should never be null!
 				    // This is caused by a problem in the namespace code
-				    if (owlModel.getRDFResource(":") != null && owlModel.getRDFResource(":") instanceof OWLOntology) {
+				    if (owlModel.getRDFResource(ProtegeNames.DEFAULT_ONTOLOGY) != null && owlModel.getRDFResource(ProtegeNames.DEFAULT_ONTOLOGY) instanceof OWLOntology) {
 				        tripleStoreModel.getTopTripleStore().setName(owlModel.getDefaultOWLOntology().getURI());
 				    }
 
@@ -421,17 +422,17 @@ public class ProtegeOWLParser {
 		if(uri2NameConverter.isTemporaryRDFResourceName(name)) {
 			String namespace = uri2NameConverter.getURIFromTemporaryName(name);
 			namespace = Jena.getNamespaceFromURI(namespace);
-			String value = ":" + namespace;
+			String value = ProtegeNames.PREFIX_LOCALNAME_SEPARATOR + namespace;
 			final List oldValues = owlOntology.getDirectOwnSlotValues(prefixesSlot);
 			if(!oldValues.contains(value)) {
 				uri2NameConverter.addPrefix(namespace, "");
 				for(Iterator it = new ArrayList(oldValues).iterator(); it.hasNext();) {
 					String s = (String) it.next();
-					if(s.startsWith(":")) {
+					if(s.startsWith(ProtegeNames.PREFIX_LOCALNAME_SEPARATOR)) {
 						owlOntology.removeOwnSlotValue(prefixesSlot, s);
 					}
 				}
-				owlOntology.addOwnSlotValue(prefixesSlot, ":" + namespace);
+				owlOntology.addOwnSlotValue(prefixesSlot, ProtegeNames.PREFIX_LOCALNAME_SEPARATOR + namespace);
 			}
 		}
 	}
@@ -630,11 +631,11 @@ public class ProtegeOWLParser {
 		
 		for(Iterator it = copyOfValues.iterator(); it.hasNext();) {
 			String value = (String) it.next();
-			if(value.startsWith(prefix + ":")) {				
+			if(value.startsWith(prefix + ProtegeNames.PREFIX_LOCALNAME_SEPARATOR)) {				
 				ontology.removePropertyValue(property, value);
 			}
 		}
-		tripleStore.add(ontology, property, prefix + ":" + namespace);
+		tripleStore.add(ontology, property, prefix + ProtegeNames.PREFIX_LOCALNAME_SEPARATOR + namespace);
 	}
 
 
@@ -1033,7 +1034,7 @@ public class ProtegeOWLParser {
 					tripleStore.add(ontology, owlModel.getRDFTypeProperty(), owlModel.getOWLOntologyClass());
 					tripleStore.getNarrowFrameStore().addValues(ontology,
 					                                            ((KnowledgeBase) owlModel).getSlot(OWLNames.Slot.ONTOLOGY_PREFIXES),
-					                                            null, false, Collections.singleton(":" + defaultNamespace));
+					                                            null, false, Collections.singleton(ProtegeNames.PREFIX_LOCALNAME_SEPARATOR + defaultNamespace));
 					// ontology = owlModel.getDefaultOWLOntology();
 				}
 			}
@@ -1051,6 +1052,8 @@ public class ProtegeOWLParser {
 		public void statement(AResource aSubject,
 		                      AResource aPredicate,
 		                      AResource aObject) {
+			//System.out.println(aSubject + " " + aPredicate + " " + aObject);
+			
 			RDFProperty predicate = getRDFProperty(aPredicate);
 			if(rdfRestProperty.equals(predicate)) {
 				isRDFList = true;
@@ -1081,7 +1084,8 @@ public class ProtegeOWLParser {
 		public void statement(AResource aSubject,
 		                      AResource aPredicate,
 		                      ALiteral aLiteral) {
-			// System.out.println("Lit: " + aSubject + " " + aPredicate + " " + " " + aLiteral);
+			//System.out.println("Lit: " + aSubject + " " + aPredicate + " " + " " + aLiteral);
+			
 			RDFResource subject = getRDFResource(aSubject);
 			RDFProperty predicate = getRDFProperty(aPredicate);
 			Object object = createLiteralObject(aLiteral, predicate);
