@@ -1,6 +1,7 @@
 
 package edu.stanford.smi.protegex.owl.swrl.model;
 
+import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.model.*;
 import edu.stanford.smi.protegex.owl.swrl.parser.SWRLParseException;
 import edu.stanford.smi.protegex.owl.swrl.parser.SWRLParser;
@@ -12,6 +13,7 @@ import edu.stanford.smi.protegex.owl.swrl.model.factory.SWRLJavaFactory;
 import edu.stanford.smi.protegex.owl.swrl.model.SWRLImp;
 
 import java.util.*;
+import java.util.logging.Level;
 
 /**
  * A utility class that can (and should) be used to create and access SWRL related objects in an ontology.
@@ -30,24 +32,75 @@ public class SWRLFactory
   {
     this.owlModel = owlModel;
 
-    if (!(owlModel.getAllImports().contains(SWRLNames.SWRL_IMPORT) || owlModel.getAllImports().contains(SWRLNames.SWRL_ALT_IMPORT)))
-      System.err.println("Attempt to create SWRLFactory with an OWL model that does not import SWRL.");
-
-    atomListCls = owlModel.getOWLNamedClass(SWRLNames.Cls.ATOM_LIST);
-    builtinAtomCls = owlModel.getOWLNamedClass(SWRLNames.Cls.BUILTIN_ATOM);
-    classAtomCls = owlModel.getOWLNamedClass(SWRLNames.Cls.CLASS_ATOM);
-    dataRangeAtomCls = owlModel.getOWLNamedClass(SWRLNames.Cls.DATA_RANGE_ATOM);
-    dataValuedPropertyAtomCls = owlModel.getOWLNamedClass(SWRLNames.Cls.DATAVALUED_PROPERTY_ATOM);
-    differentIndividualsAtomCls = owlModel.getOWLNamedClass(SWRLNames.Cls.DIFFERENT_INDIVIDUALS_ATOM);
-    impCls = owlModel.getOWLNamedClass(SWRLNames.Cls.IMP);
-    individualPropertyAtomCls = owlModel.getOWLNamedClass(SWRLNames.Cls.INDIVIDUAL_PROPERTY_ATOM);
-    sameIndividualAtomCls = owlModel.getOWLNamedClass(SWRLNames.Cls.SAME_INDIVIDUAL_ATOM);
+    if (!(owlModel.getAllImports().contains(SWRLNames.SWRL_IMPORT) || owlModel.getAllImports().contains(SWRLNames.SWRL_ALT_IMPORT))) {
+    	if (Log.getLogger().getLevel() == Level.FINE) {
+    		Log.getLogger().warning("Attempt to create SWRLFactory with an OWL model that does not import SWRL.");
+    	}
+    }
   
     // Activate OWL-Java mappings.
     SWRLJavaFactory factory = new SWRLJavaFactory(owlModel);
     owlModel.setOWLJavaFactory(factory);
+    
+    initSWRLClasses();
+    
     if(owlModel instanceof JenaOWLModel) OWLJavaFactoryUpdater.run((JenaOWLModel)owlModel);
   } // SWRLFactory
+  
+  
+	private void initSWRLClasses() {
+		atomListCls = getOrCreateOWLNamedClass(SWRLNames.Cls.ATOM_LIST);
+		builtinAtomCls = getOrCreateOWLNamedClass(SWRLNames.Cls.BUILTIN_ATOM);    
+		classAtomCls = getOrCreateOWLNamedClass(SWRLNames.Cls.CLASS_ATOM);
+		dataRangeAtomCls = getOrCreateOWLNamedClass(SWRLNames.Cls.DATA_RANGE_ATOM);
+		dataValuedPropertyAtomCls = getOrCreateOWLNamedClass(SWRLNames.Cls.DATAVALUED_PROPERTY_ATOM);
+		differentIndividualsAtomCls = getOrCreateOWLNamedClass(SWRLNames.Cls.DIFFERENT_INDIVIDUALS_ATOM);
+		impCls = getOrCreateOWLNamedClass(SWRLNames.Cls.IMP);
+		individualPropertyAtomCls = getOrCreateOWLNamedClass(SWRLNames.Cls.INDIVIDUAL_PROPERTY_ATOM);
+		sameIndividualAtomCls = getOrCreateOWLNamedClass(SWRLNames.Cls.SAME_INDIVIDUAL_ATOM);
+
+		bodyProperty = getOrCreateOWLObjectProperty(SWRLNames.Slot.BODY);
+		headProperty = getOrCreateOWLObjectProperty(SWRLNames.Slot.HEAD);
+		argumentsProperty = getOrCreateOWLObjectProperty(SWRLNames.Slot.ARGUMENTS);
+		builtInProperty = getOrCreateOWLObjectProperty(SWRLNames.Slot.BUILTIN);
+		argument1Property = getOrCreateOWLObjectProperty(SWRLNames.Slot.ARGUMENT1);
+		argument2Property = getOrCreateOWLObjectProperty(SWRLNames.Slot.ARGUMENT2);
+		classPredicateProperty = getOrCreateOWLObjectProperty(SWRLNames.Slot.CLASS_PREDICATE);
+		propertyPredicateProperty = getOrCreateOWLObjectProperty(SWRLNames.Slot.PROPERTY_PREDICATE);
+		dataRangeProperty = getOrCreateOWLObjectProperty(SWRLNames.Slot.DATA_RANGE);
+	}
+	
+	private OWLNamedClass getOrCreateOWLNamedClass(String resourceName) {
+		RDFResource resource = owlModel.getRDFResource(resourceName);
+		if (resource == null) {
+			resource = owlModel.createOWLNamedClass(resourceName);
+ 
+			if (resourceName.equals(SWRLNames.Cls.ATOM_LIST)) {
+				((OWLNamedClass) resource).addSuperclass(owlModel.getRDFListClass());
+			}
+		} else if (!(resource instanceof OWLNamedClass)) {
+			resource.setProtegeType(owlModel.getOWLNamedClassClass());
+			resource = owlModel.getOWLNamedClass(resourceName);
+			((OWLNamedClass) resource).addSuperclass(owlModel.getOWLThingClass());
+		}
+
+		return (OWLNamedClass) resource;
+	}
+
+	private OWLObjectProperty getOrCreateOWLObjectProperty(String propertyName) {
+		RDFResource resource = owlModel.getRDFResource(propertyName);
+		
+		if (resource == null) {
+			resource = owlModel.createOWLObjectProperty(propertyName);			
+		} else if (!(resource instanceof OWLObjectProperty)) {
+			resource.setProtegeType(owlModel.getOWLObjectPropertyClass());		
+		}
+		
+		resource = owlModel.getOWLObjectProperty(propertyName);
+		return (OWLObjectProperty) resource;
+	}
+
+  
   
   public SWRLImp createImp() 
   {
