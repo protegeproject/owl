@@ -49,60 +49,66 @@ public interface SWRLNames extends OWLNames {
   
   public static interface Cls {
     
-    public final static String IMP = "swrl:Imp";
+    public final static String IMP = SWRL_PREFIX + ":" +"Imp";
     
-    public final static String ATOM = "swrl:Atom";
+    public final static String ATOM = SWRL_PREFIX + ":" + "Atom";
     
-    public final static String CLASS_ATOM = "swrl:ClassAtom";
+    public final static String CLASS_ATOM = SWRL_PREFIX + ":" + "ClassAtom";
     
-    public final static String INDIVIDUAL_PROPERTY_ATOM = "swrl:IndividualPropertyAtom";
+    public final static String INDIVIDUAL_PROPERTY_ATOM = SWRL_PREFIX + ":" + "IndividualPropertyAtom";
     
-    public final static String DATAVALUED_PROPERTY_ATOM = "swrl:DatavaluedPropertyAtom";
+    public final static String DATAVALUED_PROPERTY_ATOM = SWRL_PREFIX + ":" + "DatavaluedPropertyAtom";
     
-    public final static String DIFFERENT_INDIVIDUALS_ATOM = "swrl:DifferentIndividualsAtom";
+    public final static String DIFFERENT_INDIVIDUALS_ATOM = SWRL_PREFIX + ":" + "DifferentIndividualsAtom";
     
-    public final static String SAME_INDIVIDUAL_ATOM = "swrl:SameIndividualAtom";
+    public final static String SAME_INDIVIDUAL_ATOM = SWRL_PREFIX + ":" + "SameIndividualAtom";
     
-    public final static String BUILTIN_ATOM = "swrl:BuiltinAtom";
+    public final static String BUILTIN_ATOM = SWRL_PREFIX + ":" + "BuiltinAtom";
     
-    public final static String DATA_RANGE_ATOM = "swrl:DataRangeAtom";
+    public final static String DATA_RANGE_ATOM = SWRL_PREFIX + ":" + "DataRangeAtom";
     
-    public final static String BUILTIN = "swrl:Builtin";
+    public final static String BUILTIN = SWRL_PREFIX + ":" + "Builtin";
     
-    public final static String VARIABLE = "swrl:Variable";
+    public final static String VARIABLE = SWRL_PREFIX + ":" + "Variable";
     
-    public final static String ATOM_LIST = "swrl:AtomList";
+    public final static String ATOM_LIST = SWRL_PREFIX + ":" + "AtomList";
     
   } // Cls
   
   public static interface Slot {
     
-    public final static String BODY = "swrl:body";
+    public final static String BODY = SWRL_PREFIX + ":" + "body";
     
-    public final static String HEAD = "swrl:head";
+    public final static String HEAD = SWRL_PREFIX + ":" + "head";
     
-    public final static String ARGUMENTS = "swrl:arguments";
+    public final static String ARGUMENTS = SWRL_PREFIX + ":" + "arguments";
     
-    public final static String BUILTIN = "swrl:builtin";
+    public final static String BUILTIN = SWRL_PREFIX + ":" + "builtin";
     
-    public final static String ARGUMENT1 = "swrl:argument1";
+    public final static String ARGUMENT1 = SWRL_PREFIX + ":" + "argument1";
     
-    public final static String ARGUMENT2 = "swrl:argument2";
+    public final static String ARGUMENT2 = SWRL_PREFIX + ":" + "argument2";
     
-    public final static String CLASS_PREDICATE = "swrl:classPredicate";
+    public final static String CLASS_PREDICATE = SWRL_PREFIX + ":" + "classPredicate";
     
-    public final static String PROPERTY_PREDICATE = "swrl:propertyPredicate";
+    public final static String PROPERTY_PREDICATE = SWRL_PREFIX + ":" + "propertyPredicate";
     
-    public final static String DATA_RANGE = "swrl:dataRange";
+    public final static String DATA_RANGE = SWRL_PREFIX + ":" + "dataRange";
+    
+    public final static String ARGS = SWRLB_PREFIX + ":" + "args";
+    
+    public final static String MIN_ARGS = SWRLB_PREFIX + ":" + "minArgs";
+    
+    public final static String MAX_ARGS = SWRLB_PREFIX + ":" + "maxArgs";    
     
   } // Slot
 
   public static interface Annotations {
     
-    public final static String IS_RULE_ENABLED = "swrla:isRuleEnabled";
-    public final static String IS_RULE_GROUP_ENABLED = "swrla:isRuleGroupEnabled";
-    public final static String RULE_GROUP = "swrla:RuleGroup";
-    public final static String HAS_RULE_GROUP = "swrla:hasRuleGroup";
+    public final static String IS_RULE_ENABLED = SWRLA_PREFIX + ":" + "isRuleEnabled";
+    public final static String IS_RULE_GROUP_ENABLED = SWRLA_PREFIX + ":" + "isRuleGroupEnabled";
+    public final static String RULE_GROUP = SWRLA_PREFIX + ":" + "RuleGroup";
+    public final static String HAS_RULE_GROUP = SWRLA_PREFIX + ":" + "hasRuleGroup";
   } // Annotations
 
 } // SWRLNames
