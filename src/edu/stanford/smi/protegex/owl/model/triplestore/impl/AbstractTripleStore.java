@@ -137,7 +137,7 @@ public abstract class AbstractTripleStore implements ProtegeTripleAdder, TripleS
     public String getNamespaceForPrefix(String prefix) {
         Instance ontology = TripleStoreUtil.getFirstOntology(owlModel, this);
         if (ontology != null) {
-            prefix += ":";
+            prefix += ProtegeNames.PREFIX_LOCALNAME_SEPARATOR;
             Slot prefixesSlot = owlModel.getRDFProperty(OWLNames.Slot.ONTOLOGY_PREFIXES);
             Collection values = getNarrowFrameStore().getValues(ontology, prefixesSlot, null, false);
             for (Iterator it = values.iterator(); it.hasNext();) {
