@@ -3,6 +3,7 @@ package edu.stanford.smi.protegex.owl.inference.util;
 import edu.stanford.smi.protege.event.ProjectAdapter;
 import edu.stanford.smi.protege.event.ProjectEvent;
 import edu.stanford.smi.protege.event.ProjectListener;
+import edu.stanford.smi.protege.model.KnowledgeBase;
 import edu.stanford.smi.protege.model.Project;
 import edu.stanford.smi.protegex.owl.model.*;
 import edu.stanford.smi.protegex.owl.model.event.ModelAdapter;
@@ -27,11 +28,11 @@ public class ReasonerUtil {
 
     private static ReasonerUtil instance;
 
-    private HashMap namedClsesMap;
+    private HashMap<KnowledgeBase, Collection<RDFSClass>> namedClsesMap;
 
-    private HashMap propertiesMap;
+    private HashMap<KnowledgeBase, Collection<RDFProperty>> propertiesMap;
 
-    private HashMap individualsMap;
+    private HashMap<KnowledgeBase, Collection<RDFIndividual>> individualsMap;
 
     private ProjectListener projectListener = new ProjectAdapter() {
         public void projectClosed(ProjectEvent event) {
@@ -92,9 +93,9 @@ public class ReasonerUtil {
 
 
     private void initHashMaps() {
-        namedClsesMap = new HashMap();
-        propertiesMap = new HashMap();
-        individualsMap = new HashMap();
+        namedClsesMap = new HashMap<KnowledgeBase, Collection<RDFSClass>>();
+        propertiesMap = new HashMap<KnowledgeBase, Collection<RDFProperty>>();
+        individualsMap = new HashMap<KnowledgeBase, Collection<RDFIndividual>>();
 
     }
 
