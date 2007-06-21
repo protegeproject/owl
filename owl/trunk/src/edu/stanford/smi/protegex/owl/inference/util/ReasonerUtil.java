@@ -1,19 +1,27 @@
 package edu.stanford.smi.protegex.owl.inference.util;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
 import edu.stanford.smi.protege.event.ProjectAdapter;
 import edu.stanford.smi.protege.event.ProjectEvent;
 import edu.stanford.smi.protege.event.ProjectListener;
 import edu.stanford.smi.protege.model.KnowledgeBase;
 import edu.stanford.smi.protege.model.Project;
-import edu.stanford.smi.protegex.owl.model.*;
+import edu.stanford.smi.protegex.owl.model.OWLAnonymousClass;
+import edu.stanford.smi.protegex.owl.model.OWLIndividual;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
+import edu.stanford.smi.protegex.owl.model.RDFIndividual;
+import edu.stanford.smi.protegex.owl.model.RDFProperty;
+import edu.stanford.smi.protegex.owl.model.RDFResource;
+import edu.stanford.smi.protegex.owl.model.RDFSClass;
 import edu.stanford.smi.protegex.owl.model.event.ModelAdapter;
 import edu.stanford.smi.protegex.owl.model.event.ModelListener;
 import edu.stanford.smi.protegex.owl.model.visitor.OWLModelVisitorAdapter;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
 
 /**
  * User: matthewhorridge<br>
@@ -28,11 +36,11 @@ public class ReasonerUtil {
 
     private static ReasonerUtil instance;
 
-    private HashMap<KnowledgeBase, Collection<RDFSClass>> namedClsesMap;
+    private Map<KnowledgeBase, Collection<RDFSClass>> namedClsesMap;
 
-    private HashMap<KnowledgeBase, Collection<RDFProperty>> propertiesMap;
+    private Map<KnowledgeBase, Collection<RDFProperty>> propertiesMap;
 
-    private HashMap<KnowledgeBase, Collection<RDFIndividual>> individualsMap;
+    private Map<KnowledgeBase, Collection<RDFIndividual>> individualsMap;
 
     private ProjectListener projectListener = new ProjectAdapter() {
         public void projectClosed(ProjectEvent event) {
