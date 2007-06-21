@@ -1,6 +1,7 @@
 package edu.stanford.smi.protegex.owl.swrl.model;
 
 import edu.stanford.smi.protegex.owl.model.OWLNames;
+import edu.stanford.smi.protegex.owl.model.ProtegeNames;
 
 /**
  * Defines the names of the SWRL system ontology classes and properties.  This corresponds to the Model interface in general Protege, and
@@ -49,66 +50,66 @@ public interface SWRLNames extends OWLNames {
   
   public static interface Cls {
     
-    public final static String IMP = SWRL_PREFIX + ":" +"Imp";
+    public final static String IMP = SWRL_PREFIX + ProtegeNames.PREFIX_LOCALNAME_SEPARATOR +"Imp";
     
-    public final static String ATOM = SWRL_PREFIX + ":" + "Atom";
+    public final static String ATOM = SWRL_PREFIX + ProtegeNames.PREFIX_LOCALNAME_SEPARATOR + "Atom";
     
-    public final static String CLASS_ATOM = SWRL_PREFIX + ":" + "ClassAtom";
+    public final static String CLASS_ATOM = SWRL_PREFIX + ProtegeNames.PREFIX_LOCALNAME_SEPARATOR + "ClassAtom";
     
-    public final static String INDIVIDUAL_PROPERTY_ATOM = SWRL_PREFIX + ":" + "IndividualPropertyAtom";
+    public final static String INDIVIDUAL_PROPERTY_ATOM = SWRL_PREFIX + ProtegeNames.PREFIX_LOCALNAME_SEPARATOR + "IndividualPropertyAtom";
     
-    public final static String DATAVALUED_PROPERTY_ATOM = SWRL_PREFIX + ":" + "DatavaluedPropertyAtom";
+    public final static String DATAVALUED_PROPERTY_ATOM = SWRL_PREFIX + ProtegeNames.PREFIX_LOCALNAME_SEPARATOR + "DatavaluedPropertyAtom";
     
-    public final static String DIFFERENT_INDIVIDUALS_ATOM = SWRL_PREFIX + ":" + "DifferentIndividualsAtom";
+    public final static String DIFFERENT_INDIVIDUALS_ATOM = SWRL_PREFIX + ProtegeNames.PREFIX_LOCALNAME_SEPARATOR + "DifferentIndividualsAtom";
     
-    public final static String SAME_INDIVIDUAL_ATOM = SWRL_PREFIX + ":" + "SameIndividualAtom";
+    public final static String SAME_INDIVIDUAL_ATOM = SWRL_PREFIX + ProtegeNames.PREFIX_LOCALNAME_SEPARATOR + "SameIndividualAtom";
     
-    public final static String BUILTIN_ATOM = SWRL_PREFIX + ":" + "BuiltinAtom";
+    public final static String BUILTIN_ATOM = SWRL_PREFIX + ProtegeNames.PREFIX_LOCALNAME_SEPARATOR + "BuiltinAtom";
     
-    public final static String DATA_RANGE_ATOM = SWRL_PREFIX + ":" + "DataRangeAtom";
+    public final static String DATA_RANGE_ATOM = SWRL_PREFIX + ProtegeNames.PREFIX_LOCALNAME_SEPARATOR + "DataRangeAtom";
     
-    public final static String BUILTIN = SWRL_PREFIX + ":" + "Builtin";
+    public final static String BUILTIN = SWRL_PREFIX + ProtegeNames.PREFIX_LOCALNAME_SEPARATOR + "Builtin";
     
-    public final static String VARIABLE = SWRL_PREFIX + ":" + "Variable";
+    public final static String VARIABLE = SWRL_PREFIX + ProtegeNames.PREFIX_LOCALNAME_SEPARATOR + "Variable";
     
-    public final static String ATOM_LIST = SWRL_PREFIX + ":" + "AtomList";
+    public final static String ATOM_LIST = SWRL_PREFIX + ProtegeNames.PREFIX_LOCALNAME_SEPARATOR + "AtomList";
     
   } // Cls
   
   public static interface Slot {
     
-    public final static String BODY = SWRL_PREFIX + ":" + "body";
+    public final static String BODY = SWRL_PREFIX + ProtegeNames.PREFIX_LOCALNAME_SEPARATOR + "body";
     
-    public final static String HEAD = SWRL_PREFIX + ":" + "head";
+    public final static String HEAD = SWRL_PREFIX + ProtegeNames.PREFIX_LOCALNAME_SEPARATOR + "head";
     
-    public final static String ARGUMENTS = SWRL_PREFIX + ":" + "arguments";
+    public final static String ARGUMENTS = SWRL_PREFIX + ProtegeNames.PREFIX_LOCALNAME_SEPARATOR + "arguments";
     
-    public final static String BUILTIN = SWRL_PREFIX + ":" + "builtin";
+    public final static String BUILTIN = SWRL_PREFIX + ProtegeNames.PREFIX_LOCALNAME_SEPARATOR + "builtin";
     
-    public final static String ARGUMENT1 = SWRL_PREFIX + ":" + "argument1";
+    public final static String ARGUMENT1 = SWRL_PREFIX + ProtegeNames.PREFIX_LOCALNAME_SEPARATOR + "argument1";
     
-    public final static String ARGUMENT2 = SWRL_PREFIX + ":" + "argument2";
+    public final static String ARGUMENT2 = SWRL_PREFIX + ProtegeNames.PREFIX_LOCALNAME_SEPARATOR + "argument2";
     
-    public final static String CLASS_PREDICATE = SWRL_PREFIX + ":" + "classPredicate";
+    public final static String CLASS_PREDICATE = SWRL_PREFIX + ProtegeNames.PREFIX_LOCALNAME_SEPARATOR + "classPredicate";
     
-    public final static String PROPERTY_PREDICATE = SWRL_PREFIX + ":" + "propertyPredicate";
+    public final static String PROPERTY_PREDICATE = SWRL_PREFIX + ProtegeNames.PREFIX_LOCALNAME_SEPARATOR + "propertyPredicate";
     
-    public final static String DATA_RANGE = SWRL_PREFIX + ":" + "dataRange";
+    public final static String DATA_RANGE = SWRL_PREFIX + ProtegeNames.PREFIX_LOCALNAME_SEPARATOR + "dataRange";
     
-    public final static String ARGS = SWRLB_PREFIX + ":" + "args";
+    public final static String ARGS = SWRLB_PREFIX + ProtegeNames.PREFIX_LOCALNAME_SEPARATOR + "args";
     
-    public final static String MIN_ARGS = SWRLB_PREFIX + ":" + "minArgs";
+    public final static String MIN_ARGS = SWRLB_PREFIX + ProtegeNames.PREFIX_LOCALNAME_SEPARATOR + "minArgs";
     
-    public final static String MAX_ARGS = SWRLB_PREFIX + ":" + "maxArgs";    
+    public final static String MAX_ARGS = SWRLB_PREFIX + ProtegeNames.PREFIX_LOCALNAME_SEPARATOR + "maxArgs";    
     
   } // Slot
 
   public static interface Annotations {
     
-    public final static String IS_RULE_ENABLED = SWRLA_PREFIX + ":" + "isRuleEnabled";
-    public final static String IS_RULE_GROUP_ENABLED = SWRLA_PREFIX + ":" + "isRuleGroupEnabled";
-    public final static String RULE_GROUP = SWRLA_PREFIX + ":" + "RuleGroup";
-    public final static String HAS_RULE_GROUP = SWRLA_PREFIX + ":" + "hasRuleGroup";
+    public final static String IS_RULE_ENABLED = SWRLA_PREFIX + ProtegeNames.PREFIX_LOCALNAME_SEPARATOR + "isRuleEnabled";
+    public final static String IS_RULE_GROUP_ENABLED = SWRLA_PREFIX + ProtegeNames.PREFIX_LOCALNAME_SEPARATOR + "isRuleGroupEnabled";
+    public final static String RULE_GROUP = SWRLA_PREFIX + ProtegeNames.PREFIX_LOCALNAME_SEPARATOR + "RuleGroup";
+    public final static String HAS_RULE_GROUP = SWRLA_PREFIX + ProtegeNames.PREFIX_LOCALNAME_SEPARATOR + "hasRuleGroup";
   } // Annotations
 
 } // SWRLNames
