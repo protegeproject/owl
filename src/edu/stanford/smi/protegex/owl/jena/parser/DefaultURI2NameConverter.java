@@ -156,7 +156,7 @@ public class DefaultURI2NameConverter implements URI2NameConverter {
                 return null;
             }
             else {
-                return prefix + ":";
+                return prefix + ProtegeNames.PREFIX_LOCALNAME_SEPARATOR;
             }
         }
         else {
@@ -191,7 +191,7 @@ public class DefaultURI2NameConverter implements URI2NameConverter {
                     }
                 }
                 else {
-                    return prefix + ":" + localName;
+                    return prefix + ProtegeNames.PREFIX_LOCALNAME_SEPARATOR + localName;
                 }
             }
         }
