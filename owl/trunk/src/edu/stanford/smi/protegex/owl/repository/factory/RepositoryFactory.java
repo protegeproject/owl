@@ -14,6 +14,7 @@ import edu.stanford.smi.protegex.owl.repository.impl.FTPRepositoryFactoryPlugin;
 import edu.stanford.smi.protegex.owl.repository.impl.HTTPRepositoryFactoryPlugin;
 import edu.stanford.smi.protegex.owl.repository.impl.LocalFileRepositoryFactoryPlugin;
 import edu.stanford.smi.protegex.owl.repository.impl.LocalFolderRepositoryFactoryPlugin;
+import edu.stanford.smi.protegex.owl.repository.impl.RelativeFileRepositoryFactoryPlugin;
 import edu.stanford.smi.protegex.owl.repository.impl.RelativeFolderRepositoryFactoryPlugin;
 
 /**
@@ -29,13 +30,14 @@ public class RepositoryFactory {
 
     private static RepositoryFactory instance;
 
-    private ArrayList factories;
+    private ArrayList<RepositoryFactoryPlugin> factories;
 
 
     private RepositoryFactory() {
-        factories = new ArrayList();
+        factories = new ArrayList<RepositoryFactoryPlugin>();
         factories.add(new DublinCoreDLVersionRedirectRepositoryFactoryPlugin());
         factories.add(new LocalFileRepositoryFactoryPlugin());
+        factories.add(new RelativeFileRepositoryFactoryPlugin());
         factories.add(new LocalFolderRepositoryFactoryPlugin());
         factories.add(new HTTPRepositoryFactoryPlugin());
         factories.add(new RelativeFolderRepositoryFactoryPlugin());
@@ -44,7 +46,7 @@ public class RepositoryFactory {
         for (Iterator it = plugins.iterator(); it.hasNext();) {
             Class cls = (Class) it.next();
             try {
-                factories.add(cls.newInstance());
+                factories.add((RepositoryFactoryPlugin) cls.newInstance());
             }
             catch (InstantiationException e) {
               Log.getLogger().log(Level.SEVERE, "Exception caught", e);
@@ -70,8 +72,8 @@ public class RepositoryFactory {
 
 
     public Repository createOntRepository(OWLModel model, String s) {
-        for (Iterator it = factories.iterator(); it.hasNext();) {
-            RepositoryFactoryPlugin curPlugin = (RepositoryFactoryPlugin) it.next();
+        for (Iterator<RepositoryFactoryPlugin> it = factories.iterator(); it.hasNext();) {
+            RepositoryFactoryPlugin curPlugin = it.next();
             if (curPlugin.isSuitable(model, s)) {
                 return curPlugin.createRepository(model, s);
             }
@@ -80,8 +82,8 @@ public class RepositoryFactory {
     }
 
 
-    public Collection getFactories() {
-        return new ArrayList(factories);
+    public Collection<RepositoryFactoryPlugin> getFactories() {
+        return new ArrayList<RepositoryFactoryPlugin>(factories);
     }
 }
 
