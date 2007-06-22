@@ -1,5 +1,7 @@
 package edu.stanford.smi.protegex.owl.repository.util;
 
+import edu.stanford.smi.protege.util.URIUtilities;
+import edu.stanford.smi.protegex.owl.jena.JenaKnowledgeBaseFactory;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.repository.Repository;
 import edu.stanford.smi.protegex.owl.repository.RepositoryManager;
@@ -7,7 +9,10 @@ import edu.stanford.smi.protegex.owl.repository.impl.DublinCoreDLVersionRedirect
 import edu.stanford.smi.protegex.owl.repository.impl.LocalFileRepository;
 
 import java.io.*;
+import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Iterator;
 import java.util.StringTokenizer;
 
@@ -91,5 +96,37 @@ public class RepositoryUtil {
             }
         }
     }
+    
+    public static URI getURI(URL baseURL, String relativeURL) throws MalformedURLException, URISyntaxException {
+    	return new URI(new URL(baseURL, relativeURL).toString());
+    }
+    
+    public static File getRepositoryFileFromRelativePath(OWLModel model, String s) {
+        File repositoryFile = null;
+        try {
+            URI owlFileUri = model.getProject().getProjectURI();
+
+            if (owlFileUri == null && model.getKnowledgeBaseFactory() instanceof JenaKnowledgeBaseFactory) {
+                String uriString = JenaKnowledgeBaseFactory.getOWLFilePath(model.getProject().getSources());
+                owlFileUri = URIUtilities.createURI(uriString);
+            } 
+
+            if (owlFileUri == null) {
+                return null;
+            }
+            URL absoluteURL = new URL(owlFileUri.toURL(), s.trim());
+            
+            repositoryFile = new File(absoluteURL.getPath());
+            if (repositoryFile.canRead() && repositoryFile.isFile()) {
+                return repositoryFile;
+            }
+        }
+        catch (Throwable t) {
+            return null;
+        }
+        return null;
+    }
+    
+    
 }
 
