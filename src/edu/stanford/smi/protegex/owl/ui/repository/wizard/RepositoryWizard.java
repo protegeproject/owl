@@ -16,6 +16,7 @@ import edu.stanford.smi.protegex.owl.repository.Repository;
 import edu.stanford.smi.protegex.owl.ui.repository.wizard.impl.HTTPRepositoryCreatorWizardPlugin;
 import edu.stanford.smi.protegex.owl.ui.repository.wizard.impl.LocalFileRepositoryCreatorWizardPlugin;
 import edu.stanford.smi.protegex.owl.ui.repository.wizard.impl.LocalFolderRepositoryCreatorWizardPlugin;
+import edu.stanford.smi.protegex.owl.ui.repository.wizard.impl.RelativeFileRepositoryCreatorWizardPlugin;
 import edu.stanford.smi.protegex.owl.ui.repository.wizard.impl.RelativeFolderRepositoryCreatorWizardPlugin;
 import edu.stanford.smi.protegex.owl.ui.wizard.OWLWizard;
 
@@ -39,10 +40,11 @@ public class RepositoryWizard extends OWLWizard {
     public RepositoryWizard(JComponent component, OWLModel owlModel) {
         super(component, "Create Ontology Repository");
         plugins = new ArrayList();
-        plugins.add(new LocalFolderRepositoryCreatorWizardPlugin());
+        plugins.add(new LocalFolderRepositoryCreatorWizardPlugin());        
         plugins.add(new RelativeFolderRepositoryCreatorWizardPlugin());
         plugins.add(new LocalFileRepositoryCreatorWizardPlugin());
-        plugins.add(new HTTPRepositoryCreatorWizardPlugin());
+        plugins.add(new RelativeFileRepositoryCreatorWizardPlugin());
+        plugins.add(new HTTPRepositoryCreatorWizardPlugin());        
         Collection pluginClses = PluginUtilities.getClassesWithAttribute(RepositoryCreatorWizardPlugin.PLUGIN_TYPE,
                 "True");
         for (Iterator it = pluginClses.iterator(); it.hasNext();) {
