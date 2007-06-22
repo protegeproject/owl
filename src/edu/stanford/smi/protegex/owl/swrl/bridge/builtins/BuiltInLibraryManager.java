@@ -1,7 +1,7 @@
 
-package edu.stanford.smi.protegex.owl.swrl.bridge;
+package edu.stanford.smi.protegex.owl.swrl.bridge.builtins;
 
-import edu.stanford.smi.protegex.owl.swrl.bridge.builtins.*;
+import edu.stanford.smi.protegex.owl.swrl.bridge.*;
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.*;
 
 import java.util.*;
@@ -10,38 +10,28 @@ import java.net.URLClassLoader;
 import java.net.URL;
 
 /**
- ** Class to manage built-in libraries.
+ ** This class manages the dynamic loading of SWRL built-in libraries and the invocation of built-ins in those libraries. A library is
+ ** identified by a prefix and this prefix is used to find and dynamically load a Java class implementing the built-ins in this library. For
+ ** example, the <a href="http://protege.cim3.net/cgi-bin/wiki.pl?CoreSWRLBuiltIns">core SWRL built-in library</a> is identified by the
+ ** prefix swrlb; built-ins in this library can then be referred to in SWRL rules using this profix followed by the built-in name, e.g.,
+ ** swrlb:lessThanOrEqual.<p>
+ **
+ ** See <a href="http://protege.cim3.net/cgi-bin/wiki.pl?SWRLBuiltInBridge">here</a> for documentation on defining these built-in libraries.
  */
 public abstract class BuiltInLibraryManager
 {
   private static String BuiltInLibraryPackageBaseName = "edu.stanford.smi.protegex.owl.swrl.bridge.builtins.";
 
-  // Holds class instances implementing built-ins.
-  private static HashMap<String, SWRLBuiltInLibrary> builtInLibraryClassInstances;
+  // Holds instances of implementation classed defining built-in libraries
+  private static HashMap<String, SWRLBuiltInLibrary> builtInLibraries;
 
   static {
-    builtInLibraryClassInstances = new HashMap<String, SWRLBuiltInLibrary>();
+    builtInLibraries = new HashMap<String, SWRLBuiltInLibrary>();
   } // static
 
   /**
-   ** Find the implementation classes for a built-in library. Returns null if it does not find anything. A library will only be valid after
-   ** it is loaded.
-   */
-  public static SWRLBuiltInLibrary getBuiltInLibraryByPrefix(String prefix) throws InvalidBuiltInLibraryNameException
-  {
-    SWRLBuiltInLibrary swrlBuiltInLibrary = null;
-
-    if (builtInLibraryClassInstances.containsKey(prefix)) swrlBuiltInLibrary = (SWRLBuiltInLibrary)builtInLibraryClassInstances.get(prefix);
-    else throw new InvalidBuiltInLibraryNameException(prefix);
-
-    return swrlBuiltInLibrary;
-  } // getBuiltInLibraryByPrefix
-
-  public static Set<String> getBuiltInLibraryPrefixes() { return builtInLibraryClassInstances.keySet(); }
-
-  /**
-   ** Invoke a built-in. This method is called from the invokeSWRLBuiltIn method in the bridge and should not be called directly from a rule
-   ** engine. 
+   ** Invoke a SWRL built-in. This method is called from the invokeSWRLBuiltIn method in the bridge and should not be called directly from a
+   ** rule engine. The built-in name should be the fully qualified name of the built-in (e.g., swrlb:lessThanOrEqual).
    */
   public static boolean invokeSWRLBuiltIn(SWRLRuleEngineBridge bridge, String ruleName, String builtInName, int builtInIndex, 
                                           List<Argument> arguments) 
@@ -63,17 +53,33 @@ public abstract class BuiltInLibraryManager
     return result;
   } // invokeSWRLBuiltIn
 
+  /**
+   ** Find the implementation class for a built-in library. Returns null if it does not find anything. A library will only be valid after it
+   ** is loaded.
+   */
+  public static SWRLBuiltInLibrary getBuiltInLibraryByPrefix(String prefix) throws InvalidBuiltInLibraryNameException
+  {
+    SWRLBuiltInLibrary swrlBuiltInLibrary = null;
+
+    if (builtInLibraries.containsKey(prefix)) swrlBuiltInLibrary = (SWRLBuiltInLibrary)builtInLibraries.get(prefix);
+    else throw new InvalidBuiltInLibraryNameException(prefix);
+
+    return swrlBuiltInLibrary;
+  } // getBuiltInLibraryByPrefix
+
+  private static Set<String> getBuiltInLibraryPrefixes() { return builtInLibraries.keySet(); }
+
   private static SWRLBuiltInLibrary loadBuiltInLibrary(SWRLRuleEngineBridge bridge, String ruleName, String prefix, 
                                                        String implementationClassName)
     throws BuiltInException
   {
     SWRLBuiltInLibrary library;
 
-    if (builtInLibraryClassInstances.containsKey(prefix)) { // Find the implementation
-      library = (SWRLBuiltInLibrary)builtInLibraryClassInstances.get(prefix);
+    if (builtInLibraries.containsKey(prefix)) { // Find the implementation
+      library = (SWRLBuiltInLibrary)builtInLibraries.get(prefix);
     } else { // Implementation class not loaded - load it, call the reset method, and cache it.
       library = loadBuiltInLibraryImpl(ruleName, prefix, implementationClassName);
-      builtInLibraryClassInstances.put(prefix, library);
+      builtInLibraries.put(prefix, library);
       invokeBuiltInLibraryResetMethod(bridge, library);
     } // if
     return library;
@@ -128,7 +134,7 @@ public abstract class BuiltInLibraryManager
   
   public static void invokeAllBuiltInLibrariesResetMethod(SWRLRuleEngineBridge bridge) throws SWRLRuleEngineBridgeException
   {
-    for (SWRLBuiltInLibrary library : builtInLibraryClassInstances.values()) invokeBuiltInLibraryResetMethod(bridge, library);
+    for (SWRLBuiltInLibrary library : builtInLibraries.values()) invokeBuiltInLibraryResetMethod(bridge, library);
   } // invokeAllBuiltInLibrariesResetMethod
 
   private static Method resolveBuiltInMethod(String ruleName, SWRLBuiltInLibrary library, String prefix, String builtInName)

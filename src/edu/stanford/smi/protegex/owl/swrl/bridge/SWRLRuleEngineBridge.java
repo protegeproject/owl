@@ -447,7 +447,7 @@ public abstract class SWRLRuleEngineBridge implements Serializable
     } // if
   } // importOWLIndividual
 
-  // We only import owl:SameAs, owl:differentFrom, and owl:AllDifferent, owl:equivalentProperty, owl:equivalentClass restrictions at the
+  // We only import owl:SameAs, owl:differentFrom, and owl:AllDifferent, owl:equivalentProperty, and owl:equivalentClass restrictions at the
   // moment. We support owl:equivalentProperty and owl:equivalentClass restrictions indirectly through the IndividualInfo class.
   private void importOWLRestrictions() throws SWRLRuleEngineBridgeException
   {

@@ -9,7 +9,7 @@ import java.util.*;
 import java.lang.reflect.*;
 
 /** 
- ** A class that must be subclasses by a class defining SWRL built-in methods. See <a
+ ** A class that must be subclassed by a class implementing a library of SWRL built-in methods. See <a
  ** href="http://protege.cim3.net/cgi-bin/wiki.pl?SWRLBuiltInBridge">here</a> for documentation.
  */
 public abstract class SWRLBuiltInLibrary 
@@ -65,7 +65,7 @@ public abstract class SWRLBuiltInLibrary
   } // invokeResetMethod
 
   public boolean invokeBuiltInMethod(Method method, SWRLRuleEngineBridge bridge, 
-                                                  String ruleName, String builtInName, int builtInIndex, List<Argument> arguments) 
+                                     String ruleName, String builtInName, int builtInIndex, List<Argument> arguments) 
     throws BuiltInException
   {
     Boolean result = null;
