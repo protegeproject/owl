@@ -3,6 +3,7 @@ package edu.stanford.smi.protegex.owl.ui.query;
 import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.ui.actions.AbstractOWLModelAction;
+import edu.stanford.smi.protegex.owl.ui.actions.OWLModelActionConstants;
 import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
 import edu.stanford.smi.protegex.owl.ui.results.ResultsPanelManager;
 
@@ -11,7 +12,7 @@ import edu.stanford.smi.protegex.owl.ui.results.ResultsPanelManager;
  */
 public class SPARQLOWLModelAction extends AbstractOWLModelAction {
 
-    public final static String GROUP = "Query";
+    public final static String GROUP = OWLModelActionConstants.QUERY_GROUP;
 
 
     public String getIconFileName() {
@@ -30,7 +31,7 @@ public class SPARQLOWLModelAction extends AbstractOWLModelAction {
 
 
     public boolean isSuitable(OWLModel owlModel) {
-        return owlModel instanceof JenaOWLModel;
+    	return true;
     }
 
 
