@@ -33,7 +33,7 @@ import java.io.Serializable;
  **
  ** Result result = new ResultImpl("TestResult");
  **
- ** result.addSelectedIndividualColumn("name");
+ ** result.addColumn("name");
  ** result.addAggregateColumn("average", ResultGenerator.AvgAggregateFunction);
  **
  ** result.configured();
@@ -52,7 +52,7 @@ import java.io.Serializable;
  ** result.addData(new IndividualInfo("Joe"));
  ** result.addData(new LiteralInfo(21));
  ** result.closeRow();
- **
+ ** 
  ** result.prepared();
  **
  ** The result is now available for reading. The interface Result defines the assessor methods. A row consists of a list of objects defined
@@ -65,6 +65,11 @@ import java.io.Serializable;
  **  System.out.println("Name: " + nameValue.getIndividualName());
  **  System.out.println("Average: " + averageValue.getInt());
  ** } // while
+ **
+ ** A convenience method addColumns that takes a list of column names. **
+ **
+ ** There is also a convenience method addRow, which takes a list of ResultValues. This method automatically does a row open and close. It
+ ** is expecting the exact same number of list elements as there are columns in the result.
  */ 
 public class ResultImpl implements ResultGenerator, Result
 {
@@ -113,14 +118,19 @@ public class ResultImpl implements ResultGenerator, Result
     rows = new ArrayList<List<ResultValue>>();
   } // prepare
 
-  public void addSelectedColumn(String columnName) throws ResultException
+  public void addColumns(List<String> columnNames) throws ResultException
+  {
+    for (String columnName : columnNames) addColumn(columnName);
+  } // addColumns
+
+  public void addColumn(String columnName) throws ResultException
   {
     throwExceptionIfAlreadyConfigured();
 
     selectedColumnIndexes.add(Integer.valueOf(numberOfColumns));
     allColumnNames.add(columnName);
     numberOfColumns++;
-  } // addSelectedIndividualColumn
+  } // addColumn
 
   public void addAggregateColumn(String columnName, String aggregateFunctionName) throws ResultException
   {
@@ -208,6 +218,16 @@ public class ResultImpl implements ResultGenerator, Result
   } // getColumnName
 
   // Methods used to add data after result has been configured
+
+  public void addRow(List<ResultValue> resultValues) throws ResultException
+  {
+    if (resultValues.size() != getNumberOfColumns()) 
+      throw new ResultException("addRow expecting " + getNumberOfColumns() + ", got " + resultValues.size() + " values");
+
+    openRow();
+    for (ResultValue value: resultValues) addRowData(value);
+    closeRow();
+  } // addRowData
 
   public void openRow() throws ResultException
   {

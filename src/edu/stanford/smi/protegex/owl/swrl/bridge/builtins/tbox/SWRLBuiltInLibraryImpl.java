@@ -155,7 +155,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
 
     boolean result = false;
     try {
-      result = SWRLOWLUtil.isTransitiveProperty(getInvokingBridge().getOWLModel(), propertyName, true);
+      result = SWRLOWLUtil.isTransitiveProperty(getInvokingBridge().getOWLModel(), propertyName);
     } catch (SWRLOWLUtilException e) {
       throw new BuiltInException(e.getMessage());
     } // try
@@ -325,6 +325,42 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
     return isSuperClassOf(arguments, true);
   } // isSuperClassOf
 
+  /**
+   ** Check that the first class argument is in the range of the second property argument (including its superproperties). If the first
+   ** argument is unbound, bind it to the range of the second argument (if any exist).
+   */
+  public boolean isInRangeOf(List<Argument> arguments) throws BuiltInException
+  {
+    return isInRangeOf(arguments, true);
+  } // isInRangeOf
+
+  /**
+   ** Check that the first class argument is in the range of the second property argument excluding its superproperties. If the first
+   ** argument is unbound, bind it to the range of the second argument (if any exist).
+   */
+  public boolean isInDirectRangeOf(List<Argument> arguments) throws BuiltInException
+  {
+    return isInRangeOf(arguments, false);
+  } // isInDirectRangeOf
+
+  /**
+   ** Check that the first class argument is in the domain of the second property argument (including its superproperties). If the first
+   ** argument is unbound, bind it to the domain of the second argument (if any exist).
+   */
+  public boolean isInDomainOf(List<Argument> arguments) throws BuiltInException
+  {
+    return isInDomainOf(arguments, true);
+  } // isInDomainOf
+
+  /**
+   ** Check that the first class argument is in the domain of the second property argument excluding its superproperties. If the first
+   ** argument is unbound, bind it to the domain of the second argument (if any exist).
+   */
+  public boolean isInDirectDomainOf(List<Argument> arguments) throws BuiltInException
+  {
+    return isInDomainOf(arguments, false);
+  } // isInDirectDomainOf
+
   private boolean isSuperClassOf(List<Argument> arguments, boolean transitive) throws BuiltInException
   {
     boolean superClassArgumentUnbound = false;
@@ -458,5 +494,73 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
 
     return result;
   } // isSuperPropertyOf
+
+  private boolean isInDomainOf(List<Argument> arguments, boolean includingSuperproperties) throws BuiltInException
+  {
+    boolean domainClassArgumentUnbound = false;
+    String propertyName;
+    boolean result = false;
+
+    SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(2, arguments.size());
+
+    domainClassArgumentUnbound = SWRLBuiltInUtil.isUnboundArgument(0, arguments);
+    propertyName = SWRLBuiltInUtil.getArgumentAsAPropertyName(1, arguments);
+
+    try {
+      if (domainClassArgumentUnbound) {
+        Set<OWLNamedClass> domainClasses;
+        if (includingSuperproperties) domainClasses = SWRLOWLUtil.getDomainClasses(getInvokingBridge().getOWLModel(), propertyName);
+        else domainClasses = SWRLOWLUtil.getDirectDomainClasses(getInvokingBridge().getOWLModel(), propertyName);
+        if (!domainClasses.isEmpty()) {
+          MultiArgument multiArgument = new MultiArgument();
+          for (OWLNamedClass domainClass : domainClasses) multiArgument.addArgument(new ClassInfo(domainClass.getName()));
+          arguments.set(0, multiArgument);
+        result = !multiArgument.hasNoArguments();
+        } // if
+      } else {
+        String domainClassName = SWRLBuiltInUtil.getArgumentAsAClassName(0, arguments);
+        if (includingSuperproperties) result = SWRLOWLUtil.isInPropertyDomain(getInvokingBridge().getOWLModel(), propertyName, domainClassName, true);
+        else result = SWRLOWLUtil.isInDirectPropertyDomain(getInvokingBridge().getOWLModel(), propertyName, domainClassName, true);
+      } // if
+    } catch (SWRLOWLUtilException e) {
+      throw new BuiltInException(e.getMessage());
+    } // try
+
+    return result;
+  } // isInDomainOf
+
+  private boolean isInRangeOf(List<Argument> arguments, boolean includingSuperproperties) throws BuiltInException
+  {
+    boolean rangeClassArgumentUnbound = false;
+    String propertyName;
+    boolean result = false;
+
+    SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(2, arguments.size());
+
+    rangeClassArgumentUnbound = SWRLBuiltInUtil.isUnboundArgument(0, arguments);
+    propertyName = SWRLBuiltInUtil.getArgumentAsAPropertyName(1, arguments);
+
+    try {
+      if (rangeClassArgumentUnbound) {
+        Set<OWLNamedClass> rangeClasses;
+        if (includingSuperproperties) rangeClasses = SWRLOWLUtil.getRangeClasses(getInvokingBridge().getOWLModel(), propertyName);
+        else rangeClasses = SWRLOWLUtil.getDirectRangeClasses(getInvokingBridge().getOWLModel(), propertyName);
+        if (!rangeClasses.isEmpty()) {
+          MultiArgument multiArgument = new MultiArgument();
+          for (OWLNamedClass rangeClass : rangeClasses) multiArgument.addArgument(new ClassInfo(rangeClass.getName()));
+          arguments.set(0, multiArgument);
+        result = !multiArgument.hasNoArguments();
+        } // if
+      } else {
+        String rangeClassName = SWRLBuiltInUtil.getArgumentAsAClassName(0, arguments);
+        if (includingSuperproperties) result = SWRLOWLUtil.isInPropertyRange(getInvokingBridge().getOWLModel(), propertyName, rangeClassName, true);
+        else result = SWRLOWLUtil.isInDirectPropertyRange(getInvokingBridge().getOWLModel(), propertyName, rangeClassName, true);
+      } // if
+    } catch (SWRLOWLUtilException e) {
+      throw new BuiltInException(e.getMessage());
+    } // try
+
+    return result;
+  } // isInRangeOf
 
 } // SWRLBuiltInLibraryImpl
