@@ -18,7 +18,9 @@ public interface ResultGenerator
   
   void initialize();
   
-  void addSelectedColumn(String columnName) throws ResultException;
+  void addColumns(List<String> columnNames) throws ResultException;
+  void addColumn(String columnName) throws ResultException;
+
   void addAggregateColumn(String columnName, String aggregateFunctionName) throws ResultException;
   void addOrderByColumn(int orderedColumnIndex, boolean ascending) throws ResultException;
   
@@ -26,12 +28,12 @@ public interface ResultGenerator
   boolean isAscending();
   
   void setIsDistinct();
-  
   void addColumnDisplayName(String columnName) throws ResultException;
   
   boolean isConfigured();
   void configured() throws ResultException;
   
+  void addRow(List<ResultValue> resultValues) throws ResultException;
   void openRow() throws ResultException;
   void addRowData(ResultValue value) throws ResultException;
   void closeRow() throws ResultException;

@@ -255,6 +255,12 @@ public class SWRLOWLUtil
     return (superClass != null && cls != null && cls.isSubclassOf(superClass)); // No isSuperclassOf call
   } // isDirectSuperclassOf
 
+  public static boolean isSuperClassOf(OWLModel owlModel, String superClassName, String className) 
+    throws SWRLOWLUtilException
+  {
+    return isSuperClassOf(owlModel, superClassName, className, true);
+  } // isSuperClassOf
+
   public static boolean isSuperClassOf(OWLModel owlModel, String superClassName, String className, boolean mustExist) 
     throws SWRLOWLUtilException
   {
@@ -290,6 +296,94 @@ public class SWRLOWLUtil
 
     return cls != null && cls.isConsistent();
   } //  getNumberOfDirectInstancesOfClass
+
+  public static Set<OWLNamedClass> getDomainClasses(OWLModel owlModel, String propertyName)
+    throws SWRLOWLUtilException
+  {
+    return getDomainClasses(owlModel, propertyName, true, true);
+  } // getDomainClasses
+
+  public static Set<OWLNamedClass> getDomainClasses(OWLModel owlModel, String propertyName, boolean mustExist)
+    throws SWRLOWLUtilException
+  {
+    return getDomainClasses(owlModel, propertyName, mustExist, true);
+  } // getDomainClasses
+
+  public static Set<OWLNamedClass> getDirectDomainClasses(OWLModel owlModel, String propertyName)
+    throws SWRLOWLUtilException
+  {
+    return getDomainClasses(owlModel, propertyName, true, false);
+  } // getDirectDomainClasses
+
+  public static Set<OWLNamedClass> getDirectDomainClasses(OWLModel owlModel, String propertyName, boolean mustExist)
+    throws SWRLOWLUtilException
+  {
+    return getDomainClasses(owlModel, propertyName, mustExist, false);
+  } // getDirectDomainClasses
+
+  private static Set<OWLNamedClass> getDomainClasses(OWLModel owlModel, String propertyName, boolean mustExist, 
+                                                     boolean includingSuperproperties) 
+    throws SWRLOWLUtilException
+  {
+    OWLProperty property = getProperty(owlModel, propertyName, mustExist);
+    Set<OWLNamedClass> result = new HashSet<OWLNamedClass>();
+    Collection domainClasses = property.getUnionDomain(includingSuperproperties);
+    Iterator iterator;
+
+    if (domainClasses == null) return result;
+    
+    iterator = domainClasses.iterator();
+    while (iterator.hasNext()) {
+      Object o = iterator.next();
+      if (o instanceof OWLNamedClass) result.add((OWLNamedClass)o);
+    } // while
+    
+    return result;
+  } // getDomainClasses
+
+  public static Set<OWLNamedClass> getRangeClasses(OWLModel owlModel, String propertyName, boolean mustExist)
+    throws SWRLOWLUtilException
+  {
+    return getRangeClasses(owlModel, propertyName, mustExist, true);
+  } // getRangeClasses
+
+  public static Set<OWLNamedClass> getRangeClasses(OWLModel owlModel, String propertyName)
+    throws SWRLOWLUtilException
+  {
+    return getRangeClasses(owlModel, propertyName, true, true);
+  } // getRangeClasses
+
+  public static Set<OWLNamedClass> getDirectRangeClasses(OWLModel owlModel, String propertyName, boolean mustExist)
+    throws SWRLOWLUtilException
+  {
+    return getRangeClasses(owlModel, propertyName, mustExist, false);
+  } // getDirectRangeClasses
+
+  public static Set<OWLNamedClass> getDirectRangeClasses(OWLModel owlModel, String propertyName)
+    throws SWRLOWLUtilException
+  {
+    return getRangeClasses(owlModel, propertyName, true, false);
+  } // getDirectRangeClasses
+
+  private static Set<OWLNamedClass> getRangeClasses(OWLModel owlModel, String propertyName, boolean mustExist, 
+                                                    boolean includingSuperproperties) 
+    throws SWRLOWLUtilException
+  {
+    OWLProperty property = getProperty(owlModel, propertyName, mustExist);
+    Set<OWLNamedClass> result = new HashSet<OWLNamedClass>();
+    Collection rangeClasses = property.getUnionRangeClasses(); // TODO: no includingSuperproperties argument supported
+    Iterator iterator;
+
+    if (rangeClasses == null) return result;
+    
+    iterator = rangeClasses.iterator();
+    while (iterator.hasNext()) {
+      RDFResource resource = (RDFResource)iterator.next();
+      if (resource instanceof OWLNamedClass) result.add((OWLNamedClass)resource);
+    } // while
+    
+    return result;
+  } // getRangeClasses
 
   public static boolean isInPropertyDomain(OWLModel owlModel, String propertyName, String className, boolean mustExist) 
     throws SWRLOWLUtilException
@@ -361,6 +455,11 @@ public class SWRLOWLUtil
     OWLProperty property = getProperty(owlModel, propertyName, mustExist);
 
     return (property != null && property instanceof OWLObjectProperty && ((OWLObjectProperty)property).isTransitive());
+  } // isTransitiveProperty
+
+  public static boolean isTransitiveProperty(OWLModel owlModel, String propertyName) throws SWRLOWLUtilException
+  {
+    return isTransitiveProperty(owlModel, propertyName, true);
   } // isTransitiveProperty
 
   public static boolean isSymmetricProperty(OWLModel owlModel, String propertyName, boolean mustExist) throws SWRLOWLUtilException

@@ -231,7 +231,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary implements QueryL
               columnName = "?" + variableName;
               selectedVariableNames.add(variableName);
             } else columnName = "[" + argument + "]";
-            result.addSelectedColumn(columnName);
+            result.addColumn(columnName);
           } else if (builtInName.equalsIgnoreCase(QuerySelectDistinct)) {
             if (argument instanceof BuiltInVariableInfo) {
               builtInVariableInfo = (BuiltInVariableInfo)argument;
@@ -239,7 +239,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary implements QueryL
               columnName = "count(?" + variableName + ")";
               selectedVariableNames.add(variableName);
             } else columnName = "[" + argument + "]";
-            result.addSelectedColumn(columnName);
+            result.addColumn(columnName);
             result.setIsDistinct();
           } else if (builtInName.equalsIgnoreCase(QueryCount)) {
             if (argument instanceof BuiltInVariableInfo) {
