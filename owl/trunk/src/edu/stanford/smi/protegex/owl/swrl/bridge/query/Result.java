@@ -41,4 +41,7 @@ public interface Result
   ClassValue getClassValue(int columnIndex) throws ResultException;
   PropertyValue getPropertyValue(String columnName) throws ResultException;
   PropertyValue getPropertyValue(int columnIndex) throws ResultException;
+
+  List<ResultValue> getColumn(String columnName) throws ResultException;
+  List<ResultValue> getColumn(int columnIndex) throws ResultException;
 } // Result

@@ -66,7 +66,7 @@ import java.io.Serializable;
  **  System.out.println("Average: " + averageValue.getInt());
  ** } // while
  **
- ** A convenience method addColumns that takes a list of column names. **
+ ** A convenience method addColumns that takes a list of column names is also supplied.
  **
  ** There is also a convenience method addRow, which takes a list of ResultValues. This method automatically does a row open and close. It
  ** is expecting the exact same number of list elements as there are columns in the result.
@@ -78,6 +78,7 @@ public class ResultImpl implements ResultGenerator, Result
   private HashMap<Integer, String> aggregateColumnIndexes; // Map of (index, function) pairs
   private List<List<ResultValue>> rows; // List of List of ResultValue objects.
   private List<ResultValue> rowData; // List of ResultValue objects used when assembling a row.
+  private HashMap<String, List<ResultValue>> columnVectorMap; // Maps column names to a vector of ResultValue objects for that column
   private int numberOfColumns, rowIndex, rowDataColumnIndex;
   private boolean isConfigured, isPrepared, isRowOpen, isOrdered, isAscending, isDistinct, hasAggregates;
 
@@ -86,7 +87,7 @@ public class ResultImpl implements ResultGenerator, Result
   public ResultImpl() 
   {
     initialize();
-  } // Result
+  } // ResultImpl
   
   // Configuration phase methods.
 
@@ -243,7 +244,7 @@ public class ResultImpl implements ResultGenerator, Result
   {
     throwExceptionIfNotConfigured(); throwExceptionIfAlreadyPrepared(); throwExceptionIfRowNotOpen();
 
-    if (rowDataColumnIndex == getNumberOfColumns()) throw new ResultStateException("Attempt to add data beyond the end of a row");
+    if (rowDataColumnIndex == getNumberOfColumns()) throw new ResultStateException("attempt to add data beyond the end of a row");
 
     if (aggregateColumnIndexes.containsKey(Integer.valueOf(rowDataColumnIndex)) && 
         (!aggregateColumnIndexes.get(Integer.valueOf(rowDataColumnIndex)).equals(CountAggregateFunction)) && 
@@ -253,12 +254,12 @@ public class ResultImpl implements ResultGenerator, Result
     rowData.add(value);
     rowDataColumnIndex++;
 
-    if (rowDataColumnIndex == getNumberOfColumns()) closeRow();
+    if (rowDataColumnIndex == getNumberOfColumns()) closeRow(); // TODO: would prefer not to do this automatically.
   } // addData    
 
   public void closeRow() throws ResultException
   {
-    throwExceptionIfNotConfigured(); throwExceptionIfAlreadyPrepared(); throwExceptionIfRowNotOpen();
+    throwExceptionIfNotConfigured(); throwExceptionIfAlreadyPrepared(); //TODO: see closeRow() comment in addRowData throwExceptionIfRowNotOpen();
 
     rows.add(rowData);
 
@@ -276,7 +277,26 @@ public class ResultImpl implements ResultGenerator, Result
     else if (isDistinct) rows = distinct(rows);
 
     if (isOrdered) rows = orderBy(rows, allColumnNames, orderByColumnIndexes, isAscending);
+
+    prepareColumnVectors();
   } // prepared
+
+  private void prepareColumnVectors() throws ResultException
+  {
+    columnVectorMap = new HashMap<String, List<ResultValue>>();
+
+    if (getNumberOfColumns() > 0 && getNumberOfRows() > 0) {
+      List<List<ResultValue>> columns = new ArrayList(getNumberOfColumns());
+      
+      for (int c = 0; c < getNumberOfColumns(); c++) columns.add(new ArrayList<ResultValue>(getNumberOfRows()));
+      
+      for (int r = 0; r < getNumberOfRows(); r++) 
+        for (int c = 0; c < getNumberOfColumns(); c++) 
+          columns.get(c).add(rows.get(r).get(c));
+      
+      for (int c = 0; c < getNumberOfColumns(); c++) columnVectorMap.put(getColumnName(c), columns.get(c));
+    } // if
+  } // prepareColumnVectors
 
   // Methods used to retrieve data after result has been prepared
 
@@ -356,7 +376,7 @@ public class ResultImpl implements ResultGenerator, Result
   public ObjectValue getObjectValue(String columnName) throws ResultException
   {
     if (!hasObjectValue(columnName)) 
-      throw new InvalidColumnTypeException("Expecting ObjectValue type for column '" + columnName + "'");
+      throw new InvalidColumnTypeException("expecting ObjectValue type for column '" + columnName + "'");
     return (ObjectValue)getValue(columnName);
   } // getObjectValue
   
@@ -368,14 +388,14 @@ public class ResultImpl implements ResultGenerator, Result
   public DatatypeValue getDatatypeValue(String columnName) throws ResultException
   {
     if (!hasDatatypeValue(columnName)) 
-      throw new InvalidColumnTypeException("Expecting DatatypeValue type for column '" + columnName + "'");
+      throw new InvalidColumnTypeException("expecting DatatypeValue type for column '" + columnName + "'");
     return (DatatypeValue)getValue(columnName);
   } // getDatatypeValue
 
   public ClassValue getClassValue(String columnName) throws ResultException
   {
     if (!hasClassValue(columnName)) 
-      throw new InvalidColumnTypeException("Expecting ClassValue type for column '" + columnName + "'");
+      throw new InvalidColumnTypeException("expecting ClassValue type for column '" + columnName + "'");
     return (ClassValue)getValue(columnName);
   } // getClassValue
 
@@ -392,7 +412,7 @@ public class ResultImpl implements ResultGenerator, Result
   public PropertyValue getPropertyValue(String columnName) throws ResultException
   {
     if (!hasPropertyValue(columnName)) 
-      throw new InvalidColumnTypeException("Expecting PropertyValue type for column '" + columnName + "'");
+      throw new InvalidColumnTypeException("expecting PropertyValue type for column '" + columnName + "'");
     return (PropertyValue)getValue(columnName);
   } // getPropertyValue
   
@@ -401,6 +421,20 @@ public class ResultImpl implements ResultGenerator, Result
     return getDatatypeValue(getColumnName(columnIndex));
   } // getDatatypeValue
   
+  public List<ResultValue> getColumn(String columnName) throws ResultException
+  {
+    throwExceptionIfNotConfigured(); throwExceptionIfNotPrepared();
+
+    checkColumnName(columnName);
+    
+    return columnVectorMap.get(columnName);
+  } // getColumnValue
+
+  public List<ResultValue> getColumn(int columnIndex) throws ResultException
+  {
+    return getColumn(getColumnName(columnIndex));
+  } // getColumn
+
   public boolean hasObjectValue(String columnName) throws ResultException
   {
     return getValue(columnName) instanceof ObjectValue;
@@ -465,27 +499,27 @@ public class ResultImpl implements ResultGenerator, Result
   
   private void throwExceptionIfNotConfigured() throws ResultException
   {
-    if (!isConfigured()) throw new ResultStateException("Attempt to add data to unconfigured result");
+    if (!isConfigured()) throw new ResultStateException("attempt to add data to unconfigured result");
   } // throwExceptionIfNotConfigured
 
   private void throwExceptionIfAtEndOfResult() throws ResultException
   {
-    if (!hasNext()) throw new ResultStateException("Attempt to get data after end of result reached");
+    if (!hasNext()) throw new ResultStateException("attempt to get data after end of result reached");
   } // throwExceptionIfAtEndOfResult
 
   private void throwExceptionIfNotPrepared() throws ResultException
   {
-    if (!isPrepared()) throw new ResultStateException("Attempt to process unprepared result");
+    if (!isPrepared()) throw new ResultStateException("attempt to process unprepared result");
   } // throwExceptionIfNotConfigured
 
   private void throwExceptionIfAlreadyConfigured() throws ResultException
   {
-    if (isConfigured()) throw new ResultStateException("Attempt to configure already configured result");
+    if (isConfigured()) throw new ResultStateException("attempt to configure already configured result");
   } // throwExceptionIfAlreadyConfigured
 
   private void throwExceptionIfAlreadyPrepared() throws ResultException
   {
-    if (isPrepared()) throw new ResultStateException("Attempt to modify prepared result");
+    if (isPrepared()) throw new ResultStateException("attempt to modify prepared result");
   } // throwExceptionIfAlreadyConfigured
 
   private void checkColumnName(String columnName) throws InvalidColumnNameException
@@ -495,18 +529,18 @@ public class ResultImpl implements ResultGenerator, Result
   
   private void throwExceptionIfRowNotOpen() throws ResultException
   {
-    if (!isRowOpen) throw new ResultStateException("Attempt to add data to an unopened row");
+    if (!isRowOpen) throw new ResultStateException("attempt to add data to an unopened row");
   } // throwExceptionIfRowNotOpen
 
   private void throwExceptionIfRowOpen() throws ResultException
   {
-    if (isRowOpen) throw new ResultStateException("Attempt to process result with a partially prepared row");
+    if (isRowOpen) throw new ResultStateException("attempt to process result with a partially prepared row");
   } // throwExceptionIfRowOpen
 
   private void checkColumnIndex(int columnIndex) throws ResultException
   {
     if (columnIndex < 0 || columnIndex >= getNumberOfColumns())
-      throw new InvalidColumnIndexException("Column index " + columnIndex + " out of bounds");
+      throw new InvalidColumnIndexException("column index " + columnIndex + " out of bounds");
   } // checkColumnIndex
 
   private void checkRowIndex(int rowIndex) throws ResultException
@@ -538,7 +572,7 @@ public class ResultImpl implements ResultGenerator, Result
 
   private boolean isNumericValue(ResultValue value)
   {
-    return ((value instanceof DatatypeValue) || (((DatatypeValue)value).isNumeric()));
+    return ((value instanceof DatatypeValue) && (((DatatypeValue)value).isNumeric()));
   } // isNumericValue
 
   // TODO: fix - very inefficient
