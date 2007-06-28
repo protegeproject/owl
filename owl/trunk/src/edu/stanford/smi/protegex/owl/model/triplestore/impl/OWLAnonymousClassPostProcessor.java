@@ -21,7 +21,7 @@ class OWLAnonymousClassPostProcessor {
 
     private OWLModel owlModel;
 
-    private Collection properties = new ArrayList();
+    private Collection<RDFProperty> properties = new ArrayList<RDFProperty>();
 
 
     OWLAnonymousClassPostProcessor(OWLModel owlModel) {
