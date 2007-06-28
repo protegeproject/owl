@@ -3,6 +3,7 @@ package edu.stanford.smi.protegex.owl.model.triplestore.impl;
 import edu.stanford.smi.protege.model.*;
 import edu.stanford.smi.protege.model.framestore.NarrowFrameStore;
 import edu.stanford.smi.protegex.owl.model.*;
+import edu.stanford.smi.protegex.owl.model.factory.OWLJavaFactory;
 import edu.stanford.smi.protegex.owl.model.impl.*;
 import edu.stanford.smi.protegex.owl.model.triplestore.Triple;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
@@ -19,7 +20,7 @@ import java.util.*;
  */
 public abstract class AbstractTripleStore implements ProtegeTripleAdder, TripleStore {
 
-    private Map addPropertyValueHandlers = new HashMap();
+    private Map<RDFProperty, AddPropertyValueHandler> addPropertyValueHandlers = new HashMap<RDFProperty, AddPropertyValueHandler>();
 
     private Slot directInstancesSlot;
 
@@ -70,7 +71,7 @@ public abstract class AbstractTripleStore implements ProtegeTripleAdder, TripleS
 
     public void add(RDFResource subject, RDFProperty predicate, Object object) {
         addValueFast(subject, predicate, object);
-        AddPropertyValueHandler handler = (AddPropertyValueHandler) addPropertyValueHandlers.get(predicate);
+        AddPropertyValueHandler handler = addPropertyValueHandlers.get(predicate);
         if (handler != null) {
             handler.handleAdd(subject, object);
         }
@@ -203,7 +204,7 @@ public abstract class AbstractTripleStore implements ProtegeTripleAdder, TripleS
     }
 
 
-    protected Collection getReferences(Object search) {
+    protected Collection<Reference> getReferences(Object search) {
         return frameStore.getReferences(search);
     }
 
@@ -249,7 +250,9 @@ public abstract class AbstractTripleStore implements ProtegeTripleAdder, TripleS
     }
 
 
-    public Iterator listTriplesWithObject(RDFObject object) {
+    public Iterator<Triple> listTriplesWithObject(RDFObject object) {
+        Cls rdfproperty = ((KnowledgeBase) owlModel).getCls(RDFNames.Cls.PROPERTY);
+        OWLJavaFactory factory = new OWLJavaFactory((AbstractOWLModel) owlModel);
         Object search = object;
         if (object instanceof DefaultRDFSLiteral) {
             Object plain = ((DefaultRDFSLiteral) object).getPlainValue();
@@ -260,14 +263,16 @@ public abstract class AbstractTripleStore implements ProtegeTripleAdder, TripleS
                 search = plain;
             }
         }
-        Collection triples = new ArrayList();
-        Collection refs = getReferences(search);
+        Collection<Triple> triples = new ArrayList<Triple>();
+        Collection<Reference> refs = getReferences(search);
         for (Iterator it = refs.iterator(); it.hasNext();) {
             Reference reference = (Reference) it.next();
             if (reference.getFrame() instanceof RDFResource &&
-                    reference.getSlot() instanceof RDFProperty &&
+                    reference.getSlot().hasType(rdfproperty) &&
                     !Model.SlotID.DIRECT_INSTANCES.equals(reference.getSlot().getFrameID())) {
-                Triple triple = new DefaultTriple((RDFResource) reference.getFrame(), (RDFProperty) reference.getSlot(), object);
+                RDFProperty property = (RDFProperty) factory.createSlot(reference.getSlot().getFrameID(), 
+                                                                        reference.getSlot().getDirectTypes());
+                Triple triple = new DefaultTriple((RDFResource) reference.getFrame(), property, object);
                 triples.add(triple);
             }
         }
