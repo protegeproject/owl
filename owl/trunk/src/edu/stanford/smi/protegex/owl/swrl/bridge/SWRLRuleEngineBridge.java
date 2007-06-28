@@ -402,9 +402,7 @@ public abstract class SWRLRuleEngineBridge implements Serializable
       Object o = iterator.next();
       if (o instanceof OWLIndividual) { // TODO: may not be OWLIndividual. Should we detect attempts to use OWL Full?
         OWLIndividual individual = (OWLIndividual)o;
-        String individualName = individual.getName();
-        IndividualInfo individualInfo = new IndividualInfo(owlModel, individualName);
-        importedIndividuals.put(individualName, individualInfo);
+        importOWLIndividual(individual.getName());
       } // if
     } // while
   } // importAllOWLIndividualsOfClass

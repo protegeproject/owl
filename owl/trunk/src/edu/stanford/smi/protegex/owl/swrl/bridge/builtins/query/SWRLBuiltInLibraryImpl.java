@@ -210,7 +210,6 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary implements QueryL
     ResultImpl result;
     RuleInfo ruleInfo;
 
-
     try {
       List<String> selectedVariableNames = new ArrayList<String>();
       result = new ResultImpl();
