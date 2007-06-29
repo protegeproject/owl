@@ -5,6 +5,7 @@ import edu.stanford.smi.protegex.owl.model.OWLObjectProperty;
 import edu.stanford.smi.protegex.owl.model.OWLUnionClass;
 import edu.stanford.smi.protegex.owl.tests.AbstractJenaTestCase;
 import edu.stanford.smi.protegex.owl.ui.search.FindUsage;
+import edu.stanford.smi.protegex.owl.ui.search.AbstractFindUsageTableItem;
 import edu.stanford.smi.protegex.owl.ui.search.FindUsageTableItem;
 
 import java.util.Collection;
@@ -21,10 +22,10 @@ public class FindUsageAsDisjointClassTestCase extends AbstractJenaTestCase {
 
         Collection items = FindUsage.getItems(otherCls);
         assertSize(1, items);
-        FindUsageTableItem item = (FindUsageTableItem) items.iterator().next();
-        assertEquals(hostCls, item.host);
-        assertEquals(otherCls, item.usage);
-        assertEquals(FindUsageTableItem.DISJOINT_CLASS, item.type);
+        AbstractFindUsageTableItem item = (AbstractFindUsageTableItem) items.iterator().next();
+        assertEquals(hostCls, item.getHost());
+        assertEquals(otherCls, item.getUsage());
+        assertEquals(FindUsageTableItem.DISJOINT_CLASS, item.getType());
     }
 
 
@@ -39,9 +40,9 @@ public class FindUsageAsDisjointClassTestCase extends AbstractJenaTestCase {
 
         Collection items = FindUsage.getItems(otherCls);
         assertSize(1, items);
-        FindUsageTableItem item = (FindUsageTableItem) items.iterator().next();
-        assertEquals(hostCls, item.host);
-        assertEquals(unionCls, item.usage);
-        assertEquals(FindUsageTableItem.DISJOINT_CLASS, item.type);
+        AbstractFindUsageTableItem item = (AbstractFindUsageTableItem) items.iterator().next();
+        assertEquals(hostCls, item.getHost());
+        assertEquals(unionCls, item.getUsage());
+        assertEquals(FindUsageTableItem.DISJOINT_CLASS, item.getType());
     }
 }

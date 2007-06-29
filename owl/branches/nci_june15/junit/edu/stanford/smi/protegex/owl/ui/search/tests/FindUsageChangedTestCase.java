@@ -4,6 +4,7 @@ import edu.stanford.smi.protegex.owl.model.OWLComplementClass;
 import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
 import edu.stanford.smi.protegex.owl.tests.AbstractJenaTestCase;
 import edu.stanford.smi.protegex.owl.ui.search.FindUsage;
+import edu.stanford.smi.protegex.owl.ui.search.AbstractFindUsageTableItem;
 import edu.stanford.smi.protegex.owl.ui.search.FindUsageTableItem;
 import edu.stanford.smi.protegex.owl.ui.search.FindUsageTableModel;
 
@@ -21,10 +22,10 @@ public class FindUsageChangedTestCase extends AbstractJenaTestCase {
         hostCls.addSuperclass(complementCls);
         Collection items = FindUsage.getItems(findCls);
         assertSize(1, items);
-        FindUsageTableItem item = (FindUsageTableItem) items.iterator().next();
-        assertEquals(hostCls, item.host);
-        assertEquals(complementCls, item.usage);
-        assertEquals(FindUsageTableItem.SUPERCLASS, item.type);
+        AbstractFindUsageTableItem item = (AbstractFindUsageTableItem) items.iterator().next();
+        assertEquals(hostCls, item.getHost());
+        assertEquals(complementCls, item.getUsage());
+        assertEquals(FindUsageTableItem.SUPERCLASS, item.getType());
         FindUsageTableModel tableModel = new FindUsageTableModel(owlModel, items);
         assertEquals(1, tableModel.getRowCount());
         hostCls.removeSuperclass(complementCls);
