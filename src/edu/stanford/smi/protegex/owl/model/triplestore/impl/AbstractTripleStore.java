@@ -252,7 +252,7 @@ public abstract class AbstractTripleStore implements ProtegeTripleAdder, TripleS
 
     public Iterator<Triple> listTriplesWithObject(RDFObject object) {
         Cls rdfproperty = ((KnowledgeBase) owlModel).getCls(RDFNames.Cls.PROPERTY);
-        OWLJavaFactory factory = new OWLJavaFactory((AbstractOWLModel) owlModel);
+        OWLJavaFactory factory = owlModel.getOWLJavaFactory();
         Object search = object;
         if (object instanceof DefaultRDFSLiteral) {
             Object plain = ((DefaultRDFSLiteral) object).getPlainValue();
