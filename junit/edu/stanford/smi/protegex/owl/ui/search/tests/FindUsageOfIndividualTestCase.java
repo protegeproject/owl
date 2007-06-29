@@ -5,6 +5,7 @@ import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.tests.AbstractJenaTestCase;
 import edu.stanford.smi.protegex.owl.ui.search.FindUsage;
+import edu.stanford.smi.protegex.owl.ui.search.AbstractFindUsageTableItem;
 import edu.stanford.smi.protegex.owl.ui.search.FindUsageTableItem;
 
 import java.util.Collection;
@@ -24,8 +25,8 @@ public class FindUsageOfIndividualTestCase extends AbstractJenaTestCase {
         holgi.setPropertyValue(property, darwin);
         Collection items = FindUsage.getItems(darwin);
         assertSize(1, items);
-        FindUsageTableItem item = (FindUsageTableItem) items.iterator().next();
-        assertEquals(FindUsageTableItem.VALUE, item.type);
-        assertEquals(property, item.usage);
+        AbstractFindUsageTableItem item = (AbstractFindUsageTableItem) items.iterator().next();
+        assertEquals(FindUsageTableItem.VALUE, item.getType());
+        assertEquals(property, item.getUsage());
     }
 }
