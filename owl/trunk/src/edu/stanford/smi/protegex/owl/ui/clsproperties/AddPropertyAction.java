@@ -67,7 +67,7 @@ public class AddPropertyAction extends ResourceSelectionAction {
         for (Iterator it = properties.iterator(); it.hasNext();) {
             RDFProperty property = (RDFProperty) it.next();
             if (!(property instanceof OWLProperty) || !property.isAnnotationProperty()) {
-                if (property.isEditable()) {
+                if (!property.isSystem()) {
                     choice.add(property);
                 }
             }
