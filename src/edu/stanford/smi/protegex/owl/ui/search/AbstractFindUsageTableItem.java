@@ -46,9 +46,6 @@ public abstract class AbstractFindUsageTableItem implements FindUsageTableItem {
     	return host;    
     }
     
-    public Class getUsageJavaClass() {    
-    	return usage.getClass();
-    }
 
     /* (non-Javadoc)
 	 * @see edu.stanford.smi.protegex.owl.ui.search.FindUsageTableItemInterf#getIcon()

@@ -21,10 +21,8 @@ public interface FindUsageTableItem {
 
 	public boolean contains(Frame frame);
 
-	public Icon getIcon();
-	
-	public Class getUsageJavaClass();
-	
+	public Icon getIcon();	
+		
 	public RDFResource getHost();
 	
 	public Object getUsage();
