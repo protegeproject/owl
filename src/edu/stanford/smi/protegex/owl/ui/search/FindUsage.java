@@ -1,5 +1,6 @@
 package edu.stanford.smi.protegex.owl.ui.search;
 
+import edu.stanford.smi.protege.model.Frame;
 import edu.stanford.smi.protege.model.KnowledgeBase;
 import edu.stanford.smi.protege.model.Model;
 import edu.stanford.smi.protege.model.Reference;
@@ -13,11 +14,17 @@ import java.util.*;
  */
 public class FindUsage {
 
-    public static Collection getItems(RDFResource searchInstance) {
+    public static Collection getItems(RDFResource searchInstance) {    	    	
         OWLModel owlModel = searchInstance.getOWLModel();
+        
         Set ignoreProperties = getIgnoreProperties(owlModel);
         Collection anons = searchInstance.getReferringAnonymousClasses();
         Collection items = new ArrayList();
+        
+        if (searchInstance instanceof RDFProperty && (((RDFProperty)searchInstance).isAnnotationProperty())) {        	
+        	return getAnnotationPropertiesReferences((RDFProperty)searchInstance);
+        }
+        
         Slot superClsesSlot = ((KnowledgeBase) owlModel).getSlot(Model.Slot.DIRECT_SUPERCLASSES);
         RDFProperty disjointWithProperty = owlModel.getRDFProperty(OWLNames.Slot.DISJOINT_WITH);
         Slot rangeSlot = ((KnowledgeBase) owlModel).getSlot(Model.Slot.VALUE_TYPE);
@@ -25,11 +32,11 @@ public class FindUsage {
             for (Iterator it = ((KnowledgeBase) owlModel).getReferences(searchInstance, 10000).iterator(); it.hasNext();) {
                 Reference ref = (Reference) it.next();
                 if (disjointWithProperty.equals(ref.getSlot())) {
-                    items.add(new FindUsageTableItem(FindUsageTableItem.DISJOINT_CLASS,
+                    items.add(new DefaultFindUsageTableItem(FindUsageTableItem.DISJOINT_CLASS,
                             (RDFResource) ref.getFrame(), searchInstance));
                 }
                 else if (rangeSlot.equals(ref.getSlot())) {
-                    items.add(new FindUsageTableItem(FindUsageTableItem.RANGE,
+                    items.add(new DefaultFindUsageTableItem(FindUsageTableItem.RANGE,
                             (RDFResource) ref.getFrame(), searchInstance));
                 }
             }
@@ -52,20 +59,20 @@ public class FindUsage {
                     RDFResource host = (RDFResource) reference.getFrame();
                     if (superClsesSlot.equals(reference.getSlot())) {
                         if (host instanceof OWLNamedClass && ((OWLNamedClass) host).getPureSuperclasses().contains(rootCls)) {
-                            items.add(new FindUsageTableItem(FindUsageTableItem.SUPERCLASS,
+                            items.add(new DefaultFindUsageTableItem(FindUsageTableItem.SUPERCLASS,
                                     host, rootCls));
                         }
                         else {
-                            items.add(new FindUsageTableItem(FindUsageTableItem.EQUIVALENT_CLASS,
+                            items.add(new DefaultFindUsageTableItem(FindUsageTableItem.EQUIVALENT_CLASS,
                                     host, rootCls));
                         }
                     }
                     else if (disjointWithProperty.equals(reference.getSlot())) {
-                        items.add(new FindUsageTableItem(FindUsageTableItem.DISJOINT_CLASS,
+                        items.add(new DefaultFindUsageTableItem(FindUsageTableItem.DISJOINT_CLASS,
                                 host, rootCls));
                     }
                     else if (rangeSlot.equals(reference.getSlot())) {
-                        items.add(new FindUsageTableItem(FindUsageTableItem.RANGE,
+                        items.add(new DefaultFindUsageTableItem(FindUsageTableItem.RANGE,
                                 host, rootCls));
                     }
                 }
@@ -80,7 +87,7 @@ public class FindUsage {
                 if (!ignoreProperties.contains(property)) {
                     RDFResource host = (RDFResource) ref.getFrame();
                     if (!host.isAnonymous()) {
-                        items.add(new FindUsageTableItem(FindUsageTableItem.VALUE,
+                        items.add(new DefaultFindUsageTableItem(FindUsageTableItem.VALUE,
                                 host, property));
                     }
                 }
@@ -91,7 +98,25 @@ public class FindUsage {
     }
 
 
-    private static Set getIgnoreProperties(OWLModel owlModel) {
+    private static Collection getAnnotationPropertiesReferences(RDFProperty searchProperty) {
+    	Collection items = new ArrayList();
+    	
+    	OWLModel owlModel = searchProperty.getOWLModel();
+    	Collection<Frame> framesWithValue = owlModel.getHeadFrameStore().getFramesWithAnyDirectOwnSlotValue(searchProperty);
+    	
+    	for (Frame frame : framesWithValue) {
+    		Collection slotValues = frame.getOwnSlotValues(searchProperty);
+    		for (Iterator iter = slotValues.iterator(); iter.hasNext();) {
+				Object value = (Object) iter.next();
+				items.add(new DefaultFindUsageTableItem(FindUsageTableItem.PROPERTY_VALUE, (RDFResource) frame, value));
+			}
+		}
+    	
+    	return items;
+	}
+
+
+	private static Set getIgnoreProperties(OWLModel owlModel) {
         Set result = new HashSet();
         result.add(owlModel.getRDFTypeProperty());
         result.add(owlModel.getRDFSRangeProperty());

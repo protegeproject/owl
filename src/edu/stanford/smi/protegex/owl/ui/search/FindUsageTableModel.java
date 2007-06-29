@@ -74,7 +74,7 @@ public class FindUsageTableModel extends AbstractTableModel
             return RDFResource.class;
         }
         else if (column == COL_USAGE) {
-            return RDFResource.class;
+            return Object.class;
         }
         else if (column == COL_TYPE) {
             return Icon.class;
@@ -107,7 +107,7 @@ public class FindUsageTableModel extends AbstractTableModel
 
 
     RDFResource getHost(int row) {
-        return getItem(row).host;
+        return getItem(row).getHost();
     }
 
 
@@ -128,7 +128,7 @@ public class FindUsageTableModel extends AbstractTableModel
 
     public Object getValueAt(int rowIndex, int columnIndex) {
         if (columnIndex == COL_USAGE) {
-            return getItem(rowIndex).usage;
+            return getItem(rowIndex).getUsage();
         }
         else if (columnIndex == COL_HOST) {
             return getHost(rowIndex);
@@ -159,13 +159,13 @@ public class FindUsageTableModel extends AbstractTableModel
                 FindUsageTableItem item1 = (FindUsageTableItem) o1;
                 FindUsageTableItem item2 = (FindUsageTableItem) o2;
                 if (sortColumn == COL_HOST) {
-                    return item1.host.getBrowserText().compareTo(item2.host.getBrowserText());
+                    return item1.getHost().getBrowserText().compareTo(item2.getHost().getBrowserText());
                 }
                 else if (sortColumn == COL_TYPE) {
-                    return new Integer(item1.type).compareTo(new Integer(item2.type));
+                    return new Integer(item1.getType()).compareTo(new Integer(item2.getType()));
                 }
                 else if (sortColumn == COL_USAGE) {
-                    return item1.usage.getBrowserText().compareTo(item2.usage.getBrowserText());
+                   // return item1.usage.getBrowserText().compareTo(item2.usage.getBrowserText());
                 }
                 return 0;
             }
