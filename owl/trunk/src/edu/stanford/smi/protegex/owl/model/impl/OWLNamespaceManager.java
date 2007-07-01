@@ -214,29 +214,29 @@ public class OWLNamespaceManager extends AbstractNamespaceManager {
         }
     }
 
-
     public void update() {
         prefix2Namespace.clear();
         namespace2Prefix.clear();
         installDefaultNamespaces();
+        Instance topLevelOntology = null;
         Collection ontologies = owlModel.getOWLOntologies();
-        Instance defaultOntology = null;
         TripleStoreModel tsm = owlModel.getTripleStoreModel();
         if (!ontologies.isEmpty()) {
-            if (tsm != null) {
-                TripleStore tripleStore = tsm.getTopTripleStore();
-                defaultOntology = TripleStoreUtil.getFirstOntology(owlModel, tripleStore);
+            if (ontologies.size() == 1) { // during jena streaming parse to database the getFirstOntology might
+                                          // not work
+                topLevelOntology = (Instance) ontologies.iterator().next();
             }
-            else {
-                defaultOntology = (Instance) ontologies.iterator().next();
+            else if (tsm != null) {
+                TripleStore tripleStore = tsm.getTopTripleStore();
+                topLevelOntology = TripleStoreUtil.getFirstOntology(owlModel, tripleStore);
             }
         }
 
         // Ensure that default ontology is handled first in case prefixes contradict below
-        if (defaultOntology != null) {
-            addPrefixes(defaultOntology, true);
+        if (topLevelOntology != null) {
+            addPrefixes(topLevelOntology, true);
             ontologies = new ArrayList(ontologies);
-            ontologies.remove(defaultOntology);
+            ontologies.remove(topLevelOntology);
         }
         for (Iterator it = ontologies.iterator(); it.hasNext();) {
             Instance ontology = (Instance) it.next();
