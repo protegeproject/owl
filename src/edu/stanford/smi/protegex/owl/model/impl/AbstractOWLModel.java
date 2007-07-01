@@ -406,7 +406,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
      */
     private final static String VALID_SYMBOLS = "-."; // "-.+/:";
 
-    private Set defaultAnonymousTypes = new HashSet();
+    private Set<Cls> defaultAnonymousTypes = new HashSet<Cls>();
 
     public static final String DEFAULT_ANNOTATION_PROPERTY_NAME = "annotationProperty";
 
@@ -426,6 +426,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
     private RepositoryManager repositoryManager;
 
+    private OWLOntology defaultOWLOntology;
 
     public AbstractOWLModel(KnowledgeBaseFactory factory) {
         super(factory);
@@ -664,7 +665,13 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
 
     public void adjustThing() {
-        getRootCls().setName(OWLNames.Cls.THING);
+        Cls thing = getRootCls();
+        thing.setName(OWLNames.Cls.THING);
+        MergingNarrowFrameStore mnfs = MergingNarrowFrameStore.get(this);
+        if (mnfs != null) {
+            mnfs.getSystemFrameStore().replaceFrame(thing);
+        }
+        // TODO do we need to replaceFrame when there is no merging narrow frame store???
     }
 
 
@@ -2036,9 +2043,23 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
         }
         return null;
     }
+    
+    /**
+     * The current getDefaultOWLOntology() method needs fixing.  This method
+     * provides a bypass allowing a caller to override the getDefaultOWLOntology 
+     * implementation when it does not function correctly (e.g. during parsing).  
+     * It is possible that we will eventually remove the default implementation 
+     * of getDefaultOWLOntology.
+     */
+    public void setDefaultOWLOntology(OWLOntology defaultOWLOntology) {
+        this.defaultOWLOntology = defaultOWLOntology;
+    }
 
 
     public OWLOntology getDefaultOWLOntology() {
+        if (defaultOWLOntology != null) {
+            return defaultOWLOntology;
+        }
         return (OWLOntology) getFrame(ProtegeNames.DEFAULT_ONTOLOGY);
     }
 
