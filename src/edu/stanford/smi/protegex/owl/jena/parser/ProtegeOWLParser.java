@@ -60,6 +60,7 @@ import edu.stanford.smi.protegex.owl.model.RDFSLiteral;
 import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
 import edu.stanford.smi.protegex.owl.model.RDFUntypedResource;
 import edu.stanford.smi.protegex.owl.model.factory.OWLJavaFactoryUpdater;
+import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLNamedClass;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLOntology;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultRDFList;
@@ -98,6 +99,10 @@ public class ProtegeOWLParser {
 
 	private Frame currentType;
 	
+    private OWLOntology currentOntologyBeingParsed;
+    
+    private boolean importing = false;
+    
 	private static Collection errors;
 
 	private static URI errorOntologyURI;
@@ -115,6 +120,8 @@ public class ProtegeOWLParser {
 	private ProtegeOWLParserLogger logger;
 
 	private Cls owlNamedClassClass;
+    
+    private Cls owlOntologyClass;
 
 	private OWLModel owlModel;
 
@@ -169,6 +176,7 @@ public class ProtegeOWLParser {
 		logger = createLogger();
 		
 		owlNamedClassClass = owlModel.getOWLNamedClassClass();
+        owlOntologyClass   = owlModel.getOWLOntologyClass();
 		uri2NameConverter = createURI2NameConverter(owlModel, incremental);
 	}
 
@@ -228,6 +236,7 @@ public class ProtegeOWLParser {
 		
 		errors = new ArrayList();
 		errorOntologyURI = null;
+        currentOntologyBeingParsed = null;
 		
 		loadTriples(owlModel.getTripleStoreModel().getActiveTripleStore(), uri, invokation);
 	}
@@ -417,7 +426,13 @@ public class ProtegeOWLParser {
 
 	private void createDefaultNamespace(TripleStore tripleStore) {
 		Slot prefixesSlot = kb.getSlot(OWLNames.Slot.ONTOLOGY_PREFIXES);
-		Instance owlOntology = TripleStoreUtil.getFirstOntology(owlModel, tripleStore);
+		Instance owlOntology = null;
+        if (currentOntologyBeingParsed != null) {
+            owlOntology = currentOntologyBeingParsed;
+        }
+        else {
+            owlOntology = TripleStoreUtil.getFirstOntology(owlModel, tripleStore);
+        }
 		String name = owlOntology.getName();
 		if(uri2NameConverter.isTemporaryRDFResourceName(name)) {
 			String namespace = uri2NameConverter.getURIFromTemporaryName(name);
@@ -840,12 +855,7 @@ public class ProtegeOWLParser {
 	private void processImports(TripleStore tripleStore,
 	                            Set imports)
 	        throws Exception {
-		
-		//TODO: This is wrong and will be fixed when db inclusion will work.
-		if (owlModel instanceof OWLDatabaseModel) {
-			return;
-		}
-		
+		importing = true;
 		prefixForDefaultNamespace = null;
 		RDFProperty owlImportsProperty = owlModel.getRDFProperty(OWLNames.Slot.IMPORTS);
 		Iterator ontologies = tripleStore.listSubjects(owlImportsProperty);
@@ -885,6 +895,7 @@ public class ProtegeOWLParser {
 //		AbstractTask task = new AbstractTask("Importing " + uri, false, owlModel.getTaskManager()) {
 //			public void runTask()
 //			        throws Exception {
+        currentOntologyBeingParsed = null;
 				if(imports.contains(uri) == false) {
 					imports.add(uri);
 					
@@ -1016,11 +1027,22 @@ public class ProtegeOWLParser {
 			}
 		}
 
-
+		/*
+         * 
+         * This is called at the very end of parsing an owl file when the prefix mapping section is 
+         * finally closed off.  All the statements from the owl file have been processed so things such
+         * as the ontology for the owl file should have been processed.
+         * 
+         * It is called once for each namespace prefix in the owl file.
+         * 
+         * @see com.hp.hpl.jena.rdf.arp.NamespaceHandler#endPrefixMapping(java.lang.String)
+		 */
 		public void endPrefixMapping(String prefix) {
 			if (ontology == null) {
-				ontology = TripleStoreUtil.getFirstOntology(owlModel, tripleStore);
-				if(ontology == null) {
+				if (currentOntologyBeingParsed != null) {
+				    ontology = currentOntologyBeingParsed;
+                }
+                else { // ontology not declared in the owl file so I make one.
 					String defaultNamespace = (String) prefix2Namespace.get("");
 					if(defaultNamespace == null) {
 						logger.logWarning("No default namespace found in file.  Will use " + currentDefaultNamespace);
@@ -1051,9 +1073,7 @@ public class ProtegeOWLParser {
 
 		public void statement(AResource aSubject,
 		                      AResource aPredicate,
-		                      AResource aObject) {
-			//System.out.println(aSubject + " " + aPredicate + " " + aObject);
-			
+		                      AResource aObject) {		
 			RDFProperty predicate = getRDFProperty(aPredicate);
 			if(rdfRestProperty.equals(predicate)) {
 				isRDFList = true;
@@ -1071,10 +1091,15 @@ public class ProtegeOWLParser {
 			}
 			else {
 				tripleStore.add(subject, predicate, object);
+                if (rdfTypeProperty.equals(predicate) && owlOntologyClass.equals(object)) {
+                    currentOntologyBeingParsed = new DefaultOWLOntology(owlModel, ((Frame) subject).getFrameID());
+                    if (!importing) {
+                        ((AbstractOWLModel) owlModel).setDefaultOWLOntology(currentOntologyBeingParsed);
+                    }
+                }
 				logger.logTripleAdded(subject, predicate, object);
 				tripleCount++;
 				if(tripleCount % 5000 == 0 /*&& task != null*/) {
-					//task.setMessage("Loaded " + tripleCount + " triples");
                     Log.getLogger().info("Loaded " + tripleCount + " triples");
                 }
 			}
