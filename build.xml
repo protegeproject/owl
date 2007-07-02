@@ -143,7 +143,7 @@
     <!-- Clean up build directories -->
     <!-- ================================================================ -->
 
-    <target name="clean" depends="init" 
+    <target name="clean" 
             description="clean up all build related files and dirs">
         <delete dir="${build}"/>
     </target>
