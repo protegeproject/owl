@@ -73,6 +73,7 @@ public class SWRLQueryResultPanel extends JPanel
         bridge.runRuleEngine();
 
         result = bridge.getQueryResult(ruleName);
+
         if (result == null || result.getNumberOfRows() == 0) {
           controlPanel.appendText("No result returned for rule '" + ruleName + "' - closing tab.\n");
           controlPanel.removeResultPanel(ruleName);

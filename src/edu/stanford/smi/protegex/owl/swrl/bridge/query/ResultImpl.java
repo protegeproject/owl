@@ -261,7 +261,7 @@ public class ResultImpl implements ResultGenerator, Result
   {
     throwExceptionIfNotConfigured(); throwExceptionIfAlreadyPrepared(); //TODO: see closeRow() comment in addRowData throwExceptionIfRowNotOpen();
 
-    rows.add(rowData);
+    if (isRowOpen) rows.add(rowData);
 
     isRowOpen = false;
   } // closeRow
