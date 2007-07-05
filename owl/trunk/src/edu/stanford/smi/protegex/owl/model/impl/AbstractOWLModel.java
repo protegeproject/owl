@@ -1756,8 +1756,12 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     public OWLUnionClass createOWLUnionClass(Collection clses) {
         OWLUnionClass unionCls = createOWLUnionClass();
         for (Iterator it = clses.iterator(); it.hasNext();) {
-            RDFSClass cls = (RDFSClass) it.next();
-            unionCls.addOperand(cls);
+        	Cls cls = (Cls) it.next();
+        	if (cls instanceof RDFSClass) {
+        		unionCls.addOperand((RDFSClass)cls);
+        	} else {
+        		Log.getLogger().warning(cls + " is not an RDFSClass. It will not be added to the OWLUnionClass.");
+        	}            
         }
         return unionCls;
     }
