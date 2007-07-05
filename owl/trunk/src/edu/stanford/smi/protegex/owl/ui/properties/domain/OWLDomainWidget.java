@@ -76,14 +76,14 @@ public class OWLDomainWidget extends AbstractPropertyWidget {
                     RDFProperty prop = (RDFProperty) getEditedResource();
                     for (Iterator it = sel.iterator(); it.hasNext();) {
                         RDFSClass cls = (RDFSClass) it.next();
-                        if (cls != cls.getOWLModel().getOWLThingClass() &&
-                            prop.getUnionDomain(false).contains(cls)) {
+                        Collection unionDomain = prop.getUnionDomain();
+                        if (    (!cls.equals(cls.getOWLModel().getOWLThingClass()) &&  unionDomain.contains(cls)) ||
+                        		( cls.equals(cls.getOWLModel().getOWLThingClass()) &&  unionDomain.size() > 1) ) {
                             allowed = true;
                         }
                     }
                 }
-                //setAllowed(allowed);
-                setEnabled(allowed);
+                setAllowed(allowed);
             }
         };
         updateActions();        
@@ -98,29 +98,31 @@ public class OWLDomainWidget extends AbstractPropertyWidget {
                slot.getName().equals(Model.Slot.DIRECT_DOMAIN);
     }
 
-    //TT: This method does the wrong thing. Should be fixed.
+    //FIXME TT: Check this method.     
     private void removeFromDomain(RDFSClass cls, RDFProperty property) {
         try {
             beginTransaction("Remove " + cls.getBrowserText() + " from the domain of " + property.getBrowserText(), property.getName());
             if (property.isDomainDefined()) {
-                property.removeUnionDomainClass(cls);
-//                if (property.getUnionDomain(true).size() == 0){
-//                    property.setDomain(cls.getOWLModel().getOWLThingClass());
-//                }
-            }
-            else {
-                Collection classes = new ArrayList(property.getUnionDomain(true));
-                if (classes.remove(cls)) {
-                    if (classes.size() == 1) {
-                        property.setDomain((RDFSClass) classes.iterator().next());
-                    }
-                    else {
-                       // System.out.println("classes = " + classes);
-                        RDFSClass domain = cls.getOWLModel().createOWLUnionClass(classes);
-                        property.setDomain(domain);
-                    }
-                }
-            }
+				property.removeUnionDomainClass(cls);
+			} else {
+				Collection classes = new ArrayList();
+
+				classes.addAll(property.getUnionDomain());
+				/* TT: This was the previous implementation, but it is not clear that it is
+				 * the desired behavior 
+				 */
+				// classes.addAll(property.getUnionDomain(true));
+
+				if (classes.remove(cls)) {
+					if (classes.size() == 1) {
+						property.setDomain((RDFSClass) classes.iterator()
+								.next());
+					} else {
+						RDFSClass domain = cls.getOWLModel().createOWLUnionClass(classes);
+						property.setDomain(domain);
+					}
+				}
+			}
             property.synchronizeDomainAndRangeOfInverse();
             commitTransaction();
         }
@@ -131,11 +133,11 @@ public class OWLDomainWidget extends AbstractPropertyWidget {
     }
 
 
-    public void setEditable(boolean b) {
-        super.setEditable(b);       
-        table.setEnabled(b);         
-        addAction.setEnabled(b);
-        removeAction.setAllowed(b);
+    public void setEditable(boolean b) {        
+        table.setEnabled(b);
+        setEnabled(b);
+        //addAction.setEnabled(b);
+        //removeAction.setAllowed(b);
     }
 
 
@@ -161,15 +163,22 @@ public class OWLDomainWidget extends AbstractPropertyWidget {
     private void updateActions() {
         RDFProperty property = tableModel.getSlot();
         boolean enabled = property != null && property.isEditable();
-        setEnabled(enabled);
+        setEnabled(enabled);       
     }
     
     public void setEnabled(boolean enabled) {
     	enabled = enabled && RemoteClientFrameStore.isOperationAllowed(getOWLModel(), OperationImpl.PROPERTY_TAB_WRITE);
     	addAction.setEnabled(enabled);
-    	removeAction.setAllowed(enabled);
+    	
+    	RDFProperty property = tableModel.getSlot();
+    	if (property != null && !property.isDomainDefined()) {
+         	removeAction.setEnabled(false);
+        } else {
+        	removeAction.setAllowed(enabled);
+        }
+    	
     	table.setEnabled(enabled);
-    	super.setEnabled(enabled);
+    	
     };
     
     @Override
