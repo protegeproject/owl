@@ -83,12 +83,14 @@
             if="protege.home.set">
       <echo message="Using Protege Home = ${protege.home} to find protege jars"/>
       <property name="protege.lib" value="${protege.home}/protege.jar"/>
+      <property name="looks.lib" value="${protege.home}/looks-2.1.3.jar"/>
     </target>
     
     <target name="useLibDir" depends="checkProtegeHome" 
             unless="protege.home.set">
        <echo message="Using lib dir to find protege jars"/>
       <property name="protege.lib" value="${lib}/protege.jar"/>
+      <property name="looks.lib" value="${lib}/looks-2.1.3.jar"/>
     </target>
 
 
@@ -96,6 +98,7 @@
       <condition property="libs.found">
         <and>
           <available file="${protege.lib}" type = "file"/>
+          <available file="${looks.lib}" type = "file"/>
         </and>
       </condition>
       <path id="classpath.compile">
@@ -112,7 +115,7 @@
       <echo message="protege installation directory where the"/>
       <echo message="appropriate plugins have been installed or copy the"/>
       <echo message="needed jars into the lib directory"/>
-      <echo message="The jar file in question is protege.jar."/>
+      <echo message="Use the -v option to find the missing jar"/>
       <fail message="build aborted."/>
     </target>
       
@@ -341,6 +344,7 @@
       <classpath>
         <pathelement location="${classes}"/>
         <pathelement location = "${protege.lib}"/>
+        <pathelement location = "${looks.lib}"/>
         <pathelement location = "${lib}/junit.jar"/>
       </classpath>
     </java>
@@ -379,6 +383,7 @@
       <classpath>
            <pathelement location="${classes}"/>
            <pathelement location = "${protege.lib}"/>
+           <pathelement location = "${looks.lib}"/>
            <fileset
               dir="${plugin}">
               <include name = "**/*.jar"/>
