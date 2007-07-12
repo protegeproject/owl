@@ -179,6 +179,11 @@ public class ProtegeOWLParser {
         owlOntologyClass   = owlModel.getOWLOntologyClass();
 		uri2NameConverter = createURI2NameConverter(owlModel, incremental);
 	}
+	
+	
+	public void setImporting(boolean importing) {
+	    this.importing = importing;
+	}
 
 
 	/**
@@ -1185,6 +1190,7 @@ public class ProtegeOWLParser {
 			TripleStore ts = owlModel.getTripleStoreModel().createTripleStore(ontologyName.toString());
 			
 			ProtegeOWLParser parser = new ProtegeOWLParser(owlModel, true);
+			parser.setImporting(true);
 			
 			if(prefixForDefaultNamespace != null) {
 				parser.setPrefixForDefaultNamespace(prefixForDefaultNamespace);
