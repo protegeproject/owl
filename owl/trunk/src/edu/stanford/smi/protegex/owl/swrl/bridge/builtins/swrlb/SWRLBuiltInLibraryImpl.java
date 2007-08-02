@@ -10,6 +10,7 @@ import edu.stanford.smi.protegex.owl.swrl.bridge.builtins.*;
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.*;
 
 import java.util.*;
+import java.util.regex.*;
 import java.lang.Math.*;
 
 /**
@@ -56,7 +57,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
   private static String SWRLB_STRING_CONCAT = SWRLBPrefix + "stringConcat";
   private static String SWRLB_SUBSTRING = SWRLBPrefix + "substring";
   private static String SWRLB_STRING_LENGTH = SWRLBPrefix + "stringLength";
-  private static String SWRLB_NORMALIZE_SPACE = SWRLBPrefix + "normalizeSpace"; // TODO: not implemented
+  private static String SWRLB_NORMALIZE_SPACE = SWRLBPrefix + "normalizeSpace";
   private static String SWRLB_UPPER_CASE = SWRLBPrefix + "upperCase";
   private static String SWRLB_LOWER_CASE = SWRLBPrefix + "lowerCase";
   private static String SWRLB_TRANSLATE = SWRLBPrefix + "translate"; // TODO: not implemented
@@ -66,8 +67,8 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
   private static String SWRLB_ENDS_WITH = SWRLBPrefix + "endsWith";
   private static String SWRLB_SUBSTRING_BEFORE = SWRLBPrefix + "substringBefore"; // TODO: not implemented
   private static String SWRLB_SUBSTRING_AFTER = SWRLBPrefix + "substringAfter"; 
-  private static String SWRLB_MATCHES = SWRLBPrefix + "matches"; // TODO: not implemented
-  private static String SWRLB_REPLACE = SWRLBPrefix + "replace"; // TODO: not implemented
+  private static String SWRLB_MATCHES = SWRLBPrefix + "matches"; 
+  private static String SWRLB_REPLACE = SWRLBPrefix + "replace"; 
   private static String SWRLB_TOKENIZE = SWRLBPrefix + "tokenize"; // TODO: not implemented
 
   public SWRLBuiltInLibraryImpl() { super(SWRLBLibraryName); }
@@ -455,15 +456,6 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
     return result;
   } // translate
 
-  public boolean normalizeSpace(List<Argument> arguments) throws BuiltInException
-  {
-    boolean result = false;
-
-    if (result) throw new BuiltInNotImplementedException("swrlb:normalizeSpace");
-
-    return result;
-  } // normalizeSpace
-
   public boolean substringBefore(List<Argument> arguments) throws BuiltInException
   {
     boolean result = false;
@@ -477,7 +469,17 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
   {
     boolean result = false;
 
-    if (result) throw new BuiltInNotImplementedException("swrlb:matches");
+    SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(2, arguments.size());
+    SWRLBuiltInUtil.checkForUnboundArguments(arguments);
+
+    String argument1 = SWRLBuiltInUtil.getArgumentAsAString(0, arguments);
+    String argument2 = SWRLBuiltInUtil.getArgumentAsAString(1, arguments);
+
+    try {
+      result = Pattern.matches(argument2, argument1);
+    } catch (PatternSyntaxException e) {
+      throw new InvalidBuiltInArgumentException(1, "invalid regular expression '" + argument2 + "': " + e.getMessage());
+    } // try
 
     return result;
   } // matches
@@ -486,10 +488,51 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
   {
     boolean result = false;
 
-    if (result) throw new BuiltInNotImplementedException("swrlb:replace");
+    SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(4, arguments.size());
+    SWRLBuiltInUtil.checkForUnboundNonFirstArguments(arguments);
+
+    String input = SWRLBuiltInUtil.getArgumentAsAString(1, arguments);
+    String regex = SWRLBuiltInUtil.getArgumentAsAString(2, arguments);
+    String replacement = SWRLBuiltInUtil.getArgumentAsAString(2, arguments);
+
+    Pattern p = Pattern.compile(regex);
+    Matcher m = p.matcher(input);
+    String operationResult = m.replaceAll(replacement);
+
+    if (SWRLBuiltInUtil.isUnboundArgument(0, arguments)) {
+      arguments.set(0, new LiteralInfo(operationResult)); 
+      result = true;
+    } else {
+      String output = SWRLBuiltInUtil.getArgumentAsAString(0, arguments);
+      result = output.equals(operationResult);
+    } // if
 
     return result;
   } // replace
+
+  public boolean normalizeSpace(List<Argument> arguments) throws BuiltInException
+  {
+    boolean result = false;
+
+    SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(2, arguments.size());
+    SWRLBuiltInUtil.checkForUnboundNonFirstArguments(arguments);
+
+    String input = SWRLBuiltInUtil.getArgumentAsAString(1, arguments);
+
+    Pattern p = Pattern.compile("\\s*");
+    Matcher m = p.matcher(input);
+    String operationResult = m.replaceAll(" ");
+
+    if (SWRLBuiltInUtil.isUnboundArgument(0, arguments)) {
+      arguments.set(0, new LiteralInfo(operationResult)); 
+      result = true;
+    } else {
+      String output = SWRLBuiltInUtil.getArgumentAsAString(0, arguments);
+      result = output.equals(operationResult);
+    } // if
+
+    return result;
+  } // normalizeSpace
 
   public boolean tokenize(List<Argument> arguments) throws BuiltInException
   {

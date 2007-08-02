@@ -10,6 +10,8 @@ import edu.stanford.smi.protegex.owl.swrl.bridge.*;
 import edu.stanford.smi.protegex.owl.swrl.bridge.builtins.*;
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.*;
 
+import edu.stanford.smi.protegex.owl.swrl.bridge.xsd.DateTime;
+
 import java.util.*;
 
 /**
@@ -20,31 +22,33 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
 {
   public static final String TemporalLibraryName = "SWRLTemporalBuiltIns";
   
-  public static final String Prefix = "temporal";
+  public static final String Prefix = "temporal:";
   
-  private static String TemporalDuration = Prefix + ":"  + "duration";
-  private static String TemporalEquals = Prefix + ":"  + "equals";
-  private static String TemporalAfter = Prefix + ":"  + "after";
-  private static String TemporalBefore = Prefix + ":"  + "before";
+  private static String TemporalDuration = Prefix + "duration";
+  private static String TemporalEquals = Prefix + "equals";
+  private static String TemporalAfter = Prefix + "after";
+  private static String TemporalBefore = Prefix + "before";
 
-  private static String TemporalMeets = Prefix + ":"  + "meets";
-  private static String TemporalMetBy = Prefix + ":"  + "metBy";
-  private static String TemporalOverlaps = Prefix + ":"  + "overlaps";
-  private static String TemporalOverlappedBy = Prefix + ":"  + "overlappedBy";
-  private static String TemporalContains = Prefix + ":"  + "contains";
-  private static String TemporalDuring = Prefix + ":"  + "during";
-  private static String TemporalStarts = Prefix + ":"  + "starts";
-  private static String TemporalStartedBy = Prefix + ":"  + "startedBy";
-  private static String TemporalFinishes = Prefix + ":"  + "finishes";
-  private static String TemporalFinishedBy = Prefix + ":"  + "finishedBy";
+  private static String TemporalAdd = Prefix + "add";
 
-  private static String ValidInstantClassName = Prefix + ":" + "ValidInstant";
-  private static String ValidPeriodClassName = Prefix + ":" + "ValidPeriod";
-  private static String GranularityClassName = Prefix + ":" + "Granularity";
-  private static String HasGranularityPropertyName = Prefix + ":" + "hasGranularity";
-  private static String HasTimePropertyName = Prefix + ":" + "hasTime";
-  private static String HasStartTimePropertyName = Prefix + ":" + "hasStartTime";
-  private static String HasFinishTimePropertyName = Prefix + ":" + "hasFinishTime";
+  private static String TemporalMeets = Prefix + "meets";
+  private static String TemporalMetBy = Prefix + "metBy";
+  private static String TemporalOverlaps = Prefix + "overlaps";
+  private static String TemporalOverlappedBy = Prefix + "overlappedBy";
+  private static String TemporalContains = Prefix + "contains";
+  private static String TemporalDuring = Prefix + "during";
+  private static String TemporalStarts = Prefix + "starts";
+  private static String TemporalStartedBy = Prefix + "startedBy";
+  private static String TemporalFinishes = Prefix + "finishes";
+  private static String TemporalFinishedBy = Prefix + "finishedBy";
+
+  private static String ValidInstantClassName = Prefix + "ValidInstant";
+  private static String ValidPeriodClassName = Prefix + "ValidPeriod";
+  private static String GranularityClassName = Prefix + "Granularity";
+  private static String HasGranularityPropertyName = Prefix + "hasGranularity";
+  private static String HasTimePropertyName = Prefix + "hasTime";
+  private static String HasStartTimePropertyName = Prefix + "hasStartTime";
+  private static String HasFinishTimePropertyName = Prefix + "hasFinishTime";
 
   private Temporal temporal;
 
@@ -114,6 +118,41 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
 
     return result;
   } // duration
+
+  /**
+   ** Returns true if the first timestamp argument is equal to the second timestamps argument plus the third count argument at the
+   ** granularity specified by the fourth argument. The timestamps are specified as either a ValidInstant, or xsd:DateTime
+   ** arguments. If the first argument is unbound, it is assigned the result of the addition.
+   */
+  public boolean add(List<Argument> arguments) throws BuiltInException
+  {
+    boolean result = false;
+
+    SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(4, arguments.size());
+    SWRLBuiltInUtil.checkForUnboundNonFirstArguments(arguments);
+
+    try {
+      long granuleCount = SWRLBuiltInUtil.getArgumentAsAnInteger(2, arguments);
+      int granularity = getArgumentAsAGranularity(3, arguments);
+      Instant operationResult = getArgumentAsAnInstant(1, arguments, granularity);
+      
+      operationResult.addGranuleCount(granuleCount, granularity);
+
+      if (SWRLBuiltInUtil.isUnboundArgument(0, arguments)) {
+        arguments.set(0, new LiteralInfo(new DateTime(operationResult.toString()))); // Bind the result to the first parameter
+        result = true;
+      } else {
+        Instant argument1 = getArgumentAsAnInstant(0, arguments, granularity);
+        result = (argument1.equals(operationResult, Temporal.FINEST));
+      } //if
+    } catch (TemporalException e) {
+      throw new BuiltInException(e.getMessage());
+    } catch (SWRLOWLUtilException e) {
+      throw new BuiltInException(e.getMessage());
+    } // try
+
+    return result;
+  } // add
 
   private boolean temporalOperation(String operation, List<Argument> arguments) throws BuiltInException
   {

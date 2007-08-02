@@ -23,8 +23,8 @@
   </owl:Class>
   <owl:Class rdf:ID="Granularity"/>
   <owl:ObjectProperty rdf:ID="hasValidTime">
-    <rdfs:domain rdf:resource="#ExtendedProposition"/>
     <rdfs:range rdf:resource="#ValidTime"/>
+    <rdfs:domain rdf:resource="#ExtendedProposition"/>
   </owl:ObjectProperty>
   <owl:FunctionalProperty rdf:ID="hasStartTime">
     <rdfs:domain rdf:resource="#ValidPeriod"/>
@@ -32,19 +32,19 @@
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
   </owl:FunctionalProperty>
   <owl:FunctionalProperty rdf:ID="hasTime">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#dateTime"/>
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
     <rdfs:domain rdf:resource="#ValidInstant"/>
-    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#dateTime"/>
   </owl:FunctionalProperty>
   <owl:FunctionalProperty rdf:ID="hasFinishTime">
-    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
     <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#dateTime"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
     <rdfs:domain rdf:resource="#ValidPeriod"/>
   </owl:FunctionalProperty>
   <owl:FunctionalProperty rdf:ID="hasGranularity">
-    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
-    <rdfs:range rdf:resource="#Granularity"/>
     <rdfs:domain rdf:resource="#ValidTime"/>
+    <rdfs:range rdf:resource="#Granularity"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
   </owl:FunctionalProperty>
   <swrl:Builtin rdf:ID="meets"/>
   <Granularity rdf:ID="Milliseconds"/>
@@ -56,8 +56,9 @@
   <swrl:Builtin rdf:ID="overlaps"/>
   <swrl:Builtin rdf:ID="overlappedBy"/>
   <swrl:Builtin rdf:ID="contains"/>
-  <Granularity rdf:ID="Hours"/>
   <swrl:Builtin rdf:ID="finishes"/>
+  <Granularity rdf:ID="Hours"/>
+  <swrl:Builtin rdf:ID="add"/>
   <Granularity rdf:ID="Days"/>
   <swrl:Builtin rdf:ID="startedBy"/>
   <Granularity rdf:ID="Years"/>
@@ -75,4 +76,4 @@
   </swrl:Builtin>
 </rdf:RDF>
 
-<!-- Created with Protege (with OWL Plugin 3.3, Build 395)  http://protege.stanford.edu -->
+<!-- Created with Protege (with OWL Plugin 3.3, Build 407)  http://protege.stanford.edu -->

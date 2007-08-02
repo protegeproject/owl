@@ -41,7 +41,7 @@ public class BridgeFactory
   public static Set<String> getRegisteredBridgeNames() { return registeredBridges.keySet(); }
 
   /**
-   ** Create an instance of a rule engine - a random registered engine is returned. If no engines are registered, a
+   ** Create an instance of a rule engine - a random registered engine is returned. If no engine is registered, a
    ** NoRegisteredBridgesException is returned.
    */
   public static SWRLRuleEngineBridge createBridge(OWLModel owlModel) throws SWRLRuleEngineBridgeException

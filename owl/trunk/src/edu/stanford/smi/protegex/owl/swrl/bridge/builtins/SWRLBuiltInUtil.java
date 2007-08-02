@@ -235,6 +235,19 @@ public class SWRLBuiltInUtil
     return ((ClassInfo)arguments.get(argumentNumber)).getClassName();
   } // getArgumentAsAClassName
 
+  public static String getArgumentAsAResourceName(int argumentNumber, List<Argument> arguments) throws BuiltInException
+  {
+    String resourceName = "";
+
+    checkThatArgumentIsAClassPropertyOrIndividual(argumentNumber, arguments);
+
+    if (isArgumentAClass(argumentNumber, arguments)) resourceName = ((ClassInfo)arguments.get(argumentNumber)).getClassName();
+    else if (isArgumentAProperty(argumentNumber, arguments)) resourceName = ((PropertyInfo)arguments.get(argumentNumber)).getPropertyName();
+    else if (isArgumentAnIndividual(argumentNumber, arguments)) resourceName = ((IndividualInfo)arguments.get(argumentNumber)).getIndividualName();
+
+    return resourceName;
+  } // getArgumentAsAResourceName
+
   public static String getArgumentAsAPropertyName(int argumentNumber, List<Argument> arguments) throws BuiltInException
   {
     checkThatArgumentIsAProperty(argumentNumber, arguments);
@@ -337,6 +350,19 @@ public class SWRLBuiltInUtil
       throw new InvalidBuiltInArgumentException(argumentNumber,
                                                 makeInvalidArgumentTypeMessage(arguments.get(argumentNumber), "property"));
   } // checkThatArgumentIsAProperty
+
+  public static void checkThatArgumentIsAClassPropertyOrIndividual(int argumentNumber, List<Argument> arguments) throws BuiltInException
+  {
+    if (!isArgumentAClassPropertyOrIndividual(argumentNumber, arguments))
+      throw new InvalidBuiltInArgumentException(argumentNumber,
+                                                makeInvalidArgumentTypeMessage(arguments.get(argumentNumber), "class, property, or individual"));
+  } // checkThatArgumentIsAClassPropertyOrIndividual
+
+  public static boolean isArgumentAClassPropertyOrIndividual(int argumentNumber, List<Argument> arguments) throws BuiltInException
+  {
+    return isArgumentAClass(argumentNumber, arguments) || isArgumentAProperty(argumentNumber, arguments) ||
+           isArgumentAnIndividual(argumentNumber, arguments);
+  } // isArgumentAClassPropertyOrIndividual
 
   public static boolean isArgumentAClass(int argumentNumber, List<Argument> arguments) throws BuiltInException
   {
@@ -475,6 +501,11 @@ public class SWRLBuiltInUtil
     return !arguments.isEmpty() && arguments.contains(null); // An argument is unbound if its value is null.
   } // hasUnboundArguments
 
+  public static void checkThatAllArgumentsAreBound(List<Argument> arguments) throws BuiltInException
+  {
+    if (hasUnboundArguments(arguments)) throw new BuiltInException("all arguments must be bound");
+  } // checkThatAllArgumentsAreBound
+
   public static void checkThatArgumentIsBound(int argumentNumber, List<Argument> arguments) throws BuiltInException
   {
     if (isUnboundArgument(argumentNumber, arguments)) 
@@ -511,7 +542,7 @@ public class SWRLBuiltInUtil
 
   private static String makeInvalidArgumentTypeMessage(Argument argument, String expectedTypeName)
   {
-    String message = "Expecting " + expectedTypeName + ", got ";
+    String message = "expecting " + expectedTypeName + ", got ";
     if (argument == null) message += "unbound argument";
     else {
       if (argument instanceof ClassInfo) {

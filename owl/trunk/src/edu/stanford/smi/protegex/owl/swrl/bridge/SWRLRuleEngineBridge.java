@@ -4,6 +4,7 @@
 package edu.stanford.smi.protegex.owl.swrl.bridge;
 
 import edu.stanford.smi.protegex.owl.model.*;
+import edu.stanford.smi.protegex.owl.swrl.*;
 import edu.stanford.smi.protegex.owl.swrl.model.*;
 import edu.stanford.smi.protegex.owl.swrl.bridge.query.*;
 import edu.stanford.smi.protegex.owl.swrl.bridge.query.exceptions.ResultException;
@@ -21,16 +22,14 @@ import java.io.Serializable;
  **
  ** Detailed documentation for this class can be found <a href="http://protege.cim3.net/cgi-bin/wiki.pl?SWRLRuleEngineBridgeFAQ">here</a>.
  */
-public abstract class SWRLRuleEngineBridge implements Serializable
+public abstract class SWRLRuleEngineBridge implements SWRLRuleEngine, Serializable
 {
   protected abstract void defineRule(RuleInfo ruleInfo) throws SWRLRuleEngineBridgeException;
   protected abstract void defineClass(ClassInfo classInfo) throws SWRLRuleEngineBridgeException;
   protected abstract void defineProperty(PropertyInfo propertyInfo) throws SWRLRuleEngineBridgeException;
   protected abstract void defineIndividual(IndividualInfo individualInfo) throws SWRLRuleEngineBridgeException;
   protected abstract void defineRestriction(RestrictionInfo restrictionInfo) throws SWRLRuleEngineBridgeException;
-
   protected abstract void initializeRuleEngine() throws SWRLRuleEngineBridgeException;
-
   protected abstract void generateBuiltInBinding(String ruleName, String builtInName, int builtInIndex, List<Argument> arguments) 
     throws BuiltInException;
 
@@ -50,7 +49,7 @@ public abstract class SWRLRuleEngineBridge implements Serializable
   private HashMap<String, IndividualInfo> importedIndividuals;
   private Set<String> importedPropertyNames;
   private Set<PropertyInfo> importedProperties; 
-  private Collection<RestrictionInfo> importedRestrictions;
+  private Set<RestrictionInfo> importedRestrictions;
 
   // Names of classes, properties, and individuals that have been exported to target.
   private Set<String> exportedClassNames, exportedIndividualNames; 
@@ -91,6 +90,10 @@ public abstract class SWRLRuleEngineBridge implements Serializable
     importSWRLRulesAndOWLKnowledge(new HashSet<String>());
   } // importSWRLRulesAndOWLKnowledge
 
+  /**
+   ** Load rules from a particular rule group and associated knowledge from OWL into bridge. All existing bridge rules and knowledge will
+   ** first be cleared and the associated rule engine will be reset.
+   */
   public void importSWRLRulesAndOWLKnowledge(String ruleGroupName) throws SWRLRuleEngineBridgeException
   {
     Set<String> ruleGroupNames = new HashSet<String>();
@@ -98,6 +101,10 @@ public abstract class SWRLRuleEngineBridge implements Serializable
     importSWRLRulesAndOWLKnowledge(ruleGroupNames);
   } // importSWRLRulesAndOWLKnowledge
 
+  /**
+   ** Load rules from all the named rule groups and associated knowledge from OWL into bridge. All existing bridge rules and knowledge will
+   ** first be cleared and the associated rule engine will be reset.
+   */
   public void importSWRLRulesAndOWLKnowledge(Set<String> ruleGroupNames) throws SWRLRuleEngineBridgeException
   {
     resetRuleEngine();
@@ -138,6 +145,14 @@ public abstract class SWRLRuleEngineBridge implements Serializable
     exportOWLProperties();
     exportOWLRestrictions();
   } // exportOWLKnowledge
+
+  /**
+   ** Run the rule engine.
+   */
+  public void run() throws SWRLRuleEngineBridgeException
+  {
+    runRuleEngine();
+  } // run
 
   /**
    ** Write knowledge inferred by rule engine back to OWL.
@@ -217,14 +232,14 @@ public abstract class SWRLRuleEngineBridge implements Serializable
   public boolean isCreatedIndividual(String individualName) { return createdIndividuals.containsKey(individualName); }
 
   // Convenience methods for subclasses that may wish to display the contents of the bridge.
-  protected Collection<RuleInfo> getImportedSWRLRules() { return new ArrayList<RuleInfo>(importedSWRLRules.values()); }
-  protected Collection<ClassInfo> getImportedClasses() { return new ArrayList<ClassInfo>(importedClasses.values()); }
-  protected Collection<IndividualInfo> getImportedIndividuals() { return new ArrayList<IndividualInfo>(importedIndividuals.values()); }
-  protected Collection<PropertyInfo> getImportedProperties() { return importedProperties; }
-  protected Collection<RestrictionInfo> getImportedRestrictions() { return importedRestrictions; }
-  protected Collection<IndividualInfo> getAssertedIndividuals() { return assertedIndividuals; }
-  protected Collection<PropertyInfo> getAssertedProperties() { return assertedProperties; }
-  protected Collection<IndividualInfo> getCreatedIndividuals() { return new ArrayList<IndividualInfo>(createdIndividuals.values()); }
+  protected Set<RuleInfo> getImportedSWRLRules() { return new HashSet<RuleInfo>(importedSWRLRules.values()); }
+  protected Set<ClassInfo> getImportedClasses() { return new HashSet<ClassInfo>(importedClasses.values()); }
+  protected Set<IndividualInfo> getImportedIndividuals() { return new HashSet<IndividualInfo>(importedIndividuals.values()); }
+  protected Set<PropertyInfo> getImportedProperties() { return importedProperties; }
+  protected Set<RestrictionInfo> getImportedRestrictions() { return importedRestrictions; }
+  protected Set<IndividualInfo> getAssertedIndividuals() { return assertedIndividuals; }
+  protected Set<PropertyInfo> getAssertedProperties() { return assertedProperties; }
+  protected Set<IndividualInfo> getCreatedIndividuals() { return new HashSet<IndividualInfo>(createdIndividuals.values()); }
 
   /**
    ** Assert an OWL property from a rule engine.
@@ -746,7 +761,7 @@ public abstract class SWRLRuleEngineBridge implements Serializable
     importedIndividuals = new HashMap<String, IndividualInfo>(); 
     importedProperties = new HashSet<PropertyInfo>(); 
     importedPropertyNames = new HashSet<String>();
-    importedRestrictions = new ArrayList<RestrictionInfo>();
+    importedRestrictions = new HashSet<RestrictionInfo>();
 
     exportedClassNames = new HashSet<String>();
     exportedIndividualNames = new HashSet<String>();
