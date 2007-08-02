@@ -270,6 +270,11 @@ public class SWRLOWLUtil
     return (superClass != null && cls != null && cls.getSuperclasses(true).contains(superClass));
   } // isSuperclassOf
 
+  public static int getNumberOfIndividualsOfClass(OWLModel owlModel, String className) throws SWRLOWLUtilException
+  {
+    return getNumberOfIndividualsOfClass(owlModel, className, true);
+  } // getNumberOfIndividualsOfClass
+
   public static int getNumberOfIndividualsOfClass(OWLModel owlModel, String className, boolean mustExist) throws SWRLOWLUtilException
   {
     OWLNamedClass cls = getClass(owlModel, className, mustExist);
@@ -510,12 +515,12 @@ public class SWRLOWLUtil
     return resource instanceof OWLNamedClass ? (OWLNamedClass)resource : null;
   } // getClass
 
-  public Set<OWLNamedClass> getClassesOfIndividual(OWLModel owlModel, String individualName) throws SWRLOWLUtilException
+  public static Set<OWLNamedClass> getClassesOfIndividual(OWLModel owlModel, String individualName) throws SWRLOWLUtilException
   {
     return getClassesOfIndividual(owlModel, individualName, true);
   } // getClassesOfIndividual
 
-  public Set<OWLNamedClass> getClassesOfIndividual(OWLModel owlModel, String individualName, boolean mustExist) 
+  public static Set<OWLNamedClass> getClassesOfIndividual(OWLModel owlModel, String individualName, boolean mustExist) 
     throws SWRLOWLUtilException  
   {
     OWLIndividual individual = getIndividual(owlModel, individualName, mustExist);
@@ -523,7 +528,7 @@ public class SWRLOWLUtil
     return individual == null ? new HashSet<OWLNamedClass>() : getClassesOfIndividual(owlModel, individual);
   } // getClassesOfIndividual
 
-  public Set<OWLNamedClass> getClassesOfIndividual(OWLModel owlModel, OWLIndividual individual) throws SWRLOWLUtilException
+  public static Set<OWLNamedClass> getClassesOfIndividual(OWLModel owlModel, OWLIndividual individual) throws SWRLOWLUtilException
   {
     Set<OWLNamedClass> result = new HashSet<OWLNamedClass>();
     Collection types = individual.getRDFTypes();
@@ -641,6 +646,15 @@ public class SWRLOWLUtil
 
     return properties;
   } // getPossiblePropertiesOfIndividual
+
+  public static String getURI(OWLModel owlModel, String resourceName) throws SWRLOWLUtilException
+  {
+    RDFResource resource = owlModel.getRDFResource(resourceName);
+    
+    if (resource == null) throwException("invalid resource '" + resourceName + "'");
+
+    return resource.getURI();
+  } // getURI
 
   public static int getNumberOfPropertyValues(OWLModel owlModel, String individualName, 
                                               String propertyName, Object propertyValue, boolean mustExist) 
@@ -1001,6 +1015,26 @@ public class SWRLOWLUtil
 
     return new ArrayList<OWLProperty>(property.getSuperproperties(true));
   } // getSuperPropertiesOf
+
+  public static Set<OWLProperty> getDomainProperties(OWLModel owlModel, String className, boolean transitive) throws SWRLOWLUtilException
+  {
+    OWLClass cls = getClass(owlModel, className);
+    Set<OWLProperty> result = new HashSet<OWLProperty>();
+    Collection domainProperties = cls.getUnionDomainProperties(transitive);
+
+    // TODO: bug in Property.getUnionDomain that causes it to return non RDFResource objects so we need to work around it.
+    // for (RDFResource resource : resources) result.add(resource.getName());
+
+    if (domainProperties != null) {
+      Iterator iterator = cls.getUnionDomainProperties().iterator();
+      while (iterator.hasNext()) {
+        Object o = iterator.next();
+        if (o instanceof OWLProperty) result.add((OWLProperty)o);
+      } // while
+    } // if
+
+    return result;
+  } // getDomainProperties
 
   public static Set<String> rdfResources2Names(Collection resources) 
   {

@@ -14,7 +14,7 @@ import java.util.*;
 /**
  ** Info object representing an OWL individual. 
  */
-public class IndividualInfo extends Info implements Argument, ObjectValue
+public class IndividualInfo extends PropertyValueInfo implements Argument, ObjectValue
 {
   // NOTE: equals() method defined in this class.
 

@@ -345,7 +345,9 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
 
   /**
    ** Check that the first class argument is in the domain of the second property argument (including its superproperties). If the first
-   ** argument is unbound, bind it to the domain of the second argument (if any exist).
+   ** argument is unbound and the second argument is bound, bind the first argument to the domain(s) of the second property argument (if any
+   ** exist). If the first class argument is bound and the second argument is unbound, bind the second argument to the properties that have
+   ** the class in their domain (if any). An error is thrown if both arguments are unbound.
    */
   public boolean isInDomainOf(List<Argument> arguments) throws BuiltInException
   {
@@ -353,13 +355,54 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
   } // isInDomainOf
 
   /**
-   ** Check that the first class argument is in the domain of the second property argument excluding its superproperties. If the first
-   ** argument is unbound, bind it to the domain of the second argument (if any exist).
+   ** Check that the first class argument is in the domain of the second property argument (excluding its superproperties). If the first
+   ** argument is unbound and the second argument is bound, bind the first argument to the domain(s) of the second property argument (if any
+   ** exist). If the first class argument is bound and the second argument is unbound, bind the second argument to the properties that have
+   ** the class in their domain (if any). An error is thrown if both arguments are unbound.
    */
   public boolean isInDirectDomainOf(List<Argument> arguments) throws BuiltInException
   {
     return isInDomainOf(arguments, false);
   } // isInDirectDomainOf
+
+  /**
+   ** Check that the two class or property arguments are the same.
+   */
+  public boolean sameAs(List<Argument> arguments) throws BuiltInException
+  {
+    boolean result = false;
+
+    SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(2, arguments.size());
+    SWRLBuiltInUtil.checkThatAllArgumentsAreBound(arguments);
+    
+
+    if (SWRLBuiltInUtil.isArgumentAClass(0, arguments) && SWRLBuiltInUtil.isArgumentAClass(1, arguments)) {
+      result = SWRLBuiltInUtil.getArgumentAsAClassName(0, arguments).equals(SWRLBuiltInUtil.getArgumentAsAClassName(1, arguments));
+    } else if (SWRLBuiltInUtil.isArgumentAProperty(0, arguments) && SWRLBuiltInUtil.isArgumentAProperty(1, arguments)) {
+      result = SWRLBuiltInUtil.getArgumentAsAPropertyName(0, arguments).equals(SWRLBuiltInUtil.getArgumentAsAPropertyName(1, arguments));
+    } // if
+
+    return result;
+  } // sameAs
+
+  /**
+   ** Check that the two class or property arguments are not the same.
+   */
+  public boolean differentFrom(List<Argument> arguments) throws BuiltInException
+  {
+    boolean result = true;
+
+    SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(2, arguments.size());
+    SWRLBuiltInUtil.checkThatAllArgumentsAreBound(arguments);
+
+    if (SWRLBuiltInUtil.isArgumentAClass(0, arguments) && SWRLBuiltInUtil.isArgumentAClass(1, arguments)) {
+      result = !SWRLBuiltInUtil.getArgumentAsAClassName(0, arguments).equals(SWRLBuiltInUtil.getArgumentAsAClassName(1, arguments));
+    } else if (SWRLBuiltInUtil.isArgumentAProperty(0, arguments) && SWRLBuiltInUtil.isArgumentAProperty(1, arguments)) {
+      result = !SWRLBuiltInUtil.getArgumentAsAPropertyName(0, arguments).equals(SWRLBuiltInUtil.getArgumentAsAPropertyName(1, arguments));
+    } // if
+
+    return result;
+  } // differentFrom
 
   private boolean isSuperClassOf(List<Argument> arguments, boolean transitive) throws BuiltInException
   {
@@ -497,18 +540,21 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
 
   private boolean isInDomainOf(List<Argument> arguments, boolean includingSuperproperties) throws BuiltInException
   {
-    boolean domainClassArgumentUnbound = false;
-    String propertyName;
+    boolean domainClassArgumentUnbound, propertyArgumentUnbound = false;
+    String propertyName, domainClassName;
     boolean result = false;
 
     SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(2, arguments.size());
 
     domainClassArgumentUnbound = SWRLBuiltInUtil.isUnboundArgument(0, arguments);
-    propertyName = SWRLBuiltInUtil.getArgumentAsAPropertyName(1, arguments);
+    propertyArgumentUnbound = SWRLBuiltInUtil.isUnboundArgument(1, arguments);
+
+    if (domainClassArgumentUnbound && propertyArgumentUnbound) throw new BuiltInException("at least one argument must be bound");
 
     try {
       if (domainClassArgumentUnbound) {
         Set<OWLNamedClass> domainClasses;
+        propertyName = SWRLBuiltInUtil.getArgumentAsAPropertyName(1, arguments);
         if (includingSuperproperties) domainClasses = SWRLOWLUtil.getDomainClasses(getInvokingBridge().getOWLModel(), propertyName);
         else domainClasses = SWRLOWLUtil.getDirectDomainClasses(getInvokingBridge().getOWLModel(), propertyName);
         if (!domainClasses.isEmpty()) {
@@ -517,8 +563,19 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
           arguments.set(0, multiArgument);
         result = !multiArgument.hasNoArguments();
         } // if
-      } else {
-        String domainClassName = SWRLBuiltInUtil.getArgumentAsAClassName(0, arguments);
+      } else if (propertyArgumentUnbound) {
+        Set<OWLProperty> domainProperties;
+        domainClassName = SWRLBuiltInUtil.getArgumentAsAClassName(0, arguments);
+        domainProperties = SWRLOWLUtil.getDomainProperties(getInvokingBridge().getOWLModel(), domainClassName, includingSuperproperties);
+        if (!domainProperties.isEmpty()) {
+          MultiArgument multiArgument = new MultiArgument();
+          for (OWLProperty property : domainProperties) multiArgument.addArgument(new PropertyInfo(property.getName()));
+          arguments.set(1, multiArgument);
+        result = !multiArgument.hasNoArguments();
+        } // if
+      } else { // Both arguments bound
+        domainClassName = SWRLBuiltInUtil.getArgumentAsAClassName(0, arguments);
+        propertyName = SWRLBuiltInUtil.getArgumentAsAPropertyName(1, arguments);
         if (includingSuperproperties) result = SWRLOWLUtil.isInPropertyDomain(getInvokingBridge().getOWLModel(), propertyName, domainClassName, true);
         else result = SWRLOWLUtil.isInDirectPropertyDomain(getInvokingBridge().getOWLModel(), propertyName, domainClassName, true);
       } // if
@@ -532,7 +589,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
   private boolean isInRangeOf(List<Argument> arguments, boolean includingSuperproperties) throws BuiltInException
   {
     boolean rangeClassArgumentUnbound = false;
-    String propertyName;
+    String rangeClassName, propertyName;
     boolean result = false;
 
     SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(2, arguments.size());
@@ -549,10 +606,11 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
           MultiArgument multiArgument = new MultiArgument();
           for (OWLNamedClass rangeClass : rangeClasses) multiArgument.addArgument(new ClassInfo(rangeClass.getName()));
           arguments.set(0, multiArgument);
-        result = !multiArgument.hasNoArguments();
+          result = !multiArgument.hasNoArguments();
         } // if
       } else {
-        String rangeClassName = SWRLBuiltInUtil.getArgumentAsAClassName(0, arguments);
+        propertyName = SWRLBuiltInUtil.getArgumentAsAPropertyName(1, arguments);
+        rangeClassName = SWRLBuiltInUtil.getArgumentAsAClassName(0, arguments);
         if (includingSuperproperties) result = SWRLOWLUtil.isInPropertyRange(getInvokingBridge().getOWLModel(), propertyName, rangeClassName, true);
         else result = SWRLOWLUtil.isInDirectPropertyRange(getInvokingBridge().getOWLModel(), propertyName, rangeClassName, true);
       } // if

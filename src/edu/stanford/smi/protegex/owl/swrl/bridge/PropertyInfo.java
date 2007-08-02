@@ -15,11 +15,12 @@ public class PropertyInfo extends Info implements Argument, PropertyValue
 {
   // There is an equals method defined on this class.
   private String propertyName;
-  private Argument subject, predicate;
+  private IndividualInfo subject;
+  private PropertyValueInfo predicate;
   private Set<String> domainClassNames, rangeClassNames, superPropertyNames, subPropertyNames, equivalentPropertyNames;
   
   // Constructor used when creating a PropertyInfo object from an OWL property.
-  public PropertyInfo(String propertyName, Argument subject, Argument predicate, Set<String> domainClassNames, 
+  public PropertyInfo(String propertyName, IndividualInfo subject, PropertyValueInfo predicate, Set<String> domainClassNames, 
                       Set<String> rangeClassNames, Set<String> superPropertyNames, Set<String> subPropertyNames,
                       Set<String> equivalentPropertyNames) 
     throws SWRLRuleEngineBridgeException
@@ -35,7 +36,7 @@ public class PropertyInfo extends Info implements Argument, PropertyValue
   } // PropertyInfo
   
   // Constructor used when creating a PropertyInfo object from an assertion made by a target rule engine or to pass as built-in arguments.
-  public PropertyInfo(String propertyName, Argument subject, Argument predicate) 
+  public PropertyInfo(String propertyName, IndividualInfo subject, PropertyValueInfo predicate) 
   {
     this.propertyName = propertyName;    
     this.subject = subject;
@@ -64,8 +65,8 @@ public class PropertyInfo extends Info implements Argument, PropertyValue
   } // PropertyInfo
   
   public String getPropertyName() { return propertyName; }
-  public Argument getSubject() { return subject; }
-  public Argument getPredicate() { return predicate; }
+  public IndividualInfo getSubject() { return subject; }
+  public PropertyValueInfo getPredicate() { return predicate; }
   public boolean hasSubject() { return subject != null; }
   public boolean hasPredicate() { return predicate != null; }
   public Set<String> getDomainClassNames() { return domainClassNames; }
@@ -108,7 +109,7 @@ public class PropertyInfo extends Info implements Argument, PropertyValue
     if (property.isInverseFunctional()) inverseProperty = property.getInverseProperty();
     firstInverseSuperProperty = (inverseProperty == null) ? null : inverseProperty.getFirstSuperproperty();
 
-    // We have to make sure that any super properties do not have this value and also that any inverse properties (and their
+    // We have to make sure that any super properties do not already have this value and also that any inverse properties (and their
     // superproperties) do not have this value.
     if (!((firstSuperProperty != null && individual.hasPropertyValue(firstSuperProperty, object, true)) ||
           (firstInverseSuperProperty != null && ((OWLIndividual)object).hasPropertyValue(firstInverseSuperProperty, individual, true)) ||
@@ -157,7 +158,8 @@ public class PropertyInfo extends Info implements Argument, PropertyValue
     PropertyInfo propertyInfo;
     List<PropertyInfo> propertyInfoList = new ArrayList<PropertyInfo>();
     Set<String> domainClassNames, rangeClassNames, superPropertyNames, subPropertyNames, equivalentPropertyNames;
-    Argument subject, predicate;
+    IndividualInfo subject;
+    PropertyValueInfo predicate;
 
     property = owlModel.getOWLProperty(propertyName);
     if (property == null) throw new InvalidPropertyNameException(propertyName);
