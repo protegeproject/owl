@@ -31,7 +31,7 @@ public class Period
 
     semanticCheck(startDatetime, finishDatetime);
 
-    startInstant = new Instant(temporal, startDatetime, granularity, true);
+    startInstant = new Instant(temporal, startDatetime, granularity, false);
     finishInstant = new Instant(temporal, finishDatetime, granularity, false);
     
     orderCheck(); // Throws exception if start is after finish.

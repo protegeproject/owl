@@ -13,7 +13,7 @@ import java.util.*;
 /**
  ** Info object representing an OWL class. 
  */
-public class ClassInfo extends Info implements Argument, ClassValue
+public class ClassInfo extends Info implements ClassArgument, ClassValue
 {
   // equals() method defined in this class.
   private String className;

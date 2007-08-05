@@ -182,7 +182,7 @@ public class SWRLBuiltInUtil
   {
     checkArgumentNumber(argumentNumber, arguments);
 
-    if (!(arguments.get(argumentNumber) instanceof LiteralInfo)) 
+    if (!(arguments.get(argumentNumber) instanceof LiteralArgument)) 
       throw new InvalidBuiltInArgumentException(argumentNumber,
                                                 makeInvalidArgumentTypeMessage(arguments.get(argumentNumber), "literal"));
   } // checkThatArgumentIsALiteral
@@ -210,7 +210,7 @@ public class SWRLBuiltInUtil
   {
     checkArgumentNumber(argumentNumber, arguments);
 
-    return arguments.get(argumentNumber) instanceof IndividualInfo;
+    return arguments.get(argumentNumber) instanceof IndividualArgument;
   } // isArgumentAnIndividual
 
   public static void checkThatArgumentIsAnIndividual(int argumentNumber, List<Argument> arguments) throws BuiltInException
@@ -334,14 +334,14 @@ public class SWRLBuiltInUtil
   {
     checkThatArgumentIsBound(argumentNumber, arguments);
 
-    return (arguments.get(argumentNumber) instanceof LiteralInfo);
+    return (arguments.get(argumentNumber) instanceof LiteralArgument);
   } // isArgumentALiteral
 
   public static boolean isArgumentAProperty(int argumentNumber, List<Argument> arguments) throws BuiltInException
   {
     checkThatArgumentIsBound(argumentNumber, arguments);
 
-    return (arguments.get(argumentNumber) instanceof PropertyInfo);
+    return (arguments.get(argumentNumber) instanceof PropertyArgument);
   } // isArgumentAProperty
 
   public static void checkThatArgumentIsAProperty(int argumentNumber, List<Argument> arguments) throws BuiltInException
@@ -368,7 +368,7 @@ public class SWRLBuiltInUtil
   {
     checkThatArgumentIsBound(argumentNumber, arguments);
 
-    return (arguments.get(argumentNumber) instanceof ClassInfo);
+    return (arguments.get(argumentNumber) instanceof ClassArgument);
   } // isArgumentAClass
 
   public static void checkThatArgumentIsAClass(int argumentNumber, List<Argument> arguments) throws BuiltInException
@@ -545,16 +545,16 @@ public class SWRLBuiltInUtil
     String message = "expecting " + expectedTypeName + ", got ";
     if (argument == null) message += "unbound argument";
     else {
-      if (argument instanceof ClassInfo) {
+      if (argument instanceof ClassArgument) {
         ClassInfo classInfo = (ClassInfo)argument;
         message += "class with name '" + classInfo.getClassName() + "'";
-      } else if (argument instanceof PropertyInfo) {
+      } else if (argument instanceof PropertyArgument) {
         PropertyInfo propertyInfo = (PropertyInfo)argument;
         message += "property with name '" + propertyInfo.getPropertyName() + "'";
-      } else if (argument instanceof IndividualInfo) {
+      } else if (argument instanceof IndividualArgument) {
         IndividualInfo individualInfo = (IndividualInfo)argument;
         message += "individual with name '" + individualInfo.getIndividualName() + "'";
-      } else if (argument instanceof LiteralInfo) {
+      } else if (argument instanceof LiteralArgument) {
         LiteralInfo literalInfo = (LiteralInfo)argument;
         message += "literal with value '" + literalInfo.toString() + "' of type '" + literalInfo.getValueClassName() + "'";
       } else message += "unknown type '" + argument.getClass().getName() + "'";
@@ -563,10 +563,10 @@ public class SWRLBuiltInUtil
   } // makeInvalidArgumentTypeMessage
 
   /**
-   ** Take an bound Argument object with types ClassInfo, PropertyInfo, IndividualInfo, or LiteralInfo and return it as a property value
-   ** representation. Class, property and individual info objects are represented by strings containing their class, property or individual
-   ** names, respectively; literal objects are represented by the appropriate Java type. Primitive XSD datatypes that do not have a
-   ** corresponding Java type are not yet supported.
+   ** Take an bound Argument object with types ClassArgument, PropertyArgument, IndividualArgument, or LiteralArgument and return it as a
+   ** property value representation. Class, property and individual argument are represented by strings containing their class, property or
+   ** individual names, respectively; literal objects are represented by the appropriate Java type. Primitive XSD datatypes that do not have
+   ** a corresponding Java type are not yet supported.
    */
   public static Object getArgumentAsAPropertyValue(int argumentNumber, List<Argument> arguments) throws BuiltInException
   {
@@ -577,16 +577,16 @@ public class SWRLBuiltInUtil
 
     argument = arguments.get(argumentNumber);
 
-    if (argument instanceof ClassInfo) {
+    if (argument instanceof ClassArgument) {
       ClassInfo classInfo = (ClassInfo)argument;
       result = classInfo.getClassName();
-    } else if (argument instanceof PropertyInfo) {
+    } else if (argument instanceof PropertyArgument) {
       PropertyInfo propertyInfo = (PropertyInfo)argument;
       result = propertyInfo.getPropertyName();
-    } else if (argument instanceof IndividualInfo) {
+    } else if (argument instanceof IndividualArgument) {
       IndividualInfo individualInfo = (IndividualInfo)argument;
       result = individualInfo.getIndividualName();
-    } else if (argument instanceof LiteralInfo) {
+    } else if (argument instanceof LiteralArgument) {
       LiteralInfo literalInfo = (LiteralInfo)argument;
       if (literalInfo.isNumeric()) result = literalInfo.getNumber();
       else if (literalInfo.isString()) result = literalInfo.getString();

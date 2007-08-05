@@ -135,7 +135,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
       long granuleCount = SWRLBuiltInUtil.getArgumentAsAnInteger(2, arguments);
       int granularity = getArgumentAsAGranularity(3, arguments);
       Instant operationResult = getArgumentAsAnInstant(1, arguments, granularity);
-      
+
       operationResult.addGranuleCount(granuleCount, granularity);
 
       if (SWRLBuiltInUtil.isUnboundArgument(0, arguments)) {

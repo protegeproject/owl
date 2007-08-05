@@ -15,7 +15,7 @@ import java.math.BigInteger;
  ** For the moment we do not support (1) RDFSLiteral language tags, and (2) the types: byte[], and primitive XSD types Decimal, GDay,
  ** GYear, GMonth, GMonthDay, QName, HexBinary, and NOTATION.
  */
-public class LiteralInfo extends PropertyValueInfo implements Argument, DatatypeValue
+public class LiteralInfo extends PropertyValueInfo implements LiteralArgument, DatatypeValue
 {
   private Object value; // This value object should implement Comparable.
 
