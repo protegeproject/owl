@@ -6,4 +6,5 @@ package edu.stanford.smi.protegex.owl.swrl.bridge;
  */
 public interface ClassArgument extends Argument 
 {
+  String getClassName();
 } // ClassArgument

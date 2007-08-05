@@ -509,7 +509,7 @@ public class SWRLBuiltInUtil
   public static void checkThatArgumentIsBound(int argumentNumber, List<Argument> arguments) throws BuiltInException
   {
     if (isUnboundArgument(argumentNumber, arguments)) 
-      throw new BuiltInException("not expecting an unbound argument for argument #" + argumentNumber + ".");
+      throw new BuiltInException("not expecting an unbound argument for argument #" + argumentNumber);
   } // checkThatArgumentIsBound
 
   public static boolean isUnboundArgument(int argumentNumber, List<Argument> arguments)
@@ -529,15 +529,15 @@ public class SWRLBuiltInUtil
   public static void checkForUnboundArguments(List<Argument> arguments) throws BuiltInException
   {
     if (hasUnboundArguments(arguments))
-      throw new BuiltInException("built-in does not support variable binding. Unbound variable used for argument #" +
-                                 getFirstUnboundArgument(arguments) + ".");
+      throw new BuiltInException("built-in does not support variable binding - unbound variable used for argument #" +
+                                 getFirstUnboundArgument(arguments));
   } // checkForUnboundArguments
 
   public static void checkForUnboundNonFirstArguments(List<Argument> arguments) throws BuiltInException
   {
     if (hasUnboundArguments(arguments.subList(1, arguments.size())))
-      throw new BuiltInException("built-in supports variable binding only for the first argument. " +
-                                 "Unbound variable used in other arguments.");
+      throw new BuiltInException("built-in supports variable binding only for the first argument - " +
+                                 "unbound variable used in other arguments");
   } // checkForUnboundArguments
 
   private static String makeInvalidArgumentTypeMessage(Argument argument, String expectedTypeName)
@@ -591,8 +591,8 @@ public class SWRLBuiltInUtil
       if (literalInfo.isNumeric()) result = literalInfo.getNumber();
       else if (literalInfo.isString()) result = literalInfo.getString();
       else throw new BuiltInException("LiteralInfo of type '" + literalInfo.getValueClassName() + "' with value '" + 
-                                      literalInfo.toString() + "' not supported. Only strings and number literals supported.");
-    } else throw new BuiltInException("Argument '" + argument + "' of unknown type '" + argument.getClass().getName() + "'.");
+                                      literalInfo.toString() + "' not supported - only strings and number literals supported");
+    } else throw new BuiltInException("Argument '" + argument + "' of unknown type '" + argument.getClass().getName() + "'");
 
     return result;
   } // getArgumentAsAPropertyValue

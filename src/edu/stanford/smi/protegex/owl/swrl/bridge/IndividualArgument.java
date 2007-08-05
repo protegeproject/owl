@@ -6,4 +6,5 @@ package edu.stanford.smi.protegex.owl.swrl.bridge;
  */
 public interface IndividualArgument extends Argument 
 {
+  String getIndividualName();
 } // IndividualArgument
