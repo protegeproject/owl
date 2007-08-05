@@ -11,7 +11,7 @@ import java.util.*;
 /**
  ** Info object representing an OWL property. 
  */
-public class PropertyInfo extends Info implements Argument, PropertyValue
+public class PropertyInfo extends Info implements PropertyArgument, PropertyValue
 {
   // There is an equals method defined on this class.
   private String propertyName;
@@ -99,18 +99,19 @@ public class PropertyInfo extends Info implements Argument, PropertyValue
       object = owlModel.getOWLIndividual(individualInfo.getIndividualName());
       if (object == null) throw new InvalidIndividualNameException(individualInfo.getIndividualName());
     } else { // Is a datatype property, so will be held in a LiteralInfo.
-      // In Protege-OWL RDFS literals without a selected language are stored as String objects.
+      // In Protege-OWL, RDFS literals without a selected language are stored as String objects.
       LiteralInfo literalInfo = (LiteralInfo)predicate;
       if (literalInfo.isString()) object = literalInfo.getString(); // Store strings as String objects, not RDFSLiteral objects.
       object = literalInfo.asRDFSLiteral(owlModel); // Will throw exception if it cannot convert.
     } // if    
 
+    // We have to make sure that any super properties do not already have this value and also that any inverse properties (and their
+    // superproperties) do not have this value.
+
     firstSuperProperty = property.getFirstSuperproperty();
     if (property.isInverseFunctional()) inverseProperty = property.getInverseProperty();
     firstInverseSuperProperty = (inverseProperty == null) ? null : inverseProperty.getFirstSuperproperty();
 
-    // We have to make sure that any super properties do not already have this value and also that any inverse properties (and their
-    // superproperties) do not have this value.
     if (!((firstSuperProperty != null && individual.hasPropertyValue(firstSuperProperty, object, true)) ||
           (firstInverseSuperProperty != null && ((OWLIndividual)object).hasPropertyValue(firstInverseSuperProperty, individual, true)) ||
           individual.hasPropertyValue(property, object, true)))

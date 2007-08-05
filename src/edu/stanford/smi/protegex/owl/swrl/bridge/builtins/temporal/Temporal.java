@@ -115,9 +115,7 @@ public class Temporal
     else { 
       int i = 0;
       while (i < stringGranularityRepresentation.length) {
-	if (stringGranularityRepresentation[i].equalsIgnoreCase(granularity)) {
-	return i;
-	} // if
+	if (stringGranularityRepresentation[i].equalsIgnoreCase(granularity)) return i;
 	i++;
       } // while
     } // if
@@ -127,14 +125,11 @@ public class Temporal
 
   public static boolean isValidGranularityString(String granularity)
   {
-    int i;
+    int i = 0;
     boolean found = false;
 
-    i = 0;
     while (i < stringGranularityRepresentation.length && !found) {
-      if (stringGranularityRepresentation[i].equalsIgnoreCase(granularity)) {
-	found = true;
-      } // if
+      if (stringGranularityRepresentation[i].equalsIgnoreCase(granularity)) found = true;
       i++;
     } // while
 
@@ -211,8 +206,8 @@ public class Temporal
 
     years = datetimeStringProcessor.getYears(datetimeString);
 
-    months = datetimeStringProcessor.getMonths(datetimeString);
-    days = datetimeStringProcessor.getDays(datetimeString);
+    months = datetimeStringProcessor.getMonths(datetimeString) - 1;
+    days = datetimeStringProcessor.getDays(datetimeString) - 1;
     hours = datetimeStringProcessor.getHours(datetimeString);
     minutes = datetimeStringProcessor.getMinutes(datetimeString);
     seconds = datetimeStringProcessor.getSeconds(datetimeString);
