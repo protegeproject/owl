@@ -15,12 +15,12 @@ public class RelativeFileRepository extends LocalFileRepository {
 
     public RelativeFileRepository(File file, URL baseURL, String relativeURL) throws MalformedURLException, URISyntaxException {
 		super(file, RepositoryUtil.isForcedToBeReadOnly(RepositoryUtil.getURI(baseURL, relativeURL).getQuery()));
-		this.relativeURL = relativeURL;
+		this.relativeURL = RepositoryUtil.stripQuery(relativeURL);
 	}
 
     public RelativeFileRepository(File file, String relativeURL, boolean isForceReadOnly) throws MalformedURLException, URISyntaxException {
 		super(file, isForceReadOnly);
-		this.relativeURL = relativeURL;
+		this.relativeURL = RepositoryUtil.stripQuery(relativeURL);
 	}
 
 	public String getRepositoryDescriptor() {
