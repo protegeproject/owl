@@ -128,5 +128,15 @@ public class RepositoryUtil {
     }
     
     
+    public static String stripQuery(String relativeURL) {
+        int index = relativeURL.indexOf('?');
+        if (index != -1) {
+            return relativeURL.substring(0, index);
+        }
+        else {
+            return relativeURL;
+        }
+    }
+    
 }
 
