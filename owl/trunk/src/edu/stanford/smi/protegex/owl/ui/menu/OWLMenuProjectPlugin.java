@@ -49,6 +49,8 @@ import edu.stanford.smi.protege.util.ComponentFactory;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protege.util.StandardAction;
 import edu.stanford.smi.protege.util.SystemUtilities;
+import edu.stanford.smi.protege.widget.ClsWidget;
+import edu.stanford.smi.protege.widget.FormWidget;
 import edu.stanford.smi.protegex.owl.database.OWLDatabaseModel;
 import edu.stanford.smi.protegex.owl.javacode.JavaCodeGeneratorResourceAction;
 import edu.stanford.smi.protegex.owl.jena.JenaKnowledgeBaseFactory;
@@ -344,6 +346,7 @@ public class OWLMenuProjectPlugin extends ProjectPluginAdapter {
 
             owlModel.getProject().setInstanceDisplayClass(ResourceDisplay.class);
             adjustMenuAndToolBar(owlModel, menuBar, toolBar);
+            adjustOWLAnnotationPropertyForm(view.getProject());
 
             ResourceActionManager.addResourceActionClass(JavaCodeGeneratorResourceAction.class);
 
@@ -357,7 +360,33 @@ public class OWLMenuProjectPlugin extends ProjectPluginAdapter {
         }
     }
 
-    public void beforeClose(Project p) {
+    // Make sure that the annotation property class form does not contain
+    // rdfs:domain and rdfs:range widgets
+    private void adjustOWLAnnotationPropertyForm(Project project) {
+    	OWLModel owlModel = (OWLModel) project.getKnowledgeBase();
+    	
+    	try {
+        	ClsWidget clsWidget = project.getDesignTimeClsWidget(owlModel.getOWLAnnotationPropertyClass());   
+        	
+    		Slot s1 = owlModel.getRDFSDomainProperty();
+    		clsWidget.replaceWidget(s1, null);
+
+    		Slot s2 = owlModel.getRDFSRangeProperty();
+    		clsWidget.replaceWidget(s2, null);
+
+    		Slot s3 = owlModel.getSlot(Model.Slot.DIRECT_DOMAIN);
+    		clsWidget.replaceWidget(s3, null);
+    		
+    		((FormWidget)clsWidget).setVerticalStretcher(FormWidget.STRETCH_NONE);
+    		((FormWidget)clsWidget).setHorizontalStretcher(FormWidget.STRETCH_ALL);
+			
+		} catch (Exception e) {
+			Log.getLogger().warning("Problems at adjusting the class form of owl:AnnotationProperty.");
+		}
+		
+	}
+
+	public void beforeClose(Project p) {
         if (p.getKnowledgeBase() instanceof OWLModel) {
             ProjectView view = ProtegeUI.getProjectView(p);
             if (view != null) {
