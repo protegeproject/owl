@@ -155,7 +155,7 @@ public class ResourceDisplay extends InstanceDisplay implements ResourcePanel {
         // setLayout(new BorderLayout());
 
         suppressedTypes.add(owlModel.getOWLFunctionalPropertyClass());
-        suppressedTypes.add(owlModel.getRDFSNamedClass(OWLNames.Cls.ANNOTATION_PROPERTY));
+        //suppressedTypes.add(owlModel.getRDFSNamedClass(OWLNames.Cls.ANNOTATION_PROPERTY));
         suppressedTypes.add(owlModel.getRDFSNamedClass(OWLNames.Cls.INVERSE_FUNCTIONAL_PROPERTY));
         suppressedTypes.add(owlModel.getRDFSNamedClass(OWLNames.Cls.SYMMETRIC_PROPERTY));
         suppressedTypes.add(owlModel.getRDFSNamedClass(OWLNames.Cls.TRANSITIVE_PROPERTY));
