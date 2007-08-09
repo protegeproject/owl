@@ -114,9 +114,9 @@ public class RepositoryUtil {
             if (owlFileUri == null) {
                 return null;
             }
-            URL absoluteURL = new URL(owlFileUri.toURL(), s.trim());
+            URL absoluteURL = new URL(owlFileUri.toURL(), RepositoryUtil.stripQuery(s.trim()));
             
-            repositoryFile = new File(absoluteURL.getPath());
+            repositoryFile = new File(absoluteURL.toURI());
             if (repositoryFile.canRead() && repositoryFile.isFile()) {
                 return repositoryFile;
             }
