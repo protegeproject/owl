@@ -41,7 +41,7 @@ public class RelativeFileRepositoryFactoryPlugin implements RepositoryFactoryPlu
 				try {
 					URI uri = new URI(s.trim());
 					if (uri.isAbsolute() == false) {
-						File file = RepositoryUtil.getRepositoryFileFromRelativePath(model, s);
+						File file = RepositoryUtil.getRepositoryFileFromRelativePath(model, RepositoryUtil.stripQuery(s));
 						return (file != null);
 					} else {
 						return false;
