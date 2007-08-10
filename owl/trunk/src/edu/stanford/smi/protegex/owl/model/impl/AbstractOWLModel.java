@@ -43,6 +43,7 @@ import edu.stanford.smi.protege.model.framestore.FrameStore;
 import edu.stanford.smi.protege.model.framestore.FrameStoreManager;
 import edu.stanford.smi.protege.model.framestore.MergingNarrowFrameStore;
 import edu.stanford.smi.protege.model.framestore.NarrowFrameStore;
+import edu.stanford.smi.protege.server.framestore.background.ServerCacheStateMachine;
 import edu.stanford.smi.protege.util.CollectionUtilities;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protege.util.URIUtilities;
@@ -120,6 +121,7 @@ import edu.stanford.smi.protegex.owl.model.validator.DefaultPropertyValueValidat
 import edu.stanford.smi.protegex.owl.model.validator.PropertyValueValidator;
 import edu.stanford.smi.protegex.owl.repository.RepositoryManager;
 import edu.stanford.smi.protegex.owl.repository.util.RepositoryFileManager;
+import edu.stanford.smi.protegex.owl.server.OwlStateMachine;
 import edu.stanford.smi.protegex.owl.testing.OWLTest;
 import edu.stanford.smi.protegex.owl.testing.OWLTestLibrary;
 import edu.stanford.smi.protegex.owl.ui.widget.OWLFormWidget;
@@ -3979,4 +3981,12 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     	taskManager = null;
     }
     
+    public ServerCacheStateMachine getCacheMachine() {
+        return new OwlStateMachine(getHeadFrameStore(), this);
+    }
+    
+    @Override
+    public void setCacheMachine(ServerCacheStateMachine machine) {
+        throw new UnsupportedOperationException("Not implemented yet");
+    }
 }
