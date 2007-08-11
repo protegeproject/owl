@@ -494,9 +494,9 @@ public class OWLMenuProjectPlugin extends ProjectPluginAdapter {
             owlModel.getOWLNamedClassClass().setVisible(true);
         }
         Set systemFrames = new HashSet(owlModel.getOWLSystemResources());
-        if (owlModel.getOWLObjectPropertyClass().getSubclassCount() > 0 ||
+        if (owlModel.getOWLObjectPropertyClass().getSubclassCount() > 3 || //better test needed
             owlModel.getOWLDatatypePropertyClass().getSubclassCount() > 0 ||
-            isUsedInRange(owlModel.getOWLObjectPropertyClass(), systemFrames) ||
+            isUsedInRange(owlModel.getOWLObjectPropertyClass(), systemFrames) || 
             isUsedInRange(owlModel.getOWLDatatypePropertyClass(), systemFrames) ||
             isUsedInRange(owlModel.getRDFPropertyClass(), systemFrames)) {
             owlModel.getRDFPropertyClass().setVisible(true);
