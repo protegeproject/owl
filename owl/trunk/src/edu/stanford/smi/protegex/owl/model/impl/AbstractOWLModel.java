@@ -860,11 +860,11 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
         owlFunctionalPropertyClass = createSystemCls(OWLNames.Cls.FUNCTIONAL_PROPERTY,
                                                      Collections.singleton(rdfPropertyClass), rdfsNamedClassClass);
         owlInverseFunctionalPropertyClass = createSystemCls(OWLNames.Cls.INVERSE_FUNCTIONAL_PROPERTY,
-                                                            Collections.singleton(rdfPropertyClass), rdfsNamedClassClass);
+                                                            Collections.singleton(owlObjectPropertyClass), rdfsNamedClassClass);
         owlSymmetricPropertyClass = createSystemCls(OWLNames.Cls.SYMMETRIC_PROPERTY,
-                                                    Collections.singleton(rdfPropertyClass), rdfsNamedClassClass);
+                                                    Collections.singleton(owlObjectPropertyClass), rdfsNamedClassClass);
         owlTransitivePropertyClass = createSystemCls(OWLNames.Cls.TRANSITIVE_PROPERTY,
-                                                     Collections.singleton(rdfPropertyClass), rdfsNamedClassClass);
+                                                     Collections.singleton(owlObjectPropertyClass), rdfsNamedClassClass);
 
         rdfExternalResourceClass = createSystemCls(RDFNames.Cls.EXTERNAL_RESOURCE,
                                                    Collections.singleton(getRootCls()), rdfsNamedClassClass);
