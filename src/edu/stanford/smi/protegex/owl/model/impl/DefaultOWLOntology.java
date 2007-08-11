@@ -214,7 +214,7 @@ public class DefaultOWLOntology extends DefaultRDFIndividual implements OWLOntol
         boolean result = false;
         OWLModel owlModel = getOWLModel();
         TripleStore top = owlModel.getTripleStoreModel().getTopTripleStore();
-        if (this == TripleStoreUtil.getFirstOntology(owlModel, top)) {
+        if (this.equals(TripleStoreUtil.getFirstOntology(owlModel, top))) {
             result = true;
         }
         else {
@@ -236,6 +236,6 @@ public class DefaultOWLOntology extends DefaultRDFIndividual implements OWLOntol
 
     private boolean isActive() {
         TripleStore active = getOWLModel().getTripleStoreModel().getActiveTripleStore();
-        return this == TripleStoreUtil.getFirstOntology(getOWLModel(), active);
+        return this.equals(TripleStoreUtil.getFirstOntology(getOWLModel(), active));
     }
 }
