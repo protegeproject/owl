@@ -196,7 +196,7 @@ public class ResourceRenderer extends FrameRenderer {
         else {
             if (loadedInstance != null) {
                 OWLModel model = ((RDFResource) loadedInstance).getOWLModel();
-                if (loadedInstance.getDirectType() == model.getOWLOntologyClass()) {
+                if (loadedInstance.getDirectType().equals(model.getOWLOntologyClass())) {
                     if (!((DefaultOWLOntology) loadedInstance).isAssociatedTriplestoreEditable()) {
                         color = Color.GRAY;
                         graphics.setFont(graphics.getFont().deriveFont(Font.ITALIC));
