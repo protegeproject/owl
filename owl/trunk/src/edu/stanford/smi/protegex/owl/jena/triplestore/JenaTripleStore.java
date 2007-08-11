@@ -75,4 +75,10 @@ public class JenaTripleStore extends AbstractTripleStore {
         }
         return triples.iterator();
     }
+    
+    @Override
+    public int hashCode() {
+    	return 0;    	
+    }
+    
 }
