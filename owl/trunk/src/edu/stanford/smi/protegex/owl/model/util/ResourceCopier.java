@@ -174,7 +174,7 @@ public class ResourceCopier extends OWLModelVisitorAdapter {
     /////////////////////////////////// rdf components
 
     public void visitRDFList(RDFList source) {
-        if (source == source.getOWLModel().getRDFNil()) {
+        if (source.equals(source.getOWLModel().getRDFNil())) {
             copy = source;
         }
         else {
