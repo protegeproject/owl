@@ -519,14 +519,22 @@ public interface OWLModel extends ProtegeKnowledgeBase, OWLTestManager {
      */
     Collection getChangedInferredClasses();
 
-
+    
     /**
-     * Gets the most specific common superclass of a given collection of named classes.
+     * Gets the most specific common named superclasses of a given collection of named classes.
      *
      * @param classes the RDFSNamedClasses to get the superclass of (at least one)
      * @return the most specific common superclass of all classes, e.g. owl:Thing
      */
-    RDFSNamedClass getCommonSuperclass(Collection classes);
+    Set<RDFSNamedClass> getCommonSuperclasses(Collection<RDFSNamedClass> classes);
+
+    /**
+     * Chooses a most specific common named superclass of a given collection of named classes.
+     *
+     * @param classes the RDFSNamedClasses to get the superclass of (at least one)
+     * @return the most specific common superclass of all classes, e.g. owl:Thing
+     */
+    RDFSNamedClass getCommonSuperclass(Collection<RDFSNamedClass> classes);
 
 
     /**
