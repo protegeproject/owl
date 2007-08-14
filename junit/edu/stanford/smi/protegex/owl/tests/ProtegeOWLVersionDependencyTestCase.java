@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
-public class ProtegeOWLVersionDependencyFailedTestCase extends TestCase {
+public class ProtegeOWLVersionDependencyTestCase extends TestCase {
 
     private static Properties props;
 

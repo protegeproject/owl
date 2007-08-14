@@ -10,7 +10,7 @@ import edu.stanford.smi.protegex.owl.tests.AbstractJenaTestCase;
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
  */
-public class LoadURNNamespacesFailedTestCase extends AbstractJenaTestCase {
+public class LoadURNNamespacesTestCase extends AbstractJenaTestCase {
 
     public void testLoadOntologyMetadata() throws Exception {
         loadRemoteOntology("alix/java.owl");

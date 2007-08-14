@@ -13,7 +13,7 @@ import edu.stanford.smi.protegex.owl.ui.dialogs.SelectClassPanel;
  * @author Nick Drummond, Medical Informatics Group, University of Manchester
  *         19-Jan-2006
  */
-public class SelectClassPanelFailedTestCase extends AbstractJenaTestCase{
+public class SelectClassPanelTestCase extends AbstractJenaTestCase{
 
     public void testWithOwlThingRoot(){
 
