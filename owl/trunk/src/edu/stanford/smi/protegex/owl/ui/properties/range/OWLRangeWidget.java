@@ -223,7 +223,7 @@ public class OWLRangeWidget extends AbstractPropertyWidget {
 
     public void setEditable(boolean b) {
         dataRangeComponent.setEditable(b);
-        classesComponent.setEditable(b);
+        //classesComponent.setEditable(b);
         comboBox.setEnabled(b);
         if (facetsPanel != null) {
             facetsPanel.setEditable(b);
