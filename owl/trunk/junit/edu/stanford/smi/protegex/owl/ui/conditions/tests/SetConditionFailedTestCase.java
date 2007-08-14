@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
  */
-public class SetConditionTestCase extends AbstractConditionsTableTestCase {
+public class SetConditionFailedTestCase extends AbstractConditionsTableTestCase {
 
     /**
      * <sufficient>
@@ -253,15 +253,15 @@ public class SetConditionTestCase extends AbstractConditionsTableTestCase {
      */
     public void testSetNamedEquivalentClsOperandToAnon() throws Exception {
         OWLNamedClass animalCls = owlModel.createOWLNamedClass("Animal");
-        OWLNamedClass cls = owlModel.createOWLNamedClass("Person");
+        OWLNamedClass personCls = owlModel.createOWLNamedClass("Person");
         OWLNamedClass tierCls = owlModel.createOWLNamedClass("Tier");
-        cls.addSuperclass(animalCls);
-        cls.removeSuperclass(owlThing);
+        personCls.addSuperclass(animalCls);
+        personCls.removeSuperclass(owlThing);
         OWLIntersectionClass intersectionCls = owlModel.createOWLIntersectionClass();
         intersectionCls.addOperand(animalCls);
         intersectionCls.addOperand(owlModel.createOWLComplementClass(tierCls));
-        cls.addEquivalentClass(intersectionCls);
-        ConditionsTableModel tableModel = getTableModel(cls);
+        personCls.addEquivalentClass(intersectionCls);
+        ConditionsTableModel tableModel = getTableModel(personCls);
         assertEquals(4, tableModel.getRowCount());
         assertTrue(tableModel.isSeparator(0));
         assertEquals(animalCls, tableModel.getClass(1));
@@ -270,14 +270,14 @@ public class SetConditionTestCase extends AbstractConditionsTableTestCase {
         int oldClsCount = owlModel.getClsCount();
         tableModel.setValueAt(1, owlModel, "not Animal");
         assertEquals(oldClsCount + 1, owlModel.getClsCount());
-        assertEquals(2, cls.getSuperclassCount());
-        assertEquals(1, cls.getEquivalentClasses().size());
-        assertTrue(cls.getDefinition() instanceof OWLIntersectionClass);
-        OWLIntersectionClass newDefinition = (OWLIntersectionClass) cls.getDefinition();
+        assertEquals(2, personCls.getSuperclassCount());
+        assertEquals(1, personCls.getEquivalentClasses().size());
+        assertTrue(personCls.getDefinition() instanceof OWLIntersectionClass);
+        OWLIntersectionClass newDefinition = (OWLIntersectionClass) personCls.getDefinition();
         final List newOperands = new ArrayList(newDefinition.getOperands());
         assertTrue(newOperands.get(0) instanceof OWLComplementClass);
         assertTrue(newOperands.get(1) instanceof OWLComplementClass);
-        assertTrue(cls.isSubclassOf(owlThing));
+        assertTrue(personCls.isSubclassOf(owlThing));
     }
 
 
