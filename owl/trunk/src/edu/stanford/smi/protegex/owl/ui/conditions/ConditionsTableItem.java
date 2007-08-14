@@ -1,10 +1,14 @@
 package edu.stanford.smi.protegex.owl.ui.conditions;
 
+import edu.stanford.smi.protege.util.CollectionUtilities;
 import edu.stanford.smi.protegex.owl.model.*;
 import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
 
 import javax.swing.*;
+
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -32,7 +36,7 @@ public class ConditionsTableItem implements ConditionsTableConstants, Comparable
 
     public static final String SUFFICIENT = "NECESSARY & SUFFICIENT ";
 
-	private static List owlRestrictionMetaClses = null;
+	private List<RDFSNamedClass> owlRestrictionMetaClses = null;
 
 
     private ConditionsTableItem(RDFSClass aClass,
@@ -63,9 +67,10 @@ public class ConditionsTableItem implements ConditionsTableConstants, Comparable
      * @param o the other ClassDescriptionItem to compare to
      * @return -1 if this is smaller (higher in the list), 1 if the other is smaller
      */
-    public int compareTo(Object o) {
+    public int compareTo(Object o) {    	
         if (o instanceof ConditionsTableItem) {
             ConditionsTableItem other = (ConditionsTableItem) o;
+            
             if (type > other.type) {
                 return -1;
             }
@@ -130,7 +135,7 @@ public class ConditionsTableItem implements ConditionsTableConstants, Comparable
         if (property.equals(otherProperty)) {            
              if (owlRestrictionMetaClses == null) {            	 
             	 owlRestrictionMetaClses = Arrays.asList(aClass.getOWLModel().getOWLRestrictionMetaclasses());
-             }            
+             }
 			int clsIndex = owlRestrictionMetaClses.indexOf(restriction.getProtegeType());
             int otherIndex = owlRestrictionMetaClses.indexOf(otherCls.getProtegeType());
             return new Integer(clsIndex).compareTo(new Integer(otherIndex));
