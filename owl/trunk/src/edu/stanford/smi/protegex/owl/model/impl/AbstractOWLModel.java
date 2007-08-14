@@ -1968,36 +1968,55 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
         return getClsesWithClassificationStatus(OWLNames.CLASSIFICATION_STATUS_CONSISTENT_AND_CHANGED);
     }
 
-
-    public RDFSNamedClass getCommonSuperclass(Collection classes) {
-        Set cs = new HashSet();
-        Iterator it = classes.iterator();
-        RDFSNamedClass firstClass = (RDFSNamedClass) it.next();
-        Collection supers = firstClass.getSuperclasses(true);
-        for (Iterator sit = supers.iterator(); sit.hasNext();) {
-            RDFSClass superclass = (RDFSClass) sit.next();
-            if (superclass instanceof RDFSNamedClass) {
-                cs.add(superclass);
-            }
-        }
-
-        while (it.hasNext()) {
-            RDFSNamedClass namedClass = (RDFSNamedClass) it.next();
-            Set ss = new HashSet(namedClass.getSuperclasses(true));
-            for (Iterator sit = cs.iterator(); sit.hasNext();) {
-                RDFSNamedClass c = (RDFSNamedClass) sit.next();
-                if (!ss.contains(c)) {
-                    sit.remove();
+    /**
+     * Gets the most specific common named superclasses of a given collection of named classes.
+     *
+     * @param classes the RDFSNamedClasses to get the superclasses of (at least one)
+     * @return the most specific common superclasses of all classes, e.g. owl:Thing
+     */
+    public Set<RDFSNamedClass> getCommonSuperclasses(Collection<RDFSNamedClass> classes) {
+        Set<RDFSNamedClass> commonSupers = new HashSet<RDFSNamedClass>();
+        boolean firstTime = true;
+        for (RDFSNamedClass inputClass : classes) {
+            if (firstTime) {
+                Collection firstInputClassSupers = inputClass.getSuperclasses(true);
+                for (Object aFirstSuper  : firstInputClassSupers) {
+                    if (aFirstSuper instanceof RDFSNamedClass) {
+                        commonSupers.add((RDFSNamedClass) aFirstSuper);
+                    }
                 }
+                firstTime = false;
+            }
+            else {
+                commonSupers.retainAll(inputClass.getSuperclasses(true));
             }
         }
 
-        List copy = new ArrayList(cs);
-        for (Iterator cit = copy.iterator(); cit.hasNext();) {
-            RDFSNamedClass namedClass = (RDFSNamedClass) cit.next();
-            cs.removeAll(namedClass.getSuperclasses(true));
+        // the mysterious if check is to ensure no problems in the case getCommonSuperclasses({ A }) where
+        //   A \subseteq B \subseteq C \subseteq B
+        // We don't want to remove both B and C but either one will do for keeping.
+        List<RDFSNamedClass> commonSupersCopy = new ArrayList<RDFSNamedClass>(commonSupers);
+        for (RDFSNamedClass namedClass : commonSupersCopy) {
+            if (commonSupers.contains(namedClass)) {
+                Collection superClasses = namedClass.getSuperclasses(true);
+                if (superClasses.contains(namedClass)) {
+                    superClasses = new HashSet(superClasses);
+                    superClasses.remove(namedClass);
+                }
+                commonSupers.removeAll(superClasses);
+            }
         }
-        return (RDFSNamedClass) cs.iterator().next();
+        return commonSupers;
+    }
+    
+    /**
+     * Chooses a most specific common named superclass of a given collection of named classes.
+     *
+     * @param classes the RDFSNamedClasses to get the superclass of (at least one)
+     * @return the most specific common superclass of all classes, e.g. owl:Thing
+     */
+    public RDFSNamedClass getCommonSuperclass(Collection<RDFSNamedClass> classes) {
+        return getCommonSuperclasses(classes).iterator().next();
     }
 
 
