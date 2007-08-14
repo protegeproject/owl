@@ -396,7 +396,11 @@ public class ConditionsTableModel extends AbstractTableModel
         OWLIntersectionClass definition = getDefinition(index);
         
         if (definition == null) {//only one equivalent class        	
-        	hostClass.removeEquivalentClass(rowClass);        	
+        	hostClass.removeEquivalentClass(rowClass);
+
+        	//TT: this is arguably the right behavior.. At least according to the junits
+        	rowClass.addSuperclass(hostClass);
+       	
         	return true;        	
         } 
         	
@@ -457,17 +461,15 @@ public class ConditionsTableModel extends AbstractTableModel
         if (!deleted && isDefinition && rowClass instanceof OWLNamedClass && forceDelete) {            
             rowClass.removeSuperclass(hostClass);
                         
-        }
-        else if (hostClass.isSubclassOf(rowClass)) {
+        } else if (hostClass.isSubclassOf(rowClass)) {
             if (!getNamedDefinitionClses(definition).contains(rowClass) || forceDelete) {
                 if (rowClass instanceof RDFSNamedClass) { //Remove a named class               	
-                	hostClass.removeSuperclass(rowClass);
+                	hostClass.removeSuperclass(rowClass);                	
                 }
                 else {
                     hostClass.removeSuperclass(rowClass);                   
                 }
-            }
-            
+            }            
         }
         
        ensureHasOneNamedSuperclass(hostClass);
@@ -1105,6 +1107,10 @@ public class ConditionsTableModel extends AbstractTableModel
             handleAddOrReplaceRestriction(newRestriction, rowIndex);
             
             ensureHasOneNamedSuperclass(hostClass);
+            
+            if (oldRestriction instanceof RDFSNamedClass) {
+            	ensureHasOneNamedSuperclass((RDFSNamedClass)oldRestriction);
+            }
             
             inEditing = false;
             
