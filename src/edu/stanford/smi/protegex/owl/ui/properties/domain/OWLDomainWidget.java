@@ -71,18 +71,30 @@ public class OWLDomainWidget extends AbstractPropertyWidget {
 
             public void onSelectionChange() {
                 Collection sel = table.getSelection();
+                
+                if (sel.isEmpty()) {
+                	setAllowed(false);
+                	return;
+                }
+                
+                RDFProperty prop = (RDFProperty) getEditedResource();
+                
+                if (!prop.isEditable()) {
+                	setAllowed(false);
+                	return;
+                }
+                
+                
                 boolean allowed = false;
-                if (!sel.isEmpty()) {
-                    RDFProperty prop = (RDFProperty) getEditedResource();
-                    for (Iterator it = sel.iterator(); it.hasNext();) {
-                        RDFSClass cls = (RDFSClass) it.next();
-                        Collection unionDomain = prop.getUnionDomain();
-                        if (    (!cls.equals(cls.getOWLModel().getOWLThingClass()) &&  unionDomain.contains(cls)) ||
-                        		( cls.equals(cls.getOWLModel().getOWLThingClass()) &&  unionDomain.size() > 1) ) {
-                            allowed = true;
-                        }
+                for (Iterator it = sel.iterator(); it.hasNext();) {
+                    RDFSClass cls = (RDFSClass) it.next();
+                    Collection unionDomain = prop.getUnionDomain();
+                    if (    (!cls.equals(cls.getOWLModel().getOWLThingClass()) &&  unionDomain.contains(cls)) ||
+                    		( cls.equals(cls.getOWLModel().getOWLThingClass()) &&  unionDomain.size() > 1) ) {
+                        allowed = true;
                     }
                 }
+                
                 setAllowed(allowed);
             }
         };
@@ -134,7 +146,7 @@ public class OWLDomainWidget extends AbstractPropertyWidget {
 
 
     public void setEditable(boolean b) {        
-        table.setEnabled(b);
+        //table.setEnabled(b);
         setEnabled(b);
         //addAction.setEnabled(b);
         //removeAction.setAllowed(b);
@@ -168,16 +180,22 @@ public class OWLDomainWidget extends AbstractPropertyWidget {
     
     public void setEnabled(boolean enabled) {
     	enabled = enabled && RemoteClientFrameStore.isOperationAllowed(getOWLModel(), OperationImpl.PROPERTY_TAB_WRITE);
-    	addAction.setEnabled(enabled);
     	
     	RDFProperty property = tableModel.getSlot();
+    	
+    	if (property != null) {
+    		enabled = enabled && property.isEditable();
+    	}
+    	
+    	addAction.setEnabled(enabled);    	
+    	
     	if (property != null && !property.isDomainDefined()) {
          	removeAction.setEnabled(false);
         } else {
         	removeAction.setAllowed(enabled);
         }
     	
-    	table.setEnabled(enabled);
+    	//table.setEnabled(enabled);
     	
     };
     
