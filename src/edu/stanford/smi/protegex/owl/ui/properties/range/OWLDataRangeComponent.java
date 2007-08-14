@@ -21,8 +21,12 @@ import java.util.Iterator;
 public class OWLDataRangeComponent extends JComponent {
 
     private Action createAction = new AbstractAction("Create value...", OWLIcons.getAddIcon()) {
-        public void actionPerformed(ActionEvent e) {
+        public void actionPerformed(ActionEvent e) {        	
             createValue();
+        }
+        @Override
+        public boolean isEnabled() {        	
+        	return datatype != null;
         }
     };
 
@@ -59,8 +63,15 @@ public class OWLDataRangeComponent extends JComponent {
     }
 
 
+    //FIXME: Not initialized correctly when browsing a different datatype. If "Any", you should not 
+    //be able to add a value
     private void createValue() {
-        String newValue = ProtegeUI.getModalDialogFactory().showInputDialog(this, "Enter a new " + datatype.getBrowserText() + " literal", null);
+    	if (datatype == null) {
+    		return;
+    	}
+    	
+        String newValue = ProtegeUI.getModalDialogFactory().showInputDialog(this, "Enter a new " + 
+        		datatype.getBrowserText() + " literal", null);
         if (newValue != null) {
             RDFProperty property = rangeWidget.getEditedProperty();
             newValue = newValue.trim();
