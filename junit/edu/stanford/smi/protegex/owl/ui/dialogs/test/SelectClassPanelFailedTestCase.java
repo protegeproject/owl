@@ -3,12 +3,10 @@ package edu.stanford.smi.protegex.owl.ui.dialogs.test;
 import java.util.Collection;
 import java.util.Collections;
 
-import edu.stanford.smi.protege.util.Log;
+import edu.stanford.smi.protege.util.ComponentUtilities;
 import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
 import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
 import edu.stanford.smi.protegex.owl.tests.AbstractJenaTestCase;
-import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
-import edu.stanford.smi.protegex.owl.ui.dialogs.ModalDialogFactory;
 import edu.stanford.smi.protegex.owl.ui.dialogs.SelectClassPanel;
 
 /**
@@ -23,15 +21,17 @@ public class SelectClassPanelFailedTestCase extends AbstractJenaTestCase{
 
         Collection rootClses = Collections.singleton(owlModel.getOWLThingClass());
         SelectClassPanel panel = new SelectClassPanel(owlModel, rootClses,
-                                                      false, true);
-
+                                                     false, true);
         Collection clses = Collections.EMPTY_LIST;
-        int result = ProtegeUI.getModalDialogFactory().showDialog(null, panel, "Test select classes", ModalDialogFactory.MODE_OK_CANCEL);
-        if (result == ModalDialogFactory.OPTION_OK) {
-            clses = panel.getSelection();
-        }
-
-        Log.getLogger().info("selected = " + clses);
+        //TT: Test disabled because it required user interaction. Should be fixed later to have a different thread that clicks on the
+        // OK button of the dialog.
+//      int result = ProtegeUI.getModalDialogFactory().showDialog(null, panel, "Test select classes", ModalDialogFactory.MODE_OK_CANCEL);        
+// 		if (result == ModalDialogFactory.OPTION_OK) {
+//	   		clses = panel.getSelection();
+//		}        
+//		Log.getLogger().info("selected = " + clses);
+        ComponentUtilities.dispose(panel);
+        
     }
 
     public void testWithARoot(){
@@ -43,12 +43,14 @@ public class SelectClassPanelFailedTestCase extends AbstractJenaTestCase{
                                                       false, true);
 
         Collection clses = Collections.EMPTY_LIST;
-        int result = ProtegeUI.getModalDialogFactory().showDialog(null, panel, "Test select classes", ModalDialogFactory.MODE_OK_CANCEL);
-        if (result == ModalDialogFactory.OPTION_OK) {
-            clses = panel.getSelection();
-        }
+        //TT: Test disabled because it required user interaction. Should be fixed later to have a different thread that clicks on the
+        // OK button of the dialog.
+//      int result = ProtegeUI.getModalDialogFactory().showDialog(null, panel, "Test select classes", ModalDialogFactory.MODE_OK_CANCEL);        
+// 		if (result == ModalDialogFactory.OPTION_OK) {
+//	   		clses = panel.getSelection();
+//		}        
+        ComponentUtilities.dispose(panel);
 
-        Log.getLogger().info("selected = " + clses);
     }
 
     private void createTestOntology(){
@@ -60,4 +62,7 @@ public class SelectClassPanelFailedTestCase extends AbstractJenaTestCase{
         RDFSNamedClass y = owlModel.createSubclass("Y", b);
         RDFSNamedClass z = owlModel.createSubclass("Z", b);
     }
+    
+  
+    
 }
