@@ -16,7 +16,7 @@ public class RDFSClassCodeTestCase extends AbstractJenaTestCase {
         RDFSNamedClass cls = owlModel.createRDFSNamedClass(NAME);
         RDFSClassCode code = new RDFSClassCode(cls);
         assertEquals("Test_Class", code.getJavaName());
-        assertSize(0, code.getPropertyCodes());
+        assertSize(0, code.getPropertyCodes(false));
     }
 
 
@@ -28,8 +28,8 @@ public class RDFSClassCodeTestCase extends AbstractJenaTestCase {
         property.setDomain(cls);
         RDFSClassCode code = new RDFSClassCode(cls);
         assertEquals(CLASS_NAME, code.getJavaName());
-        assertSize(1, code.getPropertyCodes());
-        RDFPropertyAtClassCode pc = (RDFPropertyAtClassCode) code.getPropertyCodes().iterator().next();
+        assertSize(1, code.getPropertyCodes(false));
+        RDFPropertyAtClassCode pc = (RDFPropertyAtClassCode) code.getPropertyCodes(false).iterator().next();
         assertEquals(property, pc.getRDFProperty());
     }
 }
