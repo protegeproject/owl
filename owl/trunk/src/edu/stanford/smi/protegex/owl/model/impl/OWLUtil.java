@@ -27,6 +27,8 @@ import java.net.URI;
 import java.util.*;
 import java.util.logging.Level;
 
+import javax.swing.JComponent;
+
 /**
  * A collection of static utility methods for OWL classes.
  * Many of them are used to "simulate" the multiple inheritance between the various
@@ -1059,13 +1061,11 @@ public class OWLUtil {
     		return false;
     	}    	  	
     	
-    	ProjectView projectView = ProjectManager.getProjectManager().getCurrentProjectView();
+    	JComponent mainPanel = ProjectManager.getProjectManager().getMainPanel();
     	
-    	if (projectView == null) {
-    		return false;
-    	}
-        //TT: How does this behave in client-server?
-    	return project.equals(projectView.getProject());  
+    	//TT: This is a rather week test
+    	return (mainPanel != null);        
+    	
     }
     
     
