@@ -32,10 +32,10 @@ public class RDFSClassCode {
      * @return a List of RDFPropertyAtClassCodes
      * @see RDFPropertyAtClassCode
      */
-    public List getPropertyCodes() {
+    public List getPropertyCodes(boolean transitive) {
         Set properties = new HashSet();
         List codes = new ArrayList();
-        Collection unionDomainProperties = cls.getUnionDomainProperties();
+        Collection unionDomainProperties = cls.getUnionDomainProperties(transitive);
         Set relevantProperties = new HashSet(unionDomainProperties);
         if (cls instanceof OWLNamedClass) {
             OWLNamedClass owlNamedClass = (OWLNamedClass) cls;
@@ -46,6 +46,10 @@ public class RDFSClassCode {
         }
         for (Iterator it = relevantProperties.iterator(); it.hasNext();) {
             RDFProperty property = (RDFProperty) it.next();
+            if (property.isSystem()) {
+            	//skip system properties
+            	continue;
+            }
             properties.add(property);
             RDFPropertyAtClassCode code = new RDFPropertyAtClassCode(cls, property);
             codes.add(code);
