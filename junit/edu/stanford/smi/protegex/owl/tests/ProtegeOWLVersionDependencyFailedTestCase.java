@@ -20,7 +20,7 @@ public class ProtegeOWLVersionDependencyFailedTestCase extends TestCase {
 
     private static String jena_minor = "prowl.dependencies.jena.major_version";
 
-    private static String protege_version = "prowl.dependencies.protege-core.version";
+    private static String protege_version = "build.version";
 
 
     protected void setUp() throws Exception {
@@ -41,8 +41,9 @@ public class ProtegeOWLVersionDependencyFailedTestCase extends TestCase {
      * @todo Compare actual vs. expected versions
      */
     public void testShowVersionDependencies() throws Exception {
-        assertEquals(jena_major, Jena.MAJOR_VERSION, props.getProperty(jena_major));
-        assertEquals(jena_minor, Jena.MINOR_VERSION, props.getProperty(jena_minor));
+    	//TT - the Jena minor and major are not used anymore
+        //assertEquals(jena_major, Jena.MAJOR_VERSION, props.getProperty(jena_major));
+        //assertEquals(jena_minor, Jena.MINOR_VERSION, props.getProperty(jena_minor));
         assertEquals(protege_version, Text.getVersion(), props.getProperty(protege_version));
     }
 
