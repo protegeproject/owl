@@ -20,6 +20,7 @@ import edu.stanford.smi.protege.resource.LocalizedText;
 import edu.stanford.smi.protege.resource.ResourceKey;
 import edu.stanford.smi.protege.server.framestore.RemoteClientFrameStore;
 import edu.stanford.smi.protege.server.metaproject.impl.OperationImpl;
+import edu.stanford.smi.protege.ui.FrameRenderer;
 import edu.stanford.smi.protege.ui.HeaderComponent;
 import edu.stanford.smi.protege.util.ComponentFactory;
 import edu.stanford.smi.protege.util.Log;
@@ -181,5 +182,12 @@ public class OWLPropertyHierarchiesPanel extends JPanel
     	allPropertiesHierarchy.setEnabled(enabled);
     	super.setEnabled(enabled);
     };
+    
+    public void setHierarchyTreeRenderer(FrameRenderer renderer) {
+    	objectPropertyHierarchy.setRenderer(renderer);
+    	datatypePropertyHierarchy.setRenderer(renderer);
+    	annotationPropertyHierarchy.setRenderer(renderer);
+    	allPropertiesHierarchy.setRenderer(renderer);
+    }
 }
 
