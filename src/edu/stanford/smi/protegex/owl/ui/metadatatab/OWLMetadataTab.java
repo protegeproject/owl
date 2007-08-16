@@ -88,6 +88,7 @@ public class OWLMetadataTab extends AbstractTabWidget implements HostResourceDis
         setIcon(OWLIcons.getImageIcon("Metadata"));
         JComponent comp = createMainPanel();
         add(comp);
+        setClsTree(importsTreePanel.getImportsTree());
         setEnabled(true);
     }
 
@@ -143,4 +144,6 @@ public class OWLMetadataTab extends AbstractTabWidget implements HostResourceDis
     	importsTreePanel.setEnabled(enabled);
     	super.setEnabled(enabled);
     };
+    
+    
 }
