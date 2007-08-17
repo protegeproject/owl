@@ -1,6 +1,5 @@
 package edu.stanford.smi.protegex.owl.ui.conditions;
 
-import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -11,10 +10,6 @@ import java.util.List;
 import javax.swing.Icon;
 import javax.swing.table.AbstractTableModel;
 
-
-import com.hp.hpl.jena.vocabulary.OWL;
-
-import edu.stanford.smi.protege.action.DetachCurrentView;
 import edu.stanford.smi.protege.event.FrameAdapter;
 import edu.stanford.smi.protege.event.FrameEvent;
 import edu.stanford.smi.protege.event.FrameListener;
@@ -22,13 +17,12 @@ import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.KnowledgeBase;
 import edu.stanford.smi.protege.model.Model;
 import edu.stanford.smi.protege.model.Slot;
-import edu.stanford.smi.protege.server.framestore.RemoteClientFrameStore;
-import edu.stanford.smi.protege.ui.ProjectManager;
 import edu.stanford.smi.protege.util.ApplicationProperties;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.model.OWLAllValuesFrom;
 import edu.stanford.smi.protegex.owl.model.OWLAnonymousClass;
 import edu.stanford.smi.protegex.owl.model.OWLCardinalityBase;
+import edu.stanford.smi.protegex.owl.model.OWLClass;
 import edu.stanford.smi.protegex.owl.model.OWLHasValue;
 import edu.stanford.smi.protegex.owl.model.OWLIntersectionClass;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
@@ -36,7 +30,6 @@ import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
 import edu.stanford.smi.protegex.owl.model.OWLNames;
 import edu.stanford.smi.protegex.owl.model.OWLRestriction;
 import edu.stanford.smi.protegex.owl.model.OWLSomeValuesFrom;
-import edu.stanford.smi.protegex.owl.model.RDFList;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
 import edu.stanford.smi.protegex.owl.model.RDFSClass;
@@ -45,12 +38,8 @@ import edu.stanford.smi.protegex.owl.model.classparser.OWLClassParseException;
 import edu.stanford.smi.protegex.owl.model.classparser.OWLClassParser;
 import edu.stanford.smi.protegex.owl.model.event.ClassAdapter;
 import edu.stanford.smi.protegex.owl.model.event.ClassListener;
-import edu.stanford.smi.protegex.owl.model.impl.AbstractRDFSClass;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLIntersectionClass;
-import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLNamedClass;
-import edu.stanford.smi.protegex.owl.model.impl.OWLUtil;
 import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
-import edu.stanford.smi.protegex.owl.ui.clsproperties.OldRestrictionTreeNode;
 import edu.stanford.smi.protegex.owl.ui.owltable.OWLTableModel;
 import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
 
@@ -1348,14 +1337,24 @@ public class ConditionsTableModel extends AbstractTableModel
     }
  
     private void ensureHasOneNamedSuperclass(RDFSNamedClass cls) {
-    	if (cls.equals(owlModel.getOWLThingClass())) {
+    	OWLClass owlThing = owlModel.getOWLThingClass(); 
+    	
+    	if (cls.equals(owlThing)) {
+    		return;
+    	}
+    	    	
+    	Collection<Cls> superclses = cls.getSuperclasses(true);
+    	
+    	if (!superclses.contains(owlThing)) {
+    		cls.addSuperclass(owlThing);
     		return;
     	}
     	
-    	Collection<Cls> superclses = cls.getSuperclasses(false);
+    	Collection<Cls> directSuperclses = cls.getSuperclasses(false);
     	
-    	for (Cls supercls : superclses) {
-    		if (supercls instanceof RDFSNamedClass) {
+    	for (Cls supercls : directSuperclses) {
+    		if (supercls instanceof RDFSNamedClass && 
+    				!supercls.equals(cls)) {
     			return;
     		}
 		}
