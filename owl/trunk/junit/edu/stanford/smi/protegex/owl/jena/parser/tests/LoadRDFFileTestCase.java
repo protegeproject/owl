@@ -12,7 +12,8 @@ import java.net.URI;
 public class LoadRDFFileTestCase extends AbstractJenaTestCase {
 
     public void testLoadFOAF() throws Exception {
-        loadTestOntology(new URI("http://xmlns.com/foaf/0.1/index.rdf"));
+        //loadTestOntology(new URI("http://xmlns.com/foaf/0.1/index.rdf"));
+    	loadTestOntology(new URI("http://xmlns.com/foaf/spec/index.rdf"));
         owlModel.getOntModel();
     }
 
