@@ -668,7 +668,12 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
 
     public void adjustThing() {
-        getRootCls().setName(OWLNames.Cls.THING);
+    	Cls thing = getRootCls();
+        thing.setName(OWLNames.Cls.THING);
+        MergingNarrowFrameStore mnfs = MergingNarrowFrameStore.get(this);
+        if (mnfs != null) {
+            mnfs.getSystemFrameStore().replaceFrame(thing);
+        }
     }
 
 
