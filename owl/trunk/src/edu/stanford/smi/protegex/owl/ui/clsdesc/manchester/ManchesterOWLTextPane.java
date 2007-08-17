@@ -648,14 +648,18 @@ public class ManchesterOWLTextPane extends JTextPane implements KeyListener {
 
 
     private boolean isCaretAfterClosingBracket() {
-        int caretPos = getCaretPosition();
-        if (caretPos > 1) {
-            return getText().charAt(caretPos - 1) == ')';
-        }
-        else {
-            return false;
-        }
-
+    	try {
+            int caretPos = getCaretPosition();
+            if (caretPos > 1) {
+                return getText().charAt(caretPos - 1) == ')';
+            }
+            else {
+                return false;
+            }    		
+    	} catch (Exception e) {
+    		// do nothing
+    		return false;
+    	}
     }
 
 
