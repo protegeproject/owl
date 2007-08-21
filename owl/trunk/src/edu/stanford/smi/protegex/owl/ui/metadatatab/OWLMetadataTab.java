@@ -47,7 +47,7 @@ public class OWLMetadataTab extends AbstractTabWidget implements HostResourceDis
                 Collection sel = importsTreePanel.getImportsTree().getSelectedResources();
                 RDFResource res = (RDFResource) CollectionUtilities.getFirstItem(sel);
                 resourceDisplay.setResource(res);
-                ((ResourceDisplay)resourceDisplay).setEnabled(isEnabled());
+                ((ResourceDisplay)resourceDisplay).setEnabled(OWLMetadataTab.this.isEnabled());
             }
         };
 
