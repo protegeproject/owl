@@ -201,8 +201,8 @@ public class OWLSuperpropertiesPanel extends SelectableContainer {
     
     @Override
     public void onSelectionChange() {
-    	addAction.setEnabled(property != null && property.isEditable() && isEnabled());
-    	removeAction.setEnabled(getSelection().size() >0 && property != null && property.isEditable() && isEnabled());
+    	addAction.setEnabled(property != null && property.isEditable() && OWLSuperpropertiesPanel.this.isEnabled());
+    	removeAction.setEnabled(getSelection().size() >0 && property != null && property.isEditable() && OWLSuperpropertiesPanel.this.isEnabled());
     	super.onSelectionChange();
     }
     
