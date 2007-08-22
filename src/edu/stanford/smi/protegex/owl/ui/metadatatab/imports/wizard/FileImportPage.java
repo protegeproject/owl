@@ -1,5 +1,6 @@
 package edu.stanford.smi.protegex.owl.ui.metadatatab.imports.wizard;
 
+import edu.stanford.smi.protege.util.ExtensionFilter;
 import edu.stanford.smi.protege.util.FileField;
 import edu.stanford.smi.protege.util.WizardPage;
 
@@ -7,6 +8,8 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * User: matthewhorridge<br>
@@ -28,8 +31,10 @@ public class FileImportPage extends AbstractImportStartWizardPage {
 
 
     private void createUI() {
-	    setHelpText("Importing an ontology contained in a specific file", HELP_TEXT);
-        fileField = new FileField("Specify file path", "", "owl", "Select OWL or RDF files");
+	    setHelpText("Importing an ontology contained in a specific file", HELP_TEXT);	    
+	    java.util.List<String> extensions = (java.util.List<String>) Arrays.asList((new String[]{"owl" , "rdfs", "rdf"}));
+	    ExtensionFilter extensionFilter = new ExtensionFilter(extensions.iterator(), "Select OWL or RDF files");
+        fileField = new FileField("Specify file path", "", extensionFilter);
         fileField.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
                 setPageComplete(validateData());
