@@ -105,7 +105,7 @@ public class LoadNamespacesFailedTestCase extends AbstractJenaTestCase {
         expectedPrefixes.put("Class_3", TEST_2_PREFIX);
 
         assertOntologyIsAsExpected(expectedNamespaces, expectedPrefixes);
-        assertEquals("http://www.co-ode.org/ontology/test1.owl",
+        assertEquals("http://protege.stanford.edu/junitOntologies/testset/namespaces/noDefaultNSNoBase.owl",
                      owlModel.getDefaultOWLOntology().getURI());
 
         owlModel.save(tempSavedFileURI);
