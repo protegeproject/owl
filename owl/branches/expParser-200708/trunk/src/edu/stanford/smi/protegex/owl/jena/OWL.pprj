@@ -24,7 +24,7 @@
 ([Instance_1005] of  Widget
 
 	(is_hidden FALSE)
-	(name "owl:Class")
+	(name "http://www.w3.org/2002/07/owl#Class")
 	(property_list [XY_Instance_540])
 	(widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.OWLFormWidget"))
 
@@ -124,7 +124,7 @@
 ([Instance_443] of  Widget
 
 	(is_hidden FALSE)
-	(name "owl:AnonymousClass")
+	(name "http://www.w3.org/2002/07/owl#AnonymousClass")
 	(property_list [KB_713803_Instance_7])
 	(widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.OWLFormWidget"))
 
@@ -311,7 +311,7 @@
 	(height 360)
 	(is_hidden FALSE)
 	(label "Class Annotations")
-	(name "owl:equivalentClass")
+	(name "http://www.w3.org/2002/07/owl#equivalentClass")
 	(property_list [KB_100699_Instance_1])
 	(widget_class_name "edu.stanford.smi.protege.widget.FormWidget")
 	(width 650)
@@ -328,7 +328,7 @@
 
 	(is_hidden FALSE)
 	(label "Disjoints")
-	(name "owl:disjointWith")
+	(name "http://www.w3.org/2002/07/owl#disjointWith")
 	(widget_class_name "edu.stanford.smi.protege.widget.FormWidget"))
 
 ([KB_100699_Instance_11] of  Property_List
@@ -374,7 +374,7 @@
 	(height 137)
 	(is_hidden FALSE)
 	(label "Disjoints")
-	(name "owl:disjointWith")
+	(name "http://www.w3.org/2002/07/owl#disjointWith")
 	(widget_class_name "edu.stanford.smi.protege.widget.FormWidget")
 	(width 650)
 	(x 0)
@@ -417,7 +417,7 @@
 ([KB_140180_Instance_0] of  Widget
 
 	(is_hidden FALSE)
-	(name "owl:versionInfo")
+	(name "http://www.w3.org/2002/07/owl#versionInfo")
 	(property_list [KB_140180_Instance_1]))
 
 ([KB_140180_Instance_1] of  Property_List
@@ -450,7 +450,7 @@
 ([KB_140180_Instance_283] of  Widget
 
 	(is_hidden FALSE)
-	(name "owl:versionInfo")
+	(name "http://www.w3.org/2002/07/owl#versionInfo")
 	(property_list [KB_140180_Instance_284]))
 
 ([KB_140180_Instance_284] of  Property_List
@@ -526,7 +526,7 @@
 
 	(height 0)
 	(is_hidden FALSE)
-	(name "owl:inverseOf")
+	(name "http://www.w3.org/2002/07/owl#inverseOf")
 	(property_list [KB_221055_Instance_11])
 	(width 0)
 	(x 0)
@@ -552,7 +552,7 @@
 
 	(height 60)
 	(is_hidden FALSE)
-	(name "owl:inverseOf")
+	(name "http://www.w3.org/2002/07/owl#inverseOf")
 	(property_list [KB_221055_Instance_19])
 	(widget_class_name "edu.stanford.smi.protegex.owl.ui.properties.OWLInversePropertyWidget")
 	(width 200)
@@ -566,7 +566,7 @@
 
 	(height 0)
 	(is_hidden FALSE)
-	(name "owl:inverseOf")
+	(name "http://www.w3.org/2002/07/owl#inverseOf")
 	(property_list [KB_221055_Instance_3])
 	(width 0)
 	(x 0)
@@ -589,7 +589,7 @@
 
 	(height 0)
 	(is_hidden FALSE)
-	(name "owl:inverseOf")
+	(name "http://www.w3.org/2002/07/owl#inverseOf")
 	(property_list [KB_221055_Instance_27])
 	(width 0)
 	(x 0)
@@ -618,7 +618,7 @@
 
 	(height 0)
 	(is_hidden FALSE)
-	(name "owl:inverseOf")
+	(name "http://www.w3.org/2002/07/owl#inverseOf")
 	(property_list [KB_221055_Instance_35])
 	(width 0)
 	(x 0)
@@ -644,7 +644,7 @@
 
 	(height 0)
 	(is_hidden FALSE)
-	(name "owl:inverseOf")
+	(name "http://www.w3.org/2002/07/owl#inverseOf")
 	(property_list [KB_221055_Instance_43])
 	(width 0)
 	(x 0)
@@ -670,7 +670,7 @@
 
 	(height 0)
 	(is_hidden FALSE)
-	(name "owl:inverseOf")
+	(name "http://www.w3.org/2002/07/owl#inverseOf")
 	(property_list [KB_221055_Instance_51])
 	(width 0)
 	(x 0)
@@ -696,7 +696,7 @@
 
 	(height 0)
 	(is_hidden FALSE)
-	(name "owl:inverseOf")
+	(name "http://www.w3.org/2002/07/owl#inverseOf")
 	(property_list [KB_221055_Instance_59])
 	(width 0)
 	(x 0)
@@ -732,7 +732,7 @@
 
 	(height 0)
 	(is_hidden FALSE)
-	(name "owl:inverseOf")
+	(name "http://www.w3.org/2002/07/owl#inverseOf")
 	(property_list [KB_221055_Instance_67])
 	(width 0)
 	(x 0)
@@ -760,7 +760,7 @@
 ([KB_301165_Instance_1013] of  Widget
 
 	(is_hidden FALSE)
-	(name "owl:Nothing")
+	(name "http://www.w3.org/2002/07/owl#Nothing")
 	(property_list [XY_Instance_975])
 	(widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.OWLFormWidget"))
 
@@ -774,7 +774,7 @@
 ([KB_303942_Instance_68] of  Widget
 
 	(is_hidden FALSE)
-	(name "owl:Thing")
+	(name "http://www.w3.org/2002/07/owl#Thing")
 	(property_list [XY_Instance_784])
 	(widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.OWLFormWidget"))
 
@@ -850,7 +850,7 @@
 ([KB_313796_Instance_852] of  Widget
 
 	(is_hidden FALSE)
-	(name "owl:AllDifferent")
+	(name "http://www.w3.org/2002/07/owl#AllDifferent")
 	(property_list [XY_Instance_89])
 	(widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.OWLFormWidget"))
 
@@ -981,7 +981,7 @@
 ([KB_635552_Instance_0] of  Widget
 
 	(is_hidden FALSE)
-	(name "owl:versionInfo")
+	(name "http://www.w3.org/2002/07/owl#versionInfo")
 	(property_list [KB_635552_Instance_1]))
 
 ([KB_635552_Instance_1] of  Property_List
@@ -990,7 +990,7 @@
 ([KB_635552_Instance_10] of  Widget
 
 	(is_hidden FALSE)
-	(name "owl:versionInfo")
+	(name "http://www.w3.org/2002/07/owl#versionInfo")
 	(property_list [KB_635552_Instance_11]))
 
 ([KB_635552_Instance_11] of  Property_List
@@ -999,7 +999,7 @@
 ([KB_635552_Instance_12] of  Widget
 
 	(is_hidden FALSE)
-	(name "owl:priorVersion")
+	(name "http://www.w3.org/2002/07/owl#priorVersion")
 	(property_list [KB_635552_Instance_13]))
 
 ([KB_635552_Instance_13] of  Property_List
@@ -1041,7 +1041,7 @@
 ([KB_635552_Instance_20] of  Widget
 
 	(is_hidden FALSE)
-	(name "owl:incompatibleWith")
+	(name "http://www.w3.org/2002/07/owl#incompatibleWith")
 	(property_list [KB_635552_Instance_21]))
 
 ([KB_635552_Instance_21] of  Property_List
@@ -1051,7 +1051,7 @@
 
 	(height 0)
 	(is_hidden FALSE)
-	(name "owl:backwardCompatibleWith")
+	(name "http://www.w3.org/2002/07/owl#backwardCompatibleWith")
 	(property_list [KB_635552_Instance_23])
 	(width 0)
 	(x 0)
@@ -1073,7 +1073,7 @@
 ([KB_635552_Instance_26] of  Widget
 
 	(is_hidden FALSE)
-	(name "owl:versionInfo")
+	(name "http://www.w3.org/2002/07/owl#versionInfo")
 	(property_list [KB_635552_Instance_27]))
 
 ([KB_635552_Instance_27] of  Property_List
@@ -1166,14 +1166,14 @@
 ([KB_691299_Instance_398] of  Widget
 
 	(is_hidden FALSE)
-	(name "owl:DatatypeProperty")
+	(name "http://www.w3.org/2002/07/owl#DatatypeProperty")
 	(property_list [KB_938545_Instance_56])
 	(widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.OWLFormWidget"))
 
 ([KB_691299_Instance_537] of  Widget
 
 	(is_hidden FALSE)
-	(name "owl:ObjectProperty")
+	(name "http://www.w3.org/2002/07/owl#ObjectProperty")
 	(property_list [XY_Instance_462])
 	(widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.OWLFormWidget"))
 
@@ -1230,8 +1230,8 @@
 
 	(height 144)
 	(is_hidden FALSE)
-	(label "owl:sameAs")
-	(name "owl:sameAs")
+	(label "http://www.w3.org/2002/07/owl#sameAs")
+	(name "http://www.w3.org/2002/07/owl#sameAs")
 	(property_list [KB_713803_Instance_15])
 	(widget_class_name "edu.stanford.smi.protege.widget.FormWidget")
 	(width 266)
@@ -1258,8 +1258,8 @@
 
 	(height 144)
 	(is_hidden FALSE)
-	(label "owl:differentFrom")
-	(name "owl:differentFrom")
+	(label "http://www.w3.org/2002/07/owl#differentFrom")
+	(name "http://www.w3.org/2002/07/owl#differentFrom")
 	(property_list [KB_713803_Instance_19])
 	(widget_class_name "edu.stanford.smi.protege.widget.FormWidget")
 	(width 266)
@@ -1322,7 +1322,7 @@
 ([KB_713803_Instance_27] of  Widget
 
 	(is_hidden FALSE)
-	(name "owl:versionInfo")
+	(name "http://www.w3.org/2002/07/owl#versionInfo")
 	(property_list [KB_713803_Instance_28]))
 
 ([KB_713803_Instance_28] of  Property_List
@@ -1343,7 +1343,7 @@
 ([KB_713803_Instance_303] of  Widget
 
 	(is_hidden FALSE)
-	(name "owl:MaxCardinalityRestriction")
+	(name "http://www.w3.org/2002/07/owl#MaxCardinalityRestriction")
 	(property_list [KB_713803_Instance_348])
 	(widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.OWLFormWidget"))
 
@@ -1452,8 +1452,8 @@
 
 	(height 144)
 	(is_hidden FALSE)
-	(label "owl:sameAs")
-	(name "owl:sameAs")
+	(label "http://www.w3.org/2002/07/owl#sameAs")
+	(name "http://www.w3.org/2002/07/owl#sameAs")
 	(property_list [KB_713803_Instance_356])
 	(widget_class_name "edu.stanford.smi.protege.widget.FormWidget")
 	(width 266)
@@ -1480,8 +1480,8 @@
 
 	(height 144)
 	(is_hidden FALSE)
-	(label "owl:differentFrom")
-	(name "owl:differentFrom")
+	(label "http://www.w3.org/2002/07/owl#differentFrom")
+	(name "http://www.w3.org/2002/07/owl#differentFrom")
 	(property_list [KB_713803_Instance_360])
 	(widget_class_name "edu.stanford.smi.protege.widget.FormWidget")
 	(width 266)
@@ -1541,7 +1541,7 @@
 ([KB_713803_Instance_368] of  Widget
 
 	(is_hidden FALSE)
-	(name "owl:versionInfo")
+	(name "http://www.w3.org/2002/07/owl#versionInfo")
 	(property_list [KB_713803_Instance_369]))
 
 ([KB_713803_Instance_369] of  Property_List
@@ -1665,7 +1665,7 @@
 
 	(height 0)
 	(is_hidden FALSE)
-	(name "owl:valuesFrom")
+	(name "http://www.w3.org/2002/07/owl#valuesFrom")
 	(property_list [KB_713803_Instance_389])
 	(width 0)
 	(x 0)
@@ -1677,7 +1677,7 @@
 ([KB_713803_Instance_390] of  Widget
 
 	(is_hidden FALSE)
-	(name "owl:MinCardinalityRestriction")
+	(name "http://www.w3.org/2002/07/owl#MinCardinalityRestriction")
 	(property_list [KB_713803_Instance_435])
 	(widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.OWLFormWidget"))
 
@@ -1775,8 +1775,8 @@
 
 	(height 144)
 	(is_hidden FALSE)
-	(label "owl:sameAs")
-	(name "owl:sameAs")
+	(label "http://www.w3.org/2002/07/owl#sameAs")
+	(name "http://www.w3.org/2002/07/owl#sameAs")
 	(property_list [KB_713803_Instance_443])
 	(widget_class_name "edu.stanford.smi.protege.widget.FormWidget")
 	(width 266)
@@ -1803,8 +1803,8 @@
 
 	(height 144)
 	(is_hidden FALSE)
-	(label "owl:differentFrom")
-	(name "owl:differentFrom")
+	(label "http://www.w3.org/2002/07/owl#differentFrom")
+	(name "http://www.w3.org/2002/07/owl#differentFrom")
 	(property_list [KB_713803_Instance_447])
 	(widget_class_name "edu.stanford.smi.protege.widget.FormWidget")
 	(width 266)
@@ -1871,7 +1871,7 @@
 ([KB_713803_Instance_455] of  Widget
 
 	(is_hidden FALSE)
-	(name "owl:versionInfo")
+	(name "http://www.w3.org/2002/07/owl#versionInfo")
 	(property_list [KB_713803_Instance_456]))
 
 ([KB_713803_Instance_456] of  Property_List
@@ -1995,7 +1995,7 @@
 
 	(height 0)
 	(is_hidden FALSE)
-	(name "owl:valuesFrom")
+	(name "http://www.w3.org/2002/07/owl#valuesFrom")
 	(property_list [KB_713803_Instance_476])
 	(width 0)
 	(x 0)
@@ -2007,7 +2007,7 @@
 ([KB_713803_Instance_477] of  Widget
 
 	(is_hidden FALSE)
-	(name "owl:CardinalityRestriction")
+	(name "http://www.w3.org/2002/07/owl#CardinalityRestriction")
 	(property_list [KB_713803_Instance_522])
 	(widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.OWLFormWidget"))
 
@@ -2108,8 +2108,8 @@
 
 	(height 144)
 	(is_hidden FALSE)
-	(label "owl:sameAs")
-	(name "owl:sameAs")
+	(label "http://www.w3.org/2002/07/owl#sameAs")
+	(name "http://www.w3.org/2002/07/owl#sameAs")
 	(property_list [KB_713803_Instance_530])
 	(widget_class_name "edu.stanford.smi.protege.widget.FormWidget")
 	(width 266)
@@ -2136,8 +2136,8 @@
 
 	(height 144)
 	(is_hidden FALSE)
-	(label "owl:differentFrom")
-	(name "owl:differentFrom")
+	(label "http://www.w3.org/2002/07/owl#differentFrom")
+	(name "http://www.w3.org/2002/07/owl#differentFrom")
 	(property_list [KB_713803_Instance_534])
 	(widget_class_name "edu.stanford.smi.protege.widget.FormWidget")
 	(width 266)
@@ -2194,7 +2194,7 @@
 ([KB_713803_Instance_542] of  Widget
 
 	(is_hidden FALSE)
-	(name "owl:versionInfo")
+	(name "http://www.w3.org/2002/07/owl#versionInfo")
 	(property_list [KB_713803_Instance_543]))
 
 ([KB_713803_Instance_543] of  Property_List
@@ -2305,7 +2305,7 @@
 
 	(height 0)
 	(is_hidden FALSE)
-	(name "owl:valuesFrom")
+	(name "http://www.w3.org/2002/07/owl#valuesFrom")
 	(property_list [KB_713803_Instance_563])
 	(width 0)
 	(x 0)
@@ -2317,7 +2317,7 @@
 ([KB_713803_Instance_648] of  Widget
 
 	(is_hidden FALSE)
-	(name "owl:ComplementClass")
+	(name "http://www.w3.org/2002/07/owl#ComplementClass")
 	(property_list [KB_713803_Instance_651])
 	(widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.OWLFormWidget"))
 
@@ -2402,8 +2402,8 @@
 
 	(height 144)
 	(is_hidden FALSE)
-	(label "owl:sameAs")
-	(name "owl:sameAs")
+	(label "http://www.w3.org/2002/07/owl#sameAs")
+	(name "http://www.w3.org/2002/07/owl#sameAs")
 	(property_list [KB_713803_Instance_659])
 	(widget_class_name "edu.stanford.smi.protege.widget.FormWidget")
 	(width 266)
@@ -2430,8 +2430,8 @@
 
 	(height 144)
 	(is_hidden FALSE)
-	(label "owl:differentFrom")
-	(name "owl:differentFrom")
+	(label "http://www.w3.org/2002/07/owl#differentFrom")
+	(name "http://www.w3.org/2002/07/owl#differentFrom")
 	(property_list [KB_713803_Instance_663])
 	(widget_class_name "edu.stanford.smi.protege.widget.FormWidget")
 	(width 266)
@@ -2488,7 +2488,7 @@
 ([KB_713803_Instance_671] of  Widget
 
 	(is_hidden FALSE)
-	(name "owl:versionInfo")
+	(name "http://www.w3.org/2002/07/owl#versionInfo")
 	(property_list [KB_713803_Instance_672]))
 
 ([KB_713803_Instance_672] of  Property_List
@@ -2599,7 +2599,7 @@
 
 	(height 0)
 	(is_hidden FALSE)
-	(name "owl:complementOf")
+	(name "http://www.w3.org/2002/07/owl#complementOf")
 	(property_list [KB_713803_Instance_692])
 	(width 0)
 	(x 0)
@@ -2611,7 +2611,7 @@
 ([KB_713803_Instance_693] of  Widget
 
 	(is_hidden FALSE)
-	(name "owl:IntersectionClass")
+	(name "http://www.w3.org/2002/07/owl#IntersectionClass")
 	(property_list [KB_713803_Instance_738])
 	(widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.OWLFormWidget"))
 
@@ -2713,8 +2713,8 @@
 
 	(height 144)
 	(is_hidden FALSE)
-	(label "owl:sameAs")
-	(name "owl:sameAs")
+	(label "http://www.w3.org/2002/07/owl#sameAs")
+	(name "http://www.w3.org/2002/07/owl#sameAs")
 	(property_list [KB_713803_Instance_746])
 	(widget_class_name "edu.stanford.smi.protege.widget.FormWidget")
 	(width 266)
@@ -2741,8 +2741,8 @@
 
 	(height 144)
 	(is_hidden FALSE)
-	(label "owl:differentFrom")
-	(name "owl:differentFrom")
+	(label "http://www.w3.org/2002/07/owl#differentFrom")
+	(name "http://www.w3.org/2002/07/owl#differentFrom")
 	(property_list [KB_713803_Instance_750])
 	(widget_class_name "edu.stanford.smi.protege.widget.FormWidget")
 	(width 266)
@@ -2799,7 +2799,7 @@
 ([KB_713803_Instance_758] of  Widget
 
 	(is_hidden FALSE)
-	(name "owl:versionInfo")
+	(name "http://www.w3.org/2002/07/owl#versionInfo")
 	(property_list [KB_713803_Instance_759]))
 
 ([KB_713803_Instance_759] of  Property_List
@@ -2910,7 +2910,7 @@
 
 	(height 0)
 	(is_hidden FALSE)
-	(name "owl:intersectionOf")
+	(name "http://www.w3.org/2002/07/owl#intersectionOf")
 	(property_list [KB_713803_Instance_779])
 	(width 0)
 	(x 0)
@@ -2922,7 +2922,7 @@
 ([KB_713803_Instance_780] of  Widget
 
 	(is_hidden FALSE)
-	(name "owl:UnionClass")
+	(name "http://www.w3.org/2002/07/owl#UnionClass")
 	(property_list [KB_713803_Instance_825])
 	(widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.OWLFormWidget"))
 
@@ -3019,8 +3019,8 @@
 
 	(height 144)
 	(is_hidden FALSE)
-	(label "owl:sameAs")
-	(name "owl:sameAs")
+	(label "http://www.w3.org/2002/07/owl#sameAs")
+	(name "http://www.w3.org/2002/07/owl#sameAs")
 	(property_list [KB_713803_Instance_833])
 	(widget_class_name "edu.stanford.smi.protege.widget.FormWidget")
 	(width 266)
@@ -3047,8 +3047,8 @@
 
 	(height 144)
 	(is_hidden FALSE)
-	(label "owl:differentFrom")
-	(name "owl:differentFrom")
+	(label "http://www.w3.org/2002/07/owl#differentFrom")
+	(name "http://www.w3.org/2002/07/owl#differentFrom")
 	(property_list [KB_713803_Instance_837])
 	(widget_class_name "edu.stanford.smi.protege.widget.FormWidget")
 	(width 266)
@@ -3105,7 +3105,7 @@
 ([KB_713803_Instance_845] of  Widget
 
 	(is_hidden FALSE)
-	(name "owl:versionInfo")
+	(name "http://www.w3.org/2002/07/owl#versionInfo")
 	(property_list [KB_713803_Instance_846]))
 
 ([KB_713803_Instance_846] of  Property_List
@@ -3216,7 +3216,7 @@
 
 	(height 0)
 	(is_hidden FALSE)
-	(name "owl:unionOf")
+	(name "http://www.w3.org/2002/07/owl#unionOf")
 	(property_list [KB_713803_Instance_866])
 	(width 0)
 	(x 0)
@@ -3244,7 +3244,7 @@
 ([KB_764103_Instance_545] of  Widget
 
 	(is_hidden FALSE)
-	(name "owl:Ontology")
+	(name "http://www.w3.org/2002/07/owl#Ontology")
 	(property_list [XY_Instance_195])
 	(widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.OWLFormWidget"))
 
@@ -3801,7 +3801,7 @@
 ([KB_938545_Instance_118] of  Widget
 
 	(is_hidden FALSE)
-	(name "owl:versionInfo")
+	(name "http://www.w3.org/2002/07/owl#versionInfo")
 	(property_list [KB_938545_Instance_119]))
 
 ([KB_938545_Instance_119] of  Property_List
@@ -3878,7 +3878,7 @@
 
 	(height 0)
 	(is_hidden FALSE)
-	(name "owl:equivalentProperty")
+	(name "http://www.w3.org/2002/07/owl#equivalentProperty")
 	(property_list [KB_938545_Instance_131])
 	(width 0)
 	(x 0)
@@ -3977,7 +3977,7 @@
 
 	(height 0)
 	(is_hidden FALSE)
-	(name "owl:equivalentProperty")
+	(name "http://www.w3.org/2002/07/owl#equivalentProperty")
 	(property_list [KB_938545_Instance_153])
 	(width 0)
 	(x 0)
@@ -4002,7 +4002,7 @@
 ([KB_938545_Instance_158] of  Widget
 
 	(is_hidden FALSE)
-	(name "owl:versionInfo")
+	(name "http://www.w3.org/2002/07/owl#versionInfo")
 	(property_list [KB_938545_Instance_159]))
 
 ([KB_938545_Instance_159] of  Property_List
@@ -4035,7 +4035,7 @@
 ([KB_938545_Instance_166] of  Widget
 
 	(is_hidden FALSE)
-	(name "owl:AnnotationProperty")
+	(name "http://www.w3.org/2002/07/owl#AnnotationProperty")
 	(property_list [KB_938545_Instance_249])
 	(widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.OWLFormWidget"))
 
@@ -4043,7 +4043,7 @@
 
 	(height 0)
 	(is_hidden FALSE)
-	(name "owl:equivalentProperty")
+	(name "http://www.w3.org/2002/07/owl#equivalentProperty")
 	(property_list [KB_938545_Instance_19])
 	(width 0)
 	(x 0)
@@ -4325,7 +4325,7 @@
 ([KB_938545_Instance_311] of  Widget
 
 	(is_hidden FALSE)
-	(name "owl:versionInfo")
+	(name "http://www.w3.org/2002/07/owl#versionInfo")
 	(property_list [KB_938545_Instance_312]))
 
 ([KB_938545_Instance_312] of  Property_List
@@ -4384,7 +4384,7 @@
 
 	(height 0)
 	(is_hidden FALSE)
-	(name "owl:equivalentProperty")
+	(name "http://www.w3.org/2002/07/owl#equivalentProperty")
 	(property_list [KB_938545_Instance_324])
 	(width 0)
 	(x 0)
@@ -4423,7 +4423,7 @@
 ([KB_938545_Instance_329] of  Widget
 
 	(is_hidden FALSE)
-	(name "owl:FunctionalProperty")
+	(name "http://www.w3.org/2002/07/owl#FunctionalProperty")
 	(property_list [KB_938545_Instance_332])
 	(widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.OWLFormWidget"))
 
@@ -4590,7 +4590,7 @@
 
 	(height 138)
 	(is_hidden FALSE)
-	(label "owl:equivalentProperty")
+	(label "http://www.w3.org/2002/07/owl#equivalentProperty")
 	(name ":OWL-EQUIVALENT-SLOTS")
 	(property_list [KB_938545_Instance_354])
 	(widget_class_name "edu.stanford.smi.protege.widget.FormWidget")
@@ -4618,8 +4618,8 @@
 
 	(height 137)
 	(is_hidden FALSE)
-	(label "owl:sameAs")
-	(name "owl:sameAs")
+	(label "http://www.w3.org/2002/07/owl#sameAs")
+	(name "http://www.w3.org/2002/07/owl#sameAs")
 	(property_list [KB_938545_Instance_358])
 	(widget_class_name "edu.stanford.smi.protege.widget.FormWidget")
 	(width 286)
@@ -4646,8 +4646,8 @@
 
 	(height 137)
 	(is_hidden FALSE)
-	(label "owl:differentFrom")
-	(name "owl:differentFrom")
+	(label "http://www.w3.org/2002/07/owl#differentFrom")
+	(name "http://www.w3.org/2002/07/owl#differentFrom")
 	(property_list [KB_938545_Instance_362])
 	(widget_class_name "edu.stanford.smi.protege.widget.FormWidget")
 	(width 286)
@@ -4674,8 +4674,8 @@
 
 	(height 137)
 	(is_hidden FALSE)
-	(label "owl:equivalentProperty")
-	(name "owl:equivalentProperty")
+	(label "http://www.w3.org/2002/07/owl#equivalentProperty")
+	(name "http://www.w3.org/2002/07/owl#equivalentProperty")
 	(property_list [KB_938545_Instance_366])
 	(widget_class_name "edu.stanford.smi.protege.widget.FormWidget")
 	(width 286)
@@ -4836,7 +4836,7 @@
 ([KB_938545_Instance_394] of  Widget
 
 	(is_hidden FALSE)
-	(name "owl:versionInfo")
+	(name "http://www.w3.org/2002/07/owl#versionInfo")
 	(property_list [KB_938545_Instance_395]))
 
 ([KB_938545_Instance_395] of  Property_List
@@ -4895,7 +4895,7 @@
 
 	(height 0)
 	(is_hidden FALSE)
-	(name "owl:equivalentProperty")
+	(name "http://www.w3.org/2002/07/owl#equivalentProperty")
 	(property_list [KB_938545_Instance_407])
 	(width 0)
 	(x 0)
@@ -4934,7 +4934,7 @@
 ([KB_938545_Instance_412] of  Widget
 
 	(is_hidden FALSE)
-	(name "owl:InverseFunctionalProperty")
+	(name "http://www.w3.org/2002/07/owl#InverseFunctionalProperty")
 	(property_list [KB_938545_Instance_415])
 	(widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.OWLFormWidget"))
 
@@ -5101,7 +5101,7 @@
 
 	(height 138)
 	(is_hidden FALSE)
-	(label "owl:equivalentProperty")
+	(label "http://www.w3.org/2002/07/owl#equivalentProperty")
 	(name ":OWL-EQUIVALENT-SLOTS")
 	(property_list [KB_938545_Instance_437])
 	(widget_class_name "edu.stanford.smi.protege.widget.FormWidget")
@@ -5129,8 +5129,8 @@
 
 	(height 137)
 	(is_hidden FALSE)
-	(label "owl:sameAs")
-	(name "owl:sameAs")
+	(label "http://www.w3.org/2002/07/owl#sameAs")
+	(name "http://www.w3.org/2002/07/owl#sameAs")
 	(property_list [KB_938545_Instance_441])
 	(widget_class_name "edu.stanford.smi.protege.widget.FormWidget")
 	(width 286)
@@ -5157,8 +5157,8 @@
 
 	(height 137)
 	(is_hidden FALSE)
-	(label "owl:differentFrom")
-	(name "owl:differentFrom")
+	(label "http://www.w3.org/2002/07/owl#differentFrom")
+	(name "http://www.w3.org/2002/07/owl#differentFrom")
 	(property_list [KB_938545_Instance_445])
 	(widget_class_name "edu.stanford.smi.protege.widget.FormWidget")
 	(width 286)
@@ -5185,8 +5185,8 @@
 
 	(height 137)
 	(is_hidden FALSE)
-	(label "owl:equivalentProperty")
-	(name "owl:equivalentProperty")
+	(label "http://www.w3.org/2002/07/owl#equivalentProperty")
+	(name "http://www.w3.org/2002/07/owl#equivalentProperty")
 	(property_list [KB_938545_Instance_449])
 	(widget_class_name "edu.stanford.smi.protege.widget.FormWidget")
 	(width 286)
@@ -5347,7 +5347,7 @@
 ([KB_938545_Instance_477] of  Widget
 
 	(is_hidden FALSE)
-	(name "owl:versionInfo")
+	(name "http://www.w3.org/2002/07/owl#versionInfo")
 	(property_list [KB_938545_Instance_478]))
 
 ([KB_938545_Instance_478] of  Property_List
@@ -5406,7 +5406,7 @@
 
 	(height 0)
 	(is_hidden FALSE)
-	(name "owl:equivalentProperty")
+	(name "http://www.w3.org/2002/07/owl#equivalentProperty")
 	(property_list [KB_938545_Instance_490])
 	(width 0)
 	(x 0)
@@ -5445,7 +5445,7 @@
 ([KB_938545_Instance_495] of  Widget
 
 	(is_hidden FALSE)
-	(name "owl:SymmetricProperty")
+	(name "http://www.w3.org/2002/07/owl#SymmetricProperty")
 	(property_list [KB_938545_Instance_498])
 	(widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.OWLFormWidget"))
 
@@ -5612,7 +5612,7 @@
 
 	(height 138)
 	(is_hidden FALSE)
-	(label "owl:equivalentProperty")
+	(label "http://www.w3.org/2002/07/owl#equivalentProperty")
 	(name ":OWL-EQUIVALENT-SLOTS")
 	(property_list [KB_938545_Instance_520])
 	(widget_class_name "edu.stanford.smi.protege.widget.FormWidget")
@@ -5640,8 +5640,8 @@
 
 	(height 137)
 	(is_hidden FALSE)
-	(label "owl:sameAs")
-	(name "owl:sameAs")
+	(label "http://www.w3.org/2002/07/owl#sameAs")
+	(name "http://www.w3.org/2002/07/owl#sameAs")
 	(property_list [KB_938545_Instance_524])
 	(widget_class_name "edu.stanford.smi.protege.widget.FormWidget")
 	(width 286)
@@ -5668,8 +5668,8 @@
 
 	(height 137)
 	(is_hidden FALSE)
-	(label "owl:differentFrom")
-	(name "owl:differentFrom")
+	(label "http://www.w3.org/2002/07/owl#differentFrom")
+	(name "http://www.w3.org/2002/07/owl#differentFrom")
 	(property_list [KB_938545_Instance_528])
 	(widget_class_name "edu.stanford.smi.protege.widget.FormWidget")
 	(width 286)
@@ -5696,8 +5696,8 @@
 
 	(height 137)
 	(is_hidden FALSE)
-	(label "owl:equivalentProperty")
-	(name "owl:equivalentProperty")
+	(label "http://www.w3.org/2002/07/owl#equivalentProperty")
+	(name "http://www.w3.org/2002/07/owl#equivalentProperty")
 	(property_list [KB_938545_Instance_532])
 	(widget_class_name "edu.stanford.smi.protege.widget.FormWidget")
 	(width 286)
@@ -5889,7 +5889,7 @@
 ([KB_938545_Instance_560] of  Widget
 
 	(is_hidden FALSE)
-	(name "owl:versionInfo")
+	(name "http://www.w3.org/2002/07/owl#versionInfo")
 	(property_list [KB_938545_Instance_561]))
 
 ([KB_938545_Instance_561] of  Property_List
@@ -5958,7 +5958,7 @@
 
 	(height 0)
 	(is_hidden FALSE)
-	(name "owl:equivalentProperty")
+	(name "http://www.w3.org/2002/07/owl#equivalentProperty")
 	(property_list [KB_938545_Instance_573])
 	(width 0)
 	(x 0)
@@ -5997,7 +5997,7 @@
 ([KB_938545_Instance_578] of  Widget
 
 	(is_hidden FALSE)
-	(name "owl:TransitiveProperty")
+	(name "http://www.w3.org/2002/07/owl#TransitiveProperty")
 	(property_list [KB_938545_Instance_581])
 	(widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.OWLFormWidget"))
 
@@ -6172,7 +6172,7 @@
 
 	(height 138)
 	(is_hidden FALSE)
-	(label "owl:equivalentProperty")
+	(label "http://www.w3.org/2002/07/owl#equivalentProperty")
 	(name ":OWL-EQUIVALENT-SLOTS")
 	(property_list [KB_938545_Instance_603])
 	(widget_class_name "edu.stanford.smi.protege.widget.FormWidget")
@@ -6200,8 +6200,8 @@
 
 	(height 137)
 	(is_hidden FALSE)
-	(label "owl:sameAs")
-	(name "owl:sameAs")
+	(label "http://www.w3.org/2002/07/owl#sameAs")
+	(name "http://www.w3.org/2002/07/owl#sameAs")
 	(property_list [KB_938545_Instance_607])
 	(widget_class_name "edu.stanford.smi.protege.widget.FormWidget")
 	(width 286)
@@ -6228,8 +6228,8 @@
 
 	(height 137)
 	(is_hidden FALSE)
-	(label "owl:differentFrom")
-	(name "owl:differentFrom")
+	(label "http://www.w3.org/2002/07/owl#differentFrom")
+	(name "http://www.w3.org/2002/07/owl#differentFrom")
 	(property_list [KB_938545_Instance_611])
 	(widget_class_name "edu.stanford.smi.protege.widget.FormWidget")
 	(width 286)
@@ -6256,8 +6256,8 @@
 
 	(height 137)
 	(is_hidden FALSE)
-	(label "owl:equivalentProperty")
-	(name "owl:equivalentProperty")
+	(label "http://www.w3.org/2002/07/owl#equivalentProperty")
+	(name "http://www.w3.org/2002/07/owl#equivalentProperty")
 	(property_list [KB_938545_Instance_615])
 	(widget_class_name "edu.stanford.smi.protege.widget.FormWidget")
 	(width 286)
@@ -6436,7 +6436,7 @@
 ([KB_938545_Instance_643] of  Widget
 
 	(is_hidden FALSE)
-	(name "owl:versionInfo")
+	(name "http://www.w3.org/2002/07/owl#versionInfo")
 	(property_list [KB_938545_Instance_644]))
 
 ([KB_938545_Instance_644] of  Property_List
@@ -6498,7 +6498,7 @@
 
 	(height 0)
 	(is_hidden FALSE)
-	(name "owl:equivalentProperty")
+	(name "http://www.w3.org/2002/07/owl#equivalentProperty")
 	(property_list [KB_938545_Instance_656])
 	(width 0)
 	(x 0)
@@ -6547,7 +6547,7 @@
 ([KB_938545_Instance_661] of  Widget
 
 	(is_hidden FALSE)
-	(name "owl:DeprecatedProperty")
+	(name "http://www.w3.org/2002/07/owl#DeprecatedProperty")
 	(property_list [KB_938545_Instance_664])
 	(widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.OWLFormWidget"))
 
@@ -6727,7 +6727,7 @@
 
 	(height 138)
 	(is_hidden FALSE)
-	(label "owl:equivalentProperty")
+	(label "http://www.w3.org/2002/07/owl#equivalentProperty")
 	(name ":OWL-EQUIVALENT-SLOTS")
 	(property_list [KB_938545_Instance_686])
 	(widget_class_name "edu.stanford.smi.protege.widget.FormWidget")
@@ -6755,8 +6755,8 @@
 
 	(height 137)
 	(is_hidden FALSE)
-	(label "owl:sameAs")
-	(name "owl:sameAs")
+	(label "http://www.w3.org/2002/07/owl#sameAs")
+	(name "http://www.w3.org/2002/07/owl#sameAs")
 	(property_list [KB_938545_Instance_690])
 	(widget_class_name "edu.stanford.smi.protege.widget.FormWidget")
 	(width 286)
@@ -6786,8 +6786,8 @@
 
 	(height 137)
 	(is_hidden FALSE)
-	(label "owl:differentFrom")
-	(name "owl:differentFrom")
+	(label "http://www.w3.org/2002/07/owl#differentFrom")
+	(name "http://www.w3.org/2002/07/owl#differentFrom")
 	(property_list [KB_938545_Instance_694])
 	(widget_class_name "edu.stanford.smi.protege.widget.FormWidget")
 	(width 286)
@@ -6814,8 +6814,8 @@
 
 	(height 137)
 	(is_hidden FALSE)
-	(label "owl:equivalentProperty")
-	(name "owl:equivalentProperty")
+	(label "http://www.w3.org/2002/07/owl#equivalentProperty")
+	(name "http://www.w3.org/2002/07/owl#equivalentProperty")
 	(property_list [KB_938545_Instance_698])
 	(widget_class_name "edu.stanford.smi.protege.widget.FormWidget")
 	(width 286)
@@ -6994,7 +6994,7 @@
 ([KB_938545_Instance_726] of  Widget
 
 	(is_hidden FALSE)
-	(name "owl:versionInfo")
+	(name "http://www.w3.org/2002/07/owl#versionInfo")
 	(property_list [KB_938545_Instance_727]))
 
 ([KB_938545_Instance_727] of  Property_List
@@ -7053,7 +7053,7 @@
 
 	(height 0)
 	(is_hidden FALSE)
-	(name "owl:equivalentProperty")
+	(name "http://www.w3.org/2002/07/owl#equivalentProperty")
 	(property_list [KB_938545_Instance_739])
 	(width 0)
 	(x 0)
@@ -7102,7 +7102,7 @@
 
 	(height 230)
 	(is_hidden FALSE)
-	(name "owl:imports")
+	(name "http://www.w3.org/2002/07/owl#imports")
 	(property_list [KB_938545_Instance_9])
 	(widget_class_name "edu.stanford.smi.protegex.owl.ui.metadatatab.OWLNamespacesWidget")
 	(width 620)
@@ -7146,7 +7146,7 @@
 
 	(height 0)
 	(is_hidden FALSE)
-	(name "owl:equivalentClass")
+	(name "http://www.w3.org/2002/07/owl#equivalentClass")
 	(property_list [KB_941921_Instance_11])
 	(width 0)
 	(x 0)
@@ -7173,7 +7173,7 @@
 
 	(height 0)
 	(is_hidden FALSE)
-	(name "owl:equivalentClass")
+	(name "http://www.w3.org/2002/07/owl#equivalentClass")
 	(property_list [KB_941921_Instance_3])
 	(width 0)
 	(x 0)
@@ -7197,7 +7197,7 @@
 
 ([OWL_ProjectKB_Instance_1] of  String
 
-	(name "owl:Class")
+	(name "http://www.w3.org/2002/07/owl#Class")
 	(string_value "%3ANAME"))
 
 ([OWL_ProjectKB_Instance_10003] of  String
@@ -7207,7 +7207,7 @@
 
 ([OWL_ProjectKB_Instance_10004] of  String
 
-	(name "owl:Thing")
+	(name "http://www.w3.org/2002/07/owl#Thing")
 	(string_value "%3ANAME"))
 
 ([OWL_ProjectKB_Instance_10005] of  String
@@ -7270,10 +7270,10 @@
 		[KB_938545_Instance_166]
 		[KB_868747_Instance_76]
 		[KB_713803_Instance_648])
-	(default_cls_metaclass "owl:Class")
+	(default_cls_metaclass "http://www.w3.org/2002/07/owl#Class")
 	(default_facet_metaclass ":STANDARD-FACET")
 	(default_instance_widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.OWLFormWidget")
-	(default_slot_metaclass "owl:ObjectProperty")
+	(default_slot_metaclass "http://www.w3.org/2002/07/owl#ObjectProperty")
 	(hidden_classes
 		"rdf:XMLLiteral"
 		"xsd:anyURI"
@@ -7285,33 +7285,33 @@
 		"protege:classificationStatus"
 		"xsd:integer"
 		"xsd:unsignedShort"
-		"owl:allValuesFrom"
+		"http://www.w3.org/2002/07/owl#allValuesFrom"
 		"rdfs:member"
 		"protege:inferredSuperclassOf"
 		"xsd:base64Binary"
-		"owl:Class"
+		"http://www.w3.org/2002/07/owl#Class"
 		"rdfs:Container"
-		"owl:Ontology"
+		"http://www.w3.org/2002/07/owl#Ontology"
 		":TO"
 		"xsd:gMonthDay"
-		"owl:DataRange"
+		"http://www.w3.org/2002/07/owl#DataRange"
 		"xsd:NMTOKEN"
 		"xsd:QName"
 		"xsd:unsignedInt"
-		"owl:FunctionalProperty"
+		"http://www.w3.org/2002/07/owl#FunctionalProperty"
 		"xsd:long"
-		"owl:onProperty"
+		"http://www.w3.org/2002/07/owl#onProperty"
 		":SYSTEM-CLASS"
 		"xsd:language"
 		"protege:ExternalResource"
-		"owl:someValuesFrom"
+		"http://www.w3.org/2002/07/owl#someValuesFrom"
 		"xsd:positiveInteger"
-		"owl:DeprecatedClass"
-		"owl:DatatypeProperty"
+		"http://www.w3.org/2002/07/owl#DeprecatedClass"
+		"http://www.w3.org/2002/07/owl#DatatypeProperty"
 		"xsd:duration"
-		"owl:DeprecatedProperty"
-		"owl:ObjectProperty"
-		"owl:AnnotationProperty"
+		"http://www.w3.org/2002/07/owl#DeprecatedProperty"
+		"http://www.w3.org/2002/07/owl#ObjectProperty"
+		"http://www.w3.org/2002/07/owl#AnnotationProperty"
 		"xsd:unsignedLong"
 		"xsd:unsignedByte"
 		"protege:inferredSubclassOf"
@@ -7320,46 +7320,46 @@
 		"xsd:short"
 		"rdf:List"
 		"rdf:predicate"
-		"owl:hasValue"
+		"http://www.w3.org/2002/07/owl#hasValue"
 		"xsd:double"
 		"rdf:rest"
 		"xsd:decimal"
 		"rdf:subject"
 		"xsd:Name"
 		"rdf:value"
-		"owl:sameAs"
-		"owl:SymmetricProperty"
+		"http://www.w3.org/2002/07/owl#sameAs"
+		"http://www.w3.org/2002/07/owl#SymmetricProperty"
 		"xsd:byte"
-		"owl:differentFrom"
-		"owl:AllDifferent"
+		"http://www.w3.org/2002/07/owl#differentFrom"
+		"http://www.w3.org/2002/07/owl#AllDifferent"
 		"rdf:Property"
-		"owl:Nothing"
-		"owl:cardinality"
-		"owl:InverseFunctionalProperty"
+		"http://www.w3.org/2002/07/owl#Nothing"
+		"http://www.w3.org/2002/07/owl#cardinality"
+		"http://www.w3.org/2002/07/owl#InverseFunctionalProperty"
 		"xsd:nonNegativeInteger"
 		"rdf:Statement"
 		":FROM"
 		"rdfs:Literal"
-		"owl:disjointWith"
+		"http://www.w3.org/2002/07/owl#disjointWith"
 		"xsd:anySimpleType"
-		"owl:minCardinality"
+		"http://www.w3.org/2002/07/owl#minCardinality"
 		"xsd:ID"
 		"xsd:gDay"
 		"xsd:gYearMonth"
 		"xsd:NCName"
-		"owl:distinctMembers"
+		"http://www.w3.org/2002/07/owl#distinctMembers"
 		"xsd:nonPositiveInteger"
 		"rdfs:Datatype"
 		":DIRECTED-BINARY-RELATION"
 		"xsd:token"
-		"owl:TransitiveProperty"
+		"http://www.w3.org/2002/07/owl#TransitiveProperty"
 		"xsd:IDREF"
 		"xsd:ENTITY"
 		"xsd:normalizedString"
 		"xsd:gMonth"
 		"rdf:type"
-		"owl:oneOf"
-		"owl:maxCardinality"
+		"http://www.w3.org/2002/07/owl#oneOf"
+		"http://www.w3.org/2002/07/owl#maxCardinality"
 		"rdf:object")
 	(journaling_enabled FALSE)
 	(next_frame_number 0)
@@ -7434,7 +7434,7 @@
 ([XY_Instance_1001] of  Widget
 
 	(is_hidden FALSE)
-	(name "owl:versionInfo")
+	(name "http://www.w3.org/2002/07/owl#versionInfo")
 	(property_list [XY_Instance_1002]))
 
 ([XY_Instance_1002] of  Property_List
@@ -7727,7 +7727,7 @@
 
 	(height 0)
 	(is_hidden FALSE)
-	(name "owl:versionInfo")
+	(name "http://www.w3.org/2002/07/owl#versionInfo")
 	(property_list [XY_Instance_1099])
 	(width 0)
 	(x 0)
@@ -7813,7 +7813,7 @@
 ([XY_Instance_212] of  String
 
 	(name "vertical_stretcher")
-	(string_value "owl:imports"))
+	(string_value "http://www.w3.org/2002/07/owl#imports"))
 
 ([XY_Instance_217] of  Widget
 
@@ -8605,7 +8605,7 @@
 
 	(height 0)
 	(is_hidden FALSE)
-	(name "owl:versionInfo")
+	(name "http://www.w3.org/2002/07/owl#versionInfo")
 	(property_list [XY_Instance_675])
 	(width 0)
 	(x 0)
@@ -9036,7 +9036,7 @@
 ([XY_Instance_770] of  Widget
 
 	(is_hidden FALSE)
-	(name "owl:versionInfo")
+	(name "http://www.w3.org/2002/07/owl#versionInfo")
 	(property_list [XY_Instance_771]))
 
 ([XY_Instance_771] of  Property_List
@@ -9265,7 +9265,7 @@
 ([XY_Instance_910] of  Widget
 
 	(is_hidden FALSE)
-	(name "owl:versionInfo")
+	(name "http://www.w3.org/2002/07/owl#versionInfo")
 	(property_list [XY_Instance_911]))
 
 ([XY_Instance_911] of  Property_List
@@ -9511,7 +9511,7 @@
 
 	(height 0)
 	(is_hidden FALSE)
-	(name "owl:versionInfo")
+	(name "http://www.w3.org/2002/07/owl#versionInfo")
 	(property_list [XY_Instance_99])
 	(width 0)
 	(x 0)

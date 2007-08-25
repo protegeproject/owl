@@ -48,6 +48,7 @@ import edu.stanford.smi.protege.util.CollectionUtilities;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protege.util.URIUtilities;
 import edu.stanford.smi.protegex.owl.jena.graph.JenaModelFactory;
+import edu.stanford.smi.protegex.owl.jena.parser.NamespaceUtil;
 import edu.stanford.smi.protegex.owl.model.DefaultTaskManager;
 import edu.stanford.smi.protegex.owl.model.NamespaceManager;
 import edu.stanford.smi.protegex.owl.model.NamespaceManagerListener;
@@ -980,7 +981,8 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
             com.hp.hpl.jena.datatypes.RDFDatatype type = (com.hp.hpl.jena.datatypes.RDFDatatype) it.next();
             String uri = type.getURI();
             if (uri.startsWith(XSDDatatype.XSD)) {
-                String name = RDFNames.XSD_PREFIX + ProtegeNames.PREFIX_LOCALNAME_SEPARATOR + uri.substring(XSDDatatype.XSD.length() + 1);
+                //String name = RDFNames.XSD_PREFIX + ProtegeNames.PREFIX_LOCALNAME_SEPARATOR + uri.substring(XSDDatatype.XSD.length() + 1);
+            	String name = uri.toString();
                 createSystemInstance(name, rdfsDatatypeClass);
             }
         }
@@ -1935,6 +1937,10 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
        	if (directType == null)
         	return getMissingTypeString(instance);
           
+//      remove this after you implemented the Namespace
+		return NamespaceUtil.getLocalName(instance.getName());
+        /*
+       	
        	BrowserSlotPattern slotPattern = null;
        	       	
        	try {
@@ -1960,6 +1966,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
          }
          
          return value;
+         */
 	}
 
     
@@ -3795,8 +3802,13 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
         return isValidOWLFrameName(getNamespaceManager(), name);
     }
 
-
     public static boolean isValidOWLFrameName(NamespaceManager nsm, String name) {
+    	//TT - add maybe extra checks; for now it should be fine
+    	return URIUtilities.isValidURI(name);
+    }
+    
+    
+    public static boolean isValidOWLFrameName1(NamespaceManager nsm, String name) {
         if (name == null) {
             return false;
         }

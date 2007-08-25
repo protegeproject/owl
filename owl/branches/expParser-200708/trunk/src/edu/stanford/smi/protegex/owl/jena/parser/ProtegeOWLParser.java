@@ -150,6 +150,10 @@ public class ProtegeOWLParser {
 	private static UnresolvedImportHandler unresolvedImportHandler = new UnresolvedImportUIHandler();
 
 	private int tripleCount;
+	
+	private TripleFrameCache tfc;
+	
+	private Set<String> imports = new HashSet<String>();
 
 //	private AbstractTask task;
 
@@ -290,15 +294,67 @@ public class ProtegeOWLParser {
 		}				
 	}
 	
+	
+	public void loadTriples(final TripleStore tripleStore,	final String ontologyName, final ARPInvokation invokation) throws Exception {
 
-	public void loadTriples(final TripleStore tripleStore,
+		boolean eventsEnabled = owlModel.setGenerateEventsEnabled(false);
+
+		TripleStore toplevelTs = tripleStore;
+			
+		this.tripleStore = tripleStore;
+		tripleStores.addAll(tripleStoreModel.getTripleStores());
+		
+		tfc = new TripleFrameCache(owlModel, tripleStore);
+		
+		Log.getLogger().info("Loading triples");
+
+		ARP arp = createARP();
+		
+		long startTime = System.currentTimeMillis();		
+
+		invokation.invokeARP(arp);
+
+		long endTime = System.currentTimeMillis();
+
+		Log.getLogger().info("[ProtegeOWLParser] Completed triple loading after " + (endTime - startTime) + " ms");
+
+		System.out.println("\nDump before end processing. Size: " + tfc.getUndefTripleManager().getUndefTriples().size());
+		// tfc.getUndefTripleManager().dumpUndefTriples();
+
+		tfc.processUndefTriples();
+		tfc.doPostProcessing();
+
+		((AbstractOWLModel)owlModel).setDefaultOWLOntology((OWLOntology) owlModel.getFrame(tripleStore.getName()));
+		
+		tfc.getUndefTripleManager().dumpUndefTriples();
+		System.out.println("Dump after end processing. Size: "	+ tfc.getUndefTripleManager().getUndefTriples().size());
+		
+		System.out.println("Start processing imports ...");
+				
+		processImports(tripleStore);
+		
+		System.out.println("End processing imports");
+
+		tfc.processUndefTriples();
+		tfc.doPostProcessing();
+
+		tfc.getUndefTripleManager().dumpUndefTriples();
+		
+		owlModel.getTripleStoreModel().setActiveTripleStore(toplevelTs);
+		
+		owlModel.setGenerateEventsEnabled(eventsEnabled);
+
+	}
+	
+
+	public void loadTriples1(final TripleStore tripleStore,
 	                        final String ontologyName,
 	                        final ARPInvokation invokation)
 	        throws Exception {
 				boolean eventsEnabled = owlModel.setGenerateEventsEnabled(false);
                 Log.getLogger().info("Loading triples");
                 
-				Set imports = owlModel.getAllImports();
+                Set imports = owlModel.getAllImports();		
 
 				// To avoid cyclic imports: mark this as already imported
 				addNamespaceToImports(ontologyName, imports);
@@ -330,7 +386,7 @@ public class ProtegeOWLParser {
 					addNamespaceToImports(dns, imports);
 				}
                 
-				processImports(tripleStore, imports);
+				processImports1(tripleStore, imports);
 				
 				long endTime = System.currentTimeMillis();
 				
@@ -421,9 +477,10 @@ public class ProtegeOWLParser {
 	protected ARP createARP() {
 		ARP arp = new ARP();
 		ARPHandlers handlers = arp.getHandlers();
-		handlers.setStatementHandler(new MyStatementHandler());
+		//handlers.setStatementHandler(new MyStatementHandler());
+		handlers.setStatementHandler(new NewStatementHandler());
 		handlers.setErrorHandler(new MyErrorHandler());
-		handlers.setNamespaceHandler(new MyNamespaceHandler());
+		//handlers.setNamespaceHandler(new MyNamespaceHandler());
 		arp.setHandlersWith(handlers);
 		return arp;
 	}
@@ -834,7 +891,7 @@ public class ProtegeOWLParser {
 				String importURI = getImplicitImport(u);
 				if(importURI != null) {
 					logger.logWarning("Trying to add import for external resource: " + importURI);
-					runImport(importURI, imports);
+					runImport1(importURI, imports);
 					return true;
 				}
 				else {
@@ -852,12 +909,81 @@ public class ProtegeOWLParser {
 	}
 
 
+	private void processImports(TripleStore tripleStore) throws Exception {		
+		importing = true;
+
+		Set<String> thisOntoImports = OWLImportsCache.getOWLImportsURI(tripleStore.getName());
+		
+		for (String import_ : thisOntoImports) {
+			runImport(import_);
+		}	
+		
+	}
+	
+	
+	private void runImport(final String uri) throws Exception {
+		currentOntologyBeingParsed = null;
+
+		if (imports.contains(uri)) {
+			return;
+		}
+
+		imports.add(uri);
+		URI ontologyNameURI = URIUtilities.createURI(uri);
+		if (ontologyNameURI == null) {
+			Log.getLogger().warning("Could not convert ontology name " + uri + " to URI.");
+			return;
+		}
+
+		Repository repository = getRepository(owlModel, ProtegeOWLParser.this.tripleStore, ontologyNameURI);
+
+		if (repository == null) {
+			logger.logWarning("Ignoring import " + uri);
+			return;
+		}
+
+		ProtegeOWLParser.this.tripleStore = tripleStoreModel.createTripleStore(uri);
+		tripleStores.add(ProtegeOWLParser.this.tripleStore);
+		tripleStoreModel.setActiveTripleStore(ProtegeOWLParser.this.tripleStore);
+		
+		ARP arp = createARP();
+		logger.logImport(uri, repository.getOntologyLocationDescription(ontologyNameURI));
+
+		InputStream is = repository.getInputStream(ontologyNameURI);
+
+		// Double check we can get an input stream to read from
+		if (is == null) {
+			logger.logWarning("Couldn't get an input stream to read " + uri + " from.");
+			return;
+		}
+
+		errorOntologyURI = ontologyNameURI;
+
+		//ProtegeOWLParser parser = new ProtegeOWLParser(owlModel, true);
+		//parser.setImporting(true);
+
+		//parser.loadTriples(tripleStore, uri, parser.createARPInvokation(is, uri));
+		long t0 = System.currentTimeMillis();
+		
+		System.out.print("Start processing import: " + uri + " ... ");
+		arp.load(is, uri);
+
+		tfc.processUndefTriples();
+		tfc.doPostProcessing();
+		
+		System.out.println(" done in " + (System.currentTimeMillis() - t0) + " ms");
+		
+		// Do imports for this import
+		processImports(ProtegeOWLParser.this.tripleStore);	
+	}
+
+	
 	/**
-	 * Imports the ontologies that are objects of any owl:imports triples
-	 * in the specified <code>TripleStore</code>. Ontologies that have already
-	 * been imported will not be imported again.
+	 * Imports the ontologies that are objects of any owl:imports triples in the
+	 * specified <code>TripleStore</code>. Ontologies that have already been
+	 * imported will not be imported again.
 	 */
-	private void processImports(TripleStore tripleStore,
+	private void processImports1(TripleStore tripleStore,
 	                            Set imports)
 	        throws Exception {
 		importing = true;
@@ -879,7 +1005,7 @@ public class ProtegeOWLParser {
 				}
 				if(uri != null) {
 					//System.out.println("Importing " + uri);
-					runImport(uri, imports);
+					runImport1(uri, imports);
 				}
 			}
 		}
@@ -894,7 +1020,7 @@ public class ProtegeOWLParser {
 	 *                that represent the names of the ontologies that have already been
 	 *                imported.
 	 */
-	private void runImport(final String uri,
+	private void runImport1(final String uri,
 	                       final Set imports)
 	        throws Exception {
 //		AbstractTask task = new AbstractTask("Importing " + uri, false, owlModel.getTaskManager()) {
@@ -929,7 +1055,7 @@ public class ProtegeOWLParser {
 							
 							arp.load(is, uri);
 							// Do imports for this import
-							processImports(ProtegeOWLParser.this.tripleStore, imports);
+							processImports1(ProtegeOWLParser.this.tripleStore, imports);
 						}
 						else {
 							logger.logWarning("Couldn't get an input stream to read " + uri + " from.");
@@ -1237,6 +1363,36 @@ public class ProtegeOWLParser {
 		else {
 			return url.openStream();
 		}
+	}
+
+	
+	class NewStatementHandler implements StatementHandler {
+
+		public void statement(AResource subj, AResource pred, AResource obj) {
+			//System.out.println(subj + "  " + pred + "  " + obj);
+			
+			tripleCount++;
+			if(tripleCount % 5000 == 0) {			
+	            Log.getLogger().info("Loaded " + tripleCount + " triples");
+	        }
+			
+			tfc.processTriple(subj, pred, obj, false);	
+			
+		}
+
+
+		public void statement(AResource subj, AResource pred, ALiteral lit) {
+			//System.out.println(subj + "  " + pred + "  " + lit);
+			
+			tripleCount++;
+			if(tripleCount % 5000 == 0) {			
+	            Log.getLogger().info("Loaded " + tripleCount + " triples");
+	        }
+			
+			tfc.processTriple(subj, pred, lit, false);	
+			
+		}
+		
 	}
 
 

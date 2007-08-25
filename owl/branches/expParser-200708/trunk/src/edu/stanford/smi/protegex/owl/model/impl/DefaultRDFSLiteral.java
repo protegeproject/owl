@@ -157,7 +157,10 @@ public class DefaultRDFSLiteral implements RDFSLiteral {
             else {
             	RDFSDatatype datatype = owlModel.getRDFSDatatypeByName(RDFNames.XSD_PREFIX + ProtegeNames.PREFIX_LOCALNAME_SEPARATOR + localName);            		
             	if (datatype == null) {
-            		datatype = owlModel.getRDFSDatatypeByName(localName); 
+            		//datatype = owlModel.getRDFSDatatypeByName(localName);
+                	//WRONG!
+                    //return owlModel.getRDFSDatatypeByName(RDFNames.XSD_PREFIX + ":" + localName);
+                	datatype = owlModel.getRDFSDatatypeByName(localName);
             	}
             	return datatype;
             }

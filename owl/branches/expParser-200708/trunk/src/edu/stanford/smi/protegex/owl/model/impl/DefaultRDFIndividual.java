@@ -175,8 +175,9 @@ public class DefaultRDFIndividual extends DefaultSimpleInstance implements RDFIn
 
     public String getLocalName() {
         final String name = getName();
-        final OWLModel nskb = (OWLModel) getKnowledgeBase();
-        return nskb.getLocalNameForResourceName(name);
+        return name;
+        //final OWLModel nskb = (OWLModel) getKnowledgeBase();
+        //return nskb.getLocalNameForResourceName(name);
     }
 
 
@@ -275,7 +276,8 @@ public class DefaultRDFIndividual extends DefaultSimpleInstance implements RDFIn
 
 
     public String getURI() {
-        return getOWLModel().getURIForResourceName(getName());
+        //return getOWLModel().getURIForResourceName(getName());
+    	return getName();
     }
 
 
