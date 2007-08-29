@@ -1948,7 +1948,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
        		}
 		} catch(Exception e) {
        		slotPattern = getProject().getBrowserSlotPattern(directType);
-       		//Log.getLogger().warning("Non-OWL browser slot for: " + directType);
+       		Log.getLogger().log(Level.WARNING, "Unknown error at getting the browser slot for: " + directType, e);
        	}
                         
          if (slotPattern == null)
