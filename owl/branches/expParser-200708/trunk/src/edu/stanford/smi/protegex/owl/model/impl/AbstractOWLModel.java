@@ -1938,7 +1938,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
         	return getMissingTypeString(instance);
           
 //      remove this after you implemented the Namespace
-		return NamespaceUtil.getLocalName(instance.getName());
+		return NamespaceUtil.getPrefixedName(this, instance.getName());
         /*
        	
        	BrowserSlotPattern slotPattern = null;

@@ -22,7 +22,9 @@ import edu.stanford.smi.protege.util.PropertyList;
 import edu.stanford.smi.protege.util.URIUtilities;
 import edu.stanford.smi.protegex.owl.database.OWLDatabaseModel;
 import edu.stanford.smi.protegex.owl.jena.triplestore.JenaTripleStoreModel;
+import edu.stanford.smi.protegex.owl.model.NamespaceManager;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.model.impl.NewNamespaceManager;
 import edu.stanford.smi.protegex.owl.model.impl.OWLNamespaceManager;
 import edu.stanford.smi.protegex.owl.repository.util.RepositoryFileManager;
 import edu.stanford.smi.protegex.owl.resource.OWLText;
@@ -75,7 +77,8 @@ public class JenaKnowledgeBaseFactory implements OWLKnowledgeBaseFactory, Client
     	//have to test this in a different way..
     	boolean inUI = ProjectManager.getProjectManager().getCurrentProjectView() != null;
         useStandalone = inUI == false;
-        OWLNamespaceManager namespaceManager = new OWLNamespaceManager();
+        //OWLNamespaceManager namespaceManager = new OWLNamespaceManager();
+        NamespaceManager namespaceManager = new NewNamespaceManager();
         ResourceSelectionAction.setActivated(true);
 	    JenaOWLModel owlModel = new JenaOWLModel(this, namespaceManager);
         owlModel.getRepositoryManager().addDefaultRepositories();

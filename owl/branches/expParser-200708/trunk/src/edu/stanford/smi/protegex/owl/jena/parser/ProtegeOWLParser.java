@@ -47,6 +47,7 @@ import edu.stanford.smi.protege.util.URIUtilities;
 import edu.stanford.smi.protegex.owl.database.OWLDatabaseModel;
 import edu.stanford.smi.protegex.owl.jena.Jena;
 import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
+import edu.stanford.smi.protegex.owl.model.NamespaceManager;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
 import edu.stanford.smi.protegex.owl.model.OWLNames;
@@ -181,7 +182,7 @@ public class ProtegeOWLParser {
 		
 		owlNamedClassClass = owlModel.getOWLNamedClassClass();
         owlOntologyClass   = owlModel.getOWLOntologyClass();
-		uri2NameConverter = createURI2NameConverter(owlModel, incremental);
+		//uri2NameConverter = createURI2NameConverter(owlModel, incremental);
 	}
 	
 	
@@ -326,7 +327,7 @@ public class ProtegeOWLParser {
 
 		((AbstractOWLModel)owlModel).setDefaultOWLOntology((OWLOntology) owlModel.getFrame(tripleStore.getName()));
 		
-		tfc.getUndefTripleManager().dumpUndefTriples();
+		//tfc.getUndefTripleManager().dumpUndefTriples();
 		System.out.println("Dump after end processing. Size: "	+ tfc.getUndefTripleManager().getUndefTriples().size());
 		
 		System.out.println("Start processing imports ...");
@@ -338,7 +339,7 @@ public class ProtegeOWLParser {
 		tfc.processUndefTriples();
 		tfc.doPostProcessing();
 
-		tfc.getUndefTripleManager().dumpUndefTriples();
+		//tfc.getUndefTripleManager().dumpUndefTriples();
 		
 		owlModel.getTripleStoreModel().setActiveTripleStore(toplevelTs);
 		
@@ -480,6 +481,7 @@ public class ProtegeOWLParser {
 		//handlers.setStatementHandler(new MyStatementHandler());
 		handlers.setStatementHandler(new NewStatementHandler());
 		handlers.setErrorHandler(new MyErrorHandler());
+		handlers.setNamespaceHandler(new NewNamespaceHandler());
 		//handlers.setNamespaceHandler(new MyNamespaceHandler());
 		arp.setHandlersWith(handlers);
 		return arp;
@@ -965,13 +967,13 @@ public class ProtegeOWLParser {
 		//parser.loadTriples(tripleStore, uri, parser.createARPInvokation(is, uri));
 		long t0 = System.currentTimeMillis();
 		
-		System.out.print("Start processing import: " + uri + " ... ");
+		System.out.println("Start processing import: " + uri + " ... ");
 		arp.load(is, uri);
 
 		tfc.processUndefTriples();
 		tfc.doPostProcessing();
 		
-		System.out.println(" done in " + (System.currentTimeMillis() - t0) + " ms");
+		System.out.println("Import " + uri + "  done in " + (System.currentTimeMillis() - t0) + " ms");
 		
 		// Do imports for this import
 		processImports(ProtegeOWLParser.this.tripleStore);	
@@ -1395,6 +1397,24 @@ public class ProtegeOWLParser {
 		
 	}
 
+	
+	class NewNamespaceHandler implements NamespaceHandler {
+
+		public void endPrefixMapping(String prefix) {
+			//System.out.println("*** End namespace mapping: " + arg0);
+			NamespaceManager namespaceManager = owlModel.getNamespaceManager();
+			System.out.println("*** " + prefix + " -> " + namespaceManager.getNamespaceForPrefix(prefix));
+			
+		}
+
+		public void startPrefixMapping(String prefix, String namespace) {
+			NamespaceManager namespaceManager = owlModel.getNamespaceManager();
+			namespaceManager.setPrefix(namespace, prefix);
+			//System.out.println("*** " + arg0 + " -> " + arg1);
+			
+		}
+		
+	}
 
 }
 

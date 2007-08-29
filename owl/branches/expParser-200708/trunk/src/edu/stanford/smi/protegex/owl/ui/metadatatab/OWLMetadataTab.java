@@ -94,6 +94,7 @@ public class OWLMetadataTab extends AbstractTabWidget implements HostResourceDis
 
     public String getLabel() {
         String label = "Metadata";
+        /*
         TripleStore ts = getOWLModel().getTripleStoreModel().getActiveTripleStore();
         OWLOntology ont = (OWLOntology) TripleStoreUtil.getFirstOntology(getOWLModel(), ts);
         if (ont != null) {
@@ -112,7 +113,8 @@ public class OWLMetadataTab extends AbstractTabWidget implements HostResourceDis
             }
             label += " (" + file + ")";
         }
-        return label;
+        */
+        return label + "(" + getOWLModel().getDefaultOWLOntology().getName() + ")";
     }
 
     public static boolean isSuitable(Project p, Collection errors) {
