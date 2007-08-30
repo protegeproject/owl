@@ -44,6 +44,7 @@ public class JenaTripleStore extends AbstractTripleStore {
         KnowledgeBase kb = owlModel;
         Collection<Slot> ignoreProperties = new HashSet<Slot>();
         ignoreProperties.add(owlModel.getRDFProperty(OWLNames.Slot.ONTOLOGY_PREFIXES));
+        ignoreProperties.add(owlModel.getRDFProperty(OWLNames.Slot.TOP_LEVEL_ONTOLOGY_URI));
         ignoreProperties.add(kb.getSlot(Model.Slot.DIRECT_INSTANCES));
         ignoreProperties.add(kb.getSlot(Model.Slot.DIRECT_TYPES));
         ignoreProperties.add(kb.getSlot(ProtegeNames.Slot.CLASSIFICATION_STATUS));
