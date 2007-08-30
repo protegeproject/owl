@@ -627,6 +627,7 @@ public class Jena {
         if (FileUtils.langXMLAbbrev.equals(language) || FileUtils.langXML.equals(language)) {
             writer.setProperty("showXmlDeclaration", "" + !Jena.isXMLTagHidden());  // Suggested by Alix
             writer.setProperty("relativeURIs", "same-document");
+            //FIXME: TT - wrong!
             String xmlBase = namespace;
             if (Jena.isNamespaceWithSeparator(xmlBase) && !namespace.endsWith("/")) {
                 xmlBase = xmlBase.substring(0, xmlBase.length() - 1);
