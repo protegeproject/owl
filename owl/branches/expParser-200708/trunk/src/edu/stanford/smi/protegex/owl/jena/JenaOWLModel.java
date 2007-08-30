@@ -246,7 +246,9 @@ public class JenaOWLModel extends AbstractOWLModel implements OntModelProvider {
 
     public void load(URI uri, String language) throws Exception {
         ProtegeOWLParser parser = new ProtegeOWLParser(this, false);
+        parser.addFrameListener(this);
         parser.run(uri);
+        
         //TripleStoreUtil.sortSubclasses(this);
         //copyFacetValuesIntoNamedClses();
     }
@@ -491,9 +493,11 @@ public class JenaOWLModel extends AbstractOWLModel implements OntModelProvider {
     
     @Override
     public synchronized void dispose() {
-    	tripleStoreModel.dispose();
-    	tripleStoreModel = null;
-    	
+    	//TT - just for test
+    	if (tripleStoreModel != null) {
+    		tripleStoreModel.dispose();
+    		tripleStoreModel = null;
+    	}
     	super.dispose();
     }
 }
