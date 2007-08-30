@@ -4,32 +4,36 @@ import java.net.URI;
 import java.util.Collection;
 import java.util.HashMap;
 
+import edu.stanford.smi.protege.model.KnowledgeBase;
+import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protege.util.URIUtilities;
 import edu.stanford.smi.protegex.owl.model.NamespaceManager;
 import edu.stanford.smi.protegex.owl.model.NamespaceManagerListener;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.model.OWLNames;
+import edu.stanford.smi.protegex.owl.model.OWLOntology;
 
 public class NewNamespaceManager implements NamespaceManager {
 	//TODO: The interface should be modified to throw exceptions	
 	
 	private static String DEFAULT_PREFIX_START = "p";
 	public static final String DEFAULT_NAMESPACE_PREFIX = "";
-	
-	
+		
 	//the 2 hashmaps should be kept in sync at all times
 	private HashMap<String, String> prefix2namespaceMap = new HashMap<String, String>();
 	private HashMap<String, String> namespace2prefixMap = new HashMap<String, String>();
 	
 	private int last_prefix_index = 0;
 	
+	protected OWLModel owlModel;
 
 	public void addNamespaceManagerListener(NamespaceManagerListener listener) {
 		// TODO Auto-generated method stub
 	}
 
 	public void init(OWLModel owlModel) {
-		// TODO Auto-generated method stub
+		this.owlModel = owlModel;
 	}
 
 	public boolean isModifiable(String prefix) {
@@ -101,12 +105,15 @@ public class NewNamespaceManager implements NamespaceManager {
 			return;
 		}
 				
+		addPrefixNamespaceMapping(prefix, namespace);
 		//String newPrefix = getNextAvailablePrefixName();
-		prefix2namespaceMap.put(prefix, namespace);
-		namespace2prefixMap.put(namespace, prefix);
-		
-		
+				
 		return;
+	}
+
+	private void addPrefixNamespaceMapping(String prefix, String namespace) {
+		prefix2namespaceMap.put(prefix, namespace);
+		namespace2prefixMap.put(namespace, prefix);	
 	}
 
 	public void setPrefix(URI namespace, String prefix) {

@@ -27,10 +27,6 @@ import java.util.*;
  */
 public class OWLNamespaceManager extends AbstractNamespaceManager {
 
-    public final static String DEFAULT_DEFAULT_BASE = "http://www.owl-ontologies.com/unnamed.owl";
-
-    public final static String DEFAULT_DEFAULT_NAMESPACE = DEFAULT_DEFAULT_BASE + "#";
-
     private String defaultNamespace;
 
     private Slot prefixesSlot;
@@ -244,7 +240,7 @@ public class OWLNamespaceManager extends AbstractNamespaceManager {
         }
         defaultNamespace = getNamespaceForPrefix("");
         if (defaultNamespace == null) {
-            defaultNamespace = OWLNamespaceManager.DEFAULT_DEFAULT_NAMESPACE;
+            defaultNamespace = ProtegeNames.DEFAULT_DEFAULT_NAMESPACE;
         }
     }
 
