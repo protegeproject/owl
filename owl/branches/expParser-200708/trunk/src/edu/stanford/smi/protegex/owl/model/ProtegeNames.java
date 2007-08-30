@@ -14,7 +14,14 @@ public class ProtegeNames {
 
 	public final static String PREFIX_LOCALNAME_SEPARATOR = ":";
 
-	public final static String DEFAULT_ONTOLOGY = ":";
+	//maybe move this later to a different class 
+	public final static String DEFAULT_DEFAULT_BASE = "http://www.owl-ontologies.com/unnamed.owl";
+	
+	//maybe move this later to a different class
+	public final static String DEFAULT_DEFAULT_NAMESPACE = DEFAULT_DEFAULT_BASE + "#";
+	
+	//should be used only in initializations
+	public final static String DEFAULT_ONTOLOGY = DEFAULT_DEFAULT_BASE;
 
     public static String PROTEGE_PREFIX = "protege";
 
