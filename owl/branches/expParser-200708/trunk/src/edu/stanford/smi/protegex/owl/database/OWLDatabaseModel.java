@@ -1,7 +1,5 @@
 package edu.stanford.smi.protegex.owl.database;
 
-import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
@@ -17,12 +15,12 @@ import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
 import com.hp.hpl.jena.vocabulary.ReasonerVocabulary;
 
+import edu.stanford.smi.protege.model.Cls;
+import edu.stanford.smi.protege.model.Instance;
 import edu.stanford.smi.protege.model.KnowledgeBaseFactory;
 import edu.stanford.smi.protege.model.Project;
-import edu.stanford.smi.protege.model.framestore.AbstractFrameStoreInvocationHandler;
-import edu.stanford.smi.protege.model.framestore.EventGeneratorFrameStore;
-import edu.stanford.smi.protege.model.framestore.FrameStore;
-import edu.stanford.smi.protege.model.framestore.MergingNarrowFrameStore;
+import edu.stanford.smi.protege.model.Slot;
+import edu.stanford.smi.protege.util.CollectionUtilities;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.database.triplestore.DatabaseTripleStoreModel;
 import edu.stanford.smi.protegex.owl.jena.Jena;
@@ -31,15 +29,15 @@ import edu.stanford.smi.protegex.owl.jena.creator.JenaCreator;
 import edu.stanford.smi.protegex.owl.model.NamespaceManager;
 import edu.stanford.smi.protegex.owl.model.OWLNames;
 import edu.stanford.smi.protegex.owl.model.OWLOntology;
+import edu.stanford.smi.protegex.owl.model.ProtegeNames;
 import edu.stanford.smi.protegex.owl.model.RDFNames;
 import edu.stanford.smi.protegex.owl.model.RDFSNames;
 import edu.stanford.smi.protegex.owl.model.factory.OWLJavaFactory;
-import edu.stanford.smi.protegex.owl.model.factory.OWLJavaFactoryUpdater;
 import edu.stanford.smi.protegex.owl.model.framestore.LocalClassificationFrameStore;
-import edu.stanford.smi.protegex.owl.model.framestore.OWLFrameFactoryInvocationHandler;
 import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
-import edu.stanford.smi.protegex.owl.model.impl.OWLNamespaceManager;
+import edu.stanford.smi.protegex.owl.model.impl.NewDatabaseNamespaceManager;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreModel;
+import edu.stanford.smi.protegex.owl.model.util.ImportUtil;
 import edu.stanford.smi.protegex.owl.ui.widget.ModalProgressBarManager;
 
 /**
@@ -53,22 +51,13 @@ public class OWLDatabaseModel
     private static transient Logger log = Log.getLogger(OWLDatabaseModel.class);
 
     private TripleStoreModel tripleStoreModel;
+    
+    private OWLOntology defaultDBOWLOntology;
 
 
     public OWLDatabaseModel(KnowledgeBaseFactory factory) {    	
         super(factory);
     }
-
-    // added by TT
-    /*
-    public OWLDatabaseModel(OWLDatabaseKnowledgeBaseFactory factory, OWLNamespaceManager namespaceManager) {
-        super(factory, namespaceManager);
-        OWLJavaFactoryUpdater.run(this);
-        //maybe remove the following two lines
-        //MergingNarrowFrameStore mnfs = MergingNarrowFrameStore.get(this);
-        //mnfs.setTopFrameStore(mnfs.getActiveFrameStore().getName());
-	}
-	*/
 
 	/**
      * Initializes the OWLDatabaseModel in the case that it is a client of a remote server.
@@ -84,7 +73,8 @@ public class OWLDatabaseModel
     public void initialize() {
     	setFrameFactory(new OWLJavaFactory(this));
         
-        final OWLNamespaceManager namespaceManager = new OWLNamespaceManager();
+        //final OWLNamespaceManager namespaceManager = new OWLNamespaceManager();
+    	NamespaceManager namespaceManager = new NewDatabaseNamespaceManager();
         super.initialize(namespaceManager);
 
         initCustomFrameStores();
@@ -96,18 +86,51 @@ public class OWLDatabaseModel
 
 
     public OWLOntology getDefaultOWLOntology() {
-        OWLOntology ontology = super.getDefaultOWLOntology();
-        if (ontology == null) {
-            createDefaultOWLOntologyReally();
-            return super.getDefaultOWLOntology();
-        }
-        else {
-            return ontology;
-        }
+    	if (defaultDBOWLOntology != null) {
+    		return defaultDBOWLOntology;
+    	}
+    	
+    	//try to read it from the OWLNames.Cls.TOP-LEVEL-ONTOLOGY
+    	defaultDBOWLOntology = getTopLevelOntololgyFromDatabase();
+    	if (defaultDBOWLOntology != null) {
+    		return defaultDBOWLOntology;
+    	}
+    	
+    	//try to compute it from the existing owl ontology instances
+    	defaultDBOWLOntology = ImportUtil.calculateTopLevelOntology(this);    	
+    	if (defaultDBOWLOntology == null) {
+    		Log.getLogger().warning("Could not compute the top level ontology. Using the default one: " + ProtegeNames.DEFAULT_ONTOLOGY);
+    		defaultDBOWLOntology = createDefaultOWLOntologyReally();
+    	}
+    	
+    	return defaultDBOWLOntology;
     }
 
 
-    public OntModel getOntModel() {
+    
+    protected OWLOntology getTopLevelOntololgyFromDatabase() {
+		Cls topLevelOWLOntologyClass = getCls(OWLNames.Cls.TOP_LEVEL_ONTOLOGY);
+		Slot topLevelOWLOntologyURISlot = getSlot(OWLNames.Slot.TOP_LEVEL_ONTOLOGY_URI);
+		
+		if (topLevelOWLOntologyClass == null || topLevelOWLOntologyURISlot == null) {
+			return null;
+		}
+		
+		//should be just one
+		Instance inst = (Instance) CollectionUtilities.getFirstItem(topLevelOWLOntologyClass.getInstances());
+		if (inst == null) {
+			return null;
+		}
+				
+		return (OWLOntology) inst.getOwnSlotValue(topLevelOWLOntologyURISlot);
+	}
+
+	@Override
+    protected OWLOntology createDefaultOWLOntologyReally() {
+    	return (OWLOntology) createInstance(ProtegeNames.DEFAULT_ONTOLOGY, getOWLOntologyClass());
+    }
+
+	public OntModel getOntModel() {
 
         long startTime = System.currentTimeMillis();
         JenaCreator creator = new JenaCreator(this, false, null,
@@ -196,20 +219,6 @@ public class OWLDatabaseModel
     }
 
 
-    //TT this method should not be called
-    public void initOWLFrameFactoryInvocationHandler() {
-        Class clazz = OWLFrameFactoryInvocationHandler.class;
-        FrameStore frameFactoryInvocationFrameStore = AbstractFrameStoreInvocationHandler.newInstance(clazz, this);
-        List frameStores = getFrameStores();
-        int index = 0;
-        while (!(frameStores.get(index) instanceof EventGeneratorFrameStore)) {
-            index++;
-        }
-        //index = frameStores.size(); // Test!
-        insertFrameStore(frameFactoryInvocationFrameStore, index - 1);
-    }
-
-
     public void resetTripleStoreModel() {
         tripleStoreModel = null;
     }
@@ -225,4 +234,10 @@ public class OWLDatabaseModel
             }
         }
     }
+
+    
+	@Override
+	public void initOWLFrameFactoryInvocationHandler() {
+		Log.getLogger().warning("This method should not be invoked!");		
+	}
 }
