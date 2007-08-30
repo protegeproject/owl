@@ -245,8 +245,7 @@ public class JenaOWLModel extends AbstractOWLModel implements OntModelProvider {
 
 
     public void load(URI uri, String language) throws Exception {
-        ProtegeOWLParser parser = new ProtegeOWLParser(this, false);
-        parser.addFrameListener(this);
+        ProtegeOWLParser parser = new ProtegeOWLParser(this, false);    
         parser.run(uri);
         
         //TripleStoreUtil.sortSubclasses(this);
