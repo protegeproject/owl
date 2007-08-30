@@ -27,8 +27,8 @@ import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.jena.Jena;
 import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.model.ProtegeNames;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
-import edu.stanford.smi.protegex.owl.model.impl.OWLNamespaceManager;
 import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
 import edu.stanford.smi.protegex.owl.ui.dialogs.ModalDialogFactory;
 import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
@@ -166,7 +166,7 @@ public class RenameAcrossFilesAction extends RefactorResourceAction {
         OntModel ontModel = ModelFactory.createOntologyModel(spec, null);
 
         ontModel.read(new FileInputStream(file),
-                OWLNamespaceManager.DEFAULT_DEFAULT_NAMESPACE,
+                ProtegeNames.DEFAULT_DEFAULT_NAMESPACE,
                 FileUtils.langXMLAbbrev);
         Resource oldResource = ontModel.getResource(oldURI);
         if (ontModel.contains(oldResource, null, (RDFNode) null) ||
