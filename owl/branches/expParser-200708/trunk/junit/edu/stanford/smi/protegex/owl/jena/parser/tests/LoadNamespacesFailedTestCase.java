@@ -18,7 +18,7 @@ import edu.stanford.smi.protegex.owl.ProtegeOWL;
 import edu.stanford.smi.protegex.owl.model.NamespaceManager;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
-import edu.stanford.smi.protegex.owl.model.impl.OWLNamespaceManager;
+import edu.stanford.smi.protegex.owl.model.ProtegeNames;
 import edu.stanford.smi.protegex.owl.tests.AbstractJenaTestCase;
 import edu.stanford.smi.protegex.owl.ui.search.finder.DefaultClassFind;
 import edu.stanford.smi.protegex.owl.ui.search.finder.Find;
@@ -125,7 +125,7 @@ public class LoadNamespacesFailedTestCase extends AbstractJenaTestCase {
         assertSize(1, ontologies);
         assertContains(newModel.getDefaultOWLOntology(), ontologies);
         NamespaceManager nsm = newModel.getNamespaceManager();
-        assertEquals(OWLNamespaceManager.DEFAULT_DEFAULT_NAMESPACE, nsm.getDefaultNamespace());
+        assertEquals(ProtegeNames.DEFAULT_DEFAULT_NAMESPACE, nsm.getDefaultNamespace());
         assertEquals(OWL.getURI(), nsm.getNamespaceForPrefix("owl"));
         assertEquals(RDF.getURI(), nsm.getNamespaceForPrefix("rdf"));
         assertEquals(RDFS.getURI(), nsm.getNamespaceForPrefix("rdfs"));
