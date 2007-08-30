@@ -31,6 +31,8 @@ import com.hp.hpl.jena.rdf.arp.NamespaceHandler;
 import com.hp.hpl.jena.rdf.arp.StatementHandler;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
+import edu.stanford.smi.protege.event.FrameAdapter;
+import edu.stanford.smi.protege.event.FrameEvent;
 import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.Frame;
 import edu.stanford.smi.protege.model.FrameID;
@@ -325,6 +327,7 @@ public class ProtegeOWLParser {
 		tfc.processUndefTriples();
 		tfc.doPostProcessing();
 
+		//TT - check whether this is right here when you process imports
 		((AbstractOWLModel)owlModel).setDefaultOWLOntology((OWLOntology) owlModel.getFrame(tripleStore.getName()));
 		
 		//tfc.getUndefTripleManager().dumpUndefTriples();
@@ -913,7 +916,9 @@ public class ProtegeOWLParser {
 
 	private void processImports(TripleStore tripleStore) throws Exception {		
 		importing = true;
-
+		
+		imports.add(tripleStore.getName());
+		
 		Set<String> thisOntoImports = OWLImportsCache.getOWLImportsURI(tripleStore.getName());
 		
 		for (String import_ : thisOntoImports) {
@@ -1415,6 +1420,7 @@ public class ProtegeOWLParser {
 		}
 		
 	}
+	
 
 }
 
