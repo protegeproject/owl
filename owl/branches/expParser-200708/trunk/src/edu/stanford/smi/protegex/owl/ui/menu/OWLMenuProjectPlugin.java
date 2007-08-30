@@ -285,46 +285,52 @@ public class OWLMenuProjectPlugin extends ProjectPluginAdapter {
     }
 
     public void afterLoad(Project project) {
-        KnowledgeBase kb = project.getKnowledgeBase();
-        if (kb instanceof OWLModel) {
-            OWLModel owlModel = (OWLModel) kb;
-            owlModel.getNamespaceManager().update();
-            makeHiddenClsesWithSubclassesVisible(owlModel);
-            project.setWidgetMapper(new OWLWidgetMapper(owlModel));
+		KnowledgeBase kb = project.getKnowledgeBase();
+		if (!(kb instanceof OWLModel)) {
+			return;
+		}
+		
+		OWLModel owlModel = (OWLModel) kb;
+		owlModel.getNamespaceManager().update();
+		makeHiddenClsesWithSubclassesVisible(owlModel);
+		project.setWidgetMapper(new OWLWidgetMapper(owlModel));
 
-            //added TT:
-            OWLUI.fixBrowserSlotPatterns(project);
+		// added TT:
+		OWLUI.fixBrowserSlotPatterns(project);
 
-            Integer build = owlModel.getOWLProject().getSettingsMap().getInteger(JenaKnowledgeBaseFactory.OWL_BUILD_PROPERTY);
-            if (build == null) {
-                fix(owlModel);
-                /*OWLUI.showMessageDialog("Warning: Your Protege project (pprj) file does not contain information" +
-                        "\nabout which version of Protege-OWL it was created with.  Some forms" +
-                        "\nor tabs may not show up correctly.  In that case, you should rebuild your" +
-                        "\nproject from the .owl file." +
-                        "\nIf you think your project file is ok you just need to save the project" +
-                        "\nusing this version to get rid of this warning in the future.");*/
-            }
-            else if (build.intValue() < OWLText.getLatestCompatibleBuild()) {
-                fix(owlModel);
-                /*
-                OWLUI.showMessageDialog("Warning: Your Protege project (pprj) file has been created with a" +
-                        "\nprevious version of Protege-OWL (" + build + ").  As a result, some forms or" +
-                        "\ntabs may not show up correctly.  In that case, you should rebuild your" +
-                        "\nproject from the .owl file.");
-                        */
-            }
-            if (project.getSources().getString(AbsoluteFormsGenerator.SAVE_FORMS_KEY) != null) {
-                try {
-                    AbsoluteFormsLoader absoluteFormsLoader = new AbsoluteFormsLoader(owlModel);
-                    absoluteFormsLoader.loadAll();
-                }
-                catch (Exception ex) {
-                  Log.getLogger().log(Level.SEVERE, "Exception caught at loading absolute forms", ex);
-                }
-            }
-        }
-    }
+		Integer build = owlModel.getOWLProject().getSettingsMap().getInteger(
+				JenaKnowledgeBaseFactory.OWL_BUILD_PROPERTY);
+		if (build == null) {
+			fix(owlModel);
+			/*
+			 * OWLUI.showMessageDialog("Warning: Your Protege project (pprj)
+			 * file does not contain information" + "\nabout which version of
+			 * Protege-OWL it was created with. Some forms" + "\nor tabs may not
+			 * show up correctly. In that case, you should rebuild your" +
+			 * "\nproject from the .owl file." + "\nIf you think your project
+			 * file is ok you just need to save the project" + "\nusing this
+			 * version to get rid of this warning in the future.");
+			 */
+		} else if (build.intValue() < OWLText.getLatestCompatibleBuild()) {
+			fix(owlModel);
+			/*
+			 * OWLUI.showMessageDialog("Warning: Your Protege project (pprj)
+			 * file has been created with a" + "\nprevious version of
+			 * Protege-OWL (" + build + "). As a result, some forms or" +
+			 * "\ntabs may not show up correctly. In that case, you should
+			 * rebuild your" + "\nproject from the .owl file.");
+			 */
+		}
+		
+		if (project.getSources().getString(AbsoluteFormsGenerator.SAVE_FORMS_KEY) != null) {
+			try {
+				AbsoluteFormsLoader absoluteFormsLoader = new AbsoluteFormsLoader(owlModel);
+				absoluteFormsLoader.loadAll();
+			} catch (Exception ex) {
+				Log.getLogger().log(Level.SEVERE, "Exception caught at loading absolute forms", ex);
+			}
+		}	
+	}
 
 	public void afterSave(Project p) {
         if (p.getKnowledgeBase() instanceof OWLModel) {
