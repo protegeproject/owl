@@ -1,7 +1,6 @@
 package edu.stanford.smi.protegex.owl.ui.components.triples;
 
 import edu.stanford.smi.protegex.owl.model.*;
-import edu.stanford.smi.protegex.owl.model.impl.OWLNamespaceManager;
 import edu.stanford.smi.protegex.owl.model.impl.OWLUtil;
 import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
 import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
@@ -109,7 +108,7 @@ public class CreateValueAction extends ResourceSelectionAction {
                 while (owlModel.getNamespaceManager().getNamespaceForPrefix(prefixBase) != null) {
                     prefix = prefixBase + (index++);
                 }
-                String nsBase = OWLNamespaceManager.DEFAULT_DEFAULT_BASE;
+                String nsBase = ProtegeNames.DEFAULT_DEFAULT_BASE;
                 String ns = nsBase + "#";
                 while (owlModel.getNamespaceManager().getPrefix(ns) != null) {
                     ns = nsBase + index + "#";
