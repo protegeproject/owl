@@ -23,6 +23,8 @@ import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.model.OWLIntersectionClass;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
+import edu.stanford.smi.protegex.owl.model.OWLNames;
+import edu.stanford.smi.protegex.owl.model.OWLOntology;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
 import edu.stanford.smi.protegex.owl.model.RDFSClass;
@@ -33,24 +35,22 @@ import edu.stanford.smi.protegex.owl.model.impl.DefaultRDFSLiteral;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 
  // TODO: Find a solution for double slot value entries!! Checking at runtime slows down performance a lot!
- // TODO: rdf:type is added several times
+
  // TODO: fix ranges with datatypes 
- // TODO: Use getFrame from the NFS
+ // TODO: Use getFrame from the MNFS
  // TODO: Use java objects rather than strings for the frames-owl mapping
- // TODO: Check the OWLJavaFactory. Datatype annotation properties are created as annotation properties, not as datatype properties
  // TODO: ClassCastException at sortSubclasses NCI Th. 
- // TODO: RDFSLiterals add raw value as own slot value
- // TODO: Create AnnotationProperty class as subclass of AbstractOWLPropertyClass, set isAnnotation to true, and false for the rest
  // TODO: Complete the FrameCreatorUtility.createClassWithTYpe with the rest of type
  // TODO: Try to use reflection to see how fast it is
  // TODO: Try to create Java objects as soon as possible (by using heuristics) 
  // TODO: Try to process remaining undef triples by using heuristics
  // TODO: Process each triple in a try catch
- // TODO: check multiple type assertions 
+
 
 // TODO: (done) Put owl:Thing as superclass to all classes without superclass
 // TODO: (done) Add not-implemented facets/prop (range, equiv classes)
 // TODO: (done) fix the XSD datatypes (they are now xsd:string instead of the fully qualified name)
+// TODO: (done) rdf:type is added several times
 
 public class TripleFrameCache {
 	
@@ -452,13 +452,28 @@ public class TripleFrameCache {
 	
 // ============================================ Post processing =================================================================
 	
-	public void doPostProcessing() {		
+	public void doPostProcessing() {
+		//processAddPrefixesToOntology();
 		processInferredSuperclasses();
 		processClsesWithoutSupercls();
-		processInstancesWithMultipleTypes();
-		
+		processInstancesWithMultipleTypes();		
 	}
 	
+	
+	
+
+	private void processAddPrefixesToOntology() {
+		Slot prefixesSlot = owlModel.getSlot(OWLNames.Slot.ONTOLOGY_PREFIXES);
+		
+		//check whether this is OK at imports..
+		OWLOntology defaultOntology = owlModel.getDefaultOWLOntology();
+		
+		for (String prefix : owlModel.getNamespaceManager().getPrefixes()) {
+			String value = prefix + ":" + owlModel.getNamespaceManager().getNamespaceForPrefix(prefix);
+			defaultOntology.addOwnSlotValue(prefixesSlot, value);
+		}		
+	
+	}
 
 	private void processClsesWithoutSupercls() {
 		long time0 = System.currentTimeMillis();
@@ -561,6 +576,8 @@ public class TripleFrameCache {
 		}
 		
 	}
+
+	
 	
 	
 }
