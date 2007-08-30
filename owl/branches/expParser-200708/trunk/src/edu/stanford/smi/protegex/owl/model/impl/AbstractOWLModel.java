@@ -220,6 +220,10 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
     private Cls owlObjectPropertyClass;
 
+    private Cls topOWLOntologyClass;
+    
+    
+    private Slot topOWLOntologyURISlot; 
 
     private Slot owlAllValuesFromProperty;
 
@@ -853,7 +857,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
         Cls directedBinaryRelationCls = getCls(Model.Cls.DIRECTED_BINARY_RELATION);
         directedBinaryRelationCls.addDirectSuperclass(getRootCls());
         directedBinaryRelationCls.setDirectType(owlNamedClassClass);
-
+        
         initOntologyMetaclass();
 
         rdfPropertyClass = getCls(RDFNames.Cls.PROPERTY);
@@ -929,6 +933,13 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
         owlDataRangeClass.addDirectTemplateSlot(owlOneOfProperty);
         owlEnumeratedClassClass.addDirectTemplateSlot(owlOneOfProperty);
 
+        topOWLOntologyClass = createSystemCls(OWLNames.Cls.TOP_LEVEL_ONTOLOGY, getRootCls());
+        topOWLOntologyURISlot = createSystemSlot(OWLNames.Slot.TOP_LEVEL_ONTOLOGY_URI, rdfPropertyClass);
+        topOWLOntologyURISlot.setValueType(ValueType.INSTANCE);
+        topOWLOntologyURISlot.setAllowsMultipleValues(false);
+        topOWLOntologyURISlot.setAllowedClses(CollectionUtilities.createCollection(owlOntologyClass));
+        topOWLOntologyClass.addDirectTemplateSlot(topOWLOntologyURISlot);
+        
         setAbstract(owlThingClass, false);
         ((Cls) owlThingClass).addOwnSlotValue(rdfTypeProperty, owlNamedClassClass);
 
@@ -1015,25 +1026,35 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
 
     private void initOntologyMetaclass() {
+    	//owl:Ontology
         owlOntologyClass = createSystemCls(OWLNames.Cls.ONTOLOGY,
                                            Collections.singleton(owlThingClass),
                                            owlNamedClassClass);
+        
+        //:OWL-ONTOLOGY-PREFIXES
         owlOntologyPrefixesProperty = createSystemSlot(OWLNames.Slot.ONTOLOGY_PREFIXES, rdfPropertyClass);
         owlOntologyPrefixesProperty.setAllowsMultipleValues(true);
         owlOntologyPrefixesProperty.setValueType(ValueType.STRING);
         owlOntologyClass.addDirectTemplateSlot(owlOntologyPrefixesProperty);
+        
+        //owl:imports
         owlImportsProperty = createSystemSlot(OWLNames.Slot.IMPORTS, rdfPropertyClass);
         owlImportsProperty.setAllowsMultipleValues(true);
         owlOntologyClass.addDirectTemplateSlot(owlImportsProperty);
 
+        //owl:backwardCompatibleWith
         owlBackwardCompatibleWithProperty = createAnnotationOWLObjectProperty(OWLNames.Slot.BACKWARD_COMPATIBLE_WITH);
         owlBackwardCompatibleWithProperty.setAllowedClses(Collections.EMPTY_LIST);
         //((Cls) owlThingClass).removeDirectTemplateSlot(owlBackwardCompatibleWithProperty);
         owlOntologyClass.addDirectTemplateSlot(owlBackwardCompatibleWithProperty);
+        
+        //owl:incompatibleWith
         owlIncompatibleWithProperty = createAnnotationOWLObjectProperty(OWLNames.Slot.INCOMPATIBLE_WITH);
         owlIncompatibleWithProperty.setAllowedClses(Collections.EMPTY_LIST);
         //((Cls) owlThingClass).removeDirectTemplateSlot(owlIncompatibleWithProperty);
         owlOntologyClass.addDirectTemplateSlot(owlIncompatibleWithProperty);
+        
+        //owl:priorVersion
         owlPriorVersionProperty = createAnnotationOWLObjectProperty(OWLNames.Slot.PRIOR_VERSION);
         owlPriorVersionProperty.setAllowedClses(Collections.EMPTY_LIST);
         //((Cls) owlThingClass).removeDirectTemplateSlot(owlPriorVersionProperty);
@@ -1379,14 +1400,15 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     }
 
 
-    protected void createDefaultOWLOntologyReally() {
+    protected OWLOntology createDefaultOWLOntologyReally() {
         Instance ontology = createInstance(ProtegeNames.DEFAULT_ONTOLOGY, owlOntologyClass);
         ontology.setDirectOwnSlotValue(rdfTypeProperty, owlOntologyClass);
-        getNamespaceManager().setDefaultNamespace(OWLNamespaceManager.DEFAULT_DEFAULT_NAMESPACE);
+        getNamespaceManager().setDefaultNamespace(ProtegeNames.DEFAULT_DEFAULT_NAMESPACE);
         getNamespaceManager().setPrefix(RDF.getURI(), RDFNames.RDF_PREFIX);
         getNamespaceManager().setPrefix(RDFS.getURI(), RDFSNames.RDFS_PREFIX);
         getNamespaceManager().setPrefix(OWL.NS, OWLNames.OWL_PREFIX);
         getNamespaceManager().setPrefix(XSDDatatype.XSD + "#", RDFNames.XSD_PREFIX);
+        return (OWLOntology) ontology;
     }
 
     //added by TT: It was missing in the initialization and set only too late
@@ -1622,8 +1644,9 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     }
 
 
-    public OWLOntology createOWLOntology(String prefix) {
-        return (OWLOntology) createInstance(prefix + ":", owlOntologyClass);
+    public OWLOntology createOWLOntology(String uri) {
+        //return (OWLOntology) createInstance(prefix + ":", owlOntologyClass);
+    	return (OWLOntology) createInstance(uri, owlOntologyClass);
     }
 
 
@@ -1631,8 +1654,8 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
      * @deprecated
      */
     public OWLOntology createOWLOntology(String name, String uri) {
-        String prefix = getNamespaceManager().getPrefix(uri);
-        return createOWLOntology(prefix);
+        //String prefix = getNamespaceManager().getPrefix(uri);
+        return createOWLOntology(uri);
     }
 
 
@@ -2533,6 +2556,9 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
                 protegeInferredTypeProperty = getSlot(ProtegeNames.Slot.INFERRED_TYPE),
                 protegeInferredSubclassesProperty = getSlot(ProtegeNames.Slot.INFERRED_SUBCLASSES),
                 protegeInferredSuperclassesProperty = getSlot(ProtegeNames.Slot.INFERRED_SUPERCLASSES),
+                
+                topOWLOntologyClass = getCls(OWLNames.Cls.TOP_LEVEL_ONTOLOGY),
+                topOWLOntologyURISlot = getSlot(OWLNames.Slot.TOP_LEVEL_ONTOLOGY_URI),
 
                 owlAllDifferentClass = getCls(OWLNames.Cls.ALL_DIFFERENT),
                 owlAllValuesFromProperty = getSlot(OWLNames.Slot.ALL_VALUES_FROM),
@@ -3595,16 +3621,18 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
     private static void removeProtegeSystemResources(KnowledgeBase kb, Collection frames) {
         if (frames.size() > 0) {
-            final Cls dbrClass = kb.getCls(Model.Cls.DIRECTED_BINARY_RELATION);
-            //if (kb.getProject() != null && kb.getProject().isHidden(dbrClass)) {
+            final Cls dbrClass = kb.getCls(Model.Cls.DIRECTED_BINARY_RELATION);            
             frames.remove(dbrClass);
-            //}
+            
+            frames.remove(kb.getCls(OWLNames.Cls.TOP_LEVEL_ONTOLOGY));
+            
             frames.remove(kb.getCls(Model.Cls.PAL_CONSTRAINT));
             frames.remove(kb.getCls(OWLNames.Cls.ANONYMOUS_ROOT));
             frames.remove(kb.getCls(OWLNames.Cls.OWL_CLASS));
-            frames.remove(kb.getSlot(OWLNames.Slot.ONTOLOGY_PREFIXES));
+            frames.remove(kb.getSlot(OWLNames.Slot.ONTOLOGY_PREFIXES));            
             frames.remove(kb.getSlot(OWLNames.Slot.RESOURCE_URI));
             frames.remove(kb.getSlot(Model.Slot.CONSTRAINTS));
+            frames.remove(kb.getSlot(OWLNames.Slot.TOP_LEVEL_ONTOLOGY_URI));
         }
     }
 
