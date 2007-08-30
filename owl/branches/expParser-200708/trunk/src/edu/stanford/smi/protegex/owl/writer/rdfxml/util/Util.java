@@ -84,6 +84,8 @@ public class Util {
 
         excludedPropertyNames.add(OWLNames.OWL_PREFIX);
         excludedPropertyNames.add(OWLNames.Slot.ONTOLOGY_PREFIXES);
+        
+        excludedPropertyNames.add(OWLNames.Slot.TOP_LEVEL_ONTOLOGY_URI);
 
         // Handle imports in a special way
         excludedPropertyNames.add(OWLNames.Slot.IMPORTS);
