@@ -238,4 +238,9 @@ public class DefaultOWLOntology extends DefaultRDFIndividual implements OWLOntol
         TripleStore active = getOWLModel().getTripleStoreModel().getActiveTripleStore();
         return this.equals(TripleStoreUtil.getFirstOntology(getOWLModel(), active));
     }
+    
+    @Override
+    public String toString() {
+    	return "OWLOntology(" + getName() + ")";
+    }
 }
