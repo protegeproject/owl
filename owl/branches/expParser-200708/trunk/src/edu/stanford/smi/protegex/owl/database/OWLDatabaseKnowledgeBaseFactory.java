@@ -18,6 +18,7 @@ import edu.stanford.smi.protege.model.framestore.NarrowFrameStore;
 import edu.stanford.smi.protege.server.ClientInitializerKnowledgeBaseFactory;
 import edu.stanford.smi.protege.storage.database.DatabaseFrameDb;
 import edu.stanford.smi.protege.storage.database.DatabaseKnowledgeBaseFactory;
+import edu.stanford.smi.protege.util.CollectionUtilities;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protege.util.MessageError;
 import edu.stanford.smi.protege.util.PropertyList;
@@ -25,7 +26,11 @@ import edu.stanford.smi.protegex.owl.database.triplestore.DatabaseTripleStoreMod
 import edu.stanford.smi.protegex.owl.jena.JenaKnowledgeBaseFactory;
 import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
 import edu.stanford.smi.protegex.owl.jena.parser.ProtegeOWLParser;
+import edu.stanford.smi.protegex.owl.model.NamespaceManager;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.model.OWLNames;
+import edu.stanford.smi.protegex.owl.model.OWLOntology;
+import edu.stanford.smi.protegex.owl.model.ProtegeNames;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
 import edu.stanford.smi.protegex.owl.model.factory.OWLJavaFactory;
 import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
@@ -136,6 +141,12 @@ public class OWLDatabaseKnowledgeBaseFactory extends DatabaseKnowledgeBaseFactor
         if (kb instanceof OWLModel) {
             OWLModel owlModel = (OWLModel) kb;
             sources.setInteger(JenaKnowledgeBaseFactory.OWL_BUILD_PROPERTY, OWLText.getBuildNumber());
+            
+            //move this from here
+            if (owlModel instanceof JenaOWLModel) {
+            	writePrefixesToDatabase(owlModel);
+            }
+            
             if (owlModel instanceof JenaOWLModel) {
                 kb.removeFrameStore(owlModel.getOWLFrameStore());
             }
@@ -143,6 +154,7 @@ public class OWLDatabaseKnowledgeBaseFactory extends DatabaseKnowledgeBaseFactor
             if (owlModel instanceof JenaOWLModel) {
                 kb.insertFrameStore(owlModel.getOWLFrameStore(), 0);
             }
+
         }
         else {
         	String message = "You can only save OWL projects to OWL Database format.";
@@ -152,7 +164,50 @@ public class OWLDatabaseKnowledgeBaseFactory extends DatabaseKnowledgeBaseFactor
     }
 
 
-    protected void updateKnowledgeBase(DefaultKnowledgeBase kb) {
+    private void writePrefixesToDatabase(OWLModel owlModel) {
+		// TODO Auto-generated method stub
+    	System.out.println(owlModel.getDefaultOWLOntology());
+    	System.out.println(owlModel.getNamespaceManager().getPrefixes());
+    	
+    	//delete the initial default ontology
+    	OWLOntology initialDefaultOntology = owlModel.getOWLOntologyByURI(ProtegeNames.DEFAULT_ONTOLOGY);
+    	if (initialDefaultOntology != null) {
+    		initialDefaultOntology.delete();
+    	}
+    	
+    	OWLOntology defaultOwlOntology = owlModel.getDefaultOWLOntology();
+    	
+    	//write the default ontology to the database
+    	createTopLevelOntologyInstance(owlModel);
+    	
+    	Slot prefixesSlot = owlModel.getSlot(OWLNames.Slot.ONTOLOGY_PREFIXES);
+    	NamespaceManager nm = owlModel.getNamespaceManager();
+    	for (String prefix  : nm.getPrefixes()) {
+			String namespace = nm.getNamespaceForPrefix(prefix);
+			String value = prefix + ":" + namespace;
+			defaultOwlOntology.addOwnSlotValue(prefixesSlot, value);
+		}
+		
+	}
+
+    
+    protected void createTopLevelOntologyInstance(OWLModel owlModel) {
+		Cls topLevelOWLOntologyClass = owlModel.getCls(OWLNames.Cls.TOP_LEVEL_ONTOLOGY);
+		Slot topLevelOWLOntologyURISlot = owlModel.getSlot(OWLNames.Slot.TOP_LEVEL_ONTOLOGY_URI);
+		
+		if (topLevelOWLOntologyClass == null || topLevelOWLOntologyURISlot == null) {
+			Log.getLogger().warning("Could not write top level ontology to the database. Missing system frames");
+			return;
+		}
+		
+		//should be just one
+		Instance inst = topLevelOWLOntologyClass.createDirectInstance(null);
+		inst.setOwnSlotValue(topLevelOWLOntologyURISlot, owlModel.getDefaultOWLOntology());
+		
+	}
+    
+
+	protected void updateKnowledgeBase(DefaultKnowledgeBase kb) {
         // Overloaded to suppress super call
     }
 
