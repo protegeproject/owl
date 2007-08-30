@@ -78,6 +78,8 @@ public interface OWLNames {
         public final static String TRANSITIVE_PROPERTY = OWL_NAMESPACE + "TransitiveProperty";
 
         public final static String UNION_CLASS = OWL_NAMESPACE + "UnionClass";
+        
+        public final static String TOP_LEVEL_ONTOLOGY = ":OWL-TOP-LEVEL-ONTOLOGY";
     }
 
     public static interface Slot {
@@ -121,14 +123,10 @@ public interface OWLNames {
 
         public final static String IMPORTS = OWL_NAMESPACE + "imports";
 
-        public final static String ONTOLOGY_PREFIXES = ":OWL-ONTOLOGY-PREFIXES";
-
         public final static String ONE_OF = OWL_NAMESPACE + "oneOf";
 
         public final static String PRIOR_VERSION = OWL_NAMESPACE + "priorVersion";
-
-        public final static String RESOURCE_URI = ":OWL-RESOURCE-URI";
-
+        
         public final static String SAME_AS = OWL_NAMESPACE + "sameAs";
 
         public final static String SOME_VALUES_FROM = OWL_NAMESPACE + "someValuesFrom";
@@ -140,6 +138,15 @@ public interface OWLNames {
         public final static String VERSION_INFO = OWL_NAMESPACE + "versionInfo";
 
         public final static String UNION_OF = OWL_NAMESPACE + "unionOf";
+        
+        //Non-OWL slots that are used internally by Protege
+        
+        public final static String ONTOLOGY_PREFIXES = ":OWL-ONTOLOGY-PREFIXES";
+                      
+        public final static String RESOURCE_URI = ":OWL-RESOURCE-URI";
+        
+        public final static String TOP_LEVEL_ONTOLOGY_URI = ":OWL-TOP-LEVEL-ONTOLOGY-URI";
+        
     }
 
 
