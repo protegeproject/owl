@@ -230,7 +230,9 @@ public class OWLSubpropertyPane extends SelectableContainer implements HostResou
                 return OWLSubpropertyPane.this.getPopupMenu();
             }
         });
+        
         setupDragAndDrop();
+        
         // Necessary because the actions don't get notified when the tree is initialized.
         viewPropertyAction.setEnabled(true);
         deletePropertyAction.setEnabled(true);
@@ -432,6 +434,11 @@ public class OWLSubpropertyPane extends SelectableContainer implements HostResou
 
 
     private void setupDragAndDrop() {
+    	//Drag-and-drop is enabled only if the PropertiesTab is not read-only     	
+    	if (!RemoteClientFrameStore.isOperationAllowed(owlModel, OperationImpl.PROPERTY_TAB_WRITE)) {
+    		return;
+    	}
+    		
         DragSource.getDefaultDragSource().createDefaultDragGestureRecognizer(getTree(),
                                                                              DnDConstants.ACTION_COPY_OR_MOVE, new SlotsTreeDragSourceListener());
         new DropTarget(getTree(), DnDConstants.ACTION_COPY_OR_MOVE, new SlotsTreeTarget());
