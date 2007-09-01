@@ -171,7 +171,7 @@ public class OWLSubpropertyPane extends SelectableContainer implements HostResou
         public void onSelectionChange() {
             RDFProperty slot = (RDFProperty) CollectionUtilities.getFirstItem(this.getSelection());
             if (slot != null) {
-                setAllowed(slot.isEditable() && isEnabled());
+                setAllowed(slot.isEditable() && OWLSubpropertyPane.this.isEnabled());
             }
         }
     };
