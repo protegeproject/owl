@@ -1,9 +1,11 @@
 package edu.stanford.smi.protegex.owl.storage;
 
 import edu.stanford.smi.protege.model.*;
+import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
 import edu.stanford.smi.protegex.owl.model.*;
 import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
 import edu.stanford.smi.protegex.owl.model.impl.XMLSchemaDatatypes;
+import edu.stanford.smi.protegex.owl.writer.rdfxml.util.ProtegeWriterSettings;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -28,12 +30,21 @@ public class ProtegeSaver extends KnowledgeBaseCopier {
 
 
     public ProtegeSaver(KnowledgeBase source, OWLModel target) {
-        super(source, target);
-        this.owlModel = target;
+    	this(source, target, false);
     }
 
 
-    protected void addExtraDirectTypes(Instance oldInstance, Instance newInstance) {
+    public ProtegeSaver(KnowledgeBase source, OWLModel target, boolean useNativeWriter) {
+        super(source, target);
+        this.owlModel = target;
+        
+        if (useNativeWriter && owlModel instanceof JenaOWLModel) {
+        	((JenaOWLModel)owlModel).setWriterSettings(new ProtegeWriterSettings((JenaOWLModel)owlModel));
+        }
+	}
+
+
+	protected void addExtraDirectTypes(Instance oldInstance, Instance newInstance) {
         super.addExtraDirectTypes(oldInstance, newInstance);
         if (oldInstance instanceof Slot &&
                 !((Slot) oldInstance).getAllowsMultipleValues() &&
