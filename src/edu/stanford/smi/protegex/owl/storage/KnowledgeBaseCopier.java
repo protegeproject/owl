@@ -1,6 +1,7 @@
 package edu.stanford.smi.protegex.owl.storage;
 
 import edu.stanford.smi.protege.model.*;
+import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.model.OWLNames;
 
 import java.util.*;
@@ -59,9 +60,10 @@ public class KnowledgeBaseCopier {
         createFacetOverrides();
         // TODO TT: This is causing infinite looping in certain cases. Check what's going on
         setOwnSlotValues();
-        for (Iterator it = todoSlots.keySet().iterator(); it.hasNext();) {
+        for (Iterator it = todoSlots.keySet().iterator(); it.hasNext();) {        	
             Slot oldSlot = (Slot) it.next();
             Slot newSlot = (Slot) todoSlots.get(oldSlot);
+            log("Setting value type of property: " + newSlot + " (Old slot: " + oldSlot + ")");
             setValueType(oldSlot, newSlot);
         }
     }
@@ -346,7 +348,7 @@ public class KnowledgeBaseCopier {
 
 
     protected void log(String str) {
-        // System.out.println("[KnowledgeBaseCopier] " + str);
+       // Log.getLogger().info("[KnowledgeBaseCopier] " + str);
     }
 
 
