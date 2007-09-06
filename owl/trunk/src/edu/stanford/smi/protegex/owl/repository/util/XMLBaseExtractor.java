@@ -85,6 +85,11 @@ public class XMLBaseExtractor {
         public void startPrefixMapping(String prefix,
                                        String uri)
                 throws SAXException {
+        	
+        	if (prefix == null || prefix.equals("")) {
+        		defaultNamespace = uri;
+        	}
+        	
         }
 
 
@@ -100,7 +105,7 @@ public class XMLBaseExtractor {
                 throws SAXException {
             if (startElement == false) {
                 rootElementName = qName;
-                for (int i = 0; i < atts.getLength(); i++) {
+                for (int i = 0; i < atts.getLength(); i++) {                	
                     if (atts.getQName(i).equals("xml:base")) {
                         URI attURL = null;
                         try {
@@ -110,16 +115,14 @@ public class XMLBaseExtractor {
                             Log.getLogger().log(Level.SEVERE, "Exception caught", e);
                         }
                         xmlBase = attURL;
-                    }
-                    else if (atts.getLocalName(i).equals("xmlns")) {
-                        defaultNamespace = atts.getValue(i);
-                    }
+                    }           
                 }
                 startElement = true;
-            }
+           }   
             else {
                 throw new SAXException("No xml:base");
             }
+            
         }
 
 
