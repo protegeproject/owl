@@ -36,17 +36,22 @@ public class OWLModelAllTripleStoresWriter {
 
 
     public void write() throws Exception {
-        Iterator ts = model.getTripleStoreModel().listUserTripleStores();
+        Iterator ts = model.getTripleStoreModel().listUserTripleStores();        
         TripleStore mainTS = (TripleStore) ts.next();
+        
         File file = new File(uri);
         FileOutputStream mainOS = new FileOutputStream(file);
-	    OutputStreamWriter osw = new OutputStreamWriter(mainOS, FileUtilities.getWriteEncoding());
+        String encoding = FileUtilities.getWriteEncoding();
+	    OutputStreamWriter osw = new OutputStreamWriter(mainOS, encoding);
         BufferedWriter bw = new BufferedWriter(osw);
+        
         OWLModelWriter mainWriter = getOwlModelWriter(mainTS, bw);
-	    mainWriter.getXmlWriter().setEncoding(osw.getEncoding());
+	   // mainWriter.getXmlWriter().setEncoding(osw.getEncoding());
+        mainWriter.getXmlWriter().setEncoding(encoding);
         mainWriter.write();
         bw.flush();
         bw.close();
+        
         while (ts.hasNext()) {
             TripleStore tripleStore = (TripleStore) ts.next();
             String name = tripleStore.getName();
