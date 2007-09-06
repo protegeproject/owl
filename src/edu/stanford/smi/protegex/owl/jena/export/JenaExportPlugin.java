@@ -51,7 +51,7 @@ public class JenaExportPlugin implements ExportPlugin {
                 String filePath = panel.getOWLFilePath();
                 WaitCursor cursor = new WaitCursor(ProjectManager.getProjectManager().getMainPanel());
                 try {
-                    exportProject(project.getKnowledgeBase(), filePath);
+                    exportProject(project.getKnowledgeBase(), filePath, panel.getUseNativeWriter());
                 }
                 catch (Exception ex) {
                     Log.getLogger().log(Level.SEVERE, "Exception caught", ex);
@@ -65,28 +65,33 @@ public class JenaExportPlugin implements ExportPlugin {
         }
     }
 
-
     private void exportProject(KnowledgeBase kb, String filePath) {
+    	exportProject(kb, filePath, false);
+    }
+
+    private void exportProject(KnowledgeBase kb, String filePath, boolean useNativeWriter) {
         Collection errors = new ArrayList();
+        
         JenaKnowledgeBaseFactory factory = new JenaKnowledgeBaseFactory();
         Project newProject = Project.createNewProject(factory, errors);
+        
         URI fileURI = new File(filePath).toURI();
         newProject.setProjectURI(fileURI);
+        
         JenaOWLModel owlModel = (JenaOWLModel) newProject.getKnowledgeBase();
         if (kb instanceof OWLDatabaseModel) {
             OntModel newModel = ((OWLDatabaseModel) kb).getOntModel();
             owlModel.save(fileURI, FileUtils.langXML, errors, newModel);
-        }
-        else {  // Any other Protege format
+        } else {  // Any other Protege format
             // TODO: owlModel.initWithProtegeMetadataOntology(errors);
-            new ProtegeSaver(kb, owlModel).run();
+            new ProtegeSaver(kb, owlModel, useNativeWriter).run();
             owlModel.save(fileURI, FileUtils.langXMLAbbrev, errors);
         }
+        
         if (errors.size() == 0) {
             ProtegeUI.getModalDialogFactory().showMessageDialog(owlModel,
                     "Project has been exported to " + filePath);
-        }
-        else {
+        } else {
             ProtegeUI.getModalDialogFactory().showErrorMessageDialog(owlModel,
                     "Export Failed: " + errors.iterator().next());
         }
