@@ -622,16 +622,24 @@ public class Jena {
         return namespace.endsWith("#") || namespace.endsWith(":");
     }
 
-
+    
+    //backward compatibility
+    /**
+     * @deprecated - Use {@link prepareWriter(RDFWriter writer, String language, String namespace, String xmlBase)}  
+     */
     public static void prepareWriter(RDFWriter writer, String language, String namespace) {
+        String xmlBase = namespace;
+        if (Jena.isNamespaceWithSeparator(xmlBase) && !namespace.endsWith("/")) {
+            xmlBase = xmlBase.substring(0, xmlBase.length() - 1);
+        }
+    	
+        prepareWriter(writer, language, namespace, xmlBase);
+    }
+
+    public static void prepareWriter(RDFWriter writer, String language, String namespace, String xmlBase) {
         if (FileUtils.langXMLAbbrev.equals(language) || FileUtils.langXML.equals(language)) {
             writer.setProperty("showXmlDeclaration", "" + !Jena.isXMLTagHidden());  // Suggested by Alix
             writer.setProperty("relativeURIs", "same-document");
-            //FIXME: TT - wrong!
-            String xmlBase = namespace;
-            if (Jena.isNamespaceWithSeparator(xmlBase) && !namespace.endsWith("/")) {
-                xmlBase = xmlBase.substring(0, xmlBase.length() - 1);
-            }
             writer.setProperty("xmlbase", xmlBase);
             if (FileUtils.langXMLAbbrev.equals(language)) {
                 writer.setProperty("blockRules", "propertyAttr");

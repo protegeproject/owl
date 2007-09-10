@@ -16,6 +16,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.logging.Level;
 
+import com.hp.hpl.jena.graph.GetTriple;
 import com.hp.hpl.jena.graph.Graph;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntModelSpec;
@@ -389,6 +390,7 @@ public class JenaOWLModel extends AbstractOWLModel implements OntModelProvider {
         try {
             File file = new File(fileURI);
             String namespace = getNamespaceManager().getDefaultNamespace();
+        	//String namespace = getDefaultOWLOntology().getName();
             save(file, ontModel, language, namespace);
         }
         catch (Throwable t) {
@@ -397,11 +399,18 @@ public class JenaOWLModel extends AbstractOWLModel implements OntModelProvider {
             errors.add(new MessageError(new Exception(t), message));
         }
     }
-
-
+    
+    /**
+     * @deprecated -Use save(File file, OntModel ontModel, String language, String namespace, String xmlBase)
+     */
     public static void save(File file, OntModel ontModel, String language, String namespace) throws IOException {
+    	save(file, ontModel, language, namespace, namespace);
+    }
+
+
+    public static void save(File file, OntModel ontModel, String language, String namespace, String xmlBase) throws IOException {
         OutputStream outputStream = new FileOutputStream(file);
-        save(outputStream, ontModel, language, namespace);
+        save(outputStream, ontModel, language, namespace, xmlBase);
     }
 
 
@@ -411,7 +420,8 @@ public class JenaOWLModel extends AbstractOWLModel implements OntModelProvider {
     public void save(OutputStream os, String language, Collection errors, OntModel ontModel) {
         try {
             String namespace = getNamespaceManager().getDefaultNamespace();
-            save(os, ontModel, language, namespace);
+        	//String namespace = getDefaultOWLOntology().getName();
+            save(os, ontModel, language, namespace, namespace);
         }
         catch (Throwable t) {
            	String message = "Failed to save file to output stream"; 
@@ -421,15 +431,23 @@ public class JenaOWLModel extends AbstractOWLModel implements OntModelProvider {
     }
 
 
-    private static void save(OutputStream outputStream, OntModel ontModel, String language, String namespace) throws IOException {
-        saveModel(outputStream, ontModel.getBaseModel(), language, namespace);
+    private static void save(OutputStream outputStream, OntModel ontModel, String language, String namespace, String xmlBase) throws IOException {
+        saveModel(outputStream, ontModel.getBaseModel(), language, namespace, xmlBase);
     }
 
+    /**
+     * @deprecated Use 
+     */
+    public static void saveModel(OutputStream outputStream, Model model, String language, String namespace) throws IOException {    	
+    	saveModel(outputStream, model, language, namespace, namespace);
+    }
+    
 
-    public static void saveModel(OutputStream outputStream, Model model, String language, String namespace) throws IOException {
+
+    public static void saveModel(OutputStream outputStream, Model model, String language, String namespace, String xmlBase) throws IOException {
         PrintStream ps = new PrintStream(outputStream);
         RDFWriter writer = model.getWriter(language);
-        Jena.prepareWriter(writer, language, namespace);
+        Jena.prepareWriter(writer, language, namespace, xmlBase);
         boolean xml = Jena.isXMLLanguage(language);
         if (xml) {
             String encoding = SystemUtilities.getFileEncoding();
