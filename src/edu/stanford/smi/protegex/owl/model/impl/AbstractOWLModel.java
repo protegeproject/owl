@@ -2060,9 +2060,12 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
         if (metaSlot != null) {
             OWLOntology oi = getDefaultOWLOntology();
             if (oi != null) {
-                String value = (String) oi.getPropertyValue(metaSlot);
-                if (value != null && value.length() > 0) {
-                    return value;
+                Object value = oi.getPropertyValue(metaSlot);                
+                if (value instanceof String) {
+                	String stringValue = (String) value;
+                	if (stringValue != null && stringValue.length() > 0) {
+                		return stringValue;
+                	}
                 }
             }
         }
