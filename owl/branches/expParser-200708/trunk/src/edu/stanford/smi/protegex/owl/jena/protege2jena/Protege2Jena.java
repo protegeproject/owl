@@ -343,7 +343,10 @@ public class Protege2Jena {
     public static void saveAll(OWLModel owlModel, URI uri, String language) throws Exception {
         List fillTripleStores = new ArrayList();
         Iterator ts = owlModel.getTripleStoreModel().listUserTripleStores();
-        fillTripleStores.add(ts.next());
+        TripleStore topTripleStore = (TripleStore) ts.next();
+        String topXmlBase = topTripleStore.getOriginalXMLBase();
+        
+        fillTripleStores.add(topTripleStore);
         while (ts.hasNext()) {
             TripleStore tripleStore = (TripleStore) ts.next();
             String name = tripleStore.getName();
@@ -361,8 +364,11 @@ public class Protege2Jena {
 
 
         File file = new File(uri);
+        
         String namespace = owlModel.getNamespaceManager().getDefaultNamespace();
-        JenaOWLModel.save(file, ontModel, language, namespace);
+    	//String namespace = owlModel.getDefaultOWLOntology().getName();
+    	
+        JenaOWLModel.save(file, ontModel, language, namespace, topXmlBase);
         Iterator tripleStores = owlModel.getTripleStoreModel().listUserTripleStores();
         tripleStores.next();
         while (tripleStores.hasNext()) {
@@ -375,7 +381,7 @@ public class Protege2Jena {
                 System.out.println("Saving import " + ontologyName + " to " +
                         rep.getOntologyLocationDescription(ontologyName));
                 OutputStream os = rep.getOutputStream(ontologyName);
-                JenaOWLModel.saveModel(os, model, language, ontologyName + "#");
+                JenaOWLModel.saveModel(os, model, language, ontologyName + "#", tripleStore.getOriginalXMLBase());
             }
         }
 
