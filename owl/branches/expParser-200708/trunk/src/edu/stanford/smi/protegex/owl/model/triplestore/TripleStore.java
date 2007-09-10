@@ -128,6 +128,11 @@ public interface TripleStore extends NamespaceMap, Disposable {
     void sortPropertyValues(RDFResource resource, RDFProperty property, Comparator comparator);
 
 
+    String getOriginalXMLBase();
+    
+    void setOriginalXMLBase(String xmlBase);
+    
+    
     /**
      * Debugging only.
      */
