@@ -33,6 +33,8 @@ public abstract class AbstractTripleStore implements ProtegeTripleAdder, TripleS
     protected OWLModel owlModel;
 
     protected TripleStoreModel tripleStoreModel;
+    
+    protected String originalXMLBase;
 
 
     public AbstractTripleStore(OWLModel owlModel,
@@ -380,6 +382,15 @@ public abstract class AbstractTripleStore implements ProtegeTripleAdder, TripleS
     }
 
 
+    public String getOriginalXMLBase() {    
+    	return originalXMLBase;
+    }
+    
+    public void setOriginalXMLBase(String xmlBase) {
+    	originalXMLBase = xmlBase;    	
+    }
+    
+    
     public String toString() {
         return "TripleStore(" + getName() + ")";
     }
