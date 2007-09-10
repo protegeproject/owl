@@ -19,6 +19,8 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.swing.text.html.HTMLDocument.HTMLReader.IsindexAction;
+
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
@@ -77,6 +79,7 @@ import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreUtil;
 import edu.stanford.smi.protegex.owl.model.triplestore.impl.RDFListPostProcessor;
 import edu.stanford.smi.protegex.owl.repository.Repository;
 import edu.stanford.smi.protegex.owl.repository.RepositoryManager;
+import edu.stanford.smi.protegex.owl.repository.util.XMLBaseExtractor;
 import edu.stanford.smi.protegex.owl.swrl.model.SWRLNames;
 import edu.stanford.smi.protegex.owl.swrl.model.factory.SWRLJavaFactory;
 import edu.stanford.smi.protegex.owl.ui.repository.UnresolvedImportUIHandler;
@@ -312,11 +315,21 @@ public class ProtegeOWLParser {
 		Log.getLogger().info("Loading triples");
 
 		ARP arp = createARP();
+			
+		//find out the original xmlBase; - do this nicer
 		
-		long startTime = System.currentTimeMillis();		
+		URI ontologyURI = URIUtilities.createURI(ontologyName);				
+		InputStream is = getInputStream(ontologyURI.toURL());
+		XMLBaseExtractor xmlBaseExtractor = new XMLBaseExtractor(is);
+		URI xmlBase = xmlBaseExtractor.getXMLBase();
+		if (xmlBase != null) {
+			tripleStore.setOriginalXMLBase(xmlBase.toString());
+		}
+		
+		long startTime = System.currentTimeMillis();	
 
 		invokation.invokeARP(arp);
-
+		
 		long endTime = System.currentTimeMillis();
 
 		Log.getLogger().info("[ProtegeOWLParser] Completed triple loading after " + (endTime - startTime) + " ms");
@@ -325,10 +338,22 @@ public class ProtegeOWLParser {
 		// tfc.getUndefTripleManager().dumpUndefTriples();
 
 		tfc.processUndefTriples();
-		tfc.doPostProcessing();
+		//tfc.doPostProcessing();
 
-		//TT - check whether this is right here when you process imports
-		((AbstractOWLModel)owlModel).setDefaultOWLOntology((OWLOntology) owlModel.getFrame(tripleStore.getName()));
+		//TT - This check should not be here.. The load method should be called only at the first parsing, the imports should call other methods
+		if (!importing) {
+			/* Delete the old default ontology and set the new one. The old default ontology has been created artifically at initialization,
+			 * and it should not just stay around in the ontology.
+			 */
+			OWLOntology newDefaultOWLOntology = (OWLOntology) owlModel.getFrame(tripleStore.getName());			
+			OWLOntology oldDefaultOntology = owlModel.getDefaultOWLOntology();
+			
+			if (!oldDefaultOntology.equals(newDefaultOWLOntology) && oldDefaultOntology.getName().equals(ProtegeNames.DEFAULT_ONTOLOGY)) {
+				oldDefaultOntology.delete();
+			}
+			
+			((AbstractOWLModel)owlModel).setDefaultOWLOntology(newDefaultOWLOntology);
+		}
 		
 		//tfc.getUndefTripleManager().dumpUndefTriples();
 		System.out.println("Dump after end processing. Size: "	+ tfc.getUndefTripleManager().getUndefTriples().size());
@@ -957,26 +982,34 @@ public class ProtegeOWLParser {
 		logger.logImport(uri, repository.getOntologyLocationDescription(ontologyNameURI));
 
 		InputStream is = repository.getInputStream(ontologyNameURI);
-
+		
 		// Double check we can get an input stream to read from
 		if (is == null) {
 			logger.logWarning("Couldn't get an input stream to read " + uri + " from.");
 			return;
 		}
-
+		
 		errorOntologyURI = ontologyNameURI;
 
 		//ProtegeOWLParser parser = new ProtegeOWLParser(owlModel, true);
 		//parser.setImporting(true);
 
 		//parser.loadTriples(tripleStore, uri, parser.createARPInvokation(is, uri));
+		
+		InputStream is1 = repository.getInputStream(ontologyNameURI);
+		
+		//get Original xmlbase
+		XMLBaseExtractor xmlBaseExtractor = new XMLBaseExtractor(is1);
+		URI xmlbase = xmlBaseExtractor.getXMLBase();
+		tripleStore.setOriginalXMLBase(xmlbase.toString());
+		
 		long t0 = System.currentTimeMillis();
 		
 		System.out.println("Start processing import: " + uri + " ... ");
 		arp.load(is, uri);
 
 		tfc.processUndefTriples();
-		tfc.doPostProcessing();
+		//tfc.doPostProcessing();
 		
 		System.out.println("Import " + uri + "  done in " + (System.currentTimeMillis() - t0) + " ms");
 		
@@ -1329,7 +1362,7 @@ public class ProtegeOWLParser {
 				parser.setPrefixForDefaultNamespace(prefixForDefaultNamespace);
 			}
 			InputStream is = rep.getInputStream(ontologyName);
-			
+						
 			parser.loadTriples(ts, ontologyName.toString(), parser.createARPInvokation(is, ontologyName.toString()));
 			
 			owlModel.getTripleStoreModel().setActiveTripleStore(activeTripleStore);
