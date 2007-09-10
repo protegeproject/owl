@@ -456,7 +456,10 @@ public class TripleFrameCache {
 		//processAddPrefixesToOntology();
 		processInferredSuperclasses();
 		processClsesWithoutSupercls();
-		processInstancesWithMultipleTypes();		
+		processInstancesWithMultipleTypes();
+		
+		//dump what you have not processed:
+		getUndefTripleManager().dumpUndefTriples();
 	}
 	
 	
