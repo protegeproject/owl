@@ -10,13 +10,14 @@ import edu.stanford.smi.protegex.owl.model.*;
 import edu.stanford.smi.protegex.owl.swrl.model.*;
 
 import java.util.*;
+import java.io.Serializable;
 
 /**
  ** Info object representing an OWL individual. 
  */
-public class IndividualInfo extends PropertyValueInfo implements IndividualArgument, ObjectValue
+public class IndividualInfo extends PropertyValueInfo implements IndividualArgument, ObjectValue, Serializable
 {
-  // NOTE: equals() method defined in this class.
+  // NOTE: equals() method defined in this class
 
   private String individualName;  
   private Set<String> definingClassNames, definingSuperClassNames, definingEquivalentClassNames;
@@ -28,9 +29,7 @@ public class IndividualInfo extends PropertyValueInfo implements IndividualArgum
    */
   public IndividualInfo(OWLIndividual individual) throws SWRLRuleEngineBridgeException
   {
-    individualName = individual.getName();
-
-    initialize();
+    initialize(individual.getName());
 
     buildDefiningClassNames(individual);
     buildDefiningSuperClassNames(individual);
@@ -44,12 +43,10 @@ public class IndividualInfo extends PropertyValueInfo implements IndividualArgum
    */
   public IndividualInfo(OWLModel owlModel, String individualName) throws SWRLRuleEngineBridgeException
   {
-    this.individualName = individualName;
-
     OWLIndividual individual = owlModel.getOWLIndividual(individualName);
     if (individual == null) throw new InvalidIndividualNameException(individualName);
 
-    initialize();
+    initialize(individualName);
 
     buildDefiningClassNames(individual);
     buildDefiningSuperClassNames(individual);
@@ -62,9 +59,7 @@ public class IndividualInfo extends PropertyValueInfo implements IndividualArgum
    */
   public IndividualInfo(String individualName, String className) 
   {
-    this.individualName = individualName;
-
-    initialize();
+    initialize(individualName);
 
     definingClassNames.add(className);
   } // IndividualInfo        
@@ -75,9 +70,12 @@ public class IndividualInfo extends PropertyValueInfo implements IndividualArgum
    */
   public IndividualInfo(String individualName)
   {
-    this.individualName = individualName;
+    initialize(individualName);
+  } // IndividualInfo
 
-    initialize();
+  public IndividualInfo() // For serialization
+  {
+    initialize("");
   } // IndividualInfo
 
   public String getIndividualName() { return individualName; }
@@ -116,6 +114,7 @@ public class IndividualInfo extends PropertyValueInfo implements IndividualArgum
   public int hashCode()
   {
     int hash = 7;
+
     hash = hash + (null == getIndividualName() ? 0 : getIndividualName().hashCode());
     hash = hash + (null == definingClassNames ? 0 : definingClassNames.hashCode());
     hash = hash + (null == definingSuperClassNames ? 0 : definingSuperClassNames.hashCode());
@@ -129,8 +128,10 @@ public class IndividualInfo extends PropertyValueInfo implements IndividualArgum
     return individualName.compareTo(((IndividualInfo)o).getIndividualName());
   } // compareTo
 
-  private void initialize()
+  private void initialize(String individualName)
   {
+    this.individualName = individualName;
+
     definingClassNames = new HashSet<String>();
     definingSuperClassNames = new HashSet<String>();
     definingEquivalentClassNames = new HashSet<String>();
@@ -163,11 +164,11 @@ public class IndividualInfo extends PropertyValueInfo implements IndividualArgum
     Iterator definingClassesIterator = individual.getRDFTypes().iterator(); // Could be more than one defining type
     while (definingClassesIterator.hasNext()) {
       RDFSClass definingClass = (RDFSClass)definingClassesIterator.next();
-      Iterator equlvalentClassesIterator = definingClass.getEquivalentClasses().iterator();
-      while (equlvalentClassesIterator.hasNext()) {
-        RDFSClass equlvalentClass = (RDFSClass)equlvalentClassesIterator.next();
-        if (equlvalentClass.isAnonymous()) continue;
-        if (!definingEquivalentClassNames.contains(equlvalentClass.getName())) definingEquivalentClassNames.add(equlvalentClass.getName());
+      Iterator equivalentClassesIterator = definingClass.getEquivalentClasses().iterator();
+      while (equivalentClassesIterator.hasNext()) {
+        RDFSClass equivalentClass = (RDFSClass)equivalentClassesIterator.next();
+        if (!equivalentClass.isAnonymous() &&!definingEquivalentClassNames.contains(equivalentClass.getName()))
+          definingEquivalentClassNames.add(equivalentClass.getName());
       } // while
     } // while
   } // buildDefiningEquivalentClassNames

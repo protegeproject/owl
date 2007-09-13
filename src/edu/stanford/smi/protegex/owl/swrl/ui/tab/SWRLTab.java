@@ -55,6 +55,7 @@ public class SWRLTab extends AbstractTabWidget
       owlModel.getNamespaceManager().setPrefix(new URI(SWRLNames.SWRLABOX_NAMESPACE), SWRLNames.SWRLABOX_PREFIX);
       owlModel.getNamespaceManager().setPrefix(new URI(SWRLNames.SWRLQUERY_NAMESPACE), SWRLNames.SWRLQUERY_PREFIX);
       owlModel.getNamespaceManager().setPrefix(new URI(SWRLNames.SWRLTEMPORAL_NAMESPACE), SWRLNames.SWRLTEMPORAL_PREFIX);
+      // TODO (not yet): owlModel.getNamespaceManager().setPrefix(new URI(SWRLNames.SQWRL_NAMESPACE), SWRLNames.SQWRL_PREFIX);
   
       ImportHelper importHelper = new ImportHelper((JenaOWLModel)getKnowledgeBase());
       
@@ -66,6 +67,7 @@ public class SWRLTab extends AbstractTabWidget
       importHelper.addImport(new URI(SWRLNames.SWRLABOX_IMPORT));
       importHelper.addImport(new URI(SWRLNames.SWRLQUERY_IMPORT));
       importHelper.addImport(new URI(SWRLNames.SWRLTEMPORAL_IMPORT));
+      // TODO (not yet): importHelper.addImport(new URI(SWRLNames.SQWRL_IMPORT));
       
       importHelper.importOntologies();
 
@@ -75,12 +77,11 @@ public class SWRLTab extends AbstractTabWidget
       RDFProperty from = owlModel.getOWLObjectProperty(edu.stanford.smi.protege.model.Model.Slot.FROM);
       from.setVisible(true);
     } catch (Exception ex) {
-      ProtegeUI.getModalDialogFactory().showErrorMessageDialog(owlModel,
-                                                               "Could not activate SWRLTab: " + ex +
+      ProtegeUI.getModalDialogFactory().showErrorMessageDialog(owlModel, "Could not activate SWRLTab: " + ex +
                                                                "\n. Your project might be in an inconsistent state now.");
       Log.getLogger().log(Level.SEVERE, "Exception caught", ex);
     }
-  }
+  } // activateSWRL
   
   public void initialize() 
   {

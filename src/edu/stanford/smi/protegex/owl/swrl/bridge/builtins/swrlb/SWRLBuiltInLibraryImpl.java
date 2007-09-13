@@ -451,7 +451,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
   {
     boolean result = false;
 
-    if (result) throw new BuiltInNotImplementedException("swrlb:translate");
+    if (!result) throw new BuiltInNotImplementedException();
 
     return result;
   } // translate
@@ -460,7 +460,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
   {
     boolean result = false;
 
-    if (result) throw new BuiltInNotImplementedException("swrlb:substringBefore");
+    if (!result) throw new BuiltInNotImplementedException();
 
     return result;
   } // substringBefore
@@ -538,7 +538,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
   {
     boolean result = false;
 
-    if (result) throw new BuiltInNotImplementedException("swrlb:tokenize");
+    if (!result) throw new BuiltInNotImplementedException();
 
     return result;
   } // tokenize
@@ -549,7 +549,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
   {
     boolean result = false;
 
-    if (result) throw new BuiltInNotImplementedException("swrlb:yearMonthDuration");
+    if (!result) throw new BuiltInNotImplementedException();
 
     return result;
   } // yearMonthDuration
@@ -558,7 +558,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
   {
     boolean result = false;
 
-    if (result) throw new BuiltInNotImplementedException("swrlb:dayTimeDuration");
+    if (!result) throw new BuiltInNotImplementedException();
 
     return result;
   } // dayTimeDuration
@@ -567,7 +567,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
   {
     boolean result = false;
 
-    if (result) throw new BuiltInNotImplementedException("swrlb:dateTime");
+    if (!result) throw new BuiltInNotImplementedException();
 
     return result;
   } // dateTime
@@ -576,7 +576,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
   {
     boolean result = false;
 
-    if (result) throw new BuiltInNotImplementedException("swrlb:date");
+    if (!result) throw new BuiltInNotImplementedException();
 
     return result;
   } // date
@@ -585,7 +585,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
   {
     boolean result = false;
 
-    if (result) throw new BuiltInNotImplementedException("swrlb:time");
+    if (!result) throw new BuiltInNotImplementedException();
 
     return result;
   } // time
@@ -594,7 +594,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
   {
     boolean result = false;
 
-    if (result) throw new BuiltInNotImplementedException("swrlb:addYearMonthDurations");
+    if (!result) throw new BuiltInNotImplementedException();
 
     return result;
   } // addYearMonthDurations
@@ -603,7 +603,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
   {
     boolean result = false;
 
-    if (result) throw new BuiltInNotImplementedException("swrlb:subtractYearMonthDurations");
+    if (!result) throw new BuiltInNotImplementedException();
 
     return result;
   } // subtractYearMonthDurations
@@ -612,7 +612,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
   {
     boolean result = false;
 
-    if (result) throw new BuiltInNotImplementedException("swrlb:multiplyYearMonthDuration");
+    if (!result) throw new BuiltInNotImplementedException();
 
     return result;
   } // multiplyYearMonthDuration
@@ -621,7 +621,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
   {
     boolean result = false;
 
-    if (result) throw new BuiltInNotImplementedException("swrlb:divideYearMonthDurations");
+    if (!result) throw new BuiltInNotImplementedException();
 
     return result;
   } // divideYearMonthDurations
@@ -630,7 +630,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
   {
     boolean result = false;
 
-    if (result) throw new BuiltInNotImplementedException("swrlb:addDayTimeDurations");
+    if (!result) throw new BuiltInNotImplementedException();
 
     return result;
   } // addDayTimeDurations
@@ -639,7 +639,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
   {
     boolean result = false;
 
-    if (result) throw new BuiltInNotImplementedException("swrlb:subtractDayTimeDurations");
+    if (!result) throw new BuiltInNotImplementedException();
 
     return result;
   } // subtractDayTimeDurations
@@ -648,7 +648,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
   {
     boolean result = false;
 
-    if (result) throw new BuiltInNotImplementedException("swrlb:multiplyDayTimeDurations");
+    if (!result) throw new BuiltInNotImplementedException();
 
     return result;
   } // multiplyDayTimeDurations
@@ -657,7 +657,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
   {
     boolean result = false;
 
-    if (result) throw new BuiltInNotImplementedException("swrlb:divideDayTimeDuration");
+    if (!result) throw new BuiltInNotImplementedException();
 
     return result;
   } // divideDayTimeDuration
@@ -666,7 +666,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
   {
     boolean result = false;
 
-    if (result) throw new BuiltInNotImplementedException("swrlb:subtractDates");
+    if (!result) throw new BuiltInNotImplementedException();
 
     return result;
   } // subtractDates
@@ -675,7 +675,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
   {
     boolean result = false;
 
-    if (result) throw new BuiltInNotImplementedException("swrlb:subtractTimes");
+    if (!result) throw new BuiltInNotImplementedException();
 
     return result;
   } // subtractTimes
@@ -684,7 +684,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
   {
     boolean result = false;
 
-    if (result) throw new BuiltInNotImplementedException("swrlb:addYearMonthDurationToDateTime");
+    if (!result) throw new BuiltInNotImplementedException();
 
     return result;
   } // addYearMonthDurationToDateTime
@@ -693,7 +693,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
   {
     boolean result = false;
 
-    if (result) throw new BuiltInNotImplementedException("swrlb:addDayTimeDurationToDateTime");
+    if (!result) throw new BuiltInNotImplementedException();
 
     return result;
   } // addDayTimeDurationToDateTime
@@ -702,7 +702,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
   {
     boolean result = false;
 
-    if (result) throw new BuiltInNotImplementedException("swrlb:subtractYearMonthDurationFromDateTime");
+    if (!result) throw new BuiltInNotImplementedException();
 
     return result;
   } // subtractYearMonthDurationFromDateTime
@@ -711,7 +711,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
   {
     boolean result = false;
 
-    if (result) throw new BuiltInNotImplementedException("swrlb:subtractDayTimeDurationFromDateTime");
+    if (!result) throw new BuiltInNotImplementedException();
 
     return result;
   } // subtractDayTimeDurationFromDateTime
@@ -720,7 +720,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
   {
     boolean result = false;
 
-    if (result) throw new BuiltInNotImplementedException("swrlb:addYearMonthDurationToDate");
+    if (!result) throw new BuiltInNotImplementedException();
 
     return result;
   } // addYearMonthDurationToDate
@@ -729,7 +729,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
   {
     boolean result = false;
 
-    if (result) throw new BuiltInNotImplementedException("swrlb:addDayTimeDurationToDate");
+    if (!result) throw new BuiltInNotImplementedException();
 
     return result;
   } // addDayTimeDurationToDate
@@ -738,7 +738,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
   {
     boolean result = false;
 
-    if (result) throw new BuiltInNotImplementedException("swrlb:subtractYearMonthDurationFromDate");
+    if (!result) throw new BuiltInNotImplementedException();
 
     return result;
   } // subtractYearMonthDurationFromDate
@@ -747,7 +747,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
   {
     boolean result = false;
 
-    if (result) throw new BuiltInNotImplementedException("swrlb:subtractDayTimeDurationFromDate");
+    if (!result) throw new BuiltInNotImplementedException();
 
     return result;
   } // subtractDayTimeDurationFromDate
@@ -756,7 +756,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
   {
     boolean result = false;
 
-    if (result) throw new BuiltInNotImplementedException("swrlb:addDayTimeDurationToTime");
+    if (!result) throw new BuiltInNotImplementedException();
 
     return result;
   } // addDayTimeDurationToTime
@@ -765,7 +765,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
   {
     boolean result = false;
 
-    if (result) throw new BuiltInNotImplementedException("swrlb:subtractDayTimeDurationFromTime");
+    if (!result) throw new BuiltInNotImplementedException();
 
     return result;
   } // 
@@ -774,7 +774,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
   {
     boolean result = false;
 
-    if (result) throw new BuiltInNotImplementedException("swrlb:subtractDateTimesYieldingYearMonthDuration");
+    if (!result) throw new BuiltInNotImplementedException();
 
     return result;
   } // subtractDateTimesYieldingYearMonthDuration
@@ -783,7 +783,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
   {
     boolean result = false;
 
-    if (result) throw new BuiltInNotImplementedException("swrlb:subtractDateTimesYieldingDayTimeDuration");
+    if (!result) throw new BuiltInNotImplementedException();
 
     return result;
   } // subtractDateTimesYieldingDayTimeDuration 
@@ -794,7 +794,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
   {
     boolean result = false;
 
-    if (result) throw new BuiltInNotImplementedException("swrlb:resolveURI");
+    if (!result) throw new BuiltInNotImplementedException();
 
     return result;
   } // resolveURI
@@ -803,7 +803,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
   {
     boolean result = false;
 
-    if (result) throw new BuiltInNotImplementedException("swrlb:anyURI");
+    if (!result) throw new BuiltInNotImplementedException();
 
     return result;
   } // anyURI
@@ -814,7 +814,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
   {
     boolean result = false;
 
-    if (result) throw new BuiltInNotImplementedException("swrlb:listConcat");
+    if (!result) throw new BuiltInNotImplementedException();
 
     return result;
   } // listConcat
@@ -823,7 +823,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
   {
     boolean result = false;
 
-    if (result) throw new BuiltInNotImplementedException("swrlb:listIntersection");
+    if (!result) throw new BuiltInNotImplementedException();
 
     return result;
   } // listIntersection
@@ -832,7 +832,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
   {
     boolean result = false;
 
-    if (result) throw new BuiltInNotImplementedException("swrlb:listSubtraction");
+    if (!result) throw new BuiltInNotImplementedException();
 
     return result;
   } // listSubtraction
@@ -841,7 +841,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
   {
     boolean result = false;
 
-    if (result) throw new BuiltInNotImplementedException("swrlb:member");
+    if (!result) throw new BuiltInNotImplementedException();
 
     return result;
   } // member 
@@ -850,7 +850,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
   {
     boolean result = false;
 
-    if (result) throw new BuiltInNotImplementedException("swrlb:length");
+    if (!result) throw new BuiltInNotImplementedException();
 
     return result;
   } // length
@@ -859,7 +859,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
   {
     boolean result = false;
 
-    if (result) throw new BuiltInNotImplementedException("swrlb:firsr");
+    if (!result) throw new BuiltInNotImplementedException();
 
     return result;
   } // first
@@ -868,7 +868,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
   {
     boolean result = false;
 
-    if (result) throw new BuiltInNotImplementedException("swrlb:rest");
+    if (!result) throw new BuiltInNotImplementedException();
 
     return result;
   } // rest
@@ -877,7 +877,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
   {
     boolean result = false;
 
-    if (result) throw new BuiltInNotImplementedException("swrlb:sublist");
+    if (!result) throw new BuiltInNotImplementedException();
 
     return result;
   } // sublist
@@ -886,7 +886,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
   {
     boolean result = false;
 
-    if (result) throw new BuiltInNotImplementedException("swrlb:empty");
+    if (!result) throw new BuiltInNotImplementedException();
 
     return result;
   } // empty
@@ -937,7 +937,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
     double argument1 = 0.0, argument2, argument3, operationResult = 0.0; 
     boolean result = false, hasUnbound1stArgument = false;
 
-    SWRLBuiltInUtil.checkForUnboundNonFirstArguments(arguments); // Only supports binding of first argument at the moment.
+    SWRLBuiltInUtil.checkForUnboundNonFirstArguments(arguments); // Only supports binding of first argument
 
     if (SWRLBuiltInUtil.isUnboundArgument(0, arguments)) hasUnbound1stArgument = true;
 

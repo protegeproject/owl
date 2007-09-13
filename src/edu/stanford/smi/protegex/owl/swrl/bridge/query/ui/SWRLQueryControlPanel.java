@@ -43,16 +43,15 @@ public class SWRLQueryControlPanel extends JPanel
     
     panel = new JPanel(new FlowLayout());
 
-    button = createButton("Run Rules", "Run all SWRL rules", new RunRuleActionListener(textArea, this));
+    button = createButton("Run", "Run all SWRL rules and queries", new RunActionListener(textArea, this));
     panel.add(button);
 
     add(BorderLayout.SOUTH, panel);
 
-    textArea.append("SWRLQueryTab\n\n");
-    textArea.append("See http://protege.cim3.net/cgi-bin/wiki.pl?SWRLQueryTab for documentation.\n\n");
+    textArea.append("\nSee http://protege.cim3.net/cgi-bin/wiki.pl?SWRLQueryTab for documentation.\n\n");
     textArea.append("Executing rules in this tab does not modify the ontology.\n\n");
-    textArea.append("Select a rule with query built-ins from the list above and press the 'Run Rules' button.\n");
-    textArea.append("If the selected rule generates a result, the result will appear in a new tab.\n\n");
+    textArea.append("Select a query built-ins from the list above and press the 'Run' button.\n");
+    textArea.append("If the selected query generates a result, the result will appear in a new tab.\n\n");
   } // SWRLQueryControlPanel
 
   public void appendText(String text)
@@ -117,9 +116,9 @@ public class SWRLQueryControlPanel extends JPanel
     } // ListenerBase
   } // ListenerBase
 
-  private class RunRuleActionListener extends ListenerBase implements ActionListener
+  private class RunActionListener extends ListenerBase implements ActionListener
   {
-    public RunRuleActionListener(JTextArea textArea, SWRLQueryControlPanel controlPanel) 
+    public RunActionListener(JTextArea textArea, SWRLQueryControlPanel controlPanel) 
     { super(textArea, controlPanel); }
     
     public void actionPerformed(ActionEvent event) 
@@ -170,7 +169,8 @@ public class SWRLQueryControlPanel extends JPanel
 	} // try
       } // if
     } // ActionPerformed
-  } // RunRuleActionListener
+  } // RunActionListener
+
 } // SWRLQueryControlPanel
 
 
