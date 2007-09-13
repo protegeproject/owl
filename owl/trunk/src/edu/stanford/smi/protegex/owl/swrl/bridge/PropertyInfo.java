@@ -7,11 +7,12 @@ import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.*;
 import edu.stanford.smi.protegex.owl.swrl.bridge.query.*;
 
 import java.util.*;
+import java.io.Serializable;
 
 /**
  ** Info object representing an OWL property. 
  */
-public class PropertyInfo extends Info implements PropertyArgument, PropertyValue
+public class PropertyInfo extends Info implements PropertyArgument, PropertyValue, Serializable
 {
   // There is an equals method defined on this class.
   private String propertyName;
@@ -19,7 +20,7 @@ public class PropertyInfo extends Info implements PropertyArgument, PropertyValu
   private PropertyValueInfo predicate;
   private Set<String> domainClassNames, rangeClassNames, superPropertyNames, subPropertyNames, equivalentPropertyNames;
   
-  // Constructor used when creating a PropertyInfo object from an OWL property.
+  // Constructor used when creating a PropertyInfo object from an OWL property
   public PropertyInfo(String propertyName, IndividualInfo subject, PropertyValueInfo predicate, Set<String> domainClassNames, 
                       Set<String> rangeClassNames, Set<String> superPropertyNames, Set<String> subPropertyNames,
                       Set<String> equivalentPropertyNames) 
@@ -35,33 +36,28 @@ public class PropertyInfo extends Info implements PropertyArgument, PropertyValu
     this.equivalentPropertyNames = equivalentPropertyNames;
   } // PropertyInfo
   
-  // Constructor used when creating a PropertyInfo object from an assertion made by a target rule engine or to pass as built-in arguments.
+  // Constructor used when creating a PropertyInfo object from an assertion made by a target rule engine or to pass as built-in arguments
   public PropertyInfo(String propertyName, IndividualInfo subject, PropertyValueInfo predicate) 
   {
-    this.propertyName = propertyName;    
+    initialize(propertyName);
     this.subject = subject;
     this.predicate = predicate;
-
-    initialize();
   } // PropertyInfo
 
   // Constructors used when creating a PropertyInfo object from a property name in a rule.
   public PropertyInfo(OWLProperty property) 
   {
-    this.propertyName = property.getName();    
-    this.subject = null;
-    this.predicate = null;
-
-    initialize();
+    initialize(property.getName());
   } // PropertyInfo
 
   public PropertyInfo(String propertyName) 
   {
-    this.propertyName = propertyName;    
-    this.subject = null;
-    this.predicate = null;
+    initialize(propertyName);
+  } // PropertyInfo
 
-    initialize();
+  public PropertyInfo() // For serialization
+  {
+    initialize("");
   } // PropertyInfo
   
   public String getPropertyName() { return propertyName; }
@@ -171,7 +167,6 @@ public class PropertyInfo extends Info implements PropertyArgument, PropertyValu
     subPropertyNames = SWRLOWLUtil.rdfResources2Names(property.getSubproperties(true));
     equivalentPropertyNames = SWRLOWLUtil.rdfResources2Names(property.getEquivalentProperties());
 
-
     Iterator domainsIterator = property.getUnionDomain(true).iterator();
     while (domainsIterator.hasNext()) {
       Object object1 = domainsIterator.next();
@@ -219,13 +214,17 @@ public class PropertyInfo extends Info implements PropertyArgument, PropertyValu
     return propertyInfoList;
   } // buildPropertyInfoList
 
-  private void initialize()
+  private void initialize(String propertyName)
   {
+    this.propertyName = propertyName;
+
     domainClassNames = new HashSet<String>();
     rangeClassNames = new HashSet<String>();
     superPropertyNames = new HashSet<String>();
     subPropertyNames = new HashSet<String>();
     equivalentPropertyNames = new HashSet<String>();
+    this.subject = null;
+    this.predicate = null;
   } // initialize
 
 } // PropertyInfo

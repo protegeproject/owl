@@ -15,13 +15,16 @@ public class BuiltInAtomInfo extends AtomInfo
 {
   private String builtInName;
   private List<Argument> arguments; 
-  private Collection<Integer> unboundArgumentNumbers = new ArrayList<Integer>(); // List containing positions of any unbound arguments.
+  private Set<Integer> unboundArgumentNumbers = new HashSet<Integer>(); // List containing positions of any unbound arguments
+  private int builtInIndex = -1; // Index of this built-in atom in rule body; left-to-right, first built-in index is 0, second in 1, and so on
+  private boolean sqwrlVariablesUsed = false;
+  private String sqwrlCollectionName = "";
   
   public BuiltInAtomInfo(OWLModel owlModel, SWRLBuiltinAtom atom) throws SWRLRuleEngineBridgeException
   {
     builtInName = (atom.getBuiltin() != null) ? atom.getBuiltin().getName() : null;
 
-    if (builtInName == null) throw new SWRLRuleEngineBridgeException("Empty built-in name in SWRLBuiltinAtom: " + atom);
+    if (builtInName == null) throw new SWRLRuleEngineBridgeException("empty built-in name in SWRLBuiltinAtom: " + atom);
 
     arguments = buildArgumentList(owlModel, atom);
   } // BuiltInAtomInfo
@@ -29,11 +32,26 @@ public class BuiltInAtomInfo extends AtomInfo
   public String getBuiltInName() { return builtInName; }  
   public List<Argument> getArguments() { return arguments; }
   public int getNumberOfArguments() { return arguments.size(); }
+  public int getBuiltInIndex() { return builtInIndex; }
+  public void setBuiltInIndex(int builtInIndex) { this.builtInIndex = builtInIndex; }
 
   public boolean hasUnboundArguments() { return !unboundArgumentNumbers.isEmpty(); }
-  public Collection<Integer> getUnboundArgumentNumbers() { return unboundArgumentNumbers; }
+  public Set<Integer> getUnboundArgumentNumbers() { return unboundArgumentNumbers; }
   public void addUnboundArgumentNumber(int argumentNumber) { unboundArgumentNumbers.add(Integer.valueOf(argumentNumber)); }
   public boolean isUnboundArgument(int argumentNumber) { return unboundArgumentNumbers.contains(Integer.valueOf(argumentNumber)); }
+
+  public boolean usesSQWRLVariables() { return sqwrlVariablesUsed; } 
+  public boolean hasSQWRLCollectionName() { return !sqwrlCollectionName.equals(""); }
+  public void setSQWRLCollectionName(String collectionName) { sqwrlCollectionName = collectionName; }
+
+  public boolean usesAtLeastOneVariableOf(Set<String> variableNames) throws SWRLRuleEngineBridgeException
+  { 
+    Set<String> s = new HashSet<String>(variableNames);
+
+    s.retainAll(getArgumentsVariableNames());
+
+    return !s.isEmpty();
+  } // usesAtLeastOneVariableOf
 
   public Set<String> getUnboundArgumentVariableNames() throws SWRLRuleEngineBridgeException
   {  
@@ -52,12 +70,30 @@ public class BuiltInAtomInfo extends AtomInfo
   public String getArgumentVariableName(int argumentNumber) throws SWRLRuleEngineBridgeException
   {
     if (!isArgumentAVariable(argumentNumber))
-      throw new SWRLRuleEngineBridgeException("Expecting a variable for argument #" + argumentNumber + " to built-in '" + getBuiltInName() + "'");
+      throw new SWRLRuleEngineBridgeException("expecting a variable for argument #" + argumentNumber + " to built-in '" + getBuiltInName() + "'");
     
     BuiltInVariableInfo builtInVariableInfo = (BuiltInVariableInfo)arguments.get(argumentNumber);
 
     return builtInVariableInfo.getVariableName();
   } // getArgumentVariableName
+
+  public Set<String> getArgumentsVariableNames() throws SWRLRuleEngineBridgeException
+  {
+    Set<String> result = new HashSet<String>();
+
+    for (Argument argument : arguments) {
+      if (argument instanceof BuiltInVariableInfo) {
+        BuiltInVariableInfo builtInVariableInfo = (BuiltInVariableInfo)argument;
+        result.add(builtInVariableInfo.getVariableName());
+      } // if
+    } // for
+
+    return result;
+  } // getArgumentsVariableNames
+
+  public void addArguments(List<Argument> additionalArguments) { arguments.addAll(additionalArguments); }
+
+  public void setUsesSQWRLVariables() { sqwrlVariablesUsed = true; }
 
   private List<Argument> buildArgumentList(OWLModel owlModel, SWRLBuiltinAtom builtInAtom) throws SWRLRuleEngineBridgeException
   {

@@ -8,19 +8,23 @@ import edu.stanford.smi.protegex.owl.model.*;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.io.Serializable;
 
 /**
  ** Info object to wrap Java and XML Schema primitve datatype literals.
  **
- ** For the moment we do not support (1) RDFSLiteral language tags, and (2) the types: byte[], and primitive XSD types Decimal, GDay,
- ** GYear, GMonth, GMonthDay, QName, HexBinary, and NOTATION.
+ ** For the moment we do not support (1) RDFSLiteral language tags, and (2) simple XSD types: normalizedString, token, positiveInteger,
+ ** negativeInteger, nonNegativeInteger, nonPositiveInteger, unsignedInt, unsignedLong, unsignedShort, unsignedByte, decimal, GDay, GYear,
+ ** GMonth, GMonthDay, Name, QName, NCName, HexBinary.
+ **
+ ** cf. http://www.w3.org/TR/xmlschema-0/
  */
-public class LiteralInfo extends PropertyValueInfo implements LiteralArgument, DatatypeValue
+public class LiteralInfo extends PropertyValueInfo implements LiteralArgument, DatatypeValue, Serializable
 {
   private Object value; // This value object should implement Comparable.
 
   /**
-   ** Convert an RDFSLiteral to a LiteralInfo. 
+   ** Convert an RDFSLiteral to a LiteralInfo
    */
   public LiteralInfo(OWLModel owlModel, RDFSLiteral literal) throws DatatypeConversionException
   {
@@ -44,50 +48,16 @@ public class LiteralInfo extends PropertyValueInfo implements LiteralArgument, D
                                                + "' of type '" + datatype + "'");
   } // LiteralInfo
 
-  public LiteralInfo(String s)
-  {
-    value = s;
-  } // LiteralInfo
-
-  public LiteralInfo(Number n)
-  {
-    value = n;
-  } // LiteralInfo
-
-  public LiteralInfo(boolean b)
-  {
-    value = Boolean.valueOf(b);
-  } // LiteralInfo
-
-  public LiteralInfo(int i)
-  {
-    value = Integer.valueOf(i);
-  } // LiteralInfo
-
-  public LiteralInfo(long l)
-  {
-    value = Long.valueOf(l);
-  } // LiteralInfo
-
-  public LiteralInfo(float f)
-  {
-    value = Float.valueOf(f);
-  } // LiteralInfo
-
-  public LiteralInfo(double d)
-  {
-    value = Double.valueOf(d);
-  } // LiteralInfo
-
-  public LiteralInfo(short s)
-  {
-    value = Short.valueOf(s);
-  } // LiteralInfo
-
-  public LiteralInfo(PrimitiveXSDType value)
-  {
-    this.value = value;
-  } // LiteralInfo
+  public LiteralInfo() { value = null; } // For serialization
+  public LiteralInfo(String s) { value = s; } 
+  public LiteralInfo(Number n) { value = n; }
+  public LiteralInfo(boolean b) { value = Boolean.valueOf(b); }
+  public LiteralInfo(int i) { value = Integer.valueOf(i); }
+  public LiteralInfo(long l) { value = Long.valueOf(l); }
+  public LiteralInfo(float f) { value = Float.valueOf(f); }
+  public LiteralInfo(double d) { value = Double.valueOf(d); }
+  public LiteralInfo(short s) { value = Short.valueOf(s); }
+  public LiteralInfo(PrimitiveXSDType value) { this.value = value; }
 
   // Java String type
   public boolean isString() { return value instanceof String; }

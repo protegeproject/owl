@@ -71,7 +71,7 @@ import java.io.Serializable;
  ** There is also a convenience method addRow, which takes a list of ResultValues. This method automatically does a row open and close. It
  ** is expecting the exact same number of list elements as there are columns in the result.
  */ 
-public class ResultImpl implements ResultGenerator, Result
+public class ResultImpl implements ResultGenerator, Result, Serializable
 {
   private List<String> allColumnNames, columnDisplayNames;
   private List<Integer> selectedColumnIndexes, orderByColumnIndexes;
@@ -89,7 +89,7 @@ public class ResultImpl implements ResultGenerator, Result
     initialize();
   } // ResultImpl
   
-  // Configuration phase methods.
+  // Configuration phase methods
 
   public boolean isConfigured() { return isConfigured; }
   public boolean isRowOpen() { return isRowOpen; }
@@ -477,9 +477,7 @@ public class ResultImpl implements ResultGenerator, Result
 
   public String toString()
   {
-    String result = "";
-
-    result += "[isConfigured: " + isConfigured + ", isPrepared: " + isPrepared + ", isRowOpen: " + isRowOpen +
+    String result = "[isConfigured: " + isConfigured + ", isPrepared: " + isPrepared + ", isRowOpen: " + isRowOpen +
               ", isOrdered: " + isOrdered + ", isAscending " + isAscending + ", isDistinct: " + isDistinct + 
               ", hasAggregates: " + hasAggregates + "]\n";
 

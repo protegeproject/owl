@@ -9,11 +9,12 @@ import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.*;
 import edu.stanford.smi.protegex.owl.model.*;
 
 import java.util.*;
+import java.io.Serializable;
 
 /**
  ** Info object representing an OWL class. 
  */
-public class ClassInfo extends Info implements ClassArgument, ClassValue
+public class ClassInfo extends Info implements ClassArgument, ClassValue, Serializable
 {
   // equals() method defined in this class.
   private String className;
@@ -40,11 +41,12 @@ public class ClassInfo extends Info implements ClassArgument, ClassValue
   // Constructor used when creating a ClassInfo object to pass as a built-in argument
   public ClassInfo(String className)
   {
-    this.className = className;
+    initialize(className);
+  } // ClassInfo
 
-    directSuperClassNames = new HashSet<String>();
-    directSubClassNames = new HashSet<String>();
-    equivalentClassNames = new HashSet<String>();
+  public ClassInfo() // For serialization
+  {
+    initialize("");
   } // ClassInfo
   
   public String getClassName() { return className; }
@@ -83,4 +85,11 @@ public class ClassInfo extends Info implements ClassArgument, ClassValue
     return className.compareTo(((ClassInfo)o).getClassName());
   } // compareTo
 
+  private void initialize(String className)
+  {
+    this.className = className;
+    directSuperClassNames = new HashSet<String>();
+    directSubClassNames = new HashSet<String>();
+    equivalentClassNames = new HashSet<String>();
+  } // initialize
 } // ClassInfo

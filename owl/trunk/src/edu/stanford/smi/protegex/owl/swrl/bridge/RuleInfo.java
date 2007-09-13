@@ -13,6 +13,8 @@ public class RuleInfo extends Info
   private String ruleName;
   private List<AtomInfo> bodyAtoms, headAtoms;
   private Set<String> referencedObjectVariableNames, referencedDatatypeVariableNames;
+  private boolean hasSQWRLBuiltIns = false;
+  private HashMap<Integer, String> collectionNameMap;
   
   public RuleInfo(String ruleName, List<AtomInfo> bodyAtoms, List<AtomInfo> headAtoms) throws SWRLRuleEngineBridgeException
   {
@@ -28,9 +30,14 @@ public class RuleInfo extends Info
   public List<AtomInfo> getBodyAtoms() { return bodyAtoms; }
   public boolean isObjectVariable(String variableName) { return referencedObjectVariableNames.contains(variableName); }
   public boolean isDatatypeVariable(String variableName) { return referencedDatatypeVariableNames.contains(variableName); }
+  public boolean isSQWRL() { return hasSQWRLBuiltIns; }
+  public boolean setIsSQWRL() { return hasSQWRLBuiltIns = true; }
 
+  public List<BuiltInAtomInfo> getBuiltInAtomsFromHead() throws SWRLRuleEngineBridgeException { return getBuiltInAtoms(headAtoms); }
   public List<BuiltInAtomInfo> getBuiltInAtomsFromHead(Set<String> builtInNames) throws SWRLRuleEngineBridgeException 
     { return getBuiltInAtoms(headAtoms, builtInNames); }
+
+  public List<BuiltInAtomInfo> getBuiltInAtomsFromBody() throws SWRLRuleEngineBridgeException { return getBuiltInAtoms(bodyAtoms); }
   public List<BuiltInAtomInfo> getBuiltInAtomsFromBody(Set<String> builtInNames) throws SWRLRuleEngineBridgeException 
     { return getBuiltInAtoms(bodyAtoms, builtInNames); }
 
@@ -106,6 +113,19 @@ public class RuleInfo extends Info
         BuiltInAtomInfo builtInAtomInfo = (BuiltInAtomInfo)atomInfo;
         if (builtInNames.contains(builtInAtomInfo.getBuiltInName())) result.add(builtInAtomInfo);
         } // if
+    } // for
+    return result;
+  } // getBuiltInAtoms
+
+  private List<BuiltInAtomInfo> getBuiltInAtoms(List<AtomInfo> atoms) throws SWRLRuleEngineBridgeException
+  {
+    List<BuiltInAtomInfo> result = new ArrayList<BuiltInAtomInfo>();
+    
+    for (AtomInfo atomInfo : atoms) {
+      if (atomInfo instanceof BuiltInAtomInfo) {
+        BuiltInAtomInfo builtInAtomInfo = (BuiltInAtomInfo)atomInfo;
+        result.add(builtInAtomInfo);
+      } // if
     } // for
     return result;
   } // getBuiltInAtoms

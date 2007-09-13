@@ -2,11 +2,8 @@
 package edu.stanford.smi.protegex.owl.swrl;
 
 import edu.stanford.smi.protegex.owl.swrl.exceptions.*;
-import edu.stanford.smi.protegex.owl.swrl.bridge.query.Result;
-import edu.stanford.smi.protegex.owl.swrl.bridge.query.exceptions.ResultException;
 
 import java.util.*;
-
 
 /**
  ** This inferface defines the methods that must be provided by a SWRL rule engine.
@@ -62,11 +59,5 @@ public interface SWRLRuleEngine
    **  Clear all knowledge from rule engine, deleted asserted knowledge from the bridge, and leave imported bridge knowledge intact.
    */
   void resetRuleEngine() throws SWRLRuleEngineException;
-
-  /**
-   **  Get the results from a rule containing query built-ins. Null is retured if there are no results or if the query subsystem is not
-   **  activated.
-   */
-  Result getQueryResult(String ruleName) throws ResultException;
 
 } // SWRLRuleEngine

@@ -57,12 +57,11 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
   } // isIndividual
 
   /**
-   ** Returns true if the individual named by the first argument has at least one value for the property named by the second parameter. If
-   ** the second argument in unbound, bind it to all the properties that have at least one value for this individual. If the second argument
-   ** is bound, an optional third argument can be supplied supplied to restrict the result to property values that are equal to the value
-   ** specified by this argument.
+   ** Returns true if the individual named by the first argument has a property specified by the second argument with the value specified by
+   ** the third argument. If the third argument in unbound, bind it to all the values for this property.
+   ** TODO: update
    */
-  public boolean hasProperty(List<Argument> arguments) throws BuiltInException
+  public boolean hasValue(List<Argument> arguments) throws BuiltInException
   {
     String individualName, propertyName = null;
     Object propertyValue = null;
@@ -142,7 +141,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
    ** Returns true if the class named by the first argument has an individual identified by the second argument. If the second argument is
    ** unbound, bind it to all individuals of the class.
    */
-  public boolean hasInstance(List<Argument> arguments) throws BuiltInException
+  public boolean hasIndividual(List<Argument> arguments) throws BuiltInException
   {
     boolean isUnboundArgument = SWRLBuiltInUtil.isUnboundArgument(1, arguments);   
     String className;
@@ -168,7 +167,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
       throw new BuiltInException(e.getMessage());
     } // try
     return result;
-  } // hasInstance
+  } // hasIndividual
 
   /**
    ** Returns true if the OWL class, property, or individual named by the first argument has a URI identified by the second
@@ -233,33 +232,27 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
   } // hasClass
 
   /**
-   ** Returns true if the class named by the second argument has the number of individuals specified by the first argument. If the first
-   ** argument is unbound when the built-in is called, it is bound to the actual number of individuals of the specified class.
+   ** setClass(i, c)
    */
-  public boolean hasNumberOfIndividuals(List<Argument> arguments) throws BuiltInException
+  public boolean setClass(List<Argument> arguments) throws BuiltInException
   {
-    String className;
-    int numberOfIndividuals;
     boolean result = false;
 
-    SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(2, arguments.size());
-    SWRLBuiltInUtil.checkThatArgumentIsAClass(1, arguments);
+    if (!result) throw new BuiltInNotImplementedException();
 
-    className = SWRLBuiltInUtil.getArgumentAsAClassName(1, arguments);
-
-    try {
-      if (SWRLBuiltInUtil.isUnboundArgument(0, arguments)) {
-        numberOfIndividuals = SWRLOWLUtil.getNumberOfIndividualsOfClass(getInvokingBridge().getOWLModel(), className, true);
-        arguments.set(0, new LiteralInfo(numberOfIndividuals)); // Bind the result to the first argument      
-        result = true;
-      } else {
-        numberOfIndividuals = SWRLBuiltInUtil.getArgumentAsAnInteger(0, arguments);
-        result = (numberOfIndividuals == SWRLOWLUtil.getNumberOfIndividualsOfClass(getInvokingBridge().getOWLModel(), className, true));
-      } // if
-    } catch (SWRLOWLUtilException e) {
-      throw new BuiltInException(e.getMessage());
-    } // try
     return result;
-  } // hasNumberOfIndividuals
+  } // setClass
+
+  /**
+   ** setClass(i, p, v)
+   */
+  public boolean setValue(List<Argument> arguments) throws BuiltInException
+  {
+    boolean result = false;
+
+    if (!result) throw new BuiltInNotImplementedException();
+
+    return result;
+  } // setValue
 
 } // SWRLBuiltInLibraryImpl

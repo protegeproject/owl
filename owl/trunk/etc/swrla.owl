@@ -7,9 +7,7 @@
     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
     xmlns:owl="http://www.w3.org/2002/07/owl#"
   xml:base="http://swrl.stanford.edu/ontologies/3.3/swrla.owl">
-  <owl:Ontology rdf:about="">
-    <owl:imports rdf:resource="http://www.w3.org/2003/11/swrl"/>
-  </owl:Ontology>
+  <owl:Ontology rdf:about=""/>
   <owl:Class rdf:ID="RuleGroup"/>
   <owl:FunctionalProperty rdf:ID="isRuleGroupEnabled">
     <rdfs:domain rdf:resource="#RuleGroup"/>
