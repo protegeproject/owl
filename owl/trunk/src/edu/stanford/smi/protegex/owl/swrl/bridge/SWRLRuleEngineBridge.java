@@ -241,7 +241,7 @@ public abstract class SWRLRuleEngineBridge implements SWRLRuleEngine, SQWRLQuery
   public int getNumberOfImportedClasses() { return importedClasses.size(); }
   public int getNumberOfImportedIndividuals() { return importedIndividuals.size(); }
   public int getNumberOfImportedProperties() { return importedProperties.size(); }
-  public int getNumberOfImportedAxioms() { return importedRestrictions.size(); }
+  public int getNumberOfImportedRestrictions() { return importedRestrictions.size(); }
   public int getNumberOfAssertedIndividuals() { return assertedIndividuals.size(); }
   public int getNumberOfAssertedProperties() { return assertedProperties.size(); }
   public int getNumberOfCreatedIndividuals() { return createdIndividuals.size(); }
