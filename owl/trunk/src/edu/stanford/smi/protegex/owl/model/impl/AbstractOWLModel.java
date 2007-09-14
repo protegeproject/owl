@@ -1242,6 +1242,18 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
         allRestriction.setFiller(dataRange);
         return allRestriction;
     }
+    
+    
+    public RDFProperty createAnnotationProperty(String name) {
+    	if (name == null) {
+    		name = createUniqueNewFrameName("AnnotationProperty");
+    	}
+
+    	RDFProperty annotationProperty = createRDFProperty(name);
+    	annotationProperty.setProtegeType(getOWLAnnotationPropertyClass());    	
+
+    	return annotationProperty;
+    }
 
 
     public OWLDatatypeProperty createAnnotationOWLDatatypeProperty(String name) {
