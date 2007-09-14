@@ -42,8 +42,13 @@ public class AnnotationPropertyTestCase extends AbstractJenaTestCase {
         assertContains(anno, domainProperties);
     }
 
+    public void testCreateAnnotationProperty() {
+        RDFProperty annProp = owlModel.createAnnotationProperty("Annotation");    
+        assertAnnotationProperty(annProp);
+    }
+    
 
-    private void assertAnnotationProperty(OWLProperty property) {
+    private void assertAnnotationProperty(RDFProperty property) {
         assertTrue(property.isAnnotationProperty());
         assertFalse(property.isFunctional());
         assertFalse(property.isDomainDefined());
