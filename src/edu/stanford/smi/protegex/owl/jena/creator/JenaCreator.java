@@ -124,9 +124,12 @@ public class JenaCreator {
 
 
     private void addEquivalentClasses(OWLNamedClass namedCls, OntClass ontClass) {
-        Collection clses = inferred ?
-                namedCls.getInferredEquivalentClasses() :
-                namedCls.getEquivalentClasses();
+    	Collection clses = new HashSet(namedCls.getEquivalentClasses());
+    	
+    	if (inferred) {
+    		clses.addAll(namedCls.getInferredEquivalentClasses());
+    	}
+    	
         for (Iterator it = clses.iterator(); it.hasNext();) {
             RDFSClass superClass = (RDFSClass) it.next();
             OntClass superOntClass = getOntClass(superClass);
