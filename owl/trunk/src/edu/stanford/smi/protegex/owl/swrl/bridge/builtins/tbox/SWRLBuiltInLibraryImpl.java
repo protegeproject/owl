@@ -1,276 +1,3 @@
-/*
-Interface OWLDescription
-
-All Superinterfaces:
-    OWLObject, OWLPropertyRange
-
-All Known Subinterfaces: 
-
-OWLAnonymousDescription, OWLBooleanDescription, OWLCardinalityRestriction<P,F>, OWLClass, OWLDataAllRestriction,
-OWLDataCardinalityRestriction, OWLDataExactCardinalityRestriction, OWLDataMaxCardinalityRestriction, OWLDataMinCardinalityRestriction,
-OWLDataSomeRestriction, OWLDataValueRestriction, OWLNaryBooleanDescription, OWLObjectAllRestriction, OWLObjectCardinalityRestriction,
-OWLObjectComplementOf, OWLObjectExactCardinalityRestriction, OWLObjectIntersectionOf, OWLObjectMaxCardinalityRestriction,
-OWLObjectMinCardinalityRestriction, OWLObjectOneOf, OWLObjectSelfRestriction, OWLObjectSomeRestriction, OWLObjectUnionOf,
-OWLObjectValueRestriction, OWLQuantifiedRestriction<P,F>, OWLRestriction<P>, OWLValueRestriction<P,V>
-
-
-AbstractOWLParser
-AbstractOWLRenderer
-AddAxiom
-AnnotationValueShortFormProvider
-AutoURIMapper
-BidirectionalShortFormProvider
-BidirectionalShortFormProviderAdapter
-CachingBidirectionalShortFormProvider
-CollectionFactory
-CommonBaseURIMapper
-DefaultChangeBroadcastStrategy
-DefaultOntologyFormat
-DLExpressivityChecker
-DLExpressivityChecker.Construct
-DublinCoreVocabulary
-FilteringOWLOntologyChangeListener
-HashCode
-ImmutableOWLOntologyChangeException
-Monitorable
-MonitorableOWLReasoner
-MonitorableOWLReasonerAdapter
-NamedConjunctChecker
-NamespaceOWLOntologyFormat
-Namespaces
-NamespaceUtil
-NonMappingOntologyURIMapper
-NullProgressMonitor
-OWLAnnotation
-OWLAnnotationAxiom
-OWLAnnotationVisitor
-OWLAnonymousDescription
-OWLAnonymousIndividual
-OWLAntiSymmetricObjectPropertyAxiom
-OWLAxiom
-OWLAxiomAnnotationAxiom
-OWLAxiomChange
-OWLAxiomFilter
-OWLAxiomVisitor
-OWLAxiomVisitorAdapter
-OWLBooleanDescription
-OWLCardinalityRestriction
-OWLClass
-OWLClassAssertionAxiom
-OWLClassAxiom
-OWLClassReasoner
-OWLCommentAnnotation
-OWLConsistencyChecker
-OWLConstant
-OWLConstantAnnotation
-OWLDataAllRestriction
-OWLDataCardinalityRestriction
-OWLDataComplementOf
-OWLDataExactCardinalityRestriction
-OWLDataFactory
-OWLDataMaxCardinalityRestriction
-OWLDataMinCardinalityRestriction
-OWLDataOneOf
-OWLDataProperty
-OWLDataPropertyAssertionAxiom
-OWLDataPropertyAxiom
-OWLDataPropertyCharacteristicAxiom
-OWLDataPropertyDomainAxiom
-OWLDataPropertyExpression
-OWLDataPropertyRangeAxiom
-OWLDataRange
-OWLDataRangeFacetRestriction
-OWLDataRangeRestriction
-OWLDataSomeRestriction
-OWLDataSubPropertyAxiom
-OWLDataType
-OWLDataUtil
-OWLDataValueRestriction
-OWLDataVisitor
-OWLDeclarationAxiom
-OWLDeprecatedClassAxiom
-OWLDeprecatedDataPropertyAxiom
-OWLDeprecatedObjectPropertyAxiom
-OWLDescription
-OWLDescriptionVisitor
-OWLDescriptionVisitorAdapter
-OWLDifferentIndividualsAxiom
-OWLDisjointClassesAxiom
-OWLDisjointDataPropertiesAxiom
-OWLDisjointObjectPropertiesAxiom
-OWLDisjointUnionAxiom
-OWLEntity
-OWLEntityAnnotationAxiom
-OWLEntityCollectingOntologyChangeListener
-OWLEntityCollector
-OWLEntityRemover
-OWLEntityRenamer
-OWLEntitySetProvider
-OWLEntityVisitor
-OWLEquivalentClassesAxiom
-OWLEquivalentDataPropertiesAxiom
-OWLEquivalentObjectPropertiesAxiom
-OWLException
-OWLFunctionalDataPropertyAxiom
-OWLFunctionalObjectPropertyAxiom
-OWLFunctionalSyntaxOntologyFormat
-OWLImportsDeclaration
-OWLIndividual
-OWLIndividualAxiom
-OWLIndividualReasoner
-OWLInverseFunctionalObjectPropertyAxiom
-OWLInverseObjectPropertiesAxiom
-OWLIrreflexiveObjectPropertyAxiom
-OWLLabelAnnotation
-OWLLogicalAxiom
-OWLMutableOntology
-OWLNamedObject
-OWLNamedObjectVisitor
-OWLNaryBooleanDescription
-OWLNaryClassAxiom
-OWLNaryIndividualAxiom
-OWLNaryPropertyAxiom
-OWLNegativeDataPropertyAssertionAxiom
-OWLNegativeObjectPropertyAssertionAxiom
-OWLObject
-OWLObjectAllRestriction
-OWLObjectAnnotation
-OWLObjectCardinalityRestriction
-OWLObjectComplementOf
-OWLObjectDuplicator
-OWLObjectExactCardinalityRestriction
-OWLObjectIntersectionOf
-OWLObjectMaxCardinalityRestriction
-OWLObjectMinCardinalityRestriction
-OWLObjectOneOf
-OWLObjectProperty
-OWLObjectPropertyAssertionAxiom
-OWLObjectPropertyAxiom
-OWLObjectPropertyChainSubPropertyAxiom
-OWLObjectPropertyCharacteristicAxiom
-OWLObjectPropertyDomainAxiom
-OWLObjectPropertyExpression
-OWLObjectPropertyInverse
-OWLObjectPropertyRangeAxiom
-OWLObjectSelfRestriction
-OWLObjectSomeRestriction
-OWLObjectSubPropertyAxiom
-OWLObjectUnionOf
-OWLObjectValueRestriction
-OWLObjectVisitor
-OWLObjectVisitorAdapter
-OWLOntology
-OWLOntologyAnnotationAxiom
-OWLOntologyChange
-OWLOntologyChangeBroadcastStrategy
-OWLOntologyChangeException
-OWLOntologyChangeFilter
-OWLOntologyChangeListener
-OWLOntologyChangeVetoException
-OWLOntologyChangeVisitor
-OWLOntologyChangeVisitorAdapter
-OWLOntologyCreationException
-OWLOntologyFactory
-OWLOntologyFactory.OWLOntologyCreationHandler
-OWLOntologyFactoryNotFoundException
-OWLOntologyFormat
-OWLOntologyImportsClosureSetProvider
-OWLOntologyInputSource
-OWLOntologyManager
-OWLOntologyMerger
-OWLOntologyResourceAccessException
-OWLOntologySetProvider
-OWLOntologySingletonSetProvider
-OWLOntologyStorageException
-OWLOntologyStorer
-OWLOntologyStorerNotFoundException
-OWLOntologyURIChanger
-OWLOntologyURIMapper
-OWLOntologyURIMappingNotFoundException
-OWLParser
-OWLParserException
-OWLParserFactory
-OWLParserFactoryRegistry
-OWLParserIOException
-OWLProperty
-OWLPropertyAssertionAxiom
-OWLPropertyAxiom
-OWLPropertyDomainAxiom
-OWLPropertyExpression
-OWLPropertyExpressionVisitor
-OWLPropertyRange
-OWLPropertyRangeAxiom
-OWLPropertyReasoner
-OWLQuantifiedRestriction
-OWLRDFVocabulary
-OWLReasoner
-OWLReasonerAdapter
-OWLReasonerBase
-OWLReasonerException
-OWLReasonerMediator
-OWLReflexiveObjectPropertyAxiom
-OWLRenderer
-OWLRendererException
-OWLRendererIOException
-OWLRestrictedDataRangeFacetVocabulary
-OWLRestriction
-OWLRuntimeException
-OWLSameIndividualsAxiom
-OWLSatisfiabilityChecker
-OWLSubClassAxiom
-OWLSubPropertyAxiom
-OWLSymmetricObjectPropertyAxiom
-OWLTransitiveObjectPropertyAxiom
-OWLTypedConstant
-OWLUnaryPropertyAxiom
-OWLUntypedConstant
-OWLValueRestriction
-OWLXMLOntologyFormat
-OWLXMLVocabulary
-PhysicalURIInputSource
-ProgressMonitor
-QNameShortFormProvider
-RDFXMLOntologyFormat
-RemoveAxiom
-RootClassChecker
-SetOntologyURI
-ShortFormProvider
-SimpleRenderer
-SimpleRootClassChecker
-SimpleShortFormProvider
-SimpleURIMapper
-SpecificOntologyChangeBroadcastStrategy
-StringInputSource
-SWRLAtom
-SWRLAtomConstantObject
-SWRLAtomDObject
-SWRLAtomDVariable
-SWRLAtomIndividualObject
-SWRLAtomIObject
-SWRLAtomIVariable
-SWRLAtomObject
-SWRLAtomVariable
-SWRLBinaryAtom
-SWRLBuiltInAtom
-SWRLBuiltInsVocabulary
-SWRLClassAtom
-SWRLDataFactory
-SWRLDataRangeAtom
-SWRLDataValuedPropertyAtom
-SWRLDifferentFromAtom
-SWRLObject
-SWRLObjectPropertyAtom
-SWRLObjectVisitor
-SWRLRule
-SWRLSameAsAtom
-SWRLUnaryAtom
-SWRLVocabulary
-ToldClassHierarchyReasoner
-UndefinedEntityException
-UnknownOWLOntologyException
-UnsupportedReasonerOperationException
-XSDVocabulary 
-*/
 // TODO: a lot of repetition here
 // cf. http://listserv.manchester.ac.uk/cgi-bin/wa?A2=ind0611&L=dig-wg&T=0&P=754
 
@@ -547,12 +274,29 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
   } // isCardinalityRestriction
 
   /**
-   ** Is the single argument an OWL named class.
+  /**
+   ** Determine if a single argument is an OWL named class. If the argument is unbound, bind it to all OWL named classes in an ontology.
    */
   public boolean isClass(List<Argument> arguments) throws BuiltInException
   {
+    SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(1, arguments.size());
+    boolean isUnboundArgument = SWRLBuiltInUtil.isUnboundArgument(0, arguments);   
     boolean result = false;
-    if (!result) throw new BuiltInNotImplementedException();
+
+    try {
+      if (isUnboundArgument) {
+        MultiArgument multiArgument = new MultiArgument();
+        for (OWLNamedClass cls : SWRLOWLUtil.getUserDefinedOWLNamedClasses(getInvokingBridge().getOWLModel()))
+          multiArgument.addArgument(new ClassInfo(cls.getName()));
+        arguments.set(0, multiArgument);
+        result = !multiArgument.hasNoArguments();
+      } else {
+        String className = SWRLBuiltInUtil.getArgumentAsAClassName(0, arguments);
+        result = SWRLOWLUtil.isClass(getInvokingBridge().getOWLModel(), className, false);
+      } // if
+    } catch (SWRLOWLUtilException e) {
+      throw new BuiltInException(e.getMessage());
+    } // try
 
     return result;
   } // isClass
@@ -998,33 +742,6 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
 
     return result;
   } // isMinCardinalityRestriction
-
-  /**
-   ** Determine if a single argument is an OWL named class. If the argument is unbound, bind it to all OWL named classes in an ontology.
-   */
-  public boolean isNamedClass(List<Argument> arguments) throws BuiltInException
-  {
-    SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(1, arguments.size());
-    boolean isUnboundArgument = SWRLBuiltInUtil.isUnboundArgument(0, arguments);   
-    boolean result = false;
-
-    try {
-      if (isUnboundArgument) {
-        MultiArgument multiArgument = new MultiArgument();
-        for (OWLNamedClass cls : SWRLOWLUtil.getUserDefinedOWLNamedClasses(getInvokingBridge().getOWLModel()))
-          multiArgument.addArgument(new ClassInfo(cls.getName()));
-        arguments.set(0, multiArgument);
-        result = !multiArgument.hasNoArguments();
-      } else {
-        String className = SWRLBuiltInUtil.getArgumentAsAClassName(0, arguments);
-        result = SWRLOWLUtil.isClass(getInvokingBridge().getOWLModel(), className, false);
-      } // if
-    } catch (SWRLOWLUtilException e) {
-      throw new BuiltInException(e.getMessage());
-    } // try
-
-    return result;
-  } // isNamedClass
 
   /**
    ** Determine if a single argument is an OWL object property. If the argument is unbound, bind it to all OWL object properties in an

@@ -62,7 +62,6 @@
   <swrl:Builtin rdf:ID="isVersionInfoAnnotation"/>
   <swrl:Builtin rdf:ID="isDirectSubPropertyOf"/>
   <swrl:Builtin rdf:ID="isSomeValuesFromRestriction"/>
-  <swrl:Builtin rdf:ID="isNamedClass"/>
   <swrl:Builtin rdf:ID="isTransitivePropertyDescription"/>
   <swrl:Builtin rdf:ID="hasSeeAlso"/>
   <swrl:Builtin rdf:ID="isEquivalentClass"/>
