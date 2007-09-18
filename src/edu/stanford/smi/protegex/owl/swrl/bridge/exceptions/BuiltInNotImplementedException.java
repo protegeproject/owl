@@ -5,7 +5,7 @@ public class BuiltInNotImplementedException extends BuiltInException
 {
   public BuiltInNotImplementedException() 
   { 
-    super("built-inn not yet implemented"); 
+    super("built-in not yet implemented"); 
   } // BuiltInNotImplementedException
 
   public BuiltInNotImplementedException(String message) 
