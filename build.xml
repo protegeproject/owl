@@ -440,9 +440,11 @@
      <junit printsummary="withOutAndErr"
             dir = "${build}" 
             fork = "yes"
-            haltonfailure = "on" 
-            haltonerror = "on">
-      <jvmarg value="-Xmx300M"/>
+            filtertrace="${junit.filtertrace}"
+            showoutput="${junit.showoutput}"
+            haltonfailure = "${junit.haltonfailure}"
+            haltonerror = "${junit.haltonerror}">
+      <jvmarg value="-Xmx${junit.memory}"/>
       <classpath>
            <pathelement location="${classes}"/>
            <pathelement location = "${protege.lib}"/>
@@ -458,7 +460,7 @@
         </classpath>
         <batchtest>
            <fileset dir="${junit}">
-             <include name = "**/*TestCase.java"/>
+             <include name = "${junit.includes}"/>
              <exclude name = "**/*Abstract*.java"/>
              <exclude name = "**/*FailedTestCase.java"/>
            </fileset>
