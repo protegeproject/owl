@@ -14,7 +14,7 @@ import edu.stanford.smi.protegex.owl.swrl.model.impl.SWRLUtil;
 import javax.swing.*;
 import java.util.*;
 
-public class DefaultSWRLImp extends DefaultOWLIndividual implements SWRLImp 
+public class DefaultSWRLImp extends AbstractSWRLIndividual implements SWRLImp 
 {
   public static final String EMPTY_RULE_TEXT = "<EMPTY_RULE>";
   private boolean isRuleEnabled = true;
