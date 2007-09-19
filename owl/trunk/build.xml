@@ -437,6 +437,7 @@
    <target name = "junit" 
            description = "run the tests (anybody can do it)"
            depends = "plugin.dir,junit-compile,checkJunitConfiguration">
+     <property file="junit.properties"/>
      <junit printsummary="withOutAndErr"
             dir = "${build}" 
             fork = "yes"
