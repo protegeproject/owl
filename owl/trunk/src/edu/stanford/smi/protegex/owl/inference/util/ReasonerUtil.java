@@ -5,12 +5,14 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.logging.Level;
 
 import edu.stanford.smi.protege.event.ProjectAdapter;
 import edu.stanford.smi.protege.event.ProjectEvent;
 import edu.stanford.smi.protege.event.ProjectListener;
 import edu.stanford.smi.protege.model.KnowledgeBase;
 import edu.stanford.smi.protege.model.Project;
+import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.model.OWLAnonymousClass;
 import edu.stanford.smi.protegex.owl.model.OWLIndividual;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
@@ -22,6 +24,11 @@ import edu.stanford.smi.protegex.owl.model.RDFSClass;
 import edu.stanford.smi.protegex.owl.model.event.ModelAdapter;
 import edu.stanford.smi.protegex.owl.model.event.ModelListener;
 import edu.stanford.smi.protegex.owl.model.visitor.OWLModelVisitorAdapter;
+import edu.stanford.smi.protegex.owl.swrl.model.SWRLAtomList;
+import edu.stanford.smi.protegex.owl.swrl.model.SWRLBuiltin;
+import edu.stanford.smi.protegex.owl.swrl.model.SWRLFactory;
+import edu.stanford.smi.protegex.owl.swrl.model.SWRLIndividual;
+import edu.stanford.smi.protegex.owl.swrl.model.factory.SWRLJavaFactory;
 
 /**
  * User: matthewhorridge<br>
@@ -119,7 +126,7 @@ public class ReasonerUtil {
         // If we haven't got a cache for the knowledge base
         // then create one.
         if (namedClsesMap.containsKey(kb) == false) {
-            namedClsesMap.put(kb, kb.getUserDefinedOWLNamedClasses());
+            namedClsesMap.put(kb, getFilteredNamedClasses(kb));
 
             kb.addModelListener(modelListener);
             kb.getProject().addProjectListener(projectListener);
@@ -129,7 +136,7 @@ public class ReasonerUtil {
         Collection namedClses = (Collection) namedClsesMap.get(kb);
 
         if (namedClses == null) {
-            namedClses = kb.getUserDefinedOWLNamedClasses();
+            namedClses = getFilteredNamedClasses(kb);
 
             namedClsesMap.put(kb, namedClses);
         }
@@ -137,12 +144,30 @@ public class ReasonerUtil {
         return namedClses;
     }
 
+    
+    private Collection getFilteredNamedClasses(OWLModel owlModel) {
+    	Collection allNamedClasses = owlModel.getUserDefinedOWLNamedClasses();
+    	
+    	try {
+        	//filter out SWRL classes, if present
+        	//if  (false && owlModel.getOWLJavaFactory() instanceof SWRLJavaFactory) {
+        	if  (owlModel.getOWLJavaFactory() instanceof SWRLJavaFactory) {
+        		SWRLFactory swrlFactory = new SWRLFactory(owlModel);
+        		Collection swrlClasses = swrlFactory.getSWRLClasses();
+        		allNamedClasses.removeAll(swrlClasses);
+        	}			
+		} catch (Exception e) {
+			Log.getLogger().log(Level.WARNING, "Error at filtering out the SWRL classes from the classes sent to the reasoner", e);
+		}
+    	
+    	return allNamedClasses;
+    }
 
     public Collection getProperties(OWLModel kb) {
         // If we haven't got a cache for the knowledge base
         // then create one.
         if (propertiesMap.containsKey(kb) == false) {
-            propertiesMap.put(kb, kb.getUserDefinedOWLProperties());
+            propertiesMap.put(kb, getFilteredProperties(kb));
 
             kb.addModelListener(modelListener);
         }
@@ -151,7 +176,7 @@ public class ReasonerUtil {
         Collection properties = (Collection) propertiesMap.get(kb);
 
         if (properties == null) {
-            properties = kb.getUserDefinedOWLProperties();
+            properties = getFilteredProperties(kb);
 
             propertiesMap.put(kb, properties);
         }
@@ -159,6 +184,26 @@ public class ReasonerUtil {
         return properties;
     }
 
+    
+    private Collection getFilteredProperties(OWLModel owlModel) {
+    	Collection allProperties = owlModel.getUserDefinedOWLProperties();
+    	
+    	try {
+        	//filter out SWRL properties, if present
+        	if  (owlModel.getOWLJavaFactory() instanceof SWRLJavaFactory) {        
+        		SWRLFactory swrlFactory = new SWRLFactory(owlModel);
+        		Collection swrlProperties = swrlFactory.getSWRLProperties();
+        		Collection swrlbProperties = swrlFactory.getSWRLBProperties();
+        		allProperties.removeAll(swrlProperties);
+        		allProperties.removeAll(swrlbProperties);
+        	}			
+		} catch (Exception e) {
+			Log.getLogger().log(Level.WARNING, "Error at filtering out the SWRL properties from the properties sent to the reasoner", e);
+		}
+    	
+    	return allProperties;
+    }
+    
 
     public Collection getIndividuals(OWLModel kb) {
         if (individualsMap.containsKey(kb) == false) {
@@ -197,7 +242,7 @@ public class ReasonerUtil {
 
         public Collection getOWLIndividuals() {
             individuals = new ArrayList();
-            for (Iterator it = model.getRDFResources().iterator(); it.hasNext();) {
+            for (Iterator it = model.getOWLIndividuals().iterator(); it.hasNext();) {
                 RDFResource curRes = (RDFResource) it.next();
                 curRes.accept(this);
             }
@@ -208,6 +253,7 @@ public class ReasonerUtil {
         public void visitOWLIndividual(OWLIndividual owlIndividual) {
             individuals.add(owlIndividual);
         }
+        
     }
 
 
