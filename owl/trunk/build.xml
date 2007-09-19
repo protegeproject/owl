@@ -413,6 +413,12 @@
     </java>
   </target>
 
+  <target name="junitOntologies">
+    <copy todir="${build}/examples">
+      <fileset dir="./examples"/>
+    </copy>
+  </target>
+
    <!--
      My experience is that "ant junit" provides almost no debugging
      information when things go wrong.  (This was not true in my
@@ -436,7 +442,7 @@
        -->
    <target name = "junit" 
            description = "run the tests (anybody can do it)"
-           depends = "plugin.dir,junit-compile,checkJunitConfiguration">
+           depends = "plugin.dir,junit-compile,checkJunitConfiguration, junitOntologies">
      <property file="junit.properties"/>
      <junit printsummary="withOutAndErr"
             dir = "${build}" 
