@@ -338,6 +338,7 @@ public abstract class SWRLRuleEngineBridge implements SWRLRuleEngine, SQWRLQuery
     Iterator iterator = rules.iterator();
     while (iterator.hasNext()) {
       SWRLImp rule = (SWRLImp)iterator.next();
+      if (rule == null) throw new SWRLRuleEngineBridgeException("empty rule");
       importSWRLRule(rule);
     } // while
   } // importSWRLRules
