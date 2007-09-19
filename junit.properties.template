@@ -25,7 +25,7 @@ junit.filtertrace=true
 junit.showoutput=false
 junit.haltonerror=on
 junit.haltonfailure=on
-junit.includes=**/*Test.java
+junit.includes=**/*TestCase.java
 junit.memory=700M
 
 #==---==---==---==---==---==---==---==---==---==---==---==---==---==---==---==
