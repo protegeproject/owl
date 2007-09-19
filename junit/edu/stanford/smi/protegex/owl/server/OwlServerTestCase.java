@@ -13,9 +13,12 @@ public class OwlServerTestCase extends AbstractJenaTestCase {
   private static final String PASSWORD = "timothy";
   private static final String PROJECT_NAME = "Pizza";
   
+  public static final String PROTEGE_JAR_LOC_PROP = "junit.server.protege.jar";
+  
   
   public void setUp() throws Exception {
     super.setUp();
+    Server_Test.setProtegeJarLocation(System.getProperty(PROTEGE_JAR_LOC_PROP));
     Server_Test.setMetaProject("junit/projects/metaproject.pprj");
     if (!Server_Test.startServer()) {
       return;
