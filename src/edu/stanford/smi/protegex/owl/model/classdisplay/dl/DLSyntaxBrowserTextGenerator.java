@@ -4,6 +4,8 @@ import edu.stanford.smi.protegex.owl.model.*;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLSomeValuesFrom;
 import edu.stanford.smi.protegex.owl.model.visitor.OWLModelVisitor;
 import edu.stanford.smi.protegex.owl.model.visitor.Visitable;
+import edu.stanford.smi.protegex.owl.swrl.model.SWRLAtomList;
+import edu.stanford.smi.protegex.owl.swrl.model.SWRLIndividual;
 
 import java.util.Iterator;
 import java.util.Stack;
@@ -276,5 +278,13 @@ public class DLSyntaxBrowserTextGenerator implements OWLModelVisitor {
     public void visitRDFUntypedResource(RDFUntypedResource rdfUntypedResource) {
         write(rdfUntypedResource.getURI());
     }
+
+	public void visitSWRLIndividual(SWRLIndividual swrlIndividual) {		
+		visitOWLIndividual(swrlIndividual);
+	}
+
+	public void visitSWRLAtomListIndividual(SWRLAtomList swrlAtomList) {		
+		visitRDFList(swrlAtomList);
+	}
 
 }
