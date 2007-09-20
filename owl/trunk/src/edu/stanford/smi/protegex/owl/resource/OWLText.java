@@ -51,10 +51,6 @@ public final class OWLText {
         return Integer.parseInt(props.getProperty("build.compatible.latest", "1"));
     }
 
-    public static int getRequiresProtegeBuild(){
-        return Integer.parseInt(props.getProperty("build.requires.protege.build", "1"));
-    }
-
     public static URL getAboutURL() {
     	URL aboutURL = OWLText.class.getResource("files/about-owl.html");
         return aboutURL;
