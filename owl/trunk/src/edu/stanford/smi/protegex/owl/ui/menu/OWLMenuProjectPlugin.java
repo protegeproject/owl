@@ -42,7 +42,6 @@ import edu.stanford.smi.protege.model.WidgetDescriptor;
 import edu.stanford.smi.protege.plugin.ProjectPluginAdapter;
 import edu.stanford.smi.protege.resource.LocalizedText;
 import edu.stanford.smi.protege.resource.ResourceKey;
-import edu.stanford.smi.protege.resource.Text;
 import edu.stanford.smi.protege.ui.ProjectMenuBar;
 import edu.stanford.smi.protege.ui.ProjectToolBar;
 import edu.stanford.smi.protege.ui.ProjectView;
@@ -269,21 +268,9 @@ public class OWLMenuProjectPlugin extends ProjectPluginAdapter {
             Integer build = owlModel.getOWLProject().getSettingsMap().getInteger(JenaKnowledgeBaseFactory.OWL_BUILD_PROPERTY);
             if (build == null) {
                 fix(owlModel);
-                /*OWLUI.showMessageDialog("Warning: Your Protege project (pprj) file does not contain information" +
-                        "\nabout which version of Protege-OWL it was created with.  Some forms" +
-                        "\nor tabs may not show up correctly.  In that case, you should rebuild your" +
-                        "\nproject from the .owl file." +
-                        "\nIf you think your project file is ok you just need to save the project" +
-                        "\nusing this version to get rid of this warning in the future.");*/
             }
             else if (build.intValue() < OWLText.getLatestCompatibleBuild()) {
                 fix(owlModel);
-                /*
-                OWLUI.showMessageDialog("Warning: Your Protege project (pprj) file has been created with a" +
-                        "\nprevious version of Protege-OWL (" + build + ").  As a result, some forms or" +
-                        "\ntabs may not show up correctly.  In that case, you should rebuild your" +
-                        "\nproject from the .owl file.");
-                        */
             }
             if (project.getSources().getString(AbsoluteFormsGenerator.SAVE_FORMS_KEY) != null) {
                 try {
@@ -320,14 +307,6 @@ public class OWLMenuProjectPlugin extends ProjectPluginAdapter {
             adjustOWLAnnotationPropertyForm(view.getProject());
 
             ResourceActionManager.addResourceActionClass(JavaCodeGeneratorResourceAction.class);
-
-            int buildNumber = Integer.parseInt(Text.getBuildNumber());
-            if (buildNumber < OWLText.getRequiresProtegeBuild()) {
-                ProtegeUI.getModalDialogFactory().showMessageDialog(owlModel,
-                                                                    "Warning: This version of the OWL Plugin requires Protege 3.2 beta build " +
-                                                                    OWLText.getRequiresProtegeBuild() + ",\nbut you currently have Protege " +
-                                                                    Text.getVersion() + ", Build " + buildNumber + ". Please do a clean reinstall.");
-            }
         }
     }
 
