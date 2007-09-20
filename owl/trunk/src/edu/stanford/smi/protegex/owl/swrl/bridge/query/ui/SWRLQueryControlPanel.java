@@ -49,8 +49,8 @@ public class SWRLQueryControlPanel extends JPanel
     add(BorderLayout.SOUTH, panel);
 
     textArea.append("\nSee http://protege.cim3.net/cgi-bin/wiki.pl?SWRLQueryTab for documentation.\n\n");
-    textArea.append("Executing rules in this tab does not modify the ontology.\n\n");
-    textArea.append("Select a query built-ins from the list above and press the 'Run' button.\n");
+    textArea.append("Executing queries in this tab does not modify the ontology.\n\n");
+    textArea.append("Select a query from the list above and press the 'Run' button.\n");
     textArea.append("If the selected query generates a result, the result will appear in a new tab.\n\n");
   } // SWRLQueryControlPanel
 
