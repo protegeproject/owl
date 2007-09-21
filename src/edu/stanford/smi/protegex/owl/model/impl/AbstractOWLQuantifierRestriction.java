@@ -2,7 +2,7 @@ package edu.stanford.smi.protegex.owl.model.impl;
 
 import edu.stanford.smi.protege.model.FrameID;
 import edu.stanford.smi.protege.model.KnowledgeBase;
-import edu.stanford.smi.protegex.owl.compactparser.OWLCompactParserUtil;
+import edu.stanford.smi.protegex.owl.model.classparser.compact.OWLCompactParserUtil;
 import edu.stanford.smi.protegex.owl.model.*;
 import edu.stanford.smi.protegex.owl.model.classparser.OWLClassParseException;
 import edu.stanford.smi.protegex.owl.model.classparser.OWLClassParser;
