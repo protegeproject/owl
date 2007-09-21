@@ -7,6 +7,7 @@ import edu.stanford.smi.protegex.owl.swrl.model.SWRLNames;
 import edu.stanford.smi.protegex.owl.swrl.model.SWRLVariable;
 import edu.stanford.smi.protegex.owl.ui.code.OWLResourceNameMatcher;
 import edu.stanford.smi.protegex.owl.ui.code.ResourceNameMatcher;
+import edu.stanford.smi.protegex.owl.ui.code.SymbolTextField;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -43,6 +44,10 @@ public class SWRLResourceNameMatcher implements ResourceNameMatcher {
             OWLResourceNameMatcher.getMatchingOWLProperties(prefix, resources, owlModel);
         }
         return resources;
+    }
+    
+    public boolean isIdChar(char ch) {
+        return SymbolTextField.isIdChar(ch);
     }
 
 
