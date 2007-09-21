@@ -129,4 +129,39 @@ public class ParserUtils {
     }
     return targetClass.isAssignableFrom(resource.getClass());
   }
+  
+  public final static String SINGLE_QUOTE_STRING = "'";
+  public final static String[] SUBSTRINGS_REQUIRING_QUOTES = {" ", ";", " "};
+  public static String quoteIfNeeded(String id) {
+      if (quoteNeeded(id)) {
+          return SINGLE_QUOTE_STRING + id + SINGLE_QUOTE_STRING;
+      }
+      return id;
+  }
+  
+  public static boolean quoteNeeded(String id) {
+      for (String bad : SUBSTRINGS_REQUIRING_QUOTES) {
+          if (id.contains(bad)) {
+              return true;
+          }
+      }
+      return false;
+  }
+  
+  public static String dequoteIdentifier(String id) {
+      if (id.startsWith(SINGLE_QUOTE_STRING) && id.endsWith(SINGLE_QUOTE_STRING))  {
+          return id.substring(1, id.length() - 1);
+      }
+      else {
+          return id;
+      }
+  }
+  
+  public static boolean isLexError(Error e) {
+      String clazz = e.getClass().getCanonicalName();
+      if (clazz.endsWith("TokenMgrError")) {
+          return  true;
+      }
+      return false;
+  }
 }
