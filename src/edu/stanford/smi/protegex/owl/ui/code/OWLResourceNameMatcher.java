@@ -1,12 +1,25 @@
 package edu.stanford.smi.protegex.owl.ui.code;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+
 import edu.stanford.smi.protege.model.Frame;
 import edu.stanford.smi.protegex.owl.database.OWLDatabaseModel;
-import edu.stanford.smi.protegex.owl.model.*;
+import edu.stanford.smi.protegex.owl.model.OWLIndividual;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
+import edu.stanford.smi.protegex.owl.model.OWLProperty;
+import edu.stanford.smi.protegex.owl.model.RDFIndividual;
+import edu.stanford.smi.protegex.owl.model.RDFProperty;
+import edu.stanford.smi.protegex.owl.model.RDFResource;
+import edu.stanford.smi.protegex.owl.model.RDFSDatatype;
+import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
 import edu.stanford.smi.protegex.owl.model.classparser.OWLClassParseException;
+import edu.stanford.smi.protegex.owl.model.classparser.ParserUtils;
 import edu.stanford.smi.protegex.owl.model.impl.OWLUtil;
-
-import java.util.*;
 
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
@@ -17,7 +30,8 @@ public class OWLResourceNameMatcher implements ResourceNameMatcher {
 
 
     public String getInsertString(RDFResource resource) {
-        return resource.getBrowserText();
+        String insert = resource.getBrowserText();
+        return ParserUtils.quoteIfNeeded(insert);
     }
 
 
@@ -146,4 +160,8 @@ public class OWLResourceNameMatcher implements ResourceNameMatcher {
             }
         }
 	}
+    
+    public boolean isIdChar(char ch) {
+        return SymbolTextField.isIdChar(ch);
+    }
 }
