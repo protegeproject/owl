@@ -186,10 +186,19 @@ public class ProtegeSaver extends KnowledgeBaseCopier {
                 RDFSDatatype datatype = owlModel.getRDFSDatatypeByURI(uri);
                 ((RDFProperty) newSlot).setRange(datatype);
             }
-            super.setValueType(oldSlot, newSlot);
+           
+           //treat rdf:range for owl object properties
+           if (newSlot instanceof OWLObjectProperty && valueType == ValueType.INSTANCE) {
+        	   Collection newAllowedClses = cloneValues(oldSlot.getAllowedClses());
+               ((OWLObjectProperty)newSlot).setRanges(newAllowedClses);        
+           } else {
+        	   super.setValueType(oldSlot, newSlot);
+           }
         }
         else {
             System.err.println("[ProtegeSaver] Warning: Slot " + oldSlot + " has value type ANY");
         }
     }
+  
+    
 }
