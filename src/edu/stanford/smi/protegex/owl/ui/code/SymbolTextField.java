@@ -9,6 +9,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 
 import javax.swing.JComboBox;
@@ -198,9 +199,9 @@ public abstract class SymbolTextField extends JTextField
         }
         String prefix = text.substring(i + 1, pos);
         String leftString = text.substring(0, i + 1);
-        List resources = resourceNameMatcher.getMatchingResources(prefix, leftString, owlModel);
+        Set<RDFResource> resources = resourceNameMatcher.getMatchingResources(prefix, leftString, owlModel);
         if (autoInsert && resources.size() == 1) {
-            RDFResource resource = (RDFResource) resources.get(0);
+            RDFResource resource = resources.iterator().next();
             extendPartialName(prefix, resourceNameMatcher.getInsertString(resource));
             closeComboBox();
         }
@@ -397,7 +398,7 @@ public abstract class SymbolTextField extends JTextField
             }
             String prefix = text.substring(i + 1, pos);
             String leftString = text.substring(0, i + 1);
-            List frames = resourceNameMatcher.getMatchingResources(prefix, leftString, owlModel);
+            Set<RDFResource> frames = resourceNameMatcher.getMatchingResources(prefix, leftString, owlModel);
             if (frames.size() == 0) {
                 closeComboBox();
             }
@@ -420,7 +421,7 @@ public abstract class SymbolTextField extends JTextField
     }
 
 
-    private void showComboBox(List frames, int startIndex) {
+    private void showComboBox(Set<RDFResource> frames, int startIndex) {
         closeComboBox();
         Frame[] fs = (Frame[]) frames.toArray(new Frame[0]);
         Arrays.sort(fs, new ResourceIgnoreCaseComparator());
