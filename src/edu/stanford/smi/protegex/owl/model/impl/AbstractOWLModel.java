@@ -2906,7 +2906,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
 
     private Collection getUserDefinedInstances(Cls cls) {
-        Collection instances = cls.getInstances();
+        Collection<Instance> instances = cls.getInstances();
         return getUserDefinedInstances(instances);
     }
 
