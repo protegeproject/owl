@@ -1,6 +1,6 @@
 package edu.stanford.smi.protegex.owl.ui.code;
 
-import java.util.List;
+import java.util.Set;
 
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
@@ -16,7 +16,7 @@ public interface ResourceNameMatcher {
     String getInsertString(RDFResource resource);
 
 
-    List<RDFResource> getMatchingResources(String prefix, String leftString, OWLModel owlModel);
+    Set<RDFResource> getMatchingResources(String prefix, String leftString, OWLModel owlModel);
     
     public boolean isIdChar(char ch);
 }
