@@ -251,7 +251,8 @@ public class RepositoryFileManager {
     private File getProjectRepositoryFile(URI owlFileURI) {        
     	File f = new File(owlFileURI);
         String repName = f.getName();
-        repName = repName.substring(0, repName.lastIndexOf(".")) + REPOSITORY_EXTENTION;
+        repName = FileUtilities.replaceExtension(repName, REPOSITORY_EXTENTION);
+        repName = FileUtilities.ensureExtension(repName, REPOSITORY_EXTENTION);      
         f = new File(f.getParentFile(), repName);
         return f;       
     }
