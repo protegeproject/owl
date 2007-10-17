@@ -3,12 +3,14 @@ package edu.stanford.smi.protegex.owl.swrl.bridge.builtins.temporal;
 
 import edu.stanford.smi.protegex.owl.swrl.bridge.builtins.temporal.exceptions.*;
 
-import edu.stanford.smi.protegex.owl.model.*;
-import edu.stanford.smi.protegex.owl.swrl.util.*;
-import edu.stanford.smi.protegex.owl.swrl.exceptions.*;
 import edu.stanford.smi.protegex.owl.swrl.bridge.*;
 import edu.stanford.smi.protegex.owl.swrl.bridge.builtins.*;
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.*;
+
+import edu.stanford.smi.protegex.owl.swrl.util.*;
+import edu.stanford.smi.protegex.owl.swrl.exceptions.*;
+
+import edu.stanford.smi.protegex.owl.model.OWLModel;
 
 import edu.stanford.smi.protegex.owl.swrl.bridge.xsd.DateTime;
 
@@ -60,19 +62,19 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
     temporal = new Temporal(d);
   } // reset
 
-  public boolean equals(List<Argument> arguments) throws BuiltInException { return temporalOperation(TemporalEquals, arguments); }
-  public boolean before(List<Argument> arguments) throws BuiltInException { return temporalOperation(TemporalBefore, arguments); }
-  public boolean after(List<Argument> arguments) throws BuiltInException { return temporalOperation(TemporalAfter, arguments); }
-  public boolean meets(List<Argument> arguments) throws BuiltInException { return temporalOperation(TemporalMeets, arguments); }
-  public boolean metBy(List<Argument> arguments) throws BuiltInException { return temporalOperation(TemporalMetBy, arguments); }
-  public boolean overlaps(List<Argument> arguments) throws BuiltInException { return temporalOperation(TemporalOverlaps, arguments); }
-  public boolean overlappedBy(List<Argument> arguments) throws BuiltInException { return temporalOperation(TemporalOverlappedBy, arguments); }
-  public boolean contains(List<Argument> arguments) throws BuiltInException { return temporalOperation(TemporalContains, arguments); }
-  public boolean during(List<Argument> arguments) throws BuiltInException { return temporalOperation(TemporalDuring, arguments); }
-  public boolean starts(List<Argument> arguments) throws BuiltInException { return temporalOperation(TemporalStarts, arguments); }
-  public boolean startedBy(List<Argument> arguments) throws BuiltInException { return temporalOperation(TemporalStartedBy, arguments); }
-  public boolean finishes(List<Argument> arguments) throws BuiltInException { return temporalOperation(TemporalFinishes, arguments); }
-  public boolean finishedBy(List<Argument> arguments) throws BuiltInException { return temporalOperation(TemporalFinishedBy, arguments); }
+  public boolean equals(List<BuiltInArgument> arguments) throws BuiltInException { return temporalOperation(TemporalEquals, arguments); }
+  public boolean before(List<BuiltInArgument> arguments) throws BuiltInException { return temporalOperation(TemporalBefore, arguments); }
+  public boolean after(List<BuiltInArgument> arguments) throws BuiltInException { return temporalOperation(TemporalAfter, arguments); }
+  public boolean meets(List<BuiltInArgument> arguments) throws BuiltInException { return temporalOperation(TemporalMeets, arguments); }
+  public boolean metBy(List<BuiltInArgument> arguments) throws BuiltInException { return temporalOperation(TemporalMetBy, arguments); }
+  public boolean overlaps(List<BuiltInArgument> arguments) throws BuiltInException { return temporalOperation(TemporalOverlaps, arguments); }
+  public boolean overlappedBy(List<BuiltInArgument> arguments) throws BuiltInException { return temporalOperation(TemporalOverlappedBy, arguments); }
+  public boolean contains(List<BuiltInArgument> arguments) throws BuiltInException { return temporalOperation(TemporalContains, arguments); }
+  public boolean during(List<BuiltInArgument> arguments) throws BuiltInException { return temporalOperation(TemporalDuring, arguments); }
+  public boolean starts(List<BuiltInArgument> arguments) throws BuiltInException { return temporalOperation(TemporalStarts, arguments); }
+  public boolean startedBy(List<BuiltInArgument> arguments) throws BuiltInException { return temporalOperation(TemporalStartedBy, arguments); }
+  public boolean finishes(List<BuiltInArgument> arguments) throws BuiltInException { return temporalOperation(TemporalFinishes, arguments); }
+  public boolean finishedBy(List<BuiltInArgument> arguments) throws BuiltInException { return temporalOperation(TemporalFinishedBy, arguments); }
 
   /**
    ** Accepts either three or four arguments. Returns true if the first duration argument is equal to the difference between two timestamps
@@ -80,7 +82,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
    ** arguments or in single ValidPeriod argument. If the duration argument is unbound, it is assigned to the time difference between the
    ** two timestamps.
    */
-  public boolean duration(List<Argument> arguments) throws BuiltInException
+  public boolean duration(List<BuiltInArgument> arguments) throws BuiltInException
   {
     boolean result = false;
     long operationResult;
@@ -104,7 +106,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
       } // if
 
       if (SWRLBuiltInUtil.isUnboundArgument(0, arguments)) {
-        arguments.set(0, new LiteralInfo(operationResult)); // Bind the result to the first parameter
+        arguments.set(0, BridgeFactory.createOWLDatatypeValue(operationResult)); // Bind the result to the first parameter
         result = true;
       } else {
         long argument1 = SWRLBuiltInUtil.getArgumentAsALong(0, arguments);
@@ -124,7 +126,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
    ** granularity specified by the fourth argument. The timestamps are specified as either a ValidInstant, or xsd:DateTime
    ** arguments. If the first argument is unbound, it is assigned the result of the addition.
    */
-  public boolean add(List<Argument> arguments) throws BuiltInException
+  public boolean add(List<BuiltInArgument> arguments) throws BuiltInException
   {
     boolean result = false;
 
@@ -139,7 +141,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
       operationResult.addGranuleCount(granuleCount, granularity);
 
       if (SWRLBuiltInUtil.isUnboundArgument(0, arguments)) {
-        arguments.set(0, new LiteralInfo(new DateTime(operationResult.toString()))); // Bind the result to the first parameter
+        arguments.set(0, BridgeFactory.createOWLDatatypeValue(new DateTime(operationResult.toString()))); // Bind the result to the first parameter
         result = true;
       } else {
         Instant argument1 = getArgumentAsAnInstant(0, arguments, granularity);
@@ -154,7 +156,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
     return result;
   } // add
 
-  private boolean temporalOperation(String operation, List<Argument> arguments) throws BuiltInException
+  private boolean temporalOperation(String operation, List<BuiltInArgument> arguments) throws BuiltInException
   {
     boolean result = false;
 
@@ -189,7 +191,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
     return result;
   } // duration
 
-  private Period getArgumentAsAPeriod(int argumentNumber, List<Argument> arguments, int granularity) 
+  private Period getArgumentAsAPeriod(int argumentNumber, List<BuiltInArgument> arguments, int granularity) 
     throws BuiltInException, TemporalException, SWRLOWLUtilException
   {
     OWLModel owlModel = getInvokingBridge().getOWLModel();
@@ -213,7 +215,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
     return result;
   } // getArgumentAsAPeriod
 
-  private Instant getArgumentAsAnInstant(int argumentNumber, List<Argument> arguments, int granularity) 
+  private Instant getArgumentAsAnInstant(int argumentNumber, List<BuiltInArgument> arguments, int granularity) 
     throws BuiltInException, TemporalException, SWRLOWLUtilException
   {
     OWLModel owlModel = getInvokingBridge().getOWLModel();
@@ -234,7 +236,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
     return result;
   } // getArgumentAsAnInstant
 
-  private int getArgumentAsAGranularity(int argumentNumber, List<Argument> arguments) 
+  private int getArgumentAsAGranularity(int argumentNumber, List<BuiltInArgument> arguments) 
     throws TemporalException, BuiltInException, SWRLOWLUtilException
   {
     OWLModel owlModel = getInvokingBridge().getOWLModel();

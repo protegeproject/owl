@@ -10,6 +10,7 @@
   xml:base="http://sqwrl.stanford.edu/ontologies/built-ins/3.4/sqwrl.owl">
   <owl:Ontology rdf:about=""/>
   <swrl:Builtin rdf:ID="element"/>
+  <swrl:Builtin rdf:ID="makeSortedSet"/>
   <swrl:Builtin rdf:ID="size"/>
   <swrl:Builtin rdf:ID="empty"/>
   <swrl:Builtin rdf:ID="count">
@@ -37,7 +38,6 @@
   <swrl:Builtin rdf:ID="makeSet"/>
   <swrl:Builtin rdf:ID="orderBy"/>
   <swrl:Builtin rdf:ID="intersect"/>
-  <swrl:Builtin rdf:ID="makeOrderedList"/>
   <swrl:Builtin rdf:ID="sum">
     <swrlb:args rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
     >1</swrlb:args>
@@ -52,4 +52,4 @@
   <swrl:Builtin rdf:ID="orderByDescending"/>
 </rdf:RDF>
 
-<!-- Created with Protege (with OWL Plugin 3.3, Build 421)  http://protege.stanford.edu -->
+<!-- Created with Protege (with OWL Plugin 3.4, Build 102)  http://protege.stanford.edu -->

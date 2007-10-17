@@ -11,7 +11,6 @@
   <owl:Ontology rdf:about=""/>
   <swrl:Builtin rdf:ID="hasValue"/>
   <swrl:Builtin rdf:ID="hasURI"/>
-  <swrl:Builtin rdf:ID="setClass"/>
   <swrl:Builtin rdf:ID="isIndividual"/>
   <swrl:Builtin rdf:ID="hasClass"/>
   <swrl:Builtin rdf:ID="hasIndividual">

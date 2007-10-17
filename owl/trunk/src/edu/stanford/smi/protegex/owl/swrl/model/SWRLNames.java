@@ -16,32 +16,24 @@ public interface SWRLNames extends OWLNames {
   public final static String SWRLB_IMPORT = "http://www.w3.org/2003/11/swrlb";
   public final static String SWRLA_IMPORT = "http://swrl.stanford.edu/ontologies/3.3/swrla.owl";
   public final static String SWRLX_IMPORT = "http://swrl.stanford.edu/ontologies/built-ins/3.3/swrlx.owl";
+  public final static String SWRLM_IMPORT = "http://swrl.stanford.edu/ontologies/built-ins/3.4/swrlm.owl";
   public final static String SWRLTBOX_IMPORT = "http://swrl.stanford.edu/ontologies/built-ins/3.3/tbox.owl";
   public final static String SWRLABOX_IMPORT = "http://swrl.stanford.edu/ontologies/built-ins/3.3/abox.owl";
   public final static String SWRLRDF_IMPORT = "http://swrl.stanford.edu/ontologies/built-ins/3.4/rdfb.owl";
-  public final static String SWRLQUERY_IMPORT = "http://swrl.stanford.edu/ontologies/built-ins/3.3/query.owl";
   public final static String SWRLTEMPORAL_IMPORT = "http://swrl.stanford.edu/ontologies/built-ins/3.3/temporal.owl";
   public final static String SQWRL_IMPORT = "http://sqwrl.stanford.edu/ontologies/built-ins/3.4/sqwrl.owl";
   
   public final static String SWRL_ALT_IMPORT = "http://www.daml.org/rules/proposal/swrl.owl";
   public final static String SWRLB_ALT_IMPORT = "http://www.daml.org/rules/proposal/swrlb.owl";
-  public final static String SWRLA_ALT_IMPORT = "http://swrl.stanford.edu/ontologies/3.3/swrla.owl";
-  public final static String SWRLX_ALT_IMPORT = "http://swrl.stanford.edu/ontologies/built-ins/3.3/swrlx.owl";
-  public final static String SWRLTBOX_ALT_IMPORT = "http://swrl.stanford.edu/ontologies/built-ins/3.3/tbox.owl";
-  public final static String SWRLABOX_ALT_IMPORT = "http://swrl.stanford.edu/ontologies/built-ins/3.3/abox.owl";
-  public final static String SWRLRDF_ALT_IMPORT = "http://swrl.stanford.edu/ontologies/built-ins/3.4/rdfb.owl";
-  public final static String SWRLQUERY_ALT_IMPORT = "http://swrl.stanford.edu/ontologies/built-ins/3.3/query.owl";
-  public final static String SWRLTEMPORAL_ALT_IMPORT = "http://swrl.stanford.edu/ontologies/built-ins/3.3/temporal.owl";
-  public final static String SQWRL_ALT_IMPORT = "http://sqwrl.stanford.edu/ontologies/built-ins/3.4/sqwrl.owl";
   
   public final static String SWRL_NAMESPACE = "http://www.w3.org/2003/11/swrl#";
   public final static String SWRLB_NAMESPACE = "http://www.w3.org/2003/11/swrlb#";
   public final static String SWRLA_NAMESPACE = "http://swrl.stanford.edu/ontologies/3.3/swrla.owl#";
   public final static String SWRLX_NAMESPACE = "http://swrl.stanford.edu/ontologies/built-ins/3.3/swrlx.owl#";
+  public final static String SWRLM_NAMESPACE = "http://swrl.stanford.edu/ontologies/built-ins/3.4/swrlm.owl#";
   public final static String SWRLTBOX_NAMESPACE = "http://swrl.stanford.edu/ontologies/built-ins/3.3/tbox.owl#";
   public final static String SWRLABOX_NAMESPACE = "http://swrl.stanford.edu/ontologies/built-ins/3.3/abox.owl#";
   public final static String SWRLRDF_NAMESPACE = "http://swrl.stanford.edu/ontologies/built-ins/3.4/rdfb.owl#";
-  public final static String SWRLQUERY_NAMESPACE = "http://swrl.stanford.edu/ontologies/built-ins/3.3/query.owl#";
   public final static String SWRLTEMPORAL_NAMESPACE = "http://swrl.stanford.edu/ontologies/built-ins/3.3/temporal.owl#";
   public final static String SQWRL_NAMESPACE = "http://sqwrl.stanford.edu/ontologies/built-ins/3.4/sqwrl.owl#";
   
@@ -49,10 +41,10 @@ public interface SWRLNames extends OWLNames {
   public final static String SWRLB_PREFIX = "swrlb";
   public final static String SWRLA_PREFIX = "swrla";
   public final static String SWRLX_PREFIX = "swrlx";
+  public final static String SWRLM_PREFIX = "swrlm";
   public final static String SWRLTBOX_PREFIX = "tbox";
   public final static String SWRLABOX_PREFIX = "abox";
   public final static String SWRLRDF = "rdfb";
-  public final static String SWRLQUERY_PREFIX = "query";
   public final static String SWRLTEMPORAL_PREFIX = "temporal";
   public final static String SQWRL_PREFIX = "sqwrl";
   

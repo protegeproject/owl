@@ -1,7 +1,9 @@
 
 package edu.stanford.smi.protegex.owl.swrl;
 
+import edu.stanford.smi.protegex.owl.swrl.bridge.*;
 import edu.stanford.smi.protegex.owl.swrl.exceptions.*;
+import edu.stanford.smi.protegex.owl.swrl.sqwrl.exceptions.*;
 
 import java.util.*;
 
@@ -53,11 +55,18 @@ public interface SWRLRuleEngine
   /**
    ** Write knowledge inferred by rule engine back to OWL.
    */
-  void writeAssertedIndividualsAndProperties2OWL() throws SWRLRuleEngineException;
+  void writeInferredKnowledge2OWL() throws SWRLRuleEngineException;
 
   /**
    **  Clear all knowledge from rule engine, deleted asserted knowledge from the bridge, and leave imported bridge knowledge intact.
    */
   void resetRuleEngine() throws SWRLRuleEngineException;
 
+  int getNumberOfInferredIndividuals();
+  int getNumberOfInferredPropertyAssertionAxioms();
+
+  SWRLRule getRule(String ruleName) throws InvalidRuleNameException;
+
+  Set<OWLIndividual> getInferredIndividuals();
+  Set<OWLPropertyAssertionAxiom> getInferredPropertyAssertionAxioms();
 } // SWRLRuleEngine
