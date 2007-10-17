@@ -1,14 +1,9 @@
 
 package edu.stanford.smi.protegex.owl.swrl.bridge.builtins.rdfb;
 
-import edu.stanford.smi.protegex.owl.model.*;
-import edu.stanford.smi.protegex.owl.swrl.model.*;
 import edu.stanford.smi.protegex.owl.swrl.bridge.*;
 import edu.stanford.smi.protegex.owl.swrl.bridge.builtins.*;
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.*;
-
-import edu.stanford.smi.protegex.owl.swrl.util.SWRLOWLUtil;
-import edu.stanford.smi.protegex.owl.swrl.exceptions.SWRLOWLUtilException;
 
 import java.util.*;
 
@@ -28,11 +23,10 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
   {
   } // reset
 
-
   /**
    ** isClass(c)
    */
-  public boolean isClass(List<Argument> arguments) throws BuiltInException
+  public boolean isClass(List<BuiltInArgument> arguments) throws BuiltInException
   {
     boolean result = false;
 
@@ -44,7 +38,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
   /**
    ** isList(l)
    */
-  public boolean isList(List<Argument> arguments) throws BuiltInException
+  public boolean isList(List<BuiltInArgument> arguments) throws BuiltInException
   {
     boolean result = false;
 
@@ -56,7 +50,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
   /**
    ** isProperty(p)
    */
-  public boolean isProperty(List<Argument> arguments) throws BuiltInException
+  public boolean isProperty(List<BuiltInArgument> arguments) throws BuiltInException
   {
     boolean result = false;
 
@@ -68,7 +62,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
   /**
    ** isResource(r)
    */
-  public boolean isResource(List<Argument> arguments) throws BuiltInException
+  public boolean isResource(List<BuiltInArgument> arguments) throws BuiltInException
   {
     boolean result = false;
 

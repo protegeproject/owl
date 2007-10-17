@@ -34,30 +34,25 @@ public abstract class BuiltInLibraryManager
    ** rule engine. The built-in name should be the fully qualified name of the built-in (e.g., swrlb:lessThanOrEqual).
    */
   public static boolean invokeSWRLBuiltIn(SWRLRuleEngineBridge bridge, String ruleName, String builtInName, int builtInIndex, 
-                                          List<Argument> arguments) 
+                                          List<BuiltInArgument> arguments) 
     throws BuiltInException
   {
-    boolean result = false;
-    SWRLBuiltInLibrary library = null;
-    String implementationClassName, prefix, builtInMethodName;
-    Method method;
+    String prefix = getPrefix(builtInName);
+    String implementationClassName = getBuiltInLibraryImplementationClassName(prefix);
+    String builtInMethodName = getBuiltInMethodName(builtInName);
+    SWRLBuiltInLibrary library = loadBuiltInLibrary(bridge, ruleName, prefix, implementationClassName);
+    Method method = resolveBuiltInMethod(ruleName, library, prefix, builtInMethodName); // Find the method.
 
-    prefix = getPrefixName(builtInName);
-    implementationClassName = getBuiltInLibraryImplementationClassName(prefix);
-    builtInMethodName = getBuiltInMethodName(prefix, builtInName);
-    library = loadBuiltInLibrary(bridge, ruleName, prefix, implementationClassName);
-    method = resolveBuiltInMethod(ruleName, library, prefix, builtInMethodName); // Find the method.
     checkBuiltInMethodSignature(ruleName, prefix, builtInMethodName, method); // Check signature of method.
-    result = library.invokeBuiltInMethod(method, bridge, ruleName, builtInName, builtInIndex, arguments);
 
-    return result;
+    return library.invokeBuiltInMethod(method, bridge, ruleName, prefix, builtInMethodName, builtInIndex, arguments);
   } // invokeSWRLBuiltIn
 
   /**
    ** Find the implementation class for a built-in library. Returns null if it does not find anything. A library will only be valid after it
    ** is loaded.
    */
-  public static SWRLBuiltInLibrary getBuiltInLibraryByPrefix(String prefix) throws InvalidBuiltInLibraryNameException
+  private static SWRLBuiltInLibrary getBuiltInLibraryByPrefix(String prefix) throws InvalidBuiltInLibraryNameException
   {
     SWRLBuiltInLibrary swrlBuiltInLibrary = null;
 
@@ -76,7 +71,7 @@ public abstract class BuiltInLibraryManager
     SWRLBuiltInLibrary library;
 
     if (builtInLibraries.containsKey(prefix)) { // Find the implementation
-      library = (SWRLBuiltInLibrary)builtInLibraries.get(prefix);
+      library = builtInLibraries.get(prefix);
     } else { // Implementation class not loaded - load it, call the reset method, and cache it.
       library = loadBuiltInLibraryImpl(ruleName, prefix, implementationClassName);
       builtInLibraries.put(prefix, library);
@@ -85,37 +80,26 @@ public abstract class BuiltInLibraryManager
     return library;
   } // loadBuiltInLibrary
 
-  private static String getPrefixName(String builtInName) 
+  private static String getPrefix(String builtInName) 
   {
-    String prefix;
-    int colonIndex;
+    int colonIndex = builtInName.indexOf(':');
 
-    colonIndex = builtInName.indexOf(':');
-    if (colonIndex != -1) {
-      prefix = builtInName.substring(0, colonIndex);
-    } else { // No prefix - try the base built-ins package. Ordinarily, built-ins should not be located here.
-      prefix = "";
-    } // if
-
-    return prefix;
-  } // getPrefixName
+    if (colonIndex != -1) return builtInName.substring(0, colonIndex);
+    else return ""; // No prefix - try the base built-ins package. Ordinarily, built-ins should not be located here.
+  } // getPrefix
 
   private static String getBuiltInLibraryImplementationClassName(String prefix)
   {
-    String className;
-
-    if (prefix.equals("")) className = BuiltInLibraryPackageBaseName + "SWRLBuiltInLibraryImpl";
-    else  className = BuiltInLibraryPackageBaseName + prefix + ".SWRLBuiltInLibraryImpl";
-
-    return className;
+    if (prefix.equals("")) return  BuiltInLibraryPackageBaseName + "SWRLBuiltInLibraryImpl";
+    return BuiltInLibraryPackageBaseName + prefix + ".SWRLBuiltInLibraryImpl";
   } // getBuiltInLibraryImplementationClassName
 
-  private static String getBuiltInMethodName(String prefix, String builtInName)
+  private static String getBuiltInMethodName(String builtInName)
   {
     String builtInMethodName;
 
-    if (prefix.equals("")) builtInMethodName = builtInName;
-    else builtInMethodName = builtInName.substring(prefix.length() + 1, builtInName.length());
+    if (builtInName.indexOf(":") == -1) builtInMethodName = builtInName;
+    else builtInMethodName = builtInName.substring(builtInName.indexOf(":") + 1, builtInName.length());
 
     return builtInMethodName;
   } // getBuiltInMethodName
@@ -194,9 +178,9 @@ public abstract class BuiltInLibraryManager
     if ((parameterTypes.length != 1) || (!(parameterTypes[0] instanceof ParameterizedType)) || 
         (((ParameterizedType)parameterTypes[0]).getRawType() != List.class) ||
         (((ParameterizedType)parameterTypes[0]).getActualTypeArguments().length != 1) ||
-        (((ParameterizedType)parameterTypes[0]).getActualTypeArguments()[0] != Argument.class))
+        (((ParameterizedType)parameterTypes[0]).getActualTypeArguments()[0] != BuiltInArgument.class))
       throw new IncompatibleBuiltInMethodException(ruleName, prefix, builtInName, 
-                                                   "Java method must accept a single List of Argument objects");
+                                                   "Java method must accept a single List of BuiltInArgument objects");
   } // checkBuiltInMethodSignature
 
   private static void checkBuiltInMethodsClassCompatibility(String ruleName, String prefix, Class cls) 

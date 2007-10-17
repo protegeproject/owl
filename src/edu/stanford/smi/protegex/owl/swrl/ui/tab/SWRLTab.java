@@ -51,11 +51,11 @@ public class SWRLTab extends AbstractTabWidget
       owlModel.getNamespaceManager().setPrefix(new URI(SWRLNames.SWRLB_NAMESPACE), SWRLNames.SWRLB_PREFIX);
       owlModel.getNamespaceManager().setPrefix(new URI(SWRLNames.SWRLA_NAMESPACE), SWRLNames.SWRLA_PREFIX);
       owlModel.getNamespaceManager().setPrefix(new URI(SWRLNames.SWRLX_NAMESPACE), SWRLNames.SWRLX_PREFIX);
+      owlModel.getNamespaceManager().setPrefix(new URI(SWRLNames.SWRLM_NAMESPACE), SWRLNames.SWRLM_PREFIX);
       owlModel.getNamespaceManager().setPrefix(new URI(SWRLNames.SWRLTBOX_NAMESPACE), SWRLNames.SWRLTBOX_PREFIX);
       owlModel.getNamespaceManager().setPrefix(new URI(SWRLNames.SWRLABOX_NAMESPACE), SWRLNames.SWRLABOX_PREFIX);
-      owlModel.getNamespaceManager().setPrefix(new URI(SWRLNames.SWRLQUERY_NAMESPACE), SWRLNames.SWRLQUERY_PREFIX);
       owlModel.getNamespaceManager().setPrefix(new URI(SWRLNames.SWRLTEMPORAL_NAMESPACE), SWRLNames.SWRLTEMPORAL_PREFIX);
-      // TODO (not yet): owlModel.getNamespaceManager().setPrefix(new URI(SWRLNames.SQWRL_NAMESPACE), SWRLNames.SQWRL_PREFIX);
+      owlModel.getNamespaceManager().setPrefix(new URI(SWRLNames.SQWRL_NAMESPACE), SWRLNames.SQWRL_PREFIX);
   
       ImportHelper importHelper = new ImportHelper((JenaOWLModel)getKnowledgeBase());
       
@@ -63,11 +63,11 @@ public class SWRLTab extends AbstractTabWidget
       importHelper.addImport(new URI(SWRLNames.SWRLB_IMPORT));
       importHelper.addImport(new URI(SWRLNames.SWRLA_IMPORT));
       importHelper.addImport(new URI(SWRLNames.SWRLX_IMPORT));
+      importHelper.addImport(new URI(SWRLNames.SWRLM_IMPORT));
       importHelper.addImport(new URI(SWRLNames.SWRLTBOX_IMPORT));
       importHelper.addImport(new URI(SWRLNames.SWRLABOX_IMPORT));
-      importHelper.addImport(new URI(SWRLNames.SWRLQUERY_IMPORT));
       importHelper.addImport(new URI(SWRLNames.SWRLTEMPORAL_IMPORT));
-      // TODO (not yet): importHelper.addImport(new URI(SWRLNames.SQWRL_IMPORT));
+      importHelper.addImport(new URI(SWRLNames.SQWRL_IMPORT));
       
       importHelper.importOntologies();
 

@@ -64,11 +64,12 @@ public abstract class SWRLBuiltInLibrary
     } // synchronized
   } // invokeResetMethod
 
-  public boolean invokeBuiltInMethod(Method method, SWRLRuleEngineBridge bridge, 
-                                     String ruleName, String builtInName, int builtInIndex, List<Argument> arguments) 
+  public boolean invokeBuiltInMethod(Method method, SWRLRuleEngineBridge bridge, String ruleName, 
+                                     String prefix, String builtInMethodName, int builtInIndex, List<BuiltInArgument> arguments) 
     throws BuiltInException
   {
     Boolean result = null;
+    String builtInName = prefix + ":" + builtInMethodName;
 
     synchronized(this) {
       invokingBridge = bridge; invokingRuleName = ruleName; invokingBuiltInIndex = builtInIndex; 
@@ -83,7 +84,7 @@ public abstract class SWRLBuiltInLibrary
         } else if (targetException instanceof RuntimeException) { // A runtime exception was thrown by the built-in.
           throw new BuiltInMethodRuntimeException(ruleName, builtInName, targetException.getMessage(), targetException);
         } else throw new BuiltInException("unknown exception thrown by built-in method '" + builtInName + "' in rule '" + 
-                                          ruleName + "'. Exception: " + e.toString(), e);
+                                          ruleName + "': " + e.toString(), e);
       } catch (Exception e) { // Should be one of IllegalAccessException or IllegalArgumentException
         throw new BuiltInException("internal bridge exception when invoking built-in method '" + builtInName + "' in rule '" + 
                                    ruleName + "': " + e.getMessage(), e);        
