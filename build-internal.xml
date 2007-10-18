@@ -117,7 +117,6 @@
 		<copy file = "${build.src}/edu/stanford/smi/protegex/owl/resource/files/build.properties" todir = "${build.dest}/edu/stanford/smi/protegex/owl/resource/files"/>
 		<copy file = "${build.src}/edu/stanford/smi/protegex/owl/resource/files/about-owl.html" todir = "${build.dest}/edu/stanford/smi/protegex/owl/resource/files"/>
 		<copy file = "${build.src}/edu/stanford/smi/protegex/owl/resource/files/ProtegeLogo.gif" todir = "${build.dest}/edu/stanford/smi/protegex/owl/resource/files"/>
-		<copy file = "${build.src}/edu/stanford/smi/protegex/owl/compactparser/OWLCompactParser.jj" todir = "${build.dest}/edu/stanford/smi/protegex/compactparser"/>
 		<copy file = "${build.src}/edu/stanford/smi/protegex/owl/model/classparser/manchester/ManchesterOWLParser.jj" todir = "${build.dest}/edu/stanford/smi/protegex/owl/model/classparser/manchester"/>
 		<copy file = "${build.src}/edu/stanford/smi/protegex/owl/model/classparser/dl/DLSyntaxParser.jj" todir = "${build.dest}/edu/stanford/smi/protegex/owl/model/classparser/dl"/>
 		<copy file = "${build.src}/edu/stanford/smi/protegex/owl/model/classparser/compact/CompactParser.jj" todir = "${build.dest}/edu/stanford/smi/protegex/owl/model/classparser/compact"/>
