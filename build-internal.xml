@@ -101,14 +101,8 @@
 			</fileset>
 		</copy>
 
-		<copy todir = "${build.dest}/edu/stanford/smi/protegex/owl/swrl/bridge/query/ui/icons">
-			<fileset dir = "${build.src}/edu/stanford/smi/protegex/owl/swrl/bridge/query/ui/icons/">
-				<include name = "**/*.gif"/>
-			</fileset>
-		</copy>
-
-		<copy todir = "${build.dest}/edu/stanford/smi/protegex/owl/swrl/bridge/query/ui/icons/Multicolored">
-			<fileset dir = "${build.src}/edu/stanford/smi/protegex/owl/swrl/bridge/query/ui/icons/Multicolored">
+		<copy todir = "${build.dest}/edu/stanford/smi/protegex/owl/swrl/sqwrl/ui/icons">
+			<fileset dir = "${build.src}/edu/stanford/smi/protegex/owl/swrl/sqwrl/ui/icons">
 				<include name = "**/*.gif"/>
 			</fileset>
 		</copy>
