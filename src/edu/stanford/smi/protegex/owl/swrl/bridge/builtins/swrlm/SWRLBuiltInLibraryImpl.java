@@ -7,7 +7,7 @@ import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.*;
 
 import java.util.*;
 
-import org.nfunk.jep.JEP;
+import org.nfunk.jep.JEP; // Expecting JEP 2.4.0; may work with other versions but has not been tested.
 
 /**
  ** Implementations library for SWRL mathematical built-in methods. See <a
@@ -81,7 +81,10 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
   } // log
 
   /*
-  ** 
+  ** Returns true if the first argument is an individual of class XMLDocument (defined in the <a
+  ** href="http://swrl.stanford.edu/ontologies/built-ins/3.4/swrlxml.owl">OWL XML Ontology</a>) that corresponds to an OWL XML
+  ** representation of the contents of the XML document named by the second argument. If the first argument is unbound, bind it to the
+  ** individual that corresponds to this document.
   */ 
   public boolean eval(List<BuiltInArgument> arguments) throws BuiltInException
   {
@@ -101,7 +104,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
       SWRLBuiltInUtil.checkForNonVariableArguments(variableArguments, "unexpected non variable argument");
 
       for (BuiltInArgument argument : variableArguments) { 
-        String variableName = argument.getVariableName(); // We will have checked that they are all variables
+        String variableName = argument.getVariableName(); // We will have already checked that they are all variables
         double variableValue = SWRLBuiltInUtil.getArgumentAsADouble(argument);
         getJEP().addVariable(variableName, variableValue);
       } // for

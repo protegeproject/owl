@@ -1,4 +1,6 @@
 
+// TODO: should probably a more specific exception - not SWRLRuleEngineBridgeException
+
 package edu.stanford.smi.protegex.owl.swrl.bridge;
 
 import edu.stanford.smi.protegex.owl.swrl.bridge.impl.*;
