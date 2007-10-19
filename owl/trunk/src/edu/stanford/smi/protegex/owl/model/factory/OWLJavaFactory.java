@@ -22,6 +22,8 @@ import edu.stanford.smi.protege.model.Model;
 import edu.stanford.smi.protege.model.SimpleInstance;
 import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protege.model.framestore.DefaultFrameFactory;
+import edu.stanford.smi.protege.model.framestore.MergingNarrowFrameStore;
+import edu.stanford.smi.protege.model.framestore.NarrowFrameStore;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.model.OWLClass;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
@@ -392,6 +394,12 @@ public class OWLJavaFactory extends DefaultFrameFactory {
         final Cls objectSlotMetaCls = owlModel.getOWLObjectPropertyClass();
         final Cls rdfSlotMetaCls = owlModel.getRDFPropertyClass();
         boolean isRDFProperty = false;
+        if (id.isSystem() && directTypes.isEmpty()) {
+            MergingNarrowFrameStore mnfs = MergingNarrowFrameStore.get(owlModel);
+            if (mnfs != null) {
+                return (Slot) mnfs.getSystemFrameStore().getFrame(id);
+            }
+        }
         for (Iterator it = directTypes.iterator(); it.hasNext();) {
             Cls metaCls = (Cls) it.next();
             if (metaCls.equals(datatypeSlotMetaCls) || metaCls.hasSuperclass(datatypeSlotMetaCls)) {
