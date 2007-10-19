@@ -1,7 +1,6 @@
 package edu.stanford.smi.protegex.owl.model.factory;
 
 import java.lang.reflect.Constructor;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -22,6 +21,7 @@ import edu.stanford.smi.protege.model.Model;
 import edu.stanford.smi.protege.model.SimpleInstance;
 import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protege.model.framestore.DefaultFrameFactory;
+import edu.stanford.smi.protege.model.framestore.MergingNarrowFrameStore;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.model.OWLClass;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
@@ -33,23 +33,12 @@ import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
 import edu.stanford.smi.protegex.owl.model.RDFSNames;
 import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLAllDifferent;
-import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLAllValuesFrom;
-import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLCardinality;
-import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLComplementClass;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLDataRange;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLDatatypeProperty;
-import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLEnumeratedClass;
-import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLHasValue;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLIndividual;
-import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLIntersectionClass;
-import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLMaxCardinality;
-import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLMinCardinality;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLNamedClass;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLObjectProperty;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLOntology;
-import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLSomeValuesFrom;
-import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLUnionClass;
-import edu.stanford.smi.protegex.owl.model.impl.DefaultRDFExternalResource;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultRDFIndividual;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultRDFList;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultRDFProperty;
@@ -387,6 +376,12 @@ public class OWLJavaFactory extends DefaultFrameFactory {
         final Cls datatypeSlotMetaCls = owlModel.getOWLDatatypePropertyClass();
         final Cls objectSlotMetaCls = owlModel.getOWLObjectPropertyClass();
         final Cls rdfSlotMetaCls = owlModel.getRDFPropertyClass();
+        if (id.isSystem() && directTypes.isEmpty()) {
+            MergingNarrowFrameStore mnfs = MergingNarrowFrameStore.get(owlModel);
+            if (mnfs != null) {
+                return (Slot) mnfs.getSystemFrameStore().getFrame(id);
+            }
+        }
         for (Iterator it = directTypes.iterator(); it.hasNext();) {
             Cls metaCls = (Cls) it.next();
             if (metaCls.equals(datatypeSlotMetaCls) || metaCls.hasSuperclass(datatypeSlotMetaCls)) {
