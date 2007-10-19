@@ -35,15 +35,15 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
     SWRLBuiltInUtil.checkNumberOfArgumentsAtLeast(2, arguments.size());
 
     if (SWRLBuiltInUtil.isUnboundArgument(0, arguments)) {
+      OWLIndividual owlIndividual = null;
       String createInvocationPattern 
         = SWRLBuiltInUtil.createInvocationPattern(getInvokingBridge(), getInvokingRuleName(), getInvokingBuiltInIndex(), 
                                                   arguments.subList(1, arguments.size()));
 
-      OWLIndividual owlIndividual = null;
       if (createInvocationMap.containsKey(createInvocationPattern)) owlIndividual = createInvocationMap.get(createInvocationPattern);
       else {
         try {
-          owlIndividual = getInvokingBridge().createIndividual();
+          owlIndividual = getInvokingBridge().createOWLIndividual();
         } catch (SWRLRuleEngineBridgeException e) {
           throw new BuiltInException("error calling bridge to create OWL individual: " + e.getMessage());
         } // 

@@ -9,7 +9,7 @@ import java.util.*;
 
 /**
  ** This built-in library has been superceded by the SQWRL built-in library. See See <a
- ** href="http://protege.cim3.net/cgi-bin/wiki.pl?SQWRL">here</a> for documentation documentation on this new library.
+ ** href="http://protege.cim3.net/cgi-bin/wiki.pl?SQWRL">here</a> for documentation on this new library.
  */
 public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary 
 {

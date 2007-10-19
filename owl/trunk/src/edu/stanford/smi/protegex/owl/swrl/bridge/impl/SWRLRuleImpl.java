@@ -1,7 +1,6 @@
 
 package edu.stanford.smi.protegex.owl.swrl.bridge.impl;
 
-
 import edu.stanford.smi.protegex.owl.swrl.exceptions.*;
 
 import edu.stanford.smi.protegex.owl.swrl.bridge.*;

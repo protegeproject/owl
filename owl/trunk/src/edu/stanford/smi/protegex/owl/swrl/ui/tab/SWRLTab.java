@@ -55,6 +55,7 @@ public class SWRLTab extends AbstractTabWidget
       owlModel.getNamespaceManager().setPrefix(new URI(SWRLNames.SWRLTBOX_NAMESPACE), SWRLNames.SWRLTBOX_PREFIX);
       owlModel.getNamespaceManager().setPrefix(new URI(SWRLNames.SWRLABOX_NAMESPACE), SWRLNames.SWRLABOX_PREFIX);
       owlModel.getNamespaceManager().setPrefix(new URI(SWRLNames.SWRLTEMPORAL_NAMESPACE), SWRLNames.SWRLTEMPORAL_PREFIX);
+      owlModel.getNamespaceManager().setPrefix(new URI(SWRLNames.SWRLXML_NAMESPACE), SWRLNames.SWRLXML_PREFIX);
       owlModel.getNamespaceManager().setPrefix(new URI(SWRLNames.SQWRL_NAMESPACE), SWRLNames.SQWRL_PREFIX);
   
       ImportHelper importHelper = new ImportHelper((JenaOWLModel)getKnowledgeBase());
@@ -67,6 +68,7 @@ public class SWRLTab extends AbstractTabWidget
       importHelper.addImport(new URI(SWRLNames.SWRLTBOX_IMPORT));
       importHelper.addImport(new URI(SWRLNames.SWRLABOX_IMPORT));
       importHelper.addImport(new URI(SWRLNames.SWRLTEMPORAL_IMPORT));
+      importHelper.addImport(new URI(SWRLNames.SWRLXML_IMPORT));
       importHelper.addImport(new URI(SWRLNames.SQWRL_IMPORT));
       
       importHelper.importOntologies();
