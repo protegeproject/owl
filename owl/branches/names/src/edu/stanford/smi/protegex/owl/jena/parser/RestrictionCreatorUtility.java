@@ -46,8 +46,8 @@ public class RestrictionCreatorUtility {
 	
 	
 	
-	public static Frame createRestriction(OWLModel owlModel, FrameID id, String restrictionName, String predUri) {
-		Frame inst = owlModel.getFrame(restrictionName);
+	public static Frame createRestriction(OWLModel owlModel, FrameID id, String predUri) {
+		Frame inst = owlModel.getFrame(id);
 		
 		if (inst != null)
 			return inst;
@@ -65,8 +65,6 @@ public class RestrictionCreatorUtility {
 		} else if (predUri.equals(OWL.cardinality.getURI())) {
 			inst = new DefaultOWLCardinality(owlModel, id);
 		}
- 
-		FrameCreatorUtility.setFrameName(inst, restrictionName);
 		
 		// should be safe
 		Cls metaCls = owlModel.getCls(restrictionURI2MetaclassName.get(predUri));

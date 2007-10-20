@@ -25,19 +25,12 @@ public abstract class AbstractTripleStoreTestCase extends AbstractJenaTestCase {
 
 
     protected RDFResource createRDFResource(String name) {
-        RDFResource frame = new DefaultRDFProperty(owlModel, createFrameID());
         if (name == null) {
             name = owlModel.getNextAnonymousResourceName();
         }
-        owlModel.getOWLFrameStore().setFrameName(frame, name);
+        RDFResource frame = new DefaultRDFProperty(owlModel, new FrameID(name));
         return frame;
     }
-
-
-    protected FrameID createFrameID() {
-        return FrameID.createLocal(frameIDCount++);
-    }
-
 
     protected void setUp() throws Exception {
         super.setUp();

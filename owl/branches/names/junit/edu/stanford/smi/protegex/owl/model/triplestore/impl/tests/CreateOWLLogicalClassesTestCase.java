@@ -1,6 +1,7 @@
 package edu.stanford.smi.protegex.owl.model.triplestore.impl.tests;
 
 import edu.stanford.smi.protege.model.Frame;
+import edu.stanford.smi.protege.model.FrameID;
 import edu.stanford.smi.protegex.owl.model.*;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultRDFProperty;
 
@@ -8,6 +9,11 @@ import edu.stanford.smi.protegex.owl.model.impl.DefaultRDFProperty;
  * @author Holger Knublauch  <holger@knublauch.com>
  */
 public class CreateOWLLogicalClassesTestCase extends AbstractTripleStoreTestCase {
+    
+    private int frameCounter = 0;
+    public FrameID createFrameID() {
+        return new FrameID("OWLTestEntity" + frameCounter++);
+    }
 
     public void testCreateComplementClass1() {
         RDFResource c = new DefaultRDFProperty(owlModel, createFrameID());

@@ -47,8 +47,8 @@ public class LogicalClassCreatorUtility {
 	}
 
 
-	public static Frame createLogicalClass(OWLModel owlModel, FrameID id, String logicalClassName, String predUri) {
-		Frame inst = owlModel.getFrame(logicalClassName);
+	public static Frame createLogicalClass(OWLModel owlModel, FrameID id, String predUri) {
+		Frame inst = owlModel.getFrame(id);
 		
 		if (inst != null)
 			return inst;
@@ -63,7 +63,6 @@ public class LogicalClassCreatorUtility {
 			inst = new DefaultOWLEnumeratedClass(owlModel, id);
 		}
  
-		FrameCreatorUtility.setFrameName(inst, logicalClassName);
 		
 		// should be safe
 		Cls metaCls = owlModel.getCls(logicalClassURI2MetaclassName.get(predUri));

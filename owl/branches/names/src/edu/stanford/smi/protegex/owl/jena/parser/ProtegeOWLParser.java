@@ -810,6 +810,7 @@ public class ProtegeOWLParser {
 						if(uri2NameConverter.isTemporaryRDFResourceName(name)) {
 							String uri = uri2NameConverter.getURIFromTemporaryName(name);
 							owlModel.getHeadFrameStore().setFrameName(externalResource, uri);
+							owlModel.
 						}
 						else {
 							String uri = owlModel.getURIForResourceName(name);

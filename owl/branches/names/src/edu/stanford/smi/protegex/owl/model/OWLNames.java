@@ -167,7 +167,7 @@ public interface OWLNames {
 
     public interface ClsID {
 
-        FrameID NAMED_CLASS = FrameID.createSystem(9004);
+        FrameID NAMED_CLASS = new FrameID(Cls.NAMED_CLASS);
 
         FrameID THING = Model.ClsID.THING;
     }

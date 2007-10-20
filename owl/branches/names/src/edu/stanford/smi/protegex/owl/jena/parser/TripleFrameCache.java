@@ -280,9 +280,9 @@ public class TripleFrameCache {
 		//applies both for rdf:fist and rdf:rest
 		if (subjList == null) {
 			//move this to a RDFListCreator
-			FrameID id = tripleStore.generateFrameID();
+			FrameID id = new FrameID(subjName);
 			
-			Frame listFrame = FrameCreatorUtility.createFrameWithType(owlModel, id, subjName, RDF.List.getURI(), true);
+			Frame listFrame = FrameCreatorUtility.createFrameWithType(owlModel, id, RDF.List.getURI(), true);
 			
 			if (listFrame != null) {
 				checkUndefinedResources(subjName);
@@ -297,9 +297,9 @@ public class TripleFrameCache {
 		
 		if (objList == null) {
 			//move this to a RDFListCreator
-			FrameID id = tripleStore.generateFrameID();
+			FrameID id = new FrameID(objName);
 
-			Frame listFrame = FrameCreatorUtility.createFrameWithType(owlModel, id, objName, RDF.List.getURI(), true);
+			Frame listFrame = FrameCreatorUtility.createFrameWithType(owlModel, id, RDF.List.getURI(), true);
 			
 			if (listFrame != null) {
 				checkUndefinedResources(objName);
@@ -313,12 +313,11 @@ public class TripleFrameCache {
 	
 		Frame frame = owlModel.getFrame(frameUri);
 		
-		if (frame != null)
-			return frame;
+		if (frame != null) return frame;
 					
-		FrameID id = tripleStore.getNarrowFrameStore().generateFrameID();
+		FrameID id = new FrameID(frameUri);
 
-		frame = FrameCreatorUtility.createFrameWithType(owlModel, id, frameUri, type, isSubjAnon);
+		frame = FrameCreatorUtility.createFrameWithType(owlModel, id, type, isSubjAnon);
 
 		//multipleTypesInstanceCache.addType((Instance)frame, type);
 		
@@ -335,8 +334,8 @@ public class TripleFrameCache {
 		if (restriction != null)
 			return restriction;
 		
-		FrameID id = tripleStore.generateFrameID();
-		restriction = RestrictionCreatorUtility.createRestriction(owlModel, id, restrName, predName);
+		FrameID id = new FrameID(restrName);
+		restriction = RestrictionCreatorUtility.createRestriction(owlModel, id, predName);
 		
 		if (restriction != null){		
 			checkUndefinedResources(restrName);
@@ -352,8 +351,8 @@ public class TripleFrameCache {
 		if (logClass != null)
 			return logClass;
 		
-		FrameID id = tripleStore.generateFrameID();
-		logClass = LogicalClassCreatorUtility.createLogicalClass(owlModel, id, logClassName, predName);
+		FrameID id = new FrameID(logClassName);
+		logClass = LogicalClassCreatorUtility.createLogicalClass(owlModel, id, predName);
 		
 		if (logClass != null){		
 			checkUndefinedResources(logClassName);

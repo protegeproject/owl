@@ -37,7 +37,7 @@ public interface RDFNames {
 
     public interface ClsID {
 
-        FrameID PROPERTY = FrameID.createSystem(9007);
+        FrameID PROPERTY = new FrameID(Cls.PROPERTY);
     }
 
     public static interface Slot {

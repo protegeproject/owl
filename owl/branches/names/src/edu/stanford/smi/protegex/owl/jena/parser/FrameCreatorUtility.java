@@ -28,8 +28,8 @@ public class FrameCreatorUtility {
 	private static SimpleFrameStore simpleFrameStore;
 		
 	
-	public static Frame createFrameWithType(OWLModel owlModel, FrameID id, String frameUri, String typeUri, boolean isSubjAnon) {
-		Frame frame = owlModel.getFrame(frameUri);
+	public static Frame createFrameWithType(OWLModel owlModel, FrameID id, String typeUri, boolean isSubjAnon) {
+		Frame frame = owlModel.getFrame(id);
 		
 		if (frame != null)
 			return frame;
@@ -91,7 +91,6 @@ public class FrameCreatorUtility {
 			frame = new DefaultOWLIndividual(owlModel, id);
 		}
 		
-		setFrameName(frame, frameUri);
 		addInstanceType((Instance)frame, (Cls)type);
 
 		return frame;
@@ -99,8 +98,8 @@ public class FrameCreatorUtility {
 	}
 	
 	
-	public static Frame createFrameWithType(OWLModel owlModel, FrameID id, String frameUri, Cls type, boolean isSubjAnon) {
-		return createFrameWithType(owlModel, id, frameUri, type.getName(), isSubjAnon);		
+	public static Frame createFrameWithType(OWLModel owlModel, FrameID id, Cls type, boolean isSubjAnon) {
+		return createFrameWithType(owlModel, id, type.getName(), isSubjAnon);		
 	}
 	
 	
@@ -142,15 +141,6 @@ public class FrameCreatorUtility {
 		simpleFrameStore.removeDirectOwnSlotValue(inst, typeSlot , type);
     	simpleFrameStore.removeDirectOwnSlotValue(type, inst.getKnowledgeBase().getSystemFrames().getDirectInstancesSlot(), inst);
     	return true;
-	}
-	
-	public static boolean setFrameName(Frame frame, String name) {
-		if (frame == null)
-			return false;
-		
-		simpleFrameStore.setFrameName(frame, name);
-		
-		return true;
 	}
 	
 	public static boolean createSubclassOf(Cls cls, Cls superCls) {

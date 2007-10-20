@@ -710,7 +710,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
 
     private Cls createSystemCls(String name, Collection superclasses, Cls type) {
-        return createCls(FrameID.createSystem(systemID++), name, superclasses, Collections.singleton(type), false);
+        return createCls(new FrameID(name), superclasses, Collections.singleton(type), false);
     }
 
 
@@ -956,7 +956,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
 
     private Slot createSystemSlot(String name, Cls type) {
-        return createSlot(FrameID.createSystem(systemID++), name, Collections.singleton(type),
+        return createSlot(new FrameID(name), Collections.singleton(type),
                           Collections.EMPTY_LIST, false);
     }
 
@@ -1013,7 +1013,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
 
     private Instance createSystemInstance(String name, Cls type) {
-        return createInstance(FrameID.createSystem(systemID++), name, type, false);
+        return createInstance(new FrameID(name), type, false);
     }
 
 
@@ -1307,24 +1307,23 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
         return owlCardinality;
     }
 
-
+    @Override
     public synchronized Cls createCls(FrameID id,
-                                      String name,
                                       Collection directSuperclasses,
                                       Collection directTypes,
                                       boolean loadDefaults) {
         if (bootstrapped) {
-            if (name == null) {
+            if (id == null) {
                 if (isDefaultAnonymousType(directTypes)) {
-                    name = getNextAnonymousResourceName();
+                    id = new FrameID(getNextAnonymousResourceName());
                 }
                 else {
-                    name = createUniqueNewFrameName(DEFAULT_CLASS_NAME);
+                    id = new FrameID(createUniqueNewFrameName(DEFAULT_CLASS_NAME));
                 }
             }
             // name = getValidNamespaceFrameName(name);
         }
-        return super.createCls(id, name, directSuperclasses, directTypes, loadDefaults);
+        return super.createCls(id, directSuperclasses, directTypes, loadDefaults);
     }
 
 
@@ -1458,20 +1457,20 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
         return restriction;
     }
 
-
-    public synchronized Instance createInstance(FrameID id, String name, Collection directTypes, boolean initializeDefaults) {
-        if (name == null) {
+    @Override
+    public synchronized Instance createInstance(FrameID id, Collection directTypes, boolean initializeDefaults) {
+        if (id == null) {
             if (isDefaultAnonymousType(directTypes)) {
-                name = getNextAnonymousResourceName();
+                id = new FrameID(getNextAnonymousResourceName());
             }
             else {
                 Cls firstType = (Cls) directTypes.iterator().next();
                 if (firstType instanceof RDFSNamedClass) {
-                    name = createNewResourceName(((RDFSClass) firstType).getLocalName());
+                    id = new FrameID(createNewResourceName(((RDFSClass) firstType).getLocalName()));
                 }
             }
         }
-        return super.createInstance(id, name, directTypes, initializeDefaults);
+        return super.createInstance(id,directTypes, initializeDefaults);
     }
 
 
