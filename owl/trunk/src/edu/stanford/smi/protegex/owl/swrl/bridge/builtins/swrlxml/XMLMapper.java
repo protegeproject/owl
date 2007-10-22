@@ -44,15 +44,15 @@ public class XMLMapper
 
   public XMLMapper()
   {
-    rootElementProperty = BridgeFactory.createOWLProperty(XMLDocumentMappingHasRootElementPropertyName);
-    elementsProperty = BridgeFactory.createOWLProperty(XMLDocumentMappingHasElementsPropertyName);
-    nameProperty = BridgeFactory.createOWLProperty(XMLMappingHasNamePropertyName);
-    namespacePrefixProperty = BridgeFactory.createOWLProperty(XMLMappingHasNamespacePrefixPropertyName);
-    namespaceURIProperty = BridgeFactory.createOWLProperty(XMLMappingHasNamespaceURIPropertyName);
-    contentProperty = BridgeFactory.createOWLProperty(XMLElementMappingHasContentPropertyName);
-    subElementsProperty = BridgeFactory.createOWLProperty(XMLElementMappingHasSubElementsPropertyName);
-    valueProperty = BridgeFactory.createOWLProperty(XMLAttributeMappingHasValuePropertyName);
-    attributesProperty = BridgeFactory.createOWLProperty(XMLElementMappingHasAttributesPropertyName);
+    rootElementProperty = BridgeFactory.createOWLObjectProperty(XMLDocumentMappingHasRootElementPropertyName);
+    elementsProperty = BridgeFactory.createOWLObjectProperty(XMLDocumentMappingHasElementsPropertyName);
+    nameProperty = BridgeFactory.createOWLDatatypeProperty(XMLMappingHasNamePropertyName);
+    namespacePrefixProperty = BridgeFactory.createOWLDatatypeProperty(XMLMappingHasNamespacePrefixPropertyName);
+    namespaceURIProperty = BridgeFactory.createOWLDatatypeProperty(XMLMappingHasNamespaceURIPropertyName);
+    contentProperty = BridgeFactory.createOWLDatatypeProperty(XMLElementMappingHasContentPropertyName);
+    subElementsProperty = BridgeFactory.createOWLObjectProperty(XMLElementMappingHasSubElementsPropertyName);
+    valueProperty = BridgeFactory.createOWLObjectProperty(XMLAttributeMappingHasValuePropertyName);
+    attributesProperty = BridgeFactory.createOWLObjectProperty(XMLElementMappingHasAttributesPropertyName);
   } // XMLMapper
 
   public Document xmlDocumentMapping2Document(SWRLRuleEngineBridge bridge) throws XMLMapperException

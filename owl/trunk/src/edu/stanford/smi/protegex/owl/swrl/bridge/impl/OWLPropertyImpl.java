@@ -18,7 +18,7 @@ import java.io.Serializable;
 /**
  ** Class representing an OWL property
  */
-public class OWLPropertyImpl extends BuiltInArgumentImpl implements OWLProperty, Serializable
+public abstract class OWLPropertyImpl extends BuiltInArgumentImpl implements OWLProperty, Serializable
 {
   // There is an equals method defined on this class.
   private String propertyName;
@@ -128,7 +128,7 @@ public class OWLPropertyImpl extends BuiltInArgumentImpl implements OWLProperty,
                 edu.stanford.smi.protegex.owl.model.OWLIndividual rangeIndividual = (edu.stanford.smi.protegex.owl.model.OWLIndividual)resource;
                 OWLIndividual subject = BridgeFactory.createOWLIndividual(domainIndividual.getName());
                 OWLIndividual object = BridgeFactory.createOWLIndividual(rangeIndividual.getName());
-                OWLPropertyAssertionAxiom axiom = BridgeFactory.createOWLObjectPropertyAssertionAxiom(subject, BridgeFactory.createOWLProperty(propertyName), object);
+                OWLPropertyAssertionAxiom axiom = BridgeFactory.createOWLObjectPropertyAssertionAxiom(subject, BridgeFactory.createOWLObjectProperty(propertyName), object);
                 propertyAssertions.add(axiom);
               } else {
                 //System.err.println("Unknown property value resource: " + resource); // TODO: Orphan resources in OWL file. Ignore?
@@ -140,7 +140,7 @@ public class OWLPropertyImpl extends BuiltInArgumentImpl implements OWLProperty,
               RDFSLiteral literal = (RDFSLiteral)literalsIterator.next();
               OWLIndividual subject = BridgeFactory.createOWLIndividual(domainIndividual.getName());
               OWLDatatypeValue object = BridgeFactory.createOWLDatatypeValue(owlModel, literal);
-              OWLPropertyAssertionAxiom axiom = BridgeFactory.createOWLDatatypePropertyAssertionAxiom(subject, BridgeFactory.createOWLProperty(propertyName), object);
+              OWLPropertyAssertionAxiom axiom = BridgeFactory.createOWLDatatypePropertyAssertionAxiom(subject, BridgeFactory.createOWLDatatypeProperty(propertyName), object);
               propertyAssertions.add(axiom);
             } // while
           } // if
