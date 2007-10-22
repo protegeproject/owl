@@ -17,9 +17,12 @@ public class SingleLiteralComponent extends AbstractSingleLiteralComponent {
     }
 
     public SingleLiteralComponent(RDFProperty predicate, String label) {
-    	super(predicate, label);
+    	this(predicate, label, false);
 	}
     
+    public SingleLiteralComponent(RDFProperty predicate, String label, boolean isReadOnly) {
+    	super(predicate, label, isReadOnly);
+	}
     
     protected JTextComponent createTextComponent() {
         return new JTextField();
