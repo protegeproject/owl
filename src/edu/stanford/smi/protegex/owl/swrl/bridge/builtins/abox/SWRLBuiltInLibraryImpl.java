@@ -93,6 +93,12 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
             } else if (value instanceof edu.stanford.smi.protegex.owl.model.OWLNamedClass) {
               edu.stanford.smi.protegex.owl.model.OWLNamedClass cls = (edu.stanford.smi.protegex.owl.model.OWLNamedClass)value;
               multiArgument.addArgument(BridgeFactory.createOWLClass(cls.getName()));
+            } else if (value instanceof edu.stanford.smi.protegex.owl.model.OWLDatatypeProperty) {
+              edu.stanford.smi.protegex.owl.model.OWLDatatypeProperty owlDatatypeProperty = (edu.stanford.smi.protegex.owl.model.OWLDatatypeProperty)value;
+              multiArgument.addArgument(BridgeFactory.createOWLDatatypeProperty(owlDatatypeProperty.getName()));
+            } else if (value instanceof edu.stanford.smi.protegex.owl.model.OWLObjectProperty) {
+              edu.stanford.smi.protegex.owl.model.OWLObjectProperty owlObjectProperty = (edu.stanford.smi.protegex.owl.model.OWLObjectProperty)value;
+              multiArgument.addArgument(BridgeFactory.createOWLObjectProperty(owlObjectProperty.getName()));
             } // if
           } // for
         } else { // Datatype property
@@ -130,8 +136,10 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
     try {
       if (hasUnboundPropertyArgument) {
         MultiArgument multiArgument = BridgeFactory.createMultiArgument(SWRLBuiltInUtil.getVariableName(1, arguments));
-        for (edu.stanford.smi.protegex.owl.model.OWLProperty property : SWRLOWLUtil.getPropertiesOfIndividual(getInvokingBridge().getOWLModel(), individualName))
-          multiArgument.addArgument(BridgeFactory.createOWLProperty(property.getName()));
+        for (edu.stanford.smi.protegex.owl.model.OWLProperty property : SWRLOWLUtil.getPropertiesOfIndividual(getInvokingBridge().getOWLModel(), individualName)) {
+          if (property.isObjectProperty()) multiArgument.addArgument(BridgeFactory.createOWLObjectProperty(property.getName()));
+          else multiArgument.addArgument(BridgeFactory.createOWLDatatypeProperty(property.getName()));
+        } // for
         arguments.set(1, multiArgument);
         result = !multiArgument.hasNoArguments();
       } else

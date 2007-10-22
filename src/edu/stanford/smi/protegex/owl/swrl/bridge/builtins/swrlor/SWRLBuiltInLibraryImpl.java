@@ -96,7 +96,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
     hasObject = (arguments.size() > 2);
 
     try {
-      owlProperty = BridgeFactory.createOWLProperty(propertyName);
+      owlProperty = BridgeFactory.createOWLObjectProperty(propertyName);
       
       if (hasSubject) subjectOWLIndividual = BridgeFactory.createOWLIndividual(SWRLBuiltInUtil.getArgumentAsAnIndividualName(1, arguments));
       if (hasObject) objectOWLIndividual = BridgeFactory.createOWLIndividual(SWRLBuiltInUtil.getArgumentAsAnIndividualName(2, arguments));
@@ -140,7 +140,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
 
     try {
 
-      owlProperty = BridgeFactory.createOWLProperty(propertyName);
+      owlProperty = BridgeFactory.createOWLDatatypeProperty(propertyName);
       
       if (hasSubject) subjectOWLIndividual = BridgeFactory.createOWLIndividual(SWRLBuiltInUtil.getArgumentAsAnIndividualName(1, arguments));
       if (hasValue) value = BridgeFactory.createOWLDatatypeValue(SWRLBuiltInUtil.getArgumentAsAString(2, arguments)); // TODO
