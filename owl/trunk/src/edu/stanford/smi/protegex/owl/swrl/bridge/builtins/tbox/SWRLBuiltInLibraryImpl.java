@@ -27,10 +27,10 @@
 // 3.1.1 enumeration: isEnumerationClassDescription(?cd), onIndividual(?cd, ?i)
 
 // (3) property restriction class descriptions
-// 3.1.2 cardinality restrictions = isCardinalityRestriction(?r), isMinCardinalityRestriction(?r), isMaxCardinalityRestriction(?r), hasCardinality(?r, ?d)
-// 3.1.2.1.1 allValuesFromRestriction: isAllValuesFromRestriction(?r), onProperty(?r, ?p), hasValue(?r, ?{i, d})
-// 3.1.2.1.2 someValuesFromRestriction: isSomeValuesFromRestriction(?r), onProperty(?r, ?p), hasValue(?r, ?{i,d})
-// 3.1.2.1.3 hasValueRestriction: isHasValueRestriction(?r), onProperty(?r, ?p), hasValue(?r, ?{i,d})
+// 3.1.2 cardinality restrictions = isCardinalityRestriction(?a), isMinCardinalityRestriction(?a), isMaxCardinalityRestriction(?a), hasCardinality(?a, ?d)
+// 3.1.2.1.1 allValuesFromRestriction: isAllValuesFromRestriction(?a), onProperty(?a, ?p), hasValue(?a, ?{i, d})
+// 3.1.2.1.2 someValuesFromRestriction: isSomeValuesFromRestriction(?a), onProperty(?a, ?p), hasValue(?a, ?{i,d})
+// 3.1.2.1.3 hasValueRestriction: isHasValueRestriction(?a), onProperty(?a, ?p), hasValue(?a, ?{i,d})
 
 // (4) intersection of class description
 // 3.1.3.1 intersectionOf: list of owl:oneOf class descriptions: isIntersectionOfClassDescription(?cd), onClassDescription(?cd, ?cd)

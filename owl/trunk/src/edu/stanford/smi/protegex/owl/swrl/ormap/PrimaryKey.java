@@ -1,6 +1,6 @@
 
 package edu.stanford.smi.protegex.owl.swrl.ormap;
 
-public interface PrimaryKey
+public interface PrimaryKey extends Key
 {
-} // Primary
+} // PrimaryKey

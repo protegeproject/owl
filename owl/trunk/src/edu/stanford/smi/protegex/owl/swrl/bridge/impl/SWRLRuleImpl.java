@@ -180,7 +180,7 @@ public class SWRLRuleImpl implements SWRLRule
       if (hasSQWRLCollectionBuiltIns) sqwrlResult.setIsDistinct(); 
 
     } catch (SWRLRuleEngineBridgeException e) {
-      throw new BuiltInException("error configuring SQWRL query '" + ruleName + "': " + e.getMessage());
+      throw new SWRLRuleEngineBridgeException("error configuring SQWRL query '" + ruleName + "': " + e.getMessage());
     } // try
   } // configureResult
 
@@ -234,15 +234,15 @@ public class SWRLRuleImpl implements SWRLRule
            if (isArgumentAVariable) columnName = "avg(?" + variableName + ")"; else columnName = "avg[" + argument + "]";
            sqwrlResult.addAggregateColumn(columnName, SQWRLNames.AvgAggregateFunction);
          } else if (builtInName.equalsIgnoreCase(SQWRLNames.OrderBy)) {
-           if (!isArgumentAVariable) throw new BuiltInException("only variables allowed for ordered columns - found '" + argument + "'");
+           if (!isArgumentAVariable) throw new SWRLRuleEngineBridgeException("only variables allowed for ordered columns - found '" + argument + "'");
            columnIndex = selectedVariableNames.indexOf(variableName);
            if (columnIndex != -1) sqwrlResult.addOrderByColumn(columnIndex, true);
-           else throw new BuiltInException("variable ?" + variableName + " must be selected before it can be ordered");
+           else throw new SWRLRuleEngineBridgeException("variable ?" + variableName + " must be selected before it can be ordered");
          } else if (builtInName.equalsIgnoreCase(SQWRLNames.OrderByDescending)) {
-           if (!isArgumentAVariable) throw new BuiltInException("only variables allowed for ordered columns - found '" + argument + "'");
+           if (!isArgumentAVariable) throw new SWRLRuleEngineBridgeException("only variables allowed for ordered columns - found '" + argument + "'");
            columnIndex = selectedVariableNames.indexOf(variableName);
            if (columnIndex != -1) sqwrlResult.addOrderByColumn(columnIndex, false);
-           else throw new BuiltInException("variable ?" + variableName + " must be selected before it can be ordered");
+           else throw new SWRLRuleEngineBridgeException("variable ?" + variableName + " must be selected before it can be ordered");
          } else if (builtInName.equalsIgnoreCase(SQWRLNames.ColumnNames)) {
            if (argument instanceof OWLDatatypeValue && ((OWLDatatypeValue)argument).isString()) {
              OWLDatatypeValue literal = (OWLDatatypeValue)argument; sqwrlResult.addColumnDisplayName(literal.getString());

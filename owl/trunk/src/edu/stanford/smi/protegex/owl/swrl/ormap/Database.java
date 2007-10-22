@@ -5,11 +5,9 @@ import java.util.*;
 
 public interface Database
 {
+  String getJDBCDriverName();
   String getServerName();
   String getDatabaseName();
-  String getUserID();
-  String getPassword();
+  int getPortNumber();
   String getJDBCConnectionString();
-  String getODBCName();
-  List<Table> getTables(); 
 } // Database

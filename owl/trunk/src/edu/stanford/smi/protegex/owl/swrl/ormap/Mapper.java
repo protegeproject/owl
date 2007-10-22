@@ -9,9 +9,23 @@ import java.util.*;
 
 public interface Mapper
 {
-  boolean isMappedClass(OWLClass owlClass);
-  boolean isMappedProperty(OWLProperty owlProperty);
+  boolean isMapped(OWLClass owlClass);
+  boolean isMapped(OWLProperty owlProperty);
 
-  Set<OWLIndividual> getMappedIndividuals(OWLClass owlClass) throws MapperException;
-  Set<OWLPropertyAssertionAxiom> getMappedProperties(OWLProperty owlProperty) throws MapperException;
+  Set<OWLIndividual> mapOWLClass(OWLClass owlClass) throws MapperException;
+  Set<OWLIndividual> mapOWLClass(OWLClass owlClass, OWLIndividual owlIndividual) throws MapperException;
+
+  Set<OWLDatatypePropertyAssertionAxiom> mapOWLDatatypeProperty(OWLProperty owlProperty) throws MapperException;
+  Set<OWLDatatypePropertyAssertionAxiom> mapOWLDatatypeProperty(OWLProperty owlProperty, OWLIndividual subject) throws MapperException;
+  Set<OWLDatatypePropertyAssertionAxiom> mapOWLDatatypeProperty(OWLProperty owlProperty, OWLIndividual subject, OWLDatatypeValue value) 
+    throws MapperException;
+
+  Set<OWLObjectPropertyAssertionAxiom> mapOWLObjectProperty(OWLProperty owlProperty) throws MapperException;
+  Set<OWLObjectPropertyAssertionAxiom> mapOWLObjectProperty(OWLProperty owlProperty, OWLIndividual subject) throws MapperException;
+  Set<OWLObjectPropertyAssertionAxiom> mapOWLObjectProperty(OWLProperty owlProperty, OWLIndividual subject, OWLIndividual object) 
+    throws MapperException;
+
+  void addMap(OWLClassMap classMap);
+  void addMap(OWLObjectPropertyMap objectPropertyMap);
+  void addMap(OWLDatatypePropertyMap datatypePropertyMap);
 } // Mapper
