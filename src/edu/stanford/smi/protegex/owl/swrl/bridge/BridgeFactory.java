@@ -103,9 +103,9 @@ public class BridgeFactory
   public static SWRLRule createSWRLRule(String ruleName, List<Atom> bodyAtoms, List<Atom> headAtoms) throws SWRLRuleEngineBridgeException { return new SWRLRuleImpl(ruleName, bodyAtoms, headAtoms); }
   public static OWLClass createOWLClass(OWLModel owlModel, String className) throws SWRLRuleEngineBridgeException { return new OWLClassImpl(owlModel, className); }
   public static OWLClass createOWLClass(String className) { return new OWLClassImpl(className); }
-  public static OWLIndividual createOWLIndividual(edu.stanford.smi.protegex.owl.model.OWLIndividual individual) throws SWRLRuleEngineBridgeException { return new OWLIndividualImpl(individual); }
   public static OWLIndividual createOWLIndividual(String individualName) { return new OWLIndividualImpl(individualName); }
   public static OWLIndividual createOWLIndividual(OWLModel owlModel, String individualName) throws SWRLRuleEngineBridgeException { return new OWLIndividualImpl(owlModel, individualName); }
+  public static OWLIndividual createOWLIndividual(edu.stanford.smi.protegex.owl.model.OWLIndividual individual) throws SWRLRuleEngineBridgeException { return new OWLIndividualImpl(individual); }
   public static OWLIndividual createOWLIndividual(String individualName, String className) { return new OWLIndividualImpl(individualName, className); }
   public static OWLProperty createOWLProperty(String propertyName) { return new OWLPropertyImpl(propertyName); }
   public static OWLDatatypeValue createOWLDatatypeValue(OWLModel owlModel, RDFSLiteral literal) throws DatatypeConversionException { return new OWLDatatypeValueImpl(owlModel, literal); }
@@ -123,17 +123,17 @@ public class BridgeFactory
   public static OWLDatatypeValue createOWLDatatypeValue(PrimitiveXSDType xsd) { return new OWLDatatypeValueImpl(xsd); }
 
   // OWL axioms
-  public static OWLDatatypePropertyAssertionAxiom createOWLDatatypePropertyAssertionAxiom(OWLIndividual subject, OWLProperty property, OWLDatatypeValue object) throws SWRLRuleEngineBridgeException { return new OWLDatatypePropertyAssertionAxiomImpl(subject, property, object); }
-  public static OWLObjectPropertyAssertionAxiom createOWLObjectPropertyAssertionAxiom(OWLIndividual subject, OWLProperty property, OWLIndividual object) throws SWRLRuleEngineBridgeException { return new OWLObjectPropertyAssertionAxiomImpl(subject, property, object); }
-  public static OWLDifferentIndividualsAxiom createOWLDifferentIndividualsAxiom(OWLIndividual individual1, OWLIndividual individual2) throws SWRLRuleEngineBridgeException { return new OWLDifferentIndividualsAxiomImpl(individual1, individual2); }
-  public static OWLDifferentIndividualsAxiom createOWLDifferentIndividualsAxiom(Set<OWLIndividual> individuals) throws SWRLRuleEngineBridgeException { return new OWLDifferentIndividualsAxiomImpl(individuals); }
-  public static OWLSameIndividualsAxiom createOWLSameIndividualsAxiom(OWLIndividual individual1, OWLIndividual individual2) throws SWRLRuleEngineBridgeException { return new OWLSameIndividualsAxiomImpl(individual1, individual2); }
+  public static OWLDatatypePropertyAssertionAxiom createOWLDatatypePropertyAssertionAxiom(OWLIndividual subject, OWLProperty property, OWLDatatypeValue object) { return new OWLDatatypePropertyAssertionAxiomImpl(subject, property, object); }
+  public static OWLObjectPropertyAssertionAxiom createOWLObjectPropertyAssertionAxiom(OWLIndividual subject, OWLProperty property, OWLIndividual object)  { return new OWLObjectPropertyAssertionAxiomImpl(subject, property, object); }
+  public static OWLDifferentIndividualsAxiom createOWLDifferentIndividualsAxiom(OWLIndividual individual1, OWLIndividual individual2) { return new OWLDifferentIndividualsAxiomImpl(individual1, individual2); }
+  public static OWLDifferentIndividualsAxiom createOWLDifferentIndividualsAxiom(Set<OWLIndividual> individuals) { return new OWLDifferentIndividualsAxiomImpl(individuals); }
+  public static OWLSameIndividualsAxiom createOWLSameIndividualsAxiom(OWLIndividual individual1, OWLIndividual individual2) { return new OWLSameIndividualsAxiomImpl(individual1, individual2); }
 
   // Arguments
   public static MultiArgument createMultiArgument(String variableName) { return new MultiArgumentImpl(variableName); }
   public static MultiArgument createMultiArgument(String variableName, List<BuiltInArgument> arguments) { return new MultiArgumentImpl(variableName, arguments); }
-  public static VariableAtomArgument createVariableAtomArgument(String variableName) throws SWRLRuleEngineBridgeException { return new VariableAtomArgumentImpl(variableName); }
-  public static VariableBuiltInArgument createVariableBuiltInArgument(String variableName) throws SWRLRuleEngineBridgeException { return new VariableBuiltInArgumentImpl(variableName); }
+  public static VariableAtomArgument createVariableAtomArgument(String variableName) { return new VariableAtomArgumentImpl(variableName); }
+  public static VariableBuiltInArgument createVariableBuiltInArgument(String variableName) { return new VariableBuiltInArgumentImpl(variableName); }
   public static BuiltInArgument createBuiltInArgument(String variableName) { return new BuiltInArgumentImpl(variableName); }
 
 } // BridgeFactory

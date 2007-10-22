@@ -18,6 +18,8 @@ import edu.stanford.smi.protegex.owl.swrl.bridge.builtins.*;
 
 import edu.stanford.smi.protegex.owl.swrl.model.*;
 
+import edu.stanford.smi.protegex.owl.swrl.ormap.Mapper;
+
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.RDFSClass;
@@ -70,6 +72,9 @@ public abstract class SWRLRuleEngineBridge implements SWRLRuleEngine, SQWRLQuery
   // Created individuals
   private HashMap<String, OWLIndividual> createdIndividuals;
   private Set<OWLPropertyAssertionAxiom> createdPropertyAssertionAxioms;
+
+  // Mapper
+  private Mapper mapper = null;
 
   protected SWRLRuleEngineBridge(OWLModel owlModel) throws SWRLRuleEngineBridgeException
   {
@@ -243,6 +248,10 @@ public abstract class SWRLRuleEngineBridge implements SWRLRuleEngine, SQWRLQuery
   public int getNumberOfCreatedIndividuals() { return createdIndividuals.size(); }
   public int getNumberOfCreatedPropertyAssertionAxioms() { return createdPropertyAssertionAxioms.size(); }
 
+  public boolean isClass(String className) { return importedClasses.containsKey(className); }
+  public boolean isProperty(String propertyName) { return importedPropertyNames.contains(propertyName); }
+  public boolean isIndividual(String individualName) { return importedIndividuals.containsKey(individualName); }
+
   public boolean isCreatedIndividual(String individualName) { return createdIndividuals.containsKey(individualName); }
   public boolean isCreatedPropertyAssertionAxiom(OWLPropertyAssertionAxiom axiom) { return createdPropertyAssertionAxioms.contains(axiom); }
 
@@ -305,11 +314,15 @@ public abstract class SWRLRuleEngineBridge implements SWRLRuleEngine, SQWRLQuery
   {
     String individualName = SWRLOWLUtil.createNewResourceName(owlModel, "SWRLCreated");
     OWLIndividual owlIndividual = BridgeFactory.createOWLIndividual(individualName, edu.stanford.smi.protegex.owl.model.OWLNames.Cls.THING);
-    
-    createdIndividuals.put(individualName, owlIndividual); 
-    defineIndividual(owlIndividual); // Export the individual to the rule engine.
-
+    createOWLIndividual(owlIndividual);
     return owlIndividual;
+  } // createOWLIndividual
+    
+  public void createOWLIndividual(OWLIndividual owlIndividual) throws SWRLRuleEngineBridgeException
+  {
+    createdIndividuals.put(owlIndividual.getIndividualName(), owlIndividual); 
+
+    defineIndividual(owlIndividual); // Export the individual to the rule engine.
   } // createOWLIndividual
 
   public OWLIndividual createOWLIndividual(OWLClass owlClass) throws SWRLRuleEngineBridgeException
@@ -325,12 +338,24 @@ public abstract class SWRLRuleEngineBridge implements SWRLRuleEngine, SQWRLQuery
     return owlIndividual;
   } // createOWLIndividual
 
+  public void createOWLIndividuals(Set<OWLIndividual> individuals)
+    throws SWRLRuleEngineBridgeException
+  {
+    for (OWLIndividual owlIndividual : individuals) createOWLIndividual(owlIndividual);
+  } // createOWLDatatypePropertyAssertionAxioms
+
   public OWLDatatypePropertyAssertionAxiom createOWLDatatypePropertyAssertionAxiom(OWLIndividual subject, OWLProperty property,
                                                                                    OWLDatatypeValue object) 
     throws SWRLRuleEngineBridgeException
   {
     OWLDatatypePropertyAssertionAxiom axiom = BridgeFactory.createOWLDatatypePropertyAssertionAxiom(subject, property, object);
+    createOWLDatatypePropertyAssertionAxiom(axiom);
+    return axiom;
+  } // createOWLDatatypePropertyAssertionAxiom
 
+  public OWLDatatypePropertyAssertionAxiom createOWLDatatypePropertyAssertionAxiom(OWLDatatypePropertyAssertionAxiom axiom)
+    throws SWRLRuleEngineBridgeException
+  {
     if (!createdPropertyAssertionAxioms.contains(axiom)) createdPropertyAssertionAxioms.add(axiom);
 
     defineAxiom(axiom); // Export the axiom to the rule engine.
@@ -338,18 +363,40 @@ public abstract class SWRLRuleEngineBridge implements SWRLRuleEngine, SQWRLQuery
     return axiom;
   } // createOWLDatatypePropertyAssertionAxiom
 
+  public void createOWLDatatypePropertyAssertionAxioms(Set<OWLDatatypePropertyAssertionAxiom> axioms)
+    throws SWRLRuleEngineBridgeException
+  {
+    for (OWLDatatypePropertyAssertionAxiom axiom : axioms) createOWLDatatypePropertyAssertionAxiom(axiom);
+  } // createOWLDatatypePropertyAssertionAxioms
+
   public OWLObjectPropertyAssertionAxiom createOWLObjectPropertyAssertionAxiom(OWLIndividual subject, OWLProperty property,
                                                                                OWLIndividual object) 
     throws SWRLRuleEngineBridgeException
   {
     OWLObjectPropertyAssertionAxiom axiom = BridgeFactory.createOWLObjectPropertyAssertionAxiom(subject, property, object);
+    createOWLObjectPropertyAssertionAxiom(axiom);
+    return axiom;
+  } // createOWLObjectPropertyAssertionAxiom
 
+  public OWLObjectPropertyAssertionAxiom createOWLObjectPropertyAssertionAxiom(OWLObjectPropertyAssertionAxiom axiom)
+    throws SWRLRuleEngineBridgeException
+  {
     if (!createdPropertyAssertionAxioms.contains(axiom)) createdPropertyAssertionAxioms.add(axiom);
 
     defineAxiom(axiom); // Export the axiom to the rule engine.
 
     return axiom;
   } // createOWLObjectPropertyAssertionAxiom
+
+  public void createOWLObjectPropertyAssertionAxioms(Set<OWLObjectPropertyAssertionAxiom> axioms)
+    throws SWRLRuleEngineBridgeException
+  {
+    for (OWLObjectPropertyAssertionAxiom axiom : axioms) createOWLObjectPropertyAssertionAxiom(axiom);
+  } // createOWLObjectPropertyAssertionAxioms
+
+  public void setMapper(Mapper mapper) { this.mapper = mapper; }
+  public boolean hasMapper() { return mapper != null; }
+  public Mapper getMapper() { return mapper; }
 
   /**
    ** Create OWL individuals in model for the individuals generated during rule execution.
@@ -674,7 +721,7 @@ public abstract class SWRLRuleEngineBridge implements SWRLRuleEngine, SQWRLQuery
           if (!(object2 instanceof edu.stanford.smi.protegex.owl.model.OWLIndividual)) continue;
           edu.stanford.smi.protegex.owl.model.OWLIndividual individual2 = (edu.stanford.smi.protegex.owl.model.OWLIndividual)object2;
           importedAxioms.add(BridgeFactory.createOWLDifferentIndividualsAxiom(BridgeFactory.createOWLIndividual(individual1.getName()), 
-                                                                                  BridgeFactory.createOWLIndividual(individual2.getName())));
+                                                                              BridgeFactory.createOWLIndividual(individual2.getName())));
         } // while
       } // if
     } // while

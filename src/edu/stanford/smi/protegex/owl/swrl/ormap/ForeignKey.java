@@ -1,7 +1,9 @@
 
 package edu.stanford.smi.protegex.owl.swrl.ormap;
 
+import java.util.*;
+
 public interface ForeignKey extends Key
 {
-  PrimaryKey getPredicatePrimaryKey();
+  Set<Table> getKeyedTables();
 } // ForeignKey
