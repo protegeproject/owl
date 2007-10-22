@@ -55,9 +55,12 @@ public abstract class AbstractTriplesComponent extends AbstractPropertyValuesCom
         this(predicate, "Triples", OWLIcons.getImageIcon(OWLIcons.TRIPLE));
     }
 
-
     public AbstractTriplesComponent(RDFProperty predicate, String label, Icon icon) {
-        super(predicate);
+    	this(predicate, label, icon, false);
+    }
+    
+    public AbstractTriplesComponent(RDFProperty predicate, String label, Icon icon, boolean isReadOnly) {
+        super(predicate, label, isReadOnly);
 
         this.icon = icon;
 
