@@ -23,6 +23,7 @@ public class MultiResourceComponent extends AddablePropertyValuesComponent {
     private Action addAction;
 
     private MultiResourceList list;
+     
 
     private Action removeAction = new AbstractAction("Remove selected values", OWLIcons.getRemoveIcon(OWLIcons.RDF_INDIVIDUAL)) {
         public void actionPerformed(ActionEvent e) {
@@ -34,30 +35,39 @@ public class MultiResourceComponent extends AddablePropertyValuesComponent {
     	this(predicate, symmetric, null);
     }
     
+    
     public MultiResourceComponent(RDFProperty predicate, boolean symmetric, String label) {
-        super(predicate, label);
-        list = new MultiResourceList(predicate, symmetric);
-        list.addListSelectionListener(new ListSelectionListener() {
-            public void valueChanged(ListSelectionEvent e) {
-                updateActions();
-            }
-        });
-        OWLLabeledComponent lc = new OWLLabeledComponent((label == null ? getLabel():label), new JScrollPane(list));
-        createAction = createCreateAction();
-        if (createAction != null) {
-            lc.addHeaderButton(createAction);
-        }
-        addAction = createAddAction(symmetric);
-        if (addAction != null) {
-            lc.addHeaderButton(addAction);
-        }
-        lc.addHeaderButton(removeAction);
-        add(BorderLayout.CENTER, lc);
-        updateActions();
+       this(predicate, symmetric, label, false);
     }
 
 
-    protected AddResourceAction createAddAction(boolean symmetric) {
+    public MultiResourceComponent(RDFProperty predicate, boolean symmetric, String label, boolean isReadOnly) {
+    	 super(predicate, label, isReadOnly);
+    	     	 
+         list = new MultiResourceList(predicate, symmetric);
+         list.addListSelectionListener(new ListSelectionListener() {
+             public void valueChanged(ListSelectionEvent e) {
+                 updateActions();
+             }
+         });
+         
+         OWLLabeledComponent lc = new OWLLabeledComponent((label == null ? getLabel():label), new JScrollPane(list));
+         createAction = createCreateAction();
+         if (createAction != null) {
+             lc.addHeaderButton(createAction);
+         }
+         
+         addAction = createAddAction(symmetric);
+         if (addAction != null) {
+             lc.addHeaderButton(addAction);
+         }
+         
+         lc.addHeaderButton(removeAction);
+         add(BorderLayout.CENTER, lc);
+         updateActions();
+	}
+
+	protected AddResourceAction createAddAction(boolean symmetric) {
         return new AddResourceAction(this, symmetric);
     }
 
@@ -98,16 +108,17 @@ public class MultiResourceComponent extends AddablePropertyValuesComponent {
     }
 
 
-    private void updateActions() {
-    	boolean isEditable = isEditable();
+    private void updateActions() {    	
+    	boolean isReadOnly = isReadOnly();
     	
         if (createAction != null) {
-            createAction.setEnabled(isEditable && isCreateEnabled());
+            createAction.setEnabled(!isReadOnly && isCreateEnabled());
         }
-        removeAction.setEnabled(isEditable && list.isRemoveEnabled());
+        removeAction.setEnabled(!isReadOnly && list.isRemoveEnabled());
         
-        addAction.setEnabled(isEditable);        
+        addAction.setEnabled(!isReadOnly);        
     }
+    
     
     
 }
