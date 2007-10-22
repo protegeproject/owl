@@ -21,6 +21,10 @@ public class RDFSSubClassOfComponent extends MultiResourceComponent {
         super(owlModel.getRDFSSubClassOfProperty(), false);
     }
 
+    public RDFSSubClassOfComponent(OWLModel owlModel, boolean isReadOnly) {
+        super(owlModel.getRDFSSubClassOfProperty(), false, null, isReadOnly );
+    }
+    
 
     public void addObject(RDFResource resource, boolean symmetric) {
         RDFSNamedClass cls = (RDFSNamedClass) getSubject();
