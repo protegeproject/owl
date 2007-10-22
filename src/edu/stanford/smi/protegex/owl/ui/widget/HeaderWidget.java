@@ -46,7 +46,7 @@ public class HeaderWidget extends AbstractSlotWidget {
 
     public void activateAnnotationsComponent() {
         RDFProperty property = (RDFProperty) getSlot();
-        activate(new AnnotationsComponent(property) {
+        activate(new AnnotationsComponent(property, isReadOnlyConfiguredWidget()) {
             protected void addButtons(LabeledComponent lc) {
                 super.addButtons(lc);
                 lc.addHeaderSeparator();
@@ -63,7 +63,7 @@ public class HeaderWidget extends AbstractSlotWidget {
 
     public void activateTriplesComponent() {
         RDFProperty property = (RDFProperty) getSlot();
-        activate(new TriplesComponent(property) {
+        activate(new TriplesComponent(property, isReadOnlyConfiguredWidget()) {
             protected void addButtons(LabeledComponent lc) {
                 super.addButtons(lc);
                 lc.addHeaderSeparator();

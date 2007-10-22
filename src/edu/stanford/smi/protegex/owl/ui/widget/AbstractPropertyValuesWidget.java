@@ -24,6 +24,7 @@ import java.util.Iterator;
 public abstract class AbstractPropertyValuesWidget extends AbstractSlotWidget {
 
     private PropertyValuesComponent component;
+    private boolean isEditable;
 
 
     protected abstract PropertyValuesComponent createComponent(RDFProperty predicate);
@@ -70,7 +71,8 @@ public abstract class AbstractPropertyValuesWidget extends AbstractSlotWidget {
         if (newInstance instanceof RDFResource) {
             subject = (RDFResource) newInstance;
         }
-        component.setSubject(subject);
+       
+        component.setSubject(subject);        
         super.setInstance(newInstance);
     }
 
@@ -106,8 +108,12 @@ public abstract class AbstractPropertyValuesWidget extends AbstractSlotWidget {
     		((AbstractPropertyValuesComponent)component).setEditable(b);
     	}
     	
-    	super.setEditable(b);
+    	isEditable = b;
     }
+    
+    public boolean isEditable() {
+		return isEditable;
+	}
     
     //maybe move up
     @Override

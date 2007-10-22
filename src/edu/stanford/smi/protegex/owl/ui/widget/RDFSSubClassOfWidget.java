@@ -13,7 +13,7 @@ import edu.stanford.smi.protegex.owl.ui.components.superclasses.RDFSSubClassOfCo
 public class RDFSSubClassOfWidget extends AbstractPropertyValuesWidget {
 
     protected PropertyValuesComponent createComponent(RDFProperty predicate) {
-        return new RDFSSubClassOfComponent(predicate.getOWLModel());
+        return new RDFSSubClassOfComponent(predicate.getOWLModel(), isReadOnlyConfiguredWidget());
     }
 
 

@@ -20,7 +20,7 @@ public class DataRangeFieldWidget extends AbstractPropertyValuesWidget {
 
 
     protected PropertyValuesComponent createComponent(RDFProperty predicate) {
-        return new DataRangeFieldComponent(predicate, getLabel());
+        return new DataRangeFieldComponent(predicate, getLabel(), isReadOnlyConfiguredWidget());
     }
 
 
