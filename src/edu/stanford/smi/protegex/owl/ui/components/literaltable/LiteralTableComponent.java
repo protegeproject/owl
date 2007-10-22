@@ -53,9 +53,13 @@ public class LiteralTableComponent extends AddablePropertyValuesComponent {
     public LiteralTableComponent(RDFProperty predicate) {
     	this(predicate, null);
     }
-    
+
     public LiteralTableComponent(RDFProperty predicate, String label) {
-        super(predicate, label);
+        super(predicate, label, false);
+    }
+    
+    public LiteralTableComponent(RDFProperty predicate, String label, boolean isReadOnly) {
+        super(predicate, label, isReadOnly);
         table = new LiteralTable(predicate);
         table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             public void valueChanged(ListSelectionEvent e) {
@@ -222,10 +226,10 @@ public class LiteralTableComponent extends AddablePropertyValuesComponent {
 
     private void updateActionsState() {
         int[] sel = table.getSelectedRows();
-        boolean deleteEnabled = isEditable() && table.getTableModel().isDeleteEnabled(sel);
+        boolean deleteEnabled = !isReadOnly() && table.getTableModel().isDeleteEnabled(sel);
         deleteAction.setEnabled(deleteEnabled);
 
-        if (!isEditable()) {
+        if (isReadOnly()) {
         	viewAction.setEnabled(false);
         } else {        
 	        boolean viewEnabled = false;
@@ -250,7 +254,7 @@ public class LiteralTableComponent extends AddablePropertyValuesComponent {
 	        viewAction.setEnabled(viewEnabled);
         }
         
-        addAction.setEnabled(isEditable());        
+        addAction.setEnabled(!isReadOnly());        
     }
 
 
