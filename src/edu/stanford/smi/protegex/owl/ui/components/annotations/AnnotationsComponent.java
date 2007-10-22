@@ -25,9 +25,13 @@ public class AnnotationsComponent extends AbstractTriplesComponent {
 
 
     public AnnotationsComponent(RDFProperty predicate) {
-        super(predicate, "Annotations", OWLIcons.getImageIcon(OWLIcons.ANNOTATIONS_TABLE));
+    	this(predicate, false);
     }
-
+    
+    public AnnotationsComponent(RDFProperty predicate, boolean isReadOnly) {
+    	super(predicate, "Annotations", OWLIcons.getImageIcon(OWLIcons.ANNOTATIONS_TABLE), isReadOnly);
+    }
+    
 
     protected void addButtons(LabeledComponent lc) {
         createValueAction = new CreateValueAction(getTable(), "Create new annotation value", OWLIcons.getCreateIcon(OWLIcons.ANNOTATION)) {
