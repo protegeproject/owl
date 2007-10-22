@@ -30,7 +30,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
    ** For every pattern of second and subsequent arguments, create an OWL individual of type OWL:Thing and bind it to the first argument. If
    ** the first argument is already bound when the built-in is called, this method returns true.
    */
-  public boolean createOWLThing(List<BuiltInArgument> arguments) throws BuiltInException
+  public boolean makeOWLThing(List<BuiltInArgument> arguments) throws BuiltInException
   {
     SWRLBuiltInUtil.checkNumberOfArgumentsAtLeast(2, arguments.size());
 
@@ -53,6 +53,12 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
     } // if
     
     return true;
+  } // makeOWLThing
+
+  // For backwards compatability
+  public boolean createOWLThing(List<BuiltInArgument> arguments) throws BuiltInException
+  {
+    return makeOWLThing(arguments);
   } // createOWLThing
 
 } // SWRLBuiltInLibraryImpl
