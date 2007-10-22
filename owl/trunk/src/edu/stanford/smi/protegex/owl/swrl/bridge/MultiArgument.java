@@ -3,7 +3,7 @@ package edu.stanford.smi.protegex.owl.swrl.bridge;
 
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.*;
 
-import java.util.List;
+import java.util.Set;
 
 /**
  ** A class used to bind multiple arguments to a built-in argument. See <a
@@ -12,8 +12,8 @@ import java.util.List;
 public interface MultiArgument extends BuiltInArgument
 {
   void addArgument(BuiltInArgument argument);
-  void setArguments(List<BuiltInArgument> arguments);
-  List<BuiltInArgument> getArguments();
+  void setArguments(Set<BuiltInArgument> arguments);
+  Set<BuiltInArgument> getArguments();
   int getNumberOfArguments(); 
   boolean hasNoArguments();
 } // MultiArgument

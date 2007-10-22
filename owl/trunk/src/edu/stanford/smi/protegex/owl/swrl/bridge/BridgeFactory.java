@@ -131,7 +131,7 @@ public class BridgeFactory
 
   // Arguments
   public static MultiArgument createMultiArgument(String variableName) { return new MultiArgumentImpl(variableName); }
-  public static MultiArgument createMultiArgument(String variableName, List<BuiltInArgument> arguments) { return new MultiArgumentImpl(variableName, arguments); }
+  public static MultiArgument createMultiArgument(String variableName, Set<BuiltInArgument> arguments) { return new MultiArgumentImpl(variableName, arguments); }
   public static VariableAtomArgument createVariableAtomArgument(String variableName) { return new VariableAtomArgumentImpl(variableName); }
   public static VariableBuiltInArgument createVariableBuiltInArgument(String variableName) { return new VariableBuiltInArgumentImpl(variableName); }
   public static BuiltInArgument createBuiltInArgument(String variableName) { return new BuiltInArgumentImpl(variableName); }
