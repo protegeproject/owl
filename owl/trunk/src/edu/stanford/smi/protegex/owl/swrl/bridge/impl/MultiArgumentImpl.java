@@ -11,23 +11,23 @@ import java.util.*;
  */
 public class MultiArgumentImpl extends BuiltInArgumentImpl implements MultiArgument
 {
-  private Set<BuiltInArgument> arguments;
+  private List<BuiltInArgument> arguments;
 
   public MultiArgumentImpl(String variableName)
   {
     super(variableName);
-    arguments = new HashSet<BuiltInArgument>();
+    arguments = new ArrayList<BuiltInArgument>();
   } // MultiArgumentImpl
 
-  public MultiArgumentImpl(String variableName, Set<BuiltInArgument> arguments)
+  public MultiArgumentImpl(String variableName, List<BuiltInArgument> arguments)
   {
     super(variableName);
     this.arguments = arguments;
   } // MultiArgumentImpl
 
   public void addArgument(BuiltInArgument argument) { arguments.add(argument); }
-  public void setArguments(Set<BuiltInArgument> arguments) { this.arguments = arguments; }
-  public Set<BuiltInArgument> getArguments() { return arguments; }
+  public void setArguments(List<BuiltInArgument> arguments) { this.arguments = arguments; }
+  public List<BuiltInArgument> getArguments() { return arguments; }
   public int getNumberOfArguments() { return arguments.size(); }
   public boolean hasNoArguments() { return arguments.size() == 0; }
 } // MultiArgumentImpl
