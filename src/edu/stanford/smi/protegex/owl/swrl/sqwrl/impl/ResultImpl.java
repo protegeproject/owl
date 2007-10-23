@@ -13,65 +13,65 @@ import java.io.Serializable;
 
 /**
  ** This class implements the interfaces Result and ResultGenerator. It can be used to generate a result structure and populate it with data;
- ** it can also be used to retrieve those data from the result.
+ ** it can also be used to retrieve those data from the result.<p>
  **
- ** This class operates in three phases:
+ ** This class operates in three phases:<p>
  **
  ** (1) Configuration Phase: In this phase the structure of the result is defined. This phase opened by a call to the configure() method (which
  ** will also clear any existing data). In this phase the columns are defined; aggregation or ordering is also specified in this phase. This
- ** phase is closed by a call to the configured() method.
+ ** phase is closed by a call to the configured() method.<p>
  **
  ** (2) Preparation Phase: In this phase data are added to the result. This phase is implicitly opened by the call to the configured() method. It
- ** is closed by a call to the prepared() method.
+ ** is closed by a call to the prepared() method.<p>
  **
- ** The interface ResultGenerator defines the calls used in these two phases.
+ ** The interface ResultGenerator defines the calls used in these two phases.<p>
  **
  ** (3) Processing Phase: In this phase data may be retrieved from the result. This phase is implicitly opened by the call to the closed()
- ** method.
+ ** method.<p>
  **
- ** The interface Result defines the calls used in the processing phase.
+ ** The interface Result defines the calls used in the processing phase.<p>
  **
- ** An example configuration and data generation is:
+ ** An example configuration and data generation is:<p>
  **
- ** ResultImpl result = new ResultImpl("TestResult");
+ ** ResultImpl result = new ResultImpl("TestResult");<p>
  **
- ** result.addColumn("name");
- ** result.addAggregateColumn("average", SQWRLNames.AvgAggregateFunction);
+ ** result.addColumn("name");<p>
+ ** result.addAggregateColumn("average", SQWRLNames.AvgAggregateFunction);<p><p>
  **
- ** result.configured();
+ ** result.configured();<>p<p>
  **
- ** result.openRow();
- ** result.addData(new BridgeFactory.createOWLIndividual("Fred"));
- ** result.addData(new Literal(27));
- ** result.closeRow();
+ ** result.openRow();<p>
+ ** result.addData(new BridgeFactory.createOWLIndividual("Fred"));<p>
+ ** result.addData(new Literal(27));<p>
+ ** result.closeRow();<p><p>
  **
- ** result.openRow();
- ** result.addData(new BridgeFactory.createOWLIndividual("Joe"));
- ** result.addData(new Literal(34));
- ** result.closeRow();
+ ** result.openRow();<p>
+ ** result.addData(new BridgeFactory.createOWLIndividual("Joe"));<p>
+ ** result.addData(new Literal(34));<p>
+ ** result.closeRow();<p><p>
  **
- ** result.openRow();
- ** result.addData(new BridgeFactory.createOWLIndividual("Joe"));
- ** result.addData(new Literal(21));
- ** result.closeRow();
+ ** result.openRow();<p>
+ ** result.addData(new BridgeFactory.createOWLIndividual("Joe"));<p>
+ ** result.addData(new Literal(21));<p>
+ ** result.closeRow();<p><p>
  ** 
- ** result.prepared();
+ ** result.prepared();<p><p>
  **
  ** The result is now available for reading. The interface Result defines the assessor methods. A row consists of a list of objects defined
  ** by the interface ResultValue. There are four possible types of values (1) DatatypeValue, representing literals; (2) ObjectValue,
- ** representing OWL individuals; (3) ClassValue, representing OWL classes; and (4) PropertyValue, representing OWL properties.
+ ** representing OWL individuals; (3) ClassValue, representing OWL classes; and (4) PropertyValue, representing OWL properties.<p><p>
  **
- ** while (result.hasNext()) {
- **  ObjectValue nameValue = result.getObjectValue("name");
- **  DatatypeValue averageValue = result.getDatatypeValue("average");
- **  System.out.println("Name: " + nameValue.getIndividualName());
- **  System.out.println("Average: " + averageValue.getInt());
- ** } // while
+ ** while (result.hasNext()) {<p>
+ **  ObjectValue nameValue = result.getObjectValue("name");<p>
+ **  DatatypeValue averageValue = result.getDatatypeValue("average");<p>
+ **  System.out.println("Name: " + nameValue.getIndividualName());<p>
+ **  System.out.println("Average: " + averageValue.getInt());<p>
+ ** } // while<p><p>
  **
- ** A convenience method addColumns that takes a list of column names is also supplied.
+ ** A convenience method addColumns that takes a list of column names is also supplied.<p><p>
  **
  ** There is also a convenience method addRow, which takes a list of ResultValues. This method automatically does a row open and close. It
- ** is expecting the exact same number of list elements as there are columns in the result.
+ ** is expecting the exact same number of list elements as there are columns in the result.<p>
  */ 
 public class ResultImpl implements ResultGenerator, Result, Serializable
 {

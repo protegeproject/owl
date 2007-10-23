@@ -6,8 +6,8 @@ import edu.stanford.smi.protegex.owl.swrl.sqwrl.exceptions.ResultException;
 import java.util.List;
 
 /**
- ** Interface that defines methods to process results from a SWRL query. See <a
- ** href="http://protege.cim3.net/cgi-bin/wiki.pl?SWRLQueryAPI">here</a> for documentation.
+ ** Interface that defines methods to process results from a SQWRL query. See <a
+ ** href="http://protege.cim3.net/cgi-bin/wiki.pl?SQWRLQueryAPI">here</a> for documentation.
  */
 public interface Result
 {
