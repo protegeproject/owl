@@ -32,7 +32,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
   
   private boolean throwSupercededException() throws BuiltInException
   {
-    throw new BuiltInException("\nThe query library has been superceded by the SQWRL library; to upgrade, import the SQWRL ontology\n" +
+    throw new BuiltInException("\nThe query library has been superseded by the SQWRL library; to upgrade, import the SQWRL ontology\n" +
                                "(http://sqwrl.stanford.edu/ontologies/built-ins/3.4/sqwrl.owl) from the Protege-OWL repository, give it\n" +
                                "the prefix 'sqwrl', and replace 'query' with this prefix for all existing query built-ins"); 
   } // throwInternalQueryException
