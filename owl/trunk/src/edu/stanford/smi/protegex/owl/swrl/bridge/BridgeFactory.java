@@ -16,7 +16,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 
 /**
- ** Factory to create instances of rule engine bridges
+ ** Factory to create instances of common bridge entities
  */
 public class BridgeFactory
 {
