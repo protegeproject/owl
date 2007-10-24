@@ -11,6 +11,9 @@ import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.swrl.model.*;
 import edu.stanford.smi.protegex.owl.swrl.sqwrl.ui.icons.QueryIcons;
 
+import edu.stanford.smi.protegex.owl.swrl.ormap.Mapper;
+import edu.stanford.smi.protegex.owl.swrl.ormap.MapperFactory;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -31,6 +34,8 @@ public class SQWRLQueryTab extends JTabbedPane implements SWRLPluginGUIAdapter
 
     try {
       bridge = BridgeFactory.createBridge(owlModel);
+      //Mapper mapper = MapperFactory.create(bridge);
+      //bridge.setMapper(mapper);
     } catch (SWRLRuleEngineBridgeException e) {
       System.err.println(e.toString());
       return makeErrorWindow(e.toString());

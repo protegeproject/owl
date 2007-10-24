@@ -228,11 +228,12 @@ public class RelationalMapper implements Mapper
   private void readOWLClassMaps(SQWRLQueryEngine queryEngine) throws MapperException, SQWRLException
   {
     SQWRLResult result = queryEngine.getSQWRLResult("swrlor:OWLDatatypePropertyMap-Query");
-
     if (result != null) {
       while (result.hasNext()) {
-        PropertyValue propertyValue = result.getPropertyValue("?swrlor:owlDatatypeProperty");
-        System.err.println("property: " + propertyValue.getPropertyName());
+        String propertyName = result.getPropertyValue("?swrlor:owlDatatypeProperty").getPropertyName();
+        System.err.println("propertyName: " + propertyName);
+        String schemaName  = result.getDatatypeValue("?swrlor:schemaName").getString();
+        System.err.println("schemaName: " + schemaName);
         result.next();
       } // while
     } // if
