@@ -107,8 +107,8 @@ public class BridgeFactory
   public static OWLIndividual createOWLIndividual(OWLModel owlModel, String individualName) throws SWRLRuleEngineBridgeException { return new OWLIndividualImpl(owlModel, individualName); }
   public static OWLIndividual createOWLIndividual(edu.stanford.smi.protegex.owl.model.OWLIndividual individual) throws SWRLRuleEngineBridgeException { return new OWLIndividualImpl(individual); }
   public static OWLIndividual createOWLIndividual(String individualName, String className) { return new OWLIndividualImpl(individualName, className); }
-  public static OWLProperty createOWLObjectProperty(String propertyName) { return new OWLObjectPropertyImpl(propertyName); }
-  public static OWLProperty createOWLDatatypeProperty(String propertyName) { return new OWLDatatypePropertyImpl(propertyName); }
+  public static OWLObjectProperty createOWLObjectProperty(String propertyName) { return new OWLObjectPropertyImpl(propertyName); }
+  public static OWLDatatypeProperty createOWLDatatypeProperty(String propertyName) { return new OWLDatatypePropertyImpl(propertyName); }
   public static OWLDatatypeValue createOWLDatatypeValue(OWLModel owlModel, RDFSLiteral literal) throws DatatypeConversionException { return new OWLDatatypeValueImpl(owlModel, literal); }
   public static OWLDatatypeValue createOWLDatatypeValue(String s) { return new OWLDatatypeValueImpl(s); }
   public static OWLDatatypeValue createOWLDatatypeValue(Number n) { return new OWLDatatypeValueImpl(n); }
