@@ -1,6 +1,8 @@
 
 package edu.stanford.smi.protegex.owl.swrl.bridge.builtins.sqwrl;
 
+import edu.stanford.smi.protegex.owl.swrl.exceptions.*;
+
 import edu.stanford.smi.protegex.owl.swrl.sqwrl.*;
 import edu.stanford.smi.protegex.owl.swrl.sqwrl.impl.*;
 import edu.stanford.smi.protegex.owl.swrl.sqwrl.exceptions.*;
@@ -263,13 +265,14 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
     return ruleName + ":" + collectionName + ":" + invocationPattern;
   } // getCollectionIDInOperation
 
-  private ResultImpl getResult(String ruleName) throws BuiltInException
+  private ResultImpl getResult(String queryName) throws BuiltInException
   {
     ResultImpl result = null;
 
     try {
-      result = getInvokingBridge().getRule(ruleName).getSQWRLResult();
-    } catch (InvalidRuleNameException e) {} // Result will be null if cannot find rule
+      if (getInvokingBridge().getRule(queryName) != null)
+        result = getInvokingBridge().getRule(queryName).getSQWRLResult();
+    } catch (InvalidRuleNameException e) {} // Result will be null if cannot find query
 
     return result;
   } // getResult

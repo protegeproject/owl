@@ -1,7 +1,7 @@
 
 package edu.stanford.smi.protegex.owl.swrl.sqwrl.exceptions;
 
-public class InvalidRowIndexException extends ResultException
+public class InvalidRowIndexException extends SQWRLException
 {
   public InvalidRowIndexException(String message) { super(message); }
 

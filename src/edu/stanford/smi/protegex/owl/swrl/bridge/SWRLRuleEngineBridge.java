@@ -19,6 +19,7 @@ import edu.stanford.smi.protegex.owl.swrl.bridge.builtins.*;
 import edu.stanford.smi.protegex.owl.swrl.model.*;
 
 import edu.stanford.smi.protegex.owl.swrl.ormap.Mapper;
+import edu.stanford.smi.protegex.owl.swrl.ormap.MapperFactory;
 
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
@@ -81,6 +82,7 @@ public abstract class SWRLRuleEngineBridge implements SWRLRuleEngine, SQWRLQuery
     this.owlModel = owlModel;
     initialize();
     BuiltInLibraryManager.invokeAllBuiltInLibrariesResetMethod(this);
+
   } // SWRLRuleEngineBridge
 
   /**
@@ -213,12 +215,28 @@ public abstract class SWRLRuleEngineBridge implements SWRLRuleEngine, SQWRLQuery
     clearExportedAndInferredKnowledge();
   } // resetRuleEngine
 
+  public void runSQWRLQueries() throws SQWRLException
+  {
+    try {
+      resetBridge();
+      importSWRLRulesAndOWLKnowledge();
+      exportSWRLRulesAndOWLKnowledge();
+      runRuleEngine();
+    } catch (SWRLRuleEngineBridgeException e) {
+      throw new SQWRLException("error running queries: " + e.getMessage());
+    } // try
+  } // runSQWRLQueries
+
   /**
    **  Get the results from a SQWRL query.
    */
-  public Result getSQWRLResult(String ruleName) throws ResultException
+  public SQWRLResult getSQWRLResult(String queryName) throws SQWRLException
   {
-    ResultImpl result = getRule(ruleName).getSQWRLResult();
+    ResultImpl result;
+
+    if (!importedSWRLRules.containsKey(queryName)) throw new InvalidQueryNameException(queryName);
+
+    result = importedSWRLRules.get(queryName).getSQWRLResult();
 
     if (!result.isPrepared()) result.prepared();
 

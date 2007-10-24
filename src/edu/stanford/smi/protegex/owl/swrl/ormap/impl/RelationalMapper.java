@@ -4,25 +4,33 @@ package edu.stanford.smi.protegex.owl.swrl.ormap.impl;
 import edu.stanford.smi.protegex.owl.swrl.ormap.*;
 import edu.stanford.smi.protegex.owl.swrl.ormap.exceptions.*;
 
+import edu.stanford.smi.protegex.owl.swrl.sqwrl.*;
+import edu.stanford.smi.protegex.owl.swrl.sqwrl.exceptions.*;
+
 import edu.stanford.smi.protegex.owl.swrl.bridge.*;
+import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.*;
+
+import edu.stanford.smi.protegex.owl.model.OWLModel;
 
 import java.util.*;
 import java.sql.*;
 
-public class DefaultRelationalMapper implements Mapper
+public class RelationalMapper implements Mapper
 {
   private Map<String, OWLClassMap> classMaps;
   private Map<String, OWLObjectPropertyMap> objectPropertyMaps;
   private Map<String, OWLDatatypePropertyMap> datatypePropertyMaps;
   private DatabaseConnection databaseConnection;
 
-  public DefaultRelationalMapper(DatabaseConnection databaseConnection) 
+  public RelationalMapper(SQWRLQueryEngine queryEngine) throws MapperException
   {
     classMaps = new HashMap<String, OWLClassMap>();
     objectPropertyMaps = new HashMap<String, OWLObjectPropertyMap>();
     datatypePropertyMaps = new HashMap<String, OWLDatatypePropertyMap>();
-    this.databaseConnection = databaseConnection;
-  } // DefaultRelationalMapper
+
+    readMaps(queryEngine);
+    createDatabaseConnection();
+  } // RelationalMapper
 
   public boolean isMapped(OWLClass owlClass) { return classMaps.containsKey(owlClass.getClassName()); }
   public boolean isMapped(OWLProperty owlProperty) 
@@ -203,6 +211,46 @@ public class DefaultRelationalMapper implements Mapper
     return datatypePropertyMaps.get(propertyName);
   } // getOWLDatatypePropertyMap
 
-} // DefaultRelationalMapper
+  private void readMaps(SQWRLQueryEngine queryEngine) throws MapperException
+  {
+    try {
+      queryEngine.runSQWRLQueries();
+      
+      readOWLClassMaps(queryEngine);
+      readOWLObjectPropertyMaps(queryEngine);
+      readOWLDatatypePropertyMaps(queryEngine);
+    } catch (InvalidQueryNameException e) {
+    } catch (SQWRLException e) {
+      throw new MapperException("error reading mapping information: " + e.getMessage());
+    } // try
+  } // readMaps
+
+  private void readOWLClassMaps(SQWRLQueryEngine queryEngine) throws MapperException, SQWRLException
+  {
+    SQWRLResult result = queryEngine.getSQWRLResult("swrlor:OWLDatatypePropertyMap-Query");
+
+    if (result != null) {
+      while (result.hasNext()) {
+        PropertyValue propertyValue = result.getPropertyValue("?swrlor:owlDatatypeProperty");
+        System.err.println("property: " + propertyValue.getPropertyName());
+        result.next();
+      } // while
+    } // if
+    
+  } // readOWLClassMaps
+
+  private void readOWLObjectPropertyMaps(SQWRLQueryEngine queryEngine) throws MapperException, SQWRLException
+  {
+  } // readOWLObjectPropertyMaps
+
+  private void readOWLDatatypePropertyMaps(SQWRLQueryEngine queryEngine) throws MapperException, SQWRLException
+  {
+  } // readOWLDatatypePropertyMaps
+
+  private void createDatabaseConnection() throws MapperException
+  {
+  } // createDatabaseConnection
+
+} // RelationalMapper
 
 

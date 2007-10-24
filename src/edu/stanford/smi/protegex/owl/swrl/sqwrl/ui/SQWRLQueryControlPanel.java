@@ -57,11 +57,11 @@ public class SQWRLQueryControlPanel extends JPanel
     textArea.append(text);
   } // appendText
 
-  public void removeResultPanel(String ruleName)
+  public void removeResultPanel(String queryName)
   {
-    if (resultPanels.containsKey(ruleName)) {
-      SQWRLQueryResultPanel resultPanel = resultPanels.get(ruleName);
-      resultPanels.remove(ruleName);
+    if (resultPanels.containsKey(queryName)) {
+      SQWRLQueryResultPanel resultPanel = resultPanels.get(queryName);
+      resultPanels.remove(queryName);
       ((JTabbedPane)getParent()).remove(resultPanel);
       ((JTabbedPane)getParent()).setSelectedIndex(0);
     } // if
@@ -122,47 +122,44 @@ public class SQWRLQueryControlPanel extends JPanel
     public void actionPerformed(ActionEvent event) 
     {
       SQWRLQueryResultPanel resultPanel;
-      String ruleName = "";
-      Result result = null;
+      String queryName = "";
+      SQWRLResult result = null;
       
       if (resultPanels.size() == MaximumOpenResultPanels) {
         textArea.append("A maximum of " + MaximumOpenResultPanels + " result tabs may be open at once. ");
         textArea.append("Please close an existing tab to display results for the selected rule.\n");
       } else {
 	try {
-          bridge.resetBridge();
-          bridge.importSWRLRulesAndOWLKnowledge();
-          bridge.exportSWRLRulesAndOWLKnowledge();
-          bridge.runRuleEngine();
+          bridge.runSQWRLQueries();
         
-          ruleName = BridgePluginManager.getSelectedRuleName();
+          queryName = BridgePluginManager.getSelectedRuleName();
           
-          if (ruleName == null || ruleName.equals("")) textArea.append("No rule selected.\n");
+          if (queryName == null || queryName.equals("")) textArea.append("No query selected.\n");
           else {
-            result = bridge.getSQWRLResult(ruleName);
+            result = bridge.getSQWRLResult(queryName);
             if (result == null || result.getNumberOfRows() == 0) {
-              textArea.append("Rule '" + ruleName + "' did not generate any result.\n");
-              if  (resultPanels.containsKey(ruleName)) {
-                resultPanel = resultPanels.get(ruleName);
+              textArea.append("Query '" + queryName + "' did not generate any result.\n");
+              if  (resultPanels.containsKey(queryName)) {
+                resultPanel = resultPanels.get(queryName);
                 resultPanels.remove(resultPanel);
                 ((JTabbedPane)getParent()).remove(resultPanel);
               } // if
             } else { // A result was returned
-              textArea.append("See the '" + ruleName + "' tab to review results of the query.\n");
+              textArea.append("See the '" + queryName + "' tab to review results of the query.\n");
               
-              if  (resultPanels.containsKey(ruleName)) resultPanel = resultPanels.get(ruleName); // Existing tab found
+              if  (resultPanels.containsKey(queryName)) resultPanel = resultPanels.get(queryName); // Existing tab found
               else { // Create new tab
-                resultPanel = new SQWRLQueryResultPanel(bridge, controlPanel, ruleName);
-                resultPanels.put(ruleName, resultPanel);
-                ((JTabbedPane)getParent()).addTab(ruleName, SWRLIcons.getImpsIcon(), resultPanel, "Result Panel for rule '" + ruleName + "'");
+                resultPanel = new SQWRLQueryResultPanel(bridge, controlPanel, queryName);
+                resultPanels.put(queryName, resultPanel);
+                ((JTabbedPane)getParent()).addTab(queryName, SWRLIcons.getImpsIcon(), resultPanel, "Result Panel for query '" + queryName + "'");
               } // if
               resultPanel.validate();
               controlPanel.getParent().validate();
             } // if
           } // if
 	} catch (SWRLRuleEngineBridgeException e) {
-          if (ruleName.equals("")) textArea.append("Exception running rules:" + e.getMessage() + "\n");
-          else textArea.append("Exception when running rule '" + ruleName + "': " + e.getMessage() + "\n");
+          if (queryName.equals("")) textArea.append("Exception running queries:" + e.getMessage() + "\n");
+          else textArea.append("Exception when running query '" + queryName + "': " + e.getMessage() + "\n");
 	} // try
       } // if
     } // ActionPerformed

@@ -1,7 +1,7 @@
 
 package edu.stanford.smi.protegex.owl.swrl.sqwrl.exceptions;
 
-public class ResultStateException extends ResultException
+public class ResultStateException extends SQWRLException
 {
   public ResultStateException(String message) { super(message); }
 

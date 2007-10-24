@@ -1,7 +1,7 @@
 
 package edu.stanford.smi.protegex.owl.swrl.sqwrl.exceptions;
 
-public class InvalidColumnNameException extends ResultException
+public class InvalidColumnNameException extends SQWRLException
 {
   public InvalidColumnNameException(String message) { super(message); }
 
