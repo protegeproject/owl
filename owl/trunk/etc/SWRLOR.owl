@@ -12,7 +12,7 @@
     xmlns:tbox="http://swrl.stanford.edu/ontologies/built-ins/3.3/tbox.owl#"
   xml:base="http://swrl.stanford.edu/ontologies/built-ins/3.4/swrlor.owl">
   <owl:Ontology rdf:about="">
-    <owl:imports rdf:resource="http://swrl.stanford.edu/ontologies/built-ins/3.4/sqwrl.owl"/>
+    <owl:imports rdf:resource="http://sqwrl.stanford.edu/ontologies/built-ins/3.4/sqwrl.owl"/>
     <owl:imports rdf:resource="http://swrl.stanford.edu/ontologies/built-ins/3.3/tbox.owl"/>
     <owl:imports rdf:resource="http://swrl.stanford.edu/ontologies/built-ins/3.3/abox.owl"/>
     <owl:imports rdf:resource="http://www.w3.org/2003/11/swrl"/>

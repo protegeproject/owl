@@ -1,10 +1,7 @@
 
 package edu.stanford.smi.protegex.owl.swrl.sqwrl;
 
-import edu.stanford.smi.protegex.owl.swrl.exceptions.*;
-import edu.stanford.smi.protegex.owl.swrl.sqwrl.exceptions.ResultException;
-
-import java.util.*;
+import edu.stanford.smi.protegex.owl.swrl.sqwrl.exceptions.SQWRLException;
 
 /**
  ** This inferface defines the methods that must be provided by a SQWRL query engine.
@@ -13,7 +10,12 @@ import java.util.*;
 public interface SQWRLQueryEngine
 {
   /**
-   **  Get the results from a SQWRL query. Null is retured if there are no results or if the query subsystem is not activated.
+   ** Run all the SQWRL queries in an ontology.
    */
-  Result getSQWRLResult(String ruleName) throws ResultException;
+  void runSQWRLQueries() throws SQWRLException;
+
+  /**
+   ** Get the results from a SQWRL query. Null is retured if there is no result.
+   */
+  SQWRLResult getSQWRLResult(String queryName) throws SQWRLException;
 } // SQWRLQueryEngine

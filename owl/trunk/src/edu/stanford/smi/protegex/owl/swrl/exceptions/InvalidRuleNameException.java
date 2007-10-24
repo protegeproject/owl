@@ -1,7 +1,7 @@
 
-package edu.stanford.smi.protegex.owl.swrl.sqwrl.exceptions;
+package edu.stanford.smi.protegex.owl.swrl.exceptions;
 
-public class InvalidRuleNameException extends ResultException 
+public class InvalidRuleNameException extends SWRLRuleEngineException
 {
   public InvalidRuleNameException(String ruleName) 
   { 
