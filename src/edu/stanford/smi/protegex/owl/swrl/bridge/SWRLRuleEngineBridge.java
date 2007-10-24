@@ -63,7 +63,7 @@ public abstract class SWRLRuleEngineBridge implements SWRLRuleEngine, SQWRLQuery
   private Set<OWLPropertyAssertionAxiom> importedPropertyAssertionAxioms; 
   private Set<OWLAxiom> importedAxioms;
 
-  // Names of classes, properties, and individuals that have been exported to target
+  // Names of classes, properties, and individuals that have been exported to target rule engine
   private Set<String> exportedClassNames, exportedIndividualNames; 
 
   // Inferred individuals and property assertion axioms
@@ -82,7 +82,6 @@ public abstract class SWRLRuleEngineBridge implements SWRLRuleEngine, SQWRLQuery
     this.owlModel = owlModel;
     initialize();
     BuiltInLibraryManager.invokeAllBuiltInLibrariesResetMethod(this);
-
   } // SWRLRuleEngineBridge
 
   /**
