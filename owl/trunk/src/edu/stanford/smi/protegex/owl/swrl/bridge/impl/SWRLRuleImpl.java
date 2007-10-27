@@ -46,6 +46,11 @@ public class SWRLRuleImpl implements SWRLRule
   public List<BuiltInAtom> getBuiltInAtomsFromBody() { return getBuiltInAtoms(bodyAtoms); }
   public List<BuiltInAtom> getBuiltInAtomsFromBody(Set<String> builtInNames) { return getBuiltInAtoms(bodyAtoms, builtInNames); }
 
+  public void appendAtomsToBody(List<Atom> atoms)
+  {
+    bodyAtoms.addAll(atoms);
+  } // appendAtomToBody
+
   public List<Atom> getSQWRLPhase1BodyAtoms()
   {
     List<Atom> result = new ArrayList<Atom>();
@@ -178,7 +183,6 @@ public class SWRLRuleImpl implements SWRLRule
       sqwrlResult.openRow();
 
       if (hasSQWRLCollectionBuiltIns) sqwrlResult.setIsDistinct(); 
-
     } catch (SWRLRuleEngineBridgeException e) {
       throw new SWRLRuleEngineBridgeException("error configuring SQWRL query '" + ruleName + "': " + e.getMessage());
     } // try

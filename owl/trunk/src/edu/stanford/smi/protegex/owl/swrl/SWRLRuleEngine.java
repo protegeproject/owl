@@ -8,7 +8,7 @@ import edu.stanford.smi.protegex.owl.swrl.sqwrl.exceptions.*;
 import java.util.*;
 
 /**
- ** This inferface defines the methods that must be provided by a SWRL rule engine.
+ ** This interface defines the methods that must be provided by a SWRL rule engine.
  **
  */
 public interface SWRLRuleEngine
@@ -43,16 +43,6 @@ public interface SWRLRuleEngine
   void run() throws SWRLRuleEngineException;
 
   /**
-   ** Send rules and knowledge stored in bridge to a rule engine.
-   */
-  void exportSWRLRulesAndOWLKnowledge() throws SWRLRuleEngineException;
-
-  /**
-   ** Send knowledge (excluding SWRL rules) stored in bridge to a rule engine.
-   */
-  void exportOWLKnowledge() throws SWRLRuleEngineException;
-
-  /**
    ** Write knowledge inferred by rule engine back to OWL.
    */
   void writeInferredKnowledge2OWL() throws SWRLRuleEngineException;
@@ -60,7 +50,7 @@ public interface SWRLRuleEngine
   /**
    **  Clear all knowledge from rule engine, deleted asserted knowledge from the bridge, and leave imported bridge knowledge intact.
    */
-  void resetRuleEngine() throws SWRLRuleEngineException;
+  void reset() throws SWRLRuleEngineException;
 
   int getNumberOfInferredIndividuals();
   int getNumberOfInferredPropertyAssertionAxioms();

@@ -92,6 +92,7 @@ public class BridgeFactory
 
   // SWRL atoms
   public static BuiltInAtom createBuiltInAtom(OWLModel owlModel, SWRLBuiltinAtom atom) throws SWRLRuleEngineBridgeException  { return new BuiltInAtomImpl(owlModel, atom); } 
+  public static BuiltInAtom createBuiltInAtom(String builtInName, List<BuiltInArgument> arguments) throws SWRLRuleEngineBridgeException  { return new BuiltInAtomImpl(builtInName, arguments); } 
   public static ClassAtom createClassAtom(SWRLClassAtom atom) throws SWRLRuleEngineBridgeException { return new ClassAtomImpl(atom); }
   public static DataRangeAtom createDataRangeAtom(SWRLDataRangeAtom atom) throws SWRLRuleEngineBridgeException { return new DataRangeAtomImpl(atom); }
   public static DatavaluedPropertyAtom createDatavaluedPropertyAtom(OWLModel owlModel, SWRLDatavaluedPropertyAtom atom) throws SWRLRuleEngineBridgeException { return new DatavaluedPropertyAtomImpl(owlModel, atom); }
