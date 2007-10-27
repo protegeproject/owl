@@ -21,6 +21,8 @@ public interface SWRLRule
   List<BuiltInAtom> getBuiltInAtomsFromBody();
   List<BuiltInAtom> getBuiltInAtomsFromBody(Set<String> builtInNames);
 
+  void appendAtomsToBody(List<Atom> atom);
+
   boolean isSQWRL();
   ResultImpl getSQWRLResult();
 

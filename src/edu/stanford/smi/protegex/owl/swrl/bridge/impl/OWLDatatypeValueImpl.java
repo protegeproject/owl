@@ -156,18 +156,23 @@ public class OWLDatatypeValueImpl extends BuiltInArgumentImpl implements OWLData
     return result;
   } // getLong
 
+  // Some precision loss possible going from integer and long to
+  // float. cf. http://www.particle.kth.se/~lindsey/JavaCourse/Book/Part1/Java/Chapter02/castsMixing.html
   public float getFloat() throws DatatypeConversionException 
   { 
     float result = 0;
 
     if (isFloat()) result = ((Float)value).floatValue(); 
     else if (isInteger()) result = (float)((Integer)value).intValue();
+    else if (isLong()) result = (float)((Long)value).longValue();
     else if (isShort()) result = (float)((Short)value).shortValue();
     else throw new DatatypeConversionException("cannot convert value of type '" + value.getClass().getCanonicalName() + "' to float"); 
 
     return result;
   } // getFloat
 
+  // Some precision loss possible going from long to
+  // double. cf. http://www.particle.kth.se/~lindsey/JavaCourse/Book/Part1/Java/Chapter02/castsMixing.html
   public double getDouble() throws DatatypeConversionException 
   { 
     double result = 0.0;

@@ -54,9 +54,9 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
           xmlDocumentMapping = xmlMapper.document2XMLDocumentMapping(doc, getInvokingBridge());
           mappedSources.put(inputXMLStreamName, xmlDocumentMapping);
         } catch (XMLProcessorException e) {
-          throw new BuiltInException("error processing XML stream '" + inputXMLStreamName + "':" + e.getMessage());
+          throw new BuiltInException("error processing XML stream '" + inputXMLStreamName + "': " + e.getMessage());
         } catch (XMLMapperException e) {
-          throw new BuiltInException("error mapping XML stream '" + inputXMLStreamName + "':" + e.getMessage());
+          throw new BuiltInException("error mapping XML stream '" + inputXMLStreamName + "': " + e.getMessage());
         } // try
       } else xmlDocumentMapping = mappedSources.get(inputXMLStreamName);
 

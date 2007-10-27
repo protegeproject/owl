@@ -33,17 +33,19 @@ public class JDBCConnection
       url = new String("jdbc:odbc:" + databaseName);
     } else if (jdbcDriverName.equals("OracleThin")) { 
       url = new String("jdbc:oracle:thin:@" + serverName + ":" + portNumber + ":" + databaseName);
-    } else if (jdbcDriverName.equals("MySQLJDBCDriver")) {
-      url = new String("jdbc:mysql:" + serverName + ":" + portNumber + "/" + databaseName);
+    } else if (jdbcDriverName.equals("com.mysql.jdbc.Driver")) {
+      url = new String("jdbc:mysql://" + serverName + ":" + portNumber + "/" + databaseName);
     } else {
       if (jdbcDriverName.equals("")) throw new SQLException("no JDBC driver specified");
       else throw new SQLException("unknown JDBC driver '" + jdbcDriverName + "'");
     } // if
 
+    loadDrivers(jdbcDriverName);
+
     return url;
   } // getConnectionString
 
-  public void loadDrivers(String jdbcDriverName) throws SQLException
+  public static void loadDrivers(String jdbcDriverName) throws SQLException
   {
     if (jdbcDriverName.equals("SQLServerJDBCDriver2000")) {
       try { Class.forName("com.microsoft.jdbc.sqlserver.SQLServerDriver");
@@ -65,7 +67,7 @@ public class JDBCConnection
       } catch (Exception e) {
       throw new SQLException("failed to load Oracle JDBC driver");
       } // try
-    } else if (jdbcDriverName.equals("MySQLJDBCDriver")) {
+    } else if (jdbcDriverName.equals("com.mysql.jdbc.Driver")) {
       try {
         Class.forName("com.mysql.jdbc.Driver").newInstance();
       } catch (Exception e) {

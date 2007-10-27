@@ -5,7 +5,6 @@ import edu.stanford.smi.protegex.owl.swrl.bridge.builtins.temporal.exceptions.*;
 
 import java.sql.*;
 import java.util.*;
-import java.io.Serializable;
 
 /*
 ** Class representing an interval of time.

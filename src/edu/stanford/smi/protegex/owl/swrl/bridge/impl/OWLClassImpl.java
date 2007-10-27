@@ -13,7 +13,7 @@ import java.util.*;
 import java.io.Serializable;
 
 /**
- ** Info object representing an OWL named class
+ ** Class representing an OWL named class
  */
 public class OWLClassImpl extends BuiltInArgumentImpl implements OWLClass, Serializable
 {

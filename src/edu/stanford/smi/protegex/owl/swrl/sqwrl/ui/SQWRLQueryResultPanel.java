@@ -1,6 +1,8 @@
 
 package edu.stanford.smi.protegex.owl.swrl.sqwrl.ui;
 
+import edu.stanford.smi.protegex.owl.swrl.exceptions.*;
+
 import edu.stanford.smi.protegex.owl.swrl.bridge.*;
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.*;
 
@@ -68,7 +70,6 @@ public class SQWRLQueryResultPanel extends JPanel
       try {
         bridge.resetBridge();
         bridge.importSWRLRulesAndOWLKnowledge();
-        bridge.exportSWRLRulesAndOWLKnowledge();
         bridge.runRuleEngine();
 
         result = bridge.getSQWRLResult(queryName);
@@ -77,7 +78,7 @@ public class SQWRLQueryResultPanel extends JPanel
           controlPanel.appendText("No result returned for query '" + queryName + "' - closing tab.\n");
           controlPanel.removeResultPanel(queryName);
         } else validate();
-      } catch (SWRLRuleEngineBridgeException e) {
+      } catch (SWRLRuleEngineException e) {
         controlPanel.appendText("All results panels closed - exception running rules: " + e.getMessage() + "\n");
         controlPanel.removeAllPanels();
       } // try

@@ -46,7 +46,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
 
     SWRLBuiltInUtil.checkNumberOfArgumentsAtLeast(2, arguments.size());
 
-    className = SWRLBuiltInUtil.getArgumentAsAString(0, arguments);
+    className = SWRLBuiltInUtil.getArgumentAsAClassName(0, arguments);
 
     if (!getInvokingBridge().hasMapper()) return false;
 
@@ -70,11 +70,11 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
         result = !multiArgument.hasNoArguments();
       } else result = false;
     } catch (SWRLRuleEngineBridgeException e) {
-      throw new BuiltInException("error mapping OWL class '" + className + "'");
+      throw new BuiltInException("error mapping OWL class '" + className + "': " + e.getMessage());
     } // try
 
     return result;
-  } // mapOWLDatatypeProperty
+  } // mapOWLClass
 
   public boolean mapOWLObjectProperty(List<BuiltInArgument> arguments) throws BuiltInException 
   { 
@@ -88,7 +88,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
     SWRLBuiltInUtil.checkNumberOfArgumentsAtLeast(1, arguments.size());
     SWRLBuiltInUtil.checkForUnboundArguments(arguments);
 
-    propertyName = SWRLBuiltInUtil.getArgumentAsAString(0, arguments);
+    propertyName = SWRLBuiltInUtil.getArgumentAsAPropertyName(0, arguments);
 
     if (!getInvokingBridge().hasMapper()) return false;
 
@@ -112,7 +112,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
       if (!axioms.isEmpty()) getInvokingBridge().createOWLObjectPropertyAssertionAxioms(axioms);
 
     } catch (SWRLRuleEngineBridgeException e) {
-      throw new BuiltInException("error mapping OWL object property '" + propertyName + "'");
+      throw new BuiltInException("error mapping OWL object property '" + propertyName + "': " + e.getMessage());
     } // try
 
     return !axioms.isEmpty();
@@ -131,19 +131,20 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
     SWRLBuiltInUtil.checkNumberOfArgumentsAtLeast(1, arguments.size());
     SWRLBuiltInUtil.checkForUnboundArguments(arguments);
 
-    propertyName = SWRLBuiltInUtil.getArgumentAsAString(0, arguments);
+    propertyName = SWRLBuiltInUtil.getArgumentAsAPropertyName(0, arguments);
 
     if (!getInvokingBridge().hasMapper()) return false;
 
-    hasSubject = (arguments.size() > 1);
-    hasValue = (arguments.size() > 2);
-
+    hasSubject = (arguments.size() > 1) && SWRLBuiltInUtil.isArgumentAnIndividual(1, arguments);
+    hasValue = (arguments.size() > 2 || (arguments.size() > 1 && SWRLBuiltInUtil.isArgumentADatatypeValue(1, arguments)));
     try {
-
       owlProperty = BridgeFactory.createOWLDatatypeProperty(propertyName);
       
       if (hasSubject) subjectOWLIndividual = BridgeFactory.createOWLIndividual(SWRLBuiltInUtil.getArgumentAsAnIndividualName(1, arguments));
-      if (hasValue) value = BridgeFactory.createOWLDatatypeValue(SWRLBuiltInUtil.getArgumentAsAString(2, arguments)); // TODO
+      if (hasValue) {
+        if (hasSubject) value = SWRLBuiltInUtil.getArgumentAsAnOWLDatatypeValue(2, arguments);
+        else value = SWRLBuiltInUtil.getArgumentAsAnOWLDatatypeValue(1, arguments);
+      } // if
       
       mapper = getInvokingBridge().getMapper();
       
@@ -151,11 +152,12 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
       
       if (!hasSubject && !hasValue) axioms = mapper.mapOWLDatatypeProperty(owlProperty);
       else if (hasSubject && !hasValue) axioms = mapper.mapOWLDatatypeProperty(owlProperty, subjectOWLIndividual);
+      else if (!hasSubject && hasValue) axioms = mapper.mapOWLDatatypeProperty(owlProperty, value);
       else axioms = mapper.mapOWLDatatypeProperty(owlProperty, subjectOWLIndividual, value);
       
       if (!axioms.isEmpty()) getInvokingBridge().createOWLDatatypePropertyAssertionAxioms(axioms);
     } catch (SWRLRuleEngineBridgeException e) {
-      throw new BuiltInException("error mapping OWL datatype property '" + propertyName + "'");
+      throw new BuiltInException("error mapping OWL datatype property '" + propertyName + "': " + e.getMessage());
     } // try
 
     return !axioms.isEmpty();

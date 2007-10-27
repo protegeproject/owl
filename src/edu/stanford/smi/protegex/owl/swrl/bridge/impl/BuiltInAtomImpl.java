@@ -34,6 +34,12 @@ public class BuiltInAtomImpl extends AtomImpl implements BuiltInAtom
     arguments = buildArgumentList(owlModel, atom);
   } // BuiltInAtomImpl
 
+  public BuiltInAtomImpl(String builtInName, List<BuiltInArgument> arguments)
+  {
+    this.builtInName = builtInName;
+    this.arguments = arguments;
+  } // BuiltInArgument
+
   public String getBuiltInName() { return builtInName; }  
   public List<BuiltInArgument> getArguments() { return arguments; }
   public int getNumberOfArguments() { return arguments.size(); }

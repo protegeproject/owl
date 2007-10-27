@@ -5,7 +5,7 @@ public class InvalidBuiltInArgumentException extends BuiltInException
 {
   public InvalidBuiltInArgumentException(int argumentNumber, String message) 
   { 
-    super(message + " for argument #" + argumentNumber);
+    super(message + " for (0-offset) argument #" + argumentNumber);
   } // InvalidBuiltInArgumentException
 
   public InvalidBuiltInArgumentException(String message) 

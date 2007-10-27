@@ -6,7 +6,7 @@ import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.*;
 
 import edu.stanford.smi.protegex.owl.swrl.bridge.impl.*;
 
-import java.util.List;
+import java.util.*;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
@@ -217,6 +217,13 @@ public class SWRLBuiltInUtil
     return arguments.get(argumentNumber) instanceof IndividualArgument;
   } // isArgumentAnIndividual
 
+  public static boolean isArgumentADatatypeValue(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException
+  {
+    checkArgumentNumber(argumentNumber, arguments);
+
+    return arguments.get(argumentNumber) instanceof DatatypeValueArgument;
+  } // isArgumentADatatypeValue
+
   public static void checkThatArgumentIsAnIndividual(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException
   {
     if (!isArgumentAnIndividual(argumentNumber, arguments)) {
@@ -224,6 +231,14 @@ public class SWRLBuiltInUtil
                                                 makeInvalidArgumentTypeMessage(arguments.get(argumentNumber), "individual"));
     } // if
   } // checkThatArgumentIsAnIndividual
+
+  public static void checkThatArgumentIsAnOWLDatatypeValue(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException
+  {
+    if (!isArgumentADatatypeValue(argumentNumber, arguments)) {
+      throw new InvalidBuiltInArgumentException(argumentNumber, 
+                                                makeInvalidArgumentTypeMessage(arguments.get(argumentNumber), "datatype value"));
+    } // if
+  } // checkThatArgumentIsAnOWLDatatypeValue
 
   public static String getArgumentAsAnIndividualName(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException
   {
@@ -238,6 +253,27 @@ public class SWRLBuiltInUtil
 
     return ((OWLClass)arguments.get(argumentNumber)).getClassName();
   } // getArgumentAsAClassName
+
+  public static OWLClass getArgumentAsAnOWLClass(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException
+  {
+    checkThatArgumentIsAClass(argumentNumber, arguments);
+
+    return (OWLClass)arguments.get(argumentNumber);
+  } // getArgumentAsAnOWLClass
+
+  public static OWLProperty getArgumentAsAnOWLProperty(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException
+  {
+    checkThatArgumentIsAProperty(argumentNumber, arguments);
+
+    return (OWLProperty)arguments.get(argumentNumber);
+  } // getArgumentAsAnOWLProperty
+
+  public static OWLDatatypeValue getArgumentAsAnOWLDatatypeValue(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException
+  {
+    checkThatArgumentIsAnOWLDatatypeValue(argumentNumber, arguments);
+
+    return (OWLDatatypeValue)arguments.get(argumentNumber);
+  } // getArgumentAsAnOWLDatatypeValue
 
   public static String getArgumentAsAResourceName(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException
   {
@@ -648,5 +684,91 @@ public class SWRLBuiltInUtil
 
     return pattern;
   } // createInvocationPattern
+
+  public static void checkForUnboundArguments(String ruleName, String builtInName, List<BuiltInArgument> arguments) throws BuiltInException
+  {
+    int argumentNumber = 0;
+
+    for (BuiltInArgument argument : arguments) {
+      if (argument.isUnbound())  throw new BuiltInException("built-in '" + builtInName + "' in rule '" + ruleName + "' " +
+                                                            "returned with unbound argument ?" + argument.getVariableName());
+      else if (argument instanceof MultiArgument && ((MultiArgument)argument).hasNoArguments())
+        throw new BuiltInException("built-in '" + builtInName + "' in rule '" + ruleName + "' " +
+                                   "returned with empty multi-argument ?" + argument.getVariableName());
+      argumentNumber++;
+    } // for
+  } // checkForUnboundArguments
+
+  public static void generateBuiltInBindings(SWRLRuleEngineBridge bridge, String ruleName, String builtInName, int builtInIndex, List<BuiltInArgument> arguments)
+    throws BuiltInException
+  {
+    List<Integer> multiArgumentIndexes = getMultiArgumentIndexes(arguments);
+    
+    if (multiArgumentIndexes.isEmpty()) 
+      bridge.generateBuiltInBinding(ruleName, builtInName, builtInIndex, arguments); // No multi-arguments - do a simple bind
+    else {
+      List<Integer> multiArgumentCounts = new ArrayList<Integer>();
+      List<Integer> multiArgumentSizes = new ArrayList<Integer>();
+      List<BuiltInArgument> argumentsPattern;
+
+      for (int i = 0; i < multiArgumentIndexes.size(); i++) multiArgumentCounts.add(Integer.valueOf(0));
+      for (int i = 0; i < multiArgumentIndexes.size(); i++) {
+        MultiArgument multiArgument = (MultiArgument)arguments.get(multiArgumentIndexes.get(i).intValue());
+        multiArgumentSizes.add(Integer.valueOf(multiArgument.getNumberOfArguments()));
+      } // for
+
+      do {
+        argumentsPattern = generateArgumentsPattern(arguments, multiArgumentCounts);
+        bridge.generateBuiltInBinding(ruleName, builtInName, builtInIndex, argumentsPattern); // Call the rule engine method.
+      } while (!nextMultiArgumentCounts(multiArgumentCounts, multiArgumentSizes));
+    } // if
+  } // generateBuiltInBindings
+
+  private static boolean nextMultiArgumentCounts(List<Integer> multiArgumentCounts, List<Integer> multiArgumentSizes)
+  {
+    if (multiArgumentSizes.isEmpty()) return true;
+    
+    if (nextMultiArgumentCounts(multiArgumentCounts.subList(1, multiArgumentCounts.size()), 
+                                multiArgumentSizes.subList(1, multiArgumentSizes.size()))) {
+      // No more permutations of rest of list so increment this count and if we are not at the end set rest of the list to begin at 0 again.
+      int count = multiArgumentCounts.get(0).intValue();
+      int size = multiArgumentSizes.get(0).intValue();
+      
+      if (++count == size) return true;
+
+      multiArgumentCounts.set(0, Integer.valueOf(count));
+
+      for (int i = 1; i < multiArgumentCounts.size(); i++) multiArgumentCounts.set(i, Integer.valueOf(0));
+    } // if
+    return false;
+  } // nextMultiArgumentCounts
+
+  private static List<BuiltInArgument> generateArgumentsPattern(List<BuiltInArgument> arguments, List<Integer> multiArgumentCounts)
+  {
+    List<BuiltInArgument> result = new ArrayList<BuiltInArgument>();
+    int multiArgumentIndex = 0;
+
+    for (BuiltInArgument argument: arguments) {
+      if (argument instanceof MultiArgument) {
+        MultiArgument multiArgument = (MultiArgument)argument;
+        result.add(multiArgument.getArguments().get((multiArgumentCounts.get(multiArgumentIndex).intValue())));
+        multiArgumentIndex++;
+      } else result.add(argument);
+    } // for
+
+    return result;
+  } // generateArgumentsPattern
+    
+  private static List<Integer> getMultiArgumentIndexes(List<BuiltInArgument> arguments)
+  {
+    List<Integer> result = new ArrayList<Integer>();
+
+    for (int i = 0; i < arguments.size(); i++) 
+      if (arguments.get(i) instanceof MultiArgument) result.add(Integer.valueOf(i));
+
+    return result;
+  } // getMultiArgumentIndexes
+
+
 
 } // SWRLBuiltInUtil
