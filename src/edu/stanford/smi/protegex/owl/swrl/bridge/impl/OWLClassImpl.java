@@ -21,7 +21,7 @@ public class OWLClassImpl extends BuiltInArgumentImpl implements OWLClass, Seria
   private String className;
   private Set<String> directSuperClassNames, directSubClassNames, equivalentClassNames;
     
-  public OWLClassImpl(OWLModel owlModel, String className) throws SWRLRuleEngineBridgeException
+  public OWLClassImpl(OWLModel owlModel, String className) throws OWLFactoryException
   {
     edu.stanford.smi.protegex.owl.model.OWLNamedClass owlNamedClass;
 

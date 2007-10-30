@@ -20,7 +20,7 @@ import java.util.*;
  ** Implementation library for SWRL temporal built-ins. See <a href="http://protege.cim3.net/cgi-bin/wiki.pl?SWRLTemporalBuiltIns">here</a>
  ** for documentation on this built-in library.
  */
-public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
+public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
 {
   public static final String TemporalLibraryName = "SWRLTemporalBuiltIns";
   
@@ -106,7 +106,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
       } // if
 
       if (SWRLBuiltInUtil.isUnboundArgument(0, arguments)) {
-        arguments.set(0, BridgeFactory.createOWLDatatypeValue(operationResult)); // Bind the result to the first parameter
+        arguments.set(0, OWLFactory.createOWLDatatypeValue(operationResult)); // Bind the result to the first parameter
         result = true;
       } else {
         long argument1 = SWRLBuiltInUtil.getArgumentAsALong(0, arguments);
@@ -141,7 +141,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
       operationResult.addGranuleCount(granuleCount, granularity);
 
       if (SWRLBuiltInUtil.isUnboundArgument(0, arguments)) {
-        arguments.set(0, BridgeFactory.createOWLDatatypeValue(new DateTime(operationResult.toString()))); // Bind the result to the first parameter
+        arguments.set(0, OWLFactory.createOWLDatatypeValue(new DateTime(operationResult.toString()))); // Bind the result to the first parameter
         result = true;
       } else {
         Instant argument1 = getArgumentAsAnInstant(0, arguments, granularity);

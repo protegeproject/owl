@@ -12,7 +12,7 @@ public  class OWLObjectPropertyImpl extends OWLPropertyImpl implements OWLObject
   public OWLObjectPropertyImpl(String propertyName, Set<String> domainClassNames, 
                                Set<String> rangeClassNames, Set<String> superPropertyNames, Set<String> subPropertyNames,
                                Set<String> equivalentPropertyNames) 
-    throws SWRLRuleEngineBridgeException
+    throws OWLFactoryException
   {
     super(propertyName, domainClassNames, rangeClassNames, superPropertyNames, subPropertyNames, equivalentPropertyNames);
   } // OWLObjectPropertyImpl

@@ -11,33 +11,32 @@ import edu.stanford.smi.protegex.owl.model.OWLModel;
 
 import java.util.*;
 
-
 /**
  ** The SWRL Rule Engine Bridge provides a mechanism to incorporate rule engines into Protege-OWL to execute SWRL rules. <p>
  **
- ** Detailed documentation for this class can be found <a href="http://protege.cim3.net/cgi-bin/wiki.pl?SWRLRuleEngineBridgeFAQ">here</a>.
+ ** Detailed documentation for this mechanism can be found <a href="http://protege.cim3.net/cgi-bin/wiki.pl?SWRLRuleEngineBridgeFAQ">here</a>.
  */
 public interface SWRLRuleEngineBridge extends SWRLRuleEngine, SQWRLQueryEngine
 {
   void resetBridge() throws SWRLRuleEngineBridgeException;
+  void initializeRuleEngine() throws SWRLRuleEngineBridgeException;
+  void runRuleEngine() throws SWRLRuleEngineBridgeException;
 
   void defineRule(SWRLRule rule) throws SWRLRuleEngineBridgeException;
   void defineClass(OWLClass owlClass) throws SWRLRuleEngineBridgeException;
   void defineIndividual(OWLIndividual owlIndividual) throws SWRLRuleEngineBridgeException;
   void defineAxiom(OWLAxiom axiom) throws SWRLRuleEngineBridgeException;
-  void initializeRuleEngine() throws SWRLRuleEngineBridgeException;
-  void generateBuiltInBinding(String ruleName, String builtInName, int builtInIndex, List<BuiltInArgument> arguments) 
-    throws BuiltInException;
-  void runRuleEngine() throws SWRLRuleEngineBridgeException;
 
   boolean invokeSWRLBuiltIn(String ruleName, String builtInName, int builtInIndex, List<BuiltInArgument> arguments)
     throws BuiltInException;
+  void generateBuiltInBinding(String ruleName, String builtInName, int builtInIndex, List<BuiltInArgument> arguments) 
+    throws BuiltInException;
 
-  // The infer methods asert new axioms into the bridge
+  // The infer methods can be used by rule engines to assert axioms that they infer into the bridge
   void inferPropertyAssertionAxiom(OWLPropertyAssertionAxiom owlPropertyAssertionAxiom) throws SWRLRuleEngineBridgeException;
   void inferIndividual(OWLIndividual owlIndividual) throws SWRLRuleEngineBridgeException;
   
-  // The create methods can be used by built-ins to assert new axioms into a bridge and also the underlying engine
+  // The create methods can be used by built-ins to assert new axioms into a bridge and also reflect them in the underlying engine
   OWLIndividual createOWLIndividual() throws SWRLRuleEngineBridgeException;
   void createOWLIndividual(OWLIndividual owlIndividual) throws SWRLRuleEngineBridgeException;
   OWLIndividual createOWLIndividual(OWLClass owlClass) throws SWRLRuleEngineBridgeException;

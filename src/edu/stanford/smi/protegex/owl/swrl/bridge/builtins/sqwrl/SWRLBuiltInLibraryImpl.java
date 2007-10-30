@@ -17,7 +17,7 @@ import java.util.*;
  ** Implementation library for SQWRL query built-ins. See <a href="http://protege.cim3.net/cgi-bin/wiki.pl?SQWRL">here</a> for documentation
  ** on this built-in library.
  */
-public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
+public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
 {
   private HashMap<String, Set<BuiltInArgument>> sets;
   private HashMap<String, List<BuiltInArgument>> lists;
@@ -165,7 +165,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
       set.add(value); if (!sets.containsKey(collectionID)) sets.put(collectionID, set);
     } // if
     
-      if (SWRLBuiltInUtil.isUnboundArgument(0, arguments)) arguments.set(0, BridgeFactory.createOWLDatatypeValue(collectionID));
+      if (SWRLBuiltInUtil.isUnboundArgument(0, arguments)) arguments.set(0, OWLFactory.createOWLDatatypeValue(collectionID));
 
     return true;
   } // makeSet
@@ -183,7 +183,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
       list.add(value); if (!lists.containsKey(collectionID)) lists.put(collectionID, list);
     } // if
     
-    if (SWRLBuiltInUtil.isUnboundArgument(0, arguments)) arguments.set(0, BridgeFactory.createOWLDatatypeValue(collectionID));
+    if (SWRLBuiltInUtil.isUnboundArgument(0, arguments)) arguments.set(0, OWLFactory.createOWLDatatypeValue(collectionID));
 
     return true;
   } // makeList
@@ -201,7 +201,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
       sortedSet.add(value); if (!sortedSets.containsKey(collectionID)) sortedSets.put(collectionID, sortedSet);
     } // if
  
-    if (SWRLBuiltInUtil.isUnboundArgument(0, arguments)) arguments.set(0, BridgeFactory.createOWLDatatypeValue(collectionID));
+    if (SWRLBuiltInUtil.isUnboundArgument(0, arguments)) arguments.set(0, OWLFactory.createOWLDatatypeValue(collectionID));
 
     return true;
   } // makeSortedSet
@@ -231,7 +231,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
     else throw new BuiltInException("internal error: no collection found for ID '" + collectionID + "'");
 
     if (SWRLBuiltInUtil.isUnboundArgument(0, arguments)) {
-      arguments.set(0, BridgeFactory.createOWLDatatypeValue(size)); // Bind the result to the first parameter
+      arguments.set(0, OWLFactory.createOWLDatatypeValue(size)); // Bind the result to the first parameter
       result = true;
     } else {
       long argument1 = SWRLBuiltInUtil.getArgumentAsALong(0, arguments);

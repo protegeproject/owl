@@ -41,17 +41,17 @@ import java.io.Serializable;
  ** result.configured();<>p<p>
  **
  ** result.openRow();<p>
- ** result.addData(new BridgeFactory.createOWLIndividual("Fred"));<p>
+ ** result.addData(new OWLFactory.createOWLIndividual("Fred"));<p>
  ** result.addData(new Literal(27));<p>
  ** result.closeRow();<p><p>
  **
  ** result.openRow();<p>
- ** result.addData(new BridgeFactory.createOWLIndividual("Joe"));<p>
+ ** result.addData(new OWLFactory.createOWLIndividual("Joe"));<p>
  ** result.addData(new Literal(34));<p>
  ** result.closeRow();<p><p>
  **
  ** result.openRow();<p>
- ** result.addData(new BridgeFactory.createOWLIndividual("Joe"));<p>
+ ** result.addData(new OWLFactory.createOWLIndividual("Joe"));<p>
  ** result.addData(new Literal(21));<p>
  ** result.closeRow();<p><p>
  ** 
@@ -723,7 +723,7 @@ public class ResultImpl implements ResultGenerator, SQWRLResult, Serializable
       sum = sum.add(value);
     } // for
 
-    return BridgeFactory.createOWLDatatypeValue(sum);
+    return OWLFactory.createOWLDatatypeValue(sum);
   } // sum
 
   // We return a BigDecimal object for the moment.
@@ -749,12 +749,12 @@ public class ResultImpl implements ResultGenerator, SQWRLResult, Serializable
       sum = sum.add(value);
     } // for
 
-    return BridgeFactory.createOWLDatatypeValue(sum.divide(new BigDecimal(count), BigDecimal.ROUND_DOWN));
+    return OWLFactory.createOWLDatatypeValue(sum.divide(new BigDecimal(count), BigDecimal.ROUND_DOWN));
   } // sum
 
   private DatatypeValue count(List<ResultValue> values) throws SQWRLException
   {
-    return BridgeFactory.createOWLDatatypeValue(values.size());
+    return OWLFactory.createOWLDatatypeValue(values.size());
   } // count
 
   // Quick and dirty: all checking left to the Java runtime.

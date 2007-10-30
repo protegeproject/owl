@@ -18,7 +18,7 @@ import java.lang.Math.*;
  **
  ** See <a href="http://protege.cim3.net/cgi-bin/wiki.pl?SWRLBuiltInBridge">here</a> for documentation on defining SWRL built-in libraries.
  */
-public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
+public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
 {
   private static String SWRLBLibraryName = "SWRLCoreBuiltIns";
 
@@ -250,7 +250,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
         throw new InvalidBuiltInArgumentException(1, "expecting a Boolean");
 
       boolean operationResult = !SWRLBuiltInUtil.getArgumentAsABoolean(1, arguments);
-      arguments.set(0, BridgeFactory.createOWLDatatypeValue(operationResult)); // Bind the result to the first parameter
+      arguments.set(0, OWLFactory.createOWLDatatypeValue(operationResult)); // Bind the result to the first parameter
       result = true;
     } else {
       if (!SWRLBuiltInUtil.areAllArgumentsBooleans(arguments))
@@ -289,7 +289,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
     } // for
 
     if (SWRLBuiltInUtil.isUnboundArgument(0, arguments)) {
-      arguments.set(0, BridgeFactory.createOWLDatatypeValue(operationResult)); // Bind the result to the first parameter
+      arguments.set(0, OWLFactory.createOWLDatatypeValue(operationResult)); // Bind the result to the first parameter
       result = true;
     } else {
       String argument1 = SWRLBuiltInUtil.getArgumentAsAString(0, arguments);
@@ -318,7 +318,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
     } else operationResult = argument2.substring(startIndex);
 
     if (SWRLBuiltInUtil.hasUnboundArguments(arguments)) {
-      arguments.set(0, BridgeFactory.createOWLDatatypeValue(operationResult)); // Bind the result to the first parameter
+      arguments.set(0, OWLFactory.createOWLDatatypeValue(operationResult)); // Bind the result to the first parameter
       result = true;
     } else {
       String argument1 = SWRLBuiltInUtil.getArgumentAsAString(0, arguments);
@@ -340,7 +340,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
     operationResult = argument2.length();
 
     if (SWRLBuiltInUtil.hasUnboundArguments(arguments)) {
-      arguments.set(0, BridgeFactory.createOWLDatatypeValue(operationResult)); // Bind the result to the first parameter
+      arguments.set(0, OWLFactory.createOWLDatatypeValue(operationResult)); // Bind the result to the first parameter
       result = true;
     } else {
       String argument1 = SWRLBuiltInUtil.getArgumentAsAString(0, arguments);
@@ -361,7 +361,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
     operationResult = argument2.toUpperCase();
 
     if (SWRLBuiltInUtil.hasUnboundArguments(arguments)) {
-      arguments.set(0, BridgeFactory.createOWLDatatypeValue(operationResult)); // Bind the result to the first parameter
+      arguments.set(0, OWLFactory.createOWLDatatypeValue(operationResult)); // Bind the result to the first parameter
       result = true;
     } else {
       String argument1 = SWRLBuiltInUtil.getArgumentAsAString(0, arguments);
@@ -383,7 +383,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
     operationResult = argument2.toLowerCase();
 
     if (SWRLBuiltInUtil.hasUnboundArguments(arguments)) {
-      arguments.set(0, BridgeFactory.createOWLDatatypeValue(operationResult)); // Bind the result to the first parameter
+      arguments.set(0, OWLFactory.createOWLDatatypeValue(operationResult)); // Bind the result to the first parameter
       result = true;
     } else {
       String argument1 = SWRLBuiltInUtil.getArgumentAsAString(0, arguments);
@@ -498,7 +498,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
     String operationResult = m.replaceAll(replacement);
 
     if (SWRLBuiltInUtil.isUnboundArgument(0, arguments)) {
-      arguments.set(0, BridgeFactory.createOWLDatatypeValue(operationResult)); 
+      arguments.set(0, OWLFactory.createOWLDatatypeValue(operationResult)); 
       result = true;
     } else {
       String output = SWRLBuiltInUtil.getArgumentAsAString(0, arguments);
@@ -522,7 +522,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
     String operationResult = m.replaceAll(" ");
 
     if (SWRLBuiltInUtil.isUnboundArgument(0, arguments)) {
-      arguments.set(0, BridgeFactory.createOWLDatatypeValue(operationResult)); 
+      arguments.set(0, OWLFactory.createOWLDatatypeValue(operationResult)); 
       result = true;
     } else {
       String output = SWRLBuiltInUtil.getArgumentAsAString(0, arguments);
@@ -984,14 +984,14 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
     
     if (hasUnbound1stArgument) { // Bind the result to the first argument.
       if (SWRLBuiltInUtil.isShortMostPreciseArgument(arguments.subList(1, arguments.size()))) 
-        arguments.set(0, BridgeFactory.createOWLDatatypeValue((short)operationResult)); 
+        arguments.set(0, OWLFactory.createOWLDatatypeValue((short)operationResult)); 
       else if (SWRLBuiltInUtil.isIntegerMostPreciseArgument(arguments.subList(1, arguments.size()))) 
-        arguments.set(0, BridgeFactory.createOWLDatatypeValue((int)operationResult));
+        arguments.set(0, OWLFactory.createOWLDatatypeValue((int)operationResult));
       else if (SWRLBuiltInUtil.isFloatMostPreciseArgument(arguments.subList(1, arguments.size()))) 
-        arguments.set(0, BridgeFactory.createOWLDatatypeValue((float)operationResult));
+        arguments.set(0, OWLFactory.createOWLDatatypeValue((float)operationResult));
       else if (SWRLBuiltInUtil.isLongMostPreciseArgument(arguments.subList(1, arguments.size()))) 
-        arguments.set(0, BridgeFactory.createOWLDatatypeValue((long)operationResult));
-      else arguments.set(0, BridgeFactory.createOWLDatatypeValue((double)operationResult));
+        arguments.set(0, OWLFactory.createOWLDatatypeValue((long)operationResult));
+      else arguments.set(0, OWLFactory.createOWLDatatypeValue((double)operationResult));
       result = true;
     } else result = (argument1 == operationResult);
 

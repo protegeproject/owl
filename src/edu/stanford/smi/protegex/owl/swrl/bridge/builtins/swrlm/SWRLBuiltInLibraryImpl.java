@@ -15,7 +15,7 @@ import org.nfunk.jep.JEP; // Expecting JEP 2.4.0; may work with other versions b
  **
  ** See <a href="http://protege.cim3.net/cgi-bin/wiki.pl?SWRLBuiltInBridge">here</a> for documentation on defining SWRL built-in libraries.
  */
-public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
+public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
 {
   private static String SWRLMLibraryName = "SWRLTabMathematicalBuiltIns";
   private JEP jep = null;
@@ -45,7 +45,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
 
     if (SWRLBuiltInUtil.isUnboundArgument(0, arguments)) {
       argument1 = java.lang.Math.sqrt(argument2);
-      arguments.set(0, BridgeFactory.createOWLDatatypeValue(argument2));
+      arguments.set(0, OWLFactory.createOWLDatatypeValue(argument2));
       result = true;
     } else {
       argument1 = SWRLBuiltInUtil.getArgumentAsADouble(0, arguments);
@@ -70,7 +70,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
 
     if (SWRLBuiltInUtil.isUnboundArgument(0, arguments)) {
       argument1 = java.lang.Math.log(argument2);
-      arguments.set(0, BridgeFactory.createOWLDatatypeValue(argument2));
+      arguments.set(0, OWLFactory.createOWLDatatypeValue(argument2));
       result = true;
     } else {
       argument1 = SWRLBuiltInUtil.getArgumentAsADouble(0, arguments);
@@ -116,7 +116,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
     if (getJEP().hasError()) throw new BuiltInException("exception parsing expression '" + expression + "': " + getJEP().getErrorInfo());
 
     if (SWRLBuiltInUtil.isUnboundArgument(0, arguments)) {
-      arguments.set(0, BridgeFactory.createOWLDatatypeValue(value));
+      arguments.set(0, OWLFactory.createOWLDatatypeValue(value));
       result = true;
     } else {
       result = value == SWRLBuiltInUtil.getArgumentAsADouble(0, arguments);

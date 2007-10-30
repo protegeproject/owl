@@ -25,11 +25,11 @@ public class BuiltInAtomImpl extends AtomImpl implements BuiltInAtom
   private int builtInIndex = -1; // Index of this built-in atom in rule body; left-to-right, first built-in index is 0, second in 1, and so on
   private boolean sqwrlVariablesUsed = false, isASQWRLMakeCollection = false;
   
-  public BuiltInAtomImpl(OWLModel owlModel, SWRLBuiltinAtom atom) throws SWRLRuleEngineBridgeException
+  public BuiltInAtomImpl(OWLModel owlModel, SWRLBuiltinAtom atom) throws OWLFactoryException, DatatypeConversionException
   {
     builtInName = (atom.getBuiltin() != null) ? atom.getBuiltin().getName() : null;
 
-    if (builtInName == null) throw new SWRLRuleEngineBridgeException("empty built-in name in SWRLBuiltinAtom: " + atom);
+    if (builtInName == null) throw new OWLFactoryException("empty built-in name in SWRLBuiltinAtom: " + atom);
 
     arguments = buildArgumentList(owlModel, atom);
   } // BuiltInAtomImpl
@@ -121,7 +121,7 @@ public class BuiltInAtomImpl extends AtomImpl implements BuiltInAtom
     if (argumentNumber < 0 || argumentNumber > arguments.size()) throw new BuiltInException("invalid (0-offset) argument #" + argumentNumber);
   } // checkArgumentNumber  
 
-  private List<BuiltInArgument> buildArgumentList(OWLModel owlModel, SWRLBuiltinAtom builtInAtom) throws SWRLRuleEngineBridgeException
+  private List<BuiltInArgument> buildArgumentList(OWLModel owlModel, SWRLBuiltinAtom builtInAtom) throws OWLFactoryException, DatatypeConversionException
   {
     List<BuiltInArgument> result = new ArrayList<BuiltInArgument>();
     RDFList rdfList = builtInAtom.getArguments();
@@ -131,24 +131,24 @@ public class BuiltInAtomImpl extends AtomImpl implements BuiltInAtom
       Object o = iterator.next();
       if (o instanceof SWRLVariable) {
         SWRLVariable variable = (SWRLVariable)o;
-	BuiltInArgument builtInArgument = BridgeFactory.createVariableBuiltInArgument(variable.getName());
+	BuiltInArgument builtInArgument = OWLFactory.createVariableBuiltInArgument(variable.getName());
         result.add(builtInArgument);
         addReferencedVariableName(variable.getName());
       } else if (o instanceof edu.stanford.smi.protegex.owl.model.OWLIndividual) {
         edu.stanford.smi.protegex.owl.model.OWLIndividual individual = (edu.stanford.smi.protegex.owl.model.OWLIndividual)o;
-        result.add(BridgeFactory.createOWLIndividual(individual));
+        result.add(OWLFactory.createOWLIndividual(individual));
         addReferencedIndividualName(individual.getName());
       } else  if (o instanceof OWLNamedClass) {
         OWLNamedClass cls = (OWLNamedClass)o;
-        result.add(BridgeFactory.createOWLClass(owlModel, cls.getName()));
+        result.add(OWLFactory.createOWLClass(owlModel, cls.getName()));
       } else  if (o instanceof edu.stanford.smi.protegex.owl.model.OWLProperty) {
         edu.stanford.smi.protegex.owl.model.OWLProperty property = (edu.stanford.smi.protegex.owl.model.OWLProperty)o;
-        if (property.isObjectProperty()) result.add(BridgeFactory.createOWLObjectProperty(property.getName()));
-        else result.add(BridgeFactory.createOWLDatatypeProperty(property.getName()));
-      } else  if (o instanceof RDFSLiteral) result.add(BridgeFactory.createOWLDatatypeValue(owlModel, (RDFSLiteral)o));
-      else  if (o instanceof Number) result.add(BridgeFactory.createOWLDatatypeValue((Number)o));
-      else  if (o instanceof String) result.add(BridgeFactory.createOWLDatatypeValue((String)o));
-      else throw new SWRLRuleEngineBridgeException("unknown type for argument '" + o + "'");
+        if (property.isObjectProperty()) result.add(OWLFactory.createOWLObjectProperty(property.getName()));
+        else result.add(OWLFactory.createOWLDatatypeProperty(property.getName()));
+      } else  if (o instanceof RDFSLiteral) result.add(OWLFactory.createOWLDatatypeValue(owlModel, (RDFSLiteral)o));
+      else  if (o instanceof Number) result.add(OWLFactory.createOWLDatatypeValue((Number)o));
+      else  if (o instanceof String) result.add(OWLFactory.createOWLDatatypeValue((String)o));
+      else throw new OWLFactoryException("unknown type for argument '" + o + "'");
     } // while
     
     return result;

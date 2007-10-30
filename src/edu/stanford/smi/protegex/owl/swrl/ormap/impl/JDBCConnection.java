@@ -2,6 +2,7 @@
 package edu.stanford.smi.protegex.owl.swrl.ormap.impl;
 
 import edu.stanford.smi.protegex.owl.swrl.ormap.*;
+import edu.stanford.smi.protegex.owl.swrl.ormap.exceptions.*;
 
 import java.sql.*;
 import java.util.*;
@@ -12,16 +13,20 @@ public class JDBCConnection
   private Statement queryStmt;
   private DatabaseMetaData dbmd;
 
-  public JDBCConnection(String jdbcConnectionString, String id, String password) throws SQLException
+  public JDBCConnection(String jdbcConnectionString, String id, String password) throws JDBCException
   {
-    connection = DriverManager.getConnection(jdbcConnectionString, id, password);
-
-    queryStmt = connection.createStatement();
-
-    dbmd = connection.getMetaData();
+    try {
+      connection = DriverManager.getConnection(jdbcConnectionString, id, password);
+      
+      queryStmt = connection.createStatement();
+      
+      dbmd = connection.getMetaData();
+    } catch (SQLException e) {
+      throw new JDBCException("error creating JDBC connection '" + jdbcConnectionString + "': " + e.getMessage());
+    } // try
   } // JDBCConnection
 
-  public static String getConnectionString(String jdbcDriverName, String serverName, String databaseName, int portNumber) throws SQLException
+  public static String getConnectionString(String jdbcDriverName, String serverName, String databaseName, int portNumber) throws JDBCException
   {
     String url = "";
 
@@ -36,8 +41,8 @@ public class JDBCConnection
     } else if (jdbcDriverName.equals("com.mysql.jdbc.Driver")) {
       url = new String("jdbc:mysql://" + serverName + ":" + portNumber + "/" + databaseName);
     } else {
-      if (jdbcDriverName.equals("")) throw new SQLException("no JDBC driver specified");
-      else throw new SQLException("unknown JDBC driver '" + jdbcDriverName + "'");
+      if (jdbcDriverName.equals("")) throw new JDBCException("no JDBC driver specified");
+      else throw new JDBCException("unknown JDBC driver '" + jdbcDriverName + "'");
     } // if
 
     loadDrivers(jdbcDriverName);
@@ -45,37 +50,37 @@ public class JDBCConnection
     return url;
   } // getConnectionString
 
-  public static void loadDrivers(String jdbcDriverName) throws SQLException
+  public static void loadDrivers(String jdbcDriverName) throws JDBCException
   {
     if (jdbcDriverName.equals("SQLServerJDBCDriver2000")) {
       try { Class.forName("com.microsoft.jdbc.sqlserver.SQLServerDriver");
       } catch (Exception e) {
-	throw new SQLException("failed to load Microsoft SQL Server 2000 JDBC driver");
+	throw new JDBCException("failed to load Microsoft SQL Server 2000 JDBC driver");
       } // try
     } else if (jdbcDriverName.equals("SQLServerJDBCDriver2005")) {
       try { Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
       } catch (Exception e) {
-	throw new SQLException("failed to load Microsoft SQL Server 2005 JDBC driver");
+	throw new JDBCException("failed to load Microsoft SQL Server 2005 JDBC driver");
       } // try
     } else if (jdbcDriverName.equals("SunJDBCDriver")) { 
       try { Class.forName("sun.jdbc.odbc.JdbcOdbcDriver");
       } catch (Exception e) {
-        throw new SQLException("failed to load Sun JDBC driver");
+        throw new JDBCException("failed to load Sun JDBC driver");
       } // try
     } else if (jdbcDriverName.equals("OracleThin")) { 
       try { Class.forName("oracle.jdbc.driver.OracleDriver");
       } catch (Exception e) {
-      throw new SQLException("failed to load Oracle JDBC driver");
+      throw new JDBCException("failed to load Oracle JDBC driver");
       } // try
     } else if (jdbcDriverName.equals("com.mysql.jdbc.Driver")) {
       try {
         Class.forName("com.mysql.jdbc.Driver").newInstance();
       } catch (Exception e) {
-	throw new SQLException("failed to load MySQL JDBC driver");
+	throw new JDBCException("failed to load MySQL JDBC driver");
       } // try
     } else {
-      if (jdbcDriverName.equals("")) throw new SQLException("no JDBC driver specified");
-      else throw new SQLException("unknown JDBC driver '" + jdbcDriverName + "'");
+      if (jdbcDriverName.equals("")) throw new JDBCException("no JDBC driver specified");
+      else throw new JDBCException("unknown JDBC driver '" + jdbcDriverName + "'");
     } // if
   } // getConnectionString
 

@@ -17,31 +17,31 @@ public class DatavaluedPropertyAtomImpl extends AtomImpl implements DatavaluedPr
   private String propertyName;
   private AtomArgument argument1, argument2;
   
-  public DatavaluedPropertyAtomImpl(OWLModel owlModel, SWRLDatavaluedPropertyAtom atom) throws SWRLRuleEngineBridgeException
+  public DatavaluedPropertyAtomImpl(OWLModel owlModel, SWRLDatavaluedPropertyAtom atom) throws OWLFactoryException, DatatypeConversionException
   {
     propertyName = (atom.getPropertyPredicate() != null) ? atom.getPropertyPredicate().getName() : null;
 
-    if (propertyName == null) throw new SWRLRuleEngineBridgeException("Empty property name in SWRLDatavaluedPropertyAtom: " + atom);
+    if (propertyName == null) throw new OWLFactoryException("empty property name in SWRLDatavaluedPropertyAtom: " + atom);
 
     if (atom.getArgument1() instanceof SWRLVariable) {
       SWRLVariable variable = (SWRLVariable)atom.getArgument1();
-      AtomArgument argument = BridgeFactory.createVariableAtomArgument(variable.getName());
+      AtomArgument argument = OWLFactory.createVariableAtomArgument(variable.getName());
       addReferencedVariableName(variable.getName());
       argument1 = argument;
     } else if (atom.getArgument1() instanceof OWLIndividual) {
       edu.stanford.smi.protegex.owl.model.OWLIndividual individual = (edu.stanford.smi.protegex.owl.model.OWLIndividual)atom.getArgument1();
-      argument1 = BridgeFactory.createOWLIndividual(individual.getName());
-    } else throw new SWRLRuleEngineBridgeException("unexpected argument first to datavalued property atom '" + atom.getBrowserText() + 
-                                                 "' - expecting variable or individual, got instance of " + atom.getArgument1().getClass());
+      argument1 = OWLFactory.createOWLIndividual(individual.getName());
+    } else throw new OWLFactoryException("unexpected argument first to datavalued property atom '" + atom.getBrowserText() + 
+                                         "' - expecting variable or individual, got instance of " + atom.getArgument1().getClass());
 
     if (atom.getArgument2() instanceof SWRLVariable) {
       SWRLVariable variable = (SWRLVariable)atom.getArgument2();
-      AtomArgument argument = BridgeFactory.createVariableAtomArgument(variable.getName());
+      AtomArgument argument = OWLFactory.createVariableAtomArgument(variable.getName());
       addReferencedVariableName(variable.getName());
       argument2 = argument;
-    } else if (atom.getArgument2() instanceof RDFSLiteral) argument2 = BridgeFactory.createOWLDatatypeValue(owlModel, (RDFSLiteral)atom.getArgument2());
-    else throw new SWRLRuleEngineBridgeException("unexpected second to datavalued property atom '" + atom.getBrowserText()  + 
-                                                 "' - expecting variable or literal, got instance of " + atom.getArgument2().getClass());
+    } else if (atom.getArgument2() instanceof RDFSLiteral) argument2 = OWLFactory.createOWLDatatypeValue(owlModel, (RDFSLiteral)atom.getArgument2());
+    else throw new OWLFactoryException("unexpected second to datavalued property atom '" + atom.getBrowserText()  + 
+                                       "' - expecting variable or literal, got instance of " + atom.getArgument2().getClass());
 
     // If argument1 is an individual, add its name to the referenced individuals list for this atom.
     if (argument1 instanceof OWLIndividual) addReferencedIndividualName(((OWLIndividual)argument1).getIndividualName());

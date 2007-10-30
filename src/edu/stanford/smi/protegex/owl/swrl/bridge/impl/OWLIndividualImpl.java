@@ -28,7 +28,7 @@ public class OWLIndividualImpl extends PropertyValueImpl implements OWLIndividua
    ** indirect defining classes, and classes that are equivalent to the classes that define it. These names may be used by a rule engine to
    ** assert class membership information for individuals.
    */
-  public OWLIndividualImpl(edu.stanford.smi.protegex.owl.model.OWLIndividual individual) throws SWRLRuleEngineBridgeException
+  public OWLIndividualImpl(edu.stanford.smi.protegex.owl.model.OWLIndividual individual) throws OWLFactoryException
   {
     initialize(individual.getName());
 
@@ -42,7 +42,7 @@ public class OWLIndividualImpl extends PropertyValueImpl implements OWLIndividua
    ** indirect defining classes, and classes that are equivalent to the classes that define it. These names may be used by a rule engine to
    ** assert class membership information for individuals.
    */
-  public OWLIndividualImpl(OWLModel owlModel, String individualName) throws SWRLRuleEngineBridgeException
+  public OWLIndividualImpl(OWLModel owlModel, String individualName) throws OWLFactoryException
   {
     edu.stanford.smi.protegex.owl.model.OWLIndividual individual = owlModel.getOWLIndividual(individualName);
     if (individual == null) throw new InvalidIndividualNameException(individualName);

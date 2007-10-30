@@ -3,7 +3,7 @@ package edu.stanford.smi.protegex.owl.swrl.bridge.builtins.query;
 
 import edu.stanford.smi.protegex.owl.swrl.bridge.BuiltInArgument;
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.BuiltInException;
-import edu.stanford.smi.protegex.owl.swrl.bridge.builtins.SWRLBuiltInLibrary;
+import edu.stanford.smi.protegex.owl.swrl.bridge.builtins.AbstractSWRLBuiltInLibrary;
 
 import java.util.*;
 
@@ -11,7 +11,7 @@ import java.util.*;
  ** This built-in library has been superceded by the SQWRL built-in library. See See <a
  ** href="http://protege.cim3.net/cgi-bin/wiki.pl?SQWRL">here</a> for documentation on this new library.
  */
-public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary 
+public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary 
 {
   private static String QueryLibraryName = "SWRLQueryBuiltIns";
 
