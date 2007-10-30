@@ -23,17 +23,19 @@ import java.awt.event.ActionListener;
 public class SQWRLQueryResultPanel extends JPanel 
 {
   private String queryName;
-  private SWRLRuleEngineBridge bridge;
+  private JTable table;
+  private SQWRLQueryEngine queryEngine;
+  private SQWRLResult result = null;
   private SQWRLQueryControlPanel controlPanel;
   private SQWRLQueryResultModel swrlQueryResultModel;
-  private JTable table;
   private static File currentDirectory = null;
 
-  public SQWRLQueryResultPanel(SWRLRuleEngineBridge bridge, SQWRLQueryControlPanel controlPanel, String queryName) 
+  public SQWRLQueryResultPanel(SQWRLQueryEngine queryEngine, String queryName, SQWRLResult result, SQWRLQueryControlPanel controlPanel) 
   {
+    this.queryEngine = queryEngine;
     this.queryName = queryName;
+    this.result = result;
     this.controlPanel = controlPanel;
-    this.bridge = bridge;
     
     swrlQueryResultModel = new SQWRLQueryResultModel();
     table = new JTable(swrlQueryResultModel);
@@ -45,10 +47,10 @@ public class SQWRLQueryResultPanel extends JPanel
     JButton saveResultButton = createButton("Save as CSV...", "Save the result as a CSV file...", new SaveResultActionListener());
     buttonsPanel.add(saveResultButton);
 
-    JButton runRulesButton = createButton("Rerun", "Rerun all the SWRL rules", new RunRulesActionListener());
-    buttonsPanel.add(runRulesButton);
+    JButton runQueriesButton = createButton("Rerun", "Rerun all the SQWRL queries", new RunQueriesActionListener());
+    buttonsPanel.add(runQueriesButton);
     
-    JButton closeTabButton = createButton("Close", "Close the tab for this rule", new CloseTabActionListener());
+    JButton closeTabButton = createButton("Close", "Close the tab for this query", new CloseTabActionListener());
     buttonsPanel.add(closeTabButton);
         
     JScrollPane scrollPane = new JScrollPane(table);
@@ -61,29 +63,33 @@ public class SQWRLQueryResultPanel extends JPanel
   
   public void validate() { swrlQueryResultModel.fireTableStructureChanged(); super.validate(); }
   
-  private class RunRulesActionListener implements ActionListener
+  private class RunQueriesActionListener implements ActionListener
   {
     public void actionPerformed(ActionEvent event) 
     {
-      SQWRLResult result;
+      result = null;
 
       try {
-        bridge.resetBridge();
-        bridge.importSWRLRulesAndOWLKnowledge();
-        bridge.runRuleEngine();
+        queryEngine.runSQWRLQueries();
 
-        result = bridge.getSQWRLResult(queryName);
+        result = queryEngine.getSQWRLResult(queryName);
 
         if (result == null || result.getNumberOfRows() == 0) {
-          controlPanel.appendText("No result returned for query '" + queryName + "' - closing tab.\n");
+          controlPanel.appendText("No result returned for SQWRL query '" + queryName + "' - closing tab.\n");
           controlPanel.removeResultPanel(queryName);
         } else validate();
-      } catch (SWRLRuleEngineException e) {
-        controlPanel.appendText("All results panels closed - exception running rules: " + e.getMessage() + "\n");
-        controlPanel.removeAllPanels();
+      } catch (InvalidQueryNameException e) {
+        controlPanel.appendText("Invalid query name '" + queryName + "'.\n");
+      } catch (SQWRLException e) {
+        controlPanel.appendText("Exception running SQWRL queries: " + e.getMessage() + "\n");
       } // try
-    } // ActionPerformed
-  } // RunRulesActionListener
+     
+      if (result == null) {
+        controlPanel.removeAllPanels();
+        controlPanel.appendText("Closing all result tabs.\n");
+      } // if
+    }
+  } // RunQueriesActionListener
   
   private class CloseTabActionListener implements ActionListener
   {
@@ -114,7 +120,6 @@ public class SQWRLQueryResultPanel extends JPanel
       int returnValue = chooser.showOpenDialog(controlPanel);
       File selectedFile = null;
       FileWriter writer = null;
-      SQWRLResult result = null;
       int numberOfColumns;
       
       try {
@@ -122,7 +127,7 @@ public class SQWRLQueryResultPanel extends JPanel
           selectedFile = chooser.getSelectedFile();
           currentDirectory = chooser.getCurrentDirectory();
           writer = new FileWriter(selectedFile);
-          result = bridge.getSQWRLResult(queryName);
+          result = queryEngine.getSQWRLResult(queryName);
 
           if (result != null) {
             numberOfColumns = result.getNumberOfColumns();
@@ -172,62 +177,45 @@ public class SQWRLQueryResultPanel extends JPanel
   {
     public int getRowCount() 
     { 
-      SQWRLResult result = null;
       int count = 0;
       
       try {
-        result = bridge.getSQWRLResult(queryName);
         count = (result == null) ? 0 : result.getNumberOfRows(); 
-      } catch (ResultException e) {
-        controlPanel.appendText("Exception getting row count in model: " + e + "\n");
-      } // try
+      } catch (SQWRLException e) {}
 
       return count;
     } // getRowCount
     
     public int getColumnCount() 
     {
-      SQWRLResult result = null;
       int count = 0;
       
       try {
-        result = bridge.getSQWRLResult(queryName);
         count = (result == null) ? 0 : result.getNumberOfColumns(); 
-      } catch (ResultException e) {
-        controlPanel.appendText("Exception getting column count in model: " + e + "\n");
-      } // try
+      } catch (SQWRLException e) {}
 
       return count;
     } // getColumnCount
     
     public String getColumnName(int columnIndex) 
     {
-      SQWRLResult result = null;
-      String columnName = null;
-      
+      String columnName = "";
+
       try {
-        result = bridge.getSQWRLResult(queryName);
         columnName = (result == null) ? "" : result.getColumnName(columnIndex); 
-      } catch (ResultException e) {
-        controlPanel.appendText("Exception getting column name in model: " + e + "\n");
-        columnName = "Exception: " + e.getMessage();
-      } // try
+      } catch (SQWRLException e) {}
+      
       return columnName;
     } // getColumnName
 
     public Object getValueAt(int row, int column) 
     { 
-      SQWRLResult result = null;
       Object value = null;
       
       try { 
-        result = bridge.getSQWRLResult(queryName);
         value = (result == null) ? null : result.getValue(column, row);
-      } catch (ResultException e) { 
-        controlPanel.appendText("Exception getting value in model: " + e + "\n");
-        value = e.getMessage(); 
-      } // try
-      
+      } catch (SQWRLException e) {}
+
       return value;
     } // getValueAt
     

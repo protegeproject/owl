@@ -71,13 +71,11 @@ public class BridgePluginManager
   public static boolean hidePlugin(String pluginName) { return hidePlugin(pluginName, false); }
   public static boolean isVisible(String pluginName) { return !visiblePluginName.equals("") && pluginName.equals(visiblePluginName); } 
 
-  // Called by each plugin as it is loaded to inform the adapter of its presence.
+  // Called by each plugin as it is loaded to inform the adapter of its presence
   public static void registerPlugin(String pluginName, String toolTip, Icon icon, SWRLPluginGUIAdapter guiAdapter)
   {
     if (registeredPlugins.containsKey(pluginName)) registeredPlugins.remove(pluginName);
-
     registeredPlugins.put(pluginName, new PluginRegistration(pluginName, toolTip, icon, guiAdapter));
-
     System.out.println("Plugin '" + pluginName + "' registered with the SWRLTab plugin manager.");
   } // registerPlugin
 
@@ -93,7 +91,7 @@ public class BridgePluginManager
   {
     if (!isVisible(pluginName)) {
       if (hidePlugin(visiblePluginName)) { // Hide may fail if user does not confirm it.
-      
+        
         if (registeredPlugins.containsKey(pluginName)) {
           PluginRegistration registration = registeredPlugins.get(pluginName);
           Container pluginGUI = registration.getGUIAdapter().createPluginGUI(owlModel);
