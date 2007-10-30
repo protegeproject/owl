@@ -1,25 +1,25 @@
-
 // TODO: DataRange
 // TODO: remove all Protege-OWL specific code
 
-package edu.stanford.smi.protegex.owl.swrl.bridge;
+package edu.stanford.smi.protegex.owl.swrl.bridge.impl;
 
 import edu.stanford.smi.protegex.owl.swrl.SWRLRuleEngine;
-import edu.stanford.smi.protegex.owl.swrl.bridge.impl.*;
+import edu.stanford.smi.protegex.owl.swrl.exceptions.*;
+
+import edu.stanford.smi.protegex.owl.swrl.bridge.*;
+import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.*;
 
 import edu.stanford.smi.protegex.owl.swrl.sqwrl.*;
 import edu.stanford.smi.protegex.owl.swrl.sqwrl.exceptions.*;
 import edu.stanford.smi.protegex.owl.swrl.sqwrl.impl.*;
 
 import edu.stanford.smi.protegex.owl.swrl.util.*;
-import edu.stanford.smi.protegex.owl.swrl.exceptions.*;
-import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.*;
+
 import edu.stanford.smi.protegex.owl.swrl.bridge.builtins.*;
 
 import edu.stanford.smi.protegex.owl.swrl.model.*;
 
 import edu.stanford.smi.protegex.owl.swrl.ormap.Mapper;
-import edu.stanford.smi.protegex.owl.swrl.ormap.MapperFactory;
 
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
@@ -311,6 +311,14 @@ public abstract class AbstractSWRLRuleEngineBridge implements SWRLRuleEngineBrid
 
     return result;
   } // invokeSWRLBuiltIn
+
+  public void setMapper(Mapper mapper) 
+  { 
+    this.mapper = mapper; 
+  } // setMapper
+
+  public boolean hasMapper() { return mapper != null; }
+  public Mapper getMapper() { return mapper; }
   
   /**
    ** Method used to create a bridge individual of type owl:Thing. This method will typically be invoked from within a built-in. An OWL
@@ -318,14 +326,10 @@ public abstract class AbstractSWRLRuleEngineBridge implements SWRLRuleEngineBrid
    ** exported to the rule engine. The individual is given a unique name that can be used later if an OWL individual is created for it.
    */
 
-  public void setMapper(Mapper mapper) { this.mapper = mapper; }
-  public boolean hasMapper() { return mapper != null; }
-  public Mapper getMapper() { return mapper; }
-
   public OWLIndividual createOWLIndividual() throws SWRLRuleEngineBridgeException
   {
     String individualName = SWRLOWLUtil.createNewResourceName(owlModel, "SWRLCreated");
-    OWLIndividual owlIndividual = BridgeFactory.createOWLIndividual(individualName, edu.stanford.smi.protegex.owl.model.OWLNames.Cls.THING);
+    OWLIndividual owlIndividual = OWLFactory.createOWLIndividual(individualName, edu.stanford.smi.protegex.owl.model.OWLNames.Cls.THING);
     createOWLIndividual(owlIndividual);
     return owlIndividual;
   } // createOWLIndividual
@@ -340,7 +344,7 @@ public abstract class AbstractSWRLRuleEngineBridge implements SWRLRuleEngineBrid
   public OWLIndividual createOWLIndividual(OWLClass owlClass) throws SWRLRuleEngineBridgeException
   {
     String individualName = SWRLOWLUtil.createNewResourceName(owlModel, "SWRLCreated");
-    OWLIndividual owlIndividual = BridgeFactory.createOWLIndividual(individualName, owlClass.getClassName());
+    OWLIndividual owlIndividual = OWLFactory.createOWLIndividual(individualName, owlClass.getClassName());
 
     if (!importedClasses.containsKey(owlClass.getClassName())) defineClass(owlClass);
     
@@ -350,8 +354,7 @@ public abstract class AbstractSWRLRuleEngineBridge implements SWRLRuleEngineBrid
     return owlIndividual;
   } // createOWLIndividual
 
-  public void createOWLIndividuals(Set<OWLIndividual> individuals)
-    throws SWRLRuleEngineBridgeException
+  public void createOWLIndividuals(Set<OWLIndividual> individuals) throws SWRLRuleEngineBridgeException
   {
     for (OWLIndividual owlIndividual : individuals) createOWLIndividual(owlIndividual);
   } // createOWLDatatypePropertyAssertionAxioms
@@ -360,7 +363,7 @@ public abstract class AbstractSWRLRuleEngineBridge implements SWRLRuleEngineBrid
                                                                                    OWLDatatypeValue object) 
     throws SWRLRuleEngineBridgeException
   {
-    OWLDatatypePropertyAssertionAxiom axiom = BridgeFactory.createOWLDatatypePropertyAssertionAxiom(subject, property, object);
+    OWLDatatypePropertyAssertionAxiom axiom = OWLFactory.createOWLDatatypePropertyAssertionAxiom(subject, property, object);
     createOWLDatatypePropertyAssertionAxiom(axiom);
     return axiom;
   } // createOWLDatatypePropertyAssertionAxiom
@@ -385,7 +388,7 @@ public abstract class AbstractSWRLRuleEngineBridge implements SWRLRuleEngineBrid
                                                                                OWLIndividual object) 
     throws SWRLRuleEngineBridgeException
   {
-    OWLObjectPropertyAssertionAxiom axiom = BridgeFactory.createOWLObjectPropertyAssertionAxiom(subject, property, object);
+    OWLObjectPropertyAssertionAxiom axiom = OWLFactory.createOWLObjectPropertyAssertionAxiom(subject, property, object);
     createOWLObjectPropertyAssertionAxiom(axiom);
     return axiom;
   } // createOWLObjectPropertyAssertionAxiom
@@ -458,7 +461,7 @@ public abstract class AbstractSWRLRuleEngineBridge implements SWRLRuleEngineBrid
       headAtoms.add(processSWRLAtom(swrlAtom, true));
     } // while 
 
-    rule = BridgeFactory.createSWRLRule(imp.getName(), bodyAtoms, headAtoms);
+    rule = OWLFactory.createSWRLRule(imp.getName(), bodyAtoms, headAtoms);
 
     importedSWRLRules.put(rule.getRuleName(), rule);
   } // importSWRLRule
@@ -468,25 +471,25 @@ public abstract class AbstractSWRLRuleEngineBridge implements SWRLRuleEngineBrid
     Atom atom;
     
     if (swrlAtom instanceof SWRLClassAtom) {
-      ClassAtom classAtom = BridgeFactory.createClassAtom((SWRLClassAtom)swrlAtom);
+      ClassAtom classAtom = OWLFactory.createClassAtom((SWRLClassAtom)swrlAtom);
       referencedClassNames.add(classAtom.getClassName());
       atom = classAtom;
     } else if (swrlAtom instanceof SWRLDatavaluedPropertyAtom) {
-      DatavaluedPropertyAtom datavaluedPropertyAtom = BridgeFactory.createDatavaluedPropertyAtom(owlModel, (SWRLDatavaluedPropertyAtom)swrlAtom);
+      DatavaluedPropertyAtom datavaluedPropertyAtom = OWLFactory.createDatavaluedPropertyAtom(owlModel, (SWRLDatavaluedPropertyAtom)swrlAtom);
       referencedPropertyNames.add(datavaluedPropertyAtom.getPropertyName());
       atom = datavaluedPropertyAtom;
     } else if (swrlAtom instanceof SWRLIndividualPropertyAtom) {
-      IndividualPropertyAtom individualPropertyAtom = BridgeFactory.createIndividualPropertyAtom((SWRLIndividualPropertyAtom)swrlAtom);
+      IndividualPropertyAtom individualPropertyAtom = OWLFactory.createIndividualPropertyAtom((SWRLIndividualPropertyAtom)swrlAtom);
       referencedPropertyNames.add(individualPropertyAtom.getPropertyName());
       atom = individualPropertyAtom;
     } else if (swrlAtom instanceof SWRLSameIndividualAtom) {
-      atom = BridgeFactory.createSameIndividualAtom((SWRLSameIndividualAtom)swrlAtom);
+      atom = OWLFactory.createSameIndividualAtom((SWRLSameIndividualAtom)swrlAtom);
     } else if (swrlAtom instanceof SWRLDifferentIndividualsAtom) {
-      atom = BridgeFactory.createDifferentIndividualsAtom((SWRLDifferentIndividualsAtom)swrlAtom);
+      atom = OWLFactory.createDifferentIndividualsAtom((SWRLDifferentIndividualsAtom)swrlAtom);
     } else if (swrlAtom instanceof SWRLBuiltinAtom) {
-      atom = BridgeFactory.createBuiltInAtom(owlModel, (SWRLBuiltinAtom)swrlAtom);
+      atom = OWLFactory.createBuiltInAtom(owlModel, (SWRLBuiltinAtom)swrlAtom);
     } else if (swrlAtom instanceof SWRLDataRangeAtom) 
-      atom = BridgeFactory.createDataRangeAtom((SWRLDataRangeAtom)swrlAtom);
+      atom = OWLFactory.createDataRangeAtom((SWRLDataRangeAtom)swrlAtom);
     else throw new InvalidSWRLAtomException(swrlAtom.getBrowserText());
 
     if (atom.hasReferencedIndividuals()) referencedIndividualNames.addAll(atom.getReferencedIndividualNames());
@@ -504,7 +507,7 @@ public abstract class AbstractSWRLRuleEngineBridge implements SWRLRuleEngineBrid
     if (rdfsNamedClass.isAnonymous()) return;    
 
     if (!importedClasses.containsKey(className)) {
-      OWLClass owlClass = BridgeFactory.createOWLClass(owlModel, className);
+      OWLClass owlClass = OWLFactory.createOWLClass(owlModel, className);
       importedClasses.put(className, owlClass);
       importOWLClasses(owlClass.getDirectSuperClassNames());
       importOWLClasses(owlClass.getDirectSubClassNames());
@@ -569,7 +572,7 @@ public abstract class AbstractSWRLRuleEngineBridge implements SWRLRuleEngineBrid
   private void importOWLIndividual(String individualName) throws SWRLRuleEngineBridgeException
   {
     if (!importedIndividuals.containsKey(individualName)) {
-      OWLIndividual owlIndividual = BridgeFactory.createOWLIndividual(owlModel, individualName);
+      OWLIndividual owlIndividual = OWLFactory.createOWLIndividual(owlModel, individualName);
       importedIndividuals.put(individualName, owlIndividual);
       importOWLClasses(owlIndividual.getDefiningClassNames());
       importOWLClasses(owlIndividual.getDefiningSuperClassNames());
@@ -703,8 +706,8 @@ public abstract class AbstractSWRLRuleEngineBridge implements SWRLRuleEngineBrid
           Object object2 = individualsIterator2.next();
           if (!(object2 instanceof edu.stanford.smi.protegex.owl.model.OWLIndividual)) continue;
           edu.stanford.smi.protegex.owl.model.OWLIndividual individual2 = (edu.stanford.smi.protegex.owl.model.OWLIndividual)object2;
-          importedAxioms.add(BridgeFactory.createOWLSameIndividualsAxiom(BridgeFactory.createOWLIndividual(individual1.getName()), 
-                                                                             BridgeFactory.createOWLIndividual(individual2.getName())));
+          importedAxioms.add(OWLFactory.createOWLSameIndividualsAxiom(OWLFactory.createOWLIndividual(individual1.getName()), 
+                                                                      OWLFactory.createOWLIndividual(individual2.getName())));
         } // while
       } // if
     } // while
@@ -729,8 +732,8 @@ public abstract class AbstractSWRLRuleEngineBridge implements SWRLRuleEngineBrid
           Object object2 = individualsIterator2.next();
           if (!(object2 instanceof edu.stanford.smi.protegex.owl.model.OWLIndividual)) continue;
           edu.stanford.smi.protegex.owl.model.OWLIndividual individual2 = (edu.stanford.smi.protegex.owl.model.OWLIndividual)object2;
-          importedAxioms.add(BridgeFactory.createOWLDifferentIndividualsAxiom(BridgeFactory.createOWLIndividual(individual1.getName()), 
-                                                                              BridgeFactory.createOWLIndividual(individual2.getName())));
+          importedAxioms.add(OWLFactory.createOWLDifferentIndividualsAxiom(OWLFactory.createOWLIndividual(individual1.getName()), 
+                                                                           OWLFactory.createOWLIndividual(individual2.getName())));
         } // while
       } // if
     } // while
@@ -752,9 +755,9 @@ public abstract class AbstractSWRLRuleEngineBridge implements SWRLRuleEngineBrid
           Iterator individualsIterator = owlAllDifferent.getDistinctMembers().iterator();
           while (individualsIterator.hasNext()) {
             RDFIndividual individual = (RDFIndividual)individualsIterator.next();
-            individuals.add(BridgeFactory.createOWLIndividual(individual.getName()));
+            individuals.add(OWLFactory.createOWLIndividual(individual.getName()));
           } // while
-          owlDifferentIndividualsAxiom = BridgeFactory.createOWLDifferentIndividualsAxiom(individuals);
+          owlDifferentIndividualsAxiom = OWLFactory.createOWLDifferentIndividualsAxiom(individuals);
           importedAxioms.add(owlDifferentIndividualsAxiom);
         } // if
         } // while
@@ -789,24 +792,24 @@ public abstract class AbstractSWRLRuleEngineBridge implements SWRLRuleEngineBrid
       for (Atom atom: rule.getBodyAtoms()) {
         if (atom instanceof ClassAtom) {
           ClassAtom classAtom = (ClassAtom)atom;
-          OWLClass owlClass = BridgeFactory.createOWLClass(classAtom.getClassName());
+          OWLClass owlClass = OWLFactory.createOWLClass(classAtom.getClassName());
           if (mapper.isMapped(owlClass)) {                        
           } // if
         } else if (atom instanceof DatavaluedPropertyAtom) {
           DatavaluedPropertyAtom datavaluedPropertyAtom = (DatavaluedPropertyAtom)atom;
-          OWLDatatypeProperty owlDatatypeProperty = BridgeFactory.createOWLDatatypeProperty(datavaluedPropertyAtom.getPropertyName());
+          OWLDatatypeProperty owlDatatypeProperty = OWLFactory.createOWLDatatypeProperty(datavaluedPropertyAtom.getPropertyName());
           if (mapper.isMapped(owlDatatypeProperty)) {
             arguments = new ArrayList<BuiltInArgument>();
             argument1 = convertAtomArgument2BuiltInArgument(datavaluedPropertyAtom.getArgument1());
             argument2 = convertAtomArgument2BuiltInArgument(datavaluedPropertyAtom.getArgument2());
             arguments.add(owlDatatypeProperty);
             arguments.add(argument2); arguments.add(argument1); //HACK
-            builtInAtom = BridgeFactory.createBuiltInAtom("swrlor:mapOWLDatatypeProperty", arguments);
+            builtInAtom = OWLFactory.createBuiltInAtom("swrlor:mapOWLDatatypeProperty", arguments);
             mappingBuiltInAtoms.add(builtInAtom);
           } // if
         } else if (atom instanceof IndividualPropertyAtom) {
           IndividualPropertyAtom individualPropertyAtom = (IndividualPropertyAtom)atom;
-          OWLObjectProperty owlObjectProperty = BridgeFactory.createOWLObjectProperty(individualPropertyAtom.getPropertyName());
+          OWLObjectProperty owlObjectProperty = OWLFactory.createOWLObjectProperty(individualPropertyAtom.getPropertyName());
           if (mapper.isMapped(owlObjectProperty)) {
           } // if
         } //if
@@ -821,9 +824,9 @@ public abstract class AbstractSWRLRuleEngineBridge implements SWRLRuleEngineBrid
     BuiltInArgument builtInArgument = null;
 
     if (atomArgument instanceof VariableAtomArgument)
-      builtInArgument = BridgeFactory.createVariableBuiltInArgument(((VariableAtomArgument)atomArgument).getVariableName());
+      builtInArgument = OWLFactory.createVariableBuiltInArgument(((VariableAtomArgument)atomArgument).getVariableName());
     else if (atomArgument instanceof IndividualArgument)
-      builtInArgument = BridgeFactory.createOWLIndividual(((IndividualArgument)atomArgument).getIndividualName());
+      builtInArgument = OWLFactory.createOWLIndividual(((IndividualArgument)atomArgument).getIndividualName());
     else if (atomArgument instanceof DatatypeValueArgument)
       builtInArgument = (OWLDatatypeValue)atomArgument;
     else throw new SWRLRuleEngineBridgeException("cannon convert atom argument '" + atomArgument.getClass() + "' to built-in argument");

@@ -2,6 +2,7 @@
 package edu.stanford.smi.protegex.owl.swrl.ormap.impl;
 
 import edu.stanford.smi.protegex.owl.swrl.ormap.*;
+import edu.stanford.smi.protegex.owl.swrl.ormap.exceptions.*;
 
 import java.util.*;
 import java.sql.*;
@@ -11,7 +12,7 @@ public class DatabaseImpl implements Database
   private String jdbcDriverName, serverName, databaseName, jdbcConnectionString;
   private int portNumber;
 
-  public DatabaseImpl(String jdbcDriverName, String serverName, String databaseName, int portNumber) throws SQLException
+  public DatabaseImpl(String jdbcDriverName, String serverName, String databaseName, int portNumber) throws JDBCException, SQLException
   {
     this.jdbcDriverName = jdbcDriverName;
     this.serverName = serverName;

@@ -6,19 +6,19 @@ import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.*;
 
 import edu.stanford.smi.protegex.owl.swrl.model.SWRLDataRangeAtom;
 
-import java.util.List;
+import java.util.Set;
 
 /*
 ** Class representing a SWRL data range atom
 */
 public class DataRangeAtomImpl extends AtomImpl implements DataRangeAtom
 {
-  private List<OWLDatatypeValue> values;
+  private Set<OWLDatatypeValue> values;
   
-  public DataRangeAtomImpl(SWRLDataRangeAtom atom) throws SWRLRuleEngineBridgeException
+  public DataRangeAtomImpl(SWRLDataRangeAtom atom) throws OWLFactoryException
   { 
     // TODO: and don't forget to call addReferencedVariableName, and addReferencedIndividualName if appropriate
-    throw new NotImplementedException("SWRL data range atoms not implemented.");
+    throw new OWLFactoryException("SWRL data range atoms not implemented.");
   } // DataRangeAtomImpl
 
 } // DataRangeAtomImpl

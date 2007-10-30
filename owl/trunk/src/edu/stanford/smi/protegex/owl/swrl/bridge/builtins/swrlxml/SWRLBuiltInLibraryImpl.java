@@ -4,7 +4,7 @@ package edu.stanford.smi.protegex.owl.swrl.bridge.builtins.swrlxml;
 import edu.stanford.smi.protegex.owl.swrl.bridge.BuiltInArgument;
 import edu.stanford.smi.protegex.owl.swrl.bridge.OWLIndividual;
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.BuiltInException;
-import edu.stanford.smi.protegex.owl.swrl.bridge.builtins.SWRLBuiltInLibrary;
+import edu.stanford.smi.protegex.owl.swrl.bridge.builtins.AbstractSWRLBuiltInLibrary;
 import edu.stanford.smi.protegex.owl.swrl.bridge.builtins.SWRLBuiltInUtil;
 
 import org.jdom.*;
@@ -13,7 +13,7 @@ import java.util.*;
 
 /**
  */
-public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary 
+public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary 
 {
   private static String SWRLXMLLibraryName = "SWRLXMLBuiltIns";
 

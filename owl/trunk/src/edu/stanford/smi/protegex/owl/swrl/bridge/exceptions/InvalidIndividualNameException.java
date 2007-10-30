@@ -1,10 +1,10 @@
 
 package edu.stanford.smi.protegex.owl.swrl.bridge.exceptions;
 
-public class InvalidIndividualNameException extends SWRLRuleEngineBridgeException 
+public class InvalidIndividualNameException extends OWLFactoryException 
 {
   public InvalidIndividualNameException(String name) 
   { 
-    super("Invalid individual name: " + name); 
+    super("invalid individual name '" + name + "'"); 
   } // InvalidIndividualNameException
 } // InvalidIndividualNameException

@@ -11,7 +11,7 @@ import edu.stanford.smi.protegex.owl.swrl.model.SWRLSameIndividualAtom;
 */
 public class SameIndividualAtomImpl extends IndividualsAtomImpl implements SameIndividualAtom
 {
-  public SameIndividualAtomImpl(SWRLSameIndividualAtom sameIndividualAtom) throws SWRLRuleEngineBridgeException
+  public SameIndividualAtomImpl(SWRLSameIndividualAtom sameIndividualAtom) throws OWLFactoryException
   { 
     super(sameIndividualAtom); 
   } // SameIndividualAtomImpl

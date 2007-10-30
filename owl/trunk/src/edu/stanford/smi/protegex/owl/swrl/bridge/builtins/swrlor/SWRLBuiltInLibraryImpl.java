@@ -9,19 +9,19 @@ import edu.stanford.smi.protegex.owl.swrl.bridge.OWLIndividual;
 import edu.stanford.smi.protegex.owl.swrl.bridge.OWLClass;
 import edu.stanford.smi.protegex.owl.swrl.bridge.OWLProperty;
 import edu.stanford.smi.protegex.owl.swrl.bridge.OWLDatatypeValue;
-import edu.stanford.smi.protegex.owl.swrl.bridge.BridgeFactory;
+import edu.stanford.smi.protegex.owl.swrl.bridge.OWLFactory;
 import edu.stanford.smi.protegex.owl.swrl.bridge.OWLObjectPropertyAssertionAxiom;
 import edu.stanford.smi.protegex.owl.swrl.bridge.OWLDatatypePropertyAssertionAxiom;
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.BuiltInException;
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.SWRLRuleEngineBridgeException;
-import edu.stanford.smi.protegex.owl.swrl.bridge.builtins.SWRLBuiltInLibrary;
+import edu.stanford.smi.protegex.owl.swrl.bridge.builtins.AbstractSWRLBuiltInLibrary;
 import edu.stanford.smi.protegex.owl.swrl.bridge.builtins.SWRLBuiltInUtil;
 
 import java.util.*;
 
 /**
  */
-public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary 
+public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary 
 {
   private static String SWRLORLibraryName = "SWRLORBuiltIns";
 
@@ -55,7 +55,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
     if (!isUnboundIndividualArgument) throw new BuiltInException("bound arguments not yet implemented, class = '" + className + "'");
 
     try {
-      owlClass = BridgeFactory.createOWLClass(className);    
+      owlClass = OWLFactory.createOWLClass(className);    
 
       mapper = getInvokingBridge().getMapper();
       if (!mapper.isMapped(owlClass)) return false;
@@ -64,7 +64,7 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
       
       //if (!individuals.isEmpty()) getInvokingBridge().createOWLIndividuals(individuals);
       if (isUnboundIndividualArgument) {
-        MultiArgument multiArgument = BridgeFactory.createMultiArgument(SWRLBuiltInUtil.getVariableName(1, arguments));
+        MultiArgument multiArgument = OWLFactory.createMultiArgument(SWRLBuiltInUtil.getVariableName(1, arguments));
         for (OWLIndividual individual : individuals) multiArgument.addArgument(individual);
         arguments.set(1, multiArgument);
         result = !multiArgument.hasNoArguments();
@@ -96,10 +96,10 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
     hasObject = (arguments.size() > 2);
 
     try {
-      owlProperty = BridgeFactory.createOWLObjectProperty(propertyName);
+      owlProperty = OWLFactory.createOWLObjectProperty(propertyName);
       
-      if (hasSubject) subjectOWLIndividual = BridgeFactory.createOWLIndividual(SWRLBuiltInUtil.getArgumentAsAnIndividualName(1, arguments));
-      if (hasObject) objectOWLIndividual = BridgeFactory.createOWLIndividual(SWRLBuiltInUtil.getArgumentAsAnIndividualName(2, arguments));
+      if (hasSubject) subjectOWLIndividual = OWLFactory.createOWLIndividual(SWRLBuiltInUtil.getArgumentAsAnIndividualName(1, arguments));
+      if (hasObject) objectOWLIndividual = OWLFactory.createOWLIndividual(SWRLBuiltInUtil.getArgumentAsAnIndividualName(2, arguments));
       
       mapper = getInvokingBridge().getMapper();
       
@@ -138,9 +138,9 @@ public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
     hasSubject = (arguments.size() > 1) && SWRLBuiltInUtil.isArgumentAnIndividual(1, arguments);
     hasValue = (arguments.size() > 2 || (arguments.size() > 1 && SWRLBuiltInUtil.isArgumentADatatypeValue(1, arguments)));
     try {
-      owlProperty = BridgeFactory.createOWLDatatypeProperty(propertyName);
+      owlProperty = OWLFactory.createOWLDatatypeProperty(propertyName);
       
-      if (hasSubject) subjectOWLIndividual = BridgeFactory.createOWLIndividual(SWRLBuiltInUtil.getArgumentAsAnIndividualName(1, arguments));
+      if (hasSubject) subjectOWLIndividual = OWLFactory.createOWLIndividual(SWRLBuiltInUtil.getArgumentAsAnIndividualName(1, arguments));
       if (hasValue) {
         if (hasSubject) value = SWRLBuiltInUtil.getArgumentAsAnOWLDatatypeValue(2, arguments);
         else value = SWRLBuiltInUtil.getArgumentAsAnOWLDatatypeValue(1, arguments);

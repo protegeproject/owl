@@ -23,7 +23,7 @@ public class SWRLRuleImpl implements SWRLRule
   private ResultImpl sqwrlResult = null;
   private boolean hasSQWRLBuiltIns, hasSQWRLCollectionBuiltIns;
   
-  public SWRLRuleImpl(String ruleName, List<Atom> bodyAtoms, List<Atom> headAtoms) throws SWRLRuleEngineBridgeException
+  public SWRLRuleImpl(String ruleName, List<Atom> bodyAtoms, List<Atom> headAtoms) throws BuiltInException, SQWRLException
   {
     this.ruleName = ruleName;
     this.bodyAtoms = bodyAtoms;
@@ -82,7 +82,7 @@ public class SWRLRuleImpl implements SWRLRule
    ** to null. See <a href="http://protege.cim3.net/cgi-bin/wiki.pl?SWRLBuiltInBridge#nid88T">here</a> for a discussion of the role of this
    ** method.
    */
-  private void processBodyAtoms() throws SWRLRuleEngineBridgeException
+  private void processBodyAtoms() throws BuiltInException
   {
     List<BuiltInAtom> bodyBuiltInAtoms = new ArrayList<BuiltInAtom>();
     List<Atom> bodyNonBuiltInAtoms = new ArrayList<Atom>();
@@ -167,28 +167,24 @@ public class SWRLRuleImpl implements SWRLRule
     for (Atom atom : getBodyAtoms()) referencedVariableNames.addAll(atom.getReferencedVariableNames());
   } // buildReferencedVariableNames
 
-  private void processSQWRLAtoms() throws SWRLRuleEngineBridgeException
+  private void processSQWRLAtoms() throws DatatypeConversionException, BuiltInException
   {
     Map<String, List<BuiltInArgument>> makeCollectionPatternArguments = new HashMap<String, List<BuiltInArgument>>(); 
     Set<String> collectionNames = new HashSet<String>();
 
-    try {
-      sqwrlResult = new ResultImpl();
-
-      preprocessSQWRLHeadBuiltIns();
-      preprocessSQWRLMakeBuiltIns(collectionNames, makeCollectionPatternArguments);
-      preprocessSQWRLOperationBuiltIns(collectionNames, makeCollectionPatternArguments);
-       
-      sqwrlResult.configured();
-      sqwrlResult.openRow();
-
-      if (hasSQWRLCollectionBuiltIns) sqwrlResult.setIsDistinct(); 
-    } catch (SWRLRuleEngineBridgeException e) {
-      throw new SWRLRuleEngineBridgeException("error configuring SQWRL query '" + ruleName + "': " + e.getMessage());
-    } // try
+    sqwrlResult = new ResultImpl();
+    
+    preprocessSQWRLHeadBuiltIns();
+    preprocessSQWRLMakeBuiltIns(collectionNames, makeCollectionPatternArguments);
+    preprocessSQWRLOperationBuiltIns(collectionNames, makeCollectionPatternArguments);
+    
+    sqwrlResult.configured();
+    sqwrlResult.openRow();
+    
+    if (hasSQWRLCollectionBuiltIns) sqwrlResult.setIsDistinct(); 
   } // configureResult
 
-  private void preprocessBuiltInIndexes() throws BuiltInException
+  private void preprocessBuiltInIndexes()
   {
     int builtInIndex = 0;
 
@@ -196,7 +192,7 @@ public class SWRLRuleImpl implements SWRLRule
     for (BuiltInAtom builtInAtom : getBuiltInAtomsFromHead()) builtInAtom.setBuiltInIndex(builtInIndex++);
   } // preprocessBuiltInIndexes
 
-  private void preprocessSQWRLHeadBuiltIns() throws SWRLRuleEngineBridgeException
+  private void preprocessSQWRLHeadBuiltIns() throws DatatypeConversionException, SQWRLException, BuiltInException
   {
      List<String> selectedVariableNames = new ArrayList<String>();
 
@@ -238,19 +234,19 @@ public class SWRLRuleImpl implements SWRLRule
            if (isArgumentAVariable) columnName = "avg(?" + variableName + ")"; else columnName = "avg[" + argument + "]";
            sqwrlResult.addAggregateColumn(columnName, SQWRLNames.AvgAggregateFunction);
          } else if (builtInName.equalsIgnoreCase(SQWRLNames.OrderBy)) {
-           if (!isArgumentAVariable) throw new SWRLRuleEngineBridgeException("only variables allowed for ordered columns - found '" + argument + "'");
+           if (!isArgumentAVariable) throw new SQWRLException("only variables allowed for ordered columns - found '" + argument + "'");
            columnIndex = selectedVariableNames.indexOf(variableName);
            if (columnIndex != -1) sqwrlResult.addOrderByColumn(columnIndex, true);
-           else throw new SWRLRuleEngineBridgeException("variable ?" + variableName + " must be selected before it can be ordered");
+           else throw new SQWRLException("variable ?" + variableName + " must be selected before it can be ordered");
          } else if (builtInName.equalsIgnoreCase(SQWRLNames.OrderByDescending)) {
-           if (!isArgumentAVariable) throw new SWRLRuleEngineBridgeException("only variables allowed for ordered columns - found '" + argument + "'");
+           if (!isArgumentAVariable) throw new SQWRLException("only variables allowed for ordered columns - found '" + argument + "'");
            columnIndex = selectedVariableNames.indexOf(variableName);
            if (columnIndex != -1) sqwrlResult.addOrderByColumn(columnIndex, false);
-           else throw new SWRLRuleEngineBridgeException("variable ?" + variableName + " must be selected before it can be ordered");
+           else throw new SQWRLException("variable ?" + variableName + " must be selected before it can be ordered");
          } else if (builtInName.equalsIgnoreCase(SQWRLNames.ColumnNames)) {
            if (argument instanceof OWLDatatypeValue && ((OWLDatatypeValue)argument).isString()) {
              OWLDatatypeValue literal = (OWLDatatypeValue)argument; sqwrlResult.addColumnDisplayName(literal.getString());
-           } else throw new SWRLRuleEngineBridgeException("only string literals allowed as column names - found '" + argument + "'");
+           } else throw new SQWRLException("only string literals allowed as column names - found '" + argument + "'");
          } // if
          argumentIndex++;
        } // for
@@ -258,10 +254,10 @@ public class SWRLRuleImpl implements SWRLRule
   } // preprocessSQWRLHeadBuiltIns
 
   private void preprocessSQWRLMakeBuiltIns(Set<String> collectionNames, Map<String, List<BuiltInArgument>> makeCollectionPatternArguments) 
-    throws SWRLRuleEngineBridgeException
+    throws BuiltInException
   {
     for (BuiltInAtom builtInAtom : getBuiltInAtomsFromBody(SQWRLNames.getCollectionMakeBuiltInNames())) {
-      if (builtInAtom.getNumberOfArguments() < 2) throw new SWRLRuleEngineBridgeException("make-collection built-ins must have at least two arguments");
+      if (builtInAtom.getNumberOfArguments() < 2) throw new SQWRLException("make-collection built-ins must have at least two arguments");
       
       String collectionName = builtInAtom.getArgumentVariableName(0); // First argument is the collection name
 
@@ -275,7 +271,7 @@ public class SWRLRuleImpl implements SWRLRule
         List<BuiltInArgument> patternArguments = builtInArguments.subList(2, builtInArguments.size());
 
         if (makeCollectionPatternArguments.containsKey(collectionName)) // Pattern should only be supplied once
-          throw new SWRLRuleEngineBridgeException("pattern specified more than once for collection ?" + collectionName);
+          throw new SQWRLException("pattern specified more than once for collection ?" + collectionName);
         
         makeCollectionPatternArguments.put(collectionName, patternArguments); // Store pattern arguments
       } else { // No pattern arguments
@@ -288,7 +284,7 @@ public class SWRLRuleImpl implements SWRLRule
   } // preprocessSQWRLMakeBuiltIns
 
   private void preprocessSQWRLOperationBuiltIns(Set<String> collectionNames, Map<String, List<BuiltInArgument>> makeCollectionPatternArguments) 
-    throws SWRLRuleEngineBridgeException
+    throws SQWRLException, BuiltInException
   {
     Set<String> cascadedUnboundVariableNames = new HashSet<String>();
 
@@ -297,7 +293,7 @@ public class SWRLRuleImpl implements SWRLRule
       if (SQWRLNames.getCollectionOperationBuiltInNames().contains(builtInName)) {
 
         if (builtInAtom.getNumberOfArguments() < 1) 
-          throw new SWRLRuleEngineBridgeException("collection-operation built-ins must have at least one argument");
+          throw new SQWRLException("collection-operation built-ins must have at least one argument");
 
         hasSQWRLCollectionBuiltIns = true;
 

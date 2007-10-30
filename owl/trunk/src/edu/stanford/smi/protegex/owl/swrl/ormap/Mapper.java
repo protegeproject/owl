@@ -12,6 +12,9 @@ public interface Mapper
   boolean isMapped(OWLClass owlClass);
   boolean isMapped(OWLProperty owlProperty);
 
+  void open() throws MapperException;
+  void close() throws MapperException;
+
   Set<OWLIndividual> mapOWLClass(OWLClass owlClass) throws MapperException;
   Set<OWLIndividual> mapOWLClass(OWLClass owlClass, OWLIndividual owlIndividual) throws MapperException;
 

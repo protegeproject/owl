@@ -28,7 +28,6 @@ public abstract class OWLPropertyImpl extends BuiltInArgumentImpl implements OWL
   public OWLPropertyImpl(String propertyName, Set<String> domainClassNames, 
                          Set<String> rangeClassNames, Set<String> superPropertyNames, Set<String> subPropertyNames,
                          Set<String> equivalentPropertyNames) 
-    throws SWRLRuleEngineBridgeException
   {
     this.propertyName = propertyName;    
     this.domainClassNames = domainClassNames;
@@ -92,7 +91,7 @@ public abstract class OWLPropertyImpl extends BuiltInArgumentImpl implements OWL
   // Utility method to create a collection of OWLProperty objects for every subject/predicate combination for a particular OWL property.
   // TODO: This is incredibly inefficient. 
 
-  public static Set<OWLPropertyAssertionAxiom> buildOWLPropertyAssertionAxioms(OWLModel owlModel, String propertyName) throws SWRLRuleEngineBridgeException
+  public static Set<OWLPropertyAssertionAxiom> buildOWLPropertyAssertionAxioms(OWLModel owlModel, String propertyName) throws OWLFactoryException, DatatypeConversionException
   {
     Set<OWLPropertyAssertionAxiom> propertyAssertions = new HashSet<OWLPropertyAssertionAxiom>();
     Set<String> domainClassNames, rangeClassNames, superPropertyNames, subPropertyNames, equivalentPropertyNames;
@@ -126,9 +125,9 @@ public abstract class OWLPropertyImpl extends BuiltInArgumentImpl implements OWL
               RDFResource resource = (RDFResource)individualValuesIterator.next();
               if (resource instanceof edu.stanford.smi.protegex.owl.model.OWLIndividual) {
                 edu.stanford.smi.protegex.owl.model.OWLIndividual rangeIndividual = (edu.stanford.smi.protegex.owl.model.OWLIndividual)resource;
-                OWLIndividual subject = BridgeFactory.createOWLIndividual(domainIndividual.getName());
-                OWLIndividual object = BridgeFactory.createOWLIndividual(rangeIndividual.getName());
-                OWLPropertyAssertionAxiom axiom = BridgeFactory.createOWLObjectPropertyAssertionAxiom(subject, BridgeFactory.createOWLObjectProperty(propertyName), object);
+                OWLIndividual subject = OWLFactory.createOWLIndividual(domainIndividual.getName());
+                OWLIndividual object = OWLFactory.createOWLIndividual(rangeIndividual.getName());
+                OWLPropertyAssertionAxiom axiom = OWLFactory.createOWLObjectPropertyAssertionAxiom(subject, OWLFactory.createOWLObjectProperty(propertyName), object);
                 propertyAssertions.add(axiom);
               } else {
                 //System.err.println("Unknown property value resource: " + resource); // TODO: Orphan resources in OWL file. Ignore?
@@ -138,9 +137,9 @@ public abstract class OWLPropertyImpl extends BuiltInArgumentImpl implements OWL
             Iterator literalsIterator = domainIndividual.getPropertyValueLiterals(property).iterator();
             while (literalsIterator.hasNext()) {
               RDFSLiteral literal = (RDFSLiteral)literalsIterator.next();
-              OWLIndividual subject = BridgeFactory.createOWLIndividual(domainIndividual.getName());
-              OWLDatatypeValue object = BridgeFactory.createOWLDatatypeValue(owlModel, literal);
-              OWLPropertyAssertionAxiom axiom = BridgeFactory.createOWLDatatypePropertyAssertionAxiom(subject, BridgeFactory.createOWLDatatypeProperty(propertyName), object);
+              OWLIndividual subject = OWLFactory.createOWLIndividual(domainIndividual.getName());
+              OWLDatatypeValue object = OWLFactory.createOWLDatatypeValue(owlModel, literal);
+              OWLPropertyAssertionAxiom axiom = OWLFactory.createOWLDatatypePropertyAssertionAxiom(subject, OWLFactory.createOWLDatatypeProperty(propertyName), object);
               propertyAssertions.add(axiom);
             } // while
           } // if
