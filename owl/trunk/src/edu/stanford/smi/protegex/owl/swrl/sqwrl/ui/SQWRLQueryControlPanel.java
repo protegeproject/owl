@@ -2,8 +2,8 @@
 package edu.stanford.smi.protegex.owl.swrl.sqwrl.ui;
 
 import edu.stanford.smi.protegex.owl.swrl.sqwrl.*;
+import edu.stanford.smi.protegex.owl.swrl.sqwrl.exceptions.*;
 
-import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.swrl.model.*;
 import edu.stanford.smi.protegex.owl.swrl.bridge.*;
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.*;
@@ -17,17 +17,17 @@ import java.util.*;
 
 public class SQWRLQueryControlPanel extends JPanel 
 {
-  private SWRLRuleEngineBridge bridge;
+  private SQWRLQueryEngine queryEngine;
   private HashMap<String, SQWRLQueryResultPanel> resultPanels;
   private JTextArea textArea;
   private static int MaximumOpenResultPanels = 8;
 
-  public SQWRLQueryControlPanel(SWRLRuleEngineBridge bridge) 
+  public SQWRLQueryControlPanel(SQWRLQueryEngine queryEngine) 
   {
     JPanel panel;
     JButton button;
 
-    this.bridge = bridge;
+    this.queryEngine = queryEngine;
 
     resultPanels = new HashMap<String, SQWRLQueryResultPanel>();
 
@@ -130,13 +130,13 @@ public class SQWRLQueryControlPanel extends JPanel
         textArea.append("Please close an existing tab to display results for the selected rule.\n");
       } else {
 	try {
-          bridge.runSQWRLQueries();
+          queryEngine.runSQWRLQueries();
         
           queryName = BridgePluginManager.getSelectedRuleName();
           
-          if (queryName == null || queryName.equals("")) textArea.append("No query selected.\n");
+          if (queryName == null || queryName.equals("")) textArea.append("No SQWRL query selected.\n");
           else {
-            result = bridge.getSQWRLResult(queryName);
+            result = queryEngine.getSQWRLResult(queryName);
             if (result == null || result.getNumberOfRows() == 0) {
               textArea.append("Query '" + queryName + "' did not generate any result.\n");
               if  (resultPanels.containsKey(queryName)) {
@@ -145,11 +145,11 @@ public class SQWRLQueryControlPanel extends JPanel
                 ((JTabbedPane)getParent()).remove(resultPanel);
               } // if
             } else { // A result was returned
-              textArea.append("See the '" + queryName + "' tab to review results of the query.\n");
+              textArea.append("See the '" + queryName + "' tab to review results of the SQWRL query.\n");
               
               if  (resultPanels.containsKey(queryName)) resultPanel = resultPanels.get(queryName); // Existing tab found
               else { // Create new tab
-                resultPanel = new SQWRLQueryResultPanel(bridge, controlPanel, queryName);
+                resultPanel = new SQWRLQueryResultPanel(queryEngine, queryName, result, controlPanel);
                 resultPanels.put(queryName, resultPanel);
                 ((JTabbedPane)getParent()).addTab(queryName, SWRLIcons.getImpsIcon(), resultPanel, "Result Panel for query '" + queryName + "'");
               } // if
@@ -157,7 +157,9 @@ public class SQWRLQueryControlPanel extends JPanel
               controlPanel.getParent().validate();
             } // if
           } // if
-	} catch (SWRLRuleEngineBridgeException e) {
+        } catch (InvalidQueryNameException e) {
+          textArea.append("Invalid query name '" + queryName + "'.\n");
+	} catch (SQWRLException e) {
           if (queryName.equals("")) textArea.append("Exception running queries:" + e.getMessage() + "\n");
           else textArea.append("Exception when running query '" + queryName + "': " + e.getMessage() + "\n");
 	} // try
