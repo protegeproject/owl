@@ -807,6 +807,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
         owlEquivalentPropertyProperty = createInstanceSlot(OWLNames.Slot.EQUIVALENT_PROPERTY, rdfPropertyClass, rdfPropertyClass);
         owlEquivalentPropertyProperty.setAllowsMultipleValues(true);
+        owlEquivalentPropertyProperty.setOwnSlotValue(rdfsRangeProperty, rdfPropertyClass);
         rdfPropertyClass.addDirectTemplateSlot(owlEquivalentPropertyProperty);
         owlDatatypePropertyClass.setTemplateSlotAllowedClses(owlEquivalentPropertyProperty, Collections.singleton(owlDatatypePropertyClass));
         owlObjectPropertyClass.setTemplateSlotAllowedClses(owlEquivalentPropertyProperty, Collections.singleton(owlObjectPropertyClass));
@@ -3703,7 +3704,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
         lastGen = i;
         return name;
     }
-
+ 
 
     public String getURIForResourceName(final String name) {
         if (name.indexOf('#') < 0) { // No namespace found
