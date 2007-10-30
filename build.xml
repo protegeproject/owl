@@ -388,7 +388,7 @@
 
 
     <target name = "junit-compile" depends = "jar">
-       <javac srcdir = "${junit}" destdir = "${classes}" debug = "on"
+       <javac srcdir = "${junit}" destdir = "${classes}" debug = "on" 
               includeAntRuntime="false">
          <classpath refid = "classpath.compile"/>
          <classpath>
