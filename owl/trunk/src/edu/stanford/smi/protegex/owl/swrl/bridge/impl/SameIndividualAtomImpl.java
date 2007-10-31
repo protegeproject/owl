@@ -15,4 +15,6 @@ public class SameIndividualAtomImpl extends IndividualsAtomImpl implements SameI
   { 
     super(sameIndividualAtom); 
   } // SameIndividualAtomImpl
+
+  public String toString() { return "sameAs(" + getArgument1() + ", " + getArgument2() + ")"; }
 } // SameIndividualAtomImpl

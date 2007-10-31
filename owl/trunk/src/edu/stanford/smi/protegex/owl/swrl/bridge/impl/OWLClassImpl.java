@@ -62,27 +62,19 @@ public class OWLClassImpl extends BuiltInArgumentImpl implements OWLClass, Seria
 
   public String toString() { return getClassName(); }
 
+  // We consider classes to be equal if they have the same name.
   public boolean equals(Object obj)
   {
     if(this == obj) return true;
     if((obj == null) || (obj.getClass() != this.getClass())) return false;
     OWLClassImpl impl = (OWLClassImpl)obj;
-    return (getClassName() == impl.getClassName() || (getClassName() != null && getClassName().equals(impl.getClassName()))) && 
-      (directSuperClassNames == impl.directSuperClassNames || (directSuperClassNames != null 
-                                                               && directSuperClassNames.equals(impl.directSuperClassNames))) &&
-      (directSubClassNames == impl.directSubClassNames || (directSubClassNames != null 
-                                                           && directSubClassNames.equals(impl.directSubClassNames))) && 
-      (equivalentClassNames == impl.equivalentClassNames || (equivalentClassNames != null 
-                                                           && equivalentClassNames.equals(impl.equivalentClassNames)));
+    return (getClassName() == impl.getClassName() || (getClassName() != null && getClassName().equals(impl.getClassName())));
   } // equals
 
   public int hashCode()
   {
     int hash = 7;
     hash = hash + (null == getClassName() ? 0 : getClassName().hashCode());
-    hash = hash + (null == directSuperClassNames ? 0 : directSuperClassNames.hashCode());
-    hash = hash + (null == directSubClassNames ? 0 : directSubClassNames.hashCode());
-    hash = hash + (null == equivalentClassNames ? 0 : equivalentClassNames.hashCode());
     return hash;
   } // hashCode
 

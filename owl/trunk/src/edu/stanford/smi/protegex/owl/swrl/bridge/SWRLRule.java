@@ -24,6 +24,7 @@ public interface SWRLRule
   void appendAtomsToBody(List<Atom> atom);
 
   boolean isSQWRL();
+  boolean usesSQWRLCollections();
   ResultImpl getSQWRLResult();
 
   List<Atom> getSQWRLPhase1BodyAtoms();

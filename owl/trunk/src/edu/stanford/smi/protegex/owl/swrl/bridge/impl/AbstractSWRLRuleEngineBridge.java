@@ -75,18 +75,6 @@ public abstract class AbstractSWRLRuleEngineBridge implements SWRLRuleEngineBrid
   } // AbstractSWRLRuleEngineBridge
 
   /**
-   ** Load rules and knowledge from OWL into bridge, send them to a rule engine, run the rule engine, and write any inferred knowledge back
-   ** to OWL.
-   */
-  public void infer() throws SWRLRuleEngineBridgeException
-  {
-    resetBridge();
-    importSWRLRulesAndOWLKnowledge();
-    runRuleEngine();
-    writeInferredKnowledge2OWL();
-  } // infer
-
-  /**
    ** Load rules and knowledge from OWL into bridge. All existing bridge rules and knowledge will first be cleared and the associated rule
    ** engine will be reset.
    */
@@ -112,8 +100,6 @@ public abstract class AbstractSWRLRuleEngineBridge implements SWRLRuleEngineBrid
    */
   public void importSWRLRulesAndOWLKnowledge(Set<String> ruleGroupNames) throws SWRLRuleEngineBridgeException
   {
-    resetBridge();
-
     if (SWRLOWLUtil.hasInconsistentClasses(owlModel))
       throw new InconsistentKnowledgeBaseException("cannot import rules from an inconsistent ontology");
 
@@ -133,7 +119,7 @@ public abstract class AbstractSWRLRuleEngineBridge implements SWRLRuleEngineBrid
   /**
    ** Send rules and knowledge stored in bridge to a rule engine.
    */
-  public void exportSWRLRulesAndOWLKnowledge() throws SWRLRuleEngineBridgeException
+  private void exportSWRLRulesAndOWLKnowledge() throws SWRLRuleEngineBridgeException
   {
     exportClasses(); // Classes should be exported before rules because rules usually use class definitions.
     exportSWRLRules();
@@ -145,7 +131,7 @@ public abstract class AbstractSWRLRuleEngineBridge implements SWRLRuleEngineBrid
   /**
    ** Send knowledge (excluding SWRL rules) stored in bridge to a rule engine.
    */
-  public void exportOWLKnowledge() throws SWRLRuleEngineBridgeException
+  private void exportOWLKnowledge() throws SWRLRuleEngineBridgeException
   {
     exportClasses();
     exportIndividuals();
@@ -158,7 +144,9 @@ public abstract class AbstractSWRLRuleEngineBridge implements SWRLRuleEngineBrid
    */
   public void run() throws SWRLRuleEngineBridgeException
   {
+    if (hasMapper()) mapper.open();
     runRuleEngine();
+    if (hasMapper()) mapper.close();
   } // run
 
   /**
@@ -176,43 +164,60 @@ public abstract class AbstractSWRLRuleEngineBridge implements SWRLRuleEngineBrid
   /**
    ** Clear all knowledge from bridge.
    */
-  public void resetBridge() throws SWRLRuleEngineBridgeException
+  public void reset() throws SWRLRuleEngineBridgeException
   {
-    reset();
+    resetRuleEngine(); // Reset the underlying rule engine
 
     BuiltInLibraryManager.invokeAllBuiltInLibrariesResetMethod(this);
 
-    importedSWRLRules.clear();
-    referencedClassNames.clear();
-    referencedPropertyNames.clear();
-    referencedIndividualNames.clear();
-    importedClasses.clear();
-    importedPropertyAssertionAxioms.clear();
-    importedPropertyNames.clear();
-    importedIndividuals.clear();
-    importedAxioms.clear();
-    createdIndividuals.clear();
-    createdPropertyAssertionAxioms.clear();
-    clearExportedAndInferredKnowledge();
+    initialize();
   } // resetBridge
 
-  /**
-   **  Clear all knowledge from rule engine, deleted inferred knowledge from the bridge, and leave imported bridge knowledge intact.
-   */
-  public void reset() throws SWRLRuleEngineBridgeException
+  private void initialize()
   {
-    initializeRuleEngine();
-    clearExportedAndInferredKnowledge();
-  } // reset
+    importedSWRLRules = new HashMap<String, SWRLRule>();
+
+    referencedClassNames = new HashSet<String>();
+    referencedIndividualNames = new HashSet<String>();
+    referencedPropertyNames = new HashSet<String>();
+
+    importedClasses = new HashMap<String, OWLClass>();
+    importedIndividuals = new HashMap<String, OWLIndividual>(); 
+    importedPropertyAssertionAxioms = new HashSet<OWLPropertyAssertionAxiom>(); 
+    importedPropertyNames = new HashSet<String>();
+    importedAxioms = new HashSet<OWLAxiom>();
+
+    exportedClassNames = new HashSet<String>();
+    exportedIndividualNames = new HashSet<String>();
+
+    inferredIndividuals = new HashSet<OWLIndividual>(); 
+    inferredPropertyAssertionAxioms = new HashSet<OWLPropertyAssertionAxiom>(); 
+
+    createdIndividuals = new HashMap<String, OWLIndividual>();
+    createdPropertyAssertionAxioms = new HashSet<OWLPropertyAssertionAxiom>();
+  } // initialize  
+
+
+  /**
+   ** Load rules and knowledge from OWL into bridge, send them to a rule engine, run the rule engine, and write any inferred knowledge back
+   ** to OWL.
+   */
+  public void infer() throws SWRLRuleEngineBridgeException
+  {
+    reset();
+    importSWRLRulesAndOWLKnowledge();
+    run();
+    writeInferredKnowledge2OWL();
+  } // infer
 
   public void runSQWRLQueries() throws SQWRLException
   {
     try {
-      resetBridge();
+      reset();
       importSWRLRulesAndOWLKnowledge();
-      runRuleEngine();
+      run();
     } catch (SWRLRuleEngineBridgeException e) {
-      throw new SQWRLException("error running queries: " + e.getMessage());
+      throw new SQWRLException("error running SQWRL queries: " + e.getMessage());
     } // try
   } // runSQWRLQueries
 
@@ -889,33 +894,5 @@ public abstract class AbstractSWRLRuleEngineBridge implements SWRLRuleEngineBrid
   
   private void clearExportedAndInferredKnowledge() 
   {
-    exportedClassNames.clear();
-    exportedIndividualNames.clear();
-    inferredPropertyAssertionAxioms.clear();
-    inferredIndividuals.clear();
   } // clearExportedAndInferredKnowledge
-
-  private void initialize()
-  {
-    importedSWRLRules = new HashMap<String, SWRLRule>();
-
-    referencedClassNames = new HashSet<String>();
-    referencedIndividualNames = new HashSet<String>();
-    referencedPropertyNames = new HashSet<String>();
-
-    importedClasses = new HashMap<String, OWLClass>();
-    importedIndividuals = new HashMap<String, OWLIndividual>(); 
-    importedPropertyAssertionAxioms = new HashSet<OWLPropertyAssertionAxiom>(); 
-    importedPropertyNames = new HashSet<String>();
-    importedAxioms = new HashSet<OWLAxiom>();
-
-    exportedClassNames = new HashSet<String>();
-    exportedIndividualNames = new HashSet<String>();
-
-    inferredIndividuals = new HashSet<OWLIndividual>(); 
-    inferredPropertyAssertionAxioms = new HashSet<OWLPropertyAssertionAxiom>(); 
-
-    createdIndividuals = new HashMap<String, OWLIndividual>();
-    createdPropertyAssertionAxioms = new HashSet<OWLPropertyAssertionAxiom>();
-  } // initialize  
 } // AbstractSWRLRuleEngineBridge

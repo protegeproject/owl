@@ -71,7 +71,6 @@ public class SQWRLQueryResultPanel extends JPanel
 
       try {
         queryEngine.runSQWRLQueries();
-
         result = queryEngine.getSQWRLResult(queryName);
 
         if (result == null || result.getNumberOfRows() == 0) {

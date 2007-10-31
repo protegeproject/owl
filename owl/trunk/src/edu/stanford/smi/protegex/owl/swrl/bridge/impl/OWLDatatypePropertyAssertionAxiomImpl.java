@@ -49,7 +49,7 @@ public class OWLDatatypePropertyAssertionAxiomImpl extends OWLPropertyAssertionA
     if (this == obj) return true;
     if ((obj == null) || (obj.getClass() != this.getClass())) return false;
     OWLDatatypePropertyAssertionAxiomImpl impl = (OWLDatatypePropertyAssertionAxiomImpl)obj;
-    return (super.equals((OWLDatatypePropertyAssertionAxiomImpl)impl) &&
+    return (super.equals((OWLPropertyAssertionAxiomImpl)impl) &&
             (object != null && impl.object != null && object.equals(impl.object)));
   } // equals
 
@@ -60,5 +60,17 @@ public class OWLDatatypePropertyAssertionAxiomImpl extends OWLPropertyAssertionA
     hash = hash + (null == object ? 0 : object.hashCode());
     return hash;
   } // hashCode
+
+  public String toString() 
+  { 
+    String result = "" + getProperty() + "(" + getSubject() + ", ";
+
+    if (object.isString()) result += "\"" + object + "\"";
+    else result += "" + object;
+
+    result += ")"; 
+
+    return result;
+  } // toString
 
 } // OWLDatatypePropertyAssertionAxiomImpl

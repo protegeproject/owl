@@ -52,10 +52,10 @@ public interface SWRLRuleEngine
    */
   void reset() throws SWRLRuleEngineException;
 
+  SWRLRule getRule(String ruleName) throws InvalidRuleNameException;
+
   int getNumberOfInferredIndividuals();
   int getNumberOfInferredPropertyAssertionAxioms();
-
-  SWRLRule getRule(String ruleName) throws InvalidRuleNameException;
 
   Set<OWLIndividual> getInferredIndividuals();
   Set<OWLPropertyAssertionAxiom> getInferredPropertyAssertionAxioms();

@@ -331,7 +331,11 @@ public class OWLDatatypeValueImpl extends BuiltInArgumentImpl implements OWLData
     return (QName)value;
   } // getQName
 
-  public String toString() { return "" + value; }
+  // The caller can decide to quote or not.
+  public String toString() 
+  { 
+    return "" + value;
+  } // toString
 
   public String getValueClassName() { return value.getClass().getName(); }
   public Object getValue() { return value; }

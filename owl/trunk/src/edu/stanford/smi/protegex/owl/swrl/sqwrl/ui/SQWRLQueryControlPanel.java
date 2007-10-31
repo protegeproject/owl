@@ -160,8 +160,8 @@ public class SQWRLQueryControlPanel extends JPanel
         } catch (InvalidQueryNameException e) {
           textArea.append("Invalid query name '" + queryName + "'.\n");
 	} catch (SQWRLException e) {
-          if (queryName.equals("")) textArea.append("Exception running queries:" + e.getMessage() + "\n");
-          else textArea.append("Exception when running query '" + queryName + "': " + e.getMessage() + "\n");
+          if (queryName.equals("")) textArea.append("Exception running SQWRL queries: " + e.getMessage() + "\n");
+          else textArea.append("Exception when running SQWRL query '" + queryName + "': " + e.getMessage() + "\n");
 	} // try
       } // if
     } // ActionPerformed
