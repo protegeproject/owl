@@ -15,4 +15,6 @@ public class DifferentIndividualsAtomImpl extends IndividualsAtomImpl implements
   { 
     super(sameIndividualAtom); 
   } // DifferentIndividualsAtomImpl
+
+  public String toString() { return "differentFrom(" + getArgument1() + ", " + getArgument2() + ")"; }
 } // DifferentIndividualsAtomImpl

@@ -270,8 +270,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
     ResultImpl result = null;
 
     try {
-      if (getInvokingBridge().getRule(queryName) != null)
-        result = getInvokingBridge().getRule(queryName).getSQWRLResult();
+      if (getInvokingBridge().getRule(queryName) != null) result = getInvokingBridge().getRule(queryName).getSQWRLResult();
     } catch (InvalidRuleNameException e) {} // Result will be null if cannot find query
 
     return result;

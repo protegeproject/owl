@@ -18,19 +18,13 @@ import java.util.*;
  */
 public interface SWRLRuleEngineBridge extends SWRLRuleEngine, SQWRLQueryEngine
 {
-  void resetBridge() throws SWRLRuleEngineBridgeException;
-  void initializeRuleEngine() throws SWRLRuleEngineBridgeException;
+  void resetRuleEngine() throws SWRLRuleEngineBridgeException;
   void runRuleEngine() throws SWRLRuleEngineBridgeException;
 
   void defineRule(SWRLRule rule) throws SWRLRuleEngineBridgeException;
   void defineClass(OWLClass owlClass) throws SWRLRuleEngineBridgeException;
   void defineIndividual(OWLIndividual owlIndividual) throws SWRLRuleEngineBridgeException;
   void defineAxiom(OWLAxiom axiom) throws SWRLRuleEngineBridgeException;
-
-  boolean invokeSWRLBuiltIn(String ruleName, String builtInName, int builtInIndex, List<BuiltInArgument> arguments)
-    throws BuiltInException;
-  void generateBuiltInBinding(String ruleName, String builtInName, int builtInIndex, List<BuiltInArgument> arguments) 
-    throws BuiltInException;
 
   // The infer methods can be used by rule engines to assert axioms that they infer into the bridge
   void inferPropertyAssertionAxiom(OWLPropertyAssertionAxiom owlPropertyAssertionAxiom) throws SWRLRuleEngineBridgeException;
@@ -58,6 +52,13 @@ public interface SWRLRuleEngineBridge extends SWRLRuleEngine, SQWRLQueryEngine
   boolean isCreatedIndividual(String individualName);
   boolean isCreatedPropertyAssertionAxiom(OWLPropertyAssertionAxiom axiom);
 
+  // Built-in invocation and argument binding 
+  boolean invokeSWRLBuiltIn(String ruleName, String builtInName, int builtInIndex, List<BuiltInArgument> arguments)
+    throws BuiltInException;
+  void generateBuiltInBinding(String ruleName, String builtInName, int builtInIndex, List<BuiltInArgument> arguments) 
+    throws BuiltInException;
+
+  // Mapper to non OWL storage formats
   void setMapper(Mapper mapper);
   boolean hasMapper();
   Mapper getMapper();
@@ -75,14 +76,18 @@ public interface SWRLRuleEngineBridge extends SWRLRuleEngine, SQWRLQueryEngine
   int getNumberOfCreatedIndividuals();
   int getNumberOfCreatedPropertyAssertionAxioms();
 
-  // Convenience methods to display the contents of the bridge, including inferred knowledge
+  // Convenience methods to display the contents of the bridge, including inferred and created knowledge
   Set<SWRLRule> getImportedSWRLRules();
+
   Set<OWLClass> getImportedClasses();
   Set<OWLIndividual> getImportedIndividuals();
+
   Set<OWLPropertyAssertionAxiom> getImportedPropertyAssertionAxioms();
   Set<OWLAxiom> getImportedAxioms();
+
   Set<OWLIndividual> getInferredIndividuals();
   Set<OWLPropertyAssertionAxiom> getInferredPropertyAssertionAxioms();
+
   Set<OWLIndividual> getCreatedIndividuals();
   Set<OWLPropertyAssertionAxiom> getCreatedPropertyAssertionAxioms();
 

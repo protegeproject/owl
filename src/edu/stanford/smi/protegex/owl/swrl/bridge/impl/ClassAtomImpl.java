@@ -35,5 +35,7 @@ public class ClassAtomImpl extends AtomImpl implements ClassAtom
   
   public String getClassName() { return className; }
   public AtomArgument getArgument1() { return argument1; }
+
+  public String toString() { return getClassName() + "(" + getArgument1() + ")"; }
 } // ClassAtomImpl
 

@@ -39,6 +39,7 @@ public class SWRLRuleImpl implements SWRLRule
   public List<Atom> getHeadAtoms() { return headAtoms; }
   public List<Atom> getBodyAtoms() { return bodyAtoms; }
   public boolean isSQWRL() { return hasSQWRLBuiltIns; }
+  public boolean usesSQWRLCollections() { return hasSQWRLCollectionBuiltIns; }
 
   public List<BuiltInAtom> getBuiltInAtomsFromHead() { return getBuiltInAtoms(headAtoms); }
   public List<BuiltInAtom> getBuiltInAtomsFromHead(Set<String> builtInNames) { return getBuiltInAtoms(headAtoms, builtInNames); }
@@ -262,6 +263,8 @@ public class SWRLRuleImpl implements SWRLRule
       String collectionName = builtInAtom.getArgumentVariableName(0); // First argument is the collection name
 
       hasSQWRLCollectionBuiltIns = true;
+      System.err.println("preprocessSQWRLMakeBuiltIns");
+
       builtInAtom.setIsSQWRLMakeCollection();
       
       if (!collectionNames.contains(collectionName)) collectionNames.add(collectionName);
@@ -296,6 +299,7 @@ public class SWRLRuleImpl implements SWRLRule
           throw new SQWRLException("collection-operation built-ins must have at least one argument");
 
         hasSQWRLCollectionBuiltIns = true;
+        System.err.println("preprocessSQWRLOperationBuiltIns");
 
         for (String variableName : builtInAtom.getArgumentsVariableNames()) {
           if (makeCollectionPatternArguments.containsKey(variableName)) { // Variable refers to a set
@@ -316,5 +320,28 @@ public class SWRLRuleImpl implements SWRLRule
       } // if
     } // for
   } // preprocessSQWRLOperationBuiltIns
+
+  public String toString()
+  {
+    String result = getRuleName() + ": ";
+    boolean isFirst = true;
+
+    for (Atom atom : getBodyAtoms()) {
+      if (!isFirst) result += " ^ ";
+      result += "" + atom;
+      isFirst = false;
+    } // for
+    
+    result += " -> ";
+
+    isFirst = true;
+    for (Atom atom : getHeadAtoms()) {
+      if (!isFirst) result += " ^ ";
+      result += "" + atom;
+      isFirst = false;
+    } // for
+
+    return result;
+  } // toString
 
 } // SWRLRuleImpl

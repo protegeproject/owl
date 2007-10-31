@@ -28,7 +28,7 @@ public class DatavaluedPropertyAtomImpl extends AtomImpl implements DatavaluedPr
       AtomArgument argument = OWLFactory.createVariableAtomArgument(variable.getName());
       addReferencedVariableName(variable.getName());
       argument1 = argument;
-    } else if (atom.getArgument1() instanceof OWLIndividual) {
+    } else if (atom.getArgument1() instanceof edu.stanford.smi.protegex.owl.model.OWLIndividual) {
       edu.stanford.smi.protegex.owl.model.OWLIndividual individual = (edu.stanford.smi.protegex.owl.model.OWLIndividual)atom.getArgument1();
       argument1 = OWLFactory.createOWLIndividual(individual.getName());
     } else throw new OWLFactoryException("unexpected argument first to datavalued property atom '" + atom.getBrowserText() + 
@@ -51,4 +51,17 @@ public class DatavaluedPropertyAtomImpl extends AtomImpl implements DatavaluedPr
   public String getPropertyName() { return propertyName; }  
   public AtomArgument getArgument1() { return argument1; }
   public AtomArgument getArgument2() { return argument2; }
+
+  public String toString() 
+  { 
+    String result = "" + getPropertyName() + "(" + getArgument1() + ", ";
+
+    if (getArgument2() instanceof OWLDatatypeValue && ((OWLDatatypeValue)getArgument2()).isString())
+      result += "\"" + getArgument2() + "\"";
+    else result += "" + getArgument2();
+
+    result += ")"; 
+
+    return result;
+  } // toString
 } // DatavaluedPropertyAtomImpl

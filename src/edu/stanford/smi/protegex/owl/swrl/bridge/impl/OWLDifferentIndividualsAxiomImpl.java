@@ -18,4 +18,5 @@ public class OWLDifferentIndividualsAxiomImpl extends OWLNaryIndividualAxiomImpl
     addIndividual(individual2);
   } // OWLDifferentIndividualsAxiomImpl
 
+  public String toString() { return "differentFrom" + super.toString(); }  
 } // OWLDifferentIndividualsAxiomImpl

@@ -10,4 +10,18 @@ import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.*;
 public class VariableBuiltInArgumentImpl extends BuiltInArgumentImpl implements VariableBuiltInArgument
 {
   public VariableBuiltInArgumentImpl(String variableName) { super(variableName); }
+
+  public String toString() 
+  {
+    String result = "";
+
+    try {
+      result = "?" + getVariableName();
+    } catch (BuiltInException e) {
+      result = "INVALID VariableBuiltInArgument: " + e.getMessage();
+    } // try
+
+    return result;
+  } // toString      
+      
 } // VariableBuiltInArgumentImpl

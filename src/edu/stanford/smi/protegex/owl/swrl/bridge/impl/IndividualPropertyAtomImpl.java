@@ -26,7 +26,7 @@ public class IndividualPropertyAtomImpl extends AtomImpl implements IndividualPr
       AtomArgument argument = OWLFactory.createVariableAtomArgument(variable.getName());
       addReferencedVariableName(variable.getName());
       argument1 = argument;
-    } else if (atom.getArgument1() instanceof OWLIndividual) {
+    } else if (atom.getArgument1() instanceof edu.stanford.smi.protegex.owl.model.OWLIndividual) {
       edu.stanford.smi.protegex.owl.model.OWLIndividual individual = (edu.stanford.smi.protegex.owl.model.OWLIndividual)atom.getArgument1();
       argument1 = OWLFactory.createOWLIndividual(individual.getName());
     } else throw new OWLFactoryException("unexpected first argument to individual property atom '" + atom.getBrowserText() + 
@@ -37,7 +37,7 @@ public class IndividualPropertyAtomImpl extends AtomImpl implements IndividualPr
       AtomArgument argument = OWLFactory.createVariableAtomArgument(variable.getName());
       addReferencedVariableName(variable.getName());
       argument2 = argument;
-    } else if (atom.getArgument2() instanceof OWLIndividual) {
+    } else if (atom.getArgument2() instanceof edu.stanford.smi.protegex.owl.model.OWLIndividual) {
       edu.stanford.smi.protegex.owl.model.OWLIndividual individual = (edu.stanford.smi.protegex.owl.model.OWLIndividual)atom.getArgument2();
       argument2 = OWLFactory.createOWLIndividual(individual.getName());
     } else throw new OWLFactoryException("unexpected second argument to individual property atom '" + atom.getBrowserText() + 
@@ -51,4 +51,6 @@ public class IndividualPropertyAtomImpl extends AtomImpl implements IndividualPr
   public String getPropertyName() { return propertyName; }  
   public AtomArgument getArgument1() { return argument1; }
   public AtomArgument getArgument2() { return argument2; }  
+
+  public String toString() { return getPropertyName() + "(" + getArgument1() + ", " + getArgument2() + ")"; }
 } // IndividualPropertyAtomImpl

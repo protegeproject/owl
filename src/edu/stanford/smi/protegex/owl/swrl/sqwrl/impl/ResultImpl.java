@@ -581,7 +581,6 @@ public class ResultImpl implements ResultGenerator, SQWRLResult, Serializable
     return result;
   } // distinct
 
-  // TODO: not very efficient
   private List<List<ResultValue>> aggregate(List<List<ResultValue>> rows, List<String> allColumnNames, 
                                             HashMap<Integer, String> aggregateColumnIndexes)
     throws SQWRLException
@@ -596,26 +595,25 @@ public class ResultImpl implements ResultGenerator, SQWRLResult, Serializable
     int rowIndex;
 
     for (List<ResultValue> row : rows) {
-      rowIndex = Collections.binarySearch(result, row, rowComparator); // Find a row with the same values for non aggregated columns.
+      rowIndex = findRowIndex(result, row, rowComparator); // Find a row with the same values for non aggregated columns.
 
       if (rowIndex < 0) { // Row with same values for non aggregated columns not yet present in result.
         aggregateRowMap = new HashMap<Integer, List<ResultValue>>();
-
-        for (Integer aggregateColumnIndex : aggregateColumnIndexes.keySet()) {
+        // Find value for each aggregated column in row and add each to map indexed by result row
+        for (Integer aggregateColumnIndex : aggregateColumnIndexes.keySet()) { 
           values = new ArrayList<ResultValue>();
           value = row.get(aggregateColumnIndex.intValue());
           values.add(value);
           aggregateRowMap.put(aggregateColumnIndex, values);
         } // for
-        aggregatesMap.put(Integer.valueOf(result.size()), aggregateRowMap);
+        aggregatesMap.put(Integer.valueOf(result.size()), aggregateRowMap); // 
         result.add(row);
-        Collections.sort(result, rowComparator); // binary search is expecting a sorted list
       } else { // We found a row that has the same values for the non aggregated columns.
-        aggregateRowMap = aggregatesMap.get(Integer.valueOf(rowIndex));
+        aggregateRowMap = aggregatesMap.get(Integer.valueOf(rowIndex)); // Find the aggregate map
         for (Integer aggregateColumnIndex : aggregateColumnIndexes.keySet()) {
-          values = aggregateRowMap.get(aggregateColumnIndex);
-          value = row.get(aggregateColumnIndex); 
-          values.add(value);
+          value = row.get(aggregateColumnIndex.intValue());  // Find value
+          values = aggregateRowMap.get(aggregateColumnIndex); // Find row map
+          values.add(value); // Add value
         } // for
       } // if
     } // for
@@ -757,8 +755,21 @@ public class ResultImpl implements ResultGenerator, SQWRLResult, Serializable
     return OWLFactory.createOWLDatatypeValue(values.size());
   } // count
 
+  // TODO: linear search is not very efficient. 
+  private int findRowIndex(List<List<ResultValue>> result, List<ResultValue> rowToFind, Comparator<List<ResultValue>> rowComparator)
+  {
+    int rowIndex = 0;
+
+    for (List<ResultValue> row : result) {
+      if (rowComparator.compare(rowToFind, row) == 0) return rowIndex;
+      rowIndex++;
+    } // for
+
+    return -1;
+  } // findRowIndex
+
   // Quick and dirty: all checking left to the Java runtime.
-  private static class RowComparator implements Comparator<List<ResultValue>>, Serializable
+  private static class RowComparator implements Comparator<List<ResultValue>>
   {
     private List<Integer> orderByColumnIndexes;
     private boolean ascending;

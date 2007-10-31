@@ -19,4 +19,20 @@ public abstract class OWLNaryIndividualAxiomImpl implements OWLNaryIndividualAxi
   void addIndividual(OWLIndividual owlIndividual) { individuals.add(owlIndividual); }
   void addIndividuals(Set<OWLIndividual> individuals) { this.individuals.addAll(individuals); }
 
+  public String toString() 
+  { 
+    String result = "(";
+    boolean isFirst = true;
+
+    for (OWLIndividual individual: individuals) {
+      if (!isFirst) result += ", ";
+      result += individual.toString();
+      isFirst = false;
+    } // for
+
+    result += ")";
+
+    return result;
+  } // toString    
+
 } // OWLNaryIndividualAxiomImpl

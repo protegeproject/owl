@@ -17,4 +17,6 @@ public class OWLSameIndividualsAxiomImpl extends OWLNaryIndividualAxiomImpl impl
 
   public OWLIndividual getIndividual1() { return individual1; }
   public OWLIndividual getIndividual2() { return individual2; }
+
+  public String toString() { return "sameAs" + super.toString(); }  
 } // OWLSameIndividualsAxiomImpl

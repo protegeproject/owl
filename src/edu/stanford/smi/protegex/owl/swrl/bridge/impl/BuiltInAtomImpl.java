@@ -154,4 +154,22 @@ public class BuiltInAtomImpl extends AtomImpl implements BuiltInAtom
     return result;
   } // buildArgumentList
 
+  public String toString() 
+  {
+    String result = getBuiltInName() + "(";
+    boolean isFirst = true;
+
+    for (BuiltInArgument argument : getArguments()) {
+      if (!isFirst) result += ", ";
+      if (argument instanceof OWLDatatypeValue && ((OWLDatatypeValue)argument).isString())
+        result += "\"" + argument + "\"";
+      else result += "" + argument;
+      isFirst = false;
+    } // for
+
+    result += ")";
+
+    return result;
+  } // toString
+
 } // BuiltInAtomImpl

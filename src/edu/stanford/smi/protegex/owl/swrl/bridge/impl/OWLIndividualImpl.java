@@ -102,15 +102,13 @@ public class OWLIndividualImpl extends PropertyValueImpl implements OWLIndividua
 
   public String toString() { return getIndividualName(); }
 
+  // We consider individuals to be equal if they have the same name.
   public boolean equals(Object obj)
   {
     if(this == obj) return true;
     if((obj == null) || (obj.getClass() != this.getClass())) return false;
     OWLIndividualImpl impl = (OWLIndividualImpl)obj;
-    return (getIndividualName() == impl.getIndividualName() || (getIndividualName() != null && getIndividualName().equals(impl.getIndividualName()))) && 
-      (definingClassNames == impl.definingClassNames || (definingClassNames != null && definingClassNames.equals(impl.definingClassNames))) &&
-      (definingSuperClassNames == impl.definingSuperClassNames || (definingSuperClassNames != null && definingSuperClassNames.equals(impl.definingSuperClassNames))) &&
-      (definingEquivalentClassNames == impl.definingEquivalentClassNames || (definingEquivalentClassNames != null && definingEquivalentClassNames.equals(impl.definingEquivalentClassNames)));
+    return (getIndividualName() == impl.getIndividualName() || (getIndividualName() != null && getIndividualName().equals(impl.getIndividualName())));
   } // equals
 
   public int hashCode()
@@ -118,9 +116,6 @@ public class OWLIndividualImpl extends PropertyValueImpl implements OWLIndividua
     int hash = 7;
 
     hash = hash + (null == getIndividualName() ? 0 : getIndividualName().hashCode());
-    hash = hash + (null == definingClassNames ? 0 : definingClassNames.hashCode());
-    hash = hash + (null == definingSuperClassNames ? 0 : definingSuperClassNames.hashCode());
-    hash = hash + (null == definingEquivalentClassNames ? 0 : definingEquivalentClassNames.hashCode());
 
     return hash;
   } // hashCode
