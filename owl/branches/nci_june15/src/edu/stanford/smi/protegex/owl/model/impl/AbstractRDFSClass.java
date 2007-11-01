@@ -71,6 +71,7 @@ public abstract class AbstractRDFSClass extends DefaultCls implements RDFSClass 
 		} catch (Throwable e) {
 			getOWLModel().rollbackTransaction();
 			Log.getLogger().log(Level.WARNING, "There were errors while creating clone of " + this, e);
+			throw new RuntimeException(e);
 		}
         return clone;
     }
