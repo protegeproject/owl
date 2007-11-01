@@ -1,15 +1,17 @@
 package edu.stanford.smi.protegex.owl.ui.properties;
 
+import java.awt.BorderLayout;
+
+import javax.swing.JPanel;
+import javax.swing.JSplitPane;
+
 import edu.stanford.smi.protege.server.framestore.RemoteClientFrameStore;
 import edu.stanford.smi.protege.server.metaproject.impl.OperationImpl;
-import edu.stanford.smi.protege.util.SelectionListener;
-import edu.stanford.smi.protege.util.SelectionEvent;
+import edu.stanford.smi.protege.ui.FrameRenderer;
 import edu.stanford.smi.protege.util.CollectionUtilities;
-import edu.stanford.smi.protege.util.ComponentUtilities;
+import edu.stanford.smi.protege.util.SelectionEvent;
+import edu.stanford.smi.protege.util.SelectionListener;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
-
-import javax.swing.*;
-import java.awt.*;
 
 /**
  * User: matthewhorridge<br>
@@ -65,5 +67,9 @@ public class OWLPropertyHierarchyPanel extends JPanel {
 		superpropertiesPanel.setEnabled(enabled);
 		super.setEnabled(enabled);
 	};
+	
+	public void setRenderer(FrameRenderer renderer) {
+		subpropertyPane.setRenderer(renderer);		
+	}
 }
 
