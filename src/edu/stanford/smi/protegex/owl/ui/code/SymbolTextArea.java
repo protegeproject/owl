@@ -29,6 +29,7 @@ import edu.stanford.smi.protegex.owl.model.OWLNAryLogicalClass;
 import edu.stanford.smi.protegex.owl.model.OWLUnionClass;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
 import edu.stanford.smi.protegex.owl.model.RDFSClass;
+import edu.stanford.smi.protegex.owl.model.classparser.ParserUtils;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLIntersectionClass;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLUnionClass;
 import edu.stanford.smi.protegex.owl.ui.resourceselection.ResourceIgnoreCaseComparator;
@@ -90,13 +91,10 @@ public abstract class SymbolTextArea extends JTextArea
     protected void acceptSelectedFrame() {
         String text = getText();
         int pos = getCaretPosition();
-        int i = pos - 1;
-        while (i >= 0 && SymbolTextField.isIdChar(text.charAt(i))) {
-            i--;
-        }
-        String prefix = text.substring(i + 1, pos);
+        int i = ParserUtils.findSplittingPoint(text.substring(0, pos));
+        String prefix = text.substring(i, pos);
 
-        extendPartialName(prefix, ((Frame) comboBox.getSelectedItem()).getBrowserText());
+        extendPartialName(prefix, resourceNameMatcher.getInsertString((RDFResource) comboBox.getSelectedItem()));
         updateErrorDisplay();
         closeComboBox();
     }
@@ -183,11 +181,10 @@ public abstract class SymbolTextArea extends JTextArea
     private void extendPartialName(boolean autoInsert) {
         String text = getText();
         int pos = getCaretPosition();
-        int i = pos - 1;
-        while (i >= 0 && SymbolTextField.isIdChar(text.charAt(i))) i--;
+        int i = ParserUtils.findSplittingPoint(text.substring(0, pos));
 
-        String prefix = text.substring(i + 1, pos);
-        String leftString = text.substring(0, i + 1);
+        String prefix = text.substring(i, pos);
+        String leftString = text.substring(0, i);
         Set<RDFResource> resources = resourceNameMatcher.getMatchingResources(prefix, leftString, owlModel);
         if (autoInsert && resources.size() == 1) {
             RDFResource resource = resources.iterator().next();
@@ -407,12 +404,9 @@ public abstract class SymbolTextArea extends JTextArea
         if (isComboBoxVisible()) {
             String text = getText();
             int pos = getCaretPosition();
-            int i = pos - 1;
-            while (i >= 0 && SymbolTextField.isIdChar(text.charAt(i))) {
-                i--;
-            }
-            String prefix = text.substring(i + 1, pos);
-            String leftString = text.substring(0, i + 1);
+            int i = ParserUtils.findSplittingPoint(text.substring(0, pos));
+            String prefix = text.substring(i, pos);
+            String leftString = text.substring(0, i);
             Set<RDFResource> frames = resourceNameMatcher.getMatchingResources(prefix, leftString, owlModel);
             if (frames.size() == 0) {
                 closeComboBox();
