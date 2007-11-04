@@ -92,7 +92,7 @@ public class ManchesterOWLTextPane extends JTextPane implements KeyListener {
 
     private DocumentListener docListener;
 
-    private Map styleMap;
+    private Map<String, Style> styleMap;
 
     private Style defaultStyle;
 
@@ -170,7 +170,7 @@ public class ManchesterOWLTextPane extends JTextPane implements KeyListener {
         Style logicalKWStyle = doc.addStyle("lk", null);
         StyleConstants.setForeground(logicalKWStyle, LOGICAL_OPERAND_KEYWORD_COLOR);
         StyleConstants.setBold(logicalKWStyle, true);
-        styleMap = new HashMap();
+        styleMap = new HashMap<String, Style>();
         styleMap.put(ManchesterOWLParserUtil.getAllKeyword(), restrictionKWStyle);
         styleMap.put(ManchesterOWLParserUtil.getSomeKeyword(), restrictionKWStyle);
         styleMap.put(ManchesterOWLParserUtil.getHasKeyword(), restrictionKWStyle);
@@ -198,7 +198,7 @@ public class ManchesterOWLTextPane extends JTextPane implements KeyListener {
                 StyledDocument doc = (StyledDocument) getDocument();
                 while (tokenizer.hasMoreTokens()) {
                     String curToken = tokenizer.nextToken();
-                    Style style = (Style) styleMap.get(curToken);
+                    Style style = styleMap.get(curToken);
                     if (style != null) {
                         doc.setCharacterAttributes(start, curToken.length(), style, true);
                     }
