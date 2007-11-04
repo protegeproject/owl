@@ -23,6 +23,7 @@ import edu.stanford.smi.protege.ui.FrameRenderer;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
+import edu.stanford.smi.protegex.owl.model.classparser.ParserUtils;
 import edu.stanford.smi.protegex.owl.ui.resourceselection.ResourceIgnoreCaseComparator;
 
 /**
@@ -193,12 +194,9 @@ public abstract class SymbolTextField extends JTextField
     private void extendPartialName(boolean autoInsert) {
         String text = getText();
         int pos = getCaretPosition();
-        int i = pos - 1;
-        while (i >= 0 && isIdChar(text.charAt(i))) {
-            i--;
-        }
-        String prefix = text.substring(i + 1, pos);
-        String leftString = text.substring(0, i + 1);
+        int i = ParserUtils.findSplittingPoint(text.substring(0, pos));
+        String prefix = text.substring(i, pos);
+        String leftString = text.substring(0, i);
         Set<RDFResource> resources = resourceNameMatcher.getMatchingResources(prefix, leftString, owlModel);
         if (autoInsert && resources.size() == 1) {
             RDFResource resource = resources.iterator().next();
@@ -392,12 +390,9 @@ public abstract class SymbolTextField extends JTextField
         if (isComboBoxVisible()) {
             String text = getText();
             int pos = getCaretPosition();
-            int i = pos - 1;
-            while (i >= 0 && isIdChar(text.charAt(i))) {
-                i--;
-            }
-            String prefix = text.substring(i + 1, pos);
-            String leftString = text.substring(0, i + 1);
+            int i = ParserUtils.findSplittingPoint(text.substring(0, pos));
+            String prefix = text.substring(i, pos);
+            String leftString = text.substring(0, i);
             Set<RDFResource> frames = resourceNameMatcher.getMatchingResources(prefix, leftString, owlModel);
             if (frames.size() == 0) {
                 closeComboBox();
