@@ -35,15 +35,13 @@ public interface SWRLRuleEngineBridge extends SWRLRuleEngine, SQWRLQueryEngine
   void createOWLIndividual(OWLIndividual owlIndividual) throws SWRLRuleEngineBridgeException;
   OWLIndividual createOWLIndividual(OWLClass owlClass) throws SWRLRuleEngineBridgeException;
   void createOWLIndividuals(Set<OWLIndividual> individuals) throws SWRLRuleEngineBridgeException;
-  OWLDatatypePropertyAssertionAxiom createOWLDatatypePropertyAssertionAxiom(OWLIndividual subject, OWLProperty property,
-                                                                            OWLDatatypeValue object) 
+
+  OWLDatatypePropertyAssertionAxiom createOWLDatatypePropertyAssertionAxiom(OWLIndividual subject, OWLProperty property, OWLDatatypeValue object) 
     throws SWRLRuleEngineBridgeException;
   OWLDatatypePropertyAssertionAxiom createOWLDatatypePropertyAssertionAxiom(OWLDatatypePropertyAssertionAxiom axiom)
     throws SWRLRuleEngineBridgeException;
-  void createOWLDatatypePropertyAssertionAxioms(Set<OWLDatatypePropertyAssertionAxiom> axioms)
-    throws SWRLRuleEngineBridgeException;
-  OWLObjectPropertyAssertionAxiom createOWLObjectPropertyAssertionAxiom(OWLIndividual subject, OWLProperty property,
-                                                                        OWLIndividual object) 
+  void createOWLDatatypePropertyAssertionAxioms(Set<OWLDatatypePropertyAssertionAxiom> axioms) throws SWRLRuleEngineBridgeException;
+  OWLObjectPropertyAssertionAxiom createOWLObjectPropertyAssertionAxiom(OWLIndividual subject, OWLProperty property, OWLIndividual object) 
     throws SWRLRuleEngineBridgeException;
  OWLObjectPropertyAssertionAxiom createOWLObjectPropertyAssertionAxiom(OWLObjectPropertyAssertionAxiom axiom)
     throws SWRLRuleEngineBridgeException;
@@ -53,10 +51,8 @@ public interface SWRLRuleEngineBridge extends SWRLRuleEngine, SQWRLQueryEngine
   boolean isCreatedPropertyAssertionAxiom(OWLPropertyAssertionAxiom axiom);
 
   // Built-in invocation and argument binding 
-  boolean invokeSWRLBuiltIn(String ruleName, String builtInName, int builtInIndex, List<BuiltInArgument> arguments)
-    throws BuiltInException;
-  void generateBuiltInBinding(String ruleName, String builtInName, int builtInIndex, List<BuiltInArgument> arguments) 
-    throws BuiltInException;
+  boolean invokeSWRLBuiltIn(String ruleName, String builtInName, int builtInIndex, List<BuiltInArgument> arguments) throws BuiltInException;
+  void generateBuiltInBinding(String ruleName, String builtInName, int builtInIndex, List<BuiltInArgument> arguments) throws BuiltInException;
 
   // Mapper to non OWL storage formats
   void setMapper(Mapper mapper);

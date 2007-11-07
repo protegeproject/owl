@@ -585,7 +585,7 @@ public abstract class AbstractSWRLRuleEngineBridge implements SWRLRuleEngineBrid
     } // if
   } // importOWLIndividual
 
-  // We only import owl:SameAs, owl:differentFrom, and owl:AllDifferent, owl:equivalentProperty, and owl:equivalentClass axioms at the
+  // We only import owl:sameAs, owl:differentFrom, and owl:allDifferent, owl:equivalentProperty, and owl:equivalentClass axioms at the
   // moment. We support owl:equivalentProperty and owl:equivalentClass axioms indirectly through the OWLIndividual class.
   private void importAxioms() throws SWRLRuleEngineBridgeException
   {

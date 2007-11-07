@@ -4,6 +4,9 @@ package edu.stanford.smi.protegex.owl.swrl.ormap.impl;
 import edu.stanford.smi.protegex.owl.swrl.ormap.*;
 import edu.stanford.smi.protegex.owl.swrl.ormap.exceptions.*;
 
+// Use the Protege class loader to find JDBC drivers
+import edu.stanford.smi.protege.plugin.PluginUtilities;
+
 import java.sql.*;
 import java.util.*;
 
@@ -13,7 +16,7 @@ public class JDBCConnection
   private Statement queryStmt;
   private DatabaseMetaData dbmd;
 
-  public JDBCConnection(String jdbcConnectionString, String id, String password) throws JDBCException
+  public JDBCConnection(String jdbcConnectionString, String id, String password) throws SQLException
   {
     try {
       connection = DriverManager.getConnection(jdbcConnectionString, id, password);
@@ -26,7 +29,7 @@ public class JDBCConnection
     } // try
   } // JDBCConnection
 
-  public static String getConnectionString(String jdbcDriverName, String serverName, String databaseName, int portNumber) throws JDBCException
+  public static String getConnectionString(String jdbcDriverName, String serverName, String databaseName, int portNumber) throws SQLException
   {
     String url = "";
 
@@ -50,31 +53,31 @@ public class JDBCConnection
     return url;
   } // getConnectionString
 
-  public static void loadDrivers(String jdbcDriverName) throws JDBCException
+  public static void loadDrivers(String jdbcDriverName) throws SQLException
   {
     if (jdbcDriverName.equals("SQLServerJDBCDriver2000")) {
-      try { Class.forName("com.microsoft.jdbc.sqlserver.SQLServerDriver");
+      try { PluginUtilities.forName("com.microsoft.jdbc.sqlserver.SQLServerDriver", true);
       } catch (Exception e) {
 	throw new JDBCException("failed to load Microsoft SQL Server 2000 JDBC driver");
       } // try
     } else if (jdbcDriverName.equals("SQLServerJDBCDriver2005")) {
-      try { Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+      try { PluginUtilities.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver", true);
       } catch (Exception e) {
 	throw new JDBCException("failed to load Microsoft SQL Server 2005 JDBC driver");
       } // try
     } else if (jdbcDriverName.equals("SunJDBCDriver")) { 
-      try { Class.forName("sun.jdbc.odbc.JdbcOdbcDriver");
+      try { PluginUtilities.forName("sun.jdbc.odbc.JdbcOdbcDriver", true);
       } catch (Exception e) {
         throw new JDBCException("failed to load Sun JDBC driver");
       } // try
     } else if (jdbcDriverName.equals("OracleThin")) { 
-      try { Class.forName("oracle.jdbc.driver.OracleDriver");
+      try { PluginUtilities.forName("oracle.jdbc.driver.OracleDriver", true);
       } catch (Exception e) {
       throw new JDBCException("failed to load Oracle JDBC driver");
       } // try
     } else if (jdbcDriverName.equals("com.mysql.jdbc.Driver")) {
       try {
-        Class.forName("com.mysql.jdbc.Driver").newInstance();
+        PluginUtilities.forName("com.mysql.jdbc.Driver", true).newInstance();
       } catch (Exception e) {
 	throw new JDBCException("failed to load MySQL JDBC driver");
       } // try
@@ -83,7 +86,7 @@ public class JDBCConnection
       else throw new JDBCException("unknown JDBC driver '" + jdbcDriverName + "'");
     } // if
   } // getConnectionString
-
+  
   public synchronized ResultSet executeQuery(String query) throws SQLException
   {
     ResultSet rs = null;
@@ -161,26 +164,26 @@ public class JDBCConnection
     return catalogs;
   } // getCatalogs
 
-  public synchronized Set<String> getSchemas() throws SQLException
+  public synchronized Set<String> getSchemaNames() throws SQLException
   {
-    Set<String> schemas = new HashSet<String>();
+    Set<String> schemaNames = new HashSet<String>();
     ResultSet rs = dbmd.getSchemas();
 
     while (rs.next()) {
-      String s = rs.getString(1);
-      schemas.add(s);
+      String schemaName = rs.getString(1);
+      schemaNames.add(schemaName);
     } // while
 
     rs.close();
 
-    return schemas;
-  } // getSchemas
+    return schemaNames;
+  } // getSchemaNames
 
   public synchronized Set<String> getTableNames(String schemaName) throws SQLException
   {
     Set<String> tableNames = new HashSet<String>();
     ResultSet rs = dbmd.getTables(null, schemaName, null, null);
-
+    
     while (rs.next()) {
       String s = rs.getString("TABLE_NAME");
       tableNames.add(s);
@@ -191,15 +194,11 @@ public class JDBCConnection
     return tableNames;
   } // getTableNames
 
-  public synchronized void determinePrimaryKey(Table table) throws SQLException
+  public synchronized Set<String> getPrimaryKeyColumnNames(String schemaName, String tableName) throws SQLException
   {
     Set<String> keyColumnNames = new HashSet<String>();
-    String tableName = table.getTableName();
-    String schemaName = table.getSchemaName();
     ResultSet rs = dbmd.getPrimaryKeys(null, schemaName, tableName);
-    Set<Column> columns = new HashSet<Column>();
-    PrimaryKey primaryKey;
-
+ 
     while (rs.next()) {
       String s = rs.getString("COLUMN_NAME");
       keyColumnNames.add(s);
@@ -207,54 +206,47 @@ public class JDBCConnection
 
     rs.close();
 
-    if (!keyColumnNames.isEmpty()) {
-
-      for (String columnName : keyColumnNames) {
-        int columnType = getColumnType(schemaName, tableName, columnName);
-        Column column = new ColumnImpl(columnName, columnType);
-        columns.add(column);
-      } // for
-      
-      primaryKey = new PrimaryKeyImpl(table, columns);
-      
-      table.setPrimaryKey(primaryKey);
-    } // if
+    return keyColumnNames;
   } // getPrimaryKeyColumnNames
 
-  public synchronized void determineForeignKeys(Table table) throws SQLException
+  /**
+   ** Returns a (possibly empty) map of maps of the form <referencedTableName, <baseKeyColumnName, referencedKeyColumnName>>.
+   */
+  public synchronized Map<String, Map<String, String>> getForeignKeys(String schemaName, String tableName) throws SQLException
   {
-    Set<String> keyColumnNames = new HashSet<String>();
-    String tableName = table.getTableName();
-    String schemaName = table.getSchemaName();
     ResultSet rs = dbmd.getImportedKeys(null, schemaName, tableName);
+    Map<String, Map<String, String>> result = new HashMap<String, Map<String, String>>();
+    Map<String, String> keyColumnNamesMap = new HashMap<String, String>();
     int oldKeySequenceNumber = -1;
-    Set<Column> keyColumns = new HashSet<Column>();
-    Set<Table> keyedTables = new HashSet<Table>();
-    Set<ForeignKey> foreignKeys = new HashSet<ForeignKey>();
+    String oldReferencedTableName = null;
 
     while (rs.next()) {
-      String foreignKeyTableName = rs.getString("FKTABLE_NAME");
-      String foreignKeyColumnName = rs.getString("FKCOLUMN_NAME");
-      String primaryKeyTableName = rs.getString("PKTABLE_NAME");
-      String primaryKeyColumnName = rs.getString("PKCOLUMN_NAME");
+      String baseTableName = rs.getString("PKTABLE_NAME");
+      String baseKeyColumnName = rs.getString("PKCOLUMN_NAME");
+      String referencedTableName = rs.getString("FKTABLE_NAME");
+      String referencedKeyColumnName = rs.getString("FKCOLUMN_NAME");
       int keySequenceNumber = rs.getInt("KEY_SEQ");
 
-      if (keySequenceNumber != oldKeySequenceNumber) {
-        ForeignKey foreignKey = new ForeignKeyImpl(table, keyColumns, keyedTables);
-        foreignKeys.add(foreignKey);
-        keyColumns = new HashSet<Column>();
-        keyedTables = new HashSet<Table>();
-        oldKeySequenceNumber = keySequenceNumber;
+      if (!baseTableName.equalsIgnoreCase(tableName)) 
+        throw new JDBCException("expecting table '" + tableName + "', got '" + baseTableName + "' in call to getImportedKeys");
+
+      if (oldKeySequenceNumber == -1 || keySequenceNumber == oldKeySequenceNumber) { // Still processing the first or same key
+        keyColumnNamesMap.put(baseKeyColumnName, referencedKeyColumnName);
+      } else { // New key - first save old one
+        result.put(referencedTableName, keyColumnNamesMap);
+        keyColumnNamesMap = new HashMap<String, String>();
       } // if
 
-      keyColumns.add(new ColumnImpl(primaryKeyColumnName, getColumnType(schemaName, tableName, primaryKeyColumnName)));
-      keyedTables.add(new TableImpl(table.getDatabase(), schemaName, foreignKeyTableName, getColumns(schemaName, foreignKeyTableName)));
+      oldKeySequenceNumber = keySequenceNumber;
+      oldReferencedTableName = referencedTableName;
     } // while
+
+    if (oldKeySequenceNumber != -1) result.put(oldReferencedTableName, keyColumnNamesMap); // Save the final key
 
     rs.close();
 
-    if (!foreignKeys.isEmpty()) table.setForeignKeys(foreignKeys);
-  } // determineForeignKeys
+    return result;
+  } // getForeignKeys
 
   public synchronized void closeConnection() throws SQLException
   {

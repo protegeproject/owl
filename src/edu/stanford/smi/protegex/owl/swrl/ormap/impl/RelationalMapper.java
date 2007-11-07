@@ -20,19 +20,18 @@ public class RelationalMapper implements Mapper
   private Map<String, OWLClassMap> classMaps;
   private Map<String, OWLObjectPropertyMap> objectPropertyMaps;
   private Map<String, OWLDatatypePropertyMap> datatypePropertyMaps;
-  private Map<String, Database> databases;
-  private Map<String, DatabaseConnection> databaseConnections;
+  private Set<Database> databases;
+  private Map<Database, DatabaseConnection> databaseConnections;
 
   public RelationalMapper(SQWRLQueryEngine queryEngine) throws MapperException
   {
     classMaps = new HashMap<String, OWLClassMap>();
     objectPropertyMaps = new HashMap<String, OWLObjectPropertyMap>();
     datatypePropertyMaps = new HashMap<String, OWLDatatypePropertyMap>();
-    databases = new HashMap<String, Database>();
-    databaseConnections = new HashMap<String, DatabaseConnection>();
+    databases = new HashSet<Database>();
+    databaseConnections = new HashMap<Database, DatabaseConnection>();
 
     readMaps(queryEngine);
-    createDatabaseConnections();
   } // RelationalMapper
 
   public void open() throws MapperException
@@ -98,14 +97,14 @@ public class RelationalMapper implements Mapper
     OWLClassMap classMap = getOWLClassMap(className);
     PrimaryKey primaryKey = classMap.getPrimaryKey();
     String primaryKeyColumnName = primaryKey.getKeyColumns().iterator().next().getColumnName(); // Will have checked for non composite key
-    Database database = primaryKey.getTable().getDatabase();
-    String tableName = primaryKey.getTable().getTableName();
+    Database database = primaryKey.getBaseTable().getDatabase();
+    String tableName = primaryKey.getBaseTable().getTableName();
     String columnName = primaryKey.getKeyColumns().iterator().next().getColumnName();
     Set<OWLIndividual> result = new HashSet<OWLIndividual>();
     DatabaseConnection databaseConnection;
     ResultSet rs;
 
-    databaseConnection = getDatabaseConnection(database.getJDBCConnectionString());
+    databaseConnection = getDatabaseConnection(database);
 
     try { 
       rs = databaseConnection.executeQuery("SELECT " + primaryKeyColumnName + " FROM " + tableName);
@@ -133,18 +132,18 @@ public class RelationalMapper implements Mapper
     String propertyName = owlProperty.getPropertyName();
     OWLObjectPropertyMap propertyMap = getOWLObjectPropertyMap(propertyName);
     ForeignKey foreignKey = propertyMap.getForeignKey();
-    String subjectTableName = foreignKey.getTable().getTableName();
-    String subjectPrimaryKeyColumnName = foreignKey.getTable().getPrimaryKey().getKeyColumns().iterator().next().getColumnName();
-    String subjectForeignKeyColumnName = foreignKey.getKeyColumns().iterator().next().getColumnName();
-    String objectTableName = foreignKey.getKeyedTables().iterator().next().getTableName();
-    String objectPrimaryKeyColumnName = foreignKey.getKeyedTables().iterator().next().getPrimaryKey().getKeyColumns().iterator().next().getColumnName();
-    Database database = foreignKey.getTable().getDatabase();
+    String subjectTableName = foreignKey.getBaseTable().getTableName();
+    String subjectPrimaryKeyColumnName = foreignKey.getBaseTable().getPrimaryKey().getKeyColumns().iterator().next().getColumnName();
+    String subjectForeignKeyColumnName = foreignKey.getForeignKeyColumns().iterator().next().getColumnName();
+    String objectTableName = foreignKey.getReferencedTable().getTableName();
+    String objectPrimaryKeyColumnName = foreignKey.getReferencedTable().getPrimaryKey().getKeyColumns().iterator().next().getColumnName();
+    Database database = foreignKey.getBaseTable().getDatabase();
     Set<OWLObjectPropertyAssertionAxiom> result = new HashSet<OWLObjectPropertyAssertionAxiom>();
     DatabaseConnection databaseConnection;
     String query;
     ResultSet rs;
 
-    databaseConnection = getDatabaseConnection(database.getJDBCConnectionString());
+    databaseConnection = getDatabaseConnection(database);
 
     query = "SELECT S." + subjectPrimaryKeyColumnName + ", S." + subjectForeignKeyColumnName + ", O." + objectPrimaryKeyColumnName + " " +
             "FROM " + subjectTableName + " AS S, " + objectTableName + " AS O " +
@@ -189,8 +188,8 @@ public class RelationalMapper implements Mapper
     PrimaryKey primaryKey = propertyMap.getPrimaryKey();
     String valueColumnName = propertyMap.getValueColumn().getColumnName();
     String subjectPrimaryKeyColumnName = primaryKey.getKeyColumns().iterator().next().getColumnName();
-    String subjectTableName = primaryKey.getTable().getTableName();
-    Database database = primaryKey.getTable().getDatabase();
+    String subjectTableName = primaryKey.getBaseTable().getTableName();
+    Database database = primaryKey.getBaseTable().getDatabase();
     Set<OWLDatatypePropertyAssertionAxiom> result = new HashSet<OWLDatatypePropertyAssertionAxiom>();
     boolean hasSubject = (subjectOWLIndividual != null);
     boolean hasObject = (objectOWLDatatypeValue != null);
@@ -198,7 +197,7 @@ public class RelationalMapper implements Mapper
     String query;
     ResultSet rs;
 
-    databaseConnection = getDatabaseConnection(database.getJDBCConnectionString());
+    databaseConnection = getDatabaseConnection(database);
 
     query = "SELECT " + subjectPrimaryKeyColumnName + ", " + valueColumnName + " FROM " + subjectTableName;
     if (hasSubject || hasObject) {
@@ -304,8 +303,10 @@ public class RelationalMapper implements Mapper
   private void readOWLDatatypePropertyMaps(SQWRLQueryEngine queryEngine) throws MapperException, SQWRLException, SQLException, JDBCException
   {
     Table subjectTable;
-    Column valueColumn, keyColumn;
-    Set<Column> idColumns, allColumns;
+    Column valueColumn;
+    KeyColumn keyColumn;
+    Set<KeyColumn> idColumns;
+    Set<Column> allColumns;
     Database database;
     PrimaryKey primaryKey;
     OWLDatatypePropertyMap datatypePropertyMap;
@@ -326,25 +327,24 @@ public class RelationalMapper implements Mapper
 
         owlDatatypeProperty = OWLFactory.createOWLDatatypeProperty(propertyName);
 
-        database = new DatabaseImpl(jdbcDriverName, serverName, databaseName, portNumber);
-        if (!databases.containsKey(database.getJDBCConnectionString()))
-          databases.put(database.getJDBCConnectionString(), database);
+        database = ORFactory.createDatabase(jdbcDriverName, serverName, databaseName, portNumber);
+        if (!databases.contains(database)) databases.add(database);
 
         allColumns = new HashSet<Column>();
-        idColumns = new HashSet<Column>();
+        idColumns = new HashSet<KeyColumn>();
 
-        keyColumn = new ColumnImpl(keyColumnName, 999);
+        keyColumn = ORFactory.createKeyColumn(keyColumnName, 999);
         idColumns.add(keyColumn);
         allColumns.add(keyColumn);
 
-        valueColumn = new ColumnImpl(valueColumnName, 999);
+        valueColumn = ORFactory.createColumn(valueColumnName, 999);
         allColumns.add(keyColumn);
 
-        subjectTable = new TableImpl(database, schemaName, tableName, allColumns);
+        subjectTable = ORFactory.createTable(database, schemaName, tableName, allColumns);
 
-        primaryKey = new PrimaryKeyImpl(subjectTable, idColumns);
+        primaryKey = ORFactory.createPrimaryKey(subjectTable, idColumns);
 
-        datatypePropertyMap = new OWLDatatypePropertyMapImpl(owlDatatypeProperty, primaryKey, valueColumn);
+        datatypePropertyMap = ORFactory.createOWLDatatypePropertyMap(owlDatatypeProperty, primaryKey, valueColumn);
         datatypePropertyMaps.put(propertyName, datatypePropertyMap);
 
         result.next();
@@ -353,38 +353,32 @@ public class RelationalMapper implements Mapper
 
   } // readOWLDatatypePropertyMaps
 
-  private void createDatabaseConnections() throws MapperException
+  private DatabaseConnection createDatabaseConnection(Database database) throws MapperException
   {
-    for (Database database : databases.values()) {
-      String jdbcConnectionString = database.getJDBCConnectionString();
-      if (!databaseConnections.containsKey(jdbcConnectionString)) {
-        DatabaseConnection connection = null;
+    DatabaseConnection connection = null;
 
-        try {
-          connection = new DatabaseConnectionImpl(database, null, "root", "w0rches");
-        } catch (JDBCException e) {
-          throw new MapperException("error creating database connections'" + jdbcConnectionString + "': " + e.getMessage());
-        } // try
-        databaseConnections.put(jdbcConnectionString, connection);
-      } // if
-    } // for
-  } // createDatabaseConnections
+    try {
+      connection = new DatabaseConnectionImpl(database, null, "root", "w0rches");
+    } catch (SQLException e) {
+      throw new MapperException("error creating connection to database '" + database + "': " + e.getMessage());
+    } // try
+    
+    return connection;
+  } // createDatabaseConnection
 
-  private DatabaseConnection getDatabaseConnection(String jdbcConnectionString) throws MapperException
+  private DatabaseConnection getDatabaseConnection(Database database) throws MapperException
   {
     DatabaseConnection databaseConnection = null;
 
-    if (!databaseConnections.containsKey(jdbcConnectionString)) 
-      throw new MapperException("invalid database '" + jdbcConnectionString + "'");
-
-    databaseConnection = databaseConnections.get(jdbcConnectionString);
+    if (!databaseConnections.containsKey(database)) {
+      databaseConnection = createDatabaseConnection(database);
+      databaseConnections.put(database, databaseConnection);
+    } else databaseConnection = databaseConnections.get(database);
 
     try {
       if (!databaseConnection.isOpen()) databaseConnection.open();
-    } catch (JDBCException e) {
-      throw new MapperException("JDBC error connecting to database '" + jdbcConnectionString + "': " + e.getMessage());
     } catch (SQLException e) {
-      throw new MapperException("SQL error connecting to database '" + jdbcConnectionString + "': " + e.getMessage());
+      throw new MapperException("error connecting to database '" + database + "': " + e.getMessage());
     } // try
 
     return databaseConnection;

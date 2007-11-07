@@ -12,25 +12,15 @@ import java.util.Map;
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
  */
-public class SWRLSyntaxConverter implements SyntaxConverter {
+public class SWRLSyntaxConverter implements SyntaxConverter 
+{
+  private OWLModel owlModel;
+  private static Map map = new HashMap();
+  
+  static {
+    map.put("->", "" + SWRLParser.IMP_CHAR);
+  }
 
-    private static Map map = new HashMap();
-
-
-    static {
-        map.put("->", "" + SWRLParser.IMP_CHAR);
-    }
-
-
-    private OWLModel owlModel;
-
-
-    public SWRLSyntaxConverter(OWLModel owlModel) {
-        this.owlModel = owlModel;
-    }
-
-
-    public void convertSyntax(JTextComponent textComponent) {
-        OWLTextFormatter.updateSyntax(textComponent, owlModel, map);
-    }
-}
+  public SWRLSyntaxConverter(OWLModel owlModel) { this.owlModel = owlModel; }
+  public void convertSyntax(JTextComponent textComponent) { OWLTextFormatter.updateSyntax(textComponent, owlModel, map); }
+} // SWRLSyntaxConverter

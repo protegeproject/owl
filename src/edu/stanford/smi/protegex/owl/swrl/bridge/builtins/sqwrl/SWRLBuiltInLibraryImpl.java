@@ -146,8 +146,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
     return false;
   } // count
 
-  // The use of columnNames, orderBy, orderByDescending is handled at initial processing in the SWRLRule object.
-  
+  // The use of columnNames, orderBy, orderByDescending is handled at initial processing in the SWRLRule object.  
   public boolean columnNames(List<BuiltInArgument> arguments) throws BuiltInException { return false; } 
   public boolean orderBy(List<BuiltInArgument> arguments) throws BuiltInException { return false; } 
   public boolean orderByDescending(List<BuiltInArgument> arguments) throws BuiltInException { return false; }
@@ -206,7 +205,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
     return true;
   } // makeSortedSet
 
-  public boolean empty(List<BuiltInArgument> arguments) throws BuiltInException
+  public boolean isEmpty(List<BuiltInArgument> arguments) throws BuiltInException
   {
     String collectionID = getCollectionIDInOperation(arguments, 0, 1); // Does argument checking
     boolean result = false;
@@ -217,7 +216,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
     else throw new BuiltInException("internal error: no collection found for ID '" + collectionID + "'");
 
     return result;
-  } // empty
+  } // isEmpty
 
   public boolean size(List<BuiltInArgument> arguments) throws BuiltInException
   {
@@ -225,9 +224,9 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
     long size = -1;
     boolean result;
     
-    if (sets.containsKey(collectionID)) size = sets.get(collectionID).size();
-    else if (lists.containsKey(collectionID)) size = lists.get(collectionID).size();
-    else if (sortedSets.containsKey(collectionID)) size = sortedSets.get(collectionID).size();
+    if (isSet(collectionID)) size = sets.get(collectionID).size();
+    else if (isSortedSet(collectionID)) size = sortedSets.get(collectionID).size();
+    else if (isList(collectionID)) size = lists.get(collectionID).size();
     else throw new BuiltInException("internal error: no collection found for ID '" + collectionID + "'");
 
     if (SWRLBuiltInUtil.isUnboundArgument(0, arguments)) {
@@ -241,16 +240,59 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
     return result;
   } // size
 
+  public boolean intersect(List<BuiltInArgument> arguments) throws BuiltInException 
+  { 
+    String collectionID1 = getCollectionIDInOperation(arguments, 1, 3); // Does argument checking
+    String collectionID2 = getCollectionIDInOperation(arguments, 2, 3); // Does argument checking
+    // Set<BuiltInArgument> elements1 = getElements(collectionID1);
+    // Set<BuiltInArgument> elements2 = getElements(collectionID2);
+
+    throw new BuiltInException("not implemented");
+  } // intersect
+
+  public boolean union(List<BuiltInArgument> arguments) throws BuiltInException 
+  { 
+    throw new BuiltInException("not implemented");
+  } // union
+
+  public boolean contains(List<BuiltInArgument> arguments) throws BuiltInException 
+  { 
+    throw new BuiltInException("not implemented");
+  } // contains
+
+  public boolean except(List<BuiltInArgument> arguments) throws BuiltInException 
+  { 
+    throw new BuiltInException("not implemented");
+  } // except
+
+  public boolean nth(List<BuiltInArgument> arguments) throws BuiltInException 
+  { 
+    throw new BuiltInException("not implemented");
+  } // nth
+
+  public boolean first(List<BuiltInArgument> arguments) throws BuiltInException 
+  { 
+    throw new BuiltInException("not implemented");
+  } // first
+
+  public boolean last(List<BuiltInArgument> arguments) throws BuiltInException 
+  { 
+    throw new BuiltInException("not implemented");
+  } // last
+
+  // Internal methods
+
   private boolean isSet(String collectionID) { return sets.containsKey(collectionID); }
   private boolean isList(String collectionID) { return lists.containsKey(collectionID); }
-  private boolean isOrderedList(String collectionID) { return sortedSets.containsKey(collectionID); }
+  private boolean isSortedSet(String collectionID) { return sortedSets.containsKey(collectionID); }
 
   private String getCollectionIDInMake(List<BuiltInArgument> arguments) throws BuiltInException
   {
     return getCollectionID(arguments, 0, 2);
   } // getCollectionIDInMake
 
-  private String getCollectionIDInOperation(List<BuiltInArgument> arguments, int collectionArgumentNumber, int coreArgumentNumber) throws BuiltInException
+  private String getCollectionIDInOperation(List<BuiltInArgument> arguments, int collectionArgumentNumber, int coreArgumentNumber) 
+    throws BuiltInException
   {
     return getCollectionID(arguments, collectionArgumentNumber, coreArgumentNumber);
   } // getCollectionIDInOperation
@@ -280,5 +322,6 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
   {
     throw new BuiltInException("internal SQWRL engine exception: " + message);
   } // throwInternalSQWRLException
+
 
 } // SWRLBuiltInLibraryImpl

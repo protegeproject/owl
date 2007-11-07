@@ -7,13 +7,19 @@ import java.util.*;
 
 public class ForeignKeyImpl extends KeyImpl implements ForeignKey
 {
-  private Set<Table> keyedTables;
+  private Table referencedTable;
+  private Set<ForeignKeyColumn> foreignKeyColumns;
 
-  public ForeignKeyImpl(Table table, Set<Column> columns, Set<Table> keyedTables)
+  public ForeignKeyImpl(Table baseTable, Set<ForeignKeyColumn> foreignKeyColumns, Table referencedTable)
   {
-    super(table, columns);
-    this.keyedTables = keyedTables;
+    super(baseTable);
+    this.referencedTable = referencedTable;
+    this.foreignKeyColumns = foreignKeyColumns;
   } // ForeignKeyImpl
 
-  public Set<Table> getKeyedTables() { return keyedTables; }
+  public Table getReferencedTable() { return referencedTable; }
+
+  public boolean isComposite() { return foreignKeyColumns.size() > 1; }
+
+  public Set<ForeignKeyColumn> getForeignKeyColumns() { return foreignKeyColumns; }
 } // ForeignKeyImpl

@@ -1,9 +1,10 @@
 
 package edu.stanford.smi.protegex.owl.swrl.ormap;
 
-import java.util.*;
+import java.util.Set;
 
 public interface ForeignKey extends Key
 {
-  Set<Table> getKeyedTables();
+  Table getReferencedTable();
+  Set<ForeignKeyColumn> getForeignKeyColumns();
 } // ForeignKey

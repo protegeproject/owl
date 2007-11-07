@@ -9,5 +9,4 @@ public interface Database
   String getServerName();
   String getDatabaseName();
   int getPortNumber();
-  String getJDBCConnectionString();
 } // Database
