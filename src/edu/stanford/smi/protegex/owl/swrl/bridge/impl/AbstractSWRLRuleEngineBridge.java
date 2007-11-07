@@ -389,8 +389,7 @@ public abstract class AbstractSWRLRuleEngineBridge implements SWRLRuleEngineBrid
     for (OWLDatatypePropertyAssertionAxiom axiom : axioms) createOWLDatatypePropertyAssertionAxiom(axiom);
   } // createOWLDatatypePropertyAssertionAxioms
 
-  public OWLObjectPropertyAssertionAxiom createOWLObjectPropertyAssertionAxiom(OWLIndividual subject, OWLProperty property,
-                                                                               OWLIndividual object) 
+  public OWLObjectPropertyAssertionAxiom createOWLObjectPropertyAssertionAxiom(OWLIndividual subject, OWLProperty property, OWLIndividual object) 
     throws SWRLRuleEngineBridgeException
   {
     OWLObjectPropertyAssertionAxiom axiom = OWLFactory.createOWLObjectPropertyAssertionAxiom(subject, property, object);
@@ -563,6 +562,7 @@ public abstract class AbstractSWRLRuleEngineBridge implements SWRLRuleEngineBrid
 
       importOWLClasses(SWRLOWLUtil.rdfResources2Names(property.getUnionDomain()));
       importOWLClasses(SWRLOWLUtil.rdfResources2Names(property.getUnionRangeClasses()));
+
       importOWLPropertyAssertionAxioms(SWRLOWLUtil.rdfResources2Names(property.getSuperproperties(true)));
       importOWLPropertyAssertionAxioms(SWRLOWLUtil.rdfResources2Names(property.getSubproperties(true)));
       importOWLPropertyAssertionAxioms(SWRLOWLUtil.rdfResources2Names(property.getEquivalentProperties()));
@@ -711,8 +711,8 @@ public abstract class AbstractSWRLRuleEngineBridge implements SWRLRuleEngineBrid
           Object object2 = individualsIterator2.next();
           if (!(object2 instanceof edu.stanford.smi.protegex.owl.model.OWLIndividual)) continue;
           edu.stanford.smi.protegex.owl.model.OWLIndividual individual2 = (edu.stanford.smi.protegex.owl.model.OWLIndividual)object2;
-          importedAxioms.add(OWLFactory.createOWLSameIndividualsAxiom(OWLFactory.createOWLIndividual(individual1.getName()), 
-                                                                      OWLFactory.createOWLIndividual(individual2.getName())));
+          importedAxioms.add(OWLFactory.createOWLSameIndividualsAxiom(OWLFactory.createOWLIndividual(individual1), 
+                                                                      OWLFactory.createOWLIndividual(individual2)));
         } // while
       } // if
     } // while
@@ -737,8 +737,8 @@ public abstract class AbstractSWRLRuleEngineBridge implements SWRLRuleEngineBrid
           Object object2 = individualsIterator2.next();
           if (!(object2 instanceof edu.stanford.smi.protegex.owl.model.OWLIndividual)) continue;
           edu.stanford.smi.protegex.owl.model.OWLIndividual individual2 = (edu.stanford.smi.protegex.owl.model.OWLIndividual)object2;
-          importedAxioms.add(OWLFactory.createOWLDifferentIndividualsAxiom(OWLFactory.createOWLIndividual(individual1.getName()), 
-                                                                           OWLFactory.createOWLIndividual(individual2.getName())));
+          importedAxioms.add(OWLFactory.createOWLDifferentIndividualsAxiom(OWLFactory.createOWLIndividual(individual1), 
+                                                                           OWLFactory.createOWLIndividual(individual2)));
         } // while
       } // if
     } // while
@@ -760,7 +760,8 @@ public abstract class AbstractSWRLRuleEngineBridge implements SWRLRuleEngineBrid
           Iterator individualsIterator = owlAllDifferent.getDistinctMembers().iterator();
           while (individualsIterator.hasNext()) {
             RDFIndividual individual = (RDFIndividual)individualsIterator.next();
-            individuals.add(OWLFactory.createOWLIndividual(individual.getName()));
+            if (individual instanceof edu.stanford.smi.protegex.owl.model.OWLIndividual) // Ignore non OWL individuals
+              individuals.add(OWLFactory.createOWLIndividual((edu.stanford.smi.protegex.owl.model.OWLIndividual)individual));
           } // while
           owlDifferentIndividualsAxiom = OWLFactory.createOWLDifferentIndividualsAxiom(individuals);
           importedAxioms.add(owlDifferentIndividualsAxiom);

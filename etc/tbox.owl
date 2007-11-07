@@ -28,14 +28,13 @@
   <swrl:Builtin rdf:ID="isSameAsAxiom"/>
   <swrl:Builtin rdf:ID="isTransitiveProperty"/>
   <swrl:Builtin rdf:ID="hasAxiom"/>
-  <swrl:Builtin rdf:ID="isDifferentFrom"/>
   <swrl:Builtin rdf:ID="hasVersionInfo"/>
   <swrl:Builtin rdf:ID="onIndividual"/>
   <swrl:Builtin rdf:ID="hasValue"/>
   <swrl:Builtin rdf:ID="onProperty"/>
   <swrl:Builtin rdf:ID="isDirectSubClassOf"/>
-  <swrl:Builtin rdf:ID="isLabelAnnotation"/>
   <swrl:Builtin rdf:ID="isInverseFunctionalPropertyDescription"/>
+  <swrl:Builtin rdf:ID="isLabelAnnotation"/>
   <swrl:Builtin rdf:ID="isInverseOfAxiom"/>
   <swrl:Builtin rdf:ID="isIntersectionOfDescription"/>
   <swrl:Builtin rdf:ID="isInDirectRangeOf"/>
@@ -66,7 +65,6 @@
   <swrl:Builtin rdf:ID="hasSeeAlso"/>
   <swrl:Builtin rdf:ID="isEquivalentClass"/>
   <swrl:Builtin rdf:ID="isComplementOf"/>
-  <swrl:Builtin rdf:ID="isSameAs"/>
   <swrl:Builtin rdf:ID="isDefinedByAnnotation"/>
   <swrl:Builtin rdf:ID="isDirectSuperClassOf"/>
   <swrl:Builtin rdf:ID="isUnionOfDescription"/>
@@ -105,4 +103,4 @@
   <swrl:Builtin rdf:ID="isAnnotation"/>
 </rdf:RDF>
 
-<!-- Created with Protege (with OWL Plugin 3.3.1, Build 430)  http://protege.stanford.edu -->
+<!-- Created with Protege (with OWL Plugin 3.4, Build 108)  http://protege.stanford.edu -->

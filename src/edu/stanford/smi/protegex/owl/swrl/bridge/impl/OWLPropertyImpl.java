@@ -96,6 +96,7 @@ public abstract class OWLPropertyImpl extends BuiltInArgumentImpl implements OWL
     Set<OWLPropertyAssertionAxiom> propertyAssertions = new HashSet<OWLPropertyAssertionAxiom>();
     Set<String> domainClassNames, rangeClassNames, superPropertyNames, subPropertyNames, equivalentPropertyNames;
     edu.stanford.smi.protegex.owl.model.OWLProperty property = SWRLOWLUtil.getOWLProperty(owlModel, propertyName);
+    OWLPropertyAssertionAxiom axiom;
 
     if (property == null) throw new InvalidPropertyNameException(propertyName);
 
@@ -119,27 +120,28 @@ public abstract class OWLPropertyImpl extends BuiltInArgumentImpl implements OWL
         
         if (domainIndividual.hasPropertyValue(property)) {
           
-          if (property.hasObjectRange()) {
+          if (property.hasObjectRange()) { // Object property
             Iterator individualValuesIterator = domainIndividual.getPropertyValues(property).iterator();
             while (individualValuesIterator.hasNext()) {
               RDFResource resource = (RDFResource)individualValuesIterator.next();
               if (resource instanceof edu.stanford.smi.protegex.owl.model.OWLIndividual) {
                 edu.stanford.smi.protegex.owl.model.OWLIndividual rangeIndividual = (edu.stanford.smi.protegex.owl.model.OWLIndividual)resource;
-                OWLIndividual subject = OWLFactory.createOWLIndividual(domainIndividual.getName());
-                OWLIndividual object = OWLFactory.createOWLIndividual(rangeIndividual.getName());
-                OWLPropertyAssertionAxiom axiom = OWLFactory.createOWLObjectPropertyAssertionAxiom(subject, OWLFactory.createOWLObjectProperty(propertyName), object);
-                propertyAssertions.add(axiom);
+                OWLIndividual subject = OWLFactory.createOWLIndividual(domainIndividual);
+                OWLIndividual object = OWLFactory.createOWLIndividual(rangeIndividual);
+                axiom = OWLFactory.createOWLObjectPropertyAssertionAxiom(subject, OWLFactory.createOWLObjectProperty(propertyName), object);
+                propertyAssertions.add(axiom);                
               } else {
                 //System.err.println("Unknown property value resource: " + resource); // TODO: Orphan resources in OWL file. Ignore?
               } // if
             } // while
+
           } else { // DatatypeProperty
             Iterator literalsIterator = domainIndividual.getPropertyValueLiterals(property).iterator();
             while (literalsIterator.hasNext()) {
               RDFSLiteral literal = (RDFSLiteral)literalsIterator.next();
-              OWLIndividual subject = OWLFactory.createOWLIndividual(domainIndividual.getName());
+              OWLIndividual subject = OWLFactory.createOWLIndividual(domainIndividual);
               OWLDatatypeValue object = OWLFactory.createOWLDatatypeValue(owlModel, literal);
-              OWLPropertyAssertionAxiom axiom = OWLFactory.createOWLDatatypePropertyAssertionAxiom(subject, OWLFactory.createOWLDatatypeProperty(propertyName), object);
+              axiom = OWLFactory.createOWLDatatypePropertyAssertionAxiom(subject, OWLFactory.createOWLDatatypeProperty(propertyName), object);
               propertyAssertions.add(axiom);
             } // while
           } // if

@@ -380,18 +380,6 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
   } // isDefinedBy
 
   /**
-   ** Are two individuals declared to be the different from each other.
-   */
-  public boolean isDifferentFrom(List<BuiltInArgument> arguments) throws BuiltInException
-  {
-    boolean result = false;
-
-    if (!result) throw new BuiltInNotImplementedException();
-
-    return result;
-  } // isDifferentFrom
-
-  /**
    ** Is the single argument an owl:DifferentFrom axiom.
    */
   public boolean isDifferentFromAxiom(List<BuiltInArgument> arguments) throws BuiltInException
@@ -819,18 +807,6 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
   } // isProperty
 
   /**
-   ** Are two individuals declared to be the same as each other.
-   */
-  public boolean isSameAs(List<BuiltInArgument> arguments) throws BuiltInException
-  {
-    boolean result = false;
-
-    if (!result) throw new BuiltInNotImplementedException();
-
-    return false;
-  } // isSameAs
-
-  /**
    ** Is the single argument an rdfs:seeAlso annotation.
    */
   public boolean isSeeAlsoAnnotation(List<BuiltInArgument> arguments) throws BuiltInException
@@ -1042,11 +1018,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
    */
   public boolean equalTo(List<BuiltInArgument> arguments) throws BuiltInException
   {
-    boolean result = false;
-
-    if (!result) throw new BuiltInNotImplementedException();
-
-    return result;
+    throw new BuiltInNotImplementedException();
   } // equalTo
 
   /**
@@ -1054,11 +1026,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
    */
   public boolean notEqualTo(List<BuiltInArgument> arguments) throws BuiltInException
   {
-    boolean result = false;
-
-    if (!result) throw new BuiltInNotImplementedException();
-
-    return result;
+    throw new BuiltInNotImplementedException();
   } // notEqualTo
 
   private boolean isSuperClassOf(List<BuiltInArgument> arguments, boolean transitive) throws BuiltInException

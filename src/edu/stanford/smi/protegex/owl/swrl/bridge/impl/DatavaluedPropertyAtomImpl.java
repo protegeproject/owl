@@ -30,7 +30,7 @@ public class DatavaluedPropertyAtomImpl extends AtomImpl implements DatavaluedPr
       argument1 = argument;
     } else if (atom.getArgument1() instanceof edu.stanford.smi.protegex.owl.model.OWLIndividual) {
       edu.stanford.smi.protegex.owl.model.OWLIndividual individual = (edu.stanford.smi.protegex.owl.model.OWLIndividual)atom.getArgument1();
-      argument1 = OWLFactory.createOWLIndividual(individual.getName());
+      argument1 = OWLFactory.createOWLIndividual(individual);
     } else throw new OWLFactoryException("unexpected argument first to datavalued property atom '" + atom.getBrowserText() + 
                                          "' - expecting variable or individual, got instance of " + atom.getArgument1().getClass());
 

@@ -23,7 +23,7 @@ public abstract class IndividualsAtomImpl extends AtomImpl implements Individual
       argument1 = argument;
     } else if (atom.getArgument1() instanceof edu.stanford.smi.protegex.owl.model.OWLIndividual) {
       edu.stanford.smi.protegex.owl.model.OWLIndividual individual = (edu.stanford.smi.protegex.owl.model.OWLIndividual)atom.getArgument1();
-      OWLIndividual argument = OWLFactory.createOWLIndividual(individual.getName());
+      OWLIndividual argument = OWLFactory.createOWLIndividual(individual);
       addReferencedIndividualName(individual.getName());
       argument1 = argument;
     } else throw new OWLFactoryException("unexpected first argument to atom '" + atom.getBrowserText() + 
@@ -36,7 +36,7 @@ public abstract class IndividualsAtomImpl extends AtomImpl implements Individual
       argument2 = argument;
     } else if (atom.getArgument2() instanceof edu.stanford.smi.protegex.owl.model.OWLIndividual) {
       edu.stanford.smi.protegex.owl.model.OWLIndividual individual = (edu.stanford.smi.protegex.owl.model.OWLIndividual)atom.getArgument2();
-      OWLIndividual argument = OWLFactory.createOWLIndividual(individual.getName());
+      OWLIndividual argument = OWLFactory.createOWLIndividual(individual);
       addReferencedIndividualName(individual.getName());
       argument2 = argument;
     } else throw new OWLFactoryException("unexpected second argument to atom '" + atom.getBrowserText() + 
