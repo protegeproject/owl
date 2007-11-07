@@ -35,14 +35,19 @@ public class OWLFactory
 
   // SWRL and basic OWL entities
   public static SWRLRule createSWRLRule(String ruleName, List<Atom> bodyAtoms, List<Atom> headAtoms) throws SQWRLException, BuiltInException { return new SWRLRuleImpl(ruleName, bodyAtoms, headAtoms); }
+
   public static OWLClass createOWLClass(OWLModel owlModel, String className) throws OWLFactoryException { return new OWLClassImpl(owlModel, className); }
   public static OWLClass createOWLClass(String className) { return new OWLClassImpl(className); }
+
   public static OWLIndividual createOWLIndividual(String individualName) { return new OWLIndividualImpl(individualName); }
   public static OWLIndividual createOWLIndividual(OWLModel owlModel, String individualName) throws OWLFactoryException { return new OWLIndividualImpl(owlModel, individualName); }
   public static OWLIndividual createOWLIndividual(edu.stanford.smi.protegex.owl.model.OWLIndividual individual) throws OWLFactoryException { return new OWLIndividualImpl(individual); }
   public static OWLIndividual createOWLIndividual(String individualName, String className) { return new OWLIndividualImpl(individualName, className); }
+
   public static OWLObjectProperty createOWLObjectProperty(String propertyName) { return new OWLObjectPropertyImpl(propertyName); }
+
   public static OWLDatatypeProperty createOWLDatatypeProperty(String propertyName) { return new OWLDatatypePropertyImpl(propertyName); }
+
   public static OWLDatatypeValue createOWLDatatypeValue(OWLModel owlModel, RDFSLiteral literal) throws DatatypeConversionException { return new OWLDatatypeValueImpl(owlModel, literal); }
   public static OWLDatatypeValue createOWLDatatypeValue(String s) { return new OWLDatatypeValueImpl(s); }
   public static OWLDatatypeValue createOWLDatatypeValue(Number n) { return new OWLDatatypeValueImpl(n); }
