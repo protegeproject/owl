@@ -6,7 +6,7 @@ import edu.stanford.smi.protegex.owl.swrl.ormap.*;
 public class ColumnImpl implements Column
 {
   private String columnName;
-  private int columnType;
+  private int columnType; // As per java.sql.Types
 
   public ColumnImpl(String columnName, int columnType)
   {

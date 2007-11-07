@@ -5,7 +5,6 @@ import java.util.*;
 
 public interface Key
 {
-  Table getTable();
-  Set<Column> getKeyColumns();
+  Table getBaseTable();
   boolean isComposite();
 } // Key

@@ -33,10 +33,13 @@ public class SQWRLNames
   public static final String MakeList = SQWRLPrefix + ":" + "makeList";
   public static final String MakeOrderedList = SQWRLPrefix + ":" + "makeOrderedList";
 
-  public static final String Element = SQWRLPrefix + ":" + "element";
+  // Set operations
   public static final String Size = SQWRLPrefix + ":" + "size";
-  public static final String Empty = SQWRLPrefix + ":" + "empty";
+  public static final String IsEmpty = SQWRLPrefix + ":" + "isEmpty";
   public static final String Intersect = SQWRLPrefix + ":" + "intersect";
+  public static final String Union = SQWRLPrefix + ":" + "union";
+  public static final String Except = SQWRLPrefix + ":" + "except";
+  public static final String Contains = SQWRLPrefix + ":" + "contains";
   public static final String First = SQWRLPrefix + ":" + "first";
   public static final String Last = SQWRLPrefix + ":" + "last";
   public static final String Nth = SQWRLPrefix + ":" + "nth";
@@ -46,7 +49,7 @@ public class SQWRLNames
 
   private static final String collectionMakeBuiltInNamesArray[] = { MakeSet, MakeList, MakeOrderedList };
 
-  private static final String collectionOperationBuiltInNamesArray[] = { Element, Size, First, Nth, Last, Intersect, Empty};
+  private static final String collectionOperationBuiltInNamesArray[] = { Size, IsEmpty, Intersect, Union, Except, Contains, First, Last, Nth };
 
   public static  final String aggregateFunctionNames[] = { MinAggregateFunction, MaxAggregateFunction, SumAggregateFunction,
                                                            AvgAggregateFunction, CountAggregateFunction };

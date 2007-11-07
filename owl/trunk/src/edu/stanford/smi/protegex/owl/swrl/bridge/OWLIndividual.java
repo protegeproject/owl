@@ -17,5 +17,6 @@ public interface OWLIndividual extends OWLPropertyValue, IndividualArgument, Obj
   Set<String> getDefiningClassNames();
   Set<String> getDefiningSuperClassNames();
   Set<String> getDefiningEquivalentClassNames();
+  Set<String> getSameAsIndividualNames();
   void write2OWL(OWLModel owlModel) throws SWRLRuleEngineBridgeException;
 } // OWLIndividual

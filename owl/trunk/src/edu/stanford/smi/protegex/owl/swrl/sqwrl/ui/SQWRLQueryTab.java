@@ -34,8 +34,6 @@ public class SQWRLQueryTab extends JTabbedPane implements SWRLPluginGUIAdapter
 
     try {
       bridge = BridgeFactory.createBridge(owlModel);
-      Mapper mapper = MapperFactory.create(bridge);
-      bridge.setMapper(mapper);
     } catch (SWRLRuleEngineBridgeException e) {
       System.err.println(e.toString());
       return makeErrorWindow(e.toString());

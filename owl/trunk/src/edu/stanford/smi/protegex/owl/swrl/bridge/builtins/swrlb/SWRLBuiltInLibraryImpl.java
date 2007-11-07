@@ -7,6 +7,8 @@ import edu.stanford.smi.protegex.owl.swrl.bridge.*;
 import edu.stanford.smi.protegex.owl.swrl.bridge.builtins.*;
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.*;
 
+import org.apache.commons.lang.StringUtils;
+
 import java.util.*;
 import java.util.regex.*;
 import java.lang.Math.*;
@@ -63,7 +65,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
   private static String SWRLB_CONTAINS_IGNORE_CASE = SWRLBPrefix + "containsIgnoreCase";
   private static String SWRLB_STARTS_WITH = SWRLBPrefix + "startsWith";
   private static String SWRLB_ENDS_WITH = SWRLBPrefix + "endsWith";
-  private static String SWRLB_SUBSTRING_BEFORE = SWRLBPrefix + "substringBefore"; // TODO: not implemented
+  private static String SWRLB_SUBSTRING_BEFORE = SWRLBPrefix + "substringBefore";
   private static String SWRLB_SUBSTRING_AFTER = SWRLBPrefix + "substringAfter"; 
   private static String SWRLB_MATCHES = SWRLBPrefix + "matches"; 
   private static String SWRLB_REPLACE = SWRLBPrefix + "replace"; 
@@ -394,42 +396,33 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
 
   public boolean contains(List<BuiltInArgument> arguments) throws BuiltInException
   {
-    String argument1, argument2;
-
     SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(2, arguments.size());
     SWRLBuiltInUtil.checkForUnboundArguments(arguments);
 
-    argument1 = SWRLBuiltInUtil.getArgumentAsAString(0, arguments);
-    argument2 = SWRLBuiltInUtil.getArgumentAsAString(1, arguments);
+    String argument1 = SWRLBuiltInUtil.getArgumentAsAString(0, arguments);
+    String argument2 = SWRLBuiltInUtil.getArgumentAsAString(1, arguments);
 
     return argument1.lastIndexOf(argument2) != -1;
   } // contains
 
   public boolean containsIgnoreCase(List<BuiltInArgument> arguments) throws BuiltInException
   {
-    String argument1, argument2;
-
     SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(2, arguments.size());
     SWRLBuiltInUtil.checkForUnboundArguments(arguments);
 
-    if (SWRLBuiltInUtil.hasUnboundArguments(arguments)) 
-      throw new InvalidBuiltInArgumentException(0, "built-in does not support binding");
-
-    argument1 = SWRLBuiltInUtil.getArgumentAsAString(0, arguments);
-    argument2 = SWRLBuiltInUtil.getArgumentAsAString(1, arguments);
+    String argument1 = SWRLBuiltInUtil.getArgumentAsAString(0, arguments);
+    String argument2 = SWRLBuiltInUtil.getArgumentAsAString(1, arguments);
 
     return argument1.toLowerCase().lastIndexOf(argument2.toLowerCase()) != -1;
   } // containsIgnoreCase
 
   public boolean startsWith(List<BuiltInArgument> arguments) throws BuiltInException
   {
-    String argument1, argument2;
-
     SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(2, arguments.size());
     SWRLBuiltInUtil.checkForUnboundArguments(arguments);
 
-    argument1 = SWRLBuiltInUtil.getArgumentAsAString(0, arguments);
-    argument2 = SWRLBuiltInUtil.getArgumentAsAString(1, arguments);
+    String argument1 = SWRLBuiltInUtil.getArgumentAsAString(0, arguments);
+    String argument2 = SWRLBuiltInUtil.getArgumentAsAString(1, arguments);
 
     return argument1.startsWith(argument2);
   } // startsWith
@@ -447,18 +440,64 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
 
   public boolean translate(List<BuiltInArgument> arguments) throws BuiltInException
   {
-    boolean result = false;
+    boolean result;
 
-    if (!result) throw new BuiltInNotImplementedException();
+    SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(4, arguments.size());
 
+    String argument2 = SWRLBuiltInUtil.getArgumentAsAString(1, arguments);
+    String argument3 = SWRLBuiltInUtil.getArgumentAsAString(2, arguments);
+    String argument4 = SWRLBuiltInUtil.getArgumentAsAString(3, arguments);
+    String operationResult = StringUtils.replaceChars(argument2, argument3, argument4);
+
+    if (SWRLBuiltInUtil.isUnboundArgument(0, arguments)) {
+      arguments.set(0, OWLFactory.createOWLDatatypeValue(operationResult)); 
+      result = true;
+    } else {
+      String argument1 = SWRLBuiltInUtil.getArgumentAsAString(0, arguments);
+      result = argument1.equals(operationResult);
+    } // if
+    
     return result;
   } // translate
 
+  public boolean substringAfter(List<BuiltInArgument> arguments) throws BuiltInException
+  {
+    boolean result;
+
+    SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(3, arguments.size());
+
+    String argument2 = SWRLBuiltInUtil.getArgumentAsAString(1, arguments);
+    String argument3 = SWRLBuiltInUtil.getArgumentAsAString(2, arguments);
+    String operationResult = StringUtils.substringAfter(argument2, argument3);
+
+    if (SWRLBuiltInUtil.isUnboundArgument(0, arguments)) {
+      arguments.set(0, OWLFactory.createOWLDatatypeValue(operationResult)); 
+      result = true;
+    } else {
+      String argument1 = SWRLBuiltInUtil.getArgumentAsAString(0, arguments);
+      result = argument1.equals(operationResult);
+    } // if
+    
+    return result;
+  } // substringAfter
+
   public boolean substringBefore(List<BuiltInArgument> arguments) throws BuiltInException
   {
-    boolean result = false;
+    boolean result;
 
-    if (!result) throw new BuiltInNotImplementedException();
+    SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(3, arguments.size());
+
+    String argument2 = SWRLBuiltInUtil.getArgumentAsAString(1, arguments);
+    String argument3 = SWRLBuiltInUtil.getArgumentAsAString(2, arguments);
+    String operationResult = StringUtils.substringBefore(argument2, argument3);
+
+    if (SWRLBuiltInUtil.isUnboundArgument(0, arguments)) {
+      arguments.set(0, OWLFactory.createOWLDatatypeValue(operationResult)); 
+      result = true;
+    } else {
+      String argument1 = SWRLBuiltInUtil.getArgumentAsAString(0, arguments);
+      result = argument1.equals(operationResult);
+    } // if
 
     return result;
   } // substringBefore

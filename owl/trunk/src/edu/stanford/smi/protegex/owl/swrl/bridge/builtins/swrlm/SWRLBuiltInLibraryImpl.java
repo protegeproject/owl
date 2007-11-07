@@ -44,8 +44,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
     argument2 = SWRLBuiltInUtil.getArgumentAsADouble(1, arguments);
 
     if (SWRLBuiltInUtil.isUnboundArgument(0, arguments)) {
-      argument1 = java.lang.Math.sqrt(argument2);
-      arguments.set(0, OWLFactory.createOWLDatatypeValue(argument2));
+      arguments.set(0, OWLFactory.createOWLDatatypeValue(java.lang.Math.sqrt(argument2)));
       result = true;
     } else {
       argument1 = SWRLBuiltInUtil.getArgumentAsADouble(0, arguments);
@@ -69,8 +68,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
     argument2 = SWRLBuiltInUtil.getArgumentAsADouble(1, arguments);
 
     if (SWRLBuiltInUtil.isUnboundArgument(0, arguments)) {
-      argument1 = java.lang.Math.log(argument2);
-      arguments.set(0, OWLFactory.createOWLDatatypeValue(argument2));
+      arguments.set(0, OWLFactory.createOWLDatatypeValue(java.lang.Math.log(argument2)));
       result = true;
     } else {
       argument1 = SWRLBuiltInUtil.getArgumentAsADouble(0, arguments);
@@ -81,10 +79,9 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
   } // log
 
   /*
-  ** Returns true if the first argument is an individual of class XMLDocument (defined in the <a
-  ** href="http://swrl.stanford.edu/ontologies/built-ins/3.4/swrlxml.owl">OWL XML Ontology</a>) that corresponds to an OWL XML
-  ** representation of the contents of the XML document named by the second argument. If the first argument is unbound, bind it to the
-  ** individual that corresponds to this document.
+  ** Returns true if the first argument is equals to the mathematical expression specified in the second argument, which may use the values
+  ** specified by the variables in the optional subsequent arguments. If the first argument is unbound, bind it to the result of the
+  ** expression.
   */ 
   public boolean eval(List<BuiltInArgument> arguments) throws BuiltInException
   {
@@ -125,9 +122,13 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
     return result;
   } // eval
 
+  // cf. http://www.singularsys.com/jep/doc/javadoc/org/nfunk/jep/JEP.html for JEP API
   private JEP getJEP()
   {
     if (jep == null) jep = new JEP();
+
+    jep.addStandardFunctions();
+    jep.setImplicitMul(true);
 
     return jep;
   } // getJEP

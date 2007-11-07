@@ -60,8 +60,8 @@ public class SWRLTab extends AbstractTabWidget
   
       ImportHelper importHelper = new ImportHelper((JenaOWLModel)getKnowledgeBase());
       
-      importHelper.addImport(new URI(SWRLNames.SWRL_IMPORT));     
-      importHelper.addImport(new URI(SWRLNames.SWRLB_IMPORT));
+      //      importHelper.addImport(new URI(SWRLNames.SWRL_IMPORT));     
+      //      importHelper.addImport(new URI(SWRLNames.SWRLB_IMPORT));
       importHelper.addImport(new URI(SWRLNames.SWRLA_IMPORT));
       importHelper.addImport(new URI(SWRLNames.SWRLX_IMPORT));
       importHelper.addImport(new URI(SWRLNames.SWRLM_IMPORT));
@@ -101,7 +101,7 @@ public class SWRLTab extends AbstractTabWidget
         activateSWRLFactoryIfNecessary(owlModel);
       } else {
         setLayout(new FlowLayout());
-        add(new JLabel("Your ontology needs to import the SWRL ontology (" + SWRLNames.SWRL_NAMESPACE + ")."));
+        add(new JLabel("Your ontology needs to reference the SWRL ontology (" + SWRLNames.SWRL_NAMESPACE + ")."));
         JButton activateButton = new JButton("Activate SWRL...");
         activateButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -140,7 +140,7 @@ public class SWRLTab extends AbstractTabWidget
     if(owlModel instanceof JenaOWLModel) {
       OWLJavaFactoryUpdater.run((JenaOWLModel) owlModel);
     }	
-  }
+  } // activateSWRLFactoryIfNecessary
 
   private boolean isSWRLImported(OWLModel owlModel) 
   {
@@ -168,6 +168,6 @@ public class SWRLTab extends AbstractTabWidget
     } else {
       errors.add("This tab can only be used with OWL projects.");
       return false;
-    }
-  }
+    } // if
+  } // isSuitable
 } // SWRLTab
