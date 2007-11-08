@@ -125,10 +125,13 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
   // cf. http://www.singularsys.com/jep/doc/javadoc/org/nfunk/jep/JEP.html for JEP API
   private JEP getJEP()
   {
-    if (jep == null) jep = new JEP();
+    if (jep == null) {
+      jep = new JEP();
 
-    jep.addStandardFunctions();
-    jep.setImplicitMul(true);
+      jep.addStandardFunctions();
+      jep.addStandardConstants();
+      jep.setImplicitMul(true);
+    } // if
 
     return jep;
   } // getJEP
