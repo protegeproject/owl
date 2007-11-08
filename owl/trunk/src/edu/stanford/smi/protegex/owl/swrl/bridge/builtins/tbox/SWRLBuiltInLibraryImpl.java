@@ -1014,7 +1014,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
   } // onValue
 
   /**
-   ** Check that the two class, property, individual or literal arguments refer to the same underlying entity.
+   ** Check that the two class or property arguments refer to the same underlying entity.
    */
   public boolean equalTo(List<BuiltInArgument> arguments) throws BuiltInException
   {
@@ -1022,7 +1022,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
   } // equalTo
 
   /**
-   ** Check that the two class, property, individual or literal arguments do not refer to the same underlying entity.
+   ** Check that the two class or property arguments do not refer to the same underlying entity.
    */
   public boolean notEqualTo(List<BuiltInArgument> arguments) throws BuiltInException
   {
