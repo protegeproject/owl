@@ -11,7 +11,6 @@ public interface OWLClass extends ClassArgument, ClassValue
 {
   String getClassName();
 
-  // TODO: temporary
   Set<String> getDirectSuperClassNames();
   Set<String> getDirectSubClassNames();
   Set<String> getEquivalentClassNames();

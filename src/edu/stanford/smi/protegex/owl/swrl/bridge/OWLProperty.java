@@ -14,11 +14,9 @@ public interface OWLProperty extends PropertyArgument, PropertyValue
 {
   String getPropertyName();
 
-  // TODO: temporary
   Set<String> getDomainClassNames();
   Set<String> getRangeClassNames();
   Set<String> getSuperPropertyNames();
   Set<String> getSubPropertyNames();
   Set<String> getEquivalentPropertyNames();
-
 } // OWLProperty

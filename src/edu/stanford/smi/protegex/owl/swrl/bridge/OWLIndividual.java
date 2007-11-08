@@ -13,7 +13,6 @@ public interface OWLIndividual extends OWLPropertyValue, IndividualArgument, Obj
 {
   String getIndividualName();
 
-  // TODO: temporary
   Set<String> getDefiningClassNames();
   Set<String> getDefiningSuperClassNames();
   Set<String> getDefiningEquivalentClassNames();
