@@ -76,6 +76,20 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
   public boolean finishes(List<BuiltInArgument> arguments) throws BuiltInException { return temporalOperation(TemporalFinishes, arguments); }
   public boolean finishedBy(List<BuiltInArgument> arguments) throws BuiltInException { return temporalOperation(TemporalFinishedBy, arguments); }
 
+  public boolean notEquals(List<BuiltInArgument> arguments) throws BuiltInException { return !temporalOperation(TemporalEquals, arguments); }
+  public boolean notBefore(List<BuiltInArgument> arguments) throws BuiltInException { return !temporalOperation(TemporalBefore, arguments); }
+  public boolean notAfter(List<BuiltInArgument> arguments) throws BuiltInException { return !temporalOperation(TemporalAfter, arguments); }
+  public boolean notMeets(List<BuiltInArgument> arguments) throws BuiltInException { return !temporalOperation(TemporalMeets, arguments); }
+  public boolean notMetBy(List<BuiltInArgument> arguments) throws BuiltInException { return !temporalOperation(TemporalMetBy, arguments); }
+  public boolean notOverlaps(List<BuiltInArgument> arguments) throws BuiltInException { return !temporalOperation(TemporalOverlaps, arguments); }
+  public boolean notOverlappedBy(List<BuiltInArgument> arguments) throws BuiltInException { return !temporalOperation(TemporalOverlappedBy, arguments); }
+  public boolean notContains(List<BuiltInArgument> arguments) throws BuiltInException { return !temporalOperation(TemporalContains, arguments); }
+  public boolean notDuring(List<BuiltInArgument> arguments) throws BuiltInException { return !temporalOperation(TemporalDuring, arguments); }
+  public boolean notStarts(List<BuiltInArgument> arguments) throws BuiltInException { return !temporalOperation(TemporalStarts, arguments); }
+  public boolean notStartedBy(List<BuiltInArgument> arguments) throws BuiltInException { return !temporalOperation(TemporalStartedBy, arguments); }
+  public boolean notFinishes(List<BuiltInArgument> arguments) throws BuiltInException { return !temporalOperation(TemporalFinishes, arguments); }
+  public boolean notFinishedBy(List<BuiltInArgument> arguments) throws BuiltInException { return !temporalOperation(TemporalFinishedBy, arguments); }
+
   /**
    ** Accepts either three or four arguments. Returns true if the first duration argument is equal to the difference between two timestamps
    ** at the granularity specified by the final argument. The timestamps are specified as either a mixture of two ValidInstant or datetime
