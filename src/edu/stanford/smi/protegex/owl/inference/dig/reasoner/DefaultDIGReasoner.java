@@ -26,6 +26,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+import edu.stanford.smi.protege.util.ApplicationProperties;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.inference.dig.exception.DIGError;
 import edu.stanford.smi.protegex.owl.inference.dig.exception.DIGErrorException;
@@ -45,8 +46,8 @@ import edu.stanford.smi.protegex.owl.inference.dig.translator.DIGVocabulary;
  * www.cs.man.ac.uk/~horridgm<br><br>
  */
 public class DefaultDIGReasoner implements DIGReasoner {
-  public static final String DEFAULT_URL_PROPERTY = "protege.dig.url";
-  private static final String defaultURL = System.getProperty(DEFAULT_URL_PROPERTY, "http://localhost:8080");
+  public static final String DEFAULT_URL_PROPERTY = "edu.stanford.smi.protegex.owl.jena.reasoner.URL";
+  private static final String defaultURL = ApplicationProperties.getString(DEFAULT_URL_PROPERTY, "http://localhost:8080");
 
   private URL reasonerURL;
 
