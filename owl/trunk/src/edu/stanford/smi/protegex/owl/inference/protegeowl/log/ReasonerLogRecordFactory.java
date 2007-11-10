@@ -1,6 +1,8 @@
 package edu.stanford.smi.protegex.owl.inference.protegeowl.log;
 
 import edu.stanford.smi.protegex.owl.inference.dig.exception.DIGReasonerException;
+import edu.stanford.smi.protegex.owl.inference.reasoner.exception.ProtegeReasonerException;
+import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
 import edu.stanford.smi.protegex.owl.model.RDFSClass;
 
@@ -36,7 +38,7 @@ public class ReasonerLogRecordFactory {
                                                                ReasonerLogRecord parent) {
         return new InformationMessageLogRecord(null, message, parent);
     }
-
+ 
 
     public ReasonerLogRecord createWarningMessageLogRecord(RDFResource cause,
                                                            String message,
@@ -61,8 +63,19 @@ public class ReasonerLogRecordFactory {
     }
 
 
+    public ReasonerLogRecord createOWLPropertyLogRecord(RDFProperty prop,  ReasonerLogRecord parent) {
+    	return new OWLPropertyLogRecord(prop, parent);
+    }
+
+    
+    
     public ReasonerLogRecord createDIGReasonerExceptionLogRecord(DIGReasonerException ex, ReasonerLogRecord parent) {
         return new DIGErrorExceptionLogRecord(ex, parent);
     }
+    
+    public ReasonerLogRecord createReasonerExceptionLogRecord(ProtegeReasonerException ex, ReasonerLogRecord parent) {
+        return new ReasonerErrorExceptionLogRecord(ex, parent);
+    }
+
 }
 
