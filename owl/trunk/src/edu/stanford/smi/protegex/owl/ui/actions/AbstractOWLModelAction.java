@@ -21,15 +21,17 @@ public abstract class AbstractOWLModelAction implements OWLModelAction {
 
     private boolean suitable = true;
 
-    public static String CODE_MENU = "Code";
+    public static final String CODE_MENU = "Code";
 
-    public static String OWL_MENU = "OWL";
+    public static final String OWL_MENU = "OWL";
+    
+    public static final String REASONING_MENU = "Reasoning";
 
-    public static String PROJECT_MENU = "Project";
+    public static final String PROJECT_MENU = "Project";
 
-    public static String TOOLS_MENU = "Tools";
+    public static final String TOOLS_MENU = "Tools";
 
-	public static String WINDOW_MENU = "Window";
+	public static final String WINDOW_MENU = "Window";
 
 
     public void addPropertyChangeListener(PropertyChangeListener listener) {
