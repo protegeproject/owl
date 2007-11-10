@@ -15,5 +15,7 @@ import edu.stanford.smi.protegex.owl.ui.actions.OWLModelActionConstants;
 public interface ActionConstants {
 
     public static final String ACTION_GROUP = OWLModelActionConstants.INFERENCE_GROUP;
+    
+    public static final String ACTION_GROUP_DIRECT_REASONER = OWLModelActionConstants.DIRECT_INFERENCE_GROUP;
         
 }
