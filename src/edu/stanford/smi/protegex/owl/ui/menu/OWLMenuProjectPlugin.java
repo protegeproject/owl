@@ -53,6 +53,8 @@ import edu.stanford.smi.protege.widget.ClsWidget;
 import edu.stanford.smi.protege.widget.FormWidget;
 
 import edu.stanford.smi.protegex.owl.database.OWLDatabaseModel;
+import edu.stanford.smi.protegex.owl.inference.protegeowl.ReasonerPluginManager;
+import edu.stanford.smi.protegex.owl.inference.protegeowl.ReasonerPluginMenuManager;
 import edu.stanford.smi.protegex.owl.javacode.JavaCodeGeneratorResourceAction;
 import edu.stanford.smi.protegex.owl.jena.JenaKnowledgeBaseFactory;
 import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
@@ -115,6 +117,9 @@ public class OWLMenuProjectPlugin extends ProjectPluginAdapter {
     	
         JMenu owlMenu = new JMenu(AbstractOWLModelAction.OWL_MENU);
         owlMenu.setMnemonic(KeyEvent.VK_O);
+        
+        JMenu reasoningMenu = new JMenu(AbstractOWLModelAction.REASONING_MENU);
+        reasoningMenu.setMnemonic(KeyEvent.VK_R);
 
         JMenu codeMenu = new JMenu(AbstractOWLModelAction.CODE_MENU);
         codeMenu.setMnemonic(KeyEvent.VK_C);
@@ -130,9 +135,12 @@ public class OWLMenuProjectPlugin extends ProjectPluginAdapter {
 
         // add OWLMenu to mainMenuBar
         menuBar.add(owlMenu, 3);
-        menuBar.add(codeMenu, 4);
-        menuBar.add(toolsMenu, 5);
+        menuBar.add(reasoningMenu, 4);
+        menuBar.add(codeMenu, 5);
+        menuBar.add(toolsMenu, 6);
 
+        ReasonerPluginMenuManager.fillReasoningMenu(owlModel, reasoningMenu);
+        
         disableProjectMenuItem(menuBar, ResourceKey.PROJECT_MANAGE_INCLUDED);
         disableProjectMenuItem(menuBar, ResourceKey.PROJECT_CHANGE_INCLUDED);
         disableProjectMenuItem(menuBar, ResourceKey.PROJECT_MERGE_INCLUDED);
