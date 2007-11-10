@@ -59,17 +59,6 @@ public class OWLDatabaseModel
         super(factory);
     }
 
-    // added by TT
-    /*
-    public OWLDatabaseModel(OWLDatabaseKnowledgeBaseFactory factory, OWLNamespaceManager namespaceManager) {
-        super(factory, namespaceManager);
-        OWLJavaFactoryUpdater.run(this);
-        //maybe remove the following two lines
-        //MergingNarrowFrameStore mnfs = MergingNarrowFrameStore.get(this);
-        //mnfs.setTopFrameStore(mnfs.getActiveFrameStore().getName());
-	}
-	*/
-
 	/**
      * Initializes the OWLDatabaseModel in the case that it is a client of a remote server.
      * <p/>
@@ -108,13 +97,12 @@ public class OWLDatabaseModel
 
 
     public OntModel getOntModel() {
-
         long startTime = System.currentTimeMillis();
         JenaCreator creator = new JenaCreator(this, false, null,
                                               new ModalProgressBarManager("Converting Ontology"));
         OntModel ontModel = creator.createOntModel();
         long endTime = System.currentTimeMillis();
-        System.out.println("[OWLDatabaseModel.getOntModel] Duration " + (endTime - startTime));
+        Log.getLogger().info("[OWLDatabaseModel.getOntModel] Duration " + (endTime - startTime));
         return ontModel;
     }
 
@@ -196,7 +184,14 @@ public class OWLDatabaseModel
     }
 
 
-    //TT this method should not be called
+    
+    /* 
+     * This method is not needed anymore. The tasks of the OWLFrameInvocationHandler
+     * are solved now in a different way (using different frame types values for the
+     * different ontology types in the database)
+     * @see edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel#initOWLFrameFactoryInvocationHandler()     
+     */
+    @Deprecated 
     public void initOWLFrameFactoryInvocationHandler() {
         Class clazz = OWLFrameFactoryInvocationHandler.class;
         FrameStore frameFactoryInvocationFrameStore = AbstractFrameStoreInvocationHandler.newInstance(clazz, this);
