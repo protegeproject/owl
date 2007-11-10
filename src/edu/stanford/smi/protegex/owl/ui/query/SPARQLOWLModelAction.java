@@ -21,7 +21,7 @@ public class SPARQLOWLModelAction extends AbstractOWLModelAction {
 
 
     public String getMenubarPath() {
-        return OWL_MENU + PATH_SEPARATOR + GROUP;
+        return REASONING_MENU + PATH_SEPARATOR + GROUP;
     }
 
 
