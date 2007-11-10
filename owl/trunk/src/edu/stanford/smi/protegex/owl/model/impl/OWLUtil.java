@@ -514,6 +514,7 @@ public class OWLUtil {
             ((Cls) owlCls).setOwnSlotValues(computedSuperClassesSlot, Collections.EMPTY_LIST);
         }
         ((Cls) owlModel.getOWLThingClass()).setOwnSlotValues(computedSubClassesSlot, Collections.EMPTY_LIST);
+        ((Cls) owlModel.getOWLNothing()).setOwnSlotValues(computedSubClassesSlot, Collections.EMPTY_LIST);
     }
 
 
