@@ -4,6 +4,7 @@ import com.hp.hpl.jena.datatypes.xsd.impl.XMLLiteralType;
 import com.hp.hpl.jena.ontology.*;
 import com.hp.hpl.jena.rdf.model.*;
 import com.hp.hpl.jena.rdf.model.RDFList;
+import com.hp.hpl.jena.reasoner.Reasoner;
 import com.hp.hpl.jena.vocabulary.OWL;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
@@ -507,12 +508,17 @@ public class JenaCreator {
     public OntModel createOntModel() {
         OntModelSpec spec = new OntModelSpec(OntModelSpec.OWL_MEM);
         spec.setReasoner(null);
-        OntModel ontModel = ModelFactory.createOntologyModel(spec, null);
-        Model owlFullModel = Jena.addOWLFullModel(ontModel);
-        run(ontModel, owlFullModel);
-        return ontModel;
+
+    	return createOntModel(spec);
     }
 
+    public OntModel createOntModel(OntModelSpec ontModelSpec) {
+        OntModel ontModel = ModelFactory.createOntologyModel(ontModelSpec, null);
+        Model owlFullModel = Jena.addOWLFullModel(ontModel);
+        run(ontModel, owlFullModel);
+        return ontModel; 
+    }
+    
 
     public OntModel createOntModelWithoutOWLFullModel() {
         OntModelSpec spec = new OntModelSpec(OntModelSpec.OWL_MEM);
