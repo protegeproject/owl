@@ -165,6 +165,7 @@ public class BasicFind implements Find {
     /**
      * by default automatically search the name and the current browser slot
      * as well as the search synonym slots (if set)
+     * FIXME: TT: This method is wrong. It does not treat correctly the browser text
      */
     protected List getSearchProperties() {
         List searchProps = new ArrayList();
