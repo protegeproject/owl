@@ -3,8 +3,10 @@ package edu.stanford.smi.protegex.owl.inference.util;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 
 import edu.stanford.smi.protege.event.ProjectAdapter;
@@ -12,7 +14,9 @@ import edu.stanford.smi.protege.event.ProjectEvent;
 import edu.stanford.smi.protege.event.ProjectListener;
 import edu.stanford.smi.protege.model.KnowledgeBase;
 import edu.stanford.smi.protege.model.Project;
+import edu.stanford.smi.protege.util.Disposable;
 import edu.stanford.smi.protege.util.Log;
+import edu.stanford.smi.protegex.owl.inference.protegeowl.ReasonerManager;
 import edu.stanford.smi.protegex.owl.model.OWLAnonymousClass;
 import edu.stanford.smi.protegex.owl.model.OWLIndividual;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
@@ -24,10 +28,7 @@ import edu.stanford.smi.protegex.owl.model.RDFSClass;
 import edu.stanford.smi.protegex.owl.model.event.ModelAdapter;
 import edu.stanford.smi.protegex.owl.model.event.ModelListener;
 import edu.stanford.smi.protegex.owl.model.visitor.OWLModelVisitorAdapter;
-import edu.stanford.smi.protegex.owl.swrl.model.SWRLAtomList;
-import edu.stanford.smi.protegex.owl.swrl.model.SWRLBuiltin;
 import edu.stanford.smi.protegex.owl.swrl.model.SWRLFactory;
-import edu.stanford.smi.protegex.owl.swrl.model.SWRLIndividual;
 import edu.stanford.smi.protegex.owl.swrl.model.factory.SWRLJavaFactory;
 
 /**
@@ -39,22 +40,22 @@ import edu.stanford.smi.protegex.owl.swrl.model.factory.SWRLJavaFactory;
  * matthew.horridge@cs.man.ac.uk<br>
  * www.cs.man.ac.uk/~horridgm<br><br>
  */
-public class ReasonerUtil {
+public class ReasonerUtil implements Disposable{
 
     private static ReasonerUtil instance;
 
-    private Map<KnowledgeBase, Collection<RDFSClass>> namedClsesMap;
+    private Map<OWLModel, Collection<RDFSClass>> namedClsesMap;
 
-    private Map<KnowledgeBase, Collection<RDFProperty>> propertiesMap;
+    private Map<OWLModel, Collection<RDFProperty>> propertiesMap;
 
-    private Map<KnowledgeBase, Collection<RDFIndividual>> individualsMap;
+    private Map<OWLModel, Collection<RDFIndividual>> individualsMap;
+    
+    private Set<OWLModel> owlModelsWithListener; 
 
     private ProjectListener projectListener = new ProjectAdapter() {
         public void projectClosed(ProjectEvent event) {
             Project project = (Project) event.getSource();
-            project.removeProjectListener(projectListener);
-            ((OWLModel) project.getKnowledgeBase()).removeModelListener(modelListener);
-            initHashMaps();
+            dispose((OWLModel) project.getKnowledgeBase());            
         }
     };
 
@@ -108,10 +109,10 @@ public class ReasonerUtil {
 
 
     private void initHashMaps() {
-        namedClsesMap = new HashMap<KnowledgeBase, Collection<RDFSClass>>();
-        propertiesMap = new HashMap<KnowledgeBase, Collection<RDFProperty>>();
-        individualsMap = new HashMap<KnowledgeBase, Collection<RDFIndividual>>();
-
+        namedClsesMap = new HashMap<OWLModel, Collection<RDFSClass>>();
+        propertiesMap = new HashMap<OWLModel, Collection<RDFProperty>>();
+        individualsMap = new HashMap<OWLModel, Collection<RDFIndividual>>();
+        owlModelsWithListener = new HashSet<OWLModel>();
     }
 
 
@@ -128,8 +129,7 @@ public class ReasonerUtil {
         if (namedClsesMap.containsKey(kb) == false) {
             namedClsesMap.put(kb, getFilteredNamedClasses(kb));
 
-            kb.addModelListener(modelListener);
-            kb.getProject().addProjectListener(projectListener);
+            addListeners(kb);
         }
 
 
@@ -169,11 +169,11 @@ public class ReasonerUtil {
         if (propertiesMap.containsKey(kb) == false) {
             propertiesMap.put(kb, getFilteredProperties(kb));
 
-            kb.addModelListener(modelListener);
+            addListeners(kb);
         }
 
 
-        Collection properties = (Collection) propertiesMap.get(kb);
+        Collection<RDFProperty> properties = (Collection<RDFProperty>) propertiesMap.get(kb);
 
         if (properties == null) {
             properties = getFilteredProperties(kb);
@@ -208,7 +208,7 @@ public class ReasonerUtil {
     public Collection getIndividuals(OWLModel kb) {
         if (individualsMap.containsKey(kb) == false) {
             individualsMap.put(kb, getOWLIndividuals(kb));
-            kb.addModelListener(modelListener);
+            addListeners(kb);
         }
 
         Collection individuals = (Collection) individualsMap.get(kb);
@@ -308,5 +308,49 @@ public class ReasonerUtil {
 
         return namedCls;
     }
+    
+    private void addListeners(OWLModel owlModel) {
+    	if (!owlModelsWithListener.contains(owlModel)) {
+    		owlModel.addModelListener(modelListener);
+    		owlModel.getProject().addProjectListener(projectListener);
+    		owlModelsWithListener.add(owlModel);
+    	}
+    }
+    
+    
+    private void removeListeners(OWLModel owlModel) {
+    	if (owlModelsWithListener.contains(owlModel)) {
+    		owlModel.removeModelListener(modelListener);
+    		owlModel.getProject().removeProjectListener(projectListener);
+    		owlModelsWithListener.remove(owlModel);
+    	}
+    }
+    
+    private void dispose(OWLModel owlModel) {
+    	namedClsesMap.remove(owlModel);
+    	propertiesMap.remove(owlModel);
+    	individualsMap.remove(owlModel);
+    	removeListeners(owlModel);    	
+    }
+    
+    public void dispose() {
+    	for (OWLModel owlModel : owlModelsWithListener) {
+			dispose(owlModel);
+		}
+    	
+    	namedClsesMap.clear();
+    	propertiesMap.clear();
+    	individualsMap.clear();
+    	owlModelsWithListener.clear();
+    }
+    
+    public static void handleOutOfMemory() {
+    	ReasonerManager.getInstance().dispose();
+		
+		System.gc();
+		System.runFinalization();
+		System.gc();
+    }
+    
 }
 
