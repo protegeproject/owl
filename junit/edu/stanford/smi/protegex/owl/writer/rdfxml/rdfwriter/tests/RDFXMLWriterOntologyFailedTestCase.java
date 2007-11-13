@@ -14,7 +14,7 @@ import java.net.URI;
 public class RDFXMLWriterOntologyFailedTestCase extends AbstractRDFXMLWriterTestCases {
 
     public void testKAOntology() {
-        doOntology("http://protege.stanford.edu/plugins/owl/owl-library/ka.owl");
+        doOntology("http://protege.cim3.net/file/pub/ontologies/ka/ka.owl");
     }
 
 
@@ -24,12 +24,12 @@ public class RDFXMLWriterOntologyFailedTestCase extends AbstractRDFXMLWriterTest
 
 
     public void testTravelOntology() {
-        doOntology("http://protege.stanford.edu/plugins/owl/owl-library/travel.owl");
+        doOntology("http://protege.stanford.edu/junitOntologies/testset/travel.owl");
     }
 
 
     public void testGenerationsOntology() {
-        doOntology("http://protege.stanford.edu/plugins/owl/owl-library/generations.owl");
+        doOntology("http://protege.cim3.net/file/pub/ontologies/generations/generations.owl");
     }
 
 
@@ -44,7 +44,7 @@ public class RDFXMLWriterOntologyFailedTestCase extends AbstractRDFXMLWriterTest
 
 
     public void testMGEDOntology() {
-        doOntology("http://protege.stanford.edu/plugins/owl/owl-library/MGEDOntology.owl");
+        doOntology("http://mged.sourceforge.net/ontologies/MGEDOntology.owl");
     }
 
 
