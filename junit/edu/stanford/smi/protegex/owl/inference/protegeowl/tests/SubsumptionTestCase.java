@@ -5,13 +5,12 @@ import java.util.logging.Level;
 
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.inference.dig.exception.DIGReasonerException;
-import edu.stanford.smi.protegex.owl.inference.dig.reasoner.DefaultDIGReasoner;
 import edu.stanford.smi.protegex.owl.inference.protegeowl.ProtegeOWLReasoner;
 import edu.stanford.smi.protegex.owl.inference.protegeowl.ReasonerManager;
+import edu.stanford.smi.protegex.owl.inference.reasoner.ProtegeReasoner;
+import edu.stanford.smi.protegex.owl.inference.reasoner.exception.ProtegeReasonerException;
 import edu.stanford.smi.protegex.owl.model.OWLClass;
 import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
-import edu.stanford.smi.protegex.owl.tests.AbstractDIGReasonerTestCase;
-import edu.stanford.smi.protegex.owl.tests.AbstractJenaTestCase;
 
 /**
  * User: matthewhorridge<br>
@@ -33,9 +32,12 @@ public class SubsumptionTestCase extends AbstractProtegeOwlTestCase {
             OWLNamedClass clsA = owlModel.createOWLNamedClass("A");
             OWLNamedClass clsB = owlModel.createOWLNamedClass("B");
             clsB.addEquivalentClass(clsA);
-            ProtegeOWLReasoner reasoner = ReasonerManager.getInstance().createReasoner(owlModel);
+            
+            ReasonerManager rm = ReasonerManager.getInstance();
+            ProtegeReasoner reasoner = rm.createProtegeReasoner(owlModel, rm.getDefaultDIGReasonerClass());
+            
             // clsA should subsume clsB
-            assertTrue(reasoner.isSubsumedBy(clsA, clsB, null));
+            assertTrue(reasoner.isSubsumedBy(clsA, clsB));
         }
         catch (Exception e) {
             fail(e.getMessage());
@@ -49,10 +51,13 @@ public class SubsumptionTestCase extends AbstractProtegeOwlTestCase {
             OWLNamedClass clsA = owlModel.createOWLNamedClass("A");
             OWLNamedClass clsB = owlModel.createOWLNamedClass("B");
             clsB.addSuperclass(clsA);
-            ProtegeOWLReasoner reasoner = ReasonerManager.getInstance().createReasoner(owlModel);
-            assertTrue(reasoner.getSuperclasses(clsB, null).contains(clsA));
+            
+            ReasonerManager rm = ReasonerManager.getInstance();
+            ProtegeReasoner reasoner = rm.createProtegeReasoner(owlModel, rm.getDefaultDIGReasonerClass());
+            
+            assertTrue(reasoner.getSuperclasses(clsB).contains(clsA));
         }
-        catch (DIGReasonerException e) {
+        catch (ProtegeReasonerException e) {
             fail(e.getMessage());
             Log.getLogger().log(Level.SEVERE, "Exception caught", e);
         }
@@ -66,13 +71,16 @@ public class SubsumptionTestCase extends AbstractProtegeOwlTestCase {
             OWLNamedClass clsC = owlModel.createOWLNamedClass("C");
             clsB.addSuperclass(clsA);
             clsC.addSuperclass(clsB);
-            ProtegeOWLReasoner reasoner = ReasonerManager.getInstance().createReasoner(owlModel);
-            Collection ancestorClasses = reasoner.getAncestorClasses(clsC, null);
+            
+            ReasonerManager rm = ReasonerManager.getInstance();
+            ProtegeReasoner reasoner = rm.createProtegeReasoner(owlModel, rm.getDefaultDIGReasonerClass());
+            
+            Collection ancestorClasses = reasoner.getAncestorClasses(clsC);
             assertTrue(ancestorClasses.contains(clsA));
             assertTrue(ancestorClasses.contains(clsB));
             assertTrue(ancestorClasses.contains(owlModel.getOWLThingClass()));
         }
-        catch (DIGReasonerException e) {
+        catch (ProtegeReasonerException e) {
             fail(e.getMessage());
             Log.getLogger().log(Level.SEVERE, "Exception caught", e);
         }
@@ -84,10 +92,13 @@ public class SubsumptionTestCase extends AbstractProtegeOwlTestCase {
             OWLNamedClass clsA = owlModel.createOWLNamedClass("A");
             OWLNamedClass clsB = owlModel.createOWLNamedClass("B");
             clsB.addSuperclass(clsA);
-            ProtegeOWLReasoner reasoner = ReasonerManager.getInstance().createReasoner(owlModel);
-            assertTrue(reasoner.getSubclasses(clsA, null).contains(clsB));
+
+            ReasonerManager rm = ReasonerManager.getInstance();
+            ProtegeReasoner reasoner = rm.createProtegeReasoner(owlModel, rm.getDefaultDIGReasonerClass());
+            
+            assertTrue(reasoner.getSubclasses(clsA).contains(clsB));
         }
-        catch (DIGReasonerException e) {
+        catch (ProtegeReasonerException e) {
             fail(e.getMessage());
             e.printStackTrace();
         }
@@ -101,13 +112,16 @@ public class SubsumptionTestCase extends AbstractProtegeOwlTestCase {
             OWLNamedClass clsC = owlModel.createOWLNamedClass("C");
             clsB.addSuperclass(clsA);
             clsC.addSuperclass(clsB);
-            ProtegeOWLReasoner reasoner = ReasonerManager.getInstance().createReasoner(owlModel);
-            Collection descendantClasses = reasoner.getDescendantClasses(owlModel.getOWLThingClass(), null);
+            
+            ReasonerManager rm = ReasonerManager.getInstance();
+            ProtegeReasoner reasoner = rm.createProtegeReasoner(owlModel, rm.getDefaultDIGReasonerClass());
+            
+            Collection descendantClasses = reasoner.getDescendantClasses(owlModel.getOWLThingClass());
             assertTrue(descendantClasses.contains(clsA));
             assertTrue(descendantClasses.contains(clsB));
             assertTrue(descendantClasses.contains(clsC));
         }
-        catch (DIGReasonerException e) {
+        catch (ProtegeReasonerException e) {
             fail(e.getMessage());
             e.printStackTrace();
         }
@@ -120,7 +134,10 @@ public class SubsumptionTestCase extends AbstractProtegeOwlTestCase {
             OWLNamedClass clsB = owlModel.createOWLNamedClass("B");
             OWLNamedClass clsC = owlModel.createOWLNamedClass("C");
             clsB.addSuperclass(clsA);
-            ProtegeOWLReasoner reasoner = ReasonerManager.getInstance().createReasoner(owlModel);
+
+            ReasonerManager rm = ReasonerManager.getInstance();
+            ProtegeOWLReasoner reasoner = (ProtegeOWLReasoner) rm.createProtegeReasoner(owlModel, rm.getDefaultDIGReasonerClass());
+            
             int relationship;
             relationship = reasoner.getSubsumptionRelationship(clsA, clsB, null);
             assertEquals(relationship, ProtegeOWLReasoner.CLS1_SUBSUMES_CLS2);
@@ -133,7 +150,7 @@ public class SubsumptionTestCase extends AbstractProtegeOwlTestCase {
             relationship = reasoner.getSubsumptionRelationship(clsC, clsA, null);
             assertEquals(relationship, ProtegeOWLReasoner.NO_SUBSUMPTION_RELATIONSHIP);
         }
-        catch (DIGReasonerException e) {
+        catch (ProtegeReasonerException e) {
             fail(e.getMessage());
             e.printStackTrace();
         }
@@ -144,7 +161,9 @@ public class SubsumptionTestCase extends AbstractProtegeOwlTestCase {
         try {
             OWLNamedClass clsA = owlModel.createOWLNamedClass("A");
             OWLNamedClass clsB = owlModel.createOWLNamedClass("B");
+            
             ProtegeOWLReasoner reasoner = ReasonerManager.getInstance().createReasoner(owlModel);
+          
             Collection superClses = reasoner.getSuperclassesOfIntersection(new OWLClass []{clsA, clsB}, null);
             assertTrue(superClses.contains(clsA));
             assertTrue(superClses.contains(clsB));
