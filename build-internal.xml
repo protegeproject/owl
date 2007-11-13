@@ -60,7 +60,7 @@
 	<!-- COMPILE -->
 	<!-- =================================================================== -->
 	<target name = "compile" depends = "prepare-src">
-		<javac srcdir = "${build.src}" destdir = "${build.dest}" debug = "true" debuglevel = "lines" optimize = "on" includeAntRuntime = "no" source = "1.5">
+		<javac srcdir = "${build.src}" destdir = "${build.dest}" debug = "true" debuglevel = "lines" optimize = "on" includeAntRuntime = "no" source = "1.5" memoryInitialSize = "200m">
 			<classpath>
 				<pathelement path = "${protege.jar}"/>
 				<fileset dir = "${lib.dir}">
