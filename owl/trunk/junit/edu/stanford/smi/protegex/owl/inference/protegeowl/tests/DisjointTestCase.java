@@ -3,9 +3,9 @@ package edu.stanford.smi.protegex.owl.inference.protegeowl.tests;
 import java.util.logging.Level;
 
 import edu.stanford.smi.protege.util.Log;
-import edu.stanford.smi.protegex.owl.inference.dig.exception.DIGReasonerException;
-import edu.stanford.smi.protegex.owl.inference.protegeowl.ProtegeOWLReasoner;
 import edu.stanford.smi.protegex.owl.inference.protegeowl.ReasonerManager;
+import edu.stanford.smi.protegex.owl.inference.reasoner.ProtegeReasoner;
+import edu.stanford.smi.protegex.owl.inference.reasoner.exception.ProtegeReasonerException;
 import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
 
 /**
@@ -21,20 +21,20 @@ import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
  */
 public class DisjointTestCase extends AbstractProtegeOwlTestCase {
 
-    private static ProtegeOWLReasoner reasoner;
-    
-
-
+    private static ProtegeReasoner reasoner; 
 
     public void testDisjointClassesQuery() {
         try {
             OWLNamedClass clsA = owlModel.createOWLNamedClass("A");
             OWLNamedClass clsB = owlModel.createOWLNamedClass("B");
-            clsA.addDisjointClass(clsB);
-            ProtegeOWLReasoner reasoner = ReasonerManager.getInstance().createReasoner(owlModel);
-            assertTrue(reasoner.isDisjointTo(clsA, clsB, null));
+            clsA.addDisjointClass(clsB);          
+            
+            ReasonerManager rm = ReasonerManager.getInstance();
+            ProtegeReasoner reasoner = rm.createProtegeReasoner(owlModel, rm.getDefaultDIGReasonerClass());
+            
+            assertTrue(reasoner.isDisjointTo(clsA, clsB));
         }
-        catch (DIGReasonerException e) {
+        catch (ProtegeReasonerException e) {
             fail(e.getMessage());
             Log.getLogger().log(Level.SEVERE, "Exception caught", e);
         }
