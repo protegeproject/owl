@@ -54,8 +54,7 @@ public class ReasonerManager implements Disposable {
 
 
     private static void initializeUncaughtExceptionHandler() {
-		Thread.setDefaultUncaughtExceptionHandler(new DefaultUncaughtExceptionHandler());
-		
+		Thread.setDefaultUncaughtExceptionHandler(new DefaultUncaughtExceptionHandler());		
 	}
 
 
@@ -80,7 +79,7 @@ public class ReasonerManager implements Disposable {
     	ProtegeReasoner reasoner = owlModel2reasonerMap.get(owlModel);
     	
     	if (reasoner == null) {
-    		return (ProtegeOWLReasoner) getProtegeReasoner(owlModel, getDefaultDIGReasonerClass());
+    		return (ProtegeOWLReasoner) getProtegeReasoner(owlModel, getDefaultDIGReasonerClass(), false);
     	}
     	
     	if (reasoner instanceof ProtegeOWLReasoner) {
@@ -92,11 +91,16 @@ public class ReasonerManager implements Disposable {
 
     
     public ProtegeReasoner getProtegeReasoner(OWLModel owlModel) {
-    	return getProtegeReasoner(owlModel, getDefaultReasonerClass());
+    	return getProtegeReasoner(owlModel, getDefaultReasonerClass(), false);
     }
     
         
-    private ProtegeReasoner getProtegeReasoner(OWLModel owlModel, Class reasonerJavaClass ) {
+    private ProtegeReasoner getProtegeReasoner(OWLModel owlModel, Class reasonerJavaClass, boolean replace ) {
+    	
+    	if (replace == true) {
+    		disposeReasoner(owlModel);
+    	}
+    	
     	if (reasonerJavaClass == null) {
     		return null; 
     	}
@@ -144,7 +148,7 @@ public class ReasonerManager implements Disposable {
     }
     
     public ProtegeReasoner createProtegeReasoner(OWLModel owlModel, Class reasonerJavaClass) {
-    	return getProtegeReasoner(owlModel, reasonerJavaClass); 
+    	return getProtegeReasoner(owlModel, reasonerJavaClass, true); 
     }
 	
 	
