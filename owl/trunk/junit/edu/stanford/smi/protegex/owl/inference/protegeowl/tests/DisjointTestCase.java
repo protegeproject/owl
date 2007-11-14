@@ -7,6 +7,7 @@ import edu.stanford.smi.protegex.owl.inference.protegeowl.ReasonerManager;
 import edu.stanford.smi.protegex.owl.inference.reasoner.ProtegeReasoner;
 import edu.stanford.smi.protegex.owl.inference.reasoner.exception.ProtegeReasonerException;
 import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
+import edu.stanford.smi.protegex.owl.tests.AbstractDIGReasonerTestCase;
 
 /**
  * User: matthewhorridge<br>
@@ -19,7 +20,7 @@ import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
  *
  * @prowl.junit.dig
  */
-public class DisjointTestCase extends AbstractProtegeOwlTestCase {
+public class DisjointTestCase extends AbstractDIGReasonerTestCase {
 
     private static ProtegeReasoner reasoner; 
 
