@@ -13,38 +13,48 @@ import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.swrl.util.SWRLOWLUtil;
 
 import java.util.*;
-import java.io.Serializable;
 
 /**
  ** Class representing an OWL property
  */
-public abstract class OWLPropertyImpl extends BuiltInArgumentImpl implements OWLProperty, Serializable
+public abstract class OWLPropertyImpl extends BuiltInArgumentImpl implements OWLProperty
 {
   // There is an equals method defined on this class.
   private String propertyName;
-  private Set<String> domainClassNames, rangeClassNames, superPropertyNames, subPropertyNames, equivalentPropertyNames;
+  private Set<String> domainClassNames, rangeClassNames, superPropertyNames, subPropertyNames, 
+    equivalentPropertyNames, equivalentPropertySuperPropertyNames;
   
-  // Constructor used when creating a OWLPropertyImpl object from an OWL property
-  public OWLPropertyImpl(String propertyName, Set<String> domainClassNames, 
-                         Set<String> rangeClassNames, Set<String> superPropertyNames, Set<String> subPropertyNames,
-                         Set<String> equivalentPropertyNames) 
+  public OWLPropertyImpl(OWLModel owlModel, String propertyName) throws OWLFactoryException
   {
-    this.propertyName = propertyName;    
-    this.domainClassNames = domainClassNames;
-    this.rangeClassNames = rangeClassNames;
-    this.superPropertyNames = superPropertyNames;
-    this.subPropertyNames = subPropertyNames;
-    this.equivalentPropertyNames = equivalentPropertyNames;
-  } // OWLPropertyImpl
-  
-  public OWLPropertyImpl(String propertyName) 
-  {
-    initialize(propertyName);
+    edu.stanford.smi.protegex.owl.model.OWLProperty property;
+
+    this.propertyName = propertyName;
+
+    property = SWRLOWLUtil.getOWLProperty(owlModel, propertyName);
+    if (property == null) throw new InvalidPropertyNameException(propertyName);
+
+    domainClassNames = SWRLOWLUtil.rdfResources2Names(property.getUnionDomain(true));
+    rangeClassNames = SWRLOWLUtil.rdfResources2Names(property.getUnionRangeClasses());
+    superPropertyNames = SWRLOWLUtil.rdfResources2Names(property.getSuperproperties(true));
+    subPropertyNames = SWRLOWLUtil.rdfResources2Names(property.getSubproperties(true));
+    equivalentPropertyNames = SWRLOWLUtil.rdfResources2Names(property.getEquivalentProperties());
+    equivalentPropertySuperPropertyNames = new HashSet<String>();
+
+    for (String equivalentPropertyName : equivalentPropertyNames) {
+      RDFProperty equivalentProperty = SWRLOWLUtil.getOWLProperty(owlModel, equivalentPropertyName);
+      Iterator equivalentPropertySuperPropertiesIterator = equivalentProperty.getSuperproperties(true).iterator();
+      while (equivalentPropertySuperPropertiesIterator.hasNext()) {
+        RDFProperty equivalentPropertySuperProperty = (RDFProperty)equivalentPropertySuperPropertiesIterator.next();
+        equivalentPropertySuperPropertyNames.add(equivalentPropertySuperProperty.getName());
+      } /// while
+    } // for
   } // OWLPropertyImpl
 
-  public OWLPropertyImpl() // For serialization
+  // Constructor used when creating a OWLPropertyImpl object to pass as a built-in argument
+  public OWLPropertyImpl(String propertyName) 
   {
-    initialize("");
+    this.propertyName = propertyName;
+    initialize();
   } // OWLPropertyImpl
   
   public String getPropertyName() { return propertyName; }
@@ -53,6 +63,7 @@ public abstract class OWLPropertyImpl extends BuiltInArgumentImpl implements OWL
   public Set<String> getSuperPropertyNames() { return superPropertyNames; }
   public Set<String> getSubPropertyNames() { return subPropertyNames; }
   public Set<String> getEquivalentPropertyNames() { return equivalentPropertyNames; }
+  public Set<String> getEquivalentPropertySuperPropertyNames() { return equivalentPropertySuperPropertyNames; }
   
   public String getRepresentation() { return getPropertyName(); }
 
@@ -68,7 +79,8 @@ public abstract class OWLPropertyImpl extends BuiltInArgumentImpl implements OWL
       (rangeClassNames == impl.rangeClassNames || (rangeClassNames != null && rangeClassNames.equals(impl.rangeClassNames))) &&
       (subPropertyNames == impl.subPropertyNames || (subPropertyNames != null && subPropertyNames.equals(impl.subPropertyNames))) &&
       (superPropertyNames == impl.superPropertyNames || (superPropertyNames != null && superPropertyNames.equals(impl.superPropertyNames))) &&
-      (equivalentPropertyNames == impl.equivalentPropertyNames || (equivalentPropertyNames != null && equivalentPropertyNames.equals(impl.equivalentPropertyNames)));
+      (equivalentPropertyNames == impl.equivalentPropertyNames || (equivalentPropertyNames != null && equivalentPropertyNames.equals(impl.equivalentPropertyNames))) &&
+      (equivalentPropertySuperPropertyNames == impl.equivalentPropertySuperPropertyNames || (equivalentPropertySuperPropertyNames != null && equivalentPropertySuperPropertyNames.equals(impl.equivalentPropertySuperPropertyNames)));
   } // equals
 
   public int hashCode()
@@ -80,6 +92,7 @@ public abstract class OWLPropertyImpl extends BuiltInArgumentImpl implements OWL
     hash = hash + (null == subPropertyNames ? 0 : subPropertyNames.hashCode());
     hash = hash + (null == superPropertyNames ? 0 : superPropertyNames.hashCode());
     hash = hash + (null == equivalentPropertyNames ? 0 : equivalentPropertyNames.hashCode());
+    hash = hash + (null == equivalentPropertySuperPropertyNames ? 0 : equivalentPropertySuperPropertyNames.hashCode());
     return hash;
   } // hashCode
 
@@ -94,17 +107,10 @@ public abstract class OWLPropertyImpl extends BuiltInArgumentImpl implements OWL
   public static Set<OWLPropertyAssertionAxiom> buildOWLPropertyAssertionAxioms(OWLModel owlModel, String propertyName) throws OWLFactoryException, DatatypeConversionException
   {
     Set<OWLPropertyAssertionAxiom> propertyAssertions = new HashSet<OWLPropertyAssertionAxiom>();
-    Set<String> domainClassNames, rangeClassNames, superPropertyNames, subPropertyNames, equivalentPropertyNames;
     edu.stanford.smi.protegex.owl.model.OWLProperty property = SWRLOWLUtil.getOWLProperty(owlModel, propertyName);
     OWLPropertyAssertionAxiom axiom;
 
     if (property == null) throw new InvalidPropertyNameException(propertyName);
-
-    domainClassNames = SWRLOWLUtil.rdfResources2Names(property.getUnionDomain(true));
-    rangeClassNames = SWRLOWLUtil.rdfResources2Names(property.getUnionRangeClasses());
-    superPropertyNames = SWRLOWLUtil.rdfResources2Names(property.getSuperproperties(true));
-    subPropertyNames = SWRLOWLUtil.rdfResources2Names(property.getSubproperties(true));
-    equivalentPropertyNames = SWRLOWLUtil.rdfResources2Names(property.getEquivalentProperties());
 
     Iterator domainsIterator = property.getUnionDomain(true).iterator();
     while (domainsIterator.hasNext()) {
@@ -119,29 +125,39 @@ public abstract class OWLPropertyImpl extends BuiltInArgumentImpl implements OWL
         edu.stanford.smi.protegex.owl.model.OWLIndividual domainIndividual = (edu.stanford.smi.protegex.owl.model.OWLIndividual)object2;
         
         if (domainIndividual.hasPropertyValue(property)) {
-          
           if (property.hasObjectRange()) { // Object property
             Iterator individualValuesIterator = domainIndividual.getPropertyValues(property).iterator();
             while (individualValuesIterator.hasNext()) {
               RDFResource resource = (RDFResource)individualValuesIterator.next();
               if (resource instanceof edu.stanford.smi.protegex.owl.model.OWLIndividual) {
                 edu.stanford.smi.protegex.owl.model.OWLIndividual rangeIndividual = (edu.stanford.smi.protegex.owl.model.OWLIndividual)resource;
-                OWLIndividual subject = OWLFactory.createOWLIndividual(domainIndividual);
-                OWLIndividual object = OWLFactory.createOWLIndividual(rangeIndividual);
-                axiom = OWLFactory.createOWLObjectPropertyAssertionAxiom(subject, OWLFactory.createOWLObjectProperty(propertyName), object);
+                OWLIndividual subject = OWLFactory.createOWLIndividual(owlModel, domainIndividual.getName());
+                OWLIndividual object = OWLFactory.createOWLIndividual(owlModel, rangeIndividual.getName());
+                axiom = OWLFactory.createOWLObjectPropertyAssertionAxiom(subject, OWLFactory.createOWLObjectProperty(owlModel, propertyName), object);
                 propertyAssertions.add(axiom);                
-              } else {
-                //System.err.println("Unknown property value resource: " + resource); // TODO: Orphan resources in OWL file. Ignore?
+              } else if (resource instanceof edu.stanford.smi.protegex.owl.model.OWLNamedClass) { // This will be OWL Full
+                edu.stanford.smi.protegex.owl.model.OWLNamedClass rangeClass = (edu.stanford.smi.protegex.owl.model.OWLNamedClass)resource;
+                OWLIndividual subject = OWLFactory.createOWLIndividual(owlModel, domainIndividual.getName());
+                OWLClass object = OWLFactory.createOWLClass(owlModel, rangeClass.getName());
+                axiom = OWLFactory.createOWLClassPropertyAssertionAxiom(subject, OWLFactory.createOWLObjectProperty(owlModel, propertyName), object);
+                propertyAssertions.add(axiom);                
+              } else if (resource instanceof edu.stanford.smi.protegex.owl.model.OWLProperty) { // This will be OWL Full
+                edu.stanford.smi.protegex.owl.model.OWLProperty rangeProperty = (edu.stanford.smi.protegex.owl.model.OWLProperty)resource;
+                OWLIndividual subject = OWLFactory.createOWLIndividual(owlModel, domainIndividual.getName());
+                OWLProperty object;
+                if (rangeProperty.isObjectProperty()) object = OWLFactory.createOWLObjectProperty(owlModel, rangeProperty.getName());
+                else object = OWLFactory.createOWLDatatypeProperty(owlModel, rangeProperty.getName());
+                axiom = OWLFactory.createOWLPropertyPropertyAssertionAxiom(subject, OWLFactory.createOWLObjectProperty(owlModel, propertyName), object);
+                propertyAssertions.add(axiom);                
               } // if
             } // while
-
           } else { // DatatypeProperty
             Iterator literalsIterator = domainIndividual.getPropertyValueLiterals(property).iterator();
             while (literalsIterator.hasNext()) {
               RDFSLiteral literal = (RDFSLiteral)literalsIterator.next();
-              OWLIndividual subject = OWLFactory.createOWLIndividual(domainIndividual);
+              OWLIndividual subject = OWLFactory.createOWLIndividual(owlModel, domainIndividual.getName());
               OWLDatatypeValue object = OWLFactory.createOWLDatatypeValue(owlModel, literal);
-              axiom = OWLFactory.createOWLDatatypePropertyAssertionAxiom(subject, OWLFactory.createOWLDatatypeProperty(propertyName), object);
+              axiom = OWLFactory.createOWLDatatypePropertyAssertionAxiom(subject, OWLFactory.createOWLDatatypeProperty(owlModel, propertyName), object);
               propertyAssertions.add(axiom);
             } // while
           } // if
@@ -152,15 +168,14 @@ public abstract class OWLPropertyImpl extends BuiltInArgumentImpl implements OWL
     return propertyAssertions;
   } // buildOWLPropertyAssertionAxioms
 
-  private void initialize(String propertyName)
+  private void initialize()
   {
-    this.propertyName = propertyName;
-
     domainClassNames = new HashSet<String>();
     rangeClassNames = new HashSet<String>();
     superPropertyNames = new HashSet<String>();
     subPropertyNames = new HashSet<String>();
     equivalentPropertyNames = new HashSet<String>();
+    equivalentPropertySuperPropertyNames = new HashSet<String>();
   } // initialize
 
 } // OWLPropertyImpl

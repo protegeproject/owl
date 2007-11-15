@@ -12,18 +12,17 @@ import edu.stanford.smi.protegex.owl.swrl.util.SWRLOWLUtil;
 import edu.stanford.smi.protegex.owl.swrl.exceptions.*;
 
 import java.util.*;
-import java.io.Serializable;
 
 /**
  ** Class representing an OWL individual. 
  */
-public class OWLIndividualImpl extends PropertyValueImpl implements OWLIndividual, Serializable
+public class OWLIndividualImpl extends PropertyValueImpl implements OWLIndividual
 {
   // NOTE: equals() method defined in this class
 
   private String individualName;  
-  private Set<String> definingClassNames, definingSuperClassNames, definingEquivalentClassNames;
-  private Set<String> sameAsIndividualNames;
+  private Set<String> definingClassNames, definingSuperclassNames, definingEquivalentClassNames, definingEquivalentClassSuperclassNames,
+    sameAsIndividualNames;
     
   /**
    ** Constructor used when creating from an OWL individual. We construct lists containing names of its direct defining classes, its
@@ -35,7 +34,7 @@ public class OWLIndividualImpl extends PropertyValueImpl implements OWLIndividua
     initialize(individual.getName());
 
     buildDefiningClassNames(individual);
-    buildDefiningSuperClassNames(individual);
+    buildDefiningSuperclassNames(individual);
     buildDefiningEquivalentClassNames(individual);
     buildSameAsIndividualNames(individual);
   } // OWLIndividualImpl
@@ -53,7 +52,7 @@ public class OWLIndividualImpl extends PropertyValueImpl implements OWLIndividua
     initialize(individualName);
 
     buildDefiningClassNames(individual);
-    buildDefiningSuperClassNames(individual);
+    buildDefiningSuperclassNames(individual);
     buildDefiningEquivalentClassNames(individual);
     buildSameAsIndividualNames(individual);
   } // OWLIndividualImpl
@@ -78,15 +77,11 @@ public class OWLIndividualImpl extends PropertyValueImpl implements OWLIndividua
     initialize(individualName);
   } // OWLIndividualImpl
 
-  public OWLIndividualImpl() // For serialization
-  {
-    initialize("");
-  } // OWLIndividualImpl
-
   public String getIndividualName() { return individualName; }
   public Set<String> getDefiningClassNames() { return definingClassNames; }
-  public Set<String> getDefiningSuperClassNames() { return definingSuperClassNames; }
+  public Set<String> getDefiningSuperclassNames() { return definingSuperclassNames; }
   public Set<String> getDefiningEquivalentClassNames() { return definingEquivalentClassNames; }
+  public Set<String> getDefiningEquivalentClassSuperclassNames() { return definingEquivalentClassSuperclassNames; }
   public Set<String> getSameAsIndividualNames() { return sameAsIndividualNames; }
   
   public void write2OWL(OWLModel owlModel) throws SWRLRuleEngineBridgeException
@@ -113,14 +108,22 @@ public class OWLIndividualImpl extends PropertyValueImpl implements OWLIndividua
     if(this == obj) return true;
     if((obj == null) || (obj.getClass() != this.getClass())) return false;
     OWLIndividualImpl impl = (OWLIndividualImpl)obj;
-    return (getIndividualName() == impl.getIndividualName() || (getIndividualName() != null && getIndividualName().equals(impl.getIndividualName())));
+    return (getIndividualName() == impl.getIndividualName() || (getIndividualName() != null && getIndividualName().equals(impl.getIndividualName()))) &&
+           (definingClassNames != null && impl.definingClassNames != null && definingClassNames.equals(impl.definingClassNames)) &&
+           (definingSuperclassNames != null && impl.definingSuperclassNames != null && definingSuperclassNames.equals(impl.definingSuperclassNames)) &&
+           (definingEquivalentClassNames != null && impl.definingEquivalentClassNames != null && definingEquivalentClassNames.equals(impl.definingEquivalentClassNames)) &&
+           (definingEquivalentClassSuperclassNames != null && impl.definingEquivalentClassSuperclassNames != null && definingEquivalentClassSuperclassNames.equals(impl.definingEquivalentClassSuperclassNames));
   } // equals
 
   public int hashCode()
   {
-    int hash = 7;
+    int hash = 8;
 
     hash = hash + (null == getIndividualName() ? 0 : getIndividualName().hashCode());
+    hash = hash + (null == getDefiningClassNames() ? 0 : getDefiningClassNames().hashCode());
+    hash = hash + (null == getDefiningSuperclassNames() ? 0 : getDefiningSuperclassNames().hashCode());
+    hash = hash + (null == getDefiningEquivalentClassNames() ? 0 : getDefiningEquivalentClassNames().hashCode());
+    hash = hash + (null == getDefiningEquivalentClassSuperclassNames() ? 0 : getDefiningEquivalentClassSuperclassNames().hashCode());
 
     return hash;
   } // hashCode
@@ -135,9 +138,10 @@ public class OWLIndividualImpl extends PropertyValueImpl implements OWLIndividua
     this.individualName = individualName;
 
     definingClassNames = new HashSet<String>();
-    definingSuperClassNames = new HashSet<String>();
+    definingSuperclassNames = new HashSet<String>();
     definingEquivalentClassNames = new HashSet<String>();
     sameAsIndividualNames = new HashSet<String>();
+    definingEquivalentClassSuperclassNames = new HashSet<String>();
   } // initialize
 
   private void buildDefiningClassNames(edu.stanford.smi.protegex.owl.model.OWLIndividual individual) 
@@ -148,7 +152,7 @@ public class OWLIndividualImpl extends PropertyValueImpl implements OWLIndividua
     } // for
   } // buildDefiningClassNames
 
-  private void buildDefiningSuperClassNames(edu.stanford.smi.protegex.owl.model.OWLIndividual individual) 
+  private void buildDefiningSuperclassNames(edu.stanford.smi.protegex.owl.model.OWLIndividual individual) 
   {
     Iterator definingClassesIterator = individual.getRDFTypes().iterator(); // Could be more than one defining type
     while (definingClassesIterator.hasNext()) {
@@ -157,10 +161,10 @@ public class OWLIndividualImpl extends PropertyValueImpl implements OWLIndividua
       while (superClassesIterator.hasNext()) {
         RDFSClass superClass = (RDFSClass)superClassesIterator.next();
         if (superClass.isAnonymous()) continue;
-        if (!definingSuperClassNames.contains(superClass.getName())) definingSuperClassNames.add(superClass.getName());
+        if (!definingSuperclassNames.contains(superClass.getName())) definingSuperclassNames.add(superClass.getName());
       } // while
     } // while
-  } // buildDefiningSuperClassNames
+  } // buildDefiningSuperclassNames
 
   private void buildDefiningEquivalentClassNames(edu.stanford.smi.protegex.owl.model.OWLIndividual individual) 
   {
@@ -170,8 +174,14 @@ public class OWLIndividualImpl extends PropertyValueImpl implements OWLIndividua
       Iterator equivalentClassesIterator = definingClass.getEquivalentClasses().iterator();
       while (equivalentClassesIterator.hasNext()) {
         RDFSClass equivalentClass = (RDFSClass)equivalentClassesIterator.next();
-        if (!equivalentClass.isAnonymous() &&!definingEquivalentClassNames.contains(equivalentClass.getName()))
+        if (!equivalentClass.isAnonymous() &&!definingEquivalentClassNames.contains(equivalentClass.getName())) {
+          Iterator equivalentClassesSuperclassesIterator = equivalentClass.getNamedSuperclasses(true).iterator();
+          while (equivalentClassesSuperclassesIterator.hasNext()) {
+            RDFSClass equivalentClassSuperclass = (RDFSClass)equivalentClassesSuperclassesIterator.next();
+            definingEquivalentClassSuperclassNames.add(equivalentClassSuperclass.getName());
+          } // while
           definingEquivalentClassNames.add(equivalentClass.getName());
+        } // if
       } // while
     } // while
   } // buildDefiningEquivalentClassNames
@@ -179,7 +189,7 @@ public class OWLIndividualImpl extends PropertyValueImpl implements OWLIndividua
   private void buildSameAsIndividualNames(edu.stanford.smi.protegex.owl.model.OWLIndividual individual) 
   {
     RDFProperty sameAsProperty = SWRLOWLUtil.getOWLSameAsProperty(individual.getOWLModel());
-    
+
     if (individual.hasPropertyValue(sameAsProperty)) {
       Collection individuals = (Collection)individual.getPropertyValues(sameAsProperty);
       Iterator individualsIterator = individuals.iterator();

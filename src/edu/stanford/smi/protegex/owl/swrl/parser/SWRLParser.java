@@ -436,17 +436,18 @@ public class SWRLParser
     return parsedEntity;
   } // parseObject
 
-  // Parse a variable or an individual name.
+  // Parse a variable or an individual name. For SWRL Full, also allow class and property names.
   private RDFResource parseIObject() throws SWRLParseException 
   {
     RDFResource parsedEntity = null;
     String parsedString = getNextNonSpaceToken("Expecting variable or individual name.");
     
     if (parsedString.equals("?")) parsedEntity = parseVariable();
-    else { // The entity is an individual name
-      if (!isValidIndividualName(parsedString) && tokenizer.hasMoreTokens())
-        throw new SWRLParseException("Invalid individual name: '" + parsedString + "'.");
-      if (!parseOnly) parsedEntity = getIndividual(parsedString);
+    else { // The entity is an 
+      if (isValidIndividualName(parsedString)) { if (!parseOnly) parsedEntity = getIndividual(parsedString); }
+      else if (isValidClassName(parsedString)) { if (!parseOnly) parsedEntity = getClass(parsedString); } // SWRL Full
+      else if (isValidPropertyName(parsedString)) { if (!parseOnly) parsedEntity = getProperty(parsedString); } // SWRL Full
+      else if (tokenizer.hasMoreTokens()) throw new SWRLParseException("Invalid entity name: '" + parsedString + "'.");
     } // if
     return parsedEntity;
   } // parseIObject

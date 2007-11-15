@@ -5,21 +5,21 @@ import edu.stanford.smi.protegex.owl.swrl.bridge.*;
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.*;
 
 import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
 
 import edu.stanford.smi.protegex.owl.swrl.util.SWRLOWLUtil;
 import edu.stanford.smi.protegex.owl.swrl.exceptions.SWRLOWLUtilException;
 
 import java.util.*;
-import java.io.Serializable;
 
 /**
  ** Class representing an OWL named class
  */
-public class OWLClassImpl extends BuiltInArgumentImpl implements OWLClass, Serializable
+public class OWLClassImpl extends BuiltInArgumentImpl implements OWLClass
 {
   // equals() method defined in this class.
   private String className;
-  private Set<String> directSuperClassNames, directSubClassNames, equivalentClassNames;
+  private Set<String> superclassNames, directSuperClassNames, directSubClassNames, equivalentClassNames, equivalentClassSuperclassNames;
     
   public OWLClassImpl(OWLModel owlModel, String className) throws OWLFactoryException
   {
@@ -31,12 +31,25 @@ public class OWLClassImpl extends BuiltInArgumentImpl implements OWLClass, Seria
     if (owlNamedClass == null) throw new InvalidClassNameException(className);
 
     if (className.equals("owl:Thing")) {
-      directSuperClassNames = new HashSet<String>();
-      directSubClassNames = new HashSet<String>();
+      initialize(className);
     } else {
+      superclassNames = SWRLOWLUtil.rdfResources2Names(owlNamedClass.getNamedSuperclasses(true));
       directSuperClassNames = SWRLOWLUtil.rdfResources2Names(owlNamedClass.getNamedSuperclasses());
       directSubClassNames = SWRLOWLUtil.rdfResources2Names(owlNamedClass.getNamedSubclasses());
       equivalentClassNames = SWRLOWLUtil.rdfResources2Names(owlNamedClass.getEquivalentClasses());
+      equivalentClassSuperclassNames = new HashSet<String>();
+
+      for (String equivalentClassName : equivalentClassNames) {
+        OWLNamedClass equivalentClass = SWRLOWLUtil.getOWLNamedClass(owlModel, equivalentClassName);
+        Iterator equivalentClassSuperClassesIterator = equivalentClass.getSuperclasses(true).iterator();
+        while (equivalentClassSuperClassesIterator.hasNext()) {
+          Object o = equivalentClassSuperClassesIterator.next();
+          if (o instanceof OWLNamedClass) { // Ignore anonymous classes
+            OWLNamedClass equivalentClassSuperclass = (OWLNamedClass)o;
+            equivalentClassSuperclassNames.add(equivalentClassSuperclass.getName());
+          } // if
+        } /// while
+      } // for
     } // if
 
   } // OWLClassImpl
@@ -47,15 +60,12 @@ public class OWLClassImpl extends BuiltInArgumentImpl implements OWLClass, Seria
     initialize(className);
   } // OWLClassImpl
 
-  public OWLClassImpl() // For serialization
-  {
-    initialize("");
-  } // OWLClassImpl
-  
   public String getClassName() { return className; }
+  public Set<String> getSuperclassNames() { return superclassNames; }
   public Set<String> getDirectSuperClassNames() { return directSuperClassNames; }
   public Set<String> getDirectSubClassNames() { return directSubClassNames; }
   public Set<String> getEquivalentClassNames() { return equivalentClassNames; }
+  public Set<String> getEquivalentClassSuperclassNames() { return equivalentClassSuperclassNames; }
 
   public boolean isNamedClass() { return true; }
   public String getRepresentation() { return getClassName(); }
@@ -68,13 +78,25 @@ public class OWLClassImpl extends BuiltInArgumentImpl implements OWLClass, Seria
     if(this == obj) return true;
     if((obj == null) || (obj.getClass() != this.getClass())) return false;
     OWLClassImpl impl = (OWLClassImpl)obj;
-    return (getClassName() == impl.getClassName() || (getClassName() != null && getClassName().equals(impl.getClassName())));
+    return (getClassName() == impl.getClassName() || (getClassName() != null && getClassName().equals(impl.getClassName()))) &&
+           (superclassNames != null && impl.superclassNames != null && superclassNames.equals(impl.superclassNames)) &&
+           (directSuperClassNames != null && impl.directSuperClassNames != null && directSuperClassNames.equals(impl.directSuperClassNames)) &&
+           (directSubClassNames != null && impl.directSubClassNames != null && directSubClassNames.equals(impl.directSubClassNames)) &&
+           (equivalentClassNames != null && impl.equivalentClassNames != null && equivalentClassNames.equals(impl.equivalentClassNames)) &&
+           (equivalentClassSuperclassNames != null && impl.equivalentClassSuperclassNames != null && equivalentClassSuperclassNames.equals(impl.equivalentClassSuperclassNames));
   } // equals
 
   public int hashCode()
   {
-    int hash = 7;
+    int hash = 12;
+
     hash = hash + (null == getClassName() ? 0 : getClassName().hashCode());
+    hash = hash + (null == getSuperclassNames() ? 0 : getSuperclassNames().hashCode());
+    hash = hash + (null == getDirectSuperClassNames() ? 0 : getDirectSuperClassNames().hashCode());
+    hash = hash + (null == getDirectSubClassNames() ? 0 : getDirectSubClassNames().hashCode());
+    hash = hash + (null == getEquivalentClassNames() ? 0 : getEquivalentClassNames().hashCode());
+    hash = hash + (null == getEquivalentClassSuperclassNames() ? 0 : getEquivalentClassSuperclassNames().hashCode());
+
     return hash;
   } // hashCode
 
@@ -86,9 +108,11 @@ public class OWLClassImpl extends BuiltInArgumentImpl implements OWLClass, Seria
   private void initialize(String className)
   {
     this.className = className;
+    superclassNames = new HashSet<String>();
     directSuperClassNames = new HashSet<String>();
     directSubClassNames = new HashSet<String>();
     equivalentClassNames = new HashSet<String>();
+    equivalentClassSuperclassNames = new HashSet<String>();
   } // initialize
 
 } // OWLClassImpl

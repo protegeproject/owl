@@ -26,6 +26,8 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
   private HashSet<String> invocationPatterns;
 
   public SWRLBuiltInLibraryImpl() { super(SQWRLNames.SQWRLBuiltInLibraryName); }
+
+  private ArgumentFactory argumentFactory;
   
   public void reset()
   {
@@ -34,6 +36,8 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
     sortedSets = new HashMap<String, SortedSet<BuiltInArgument>>();
 
     invocationPatterns = new HashSet<String>();
+
+    argumentFactory = ArgumentFactory.getFactory();
   } // reset
   
   public boolean select(List<BuiltInArgument> arguments) throws BuiltInException
@@ -164,7 +168,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
       set.add(value); if (!sets.containsKey(collectionID)) sets.put(collectionID, set);
     } // if
     
-      if (SWRLBuiltInUtil.isUnboundArgument(0, arguments)) arguments.set(0, OWLFactory.createOWLDatatypeValue(collectionID));
+    if (SWRLBuiltInUtil.isUnboundArgument(0, arguments)) arguments.set(0, argumentFactory.createDatatypeValueArgument(collectionID));
 
     return true;
   } // makeSet
@@ -182,7 +186,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
       list.add(value); if (!lists.containsKey(collectionID)) lists.put(collectionID, list);
     } // if
     
-    if (SWRLBuiltInUtil.isUnboundArgument(0, arguments)) arguments.set(0, OWLFactory.createOWLDatatypeValue(collectionID));
+    if (SWRLBuiltInUtil.isUnboundArgument(0, arguments)) arguments.set(0, argumentFactory.createDatatypeValueArgument(collectionID));
 
     return true;
   } // makeList
@@ -200,7 +204,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
       sortedSet.add(value); if (!sortedSets.containsKey(collectionID)) sortedSets.put(collectionID, sortedSet);
     } // if
  
-    if (SWRLBuiltInUtil.isUnboundArgument(0, arguments)) arguments.set(0, OWLFactory.createOWLDatatypeValue(collectionID));
+    if (SWRLBuiltInUtil.isUnboundArgument(0, arguments)) arguments.set(0, argumentFactory.createDatatypeValueArgument(collectionID));
 
     return true;
   } // makeSortedSet
@@ -230,7 +234,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
     else throw new BuiltInException("internal error: no collection found for ID '" + collectionID + "'");
 
     if (SWRLBuiltInUtil.isUnboundArgument(0, arguments)) {
-      arguments.set(0, OWLFactory.createOWLDatatypeValue(size)); // Bind the result to the first parameter
+      arguments.set(0, argumentFactory.createDatatypeValueArgument(size)); // Bind the result to the first parameter
       result = true;
     } else {
       long argument1 = SWRLBuiltInUtil.getArgumentAsALong(0, arguments);

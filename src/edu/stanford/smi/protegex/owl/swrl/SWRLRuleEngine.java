@@ -18,23 +18,15 @@ public interface SWRLRuleEngine
    ** to OWL.
    */
   void infer() throws SWRLRuleEngineException;
+  void infer(String ruleGroupName) throws SWRLRuleEngineException;
+  void infer(Set<String> ruleGroupNames) throws SWRLRuleEngineException;
 
   /**
    ** Load rules and knowledge from OWL into bridge. All existing bridge rules and knowledge will first be cleared and the associated rule
    ** engine will be reset.
    */
   void importSWRLRulesAndOWLKnowledge() throws SWRLRuleEngineException;
-
-  /**
-   ** Load rules from a particular rule group and associated knowledge from OWL into bridge. All existing bridge rules and knowledge will
-   ** first be cleared and the associated rule engine will be reset.
-   */
   void importSWRLRulesAndOWLKnowledge(String ruleGroupName) throws SWRLRuleEngineException;
-
-  /**
-   ** Load rules from all the named rule groups and associated knowledge from OWL into bridge. All existing bridge rules and knowledge will
-   ** first be cleared and the associated rule engine will be reset.
-   */
   void importSWRLRulesAndOWLKnowledge(Set<String> ruleGroupNames) throws SWRLRuleEngineException;
 
   /**

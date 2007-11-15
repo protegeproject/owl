@@ -17,7 +17,14 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
 {
   private static String SWRLRDFLibraryName = "SWRLRDFBuiltIns";
 
-  public SWRLBuiltInLibraryImpl() { super(SWRLRDFLibraryName); }
+  private ArgumentFactory argumentFactory;
+
+  public SWRLBuiltInLibraryImpl() 
+  { 
+    super(SWRLRDFLibraryName); 
+
+    argumentFactory = ArgumentFactory.getFactory();
+  } // SWRLBuiltInLibraryImpl
 
   public void reset() 
   {

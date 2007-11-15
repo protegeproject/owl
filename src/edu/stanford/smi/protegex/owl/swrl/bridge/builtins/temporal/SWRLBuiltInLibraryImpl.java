@@ -27,6 +27,9 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
   public static final String Prefix = "temporal:";
   
   private static String TemporalDuration = Prefix + "duration";
+  private static String TemporalDurationLessThan = Prefix + "durationLessThan";
+  private static String TemporalDurationEqualTo = Prefix + "durationEqualTo";
+  private static String TemporalDurationGreaterThan = Prefix + "durationGreaterThan";
   private static String TemporalEquals = Prefix + "equals";
   private static String TemporalAfter = Prefix + "after";
   private static String TemporalBefore = Prefix + "before";
@@ -53,8 +56,14 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
   private static String HasFinishTimePropertyName = Prefix + "hasFinishTime";
 
   private Temporal temporal;
+  private ArgumentFactory argumentFactory;
 
-  public SWRLBuiltInLibraryImpl() { super(TemporalLibraryName); }
+  public SWRLBuiltInLibraryImpl() 
+  { 
+    super(TemporalLibraryName); 
+
+    argumentFactory = ArgumentFactory.getFactory();
+  } // SWRLBuiltInLibraryImpl
 
   public void reset()
   {
@@ -90,6 +99,10 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
   public boolean notFinishes(List<BuiltInArgument> arguments) throws BuiltInException { return !temporalOperation(TemporalFinishes, arguments); }
   public boolean notFinishedBy(List<BuiltInArgument> arguments) throws BuiltInException { return !temporalOperation(TemporalFinishedBy, arguments); }
 
+  public boolean notDurationLessThan(List<BuiltInArgument> arguments) throws BuiltInException { return !durationLessThan(arguments); }
+  public boolean notDurationEqualTo(List<BuiltInArgument> arguments) throws BuiltInException { return !durationEqualTo(arguments); }
+  public boolean notDurationGreaterThan(List<BuiltInArgument> arguments) throws BuiltInException { return !durationGreaterThan(arguments); }
+
   /**
    ** Accepts either three or four arguments. Returns true if the first duration argument is equal to the difference between two timestamps
    ** at the granularity specified by the final argument. The timestamps are specified as either a mixture of two ValidInstant or datetime
@@ -120,7 +133,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
       } // if
 
       if (SWRLBuiltInUtil.isUnboundArgument(0, arguments)) {
-        arguments.set(0, OWLFactory.createOWLDatatypeValue(operationResult)); // Bind the result to the first parameter
+        arguments.set(0, argumentFactory.createDatatypeValueArgument(operationResult)); // Bind the result to the first parameter
         result = true;
       } else {
         long argument1 = SWRLBuiltInUtil.getArgumentAsALong(0, arguments);
@@ -134,6 +147,54 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
 
     return result;
   } // duration
+
+  public boolean durationLessThan(List<BuiltInArgument> arguments) throws BuiltInException
+  {
+    SWRLBuiltInUtil.checkNumberOfArgumentsInRange(3, 4, arguments.size());
+    SWRLBuiltInUtil.checkForUnboundArguments(arguments);
+    long argument1, operationResult;
+    List<BuiltInArgument> newArguments = SWRLBuiltInUtil.copyArguments(arguments);
+    
+    argument1 = SWRLBuiltInUtil.getArgumentAsALong(0, arguments);
+
+    newArguments.get(0).setUnbound();
+    duration(newArguments);
+    operationResult = SWRLBuiltInUtil.getArgumentAsALong(0, newArguments);
+
+    return argument1 < operationResult;
+  } // durationLessThan    
+
+  public boolean durationEqualTo(List<BuiltInArgument> arguments) throws BuiltInException
+  {
+    SWRLBuiltInUtil.checkNumberOfArgumentsInRange(3, 4, arguments.size());
+    SWRLBuiltInUtil.checkForUnboundArguments(arguments);
+    long argument1, operationResult;
+    List<BuiltInArgument> newArguments = SWRLBuiltInUtil.copyArguments(arguments);
+    
+    argument1 = SWRLBuiltInUtil.getArgumentAsALong(0, arguments);
+
+    newArguments.get(0).setUnbound();
+    duration(newArguments);
+    operationResult = SWRLBuiltInUtil.getArgumentAsALong(0, newArguments);
+
+    return argument1 == operationResult;
+  } // durationLessThan    
+
+  public boolean durationGreaterThan(List<BuiltInArgument> arguments) throws BuiltInException
+  {
+    SWRLBuiltInUtil.checkNumberOfArgumentsInRange(3, 4, arguments.size());
+    SWRLBuiltInUtil.checkForUnboundArguments(arguments);
+    long argument1, operationResult;
+    List<BuiltInArgument> newArguments = SWRLBuiltInUtil.copyArguments(arguments);
+    
+    argument1 = SWRLBuiltInUtil.getArgumentAsALong(0, arguments);
+
+    newArguments.get(0).setUnbound();
+    duration(newArguments);
+    operationResult = SWRLBuiltInUtil.getArgumentAsALong(0, newArguments);
+
+    return argument1 > operationResult;
+  } // durationLessThan    
 
   /**
    ** Returns true if the first timestamp argument is equal to the second timestamps argument plus the third count argument at the
@@ -155,7 +216,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
       operationResult.addGranuleCount(granuleCount, granularity);
 
       if (SWRLBuiltInUtil.isUnboundArgument(0, arguments)) {
-        arguments.set(0, OWLFactory.createOWLDatatypeValue(new DateTime(operationResult.toString()))); // Bind the result to the first parameter
+        arguments.set(0, argumentFactory.createDatatypeValueArgument(new DateTime(operationResult.toString()))); // Bind the result to the first parameter
         result = true;
       } else {
         Instant argument1 = getArgumentAsAnInstant(0, arguments, granularity);

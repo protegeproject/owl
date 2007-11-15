@@ -11,9 +11,6 @@ import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.swrl.model.*;
 import edu.stanford.smi.protegex.owl.swrl.sqwrl.ui.icons.QueryIcons;
 
-import edu.stanford.smi.protegex.owl.swrl.ormap.Mapper;
-import edu.stanford.smi.protegex.owl.swrl.ormap.MapperFactory;
-
 import javax.swing.*;
 import java.awt.*;
 

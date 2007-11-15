@@ -25,19 +25,14 @@ public class OWLObjectPropertyAssertionAxiomImpl extends OWLPropertyAssertionAxi
     edu.stanford.smi.protegex.owl.model.OWLIndividual subjectIndividual, objectIndividual;
     String propertyName = getProperty().getPropertyName();
     String subjectIndividualName = getSubject().getIndividualName();
-    RDFProperty property;
-    
-    // TODO: sameAs and differentFrom will be moved to the appropriate OWL axiom classes
-    if (propertyName.equalsIgnoreCase("sameAs")) property = SWRLOWLUtil.getOWLSameAsProperty(owlModel);
-    else if (propertyName.equalsIgnoreCase("differentFrom")) property = SWRLOWLUtil.getOWLDifferentFromProperty(owlModel);
-    else property = SWRLOWLUtil.getOWLProperty(owlModel, propertyName);
+    String objectIndividualName = getObject().getIndividualName();
+    RDFProperty property = SWRLOWLUtil.getOWLProperty(owlModel, propertyName);
     
     if (property == null) throw new InvalidPropertyNameException(propertyName);
     
     subjectIndividual = SWRLOWLUtil.getOWLIndividual(owlModel, subjectIndividualName);
     if (subjectIndividual == null) throw new InvalidIndividualNameException(subjectIndividualName);
-
-    String objectIndividualName = getObject().getIndividualName();
+ 
     objectIndividual = SWRLOWLUtil.getOWLIndividual(owlModel, objectIndividualName); 
     if (objectIndividual == null) throw new InvalidIndividualNameException(objectIndividualName);
 

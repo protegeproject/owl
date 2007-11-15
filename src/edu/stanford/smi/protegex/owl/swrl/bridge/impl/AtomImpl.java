@@ -11,20 +11,38 @@ import java.util.HashSet;
 */
 public class AtomImpl implements Atom
 {
+  private Set<String> referencedClassNames;
+  private Set<String> referencedPropertyNames;
   private Set<String> referencedIndividualNames;
   private Set<String> referencedVariableNames;
 
   public AtomImpl() 
   { 
+    referencedClassNames = new HashSet<String>();
+    referencedPropertyNames = new HashSet<String>();
     referencedIndividualNames = new HashSet<String>();
     referencedVariableNames = new HashSet<String>();
   } // AtomImpl
 
+  public boolean hasReferencedClasses() { return referencedClassNames.size() != 0; }
+  public Set<String> getReferencedClassNames() { return referencedClassNames; }
+  public boolean hasReferencedProperties() { return referencedPropertyNames.size() != 0; }
+  public Set<String> getReferencedPropertyNames() { return referencedPropertyNames; }
   public boolean hasReferencedIndividuals() { return referencedIndividualNames.size() != 0; }
   public Set<String> getReferencedIndividualNames() { return referencedIndividualNames; }
   public boolean hasReferencedVariables() { return referencedVariableNames.size() != 0; }
   public Set<String> getReferencedVariableNames() { return referencedVariableNames; }
   
+  protected void addReferencedClassName(String className) 
+  { 
+    if (!referencedClassNames.contains(className)) referencedClassNames.add(className); 
+  } // addReferencedIndividualName
+
+  protected void addReferencedPropertyName(String propertyName) 
+  { 
+    if (!referencedPropertyNames.contains(propertyName)) referencedPropertyNames.add(propertyName); 
+  } // addReferencedIndividualName
+
   protected void addReferencedIndividualName(String individualName) 
   { 
     if (!referencedIndividualNames.contains(individualName)) referencedIndividualNames.add(individualName); 

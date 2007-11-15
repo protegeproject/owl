@@ -3,7 +3,6 @@ package edu.stanford.smi.protegex.owl.swrl.bridge;
 
 import edu.stanford.smi.protegex.owl.swrl.SWRLRuleEngine;
 import edu.stanford.smi.protegex.owl.swrl.sqwrl.SQWRLQueryEngine;
-import edu.stanford.smi.protegex.owl.swrl.ormap.Mapper;
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.SWRLRuleEngineBridgeException;
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.BuiltInException;
 

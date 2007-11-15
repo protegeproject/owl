@@ -143,8 +143,8 @@ public class BuiltInAtomImpl extends AtomImpl implements BuiltInAtom
         result.add(OWLFactory.createOWLClass(owlModel, cls.getName()));
       } else  if (o instanceof edu.stanford.smi.protegex.owl.model.OWLProperty) {
         edu.stanford.smi.protegex.owl.model.OWLProperty property = (edu.stanford.smi.protegex.owl.model.OWLProperty)o;
-        if (property.isObjectProperty()) result.add(OWLFactory.createOWLObjectProperty(property.getName()));
-        else result.add(OWLFactory.createOWLDatatypeProperty(property.getName()));
+        if (property.isObjectProperty()) result.add(OWLFactory.createOWLObjectProperty((edu.stanford.smi.protegex.owl.model.OWLObjectProperty)property));
+        else result.add(OWLFactory.createOWLDatatypeProperty((edu.stanford.smi.protegex.owl.model.OWLDatatypeProperty)property));
       } else  if (o instanceof RDFSLiteral) result.add(OWLFactory.createOWLDatatypeValue(owlModel, (RDFSLiteral)o));
       else  if (o instanceof Number) result.add(OWLFactory.createOWLDatatypeValue((Number)o));
       else  if (o instanceof String) result.add(OWLFactory.createOWLDatatypeValue((String)o));
