@@ -10,7 +10,7 @@ import java.util.Set;
 /**
  ** Interface representing an instance of an OWL property
  */
-public interface OWLProperty extends PropertyArgument, PropertyValue
+public interface OWLProperty extends PropertyValue, AtomArgument // AtomArgument is for SWRL Full
 {
   String getPropertyName();
 
@@ -19,4 +19,5 @@ public interface OWLProperty extends PropertyArgument, PropertyValue
   Set<String> getSuperPropertyNames();
   Set<String> getSubPropertyNames();
   Set<String> getEquivalentPropertyNames();
+  Set<String> getEquivalentPropertySuperPropertyNames();
 } // OWLProperty

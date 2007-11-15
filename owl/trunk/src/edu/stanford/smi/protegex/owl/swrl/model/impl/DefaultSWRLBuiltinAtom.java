@@ -45,15 +45,16 @@ public class DefaultSWRLBuiltinAtom extends DefaultSWRLAtom implements SWRLBuilt
   public void setBuiltin(SWRLBuiltin swrlBuiltin) { setPropertyValue(getOWLModel().getRDFProperty(SWRLNames.Slot.BUILTIN), swrlBuiltin); } 
 
   //TODO: Protege-OWL is clever about RDFLists so if an argument is deleted from the ontology, the deleted item is removed from the
-  //list (unless it is the last item). Thus, there is no way of detection deletions of non-last arguments for the moment.
+  //list (unless it is the last item). Thus, there is no way of detecting deletions of non-last arguments for the moment.
 
   public String getBrowserText() 
   {
-    SWRLBuiltin builtIn = getBuiltin();
+    SWRLBuiltin builtIn;
     RDFList list = getArguments();
+    Object propertyValue = getPropertyValue(getOWLModel().getRDFProperty(SWRLNames.Slot.BUILTIN));
     String s = "";
-
-    s += SWRLUtil.getSWRLBrowserText(builtIn, "BUILTIN");
+    
+    s = SWRLUtil.getSWRLBrowserText(propertyValue, "BUILTIN");
 
     s += "(";
 

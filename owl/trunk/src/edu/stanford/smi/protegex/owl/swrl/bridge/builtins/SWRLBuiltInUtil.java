@@ -351,9 +351,9 @@ public class SWRLBuiltInUtil
     else return false;
   } // isArgumentAShort
 
-  public static int getArgumentAsAShort(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException
+  public static short getArgumentAsAShort(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException
   {
-    return getArgumentAsALiteral(argumentNumber, arguments).getInt(); // Will throw DatatypeConversionException if invalid.
+    return getArgumentAsALiteral(argumentNumber, arguments).getShort(); // Will throw DatatypeConversionException if invalid.
   } // getArgumentAsAShort
 
   // BigDecimal
@@ -724,6 +724,11 @@ public class SWRLBuiltInUtil
     } // if
   } // generateBuiltInBindings
 
+  public static List<BuiltInArgument> copyArguments(List<BuiltInArgument> arguments) throws BuiltInException
+  {
+    return new ArrayList<BuiltInArgument>(arguments);
+  } // copyArguments
+
   private static boolean nextMultiArgumentCounts(List<Integer> multiArgumentCounts, List<Integer> multiArgumentSizes)
   {
     if (multiArgumentSizes.isEmpty()) return true;
@@ -768,7 +773,5 @@ public class SWRLBuiltInUtil
 
     return result;
   } // getMultiArgumentIndexes
-
-
 
 } // SWRLBuiltInUtil

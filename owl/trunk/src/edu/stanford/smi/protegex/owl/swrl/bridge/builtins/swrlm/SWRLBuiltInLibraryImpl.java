@@ -18,11 +18,16 @@ import org.nfunk.jep.JEP; // Expecting JEP 2.4.0; may work with other versions b
 public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
 {
   private static String SWRLMLibraryName = "SWRLTabMathematicalBuiltIns";
+
+  private ArgumentFactory argumentFactory;
+
   private JEP jep = null;
 
   public SWRLBuiltInLibraryImpl() 
   { 
     super(SWRLMLibraryName); 
+
+    argumentFactory = ArgumentFactory.getFactory();
   } // SWRLMLibraryImpl
 
   public void reset() 
@@ -44,7 +49,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
     argument2 = SWRLBuiltInUtil.getArgumentAsADouble(1, arguments);
 
     if (SWRLBuiltInUtil.isUnboundArgument(0, arguments)) {
-      arguments.set(0, OWLFactory.createOWLDatatypeValue(java.lang.Math.sqrt(argument2)));
+      arguments.set(0, argumentFactory.createDatatypeValueArgument(java.lang.Math.sqrt(argument2)));
       result = true;
     } else {
       argument1 = SWRLBuiltInUtil.getArgumentAsADouble(0, arguments);
@@ -68,7 +73,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
     argument2 = SWRLBuiltInUtil.getArgumentAsADouble(1, arguments);
 
     if (SWRLBuiltInUtil.isUnboundArgument(0, arguments)) {
-      arguments.set(0, OWLFactory.createOWLDatatypeValue(java.lang.Math.log(argument2)));
+      arguments.set(0, argumentFactory.createDatatypeValueArgument(java.lang.Math.log(argument2)));
       result = true;
     } else {
       argument1 = SWRLBuiltInUtil.getArgumentAsADouble(0, arguments);
@@ -113,7 +118,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
     if (getJEP().hasError()) throw new BuiltInException("exception parsing expression '" + expression + "': " + getJEP().getErrorInfo());
 
     if (SWRLBuiltInUtil.isUnboundArgument(0, arguments)) {
-      arguments.set(0, OWLFactory.createOWLDatatypeValue(value));
+      arguments.set(0, argumentFactory.createDatatypeValueArgument(value));
       result = true;
     } else {
       result = value == SWRLBuiltInUtil.getArgumentAsADouble(0, arguments);

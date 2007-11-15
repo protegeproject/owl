@@ -17,9 +17,16 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
 {
   private static String SWRLXLibraryName = "SWRLExtensionsBuiltIns";
 
+  private ArgumentFactory argumentFactory;
+
   private HashMap<String, OWLIndividual> createInvocationMap;
 
-  public SWRLBuiltInLibraryImpl() { super(SWRLXLibraryName); }
+  public SWRLBuiltInLibraryImpl() 
+  { 
+    super(SWRLXLibraryName); 
+
+    argumentFactory = ArgumentFactory.getFactory();
+  } // SWRLBuiltInLibraryImpl
 
   public void reset() 
   {

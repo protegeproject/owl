@@ -19,6 +19,8 @@ public class ClassAtomImpl extends AtomImpl implements ClassAtom
     className = (atom.getClassPredicate() != null) ? atom.getClassPredicate().getName() : null;
 
     if (className == null) throw new OWLFactoryException("empty class name in SWRLClassAtom: " + atom);
+
+    addReferencedClassName(className);
     
     if (atom.getArgument1() instanceof SWRLVariable) {
       SWRLVariable variable = (SWRLVariable)atom.getArgument1();
@@ -28,6 +30,18 @@ public class ClassAtomImpl extends AtomImpl implements ClassAtom
     } else if (atom.getArgument1() instanceof edu.stanford.smi.protegex.owl.model.OWLIndividual) {
       OWLIndividual argument = OWLFactory.createOWLIndividual((edu.stanford.smi.protegex.owl.model.OWLIndividual)atom.getArgument1());
       addReferencedIndividualName(argument.getIndividualName());
+      argument1 = argument;
+    } else if (atom.getArgument1() instanceof edu.stanford.smi.protegex.owl.model.OWLNamedClass) {
+      OWLClass argument = OWLFactory.createOWLClass((edu.stanford.smi.protegex.owl.model.OWLNamedClass)atom.getArgument1());
+      addReferencedClassName(argument.getClassName());
+      argument1 = argument;
+    } else if (atom.getArgument1() instanceof edu.stanford.smi.protegex.owl.model.OWLObjectProperty) {
+      OWLObjectProperty argument = OWLFactory.createOWLObjectProperty((edu.stanford.smi.protegex.owl.model.OWLObjectProperty)atom.getArgument1());
+      addReferencedPropertyName(argument.getPropertyName());
+      argument1 = argument;
+    } else if (atom.getArgument1() instanceof edu.stanford.smi.protegex.owl.model.OWLDatatypeProperty) {
+      OWLDatatypeProperty argument = OWLFactory.createOWLDatatypeProperty((edu.stanford.smi.protegex.owl.model.OWLDatatypeProperty)atom.getArgument1());
+      addReferencedPropertyName(argument.getPropertyName());
       argument1 = argument;
     } else throw new OWLFactoryException("unexpected argument to class atom '" + atom.getBrowserText() + "'; expecting " +
                                          "variable or individual, got instance of '" + atom.getArgument1().getClass() + "'");

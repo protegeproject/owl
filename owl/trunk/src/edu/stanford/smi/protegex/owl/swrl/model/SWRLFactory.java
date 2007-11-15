@@ -48,7 +48,6 @@ public class SWRLFactory
     if(owlModel instanceof JenaOWLModel) OWLJavaFactoryUpdater.run((JenaOWLModel)owlModel);
   } // SWRLFactory
   
-  
   private void initSWRLClasses() 
   {
     TripleStoreModel tsm = owlModel.getTripleStoreModel();               
@@ -58,18 +57,20 @@ public class SWRLFactory
 
     tsm.setActiveTripleStore(systemTS);
 
-    atomListCls = getOrCreateOWLNamedClass(SWRLNames.Cls.ATOM_LIST, swrlFrameID++);
-    builtinAtomCls = getOrCreateOWLNamedClass(SWRLNames.Cls.BUILTIN_ATOM, swrlFrameID++);
-    classAtomCls = getOrCreateOWLNamedClass(SWRLNames.Cls.CLASS_ATOM, swrlFrameID++);
-    dataRangeAtomCls = getOrCreateOWLNamedClass(SWRLNames.Cls.DATA_RANGE_ATOM, swrlFrameID++);
-    dataValuedPropertyAtomCls = getOrCreateOWLNamedClass(SWRLNames.Cls.DATAVALUED_PROPERTY_ATOM, swrlFrameID++);
-    differentIndividualsAtomCls = getOrCreateOWLNamedClass(SWRLNames.Cls.DIFFERENT_INDIVIDUALS_ATOM, swrlFrameID++);
     impCls = getOrCreateOWLNamedClass(SWRLNames.Cls.IMP, swrlFrameID++);
-    individualPropertyAtomCls = getOrCreateOWLNamedClass(SWRLNames.Cls.INDIVIDUAL_PROPERTY_ATOM, swrlFrameID++);
-    sameIndividualAtomCls = getOrCreateOWLNamedClass(SWRLNames.Cls.SAME_INDIVIDUAL_ATOM, swrlFrameID++);
-    builtInCls = getOrCreateOWLNamedClass(SWRLNames.Cls.BUILTIN, swrlFrameID++);
-    atomCls = getOrCreateOWLNamedClass(SWRLNames.Cls.ATOM, swrlFrameID++);
     variableCls = getOrCreateOWLNamedClass(SWRLNames.Cls.VARIABLE, swrlFrameID++);
+    builtInCls = getOrCreateOWLNamedClass(SWRLNames.Cls.BUILTIN, swrlFrameID++);
+
+    atomListCls = getOrCreateOWLNamedClass(SWRLNames.Cls.ATOM_LIST, swrlFrameID++, owlModel.getRDFListClass());
+
+    atomCls = getOrCreateOWLNamedClass(SWRLNames.Cls.ATOM, swrlFrameID++);
+    classAtomCls = getOrCreateOWLNamedClass(SWRLNames.Cls.CLASS_ATOM, swrlFrameID++, atomCls);
+    builtinAtomCls = getOrCreateOWLNamedClass(SWRLNames.Cls.BUILTIN_ATOM, swrlFrameID++, atomCls);
+    dataRangeAtomCls = getOrCreateOWLNamedClass(SWRLNames.Cls.DATA_RANGE_ATOM, swrlFrameID++, atomCls);
+    dataValuedPropertyAtomCls = getOrCreateOWLNamedClass(SWRLNames.Cls.DATAVALUED_PROPERTY_ATOM, swrlFrameID++, atomCls);
+    differentIndividualsAtomCls = getOrCreateOWLNamedClass(SWRLNames.Cls.DIFFERENT_INDIVIDUALS_ATOM, swrlFrameID++, atomCls);
+    individualPropertyAtomCls = getOrCreateOWLNamedClass(SWRLNames.Cls.INDIVIDUAL_PROPERTY_ATOM, swrlFrameID++, atomCls);
+    sameIndividualAtomCls = getOrCreateOWLNamedClass(SWRLNames.Cls.SAME_INDIVIDUAL_ATOM, swrlFrameID++, atomCls);
     
     bodyProperty = getOrCreateOWLObjectProperty(SWRLNames.Slot.BODY, swrlFrameID++);
     headProperty = getOrCreateOWLObjectProperty(SWRLNames.Slot.HEAD, swrlFrameID++);
@@ -86,22 +87,32 @@ public class SWRLFactory
     tsm.setActiveTripleStore(activeTs); 
   } // initSWRLClasses
 	
-  private OWLNamedClass getOrCreateOWLNamedClass(String className, int frameID) {
+  private OWLNamedClass getOrCreateOWLNamedClass(String className, int frameID) 
+  {
+    return getOrCreateOWLNamedClass(className, frameID, null);
+  } // getOrCreateOWLNamedClass
+
+  private OWLNamedClass getOrCreateOWLNamedClass(String className, int frameID, RDFSNamedClass superclass)
+  {
     RDFResource resource = owlModel.getRDFResource(className);
+    OWLNamedClass cls;
 
     if (resource == null) {
-      OWLNamedClass cls = new DefaultOWLNamedClass(owlModel, FrameID.createSystem(frameID));
+      cls = new DefaultOWLNamedClass(owlModel, FrameID.createSystem(frameID));
       cls.setName(className);
       cls.setProtegeType(owlModel.getOWLNamedClassClass());
-      cls.addSuperclass(owlModel.getOWLThingClass());
-      if (className.equals(SWRLNames.Cls.ATOM_LIST)) cls.addSuperclass(owlModel.getRDFListClass());
     } else if (!(resource instanceof OWLNamedClass)) {
       resource.setProtegeType(owlModel.getOWLNamedClassClass());
-      resource = owlModel.getOWLNamedClass(className);
-      ((OWLNamedClass)resource).addSuperclass(owlModel.getOWLThingClass());
     } // if
+    
+    cls = owlModel.getOWLNamedClass(className);
 
-    return owlModel.getOWLNamedClass(className);
+    if (superclass != null) {
+      cls.addSuperclass(superclass);
+      cls.removeSuperclass(owlModel.getOWLThingClass());
+    } else cls.addSuperclass(owlModel.getOWLThingClass());
+
+    return cls;
   } // getOrCreateOWLNamedClass
   
   private OWLObjectProperty getOrCreateOWLObjectProperty(String propertyName, int frameID) 
@@ -121,7 +132,7 @@ public class SWRLFactory
   private SWRLBuiltin getOrCreateBuiltIn(String builtInName, int frameID)
   {
     RDFResource resource = owlModel.getRDFResource(builtInName);
-    
+
     if (resource == null) { // See if it is an external resource
       String name = (builtInName.indexOf(":") == -1) ? builtInName : builtInName.substring(builtInName.indexOf(":") + 1);
       resource = owlModel.getRDFResource(SWRLNames.SWRLB_NAMESPACE + name);
@@ -371,10 +382,10 @@ public class SWRLFactory
       String ruleName = imp.getLocalName();
       String expression = imp.getBrowserText();
 
-      if (hasImp(ruleName)) throw new SWRLFactoryException("Attempt to copy rule '" + ruleName + "' that has same name as an existing rule.");
+      if (hasImp(ruleName)) throw new SWRLFactoryException("attempt to copy rule '" + ruleName + "' that has same name as an existing rule");
 
       try { createImp(ruleName, expression); }
-      catch (SWRLParseException e) { throw new SWRLFactoryException("Error copying rule '" + ruleName + "': " + e.getMessage()); }
+      catch (SWRLParseException e) { throw new SWRLFactoryException("error copying rule '" + ruleName + "': " + e.getMessage()); }
     } // for
   } // copyImps
 
@@ -384,8 +395,7 @@ public class SWRLFactory
     SWRLImp result = null;
 
     if (resource instanceof SWRLImp) result = (SWRLImp) resource;
-    else throw new SWRLFactoryException("Invalid attempt to cast " + name +
-                                        " into SWRLBuiltin (real type is " + resource.getProtegeType() + ")");
+    else throw new SWRLFactoryException("invalid attempt to cast " + name + " into SWRLBuiltin (real type is " + resource.getProtegeType() + ")");
 
     return result;
   } // getImp

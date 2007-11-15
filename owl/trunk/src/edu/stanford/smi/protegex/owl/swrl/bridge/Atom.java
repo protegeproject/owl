@@ -8,8 +8,12 @@ import java.util.Set;
 */
 public interface Atom
 {
+  boolean hasReferencedClasses();
+  boolean hasReferencedProperties();
   boolean hasReferencedIndividuals();
-  Set<String> getReferencedIndividualNames();
   boolean hasReferencedVariables();
+  Set<String> getReferencedClassNames();
+  Set<String> getReferencedPropertyNames();
+  Set<String> getReferencedIndividualNames();
   Set<String> getReferencedVariableNames();
 } // Atom

@@ -21,7 +21,9 @@ public class DatavaluedPropertyAtomImpl extends AtomImpl implements DatavaluedPr
   {
     propertyName = (atom.getPropertyPredicate() != null) ? atom.getPropertyPredicate().getName() : null;
 
-    if (propertyName == null) throw new OWLFactoryException("empty property name in SWRLDatavaluedPropertyAtom: " + atom);
+    if (propertyName == null) throw new OWLFactoryException("empty property name in SWRLDatavaluedPropertyAtom '" + atom.getBrowserText() + "'");
+
+    addReferencedPropertyName(propertyName);
 
     if (atom.getArgument1() instanceof SWRLVariable) {
       SWRLVariable variable = (SWRLVariable)atom.getArgument1();
@@ -30,7 +32,9 @@ public class DatavaluedPropertyAtomImpl extends AtomImpl implements DatavaluedPr
       argument1 = argument;
     } else if (atom.getArgument1() instanceof edu.stanford.smi.protegex.owl.model.OWLIndividual) {
       edu.stanford.smi.protegex.owl.model.OWLIndividual individual = (edu.stanford.smi.protegex.owl.model.OWLIndividual)atom.getArgument1();
-      argument1 = OWLFactory.createOWLIndividual(individual);
+      OWLIndividual argument = OWLFactory.createOWLIndividual(individual);
+      addReferencedIndividualName(argument.getIndividualName());
+      argument1 = argument;
     } else throw new OWLFactoryException("unexpected argument first to datavalued property atom '" + atom.getBrowserText() + 
                                          "' - expecting variable or individual, got instance of " + atom.getArgument1().getClass());
 
@@ -42,10 +46,6 @@ public class DatavaluedPropertyAtomImpl extends AtomImpl implements DatavaluedPr
     } else if (atom.getArgument2() instanceof RDFSLiteral) argument2 = OWLFactory.createOWLDatatypeValue(owlModel, (RDFSLiteral)atom.getArgument2());
     else throw new OWLFactoryException("unexpected second to datavalued property atom '" + atom.getBrowserText()  + 
                                        "' - expecting variable or literal, got instance of " + atom.getArgument2().getClass());
-
-    // If argument1 is an individual, add its name to the referenced individuals list for this atom.
-    if (argument1 instanceof OWLIndividual) addReferencedIndividualName(((OWLIndividual)argument1).getIndividualName());
-
   } // DatavaluedPropertyAtomImpl
 
   public String getPropertyName() { return propertyName; }  

@@ -60,7 +60,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
   private static String SWRLB_NORMALIZE_SPACE = SWRLBPrefix + "normalizeSpace";
   private static String SWRLB_UPPER_CASE = SWRLBPrefix + "upperCase";
   private static String SWRLB_LOWER_CASE = SWRLBPrefix + "lowerCase";
-  private static String SWRLB_TRANSLATE = SWRLBPrefix + "translate"; // TODO: not implemented
+  private static String SWRLB_TRANSLATE = SWRLBPrefix + "translate";
   private static String SWRLB_CONTAINS = SWRLBPrefix + "contains";
   private static String SWRLB_CONTAINS_IGNORE_CASE = SWRLBPrefix + "containsIgnoreCase";
   private static String SWRLB_STARTS_WITH = SWRLBPrefix + "startsWith";
@@ -71,7 +71,14 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
   private static String SWRLB_REPLACE = SWRLBPrefix + "replace"; 
   private static String SWRLB_TOKENIZE = SWRLBPrefix + "tokenize"; // TODO: not implemented
 
-  public SWRLBuiltInLibraryImpl() { super(SWRLBLibraryName); }
+  private ArgumentFactory argumentFactory;
+
+  public SWRLBuiltInLibraryImpl() 
+  { 
+    super(SWRLBLibraryName); 
+
+    argumentFactory = ArgumentFactory.getFactory();
+  } // SWRLBuiltInLibraryImpl
 
   public void reset() {}
   
@@ -252,7 +259,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
         throw new InvalidBuiltInArgumentException(1, "expecting a Boolean");
 
       boolean operationResult = !SWRLBuiltInUtil.getArgumentAsABoolean(1, arguments);
-      arguments.set(0, OWLFactory.createOWLDatatypeValue(operationResult)); // Bind the result to the first parameter
+      arguments.set(0, argumentFactory.createDatatypeValueArgument(operationResult)); // Bind the result to the first parameter
       result = true;
     } else {
       if (!SWRLBuiltInUtil.areAllArgumentsBooleans(arguments))
@@ -291,7 +298,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
     } // for
 
     if (SWRLBuiltInUtil.isUnboundArgument(0, arguments)) {
-      arguments.set(0, OWLFactory.createOWLDatatypeValue(operationResult)); // Bind the result to the first parameter
+      arguments.set(0, argumentFactory.createDatatypeValueArgument(operationResult)); // Bind the result to the first parameter
       result = true;
     } else {
       String argument1 = SWRLBuiltInUtil.getArgumentAsAString(0, arguments);
@@ -320,7 +327,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
     } else operationResult = argument2.substring(startIndex);
 
     if (SWRLBuiltInUtil.hasUnboundArguments(arguments)) {
-      arguments.set(0, OWLFactory.createOWLDatatypeValue(operationResult)); // Bind the result to the first parameter
+      arguments.set(0, argumentFactory.createDatatypeValueArgument(operationResult)); // Bind the result to the first parameter
       result = true;
     } else {
       String argument1 = SWRLBuiltInUtil.getArgumentAsAString(0, arguments);
@@ -342,7 +349,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
     operationResult = argument2.length();
 
     if (SWRLBuiltInUtil.hasUnboundArguments(arguments)) {
-      arguments.set(0, OWLFactory.createOWLDatatypeValue(operationResult)); // Bind the result to the first parameter
+      arguments.set(0, argumentFactory.createDatatypeValueArgument(operationResult)); // Bind the result to the first parameter
       result = true;
     } else {
       String argument1 = SWRLBuiltInUtil.getArgumentAsAString(0, arguments);
@@ -363,7 +370,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
     operationResult = argument2.toUpperCase();
 
     if (SWRLBuiltInUtil.hasUnboundArguments(arguments)) {
-      arguments.set(0, OWLFactory.createOWLDatatypeValue(operationResult)); // Bind the result to the first parameter
+      arguments.set(0, argumentFactory.createDatatypeValueArgument(operationResult)); // Bind the result to the first parameter
       result = true;
     } else {
       String argument1 = SWRLBuiltInUtil.getArgumentAsAString(0, arguments);
@@ -385,7 +392,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
     operationResult = argument2.toLowerCase();
 
     if (SWRLBuiltInUtil.hasUnboundArguments(arguments)) {
-      arguments.set(0, OWLFactory.createOWLDatatypeValue(operationResult)); // Bind the result to the first parameter
+      arguments.set(0, argumentFactory.createDatatypeValueArgument(operationResult)); // Bind the result to the first parameter
       result = true;
     } else {
       String argument1 = SWRLBuiltInUtil.getArgumentAsAString(0, arguments);
@@ -450,7 +457,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
     String operationResult = StringUtils.replaceChars(argument2, argument3, argument4);
 
     if (SWRLBuiltInUtil.isUnboundArgument(0, arguments)) {
-      arguments.set(0, OWLFactory.createOWLDatatypeValue(operationResult)); 
+      arguments.set(0, argumentFactory.createDatatypeValueArgument(operationResult)); 
       result = true;
     } else {
       String argument1 = SWRLBuiltInUtil.getArgumentAsAString(0, arguments);
@@ -471,7 +478,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
     String operationResult = StringUtils.substringAfter(argument2, argument3);
 
     if (SWRLBuiltInUtil.isUnboundArgument(0, arguments)) {
-      arguments.set(0, OWLFactory.createOWLDatatypeValue(operationResult)); 
+      arguments.set(0, argumentFactory.createDatatypeValueArgument(operationResult)); 
       result = true;
     } else {
       String argument1 = SWRLBuiltInUtil.getArgumentAsAString(0, arguments);
@@ -492,7 +499,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
     String operationResult = StringUtils.substringBefore(argument2, argument3);
 
     if (SWRLBuiltInUtil.isUnboundArgument(0, arguments)) {
-      arguments.set(0, OWLFactory.createOWLDatatypeValue(operationResult)); 
+      arguments.set(0, argumentFactory.createDatatypeValueArgument(operationResult)); 
       result = true;
     } else {
       String argument1 = SWRLBuiltInUtil.getArgumentAsAString(0, arguments);
@@ -537,7 +544,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
     String operationResult = m.replaceAll(replacement);
 
     if (SWRLBuiltInUtil.isUnboundArgument(0, arguments)) {
-      arguments.set(0, OWLFactory.createOWLDatatypeValue(operationResult)); 
+      arguments.set(0, argumentFactory.createDatatypeValueArgument(operationResult)); 
       result = true;
     } else {
       String output = SWRLBuiltInUtil.getArgumentAsAString(0, arguments);
@@ -561,7 +568,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
     String operationResult = m.replaceAll(" ");
 
     if (SWRLBuiltInUtil.isUnboundArgument(0, arguments)) {
-      arguments.set(0, OWLFactory.createOWLDatatypeValue(operationResult)); 
+      arguments.set(0, argumentFactory.createDatatypeValueArgument(operationResult)); 
       result = true;
     } else {
       String output = SWRLBuiltInUtil.getArgumentAsAString(0, arguments);
@@ -573,9 +580,28 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
 
   public boolean tokenize(List<BuiltInArgument> arguments) throws BuiltInException
   {
+    StringTokenizer tokenizer;
+    String inputString, delimeters;
     boolean result = false;
 
-    if (!result) throw new BuiltInNotImplementedException();
+    if (!SWRLBuiltInUtil.isUnboundArgument(0, arguments)) throw new InvalidBuiltInArgumentException(0, "unexpected bound argument found");
+
+    SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(3, arguments.size());
+    SWRLBuiltInUtil.checkForUnboundNonFirstArguments(arguments);
+
+    inputString = SWRLBuiltInUtil.getArgumentAsAString(1, arguments);
+    delimeters = SWRLBuiltInUtil.getArgumentAsAString(2, arguments);
+
+    tokenizer = new StringTokenizer(inputString.trim(), delimeters);
+    
+    MultiArgument multiArgument = argumentFactory.createMultiArgument(SWRLBuiltInUtil.getVariableName(0, arguments));
+    while (tokenizer.hasMoreTokens()) {
+      String token = tokenizer.nextToken();
+      multiArgument.addArgument(argumentFactory.createDatatypeValueArgument(token));
+    } // while
+
+    arguments.set(0, multiArgument);
+    result = !multiArgument.hasNoArguments();
 
     return result;
   } // tokenize
@@ -942,7 +968,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
       String s1 = SWRLBuiltInUtil.getArgumentAsAString(0, arguments);
       String s2 = SWRLBuiltInUtil.getArgumentAsAString(1, arguments); // Performs type checking.
 
-      return s1.compareTo(s2);
+      result = s1.compareTo(s2);
     } else if (SWRLBuiltInUtil.isArgumentAnInteger(0, arguments)) {
       int i1 = SWRLBuiltInUtil.getArgumentAsAnInteger(0, arguments);
       int i2 = SWRLBuiltInUtil.getArgumentAsAnInteger(1, arguments); // Performs type checking.
@@ -963,6 +989,11 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
       double d2 = SWRLBuiltInUtil.getArgumentAsADouble(1, arguments); // Performs type checking.
 
       if (d1 < d2) result = -1; else if (d1 > d2) result =  1; else result = 0;
+    } else if (SWRLBuiltInUtil.isArgumentAShort(0, arguments)) {
+      short s1 = SWRLBuiltInUtil.getArgumentAsAShort(0, arguments);
+      short s2 = SWRLBuiltInUtil.getArgumentAsAShort(1, arguments); // Performs type checking.
+
+      if (s1 < s2) result = -1; else if (s1 > s2) result =  1; else result = 0;
     } else throw new InvalidBuiltInArgumentException(1, "unknown argument type");
 
     return result;
@@ -1022,15 +1053,18 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
     else throw new InvalidBuiltInNameException(builtInName);
     
     if (hasUnbound1stArgument) { // Bind the result to the first argument.
-      if (SWRLBuiltInUtil.isShortMostPreciseArgument(arguments.subList(1, arguments.size()))) 
-        arguments.set(0, OWLFactory.createOWLDatatypeValue((short)operationResult)); 
-      else if (SWRLBuiltInUtil.isIntegerMostPreciseArgument(arguments.subList(1, arguments.size()))) 
-        arguments.set(0, OWLFactory.createOWLDatatypeValue((int)operationResult));
-      else if (SWRLBuiltInUtil.isFloatMostPreciseArgument(arguments.subList(1, arguments.size()))) 
-        arguments.set(0, OWLFactory.createOWLDatatypeValue((float)operationResult));
-      else if (SWRLBuiltInUtil.isLongMostPreciseArgument(arguments.subList(1, arguments.size()))) 
-        arguments.set(0, OWLFactory.createOWLDatatypeValue((long)operationResult));
-      else arguments.set(0, OWLFactory.createOWLDatatypeValue((double)operationResult));
+      List<BuiltInArgument> boundArguments = arguments.subList(1, arguments.size());
+
+      if (SWRLBuiltInUtil.isShortMostPreciseArgument(boundArguments))
+        arguments.set(0, argumentFactory.createDatatypeValueArgument((short)operationResult)); 
+      else if (SWRLBuiltInUtil.isIntegerMostPreciseArgument(boundArguments))
+        arguments.set(0, argumentFactory.createDatatypeValueArgument((int)operationResult));
+      else if (SWRLBuiltInUtil.isFloatMostPreciseArgument(boundArguments))
+        arguments.set(0, argumentFactory.createDatatypeValueArgument((float)operationResult));
+      else if (SWRLBuiltInUtil.isLongMostPreciseArgument(boundArguments))
+        arguments.set(0, argumentFactory.createDatatypeValueArgument((long)operationResult));
+      else arguments.set(0, argumentFactory.createDatatypeValueArgument(operationResult));
+
       result = true;
     } else result = (argument1 == operationResult);
 

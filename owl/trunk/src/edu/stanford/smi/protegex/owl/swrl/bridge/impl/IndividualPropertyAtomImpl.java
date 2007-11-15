@@ -21,6 +21,8 @@ public class IndividualPropertyAtomImpl extends AtomImpl implements IndividualPr
 
     if (propertyName == null) throw new OWLFactoryException("empty property name in SWRLIndividualPropertyAtom '" + atom + "'");
     
+    addReferencedPropertyName(propertyName);
+
     if (atom.getArgument1() instanceof SWRLVariable) {
       SWRLVariable variable = (SWRLVariable)atom.getArgument1();
       AtomArgument argument = OWLFactory.createVariableAtomArgument(variable.getName());
@@ -28,7 +30,9 @@ public class IndividualPropertyAtomImpl extends AtomImpl implements IndividualPr
       argument1 = argument;
     } else if (atom.getArgument1() instanceof edu.stanford.smi.protegex.owl.model.OWLIndividual) {
       edu.stanford.smi.protegex.owl.model.OWLIndividual individual = (edu.stanford.smi.protegex.owl.model.OWLIndividual)atom.getArgument1();
-      argument1 = OWLFactory.createOWLIndividual(individual);
+      OWLIndividual argument = OWLFactory.createOWLIndividual(individual);
+      addReferencedIndividualName(argument.getIndividualName());
+      argument1 = argument;
     } else throw new OWLFactoryException("unexpected first argument to individual property atom '" + atom.getBrowserText() + 
                                          "' - expecting variable or individual, got instance of " + atom.getArgument1().getClass());
 
@@ -39,13 +43,25 @@ public class IndividualPropertyAtomImpl extends AtomImpl implements IndividualPr
       argument2 = argument;
     } else if (atom.getArgument2() instanceof edu.stanford.smi.protegex.owl.model.OWLIndividual) {
       edu.stanford.smi.protegex.owl.model.OWLIndividual individual = (edu.stanford.smi.protegex.owl.model.OWLIndividual)atom.getArgument2();
-      argument2 = OWLFactory.createOWLIndividual(individual);
+      OWLIndividual argument = OWLFactory.createOWLIndividual(individual);
+      addReferencedIndividualName(argument.getIndividualName());
+      argument2 = argument;
+    } else if (atom.getArgument2() instanceof edu.stanford.smi.protegex.owl.model.OWLNamedClass) {
+      edu.stanford.smi.protegex.owl.model.OWLNamedClass cls = (edu.stanford.smi.protegex.owl.model.OWLNamedClass)atom.getArgument2();
+      OWLClass argument = OWLFactory.createOWLClass(cls);
+      addReferencedClassName(argument.getClassName());
+      argument2 = argument;
+    } else if (atom.getArgument2() instanceof edu.stanford.smi.protegex.owl.model.OWLProperty) {
+      edu.stanford.smi.protegex.owl.model.OWLProperty property = (edu.stanford.smi.protegex.owl.model.OWLProperty)atom.getArgument2();
+      OWLProperty argument;
+      if (property.isObjectProperty()) 
+        argument = OWLFactory.createOWLObjectProperty((edu.stanford.smi.protegex.owl.model.OWLObjectProperty)property);
+      else 
+        argument = OWLFactory.createOWLDatatypeProperty((edu.stanford.smi.protegex.owl.model.OWLDatatypeProperty)property);
+      addReferencedPropertyName(argument.getPropertyName());
+      argument2 = argument;
     } else throw new OWLFactoryException("unexpected second argument to individual property atom '" + atom.getBrowserText() + 
                                          "' - expecting variable or individual, got instance of " + atom.getArgument2().getClass());
-
-    // If argument1 or 2 is an individual, add its name to the referenced individuals list for this atom.
-    if (argument1 instanceof OWLIndividual) addReferencedIndividualName(((OWLIndividual)argument1).getIndividualName());
-    if (argument2 instanceof OWLIndividual) addReferencedIndividualName(((OWLIndividual)argument2).getIndividualName());
   } // IndividualPropertyAtomImpl
 
   public String getPropertyName() { return propertyName; }  

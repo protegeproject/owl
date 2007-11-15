@@ -4,18 +4,12 @@ package edu.stanford.smi.protegex.owl.swrl.bridge.impl;
 import edu.stanford.smi.protegex.owl.swrl.bridge.*;
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.*;
 
-import java.util.*;
-import java.io.Serializable;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
 
-public  class OWLObjectPropertyImpl extends OWLPropertyImpl implements OWLObjectProperty, Serializable
+import java.util.*;
+
+public  class OWLObjectPropertyImpl extends OWLPropertyImpl implements OWLObjectProperty
 {
-  public OWLObjectPropertyImpl(String propertyName, Set<String> domainClassNames, 
-                               Set<String> rangeClassNames, Set<String> superPropertyNames, Set<String> subPropertyNames,
-                               Set<String> equivalentPropertyNames) 
-    throws OWLFactoryException
-  {
-    super(propertyName, domainClassNames, rangeClassNames, superPropertyNames, subPropertyNames, equivalentPropertyNames);
-  } // OWLObjectPropertyImpl
-  
+  public OWLObjectPropertyImpl(OWLModel owlModel, String propertyName) throws OWLFactoryException { super(owlModel, propertyName); }
   public OWLObjectPropertyImpl(String propertyName) { super(propertyName); }
 } // OWLObjectPropertyImpl
