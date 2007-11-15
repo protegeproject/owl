@@ -57,15 +57,12 @@ public interface ProtegeCls extends ProtegeInstance, Cls {
     Collection getConcreteSubclasses();
 
 
-    // Will be deprecated later
     BrowserSlotPattern getBrowserSlotPattern();
 
 
-    // Will be deprecated later
     BrowserSlotPattern getDirectBrowserSlotPattern();
 
 
-    // Will be deprecated later
     BrowserSlotPattern getInheritedBrowserSlotPattern();
 
 
