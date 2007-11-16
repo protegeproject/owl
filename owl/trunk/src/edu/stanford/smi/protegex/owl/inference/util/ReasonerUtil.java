@@ -18,9 +18,11 @@ import edu.stanford.smi.protege.util.Disposable;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.inference.protegeowl.ReasonerManager;
 import edu.stanford.smi.protegex.owl.model.OWLAnonymousClass;
+import edu.stanford.smi.protegex.owl.model.OWLDatatypeProperty;
 import edu.stanford.smi.protegex.owl.model.OWLIndividual;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
+import edu.stanford.smi.protegex.owl.model.OWLObjectProperty;
 import edu.stanford.smi.protegex.owl.model.RDFIndividual;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
@@ -46,8 +48,10 @@ public class ReasonerUtil implements Disposable{
 
     private Map<OWLModel, Collection<RDFSClass>> namedClsesMap;
 
-    private Map<OWLModel, Collection<RDFProperty>> propertiesMap;
+    private Map<OWLModel, Collection<OWLDatatypeProperty>> datatypePropertiesMap;
 
+    private Map<OWLModel, Collection<OWLObjectProperty>> objectPropertiesMap;
+    
     private Map<OWLModel, Collection<RDFIndividual>> individualsMap;
     
     private Set<OWLModel> owlModelsWithListener; 
@@ -110,7 +114,8 @@ public class ReasonerUtil implements Disposable{
 
     private void initHashMaps() {
         namedClsesMap = new HashMap<OWLModel, Collection<RDFSClass>>();
-        propertiesMap = new HashMap<OWLModel, Collection<RDFProperty>>();
+        datatypePropertiesMap = new HashMap<OWLModel, Collection<OWLDatatypeProperty>>();
+        objectPropertiesMap = new HashMap<OWLModel, Collection<OWLObjectProperty>>();
         individualsMap = new HashMap<OWLModel, Collection<RDFIndividual>>();
         owlModelsWithListener = new HashSet<OWLModel>();
     }
@@ -163,45 +168,76 @@ public class ReasonerUtil implements Disposable{
     	return allNamedClasses;
     }
 
-    public Collection getProperties(OWLModel kb) {
+    
+    public Collection<RDFProperty> getProperties(OWLModel kb) {
+    	//should we care about rdf:Properties?
+    	ArrayList<RDFProperty> allProps = new ArrayList<RDFProperty>();
+    	allProps.addAll(getDataTypeProperties(kb));
+    	allProps.addAll(getObjectProperties(kb));
+    	
+    	return allProps;
+    }
+    
+    
+    public Collection<OWLDatatypeProperty> getDataTypeProperties(OWLModel kb) {
         // If we haven't got a cache for the knowledge base
         // then create one.
-        if (propertiesMap.containsKey(kb) == false) {
-            propertiesMap.put(kb, getFilteredProperties(kb));
+        if (datatypePropertiesMap.containsKey(kb) == false) {
+            datatypePropertiesMap.put(kb, getFilteredProperties(kb, kb.getUserDefinedOWLDatatypeProperties()));
 
             addListeners(kb);
         }
 
 
-        Collection<RDFProperty> properties = (Collection<RDFProperty>) propertiesMap.get(kb);
+        Collection<OWLDatatypeProperty> properties = (Collection<OWLDatatypeProperty>) datatypePropertiesMap.get(kb);
 
         if (properties == null) {
-            properties = getFilteredProperties(kb);
+            properties = getFilteredProperties(kb, kb.getUserDefinedOWLDatatypeProperties());
 
-            propertiesMap.put(kb, properties);
+            datatypePropertiesMap.put(kb, properties);
         }
 
         return properties;
     }
 
+    public Collection<OWLObjectProperty> getObjectProperties(OWLModel kb) {
+        // If we haven't got a cache for the knowledge base
+        // then create one.
+        if (objectPropertiesMap.containsKey(kb) == false) {
+            objectPropertiesMap.put(kb, getFilteredProperties(kb, kb.getUserDefinedOWLObjectProperties()));
+
+            addListeners(kb);
+        }
+
+
+        Collection<OWLObjectProperty> properties = (Collection<OWLObjectProperty>) objectPropertiesMap.get(kb);
+
+        if (properties == null) {
+            properties = getFilteredProperties(kb, kb.getUserDefinedOWLObjectProperties());
+
+            objectPropertiesMap.put(kb, properties);
+        }
+
+        return properties;
+    }
     
-    private Collection getFilteredProperties(OWLModel owlModel) {
-    	Collection allProperties = owlModel.getUserDefinedOWLProperties();
-    	
+    
+    private <T> Collection<T> getFilteredProperties(OWLModel owlModel, Collection<T> properties) {
+    	ArrayList<T> allProps = new ArrayList<T>(properties);
     	try {
         	//filter out SWRL properties, if present
         	if  (owlModel.getOWLJavaFactory() instanceof SWRLJavaFactory) {        
         		SWRLFactory swrlFactory = new SWRLFactory(owlModel);
         		Collection swrlProperties = swrlFactory.getSWRLProperties();
         		Collection swrlbProperties = swrlFactory.getSWRLBProperties();
-        		allProperties.removeAll(swrlProperties);
-        		allProperties.removeAll(swrlbProperties);
+        		allProps.removeAll(swrlProperties);
+        		allProps.removeAll(swrlbProperties);
         	}			
 		} catch (Exception e) {
 			Log.getLogger().log(Level.WARNING, "Error at filtering out the SWRL properties from the properties sent to the reasoner", e);
 		}
     	
-    	return allProperties;
+    	return allProps;
     }
     
 
@@ -263,7 +299,8 @@ public class ReasonerUtil implements Disposable{
 
 
     public void invalidatePropertiesCache(OWLModel kb) {
-        propertiesMap.put(kb, null);
+        objectPropertiesMap.put(kb, null);
+        datatypePropertiesMap.put(kb, null);
     }
 
 
@@ -328,7 +365,8 @@ public class ReasonerUtil implements Disposable{
     
     private void dispose(OWLModel owlModel) {
     	namedClsesMap.remove(owlModel);
-    	propertiesMap.remove(owlModel);
+    	datatypePropertiesMap.remove(owlModel);
+    	objectPropertiesMap.remove(owlModel);
     	individualsMap.remove(owlModel);
     	removeListeners(owlModel);    	
     }
@@ -339,7 +377,8 @@ public class ReasonerUtil implements Disposable{
 		}
     	
     	namedClsesMap.clear();
-    	propertiesMap.clear();
+    	datatypePropertiesMap.clear();
+    	objectPropertiesMap.clear();
     	individualsMap.clear();
     	owlModelsWithListener.clear();
     }
