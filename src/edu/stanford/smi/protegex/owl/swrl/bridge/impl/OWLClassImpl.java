@@ -6,6 +6,7 @@ import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.*;
 
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
+import edu.stanford.smi.protegex.owl.model.OWLNames;
 
 import edu.stanford.smi.protegex.owl.swrl.util.SWRLOWLUtil;
 import edu.stanford.smi.protegex.owl.swrl.exceptions.SWRLOWLUtilException;
@@ -30,18 +31,18 @@ public class OWLClassImpl extends BuiltInArgumentImpl implements OWLClass
     owlNamedClass = SWRLOWLUtil.getOWLNamedClass(owlModel, className);
     if (owlNamedClass == null) throw new InvalidClassNameException(className);
 
-    if (className.equals("owl:Thing")) {
+    if (className.equals(OWLNames.Cls.THING)) {
       initialize(className);
     } else {
       superclassNames = SWRLOWLUtil.rdfResources2Names(owlNamedClass.getNamedSuperclasses(true));
       directSuperClassNames = SWRLOWLUtil.rdfResources2Names(owlNamedClass.getNamedSuperclasses());
       directSubClassNames = SWRLOWLUtil.rdfResources2Names(owlNamedClass.getNamedSubclasses());
-      equivalentClassNames = SWRLOWLUtil.rdfResources2Names(owlNamedClass.getEquivalentClasses());
+      equivalentClassNames = SWRLOWLUtil.rdfResources2OWLNamedClassNames(owlNamedClass.getEquivalentClasses());
       equivalentClassSuperclassNames = new HashSet<String>();
 
       for (String equivalentClassName : equivalentClassNames) {
         OWLNamedClass equivalentClass = SWRLOWLUtil.getOWLNamedClass(owlModel, equivalentClassName);
-        Iterator equivalentClassSuperClassesIterator = equivalentClass.getSuperclasses(true).iterator();
+        Iterator equivalentClassSuperClassesIterator = equivalentClass.getNamedSuperclasses(true).iterator();
         while (equivalentClassSuperClassesIterator.hasNext()) {
           Object o = equivalentClassSuperClassesIterator.next();
           if (o instanceof OWLNamedClass) { // Ignore anonymous classes
