@@ -5,6 +5,8 @@ import edu.stanford.smi.protegex.owl.inference.protegeowl.ProtegeOWLReasoner;
 import edu.stanford.smi.protegex.owl.inference.protegeowl.log.ReasonerLogRecord;
 import edu.stanford.smi.protegex.owl.inference.protegeowl.log.ReasonerLogRecordFactory;
 import edu.stanford.smi.protegex.owl.inference.util.TimeDifference;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
+
 import org.w3c.dom.Document;
 
 /**
@@ -47,13 +49,24 @@ public class SynchronizeReasonerTask extends AbstractReasonerTask {
         doAbortCheck();
         setMessage("Updating reasoner...");
 
-        // Clear the knowledgebase
-        clearKnowledgeBase(parentRecord);
-        doAbortCheck();
+        OWLModel owlModel = protegeOWLReasoner.getKnowledgeBase(); 
+        
+        boolean eventsEnabled = owlModel.setGenerateEventsEnabled(false);
+        try {
+            // Clear the knowledgebase
+            clearKnowledgeBase(parentRecord);
+            doAbortCheck();
 
-        // Transmit the kb to the reasoner
-        transmitToReasoner(parentRecord);
-        doAbortCheck();
+            // Transmit the kb to the reasoner
+            transmitToReasoner(parentRecord);
+            
+		} catch (Exception e) {
+			// TODO: handle exception
+		} finally {
+			owlModel.setGenerateEventsEnabled(eventsEnabled);
+		}
+        
+		doAbortCheck();
 
         setProgressIndeterminate(false);
         td.markEnd();
