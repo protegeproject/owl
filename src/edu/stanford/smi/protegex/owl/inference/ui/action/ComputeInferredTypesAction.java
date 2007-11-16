@@ -1,5 +1,6 @@
 package edu.stanford.smi.protegex.owl.inference.ui.action;
 
+import edu.stanford.smi.protege.ui.ProjectManager;
 import edu.stanford.smi.protegex.owl.inference.protegeowl.ReasonerManager;
 import edu.stanford.smi.protegex.owl.inference.protegeowl.task.ReasonerTaskListener;
 import edu.stanford.smi.protegex.owl.inference.reasoner.ProtegeReasoner;
@@ -47,6 +48,9 @@ public class ComputeInferredTypesAction extends AbstractOWLModelAction {
             	ProtegeReasoner reasoner = ReasonerManager.getInstance().getProtegeReasoner(owlModel);
             	reasoner.setReasonerTaskListener(taskListener);
             	reasoner.computeInferredIndividualTypes();
+            	
+            	//reload project view
+            	ProjectManager.getProjectManager().reloadUI(false);
             }
 
 
