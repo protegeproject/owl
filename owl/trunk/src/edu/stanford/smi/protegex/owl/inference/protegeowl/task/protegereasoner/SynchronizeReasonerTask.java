@@ -47,14 +47,14 @@ public class SynchronizeReasonerTask extends AbstractReasonerTask {
             doAbortCheck();
             
             // Transmit the kb to the reasoner
-            transmitToReasoner(parentRecord);
-            doAbortCheck();			
+            transmitToReasoner(parentRecord);            			
 		} catch (Exception e) {
 			postLogRecord(ReasonerLogRecordFactory.getInstance().createErrorMessageLogRecord("Errors at synchronization: " + e.getMessage(), null));
 		} finally {
 			owlModel.setGenerateEventsEnabled(eventsEnabled);
 		}
-
+		
+		doAbortCheck();
         setProgressIndeterminate(false);
         td.markEnd();
         postLogRecord(ReasonerLogRecordFactory.getInstance().createInformationMessageLogRecord("Time to synchronize = " + td, parentRecord));
