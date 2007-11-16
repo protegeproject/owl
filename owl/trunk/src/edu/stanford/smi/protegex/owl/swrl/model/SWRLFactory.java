@@ -30,8 +30,9 @@ public class SWRLFactory
   private OWLNamedClass atomListCls, builtinAtomCls, classAtomCls, dataRangeAtomCls, dataValuedPropertyAtomCls,
                         differentIndividualsAtomCls, impCls, individualPropertyAtomCls, sameIndividualAtomCls,
                         atomCls, variableCls, builtInCls;
-  private OWLObjectProperty bodyProperty, headProperty, argumentsProperty, builtInProperty, argument1Property, argument2Property,
-                            classPredicateProperty, propertyPredicateProperty, dataRangeProperty;
+  private OWLObjectProperty bodyProperty, headProperty, argumentsProperty, builtInProperty, argument1Property, classPredicateProperty, propertyPredicateProperty, dataRangeProperty;
+  private RDFProperty argument2Property;
+
   private OWLModel owlModel;
   private List<SWRLBuiltin> coreSWRLBuiltIns;
 
@@ -77,7 +78,7 @@ public class SWRLFactory
     argumentsProperty = getOrCreateOWLObjectProperty(SWRLNames.Slot.ARGUMENTS, swrlFrameID++);
     builtInProperty = getOrCreateOWLObjectProperty(SWRLNames.Slot.BUILTIN, swrlFrameID++);
     argument1Property = getOrCreateOWLObjectProperty(SWRLNames.Slot.ARGUMENT1, swrlFrameID++);
-    argument2Property = getOrCreateOWLObjectProperty(SWRLNames.Slot.ARGUMENT2, swrlFrameID++);
+    argument2Property = getOrCreateOWLProperty(SWRLNames.Slot.ARGUMENT2, swrlFrameID++);
     classPredicateProperty = getOrCreateOWLObjectProperty(SWRLNames.Slot.CLASS_PREDICATE, swrlFrameID++);
     propertyPredicateProperty = getOrCreateOWLObjectProperty(SWRLNames.Slot.PROPERTY_PREDICATE, swrlFrameID++);
     dataRangeProperty = getOrCreateOWLObjectProperty(SWRLNames.Slot.DATA_RANGE, swrlFrameID++);
@@ -128,6 +129,20 @@ public class SWRLFactory
     } // if
     return owlModel.getOWLObjectProperty(propertyName);
   } // getOrCreateOWLObjectProperty
+
+  private RDFProperty getOrCreateOWLProperty(String propertyName, int frameID) 
+  {
+    RDFResource resource = owlModel.getRDFResource(propertyName);
+    
+    if (resource == null) {
+      RDFProperty property = new DefaultRDFProperty(owlModel, FrameID.createSystem(frameID));
+      property.setName(propertyName);
+      property.setProtegeType(owlModel.getRDFPropertyClass());
+    } else if (!(resource instanceof RDFProperty)) {
+      resource.setProtegeType(owlModel.getRDFPropertyClass());		
+    } // if
+    return owlModel.getRDFProperty(propertyName);
+  } // getOrCreateOWLProperty
 
   private SWRLBuiltin getOrCreateBuiltIn(String builtInName, int frameID)
   {

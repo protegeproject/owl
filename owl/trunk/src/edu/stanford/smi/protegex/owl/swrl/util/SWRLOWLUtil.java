@@ -897,6 +897,12 @@ public class SWRLOWLUtil
     return getDatavaluedPropertyValueAsLong(owlModel, getIndividual(owlModel, individualName), propertyName, true);
   } // getDatavaluedPropertyValueAsLong
 
+  public static String getDatavaluedPropertyValueAsString(OWLModel owlModel, OWLIndividual individual, String propertyName)
+    throws SWRLOWLUtilException
+  { 
+    return getDatavaluedPropertyValueAsString(owlModel, individual, propertyName, true);
+  } // getDatavaluedPropertyValueAsString
+
   public static String getDatavaluedPropertyValueAsString(OWLModel owlModel, OWLIndividual individual, String propertyName, boolean mustExist)
     throws SWRLOWLUtilException
   {
@@ -1116,6 +1122,20 @@ public class SWRLOWLUtil
 
     return result;
   } // getDomainProperties
+
+  public static Set<String> rdfResources2OWLNamedClassNames(Collection resources) 
+  {
+    Set<String> result = new HashSet<String>();
+    
+    Iterator iterator = resources.iterator();
+    while (iterator.hasNext()) {
+      Object o = iterator.next();
+      if (o instanceof OWLNamedClass) result.add(((OWLNamedClass)o).getName());
+    } // if
+
+    return result;
+    
+  } // rdfResources2OWLNamedClassNames
 
   public static Set<String> rdfResources2Names(Collection resources) 
   {

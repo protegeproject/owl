@@ -26,6 +26,11 @@
       <owl:Class rdf:ID="KeyColumn"/>
     </rdfs:subClassOf>
   </owl:Class>
+  <owl:Class rdf:ID="PrimaryKeyColumn">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#KeyColumn"/>
+    </rdfs:subClassOf>
+  </owl:Class>
   <owl:Class rdf:ID="OWLDatatypePropertyMap">
     <rdfs:subClassOf>
       <owl:Class rdf:ID="OWLPropertyMap"/>
@@ -42,7 +47,9 @@
     </rdfs:subClassOf>
   </owl:Class>
   <owl:Class rdf:ID="OWLClassMap">
-    <rdfs:subClassOf rdf:resource="#Entity"/>
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="Map"/>
+    </rdfs:subClassOf>
   </owl:Class>
   <owl:Class rdf:ID="Database">
     <rdfs:subClassOf rdf:resource="#Entity"/>
@@ -55,11 +62,14 @@
   <owl:Class rdf:ID="Table">
     <rdfs:subClassOf rdf:resource="#Entity"/>
   </owl:Class>
+  <owl:Class rdf:about="#Map">
+    <rdfs:subClassOf rdf:resource="#Entity"/>
+  </owl:Class>
   <owl:Class rdf:about="#KeyColumn">
     <rdfs:subClassOf rdf:resource="#Column"/>
   </owl:Class>
   <owl:Class rdf:about="#OWLPropertyMap">
-    <rdfs:subClassOf rdf:resource="#Entity"/>
+    <rdfs:subClassOf rdf:resource="#Map"/>
   </owl:Class>
   <owl:Class rdf:about="#Key">
     <rdfs:subClassOf rdf:resource="#Entity"/>
@@ -74,20 +84,20 @@
     <rdfs:domain rdf:resource="#ForeignKey"/>
   </owl:ObjectProperty>
   <owl:ObjectProperty rdf:ID="hasKeyColumns">
-    <rdfs:range rdf:resource="#KeyColumn"/>
     <rdfs:domain rdf:resource="#PrimaryKey"/>
+    <rdfs:range rdf:resource="#KeyColumn"/>
   </owl:ObjectProperty>
   <owl:ObjectProperty rdf:ID="hasForeignKey">
-    <rdfs:range rdf:resource="#ForeignKey"/>
     <rdfs:domain rdf:resource="#OWLObjectPropertyMap"/>
+    <rdfs:range rdf:resource="#ForeignKey"/>
   </owl:ObjectProperty>
   <owl:FunctionalProperty rdf:ID="hasDatabase">
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
-    <rdfs:domain rdf:resource="#Table"/>
     <rdfs:range rdf:resource="#Database"/>
+    <rdfs:domain rdf:resource="#Table"/>
   </owl:FunctionalProperty>
   <owl:FunctionalProperty rdf:ID="hasPrimaryKey">
-    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+    <rdfs:range rdf:resource="#PrimaryKey"/>
     <rdfs:domain>
       <owl:Class>
         <owl:unionOf rdf:parseType="Collection">
@@ -97,27 +107,27 @@
         </owl:unionOf>
       </owl:Class>
     </rdfs:domain>
-    <rdfs:range rdf:resource="#PrimaryKey"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
   </owl:FunctionalProperty>
   <owl:FunctionalProperty rdf:ID="hasReferencedColumnName">
-    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
     <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
     <rdfs:domain rdf:resource="#ForiegnKeyColumn"/>
   </owl:FunctionalProperty>
   <owl:FunctionalProperty rdf:ID="hasColumnName">
-    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
-    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
     <rdfs:domain rdf:resource="#Column"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
   </owl:FunctionalProperty>
   <owl:FunctionalProperty rdf:ID="hasDatabaseName">
-    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
-    <rdfs:domain rdf:resource="#Database"/>
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:domain rdf:resource="#Database"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
   </owl:FunctionalProperty>
   <owl:FunctionalProperty rdf:ID="hasColumnType">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
     <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
     <rdfs:domain rdf:resource="#Column"/>
-    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
   </owl:FunctionalProperty>
   <owl:FunctionalProperty rdf:ID="hasReferencedTable">
     <rdfs:domain rdf:resource="#ForeignKey"/>
@@ -125,33 +135,33 @@
     <rdfs:range rdf:resource="#Table"/>
   </owl:FunctionalProperty>
   <owl:FunctionalProperty rdf:ID="hasServerName">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
     <rdfs:domain rdf:resource="#Database"/>
-    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
   </owl:FunctionalProperty>
   <owl:FunctionalProperty rdf:ID="hasOWLClass">
     <rdfs:domain rdf:resource="#OWLClassMap"/>
-    <rdfs:range rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
   </owl:FunctionalProperty>
   <owl:FunctionalProperty rdf:ID="hasTableName">
-    <rdfs:domain rdf:resource="#Table"/>
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
     <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:domain rdf:resource="#Table"/>
   </owl:FunctionalProperty>
   <owl:FunctionalProperty rdf:ID="hasSchemaName">
-    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
-    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
     <rdfs:domain rdf:resource="#Table"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
   </owl:FunctionalProperty>
   <owl:FunctionalProperty rdf:ID="hasPortNumber">
     <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
-    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
     <rdfs:domain rdf:resource="#Database"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
   </owl:FunctionalProperty>
   <owl:FunctionalProperty rdf:ID="hasBaseTable">
-    <rdfs:domain rdf:resource="#Key"/>
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+    <rdfs:domain rdf:resource="#Key"/>
     <rdfs:range rdf:resource="#Table"/>
   </owl:FunctionalProperty>
   <owl:FunctionalProperty rdf:ID="hasJDBCDriverName">
@@ -160,7 +170,6 @@
     <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
   </owl:FunctionalProperty>
   <owl:FunctionalProperty rdf:ID="hasOWLProperty">
-    <rdfs:domain rdf:resource="#OWLPropertyMap"/>
     <rdfs:range>
       <owl:Class>
         <owl:unionOf rdf:parseType="Collection">
@@ -170,11 +179,12 @@
       </owl:Class>
     </rdfs:range>
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+    <rdfs:domain rdf:resource="#OWLPropertyMap"/>
   </owl:FunctionalProperty>
   <owl:FunctionalProperty rdf:ID="hasValueColumn">
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
-    <rdfs:domain rdf:resource="#OWLDatatypePropertyMap"/>
     <rdfs:range rdf:resource="#Column"/>
+    <rdfs:domain rdf:resource="#OWLDatatypePropertyMap"/>
   </owl:FunctionalProperty>
   <swrl:Variable rdf:ID="databaseName"/>
   <swrl:Variable rdf:ID="schemaName"/>
@@ -192,6 +202,7 @@
                 </rdf:first>
                 <rdf:rest>
                   <rdf:List>
+                    <rdf:first rdf:resource="#schemaName"/>
                     <rdf:rest>
                       <rdf:List>
                         <rdf:first>
@@ -233,7 +244,6 @@
                         </rdf:rest>
                       </rdf:List>
                     </rdf:rest>
-                    <rdf:first rdf:resource="#schemaName"/>
                   </rdf:List>
                 </rdf:rest>
               </rdf:List>
@@ -244,35 +254,29 @@
     </swrl:head>
     <swrl:body>
       <swrl:AtomList>
-        <rdf:first>
-          <swrl:ClassAtom>
-            <swrl:classPredicate rdf:resource="#OWLClassMap"/>
-            <swrl:argument1>
-              <swrl:Variable rdf:ID="cmap"/>
-            </swrl:argument1>
-          </swrl:ClassAtom>
-        </rdf:first>
         <rdf:rest>
           <swrl:AtomList>
             <rdf:first>
               <swrl:BuiltinAtom>
-                <swrl:builtin rdf:resource="http://swrl.stanford.edu/ontologies/built-ins/3.3/abox.owl#hasValue"/>
                 <swrl:arguments>
                   <rdf:List>
+                    <rdf:first>
+                      <swrl:Variable rdf:ID="cmap"/>
+                    </rdf:first>
                     <rdf:rest>
                       <rdf:List>
+                        <rdf:first rdf:resource="#hasOWLClass"/>
                         <rdf:rest>
                           <rdf:List>
                             <rdf:first rdf:resource="#owlClass"/>
                             <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
                           </rdf:List>
                         </rdf:rest>
-                        <rdf:first rdf:resource="#hasOWLClass"/>
                       </rdf:List>
                     </rdf:rest>
-                    <rdf:first rdf:resource="#cmap"/>
                   </rdf:List>
                 </swrl:arguments>
+                <swrl:builtin rdf:resource="http://swrl.stanford.edu/ontologies/built-ins/3.3/abox.owl#hasValue"/>
               </swrl:BuiltinAtom>
             </rdf:first>
             <rdf:rest>
@@ -281,8 +285,8 @@
                   <swrl:BuiltinAtom>
                     <swrl:arguments>
                       <rdf:List>
-                        <rdf:first rdf:resource="#owlClass"/>
                         <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                        <rdf:first rdf:resource="#owlClass"/>
                       </rdf:List>
                     </swrl:arguments>
                     <swrl:builtin rdf:resource="http://swrl.stanford.edu/ontologies/built-ins/3.3/tbox.owl#isClass"/>
@@ -294,115 +298,115 @@
                       <swrl:AtomList>
                         <rdf:rest>
                           <swrl:AtomList>
+                            <rdf:first>
+                              <swrl:DatavaluedPropertyAtom>
+                                <swrl:argument2 rdf:resource="#tableName"/>
+                                <swrl:propertyPredicate rdf:resource="#hasTableName"/>
+                                <swrl:argument1>
+                                  <swrl:Variable rdf:ID="t"/>
+                                </swrl:argument1>
+                              </swrl:DatavaluedPropertyAtom>
+                            </rdf:first>
                             <rdf:rest>
                               <swrl:AtomList>
+                                <rdf:first>
+                                  <swrl:DatavaluedPropertyAtom>
+                                    <swrl:propertyPredicate rdf:resource="#hasSchemaName"/>
+                                    <swrl:argument2 rdf:resource="#schemaName"/>
+                                    <swrl:argument1 rdf:resource="#t"/>
+                                  </swrl:DatavaluedPropertyAtom>
+                                </rdf:first>
                                 <rdf:rest>
                                   <swrl:AtomList>
+                                    <rdf:first>
+                                      <swrl:IndividualPropertyAtom>
+                                        <swrl:argument2>
+                                          <swrl:Variable rdf:ID="kc"/>
+                                        </swrl:argument2>
+                                        <swrl:argument1>
+                                          <swrl:Variable rdf:ID="pk"/>
+                                        </swrl:argument1>
+                                        <swrl:propertyPredicate rdf:resource="#hasKeyColumns"/>
+                                      </swrl:IndividualPropertyAtom>
+                                    </rdf:first>
                                     <rdf:rest>
                                       <swrl:AtomList>
-                                        <rdf:first>
-                                          <swrl:DatavaluedPropertyAtom>
-                                            <swrl:argument1>
-                                              <swrl:Variable rdf:ID="kc"/>
-                                            </swrl:argument1>
-                                            <swrl:propertyPredicate rdf:resource="#hasColumnName"/>
-                                            <swrl:argument2 rdf:resource="#keyColumnName"/>
-                                          </swrl:DatavaluedPropertyAtom>
-                                        </rdf:first>
                                         <rdf:rest>
                                           <swrl:AtomList>
                                             <rdf:rest>
                                               <swrl:AtomList>
-                                                <rdf:first>
-                                                  <swrl:DatavaluedPropertyAtom>
-                                                    <swrl:argument1>
-                                                      <swrl:Variable rdf:ID="db"/>
-                                                    </swrl:argument1>
-                                                    <swrl:argument2 rdf:resource="#jdbcDriverName"/>
-                                                    <swrl:propertyPredicate rdf:resource="#hasJDBCDriverName"/>
-                                                  </swrl:DatavaluedPropertyAtom>
-                                                </rdf:first>
                                                 <rdf:rest>
                                                   <swrl:AtomList>
                                                     <rdf:rest>
                                                       <swrl:AtomList>
                                                         <rdf:first>
                                                           <swrl:DatavaluedPropertyAtom>
-                                                            <swrl:argument1 rdf:resource="#db"/>
                                                             <swrl:propertyPredicate rdf:resource="#hasPortNumber"/>
+                                                            <swrl:argument1>
+                                                              <swrl:Variable rdf:ID="db"/>
+                                                            </swrl:argument1>
                                                             <swrl:argument2 rdf:resource="#portNumber"/>
                                                           </swrl:DatavaluedPropertyAtom>
                                                         </rdf:first>
                                                         <rdf:rest>
                                                           <swrl:AtomList>
+                                                            <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
                                                             <rdf:first>
                                                               <swrl:DatavaluedPropertyAtom>
-    <swrl:argument2 rdf:resource="#serverName"/>
+    <swrl:argument1 rdf:resource="#db"/>
     <swrl:propertyPredicate rdf:resource="#hasServerName"/>
-    <swrl:argument1 rdf:resource="#db"/>                      </swrl:DatavaluedPropertyAtom>
+    <swrl:argument2 rdf:resource="#serverName"/>              </swrl:DatavaluedPropertyAtom>
                                                             </rdf:first>
-                                                            <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
                                                           </swrl:AtomList>
                                                         </rdf:rest>
                                                       </swrl:AtomList>
                                                     </rdf:rest>
                                                     <rdf:first>
                                                       <swrl:DatavaluedPropertyAtom>
-                                                        <swrl:propertyPredicate rdf:resource="#hasDatabaseName"/>
-                                                        <swrl:argument2 rdf:resource="#databaseName"/>
                                                         <swrl:argument1 rdf:resource="#db"/>
+                                                        <swrl:argument2 rdf:resource="#databaseName"/>
+                                                        <swrl:propertyPredicate rdf:resource="#hasDatabaseName"/>
                                                       </swrl:DatavaluedPropertyAtom>
                                                     </rdf:first>
                                                   </swrl:AtomList>
                                                 </rdf:rest>
+                                                <rdf:first>
+                                                  <swrl:DatavaluedPropertyAtom>
+                                                    <swrl:argument2 rdf:resource="#jdbcDriverName"/>
+                                                    <swrl:argument1 rdf:resource="#db"/>
+                                                    <swrl:propertyPredicate rdf:resource="#hasJDBCDriverName"/>
+                                                  </swrl:DatavaluedPropertyAtom>
+                                                </rdf:first>
                                               </swrl:AtomList>
                                             </rdf:rest>
                                             <rdf:first>
                                               <swrl:IndividualPropertyAtom>
                                                 <swrl:argument2 rdf:resource="#db"/>
-                                                <swrl:argument1>
-                                                  <swrl:Variable rdf:ID="t"/>
-                                                </swrl:argument1>
+                                                <swrl:argument1 rdf:resource="#t"/>
                                                 <swrl:propertyPredicate rdf:resource="#hasDatabase"/>
                                               </swrl:IndividualPropertyAtom>
                                             </rdf:first>
                                           </swrl:AtomList>
                                         </rdf:rest>
+                                        <rdf:first>
+                                          <swrl:DatavaluedPropertyAtom>
+                                            <swrl:propertyPredicate rdf:resource="#hasColumnName"/>
+                                            <swrl:argument2 rdf:resource="#keyColumnName"/>
+                                            <swrl:argument1 rdf:resource="#kc"/>
+                                          </swrl:DatavaluedPropertyAtom>
+                                        </rdf:first>
                                       </swrl:AtomList>
                                     </rdf:rest>
-                                    <rdf:first>
-                                      <swrl:IndividualPropertyAtom>
-                                        <swrl:argument2 rdf:resource="#kc"/>
-                                        <swrl:propertyPredicate rdf:resource="#hasKeyColumns"/>
-                                        <swrl:argument1>
-                                          <swrl:Variable rdf:ID="pk"/>
-                                        </swrl:argument1>
-                                      </swrl:IndividualPropertyAtom>
-                                    </rdf:first>
                                   </swrl:AtomList>
                                 </rdf:rest>
-                                <rdf:first>
-                                  <swrl:DatavaluedPropertyAtom>
-                                    <swrl:argument1 rdf:resource="#t"/>
-                                    <swrl:propertyPredicate rdf:resource="#hasSchemaName"/>
-                                    <swrl:argument2 rdf:resource="#schemaName"/>
-                                  </swrl:DatavaluedPropertyAtom>
-                                </rdf:first>
                               </swrl:AtomList>
                             </rdf:rest>
-                            <rdf:first>
-                              <swrl:DatavaluedPropertyAtom>
-                                <swrl:argument2 rdf:resource="#tableName"/>
-                                <swrl:argument1 rdf:resource="#t"/>
-                                <swrl:propertyPredicate rdf:resource="#hasTableName"/>
-                              </swrl:DatavaluedPropertyAtom>
-                            </rdf:first>
                           </swrl:AtomList>
                         </rdf:rest>
                         <rdf:first>
                           <swrl:IndividualPropertyAtom>
-                            <swrl:argument1 rdf:resource="#pk"/>
                             <swrl:propertyPredicate rdf:resource="#hasBaseTable"/>
+                            <swrl:argument1 rdf:resource="#pk"/>
                             <swrl:argument2 rdf:resource="#t"/>
                           </swrl:IndividualPropertyAtom>
                         </rdf:first>
@@ -411,8 +415,8 @@
                     <rdf:first>
                       <swrl:IndividualPropertyAtom>
                         <swrl:argument2 rdf:resource="#pk"/>
-                        <swrl:propertyPredicate rdf:resource="#hasPrimaryKey"/>
                         <swrl:argument1 rdf:resource="#cmap"/>
+                        <swrl:propertyPredicate rdf:resource="#hasPrimaryKey"/>
                       </swrl:IndividualPropertyAtom>
                     </rdf:first>
                   </swrl:AtomList>
@@ -421,6 +425,12 @@
             </rdf:rest>
           </swrl:AtomList>
         </rdf:rest>
+        <rdf:first>
+          <swrl:ClassAtom>
+            <swrl:argument1 rdf:resource="#cmap"/>
+            <swrl:classPredicate rdf:resource="#OWLClassMap"/>
+          </swrl:ClassAtom>
+        </rdf:first>
       </swrl:AtomList>
     </swrl:body>
   </swrl:Imp>
@@ -430,24 +440,19 @@
       <swrl:AtomList>
         <rdf:first>
           <swrl:BuiltinAtom>
-            <swrl:builtin rdf:resource="http://sqwrl.stanford.edu/ontologies/built-ins/3.4/sqwrl.owl#select"/>
             <swrl:arguments>
               <rdf:List>
                 <rdf:rest>
                   <rdf:List>
-                    <rdf:first rdf:resource="#schemaName"/>
                     <rdf:rest>
                       <rdf:List>
-                        <rdf:first rdf:resource="#tableName"/>
                         <rdf:rest>
                           <rdf:List>
                             <rdf:rest>
                               <rdf:List>
-                                <rdf:first>
-                                  <swrl:Variable rdf:ID="valueColumnName"/>
-                                </rdf:first>
                                 <rdf:rest>
                                   <rdf:List>
+                                    <rdf:first rdf:resource="#jdbcDriverName"/>
                                     <rdf:rest>
                                       <rdf:List>
                                         <rdf:first rdf:resource="#databaseName"/>
@@ -464,16 +469,20 @@
                                         </rdf:rest>
                                       </rdf:List>
                                     </rdf:rest>
-                                    <rdf:first rdf:resource="#jdbcDriverName"/>
                                   </rdf:List>
                                 </rdf:rest>
+                                <rdf:first>
+                                  <swrl:Variable rdf:ID="valueColumnName"/>
+                                </rdf:first>
                               </rdf:List>
                             </rdf:rest>
                             <rdf:first rdf:resource="#keyColumnName"/>
                           </rdf:List>
                         </rdf:rest>
+                        <rdf:first rdf:resource="#tableName"/>
                       </rdf:List>
                     </rdf:rest>
+                    <rdf:first rdf:resource="#schemaName"/>
                   </rdf:List>
                 </rdf:rest>
                 <rdf:first>
@@ -481,6 +490,7 @@
                 </rdf:first>
               </rdf:List>
             </swrl:arguments>
+            <swrl:builtin rdf:resource="http://sqwrl.stanford.edu/ontologies/built-ins/3.4/sqwrl.owl#select"/>
           </swrl:BuiltinAtom>
         </rdf:first>
         <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
@@ -488,52 +498,74 @@
     </swrl:head>
     <swrl:body>
       <swrl:AtomList>
+        <rdf:first>
+          <swrl:ClassAtom>
+            <swrl:argument1>
+              <swrl:Variable rdf:ID="dpmap"/>
+            </swrl:argument1>
+            <swrl:classPredicate rdf:resource="#OWLDatatypePropertyMap"/>
+          </swrl:ClassAtom>
+        </rdf:first>
         <rdf:rest>
           <swrl:AtomList>
             <rdf:first>
               <swrl:BuiltinAtom>
+                <swrl:builtin rdf:resource="http://swrl.stanford.edu/ontologies/built-ins/3.3/abox.owl#hasValue"/>
                 <swrl:arguments>
                   <rdf:List>
-                    <rdf:first>
-                      <swrl:Variable rdf:ID="dpmap"/>
-                    </rdf:first>
                     <rdf:rest>
                       <rdf:List>
                         <rdf:rest>
                           <rdf:List>
-                            <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
                             <rdf:first rdf:resource="#owlDatatypeProperty"/>
+                            <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
                           </rdf:List>
                         </rdf:rest>
                         <rdf:first rdf:resource="#hasOWLProperty"/>
                       </rdf:List>
                     </rdf:rest>
+                    <rdf:first rdf:resource="#dpmap"/>
                   </rdf:List>
                 </swrl:arguments>
-                <swrl:builtin rdf:resource="http://swrl.stanford.edu/ontologies/built-ins/3.3/abox.owl#hasValue"/>
               </swrl:BuiltinAtom>
             </rdf:first>
             <rdf:rest>
               <swrl:AtomList>
                 <rdf:rest>
                   <swrl:AtomList>
-                    <rdf:first>
-                      <swrl:IndividualPropertyAtom>
-                        <swrl:propertyPredicate rdf:resource="#hasPrimaryKey"/>
-                        <swrl:argument1 rdf:resource="#dpmap"/>
-                        <swrl:argument2 rdf:resource="#pk"/>
-                      </swrl:IndividualPropertyAtom>
-                    </rdf:first>
                     <rdf:rest>
                       <swrl:AtomList>
+                        <rdf:first>
+                          <swrl:IndividualPropertyAtom>
+                            <swrl:argument2>
+                              <swrl:Variable rdf:ID="vc"/>
+                            </swrl:argument2>
+                            <swrl:propertyPredicate rdf:resource="#hasValueColumn"/>
+                            <swrl:argument1 rdf:resource="#dpmap"/>
+                          </swrl:IndividualPropertyAtom>
+                        </rdf:first>
                         <rdf:rest>
                           <swrl:AtomList>
+                            <rdf:first>
+                              <swrl:DatavaluedPropertyAtom>
+                                <swrl:argument2 rdf:resource="#valueColumnName"/>
+                                <swrl:argument1 rdf:resource="#vc"/>
+                                <swrl:propertyPredicate rdf:resource="#hasColumnName"/>
+                              </swrl:DatavaluedPropertyAtom>
+                            </rdf:first>
                             <rdf:rest>
                               <swrl:AtomList>
                                 <rdf:rest>
                                   <swrl:AtomList>
                                     <rdf:rest>
                                       <swrl:AtomList>
+                                        <rdf:first>
+                                          <swrl:DatavaluedPropertyAtom>
+                                            <swrl:propertyPredicate rdf:resource="#hasSchemaName"/>
+                                            <swrl:argument2 rdf:resource="#schemaName"/>
+                                            <swrl:argument1 rdf:resource="#t"/>
+                                          </swrl:DatavaluedPropertyAtom>
+                                        </rdf:first>
                                         <rdf:rest>
                                           <swrl:AtomList>
                                             <rdf:first>
@@ -545,126 +577,110 @@
                                             </rdf:first>
                                             <rdf:rest>
                                               <swrl:AtomList>
-                                                <rdf:first>
-                                                  <swrl:DatavaluedPropertyAtom>
-                                                    <swrl:argument1 rdf:resource="#kc"/>
-                                                    <swrl:propertyPredicate rdf:resource="#hasColumnName"/>
-                                                    <swrl:argument2 rdf:resource="#keyColumnName"/>
-                                                  </swrl:DatavaluedPropertyAtom>
-                                                </rdf:first>
                                                 <rdf:rest>
                                                   <swrl:AtomList>
                                                     <rdf:rest>
                                                       <swrl:AtomList>
+                                                        <rdf:first>
+                                                          <swrl:DatavaluedPropertyAtom>
+                                                            <swrl:propertyPredicate rdf:resource="#hasJDBCDriverName"/>
+                                                            <swrl:argument1 rdf:resource="#db"/>
+                                                            <swrl:argument2 rdf:resource="#jdbcDriverName"/>
+                                                          </swrl:DatavaluedPropertyAtom>
+                                                        </rdf:first>
                                                         <rdf:rest>
                                                           <swrl:AtomList>
-                                                            <rdf:first>
-                                                              <swrl:DatavaluedPropertyAtom>
-    <swrl:argument2 rdf:resource="#databaseName"/>
-    <swrl:argument1 rdf:resource="#db"/>
-    <swrl:propertyPredicate rdf:resource="#hasDatabaseName"/> </swrl:DatavaluedPropertyAtom>
-                                                            </rdf:first>
                                                             <rdf:rest>
                                                               <swrl:AtomList>
     <rdf:first>
       <swrl:DatavaluedPropertyAtom>
-        <swrl:argument2 rdf:resource="#portNumber"/>
-        <swrl:propertyPredicate rdf:resource="#hasPortNumber"/>
         <swrl:argument1 rdf:resource="#db"/>
+        <swrl:propertyPredicate rdf:resource="#hasPortNumber"/>
+        <swrl:argument2 rdf:resource="#portNumber"/>
       </swrl:DatavaluedPropertyAtom>
     </rdf:first>
     <rdf:rest>
       <swrl:AtomList>
         <rdf:first>
           <swrl:DatavaluedPropertyAtom>
+            <swrl:propertyPredicate rdf:resource="#hasServerName"/>
             <swrl:argument1 rdf:resource="#db"/>
             <swrl:argument2 rdf:resource="#serverName"/>
-            <swrl:propertyPredicate rdf:resource="#hasServerName"/>
           </swrl:DatavaluedPropertyAtom>
         </rdf:first>
         <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
       </swrl:AtomList>
     </rdf:rest>                                               </swrl:AtomList>
                                                             </rdf:rest>
+                                                            <rdf:first>
+                                                              <swrl:DatavaluedPropertyAtom>
+    <swrl:propertyPredicate rdf:resource="#hasDatabaseName"/>
+    <swrl:argument1 rdf:resource="#db"/>
+    <swrl:argument2 rdf:resource="#databaseName"/>            </swrl:DatavaluedPropertyAtom>
+                                                            </rdf:first>
                                                           </swrl:AtomList>
                                                         </rdf:rest>
-                                                        <rdf:first>
-                                                          <swrl:DatavaluedPropertyAtom>
-                                                            <swrl:argument1 rdf:resource="#db"/>
-                                                            <swrl:argument2 rdf:resource="#jdbcDriverName"/>
-                                                            <swrl:propertyPredicate rdf:resource="#hasJDBCDriverName"/>
-                                                          </swrl:DatavaluedPropertyAtom>
-                                                        </rdf:first>
                                                       </swrl:AtomList>
                                                     </rdf:rest>
                                                     <rdf:first>
                                                       <swrl:IndividualPropertyAtom>
-                                                        <swrl:propertyPredicate rdf:resource="#hasDatabase"/>
                                                         <swrl:argument2 rdf:resource="#db"/>
+                                                        <swrl:propertyPredicate rdf:resource="#hasDatabase"/>
                                                         <swrl:argument1 rdf:resource="#t"/>
                                                       </swrl:IndividualPropertyAtom>
                                                     </rdf:first>
                                                   </swrl:AtomList>
                                                 </rdf:rest>
+                                                <rdf:first>
+                                                  <swrl:DatavaluedPropertyAtom>
+                                                    <swrl:propertyPredicate rdf:resource="#hasColumnName"/>
+                                                    <swrl:argument1 rdf:resource="#kc"/>
+                                                    <swrl:argument2 rdf:resource="#keyColumnName"/>
+                                                  </swrl:DatavaluedPropertyAtom>
+                                                </rdf:first>
                                               </swrl:AtomList>
                                             </rdf:rest>
                                           </swrl:AtomList>
                                         </rdf:rest>
-                                        <rdf:first>
-                                          <swrl:DatavaluedPropertyAtom>
-                                            <swrl:propertyPredicate rdf:resource="#hasSchemaName"/>
-                                            <swrl:argument2 rdf:resource="#schemaName"/>
-                                            <swrl:argument1 rdf:resource="#t"/>
-                                          </swrl:DatavaluedPropertyAtom>
-                                        </rdf:first>
                                       </swrl:AtomList>
                                     </rdf:rest>
                                     <rdf:first>
                                       <swrl:DatavaluedPropertyAtom>
                                         <swrl:propertyPredicate rdf:resource="#hasTableName"/>
-                                        <swrl:argument1 rdf:resource="#t"/>
                                         <swrl:argument2 rdf:resource="#tableName"/>
+                                        <swrl:argument1 rdf:resource="#t"/>
                                       </swrl:DatavaluedPropertyAtom>
                                     </rdf:first>
                                   </swrl:AtomList>
                                 </rdf:rest>
                                 <rdf:first>
                                   <swrl:IndividualPropertyAtom>
+                                    <swrl:argument1 rdf:resource="#pk"/>
                                     <swrl:propertyPredicate rdf:resource="#hasBaseTable"/>
                                     <swrl:argument2 rdf:resource="#t"/>
-                                    <swrl:argument1 rdf:resource="#pk"/>
                                   </swrl:IndividualPropertyAtom>
                                 </rdf:first>
                               </swrl:AtomList>
                             </rdf:rest>
-                            <rdf:first>
-                              <swrl:DatavaluedPropertyAtom>
-                                <swrl:argument1>
-                                  <swrl:Variable rdf:ID="vc"/>
-                                </swrl:argument1>
-                                <swrl:propertyPredicate rdf:resource="#hasColumnName"/>
-                                <swrl:argument2 rdf:resource="#valueColumnName"/>
-                              </swrl:DatavaluedPropertyAtom>
-                            </rdf:first>
                           </swrl:AtomList>
                         </rdf:rest>
-                        <rdf:first>
-                          <swrl:IndividualPropertyAtom>
-                            <swrl:argument2 rdf:resource="#vc"/>
-                            <swrl:propertyPredicate rdf:resource="#hasValueColumn"/>
-                            <swrl:argument1 rdf:resource="#dpmap"/>
-                          </swrl:IndividualPropertyAtom>
-                        </rdf:first>
                       </swrl:AtomList>
                     </rdf:rest>
+                    <rdf:first>
+                      <swrl:IndividualPropertyAtom>
+                        <swrl:argument1 rdf:resource="#dpmap"/>
+                        <swrl:propertyPredicate rdf:resource="#hasPrimaryKey"/>
+                        <swrl:argument2 rdf:resource="#pk"/>
+                      </swrl:IndividualPropertyAtom>
+                    </rdf:first>
                   </swrl:AtomList>
                 </rdf:rest>
                 <rdf:first>
                   <swrl:BuiltinAtom>
                     <swrl:arguments>
                       <rdf:List>
-                        <rdf:first rdf:resource="#owlDatatypeProperty"/>
                         <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                        <rdf:first rdf:resource="#owlDatatypeProperty"/>
                       </rdf:List>
                     </swrl:arguments>
                     <swrl:builtin rdf:resource="http://swrl.stanford.edu/ontologies/built-ins/3.3/tbox.owl#isDatatypeProperty"/>
@@ -674,12 +690,6 @@
             </rdf:rest>
           </swrl:AtomList>
         </rdf:rest>
-        <rdf:first>
-          <swrl:ClassAtom>
-            <swrl:classPredicate rdf:resource="#OWLDatatypePropertyMap"/>
-            <swrl:argument1 rdf:resource="#dpmap"/>
-          </swrl:ClassAtom>
-        </rdf:first>
       </swrl:AtomList>
     </swrl:body>
   </swrl:Imp>
@@ -703,33 +713,27 @@
   <swrl:Imp rdf:ID="OWLObjectPropertyMap-Query">
     <swrl:body>
       <swrl:AtomList>
-        <rdf:first>
-          <swrl:ClassAtom>
-            <swrl:argument1 rdf:resource="#opmap"/>
-            <swrl:classPredicate rdf:resource="#OWLObjectPropertyMap"/>
-          </swrl:ClassAtom>
-        </rdf:first>
         <rdf:rest>
           <swrl:AtomList>
             <rdf:first>
               <swrl:BuiltinAtom>
-                <swrl:builtin rdf:resource="http://swrl.stanford.edu/ontologies/built-ins/3.3/abox.owl#hasValue"/>
                 <swrl:arguments>
                   <rdf:List>
+                    <rdf:first rdf:resource="#opmap"/>
                     <rdf:rest>
                       <rdf:List>
+                        <rdf:first rdf:resource="#hasOWLProperty"/>
                         <rdf:rest>
                           <rdf:List>
                             <rdf:first rdf:resource="#owlObjectProperty"/>
                             <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
                           </rdf:List>
                         </rdf:rest>
-                        <rdf:first rdf:resource="#hasOWLProperty"/>
                       </rdf:List>
                     </rdf:rest>
-                    <rdf:first rdf:resource="#opmap"/>
                   </rdf:List>
                 </swrl:arguments>
+                <swrl:builtin rdf:resource="http://swrl.stanford.edu/ontologies/built-ins/3.3/abox.owl#hasValue"/>
               </swrl:BuiltinAtom>
             </rdf:first>
             <rdf:rest>
@@ -738,70 +742,49 @@
                   <swrl:AtomList>
                     <rdf:rest>
                       <swrl:AtomList>
-                        <rdf:first>
-                          <swrl:IndividualPropertyAtom>
-                            <swrl:propertyPredicate rdf:resource="#hasBaseTable"/>
-                            <swrl:argument2 rdf:resource="#st"/>
-                            <swrl:argument1 rdf:resource="#pk"/>
-                          </swrl:IndividualPropertyAtom>
-                        </rdf:first>
                         <rdf:rest>
                           <swrl:AtomList>
-                            <rdf:first>
-                              <swrl:DatavaluedPropertyAtom>
-                                <swrl:argument2 rdf:resource="#subjectTableName"/>
-                                <swrl:propertyPredicate rdf:resource="#hasTableName"/>
-                                <swrl:argument1 rdf:resource="#st"/>
-                              </swrl:DatavaluedPropertyAtom>
-                            </rdf:first>
                             <rdf:rest>
                               <swrl:AtomList>
                                 <rdf:rest>
                                   <swrl:AtomList>
+                                    <rdf:first>
+                                      <swrl:IndividualPropertyAtom>
+                                        <swrl:argument1 rdf:resource="#pk"/>
+                                        <swrl:argument2 rdf:resource="#skc"/>
+                                        <swrl:propertyPredicate rdf:resource="#hasKeyColumns"/>
+                                      </swrl:IndividualPropertyAtom>
+                                    </rdf:first>
                                     <rdf:rest>
                                       <swrl:AtomList>
+                                        <rdf:first>
+                                          <swrl:DatavaluedPropertyAtom>
+                                            <swrl:argument2 rdf:resource="#subjectKeyColumnName"/>
+                                            <swrl:propertyPredicate rdf:resource="#hasColumnName"/>
+                                            <swrl:argument1 rdf:resource="#skc"/>
+                                          </swrl:DatavaluedPropertyAtom>
+                                        </rdf:first>
                                         <rdf:rest>
                                           <swrl:AtomList>
                                             <rdf:rest>
                                               <swrl:AtomList>
-                                                <rdf:first>
-                                                  <swrl:IndividualPropertyAtom>
-                                                    <swrl:propertyPredicate rdf:resource="#hasReferencedTable"/>
-                                                    <swrl:argument2 rdf:resource="#ot"/>
-                                                    <swrl:argument1 rdf:resource="#fk"/>
-                                                  </swrl:IndividualPropertyAtom>
-                                                </rdf:first>
                                                 <rdf:rest>
                                                   <swrl:AtomList>
-                                                    <rdf:first>
-                                                      <swrl:DatavaluedPropertyAtom>
-                                                        <swrl:argument2 rdf:resource="#objectTableName"/>
-                                                        <swrl:propertyPredicate rdf:resource="#hasTableName"/>
-                                                        <swrl:argument1 rdf:resource="#ot"/>
-                                                      </swrl:DatavaluedPropertyAtom>
-                                                    </rdf:first>
                                                     <rdf:rest>
                                                       <swrl:AtomList>
                                                         <rdf:rest>
                                                           <swrl:AtomList>
                                                             <rdf:rest>
                                                               <swrl:AtomList>
-    <rdf:first>
-      <swrl:DatavaluedPropertyAtom>
-        <swrl:propertyPredicate rdf:resource="#hasColumnName"/>
-        <swrl:argument2 rdf:resource="#objectKeyColumnName"/>
-        <swrl:argument1 rdf:resource="#okc"/>
-      </swrl:DatavaluedPropertyAtom>
-    </rdf:first>
     <rdf:rest>
       <swrl:AtomList>
         <rdf:rest>
           <swrl:AtomList>
             <rdf:first>
               <swrl:DatavaluedPropertyAtom>
-                <swrl:argument1 rdf:resource="#db"/>
                 <swrl:argument2 rdf:resource="#jdbcDriverName"/>
                 <swrl:propertyPredicate rdf:resource="#hasJDBCDriverName"/>
+                <swrl:argument1 rdf:resource="#db"/>
               </swrl:DatavaluedPropertyAtom>
             </rdf:first>
             <rdf:rest>
@@ -811,20 +794,20 @@
                     <rdf:first>
                       <swrl:DatavaluedPropertyAtom>
                         <swrl:argument2 rdf:resource="#portNumber"/>
-                        <swrl:propertyPredicate rdf:resource="#hasPortNumber"/>
                         <swrl:argument1 rdf:resource="#db"/>
+                        <swrl:propertyPredicate rdf:resource="#hasPortNumber"/>
                       </swrl:DatavaluedPropertyAtom>
                     </rdf:first>
                     <rdf:rest>
                       <swrl:AtomList>
-                        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
                         <rdf:first>
                           <swrl:DatavaluedPropertyAtom>
+                            <swrl:propertyPredicate rdf:resource="#hasServerName"/>
                             <swrl:argument2 rdf:resource="#serverName"/>
                             <swrl:argument1 rdf:resource="#db"/>
-                            <swrl:propertyPredicate rdf:resource="#hasServerName"/>
                           </swrl:DatavaluedPropertyAtom>
                         </rdf:first>
+                        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
                       </swrl:AtomList>
                     </rdf:rest>
                   </swrl:AtomList>
@@ -842,80 +825,101 @@
         </rdf:rest>
         <rdf:first>
           <swrl:IndividualPropertyAtom>
+            <swrl:propertyPredicate rdf:resource="#hasDatabase"/>
             <swrl:argument2 rdf:resource="#db"/>
             <swrl:argument1 rdf:resource="#st"/>
-            <swrl:propertyPredicate rdf:resource="#hasDatabase"/>
           </swrl:IndividualPropertyAtom>
         </rdf:first>
       </swrl:AtomList>
-    </rdf:rest>                                               </swrl:AtomList>
+    </rdf:rest>
+    <rdf:first>
+      <swrl:DatavaluedPropertyAtom>
+        <swrl:argument2 rdf:resource="#objectKeyColumnName"/>
+        <swrl:argument1 rdf:resource="#okc"/>
+        <swrl:propertyPredicate rdf:resource="#hasColumnName"/>
+      </swrl:DatavaluedPropertyAtom>
+    </rdf:first>                                              </swrl:AtomList>
                                                             </rdf:rest>
                                                             <rdf:first>
                                                               <swrl:IndividualPropertyAtom>
-    <swrl:propertyPredicate rdf:resource="#hasKeyColumns"/>
+    <swrl:argument1 rdf:resource="#fk"/>
     <swrl:argument2 rdf:resource="#okc"/>
-    <swrl:argument1 rdf:resource="#fk"/>                      </swrl:IndividualPropertyAtom>
+    <swrl:propertyPredicate rdf:resource="#hasKeyColumns"/>   </swrl:IndividualPropertyAtom>
                                                             </rdf:first>
                                                           </swrl:AtomList>
                                                         </rdf:rest>
                                                         <rdf:first>
                                                           <swrl:DatavaluedPropertyAtom>
-                                                            <swrl:argument1 rdf:resource="#ot"/>
                                                             <swrl:argument2 rdf:resource="#objectSchemaName"/>
+                                                            <swrl:argument1 rdf:resource="#ot"/>
                                                             <swrl:propertyPredicate rdf:resource="#hasSchemaName"/>
                                                           </swrl:DatavaluedPropertyAtom>
                                                         </rdf:first>
                                                       </swrl:AtomList>
                                                     </rdf:rest>
+                                                    <rdf:first>
+                                                      <swrl:DatavaluedPropertyAtom>
+                                                        <swrl:argument1 rdf:resource="#ot"/>
+                                                        <swrl:propertyPredicate rdf:resource="#hasTableName"/>
+                                                        <swrl:argument2 rdf:resource="#objectTableName"/>
+                                                      </swrl:DatavaluedPropertyAtom>
+                                                    </rdf:first>
                                                   </swrl:AtomList>
                                                 </rdf:rest>
+                                                <rdf:first>
+                                                  <swrl:IndividualPropertyAtom>
+                                                    <swrl:propertyPredicate rdf:resource="#hasReferencedTable"/>
+                                                    <swrl:argument1 rdf:resource="#fk"/>
+                                                    <swrl:argument2 rdf:resource="#ot"/>
+                                                  </swrl:IndividualPropertyAtom>
+                                                </rdf:first>
                                               </swrl:AtomList>
                                             </rdf:rest>
                                             <rdf:first>
                                               <swrl:IndividualPropertyAtom>
+                                                <swrl:argument2 rdf:resource="#fk"/>
                                                 <swrl:propertyPredicate rdf:resource="#hasForeignKey"/>
                                                 <swrl:argument1 rdf:resource="#opmap"/>
-                                                <swrl:argument2 rdf:resource="#fk"/>
                                               </swrl:IndividualPropertyAtom>
                                             </rdf:first>
                                           </swrl:AtomList>
                                         </rdf:rest>
-                                        <rdf:first>
-                                          <swrl:DatavaluedPropertyAtom>
-                                            <swrl:argument1 rdf:resource="#skc"/>
-                                            <swrl:argument2 rdf:resource="#subjectKeyColumnName"/>
-                                            <swrl:propertyPredicate rdf:resource="#hasColumnName"/>
-                                          </swrl:DatavaluedPropertyAtom>
-                                        </rdf:first>
                                       </swrl:AtomList>
                                     </rdf:rest>
-                                    <rdf:first>
-                                      <swrl:IndividualPropertyAtom>
-                                        <swrl:propertyPredicate rdf:resource="#hasKeyColumns"/>
-                                        <swrl:argument2 rdf:resource="#skc"/>
-                                        <swrl:argument1 rdf:resource="#pk"/>
-                                      </swrl:IndividualPropertyAtom>
-                                    </rdf:first>
                                   </swrl:AtomList>
                                 </rdf:rest>
                                 <rdf:first>
                                   <swrl:DatavaluedPropertyAtom>
                                     <swrl:argument1 rdf:resource="#st"/>
-                                    <swrl:argument2 rdf:resource="#subjectSchemaName"/>
                                     <swrl:propertyPredicate rdf:resource="#hasSchemaName"/>
+                                    <swrl:argument2 rdf:resource="#subjectSchemaName"/>
                                   </swrl:DatavaluedPropertyAtom>
                                 </rdf:first>
                               </swrl:AtomList>
                             </rdf:rest>
+                            <rdf:first>
+                              <swrl:DatavaluedPropertyAtom>
+                                <swrl:propertyPredicate rdf:resource="#hasTableName"/>
+                                <swrl:argument1 rdf:resource="#st"/>
+                                <swrl:argument2 rdf:resource="#subjectTableName"/>
+                              </swrl:DatavaluedPropertyAtom>
+                            </rdf:first>
                           </swrl:AtomList>
                         </rdf:rest>
+                        <rdf:first>
+                          <swrl:IndividualPropertyAtom>
+                            <swrl:propertyPredicate rdf:resource="#hasBaseTable"/>
+                            <swrl:argument1 rdf:resource="#pk"/>
+                            <swrl:argument2 rdf:resource="#st"/>
+                          </swrl:IndividualPropertyAtom>
+                        </rdf:first>
                       </swrl:AtomList>
                     </rdf:rest>
                     <rdf:first>
                       <swrl:IndividualPropertyAtom>
-                        <swrl:argument2 rdf:resource="#pk"/>
-                        <swrl:argument1 rdf:resource="#opmap"/>
                         <swrl:propertyPredicate rdf:resource="#hasPrimaryKey"/>
+                        <swrl:argument1 rdf:resource="#opmap"/>
+                        <swrl:argument2 rdf:resource="#pk"/>
                       </swrl:IndividualPropertyAtom>
                     </rdf:first>
                   </swrl:AtomList>
@@ -935,22 +939,25 @@
             </rdf:rest>
           </swrl:AtomList>
         </rdf:rest>
+        <rdf:first>
+          <swrl:ClassAtom>
+            <swrl:argument1 rdf:resource="#opmap"/>
+            <swrl:classPredicate rdf:resource="#OWLObjectPropertyMap"/>
+          </swrl:ClassAtom>
+        </rdf:first>
       </swrl:AtomList>
     </swrl:body>
     <swrl:head>
       <swrl:AtomList>
-        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <rdf:first>
           <swrl:BuiltinAtom>
-            <swrl:builtin rdf:resource="http://sqwrl.stanford.edu/ontologies/built-ins/3.4/sqwrl.owl#select"/>
             <swrl:arguments>
               <rdf:List>
-                <rdf:first rdf:resource="#owlObjectProperty"/>
                 <rdf:rest>
                   <rdf:List>
+                    <rdf:first rdf:resource="#subjectSchemaName"/>
                     <rdf:rest>
                       <rdf:List>
-                        <rdf:first rdf:resource="#subjectTableName"/>
                         <rdf:rest>
                           <rdf:List>
                             <rdf:first rdf:resource="#subjectKeyColumnName"/>
@@ -961,9 +968,9 @@
                                   <rdf:List>
                                     <rdf:rest>
                                       <rdf:List>
-                                        <rdf:first rdf:resource="#objectKeyColumnName"/>
                                         <rdf:rest>
                                           <rdf:List>
+                                            <rdf:first rdf:resource="#jdbcDriverName"/>
                                             <rdf:rest>
                                               <rdf:List>
                                                 <rdf:first rdf:resource="#databaseName"/>
@@ -971,8 +978,8 @@
                                                   <rdf:List>
                                                     <rdf:rest>
                                                       <rdf:List>
-                                                        <rdf:first rdf:resource="#serverName"/>
                                                         <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                                                        <rdf:first rdf:resource="#serverName"/>
                                                       </rdf:List>
                                                     </rdf:rest>
                                                     <rdf:first rdf:resource="#portNumber"/>
@@ -980,9 +987,9 @@
                                                 </rdf:rest>
                                               </rdf:List>
                                             </rdf:rest>
-                                            <rdf:first rdf:resource="#jdbcDriverName"/>
                                           </rdf:List>
                                         </rdf:rest>
+                                        <rdf:first rdf:resource="#objectKeyColumnName"/>
                                       </rdf:List>
                                     </rdf:rest>
                                     <rdf:first rdf:resource="#objectTableName"/>
@@ -992,15 +999,18 @@
                             </rdf:rest>
                           </rdf:List>
                         </rdf:rest>
+                        <rdf:first rdf:resource="#subjectTableName"/>
                       </rdf:List>
                     </rdf:rest>
-                    <rdf:first rdf:resource="#subjectSchemaName"/>
                   </rdf:List>
                 </rdf:rest>
+                <rdf:first rdf:resource="#owlObjectProperty"/>
               </rdf:List>
             </swrl:arguments>
+            <swrl:builtin rdf:resource="http://sqwrl.stanford.edu/ontologies/built-ins/3.4/sqwrl.owl#select"/>
           </swrl:BuiltinAtom>
         </rdf:first>
+        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
       </swrl:AtomList>
     </swrl:head>
   </swrl:Imp>
