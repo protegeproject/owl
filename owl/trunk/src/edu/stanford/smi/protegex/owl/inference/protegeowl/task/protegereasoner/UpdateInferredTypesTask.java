@@ -119,12 +119,13 @@ public class UpdateInferredTypesTask extends AbstractReasonerTask {
         }
         catch (Exception e) {
         	kb.rollbackTransaction();
-        	Log.getLogger().warning("Exception in transaction. Rollback. Exception: " + e.getMessage());
+        	
         	RuntimeException re = new RuntimeException();
         	re.initCause(e);
         	throw re;
+		} finally{
+			kb.setGenerateEventsEnabled(eventsEnabled);
 		}
-        kb.setGenerateEventsEnabled(eventsEnabled);
 
         td.markEnd();
         postLogRecord(ReasonerLogRecordFactory.getInstance().createInformationMessageLogRecord("Time to update Protege-OWL = " + td, parentRecord));
