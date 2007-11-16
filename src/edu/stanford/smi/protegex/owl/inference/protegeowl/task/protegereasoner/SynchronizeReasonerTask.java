@@ -5,6 +5,7 @@ import edu.stanford.smi.protegex.owl.inference.protegeowl.log.ReasonerLogRecordF
 import edu.stanford.smi.protegex.owl.inference.reasoner.ProtegeReasoner;
 import edu.stanford.smi.protegex.owl.inference.reasoner.exception.ProtegeReasonerException;
 import edu.stanford.smi.protegex.owl.inference.util.TimeDifference;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
 
 public class SynchronizeReasonerTask extends AbstractReasonerTask {
 
@@ -37,13 +38,22 @@ public class SynchronizeReasonerTask extends AbstractReasonerTask {
         doAbortCheck();
         setMessage("Updating reasoner...");
 
-        // Clear the knowledgebase
-        clearKnowledgeBase(parentRecord);
-       // doAbortCheck();
+        OWLModel owlModel = protegeReasoner.getOWLModel();
+        boolean eventsEnabled = owlModel.setGenerateEventsEnabled(false);
         
-        // Transmit the kb to the reasoner
-        transmitToReasoner(parentRecord);
-        doAbortCheck();
+        try {
+            // Clear the knowledgebase
+            clearKnowledgeBase(parentRecord);
+            doAbortCheck();
+            
+            // Transmit the kb to the reasoner
+            transmitToReasoner(parentRecord);
+            doAbortCheck();			
+		} catch (Exception e) {
+			postLogRecord(ReasonerLogRecordFactory.getInstance().createErrorMessageLogRecord("Errors at synchronization: " + e.getMessage(), null));
+		} finally {
+			owlModel.setGenerateEventsEnabled(eventsEnabled);
+		}
 
         setProgressIndeterminate(false);
         td.markEnd();
