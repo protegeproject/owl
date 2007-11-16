@@ -23,7 +23,7 @@ import edu.stanford.smi.protegex.owl.model.OWLModel;
  * Medical Informatics Group<br>
  * Date: Jun 22, 2004<br><br>
  * 
- * @author Matthwe Horridge <matthew.horridge@cs.man.ac.uk> 
+ * @author Matthew Horridge <matthew.horridge@cs.man.ac.uk> 
  * @author Tania Tudorache <tudorache@stanford.edu>
  */
 public class ReasonerManager implements Disposable {
