@@ -26,7 +26,7 @@ public class SPARQLOWLModelAction extends AbstractOWLModelAction {
 
 
     public String getName() {
-        return "Open SPARQL Query panel...";
+        return "Open SPARQL Query panel";
     }
 
 
