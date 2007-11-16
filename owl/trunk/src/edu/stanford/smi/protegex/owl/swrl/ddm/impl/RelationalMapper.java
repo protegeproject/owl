@@ -178,8 +178,7 @@ public class RelationalMapper implements Mapper, MapperGenerator
     throw new MapperException("not implemented");
   } // mapOWLbjectProperty
 
-  public Set<OWLDatatypePropertyAssertionAxiom> mapOWLDatatypeProperty(OWLProperty owlProperty,
-                                                                       OWLIndividual subjectOWLIndividual,
+  public Set<OWLDatatypePropertyAssertionAxiom> mapOWLDatatypeProperty(OWLProperty owlProperty, OWLIndividual subjectOWLIndividual,
                                                                        OWLDatatypeValue objectOWLDatatypeValue) 
     throws MapperException
   {
@@ -205,13 +204,11 @@ public class RelationalMapper implements Mapper, MapperGenerator
       if (hasSubject) query +=  subjectPrimaryKeyColumnName + " = " + subjectOWLIndividual.getIndividualName();
       if (hasObject) {
         if (hasSubject) query += " AND ";
-        query += valueColumnName + " > ";
+        query += valueColumnName + " = ";
         if (objectOWLDatatypeValue.isString()) query += "\"" + objectOWLDatatypeValue.toString() + "\"";
         else query += objectOWLDatatypeValue.toString();
       } // if
     } // if
-
-    System.err.println("query: " + query);
 
     try {
       rs = databaseConnection.executeQuery(query);
@@ -222,6 +219,7 @@ public class RelationalMapper implements Mapper, MapperGenerator
         OWLDatatypePropertyAssertionAxiom axiom = OWLFactory.createOWLDatatypePropertyAssertionAxiom(subject, owlProperty, value);
         result.add(axiom);
       } // while
+      rs.close();
     } catch (JDBCException e) {
       throw new MapperException("JDBC error mapping datatype property '" + propertyName + "': " + e.getMessage());
     } catch (SQLException e) {
@@ -286,7 +284,7 @@ public class RelationalMapper implements Mapper, MapperGenerator
     } catch (SQLException e) {
       throw new MapperException("SQL error reading mapping information: " + e.getMessage());
     } catch (InvalidQueryNameException e) {
-      // We have not imported http://swrl.stanford.edu/ontologies/built-ins/3.4/swrlor.owl so there is nothing to map
+      // We have not imported http://swrl.stanford.edu/ontologies/built-ins/3.4/ddm.owl so there is nothing to map
     } catch (SQWRLException e) {
       throw new MapperException("SQWRL error reading mapping information: " + e.getMessage());
     } // try
@@ -312,18 +310,18 @@ public class RelationalMapper implements Mapper, MapperGenerator
     OWLDatatypePropertyMap datatypePropertyMap;
     OWLDatatypeProperty owlDatatypeProperty;
 
-    SQWRLResult result = queryEngine.getSQWRLResult("swrlor:OWLDatatypePropertyMap-Query");
+    SQWRLResult result = queryEngine.getSQWRLResult("ddm:OWLDatatypePropertyMap-Query");
     if (result != null) {
       while (result.hasNext()) {
-        String propertyName = result.getPropertyValue("?swrlor:owlDatatypeProperty").getPropertyName();
-        String schemaName  = result.getDatatypeValue("?swrlor:schemaName").getString();
-        String tableName  = result.getDatatypeValue("?swrlor:tableName").getString();
-        String keyColumnName  = result.getDatatypeValue("?swrlor:keyColumnName").getString();
-        String valueColumnName  = result.getDatatypeValue("?swrlor:valueColumnName").getString();
-        String jdbcDriverName  = result.getDatatypeValue("?swrlor:jdbcDriverName").getString();
-        String databaseName  = result.getDatatypeValue("?swrlor:databaseName").getString();
-        String serverName  = result.getDatatypeValue("?swrlor:serverName").getString();
-        int portNumber  = result.getDatatypeValue("?swrlor:portNumber").getInt();
+        String propertyName = result.getPropertyValue("?ddm:owlDatatypeProperty").getPropertyName();
+        String schemaName  = result.getDatatypeValue("?ddm:schemaName").getString();
+        String tableName  = result.getDatatypeValue("?ddm:tableName").getString();
+        String keyColumnName  = result.getDatatypeValue("?ddm:keyColumnName").getString();
+        String valueColumnName  = result.getDatatypeValue("?ddm:valueColumnName").getString();
+        String jdbcDriverName  = result.getDatatypeValue("?ddm:jdbcDriverName").getString();
+        String databaseName  = result.getDatatypeValue("?ddm:databaseName").getString();
+        String serverName  = result.getDatatypeValue("?ddm:serverName").getString();
+        int portNumber  = result.getDatatypeValue("?ddm:portNumber").getInt();
 
         owlDatatypeProperty = OWLFactory.getOWLDatatypeProperty(propertyName);
 
@@ -358,7 +356,7 @@ public class RelationalMapper implements Mapper, MapperGenerator
     DatabaseConnection connection = null;
 
     try {
-      connection = new DatabaseConnectionImpl(database, "", "");
+      connection = new DatabaseConnectionImpl(database, "root", "w0rches");
     } catch (SQLException e) {
       throw new MapperException("error creating connection to database '" + database + "': " + e.getMessage());
     } // try
