@@ -45,9 +45,11 @@ public abstract class MessageLogRecord extends ReasonerLogRecord {
 
 
     public String getHTMLMessage() {
-        String htmlMessage;
+        String htmlMessage = "";
 
-        htmlMessage = message.replaceAll("[\n]", "<br>");
+        if (message != null) {
+        	htmlMessage = message.replaceAll("[\n]", "<br>");
+        }
 
         return htmlMessage;
     }

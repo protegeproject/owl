@@ -30,9 +30,9 @@ public class ReasonerErrorExceptionLogRecord extends ReasonerLogRecord {
 
         label.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
 
-        String htmlMessage;
-
-        htmlMessage = "Reasoner Error: " + ex.getMessage().replaceAll("[\n]", "<br>");
+        String htmlMessage =  "Reasoner Error: ";
+        
+        htmlMessage = htmlMessage + ((ex.getMessage() == null) ? "" : ex.getMessage().replaceAll("[\n]", "<br>"));
 
         label.setText("<html><body color=\"ff0000\">" +
                 htmlMessage + "</body></html>");
