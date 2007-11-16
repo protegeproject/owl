@@ -102,18 +102,20 @@ public class SWRLFactory
       cls = new DefaultOWLNamedClass(owlModel, FrameID.createSystem(frameID));
       cls.setName(className);
       cls.setProtegeType(owlModel.getOWLNamedClassClass());
+      if (superclass != null) {
+        cls.addSuperclass(superclass);
+        cls.removeSuperclass(owlModel.getOWLThingClass());
+      } else cls.addSuperclass(owlModel.getOWLThingClass());   
     } else if (!(resource instanceof OWLNamedClass)) {
       resource.setProtegeType(owlModel.getOWLNamedClassClass());
+      cls = owlModel.getOWLNamedClass(className);
+      if (superclass != null) {
+        cls.addSuperclass(superclass);
+        cls.removeSuperclass(owlModel.getOWLThingClass());
+      } else cls.addSuperclass(owlModel.getOWLThingClass());   
     } // if
-    
-    cls = owlModel.getOWLNamedClass(className);
 
-    if (superclass != null) {
-      cls.addSuperclass(superclass);
-      cls.removeSuperclass(owlModel.getOWLThingClass());
-    } else cls.addSuperclass(owlModel.getOWLThingClass());
-
-    return cls;
+    return owlModel.getOWLNamedClass(className);
   } // getOrCreateOWLNamedClass
   
   private OWLObjectProperty getOrCreateOWLObjectProperty(String propertyName, int frameID) 

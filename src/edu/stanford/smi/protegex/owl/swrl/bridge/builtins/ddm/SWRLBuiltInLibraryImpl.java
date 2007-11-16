@@ -163,7 +163,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
       mapper = getInvokingBridge().getMapper();
       
       if (!mapper.isMapped(owlProperty)) return false;
-      
+
       if (!hasSubject && !hasValue) axioms = mapper.mapOWLDatatypeProperty(owlProperty);
       else if (hasSubject && !hasValue) axioms = mapper.mapOWLDatatypeProperty(owlProperty, subjectOWLIndividual);
       else if (!hasSubject && hasValue) axioms = mapper.mapOWLDatatypeProperty(owlProperty, value);

@@ -65,11 +65,14 @@ public abstract class AbstractSWRLRuleEngineBridge implements SWRLRuleEngineBrid
   // Mapper
   private Mapper mapper = null;
 
+  private SWRLFactory factory;
+
   protected AbstractSWRLRuleEngineBridge(OWLModel owlModel) throws SWRLRuleEngineBridgeException
   {
     this.owlModel = owlModel;
     initialize();
     BuiltInLibraryManager.invokeAllBuiltInLibrariesResetMethod(this);
+    factory = new SWRLFactory(owlModel);
   } // AbstractSWRLRuleEngineBridge
 
   /**
@@ -418,7 +421,6 @@ public abstract class AbstractSWRLRuleEngineBridge implements SWRLRuleEngineBrid
 
   private void importSWRLRules(Set<String> ruleGroupNames) throws SWRLRuleEngineBridgeException
   {
-    SWRLFactory factory = new SWRLFactory(owlModel);;
     Collection rules = factory.getEnabledImps(ruleGroupNames);
 
     if (rules == null) return;
@@ -795,7 +797,7 @@ public abstract class AbstractSWRLRuleEngineBridge implements SWRLRuleEngineBrid
             argument2 = convertAtomArgument2BuiltInArgument(datavaluedPropertyAtom.getArgument2());
             arguments.add(owlDatatypeProperty);
             arguments.add(argument2); arguments.add(argument1); //HACK
-            builtInAtom = OWLFactory.createBuiltInAtom("swrlor:mapOWLDatatypeProperty", arguments);
+            builtInAtom = OWLFactory.createBuiltInAtom("ddm:mapOWLDatatypeProperty", arguments);
             mappingBuiltInAtoms.add(builtInAtom);
           } // if
         } else if (atom instanceof IndividualPropertyAtom) {

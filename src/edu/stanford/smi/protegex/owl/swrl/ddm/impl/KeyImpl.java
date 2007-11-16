@@ -9,7 +9,7 @@ public abstract class KeyImpl implements Key
 {
   private Table baseTable;
 
-  public KeyImpl(Table table)
+  public KeyImpl(Table baseTable)
   {
     this.baseTable = baseTable;
   } // KeyImpl
