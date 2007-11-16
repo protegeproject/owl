@@ -9,8 +9,7 @@ public interface OWLModelActionConstants {
 	/*
 	 * OWL Menu
 	 */
-
-	public final static String QUERY_GROUP = "3_Query";
+	
 	
 	public final static String REPOSITORY_GROUP = "4_Repository";
 	
@@ -29,6 +28,7 @@ public interface OWLModelActionConstants {
 	
 	public final static String DIRECT_INFERENCE_GROUP = "2_Direct_Inference";
 
+	public final static String QUERY_GROUP = "3_Query";
 	
 	/*
 	 * Code Menu
