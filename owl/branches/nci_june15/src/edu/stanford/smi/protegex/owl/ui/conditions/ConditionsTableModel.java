@@ -29,8 +29,10 @@ import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.model.OWLAllValuesFrom;
 import edu.stanford.smi.protegex.owl.model.OWLAnonymousClass;
 import edu.stanford.smi.protegex.owl.model.OWLCardinalityBase;
+import edu.stanford.smi.protegex.owl.model.OWLComplementClass;
 import edu.stanford.smi.protegex.owl.model.OWLHasValue;
 import edu.stanford.smi.protegex.owl.model.OWLIntersectionClass;
+import edu.stanford.smi.protegex.owl.model.OWLLogicalClass;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
 import edu.stanford.smi.protegex.owl.model.OWLNames;
@@ -204,77 +206,105 @@ public class ConditionsTableModel extends AbstractTableModel
      * @param originCls the class where aClassass has been defined
      */
     private void addItemUnlessOverloaded(RDFSClass aClass, OWLNamedClass originCls) {
-        if (aClass instanceof OWLRestriction) {
-            RDFSClass directType = aClass.getProtegeType();
-            RDFProperty property = ((OWLRestriction) aClass).getOnProperty();
-            if (aClass instanceof OWLHasValue) {
-                String browserText = aClass.getBrowserText();
-                for (Iterator it = items.iterator(); it.hasNext();) {
-                    ConditionsTableItem existing = (ConditionsTableItem) it.next();
-                    if (!existing.isSeparator() && browserText.equals(existing.aClass.getBrowserText())) {
-                        return;  // Don't add if entry with same browser text exists
-                    }
-                }
-            }
-            else if (aClass instanceof OWLSomeValuesFrom) {
-                final OWLSomeValuesFrom someRestriction = ((OWLSomeValuesFrom) aClass);
-                if (someRestriction.getFiller() instanceof RDFSClass) {
-                    RDFSClass someClass = (RDFSClass) someRestriction.getFiller();
-                    String browserText = aClass.getBrowserText();
-                    for (Iterator it = items.iterator(); it.hasNext();) {
-                        ConditionsTableItem existing = (ConditionsTableItem) it.next();
-                        if (!existing.isSeparator() && existing.aClass instanceof OWLSomeValuesFrom) {
-                            if (browserText.equals(existing.aClass.getBrowserText())) {
-                                return;  // Don't add if entry with same browser text exists
-                            }
-                            OWLSomeValuesFrom other = (OWLSomeValuesFrom) existing.aClass;
-                            if (other.getOnProperty().equals(property)) {
-                                if (other.getFiller() instanceof RDFSClass) {
-                                    RDFSClass otherSomeClass = (RDFSClass) other.getFiller();
-                                    if (otherSomeClass.isSubclassOf(someClass)) {
-                                        return;  // Don't add if OWLSomeValuesFrom with a subclass exists
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            else if (aClass instanceof OWLAllValuesFrom && ((OWLAllValuesFrom) aClass).getFiller() instanceof RDFSClass) {
-                OWLAllValuesFrom newRestriction = (OWLAllValuesFrom) aClass;
-                OWLNamedClass newSourceClass = newRestriction.getOwner();
-                for (Iterator it = items.iterator(); it.hasNext();) {
-                    ConditionsTableItem existing = (ConditionsTableItem) it.next();
-                    if (!existing.isSeparator() && directType.equals(existing.aClass.getProtegeType()) &&
-                            property.equals(((OWLRestriction) existing.aClass).getOnProperty())) {
-                        OWLAllValuesFrom existingRestriction = (OWLAllValuesFrom) existing.aClass;
-                        OWLNamedClass existingSourceCls = existingRestriction.getOwner();
-                        if (((RDFSClass) existingRestriction.getFiller()).isSubclassOf((RDFSClass) newRestriction.getFiller()) &&
-                                !existingSourceCls.equals(newSourceClass)) {
-                            return;
-                        }
-                    }
-                }
-            }
-            else {
-                boolean qcr = false;
-                if (aClass instanceof OWLCardinalityBase) {
-                    OWLCardinalityBase base = (OWLCardinalityBase) aClass;
-                    qcr = base.isQualified();
-                }
-                if (!qcr) {
-                    for (Iterator it = items.iterator(); it.hasNext();) {
-                        ConditionsTableItem existing = (ConditionsTableItem) it.next();
-                        if (!existing.isSeparator() && directType.equals(existing.aClass.getProtegeType()) &&
-                                property.equals(((OWLRestriction) existing.aClass).getOnProperty())) {
-                            return;  // Don't add if entry with same type exists
-                        }
-                    }
-                }
-            }
-        }
-        addInheritedSeparator();
-        items.add(ConditionsTableItem.createInherited(aClass, originCls));
+    	if (aClass instanceof OWLLogicalClass) {
+			String browserText = aClass.getBrowserText();
+			for (Iterator it = items.iterator(); it.hasNext();) {
+				ConditionsTableItem existing = (ConditionsTableItem) it.next();
+				if (!existing.isSeparator() && browserText.equals(existing.aClass.getBrowserText())) {
+					return;  // Don't add if entry with same browser text exists
+				}
+			}    		
+    	} else if (aClass instanceof OWLRestriction) {
+    		RDFSClass directType = aClass.getProtegeType();
+    		RDFProperty property = ((OWLRestriction) aClass).getOnProperty();
+    	    		
+    		if (aClass instanceof OWLHasValue) {
+    			String browserText = aClass.getBrowserText();
+    			for (Iterator it = items.iterator(); it.hasNext();) {
+    				ConditionsTableItem existing = (ConditionsTableItem) it.next();
+    				if (!existing.isSeparator() && browserText.equals(existing.aClass.getBrowserText())) {
+    					return;  // Don't add if entry with same browser text exists
+    				}
+    			}
+    		} else if (aClass instanceof OWLSomeValuesFrom) {
+    			final OWLSomeValuesFrom someRestriction = ((OWLSomeValuesFrom) aClass);
+    			if (someRestriction.getFiller() instanceof RDFSClass) {
+    				RDFSClass someClass = (RDFSClass) someRestriction.getFiller();
+    				String browserText = aClass.getBrowserText();
+    				for (Iterator it = items.iterator(); it.hasNext();) {
+    					ConditionsTableItem existing = (ConditionsTableItem) it.next();
+    					if (!existing.isSeparator() && existing.aClass instanceof OWLSomeValuesFrom) {
+    						if (browserText.equals(existing.aClass.getBrowserText())) {
+    							return;  // Don't add if entry with same browser text exists
+    						}
+    						OWLSomeValuesFrom other = (OWLSomeValuesFrom) existing.aClass;
+    						if (other.getOnProperty().equals(property)) {
+    							if (other.getFiller() instanceof RDFSClass) {
+    								RDFSClass otherSomeClass = (RDFSClass) other.getFiller();
+    								if (otherSomeClass.equals(someClass) || 
+    										otherSomeClass.isSubclassOf(someClass)) {
+    									return;  // Don't add if OWLSomeValuesFrom with a subclass exists
+    								}
+    							}
+    						}
+    					}
+    				}
+    			}
+    		}
+    		else if (aClass instanceof OWLAllValuesFrom) {
+
+    			RDFResource filler = ((OWLAllValuesFrom) aClass).getFiller();
+
+    			if (filler instanceof RDFSClass) {
+    				OWLAllValuesFrom newRestriction = (OWLAllValuesFrom) aClass;
+    				OWLNamedClass newSourceClass = newRestriction.getOwner();
+    				for (Iterator it = items.iterator(); it.hasNext();) {
+    					ConditionsTableItem existing = (ConditionsTableItem) it.next();
+    					if (!existing.isSeparator() && directType.equals(existing.aClass.getProtegeType()) &&
+    							property.equals(((OWLRestriction) existing.aClass).getOnProperty())) {
+    						OWLAllValuesFrom existingRestriction = (OWLAllValuesFrom) existing.aClass;
+    						OWLNamedClass existingSourceCls = existingRestriction.getOwner();
+
+    						RDFSClass existingFiller = (RDFSClass) existingRestriction.getFiller();
+    						RDFSClass newRestrictionFiller = (RDFSClass) newRestriction.getFiller();
+
+    						if (   (( (existingFiller.equals(newRestrictionFiller) ||
+    								(existingFiller).isSubclassOf(newRestrictionFiller)) ) &&
+    								!existingSourceCls.equals(newSourceClass)) ||
+    								(existingFiller.getBrowserText().equals(newRestrictionFiller.getBrowserText())) ) {
+    							return;
+    						}
+    					}
+    				}
+    			} else 	{ //filler is not an RDFSClass
+    				String browserText = aClass.getBrowserText();
+        			for (Iterator it = items.iterator(); it.hasNext();) {
+        				ConditionsTableItem existing = (ConditionsTableItem) it.next();
+        				if (!existing.isSeparator() && browserText.equals(existing.aClass.getBrowserText())) {
+        					return;  // Don't add if entry with same browser text exists
+        				}
+        			}
+    			}
+    		}
+    		else {
+    			boolean qcr = false;
+    			if (aClass instanceof OWLCardinalityBase) {
+    				OWLCardinalityBase base = (OWLCardinalityBase) aClass;
+    				qcr = base.isQualified();
+    			}
+    			if (!qcr) {
+    				for (Iterator it = items.iterator(); it.hasNext();) {
+    					ConditionsTableItem existing = (ConditionsTableItem) it.next();
+    					if (!existing.isSeparator() && directType.equals(existing.aClass.getProtegeType()) &&
+    							property.equals(((OWLRestriction) existing.aClass).getOnProperty())) {
+    						return;  // Don't add if entry with same type exists
+    					}
+    				}
+    			}
+    		}
+    	}
+    	addInheritedSeparator();
+    	items.add(ConditionsTableItem.createInherited(aClass, originCls));
     }
 
 
@@ -624,10 +654,7 @@ public class ConditionsTableModel extends AbstractTableModel
                     for (Iterator oit = operands.iterator(); oit.hasNext();) {
                         RDFSClass operand = (RDFSClass) oit.next();
                         if (operand instanceof OWLAnonymousClass) {
-                  		/* TT:
-						 * The following line should be commented out if the performance is bad
-    	              	 * The following line adds the inherited conditons to the table
-						 */
+                        
                         if (showInheritedRestrictions) {
                         	addItemUnlessOverloaded(operand, originCls);
                         } else {
@@ -638,17 +665,11 @@ public class ConditionsTableModel extends AbstractTableModel
                     }
                 }
                 else if (!coveredClses.contains(ss)) {
-                  	/* TT:
-					 * The following line should be commented out if the performance is bad
-                  	 * The following line adds the inherited conditons to the table
-					 */
                     if (showInheritedRestrictions) {
                     	addItemUnlessOverloaded((OWLAnonymousClass) ss, originCls);
                     } else {
                     	items.add(ConditionsTableItem.createInherited((OWLAnonymousClass)ss, originCls));
-                    }
-                    //addItemUnlessOverloaded((OWLAnonymousClass) ss, originCls);
-                   // items.add(ConditionsTableItem.createInherited((OWLAnonymousClass)ss, originCls));
+                    }                   
                 }
             }
         }
