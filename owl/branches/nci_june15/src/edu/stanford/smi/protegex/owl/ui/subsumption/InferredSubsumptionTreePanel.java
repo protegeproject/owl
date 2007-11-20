@@ -12,7 +12,6 @@ import java.util.logging.Level;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JFileChooser;
-import javax.swing.JTree;
 import javax.swing.tree.TreePath;
 
 import com.hp.hpl.jena.ontology.OntModel;
@@ -22,6 +21,7 @@ import com.hp.hpl.jena.vocabulary.OWL;
 
 import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.Slot;
+import edu.stanford.smi.protege.util.ComponentFactory;
 import edu.stanford.smi.protege.util.LazyTreeRoot;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.jena.Jena;
@@ -38,6 +38,7 @@ import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
 import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
 import edu.stanford.smi.protegex.owl.ui.ResourceRenderer;
 import edu.stanford.smi.protegex.owl.ui.cls.ClassTree;
+import edu.stanford.smi.protegex.owl.ui.cls.ExtractOntologyAction;
 import edu.stanford.smi.protegex.owl.ui.cls.Hierarchy;
 import edu.stanford.smi.protegex.owl.ui.cls.OWLClassesTab;
 import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
@@ -143,13 +144,13 @@ public class InferredSubsumptionTreePanel extends SubsumptionTreePanel {
 
 
     private void saveInferred() {
-        JFileChooser fileChooser = new JFileChooser(".");
+        JFileChooser fileChooser = ComponentFactory.createFileChooser("Select OWL export file", "owl");
         if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
             File file = fileChooser.getSelectedFile();
             OWLModel owlModel = getOWLModel();
             Collection clses = new ArrayList();
             for (Iterator it = owlModel.getUserDefinedOWLNamedClasses().iterator(); it.hasNext();) {
-                OWLNamedClass cls = (OWLNamedClass) it.next();
+                OWLNamedClass cls = (OWLNamedClass) it.next();                
                 if (!cls.isProbeClass()) {
                     clses.add(cls);
                 }
@@ -158,7 +159,9 @@ public class InferredSubsumptionTreePanel extends SubsumptionTreePanel {
             if (baseURI.endsWith("#")) {
                 baseURI = baseURI.substring(0, baseURI.length() - 1);
             }
-            /*ExtractorEngine engine = new ExtractorEngine(owlModel);
+            /*
+            ExtractOntologyAction
+            ExtractorEngine engine = new ExtractorEngine(owlModel);
             int all = ExtractorEngine.CLASSES | ExtractorEngine.PROPERTIES | ExtractorEngine.INDIVIDUALS;
             engine.setExtractTypes(all);
             engine.setExtractLogic(ExtractorEngine.CLASSES | ExtractorEngine.PROPERTIES);
@@ -167,7 +170,7 @@ public class InferredSubsumptionTreePanel extends SubsumptionTreePanel {
             engine.setBaseURI(baseURI);
             engine.setUseInferredRelationships(true);
             engine.setOutputFile(file);*/
-            OntModel ontModel = new JenaCreator(owlModel, false, true, clses,
+            OntModel ontModel = new JenaCreator(owlModel, false, true, true, clses,
                                                 new ModalProgressBarManager("Preparing File")).createOntModel();
             try {
                 //engine.run();
