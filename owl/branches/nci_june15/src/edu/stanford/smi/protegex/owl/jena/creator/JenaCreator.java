@@ -47,6 +47,9 @@ public class JenaCreator {
 
     private ProgressDisplay progressDisplay;
 
+    //TT -this is just for NCI
+    private boolean exportInheritedAsAsserted = false;
+    
     private Set systemOwnSlots = new HashSet();
 
     /**
@@ -77,16 +80,27 @@ public class JenaCreator {
         this(owlModel, forReasoning, false, targetClses, progressDisplay);
     }
 
+    
+    public JenaCreator(OWLModel owlModel,
+            boolean forReasoning,
+            boolean inferred,
+            Collection targetClses,
+            ProgressDisplay progressDisplay) {
+    	this(owlModel, forReasoning, inferred, false, targetClses, progressDisplay);
+    }
+    
 
     public JenaCreator(OWLModel owlModel,
                        boolean forReasoning,
                        boolean inferred,
+                       boolean exportInheritedAsAsserted,
                        Collection targetClses,
                        ProgressDisplay progressDisplay) {
         this.targetClses = targetClses;
         this.inferred = inferred;
         this.owlModel = owlModel;
         this.forReasoning = forReasoning;
+        this.exportInheritedAsAsserted = exportInheritedAsAsserted;
         this.progressDisplay = progressDisplay;
 
         systemOwnSlots.add(owlModel.getRDFProperty(OWLNames.Slot.CARDINALITY));
@@ -124,9 +138,12 @@ public class JenaCreator {
 
 
     private void addEquivalentClasses(OWLNamedClass namedCls, OntClass ontClass) {
-        Collection clses = inferred ?
-                namedCls.getInferredEquivalentClasses() :
-                namedCls.getEquivalentClasses();
+    	Collection clses = new HashSet(namedCls.getEquivalentClasses());
+    	
+    	if (inferred) {
+    		clses.addAll(namedCls.getInferredEquivalentClasses());
+    	}
+    	
         for (Iterator it = clses.iterator(); it.hasNext();) {
             RDFSClass superClass = (RDFSClass) it.next();
             OntClass superOntClass = getOntClass(superClass);
@@ -215,18 +232,22 @@ public class JenaCreator {
 
 
     private void addSuperclasses(RDFSNamedClass rdfsClass, OntClass ontClass) {
-        Collection superClasses = rdfsClass.getPureSuperclasses();
-        if (inferred && (rdfsClass instanceof OWLNamedClass)) {
-            OWLNamedClass namedCls = (OWLNamedClass) rdfsClass;
-            for (Iterator it = superClasses.iterator(); it.hasNext();) {
-                Cls superCls = (Cls) it.next();
-                if (superCls instanceof RDFSNamedClass) {
-                    it.remove();
-                }
-            }
-            superClasses.addAll(namedCls.getInferredSuperclasses());
-            superClasses.removeAll(namedCls.getInferredEquivalentClasses());
-        }
+    	Collection superClasses = rdfsClass.getPureSuperclasses();
+    	if (inferred && (rdfsClass instanceof OWLNamedClass)) {
+    		OWLNamedClass namedCls = (OWLNamedClass) rdfsClass;
+    		for (Iterator it = superClasses.iterator(); it.hasNext();) {
+    			Cls superCls = (Cls) it.next();
+    			if (superCls instanceof RDFSNamedClass) {
+    				it.remove();
+    			}
+    		}           
+    		superClasses.addAll(namedCls.getInferredSuperclasses());
+    		superClasses.removeAll(namedCls.getInferredEquivalentClasses());
+
+    		if (exportInheritedAsAsserted == true) {
+    			addInferredInheritedAnonymousSuperclasses(namedCls);
+    		}
+    	}
         if (superClasses.size() > 0 &&
             (superClasses.size() > 1 || !superClasses.iterator().next().equals(owlModel.getOWLThingClass()))) {
             for (Iterator it = superClasses.iterator(); it.hasNext();) {
@@ -260,7 +281,14 @@ public class JenaCreator {
 
     private void createAdditionalAnonymousSuperclassesOfIncludedClass(OWLNamedClass namedCls) {
         OntClass ontClass = ontModel.getOntClass(namedCls.getURI());
-        for (Iterator it = namedCls.getSuperclasses(false).iterator(); it.hasNext();) {
+        
+        Collection superclasses = namedCls.getSuperclasses(false);
+        
+        if (exportInheritedAsAsserted == true) {
+        	superclasses = namedCls.getSuperclasses(true);
+        }
+        
+        for (Iterator it = superclasses.iterator(); it.hasNext();) {
             Cls superCls = (Cls) it.next();
             if (superCls instanceof OWLAnonymousClass && !superCls.isIncluded()) {
                 OntClass superClass = getOntClass((OWLAnonymousClass) superCls);
@@ -269,12 +297,78 @@ public class JenaCreator {
                 }
                 else {
                     ontClass.addSuperClass(superClass);
+                    if (exportInheritedAsAsserted == true) {
+                    	addInferredInheritedAnonymousSuperclasses(namedCls);
+                    }
                 }
             }
         }
     }
 
 
+	//TT - this should not be committed to the head. It is a NCI specific extension.
+    private void addInferredInheritedAnonymousSuperclasses(OWLNamedClass namedCls) {
+
+    	Set<RDFSClass> inheritedInferredRestrictions = new HashSet<RDFSClass>();
+
+    	ArrayList<RDFSClass> inferredSuperclasses = new ArrayList<RDFSClass>();
+    	getInferredSuperclasses(namedCls, inferredSuperclasses);
+    	
+    	Collection<RDFSClass> allSuperclasses = new HashSet<RDFSClass>(namedCls.getSuperclasses(true));    	
+    	allSuperclasses.addAll(inferredSuperclasses);
+    	allSuperclasses.addAll(namedCls.getInferredEquivalentClasses());
+
+    	for (RDFSClass superClass : allSuperclasses) {
+    		Collection<RDFSClass> superclassesOfInfSuperclass = superClass.getSuperclasses(true);
+    		
+    		if (superClass instanceof OWLNamedClass) {
+    			superclassesOfInfSuperclass.addAll(((OWLNamedClass)superClass).getInferredSuperclasses());
+    			superclassesOfInfSuperclass.addAll(((OWLNamedClass)superClass).getInferredEquivalentClasses());
+    		}
+
+    		for (RDFSClass superOfInfSuperCls : superclassesOfInfSuperclass) {
+    			if (superOfInfSuperCls instanceof OWLAnonymousClass) {
+    				inheritedInferredRestrictions.add(superOfInfSuperCls);
+    				
+    				//if intersection add also the operands ...    				
+    				if (superOfInfSuperCls instanceof OWLIntersectionClass) {
+    					Collection operands = ((OWLIntersectionClass)superOfInfSuperCls).getOperands();
+    					for (Iterator iterator = operands.iterator(); iterator.hasNext();) {
+							RDFSClass operand = (RDFSClass) iterator.next();
+							if (operand instanceof OWLAnonymousClass) {
+								inheritedInferredRestrictions.add(operand);
+							}
+						}
+    				}
+    				
+    			}
+    		}
+    	}     	
+
+    	OntClass ontClass = ontModel.getOntClass(namedCls.getURI());
+    	
+    	for (RDFSClass superCls : inheritedInferredRestrictions) {
+    		OntClass ontSuperClass = getOntClass((OWLAnonymousClass) superCls);
+			ontClass.addSuperClass(ontSuperClass);
+		}
+    	
+   }
+
+    
+    private void getInferredSuperclasses(OWLNamedClass aClass, List<RDFSClass> infSuperclasses) {
+    	Collection infDirectSuperclasses = aClass.getInferredSuperclasses();
+    	
+    	for (Iterator iterator = infDirectSuperclasses.iterator(); iterator.hasNext();) {
+			RDFSClass infDirectSuperclass = (RDFSClass) iterator.next();
+			
+			if (!infSuperclasses.contains(infDirectSuperclass) && infDirectSuperclass instanceof OWLNamedClass) {
+				infSuperclasses.add(infDirectSuperclass);
+				getInferredSuperclasses((OWLNamedClass)infDirectSuperclass, infSuperclasses);
+			}
+		}
+    }
+    
+    
     private OntClass createAnonymousClass(OWLAnonymousClass anonymousCls) {
         if (anonymousCls instanceof OWLLogicalClass) {
             return createLogicalClass((OWLLogicalClass) anonymousCls);
