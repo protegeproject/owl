@@ -8,6 +8,7 @@ import edu.stanford.smi.protege.server.metaproject.impl.OperationImpl;
 import edu.stanford.smi.protege.ui.FrameComparator;
 import edu.stanford.smi.protege.ui.FrameRenderer;
 import edu.stanford.smi.protege.util.LabeledComponent;
+import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.model.*;
 import edu.stanford.smi.protegex.owl.model.impl.OWLUtil;
 import edu.stanford.smi.protegex.owl.ui.menu.preferences.ProtegeSettingsPanel;
@@ -223,7 +224,7 @@ public class OWLRangeWidget extends AbstractPropertyWidget {
 
     public void setEditable(boolean b) {
         dataRangeComponent.setEditable(b);
-        classesComponent.setEditable(b);
+        //classesComponent.setEditable(b);
         comboBox.setEnabled(b);
         if (facetsPanel != null) {
             facetsPanel.setEditable(b);
@@ -250,7 +251,7 @@ public class OWLRangeWidget extends AbstractPropertyWidget {
     }
 
 
-    public void setValues(Collection collection) {
+    public void setValues(Collection collection) {    	
         refillAll();
     }
 
