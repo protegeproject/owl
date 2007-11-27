@@ -17,7 +17,6 @@ public class CreateOWLLogicalClassesTestCase extends AbstractTripleStoreTestCase
 
     public void testCreateComplementClass1() {
         RDFResource c = new DefaultRDFProperty(owlModel, createFrameID());
-        c.setName("test");
         ts.add(c, owlModel.getRDFTypeProperty(), owlModel.getOWLNamedClassClass());
         ts.add(c, owlModel.getRDFProperty(OWLNames.Slot.COMPLEMENT_OF), owlModel.getOWLThingClass());
         owlModel.getTripleStoreModel().endTripleStoreChanges();
@@ -30,8 +29,6 @@ public class CreateOWLLogicalClassesTestCase extends AbstractTripleStoreTestCase
 
     public void testCreateComplementClass2() {
         RDFResource c = new DefaultRDFProperty(owlModel, createFrameID());
-        String name = "test";
-        c.setName(name);
         ts.add(c, owlModel.getRDFProperty(OWLNames.Slot.COMPLEMENT_OF), owlModel.getOWLThingClass());
         ts.add(c, owlModel.getRDFTypeProperty(), owlModel.getOWLNamedClassClass());
         owlModel.getTripleStoreModel().endTripleStoreChanges();
@@ -47,7 +44,6 @@ public class CreateOWLLogicalClassesTestCase extends AbstractTripleStoreTestCase
         OWLNamedClass classB = owlModel.createOWLNamedClass("B");
 
         RDFResource c = new DefaultRDFProperty(owlModel, createFrameID());
-        c.setName("test");
         ts.add(c, owlModel.getRDFTypeProperty(), owlModel.getOWLNamedClassClass());
         RDFProperty operandsProperty = owlModel.getOWLIntersectionOfProperty();
         RDFResource nodeA = createRDFResource(null);
@@ -73,7 +69,6 @@ public class CreateOWLLogicalClassesTestCase extends AbstractTripleStoreTestCase
         OWLNamedClass classB = owlModel.createOWLNamedClass("B");
 
         RDFResource c = new DefaultRDFProperty(owlModel, createFrameID());
-        c.setName("test");
         ts.add(c, owlModel.getRDFTypeProperty(), owlModel.getOWLNamedClassClass());
         RDFProperty operandsProperty = owlModel.getOWLUnionOfProperty();
         RDFResource nodeB = createRDFResource(null);
