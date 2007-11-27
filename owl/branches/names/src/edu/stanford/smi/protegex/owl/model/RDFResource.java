@@ -694,17 +694,6 @@ public interface RDFResource extends ProtegeInstance, RDFObject, Visitable {
     void setInferredTypes(Collection types);
 
 
-    /**
-     * Sets the Protege name of this resource.
-     * The new name must be valid, i.e. be well-formed and only refer
-     * to valid namespace prefixes.  The new name must also be unique.
-     *
-     * @param newName the name name of this
-     * @see #getName
-     */
-    void setName(String newName);
-
-
     void setPropertyValue(RDFProperty property, Object value);
 
 

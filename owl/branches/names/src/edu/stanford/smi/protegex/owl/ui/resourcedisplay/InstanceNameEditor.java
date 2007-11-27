@@ -101,12 +101,12 @@ public class InstanceNameEditor extends JTextField {
             if (isValidName(newName)) {
                 String oldName = instance.getName();
                 if (!oldName.equals(newName)) {
-                	try {
-                		instance.setName(newName);
-					} catch (Exception e) {
-						OWLUI.handleError(((OWLModel)instance.getKnowledgeBase()),e);
-					}
-                    
+                    try {
+                        instance = (Instance) instance.rename(newName);
+                    } catch (Exception e) {
+                        OWLUI.handleError(((OWLModel)instance.getKnowledgeBase()),e);
+                    }
+
                 }
             }
         }

@@ -72,7 +72,7 @@ public class OWLUtil {
     }
 
 
-    public static void assignUniqueURI(RDFUntypedResource eri) {
+    public static RDFUntypedResource assignUniqueURI(RDFUntypedResource eri) {
         OWLModel owlModel = (OWLModel) eri.getOWLModel();
         String prefix = "http://protege.stanford.edu/";
         String suffix = "";
@@ -80,7 +80,7 @@ public class OWLUtil {
         while (owlModel.getRDFUntypedResource(prefix + index + suffix, false) != null) {
             index++;
         }
-        eri.setName(prefix + index + suffix);
+        return (RDFUntypedResource) eri.rename(prefix + index + suffix);
     }
 
 

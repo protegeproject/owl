@@ -115,10 +115,10 @@ public class CreateValueAction extends ResourceSelectionAction {
                 }
                 owlModel.getNamespaceManager().setPrefix(ns, prefix);
                 OWLOntology ontology = (OWLOntology) resource;
-                ontology.setName(prefix + ":");
+                ontology = (OWLOntology) ontology.rename(prefix + ":");
             }
             else if (resource instanceof RDFUntypedResource) {
-                OWLUtil.assignUniqueURI((RDFUntypedResource) resource);
+                resource =  OWLUtil.assignUniqueURI((RDFUntypedResource) resource);
             }
             owlModel.getProject().show(resource);
             int row = tableModel.addRow(property, resource);

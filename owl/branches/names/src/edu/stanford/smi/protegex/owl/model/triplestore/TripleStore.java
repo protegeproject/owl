@@ -21,8 +21,6 @@ import edu.stanford.smi.protegex.owl.model.RDFResource;
  * @author Holger Knublauch  <holger@knublauch.com>
  */
 public interface TripleStore extends NamespaceMap, Disposable {
-    
-    FrameID generateFrameID();
 
     void add(Triple triple);
 

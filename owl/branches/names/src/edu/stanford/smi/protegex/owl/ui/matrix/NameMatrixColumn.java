@@ -86,7 +86,7 @@ public class NameMatrixColumn extends AbstractMatrixColumn implements EditableMa
                         "The name \"" + newName + "\" is already used", "Rename failed");
             }
             else if (instance.getOWLModel().isValidResourceName(newName, instance)) {
-                instance.setName(newName);
+                instance = (RDFResource) instance.rename(newName);
             }
             else {
                 ProtegeUI.getModalDialogFactory().showErrorMessageDialog(instance.getOWLModel(),

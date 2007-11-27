@@ -374,101 +374,6 @@ public class ProtegeOWLParser {
 		owlModel.setGenerateEventsEnabled(eventsEnabled);
 
 	}
-	
-
-	public void loadTriples1(final TripleStore tripleStore,
-	                        final String ontologyName,
-	                        final ARPInvokation invokation)
-	        throws Exception {
-				boolean eventsEnabled = owlModel.setGenerateEventsEnabled(false);
-                Log.getLogger().info("Loading triples");
-                
-                Set imports = owlModel.getAllImports();		
-
-				// To avoid cyclic imports: mark this as already imported
-				addNamespaceToImports(ontologyName, imports);
-				currentDefaultNamespace = ontologyName;
-				
-				ProtegeOWLParser.this.tripleStore = tripleStore;
-				tripleStores.addAll(tripleStoreModel.getTripleStores());
-				
-				ARP arp = createARP();
-				
-				long startTime = System.currentTimeMillis();
-				Log.getLogger().info("Start processing ontology: " + ontologyName + " Time: " + (new Date()));
-				
-				OWLOntology defaultOntology = owlModel.getDefaultOWLOntology();
-				if(tripleStore.contains(defaultOntology, owlModel.getRDFTypeProperty(), owlModel.getOWLOntologyClass())) {
-					defaultOntology.delete();
-				}
-				
-				errorOntologyURI = URIUtilities.createURI(ontologyName);                        
-				
-				invokation.invokeARP(arp);
-								
-				if(owlModel.getRDFResource(ProtegeNames.DEFAULT_ONTOLOGY) == null) {
-					createDefaultNamespace(tripleStore);
-				}
-				
-				String dns = owlModel.getNamespaceManager().getDefaultNamespace();
-				if(dns != null) {
-					addNamespaceToImports(dns, imports);
-				}
-                
-				processImports1(tripleStore, imports);
-				
-				long endTime = System.currentTimeMillis();
-				
-				Log.getLogger().info("[ProtegeOWLParser] Completed triple loading after " + (endTime - startTime) + " ms");
-				
-				do {
-					tripleStoreModel.setActiveTripleStore(tripleStore);
-					owlModel.getNamespaceManager().update();
-					owlModel.flushCache();
-				}
-				while(runImplicitImports(imports));
-				
-				boolean oldUndo = owlModel.setUndoEnabled(false);
-
-				try {
-				    // Assign rdf:List to any untyped lists
-				    new RDFListPostProcessor(owlModel);
-
-				    tripleStoreModel.setActiveTripleStore(tripleStore);
-				    uri2NameConverter.updateInternalState();
-
-				    // Replace all temporary names with the final ones
-				    replaceTemporaryNames();
-				    owlModel.getNamespaceManager().update();
-
-				    // Clean up the temporary mess
-				    tripleStoreModel.endTripleStoreChanges();
-				    TripleStoreUtil.updateFrameInclusion(MergingNarrowFrameStore.get(owlModel),
-				                                         ((KnowledgeBase) owlModel).getSlot(Model.Slot.NAME));
-				    // TT:ensure that the triple store of the default ontology has the right name set
-				    // TODO: This check should not be here! The default ontology should never be null!
-				    // This is caused by a problem in the namespace code
-				    if (owlModel.getRDFResource(ProtegeNames.DEFAULT_ONTOLOGY) != null && owlModel.getRDFResource(ProtegeNames.DEFAULT_ONTOLOGY) instanceof OWLOntology) {
-				        tripleStoreModel.getTopTripleStore().setName(owlModel.getDefaultOWLOntology().getURI());
-				    }
-
-				    //added TT - I don't know if this is needed
-				    owlModel.getNamespaceManager().update();
-
-				    endTime = System.currentTimeMillis();
-
-				    activateSWRLFactoryIfNecessary(imports);
-				} finally {
-				    owlModel.setUndoEnabled(oldUndo);
-				}
-				errorOntologyURI = null;
-				
-				Log.getLogger().info("... Loading completed after " + (System.currentTimeMillis() - startTime) + " ms");
-//			};
-//		};
-//		owlModel.getTaskManager().run(task);
-		owlModel.setGenerateEventsEnabled(eventsEnabled);
-	}
 
 
 	private void activateSWRLFactoryIfNecessary(Set imports) {
@@ -597,7 +502,7 @@ public class ProtegeOWLParser {
 
 
 	private RDFResource createRDFResource(String name) {
-		FrameID id = tripleStore.generateFrameID();
+		FrameID id = new FrameID(name);
 		RDFResource r = null;
 		if(owlNamedClassClass.equals(currentType)) {
 			r = new DefaultOWLNamedClass(owlModel, id);
@@ -611,7 +516,6 @@ public class ProtegeOWLParser {
 		if(name == null) {
 			name = owlModel.getNextAnonymousResourceName();
 		}
-		tripleStore.setRDFResourceName(r, name);
 		return r;
 	}
 
@@ -744,134 +648,14 @@ public class ProtegeOWLParser {
 		}
 		tripleStore.add(ontology, property, prefix + ProtegeNames.PREFIX_LOCALNAME_SEPARATOR + namespace);
 	}
-
-
-	private void replaceTemporaryNames() {
-		TripleStore activeTripleStore = tripleStoreModel.getActiveTripleStore();
-		Iterator it = owlModel.getTripleStoreModel().listUserTripleStores();
-		while(it.hasNext()) {
-			TripleStore tripleStore = (TripleStore) it.next();
-			tripleStoreModel.setActiveTripleStore(tripleStore);
-			replaceTemporaryNames(tripleStore);
-		}
-		tripleStoreModel.setActiveTripleStore(activeTripleStore);
-	}
-
-
-	private void replaceTemporaryNames(TripleStore tripleStore) {
-		Collection homeResources = Jena.set(tripleStore.listHomeResources());
-		OWLNamedClass owlOntologyClass = owlModel.getOWLOntologyClass();
-		boolean changed = false;
-		for(Iterator it = homeResources.iterator(); it.hasNext();) {
-			RDFResource ontology = (RDFResource) it.next();
-			//if(ontology.getName().equals("^http://www.daml.org/services/owl-s/1.1/generic/Expression.owl#Condition")) {
-			if(ontology.hasRDFType(owlOntologyClass)) {
-				String name = ontology.getName();
-				if(uri2NameConverter.isTemporaryRDFResourceName(name)) {
-					String uri = uri2NameConverter.getURIFromTemporaryName(name);
-					uri = Jena.getNamespaceFromURI(uri);
-					name = uri2NameConverter.getTemporaryRDFResourceName(uri);
-					replaceTemporaryName(tripleStore, ontology, name, true);
-					changed = true;
-				}
-			}
-		}
-		if(changed) {
-			owlModel.flushCache();
-			owlModel.getNamespaceManager().update();
-			uri2NameConverter.updateInternalState();
-		}
-		final Slot directTypesSlot = kb.getSlot(Model.Slot.DIRECT_TYPES);
-		for(Iterator it = homeResources.iterator(); it.hasNext();) {
-			final Instance instance = (Instance) it.next();
-			if(!instance.isSystem()) {
-				final String name = instance.getName();
-				if(instance.getDirectOwnSlotValues(directTypesSlot).isEmpty()) {  // External resource
-					instance.getDirectOwnSlotValues(directTypesSlot);
-					if(instance instanceof RDFProperty && !tripleStore.getNarrowFrameStore().getFramesWithAnyValue((Slot) instance,
-					                                                                                               null, false).isEmpty()) {
-						// Convert into rdf:Property if this has been used as any property value
-						if(uri2NameConverter.isTemporaryRDFResourceName(name)) {
-							replaceTemporaryName(tripleStore, (RDFResource) instance, name, false);
-						}
-						tripleStore.add((RDFResource) instance, owlModel.getRDFTypeProperty(), owlModel.getRDFPropertyClass());
-					}
-					else if(tripleStore.listSubjects(owlModel.getRDFSRangeProperty(), instance).hasNext() || tripleStore.listSubjects(
-					        owlModel.getRDFSDomainProperty(), instance).hasNext() || tripleStore.listSubjects(
-					                owlModel.getRDFSSubClassOfProperty(), instance).hasNext()) {
-						if(uri2NameConverter.isTemporaryRDFResourceName(name)) {
-							replaceTemporaryName(tripleStore, (RDFResource) instance, name, false);
-						}
-						tripleStore.add((RDFResource) instance, owlModel.getRDFTypeProperty(), owlModel.getRDFSNamedClassClass());
-					}
-					else {
-						instance.setDirectType(kb.getCls(RDFNames.Cls.EXTERNAL_RESOURCE));
-						RDFUntypedResource externalResource = (RDFUntypedResource) kb.getFrame(name);
-						if(uri2NameConverter.isTemporaryRDFResourceName(name)) {
-							String uri = uri2NameConverter.getURIFromTemporaryName(name);
-							owlModel.getHeadFrameStore().setFrameName(externalResource, uri);
-							owlModel.
-						}
-						else {
-							String uri = owlModel.getURIForResourceName(name);
-							if(uri != null && !name.equals(uri)) {
-								owlModel.getHeadFrameStore().setFrameName(externalResource, uri);
-							}
-						}
-						// System.out.println("External Resource for " + uri);
-					}
-				}
-				else {
-					if(uri2NameConverter.isTemporaryRDFResourceName(name)) {
-						replaceTemporaryName(tripleStore, (RDFResource) instance, name, false);
-					}
-				}
-			}
-		}
-		owlModel.flushCache();
-	}
-
-
-	private void replaceTemporaryName(TripleStore tripleStore,
-	                                  RDFResource resource,
-	                                  String name,
-	                                  boolean isOntology) {
-		if(uri2NameConverter.isAnonymousRDFResourceName(name)) {
-			String newName = uri2NameConverter.createAnonymousRDFResourceName();
-			tripleStore.setRDFResourceName(resource, newName);
-		}
-		else {
-			String uri = uri2NameConverter.getURIFromTemporaryName(name);
-			String newName = uri2NameConverter.getRDFResourceName(uri);
-			if(newName == null) {
-				if(isOntology) {
-					uri = Jena.getNamespaceFromURI(uri);
-				}
-				String prefix = uri2NameConverter.createNewPrefix(uri);
-				String namespace = uri2NameConverter.getResourceNamespace(uri);
-				newName = uri2NameConverter.getRDFResourceName(uri);
-				RDFResource ontology = TripleStoreUtil.getFirstOntology(owlModel, tripleStore);
-				replaceNamespace(tripleStore, ontology, prefix, namespace);
-				if(newName == null) {
-					namespace = uri2NameConverter.getResourceNamespace(uri);
-					prefix = uri2NameConverter.createNewPrefix(namespace);
-					replaceNamespace(tripleStore, ontology, prefix, namespace);
-					newName = uri2NameConverter.getRDFResourceName(uri);
-				}
-			}
-			//System.out.println("Replacing " + name + " with \"" + newName + "\"");
-			tripleStore.setRDFResourceName(resource, newName);
-		}
-	}
-
-
+	
 	/**
 	 * Applies some heuristics to resolve missing owl:imports, especially for RDF Schema files.
 	 */
 	private boolean runImplicitImports(Set imports)
 	        throws Exception {
 		long startTime = System.currentTimeMillis();
-		Set specialProperties = new HashSet();
+		Set<RDFProperty> specialProperties = new HashSet<RDFProperty>();
 		specialProperties.add(owlModel.getRDFSSubPropertyOfProperty());
 		specialProperties.add(owlModel.getRDFSSubClassOfProperty());
 		specialProperties.add(owlModel.getRDFSRangeProperty());
@@ -1173,72 +957,6 @@ public class ProtegeOWLParser {
 					            
 		}
 						
-	}
-
-	private class MyNamespaceHandler implements NamespaceHandler {
-
-		private RDFResource ontology;
-
-		private Map prefix2Namespace = new HashMap();
-
-
-		public void startPrefixMapping(String prefix,
-		                               String namespace) {
-			if(!namespace.endsWith("#") && !namespace.endsWith("/") && !namespace.endsWith(":")) {
-				logger.logWarning("Invalid namespace \"" + namespace + "\" for prefix \"" + prefix + "\" ignored.");
-			}
-			else {
-				// System.out.println("Starting mapping \"" + prefix + "\" -> " + namespace);
-				if(prefixForDefaultNamespace != null && prefix.length() == 0) {
-					owlModel.getNamespaceManager().setPrefix(namespace, prefixForDefaultNamespace);
-					prefix = prefixForDefaultNamespace;
-					prefixForDefaultNamespace = null;
-				}
-				prefix = uri2NameConverter.addPrefix(namespace, prefix);
-				prefix2Namespace.put(prefix, namespace);
-			}
-		}
-
-		/*
-         * 
-         * This is called at the very end of parsing an owl file when the prefix mapping section is 
-         * finally closed off.  All the statements from the owl file have been processed so things such
-         * as the ontology for the owl file should have been processed.
-         * 
-         * It is called once for each namespace prefix in the owl file.
-         * 
-         * @see com.hp.hpl.jena.rdf.arp.NamespaceHandler#endPrefixMapping(java.lang.String)
-		 */
-		public void endPrefixMapping(String prefix) {
-			if (ontology == null) {
-				if (currentOntologyBeingParsed != null) {
-				    ontology = currentOntologyBeingParsed;
-                }
-                else { // ontology not declared in the owl file so I make one.
-					String defaultNamespace = (String) prefix2Namespace.get("");
-					if(defaultNamespace == null) {
-						logger.logWarning("No default namespace found in file.  Will use " + currentDefaultNamespace);
-						defaultNamespace = currentDefaultNamespace;
-						prefix2Namespace.put("", defaultNamespace);
-					}
-					FrameID id = tripleStore.generateFrameID();
-					ontology = new DefaultOWLOntology(owlModel, id);
-					String tempName = uri2NameConverter.getTemporaryRDFResourceName(defaultNamespace);
-					tripleStore.setRDFResourceName(ontology, tempName);
-					tripleStore.add(ontology, owlModel.getRDFTypeProperty(), owlModel.getOWLOntologyClass());
-					tripleStore.getNarrowFrameStore().addValues(ontology,
-					                                            ((KnowledgeBase) owlModel).getSlot(OWLNames.Slot.ONTOLOGY_PREFIXES),
-					                                            null, false, Collections.singleton(ProtegeNames.PREFIX_LOCALNAME_SEPARATOR + defaultNamespace));
-					// ontology = owlModel.getDefaultOWLOntology();
-				}
-			}
-			String namespace = (String) prefix2Namespace.get(prefix);
-                        if (namespace != null) {
-				//System.out.println("- Registering \"" + prefix + "\" : " + namespace);
-				replaceNamespace(tripleStore, ontology, prefix, namespace);
-				owlModel.getNamespaceManager().update();
-                        }
-		}
 	}
 
 	private class MyStatementHandler implements StatementHandler {

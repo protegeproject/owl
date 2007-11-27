@@ -57,6 +57,7 @@ public class SWRLTableModel extends AbstractTableModel implements Disposable, Sy
   public int getColumnCount() { return COL_COUNT; }
   public Icon getIcon(RDFResource resource) { return ProtegeUI.getIcon(resource);  }
   public SWRLImp getImp(int row) { return (SWRLImp)imps.get(row); }
+  public void setImp(int row, SWRLImp imp) { imps.remove(row); imps.add(row, imp); }
   public RDFProperty getPredicate(int row) { return null; }
   public RDFResource getRDFResource(int row) { return getImp(row); }
   public RDFResource getSubject() { return null; }
@@ -116,7 +117,10 @@ public class SWRLTableModel extends AbstractTableModel implements Disposable, Sy
           if (!imp.equals(resource)) {
             ProtegeUI.getModalDialogFactory().showErrorMessageDialog(owlModel, "The name " + newName + " is already used in this ontology.");
           }
-        } else imp.setName(newName);
+        } else {
+            imp = (SWRLImp) imp.rename(newName);
+            setImp(rowIndex, imp);
+        }
       }
       else ProtegeUI.getModalDialogFactory().showErrorMessageDialog(owlModel, newName + " is not a valid rule name.");
     } else if (columnIndex == COL_ENABLED) {

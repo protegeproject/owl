@@ -96,7 +96,7 @@ public class DefaultRDFList extends DefaultRDFIndividual implements RDFList {
     		if (Log.getLogger().getLevel() == Level.WARNING) {
     			Log.getLogger().log(Level.WARNING, "Called method on deleted frame " + this);
     		}
-    		return "deleted frame id: " + getFrameID().toStringRepresentation();
+    		return "deleted frame id: " + getFrameID().getName();
     	}
     	
         String str = getDirectType().getBrowserText() + " (";

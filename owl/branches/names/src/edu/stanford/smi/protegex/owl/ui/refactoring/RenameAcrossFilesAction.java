@@ -99,7 +99,7 @@ public class RenameAcrossFilesAction extends RefactorResourceAction {
     public static void performAction(RDFResource resource, String newName, Iterator files) {
         OWLModel owlModel = resource.getOWLModel();
         String oldURI = resource.getURI();
-        resource.setName(newName);
+        resource = (RDFResource) resource.rename(newName);
         String newURI = resource.getURI();
         ModalProgressBarManager man = new ModalProgressBarManager("Renaming across files...");
         man.setProgressValue(0);

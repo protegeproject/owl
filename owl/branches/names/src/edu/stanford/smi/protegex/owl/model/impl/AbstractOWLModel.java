@@ -673,7 +673,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
     public void adjustThing() {
         Cls thing = getRootCls();
-        thing.setName(OWLNames.Cls.THING);
+        thing = (Cls) thing.rename(OWLNames.Cls.THING);
         MergingNarrowFrameStore mnfs = MergingNarrowFrameStore.get(this);
         if (mnfs != null) {
             mnfs.getSystemFrameStore().replaceFrame(thing);
@@ -772,7 +772,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
         owlInverseOfProperty = getSlot(Model.Slot.INVERSE);
         owlInverseOfProperty.setDirectType(rdfPropertyClass);
         owlInverseOfProperty = getSlot(Model.Slot.INVERSE);   // Re-get
-        owlInverseOfProperty.setName(OWLNames.Slot.INVERSE_OF);
+        owlInverseOfProperty = (Slot) owlInverseOfProperty.rename(OWLNames.Slot.INVERSE_OF);
         owlInverseOfProperty.setValueType(ValueType.INSTANCE);
         owlInverseOfProperty.setAllowedClses(Collections.singleton(owlObjectPropertyClass));
 
@@ -825,7 +825,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
         // rdfs:subPropertyOf
         rdfsSubPropertyOfProperty = getSlot(Model.Slot.DIRECT_SUPERSLOTS);
-        rdfsSubPropertyOfProperty.setName(RDFSNames.Slot.SUB_PROPERTY_OF);
+        rdfsSubPropertyOfProperty = rdfsSubPropertyOfProperty.rename(RDFSNames.Slot.SUB_PROPERTY_OF);
         rdfsSubPropertyOfProperty.setDirectType(rdfPropertyClass);
         rdfsSubPropertyOfProperty = (RDFProperty) getSlot(RDFSNames.Slot.SUB_PROPERTY_OF);
 
@@ -3923,7 +3923,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
                     if (getFrame(newName) != null) {
                         newName = getUniqueFrameName(newName);
                     }
-                    resource.setName(newName);
+                    resource = (RDFResource) resource.rename(newName);
                 }
             }
         }
