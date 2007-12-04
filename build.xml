@@ -369,31 +369,36 @@
    <target name = "junit" 
            description = "run the tests (anybody can do it)"
            depends = "plugin.dir,junit-compile,checkJunitConfiguration">
+     <property file="junit.properties"/>
      <junit printsummary="withOutAndErr"
             dir = "${build}" 
             fork = "yes"
-            haltonfailure = "on" 
-            haltonerror = "on">
-      <jvmarg value="-Xmx300M"/>
-      <classpath>
-           <pathelement location="${classes}"/>
-           <pathelement location = "${protege.lib}"/>
-           <fileset
-              dir="${plugin}">
-              <include name = "**/*.jar"/>
-           </fileset>
-           <fileset
-              dir="dbdrivers">
-              <include name = "**/*.jar"/>
-           </fileset>
-        </classpath>
-        <batchtest>
-           <fileset dir="${junit}">
-             <include name = "**/*TestCase.java"/>
-             <exclude name = "**/*Abstract*.java"/>
-             <exclude name = "**/*FailedTestCase.java"/>
-           </fileset>
-        </batchtest>
+            filtertrace="${junit.filtertrace}"
+            showoutput="${junit.showoutput}"
+            haltonfailure = "${junit.haltonfailure}"
+            haltonerror = "${junit.haltonerror}">
+       <jvmarg value="-Xmx${junit.memory}"/>
+       <jvmarg value="-Djunit.server.protege.jar=${protege.lib}"/>
+       <jvmarg value="-Djava.util.logging.config.file=junit-logging.properties"/>
+       <classpath>
+         <pathelement location="${classes}"/>
+         <pathelement location = "${protege.lib}"/>
+         <fileset
+            dir="${plugin}">
+           <include name = "**/*.jar"/>
+         </fileset>
+         <fileset
+            dir="dbdrivers">
+           <include name = "**/*.jar"/>
+         </fileset>
+       </classpath>
+       <batchtest>
+         <fileset dir="${junit}">
+           <include name = "${junit.includes}"/>
+           <exclude name = "**/*Abstract*.java"/>
+           <exclude name = "**/*FailedTestCase.java"/>
+         </fileset>
+       </batchtest>
      </junit>
    </target>
 
