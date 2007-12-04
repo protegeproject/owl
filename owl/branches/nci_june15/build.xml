@@ -79,12 +79,14 @@
             if="protege.home.set">
       <echo message="Using Protege Home = ${protege.home} to find protege jars"/>
       <property name="protege.lib" value="${protege.home}/protege.jar"/>
+      <property name="looks.lib"   location="${protege.home}/looks.jar"/>
     </target>
     
     <target name="useLibDir" depends="checkProtegeHome" 
             unless="protege.home.set">
        <echo message="Using lib dir to find protege jars"/>
       <property name="protege.lib" value="${lib}/protege.jar"/>
+      <property name="protege.lib" value="${lib}/looks.jar"/>
     </target>
 
 
@@ -331,6 +333,7 @@
       <classpath>
         <pathelement location="${classes}"/>
         <pathelement location = "${protege.lib}"/>
+        <pathelement location = "${looks.lib}"/>
         <pathelement location = "${lib}/junit.jar"/>
       </classpath>
     </java>
