@@ -3,7 +3,6 @@ package edu.stanford.smi.protegex.owl.junit_config;
 import java.util.Properties;
 import java.util.logging.Level;
 
-import edu.stanford.smi.protege.server.Server_Test;
 import edu.stanford.smi.protege.test.APITestCase;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.tests.AbstractDIGReasonerTestCase;
@@ -14,7 +13,6 @@ public class CheckConfiguration {
     Log.getLogger().setLevel(Level.SEVERE);
     System.out.println("-------------------------------------------");
     checkProperty(AbstractDIGReasonerTestCase.REASONER_URL_PROPERTY, "No reasoner specified");
-    checkProperty(Server_Test.JAR_PROPERTY, "Server needs to know the location of the protege.jar file");
     checkDbConfiguration();
     System.out.println("-------------------------------------------");
   }
