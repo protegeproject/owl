@@ -94,6 +94,7 @@
       <condition property="libs.found">
         <and>
           <available file="${protege.lib}" type = "file"/>
+          <available file="${looks.lib}" type = "file"/>
         </and>
       </condition>
       <path id="classpath.compile">
