@@ -32,6 +32,7 @@ import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
 import edu.stanford.smi.protegex.owl.model.RDFSNames;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 import edu.stanford.smi.protegex.owl.model.visitor.OWLModelVisitorAdapter;
+import edu.stanford.smi.protegex.owl.swrl.model.SWRLIndividual;
 import edu.stanford.smi.protegex.owl.writer.rdfxml.util.Util;
 import edu.stanford.smi.protegex.owl.writer.xml.XMLWriter;
 
@@ -151,7 +152,12 @@ public class RDFAxiomRenderer extends OWLModelVisitorAdapter {
         renderPropertyAxioms(owlObjectProperty);
     }
 
-
+    @Override
+    public void visitSWRLIndividual(SWRLIndividual swrlIndividual) {    
+    	renderIndividualAxioms(swrlIndividual);
+    }
+    
+    
     @SuppressWarnings("deprecation")
 	public void visitRDFIndividual(RDFIndividual rdfIndividual) {
     	//filter out the annotations and PAL constraints
