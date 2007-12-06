@@ -1,6 +1,7 @@
 package edu.stanford.smi.protegex.owl.writer.rdfxml.rdfwriter;
 
 import edu.stanford.smi.protege.util.FileUtilities;
+import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 import edu.stanford.smi.protegex.owl.repository.Repository;
@@ -59,8 +60,7 @@ public class OWLModelAllTripleStoresWriter {
             Repository rep = model.getRepositoryManager().getRepository(ontologyName);
             if (rep != null) {
                 if (rep.isWritable(ontologyName)) {
-                    System.out.println("Saving import " + ontologyName + " to " +
-                            rep.getOntologyLocationDescription(ontologyName));
+                	Log.getLogger().info("Saving import " + ontologyName + " to " + rep.getOntologyLocationDescription(ontologyName));
                     OutputStream os = rep.getOutputStream(ontologyName);
 	                OutputStreamWriter outputStreamWriter = new OutputStreamWriter(os, FileUtilities.getWriteEncoding());
                     bw = new BufferedWriter(outputStreamWriter);
@@ -78,7 +78,7 @@ public class OWLModelAllTripleStoresWriter {
         fm.saveGlobalRepositories();
         fm.saveProjectRepositories(uri);
 
-        System.out.println("... saving successful.");
+        Log.getLogger().info("... saving successful.");
     }
 
 
