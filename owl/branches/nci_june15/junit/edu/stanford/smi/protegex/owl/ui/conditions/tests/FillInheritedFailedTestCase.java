@@ -7,7 +7,7 @@ import edu.stanford.smi.protegex.owl.ui.conditions.ConditionsTableModel;
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
  */
-public class FillInheritedTestCase extends AbstractConditionsTableTestCase {
+public class FillInheritedFailedTestCase extends AbstractConditionsTableTestCase {
 
     /**
      * owl:Thing
