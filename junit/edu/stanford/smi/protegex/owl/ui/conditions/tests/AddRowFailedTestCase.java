@@ -9,7 +9,7 @@ import java.util.Iterator;
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
  */
-public class AddRowTestCase extends AbstractConditionsTableTestCase {
+public class AddRowFailedTestCase extends AbstractConditionsTableTestCase {
 
     /**
      * <sufficient>

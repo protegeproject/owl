@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
  */
-public class SetConditionTestCase extends AbstractConditionsTableTestCase {
+public class SetConditionFailedTestCase extends AbstractConditionsTableTestCase {
 
     /**
      * <sufficient>

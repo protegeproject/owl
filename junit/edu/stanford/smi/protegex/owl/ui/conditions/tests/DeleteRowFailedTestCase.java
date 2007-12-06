@@ -6,7 +6,7 @@ import edu.stanford.smi.protegex.owl.ui.conditions.ConditionsTableModel;
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
  */
-public class DeleteRowTestCase extends AbstractConditionsTableTestCase {
+public class DeleteRowFailedTestCase extends AbstractConditionsTableTestCase {
 
     /**
      * owl:Thing

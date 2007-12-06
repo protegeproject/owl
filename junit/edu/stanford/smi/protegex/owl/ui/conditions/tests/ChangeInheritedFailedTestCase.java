@@ -8,7 +8,7 @@ import edu.stanford.smi.protegex.owl.ui.conditions.ConditionsTableModel;
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
  */
-public class ChangeInheritedTestCase extends AbstractConditionsTableTestCase {
+public class ChangeInheritedFailedTestCase extends AbstractConditionsTableTestCase {
 
     public void testDeleteInheritedRestriction() {
         OWLObjectProperty genderProperty = owlModel.createOWLObjectProperty("gender");
