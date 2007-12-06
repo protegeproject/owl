@@ -16,7 +16,7 @@ import edu.stanford.smi.protegex.owl.tests.AbstractJenaTestCase;
 import edu.stanford.smi.protegex.owl.ui.clsproperties.PropertyRestrictionsTree;
 import edu.stanford.smi.protegex.owl.ui.clsproperties.PropertyTreeNode;
 
-public class PropertyRestrictionsTreeTestCase extends AbstractJenaTestCase {
+public class PropertyRestrictionsTreeFailedTestCase extends AbstractJenaTestCase {
 
     private void assertTree(PropertyRestrictionsTree tree, Object[] objects) {
         DefaultMutableTreeNode root = (DefaultMutableTreeNode) tree.getModel().getRoot();

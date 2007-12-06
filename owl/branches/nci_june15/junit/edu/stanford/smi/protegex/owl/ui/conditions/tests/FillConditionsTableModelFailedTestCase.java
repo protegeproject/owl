@@ -10,7 +10,7 @@ import java.util.Arrays;
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
  */
-public class FillConditionsTableModelTestCase extends AbstractConditionsTableTestCase {
+public class FillConditionsTableModelFailedTestCase extends AbstractConditionsTableTestCase {
 
     public void testEmptyClass() {
         OWLNamedClass personCls = owlModel.createOWLNamedClass("Person");

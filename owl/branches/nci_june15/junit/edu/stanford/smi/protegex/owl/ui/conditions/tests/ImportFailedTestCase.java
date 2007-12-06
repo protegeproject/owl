@@ -8,7 +8,7 @@ import java.net.URI;
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
  */
-public class ImportTestCase extends AbstractConditionsTableTestCase {
+public class ImportFailedTestCase extends AbstractConditionsTableTestCase {
 
     private OWLObjectProperty hasChildrenProperty;
 
