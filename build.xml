@@ -380,6 +380,8 @@
        <jvmarg value="-Xmx${junit.memory}"/>
        <jvmarg value="-Djunit.server.protege.jar=${protege.lib}"/>
        <jvmarg value="-Djava.util.logging.config.file=junit-logging.properties"/>
+       <!-- <jvmarg value="-Xdebug"/>
+       <jvmarg value="-Xrunjdwp:transport=dt_socket,address=8100,server=y,suspend=y"/> -->
        <classpath>
          <pathelement location="${classes}"/>
          <pathelement location = "${protege.lib}"/>
