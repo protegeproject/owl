@@ -1170,6 +1170,7 @@
 	(property_list [KB_938545_Instance_56])
 	(widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.OWLFormWidget"))
 
+
 ([KB_691299_Instance_537] of  Widget
 
 	(is_hidden FALSE)
@@ -4931,12 +4932,6 @@
 ([KB_938545_Instance_411] of  Property_List
 )
 
-([KB_938545_Instance_412] of  Widget
-
-	(is_hidden FALSE)
-	(name "owl:InverseFunctionalProperty")
-	(property_list [KB_938545_Instance_415])
-	(widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.OWLFormWidget"))
 
 ([KB_938545_Instance_415] of  Property_List
 
@@ -5442,12 +5437,6 @@
 ([KB_938545_Instance_494] of  Property_List
 )
 
-([KB_938545_Instance_495] of  Widget
-
-	(is_hidden FALSE)
-	(name "owl:SymmetricProperty")
-	(property_list [KB_938545_Instance_498])
-	(widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.OWLFormWidget"))
 
 ([KB_938545_Instance_498] of  Property_List
 
@@ -5994,12 +5983,6 @@
 ([KB_938545_Instance_577] of  Property_List
 )
 
-([KB_938545_Instance_578] of  Widget
-
-	(is_hidden FALSE)
-	(name "owl:TransitiveProperty")
-	(property_list [KB_938545_Instance_581])
-	(widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.OWLFormWidget"))
 
 ([KB_938545_Instance_58] of  Property_List
 )
@@ -7243,14 +7226,12 @@
 		[STANDARD_SLOT_FORM_WIDGET]
 		[KB_713803_Instance_693]
 		[KB_313796_Instance_943]
-		[KB_938545_Instance_495]
 		[STANDARD_CLASS_FORM_WIDGET]
 		[KB_713803_Instance_303]
 		[KB_313796_Instance_852]
 		[Instance_1005]
 		[KB_301165_Instance_1013]
 		[Instance_581]
-		[KB_938545_Instance_412]
 		[KB_764103_Instance_545]
 		[KB_713803_Instance_390]
 		[KB_938545_Instance_329]
@@ -7263,7 +7244,6 @@
 		[KB_691299_Instance_398]
 		[STANDARD_FACET_FORM_WIDGET]
 		[KB_301165_Instance_856]
-		[KB_938545_Instance_578]
 		[KB_938545_Instance_661]
 		[KB_691299_Instance_537]
 		[INSTANCE_ANNOTATION_FORM_WIDGET]
