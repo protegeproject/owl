@@ -298,7 +298,7 @@ public class ResourceDisplay extends InstanceDisplay implements ResourcePanel {
 
 
     protected ClsWidget getWidget(Cls type, Instance instance, Cls associatedCls) {
-        if (isSuppressedType(type)) {
+        if (isSuppressedType(type, instance)) {
             return null;
         }
         else {
@@ -350,6 +350,22 @@ public class ResourceDisplay extends InstanceDisplay implements ResourcePanel {
     }
 
 
+    protected boolean isSuppressedType(Cls type, Instance instance) {
+        return (suppressedTypes.contains(type) && hasUnsuppressedTypes(instance));
+    }
+    
+    protected boolean hasUnsuppressedTypes(Instance instance) {
+    	Collection<Cls> types = instance.getDirectTypes();
+    	
+    	for (Cls type : types) {
+			if (!suppressedTypes.contains(type)) {
+				return true;
+			}
+		}
+    	
+    	return false;
+    }
+    
     protected boolean isSuppressedType(Cls type) {
         return suppressedTypes.contains(type);
     }
