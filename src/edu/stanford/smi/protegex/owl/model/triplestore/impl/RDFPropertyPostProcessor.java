@@ -127,29 +127,7 @@ class RDFPropertyPostProcessor {
 
     private RDFProperty updatePrimaryDirectType(Slot property) {
         Collection types = property.getDirectTypes();
-        boolean hasNoOtherType = true;
-        RDFSClass newType = owlModel.getRDFPropertyClass();
-        for (Iterator it = types.iterator(); it.hasNext();) {
-            Cls type = (Cls) it.next();
-            if (!specialPropertyTypes.contains(type)) {
-                hasNoOtherType = false;
-                break;
-            }
-            else if (symmetricPropertyClass.equals(type) || transitivePropertyClass.equals(type)) {
-                newType = owlModel.getOWLObjectPropertyClass();
-            }
-        }
-        
-        /*
-	    // TT: Comment this out for support for simple annotation types
-        if (hasNoOtherType) {
-            if (types.contains(owlModel.getOWLAnnotationPropertyClass())) {
-                newType = owlModel.getOWLDatatypePropertyClass();
-            }
-            property.addDirectType(newType);
-        }
-        */
-
+                
         // Ensure that the special types are at the end of the types list
         if (property.getDirectTypes().size() > 1) {
             for (Iterator it = specialPropertyTypes.iterator(); it.hasNext();) {
