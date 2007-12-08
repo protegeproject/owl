@@ -12,7 +12,6 @@ import java.util.logging.Level;
 import edu.stanford.smi.protege.event.ProjectAdapter;
 import edu.stanford.smi.protege.event.ProjectEvent;
 import edu.stanford.smi.protege.event.ProjectListener;
-import edu.stanford.smi.protege.model.KnowledgeBase;
 import edu.stanford.smi.protege.model.Project;
 import edu.stanford.smi.protege.util.Disposable;
 import edu.stanford.smi.protege.util.Log;
@@ -30,7 +29,9 @@ import edu.stanford.smi.protegex.owl.model.RDFSClass;
 import edu.stanford.smi.protegex.owl.model.event.ModelAdapter;
 import edu.stanford.smi.protegex.owl.model.event.ModelListener;
 import edu.stanford.smi.protegex.owl.model.visitor.OWLModelVisitorAdapter;
+import edu.stanford.smi.protegex.owl.swrl.model.SWRLAtomList;
 import edu.stanford.smi.protegex.owl.swrl.model.SWRLFactory;
+import edu.stanford.smi.protegex.owl.swrl.model.SWRLIndividual;
 import edu.stanford.smi.protegex.owl.swrl.model.factory.SWRLJavaFactory;
 
 /**
@@ -155,7 +156,6 @@ public class ReasonerUtil implements Disposable{
     	
     	try {
         	//filter out SWRL classes, if present
-        	//if  (false && owlModel.getOWLJavaFactory() instanceof SWRLJavaFactory) {
         	if  (owlModel.getOWLJavaFactory() instanceof SWRLJavaFactory) {
         		SWRLFactory swrlFactory = new SWRLFactory(owlModel);
         		Collection swrlClasses = swrlFactory.getSWRLClasses();
@@ -226,7 +226,7 @@ public class ReasonerUtil implements Disposable{
     	ArrayList<T> allProps = new ArrayList<T>(properties);
     	try {
         	//filter out SWRL properties, if present
-        	if  (owlModel.getOWLJavaFactory() instanceof SWRLJavaFactory) {        
+        	if  (owlModel.getOWLJavaFactory() instanceof SWRLJavaFactory) {
         		SWRLFactory swrlFactory = new SWRLFactory(owlModel);
         		Collection swrlProperties = swrlFactory.getSWRLProperties();
         		Collection swrlbProperties = swrlFactory.getSWRLBProperties();
@@ -270,9 +270,8 @@ public class ReasonerUtil implements Disposable{
 
         private OWLModel model;
 
-
         public IndividualsFilter(OWLModel model) {
-            this.model = model;
+            this.model = model;            
         }
 
 
@@ -287,8 +286,18 @@ public class ReasonerUtil implements Disposable{
 
 
         public void visitOWLIndividual(OWLIndividual owlIndividual) {
-            individuals.add(owlIndividual);
+        	individuals.add(owlIndividual);
         }
+        
+        @Override
+        public void visitSWRLIndividual(SWRLIndividual swrlIndividual) {
+        	//ignore SWRL individuals
+        }
+        
+        @Override
+        public void visitSWRLAtomListIndividual(SWRLAtomList swrlAtomList) {
+        	//ignore SWRL atom list
+        }   
         
     }
 
