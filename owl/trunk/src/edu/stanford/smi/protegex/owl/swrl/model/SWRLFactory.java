@@ -30,7 +30,9 @@ public class SWRLFactory
   private OWLNamedClass atomListCls, builtinAtomCls, classAtomCls, dataRangeAtomCls, dataValuedPropertyAtomCls,
                         differentIndividualsAtomCls, impCls, individualPropertyAtomCls, sameIndividualAtomCls,
                         atomCls, variableCls, builtInCls;
-  private OWLObjectProperty bodyProperty, headProperty, argumentsProperty, builtInProperty, argument1Property, classPredicateProperty, propertyPredicateProperty, dataRangeProperty;
+  private OWLObjectProperty bodyProperty, headProperty, argumentsProperty, builtInProperty, argument1Property, classPredicateProperty, 
+                            propertyPredicateProperty, dataRangeProperty;
+  private OWLDatatypeProperty argsProperty, minArgsProperty, maxArgsProperty; 
   private RDFProperty argument2Property;
 
   private OWLModel owlModel;
@@ -54,7 +56,7 @@ public class SWRLFactory
     TripleStoreModel tsm = owlModel.getTripleStoreModel();               
     TripleStore activeTs = tsm.getActiveTripleStore();
     TripleStore systemTS = tsm.getTripleStore(0);
-    int swrlFrameID = 9500;
+    int swrlFrameID = 9500; // IDs of of 9500 and greater will be system frames so they will not be saved
 
     tsm.setActiveTripleStore(systemTS);
 
@@ -82,6 +84,10 @@ public class SWRLFactory
     classPredicateProperty = getOrCreateOWLObjectProperty(SWRLNames.Slot.CLASS_PREDICATE, swrlFrameID++);
     propertyPredicateProperty = getOrCreateOWLObjectProperty(SWRLNames.Slot.PROPERTY_PREDICATE, swrlFrameID++);
     dataRangeProperty = getOrCreateOWLObjectProperty(SWRLNames.Slot.DATA_RANGE, swrlFrameID++);
+
+    argsProperty = getOrCreateOWLDatatypeProperty(SWRLNames.Slot.ARGS, swrlFrameID++);
+    minArgsProperty = getOrCreateOWLDatatypeProperty(SWRLNames.Slot.MIN_ARGS, swrlFrameID++);
+    maxArgsProperty = getOrCreateOWLDatatypeProperty(SWRLNames.Slot.MAX_ARGS, swrlFrameID++);
 
     initCoreSWRLBuiltIns(swrlFrameID); // Must be called after class and property creations
 
@@ -131,6 +137,20 @@ public class SWRLFactory
     } // if
     return owlModel.getOWLObjectProperty(propertyName);
   } // getOrCreateOWLObjectProperty
+
+  private OWLDatatypeProperty getOrCreateOWLDatatypeProperty(String propertyName, int frameID) 
+  {
+    RDFResource resource = owlModel.getRDFResource(propertyName);
+    
+    if (resource == null) {
+      OWLProperty property = new DefaultOWLDatatypeProperty(owlModel, FrameID.createSystem(frameID));
+      property.setName(propertyName);
+      property.setProtegeType(owlModel.getOWLDatatypePropertyClass());
+    } else if (!(resource instanceof OWLDatatypeProperty)) {
+      resource.setProtegeType(owlModel.getOWLDatatypePropertyClass());		
+    } // if
+    return owlModel.getOWLDatatypeProperty(propertyName);
+  } // getOrCreateOWLDatatypeProperty
 
   private RDFProperty getOrCreateOWLProperty(String propertyName, int frameID) 
   {
