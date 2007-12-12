@@ -20,20 +20,20 @@ public class XMLProcessor
   } // XMLProcessor
 
   /**
-   ** Method that writes an XML stream from an instance of a Document.
+   ** Method that writes an XML file from an instance of a Document.
    */
-  public void generateXMLStream(Document doc, String outputXMLStreamName) throws XMLProcessorException
+  public void generateXMLFile(Document doc, String outputXMLFileName) throws XMLProcessorException
   {
-    OutputStream xmlStream = createOutputXMLStream(outputXMLStreamName);
+    OutputStream xmlStream = createOutputXMLStream(outputXMLFileName);
 
     if ((doc == null) || !doc.hasRootElement()) throw new XMLProcessorException("document is empty");
 
     try {
       serializer.output(doc, xmlStream);
     } catch (IOException e) {
-      throw new XMLProcessorException("error writing XML file '" + outputXMLStreamName + "': " + e.getMessage());
+      throw new XMLProcessorException("error writing XML file '" + outputXMLFileName + "': " + e.getMessage());
     } // try
-  } // generateXMLStream
+  } // generateXMLFile
 
   /**
    ** Method that writes an XML string from an instance of a Document.

@@ -227,11 +227,13 @@ public class SWRLFactory
     return swrlImp;
   } // SWRLImp
  
-  public SWRLAtomList createAtomList() {
+  public SWRLAtomList createAtomList() 
+  {
     return (SWRLAtomList) atomListCls.createAnonymousInstance();
   } // createAtomList
 
-  public SWRLAtomList createAtomList(Collection atoms) {
+  public SWRLAtomList createAtomList(Collection atoms) 
+  {
     SWRLAtomList list = createAtomList();
     for (Iterator it = atoms.iterator(); it.hasNext();) {
       Object o = it.next();
@@ -258,45 +260,40 @@ public class SWRLFactory
     return swrlBuiltinAtom;
   } // createBuiltinAtom
 
-    public SWRLClassAtom createClassAtom(RDFSNamedClass aClass,
-                                         RDFResource iObject) {
-        SWRLClassAtom swrlClassAtom;
+  public SWRLClassAtom createClassAtom(RDFSNamedClass aClass, RDFResource iObject) 
+  {
+    SWRLClassAtom swrlClassAtom;
+    
+    swrlClassAtom = (SWRLClassAtom) classAtomCls.createAnonymousInstance();
+    
+    swrlClassAtom.setClassPredicate(aClass);
+    swrlClassAtom.setArgument1(iObject);
+    
+    return swrlClassAtom;
+    
+  } // createClassAtom
 
-        swrlClassAtom = (SWRLClassAtom) classAtomCls.createAnonymousInstance();
+  public SWRLDataRangeAtom createDataRangeAtom(RDFResource dataRange, RDFObject dObject) 
+  {
+    SWRLDataRangeAtom swrlDataRangeAtom = (SWRLDataRangeAtom) dataRangeAtomCls.createAnonymousInstance();
+    
+    swrlDataRangeAtom.setArgument1(dObject);
+    swrlDataRangeAtom.setDataRange(dataRange);
+    
+    return swrlDataRangeAtom;
+  } // createDataRangeAtom
+  
+  public SWRLDatavaluedPropertyAtom createDatavaluedPropertyAtom(OWLDatatypeProperty datatypeSlot, RDFResource iObject, RDFObject dObject) 
+  {
+    SWRLDatavaluedPropertyAtom swrlDatavaluedPropertyAtom = (SWRLDatavaluedPropertyAtom) dataValuedPropertyAtomCls.createAnonymousInstance();
+    
+    swrlDatavaluedPropertyAtom.setPropertyPredicate(datatypeSlot);
+    swrlDatavaluedPropertyAtom.setArgument1(iObject);
+    swrlDatavaluedPropertyAtom.setArgument2(dObject);
 
-        swrlClassAtom.setClassPredicate(aClass);
-        swrlClassAtom.setArgument1(iObject);
-
-        return swrlClassAtom;
-
-    } // createClassAtom
-
-
-    public SWRLDataRangeAtom createDataRangeAtom(RDFResource dataRange,
-                                                 RDFObject dObject) {
-
-        SWRLDataRangeAtom swrlDataRangeAtom = (SWRLDataRangeAtom) dataRangeAtomCls.createAnonymousInstance();
-
-        swrlDataRangeAtom.setArgument1(dObject);
-        swrlDataRangeAtom.setDataRange(dataRange);
-
-        return swrlDataRangeAtom;
-    } // createDataRangeAtom
-
-
-    public SWRLDatavaluedPropertyAtom createDatavaluedPropertyAtom(OWLDatatypeProperty datatypeSlot,
-                                                                   RDFResource iObject,
-                                                                   RDFObject dObject) {
-        SWRLDatavaluedPropertyAtom swrlDatavaluedPropertyAtom = (SWRLDatavaluedPropertyAtom) dataValuedPropertyAtomCls.createAnonymousInstance();
-
-        swrlDatavaluedPropertyAtom.setPropertyPredicate(datatypeSlot);
-        swrlDatavaluedPropertyAtom.setArgument1(iObject);
-        swrlDatavaluedPropertyAtom.setArgument2(dObject);
-
-        return swrlDatavaluedPropertyAtom;
-
-    } // createDatavaluedPropertyAtom
-
+    return swrlDatavaluedPropertyAtom;
+    
+  } // createDatavaluedPropertyAtom
   
   public SWRLIndividualPropertyAtom createIndividualPropertyAtom(OWLObjectProperty objectSlot, RDFResource iObject1, RDFResource iObject2) 
   {
@@ -311,7 +308,7 @@ public class SWRLFactory
     return swrlIndividualPropertyAtom;
   } // createIndividualPropertyAtom
   
-    public SWRLDifferentIndividualsAtom createDifferentIndividualsAtom(RDFResource argument1, RDFResource argument2) 
+  public SWRLDifferentIndividualsAtom createDifferentIndividualsAtom(RDFResource argument1, RDFResource argument2) 
   {
     SWRLDifferentIndividualsAtom swrlDifferentIndividualsAtom;
     
