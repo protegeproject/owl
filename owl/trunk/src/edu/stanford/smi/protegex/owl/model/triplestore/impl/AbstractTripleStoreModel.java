@@ -19,7 +19,6 @@ import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
 import edu.stanford.smi.protegex.owl.model.factory.OWLJavaFactoryUpdater;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultRDFSLiteral;
-import edu.stanford.smi.protegex.owl.model.impl.OWLUtil;
 import edu.stanford.smi.protegex.owl.model.triplestore.Triple;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreModel;
@@ -232,6 +231,13 @@ public abstract class AbstractTripleStoreModel implements TripleStoreModel {
 
 
     public void setActiveTripleStore(TripleStore tripleStore) {
+        if (mnfs == null && ts.size() == 1) {
+            /**
+             * Probably a client talking to a server and server is using database mode.
+             * When we will support database inclusion, we should fix this implementation
+             */
+            return;
+        }
         if (mnfs.getActiveFrameStore() != tripleStore.getNarrowFrameStore()) {
             mnfs.setActiveFrameStore(tripleStore.getNarrowFrameStore());
         }
