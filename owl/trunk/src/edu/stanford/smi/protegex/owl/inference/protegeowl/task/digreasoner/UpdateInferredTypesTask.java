@@ -132,12 +132,12 @@ public class UpdateInferredTypesTask extends AbstractReasonerTask {
 	                KnowledgeBase k = kb;
 	                k.setOwnSlotValues(curInd, inferredTypesSlot, inferredTypes);
 	
-	                if (inferredTypes.containsAll(assertedTypes) == false &&
-	                        assertedTypes.containsAll(inferredTypes) == false) {
-	                    k.setOwnSlotValues(curInd, classificationStatusSlot, Collections.singleton(new Integer(OWLNames.CLASSIFICATION_STATUS_CONSISTENT_AND_CHANGED)));
+	                if (inferredTypes.containsAll(assertedTypes) &&
+	                        assertedTypes.containsAll(inferredTypes)) {
+	                	k.setOwnSlotValues(curInd, classificationStatusSlot, Collections.singleton(new Integer(OWLNames.CLASSIFICATION_STATUS_CONSISTENT_AND_UNCHANGED)));	                    
 	                }
 	                else {
-	                    k.setOwnSlotValues(curInd, classificationStatusSlot, Collections.singleton(new Integer(OWLNames.CLASSIFICATION_STATUS_CONSISTENT_AND_UNCHANGED)));
+	                	k.setOwnSlotValues(curInd, classificationStatusSlot, Collections.singleton(new Integer(OWLNames.CLASSIFICATION_STATUS_CONSISTENT_AND_CHANGED)));
 	                }
 	            }
 	
