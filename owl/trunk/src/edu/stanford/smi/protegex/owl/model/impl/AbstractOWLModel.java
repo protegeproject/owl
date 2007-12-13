@@ -2252,12 +2252,12 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     }
 
 
-    public static Collection getRDFResources(KnowledgeBase kb, Collection frames) {
-        ArrayList result = new ArrayList();
-        for (Iterator it = frames.iterator(); it.hasNext();) {
+    public static Collection<RDFResource> getRDFResources(KnowledgeBase kb, Collection<? extends Frame> frames) {
+        ArrayList<RDFResource> result = new ArrayList<RDFResource>();
+        for (Iterator<? extends Frame> it = frames.iterator(); it.hasNext();) {
             Frame frame = (Frame) it.next();
             if (frame instanceof RDFResource) {
-                result.add(frame);
+                result.add((RDFResource) frame);
             }
         }
         removeProtegeSystemResources(kb, result);
@@ -2284,7 +2284,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     }
 
 
-    public Collection getResourceNameMatches(String nameExpression, int maxMatches) {
+    public Collection<RDFResource> getResourceNameMatches(String nameExpression, int maxMatches) {
         Collection frames = getFrameNameMatches(nameExpression, maxMatches);
         return getRDFResources(this, frames);
     }
