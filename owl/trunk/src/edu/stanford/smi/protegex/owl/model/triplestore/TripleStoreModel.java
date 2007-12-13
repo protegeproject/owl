@@ -3,6 +3,7 @@ package edu.stanford.smi.protegex.owl.model.triplestore;
 import edu.stanford.smi.protege.model.Instance;
 import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protege.util.Disposable;
+import edu.stanford.smi.protegex.owl.model.RDFObject;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
 
@@ -123,7 +124,7 @@ public interface TripleStoreModel extends Disposable{
      *
      * @return a collection of TripleStore objects
      */
-    List getTripleStores();
+    List<TripleStore> getTripleStores();
 
 
     /**
@@ -169,16 +170,23 @@ public interface TripleStoreModel extends Disposable{
      * @param subject the subject to get all triples of
      * @return an Iterator of Triples
      */
-    Iterator listTriplesWithSubject(RDFResource subject);
+    Iterator<Triple> listTriplesWithSubject(RDFResource subject);
 
-
+    
+    /**
+     * Returns an iterator of all subjects in any triplestore
+     * that have a value for property.
+     */
+    Iterator<RDFResource> listSubjects(RDFProperty property);
+    
+    
     /**
      * Provides an Iterator on all user TripleStores, i.e. all results of <CODE>getTripleStores()</CODE>
      * except for the first (system) TripleStore.
      *
      * @return an Iterator of TripleStore objects
      */
-    Iterator listUserTripleStores();
+    Iterator<TripleStore> listUserTripleStores();
 
 
     void replaceJavaObject(RDFResource subject);
