@@ -4,9 +4,12 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
+import edu.stanford.smi.protege.model.Frame;
 import edu.stanford.smi.protege.model.Instance;
 import edu.stanford.smi.protege.model.KnowledgeBase;
 import edu.stanford.smi.protege.model.Model;
@@ -124,7 +127,7 @@ public abstract class AbstractTripleStoreModel implements TripleStoreModel {
     }
 
 
-    public List getTripleStores() {
+    public List<TripleStore> getTripleStores() {
         return new ArrayList(ts);
     }
 
@@ -195,18 +198,36 @@ public abstract class AbstractTripleStoreModel implements TripleStoreModel {
     }
 
 
-    public Iterator listTriplesWithSubject(RDFResource subject) {
-        List result = new ArrayList();
-        Iterator it = getTripleStores().iterator();
+    public Iterator<Triple> listTriplesWithSubject(RDFResource subject) {
+        List<Triple> result = new ArrayList<Triple>();
+        Iterator<TripleStore> it = getTripleStores().iterator();
         while (it.hasNext()) {
             TripleStore ts = (TripleStore) it.next();
-            Iterator triples = ts.listTriplesWithSubject(subject);
+            Iterator<Triple> triples = ts.listTriplesWithSubject(subject);
             while (triples.hasNext()) {
                 Triple triple = (Triple) triples.next();
                 result.add(triple);
             }
         }
         return result.iterator();
+    }
+    
+    
+    public Iterator<RDFResource> listSubjects(RDFProperty property) {    	
+    	 Set<RDFResource> result = new HashSet<RDFResource>();
+         
+    	 Iterator<TripleStore> it = getTripleStores().iterator();
+         while (it.hasNext()) {
+             TripleStore ts = (TripleStore) it.next();    
+             Iterator subjects = ts.listSubjects(property);
+             while (subjects.hasNext()) {
+            	 Frame frame = (Frame) subjects.next();
+            	 if (frame instanceof RDFResource) {
+            	    result.add((RDFResource) frame);
+            	 }
+             }
+         }
+         return result.iterator();
     }
 
 
