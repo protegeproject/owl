@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -12,7 +13,6 @@ import java.util.logging.Level;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JFileChooser;
-import javax.swing.JTree;
 import javax.swing.tree.TreePath;
 
 import com.hp.hpl.jena.ontology.OntModel;
@@ -178,7 +178,7 @@ public class InferredSubsumptionTreePanel extends SubsumptionTreePanel {
                 ProtegeUI.getModalDialogFactory().showMessageDialog(owlModel,
                                                                     "Successfully saved to " + file + ".");
             }
-            catch (Exception ex) {
+            catch (IOException ex) {
                 Log.getLogger().log(Level.SEVERE, "Exception caught", ex);
                 ProtegeUI.getModalDialogFactory().showThrowable(owlModel, ex);
             }
