@@ -1,24 +1,40 @@
 
 package edu.stanford.smi.protegex.owl.swrl.model;
 
-import edu.stanford.smi.protege.util.Log;
-import edu.stanford.smi.protegex.owl.model.*;
-import edu.stanford.smi.protegex.owl.model.impl.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+
 import edu.stanford.smi.protege.model.FrameID;
-
-import edu.stanford.smi.protegex.owl.swrl.parser.SWRLParseException;
-import edu.stanford.smi.protegex.owl.swrl.parser.SWRLParser;
-import edu.stanford.smi.protegex.owl.swrl.exceptions.SWRLFactoryException;
-
+import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
+import edu.stanford.smi.protegex.owl.model.OWLDatatypeProperty;
+import edu.stanford.smi.protegex.owl.model.OWLIndividual;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
+import edu.stanford.smi.protegex.owl.model.OWLObjectProperty;
+import edu.stanford.smi.protegex.owl.model.OWLProperty;
+import edu.stanford.smi.protegex.owl.model.RDFList;
+import edu.stanford.smi.protegex.owl.model.RDFObject;
+import edu.stanford.smi.protegex.owl.model.RDFProperty;
+import edu.stanford.smi.protegex.owl.model.RDFResource;
+import edu.stanford.smi.protegex.owl.model.RDFSClass;
+import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
 import edu.stanford.smi.protegex.owl.model.factory.OWLJavaFactoryUpdater;
+import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLDatatypeProperty;
+import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLIndividual;
+import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLNamedClass;
+import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLObjectProperty;
+import edu.stanford.smi.protegex.owl.model.impl.DefaultRDFProperty;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreModel;
-import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
+import edu.stanford.smi.protegex.owl.swrl.exceptions.SWRLFactoryException;
 import edu.stanford.smi.protegex.owl.swrl.model.factory.SWRLJavaFactory;
-import edu.stanford.smi.protegex.owl.swrl.model.SWRLImp;
-
-import java.util.*;
-import java.util.logging.Level;
+import edu.stanford.smi.protegex.owl.swrl.parser.SWRLParseException;
+import edu.stanford.smi.protegex.owl.swrl.parser.SWRLParser;
 
 /**
  * A utility class that can (and should) be used to create and access SWRL related objects in an ontology.
@@ -43,12 +59,14 @@ public class SWRLFactory
     this.owlModel = owlModel;
 
     initSWRLClasses();
-
-    // Activate OWL-Java mappings.
-    SWRLJavaFactory factory = new SWRLJavaFactory(owlModel);
-    owlModel.setOWLJavaFactory(factory);
     
-    if(owlModel instanceof JenaOWLModel) OWLJavaFactoryUpdater.run((JenaOWLModel)owlModel);
+    if (!(owlModel.getOWLJavaFactory() instanceof SWRLJavaFactory)) {    
+    	// Activate OWL-Java mappings.
+    	SWRLJavaFactory factory = new SWRLJavaFactory(owlModel);
+    	owlModel.setOWLJavaFactory(factory);
+        
+    	if(owlModel instanceof JenaOWLModel) OWLJavaFactoryUpdater.run((JenaOWLModel)owlModel);
+    }
   } // SWRLFactory
   
   private void initSWRLClasses() 
