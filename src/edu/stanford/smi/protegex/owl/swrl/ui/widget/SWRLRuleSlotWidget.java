@@ -35,11 +35,13 @@ public class SWRLRuleSlotWidget extends AbstractSlotWidget {
 	private LabeledComponent swrlTextAreaLabeledComponent;
 	
 	private String ruleExpressionInKb = new String();
-        private SWRLParser parser;
+    private SWRLParser parser;
 
+    private boolean committed = false;
+    
 	private FocusListener _focusListener = new FocusAdapter() {
 		public void focusLost(FocusEvent event) {
-			commitChanges();
+			committed = commitChanges();
 		}
 	};
 
@@ -115,6 +117,7 @@ public class SWRLRuleSlotWidget extends AbstractSlotWidget {
 		
 		commitChanges();
 		
+		committed = false;
 		updateGUI((SWRLImp) newInstance);
 
 		super.setInstance(newInstance);
@@ -123,16 +126,16 @@ public class SWRLRuleSlotWidget extends AbstractSlotWidget {
 
 	protected void updateGUI(SWRLImp imp) {
 		swrlTextAreaLabeledComponent.setHeaderLabel(SWRL_RULE_LABEL);
-		
+
 		ruleExpressionInKb = imp == null ? "" : imp.getBrowserText();		
 		ruleExpressionInKb = SWRLTextArea.reformatText(ruleExpressionInKb);
-		
-                if (ruleExpressionInKb.equals(DefaultSWRLImp.EMPTY_RULE_TEXT)) swrlTextArea.setText("");
-                else swrlTextArea.setText(ruleExpressionInKb);
 
-                swrlTextArea.getErrorSymbolDisplay().displayError((Throwable) null);
-                swrlTextArea.setBackground(Color.white);
-                setNormalBorder();
+		if (ruleExpressionInKb.equals(DefaultSWRLImp.EMPTY_RULE_TEXT)) swrlTextArea.setText("");
+		else swrlTextArea.setText(ruleExpressionInKb);
+
+		swrlTextArea.getErrorSymbolDisplay().displayError((Throwable) null);
+		swrlTextArea.setBackground(Color.white);
+		setNormalBorder();
 	}
 
 
@@ -144,7 +147,18 @@ public class SWRLRuleSlotWidget extends AbstractSlotWidget {
 		}
 
 		try {
-			swrlimp.setExpression(swrlTextArea.getText());			
+			
+			if (committed) {
+				return true;
+			}
+
+			//if the rule text has not changed, then don't commit
+			String swrlImpText = SWRLTextArea.reformatText(swrlimp.getBrowserText());
+			if (swrlImpText.equals(swrlTextArea.getText())) {
+				return true;
+			}
+			
+			swrlimp.setExpression(swrlTextArea.getText());	
 			ruleExpressionInKb = swrlTextArea.getText();
 			
 			swrlTextAreaLabeledComponent.setHeaderLabel(SWRL_RULE_LABEL);
@@ -181,4 +195,15 @@ public class SWRLRuleSlotWidget extends AbstractSlotWidget {
 		return swrlTextArea.getText();
 	}
 
+	@Override
+	public void dispose() {
+		try {
+			swrlTextArea.removeFocusListener(_focusListener);
+		} catch (Throwable t) {
+			//do nothing
+		}
+		
+		super.dispose();
+	}
+	
 }
