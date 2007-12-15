@@ -11,6 +11,8 @@ import edu.stanford.smi.protegex.owl.swrl.model.*;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.RDFSLiteral;
 
+import edu.stanford.smi.protege.plugin.PluginUtilities;
+
 import java.util.*;
 
 /**
@@ -25,13 +27,9 @@ public class BridgeFactory
   } // static
 
   static {
-
-    try { // TODO:  Hack until we can do a proper class load with the manifest
-      Class.forName("edu.stanford.smi.protegex.owl.swrl.bridge.jess.SWRLJessBridge");
-    } catch (ClassNotFoundException e) {
-      System.err.println("SWRLJessBridge load failed");
-    } // try
-  } // static
+    Class cls = PluginUtilities.forName("edu.stanford.smi.protegex.owl.swrl.bridge.jess.SWRLJessBridge", true);
+    if (cls == null) System.err.println("SWRLJessBridge load failed - could not find class");
+   } // static
 
   public static void registerBridge(String bridgeName, BridgeCreator bridgeCreator)
   {
