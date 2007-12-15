@@ -351,7 +351,7 @@ public abstract class AbstractSWRLRuleEngineBridge implements SWRLRuleEngineBrid
   public void createOWLIndividuals(Set<OWLIndividual> individuals) throws SWRLRuleEngineBridgeException
   {
     for (OWLIndividual owlIndividual : individuals) createOWLIndividual(owlIndividual);
-  } // createOWLDatatypePropertyAssertionAxioms
+  } // createOWLIndividuals
 
   public OWLDatatypePropertyAssertionAxiom createOWLDatatypePropertyAssertionAxiom(OWLIndividual subject, OWLProperty property,
                                                                                    OWLDatatypeValue object) 

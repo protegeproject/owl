@@ -10,6 +10,8 @@ import edu.stanford.smi.protegex.owl.model.RDFSLiteral;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
 
+import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreModel;
+
 import edu.stanford.smi.protegex.owl.swrl.util.SWRLOWLUtil;
 
 import java.util.*;
@@ -109,62 +111,51 @@ public abstract class OWLPropertyImpl extends BuiltInArgumentImpl implements OWL
     Set<OWLPropertyAssertionAxiom> propertyAssertions = new HashSet<OWLPropertyAssertionAxiom>();
     edu.stanford.smi.protegex.owl.model.OWLProperty property = SWRLOWLUtil.getOWLProperty(owlModel, propertyName);
     OWLPropertyAssertionAxiom axiom;
+    RDFResource subject;
 
     if (property == null) throw new InvalidPropertyNameException(propertyName);
 
-    Iterator domainsIterator = property.getUnionDomain(true).iterator();
-    while (domainsIterator.hasNext()) {
-      Object domain = domainsIterator.next();
-      if (!(domain instanceof RDFSClass)) continue; // Should only return RDFResource object, but...
-      RDFSClass rdfsClass = (RDFSClass)domain;
+    TripleStoreModel tsm = owlModel.getTripleStoreModel();
+    Iterator<RDFResource> it = tsm.listSubjects(property);
+    while (it.hasNext()) {
+      subject = it.next();
+      if (!(subject instanceof edu.stanford.smi.protegex.owl.model.OWLIndividual)) continue; // Deal only with OWL individuals (could return metaclass, for example)
+      edu.stanford.smi.protegex.owl.model.OWLIndividual subjectIndividual = (edu.stanford.smi.protegex.owl.model.OWLIndividual)subject;
+      
+      for (Object object : subject.getPropertyValues(property)) {
         
-      Iterator individualsIterator = rdfsClass.getInstances(true).iterator();
-      while (individualsIterator.hasNext()) {
-        Object object2 = individualsIterator.next();          
-        if (!(object2 instanceof edu.stanford.smi.protegex.owl.model.OWLIndividual)) continue; // Deal only with OWL individuals (could return metaclass, for example)
-        edu.stanford.smi.protegex.owl.model.OWLIndividual domainIndividual = (edu.stanford.smi.protegex.owl.model.OWLIndividual)object2;
-        
-        if (domainIndividual.hasPropertyValue(property)) {
-          if (property.hasObjectRange()) { // Object property
-            Iterator individualValuesIterator = domainIndividual.getPropertyValues(property).iterator();
-            while (individualValuesIterator.hasNext()) {
-              RDFResource resource = (RDFResource)individualValuesIterator.next();
-              if (resource instanceof edu.stanford.smi.protegex.owl.model.OWLIndividual) {
-                edu.stanford.smi.protegex.owl.model.OWLIndividual rangeIndividual = (edu.stanford.smi.protegex.owl.model.OWLIndividual)resource;
-                OWLIndividual subject = OWLFactory.createOWLIndividual(owlModel, domainIndividual.getName());
-                OWLIndividual object = OWLFactory.createOWLIndividual(owlModel, rangeIndividual.getName());
-                axiom = OWLFactory.createOWLObjectPropertyAssertionAxiom(subject, OWLFactory.createOWLObjectProperty(owlModel, propertyName), object);
-                propertyAssertions.add(axiom);                
-              } else if (resource instanceof edu.stanford.smi.protegex.owl.model.OWLNamedClass) { // This will be OWL Full
-                edu.stanford.smi.protegex.owl.model.OWLNamedClass rangeClass = (edu.stanford.smi.protegex.owl.model.OWLNamedClass)resource;
-                OWLIndividual subject = OWLFactory.createOWLIndividual(owlModel, domainIndividual.getName());
-                OWLClass object = OWLFactory.createOWLClass(owlModel, rangeClass.getName());
-                axiom = OWLFactory.createOWLClassPropertyAssertionAxiom(subject, OWLFactory.createOWLObjectProperty(owlModel, propertyName), object);
-                propertyAssertions.add(axiom);                
-              } else if (resource instanceof edu.stanford.smi.protegex.owl.model.OWLProperty) { // This will be OWL Full
-                edu.stanford.smi.protegex.owl.model.OWLProperty rangeProperty = (edu.stanford.smi.protegex.owl.model.OWLProperty)resource;
-                OWLIndividual subject = OWLFactory.createOWLIndividual(owlModel, domainIndividual.getName());
-                OWLProperty object;
-                if (rangeProperty.isObjectProperty()) object = OWLFactory.createOWLObjectProperty(owlModel, rangeProperty.getName());
-                else object = OWLFactory.createOWLDatatypeProperty(owlModel, rangeProperty.getName());
-                axiom = OWLFactory.createOWLPropertyPropertyAssertionAxiom(subject, OWLFactory.createOWLObjectProperty(owlModel, propertyName), object);
-                propertyAssertions.add(axiom);                
-              } // if
-            } // while
-          } else { // DatatypeProperty
-            Iterator literalsIterator = domainIndividual.getPropertyValueLiterals(property).iterator();
-            while (literalsIterator.hasNext()) {
-              RDFSLiteral literal = (RDFSLiteral)literalsIterator.next();
-              OWLIndividual subject = OWLFactory.createOWLIndividual(owlModel, domainIndividual.getName());
-              OWLDatatypeValue object = OWLFactory.createOWLDatatypeValue(owlModel, literal);
-              axiom = OWLFactory.createOWLDatatypePropertyAssertionAxiom(subject, OWLFactory.createOWLDatatypeProperty(owlModel, propertyName), object);
-              propertyAssertions.add(axiom);
-            } // while
+        if (property.hasObjectRange()) { // Object property
+          if (object instanceof edu.stanford.smi.protegex.owl.model.OWLIndividual) {
+            edu.stanford.smi.protegex.owl.model.OWLIndividual objectIndividual = (edu.stanford.smi.protegex.owl.model.OWLIndividual)object;
+            OWLIndividual subjectOWLIndividual = OWLFactory.createOWLIndividual(owlModel, subjectIndividual.getName());
+            OWLIndividual objectOWLIndividual = OWLFactory.createOWLIndividual(owlModel, objectIndividual.getName());
+            axiom = OWLFactory.createOWLObjectPropertyAssertionAxiom(subjectOWLIndividual, OWLFactory.createOWLObjectProperty(owlModel, propertyName), objectOWLIndividual);
+            propertyAssertions.add(axiom);
+          } else if (object instanceof edu.stanford.smi.protegex.owl.model.OWLNamedClass) { // This will be OWL Full
+            edu.stanford.smi.protegex.owl.model.OWLNamedClass objectClass = (edu.stanford.smi.protegex.owl.model.OWLNamedClass)object;
+            OWLIndividual subjectOWLIndividual = OWLFactory.createOWLIndividual(owlModel, subjectIndividual.getName());
+            OWLClass objectOWLClass = OWLFactory.createOWLClass(owlModel, objectClass.getName());
+            axiom = OWLFactory.createOWLClassPropertyAssertionAxiom(subjectOWLIndividual, OWLFactory.createOWLObjectProperty(owlModel, propertyName), objectOWLClass);
+            propertyAssertions.add(axiom);
+          } else if (object instanceof edu.stanford.smi.protegex.owl.model.OWLProperty) { // This will be OWL Full
+            edu.stanford.smi.protegex.owl.model.OWLProperty objectProperty = (edu.stanford.smi.protegex.owl.model.OWLProperty)object;
+            OWLIndividual subjectOWLIndividual = OWLFactory.createOWLIndividual(owlModel, subjectIndividual.getName());
+            OWLProperty objectOWLProperty;
+            if (objectProperty.isObjectProperty()) objectOWLProperty = OWLFactory.createOWLObjectProperty(owlModel, objectProperty.getName());
+            else objectOWLProperty = OWLFactory.createOWLDatatypeProperty(owlModel, objectProperty.getName());
+            axiom = OWLFactory.createOWLPropertyPropertyAssertionAxiom(subjectOWLIndividual, OWLFactory.createOWLObjectProperty(owlModel, propertyName), objectOWLProperty);
+            propertyAssertions.add(axiom);                
           } // if
+        } else { // DatatypeProperty
+          OWLIndividual subjectOWLIndividual = OWLFactory.createOWLIndividual(owlModel, subjectIndividual.getName());
+          RDFSLiteral literal = owlModel.asRDFSLiteral(object);
+          OWLDatatypeValue objectOWLDatatypeValue = OWLFactory.createOWLDatatypeValue(owlModel, literal);
+          axiom = OWLFactory.createOWLDatatypePropertyAssertionAxiom(subjectOWLIndividual, OWLFactory.createOWLDatatypeProperty(owlModel, propertyName), objectOWLDatatypeValue);
+          propertyAssertions.add(axiom);
         } // if
-      } // while
+      } // for
     } // while
-    
+      
     return propertyAssertions;
   } // buildOWLPropertyAssertionAxioms
 

@@ -49,14 +49,14 @@ public class BridgePluginManager
       Class.forName("edu.stanford.smi.protegex.owl.swrl.bridge.jess.SWRLJessBridge");
       Class.forName("edu.stanford.smi.protegex.owl.swrl.bridge.jess.ui.SWRLJessTab");
     } catch (ClassNotFoundException e) {
-      System.err.println("SWRLJessBridge load failed: Could not find jess.Rete - or an error occured on initialization");
+      System.err.println("SWRLJessBridge load failed: could not find jess.Rete - or an error occured on initialization");
     } // try
 
     try { // TODO:  Hack until we can do a proper class load with the manifest
       Class.forName("jess.Rete");
       Class.forName("edu.stanford.smi.protegex.owl.swrl.sqwrl.ui.SQWRLQueryTab");
     } catch (ClassNotFoundException e) {
-      System.err.println("SQWRLQueryTab load failed: Could not find jess.Rete - or an error occured on initialization");
+      System.err.println("SQWRLQueryTab load failed: could not find jess.Rete - or an error occured on initialization");
     } // try
 
   } // static
