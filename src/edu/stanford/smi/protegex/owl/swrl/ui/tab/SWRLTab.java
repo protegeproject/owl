@@ -16,6 +16,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 
 import edu.stanford.smi.protege.model.Project;
+import edu.stanford.smi.protege.ui.ProjectManager;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protege.widget.AbstractTabWidget;
 import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
@@ -76,6 +77,10 @@ public class SWRLTab extends AbstractTabWidget
       to.setVisible(true);
       RDFProperty from = owlModel.getOWLObjectProperty(edu.stanford.smi.protege.model.Model.Slot.FROM);
       from.setVisible(true);
+      
+      SWRLProjectPlugin.setSWRLClassesAndPropertiesVisible(getProject(), false);
+      ProjectManager.getProjectManager().reloadUI(true);
+      
     } catch (Exception ex) {
       ProtegeUI.getModalDialogFactory().showErrorMessageDialog(owlModel, "Could not activate SWRLTab: " + ex +
                                                                "\n. Your project might be in an inconsistent state now.");
