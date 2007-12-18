@@ -44,6 +44,7 @@ import edu.stanford.smi.protege.model.framestore.FrameStoreManager;
 import edu.stanford.smi.protege.model.framestore.MergingNarrowFrameStore;
 import edu.stanford.smi.protege.model.framestore.NarrowFrameStore;
 import edu.stanford.smi.protege.server.framestore.background.ServerCacheStateMachine;
+import edu.stanford.smi.protege.util.ApplicationProperties;
 import edu.stanford.smi.protege.util.CollectionUtilities;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protege.util.URIUtilities;
@@ -137,6 +138,17 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
         implements NamespaceManagerListener, OWLModel {
 
     private static transient Logger log = Log.getLogger(AbstractOWLModel.class);
+    
+    /**
+     * If the value of this property key is true in protege.properties, 
+     * the default mechanism of the underlying frame model will be used
+     * at class, property and individual creation time. 
+     * It false, the defaults mechanism will not be used, which might bring
+     * performance improvements. 
+     * If false, the default mechanism will be disabled. 
+     * The default value of this property is false. 
+     */
+    public static final String OWL_MODEL_INIT_DEFAULTS_AT_CREATION = "owlmodel.init.defaults";
 
     private Cls owlAllDifferentClass;
 
@@ -391,8 +403,11 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
             "ru"
     };
 
-    private boolean loadDefaults = true;
+    //TT -testing
+    //private boolean loadDefaults = true;
 
+    private boolean loadDefaults = false;
+    
     private NamespaceManager namespaceManager;
 
     private Instance rdfNilIndividual;
@@ -435,6 +450,8 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
         setFrameFactory(new OWLJavaFactory(this));
         
+        initializeLoadDefaults();
+        
         resetSystemFrames();
     }
 
@@ -444,10 +461,17 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
         setFrameFactory(new OWLJavaFactory(this));
         
+        initializeLoadDefaults();
+        
         resetSystemFrames();
         initialize(namespaceManager);
     }
 
+    
+    protected void initializeLoadDefaults() {
+    	loadDefaults = ApplicationProperties.getBooleanProperty(OWL_MODEL_INIT_DEFAULTS_AT_CREATION, false);
+    }
+    
     private void resetSystemFrames() {
         MergingNarrowFrameStore mnfs = MergingNarrowFrameStore.get(this);
         if (mnfs == null) {
@@ -731,10 +755,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
         owlClassMetaCls.setAbstract(true);
 
         rdfsNamedClassClass = createSystemCls(RDFSNames.Cls.NAMED_CLASS, Arrays.asList(new Cls[]{
-                getRootCls(),
-                owlClassMetaCls,
-                standardCls
-        }), standardCls);
+                getRootCls(), owlClassMetaCls, standardCls}), standardCls);
         rdfsNamedClassClass.setDirectType(rdfsNamedClassClass);
         owlClassMetaCls.setDirectType(rdfsNamedClassClass);
         owlNamedClassClass = createSystemCls(OWLNames.Cls.NAMED_CLASS, rdfsNamedClassClass);
@@ -1447,7 +1468,19 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
         return restriction;
     }
 
+    
+    @Override
+    public synchronized Instance createInstance(String name, Cls directType) {     	
+    	// TT: should we ignore the loadDefaults for non-system classes?
+    	return super.createInstance(name, directType, loadDefaults);
+    }
 
+    @Override
+    public synchronized Instance createInstance(String name, Collection directTypes) {    
+	    // TT: should we ignore the loadDefaults for non-system classes?
+       	return createInstance(null, name, directTypes, loadDefaults);
+    }
+    
     public synchronized Instance createInstance(FrameID id, String name, Collection directTypes, boolean initializeDefaults) {
         if (name == null) {
             if (isDefaultAnonymousType(directTypes)) {
@@ -2327,7 +2360,6 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
         for (; ;) {
             String name = ANONYMOUS_BASE + anonCount;
             if (getFrame(name) == null) {
-            	anonCount++;
                 return name;
             }
             anonCount++;
