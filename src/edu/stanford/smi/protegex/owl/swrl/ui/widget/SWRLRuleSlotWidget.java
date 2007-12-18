@@ -37,11 +37,10 @@ public class SWRLRuleSlotWidget extends AbstractSlotWidget {
 	private String ruleExpressionInKb = new String();
     private SWRLParser parser;
 
-    private boolean committed = false;
     
 	private FocusListener _focusListener = new FocusAdapter() {
 		public void focusLost(FocusEvent event) {
-			committed = commitChanges();
+			commitChanges();
 		}
 	};
 
@@ -117,7 +116,6 @@ public class SWRLRuleSlotWidget extends AbstractSlotWidget {
 		
 		commitChanges();
 		
-		committed = false;
 		updateGUI((SWRLImp) newInstance);
 
 		super.setInstance(newInstance);
@@ -146,18 +144,7 @@ public class SWRLRuleSlotWidget extends AbstractSlotWidget {
 			return true;
 		}
 
-		try {
-			
-			if (committed) {
-				return true;
-			}
-
-			//if the rule text has not changed, then don't commit
-			String swrlImpText = SWRLTextArea.reformatText(swrlimp.getBrowserText());
-			if (swrlImpText.equals(swrlTextArea.getText())) {
-				return true;
-			}
-			
+		try {			
 			swrlimp.setExpression(swrlTextArea.getText());	
 			ruleExpressionInKb = swrlTextArea.getText();
 			
@@ -202,6 +189,8 @@ public class SWRLRuleSlotWidget extends AbstractSlotWidget {
 		} catch (Throwable t) {
 			//do nothing
 		}
+		
+		parser=null;
 		
 		super.dispose();
 	}
