@@ -14,7 +14,7 @@ package edu.stanford.smi.protegex.owl.model;
 public interface OWLAnonymousClass extends OWLClass {
 
     /**
-     * @deprecated This routine performs very slowly.  Usually this
+     * This routine performs very slowly.  Usually this
      * can be avoided by keeping track of how this OWLAnonymous class was constructed.
      * 
      * Gets the root of the expression three where this is a part of.
