@@ -14,7 +14,8 @@ public interface SQWRLResult
   List<String> getColumnNames() throws SQWRLException;
   int getNumberOfColumns() throws SQWRLException;
   String getColumnName(int columnIndex) throws SQWRLException;
-   
+
+  boolean isEmpty() throws SQWRLException;
   int getNumberOfRows() throws SQWRLException;
   void reset() throws SQWRLException;
   void next() throws SQWRLException;

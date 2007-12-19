@@ -357,7 +357,7 @@ public class Period
   private void orderCheck() throws TemporalException
   {
     if (startInstant.after(finishInstant, Temporal.FINEST)) 
-      throw new TemporalException("start must be beforexxx or equal to the finish in a period: (" +
+      throw new TemporalException("start must be before or equal to finish in a period: (" +
 				  startInstant.toString(Temporal.FINEST) + ", " + finishInstant.toString(Temporal.FINEST) + ")");
 
   } // orderCheck
