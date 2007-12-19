@@ -113,7 +113,7 @@ public class DefaultSelectionDialogFactory extends AbstractSelectionDialogFactor
         Instance instance = null;
         if (collection != null && collection.size() > 0){
             Collection modifiedVis = ensureResourcesHaveVisibility(collection, true);
-            SelectInstanceFromCollectionPanel panel = new SelectInstanceFromCollectionPanel(collection, initialSelection);
+            SelectInstanceFromCollectionPanelWithFinder panel = new SelectInstanceFromCollectionPanelWithFinder(collection, initialSelection);
             int result = ProtegeUI.getModalDialogFactory().showDialog(component, panel, label, ModalDialogFactory.MODE_OK_CANCEL);
             ensureResourcesHaveVisibility(modifiedVis, false);
             if (result == ModalDialogFactory.OPTION_OK) {
