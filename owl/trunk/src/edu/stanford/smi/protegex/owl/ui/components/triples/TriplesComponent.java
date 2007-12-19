@@ -19,8 +19,7 @@ public class TriplesComponent extends AbstractTriplesComponent {
     
     private Action deleteRowAction;
     private Action createObjectPropertyValueAction;
-    private Action createDatatypePropertyValueAction;
-    private Action todoAction;
+    private Action createDatatypePropertyValueAction;    
     private Action addResourceAction;
 
     public TriplesComponent(RDFProperty predicate) {
