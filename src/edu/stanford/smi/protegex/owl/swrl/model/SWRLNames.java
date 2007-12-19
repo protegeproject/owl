@@ -126,14 +126,14 @@ public interface SWRLNames extends OWLNames {
     public final static String TOKENIZE = SWRLB_PREFIX + ProtegeNames.PREFIX_LOCALNAME_SEPARATOR + "tokenize";
     public final static String YEAR_MONTH_DURATION = SWRLB_PREFIX + ProtegeNames.PREFIX_LOCALNAME_SEPARATOR + "yearMonthDuration";
     public final static String DAY_TIME_DURATION = SWRLB_PREFIX + ProtegeNames.PREFIX_LOCALNAME_SEPARATOR + "dayTimeDuration";
-    public final static String DATETIME = SWRLB_PREFIX + ProtegeNames.PREFIX_LOCALNAME_SEPARATOR + "datetime";
+    public final static String DATETIME = SWRLB_PREFIX + ProtegeNames.PREFIX_LOCALNAME_SEPARATOR + "dateTime";
     public final static String DATE = SWRLB_PREFIX + ProtegeNames.PREFIX_LOCALNAME_SEPARATOR + "date";
     public final static String TIME = SWRLB_PREFIX + ProtegeNames.PREFIX_LOCALNAME_SEPARATOR + "time";
     public final static String ADD_YEAR_MONTH_DURATIONS = SWRLB_PREFIX + ProtegeNames.PREFIX_LOCALNAME_SEPARATOR + "addYearMonthDurations";
     public final static String SUBTRACT_YEAR_MONTH_DURATIONS = SWRLB_PREFIX + ProtegeNames.PREFIX_LOCALNAME_SEPARATOR + "subtractYearMonthDurations";
     public final static String MULTIPLY_YEAR_MONTH_DURATION = SWRLB_PREFIX + ProtegeNames.PREFIX_LOCALNAME_SEPARATOR + "multiplyYearMonthDuration";
     public final static String DIVIDE_YEAR_MONTH_DURATIONS = SWRLB_PREFIX + ProtegeNames.PREFIX_LOCALNAME_SEPARATOR + "divideYearMonthDurations";
-    public final static String ADD_DAY_TIME_DURATIONS = SWRLB_PREFIX + ProtegeNames.PREFIX_LOCALNAME_SEPARATOR + "addDateTimeDurations";
+    public final static String ADD_DAY_TIME_DURATIONS = SWRLB_PREFIX + ProtegeNames.PREFIX_LOCALNAME_SEPARATOR + "addDayTimeDurations";
     public final static String SUBTRACT_DAY_TIME_DURATIONS = SWRLB_PREFIX + ProtegeNames.PREFIX_LOCALNAME_SEPARATOR + "subtractDayTimeDurations";
     public final static String MULTIPLY_DAY_TIME_DURATIONS = SWRLB_PREFIX + ProtegeNames.PREFIX_LOCALNAME_SEPARATOR + "multiplyDayTimeDurations";
     public final static String DIVIDE_DAY_TIME_DURATION = SWRLB_PREFIX + ProtegeNames.PREFIX_LOCALNAME_SEPARATOR + "divideDayTimeDuration";
@@ -147,7 +147,7 @@ public interface SWRLNames extends OWLNames {
     public final static String ADD_DAY_TIME_DURATION_TO_DATE = SWRLB_PREFIX + ProtegeNames.PREFIX_LOCALNAME_SEPARATOR + "addDayTimeDurationToDate";
     public final static String SUBTRACT_YEAR_MONTH_DURATION_FROM_DATE = SWRLB_PREFIX + ProtegeNames.PREFIX_LOCALNAME_SEPARATOR + "subtractYearMonthDurationFromDate";
     public final static String SUBTRACT_DAY_TIME_DURATION_FROM_DATE = SWRLB_PREFIX + ProtegeNames.PREFIX_LOCALNAME_SEPARATOR + "subtractDayTimeDurationFromDate";
-    public final static String ADD_DAY_TIME_DURATION_TO_TIME = SWRLB_PREFIX + ProtegeNames.PREFIX_LOCALNAME_SEPARATOR + "addDatTimeDurationToTime";
+    public final static String ADD_DAY_TIME_DURATION_TO_TIME = SWRLB_PREFIX + ProtegeNames.PREFIX_LOCALNAME_SEPARATOR + "addDayTimeDurationToTime";
     public final static String SUBTRACT_DAY_TIME_DURATION_FROM_TIME = SWRLB_PREFIX + ProtegeNames.PREFIX_LOCALNAME_SEPARATOR + "subtractDatTimeDurationFromTime";
     public final static String SUBTRACT_DATETIMES_YIELDING_YEAR_MONTH_DURATION = SWRLB_PREFIX + ProtegeNames.PREFIX_LOCALNAME_SEPARATOR + "subtractDatetimesYieldingYearMonthDuration";
     public final static String SUBTRACT_DATETIMES_YIELDING_DAY_TIME_DURATION = SWRLB_PREFIX + ProtegeNames.PREFIX_LOCALNAME_SEPARATOR + "subtractDatetimesYieldingDayTimeDuration";

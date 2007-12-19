@@ -1,7 +1,7 @@
   
 package edu.stanford.smi.protegex.owl.swrl.exceptions;
 
-public class SWRLRuleEngineException extends Throwable
+public class SWRLRuleEngineException extends Exception
 {
   public SWRLRuleEngineException(String message) { super(message); }
 

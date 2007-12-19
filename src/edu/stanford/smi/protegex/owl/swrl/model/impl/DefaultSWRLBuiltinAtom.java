@@ -63,9 +63,9 @@ public class DefaultSWRLBuiltinAtom extends DefaultSWRLAtom implements SWRLBuilt
         Object o = list.getFirst();
         if (o == null) s += "<DELETED_LIST>";
         else if (o instanceof RDFUntypedResource) {
-          s += SWRLUtil.getSWRLBrowserText((RDFUntypedResource)o, "ARGUMENT");
+          s += SWRLUtil.getSWRLBrowserText(o, "ARGUMENT");
         } else if (o instanceof RDFResource) {
-          s += ((RDFResource)o).getBrowserText();
+          s += SWRLUtil.getSWRLBrowserText(o, "ARGUMENT");
         } else {
           RDFSLiteral l = list.getFirstLiteral();
           s += SWRLUtil.getSWRLBrowserText(l, "ARGUMENT");

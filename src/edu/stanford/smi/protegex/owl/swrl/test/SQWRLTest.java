@@ -3,9 +3,12 @@ package edu.stanford.smi.protegex.owl.swrl.test;
 
 import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
-import edu.stanford.smi.protegex.owl.swrl.SWRLRuleEngine;
+import edu.stanford.smi.protegex.owl.swrl.*;
+import edu.stanford.smi.protegex.owl.swrl.bridge.*;
+import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.*;
+import edu.stanford.smi.protegex.owl.swrl.sqwrl.*;
+import edu.stanford.smi.protegex.owl.swrl.sqwrl.exceptions.SQWRLException;
 import edu.stanford.smi.protegex.owl.swrl.util.SWRLOWLUtil;
-import edu.stanford.smi.protegex.owl.swrl.SWRLRuleEngineFactory;
 import edu.stanford.smi.protegex.owl.swrl.exceptions.SWRLRuleEngineException;
 import edu.stanford.smi.protegex.owl.swrl.exceptions.SWRLOWLUtilException;
 
@@ -16,7 +19,7 @@ public class SQWRLTest
   public static void main(String args[]) 
   {
     OWLModel owlModel;
-    SWRLRuleEngine ruleEngine;
+    SWRLRuleEngineBridge ruleEngine;
     String owlFileName = "";
 
     if (args.length == 1) {
@@ -25,7 +28,30 @@ public class SQWRLTest
     
     try {
       owlModel = SWRLOWLUtil.createJenaOWLModel(owlFileName);
+      ruleEngine = BridgeFactory.createBridge(owlModel);
+      ruleEngine.infer();
 
+      for (OWLPropertyAssertionAxiom axiom : ruleEngine.getInferredPropertyAssertionAxioms()) {
+        if (axiom instanceof OWLDatatypePropertyAssertionAxiom) {
+          OWLDatatypePropertyAssertionAxiom da = (OWLDatatypePropertyAssertionAxiom)axiom;
+        }
+      }
+
+      SQWRLResult result = ruleEngine.getSQWRLResult("Rule-6");
+      while (result.hasNext()) {
+        DatatypeValue value = result.getDatatypeValue("?y");
+        System.err.println("value: " + value);
+        System.err.println("value isString: " + value.isString());
+        System.err.println("value isBoolean: " + value.isBoolean());
+        result.next();
+      } // while
+
+    } catch (SQWRLException e) {
+      System.err.println("Exception: " + e.getMessage());
+      e.printStackTrace();
+    } catch (SWRLRuleEngineException e) {
+      System.err.println("Exception: " + e.getMessage());
+      e.printStackTrace();
     } catch (SWRLOWLUtilException e) {
       System.err.println("Exception: " + e.getMessage());
       e.printStackTrace();
@@ -34,7 +60,7 @@ public class SQWRLTest
 
   private static void Usage()
   {
-    System.err.println("Usage: Test <owlFileName>");
+    System.err.println("Usage: SQWRLTest <owlFileName>");
     System.exit(1);
   } // Usage
 

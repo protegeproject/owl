@@ -277,6 +277,7 @@ public class ResultImpl implements ResultGenerator, SQWRLResult, Serializable
     isRowOpen = false;
     rowDataColumnIndex = 0;
     if (getNumberOfRows() > 0) rowIndex = 0;
+    else rowIndex = -1;
 
     if (hasAggregates) rows = aggregate(rows, allColumnNames, aggregateColumnIndexes); // Aggregation implies killing duplicate rows
     else if (isDistinct) rows = distinct(rows);
@@ -290,7 +291,7 @@ public class ResultImpl implements ResultGenerator, SQWRLResult, Serializable
   {
     columnVectorMap = new HashMap<String, List<ResultValue>>();
 
-    if (getNumberOfColumns() > 0 && getNumberOfRows() > 0) {
+    if (getNumberOfColumns() > 0) {
       List<List<ResultValue>> columns = new ArrayList(getNumberOfColumns());
       
       for (int c = 0; c < getNumberOfColumns(); c++) columns.add(new ArrayList<ResultValue>(getNumberOfRows()));
@@ -311,6 +312,8 @@ public class ResultImpl implements ResultGenerator, SQWRLResult, Serializable
 
     return rows.size(); 
   } // getNumberOfRows
+
+  public boolean isEmpty() throws SQWRLException { return getNumberOfRows() == 0; }
 
   public void reset() throws SQWRLException
   {

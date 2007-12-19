@@ -4,10 +4,16 @@ package edu.stanford.smi.protegex.owl.swrl.test;
 import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.swrl.SWRLRuleEngine;
+import edu.stanford.smi.protegex.owl.swrl.bridge.SWRLRuleEngineBridge;
+import edu.stanford.smi.protegex.owl.swrl.bridge.BridgeFactory;
 import edu.stanford.smi.protegex.owl.swrl.util.SWRLOWLUtil;
 import edu.stanford.smi.protegex.owl.swrl.SWRLRuleEngineFactory;
 import edu.stanford.smi.protegex.owl.swrl.exceptions.SWRLRuleEngineException;
 import edu.stanford.smi.protegex.owl.swrl.exceptions.SWRLOWLUtilException;
+
+import edu.stanford.smi.protegex.owl.swrl.bridge.builtins.swrlxml.*;
+
+import org.jdom.*;
 
 public class SWRLTest
 {
@@ -15,25 +21,27 @@ public class SWRLTest
 
   public static void main(String args[]) 
   {
+    XMLMapper xmlMapper = new XMLMapper();
+    XMLProcessor xmlProcessor = new XMLProcessor();
+    Document doc;
     OWLModel owlModel;
-    SWRLRuleEngine ruleEngine;
-    String owlFileName = "";
+    SWRLRuleEngineBridge bridge;
+    String owlFileName = "", xmlFileName = "";
 
-    if (args.length == 1) {
+    if (args.length == 2) {
       owlFileName = args[0];
+      xmlFileName = args[1];
     } else Usage();
     
     try {
       owlModel = SWRLOWLUtil.createJenaOWLModel(owlFileName);
-      ruleEngine = SWRLRuleEngineFactory.create(owlModel);
-      ruleEngine.infer();
+      bridge = BridgeFactory.createBridge(owlModel);
+      bridge.infer();
 
-      System.err.println("number of inferred individuals: " +  ruleEngine.getNumberOfInferredIndividuals());
-      System.err.println("number of inferred property assertion axioms: " + ruleEngine.getNumberOfInferredPropertyAssertionAxioms());
-    } catch (SWRLOWLUtilException e) {
-      System.err.println("Exception: " + e.getMessage());
-      e.printStackTrace();
-    } catch (SWRLRuleEngineException e) {
+      doc = xmlMapper.xmlDocumentMapping2Document(bridge);
+      xmlProcessor.generateXMLFile(doc, xmlFileName);
+
+    } catch (Exception e) {
       System.err.println("Exception: " + e.getMessage());
       e.printStackTrace();
     } // try
@@ -41,7 +49,7 @@ public class SWRLTest
 
   private static void Usage()
   {
-    System.err.println("Usage: Test <owlFileName>");
+    System.err.println("Usage: SWRLTest <owlFileName> <xmlFileName>");
     System.exit(1);
   } // Usage
 
