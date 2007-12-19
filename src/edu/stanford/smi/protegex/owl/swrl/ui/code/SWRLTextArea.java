@@ -17,7 +17,7 @@ import edu.stanford.smi.protegex.owl.ui.code.SymbolTextField;
  */
 public class SWRLTextArea extends SymbolTextArea 
 {
-  SWRLParser parser;
+  private SWRLParser parser;
 
   public SWRLTextArea(OWLModel owlModel, SymbolErrorDisplay errorDisplay) 
   {
@@ -66,5 +66,7 @@ public class SWRLTextArea extends SymbolTextArea
     updateErrorDisplay();
     closeComboBox();
   } // acceptSelectedFrame
+  
+  
 
 } // SWRLTextArea
