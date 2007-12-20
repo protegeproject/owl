@@ -93,6 +93,35 @@ public class SWRLBuiltInUtil
     return true;
   } // areAllArgumentsDoubles
 
+  public static boolean isArgumentConvertableToDouble(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException
+  {
+    return (isArgumentNumeric(argumentNumber, arguments));
+  } // isArgumentConvertableToDouble
+
+  public static boolean isArgumentConvertableToFloat(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException
+  {
+    return (isArgumentNumeric(argumentNumber, arguments) && isArgumentAShort(argumentNumber, arguments) &&
+            isArgumentAnInteger(argumentNumber, arguments) && isArgumentALong(argumentNumber, arguments) &&
+            isArgumentAFloat(argumentNumber, arguments));
+  } // isArgumentConvertableToFloat
+
+  public static boolean isArgumentConvertableToLong(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException
+  {
+    return (isArgumentNumeric(argumentNumber, arguments) && isArgumentAShort(argumentNumber, arguments) &&
+            isArgumentAnInteger(argumentNumber, arguments) && isArgumentALong(argumentNumber, arguments));
+  } // isArgumentConvertableToLong
+
+  public static boolean isArgumentConvertableToInteger(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException
+  {
+    return (isArgumentNumeric(argumentNumber, arguments) && isArgumentAShort(argumentNumber, arguments) &&
+            isArgumentAnInteger(argumentNumber, arguments));
+  } // isArgumentConvertableToInteger
+
+  public static boolean isArgumentConvertableToShort(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException
+  {
+    return (isArgumentNumeric(argumentNumber, arguments) && isArgumentAShort(argumentNumber, arguments));
+  } // isArgumentConvertableToShort
+
   public static boolean isShortMostPreciseArgument(List<BuiltInArgument> arguments) throws BuiltInException
   {
     for (int argumentNumber = 0; argumentNumber < arguments.size(); argumentNumber++) 
@@ -109,19 +138,19 @@ public class SWRLBuiltInUtil
     return true;
   } // isIntegerMostPreciseArgument
 
-  public static boolean isFloatMostPreciseArgument(List<BuiltInArgument> arguments) throws BuiltInException
+  public static boolean isLongMostPreciseArgument(List<BuiltInArgument> arguments) throws BuiltInException
   {
     for (int argumentNumber = 0; argumentNumber < arguments.size(); argumentNumber++) 
-      if (isArgumentADouble(argumentNumber, arguments) || isArgumentALong(argumentNumber, arguments)) return false;
+      if (isArgumentADouble(argumentNumber, arguments)|| isArgumentAFloat(argumentNumber, arguments)) return false;
     return true;
   } // isLongMostPreciseArgument
 
-  public static boolean isLongMostPreciseArgument(List<BuiltInArgument> arguments) throws BuiltInException
+  public static boolean isFloatMostPreciseArgument(List<BuiltInArgument> arguments) throws BuiltInException
   {
     for (int argumentNumber = 0; argumentNumber < arguments.size(); argumentNumber++) 
       if (isArgumentADouble(argumentNumber, arguments)) return false;
     return true;
-  } // isLongMostPreciseArgument
+  } // isFloatMostPreciseArgument
 
   public static boolean areAllArgumentsBooleans(List<BuiltInArgument> arguments) throws BuiltInException
   {
