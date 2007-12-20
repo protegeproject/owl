@@ -86,16 +86,46 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
 
   public boolean greaterThan(List<BuiltInArgument> arguments) throws BuiltInException
   {
-    return (compareTwoArgumentsOfOrderedType(arguments) > 0);
+    boolean result = false;
+
+    SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(2, arguments.size());
+
+    if (SWRLBuiltInUtil.isArgumentAString(0, arguments)) {   
+      String s1 = SWRLBuiltInUtil.getArgumentAsAString(0, arguments);
+      if (SWRLBuiltInUtil.isArgumentAString(1, arguments)) {
+        String s2 = SWRLBuiltInUtil.getArgumentAsAString(1, arguments);
+        result = s1.compareTo(s2) > 0;
+      } else throw new InvalidBuiltInArgumentException(1, "non comparable argument");
+    } else if (SWRLBuiltInUtil.isArgumentNumeric(0, arguments)) {
+      result = compareTwoNumericArguments(arguments) > 0;
+    } else throw new InvalidBuiltInArgumentException(0, "non comparable argument");
+
+    return result;
   } // greaterThan
 
   public boolean lessThan(List<BuiltInArgument> arguments) throws BuiltInException
   {
-    return (compareTwoArgumentsOfOrderedType(arguments) < 0);
-  } // greaterThan
+    boolean result = false;
+
+    SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(2, arguments.size());
+
+    if (SWRLBuiltInUtil.isArgumentAString(0, arguments)) {   
+      String s1 = SWRLBuiltInUtil.getArgumentAsAString(0, arguments);
+      if (SWRLBuiltInUtil.isArgumentAString(1, arguments)) {
+        String s2 = SWRLBuiltInUtil.getArgumentAsAString(1, arguments);
+        result = s1.compareTo(s2) < 0;
+      } else throw new InvalidBuiltInArgumentException(1, "non comparable argument");
+    } else if (SWRLBuiltInUtil.isArgumentNumeric(0, arguments)) {
+      result = compareTwoNumericArguments(arguments) < 0;
+    } else throw new InvalidBuiltInArgumentException(0, "non comparable argument");
+
+    return result;
+  } // lessThan
 
   public boolean equal(List<BuiltInArgument> arguments) throws BuiltInException
   {
+    boolean result = false;
+
     SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(2, arguments.size());
 
     if (SWRLBuiltInUtil.hasUnboundArguments(arguments)) 
@@ -103,10 +133,22 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
 
     if (SWRLBuiltInUtil.isArgumentABoolean(0, arguments)) {
       boolean b1 = SWRLBuiltInUtil.getArgumentAsABoolean(0, arguments);
-      boolean b2 = SWRLBuiltInUtil.getArgumentAsABoolean(1, arguments); // Performs type checking.
-      
-      return b1 == b2;
-    } else return compareTwoArgumentsOfOrderedType(arguments) == 0;
+      if (SWRLBuiltInUtil.isArgumentABoolean(1, arguments)) {
+        boolean b2 = SWRLBuiltInUtil.getArgumentAsABoolean(1, arguments);
+        result = b1 == b2;
+      } else result = false;
+    } else if (SWRLBuiltInUtil.isArgumentAString(0, arguments)) {   
+      String s1 = SWRLBuiltInUtil.getArgumentAsAString(0, arguments);
+      if (SWRLBuiltInUtil.isArgumentAString(1, arguments)) {
+        String s2 = SWRLBuiltInUtil.getArgumentAsAString(1, arguments);
+        result = s1.compareTo(s2) == 0;
+      } else result = false;
+    } else if (SWRLBuiltInUtil.isArgumentNumeric(0, arguments)) {
+      if (!SWRLBuiltInUtil.isArgumentNumeric(1, arguments)) throw new InvalidBuiltInArgumentException(1, "expecting numeric argument");
+      result = compareTwoNumericArguments(arguments) == 0;
+    } else throw new InvalidBuiltInArgumentException(0, "invalid argument");
+
+    return result;
   } // equal
 
   public boolean notEqual(List<BuiltInArgument> arguments) throws BuiltInException
@@ -954,50 +996,38 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
     return result;
   } // empty
 
-  // Private methods.
+  // Private methods
 
-  private static int compareTwoArgumentsOfOrderedType(List<BuiltInArgument> arguments) throws BuiltInException
+  private int compareTwoNumericArguments(List<BuiltInArgument> arguments) throws BuiltInException
   {
-    int result = 0; // Should be assigned by end of method.
-    
-    SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(2, arguments.size());
-    SWRLBuiltInUtil.checkForUnboundArguments(arguments);
-    SWRLBuiltInUtil.checkThatAllArgumentsAreOfAnOrderedType(arguments);
+    int result = 0;
 
-    if (SWRLBuiltInUtil.isArgumentAString(0, arguments)) {   
-      String s1 = SWRLBuiltInUtil.getArgumentAsAString(0, arguments);
-      String s2 = SWRLBuiltInUtil.getArgumentAsAString(1, arguments); // Performs type checking.
+    SWRLBuiltInUtil.checkThatAllArgumentsAreNumeric(arguments);
 
-      result = s1.compareTo(s2);
-    } else if (SWRLBuiltInUtil.isArgumentAnInteger(0, arguments)) {
-      int i1 = SWRLBuiltInUtil.getArgumentAsAnInteger(0, arguments);
-      int i2 = SWRLBuiltInUtil.getArgumentAsAnInteger(1, arguments); // Performs type checking.
-
-      if (i1 < i2) result = -1; else if (i1 > i2) result = 1; else result = 0;
-    } else if (SWRLBuiltInUtil.isArgumentALong(0, arguments)) {
-      long l1 = SWRLBuiltInUtil.getArgumentAsALong(0, arguments);
-      long l2 = SWRLBuiltInUtil.getArgumentAsALong(1, arguments); // Performs type checking.
-
-      if (l1 < l2) result = -1; else if (l1 > l2) result = 1; else result = 0;
-    } else if (SWRLBuiltInUtil.isArgumentAFloat(0, arguments)) {
-      float f1 = SWRLBuiltInUtil.getArgumentAsAFloat(0, arguments);
-      float f2 = SWRLBuiltInUtil.getArgumentAsAFloat(1, arguments); // Performs type checking.
-
-      if (f1 < f2) result = -1; else if (f1 > f2) result = 1; else result = 0;
-    } else if (SWRLBuiltInUtil.isArgumentADouble(0, arguments)) {
-      double d1 = SWRLBuiltInUtil.getArgumentAsADouble(0, arguments);
-      double d2 = SWRLBuiltInUtil.getArgumentAsADouble(1, arguments); // Performs type checking.
-
-      if (d1 < d2) result = -1; else if (d1 > d2) result =  1; else result = 0;
-    } else if (SWRLBuiltInUtil.isArgumentAShort(0, arguments)) {
+    if (SWRLBuiltInUtil.isShortMostPreciseArgument(arguments)) {
       short s1 = SWRLBuiltInUtil.getArgumentAsAShort(0, arguments);
-      short s2 = SWRLBuiltInUtil.getArgumentAsAShort(1, arguments); // Performs type checking.
-
+      short s2 = SWRLBuiltInUtil.getArgumentAsAShort(1, arguments);
       if (s1 < s2) result = -1; else if (s1 > s2) result =  1; else result = 0;
-    } else throw new InvalidBuiltInArgumentException(1, "unknown argument type");
+    } else if (SWRLBuiltInUtil.isIntegerMostPreciseArgument(arguments)) {
+      int i1 = SWRLBuiltInUtil.getArgumentAsAnInteger(0, arguments);
+      int i2 = SWRLBuiltInUtil.getArgumentAsAnInteger(1, arguments);
+      if (i1 < i2) result = -1; else if (i1 > i2) result = 1; else result = 0;
+    } else if (SWRLBuiltInUtil.isLongMostPreciseArgument(arguments)) {
+      long l1 = SWRLBuiltInUtil.getArgumentAsALong(0, arguments);
+      long l2 = SWRLBuiltInUtil.getArgumentAsALong(1, arguments); 
+      if (l1 < l2) result = -1; else if (l1 > l2) result =  1; else result = 0;
+    } else if (SWRLBuiltInUtil.isFloatMostPreciseArgument(arguments)) {
+      float f1 = SWRLBuiltInUtil.getArgumentAsAFloat(0, arguments);
+      float f2 = SWRLBuiltInUtil.getArgumentAsAFloat(1, arguments); 
+      if (f1 < f2) result = -1; else if (f1 > f2) result = 1; else result = 0;
+    } else {
+      double d1 = SWRLBuiltInUtil.getArgumentAsADouble(0, arguments);
+      double d2 = SWRLBuiltInUtil.getArgumentAsADouble(1, arguments); 
+      if (d1 < d2) result = -1; else if (d1 > d2) result =  1; else result = 0;
+    } // if
 
     return result;
-  } // greaterThan
+  } // equal
 
   private boolean mathOperation(String builtInName, List<BuiltInArgument> arguments) throws BuiltInException
   {
@@ -1055,7 +1085,10 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
     if (hasUnbound1stArgument) { // Bind the result to the first argument.
       List<BuiltInArgument> boundArguments = arguments.subList(1, arguments.size());
 
-      if (SWRLBuiltInUtil.isShortMostPreciseArgument(boundArguments))
+      if (builtInName.equalsIgnoreCase(SWRLB_DIVIDE) || builtInName.equalsIgnoreCase(SWRLB_SIN) ||
+          builtInName.equalsIgnoreCase(SWRLB_COS) || builtInName.equalsIgnoreCase(SWRLB_TAN))
+        arguments.set(0, argumentFactory.createDatatypeValueArgument(operationResult));
+      else if (SWRLBuiltInUtil.isShortMostPreciseArgument(boundArguments))
         arguments.set(0, argumentFactory.createDatatypeValueArgument((short)operationResult)); 
       else if (SWRLBuiltInUtil.isIntegerMostPreciseArgument(boundArguments))
         arguments.set(0, argumentFactory.createDatatypeValueArgument((int)operationResult));
