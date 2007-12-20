@@ -355,8 +355,7 @@ public abstract class SymbolPanel extends JPanel implements SymbolErrorDisplay {
 
         public RDFResource pickResource() {
             Collection properties = getSelectableResources();
-            return ProtegeUI.getSelectionDialogFactory().selectResourceFromCollection(SymbolPanel.this, owlModel, properties,
-                    "Select the property to insert");
+            return ProtegeUI.getSelectionDialogFactory().selectProperty(SymbolPanel.this, owlModel, properties, "Select the property to insert");
         }
     }
 }
