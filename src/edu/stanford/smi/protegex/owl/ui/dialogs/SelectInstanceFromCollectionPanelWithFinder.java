@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 
 import javax.swing.Icon;
@@ -33,7 +34,11 @@ public class SelectInstanceFromCollectionPanelWithFinder extends JComponent {
         setLayout(new BorderLayout());
         _list = ComponentFactory.createList(ModalDialog.getCloseAction(this));
         c = removeHidden(c);
-        _list.setListData(c.toArray());
+        
+        ArrayList<Instance> instanceList = new ArrayList<Instance>(c);
+        Collections.sort(instanceList);
+        
+        _list.setListData(instanceList.toArray());
         configureRenderer();
         if (initialSelection >= 0) {
             setSelection(initialSelection);
