@@ -78,7 +78,6 @@ public class OWLDatabaseModel
         super.initialize(namespaceManager);
 
         initCustomFrameStores();
-        adjustThing();
         adjustSystemClasses();
         
         getNamespaceManager().update();
