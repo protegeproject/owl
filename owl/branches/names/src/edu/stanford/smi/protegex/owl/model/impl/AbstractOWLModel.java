@@ -23,7 +23,6 @@ import com.hp.hpl.jena.vocabulary.OWL;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
-import edu.stanford.smi.protege.model.BrowserSlotPattern;
 import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.DefaultKnowledgeBase;
 import edu.stanford.smi.protege.model.Facet;
@@ -37,7 +36,6 @@ import edu.stanford.smi.protege.model.Model;
 import edu.stanford.smi.protege.model.Project;
 import edu.stanford.smi.protege.model.Reference;
 import edu.stanford.smi.protege.model.Slot;
-import edu.stanford.smi.protege.model.SystemFrames;
 import edu.stanford.smi.protege.model.ValueType;
 import edu.stanford.smi.protege.model.framestore.FrameStore;
 import edu.stanford.smi.protege.model.framestore.FrameStoreManager;
@@ -126,7 +124,6 @@ import edu.stanford.smi.protegex.owl.server.OwlStateMachine;
 import edu.stanford.smi.protegex.owl.testing.OWLTest;
 import edu.stanford.smi.protegex.owl.testing.OWLTestLibrary;
 import edu.stanford.smi.protegex.owl.ui.widget.OWLFormWidget;
-import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
 import edu.stanford.smi.protegex.owl.ui.widget.OWLWidgetMapper;
 import edu.stanford.smi.protegex.owl.util.OWLBrowserSlotPattern;
 
@@ -456,8 +453,6 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     private void resetSystemFrames() {
         MergingNarrowFrameStore mnfs = MergingNarrowFrameStore.get(this);
         if (mnfs == null) {
-            adjustThing();
-
             String name = getRootCls().getDirectType().getName();
             if (name.equals(Model.Cls.STANDARD_CLASS)) {
                 bootstrap();
@@ -465,9 +460,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
         }
         else {
             NarrowFrameStore systemFrameStore = mnfs.getSystemFrameStore();
-            NarrowFrameStore oldActiveFrameStore = mnfs.setActiveFrameStore(systemFrameStore);
-            adjustThing();
-           
+            NarrowFrameStore oldActiveFrameStore = mnfs.setActiveFrameStore(systemFrameStore);           
             bootstrap();
             mnfs.setActiveFrameStore(oldActiveFrameStore);
         }
@@ -671,17 +664,6 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     }
 
 
-    public void adjustThing() {
-        Cls thing = getRootCls();
-        thing = (Cls) thing.rename(OWLNames.Cls.THING);
-        MergingNarrowFrameStore mnfs = MergingNarrowFrameStore.get(this);
-        if (mnfs != null) {
-            mnfs.getSystemFrameStore().replaceFrame(thing);
-        }
-        // TODO do we need to replaceFrame when there is no merging narrow frame store???
-    }
-
-
     public abstract void initOWLFrameFactoryInvocationHandler();
 
 
@@ -714,10 +696,12 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     }
 
 
-    protected SystemFrames createSystemFrames() {
-        SystemFrames systemFrames = super.createSystemFrames();
-        systemFrames.replaceFrame(new DefaultRDFProperty(this, Model.SlotID.DIRECT_SUPERSLOTS));
-        return systemFrames;
+    protected OWLSystemFrames createSystemFrames() {
+        return new OWLSystemFrames(this);
+    }
+    
+    public synchronized OWLSystemFrames getSystemFrames() {
+        return (OWLSystemFrames) super.getSystemFrames();
     }
 
 
@@ -727,6 +711,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     public void bootstrap() {
     	boolean eventsEnabled = setGenerateEventsEnabled(false);
     	
+    	owlThingClass = (OWLNamedClass) getRootCls();
         nameSlot = getSlot(Model.Slot.NAME);
         Cls standardCls = getCls(Model.Cls.STANDARD_CLASS);
 
@@ -769,10 +754,8 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
         rdfPropertyClass.addDirectTemplateSlot(rdfsDomainProperty);
         rdfPropertyClass.addDirectTemplateSlot(rdfsRangeProperty);
 
-        owlInverseOfProperty = getSlot(Model.Slot.INVERSE);
+        owlInverseOfProperty = getSystemFrames().getInverseSlotSlot();
         owlInverseOfProperty.setDirectType(rdfPropertyClass);
-        owlInverseOfProperty = getSlot(Model.Slot.INVERSE);   // Re-get
-        owlInverseOfProperty = (Slot) owlInverseOfProperty.rename(OWLNames.Slot.INVERSE_OF);
         owlInverseOfProperty.setValueType(ValueType.INSTANCE);
         owlInverseOfProperty.setAllowedClses(Collections.singleton(owlObjectPropertyClass));
 
@@ -824,10 +807,8 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
         rdfsNamedClassClass.addDirectTemplateSlot(rdfsSubClassOfProperty);
 
         // rdfs:subPropertyOf
-        rdfsSubPropertyOfProperty = getSlot(Model.Slot.DIRECT_SUPERSLOTS);
-        rdfsSubPropertyOfProperty = rdfsSubPropertyOfProperty.rename(RDFSNames.Slot.SUB_PROPERTY_OF);
+        rdfsSubPropertyOfProperty = getSystemFrames().getDirectSuperslotsSlot();
         rdfsSubPropertyOfProperty.setDirectType(rdfPropertyClass);
-        rdfsSubPropertyOfProperty = (RDFProperty) getSlot(RDFSNames.Slot.SUB_PROPERTY_OF);
 
         // owl:equivalentClass
         owlEquivalentClassProperty = createInstanceSlot(OWLNames.Slot.EQUIVALENT_CLASS, rdfPropertyClass, owlClassMetaCls);
@@ -2770,14 +2751,6 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
                 (RDFSNamedClass) owlMinCardinalityClass,
                 (RDFSNamedClass) owlMaxCardinalityClass
         };
-    }
-
-
-    public synchronized Cls getRootCls() {
-        if (owlThingClass == null) {
-            owlThingClass = new DefaultOWLNamedClass(this, Model.ClsID.THING);
-        }
-        return owlThingClass;
     }
 
 
