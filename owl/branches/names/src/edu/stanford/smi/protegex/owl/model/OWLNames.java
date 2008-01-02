@@ -169,6 +169,6 @@ public interface OWLNames {
 
         FrameID NAMED_CLASS = new FrameID(Cls.NAMED_CLASS);
 
-        FrameID THING = Model.ClsID.THING;
+        FrameID THING = new FrameID(Cls.THING);
     }
 }
