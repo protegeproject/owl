@@ -12,7 +12,6 @@ import java.util.logging.Level;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JFileChooser;
-import javax.swing.JTree;
 import javax.swing.tree.TreePath;
 
 import com.hp.hpl.jena.ontology.OntModel;
