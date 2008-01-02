@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.hp.hpl.jena.rdf.arp.ALiteral;
 import com.hp.hpl.jena.rdf.arp.AResource;
@@ -53,6 +54,7 @@ import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 // TODO: (done) rdf:type is added several times
 
 public class TripleFrameCache {
+	private static final transient Logger log = Log.getLogger(TripleFrameCache.class);
 	
 	private UndefTripleManager undefTripleManager = new UndefTripleManager();
 
@@ -79,7 +81,9 @@ public class TripleFrameCache {
 	
 	
 	public boolean processTriple(AResource subj, AResource pred, AResource obj, boolean alreadyInUndef) {
-		//System.out.println(subj + " " + pred + " " + obj);
+		if (log.isLoggable(Level.FINE)) {
+			log.fine("Process Triple " + subj + " " + pred + " " + obj);
+		}
 		
 		String predName = ParserUtility.getResourceName(pred);		
 		Slot predSlot = (Slot) owlModel.getFrame(predName);
@@ -150,14 +154,14 @@ public class TripleFrameCache {
 		//checking and adding to undefined
 		if (subjFrame == null) {
 			addUndefTriple(subj, pred, obj, subjName, alreadyInUndef);
-			//System.out.println("^^^ Should add undef triple: " + subj + " " + pred + " " + obj + " undef:" + subjName);
+			System.out.println("^^^ Should add undef triple: " + subj + " " + pred + " " + obj + " undef:" + subjName);
 			return false;
 		}
 		
 		
 		if (objFrame == null) {
 			addUndefTriple(subj, pred, obj, objName, alreadyInUndef);
-			//System.out.println("^^^ Should add undef triple: " + subj + " " + pred + " " + obj + " undef:" + objName);
+			System.out.println("^^^ Should add undef triple: " + subj + " " + pred + " " + obj + " undef:" + objName);
 			return false;
 		}
 
@@ -213,7 +217,7 @@ public class TripleFrameCache {
 	}
 
 	public boolean processTriple(AResource subj, AResource pred, ALiteral lit, boolean alreadyInUndef) {
-		//System.out.println(subj + " " + pred + " " + lit);
+		System.out.println(subj + " " + pred + " " + lit);
 		
 		//TT:just for testing
 		/*if (true) {
@@ -372,7 +376,7 @@ public class TripleFrameCache {
 			
 			boolean success = false;
 			
-			if (obj instanceof AResource) {			
+			if (obj instanceof AResource) {	
 				success = processTriple(undefTriple.getTripleSubj(), undefTriple.getTriplePred(), (AResource) undefTriple.getTripleObj(), true);
 			} else if (obj instanceof ALiteral) {
 				success = processTriple(undefTriple.getTripleSubj(), undefTriple.getTriplePred(), (ALiteral) undefTriple.getTripleObj(), true);
