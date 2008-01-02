@@ -92,6 +92,7 @@ public class FrameCreatorUtility {
 		}
 		
 		addInstanceType((Instance)frame, (Cls)type);
+		frame.assertFrameName();	
 
 		return frame;
 		
