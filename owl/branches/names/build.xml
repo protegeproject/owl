@@ -8,7 +8,7 @@
 <project name="Protege-OWL" default="usage" basedir=".">
 
     <property environment="env"/>
-    <property name="protege.home" value="${env.PROTEGE_HOME}"/>
+    <property name="protege.home" location="${env.PROTEGE_HOME}"/>
 
     <property file = "local.properties"/>  
 
@@ -82,8 +82,8 @@
     <target name="useProtegeHome" depends="checkProtegeHome" 
             if="protege.home.set">
       <echo message="Using Protege Home = ${protege.home} to find protege jars"/>
-      <property name="protege.lib" value="${protege.home}/protege.jar"/>
-      <property name="looks.lib" value="${protege.home}/looks-2.1.3.jar"/>
+      <property name="protege.lib" location="${protege.home}/protege.jar"/>
+      <property name="looks.lib"   location="${protege.home}/looks-2.1.3.jar"/>
     </target>
     
     <target name="useLibDir" depends="checkProtegeHome" 
@@ -388,7 +388,7 @@
 
 
     <target name = "junit-compile" depends = "jar">
-       <javac srcdir = "${junit}" destdir = "${classes}" debug = "on"
+       <javac srcdir = "${junit}" destdir = "${classes}" debug = "on" 
               includeAntRuntime="false">
          <classpath refid = "classpath.compile"/>
          <classpath>
@@ -411,6 +411,12 @@
         <pathelement location = "${lib}/junit.jar"/>
       </classpath>
     </java>
+  </target>
+
+  <target name="junitOntologies">
+    <copy todir="${build}/examples">
+      <fileset dir="./examples"/>
+    </copy>
   </target>
 
    <!--
@@ -436,13 +442,17 @@
        -->
    <target name = "junit" 
            description = "run the tests (anybody can do it)"
-           depends = "plugin.dir,junit-compile,checkJunitConfiguration">
+           depends = "plugin.dir,junit-compile,checkJunitConfiguration, junitOntologies">
+     <property file="junit.properties"/>
      <junit printsummary="withOutAndErr"
             dir = "${build}" 
             fork = "yes"
-            haltonfailure = "on" 
-            haltonerror = "on">
-      <jvmarg value="-Xmx300M"/>
+            filtertrace="${junit.filtertrace}"
+            showoutput="${junit.showoutput}"
+            haltonfailure = "${junit.haltonfailure}"
+            haltonerror = "${junit.haltonerror}">
+      <jvmarg value="-Xmx${junit.memory}"/>
+      <jvmarg value="-Djunit.server.protege.jar=${protege.lib}"/>
       <classpath>
            <pathelement location="${classes}"/>
            <pathelement location = "${protege.lib}"/>
@@ -458,7 +468,7 @@
         </classpath>
         <batchtest>
            <fileset dir="${junit}">
-             <include name = "**/*TestCase.java"/>
+             <include name = "${junit.includes}"/>
              <exclude name = "**/*Abstract*.java"/>
              <exclude name = "**/*FailedTestCase.java"/>
            </fileset>
