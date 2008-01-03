@@ -1,8 +1,6 @@
 package edu.stanford.smi.protegex.owl.model.impl;
 
 import edu.stanford.smi.protege.model.FrameID;
-import edu.stanford.smi.protege.model.Model;
-import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protege.model.SystemFrames;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
@@ -43,15 +41,18 @@ public class OWLSystemFrames extends SystemFrames {
 	/* **********************************************************************
 	 * Modified SystemFrames calls.
 	 */
+	@Override
 	public OWLNamedClass getRootCls() {
 		return (OWLNamedClass) getFrame(new FrameID(OWLNames.Cls.THING));
 	}
 
+	@Override
 	public RDFProperty getDirectSuperslotsSlot() {
 	    return (RDFProperty) getFrame(new FrameID(RDFSNames.Slot.SUB_PROPERTY_OF));
 	}
 	
-    public RDFProperty getInverseSlotSlot() {
+    @Override
+	public RDFProperty getInverseSlotSlot() {
         return (RDFProperty) getFrame(new FrameID(OWLNames.Slot.INVERSE_OF));
     }
 }
