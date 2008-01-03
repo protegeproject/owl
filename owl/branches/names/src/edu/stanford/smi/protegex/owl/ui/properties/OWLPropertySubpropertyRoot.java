@@ -1,5 +1,13 @@
 package edu.stanford.smi.protegex.owl.ui.properties;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.List;
+
 import edu.stanford.smi.protege.model.Model;
 import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protege.ui.FrameComparator;
@@ -11,9 +19,12 @@ import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
 import edu.stanford.smi.protegex.owl.model.RDFSClass;
-import edu.stanford.smi.protegex.owl.model.event.*;
-
-import java.util.*;
+import edu.stanford.smi.protegex.owl.model.event.ModelAdapter;
+import edu.stanford.smi.protegex.owl.model.event.ModelListener;
+import edu.stanford.smi.protegex.owl.model.event.PropertyAdapter;
+import edu.stanford.smi.protegex.owl.model.event.PropertyListener;
+import edu.stanford.smi.protegex.owl.model.event.ResourceAdapter;
+import edu.stanford.smi.protegex.owl.model.event.ResourceListener;
 
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
@@ -23,7 +34,8 @@ public class OWLPropertySubpropertyRoot extends LazyTreeRoot {
     private OWLModel owlModel;
 
     private ModelListener modelListener = new ModelAdapter() {
-        public void propertyCreated(RDFProperty property) {
+        @Override
+		public void propertyCreated(RDFProperty property) {
             if (property.getSuperproperties(false).isEmpty() && isSuitable(property)) {
                 List properties = (List) getUserObject();
                 int index = 0;
@@ -39,7 +51,8 @@ public class OWLPropertySubpropertyRoot extends LazyTreeRoot {
         }
 
 
-        public void propertyDeleted(RDFProperty property) {
+        @Override
+		public void propertyDeleted(RDFProperty property) {
             List properties = (List) getUserObject();
             boolean changed = properties.remove(property);
             if (changed) {
@@ -49,14 +62,16 @@ public class OWLPropertySubpropertyRoot extends LazyTreeRoot {
     };
 
     public PropertyListener propertyListener = new PropertyAdapter() {
-        public void superpropertyAdded(RDFProperty property, RDFProperty superproperty) {
+        @Override
+		public void superpropertyAdded(RDFProperty property, RDFProperty superproperty) {
             if (property.getSuperpropertyCount() == 1 && isSuitable(property)) {
                 removeChild(property);
             }
         }
 
 
-        public void superpropertyRemoved(RDFProperty property, RDFProperty superproperty) {
+        @Override
+		public void superpropertyRemoved(RDFProperty property, RDFProperty superproperty) {
             if (property.getSuperpropertyCount() == 0 && isSuitable(property)) {
                 addChild(property);
             }
@@ -78,6 +93,7 @@ public class OWLPropertySubpropertyRoot extends LazyTreeRoot {
     };
 
 	public ResourceListener resourceListener = new ResourceAdapter() {
+		@Override
 		public void typeAdded(RDFResource resource,
 		                      RDFSClass type) {
 			if(resource instanceof RDFProperty) {
@@ -87,6 +103,7 @@ public class OWLPropertySubpropertyRoot extends LazyTreeRoot {
 		}
 
 
+		@Override
 		public void typeRemoved(RDFResource resource,
 		                        RDFSClass type) {
 			if(resource instanceof RDFProperty) {
@@ -137,24 +154,28 @@ public class OWLPropertySubpropertyRoot extends LazyTreeRoot {
     }
 
 
-    public LazyTreeNode createNode(Object o) {
+    @Override
+	public LazyTreeNode createNode(Object o) {
         return new SlotSubslotNode(this, (Slot) o);
     }
 
 
-    public void dispose() {
+    @Override
+	public void dispose() {
         super.dispose();
         owlModel.removeModelListener(modelListener);
         owlModel.removePropertyListener(propertyListener);
     }
 
 
-    public Comparator getComparator() {
+    @Override
+	public Comparator getComparator() {
         return new LazyTreeNodeFrameComparator();
     }
 
 
-    private static Collection getValidSlots(OWLModel owlModel) {
+    @SuppressWarnings("unchecked")
+	private static Collection getValidSlots(OWLModel owlModel) {
         List results = new ArrayList(owlModel.getVisibleUserDefinedRDFProperties());
         Iterator i = results.iterator();
         while (i.hasNext()) {
@@ -162,9 +183,11 @@ public class OWLPropertySubpropertyRoot extends LazyTreeRoot {
             if (slot.getDirectSuperslotCount() > 0) {
                 i.remove();
             }
+            String name = slot.getName();
+            if (name.equals(Model.Slot.FROM) || name.equals(Model.Slot.TO)) {
+            	i.remove();
+            }
         }
-        results.remove(owlModel.getRDFProperty(Model.Slot.FROM));
-        results.remove(owlModel.getRDFProperty(Model.Slot.TO));
         results.removeAll(Arrays.asList(owlModel.getSystemAnnotationProperties()));
         Collections.sort(results, new FrameComparator());
         return results;
