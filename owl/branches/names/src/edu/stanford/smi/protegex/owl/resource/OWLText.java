@@ -5,6 +5,7 @@ import edu.stanford.smi.protege.util.Log;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.util.Properties;
 
 /**
@@ -50,7 +51,8 @@ public final class OWLText {
         return Integer.parseInt(props.getProperty("build.compatible.latest", "1"));
     }
 
-    public static int getRequiresProtegeBuild(){
-        return Integer.parseInt(props.getProperty("build.requires.protege.build", "1"));
+    public static URL getAboutURL() {
+    	URL aboutURL = OWLText.class.getResource("files/about-owl.html");
+        return aboutURL;
     }
 }

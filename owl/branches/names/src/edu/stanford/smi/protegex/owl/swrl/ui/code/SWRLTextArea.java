@@ -15,36 +15,34 @@ import edu.stanford.smi.protegex.owl.ui.code.SymbolTextField;
  *
  * @author Holger Knublauch  <holger@knublauch.com>
  */
-public class SWRLTextArea extends SymbolTextArea {
+public class SWRLTextArea extends SymbolTextArea 
+{
+  private SWRLParser parser;
 
   public SWRLTextArea(OWLModel owlModel, SymbolErrorDisplay errorDisplay) 
   {
     super(owlModel, errorDisplay, new SWRLResourceNameMatcher(), new SWRLSyntaxConverter(owlModel));
-           
+    parser = new SWRLParser(owlModel);
     setFont(UIManager.getFont("TextArea.font"));
-    
     SWRLTextField.initKeymap(this);
-  }
+  } // SWRLTextArea
 
   protected void checkUniCodeExpression(String uniCodeText) throws Throwable 
   {
-    SWRLParser parser = new SWRLParser(getOWLModel());
     try {
       parser.parse(uniCodeText);
-    }
-    catch (SWRLIncompleteRuleException e) {
+    }  catch (SWRLIncompleteRuleException e) {
       // Ignore incomplete rules on input checking. (Unlike SymbolTextField, SymbolTextArea only calls checkUniCodeExpression when it
       // is checking an expression for errors, not when it is determining if an expression can be saved.
     } // try
   } // checkUniCodeExpression
 
-  public void reformatText() {
+  public void reformatText() 
+  {
     String text = getText();
-    
     text = reformatText(text);
-    
     setText(text);
-  }
+  } // reformatText
   
   public static String reformatText(String text) 
   {
@@ -54,17 +52,21 @@ public class SWRLTextArea extends SymbolTextArea {
     return text;
   } // reformatText
   
-  protected void acceptSelectedFrame() {
-      String text = getText();
-      int pos = getCaretPosition();
-      int i = pos - 1;
-      while (i >= 0 && (SymbolTextField.isIdChar(text.charAt(i)) || text.charAt(i) == '?')) {
-          i--;
-      }
-      String prefix = text.substring(i + 1, pos);
+  protected void acceptSelectedFrame() 
+  {
+    String text = getText();
+    int pos = getCaretPosition();
+    int i = pos - 1;
+    while (i >= 0 && (SymbolTextField.isIdChar(text.charAt(i)) || text.charAt(i) == '?')) {
+      i--;
+    }
+    String prefix = text.substring(i + 1, pos);
+    
+    extendPartialName(prefix, ((Frame) getComboBox().getSelectedItem()).getBrowserText());
+    updateErrorDisplay();
+    closeComboBox();
+  } // acceptSelectedFrame
+  
+  
 
-      extendPartialName(prefix, ((Frame) getComboBox().getSelectedItem()).getBrowserText());
-      updateErrorDisplay();
-      closeComboBox();
-  }
-}
+} // SWRLTextArea

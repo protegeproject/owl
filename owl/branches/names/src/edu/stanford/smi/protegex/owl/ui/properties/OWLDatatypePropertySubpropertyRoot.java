@@ -1,7 +1,9 @@
 package edu.stanford.smi.protegex.owl.ui.properties;
 
+import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.model.OWLDatatypeProperty;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.model.OWLObjectProperty;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
 
 import java.util.Collection;
@@ -32,10 +34,18 @@ public class OWLDatatypePropertySubpropertyRoot extends OWLPropertySubpropertyRo
 	public static Collection getTopLevelProperties(OWLModel owlModel) {
 		Collection properties = owlModel.getUserDefinedOWLDatatypeProperties();
 		for(Iterator it = properties.iterator(); it.hasNext(); ) {
-			OWLDatatypeProperty curProp = (OWLDatatypeProperty) it.next();
-			if(curProp.getSuperpropertyCount() > 0 || curProp.isSystem() || curProp.isAnnotationProperty()) {
+			Object o = it.next();
+			
+			//TT - happens with OWL Full ontologies
+			if (o instanceof OWLDatatypeProperty) {
+				OWLDatatypeProperty curProp = (OWLDatatypeProperty) o;
+				if(curProp.getSuperpropertyCount() > 0 || curProp.isSystem() || curProp.isAnnotationProperty()) {
+					it.remove();
+				}				
+			} else {
+				Log.getLogger().warning("Expected to find owl:DatatypeProperty. Found: " + o);
 				it.remove();
-			}
+			}			
 		}
 		return properties;
 	}

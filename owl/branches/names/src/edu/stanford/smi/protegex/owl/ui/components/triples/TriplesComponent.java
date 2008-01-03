@@ -19,20 +19,26 @@ public class TriplesComponent extends AbstractTriplesComponent {
     
     private Action deleteRowAction;
     private Action createObjectPropertyValueAction;
-    private Action createDatatypePropertyValueAction;
-    private Action todoAction;
+    private Action createDatatypePropertyValueAction;    
     private Action addResourceAction;
 
     public TriplesComponent(RDFProperty predicate) {
         this(predicate, "Triples", OWLIcons.getImageIcon(OWLIcons.TRIPLES));
     }
 
-
-    public TriplesComponent(RDFProperty predicate, String label, Icon icon) {
-        super(predicate, label, icon);
+    public TriplesComponent(RDFProperty predicate, boolean isreadOnly) {
+    	this(predicate, "Triples", OWLIcons.getImageIcon(OWLIcons.TRIPLES), isreadOnly);
     }
 
-    
+    public TriplesComponent(RDFProperty predicate, String label, Icon icon) {
+        this(predicate, label, icon, false);
+    }
+
+    public TriplesComponent(RDFProperty predicate, String label, Icon icon, boolean isReadOnly) {
+        super(predicate, label, icon, isReadOnly);
+    }
+
+        
     protected void addButtons(LabeledComponent lc) {
     	createDatatypePropertyValueAction = new CreateValueAction(getTable(), "Create datatype property value...", OWLIcons.getCreateIndividualIcon(OWLIcons.DATATYPE_TRIPLE)) {
             protected Collection getAllowedProperties(OWLModel owlModel) {

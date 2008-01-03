@@ -35,8 +35,9 @@ public class SWRLRuleSlotWidget extends AbstractSlotWidget {
 	private LabeledComponent swrlTextAreaLabeledComponent;
 	
 	private String ruleExpressionInKb = new String();
-        private SWRLParser parser;
+    private SWRLParser parser;
 
+    
 	private FocusListener _focusListener = new FocusAdapter() {
 		public void focusLost(FocusEvent event) {
 			commitChanges();
@@ -123,16 +124,16 @@ public class SWRLRuleSlotWidget extends AbstractSlotWidget {
 
 	protected void updateGUI(SWRLImp imp) {
 		swrlTextAreaLabeledComponent.setHeaderLabel(SWRL_RULE_LABEL);
-		
+
 		ruleExpressionInKb = imp == null ? "" : imp.getBrowserText();		
 		ruleExpressionInKb = SWRLTextArea.reformatText(ruleExpressionInKb);
-		
-                if (ruleExpressionInKb.equals(DefaultSWRLImp.EMPTY_RULE_TEXT)) swrlTextArea.setText("");
-                else swrlTextArea.setText(ruleExpressionInKb);
 
-                swrlTextArea.getErrorSymbolDisplay().displayError((Throwable) null);
-                swrlTextArea.setBackground(Color.white);
-                setNormalBorder();
+		if (ruleExpressionInKb.equals(DefaultSWRLImp.EMPTY_RULE_TEXT)) swrlTextArea.setText("");
+		else swrlTextArea.setText(ruleExpressionInKb);
+
+		swrlTextArea.getErrorSymbolDisplay().displayError((Throwable) null);
+		swrlTextArea.setBackground(Color.white);
+		setNormalBorder();
 	}
 
 
@@ -143,8 +144,8 @@ public class SWRLRuleSlotWidget extends AbstractSlotWidget {
 			return true;
 		}
 
-		try {
-			swrlimp.setExpression(swrlTextArea.getText());			
+		try {			
+			swrlimp.setExpression(swrlTextArea.getText());	
 			ruleExpressionInKb = swrlTextArea.getText();
 			
 			swrlTextAreaLabeledComponent.setHeaderLabel(SWRL_RULE_LABEL);
@@ -181,4 +182,17 @@ public class SWRLRuleSlotWidget extends AbstractSlotWidget {
 		return swrlTextArea.getText();
 	}
 
+	@Override
+	public void dispose() {
+		try {
+			swrlTextArea.removeFocusListener(_focusListener);
+		} catch (Throwable t) {
+			//do nothing
+		}
+		
+		parser=null;
+		
+		super.dispose();
+	}
+	
 }

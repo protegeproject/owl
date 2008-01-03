@@ -108,10 +108,16 @@ public interface OWLModel extends ProtegeKnowledgeBase, OWLTestManager {
      * @see #removeResourceListener
      */
     void addResourceListener(ResourceListener listener);
-
+    
+    
+    /**
+     * Creates a simple owl:AnnotationProperty.
+     * @param name - the name of the annotation property. If name is null, a new name will be generated 
+     * @return the owl:AnnotationProperty
+     */
+    RDFProperty createAnnotationProperty(String name);
   
     OWLDatatypeProperty createAnnotationOWLDatatypeProperty(String name);
-
 
     OWLObjectProperty createAnnotationOWLObjectProperty(String name);
 

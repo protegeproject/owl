@@ -55,7 +55,7 @@ public interface TripleStore extends NamespaceMap, Disposable {
      *
      * @return an Iterator of RDFResources
      */
-    Iterator listHomeResources();
+    Iterator<RDFResource> listHomeResources();
 
 
     /**
@@ -75,7 +75,7 @@ public interface TripleStore extends NamespaceMap, Disposable {
      * @param property the property to look for
      * @return an Iterator of RDFResources
      */
-    Iterator listSubjects(RDFProperty property);
+    Iterator<RDFResource> listSubjects(RDFProperty property);
 
 
     /**
@@ -88,7 +88,7 @@ public interface TripleStore extends NamespaceMap, Disposable {
     Iterator listSubjects(RDFProperty predicate, Object object);
 
 
-    Iterator listTriples();
+    Iterator<Triple> listTriples();
 
 
     /**
@@ -97,7 +97,7 @@ public interface TripleStore extends NamespaceMap, Disposable {
      * @param object the object to get the triples of
      * @return an Iterator of Triples
      */
-    Iterator listTriplesWithObject(RDFObject object);
+    Iterator<Triple> listTriplesWithObject(RDFObject object);
 
 
     /**
@@ -108,7 +108,7 @@ public interface TripleStore extends NamespaceMap, Disposable {
      * @param subject the subject in the triples
      * @return an Iterator of Triples
      */
-    Iterator listTriplesWithSubject(RDFResource subject);
+    Iterator<Triple> listTriplesWithSubject(RDFResource subject);
 
 
     void remove(Triple triple);

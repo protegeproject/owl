@@ -3,7 +3,6 @@ package edu.stanford.smi.protegex.owl.model.framestore;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -30,18 +29,11 @@ import edu.stanford.smi.protege.model.query.QueryCallback;
 import edu.stanford.smi.protege.model.query.QueryCallbackClone;
 import edu.stanford.smi.protege.util.AbstractEvent;
 import edu.stanford.smi.protege.util.Log;
-import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
 import edu.stanford.smi.protegex.owl.model.OWLNames;
-import edu.stanford.smi.protegex.owl.model.RDFList;
 import edu.stanford.smi.protegex.owl.model.RDFNames;
-import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
-import edu.stanford.smi.protegex.owl.model.RDFSClass;
 import edu.stanford.smi.protegex.owl.model.RDFSNames;
 import edu.stanford.smi.protegex.owl.model.factory.OWLJavaFactory;
-import edu.stanford.smi.protegex.owl.model.factory.OWLJavaFactoryUpdater;
-import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
-import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLNamedClass;
 
 /**
  * A FrameStoreInvocationHandler that uses a DefaultOWLFrameFactory to replace all
@@ -49,7 +41,10 @@ import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLNamedClass;
  * backend to solve a bootstrapping recursion problem.
  *
  * @author Holger Knublauch  <holger@knublauch.com>
+ * @deprecated - Not needed anymore. The conversion of the frames into OWL Java objects is
+ * handled in a different way
  */
+@Deprecated
 public class OWLFrameFactoryInvocationHandler extends AbstractFrameStoreInvocationHandler {
 
     private OWLJavaFactory ff;

@@ -4,6 +4,7 @@ import edu.stanford.smi.protegex.owl.inference.dig.exception.DIGReasonerExceptio
 import edu.stanford.smi.protegex.owl.inference.dig.reasoner.DIGReasoner;
 import edu.stanford.smi.protegex.owl.inference.dig.reasoner.DIGReasonerIdentity;
 import edu.stanford.smi.protegex.owl.inference.protegeowl.task.ReasonerTaskListener;
+import edu.stanford.smi.protegex.owl.inference.reasoner.ProtegeReasoner;
 import edu.stanford.smi.protegex.owl.model.OWLClass;
 import edu.stanford.smi.protegex.owl.model.OWLIndividual;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
@@ -23,7 +24,10 @@ import java.util.Collection;
  * compliant reasoner.  DIG (Description Logic Implementation Group) is
  * a standard language for talking to a description logic reasoner over
  * http.
+ * 
+ * @deprecated - Use {@link ProtegeReasoner}
  */
+@Deprecated
 public interface ProtegeOWLReasoner {
 
     public static final int NO_SUBSUMPTION_RELATIONSHIP = 0;

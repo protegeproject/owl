@@ -84,7 +84,8 @@ public class OWLDatabaseModel
     }
 
 
-    public OWLOntology getDefaultOWLOntology() {
+    @Override
+	public OWLOntology getDefaultOWLOntology() {
     	if (defaultDBOWLOntology != null) {
     		return defaultDBOWLOntology;
     	}
@@ -123,7 +124,6 @@ public class OWLDatabaseModel
 				
 		return (OWLOntology) inst.getOwnSlotValue(topLevelOWLOntologyURISlot);
 	}
-
 	@Override
     protected OWLOntology createDefaultOWLOntologyReally() {
     	return (OWLOntology) createInstance(ProtegeNames.DEFAULT_ONTOLOGY, getOWLOntologyClass());
@@ -136,7 +136,7 @@ public class OWLDatabaseModel
                                               new ModalProgressBarManager("Converting Ontology"));
         OntModel ontModel = creator.createOntModel();
         long endTime = System.currentTimeMillis();
-        System.out.println("[OWLDatabaseModel.getOntModel] Duration " + (endTime - startTime));
+        Log.getLogger().info("[OWLDatabaseModel.getOntModel] Duration " + (endTime - startTime));
         return ontModel;
     }
 
@@ -177,7 +177,8 @@ public class OWLDatabaseModel
     }
 
 
-    public String getNextAnonymousResourceName() {
+    @Override
+	public String getNextAnonymousResourceName() {
         for (; ;) {
             int rand = (int) (Math.random() * 1000000);
             String name = ANONYMOUS_BASE + rand;
@@ -218,12 +219,16 @@ public class OWLDatabaseModel
     }
 
 
+
+
+
     public void resetTripleStoreModel() {
         tripleStoreModel = null;
     }
 
 
-    public void setProject(Project project) {
+    @Override
+	public void setProject(Project project) {
         super.setProject(project);
 
         if (!project.isMultiUserServer()) {

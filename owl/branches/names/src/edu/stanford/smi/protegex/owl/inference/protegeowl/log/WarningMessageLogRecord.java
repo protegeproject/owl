@@ -38,15 +38,18 @@ public class WarningMessageLogRecord extends MessageLogRecord {
             }
         }
         else {
-            causeText = " (Unknown)";
+            causeText = "";
         }
 
         JLabel label = getJLabel();
 
         label.setIcon(OWLIcons.getOWLTestWarningIcon());
 
-        label.setText("<html><body color=\"6E6E6E\">" + "<font color=\"ff6600\">WARNING<br></font>" + "<font color=\"ff6600\">CAUSE: </font><font color=\"000000\">" + causeText + "</font><br>" + getHTMLMessage() + "</body></html>");
-
+        label.setText("<html><body color=\"6E6E6E\">" +
+        			  "<font color=\"ff6600\">WARNING<br></font>" + 
+        			  (causeText.equals("") ? "" : "<font color=\"ff6600\">CAUSE: </font><font color=\"000000\">" + causeText + "</font><br>") + 
+        			  getHTMLMessage() + "</body></html>");
+        
         label.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
     }
 }

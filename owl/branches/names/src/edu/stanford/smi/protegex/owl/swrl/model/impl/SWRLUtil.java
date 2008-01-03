@@ -3,6 +3,7 @@ package edu.stanford.smi.protegex.owl.swrl.model.impl;
 
 import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
 import edu.stanford.smi.protegex.owl.model.*;
+import edu.stanford.smi.protegex.owl.swrl.model.*;
 
 /**
  * @author Daniel Elenius
@@ -47,7 +48,12 @@ public class SWRLUtil
       s += "<INVALID_" + resourceType;
       s += "[" + name + "]>";
     } else if (o instanceof RDFSLiteral) s += SWRLUtil.getSWRLBrowserText((RDFSLiteral)o); 
-    else if (o instanceof RDFSClass) s += ((RDFSClass)o).getNestedBrowserText(); 
+    else if (o instanceof SWRLAtomList) s += ((SWRLAtomList)o).getBrowserText();
+    else if (o instanceof SWRLAtom) s += ((SWRLAtom)o).getBrowserText();
+    else if (o instanceof SWRLVariable) s += ((SWRLVariable)o).getBrowserText();
+    else if (o instanceof RDFSClass) s += ((RDFSClass)o).getName(); 
+    else if (o instanceof RDFIndividual) s += ((RDFIndividual)o).getName(); 
+    else if (o instanceof RDFProperty) s += ((RDFProperty)o).getName(); 
     else if (o instanceof OWLDataRange) s += ((OWLDataRange)o).getBrowserText();
     else if (o instanceof RDFResource) s += ((RDFResource)o).getBrowserText();
     else s += o.toString();

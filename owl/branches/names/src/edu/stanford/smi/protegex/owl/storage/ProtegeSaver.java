@@ -1,9 +1,11 @@
 package edu.stanford.smi.protegex.owl.storage;
 
 import edu.stanford.smi.protege.model.*;
+import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
 import edu.stanford.smi.protegex.owl.model.*;
 import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
 import edu.stanford.smi.protegex.owl.model.impl.XMLSchemaDatatypes;
+import edu.stanford.smi.protegex.owl.writer.rdfxml.util.ProtegeWriterSettings;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -28,12 +30,21 @@ public class ProtegeSaver extends KnowledgeBaseCopier {
 
 
     public ProtegeSaver(KnowledgeBase source, OWLModel target) {
-        super(source, target);
-        this.owlModel = target;
+    	this(source, target, false);
     }
 
 
-    protected void addExtraDirectTypes(Instance oldInstance, Instance newInstance) {
+    public ProtegeSaver(KnowledgeBase source, OWLModel target, boolean useNativeWriter) {
+        super(source, target);
+        this.owlModel = target;
+        
+        if (useNativeWriter && owlModel instanceof JenaOWLModel) {
+        	((JenaOWLModel)owlModel).setWriterSettings(new ProtegeWriterSettings((JenaOWLModel)owlModel));
+        }
+	}
+
+
+	protected void addExtraDirectTypes(Instance oldInstance, Instance newInstance) {
         super.addExtraDirectTypes(oldInstance, newInstance);
         if (oldInstance instanceof Slot &&
                 !((Slot) oldInstance).getAllowsMultipleValues() &&
@@ -175,10 +186,19 @@ public class ProtegeSaver extends KnowledgeBaseCopier {
                 RDFSDatatype datatype = owlModel.getRDFSDatatypeByURI(uri);
                 ((RDFProperty) newSlot).setRange(datatype);
             }
-            super.setValueType(oldSlot, newSlot);
+           
+           //treat rdf:range for owl object properties
+           if (newSlot instanceof OWLObjectProperty && valueType == ValueType.INSTANCE) {
+        	   Collection newAllowedClses = cloneValues(oldSlot.getAllowedClses());
+               ((OWLObjectProperty)newSlot).setRanges(newAllowedClses);        
+           } else {
+        	   super.setValueType(oldSlot, newSlot);
+           }
         }
         else {
             System.err.println("[ProtegeSaver] Warning: Slot " + oldSlot + " has value type ANY");
         }
     }
+  
+    
 }

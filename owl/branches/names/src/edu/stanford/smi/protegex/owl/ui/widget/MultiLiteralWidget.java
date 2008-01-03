@@ -20,7 +20,7 @@ public class MultiLiteralWidget extends AbstractPropertyValuesWidget {
 
 
     protected PropertyValuesComponent createComponent(RDFProperty predicate) {
-        return new LiteralTableComponent(predicate, getLabel());
+        return new LiteralTableComponent(predicate, getLabel(), isReadOnlyConfiguredWidget());
     }
 
 

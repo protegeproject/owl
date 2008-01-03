@@ -494,7 +494,7 @@ class CompactParser implements CompactParserConstants {
   final public String Identifier() throws ParseException {
     Token t;
     t = jj_consume_token(IDENTIFIER);
-        {if (true) return t.image;}
+        {if (true) return ParserUtils.dequoteIdentifier(t.image);}
     throw new Error("Missing return statement in function");
   }
 
@@ -642,7 +642,8 @@ class CompactParser implements CompactParserConstants {
       break;
     case DATATYPEID:
       token = jj_consume_token(DATATYPEID);
-        String qName = datatypeNameChecker.getDatatypeQName(token.image);
+            String idName = ParserUtils.dequoteIdentifier(token.image);
+        String qName = datatypeNameChecker.getDatatypeQName(idName);
         datatype = owlModel.getRDFSDatatypeByName(qName);
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case OPENPAR:
@@ -836,11 +837,6 @@ class CompactParser implements CompactParserConstants {
     finally { jj_save(1, xla); }
   }
 
-  final private boolean jj_3R_11() {
-    if (jj_3R_14()) return true;
-    return false;
-  }
-
   final private boolean jj_3R_10() {
     if (jj_3R_13()) return true;
     return false;
@@ -913,6 +909,11 @@ class CompactParser implements CompactParserConstants {
 
   final private boolean jj_3R_12() {
     if (jj_scan_token(OPENPAR)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_11() {
+    if (jj_3R_14()) return true;
     return false;
   }
 

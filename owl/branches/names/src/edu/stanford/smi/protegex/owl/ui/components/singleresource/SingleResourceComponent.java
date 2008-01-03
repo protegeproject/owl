@@ -30,7 +30,7 @@ import java.util.Iterator;
  */
 public class SingleResourceComponent extends AbstractPropertyValuesComponent implements Disposable {
 
-
+	
     private PropertyValueListener browserTextListener = new PropertyValueAdapter() {
         public void browserTextChanged(RDFResource resource) {
             list.repaint();
@@ -63,10 +63,13 @@ public class SingleResourceComponent extends AbstractPropertyValuesComponent imp
     	this(predicate, null);
 	}
     
-
     public SingleResourceComponent(RDFProperty predicate, String label) {
-        super(predicate, label);
+    	this(predicate, label, false);
+    }
 
+    public SingleResourceComponent(RDFProperty predicate, String label, boolean isReadOnly) {
+        super(predicate, label, isReadOnly);
+        
         list = ComponentFactory.createSingleItemList(new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
                 handleDoubleClick();
@@ -202,7 +205,7 @@ public class SingleResourceComponent extends AbstractPropertyValuesComponent imp
 
 
     private void updateActions() {
-    	boolean isEditable = isEditable();
+    	boolean isEditable = !isReadOnly();
     	
         createAction.setEnabled(isEditable && isCreateEnabled());
         setAction.setEnabled(isEditable && isSetEnabled());

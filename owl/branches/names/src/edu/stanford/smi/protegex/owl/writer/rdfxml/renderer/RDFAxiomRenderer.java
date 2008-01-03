@@ -5,6 +5,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.logging.Level;
 
+import edu.stanford.smi.protege.model.Cls;
+import edu.stanford.smi.protege.model.Model;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.model.OWLAllValuesFrom;
 import edu.stanford.smi.protegex.owl.model.OWLCardinality;
@@ -30,6 +32,7 @@ import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
 import edu.stanford.smi.protegex.owl.model.RDFSNames;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 import edu.stanford.smi.protegex.owl.model.visitor.OWLModelVisitorAdapter;
+import edu.stanford.smi.protegex.owl.swrl.model.SWRLIndividual;
 import edu.stanford.smi.protegex.owl.writer.rdfxml.util.Util;
 import edu.stanford.smi.protegex.owl.writer.xml.XMLWriter;
 
@@ -149,9 +152,23 @@ public class RDFAxiomRenderer extends OWLModelVisitorAdapter {
         renderPropertyAxioms(owlObjectProperty);
     }
 
-
-    public void visitRDFIndividual(RDFIndividual rdfIndividual) {
-        renderIndividualAxioms(rdfIndividual);
+    @Override
+    public void visitSWRLIndividual(SWRLIndividual swrlIndividual) {    
+    	renderIndividualAxioms(swrlIndividual);
+    }
+    
+    
+    @SuppressWarnings("deprecation")
+	public void visitRDFIndividual(RDFIndividual rdfIndividual) {
+    	//filter out the annotations and PAL constraints
+    	Cls annotationCls = rdfIndividual.getKnowledgeBase().getCls(Model.Cls.ANNOTATION);
+    	Cls palCls = rdfIndividual.getKnowledgeBase().getCls(Model.Cls.PAL_CONSTRAINT);
+    	
+    	if (rdfIndividual.hasType(annotationCls) || rdfIndividual.hasType(palCls)) {
+    		return;
+    	}
+    	
+    	renderIndividualAxioms(rdfIndividual);
     }
 
 

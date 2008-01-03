@@ -2,6 +2,7 @@ package edu.stanford.smi.protegex.owl.inference.ui;
 
 import java.awt.Component;
 import java.awt.Frame;
+import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -9,12 +10,14 @@ import java.util.logging.Logger;
 import javax.swing.SwingUtilities;
 
 import edu.stanford.smi.protege.model.Project;
+import edu.stanford.smi.protege.ui.ProjectManager;
 import edu.stanford.smi.protege.ui.ProjectView;
 import edu.stanford.smi.protege.util.Log;
-import edu.stanford.smi.protegex.owl.inference.dig.exception.DIGReasonerException;
+import edu.stanford.smi.protege.util.ModalDialog;
 import edu.stanford.smi.protegex.owl.inference.dig.reasoner.DIGReasonerIdentity;
 import edu.stanford.smi.protegex.owl.inference.protegeowl.ProtegeOWLReasoner;
 import edu.stanford.smi.protegex.owl.inference.protegeowl.ReasonerManager;
+import edu.stanford.smi.protegex.owl.inference.protegeowl.ReasonerPluginManager;
 import edu.stanford.smi.protegex.owl.inference.protegeowl.log.ReasonerLogRecord;
 import edu.stanford.smi.protegex.owl.inference.protegeowl.log.ReasonerLogRecordFactory;
 import edu.stanford.smi.protegex.owl.inference.protegeowl.log.ReasonerLogger;
@@ -23,7 +26,12 @@ import edu.stanford.smi.protegex.owl.inference.protegeowl.log.ReasonerLoggerUtil
 import edu.stanford.smi.protegex.owl.inference.protegeowl.log.WarningMessageLogRecord;
 import edu.stanford.smi.protegex.owl.inference.protegeowl.task.ReasonerTaskEvent;
 import edu.stanford.smi.protegex.owl.inference.protegeowl.task.ReasonerTaskListener;
+import edu.stanford.smi.protegex.owl.inference.reasoner.ProtegeReasoner;
+import edu.stanford.smi.protegex.owl.inference.reasoner.exception.ProtegeReasonerException;
+import edu.stanford.smi.protegex.owl.inference.util.DefaultUncaughtExceptionHandler;
 import edu.stanford.smi.protegex.owl.inference.util.ReasonerPreferences;
+import edu.stanford.smi.protegex.owl.inference.util.ReasonerUtil;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
 import edu.stanford.smi.protegex.owl.ui.cls.OWLClassesTab;
 import edu.stanford.smi.protegex.owl.ui.results.ResultsPanelManager;
@@ -38,7 +46,7 @@ import edu.stanford.smi.protegex.owl.ui.testing.OWLTestResultsPanel;
  * matthew.horridge@cs.man.ac.uk<br>
  * www.cs.man.ac.uk/~horridgm<br><br>
  * <p/>
- * The ReasonerActionRunner can be used to exuecute a number
+ * The ReasonerActionRunner can be used to execute a number
  * of reasoner actions in a separate worker thread.  It will
  * also pop up a dialog with a progress bar and reasoner log.
  */
@@ -80,6 +88,13 @@ public class ReasonerActionRunner {
      * and pop up a progress dialog.
      */
     public void execute() {
+    	
+    	ProtegeReasoner reasoner = ReasonerManager.getInstance().getProtegeReasoner(runner.getOWLModel());
+    	if (reasoner == null) {
+    		ModalDialog.showMessageDialog(ProjectManager.getProjectManager().getMainPanel(), 
+    				"Please select first a reasoner from the Reasoning Menu and then try again.", "Warning: No reasoner selected");
+    		return;
+    	}
 
         // Disable journaling whilst the classification takes place.
         // For very large ontologies, such as the NCI ontology, the journaling
@@ -88,21 +103,8 @@ public class ReasonerActionRunner {
         if (project != null) {
             journalingEnabled = project.isJournalingEnabled();
         }
-
-        // The reasoner that we will use
-        final ProtegeOWLReasoner reasoner = ReasonerManager.getInstance().getReasoner(runner.getOWLModel());
-
-        // Ensure that the reasoner URL is correct
-        String prefURL = ReasonerPreferences.getInstance().getReasonerURL();
-        String actualURL = reasoner.getDIGReasoner().getReasonerURL();
-        if (actualURL.equals(prefURL) == false) {
-            reasoner.setURL(prefURL);
-        }
-
-        // We want to obtain the identity of the reasoner
-        // so that we can display its name to the user
-        final DIGReasonerIdentity id = reasoner.getIdentity();
-
+                
+       
         // Create a new progress dialog
         Component appWindow = ProtegeUI.getTopLevelContainer(project);
         Frame appFrame = null;
@@ -110,13 +112,8 @@ public class ReasonerActionRunner {
             appFrame = (Frame) appWindow;
         }
 
-        String dlgTitle;
-        if (id != null) {
-            dlgTitle = "Connected to " + id.getName() + " " + id.getVersion();
-        }
-        else {
-            dlgTitle = "Could not obtain reasoner identity";
-        }
+        String dlgTitle = getReasonerName(runner.getOWLModel());
+    
 
         final ReasonerProgressModalDialog dlg = new ReasonerProgressModalDialog(appFrame, dlgTitle);
 
@@ -142,7 +139,7 @@ public class ReasonerActionRunner {
                 // Display the progress dialog
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
-                        dlg.show();
+                        dlg.setVisible(true);
                     }
                 });
 
@@ -190,8 +187,8 @@ public class ReasonerActionRunner {
                     }
 
                 }
-                catch (DIGReasonerException e1) {
-                    final DIGReasonerException ex = e1;
+                catch (ProtegeReasonerException e1) {
+                    final ProtegeReasonerException ex = e1;
 
                     SwingUtilities.invokeLater(new Runnable() {
                         public void run() {
@@ -201,11 +198,10 @@ public class ReasonerActionRunner {
                             // Post an error log record
                             ReasonerLogger logger = ReasonerLogger.getInstance();
                             ReasonerLogRecordFactory factory = ReasonerLogRecordFactory.getInstance();
-                            ReasonerLogRecord log = factory.createDIGReasonerExceptionLogRecord(ex, null);
+                            ReasonerLogRecord log = factory.createReasonerExceptionLogRecord(ex, null);
                             logger.postLogRecord(log);
                         }
                     });
-
 
                     // The reasoner may have disabled the kb events.
                     // Check that they are enabled - if not enable them
@@ -216,25 +212,90 @@ public class ReasonerActionRunner {
                     if (project != null) {
                         project.setJournalingEnabled(journalingEnabled);
                     }
+                } catch (OutOfMemoryError e) {
+                	ReasonerUtil.handleOutOfMemory();
+                    // The reasoner may have disabled the kb events.
+                    // Check that they are enabled - if not enable them
+                    if (runner.getOWLModel().getGenerateEventsEnabled() == false) {
+                        runner.getOWLModel().setGenerateEventsEnabled(true);
+                    }
+                    
+                    if (project != null) {
+                        project.setJournalingEnabled(journalingEnabled);
+                    }
+                    
+                    SwingUtilities.invokeLater(new Runnable() {
+                        public void run() {
+                            // Signal that the dialog can be closed
+                            dlg.setOKButtonEnabled(true);
+                            dlg.setProgressIndeterminate(false);
+                            // Post an error log record
+                            ReasonerLogger logger = ReasonerLogger.getInstance();
+                            ReasonerLogRecordFactory factory = ReasonerLogRecordFactory.getInstance();
+                            ReasonerLogRecord log = factory.createErrorMessageLogRecord("Out of memory detected. " +
+                            		"Please increase the heap size and try again.", null);
+                            logger.postLogRecord(log);
+                            
+                            //TODO: select the None reasoner in the reasoning menu
+                        }
+                    });
+                    
                 }
-
-
-            }
+              }
         };
 
         // Execute the whole thing
-        try {
+        try {        	
             Thread t = new Thread(r);
+            
+            if (Log.getLogger().getLevel() == Level.FINE) {
+            	Log.getLogger().log(Level.FINE, "Starting reasoner thread " + t + " Free memory: " + Runtime.getRuntime().freeMemory());
+            }
+               
             t.start();
-        }
-        catch (Exception e) {
+            
+        } catch (Throwable e) {
             dlg.setOKButtonEnabled(true);
             dlg.setProgressIndeterminate(false);
             Log.emptyCatchBlock(e);
         }
     }
 
+    
+    protected String getReasonerName(OWLModel owlModel) { 	
 
+    	ProtegeReasoner reasoner = ReasonerManager.getInstance().getProtegeReasoner(owlModel);
+    	
+    //	if (reasoner == null) {
+    //		return "No reasoner";
+    //	}
+
+    	if (reasoner instanceof ProtegeOWLReasoner) {
+    		ProtegeOWLReasoner digReasoner = (ProtegeOWLReasoner) reasoner;
+    		ensureDIGReasonerHasRightURL(digReasoner);
+
+    		DIGReasonerIdentity id = digReasoner.getIdentity();
+
+    		return (id == null ? 
+    				"Could not obtain DIG reasoner identity"  :	        	
+    					"Connected to " + id.getName() + " " + id.getVersion() + " (DIG)");
+    	}
+    	    	
+    	return ReasonerPluginManager.getReasonerName(reasoner.getClass());
+    }
+    
+    
+    protected void ensureDIGReasonerHasRightURL(ProtegeOWLReasoner reasoner) {
+        // Ensure that the reasoner URL is correct
+        String prefURL = ReasonerPreferences.getInstance().getReasonerURL();
+        String actualURL = reasoner.getDIGReasoner().getReasonerURL();
+        if (actualURL.equals(prefURL) == false) {
+            reasoner.setURL(prefURL);
+        }
+
+    }
+    
+    
     /**
      * Displays the inferred hierarchy and the classifier results
      * panel.

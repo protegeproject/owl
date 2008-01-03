@@ -11,18 +11,20 @@ import java.math.BigInteger;
  * @author Holger Knublauch  <holger@knublauch.com>
  */
 public class DefaultRDFSLiteral implements RDFSLiteral {
+    
+
+    public static final String DATATYPE_PREFIX = "~@";
+
+    public static final String LANGUAGE_PREFIX = "~#";
+
+    public static final char SEPARATOR = ' ';   
+    
 
     private OWLModel owlModel;
 
     private String rawValue;
     
-    private String language;
-
-    private static final String DATATYPE_PREFIX = "~@";
-
-    private static final String LANGUAGE_PREFIX = "~#";
-
-    private static final char SEPARATOR = ' ';    
+    private String language; 
 
 
     public DefaultRDFSLiteral(OWLModel owlModel, String rawValue) {

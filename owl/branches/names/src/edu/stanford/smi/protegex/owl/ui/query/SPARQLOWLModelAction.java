@@ -21,12 +21,12 @@ public class SPARQLOWLModelAction extends AbstractOWLModelAction {
 
 
     public String getMenubarPath() {
-        return OWL_MENU + PATH_SEPARATOR + GROUP;
+        return REASONING_MENU + PATH_SEPARATOR + GROUP;
     }
 
 
     public String getName() {
-        return "Open SPARQL Query panel...";
+        return "Open SPARQL Query panel";
     }
 
 

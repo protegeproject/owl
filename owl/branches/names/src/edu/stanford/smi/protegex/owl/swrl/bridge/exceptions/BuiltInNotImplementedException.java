@@ -3,14 +3,14 @@ package edu.stanford.smi.protegex.owl.swrl.bridge.exceptions;
 
 public class BuiltInNotImplementedException extends BuiltInException 
 {
-  public BuiltInNotImplementedException(String builtInName) 
+  public BuiltInNotImplementedException() 
   { 
-    super("builtIn " + builtInName + " not yet implemented"); 
+    super("built-in not yet implemented"); 
   } // BuiltInNotImplementedException
 
-  public BuiltInNotImplementedException(String builtInName, String message) 
+  public BuiltInNotImplementedException(String message) 
   { 
-    super("built-in '" + builtInName + "' not yet implemented: " + message); 
+    super("built-in not yet implemented: " + message); 
   } // BuiltInNotImplementedException
 } // BuiltInNotImplementedException
 

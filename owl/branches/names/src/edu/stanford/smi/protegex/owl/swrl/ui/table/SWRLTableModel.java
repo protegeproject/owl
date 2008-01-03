@@ -164,7 +164,6 @@ public class SWRLTableModel extends AbstractTableModel implements Disposable, Sy
   private void addReferencingImps(RDFResource rdfResource) 
   {
     OWLModel owlModel = rdfResource.getOWLModel();
-    SWRLFactory factory = new SWRLFactory(owlModel);
     Collection allImps = factory.getImps();
     for (Iterator it = allImps.iterator(); it.hasNext();) {
       SWRLImp imp = (SWRLImp) it.next();

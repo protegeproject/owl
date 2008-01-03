@@ -29,7 +29,7 @@ public class ShowReasonerInspectorAction extends AbstractOWLModelAction {
 
 
     public String getMenubarPath() {
-        return OWL_MENU + PATH_SEPARATOR + ActionConstants.ACTION_GROUP;
+        return REASONING_MENU + PATH_SEPARATOR + ActionConstants.ACTION_GROUP;
     }
 
 

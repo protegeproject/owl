@@ -36,15 +36,13 @@ public class AnnotationsValueEditor extends AbstractCellEditor implements TableC
 
     private JTextComponent textComponent;
 
-    private JTable table;
-
     private Border focusBorder = UIManager.getBorder("Table.focusCellHighlightBorder");
 
     public static final int EDITING_MARGIN = 30;
 
 
     public AnnotationsValueEditor(OWLModel owlModel, JTable t) {
-        this.table = t;
+
         textArea = new JTextArea();
         OWLUI.addCopyPastePopup(textArea);
         textArea.setWrapStyleWord(true);

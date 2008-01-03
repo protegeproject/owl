@@ -1,12 +1,43 @@
 package edu.stanford.smi.protegex.owl.model.classdisplay.dl;
 
-import edu.stanford.smi.protegex.owl.model.*;
+import java.util.Iterator;
+import java.util.Stack;
+
+import edu.stanford.smi.protegex.owl.model.OWLAllDifferent;
+import edu.stanford.smi.protegex.owl.model.OWLAllValuesFrom;
+import edu.stanford.smi.protegex.owl.model.OWLCardinality;
+import edu.stanford.smi.protegex.owl.model.OWLCardinalityBase;
+import edu.stanford.smi.protegex.owl.model.OWLComplementClass;
+import edu.stanford.smi.protegex.owl.model.OWLDataRange;
+import edu.stanford.smi.protegex.owl.model.OWLDatatypeProperty;
+import edu.stanford.smi.protegex.owl.model.OWLEnumeratedClass;
+import edu.stanford.smi.protegex.owl.model.OWLHasValue;
+import edu.stanford.smi.protegex.owl.model.OWLIndividual;
+import edu.stanford.smi.protegex.owl.model.OWLIntersectionClass;
+import edu.stanford.smi.protegex.owl.model.OWLMaxCardinality;
+import edu.stanford.smi.protegex.owl.model.OWLMinCardinality;
+import edu.stanford.smi.protegex.owl.model.OWLNAryLogicalClass;
+import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
+import edu.stanford.smi.protegex.owl.model.OWLObjectProperty;
+import edu.stanford.smi.protegex.owl.model.OWLOntology;
+import edu.stanford.smi.protegex.owl.model.OWLQuantifierRestriction;
+import edu.stanford.smi.protegex.owl.model.OWLSomeValuesFrom;
+import edu.stanford.smi.protegex.owl.model.OWLUnionClass;
+import edu.stanford.smi.protegex.owl.model.RDFIndividual;
+import edu.stanford.smi.protegex.owl.model.RDFList;
+import edu.stanford.smi.protegex.owl.model.RDFProperty;
+import edu.stanford.smi.protegex.owl.model.RDFResource;
+import edu.stanford.smi.protegex.owl.model.RDFSClass;
+import edu.stanford.smi.protegex.owl.model.RDFSDatatype;
+import edu.stanford.smi.protegex.owl.model.RDFSLiteral;
+import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
+import edu.stanford.smi.protegex.owl.model.RDFUntypedResource;
+import edu.stanford.smi.protegex.owl.model.classparser.ParserUtils;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLSomeValuesFrom;
 import edu.stanford.smi.protegex.owl.model.visitor.OWLModelVisitor;
 import edu.stanford.smi.protegex.owl.model.visitor.Visitable;
-
-import java.util.Iterator;
-import java.util.Stack;
+import edu.stanford.smi.protegex.owl.swrl.model.SWRLAtomList;
+import edu.stanford.smi.protegex.owl.swrl.model.SWRLIndividual;
 
 /**
  * Author: Matthew Horridge<br>
@@ -158,7 +189,7 @@ public class DLSyntaxBrowserTextGenerator implements OWLModelVisitor {
     }
 
     public void visitOWLDatatypeProperty(OWLDatatypeProperty owlDatatypeProperty) {
-        write(owlDatatypeProperty.getBrowserText());
+        write(ParserUtils.quoteIfNeeded(owlDatatypeProperty.getBrowserText()));
     }
 
     public void visitOWLEnumeratedClass(OWLEnumeratedClass owlEnumeratedClass) {
@@ -201,7 +232,7 @@ public class DLSyntaxBrowserTextGenerator implements OWLModelVisitor {
     }
 
     public void visitOWLIndividual(OWLIndividual owlIndividual) {
-        write(owlIndividual.getBrowserText());
+        write(ParserUtils.quoteIfNeeded(owlIndividual.getBrowserText()));
     }
 
     public void visitOWLIntersectionClass(OWLIntersectionClass owlIntersectionClass) {
@@ -224,12 +255,12 @@ public class DLSyntaxBrowserTextGenerator implements OWLModelVisitor {
 
     public void visitOWLNamedClass(OWLNamedClass owlNamedClass) {
         push(owlNamedClass);
-        write(owlNamedClass.getBrowserText());
+        write(ParserUtils.quoteIfNeeded(owlNamedClass.getBrowserText()));
         pop();
     }
 
     public void visitOWLObjectProperty(OWLObjectProperty owlObjectProperty) {
-        write(owlObjectProperty.getBrowserText());
+        write(ParserUtils.quoteIfNeeded(owlObjectProperty.getBrowserText()));
     }
 
     public void visitOWLOntology(OWLOntology owlOntology) {
@@ -253,7 +284,7 @@ public class DLSyntaxBrowserTextGenerator implements OWLModelVisitor {
     }
 
     public void visitRDFIndividual(RDFIndividual rdfIndividual) {
-        write(rdfIndividual.getBrowserText());
+        write(ParserUtils.quoteIfNeeded(rdfIndividual.getBrowserText()));
     }
 
     public void visitRDFList(RDFList rdfList) {
@@ -261,7 +292,7 @@ public class DLSyntaxBrowserTextGenerator implements OWLModelVisitor {
     }
 
     public void visitRDFProperty(RDFProperty rdfProperty) {
-        write(rdfProperty.getBrowserText());
+        write(ParserUtils.quoteIfNeeded(rdfProperty.getBrowserText()));
     }
 
     public void visitRDFSLiteral(RDFSLiteral rdfsLiteral) {
@@ -276,5 +307,13 @@ public class DLSyntaxBrowserTextGenerator implements OWLModelVisitor {
     public void visitRDFUntypedResource(RDFUntypedResource rdfUntypedResource) {
         write(rdfUntypedResource.getURI());
     }
+
+	public void visitSWRLIndividual(SWRLIndividual swrlIndividual) {		
+		visitOWLIndividual(swrlIndividual);
+	}
+
+	public void visitSWRLAtomListIndividual(SWRLAtomList swrlAtomList) {		
+		visitRDFList(swrlAtomList);
+	}
 
 }

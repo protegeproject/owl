@@ -145,6 +145,23 @@ public class JavaCodeGenerator {
 	            printWriter.println("    }");
             }
         }
+
+        for (Iterator it = owlModel.getUserDefinedRDFProperties().iterator(); it.hasNext();) {
+            RDFProperty property = (RDFProperty) it.next();            
+            if (!property.getNamespace().equals(SWRLNames.SWRL_NAMESPACE)) {  
+                RDFPropertyCode propertyCode = new RDFPropertyCode(property);
+                String name = propertyCode.getUpperCaseJavaName();
+
+	            printWriter.println();
+	            printWriter.println();
+                printWriter.println("    public RDFProperty get" + name + "Property() {");
+                printWriter.println("        final String uri = \"" + property.getURI() + "\";");
+                printWriter.println("        final String name = owlModel.getResourceNameForURI(uri);");
+                printWriter.println("        return owlModel.getRDFProperty(name);");
+                printWriter.println("    }");
+            }
+        }
+
         printWriter.println("}");
     }
 

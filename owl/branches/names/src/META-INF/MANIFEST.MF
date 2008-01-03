@@ -475,5 +475,16 @@ Slot-Widget: True
 Name: edu.stanford.smi.protegex.owl.swrl.ui.widget.SWRLRuleSlotWidget.class
 Slot-Widget: True
 
+Name: edu.stanford.smi.protegex.owl.inference.dig.DefaultProtegeDIGReasoner.class
+ReasonerPlugin: True
+
+Name: edu.stanford.smi.protegex.owl.ui.widget.InferredSuperClassesWidget.class
+Slot-Widget: True
+
+Name: edu.stanford.smi.protegex.owl.swrl.ui.actions.EnableSWRLTabAction.class
+OWLModelAction: True
+
+
+
 
 

@@ -211,8 +211,9 @@ TOKEN :
 {
   < ONE_OF: "owl:oneOf{" >
 |
-  < IDENTIFIER: <LETTER> (<LETTER>|<DIGIT>)* > {
-    if(CompactParser.getDatatypeNameChecker().isDatatypeName(matchedToken.image)) {
+  < IDENTIFIER: <LETTER> (<LETTER>|<DIGIT>)* | "'" (~["'"])* "'" > {
+    String idName = ParserUtils.dequoteIdentifier(matchedToken.image);
+    if(CompactParser.getDatatypeNameChecker().isDatatypeName(idName)) {
 		matchedToken.kind = DATATYPEID;
     }
   }
@@ -644,7 +645,7 @@ String Identifier() :
 }
 {
     t=<IDENTIFIER> {
-        return t.image;
+        return ParserUtils.dequoteIdentifier(t.image);
     }
 }
 
@@ -799,7 +800,8 @@ Object DataType() :
 {
     (<ONE_OF> oneOfValues=OneOfValues())  { return oneOfValues; }
   | (token=<DATATYPEID> {
-        String qName = datatypeNameChecker.getDatatypeQName(token.image);
+  	    String idName = ParserUtils.dequoteIdentifier(token.image);
+        String qName = datatypeNameChecker.getDatatypeQName(idName);
         datatype = owlModel.getRDFSDatatypeByName(qName);
      }
     ( // User defined part

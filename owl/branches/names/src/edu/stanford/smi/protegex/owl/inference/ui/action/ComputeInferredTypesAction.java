@@ -1,9 +1,10 @@
 package edu.stanford.smi.protegex.owl.inference.ui.action;
 
-import edu.stanford.smi.protegex.owl.inference.dig.exception.DIGReasonerException;
-import edu.stanford.smi.protegex.owl.inference.protegeowl.ProtegeOWLReasoner;
+import edu.stanford.smi.protege.ui.ProjectManager;
 import edu.stanford.smi.protegex.owl.inference.protegeowl.ReasonerManager;
 import edu.stanford.smi.protegex.owl.inference.protegeowl.task.ReasonerTaskListener;
+import edu.stanford.smi.protegex.owl.inference.reasoner.ProtegeReasoner;
+import edu.stanford.smi.protegex.owl.inference.reasoner.exception.ProtegeReasonerException;
 import edu.stanford.smi.protegex.owl.inference.ui.ReasonerActionRunner;
 import edu.stanford.smi.protegex.owl.inference.ui.RunnableReasonerAction;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
@@ -27,7 +28,7 @@ public class ComputeInferredTypesAction extends AbstractOWLModelAction {
 
 
     public String getMenubarPath() {
-        return OWL_MENU + PATH_SEPARATOR + ActionConstants.ACTION_GROUP;
+        return REASONING_MENU + PATH_SEPARATOR + ActionConstants.ACTION_GROUP;
     }
 
 
@@ -43,9 +44,13 @@ public class ComputeInferredTypesAction extends AbstractOWLModelAction {
 
     public void run(final OWLModel owlModel) {
         ReasonerActionRunner runner = new ReasonerActionRunner(new RunnableReasonerAction() {
-            public void executeReasonerActions(ReasonerTaskListener taskListener) throws DIGReasonerException {
-                ProtegeOWLReasoner reasoner = ReasonerManager.getInstance().getReasoner(owlModel);
-                reasoner.computeInferredIndividualTypes(taskListener);
+            public void executeReasonerActions(ReasonerTaskListener taskListener) throws ProtegeReasonerException {           
+            	ProtegeReasoner reasoner = ReasonerManager.getInstance().getProtegeReasoner(owlModel);
+            	reasoner.setReasonerTaskListener(taskListener);
+            	reasoner.computeInferredIndividualTypes();
+            	
+            	//reload project view
+            	ProjectManager.getProjectManager().reloadUI(false);
             }
 
 

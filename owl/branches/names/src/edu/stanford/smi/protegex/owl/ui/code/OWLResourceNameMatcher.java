@@ -1,12 +1,30 @@
 package edu.stanford.smi.protegex.owl.ui.code;
 
-import edu.stanford.smi.protege.model.Frame;
-import edu.stanford.smi.protegex.owl.database.OWLDatabaseModel;
-import edu.stanford.smi.protegex.owl.model.*;
-import edu.stanford.smi.protegex.owl.model.classparser.OWLClassParseException;
-import edu.stanford.smi.protegex.owl.model.impl.OWLUtil;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
-import java.util.*;
+import edu.stanford.smi.protege.model.BrowserSlotPattern;
+import edu.stanford.smi.protege.model.Cls;
+import edu.stanford.smi.protege.model.Frame;
+import edu.stanford.smi.protege.model.KnowledgeBase;
+import edu.stanford.smi.protege.model.Slot;
+import edu.stanford.smi.protegex.owl.database.OWLDatabaseModel;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.model.RDFIndividual;
+import edu.stanford.smi.protegex.owl.model.RDFProperty;
+import edu.stanford.smi.protegex.owl.model.RDFResource;
+import edu.stanford.smi.protegex.owl.model.RDFSDatatype;
+import edu.stanford.smi.protegex.owl.model.RDFSLiteral;
+import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
+import edu.stanford.smi.protegex.owl.model.classparser.OWLClassParseException;
+import edu.stanford.smi.protegex.owl.model.classparser.ParserUtils;
+import edu.stanford.smi.protegex.owl.model.impl.DefaultRDFSLiteral;
+import edu.stanford.smi.protegex.owl.model.impl.OWLUtil;
 
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
@@ -17,26 +35,33 @@ public class OWLResourceNameMatcher implements ResourceNameMatcher {
 
 
     public String getInsertString(RDFResource resource) {
-        return resource.getBrowserText();
+        String insert = resource.getBrowserText();
+        return ParserUtils.quoteIfNeeded(insert);
     }
 
 
-    public List getMatchingResources(String prefix, String leftString, OWLModel owlModel) {
+    public Set<RDFResource> getMatchingResources(String prefix, String leftString, OWLModel owlModel) {
+        boolean matchToQuote = false;
+        
+        if (prefix.startsWith(ParserUtils.SINGLE_QUOTE_STRING)) {
+            matchToQuote = true;
+            prefix = prefix.substring(1);
+        }
 
         if (owlModel instanceof OWLDatabaseModel && prefix.length() < 3) {
-            return Collections.EMPTY_LIST;
+            return Collections.EMPTY_SET;
         }
 
-        List frames = new ArrayList();
+        Set<RDFResource> frames = new HashSet<RDFResource>();
         OWLClassParseException ex = OWLClassParseException.getRecentInstance();
-        if (ex.nextCouldBeClass || owlModel.getRDFResource(prefix) instanceof RDFSNamedClass) {
-            getMatchingRDFSNamedClasses(prefix, frames, owlModel);
+        if (ex.nextCouldBeClass || owlModel.getRDFResource(prefix) instanceof RDFSNamedClass || matchToQuote) {
+            addMatchingRDFSNamedClasses(prefix, frames, owlModel);
         }
-        if (ex.nextCouldBeIndividual || owlModel.getRDFResource(prefix) != null) {
-            getMatchingRDFIndividuals(prefix, frames, owlModel);
+        if (ex.nextCouldBeIndividual || owlModel.getRDFResource(prefix) != null || matchToQuote) {
+            addMatchingRDFIndividuals(prefix, frames, owlModel);
         }
-        if (ex.nextCouldBeProperty || owlModel.getRDFResource(prefix) instanceof RDFProperty) {
-            getMatchingRDFProperties(prefix, frames, owlModel);
+        if (ex.nextCouldBeProperty || owlModel.getRDFResource(prefix) instanceof RDFProperty || matchToQuote) {
+            addMatchingRDFProperties(prefix, frames, owlModel);
         }
 	    if(ex.nextCouldBeDatatypeName || owlModel.getRDFResource(prefix) instanceof RDFSDatatype) {
 		    getMatchingDatatypeNames(prefix, frames, owlModel);
@@ -44,20 +69,8 @@ public class OWLResourceNameMatcher implements ResourceNameMatcher {
         return frames;
     }
 
-  public static void getMatchingOWLNamedClasses(String prefix, List result, OWLModel owlModel)
-  {
-    List localResult = new ArrayList(); 
-    Iterator iterator;
 
-    getMatchingRDFSNamedClasses(prefix, localResult, owlModel);
-    iterator = localResult.iterator();
-    while (iterator.hasNext()) {
-      RDFSNamedClass aClass = (RDFSNamedClass)iterator.next();
-      if (aClass instanceof OWLNamedClass) result.add(aClass);
-    } // while
-  } // getMatchingOWLNamedClasses
-
-    public static void getMatchingRDFSNamedClasses(String prefix, List result, OWLModel owlModel) {
+    public static void addMatchingRDFSNamedClasses(String prefix, Set<RDFResource> result, OWLModel owlModel) {
         if (prefix.length() == 0) {
             int count = owlModel.getRDFSClassCount();
             if (count < SCALABLE_FRAME_COUNT) {
@@ -70,73 +83,34 @@ public class OWLResourceNameMatcher implements ResourceNameMatcher {
             }
         }
         else {
-            Collection matches = owlModel.getResourceNameMatches(prefix + "*", SCALABLE_FRAME_COUNT);
-            for (Iterator it = matches.iterator(); it.hasNext();) {
-                Frame frame = (Frame) it.next();
-                if (frame instanceof RDFSNamedClass &&
-                        frame.isVisible() && (isSlowProject(owlModel) ||
-                        ((RDFSNamedClass) frame).isVisibleFromOWLThing())) {
-                    result.add(frame);
-                }
-            }
+            Collection<Frame> frames = new ArrayList<Frame>();
+            Collection<Slot> alreadySearchedSlots = new ArrayList<Slot>();
+            addMatchingFrames(owlModel, frames, owlModel.getRDFSNamedClassClass(), prefix, alreadySearchedSlots);
+            addMatchingFrames(owlModel, frames, owlModel.getOWLNamedClassClass(), prefix, alreadySearchedSlots);
+            addFilteredElements(result, frames, RDFSNamedClass.class);
         }
     }
 
-
-    private static boolean isSlowProject(OWLModel owlModel) {
-        return owlModel.getProject().isMultiUserClient();
+    public static void addMatchingRDFProperties(String prefix, Set<RDFResource> result, OWLModel owlModel) {
+        Collection<Frame> frames = new ArrayList<Frame>();
+        Collection<Slot> alreadySearchedSlots = new ArrayList<Slot>();
+        addMatchingFrames(owlModel, frames, owlModel.getRDFPropertyClass(), prefix, alreadySearchedSlots);
+        addMatchingFrames(owlModel, frames, owlModel.getOWLDatatypePropertyClass(), prefix, alreadySearchedSlots);
+        addMatchingFrames(owlModel, frames, owlModel.getOWLObjectPropertyClass(), prefix, alreadySearchedSlots);
+        addFilteredElements(result, frames, RDFProperty.class);
     }
 
 
-  public static void getMatchingOWLProperties(String prefix, List result, OWLModel owlModel)
-  {
-    List localResult = new ArrayList(); 
-    Iterator iterator;
 
-    getMatchingRDFProperties(prefix, localResult, owlModel);
-    iterator = localResult.iterator();
-    while (iterator.hasNext()) {
-      RDFProperty aProperty = (RDFProperty)iterator.next();
-      if (aProperty instanceof OWLProperty) result.add(aProperty);
-    } // while
-  } // getMatchingOWLProperties
 
-    public static void getMatchingRDFProperties(String prefix, List result, OWLModel owlModel) {
-        Collection matches = owlModel.getResourceNameMatches(prefix + "*", SCALABLE_FRAME_COUNT);
-        for (Iterator it = matches.iterator(); it.hasNext();) {
-            Frame frame = (Frame) it.next();
-            if (frame instanceof RDFProperty && frame.isVisible()) {
-                result.add(frame);
-            }
-        }
+    public static void addMatchingRDFIndividuals(String prefix, Set<RDFResource> result, OWLModel owlModel) {
+        Collection<Frame> frames = new ArrayList<Frame>();
+        Collection<Slot> alreadySearchedSlots = new ArrayList<Slot>();
+        addMatchingFrames(owlModel, frames, owlModel.getOWLThingClass(), prefix, alreadySearchedSlots);
+        addFilteredElements(result, frames, RDFIndividual.class);
     }
 
-
-  public static void getMatchingOWLIndividuals(String prefix, List result, OWLModel owlModel)
-  {
-    List localResult = new ArrayList(); 
-    Iterator iterator;
-
-    getMatchingRDFIndividuals(prefix, localResult, owlModel);
-    iterator = localResult.iterator();
-    while (iterator.hasNext()) {
-      RDFIndividual anIndividual = (RDFIndividual)iterator.next();
-      if (anIndividual instanceof OWLIndividual) result.add(anIndividual);
-    } // while
-  } // getMatchingOWLIndividuals
-
-
-    public static void getMatchingRDFIndividuals(String prefix, List result, OWLModel owlModel) {
-        Collection matches = owlModel.getResourceNameMatches(prefix + "*", SCALABLE_FRAME_COUNT);
-        for (Iterator it = matches.iterator(); it.hasNext();) {
-            Frame frame = (Frame) it.next();
-            if (frame instanceof RDFIndividual && frame.isVisible()) {
-                result.add(frame);
-            }
-        }
-    }
-
-	public static void getMatchingDatatypeNames(String prefix, List result, OWLModel owlModel) {
+	public static void getMatchingDatatypeNames(String prefix, Set<RDFResource> result, OWLModel owlModel) {
 		Collection matches = owlModel.getRDFSDatatypes();
         for (Iterator it = matches.iterator(); it.hasNext();) {
             RDFSDatatype datatype = (RDFSDatatype) it.next();
@@ -146,4 +120,61 @@ public class OWLResourceNameMatcher implements ResourceNameMatcher {
             }
         }
 	}
+    
+    private static void addMatchingFrames(OWLModel owlModel,
+                                          Collection<Frame> frames, Cls type, String prefix, 
+                                          Collection<Slot> alreadySearchedSlots) {
+        Slot slot = getBrowserSlotForType(type);
+        if (!alreadySearchedSlots.contains(slot)) {
+            Collection<Frame> newFrames = ((KnowledgeBase) owlModel).getMatchingFrames(slot, null, false, 
+                                                                                       prefix + "*", SCALABLE_FRAME_COUNT);
+            frames.addAll(newFrames);
+            String  lang = owlModel.getDefaultLanguage();
+            if (lang != null && slot instanceof RDFProperty 
+                    && ((RDFProperty) slot).isAnnotationProperty()) {
+                newFrames = ((KnowledgeBase) owlModel).getMatchingFrames(slot, null, false, 
+                                                                         DefaultRDFSLiteral.LANGUAGE_PREFIX + lang + DefaultRDFSLiteral.SEPARATOR + prefix + "*", SCALABLE_FRAME_COUNT);
+                frames.addAll(newFrames);
+            }
+            alreadySearchedSlots.add(slot);
+        }  
+    }
+    
+    public boolean isIdChar(char ch) {
+        return SymbolTextField.isIdChar(ch);
+    }
+
+    private static Slot getBrowserSlotForType(Cls type) {
+        BrowserSlotPattern bsp = type.getBrowserSlotPattern();
+        List<Slot> slots = bsp.getSlots();
+        if (slots.size() == 1) {
+            return slots.get(0);
+        }
+        return type.getKnowledgeBase().getSystemFrames().getNameSlot();
+    }
+    
+    
+    private static void addFilteredElements(Set<RDFResource> setToBeAppended,
+                                            Collection<?> setWithSomeUsefulResources, 
+                                            Class<? extends RDFResource> clazz) {
+        for (Object resource  : setWithSomeUsefulResources) {
+            if (clazz.isAssignableFrom(resource.getClass()) && isVisible((RDFResource) resource)) {
+                setToBeAppended.add((RDFResource) resource);
+            }
+        }
+    }
+    
+    private static boolean isVisible(Frame frame) {
+        if (frame instanceof RDFSNamedClass) {
+            return frame.isVisible() && 
+                (isSlowProject(frame.getKnowledgeBase()) ||
+                    ((RDFSNamedClass) frame).isVisibleFromOWLThing());
+        }
+        else return frame.isVisible();
+    }
+    
+    private static boolean isSlowProject(KnowledgeBase kb) {
+        return kb.getProject().isMultiUserClient();
+    }
+    
 }

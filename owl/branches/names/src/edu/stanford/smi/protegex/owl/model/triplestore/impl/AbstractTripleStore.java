@@ -218,9 +218,9 @@ public abstract class AbstractTripleStore implements ProtegeTripleAdder, TripleS
     }
 
 
-    public Iterator listHomeResources() {
+    public Iterator<RDFResource> listHomeResources() {
         Collection frames = frameStore.getFramesWithAnyValue(nameSlot, null, false);
-        Collection results = AbstractOWLModel.getRDFResources(owlModel, frames);
+        Collection<RDFResource> results = AbstractOWLModel.getRDFResources(owlModel, frames);
         return results.iterator();
     }
 

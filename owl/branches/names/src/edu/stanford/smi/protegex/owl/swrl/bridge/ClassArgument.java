@@ -2,9 +2,9 @@
 package edu.stanford.smi.protegex.owl.swrl.bridge;
 
 /**
- ** Interface representing OWL class arguments to atoms and built-ins.
+ ** Interface representing OWL named class arguments to atoms and built-ins
  */
-public interface ClassArgument extends Argument 
+public interface ClassArgument extends ClassDescriptionArgument, BuiltInArgument
 {
   String getClassName();
 } // ClassArgument

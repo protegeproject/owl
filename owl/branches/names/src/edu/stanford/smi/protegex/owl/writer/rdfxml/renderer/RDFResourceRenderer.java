@@ -42,6 +42,9 @@ import edu.stanford.smi.protegex.owl.model.RDFSNames;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 import edu.stanford.smi.protegex.owl.model.visitor.OWLModelVisitorAdapter;
 import edu.stanford.smi.protegex.owl.model.visitor.Visitable;
+import edu.stanford.smi.protegex.owl.swrl.model.SWRLAtomList;
+import edu.stanford.smi.protegex.owl.swrl.model.SWRLIndividual;
+import edu.stanford.smi.protegex.owl.swrl.model.SWRLNames;
 import edu.stanford.smi.protegex.owl.writer.rdfxml.util.Util;
 import edu.stanford.smi.protegex.owl.writer.xml.XMLWriter;
 
@@ -424,10 +427,19 @@ public class RDFResourceRenderer extends OWLModelVisitorAdapter {
 
 
     private void renderValuesAsRDFList(Collection values, OWLModel model) {
+    	renderValuesAsRDFList(values, model, RDFNames.Cls.LIST);
+    }
+    
+    private void renderValuesAsSWRLAtomList(Collection values, OWLModel model) {
+    	renderValuesAsRDFList(values, model, SWRLNames.Cls.ATOM_LIST);
+    }
+    
+    
+    private void renderValuesAsRDFList(Collection values, OWLModel model, String listElementTypes) {
         try {
             int counter = 0;
             for (Iterator it = values.iterator(); it.hasNext();) {
-                writer.writeStartElement(RDFNames.Cls.LIST);
+                writer.writeStartElement(listElementTypes);
                 writer.writeStartElement(RDFNames.Slot.FIRST);
                 Object curVal = it.next();
                 if (curVal instanceof RDFResource) {
@@ -460,6 +472,16 @@ public class RDFResourceRenderer extends OWLModelVisitorAdapter {
         Util.insertProperties(resource, tripleStore, writer);
     }
 
+    @Override
+    public void visitSWRLIndividual(SWRLIndividual swrlIndividual) {
+    	visitOWLIndividual(swrlIndividual);
+    }
+    
+    @Override
+    public void visitSWRLAtomListIndividual(SWRLAtomList swrlAtomList) {    	
+    	renderValuesAsSWRLAtomList(swrlAtomList.getValues(), swrlAtomList.getOWLModel());
+    }
+    
 
 }
 

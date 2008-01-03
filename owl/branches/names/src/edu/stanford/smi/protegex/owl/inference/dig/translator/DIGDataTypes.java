@@ -204,7 +204,14 @@ public class DIGDataTypes {
 		}
 
 		public String getRenderering(RDFSLiteral value) {
-			return value.getString();
+			String rendering = value.getString();
+			if (rendering.equalsIgnoreCase("true")) {
+				return "1";
+			} else if (rendering.equalsIgnoreCase("false")) {
+				return "0";
+			} else {
+				return rendering;
+			}
 		}
 	}
 

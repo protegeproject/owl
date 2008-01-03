@@ -1,9 +1,9 @@
 package edu.stanford.smi.protegex.owl.ui.code;
 
+import java.util.Set;
+
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
-
-import java.util.List;
 
 /**
  * An interface for objects that determine which resources could be inserted
@@ -16,5 +16,7 @@ public interface ResourceNameMatcher {
     String getInsertString(RDFResource resource);
 
 
-    List getMatchingResources(String prefix, String leftString, OWLModel owlModel);
+    Set<RDFResource> getMatchingResources(String prefix, String leftString, OWLModel owlModel);
+    
+    public boolean isIdChar(char ch);
 }

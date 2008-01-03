@@ -12,13 +12,6 @@ import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
  */
 public class TripleChangePostProcessor {
 
-    //private static void aldi(OWLModel owlModel, TripleStore tripleStore) {
-    //    for (Iterator it = tripleStore.listSubjects(owlModel.getRDFTypeProperty(), owlModel.getOWLOntologyClass()); it.hasNext();) {
-    //        RDFResource subject = (RDFResource) it.next();
-    //        System.out.println(" - " + subject.getBrowserText());
-    //    }
-    //}
-
 
     public static void postProcess(OWLModel owlModel) {
         TripleStore activeTripleStore = owlModel.getTripleStoreModel().getActiveTripleStore();

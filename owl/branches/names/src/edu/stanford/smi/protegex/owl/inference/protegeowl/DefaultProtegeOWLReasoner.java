@@ -18,29 +18,30 @@ import edu.stanford.smi.protegex.owl.inference.dig.reasoner.logger.DIGLoggerList
 import edu.stanford.smi.protegex.owl.inference.protegeowl.log.ErrorMessageLogRecord;
 import edu.stanford.smi.protegex.owl.inference.protegeowl.log.ReasonerLogRecordFactory;
 import edu.stanford.smi.protegex.owl.inference.protegeowl.log.ReasonerLogger;
-import edu.stanford.smi.protegex.owl.inference.protegeowl.task.ClassifyTaxonomyTask;
-import edu.stanford.smi.protegex.owl.inference.protegeowl.task.GetAncestorConceptsTask;
-import edu.stanford.smi.protegex.owl.inference.protegeowl.task.GetConceptIntersectionSuperclassesTask;
-import edu.stanford.smi.protegex.owl.inference.protegeowl.task.GetConceptSatisfiableTask;
-import edu.stanford.smi.protegex.owl.inference.protegeowl.task.GetDescendantConceptsTask;
-import edu.stanford.smi.protegex.owl.inference.protegeowl.task.GetEquivalentConceptsTask;
-import edu.stanford.smi.protegex.owl.inference.protegeowl.task.GetIndividualInferredTypesTask;
-import edu.stanford.smi.protegex.owl.inference.protegeowl.task.GetIndividualsBelongingToConceptTask;
-import edu.stanford.smi.protegex.owl.inference.protegeowl.task.GetSubConceptsTask;
-import edu.stanford.smi.protegex.owl.inference.protegeowl.task.GetSubsumptionRelationshipTask;
-import edu.stanford.smi.protegex.owl.inference.protegeowl.task.GetSuperConceptsTask;
-import edu.stanford.smi.protegex.owl.inference.protegeowl.task.IsConceptIntersectionSatisfiableTask;
-import edu.stanford.smi.protegex.owl.inference.protegeowl.task.IsDisjointToTask;
-import edu.stanford.smi.protegex.owl.inference.protegeowl.task.IsSubsumedByTask;
 import edu.stanford.smi.protegex.owl.inference.protegeowl.task.ReasonerTask;
 import edu.stanford.smi.protegex.owl.inference.protegeowl.task.ReasonerTaskAdapter;
 import edu.stanford.smi.protegex.owl.inference.protegeowl.task.ReasonerTaskEvent;
 import edu.stanford.smi.protegex.owl.inference.protegeowl.task.ReasonerTaskListener;
-import edu.stanford.smi.protegex.owl.inference.protegeowl.task.SynchronizeReasonerTask;
-import edu.stanford.smi.protegex.owl.inference.protegeowl.task.UpdateEquivalentClassesTask;
-import edu.stanford.smi.protegex.owl.inference.protegeowl.task.UpdateInconsistentClassesTask;
-import edu.stanford.smi.protegex.owl.inference.protegeowl.task.UpdateInferredHierarchyTask;
-import edu.stanford.smi.protegex.owl.inference.protegeowl.task.UpdateInferredTypesTask;
+import edu.stanford.smi.protegex.owl.inference.protegeowl.task.digreasoner.ClassifyTaxonomyTask;
+import edu.stanford.smi.protegex.owl.inference.protegeowl.task.digreasoner.GetAncestorConceptsTask;
+import edu.stanford.smi.protegex.owl.inference.protegeowl.task.digreasoner.GetConceptIntersectionSuperclassesTask;
+import edu.stanford.smi.protegex.owl.inference.protegeowl.task.digreasoner.GetConceptSatisfiableTask;
+import edu.stanford.smi.protegex.owl.inference.protegeowl.task.digreasoner.GetDescendantConceptsTask;
+import edu.stanford.smi.protegex.owl.inference.protegeowl.task.digreasoner.GetEquivalentConceptsTask;
+import edu.stanford.smi.protegex.owl.inference.protegeowl.task.digreasoner.GetIndividualInferredTypesTask;
+import edu.stanford.smi.protegex.owl.inference.protegeowl.task.digreasoner.GetIndividualsBelongingToConceptTask;
+import edu.stanford.smi.protegex.owl.inference.protegeowl.task.digreasoner.GetSubConceptsTask;
+import edu.stanford.smi.protegex.owl.inference.protegeowl.task.digreasoner.GetSubsumptionRelationshipTask;
+import edu.stanford.smi.protegex.owl.inference.protegeowl.task.digreasoner.GetSuperConceptsTask;
+import edu.stanford.smi.protegex.owl.inference.protegeowl.task.digreasoner.IsConceptIntersectionSatisfiableTask;
+import edu.stanford.smi.protegex.owl.inference.protegeowl.task.digreasoner.IsDisjointToTask;
+import edu.stanford.smi.protegex.owl.inference.protegeowl.task.digreasoner.IsSubsumedByTask;
+import edu.stanford.smi.protegex.owl.inference.protegeowl.task.digreasoner.SynchronizeReasonerTask;
+import edu.stanford.smi.protegex.owl.inference.protegeowl.task.digreasoner.UpdateEquivalentClassesTask;
+import edu.stanford.smi.protegex.owl.inference.protegeowl.task.digreasoner.UpdateInconsistentClassesTask;
+import edu.stanford.smi.protegex.owl.inference.protegeowl.task.digreasoner.UpdateInferredHierarchyTask;
+import edu.stanford.smi.protegex.owl.inference.protegeowl.task.digreasoner.UpdateInferredTypesTask;
+import edu.stanford.smi.protegex.owl.inference.reasoner.exception.ProtegeReasonerException;
 import edu.stanford.smi.protegex.owl.inference.util.TimeDifference;
 import edu.stanford.smi.protegex.owl.model.OWLClass;
 import edu.stanford.smi.protegex.owl.model.OWLIndividual;
@@ -631,7 +632,7 @@ public class DefaultProtegeOWLReasoner implements ProtegeOWLReasoner {
         try {
             task.run();
         }
-        catch (DIGReasonerException e) {
+        catch (ProtegeReasonerException e) {
             String oldKbURI = kbURI;
 
             // Flag that the knowledgebase need recreating
@@ -645,7 +646,7 @@ public class DefaultProtegeOWLReasoner implements ProtegeOWLReasoner {
 
             synchronizeReasoner = true;
 
-            throw e;
+            throw new DIGReasonerException(e.getMessage(), e);
         }
         finally {
             if (taskListener != null) {

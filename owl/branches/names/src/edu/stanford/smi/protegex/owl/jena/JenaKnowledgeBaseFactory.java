@@ -225,7 +225,7 @@ public class JenaKnowledgeBaseFactory implements OWLKnowledgeBaseFactory, Client
     protected void makeOWLFileNameRelativeIfPossible(Project project) {
         String path = getOWLFilePath(project.getSources());
         URI projectDirURI = project.getProjectDirectoryURI();
-        if (projectDirURI.toString().startsWith("file:")) {
+        if (projectDirURI != null && projectDirURI.toString().startsWith("file:")) {
             try {
                 URI fileURI = new URI(path);
                 File fileFile = new File(fileURI);

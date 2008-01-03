@@ -13,42 +13,27 @@ import edu.stanford.smi.protegex.owl.swrl.model.impl.SWRLUtil;
 
 import java.util.Set;
 
-public class DefaultSWRLBuiltinAtom extends DefaultSWRLAtom implements SWRLBuiltinAtom {
+public class DefaultSWRLBuiltinAtom extends DefaultSWRLAtom implements SWRLBuiltinAtom 
+{
+  public DefaultSWRLBuiltinAtom(KnowledgeBase kb, FrameID id) { super(kb, id);} 
+  public DefaultSWRLBuiltinAtom() {}
 
-    public DefaultSWRLBuiltinAtom(KnowledgeBase kb, FrameID id) {
-        super(kb, id);
-    } // DefaultSWRLBuiltinAtom
+  public void getReferencedInstances(Set set) {
+    RDFList arguments = getArguments();
+    if (arguments != null) {
+      for (int size = arguments.size(); size > 0; size--) {
+        Object first = arguments.getFirst();
+        if (first instanceof RDFResource) set.add(first);
+        arguments = arguments.getRest();
+      } // for
+    } // if
+    SWRLBuiltin builtin = getBuiltin();
+    if (builtin != null) set.add(builtin);
+  } // getReferencedInstances
 
+  public RDFList getArguments() { return (RDFList) getPropertyValue(getOWLModel().getRDFProperty(SWRLNames.Slot.ARGUMENTS)); }
 
-    public DefaultSWRLBuiltinAtom() {
-    }
-
-
-    public void getReferencedInstances(Set set) {
-        RDFList arguments = getArguments();
-        if (arguments != null) {
-            for (int size = arguments.size(); size > 0; size--) {
-                Object first = arguments.getFirst();
-                if (first instanceof RDFResource)
-                    set.add(first);
-                arguments = arguments.getRest();
-            }
-        }
-        SWRLBuiltin builtin = getBuiltin();
-        if (builtin != null) {
-            set.add(builtin);
-        }
-    }
-
-
-  public RDFList getArguments() {
-    return (RDFList) getPropertyValue(getOWLModel().getRDFProperty(SWRLNames.Slot.ARGUMENTS));
-  } // getArguments
-
-  public void setArguments(RDFList arguments) 
-  {
-    setPropertyValue(getOWLModel().getRDFProperty(SWRLNames.Slot.ARGUMENTS), arguments);
-  } // setArgument1
+  public void setArguments(RDFList arguments) { setPropertyValue(getOWLModel().getRDFProperty(SWRLNames.Slot.ARGUMENTS), arguments); }
 
   public SWRLBuiltin getBuiltin() 
   {
@@ -57,19 +42,19 @@ public class DefaultSWRLBuiltinAtom extends DefaultSWRLAtom implements SWRLBuilt
     else return null;
   } // SWRLBuiltin
 
-  public void setBuiltin(SWRLBuiltin swrlBuiltin) {
-    setPropertyValue(getOWLModel().getRDFProperty(SWRLNames.Slot.BUILTIN), swrlBuiltin);
-  } // swrlBuiltin
+  public void setBuiltin(SWRLBuiltin swrlBuiltin) { setPropertyValue(getOWLModel().getRDFProperty(SWRLNames.Slot.BUILTIN), swrlBuiltin); } 
 
   //TODO: Protege-OWL is clever about RDFLists so if an argument is deleted from the ontology, the deleted item is removed from the
-  //list (unless it is the last item). Thus, there is no way of detection deletions of non-last arguments for the moment.
+  //list (unless it is the last item). Thus, there is no way of detecting deletions of non-last arguments for the moment.
+
   public String getBrowserText() 
   {
-    SWRLBuiltin builtIn = getBuiltin();
+    SWRLBuiltin builtIn;
     RDFList list = getArguments();
+    Object propertyValue = getPropertyValue(getOWLModel().getRDFProperty(SWRLNames.Slot.BUILTIN));
     String s = "";
-
-    s += SWRLUtil.getSWRLBrowserText(builtIn, "BUILTIN");
+    
+    s = SWRLUtil.getSWRLBrowserText(propertyValue, "BUILTIN");
 
     s += "(";
 
@@ -78,9 +63,9 @@ public class DefaultSWRLBuiltinAtom extends DefaultSWRLAtom implements SWRLBuilt
         Object o = list.getFirst();
         if (o == null) s += "<DELETED_LIST>";
         else if (o instanceof RDFUntypedResource) {
-          s += SWRLUtil.getSWRLBrowserText((RDFUntypedResource)o, "ARGUMENT");
+          s += SWRLUtil.getSWRLBrowserText(o, "ARGUMENT");
         } else if (o instanceof RDFResource) {
-          s += ((RDFResource)o).getBrowserText();
+          s += SWRLUtil.getSWRLBrowserText(o, "ARGUMENT");
         } else {
           RDFSLiteral l = list.getFirstLiteral();
           s += SWRLUtil.getSWRLBrowserText(l, "ARGUMENT");

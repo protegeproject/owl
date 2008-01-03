@@ -377,7 +377,9 @@ public class Util {
     public static String getOntologyName(OWLModel model, TripleStore tripleStore) {
         for (Iterator it = model.getOWLOntologies().iterator(); it.hasNext();) {
             OWLOntology ont = (OWLOntology) it.next();
-            if (model.getTripleStoreModel().getHomeTripleStore(ont).equals(tripleStore)) {
+            TripleStore homeTripleStore = model.getTripleStoreModel().getHomeTripleStore(ont); 
+            //happens in client-server
+            if (homeTripleStore != null && homeTripleStore.equals(tripleStore)) {
                 return ont.getURI();
             }
         }

@@ -1,15 +1,14 @@
 
 package edu.stanford.smi.protegex.owl.swrl;
 
+import edu.stanford.smi.protegex.owl.swrl.bridge.*;
 import edu.stanford.smi.protegex.owl.swrl.exceptions.*;
-import edu.stanford.smi.protegex.owl.swrl.bridge.query.Result;
-import edu.stanford.smi.protegex.owl.swrl.bridge.query.exceptions.ResultException;
+import edu.stanford.smi.protegex.owl.swrl.sqwrl.exceptions.*;
 
 import java.util.*;
 
-
 /**
- ** This inferface defines the methods that must be provided by a SWRL rule engine.
+ ** This interface defines the methods that must be provided by a SWRL rule engine.
  **
  */
 public interface SWRLRuleEngine
@@ -19,23 +18,15 @@ public interface SWRLRuleEngine
    ** to OWL.
    */
   void infer() throws SWRLRuleEngineException;
+  void infer(String ruleGroupName) throws SWRLRuleEngineException;
+  void infer(Set<String> ruleGroupNames) throws SWRLRuleEngineException;
 
   /**
    ** Load rules and knowledge from OWL into bridge. All existing bridge rules and knowledge will first be cleared and the associated rule
    ** engine will be reset.
    */
   void importSWRLRulesAndOWLKnowledge() throws SWRLRuleEngineException;
-
-  /**
-   ** Load rules from a particular rule group and associated knowledge from OWL into bridge. All existing bridge rules and knowledge will
-   ** first be cleared and the associated rule engine will be reset.
-   */
   void importSWRLRulesAndOWLKnowledge(String ruleGroupName) throws SWRLRuleEngineException;
-
-  /**
-   ** Load rules from all the named rule groups and associated knowledge from OWL into bridge. All existing bridge rules and knowledge will
-   ** first be cleared and the associated rule engine will be reset.
-   */
   void importSWRLRulesAndOWLKnowledge(Set<String> ruleGroupNames) throws SWRLRuleEngineException;
 
   /**
@@ -44,29 +35,20 @@ public interface SWRLRuleEngine
   void run() throws SWRLRuleEngineException;
 
   /**
-   ** Send rules and knowledge stored in bridge to a rule engine.
-   */
-  void exportSWRLRulesAndOWLKnowledge() throws SWRLRuleEngineException;
-
-  /**
-   ** Send knowledge (excluding SWRL rules) stored in bridge to a rule engine.
-   */
-  void exportOWLKnowledge() throws SWRLRuleEngineException;
-
-  /**
    ** Write knowledge inferred by rule engine back to OWL.
    */
-  void writeAssertedIndividualsAndProperties2OWL() throws SWRLRuleEngineException;
+  void writeInferredKnowledge2OWL() throws SWRLRuleEngineException;
 
   /**
    **  Clear all knowledge from rule engine, deleted asserted knowledge from the bridge, and leave imported bridge knowledge intact.
    */
-  void resetRuleEngine() throws SWRLRuleEngineException;
+  void reset() throws SWRLRuleEngineException;
 
-  /**
-   **  Get the results from a rule containing query built-ins. Null is retured if there are no results or if the query subsystem is not
-   **  activated.
-   */
-  Result getQueryResult(String ruleName) throws ResultException;
+  SWRLRule getRule(String ruleName) throws InvalidRuleNameException;
 
+  int getNumberOfInferredIndividuals();
+  int getNumberOfInferredPropertyAssertionAxioms();
+
+  Set<OWLIndividual> getInferredIndividuals();
+  Set<OWLPropertyAssertionAxiom> getInferredPropertyAssertionAxioms();
 } // SWRLRuleEngine

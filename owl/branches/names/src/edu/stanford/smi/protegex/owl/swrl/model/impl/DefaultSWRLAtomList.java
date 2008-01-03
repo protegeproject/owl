@@ -7,6 +7,7 @@ import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.RDFList;
 import edu.stanford.smi.protegex.owl.model.RDFObject;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultRDFList;
+import edu.stanford.smi.protegex.owl.model.visitor.OWLModelVisitor;
 import edu.stanford.smi.protegex.owl.swrl.model.SWRLAtomList;
 import edu.stanford.smi.protegex.owl.swrl.model.SWRLIndividual;
 import edu.stanford.smi.protegex.owl.swrl.model.impl.SWRLUtil;
@@ -53,5 +54,11 @@ public class DefaultSWRLAtomList extends DefaultRDFList implements SWRLAtomList
       li = li.getRest();
     }
   }
+  
+  @Override
+  public void accept(OWLModelVisitor visitor) {
+	 visitor.visitSWRLAtomListIndividual(this);
+  }
+  
 } // DefaultSWRLAtomList
 

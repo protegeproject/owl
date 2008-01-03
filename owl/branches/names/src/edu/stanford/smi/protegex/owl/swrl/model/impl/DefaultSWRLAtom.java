@@ -5,7 +5,7 @@ import edu.stanford.smi.protege.model.KnowledgeBase;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLIndividual;
 import edu.stanford.smi.protegex.owl.swrl.model.SWRLAtom;
 
-public abstract class DefaultSWRLAtom extends DefaultOWLIndividual implements SWRLAtom {
+public abstract class DefaultSWRLAtom extends AbstractSWRLIndividual implements SWRLAtom {
 
   public DefaultSWRLAtom(KnowledgeBase kb, FrameID id) 
   {

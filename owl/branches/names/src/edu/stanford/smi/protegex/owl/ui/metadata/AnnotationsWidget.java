@@ -25,7 +25,7 @@ import java.awt.*;
 public class AnnotationsWidget extends AbstractPropertyValuesWidget {
 
     protected PropertyValuesComponent createComponent(RDFProperty predicate) {
-        return new AnnotationsComponent(predicate) {
+        return new AnnotationsComponent(predicate, isReadOnlyConfiguredWidget()) {
             protected void handleSelectionChanged() {
                 super.handleSelectionChanged();
                 updateTextAreaWidget();

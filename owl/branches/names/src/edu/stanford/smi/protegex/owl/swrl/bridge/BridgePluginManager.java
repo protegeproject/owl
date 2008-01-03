@@ -27,7 +27,7 @@ import java.awt.Container;
 
 public class BridgePluginManager
 {
-  private static HashMap<String, PluginRegistrationInfo> registeredPlugins = new HashMap<String, PluginRegistrationInfo>();
+  private static HashMap<String, PluginRegistration> registeredPlugins = new HashMap<String, PluginRegistration>();
   private static String visiblePluginName = "";
   private static String selectedRuleName = "";
   
@@ -49,14 +49,14 @@ public class BridgePluginManager
       Class.forName("edu.stanford.smi.protegex.owl.swrl.bridge.jess.SWRLJessBridge");
       Class.forName("edu.stanford.smi.protegex.owl.swrl.bridge.jess.ui.SWRLJessTab");
     } catch (ClassNotFoundException e) {
-      System.err.println("SWRLJessBridge load failed: Could not find jess.Rete - or an error occured on initialization");
+      System.err.println("SWRLJessBridge load failed: could not find jess.Rete - or an error occured on initialization");
     } // try
 
     try { // TODO:  Hack until we can do a proper class load with the manifest
       Class.forName("jess.Rete");
-      Class.forName("edu.stanford.smi.protegex.owl.swrl.bridge.query.ui.SWRLQueryTab");
+      Class.forName("edu.stanford.smi.protegex.owl.swrl.sqwrl.ui.SQWRLQueryTab");
     } catch (ClassNotFoundException e) {
-      System.err.println("SWRLQueryTab load failed: Could not find jess.Rete - or an error occured on initialization");
+      System.err.println("SQWRLQueryTab load failed: could not find jess.Rete - or an error occured on initialization");
     } // try
 
   } // static
@@ -65,19 +65,17 @@ public class BridgePluginManager
   public static boolean hasSelectedRule() { return !selectedRuleName.equals(""); }
   public static void setSelectedRuleName(String ruleName) { selectedRuleName = ruleName; }
 
-  public static Collection<PluginRegistrationInfo> getRegisteredPlugins() { return registeredPlugins.values(); }
+  public static Collection<PluginRegistration> getRegisteredPlugins() { return registeredPlugins.values(); }
 
   public static void hideVisiblePlugin() { hidePlugin(visiblePluginName, true); }
   public static boolean hidePlugin(String pluginName) { return hidePlugin(pluginName, false); }
   public static boolean isVisible(String pluginName) { return !visiblePluginName.equals("") && pluginName.equals(visiblePluginName); } 
 
-  // Called by each plugin as it is loaded to inform the adapter of its presence.
+  // Called by each plugin as it is loaded to inform the adapter of its presence
   public static void registerPlugin(String pluginName, String toolTip, Icon icon, SWRLPluginGUIAdapter guiAdapter)
   {
     if (registeredPlugins.containsKey(pluginName)) registeredPlugins.remove(pluginName);
-
-    registeredPlugins.put(pluginName, new PluginRegistrationInfo(pluginName, toolTip, icon, guiAdapter));
-
+    registeredPlugins.put(pluginName, new PluginRegistration(pluginName, toolTip, icon, guiAdapter));
     System.out.println("Plugin '" + pluginName + "' registered with the SWRLTab plugin manager.");
   } // registerPlugin
 
@@ -93,12 +91,12 @@ public class BridgePluginManager
   {
     if (!isVisible(pluginName)) {
       if (hidePlugin(visiblePluginName)) { // Hide may fail if user does not confirm it.
-      
+        
         if (registeredPlugins.containsKey(pluginName)) {
-          PluginRegistrationInfo info = (PluginRegistrationInfo)registeredPlugins.get(pluginName);
-          Container pluginGUI = info.getGUIAdapter().createPluginGUI(owlModel);
+          PluginRegistration registration = registeredPlugins.get(pluginName);
+          Container pluginGUI = registration.getGUIAdapter().createPluginGUI(owlModel);
 
-          info.setOWLModel(owlModel); // Set the owlModel so that we can deregister ourselves on deactivation.
+          registration.setOWLModel(owlModel); // Set the owlModel so that we can deregister ourselves on deactivation.
           
           if (pluginGUI != null) {
             swrlTab.setVisible(false); 
@@ -121,8 +119,8 @@ public class BridgePluginManager
                                                    JOptionPane.YES_NO_OPTION) != JOptionPane.YES_OPTION)) return false;
 
       if (registeredPlugins.containsKey(pluginName)) {
-        PluginRegistrationInfo info = registeredPlugins.get(pluginName);
-        Container pluginGUI = info.getGUIAdapter().getPluginGUI();
+        PluginRegistration registration = registeredPlugins.get(pluginName);
+        Container pluginGUI = registration.getGUIAdapter().getPluginGUI();
         SWRLTab swrlTab = (SWRLTab)pluginGUI.getParent();
         if (swrlTab != null) {
           swrlTab.setVisible(false); 
@@ -130,14 +128,14 @@ public class BridgePluginManager
           swrlTab.reconfigure();
           swrlTab.setVisible(true);
         } // if
-        if (info.hasOWLModel()) info.getOWLModel().getProject().removeProjectListener(projectListener); 
+        if (registration.hasOWLModel()) registration.getOWLModel().getProject().removeProjectListener(projectListener); 
         visiblePluginName = "";
       } // if
     } // if
     return true;
   } // hidePlugin
   
-  public static class PluginRegistrationInfo
+  public static class PluginRegistration
   {
     private String pluginName;
     private String toolTip;
@@ -145,14 +143,14 @@ public class BridgePluginManager
     private Icon icon;
     private OWLModel owlModel;
 
-    public PluginRegistrationInfo(String pluginName, String toolTip, Icon icon, SWRLPluginGUIAdapter guiAdapter)
+    public PluginRegistration(String pluginName, String toolTip, Icon icon, SWRLPluginGUIAdapter guiAdapter)
     {
       this.pluginName = pluginName;
       this.toolTip = toolTip;
       this.guiAdapter = guiAdapter;
       this.icon = icon;
       owlModel = null; // An OWL model is supplied when a GUI associated with the plugin is activated.
-    } // PluginRegistrationInfo
+    } // PluginRegistration
 
     public void setOWLModel(OWLModel owlModel) { this.owlModel = owlModel; }
 
@@ -163,7 +161,7 @@ public class BridgePluginManager
     public OWLModel getOWLModel() { return owlModel; } 
     public boolean hasOWLModel() { return owlModel != null; }
       
-  } // PluginRegistrationInfo
+  } // PluginRegistration
 
   private static void makeTextPanel(SWRLTab swrlTab, String text) 
   { 

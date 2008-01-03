@@ -9,6 +9,8 @@ import com.hp.hpl.jena.util.FileUtils;
 import com.hp.hpl.jena.vocabulary.OWL;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
+
+import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.jena.Jena;
 import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
@@ -44,7 +46,7 @@ public class Protege2Jena {
      */
     private Model dummyModel = ModelFactory.createDefaultModel();
 
-    private Collection fillTripleStores;
+    private Collection<TripleStore> fillTripleStores;
 
     /**
      * The source OWLModel
@@ -59,11 +61,10 @@ public class Protege2Jena {
     /**
      * A Map from TripleStores to Jena Models
      */
-    private Map tripleStore2Model;
+    private Map<TripleStore, Model> tripleStore2Model;
 
     private TripleStoreModel tripleStoreModel;
-
-    private static final String TEMP_SUFFIX = ".temp";
+    
 
 
     private Protege2Jena(OWLModel owlModel,
@@ -89,8 +90,16 @@ public class Protege2Jena {
         Iterator it = tripleStore.listTriples();
         while (it.hasNext()) {
             Triple triple = (Triple) it.next();
-            Statement stmt = createStatement(triple, model);
-            model.add(stmt);
+            Statement stmt = null;
+            try {
+            	stmt = createStatement(triple, model);
+			} catch (Exception e) {
+				Log.getLogger().warning("Error at creating triple: " + triple + " Error message: " + e.getMessage());
+			}
+            
+			if (stmt != null) {
+				model.add(stmt);
+			}
         }
     }
 
@@ -160,10 +169,10 @@ public class Protege2Jena {
 
 
     private Statement createStatement(Triple triple, Model model) {
-        Resource subject = getResource(triple.getSubject(), model);
-        Property predicate = getProperty(triple.getPredicate(), model);
-        RDFNode object = getRDFNode(triple.getObject(), model);
-        return model.createStatement(subject, predicate, object);
+    	Resource subject = getResource(triple.getSubject(), model);
+    	Property predicate = getProperty(triple.getPredicate(), model);
+    	RDFNode object = getRDFNode(triple.getObject(), model);			
+    	return model.createStatement(subject, predicate, object);
     }
 
 
@@ -235,7 +244,8 @@ public class Protege2Jena {
 
     private Resource getResource(RDFResource rdfResource, Model model) {
         if (rdfResource.isAnonymous()) {
-            AnonId anonId = new AnonId("_:" + rdfResource.getName());
+            //AnonId anonId = new AnonId("_:" + rdfResource.getName());
+        	AnonId anonId = new AnonId(rdfResource.getName());
             return model.createResource(anonId);
         }
         else {
@@ -362,7 +372,6 @@ public class Protege2Jena {
         Map tripleStore2Model = new HashMap();
         OntModel ontModel = createOntModel(owlModel, fillTripleStores, tripleStore2Model);
 
-
         File file = new File(uri);
         
         String namespace = owlModel.getNamespaceManager().getDefaultNamespace();
@@ -378,8 +387,7 @@ public class Protege2Jena {
                 String name = tripleStore.getName();
                 URI ontologyName = new URI(name);
                 Repository rep = owlModel.getRepositoryManager().getRepository(ontologyName);
-                System.out.println("Saving import " + ontologyName + " to " +
-                        rep.getOntologyLocationDescription(ontologyName));
+                Log.getLogger().info("Saving import " + ontologyName + " to " + rep.getOntologyLocationDescription(ontologyName));
                 OutputStream os = rep.getOutputStream(ontologyName);
                 JenaOWLModel.saveModel(os, model, language, ontologyName + "#", tripleStore.getOriginalXMLBase());
             }
@@ -390,6 +398,6 @@ public class Protege2Jena {
         fm.saveGlobalRepositories();
         fm.saveProjectRepositories(uri);
 
-        System.out.println("... saving successful.");
+        Log.getLogger().info("... saving successful to: " + file.getAbsolutePath());
     }
 }

@@ -35,8 +35,9 @@ public class SWRLTablePanel extends JPanel implements Disposable
     LabeledComponent lc = initialize(owlModel, resource);
 
     // Iterate through all registered rule engine and add an enable button for each one.
-    for (BridgePluginManager.PluginRegistrationInfo info : BridgePluginManager.getRegisteredPlugins()) {
-      lc.addHeaderButton(new ViewPluginAction(info.getPluginName(), info.getToolTip(), info.getIcon(), swrlTab, owlModel));
+    for (BridgePluginManager.PluginRegistration registration : BridgePluginManager.getRegisteredPlugins()) {
+      lc.addHeaderButton(new ViewPluginAction(registration.getPluginName(), registration.getToolTip(), 
+                                              registration.getIcon(), swrlTab, owlModel));
       add(BorderLayout.CENTER, lc);
     } // for
   } // SWRLTablePanel

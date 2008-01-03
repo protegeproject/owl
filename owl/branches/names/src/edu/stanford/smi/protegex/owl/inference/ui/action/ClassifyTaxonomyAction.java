@@ -1,9 +1,13 @@
 package edu.stanford.smi.protegex.owl.inference.ui.action;
 
-import edu.stanford.smi.protegex.owl.inference.dig.exception.DIGReasonerException;
-import edu.stanford.smi.protegex.owl.inference.protegeowl.ProtegeOWLReasoner;
+import java.lang.Thread.UncaughtExceptionHandler;
+import java.util.logging.Level;
+
+import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.inference.protegeowl.ReasonerManager;
 import edu.stanford.smi.protegex.owl.inference.protegeowl.task.ReasonerTaskListener;
+import edu.stanford.smi.protegex.owl.inference.reasoner.ProtegeReasoner;
+import edu.stanford.smi.protegex.owl.inference.reasoner.exception.ProtegeReasonerException;
 import edu.stanford.smi.protegex.owl.inference.ui.ReasonerActionRunner;
 import edu.stanford.smi.protegex.owl.inference.ui.RunnableReasonerAction;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
@@ -22,12 +26,12 @@ import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
 public class ClassifyTaxonomyAction extends AbstractOWLModelAction implements RunnableReasonerAction {
 
     private OWLModel owlModel;
-
-
-    public void executeReasonerActions(ReasonerTaskListener taskListener) throws DIGReasonerException {
-        ProtegeOWLReasoner reasoner;
-        reasoner = ReasonerManager.getInstance().getReasoner(owlModel);
-        reasoner.classifyTaxonomy(taskListener);
+    private ProtegeReasoner reasoner = null;
+    
+    public void executeReasonerActions(ReasonerTaskListener taskListener) throws ProtegeReasonerException {
+    	reasoner = ReasonerManager.getInstance().getProtegeReasoner(owlModel);
+        reasoner.setReasonerTaskListener(taskListener);
+        reasoner.classifyTaxonomy();
     }
 
 
@@ -37,7 +41,7 @@ public class ClassifyTaxonomyAction extends AbstractOWLModelAction implements Ru
 
 
     public String getMenubarPath() {
-        return OWL_MENU + PATH_SEPARATOR + ActionConstants.ACTION_GROUP;
+        return REASONING_MENU + PATH_SEPARATOR + ActionConstants.ACTION_GROUP;
     }
 
 

@@ -26,7 +26,7 @@ public class RDFListWidget extends AbstractPropertyValuesWidget {
 
 
     protected PropertyValuesComponent createComponent(RDFProperty predicate) {
-        return new RDFListComponent(predicate, getLabel());
+        return new RDFListComponent(predicate, getLabel(), isReadOnlyConfiguredWidget());
     }
 
 

@@ -24,15 +24,23 @@ public abstract class AbstractPropertyValuesComponent extends JComponent impleme
     private String label;
     
     private boolean editable = true;
+    
+    private boolean isReadOnly = false;
+    
 
     protected AbstractPropertyValuesComponent(RDFProperty predicate) {
     	this(predicate, null);
     }
 
     protected AbstractPropertyValuesComponent(RDFProperty predicate, String label) {
+    	this(predicate, label, false);
+    }
+    
+    protected AbstractPropertyValuesComponent(RDFProperty predicate, String label, boolean isReadOnly) {
         this.predicate = predicate;
         setLayout(new BorderLayout());
         this.label = label;
+        this.isReadOnly = isReadOnly;
     }
     
 
@@ -182,5 +190,9 @@ public abstract class AbstractPropertyValuesComponent extends JComponent impleme
 
 	public void setEditable(boolean editable) {
 		this.editable = editable;
+	}
+	
+	public boolean isReadOnly() {
+		return isReadOnly;
 	}
 }

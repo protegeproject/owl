@@ -459,4 +459,16 @@ public class DefaultRDFIndividual extends DefaultSimpleInstance implements RDFIn
     public void setRDFTypes(Collection types) {
         OWLUtil.setRDFTypes(this, types);
     }
+    
+    @Override
+    public String toString() {
+        StringBuffer buffer = new StringBuffer();
+        buffer.append(this.getClass().getSimpleName());
+        buffer.append("(");
+        buffer.append(getName());
+        buffer.append(" of ");
+        buffer.append(getDirectTypes());
+        buffer.append(")");
+        return buffer.toString();
+    }
 }

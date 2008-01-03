@@ -9,7 +9,7 @@ import edu.stanford.smi.protegex.owl.swrl.ui.icons.SWRLIcons;
 import javax.swing.*;
 import java.util.Set;
 
-public class DefaultSWRLVariable extends DefaultOWLIndividual implements SWRLVariable {
+public class DefaultSWRLVariable extends AbstractSWRLIndividual implements SWRLVariable {
 
     public DefaultSWRLVariable(KnowledgeBase kb, FrameID id) {
         super(kb, id);
