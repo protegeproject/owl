@@ -4,9 +4,9 @@ import java.util.Collection;
 import java.util.logging.Level;
 
 import edu.stanford.smi.protege.util.Log;
-import edu.stanford.smi.protegex.owl.inference.dig.exception.DIGReasonerException;
-import edu.stanford.smi.protegex.owl.inference.protegeowl.ProtegeOWLReasoner;
 import edu.stanford.smi.protegex.owl.inference.protegeowl.ReasonerManager;
+import edu.stanford.smi.protegex.owl.inference.reasoner.ProtegeReasoner;
+import edu.stanford.smi.protegex.owl.inference.reasoner.exception.ProtegeReasonerException;
 import edu.stanford.smi.protegex.owl.model.OWLIndividual;
 import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
 
@@ -31,14 +31,17 @@ public class IndividualTestCase extends AbstractProtegeOwlTestCase {
             OWLIndividual indA = clsA.createOWLIndividual("iA");
             OWLIndividual indThing = owlModel.getOWLThingClass().createOWLIndividual("iThing");
             indA.addRDFType(clsB);
-            ProtegeOWLReasoner reasoner = ReasonerManager.getInstance().createReasoner(owlModel);
-            Collection iATypes = reasoner.getIndividualTypes(indA, null);
+
+            ReasonerManager rm = ReasonerManager.getInstance();
+            ProtegeReasoner reasoner = rm.createProtegeReasoner(owlModel, rm.getDefaultDIGReasonerClass());
+            
+            Collection iATypes = reasoner.getIndividualTypes(indA);
             assertTrue(iATypes.contains(clsA));
             assertTrue(iATypes.contains(clsB));
-            Collection thingTypes = reasoner.getIndividualTypes(indThing, null);
+            Collection thingTypes = reasoner.getIndividualTypes(indThing);
             assertTrue(thingTypes.contains(owlModel.getOWLThingClass()));
         }
-        catch (DIGReasonerException e) {
+        catch (ProtegeReasonerException e) {
             fail(e.getMessage());
             Log.getLogger().log(Level.SEVERE, "Exception caught", e);
         }
@@ -52,12 +55,15 @@ public class IndividualTestCase extends AbstractProtegeOwlTestCase {
             OWLIndividual indA = clsA.createOWLIndividual("iA");
             OWLIndividual indThing = owlModel.getOWLThingClass().createOWLIndividual("iThing");
             indA.addRDFType(clsB);
-            ProtegeOWLReasoner reasoner = ReasonerManager.getInstance().createReasoner(owlModel);
-            assertTrue(reasoner.getIndividualsBelongingToClass(clsA, null).contains(indA));
-            assertTrue(reasoner.getIndividualsBelongingToClass(clsB, null).contains(indA));
-            assertTrue(reasoner.getIndividualsBelongingToClass(owlModel.getOWLThingClass(), null).contains(indThing));
+
+            ReasonerManager rm = ReasonerManager.getInstance();
+            ProtegeReasoner reasoner = rm.createProtegeReasoner(owlModel, rm.getDefaultDIGReasonerClass());
+            
+            assertTrue(reasoner.getIndividualsBelongingToClass(clsA).contains(indA));
+            assertTrue(reasoner.getIndividualsBelongingToClass(clsB).contains(indA));
+            assertTrue(reasoner.getIndividualsBelongingToClass(owlModel.getOWLThingClass()).contains(indThing));
         }
-        catch (DIGReasonerException e) {
+        catch (ProtegeReasonerException e) {
             fail(e.getMessage());
             Log.getLogger().log(Level.SEVERE, "Exception caught", e);
         }
