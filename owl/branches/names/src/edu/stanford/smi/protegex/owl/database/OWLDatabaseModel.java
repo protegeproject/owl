@@ -66,7 +66,6 @@ public class OWLDatabaseModel
      * Many of the assumptions of the OWLDatabaseModel class are invalid.
      */
     public void initializeClient() {
-        getOWLSystemFramesArray();
         initialize();
     }
 
@@ -78,7 +77,6 @@ public class OWLDatabaseModel
         super.initialize(namespaceManager);
 
         initCustomFrameStores();
-        adjustSystemClasses();
         
         getNamespaceManager().update();
     }
