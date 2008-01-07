@@ -905,6 +905,7 @@ public interface OWLModel extends ProtegeKnowledgeBase, OWLTestManager {
      */
     Collection getResourceNameMatches(String nameExpression, int maxMatches);
 
+    RDFProperty getOWLCardinalityProperty();
 
     /**
      * Gets the class owl:DataRange, which is used to represent enumerations of
@@ -927,6 +928,9 @@ public interface OWLModel extends ProtegeKnowledgeBase, OWLTestManager {
      */
     OWLJavaFactory getOWLJavaFactory();
 
+    RDFProperty getOWLMaxCardinalityProperty();
+    
+    RDFProperty getOWLMinCardinalityProperty();
 
     /**
      * A convenience method which includes the typecast after <CODE>getCls()</CODE>.
