@@ -12,6 +12,7 @@ import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.Instance;
 import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protege.util.ApplicationProperties;
+import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.jena.Jena;
 import edu.stanford.smi.protegex.owl.jena.JenaNormalizer;
 import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
@@ -19,6 +20,8 @@ import edu.stanford.smi.protegex.owl.model.*;
 import edu.stanford.smi.protegex.owl.model.impl.XMLSchemaDatatypes;
 
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * A class that creates a Jena OntModel from a Protege OWL model.
@@ -27,6 +30,7 @@ import java.util.*;
  * @author Holger Knublauch  <holger@knublauch.com>
  */
 public class JenaCreator {
+    private static transient final Logger log = Log.getLogger(JenaCreator.class);
 
     private Map anonMap = new HashMap();
 
@@ -38,8 +42,6 @@ public class JenaCreator {
 
     private boolean inferred;
 
-    private boolean logging = false;
-
     private OWLModel owlModel;
 
     private OntModel ontModel;
@@ -48,7 +50,7 @@ public class JenaCreator {
 
     private ProgressDisplay progressDisplay;
 
-    private Set systemOwnSlots = new HashSet();
+    private Set<RDFProperty> systemOwnSlots = new HashSet<RDFProperty>();
 
     /**
      * The classes that shall be processed in this creation process.
@@ -60,9 +62,6 @@ public class JenaCreator {
      * property values still need to be assigned outside of the usual loop.
      */
     private Map todoIndividualsWithObjectProperties = new HashMap();
-
-    public static final String LOGGING_PROPERTY = JenaCreator.class.getName() + ".logging";
-
 
     public JenaCreator(OWLModel owlModel,
                        Collection targetClses,
@@ -90,9 +89,9 @@ public class JenaCreator {
         this.forReasoning = forReasoning;
         this.progressDisplay = progressDisplay;
 
-        systemOwnSlots.add(owlModel.getRDFProperty(OWLNames.Slot.CARDINALITY));
-        systemOwnSlots.add(owlModel.getRDFProperty(OWLNames.Slot.MIN_CARDINALITY));
-        systemOwnSlots.add(owlModel.getRDFProperty(OWLNames.Slot.MAX_CARDINALITY));
+        systemOwnSlots.add(owlModel.getOWLCardinalityProperty());
+        systemOwnSlots.add(owlModel.getOWLMinCardinalityProperty());
+        systemOwnSlots.add(owlModel.getOWLMaxCardinalityProperty());
         systemOwnSlots.add(owlModel.getRDFProperty(OWLNames.Slot.ALL_VALUES_FROM));
         systemOwnSlots.add(owlModel.getRDFProperty(OWLNames.Slot.SOME_VALUES_FROM));
         systemOwnSlots.add(owlModel.getRDFProperty(OWLNames.Slot.HAS_VALUE));
@@ -109,10 +108,9 @@ public class JenaCreator {
         systemOwnSlots.add(owlModel.getRDFProperty(ProtegeNames.Slot.INFERRED_SUBCLASSES));
         systemOwnSlots.add(owlModel.getRDFProperty(ProtegeNames.Slot.INFERRED_SUPERCLASSES));
         systemOwnSlots.add(owlModel.getRDFProperty(ProtegeNames.Slot.INFERRED_TYPE));
-        systemOwnSlots.add(owlModel.getRDFProperty(ProtegeNames.Slot.CLASSIFICATION_STATUS));
+        systemOwnSlots.add(owlModel.getProtegeClassificationStatusProperty());
         systemOwnSlots.add(owlModel.getRDFProperty(OWLNames.Slot.TOP_LEVEL_ONTOLOGY_URI));
 
-        logging = ApplicationProperties.getBooleanProperty(LOGGING_PROPERTY, false);
     }
 
 
@@ -369,8 +367,8 @@ public class JenaCreator {
 
 
     private Individual createIndividual(RDFResource rdfResource, boolean anon) {
-        if (logging) {
-            log("Creating RDFIndividual for " + rdfResource.getBrowserText());
+        if (log.isLoggable(Level.FINE)) {
+            log.fine("Creating RDFIndividual for " + rdfResource.getBrowserText());
         }
         Iterator it = null;
         if (inferred && !rdfResource.getInferredTypes().isEmpty()) {
@@ -443,8 +441,8 @@ public class JenaCreator {
 
 
     private OntClass createNamedClass(RDFSNamedClass rdfsClass) {
-        if (logging) {
-            log("Creating named OntClass for " + rdfsClass.getBrowserText());
+        if (log.isLoggable(Level.FINE)) {
+            log.fine("Creating named OntClass for " + rdfsClass.getBrowserText());
         }
         classProgressCount++;
         if (progressDisplay != null) {
@@ -548,8 +546,8 @@ public class JenaCreator {
 
 
     OntProperty createOntProperty(RDFProperty property) {
-        if (logging) {
-            log("Creating OntProperty for " + property.getBrowserText());
+        if (log.isLoggable(Level.FINE)) {
+            log.fine("Creating OntProperty for " + property.getBrowserText());
         }
         OntProperty ontProperty = null;
         if (property instanceof OWLDatatypeProperty) {
@@ -815,16 +813,11 @@ public class JenaCreator {
     }
 
 
-    private void log(String msg) {
-        if (logging) {
-            System.out.println("[JenaCreator] " + msg);
-        }
-    }
-
-
     public void run(OntModel ontModel, Model owlFullModel) {
         long startTime = System.currentTimeMillis();
-        log("Starting JenaCreator...");
+        if (log.isLoggable(Level.FINE)) {
+            log.fine("Starting JenaCreator...");
+        }
         this.ontModel = ontModel;
         this.owlFullModel = owlFullModel;
         if (progressDisplay != null) {
@@ -846,7 +839,9 @@ public class JenaCreator {
         createIndividuals();
         addTodoPropertyValues();
         createAllDifferents();
-        log("Terminated after " + (System.currentTimeMillis() - startTime) + " ms");
+        if (log.isLoggable(Level.FINE)) {
+            log.fine("Terminated after " + (System.currentTimeMillis() - startTime) + " ms");
+        }
         if (progressDisplay != null) {
             progressDisplay.stop();
         }
