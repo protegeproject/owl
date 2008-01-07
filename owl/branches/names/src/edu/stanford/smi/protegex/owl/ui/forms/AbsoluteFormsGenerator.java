@@ -38,7 +38,7 @@ import java.util.Set;
  */
 public class AbsoluteFormsGenerator {
 
-    private final static Set ignoreSystemClasses = new HashSet();
+    private final static Set<String> ignoreSystemClasses = new HashSet<String>();
 
     static {
         ignoreSystemClasses.add(OWLNames.Cls.ALL_DIFFERENT);
