@@ -16,7 +16,6 @@ import java.util.logging.Logger;
 
 import junit.framework.Assert;
 
-import com.hp.hpl.jena.datatypes.TypeMapper;
 import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
 import com.hp.hpl.jena.rdf.model.impl.Util;
 import com.hp.hpl.jena.vocabulary.OWL;
@@ -39,8 +38,6 @@ import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protege.model.ValueType;
 import edu.stanford.smi.protege.model.framestore.FrameStore;
 import edu.stanford.smi.protege.model.framestore.FrameStoreManager;
-import edu.stanford.smi.protege.model.framestore.MergingNarrowFrameStore;
-import edu.stanford.smi.protege.model.framestore.NarrowFrameStore;
 import edu.stanford.smi.protege.server.framestore.background.ServerCacheStateMachine;
 import edu.stanford.smi.protege.util.ApplicationProperties;
 import edu.stanford.smi.protege.util.CollectionUtilities;
@@ -148,229 +145,6 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
      */
     public static final String OWL_MODEL_INIT_DEFAULTS_AT_CREATION = "owlmodel.init.defaults";
 
-    private Cls owlAllDifferentClass;
-
-    private Cls owlAnnotationPropertyClass;
-
-    private Cls owlDeprecatedClassClass;
-
-    private Cls owlDeprecatedPropertyClass;
-
-    private Cls owlFunctionalPropertyClass;
-
-    private Cls owlInverseFunctionalPropertyClass;
-
-    private Cls owlSymmetricPropertyClass;
-
-    private Cls owlTransitivePropertyClass;
-
-    private Cls owlAllValuesFromClass;
-
-    private Cls anonymousClassMetaCls;
-
-    private Cls anonymousRootCls;
-
-    private Cls owlDataRangeClass;
-
-    private Cls owlEnumeratedClassClass;
-
-    private Cls rdfExternalResourceClass;
-
-    private Cls rdfListClass;
-
-    private Cls owlOntologyClass;
-
-    private Cls owlClassMetaCls;
-
-    private Cls owlRestrictionClass;
-
-    private Cls owlSomeValuesFromClass;
-
-
-    private Cls owlHasValueClass;
-
-    private Cls owlMinCardinalityClass;
-
-    private Cls owlMaxCardinalityClass;
-
-    private Cls owlCardinalityClass;
-
-    private Cls owlLogicalClassClass;
-
-    private Cls owlIntersectionClassClass;
-
-    private Cls rdfStatementClass;
-
-    private Cls rdfAltClass;
-
-    private Cls rdfBagClass;
-
-    private Cls rdfsNamedClassClass;
-
-    private Cls rdfsContainerClass;
-
-    private Cls rdfsDatatypeClass;
-
-    private Cls rdfSeqClass;
-
-    private Cls owlUnionClassClass;
-
-    private Cls owlComplementClassClass;
-
-    private Cls owlNamedClassClass;
-
-    private Cls owlNothingClass;
-
-    private Cls rdfsLiteralClass;
-
-    private Cls rdfPropertyClass;
-
-    private Cls owlDatatypePropertyClass;
-
-    private Cls owlObjectPropertyClass;
-
-    private Cls topOWLOntologyClass;
-    
-    
-    private Slot topOWLOntologyURISlot; 
-
-    private Slot owlAllValuesFromProperty;
-
-    private Slot owlBackwardCompatibleWithProperty;
-
-    private Slot owlCardinalityProperty;
-
-    private Slot owlComplementOfProperty;
-
-    private Slot owlDisjointWithProperty;
-
-    private Slot owlEquivalentClassProperty;
-
-    private Slot owlValuesFromProperty;
-
-    private Slot rdfsDomainProperty;
-
-    private Slot rdfsRangeProperty;
-
-    private Slot rdfsSubClassOfProperty;
-
-    private Slot rdfsSubPropertyOfProperty;
-
-
-    private Slot protegeClassificationStatusProperty;
-
-    private Slot rdfsCommentProperty;
-
-    private Slot owlDifferentFromProperty;
-
-    private Slot owlDistinctMembersProperty;
-
-    private Slot owlEquivalentPropertyProperty;
-
-    private Slot owlHasValueProperty;
-
-    private Slot owlIncompatibleWithProperty;
-
-    private Slot owlInverseOfProperty;
-
-    private Slot protegeInferredTypeProperty;
-
-    private Slot protegeInferredSubclassesProperty;
-
-    private Slot protegeInferredSuperclassesProperty;
-
-    private Slot owlIntersectionOfProperty;
-
-    private Slot rdfsIsDefinedByProperty;
-
-    private Slot rdfsLabelProperty;
-
-    private Slot owlLogicalOperandsProperty;
-
-    private Slot owlMaxCardinalityProperty;
-
-    private Slot owlMinCardinalityProperty;
-
-    private Slot nameSlot;
-
-    private Slot owlOnPropertyProperty;
-
-    private Slot owlImportsProperty;
-
-    private Slot owlOntologyPrefixesProperty;
-
-    private Slot owlOneOfProperty;
-
-    private Slot owlUnionOfProperty;
-
-    private Slot owlPriorVersionProperty;
-
-    private Slot rdfFirstProperty;
-
-    private Slot rdfObjectProperty;
-
-    private Slot rdfPredicateProperty;
-
-    private Slot rdfRestSlot;
-
-    private Slot rdfSubjectProperty;
-
-    private Slot rdfTypeProperty;
-
-    private Slot rdfValueProperty;
-
-    private Slot rdfsMemberProperty;
-
-    private Slot owlResourceURIProperty;
-
-    private Slot owlSameAsProperty;
-
-    private Slot rdfsSeeAlsoProperty;
-
-    private Slot owlSomeValuesFromProperty;
-
-    private Slot owlVersionInfoProperty;
-
-    private Slot protegeSubclassesDisjointProperty;
-
-    private RDFSDatatype xsdBoolean;
-
-    private RDFSDatatype xsdDouble;
-
-    private RDFSDatatype xsdFloat;
-
-    private RDFSDatatype xsdLong;
-
-    private RDFSDatatype xsdInt;
-
-    private RDFSDatatype xsdShort;
-
-    private RDFSDatatype xsdByte;
-
-    private RDFSDatatype xsdString;
-
-    private RDFSDatatype xsdBase64Binary;
-
-    private RDFSDatatype xsdDate;
-
-    private RDFSDatatype xsdTime;
-
-    private RDFSDatatype xsdDateTime;
-
-    private RDFSDatatype xsdDuration;
-
-    private RDFSDatatype xsdAnyURI;
-
-    private RDFSDatatype xsdDecimal;
-
-    private RDFSDatatype xsdInteger;
-
-    private RDFSDatatype xmlLiteralType;
-
-    private Set floatDatatypes = new HashSet();
-
-    private Set integerDatatypes = new HashSet();
-
     /**
      * A running id used to create the system FrameIDs
      */
@@ -446,6 +220,9 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     private RepositoryManager repositoryManager;
 
     private OWLOntology defaultOWLOntology;
+    
+    private Slot protegeSubclassesDisjointProperty;
+
 
     public AbstractOWLModel(KnowledgeBaseFactory factory) {
         super(factory);
@@ -453,8 +230,6 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
         setFrameFactory(new OWLJavaFactory(this));
         
         initializeLoadDefaults();
-        
-        resetSystemFrames();
     }
 
     public AbstractOWLModel(KnowledgeBaseFactory factory,
@@ -464,32 +239,14 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
         setFrameFactory(new OWLJavaFactory(this));
         
         initializeLoadDefaults();
-        
-        resetSystemFrames();
+
         initialize(namespaceManager);
     }
 
-    
     protected void initializeLoadDefaults() {
     	loadDefaults = ApplicationProperties.getBooleanProperty(OWL_MODEL_INIT_DEFAULTS_AT_CREATION, false);
     }
     
-    private void resetSystemFrames() {
-        MergingNarrowFrameStore mnfs = MergingNarrowFrameStore.get(this);
-        if (mnfs == null) {
-            String name = getRootCls().getDirectType().getName();
-            if (name.equals(Model.Cls.STANDARD_CLASS)) {
-                bootstrap();
-            }
-        }
-        else {
-            NarrowFrameStore systemFrameStore = mnfs.getSystemFrameStore();
-            NarrowFrameStore oldActiveFrameStore = mnfs.setActiveFrameStore(systemFrameStore);           
-            bootstrap();
-            mnfs.setActiveFrameStore(oldActiveFrameStore);
-        }
-    }
-
     public void initialize(NamespaceManager namespaceManager) {
         if (log.isLoggable(Level.FINE)) {
             log.fine("Phase 2 initialization of OWL Model starts");
@@ -514,8 +271,8 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
         namespaceManager.setModifiable(RDFSNames.RDFS_PREFIX, false);
         namespaceManager.setModifiable(RDFNames.XSD_PREFIX, false);
 
-        setDefaultClsMetaCls(owlNamedClassClass);
-        setDefaultSlotMetaCls(owlDatatypePropertyClass);
+        setDefaultClsMetaCls(getOWLNamedClassClass());
+        setDefaultSlotMetaCls(getOWLDatatypePropertyClass());
         setFrameNameValidator(new FrameNameValidator() {
 
 
@@ -555,19 +312,19 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
         initOWLFrameStore();
 
-        defaultAnonymousTypes.add(rdfListClass);
-        defaultAnonymousTypes.add(owlAllValuesFromClass);
-        defaultAnonymousTypes.add(owlSomeValuesFromClass);
-        defaultAnonymousTypes.add(owlHasValueClass);
-        defaultAnonymousTypes.add(owlMinCardinalityClass);
-        defaultAnonymousTypes.add(owlMaxCardinalityClass);
-        defaultAnonymousTypes.add(owlCardinalityClass);
-        defaultAnonymousTypes.add(owlComplementClassClass);
-        defaultAnonymousTypes.add(owlIntersectionClassClass);
-        defaultAnonymousTypes.add(owlUnionClassClass);
-        defaultAnonymousTypes.add(owlEnumeratedClassClass);
-        defaultAnonymousTypes.add(owlAllDifferentClass);
-        defaultAnonymousTypes.add(owlDataRangeClass);
+        defaultAnonymousTypes.add(getRDFListClass());
+        defaultAnonymousTypes.add(getOWLAllValuesFromClass());
+        defaultAnonymousTypes.add(getOWLSomeValuesFromClass());
+        defaultAnonymousTypes.add(getOWLHasValueClass());
+        defaultAnonymousTypes.add(getOWLMinCardinalityClass());
+        defaultAnonymousTypes.add(getOWLMaxCardinalityClass());
+        defaultAnonymousTypes.add(getOWLCardinalityClass());
+        defaultAnonymousTypes.add(getOWLComplementClassClass());
+        defaultAnonymousTypes.add(getOWLIntersectionClassClass());
+        defaultAnonymousTypes.add(getOWLUnionClassClass());
+        defaultAnonymousTypes.add(getOWLEnumeratedClassClass());
+        defaultAnonymousTypes.add(getOWLAllDifferentClass());
+        defaultAnonymousTypes.add(getOWLDataRangeClass());
 
         bootstrapped = true;
 
@@ -661,33 +418,6 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     }
 
 
-    public void adjustSystemClasses() {
-        final Slot[] thingSlots = new Slot[]{
-                nameSlot,
-                rdfsLabelProperty,
-                rdfsIsDefinedByProperty,
-                rdfsSeeAlsoProperty,
-                owlVersionInfoProperty,
-                owlDifferentFromProperty,
-                owlSameAsProperty,
-                rdfValueProperty,
-                rdfsMemberProperty,
-                protegeInferredTypeProperty
-        };
-        for (int i = 0; i < thingSlots.length; i++) {
-            Slot slot = thingSlots[i];
-            Collection oldDomain = slot.getDirectDomain();
-            if (oldDomain.size() != 1 || !oldDomain.contains(owlThingClass)) {
-                for (Iterator it = new ArrayList(oldDomain).iterator(); it.hasNext();) {
-                    Cls oldDomainCls = (Cls) it.next();
-                    oldDomainCls.removeDirectTemplateSlot(slot);
-                }
-                ((Cls) owlThingClass).addDirectTemplateSlot(slot);
-            }
-        }
-    }
-
-
     public abstract void initOWLFrameFactoryInvocationHandler();
 
 
@@ -710,251 +440,15 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     }
 
 
-    private Cls createSystemCls(String name, Cls superclass) {
-        return createSystemCls(name, Collections.singleton(superclass), superclass.getDirectType());
-    }
 
-
-    private Cls createSystemCls(String name, Collection superclasses, Cls type) {
-        return createCls(new FrameID(name), superclasses, Collections.singleton(type), false);
-    }
-
-
+    @Override
     protected OWLSystemFrames createSystemFrames() {
         return new OWLSystemFrames(this);
     }
     
+    @Override
     public synchronized OWLSystemFrames getSystemFrames() {
         return (OWLSystemFrames) super.getSystemFrames();
-    }
-
-
-    /**
-     * Creates the OWL metamodel.
-     */
-    public void bootstrap() {
-    	boolean eventsEnabled = setGenerateEventsEnabled(false);
-    	
-    	owlThingClass = (OWLNamedClass) getRootCls();
-        nameSlot = getSlot(Model.Slot.NAME);
-        Cls standardCls = getCls(Model.Cls.STANDARD_CLASS);
-
-        anonymousRootCls = createSystemCls(OWLNames.Cls.ANONYMOUS_ROOT, getCls(Model.Cls.SYSTEM_CLASS));
-
-        owlClassMetaCls = createSystemCls(OWLNames.Cls.OWL_CLASS, getCls(Model.Cls.CLASS));
-        owlClassMetaCls.setAbstract(true);
-
-        rdfsNamedClassClass = createSystemCls(RDFSNames.Cls.NAMED_CLASS, Arrays.asList(new Cls[]{
-                getRootCls(), owlClassMetaCls, standardCls}), standardCls);
-        rdfsNamedClassClass.setDirectType(rdfsNamedClassClass);
-        owlClassMetaCls.setDirectType(rdfsNamedClassClass);
-        owlNamedClassClass = createSystemCls(OWLNames.Cls.NAMED_CLASS, rdfsNamedClassClass);
-        owlNamedClassClass.setDirectType(owlNamedClassClass);
-        owlNamedClassClass = getCls(OWLNames.Cls.NAMED_CLASS);
-        rdfsNamedClassClass.setDirectType(owlNamedClassClass);
-        rdfsNamedClassClass = getCls(RDFSNames.Cls.NAMED_CLASS);
-        getRootCls().setDirectType(owlNamedClassClass);
-
-        anonymousRootCls.setDirectType(rdfsNamedClassClass);
-
-        anonymousClassMetaCls = createSystemCls(OWLNames.Cls.ANONYMOUS_CLASS,
-                                                Collections.singleton(owlClassMetaCls), rdfsNamedClassClass);
-        anonymousClassMetaCls.setAbstract(true);
-        owlEnumeratedClassClass = createSystemCls(OWLNames.Cls.ENUMERATED_CLASS, anonymousClassMetaCls);
-
-        List slotClassSupers = Arrays.asList(new Cls[]{getRootCls(), getCls(Model.Cls.STANDARD_SLOT)});
-        rdfPropertyClass = createSystemCls(RDFNames.Cls.PROPERTY, slotClassSupers, owlNamedClassClass);
-        rdfPropertyClass = getCls(RDFNames.Cls.PROPERTY);
-        owlDatatypePropertyClass = createSystemCls(OWLNames.Cls.DATATYPE_PROPERTY, rdfPropertyClass);
-        owlObjectPropertyClass = createSystemCls(OWLNames.Cls.OBJECT_PROPERTY, rdfPropertyClass);
-
-        rdfsDomainProperty = createSystemSlot(RDFSNames.Slot.DOMAIN, rdfPropertyClass);
-        rdfsDomainProperty.setValueType(ValueType.INSTANCE);
-        rdfsRangeProperty = createSystemSlot(RDFSNames.Slot.RANGE, rdfPropertyClass);
-        rdfsRangeProperty.setValueType(ValueType.INSTANCE);
-        rdfPropertyClass.addDirectTemplateSlot(rdfsDomainProperty);
-        rdfPropertyClass.addDirectTemplateSlot(rdfsRangeProperty);
-
-        owlInverseOfProperty = getSystemFrames().getInverseSlotSlot();
-        owlInverseOfProperty.setDirectType(rdfPropertyClass);
-        owlInverseOfProperty.setValueType(ValueType.INSTANCE);
-        owlInverseOfProperty.setAllowedClses(Collections.singleton(owlObjectPropertyClass));
-
-        rdfsDatatypeClass = createSystemCls(RDFSNames.Cls.DATATYPE,
-                                            Collections.singleton(owlThingClass), rdfsNamedClassClass);
-        initRDFDatatypes();
-
-        owlAnnotationPropertyClass = createSystemCls(OWLNames.Cls.ANNOTATION_PROPERTY,
-                                                     Collections.singleton(rdfPropertyClass), rdfsNamedClassClass);
-
-        initInferredSlots();
-
-        initRestrictionMetaclasses();
-
-        owlLogicalClassClass = createSystemCls(OWLNames.Cls.LOGICAL_CLASS, anonymousClassMetaCls);
-        owlComplementClassClass = createSystemCls(OWLNames.Cls.COMPLEMENT_CLASS, owlLogicalClassClass);
-        owlIntersectionClassClass = createSystemCls(OWLNames.Cls.INTERSECTION_CLASS, owlLogicalClassClass);
-        owlUnionClassClass = createSystemCls(OWLNames.Cls.UNION_CLASS, owlLogicalClassClass);
-
-        owlDifferentFromProperty = createInstanceSlot(OWLNames.Slot.DIFFERENT_FROM, rdfPropertyClass, getRootCls());
-        owlDifferentFromProperty.setAllowsMultipleValues(true);
-        owlDifferentFromProperty.addOwnSlotValue(rdfsRangeProperty, getRootCls());
-        owlSameAsProperty = createInstanceSlot(OWLNames.Slot.SAME_AS, rdfPropertyClass, getRootCls());
-        owlSameAsProperty.setAllowsMultipleValues(true);
-        owlSameAsProperty.addOwnSlotValue(rdfsRangeProperty, getRootCls());
-
-        owlDisjointWithProperty = createInstanceSlot(OWLNames.Slot.DISJOINT_WITH, rdfPropertyClass, rdfsNamedClassClass);
-        owlDisjointWithProperty.setAllowsMultipleValues(true);
-        owlClassMetaCls.addDirectTemplateSlot(owlDisjointWithProperty);
-
-        owlComplementOfProperty = createInstanceSlot(OWLNames.Slot.COMPLEMENT_OF, rdfPropertyClass, owlClassMetaCls);
-        owlComplementClassClass.addDirectTemplateSlot(owlComplementOfProperty);
-        owlIntersectionOfProperty = createInstanceSlot(OWLNames.Slot.INTERSECTION_OF, rdfPropertyClass, rdfListClass);
-        owlIntersectionClassClass.addDirectTemplateSlot(owlIntersectionOfProperty);
-        owlUnionOfProperty = createInstanceSlot(OWLNames.Slot.UNION_OF, rdfPropertyClass, rdfListClass);
-        owlUnionClassClass.addDirectTemplateSlot(owlUnionOfProperty);
-
-        owlEquivalentPropertyProperty = createInstanceSlot(OWLNames.Slot.EQUIVALENT_PROPERTY, rdfPropertyClass, rdfPropertyClass);
-        owlEquivalentPropertyProperty.setAllowsMultipleValues(true);
-        owlEquivalentPropertyProperty.setOwnSlotValue(rdfsRangeProperty, rdfPropertyClass);
-        rdfPropertyClass.addDirectTemplateSlot(owlEquivalentPropertyProperty);
-        owlDatatypePropertyClass.setTemplateSlotAllowedClses(owlEquivalentPropertyProperty, Collections.singleton(owlDatatypePropertyClass));
-        owlObjectPropertyClass.setTemplateSlotAllowedClses(owlEquivalentPropertyProperty, Collections.singleton(owlObjectPropertyClass));
-
-        // rdfs:subClassOf
-        rdfsSubClassOfProperty = createInstanceSlot(RDFSNames.Slot.SUB_CLASS_OF, rdfPropertyClass, owlClassMetaCls);
-        rdfsSubClassOfProperty.setAllowsMultipleValues(true);
-        rdfsSubClassOfProperty.setAllowedClses(Collections.singleton(rdfsNamedClassClass));
-        rdfsSubClassOfProperty.setOwnSlotValue(rdfsRangeProperty, rdfsNamedClassClass);
-        rdfsNamedClassClass.addDirectTemplateSlot(rdfsSubClassOfProperty);
-
-        // rdfs:subPropertyOf
-        rdfsSubPropertyOfProperty = getSystemFrames().getDirectSuperslotsSlot();
-        rdfsSubPropertyOfProperty.setDirectType(rdfPropertyClass);
-
-        // owl:equivalentClass
-        owlEquivalentClassProperty = createInstanceSlot(OWLNames.Slot.EQUIVALENT_CLASS, rdfPropertyClass, owlClassMetaCls);
-        owlEquivalentClassProperty.setAllowsMultipleValues(true);
-        rdfsNamedClassClass.addDirectTemplateSlot(owlEquivalentClassProperty);
-
-        // Annotation properties of :THING
-        rdfsLabelProperty = createAnnotationOWLDatatypeProperty(RDFSNames.Slot.LABEL);
-        setStringRange(rdfsLabelProperty);
-        rdfsIsDefinedByProperty = createAnnotationOWLObjectProperty(RDFSNames.Slot.IS_DEFINED_BY);
-        rdfsSeeAlsoProperty = createAnnotationOWLObjectProperty(RDFSNames.Slot.SEE_ALSO);
-        owlVersionInfoProperty = createAnnotationOWLDatatypeProperty(OWLNames.Slot.VERSION_INFO);
-        setStringRange(owlVersionInfoProperty);
-        rdfsCommentProperty = createAnnotationOWLDatatypeProperty(RDFSNames.Slot.COMMENT);
-        setStringRange(rdfsCommentProperty);
-
-        rdfValueProperty = createSystemSlot(RDFNames.Slot.VALUE, rdfPropertyClass);
-        rdfValueProperty.setAllowsMultipleValues(true);
-        rdfValueProperty.setValueType(ValueType.ANY);
-
-        rdfsMemberProperty = createSystemSlot(RDFSNames.Slot.MEMBER, rdfPropertyClass);
-        rdfsMemberProperty.setValueType(ValueType.INSTANCE);
-        ((Cls) owlThingClass).addDirectTemplateSlot(rdfsMemberProperty);
-
-        adjustSystemClasses();
-
-        Cls directedBinaryRelationCls = getCls(Model.Cls.DIRECTED_BINARY_RELATION);
-        directedBinaryRelationCls.addDirectSuperclass(getRootCls());
-        directedBinaryRelationCls.setDirectType(owlNamedClassClass);
-        
-        initOntologyMetaclass();
-
-        rdfPropertyClass = getCls(RDFNames.Cls.PROPERTY);
-
-        owlFunctionalPropertyClass = createSystemCls(OWLNames.Cls.FUNCTIONAL_PROPERTY,
-                                                     Collections.singleton(rdfPropertyClass), rdfsNamedClassClass);
-        owlInverseFunctionalPropertyClass = createSystemCls(OWLNames.Cls.INVERSE_FUNCTIONAL_PROPERTY,
-                                                            Collections.singleton(owlObjectPropertyClass), rdfsNamedClassClass);
-        owlSymmetricPropertyClass = createSystemCls(OWLNames.Cls.SYMMETRIC_PROPERTY,
-                                                    Collections.singleton(owlObjectPropertyClass), rdfsNamedClassClass);
-        owlTransitivePropertyClass = createSystemCls(OWLNames.Cls.TRANSITIVE_PROPERTY,
-                                                     Collections.singleton(owlObjectPropertyClass), rdfsNamedClassClass);
-
-        rdfExternalResourceClass = createSystemCls(RDFNames.Cls.EXTERNAL_RESOURCE,
-                                                   Collections.singleton(getRootCls()), rdfsNamedClassClass);
-        owlResourceURIProperty = createSystemSlot(OWLNames.Slot.RESOURCE_URI, rdfPropertyClass);
-        owlResourceURIProperty.setValueType(ValueType.STRING);
-        owlResourceURIProperty.setAllowsMultipleValues(false);
-        rdfExternalResourceClass.addDirectTemplateSlot(owlResourceURIProperty);
-
-        owlNothingClass = createSystemCls(OWLNames.Cls.NOTHING, getRootClses(), owlNamedClassClass);
-        rdfListClass = createSystemCls(RDFNames.Cls.LIST, getRootClses(), owlNamedClassClass);
-        rdfFirstProperty = createSystemSlot(RDFNames.Slot.FIRST, rdfPropertyClass);
-        rdfFirstProperty.setValueType(ValueType.ANY);
-        rdfFirstProperty.setAllowsMultipleValues(false);
-        rdfRestSlot = createSystemSlot(RDFNames.Slot.REST, rdfPropertyClass);
-        rdfRestSlot.setAllowsMultipleValues(false);
-        rdfRestSlot.setValueType(ValueType.INSTANCE);
-        rdfRestSlot.setAllowedClses(Collections.singleton(rdfListClass));
-        rdfListClass.addDirectTemplateSlot(rdfFirstProperty);
-        rdfListClass.addDirectTemplateSlot(rdfRestSlot);
-        rdfNilIndividual = createSystemInstance(RDFNames.Instance.NIL, rdfListClass);
-
-        owlAllDifferentClass = createSystemCls(OWLNames.Cls.ALL_DIFFERENT, Collections.singleton(owlThingClass), rdfsNamedClassClass);
-        owlDistinctMembersProperty = createSystemSlot(OWLNames.Slot.DISTINCT_MEMBERS, rdfPropertyClass);
-        owlDistinctMembersProperty.setValueType(ValueType.INSTANCE);
-        owlDistinctMembersProperty.setAllowedClses(Collections.singleton(rdfListClass));
-        owlAllDifferentClass.addDirectTemplateSlot(owlDistinctMembersProperty);
-
-        rdfsLiteralClass = createSystemCls(RDFSNames.Cls.LITERAL, getRootClses(), owlNamedClassClass);
-
-        rdfsContainerClass = createSystemCls(RDFSNames.Cls.CONTAINER, getRootClses(), rdfsNamedClassClass);
-        rdfAltClass = createSystemCls(RDFNames.Cls.ALT, rdfsContainerClass);
-        rdfBagClass = createSystemCls(RDFNames.Cls.BAG, rdfsContainerClass);
-        rdfSeqClass = createSystemCls(RDFNames.Cls.SEQ, rdfsContainerClass);
-
-        rdfObjectProperty = createSystemSlot(RDFNames.Slot.OBJECT, rdfPropertyClass);
-        rdfObjectProperty.setValueType(ValueType.INSTANCE);
-        rdfPredicateProperty = createSystemSlot(RDFNames.Slot.PREDICATE, rdfPropertyClass);
-        rdfPredicateProperty.setValueType(ValueType.INSTANCE);
-        rdfSubjectProperty = createSystemSlot(RDFNames.Slot.SUBJECT, rdfPropertyClass);
-        rdfSubjectProperty.setValueType(ValueType.INSTANCE);
-
-        rdfTypeProperty = createSystemSlot(RDFNames.Slot.TYPE, rdfPropertyClass);
-        rdfTypeProperty.setValueType(ValueType.CLS);
-        ((Cls) owlThingClass).addDirectTemplateSlot(rdfTypeProperty);
-
-        rdfStatementClass = createSystemCls(RDFNames.Cls.STATEMENT, getRootClses(), rdfsNamedClassClass);
-        rdfStatementClass.addDirectTemplateSlot(rdfObjectProperty);
-        rdfStatementClass.addDirectTemplateSlot(rdfPredicateProperty);
-        rdfStatementClass.addDirectTemplateSlot(rdfSubjectProperty);
-
-        owlDeprecatedClassClass = createSystemCls(OWLNames.Cls.DEPRECATED_CLASS,
-                                                  Collections.singleton(rdfsNamedClassClass), rdfsNamedClassClass);
-        owlDeprecatedPropertyClass = createSystemCls(OWLNames.Cls.DEPRECATED_PROPERTY,
-                                                     Collections.singleton(rdfPropertyClass), rdfsNamedClassClass);
-
-        owlDataRangeClass = createSystemCls(OWLNames.Cls.DATA_RANGE, getRootClses(), rdfsNamedClassClass);
-
-        owlOneOfProperty = createSystemSlot(OWLNames.Slot.ONE_OF, rdfPropertyClass);
-        owlOneOfProperty.setValueType(ValueType.INSTANCE);
-        owlOneOfProperty.setAllowedClses(Collections.singleton(rdfListClass));
-        owlDataRangeClass.addDirectTemplateSlot(owlOneOfProperty);
-        owlEnumeratedClassClass.addDirectTemplateSlot(owlOneOfProperty);
-
-        topOWLOntologyClass = createSystemCls(OWLNames.Cls.TOP_LEVEL_ONTOLOGY, getRootCls());
-        topOWLOntologyURISlot = createSystemSlot(OWLNames.Slot.TOP_LEVEL_ONTOLOGY_URI, rdfPropertyClass);
-        topOWLOntologyURISlot.setValueType(ValueType.INSTANCE);
-        topOWLOntologyURISlot.setAllowsMultipleValues(false);
-        topOWLOntologyURISlot.setAllowedClses(CollectionUtilities.createCollection(owlOntologyClass));
-        topOWLOntologyClass.addDirectTemplateSlot(topOWLOntologyURISlot);
-        
-        setAbstract(owlThingClass, false);
-        ((Cls) owlThingClass).addOwnSlotValue(rdfTypeProperty, owlNamedClassClass);
-
-        adjustProtegeSystemFrames();
-
-        if (!OWLNames.ClsID.THING.equals(((Cls) owlThingClass).getFrameID()) ||
-            !RDFSNames.ClsID.NAMED_CLASS.equals(rdfsNamedClassClass.getFrameID()) ||
-            !RDFNames.ClsID.PROPERTY.equals(rdfPropertyClass.getFrameID())) {
-            throw new RuntimeException("Fatal Metaclass Error: FrameIDs mismatch.  Perhaps a database rebuild required?");
-        }
-        
-        setGenerateEventsEnabled(eventsEnabled);
     }
 
 
@@ -964,61 +458,14 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     }
 
 
-    private void adjustProtegeSystemFrames() {
-        getCls(Model.Cls.DIRECTED_BINARY_RELATION).setDirectType(owlNamedClassClass);
-        Slot toSlot = getSlot(Model.Slot.FROM);
-        Slot fromSlot = getSlot(Model.Slot.TO);
-        fromSlot.setDirectType(owlObjectPropertyClass);
-        toSlot.setDirectType(owlObjectPropertyClass);
 
-        Cls constraintCls = getCls(Model.Cls.PAL_CONSTRAINT);
-        constraintCls.setDirectType(rdfsNamedClassClass);
-        getSlot(Model.Slot.PAL_DESCRIPTION).setDirectType(owlDatatypePropertyClass);
-        getSlot(Model.Slot.PAL_NAME).setDirectType(owlDatatypePropertyClass);
-        getSlot(Model.Slot.PAL_RANGE).setDirectType(owlDatatypePropertyClass);
-        getSlot(Model.Slot.PAL_STATEMENT).setDirectType(owlDatatypePropertyClass);
-        getSlot(Model.Slot.CONSTRAINTS).setDirectType(owlObjectPropertyClass);
-    }
 
 
     private void setStringRange(Slot slot) {
         Frame datatype = getFrame("xsd:string");
-        slot.setDirectOwnSlotValue(rdfsRangeProperty, datatype);
+        slot.setDirectOwnSlotValue(getRDFSRangeProperty(), datatype);
         slot.setValueType(ValueType.STRING);
     }
-
-
-    private void initRDFDatatypes() {
-        TypeMapper typeMapper = TypeMapper.getInstance();
-        Iterator it = typeMapper.listTypes();
-        while (it.hasNext()) {
-            com.hp.hpl.jena.datatypes.RDFDatatype type = (com.hp.hpl.jena.datatypes.RDFDatatype) it.next();
-            String uri = type.getURI();
-            if (uri.startsWith(XSDDatatype.XSD)) {
-                //String name = RDFNames.XSD_PREFIX + ProtegeNames.PREFIX_LOCALNAME_SEPARATOR + uri.substring(XSDDatatype.XSD.length() + 1);
-            	String name = uri.toString();
-                createSystemInstance(name, rdfsDatatypeClass);
-            }
-        }
-        createSystemInstance(RDFNames.XML_LITERAL, rdfsDatatypeClass);
-        fillDatatypeSet(XMLSchemaDatatypes.floatTypes, floatDatatypes);
-        fillDatatypeSet(XMLSchemaDatatypes.integerTypes, integerDatatypes);
-    }
-
-
-    private void fillDatatypeSet(XSDDatatype[] types, Set set) {
-        for (int i = 0; i < types.length; i++) {
-            XSDDatatype datatype = types[i];
-            String name = RDFNames.XSD_PREFIX + ProtegeNames.PREFIX_LOCALNAME_SEPARATOR + datatype.getURI().substring(XSDDatatype.XSD.length() + 1);
-            set.add(getFrame(name));
-        }
-    }
-
-
-    private Instance createSystemInstance(String name, Cls type) {
-        return createInstance(new FrameID(name), type, false);
-    }
-
 
     public TaskManager getTaskManager() {
         if (taskManager == null) {
@@ -1026,124 +473,6 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
         }
         return taskManager;
     }
-
-
-    private void initOntologyMetaclass() {
-    	//owl:Ontology
-        owlOntologyClass = createSystemCls(OWLNames.Cls.ONTOLOGY,
-                                           Collections.singleton(owlThingClass),
-                                           owlNamedClassClass);
-        
-        //:OWL-ONTOLOGY-PREFIXES
-        owlOntologyPrefixesProperty = createSystemSlot(OWLNames.Slot.ONTOLOGY_PREFIXES, rdfPropertyClass);
-        owlOntologyPrefixesProperty.setAllowsMultipleValues(true);
-        owlOntologyPrefixesProperty.setValueType(ValueType.STRING);
-        owlOntologyClass.addDirectTemplateSlot(owlOntologyPrefixesProperty);
-        
-        //owl:imports
-        owlImportsProperty = createSystemSlot(OWLNames.Slot.IMPORTS, rdfPropertyClass);
-        owlImportsProperty.setAllowsMultipleValues(true);
-        owlOntologyClass.addDirectTemplateSlot(owlImportsProperty);
-
-        //owl:backwardCompatibleWith
-        owlBackwardCompatibleWithProperty = createAnnotationOWLObjectProperty(OWLNames.Slot.BACKWARD_COMPATIBLE_WITH);
-        owlBackwardCompatibleWithProperty.setAllowedClses(Collections.EMPTY_LIST);
-        //((Cls) owlThingClass).removeDirectTemplateSlot(owlBackwardCompatibleWithProperty);
-        owlOntologyClass.addDirectTemplateSlot(owlBackwardCompatibleWithProperty);
-        
-        //owl:incompatibleWith
-        owlIncompatibleWithProperty = createAnnotationOWLObjectProperty(OWLNames.Slot.INCOMPATIBLE_WITH);
-        owlIncompatibleWithProperty.setAllowedClses(Collections.EMPTY_LIST);
-        //((Cls) owlThingClass).removeDirectTemplateSlot(owlIncompatibleWithProperty);
-        owlOntologyClass.addDirectTemplateSlot(owlIncompatibleWithProperty);
-        
-        //owl:priorVersion
-        owlPriorVersionProperty = createAnnotationOWLObjectProperty(OWLNames.Slot.PRIOR_VERSION);
-        owlPriorVersionProperty.setAllowedClses(Collections.EMPTY_LIST);
-        //((Cls) owlThingClass).removeDirectTemplateSlot(owlPriorVersionProperty);
-        owlOntologyClass.addDirectTemplateSlot(owlPriorVersionProperty);
-    }
-
-
-    private void initRestrictionMetaclasses() {
-        owlOnPropertyProperty = createSystemSlot(OWLNames.Slot.ON_PROPERTY, rdfPropertyClass);
-        owlOnPropertyProperty.setValueType(ValueType.INSTANCE);
-        owlOnPropertyProperty.setAllowedClses(Collections.singleton(rdfPropertyClass));
-
-        owlRestrictionClass = createSystemCls(OWLNames.Cls.RESTRICTION, anonymousClassMetaCls);
-        owlRestrictionClass.addDirectTemplateSlot(owlOnPropertyProperty);
-
-        Cls metaclass = rdfsNamedClassClass;
-
-        owlAllValuesFromProperty = createSystemSlot(OWLNames.Slot.ALL_VALUES_FROM, rdfPropertyClass);
-        owlAllValuesFromClass = createSystemCls(OWLNames.Cls.ALL_VALUES_FROM_RESTRICTION,
-                                                Collections.singleton(owlRestrictionClass), metaclass);
-        owlAllValuesFromClass.addDirectTemplateSlot(owlAllValuesFromProperty);
-
-        owlHasValueProperty = createSystemSlot(OWLNames.Slot.HAS_VALUE, rdfPropertyClass);
-        owlHasValueProperty.setAllowsMultipleValues(false);
-        owlHasValueClass = createSystemCls(OWLNames.Cls.HAS_VALUE_RESTRICTION,
-                                           Collections.singleton(owlRestrictionClass), metaclass);
-        owlHasValueClass.addDirectTemplateSlot(owlHasValueProperty);
-
-        final RDFSDatatype cardiRange = getXSDint();
-        owlMaxCardinalityProperty = createSystemSlot(OWLNames.Slot.MAX_CARDINALITY, rdfPropertyClass);
-        owlMaxCardinalityProperty.setAllowsMultipleValues(false);
-        owlMaxCardinalityProperty.setValueType(ValueType.INTEGER);
-        owlMaxCardinalityProperty.setDirectOwnSlotValue(rdfsRangeProperty, cardiRange);
-        owlMaxCardinalityClass = createSystemCls(OWLNames.Cls.MAX_CARDINALITY_RESTRICTION,
-                                                 Collections.singleton(owlRestrictionClass), metaclass);
-        owlMaxCardinalityClass.addDirectTemplateSlot(owlMaxCardinalityProperty);
-
-        owlMinCardinalityProperty = createSystemSlot(OWLNames.Slot.MIN_CARDINALITY, rdfPropertyClass);
-        owlMinCardinalityProperty.setAllowsMultipleValues(false);
-        owlMinCardinalityProperty.setValueType(ValueType.INTEGER);
-        owlMinCardinalityProperty.setDirectOwnSlotValue(rdfsRangeProperty, cardiRange);
-        owlMinCardinalityClass = createSystemCls(OWLNames.Cls.MIN_CARDINALITY_RESTRICTION,
-                                                 Collections.singleton(owlRestrictionClass), metaclass);
-        owlMinCardinalityClass.addDirectTemplateSlot(owlMinCardinalityProperty);
-
-        owlCardinalityProperty = createSystemSlot(OWLNames.Slot.CARDINALITY, rdfPropertyClass);
-        owlCardinalityProperty.setAllowsMultipleValues(false);
-        owlCardinalityProperty.setValueType(ValueType.INTEGER);
-        owlCardinalityProperty.setDirectOwnSlotValue(rdfsRangeProperty, cardiRange);
-        owlCardinalityClass = createSystemCls(OWLNames.Cls.CARDINALITY_RESTRICTION,
-                                              Collections.singleton(owlRestrictionClass), metaclass);
-        owlCardinalityClass.addDirectTemplateSlot(owlCardinalityProperty);
-
-        owlValuesFromProperty = createSystemSlot(OWLNames.Slot.VALUES_FROM, rdfPropertyClass);
-        owlValuesFromProperty.setAllowsMultipleValues(false);
-        owlValuesFromProperty.setValueType(ValueType.INSTANCE);
-        owlMaxCardinalityClass.addDirectTemplateSlot(owlValuesFromProperty);
-        owlMinCardinalityClass.addDirectTemplateSlot(owlValuesFromProperty);
-        owlCardinalityClass.addDirectTemplateSlot(owlValuesFromProperty);
-
-        owlSomeValuesFromProperty = createSystemSlot(OWLNames.Slot.SOME_VALUES_FROM, rdfPropertyClass);
-        owlSomeValuesFromClass = createSystemCls(OWLNames.Cls.SOME_VALUES_FROM_RESTRICTION,
-                                                 Collections.singleton(owlRestrictionClass), metaclass);
-        owlSomeValuesFromClass.addDirectTemplateSlot(owlSomeValuesFromProperty);
-    }
-
-
-    private void initInferredSlots() {
-
-        protegeClassificationStatusProperty = createSystemSlot(ProtegeNames.Slot.CLASSIFICATION_STATUS, rdfPropertyClass);
-        protegeClassificationStatusProperty.setAllowsMultipleValues(false);
-        protegeClassificationStatusProperty.setValueType(ValueType.BOOLEAN);
-        rdfsNamedClassClass.addDirectTemplateSlot(protegeClassificationStatusProperty);
-
-        Cls standardCls = getCls(OWLNames.Cls.OWL_CLASS);
-        protegeInferredSubclassesProperty = createInstanceSlot(ProtegeNames.Slot.INFERRED_SUBCLASSES, rdfPropertyClass, standardCls);
-        protegeInferredSubclassesProperty.setAllowsMultipleValues(true);
-        protegeInferredSuperclassesProperty = createInstanceSlot(ProtegeNames.Slot.INFERRED_SUPERCLASSES, rdfPropertyClass, standardCls);
-        protegeInferredSuperclassesProperty.setAllowsMultipleValues(true);
-        rdfsNamedClassClass.addDirectTemplateSlot(protegeInferredSubclassesProperty);
-        rdfsNamedClassClass.addDirectTemplateSlot(protegeInferredSuperclassesProperty);
-
-        protegeInferredTypeProperty = createInstanceSlot(ProtegeNames.Slot.INFERRED_TYPE, rdfPropertyClass, standardCls);
-        protegeInferredTypeProperty.setAllowsMultipleValues(true);
-    }
-
 
     public void removeClassListener(ClassListener listener) {
         removeClsListener(listener);
@@ -1243,13 +572,13 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
 
     public OWLAllDifferent createOWLAllDifferent() {
-        return (OWLAllDifferent) createInstance(null, owlAllDifferentClass);
+        return (OWLAllDifferent) createInstance(null, getOWLAllDifferentClass());
     }
 
 
     public OWLAllValuesFrom createOWLAllValuesFrom() {
-        Collection parents = CollectionUtilities.createCollection(anonymousRootCls);
-        return (OWLAllValuesFrom) createCls(null, parents, owlAllValuesFromClass, false);
+        Collection parents = CollectionUtilities.createCollection(getAnonymousRootCls());
+        return (OWLAllValuesFrom) createCls(null, parents, getOWLAllValuesFromClass(), false);
     }
 
 
@@ -1263,7 +592,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
     public OWLAllValuesFrom createOWLAllValuesFrom(RDFProperty property, RDFSLiteral[] oneOfValues) {
         OWLAllValuesFrom allRestriction = createOWLAllValuesFrom();
-        allRestriction.setOnProperty((RDFProperty) property);
+        allRestriction.setOnProperty(property);
         OWLDataRange dataRange = createOWLDataRange(oneOfValues);
         allRestriction.setFiller(dataRange);
         return allRestriction;
@@ -1287,7 +616,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
         ((Slot) property).setAllowsMultipleValues(true);
         //getRootCls().addDirectTemplateSlot(property);
         //property.setDomain(getOWLThingClass());
-        ((Slot) property).addDirectType(owlAnnotationPropertyClass);
+        ((Slot) property).addDirectType(getOWLAnnotationPropertyClass());
         return property;
     }
 
@@ -1297,20 +626,20 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
         ((Slot) property).setAllowsMultipleValues(true);
         //getRootCls().addDirectTemplateSlot(property);
         //property.setDomain(getOWLThingClass());
-        ((Slot) property).addDirectType(owlAnnotationPropertyClass);
+        ((Slot) property).addDirectType(getOWLAnnotationPropertyClass());
         return property;
     }
 
 
     public OWLCardinality createOWLCardinality() {
-        Collection parents = CollectionUtilities.createCollection(anonymousRootCls);
-        return (OWLCardinality) createCls(null, parents, owlCardinalityClass, false);
+        Collection parents = CollectionUtilities.createCollection(getAnonymousRootCls());
+        return (OWLCardinality) createCls(null, parents, getOWLCardinalityClass(), false);
     }
 
 
     public OWLCardinality createOWLCardinality(RDFProperty property, int value) {
         OWLCardinality cardiRestriction = createOWLCardinality();
-        cardiRestriction.setOnProperty((RDFProperty) property);
+        cardiRestriction.setOnProperty(property);
         cardiRestriction.setCardinality(value);
         return cardiRestriction;
     }
@@ -1343,8 +672,8 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
 
     public OWLComplementClass createOWLComplementClass() {
-        Collection parents = CollectionUtilities.createCollection(anonymousRootCls);
-        return (OWLComplementClass) createCls(null, parents, owlComplementClassClass, false);
+        Collection parents = CollectionUtilities.createCollection(getAnonymousRootCls());
+        return (OWLComplementClass) createCls(null, parents, getOWLComplementClassClass(), false);
     }
 
 
@@ -1369,7 +698,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
 
     public OWLDatatypeProperty createOWLDatatypeProperty(String name) {
-        return createOWLDatatypeProperty(name, (OWLNamedClass) owlDatatypePropertyClass);
+        return createOWLDatatypeProperty(name, getOWLDatatypePropertyClass());
     }
 
 
@@ -1415,8 +744,8 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
 
     protected OWLOntology createDefaultOWLOntologyReally() {
-        Instance ontology = createInstance(ProtegeNames.DEFAULT_ONTOLOGY, owlOntologyClass);
-        ontology.setDirectOwnSlotValue(rdfTypeProperty, owlOntologyClass);
+        Instance ontology = createInstance(ProtegeNames.DEFAULT_ONTOLOGY, getOWLOntologyClass());
+        ontology.setDirectOwnSlotValue(getRDFTypeProperty(), getOWLOntologyClass());
         getNamespaceManager().setDefaultNamespace(ProtegeNames.DEFAULT_DEFAULT_NAMESPACE);
         getNamespaceManager().setPrefix(RDF.getURI(), RDFNames.RDF_PREFIX);
         getNamespaceManager().setPrefix(RDFS.getURI(), RDFSNames.RDFS_PREFIX);
@@ -1433,14 +762,15 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     	return new OWLJavaFactory(this);
     }*/
     
-    protected FrameStoreManager createFrameStoreManager() {
+    @Override
+	protected FrameStoreManager createFrameStoreManager() {
         return new OWLFrameStoreManager(this);
     }
 
 
     public OWLEnumeratedClass createOWLEnumeratedClass() {
-        Collection parents = CollectionUtilities.createCollection(anonymousRootCls);
-        return (OWLEnumeratedClass) createCls(null, parents, owlEnumeratedClassClass, false);
+        Collection parents = CollectionUtilities.createCollection(getAnonymousRootCls());
+        return (OWLEnumeratedClass) createCls(null, parents, getOWLEnumeratedClassClass(), false);
     }
 
 
@@ -1454,20 +784,21 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     /**
      * @deprecated
      */
-    public RDFExternalResource createRDFExternalResource(String uri) {
+    @Deprecated
+	public RDFExternalResource createRDFExternalResource(String uri) {
         throw new RuntimeException("The class RDFExternalResource has been replaced with RDFUntypedResource");
     }
 
 
     public OWLHasValue createOWLHasValue() {
-        Collection parents = CollectionUtilities.createCollection(anonymousRootCls);
-        return (OWLHasValue) createCls(null, parents, owlHasValueClass, false);
+        Collection parents = CollectionUtilities.createCollection(getAnonymousRootCls());
+        return (OWLHasValue) createCls(null, parents, getOWLHasValueClass(), false);
     }
 
 
     public OWLHasValue createOWLHasValue(RDFProperty property, Object value) {
         OWLHasValue restriction = createOWLHasValue();
-        restriction.setOnProperty((RDFProperty) property);
+        restriction.setOnProperty(property);
         restriction.setHasValue(value);
         return restriction;
     }
@@ -1509,8 +840,8 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
 
     public OWLIntersectionClass createOWLIntersectionClass() {
-        Collection parents = CollectionUtilities.createCollection(anonymousRootCls);
-        return (OWLIntersectionClass) createCls(null, parents, owlIntersectionClassClass, false);
+        Collection parents = CollectionUtilities.createCollection(getAnonymousRootCls());
+        return (OWLIntersectionClass) createCls(null, parents, getOWLIntersectionClassClass(), false);
     }
 
 
@@ -1525,12 +856,12 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
 
     public RDFList createRDFList() {
-        return (RDFList) rdfListClass.createDirectInstance(null);
+        return (RDFList) getRDFListClass().createDirectInstance(null);
     }
 
 
     public RDFList createRDFList(Iterator values) {
-        return createListInstance(values, rdfListClass);
+        return createListInstance(values, getRDFListClass());
     }
 
 
@@ -1547,7 +878,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
 
     public RDFSDatatype createRDFSDatatype(String name) {
-        return (RDFSDatatype) rdfsDatatypeClass.createDirectInstance(name);
+        return (RDFSDatatype) getRDFSDatatypeClass().createDirectInstance(name);
     }
 
 
@@ -1575,13 +906,13 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
     public OWLMaxCardinality createOWLMaxCardinality() {
         Collection parents = Collections.singleton(getAnonymousRootCls());
-        return (OWLMaxCardinality) createCls(null, parents, owlMaxCardinalityClass, false);
+        return (OWLMaxCardinality) createCls(null, parents, getOWLMaxCardinalityClass(), false);
     }
 
 
     public OWLMaxCardinality createOWLMaxCardinality(RDFProperty property, int value) {
         OWLMaxCardinality maxCardiRestriction = createOWLMaxCardinality();
-        maxCardiRestriction.setOnProperty((RDFProperty) property);
+        maxCardiRestriction.setOnProperty(property);
         maxCardiRestriction.setCardinality(value);
         return maxCardiRestriction;
     }
@@ -1595,14 +926,14 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
 
     public OWLMinCardinality createOWLMinCardinality() {
-        Collection parents = Collections.singleton(anonymousRootCls);
-        return (OWLMinCardinality) createCls(null, parents, owlMinCardinalityClass, false);
+        Collection parents = Collections.singleton(getAnonymousRootCls());
+        return (OWLMinCardinality) createCls(null, parents, getOWLMinCardinalityClass(), false);
     }
 
 
     public OWLMinCardinality createOWLMinCardinality(RDFProperty property, int value) {
         OWLMinCardinality minCardiRestriction = createOWLMinCardinality();
-        minCardiRestriction.setOnProperty((RDFProperty) property);
+        minCardiRestriction.setOnProperty(property);
         minCardiRestriction.setCardinality(value);
         return minCardiRestriction;
     }
@@ -1621,7 +952,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
 
     public OWLNamedClass createOWLNamedClass(String name, boolean loadDefaults) {
-        return (OWLNamedClass) createCls(name, getRootClses(), owlNamedClassClass, loadDefaults);
+        return (OWLNamedClass) createCls(name, getRootClses(), getOWLNamedClassClass(), loadDefaults);
     }
 
 
@@ -1641,7 +972,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
 
     public OWLObjectProperty createOWLObjectProperty(String name) {
-        return createOWLObjectProperty(name, (OWLNamedClass) owlObjectPropertyClass);
+        return createOWLObjectProperty(name, getOWLObjectPropertyClass());
     }
 
 
@@ -1670,15 +1001,16 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
 
     public OWLOntology createOWLOntology(String uri) {
-        //return (OWLOntology) createInstance(prefix + ":", owlOntologyClass);
-    	return (OWLOntology) createInstance(uri, owlOntologyClass);
+        //return (OWLOntology) createInstance(prefix + ":", getOWLOntologyClass());
+    	return (OWLOntology) createInstance(uri, getOWLOntologyClass());
     }
 
 
     /**
      * @deprecated
      */
-    public OWLOntology createOWLOntology(String name, String uri) {
+    @Deprecated
+	public OWLOntology createOWLOntology(String name, String uri) {
         //String prefix = getNamespaceManager().getPrefix(uri);
         return createOWLOntology(uri);
     }
@@ -1690,7 +1022,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
 
     public RDFSNamedClass createRDFSNamedClass(String name, boolean loadDefaults) {
-        return (RDFSNamedClass) createCls(name, getRootClses(), rdfsNamedClassClass, loadDefaults);
+        return (RDFSNamedClass) createCls(name, getRootClses(), getRDFSNamedClassClass(), loadDefaults);
     }
 
 
@@ -1710,7 +1042,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
 
     public RDFUntypedResource createRDFUntypedResource(String uri) {
-        Instance instance = rdfExternalResourceClass.createDirectInstance(uri);
+        Instance instance = getRDFExternalResourceClass().createDirectInstance(uri);
         return (RDFUntypedResource) instance;
     }
 
@@ -1719,7 +1051,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
         if (name == null) {
             name = createUniqueNewFrameName("RDFProperty");
         }
-        RDFProperty property = (RDFProperty) createSlot(name, rdfPropertyClass, loadDefaults);
+        RDFProperty property = (RDFProperty) createSlot(name, getRDFPropertyClass(), loadDefaults);
         ((Slot) property).setValueType(ValueType.ANY);
         ((Slot) property).setAllowsMultipleValues(true);
         return property;
@@ -1761,14 +1093,14 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
 
     public OWLSomeValuesFrom createOWLSomeValuesFrom() {
-        Collection parents = CollectionUtilities.createCollection(anonymousRootCls);
-        return (OWLSomeValuesFrom) createCls(null, parents, owlSomeValuesFromClass, false);
+        Collection parents = CollectionUtilities.createCollection(getAnonymousRootCls());
+        return (OWLSomeValuesFrom) createCls(null, parents, getOWLSomeValuesFromClass(), false);
     }
 
 
     public OWLSomeValuesFrom createOWLSomeValuesFrom(RDFProperty property, RDFResource filler) {
         OWLSomeValuesFrom someRestriction = createOWLSomeValuesFrom();
-        someRestriction.setOnProperty((RDFProperty) property);
+        someRestriction.setOnProperty(property);
         someRestriction.setFiller(filler);
         return someRestriction;
     }
@@ -1776,7 +1108,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
     public OWLSomeValuesFrom createOWLSomeValuesFrom(RDFProperty property, RDFSLiteral[] oneOfValues) {
         OWLSomeValuesFrom someRestriction = createOWLSomeValuesFrom();
-        someRestriction.setOnProperty((RDFProperty) property);
+        someRestriction.setOnProperty(property);
         OWLDataRange dataRange = createOWLDataRange(oneOfValues);
         someRestriction.setFiller(dataRange);
         return someRestriction;
@@ -1788,7 +1120,8 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     }
 
 
-    public boolean endTransaction() {
+    @Override
+	public boolean endTransaction() {
         return commitTransaction();
     }
 
@@ -1800,8 +1133,8 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
 
     public OWLUnionClass createOWLUnionClass() {
-        Collection parents = CollectionUtilities.createCollection(anonymousRootCls);
-        return (OWLUnionClass) createCls(null, parents, owlUnionClassClass, false);
+        Collection parents = CollectionUtilities.createCollection(getAnonymousRootCls());
+        return (OWLUnionClass) createCls(null, parents, getOWLUnionClassClass(), false);
     }
 
 
@@ -1883,7 +1216,8 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     }
 
 
-    public void deleteCls(Cls cls) {
+    @Override
+	public void deleteCls(Cls cls) {
     	
     	//This code was moved in OWLFrameStore.deleteAnonymousClass
     	/*
@@ -1941,11 +1275,6 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     }
 
 
-    public RDFSNamedClass getOWLAllDifferentClass() {
-        return (RDFSNamedClass) owlAllDifferentClass;
-    }
-
-
     public Collection getOWLAnnotationProperties() {
         Collection result = new ArrayList();
         for (Iterator it = getSlots().iterator(); it.hasNext();) {
@@ -1958,15 +1287,8 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     }
 
 
-    /**
-     * @deprecated
-     */
-    public Cls getAnonymousRootCls() {
-        return anonymousRootCls;
-    }
-    
- 
-    public synchronized String getBrowserText(Instance instance) {
+    @Override
+	public synchronized String getBrowserText(Instance instance) {
     	
     	if (!(instance instanceof RDFResource))
     		return super.getBrowserText(instance);
@@ -2075,9 +1397,6 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     }
 
 
-    public RDFProperty getProtegeClassificationStatusProperty() {
-        return (RDFProperty) protegeClassificationStatusProperty;
-    }
 
 
     private Collection getClsesWithClassificationStatus(int status) {
@@ -2099,15 +1418,6 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
         return (OWLDatatypeProperty) getSlot(name);
     }
 
-
-    public OWLNamedClass getOWLDatatypePropertyClass() {
-        return (OWLNamedClass) owlDatatypePropertyClass;
-    }
-
-
-    public RDFSNamedClass getOWLDeprecatedClassClass() {
-        return (RDFSNamedClass) owlDeprecatedClassClass;
-    }
 
 
     public String getDefaultLanguage() {        
@@ -2152,36 +1462,6 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     }
 
 
-    public Set getFloatDatatypes() {
-        return floatDatatypes;
-    }
-
-
-    public Set getIntegerDatatypes() {
-        return integerDatatypes;
-    }
-
-
-    public RDFProperty getOWLDifferentFromProperty() {
-        return (RDFProperty) owlDifferentFromProperty;
-    }
-
-
-    public RDFProperty getOWLDisjointWithProperty() {
-        return (RDFProperty) owlDisjointWithProperty;
-    }
-
-
-    public RDFProperty getOWLEquivalentPropertyProperty() {
-        return (RDFProperty) owlEquivalentPropertyProperty;
-    }
-
-
-    public RDFProperty getOWLOneOfProperty() {
-        return (RDFProperty) owlOneOfProperty;
-    }
-
-
     public OWLProject getOWLProject() {
         return owlProject;
     }
@@ -2200,7 +1480,8 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     /**
      * @deprecated
      */
-    public RDFExternalResource getRDFExternalResource(String uri) {
+    @Deprecated
+	public RDFExternalResource getRDFExternalResource(String uri) {
         for (Iterator it = getRDFUntypedResourcesClass().getInstances(false).iterator(); it.hasNext();) {
             RDFExternalResource eri = (RDFExternalResource) it.next();
             if (uri.equals(eri.getResourceURI())) {
@@ -2210,18 +1491,6 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
         return null;
     }
 
-
-    /**
-     * @deprecated
-     */
-    public RDFSClass getRDFExternalResourceClass() {
-        return (RDFSNamedClass) rdfExternalResourceClass;
-    }
-
-
-    public RDFProperty getRDFFirstProperty() {
-        return (RDFProperty) rdfFirstProperty;
-    }
 
 
     public Collection getInconsistentClasses() {
@@ -2237,10 +1506,6 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     }
 
 
-    public RDFSNamedClass getOWLAnnotationPropertyClass() {
-        return (RDFSNamedClass) owlAnnotationPropertyClass;
-    }
-
 
     public OWLClassParser getOWLClassParser() {
         return getOWLClassDisplay().getParser();
@@ -2249,31 +1514,6 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
     public OWLClassDisplay getOWLClassDisplay() {
         return owlClassRenderer;
-    }
-
-
-    public RDFProperty getProtegeInferredSubclassesProperty() {
-        return (RDFProperty) protegeInferredSubclassesProperty;
-    }
-
-
-    public RDFProperty getProtegeInferredSuperclassesProperty() {
-        return (RDFProperty) protegeInferredSuperclassesProperty;
-    }
-
-
-    public RDFProperty getRDFSDomainProperty() {
-        return (RDFProperty) rdfsDomainProperty;
-    }
-
-
-    public RDFProperty getRDFSIsDefinedByProperty() {
-        return (RDFProperty) rdfsIsDefinedByProperty;
-    }
-
-
-    public RDFProperty getRDFSLabelProperty() {
-        return (RDFProperty) rdfsLabelProperty;
     }
 
 
@@ -2307,9 +1547,6 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     }
 
 
-    public RDFSNamedClass getRDFListClass() {
-        return (RDFSNamedClass) rdfListClass;
-    }
 
 
     public RDFUntypedResource getRDFUntypedResource(String uri, boolean createOnDemand) {
@@ -2321,9 +1558,6 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     }
 
 
-    public RDFSNamedClass getRDFUntypedResourcesClass() {
-        return (RDFSNamedClass) rdfExternalResourceClass;
-    }
 
 
     public Collection<RDFResource> getResourceNameMatches(String nameExpression, int maxMatches) {
@@ -2332,29 +1566,12 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     }
 
 
-    public RDFSNamedClass getOWLDataRangeClass() {
-        return (RDFSNamedClass) owlDataRangeClass;
-    }
-
-
-    public RDFProperty getOWLIntersectionOfProperty() {
-        return (RDFProperty) owlIntersectionOfProperty;
-    }
 
 
     public OWLNamedClass getOWLNamedClass(String name) {
         return (OWLNamedClass) getCls(name);
     }
 
-
-    public OWLNamedClass getOWLNamedClassClass() {
-        return (OWLNamedClass) owlNamedClassClass;
-    }
-
-
-    public RDFProperty getOWLValuesFromProperty() {
-        return (RDFProperty) owlValuesFromProperty;
-    }
 
 
     public Collection getMatchingResources(RDFProperty property, String matchString, int maxMatches) {
@@ -2373,11 +1590,6 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
             }
             anonCount++;
         }
-    }
-
-
-    public RDFList getRDFNil() {
-        return (RDFList) rdfNilIndividual;
     }
 
 
@@ -2407,13 +1619,10 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     }
 
 
-    public OWLNamedClass getOWLNothing() {
-        return (OWLNamedClass) owlNothingClass;
-    }
 
 
     public Collection getOWLRestrictionsOnProperty(RDFProperty property) {
-        return getFramesWithValue(owlOnPropertyProperty, null, false, property);
+        return getFramesWithValue(getOWLOnPropertyProperty(), null, false, property);
     }
 
 
@@ -2439,13 +1648,11 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     }
 
 
-    public OWLNamedClass getOWLObjectPropertyClass() {
-        return (OWLNamedClass) owlObjectPropertyClass;
-    }
+
 
 
     public Collection getOWLOntologies() {
-        return owlOntologyClass.getInstances();
+        return getOWLOntologyClass().getInstances();
     }
 
 
@@ -2469,19 +1676,15 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
         }
         String prefix = getNamespaceManager().getPrefix(uriString);
         String name = prefix != null ? (prefix + ":") : ProtegeNames.DEFAULT_ONTOLOGY;
-        return (RDFResource) getRDFResource(name);
-    }
-
-    public OWLNamedClass getOWLOntologyClass() {
-        return (OWLNamedClass) owlOntologyClass;
+        return getRDFResource(name);
     }
 
 
     public Collection getOWLOntologyProperties() {
         return Arrays.asList(new Slot[]{
-                owlBackwardCompatibleWithProperty,
-                owlIncompatibleWithProperty,
-                owlPriorVersionProperty
+                getOWLBackwardCompatibleWithProperty(),
+                getOWLIncompatibleWithProperty(),
+                getOWLPriorVersionProperty()
         });
     }
 
@@ -2489,6 +1692,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     /**
      * @deprecated use getRDFSClasses instead
      */
+    @Deprecated
     public Collection getOWLClasses() {
         return getRDFSClasses();
     }
@@ -2507,15 +1711,6 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
     public OWLFrameStore getOWLFrameStore() {
         return owlFrameStore;
-    }
-
-    public RDFSNamedClass getOWLFunctionalPropertyClass() {
-        return (RDFSNamedClass) owlFunctionalPropertyClass;
-    }
-
-
-    public RDFSNamedClass getOWLInverseFunctionalPropertyClass() {
-        return (RDFSNamedClass) owlInverseFunctionalPropertyClass;
     }
 
 
@@ -2546,7 +1741,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
     public Collection getOWLSystemResources() {
         Collection result = new ArrayList(Arrays.asList(getOWLSystemFramesArray()));
-        result.addAll(rdfsDatatypeClass.getDirectInstances());
+        result.addAll(getRDFSDatatypeClass().getDirectInstances());
         return result;
     }
 
@@ -2559,107 +1754,16 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
      */
 
     protected Frame[] getOWLSystemFramesArray() {
-        nameSlot = getSlot(Model.Slot.NAME);
-        return new Frame[]{
-                owlAllValuesFromClass = getCls(OWLNames.Cls.ALL_VALUES_FROM_RESTRICTION),
-                anonymousClassMetaCls = getCls(OWLNames.Cls.ANONYMOUS_CLASS),
-                anonymousRootCls = getCls(OWLNames.Cls.ANONYMOUS_ROOT),
-                owlCardinalityClass = getCls(OWLNames.Cls.CARDINALITY_RESTRICTION),
-                owlComplementClassClass = getCls(OWLNames.Cls.COMPLEMENT_CLASS),
-                owlEnumeratedClassClass = getCls(OWLNames.Cls.ENUMERATED_CLASS),
-                owlHasValueClass = getCls(OWLNames.Cls.HAS_VALUE_RESTRICTION),
-                owlIntersectionClassClass = getCls(OWLNames.Cls.INTERSECTION_CLASS),
-                owlLogicalClassClass = getCls(OWLNames.Cls.LOGICAL_CLASS),
-                owlMaxCardinalityClass = getCls(OWLNames.Cls.MAX_CARDINALITY_RESTRICTION),
-                owlMinCardinalityClass = getCls(OWLNames.Cls.MIN_CARDINALITY_RESTRICTION),
-                owlOntologyPrefixesProperty = getSlot(OWLNames.Slot.ONTOLOGY_PREFIXES),
-                owlRestrictionClass = getCls(OWLNames.Cls.RESTRICTION),
-                owlSomeValuesFromClass = getCls(OWLNames.Cls.SOME_VALUES_FROM_RESTRICTION),
-                owlUnionClassClass = getCls(OWLNames.Cls.UNION_CLASS),
-                rdfExternalResourceClass = getCls(RDFNames.Cls.EXTERNAL_RESOURCE),
-                owlResourceURIProperty = getSlot(OWLNames.Slot.RESOURCE_URI),
-
-                protegeClassificationStatusProperty = getSlot(ProtegeNames.Slot.CLASSIFICATION_STATUS),
-                protegeInferredTypeProperty = getSlot(ProtegeNames.Slot.INFERRED_TYPE),
-                protegeInferredSubclassesProperty = getSlot(ProtegeNames.Slot.INFERRED_SUBCLASSES),
-                protegeInferredSuperclassesProperty = getSlot(ProtegeNames.Slot.INFERRED_SUPERCLASSES),
-                
-                topOWLOntologyClass = getCls(OWLNames.Cls.TOP_LEVEL_ONTOLOGY),
-                topOWLOntologyURISlot = getSlot(OWLNames.Slot.TOP_LEVEL_ONTOLOGY_URI),
-
-                owlAllDifferentClass = getCls(OWLNames.Cls.ALL_DIFFERENT),
-                owlAllValuesFromProperty = getSlot(OWLNames.Slot.ALL_VALUES_FROM),
-                owlAnnotationPropertyClass = getCls(OWLNames.Cls.ANNOTATION_PROPERTY),
-                owlBackwardCompatibleWithProperty = getSlot(OWLNames.Slot.BACKWARD_COMPATIBLE_WITH),
-                owlCardinalityProperty = getSlot(OWLNames.Slot.CARDINALITY),
-                rdfsCommentProperty = getSlot(RDFSNames.Slot.COMMENT),
-                owlComplementOfProperty = getSlot(OWLNames.Slot.COMPLEMENT_OF),
-                owlDataRangeClass = getCls(OWLNames.Cls.DATA_RANGE),
-                owlDatatypePropertyClass = getCls(OWLNames.Cls.DATATYPE_PROPERTY),
-                rdfsDomainProperty = getSlot(RDFSNames.Slot.DOMAIN),
-                owlDeprecatedClassClass = getCls(OWLNames.Cls.DEPRECATED_CLASS),
-                owlDeprecatedPropertyClass = getCls(OWLNames.Cls.DEPRECATED_PROPERTY),
-                owlFunctionalPropertyClass = getCls(OWLNames.Cls.FUNCTIONAL_PROPERTY),
-                owlInverseFunctionalPropertyClass = getCls(OWLNames.Cls.INVERSE_FUNCTIONAL_PROPERTY),
-                owlSymmetricPropertyClass = getCls(OWLNames.Cls.SYMMETRIC_PROPERTY),
-                owlTransitivePropertyClass = getCls(OWLNames.Cls.TRANSITIVE_PROPERTY),
-                owlDifferentFromProperty = getSlot(OWLNames.Slot.DIFFERENT_FROM),
-                owlDisjointWithProperty = getSlot(OWLNames.Slot.DISJOINT_WITH),
-                owlDistinctMembersProperty = getSlot(OWLNames.Slot.DISTINCT_MEMBERS),
-                owlEquivalentClassProperty = getSlot(OWLNames.Slot.EQUIVALENT_CLASS),
-                owlEquivalentPropertyProperty = getSlot(OWLNames.Slot.EQUIVALENT_PROPERTY),
-                rdfFirstProperty = getSlot(RDFNames.Slot.FIRST),
-                owlHasValueProperty = getSlot(OWLNames.Slot.HAS_VALUE),
-                owlIncompatibleWithProperty = getSlot(OWLNames.Slot.INCOMPATIBLE_WITH),
-                owlIntersectionOfProperty = getSlot(OWLNames.Slot.INTERSECTION_OF),
-                owlValuesFromProperty = getSlot(OWLNames.Slot.VALUES_FROM),
-                rdfsIsDefinedByProperty = getSlot(RDFSNames.Slot.IS_DEFINED_BY),
-                rdfsLabelProperty = getSlot(RDFSNames.Slot.LABEL),
-                rdfListClass = getCls(RDFNames.Cls.LIST),
-                rdfsLiteralClass = getCls(RDFSNames.Cls.LITERAL),
-                rdfsSubPropertyOfProperty = getSlot(RDFSNames.Slot.SUB_PROPERTY_OF),
-                rdfsSubClassOfProperty = getSlot(RDFSNames.Slot.SUB_CLASS_OF),
-                owlInverseOfProperty = getSlot(OWLNames.Slot.INVERSE_OF),
-                owlMaxCardinalityProperty = getSlot(OWLNames.Slot.MAX_CARDINALITY),
-                owlMinCardinalityProperty = getSlot(OWLNames.Slot.MIN_CARDINALITY),
-                owlNamedClassClass = getCls(OWLNames.Cls.NAMED_CLASS),
-                rdfNilIndividual = getInstance(RDFNames.Instance.NIL),
-                owlNothingClass = getCls(OWLNames.Cls.NOTHING),
-                owlObjectPropertyClass = getCls(OWLNames.Cls.OBJECT_PROPERTY),
-                owlOnPropertyProperty = getSlot(OWLNames.Slot.ON_PROPERTY),
-                owlOntologyClass = getCls(OWLNames.Cls.ONTOLOGY),
-                owlImportsProperty = getSlot(OWLNames.Slot.IMPORTS),
-                owlClassMetaCls = getCls(OWLNames.Cls.OWL_CLASS),
-                owlOneOfProperty = getSlot(OWLNames.Slot.ONE_OF),
-                rdfPropertyClass = getCls(RDFNames.Cls.PROPERTY),
-                owlPriorVersionProperty = getSlot(OWLNames.Slot.PRIOR_VERSION),
-                rdfObjectProperty = getSlot(RDFNames.Slot.OBJECT),
-                rdfPredicateProperty = getSlot(RDFNames.Slot.PREDICATE),
-                rdfsRangeProperty = getSlot(RDFSNames.Slot.RANGE),
-                rdfStatementClass = getCls(RDFNames.Cls.STATEMENT),
-                rdfSubjectProperty = getSlot(RDFNames.Slot.SUBJECT),
-                rdfTypeProperty = getSlot(RDFNames.Slot.TYPE),
-                rdfValueProperty = getSlot(RDFNames.Slot.VALUE),
-                rdfsNamedClassClass = getCls(RDFSNames.Cls.NAMED_CLASS),
-                rdfAltClass = getCls(RDFNames.Cls.ALT),
-                rdfBagClass = getCls(RDFNames.Cls.BAG),
-                rdfsContainerClass = getCls(RDFSNames.Cls.CONTAINER),
-                rdfsDatatypeClass = getCls(RDFSNames.Cls.DATATYPE),
-                rdfsMemberProperty = getSlot(RDFSNames.Slot.MEMBER),
-                rdfSeqClass = getCls(RDFNames.Cls.SEQ),
-                rdfRestSlot = getSlot(RDFNames.Slot.REST),
-                owlSameAsProperty = getSlot(OWLNames.Slot.SAME_AS),
-                rdfsSeeAlsoProperty = getSlot(RDFSNames.Slot.SEE_ALSO),
-                owlSomeValuesFromProperty = getSlot(OWLNames.Slot.SOME_VALUES_FROM),
-                owlUnionOfProperty = getSlot(OWLNames.Slot.UNION_OF),
-                owlVersionInfoProperty = getSlot(OWLNames.Slot.VERSION_INFO)
-        };
+        Collection<Frame> frameSet = getSystemFrames().getFrames();
+        Set<Frame> owlFrameSet = new HashSet<Frame>();
+        for (Frame frame : frameSet) {
+            if (frame instanceof RDFResource) {
+                owlFrameSet.add(frame);
+            }
+        }
+        return owlFrameSet.toArray(new Frame[owlFrameSet.size()]);
     }
 
-
-    public OWLNamedClass getOWLThingClass() {
-        return (OWLNamedClass) getRootCls();
-    }
 
 
     public RDFProperty getProtegeAllowedParentProperty() {
@@ -2708,9 +1812,6 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     }
 
 
-    public RDFSNamedClass getRDFSNamedClassClass() {
-        return (RDFSNamedClass) rdfsNamedClassClass;
-    }
 
 
     public RDFSNamedClass getRDFSNamedClass(String name) {
@@ -2720,11 +1821,6 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
     public RDFProperty getRDFProperty(String name) {
         return (RDFProperty) getSlot(name);
-    }
-
-
-    public RDFSNamedClass getRDFPropertyClass() {
-        return (RDFSNamedClass) rdfPropertyClass;
     }
 
 
@@ -2761,7 +1857,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
     public Collection<RDFResource> getRDFSDatatypes() {
         List<RDFResource> results = new ArrayList<RDFResource>();
-        Iterator it = rdfsDatatypeClass.getDirectInstances().iterator();
+        Iterator it = getRDFSDatatypeClass().getDirectInstances().iterator();
         while (it.hasNext()) {
             RDFResource datatype = (RDFResource) it.next();
             if (!datatype.isAnonymous()) {
@@ -2771,110 +1867,32 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
         return results;
     }
 
-
-    public RDFProperty getRDFRestProperty() {
-        return (RDFProperty) rdfRestSlot;
-    }
-
-
-    public RDFSDatatype getRDFXMLLiteralType() {
-        if (xmlLiteralType == null) {
-            xmlLiteralType = getRDFSDatatypeByName(RDFNames.XML_LITERAL);
-        }
-        return xmlLiteralType;
-    }
-    
-    public RDFSNamedClass getOWLSomeValuesFromRestrictionClass() {
-      return (RDFSNamedClass) owlSomeValuesFromClass;
-    }
-
-
     public RDFSNamedClass[] getOWLRestrictionMetaclasses() {
         return new RDFSNamedClass[]{// Order may be used for sorting and should be preserved
-                (RDFSNamedClass) owlAllValuesFromClass,
-                (RDFSNamedClass) owlSomeValuesFromClass,
-                (RDFSNamedClass) owlHasValueClass,
-                (RDFSNamedClass) owlCardinalityClass,
-                (RDFSNamedClass) owlMinCardinalityClass,
-                (RDFSNamedClass) owlMaxCardinalityClass
+                getOWLAllValuesFromClass(),
+                getOWLSomeValuesFromClass(),
+                getOWLHasValueClass(),
+                getOWLCardinalityClass(),
+                getOWLMinCardinalityClass(),
+                getOWLMaxCardinalityClass()
         };
     }
 
 
-    public synchronized Cls getRootSlotMetaCls() {
-        return getCls(RDFNames.Cls.PROPERTY);
-    }
 
 
-    public RDFProperty getOWLSameAsProperty() {
-        return (RDFProperty) owlSameAsProperty;
-    }
-
-
-    public RDFProperty getOWLUnionOfProperty() {
-        return (RDFProperty) owlUnionOfProperty;
-    }
-
-
-    public Cls getRDFSClassMetaClassCls() {
-        return rdfsNamedClassClass;
-    }
-
-
-    public Cls getOWLNamedClassMetaClassCls() {
-        return owlNamedClassClass;
-    }
-
-
-    public Cls getOWLDatatypePropertyMetaClassCls() {
-        return owlDatatypePropertyClass;
-    }
-
-
-    public Cls getOWLObjectPropertyMetaClassCls() {
-        return owlObjectPropertyClass;
-    }
-
-
-    public Cls getOWLAllDifferentClassCls() {
-        return owlAllDifferentClass;
-    }
-
-
-    public Cls getRDFListCls() {
-        return rdfListClass;
-    }
-
-
-    public Cls getOWLOntologyCls() {
-        return owlOntologyClass;
-    }
-
-
-    public RDFProperty getProtegeSubclassesDisjointProperty() {
-    	//TT: is it safe to cache this value? What if an import is added/removed? 
-    	if (protegeSubclassesDisjointProperty == null) {
-    		protegeSubclassesDisjointProperty = getSlot(ProtegeNames.getSubclassesDisjointSlotName());
-        }
-        return (RDFProperty) protegeSubclassesDisjointProperty;
-    }
-
-
-    public RDFProperty getRDFTypeProperty() {
-        return (RDFProperty) rdfTypeProperty;
-    }
 
 
     public RDFProperty[] getSystemAnnotationProperties() {
         return new RDFProperty[]{
-                (RDFProperty) rdfsSeeAlsoProperty,
-                (RDFProperty) rdfsIsDefinedByProperty,
-                (RDFProperty) rdfsLabelProperty,
-                (RDFProperty) owlVersionInfoProperty,
-                (RDFProperty) owlBackwardCompatibleWithProperty,
-                (RDFProperty) owlIncompatibleWithProperty,
-                (RDFProperty) owlPriorVersionProperty,
-                (RDFProperty) rdfsCommentProperty
+                getRDFSSeeAlsoProperty(),
+                getRDFSIsDefinedByProperty(),
+                getRDFSLabelProperty(),
+                getOWLVersionInfoProperty(),
+                getOWLBackwardCompatibleWithProperty(),
+                getOWLIncompatibleWithProperty(),
+                getOWLPriorVersionProperty(),
+                getRDFSCommentProperty()
         };
     }
 
@@ -2925,7 +1943,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
 
     public Collection getUserDefinedOWLNamedClasses() {
-        return getUserDefinedInstances(owlNamedClassClass);
+        return getUserDefinedInstances(getOWLNamedClassClass());
     }
 
 
@@ -2962,33 +1980,33 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
     public Collection getUserDefinedOWLProperties() {
         List instances = new ArrayList();
-        instances.addAll(owlDatatypePropertyClass.getInstances());
-        instances.addAll(owlObjectPropertyClass.getInstances());
+        instances.addAll(getOWLDatatypePropertyClass().getInstances());
+        instances.addAll(getOWLObjectPropertyClass().getInstances());
         return getUserDefinedInstances(instances);
     }
 
 
     public Collection getUserDefinedOWLObjectProperties() {
         List instances = new ArrayList();
-        instances.addAll(owlObjectPropertyClass.getInstances());
+        instances.addAll(getOWLObjectPropertyClass().getInstances());
         return getUserDefinedInstances(instances);
     }
 
 
     public Collection getUserDefinedOWLDatatypeProperties() {
         List instances = new ArrayList();
-        instances.addAll(owlDatatypePropertyClass.getInstances());
+        instances.addAll(getOWLDatatypePropertyClass().getInstances());
         return getUserDefinedInstances(instances);
     }
 
 
     public Collection getUserDefinedRDFProperties() {
-        return getUserDefinedInstances(rdfPropertyClass);
+        return getUserDefinedInstances(getRDFPropertyClass());
     }
 
 
     public Collection getUserDefinedRDFSNamedClasses() {
-        return getUserDefinedInstances(rdfsNamedClassClass);
+        return getUserDefinedInstances(getRDFSNamedClassClass());
     }
 
 
@@ -2999,8 +2017,8 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
     public Collection getVisibleUserDefinedOWLProperties() {
         List instances = new ArrayList();
-        instances.addAll(owlDatatypePropertyClass.getInstances());
-        instances.addAll(owlObjectPropertyClass.getInstances());
+        instances.addAll(getOWLDatatypePropertyClass().getInstances());
+        instances.addAll(getOWLObjectPropertyClass().getInstances());
         return getVisibleUserDefinedInstances(instances);
     }
 
@@ -3025,157 +2043,15 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
     public Collection getVisibleUserDefinedRDFProperties() {
         // TODO: Maybe remove protege:slots
-        return getVisibleUserDefinedInstances(rdfPropertyClass);
-    }
-
-
-    public RDFSDatatype getXSDboolean() {
-        if (xsdBoolean == null) {
-            xsdBoolean = (RDFSDatatype) getFrame(XSDNames.BOOLEAN);
-        }
-        return xsdBoolean;
-    }
-
-
-    public RDFSDatatype getXSDdouble() {
-        if (xsdDouble == null) {
-            xsdDouble = (RDFSDatatype) getFrame(XSDNames.DOUBLE);
-        }
-        return xsdDouble;
-    }
-
-
-    public RDFSDatatype getXSDfloat() {
-        if (xsdFloat == null) {
-            xsdFloat = (RDFSDatatype) getFrame(XSDNames.FLOAT);
-        }
-        return xsdFloat;
-    }
-
-
-    public RDFSDatatype getXSDlong() {
-        if (xsdLong == null) {
-            xsdLong = (RDFSDatatype) getFrame(XSDNames.LONG);
-        }
-        return xsdLong;
-    }
-
-
-    public RDFSDatatype getXSDint() {
-        if (xsdInt == null) {
-            xsdInt = (RDFSDatatype) getFrame(XSDNames.INT);
-        }
-        return xsdInt;
-    }
-
-
-    public RDFSDatatype getXSDshort() {
-        if (xsdShort == null) {
-            xsdShort = (RDFSDatatype) getFrame(XSDNames.SHORT);
-        }
-        return xsdShort;
-    }
-
-
-    public RDFSDatatype getXSDbyte() {
-        if (xsdByte == null) {
-            xsdByte = (RDFSDatatype) getFrame(XSDNames.BYTE);
-        }
-        return xsdByte;
-    }
-
-
-    public RDFSDatatype getXSDstring() {
-        if (xsdString == null) {
-            xsdString = (RDFSDatatype) getFrame(XSDNames.STRING);
-        }
-        return xsdString;
-    }
-
-
-    public RDFSDatatype getXSDbase64Binary() {
-        if (xsdBase64Binary == null) {
-            xsdBase64Binary = (RDFSDatatype) getFrame(XSDNames.BASE_64_BINARY);
-        }
-        return xsdBase64Binary;
-    }
-
-
-    public RDFSDatatype getXSDdate() {
-        if (xsdDate == null) {
-            xsdDate = (RDFSDatatype) getFrame(XSDNames.DATE);
-        }
-        return xsdDate;
-    }
-
-
-    public RDFSDatatype getXSDtime() {
-        if (xsdTime == null) {
-            xsdTime = (RDFSDatatype) getFrame(XSDNames.TIME);
-        }
-        return xsdTime;
-    }
-
-
-    public RDFSDatatype getXSDdateTime() {
-        if (xsdDateTime == null) {
-            xsdDateTime = (RDFSDatatype) getFrame(XSDNames.DATE_TIME);
-        }
-        return xsdDateTime;
-    }
-
-
-    public RDFSDatatype getXSDduration() {
-        if (xsdDuration == null) {
-            xsdDuration = (RDFSDatatype) getFrame(XSDNames.DURATION);
-        }
-        return xsdDuration;
-    }
-
-
-    public RDFSDatatype getXSDanyURI() {
-        if (xsdAnyURI == null) {
-            xsdAnyURI = (RDFSDatatype) getFrame(XSDNames.ANY_URI);
-        }
-        return xsdAnyURI;
-    }
-
-
-    public RDFSDatatype getXSDdecimal() {
-        if (xsdDecimal == null) {
-            xsdDecimal = (RDFSDatatype) getFrame(XSDNames.DECIMAL);
-        }
-        return xsdDecimal;
-    }
-
-
-    public RDFSDatatype getXSDinteger() {
-        if (xsdInteger == null) {
-            xsdInteger = (RDFSDatatype) getFrame(XSDNames.INTEGER);
-        }
-        return xsdInteger;
-    }
-
-
-    public RDFProperty getOWLVersionInfoProperty() {
-        return (RDFProperty) owlVersionInfoProperty;
-    }
-
-
-    public RDFProperty getRDFSRangeProperty() {
-        return (RDFProperty) rdfsRangeProperty;
-    }
-
-
-    public RDFProperty getRDFSSubPropertyOfProperty() {
-        return (RDFProperty) rdfsSubPropertyOfProperty;
+        return getVisibleUserDefinedInstances(getRDFPropertyClass());
     }
 
 
     /**
      * @deprecated
      */
-    public boolean isAnonymousResource(RDFResource resource) {
+    @Deprecated
+	public boolean isAnonymousResource(RDFResource resource) {
         return resource.isAnonymous();
     }
 
@@ -3204,7 +2080,8 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     /**
      * @deprecated
      */
-    public boolean isOWLSystemFrame(Frame frame) {
+    @Deprecated
+	public boolean isOWLSystemFrame(Frame frame) {
         return getOWLSystemResources().contains(frame);
     }
 
@@ -3322,11 +2199,12 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     }
 
 
-    public synchronized Instance setDirectType(Instance instance, Cls type) {
+    @Override
+	public synchronized Instance setDirectType(Instance instance, Cls type) {
         if (instance instanceof OWLProperty && type != null) {
             deleteRestrictionsDependingOnPropertyType((OWLProperty) instance, type);
         }
-        if (instance instanceof OWLNamedClass && type.equals(rdfsNamedClassClass)) {
+        if (instance instanceof OWLNamedClass && type.equals(getRDFSNamedClassClass())) {
             deleteAnonymousSuperclasses((OWLNamedClass) instance);
         }
         return super.setDirectType(instance, type);
@@ -3375,7 +2253,8 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     }
 
 
-    public void setProject(Project project) {
+    @Override
+	public void setProject(Project project) {
         super.setProject(project);
         if (bootstrapped) {
 
@@ -3397,10 +2276,10 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
                 fsm.setEnabled(getOWLFrameStore(), false);
             }
 
-            protegeClassificationStatusProperty.setVisible(false);
-            protegeInferredSuperclassesProperty.setVisible(false);
-            protegeInferredSubclassesProperty.setVisible(false);
-            owlOntologyClass.setVisible(false);
+            getProtegeClassificationStatusProperty().setVisible(false);
+            getProtegeInferredSuperclassesProperty().setVisible(false);
+            getProtegeInferredSubclassesProperty().setVisible(false);
+            getOWLOntologyClass().setVisible(false);
         }
     }
 
@@ -3622,12 +2501,12 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
 
     public int getRDFSClassCount() {
-        return owlClassMetaCls.getInstanceCount() - 4;
+        return getRDFSNamedClassClass().getInstanceCount() - 4;
     }
 
 
     public Collection getRDFSClasses() {
-        Collection classes = new ArrayList(owlClassMetaCls.getInstances());
+        Collection classes = new ArrayList(getOWLClassMetaCls().getInstances());
         removeProtegeSystemResources(this, classes);
         return classes;
     }
@@ -3796,10 +2675,6 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     }
 
 
-    public OWLDatatypeProperty getRDFSCommentProperty() {
-        return (OWLDatatypeProperty) rdfsCommentProperty;
-    }
-
 
     public String getValidNamespaceFrameName(String suggestedName) {
         return getValidOWLFrameName(this, suggestedName);
@@ -3840,8 +2715,9 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     }
 
 
-    public synchronized boolean isSlotMetaCls(Cls cls) {
-        return rdfPropertyClass.equals(cls) || hasSuperclass(cls, getRootSlotMetaCls());
+    @Override
+	public synchronized boolean isSlotMetaCls(Cls cls) {
+        return getRDFPropertyClass().equals(cls) || hasSuperclass(cls, getRootSlotMetaCls());
     }
 
 
@@ -3961,11 +2837,6 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     }
 
 
-    public RDFSNamedClass getRDFSDatatypeClass() {
-        return (RDFSNamedClass) rdfsDatatypeClass;
-    }
-
-
     public Collection getPropertyValueLiterals(RDFResource resource, RDFProperty property) {
         final List values = new ArrayList(OWLUtil.getPropertyValues(resource, property, false));
         if (!values.isEmpty()) {
@@ -3992,26 +2863,9 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     }
 
 
-    public RDFProperty getRDFSSubClassOfProperty() {
-        return (RDFProperty) rdfsSubClassOfProperty;
-    }
-
-
-    public RDFProperty getOWLEquivalentClassProperty() {
-        return (RDFProperty) owlEquivalentClassProperty;
-    }
-
-
-    public RDFProperty getOWLInverseOfProperty() {
-        return (RDFProperty) owlInverseOfProperty;
-    }
-
-
-    public RDFProperty getOWLDistinctMembersProperty() {
-        return (RDFProperty) owlDistinctMembersProperty;
-    }
     
-    public void setDirectOwnSlotValues(Frame frame, Slot slot, Collection values) {
+    @Override
+	public void setDirectOwnSlotValues(Frame frame, Slot slot, Collection values) {
 
         final int valueCount = values.size();
         if (valueCount > 0) {
@@ -4059,6 +2913,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     	taskManager = null;
     }
     
+    @Override
     public ServerCacheStateMachine getCacheMachine() {
         return new OwlStateMachine(getHeadFrameStore(), this);
     }
@@ -4067,4 +2922,792 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     public void setCacheMachine(ServerCacheStateMachine machine) {
         throw new UnsupportedOperationException("Not implemented yet");
     }
+    
+    public RDFProperty getProtegeSubclassesDisjointProperty() {
+        //TT: is it safe to cache this value? What if an import is added/removed? 
+        if (protegeSubclassesDisjointProperty == null) {
+            protegeSubclassesDisjointProperty = getSlot(ProtegeNames.getSubclassesDisjointSlotName());
+        }
+        return (RDFProperty) protegeSubclassesDisjointProperty;
+    }
+    
+    /*
+     * These essentially come from the system frames but there is some issues with the naming.
+     */
+    
+    public RDFSNamedClass getRDFUntypedResourcesClass() {
+        return getRDFExternalResourceClass();
+    }
+
+    public OWLNamedClass getOWLDatatypePropertyMetaClassCls() {
+        return getOWLDatatypePropertyClass();
+    }
+
+    public OWLNamedClass getOWLObjectPropertyMetaClassCls() {
+        return getOWLObjectPropertyClass();
+    }
+    
+    public RDFSNamedClass getOWLAllDifferentClassCls() {
+        return getOWLAllDifferentClass();
+    }
+    
+    public OWLNamedClass getOWLNamedClassMetaClassCls() {
+        return getOWLNamedClassClass();
+    }
+    
+    public OWLNamedClass getOWLOntologyCls() {
+        return getOWLOntologyClass();
+    }
+    
+    public RDFSNamedClass getRDFListCls() {
+        return getRDFListClass();
+    }
+    
+    public OWLNamedClass getRDFSClassMetaClassCls() {
+        return getRDFSNamedClassClass();
+    }
+    
+    public OWLNamedClass getOWLNothing() {
+        return getOWLNothingClass();
+    }
+    
+    public RDFSNamedClass getOWLSomeValuesFromRestrictionClass() {
+        return getOWLSomeValuesFromClass();
+    }
+    
+    public RDFProperty getRDFSSubPropertyOfProperty() {
+        return getRDFSSubPropertyOf();
+    }
+    
+    /*
+     * Getters retrieved from system frames.  Note that the case is slightly
+     * different
+     *    Owl -> OWL
+     *    Rdf -> RDF
+     *    Rdfs -> RDFS
+     */
+
+    /**
+     * @return the owlThingClass
+     */
+    public OWLNamedClass getOWLThingClass() {
+        return getSystemFrames().getOwlThingClass();
+    }
+
+    /**
+     * @return the owlClassMetaCls
+     */
+    public RDFSNamedClass getOWLClassMetaCls() {
+        return getSystemFrames().getOwlClassMetaCls();
+    }
+
+    /**
+     * @return the rdfsNamedClassClass
+     */
+    public OWLNamedClass getRDFSNamedClassClass() {
+        return getSystemFrames().getRdfsNamedClassClass();
+    }
+
+    /**
+     * @return the owlNamedClassClass
+     */
+    public OWLNamedClass getOWLNamedClassClass() {
+        return getSystemFrames().getOwlNamedClassClass();
+    }
+
+    /**
+     * @return the owlDeprecatedClassClass
+     */
+    public RDFSNamedClass getOWLDeprecatedClassClass() {
+        return getSystemFrames().getOwlDeprecatedClassClass();
+    }
+
+    /**
+     * @return the anonymousClassMetaCls
+     */
+    public OWLNamedClass getAnonymousClassMetaCls() {
+        return getSystemFrames().getAnonymousClassMetaCls();
+    }
+
+    /**
+     * @return the owlEnumeratedClassClass
+     */
+    public RDFSNamedClass getOWLEnumeratedClassClass() {
+        return getSystemFrames().getOwlEnumeratedClassClass();
+    }
+
+    /**
+     * @return the owlRestrictionClass
+     */
+    public RDFSNamedClass getOWLRestrictionClass() {
+        return getSystemFrames().getOwlRestrictionClass();
+    }
+
+    /**
+     * @return the owlAllValuesFromClass
+     */
+    public RDFSNamedClass getOWLAllValuesFromClass() {
+        return getSystemFrames().getOwlAllValuesFromClass();
+    }
+
+    /**
+     * @return the owlHasValueClass
+     */
+    public RDFSNamedClass getOWLHasValueClass() {
+        return getSystemFrames().getOwlHasValueClass();
+    }
+
+    /**
+     * @return the owlMaxCardinalityClass
+     */
+    public RDFSNamedClass getOWLMaxCardinalityClass() {
+        return getSystemFrames().getOwlMaxCardinalityClass();
+    }
+
+    /**
+     * @return the owlMinCardinalityClass
+     */
+    public RDFSNamedClass getOWLMinCardinalityClass() {
+        return getSystemFrames().getOwlMinCardinalityClass();
+    }
+
+    /**
+     * @return the owlCardinalityClass
+     */
+    public RDFSNamedClass getOWLCardinalityClass() {
+        return getSystemFrames().getOwlCardinalityClass();
+    }
+
+    /**
+     * @return the owlSomeValuesFromClass
+     */
+    public RDFSNamedClass getOWLSomeValuesFromClass() {
+        return getSystemFrames().getOwlSomeValuesFromClass();
+    }
+
+    /**
+     * @return the owlLogicalClassClass
+     */
+    public RDFSNamedClass getOWLLogicalClassClass() {
+        return getSystemFrames().getOwlLogicalClassClass();
+    }
+
+    /**
+     * @return the owlComplementClassClass
+     */
+    public RDFSNamedClass getOWLComplementClassClass() {
+        return getSystemFrames().getOwlComplementClassClass();
+    }
+
+    /**
+     * @return the owlIntersectionClassClass
+     */
+    public RDFSNamedClass getOWLIntersectionClassClass() {
+        return getSystemFrames().getOwlIntersectionClassClass();
+    }
+
+    /**
+     * @return the owlUnionClassClass
+     */
+    public RDFSNamedClass getOWLUnionClassClass() {
+        return getSystemFrames().getOwlUnionClassClass();
+    }
+
+    /**
+     * @return the rdfPropertyClass
+     */
+    public OWLNamedClass getRDFPropertyClass() {
+        return getSystemFrames().getRdfPropertyClass();
+    }
+
+    /**
+     * @return the owlDatatypePropertyClass
+     */
+    public OWLNamedClass getOWLDatatypePropertyClass() {
+        return getSystemFrames().getOwlDatatypePropertyClass();
+    }
+
+    /**
+     * @return the owlObjectPropertyClass
+     */
+    public OWLNamedClass getOWLObjectPropertyClass() {
+        return getSystemFrames().getOwlObjectPropertyClass();
+    }
+
+    /**
+     * @return the owlInverseFunctionalPropertyClass
+     */
+    public OWLNamedClass getOWLInverseFunctionalPropertyClass() {
+        return getSystemFrames().getOwlInverseFunctionalPropertyClass();
+    }
+
+    /**
+     * @return the owlSymmetricPropertyClass
+     */
+    public OWLNamedClass getOWLSymmetricPropertyClass() {
+        return getSystemFrames().getOwlSymmetricPropertyClass();
+    }
+
+    /**
+     * @return the owlTransitivePropertyClass
+     */
+    public OWLNamedClass getOWLTransitivePropertyClass() {
+        return getSystemFrames().getOwlTransitivePropertyClass();
+    }
+
+    /**
+     * @return the owlAnnotationPropertyClass
+     */
+    public OWLNamedClass getOWLAnnotationPropertyClass() {
+        return getSystemFrames().getOwlAnnotationPropertyClass();
+    }
+
+    /**
+     * @return the owlFunctionalPropertyClass
+     */
+    public OWLNamedClass getOWLFunctionalPropertyClass() {
+        return getSystemFrames().getOwlFunctionalPropertyClass();
+    }
+
+    /**
+     * @return the owlDeprecatedPropertyClass
+     */
+    public RDFSNamedClass getOWLDeprecatedPropertyClass() {
+        return getSystemFrames().getOwlDeprecatedPropertyClass();
+    }
+
+    /**
+     * @return the rdfsDatatypeClass
+     */
+    public RDFSNamedClass getRDFSDatatypeClass() {
+        return getSystemFrames().getRdfsDatatypeClass();
+    }
+
+    /**
+     * @return the owlOntologyClass
+     */
+    public OWLNamedClass getOWLOntologyClass() {
+        return getSystemFrames().getOwlOntologyClass();
+    }
+
+    /**
+     * @return the owlNothingClass
+     */
+    public OWLNamedClass getOWLNothingClass() {
+        return getSystemFrames().getOwlNothingClass();
+    }
+
+    /**
+     * @return the rdfListClass
+     */
+    public RDFSNamedClass getRDFListClass() {
+        return getSystemFrames().getRdfListClass();
+    }
+
+    /**
+     * @return the owlAllDifferentClass
+     */
+    public RDFSNamedClass getOWLAllDifferentClass() {
+        return getSystemFrames().getOwlAllDifferentClass();
+    }
+
+    /**
+     * @return the rdfsLiteralClass
+     */
+    public RDFSNamedClass getRDFSLiteralClass() {
+        return getSystemFrames().getRdfsLiteralClass();
+    }
+
+    /**
+     * @return the rdfsContainerClass
+     */
+    public RDFSNamedClass getRDFSContainerClass() {
+        return getSystemFrames().getRdfsContainerClass();
+    }
+
+    /**
+     * @return the rdfAltClass
+     */
+    public RDFSNamedClass getRDFAltClass() {
+        return getSystemFrames().getRdfAltClass();
+    }
+
+    /**
+     * @return the rdfBagClass
+     */
+    public RDFSNamedClass getRDFBagClass() {
+        return getSystemFrames().getRdfBagClass();
+    }
+
+    /**
+     * @return the rdfSeqClass
+     */
+    public RDFSNamedClass getRDFSeqClass() {
+        return getSystemFrames().getRdfSeqClass();
+    }
+
+    /**
+     * @return the rdfStatementClass
+     */
+    public RDFSNamedClass getRDFStatementClass() {
+        return getSystemFrames().getRdfStatementClass();
+    }
+
+    /**
+     * @return the owlDataRangeClass
+     */
+    public RDFSNamedClass getOWLDataRangeClass() {
+        return getSystemFrames().getOwlDataRangeClass();
+    }
+
+    /**
+     * @return the anonymousRootCls
+     */
+    public RDFSNamedClass getAnonymousRootCls() {
+        return getSystemFrames().getAnonymousRootCls();
+    }
+
+    /**
+     * @return the rdfExternalResourceClass
+     */
+    public RDFSNamedClass getRDFExternalResourceClass() {
+        return getSystemFrames().getRdfExternalResourceClass();
+    }
+
+    /**
+     * @return the topOWLOntologyClass
+     */
+    public RDFSNamedClass getTopOWLOntologyClass() {
+        return getSystemFrames().getTopOWLOntologyClass();
+    }
+
+    /**
+     * @return the owlAllValuesFromProperty
+     */
+    public RDFProperty getOWLAllValuesFromProperty() {
+        return getSystemFrames().getOwlAllValuesFromProperty();
+    }
+
+    /**
+     * @return the owlBackwardCompatibleWithProperty
+     */
+    public RDFProperty getOWLBackwardCompatibleWithProperty() {
+        return getSystemFrames().getOwlBackwardCompatibleWithProperty();
+    }
+
+    /**
+     * @return the owlCardinalityProperty
+     */
+    public RDFProperty getOWLCardinalityProperty() {
+        return getSystemFrames().getOwlCardinalityProperty();
+    }
+
+    /**
+     * @return the owlComplementOfProperty
+     */
+    public RDFProperty getOWLComplementOfProperty() {
+        return getSystemFrames().getOwlComplementOfProperty();
+    }
+
+    /**
+     * @return the owlDifferentFromProperty
+     */
+    public RDFProperty getOWLDifferentFromProperty() {
+        return getSystemFrames().getOwlDifferentFromProperty();
+    }
+
+    /**
+     * @return the owlDisjointWithProperty
+     */
+    public RDFProperty getOWLDisjointWithProperty() {
+        return getSystemFrames().getOwlDisjointWithProperty();
+    }
+
+    /**
+     * @return the owlDistinctMembersProperty
+     */
+    public RDFProperty getOWLDistinctMembersProperty() {
+        return getSystemFrames().getOwlDistinctMembersProperty();
+    }
+
+    /**
+     * @return the owlEquivalentClassProperty
+     */
+    public RDFProperty getOWLEquivalentClassProperty() {
+        return getSystemFrames().getOwlEquivalentClassProperty();
+    }
+
+    /**
+     * @return the owlEquivalentPropertyProperty
+     */
+    public RDFProperty getOWLEquivalentPropertyProperty() {
+        return getSystemFrames().getOwlEquivalentPropertyProperty();
+    }
+
+    /**
+     * @return the owlHasValueProperty
+     */
+    public RDFProperty getOWLHasValueProperty() {
+        return getSystemFrames().getOwlHasValueProperty();
+    }
+
+    /**
+     * @return the owlImportsProperty
+     */
+    public RDFProperty getOWLImportsProperty() {
+        return getSystemFrames().getOwlImportsProperty();
+    }
+
+    /**
+     * @return the owlIncompatibleWithProperty
+     */
+    public RDFProperty getOWLIncompatibleWithProperty() {
+        return getSystemFrames().getOwlIncompatibleWithProperty();
+    }
+
+    /**
+     * @return the owlIntersectionOfProperty
+     */
+    public RDFProperty getOWLIntersectionOfProperty() {
+        return getSystemFrames().getOwlIntersectionOfProperty();
+    }
+
+    /**
+     * @return the owlInverseOfProperty
+     */
+    public RDFProperty getOWLInverseOfProperty() {
+        return getSystemFrames().getOwlInverseOfProperty();
+    }
+
+    /**
+     * @return the owlMaxCardinalityProperty
+     */
+    public RDFProperty getOWLMaxCardinalityProperty() {
+        return getSystemFrames().getOwlMaxCardinalityProperty();
+    }
+
+    /**
+     * @return the owlMinCardinalityProperty
+     */
+    public RDFProperty getOWLMinCardinalityProperty() {
+        return getSystemFrames().getOwlMinCardinalityProperty();
+    }
+
+    /**
+     * @return the owlOneOfProperty
+     */
+    public RDFProperty getOWLOneOfProperty() {
+        return getSystemFrames().getOwlOneOfProperty();
+    }
+
+    /**
+     * @return the owlOnPropertyProperty
+     */
+    public RDFProperty getOWLOnPropertyProperty() {
+        return getSystemFrames().getOwlOnPropertyProperty();
+    }
+
+    /**
+     * @return the owlPriorVersionProperty
+     */
+    public RDFProperty getOWLPriorVersionProperty() {
+        return getSystemFrames().getOwlPriorVersionProperty();
+    }
+
+    /**
+     * @return the owlSameAsProperty
+     */
+    public RDFProperty getOWLSameAsProperty() {
+        return getSystemFrames().getOwlSameAsProperty();
+    }
+
+    /**
+     * @return the owlSomeValuesFromProperty
+     */
+    public RDFProperty getOWLSomeValuesFromProperty() {
+        return getSystemFrames().getOwlSomeValuesFromProperty();
+    }
+
+    /**
+     * @return the owlUnionOfProperty
+     */
+    public RDFProperty getOWLUnionOfProperty() {
+        return getSystemFrames().getOwlUnionOfProperty();
+    }
+
+    /**
+     * @return the owlValuesFromProperty
+     */
+    public RDFProperty getOWLValuesFromProperty() {
+        return getSystemFrames().getOwlValuesFromProperty();
+    }
+
+    /**
+     * @return the owlVersionInfoProperty
+     */
+    public RDFProperty getOWLVersionInfoProperty() {
+        return getSystemFrames().getOwlVersionInfoProperty();
+    }
+
+    /**
+     * @return the protegeClassificationStatusProperty
+     */
+    public RDFProperty getProtegeClassificationStatusProperty() {
+        return getSystemFrames().getProtegeClassificationStatusProperty();
+    }
+
+    /**
+     * @return the protegeInferredSubclassesProperty
+     */
+    public RDFProperty getProtegeInferredSubclassesProperty() {
+        return getSystemFrames().getProtegeInferredSubclassesProperty();
+    }
+
+    /**
+     * @return the protegeInferredSuperclassesProperty
+     */
+    public RDFProperty getProtegeInferredSuperclassesProperty() {
+        return getSystemFrames().getProtegeInferredSuperclassesProperty();
+    }
+
+    /**
+     * @return the protegeInferredTypeProperty
+     */
+    public RDFProperty getProtegeInferredTypeProperty() {
+        return getSystemFrames().getProtegeInferredTypeProperty();
+    }
+
+    /**
+     * @return the rdfFirstProperty
+     */
+    public RDFProperty getRDFFirstProperty() {
+        return getSystemFrames().getRdfFirstProperty();
+    }
+
+    /**
+     * @return the rdfObjectProperty
+     */
+    public RDFProperty getRDFObjectProperty() {
+        return getSystemFrames().getRdfObjectProperty();
+    }
+
+    /**
+     * @return the rdfPredicateProperty
+     */
+    public RDFProperty getRDFPredicateProperty() {
+        return getSystemFrames().getRdfPredicateProperty();
+    }
+
+    /**
+     * @return the rdfRestSlot
+     */
+    public RDFProperty getRDFRestProperty() {
+        return getSystemFrames().getRdfRestProperty();
+    }
+
+    /**
+     * @return the rdfSubjectProperty
+     */
+    public RDFProperty getRDFSubjectProperty() {
+        return getSystemFrames().getRdfSubjectProperty();
+    }
+
+    /**
+     * @return the rdfTypeProperty
+     */
+    public RDFProperty getRDFTypeProperty() {
+        return getSystemFrames().getRdfTypeProperty();
+    }
+
+    /**
+     * @return the rdfValueProperty
+     */
+    public RDFProperty getRDFValueProperty() {
+        return getSystemFrames().getRdfValueProperty();
+    }
+
+    /**
+     * @return the rdfsCommentProperty
+     */
+    public OWLDatatypeProperty getRDFSCommentProperty() {
+        return getSystemFrames().getRdfsCommentProperty();
+    }
+
+    /**
+     * @return the rdfsDomainProperty
+     */
+    public RDFProperty getRDFSDomainProperty() {
+        return getSystemFrames().getRdfsDomainProperty();
+    }
+
+    /**
+     * @return the rdfsIsDefinedByProperty
+     */
+    public RDFProperty getRDFSIsDefinedByProperty() {
+        return getSystemFrames().getRdfsIsDefinedByProperty();
+    }
+
+    /**
+     * @return the rdfsLabelProperty
+     */
+    public RDFProperty getRDFSLabelProperty() {
+        return getSystemFrames().getRdfsLabelProperty();
+    }
+
+    /**
+     * @return the rdfsMemberProperty
+     */
+    public RDFProperty getRDFSMemberProperty() {
+        return getSystemFrames().getRdfsMemberProperty();
+    }
+
+    /**
+     * @return the rdfsRangeProperty
+     */
+    public RDFProperty getRDFSRangeProperty() {
+        return getSystemFrames().getRdfsRangeProperty();
+    }
+
+    /**
+     * @return the rdfsSeeAlsoProperty
+     */
+    public RDFProperty getRDFSSeeAlsoProperty() {
+        return getSystemFrames().getRdfsSeeAlsoProperty();
+    }
+
+    /**
+     * @return the rdfsSubClassOfProperty
+     */
+    public RDFProperty getRDFSSubClassOfProperty() {
+        return getSystemFrames().getRdfsSubClassOfProperty();
+    }
+
+    /**
+     * @return the rdfsSubPropertyOf
+     */
+    public RDFProperty getRDFSSubPropertyOf() {
+        return getSystemFrames().getRdfsSubPropertyOf();
+    }
+
+    /**
+     * @return the owlOntologyPrefixesProperty
+     */
+    public RDFProperty getOWLOntologyPrefixesProperty() {
+        return getSystemFrames().getOwlOntologyPrefixesProperty();
+    }
+
+    /**
+     * @return the owlResourceURIProperty
+     */
+    public RDFProperty getOWLResourceURIProperty() {
+        return getSystemFrames().getOwlResourceURIProperty();
+    }
+
+    /**
+     * @return the topOWLOntologyURISlot
+     */
+    public RDFProperty getTopOWLOntologyURISlot() {
+        return getSystemFrames().getTopOWLOntologyURISlot();
+    }
+
+    /**
+     * @return the rdfNilIndividual
+     */
+    public RDFList getRDFNil() {
+        return getSystemFrames().getRdfNil();
+    }
+
+    /**
+     * @return the rdfDatatypes
+     */
+    public Set<RDFSDatatype> getRDFDatatypes() {
+        return getSystemFrames().getRdfDatatypes();
+    }
+
+    /**
+     * @return the floatDatatypes
+     */
+    public Set<RDFSDatatype> getFloatDatatypes() {
+        return getSystemFrames().getFloatDatatypes();
+    }
+
+    /**
+     * @return the integerDatatypes
+     */
+    public Set<RDFSDatatype> getIntegerDatatypes() {
+        return getSystemFrames().getIntegerDatatypes();
+    }
+    
+    /*
+     * Getters for the important datatypes.  We don't need all 43...
+     */
+    public RDFSDatatype getXSDboolean() {
+        return getSystemFrames().getXsdBoolean();
+    }
+
+    public RDFSDatatype getXSDdouble() {
+        return getSystemFrames().getXsdDouble();
+    }
+
+    public RDFSDatatype getXSDfloat() {
+        return getSystemFrames().getXsdFloat();
+    }
+
+    public RDFSDatatype getXSDlong() {
+        return getSystemFrames().getXsdLong();
+    }
+
+    public RDFSDatatype getXSDint() {
+        return getSystemFrames().getXsdInt();
+    }
+
+    public RDFSDatatype getXSDshort() {
+        return getSystemFrames().getXsdShort();
+    }
+
+    public RDFSDatatype getXSDbyte() {
+        return getSystemFrames().getXsdByte();
+    }
+
+    public RDFSDatatype getXSDstring() {
+        return getSystemFrames().getXsdString();
+    }
+
+    public RDFSDatatype getXSDbase64Binary() {
+        return getSystemFrames().getXsdBase64Binary();
+    }
+
+    public RDFSDatatype getXSDdate() {
+        return getSystemFrames().getXsdDate();
+    }
+
+    public RDFSDatatype getXSDtime() {
+        return getSystemFrames().getXsdTime();
+    }
+
+    public RDFSDatatype getXSDdateTime() {
+        return getSystemFrames().getXsdDateTime();
+    }
+
+    public RDFSDatatype getXSDduration() {
+        return getSystemFrames().getXsdDuration();
+    }
+
+    public RDFSDatatype getXSDanyURI() {
+        return getSystemFrames().getXsdAnyURI();
+    }
+
+    public RDFSDatatype getXSDdecimal() {
+        return getSystemFrames().getXsdDecimal();
+    }
+
+    public RDFSDatatype getXSDinteger() {
+        return getSystemFrames().getXsdInteger();
+    }
+
+    public RDFSDatatype getRDFXMLLiteralType() {
+        return getSystemFrames().getXmlLiteralType();
+    }
+ 
+    
 }
