@@ -165,9 +165,10 @@ public class OWLDatabaseKnowledgeBaseFactory extends DatabaseKnowledgeBaseFactor
 
 
     private void writePrefixesToDatabase(OWLModel owlModel) {
-		// TODO Auto-generated method stub
-    	System.out.println(owlModel.getDefaultOWLOntology());
-    	System.out.println(owlModel.getNamespaceManager().getPrefixes());
+        if (log.isLoggable(Level.FINE)) {
+            log.fine("Saving Prefixes to database, owl ontology = " + owlModel.getDefaultOWLOntology());
+            log.fine("prefixes = " + owlModel.getNamespaceManager().getPrefixes());
+        }
     	
     	//delete the initial default ontology
     	OWLOntology initialDefaultOntology = owlModel.getOWLOntologyByURI(ProtegeNames.DEFAULT_ONTOLOGY);
