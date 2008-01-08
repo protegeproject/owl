@@ -2,7 +2,6 @@ package edu.stanford.smi.protegex.owl.storage;
 
 import java.net.URI;
 
-import edu.stanford.smi.protege.model.KnowledgeBase;
 import edu.stanford.smi.protege.model.Project;
 import edu.stanford.smi.protege.test.APITestCase;
 import edu.stanford.smi.protege.util.URIUtilities;
@@ -10,7 +9,7 @@ import edu.stanford.smi.protegex.owl.database.CreateOWLDatabaseFromFileProjectPl
 import edu.stanford.smi.protegex.owl.database.OWLDatabaseKnowledgeBaseFactory;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 
-public class StreamingDatabaseTestCase extends APITestCase {
+public class StreamingDatabaseFailedTestCase extends APITestCase {
   private static final String fileProject = "junit/projects/pizza.owl";
   
   public void testStreamingDatabase() {
