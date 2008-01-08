@@ -433,6 +433,7 @@ public class OWLSystemFrames extends SystemFrames {
     	
         private Cls assertTypeAndSubclasses(Cls cls, Cls type, Cls[] subclasses) {
             assertTypeAndName(cls, type);
+            fs.removeDirectType(cls, getStandardClsMetaCls()); // why is this necessary?
             for (Cls subclass : subclasses) {
                 fs.addDirectSuperclass(subclass, cls);
             }
@@ -518,7 +519,6 @@ public class OWLSystemFrames extends SystemFrames {
                     assertTypeAndSubclasses(owlFunctionalPropertyClass, owlNamedClassClass, new Cls[] {}),
                     assertTypeAndSubclasses(owlDeprecatedPropertyClass, owlNamedClassClass, new Cls[] {})
                 });
-            fs.removeDirectType(owlThingClass, getStandardClsMetaCls());
             assertTypeAndSubclasses(owlThingClass, owlNamedClassClass, new Cls[] {
                     rdfsNamedClassClass,
                     rdfPropertyClass,
