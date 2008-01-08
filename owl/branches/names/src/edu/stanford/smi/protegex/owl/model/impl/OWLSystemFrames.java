@@ -518,6 +518,7 @@ public class OWLSystemFrames extends SystemFrames {
                     assertTypeAndSubclasses(owlFunctionalPropertyClass, owlNamedClassClass, new Cls[] {}),
                     assertTypeAndSubclasses(owlDeprecatedPropertyClass, owlNamedClassClass, new Cls[] {})
                 });
+            fs.removeDirectType(owlThingClass, getStandardClsMetaCls());
             assertTypeAndSubclasses(owlThingClass, owlNamedClassClass, new Cls[] {
                     rdfsNamedClassClass,
                     rdfPropertyClass,
