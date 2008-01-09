@@ -16,7 +16,6 @@ import java.util.logging.Logger;
 
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.jena.parser.ProtegeOWLParser;
-import edu.stanford.smi.protegex.owl.repository.Repository;
 import edu.stanford.smi.protegex.owl.repository.factory.RepositoryFactory;
 import edu.stanford.smi.protegex.owl.repository.util.OntologyNameExtractor;
 
@@ -29,7 +28,7 @@ import edu.stanford.smi.protegex.owl.repository.util.OntologyNameExtractor;
  * matthew.horridge@cs.man.ac.uk<br>
  * www.cs.man.ac.uk/~horridgm<br><br>
  */
-public class HTTPRepository implements Repository {
+public class HTTPRepository extends AbstractStreamBasedRepositoryImpl {
     private static transient Logger log = Log.getLogger(HTTPRepository.class);
 
     private URL ontologyURL;
@@ -68,6 +67,7 @@ public class HTTPRepository implements Repository {
         try {
             PrintStream oldErr = System.err;
             System.setErr(new PrintStream(new OutputStream() {
+                @Override
                 public void write(int b)
                         throws IOException {
                 }
@@ -129,6 +129,7 @@ public class HTTPRepository implements Repository {
     }
 
 
+    @Override
     public InputStream getInputStream(URI ontologyName)
             throws IOException {
         return ProtegeOWLParser.getInputStream(ontologyURL);

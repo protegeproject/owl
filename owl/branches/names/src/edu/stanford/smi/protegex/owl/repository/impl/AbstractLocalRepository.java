@@ -1,17 +1,22 @@
 package edu.stanford.smi.protegex.owl.repository.impl;
 
-import edu.stanford.smi.protege.util.Log;
-import edu.stanford.smi.protegex.owl.repository.Repository;
-import edu.stanford.smi.protegex.owl.repository.util.OntologyNameExtractor;
-import edu.stanford.smi.protegex.owl.repository.util.RepositoryUtil;
-
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+
+import edu.stanford.smi.protege.util.Log;
+import edu.stanford.smi.protegex.owl.repository.util.OntologyNameExtractor;
+import edu.stanford.smi.protegex.owl.repository.util.RepositoryUtil;
 
 /**
  * User: matthewhorridge<br>
@@ -22,7 +27,7 @@ import java.util.Map;
  * matthew.horridge@cs.man.ac.uk<br>
  * www.cs.man.ac.uk/~horridgm<br><br>
  */
-public abstract class AbstractLocalRepository implements Repository {
+public abstract class AbstractLocalRepository extends AbstractStreamBasedRepositoryImpl {
 
     private File file;
 
@@ -63,6 +68,7 @@ public abstract class AbstractLocalRepository implements Repository {
     }
 
 
+    @Override
     public InputStream getInputStream(URI ontologyName)
             throws IOException {
         File f = (File) ontologies.get(ontologyName);
@@ -145,6 +151,7 @@ public abstract class AbstractLocalRepository implements Repository {
         try {
             PrintStream oldErr = System.err;
             System.setErr(new PrintStream(new OutputStream() {
+                @Override
                 public void write(int b)
                         throws IOException {
                 }

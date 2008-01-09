@@ -13,7 +13,6 @@ import java.util.logging.Level;
 
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.jena.parser.ProtegeOWLParser;
-import edu.stanford.smi.protegex.owl.repository.Repository;
 
 /**
  * User: matthewhorridge<br>
@@ -24,7 +23,7 @@ import edu.stanford.smi.protegex.owl.repository.Repository;
  * matthew.horridge@cs.man.ac.uk<br>
  * www.cs.man.ac.uk/~horridgm<br><br>
  */
-public class DublinCoreDLVersionRedirectRepository implements Repository {
+public class DublinCoreDLVersionRedirectRepository extends AbstractStreamBasedRepositoryImpl {
 
     private URI dublinCoreOntologyURI;
 
@@ -66,6 +65,7 @@ public class DublinCoreDLVersionRedirectRepository implements Repository {
     }
 
 
+    @Override
     public InputStream getInputStream(URI ontologyName)
             throws IOException {
         return ProtegeOWLParser.getInputStream(redirectURL);
@@ -103,11 +103,13 @@ public class DublinCoreDLVersionRedirectRepository implements Repository {
     }
 
 
+    @Override
     public int hashCode() {
         return redirectURL.hashCode();
     }
 
 
+    @Override
     public boolean equals(Object obj) {
         if (obj instanceof DublinCoreDLVersionRedirectRepository) {
             return true;

@@ -22,7 +22,6 @@ import com.enterprisedt.net.ftp.FTPException;
 
 import edu.stanford.smi.protege.util.LabeledComponent;
 import edu.stanford.smi.protege.util.Log;
-import edu.stanford.smi.protegex.owl.repository.Repository;
 import edu.stanford.smi.protegex.owl.repository.util.OntologyNameExtractor;
 
 /**
@@ -34,7 +33,7 @@ import edu.stanford.smi.protegex.owl.repository.util.OntologyNameExtractor;
  * matthew.horridge@cs.man.ac.uk<br>
  * www.cs.man.ac.uk/~horridgm<br><br>
  */
-public class FTPRepository implements Repository {
+public class FTPRepository extends AbstractStreamBasedRepositoryImpl {
 
     private URI ftpURI;
 
@@ -163,6 +162,7 @@ public class FTPRepository implements Repository {
     }
 
 
+    @Override
     public InputStream getInputStream(URI ontologyName)
             throws IOException {
         if (contains(ontologyName)) {
