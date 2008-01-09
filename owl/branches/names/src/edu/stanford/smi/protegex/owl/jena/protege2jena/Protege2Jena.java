@@ -351,9 +351,9 @@ public class Protege2Jena {
 
 
     public static void saveAll(OWLModel owlModel, URI uri, String language) throws Exception {
-        List fillTripleStores = new ArrayList();
-        Iterator ts = owlModel.getTripleStoreModel().listUserTripleStores();
-        TripleStore topTripleStore = (TripleStore) ts.next();
+        List<TripleStore> fillTripleStores = new ArrayList<TripleStore>();
+        Iterator<TripleStore> ts = owlModel.getTripleStoreModel().listUserTripleStores();
+        TripleStore topTripleStore = ts.next();
         String topXmlBase = topTripleStore.getOriginalXMLBase();
         
         fillTripleStores.add(topTripleStore);
