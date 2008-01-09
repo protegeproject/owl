@@ -1,9 +1,10 @@
 package edu.stanford.smi.protegex.owl.jena.parser;
 
-import java.net.URI;
 
 import com.hp.hpl.jena.rdf.arp.ALiteral;
 import com.hp.hpl.jena.rdf.arp.AResource;
+
+import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 
 public class UndefTriple {
 
@@ -46,13 +47,15 @@ public class UndefTriple {
 	
 	@Override
 	public boolean equals(Object obj) {
-		if (!(obj instanceof UndefTriple))
+		if (!(obj instanceof UndefTriple)) {
 			return false;
+		}
+		UndefTriple other = (UndefTriple) obj;
 		
-		return ((UndefTriple)obj).getTripleSubj().equals(getTripleSubj()) &&
-		((UndefTriple)obj).getTriplePred().equals(getTriplePred()) &&
-		((UndefTriple)obj).getTripleObj().equals(getTripleObj()) &&
-		((UndefTriple)obj).getUndef().equals(getUndef());
+		return other.getTripleSubj().equals(getTripleSubj()) &&
+		       other.getTriplePred().equals(getTriplePred()) &&
+		       other.getTripleObj().equals(getTripleObj()) &&
+		       other.getUndef().equals(getUndef());
 	
 	}
 	
