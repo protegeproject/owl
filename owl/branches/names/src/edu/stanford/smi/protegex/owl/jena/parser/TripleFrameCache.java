@@ -18,6 +18,7 @@ import edu.stanford.smi.protege.model.DefaultKnowledgeBase;
 import edu.stanford.smi.protege.model.Frame;
 import edu.stanford.smi.protege.model.FrameID;
 import edu.stanford.smi.protege.model.Instance;
+import edu.stanford.smi.protege.model.KnowledgeBase;
 import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protege.model.framestore.SimpleFrameStore;
 import edu.stanford.smi.protege.util.Log;
@@ -34,6 +35,7 @@ import edu.stanford.smi.protegex.owl.model.RDFSLiteral;
 import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultRDFSLiteral;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
+import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreModel;
 
  // TODO: Find a solution for double slot value entries!! Checking at runtime slows down performance a lot!
 
@@ -86,7 +88,7 @@ public class TripleFrameCache {
 		}
 		
 		String predName = ParserUtility.getResourceName(pred);		
-		Slot predSlot = (Slot) owlModel.getFrame(predName);
+		Slot predSlot = (Slot) ((KnowledgeBase) owlModel).getFrame(predName);
 
 		if (predSlot == null) {
 			if (!alreadyInUndef) {
@@ -101,7 +103,6 @@ public class TripleFrameCache {
 		
 		String objName = ParserUtility.getResourceName(obj);
 		Frame objFrame = owlModel.getFrame(objName);
-
 		
 		if (predName.equals(OWL.imports.getURI())) {
 			OWLImportsCache.addOWLImport(subjName, objName);
@@ -212,12 +213,15 @@ public class TripleFrameCache {
 
 	private void addUndefTriple(AResource subj, AResource pred, AResource obj, String undefName, boolean alreadyInUndef) {
 		if (!alreadyInUndef) {
+		    TripleStore activeTripleStore = owlModel.getTripleStoreModel().getActiveTripleStore();
 			undefTripleManager.addUndefTriple(new UndefTriple(subj, pred, obj, undefName)); //check this!!
 		}		
 	}
 
 	public boolean processTriple(AResource subj, AResource pred, ALiteral lit, boolean alreadyInUndef) {
-		System.out.println(subj + " " + pred + " " + lit);
+	    if (log.isLoggable(Level.FINE)) {
+	        log.fine("Processing triple: " + subj + " " + pred + " " + lit);
+	    }
 		
 		//TT:just for testing
 		/*if (true) {
@@ -367,6 +371,9 @@ public class TripleFrameCache {
 	
 
 	private void checkUndefinedResources(String uri) {
+	    TripleStoreModel tripleStoreModel = owlModel.getTripleStoreModel();
+	    TripleStore activeTripleStore = tripleStoreModel.getActiveTripleStore();
+	    
 		Collection undefTriples = undefTripleManager.getUndefTriples(uri); 
 		
 		for (Iterator iter = undefTriples.iterator(); iter.hasNext();) {
@@ -375,13 +382,13 @@ public class TripleFrameCache {
 			Object obj = undefTriple.getTripleObj();
 			
 			boolean success = false;
-			
+		
 			if (obj instanceof AResource) {	
-				success = processTriple(undefTriple.getTripleSubj(), undefTriple.getTriplePred(), (AResource) undefTriple.getTripleObj(), true);
+			    success = processTriple(undefTriple.getTripleSubj(), undefTriple.getTriplePred(), (AResource) undefTriple.getTripleObj(), true);
 			} else if (obj instanceof ALiteral) {
-				success = processTriple(undefTriple.getTripleSubj(), undefTriple.getTriplePred(), (ALiteral) undefTriple.getTripleObj(), true);
+			    success = processTriple(undefTriple.getTripleSubj(), undefTriple.getTriplePred(), (ALiteral) undefTriple.getTripleObj(), true);
 			}
-						
+			
 			if (success) {			
 				iter.remove();
 				undefTripleManager.removeUndefTriple(uri, undefTriple);
@@ -398,6 +405,9 @@ public class TripleFrameCache {
 
 
 	public void processUndefTriples() {
+	    TripleStoreModel tripleStoreModel = owlModel.getTripleStoreModel();
+	    TripleStore activeTripleStore = tripleStoreModel.getActiveTripleStore();
+	    
 		for (Iterator iter = getUndefTripleManager().getUndefTriples().iterator(); iter.hasNext();) {
 			UndefTriple undefTriple = (UndefTriple) iter.next();
 			
@@ -406,10 +416,10 @@ public class TripleFrameCache {
 			Object obj = undefTriple.getTripleObj();
 			
 			if (obj instanceof AResource) {			
-				success = processTriple(undefTriple.getTripleSubj(), undefTriple.getTriplePred(), (AResource) undefTriple.getTripleObj(), true);
+			    success = processTriple(undefTriple.getTripleSubj(), undefTriple.getTriplePred(), (AResource) undefTriple.getTripleObj(), true);
 			} else if (obj instanceof ALiteral) {
-				success = processTriple(undefTriple.getTripleSubj(), undefTriple.getTriplePred(), (ALiteral) undefTriple.getTripleObj(), true);
-			}		
+			    success = processTriple(undefTriple.getTripleSubj(), undefTriple.getTriplePred(), (ALiteral) undefTriple.getTripleObj(), true);
+			}	
 			
 			if (success) {
 				getUndefTripleManager().removeUndefTriple(undefTriple.getUndef(), undefTriple);
