@@ -1,10 +1,11 @@
 package edu.stanford.smi.protegex.owl.repository;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 import java.util.Collection;
+
+import edu.stanford.smi.protegex.owl.model.OWLModel;
 
 /**
  * User: matthewhorridge<br>
@@ -43,16 +44,7 @@ public interface Repository {
     public Collection getOntologies();
 
 
-    /**
-     * Gets an inputstream to read the specified ontology
-     * from
-     *
-     * @param ontologyName The name of the ontology.
-     * @return an <code>InputStream</code> to read the ontology
-     *         from, or <code>null</code> if the repository does not
-     *         contain the ontology or the ontology cannot be retrieved.
-     */
-    public InputStream getInputStream(URI ontologyName) throws IOException;
+
 
 
     /**
@@ -65,16 +57,7 @@ public interface Repository {
     public boolean isWritable(URI ontologyName);
 
 
-    /**
-     * Gets an output stream which can be used to write
-     * changes to the specified ontology.
-     *
-     * @param ontologyName The ontology to be written
-     * @return an <code>OutputStream</code> that can be used to
-     *         write changes to the ontology, or <code>null</code> if the
-     *         ontology is not writable.
-     */
-    public OutputStream getOutputStream(URI ontologyName) throws IOException;
+
 
 
     /**
@@ -107,4 +90,32 @@ public interface Repository {
      * serialise the repository in a list of the available repositories.
      */
     public String getRepositoryDescriptor();
+    
+    /**
+     * 
+     * 
+     * @param owlModel the model to add the import to
+     * @param ontologyName the ontology name to use to look up the imported ontology.
+     */
+    public void addImport(OWLModel owlModel, URI ontologyName) throws IOException;
+    
+    /*
+     * TODO the following method should probably be refactored to AbstractStreamBasedRepositoryImpl and replaced 
+     *      with something like a save of just the single triple store.  But for the time being any repository that is not
+     *      io based does not need a save.  Currently Protege2Jena is written to loop through and save everything
+     *      but it should not be too hard to break the loops.
+     */
+
+    /**
+     * Gets an output stream which can be used to write
+     * changes to the specified ontology.
+     *
+     * @param ontologyName The ontology to be written
+     * @return an <code>OutputStream</code> that can be used to
+     *         write changes to the ontology, or <code>null</code> if the
+     *         ontology is not writable.
+     */         
+
+    public abstract OutputStream getOutputStream(URI ontologyName) throws IOException;
+    
 }
