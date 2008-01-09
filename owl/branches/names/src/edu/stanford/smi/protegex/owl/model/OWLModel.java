@@ -1,12 +1,23 @@
 package edu.stanford.smi.protegex.owl.model;
 
+import java.io.IOException;
+import java.net.URI;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+
 import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.Frame;
 import edu.stanford.smi.protege.model.ValueType;
 import edu.stanford.smi.protege.model.framestore.FrameStore;
 import edu.stanford.smi.protegex.owl.model.classdisplay.OWLClassDisplay;
 import edu.stanford.smi.protegex.owl.model.classparser.OWLClassParser;
-import edu.stanford.smi.protegex.owl.model.event.*;
+import edu.stanford.smi.protegex.owl.model.event.ClassListener;
+import edu.stanford.smi.protegex.owl.model.event.ModelListener;
+import edu.stanford.smi.protegex.owl.model.event.PropertyListener;
+import edu.stanford.smi.protegex.owl.model.event.PropertyValueListener;
+import edu.stanford.smi.protegex.owl.model.event.ResourceListener;
 import edu.stanford.smi.protegex.owl.model.factory.OWLJavaFactory;
 import edu.stanford.smi.protegex.owl.model.framestore.OWLFrameStore;
 import edu.stanford.smi.protegex.owl.model.project.OWLProject;
@@ -16,12 +27,6 @@ import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreModel;
 import edu.stanford.smi.protegex.owl.model.validator.PropertyValueValidator;
 import edu.stanford.smi.protegex.owl.repository.RepositoryManager;
 import edu.stanford.smi.protegex.owl.testing.OWLTestManager;
-
-import java.net.URI;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
 
 /**
  * A KnowledgeBase with a number of convenience methods to handle anonymous classes.
@@ -39,6 +44,22 @@ public interface OWLModel extends ProtegeKnowledgeBase, OWLTestManager {
      */
     void addClassListener(ClassListener listener);
 
+    /**
+     * A convenience method that dynamically adds an import to a JenaOWLModel.
+     * This will immediately load the file into a new TripleStore.  Prior to
+     * invoking this method, the caller should define a prefix for the expected
+     * namespace (e.g., URI + "#").  Following the call, the caller should add
+     * an import statement to an existing OWLOntology (usually the default ontology).
+     *
+     * <i>Note that the
+     * preferred method of adding imports is to use the <code>ImportHelper</code>, since
+     * this takes care of "house keeping" tasks that this "raw" addImport method does not.</i>
+     *
+     * @param owlModel
+     * @param ontologyName The name of the imported ontology.
+     * @throws Exception
+     */
+    void addImport(URI ontologyName) throws IOException;
 
     /**
      * Adds a ModelListener to receive notifications when resources have been created, renamed
@@ -303,6 +324,7 @@ public interface OWLModel extends ProtegeKnowledgeBase, OWLTestManager {
      * @see #createOWLOntology(String)
      * @deprecated use the other createOWLOntology method instead
      */
+    @Deprecated
     OWLOntology createOWLOntology(String name, String uri);
 
 
@@ -324,6 +346,7 @@ public interface OWLModel extends ProtegeKnowledgeBase, OWLTestManager {
     /**
      * @deprecated use createRDFUntypedResource instead
      */
+    @Deprecated
     RDFExternalResource createRDFExternalResource(String uri);
 
 
@@ -512,6 +535,7 @@ public interface OWLModel extends ProtegeKnowledgeBase, OWLTestManager {
     /**
      * @deprecated internal Protege detail
      */
+    @Deprecated
     Cls getAnonymousRootCls();
 
 
@@ -749,6 +773,7 @@ public interface OWLModel extends ProtegeKnowledgeBase, OWLTestManager {
     /**
      * @deprecated use getRDFUntypedResource instead
      */
+    @Deprecated
     RDFExternalResource getRDFExternalResource(String uri);
 
 
@@ -756,6 +781,7 @@ public interface OWLModel extends ProtegeKnowledgeBase, OWLTestManager {
      * @see #getRDFUntypedResourcesClass()
      * @deprecated use getRDFUntypedResourcesClass
      */
+    @Deprecated
     RDFSClass getRDFExternalResourceClass();
 
 
@@ -1010,6 +1036,7 @@ public interface OWLModel extends ProtegeKnowledgeBase, OWLTestManager {
      *             DO NOT PASS IN THE URI OF AN UNRESOLVED IMPORT AS THIS WILL
      *             CAUSE A Class Cast Exception
      */
+    @Deprecated
     OWLOntology getOWLOntologyByURI(String uri);
 
     /**
@@ -1573,6 +1600,7 @@ public interface OWLModel extends ProtegeKnowledgeBase, OWLTestManager {
      * @see RDFResource#isAnonymous()
      * @deprecated
      */
+    @Deprecated
     boolean isAnonymousResource(RDFResource resource);
 
 
@@ -1586,6 +1614,7 @@ public interface OWLModel extends ProtegeKnowledgeBase, OWLTestManager {
      * @return true if frame is one of the system frames
      * @deprecated
      */
+    @Deprecated
     boolean isOWLSystemFrame(Frame frame);
 
 
