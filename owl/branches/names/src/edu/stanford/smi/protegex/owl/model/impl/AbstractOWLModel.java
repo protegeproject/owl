@@ -1,5 +1,6 @@
 package edu.stanford.smi.protegex.owl.model.impl;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -45,6 +46,7 @@ import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protege.util.URIUtilities;
 import edu.stanford.smi.protegex.owl.jena.graph.JenaModelFactory;
 import edu.stanford.smi.protegex.owl.jena.parser.NamespaceUtil;
+import edu.stanford.smi.protegex.owl.jena.parser.UnresolvedImportHandler;
 import edu.stanford.smi.protegex.owl.model.DefaultTaskManager;
 import edu.stanford.smi.protegex.owl.model.NamespaceManager;
 import edu.stanford.smi.protegex.owl.model.NamespaceManagerListener;
@@ -85,7 +87,6 @@ import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
 import edu.stanford.smi.protegex.owl.model.RDFSNames;
 import edu.stanford.smi.protegex.owl.model.RDFUntypedResource;
 import edu.stanford.smi.protegex.owl.model.TaskManager;
-import edu.stanford.smi.protegex.owl.model.XSDNames;
 import edu.stanford.smi.protegex.owl.model.XSPNames;
 import edu.stanford.smi.protegex.owl.model.classdisplay.OWLClassDisplay;
 import edu.stanford.smi.protegex.owl.model.classdisplay.OWLClassDisplayFactory;
@@ -116,11 +117,13 @@ import edu.stanford.smi.protegex.owl.model.triplestore.impl.DefaultTriple;
 import edu.stanford.smi.protegex.owl.model.triplestore.impl.DefaultTuple;
 import edu.stanford.smi.protegex.owl.model.validator.DefaultPropertyValueValidator;
 import edu.stanford.smi.protegex.owl.model.validator.PropertyValueValidator;
+import edu.stanford.smi.protegex.owl.repository.Repository;
 import edu.stanford.smi.protegex.owl.repository.RepositoryManager;
 import edu.stanford.smi.protegex.owl.repository.util.RepositoryFileManager;
 import edu.stanford.smi.protegex.owl.server.OwlStateMachine;
 import edu.stanford.smi.protegex.owl.testing.OWLTest;
 import edu.stanford.smi.protegex.owl.testing.OWLTestLibrary;
+import edu.stanford.smi.protegex.owl.ui.repository.UnresolvedImportUIHandler;
 import edu.stanford.smi.protegex.owl.ui.widget.OWLFormWidget;
 import edu.stanford.smi.protegex.owl.ui.widget.OWLWidgetMapper;
 import edu.stanford.smi.protegex.owl.util.OWLBrowserSlotPattern;
@@ -145,10 +148,8 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
      */
     public static final String OWL_MODEL_INIT_DEFAULTS_AT_CREATION = "owlmodel.init.defaults";
 
-    /**
-     * A running id used to create the system FrameIDs
-     */
-    private int systemID = 9001;
+
+    private static UnresolvedImportHandler unresolvedImportHandler = new UnresolvedImportUIHandler();
 
     private boolean inInit = true;
 
@@ -337,7 +338,29 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
         setGenerateEventsEnabled(eventEnabled);
         
     }
+    
 
+
+    public void addImport(URI ontologyName) throws IOException {
+        Repository rep = getRepository(getTripleStoreModel().getActiveTripleStore(), ontologyName);
+        if(rep != null) {
+            rep.addImport(this, ontologyName);
+        }
+    }
+
+    private Repository getRepository(TripleStore tripleStore,
+                                            URI ontologyName) {
+        RepositoryManager rm = getRepositoryManager();
+        // Get the repository (ask the system to create a HTTP repository if necessary)
+        Repository rep = rm.getRepository(ontologyName, true);
+        if(rep == null) {
+            rep = unresolvedImportHandler.handleUnresolvableImport(this, tripleStore, ontologyName);
+            if(rep != null) {
+                rm.addProjectRepository(0, rep);
+            }
+        }
+        return rep;
+    }
 
     public void addClassListener(ClassListener listener) {
         if (!(listener instanceof ClassAdapter)) {
@@ -815,6 +838,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
          return createInstance(new FrameID(name), directTypes, loadDefaults);
     }
     
+    @Override
     public synchronized Instance createInstance(FrameID id, Collection directTypes, boolean initializeDefaults) {
         if (id == null) {
             if (isDefaultAnonymousType(directTypes)) {
@@ -1537,7 +1561,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     public static Collection<RDFResource> getRDFResources(KnowledgeBase kb, Collection<? extends Frame> frames) {
         ArrayList<RDFResource> result = new ArrayList<RDFResource>();
         for (Iterator<? extends Frame> it = frames.iterator(); it.hasNext();) {
-            Frame frame = (Frame) it.next();
+            Frame frame = it.next();
             if (frame instanceof RDFResource) {
                 result.add((RDFResource) frame);
             }
