@@ -1,20 +1,16 @@
 package edu.stanford.smi.protegex.owl.model.util;
 
-import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
-import edu.stanford.smi.protegex.owl.jena.parser.ProtegeOWLParser;
-import edu.stanford.smi.protegex.owl.model.OWLOntology;
-import edu.stanford.smi.protegex.owl.model.impl.OWLUtil;
-import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
-import edu.stanford.smi.protegex.owl.swrl.ui.SWRLProjectPlugin;
-import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
-import edu.stanford.smi.protegex.owl.ui.menu.OWLMenuProjectPlugin;
-
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Set;
+
+import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
+import edu.stanford.smi.protegex.owl.model.OWLOntology;
+import edu.stanford.smi.protegex.owl.model.impl.OWLUtil;
+import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
+import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
+import edu.stanford.smi.protegex.owl.ui.menu.OWLMenuProjectPlugin;
 
 /**
  * User: matthewhorridge<br>
@@ -86,7 +82,7 @@ public class ImportHelper {
         for(Iterator it = ontologyURIs.iterator(); it.hasNext();) {
             URI ontologyURI = (URI) it.next();
             if(owlModel.getAllImports().contains(ontologyURI.toString()) == false) {
-                ProtegeOWLParser.addImport(owlModel, ontologyURI);
+                owlModel.addImport(ontologyURI);
                 // Add the imported URI
                 for(Iterator ontIt = owlModel.getOWLOntologies().iterator(); ontIt.hasNext();) {
                     OWLOntology owlOntology = (OWLOntology) ontIt.next();
