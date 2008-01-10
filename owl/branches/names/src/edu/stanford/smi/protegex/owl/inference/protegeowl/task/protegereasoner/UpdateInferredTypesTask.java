@@ -3,6 +3,8 @@ package edu.stanford.smi.protegex.owl.inference.protegeowl.task.protegereasoner;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import edu.stanford.smi.protege.model.KnowledgeBase;
 import edu.stanford.smi.protege.model.Slot;
@@ -22,7 +24,7 @@ import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
 
 
 public class UpdateInferredTypesTask extends AbstractReasonerTask {
-
+    private static transient final Logger log = Log.getLogger(UpdateInferredTypesTask.class);
     private ProtegeReasoner protegeReasoner;
     
     //private Map<OWLIndividual, Collection<OWLClass>> individuals2inferredTypes = new HashMap<OWLIndividual, Collection<OWLClass>>();
@@ -84,7 +86,9 @@ public class UpdateInferredTypesTask extends AbstractReasonerTask {
 	        	// if there is a mismatch between the two then
 	        	// mark the classification status of the individual
 	        	// as changed. (MH - 15/09/04)
-	        	//System.out.println("Current individual: " + curInd);
+                        if (log.isLoggable(Level.FINE)) {
+                            log.fine("Current individual: " + curInd);
+                        }
 	        	
 	        	Collection<OWLClass> inferredTypes = protegeReasoner.getIndividualTypes(curInd);
 	        	
@@ -130,9 +134,6 @@ public class UpdateInferredTypesTask extends AbstractReasonerTask {
         td.markEnd();
         postLogRecord(ReasonerLogRecordFactory.getInstance().createInformationMessageLogRecord("Time to update Protege-OWL = " + td, parentRecord));
         setTaskCompleted();
-        
-        //System.out.println(individuals2inferredTypes);
-
     }
 }
 
