@@ -1,25 +1,61 @@
 package edu.stanford.smi.protegex.owl.jena;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
 import com.hp.hpl.jena.graph.Graph;
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.graph.Triple;
-import com.hp.hpl.jena.ontology.*;
-import com.hp.hpl.jena.rdf.model.*;
+import com.hp.hpl.jena.ontology.AllValuesFromRestriction;
+import com.hp.hpl.jena.ontology.AnnotationProperty;
+import com.hp.hpl.jena.ontology.CardinalityRestriction;
+import com.hp.hpl.jena.ontology.ComplementClass;
+import com.hp.hpl.jena.ontology.DatatypeProperty;
+import com.hp.hpl.jena.ontology.EnumeratedClass;
+import com.hp.hpl.jena.ontology.FunctionalProperty;
+import com.hp.hpl.jena.ontology.HasValueRestriction;
+import com.hp.hpl.jena.ontology.Individual;
+import com.hp.hpl.jena.ontology.IntersectionClass;
+import com.hp.hpl.jena.ontology.MaxCardinalityRestriction;
+import com.hp.hpl.jena.ontology.MinCardinalityRestriction;
+import com.hp.hpl.jena.ontology.ObjectProperty;
+import com.hp.hpl.jena.ontology.OntClass;
+import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.ontology.OntProperty;
+import com.hp.hpl.jena.ontology.OntResource;
+import com.hp.hpl.jena.ontology.Ontology;
+import com.hp.hpl.jena.ontology.Restriction;
+import com.hp.hpl.jena.ontology.SomeValuesFromRestriction;
+import com.hp.hpl.jena.ontology.SymmetricProperty;
+import com.hp.hpl.jena.ontology.TransitiveProperty;
+import com.hp.hpl.jena.ontology.UnionClass;
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.Property;
+import com.hp.hpl.jena.rdf.model.RDFList;
+import com.hp.hpl.jena.rdf.model.RDFNode;
+import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.Statement;
+import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.util.ResourceUtils;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 import com.hp.hpl.jena.util.iterator.Filter;
 import com.hp.hpl.jena.vocabulary.OWL;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
-import edu.stanford.smi.protege.util.ApplicationProperties;
+
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protege.util.MessageError;
 import edu.stanford.smi.protegex.owl.model.NamespaceManager;
 import edu.stanford.smi.protegex.owl.model.ProtegeNames;
 import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
-
-import java.util.*;
 
 /**
  * A class that is able to normalize a given OntModel.
@@ -40,16 +76,7 @@ import java.util.*;
  * @author Holger Knublauch  <holger@knublauch.com>
  */
 public class JenaNormalizer {
-
-    /**
-     * Indicates whether logging is turned on or not
-     */
-    private static boolean logging = false;
-
-    /**
-     * Set this to "true" in protege.properties to enable logging
-     */
-    private static String LOGGING = JenaNormalizer.class.getName() + ".logging";
+    private static transient final Logger log = Log.getLogger(JenaNormalizer.class);
 
     private OntModel ontModel;
 
@@ -64,8 +91,6 @@ public class JenaNormalizer {
         this.ontModel = ontModel;
 
         Jena.ensureOWLFullModelIsLastModel(ontModel, owlFullModel);
-
-        updateLoggingStatus();
 
         final String defaultNamespace = namespaceManager.getDefaultNamespace();
         standardizePrefixes(ontModel);
@@ -153,7 +178,9 @@ public class JenaNormalizer {
                     String uri = (String) map.get(localPrefix);
                     String globalPrefix = ontModel.getNsURIPrefix(uri);
                     if (!localPrefix.equals(globalPrefix)) {
-                        log("Prefix mismatch " + localPrefix + " aligned to " + globalPrefix + " for namespace " + uri);
+                        if (log.isLoggable(Level.FINE)) {
+                            log.fine("Prefix mismatch " + localPrefix + " aligned to " + globalPrefix + " for namespace " + uri);
+                        }
                         graph.getPrefixMapping().removeNsPrefix(localPrefix);
                         graph.getPrefixMapping().setNsPrefix(globalPrefix, uri);
                         nsm.setPrefix(uri, globalPrefix);
@@ -170,7 +197,9 @@ public class JenaNormalizer {
             Resource c = (Resource) it.next();
             if (!c.canAs(OntClass.class)) {
                 ontModel.add(c, RDF.type, RDFS.Class);
-                log("+ Made deprecated class " + c + " an RDFS class");
+                if (log.isLoggable(Level.FINE)) {
+                    log.fine("+ Made deprecated class " + c + " an RDFS class");
+                }
             }
         }
     }
@@ -181,7 +210,9 @@ public class JenaNormalizer {
             Resource property = (Resource) it.next();
             if (!property.canAs(OntProperty.class)) {
                 ontModel.add(property, RDF.type, RDF.Property);
-                log("+ Made deprecated property " + property + " an RDF property");
+                if (log.isLoggable(Level.FINE)) {
+                    log.fine("+ Made deprecated property " + property + " an RDF property");
+                }
             }
         }
     }
@@ -192,7 +223,9 @@ public class JenaNormalizer {
             FunctionalProperty property = (FunctionalProperty) it.next();
             if (!hasValidPropertyType(property)) {
                 ontModel.add(property, RDF.type, RDF.Property);
-                log("+ Made functional property " + property + " an RDF property");
+                if (log.isLoggable(Level.FINE)) {
+                    log.fine("+ Made functional property " + property + " an RDF property");
+                }
             }
         }
     }
@@ -225,7 +258,9 @@ public class JenaNormalizer {
             if (!Jena.canAsOntClass(node)) {
                 if (node.canAs(Resource.class)) {
                     owlFullModel.add((Resource) node.as(Resource.class), RDF.type, RDFS.Class);
-                    log("+ Made non-imported superclass " + node + " an " + RDFS.Class);
+                    if (log.isLoggable(Level.FINE)) {
+                        log.fine("+ Made non-imported superclass " + node + " an " + RDFS.Class);
+                    }
                 }
             }
         }
@@ -244,7 +279,9 @@ public class JenaNormalizer {
             if (!node.canAs(OntProperty.class)) {
                 if (node.canAs(Resource.class)) {
                     owlFullModel.add((Resource) node.as(Resource.class), RDF.type, RDF.Property);
-                    log("+ Made non-imported superclass " + node + " an " + RDF.Property);
+                    if (log.isLoggable(Level.FINE)) {
+                        log.fine("+ Made non-imported superclass " + node + " an " + RDF.Property);
+                    }
                 }
             }
         }
@@ -256,7 +293,9 @@ public class JenaNormalizer {
             SymmetricProperty property = (SymmetricProperty) it.next();
             if (!hasValidPropertyType(property)) {
                 ontModel.add(property, RDF.type, OWL.ObjectProperty);
-                log("+ Made symmetric property " + property + " an object property");
+                if (log.isLoggable(Level.FINE)) {
+                    log.fine("+ Made symmetric property " + property + " an object property");
+                }
             }
         }
     }
@@ -267,7 +306,9 @@ public class JenaNormalizer {
             TransitiveProperty property = (TransitiveProperty) it.next();
             if (!hasValidPropertyType(property)) {
                 ontModel.add(property, RDF.type, OWL.ObjectProperty);
-                log("+ Made transitive property " + property + " an object property");
+                if (log.isLoggable(Level.FINE)) {
+                    log.fine("+ Made transitive property " + property + " an object property");
+                }
             }
         }
     }
@@ -293,7 +334,9 @@ public class JenaNormalizer {
                         }
                         while (ontModel.getIndividual(name) != null);
                         Jena.renameResource(ontModel, individual, name);
-                        log("* Assigned name " + name + " to anonymous individual " + individual);
+                        if (log.isLoggable(Level.FINE)) {
+                            log.fine("* Assigned name " + name + " to anonymous individual " + individual);
+                        }
                     }
                 }
             }
@@ -308,7 +351,9 @@ public class JenaNormalizer {
             OntClass ontClass = (OntClass) it.next();
             String name = baseName + index++;
             ResourceUtils.renameResource(ontClass, name);
-            log("* Assigned name " + name + " to anonymous top-level class " + ontClass);
+            if (log.isLoggable(Level.FINE)) {
+                log.fine("* Assigned name " + name + " to anonymous top-level class " + ontClass);
+            }
         }
     }
 
@@ -322,7 +367,9 @@ public class JenaNormalizer {
             for (Iterator it = individuals.iterator(); it.hasNext();) {
                 Individual individual = (Individual) it.next();
                 if (++i % 100 == 0) {
-                    log("- Assigning RDF types to individual " + i + " of " + individuals.size());
+                    if (log.isLoggable(Level.FINE)) {
+                        log.fine("- Assigning RDF types to individual " + i + " of " + individuals.size());
+                    }
                 }
                 if (Jena.canAsOntClass(individual)) {
                     repeat = ensureRDFType(individual, OWL.Class, owlFullModel) || repeat;
@@ -359,7 +406,7 @@ public class JenaNormalizer {
                 convertCyclicPropertyInheritance(ontProperty, ontProperty, new HashSet(), errors);
             }
             catch (Throwable t) {
-                System.out.println("Can't convertCyclicPropertyInheritance for "
+                log.warning("Can't convertCyclicPropertyInheritance for "
                         + ontProperty.getLocalName());
             }
         }
@@ -398,8 +445,10 @@ public class JenaNormalizer {
             OntProperty ontProperty = (OntProperty) ontProperties.next();
             Set domainSet = Jena.set(ontProperty.listDomain());
             if (domainSet.size() > 1) {
-                log("* Converted multiple domains for " + ontProperty.getLocalName() +
-                        " into an intersection class");
+                if (log.isLoggable(Level.FINE)) {
+                log.fine("* Converted multiple domains for " + ontProperty.getLocalName() +
+                    " into an intersection class");
+                }
                 RDFList list = ontModel.createList(domainSet.iterator());
                 IntersectionClass intersectionClass = ontModel.createIntersectionClass(null, list);
                 ontProperty.setDomain(intersectionClass);
@@ -422,8 +471,10 @@ public class JenaNormalizer {
                 RDFList list = ontModel.createList(rangeSet.iterator());
                 IntersectionClass intersectionClass = ontModel.createIntersectionClass(null, list);
                 ontProperty.setRange(intersectionClass);
-                log("* Converted multiple ranges for " + ontProperty.getLocalName() +
+                if (log.isLoggable(Level.FINE)) {
+                    log.fine("* Converted multiple ranges for " + ontProperty.getLocalName() +
                         " into an intersection class");
+                }
             }
         }
     }
@@ -465,7 +516,9 @@ public class JenaNormalizer {
                         Node object = statement.getObject() == null ? null : statement.getObject().asNode();
                         Triple triple = new Triple(subject, predicate, object);
                         homeGraph.add(triple);
-                        log("  * Moved triple into imported graph: " + triple);
+                        if (log.isLoggable(Level.FINE)) {
+                            log.fine("  * Moved triple into imported graph: " + triple);
+                        }
                     }
                 }
                 else {
@@ -477,7 +530,9 @@ public class JenaNormalizer {
 
 
     private AllValuesFromRestriction createAllValuesFromRestriction(AllValuesFromRestriction base) {
-        log("+ Adding anonymous AllValuesFromRestriction for " + base);
+        if (log.isLoggable(Level.FINE)) {
+            log.fine("+ Adding anonymous AllValuesFromRestriction for " + base);
+        }
         AllValuesFromRestriction result = ontModel.createAllValuesFromRestriction(null, base.getOnProperty(), base.getAllValuesFrom());
         base.removeAll(ontModel.getProfile().ALL_VALUES_FROM());
         base.removeAll(ontModel.getProfile().ON_PROPERTY());
@@ -486,7 +541,9 @@ public class JenaNormalizer {
 
 
     private CardinalityRestriction createCardinalityRestriction(CardinalityRestriction base) {
-        log("+ Adding anonymous OWLCardinalityBase for " + base);
+        if (log.isLoggable(Level.FINE)) {
+            log.fine("+ Adding anonymous OWLCardinalityBase for " + base);
+        }
         CardinalityRestriction result = ontModel.createCardinalityRestriction(null, base.getOnProperty(), base.getCardinality());
         base.removeAll(ontModel.getProfile().CARDINALITY());
         base.removeAll(ontModel.getProfile().ON_PROPERTY());
@@ -495,7 +552,9 @@ public class JenaNormalizer {
 
 
     private ComplementClass createComplementClass(ComplementClass base) {
-        log("+ Adding anonymous ComplementClass for " + base);
+        if (log.isLoggable(Level.FINE)) {
+            log.fine("+ Adding anonymous ComplementClass for " + base);
+        }
         OntResource operand = base.getOperand();
         base.removeAll(ontModel.getProfile().COMPLEMENT_OF());
         return ontModel.createComplementClass(null, operand);
@@ -503,7 +562,9 @@ public class JenaNormalizer {
 
 
     private EnumeratedClass createEnumeratedClass(OntClass enumeratedClass) {
-        log("+ Adding anonymous EnumeratedClass for " + enumeratedClass);
+        if (log.isLoggable(Level.FINE)) {
+            log.fine("+ Adding anonymous EnumeratedClass for " + enumeratedClass);
+        }
         Property oneOfProperty = ontModel.getProperty(OWL.oneOf.getURI());
         Statement s = enumeratedClass.getProperty(oneOfProperty);
         RDFList members = (RDFList) s.getObject().as(RDFList.class);
@@ -513,7 +574,9 @@ public class JenaNormalizer {
 
 
     private HasValueRestriction createHasValueRestriction(HasValueRestriction base) {
-        log("+ Adding anonymous HasValueRestriction for " + base);
+        if (log.isLoggable(Level.FINE)) {
+            log.fine("+ Adding anonymous HasValueRestriction for " + base);
+        }
         HasValueRestriction result =
                 ontModel.createHasValueRestriction(null, base.getOnProperty(), base.getHasValue());
         base.removeAll(ontModel.getProfile().HAS_VALUE());
@@ -523,7 +586,9 @@ public class JenaNormalizer {
 
 
     private IntersectionClass createIntersectionClass(IntersectionClass intersectionClass) {
-        log("+ Adding anonymous IntersectionClass for " + intersectionClass);
+        if (log.isLoggable(Level.FINE)) {
+            log.fine("+ Adding anonymous IntersectionClass for " + intersectionClass);
+        }
         RDFList operands = intersectionClass.getOperands();
         IntersectionClass result = ontModel.createIntersectionClass(null, operands);
         intersectionClass.removeAll(ontModel.getProfile().INTERSECTION_OF());
@@ -532,7 +597,9 @@ public class JenaNormalizer {
 
 
     private MaxCardinalityRestriction createMaxCardinalityRestriction(MaxCardinalityRestriction base) {
-        log("+ Adding anonymous MaxCardinalityRestriction for " + base);
+        if (log.isLoggable(Level.FINE)) {
+            log.fine("+ Adding anonymous MaxCardinalityRestriction for " + base);
+        }
         MaxCardinalityRestriction result = ontModel.createMaxCardinalityRestriction(null, base.getOnProperty(), base.getMaxCardinality());
         base.removeAll(ontModel.getProfile().CARDINALITY());
         base.removeAll(ontModel.getProfile().ON_PROPERTY());
@@ -541,7 +608,9 @@ public class JenaNormalizer {
 
 
     private MinCardinalityRestriction createMinCardinalityRestriction(MinCardinalityRestriction base) {
-        log("+ Adding anonymous MinCardinalityRestriction for " + base);
+        if (log.isLoggable(Level.FINE)) {
+            log.fine("+ Adding anonymous MinCardinalityRestriction for " + base);
+        }
         MinCardinalityRestriction result = ontModel.createMinCardinalityRestriction(null, base.getOnProperty(), base.getMinCardinality());
         base.removeAll(ontModel.getProfile().CARDINALITY());
         base.removeAll(ontModel.getProfile().ON_PROPERTY());
@@ -573,7 +642,9 @@ public class JenaNormalizer {
 
 
     private SomeValuesFromRestriction createSomeValuesFromRestriction(SomeValuesFromRestriction base) {
-        log("+ Adding anonymous SomeValuesFromRestriction for " + base);
+        if (log.isLoggable(Level.FINE)) {
+            log.fine("+ Adding anonymous SomeValuesFromRestriction for " + base);
+        }
         SomeValuesFromRestriction result =
                 ontModel.createSomeValuesFromRestriction(null, base.getOnProperty(), base.getSomeValuesFrom());
         base.removeAll(ontModel.getProfile().SOME_VALUES_FROM());
@@ -583,7 +654,9 @@ public class JenaNormalizer {
 
 
     private UnionClass createUnionClass(UnionClass unionClass) {
-        log("+ Adding anonymous UnionClass for " + unionClass);
+        if (log.isLoggable(Level.FINE)) {
+            log.fine("+ Adding anonymous UnionClass for " + unionClass);
+        }
         RDFList operands = unionClass.getOperands();
         unionClass.removeAll(ontModel.getProfile().UNION_OF());
         return ontModel.createUnionClass(null, operands);
@@ -607,7 +680,9 @@ public class JenaNormalizer {
                         datatype = XSDDatatype.XSDboolean;
                     }
                     graph.add(new Triple(annotationProperty.getNode(), RDFS.range.getNode(), ontModel.getResource(datatype.getURI()).getNode()));
-                    log("Made annotationProperty " + annotationProperty.getURI() + " a datatype property with range " + datatype);
+                    if (log.isLoggable(Level.FINE)) {
+                        log.fine("Made annotationProperty " +   annotationProperty.getURI() + " a datatype property with range " + datatype);
+                    }
                 }
             }
         }
@@ -617,7 +692,9 @@ public class JenaNormalizer {
     private static boolean ensureRDFType(OntResource individual, Resource type, Model owlFullModel) {
         if (!individual.hasRDFType(type)) {
             owlFullModel.add(individual, RDF.type, type);
-            log("+ Added " + type + " to rdf:types of " + individual + " in OWL Full model");
+            if (log.isLoggable(Level.FINE)) {
+                log.fine("+ Added " + type + " to rdf:types of " + individual + " in OWL Full model");
+            }
             return true;
         }
         else {
@@ -642,18 +719,12 @@ public class JenaNormalizer {
     public static Iterator listAnonTopLevelClasses(final OntModel m) {
         final Set objects = Jena.set(m.listObjects());
         return m.listClasses().filterDrop(new Filter() {
+            @Override
             public boolean accept(Object x) {
                 OntClass c = (OntClass) x;
                 return !c.isAnon() || objects.contains(c);
             }
         });
-    }
-
-
-    private static void log(String message) {
-        if (logging) {
-            System.out.println("[JenaNormalizer]  " + message);
-        }
     }
 
 
@@ -675,7 +746,9 @@ public class JenaNormalizer {
             Collection domain = Jena.set(ontProperty.listDomain());
             if (domain.contains(OWL.Thing)) {
                 ontProperty.removeAll(RDFS.domain);
-                log("- Removed redundant domain from property " + ontProperty);
+                if (log.isLoggable(Level.FINE)) {
+                    log.fine("- Removed redundant domain from property " + ontProperty);
+                }
             }
         }
     }
@@ -689,7 +762,9 @@ public class JenaNormalizer {
                 localName = "_" + localName;
             }
             final String newURI = (Jena.isNamespaceWithSeparator(newNamespace) ? newNamespace : cmp) + localName;
-            log("* Namespacing " + resource.getURI() + " to " + newURI);
+            if (log.isLoggable(Level.FINE)) {
+                log.fine("* Namespacing " + resource.getURI() + " to " + newURI);
+            }
             return ResourceUtils.renameResource(resource, newURI);
         }
         else {
@@ -760,7 +835,9 @@ public class JenaNormalizer {
                     if (newURI.endsWith(Jena.DEFAULT_NAMESPACE_SEPARATOR)) {
                         newURI = newNamespace.substring(0, newNamespace.length() - 1);
                     }
-                    log("* Renaming ontology " + ontology.getURI() + " into namespace " + newURI);
+                    if (log.isLoggable(Level.FINE)) {
+                        log.fine("* Renaming ontology " + ontology.getURI() + " into namespace " + newURI);
+                    }
                     ResourceUtils.renameResource(ontology, newURI);
                 }
             }
@@ -784,16 +861,12 @@ public class JenaNormalizer {
                         Statement s = (Statement) sit.next();
                         s.remove();
                         ontModel.add(s.getSubject(), newProperty, s.getObject());
-                        log("* Changed statement (" + s.getSubject() + ", " + newProperty + ", " + s.getObject());
+                        if (log.isLoggable(Level.FINE)) {
+                            log.fine("* Changed statement (" + s.getSubject() + ", " + newProperty + ", " + s.getObject());
+                        }
                     }
                 }
             }
         }
-    }
-
-
-    private static void updateLoggingStatus() {
-        String str = ApplicationProperties.getString(LOGGING, "false");
-        logging = str != null && str.equalsIgnoreCase("true");
     }
 }
