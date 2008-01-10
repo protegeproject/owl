@@ -1,17 +1,29 @@
 package edu.stanford.smi.protegex.owl.model.framestore;
 
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.Facet;
 import edu.stanford.smi.protege.model.Model;
 import edu.stanford.smi.protege.model.Slot;
-import edu.stanford.smi.protegex.owl.model.*;
+import edu.stanford.smi.protege.util.Log;
+import edu.stanford.smi.protegex.owl.model.OWLCardinality;
+import edu.stanford.smi.protegex.owl.model.OWLCardinalityBase;
+import edu.stanford.smi.protegex.owl.model.OWLMaxCardinality;
+import edu.stanford.smi.protegex.owl.model.OWLMinCardinality;
+import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
+import edu.stanford.smi.protegex.owl.model.OWLNames;
+import edu.stanford.smi.protegex.owl.model.OWLRestriction;
+import edu.stanford.smi.protegex.owl.model.RDFProperty;
+import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
 import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
 
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-
 class CardinalityRestrictionUpdater extends AbstractRestrictionUpdater {
+    private final static transient Logger log = Log.getLogger(CardinalityRestrictionUpdater.class);
 
     private Facet maxCardinalityFacet;
 
@@ -42,7 +54,9 @@ class CardinalityRestrictionUpdater extends AbstractRestrictionUpdater {
                 removeRestrictions(cls, property, getCardinalityRestrictionCls(facet));
                 OWLCardinalityBase restriction = createCardinalityRestriction(property, facet, cardinality);
                 cls.addDirectSuperclass(restriction);
-                log("+ " + restriction.getClass().getName() + " " + restriction.getBrowserText() + " to " + cls.getName() + "." + property.getName());
+                if (log.isLoggable(Level.FINE)) {
+                    log.fine("+ " + restriction.getClass().getName() + " " + restriction.getBrowserText() + " to " + cls.getName() + "." + property.getName());
+                }
             }
         }
     }
@@ -88,8 +102,10 @@ class CardinalityRestrictionUpdater extends AbstractRestrictionUpdater {
             int cardinality = restriction.getCardinality();
             ((Cls) cls).addTemplateFacetValue(slot, minCardinalityFacet, new Integer(cardinality));
             ((Cls) cls).addTemplateFacetValue(slot, maxCardinalityFacet, new Integer(cardinality));
-            log("+ :Max and :MinimumCardinality overrides to " + cls.getName() +
+            if (log.isLoggable(Level.FINE)) {
+                log.fine("+ :Max and :MinimumCardinality overrides to " + cls.getName() +
                     "." + slot.getName() + ": " + cardinality);
+            }
         }
     }
 
@@ -130,7 +146,9 @@ class CardinalityRestrictionUpdater extends AbstractRestrictionUpdater {
                     removeRestrictions(cls, slot, owlModel.getCls(OWLNames.Cls.CARDINALITY_RESTRICTION));
                     OWLCardinality restriction = owlModel.createOWLCardinality(slot, cardinality.intValue());
                     cls.addDirectSuperclass(restriction);
-                    log("+ OWLCardinality " + restriction.getBrowserText() + " to " + cls.getName() + "." + slot.getName());
+                    if (log.isLoggable(Level.FINE)) {
+                        log.fine("+ OWLCardinality " + restriction.getBrowserText() + " to " + cls.getName() + "." + slot.getName());
+                    }
                 }
             }
             else {
@@ -168,7 +186,7 @@ class CardinalityRestrictionUpdater extends AbstractRestrictionUpdater {
 
 
     protected void updateMinimumCardinalityFacet(RDFSNamedClass cls, Slot slot) {
-        final Cls c = ((Cls) cls);
+        final Cls c = (cls);
         final List oldValues = c.getDirectTemplateFacetValues(slot, minCardinalityFacet);
         OWLMinCardinality restriction =
                 (OWLMinCardinality) getDirectRestriction(cls, slot, OWLMinCardinality.class);
