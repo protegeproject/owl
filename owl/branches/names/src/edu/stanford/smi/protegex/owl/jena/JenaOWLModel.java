@@ -41,7 +41,6 @@ import edu.stanford.smi.protege.util.SystemUtilities;
 import edu.stanford.smi.protegex.owl.jena.creator.JenaCreator;
 import edu.stanford.smi.protegex.owl.jena.parser.ProtegeOWLParser;
 import edu.stanford.smi.protegex.owl.jena.protege2jena.Protege2Jena;
-import edu.stanford.smi.protegex.owl.jena.triplestore.JenaTripleStoreModel;
 import edu.stanford.smi.protegex.owl.jena.writersettings.JenaWriterSettings;
 import edu.stanford.smi.protegex.owl.jena.writersettings.WriterSettings;
 import edu.stanford.smi.protegex.owl.model.NamespaceManager;
@@ -53,6 +52,7 @@ import edu.stanford.smi.protegex.owl.model.factory.OWLJavaFactoryUpdater;
 import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreModel;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreUtil;
+import edu.stanford.smi.protegex.owl.model.triplestore.impl.TripleStoreModelImpl;
 import edu.stanford.smi.protegex.owl.resource.OWLText;
 import edu.stanford.smi.protegex.owl.ui.widget.ModalProgressBarManager;
 import edu.stanford.smi.protegex.owl.writer.rdfxml.rdfwriter.OWLModelAllTripleStoresWriter;
@@ -186,7 +186,7 @@ public class JenaOWLModel extends AbstractOWLModel implements OntModelProvider {
 
     public TripleStoreModel getTripleStoreModel() {
         if (tripleStoreModel == null) {
-            tripleStoreModel = new JenaTripleStoreModel(this);
+            tripleStoreModel = new TripleStoreModelImpl(this);
         }
         return tripleStoreModel;
     }
