@@ -462,8 +462,6 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
     }
 
-
-
     @Override
     protected OWLSystemFrames createSystemFrames() {
         return new OWLSystemFrames(this);
