@@ -13,6 +13,7 @@ import java.net.URL;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
@@ -34,7 +35,7 @@ import edu.stanford.smi.protegex.owl.repository.util.OntologyNameExtractor;
  * www.cs.man.ac.uk/~horridgm<br><br>
  */
 public class FTPRepository extends AbstractStreamBasedRepositoryImpl {
-
+    private static transient final Logger log = Log.getLogger(FTPRepository.class);
     private URI ftpURI;
 
     private URI projectDirectory;
@@ -111,7 +112,7 @@ public class FTPRepository extends AbstractStreamBasedRepositoryImpl {
             FileInputStream fis = new FileInputStream(localCopy);
             OntologyNameExtractor extractor = new OntologyNameExtractor(fis, localCopy.toURI().toURL());
             ontologyName = extractor.getOntologyName();
-            System.out.println(extractor.getOntologyName());
+            log.info("ftp get = " + extractor.getOntologyName());
         }
         catch (IOException e) {
           Log.getLogger().log(Level.SEVERE, "Exception caught", e);
@@ -135,7 +136,7 @@ public class FTPRepository extends AbstractStreamBasedRepositoryImpl {
             FileInputStream fis = new FileInputStream(localCopy);
             ftpClient.put(fis, f.getName());
             ftpClient.quit();
-            System.out.println("Put!");
+            log.info("Put!");
 
         }
         catch (IOException e) {
