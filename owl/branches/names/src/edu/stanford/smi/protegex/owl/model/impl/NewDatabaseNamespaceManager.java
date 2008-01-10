@@ -2,9 +2,9 @@ package edu.stanford.smi.protegex.owl.model.impl;
 
 import java.util.Collection;
 
+import edu.stanford.smi.protege.model.Frame;
 import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
-import edu.stanford.smi.protegex.owl.model.OWLNames;
 import edu.stanford.smi.protegex.owl.model.OWLOntology;
 
 public class NewDatabaseNamespaceManager extends NewNamespaceManager {
@@ -18,11 +18,11 @@ public class NewDatabaseNamespaceManager extends NewNamespaceManager {
 	
 
 	void initializeNamespacesFromDatabase() {
-		Slot prefixesSlot = owlModel.getSlot(OWLNames.Slot.ONTOLOGY_PREFIXES);
+		Slot prefixesSlot = owlModel.getSystemFrames().getOwlOntologyPrefixesProperty();
 		//check whether this is OK at imports..
 		OWLOntology defaultOntology = owlModel.getDefaultOWLOntology();
 		
-        Collection<String> values = defaultOntology.getDirectOwnSlotValues(prefixesSlot);
+        Collection<String> values = ((Frame) defaultOntology).getDirectOwnSlotValues(prefixesSlot);
         
         for (String value : values) {
             int index = value.indexOf(':');
