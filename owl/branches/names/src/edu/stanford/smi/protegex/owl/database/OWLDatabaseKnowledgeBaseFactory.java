@@ -1,12 +1,11 @@
 package edu.stanford.smi.protegex.owl.database;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import edu.stanford.smi.protege.Application;
 import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.DefaultKnowledgeBase;
 import edu.stanford.smi.protege.model.FrameFactory;
@@ -18,26 +17,23 @@ import edu.stanford.smi.protege.model.framestore.NarrowFrameStore;
 import edu.stanford.smi.protege.server.ClientInitializerKnowledgeBaseFactory;
 import edu.stanford.smi.protege.storage.database.DatabaseFrameDb;
 import edu.stanford.smi.protege.storage.database.DatabaseKnowledgeBaseFactory;
-import edu.stanford.smi.protege.util.CollectionUtilities;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protege.util.MessageError;
 import edu.stanford.smi.protege.util.PropertyList;
-import edu.stanford.smi.protegex.owl.database.triplestore.DatabaseTripleStoreModel;
+import edu.stanford.smi.protege.util.URIUtilities;
 import edu.stanford.smi.protegex.owl.jena.JenaKnowledgeBaseFactory;
 import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
-import edu.stanford.smi.protegex.owl.jena.parser.ProtegeOWLParser;
 import edu.stanford.smi.protegex.owl.model.NamespaceManager;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLNames;
 import edu.stanford.smi.protegex.owl.model.OWLOntology;
 import edu.stanford.smi.protegex.owl.model.ProtegeNames;
-import edu.stanford.smi.protegex.owl.model.RDFResource;
 import edu.stanford.smi.protegex.owl.model.factory.OWLJavaFactory;
 import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
-import edu.stanford.smi.protegex.owl.model.impl.OWLNamespaceManager;
+import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreModel;
+import edu.stanford.smi.protegex.owl.model.triplestore.impl.TripleStoreModelImpl;
 import edu.stanford.smi.protegex.owl.resource.OWLText;
 import edu.stanford.smi.protegex.owl.storage.OWLKnowledgeBaseFactory;
-import edu.stanford.smi.protegex.owl.ui.ProgressDisplayDialog;
 import edu.stanford.smi.protegex.owl.ui.resourceselection.ResourceSelectionAction;
 
 /**
@@ -112,6 +108,15 @@ public class OWLDatabaseKnowledgeBaseFactory extends DatabaseKnowledgeBaseFactor
         super.loadKnowledgeBase(kb, driver, table, url, user, password, errors);
 
         owlModel.initialize();
+        
+        for (String imprt : owlModel.getDefaultOWLOntology().getImports()) {
+            try {
+                 owlModel.addImport(URIUtilities.createURI(imprt));
+            }
+            catch (IOException e) {
+                errors.add(e);
+            }
+        }
     }
 
     protected void initializeKB(KnowledgeBase kb, 
@@ -154,7 +159,6 @@ public class OWLDatabaseKnowledgeBaseFactory extends DatabaseKnowledgeBaseFactor
             if (owlModel instanceof JenaOWLModel) {
                 kb.insertFrameStore(owlModel.getOWLFrameStore(), 0);
             }
-
         }
         else {
         	String message = "You can only save OWL projects to OWL Database format.";
@@ -219,7 +223,7 @@ public class OWLDatabaseKnowledgeBaseFactory extends DatabaseKnowledgeBaseFactor
                                               KnowledgeBase kb) { 
       if (kb instanceof OWLDatabaseModel) {
         OWLDatabaseModel owlModel = (OWLDatabaseModel) kb;
-        DatabaseTripleStoreModel tsm = new DatabaseTripleStoreModel(owlModel,systemNfs, userNfs);
+        TripleStoreModel tsm = new TripleStoreModelImpl(owlModel, userNfs);
         owlModel.setTripleStoreModel(tsm);
         owlModel.initializeClient();
         owlModel.adjustClientFrameStores();
