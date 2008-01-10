@@ -1,16 +1,30 @@
 package edu.stanford.smi.protegex.owl.jena;
 
-import com.hp.hpl.jena.ontology.*;
-import com.hp.hpl.jena.rdf.model.*;
-import com.hp.hpl.jena.vocabulary.OWL;
-import com.hp.hpl.jena.vocabulary.RDF;
-import com.hp.hpl.jena.vocabulary.RDFS;
-import edu.stanford.smi.protegex.owl.model.NamespaceManager;
-import edu.stanford.smi.protegex.owl.model.ProtegeNames;
-
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import com.hp.hpl.jena.ontology.AnnotationProperty;
+import com.hp.hpl.jena.ontology.DataRange;
+import com.hp.hpl.jena.ontology.Individual;
+import com.hp.hpl.jena.ontology.ObjectProperty;
+import com.hp.hpl.jena.ontology.OntClass;
+import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.ontology.Ontology;
+import com.hp.hpl.jena.rdf.model.Property;
+import com.hp.hpl.jena.rdf.model.RDFNode;
+import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.Statement;
+import com.hp.hpl.jena.rdf.model.StmtIterator;
+import com.hp.hpl.jena.vocabulary.OWL;
+import com.hp.hpl.jena.vocabulary.RDF;
+import com.hp.hpl.jena.vocabulary.RDFS;
+
+import edu.stanford.smi.protege.util.Log;
+import edu.stanford.smi.protegex.owl.model.NamespaceManager;
+import edu.stanford.smi.protegex.owl.model.ProtegeNames;
 
 /**
  * A class that can convert a given OntModel into OWL DL.
@@ -18,7 +32,7 @@ import java.util.Iterator;
  * @author Holger Knublauch  <holger@knublauch.com>
  */
 public class JenaDLConverter {
-
+    private static transient final Logger log = Log.getLogger(JenaDLConverter.class);
     private OntModel ontModel;
 
 
@@ -70,7 +84,9 @@ public class JenaDLConverter {
             ObjectProperty objectProperty = (ObjectProperty) it.next();
             if (Jena.set(objectProperty.listRange()).contains(metaClass)) {
                 objectProperty.removeRange(metaClass);
-                log("- Removed " + metaClass + " from range of property " + objectProperty);
+                if (log.isLoggable(Level.FINE)) {
+                    log.fine("- Removed " + metaClass + " from range of property " + objectProperty);
+                }
             }
         }
     }
@@ -106,22 +122,20 @@ public class JenaDLConverter {
             Individual individual = (Individual) it.next();
             if (subClassesOfMetaClass.contains(individual.getRDFType(true))) {
                 individual.setRDFType(metaClass);
-                log("* Set RDF type of class " + individual + " to " + metaClass);
+                if (log.isLoggable(Level.FINE)) {
+                    log.fine("* Set RDF type of class " + individual + " to " + metaClass);
+                }
                 removeFullPropertyValues(individual);
             }
         }
         for (Iterator it = subClassesOfMetaClass.iterator(); it.hasNext();) {
             OntClass ontClass = (OntClass) it.next();
             ontClass.remove();
-            log("- Removed metaclass " + ontClass);
+            if (log.isLoggable(Level.FINE)) {
+                log.fine("- Removed metaclass " + ontClass);
+            }
         }
     }
-
-
-    private void log(String msg) {
-        System.out.println("[JenaDLConverter] " + msg);
-    }
-
 
     private void removeAnnotationsFromAnonymousClasses() {
         Collection ps = Jena.set(ontModel.listAnnotationProperties());
@@ -144,7 +158,9 @@ public class JenaDLConverter {
         final Property domainProperty = RDFS.domain;
         for (StmtIterator it = property.listProperties(domainProperty); it.hasNext();) {
             Statement stmt = it.nextStatement();
-            log("- Removing domain " + stmt.getObject() + " from annotation property " + property);
+            if (log.isLoggable(Level.FINE)) {
+                log.fine("- Removing domain " + stmt.getObject() + " from annotation property " + property);
+            }
             it.remove();
         }
     }
@@ -176,7 +192,9 @@ public class JenaDLConverter {
                 if (!namespace.equals(OWL.getURI()) &&
                         !namespace.equals(RDF.getURI()) &&
                         !namespace.equals(RDFS.getURI())) {
-                    log("- Removed OWL Full property value " + statement);
+                    if (log.isLoggable(Level.FINE)) {
+                        log.fine("- Removed OWL Full property value " + statement);
+                    }
                     statement.remove();
                 }
             }
@@ -191,7 +209,9 @@ public class JenaDLConverter {
             final Resource resource = ontModel.getResource(ProtegeNames.FILE);
             if (ontology.hasProperty(OWL.imports, resource)) {
                 ontology.removeImport(resource);
-                log("- Removed import of " + resource + " from ontology " + ontology);
+                if (log.isLoggable(Level.FINE)) {
+                    log.fine("- Removed import of " + resource + " from ontology " + ontology);
+                }
                 reload = true;
             }
         }
@@ -205,11 +225,15 @@ public class JenaDLConverter {
         final Property rangeProperty = RDFS.range;
         for (StmtIterator it = property.listProperties(rangeProperty); it.hasNext();) {
             Statement stmt = it.nextStatement();
-            log("- Removing range " + stmt.getObject() + " from annotation property " + property);
+            if (log.isLoggable(Level.FINE)) {
+                log.fine("- Removing range " + stmt.getObject() + " from annotation property " + property);
+            }
             RDFNode range = stmt.getObject();
             it.remove();
             if (range.canAs(DataRange.class)) {
-                log("- Removing DataRange " + range);
+                if (log.isLoggable(Level.FINE)) {
+                    log.fine("- Removing DataRange " + range);
+                }
                 ((DataRange) range.as(DataRange.class)).remove();
             }
         }
@@ -222,7 +246,9 @@ public class JenaDLConverter {
             Statement stmt = it.nextStatement();
             Resource type = (Resource) stmt.getObject();
             if (!type.equals(OWL.AnnotationProperty)) {
-                log("- Removing type " + type + " from annotation property " + property);
+                if (log.isLoggable(Level.FINE)) {
+                    log.fine("- Removing type " + type + " from annotation property " + property);
+                }
                 it.remove();
             }
         }
