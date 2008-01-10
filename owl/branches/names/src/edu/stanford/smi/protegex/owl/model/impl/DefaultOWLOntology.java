@@ -140,12 +140,12 @@ public class DefaultOWLOntology extends DefaultRDFIndividual implements OWLOntol
     }
 
 
-    public Collection getImports() {
+    @SuppressWarnings("unchecked")
+    public Collection<String> getImports() {
         Collection resources = getImportResources();
-        List results = new ArrayList();
+        List<String> results = new ArrayList<String>();
         for (Iterator it = resources.iterator(); it.hasNext();) {
             Object o = it.next();
-            //TODO: Database inclusion problem
             if (o instanceof RDFResource) {
             	results.add(((RDFResource) o).getURI());
             }
