@@ -22,7 +22,6 @@ import edu.stanford.smi.protege.model.Project;
 import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protege.util.CollectionUtilities;
 import edu.stanford.smi.protege.util.Log;
-import edu.stanford.smi.protegex.owl.database.triplestore.DatabaseTripleStoreModel;
 import edu.stanford.smi.protegex.owl.jena.Jena;
 import edu.stanford.smi.protegex.owl.jena.OntModelProvider;
 import edu.stanford.smi.protegex.owl.jena.creator.JenaCreator;
@@ -37,7 +36,10 @@ import edu.stanford.smi.protegex.owl.model.framestore.LocalClassificationFrameSt
 import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
 import edu.stanford.smi.protegex.owl.model.impl.NewDatabaseNamespaceManager;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreModel;
+import edu.stanford.smi.protegex.owl.model.triplestore.impl.TripleStoreModelImpl;
 import edu.stanford.smi.protegex.owl.model.util.ImportUtil;
+import edu.stanford.smi.protegex.owl.ui.widget.ModalProgressBarManager;
+
 import edu.stanford.smi.protegex.owl.ui.widget.ModalProgressBarManager;
 
 /**
@@ -147,7 +149,7 @@ public class OWLDatabaseModel
         OntModel ontModel = creator.createOntModel();
         // ontModel.write(System.out, ModelLoader.langXMLAbbrev);
         long endTime = System.currentTimeMillis();
-        System.out.println("[OWLDatabaseModel.getOWLDLOntModel] Duration " + (endTime - startTime));
+        log.info("[OWLDatabaseModel.getOWLDLOntModel] Duration " + (endTime - startTime));
         return ontModel;
     }
 
@@ -189,7 +191,7 @@ public class OWLDatabaseModel
 
     public TripleStoreModel getTripleStoreModel() {
         if (tripleStoreModel == null) {
-            tripleStoreModel = new DatabaseTripleStoreModel(this);
+            tripleStoreModel = new TripleStoreModelImpl(this);
         }
         return tripleStoreModel;
     }
