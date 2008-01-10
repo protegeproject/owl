@@ -1,13 +1,39 @@
 package edu.stanford.smi.protegex.owl.jena.importer;
 
-import edu.stanford.smi.protege.model.*;
-import edu.stanford.smi.protegex.owl.model.*;
-import edu.stanford.smi.protegex.owl.model.impl.XMLSchemaDatatypes;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import edu.stanford.smi.protege.model.Cls;
+import edu.stanford.smi.protege.model.Instance;
+import edu.stanford.smi.protege.model.KnowledgeBase;
+import edu.stanford.smi.protege.model.Model;
+import edu.stanford.smi.protege.model.Slot;
+import edu.stanford.smi.protege.model.ValueType;
+import edu.stanford.smi.protege.util.Log;
+import edu.stanford.smi.protegex.owl.model.OWLAllValuesFrom;
+import edu.stanford.smi.protegex.owl.model.OWLCardinality;
+import edu.stanford.smi.protegex.owl.model.OWLDataRange;
+import edu.stanford.smi.protegex.owl.model.OWLDatatypeProperty;
+import edu.stanford.smi.protegex.owl.model.OWLHasValue;
+import edu.stanford.smi.protegex.owl.model.OWLMaxCardinality;
+import edu.stanford.smi.protegex.owl.model.OWLMinCardinality;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
+import edu.stanford.smi.protegex.owl.model.OWLNames;
+import edu.stanford.smi.protegex.owl.model.OWLObjectProperty;
+import edu.stanford.smi.protegex.owl.model.OWLProperty;
+import edu.stanford.smi.protegex.owl.model.OWLRestriction;
+import edu.stanford.smi.protegex.owl.model.ProtegeNames;
+import edu.stanford.smi.protegex.owl.model.RDFNames;
+import edu.stanford.smi.protegex.owl.model.RDFProperty;
+import edu.stanford.smi.protegex.owl.model.RDFResource;
+import edu.stanford.smi.protegex.owl.model.RDFSDatatype;
+import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
+import edu.stanford.smi.protegex.owl.model.impl.XMLSchemaDatatypes;
 
 /**
  * An object that is capable of creating a default (CLIPS) knowledge base
@@ -16,7 +42,7 @@ import java.util.Iterator;
  * @author Holger Knublauch  <holger@knublauch.com>
  */
 public class OWLImporter {
-
+    private static transient final Logger log = Log.getLogger(OWLImporter.class);
     /**
      * The target KB
      */
@@ -70,7 +96,9 @@ public class OWLImporter {
     private Cls createCls(Cls oldCls) {
         Cls metaCls = getCls(oldCls.getDirectType());
         Cls cls = kb.createCls(oldCls.getName(), Collections.EMPTY_LIST, metaCls);
-        log("+ Created Cls " + oldCls.getName());
+        if (log.isLoggable(Level.FINE)) {
+            log.fine("+ Created Cls " + oldCls.getName());
+        }
         cls.setAbstract(oldCls.isAbstract());
         createDirectSuperclasses(oldCls, cls);
         createDirectTemplateSlots(oldCls, cls);
@@ -94,7 +122,7 @@ public class OWLImporter {
 
     private void createDirectOwnSlotValues(Instance oldInstance, Instance newInstance, Slot oldSlot, Slot newSlot) {
         for (Iterator it = oldInstance.getDirectOwnSlotValues(oldSlot).iterator(); it.hasNext();) {
-            Object oldValue = (Object) it.next();
+            Object oldValue = it.next();
             Object newValue = getNewValue(oldValue);
             if (newValue != null) {
                 newInstance.addOwnSlotValue(newSlot, newValue);
@@ -107,7 +135,7 @@ public class OWLImporter {
         for (Iterator it = rdfsCls.getDirectSuperclasses().iterator(); it.hasNext();) {
             Cls oldSuperCls = (Cls) it.next();
             if (oldSuperCls instanceof RDFSNamedClass) {
-                Cls newSuperCls = getCls((RDFSNamedClass) oldSuperCls);
+                Cls newSuperCls = getCls(oldSuperCls);
                 cls.addDirectSuperclass(newSuperCls);
             }
         }
@@ -118,7 +146,7 @@ public class OWLImporter {
         for (Iterator it = oldCls.getDirectTemplateSlots().iterator(); it.hasNext();) {
             Slot oldSlot = (Slot) it.next();
             if (oldSlot instanceof OWLProperty) {
-                Slot newSlot = getSlot((OWLProperty) oldSlot);
+                Slot newSlot = getSlot(oldSlot);
                 cls.addDirectTemplateSlot(newSlot);
             }
         }
@@ -183,7 +211,9 @@ public class OWLImporter {
         Cls oldType = oldInstance.getDirectType();
         Cls newType = getCls(oldType);
         Instance instance = newType.createDirectInstance(oldInstance.getName());
-        log("+ Created instance " + oldInstance.getName());
+        if (log.isLoggable(Level.FINE)) {
+            log.fine("+ Created instance " + oldInstance.getName());
+        }
         createDirectOwnSlotValues(oldInstance, instance);
         return instance;
     }
@@ -192,7 +222,9 @@ public class OWLImporter {
     private Slot createSlot(Slot oldSlot) {
         Cls metaCls = getCls(oldSlot.getDirectType());
         Slot slot = kb.createSlot(oldSlot.getName(), metaCls);
-        log("+ Created slot " + oldSlot.getName());
+        if (log.isLoggable(Level.FINE)) {
+            log.fine("+ Created slot " + oldSlot.getName());
+        }
         if (oldSlot instanceof RDFProperty && !((RDFProperty) oldSlot).isDomainDefined()) {
             kb.getRootCls().addDirectTemplateSlot(slot);
         }
@@ -223,7 +255,7 @@ public class OWLImporter {
         }
         createDirectOwnSlotValues(oldSlot, slot);
         if (oldSlot.getInverseSlot() instanceof RDFProperty) {
-            Slot newInverseSlot = getSlot((RDFProperty) oldSlot.getInverseSlot());
+            Slot newInverseSlot = getSlot(oldSlot.getInverseSlot());
             slot.setInverseSlot(newInverseSlot);
         }
         return slot;
@@ -340,12 +372,6 @@ public class OWLImporter {
                 Model.Slot.PAL_RANGE.equals(slot.getName()) ||
                 Model.Slot.PAL_STATEMENT.equals(slot.getName());
     }
-
-
-    private void log(String msg) {
-        // System.out.println("[OWLImporter] " + msg);
-    }
-
 
     private void updateSlotDomain() {
         Cls rootCls = kb.getRootCls();
