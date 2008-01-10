@@ -50,15 +50,17 @@ public class UndefTripleManager {
 	}
 
 	public void removeUndefTriple(String uri, UndefTriple undefTriple) {
-		//System.out.println(" --- Removing undef triple: " + undefTriple);
-		Collection<UndefTriple> undefTriples = getUndefTriples(uri);		
-		undefTriples.remove(undefTriple);
+            if (log.isLoggable(Level.FINE)) {
+		log.fine(" --- Removing undef triple: " + undefTriple);
+            }
+            Collection<UndefTriple> undefTriples = getUndefTriples(uri);		
+            undefTriples.remove(undefTriple);
 		
-		if (undefTriples.isEmpty()) {
-			undefTriplesMap.remove(uri);
-		} else {
-			undefTriplesMap.put(uri, undefTriples);
-		}
+            if (undefTriples.isEmpty()) {
+                undefTriplesMap.remove(uri);
+            } else {
+                undefTriplesMap.put(uri, undefTriples);
+            }
 	}
 	
 	public void dumpUndefTriples() {
