@@ -45,6 +45,7 @@ import edu.stanford.smi.protegex.owl.model.impl.DefaultRDFProperty;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultRDFSDatatype;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultRDFSNamedClass;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultRDFUntypedResource;
+import edu.stanford.smi.protegex.owl.model.impl.OWLSystemFrames;
 
 /**
  * A DefaultFrameFactory that creates the proper Java objects for Protege frames.
@@ -97,11 +98,14 @@ public class OWLJavaFactory extends DefaultFrameFactory {
     private static final Class[] CONSTRUCTOR_PARAMETERS = { KnowledgeBase.class, FrameID.class };
 
     private AbstractOWLModel owlModel;
+    
+    private OWLSystemFrames systemFrames;
 
 
     public OWLJavaFactory(AbstractOWLModel owlModel) {
         super(owlModel);
         this.owlModel = owlModel;
+        systemFrames = owlModel.getSystemFrames();
     }
 
     
