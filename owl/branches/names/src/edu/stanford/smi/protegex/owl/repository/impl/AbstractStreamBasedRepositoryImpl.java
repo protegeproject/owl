@@ -2,9 +2,10 @@ package edu.stanford.smi.protegex.owl.repository.impl;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.URI;
 
+import edu.stanford.smi.protege.model.framestore.InMemoryFrameDb;
+import edu.stanford.smi.protege.model.framestore.NarrowFrameStore;
 import edu.stanford.smi.protegex.owl.jena.parser.ProtegeOWLParser;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
@@ -23,20 +24,10 @@ public abstract class AbstractStreamBasedRepositoryImpl implements Repository {
      */
     public abstract InputStream getInputStream(URI ontologyName) throws IOException;
     
-    /**
-     * Gets an output stream which can be used to write
-     * changes to the specified ontology.
-     *
-     * @param ontologyName The ontology to be written
-     * @return an <code>OutputStream</code> that can be used to
-     *         write changes to the ontology, or <code>null</code> if the
-     *         ontology is not writable.
-     */
-    public abstract OutputStream getOutputStream(URI ontologyName) throws IOException;
-    
     public void addImport(OWLModel owlModel, URI ontologyName) throws IOException {
         TripleStore importingTripleStore = owlModel.getTripleStoreModel().getActiveTripleStore();
-        TripleStore importedTripleStore = owlModel.getTripleStoreModel().createTripleStore(ontologyName.toString());
+        NarrowFrameStore frameStore = new InMemoryFrameDb(ontologyName.toString());
+        TripleStore importedTripleStore = owlModel.getTripleStoreModel().createTripleStore(frameStore);
         ProtegeOWLParser parser = new ProtegeOWLParser(owlModel, true);
         parser.setImporting(true);
         InputStream is = getInputStream(ontologyName);
