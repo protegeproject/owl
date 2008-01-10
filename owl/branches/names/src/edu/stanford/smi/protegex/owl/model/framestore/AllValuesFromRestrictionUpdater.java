@@ -1,15 +1,35 @@
 package edu.stanford.smi.protegex.owl.model.framestore;
 
-import edu.stanford.smi.protege.model.*;
-import edu.stanford.smi.protegex.owl.model.*;
-import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
-import edu.stanford.smi.protegex.owl.model.impl.XMLSchemaDatatypes;
-
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import edu.stanford.smi.protege.model.Cls;
+import edu.stanford.smi.protege.model.Facet;
+import edu.stanford.smi.protege.model.Model;
+import edu.stanford.smi.protege.model.Slot;
+import edu.stanford.smi.protege.model.ValueType;
+import edu.stanford.smi.protege.util.Log;
+import edu.stanford.smi.protegex.owl.model.OWLAllValuesFrom;
+import edu.stanford.smi.protegex.owl.model.OWLDataRange;
+import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
+import edu.stanford.smi.protegex.owl.model.OWLNames;
+import edu.stanford.smi.protegex.owl.model.OWLQuantifierRestriction;
+import edu.stanford.smi.protegex.owl.model.OWLRestriction;
+import edu.stanford.smi.protegex.owl.model.OWLUnionClass;
+import edu.stanford.smi.protegex.owl.model.RDFProperty;
+import edu.stanford.smi.protegex.owl.model.RDFResource;
+import edu.stanford.smi.protegex.owl.model.RDFSClass;
+import edu.stanford.smi.protegex.owl.model.RDFSDatatype;
+import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
+import edu.stanford.smi.protegex.owl.model.RDFSNames;
+import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
+import edu.stanford.smi.protegex.owl.model.impl.XMLSchemaDatatypes;
 
 class AllValuesFromRestrictionUpdater extends QuantifierRestrictionUpdater {
+    private static final transient Logger log = Log.getLogger(AllValuesFromRestrictionUpdater.class);
 
     private Cls metaCls;
 
@@ -26,10 +46,13 @@ class AllValuesFromRestrictionUpdater extends QuantifierRestrictionUpdater {
     private void addAllRestriction(Cls cls, RDFProperty property, Cls allCls) {
         OWLAllValuesFrom restriction = owlModel.createOWLAllValuesFrom(property, (RDFSClass) allCls);
         cls.addDirectSuperclass(restriction);
-        log("+ OWLAllValuesFrom " + restriction.getBrowserText() + " to " + cls.getName() + "." + property.getName());
+        if (log.isLoggable(Level.FINE)) {
+            log.fine("+ OWLAllValuesFrom " + restriction.getBrowserText() + " to " + cls.getName() + "." + property.getName());
+        }
     }
 
 
+    @Override
     protected void clearFiller(OWLQuantifierRestriction restriction) {
         owlModel.setTemplateSlotAllowedClses(restriction, restriction.getOnProperty(), Collections.EMPTY_LIST);
         // restriction.setTemplateSlotAllowedClses(restriction.getOnProperty(), Collections.EMPTY_LIST);
@@ -47,26 +70,36 @@ class AllValuesFromRestrictionUpdater extends QuantifierRestrictionUpdater {
         if (slot != null && ((Cls) cls).hasDirectlyOverriddenTemplateFacet(slot, valueTypeFacet)) {
             ((Cls) cls).setTemplateSlotAllowedClses(slot, Collections.EMPTY_LIST);
             ((Cls) cls).setTemplateFacetValues(slot, valueTypeFacet, Collections.EMPTY_LIST);
-            log("- Removed :VALUE-TYPE override from " + cls.getName() + "." + slot.getName());
+            if (log.isLoggable(Level.FINE)) {
+                log.fine("- Removed :VALUE-TYPE override from " + cls.getName() + "." + slot.getName());
+            }
         }
     }
 
 
     private void setAllowedClses(RDFSNamedClass cls, Slot slot, Collection newAllowedClses) {
-        log("+ Setting allowed clses of " + cls.getName() + "." + slot.getName());
+        if (log.isLoggable(Level.FINE)) {
+            log.fine("+ Setting allowed clses of " + cls.getName() + "." + slot.getName());
+        }
         for (Iterator it = newAllowedClses.iterator(); it.hasNext();) {
             Cls ac = (Cls) it.next();
-            log("  - " + ac.getBrowserText());
+            if (log.isLoggable(Level.FINE)) {
+                log.fine("  - " + ac.getBrowserText());
+            }
         }
         ((Cls) cls).setTemplateSlotAllowedClses(slot, newAllowedClses);
     }
 
 
     private void setAllowedValues(RDFSNamedClass cls, Slot slot, Collection newAllowedValues) {
-        log("+ Setting allowed values of " + cls.getName() + "." + slot.getName());
+        if (log.isLoggable(Level.FINE)) {
+            log.fine("+ Setting allowed values of " + cls.getName() + "." + slot.getName());
+        }
         for (Iterator it = newAllowedValues.iterator(); it.hasNext();) {
             Object ac = it.next();
-            log("  - " + ac);
+            if (log.isLoggable(Level.FINE)) {
+                log.fine("  - " + ac);
+            }
         }
         ((Cls) cls).setTemplateSlotAllowedValues(slot, newAllowedValues);
     }
@@ -100,7 +133,9 @@ class AllValuesFromRestrictionUpdater extends QuantifierRestrictionUpdater {
                 RDFSDatatype datatype = owlModel.getRDFSDatatypeByURI(XMLSchemaDatatypes.getDefaultXSDDatatype(valueType).getURI());
                 OWLAllValuesFrom restriction = owlModel.createOWLAllValuesFrom(property, datatype);
                 cls.addDirectSuperclass(restriction);
-                log("+ OWLAllValuesFrom " + restriction.getBrowserText() + " to " + cls.getName() + "." + property.getName());
+                if (log.isLoggable(Level.FINE)) {
+                    log.fine("+ OWLAllValuesFrom " + restriction.getBrowserText() + " to " + cls.getName() + "." + property.getName());
+                }
             }
         }
         else {
@@ -182,7 +217,9 @@ class AllValuesFromRestrictionUpdater extends QuantifierRestrictionUpdater {
             }
         }
         else {
-            log("+ Setting :VALUE-TYPE of " + cls.getName() + "." + slot.getName() + " to " + newValueType);
+            if (log.isLoggable(Level.FINE)) {
+                log.fine("+ Setting :VALUE-TYPE of " + cls.getName() + "." + slot.getName() + " to " + newValueType);
+            }
             ((Cls) cls).setTemplateSlotValueType(slot, newValueType);
             if (newValueType == ValueType.INSTANCE) {
                 setAllowedClses(cls, slot, newAllowedClses);
