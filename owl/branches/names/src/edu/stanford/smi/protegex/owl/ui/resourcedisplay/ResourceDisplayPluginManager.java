@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.JPanel;
 
@@ -22,6 +23,7 @@ import edu.stanford.smi.protegex.owl.model.RDFResource;
  * @author Holger Knublauch  <holger@knublauch.com>
  */
 public class ResourceDisplayPluginManager {
+    private static transient final Logger log = Log.getLogger(ResourceDisplayPluginManager.class);
 
     private static Map map = new HashMap();
 
@@ -81,11 +83,15 @@ public class ResourceDisplayPluginManager {
      */
     public static void initInstanceDisplay(RDFResource frame, JPanel hostPanel) {
         Class[] classes = getInstanceDisplayPluginClasses();
-        // System.out.println("Installed InstanceDisplayPlugins:");
+        if (log.isLoggable(Level.FINE)) {
+            log.fine("Installed InstanceDisplayPlugins:");
+        }
         for (int i = 0; i < classes.length; i++) {
             Class c = classes[i];
             ResourceDisplayPlugin plugin = getInstanceDisplayPlugin(c);
-            // System.out.println("- " + c + ": " + plugin);
+            if (log.isLoggable(Level.FINE)) {
+                log.fine("- " + c + ": " + plugin);
+            }
             if (plugin != null) {
                 plugin.initResourceDisplay(frame, hostPanel);
             }
