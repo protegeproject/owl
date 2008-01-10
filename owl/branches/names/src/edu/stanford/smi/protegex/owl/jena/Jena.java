@@ -17,6 +17,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.hp.hpl.jena.enhanced.EnhNode;
 import com.hp.hpl.jena.graph.Graph;
@@ -63,6 +64,7 @@ import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
  * @author Holger Knublauch  <holger@knublauch.com>
  */
 public class Jena {
+    private static transient final Logger log = Log.getLogger(Jena.class);
 
     public static final String DEFAULT_NAMESPACE_SEPARATOR = "#";
 
@@ -79,6 +81,7 @@ public class Jena {
     /**
      * @deprecated use ProtegeOWL.PLUGIN_FOLDER instead
      */
+    @Deprecated
     public final static String ROOT_FOLDER = "edu.stanford.smi.protegex.owl";
 
     public final static String DEFAULT_ONT_POLICY_FILE_PATH =
@@ -277,7 +280,7 @@ public class Jena {
                 Resource type = (Resource) tit.next();
                 if (!type.equals(annotationPropertyClass)) {
                     property.removeRDFType(type);
-                    System.out.println("Temporarily removed type " + type + " from " + property);
+                    log.info("Temporarily removed type " + type + " from " + property);
                 }
             }
         }
@@ -627,6 +630,7 @@ public class Jena {
     /**
      * @deprecated - Use {@link prepareWriter(RDFWriter writer, String language, String namespace, String xmlBase)}  
      */
+    @Deprecated
     public static void prepareWriter(RDFWriter writer, String language, String namespace) {
         String xmlBase = namespace;
         if (Jena.isNamespaceWithSeparator(xmlBase) && !namespace.endsWith("/")) {
@@ -673,6 +677,7 @@ public class Jena {
      * @deprecated this has a bug (it does not rename the resource in all models) -
      *             use the other renameResource method instead
      */
+    @Deprecated
     public static Resource renameResource(Resource old, String uri, Model owlFullModel) {
 
         OntModel homeModel = (OntModel) old.getModel();
@@ -736,6 +741,7 @@ public class Jena {
     /**
      * @deprecated wrong
      */
+    @Deprecated
     public static void renameResourceInModel(Model m, Resource old, Resource newResource) {
         List stmts = new ArrayList();
 
@@ -814,11 +820,11 @@ public class Jena {
            Resource res = (Resource) it.next();
            String namespace = res.getNameSpace();
            if (namespace != null) {
-               System.out.println("Namespace: " + namespace);
-               System.out.println("RDFS: " + RDFS.getURI().toString());
+               log.info("Namespace: " + namespace);
+               log.info("RDFS: " + RDFS.getURI().toString());
                if (namespace.equals(RDFS.getURI().toString()) ||
                        namespace.equals(RDF.getURI().toString())) {
-                   System.out.println("Note: " + res);
+                   log.info("Note: " + res);
                    return true;
                }
            }
@@ -903,6 +909,7 @@ public class Jena {
     /**
      * @deprecated
      */
+    @Deprecated
     public static String getOntPolicyFilePath(Project project) {
         if (project == null) {
             return DEFAULT_ONT_POLICY_FILE_PATH;
@@ -920,6 +927,7 @@ public class Jena {
     /**
      * @deprecated
      */
+    @Deprecated
     public static void setOntPolicyFilePath(Project project, String path) {
         project.getSources().setString(ONT_POLICY_PROPERTY, path);
     }
