@@ -1,12 +1,21 @@
 package edu.stanford.smi.protegex.owl.jena.rdf2owl;
 
-import com.hp.hpl.jena.rdf.model.*;
+import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.Property;
+import com.hp.hpl.jena.rdf.model.RDFNode;
+import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.Statement;
+import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.vocabulary.OWL;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
-import edu.stanford.smi.protegex.owl.jena.Jena;
 
-import java.util.Iterator;
+import edu.stanford.smi.protege.util.Log;
+import edu.stanford.smi.protegex.owl.jena.Jena;
 
 /**
  * A class that can convert pure RDF statements from a Model into corresponding
@@ -15,6 +24,7 @@ import java.util.Iterator;
  * @author Holger Knublauch  <holger@knublauch.com>
  */
 public class RDF2OWL {
+    private static transient final Logger log  = Log.getLogger(RDF2OWL.class);
 
     private Model model;
 
@@ -33,7 +43,9 @@ public class RDF2OWL {
             Resource clazz = s.getSubject();
             s.getModel().add(clazz, RDF.type, OWL.Class);
             it.remove();
-            log("Converted rdfs:Class " + clazz + " into owl:Class");
+            if (log.isLoggable(Level.FINE)) {
+                log.fine("Converted rdfs:Class " + clazz + " into owl:Class");
+            }
         }
     }
 
@@ -48,7 +60,9 @@ public class RDF2OWL {
             Resource type = getPropertyType(property);
             s.getModel().add(property, RDF.type, type);
             it.remove();
-            log("Converted rdf:Property " + property + " into " + type);
+            if (log.isLoggable(Level.FINE)) {
+                log.fine("Converted rdf:Property " + property + " into " + type);
+            }
         }
     }
 
@@ -60,7 +74,9 @@ public class RDF2OWL {
         for (StmtIterator it = model.listStatements(null, null, RDFS.Resource); it.hasNext();) {
             Statement s = it.nextStatement();
             s.getModel().add(s.getSubject(), s.getPredicate(), OWL.Thing);
-            log("Replaced triple " + s + " with (x, x, owl:Thing)");
+            if (log.isLoggable(Level.FINE)) {
+                log.fine("Replaced triple " + s + " with (x, x, owl:Thing)");
+            }
             it.remove();
         }
     }
@@ -85,11 +101,6 @@ public class RDF2OWL {
             }
         }
         return OWL.DatatypeProperty;
-    }
-
-
-    private void log(String message) {
-        System.out.println("[RDF2OWL] " + message);
     }
 
 
@@ -140,7 +151,9 @@ public class RDF2OWL {
             }
             if (changed) {
                 model.add(newSubject, newPredicate, newObject);
-                log("Replaced deprecated triple " + s + " with " + newSubject + ", " + newPredicate + ", " + newObject);
+                if (log.isLoggable(Level.FINE)) {
+                    log.fine("Replaced deprecated triple " + s + " with " + newSubject + ", " + newPredicate + ", " + newObject);
+                }
                 it.remove();
             }
         }
