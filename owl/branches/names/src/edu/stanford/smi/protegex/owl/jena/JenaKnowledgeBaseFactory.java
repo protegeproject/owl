@@ -21,11 +21,11 @@ import edu.stanford.smi.protege.util.MessageError;
 import edu.stanford.smi.protege.util.PropertyList;
 import edu.stanford.smi.protege.util.URIUtilities;
 import edu.stanford.smi.protegex.owl.database.OWLDatabaseModel;
-import edu.stanford.smi.protegex.owl.jena.triplestore.JenaTripleStoreModel;
 import edu.stanford.smi.protegex.owl.model.NamespaceManager;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.impl.NewNamespaceManager;
 import edu.stanford.smi.protegex.owl.model.impl.OWLNamespaceManager;
+import edu.stanford.smi.protegex.owl.model.triplestore.impl.TripleStoreModelImpl;
 import edu.stanford.smi.protegex.owl.repository.util.RepositoryFileManager;
 import edu.stanford.smi.protegex.owl.resource.OWLText;
 import edu.stanford.smi.protegex.owl.storage.OWLKnowledgeBaseFactory;
@@ -264,7 +264,7 @@ public class JenaKnowledgeBaseFactory implements OWLKnowledgeBaseFactory, Client
                                               KnowledgeBase kb) { 
       if (kb instanceof OWLModel) {
         JenaOWLModel owlModel = (JenaOWLModel) kb;
-        JenaTripleStoreModel tsm = new JenaTripleStoreModel(owlModel,nfs);
+        TripleStoreModelImpl tsm = new TripleStoreModelImpl(owlModel,nfs);
         owlModel.setTripleStoreModel(tsm);
       }
     }
