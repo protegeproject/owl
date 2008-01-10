@@ -10,6 +10,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.hp.hpl.jena.graph.impl.SimpleGraphMaker;
 import com.hp.hpl.jena.ontology.OntDocumentManager;
@@ -40,6 +41,7 @@ import edu.stanford.smi.protegex.owl.ui.widget.ModalProgressBarManager;
  * @author Holger Knublauch  <holger@knublauch.com>
  */
 public class RenameAcrossFilesAction extends RefactorResourceAction {
+    private static transient final Logger log = Log.getLogger(RenameAcrossFilesAction.class);
 
     private final static String PROPERTY = "RenameAcrossFiles";
 
@@ -50,7 +52,7 @@ public class RenameAcrossFilesAction extends RefactorResourceAction {
 
 
     public void actionPerformed(ActionEvent e) {
-        RDFResource resource = (RDFResource) getResource();
+        RDFResource resource = getResource();
         String oldPropertyValue = resource.getOWLModel().getOWLProject().getSettingsMap().getString(PROPERTY);
         String[] files = new String[0];
         if (oldPropertyValue != null) {
@@ -86,6 +88,7 @@ public class RenameAcrossFilesAction extends RefactorResourceAction {
     }
 
 
+    @Override
     public boolean isSuitable(Component component, RDFResource resource) {
         if (resource instanceof RDFResource) {
             return !resource.isSystem() && !resource.isAnonymous();
@@ -112,7 +115,7 @@ public class RenameAcrossFilesAction extends RefactorResourceAction {
             File file = (File) it.next();
             man.setProgressText(file.getAbsolutePath());
             man.setProgressValue((double) step / filesSet.size());
-            System.out.println("[RenameAcrossFilesAction] " + file);
+            log.info("[RenameAcrossFilesAction] " + file);
             try {
                 performAction(resource.getProject(), file, oldURI, newURI, okFiles);
             }
@@ -173,7 +176,7 @@ public class RenameAcrossFilesAction extends RefactorResourceAction {
                 ontModel.contains(null, null, oldResource) ||
                 (oldResource.canAs(Property.class) &&
                         ontModel.contains(null, ((Property) oldResource.as(Property.class)), (RDFNode) null))) {
-            System.out.println("[RenameAcrossFilesAction]   References found, now renaming...");
+            log.info("[RenameAcrossFilesAction]   References found, now renaming...");
             Jena.renameResource(ontModel, oldResource, newURI);
             JenaOWLModel.save(file, ontModel, FileUtils.langXMLAbbrev,
                     ontModel.getNsPrefixURI(""));
