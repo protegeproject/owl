@@ -1,5 +1,13 @@
 package edu.stanford.smi.protegex.owl.inference.protegeowl.task.digreasoner;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.w3c.dom.Document;
+
 import edu.stanford.smi.protege.model.KnowledgeBase;
 import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protege.util.Log;
@@ -15,11 +23,6 @@ import edu.stanford.smi.protegex.owl.model.OWLNames;
 import edu.stanford.smi.protegex.owl.model.ProtegeNames;
 import edu.stanford.smi.protegex.owl.model.RDFIndividual;
 import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
-import org.w3c.dom.Document;
-
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
 
 /**
  * User: matthewhorridge<br>
@@ -31,7 +34,7 @@ import java.util.Iterator;
  * www.cs.man.ac.uk/~horridgm<br><br>
  */
 public class UpdateInferredTypesTask extends AbstractReasonerTask {
-
+    private static transient final Logger log = Log.getLogger(UpdateInferredTypesTask.class);
     private ProtegeOWLReasoner protegeOWLReasoner;
 
 
@@ -123,7 +126,9 @@ public class UpdateInferredTypesTask extends AbstractReasonerTask {
 	                // if there is a mismatch between the two then
 	                // mark the classification status of the individual
 	                // as changed. (MH - 15/09/04)
-	            	//System.out.println("Current individual: " + curInd);
+                        if (log.isLoggable(Level.FINE)) {
+                            log.fine("Current individual: " + curInd);
+                        }
 	                final Collection inferredTypes = curResponse.getConcepts();
 	                if (inferredTypes.size() == 0) {
 	                    inferredTypes.add(curInd.getOWLModel().getOWLThingClass());
