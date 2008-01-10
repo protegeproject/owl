@@ -1,23 +1,41 @@
 package edu.stanford.smi.protegex.owl.model.triplestore;
 
-import edu.stanford.smi.protege.model.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import edu.stanford.smi.protege.model.Frame;
+import edu.stanford.smi.protege.model.Instance;
+import edu.stanford.smi.protege.model.KnowledgeBase;
+import edu.stanford.smi.protege.model.Model;
+import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protege.model.framestore.MergingNarrowFrameStore;
 import edu.stanford.smi.protege.model.framestore.NarrowFrameStore;
 import edu.stanford.smi.protege.ui.FrameComparator;
+import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protege.util.WaitCursor;
 import edu.stanford.smi.protegex.owl.database.OWLDatabaseModel;
-import edu.stanford.smi.protegex.owl.model.*;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
+import edu.stanford.smi.protegex.owl.model.RDFProperty;
+import edu.stanford.smi.protegex.owl.model.RDFResource;
+import edu.stanford.smi.protegex.owl.model.RDFSLiteral;
+import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLOntology;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultRDFSLiteral;
 import edu.stanford.smi.protegex.owl.model.triplestore.impl.DefaultTriple;
 import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
 
-import java.util.*;
-
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
  */
 public class TripleStoreUtil {
+    private static transient final Logger log = Log.getLogger(TripleStoreUtil.class);
 
 
     public static void addToTripleStore(OWLModel owlModel, TripleStore tripleStore, RDFResource subject, RDFProperty predicate, Object object) {
@@ -262,7 +280,9 @@ public class TripleStoreUtil {
                 if (frameStore.getValuesCount(frame, nameSlot, null, false) > 0) {
                     frame.setIncluded(included);
                     frame.setEditable(!included);
-                    // System.out.println("- " + frame.getName() + ": " + included);
+                    if (log.isLoggable(Level.FINE)) {
+                        log.fine("- " + frame.getName() + ": " + included);
+                    }
                 }
             }
         }
