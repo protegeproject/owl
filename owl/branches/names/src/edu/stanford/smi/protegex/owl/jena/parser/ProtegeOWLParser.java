@@ -242,7 +242,7 @@ public class ProtegeOWLParser {
 
 		Log.getLogger().info("[ProtegeOWLParser] Completed triple loading after " + (endTime - startTime) + " ms");
 
-		System.out.println("\nDump before end processing. Size: " + tfc.getUndefTripleManager().getUndefTriples().size());
+		log.info("\nDump before end processing. Size: " + tfc.getUndefTripleManager().getUndefTriples().size());
 		// tfc.getUndefTripleManager().dumpUndefTriples();
 
 		tfc.processUndefTriples();
@@ -264,13 +264,13 @@ public class ProtegeOWLParser {
 		}
 		
 		//tfc.getUndefTripleManager().dumpUndefTriples();
-		System.out.println("Dump after end processing. Size: "	+ tfc.getUndefTripleManager().getUndefTriples().size());
+		log.info("Dump after end processing. Size: "	+ tfc.getUndefTripleManager().getUndefTriples().size());
 		
-		System.out.println("Start processing imports ...");
+		log.info("Start processing imports ...");
 				
 		processImports(tripleStore);
 		
-		System.out.println("End processing imports");
+		log.info("End processing imports");
 
 		tfc.processUndefTriples();
 		tfc.doPostProcessing();
@@ -432,27 +432,30 @@ public class ProtegeOWLParser {
 	class NewStatementHandler implements StatementHandler {
 
 		public void statement(AResource subj, AResource pred, AResource obj) {
-			//System.out.println(subj + "  " + pred + "  " + obj);
+                    if (log.isLoggable(Level.FINE)) {
+                        log.fine("NewStatementHandler: " + subj + "  " + pred + "  " + obj);
+                    }
+                    tripleCount++;
+                    if(tripleCount % 5000 == 0) {			
+                        Log.getLogger().info("Loaded " + tripleCount + " triples");
+                    }
 			
-			tripleCount++;
-			if(tripleCount % 5000 == 0) {			
-	            Log.getLogger().info("Loaded " + tripleCount + " triples");
-	        }
-			
-			tfc.processTriple(subj, pred, obj, false);	
+                    tfc.processTriple(subj, pred, obj, false);	
 			
 		}
 
 
 		public void statement(AResource subj, AResource pred, ALiteral lit) {
-			//System.out.println(subj + "  " + pred + "  " + lit);
+                    if (log.isLoggable(Level.FINE)) {
+                        log.fine(subj + "  " + pred + "  " + lit);
+                    }
 			
-			tripleCount++;
-			if(tripleCount % 5000 == 0) {			
-	            Log.getLogger().info("Loaded " + tripleCount + " triples");
-	        }
+                    tripleCount++;
+                    if(tripleCount % 5000 == 0) {			
+                        Log.getLogger().info("Loaded " + tripleCount + " triples");
+                    }
 			
-			tfc.processTriple(subj, pred, lit, false);	
+                    tfc.processTriple(subj, pred, lit, false);	
 			
 		}
 		
@@ -461,18 +464,14 @@ public class ProtegeOWLParser {
 	
 	class NewNamespaceHandler implements NamespaceHandler {
 
-		public void endPrefixMapping(String prefix) {
-			//System.out.println("*** End namespace mapping: " + arg0);
-			NamespaceManager namespaceManager = owlModel.getNamespaceManager();
-			System.out.println("*** " + prefix + " -> " + namespaceManager.getNamespaceForPrefix(prefix));
-			
-		}
+	    public void endPrefixMapping(String prefix) {
+	        NamespaceManager namespaceManager = owlModel.getNamespaceManager();
+	        log.info("*** " + prefix + " -> " + namespaceManager.getNamespaceForPrefix(prefix));
+	    }
 
 		public void startPrefixMapping(String prefix, String namespace) {
-			NamespaceManager namespaceManager = owlModel.getNamespaceManager();
-			namespaceManager.setPrefix(namespace, prefix);
-			//System.out.println("*** " + arg0 + " -> " + arg1);
-			
+		    NamespaceManager namespaceManager = owlModel.getNamespaceManager();
+		    namespaceManager.setPrefix(namespace, prefix);
 		}
 		
 	}
