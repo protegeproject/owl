@@ -20,6 +20,7 @@ import edu.stanford.smi.protegex.owl.model.event.PropertyValueListener;
 import edu.stanford.smi.protegex.owl.model.event.ResourceListener;
 import edu.stanford.smi.protegex.owl.model.factory.OWLJavaFactory;
 import edu.stanford.smi.protegex.owl.model.framestore.OWLFrameStore;
+import edu.stanford.smi.protegex.owl.model.impl.OWLSystemFrames;
 import edu.stanford.smi.protegex.owl.model.project.OWLProject;
 import edu.stanford.smi.protegex.owl.model.query.QueryResults;
 import edu.stanford.smi.protegex.owl.model.triplestore.Triple;
@@ -95,7 +96,7 @@ public interface OWLModel extends ProtegeKnowledgeBase, OWLTestManager {
      * Gets an RDFSLiteral for a given value.  If the value is already an RDFSLiteral, then
      * the method will return it.  If the value is a String, Float, Integer or Boolean, then
      * the method will wrap it into a corresponding RDFSLiteral.  If the object is null, then
-     * the method retrurn null.  Objects of other types are not permitted for this method.
+     * the method return null.  Objects of other types are not permitted for this method.
      * This is a convenience method to post-process those calls that return either an Object
      * or an RDFSLiteral, if only an RDFSLiteral is desired.
      *
@@ -1338,6 +1339,8 @@ public interface OWLModel extends ProtegeKnowledgeBase, OWLTestManager {
      * @return the system annotation slots
      */
     RDFProperty[] getSystemAnnotationProperties();
+    
+    OWLSystemFrames getSystemFrames();
 
 
     /**
@@ -1804,6 +1807,12 @@ public interface OWLModel extends ProtegeKnowledgeBase, OWLTestManager {
      * @see #addResourceListener
      */
     void removeResourceListener(ResourceListener listener);
+    
+    
+    /**
+     * resets the Jena model so that it can be rebuilt.
+     */
+    void resetJenaModel();
 
 
     /**
