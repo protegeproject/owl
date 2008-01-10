@@ -1,21 +1,37 @@
 package edu.stanford.smi.protegex.owl.jena.parser;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import com.hp.hpl.jena.rdf.arp.AResource;
+
 import edu.stanford.smi.protege.model.Frame;
 import edu.stanford.smi.protege.model.KnowledgeBase;
+import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.jena.Jena;
-import edu.stanford.smi.protegex.owl.model.*;
+import edu.stanford.smi.protegex.owl.model.NamespaceManager;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.model.OWLNames;
+import edu.stanford.smi.protegex.owl.model.ProtegeNames;
+import edu.stanford.smi.protegex.owl.model.RDFNames;
+import edu.stanford.smi.protegex.owl.model.RDFResource;
+import edu.stanford.smi.protegex.owl.model.RDFSNames;
 import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLOntology;
 import edu.stanford.smi.protegex.owl.swrl.model.SWRLNames;
-
-import java.util.*;
 
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
  */
 public class DefaultURI2NameConverter implements URI2NameConverter {
-
+    private static transient final Logger log = Log.getLogger(DefaultURI2NameConverter.class);
     private int externalResourceIndex = 1;
 
     private boolean firstDefaultNamespaceHandled = false;
@@ -90,7 +106,9 @@ public class DefaultURI2NameConverter implements URI2NameConverter {
     private void addPrefixHelper(String uri, String prefix) {
         uri2Prefix.put(uri, prefix);
         prefix2URI.put(prefix, uri);
-        // System.out.println("Registered " + prefix + " for " + uri);
+        if (log.isLoggable(Level.FINE)) {
+            log.fine("Registered " + prefix + " for " + uri);
+        }
     }
 
 
