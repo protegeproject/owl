@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.Facet;
@@ -24,6 +25,7 @@ import edu.stanford.smi.protegex.owl.jena.parser.ProtegeOWLParserException;
  * @author Holger Knublauch  <holger@knublauch.com>
  */
 public class OWLJavaFactoryUpdater {
+    private static transient final Logger log = Log.getLogger(OWLJavaFactoryUpdater.class);
 
     private int count = 0;
 
@@ -41,53 +43,50 @@ public class OWLJavaFactoryUpdater {
 
     public OWLJavaFactoryUpdater(final KnowledgeBase kb, final Collection frames) {
 
-//        AbstractTask task = new AbstractTask("Running OWLJavaFactoryUpdater", true, ((OWLModel)kb).getTaskManager(), 0, frames.size()) {
-//	        public void runTask()
-//	                throws Exception {
-		        mnfs = MergingNarrowFrameStore.get(kb);
+//      AbstractTask task = new AbstractTask("Running OWLJavaFactoryUpdater", true, ((OWLModel)kb).getTaskManager(), 0, frames.size()) {
+//      public void runTask()
+//      throws Exception {
+        mnfs = MergingNarrowFrameStore.get(kb);
 
-				findMetaclasses(kb);
+        findMetaclasses(kb);
 
-				//long startTime = System.currentTimeMillis();
+        //long startTime = System.currentTimeMillis();
 
-				Instance instance = null;
-				try {
-					int prog = 0;
-					for (Iterator it = frames.iterator(); it.hasNext();) {
-						prog++;
-						instance = (Instance) it.next();
-						final Instance newInstance = createNewFrame(instance);
-						if (instance.getClass() != newInstance.getClass()) {
-							mnfs.replaceFrame(newInstance);
-//							if ((++count % 10000) == 0) {
-//								log("" + count + ": Replacing " + instance.getName() + " from " + instance.getClass() + " to " + newInstance.getClass());
-//							}
-						}
-//						setProgress(prog);
-					}
-				}
-				catch (ClassCastException ccx) {
-					Collection types = instance.getDirectTypes();
-					for (Iterator it = types.iterator(); it.hasNext();) {
-						Instance type = (Instance) it.next();
-						if (!(type instanceof Cls)) {
-							throw new ProtegeOWLParserException("The resource " + instance.getName() +
-									" has the rdf:type " + type.getName() + " which is not a class but a " + type.getClass().getName(),
-									"In many cases the problem is a missing owl:imports statement to the classes file which defines the correct type of " + type.getName());
-						}
-					}
-                                        Log.getLogger().log(Level.SEVERE, "Exception caught", ccx);
-					throw new RuntimeException("Failed to convert type of " + instance);
-				}
-				catch (Exception ex) {
-                                        Log.getLogger().log(Level.SEVERE, "Exception caught", ex);
-					throw new RuntimeException("Failed to convert type of " + instance);
-				}
+        Instance instance = null;
+        try {
+            int prog = 0;
+            for (Iterator it = frames.iterator(); it.hasNext();) {
+                prog++;
+                instance = (Instance) it.next();
+                final Instance newInstance = createNewFrame(instance);
+                if (instance.getClass() != newInstance.getClass()) {
+                    mnfs.replaceFrame(newInstance);
+                    if (log.isLoggable(Level.FINE)) {
+                        log.fine("" + count + ": Replacing " + instance.getName() + " from " + instance.getClass() + " to " + newInstance.getClass());
+                    }
+                }
+            }
+        }
+        catch (ClassCastException ccx) {
+            Collection types = instance.getDirectTypes();
+            for (Iterator it = types.iterator(); it.hasNext();) {
+                Instance type = (Instance) it.next();
+                if (!(type instanceof Cls)) {
+                    throw new ProtegeOWLParserException("The resource " + instance.getName() +
+                                                        " has the rdf:type " + type.getName() + " which is not a class but a " + type.getClass().getName(),
+                                                        "In many cases the problem is a missing owl:imports statement to the classes file which defines the correct type of " + type.getName());
+                }
+            }
+            Log.getLogger().log(Level.SEVERE, "Exception caught", ccx);
+            throw new RuntimeException("Failed to convert type of " + instance);
+        }
+        catch (Exception ex) {
+            Log.getLogger().log(Level.SEVERE, "Exception caught", ex);
+            throw new RuntimeException("Failed to convert type of " + instance);
+        }
 
-				kb.flushCache();
+        kb.flushCache();
 
-				//long endTime = System.currentTimeMillis();
-				//log("Completed after " + (endTime - startTime) + " ms for " + count + " frames.");
     }
 
 
@@ -157,11 +156,6 @@ public class OWLJavaFactoryUpdater {
             }
         }
         return false;
-    }
-
-
-    private void log(String message) {
-        System.out.println("[OWLJavaFactoryUpdater] " + message);
     }
 
 
