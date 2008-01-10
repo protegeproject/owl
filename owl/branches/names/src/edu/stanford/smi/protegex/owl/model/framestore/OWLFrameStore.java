@@ -6,10 +6,10 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.Facet;
@@ -27,10 +27,8 @@ import edu.stanford.smi.protege.model.framestore.FrameStoreAdapter;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.model.OWLAnonymousClass;
 import edu.stanford.smi.protegex.owl.model.OWLDataRange;
-import edu.stanford.smi.protegex.owl.model.OWLEnumeratedClass;
 import edu.stanford.smi.protegex.owl.model.OWLIntersectionClass;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
-import edu.stanford.smi.protegex.owl.model.OWLNAryLogicalClass;
 import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
 import edu.stanford.smi.protegex.owl.model.OWLNames;
 import edu.stanford.smi.protegex.owl.model.OWLObjectProperty;
@@ -52,7 +50,6 @@ import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLCardinality;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLHasValue;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLMaxCardinality;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLMinCardinality;
-import edu.stanford.smi.protegex.owl.model.impl.DefaultRDFSLiteral;
 import edu.stanford.smi.protegex.owl.model.impl.OWLUtil;
 import edu.stanford.smi.protegex.owl.model.impl.XMLSchemaDatatypes;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
@@ -107,6 +104,7 @@ import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreUtil;
  * @author Holger Knublauch  <holger@knublauch.com>
  */
 public class OWLFrameStore extends FrameStoreAdapter {
+    private static final transient Logger log = Log.getLogger(OWLFrameStore.class);
 
     /**
      * A Hashtable from Java restriction Class objects to the responsible RestrictionUpdaters
@@ -151,6 +149,7 @@ public class OWLFrameStore extends FrameStoreAdapter {
     }
 
 
+    @Override
     public void addDirectSuperclass(Cls cls, Cls superCls) {
         if (!cls.hasDirectSuperclass(superCls)) {   // Disallow duplicates
 
@@ -193,6 +192,7 @@ public class OWLFrameStore extends FrameStoreAdapter {
     }
 
 
+    @Override
     public void addDirectSuperslot(Slot slot, Slot superSlot) {
         super.addDirectSuperslot(slot, superSlot);
         if (slot instanceof RDFProperty) {
@@ -210,6 +210,7 @@ public class OWLFrameStore extends FrameStoreAdapter {
     }
 
 
+    @Override
     public void addDirectType(Instance instance, Cls type) {
         if (instance instanceof RDFProperty) {
             if (type.equals(owlModel.getOWLFunctionalPropertyClass())) {
@@ -238,7 +239,7 @@ public class OWLFrameStore extends FrameStoreAdapter {
         boolean oldUndo = owlModel.isUndoEnabled();
         owlModel.setUndoEnabled(false);
         try {
-            for (Iterator it = ((AbstractOWLModel) owlModel).getRDFSClasses().iterator(); it.hasNext();) {
+            for (Iterator it = (owlModel).getRDFSClasses().iterator(); it.hasNext();) {
                 Cls cls = (Cls) it.next();
                 if (cls instanceof OWLRestriction) {  // Convert restrictions into facet overrides
                     copyFacetValuesIntoOWLNamedClass((OWLRestriction) cls);
@@ -258,7 +259,7 @@ public class OWLFrameStore extends FrameStoreAdapter {
       
       private void copyFacetValuesIntoOWLNamedClass(RDFSNamedClass cls, OWLRestriction restriction) {
         Class clazz = restriction.getClass();
-        RestrictionUpdater ru = (RestrictionUpdater) class2Updater.get(clazz);
+        RestrictionUpdater ru = class2Updater.get(clazz);
         if (ru != null) {
             facetHandlingBlocked = true;
             ru.copyFacetValuesIntoNamedClass(cls, restriction);
@@ -267,6 +268,7 @@ public class OWLFrameStore extends FrameStoreAdapter {
       }
       
       
+    @Override
     public Cls createCls(FrameID id, Collection directTypes, Collection directSuperclasses, boolean loadDefaults) {
         Cls cls = super.createCls(id, directTypes, directSuperclasses, loadDefaults);
         if (cls instanceof OWLNamedClass && cls.isEditable()) {
@@ -374,7 +376,7 @@ public class OWLFrameStore extends FrameStoreAdapter {
 
         // Delete any RDFLists that are direct own slot values of the instance
         if (cls instanceof RDFResource) {
-            deleteRDFListsThatArePropertyValues((RDFResource) cls);
+            deleteRDFListsThatArePropertyValues(cls);
         }
         
         return result;
@@ -435,6 +437,7 @@ public class OWLFrameStore extends FrameStoreAdapter {
     }
 
 
+    @Override
     public void deleteCls(Cls cls) {
         if (cls instanceof OWLAnonymousClass) {
             deleteAnonymousClass((OWLAnonymousClass) cls);
@@ -505,7 +508,7 @@ public class OWLFrameStore extends FrameStoreAdapter {
 
     private void deleteRDFListsThatArePropertyValues(RDFResource resource) {
         RDFResource nil = owlModel.getRDFNil();
-        for (Iterator it = ((RDFResource) resource).getPossibleRDFProperties().iterator(); it.hasNext();) {
+        for (Iterator it = (resource).getPossibleRDFProperties().iterator(); it.hasNext();) {
             RDFProperty property = (RDFProperty) it.next();
             Collection values = new ArrayList(resource.getPropertyValues(property));
             for (Iterator vit = values.iterator(); vit.hasNext();) {
@@ -513,7 +516,9 @@ public class OWLFrameStore extends FrameStoreAdapter {
                 if (o instanceof RDFList && !nil.equals(o)) {
                     RDFList l = (RDFList) o;
                     resource.removePropertyValue(property, l);
-                    //System.out.println("Deleting " + l.getBrowserText() + " at " + instance.getBrowserText() + " . " + property.getBrowserText());
+                    if (log.isLoggable(Level.FINE)) {
+                        log.fine("Deleting " + l.getBrowserText() + " at " + l.getBrowserText() + " . " + property.getBrowserText());
+                    }
                     l.delete();
                 }
             }
@@ -617,12 +622,15 @@ public class OWLFrameStore extends FrameStoreAdapter {
         }
         for (Iterator it = roots.iterator(); it.hasNext();) {
             OWLAnonymousClass cls = (OWLAnonymousClass) it.next();
-            log("- Deleting quantifier restriction root " + cls.getBrowserText());
+            if (log.isLoggable(Level.FINE)) {
+                log.fine("- Deleting quantifier restriction root " + cls.getBrowserText());
+            }
             cls.delete();
         }
     }
 
 
+    @Override
     public void deleteSimpleInstance(SimpleInstance simpleInstance) {
         if (simpleInstance instanceof RDFList) {
             deleteListChain((RDFList) simpleInstance);
@@ -655,6 +663,7 @@ public class OWLFrameStore extends FrameStoreAdapter {
      *
      * @param slot the Slot being deleted
      */
+    @Override
     public void deleteSlot(Slot slot) {
         deleteDependingListInstances(slot);
         if (slot instanceof RDFProperty) {
@@ -733,6 +742,7 @@ public class OWLFrameStore extends FrameStoreAdapter {
     /**
      * @deprecated This method was moved into AbstractOWLModel
      */     
+    @Deprecated
     public List getLiteralValues(final List values) {
         List result = new ArrayList();
         for (Iterator it = values.iterator(); it.hasNext();) {
@@ -774,6 +784,7 @@ public class OWLFrameStore extends FrameStoreAdapter {
        }
    } */
 
+    @Override
     public Set getClsesWithMatchingBrowserText(String value, Collection superclasses, int maxMatches) {
         Set results = new HashSet();
         results.addAll(super.getClsesWithMatchingBrowserText(value, superclasses, maxMatches));
@@ -787,6 +798,7 @@ public class OWLFrameStore extends FrameStoreAdapter {
         return results;
     }
 
+    @Override
     public Set getFramesWithMatchingDirectOwnSlotValue(Slot slot, String value, int maxMatches) {
         Set results = super.getFramesWithMatchingDirectOwnSlotValue(slot, value, maxMatches);
         if (isIgnorePrefixesInSearch(owlModel)) {
@@ -800,6 +812,7 @@ public class OWLFrameStore extends FrameStoreAdapter {
     }
 
 
+    @Override
     public Set getMatchingReferences(String value, int maxMatches) {
         Set results = new HashSet();
         results.addAll(super.getMatchingReferences(value, maxMatches));
@@ -861,17 +874,13 @@ public class OWLFrameStore extends FrameStoreAdapter {
     }
 
 
-    private static void log(String str) {
-        // System.out.println("[OWLFrameStore] " + str);
-    }
-
-
     /**
      * An ugly trick to prevent anonymous classes from being deleted as a side effect
      */
     public static boolean autoDeleteOfAnonymousClses = true;
 
 
+    @Override
     public void removeDirectSuperclass(Cls cls, Cls superCls) {
 
         boolean wasEquivalentCls = superCls.hasDirectSuperclass(cls);
@@ -907,6 +916,7 @@ public class OWLFrameStore extends FrameStoreAdapter {
     }
 
 
+    @Override
     public void removeDirectSuperslot(Slot slot, Slot superslot) {
         super.removeDirectSuperslot(slot, superslot);
         if (slot instanceof OWLObjectProperty &&
@@ -922,6 +932,7 @@ public class OWLFrameStore extends FrameStoreAdapter {
     }
 
 
+    @Override
     public void removeDirectType(Instance instance, Cls directType) {
         if (instance instanceof RDFProperty) {
             if (directType.equals(owlModel.getOWLFunctionalPropertyClass())) {
@@ -959,6 +970,7 @@ public class OWLFrameStore extends FrameStoreAdapter {
     public static boolean allowDuplicateOwnSlotValues = false;
 
 
+    @Override
     public void setDirectOwnSlotValues(Frame frame, Slot slot, Collection values) {
 
         final int valueCount = values.size();
@@ -1012,6 +1024,7 @@ public class OWLFrameStore extends FrameStoreAdapter {
     public boolean suppressUpdateRDFSDomain = false;
 
 
+    @Override
     public void addDirectTemplateSlot(Cls cls, Slot slot) {
         super.addDirectTemplateSlot(cls, slot);
         if (!suppressUpdateRDFSDomain && slot instanceof RDFProperty && cls instanceof RDFSClass) {
@@ -1022,10 +1035,10 @@ public class OWLFrameStore extends FrameStoreAdapter {
 
 
     private void printDeprecationWarning(String methodName) {
-        System.out.println("Warning: The method " + methodName + " is not recommended in OWL.");
-        System.out.println("         Please use the rdfs:domain methods in RDFProperty.");
-        System.out.println("         The following stack trace helps you replace your code.");
-        System.out.println("         This message may be deleted in future versions.");
+        log.warning("The method " + methodName + " is not recommended in OWL.");
+        log.warning("         Please use the rdfs:domain methods in RDFProperty.");
+        log.warning("         The following stack trace helps you replace your code.");
+        log.warning("         This message may be deleted in future versions.");
         try {
             throw new Exception();
         }
@@ -1035,6 +1048,7 @@ public class OWLFrameStore extends FrameStoreAdapter {
     }
 
 
+    @Override
     public void removeDirectTemplateSlot(Cls cls, Slot slot) {
         super.removeDirectTemplateSlot(cls, slot);
         if (!suppressUpdateRDFSDomain && slot instanceof RDFProperty && cls instanceof RDFSClass) {
@@ -1061,6 +1075,7 @@ public class OWLFrameStore extends FrameStoreAdapter {
     // ----- End
 
 
+    @Override
     public void setDirectTemplateFacetValues(Cls cls, Slot slot, Facet facet, Collection values) {
 
         super.setDirectTemplateFacetValues(cls, slot, facet, values);
@@ -1080,6 +1095,7 @@ public class OWLFrameStore extends FrameStoreAdapter {
     }
 
 
+    @Override
     public void setDirectTemplateSlotValues(Cls cls, Slot slot, Collection values) {
 
         super.setDirectTemplateSlotValues(cls, slot, values);
@@ -1137,7 +1153,7 @@ public class OWLFrameStore extends FrameStoreAdapter {
 
 
     private void updateRestrictions(OWLNamedClass cls, RDFProperty slot, Facet facet) {
-        RestrictionUpdater ru = (RestrictionUpdater) facet2Updater.get(facet);
+        RestrictionUpdater ru = facet2Updater.get(facet);
         if (ru != null) {
             superclassHandlingBlocked = true;
             ru.updateRestrictions(cls, slot, facet);
