@@ -2,8 +2,8 @@ package edu.stanford.smi.protegex.owl.model.triplestore;
 
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.logging.Level;
 
-import edu.stanford.smi.protege.model.FrameID;
 import edu.stanford.smi.protege.model.framestore.NarrowFrameStore;
 import edu.stanford.smi.protege.util.Disposable;
 import edu.stanford.smi.protegex.owl.model.NamespaceMap;
@@ -134,7 +134,7 @@ public interface TripleStore extends NamespaceMap, Disposable {
     /**
      * Debugging only.
      */
-    void dump();
+    void dump(Level level);
     
     
     /**
