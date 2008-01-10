@@ -1,15 +1,19 @@
 package edu.stanford.smi.protegex.owl.model.framestore;
 
-import edu.stanford.smi.protege.model.Cls;
-import edu.stanford.smi.protege.model.Slot;
-import edu.stanford.smi.protegex.owl.model.OWLRestriction;
-import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import edu.stanford.smi.protege.model.Cls;
+import edu.stanford.smi.protege.model.Slot;
+import edu.stanford.smi.protege.util.Log;
+import edu.stanford.smi.protegex.owl.model.OWLRestriction;
+import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
 
 abstract class AbstractRestrictionUpdater implements RestrictionUpdater {
+    private final static transient Logger log = Log.getLogger(AbstractRestrictionUpdater.class);
 
     /**
      * The OWLModel this operates on
@@ -51,11 +55,6 @@ abstract class AbstractRestrictionUpdater implements RestrictionUpdater {
     }
 
 
-    protected void log(String message) {
-        // System.out.println("[RestrictionUpdater]  " + message);
-    }
-
-
     protected void removeRestrictions(Cls cls, Slot slot, Cls metaCls) {
         Collection copy = new ArrayList(cls.getDirectSuperclasses());
         for (Iterator it = copy.iterator(); it.hasNext();) {
@@ -64,7 +63,9 @@ abstract class AbstractRestrictionUpdater implements RestrictionUpdater {
                 OWLRestriction restriction = (OWLRestriction) superCls;
                 Slot restrictedSlot = restriction.getOnProperty();
                 if (restrictedSlot.equals(slot)) {
-                    log("- OWLRestriction " + restriction.getBrowserText() + " from " + cls.getName() + "." + slot.getName());
+                    if (log.isLoggable(Level.FINE)) {
+                        log.fine("- OWLRestriction " + restriction.getBrowserText() + " from " + cls.getName() + "." + slot.getName());
+                    }
                     cls.removeDirectSuperclass(restriction);
                 }
             }
