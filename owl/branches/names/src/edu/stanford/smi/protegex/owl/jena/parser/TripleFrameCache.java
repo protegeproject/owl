@@ -151,18 +151,22 @@ public class TripleFrameCache {
 		subjFrame = owlModel.getFrame(subjName);		
 		objFrame = owlModel.getFrame(objName);
 		
-		
+
 		//checking and adding to undefined
 		if (subjFrame == null) {
-			addUndefTriple(subj, pred, obj, subjName, alreadyInUndef);
-			System.out.println("^^^ Should add undef triple: " + subj + " " + pred + " " + obj + " undef:" + subjName);
-			return false;
+		    addUndefTriple(subj, pred, obj, subjName, alreadyInUndef);
+		    if (log.isLoggable(Level.FINE)) {
+		        log.fine("^^^ Should add undef triple: " + subj + " " + pred + " " + obj + " undef:" + subjName);
+		    }
+		    return false;
 		}
 		
 		
 		if (objFrame == null) {
 			addUndefTriple(subj, pred, obj, objName, alreadyInUndef);
-			System.out.println("^^^ Should add undef triple: " + subj + " " + pred + " " + obj + " undef:" + objName);
+                        if (log.isLoggable(Level.FINE)) {
+                            log.fine("^^^ Should add undef triple: " + subj + " " + pred + " " + obj + " undef:" + objName);
+                        }
 			return false;
 		}
 
@@ -498,7 +502,9 @@ public class TripleFrameCache {
 		
 		for (Iterator iter = superClsCache.getCachedFramesWithNoSuperclass().iterator(); iter.hasNext();) {
 			Frame frame = (Frame) iter.next();
-			//System.out.println("No declared supercls: " + frame);
+                        if (log.isLoggable(Level.FINE)) {
+                            log.fine("processClsesWithoutSupercls: No declared supercls: " + frame);
+                        }
 			if (frame instanceof Cls) {
 				Cls cls = (Cls) frame;				
 				FrameCreatorUtility.createSubclassOf(cls, owlModel.getOWLThingClass());
@@ -507,7 +513,7 @@ public class TripleFrameCache {
 				
 		superClsCache.clearCache();
 		
-		System.out.println("(" + (System.currentTimeMillis() - time0) + " ms)");
+		log.info("(" + (System.currentTimeMillis() - time0) + " ms)");
 	}
 
 	private void processInferredSuperclasses(){
@@ -537,7 +543,7 @@ public class TripleFrameCache {
 			}			
 		}
 		
-		System.out.println("(" + (System.currentTimeMillis() - time0) + " ms)");
+		log.info("(" + (System.currentTimeMillis() - time0) + " ms)");
 		
 	}
 
@@ -567,19 +573,20 @@ public class TripleFrameCache {
 
 	
 	private void processInstancesWithMultipleTypes() {
-		long time0 = System.currentTimeMillis();
+            long time0 = System.currentTimeMillis();
 		
-		Set<Instance> instancesWithMultipleTypes = multipleTypesInstanceCache.getInstancesWithMultipleTypes();
+            Set<Instance> instancesWithMultipleTypes = multipleTypesInstanceCache.getInstancesWithMultipleTypes();
 		
-		System.out.print("Postprocess: Instances with multiple types (" + instancesWithMultipleTypes.size() + " instances) ... ");
+            log.info("Postprocess: Instances with multiple types (" + instancesWithMultipleTypes.size() + " instances) ... ");
 
-		for (Instance instance : instancesWithMultipleTypes) {
-			Set<Cls> typesSet = multipleTypesInstanceCache.getTypesForInstanceAsSet(instance);
-			adjustTypesOfInstance(instance, typesSet);
-			//System.out.println(instance + ": " + typesSet);		
+            for (Instance instance : instancesWithMultipleTypes) {
+                Set<Cls> typesSet = multipleTypesInstanceCache.getTypesForInstanceAsSet(instance);
+                adjustTypesOfInstance(instance, typesSet);
+                if (log.isLoggable(Level.FINE)) {
+                    log.fine("process instance with multiple types" + instance + ": " + typesSet);
 		}
-		
-		System.out.println("(" + (System.currentTimeMillis() - time0) + " ms)");
+            }
+            log.info("(" + (System.currentTimeMillis() - time0) + " ms)");
 	}
 
 	private void adjustTypesOfInstance(Instance instance, Set<Cls> typesSet) {
