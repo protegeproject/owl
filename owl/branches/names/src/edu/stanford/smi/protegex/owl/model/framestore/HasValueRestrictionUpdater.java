@@ -1,17 +1,27 @@
 package edu.stanford.smi.protegex.owl.model.framestore;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.Facet;
 import edu.stanford.smi.protege.model.Model;
 import edu.stanford.smi.protege.model.Slot;
-import edu.stanford.smi.protegex.owl.model.*;
+import edu.stanford.smi.protege.util.Log;
+import edu.stanford.smi.protegex.owl.model.OWLHasValue;
+import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
+import edu.stanford.smi.protegex.owl.model.OWLNames;
+import edu.stanford.smi.protegex.owl.model.OWLRestriction;
+import edu.stanford.smi.protegex.owl.model.RDFProperty;
+import edu.stanford.smi.protegex.owl.model.RDFSLiteral;
+import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
 import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-
 class HasValueRestrictionUpdater extends AbstractRestrictionUpdater {
+    private static final transient Logger log = Log.getLogger(HasValueRestrictionUpdater.class);
 
     private Facet valuesFacet;
 
@@ -40,7 +50,9 @@ class HasValueRestrictionUpdater extends AbstractRestrictionUpdater {
                 Object value = it.next();
                 OWLHasValue restriction = owlModel.createOWLHasValue(property, value);
                 cls.addSuperclass(restriction);
-                log("+ OWLHasValue " + restriction.getBrowserText() + " to " + cls.getName() + "." + property.getName());
+                if (log.isLoggable(Level.FINE)) {
+                    log.fine("+ OWLHasValue " + restriction.getBrowserText() + " to " + cls.getName() + "." + property.getName());
+                }
             }
         }
     }
@@ -48,7 +60,9 @@ class HasValueRestrictionUpdater extends AbstractRestrictionUpdater {
 
     void updateValuesFacet(RDFSNamedClass cls, Slot slot) {
         ((Cls) cls).setTemplateFacetValues(slot, valuesFacet, Collections.EMPTY_LIST); // was: null
-        log("- :VALUES override from " + cls.getName() + "." + slot.getName());
+        if (log.isLoggable(Level.FINE)) {
+            log.fine("- :VALUES override from " + cls.getName() + "." + slot.getName());
+        }
         for (Iterator it = getDirectRestrictions(cls, slot, OWLHasValue.class).iterator(); it.hasNext();) {
             OWLHasValue r = (OWLHasValue) it.next();
             if (r != null) {
