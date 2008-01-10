@@ -1,5 +1,7 @@
 package edu.stanford.smi.protegex.owl.model.impl;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -9,6 +11,7 @@ import com.hp.hpl.jena.datatypes.TypeMapper;
 import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
 
 import edu.stanford.smi.protege.model.Cls;
+import edu.stanford.smi.protege.model.Frame;
 import edu.stanford.smi.protege.model.FrameID;
 import edu.stanford.smi.protege.model.Instance;
 import edu.stanford.smi.protege.model.MaximumCardinalityConstraint;
@@ -414,17 +417,26 @@ public class OWLSystemFrames extends SystemFrames {
         asserter.addClassAssertions();
         asserter.addSlotAssertions();
     }
+
     
     private class OWLSystemFramesAssertions {
     	private FrameStore fs;
     	private RDFSDatatype xsdInt;
     	private RDFSDatatype xsdString;
+    	private Collection<Cls> annotationObjectPropertyTypes = new HashSet<Cls>();
+    	private Collection<Cls> annotationDatatypePropertyTypes = new HashSet<Cls>();
     	
     	
     	public OWLSystemFramesAssertions(FrameStore fs) {
             this.fs = fs;
             xsdInt = (RDFSDatatype) getFrame(new FrameID(XSDNames.INT));
             xsdString = (RDFSDatatype) getFrame(new FrameID(XSDNames.STRING));
+            
+            annotationObjectPropertyTypes.add(owlAnnotationPropertyClass);
+            annotationObjectPropertyTypes.add(owlObjectPropertyClass);
+            
+            annotationDatatypePropertyTypes.add(owlAnnotationPropertyClass);
+            annotationDatatypePropertyTypes.add(owlDatatypePropertyClass);
     	}
     	
     	/* ***********************************************************
@@ -433,7 +445,6 @@ public class OWLSystemFrames extends SystemFrames {
     	
         private Cls assertTypeAndSubclasses(Cls cls, Cls type, Cls[] subclasses) {
             assertTypeAndName(cls, type);
-            fs.removeDirectType(cls, getStandardClsMetaCls()); // why is this necessary?
             for (Cls subclass : subclasses) {
                 fs.addDirectSuperclass(subclass, cls);
             }
@@ -454,11 +465,24 @@ public class OWLSystemFrames extends SystemFrames {
             fs.setDirectOwnSlotValues(slot, getMaximumCardinalitySlot(),
                     				  MaximumCardinalityConstraint.getValues(false));
         }
-
+        
         private void assertTypeAndName(Instance frame, Cls type) {
+            assertTypeAndName(frame, Collections.singleton(type));
+        }
+
+        /*
+         * Note that I don't use the more convenient FrameStore methods to set the type because
+         * the knowledge base is not yet ready to start swizzling instances.
+         */
+        private void assertTypeAndName(Instance frame, Collection<Cls> types) {
             String name = frame.getFrameID().getName();
             fs.setDirectOwnSlotValues(frame, getNameSlot(), Collections.singleton(name));
-            fs.addDirectType(frame, type);
+            fs.setDirectOwnSlotValues(frame, getDirectTypesSlot(), types);
+            for (Cls type : types) {
+                Collection framesOfType = new ArrayList(fs.getDirectOwnSlotValues(type, getDirectInstancesSlot()));
+                framesOfType.add(frame);
+                fs.setDirectOwnSlotValues(type, getDirectInstancesSlot(), framesOfType);
+            }
         }
 
         private void assertValueType(Slot slot, ValueType vt) {
@@ -517,7 +541,7 @@ public class OWLSystemFrames extends SystemFrames {
                         }),
                     assertTypeAndSubclasses(owlAnnotationPropertyClass, owlNamedClassClass, new Cls[] {}),
                     assertTypeAndSubclasses(owlFunctionalPropertyClass, owlNamedClassClass, new Cls[] {}),
-                    assertTypeAndSubclasses(owlDeprecatedPropertyClass, owlNamedClassClass, new Cls[] {})
+                    assertTypeAndSubclasses(owlDeprecatedPropertyClass, rdfsNamedClassClass, new Cls[] {})
                 });
             assertTypeAndSubclasses(owlThingClass, owlNamedClassClass, new Cls[] {
                     rdfsNamedClassClass,
@@ -637,8 +661,7 @@ public class OWLSystemFrames extends SystemFrames {
         private void addSlotAssertions() {
             assertTypeAndName(owlAllValuesFromProperty, rdfPropertyClass);
             
-            assertTypeAndName(owlBackwardCompatibleWithProperty, owlAnnotationPropertyClass);
-            assertTypeAndName(owlBackwardCompatibleWithProperty, owlObjectPropertyClass);
+            assertTypeAndName(owlBackwardCompatibleWithProperty, annotationObjectPropertyTypes);
             assertValueType(owlBackwardCompatibleWithProperty, ValueType.INSTANCE);
             
             assertTypeAndName(owlCardinalityProperty, rdfPropertyClass);
@@ -674,8 +697,7 @@ public class OWLSystemFrames extends SystemFrames {
             
             assertTypeAndName(owlImportsProperty, rdfPropertyClass);
             
-            assertTypeAndName(owlIncompatibleWithProperty, owlAnnotationPropertyClass);
-            assertTypeAndName(owlIncompatibleWithProperty, owlObjectPropertyClass);
+            assertTypeAndName(owlIncompatibleWithProperty, annotationObjectPropertyTypes);
             assertValueType(owlIncompatibleWithProperty, ValueType.INSTANCE);
             
             assertTypeAndName(owlIntersectionOfProperty, rdfPropertyClass);
@@ -700,8 +722,7 @@ public class OWLSystemFrames extends SystemFrames {
             assertTypeAndName(owlOnPropertyProperty, rdfPropertyClass);
             assertValueTypeFromClass(owlOnPropertyProperty, rdfPropertyClass);
             
-            assertTypeAndName(owlPriorVersionProperty, owlAnnotationPropertyClass);
-            assertTypeAndName(owlPriorVersionProperty, owlObjectPropertyClass);
+            assertTypeAndName(owlPriorVersionProperty, annotationObjectPropertyTypes);
             assertValueType(owlPriorVersionProperty, ValueType.INSTANCE);
             
             assertTypeAndName(owlSameAsProperty, rdfPropertyClass);
@@ -718,8 +739,7 @@ public class OWLSystemFrames extends SystemFrames {
             fs.setDirectOwnSlotValues(owlValuesFromProperty, rdfsRangeProperty, Collections.singleton(owlThingClass));
             assertFunctional(owlValuesFromProperty);
             
-            assertTypeAndName(owlVersionInfoProperty, owlAnnotationPropertyClass);
-            assertTypeAndName(owlVersionInfoProperty, owlObjectPropertyClass);
+            assertTypeAndName(owlVersionInfoProperty, annotationObjectPropertyTypes);
             assertValueType(owlVersionInfoProperty, ValueType.STRING);
             fs.setDirectOwnSlotValues(owlVersionInfoProperty, rdfsRangeProperty, Collections.singleton(xsdInt));
             
@@ -757,19 +777,16 @@ public class OWLSystemFrames extends SystemFrames {
             
             assertTypeAndName(rdfValueProperty, rdfPropertyClass);  
             
-            assertTypeAndName(rdfsCommentProperty, owlAnnotationPropertyClass);
-            assertTypeAndName(rdfsCommentProperty, owlDatatypePropertyClass);
+            assertTypeAndName(rdfsCommentProperty, annotationDatatypePropertyTypes);
             assertValueType(rdfsCommentProperty, ValueType.STRING);
             fs.setDirectOwnSlotValues(rdfsCommentProperty, rdfsRangeProperty, Collections.singleton(xsdString));
             
             assertTypeAndName(rdfsDomainProperty, rdfPropertyClass);  
             assertValueType(rdfsCommentProperty, ValueType.INSTANCE);
             
-            assertTypeAndName(rdfsIsDefinedByProperty, owlAnnotationPropertyClass);
-            assertTypeAndName(rdfsIsDefinedByProperty, owlObjectPropertyClass);
+            assertTypeAndName(rdfsIsDefinedByProperty, annotationObjectPropertyTypes);
             
-            assertTypeAndName(rdfsLabelProperty, owlAnnotationPropertyClass);
-            assertTypeAndName(rdfsLabelProperty, owlObjectPropertyClass);
+            assertTypeAndName(rdfsLabelProperty, annotationObjectPropertyTypes);
             assertValueType(rdfsLabelProperty, ValueType.STRING);
             fs.setDirectOwnSlotValues(rdfsLabelProperty, rdfsRangeProperty, Collections.singleton(xsdString));
             
@@ -779,8 +796,7 @@ public class OWLSystemFrames extends SystemFrames {
             assertTypeAndName(rdfsRangeProperty, rdfPropertyClass);  
             assertValueType(rdfsRangeProperty, ValueType.INSTANCE);
             
-            assertTypeAndName(rdfsSeeAlsoProperty, owlAnnotationPropertyClass);
-            assertTypeAndName(rdfsSeeAlsoProperty, owlObjectPropertyClass);
+            assertTypeAndName(rdfsSeeAlsoProperty, annotationObjectPropertyTypes);
 
             assertTypeAndName(rdfsSubClassOfProperty, rdfPropertyClass);  
             assertValueTypeFromClass(rdfsSubClassOfProperty, rdfsNamedClassClass);
