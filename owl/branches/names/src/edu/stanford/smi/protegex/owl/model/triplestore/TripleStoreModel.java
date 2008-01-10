@@ -1,15 +1,15 @@
 package edu.stanford.smi.protegex.owl.model.triplestore;
 
-import edu.stanford.smi.protege.model.Instance;
-import edu.stanford.smi.protege.model.Slot;
-import edu.stanford.smi.protege.util.Disposable;
-import edu.stanford.smi.protegex.owl.model.RDFObject;
-import edu.stanford.smi.protegex.owl.model.RDFProperty;
-import edu.stanford.smi.protegex.owl.model.RDFResource;
-
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+
+import edu.stanford.smi.protege.model.Instance;
+import edu.stanford.smi.protege.model.Slot;
+import edu.stanford.smi.protege.model.framestore.NarrowFrameStore;
+import edu.stanford.smi.protege.util.Disposable;
+import edu.stanford.smi.protegex.owl.model.RDFProperty;
+import edu.stanford.smi.protegex.owl.model.RDFResource;
 
 /**
  * The TripleStoreModel is an access layer on top of the normal OWLModel.
@@ -22,10 +22,10 @@ public interface TripleStoreModel extends Disposable{
     /**
      * A low level method that creates and adds a new TripleStore to implement imports.
      *
-     * @param name the name of the new TripleStore (must be unique)
+     * @param frameStore the FrameStore to be used with the TripleStore
      * @return the new TripleStore
      */
-    TripleStore createTripleStore(String name);
+    TripleStore createTripleStore(NarrowFrameStore frameStore);
 
 
     /**
