@@ -5,12 +5,9 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
-
 import java.net.NoRouteToHostException;
 import java.sql.SQLException;
-
 import java.util.ArrayList;
-
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -19,6 +16,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.Action;
 import javax.swing.BorderFactory;
@@ -87,10 +85,12 @@ import edu.stanford.smi.protegex.owl.util.OWLBrowserSlotPattern;
  * @author Holger Knublauch  <holger@knublauch.com>
  */
 public class OWLUI {
+    private static final transient Logger log = Log.getLogger(OWLUI.class);
 
     /**
      * @deprecated use constant from AbstractOWLModelAction
      */
+    @Deprecated
     public static String CODE_MENU = AbstractOWLModelAction.CODE_MENU;
 
     public final static String CONSTRAINT_CHECKING = "OWL-CONSTRAINT-CHECKING";
@@ -102,11 +102,13 @@ public class OWLUI {
     /**
      * @deprecated use constant from AbstractOWLModelAction
      */
+    @Deprecated
     public static String OWL_MENU = AbstractOWLModelAction.OWL_MENU;
 
     /**
      * @deprecated use constant from AbstractOWLModelAction
      */
+    @Deprecated
     public static final String TOOLS_MENU = AbstractOWLModelAction.TOOLS_MENU;
 
     private static OWLToolTipGenerator toolTipGenerator;
@@ -152,6 +154,7 @@ public class OWLUI {
      */
     public static void addCopyPastePopup(JTextComponent textComponent) {
         textComponent.addMouseListener(new PopupMenuMouseListener(textComponent) {
+            @Override
             protected JPopupMenu getPopupMenu() {
                 JPopupMenu popup = new JPopupMenu();
                 popup.add(new Cut(false));
@@ -162,6 +165,7 @@ public class OWLUI {
             }
 
 
+            @Override
             protected void setSelection(JComponent jComponent, int i, int i1) {
                 jComponent.requestFocus();
             }
@@ -276,7 +280,7 @@ public class OWLUI {
         if (toolTipGenerator != null) {
             return toolTipGenerator.getToolTipText(res);
         }
-        System.out.println("LOST GENERATOR");
+        log.warning("LOST GENERATOR");
         return null;
     }
 
@@ -310,6 +314,7 @@ public class OWLUI {
     /**
      * @deprecated
      */
+    @Deprecated
     public static void handleError(Throwable t) {
         handleError(null, t);
     }
@@ -399,6 +404,7 @@ public class OWLUI {
     /**
      * @deprecated
      */
+    @Deprecated
     public static boolean isConfirmed(Project project, boolean value) {
         return isConfirmed((OWLModel) project.getKnowledgeBase(), value);
     }
@@ -434,6 +440,7 @@ public class OWLUI {
     /**
      * @deprecated use ProtegeUI.getSelectionDialogFactory()...
      */
+    @Deprecated
     public static RDFSClass pickConcreteClass(OWLModel owlModel, String label) {
         return ProtegeUI.getSelectionDialogFactory().selectClass(null, owlModel, label);
     }
@@ -442,6 +449,7 @@ public class OWLUI {
     /**
      * @deprecated use ProtegeUI.getSelectionDialogFactory()...
      */
+    @Deprecated
     public static RDFSClass pickConcreteClass(OWLModel owlModel, Collection allowedClasses) {
         return ProtegeUI.getSelectionDialogFactory().selectClass(null, owlModel, allowedClasses);
     }
@@ -450,6 +458,7 @@ public class OWLUI {
     /**
      * @deprecated use ProtegeUI.getSelectionDialogFactory()...
      */
+    @Deprecated
     public static RDFSClass pickConcreteClass(OWLModel owlModel, Collection allowedClasses, String label) {
         return ProtegeUI.getSelectionDialogFactory().selectClass(null, owlModel, allowedClasses, label);
     }
@@ -458,6 +467,7 @@ public class OWLUI {
     /**
      * @deprecated use ProtegeUI.getSelectionDialogFactory()...
      */
+    @Deprecated
     public static Collection pickRDFProperties(Collection properties, String title) {
         if (properties.isEmpty()) {
             return Collections.EMPTY_LIST;
@@ -472,6 +482,7 @@ public class OWLUI {
     /**
      * @deprecated use ProtegeUI.getSelectionDialogFactory()...
      */
+    @Deprecated
     public static RDFProperty pickRDFProperty(Collection allowedProperties, String title) {
         if (allowedProperties.isEmpty()) {
             return null;
@@ -486,6 +497,7 @@ public class OWLUI {
     /**
      * @deprecated use ProtegeUI.getSelectionDialogFactory()...
      */
+    @Deprecated
     public static RDFResource pickRDFResource(Collection allowedClasses) {
         if (allowedClasses.isEmpty()) {
             return null;
@@ -500,6 +512,7 @@ public class OWLUI {
     /**
      * @deprecated use ProtegeUI.getSelectionDialogFactory()...
      */
+    @Deprecated
     public static Collection pickRDFResources(Collection allowedClasses) {
         return pickRDFResources(allowedClasses, true);
     }
@@ -508,6 +521,7 @@ public class OWLUI {
     /**
      * @deprecated use ProtegeUI.getSelectionDialogFactory()...
      */
+    @Deprecated
     public static Collection pickRDFResources(Collection allowedClasses, boolean allowsMultipleSelection) {
         if (allowedClasses.isEmpty()) {
             return Collections.EMPTY_LIST;
@@ -533,6 +547,7 @@ public class OWLUI {
     /**
      * @deprecated use ProtegeUI.getSelectionDialogFactory()...
      */
+    @Deprecated
     public static RDFResource pickRDFResourceFromCollection(Collection allowedResources, String label) {
         if (allowedResources.isEmpty()) {
             return null;
@@ -547,6 +562,7 @@ public class OWLUI {
     /**
      * @deprecated use ProtegeUI.getSelectionDialogFactory()...
      */
+    @Deprecated
     public static RDFSNamedClass pickRDFSNamedClass(OWLModel owlModel, String label) {
         return ProtegeUI.getSelectionDialogFactory().selectClass(null, owlModel, label);
     }
@@ -555,6 +571,7 @@ public class OWLUI {
     /**
      * @deprecated use ProtegeUI.getSelectionDialogFactory()...
      */
+    @Deprecated
     public static RDFSNamedClass pickRDFSNamedClass(OWLModel owlModel, Collection cs, String label) {
         return ProtegeUI.getSelectionDialogFactory().selectClass(null, owlModel, cs, label);
     }
@@ -563,6 +580,7 @@ public class OWLUI {
     /**
      * @deprecated use ProtegeUI.getSelectionDialogFactory()...
      */
+    @Deprecated
     public static Collection pickRDFSNamedClasses(OWLModel owlModel, String label) {
         return ProtegeUI.getSelectionDialogFactory().selectClasses(null, owlModel, label);
     }
@@ -571,6 +589,7 @@ public class OWLUI {
     /**
      * @deprecated use ProtegeUI.getSelectionDialogFactory()...
      */
+    @Deprecated
     public static OWLNamedClass pickOWLNamedClass(OWLModel owlModel, Collection classes, String label) {
         RDFSNamedClass namedClass = ProtegeUI.getSelectionDialogFactory().selectClass(null, owlModel, classes, label);
         if (namedClass instanceof OWLNamedClass) {
@@ -634,6 +653,7 @@ public class OWLUI {
     /**
      * @deprecated use ProtegeUI.getModalDialogFactory()...
      */
+    @Deprecated
     public static void showErrorMessageDialog(String message) {
         showErrorMessageDialog((Project) null, message);
     }
@@ -642,6 +662,7 @@ public class OWLUI {
     /**
      * @deprecated use ProtegeUI.getModalDialogFactory()...
      */
+    @Deprecated
     public static void showErrorMessageDialog(Component parent, String message) {
         JOptionPane.showMessageDialog(parent, message, "Error", JOptionPane.ERROR_MESSAGE);
     }
@@ -650,6 +671,7 @@ public class OWLUI {
     /**
      * @deprecated use ProtegeUI.getModalDialogFactory()...
      */
+    @Deprecated
     public static void showErrorMessageDialog(Project project, String message) {
         ProtegeUI.getModalDialogFactory().showMessageDialog((OWLModel) project.getKnowledgeBase(), message);
     }
@@ -658,6 +680,7 @@ public class OWLUI {
     /**
      * @deprecated use ProtegeUI.getModalDialogFactory()...
      */
+    @Deprecated
     public static void showErrorMessageDialog(OWLModel owlModel, String message) {
         ProtegeUI.getModalDialogFactory().showMessageDialog(owlModel, message);
     }
@@ -666,6 +689,7 @@ public class OWLUI {
     /**
      * @deprecated use ProtegeUI.getModalDialogFactory()...
      */
+    @Deprecated
     public static void showErrorMessageDialog(String message, String title) {
         ProtegeUI.getModalDialogFactory().showMessageDialog((OWLModel) null, message, title);
     }
@@ -674,6 +698,7 @@ public class OWLUI {
     /**
      * @deprecated use ProtegeUI.getModalDialogFactory()...
      */
+    @Deprecated
     public static void showErrorMessageDialog(Project project, String message, String title) {
         ProtegeUI.getModalDialogFactory().showMessageDialog((OWLModel) project.getKnowledgeBase(), message, title);
     }
@@ -682,6 +707,7 @@ public class OWLUI {
     /**
      * @deprecated use ProtegeUI.getModalDialogFactory()...
      */
+    @Deprecated
     public static void showMessageDialog(String message) {
         ProtegeUI.getModalDialogFactory().showMessageDialog((OWLModel) null, message);
     }
@@ -690,6 +716,7 @@ public class OWLUI {
     /**
      * @deprecated use ProtegeUI.getModalDialogFactory()...
      */
+    @Deprecated
     public static void showMessageDialog(Component parent, String message) {
         ProtegeUI.getModalDialogFactory().showMessageDialog(parent, message);
     }
@@ -698,6 +725,7 @@ public class OWLUI {
     /**
      * @deprecated use ProtegeUI.getModalDialogFactory()...
      */
+    @Deprecated
     public static void showMessageDialog(OWLModel owlModel, String message) {
         ProtegeUI.getModalDialogFactory().showMessageDialog(owlModel, message);
     }
@@ -706,6 +734,7 @@ public class OWLUI {
     /**
      * @deprecated use ProtegeUI.getModalDialogFactory()...
      */
+    @Deprecated
     public static void showMessageDialog(Project project, String message) {
         OWLModel owlModel = (OWLModel) project.getKnowledgeBase();
         ProtegeUI.getModalDialogFactory().showMessageDialog(owlModel, message);
@@ -715,6 +744,7 @@ public class OWLUI {
     /**
      * @deprecated use ProtegeUI.getModalDialogFactory()...
      */
+    @Deprecated
     public static void showMessageDialog(String message, String title, int type) {
         ProtegeUI.getModalDialogFactory().showMessageDialog((OWLModel) null, message, title);
     }
@@ -723,6 +753,7 @@ public class OWLUI {
     /**
      * @deprecated use ProtegeUI.getModalDialogFactory()...
      */
+    @Deprecated
     public static void showMessageDialog(OWLModel owlModel, String message, String title, int type) {
         ProtegeUI.getModalDialogFactory().showMessageDialog(owlModel, message, title);
     }
@@ -731,6 +762,7 @@ public class OWLUI {
     /**
      * @deprecated use ProtegeUI.getModalDialogFactory()...
      */
+    @Deprecated
     public static void showMessageDialog(Project project, String message, String title, int type) {
         ProtegeUI.getModalDialogFactory().showMessageDialog((OWLModel) project.getKnowledgeBase(), message, title);
     }
@@ -739,6 +771,7 @@ public class OWLUI {
     /**
      * @deprecated use ProtegeUI.getModalDialogFactory()...
      */
+    @Deprecated
     public static boolean showConfirmDialog(String message, String title) {
         return ProtegeUI.getModalDialogFactory().showConfirmDialog((OWLModel) null, message, title);
     }
@@ -747,6 +780,7 @@ public class OWLUI {
     /**
      * @deprecated use ProtegeUI.getModalDialogFactory()...
      */
+    @Deprecated
     public static boolean showConfirmDialog(Project project, String message, String title) {
         OWLModel owlModel = (OWLModel) project.getKnowledgeBase();
         return ProtegeUI.getModalDialogFactory().showConfirmDialog(owlModel, message, title);
