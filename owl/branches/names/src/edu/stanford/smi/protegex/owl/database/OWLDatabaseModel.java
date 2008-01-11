@@ -1,5 +1,6 @@
 package edu.stanford.smi.protegex.owl.database;
 
+import java.util.Collections;
 import java.util.logging.Logger;
 
 import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
@@ -29,12 +30,15 @@ import edu.stanford.smi.protegex.owl.model.NamespaceManager;
 import edu.stanford.smi.protegex.owl.model.OWLNames;
 import edu.stanford.smi.protegex.owl.model.OWLOntology;
 import edu.stanford.smi.protegex.owl.model.ProtegeNames;
+import edu.stanford.smi.protegex.owl.model.RDFIndividual;
 import edu.stanford.smi.protegex.owl.model.RDFNames;
+import edu.stanford.smi.protegex.owl.model.RDFProperty;
+import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
 import edu.stanford.smi.protegex.owl.model.RDFSNames;
 import edu.stanford.smi.protegex.owl.model.factory.OWLJavaFactory;
 import edu.stanford.smi.protegex.owl.model.framestore.LocalClassificationFrameStore;
 import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
-import edu.stanford.smi.protegex.owl.model.impl.NewDatabaseNamespaceManager;
+import edu.stanford.smi.protegex.owl.model.impl.OWLDatabaseNamespaceManager;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreModel;
 import edu.stanford.smi.protegex.owl.model.triplestore.impl.TripleStoreModelImpl;
 import edu.stanford.smi.protegex.owl.model.util.ImportUtil;
@@ -58,7 +62,7 @@ public class OWLDatabaseModel
 
 
     public OWLDatabaseModel(KnowledgeBaseFactory factory) {    	
-        super(factory);
+        super(factory, false);
     }
 
 	/**
@@ -74,13 +78,9 @@ public class OWLDatabaseModel
     public void initialize() {
     	setFrameFactory(new OWLJavaFactory(this));
         
-        //final OWLNamespaceManager namespaceManager = new OWLNamespaceManager();
-    	NamespaceManager namespaceManager = new NewDatabaseNamespaceManager();
-        super.initialize(namespaceManager);
+        super.initialize();
 
         initCustomFrameStores();
-        
-        getNamespaceManager().update();
     }
 
 
@@ -100,17 +100,34 @@ public class OWLDatabaseModel
     	defaultDBOWLOntology = ImportUtil.calculateTopLevelOntology(this);    	
     	if (defaultDBOWLOntology == null) {
     		Log.getLogger().warning("Could not compute the top level ontology. Using the default one: " + ProtegeNames.DEFAULT_ONTOLOGY);
-    		defaultDBOWLOntology = createDefaultOWLOntologyReally();
+    		setDefaultOWLOntology(createDefaultOWLOntologyReally());
     	}
     	
     	return defaultDBOWLOntology;
     }
-
-
+    
+    public void setDefaultOWLOntology(OWLOntology defaultOWLOntology) {
+        RDFSNamedClass topLevelOWLOntologyClass = getSystemFrames().getTopOWLOntologyClass();
+        RDFProperty topLevelOWLOntologyURISlot = getSystemFrames().getTopOWLOntologyURISlot();
+        RDFIndividual inst;
+        if (topLevelOWLOntologyClass.getInstances(false).isEmpty()) {
+            inst = topLevelOWLOntologyClass.createRDFIndividual(null);
+        }
+        else {
+            // there should only be one!
+            inst = ((RDFIndividual) topLevelOWLOntologyClass.getInstances(false).iterator().next());
+        }
+        inst.setPropertyValue(topLevelOWLOntologyURISlot, defaultOWLOntology);
+        defaultDBOWLOntology = defaultOWLOntology;
+    }
+    
+    public void resetDefaultOWLOntologyCache() {
+        defaultDBOWLOntology = null;
+    }
     
     protected OWLOntology getTopLevelOntololgyFromDatabase() {
-		Cls topLevelOWLOntologyClass = getCls(OWLNames.Cls.TOP_LEVEL_ONTOLOGY);
-		Slot topLevelOWLOntologyURISlot = getSlot(OWLNames.Slot.TOP_LEVEL_ONTOLOGY_URI);
+		Cls topLevelOWLOntologyClass = getSystemFrames().getTopOWLOntologyClass();
+		Slot topLevelOWLOntologyURISlot = getSystemFrames().getTopOWLOntologyURISlot();
 		
 		if (topLevelOWLOntologyClass == null || topLevelOWLOntologyURISlot == null) {
 			return null;
@@ -124,6 +141,9 @@ public class OWLDatabaseModel
 				
 		return (OWLOntology) inst.getOwnSlotValue(topLevelOWLOntologyURISlot);
 	}
+    
+    
+    
 	@Override
     protected OWLOntology createDefaultOWLOntologyReally() {
     	return (OWLOntology) createInstance(ProtegeNames.DEFAULT_ONTOLOGY, getOWLOntologyClass());
