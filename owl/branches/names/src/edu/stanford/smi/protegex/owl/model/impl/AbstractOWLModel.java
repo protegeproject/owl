@@ -49,7 +49,6 @@ import edu.stanford.smi.protegex.owl.jena.parser.NamespaceUtil;
 import edu.stanford.smi.protegex.owl.jena.parser.UnresolvedImportHandler;
 import edu.stanford.smi.protegex.owl.model.DefaultTaskManager;
 import edu.stanford.smi.protegex.owl.model.NamespaceManager;
-import edu.stanford.smi.protegex.owl.model.NamespaceManagerListener;
 import edu.stanford.smi.protegex.owl.model.OWLAllDifferent;
 import edu.stanford.smi.protegex.owl.model.OWLAllValuesFrom;
 import edu.stanford.smi.protegex.owl.model.OWLAnonymousClass;
@@ -112,7 +111,6 @@ import edu.stanford.smi.protegex.owl.model.query.QueryResults;
 import edu.stanford.smi.protegex.owl.model.query.SPARQLQueryResults;
 import edu.stanford.smi.protegex.owl.model.triplestore.Triple;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
-import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreModel;
 import edu.stanford.smi.protegex.owl.model.triplestore.impl.DefaultTriple;
 import edu.stanford.smi.protegex.owl.model.triplestore.impl.DefaultTuple;
 import edu.stanford.smi.protegex.owl.model.validator.DefaultPropertyValueValidator;
@@ -133,7 +131,7 @@ import edu.stanford.smi.protegex.owl.util.OWLBrowserSlotPattern;
  * @author Holger Knublauch  <holger@knublauch.com>
  */
 public abstract class AbstractOWLModel extends DefaultKnowledgeBase
-        implements NamespaceManagerListener, OWLModel {
+        implements OWLModel {
 
     private static transient Logger log = Log.getLogger(AbstractOWLModel.class);
     
@@ -184,8 +182,6 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     //private boolean loadDefaults = true;
 
     private boolean loadDefaults = false;
-    
-    private NamespaceManager namespaceManager;
 
     private Instance rdfNilIndividual;
 
@@ -225,35 +221,26 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     private Slot protegeSubclassesDisjointProperty;
 
 
-    public AbstractOWLModel(KnowledgeBaseFactory factory) {
+    public AbstractOWLModel(KnowledgeBaseFactory factory, boolean initialize) {
         super(factory);
 
         setFrameFactory(new OWLJavaFactory(this));
         
         initializeLoadDefaults();
-    }
-
-    public AbstractOWLModel(KnowledgeBaseFactory factory,
-                            NamespaceManager namespaceManager) {
-        super(factory);
-
-        setFrameFactory(new OWLJavaFactory(this));
         
-        initializeLoadDefaults();
-
-        initialize(namespaceManager);
+        if (initialize) {
+            initialize();
+        }
     }
 
     protected void initializeLoadDefaults() {
     	loadDefaults = ApplicationProperties.getBooleanProperty(OWL_MODEL_INIT_DEFAULTS_AT_CREATION, false);
     }
     
-    public void initialize(NamespaceManager namespaceManager) {
+    public void initialize() {
         if (log.isLoggable(Level.FINE)) {
             log.fine("Phase 2 initialization of OWL Model starts");
         }
-        this.namespaceManager = namespaceManager;
-        namespaceManager.addNamespaceManagerListener(this);
         
         boolean eventEnabled = setGenerateEventsEnabled(false);
         
@@ -262,15 +249,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
         // resetSystemFrames();
 
         inInit = false;
-
-        namespaceManager.init(this);
-
         createDefaultOWLOntology();
-
-        namespaceManager.setModifiable(OWLNames.OWL_PREFIX, false);
-        namespaceManager.setModifiable(RDFNames.RDF_PREFIX, false);
-        namespaceManager.setModifiable(RDFSNames.RDFS_PREFIX, false);
-        namespaceManager.setModifiable(RDFNames.XSD_PREFIX, false);
 
         setDefaultClsMetaCls(getOWLNamedClassClass());
         setDefaultSlotMetaCls(getOWLDatatypePropertyClass());
@@ -2421,12 +2400,6 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     }
 
 
-    // Implements NamespaceManagerListener
-    public void defaultNamespaceChanged(String oldValue, String newValue) {
-        // No effect: No Frames have to be renamed for this
-    }
-
-
     public String getResourceNameForURI(String uri) {
         if (uri.lastIndexOf('#') > 0) { // Most likely not an owl:Ontology
             return getFrameNameForURI(uri, true);
@@ -2593,7 +2566,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
 
     public NamespaceManager getNamespaceManager() {
-        return namespaceManager;
+        return getTripleStoreModel().getActiveTripleStore().getNamespaceManager();
     }
 
 
@@ -2794,68 +2767,8 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     }
 
 
-    // Implements NamespaceManagerListener
-    public void namespaceChanged(String prefix, String oldValue, String newValue) {
-    }
-
-
-    // Implements NamespaceManagerListener
-    public void prefixAdded(String prefix) {
-    }
-
-
-    // Implements NamespaceManagerListener
-    public void prefixChanged(String namespace, String oldPrefix, String newPrefix) {
-        replacePrefixInInstances(oldPrefix, newPrefix);
-    }
-
-
-    // Implements NamespaceManagerListener
-    public void prefixRemoved(String prefix) {
-        replacePrefixInInstances(prefix, null);
-    }
-
-
-    /**
-     * Replaces the prefix of all NamespaceInstances that have an old prefix.
-     *
-     * @param oldPrefix the old prefix (to look for)
-     * @param newPrefix the new prefix (can be null for no prefix)
-     */
-    public void replacePrefixInInstances(String oldPrefix, String newPrefix) {
-        // Need to go through each triple store
-        TripleStoreModel tsm = getTripleStoreModel();
-        TripleStore activeTripleStore = tsm.getActiveTripleStore();
-        for (Iterator it = tsm.listUserTripleStores(); it.hasNext();) {
-            TripleStore curTripleStore = (TripleStore) it.next();
-            tsm.setActiveTripleStore(curTripleStore);
-            for (Iterator resIt = curTripleStore.listHomeResources(); resIt.hasNext();) {
-                RDFResource resource = (RDFResource) resIt.next();
-                if (resource.getNamespacePrefix() != null &&
-                    resource.getNamespacePrefix().equals(oldPrefix)) {
-                    String localName = resource.getLocalName();
-                    String newName = localName;
-                    if (newPrefix != null && newPrefix.length() > 0) {
-                        newName = newPrefix + ProtegeNames.PREFIX_LOCALNAME_SEPARATOR + localName;
-                    }
-                    if (getFrame(newName) != null) {
-                        newName = getUniqueFrameName(newName);
-                    }
-                    resource = (RDFResource) resource.rename(newName);
-                }
-            }
-        }
-        tsm.setActiveTripleStore(activeTripleStore);
-    }
-
-
     public void resetJenaModel() {
         jenaModel = null;
-    }
-
-
-    public void setNamespaceManager(NamespaceManager namespaceManager) {
-        this.namespaceManager = namespaceManager;
     }
 
 
@@ -2927,7 +2840,6 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     public synchronized void dispose() {    	
     	super.dispose();
     	owlFrameStore = null;
-    	namespaceManager = null;
     	jenaModel = null;
     	owlProject = null;
     	
