@@ -86,8 +86,8 @@ public class JenaOWLModel extends AbstractOWLModel implements OntModelProvider {
     public final static String WRITER_PROTEGE = "protege";
 
 
-    protected JenaOWLModel(KnowledgeBaseFactory factory, NamespaceManager namespaceManager) {
-        super(factory, namespaceManager);
+    protected JenaOWLModel(KnowledgeBaseFactory factory) {
+        super(factory, true);
         OWLJavaFactoryUpdater.run(this);
         MergingNarrowFrameStore mnfs = MergingNarrowFrameStore.get(this);
         mnfs.setTopFrameStore(mnfs.getActiveFrameStore().getName());
@@ -105,12 +105,6 @@ public class JenaOWLModel extends AbstractOWLModel implements OntModelProvider {
                 }
             }
         }
-    }
-
-
-    // Implements NamespaceManagerListener
-    public void defaultNamespaceChanged(String oldValue, String newValue) {
-        super.defaultNamespaceChanged(oldValue, newValue);
     }
 
 
@@ -303,30 +297,6 @@ public class JenaOWLModel extends AbstractOWLModel implements OntModelProvider {
         if (parseErrors != null && parseErrors.size() > 0) {
         	errors.addAll(parseErrors);
         }
-    }
-
-
-    // Implements NamespaceManagerListener
-    public void namespaceChanged(String prefix, String oldValue, String newValue) {
-        super.namespaceChanged(prefix, oldValue, newValue);
-    }
-
-
-    // Implements NamespaceManagerListener
-    public void prefixAdded(String prefix) {
-        super.prefixAdded(prefix);
-    }
-
-
-    // Implements NamespaceManagerListener
-    public void prefixChanged(String namespace, String oldPrefix, String newPrefix) {
-        super.prefixChanged(namespace, oldPrefix, newPrefix);
-    }
-
-
-    // Implements NamespaceManagerListener
-    public void prefixRemoved(String prefix) {
-        super.prefixRemoved(prefix);
     }
 
 
