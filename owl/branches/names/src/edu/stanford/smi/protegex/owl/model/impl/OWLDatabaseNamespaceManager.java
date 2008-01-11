@@ -7,17 +7,15 @@ import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLOntology;
 
-public class NewDatabaseNamespaceManager extends NewNamespaceManager {
+public class OWLDatabaseNamespaceManager extends OWLNamespaceManager {
 	
 
-	@Override
-	public void init(OWLModel owlModel) {
-		super.init(owlModel);
-		//initializeNamespacesFromDatabase();		
-	}
+    public OWLDatabaseNamespaceManager(OWLModel owlModel) {
+        super(owlModel);
+    }
 	
 
-	void initializeNamespacesFromDatabase() {
+	private void initializeNamespacesFromDatabase() {
 		Slot prefixesSlot = owlModel.getSystemFrames().getOwlOntologyPrefixesProperty();
 		//check whether this is OK at imports..
 		OWLOntology defaultOntology = owlModel.getDefaultOWLOntology();
