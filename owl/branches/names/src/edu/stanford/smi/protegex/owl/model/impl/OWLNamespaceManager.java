@@ -13,20 +13,33 @@ import edu.stanford.smi.protegex.owl.model.NamespaceManagerListener;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLNames;
 import edu.stanford.smi.protegex.owl.model.OWLOntology;
+import edu.stanford.smi.protegex.owl.model.RDFNames;
+import edu.stanford.smi.protegex.owl.model.RDFSNames;
 
-public class NewNamespaceManager implements NamespaceManager {
+public class OWLNamespaceManager implements NamespaceManager {
 	//TODO: The interface should be modified to throw exceptions	
 	
-	private static String DEFAULT_PREFIX_START = "p";
-	public static final String DEFAULT_NAMESPACE_PREFIX = "";
+    private static String DEFAULT_PREFIX_START = "p";
+    public static final String DEFAULT_NAMESPACE_PREFIX = "";
+ 
+    private int last_prefix_index = 0;
+
+    protected OWLModel owlModel;
 		
 	//the 2 hashmaps should be kept in sync at all times
 	private HashMap<String, String> prefix2namespaceMap = new HashMap<String, String>();
 	private HashMap<String, String> namespace2prefixMap = new HashMap<String, String>();
 	
-	private int last_prefix_index = 0;
 	
-	protected OWLModel owlModel;
+	public OWLNamespaceManager(OWLModel owlModel) {
+	    this.owlModel = owlModel;
+        setModifiable(OWLNames.OWL_PREFIX, false);
+        setModifiable(RDFNames.RDF_PREFIX, false);
+        setModifiable(RDFSNames.RDFS_PREFIX, false);
+        setModifiable(RDFNames.XSD_PREFIX, false);
+	}
+	
+
 
 	public void addNamespaceManagerListener(NamespaceManagerListener listener) {
 		// TODO Auto-generated method stub
@@ -133,6 +146,24 @@ public class NewNamespaceManager implements NamespaceManager {
 		
 		return prefixName;		
 	}
+
+
+
+    public static boolean isValidPrefix(String prefix) {
+        if (prefix.length() == 0) {
+            return false;
+        }
+        if (!Character.isJavaIdentifierStart(prefix.charAt(0))) {
+            return false;
+        }
+        for (int i = 1; i < prefix.length(); i++) {
+            char c = prefix.charAt(i);
+            if (!Character.isJavaIdentifierPart(c) && c != '.' && c != '-') {
+                return false;
+            }
+        }
+        return true;
+    }
 	
 	
 
