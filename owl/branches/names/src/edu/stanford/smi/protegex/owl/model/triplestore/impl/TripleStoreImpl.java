@@ -24,6 +24,7 @@ import edu.stanford.smi.protege.model.framestore.InMemoryFrameDb;
 import edu.stanford.smi.protege.model.framestore.NarrowFrameStore;
 import edu.stanford.smi.protege.model.framestore.Record;
 import edu.stanford.smi.protege.util.Log;
+import edu.stanford.smi.protegex.owl.model.NamespaceManager;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLNames;
 import edu.stanford.smi.protegex.owl.model.ProtegeNames;
@@ -45,6 +46,7 @@ import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLMinCardinality;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLSomeValuesFrom;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLUnionClass;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultRDFSLiteral;
+import edu.stanford.smi.protegex.owl.model.impl.OWLNamespaceManager;
 import edu.stanford.smi.protegex.owl.model.triplestore.Triple;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreModel;
@@ -57,6 +59,8 @@ import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreUtil;
  */
 public class TripleStoreImpl implements TripleStore, ProtegeTripleAdder {
     private static transient final Logger log = Log.getLogger(TripleStoreImpl.class);
+    
+    private NamespaceManager namespaceManager;
 
     private Map<RDFProperty, AddPropertyValueHandler> addPropertyValueHandlers = new HashMap<RDFProperty, AddPropertyValueHandler>();
 
@@ -78,6 +82,8 @@ public class TripleStoreImpl implements TripleStore, ProtegeTripleAdder {
         this.frameStore = frameStore;
         this.owlModel = owlModel;
         this.tripleStoreModel = tripleStoreModel;
+        
+        initializeNamespaceManager();
 
         KnowledgeBase kb = owlModel;
         directTypesSlot = kb.getSlot(Model.Slot.DIRECT_TYPES);
@@ -98,6 +104,14 @@ public class TripleStoreImpl implements TripleStore, ProtegeTripleAdder {
         initHandler(RDFSNames.Slot.SUB_CLASS_OF, new AddRDFSSubClassOfPropertyHandler(this, kb));
         initHandler(RDFSNames.Slot.SUB_PROPERTY_OF, new AddRDFSSubPropertyOfPropertyHandler(this, kb));
         initHandler(RDFNames.Slot.TYPE, new AddRDFTypePropertyHandler(this, kb, tripleStoreModel, this));
+    }
+    
+    private void initializeNamespaceManager() {
+        namespaceManager = new OWLNamespaceManager(owlModel);
+    }
+    
+    public NamespaceManager getNamespaceManager() {
+        return namespaceManager;
     }
 
 
