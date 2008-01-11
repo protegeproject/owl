@@ -269,7 +269,6 @@ public class OWLMenuProjectPlugin extends ProjectPluginAdapter {
         }
 	
         OWLModel owlModel = (OWLModel) kb;
-        owlModel.getNamespaceManager().update();
         makeHiddenClsesWithSubclassesVisible(owlModel);
         project.setWidgetMapper(new OWLWidgetMapper(owlModel));
         
