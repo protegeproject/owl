@@ -780,8 +780,6 @@ public abstract class AbstractRDFSClass extends DefaultCls implements RDFSClass 
         buffer.append(this.getClass().getSimpleName());
         buffer.append("(");
         buffer.append(getName());
-        buffer.append(", ");
-        buffer.append(getFrameID());
         buffer.append(")");
         return buffer.toString();    	
     }
