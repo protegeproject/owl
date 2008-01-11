@@ -155,8 +155,6 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
     public static final String ANONYMOUS_BASE = "@";
 
-    private boolean bootstrapped = false;
-
     private OWLClassDisplay owlClassRenderer = OWLClassDisplayFactory.getDefaultDisplay();
 
     private OWLFrameStore owlFrameStore;
@@ -302,8 +300,6 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
         defaultAnonymousTypes.add(getOWLEnumeratedClassClass());
         defaultAnonymousTypes.add(getOWLAllDifferentClass());
         defaultAnonymousTypes.add(getOWLDataRangeClass());
-
-        bootstrapped = true;
 
         taskManager = new DefaultTaskManager();
         taskManager.setProgressDisplay(new NoopProgressDisplay());
@@ -653,17 +649,15 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
                                       Collection directSuperclasses,
                                       Collection directTypes,
                                       boolean loadDefaults) {
-        if (bootstrapped) {
-            if (id == null) {
-                if (isDefaultAnonymousType(directTypes)) {
-                    id = new FrameID(getNextAnonymousResourceName());
-                }
-                else {
-                    id = new FrameID(createUniqueNewFrameName(DEFAULT_CLASS_NAME));
-                }
+        if (id == null) {
+            if (isDefaultAnonymousType(directTypes)) {
+                id = new FrameID(getNextAnonymousResourceName());
             }
-            // name = getValidNamespaceFrameName(name);
+            else {
+                id = new FrameID(createUniqueNewFrameName(DEFAULT_CLASS_NAME));
+            }
         }
+        // name = getValidNamespaceFrameName(name);
         return super.createCls(id, directSuperclasses, directTypes, loadDefaults);
     }
 
@@ -2252,33 +2246,30 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
 
     @Override
-	public void setProject(Project project) {
+    public void setProject(Project project) {
         super.setProject(project);
-        if (bootstrapped) {
+        setOWLProject(new DefaultOWLProject(project));
 
-            setOWLProject(new DefaultOWLProject(project));
+        project.setPrettyPrintSlotWidgetLabels(false);
 
-            project.setPrettyPrintSlotWidgetLabels(false);
+        Slot nameSlot = getSlot(Model.Slot.NAME);                       
+        //getRootCls().setDirectBrowserSlotPattern(new BrowserSlotPattern(nameSlot));
 
-            Slot nameSlot = getSlot(Model.Slot.NAME);                       
-            //getRootCls().setDirectBrowserSlotPattern(new BrowserSlotPattern(nameSlot));
-          
-           	getRootCls().setDirectBrowserSlotPattern(new OWLBrowserSlotPattern(nameSlot));
+        getRootCls().setDirectBrowserSlotPattern(new OWLBrowserSlotPattern(nameSlot));
 
-            project.setDefaultClsWidgetClassName(OWLFormWidget.class.getName());
+        project.setDefaultClsWidgetClassName(OWLFormWidget.class.getName());
 
-            project.setWidgetMapper(new OWLWidgetMapper(this));
+        project.setWidgetMapper(new OWLWidgetMapper(this));
 
-            if (project.isMultiUserClient()) {
-                FrameStoreManager fsm = getFrameStoreManager();
-                fsm.setEnabled(getOWLFrameStore(), false);
-            }
-
-            getProtegeClassificationStatusProperty().setVisible(false);
-            getProtegeInferredSuperclassesProperty().setVisible(false);
-            getProtegeInferredSubclassesProperty().setVisible(false);
-            getOWLOntologyClass().setVisible(false);
+        if (project.isMultiUserClient()) {
+            FrameStoreManager fsm = getFrameStoreManager();
+            fsm.setEnabled(getOWLFrameStore(), false);
         }
+
+        getProtegeClassificationStatusProperty().setVisible(false);
+        getProtegeInferredSuperclassesProperty().setVisible(false);
+        getProtegeInferredSubclassesProperty().setVisible(false);
+        getOWLOntologyClass().setVisible(false);
     }
 
 
