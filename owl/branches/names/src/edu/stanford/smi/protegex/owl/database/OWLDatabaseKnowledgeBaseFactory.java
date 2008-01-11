@@ -25,9 +25,11 @@ import edu.stanford.smi.protegex.owl.jena.JenaKnowledgeBaseFactory;
 import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
 import edu.stanford.smi.protegex.owl.model.NamespaceManager;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
-import edu.stanford.smi.protegex.owl.model.OWLNames;
 import edu.stanford.smi.protegex.owl.model.OWLOntology;
 import edu.stanford.smi.protegex.owl.model.ProtegeNames;
+import edu.stanford.smi.protegex.owl.model.RDFIndividual;
+import edu.stanford.smi.protegex.owl.model.RDFProperty;
+import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
 import edu.stanford.smi.protegex.owl.model.factory.OWLJavaFactory;
 import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreModel;
@@ -44,6 +46,8 @@ import edu.stanford.smi.protegex.owl.ui.resourceselection.ResourceSelectionActio
 public class OWLDatabaseKnowledgeBaseFactory extends DatabaseKnowledgeBaseFactory
         implements OWLKnowledgeBaseFactory, ClientInitializerKnowledgeBaseFactory {
     private static Logger log = Log.getLogger(OWLDatabaseKnowledgeBaseFactory.class);
+    
+    public final static String NAMESPACE_PREFIX_SEPARATOR = ":";
 
     
     public OWLDatabaseKnowledgeBaseFactory() {
@@ -59,6 +63,8 @@ public class OWLDatabaseKnowledgeBaseFactory extends DatabaseKnowledgeBaseFactor
        	   
         return owlModel;    	 	
     }
+    
+    
 
 
     private void dump(Cls cls, String tabs) {
@@ -109,6 +115,14 @@ public class OWLDatabaseKnowledgeBaseFactory extends DatabaseKnowledgeBaseFactor
 
         owlModel.initialize();
         
+        owlModel.resetDefaultOWLOntologyCache();
+        loadImports(owlModel, errors);
+        loadPrefixes(owlModel, errors);
+
+    }
+
+    
+    private void loadImports(OWLModel owlModel, Collection errors) {
         for (String imprt : owlModel.getDefaultOWLOntology().getImports()) {
             try {
                  owlModel.addImport(URIUtilities.createURI(imprt));
@@ -118,7 +132,7 @@ public class OWLDatabaseKnowledgeBaseFactory extends DatabaseKnowledgeBaseFactor
             }
         }
     }
-
+    
     protected void initializeKB(KnowledgeBase kb, 
     		String driver, 
     		String url, 
@@ -149,7 +163,8 @@ public class OWLDatabaseKnowledgeBaseFactory extends DatabaseKnowledgeBaseFactor
             
             //move this from here
             if (owlModel instanceof JenaOWLModel) {
-            	writePrefixesToDatabase(owlModel);
+                createTopLevelOntologyInstance(owlModel);
+            	writePrefixesToModel(owlModel);
             }
             
             if (owlModel instanceof JenaOWLModel) {
@@ -166,49 +181,24 @@ public class OWLDatabaseKnowledgeBaseFactory extends DatabaseKnowledgeBaseFactor
             Log.getLogger().severe(message);
         }
     }
-
-
-    private void writePrefixesToDatabase(OWLModel owlModel) {
-        if (log.isLoggable(Level.FINE)) {
-            log.fine("Saving Prefixes to database, owl ontology = " + owlModel.getDefaultOWLOntology());
-            log.fine("prefixes = " + owlModel.getNamespaceManager().getPrefixes());
-        }
-    	
-    	//delete the initial default ontology
-    	OWLOntology initialDefaultOntology = owlModel.getOWLOntologyByURI(ProtegeNames.DEFAULT_ONTOLOGY);
-    	if (initialDefaultOntology != null) {
-    		initialDefaultOntology.delete();
-    	}
-    	
-    	OWLOntology defaultOwlOntology = owlModel.getDefaultOWLOntology();
-    	
-    	//write the default ontology to the database
-    	createTopLevelOntologyInstance(owlModel);
-    	
-    	Slot prefixesSlot = owlModel.getSlot(OWLNames.Slot.ONTOLOGY_PREFIXES);
-    	NamespaceManager nm = owlModel.getNamespaceManager();
-    	for (String prefix  : nm.getPrefixes()) {
-			String namespace = nm.getNamespaceForPrefix(prefix);
-			String value = prefix + ":" + namespace;
-			defaultOwlOntology.addOwnSlotValue(prefixesSlot, value);
-		}
-		
-	}
-
     
     protected void createTopLevelOntologyInstance(OWLModel owlModel) {
-		Cls topLevelOWLOntologyClass = owlModel.getCls(OWLNames.Cls.TOP_LEVEL_ONTOLOGY);
-		Slot topLevelOWLOntologyURISlot = owlModel.getSlot(OWLNames.Slot.TOP_LEVEL_ONTOLOGY_URI);
+		RDFSNamedClass topLevelOWLOntologyClass = owlModel.getSystemFrames().getTopOWLOntologyClass();
+		RDFProperty topLevelOWLOntologyURISlot = owlModel.getSystemFrames().getTopOWLOntologyURISlot();
 		
 		if (topLevelOWLOntologyClass == null || topLevelOWLOntologyURISlot == null) {
 			Log.getLogger().warning("Could not write top level ontology to the database. Missing system frames");
 			return;
 		}
-		
-		//should be just one
-		Instance inst = topLevelOWLOntologyClass.createDirectInstance(null);
-		inst.setOwnSlotValue(topLevelOWLOntologyURISlot, owlModel.getDefaultOWLOntology());
-		
+
+		Collection values = topLevelOWLOntologyClass.getInstances(false);
+		for (Object o : values) {
+		    if (o instanceof RDFIndividual) {
+		        ((RDFIndividual) o).delete();
+		    }
+		}
+		RDFIndividual inst = topLevelOWLOntologyClass.createRDFIndividual(null);
+		inst.setPropertyValue(topLevelOWLOntologyURISlot, owlModel.getDefaultOWLOntology());
 	}
     
 
@@ -228,6 +218,53 @@ public class OWLDatabaseKnowledgeBaseFactory extends DatabaseKnowledgeBaseFactor
         owlModel.initializeClient();
         owlModel.adjustClientFrameStores();
       }
+    }
+    
+    
+    /*
+     * In case you are dyslexic like me a typical prefix namespace pair is
+     *    prefix = dc
+     *    namespace = http://purl.org/dc/elements/1.1/
+     */
+    
+    private void loadPrefixes(OWLModel owlModel, Collection errors) {
+        OWLOntology defaultOwlOntology = owlModel.getDefaultOWLOntology();
+        
+        RDFProperty prefixesProperty = owlModel.getSystemFrames().getOwlOntologyPrefixesProperty();
+        NamespaceManager nm = owlModel.getNamespaceManager();
+        for (Object o : defaultOwlOntology.getPropertyValues(prefixesProperty)) {
+            if (o instanceof String) {
+                String encodedNamespaceEntry = (String) o;
+                int index = encodedNamespaceEntry.indexOf(NAMESPACE_PREFIX_SEPARATOR);
+                if (index < 0) continue;
+                String prefix = encodedNamespaceEntry.substring(0, index);
+                String namespace = encodedNamespaceEntry.substring(index + 1);
+                nm.setPrefix(namespace, prefix);
+            }
+        }
+    }
+    
+    private void writePrefixesToModel(OWLModel owlModel) {
+        if (log.isLoggable(Level.FINE)) {
+            log.fine("Saving Prefixes to database, owl ontology = " + owlModel.getDefaultOWLOntology());
+            log.fine("prefixes = " + owlModel.getNamespaceManager().getPrefixes());
+        }
+        
+        
+        OWLOntology defaultOwlOntology = owlModel.getDefaultOWLOntology();
+        //delete the initial default ontology
+        OWLOntology initialDefaultOntology = owlModel.getOWLOntologyByURI(ProtegeNames.DEFAULT_ONTOLOGY);
+        if (initialDefaultOntology != null) {
+            initialDefaultOntology.delete();
+        }     
+        RDFProperty prefixesProperty = owlModel.getSystemFrames().getOwlOntologyPrefixesProperty();
+        NamespaceManager nm = owlModel.getNamespaceManager();
+        for (String prefix  : nm.getPrefixes()) {
+            String namespace = nm.getNamespaceForPrefix(prefix);
+            String value = prefix + NAMESPACE_PREFIX_SEPARATOR + namespace;
+            defaultOwlOntology.addPropertyValue(prefixesProperty, value);
+        }
+        
     }
 
 }
