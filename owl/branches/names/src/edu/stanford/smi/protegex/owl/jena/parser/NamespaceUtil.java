@@ -3,7 +3,7 @@ package edu.stanford.smi.protegex.owl.jena.parser;
 import com.hp.hpl.jena.rdf.model.impl.Util;
 
 import edu.stanford.smi.protegex.owl.model.OWLModel;
-import edu.stanford.smi.protegex.owl.model.impl.NewNamespaceManager;
+import edu.stanford.smi.protegex.owl.model.impl.OWLNamespaceManager;
 
 public class NamespaceUtil {
 
@@ -28,7 +28,7 @@ public class NamespaceUtil {
 		
 		if (prefix == null) {
 			return fullURI;
-		} else if (prefix.equals(NewNamespaceManager.DEFAULT_NAMESPACE_PREFIX)) {
+		} else if (prefix.equals(OWLNamespaceManager.DEFAULT_NAMESPACE_PREFIX)) {
 			return localName;
 		} else {
 			return prefix + ":" + localName; 
