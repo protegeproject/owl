@@ -6,6 +6,7 @@ import java.util.logging.Level;
 
 import edu.stanford.smi.protege.model.framestore.NarrowFrameStore;
 import edu.stanford.smi.protege.util.Disposable;
+import edu.stanford.smi.protegex.owl.model.NamespaceManager;
 import edu.stanford.smi.protegex.owl.model.NamespaceMap;
 import edu.stanford.smi.protegex.owl.model.RDFObject;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
@@ -21,6 +22,8 @@ import edu.stanford.smi.protegex.owl.model.RDFResource;
  * @author Holger Knublauch  <holger@knublauch.com>
  */
 public interface TripleStore extends NamespaceMap, Disposable {
+    
+    NamespaceManager getNamespaceManager();
 
     void add(Triple triple);
 
