@@ -221,16 +221,14 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     private Slot protegeSubclassesDisjointProperty;
 
 
-    public AbstractOWLModel(KnowledgeBaseFactory factory, boolean initialize) {
+    public AbstractOWLModel(KnowledgeBaseFactory factory) {
         super(factory);
 
         setFrameFactory(new OWLJavaFactory(this));
         
         initializeLoadDefaults();
-        
-        if (initialize) {
-            initialize();
-        }
+
+        initialize();
     }
 
     protected void initializeLoadDefaults() {
@@ -241,15 +239,14 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
         if (log.isLoggable(Level.FINE)) {
             log.fine("Phase 2 initialization of OWL Model starts");
         }
-        
+
         boolean eventEnabled = setGenerateEventsEnabled(false);
-        
+
         setGenerateDeletingFrameEventsEnabled(true);
 
         // resetSystemFrames();
 
         inInit = false;
-        createDefaultOWLOntology();
 
         setDefaultClsMetaCls(getOWLNamedClassClass());
         setDefaultSlotMetaCls(getOWLDatatypePropertyClass());
@@ -263,7 +260,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
                 else {
                     String validName = getValidNamespaceFrameName(name);
                     return "The name \"" + name + "\" is not a valid OWL identifier.\n" +
-                           "You might want to use \"" + validName + "\" instead.";
+                    "You might want to use \"" + validName + "\" instead.";
                 }
             }
 
@@ -313,9 +310,9 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
         if (super.getProject() != null) {
             setProject(super.getProject());
         }
-        
+
         setGenerateEventsEnabled(eventEnabled);
-        
+
     }
     
 

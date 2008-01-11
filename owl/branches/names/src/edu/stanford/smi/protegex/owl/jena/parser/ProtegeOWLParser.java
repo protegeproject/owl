@@ -256,7 +256,9 @@ public class ProtegeOWLParser {
 			OWLOntology newDefaultOWLOntology = (OWLOntology) ((KnowledgeBase) owlModel).getFrame(tripleStore.getName());			
 			OWLOntology oldDefaultOntology = owlModel.getDefaultOWLOntology();
 			
-			if (!oldDefaultOntology.equals(newDefaultOWLOntology) && oldDefaultOntology.getName().equals(ProtegeNames.DEFAULT_ONTOLOGY)) {
+			if (oldDefaultOntology != null &&
+			        !oldDefaultOntology.equals(newDefaultOWLOntology) && 
+			        oldDefaultOntology.getName().equals(ProtegeNames.DEFAULT_ONTOLOGY)) {
 				oldDefaultOntology.delete();
 			}
 			

@@ -87,7 +87,7 @@ public class JenaOWLModel extends AbstractOWLModel implements OntModelProvider {
 
 
     protected JenaOWLModel(KnowledgeBaseFactory factory) {
-        super(factory, true);
+        super(factory);
         OWLJavaFactoryUpdater.run(this);
         MergingNarrowFrameStore mnfs = MergingNarrowFrameStore.get(this);
         mnfs.setTopFrameStore(mnfs.getActiveFrameStore().getName());

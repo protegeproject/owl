@@ -183,22 +183,8 @@ public class OWLDatabaseKnowledgeBaseFactory extends DatabaseKnowledgeBaseFactor
     }
     
     protected void createTopLevelOntologyInstance(OWLModel owlModel) {
-		RDFSNamedClass topLevelOWLOntologyClass = owlModel.getSystemFrames().getTopOWLOntologyClass();
 		RDFProperty topLevelOWLOntologyURISlot = owlModel.getSystemFrames().getTopOWLOntologyURISlot();
-		
-		if (topLevelOWLOntologyClass == null || topLevelOWLOntologyURISlot == null) {
-			Log.getLogger().warning("Could not write top level ontology to the database. Missing system frames");
-			return;
-		}
-
-		Collection values = topLevelOWLOntologyClass.getInstances(false);
-		for (Object o : values) {
-		    if (o instanceof RDFIndividual) {
-		        ((RDFIndividual) o).delete();
-		    }
-		}
-		RDFIndividual inst = topLevelOWLOntologyClass.createRDFIndividual(null);
-		inst.setPropertyValue(topLevelOWLOntologyURISlot, owlModel.getDefaultOWLOntology());
+		OWLDatabaseModel.getTopLevelOWLOntologyClassInstance(owlModel).setPropertyValue(topLevelOWLOntologyURISlot, owlModel.getDefaultOWLOntology());
 	}
     
 

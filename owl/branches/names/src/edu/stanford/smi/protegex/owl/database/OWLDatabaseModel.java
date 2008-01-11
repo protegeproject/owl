@@ -27,6 +27,7 @@ import edu.stanford.smi.protegex.owl.jena.Jena;
 import edu.stanford.smi.protegex.owl.jena.OntModelProvider;
 import edu.stanford.smi.protegex.owl.jena.creator.JenaCreator;
 import edu.stanford.smi.protegex.owl.model.NamespaceManager;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLNames;
 import edu.stanford.smi.protegex.owl.model.OWLOntology;
 import edu.stanford.smi.protegex.owl.model.ProtegeNames;
@@ -62,7 +63,7 @@ public class OWLDatabaseModel
 
 
     public OWLDatabaseModel(KnowledgeBaseFactory factory) {    	
-        super(factory, false);
+        super(factory);
     }
 
 	/**
@@ -89,35 +90,12 @@ public class OWLDatabaseModel
     	if (defaultDBOWLOntology != null) {
     		return defaultDBOWLOntology;
     	}
-    	
-    	//try to read it from the OWLNames.Cls.TOP-LEVEL-ONTOLOGY
-    	defaultDBOWLOntology = getTopLevelOntololgyFromDatabase();
-    	if (defaultDBOWLOntology != null) {
-    		return defaultDBOWLOntology;
-    	}
-    	
-    	//try to compute it from the existing owl ontology instances
-    	defaultDBOWLOntology = ImportUtil.calculateTopLevelOntology(this);    	
-    	if (defaultDBOWLOntology == null) {
-    		Log.getLogger().warning("Could not compute the top level ontology. Using the default one: " + ProtegeNames.DEFAULT_ONTOLOGY);
-    		setDefaultOWLOntology(createDefaultOWLOntologyReally());
-    	}
-    	
-    	return defaultDBOWLOntology;
+    	return defaultDBOWLOntology = getTopLevelOntololgyFromDatabase();
     }
     
     public void setDefaultOWLOntology(OWLOntology defaultOWLOntology) {
-        RDFSNamedClass topLevelOWLOntologyClass = getSystemFrames().getTopOWLOntologyClass();
         RDFProperty topLevelOWLOntologyURISlot = getSystemFrames().getTopOWLOntologyURISlot();
-        RDFIndividual inst;
-        if (topLevelOWLOntologyClass.getInstances(false).isEmpty()) {
-            inst = topLevelOWLOntologyClass.createRDFIndividual(null);
-        }
-        else {
-            // there should only be one!
-            inst = ((RDFIndividual) topLevelOWLOntologyClass.getInstances(false).iterator().next());
-        }
-        inst.setPropertyValue(topLevelOWLOntologyURISlot, defaultOWLOntology);
+        getTopLevelOWLOntologyClassInstance(this).setPropertyValue(topLevelOWLOntologyURISlot, defaultOWLOntology);
         defaultDBOWLOntology = defaultOWLOntology;
     }
     
@@ -126,22 +104,21 @@ public class OWLDatabaseModel
     }
     
     protected OWLOntology getTopLevelOntololgyFromDatabase() {
-		Cls topLevelOWLOntologyClass = getSystemFrames().getTopOWLOntologyClass();
-		Slot topLevelOWLOntologyURISlot = getSystemFrames().getTopOWLOntologyURISlot();
-		
-		if (topLevelOWLOntologyClass == null || topLevelOWLOntologyURISlot == null) {
-			return null;
-		}
-		
-		//should be just one
-		Instance inst = (Instance) CollectionUtilities.getFirstItem(topLevelOWLOntologyClass.getInstances());
-		if (inst == null) {
-			return null;
-		}
-				
-		return (OWLOntology) inst.getOwnSlotValue(topLevelOWLOntologyURISlot);
+
+		RDFProperty topLevelOWLOntologyURISlot = getSystemFrames().getTopOWLOntologyURISlot();
+		return (OWLOntology) getTopLevelOWLOntologyClassInstance(this).getPropertyValue(topLevelOWLOntologyURISlot);
 	}
     
+    public static RDFIndividual getTopLevelOWLOntologyClassInstance(OWLModel owlModel) {
+        RDFSNamedClass topLevelOWLOntologyClass = owlModel.getSystemFrames().getTopOWLOntologyClass();
+        if (topLevelOWLOntologyClass.getInstances(false).isEmpty()) {
+            return topLevelOWLOntologyClass.createRDFIndividual(null);
+        }
+        else {
+            // there should only be one!
+            return ((RDFIndividual) topLevelOWLOntologyClass.getInstances(false).iterator().next());
+        }
+    }
     
     
 	@Override
