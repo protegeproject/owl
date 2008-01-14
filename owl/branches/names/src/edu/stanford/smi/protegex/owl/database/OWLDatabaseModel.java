@@ -1,6 +1,5 @@
 package edu.stanford.smi.protegex.owl.database;
 
-import java.util.Collections;
 import java.util.logging.Logger;
 
 import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
@@ -16,12 +15,8 @@ import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
 import com.hp.hpl.jena.vocabulary.ReasonerVocabulary;
 
-import edu.stanford.smi.protege.model.Cls;
-import edu.stanford.smi.protege.model.Instance;
 import edu.stanford.smi.protege.model.KnowledgeBaseFactory;
 import edu.stanford.smi.protege.model.Project;
-import edu.stanford.smi.protege.model.Slot;
-import edu.stanford.smi.protege.util.CollectionUtilities;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.jena.Jena;
 import edu.stanford.smi.protegex.owl.jena.OntModelProvider;
@@ -39,12 +34,8 @@ import edu.stanford.smi.protegex.owl.model.RDFSNames;
 import edu.stanford.smi.protegex.owl.model.factory.OWLJavaFactory;
 import edu.stanford.smi.protegex.owl.model.framestore.LocalClassificationFrameStore;
 import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
-import edu.stanford.smi.protegex.owl.model.impl.OWLDatabaseNamespaceManager;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreModel;
 import edu.stanford.smi.protegex.owl.model.triplestore.impl.TripleStoreModelImpl;
-import edu.stanford.smi.protegex.owl.model.util.ImportUtil;
-import edu.stanford.smi.protegex.owl.ui.widget.ModalProgressBarManager;
-
 import edu.stanford.smi.protegex.owl.ui.widget.ModalProgressBarManager;
 
 /**
