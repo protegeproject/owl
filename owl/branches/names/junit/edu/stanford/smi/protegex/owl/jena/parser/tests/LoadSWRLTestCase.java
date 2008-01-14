@@ -22,8 +22,8 @@ public class LoadSWRLTestCase extends AbstractJenaTestCase {
     public void testAddSWRLImport() throws Exception {
         owlModel.getNamespaceManager().setPrefix(SWRLNames.SWRL_IMPORT, "swrlImport");
         owlModel.getNamespaceManager().setPrefix(SWRLNames.SWRLB_IMPORT, "swrlbImport");
-        ProtegeOWLParser.addImport(owlModel, new URI(SWRLNames.SWRL_IMPORT));
-        ProtegeOWLParser.addImport(owlModel, new URI(SWRLNames.SWRLB_IMPORT));
+        owlModel.addImport(new URI(SWRLNames.SWRL_IMPORT));
+        owlModel.addImport(new URI(SWRLNames.SWRLB_IMPORT));
         RDFResource atomListClass = owlModel.getRDFResource(SWRLNames.Cls.ATOM_LIST);
         assertTrue(atomListClass instanceof OWLNamedClass);
     }
