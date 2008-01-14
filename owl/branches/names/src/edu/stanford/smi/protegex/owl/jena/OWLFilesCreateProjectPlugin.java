@@ -21,8 +21,10 @@ import edu.stanford.smi.protege.util.PropertyList;
 import edu.stanford.smi.protege.util.WizardPage;
 import edu.stanford.smi.protegex.owl.jena.parser.ProtegeOWLParser;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.model.OWLOntology;
 import edu.stanford.smi.protegex.owl.model.ProtegeNames;
 import edu.stanford.smi.protegex.owl.model.XSPNames;
+import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
 import edu.stanford.smi.protegex.owl.model.util.ImportHelper;
 import edu.stanford.smi.protegex.owl.model.util.XSDVisibility;
 import edu.stanford.smi.protegex.owl.swrl.model.SWRLNames;
@@ -180,16 +182,23 @@ public class OWLFilesCreateProjectPlugin
 
 
     protected Project createNewProject(KnowledgeBaseFactory factory) {
-        Collection errors = new ArrayList();
-        Project project = Project.createNewProject(factory, errors);
-        OWLModel owlModel = (OWLModel) project.getKnowledgeBase();
-        if (defaultNamespace != null) {
-            owlModel.getNamespaceManager().setDefaultNamespace(defaultNamespace);
-        }
-        addViewSettings(project.getSources());
-        addImports(project);
-        OWLMenuProjectPlugin.makeHiddenClsesWithSubclassesVisible(owlModel);
-        return project;
+    	Collection errors = new ArrayList();
+    	Project project = Project.createNewProject(factory, errors);
+    	OWLModel owlModel = (OWLModel) project.getKnowledgeBase();
+    	if (defaultNamespace == null) {
+    		defaultNamespace = ProtegeNames.DEFAULT_DEFAULT_BASE;
+    	}
+    	owlModel.getNamespaceManager().setDefaultNamespace(defaultNamespace);
+    	String defaultOntologyName = defaultNamespace;
+    	if (defaultOntologyName.endsWith("#")) {
+    		defaultOntologyName = defaultOntologyName.substring(0, defaultOntologyName.length() - 1);
+    	}
+    	OWLOntology defaultOntology = (OWLOntology) owlModel.getSystemFrames().getOwlOntologyClass().createInstance(defaultOntologyName);
+    	((AbstractOWLModel) owlModel).setDefaultOWLOntology(defaultOntology);
+    	addViewSettings(project.getSources());
+    	addImports(project);
+    	OWLMenuProjectPlugin.makeHiddenClsesWithSubclassesVisible(owlModel);
+    	return project;
     }
 
 
