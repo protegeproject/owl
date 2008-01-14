@@ -3,21 +3,23 @@ package edu.stanford.smi.protegex.owl.model.impl;
 import java.net.URI;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-import edu.stanford.smi.protege.model.KnowledgeBase;
-import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protege.util.Log;
-import edu.stanford.smi.protege.util.URIUtilities;
 import edu.stanford.smi.protegex.owl.model.NamespaceManager;
 import edu.stanford.smi.protegex.owl.model.NamespaceManagerListener;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLNames;
-import edu.stanford.smi.protegex.owl.model.OWLOntology;
 import edu.stanford.smi.protegex.owl.model.RDFNames;
 import edu.stanford.smi.protegex.owl.model.RDFSNames;
+import edu.stanford.smi.protegex.owl.model.XSDNames;
 
 public class OWLNamespaceManager implements NamespaceManager {
+	private static final transient Logger log = Log.getLogger(OWLNamespaceManager.class);
 	//TODO: The interface should be modified to throw exceptions	
+	private Collection<NamespaceManagerListener> listeners = new HashSet<NamespaceManagerListener>();
 	
     private static String DEFAULT_PREFIX_START = "p";
     public static final String DEFAULT_NAMESPACE_PREFIX = "";
@@ -30,19 +32,25 @@ public class OWLNamespaceManager implements NamespaceManager {
 	private HashMap<String, String> prefix2namespaceMap = new HashMap<String, String>();
 	private HashMap<String, String> namespace2prefixMap = new HashMap<String, String>();
 	
+	private Collection<String> unmodifiablePrefixes = new HashSet<String>();
+	
 	
 	public OWLNamespaceManager(OWLModel owlModel) {
 	    this.owlModel = owlModel;
+	    setPrefix(OWLNames.OWL_NAMESPACE, OWLNames.OWL_PREFIX);
         setModifiable(OWLNames.OWL_PREFIX, false);
+        setPrefix(RDFNames.RDF_NAMESPACE, RDFNames.RDF_PREFIX);
         setModifiable(RDFNames.RDF_PREFIX, false);
+        setPrefix(RDFSNames.RDFS_NAMESPACE, RDFSNames.RDFS_PREFIX);
         setModifiable(RDFSNames.RDFS_PREFIX, false);
+        setPrefix(XSDNames.XSD_NAMESPACE, RDFNames.XSD_PREFIX);
         setModifiable(RDFNames.XSD_PREFIX, false);
 	}
 	
 
 
 	public void addNamespaceManagerListener(NamespaceManagerListener listener) {
-		// TODO Auto-generated method stub
+		listeners.add(listener);
 	}
 
 	public void init(OWLModel owlModel) {
@@ -50,24 +58,25 @@ public class OWLNamespaceManager implements NamespaceManager {
 	}
 
 	public boolean isModifiable(String prefix) {
-		// TODO Auto-generated method stub
-		return false;
+		return !unmodifiablePrefixes.contains(prefix);
 	}
 
 	public void removeNamespaceManagerListener(NamespaceManagerListener listener) {
-		// TODO Auto-generated method stub
+		listeners.remove(listener);
 	}
 
 	public void setModifiable(String prefix, boolean value) {
-		// TODO Auto-generated method stub
+		if (value) {
+			unmodifiablePrefixes.add(prefix);
+		}
+		else {
+			unmodifiablePrefixes.remove(prefix);
+		}
 	}
 
-	public void update() {
-		// TODO Auto-generated method stub
-	}
 
 	public String getDefaultNamespace() {
-		return namespace2prefixMap.get(DEFAULT_NAMESPACE_PREFIX);
+		return prefix2namespaceMap.get(DEFAULT_NAMESPACE_PREFIX);
 	}
 
 	public String getNamespaceForPrefix(String prefix) {
@@ -86,48 +95,80 @@ public class OWLNamespaceManager implements NamespaceManager {
 		String namespace = prefix2namespaceMap.get(prefix);
 		
 		if (namespace != null) {
-			prefix2namespaceMap.remove(prefix);
-			namespace2prefixMap.remove(namespace);
+			removePrefixMappingSimple(namespace, prefix);
+			for (NamespaceManagerListener listener : listeners) {
+				try {
+					listener.prefixRemoved(prefix);
+				}
+				catch (Throwable t) {
+					handleNamespaceListenerError(listener, t);
+				}
+			}
 		}
-
 	}
+	
+
 
 	public void setDefaultNamespace(String value) {
-		// TODO Auto-generated method stub
-
+		setPrefix(value, DEFAULT_NAMESPACE_PREFIX);
 	}
 
 	public void setDefaultNamespace(URI uri) {
-		// TODO Auto-generated method stub
-
+		setDefaultNamespace(uri.toString());
 	}
 
 	public void setPrefix(String namespace, String prefix) {
 		String existingNamespace = prefix2namespaceMap.get(prefix);
 		String existingPrefix = namespace2prefixMap.get(namespace);
 		
-		if (prefix2namespaceMap.keySet().contains(prefix) && 
-				namespace.equals(existingNamespace) &&
-				prefix.equals(existingPrefix)) {
+		if (existingNamespace != null && namespace.equals(existingNamespace)) {
 			return;
 		}
-		
 		//should throw exception
-		if (existingNamespace != null) {
-			Log.getLogger().warning("Trying to add namespace to an already existing prefix: " + prefix + " -> " + namespace);
+		if (existingNamespace != null && unmodifiablePrefixes.contains(prefix)) {
+			log.warning("Trying to set namespace to an unmodifiable prefix: " + prefix + " -> " + namespace);
 			return;
 		}
+		if (existingPrefix != null) {
+			removePrefixMappingSimple(namespace, existingPrefix);
+		}
+		if (existingNamespace != null) {
+			removePrefixMappingSimple(existingNamespace, prefix);
+			for (NamespaceManagerListener listener : listeners) {
+				try {
+					listener.prefixRemoved(prefix);
+				}
+				catch (Throwable t) {
+					handleNamespaceListenerError(listener, t);
+				}
+			}
+		}
 				
-		addPrefixNamespaceMapping(prefix, namespace);
-		//String newPrefix = getNextAvailablePrefixName();
-				
+		addPrefixMappingSimple(namespace, prefix);
+		if (existingPrefix != null) {
+			for (NamespaceManagerListener listener : listeners) {
+				try {
+					listener.prefixChanged(namespace, existingPrefix, prefix);
+				}
+				catch (Throwable t) {
+					handleNamespaceListenerError(listener, t);
+				}
+			}
+		}
+		else {
+			for (NamespaceManagerListener listener : listeners) {
+				try {
+					listener.prefixAdded(prefix);
+				}
+				catch (Throwable t) {
+					handleNamespaceListenerError(listener, t);
+				}
+			}
+		}
 		return;
 	}
 
-	private void addPrefixNamespaceMapping(String prefix, String namespace) {
-		prefix2namespaceMap.put(prefix, namespace);
-		namespace2prefixMap.put(namespace, prefix);	
-	}
+
 
 	public void setPrefix(URI namespace, String prefix) {
 		setPrefix(namespace.toString(), prefix);
@@ -164,6 +205,23 @@ public class OWLNamespaceManager implements NamespaceManager {
         }
         return true;
     }
+    
+	public void removePrefixMappingSimple(String namespace, String prefix) {
+		prefix2namespaceMap.remove(prefix);
+		namespace2prefixMap.remove(namespace);
+	}
+	
+	private void addPrefixMappingSimple(String namespace, String prefix) {
+		prefix2namespaceMap.put(prefix, namespace);
+		namespace2prefixMap.put(namespace, prefix);	
+	}
+	
+	private void handleNamespaceListenerError(NamespaceManagerListener listener, Throwable t) {
+		log.warning("Excepction thrown by  namespace listener (" + listener + "): " + t);
+		if (log.isLoggable(Level.FINE)) {
+			log.log(Level.FINE, "Exception caught", t);
+		}
+	}
 	
 	
 
