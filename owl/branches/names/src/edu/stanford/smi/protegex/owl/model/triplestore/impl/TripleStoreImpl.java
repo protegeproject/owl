@@ -244,19 +244,7 @@ public class TripleStoreImpl implements TripleStore, ProtegeTripleAdder {
 
 
     public String getNamespaceForPrefix(String prefix) {
-        Instance ontology = TripleStoreUtil.getFirstOntology(owlModel, this);
-        if (ontology != null) {
-            prefix += ProtegeNames.PREFIX_LOCALNAME_SEPARATOR;
-            Slot prefixesSlot = owlModel.getRDFProperty(OWLNames.Slot.ONTOLOGY_PREFIXES);
-            Collection values = getNarrowFrameStore().getValues(ontology, prefixesSlot, null, false);
-            for (Iterator it = values.iterator(); it.hasNext();) {
-                String value = (String) it.next();
-                if (value.startsWith(prefix)) {
-                    return value.substring(prefix.length());
-                }
-            }
-        }
-        return null;
+    	return getNamespaceManager().getNamespaceForPrefix(prefix);
     }
 
     public NarrowFrameStore getNarrowFrameStore() {
@@ -275,35 +263,12 @@ public class TripleStoreImpl implements TripleStore, ProtegeTripleAdder {
 
 
     public String getPrefix(String namespace) {
-        Instance ontology = TripleStoreUtil.getFirstOntology(owlModel, this);
-        if (ontology != null) {
-            String suffix = ":" + namespace;
-            Slot prefixesSlot = owlModel.getRDFProperty(OWLNames.Slot.ONTOLOGY_PREFIXES);
-            Collection values = getNarrowFrameStore().getValues(ontology, prefixesSlot, null, false);
-            for (Iterator it = values.iterator(); it.hasNext();) {
-                String value = (String) it.next();
-                if (value.endsWith(suffix)) {
-                    return value.substring(0, value.length() - suffix.length());
-                }
-            }
-        }
-        return null;
+    	return getNamespaceManager().getPrefix(namespace);
     }
 
 
-    public Collection getPrefixes() {
-        Collection results = new ArrayList();
-        Instance ontology = TripleStoreUtil.getFirstOntology(owlModel, this);
-        if (ontology != null) {
-            Slot prefixesSlot = owlModel.getRDFProperty(OWLNames.Slot.ONTOLOGY_PREFIXES);
-            Collection values = getNarrowFrameStore().getValues(ontology, prefixesSlot, null, false);
-            for (Iterator it = values.iterator(); it.hasNext();) {
-                String value = (String) it.next();
-                int index = value.indexOf(':');
-                results.add(value.substring(0, index));
-            }
-        }
-        return results;
+    public Collection<String> getPrefixes() {
+    	return getNamespaceManager().getPrefixes();
     }
 
 
@@ -450,11 +415,7 @@ public class TripleStoreImpl implements TripleStore, ProtegeTripleAdder {
 
 
     public void setPrefix(String namespace, String prefix) {
-        removePrefix(prefix);
-        Instance ontology = TripleStoreUtil.getFirstOntology(owlModel, this);
-        Slot prefixesSlot = owlModel.getRDFProperty(OWLNames.Slot.ONTOLOGY_PREFIXES);
-        String value = prefix + ":" + namespace;
-        getNarrowFrameStore().addValues(ontology, prefixesSlot, null, false, Collections.singleton(value));
+    	getNamespaceManager().setPrefix(namespace, prefix);
     }
 
 
