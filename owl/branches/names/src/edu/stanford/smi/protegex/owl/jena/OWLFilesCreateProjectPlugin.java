@@ -195,6 +195,7 @@ public class OWLFilesCreateProjectPlugin
     	}
     	OWLOntology defaultOntology = (OWLOntology) owlModel.getSystemFrames().getOwlOntologyClass().createInstance(defaultOntologyName);
     	((AbstractOWLModel) owlModel).setDefaultOWLOntology(defaultOntology);
+    	owlModel.getTripleStoreModel().getActiveTripleStore().setOriginalXMLBase(defaultOntologyName);
     	addViewSettings(project.getSources());
     	addImports(project);
     	OWLMenuProjectPlugin.makeHiddenClsesWithSubclassesVisible(owlModel);
