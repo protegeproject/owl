@@ -1,8 +1,7 @@
-package edu.stanford.smi.protegex.owl.jena.parser;
+package edu.stanford.smi.protegex.owl.model;
 
 import com.hp.hpl.jena.rdf.model.impl.Util;
 
-import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.impl.OWLNamespaceManager;
 
 public class NamespaceUtil {
