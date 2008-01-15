@@ -48,13 +48,13 @@ public class OntologyURIWidget extends AbstractPropertyWidget {
         nameField.addKeyListener(new KeyAdapter() {
             public void keyReleased(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                    setDefaultNamespace();
+                    setDefaultOntology();
                 }
             }
         });
         nameField.addFocusListener(new FocusAdapter() {
             public void focusLost(FocusEvent e) {
-                setDefaultNamespace();
+                setDefaultOntology();
             }
         });
         nameField.getDocument().addDocumentListener(new DocumentListener() {
@@ -79,19 +79,9 @@ public class OntologyURIWidget extends AbstractPropertyWidget {
 
     public void setInstance(Instance instance) {
         super.setInstance(instance);
-        nameField.setEditable(isCurrentTripleStoreTop());
+        TripleStoreModel tsm = getOWLModel().getTripleStoreModel();
+        nameField.setEditable(tsm.getActiveTripleStore().equals(tsm.getTopTripleStore()));
         updateOntologyName();
-    }
-
-    private boolean isCurrentTripleStoreTop() {
-        TripleStoreModel tsm = getOWLModel().getTripleStoreModel();
-        TripleStore ontHome = tsm.getHomeTripleStore(getEditedResource());
-        return tsm.getTopTripleStore().equals(ontHome);
-    }
-
-    private boolean isTopTripleStoreActive() {
-        TripleStoreModel tsm = getOWLModel().getTripleStoreModel();
-        return tsm.getActiveTripleStore().equals(tsm.getTopTripleStore());
     }
 
     private boolean validateName() {
@@ -118,15 +108,10 @@ public class OntologyURIWidget extends AbstractPropertyWidget {
     }
 
 
-    private void setDefaultNamespace() {
+    private void setDefaultOntology() {
         if (validateName()) {
-            if (isTopTripleStoreActive()) {
-                String nameSpace = nameField.getText();
-                if (nameSpace.endsWith("/") == false) {
-                    nameSpace += "#";
-                }
-                getOWLModel().getNamespaceManager().setDefaultNamespace(nameSpace);
-            }
+        	OWLOntology ontology = (OWLOntology) getEditedResource();
+        	ontology.rename(nameField.getText());
             updateOntologyName();
         }
         else {
