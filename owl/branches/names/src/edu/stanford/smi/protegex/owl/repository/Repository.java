@@ -41,7 +41,7 @@ public interface Repository {
      * @return A <code>Collection</code> containing
      *         <code>URI</code>s.
      */
-    public Collection getOntologies();
+    public Collection<URI> getOntologies();
 
 
 
