@@ -60,7 +60,7 @@ public class DublinCoreDLVersionRedirectRepository extends AbstractStreamBasedRe
     }
 
 
-    public Collection getOntologies() {
+    public Collection<URI> getOntologies() {
         return Collections.singleton(dublinCoreOntologyURI);
     }
 

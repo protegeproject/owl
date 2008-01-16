@@ -106,12 +106,12 @@ public class HTTPRepository extends AbstractStreamBasedRepositoryImpl {
     }
 
 
-    public Collection getOntologies() {
+    public Collection<URI> getOntologies() {
         if (ontologyName != null) {
             return Collections.singleton(ontologyName);
         }
         else {
-            return Collections.EMPTY_LIST;
+            return Collections.emptyList();
         }
     }
 

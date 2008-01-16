@@ -71,7 +71,7 @@ public class ForcedURLRetrievalRepository extends AbstractStreamBasedRepositoryI
     }
 
 
-    public Collection getOntologies() {
+    public Collection<URI> getOntologies() {
         return Collections.singleton(uri);
     }
 

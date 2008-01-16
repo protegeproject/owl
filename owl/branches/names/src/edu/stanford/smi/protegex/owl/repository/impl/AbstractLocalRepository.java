@@ -33,13 +33,13 @@ public abstract class AbstractLocalRepository extends AbstractStreamBasedReposit
 
     private boolean forceReadOnly;
 
-    private Map ontologies;
+    private Map<URI, File> ontologies;
 
 
     public AbstractLocalRepository(File file, boolean forceReadOnly) {
         this.file = file;
         this.forceReadOnly = forceReadOnly;
-        ontologies = new HashMap();
+        ontologies = new HashMap<URI, File>();
     }
 
 
@@ -49,7 +49,7 @@ public abstract class AbstractLocalRepository extends AbstractStreamBasedReposit
 
 
     public void refresh() {
-        ontologies = new HashMap();
+        ontologies = new HashMap<URI, File>();
     }
 
 
@@ -63,7 +63,7 @@ public abstract class AbstractLocalRepository extends AbstractStreamBasedReposit
     }
 
 
-    public Collection getOntologies() {
+    public Collection<URI> getOntologies() {
         return Collections.unmodifiableCollection(ontologies.keySet());
     }
 
@@ -71,7 +71,7 @@ public abstract class AbstractLocalRepository extends AbstractStreamBasedReposit
     @Override
     public InputStream getInputStream(URI ontologyName)
             throws IOException {
-        File f = (File) ontologies.get(ontologyName);
+        File f = ontologies.get(ontologyName);
         if (f != null) {
             return new FileInputStream(f);
         }
@@ -84,7 +84,7 @@ public abstract class AbstractLocalRepository extends AbstractStreamBasedReposit
     public OutputStream getOutputStream(URI ontologyName)
             throws IOException {
         if (isWritable(ontologyName)) {
-            File f = (File) ontologies.get(ontologyName);
+            File f = ontologies.get(ontologyName);
             return new FileOutputStream(f);
         }
         else {
@@ -99,7 +99,7 @@ public abstract class AbstractLocalRepository extends AbstractStreamBasedReposit
 
 
     public String getOntologyLocationDescription(URI ontologyName) {
-        File f = (File) ontologies.get(ontologyName);
+        File f = ontologies.get(ontologyName);
         if (f != null) {
             return f.getAbsolutePath();
         }
@@ -122,7 +122,7 @@ public abstract class AbstractLocalRepository extends AbstractStreamBasedReposit
 
     public boolean isWritable(URI ontologyName) {
         if (forceReadOnly == false) {
-            File f = (File) ontologies.get(ontologyName);
+            File f = ontologies.get(ontologyName);
             if (f != null) {
                 return f.canWrite();
             }
