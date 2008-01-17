@@ -23,6 +23,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import com.hp.hpl.jena.ontology.OntModel;
+
 /**
  * A KnowledgeBase with a number of convenience methods to handle anonymous classes.
  *
@@ -608,6 +610,8 @@ public interface OWLModel extends ProtegeKnowledgeBase, OWLTestManager {
      * @return a Jena Model
      */
     com.hp.hpl.jena.rdf.model.Model getJenaModel();
+    
+    com.hp.hpl.jena.ontology.OntModel getOntModel();
 
 
     RDFProperty getOWLDifferentFromProperty();
