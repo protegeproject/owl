@@ -301,15 +301,15 @@
          <condition>
             <not>
                <and>
-                  <isset property="protege.dir"/>
-                  <available file="${protege.dir}"
+                  <isset property="protege.home"/>
+                  <available file="${protege.home}"
                              type="dir"/>
                </and>
             </not>
          </condition>
       </fail>
       <unzip src="${dist}/${pluginName}.zip" 
-             dest = "${protege.dir}/plugins"
+             dest = "${protege.home}/plugins"
              overwrite = "true"/>
    </target>
 
