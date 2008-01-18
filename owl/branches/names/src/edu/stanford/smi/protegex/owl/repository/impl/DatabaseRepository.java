@@ -9,6 +9,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -93,11 +94,14 @@ public class DatabaseRepository implements Repository {
 	    return statement;
 	}
 	
-	public static final String GET_ONTOLOGY_QUERY;
-	static {
+	private String getOntologyQuery(String table) {
 	    StringBuffer sb = new StringBuffer();
 	    sb.append("select getOntology.short_value ");
-	    sb.append("from ? as ontInstance join ? as getOntology ");
+	    sb.append("from ");
+	    sb.append(table);
+	    sb.append(" as ontInstance join ");
+	    sb.append(table);
+	    sb.append(" as getOntology ");
 	    sb.append("on ontInstance.frame='");
 	    sb.append(OWLNames.Cls.TOP_LEVEL_ONTOLOGY);
 	    sb.append("' and ontInstance.slot='");
@@ -105,24 +109,27 @@ public class DatabaseRepository implements Repository {
 	    sb.append("' and getOntology.frame=ontInstance.short_value and getOntology.slot = '");
 	    sb.append(OWLNames.Slot.TOP_LEVEL_ONTOLOGY_URI);
 	    sb.append("';");
-	    GET_ONTOLOGY_QUERY=sb.toString();
+	    return sb.toString();
 	}
 
 	public boolean addTable(String table) {
 	    String ontology = null;
 	    try {
-	        PreparedStatement query = getStatement(GET_ONTOLOGY_QUERY);
-	        query.setString(0, table);
-	        query.setString(1, table);
-	        ResultSet results = query.executeQuery();
+	        Statement stmt = connection.createStatement();
 	        try {
-	            while (results.next()) {
-	                ontology = results.getString(0);
-	                ontologyToTable.put(new URI(ontology), table);
+	            ResultSet results =  stmt.executeQuery(getOntologyQuery(table));
+	            try {
+	                while (results.next()) {
+	                    ontology = results.getString(1);
+	                    ontologyToTable.put(new URI(ontology), table);
+	                }
+	            }
+	            finally {
+	                results.close();
 	            }
 	        }
 	        finally {
-	            results.close();
+	            stmt.close();
 	        }
 	        return true;
 	    }
