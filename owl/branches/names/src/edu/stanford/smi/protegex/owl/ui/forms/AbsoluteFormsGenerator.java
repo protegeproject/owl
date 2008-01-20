@@ -1,5 +1,16 @@
 package edu.stanford.smi.protegex.owl.ui.forms;
 
+import java.awt.Rectangle;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
+import java.net.URI;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
+
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.RDFWriter;
@@ -8,6 +19,7 @@ import com.hp.hpl.jena.util.FileUtils;
 import com.hp.hpl.jena.vocabulary.OWL;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
+
 import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.KnowledgeBase;
 import edu.stanford.smi.protege.model.Project;
@@ -16,19 +28,18 @@ import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protege.widget.ClsWidget;
 import edu.stanford.smi.protege.widget.SlotWidget;
 import edu.stanford.smi.protegex.owl.jena.Jena;
-import edu.stanford.smi.protegex.owl.jena.JenaKnowledgeBaseFactory;
 import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
-import edu.stanford.smi.protegex.owl.model.*;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.model.OWLNames;
+import edu.stanford.smi.protegex.owl.model.ProtegeNames;
+import edu.stanford.smi.protegex.owl.model.RDFNames;
+import edu.stanford.smi.protegex.owl.model.RDFProperty;
+import edu.stanford.smi.protegex.owl.model.RDFResource;
+import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
+import edu.stanford.smi.protegex.owl.model.RDFSNames;
 import edu.stanford.smi.protegex.owl.model.impl.OWLUtil;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 import edu.stanford.smi.protegex.owl.repository.Repository;
-
-import java.awt.*;
-import java.io.*;
-import java.net.URI;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
 
 /**
  * A utility class that creates a Jena Model in the absolute forms ontology
@@ -179,7 +190,7 @@ public class AbsoluteFormsGenerator {
         String ans = AbsoluteLayoutNames.NS;
         ontology.addProperty(OWL.imports, model.createResource(pns.substring(0, pns.length() - 1)));
         ontology.addProperty(OWL.imports, model.createResource(ans.substring(0, ans.length() - 1)));
-        if (ts == owlModel.getTripleStoreModel().getTripleStore(0)) {
+        if (ts == owlModel.getTripleStoreModel().getSystemTripleStore()) {
             Iterator it = ((KnowledgeBase)owlModel).getClses().iterator();
             while(it.hasNext()) {
                 Cls cls = (Cls) it.next();
@@ -214,7 +225,7 @@ public class AbsoluteFormsGenerator {
         if (ts == owlModel.getTripleStoreModel().getTopTripleStore()) {
             baseURI = owlModel.getDefaultOWLOntology().getURI();
         }
-        else if(ts == owlModel.getTripleStoreModel().getTripleStore(0)) {
+        else if(ts == owlModel.getTripleStoreModel().getSystemTripleStore()) {
             return PROTEGE_SYSTEM_FORMS_URI;
         }
         if (baseURI.endsWith("#")) {
@@ -278,7 +289,7 @@ public class AbsoluteFormsGenerator {
         File file = new File(FILE_NAME);
         Log.getLogger().info("Saving system forms model to " + file);
         OutputStream os = new FileOutputStream(file);
-        TripleStore ts = owlModel.getTripleStoreModel().getTripleStore(0);
+        TripleStore ts = owlModel.getTripleStoreModel().getSystemTripleStore();
         Model model = createModel(ts, ALL.equals(option));
         String language = FileUtils.langXMLAbbrev;
         PrintStream ps = new PrintStream(os);
