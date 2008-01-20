@@ -23,10 +23,13 @@ import java.util.logging.Logger;
 import edu.stanford.smi.protege.model.Model;
 import edu.stanford.smi.protege.storage.database.DatabaseFrameDb;
 import edu.stanford.smi.protege.storage.database.ValueCachingNarrowFrameStore;
+import edu.stanford.smi.protege.util.AmalgamatedIOException;
 import edu.stanford.smi.protege.util.Log;
+import edu.stanford.smi.protegex.owl.database.DatabaseIOUtils;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLNames;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
+import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreModel;
 import edu.stanford.smi.protegex.owl.repository.Repository;
 
 public class DatabaseRepository implements Repository {
@@ -103,11 +106,11 @@ public class DatabaseRepository implements Repository {
 	    sb.append(table);
 	    sb.append(" as getOntology ");
 	    sb.append("on ontInstance.frame='");
-	    sb.append(OWLNames.Cls.TOP_LEVEL_ONTOLOGY);
+	    sb.append(OWLNames.Cls.OWL_ONTOLOGY_POINTER_CLASS);
 	    sb.append("' and ontInstance.slot='");
 	    sb.append(Model.Slot.DIRECT_INSTANCES);
 	    sb.append("' and getOntology.frame=ontInstance.short_value and getOntology.slot = '");
-	    sb.append(OWLNames.Slot.TOP_LEVEL_ONTOLOGY_URI);
+	    sb.append(OWLNames.Slot.OWL_ONTOLOGY_POINTER_PROPERTY);
 	    sb.append("';");
 	    return sb.toString();
 	}
@@ -147,14 +150,31 @@ public class DatabaseRepository implements Repository {
 	    }
 	}
 
-	public void addImport(OWLModel owlModel, URI ontologyName)
+	@SuppressWarnings("unchecked")
+    public TripleStore addImport(OWLModel owlModel, URI ontologyName)
 			throws IOException {
 	    String table = ontologyToTable.get(ontologyName);
 	    DatabaseFrameDb dbFrameStore = new DatabaseFrameDb();
 	    dbFrameStore.initialize(owlModel.getOWLJavaFactory(), getDriver(), getUrl(), getUser(), getPassword(), table, true);
 	    ValueCachingNarrowFrameStore valueCache = new ValueCachingNarrowFrameStore(dbFrameStore);
-        TripleStore importedTripleStore = owlModel.getTripleStoreModel().createTripleStore(valueCache);
-        importedTripleStore.setName(ontologyName.toString());
+	    valueCache.setName(ontologyName.toString());
+	    TripleStoreModel tripleStoreModel = owlModel.getTripleStoreModel();
+	    TripleStore importedTripleStore = null;
+	    TripleStore importingTripleStore = tripleStoreModel.getActiveTripleStore();
+	    try {
+	        importedTripleStore = tripleStoreModel.createActiveImportedTripleStore(valueCache);
+	        Collection errors = new ArrayList();
+	        DatabaseIOUtils.readOWLOntologyFromDatabase(owlModel, importedTripleStore);
+	        DatabaseIOUtils.loadPrefixesFromDB(owlModel, importedTripleStore, errors);
+	        DatabaseIOUtils.loadImports(owlModel, errors);
+	        if (!errors.isEmpty()) {
+	            throw new AmalgamatedIOException(errors);
+	        }
+	    }
+	    finally {
+	        tripleStoreModel.setActiveTripleStore(importingTripleStore);
+	    }
+	    return importedTripleStore;
 	}
 
 	public boolean contains(URI ontologyName) {
