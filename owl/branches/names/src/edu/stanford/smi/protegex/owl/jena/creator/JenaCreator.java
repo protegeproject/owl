@@ -109,7 +109,7 @@ public class JenaCreator {
         systemOwnSlots.add(owlModel.getRDFProperty(ProtegeNames.Slot.INFERRED_SUPERCLASSES));
         systemOwnSlots.add(owlModel.getRDFProperty(ProtegeNames.Slot.INFERRED_TYPE));
         systemOwnSlots.add(owlModel.getProtegeClassificationStatusProperty());
-        systemOwnSlots.add(owlModel.getRDFProperty(OWLNames.Slot.TOP_LEVEL_ONTOLOGY_URI));
+        systemOwnSlots.add(owlModel.getRDFProperty(OWLNames.Slot.OWL_ONTOLOGY_POINTER_PROPERTY));
 
     }
 
