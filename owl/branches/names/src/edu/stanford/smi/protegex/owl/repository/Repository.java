@@ -6,6 +6,7 @@ import java.net.URI;
 import java.util.Collection;
 
 import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 
 /**
  * User: matthewhorridge<br>
@@ -97,7 +98,7 @@ public interface Repository {
      * @param owlModel the model to add the import to
      * @param ontologyName the ontology name to use to look up the imported ontology.
      */
-    public void addImport(OWLModel owlModel, URI ontologyName) throws IOException;
+    public TripleStore addImport(OWLModel owlModel, URI ontologyName) throws IOException;
     
     /*
      * TODO the following method should probably be refactored to AbstractStreamBasedRepositoryImpl and replaced 
