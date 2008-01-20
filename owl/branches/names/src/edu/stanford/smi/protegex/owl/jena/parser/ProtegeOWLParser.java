@@ -159,8 +159,11 @@ public class ProtegeOWLParser {
 		
 		errors = new ArrayList();
 		errorOntologyURI = null;
-		
-		loadTriples(uri, XMLBaseExtractor.getXMLBase(uri), invokation);
+		URI xmlBase = XMLBaseExtractor.getXMLBase(uri);
+		if (xmlBase == null) {
+		    xmlBase = URIUtilities.createURI(uri);
+		}
+		loadTriples(uri, xmlBase, invokation);
 	}
 
 
@@ -247,23 +250,6 @@ public class ProtegeOWLParser {
 
 		tfc.processUndefTriples();
 		//tfc.doPostProcessing();
-
-		//TT - This check should not be here.. The load method should be called only at the first parsing, the imports should call other methods
-		if (!importing) {
-			/* Delete the old default ontology and set the new one. The old default ontology has been created artifically at initialization,
-			 * and it should not just stay around in the ontology.
-			 */
-			OWLOntology newDefaultOWLOntology = (OWLOntology) ((KnowledgeBase) owlModel).getFrame(tripleStore.getName());			
-			OWLOntology oldDefaultOntology = owlModel.getDefaultOWLOntology();
-			
-			if (oldDefaultOntology != null &&
-			        !oldDefaultOntology.equals(newDefaultOWLOntology) && 
-			        oldDefaultOntology.getName().equals(ProtegeNames.DEFAULT_ONTOLOGY)) {
-				oldDefaultOntology.delete();
-			}
-			
-			((AbstractOWLModel)owlModel).setDefaultOWLOntology(newDefaultOWLOntology);
-		}
 		
 		//tfc.getUndefTripleManager().dumpUndefTriples();
 		log.info("Dump after end processing. Size: "	+ tfc.getUndefTripleManager().getUndefTriples().size());
@@ -276,7 +262,16 @@ public class ProtegeOWLParser {
 
 		tfc.processUndefTriples();
 		tfc.doPostProcessing();
-
+		
+		if (tripleStore.getName() == null) { // no ontology declaration was found
+		    if (xmlBase != null) {
+		        tripleStore.setName(xmlBase.toString());
+		    }
+		    else {
+		        // ToDo - invent a unique name...
+		    }
+		}
+		owlModel.resetOntologyCache();
 		owlModel.setGenerateEventsEnabled(eventsEnabled);
 	}
 
