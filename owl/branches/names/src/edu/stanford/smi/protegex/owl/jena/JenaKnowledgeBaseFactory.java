@@ -22,7 +22,7 @@ import edu.stanford.smi.protege.util.PropertyList;
 import edu.stanford.smi.protege.util.URIUtilities;
 import edu.stanford.smi.protegex.owl.database.OWLDatabaseModel;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
-import edu.stanford.smi.protegex.owl.model.triplestore.impl.TripleStoreModelImpl;
+import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreModel;
 import edu.stanford.smi.protegex.owl.repository.util.RepositoryFileManager;
 import edu.stanford.smi.protegex.owl.resource.OWLText;
 import edu.stanford.smi.protegex.owl.storage.OWLKnowledgeBaseFactory;
@@ -170,7 +170,10 @@ public class JenaKnowledgeBaseFactory implements OWLKnowledgeBaseFactory, Client
             final URI absoluteURI = getFileURI(sources, owlModel.getProject());
 
             JenaKnowledgeBaseFactory.setOWLFileName(sources, absoluteURI.toString());
-                        
+                    
+            TripleStoreModel tripleStoreModel = owlModel.getTripleStoreModel();
+            tripleStoreModel.setTopTripleStore(tripleStoreModel.getActiveTripleStore());
+            
 		    loadRepositories(owlModel, absoluteURI);
 			owlModel.load(absoluteURI, language, errors);
         }
@@ -258,10 +261,5 @@ public class JenaKnowledgeBaseFactory implements OWLKnowledgeBaseFactory, Client
     		                                  NarrowFrameStore systemNfs,
                                               NarrowFrameStore nfs,
                                               KnowledgeBase kb) { 
-      if (kb instanceof OWLModel) {
-        JenaOWLModel owlModel = (JenaOWLModel) kb;
-        TripleStoreModelImpl tsm = new TripleStoreModelImpl(owlModel,nfs);
-        owlModel.setTripleStoreModel(tsm);
-      }
     }
 }
