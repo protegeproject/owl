@@ -327,6 +327,9 @@ public class TripleStoreModelImpl implements TripleStoreModel {
         tripleStoreMap = null;
     }
     
-    
+    @Override
+    public String toString() {
+        return "TripleStoreModel(" + getTopTripleStore().getOWLOntology().getBrowserText() + ")";
+    }
     
 }
