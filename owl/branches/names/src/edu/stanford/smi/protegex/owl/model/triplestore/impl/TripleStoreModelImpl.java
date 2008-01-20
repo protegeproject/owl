@@ -4,20 +4,19 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import edu.stanford.smi.protege.model.Frame;
 import edu.stanford.smi.protege.model.Instance;
-import edu.stanford.smi.protege.model.KnowledgeBase;
-import edu.stanford.smi.protege.model.Model;
 import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protege.model.framestore.MergingNarrowFrameStore;
 import edu.stanford.smi.protege.model.framestore.NarrowFrameStore;
 import edu.stanford.smi.protege.util.CollectionUtilities;
-import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
@@ -40,36 +39,34 @@ public class TripleStoreModelImpl implements TripleStoreModel {
     
     private OWLModel owlModel;
     
-    private List<TripleStore> ts = new ArrayList<TripleStore>();
+    private List<TripleStore> allTripleStores = new ArrayList<TripleStore>();
+    
+    private Map<NarrowFrameStore, TripleStore> tripleStoreMap = new HashMap<NarrowFrameStore, TripleStore>();
+    
+    private TripleStore topTripleStore;
 
 
     public TripleStoreModelImpl(OWLModel owlModel) {
-        this.nameSlot = ((KnowledgeBase) owlModel).getSlot(Model.Slot.NAME);
+        this.nameSlot = owlModel.getSystemFrames().getNameSlot();
         this.mnfs = MergingNarrowFrameStore.get(owlModel);
         this.owlModel = owlModel;
         initTripleStores();
     }
     
-    public TripleStoreModelImpl(OWLModel owlModel, NarrowFrameStore frameStore) {
-      this(owlModel);
-      ts.add(new TripleStoreImpl(owlModel, frameStore, this));
-      owlModel.resetJenaModel();
-    }
-
-
-    public TripleStore createTripleStore(NarrowFrameStore frameStore) {
+    public TripleStore createActiveImportedTripleStore(NarrowFrameStore frameStore) {
         String parentName = getActiveTripleStore().getName();
         mnfs.addActiveChildFrameStore(frameStore, parentName);
         TripleStore tripleStore = new TripleStoreImpl(owlModel, frameStore, this);
-        ts.add(tripleStore);
+        allTripleStores.add(tripleStore);
+        tripleStoreMap.put(frameStore, tripleStore);
         updateRemoveFrameStores();
         return tripleStore;
     }
 
 
     public void deleteTripleStore(TripleStore tripleStore) {
-        ts.remove(tripleStore);
-        // TODO! mnfs.delete(tripleStore.getNarrowFrameStore());
+        allTripleStores.remove(tripleStore);
+        tripleStoreMap.remove(tripleStore.getNarrowFrameStore());
     }
 
 
@@ -79,7 +76,7 @@ public class TripleStoreModelImpl implements TripleStoreModel {
 
 
     public TripleStore getTripleStoreByDefaultNamespace(String namespace) {
-        for (Iterator<TripleStore> it = ts.iterator(); it.hasNext();) {
+        for (Iterator<TripleStore> it = allTripleStores.iterator(); it.hasNext();) {
             TripleStore tripleStore = it.next();
             if (namespace.equals(tripleStore.getDefaultNamespace())) {
                 return tripleStore;
@@ -90,18 +87,19 @@ public class TripleStoreModelImpl implements TripleStoreModel {
 
 
     private void initTripleStores() {
-        ts = new ArrayList<TripleStore>();
-        NarrowFrameStore[] ss = (NarrowFrameStore[]) mnfs.getAvailableFrameStores().toArray(new NarrowFrameStore[0]);
-        for (int i = 0; i < ss.length; i++) {
-            NarrowFrameStore s = ss[i];
-            ts.add(new TripleStoreImpl(owlModel, s, this));
+        allTripleStores.clear();
+        tripleStoreMap.clear();
+        for (NarrowFrameStore nfs : mnfs.getAvailableFrameStores()) {
+            TripleStore tripleStore = new TripleStoreImpl(owlModel, nfs, this);
+            allTripleStores.add(tripleStore);
+            tripleStoreMap.put(nfs, tripleStore);
         }
         updateRemoveFrameStores();
     }
 
 
     private void updateRemoveFrameStores() {
-        Collection allFrameStores = mnfs.getAvailableFrameStores();
+        Collection<NarrowFrameStore> allFrameStores = mnfs.getAvailableFrameStores();
         mnfs.setRemoveFrameStores(allFrameStores);
         owlModel.resetJenaModel();
     }
@@ -128,23 +126,21 @@ public class TripleStoreModelImpl implements TripleStoreModel {
         }
         owlModel.flushCache();
     }
-
-
+    
     public TripleStore getActiveTripleStore() {
         if (mnfs == null) {
             /**
              * Probably a client talking to a server.
              */
-            return ts.get(ts.size() - 1);
+            return allTripleStores.get(allTripleStores.size() - 1);
         }
         NarrowFrameStore activeFrameStore = mnfs.getActiveFrameStore();
-        String name = activeFrameStore.getName();
-        return getTripleStore(name);
+        return tripleStoreMap.get(activeFrameStore);
     }
 
 
     public TripleStore getHomeTripleStore(RDFResource resource) {
-        for (Iterator<TripleStore> it = ts.iterator(); it.hasNext();) {
+        for (Iterator<TripleStore> it = allTripleStores.iterator(); it.hasNext();) {
             TripleStore tripleStore = it.next();
             if (tripleStore.getNarrowFrameStore().getValuesCount(resource, nameSlot, null, false) > 0) {
                 return tripleStore;
@@ -169,8 +165,7 @@ public class TripleStoreModelImpl implements TripleStoreModel {
         if (name == null) {
             return getActiveTripleStore();
         }
-        for (Iterator<TripleStore> it = ts.iterator(); it.hasNext();) {
-            TripleStore tripleStore = it.next();
+        for (TripleStore tripleStore : allTripleStores) {
             if (name.equals(tripleStore.getName())) {
                 return tripleStore;
             }
@@ -178,30 +173,22 @@ public class TripleStoreModelImpl implements TripleStoreModel {
         return null;
     }
 
-
-    public TripleStore getTripleStore(int index) {
-        return (TripleStore) getTripleStores().get(index);
+    public TripleStore getSystemTripleStore() {
+        return allTripleStores.get(0);
     }
 
 
     public List<TripleStore> getTripleStores() {
-        return new ArrayList<TripleStore>(ts);
+        return new ArrayList<TripleStore>(allTripleStores);
     }
 
 
     public TripleStore getTopTripleStore() {
-        if (mnfs == null && ts.size() == 1) {
-            /*
-             * Server-client mode and the server is using file mode.
-             */
-            return ts.get(0);
-        }
-        else {
-            /*
-             * Either standalone or Server-client and the server is using database mode.
-             */
-            return ts.get(1);
-        }
+        return topTripleStore;
+    }
+    
+    public void setTopTripleStore(TripleStore tripleStore) {
+        topTripleStore = tripleStore;
     }
 
 
@@ -224,34 +211,22 @@ public class TripleStoreModelImpl implements TripleStoreModel {
 
 
     public boolean isEditableTripleStore(TripleStore tripleStore) {
-        int index = ts.indexOf(tripleStore);
-        
-        //TT: This has to be checked whether it is working right.
-        if (mnfs == null) {
-            /**
-             * Probably a client talking to a server.
-             */
-            if (index == ts.size() - 1) {
-                return true;
-            } else  {
+        if (tripleStore.equals(getSystemTripleStore())) {
+            return false;
+        }
+        else if (tripleStore.equals(getTopTripleStore())) {
+            return true;
+        }
+        else {
+            try {
+                URI uri = new URI(tripleStore.getName());
+                return owlModel.getRepositoryManager().getRepository(uri).isWritable(uri);
+                //return owlModel.getURIResolver().isEditableImport(uri);
+            }
+            catch (Exception ex) {
                 return false;
             }
         }
-                
-        if (index == 0) {
-            return false;
-        }
-        if (index == 1) {
-            return true;
-        }
-        try {
-            URI uri = new URI(tripleStore.getName());
-            return owlModel.getRepositoryManager().getRepository(uri).isWritable(uri);
-            //return owlModel.getURIResolver().isEditableImport(uri);
-        }
-        catch (Exception ex) {
-        }
-        return false;
     }
 
 
@@ -259,10 +234,10 @@ public class TripleStoreModelImpl implements TripleStoreModel {
         List<Triple> result = new ArrayList<Triple>();
         Iterator<TripleStore> it = getTripleStores().iterator();
         while (it.hasNext()) {
-            TripleStore ts = (TripleStore) it.next();
+            TripleStore ts = it.next();
             Iterator<Triple> triples = ts.listTriplesWithSubject(subject);
             while (triples.hasNext()) {
-                Triple triple = (Triple) triples.next();
+                Triple triple = triples.next();
                 result.add(triple);
             }
         }
@@ -275,7 +250,7 @@ public class TripleStoreModelImpl implements TripleStoreModel {
          
          Iterator<TripleStore> it = getTripleStores().iterator();
          while (it.hasNext()) {
-             TripleStore ts = (TripleStore) it.next();    
+             TripleStore ts = it.next();    
              Iterator subjects = ts.listSubjects(property);
              while (subjects.hasNext()) {
                  Frame frame = (Frame) subjects.next();
@@ -290,11 +265,11 @@ public class TripleStoreModelImpl implements TripleStoreModel {
 
     public Iterator listUserTripleStores() {
         //TT: This has to be checked whether it is working right.
-        if (mnfs == null && ts.size() == 1) {
+        if (mnfs == null && allTripleStores.size() == 1) {
             /**
              * Probably a client talking to a server and server is using database mode.
              */
-            return CollectionUtilities.createCollection(ts.get(0)).iterator();
+            return CollectionUtilities.createCollection(allTripleStores.get(0)).iterator();
         }
         
         Iterator it = getTripleStores().iterator();
@@ -309,7 +284,7 @@ public class TripleStoreModelImpl implements TripleStoreModel {
 
 
     public void setActiveTripleStore(TripleStore tripleStore) {
-        if (mnfs == null && ts.size() == 1) {
+        if (mnfs == null && allTripleStores.size() == 1) {
             /**
              * Probably a client talking to a server and server is using database mode.
              * When we will support database inclusion, we should fix this implementation
@@ -334,12 +309,11 @@ public class TripleStoreModelImpl implements TripleStoreModel {
 
 
     public void updateEditableResourceState() {
-        Slot nameSlot = ((KnowledgeBase) owlModel).getSlot(Model.Slot.NAME);
         TripleStoreUtil.updateFrameInclusion(mnfs, nameSlot);
     }
     
     public void dispose() {
-        for (TripleStore tripleStore : ts) {
+        for (TripleStore tripleStore : allTripleStores) {
             tripleStore.dispose();
         }
         
@@ -347,8 +321,10 @@ public class TripleStoreModelImpl implements TripleStoreModel {
             mnfs.close();
         }
         
-        ts.clear();
-        ts = null;
+        allTripleStores.clear();
+        tripleStoreMap.clear();
+        allTripleStores = null;
+        tripleStoreMap = null;
     }
     
     
