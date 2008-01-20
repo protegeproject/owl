@@ -1813,7 +1813,13 @@ public interface OWLModel extends ProtegeKnowledgeBase, OWLTestManager {
      * resets the Jena model so that it can be rebuilt.
      */
     void resetJenaModel();
+    
+    /*
+     * resets the OWL ontology cache so that the default ontology is recalculated on 
+     * the next call.
+     */
 
+    void resetOntologyCache();
 
     /**
      * @see #getDispatchEventsEnabled
