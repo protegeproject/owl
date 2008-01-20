@@ -25,6 +25,7 @@ import edu.stanford.smi.protegex.owl.model.factory.OWLJavaFactory;
 import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreModel;
+import edu.stanford.smi.protegex.owl.repository.util.RepositoryFileManager;
 import edu.stanford.smi.protegex.owl.resource.OWLText;
 import edu.stanford.smi.protegex.owl.storage.OWLKnowledgeBaseFactory;
 import edu.stanford.smi.protegex.owl.ui.resourceselection.ResourceSelectionAction;
@@ -114,9 +115,8 @@ public class OWLDatabaseKnowledgeBaseFactory extends DatabaseKnowledgeBaseFactor
         DatabaseIOUtils.readOWLOntologyFromDatabase(owlModel, activeTripleStore);
         DatabaseIOUtils.loadPrefixesFromDB(owlModel, activeTripleStore, errors);
         owlModel.resetOntologyCache();
+        RepositoryFileManager.loadProjectRepositories(owlModel);
         DatabaseIOUtils.loadImports(owlModel, errors);
-
-
     }
 
     
