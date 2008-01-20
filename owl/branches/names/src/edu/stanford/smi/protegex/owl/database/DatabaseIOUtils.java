@@ -99,7 +99,10 @@ public class DatabaseIOUtils {
     }
 
     public static void loadImports(OWLModel owlModel, Collection errors) {
-        for (String imprt : owlModel.getDefaultOWLOntology().getImports()) {
+        TripleStoreModel tripleStoreModel = owlModel.getTripleStoreModel();
+        TripleStore activeTripleStore = tripleStoreModel.getActiveTripleStore();
+        OWLOntology ontology = activeTripleStore.getOWLOntology();
+        for (String imprt : ontology.getImports()) {
             try {
                  owlModel.addImport(URIUtilities.createURI(imprt));
             }
