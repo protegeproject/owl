@@ -25,7 +25,7 @@ public interface TripleStoreModel extends Disposable{
      * @param frameStore the FrameStore to be used with the TripleStore
      * @return the new TripleStore
      */
-    TripleStore createTripleStore(NarrowFrameStore frameStore);
+    TripleStore createActiveImportedTripleStore(NarrowFrameStore frameStore);
 
 
     /**
@@ -106,16 +106,13 @@ public interface TripleStoreModel extends Disposable{
      * @return the TripleStore or null
      */
     TripleStore getTripleStoreByDefaultNamespace(String namespace);
-
-
+    
     /**
-     * Gets a TripleStore by its index.
-     * This is equivalent to <CODE>getTripleStores().get(index);</CODE>.
-     *
-     * @param index the index of the TripleStore to get
-     * @return the TripleStore
+     * Gets the System Triple Store.
+     * 
+     * @return the system triple store
      */
-    TripleStore getTripleStore(int index);
+    TripleStore getSystemTripleStore();
 
 
     /**
@@ -211,7 +208,16 @@ public interface TripleStoreModel extends Disposable{
      */
     void setHomeTripleStore(RDFResource resource, TripleStore tripleStore);
 
-
+    
+    /**
+     * Sets the top level triple store to the currently active triple store.
+     * 
+     * This should only be called early on in the initialization sequence.
+     * Use of this after an owl model is loaded will lead to unpredictable 
+     * behavior.
+     */
+    void setTopTripleStore(TripleStore tripleStore);
+    
     /**
      * Changes the <CODE>isIncluded()</CODE> value of all resources to reflect the
      * currently active TripleStore.  This should be called if the editable flag
@@ -225,5 +231,5 @@ public interface TripleStoreModel extends Disposable{
      * This is called when an OWLModel is disposed (e.g. at project close in the UI).
      */
     void dispose();
-    
+
 }
