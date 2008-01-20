@@ -74,8 +74,6 @@ public class JenaOWLModel extends AbstractOWLModel implements OntModelProvider {
 
     public static boolean inUI = false;
 
-    private TripleStoreModel tripleStoreModel;
-
 
     public static final String TEMPLATE_FILE_NAME = "plugins/owl/template.owl";
 
@@ -173,18 +171,6 @@ public class JenaOWLModel extends AbstractOWLModel implements OntModelProvider {
         spec.setReasoner(reasoner);
         return Jena.cloneOntModel(getOntModel(), spec);
     }
-
-    public void setTripleStoreModel(TripleStoreModel tsm) {
-      tripleStoreModel = tsm;
-    }
-
-    public TripleStoreModel getTripleStoreModel() {
-        if (tripleStoreModel == null) {
-            tripleStoreModel = new TripleStoreModelImpl(this);
-        }
-        return tripleStoreModel;
-    }
-
 
     public WriterSettings getWriterSettings() {
         String value = getOWLProject().getSettingsMap().getString(WRITER_SETTINGS_PROPERTY);
@@ -476,15 +462,5 @@ public class JenaOWLModel extends AbstractOWLModel implements OntModelProvider {
         else {
             getOWLProject().getSettingsMap().remove(WRITER_SETTINGS_PROPERTY);
         }
-    }
-    
-    @Override
-    public synchronized void dispose() {
-    	//TT - just for test
-    	if (tripleStoreModel != null) {
-    		tripleStoreModel.dispose();
-    		tripleStoreModel = null;
-    	}
-    	super.dispose();
     }
 }
