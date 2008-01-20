@@ -73,7 +73,7 @@ public class SWRLFactory
   {
     TripleStoreModel tsm = owlModel.getTripleStoreModel();               
     TripleStore activeTs = tsm.getActiveTripleStore();
-    TripleStore systemTS = tsm.getTripleStore(0);
+    TripleStore systemTS = tsm.getSystemTripleStore();
 
     tsm.setActiveTripleStore(systemTS);
 
