@@ -93,7 +93,7 @@ public class OWLSystemFrames extends SystemFrames {
     private RDFSNamedClass owlDataRangeClass;
     private RDFSNamedClass anonymousRootCls;
     private RDFSNamedClass rdfExternalResourceClass;
-    private RDFSNamedClass topOWLOntologyClass;
+    private RDFSNamedClass owlOntologyPointerClass;
 
     /*
      * Slot declarations in the order that they appear in the Slot tab.
@@ -144,7 +144,7 @@ public class OWLSystemFrames extends SystemFrames {
     private RDFProperty rdfsSubPropertyOf;
     private RDFProperty owlOntologyPrefixesProperty;
     private RDFProperty owlResourceURIProperty;
-    private RDFProperty topOWLOntologyURISlot;
+    private RDFProperty owlOntologyPointerProperty;
     
     /* 
      * Instance Declarations
@@ -282,7 +282,7 @@ public class OWLSystemFrames extends SystemFrames {
         owlDataRangeClass = createRDFSNamedClass(OWLNames.Cls.DATA_RANGE);
         anonymousRootCls= createRDFSNamedClass(OWLNames.Cls.ANONYMOUS_ROOT);
         rdfExternalResourceClass= createRDFSNamedClass(RDFNames.Cls.EXTERNAL_RESOURCE);
-        topOWLOntologyClass = createRDFSNamedClass(OWLNames.Cls.TOP_LEVEL_ONTOLOGY);
+        owlOntologyPointerClass = createRDFSNamedClass(OWLNames.Cls.OWL_ONTOLOGY_POINTER_CLASS);
     }
 	
     private void createOWLSlots() {
@@ -332,7 +332,7 @@ public class OWLSystemFrames extends SystemFrames {
         rdfsSubPropertyOf  = createRDFProperty(RDFSNames.Slot.SUB_PROPERTY_OF);    
         owlOntologyPrefixesProperty = createRDFProperty(OWLNames.Slot.ONTOLOGY_PREFIXES);
         owlResourceURIProperty= createRDFProperty(OWLNames.Slot.RESOURCE_URI);
-        topOWLOntologyURISlot = createRDFProperty(OWLNames.Slot.TOP_LEVEL_ONTOLOGY_URI);
+        owlOntologyPointerProperty = createRDFProperty(OWLNames.Slot.OWL_ONTOLOGY_POINTER_PROPERTY);
     }
     
     private void createOWLInstances() {
@@ -561,7 +561,7 @@ public class OWLSystemFrames extends SystemFrames {
                     assertTypeAndSubclasses(owlDataRangeClass,        rdfsNamedClassClass, new Cls[] {}),
                     assertTypeAndSubclasses(anonymousRootCls,         rdfsNamedClassClass, new Cls[] {}),
                     assertTypeAndSubclasses(rdfExternalResourceClass, rdfsNamedClassClass, new Cls[] {}),
-                    assertTypeAndSubclasses(topOWLOntologyClass,      rdfsNamedClassClass, new Cls[] {}),
+                    assertTypeAndSubclasses(owlOntologyPointerClass,      rdfsNamedClassClass, new Cls[] {}),
                     getDirectedBinaryRelationCls()
                 });
         }
@@ -651,7 +651,7 @@ public class OWLSystemFrames extends SystemFrames {
 
             assertTemplateSlot(rdfExternalResourceClass, owlResourceURIProperty);
 
-            assertTemplateSlot(topOWLOntologyClass, topOWLOntologyURISlot);
+            assertTemplateSlot(owlOntologyPointerClass, owlOntologyPointerProperty);
             
             assertTypeAndName(getDirectedBinaryRelationCls(), owlNamedClassClass);
             
@@ -810,9 +810,9 @@ public class OWLSystemFrames extends SystemFrames {
             assertValueType(owlOntologyPrefixesProperty, ValueType.STRING);
             assertFunctional(owlOntologyPrefixesProperty);
 
-            assertTypeAndName(topOWLOntologyURISlot, rdfPropertyClass);
-            assertFunctional(topOWLOntologyURISlot);
-            assertValueTypeFromClass(topOWLOntologyURISlot, owlOntologyClass);
+            assertTypeAndName(owlOntologyPointerProperty, rdfPropertyClass);
+            assertFunctional(owlOntologyPointerProperty);
+            assertValueTypeFromClass(owlOntologyPointerProperty, owlOntologyClass);
             
             assertTypeAndName(getFromSlot(), owlObjectPropertyClass);        
             assertTypeAndName(getToSlot(), owlObjectPropertyClass);
@@ -1199,8 +1199,8 @@ public class OWLSystemFrames extends SystemFrames {
     /**
      * @return the topOWLOntologyClass
      */
-    public RDFSNamedClass getTopOWLOntologyClass() {
-        return topOWLOntologyClass;
+    public RDFSNamedClass getOwlOntologyPointerClass() {
+        return owlOntologyPointerClass;
     }
 
     /**
@@ -1528,8 +1528,8 @@ public class OWLSystemFrames extends SystemFrames {
     /**
      * @return the topOWLOntologyURISlot
      */
-    public RDFProperty getTopOWLOntologyURISlot() {
-        return topOWLOntologyURISlot;
+    public RDFProperty getOwlOntologyPointerProperty() {
+        return owlOntologyPointerProperty;
     }
 
     /**
