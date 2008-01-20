@@ -79,7 +79,7 @@ public interface OWLNames {
 
         public final static String UNION_CLASS = OWL_NAMESPACE + "UnionClass";
         
-        public final static String TOP_LEVEL_ONTOLOGY = ":OWL-TOP-LEVEL-ONTOLOGY";
+        public final static String OWL_ONTOLOGY_POINTER_CLASS = ":OWL-ONTOLOGY-POINTER-CLASS";
     }
 
     public static interface Slot {
@@ -145,7 +145,7 @@ public interface OWLNames {
                       
         public final static String RESOURCE_URI = ":OWL-RESOURCE-URI";
         
-        public final static String TOP_LEVEL_ONTOLOGY_URI = ":OWL-TOP-LEVEL-ONTOLOGY-URI";
+        public final static String OWL_ONTOLOGY_POINTER_PROPERTY = ":OWL-ONTOLOGY-POINTER-PROPERTY";
         
     }
 
