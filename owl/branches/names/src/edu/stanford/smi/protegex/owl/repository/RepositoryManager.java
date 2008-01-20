@@ -1,17 +1,17 @@
 package edu.stanford.smi.protegex.owl.repository;
 
-import edu.stanford.smi.protegex.owl.model.OWLModel;
-import edu.stanford.smi.protegex.owl.repository.impl.DublinCoreDLVersionRedirectRepository;
-import edu.stanford.smi.protegex.owl.repository.impl.ForcedURLRetrievalRepository;
-import edu.stanford.smi.protegex.owl.repository.impl.HTTPRepository;
-import edu.stanford.smi.protegex.owl.repository.impl.ProtegeOWLPluginFolderRepository;
-
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+
+import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.repository.impl.DublinCoreDLVersionRedirectRepository;
+import edu.stanford.smi.protegex.owl.repository.impl.ForcedURLRetrievalRepository;
+import edu.stanford.smi.protegex.owl.repository.impl.HTTPRepository;
+import edu.stanford.smi.protegex.owl.repository.impl.ProtegeOWLPluginFolderRepository;
 
 
 /**
