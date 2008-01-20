@@ -17,11 +17,7 @@ import java.util.logging.Logger;
 
 import junit.framework.Assert;
 
-import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
 import com.hp.hpl.jena.rdf.model.impl.Util;
-import com.hp.hpl.jena.vocabulary.OWL;
-import com.hp.hpl.jena.vocabulary.RDF;
-import com.hp.hpl.jena.vocabulary.RDFS;
 
 import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.DefaultKnowledgeBase;
@@ -74,7 +70,6 @@ import edu.stanford.smi.protegex.owl.model.ProtegeNames;
 import edu.stanford.smi.protegex.owl.model.RDFExternalResource;
 import edu.stanford.smi.protegex.owl.model.RDFIndividual;
 import edu.stanford.smi.protegex.owl.model.RDFList;
-import edu.stanford.smi.protegex.owl.model.RDFNames;
 import edu.stanford.smi.protegex.owl.model.RDFObject;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
@@ -83,7 +78,6 @@ import edu.stanford.smi.protegex.owl.model.RDFSDatatype;
 import edu.stanford.smi.protegex.owl.model.RDFSDatatypeFactory;
 import edu.stanford.smi.protegex.owl.model.RDFSLiteral;
 import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
-import edu.stanford.smi.protegex.owl.model.RDFSNames;
 import edu.stanford.smi.protegex.owl.model.RDFUntypedResource;
 import edu.stanford.smi.protegex.owl.model.TaskManager;
 import edu.stanford.smi.protegex.owl.model.XSPNames;
@@ -111,8 +105,10 @@ import edu.stanford.smi.protegex.owl.model.query.QueryResults;
 import edu.stanford.smi.protegex.owl.model.query.SPARQLQueryResults;
 import edu.stanford.smi.protegex.owl.model.triplestore.Triple;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
+import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreModel;
 import edu.stanford.smi.protegex.owl.model.triplestore.impl.DefaultTriple;
 import edu.stanford.smi.protegex.owl.model.triplestore.impl.DefaultTuple;
+import edu.stanford.smi.protegex.owl.model.triplestore.impl.TripleStoreModelImpl;
 import edu.stanford.smi.protegex.owl.model.validator.DefaultPropertyValueValidator;
 import edu.stanford.smi.protegex.owl.model.validator.PropertyValueValidator;
 import edu.stanford.smi.protegex.owl.repository.Repository;
@@ -217,6 +213,8 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     private OWLOntology defaultOWLOntology;
     
     private Slot protegeSubclassesDisjointProperty;
+    
+    private TripleStoreModel tripleStoreModel;
 
 
     public AbstractOWLModel(KnowledgeBaseFactory factory) {
@@ -314,9 +312,16 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
 
     public void addImport(URI ontologyName) throws IOException {
+        TripleStoreModel tripleStoreModel = getTripleStoreModel();
+        for (TripleStore tripleStore : tripleStoreModel.getTripleStores()) {
+            if (tripleStore.getIOAddresses().contains(ontologyName)) {
+                return;
+            }
+        }
         Repository rep = getRepository(getTripleStoreModel().getActiveTripleStore(), ontologyName);
         if(rep != null) {
-            rep.addImport(this, ontologyName);
+            TripleStore importedTripleStore = rep.addImport(this, ontologyName);
+            importedTripleStore.addIOAddress(ontologyName);
         }
     }
 
@@ -726,24 +731,6 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
         return property;
     }
 
-
-    private void createDefaultOWLOntology() {
-        if (getDefaultOWLOntology() == null) {
-            createDefaultOWLOntologyReally();
-        }
-    }
-
-
-    protected OWLOntology createDefaultOWLOntologyReally() {
-        Instance ontology = createInstance(ProtegeNames.DEFAULT_ONTOLOGY, getOWLOntologyClass());
-        ontology.setDirectOwnSlotValue(getRDFTypeProperty(), getOWLOntologyClass());
-        getNamespaceManager().setDefaultNamespace(ProtegeNames.DEFAULT_DEFAULT_NAMESPACE);
-        getNamespaceManager().setPrefix(RDF.getURI(), RDFNames.RDF_PREFIX);
-        getNamespaceManager().setPrefix(RDFS.getURI(), RDFSNames.RDFS_PREFIX);
-        getNamespaceManager().setPrefix(OWL.NS, OWLNames.OWL_PREFIX);
-        getNamespaceManager().setPrefix(XSDDatatype.XSD + "#", RDFNames.XSD_PREFIX);
-        return (OWLOntology) ontology;
-    }
 
     //added by TT: It was missing in the initialization and set only too late
     //it seems that it is not working! It expects the Frame FrameFactory
@@ -1428,24 +1415,17 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
         }
         return null;
     }
-    
-    /**
-     * The current getDefaultOWLOntology() method needs fixing.  This method
-     * provides a bypass allowing a caller to override the getDefaultOWLOntology 
-     * implementation when it does not function correctly (e.g. during parsing).  
-     * It is possible that we will eventually remove the default implementation 
-     * of getDefaultOWLOntology.
-     */
-    public void setDefaultOWLOntology(OWLOntology defaultOWLOntology) {
-        this.defaultOWLOntology = defaultOWLOntology;
+   
+    public void resetOntologyCache() {
+        defaultOWLOntology = null;
     }
 
 
     public OWLOntology getDefaultOWLOntology() {
-        if (defaultOWLOntology != null) {
-            return defaultOWLOntology;
+        if (defaultOWLOntology == null) {
+            defaultOWLOntology= getTripleStoreModel().getTopTripleStore().getOWLOntology();
         }
-        return (OWLOntology) getFrame(ProtegeNames.DEFAULT_ONTOLOGY);
+        return defaultOWLOntology;
     }
 
 
@@ -1916,6 +1896,13 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
             }
         }
         return (OWLDatatypeProperty) getSlot(OWLNames.Slot.VERSION_INFO);
+    }
+    
+    public TripleStoreModel getTripleStoreModel() {
+        if (tripleStoreModel == null) {
+            tripleStoreModel = new TripleStoreModelImpl(this);
+        }
+        return tripleStoreModel;
     }
 
 
@@ -2505,7 +2492,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
             final Cls dbrClass = kb.getCls(Model.Cls.DIRECTED_BINARY_RELATION);            
             frames.remove(dbrClass);
             
-            frames.remove(kb.getCls(OWLNames.Cls.TOP_LEVEL_ONTOLOGY));
+            frames.remove(((OWLModel) kb).getSystemFrames().getOwlOntologyPointerClass());
             
             frames.remove(kb.getCls(Model.Cls.PAL_CONSTRAINT));
             frames.remove(kb.getCls(OWLNames.Cls.ANONYMOUS_ROOT));
@@ -2513,7 +2500,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
             frames.remove(kb.getSlot(OWLNames.Slot.ONTOLOGY_PREFIXES));            
             frames.remove(kb.getSlot(OWLNames.Slot.RESOURCE_URI));
             frames.remove(kb.getSlot(Model.Slot.CONSTRAINTS));
-            frames.remove(kb.getSlot(OWLNames.Slot.TOP_LEVEL_ONTOLOGY_URI));
+            frames.remove(kb.getSlot(OWLNames.Slot.OWL_ONTOLOGY_POINTER_PROPERTY));
         }
     }
 
@@ -2830,6 +2817,8 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     	owlFrameStore = null;
     	jenaModel = null;
     	owlProject = null;
+    	tripleStoreModel.dispose();
+    	tripleStoreModel = null;
     	
     	repositoryManager = null;
     	taskManager = null;
@@ -3200,7 +3189,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
      * @return the topOWLOntologyClass
      */
     public RDFSNamedClass getTopOWLOntologyClass() {
-        return getSystemFrames().getTopOWLOntologyClass();
+        return getSystemFrames().getOwlOntologyPointerClass();
     }
 
     /**
@@ -3529,7 +3518,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
      * @return the topOWLOntologyURISlot
      */
     public RDFProperty getTopOWLOntologyURISlot() {
-        return getSystemFrames().getTopOWLOntologyURISlot();
+        return getSystemFrames().getOwlOntologyPointerProperty();
     }
 
     /**
