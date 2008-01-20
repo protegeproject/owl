@@ -47,8 +47,6 @@ public class OWLDatabaseModel
         extends AbstractOWLModel
         implements OntModelProvider {
     private static transient Logger log = Log.getLogger(OWLDatabaseModel.class);
-
-    private TripleStoreModel tripleStoreModel;
     
     private OWLOntology defaultDBOWLOntology;
 
@@ -73,48 +71,6 @@ public class OWLDatabaseModel
         super.initialize();
 
         initCustomFrameStores();
-    }
-
-
-    @Override
-	public OWLOntology getDefaultOWLOntology() {
-    	if (defaultDBOWLOntology != null) {
-    		return defaultDBOWLOntology;
-    	}
-    	return defaultDBOWLOntology = getTopLevelOntololgyFromDatabase();
-    }
-    
-    public void setDefaultOWLOntology(OWLOntology defaultOWLOntology) {
-        RDFProperty topLevelOWLOntologyURISlot = getSystemFrames().getTopOWLOntologyURISlot();
-        getTopLevelOWLOntologyClassInstance(this).setPropertyValue(topLevelOWLOntologyURISlot, defaultOWLOntology);
-        defaultDBOWLOntology = defaultOWLOntology;
-    }
-    
-    public void resetDefaultOWLOntologyCache() {
-        defaultDBOWLOntology = null;
-    }
-    
-    protected OWLOntology getTopLevelOntololgyFromDatabase() {
-
-		RDFProperty topLevelOWLOntologyURISlot = getSystemFrames().getTopOWLOntologyURISlot();
-		return (OWLOntology) getTopLevelOWLOntologyClassInstance(this).getPropertyValue(topLevelOWLOntologyURISlot);
-	}
-    
-    public static RDFIndividual getTopLevelOWLOntologyClassInstance(OWLModel owlModel) {
-        RDFSNamedClass topLevelOWLOntologyClass = owlModel.getSystemFrames().getTopOWLOntologyClass();
-        if (topLevelOWLOntologyClass.getInstances(false).isEmpty()) {
-            return topLevelOWLOntologyClass.createRDFIndividual(null);
-        }
-        else {
-            // there should only be one!
-            return ((RDFIndividual) topLevelOWLOntologyClass.getInstances(false).iterator().next());
-        }
-    }
-    
-    
-	@Override
-    protected OWLOntology createDefaultOWLOntologyReally() {
-    	return (OWLOntology) createInstance(ProtegeNames.DEFAULT_ONTOLOGY, getOWLOntologyClass());
     }
 
 	public OntModel getOntModel() {
@@ -176,19 +132,6 @@ public class OWLDatabaseModel
         }
     }
 
-
-    public TripleStoreModel getTripleStoreModel() {
-        if (tripleStoreModel == null) {
-            tripleStoreModel = new TripleStoreModelImpl(this);
-        }
-        return tripleStoreModel;
-    }
-
-    public void setTripleStoreModel(TripleStoreModel tripleStoreModel) {
-        this.tripleStoreModel = tripleStoreModel;
-    }
-
-
     public void initCustomFrameStores() {
         initOWLFrameStore();
     }
@@ -204,14 +147,6 @@ public class OWLDatabaseModel
         namespaceManager.setModifiable(RDFNames.RDF_PREFIX, false);
         namespaceManager.setModifiable(RDFSNames.RDFS_PREFIX, false);
         namespaceManager.setModifiable(RDFNames.XSD_PREFIX, false);
-    }
-
-
-
-
-
-    public void resetTripleStoreModel() {
-        tripleStoreModel = null;
     }
 
 
