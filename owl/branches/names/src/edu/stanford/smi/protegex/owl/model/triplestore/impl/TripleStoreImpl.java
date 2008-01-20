@@ -27,6 +27,7 @@ import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.model.NamespaceManager;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLNames;
+import edu.stanford.smi.protegex.owl.model.OWLOntology;
 import edu.stanford.smi.protegex.owl.model.ProtegeNames;
 import edu.stanford.smi.protegex.owl.model.RDFNames;
 import edu.stanford.smi.protegex.owl.model.RDFObject;
@@ -78,10 +79,16 @@ public class TripleStoreImpl implements TripleStore, ProtegeTripleAdder {
     
     protected String originalXMLBase;
 
+    private Collection<URI> ioAddresses = new ArrayList<URI>();
+    
+    private String name;
+    
     public TripleStoreImpl(OWLModel owlModel, NarrowFrameStore frameStore, TripleStoreModel tripleStoreModel) {
         this.frameStore = frameStore;
         this.owlModel = owlModel;
         this.tripleStoreModel = tripleStoreModel;
+        
+        name = frameStore.getName();
         
         initializeNamespaceManager();
 
@@ -131,7 +138,7 @@ public class TripleStoreImpl implements TripleStore, ProtegeTripleAdder {
         KnowledgeBase kb = owlModel;
         Collection<Slot> ignoreProperties = new HashSet<Slot>();
         ignoreProperties.add(owlModel.getRDFProperty(OWLNames.Slot.ONTOLOGY_PREFIXES));
-        ignoreProperties.add(owlModel.getRDFProperty(OWLNames.Slot.TOP_LEVEL_ONTOLOGY_URI));
+        ignoreProperties.add(owlModel.getRDFProperty(OWLNames.Slot.OWL_ONTOLOGY_POINTER_PROPERTY));
         ignoreProperties.add(kb.getSlot(Model.Slot.DIRECT_INSTANCES));
         ignoreProperties.add(kb.getSlot(Model.Slot.DIRECT_TYPES));
         ignoreProperties.add(kb.getSlot(ProtegeNames.Slot.CLASSIFICATION_STATUS));
@@ -226,12 +233,6 @@ public class TripleStoreImpl implements TripleStore, ProtegeTripleAdder {
         return getNamespaceForPrefix("");
     }
 
-
-    public String getName() {
-        return frameStore.getName();
-    }
-
-
     public RDFResource getHomeResource(String name) {
         Collection values = frameStore.getFrames(nameSlot, null, false, name);
         if (values.isEmpty()) {
@@ -241,6 +242,23 @@ public class TripleStoreImpl implements TripleStore, ProtegeTripleAdder {
             return (RDFResource) values.iterator().next();
         }
     }
+    
+    public OWLOntology getOWLOntology() {
+        String ontologyName = getName();
+        if (ontologyName != null) {
+            return (OWLOntology) ((KnowledgeBase) owlModel).getFrame(ontologyName);
+        }
+        else {
+            return null;
+        }
+    }
+    
+    public String getName() {
+        return name;
+    }
+
+
+
 
 
     public String getNamespaceForPrefix(String prefix) {
@@ -378,6 +396,7 @@ public class TripleStoreImpl implements TripleStore, ProtegeTripleAdder {
 
 
     public void setName(String value) {
+        name = value;
         getNarrowFrameStore().setName(value);
     }
 
@@ -473,6 +492,20 @@ public class TripleStoreImpl implements TripleStore, ProtegeTripleAdder {
         addPropertyValueHandlers.clear();
         addPropertyValueHandlers = null;
         
+    }
+
+    public void addIOAddress(URI uri) {
+        if (!ioAddresses.contains(uri)) {
+            ioAddresses.add(uri);
+        }
+    }
+
+    public Collection<URI> getIOAddresses() {
+        return Collections.unmodifiableCollection(ioAddresses);
+    }
+
+    public void removeIOAddress(URI uri) {
+        ioAddresses.remove(uri);
     }
     
 }
