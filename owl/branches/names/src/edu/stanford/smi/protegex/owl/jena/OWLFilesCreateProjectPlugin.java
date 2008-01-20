@@ -19,12 +19,12 @@ import edu.stanford.smi.protege.util.FileUtilities;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protege.util.PropertyList;
 import edu.stanford.smi.protege.util.WizardPage;
-import edu.stanford.smi.protegex.owl.jena.parser.ProtegeOWLParser;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLOntology;
 import edu.stanford.smi.protegex.owl.model.ProtegeNames;
 import edu.stanford.smi.protegex.owl.model.XSPNames;
-import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
+import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
+import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreModel;
 import edu.stanford.smi.protegex.owl.model.util.ImportHelper;
 import edu.stanford.smi.protegex.owl.model.util.XSDVisibility;
 import edu.stanford.smi.protegex.owl.swrl.model.SWRLNames;
@@ -193,9 +193,12 @@ public class OWLFilesCreateProjectPlugin
     	if (defaultOntologyName.endsWith("#")) {
     		defaultOntologyName = defaultOntologyName.substring(0, defaultOntologyName.length() - 1);
     	}
-    	OWLOntology defaultOntology = (OWLOntology) owlModel.getSystemFrames().getOwlOntologyClass().createInstance(defaultOntologyName);
-    	((AbstractOWLModel) owlModel).setDefaultOWLOntology(defaultOntology);
-    	owlModel.getTripleStoreModel().getActiveTripleStore().setOriginalXMLBase(defaultOntologyName);
+    	owlModel.getSystemFrames().getOwlOntologyClass().createInstance(defaultOntologyName);
+    	TripleStoreModel tripleStoreModel = owlModel.getTripleStoreModel();
+    	TripleStore activeTripleStore = tripleStoreModel.getActiveTripleStore();
+    	activeTripleStore.setOriginalXMLBase(defaultOntologyName);
+    	activeTripleStore.setName(defaultOntologyName);
+    	owlModel.resetOntologyCache();
     	addViewSettings(project.getSources());
     	addImports(project);
     	OWLMenuProjectPlugin.makeHiddenClsesWithSubclassesVisible(owlModel);
