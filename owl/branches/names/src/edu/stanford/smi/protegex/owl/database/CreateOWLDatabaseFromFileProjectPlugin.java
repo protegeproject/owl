@@ -50,7 +50,6 @@ public class CreateOWLDatabaseFromFileProjectPlugin extends CreateOWLDatabasePro
                 Log.getLogger().log(Level.SEVERE, "Exception caught", ex);
                 errors.add(new MessageError(ex, message));
             }
-            owlModel.resetTripleStoreModel();
             handleErrors(errors);
             project.setProjectFilePath(null);
             tempProjectFile.delete();
@@ -69,7 +68,6 @@ public class CreateOWLDatabaseFromFileProjectPlugin extends CreateOWLDatabasePro
 
 
     private void updateTripleStores(OWLDatabaseModel owlModel) {
-        owlModel.resetTripleStoreModel();
         TripleStore topTripleStore = owlModel.getTripleStoreModel().getTopTripleStore();
         owlModel.getTripleStoreModel().setActiveTripleStore(topTripleStore);
         MergingNarrowFrameStore mnfs = MergingNarrowFrameStore.get(owlModel);
