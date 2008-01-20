@@ -21,7 +21,6 @@ import edu.stanford.smi.protege.util.MessageError;
 import edu.stanford.smi.protege.util.PropertyList;
 import edu.stanford.smi.protege.util.URIUtilities;
 import edu.stanford.smi.protegex.owl.database.OWLDatabaseModel;
-import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreModel;
 import edu.stanford.smi.protegex.owl.repository.util.RepositoryFileManager;
 import edu.stanford.smi.protegex.owl.resource.OWLText;
@@ -174,7 +173,7 @@ public class JenaKnowledgeBaseFactory implements OWLKnowledgeBaseFactory, Client
             TripleStoreModel tripleStoreModel = owlModel.getTripleStoreModel();
             tripleStoreModel.setTopTripleStore(tripleStoreModel.getActiveTripleStore());
             
-		    loadRepositories(owlModel, absoluteURI);
+		    RepositoryFileManager.loadProjectRepositories(owlModel);
 			owlModel.load(absoluteURI, language, errors);
         }
         else {
@@ -182,13 +181,6 @@ public class JenaKnowledgeBaseFactory implements OWLKnowledgeBaseFactory, Client
         	errors.add(new MessageError(message));
         	Log.getLogger().severe(message);
         }
-    }
-
-
-    private void loadRepositories(OWLModel owlModel, URI uri) {    	
-        // Load any project repositories
-        RepositoryFileManager man = new RepositoryFileManager(owlModel);
-        man.loadProjectRepositories();
     }
 
 
