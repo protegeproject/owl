@@ -25,14 +25,14 @@ public interface Repository {
      *
      * @param ontologyName The name of the ontology.
      */
-    public boolean contains(URI ontologyName);
+    boolean contains(URI ontologyName);
 
 
     /**
      * Causes the repository to contain the latest
      * information.
      */
-    public void refresh();
+    void refresh();
 
 
     /**
@@ -42,36 +42,19 @@ public interface Repository {
      * @return A <code>Collection</code> containing
      *         <code>URI</code>s.
      */
-    public Collection<URI> getOntologies();
-
-
-
-
-
-    /**
-     * Determines if the specified ontology is writable.
-     *
-     * @param ontologyName
-     * @return <code>true</code> if the ontology is writable,
-     *         or <code>false</code> if the ontology is not writable.
-     */
-    public boolean isWritable(URI ontologyName);
-
-
-
-
+    Collection<URI> getOntologies();
 
     /**
      * Determines if the ontology repository is a system repository.
      */
-    public boolean isSystem();
+    boolean isSystem();
 
 
     /**
      * Gets a description of the type of the repository. For example,
      * "Local folder".
      */
-    public String getRepositoryDescription();
+    String getRepositoryDescription();
 
 
     /**
@@ -83,14 +66,14 @@ public interface Repository {
      *         return value will be an empty <code>String</code> if the repository
      *         does not contain the specified ontology.
      */
-    public String getOntologyLocationDescription(URI ontologyName);
+    String getOntologyLocationDescription(URI ontologyName);
 
 
     /**
      * Gets the descriptor for this repository.  This is used to
      * serialise the repository in a list of the available repositories.
      */
-    public String getRepositoryDescriptor();
+    String getRepositoryDescriptor();
     
     /**
      * 
@@ -98,14 +81,33 @@ public interface Repository {
      * @param owlModel the model to add the import to
      * @param ontologyName the ontology name to use to look up the imported ontology.
      */
-    public TripleStore addImport(OWLModel owlModel, URI ontologyName) throws IOException;
+    TripleStore addImport(OWLModel owlModel, URI ontologyName) throws IOException;
+    
+    /**
+     * Determines if the specified ontology is writable.
+     *
+     * @param ontologyName
+     * @return <code>true</code> if the ontology is writable,
+     *         or <code>false</code> if the ontology is not writable.
+     */
+    boolean isWritable(URI ontologyName);
     
     /*
-     * TODO the following method should probably be refactored to AbstractStreamBasedRepositoryImpl and replaced 
-     *      with something like a save of just the single triple store.  But for the time being any repository that is not
+     * TODO the following two methods should probably be refactored to 
+     *      AbstractStreamBasedRepositoryImpl and replaced 
+     *      with something like a save of just the single triple store.  This would require a 
+     *      refactor of the Protege2Jena method.  But for the time being any repository that is not
      *      io based does not need a save.  Currently Protege2Jena is written to loop through and save everything
      *      but it should not be too hard to break the loops.
      */
+    
+    /**
+     * Determines if the ontology is writable through an output stream.  Can only 
+     * be true if the ontology is writable.
+     */
+    boolean hasOutputStream(URI ontologyName);
+    
+
 
     /**
      * Gets an output stream which can be used to write
@@ -117,6 +119,6 @@ public interface Repository {
      *         ontology is not writable.
      */         
 
-    public abstract OutputStream getOutputStream(URI ontologyName) throws IOException;
+    abstract OutputStream getOutputStream(URI ontologyName) throws IOException;
     
 }
