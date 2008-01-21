@@ -57,7 +57,13 @@ public class DatabaseRepositoryCreatorWizardPlugin implements
             this.wizardPage = wizardPage;
             setLayout(new GridLayout(DatabaseRepository.DATABASE_FIELDS.length, 1));
             for (DatabaseProperty field : DatabaseRepository.DATABASE_FIELDS) {
-                JTextField text = ComponentFactory.createTextField();
+                JTextField text;
+                if (field == DatabaseProperty.PASSWORD_PROPERTY) {
+                    text = ComponentFactory.createPasswordField();
+                }
+                else {
+                    text = ComponentFactory.createTextField();
+                }
                 text.setText(DatabaseKnowledgeBaseSourcesEditor.getProperty(field));
                 textMap.put(field, text);
                 LabeledComponent component = new LabeledComponent(field.getTitle(), text);

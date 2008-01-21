@@ -54,6 +54,12 @@ public class RepositoryFileManager {
         man.loadProjectRepositories();
     }
     
+    public static void saveProjectRepositories(OWLModel owlModel) {
+        RepositoryFileManager man = new RepositoryFileManager(owlModel);
+        man.saveGlobalRepositories();
+        man.saveProjectRepositories();
+    }
+    
     public RepositoryFileManager(OWLModel model) {
         this.model = model;
         this.manager = this.model.getRepositoryManager();

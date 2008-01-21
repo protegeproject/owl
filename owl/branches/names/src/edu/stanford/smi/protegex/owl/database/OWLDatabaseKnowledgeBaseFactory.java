@@ -162,6 +162,7 @@ public class OWLDatabaseKnowledgeBaseFactory extends DatabaseKnowledgeBaseFactor
                 kb.removeFrameStore(owlModel.getOWLFrameStore());
             }
             super.saveKnowledgeBase(kb, sources, errors);
+            RepositoryFileManager.saveProjectRepositories(owlModel);
             if (owlModel instanceof JenaOWLModel) {
                 kb.insertFrameStore(owlModel.getOWLFrameStore(), 0);
             }
