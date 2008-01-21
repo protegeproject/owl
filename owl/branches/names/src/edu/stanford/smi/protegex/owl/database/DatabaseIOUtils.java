@@ -1,16 +1,22 @@
 package edu.stanford.smi.protegex.owl.database;
 
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Collection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import edu.stanford.smi.protege.model.Model;
 import edu.stanford.smi.protege.model.framestore.NarrowFrameStore;
 import edu.stanford.smi.protege.util.AmalgamatedIOException;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protege.util.URIUtilities;
 import edu.stanford.smi.protegex.owl.model.NamespaceManager;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.model.OWLNames;
 import edu.stanford.smi.protegex.owl.model.OWLOntology;
 import edu.stanford.smi.protegex.owl.model.RDFIndividual;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
@@ -98,6 +104,7 @@ public class DatabaseIOUtils {
         
     }
 
+    @SuppressWarnings("unchecked")
     public static void loadImports(OWLModel owlModel, Collection errors) {
         TripleStoreModel tripleStoreModel = owlModel.getTripleStoreModel();
         TripleStore activeTripleStore = tripleStoreModel.getActiveTripleStore();
@@ -113,5 +120,42 @@ public class DatabaseIOUtils {
                 errors.add(e);
             }
         }
+    }
+
+    public static String getOntologyFromTable(Connection connection, String table) throws SQLException {
+        Statement stmt = connection.createStatement();
+        try {
+            ResultSet results =  stmt.executeQuery(getOntologyQuery(table));
+            try {
+                while (results.next()) {
+                    return results.getString(1);
+                }
+            }
+            finally {
+                results.close();
+            }
+        }
+        finally {
+            stmt.close();
+        }
+        return null;
+    }
+    
+    private static String getOntologyQuery(String table) {
+        StringBuffer sb = new StringBuffer();
+        sb.append("select getOntology.short_value ");
+        sb.append("from ");
+        sb.append(table);
+        sb.append(" as ontInstance join ");
+        sb.append(table);
+        sb.append(" as getOntology ");
+        sb.append("on ontInstance.frame='");
+        sb.append(OWLNames.Cls.OWL_ONTOLOGY_POINTER_CLASS);
+        sb.append("' and ontInstance.slot='");
+        sb.append(Model.Slot.DIRECT_INSTANCES);
+        sb.append("' and getOntology.frame=ontInstance.short_value and getOntology.slot = '");
+        sb.append(OWLNames.Slot.OWL_ONTOLOGY_POINTER_PROPERTY);
+        sb.append("';");
+        return sb.toString();
     }
 }
