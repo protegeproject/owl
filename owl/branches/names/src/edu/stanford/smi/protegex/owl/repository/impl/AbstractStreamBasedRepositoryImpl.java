@@ -6,7 +6,6 @@ import java.net.URI;
 
 import edu.stanford.smi.protege.model.framestore.InMemoryFrameDb;
 import edu.stanford.smi.protege.model.framestore.NarrowFrameStore;
-import edu.stanford.smi.protege.util.URIUtilities;
 import edu.stanford.smi.protegex.owl.jena.parser.ProtegeOWLParser;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
@@ -44,6 +43,10 @@ public abstract class AbstractStreamBasedRepositoryImpl implements Repository {
         }
         owlModel.getOWLFrameStore().copyFacetValuesIntoNamedClses();
         return importedTripleStore;
+    }
+    
+    public boolean hasOutputStream(URI ontologyName) {
+        return isWritable(ontologyName);
     }
 
 }
