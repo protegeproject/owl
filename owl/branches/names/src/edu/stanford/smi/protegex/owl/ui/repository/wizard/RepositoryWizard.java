@@ -13,6 +13,7 @@ import edu.stanford.smi.protege.util.Wizard;
 import edu.stanford.smi.protegex.owl.ProtegeOWL;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.repository.Repository;
+import edu.stanford.smi.protegex.owl.ui.repository.wizard.impl.DatabaseRepositoryCreatorWizardPlugin;
 import edu.stanford.smi.protegex.owl.ui.repository.wizard.impl.HTTPRepositoryCreatorWizardPlugin;
 import edu.stanford.smi.protegex.owl.ui.repository.wizard.impl.LocalFileRepositoryCreatorWizardPlugin;
 import edu.stanford.smi.protegex.owl.ui.repository.wizard.impl.LocalFolderRepositoryCreatorWizardPlugin;
@@ -31,7 +32,7 @@ import edu.stanford.smi.protegex.owl.ui.wizard.OWLWizard;
  */
 public class RepositoryWizard extends OWLWizard {
 
-    private ArrayList plugins;
+    private ArrayList<RepositoryCreatorWizardPlugin> plugins;
 
     private RepositoryCreatorWizardPlugin selectedPlugin;
 
@@ -39,18 +40,19 @@ public class RepositoryWizard extends OWLWizard {
 
     public RepositoryWizard(JComponent component, OWLModel owlModel) {
         super(component, "Create Ontology Repository");
-        plugins = new ArrayList();
+        plugins = new ArrayList<RepositoryCreatorWizardPlugin>();
         plugins.add(new LocalFolderRepositoryCreatorWizardPlugin());        
         plugins.add(new RelativeFolderRepositoryCreatorWizardPlugin());
         plugins.add(new LocalFileRepositoryCreatorWizardPlugin());
         plugins.add(new RelativeFileRepositoryCreatorWizardPlugin());
-        plugins.add(new HTTPRepositoryCreatorWizardPlugin());        
-        Collection pluginClses = PluginUtilities.getClassesWithAttribute(RepositoryCreatorWizardPlugin.PLUGIN_TYPE,
+        plugins.add(new HTTPRepositoryCreatorWizardPlugin());   
+        plugins.add(new DatabaseRepositoryCreatorWizardPlugin());
+        Collection<Class> pluginClses = PluginUtilities.getClassesWithAttribute(RepositoryCreatorWizardPlugin.PLUGIN_TYPE,
                 "True");
-        for (Iterator it = pluginClses.iterator(); it.hasNext();) {
-            Class cls = (Class) it.next();
+        for (Iterator<Class> it = pluginClses.iterator(); it.hasNext();) {
+            Class cls = it.next();
             try {
-                plugins.add(cls.newInstance());
+                plugins.add((RepositoryCreatorWizardPlugin) cls.newInstance());
             }
             catch (InstantiationException e) {
               Log.getLogger().log(Level.SEVERE, "Exception caught", e);
@@ -67,7 +69,7 @@ public class RepositoryWizard extends OWLWizard {
         return pluginPanelHolder.getRepository();
     }
 
-    public ArrayList getPlugins() {
+    public ArrayList<RepositoryCreatorWizardPlugin> getPlugins() {
         return plugins;
     }
 
