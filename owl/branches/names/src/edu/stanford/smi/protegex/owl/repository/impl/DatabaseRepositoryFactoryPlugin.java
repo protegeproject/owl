@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import edu.stanford.smi.protege.storage.database.DatabaseKnowledgeBaseFactory.DatabaseProperty;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.repository.Repository;
@@ -38,8 +39,8 @@ public class DatabaseRepositoryFactoryPlugin implements RepositoryFactoryPlugin 
         if (repositoryDescriptor.startsWith(DatabaseRepository.REPOSITORY_DESCRIPTOR_PREFIX)) {
             try {
                 List<String> fields = DatabaseRepository.parse(repositoryDescriptor);
-                Class.forName(fields.get(DatabaseRepository.DB_FIELDS.DRIVER.ordinal()));
-                return  fields.size() > DatabaseRepository.DB_FIELDS.values().length;
+                Class.forName(fields.get(DatabaseRepository.getDBPropertyIndex(DatabaseProperty.DRIVER_PROPERTY)));
+                return  fields.size() > DatabaseRepository.DATABASE_FIELDS.length;
             }
             catch (Throwable t) {
                 if (log.isLoggable(Level.FINE)) {
