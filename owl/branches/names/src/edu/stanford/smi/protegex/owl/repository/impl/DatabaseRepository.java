@@ -5,29 +5,29 @@ import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import edu.stanford.smi.protege.model.Model;
 import edu.stanford.smi.protege.storage.database.DatabaseFrameDb;
 import edu.stanford.smi.protege.storage.database.ValueCachingNarrowFrameStore;
+import edu.stanford.smi.protege.storage.database.DatabaseKnowledgeBaseFactory.DatabaseProperty;
 import edu.stanford.smi.protege.util.AmalgamatedIOException;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.database.DatabaseIOUtils;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
-import edu.stanford.smi.protegex.owl.model.OWLNames;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreModel;
 import edu.stanford.smi.protegex.owl.repository.Repository;
@@ -35,18 +35,38 @@ import edu.stanford.smi.protegex.owl.repository.Repository;
 public class DatabaseRepository implements Repository {
     private final static Logger log = Log.getLogger(DatabaseRepository.class);
     
-	public enum DB_FIELDS {
-		DRIVER, URL, USER, PASSWORD;
-	};
-	Connection connection;
-	private Map<DB_FIELDS, String> fieldMap = new EnumMap<DB_FIELDS, String>(DB_FIELDS.class);
+	private Connection connection;
+	private Map<DatabaseProperty, String> fieldMap = new EnumMap<DatabaseProperty, String>(DatabaseProperty.class);
+	
 	private Map<URI, String> ontologyToTable = new HashMap<URI, String>();
-	private Map<String, PreparedStatement> statementCache = new HashMap<String, PreparedStatement>();
+	private Set<String> allTables = new HashSet<String>();
 	
 	public final static String REPOSITORY_DESCRIPTOR_PREFIX = "database:";
 	public final static char SEPARATOR_CHAR = ',';
 	
-	static List<String> parse(String repositoryDescriptor) {
+    public static final String SQL_TABLE_TYPE = "TABLE";
+    public static final String SQL_VIEW_TYPE  = "VIEW";
+    public int SQL_GET_TABLE_TYPES_TABLE_TYPE_COL=1;
+    public int SQL_GET_TABLES_TABLENAME_COL=3;
+    
+    public final static DatabaseProperty[] DATABASE_FIELDS = { 
+        DatabaseProperty.DRIVER_PROPERTY,
+        DatabaseProperty.URL_PROPERTY,
+        DatabaseProperty.USERNAME_PROPERTY,
+        DatabaseProperty.PASSWORD_PROPERTY
+    };
+    public static int getDBPropertyIndex(DatabaseProperty property) {
+        int i = 0;
+        for (DatabaseProperty other : DATABASE_FIELDS) {
+            if (property == other) {
+                return i;
+            }
+            i++;
+        }
+        throw  new IllegalArgumentException("Invalid property");
+    }
+	
+	static public List<String> parse(String repositoryDescriptor) {
 		List<String> fields = new ArrayList<String>();
 		int start = REPOSITORY_DESCRIPTOR_PREFIX.length();
 		while (true) {
@@ -60,20 +80,64 @@ public class DatabaseRepository implements Repository {
 		}
 	}
 	
+	public DatabaseRepository(String driver,
+	                          String url,
+	                          String user,
+	                          String password) throws SQLException, ClassNotFoundException {
+	    fieldMap.put(DatabaseProperty.DRIVER_PROPERTY, driver);
+	    fieldMap.put(DatabaseProperty.URL_PROPERTY, url);
+	    fieldMap.put(DatabaseProperty.USERNAME_PROPERTY, user);
+	    fieldMap.put(DatabaseProperty.PASSWORD_PROPERTY, password);
+	    Class.forName(getDriver());
+	    connect();
+	    try {
+	        findAllTables();
+	    }
+	    finally {
+	        disconnect();
+	    }
+	}
+	
 	public DatabaseRepository(String repositoryDescriptor) throws ClassNotFoundException, SQLException {
 		List<String> fields = parse(repositoryDescriptor);
-		for (DB_FIELDS field : DB_FIELDS.values()) {
-			fieldMap.put(field, fields.get(field.ordinal()));
+		for (DatabaseProperty field : DATABASE_FIELDS) {
+			fieldMap.put(field, fields.get(getDBPropertyIndex(field)));
 		}
 		Class.forName(getDriver());
 		connect();
 		try {
-		    for (int index = DB_FIELDS.values().length; index < fields.size(); index++) {
-		        addTable(fields.get(index));
+		    for (int index = DATABASE_FIELDS.length; index < fields.size(); index++) {
+		        String table = fields.get(index);
+		        addTable(table);
+		        allTables.add(table);
 		    }
 		} finally {
 		    disconnect();
 		}
+	}
+
+
+	
+	private void findAllTables() throws SQLException {
+	    DatabaseMetaData metaData = connection.getMetaData();
+	    ResultSet tableTypesSet = metaData.getTableTypes();
+	    List<String> tableTypes = new ArrayList<String>();
+	    while (tableTypesSet.next()) {
+	        String tableType = tableTypesSet.getString(SQL_GET_TABLE_TYPES_TABLE_TYPE_COL);
+	        if (tableType.equals(SQL_TABLE_TYPE) || tableType.equals(SQL_VIEW_TYPE)) {
+	            tableTypes.add(tableType);
+	        }
+	    }
+	    ResultSet tableSet = metaData.getTables(null, null, null, tableTypes.toArray(new String[1]));
+	    while (tableSet.next()) {
+	        String table = tableSet.getString(SQL_GET_TABLES_TABLENAME_COL);
+	        if (addTable(table)) {
+	            allTables.add(table);
+	        }
+	    }
+	    if (allTables.isEmpty()) {
+	        throw new SQLException("No tables containing ontologies found");
+	    }
 	}
 	
 	public void connect() throws SQLException {
@@ -81,73 +145,30 @@ public class DatabaseRepository implements Repository {
 	}
 	
 	public void disconnect() throws SQLException {
-	    for (PreparedStatement statement : statementCache.values()) {
-	        statement.close();
-	    }
 		connection.close();
 		connection = null;
 	}
 	
-	public PreparedStatement getStatement(String query) throws SQLException {
-	    PreparedStatement statement = statementCache.get(query);
-	    if (statement == null) {
-	        statement = connection.prepareStatement(query);
-	        statementCache.put(query, statement);
-	    }
-	    return statement;
-	}
-	
-	private String getOntologyQuery(String table) {
-	    StringBuffer sb = new StringBuffer();
-	    sb.append("select getOntology.short_value ");
-	    sb.append("from ");
-	    sb.append(table);
-	    sb.append(" as ontInstance join ");
-	    sb.append(table);
-	    sb.append(" as getOntology ");
-	    sb.append("on ontInstance.frame='");
-	    sb.append(OWLNames.Cls.OWL_ONTOLOGY_POINTER_CLASS);
-	    sb.append("' and ontInstance.slot='");
-	    sb.append(Model.Slot.DIRECT_INSTANCES);
-	    sb.append("' and getOntology.frame=ontInstance.short_value and getOntology.slot = '");
-	    sb.append(OWLNames.Slot.OWL_ONTOLOGY_POINTER_PROPERTY);
-	    sb.append("';");
-	    return sb.toString();
-	}
-
 	public boolean addTable(String table) {
-	    String ontology = null;
+        String ontology = null;
 	    try {
-	        Statement stmt = connection.createStatement();
-	        try {
-	            ResultSet results =  stmt.executeQuery(getOntologyQuery(table));
-	            try {
-	                while (results.next()) {
-	                    ontology = results.getString(1);
-	                    ontologyToTable.put(new URI(ontology), table);
-	                }
-	            }
-	            finally {
-	                results.close();
-	            }
+	        ontology  = DatabaseIOUtils.getOntologyFromTable(connection, table);
+	        if (ontology != null) {
+	            ontologyToTable.put(new URI(ontology), table);
+	            return true;
 	        }
-	        finally {
-	            stmt.close();
-	        }
-	        return true;
 	    }
 	    catch (SQLException e) {
 	        if (log.isLoggable(Level.FINE)) {
 	            log.log(Level.FINE, "Exception caught looking for ontology in db table " + table, e);
 	        }
-	        return false;
 	    }
 	    catch (URISyntaxException e) {
 	        if (log.isLoggable(Level.FINE)) {
 	            log.log(Level.FINE, "Ontology " + ontology + " found in " + table + " not in uri format.", e);
-	        }
-	        return false;  
+	        } 
 	    }
+        return false;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -200,12 +221,16 @@ public class DatabaseRepository implements Repository {
 	public String getRepositoryDescriptor() {
 	    StringBuffer sb = new StringBuffer();
 	    sb.append(REPOSITORY_DESCRIPTOR_PREFIX);
-	    for (DB_FIELDS field : DB_FIELDS.values()) {
+	    for (DatabaseProperty field : DATABASE_FIELDS) {
 	        sb.append(fieldMap.get(field));
 	        sb.append(SEPARATOR_CHAR);
 	    }
-	    
-		return null;
+	    for (String table : allTables) {
+	        sb.append(table);
+	        sb.append(SEPARATOR_CHAR);
+	    }
+	    sb.substring(0, sb.length() - 2);
+		return sb.toString();
 	}
 
 	public boolean isSystem() {
@@ -215,6 +240,10 @@ public class DatabaseRepository implements Repository {
 	public boolean isWritable(URI ontologyName) {
 		return true;
 	}
+	
+	public boolean hasOutputStream(URI ontologyName) {
+	    return false;
+	}
 
 	public void refresh() {
 	    // not sure if this should look at all the tables in the database or just 
@@ -222,18 +251,18 @@ public class DatabaseRepository implements Repository {
 	}
 
 	public String getDriver() {
-		return fieldMap.get(DB_FIELDS.DRIVER);
+		return fieldMap.get(DatabaseProperty.DRIVER_PROPERTY);
 	}
 	
 	public String getUrl() {
-		return fieldMap.get(DB_FIELDS.URL);
+		return fieldMap.get(DatabaseProperty.URL_PROPERTY);
 	}
 	
 	public String getUser() {
-		return fieldMap.get(DB_FIELDS.USER);
+		return fieldMap.get(DatabaseProperty.USERNAME_PROPERTY);
 	}
 
 	public String getPassword() {
-		return fieldMap.get(DB_FIELDS.PASSWORD);
+		return fieldMap.get(DatabaseProperty.PASSWORD_PROPERTY);
 	}
 }
