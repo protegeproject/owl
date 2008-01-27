@@ -20,7 +20,6 @@ import edu.stanford.smi.protege.util.CollectionUtilities;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
-import edu.stanford.smi.protegex.owl.model.factory.OWLJavaFactoryUpdater;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultRDFSLiteral;
 import edu.stanford.smi.protegex.owl.model.triplestore.Triple;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
@@ -104,29 +103,6 @@ public class TripleStoreModelImpl implements TripleStoreModel {
         owlModel.resetJenaModel();
     }
     
-
-
-    public void endTripleStoreChanges() {
-        owlModel.flushCache();
-        final Collection resources = owlModel.getRDFResources();
-        for (Iterator it = resources.iterator(); it.hasNext();) {
-            RDFResource resource = (RDFResource) it.next();
-            if (resource.isSystem()) {
-                it.remove();
-            }
-        }
-        OWLJavaFactoryUpdater.run(owlModel, resources);
-
-        boolean enabled = owlModel.setGenerateEventsEnabled(false);
-        try {
-            TripleChangePostProcessor.postProcess(owlModel);
-        }
-        finally {
-            owlModel.setGenerateEventsEnabled(enabled);
-        }
-        owlModel.flushCache();
-    }
-    
     public TripleStore getActiveTripleStore() {
         if (mnfs == null) {
             /**
@@ -189,6 +165,7 @@ public class TripleStoreModelImpl implements TripleStoreModel {
     
     public void setTopTripleStore(TripleStore tripleStore) {
         topTripleStore = tripleStore;
+        setViewActiveOnly(false);
     }
 
 
@@ -325,6 +302,19 @@ public class TripleStoreModelImpl implements TripleStoreModel {
         tripleStoreMap.clear();
         allTripleStores = null;
         tripleStoreMap = null;
+    }
+    
+    public void setViewActiveOnly(boolean viewActiveOnly) {
+        if (mnfs == null) {
+            throw new  UnsupportedOperationException("Can't restrict visibility to active triple store");
+        }
+        mnfs.setQueryAllFrameStores(false);
+        if (viewActiveOnly) {
+            mnfs.setTopFrameStore(null);
+        }
+        else {
+            mnfs.setTopFrameStore(getTopTripleStore().getNarrowFrameStore().getName());
+        }
     }
     
     @Override
