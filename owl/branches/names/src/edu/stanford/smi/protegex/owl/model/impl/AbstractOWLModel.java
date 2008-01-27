@@ -115,6 +115,8 @@ import edu.stanford.smi.protegex.owl.repository.Repository;
 import edu.stanford.smi.protegex.owl.repository.RepositoryManager;
 import edu.stanford.smi.protegex.owl.repository.util.RepositoryFileManager;
 import edu.stanford.smi.protegex.owl.server.OwlStateMachine;
+import edu.stanford.smi.protegex.owl.swrl.SWRLSystemFrames;
+import edu.stanford.smi.protegex.owl.swrl.model.factory.SWRLJavaFactory;
 import edu.stanford.smi.protegex.owl.testing.OWLTest;
 import edu.stanford.smi.protegex.owl.testing.OWLTestLibrary;
 import edu.stanford.smi.protegex.owl.ui.repository.UnresolvedImportUIHandler;
@@ -220,7 +222,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     public AbstractOWLModel(KnowledgeBaseFactory factory) {
         super(factory);
 
-        setFrameFactory(new OWLJavaFactory(this));
+        setFrameFactory(new SWRLJavaFactory(this));
         
         initializeLoadDefaults();
 
@@ -440,13 +442,13 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     }
 
     @Override
-    protected OWLSystemFrames createSystemFrames() {
-        return new OWLSystemFrames(this);
+    protected SWRLSystemFrames createSystemFrames() {
+        return new SWRLSystemFrames(this);
     }
     
     @Override
-    public synchronized OWLSystemFrames getSystemFrames() {
-        return (OWLSystemFrames) super.getSystemFrames();
+    public synchronized SWRLSystemFrames getSystemFrames() {
+        return (SWRLSystemFrames) super.getSystemFrames();
     }
 
 
