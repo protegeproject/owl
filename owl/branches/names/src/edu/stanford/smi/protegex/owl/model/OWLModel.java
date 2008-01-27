@@ -20,13 +20,13 @@ import edu.stanford.smi.protegex.owl.model.event.PropertyValueListener;
 import edu.stanford.smi.protegex.owl.model.event.ResourceListener;
 import edu.stanford.smi.protegex.owl.model.factory.OWLJavaFactory;
 import edu.stanford.smi.protegex.owl.model.framestore.OWLFrameStore;
-import edu.stanford.smi.protegex.owl.model.impl.OWLSystemFrames;
 import edu.stanford.smi.protegex.owl.model.project.OWLProject;
 import edu.stanford.smi.protegex.owl.model.query.QueryResults;
 import edu.stanford.smi.protegex.owl.model.triplestore.Triple;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreModel;
 import edu.stanford.smi.protegex.owl.model.validator.PropertyValueValidator;
 import edu.stanford.smi.protegex.owl.repository.RepositoryManager;
+import edu.stanford.smi.protegex.owl.swrl.SWRLSystemFrames;
 import edu.stanford.smi.protegex.owl.testing.OWLTestManager;
 
 /**
@@ -1340,7 +1340,7 @@ public interface OWLModel extends ProtegeKnowledgeBase, OWLTestManager {
      */
     RDFProperty[] getSystemAnnotationProperties();
     
-    OWLSystemFrames getSystemFrames();
+    SWRLSystemFrames getSystemFrames();
 
 
     /**
