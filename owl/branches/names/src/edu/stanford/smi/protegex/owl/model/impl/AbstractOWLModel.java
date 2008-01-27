@@ -322,8 +322,15 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
         }
         Repository rep = getRepository(getTripleStoreModel().getActiveTripleStore(), ontologyName);
         if(rep != null) {
-            TripleStore importedTripleStore = rep.addImport(this, ontologyName);
-            importedTripleStore.addIOAddress(ontologyName);
+            try {
+                tripleStoreModel.setViewActiveOnly(true);
+                TripleStore importedTripleStore = rep.addImport(this, ontologyName);
+                importedTripleStore.addIOAddress(ontologyName);
+            }
+            finally {
+                tripleStoreModel.setViewActiveOnly(false);
+            }
+
         }
     }
 
