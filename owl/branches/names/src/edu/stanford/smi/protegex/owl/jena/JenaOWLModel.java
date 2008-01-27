@@ -16,11 +16,9 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.logging.Level;
 
-import com.hp.hpl.jena.graph.GetTriple;
 import com.hp.hpl.jena.graph.Graph;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntModelSpec;
-import com.hp.hpl.jena.rdf.arp.ParseException;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.RDFWriter;
@@ -34,7 +32,6 @@ import com.hp.hpl.jena.vocabulary.ReasonerVocabulary;
 
 import edu.stanford.smi.protege.model.Instance;
 import edu.stanford.smi.protege.model.KnowledgeBaseFactory;
-import edu.stanford.smi.protege.model.framestore.MergingNarrowFrameStore;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protege.util.MessageError;
 import edu.stanford.smi.protege.util.SystemUtilities;
@@ -48,11 +45,8 @@ import edu.stanford.smi.protegex.owl.model.RDFList;
 import edu.stanford.smi.protegex.owl.model.RDFNames;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
 import edu.stanford.smi.protegex.owl.model.factory.OWLJavaFactory;
-import edu.stanford.smi.protegex.owl.model.factory.OWLJavaFactoryUpdater;
 import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
-import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreModel;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreUtil;
-import edu.stanford.smi.protegex.owl.model.triplestore.impl.TripleStoreModelImpl;
 import edu.stanford.smi.protegex.owl.resource.OWLText;
 import edu.stanford.smi.protegex.owl.ui.widget.ModalProgressBarManager;
 import edu.stanford.smi.protegex.owl.writer.rdfxml.rdfwriter.OWLModelAllTripleStoresWriter;
@@ -86,9 +80,6 @@ public class JenaOWLModel extends AbstractOWLModel implements OntModelProvider {
 
     protected JenaOWLModel(KnowledgeBaseFactory factory) {
         super(factory);
-        OWLJavaFactoryUpdater.run(this);
-        MergingNarrowFrameStore mnfs = MergingNarrowFrameStore.get(this);
-        mnfs.setTopFrameStore(mnfs.getActiveFrameStore().getName());
     }
 
 
@@ -183,6 +174,7 @@ public class JenaOWLModel extends AbstractOWLModel implements OntModelProvider {
     }
 
 
+    @Override
     public void initOWLFrameFactoryInvocationHandler() {
         setFrameFactory(new OWLJavaFactory(this));
     }
@@ -336,6 +328,7 @@ public class JenaOWLModel extends AbstractOWLModel implements OntModelProvider {
     /**
      * @deprecated please use the version with the URIs or access the OntModel directly
      */
+    @Deprecated
     public void save(OutputStream os, String language, Collection errors) {
         closeRDFLists();
         save(os, language, errors, getOntModel());
@@ -359,6 +352,7 @@ public class JenaOWLModel extends AbstractOWLModel implements OntModelProvider {
     /**
      * @deprecated -Use save(File file, OntModel ontModel, String language, String namespace, String xmlBase)
      */
+    @Deprecated
     public static void save(File file, OntModel ontModel, String language, String namespace) throws IOException {
     	save(file, ontModel, language, namespace, namespace);
     }
@@ -373,6 +367,7 @@ public class JenaOWLModel extends AbstractOWLModel implements OntModelProvider {
     /**
      * @deprecated please use the version with the URIs or access the OntModel directly
      */
+    @Deprecated
     public void save(OutputStream os, String language, Collection errors, OntModel ontModel) {
         try {
             String namespace = getNamespaceManager().getDefaultNamespace();
@@ -394,6 +389,7 @@ public class JenaOWLModel extends AbstractOWLModel implements OntModelProvider {
     /**
      * @deprecated Use 
      */
+    @Deprecated
     public static void saveModel(OutputStream outputStream, Model model, String language, String namespace) throws IOException {    	
     	saveModel(outputStream, model, language, namespace, namespace);
     }
