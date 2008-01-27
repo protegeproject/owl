@@ -37,14 +37,6 @@ public interface TripleStoreModel extends Disposable{
 
 
     /**
-     * Must be called after changes were made in any TripleStore.
-     * This will internally synchronize several Protege model features with
-     * the OWL/RDF triples.
-     */
-    void endTripleStoreChanges();
-
-
-    /**
      * Gets the currently "active" TripleStore, which all future set operations will be
      * operating on.
      *
@@ -218,13 +210,14 @@ public interface TripleStoreModel extends Disposable{
      */
     void setTopTripleStore(TripleStore tripleStore);
     
+    void setViewActiveOnly(boolean viewActiveOnly);
+    
     /**
      * Changes the <CODE>isIncluded()</CODE> value of all resources to reflect the
      * currently active TripleStore.  This should be called if the editable flag
      * is relevant (e.g. in a user interface) after changes of the active TripleStore.
      */
     void updateEditableResourceState();
-    
     
     /**
      * Cleans up all the triple stores managed by this.
