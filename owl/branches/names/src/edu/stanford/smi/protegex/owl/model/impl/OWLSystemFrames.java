@@ -11,7 +11,6 @@ import com.hp.hpl.jena.datatypes.TypeMapper;
 import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
 
 import edu.stanford.smi.protege.model.Cls;
-import edu.stanford.smi.protege.model.Frame;
 import edu.stanford.smi.protege.model.FrameID;
 import edu.stanford.smi.protege.model.Instance;
 import edu.stanford.smi.protege.model.MaximumCardinalityConstraint;
@@ -45,7 +44,7 @@ import edu.stanford.smi.protegex.owl.model.XSDNames;
 
 
 public class OWLSystemFrames extends SystemFrames {
-    private OWLModel owlModel;
+    protected OWLModel owlModel;
 
     /*
      * Declarations of meta class entities.
@@ -419,8 +418,7 @@ public class OWLSystemFrames extends SystemFrames {
     }
 
     
-    private class OWLSystemFramesAssertions {
-    	private FrameStore fs;
+    protected class OWLSystemFramesAssertions extends SystemFramesAsserter {
     	private RDFSDatatype xsdInt;
     	private RDFSDatatype xsdString;
     	private Collection<Cls> annotationObjectPropertyTypes = new HashSet<Cls>();
@@ -428,7 +426,7 @@ public class OWLSystemFrames extends SystemFrames {
     	
     	
     	public OWLSystemFramesAssertions(FrameStore fs) {
-            this.fs = fs;
+    	    super(fs);
             xsdInt = (RDFSDatatype) getFrame(new FrameID(XSDNames.INT));
             xsdString = (RDFSDatatype) getFrame(new FrameID(XSDNames.STRING));
             
@@ -439,63 +437,6 @@ public class OWLSystemFrames extends SystemFrames {
             annotationDatatypePropertyTypes.add(owlDatatypePropertyClass);
     	}
     	
-    	/* ***********************************************************
-    	 * Utilities
-    	 */
-    	
-        private Cls assertTypeAndSubclasses(Cls cls, Cls type, Cls[] subclasses) {
-            assertTypeAndName(cls, type);
-            for (Cls subclass : subclasses) {
-                fs.addDirectSuperclass(subclass, cls);
-            }
-            return cls;
-        }
-        
-        private void assertTemplateSlots(Cls cls, Slot [] slots) {
-            for (Slot slot : slots) {
-                assertTemplateSlot(cls, slot);
-            }
-        }
-        
-        private void assertTemplateSlot(Cls cls, Slot slot) {
-            fs.addDirectTemplateSlot(cls, slot);
-        }
-        
-        private void assertFunctional(Slot slot) {
-            fs.setDirectOwnSlotValues(slot, getMaximumCardinalitySlot(),
-                    				  MaximumCardinalityConstraint.getValues(false));
-        }
-        
-        private void assertTypeAndName(Instance frame, Cls type) {
-            assertTypeAndName(frame, Collections.singleton(type));
-        }
-
-        /*
-         * Note that I don't use the more convenient FrameStore methods to set the type because
-         * the knowledge base is not yet ready to start swizzling instances.
-         */
-        private void assertTypeAndName(Instance frame, Collection<Cls> types) {
-            String name = frame.getFrameID().getName();
-            fs.setDirectOwnSlotValues(frame, getNameSlot(), Collections.singleton(name));
-            fs.setDirectOwnSlotValues(frame, getDirectTypesSlot(), types);
-            for (Cls type : types) {
-                Collection framesOfType = new ArrayList(fs.getDirectOwnSlotValues(type, getDirectInstancesSlot()));
-                framesOfType.add(frame);
-                fs.setDirectOwnSlotValues(type, getDirectInstancesSlot(), framesOfType);
-            }
-        }
-
-        private void assertValueType(Slot slot, ValueType vt) {
-            fs.setDirectOwnSlotValues(slot, getValueTypeSlot(),
-                                      ValueTypeConstraint.getValues(vt));
-        }
-    	
-        private void assertValueTypeFromClass(Slot slot, Cls cls) {
-            fs.setDirectOwnSlotValues(slot, getValueTypeSlot(),
-                                      ValueTypeConstraint.getValues(ValueType.INSTANCE, 
-                                                                    Collections.singleton(cls)));
-        }
-            
 
         
         /* **************************************************
@@ -831,6 +772,72 @@ public class OWLSystemFrames extends SystemFrames {
                 assertTypeAndName(datatype, rdfsDatatypeClass);
             } 
         }
+    }
+    
+    protected class SystemFramesAsserter {
+        protected FrameStore fs;
+        
+        public SystemFramesAsserter(FrameStore fs) {
+            this.fs = fs;
+        }
+        
+        /* ***********************************************************
+         * Utilities
+         */
+        
+        protected Cls assertTypeAndSubclasses(Cls cls, Cls type, Cls[] subclasses) {
+            assertTypeAndName(cls, type);
+            for (Cls subclass : subclasses) {
+                fs.addDirectSuperclass(subclass, cls);
+            }
+            return cls;
+        }
+        
+        protected void assertTemplateSlots(Cls cls, Slot [] slots) {
+            for (Slot slot : slots) {
+                assertTemplateSlot(cls, slot);
+            }
+        }
+        
+        protected void assertTemplateSlot(Cls cls, Slot slot) {
+            fs.addDirectTemplateSlot(cls, slot);
+        }
+        
+        protected void assertFunctional(Slot slot) {
+            fs.setDirectOwnSlotValues(slot, getMaximumCardinalitySlot(),
+                                      MaximumCardinalityConstraint.getValues(false));
+        }
+        
+        protected void assertTypeAndName(Instance frame, Cls type) {
+            assertTypeAndName(frame, Collections.singleton(type));
+        }
+
+        /*
+         * Note that I don't use the more convenient FrameStore methods to set the type because
+         * the knowledge base is not yet ready to start swizzling instances.
+         */
+        protected void assertTypeAndName(Instance frame, Collection<Cls> types) {
+            String name = frame.getFrameID().getName();
+            fs.setDirectOwnSlotValues(frame, getNameSlot(), Collections.singleton(name));
+            fs.setDirectOwnSlotValues(frame, getDirectTypesSlot(), types);
+            for (Cls type : types) {
+                Collection framesOfType = new ArrayList(fs.getDirectOwnSlotValues(type, getDirectInstancesSlot()));
+                framesOfType.add(frame);
+                fs.setDirectOwnSlotValues(type, getDirectInstancesSlot(), framesOfType);
+            }
+        }
+
+        protected void assertValueType(Slot slot, ValueType vt) {
+            fs.setDirectOwnSlotValues(slot, getValueTypeSlot(),
+                                      ValueTypeConstraint.getValues(vt));
+        }
+        
+        protected void assertValueTypeFromClass(Slot slot, Cls cls) {
+            fs.setDirectOwnSlotValues(slot, getValueTypeSlot(),
+                                      ValueTypeConstraint.getValues(ValueType.INSTANCE, 
+                                                                    Collections.singleton(cls)));
+        }
+        
     }
     
     /*
