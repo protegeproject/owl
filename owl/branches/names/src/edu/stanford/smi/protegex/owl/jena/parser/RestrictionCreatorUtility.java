@@ -8,15 +8,18 @@ import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.Frame;
 import edu.stanford.smi.protege.model.FrameID;
 import edu.stanford.smi.protege.model.Instance;
+import edu.stanford.smi.protege.model.KnowledgeBase;
 import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLNames;
+import edu.stanford.smi.protegex.owl.model.RDFResource;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLAllValuesFrom;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLCardinality;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLHasValue;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLMaxCardinality;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLMinCardinality;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLSomeValuesFrom;
+import edu.stanford.smi.protegex.owl.model.impl.OWLSystemFrames;
 
 public class RestrictionCreatorUtility {	
 	
@@ -47,7 +50,8 @@ public class RestrictionCreatorUtility {
 	
 	
 	public static Frame createRestriction(OWLModel owlModel, FrameID id, String predUri) {
-		Frame inst = owlModel.getFrame(id);
+		Frame inst = ((KnowledgeBase) owlModel).getFrame(id);
+		OWLSystemFrames systemFrames = owlModel.getSystemFrames();
 		
 		if (inst != null)
 			return inst;
@@ -65,9 +69,10 @@ public class RestrictionCreatorUtility {
 		} else if (predUri.equals(OWL.cardinality.getURI())) {
 			inst = new DefaultOWLCardinality(owlModel, id);
 		}
+        ((RDFResource) inst).setPropertyValue(systemFrames.getRdfTypeProperty(), systemFrames.getOwlNamedClassClass());
 		
 		// should be safe
-		Cls metaCls = owlModel.getCls(restrictionURI2MetaclassName.get(predUri));
+		Cls metaCls = ((KnowledgeBase) owlModel).getCls(restrictionURI2MetaclassName.get(predUri));
 				
 		FrameCreatorUtility.addInstanceType((Instance)inst, metaCls);
 		
