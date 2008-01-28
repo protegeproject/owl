@@ -154,43 +154,22 @@ public class FrameCreatorUtility {
         
         
         public static boolean addInstanceType(Instance inst, Cls type) {
-                if (inst == null || type == null) {                     
-                        return false;
-                }
-                
-                
-                //This will call the OWLJavaFactory to make sure that the Java objects 
-                //are of the right Java type 
-                //simpleFrameStore.addDirectType(inst, type);
-                
-                Slot typeSlot = inst.getKnowledgeBase().getSystemFrames().getDirectTypesSlot();
-                
-                /*
-                Collection types = simpleFrameStore.getOwnSlotValues(inst, typeSlot);           
-                HashSet typesSet = new HashSet(types);
-                typesSet.add(type);
-                
-                simpleFrameStore.setDirectOwnSlotValues(inst, typeSlot, typesSet);
-                
-                Slot instancesSlot = inst.getKnowledgeBase().getSystemFrames().getDirectInstancesSlot();
-                Collection instances = simpleFrameStore.getOwnSlotValues(type, instancesSlot);          
-                HashSet instancesSet = new HashSet(instances);
-                instancesSet.add(inst);                         
-                simpleFrameStore.setDirectOwnSlotValues(type, instancesSlot, instancesSet);
-                */
-          //  if (!simpleFrameStore.getOwnSlotValues(inst, typeSlot).contains(type)) {
-                addOwnSlotValue(inst, typeSlot , type);
-                addOwnSlotValue(type, inst.getKnowledgeBase().getSystemFrames().getDirectInstancesSlot(), inst);
-           // }
-                
-                return true;
+            if (inst == null || type == null) {                     
+                return false;
+            }
+
+            Slot typeSlot = inst.getKnowledgeBase().getSystemFrames().getDirectTypesSlot();
+            addOwnSlotValue(inst, typeSlot , type);
+            addOwnSlotValue(type, inst.getKnowledgeBase().getSystemFrames().getDirectInstancesSlot(), inst);
+
+            return true;
         }
 
         public static boolean removeInstanceType(Instance inst, Cls type) {
-                Slot typeSlot = inst.getKnowledgeBase().getSystemFrames().getDirectTypesSlot();
-                simpleFrameStore.removeDirectOwnSlotValue(inst, typeSlot , type);
-        simpleFrameStore.removeDirectOwnSlotValue(type, inst.getKnowledgeBase().getSystemFrames().getDirectInstancesSlot(), inst);
-        return true;
+            Slot typeSlot = inst.getKnowledgeBase().getSystemFrames().getDirectTypesSlot();
+            simpleFrameStore.removeDirectOwnSlotValue(inst, typeSlot , type);
+            simpleFrameStore.removeDirectOwnSlotValue(type, inst.getKnowledgeBase().getSystemFrames().getDirectInstancesSlot(), inst);
+            return true;
         }
         
         public static boolean createSubclassOf(Cls cls, Cls superCls) {
