@@ -914,7 +914,7 @@
 ([KB_465546_Instance_567] of  Widget
 
 	(is_hidden FALSE)
-	(name "protege:ExternalResource")
+	(name "http://protege.stanford.edu/plugins/owl/protege#ExternalResource")
 	(property_list [XY_Instance_890])
 	(widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.OWLFormWidget"))
 
@@ -1310,7 +1310,7 @@
 
 	(height 180)
 	(is_hidden FALSE)
-	(name "protege:inferredType")
+	(name "http://protege.stanford.edu/plugins/owl/protege#inferredType")
 	(property_list [KB_713803_Instance_26])
 	(widget_class_name "edu.stanford.smi.protegex.owl.ui.metadata.AnnotationsWidget")
 	(width 280)
@@ -1529,7 +1529,7 @@
 
 	(height 180)
 	(is_hidden FALSE)
-	(name "protege:inferredType")
+	(name "http://protege.stanford.edu/plugins/owl/protege#inferredType")
 	(property_list [KB_713803_Instance_367])
 	(widget_class_name "edu.stanford.smi.protegex.owl.ui.metadata.AnnotationsWidget")
 	(width 280)
@@ -1859,7 +1859,7 @@
 
 	(height 180)
 	(is_hidden FALSE)
-	(name "protege:inferredType")
+	(name "http://protege.stanford.edu/plugins/owl/protege#inferredType")
 	(property_list [KB_713803_Instance_454])
 	(widget_class_name "edu.stanford.smi.protegex.owl.ui.metadata.AnnotationsWidget")
 	(width 280)
@@ -2182,7 +2182,7 @@
 
 	(height 180)
 	(is_hidden FALSE)
-	(name "protege:inferredType")
+	(name "http://protege.stanford.edu/plugins/owl/protege#inferredType")
 	(property_list [KB_713803_Instance_541])
 	(widget_class_name "edu.stanford.smi.protegex.owl.ui.metadata.AnnotationsWidget")
 	(width 280)
@@ -2476,7 +2476,7 @@
 
 	(height 180)
 	(is_hidden FALSE)
-	(name "protege:inferredType")
+	(name "http://protege.stanford.edu/plugins/owl/protege#inferredType")
 	(property_list [KB_713803_Instance_670])
 	(widget_class_name "edu.stanford.smi.protegex.owl.ui.metadata.AnnotationsWidget")
 	(width 280)
@@ -2787,7 +2787,7 @@
 
 	(height 180)
 	(is_hidden FALSE)
-	(name "protege:inferredType")
+	(name "http://protege.stanford.edu/plugins/owl/protege#inferredType")
 	(property_list [KB_713803_Instance_757])
 	(widget_class_name "edu.stanford.smi.protegex.owl.ui.metadata.AnnotationsWidget")
 	(width 280)
@@ -3093,7 +3093,7 @@
 
 	(height 180)
 	(is_hidden FALSE)
-	(name "protege:inferredType")
+	(name "http://protege.stanford.edu/plugins/owl/protege#inferredType")
 	(property_list [KB_713803_Instance_844])
 	(widget_class_name "edu.stanford.smi.protegex.owl.ui.metadata.AnnotationsWidget")
 	(width 280)
@@ -3564,7 +3564,7 @@
 
 	(height 170)
 	(is_hidden FALSE)
-	(name "protege:inferredType")
+	(name "http://protege.stanford.edu/plugins/owl/protege#inferredType")
 	(property_list [KB_886778_Instance_207])
 	(widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.HeaderWidget")
 	(width 600)
@@ -3775,7 +3775,7 @@
 
 	(height 170)
 	(is_hidden FALSE)
-	(name "protege:inferredType")
+	(name "http://protege.stanford.edu/plugins/owl/protege#inferredType")
 	(property_list [KB_938545_Instance_115])
 	(widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.HeaderWidget")
 	(width 600)
@@ -3826,7 +3826,7 @@
 ([KB_938545_Instance_1208] of  Widget
 
 	(is_hidden FALSE)
-	(name "protege:inferredType")
+	(name "http://protege.stanford.edu/plugins/owl/protege#inferredType")
 	(property_list [KB_938545_Instance_1209]))
 
 ([KB_938545_Instance_1209] of  Property_List
@@ -4299,7 +4299,7 @@
 
 	(height 170)
 	(is_hidden FALSE)
-	(name "protege:inferredType")
+	(name "http://protege.stanford.edu/plugins/owl/protege#inferredType")
 	(property_list [KB_938545_Instance_308])
 	(widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.HeaderWidget")
 	(width 600)
@@ -4811,7 +4811,7 @@
 
 	(height 170)
 	(is_hidden FALSE)
-	(name "protege:inferredType")
+	(name "http://protege.stanford.edu/plugins/owl/protege#inferredType")
 	(property_list [KB_938545_Instance_391])
 	(widget_class_name "edu.stanford.smi.protegex.owl.ui.metadata.AnnotationsWidget")
 	(width 300)
@@ -5316,7 +5316,7 @@
 
 	(height 170)
 	(is_hidden FALSE)
-	(name "protege:inferredType")
+	(name "http://protege.stanford.edu/plugins/owl/protege#inferredType")
 	(property_list [KB_938545_Instance_474])
 	(widget_class_name "edu.stanford.smi.protegex.owl.ui.metadata.AnnotationsWidget")
 	(width 300)
@@ -5821,7 +5821,7 @@
 
 	(height 170)
 	(is_hidden FALSE)
-	(name "protege:inferredType")
+	(name "http://protege.stanford.edu/plugins/owl/protege#inferredType")
 	(property_list [KB_938545_Instance_557])
 	(widget_class_name "edu.stanford.smi.protegex.owl.ui.metadata.AnnotationsWidget")
 	(width 300)
@@ -6383,7 +6383,7 @@
 
 	(height 170)
 	(is_hidden FALSE)
-	(name "protege:inferredType")
+	(name "http://protege.stanford.edu/plugins/owl/protege#inferredType")
 	(property_list [KB_938545_Instance_640])
 	(widget_class_name "edu.stanford.smi.protegex.owl.ui.metadata.AnnotationsWidget")
 	(width 300)
@@ -6951,7 +6951,7 @@
 
 	(height 170)
 	(is_hidden FALSE)
-	(name "protege:inferredType")
+	(name "http://protege.stanford.edu/plugins/owl/protege#inferredType")
 	(property_list [KB_938545_Instance_723])
 	(widget_class_name "edu.stanford.smi.protegex.owl.ui.metadata.AnnotationsWidget")
 	(width 300)
@@ -7446,7 +7446,7 @@
 
 	(height 0)
 	(is_hidden FALSE)
-	(name "protege:inferredType")
+	(name "http://protege.stanford.edu/plugins/owl/protege#inferredType")
 	(property_list [XY_Instance_1016])
 	(width 0)
 	(x 0)
@@ -7737,7 +7737,7 @@
 
 	(height 0)
 	(is_hidden FALSE)
-	(name "protege:inferredType")
+	(name "http://protege.stanford.edu/plugins/owl/protege#inferredType")
 	(property_list [XY_Instance_118])
 	(width 0)
 	(x 0)
@@ -7816,7 +7816,7 @@
 
 	(height 230)
 	(is_hidden FALSE)
-	(name "protege:inferredType")
+	(name "http://protege.stanford.edu/plugins/owl/protege#inferredType")
 	(property_list [XY_Instance_236])
 	(widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.HeaderWidget")
 	(width 620)
@@ -8075,7 +8075,7 @@
 
 	(height 160)
 	(is_hidden FALSE)
-	(name "protege:inferredType")
+	(name "http://protege.stanford.edu/plugins/owl/protege#inferredType")
 	(property_list [XY_Instance_461])
 	(widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.HeaderWidget")
 	(width 560)
@@ -8319,7 +8319,7 @@
 
 	(height 170)
 	(is_hidden FALSE)
-	(name "protege:inferredType")
+	(name "http://protege.stanford.edu/plugins/owl/protege#inferredType")
 	(property_list [XY_Instance_539])
 	(widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.HeaderWidget")
 	(width 600)
@@ -8467,7 +8467,7 @@
 
 	(height 0)
 	(is_hidden FALSE)
-	(name "protege:inferredType")
+	(name "http://protege.stanford.edu/plugins/owl/protege#inferredType")
 	(property_list [XY_Instance_586])
 	(width 0)
 	(x 0)
@@ -8704,7 +8704,7 @@
 
 	(height 0)
 	(is_hidden FALSE)
-	(name "protege:inferredType")
+	(name "http://protege.stanford.edu/plugins/owl/protege#inferredType")
 	(property_list [XY_Instance_694])
 	(width 0)
 	(x 0)
@@ -9128,7 +9128,7 @@
 
 	(height 180)
 	(is_hidden FALSE)
-	(name "protege:inferredType")
+	(name "http://protege.stanford.edu/plugins/owl/protege#inferredType")
 	(property_list [XY_Instance_813])
 	(widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.HeaderWidget")
 	(width 550)
@@ -9286,7 +9286,7 @@
 
 	(height 0)
 	(is_hidden FALSE)
-	(name "protege:inferredType")
+	(name "http://protege.stanford.edu/plugins/owl/protege#inferredType")
 	(property_list [XY_Instance_921])
 	(width 0)
 	(x 0)
@@ -9413,7 +9413,7 @@
 
 	(height 120)
 	(is_hidden FALSE)
-	(name "protege:inferredType")
+	(name "http://protege.stanford.edu/plugins/owl/protege#inferredType")
 	(property_list [XY_Instance_968])
 	(widget_class_name "edu.stanford.smi.protege.widget.InstanceListWidget")
 	(width 200)
