@@ -8,7 +8,6 @@ import edu.stanford.smi.protege.model.Project;
 import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protege.model.WidgetDescriptor;
 import edu.stanford.smi.protege.plugin.ProjectPluginAdapter;
-import edu.stanford.smi.protege.ui.ProjectManager;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protege.widget.ClsWidget;
 import edu.stanford.smi.protege.widget.FormWidget;
@@ -126,9 +125,7 @@ public class SWRLProjectPlugin extends ProjectPluginAdapter
 
 		Cls impCls = kb.getCls(SWRLNames.Cls.IMP);
 
-		if (impCls == null) return false;
-
-		return true;
+		return impCls.getInstanceCount() != 0;
 	} // isSWRLPresent
 
 	
