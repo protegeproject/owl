@@ -10,10 +10,12 @@ import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.Frame;
 import edu.stanford.smi.protege.model.FrameID;
 import edu.stanford.smi.protege.model.Instance;
+import edu.stanford.smi.protege.model.KnowledgeBase;
 import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protege.model.framestore.SimpleFrameStore;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLNames;
+import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLAllDifferent;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLDatatypeProperty;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLIndividual;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLNamedClass;
@@ -22,6 +24,7 @@ import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLOntology;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultRDFList;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultRDFProperty;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultRDFSNamedClass;
+import edu.stanford.smi.protegex.owl.model.impl.OWLSystemFrames;
 import edu.stanford.smi.protegex.owl.swrl.model.SWRLNames;
 import edu.stanford.smi.protegex.owl.swrl.model.impl.DefaultSWRLAtomList;
 import edu.stanford.smi.protegex.owl.swrl.model.impl.DefaultSWRLBuiltin;
@@ -40,7 +43,8 @@ public class FrameCreatorUtility {
                 
         
     public static Frame createFrameWithType(OWLModel owlModel, FrameID id, String typeUri, boolean isSubjAnon) {
-        Frame frame = owlModel.getFrame(id);
+        Frame frame = ((KnowledgeBase) owlModel).getFrame(id);
+        OWLSystemFrames systemFrames = owlModel.getSystemFrames();
                 
         if (frame != null)
             return frame;
@@ -69,13 +73,14 @@ public class FrameCreatorUtility {
             frame = new DefaultOWLObjectProperty(owlModel, id);                     
             ((DefaultOWLObjectProperty)frame).setTransitive(true);                  
             //hack - because otherwise the type is set twice
-            removeInstanceType((Instance)frame, owlModel.getCls(OWLNames.Cls.TRANSITIVE_PROPERTY));                 
+            removeInstanceType((Instance)frame, systemFrames.getOwlTransitivePropertyClass());                 
         }
         else if (typeUri.equals(OWL.SymmetricProperty.getURI())) {
             frame = new DefaultOWLObjectProperty(owlModel, id);                     
             ((DefaultOWLObjectProperty)frame).setSymmetric(true);
             //hack - because otherwise the type is set twice
-            removeInstanceType((Instance)frame, owlModel.getCls(OWLNames.Cls.SYMMETRIC_PROPERTY));
+            
+            removeInstanceType((Instance)frame, systemFrames.getOwlSymmetricPropertyClass());
         }
         else if (typeUri.equals(OWL.AnnotationProperty.getURI())) {
             frame = new DefaultRDFProperty(owlModel, id);  //should this be abstract owl prop?
@@ -85,11 +90,15 @@ public class FrameCreatorUtility {
             frame = new DefaultOWLObjectProperty(owlModel, id);                     
             ((DefaultOWLObjectProperty)frame).setInverseFunctional(true);
             //hack - because otherwise the type is set twice
-            removeInstanceType((Instance)frame, owlModel.getCls(OWLNames.Cls.INVERSE_FUNCTIONAL_PROPERTY));
+            
+            removeInstanceType((Instance)frame, systemFrames.getOwlInverseFunctionalPropertyClass());
         }
         else if (typeUri.equals(OWL.FunctionalProperty.getURI())) {
             frame = new DefaultRDFProperty(owlModel, id);                   
             ((DefaultRDFProperty)frame).setFunctional(true);                
+        }
+        else if (typeUri.equals(OWL.AllDifferent.getURI())) {
+            frame = new DefaultOWLAllDifferent(owlModel, id);
         }
         else if (typeUri.equals(RDF.Property.getURI())) {
             frame = new DefaultRDFProperty(owlModel, id);
