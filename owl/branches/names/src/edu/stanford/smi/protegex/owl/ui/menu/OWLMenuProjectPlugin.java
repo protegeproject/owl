@@ -56,7 +56,6 @@ import edu.stanford.smi.protegex.owl.database.OWLDatabaseModel;
 import edu.stanford.smi.protegex.owl.inference.protegeowl.ReasonerPluginManager;
 import edu.stanford.smi.protegex.owl.inference.protegeowl.ReasonerPluginMenuManager;
 import edu.stanford.smi.protegex.owl.javacode.JavaCodeGeneratorResourceAction;
-import edu.stanford.smi.protegex.owl.jena.JenaKnowledgeBaseFactory;
 import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.ProtegeNames;
@@ -275,13 +274,7 @@ public class OWLMenuProjectPlugin extends ProjectPluginAdapter {
         // added TT:
         OWLUI.fixBrowserSlotPatterns(project);
         
-        Integer build = owlModel.getOWLProject().getSettingsMap().getInteger(JenaKnowledgeBaseFactory.OWL_BUILD_PROPERTY);
-        if (build == null) {
-            fix(owlModel);
-        }
-        else if (build.intValue() < OWLText.getLatestCompatibleBuild()) {
-            fix(owlModel);
-        }
+        fix(owlModel);
         if (project.getSources().getString(AbsoluteFormsGenerator.SAVE_FORMS_KEY) != null) {
             try {
                 AbsoluteFormsLoader absoluteFormsLoader = new AbsoluteFormsLoader(owlModel);
