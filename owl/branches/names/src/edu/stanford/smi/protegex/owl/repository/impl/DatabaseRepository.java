@@ -26,7 +26,7 @@ import edu.stanford.smi.protege.storage.database.ValueCachingNarrowFrameStore;
 import edu.stanford.smi.protege.storage.database.DatabaseKnowledgeBaseFactory.DatabaseProperty;
 import edu.stanford.smi.protege.util.AmalgamatedIOException;
 import edu.stanford.smi.protege.util.Log;
-import edu.stanford.smi.protegex.owl.database.DatabaseIOUtils;
+import edu.stanford.smi.protegex.owl.database.DatabaseFactoryUtils;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreModel;
@@ -152,7 +152,7 @@ public class DatabaseRepository implements Repository {
 	public boolean addTable(String table) {
         String ontology = null;
 	    try {
-	        ontology  = DatabaseIOUtils.getOntologyFromTable(connection, table);
+	        ontology  = DatabaseFactoryUtils.getOntologyFromTable(connection, table);
 	        if (ontology != null) {
 	            ontologyToTable.put(new URI(ontology), table);
 	            return true;
@@ -185,9 +185,9 @@ public class DatabaseRepository implements Repository {
 	    try {
 	        importedTripleStore = tripleStoreModel.createActiveImportedTripleStore(valueCache);
 	        Collection errors = new ArrayList();
-	        DatabaseIOUtils.readOWLOntologyFromDatabase(owlModel, importedTripleStore);
-	        DatabaseIOUtils.loadPrefixesFromDB(owlModel, importedTripleStore, errors);
-	        DatabaseIOUtils.loadImports(owlModel, errors);
+	        DatabaseFactoryUtils.readOWLOntologyFromDatabase(owlModel, importedTripleStore);
+	        DatabaseFactoryUtils.loadPrefixesFromDB(owlModel, importedTripleStore, errors);
+	        DatabaseFactoryUtils.loadImports(owlModel, errors);
 	        if (!errors.isEmpty()) {
 	            throw new AmalgamatedIOException(errors);
 	        }
