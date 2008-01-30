@@ -2,7 +2,13 @@ package edu.stanford.smi.protegex.owl.model.triplestore.impl.tests;
 
 import edu.stanford.smi.protege.model.Frame;
 import edu.stanford.smi.protege.model.FrameID;
-import edu.stanford.smi.protegex.owl.model.*;
+import edu.stanford.smi.protegex.owl.model.OWLComplementClass;
+import edu.stanford.smi.protegex.owl.model.OWLIntersectionClass;
+import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
+import edu.stanford.smi.protegex.owl.model.OWLNames;
+import edu.stanford.smi.protegex.owl.model.OWLUnionClass;
+import edu.stanford.smi.protegex.owl.model.RDFProperty;
+import edu.stanford.smi.protegex.owl.model.RDFResource;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultRDFProperty;
 
 /**
@@ -19,7 +25,6 @@ public class CreateOWLLogicalClassesTestCase extends AbstractTripleStoreTestCase
         RDFResource c = new DefaultRDFProperty(owlModel, createFrameID());
         ts.add(c, owlModel.getRDFTypeProperty(), owlModel.getOWLNamedClassClass());
         ts.add(c, owlModel.getRDFProperty(OWLNames.Slot.COMPLEMENT_OF), owlModel.getOWLThingClass());
-        owlModel.getTripleStoreModel().endTripleStoreChanges();
         OWLNamedClass namedClass = owlModel.getOWLNamedClass(c.getName());
         Frame f = namedClass.getDefinition();
         assertTrue(f instanceof OWLComplementClass);
@@ -31,7 +36,6 @@ public class CreateOWLLogicalClassesTestCase extends AbstractTripleStoreTestCase
         RDFResource c = new DefaultRDFProperty(owlModel, createFrameID());
         ts.add(c, owlModel.getRDFProperty(OWLNames.Slot.COMPLEMENT_OF), owlModel.getOWLThingClass());
         ts.add(c, owlModel.getRDFTypeProperty(), owlModel.getOWLNamedClassClass());
-        owlModel.getTripleStoreModel().endTripleStoreChanges();
 
         OWLNamedClass namedClass = owlModel.getOWLNamedClass(c.getName());
         Frame f = namedClass.getDefinition();
@@ -53,7 +57,6 @@ public class CreateOWLLogicalClassesTestCase extends AbstractTripleStoreTestCase
         ts.add(nodeA, owlModel.getRDFRestProperty(), nodeB);
         ts.add(nodeB, owlModel.getRDFFirstProperty(), classB);
         ts.add(nodeB, owlModel.getRDFRestProperty(), owlModel.getRDFNil());
-        owlModel.getTripleStoreModel().endTripleStoreChanges();
 
         OWLNamedClass namedClass = owlModel.getOWLNamedClass(c.getName());
         Frame f = namedClass.getDefinition();
@@ -78,7 +81,6 @@ public class CreateOWLLogicalClassesTestCase extends AbstractTripleStoreTestCase
         ts.add(nodeB, owlModel.getRDFRestProperty(), owlModel.getRDFNil());
         ts.add(c, operandsProperty, nodeA);
         ts.add(nodeA, owlModel.getRDFFirstProperty(), classA);
-        owlModel.getTripleStoreModel().endTripleStoreChanges();
 
         OWLNamedClass namedClass = owlModel.getOWLNamedClass(c.getName());
         Frame f = namedClass.getDefinition();

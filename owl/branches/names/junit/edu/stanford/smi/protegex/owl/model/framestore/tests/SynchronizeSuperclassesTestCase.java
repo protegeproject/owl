@@ -1,10 +1,14 @@
 package edu.stanford.smi.protegex.owl.model.framestore.tests;
 
-import edu.stanford.smi.protegex.owl.model.*;
+import java.util.Collection;
+
+import edu.stanford.smi.protegex.owl.model.OWLAnonymousClass;
+import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
+import edu.stanford.smi.protegex.owl.model.RDFProperty;
+import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
+import edu.stanford.smi.protegex.owl.model.RDFSNames;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 import edu.stanford.smi.protegex.owl.tests.AbstractJenaTestCase;
-
-import java.util.Collection;
 
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
@@ -57,7 +61,14 @@ public class SynchronizeSuperclassesTestCase extends AbstractJenaTestCase {
         assertContains(owlThing, supers);
         assertContains(anon, supers);
         TripleStore topTS = owlModel.getTripleStoreModel().getTopTripleStore();
-        TripleStore importedTS = owlModel.getTripleStoreModel().getTripleStore(2);
+        TripleStore importedTS = null;
+        for (TripleStore ts : owlModel.getTripleStoreModel().getTripleStores()) {
+            if (!(ts.equals(owlModel.getTripleStoreModel().getSystemTripleStore())) && 
+                    !(ts.equals(topTS))) {
+                importedTS = ts;
+                break;
+            }
+        }
         assertTrue(topTS.contains(c, subClassOfProperty, anon));
         assertTrue(importedTS.contains(c, subClassOfProperty, owlThing));
     }

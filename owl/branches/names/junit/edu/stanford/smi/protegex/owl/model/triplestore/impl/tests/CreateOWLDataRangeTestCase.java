@@ -20,7 +20,6 @@ public class CreateOWLDataRangeTestCase extends AbstractTripleStoreTestCase {
         ts.add(firstNode, owlModel.getRDFRestProperty(), secondNode);
         ts.add(secondNode, owlModel.getRDFFirstProperty(), "B");
         ts.add(secondNode, owlModel.getRDFRestProperty(), owlModel.getRDFNil());
-        owlModel.getTripleStoreModel().endTripleStoreChanges();
         RDFResource newDataRange = owlModel.getRDFResource(dataRange.getName());
         assertTrue(newDataRange instanceof OWLDataRange);
         RDFResource newFirstNode = owlModel.getRDFResource(firstNode.getName());

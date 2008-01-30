@@ -14,7 +14,6 @@ public class CreateRDFSRangeTestCase extends AbstractTripleStoreTestCase {
     public void testStringRange() {
         RDFProperty property = owlModel.createRDFProperty("property");
         ts.add(property, owlModel.getRDFSRangeProperty(), owlModel.getXSDstring());
-        owlModel.getTripleStoreModel().endTripleStoreChanges();
         assertEquals(ValueType.STRING, ((Slot) property).getValueType());
         assertSize(0, ((Slot) property).getAllowedValues());
     }
@@ -24,7 +23,6 @@ public class CreateRDFSRangeTestCase extends AbstractTripleStoreTestCase {
         RDFSNamedClass cls = owlModel.createRDFSNamedClass("Class");
         RDFProperty property = owlModel.createRDFProperty("property");
         ts.add(property, owlModel.getRDFSRangeProperty(), cls);
-        owlModel.getTripleStoreModel().endTripleStoreChanges();
         assertEquals(ValueType.INSTANCE, ((Slot) property).getValueType());
         assertSize(1, ((Slot) property).getAllowedClses());
         assertContains(cls, ((Slot) property).getAllowedClses());

@@ -1,6 +1,10 @@
 package edu.stanford.smi.protegex.owl.model.triplestore.impl.tests;
 
-import edu.stanford.smi.protegex.owl.model.*;
+import edu.stanford.smi.protegex.owl.model.OWLEnumeratedClass;
+import edu.stanford.smi.protegex.owl.model.OWLIndividual;
+import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
+import edu.stanford.smi.protegex.owl.model.RDFResource;
+import edu.stanford.smi.protegex.owl.model.RDFSClass;
 
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
@@ -20,7 +24,6 @@ public class CreateOWLEnumeratedClassTestCase extends AbstractTripleStoreTestCas
         ts.add(first, owlModel.getRDFRestProperty(), second);
         ts.add(second, owlModel.getRDFFirstProperty(), b);
         ts.add(second, owlModel.getRDFRestProperty(), owlModel.getRDFNil());
-        owlModel.getTripleStoreModel().endTripleStoreChanges();
         RDFSClass enumClass = (RDFSClass) owlModel.getRDFResource(enumR.getName());
         assertTrue(enumClass instanceof OWLEnumeratedClass);
         OWLEnumeratedClass enumeratedClass = (OWLEnumeratedClass) enumClass;

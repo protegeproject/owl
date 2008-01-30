@@ -1,7 +1,11 @@
 package edu.stanford.smi.protegex.owl.model.triplestore.impl.tests;
 
 import edu.stanford.smi.protege.model.Cls;
-import edu.stanford.smi.protegex.owl.model.*;
+import edu.stanford.smi.protegex.owl.model.OWLComplementClass;
+import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
+import edu.stanford.smi.protegex.owl.model.OWLNames;
+import edu.stanford.smi.protegex.owl.model.OWLObjectProperty;
+import edu.stanford.smi.protegex.owl.model.RDFResource;
 
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
@@ -19,7 +23,6 @@ public class CreateOWLEquivalentClassTestCase extends AbstractTripleStoreTestCas
         ts.add(restriction, owlModel.getRDFProperty(OWLNames.Slot.CARDINALITY), new Integer(1));
         ts.add(restriction, owlModel.getRDFProperty(OWLNames.Slot.ON_PROPERTY), property);
         ts.add(c, owlModel.getRDFTypeProperty(), owlModel.getOWLNamedClassClass());
-        owlModel.getTripleStoreModel().endTripleStoreChanges();
         Cls cls = owlModel.getOWLNamedClass(name);
         assertSize(2, cls.getDirectSuperclasses());
         assertContains(owlThing, cls.getDirectSuperclasses());
@@ -36,7 +39,6 @@ public class CreateOWLEquivalentClassTestCase extends AbstractTripleStoreTestCas
         ts.add(classA, owlModel.getRDFTypeProperty(), owlModel.getOWLNamedClassClass());
         ts.add(classB, owlModel.getRDFTypeProperty(), owlModel.getOWLNamedClassClass());
         ts.add(classA, owlModel.getOWLEquivalentClassProperty(), classB);
-        owlModel.getTripleStoreModel().endTripleStoreChanges();
         Cls clsA = owlModel.getOWLNamedClass(classA.getName());
         Cls clsB = owlModel.getOWLNamedClass(classB.getName());
         assertSize(2, clsA.getDirectSuperclasses());
@@ -52,7 +54,6 @@ public class CreateOWLEquivalentClassTestCase extends AbstractTripleStoreTestCas
         RDFResource namedClassR = createRDFResource("class");
         ts.add(namedClassR, rdfTypeProperty, owlModel.getOWLNamedClassClass());
         ts.add(namedClassR, owlModel.getRDFProperty(OWLNames.Slot.COMPLEMENT_OF), owlThing);
-        owlModel.getTripleStoreModel().endTripleStoreChanges();
         OWLNamedClass namedClass = owlModel.getOWLNamedClass(namedClassR.getName());
         assertSize(1, namedClass.getEquivalentClasses());
         OWLComplementClass complementClass = (OWLComplementClass) namedClass.getEquivalentClasses().iterator().next();

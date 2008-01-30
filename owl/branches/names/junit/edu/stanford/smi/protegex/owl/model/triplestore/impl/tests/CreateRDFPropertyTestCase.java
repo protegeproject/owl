@@ -1,6 +1,11 @@
 package edu.stanford.smi.protegex.owl.model.triplestore.impl.tests;
 
-import edu.stanford.smi.protegex.owl.model.*;
+import edu.stanford.smi.protegex.owl.model.OWLNames;
+import edu.stanford.smi.protegex.owl.model.OWLObjectProperty;
+import edu.stanford.smi.protegex.owl.model.OWLProperty;
+import edu.stanford.smi.protegex.owl.model.RDFProperty;
+import edu.stanford.smi.protegex.owl.model.RDFResource;
+import edu.stanford.smi.protegex.owl.model.RDFSNames;
 
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
@@ -10,7 +15,6 @@ public class CreateRDFPropertyTestCase extends AbstractTripleStoreTestCase {
     public void testCreateRDFProperty() {
         RDFResource c = createRDFResource("test");
         ts.add(c, rdfTypeProperty, owlModel.getRDFPropertyClass());
-        owlModel.getTripleStoreModel().endTripleStoreChanges();
         assertTrue(owlModel.getRDFProperty(c.getName()) instanceof RDFProperty);
         assertFalse(owlModel.getRDFProperty(c.getName()) instanceof OWLProperty);
     }
@@ -19,7 +23,6 @@ public class CreateRDFPropertyTestCase extends AbstractTripleStoreTestCase {
     public void testCreateFunctionalRDFProperty() {
         RDFResource c = createRDFResource("property");
         ts.add(c, rdfTypeProperty, owlModel.getOWLFunctionalPropertyClass());
-        owlModel.getTripleStoreModel().endTripleStoreChanges();
         RDFProperty property = owlModel.getRDFProperty(c.getName());
         assertTrue(property.isFunctional());
     }
@@ -28,7 +31,6 @@ public class CreateRDFPropertyTestCase extends AbstractTripleStoreTestCase {
     public void testCreateSymmetricProperty() {
         RDFResource c = createRDFResource("test");
         ts.add(c, rdfTypeProperty, owlModel.getRDFSNamedClass(OWLNames.Cls.SYMMETRIC_PROPERTY));
-        owlModel.getTripleStoreModel().endTripleStoreChanges();
         RDFProperty property = owlModel.getRDFProperty(c.getName());
         assertTrue(property instanceof OWLObjectProperty);
         assertTrue(((OWLObjectProperty) property).isSymmetric());
@@ -38,7 +40,6 @@ public class CreateRDFPropertyTestCase extends AbstractTripleStoreTestCase {
     public void testCreateTransitiveProperty() {
         RDFResource c = createRDFResource("test");
         ts.add(c, rdfTypeProperty, owlModel.getRDFSNamedClass(OWLNames.Cls.TRANSITIVE_PROPERTY));
-        owlModel.getTripleStoreModel().endTripleStoreChanges();
         RDFProperty property = owlModel.getRDFProperty(c.getName());
         assertTrue(property instanceof OWLObjectProperty);
         assertTrue(((OWLObjectProperty) property).isTransitive());
@@ -49,7 +50,6 @@ public class CreateRDFPropertyTestCase extends AbstractTripleStoreTestCase {
         RDFProperty superproperty = owlModel.createRDFProperty("super");
         RDFProperty subproperty = owlModel.createRDFProperty("sub");
         ts.add(subproperty, owlModel.getRDFProperty(RDFSNames.Slot.SUB_PROPERTY_OF), superproperty);
-        owlModel.getTripleStoreModel().endTripleStoreChanges();
         assertSize(1, subproperty.getSuperproperties(false));
         assertContains(superproperty, subproperty.getSuperproperties(false));
         assertSize(1, superproperty.getSubproperties(false));

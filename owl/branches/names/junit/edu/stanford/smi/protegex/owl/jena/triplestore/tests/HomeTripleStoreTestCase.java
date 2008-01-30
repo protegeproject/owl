@@ -22,9 +22,11 @@ public class HomeTripleStoreTestCase extends AbstractJenaTestCase {
     public void testSetHomeTripleStore() {
         RDFResource resource = owlModel.createOWLNamedClass("Class");
         TripleStoreModel tripleStoreModel = owlModel.getTripleStoreModel();
-        assertEquals(tripleStoreModel.getActiveTripleStore(), tripleStoreModel.getHomeTripleStore(resource));
+        TripleStore activeTripleStore = tripleStoreModel.getActiveTripleStore();
+        assertEquals(activeTripleStore, tripleStoreModel.getHomeTripleStore(resource));
         NarrowFrameStore nfs = new InMemoryFrameDb("Test");
-        TripleStore newTripleStore = tripleStoreModel.createTripleStore(nfs);
+        TripleStore newTripleStore = tripleStoreModel.createActiveImportedTripleStore(nfs);
+        tripleStoreModel.setActiveTripleStore(activeTripleStore);
         tripleStoreModel.setHomeTripleStore(resource, newTripleStore);
         assertEquals(newTripleStore, tripleStoreModel.getHomeTripleStore(resource));
     }

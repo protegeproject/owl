@@ -14,7 +14,6 @@ public class ChangeRDFTypeTestCase extends AbstractJenaTestCase {
         assertFalse(property.isFunctional());
         RDFSNamedClass type = owlModel.getOWLFunctionalPropertyClass();
         owlModel.getTripleStoreModel().getActiveTripleStore().add(property, owlModel.getRDFTypeProperty(), type);
-        owlModel.getTripleStoreModel().endTripleStoreChanges();
         assertTrue(property.isFunctional());
         assertContains(property, owlModel.getOWLDatatypePropertyClass().getInstances(false));
         assertContains(property, owlModel.getOWLFunctionalPropertyClass().getInstances(false));
@@ -27,7 +26,6 @@ public class ChangeRDFTypeTestCase extends AbstractJenaTestCase {
         assertTrue(property.isFunctional());
         RDFSNamedClass type = owlModel.getOWLFunctionalPropertyClass();
         owlModel.getTripleStoreModel().getActiveTripleStore().remove(property, owlModel.getRDFTypeProperty(), type);
-        owlModel.getTripleStoreModel().endTripleStoreChanges();
         assertFalse(property.isFunctional());
         assertContains(property, owlModel.getOWLDatatypePropertyClass().getInstances(false));
         assertFalse(owlModel.getOWLFunctionalPropertyClass().getInstances(false).contains(property));

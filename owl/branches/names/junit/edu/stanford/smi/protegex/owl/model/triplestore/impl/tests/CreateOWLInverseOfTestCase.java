@@ -13,7 +13,6 @@ public class CreateOWLInverseOfTestCase extends AbstractTripleStoreTestCase {
         OWLObjectProperty property = owlModel.createOWLObjectProperty("property");
         OWLObjectProperty inverse = owlModel.createOWLObjectProperty("inverse");
         ts.add(property, owlModel.getRDFProperty(OWLNames.Slot.INVERSE_OF), inverse);
-        owlModel.getTripleStoreModel().endTripleStoreChanges();
         assertEquals(inverse, property.getInverseProperty());
         assertEquals(property, inverse.getInverseProperty());
     }

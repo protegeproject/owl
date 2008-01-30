@@ -18,7 +18,6 @@ public class CreateOWLRestrictionsTestCase extends AbstractTripleStoreTestCase {
         ts.add(c, owlModel.getRDFProperty(OWLNames.Slot.CARDINALITY), new Integer(1));
         ts.add(c, owlModel.getRDFProperty(OWLNames.Slot.ON_PROPERTY), property);
         ts.add(owlThing, owlModel.getRDFSSubClassOfProperty(), c);
-        owlModel.getTripleStoreModel().endTripleStoreChanges();
         Frame frame = owlModel.getFrame(c.getName());
         OWLCardinality restriction = (OWLCardinality) frame;
         assertEquals(1, restriction.getCardinality());

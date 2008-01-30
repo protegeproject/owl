@@ -21,9 +21,16 @@ public class DefaultOWLModelPatcherTestCase extends AbstractJenaTestCase {
         RDFResource c = owlModel.getRDFResource("ns:Class");
         assertTrue(c instanceof RDFSNamedClass);
         assertSize(2, owlModel.getTripleStoreModel().listUserTripleStores());
-        TripleStore ts = owlModel.getTripleStoreModel().getTripleStore(2);
-        assertEquals(IMPORT, ts.getName());
-        assertTrue(ts.contains(c, owlModel.getRDFTypeProperty(), owlModel.getRDFSNamedClassClass()));
+        TripleStore importedTS = null;
+        for (TripleStore ots : owlModel.getTripleStoreModel().getTripleStores()) {
+            if (!(ots.equals(owlModel.getTripleStoreModel().getSystemTripleStore())) && 
+                    !(ots.equals(owlModel.getTripleStoreModel().getTopTripleStore()))) {
+                importedTS = ots;
+                break;
+            }
+        }
+        assertEquals(IMPORT, importedTS.getName());
+        assertTrue(importedTS.contains(c, owlModel.getRDFTypeProperty(), owlModel.getRDFSNamedClassClass()));
     }
 
 
@@ -34,9 +41,16 @@ public class DefaultOWLModelPatcherTestCase extends AbstractJenaTestCase {
         RDFResource c = owlModel.getRDFResource("ns:Class");
         assertTrue(c instanceof RDFSNamedClass);
         assertSize(2, owlModel.getTripleStoreModel().listUserTripleStores());
-        TripleStore ts = owlModel.getTripleStoreModel().getTripleStore(2);
-        assertEquals(IMPORT, ts.getName());
-        assertTrue(ts.contains(c, owlModel.getRDFTypeProperty(), owlModel.getRDFSNamedClassClass()));
+        TripleStore importedTS = null;
+        for (TripleStore ts : owlModel.getTripleStoreModel().getTripleStores()) {
+            if (!(ts.equals(owlModel.getTripleStoreModel().getSystemTripleStore())) && 
+                    !(ts.equals(owlModel.getTripleStoreModel().getTopTripleStore()))) {
+                importedTS = ts;
+                break;
+            }
+        }
+        assertEquals(IMPORT, importedTS.getName());
+        assertTrue(importedTS.contains(c, owlModel.getRDFTypeProperty(), owlModel.getRDFSNamedClassClass()));
     }
 
 
@@ -47,9 +61,16 @@ public class DefaultOWLModelPatcherTestCase extends AbstractJenaTestCase {
         RDFResource c = owlModel.getRDFResource("ns:Class");
         assertTrue(c instanceof RDFSNamedClass);
         assertSize(2, owlModel.getTripleStoreModel().listUserTripleStores());
-        TripleStore ts = owlModel.getTripleStoreModel().getTripleStore(2);
-        assertEquals(IMPORT, ts.getName());
-        assertTrue(ts.contains(c, owlModel.getRDFTypeProperty(), owlModel.getRDFSNamedClassClass()));
+        TripleStore importedTS = null;
+        for (TripleStore ts : owlModel.getTripleStoreModel().getTripleStores()) {
+            if (!(ts.equals(owlModel.getTripleStoreModel().getSystemTripleStore())) && 
+                    !(ts.equals(owlModel.getTripleStoreModel().getTopTripleStore()))) {
+                importedTS = ts;
+                break;
+            }
+        }
+        assertEquals(IMPORT, importedTS.getName());
+        assertTrue(importedTS.contains(c, owlModel.getRDFTypeProperty(), owlModel.getRDFSNamedClassClass()));
         RDFSNamedClass superclass = (RDFSNamedClass) c;
         assertSize(1, superclass.getSuperclasses(false));
         assertContains(owlThing, superclass.getSuperclasses(false));
@@ -63,8 +84,15 @@ public class DefaultOWLModelPatcherTestCase extends AbstractJenaTestCase {
         RDFResource property = owlModel.getRDFResource("ns:property");
         assertTrue(property instanceof RDFProperty);
         assertSize(2, owlModel.getTripleStoreModel().listUserTripleStores());
-        TripleStore ts = owlModel.getTripleStoreModel().getTripleStore(2);
-        assertEquals(IMPORT, ts.getName());
-        assertTrue(ts.contains(property, owlModel.getRDFTypeProperty(), owlModel.getRDFPropertyClass()));
+        TripleStore importedTS = null;
+        for (TripleStore ts : owlModel.getTripleStoreModel().getTripleStores()) {
+            if (!(ts.equals(owlModel.getTripleStoreModel().getSystemTripleStore())) && 
+                    !(ts.equals(owlModel.getTripleStoreModel().getTopTripleStore()))) {
+                importedTS = ts;
+                break;
+            }
+        }
+        assertEquals(IMPORT, importedTS.getName());
+        assertTrue(importedTS.contains(property, owlModel.getRDFTypeProperty(), owlModel.getRDFPropertyClass()));
     }
 }

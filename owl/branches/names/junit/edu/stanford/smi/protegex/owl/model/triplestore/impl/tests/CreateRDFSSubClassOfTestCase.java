@@ -14,7 +14,6 @@ public class CreateRDFSSubClassOfTestCase extends AbstractTripleStoreTestCase {
         String name = "Class";
         RDFResource c = createRDFResource(name);
         ts.add(c, owlModel.getRDFTypeProperty(), owlModel.getOWLNamedClassClass());
-        owlModel.getTripleStoreModel().endTripleStoreChanges();
         Cls cls = owlModel.getOWLNamedClass(name);
         assertSize(1, cls.getDirectSuperclasses());
         assertContains(owlThing, cls.getDirectSuperclasses());
@@ -31,7 +30,6 @@ public class CreateRDFSSubClassOfTestCase extends AbstractTripleStoreTestCase {
         ts.add(restriction, owlModel.getRDFProperty(OWLNames.Slot.CARDINALITY), new Integer(1));
         ts.add(restriction, owlModel.getRDFProperty(OWLNames.Slot.ON_PROPERTY), property);
         ts.add(c, owlModel.getRDFTypeProperty(), owlModel.getOWLNamedClassClass());
-        owlModel.getTripleStoreModel().endTripleStoreChanges();
         Cls cls = owlModel.getOWLNamedClass(name);
         assertSize(2, cls.getDirectSuperclasses());
         assertContains(owlThing, cls.getDirectSuperclasses());
@@ -45,7 +43,6 @@ public class CreateRDFSSubClassOfTestCase extends AbstractTripleStoreTestCase {
         ts.add(subclass, owlModel.getRDFSSubClassOfProperty(), superclass);
         ts.add(subclass, owlModel.getRDFTypeProperty(), owlModel.getOWLNamedClassClass());
         ts.add(superclass, owlModel.getRDFTypeProperty(), owlModel.getOWLNamedClassClass());
-        owlModel.getTripleStoreModel().endTripleStoreChanges();
         Cls subcls = owlModel.getOWLNamedClass(subclass.getName());
         Cls supercls = owlModel.getOWLNamedClass(superclass.getName());
         assertSize(1, supercls.getDirectSuperclasses());

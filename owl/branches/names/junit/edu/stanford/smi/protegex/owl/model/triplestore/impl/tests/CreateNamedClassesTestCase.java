@@ -15,7 +15,6 @@ public class CreateNamedClassesTestCase extends AbstractTripleStoreTestCase {
         String name = "Class";
         RDFResource c = createRDFResource(name);
         ts.add(c, owlModel.getRDFProperty(RDFNames.Slot.TYPE), owlModel.getOWLNamedClassClass());
-        owlModel.getTripleStoreModel().endTripleStoreChanges();
         Frame f = owlModel.getFrame(name);
         assertTrue(f instanceof OWLNamedClass);
     }
@@ -25,7 +24,6 @@ public class CreateNamedClassesTestCase extends AbstractTripleStoreTestCase {
         String name = "Class";
         RDFResource c = createRDFResource(name);
         ts.add(c, owlModel.getRDFProperty(RDFNames.Slot.TYPE), owlModel.getRDFSNamedClassClass());
-        owlModel.getTripleStoreModel().endTripleStoreChanges();
         Frame f = owlModel.getFrame(name);
         assertTrue(f instanceof RDFSNamedClass);
         assertFalse(f instanceof OWLNamedClass);
