@@ -29,6 +29,8 @@ import edu.stanford.smi.protegex.owl.repository.RepositoryManager;
 import edu.stanford.smi.protegex.owl.swrl.SWRLSystemFrames;
 import edu.stanford.smi.protegex.owl.testing.OWLTestManager;
 
+import com.hp.hpl.jena.ontology.OntModel;
+
 /**
  * A KnowledgeBase with a number of convenience methods to handle anonymous classes.
  *
@@ -627,6 +629,8 @@ public interface OWLModel extends ProtegeKnowledgeBase, OWLTestManager {
     com.hp.hpl.jena.rdf.model.Model getJenaModel();
 
 
+    com.hp.hpl.jena.ontology.OntModel getOntModel();
+    
     RDFProperty getOWLDifferentFromProperty();
 
 
