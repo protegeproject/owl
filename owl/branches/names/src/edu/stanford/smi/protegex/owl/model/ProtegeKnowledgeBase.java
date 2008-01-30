@@ -1803,13 +1803,6 @@ public interface ProtegeKnowledgeBase extends KnowledgeBase {
      */
     List getFrameStores();
 
-
-    /**
-     * @deprecated internal Protege detail
-     */
-    SystemFrames getSystemFrames();
-
-
     /**
      * @deprecated whatever this does
      */
