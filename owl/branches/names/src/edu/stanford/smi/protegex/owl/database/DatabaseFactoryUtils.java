@@ -32,8 +32,8 @@ import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreModel;
  * @author tredmond
  *
  */
-public class DatabaseIOUtils {
-    private static transient final Logger log = Log.getLogger(DatabaseIOUtils.class);
+public class DatabaseFactoryUtils {
+    private static transient final Logger log = Log.getLogger(DatabaseFactoryUtils.class);
     
     public static void readOWLOntologyFromDatabase(OWLModel owlModel, TripleStore tripleStore) {
         NarrowFrameStore nfs = tripleStore.getNarrowFrameStore();
