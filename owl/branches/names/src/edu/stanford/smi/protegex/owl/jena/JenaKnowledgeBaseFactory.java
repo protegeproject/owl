@@ -27,6 +27,7 @@ import edu.stanford.smi.protegex.owl.resource.OWLText;
 import edu.stanford.smi.protegex.owl.storage.OWLKnowledgeBaseFactory;
 import edu.stanford.smi.protegex.owl.storage.ProtegeSaver;
 import edu.stanford.smi.protegex.owl.ui.ProgressDisplayDialog;
+import edu.stanford.smi.protegex.owl.ui.menu.OWLBackwardsCompatibilityProjectFixups;
 import edu.stanford.smi.protegex.owl.ui.resourceselection.ResourceSelectionAction;
 
 /**
@@ -41,8 +42,6 @@ public class JenaKnowledgeBaseFactory implements OWLKnowledgeBaseFactory, Client
     public static final String OWL_FILE_URI_PROPERTY = "owl_file_name";
 
     public static final String OWL_FILE_LANGUAGE_PROPERTY = "owl_file_language";
-
-    public static final String OWL_BUILD_PROPERTY = "owl_build";
 
     public final static String[] fileLanguages = {
             FileUtils.langXMLAbbrev,
@@ -188,7 +187,7 @@ public class JenaKnowledgeBaseFactory implements OWLKnowledgeBaseFactory, Client
         String language = getOWLFileLanguage(sources);
         if (kb instanceof JenaOWLModel) {
             JenaOWLModel owlModel = (JenaOWLModel) kb;
-            sources.setInteger(OWL_BUILD_PROPERTY, OWLText.getBuildNumber());
+            OWLBackwardsCompatibilityProjectFixups.insertVersionData(sources);
             URI absoluteURI = getFileURI(sources, owlModel.getProject());
             owlModel.save(absoluteURI, language, errors);
             makeOWLFileNameRelativeIfPossible(owlModel.getProject());
