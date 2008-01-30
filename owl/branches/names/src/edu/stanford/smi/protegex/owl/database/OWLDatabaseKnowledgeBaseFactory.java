@@ -18,7 +18,6 @@ import edu.stanford.smi.protege.storage.database.DatabaseKnowledgeBaseFactory;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protege.util.MessageError;
 import edu.stanford.smi.protege.util.PropertyList;
-import edu.stanford.smi.protegex.owl.jena.JenaKnowledgeBaseFactory;
 import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.factory.OWLJavaFactory;
@@ -28,6 +27,7 @@ import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreModel;
 import edu.stanford.smi.protegex.owl.repository.util.RepositoryFileManager;
 import edu.stanford.smi.protegex.owl.resource.OWLText;
 import edu.stanford.smi.protegex.owl.storage.OWLKnowledgeBaseFactory;
+import edu.stanford.smi.protegex.owl.ui.menu.OWLBackwardsCompatibilityProjectFixups;
 import edu.stanford.smi.protegex.owl.ui.resourceselection.ResourceSelectionAction;
 
 /**
@@ -112,11 +112,11 @@ public class OWLDatabaseKnowledgeBaseFactory extends DatabaseKnowledgeBaseFactor
         TripleStoreModel tripleStoreModel = owlModel.getTripleStoreModel();
         TripleStore activeTripleStore = tripleStoreModel.getActiveTripleStore();
         tripleStoreModel.setTopTripleStore(activeTripleStore);
-        DatabaseIOUtils.readOWLOntologyFromDatabase(owlModel, activeTripleStore);
-        DatabaseIOUtils.loadPrefixesFromDB(owlModel, activeTripleStore, errors);
+        DatabaseFactoryUtils.readOWLOntologyFromDatabase(owlModel, activeTripleStore);
+        DatabaseFactoryUtils.loadPrefixesFromDB(owlModel, activeTripleStore, errors);
         owlModel.resetOntologyCache();
         RepositoryFileManager.loadProjectRepositories(owlModel);
-        DatabaseIOUtils.loadImports(owlModel, errors);
+        DatabaseFactoryUtils.loadImports(owlModel, errors);
     }
 
     
@@ -149,13 +149,13 @@ public class OWLDatabaseKnowledgeBaseFactory extends DatabaseKnowledgeBaseFactor
         if (kb instanceof OWLModel) {
             OWLModel owlModel = (OWLModel) kb;
             TripleStoreModel tripleStoreModel = owlModel.getTripleStoreModel();
-            sources.setInteger(JenaKnowledgeBaseFactory.OWL_BUILD_PROPERTY, OWLText.getBuildNumber());
+            OWLBackwardsCompatibilityProjectFixups.insertVersionData(sources);
             
             //move this from here
             if (owlModel instanceof JenaOWLModel) {
                 TripleStore activeTripleStore = tripleStoreModel.getActiveTripleStore();
-                DatabaseIOUtils.writeOWLOntologyToDatabase(owlModel, activeTripleStore);
-            	DatabaseIOUtils.writePrefixesToModel(owlModel, activeTripleStore);
+                DatabaseFactoryUtils.writeOWLOntologyToDatabase(owlModel, activeTripleStore);
+            	DatabaseFactoryUtils.writePrefixesToModel(owlModel, activeTripleStore);
             }
             
             if (owlModel instanceof JenaOWLModel) {
