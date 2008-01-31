@@ -1,6 +1,5 @@
 package edu.stanford.smi.protegex.owl.model.impl;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -11,6 +10,7 @@ import com.hp.hpl.jena.datatypes.TypeMapper;
 import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
 
 import edu.stanford.smi.protege.model.Cls;
+import edu.stanford.smi.protege.model.Frame;
 import edu.stanford.smi.protege.model.FrameID;
 import edu.stanford.smi.protege.model.Instance;
 import edu.stanford.smi.protege.model.MaximumCardinalityConstraint;
@@ -774,7 +774,7 @@ public class OWLSystemFrames extends SystemFrames {
         }
     }
     
-    protected class SystemFramesAsserter {
+    public class SystemFramesAsserter {
         protected FrameStore fs;
         
         public SystemFramesAsserter(FrameStore fs) {
@@ -812,21 +812,6 @@ public class OWLSystemFrames extends SystemFrames {
             assertTypeAndName(frame, Collections.singleton(type));
         }
 
-        /*
-         * Note that I don't use the more convenient FrameStore methods to set the type because
-         * the knowledge base is not yet ready to start swizzling instances.
-         */
-        protected void assertTypeAndName(Instance frame, Collection<Cls> types) {
-            String name = frame.getFrameID().getName();
-            fs.setDirectOwnSlotValues(frame, getNameSlot(), Collections.singleton(name));
-            fs.setDirectOwnSlotValues(frame, getDirectTypesSlot(), types);
-            for (Cls type : types) {
-                Collection framesOfType = new ArrayList(fs.getDirectOwnSlotValues(type, getDirectInstancesSlot()));
-                framesOfType.add(frame);
-                fs.setDirectOwnSlotValues(type, getDirectInstancesSlot(), framesOfType);
-            }
-        }
-
         protected void assertValueType(Slot slot, ValueType vt) {
             fs.setDirectOwnSlotValues(slot, getValueTypeSlot(),
                                       ValueTypeConstraint.getValues(vt));
@@ -836,6 +821,10 @@ public class OWLSystemFrames extends SystemFrames {
             fs.setDirectOwnSlotValues(slot, getValueTypeSlot(),
                                       ValueTypeConstraint.getValues(ValueType.INSTANCE, 
                                                                     Collections.singleton(cls)));
+        }
+        
+        protected void assertTypeAndName(Frame frame, Collection<Cls> types) {
+            OWLSystemFrames.this.assertTypeAndName(fs, frame, types);
         }
         
     }
