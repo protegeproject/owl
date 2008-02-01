@@ -1,5 +1,6 @@
 package edu.stanford.smi.protegex.owl.model.impl;
 
+import java.io.Serializable;
 import java.net.URI;
 import java.util.Collection;
 import java.util.HashMap;
@@ -7,6 +8,8 @@ import java.util.HashSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import edu.stanford.smi.protege.model.KnowledgeBase;
+import edu.stanford.smi.protege.model.Localizable;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.model.NamespaceManager;
 import edu.stanford.smi.protegex.owl.model.NamespaceManagerListener;
@@ -16,17 +19,17 @@ import edu.stanford.smi.protegex.owl.model.RDFNames;
 import edu.stanford.smi.protegex.owl.model.RDFSNames;
 import edu.stanford.smi.protegex.owl.model.XSDNames;
 
-public class OWLNamespaceManager implements NamespaceManager {
+public class OWLNamespaceManager implements NamespaceManager, Serializable, Localizable {
 	private static final transient Logger log = Log.getLogger(OWLNamespaceManager.class);
 	//TODO: The interface should be modified to throw exceptions	
-	private Collection<NamespaceManagerListener> listeners = new HashSet<NamespaceManagerListener>();
+	private transient Collection<NamespaceManagerListener> listeners;
 	
     private static String DEFAULT_PREFIX_START = "p";
     public static final String DEFAULT_NAMESPACE_PREFIX = "";
  
     private int last_prefix_index = 0;
 
-    protected OWLModel owlModel;
+    protected transient OWLModel owlModel;
 		
 	//the 2 hashmaps should be kept in sync at all times
 	private HashMap<String, String> prefix2namespaceMap = new HashMap<String, String>();
@@ -34,8 +37,12 @@ public class OWLNamespaceManager implements NamespaceManager {
 	
 	private Collection<String> unmodifiablePrefixes = new HashSet<String>();
 	
+	private OWLNamespaceManager() {
+	    listeners = new HashSet<NamespaceManagerListener>();
+	}
 	
 	public OWLNamespaceManager(OWLModel owlModel) {
+	    this();
 	    this.owlModel = owlModel;
 	    setPrefix(OWLNames.OWL_NAMESPACE, OWLNames.OWL_PREFIX);
         setModifiable(OWLNames.OWL_PREFIX, false);
@@ -222,6 +229,10 @@ public class OWLNamespaceManager implements NamespaceManager {
 			log.log(Level.FINE, "Exception caught", t);
 		}
 	}
+
+    public void localize(KnowledgeBase kb) {
+        owlModel = (OWLModel) kb;
+    }
 	
 	
 
