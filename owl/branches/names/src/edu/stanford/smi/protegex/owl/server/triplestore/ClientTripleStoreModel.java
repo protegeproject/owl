@@ -10,6 +10,8 @@ import edu.stanford.smi.protege.model.KnowledgeBase;
 import edu.stanford.smi.protege.model.Localizable;
 import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protege.model.framestore.NarrowFrameStore;
+import edu.stanford.smi.protege.server.narrowframestore.RemoteServerNarrowFrameStore;
+import edu.stanford.smi.protegex.owl.model.NamespaceManager;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
 import edu.stanford.smi.protegex.owl.model.triplestore.Triple;
@@ -144,6 +146,9 @@ public class ClientTripleStoreModel implements TripleStoreModel {
     
     public class Package implements Localizable, Serializable {
         private static final long serialVersionUID = 6422510439112012894L;
+        
+        List<RemoteServerNarrowFrameStore> frameStores;
+        List<NamespaceManager> namspaces;
 
         public void localize(KnowledgeBase kb) {
             // TODO Auto-generated method stub
