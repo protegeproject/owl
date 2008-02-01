@@ -76,11 +76,13 @@ public class ClassTreeNode extends LazyTreeNode {
     	}
     	
         public void browserTextChanged(FrameEvent event) {
+        	if (event.isReplacementEvent()) return;
             notifyNodeChanged();
         }
 
 
         public void ownSlotValueChanged(FrameEvent event) {
+        	if (event.isReplacementEvent()) return;
             if (event.getSlot().getName().equals(Model.Slot.DIRECT_TYPES)) {
                 // refresh the stale cls reference
                 Cls cls = getCls().getKnowledgeBase().getCls(getCls().getName());
@@ -93,6 +95,7 @@ public class ClassTreeNode extends LazyTreeNode {
 
 
         public void visibilityChanged(FrameEvent event) {
+        	if (event.isReplacementEvent()) return;
             notifyNodeChanged();
         }
     };
