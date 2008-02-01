@@ -2,6 +2,7 @@ package edu.stanford.smi.protegex.owl.ui.cls;
 
 import edu.stanford.smi.protege.event.*;
 import edu.stanford.smi.protege.model.Cls;
+import edu.stanford.smi.protege.model.Frame;
 import edu.stanford.smi.protege.model.Model;
 import edu.stanford.smi.protege.ui.LazyTreeNodeFrameComparator;
 import edu.stanford.smi.protege.util.LazyTreeNode;
@@ -64,6 +65,16 @@ public class ClassTreeNode extends LazyTreeNode {
     };
 
     private FrameListener _frameListener = new FrameAdapter() {
+    	@Override
+    	public void frameReplaced(FrameEvent event) {
+    		Frame oldFrame = event.getFrame();
+    		Frame newFrame = event.getNewFrame();
+    		Cls cls = getCls();
+    		if (cls != null && cls.equals(oldFrame)) {
+    			reload(newFrame);
+    		}
+    	}
+    	
         public void browserTextChanged(FrameEvent event) {
             notifyNodeChanged();
         }
