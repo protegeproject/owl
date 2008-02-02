@@ -23,6 +23,7 @@ import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.DefaultKnowledgeBase;
 import edu.stanford.smi.protege.model.Facet;
 import edu.stanford.smi.protege.model.Frame;
+import edu.stanford.smi.protege.model.FrameFactory;
 import edu.stanford.smi.protege.model.FrameID;
 import edu.stanford.smi.protege.model.FrameNameValidator;
 import edu.stanford.smi.protege.model.Instance;
@@ -115,6 +116,7 @@ import edu.stanford.smi.protegex.owl.repository.Repository;
 import edu.stanford.smi.protegex.owl.repository.RepositoryManager;
 import edu.stanford.smi.protegex.owl.repository.util.RepositoryFileManager;
 import edu.stanford.smi.protegex.owl.server.OwlStateMachine;
+import edu.stanford.smi.protegex.owl.server.triplestore.ClientTripleStoreModel;
 import edu.stanford.smi.protegex.owl.swrl.SWRLSystemFrames;
 import edu.stanford.smi.protegex.owl.swrl.model.factory.SWRLJavaFactory;
 import edu.stanford.smi.protegex.owl.testing.OWLTest;
@@ -446,6 +448,11 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
         fsm.setEnabled(owlDeleteSimplificationFS, false);
       }
 
+    }
+    
+    @Override
+    protected SWRLJavaFactory createFrameFactory() {
+        return new SWRLJavaFactory(this);
     }
 
     @Override
@@ -1909,7 +1916,12 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     
     public TripleStoreModel getTripleStoreModel() {
         if (tripleStoreModel == null) {
-            tripleStoreModel = new TripleStoreModelImpl(this);
+            if (tripleStoreModel == null && !getProject().isMultiUserClient()) {
+                tripleStoreModel = new TripleStoreModelImpl(this);
+            }
+            else {
+                tripleStoreModel=new ClientTripleStoreModel(this);
+            }
         }
         return tripleStoreModel;
     }
