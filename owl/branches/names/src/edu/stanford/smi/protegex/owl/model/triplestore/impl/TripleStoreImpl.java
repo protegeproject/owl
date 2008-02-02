@@ -84,13 +84,16 @@ public class TripleStoreImpl implements TripleStore, ProtegeTripleAdder {
     private String name;
     
     public TripleStoreImpl(OWLModel owlModel, NarrowFrameStore frameStore, TripleStoreModel tripleStoreModel) {
+        this(owlModel, frameStore, tripleStoreModel, new OWLNamespaceManager(owlModel));
+    }
+    
+    public TripleStoreImpl(OWLModel owlModel, NarrowFrameStore frameStore, TripleStoreModel tripleStoreModel, NamespaceManager namespaceManager) {  
         this.frameStore = frameStore;
         this.owlModel = owlModel;
         this.tripleStoreModel = tripleStoreModel;
+        this.namespaceManager = namespaceManager;
         
         name = frameStore.getName();
-        
-        initializeNamespaceManager();
 
         KnowledgeBase kb = owlModel;
         directTypesSlot = kb.getSlot(Model.Slot.DIRECT_TYPES);
@@ -111,10 +114,6 @@ public class TripleStoreImpl implements TripleStore, ProtegeTripleAdder {
         initHandler(RDFSNames.Slot.SUB_CLASS_OF, new AddRDFSSubClassOfPropertyHandler(this, kb));
         initHandler(RDFSNames.Slot.SUB_PROPERTY_OF, new AddRDFSSubPropertyOfPropertyHandler(this, kb));
         initHandler(RDFNames.Slot.TYPE, new AddRDFTypePropertyHandler(this, kb, tripleStoreModel, this));
-    }
-    
-    private void initializeNamespaceManager() {
-        namespaceManager = new OWLNamespaceManager(owlModel);
     }
     
     public NamespaceManager getNamespaceManager() {
