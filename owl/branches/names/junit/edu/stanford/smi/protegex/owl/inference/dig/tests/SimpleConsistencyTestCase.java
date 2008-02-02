@@ -6,8 +6,6 @@ package edu.stanford.smi.protegex.owl.inference.dig.tests;
 import edu.stanford.smi.protege.util.URIUtilities;
 import edu.stanford.smi.protegex.owl.tests.AbstractDIGReasonerTestCase;
 
-import java.net.URI;
-
 /**
  * @author rouquett
  * @prowl.junit.dig
