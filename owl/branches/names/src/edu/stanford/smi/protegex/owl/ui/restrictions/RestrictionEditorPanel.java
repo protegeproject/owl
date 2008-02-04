@@ -398,7 +398,7 @@ public class RestrictionEditorPanel extends JComponent implements ModalDialogFac
 
     private void updatePropertiesList() {
         Collection allProperties = owlModel.getVisibleUserDefinedRDFProperties();
-        Collection selectableProperties = new ArrayList();
+        Collection<RDFProperty> selectableProperties = new ArrayList();
         for (Iterator it = allProperties.iterator(); it.hasNext();) {
             RDFProperty property = (RDFProperty) it.next();
             if (!property.isAnnotationProperty()) {
@@ -416,7 +416,7 @@ public class RestrictionEditorPanel extends JComponent implements ModalDialogFac
                 selectableProperties.add(toProperty);
             }
         }
-        Object[] propertiesArray = selectableProperties.toArray();
+        RDFProperty[] propertiesArray = selectableProperties.toArray(new RDFProperty[0]);
         Arrays.sort(propertiesArray, new FrameComparator());
         java.util.List propertiesList = Arrays.asList(propertiesArray);
         propertyList.setListData(propertiesList.toArray());
