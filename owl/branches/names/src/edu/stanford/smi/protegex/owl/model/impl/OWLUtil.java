@@ -560,7 +560,7 @@ public class OWLUtil {
             List oldSuperclasses = new ArrayList(superCls.getDirectSubclasses());
             List clses = new ArrayList(oldSuperclasses);
             Collections.sort(clses, new FrameComparator() {
-                public int compare(Object o1, Object o2) {
+                public int compare(Frame o1, Frame o2) {
                     if (o1 instanceof RDFSNamedClass && o2 instanceof RDFSNamedClass) {
                         return ((RDFSNamedClass) o1).getBrowserText().compareTo(((RDFSNamedClass) o2).getBrowserText());
                     }
