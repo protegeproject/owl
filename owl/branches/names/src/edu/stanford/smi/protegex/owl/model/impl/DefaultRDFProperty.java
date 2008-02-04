@@ -657,23 +657,17 @@ public class DefaultRDFProperty extends DefaultSlot implements RDFProperty {
 
 
     public String getLocalName() {
-        final String name = getName();
-        final OWLModel nskb = (OWLModel) getKnowledgeBase();
-        return nskb.getLocalNameForResourceName(name);
+        return NamespaceUtil.getLocalName(getName());
     }
 
 
     public String getNamespace() {
-        final OWLModel nskb = ((OWLModel) getKnowledgeBase());
-        final String name = getName();
-        return nskb.getNamespaceForResourceName(name);
+        return NamespaceUtil.getNameSpace(getName());
     }
 
 
     public String getNamespacePrefix() {
-        final OWLModel nskb = ((OWLModel) getKnowledgeBase());
-        String name = getName();
-        return nskb.getPrefixForResourceName(name);
+        return NamespaceUtil.getNamespacePrefix(getOWLModel(), getName());
     }
 
 

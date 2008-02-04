@@ -15,6 +15,11 @@ public class NamespaceUtil {
 		return fullURI.substring(Util.splitNamespace(fullURI) );
 	}
 	
+	public static String getNamespacePrefix(OWLModel owlModel, String fullURI) {
+	    String namespace = getNameSpace(fullURI);
+	    return owlModel.getNamespaceManager().getPrefix(namespace);
+	}
+	
 	public static String getPrefixedName(OWLModel owlModel, String fullURI)	{		
 		String uri = getNameSpace(fullURI);
 		

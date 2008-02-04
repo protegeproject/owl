@@ -263,12 +263,7 @@ public interface RDFResource extends ProtegeInstance, RDFObject, Visitable {
 
 
     /**
-     * Gets the Protege name of this resource.
-     * The name consists of a local name and an optional prefix,
-     * separated with ":".
-     * The Protege system uses names as primary access mechanism
-     * for resources and has some optimizations for searching and
-     * handling resources by name.
+     * Gets the full name for the resource.,
      *
      * @return the name
      */

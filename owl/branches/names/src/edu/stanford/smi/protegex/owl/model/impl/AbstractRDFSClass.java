@@ -17,6 +17,7 @@ import edu.stanford.smi.protege.model.KnowledgeBase;
 import edu.stanford.smi.protege.model.Model;
 import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protege.util.Log;
+import edu.stanford.smi.protegex.owl.model.NamespaceUtil;
 import edu.stanford.smi.protegex.owl.model.OWLAnonymousClass;
 import edu.stanford.smi.protegex.owl.model.OWLIntersectionClass;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
@@ -491,23 +492,17 @@ public abstract class AbstractRDFSClass extends DefaultCls implements RDFSClass 
 
 
     public String getLocalName() {
-        final String name = getName();
-        final OWLModel nskb = (OWLModel) getKnowledgeBase();
-        return nskb.getLocalNameForResourceName(name);
+        return NamespaceUtil.getLocalName(getName());
     }
 
 
     public String getNamespace() {
-        final OWLModel nskb = ((OWLModel) getKnowledgeBase());
-        final String name = getName();
-        return nskb.getNamespaceForResourceName(name);
+        return NamespaceUtil.getNameSpace(getName());
     }
 
 
     public String getNamespacePrefix() {
-        final OWLModel nskb = ((OWLModel) getKnowledgeBase());
-        String name = getName();
-        return nskb.getPrefixForResourceName(name);
+        return NamespaceUtil.getNamespacePrefix(getOWLModel(), getName());
     }
 
 

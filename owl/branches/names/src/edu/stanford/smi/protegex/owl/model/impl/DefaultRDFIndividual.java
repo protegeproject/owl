@@ -1,18 +1,26 @@
 package edu.stanford.smi.protegex.owl.model.impl;
 
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Set;
+
+import javax.swing.Icon;
+
 import edu.stanford.smi.protege.model.DefaultSimpleInstance;
 import edu.stanford.smi.protege.model.FrameID;
 import edu.stanford.smi.protege.model.KnowledgeBase;
-import edu.stanford.smi.protegex.owl.model.*;
+import edu.stanford.smi.protegex.owl.model.NamespaceUtil;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.model.RDFIndividual;
+import edu.stanford.smi.protegex.owl.model.RDFObject;
+import edu.stanford.smi.protegex.owl.model.RDFProperty;
+import edu.stanford.smi.protegex.owl.model.RDFResource;
+import edu.stanford.smi.protegex.owl.model.RDFSClass;
+import edu.stanford.smi.protegex.owl.model.RDFSLiteral;
 import edu.stanford.smi.protegex.owl.model.event.PropertyValueListener;
 import edu.stanford.smi.protegex.owl.model.event.ResourceListener;
 import edu.stanford.smi.protegex.owl.model.visitor.OWLModelVisitor;
 import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
-
-import javax.swing.*;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Set;
 
 public class DefaultRDFIndividual extends DefaultSimpleInstance implements RDFIndividual {
 
@@ -174,24 +182,17 @@ public class DefaultRDFIndividual extends DefaultSimpleInstance implements RDFIn
 
 
     public String getLocalName() {
-        final String name = getName();
-        return name;
-        //final OWLModel nskb = (OWLModel) getKnowledgeBase();
-        //return nskb.getLocalNameForResourceName(name);
+        return NamespaceUtil.getLocalName(getName());
     }
 
 
     public String getNamespace() {
-        final OWLModel nskb = ((OWLModel) getKnowledgeBase());
-        final String name = getName();
-        return nskb.getNamespaceForResourceName(name);
+        return NamespaceUtil.getNameSpace(getName());
     }
 
 
     public String getNamespacePrefix() {
-        final OWLModel nskb = ((OWLModel) getKnowledgeBase());
-        String name = getName();
-        return nskb.getPrefixForResourceName(name);
+        return NamespaceUtil.getNamespacePrefix(getOWLModel(), getName());
     }
 
 
