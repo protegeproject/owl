@@ -3,6 +3,7 @@ package edu.stanford.smi.protegex.owl.ui.clsdesc;
 import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.ui.FrameComparator;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
 import edu.stanford.smi.protegex.owl.model.RDFSClass;
 import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
@@ -51,13 +52,13 @@ class AddRowAction extends ResourceSelectionAction {
 
     public Collection getSelectableResources() {
         final OWLModel owlModel = table.getOWLModel();
-        Collection clses = owlModel.getUserDefinedOWLNamedClasses();
+        Collection<OWLNamedClass> clses = owlModel.getUserDefinedOWLNamedClasses();
         if (thingAllowed) {
             clses.add(owlModel.getOWLThingClass());
         }
         Cls editedCls = ((OWLTableModel) table.getModel()).getEditedCls();
         clses.remove(editedCls); // Can never add itself
-        Object[] cs = clses.toArray();
+        OWLNamedClass[] cs = clses.toArray(new OWLNamedClass[0]);
         Arrays.sort(cs, new FrameComparator());
         return Arrays.asList(cs);
     }
