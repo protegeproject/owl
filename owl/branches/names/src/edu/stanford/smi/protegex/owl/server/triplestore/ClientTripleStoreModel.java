@@ -5,8 +5,10 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import edu.stanford.smi.protege.exception.ProtegeException;
 import edu.stanford.smi.protege.model.Instance;
@@ -29,10 +31,13 @@ import edu.stanford.smi.protegex.owl.model.triplestore.Triple;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreModel;
 import edu.stanford.smi.protegex.owl.model.triplestore.impl.TripleStoreImpl;
+import edu.stanford.smi.protegex.owl.util.OWLFrameStoreUtils;
 
 public class ClientTripleStoreModel implements TripleStoreModel {
     private  OWLModel owlModel;
-    private List<TripleStore> tripleStores = new ArrayList<TripleStore>();
+    private Map<String, TripleStore> tripleStores = new HashMap<String, TripleStore>();
+    private String activeTripleStoreName;
+    private String systemTripleStoreName;
     
     public ClientTripleStoreModel(OWLModel owlModel) {
         this.owlModel = owlModel;
@@ -50,19 +55,21 @@ public class ClientTripleStoreModel implements TripleStoreModel {
     
     private void initialize(RemoteSession  session) {
         Package p = (Package) new GetPackage(owlModel).execute();
+        activeTripleStoreName = p.getActiveTripleStore();
+        systemTripleStoreName = p.getSystemTripleStore();
         for (int i = 0; i < p.getFrameStores().size(); i++) {
             RemoteServerNarrowFrameStore remoteNarrowFrameStore = p.getFrameStores().get(i);
             NamespaceManager namespaceManager = p.getNamespaceManagers().get(i);
+            String name = p.getTripleStoreNames().get(i);
             
             NarrowFrameStore narrowFrameStore = new RemoteClientInvocationHandler(owlModel, remoteNarrowFrameStore, session).getNarrowFrameStore();
-            TripleStore tripleStore = new TripleStoreImpl(owlModel, narrowFrameStore ,this, namespaceManager);
-            tripleStores.add(tripleStore);
+            TripleStore tripleStore = new TripleStoreImpl(owlModel, narrowFrameStore ,this, namespaceManager, name);
+            tripleStores.put(name, tripleStore);
         }
     }
     
 
-    public TripleStore createActiveImportedTripleStore(
-                                                       NarrowFrameStore frameStore) {
+    public TripleStore createActiveImportedTripleStore(NarrowFrameStore frameStore) {
         throw new UnsupportedOperationException();
     }
 
@@ -75,184 +82,97 @@ public class ClientTripleStoreModel implements TripleStoreModel {
     }
 
     public TripleStore getActiveTripleStore() {
-        return null;
+        return tripleStores.get(activeTripleStoreName);
     }
 
     public TripleStore getHomeTripleStore(RDFResource resource) {
-        // TODO Auto-generated method stub
-        return null;
+        return getActiveTripleStore();
     }
 
     public Collection getPropertyValues(RDFResource resource,
                                         RDFProperty property) {
-        // TODO Auto-generated method stub
-        return null;
+        Collection values = ((KnowledgeBase) owlModel).getOwnSlotValues(resource, property);
+        return OWLFrameStoreUtils.convertValueListToRDFLiterals(owlModel, values);
     }
 
     public Collection getSlotValues(Instance instance, Slot slot) {
-        // TODO Auto-generated method stub
-        return null;
+        return ((KnowledgeBase) owlModel).getOwnSlotValues(instance, slot);
     }
 
     public TripleStore getSystemTripleStore() {
-        // TODO Auto-generated method stub
-        return null;
+        return tripleStores.get(systemTripleStoreName);
     }
 
     public TripleStore getTopTripleStore() {
-        // TODO Auto-generated method stub
-        return null;
+        return getActiveTripleStore();
     }
 
     public TripleStore getTripleStore(String name) {
-        // TODO Auto-generated method stub
-        return null;
+        return tripleStores.get(name);
     }
 
     public TripleStore getTripleStoreByDefaultNamespace(String namespace) {
-        // TODO Auto-generated method stub
-        return null;
+        return tripleStores.get(namespace);
     }
 
     public List<TripleStore> getTripleStores() {
-        // TODO Auto-generated method stub
-        return null;
+        return new ArrayList(tripleStores.values());
     }
 
     public boolean isActiveTriple(RDFResource subject, RDFProperty predicate,
                                   Object object) {
-        // TODO Auto-generated method stub
-        return false;
+        return getActiveTripleStore().contains(subject, predicate, object);
     }
 
     public boolean isEditableTriple(RDFResource subject, RDFProperty predicate,
                                     Object object) {
-        // TODO Auto-generated method stub
-        return false;
+        return isActiveTriple(subject, predicate, object);
     }
 
     public boolean isEditableTripleStore(TripleStore ts) {
-        // TODO Auto-generated method stub
-        return false;
+        return ts.equals(getActiveTripleStore());
     }
 
     public Iterator<RDFResource> listSubjects(RDFProperty property) {
-        // TODO Auto-generated method stub
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     public Iterator<Triple> listTriplesWithSubject(RDFResource subject) {
-        // TODO Auto-generated method stub
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     public Iterator<TripleStore> listUserTripleStores() {
-        // TODO Auto-generated method stub
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     public void replaceJavaObject(RDFResource subject) {
-        // TODO Auto-generated method stub
-
+        throw new UnsupportedOperationException();
     }
 
     public void setActiveTripleStore(TripleStore tripleStore) {
-        // TODO Auto-generated method stub
-
+        throw new UnsupportedOperationException();
     }
 
     public void setHomeTripleStore(RDFResource resource, TripleStore tripleStore) {
-        // TODO Auto-generated method stub
-
+        throw new UnsupportedOperationException();
     }
 
     public void setTopTripleStore(TripleStore tripleStore) {
-        // TODO Auto-generated method stub
-
+        throw new UnsupportedOperationException();
     }
 
     public void setViewActiveOnly(boolean viewActiveOnly) {
-        // TODO Auto-generated method stub
-
+        throw new UnsupportedOperationException();
     }
 
     public void updateEditableResourceState() {
-        // TODO Auto-generated method stub
-
-    }
-    
-    public class GetPackage extends ProtegeJob {
-        private static final long serialVersionUID = 6836555738304528191L;
-
-        public GetPackage(OWLModel owlModel) {
-            super(owlModel);
-        }
-        
-        @Override
-        public OWLModel getKnowledgeBase() {
-            return (OWLModel) super.getKnowledgeBase();
-        }
-        
-        @Override
-        public Object run() throws ProtegeException {
-            try {
-                List<RemoteServerNarrowFrameStore> frameStores = new ArrayList<RemoteServerNarrowFrameStore>();
-                List<NamespaceManager> namespaceManagers = new ArrayList<NamespaceManager>();
-                String activeTripleStore;
-                
-                TripleStoreModel tripleStoreModel = getKnowledgeBase().getTripleStoreModel();
-                activeTripleStore = tripleStoreModel.getActiveTripleStore().getName();
-                for (TripleStore tripleStore : tripleStoreModel.getTripleStores()) {
-                    NarrowFrameStore nfs = tripleStore.getNarrowFrameStore();
-                    RemoteServerNarrowFrameStore remoteNarrowFrameStore = new ServerNarrowFrameStore(nfs, getKnowledgeBase(), getKnowledgeBase());
-                    remoteNarrowFrameStore = (RemoteServerNarrowFrameStore) UnicastRemoteObject.exportObject(remoteNarrowFrameStore);
- 
-                    frameStores.add(remoteNarrowFrameStore);
-                    namespaceManagers.add(tripleStore.getNamespaceManager());
-                }
-                return new Package(frameStores, namespaceManagers, activeTripleStore);
-            }
-            catch (RemoteException re) {
-                throw new ProtegeException(re);
-            }
-        }
-    }
-    
-    public class Package implements Localizable, Serializable {
-        private static final long serialVersionUID = 6422510439112012894L;
-        
-        private List<RemoteServerNarrowFrameStore> frameStores;
-        private List<NamespaceManager> namespaceManagers;
-        private String activeTripleStore;
-
-        
-        
-        public Package(List<RemoteServerNarrowFrameStore> frameStores,
-                       List<NamespaceManager> namespaceManagers,
-                       String activeTripleStore) {
-            this.frameStores = frameStores;
-            this.namespaceManagers = namespaceManagers;
-            this.activeTripleStore = activeTripleStore;
-        }
-
-        public List<RemoteServerNarrowFrameStore> getFrameStores() {
-            return frameStores;
-        }
-
-
-
-        public List<NamespaceManager> getNamespaceManagers() {
-            return namespaceManagers;
-        }
-
-
-
-        public void localize(KnowledgeBase kb) {
-            for (NamespaceManager ns : namespaceManagers) {
-                LocalizeUtils.localize(ns, kb);
-            }
-        }
-        
+        ;
     }
 
 }
+
+
+
+
+
+
