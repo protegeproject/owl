@@ -22,7 +22,7 @@ import edu.stanford.smi.protegex.owl.model.XSDNames;
 public class OWLNamespaceManager implements NamespaceManager, Serializable, Localizable {
 	private static final transient Logger log = Log.getLogger(OWLNamespaceManager.class);
 	//TODO: The interface should be modified to throw exceptions	
-	private transient Collection<NamespaceManagerListener> listeners;
+	private transient Collection<NamespaceManagerListener> listeners = new HashSet<NamespaceManagerListener>();
 	
     private static String DEFAULT_PREFIX_START = "p";
     public static final String DEFAULT_NAMESPACE_PREFIX = "";
@@ -37,12 +37,12 @@ public class OWLNamespaceManager implements NamespaceManager, Serializable, Loca
 	
 	private Collection<String> unmodifiablePrefixes = new HashSet<String>();
 	
-	private OWLNamespaceManager() {
-	    listeners = new HashSet<NamespaceManagerListener>();
+	@SuppressWarnings("unused")
+    private OWLNamespaceManager() {
+	    
 	}
 	
 	public OWLNamespaceManager(OWLModel owlModel) {
-	    this();
 	    this.owlModel = owlModel;
 	    setPrefix(OWLNames.OWL_NAMESPACE, OWLNames.OWL_PREFIX);
         setModifiable(OWLNames.OWL_PREFIX, false);
@@ -232,6 +232,7 @@ public class OWLNamespaceManager implements NamespaceManager, Serializable, Loca
 
     public void localize(KnowledgeBase kb) {
         owlModel = (OWLModel) kb;
+        listeners = new HashSet<NamespaceManagerListener>();
     }
 	
 	
