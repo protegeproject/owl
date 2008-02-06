@@ -47,7 +47,7 @@ import edu.stanford.smi.protegex.owl.model.XSDNames;
  */
 
 
-public class OWLSystemFrames extends SystemFrames {
+public abstract class OWLSystemFrames extends SystemFrames {
     protected OWLModel owlModel;
 
     /*
@@ -172,7 +172,7 @@ public class OWLSystemFrames extends SystemFrames {
      * first some utilities for the creation.
      */
 	
-    private OWLNamedClass createOWLNamedClass(String name) {
+    protected OWLNamedClass createOWLNamedClass(String name) {
         FrameID id = new FrameID(name);
         OWLNamedClass cls = new DefaultOWLNamedClass(owlModel, id);
         addFrame(id, cls);
@@ -185,7 +185,7 @@ public class OWLSystemFrames extends SystemFrames {
         replaceFrame(id, cls);
     }
     
-    private RDFSNamedClass createRDFSNamedClass(String name) {
+    protected RDFSNamedClass createRDFSNamedClass(String name) {
         FrameID id = new FrameID(name);
         RDFSNamedClass cls = new DefaultRDFSNamedClass(owlModel, id);
         addFrame(id, cls);
@@ -198,14 +198,14 @@ public class OWLSystemFrames extends SystemFrames {
         replaceFrame(id, cls);
     }
 
-    private RDFProperty createRDFProperty(String name) {
+    protected RDFProperty createRDFProperty(String name) {
         FrameID id = new FrameID(name);
         RDFProperty property = new DefaultRDFProperty(owlModel, id);
         addFrame(id, property);
         return property;
     }
     
-    private OWLDatatypeProperty createOWLDatatypeProperty(String name) {
+    protected OWLDatatypeProperty createOWLDatatypeProperty(String name) {
     	FrameID id = new FrameID(name);
     	OWLDatatypeProperty property = new DefaultOWLDatatypeProperty(owlModel, id);
     	addFrame(id, property);
@@ -218,13 +218,20 @@ public class OWLSystemFrames extends SystemFrames {
     	replaceFrame(id, property);
     }
     
+    protected OWLObjectProperty createOWLObjectProperty(String name) {
+    	FrameID id = new FrameID(name);
+    	OWLObjectProperty property = new DefaultOWLObjectProperty(owlModel, id);
+    	addFrame(id, property);
+    	return property;
+    }
+    
     private void replaceFrameWithOWLObjectProperty(String name) {
     	FrameID id = new FrameID(name);
     	OWLObjectProperty property = new DefaultOWLObjectProperty(owlModel, id);
     	replaceFrame(id, property);
     }
     
-    private RDFSDatatype createRDFSDatatype(String name) {
+    protected RDFSDatatype createRDFSDatatype(String name) {
         FrameID id = new FrameID(name);
         RDFSDatatype frame = new DefaultRDFSDatatype(owlModel, id);
         addFrame(id, frame);
