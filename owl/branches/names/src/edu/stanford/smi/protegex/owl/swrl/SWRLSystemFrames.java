@@ -11,10 +11,6 @@ import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
 import edu.stanford.smi.protegex.owl.model.OWLObjectProperty;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
-import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLDatatypeProperty;
-import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLNamedClass;
-import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLObjectProperty;
-import edu.stanford.smi.protegex.owl.model.impl.DefaultRDFProperty;
 import edu.stanford.smi.protegex.owl.model.impl.OWLSystemFrames;
 import edu.stanford.smi.protegex.owl.swrl.model.SWRLBuiltin;
 import edu.stanford.smi.protegex.owl.swrl.model.SWRLNames;
@@ -44,117 +40,127 @@ public class SWRLSystemFrames extends OWLSystemFrames {
         createSWRLObjectProperties();
         createSWRLDatatypeProperties();
         createSWRLBuiltIns();
-        argument2Property = new DefaultRDFProperty(owlModel, new FrameID(SWRLNames.Slot.ARGUMENT2));
+        
+        argument2Property = createRDFProperty(SWRLNames.Slot.ARGUMENT2);
     }
     
     private void createSWRLClasses() {
-        impCls = new DefaultOWLNamedClass(owlModel, new FrameID(SWRLNames.Cls.IMP));
-        variableCls = new DefaultOWLNamedClass(owlModel, new FrameID(SWRLNames.Cls.VARIABLE));
-        builtInCls = new DefaultOWLNamedClass(owlModel, new FrameID(SWRLNames.Cls.BUILTIN));
+        impCls = createOWLNamedClass(SWRLNames.Cls.IMP);
+        variableCls = createOWLNamedClass(SWRLNames.Cls.VARIABLE);
+        builtInCls = createOWLNamedClass(SWRLNames.Cls.BUILTIN);
 
-        atomListCls = new DefaultOWLNamedClass(owlModel, new FrameID(SWRLNames.Cls.ATOM_LIST));
+        atomListCls = createOWLNamedClass(SWRLNames.Cls.ATOM_LIST);
 
-        atomCls = new DefaultOWLNamedClass(owlModel, new FrameID(SWRLNames.Cls.ATOM));
-        classAtomCls = new DefaultOWLNamedClass(owlModel, new FrameID(SWRLNames.Cls.CLASS_ATOM));
-        builtinAtomCls = new DefaultOWLNamedClass(owlModel, new FrameID(SWRLNames.Cls.BUILTIN_ATOM));
-        dataRangeAtomCls = new DefaultOWLNamedClass(owlModel, new FrameID(SWRLNames.Cls.DATA_RANGE_ATOM));
-        dataValuedPropertyAtomCls = new DefaultOWLNamedClass(owlModel, new FrameID(SWRLNames.Cls.DATAVALUED_PROPERTY_ATOM));
-        differentIndividualsAtomCls = new DefaultOWLNamedClass(owlModel, new FrameID(SWRLNames.Cls.DIFFERENT_INDIVIDUALS_ATOM));
-        individualPropertyAtomCls = new DefaultOWLNamedClass(owlModel, new FrameID(SWRLNames.Cls.INDIVIDUAL_PROPERTY_ATOM));
-        sameIndividualAtomCls = new DefaultOWLNamedClass(owlModel, new FrameID(SWRLNames.Cls.SAME_INDIVIDUAL_ATOM));
+        atomCls = createOWLNamedClass(SWRLNames.Cls.ATOM);
+        classAtomCls = createOWLNamedClass(SWRLNames.Cls.CLASS_ATOM);
+        builtinAtomCls = createOWLNamedClass(SWRLNames.Cls.BUILTIN_ATOM);
+        dataRangeAtomCls = createOWLNamedClass(SWRLNames.Cls.DATA_RANGE_ATOM);
+        dataValuedPropertyAtomCls = createOWLNamedClass(SWRLNames.Cls.DATAVALUED_PROPERTY_ATOM);
+        differentIndividualsAtomCls = createOWLNamedClass(SWRLNames.Cls.DIFFERENT_INDIVIDUALS_ATOM);
+        individualPropertyAtomCls = createOWLNamedClass(SWRLNames.Cls.INDIVIDUAL_PROPERTY_ATOM);
+        sameIndividualAtomCls =createOWLNamedClass(SWRLNames.Cls.SAME_INDIVIDUAL_ATOM);
     }
     
     private void createSWRLObjectProperties() {
-        bodyProperty = new DefaultOWLObjectProperty(owlModel, new FrameID(SWRLNames.Slot.BODY));
-        headProperty = new DefaultOWLObjectProperty(owlModel, new FrameID(SWRLNames.Slot.HEAD));
-        argumentsProperty = new DefaultOWLObjectProperty(owlModel, new FrameID(SWRLNames.Slot.ARGUMENTS));
-        builtInProperty = new DefaultOWLObjectProperty(owlModel, new FrameID(SWRLNames.Slot.BUILTIN));
-        argument1Property = new DefaultOWLObjectProperty(owlModel, new FrameID(SWRLNames.Slot.ARGUMENT1));
+        bodyProperty = createOWLObjectProperty(SWRLNames.Slot.BODY);
+        headProperty = createOWLObjectProperty(SWRLNames.Slot.HEAD);
+        argumentsProperty = createOWLObjectProperty(SWRLNames.Slot.ARGUMENTS);
+        builtInProperty = createOWLObjectProperty(SWRLNames.Slot.BUILTIN);
+        argument1Property = createOWLObjectProperty(SWRLNames.Slot.ARGUMENT1);
 
-        classPredicateProperty = new DefaultOWLObjectProperty(owlModel, new FrameID(SWRLNames.Slot.CLASS_PREDICATE));
-        propertyPredicateProperty = new DefaultOWLObjectProperty(owlModel, new FrameID(SWRLNames.Slot.PROPERTY_PREDICATE));
-        dataRangeProperty = new DefaultOWLObjectProperty(owlModel, new FrameID(SWRLNames.Slot.DATA_RANGE));
+        classPredicateProperty = createOWLObjectProperty(SWRLNames.Slot.CLASS_PREDICATE);
+        propertyPredicateProperty = createOWLObjectProperty(SWRLNames.Slot.PROPERTY_PREDICATE);
+        dataRangeProperty = createOWLObjectProperty(SWRLNames.Slot.DATA_RANGE);
     }
     
     private void createSWRLDatatypeProperties() {
-        argsProperty = new DefaultOWLDatatypeProperty(owlModel, new FrameID(SWRLNames.Slot.ARGS));
-        minArgsProperty = new DefaultOWLDatatypeProperty(owlModel, new FrameID(SWRLNames.Slot.MIN_ARGS));
-        maxArgsProperty = new DefaultOWLDatatypeProperty(owlModel, new FrameID(SWRLNames.Slot.MAX_ARGS));
+        argsProperty = createOWLDatatypeProperty(SWRLNames.Slot.ARGS);
+        minArgsProperty = createOWLDatatypeProperty(SWRLNames.Slot.MIN_ARGS);
+        maxArgsProperty = createOWLDatatypeProperty(SWRLNames.Slot.MAX_ARGS);
     }
     
     private void createSWRLBuiltIns() {
         coreSWRLBuiltIns = new ArrayList<SWRLBuiltin>();
 
-        coreSWRLBuiltIns.add(new DefaultSWRLBuiltin(owlModel, new FrameID(SWRLNames.CoreBuiltIns.EQUAL)));
-        coreSWRLBuiltIns.add(new DefaultSWRLBuiltin(owlModel, new FrameID(SWRLNames.CoreBuiltIns.NOT_EQUAL)));
-        coreSWRLBuiltIns.add(new DefaultSWRLBuiltin(owlModel, new FrameID(SWRLNames.CoreBuiltIns.LESS_THAN)));
-        coreSWRLBuiltIns.add(new DefaultSWRLBuiltin(owlModel, new FrameID(SWRLNames.CoreBuiltIns.LESS_THAN_OR_EQUAL)));
-        coreSWRLBuiltIns.add(new DefaultSWRLBuiltin(owlModel, new FrameID(SWRLNames.CoreBuiltIns.GREATER_THAN)));
-        coreSWRLBuiltIns.add(new DefaultSWRLBuiltin(owlModel, new FrameID(SWRLNames.CoreBuiltIns.GREATER_THAN_OR_EQUAL)));
-        coreSWRLBuiltIns.add(new DefaultSWRLBuiltin(owlModel, new FrameID(SWRLNames.CoreBuiltIns.ADD)));
-        coreSWRLBuiltIns.add(new DefaultSWRLBuiltin(owlModel, new FrameID(SWRLNames.CoreBuiltIns.SUBTRACT)));
-        coreSWRLBuiltIns.add(new DefaultSWRLBuiltin(owlModel, new FrameID(SWRLNames.CoreBuiltIns.MULTIPLY)));
-        coreSWRLBuiltIns.add(new DefaultSWRLBuiltin(owlModel, new FrameID(SWRLNames.CoreBuiltIns.DIVIDE)));
-        coreSWRLBuiltIns.add(new DefaultSWRLBuiltin(owlModel, new FrameID(SWRLNames.CoreBuiltIns.INTEGER_DIVIDE)));
-        coreSWRLBuiltIns.add(new DefaultSWRLBuiltin(owlModel, new FrameID(SWRLNames.CoreBuiltIns.MOD)));
-        coreSWRLBuiltIns.add(new DefaultSWRLBuiltin(owlModel, new FrameID(SWRLNames.CoreBuiltIns.POW)));
-        coreSWRLBuiltIns.add(new DefaultSWRLBuiltin(owlModel, new FrameID(SWRLNames.CoreBuiltIns.UNARY_PLUS)));
-        coreSWRLBuiltIns.add(new DefaultSWRLBuiltin(owlModel, new FrameID(SWRLNames.CoreBuiltIns.UNARY_MINUS)));
-        coreSWRLBuiltIns.add(new DefaultSWRLBuiltin(owlModel, new FrameID(SWRLNames.CoreBuiltIns.ABS)));
-        coreSWRLBuiltIns.add(new DefaultSWRLBuiltin(owlModel, new FrameID(SWRLNames.CoreBuiltIns.CEILING)));
-        coreSWRLBuiltIns.add(new DefaultSWRLBuiltin(owlModel, new FrameID(SWRLNames.CoreBuiltIns.FLOOR)));
-        coreSWRLBuiltIns.add(new DefaultSWRLBuiltin(owlModel, new FrameID(SWRLNames.CoreBuiltIns.ROUND)));
-        coreSWRLBuiltIns.add(new DefaultSWRLBuiltin(owlModel, new FrameID(SWRLNames.CoreBuiltIns.ROUND_HALF_TO_EVEN)));
-        coreSWRLBuiltIns.add(new DefaultSWRLBuiltin(owlModel, new FrameID(SWRLNames.CoreBuiltIns.SIN)));
-        coreSWRLBuiltIns.add(new DefaultSWRLBuiltin(owlModel, new FrameID(SWRLNames.CoreBuiltIns.COS)));
-        coreSWRLBuiltIns.add(new DefaultSWRLBuiltin(owlModel, new FrameID(SWRLNames.CoreBuiltIns.TAN)));
-        coreSWRLBuiltIns.add(new DefaultSWRLBuiltin(owlModel, new FrameID(SWRLNames.CoreBuiltIns.BOOLEAN_NOT)));
-        coreSWRLBuiltIns.add(new DefaultSWRLBuiltin(owlModel, new FrameID(SWRLNames.CoreBuiltIns.STRING_EQUAL_IGNORE_CASE)));
-        coreSWRLBuiltIns.add(new DefaultSWRLBuiltin(owlModel, new FrameID(SWRLNames.CoreBuiltIns.STRING_CONCAT)));
-        coreSWRLBuiltIns.add(new DefaultSWRLBuiltin(owlModel, new FrameID(SWRLNames.CoreBuiltIns.SUBSTRING)));
-        coreSWRLBuiltIns.add(new DefaultSWRLBuiltin(owlModel, new FrameID(SWRLNames.CoreBuiltIns.STRING_LENGTH)));
-        coreSWRLBuiltIns.add(new DefaultSWRLBuiltin(owlModel, new FrameID(SWRLNames.CoreBuiltIns.NORMALIZE_SPACE)));
-        coreSWRLBuiltIns.add(new DefaultSWRLBuiltin(owlModel, new FrameID(SWRLNames.CoreBuiltIns.UPPER_CASE)));
-        coreSWRLBuiltIns.add(new DefaultSWRLBuiltin(owlModel, new FrameID(SWRLNames.CoreBuiltIns.LOWER_CASE)));
-        coreSWRLBuiltIns.add(new DefaultSWRLBuiltin(owlModel, new FrameID(SWRLNames.CoreBuiltIns.TRANSLATE)));
-        coreSWRLBuiltIns.add(new DefaultSWRLBuiltin(owlModel, new FrameID(SWRLNames.CoreBuiltIns.CONTAINS)));
-        coreSWRLBuiltIns.add(new DefaultSWRLBuiltin(owlModel, new FrameID(SWRLNames.CoreBuiltIns.CONTAINS_IGNORE_CASE)));
-        coreSWRLBuiltIns.add(new DefaultSWRLBuiltin(owlModel, new FrameID(SWRLNames.CoreBuiltIns.STARTS_WITH)));
-        coreSWRLBuiltIns.add(new DefaultSWRLBuiltin(owlModel, new FrameID(SWRLNames.CoreBuiltIns.ENDS_WITH)));
-        coreSWRLBuiltIns.add(new DefaultSWRLBuiltin(owlModel, new FrameID(SWRLNames.CoreBuiltIns.SUBSTRING_BEFORE)));
-        coreSWRLBuiltIns.add(new DefaultSWRLBuiltin(owlModel, new FrameID(SWRLNames.CoreBuiltIns.SUBSTRING_AFTER)));
-        coreSWRLBuiltIns.add(new DefaultSWRLBuiltin(owlModel, new FrameID(SWRLNames.CoreBuiltIns.MATCHES)));
-        coreSWRLBuiltIns.add(new DefaultSWRLBuiltin(owlModel, new FrameID(SWRLNames.CoreBuiltIns.REPLACE)));
-        coreSWRLBuiltIns.add(new DefaultSWRLBuiltin(owlModel, new FrameID(SWRLNames.CoreBuiltIns.TOKENIZE)));
-        coreSWRLBuiltIns.add(new DefaultSWRLBuiltin(owlModel, new FrameID(SWRLNames.CoreBuiltIns.YEAR_MONTH_DURATION)));
-        coreSWRLBuiltIns.add(new DefaultSWRLBuiltin(owlModel, new FrameID(SWRLNames.CoreBuiltIns.DAY_TIME_DURATION)));
-        coreSWRLBuiltIns.add(new DefaultSWRLBuiltin(owlModel, new FrameID(SWRLNames.CoreBuiltIns.DATETIME)));
-        coreSWRLBuiltIns.add(new DefaultSWRLBuiltin(owlModel, new FrameID(SWRLNames.CoreBuiltIns.DATE)));
-        coreSWRLBuiltIns.add(new DefaultSWRLBuiltin(owlModel, new FrameID(SWRLNames.CoreBuiltIns.TIME)));
-        coreSWRLBuiltIns.add(new DefaultSWRLBuiltin(owlModel, new FrameID(SWRLNames.CoreBuiltIns.ADD_YEAR_MONTH_DURATIONS)));
-        coreSWRLBuiltIns.add(new DefaultSWRLBuiltin(owlModel, new FrameID(SWRLNames.CoreBuiltIns.SUBTRACT_YEAR_MONTH_DURATIONS)));
-        coreSWRLBuiltIns.add(new DefaultSWRLBuiltin(owlModel, new FrameID(SWRLNames.CoreBuiltIns.MULTIPLY_YEAR_MONTH_DURATION)));
-        coreSWRLBuiltIns.add(new DefaultSWRLBuiltin(owlModel, new FrameID(SWRLNames.CoreBuiltIns.DIVIDE_YEAR_MONTH_DURATIONS)));
-        coreSWRLBuiltIns.add(new DefaultSWRLBuiltin(owlModel, new FrameID(SWRLNames.CoreBuiltIns.ADD_DAY_TIME_DURATIONS)));
-        coreSWRLBuiltIns.add(new DefaultSWRLBuiltin(owlModel, new FrameID(SWRLNames.CoreBuiltIns.SUBTRACT_DAY_TIME_DURATIONS)));
-        coreSWRLBuiltIns.add(new DefaultSWRLBuiltin(owlModel, new FrameID(SWRLNames.CoreBuiltIns.MULTIPLY_DAY_TIME_DURATIONS)));
-        coreSWRLBuiltIns.add(new DefaultSWRLBuiltin(owlModel, new FrameID(SWRLNames.CoreBuiltIns.DIVIDE_DAY_TIME_DURATION)));
-        coreSWRLBuiltIns.add(new DefaultSWRLBuiltin(owlModel, new FrameID(SWRLNames.CoreBuiltIns.SUBTRACT_DATES)));
-        coreSWRLBuiltIns.add(new DefaultSWRLBuiltin(owlModel, new FrameID(SWRLNames.CoreBuiltIns.SUBTRACT_TIMES)));
-        coreSWRLBuiltIns.add(new DefaultSWRLBuiltin(owlModel, new FrameID(SWRLNames.CoreBuiltIns.ADD_YEAR_MONTH_DURATION_TO_DATETIME)));
-        coreSWRLBuiltIns.add(new DefaultSWRLBuiltin(owlModel, new FrameID(SWRLNames.CoreBuiltIns.ADD_DAY_TIME_DURATION_TO_DATETIME)));
-        coreSWRLBuiltIns.add(new DefaultSWRLBuiltin(owlModel, new FrameID(SWRLNames.CoreBuiltIns.SUBTRACT_YEAR_MONTH_DURATION_FROM_DATETIME)));
-        coreSWRLBuiltIns.add(new DefaultSWRLBuiltin(owlModel, new FrameID(SWRLNames.CoreBuiltIns.SUBTRACT_DAY_TIME_DURATION_FROM_DATETIME)));
-        coreSWRLBuiltIns.add(new DefaultSWRLBuiltin(owlModel, new FrameID(SWRLNames.CoreBuiltIns.ADD_YEAR_MONTH_DURATION_TO_DATE)));
-        coreSWRLBuiltIns.add(new DefaultSWRLBuiltin(owlModel, new FrameID(SWRLNames.CoreBuiltIns.ADD_DAY_TIME_DURATION_TO_DATE)));
-        coreSWRLBuiltIns.add(new DefaultSWRLBuiltin(owlModel, new FrameID(SWRLNames.CoreBuiltIns.SUBTRACT_YEAR_MONTH_DURATION_FROM_DATE)));
-        coreSWRLBuiltIns.add(new DefaultSWRLBuiltin(owlModel, new FrameID(SWRLNames.CoreBuiltIns.SUBTRACT_DAY_TIME_DURATION_FROM_DATE)));
-        coreSWRLBuiltIns.add(new DefaultSWRLBuiltin(owlModel, new FrameID(SWRLNames.CoreBuiltIns.ADD_DAY_TIME_DURATION_TO_TIME)));
-        coreSWRLBuiltIns.add(new DefaultSWRLBuiltin(owlModel, new FrameID(SWRLNames.CoreBuiltIns.SUBTRACT_DAY_TIME_DURATION_FROM_TIME)));
-        coreSWRLBuiltIns.add(new DefaultSWRLBuiltin(owlModel, new FrameID(SWRLNames.CoreBuiltIns.SUBTRACT_DATETIMES_YIELDING_YEAR_MONTH_DURATION)));
-        coreSWRLBuiltIns.add(new DefaultSWRLBuiltin(owlModel, new FrameID(SWRLNames.CoreBuiltIns.SUBTRACT_DATETIMES_YIELDING_DAY_TIME_DURATION)));
+        createSWRLBuiltin(SWRLNames.CoreBuiltIns.EQUAL);
+        createSWRLBuiltin(SWRLNames.CoreBuiltIns.NOT_EQUAL);
+        createSWRLBuiltin(SWRLNames.CoreBuiltIns.LESS_THAN);
+        createSWRLBuiltin(SWRLNames.CoreBuiltIns.LESS_THAN_OR_EQUAL);
+        createSWRLBuiltin(SWRLNames.CoreBuiltIns.GREATER_THAN);
+        createSWRLBuiltin(SWRLNames.CoreBuiltIns.GREATER_THAN_OR_EQUAL);
+        createSWRLBuiltin(SWRLNames.CoreBuiltIns.ADD);
+        createSWRLBuiltin(SWRLNames.CoreBuiltIns.SUBTRACT);
+        createSWRLBuiltin(SWRLNames.CoreBuiltIns.MULTIPLY);
+        createSWRLBuiltin(SWRLNames.CoreBuiltIns.DIVIDE);
+        createSWRLBuiltin(SWRLNames.CoreBuiltIns.INTEGER_DIVIDE);
+        createSWRLBuiltin(SWRLNames.CoreBuiltIns.MOD);
+        createSWRLBuiltin(SWRLNames.CoreBuiltIns.POW);
+        createSWRLBuiltin(SWRLNames.CoreBuiltIns.UNARY_PLUS);
+        createSWRLBuiltin(SWRLNames.CoreBuiltIns.UNARY_MINUS);
+        createSWRLBuiltin(SWRLNames.CoreBuiltIns.ABS);
+        createSWRLBuiltin(SWRLNames.CoreBuiltIns.CEILING);
+        createSWRLBuiltin(SWRLNames.CoreBuiltIns.FLOOR);
+        createSWRLBuiltin(SWRLNames.CoreBuiltIns.ROUND);
+        createSWRLBuiltin(SWRLNames.CoreBuiltIns.ROUND_HALF_TO_EVEN);
+        createSWRLBuiltin(SWRLNames.CoreBuiltIns.SIN);
+        createSWRLBuiltin(SWRLNames.CoreBuiltIns.COS);
+        createSWRLBuiltin(SWRLNames.CoreBuiltIns.TAN);
+        createSWRLBuiltin(SWRLNames.CoreBuiltIns.BOOLEAN_NOT);
+        createSWRLBuiltin(SWRLNames.CoreBuiltIns.STRING_EQUAL_IGNORE_CASE);
+        createSWRLBuiltin(SWRLNames.CoreBuiltIns.STRING_CONCAT);
+        createSWRLBuiltin(SWRLNames.CoreBuiltIns.SUBSTRING);
+        createSWRLBuiltin(SWRLNames.CoreBuiltIns.STRING_LENGTH);
+        createSWRLBuiltin(SWRLNames.CoreBuiltIns.NORMALIZE_SPACE);
+        createSWRLBuiltin(SWRLNames.CoreBuiltIns.UPPER_CASE);
+        createSWRLBuiltin(SWRLNames.CoreBuiltIns.LOWER_CASE);
+        createSWRLBuiltin(SWRLNames.CoreBuiltIns.TRANSLATE);
+        createSWRLBuiltin(SWRLNames.CoreBuiltIns.CONTAINS);
+        createSWRLBuiltin(SWRLNames.CoreBuiltIns.CONTAINS_IGNORE_CASE);
+        createSWRLBuiltin(SWRLNames.CoreBuiltIns.STARTS_WITH);
+        createSWRLBuiltin(SWRLNames.CoreBuiltIns.ENDS_WITH);
+        createSWRLBuiltin(SWRLNames.CoreBuiltIns.SUBSTRING_BEFORE);
+        createSWRLBuiltin(SWRLNames.CoreBuiltIns.SUBSTRING_AFTER);
+        createSWRLBuiltin(SWRLNames.CoreBuiltIns.MATCHES);
+        createSWRLBuiltin(SWRLNames.CoreBuiltIns.REPLACE);
+        createSWRLBuiltin(SWRLNames.CoreBuiltIns.TOKENIZE);
+        createSWRLBuiltin(SWRLNames.CoreBuiltIns.YEAR_MONTH_DURATION);
+        createSWRLBuiltin(SWRLNames.CoreBuiltIns.DAY_TIME_DURATION);
+        createSWRLBuiltin(SWRLNames.CoreBuiltIns.DATETIME);
+        createSWRLBuiltin(SWRLNames.CoreBuiltIns.DATE);
+        createSWRLBuiltin(SWRLNames.CoreBuiltIns.TIME);
+        createSWRLBuiltin(SWRLNames.CoreBuiltIns.ADD_YEAR_MONTH_DURATIONS);
+        createSWRLBuiltin(SWRLNames.CoreBuiltIns.SUBTRACT_YEAR_MONTH_DURATIONS);
+        createSWRLBuiltin(SWRLNames.CoreBuiltIns.MULTIPLY_YEAR_MONTH_DURATION);
+        createSWRLBuiltin(SWRLNames.CoreBuiltIns.DIVIDE_YEAR_MONTH_DURATIONS);
+        createSWRLBuiltin(SWRLNames.CoreBuiltIns.ADD_DAY_TIME_DURATIONS);
+        createSWRLBuiltin(SWRLNames.CoreBuiltIns.SUBTRACT_DAY_TIME_DURATIONS);
+        createSWRLBuiltin(SWRLNames.CoreBuiltIns.MULTIPLY_DAY_TIME_DURATIONS);
+        createSWRLBuiltin(SWRLNames.CoreBuiltIns.DIVIDE_DAY_TIME_DURATION);
+        createSWRLBuiltin(SWRLNames.CoreBuiltIns.SUBTRACT_DATES);
+        createSWRLBuiltin(SWRLNames.CoreBuiltIns.SUBTRACT_TIMES);
+        createSWRLBuiltin(SWRLNames.CoreBuiltIns.ADD_YEAR_MONTH_DURATION_TO_DATETIME);
+        createSWRLBuiltin(SWRLNames.CoreBuiltIns.ADD_DAY_TIME_DURATION_TO_DATETIME);
+        createSWRLBuiltin(SWRLNames.CoreBuiltIns.SUBTRACT_YEAR_MONTH_DURATION_FROM_DATETIME);
+        createSWRLBuiltin(SWRLNames.CoreBuiltIns.SUBTRACT_DAY_TIME_DURATION_FROM_DATETIME);
+        createSWRLBuiltin(SWRLNames.CoreBuiltIns.ADD_YEAR_MONTH_DURATION_TO_DATE);
+        createSWRLBuiltin(SWRLNames.CoreBuiltIns.ADD_DAY_TIME_DURATION_TO_DATE);
+        createSWRLBuiltin(SWRLNames.CoreBuiltIns.SUBTRACT_YEAR_MONTH_DURATION_FROM_DATE);
+        createSWRLBuiltin(SWRLNames.CoreBuiltIns.SUBTRACT_DAY_TIME_DURATION_FROM_DATE);
+        createSWRLBuiltin(SWRLNames.CoreBuiltIns.ADD_DAY_TIME_DURATION_TO_TIME);
+        createSWRLBuiltin(SWRLNames.CoreBuiltIns.SUBTRACT_DAY_TIME_DURATION_FROM_TIME);
+        createSWRLBuiltin(SWRLNames.CoreBuiltIns.SUBTRACT_DATETIMES_YIELDING_YEAR_MONTH_DURATION);
+        createSWRLBuiltin(SWRLNames.CoreBuiltIns.SUBTRACT_DATETIMES_YIELDING_DAY_TIME_DURATION);
     }
     
+    private SWRLBuiltin createSWRLBuiltin(String name) {
+    	FrameID id = new FrameID(name);
+    	SWRLBuiltin swrlBuiltin = new DefaultSWRLBuiltin(owlModel, id);
+    	
+    	coreSWRLBuiltIns.add(swrlBuiltin);
+    	addFrame(id, swrlBuiltin);
+    	
+    	return swrlBuiltin;
+    }
     
     @Override
     public void addSystemFrames(FrameStore fs) {
