@@ -540,6 +540,11 @@ public abstract class AbstractProtegeReasoner implements ProtegeReasoner {
     	        public void individualDeleted(RDFResource resource) {
     	            reactToKnowledgeBaseChange();
     	        }
+    	        
+    	        @Override
+    	        public void resourceReplaced(RDFResource oldResource, RDFResource newResource, String oldName) {
+    	        	reactToKnowledgeBaseChange();
+    	        }
     	    };
     	 return modelListener;
     }
