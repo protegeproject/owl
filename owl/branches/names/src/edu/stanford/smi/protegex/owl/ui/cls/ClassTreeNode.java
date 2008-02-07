@@ -21,6 +21,8 @@ public class ClassTreeNode extends LazyTreeNode {
 
     private ClsListener _clsListener = new ClsAdapter() {
         public void directSubclassAdded(ClsEvent event) {
+        	if (event.isReplacementEvent()) return;
+        	
             if (event.getSubclass().isVisible()) {
                 childAdded(event.getSubclass());
             }
@@ -28,6 +30,8 @@ public class ClassTreeNode extends LazyTreeNode {
 
 
         public void directSubclassRemoved(ClsEvent event) {
+        	if (event.isReplacementEvent()) return;
+        	
             if (event.getSubclass().isVisible()) {
                 childRemoved(event.getSubclass());
             }
@@ -35,7 +39,9 @@ public class ClassTreeNode extends LazyTreeNode {
 
 
         public void directSubclassMoved(ClsEvent event) {
-            Cls subclass = event.getSubclass();
+        	if (event.isReplacementEvent()) return;
+            
+        	Cls subclass = event.getSubclass();
             int index = (new ArrayList(getChildObjects())).indexOf(subclass);
             if (index != -1) {
                 childRemoved(subclass);
@@ -45,21 +51,29 @@ public class ClassTreeNode extends LazyTreeNode {
 
 
         public void directInstanceAdded(ClsEvent event) {
+        	if (event.isReplacementEvent()) return;
+        	
             notifyNodeChanged();
         }
 
 
         public void directInstanceRemoved(ClsEvent event) {
+        	if (event.isReplacementEvent()) return;
+        	
             notifyNodeChanged();
         }
 
 
         public void templateFacetValueChanged(ClsEvent event) {
+        	if (event.isReplacementEvent()) return;
+        	
             notifyNodeChanged();
         }
 
 
         public void directSuperclassAdded(ClsEvent event) {
+        	if (event.isReplacementEvent()) return;
+        	
             notifyNodeChanged();
         }
     };
