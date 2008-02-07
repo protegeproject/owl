@@ -484,6 +484,9 @@ Slot-Widget: True
 Name: edu.stanford.smi.protegex.owl.swrl.ui.actions.EnableSWRLTabAction.class
 OWLModelAction: True
 
+Name: edu.stanford.smi.protegex.owl.ui.menu.OWLBackwardsCompatibilityProjectFixups.class
+ProjectFixupPlugin: True
+
 
 
 
