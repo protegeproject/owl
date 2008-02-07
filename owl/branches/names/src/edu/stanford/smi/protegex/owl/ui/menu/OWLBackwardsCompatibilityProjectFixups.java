@@ -349,6 +349,12 @@ public class OWLBackwardsCompatibilityProjectFixups implements ProjectFixupPlugi
 		
 	}
 	
+	public static boolean isSuitable(KnowledgeBase internalKb, Collection errors) {
+		String factory = getProjectSources(internalKb).getString(KnowledgeBaseFactory.FACTORY_CLASS_NAME);
+		
+		return factory != null && factory.contains(".owl.");		
+	}
+	
 	 private static final String CLASS_PROJECT = "Project";
 	 
 	// ********** utility methods *************
