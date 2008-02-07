@@ -1,5 +1,4 @@
 package edu.stanford.smi.protegex.owl.jena.parser;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -498,7 +497,7 @@ public class TripleFrameCache {
 	private void processClsesWithoutSupercls() {
 		long time0 = System.currentTimeMillis();
 		
-		System.out.print("Postprocess: Process classes without superclasses (" + superClsCache.getCachedFramesWithNoSuperclass().size() + " classes) ... ");
+		log.info("Postprocess: Process classes without superclasses (" + superClsCache.getCachedFramesWithNoSuperclass().size() + " classes) ... ");
 		
 		for (Iterator iter = superClsCache.getCachedFramesWithNoSuperclass().iterator(); iter.hasNext();) {
 			Frame frame = (Frame) iter.next();
@@ -521,7 +520,7 @@ public class TripleFrameCache {
 				
 		OWLNamedClass owlClassClass = owlModel.getOWLNamedClassClass();
 		
-		System.out.print("Postprocess: Add inferred superclasses (" + owlModel.getInstanceCount(owlClassClass) + " classes) ... ");
+		log.info("Postprocess: Add inferred superclasses (" + owlModel.getInstanceCount(owlClassClass) + " classes) ... ");
 		
 		for (Iterator iterator = owlClassClass.getInstances().iterator(); iterator.hasNext();) {
 			Object obj = iterator.next();

@@ -14,7 +14,6 @@ import edu.stanford.smi.protege.model.KnowledgeBase;
 import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protege.model.framestore.SimpleFrameStore;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
-import edu.stanford.smi.protegex.owl.model.OWLNames;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLAllDifferent;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLDatatypeProperty;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLIndividual;

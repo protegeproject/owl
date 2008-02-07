@@ -463,7 +463,7 @@ public class ProtegeOWLParser {
 
 	    public void endPrefixMapping(String prefix) {
 	        NamespaceManager namespaceManager = owlModel.getNamespaceManager();
-	        log.info("*** " + prefix + " -> " + namespaceManager.getNamespaceForPrefix(prefix));
+	        //log.info("*** " + prefix + " -> " + namespaceManager.getNamespaceForPrefix(prefix));
 	    }
 
 		public void startPrefixMapping(String prefix, String namespace) {
