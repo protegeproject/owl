@@ -23,7 +23,6 @@ import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.DefaultKnowledgeBase;
 import edu.stanford.smi.protege.model.Facet;
 import edu.stanford.smi.protege.model.Frame;
-import edu.stanford.smi.protege.model.FrameFactory;
 import edu.stanford.smi.protege.model.FrameID;
 import edu.stanford.smi.protege.model.FrameNameValidator;
 import edu.stanford.smi.protege.model.Instance;
@@ -1817,19 +1816,12 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     }
 
 
-    public RDFSDatatype getRDFSDatatypeByName(String name) {
-        return (RDFSDatatype) getFrame(name);
+    public RDFSDatatype getRDFSDatatypeByName(String name) {    	
+        return getRDFSDatatypeByURI(NamespaceUtil.getFullName(this, name));
     }
 
-
     public RDFSDatatype getRDFSDatatypeByURI(String uri) {
-        for (Iterator it = getRDFSDatatypes().iterator(); it.hasNext();) {
-            RDFSDatatype datatype = (RDFSDatatype) it.next();
-            if (uri.equals(datatype.getURI())) {
-                return datatype;
-            }
-        }
-        return null;
+    	 return uri == null ? null : (RDFSDatatype) getFrame(uri);
     }
 
 
@@ -1865,10 +1857,6 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
                 getOWLMaxCardinalityClass()
         };
     }
-
-
-
-
 
 
     public RDFProperty[] getSystemAnnotationProperties() {
