@@ -8,6 +8,11 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
+import edu.stanford.smi.protege.event.FrameEvent;
+import edu.stanford.smi.protege.event.KnowledgeBaseEvent;
+import edu.stanford.smi.protege.event.SlotEvent;
+import edu.stanford.smi.protege.model.Cls;
+import edu.stanford.smi.protege.model.Frame;
 import edu.stanford.smi.protege.model.Model;
 import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protege.ui.FrameComparator;
@@ -35,7 +40,9 @@ public class OWLPropertySubpropertyRoot extends LazyTreeRoot {
 
     private ModelListener modelListener = new ModelAdapter() {
         @Override
-		public void propertyCreated(RDFProperty property) {
+		public void propertyCreated(RDFProperty property, KnowledgeBaseEvent event) {
+        	if (event.isReplacementEvent()) return;
+        	
             if (property.getSuperproperties(false).isEmpty() && isSuitable(property)) {
                 List properties = (List) getUserObject();
                 int index = 0;
@@ -52,18 +59,32 @@ public class OWLPropertySubpropertyRoot extends LazyTreeRoot {
 
 
         @Override
-		public void propertyDeleted(RDFProperty property) {
+		public void propertyDeleted(RDFProperty property, KnowledgeBaseEvent event) {
+        	if (event.isReplacementEvent()) return;
+        	
             List properties = (List) getUserObject();
             boolean changed = properties.remove(property);
             if (changed) {
                 childRemoved(property);
             }
         }
+        
+      	public void resourceReplaced(RDFResource oldResource, RDFResource newResource, String oldName) {
+      		Object userObj = getUserObject();
+      		
+      		if (userObj != null && userObj.equals(oldResource)) {
+      			reload(newResource);
+      		}
+    	}
+        
+        
     };
 
     public PropertyListener propertyListener = new PropertyAdapter() {
         @Override
-		public void superpropertyAdded(RDFProperty property, RDFProperty superproperty) {
+		public void superpropertyAdded(RDFProperty property, RDFProperty superproperty, SlotEvent event) {
+        	if (event.isReplacementEvent()) return;
+        	
             if (property.getSuperpropertyCount() == 1 && isSuitable(property)) {
                 removeChild(property);
             }
@@ -71,7 +92,9 @@ public class OWLPropertySubpropertyRoot extends LazyTreeRoot {
 
 
         @Override
-		public void superpropertyRemoved(RDFProperty property, RDFProperty superproperty) {
+		public void superpropertyRemoved(RDFProperty property, RDFProperty superproperty, SlotEvent event) {
+        	if (event.isReplacementEvent()) return;
+        	
             if (property.getSuperpropertyCount() == 0 && isSuitable(property)) {
                 addChild(property);
             }
