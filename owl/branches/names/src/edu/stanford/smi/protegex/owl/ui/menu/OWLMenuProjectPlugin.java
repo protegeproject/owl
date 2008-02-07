@@ -51,9 +51,7 @@ import edu.stanford.smi.protege.util.StandardAction;
 import edu.stanford.smi.protege.util.SystemUtilities;
 import edu.stanford.smi.protege.widget.ClsWidget;
 import edu.stanford.smi.protege.widget.FormWidget;
-
 import edu.stanford.smi.protegex.owl.database.OWLDatabaseModel;
-import edu.stanford.smi.protegex.owl.inference.protegeowl.ReasonerPluginManager;
 import edu.stanford.smi.protegex.owl.inference.protegeowl.ReasonerPluginMenuManager;
 import edu.stanford.smi.protegex.owl.javacode.JavaCodeGeneratorResourceAction;
 import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
@@ -63,7 +61,6 @@ import edu.stanford.smi.protegex.owl.model.RDFNames;
 import edu.stanford.smi.protegex.owl.model.RDFSNames;
 import edu.stanford.smi.protegex.owl.model.project.OWLProject;
 import edu.stanford.smi.protegex.owl.model.util.XSDVisibility;
-import edu.stanford.smi.protegex.owl.resource.OWLText;
 import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
 import edu.stanford.smi.protegex.owl.ui.actions.AbstractOWLModelAction;
 import edu.stanford.smi.protegex.owl.ui.actions.OWLModelAction;
@@ -275,6 +272,7 @@ public class OWLMenuProjectPlugin extends ProjectPluginAdapter {
         OWLUI.fixBrowserSlotPatterns(project);
         
         fix(owlModel);
+        
         if (project.getSources().getString(AbsoluteFormsGenerator.SAVE_FORMS_KEY) != null) {
             try {
                 AbsoluteFormsLoader absoluteFormsLoader = new AbsoluteFormsLoader(owlModel);
@@ -400,7 +398,8 @@ public class OWLMenuProjectPlugin extends ProjectPluginAdapter {
 
     private void fix(OWLModel owlModel) {
         if (!owlModel.getProject().isMultiUserClient()) {
-            OWLBackwardsCompatibilityProjectFixups.fix(owlModel);
+        	//TODO: TT - this must not be called
+            //OWLBackwardsCompatibilityProjectFixups.fix(owlModel);
             XSDVisibility.updateVisibility(owlModel);
         }
     }
@@ -459,7 +458,7 @@ public class OWLMenuProjectPlugin extends ProjectPluginAdapter {
     }
 
     private static void makeVisibleIfSubclassesExist(Cls cls, Set systemFrames) {
-        if (cls.getDirectSubclassCount() > 0 || isUsedInRange(cls, systemFrames)) {
+        if (cls.getVisibleDirectSubclassCount() > 0 || isUsedInRange(cls, systemFrames)) {
             cls.setVisible(true);
         }
     }
