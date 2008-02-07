@@ -12,40 +12,87 @@ import java.util.Collection;
  */
 public class PropertyValueAdapter extends FrameAdapter implements PropertyValueListener {
 
-    public final void browserTextChanged(FrameEvent event) {
-        if (event.getFrame() instanceof RDFResource) {
-            browserTextChanged((RDFResource) event.getFrame());
-        }
+    public void propertyValueChanged(RDFResource resource, RDFProperty property, Collection oldValues, FrameEvent event) {
+    	propertyValueChanged(resource, property, oldValues);
     }
 
+    public void propertyValueChanged(RDFResource resource, RDFProperty property, Collection oldValues) {
+        // Do nothing
+    }
 
+    public void browserTextChanged(RDFResource resource, FrameEvent event) {
+    	browserTextChanged(resource);
+    }
+    
     public void browserTextChanged(RDFResource resource) {
         // Do nothing
     }
 
+    public void resourceReplaced(RDFResource oldResource, RDFResource newResource, String oldName) {
+		nameChanged(oldResource, oldName);
+	} 
+    
+    public void nameChanged(RDFResource resource, String oldName) {
+        // Do nothing
+    }
+
+    public void visibilityChanged(RDFResource resource, FrameEvent event) {
+    	visibilityChanged(resource);
+    }
+    
+    public void visibilityChanged(RDFResource resource) {
+        // Do nothing
+    }
+    
+    
+    /************* Deprecated methods **************/
 
     /**
      * @deprecated
-     */
-    public final void deleted(FrameEvent event) {
+     */    
+    public final void browserTextChanged(FrameEvent event) {
+        if (event.getFrame() instanceof RDFResource) {
+            browserTextChanged((RDFResource) event.getFrame(), event);
+        }
     }
-
+    
 
     /**
      * @deprecated
      */
     public final void nameChanged(FrameEvent event) {
         if (event.getFrame() instanceof RDFResource) {
-            nameChanged((RDFResource) event.getFrame(), event.getOldName());
+            resourceReplaced((RDFResource) event.getFrame(), (RDFResource) event.getNewFrame(),  event.getOldName());
         }
     }
 
-
-    public void nameChanged(RDFResource resource, String oldName) {
-        // Do nothing
+    
+    /**
+     * @deprecated
+     */
+    public final void ownSlotValueChanged(FrameEvent event) {
+        if (event.getFrame() instanceof RDFResource && event.getSlot() instanceof RDFProperty) {
+            propertyValueChanged((RDFResource) event.getFrame(), (RDFProperty) event.getSlot(), event.getOldValues(),event);
+        }
     }
 
-
+    /**
+     * @deprecated
+     */
+    public final void visibilityChanged(FrameEvent event) {
+        if (event.getFrame() instanceof RDFResource) {
+            visibilityChanged((RDFResource) event.getFrame(),event);
+        }
+    }
+    
+    
+    /**
+     * @deprecated
+     */
+    public final void deleted(FrameEvent event) {
+    }
+    
+    
     /**
      * @deprecated
      */
@@ -81,32 +128,5 @@ public class PropertyValueAdapter extends FrameAdapter implements PropertyValueL
     }
 
 
-    /**
-     * @deprecated
-     */
-    public final void ownSlotValueChanged(FrameEvent event) {
-        if (event.getFrame() instanceof RDFResource && event.getSlot() instanceof RDFProperty) {
-            propertyValueChanged((RDFResource) event.getFrame(), (RDFProperty) event.getSlot(), event.getOldValues());
-        }
-    }
 
-
-    public void propertyValueChanged(RDFResource resource, RDFProperty property, Collection oldValues) {
-        // Do nothing
-    }
-
-
-    /**
-     * @deprecated
-     */
-    public final void visibilityChanged(FrameEvent event) {
-        if (event.getFrame() instanceof RDFResource) {
-            visibilityChanged((RDFResource) event.getFrame());
-        }
-    }
-
-
-    public void visibilityChanged(RDFResource resource) {
-        // Do nothing
-    }
 }
