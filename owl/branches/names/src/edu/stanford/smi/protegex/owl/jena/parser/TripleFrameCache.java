@@ -82,8 +82,8 @@ public class TripleFrameCache {
 	
 	
 	public boolean processTriple(AResource subj, AResource pred, AResource obj, boolean alreadyInUndef) {
-		if (log.isLoggable(Level.FINE)) {
-			log.fine("Process Triple " + subj + " " + pred + " " + obj);
+		if (log.isLoggable(Level.FINER)) {
+			log.finer("Process Triple " + subj + " " + pred + " " + obj);
 		}
 		
 		String predName = ParserUtility.getResourceName(pred);		
@@ -222,15 +222,10 @@ public class TripleFrameCache {
 	}
 
 	public boolean processTriple(AResource subj, AResource pred, ALiteral lit, boolean alreadyInUndef) {
-	    if (log.isLoggable(Level.FINE)) {
-	        log.fine("Processing triple: " + subj + " " + pred + " " + lit);
+	    if (log.isLoggable(Level.FINER)) {
+	        log.finer("Processing triple: " + subj + " " + pred + " " + lit);
 	    }
-		
-		//TT:just for testing
-		/*if (true) {
-			return true;
-		}*/
-		
+
 		String predName = ParserUtility.getResourceName(pred);		
 		Slot predSlot = (Slot) owlModel.getFrame(predName);
 
@@ -599,7 +594,5 @@ public class TripleFrameCache {
 		
 	}
 
-	
-	
 	
 }
