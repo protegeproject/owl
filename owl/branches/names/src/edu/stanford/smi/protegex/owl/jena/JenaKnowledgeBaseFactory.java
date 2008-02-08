@@ -11,9 +11,6 @@ import com.hp.hpl.jena.util.FileUtils;
 import edu.stanford.smi.protege.model.KnowledgeBase;
 import edu.stanford.smi.protege.model.KnowledgeBaseSourcesEditor;
 import edu.stanford.smi.protege.model.Project;
-import edu.stanford.smi.protege.model.framestore.FrameStore;
-import edu.stanford.smi.protege.model.framestore.NarrowFrameStore;
-import edu.stanford.smi.protege.server.ClientInitializerKnowledgeBaseFactory;
 import edu.stanford.smi.protege.ui.ProjectManager;
 import edu.stanford.smi.protege.util.ApplicationProperties;
 import edu.stanford.smi.protege.util.Log;
@@ -23,7 +20,6 @@ import edu.stanford.smi.protege.util.URIUtilities;
 import edu.stanford.smi.protegex.owl.database.OWLDatabaseModel;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreModel;
 import edu.stanford.smi.protegex.owl.repository.util.RepositoryFileManager;
-import edu.stanford.smi.protegex.owl.resource.OWLText;
 import edu.stanford.smi.protegex.owl.storage.OWLKnowledgeBaseFactory;
 import edu.stanford.smi.protegex.owl.storage.ProtegeSaver;
 import edu.stanford.smi.protegex.owl.ui.ProgressDisplayDialog;
@@ -35,7 +31,7 @@ import edu.stanford.smi.protegex.owl.ui.resourceselection.ResourceSelectionActio
  *
  * @author Holger Knublauch  <holger@knublauch.com>
  */
-public class JenaKnowledgeBaseFactory implements OWLKnowledgeBaseFactory, ClientInitializerKnowledgeBaseFactory {
+public class JenaKnowledgeBaseFactory implements OWLKnowledgeBaseFactory {
 
     public static final String JENA_SYNCHRONIZED = JenaKnowledgeBaseFactory.class.getName() + ".synchronized";
 
@@ -244,13 +240,5 @@ public class JenaKnowledgeBaseFactory implements OWLKnowledgeBaseFactory, Client
             filePath += ".owl";
         }
         sources.setString(OWL_FILE_URI_PROPERTY, filePath);
-    }
-    
-    // TODO - does this really work?  Should we do something with the systemNfs argument?
-    // Try a file mode owl project on the server.
-    public void initializeClientKnowledgeBase(FrameStore fs, 
-    		                                  NarrowFrameStore systemNfs,
-                                              NarrowFrameStore nfs,
-                                              KnowledgeBase kb) { 
     }
 }
