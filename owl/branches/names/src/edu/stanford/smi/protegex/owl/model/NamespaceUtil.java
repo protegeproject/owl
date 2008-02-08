@@ -6,6 +6,8 @@ import edu.stanford.smi.protegex.owl.model.impl.OWLNamespaceManager;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 
 public class NamespaceUtil {
+    
+    public static final String PREFIX_TO_NAME_SEPARATOR = ":";
 
 	public static String getNameSpace(String fullURI) { 	
 		return fullURI.substring(0, Util.splitNamespace(fullURI) );
@@ -41,7 +43,7 @@ public class NamespaceUtil {
 	}
 	
 	public static String getFullName(OWLModel owlModel, String prefixedName) {
-		int ind = prefixedName.indexOf(":");
+		int ind = prefixedName.indexOf(PREFIX_TO_NAME_SEPARATOR);
 		
 		NamespaceManager nsm = owlModel.getNamespaceManager();
 		
@@ -56,11 +58,6 @@ public class NamespaceUtil {
 		}
 						
 		if (ind == 0) {//e.g. ":protege" - what to do in this case?
-			//TODO: what should happen in this case?
-			return null;
-		}
-		
-		if (ind == prefixedName.length() - 1) { //e.g. "p1:"
 			//TODO: what should happen in this case?
 			return null;
 		}
