@@ -801,13 +801,6 @@ public class OWLFrameStore extends FrameStoreAdapter {
     @Override
     public Set getFramesWithMatchingDirectOwnSlotValue(Slot slot, String value, int maxMatches) {
         Set results = super.getFramesWithMatchingDirectOwnSlotValue(slot, value, maxMatches);
-        if (isIgnorePrefixesInSearch(owlModel)) {
-            Iterator it = owlModel.getNamespaceManager().getPrefixes().iterator();
-            while (it.hasNext()) {
-                String prefix = (String) it.next();
-                results.addAll(super.getFramesWithMatchingDirectOwnSlotValue(slot, prefix + ProtegeNames.PREFIX_LOCALNAME_SEPARATOR + value, maxMatches));
-            }
-        }
         return results;
     }
 
