@@ -33,7 +33,6 @@ import edu.stanford.smi.protege.model.Project;
 import edu.stanford.smi.protege.model.Reference;
 import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protege.model.ValueType;
-import edu.stanford.smi.protege.model.framestore.FrameStore;
 import edu.stanford.smi.protege.model.framestore.FrameStoreManager;
 import edu.stanford.smi.protege.server.framestore.background.ServerCacheStateMachine;
 import edu.stanford.smi.protege.util.ApplicationProperties;
@@ -95,7 +94,6 @@ import edu.stanford.smi.protegex.owl.model.event.PropertyValueListener;
 import edu.stanford.smi.protegex.owl.model.event.ResourceAdapter;
 import edu.stanford.smi.protegex.owl.model.event.ResourceListener;
 import edu.stanford.smi.protegex.owl.model.factory.OWLJavaFactory;
-import edu.stanford.smi.protegex.owl.model.framestore.OWLDeleteSimplificationFrameStore;
 import edu.stanford.smi.protegex.owl.model.framestore.OWLFrameStore;
 import edu.stanford.smi.protegex.owl.model.framestore.OWLFrameStoreManager;
 import edu.stanford.smi.protegex.owl.model.project.DefaultOWLProject;
@@ -304,9 +302,6 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
         taskManager = new DefaultTaskManager();
         taskManager.setProgressDisplay(new NoopProgressDisplay());
-        if (super.getProject() != null) {
-            setProject(super.getProject());
-        }
 
         setGenerateEventsEnabled(eventEnabled);
 
@@ -434,19 +429,8 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     protected void initOWLFrameStore() {
         if (!(getFrameStores().get(0) instanceof OWLFrameStore)) {
             owlFrameStore = new OWLFrameStore(this);
-            insertFrameStore(owlFrameStore);
+            getFrameStoreManager().insertFrameStore(owlFrameStore);
         }
-    }
-    
-    public void adjustClientFrameStores() {
-      FrameStoreManager fsm = getFrameStoreManager();
-      fsm.setEnabled(owlFrameStore, false);
-      
-      FrameStore owlDeleteSimplificationFS = fsm.getFrameStoreFromClass(OWLDeleteSimplificationFrameStore.class);
-      if (owlDeleteSimplificationFS != null) {
-        fsm.setEnabled(owlDeleteSimplificationFS, false);
-      }
-
     }
     
     @Override
@@ -2255,15 +2239,17 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
         project.setWidgetMapper(new OWLWidgetMapper(this));
 
-        if (project.isMultiUserClient()) {
-            FrameStoreManager fsm = getFrameStoreManager();
-            fsm.setEnabled(getOWLFrameStore(), false);
-        }
-
         getProtegeClassificationStatusProperty().setVisible(false);
         getProtegeInferredSuperclassesProperty().setVisible(false);
         getProtegeInferredSubclassesProperty().setVisible(false);
         getOWLOntologyClass().setVisible(false);
+    }
+    
+    @Override
+    protected void adjustClientFrameStores() {
+        super.adjustClientFrameStores();
+        FrameStoreManager fsm = getFrameStoreManager();
+        fsm.setEnabled(getOWLFrameStore(), false);
     }
 
 
