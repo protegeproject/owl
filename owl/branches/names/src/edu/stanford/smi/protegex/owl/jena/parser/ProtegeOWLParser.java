@@ -25,20 +25,15 @@ import com.hp.hpl.jena.rdf.arp.ARPHandlers;
 import com.hp.hpl.jena.rdf.arp.AResource;
 import com.hp.hpl.jena.rdf.arp.NamespaceHandler;
 import com.hp.hpl.jena.rdf.arp.StatementHandler;
-import com.hp.hpl.jena.vocabulary.RDFS;
 
-import edu.stanford.smi.protege.model.KnowledgeBase;
 import edu.stanford.smi.protege.util.ApplicationProperties;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protege.util.MessageError;
 import edu.stanford.smi.protege.util.URIUtilities;
 import edu.stanford.smi.protegex.owl.model.NamespaceManager;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
-import edu.stanford.smi.protegex.owl.model.OWLOntology;
-import edu.stanford.smi.protegex.owl.model.ProtegeNames;
 import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
 import edu.stanford.smi.protegex.owl.model.RDFUntypedResource;
-import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 import edu.stanford.smi.protegex.owl.repository.util.XMLBaseExtractor;
 
@@ -61,27 +56,16 @@ public class ProtegeOWLParser {
 
 	private static URI errorOntologyURI;
 
-	/**
-	 * A rather ugly flag that can be activated to prompt the user if a local
-	 * file was found as a possible import redirection.
-	 */
-	//public static boolean inUI = false;
-
-	private boolean isRDFList = false;
-
 	private ProtegeOWLParserLogger logger;
 
 	private OWLModel owlModel;
-
-	private static final String RDFS_RESOURCE_URI = RDFS.Resource.getURI();
 	
 	private Map<String, RDFUntypedResource> untypedResources = new HashMap<String, RDFUntypedResource>();
 
 	private int tripleCount;
 	
 	private TripleFrameCache tfc;
-	
-//	private AbstractTask task;
+
 
 
 	public ProtegeOWLParser(OWLModel owlModel,
@@ -102,7 +86,6 @@ public class ProtegeOWLParser {
 	public void setImporting(boolean importing) {
 	    this.importing = importing;
 	}
-
 
 	/**
 	 * This method loads an ontology pointed to by the specified URI.
@@ -245,20 +228,27 @@ public class ProtegeOWLParser {
 
 		Log.getLogger().info("[ProtegeOWLParser] Completed triple loading after " + (endTime - startTime) + " ms");
 
-		log.info("\nDump before end processing. Size: " + tfc.getUndefTripleManager().getUndefTriples().size());
-		// tfc.getUndefTripleManager().dumpUndefTriples();
-
+		if (log.isLoggable(Level.FINE)) {
+			log.fine("\nDump before end processing. Size: " + tfc.getUndefTripleManager().getUndefTriples().size());
+			// tfc.getUndefTripleManager().dumpUndefTriples();
+        }		
+		
 		tfc.processUndefTriples();
-		//tfc.doPostProcessing();
-		
-		//tfc.getUndefTripleManager().dumpUndefTriples();
-		log.info("Dump after end processing. Size: "	+ tfc.getUndefTripleManager().getUndefTriples().size());
-		
-		log.info("Start processing imports ...");
+
+		if (log.isLoggable(Level.FINE)) {			
+			log.fine("\nDump before end processing. Size: " + tfc.getUndefTripleManager().getUndefTriples().size());
+			// tfc.getUndefTripleManager().dumpUndefTriples();
+        }		
+				
+		if (log.isLoggable(Level.FINE)) {
+			log.fine("Start processing imports ...");
+		}
 				
 		processImports(tripleStore);
 		
-		log.info("End processing imports");
+		if (log.isLoggable(Level.FINE)) {
+			log.fine("End processing imports");
+		}
 
 		tfc.processUndefTriples();
 		tfc.doPostProcessing();
@@ -268,7 +258,7 @@ public class ProtegeOWLParser {
 		        tripleStore.setName(xmlBase.toString());
 		    }
 		    else {
-		        // ToDo - invent a unique name...
+		        //TODO - invent a unique name...
 		    }
 		}
 		owlModel.resetOntologyCache();
@@ -278,23 +268,15 @@ public class ProtegeOWLParser {
 	protected ARP createARP() {
 		ARP arp = new ARP();
 		ARPHandlers handlers = arp.getHandlers();
-		//handlers.setStatementHandler(new MyStatementHandler());
-		handlers.setStatementHandler(new NewStatementHandler());
-		handlers.setErrorHandler(new MyErrorHandler());
-		handlers.setNamespaceHandler(new NewNamespaceHandler());
-		//handlers.setNamespaceHandler(new MyNamespaceHandler());
+		handlers.setStatementHandler(new ProtegeOWLStatementHandler());
+		handlers.setErrorHandler(new ProtegeOWLErrorHandler());
+		handlers.setNamespaceHandler(new ProtegeOWLNamespaceHandler());
 		arp.setHandlersWith(handlers);
 		return arp;
 	}
 
 	protected ProtegeOWLParserLogger createLogger() {
 		return new DefaultProtegeOWLParserLogger();
-	}
-
-
-	protected URI2NameConverter createURI2NameConverter(OWLModel owlModel,
-	                                                    boolean incremental) {
-		return new DefaultURI2NameConverter(owlModel, logger, incremental);
 	}
 
 	
@@ -344,7 +326,6 @@ public class ProtegeOWLParser {
 	
 
 
-
 	public void setLogger(ProtegeOWLParserLogger logger) {
 		this.logger = logger;
 	}
@@ -358,7 +339,7 @@ public class ProtegeOWLParser {
 	 * ARP Interface Implementations
 	 */
 
-	private class MyErrorHandler implements ErrorHandler {
+	private class ProtegeOWLErrorHandler implements ErrorHandler {
 
 		public void error(SAXParseException exception)
 		        throws SAXException {
@@ -426,7 +407,7 @@ public class ProtegeOWLParser {
 	}
 
 	
-	class NewStatementHandler implements StatementHandler {
+	class ProtegeOWLStatementHandler implements StatementHandler {
 
 		public void statement(AResource subj, AResource pred, AResource obj) {
                     if (log.isLoggable(Level.FINE)) {
@@ -459,11 +440,15 @@ public class ProtegeOWLParser {
 	}
 
 	
-	class NewNamespaceHandler implements NamespaceHandler {
+	class ProtegeOWLNamespaceHandler implements NamespaceHandler {
 
-	    public void endPrefixMapping(String prefix) {
+	    public void endPrefixMapping(String prefix) { // does nothing, just for logging
 	        NamespaceManager namespaceManager = owlModel.getNamespaceManager();
-	        //log.info("*** " + prefix + " -> " + namespaceManager.getNamespaceForPrefix(prefix));
+	        
+	        if (log.isLoggable(Level.FINE)) {
+                log.fine("*** " + prefix + " -> " + namespaceManager.getNamespaceForPrefix(prefix));
+            }
+
 	    }
 
 		public void startPrefixMapping(String prefix, String namespace) {
