@@ -1,7 +1,6 @@
 package edu.stanford.smi.protegex.owl.server.triplestore;
 
 import java.rmi.RemoteException;
-import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,7 +40,7 @@ public class GetPackage extends ProtegeJob {
             systemTripleStore = tripleStoreModel.getSystemTripleStore().getName();
             for (TripleStore tripleStore : tripleStoreModel.getTripleStores()) {
                 NarrowFrameStore nfs = tripleStore.getNarrowFrameStore();
-                RemoteServerNarrowFrameStore remoteNarrowFrameStore = new ServerNarrowFrameStore(nfs, getKnowledgeBase(), getKnowledgeBase());
+                RemoteServerNarrowFrameStore remoteNarrowFrameStore = new ServerNarrowFrameStore(nfs, getKnowledgeBase());
                 // remoteNarrowFrameStore = (RemoteServerNarrowFrameStore) UnicastRemoteObject.exportObject(remoteNarrowFrameStore);
 
                 frameStores.add(remoteNarrowFrameStore);
