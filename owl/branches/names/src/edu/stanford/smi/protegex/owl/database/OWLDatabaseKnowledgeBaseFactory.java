@@ -10,9 +10,6 @@ import edu.stanford.smi.protege.model.FrameFactory;
 import edu.stanford.smi.protege.model.Instance;
 import edu.stanford.smi.protege.model.KnowledgeBase;
 import edu.stanford.smi.protege.model.Slot;
-import edu.stanford.smi.protege.model.framestore.FrameStore;
-import edu.stanford.smi.protege.model.framestore.NarrowFrameStore;
-import edu.stanford.smi.protege.server.ClientInitializerKnowledgeBaseFactory;
 import edu.stanford.smi.protege.storage.database.DatabaseFrameDb;
 import edu.stanford.smi.protege.storage.database.DatabaseKnowledgeBaseFactory;
 import edu.stanford.smi.protege.util.Log;
@@ -25,7 +22,6 @@ import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreModel;
 import edu.stanford.smi.protegex.owl.repository.util.RepositoryFileManager;
-import edu.stanford.smi.protegex.owl.resource.OWLText;
 import edu.stanford.smi.protegex.owl.storage.OWLKnowledgeBaseFactory;
 import edu.stanford.smi.protegex.owl.ui.menu.OWLBackwardsCompatibilityProjectFixups;
 import edu.stanford.smi.protegex.owl.ui.resourceselection.ResourceSelectionAction;
@@ -36,7 +32,7 @@ import edu.stanford.smi.protegex.owl.ui.resourceselection.ResourceSelectionActio
  * @author Holger Knublauch  <holger@knublauch.com>
  */
 public class OWLDatabaseKnowledgeBaseFactory extends DatabaseKnowledgeBaseFactory
-        implements OWLKnowledgeBaseFactory, ClientInitializerKnowledgeBaseFactory {
+        implements OWLKnowledgeBaseFactory {
     private static Logger log = Log.getLogger(OWLDatabaseKnowledgeBaseFactory.class);
     
     public final static String NAMESPACE_PREFIX_SEPARATOR = ":";
@@ -172,18 +168,6 @@ public class OWLDatabaseKnowledgeBaseFactory extends DatabaseKnowledgeBaseFactor
             errors.add(new MessageError(message));
             Log.getLogger().severe(message);
         }
-    }
-
-
-    public void initializeClientKnowledgeBase(FrameStore fs, 
-                                              NarrowFrameStore systemNfs,
-                                              NarrowFrameStore userNfs,
-                                              KnowledgeBase kb) { 
-      if (kb instanceof OWLDatabaseModel) {
-        OWLDatabaseModel owlModel = (OWLDatabaseModel) kb;
-        owlModel.initializeClient();
-        owlModel.adjustClientFrameStores();
-      }
     }
 
 }
