@@ -571,16 +571,14 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
 
     public String createNewResourceName(String partialLocalName) {
-        if (getTripleStoreModel().getActiveTripleStore() != getTripleStoreModel().getTopTripleStore()) {
-            String namespace = getTripleStoreModel().getActiveTripleStore().getDefaultNamespace();
-            if (namespace != null) {
-                String prefix = getNamespaceManager().getPrefix(namespace);
-                if (prefix != null && prefix.length() > 0) {
-                    return getUniqueFrameName(prefix + ProtegeNames.PREFIX_LOCALNAME_SEPARATOR + partialLocalName);
-                }
-            }
-        }
-        return getUniqueFrameName(partialLocalName);
+    	TripleStore activeTripleStore = getTripleStoreModel().getActiveTripleStore(); 
+    	String activeNamespace = activeTripleStore.getDefaultNamespace();
+    	    	
+    	if (activeNamespace == null) { //TT - how to handle this?
+    		activeNamespace = activeTripleStore.getName() + "#";
+    	}
+
+    	return getUniqueFrameName(activeNamespace + partialLocalName);
     }
 
 
