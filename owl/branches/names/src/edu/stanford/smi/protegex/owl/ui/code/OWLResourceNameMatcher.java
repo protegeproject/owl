@@ -14,6 +14,7 @@ import edu.stanford.smi.protege.model.Frame;
 import edu.stanford.smi.protege.model.KnowledgeBase;
 import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protegex.owl.database.OWLDatabaseModel;
+import edu.stanford.smi.protegex.owl.model.NamespaceUtil;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.RDFIndividual;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
@@ -46,10 +47,6 @@ public class OWLResourceNameMatcher implements ResourceNameMatcher {
         if (prefix.startsWith(ParserUtils.SINGLE_QUOTE_STRING)) {
             matchToQuote = true;
             prefix = prefix.substring(1);
-        }
-
-        if (owlModel instanceof OWLDatabaseModel && prefix.length() < 3) {
-            return Collections.EMPTY_SET;
         }
 
         Set<RDFResource> frames = new HashSet<RDFResource>();
@@ -121,24 +118,32 @@ public class OWLResourceNameMatcher implements ResourceNameMatcher {
         }
 	}
     
-    private static void addMatchingFrames(OWLModel owlModel,
-                                          Collection<Frame> frames, Cls type, String prefix, 
-                                          Collection<Slot> alreadySearchedSlots) {
-        Slot slot = getBrowserSlotForType(type);
-        if (!alreadySearchedSlots.contains(slot)) {
-            Collection<Frame> newFrames = ((KnowledgeBase) owlModel).getMatchingFrames(slot, null, false, 
-                                                                                       prefix + "*", SCALABLE_FRAME_COUNT);
-            frames.addAll(newFrames);
-            String  lang = owlModel.getDefaultLanguage();
-            if (lang != null && slot instanceof RDFProperty 
-                    && ((RDFProperty) slot).isAnnotationProperty()) {
-                newFrames = ((KnowledgeBase) owlModel).getMatchingFrames(slot, null, false, 
-                                                                         DefaultRDFSLiteral.LANGUAGE_PREFIX + lang + DefaultRDFSLiteral.SEPARATOR + prefix + "*", SCALABLE_FRAME_COUNT);
-                frames.addAll(newFrames);
-            }
-            alreadySearchedSlots.add(slot);
-        }  
-    }
+	private static void addMatchingFrames(OWLModel owlModel,
+	                                      Collection<Frame> frames, Cls type, String prefix, 
+	                                      Collection<Slot> alreadySearchedSlots) {
+	    Slot slot = getBrowserSlotForType(type);
+	    if (!alreadySearchedSlots.contains(slot)) {
+	        Collection<String> prefixesToTry = new ArrayList<String>();
+	        prefixesToTry.add(prefix);
+	        if (((KnowledgeBase) owlModel).getNameSlot().equals(slot))  {
+	            String fullName = NamespaceUtil.getFullName(owlModel, prefix);
+	            if (fullName != null) {
+	                prefixesToTry.add(fullName);
+	            }
+	        }
+	        String  lang = owlModel.getDefaultLanguage();
+	        if (lang != null && slot instanceof RDFProperty 
+	                && ((RDFProperty) slot).isAnnotationProperty()) {
+	            prefixesToTry.add(DefaultRDFSLiteral.LANGUAGE_PREFIX + lang + DefaultRDFSLiteral.SEPARATOR + prefix);
+	        }
+	        for (String possiblePrefix : prefixesToTry)  {
+	            Collection<Frame> newFrames = ((KnowledgeBase) owlModel).getMatchingFrames(slot, null, false, 
+	                                                                                       possiblePrefix + "*", SCALABLE_FRAME_COUNT);
+	            frames.addAll(newFrames);
+	        }
+	        alreadySearchedSlots.add(slot);
+	    }  
+	}
     
     public boolean isIdChar(char ch) {
         return SymbolTextField.isIdChar(ch);
