@@ -9,8 +9,8 @@ import edu.stanford.smi.protege.model.Frame;
 import edu.stanford.smi.protege.model.Model;
 import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protege.model.framestore.FrameStore;
-import edu.stanford.smi.protege.server.framestore.background.ServerCachedState;
 import edu.stanford.smi.protege.server.framestore.background.ServerCacheStateMachine;
+import edu.stanford.smi.protege.server.framestore.background.ServerCachedState;
 import edu.stanford.smi.protege.util.Log;
 
 /*
@@ -23,8 +23,7 @@ public class OwlStateMachine implements ServerCacheStateMachine {
   private FrameStore fs;
   private final Object kbLock;
   
-  private Map<StateAndSlot, OwlState> transitionMap
-    = new HashMap<StateAndSlot, OwlState>();
+  private Map<StateAndSlot, OwlState> transitionMap = new HashMap<StateAndSlot, OwlState>();
   
   
 
@@ -43,6 +42,8 @@ public class OwlStateMachine implements ServerCacheStateMachine {
       
       addTransition(OwlState.RDFList, "rdf:rest", OwlState.RDFList);
       addTransition(OwlState.RDFList, "rdf:first", OwlState.OwlExpr);
+      
+      addTransition(OwlState.Start, Model.Slot.DIRECT_INSTANCES, OwlState.UserIndividual);
 
     }
   }
@@ -79,7 +80,7 @@ public class OwlStateMachine implements ServerCacheStateMachine {
     }
     OwlState endState = transitionMap.get(new StateAndSlot((OwlState) state, slot));
     synchronized (kbLock) {
-      if (endState != null && endState.entryCondition(fs, endingFrame)) {
+      if (endState != null && OwlState.allowTransition(fs, (OwlState) state, beginningFrame,  endState, endingFrame)) {
         return endState;
       }
     }
