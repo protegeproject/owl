@@ -22,20 +22,13 @@ import edu.stanford.smi.protegex.owl.jena.Jena;
 import edu.stanford.smi.protegex.owl.jena.OntModelProvider;
 import edu.stanford.smi.protegex.owl.jena.creator.JenaCreator;
 import edu.stanford.smi.protegex.owl.model.NamespaceManager;
-import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLNames;
 import edu.stanford.smi.protegex.owl.model.OWLOntology;
-import edu.stanford.smi.protegex.owl.model.ProtegeNames;
-import edu.stanford.smi.protegex.owl.model.RDFIndividual;
 import edu.stanford.smi.protegex.owl.model.RDFNames;
-import edu.stanford.smi.protegex.owl.model.RDFProperty;
-import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
 import edu.stanford.smi.protegex.owl.model.RDFSNames;
 import edu.stanford.smi.protegex.owl.model.factory.OWLJavaFactory;
 import edu.stanford.smi.protegex.owl.model.framestore.LocalClassificationFrameStore;
 import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
-import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreModel;
-import edu.stanford.smi.protegex.owl.model.triplestore.impl.TripleStoreModelImpl;
 import edu.stanford.smi.protegex.owl.ui.widget.ModalProgressBarManager;
 
 /**
@@ -55,16 +48,7 @@ public class OWLDatabaseModel
         super(factory);
     }
 
-	/**
-     * Initializes the OWLDatabaseModel in the case that it is a client of a remote server.
-     * <p/>
-     * This is a little delicate because there is no database and no NarrowFrameStores.
-     * Many of the assumptions of the OWLDatabaseModel class are invalid.
-     */
-    public void initializeClient() {
-        initialize();
-    }
-
+    @Override
     public void initialize() {
     	setFrameFactory(new OWLJavaFactory(this));
         
