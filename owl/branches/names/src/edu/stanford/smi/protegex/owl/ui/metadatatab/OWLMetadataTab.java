@@ -1,16 +1,21 @@
 package edu.stanford.smi.protegex.owl.ui.metadatatab;
 
+import java.awt.Component;
+import java.util.Collection;
+
+import javax.swing.JComponent;
+import javax.swing.JSplitPane;
+
 import edu.stanford.smi.protege.model.Project;
 import edu.stanford.smi.protege.server.framestore.RemoteClientFrameStore;
 import edu.stanford.smi.protege.server.metaproject.impl.OperationImpl;
 import edu.stanford.smi.protege.util.CollectionUtilities;
 import edu.stanford.smi.protege.util.SelectionEvent;
 import edu.stanford.smi.protege.util.SelectionListener;
+import edu.stanford.smi.protegex.owl.model.NamespaceUtil;
 import edu.stanford.smi.protegex.owl.model.OWLOntology;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
 import edu.stanford.smi.protegex.owl.model.impl.OWLUtil;
-import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
-import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreUtil;
 import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
 import edu.stanford.smi.protegex.owl.ui.cls.OWLClassesTab;
 import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
@@ -19,10 +24,6 @@ import edu.stanford.smi.protegex.owl.ui.resourcedisplay.ResourceDisplay;
 import edu.stanford.smi.protegex.owl.ui.resourcedisplay.ResourcePanel;
 import edu.stanford.smi.protegex.owl.ui.results.HostResourceDisplay;
 import edu.stanford.smi.protegex.owl.ui.widget.AbstractTabWidget;
-
-import javax.swing.*;
-import java.awt.*;
-import java.util.Collection;
 
 /**
  * The OWLMetadataTab is a tab in the OWL-Plugin.
@@ -92,29 +93,8 @@ public class OWLMetadataTab extends AbstractTabWidget implements HostResourceDis
         setEnabled(true);
     }
 
-    public String getLabel() {
-        String label = "Metadata";
-        /*
-        TripleStore ts = getOWLModel().getTripleStoreModel().getActiveTripleStore();
-        OWLOntology ont = (OWLOntology) TripleStoreUtil.getFirstOntology(getOWLModel(), ts);
-        if (ont != null) {
-            String file = ont.getURI();
-            int index = file.lastIndexOf('/');
-            if (index < 0) {
-                index = file.lastIndexOf('\\');
-            }
-            if (index >= 0) {
-                file = file.substring(index + 1);
-            }
-            if (file.length() > 25) {
-                int endIndex = file.length();
-                file = file.substring(0, 10) + "..." +
-                       file.substring(endIndex - 10, endIndex);
-            }
-            label += " (" + file + ")";
-        }
-        */
-        return label + "(" + getOWLModel().getDefaultOWLOntology().getName() + ")";
+    public String getLabel() {           
+        return "Metadata" + "(" + NamespaceUtil.getLocalName(getOWLModel().getDefaultOWLOntology().getName()) + ")";
     }
 
     public static boolean isSuitable(Project p, Collection errors) {
