@@ -97,6 +97,7 @@ public class XMLSchemaDatatypes {
         initHashtables(ValueType.STRING, stringTypes);
         initHashtables(ValueType.SYMBOL, XSDDatatype.XSDstring);
         initHashtables(null, XSDDatatype.XSDbase64Binary);
+        initHashtables(null, XSDDatatype.XSDhexBinary);
         // initHashtables(ValueType.STRING,  XML_LITERAL);
     }
 
