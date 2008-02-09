@@ -20,7 +20,6 @@ import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protege.util.PropertyList;
 import edu.stanford.smi.protege.util.WizardPage;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
-import edu.stanford.smi.protegex.owl.model.OWLOntology;
 import edu.stanford.smi.protegex.owl.model.ProtegeNames;
 import edu.stanford.smi.protegex.owl.model.XSPNames;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
@@ -41,9 +40,8 @@ import edu.stanford.smi.protegex.owl.ui.profiles.ProfilesManager;
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
  */
-public class OWLFilesCreateProjectPlugin
-        extends AbstractCreateProjectPlugin
-        implements OWLFilesPlugin {
+public class OWLFilesCreateProjectPlugin extends AbstractCreateProjectPlugin implements OWLFilesPlugin {
+	
     private static transient Logger log = Log.getLogger(OWLFilesCreateProjectPlugin.class);
 
     private Class defaultClassView;
@@ -66,61 +64,7 @@ public class OWLFilesCreateProjectPlugin
         JenaKnowledgeBaseFactory.useStandalone = false;
     }
 
-
-    public void addImport(String uri, String prefix) {
-        imports.add(uri);
-        importPrefixes.put(uri, prefix);
-    }
-
-
-    protected void addImports(Project project) {
-        JenaOWLModel owlModel = (JenaOWLModel) project.getKnowledgeBase();
-
-        if (imports.contains(SWRLNames.SWRL_IMPORT)) {
-            Collection tabWidgetDescriptors = project.getTabWidgetDescriptors();
-            WidgetDescriptor w = project.getTabWidgetDescriptor(SWRLTab.class.getName());
-            w.setVisible(true);
-            project.setTabWidgetDescriptorOrder(tabWidgetDescriptors);
-            owlModel.getNamespaceManager().setPrefix(SWRLNames.SWRL_NAMESPACE, SWRLNames.SWRL_PREFIX);
-            owlModel.getNamespaceManager().setPrefix(SWRLNames.SWRLB_NAMESPACE, SWRLNames.SWRLB_PREFIX);
-            owlModel.getNamespaceManager().setPrefix(SWRLNames.SWRLX_NAMESPACE, SWRLNames.SWRLX_PREFIX);
-        }
-
-        ImportHelper importHelper = new ImportHelper(owlModel);
-        for (Iterator it = imports.iterator(); it.hasNext();) {
-            String uri = (String) it.next();
-            String prefix = (String) importPrefixes.get(uri);
-            String namespace = uri;
-            if (!namespace.endsWith("#") && !namespace.endsWith("/")) {
-                namespace += "#";
-            }
-            owlModel.getNamespaceManager().setPrefix(namespace, prefix);
-            if (namespace.equals(ProtegeNames.NS)) {
-                owlModel.getNamespaceManager().setPrefix(XSPNames.NS, XSPNames.DEFAULT_PREFIX);
-            }
-            try {
-                URI u = new URI(uri);
-                importHelper.addImport(u);
-            }
-            catch (URISyntaxException e) {
-                log.log(Level.SEVERE, "Exception caught", e);
-            }
-        }
-        try {
-            importHelper.importOntologies();
-        }
-        catch (Exception ex) {
-            log.log(Level.SEVERE, "Exception caught", ex);
-            ProtegeUI.getModalDialogFactory().showErrorMessageDialog(owlModel,
-                                                                     "Could not load import:\n" + ex);
-        }
-
-        if (!imports.isEmpty()) {
-            owlModel.getTripleStoreModel().updateEditableResourceState();
-        }
-    }
-
-
+    
     private void addViewSettings(PropertyList sources) {
         String typeName = null;
         if (defaultClassView == null) {
@@ -185,6 +129,7 @@ public class OWLFilesCreateProjectPlugin
     	Collection errors = new ArrayList();
     	Project project = Project.createNewProject(factory, errors);
     	OWLModel owlModel = (OWLModel) project.getKnowledgeBase();
+    	
     	if (defaultNamespace == null) {
     		defaultNamespace = ProtegeNames.DEFAULT_DEFAULT_BASE;
     	}
@@ -192,16 +137,18 @@ public class OWLFilesCreateProjectPlugin
     	String defaultOntologyName = defaultNamespace;
     	if (defaultOntologyName.endsWith("#")) {
     		defaultOntologyName = defaultOntologyName.substring(0, defaultOntologyName.length() - 1);
-    	}
+    	}    	
     	owlModel.getSystemFrames().getOwlOntologyClass().createInstance(defaultOntologyName);
+    	
     	TripleStoreModel tripleStoreModel = owlModel.getTripleStoreModel();
     	TripleStore activeTripleStore = tripleStoreModel.getActiveTripleStore();
     	activeTripleStore.setOriginalXMLBase(defaultOntologyName);
     	activeTripleStore.setName(defaultOntologyName);
     	owlModel.resetOntologyCache();
-    	addViewSettings(project.getSources());
-    	addImports(project);
+    	
+    	addViewSettings(project.getSources());    	
     	OWLMenuProjectPlugin.makeHiddenClsesWithSubclassesVisible(owlModel);
+    	
     	return project;
     }
 
@@ -231,12 +178,6 @@ public class OWLFilesCreateProjectPlugin
         addViewSettings(sources);
     }
 
-    /**
-     * @deprecated This method will soon be removed
-     */
-    public void setDublinCoreRedirectToDLVersion(boolean b) {
-        // Do nothing
-    }
 
     public void setFile(String fileURI) {
         this.fileURI = fileURI;
@@ -261,5 +202,8 @@ public class OWLFilesCreateProjectPlugin
 
     public void setProfile(String profileURI) {
         this.profileURI = profileURI;
+    }
+    
+    public void addImport(String uri, String prefix) {
     }
 }
