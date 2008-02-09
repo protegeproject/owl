@@ -22,7 +22,6 @@ import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreModel;
 import edu.stanford.smi.protegex.owl.repository.util.RepositoryFileManager;
 import edu.stanford.smi.protegex.owl.storage.OWLKnowledgeBaseFactory;
 import edu.stanford.smi.protegex.owl.storage.ProtegeSaver;
-import edu.stanford.smi.protegex.owl.ui.ProgressDisplayDialog;
 import edu.stanford.smi.protegex.owl.ui.menu.OWLBackwardsCompatibilityProjectFixups;
 import edu.stanford.smi.protegex.owl.ui.resourceselection.ResourceSelectionAction;
 
@@ -72,9 +71,6 @@ public class JenaKnowledgeBaseFactory implements OWLKnowledgeBaseFactory {
         ResourceSelectionAction.setActivated(true);
 	    JenaOWLModel owlModel = new JenaOWLModel(this);
         owlModel.getRepositoryManager().addDefaultRepositories();
-	    if(inUI) {
-		    owlModel.getTaskManager().setProgressDisplay(new ProgressDisplayDialog());
-	    }
         return owlModel;
     }
 
@@ -97,7 +93,6 @@ public class JenaKnowledgeBaseFactory implements OWLKnowledgeBaseFactory {
             else {
                 URI projectURI = project.getProjectURI();
                 if (projectURI == null) {
-                    //return new File(owlURI).toURI();
                     return new URI(owlURI);
                 }
                 else {
