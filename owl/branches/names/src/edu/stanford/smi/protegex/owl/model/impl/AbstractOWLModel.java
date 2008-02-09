@@ -1886,11 +1886,11 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     
     public TripleStoreModel getTripleStoreModel() {
         if (tripleStoreModel == null) {
-            if (tripleStoreModel == null && !getProject().isMultiUserClient()) {
-                tripleStoreModel = new TripleStoreModelImpl(this);
+            if (getProject().isMultiUserClient()) {
+            	tripleStoreModel=new ClientTripleStoreModel(this);                
             }
             else {
-                tripleStoreModel=new ClientTripleStoreModel(this);
+            	tripleStoreModel = new TripleStoreModelImpl(this);
             }
         }
         return tripleStoreModel;
@@ -2810,8 +2810,11 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     	owlFrameStore = null;
     	jenaModel = null;
     	owlProject = null;
-    	tripleStoreModel.dispose();
-    	tripleStoreModel = null;
+    	
+    	if (tripleStoreModel != null) {
+    		tripleStoreModel.dispose();
+    		tripleStoreModel = null;
+    	}
     	
     	repositoryManager = null;
     	taskManager = null;
