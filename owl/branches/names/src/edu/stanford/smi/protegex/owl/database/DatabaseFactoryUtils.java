@@ -79,10 +79,12 @@ public class DatabaseFactoryUtils {
         for (Object o : ontology.getPropertyValues(prefixesProperty)) {
             if (o instanceof String) {
                 String encodedNamespaceEntry = (String) o;
-                int index = encodedNamespaceEntry.indexOf(OWLDatabaseKnowledgeBaseFactory.NAMESPACE_PREFIX_SEPARATOR);
-                if (index < 0) continue;
-                String prefix = encodedNamespaceEntry.substring(0, index);
-                String namespace = encodedNamespaceEntry.substring(index + 1);
+                String[] splitNamespaceEntry = splitEncodedNamespaceEntry(encodedNamespaceEntry);
+                if (splitNamespaceEntry == null) {
+                    continue;
+                }
+                String prefix = splitNamespaceEntry[0];
+                String namespace = splitNamespaceEntry[1];
                 nm.setPrefix(namespace, prefix);
             }
         }
@@ -98,7 +100,7 @@ public class DatabaseFactoryUtils {
         NamespaceManager nm = tripleStore.getNamespaceManager();
         for (String prefix  : nm.getPrefixes()) {
             String namespace = nm.getNamespaceForPrefix(prefix);
-            String value = prefix + OWLDatabaseKnowledgeBaseFactory.NAMESPACE_PREFIX_SEPARATOR + namespace;
+            String value = joinEncodedNamespaceEntry(prefix, namespace);
             owlOntology.addPropertyValue(prefixesProperty, value);
         }
         
@@ -157,5 +159,17 @@ public class DatabaseFactoryUtils {
         sb.append(OWLNames.Slot.OWL_ONTOLOGY_POINTER_PROPERTY);
         sb.append("';");
         return sb.toString();
+    }
+    
+    public static String[] splitEncodedNamespaceEntry(String encoded) {
+        int index = encoded.indexOf(OWLDatabaseKnowledgeBaseFactory.NAMESPACE_PREFIX_SEPARATOR);
+        if (index < 0) return null;
+        String prefix = encoded.substring(0, index);
+        String namespace = encoded.substring(index + 1);
+        return new String[] {prefix, namespace};
+    }
+    
+    public static String joinEncodedNamespaceEntry(String prefix, String namespace) {
+        return prefix + OWLDatabaseKnowledgeBaseFactory.NAMESPACE_PREFIX_SEPARATOR + namespace;
     }
 }
