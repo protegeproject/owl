@@ -1,8 +1,5 @@
 package edu.stanford.smi.protegex.owl.server.triplestore;
 
-import java.io.Serializable;
-import java.rmi.RemoteException;
-import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -10,23 +7,19 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import edu.stanford.smi.protege.exception.ProtegeException;
 import edu.stanford.smi.protege.model.Instance;
 import edu.stanford.smi.protege.model.KnowledgeBase;
-import edu.stanford.smi.protege.model.Localizable;
 import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protege.model.framestore.NarrowFrameStore;
 import edu.stanford.smi.protege.server.RemoteSession;
 import edu.stanford.smi.protege.server.framestore.RemoteClientFrameStore;
 import edu.stanford.smi.protege.server.narrowframestore.RemoteClientInvocationHandler;
 import edu.stanford.smi.protege.server.narrowframestore.RemoteServerNarrowFrameStore;
-import edu.stanford.smi.protege.server.narrowframestore.ServerNarrowFrameStore;
-import edu.stanford.smi.protege.util.LocalizeUtils;
-import edu.stanford.smi.protege.util.ProtegeJob;
 import edu.stanford.smi.protegex.owl.model.NamespaceManager;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
+import edu.stanford.smi.protegex.owl.model.impl.UnmodifiableNamespaceManager;
 import edu.stanford.smi.protegex.owl.model.triplestore.Triple;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreModel;
@@ -60,6 +53,7 @@ public class ClientTripleStoreModel implements TripleStoreModel {
         for (int i = 0; i < p.getFrameStores().size(); i++) {
             RemoteServerNarrowFrameStore remoteNarrowFrameStore = p.getFrameStores().get(i);
             NamespaceManager namespaceManager = p.getNamespaceManagers().get(i);
+            namespaceManager = new UnmodifiableNamespaceManager(namespaceManager);
             String name = p.getTripleStoreNames().get(i);
             
             NarrowFrameStore narrowFrameStore = new RemoteClientInvocationHandler(owlModel, remoteNarrowFrameStore, session).getNarrowFrameStore();
