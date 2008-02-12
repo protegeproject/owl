@@ -53,7 +53,7 @@ public class TripleStoreModelImpl implements TripleStoreModel {
     }
     
     public TripleStore createActiveImportedTripleStore(NarrowFrameStore frameStore) {
-        String parentName = getActiveTripleStore().getName();
+        String parentName = getActiveTripleStore().getNarrowFrameStore().getName();
         mnfs.addActiveChildFrameStore(frameStore, parentName);
         TripleStore tripleStore = new TripleStoreImpl(owlModel, frameStore, this);
         allTripleStores.add(tripleStore);
