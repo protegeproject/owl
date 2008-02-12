@@ -263,7 +263,7 @@ public class ImportsTreePanel extends JPanel implements HostResourceDisplay, Dis
         OWLOntology ont = (OWLOntology) CollectionUtilities.getFirstItem(sel);
         OWLModel owlModel = ont.getOWLModel();
 
-        if (ont != OWLUtil.getActiveOntology(owlModel)) {
+        if (!ont.equals(OWLUtil.getActiveOntology(owlModel))) {
             TripleStoreModel tsm = owlModel.getTripleStoreModel();
             TripleStore tripleStore = tsm.getHomeTripleStore(ont);
             TripleStoreUtil.switchTripleStore(owlModel, tripleStore);
