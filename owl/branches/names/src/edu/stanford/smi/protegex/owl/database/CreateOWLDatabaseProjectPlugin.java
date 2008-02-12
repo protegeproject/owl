@@ -1,5 +1,11 @@
 package edu.stanford.smi.protegex.owl.database;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.Collection;
+
 import edu.stanford.smi.protege.model.KnowledgeBaseFactory;
 import edu.stanford.smi.protege.model.Project;
 import edu.stanford.smi.protege.plugin.AbstractCreateProjectPlugin;
@@ -8,12 +14,6 @@ import edu.stanford.smi.protege.storage.database.DatabaseKnowledgeBaseFactory;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protege.util.PropertyList;
 import edu.stanford.smi.protege.util.WizardPage;
-
-import java.io.File;
-import java.io.IOException;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.Collection;
 
 /**
  * @author Ray Fergerson  <fergerson@smi.stanford.edu>
@@ -33,6 +33,8 @@ public class CreateOWLDatabaseProjectPlugin extends
     protected URI ontologyFileURI;
 
     private String url;
+    
+    private String ontologyName;
 
 
     public CreateOWLDatabaseProjectPlugin() {
@@ -50,6 +52,7 @@ public class CreateOWLDatabaseProjectPlugin extends
     }
 
 
+    @Override
     public Project createNewProject(KnowledgeBaseFactory factory) {
         Collection errors = new ArrayList();
         Project project = super.createNewProject(factory);
@@ -74,12 +77,18 @@ public class CreateOWLDatabaseProjectPlugin extends
 
     public WizardPage createCreateProjectWizardPage(CreateProjectWizard wizard,
                                                     boolean useExistingSources) {
-        return new OWLDatabaseWizardPage(wizard, this, useExistingSources);
+        return useExistingSources ?
+                new OWLDatabaseWizardPageExistingSources(wizard, this) :
+                new OWLDatabaseWizardPage(wizard, this);
     }
 
 
+    @Override
     protected void initializeSources(PropertyList sources) {
         DatabaseKnowledgeBaseFactory.setSources(sources, driver, url, table, username, password);
+        if (ontologyName != null) {
+            sources.setString(OWLDatabaseKnowledgeBaseFactory.CREATED_ONTOLOGY_NAME, ontologyName);
+        }
     }
 
 
@@ -110,5 +119,9 @@ public class CreateOWLDatabaseProjectPlugin extends
 
     public void setPassword(String password) {
         this.password = password;
+    }
+    
+    public void setOntologyName(String name) {
+        this.ontologyName = name;
     }
 }
