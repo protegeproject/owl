@@ -130,9 +130,6 @@ public class OWLFilesCreateProjectPlugin extends AbstractCreateProjectPlugin imp
     	Project project = Project.createNewProject(factory, errors);
     	OWLModel owlModel = (OWLModel) project.getKnowledgeBase();
     	
-    	TripleStoreModel tripleStoreModel = owlModel.getTripleStoreModel();
-    	tripleStoreModel.setTopTripleStore(tripleStoreModel.getActiveTripleStore());
-    	
     	if (defaultNamespace == null) {
     		defaultNamespace = ProtegeNames.DEFAULT_DEFAULT_BASE;
     	}
@@ -143,6 +140,7 @@ public class OWLFilesCreateProjectPlugin extends AbstractCreateProjectPlugin imp
     	}    	
     	owlModel.getSystemFrames().getOwlOntologyClass().createInstance(defaultOntologyName);
     	
+    	TripleStoreModel  tripleStoreModel = owlModel.getTripleStoreModel();
     	TripleStore activeTripleStore = tripleStoreModel.getActiveTripleStore();
     	activeTripleStore.setOriginalXMLBase(defaultOntologyName);
     	activeTripleStore.setName(defaultOntologyName);
