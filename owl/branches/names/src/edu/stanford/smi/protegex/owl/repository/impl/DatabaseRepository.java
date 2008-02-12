@@ -22,8 +22,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import edu.stanford.smi.protege.storage.database.DatabaseFrameDb;
+import edu.stanford.smi.protege.storage.database.DatabaseProperty;
 import edu.stanford.smi.protege.storage.database.ValueCachingNarrowFrameStore;
-import edu.stanford.smi.protege.storage.database.DatabaseKnowledgeBaseFactory.DatabaseProperty;
 import edu.stanford.smi.protege.util.AmalgamatedIOException;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.database.DatabaseFactoryUtils;
@@ -187,6 +187,7 @@ public class DatabaseRepository implements Repository {
 	        Collection errors = new ArrayList();
 	        DatabaseFactoryUtils.readOWLOntologyFromDatabase(owlModel, importedTripleStore);
 	        DatabaseFactoryUtils.loadPrefixesFromDB(owlModel, importedTripleStore, errors);
+	        DatabaseFactoryUtils.addPrefixesToModelListener(owlModel, importedTripleStore);
 	        DatabaseFactoryUtils.loadImports(owlModel, errors);
 	        if (!errors.isEmpty()) {
 	            throw new AmalgamatedIOException(errors);
