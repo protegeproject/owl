@@ -1886,12 +1886,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     
     public TripleStoreModel getTripleStoreModel() {
         if (tripleStoreModel == null) {
-            if (getProject().isMultiUserClient()) {
-            	tripleStoreModel=new ClientTripleStoreModel(this);                
-            }
-            else {
-            	tripleStoreModel = new TripleStoreModelImpl(this);
-            }
+            tripleStoreModel = new TripleStoreModelImpl(this);
         }
         return tripleStoreModel;
     }
@@ -2246,10 +2241,11 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     }
     
     @Override
-    protected void adjustClientFrameStores() {
-        super.adjustClientFrameStores();
+    protected void adjustForClient() {
+        super.adjustForClient();
         FrameStoreManager fsm = getFrameStoreManager();
         fsm.setEnabled(getOWLFrameStore(), false);
+        tripleStoreModel=new ClientTripleStoreModel(this);
     }
 
 
