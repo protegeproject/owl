@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -15,6 +16,7 @@ import edu.stanford.smi.protege.util.AmalgamatedIOException;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protege.util.URIUtilities;
 import edu.stanford.smi.protegex.owl.model.NamespaceManager;
+import edu.stanford.smi.protegex.owl.model.NamespaceManagerAdapter;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLNames;
 import edu.stanford.smi.protegex.owl.model.OWLOntology;
@@ -35,13 +37,19 @@ import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreModel;
 public class DatabaseFactoryUtils {
     private static transient final Logger log = Log.getLogger(DatabaseFactoryUtils.class);
     
-    public static void readOWLOntologyFromDatabase(OWLModel owlModel, TripleStore tripleStore) {
+    public static boolean readOWLOntologyFromDatabase(OWLModel owlModel, TripleStore tripleStore) {
         NarrowFrameStore nfs = tripleStore.getNarrowFrameStore();
         OWLSystemFrames systemFrames = owlModel.getSystemFrames();
         RDFProperty owlOntologyPointerProperty = systemFrames.getOwlOntologyPointerProperty();
         RDFIndividual owlOntologyPointerInstance = getOwlOntologyPointerInstance(owlModel, nfs);
-        OWLOntology  ontology = (OWLOntology) owlOntologyPointerInstance.getPropertyValue(owlOntologyPointerProperty);
-        tripleStore.setName(ontology.getName());
+        if (owlOntologyPointerInstance != null) {
+            OWLOntology  ontology = (OWLOntology) owlOntologyPointerInstance.getPropertyValue(owlOntologyPointerProperty);
+            tripleStore.setName(ontology.getName());
+            return true;
+        }
+        else {
+            return false;
+        }
     }
     
     public static void writeOWLOntologyToDatabase(OWLModel owlModel, TripleStore tripleStore) {
@@ -98,12 +106,34 @@ public class DatabaseFactoryUtils {
         OWLOntology owlOntology = tripleStore.getOWLOntology();  
         RDFProperty prefixesProperty = owlModel.getSystemFrames().getOwlOntologyPrefixesProperty();
         NamespaceManager nm = tripleStore.getNamespaceManager();
+        Iterator it = tripleStore.listObjects(owlOntology, prefixesProperty); 
+        while (it.hasNext()) {
+            Object o = it.next();
+            tripleStore.remove(owlOntology, prefixesProperty, o);
+        }
         for (String prefix  : nm.getPrefixes()) {
             String namespace = nm.getNamespaceForPrefix(prefix);
             String value = joinEncodedNamespaceEntry(prefix, namespace);
-            owlOntology.addPropertyValue(prefixesProperty, value);
+            tripleStore.add(owlOntology, prefixesProperty, value);
         }
         
+    }
+    
+    public static void addPrefixesToModelListener(final OWLModel owlModel, final TripleStore tripleStore) {
+        NamespaceManager nm  = tripleStore.getNamespaceManager();
+        nm.addNamespaceManagerListener(new NamespaceManagerAdapter() {
+            @Override
+            public void namespaceChanged(String prefix, String oldNamespace, String newNamespace) {
+                OWLOntology owlOntology = tripleStore.getOWLOntology();
+                RDFProperty prefixesProperty = owlModel.getSystemFrames().getOwlOntologyPrefixesProperty();
+                if (oldNamespace != null) {
+                    tripleStore.remove(owlOntology, prefixesProperty, joinEncodedNamespaceEntry(prefix, oldNamespace));
+                }
+                if (newNamespace != null) {
+                    tripleStore.add(owlOntology, prefixesProperty, joinEncodedNamespaceEntry(prefix, newNamespace));
+                }
+            }
+        });
     }
 
     @SuppressWarnings("unchecked")
