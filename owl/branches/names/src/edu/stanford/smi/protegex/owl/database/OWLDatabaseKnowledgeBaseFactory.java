@@ -36,6 +36,7 @@ public class OWLDatabaseKnowledgeBaseFactory extends DatabaseKnowledgeBaseFactor
     private static Logger log = Log.getLogger(OWLDatabaseKnowledgeBaseFactory.class);
     
     public final static String NAMESPACE_PREFIX_SEPARATOR = ":";
+    public final static String CREATED_ONTOLOGY_NAME = "created_ontology_name";
 
     
     public OWLDatabaseKnowledgeBaseFactory() {
@@ -52,7 +53,6 @@ public class OWLDatabaseKnowledgeBaseFactory extends DatabaseKnowledgeBaseFactor
        	   
         return owlModel;    	 	
     }
-    
     
 
 
@@ -91,29 +91,43 @@ public class OWLDatabaseKnowledgeBaseFactory extends DatabaseKnowledgeBaseFactor
         return "OWL / RDF Database";
     }
 
-
     @Override
-    public void loadKnowledgeBase(KnowledgeBase kb,
-                                  String driver,
-                                  String table,
-                                  String url,
-                                  String user,
-                                  String password,
+    public void loadKnowledgeBase(KnowledgeBase kb, 
+                                  PropertyList sources, 
                                   Collection errors) {
-
-        OWLDatabaseModel owlModel = (OWLDatabaseModel) kb;
-
-        super.loadKnowledgeBase(kb, driver, table, url, user, password, errors);
+        OWLModel owlModel = (OWLModel) kb;
+        boolean existsOntologyInstance = false;
+        
+        super.loadKnowledgeBase(kb, sources, errors);
         
         TripleStoreModel tripleStoreModel = owlModel.getTripleStoreModel();
         TripleStore activeTripleStore = tripleStoreModel.getActiveTripleStore();
         tripleStoreModel.setTopTripleStore(activeTripleStore);
-        DatabaseFactoryUtils.readOWLOntologyFromDatabase(owlModel, activeTripleStore);
-        DatabaseFactoryUtils.loadPrefixesFromDB(owlModel, activeTripleStore, errors);
-        owlModel.resetOntologyCache();
-        RepositoryFileManager.loadProjectRepositories(owlModel);
-        DatabaseFactoryUtils.loadImports(owlModel, errors);
+        if (DatabaseFactoryUtils.readOWLOntologyFromDatabase(owlModel, activeTripleStore)) {
+            DatabaseFactoryUtils.loadPrefixesFromDB(owlModel, activeTripleStore, errors);
+            existsOntologyInstance = true;
+        }
+        else {
+            String ontologyName = sources.getString(CREATED_ONTOLOGY_NAME);
+            if (ontologyName != null) {
+                owlModel.getOWLOntologyClass().createInstance(ontologyName);
+                activeTripleStore.setName(ontologyName);
+                owlModel.getTripleStoreModel().getActiveTripleStore().setDefaultNamespace(ontologyName + "#");
+                DatabaseFactoryUtils.writeOWLOntologyToDatabase(owlModel, activeTripleStore);
+                DatabaseFactoryUtils.writePrefixesToModel(owlModel, activeTripleStore);
+                existsOntologyInstance = true;
+            }
+        }
+        if (existsOntologyInstance) {
+            DatabaseFactoryUtils.addPrefixesToModelListener(owlModel, activeTripleStore);
+            owlModel.resetOntologyCache();
+            RepositoryFileManager.loadProjectRepositories(owlModel);
+            DatabaseFactoryUtils.loadImports(owlModel, errors);
+        }
     }
+
+
+
 
     
     @Override
