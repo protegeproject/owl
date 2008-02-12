@@ -2,14 +2,21 @@ package edu.stanford.smi.protegex.owl.ui.metadatatab;
 
 import java.awt.Component;
 import java.util.Collection;
+import java.util.logging.Level;
 
 import javax.swing.JComponent;
 import javax.swing.JSplitPane;
+import javax.swing.JTabbedPane;
 
+import edu.stanford.smi.protege.event.FrameAdapter;
+import edu.stanford.smi.protege.event.FrameEvent;
+import edu.stanford.smi.protege.event.FrameListener;
 import edu.stanford.smi.protege.model.Project;
 import edu.stanford.smi.protege.server.framestore.RemoteClientFrameStore;
 import edu.stanford.smi.protege.server.metaproject.impl.OperationImpl;
+import edu.stanford.smi.protege.ui.ProjectManager;
 import edu.stanford.smi.protege.util.CollectionUtilities;
+import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protege.util.SelectionEvent;
 import edu.stanford.smi.protege.util.SelectionListener;
 import edu.stanford.smi.protegex.owl.model.NamespaceUtil;
@@ -40,6 +47,10 @@ public class OWLMetadataTab extends AbstractTabWidget implements HostResourceDis
     private ImportsTreePanel importsTreePanel;
 
     private SelectionListener treeSelectionListener;
+    
+    private FrameListener frameListener;
+    
+        
 
     private JComponent createMainPanel() {
 
@@ -74,26 +85,69 @@ public class OWLMetadataTab extends AbstractTabWidget implements HostResourceDis
 
     public void dispose() {
         super.dispose();
-//        if (!isAncestorOf(resourceDisplay)) {
-//            resourceDisplay.dispose();
-//        }
 
-        importsTreePanel.getImportsTree().removeSelectionListener(treeSelectionListener);
-        
+        importsTreePanel.getImportsTree().removeSelectionListener(treeSelectionListener);        
         treeSelectionListener = null;
+        
+        try {
+			removeFrameListner();
+		} catch (Exception e) {
+			Log.getLogger().log(Level.WARNING, "Error at removing frame listener from " + getOWLModel().getDefaultOWLOntology(), e);
+		}
+		
+		importsTreePanel.dispose();
     }
 
 
     public void initialize() {
-        //setLabel("Metadata (" + );
+        
         setIcon(OWLIcons.getImageIcon("Metadata"));
+        
         JComponent comp = createMainPanel();
         add(comp);
         setClsTree(importsTreePanel.getImportsTree());
         setEnabled(true);
+        
+        /* It's important that the frame listener is added
+         * after the imports tree is initialized, because 
+         * the order of attaching listeners is important.
+         * We want first the imports tree to get the event that
+         * the top ontology name has changed and then the tab should
+         * get the event.
+         */         
+        addFrameListener();
     }
 
-    public String getLabel() {           
+    @SuppressWarnings("deprecation")
+	protected void addFrameListener() {
+    	frameListener = new FrameAdapter() {
+    		@Override
+    		public void frameReplaced(FrameEvent event) {
+    			setLabel(getLabel());
+    			
+    			try {
+    				JTabbedPane tabbedPane = ProjectManager.getProjectManager().getCurrentProjectView().getTabbedPane();
+    				int index = tabbedPane.indexOfComponent(OWLMetadataTab.this);
+    				tabbedPane.setTitleAt(index, getLabel());
+				} catch (Exception e) {
+					//it's fine to do nothing
+					Log.emptyCatchBlock(e);
+				}			
+    			
+    			repaint();
+    		}
+    	};
+    	
+    	getOWLModel().getDefaultOWLOntology().addFrameListener(frameListener);		
+	}
+
+    protected void removeFrameListner() {
+    	if (frameListener != null) {
+    		getOWLModel().getDefaultOWLOntology().removeFrameListener(frameListener);
+    	}
+	}
+
+	public String getLabel() {           
         return "Metadata" + "(" + NamespaceUtil.getLocalName(getOWLModel().getDefaultOWLOntology().getName()) + ")";
     }
 
