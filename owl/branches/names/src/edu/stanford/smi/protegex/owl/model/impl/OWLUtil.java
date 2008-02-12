@@ -1070,4 +1070,45 @@ public class OWLUtil {
     }
     
     
+    /**
+     * Renames an ontology. Returns a new ontology object with the new name.
+     * @param owlModel - the OWL model
+     * @param oldOntology - the old OWL Ontology
+     * @param newName - the new name of the ontology
+     * @return - a new OWL ontology with the name <code>newName</code> 
+     */
+    public static OWLOntology renameOntology(OWLModel owlModel, OWLOntology oldOntology, String newName) {
+    	String oldOntoloyName = oldOntology.getName();
+    	OWLOntology newOntology = (OWLOntology) owlModel.rename(oldOntology, newName);
+
+    	synchronizeTripleStoreAfterOntologyRename(owlModel, oldOntoloyName, newOntology);
+
+    	return newOntology;
+    }
+    
+    /**
+     * Ensures that the triple store and the renamed ontology have the same name.
+     * @param owlModel - the OWL model
+     * @param oldName - old name of the ontology
+     * @param newOntology - new (renamed) OWL ontology
+     */
+    public static void synchronizeTripleStoreAfterOntologyRename(OWLModel owlModel, String oldName, OWLOntology newOntology) {
+    	TripleStoreModel tsm = owlModel.getTripleStoreModel();
+    	
+    	//set triple store name to be the same as the new ontology name
+    	TripleStore ts = tsm.getTripleStore(oldName);
+    	if (ts == null) { //what to do in this case?
+    		Log.getLogger().severe("Error at ontology rename. Could not find triplestore " + oldName);
+    		return;
+    	}
+    	
+    	ts.setName(newOntology.getName());
+    	    	
+    	if (ts.equals(tsm.getTopTripleStore())) {
+    		//reset the model ontology cache - this will ensure that ontology and triplestore have the same name
+    		owlModel.resetOntologyCache();
+    	}
+    }
+    
+    
 }
