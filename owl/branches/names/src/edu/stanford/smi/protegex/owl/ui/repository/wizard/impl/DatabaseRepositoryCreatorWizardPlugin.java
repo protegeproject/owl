@@ -10,8 +10,7 @@ import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-import edu.stanford.smi.protege.storage.database.DatabaseKnowledgeBaseSourcesEditor;
-import edu.stanford.smi.protege.storage.database.DatabaseKnowledgeBaseFactory.DatabaseProperty;
+import edu.stanford.smi.protege.storage.database.DatabaseProperty;
 import edu.stanford.smi.protege.util.ComponentFactory;
 import edu.stanford.smi.protege.util.LabeledComponent;
 import edu.stanford.smi.protege.util.Log;
@@ -64,7 +63,7 @@ public class DatabaseRepositoryCreatorWizardPlugin implements
                 else {
                     text = ComponentFactory.createTextField();
                 }
-                text.setText(DatabaseKnowledgeBaseSourcesEditor.getProperty(field));
+                text.setText(DatabaseProperty.getProperty(field));
                 textMap.put(field, text);
                 LabeledComponent component = new LabeledComponent(field.getTitle(), text);
                 text.getDocument().addDocumentListener(listener);
