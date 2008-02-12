@@ -159,9 +159,6 @@ public class JenaKnowledgeBaseFactory implements OWLKnowledgeBaseFactory {
             final URI absoluteURI = getFileURI(sources, owlModel.getProject());
 
             JenaKnowledgeBaseFactory.setOWLFileName(sources, absoluteURI.toString());
-                    
-            TripleStoreModel tripleStoreModel = owlModel.getTripleStoreModel();
-            tripleStoreModel.setTopTripleStore(tripleStoreModel.getActiveTripleStore());
             
 		    RepositoryFileManager.loadProjectRepositories(owlModel);
 			owlModel.load(absoluteURI, language, errors);
