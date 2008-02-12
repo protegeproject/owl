@@ -133,9 +133,12 @@ public class DefaultDIGRenderer implements DIGRenderer {
         Collection allDifferent = kb.getOWLAllDifferents();
         if (allDifferent.isEmpty() == false) {
 
-            Element allDifferentElement = doc.createElement(DIGVocabulary.Tell.ALL_DIFFERENT);
             Iterator allDifferentIt = allDifferent.iterator();
+            
             while (allDifferentIt.hasNext()) {
+            	
+                Element allDifferentElement = doc.createElement(DIGVocabulary.Tell.ALL_DIFFERENT);
+            	
                 OWLAllDifferent curOWLAllDifferent = (OWLAllDifferent) allDifferentIt.next();
                 if (isSupportedTellElement(DIGVocabulary.Tell.ALL_DIFFERENT) == true) {
                     Iterator distinctMembersIt = curOWLAllDifferent.getDistinctMembers().iterator();
@@ -146,11 +149,11 @@ public class DefaultDIGRenderer implements DIGRenderer {
                 } else {
                     renderFakedDifferentFrom(curOWLAllDifferent.getDistinctMembers(), doc, parentNode);
                 }
+                
+                if (allDifferentElement.getChildNodes().getLength() > 0) {
+                    parentNode.appendChild(allDifferentElement);
+                }
             }
-            if (allDifferentElement.getChildNodes().getLength() > 0) {
-                parentNode.appendChild(allDifferentElement);
-            }
-
 
         }
     }
