@@ -1,13 +1,14 @@
 package edu.stanford.smi.protegex.owl.database;
 
+import java.awt.BorderLayout;
+
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+
 import edu.stanford.smi.protege.util.URIField;
 import edu.stanford.smi.protege.util.Wizard;
 import edu.stanford.smi.protege.util.WizardPage;
 import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
-
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-import java.awt.*;
 
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
@@ -36,11 +37,13 @@ public class InitOWLDatabaseFromFileWizardPage extends WizardPage {
     }
 
 
+    @Override
     public WizardPage getNextPage() {
-        return new OWLDatabaseWizardPage(getWizard(), plugin, true);
+        return new OWLDatabaseWizardPageExistingSources(getWizard(), plugin);
     }
 
 
+    @Override
     public void onFinish() {
         plugin.setOntologyFileURI(uriField.getAbsoluteURI());
     }
