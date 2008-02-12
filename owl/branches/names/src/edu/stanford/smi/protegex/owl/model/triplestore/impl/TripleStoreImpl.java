@@ -84,7 +84,7 @@ public class TripleStoreImpl implements TripleStore, ProtegeTripleAdder {
     private String name;
     
     public TripleStoreImpl(OWLModel owlModel, NarrowFrameStore frameStore, TripleStoreModel tripleStoreModel) {
-        this(owlModel, frameStore, tripleStoreModel, new OWLNamespaceManager(owlModel), frameStore.getName());
+        this(owlModel, frameStore, tripleStoreModel, new OWLNamespaceManager(owlModel), null);
     }
     
     public TripleStoreImpl(OWLModel owlModel, NarrowFrameStore frameStore, TripleStoreModel tripleStoreModel, 
