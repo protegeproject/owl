@@ -46,6 +46,7 @@ import edu.stanford.smi.protegex.owl.model.RDFNames;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
 import edu.stanford.smi.protegex.owl.model.factory.OWLJavaFactory;
 import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
+import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreModel;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreUtil;
 import edu.stanford.smi.protegex.owl.resource.OWLText;
 import edu.stanford.smi.protegex.owl.ui.widget.ModalProgressBarManager;
@@ -80,6 +81,8 @@ public class JenaOWLModel extends AbstractOWLModel implements OntModelProvider {
 
     protected JenaOWLModel(KnowledgeBaseFactory factory) {
         super(factory);
+        TripleStoreModel tripleStoreModel = getTripleStoreModel();
+        tripleStoreModel.setTopTripleStore(tripleStoreModel.getActiveTripleStore());
     }
 
 
