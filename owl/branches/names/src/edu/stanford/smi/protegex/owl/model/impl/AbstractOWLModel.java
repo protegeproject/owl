@@ -173,9 +173,6 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
             "ru"
     };
 
-    //TT -testing
-    //private boolean loadDefaults = true;
-
     private boolean loadDefaults = false;
 
     private Instance rdfNilIndividual;
@@ -211,7 +208,14 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
     private RepositoryManager repositoryManager;
 
-    private OWLOntology defaultOWLOntology;
+    /**
+     * The top OWL ontology is the top level ontology from the model.
+     * E.g. in file mode, it is the ontology that is loaded from an URI
+     * or an input stream and that may import other ontologies.
+     * The top OWL ontology is stored in the top triple store.
+     * The top OWL ontology is not dependent on the active ontology.
+     */
+    private OWLOntology topOWLOntology;
     
     private Slot protegeSubclassesDisjointProperty;
     
@@ -1414,15 +1418,15 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     }
    
     public void resetOntologyCache() {
-        defaultOWLOntology = null;
+        topOWLOntology = null;
     }
 
 
     public OWLOntology getDefaultOWLOntology() {
-        if (defaultOWLOntology == null) {
-            defaultOWLOntology= getTripleStoreModel().getTopTripleStore().getOWLOntology();
+        if (topOWLOntology == null) {
+            topOWLOntology= getTripleStoreModel().getTopTripleStore().getOWLOntology();
         }
-        return defaultOWLOntology;
+        return topOWLOntology;
     }
 
 
