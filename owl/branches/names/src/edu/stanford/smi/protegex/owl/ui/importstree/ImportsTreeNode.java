@@ -11,6 +11,7 @@ import edu.stanford.smi.protege.model.Frame;
 import edu.stanford.smi.protege.util.LazyTreeNode;
 import edu.stanford.smi.protegex.owl.model.OWLOntology;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
+import edu.stanford.smi.protegex.owl.model.impl.OWLUtil;
 
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
@@ -21,7 +22,7 @@ public class ImportsTreeNode extends LazyTreeNode {
 
 	@SuppressWarnings("deprecation")
 	public ImportsTreeNode(LazyTreeNode parent, RDFResource resource) {
-		super(parent, resource);
+		super(parent, resource);	
 		resource.addFrameListener(getFrameListener());
 	}
 
@@ -73,7 +74,8 @@ public class ImportsTreeNode extends LazyTreeNode {
 					Frame oldFrame = event.getFrame();
 					Frame newFrame = event.getNewFrame();
 					RDFResource resource = getResource();    	    		
-					if (resource != null && resource.equals(oldFrame)) {
+					if (resource != null && resource.equals(oldFrame)) {					
+						OWLUtil.synchronizeTripleStoreAfterOntologyRename(resource.getOWLModel(), oldFrame.getName(), (OWLOntology) newFrame);
 						reload(newFrame);
 					}
 				}
