@@ -18,6 +18,7 @@ import edu.stanford.smi.protege.util.MessageError;
 import edu.stanford.smi.protege.util.PropertyList;
 import edu.stanford.smi.protege.util.URIUtilities;
 import edu.stanford.smi.protegex.owl.database.OWLDatabaseModel;
+import edu.stanford.smi.protegex.owl.model.impl.OWLUtil;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreModel;
 import edu.stanford.smi.protegex.owl.repository.util.RepositoryFileManager;
 import edu.stanford.smi.protegex.owl.storage.OWLKnowledgeBaseFactory;
@@ -65,8 +66,8 @@ public class JenaKnowledgeBaseFactory implements OWLKnowledgeBaseFactory {
 
     public KnowledgeBase createKnowledgeBase(Collection errors) {
     	//have to test this in a different way..
-    	boolean inUI = ProjectManager.getProjectManager().getCurrentProjectView() != null;
-        useStandalone = inUI == false;
+    	boolean inUI = ProjectManager.getProjectManager().getMainPanel() != null;
+        useStandalone = !inUI;
 
         ResourceSelectionAction.setActivated(true);
 	    JenaOWLModel owlModel = new JenaOWLModel(this);
