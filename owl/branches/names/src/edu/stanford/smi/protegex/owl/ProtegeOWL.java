@@ -1,23 +1,21 @@
 package edu.stanford.smi.protegex.owl;
 
-import com.hp.hpl.jena.util.FileUtils;
-import edu.stanford.smi.protege.Application;
-import edu.stanford.smi.protege.model.KnowledgeBase;
-import edu.stanford.smi.protege.model.Project;
-import edu.stanford.smi.protege.util.ApplicationProperties;
-import edu.stanford.smi.protege.util.PropertyList;
-import edu.stanford.smi.protege.util.URIUtilities;
-import edu.stanford.smi.protegex.owl.jena.JenaKnowledgeBaseFactory;
-import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
-import edu.stanford.smi.protegex.owl.model.OWLModel;
-import edu.stanford.smi.protegex.owl.repository.util.RepositoryFileManager;
-
 import java.io.File;
 import java.io.InputStream;
 import java.io.Reader;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
+
+import com.hp.hpl.jena.util.FileUtils;
+
+import edu.stanford.smi.protege.Application;
+import edu.stanford.smi.protege.model.Project;
+import edu.stanford.smi.protege.util.ApplicationProperties;
+import edu.stanford.smi.protegex.owl.jena.JenaKnowledgeBaseFactory;
+import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
+import edu.stanford.smi.protegex.owl.jena.creator.NewOwlProjectCreator;
+import edu.stanford.smi.protegex.owl.jena.creator.OwlProjectFromUriCreator;
+import edu.stanford.smi.protegex.owl.ui.metadatatab.OntologyURIPanel;
 
 /**
  * A singleton that provides several generic services such as creating
@@ -39,15 +37,9 @@ public class ProtegeOWL {
      * @return a new OWLModel
      */
     public static JenaOWLModel createJenaOWLModel() {
-		final JenaKnowledgeBaseFactory factory = new JenaKnowledgeBaseFactory();
-		Collection errors = new ArrayList();
-		Project project = Project.createNewProject(factory, errors);
-		// TODO TT: I commented out the following lines, they are duplicate with
-		// the createNewProject call. They should be removed in the release, if
-		// all tests pass.
-		// project.setKnowledgeBaseFactory(factory);
-		// project.createDomainKnowledgeBase(factory, errors, false);
-		return (JenaOWLModel) project.getKnowledgeBase();
+        NewOwlProjectCreator creator = new NewOwlProjectCreator();
+        creator.setOntologyName(OntologyURIPanel.generateOntologyURIBase());
+        return (JenaOWLModel) creator.create().getKnowledgeBase();
 	}
    
     
@@ -66,21 +58,9 @@ public class ProtegeOWL {
 
 
     public static JenaOWLModel createJenaOWLModelFromURI(String uri) throws Exception {
-        JenaOWLModel owlModel = ProtegeOWL.createJenaOWLModel();
-        
-        Project project = owlModel.getProject();
-        if (project != null) {
-        	JenaKnowledgeBaseFactory.setOWLFileName(project.getSources(),uri);
-        }
-    
-        loadRepositories(owlModel);
-        owlModel.load(new URI(uri), FileUtils.langXMLAbbrev);
-        return owlModel;
-    }
-
-    private static void loadRepositories(OWLModel owlModel) {
-        RepositoryFileManager man = new RepositoryFileManager(owlModel);
-        man.loadProjectRepositories();
+        OwlProjectFromUriCreator creator = new OwlProjectFromUriCreator();
+        creator.setOntologyUri(uri);
+        return (JenaOWLModel) creator.create().getKnowledgeBase();
     }
     
 
