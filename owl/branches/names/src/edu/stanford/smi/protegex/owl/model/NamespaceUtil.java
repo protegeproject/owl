@@ -2,19 +2,25 @@ package edu.stanford.smi.protegex.owl.model;
 
 import com.hp.hpl.jena.rdf.model.impl.Util;
 
+import edu.stanford.smi.protege.util.URIUtilities;
 import edu.stanford.smi.protegex.owl.model.impl.OWLNamespaceManager;
-import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 
 public class NamespaceUtil {
     
     public static final String PREFIX_TO_NAME_SEPARATOR = ":";
 
-	public static String getNameSpace(String fullURI) { 	
+	public static String getNameSpace(String fullURI) {
+		if (!URIUtilities.isAbsoluteURI(fullURI)) {
+			return null;
+		}
 		return fullURI.substring(0, Util.splitNamespace(fullURI) );
 	}
 
 	
-	public static String getLocalName(String fullURI)	{  		
+	public static String getLocalName(String fullURI)	{
+		if (!URIUtilities.isAbsoluteURI(fullURI)) {
+			return fullURI;
+		}
 		return fullURI.substring(Util.splitNamespace(fullURI) );
 	}
 	
