@@ -10,7 +10,7 @@ public interface OWLCreateProjectPlugin {
     void setDefaultClassView(Class typeClass);
 
 
-    void setDefaultNamespace(String namespace);
+    void setOntologyName(String namespace);
 
 
     void setProfile(String profileURI);
