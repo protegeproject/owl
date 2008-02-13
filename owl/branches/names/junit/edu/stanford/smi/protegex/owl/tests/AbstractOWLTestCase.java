@@ -29,6 +29,7 @@ import com.hp.hpl.jena.rdf.model.StmtIterator;
 import edu.stanford.smi.protege.model.Project;
 import edu.stanford.smi.protege.model.ValueType;
 import edu.stanford.smi.protege.util.Log;
+import edu.stanford.smi.protegex.owl.ProtegeOWL;
 import edu.stanford.smi.protegex.owl.jena.Jena;
 import edu.stanford.smi.protegex.owl.jena.JenaKnowledgeBaseFactory;
 import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
@@ -161,11 +162,10 @@ public abstract class AbstractOWLTestCase extends TestCase {
     protected void setUp() throws Exception {
         super.setUp();
         OntDocumentManager.getInstance().reset(true);
-        Collection errors = new ArrayList();
-        final JenaKnowledgeBaseFactory factory = new JenaKnowledgeBaseFactory();
-        project = Project.createNewProject(factory, errors);
-        project.setKnowledgeBaseFactory(factory);
-        owlModel = (JenaOWLModel) project.getKnowledgeBase();
+                
+        owlModel = ProtegeOWL.createJenaOWLModel();
+        project = owlModel.getProject();
+ 
         owlThing = owlModel.getOWLThingClass();
     }
 
