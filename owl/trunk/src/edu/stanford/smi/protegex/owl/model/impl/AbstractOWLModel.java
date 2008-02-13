@@ -3739,6 +3739,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
  
 
     public String getURIForResourceName(final String name) {
+    	//TODO TT: The namespace manager does not work in client-server correctly.
         if (name.indexOf('#') < 0) { // No namespace found
             final NamespaceManager nsm = getNamespaceManager();
             int column = name.indexOf(':');
@@ -3749,8 +3750,16 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
                 }
                 else {
                     String prefix = name.substring(0, column);
-                    ns = nsm.getNamespaceForPrefix(prefix);
+                    //TT - terrible hack to make it work in client-server. 
+                    // This will be fixed with the new naming mechanism
+                    if (this.getProject().isMultiUserClient()) {
+                    	TripleStore ts = getTripleStoreModel().getTopTripleStore();
+                    	ns = ts.getNamespaceForPrefix(prefix);
+                    } else {
+                    	ns = nsm.getNamespaceForPrefix(prefix);
+                    }
                 }
+                
                 if (ns.endsWith("#") || ns.endsWith(":")) {
                     return ns.substring(0, ns.length() - 1);
                 }
