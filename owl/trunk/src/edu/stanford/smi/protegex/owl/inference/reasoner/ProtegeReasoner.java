@@ -263,7 +263,7 @@ public interface ProtegeReasoner extends Disposable {
 
 
     /**
-     * Get the inferred types for the specified individual.
+     * Get the inferred types (direct and indirect) for the specified individual.
      *
      * @param individual   The individual whose inferred types are to be retrieved.
      * @return A <code>Collection</code> of <code>OWLClasses</code> that represent the
@@ -272,6 +272,16 @@ public interface ProtegeReasoner extends Disposable {
      */
     public Collection<OWLClass> getIndividualTypes(OWLIndividual individual) throws ProtegeReasonerException;
 
+    
+    /**
+     * Get the direct inferred types for the specified individual.
+     *
+     * @param individual   The individual whose inferred direct types are to be retrieved.
+     * @return A <code>Collection</code> of <code>OWLClasses</code> that represent the
+     *         inferred direct types for the specified individual.
+     * @throws ProtegeReasonerException
+     */
+    public Collection<OWLClass> getIndividualDirectTypes(OWLIndividual individual) throws ProtegeReasonerException;
 	
 
 	/**

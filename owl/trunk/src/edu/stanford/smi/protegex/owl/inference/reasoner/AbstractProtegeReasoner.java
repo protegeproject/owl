@@ -159,7 +159,11 @@ public abstract class AbstractProtegeReasoner implements ProtegeReasoner {
 		throw new ProtegeReasonerException("Operation not supported by this reasoner");
 	}
 
-
+		
+	public Collection<OWLClass> getIndividualDirectTypes(OWLIndividual owlIndividual)	throws ProtegeReasonerException {
+		throw new ProtegeReasonerException("Operation not supported by this reasoner");
+	}
+	
 	public Collection<OWLIndividual> getIndividualsBelongingToClass(OWLClass class1)
 			throws ProtegeReasonerException {
 		throw new ProtegeReasonerException("Operation not supported by this reasoner");
