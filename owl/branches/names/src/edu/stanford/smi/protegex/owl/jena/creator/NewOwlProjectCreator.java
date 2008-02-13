@@ -46,8 +46,7 @@ public class NewOwlProjectCreator extends AbstractOwlProjectCreator {
         activeTripleStore.setName(defaultOntologyName);
         owlModel.resetOntologyCache();
         
-        addViewSettings(project.getSources());      
-        OWLMenuProjectPlugin.makeHiddenClsesWithSubclassesVisible(owlModel);
+        addViewSettings(project.getSources());
         
         return project;
     }
