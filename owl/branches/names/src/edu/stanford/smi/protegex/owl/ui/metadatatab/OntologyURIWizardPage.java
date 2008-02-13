@@ -46,10 +46,7 @@ public class OntologyURIWizardPage extends WizardPage {
 
     public void onFinish() {
         if (plugin != null) {
-            // Actually setting the default namespace
-            // sets the name of the ontology!
-            String defaultNamespace = ontologyURIPanel.getOntologyURI() + "#";
-            plugin.setDefaultNamespace(defaultNamespace);
+            plugin.setOntologyName(ontologyURIPanel.getOntologyURI().toString());
         }
     }
 
