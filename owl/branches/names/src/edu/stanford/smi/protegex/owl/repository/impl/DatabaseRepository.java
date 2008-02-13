@@ -28,6 +28,7 @@ import edu.stanford.smi.protege.util.AmalgamatedIOException;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.database.DatabaseFactoryUtils;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.model.factory.FactoryUtils;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreModel;
 import edu.stanford.smi.protegex.owl.repository.Repository;
@@ -186,8 +187,8 @@ public class DatabaseRepository implements Repository {
 	        importedTripleStore = tripleStoreModel.createActiveImportedTripleStore(valueCache);
 	        Collection errors = new ArrayList();
 	        DatabaseFactoryUtils.readOWLOntologyFromDatabase(owlModel, importedTripleStore);
-	        DatabaseFactoryUtils.loadPrefixesFromDB(owlModel, importedTripleStore, errors);
-	        DatabaseFactoryUtils.addPrefixesToModelListener(owlModel, importedTripleStore);
+	        FactoryUtils.loadEncodedNamespaceFromModel(owlModel, importedTripleStore, errors);
+	        FactoryUtils.addPrefixesToModelListener(owlModel, importedTripleStore);
 	        DatabaseFactoryUtils.loadImports(owlModel, errors);
 	        if (!errors.isEmpty()) {
 	            throw new AmalgamatedIOException(errors);
