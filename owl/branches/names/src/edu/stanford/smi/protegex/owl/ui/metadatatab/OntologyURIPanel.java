@@ -60,21 +60,23 @@ public class OntologyURIPanel extends JPanel {
 
 
     private void setDefautOntologyURIBase() {
+        textField.setText(generateOntologyURIBase());
+    }
+    
+    public static String generateOntologyURIBase() {
         String defaultBase = ApplicationProperties.getString(URI_BASE_PROPERTY);
         if (defaultBase == null) {
             defaultBase = DEFAULT_BASE;
             ApplicationProperties.setString(URI_BASE_PROPERTY, DEFAULT_BASE);
         }
-        if (defaultBase != null) {
-            defaultBase = getOntologyURIBase(defaultBase,
-                    ApplicationProperties.getBooleanProperty(URI_BASE_APPEND_YEAR_PROPERTY, false),
-                    ApplicationProperties.getBooleanProperty(URI_BASE_APPEND_MONTH_PROPERTY, false),
-                    ApplicationProperties.getBooleanProperty(URI_BASE_APPEND_DAY_PROPERTY, false));
-            String fileName = "Ontology";
-            fileName += System.currentTimeMillis() / 1000;
-            fileName += ".owl";
-            textField.setText(defaultBase + fileName);
-        }
+        defaultBase = getOntologyURIBase(defaultBase,
+                                         ApplicationProperties.getBooleanProperty(URI_BASE_APPEND_YEAR_PROPERTY, false),
+                                         ApplicationProperties.getBooleanProperty(URI_BASE_APPEND_MONTH_PROPERTY, false),
+                                         ApplicationProperties.getBooleanProperty(URI_BASE_APPEND_DAY_PROPERTY, false));
+        String fileName = "Ontology";
+        fileName += System.currentTimeMillis() / 1000;
+        fileName += ".owl";
+        return defaultBase + fileName;
     }
 
 
