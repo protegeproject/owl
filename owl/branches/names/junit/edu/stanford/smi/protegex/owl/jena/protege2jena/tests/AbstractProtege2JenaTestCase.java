@@ -37,6 +37,6 @@ public abstract class AbstractProtege2JenaTestCase extends AbstractJenaTestCase 
 
 
     public JenaOWLModel reloadWithJenaLoader(JenaOWLModel owlModel) throws Exception {
-        return AbstractJenaTestCase.reload(owlModel);
+        return reload(owlModel);
     }
 }
