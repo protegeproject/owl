@@ -1,18 +1,22 @@
 package edu.stanford.smi.protegex.owl.ui.search.finder.tests;
 
+import java.util.Iterator;
+import java.util.Map;
+import java.util.regex.Pattern;
+
 import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.util.Log;
+import edu.stanford.smi.protegex.owl.jena.creator.OwlProjectFromUriCreator;
 import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
 import edu.stanford.smi.protegex.owl.model.RDFSNames;
 import edu.stanford.smi.protegex.owl.tests.AbstractJenaTestCase;
-import edu.stanford.smi.protegex.owl.ui.search.finder.*;
-
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.regex.Pattern;
+import edu.stanford.smi.protegex.owl.ui.search.finder.DefaultClassFind;
+import edu.stanford.smi.protegex.owl.ui.search.finder.Find;
+import edu.stanford.smi.protegex.owl.ui.search.finder.FindResult;
+import edu.stanford.smi.protegex.owl.ui.search.finder.SearchAdapter;
+import edu.stanford.smi.protegex.owl.ui.search.finder.SearchListener;
+import edu.stanford.smi.protegex.owl.ui.search.finder.ThreadedFind;
+import edu.stanford.smi.protegex.owl.util.JunitErrorHandler;
 
 /**
  * @author Nick Drummond, Medical Informatics Group, University of Manchester
@@ -89,17 +93,9 @@ public class FindTestCase extends AbstractJenaTestCase {
     }
 
     private void loadPizza() {
-        try {
-            URI pizza = new URI("http://www.co-ode.org/ontologies/pizza/2005/10/18/pizza.owl");
-            try {
-                owlModel.load(pizza, null);
-            }
-            catch (Exception e) {
-                Log.getLogger().log(Level.SEVERE, "Exception caught", e);
-            }
-        }
-        catch (URISyntaxException e) {
-            Log.getLogger().log(Level.SEVERE, "Exception caught", e);
-        }
+        OwlProjectFromUriCreator creator = new OwlProjectFromUriCreator();
+        creator.setOntologyUri("http://www.co-ode.org/ontologies/pizza/2005/10/18/pizza.owl");
+        creator.setErrorHandler(new JunitErrorHandler(this, false));
+        creator.create();
     }
 }
