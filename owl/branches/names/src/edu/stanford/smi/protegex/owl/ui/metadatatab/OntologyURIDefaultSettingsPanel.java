@@ -2,6 +2,7 @@ package edu.stanford.smi.protegex.owl.ui.metadatatab;
 
 import edu.stanford.smi.protege.util.ApplicationProperties;
 import edu.stanford.smi.protege.util.LabeledComponent;
+import edu.stanford.smi.protegex.owl.model.factory.FactoryUtils;
 import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
 import edu.stanford.smi.protegex.owl.ui.dialogs.ModalDialogFactory;
 import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
@@ -138,7 +139,7 @@ public class OntologyURIDefaultSettingsPanel extends JPanel {
 
     private void updatePreviewState() {
         String text = defaultURIBaseField.getText();
-        text = OntologyURIPanel.getOntologyURIBase(text,
+        text = FactoryUtils.getOntologyURIBase(text,
                 yearCheckBox.isSelected(),
                 monthCheckBox.isSelected(),
                 dayCheckBox.isSelected());
