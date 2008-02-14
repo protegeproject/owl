@@ -220,67 +220,6 @@ public class JenaOWLModel extends AbstractOWLModel implements OntModelProvider {
     }
 
 
-    public void load(URI uri, String language) throws Exception {
-        ProtegeOWLParser parser = new ProtegeOWLParser(this, false);    
-        parser.run(uri);
-        
-        //TripleStoreUtil.sortSubclasses(this);
-        //copyFacetValuesIntoNamedClses();
-    }
-
-
-    public void load(InputStream is, String language) throws Exception {
-        ProtegeOWLParser parser = new ProtegeOWLParser(this, false);
-        parser.run(is, "http://dummy-ontologies.com/dummy.owl");
-        TripleStoreUtil.sortSubclasses(this);
-        copyFacetValuesIntoNamedClses();
-    }
-
-
-    public void load(Reader reader, String language) throws Exception {
-        ProtegeOWLParser parser = new ProtegeOWLParser(this, false);
-        parser.run(reader, "http://dummy-ontologies.com/dummy.owl");
-        TripleStoreUtil.sortSubclasses(this);
-        copyFacetValuesIntoNamedClses();
-    }
-
-
-    public void load(URI uri, String language, Collection errors) {
-        try {
-            load(uri, language);
-        }
-        catch (Throwable t) {
-            Log.getLogger().log(Level.SEVERE, "Error at loading file "+uri, t);
-            
-            Collection parseErrors = ProtegeOWLParser.getErrors(); 
-            if (parseErrors != null && parseErrors.size() > 0) {
-            	errors.addAll(parseErrors);
-            }
-            
-            errors.add(t);
-            
-            String message = "Errors at loading OWL file from " + uri + "\n";
-            message = message + "\nPlease consider running the file through an RDF or OWL validation service such as:";
-            message = message + "\n  - RDF Validator: http://www.w3.org/RDF/Validator";
-            message = message + "\n  - OWL Validator: http://phoebus.cs.man.ac.uk:9999/OWL/Validator";
-            if (getNamespaceManager().getPrefix("http://protege.stanford.edu/system#") != null ||
-                    getNamespaceManager().getPrefix("http://protege.stanford.edu/kb#") != null) {
-                message = message + "\nThis file seems to have been created with the frame-based Protege RDF Backend. " +
-                		"Please try to use the RDF Backend of Protege to open this file and then export it to OWL " +
-                		"using Export to Format...";
-            }
-   
-         	errors.add(new MessageError(message));
-        }
-        
-        //TODO: Improve this.
-        Collection parseErrors = ProtegeOWLParser.getErrors(); 
-        if (parseErrors != null && parseErrors.size() > 0) {
-        	errors.addAll(parseErrors);
-        }
-    }
-
-
     /**
      * Saves the current OWLModel in the standard format.
      *
