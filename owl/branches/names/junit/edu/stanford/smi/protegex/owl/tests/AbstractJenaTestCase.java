@@ -6,7 +6,10 @@ import com.hp.hpl.jena.rdf.model.Model;
 import edu.stanford.smi.protegex.owl.ProtegeOWL;
 import edu.stanford.smi.protegex.owl.jena.Jena;
 import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
+import edu.stanford.smi.protegex.owl.jena.creator.OwlProjectFromReaderCreator;
+import edu.stanford.smi.protegex.owl.jena.creator.OwlProjectFromUriCreator;
 import edu.stanford.smi.protegex.owl.jena.parser.ProtegeOWLParser;
+import edu.stanford.smi.protegex.owl.util.JunitErrorHandler;
 
 import java.io.ByteArrayOutputStream;
 import java.io.StringReader;
@@ -41,8 +44,10 @@ public abstract class AbstractJenaTestCase extends AbstractOWLTestCase {
 
 
     public void loadTestOntology(URI uri) throws Exception {
-        ProtegeOWLParser arp = new ProtegeOWLParser(owlModel, false);
-        arp.run(uri);
+        OwlProjectFromUriCreator creator = new OwlProjectFromUriCreator();
+        creator.setOntologyUri(uri.toString());
+        creator.setErrorHandler(new JunitErrorHandler(this, true));
+        owlModel = (JenaOWLModel) creator.create().getKnowledgeBase();
     }
 
 
@@ -58,15 +63,16 @@ public abstract class AbstractJenaTestCase extends AbstractOWLTestCase {
     }
 
 
-    public static JenaOWLModel reload(JenaOWLModel owlModel) throws Exception {
-        JenaOWLModel newModel = ProtegeOWL.createJenaOWLModel();
+    public JenaOWLModel reload(JenaOWLModel owlModel) throws Exception {
         OntModel ontModel = owlModel.getOntModel();
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         Jena.dumpRDF(ontModel, stream);
         String str = stream.toString();
         StringReader reader = new StringReader(str);
-        new ProtegeOWLParser(newModel, false).run(reader, owlModel.getNamespaceManager().getDefaultNamespace());
-        return newModel;
+        OwlProjectFromReaderCreator creator = new OwlProjectFromReaderCreator();
+        creator.setReader(reader);
+        creator.setErrorHandler(new JunitErrorHandler(this, true));
+        return (JenaOWLModel) creator.create().getKnowledgeBase();
     }
 
 
