@@ -30,11 +30,14 @@ import edu.stanford.smi.protege.util.ApplicationProperties;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protege.util.MessageError;
 import edu.stanford.smi.protege.util.URIUtilities;
+import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
 import edu.stanford.smi.protegex.owl.model.NamespaceManager;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
 import edu.stanford.smi.protegex.owl.model.RDFUntypedResource;
+import edu.stanford.smi.protegex.owl.model.factory.FactoryUtils;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
+import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreUtil;
 import edu.stanford.smi.protegex.owl.repository.util.XMLBaseExtractor;
 
 /**
@@ -68,17 +71,12 @@ public class ProtegeOWLParser {
 
 
 
-	public ProtegeOWLParser(OWLModel owlModel,
-	                        boolean incremental) {
+	public ProtegeOWLParser(OWLModel owlModel) {
 		tripleCount = 0;
 		errorOntologyURI = null;
 		errors = new ArrayList();
 		
 		this.owlModel = owlModel;
-
-		if(incremental) {
-			populateUntypedResourcesMap();
-		}
 		logger = createLogger();
 	}
 	
@@ -93,7 +91,7 @@ public class ProtegeOWLParser {
 	 * @param uri The <code>URI</code> that points to the ontology.
 	 */
 	public void run(final URI uri)
-	        throws Exception {
+	        throws IOException {
 		
 		URL url = uri.toURL();		
 		ProtegeOWLParser.this.run(getInputStream(url), url.toString());
@@ -111,7 +109,7 @@ public class ProtegeOWLParser {
 	 */
 	public void run(final InputStream is,
 	                final String xmlBase)
-	        throws Exception {
+	        throws IOException {
 		
 		run(xmlBase, createARPInvokation(is, xmlBase));
 	}
@@ -130,7 +128,7 @@ public class ProtegeOWLParser {
 	 */
 	public void run(final Reader reader,
 	                final String xmlBase)
-	        throws Exception {
+	        throws IOException {
 		
 		run(xmlBase, createARPInvokation(reader, xmlBase));
 	}
@@ -138,11 +136,14 @@ public class ProtegeOWLParser {
 
 	protected void run(final String uri,
 	                   final ARPInvokation invokation)
-	        throws Exception {
+	        throws IOException {
 		
 		errors = new ArrayList();
 		errorOntologyURI = null;
-		URI xmlBase = XMLBaseExtractor.getXMLBase(uri);
+		URI xmlBase = null;
+		if (uri != null) {
+		    xmlBase = XMLBaseExtractor.getXMLBase(uri);
+		}
 		if (xmlBase == null) {
 		    xmlBase = URIUtilities.createURI(uri);
 		}
@@ -201,68 +202,76 @@ public class ProtegeOWLParser {
 	private void loadTriples(final String ontologyName, URI xmlBase, final ARPInvokation invokation) throws IOException {
 	    final TripleStore tripleStore = owlModel.getTripleStoreModel().getActiveTripleStore();
 	    boolean eventsEnabled = owlModel.setGenerateEventsEnabled(false);
-		
-		tfc = new TripleFrameCache(owlModel, tripleStore);
-		
-		Log.getLogger().info("Loading triples");
+	    try {
+	        tfc = new TripleFrameCache(owlModel, tripleStore);
 
-		ARP arp = createARP();
+	        Log.getLogger().info("Loading triples");
 
-        if (xmlBase != null) {
-            tripleStore.setOriginalXMLBase(xmlBase.toString());
-        }
-		
-		long startTime = System.currentTimeMillis();	
-		
-		try {
-		    invokation.invokeARP(arp);
-		} catch (IOException e) {
-		    throw e;
-		} catch (Exception e) {
-		    IOException ioe = new IOException(e.getMessage());
-		    ioe.initCause(e);
-		    throw ioe;
-		}
-		
-		long endTime = System.currentTimeMillis();
+	        ARP arp = createARP();
 
-		Log.getLogger().info("[ProtegeOWLParser] Completed triple loading after " + (endTime - startTime) + " ms");
+	        if (xmlBase != null) {
+	            tripleStore.setOriginalXMLBase(xmlBase.toString());
+	        }
 
-		if (log.isLoggable(Level.FINE)) {
-			log.fine("\nDump before end processing. Size: " + tfc.getUndefTripleManager().getUndefTriples().size());
-			// tfc.getUndefTripleManager().dumpUndefTriples();
-        }		
-		
-		tfc.processUndefTriples();
+	        long startTime = System.currentTimeMillis();	
 
-		if (log.isLoggable(Level.FINE)) {			
-			log.fine("\nDump before end processing. Size: " + tfc.getUndefTripleManager().getUndefTriples().size());
-			// tfc.getUndefTripleManager().dumpUndefTriples();
-        }		
-				
-		if (log.isLoggable(Level.FINE)) {
-			log.fine("Start processing imports ...");
-		}
-				
-		processImports(tripleStore);
-		
-		if (log.isLoggable(Level.FINE)) {
-			log.fine("End processing imports");
-		}
+	        try {
+	            invokation.invokeARP(arp);
+	        } catch (IOException e) {
+	            throw e;
+	        } catch (Exception e) {
+	            IOException ioe = new IOException(e.getMessage());
+	            ioe.initCause(e);
+	            throw ioe;
+	        }
 
-		tfc.processUndefTriples();
-		tfc.doPostProcessing();
-		
-		if (tripleStore.getName() == null) { // no ontology declaration was found
-		    if (xmlBase != null) {
-		        tripleStore.setName(xmlBase.toString());
-		    }
-		    else {
-		        //TODO - invent a unique name...
-		    }
-		}
-		owlModel.resetOntologyCache();
-		owlModel.setGenerateEventsEnabled(eventsEnabled);
+	        long endTime = System.currentTimeMillis();
+
+	        Log.getLogger().info("[ProtegeOWLParser] Completed triple loading after " + (endTime - startTime) + " ms");
+
+	        // this is ok - it only logs or calculates strings if the UndefTripleManager is set for FINE logging.
+	        tfc.getUndefTripleManager().dumpUndefTriples(Level.FINE);
+	
+	        tfc.processUndefTriples();
+
+	        if (log.isLoggable(Level.FINE)) {			
+	            log.fine("\nDump before end processing. Size: " + tfc.getUndefTripleManager().getUndefTriples().size());
+	            // tfc.getUndefTripleManager().dumpUndefTriples();
+	        }		
+
+	        if (log.isLoggable(Level.FINE)) {
+	            log.fine("Start processing imports ...");
+	        }
+
+	        processImports(tripleStore);
+
+	        if (log.isLoggable(Level.FINE)) {
+	            log.fine("End processing imports");
+	        }
+
+	        tfc.processUndefTriples();
+	        tfc.doPostProcessing();
+
+	        if (tripleStore.getName() == null) { // no ontology declaration was found
+	            String oname;
+	            if (ontologyName != null) { oname = ontologyName; }
+	            else if (xmlBase != null) { oname = xmlBase.toString(); }
+	            else { oname = FactoryUtils.generateOntologyURIBase(); }
+
+	            FactoryUtils.addOntologyToTripleStore(owlModel, tripleStore, oname);
+	        }
+	        if (!importing) {
+	            doPostProcessing();
+	        }
+	    }
+	    finally {
+	        owlModel.setGenerateEventsEnabled(eventsEnabled);
+	    }
+	}
+	
+	private  void doPostProcessing() {
+        TripleStoreUtil.sortSubclasses(owlModel);
+        ((JenaOWLModel) owlModel).copyFacetValuesIntoNamedClses();
 	}
 
 	protected ARP createARP() {
@@ -301,17 +310,6 @@ public class ProtegeOWLParser {
 
 	protected ProtegeOWLParserLogger getLogger() {
 		return logger;
-	}
-
-	@SuppressWarnings("unchecked")
-    private void populateUntypedResourcesMap() {
-		RDFSNamedClass cls = owlModel.getRDFUntypedResourcesClass();
-		Iterator it = cls.getInstances(false).iterator();
-		while(it.hasNext()) {
-			RDFUntypedResource r = (RDFUntypedResource) it.next();
-			String uri = r.getURI();
-			untypedResources.put(uri, r);
-		}
 	}
 	
 
