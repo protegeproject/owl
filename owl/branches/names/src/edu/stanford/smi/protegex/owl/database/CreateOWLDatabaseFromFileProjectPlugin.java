@@ -40,7 +40,7 @@ public class CreateOWLDatabaseFromFileProjectPlugin extends CreateOWLDatabasePro
 
             OWLDatabaseModel owlModel = (OWLDatabaseModel) project.getKnowledgeBase();
             updateTripleStores(owlModel);
-            ProtegeOWLParser parser = new ProtegeOWLParser(owlModel, false);
+            ProtegeOWLParser parser = new ProtegeOWLParser(owlModel);
             try {
                 parser.run(ontologyFileURI);
             }
