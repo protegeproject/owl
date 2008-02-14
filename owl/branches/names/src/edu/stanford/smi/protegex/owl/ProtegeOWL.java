@@ -14,8 +14,10 @@ import edu.stanford.smi.protege.util.ApplicationProperties;
 import edu.stanford.smi.protegex.owl.jena.JenaKnowledgeBaseFactory;
 import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
 import edu.stanford.smi.protegex.owl.jena.creator.NewOwlProjectCreator;
+import edu.stanford.smi.protegex.owl.jena.creator.OwlProjectFromReaderCreator;
+import edu.stanford.smi.protegex.owl.jena.creator.OwlProjectFromStreamCreator;
 import edu.stanford.smi.protegex.owl.jena.creator.OwlProjectFromUriCreator;
-import edu.stanford.smi.protegex.owl.ui.metadatatab.OntologyURIPanel;
+import edu.stanford.smi.protegex.owl.model.factory.FactoryUtils;
 
 /**
  * A singleton that provides several generic services such as creating
@@ -38,22 +40,22 @@ public class ProtegeOWL {
      */
     public static JenaOWLModel createJenaOWLModel() {
         NewOwlProjectCreator creator = new NewOwlProjectCreator();
-        creator.setOntologyName(OntologyURIPanel.generateOntologyURIBase());
+        creator.setOntologyName(FactoryUtils.generateOntologyURIBase());
         return (JenaOWLModel) creator.create().getKnowledgeBase();
 	}
    
     
     public static JenaOWLModel createJenaOWLModelFromInputStream(InputStream is) throws Exception {    	
-        JenaOWLModel owlModel = ProtegeOWL.createJenaOWLModel();
-        owlModel.load(is, FileUtils.langXMLAbbrev);
-        return owlModel;
+        OwlProjectFromStreamCreator creator = new OwlProjectFromStreamCreator();
+        creator.setStream(is);
+        return (JenaOWLModel) creator.create().getKnowledgeBase();
     }
 
 
     public static JenaOWLModel createJenaOWLModelFromReader(Reader reader) throws Exception {
-        JenaOWLModel owlModel = ProtegeOWL.createJenaOWLModel();
-        owlModel.load(reader, FileUtils.langXMLAbbrev);
-        return owlModel;
+        OwlProjectFromReaderCreator creator = new OwlProjectFromReaderCreator();
+        creator.setReader(reader);
+        return (JenaOWLModel) creator.create().getKnowledgeBase();
     }
 
 
