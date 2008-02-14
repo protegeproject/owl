@@ -5,10 +5,13 @@ import edu.stanford.smi.protege.model.KnowledgeBase;
 import edu.stanford.smi.protege.model.Project;
 import edu.stanford.smi.protege.plugin.ImportPlugin;
 import edu.stanford.smi.protege.ui.ProjectManager;
+import edu.stanford.smi.protege.util.DefaultErrorHandler;
+import edu.stanford.smi.protege.util.ErrorHandler;
 import edu.stanford.smi.protege.util.WaitCursor;
 import edu.stanford.smi.protegex.owl.jena.JenaFilePanel;
 import edu.stanford.smi.protegex.owl.jena.JenaKnowledgeBaseFactory;
 import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
+import edu.stanford.smi.protegex.owl.jena.creator.OwlProjectFromUriCreator;
 import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
 import edu.stanford.smi.protegex.owl.ui.dialogs.ModalDialogFactory;
 
@@ -50,12 +53,13 @@ public class JenaImportPlugin implements ImportPlugin {
 
 
     private Project importProject(URI uri) {
-        Collection errors = new ArrayList();
-        JenaKnowledgeBaseFactory jenaFactory = new JenaKnowledgeBaseFactory();
-        Project owlProject = Project.createNewProject(jenaFactory, errors);
-        JenaOWLModel owlModel = (JenaOWLModel) owlProject.getKnowledgeBase();
-        owlModel.load(uri, FileUtils.langXMLAbbrev, errors);
-        if (errors.isEmpty()) {
+        final Boolean error = Boolean.FALSE;
+        DefaultErrorHandler<Throwable> handler = new DefaultErrorHandler<Throwable>();
+        OwlProjectFromUriCreator creator  = new OwlProjectFromUriCreator();
+        creator.setOntologyUri(uri.toString());
+        creator.setErrorHandler(handler);
+        JenaOWLModel owlModel = (JenaOWLModel) creator.create().getKnowledgeBase();
+        if (!handler.hasError()) {
             Project project = Project.createNewProject(null, new ArrayList());
             KnowledgeBase kb = project.getKnowledgeBase();
             new OWLImporter(owlModel, kb);
