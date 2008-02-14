@@ -103,7 +103,9 @@
       </condition>
       <path id="classpath.compile">
         <pathelement location = "${protege.lib}"/>
-        <fileset dir="${lib}"/>
+        <fileset dir="${lib}">
+          <include name="**/*.jar"/>
+        </fileset>
       </path>
 
     </target>
