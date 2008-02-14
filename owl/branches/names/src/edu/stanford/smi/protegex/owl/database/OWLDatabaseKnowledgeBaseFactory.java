@@ -111,9 +111,7 @@ public class OWLDatabaseKnowledgeBaseFactory extends DatabaseKnowledgeBaseFactor
         else {
             String ontologyName = sources.getString(CREATED_ONTOLOGY_NAME);
             if (ontologyName != null) {
-                owlModel.getOWLOntologyClass().createInstance(ontologyName);
-                activeTripleStore.setName(ontologyName);
-                owlModel.getTripleStoreModel().getActiveTripleStore().setDefaultNamespace(ontologyName + "#");
+                FactoryUtils.addOntologyToTripleStore(owlModel, activeTripleStore, ontologyName);
                 DatabaseFactoryUtils.writeOWLOntologyToDatabase(owlModel, activeTripleStore);
                 FactoryUtils.encodeNamespaceIntoModel(owlModel, activeTripleStore);
                 existsOntologyInstance = true;
