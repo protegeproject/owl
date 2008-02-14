@@ -1,8 +1,8 @@
 package edu.stanford.smi.protegex.owl.model.factory;
 
+import java.io.IOException;
 import java.util.Collection;
 
-import edu.stanford.smi.protege.model.KnowledgeBaseFactory;
 import edu.stanford.smi.protege.model.Project;
 import edu.stanford.smi.protege.util.DefaultErrorHandler;
 import edu.stanford.smi.protege.util.ErrorHandler;
