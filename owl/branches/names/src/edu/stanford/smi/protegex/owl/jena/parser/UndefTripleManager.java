@@ -63,16 +63,20 @@ public class UndefTripleManager {
             }
 	}
 	
-	public void dumpUndefTriples() {
-		Log.getLogger().info("\n --------------- Begin undef triples dump ----------------");
+	public void dumpUndefTriples(Level level) {
+	    if (!log.isLoggable(level)) {
+	        return;
+	    }
+        log.log(level, "\nDump before end processing. Size: " + getUndefTriples().size());
+		log.log(level, "\n --------------- Begin undef triples dump ----------------");
 		for (Iterator iter = undefTriplesMap.keySet().iterator(); iter.hasNext();) {
 			String uri = (String) iter.next();
 			for (Iterator iterator = undefTriplesMap.get(uri).iterator(); iterator.hasNext();) {
 				UndefTriple triple = (UndefTriple) iterator.next();
-				Log.getLogger().info(" * " + triple);
+				log.log(level, " * " + triple);
 			}			
 		}
-		Log.getLogger().info(" --------------- End undef triples dump ----------------\n");
+		log.log(level, " --------------- End undef triples dump ----------------\n");
 	}
 
 }
