@@ -2,16 +2,18 @@ package edu.stanford.smi.protegex.owl.jena.creator;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.logging.Level;
 
-import edu.stanford.smi.protege.model.KnowledgeBaseFactory;
 import edu.stanford.smi.protege.model.Project;
+import edu.stanford.smi.protege.util.ErrorHandler;
+import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.jena.JenaKnowledgeBaseFactory;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.ProtegeNames;
 import edu.stanford.smi.protegex.owl.model.factory.AbstractOwlProjectCreator;
+import edu.stanford.smi.protegex.owl.model.factory.FactoryUtils;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreModel;
-import edu.stanford.smi.protegex.owl.ui.menu.OWLMenuProjectPlugin;
 
 public class NewOwlProjectCreator extends AbstractOwlProjectCreator {
     private String ontologyName;
@@ -31,22 +33,13 @@ public class NewOwlProjectCreator extends AbstractOwlProjectCreator {
         OWLModel owlModel = (OWLModel) project.getKnowledgeBase();
         
         if (ontologyName == null) {
-            ontologyName = ProtegeNames.DEFAULT_DEFAULT_BASE;
+            ontologyName = FactoryUtils.generateOntologyURIBase();
         }
-        owlModel.getNamespaceManager().setDefaultNamespace(ontologyName + "#");
-        String defaultOntologyName = ontologyName;
-        if (defaultOntologyName.endsWith("#")) {
-            defaultOntologyName = defaultOntologyName.substring(0, defaultOntologyName.length() - 1);
-        }       
-        owlModel.getSystemFrames().getOwlOntologyClass().createInstance(defaultOntologyName);
-        
-        TripleStoreModel  tripleStoreModel = owlModel.getTripleStoreModel();
-        TripleStore activeTripleStore = tripleStoreModel.getActiveTripleStore();
-        activeTripleStore.setOriginalXMLBase(defaultOntologyName);
-        activeTripleStore.setName(defaultOntologyName);
-        owlModel.resetOntologyCache();
+        FactoryUtils.addOntologyToTripleStore(owlModel, owlModel.getTripleStoreModel().getActiveTripleStore(), ontologyName);
         
         addViewSettings(project.getSources());
+        
+        handleErrors(errors);
         
         return project;
     }
