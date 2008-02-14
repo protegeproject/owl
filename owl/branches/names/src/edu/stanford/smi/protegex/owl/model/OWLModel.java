@@ -319,7 +319,9 @@ public interface OWLModel extends ProtegeKnowledgeBase, OWLTestManager {
      *
      * @param prefix a valid namespace prefix
      * @return the new OWLOntology
+     * @deprecated developers should not need to create an owl ontology.  There is a rename method in OWLUtils.
      */
+    @Deprecated
     OWLOntology createOWLOntology(String prefix);
 
 
