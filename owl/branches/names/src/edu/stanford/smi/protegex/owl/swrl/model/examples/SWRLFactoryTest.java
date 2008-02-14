@@ -1,44 +1,49 @@
 package edu.stanford.smi.protegex.owl.swrl.model.examples;
 
-import com.hp.hpl.jena.util.FileUtils;
-import edu.stanford.smi.protege.model.Project;
-import edu.stanford.smi.protegex.owl.jena.JenaKnowledgeBaseFactory;
-import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
-import edu.stanford.smi.protegex.owl.model.*;
-import edu.stanford.smi.protegex.owl.swrl.model.*;
-import edu.stanford.smi.protegex.owl.swrl.model.factory.SWRLJavaFactory;
-
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Vector;
+
+import edu.stanford.smi.protege.model.KnowledgeBase;
+import edu.stanford.smi.protege.util.DefaultErrorHandler;
+import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
+import edu.stanford.smi.protegex.owl.jena.creator.OwlProjectFromUriCreator;
+import edu.stanford.smi.protegex.owl.model.OWLDataRange;
+import edu.stanford.smi.protegex.owl.model.OWLDatatypeProperty;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
+import edu.stanford.smi.protegex.owl.model.OWLObjectProperty;
+import edu.stanford.smi.protegex.owl.model.RDFObject;
+import edu.stanford.smi.protegex.owl.model.RDFSDatatype;
+import edu.stanford.smi.protegex.owl.model.RDFSLiteral;
+import edu.stanford.smi.protegex.owl.swrl.model.SWRLAtomList;
+import edu.stanford.smi.protegex.owl.swrl.model.SWRLBuiltin;
+import edu.stanford.smi.protegex.owl.swrl.model.SWRLBuiltinAtom;
+import edu.stanford.smi.protegex.owl.swrl.model.SWRLClassAtom;
+import edu.stanford.smi.protegex.owl.swrl.model.SWRLDataRangeAtom;
+import edu.stanford.smi.protegex.owl.swrl.model.SWRLDatavaluedPropertyAtom;
+import edu.stanford.smi.protegex.owl.swrl.model.SWRLFactory;
+import edu.stanford.smi.protegex.owl.swrl.model.SWRLImp;
+import edu.stanford.smi.protegex.owl.swrl.model.SWRLIndividualPropertyAtom;
+import edu.stanford.smi.protegex.owl.swrl.model.SWRLSameIndividualAtom;
+import edu.stanford.smi.protegex.owl.swrl.model.SWRLVariable;
 
 public class SWRLFactoryTest {
 
 
-    public static void main(String[] args) throws Exception {
-        SWRLFactory swrlFactory;
-        Collection error_messages = new Vector();
+    public static void main(String[] args) throws Exception {     
+        DefaultErrorHandler<Throwable> handler = new DefaultErrorHandler<Throwable>();
+        OwlProjectFromUriCreator creator = new OwlProjectFromUriCreator();
+        creator.setErrorHandler(handler);
+        creator.setOntologyUri("http://protege.stanford.edu/plugins/owl/testdata/importSWRL.owl");
+        JenaOWLModel owlModel = (JenaOWLModel) creator.create().getKnowledgeBase();
 
-        final JenaKnowledgeBaseFactory factory = new JenaKnowledgeBaseFactory();
-        Project project = new Project(null, error_messages);
-        project.setKnowledgeBaseFactory(factory);
-        project.createDomainKnowledgeBase(factory, error_messages, false);
-        JenaOWLModel owlModel = (JenaOWLModel) project.getKnowledgeBase();
-
-        owlModel.load(new URI("http://protege.stanford.edu/plugins/owl/testdata/importSWRL.owl"),
-                FileUtils.langXMLAbbrev,
-                error_messages);
-
-        if (!error_messages.isEmpty()) {
-            System.err.println("Error loading importSWRL.owl:" + error_messages);
+        if (!handler.hasError()) {
+            System.err.println("Error loading importSWRL.owl.");
             System.exit(-1);
         } // if
 
-        swrlFactory = new SWRLFactory(owlModel);
-        owlModel.setFrameFactory(new SWRLJavaFactory(owlModel));
 
-        testRuleCreation(swrlFactory, owlModel);
+        testRuleCreation((SWRLFactory) ((KnowledgeBase) owlModel).getFrameFactory(), owlModel);
 
     } //  main
 
