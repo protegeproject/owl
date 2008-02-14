@@ -470,7 +470,7 @@ public class TripleFrameCache {
 		processInstancesWithMultipleTypes();
 		
 		//dump what you have not processed:
-		getUndefTripleManager().dumpUndefTriples();
+		getUndefTripleManager().dumpUndefTriples(Level.FINE);
 	}
 	
 	
