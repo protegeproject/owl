@@ -93,6 +93,7 @@ import edu.stanford.smi.protegex.owl.model.event.PropertyValueAdapter;
 import edu.stanford.smi.protegex.owl.model.event.PropertyValueListener;
 import edu.stanford.smi.protegex.owl.model.event.ResourceAdapter;
 import edu.stanford.smi.protegex.owl.model.event.ResourceListener;
+import edu.stanford.smi.protegex.owl.model.factory.FactoryUtils;
 import edu.stanford.smi.protegex.owl.model.factory.OWLJavaFactory;
 import edu.stanford.smi.protegex.owl.model.framestore.OWLFrameStore;
 import edu.stanford.smi.protegex.owl.model.framestore.OWLFrameStoreManager;
@@ -981,8 +982,13 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
 
     public OWLOntology createOWLOntology(String uri) {
-        //return (OWLOntology) createInstance(prefix + ":", getOWLOntologyClass());
-    	return (OWLOntology) createInstance(uri, getOWLOntologyClass());
+        if (getDefaultOWLOntology() == null) {
+            FactoryUtils.addOntologyToTripleStore(this, tripleStoreModel.getTopTripleStore(), uri);
+        }
+        else {
+            OWLUtil.renameOntology(this, getDefaultOWLOntology(), uri);
+        }
+        return getDefaultOWLOntology();
     }
 
 
