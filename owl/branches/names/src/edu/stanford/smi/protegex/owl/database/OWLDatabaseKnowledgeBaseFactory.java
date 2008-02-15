@@ -37,7 +37,6 @@ public class OWLDatabaseKnowledgeBaseFactory extends DatabaseKnowledgeBaseFactor
     private static Logger log = Log.getLogger(OWLDatabaseKnowledgeBaseFactory.class);
     
     public final static String NAMESPACE_PREFIX_SEPARATOR = ":";
-    public final static String CREATED_ONTOLOGY_NAME = "created_ontology_name";
 
     
     public OWLDatabaseKnowledgeBaseFactory() {
@@ -97,27 +96,13 @@ public class OWLDatabaseKnowledgeBaseFactory extends DatabaseKnowledgeBaseFactor
                                   PropertyList sources, 
                                   Collection errors) {
         OWLModel owlModel = (OWLModel) kb;
-        boolean existsOntologyInstance = false;
-        
+
         super.loadKnowledgeBase(kb, sources, errors);
-        
         TripleStoreModel tripleStoreModel = owlModel.getTripleStoreModel();
         TripleStore activeTripleStore = tripleStoreModel.getActiveTripleStore();
         tripleStoreModel.setTopTripleStore(activeTripleStore);
         if (DatabaseFactoryUtils.readOWLOntologyFromDatabase(owlModel, activeTripleStore)) {
             FactoryUtils.loadEncodedNamespaceFromModel(owlModel, activeTripleStore, errors);
-            existsOntologyInstance = true;
-        }
-        else {
-            String ontologyName = sources.getString(CREATED_ONTOLOGY_NAME);
-            if (ontologyName != null) {
-                FactoryUtils.addOntologyToTripleStore(owlModel, activeTripleStore, ontologyName);
-                DatabaseFactoryUtils.writeOWLOntologyToDatabase(owlModel, activeTripleStore);
-                FactoryUtils.encodeNamespaceIntoModel(owlModel, activeTripleStore);
-                existsOntologyInstance = true;
-            }
-        }
-        if (existsOntologyInstance) {
             FactoryUtils.addPrefixesToModelListener(owlModel, activeTripleStore);
             owlModel.resetOntologyCache();
             RepositoryFileManager.loadProjectRepositories(owlModel);
