@@ -1,5 +1,7 @@
 package edu.stanford.smi.protegex.owl.ui.search.finder.tests;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -16,7 +18,6 @@ import edu.stanford.smi.protegex.owl.ui.search.finder.FindResult;
 import edu.stanford.smi.protegex.owl.ui.search.finder.SearchAdapter;
 import edu.stanford.smi.protegex.owl.ui.search.finder.SearchListener;
 import edu.stanford.smi.protegex.owl.ui.search.finder.ThreadedFind;
-import edu.stanford.smi.protegex.owl.util.JunitErrorHandler;
 
 /**
  * @author Nick Drummond, Medical Informatics Group, University of Manchester
@@ -93,9 +94,17 @@ public class FindTestCase extends AbstractJenaTestCase {
     }
 
     private void loadPizza() {
-        OwlProjectFromUriCreator creator = new OwlProjectFromUriCreator();
-        creator.setOntologyUri("http://www.co-ode.org/ontologies/pizza/2005/10/18/pizza.owl");
-        creator.setErrorHandler(new JunitErrorHandler(this, false));
-        creator.create();
+        try {
+            java.util.Collection errors = new ArrayList();
+            OwlProjectFromUriCreator creator = new OwlProjectFromUriCreator();
+            creator.setOntologyUri("http://www.co-ode.org/ontologies/pizza/2005/10/18/pizza.owl");
+            creator.create(errors);
+            if (!errors.isEmpty()) {
+                fail();
+            }
+        }
+        catch (IOException ioe) {
+            fail(ioe.getMessage());
+        }
     }
 }
