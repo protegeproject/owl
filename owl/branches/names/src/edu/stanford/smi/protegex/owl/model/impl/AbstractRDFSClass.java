@@ -502,7 +502,7 @@ public abstract class AbstractRDFSClass extends DefaultCls implements RDFSClass 
 
 
     public String getNamespacePrefix() {
-        return NamespaceUtil.getNamespacePrefix(getOWLModel(), getName());
+        return NamespaceUtil.getPrefixForResourceName(getOWLModel(), getName());
     }
 
 
