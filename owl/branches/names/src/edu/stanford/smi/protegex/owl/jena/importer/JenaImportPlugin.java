@@ -1,29 +1,29 @@
 package edu.stanford.smi.protegex.owl.jena.importer;
 
-import com.hp.hpl.jena.util.FileUtils;
+import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import edu.stanford.smi.protege.model.KnowledgeBase;
 import edu.stanford.smi.protege.model.Project;
 import edu.stanford.smi.protege.plugin.ImportPlugin;
 import edu.stanford.smi.protege.ui.ProjectManager;
-import edu.stanford.smi.protege.util.DefaultErrorHandler;
-import edu.stanford.smi.protege.util.ErrorHandler;
+import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protege.util.WaitCursor;
 import edu.stanford.smi.protegex.owl.jena.JenaFilePanel;
-import edu.stanford.smi.protegex.owl.jena.JenaKnowledgeBaseFactory;
 import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
 import edu.stanford.smi.protegex.owl.jena.creator.OwlProjectFromUriCreator;
 import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
 import edu.stanford.smi.protegex.owl.ui.dialogs.ModalDialogFactory;
 
-import java.io.File;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.Collection;
-
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
  */
 public class JenaImportPlugin implements ImportPlugin {
+    private static transient Logger log = Log.getLogger(JenaImportPlugin.class);
 
     public void dispose() {
     }
@@ -53,19 +53,31 @@ public class JenaImportPlugin implements ImportPlugin {
 
 
     private Project importProject(URI uri) {
-        final Boolean error = Boolean.FALSE;
-        DefaultErrorHandler<Throwable> handler = new DefaultErrorHandler<Throwable>();
+        java.util.Collection errors = new ArrayList();
         OwlProjectFromUriCreator creator  = new OwlProjectFromUriCreator();
         creator.setOntologyUri(uri.toString());
-        creator.setErrorHandler(handler);
-        JenaOWLModel owlModel = (JenaOWLModel) creator.create().getKnowledgeBase();
-        if (!handler.hasError()) {
+        JenaOWLModel owlModel = null;
+        try {
+            owlModel = (JenaOWLModel) creator.create(errors).getKnowledgeBase();
+        }
+        catch (IOException ioe) {
+            errors.add(ioe);
+        }
+        if (errors.isEmpty()) {
             Project project = Project.createNewProject(null, new ArrayList());
             KnowledgeBase kb = project.getKnowledgeBase();
             new OWLImporter(owlModel, kb);
             return project;
         }
         else {
+            for (Object error : errors) {
+                if (error instanceof Throwable) {
+                    log.log(Level.WARNING, "Exception caught", (Throwable) error);
+                }
+                else {
+                    log.warning("Error found " + error);
+                }
+            }
             return null;
         }
     }
