@@ -239,7 +239,7 @@ public class XMLSchemaDatatypes {
 
     public static XSDDatatype getXSDDatatype(edu.stanford.smi.protegex.owl.model.RDFSDatatype datatype) {
         if (datatype.isSystem()) {
-            return alias2XSDDatatype.get(datatype.getLocalName());
+            return alias2XSDDatatype.get(datatype.getName());
         }
         else {
             return getXSDDatatype(datatype.getBaseDatatype());
@@ -254,8 +254,7 @@ public class XMLSchemaDatatypes {
 
 
     public static String getXSDDatatypeAlias(String uri) {
-        int index = uri.lastIndexOf('#');
-        return uri.substring(index + 1);
+    	return uri;
     }
 
 
