@@ -1,5 +1,6 @@
 package edu.stanford.smi.protegex.owl.ui.repository.wizard;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -81,7 +82,7 @@ public class RepositoryWizard extends OWLWizard {
 		return selectedPlugin;
 	}
 
-	public static void main(String [] args) {
+	public static void main(String [] args) throws IOException {
 		OWLModel owlModel = ProtegeOWL.createJenaOWLModel();
 		RepositoryWizard wiz = new RepositoryWizard(null, owlModel);
 		if(wiz.execute() == Wizard.RESULT_FINISH) {
