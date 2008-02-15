@@ -21,10 +21,10 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import edu.stanford.smi.protege.exception.AmalgamatedIOException;
 import edu.stanford.smi.protege.storage.database.DatabaseFrameDb;
 import edu.stanford.smi.protege.storage.database.DatabaseProperty;
 import edu.stanford.smi.protege.storage.database.ValueCachingNarrowFrameStore;
-import edu.stanford.smi.protege.util.AmalgamatedIOException;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.database.DatabaseFactoryUtils;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
