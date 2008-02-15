@@ -1,16 +1,17 @@
 package edu.stanford.smi.protegex.owl;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Collection;
-
-import com.hp.hpl.jena.util.FileUtils;
+import java.util.logging.Level;
 
 import edu.stanford.smi.protege.Application;
 import edu.stanford.smi.protege.model.Project;
 import edu.stanford.smi.protege.util.ApplicationProperties;
+import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.jena.JenaKnowledgeBaseFactory;
 import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
 import edu.stanford.smi.protegex.owl.jena.creator.NewOwlProjectCreator;
@@ -38,31 +39,45 @@ public class ProtegeOWL {
      *
      * @return a new OWLModel
      */
-    public static JenaOWLModel createJenaOWLModel() {
+    public static JenaOWLModel createJenaOWLModel() throws IOException {
+        Collection errors = new ArrayList();
         NewOwlProjectCreator creator = new NewOwlProjectCreator();
         creator.setOntologyName(FactoryUtils.generateOntologyURIBase());
-        return (JenaOWLModel) creator.create().getKnowledgeBase();
+        JenaOWLModel owlModel = (JenaOWLModel) creator.create(errors).getKnowledgeBase();
+        handleErrors(errors);
+        return owlModel;
 	}
    
     
-    public static JenaOWLModel createJenaOWLModelFromInputStream(InputStream is) throws Exception {    	
+
+    
+    public static JenaOWLModel createJenaOWLModelFromInputStream(InputStream is) throws IOException { 
+        Collection errors = new ArrayList();
         OwlProjectFromStreamCreator creator = new OwlProjectFromStreamCreator();
         creator.setStream(is);
-        return (JenaOWLModel) creator.create().getKnowledgeBase();
+        JenaOWLModel owlModel =  (JenaOWLModel) creator.create(errors).getKnowledgeBase();
+        handleErrors(errors);
+        return owlModel;
     }
 
 
-    public static JenaOWLModel createJenaOWLModelFromReader(Reader reader) throws Exception {
+    public static JenaOWLModel createJenaOWLModelFromReader(Reader reader) throws IOException {
+        Collection errors = new ArrayList();
         OwlProjectFromReaderCreator creator = new OwlProjectFromReaderCreator();
         creator.setReader(reader);
-        return (JenaOWLModel) creator.create().getKnowledgeBase();
+        JenaOWLModel owlModel = (JenaOWLModel) creator.create(errors).getKnowledgeBase();
+        handleErrors(errors);
+        return owlModel;
     }
 
 
     public static JenaOWLModel createJenaOWLModelFromURI(String uri) throws Exception {
+        Collection errors = new ArrayList();
         OwlProjectFromUriCreator creator = new OwlProjectFromUriCreator();
         creator.setOntologyUri(uri);
-        return (JenaOWLModel) creator.create().getKnowledgeBase();
+        JenaOWLModel owlModel = (JenaOWLModel) creator.create(errors).getKnowledgeBase();
+        handleErrors(errors);
+        return owlModel;
     }
     
 
@@ -93,6 +108,16 @@ public class ProtegeOWL {
         JenaKnowledgeBaseFactory.setOWLFileName(project.getSources(), owlFilePath);
     }
 
+    private static void handleErrors(Collection errors) {
+        for (Object o : errors) {
+            if (o instanceof Throwable) {
+                Log.getLogger().log(Level.WARNING, "Exception caught ", (Throwable) o);
+            }
+            else {
+                Log.getLogger().warning("Error found " + o);
+            }
+        }
+    }
 
     /**
      * Starts the Protege UI, optionally with a given Project file.
