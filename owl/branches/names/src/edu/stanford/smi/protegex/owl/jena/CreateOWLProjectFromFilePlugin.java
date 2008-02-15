@@ -7,7 +7,6 @@ import java.util.logging.Level;
 
 import edu.stanford.smi.protege.model.Project;
 import edu.stanford.smi.protege.plugin.CreateProjectFromFilePlugin;
-import edu.stanford.smi.protege.util.CollectingErrorHandler;
 import edu.stanford.smi.protege.util.FileUtilities;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protege.util.MessageError;
@@ -23,19 +22,9 @@ public class CreateOWLProjectFromFilePlugin implements CreateProjectFromFilePlug
     public Project createProject(File file, Collection errors) {
         try {   
             JenaKnowledgeBaseFactory.useStandalone = false;
-            CollectingErrorHandler<Throwable> handler = new CollectingErrorHandler<Throwable>() {
-
-                @Override
-                public Throwable convertThrowable(Throwable t) {
-                    return t;
-                }
-
-            };
             OwlProjectFromUriCreator creator = new OwlProjectFromUriCreator();
             creator.setOntologyUri(URIUtilities.createURI(file.getPath()).toString());
-            creator.setErrorHandler(handler);
-            Project p = creator.create();
-            errors.addAll(handler.getErrors());
+            Project p = creator.create(errors);
             return p;
         }
         catch (Exception ex) {
