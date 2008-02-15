@@ -97,9 +97,9 @@ public class TripleStoreImpl implements TripleStore, ProtegeTripleAdder {
         this.name = name;
 
         KnowledgeBase kb = owlModel;
-        directTypesSlot = kb.getSlot(Model.Slot.DIRECT_TYPES);
-        directInstancesSlot = kb.getSlot(Model.Slot.DIRECT_INSTANCES);
-        nameSlot = kb.getSlot(Model.Slot.NAME);
+        directTypesSlot = kb.getSystemFrames().getDirectTypesSlot();
+        directInstancesSlot = kb.getSystemFrames().getDirectInstancesSlot();
+        nameSlot = kb.getSystemFrames().getNameSlot();
 
         initAACHandler(OWLNames.Slot.COMPLEMENT_OF, OWLNames.Cls.COMPLEMENT_CLASS, DefaultOWLComplementClass.class);
         initAACHandler(OWLNames.Slot.INTERSECTION_OF, OWLNames.Cls.INTERSECTION_CLASS, DefaultOWLIntersectionClass.class);
