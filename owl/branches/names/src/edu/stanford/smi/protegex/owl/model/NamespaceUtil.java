@@ -24,7 +24,7 @@ public class NamespaceUtil {
 		return fullURI.substring(Util.splitNamespace(fullURI) );
 	}
 	
-	public static String getNamespacePrefix(OWLModel owlModel, String fullURI) {
+	public static String getPrefixForResourceName(OWLModel owlModel, String fullURI) {
 	    String namespace = getNameSpace(fullURI);
 	    return owlModel.getNamespaceManager().getPrefix(namespace);
 	}
@@ -56,16 +56,16 @@ public class NamespaceUtil {
 		if (ind == -1) { //no ":" in the prefixed name, this is a name in the default namespace
 			String defaultNamespace = nsm.getDefaultNamespace();
 			
-			if (defaultNamespace == null) { 
-				return null;
+			if (defaultNamespace == null) {
+				return prefixedName;
 			}
 			
-			return defaultNamespace + prefixedName;			
+			return defaultNamespace + prefixedName;	
 		}
 						
 		if (ind == 0) {//e.g. ":protege" - what to do in this case?
 			//TODO: what should happen in this case?
-			return null;
+			return prefixedName;
 		}
 		
 		String prefix = prefixedName.substring(0, ind);
