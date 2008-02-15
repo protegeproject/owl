@@ -8,9 +8,9 @@ import java.sql.Statement;
 import java.util.Collection;
 import java.util.logging.Logger;
 
+import edu.stanford.smi.protege.exception.AmalgamatedIOException;
 import edu.stanford.smi.protege.model.Model;
 import edu.stanford.smi.protege.model.framestore.NarrowFrameStore;
-import edu.stanford.smi.protege.util.AmalgamatedIOException;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protege.util.URIUtilities;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
@@ -19,9 +19,11 @@ import edu.stanford.smi.protegex.owl.model.OWLOntology;
 import edu.stanford.smi.protegex.owl.model.RDFIndividual;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
+import edu.stanford.smi.protegex.owl.model.factory.FactoryUtils;
 import edu.stanford.smi.protegex.owl.model.impl.OWLSystemFrames;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreModel;
+import edu.stanford.smi.protegex.owl.repository.util.RepositoryFileManager;
 
 /**
  * This class is for internal use only.  It is used during the loading, saving and importing
@@ -32,6 +34,9 @@ import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreModel;
  */
 public class DatabaseFactoryUtils {
     public static transient final Logger log = Log.getLogger(DatabaseFactoryUtils.class);
+    
+    
+
     
     public static boolean readOWLOntologyFromDatabase(OWLModel owlModel, TripleStore tripleStore) {
         NarrowFrameStore nfs = tripleStore.getNarrowFrameStore();
