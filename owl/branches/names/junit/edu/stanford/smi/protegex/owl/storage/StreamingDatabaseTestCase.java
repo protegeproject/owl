@@ -27,7 +27,7 @@ public class StreamingDatabaseTestCase extends APITestCase {
         plugin.setURL(getDBProperty(JUNIT_DB_URL_PROPERTY));
         plugin.setTable(getDBProperty(JUNIT_DB_TABLE_PROPERTY));
         plugin.setUseExistingSources(true);
-        plugin.setOntologyFileURI(fileLocation);
+        plugin.setOntologyInputSource(fileLocation);
         Project p = plugin.createProject();
         OWLModel model = (OWLModel) p.getKnowledgeBase();
         assertNotNull(model.getRDFResource("Pizza"));
