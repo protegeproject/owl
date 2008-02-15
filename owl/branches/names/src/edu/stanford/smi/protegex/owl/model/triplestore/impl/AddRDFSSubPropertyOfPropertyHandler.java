@@ -16,7 +16,7 @@ class AddRDFSSubPropertyOfPropertyHandler extends AbstractAddPropertyValueHandle
 
     AddRDFSSubPropertyOfPropertyHandler(ProtegeTripleAdder adder, KnowledgeBase kb) {
         super(adder);
-        directSubSlotsSlot = kb.getSlot(Model.Slot.DIRECT_SUBSLOTS);
+        directSubSlotsSlot = kb.getSystemFrames().getDirectSubslotsSlot();
     }
 
 
