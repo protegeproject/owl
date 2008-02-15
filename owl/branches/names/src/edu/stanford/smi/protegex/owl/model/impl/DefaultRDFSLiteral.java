@@ -12,18 +12,12 @@ import java.math.BigInteger;
  */
 public class DefaultRDFSLiteral implements RDFSLiteral {
     
-
     public static final String DATATYPE_PREFIX = "~@";
-
     public static final String LANGUAGE_PREFIX = "~#";
-
-    public static final char SEPARATOR = ' ';   
-    
+    public static final char SEPARATOR = ' ';       
 
     private OWLModel owlModel;
-
-    private String rawValue;
-    
+    private String rawValue;    
     private String language; 
 
 
@@ -157,7 +151,7 @@ public class DefaultRDFSLiteral implements RDFSLiteral {
             }
             //TT: hack for user defined data types. Find a better solution.
             else {
-            	RDFSDatatype datatype = owlModel.getRDFSDatatypeByName(RDFNames.XSD_PREFIX + ProtegeNames.PREFIX_LOCALNAME_SEPARATOR + localName);            		
+            	RDFSDatatype datatype = owlModel.getRDFSDatatypeByName(localName);            		
             	if (datatype == null) {
             		//datatype = owlModel.getRDFSDatatypeByName(localName);
                 	//WRONG!
