@@ -164,6 +164,7 @@ public abstract class AbstractOWLTestCase extends TestCase {
         OntDocumentManager.getInstance().reset(true);
                 
         owlModel = ProtegeOWL.createJenaOWLModel();
+        owlModel.setExpandShortNameInMethods(true);
         project = owlModel.getProject();
  
         owlThing = owlModel.getOWLThingClass();
