@@ -1,7 +1,12 @@
 package edu.stanford.smi.protegex.owl.jena;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.logging.Logger;
 
+import edu.stanford.smi.protege.exception.AmalgamatedIOException;
 import edu.stanford.smi.protege.model.KnowledgeBaseFactory;
 import edu.stanford.smi.protege.model.Project;
 import edu.stanford.smi.protege.plugin.AbstractCreateProjectPlugin;
@@ -38,13 +43,24 @@ public class OWLFilesCreateProjectPlugin extends AbstractCreateProjectPlugin imp
         JenaKnowledgeBaseFactory.useStandalone = false;
     }
 
-    protected Project buildNewProject(KnowledgeBaseFactory factory) {    
+    protected Project buildNewProject(KnowledgeBaseFactory factory) {   
+        Collection errors = new ArrayList();
         OwlProjectFromUriCreator creator = new OwlProjectFromUriCreator((JenaKnowledgeBaseFactory) factory);
         creator.setOntologyUri(fileURI);
         creator.setLang(lang);
         creator.setDefaultClassView(defaultClassView);
         creator.setProfileURI(profileURI);
-        return creator.create();
+        try {
+            return creator.create(errors);
+        }
+        catch (IOException ioe) {
+            errors.add(ioe);
+            return null;
+        }
+        finally {
+            handleErrors(errors);
+        }
+        
     }
 
     public boolean canCreateProject(KnowledgeBaseFactory factory, boolean useExistingSources) {
@@ -64,11 +80,25 @@ public class OWLFilesCreateProjectPlugin extends AbstractCreateProjectPlugin imp
 
 
     protected Project createNewProject(KnowledgeBaseFactory factory) {
+        Collection errors = new ArrayList();
         NewOwlProjectCreator creator = new NewOwlProjectCreator((JenaKnowledgeBaseFactory) factory);
         creator.setOntologyName(ontologyName);
         creator.setDefaultClassView(defaultClassView);
         creator.setProfileURI(profileURI);
-        return creator.create();
+        try {
+            return creator.create(errors);
+        }
+        catch (AmalgamatedIOException ioe) {
+            errors.addAll(ioe.getErrorList());
+            return null;
+        }
+        catch (IOException ioe) {
+            errors.add(ioe);
+            return null;
+        }
+        finally {
+            handleErrors(errors);
+        }
     }
  
 
