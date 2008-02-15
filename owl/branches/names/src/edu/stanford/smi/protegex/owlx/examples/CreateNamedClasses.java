@@ -1,21 +1,22 @@
 package edu.stanford.smi.protegex.owlx.examples;
 
+import java.io.IOException;
+import java.util.Collection;
+import java.util.Iterator;
+
+import junit.framework.Assert;
 import edu.stanford.smi.protegex.owl.ProtegeOWL;
 import edu.stanford.smi.protegex.owl.model.OWLIndividual;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
 import edu.stanford.smi.protegex.owl.model.RDFSClass;
-import junit.framework.Assert;
-
-import java.util.Collection;
-import java.util.Iterator;
 
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
  */
 public class CreateNamedClasses {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
 
         OWLModel owlModel = ProtegeOWL.createJenaOWLModel();
 

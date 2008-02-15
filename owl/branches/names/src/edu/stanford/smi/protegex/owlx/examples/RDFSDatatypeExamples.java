@@ -1,5 +1,7 @@
 package edu.stanford.smi.protegex.owlx.examples;
 
+import java.io.IOException;
+
 import edu.stanford.smi.protegex.owl.ProtegeOWL;
 import edu.stanford.smi.protegex.owl.model.*;
 import junit.framework.Assert;
@@ -11,7 +13,7 @@ import junit.framework.Assert;
  */
 public class RDFSDatatypeExamples {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
 
         OWLModel owlModel = ProtegeOWL.createJenaOWLModel();
         OWLNamedClass cls = owlModel.createOWLNamedClass("Class");

@@ -1,5 +1,7 @@
 package edu.stanford.smi.protegex.owlx.examples;
 
+import java.io.IOException;
+
 import edu.stanford.smi.protegex.owl.ProtegeOWL;
 import edu.stanford.smi.protegex.owl.jena.Jena;
 import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
@@ -16,7 +18,7 @@ import edu.stanford.smi.protegex.owl.model.OWLObjectProperty;
  */
 public class CreateDefinedClass {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
 
         JenaOWLModel owlModel = ProtegeOWL.createJenaOWLModel();
 

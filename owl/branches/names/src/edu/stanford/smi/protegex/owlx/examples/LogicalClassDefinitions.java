@@ -1,15 +1,21 @@
 package edu.stanford.smi.protegex.owlx.examples;
 
+import java.io.IOException;
+
 import edu.stanford.smi.protegex.owl.ProtegeOWL;
 import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
-import edu.stanford.smi.protegex.owl.model.*;
+import edu.stanford.smi.protegex.owl.model.OWLComplementClass;
+import edu.stanford.smi.protegex.owl.model.OWLIntersectionClass;
+import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
+import edu.stanford.smi.protegex.owl.model.OWLUnionClass;
+import edu.stanford.smi.protegex.owl.model.RDFSClass;
 
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
  */
 public class LogicalClassDefinitions {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
 
         JenaOWLModel owlModel = ProtegeOWL.createJenaOWLModel();
 

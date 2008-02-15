@@ -1,5 +1,8 @@
 package edu.stanford.smi.protegex.owlx.examples;
 
+import java.io.IOException;
+import java.util.Collection;
+
 import edu.stanford.smi.protegex.owl.ProtegeOWL;
 import edu.stanford.smi.protegex.owl.jena.Jena;
 import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
@@ -7,14 +10,12 @@ import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
 import edu.stanford.smi.protegex.owl.model.OWLObjectProperty;
 import edu.stanford.smi.protegex.owl.model.OWLUnionClass;
 
-import java.util.Collection;
-
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
  */
 public class ObjectPropertyExamples {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
 
         JenaOWLModel owlModel = ProtegeOWL.createJenaOWLModel();
 
