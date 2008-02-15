@@ -1,19 +1,25 @@
 package edu.stanford.smi.protegex.owl.database;
 
-import java.io.File;
 import java.io.IOException;
-import java.net.URI;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
+import javax.swing.JOptionPane;
+
+import edu.stanford.smi.protege.exception.ProtegeIOException;
 import edu.stanford.smi.protege.model.KnowledgeBaseFactory;
 import edu.stanford.smi.protege.model.Project;
 import edu.stanford.smi.protege.plugin.AbstractCreateProjectPlugin;
 import edu.stanford.smi.protege.plugin.CreateProjectWizard;
-import edu.stanford.smi.protege.storage.database.DatabaseKnowledgeBaseFactory;
 import edu.stanford.smi.protege.util.Log;
-import edu.stanford.smi.protege.util.PropertyList;
 import edu.stanford.smi.protege.util.WizardPage;
+import edu.stanford.smi.protegex.owl.database.creator.OwlDatabaseCreator;
 
 /**
  * @author Ray Fergerson  <fergerson@smi.stanford.edu>
@@ -21,6 +27,7 @@ import edu.stanford.smi.protege.util.WizardPage;
  */
 public class CreateOWLDatabaseProjectPlugin extends
         AbstractCreateProjectPlugin implements OWLDatabasePlugin {
+    private static transient Logger log = Log.getLogger(CreateOWLDatabaseProjectPlugin.class);
 
     private String driver;
 
@@ -29,8 +36,6 @@ public class CreateOWLDatabaseProjectPlugin extends
     private String username;
 
     private String password;
-
-    protected URI ontologyFileURI;
 
     private String url;
     
@@ -45,34 +50,44 @@ public class CreateOWLDatabaseProjectPlugin extends
     public CreateOWLDatabaseProjectPlugin(String name) {
         super(name);
     }
+    
+    @SuppressWarnings("unchecked")
+    @Override
+    protected Project createNewProject(KnowledgeBaseFactory factory) {
+        return makeProject(factory, true);
+    }
+    
+    @Override
+    protected Project buildNewProject(KnowledgeBaseFactory factory) {
+        return makeProject(factory, false);
+    }
+    
+    private Project makeProject(KnowledgeBaseFactory factory, boolean wipe) {
+        OwlDatabaseCreator creator = new OwlDatabaseCreator((OWLDatabaseKnowledgeBaseFactory) factory, wipe);
+        creator.setDriver(driver);
+        creator.setURL(url);
+        creator.setTable(table);
+        creator.setUsername(username);
+        creator.setPassword(password);
+        creator.setOntologyName(ontologyName);
+        Collection errors = new ArrayList();
+        Project  project = null;
+        try {
+            project = creator.create(errors);
+        }
+        catch (IOException ioe) {
+            errors.add(ioe);
+        }
+        handleErrors(errors);
+        return project;
+    }
 
 
     public boolean canCreateProject(KnowledgeBaseFactory factory, boolean useExistingSources) {
-        return factory.getClass() == OWLDatabaseKnowledgeBaseFactory.class;
+        return factory instanceof OWLDatabaseKnowledgeBaseFactory;
     }
-
-
-    @Override
-    public Project createNewProject(KnowledgeBaseFactory factory) {
-        Collection errors = new ArrayList();
-        Project project = super.createNewProject(factory);
-        initializeSources(project.getSources());
-        try {
-            File tempProjectFile = File.createTempFile("protege", "temp");
-            project.setProjectFilePath(tempProjectFile.getPath());
-            project.save(errors);
-            if(errors.isEmpty()) {
-                project = Project.loadProjectFromFile(tempProjectFile.getPath(), errors);
-            }
-            handleErrors(errors);
-            project.setProjectFilePath(null);
-            tempProjectFile.delete();
-        }
-        catch (IOException e) {
-            Log.getLogger().severe(Log.toString(e));
-        }
-        return project;
-    }
+    
+    
 
 
     public WizardPage createCreateProjectWizardPage(CreateProjectWizard wizard,
@@ -83,23 +98,15 @@ public class CreateOWLDatabaseProjectPlugin extends
     }
 
 
-    @Override
-    protected void initializeSources(PropertyList sources) {
-        DatabaseKnowledgeBaseFactory.setSources(sources, driver, url, table, username, password);
-        if (ontologyName != null) {
-            sources.setString(OWLDatabaseKnowledgeBaseFactory.CREATED_ONTOLOGY_NAME, ontologyName);
-        }
-    }
-
-
+    /*
+     * getters and setters
+     */
+    
     public void setDriver(String driver) {
         this.driver = driver;
     }
 
 
-    public void setOntologyFileURI(URI uri) {
-        this.ontologyFileURI = uri;
-    }
 
 
     public void setTable(String table) {
@@ -123,5 +130,39 @@ public class CreateOWLDatabaseProjectPlugin extends
     
     public void setOntologyName(String name) {
         this.ontologyName = name;
+    }
+
+
+    public String getUrl() {
+        return url;
+    }
+
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+
+    public String getDriver() {
+        return driver;
+    }
+
+
+    public String getTable() {
+        return table;
+    }
+
+
+    public String getUsername() {
+        return username;
+    }
+
+
+    public String getPassword() {
+        return password;
+    }
+
+    public String getOntologyName() {
+        return ontologyName;
     }
 }
