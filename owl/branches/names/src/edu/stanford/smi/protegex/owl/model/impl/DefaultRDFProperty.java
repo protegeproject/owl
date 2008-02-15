@@ -667,7 +667,7 @@ public class DefaultRDFProperty extends DefaultSlot implements RDFProperty {
 
 
     public String getNamespacePrefix() {
-        return NamespaceUtil.getNamespacePrefix(getOWLModel(), getName());
+        return NamespaceUtil.getPrefixForResourceName(getOWLModel(), getName());
     }
 
 
@@ -752,7 +752,7 @@ public class DefaultRDFProperty extends DefaultSlot implements RDFProperty {
 
 
     public String getURI() {
-        return getOWLModel().getURIForResourceName(getName());
+        return getName();
     }
 
 
