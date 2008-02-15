@@ -1,20 +1,21 @@
 package edu.stanford.smi.protegex.owl.tests;
 
+import java.io.ByteArrayOutputStream;
+import java.io.StringReader;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntResource;
 import com.hp.hpl.jena.rdf.model.Model;
+
 import edu.stanford.smi.protegex.owl.ProtegeOWL;
 import edu.stanford.smi.protegex.owl.jena.Jena;
 import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
 import edu.stanford.smi.protegex.owl.jena.creator.OwlProjectFromReaderCreator;
 import edu.stanford.smi.protegex.owl.jena.creator.OwlProjectFromUriCreator;
-import edu.stanford.smi.protegex.owl.jena.parser.ProtegeOWLParser;
-import edu.stanford.smi.protegex.owl.util.JunitErrorHandler;
-
-import java.io.ByteArrayOutputStream;
-import java.io.StringReader;
-import java.net.URI;
-import java.util.Iterator;
 
 /**
  * The base class of various JUnit tests in this package.
@@ -44,10 +45,10 @@ public abstract class AbstractJenaTestCase extends AbstractOWLTestCase {
 
 
     public void loadTestOntology(URI uri) throws Exception {
+        Collection errors = new ArrayList();
         OwlProjectFromUriCreator creator = new OwlProjectFromUriCreator();
         creator.setOntologyUri(uri.toString());
-        creator.setErrorHandler(new JunitErrorHandler(this, true));
-        owlModel = (JenaOWLModel) creator.create().getKnowledgeBase();
+        owlModel = (JenaOWLModel) creator.create(errors).getKnowledgeBase();
         owlModel.setExpandShortNameInMethods(true);
     }
 
@@ -65,6 +66,7 @@ public abstract class AbstractJenaTestCase extends AbstractOWLTestCase {
 
 
     public JenaOWLModel reload(JenaOWLModel owlModel) throws Exception {
+        Collection errors = new ArrayList();
         OntModel ontModel = owlModel.getOntModel();
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         Jena.dumpRDF(ontModel, stream);
@@ -72,8 +74,7 @@ public abstract class AbstractJenaTestCase extends AbstractOWLTestCase {
         StringReader reader = new StringReader(str);
         OwlProjectFromReaderCreator creator = new OwlProjectFromReaderCreator();
         creator.setReader(reader);
-        creator.setErrorHandler(new JunitErrorHandler(this, true));
-        return (JenaOWLModel) creator.create().getKnowledgeBase();
+        return (JenaOWLModel) creator.create(errors).getKnowledgeBase();
     }
 
 
