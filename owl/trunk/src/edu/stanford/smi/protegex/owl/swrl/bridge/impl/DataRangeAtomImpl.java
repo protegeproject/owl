@@ -17,7 +17,7 @@ public class DataRangeAtomImpl extends AtomImpl implements DataRangeAtom
   
   public DataRangeAtomImpl(SWRLDataRangeAtom atom) throws OWLFactoryException
   { 
-    // TODO: and don't forget to call addReferencedVariableName, and addReferencedIndividualName if appropriate
+    // TODO: and don't forget to call addReferencedVariableName if appropriate
     throw new OWLFactoryException("SWRL data range atoms not implemented.");
   } // DataRangeAtomImpl
 

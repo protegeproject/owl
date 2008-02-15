@@ -248,6 +248,7 @@ public class ResultImpl implements ResultGenerator, SQWRLResult, Serializable
 
     if (aggregateColumnIndexes.containsKey(Integer.valueOf(rowDataColumnIndex)) && 
         (!aggregateColumnIndexes.get(Integer.valueOf(rowDataColumnIndex)).equals(SQWRLNames.CountAggregateFunction)) && 
+        (!aggregateColumnIndexes.get(Integer.valueOf(rowDataColumnIndex)).equals(SQWRLNames.CountDistinctAggregateFunction)) && 
         (!isNumericValue(value)))
         throw new SQWRLException("attempt to add non numeric value '" + value + "' to min, max, sum, or avg aggregate column '" + 
                                   allColumnNames.get(rowDataColumnIndex) + "'");
@@ -635,6 +636,7 @@ public class ResultImpl implements ResultGenerator, SQWRLResult, Serializable
         else if (aggregateFunctionName.equalsIgnoreCase(SQWRLNames.SumAggregateFunction)) value = sum(values);
         else if (aggregateFunctionName.equalsIgnoreCase(SQWRLNames.AvgAggregateFunction)) value = avg(values);
         else if (aggregateFunctionName.equalsIgnoreCase(SQWRLNames.CountAggregateFunction)) value = count(values);
+        else if (aggregateFunctionName.equalsIgnoreCase(SQWRLNames.CountDistinctAggregateFunction)) value = countDistinct(values);
         else throw new InvalidAggregateFunctionNameException("invalid aggregate function '" + aggregateFunctionName + "'");
 
         row.set(aggregateColumnIndex.intValue(), value);
@@ -757,6 +759,13 @@ public class ResultImpl implements ResultGenerator, SQWRLResult, Serializable
   {
     return OWLFactory.createOWLDatatypeValue(values.size());
   } // count
+
+  private DatatypeValue countDistinct(List<ResultValue> values) throws SQWRLException
+  {
+    Set<ResultValue> distinctValues = new HashSet<ResultValue>(values);
+
+    return OWLFactory.createOWLDatatypeValue(distinctValues.size());
+  } // countDistinct
 
   // TODO: linear search is not very efficient. 
   private int findRowIndex(List<List<ResultValue>> result, List<ResultValue> rowToFind, Comparator<List<ResultValue>> rowComparator)

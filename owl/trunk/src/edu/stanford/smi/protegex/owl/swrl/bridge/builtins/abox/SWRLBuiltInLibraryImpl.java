@@ -276,4 +276,23 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
     return result;
   } // setValue
 
+  public boolean isConstant(List<BuiltInArgument> arguments) throws BuiltInException
+  {
+    SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(1, arguments.size());
+
+    return SWRLBuiltInUtil.isArgumentALiteral(0, arguments);
+  } // isConstant
+
+  public boolean isNumeric(List<BuiltInArgument> arguments) throws BuiltInException
+  {
+    SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(1, arguments.size());
+
+    return SWRLBuiltInUtil.isArgumentNumeric(0, arguments);
+  } // isNumeric
+
+  public boolean notNumeric(List<BuiltInArgument> arguments) throws BuiltInException
+  {
+    return !isNumeric(arguments);
+  } // notNumeric
+
 } // SWRLBuiltInLibraryImpl

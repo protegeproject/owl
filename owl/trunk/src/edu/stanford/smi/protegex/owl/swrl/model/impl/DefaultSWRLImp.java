@@ -121,8 +121,22 @@ public class DefaultSWRLImp extends AbstractSWRLIndividual implements SWRLImp
     delete();
   }
 
-  public SWRLAtomList getHead() { return (SWRLAtomList) getPropertyValue(getOWLModel().getRDFProperty(SWRLNames.Slot.HEAD)); }
-  public SWRLAtomList getBody() { return (SWRLAtomList) getPropertyValue(getOWLModel().getRDFProperty(SWRLNames.Slot.BODY)); }
+  public SWRLAtomList getHead() 
+  { 
+    Object propertyValue = getPropertyValue(getOWLModel().getRDFProperty(SWRLNames.Slot.HEAD)); 
+
+    if (propertyValue instanceof SWRLAtomList) return (SWRLAtomList)propertyValue;
+    else return null;
+  } // getHead
+
+  public SWRLAtomList getBody() 
+  { 
+    Object propertyValue = getPropertyValue(getOWLModel().getRDFProperty(SWRLNames.Slot.BODY)); 
+
+    if (propertyValue instanceof SWRLAtomList) return (SWRLAtomList)propertyValue;
+    else return null;
+  } // getBody
+
   public void setBody(SWRLAtomList swrlAtomList) { setPropertyValue(getOWLModel().getRDFProperty(SWRLNames.Slot.BODY), swrlAtomList); } 
   public void setHead(SWRLAtomList swrlAtomList) { setPropertyValue(getOWLModel().getRDFProperty(SWRLNames.Slot.HEAD), swrlAtomList); }
 
