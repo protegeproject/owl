@@ -27,8 +27,7 @@ public class OwlProjectFromReaderCreator extends AbstractOwlProjectCreator {
 
     @SuppressWarnings("unchecked")
     @Override
-    public Project create() {
-        Collection errors = new ArrayList();
+    public Project create(Collection errors) throws IOException {
         Project project = Project.createNewProject(factory, errors);
         OWLModel owlModel = (OWLModel) project.getKnowledgeBase();
         
@@ -39,7 +38,6 @@ public class OwlProjectFromReaderCreator extends AbstractOwlProjectCreator {
         catch (IOException e) {
             errors.add(e);
         }
-        handleErrors(errors);
         return project;
     }
     
