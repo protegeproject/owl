@@ -4,12 +4,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import edu.stanford.smi.protege.model.KnowledgeBase;
-import edu.stanford.smi.protege.util.DefaultErrorHandler;
 import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
 import edu.stanford.smi.protegex.owl.jena.creator.OwlProjectFromUriCreator;
 import edu.stanford.smi.protegex.owl.model.OWLDataRange;
 import edu.stanford.smi.protegex.owl.model.OWLDatatypeProperty;
-import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
 import edu.stanford.smi.protegex.owl.model.OWLObjectProperty;
 import edu.stanford.smi.protegex.owl.model.RDFObject;
@@ -30,14 +28,13 @@ import edu.stanford.smi.protegex.owl.swrl.model.SWRLVariable;
 public class SWRLFactoryTest {
 
 
-    public static void main(String[] args) throws Exception {     
-        DefaultErrorHandler<Throwable> handler = new DefaultErrorHandler<Throwable>();
+    public static void main(String[] args) throws Exception {
+        Collection errors = new ArrayList();
         OwlProjectFromUriCreator creator = new OwlProjectFromUriCreator();
-        creator.setErrorHandler(handler);
         creator.setOntologyUri("http://protege.stanford.edu/plugins/owl/testdata/importSWRL.owl");
-        JenaOWLModel owlModel = (JenaOWLModel) creator.create().getKnowledgeBase();
+        JenaOWLModel owlModel = (JenaOWLModel) creator.create(errors).getKnowledgeBase();
 
-        if (!handler.hasError()) {
+        if (!errors.isEmpty()) {
             System.err.println("Error loading importSWRL.owl.");
             System.exit(-1);
         } // if
