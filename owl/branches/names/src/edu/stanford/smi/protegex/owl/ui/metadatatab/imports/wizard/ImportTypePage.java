@@ -1,15 +1,23 @@
 package edu.stanford.smi.protegex.owl.ui.metadatatab.imports.wizard;
 
+import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.IOException;
+
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+
 import edu.stanford.smi.protege.util.WizardPage;
 import edu.stanford.smi.protegex.owl.ProtegeOWL;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.ui.wizard.OWLWizard;
 import edu.stanford.smi.protegex.owl.ui.wizard.OWLWizardPage;
-
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 /**
  * User: matthewhorridge<br>
@@ -104,7 +112,7 @@ public class ImportTypePage extends OWLWizardPage implements ActionListener {
             "specific local file.";
 
 
-    public static void main(String [] args) {
+    public static void main(String [] args) throws IOException {
         OWLModel model = ProtegeOWL.createJenaOWLModel();
         ImportWizard w = new ImportWizard(null, model);
         ImportTypePage page = new ImportTypePage(w);
