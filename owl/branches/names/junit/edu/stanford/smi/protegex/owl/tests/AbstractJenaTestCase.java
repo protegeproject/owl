@@ -48,6 +48,7 @@ public abstract class AbstractJenaTestCase extends AbstractOWLTestCase {
         creator.setOntologyUri(uri.toString());
         creator.setErrorHandler(new JunitErrorHandler(this, true));
         owlModel = (JenaOWLModel) creator.create().getKnowledgeBase();
+        owlModel.setExpandShortNameInMethods(true);
     }
 
 
