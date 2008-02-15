@@ -271,7 +271,9 @@ public class ProtegeOWLParser {
 	
 	private  void doPostProcessing() {
         TripleStoreUtil.sortSubclasses(owlModel);
-        ((JenaOWLModel) owlModel).copyFacetValuesIntoNamedClses();
+        if (owlModel instanceof JenaOWLModel)  {
+            ((JenaOWLModel) owlModel).copyFacetValuesIntoNamedClses();
+        }
 	}
 
 	protected ARP createARP() {
