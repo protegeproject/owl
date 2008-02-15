@@ -16,7 +16,7 @@ class AddOWLInverseOfPropertyHandler extends AbstractAddPropertyValueHandler {
 
     AddOWLInverseOfPropertyHandler(ProtegeTripleAdder adder, KnowledgeBase kb) {
         super(adder);
-        this.inverseOfProperty = kb.getSlot(OWLNames.Slot.INVERSE_OF);
+        inverseOfProperty = kb.getSystemFrames().getInverseSlotSlot();
     }
 
 
