@@ -15,12 +15,12 @@ import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
  */
 public class InitOWLDatabaseFromFileWizardPage extends WizardPage {
 
-    private OWLDatabasePlugin plugin;
+    private CreateOWLDatabaseFromFileProjectPlugin plugin;
 
     private URIField uriField;
 
 
-    public InitOWLDatabaseFromFileWizardPage(Wizard wizard, OWLDatabasePlugin plugin) {
+    public InitOWLDatabaseFromFileWizardPage(Wizard wizard, CreateOWLDatabaseFromFileProjectPlugin plugin) {
         super("Specify Ontology File", wizard);
         this.plugin = plugin;
         uriField = new URIField("URI of OWL file to populate the new database with",
@@ -39,12 +39,14 @@ public class InitOWLDatabaseFromFileWizardPage extends WizardPage {
 
     @Override
     public WizardPage getNextPage() {
-        return new OWLDatabaseWizardPageExistingSources(getWizard(), plugin);
+        OWLDatabaseWizardPageExistingSources wizard = new OWLDatabaseWizardPageExistingSources(getWizard(), plugin);
+        wizard.setFileToDatabase(true);
+        return wizard;
     }
 
 
     @Override
     public void onFinish() {
-        plugin.setOntologyFileURI(uriField.getAbsoluteURI());
+        plugin.setOntologyInputSource(uriField.getAbsoluteURI());
     }
 }
