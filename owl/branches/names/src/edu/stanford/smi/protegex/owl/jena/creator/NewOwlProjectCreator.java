@@ -1,19 +1,14 @@
 package edu.stanford.smi.protegex.owl.jena.creator;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.logging.Level;
 
 import edu.stanford.smi.protege.model.Project;
-import edu.stanford.smi.protege.util.ErrorHandler;
-import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.jena.JenaKnowledgeBaseFactory;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
-import edu.stanford.smi.protegex.owl.model.ProtegeNames;
 import edu.stanford.smi.protegex.owl.model.factory.AbstractOwlProjectCreator;
 import edu.stanford.smi.protegex.owl.model.factory.FactoryUtils;
-import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
-import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreModel;
 
 public class NewOwlProjectCreator extends AbstractOwlProjectCreator {
     private String ontologyName;
@@ -27,8 +22,7 @@ public class NewOwlProjectCreator extends AbstractOwlProjectCreator {
     }
 
     @Override
-    public Project create() {
-        Collection errors = new ArrayList();
+    public Project create(Collection errors) throws IOException {
         Project project = Project.createNewProject(factory, errors);
         OWLModel owlModel = (OWLModel) project.getKnowledgeBase();
         
@@ -38,8 +32,6 @@ public class NewOwlProjectCreator extends AbstractOwlProjectCreator {
         FactoryUtils.addOntologyToTripleStore(owlModel, owlModel.getTripleStoreModel().getActiveTripleStore(), ontologyName);
         
         addViewSettings(project.getSources());
-        
-        handleErrors(errors);
         
         return project;
     }
