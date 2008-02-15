@@ -1,13 +1,16 @@
 package edu.stanford.smi.protegex.owl.model.triplestore.impl;
 
-import edu.stanford.smi.protege.model.*;
-import edu.stanford.smi.protegex.owl.model.OWLNames;
+import java.util.Collection;
+
+import edu.stanford.smi.protege.model.Cls;
+import edu.stanford.smi.protege.model.Instance;
+import edu.stanford.smi.protege.model.KnowledgeBase;
+import edu.stanford.smi.protege.model.Slot;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.RDFNames;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreModel;
-
-import java.util.Collection;
 
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
@@ -29,10 +32,10 @@ class AddRDFTypePropertyHandler extends AbstractAddPropertyValueHandler {
 
     AddRDFTypePropertyHandler(ProtegeTripleAdder adder, KnowledgeBase kb, TripleStoreModel tripleStoreModel, TripleStore tripleStore) {
         super(adder);
-        directInstancesSlot = kb.getSlot(Model.Slot.DIRECT_INSTANCES);
-        directTypesSlot = kb.getSlot(Model.Slot.DIRECT_TYPES);
-        owlClassClass = kb.getCls(OWLNames.Cls.NAMED_CLASS);
-        untypedResourceClass = kb.getCls(RDFNames.Cls.EXTERNAL_RESOURCE);
+        directInstancesSlot = kb.getSystemFrames().getDirectInstancesSlot();
+        directTypesSlot = kb.getSystemFrames().getDirectTypesSlot();
+        owlClassClass = ((OWLModel) kb).getSystemFrames().getOwlNamedClassClass();
+        untypedResourceClass = ((OWLModel) kb).getSystemFrames().getRdfExternalResourceClass();
         this.tripleStoreModel = tripleStoreModel;
         this.tripleStore = tripleStore;
     }
