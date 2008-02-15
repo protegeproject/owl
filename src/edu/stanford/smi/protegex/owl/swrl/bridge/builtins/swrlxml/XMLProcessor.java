@@ -30,6 +30,7 @@ public class XMLProcessor
 
     try {
       serializer.output(doc, xmlStream);
+      xmlStream.close();
     } catch (IOException e) {
       throw new XMLProcessorException("error writing XML file '" + outputXMLFileName + "': " + e.getMessage());
     } // try
@@ -63,6 +64,7 @@ public class XMLProcessor
       SAXBuilder builder = new SAXBuilder();
       InputStream xmlStream = createInputXMLStream(inputXMLStreamName);
       doc = builder.build(xmlStream);
+      xmlStream.close();
     } catch (Exception e) {
       throw new XMLProcessorException("error opening XML file '" + inputXMLStreamName + "': " + e.getMessage());
     } // try
