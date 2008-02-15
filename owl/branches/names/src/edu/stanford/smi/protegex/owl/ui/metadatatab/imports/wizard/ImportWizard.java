@@ -1,10 +1,12 @@
 package edu.stanford.smi.protegex.owl.ui.metadatatab.imports.wizard;
 
+import java.io.IOException;
+
+import javax.swing.JComponent;
+
 import edu.stanford.smi.protegex.owl.ProtegeOWL;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.ui.wizard.OWLWizard;
-
-import javax.swing.*;
 
 /**
  * User: matthewhorridge<br>
@@ -44,7 +46,7 @@ public class ImportWizard extends OWLWizard {
 		importData = new ImportWizardData();
 	}
 
-	public static void main(String  [] args) {
+	public static void main(String  [] args) throws IOException {
 		OWLModel owlModel = ProtegeOWL.createJenaOWLModel();
 		ImportWizard wizard = new ImportWizard(null, owlModel);
 		wizard.show();
