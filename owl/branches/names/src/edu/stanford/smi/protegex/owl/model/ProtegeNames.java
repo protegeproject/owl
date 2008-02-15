@@ -92,37 +92,37 @@ public class ProtegeNames {
 
 
     public static String getProbeClassSlotName() {
-        return PREFIX + PROBE_CLASS;
+        return NS + PROBE_CLASS;
     }
 
 
     public static String getReadOnlySlotName() {
-        return PREFIX + READ_ONLY;
+        return NS + READ_ONLY;
     }
 
 
     public static String getSubclassesDisjointSlotName() {
-        return PREFIX + SUBCLASSES_DISJOINT;
+        return NS + SUBCLASSES_DISJOINT;
     }
 
 
     public static String getTodoPrefixSlotName() {
-        return PREFIX + TODO_PREFIX;
+        return NS + TODO_PREFIX;
     }
 
 
     public static String getTodoPropertySlotName() {
-        return PREFIX + TODO_PROPERTY;
+        return NS + TODO_PROPERTY;
     }
 
 
     public static String getDefaultLanguageSlotName() {
-        return PREFIX + DEFAULT_LANGUAGE;
+        return NS + DEFAULT_LANGUAGE;
     }
 
 
     public static String getUsedLanguagesSlotName() {
-        return PREFIX + USED_LANGUAGE;
+        return NS + USED_LANGUAGE;
     }
 
 
