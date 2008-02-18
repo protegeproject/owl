@@ -1,9 +1,15 @@
 package edu.stanford.smi.protegex.owl.ui.conditions.tests;
 
-import edu.stanford.smi.protegex.owl.model.*;
-import edu.stanford.smi.protegex.owl.ui.conditions.ConditionsTableModel;
-
 import java.net.URI;
+
+import edu.stanford.smi.protegex.owl.model.OWLAllValuesFrom;
+import edu.stanford.smi.protegex.owl.model.OWLMaxCardinality;
+import edu.stanford.smi.protegex.owl.model.OWLMinCardinality;
+import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
+import edu.stanford.smi.protegex.owl.model.OWLObjectProperty;
+import edu.stanford.smi.protegex.owl.model.OWLSomeValuesFrom;
+import edu.stanford.smi.protegex.owl.model.RDFSClass;
+import edu.stanford.smi.protegex.owl.ui.conditions.ConditionsTableModel;
 
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
