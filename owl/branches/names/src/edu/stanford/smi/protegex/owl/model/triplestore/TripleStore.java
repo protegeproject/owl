@@ -128,9 +128,6 @@ public interface TripleStore extends NamespaceMap, Disposable {
     void setName(String value);
 
 
-    void setRDFResourceName(RDFResource resource, String name);
-
-
     void sortPropertyValues(RDFResource resource, RDFProperty property, Comparator comparator);
 
 

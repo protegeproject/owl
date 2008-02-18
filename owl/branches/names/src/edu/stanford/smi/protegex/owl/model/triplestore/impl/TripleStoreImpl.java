@@ -5,11 +5,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -26,28 +24,17 @@ import edu.stanford.smi.protege.model.framestore.Record;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.model.NamespaceManager;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
-import edu.stanford.smi.protegex.owl.model.OWLNames;
 import edu.stanford.smi.protegex.owl.model.OWLOntology;
-import edu.stanford.smi.protegex.owl.model.ProtegeNames;
 import edu.stanford.smi.protegex.owl.model.RDFNames;
 import edu.stanford.smi.protegex.owl.model.RDFObject;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
 import edu.stanford.smi.protegex.owl.model.RDFSLiteral;
-import edu.stanford.smi.protegex.owl.model.RDFSNames;
 import edu.stanford.smi.protegex.owl.model.factory.OWLJavaFactory;
 import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
-import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLAllValuesFrom;
-import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLCardinality;
-import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLComplementClass;
-import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLHasValue;
-import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLIntersectionClass;
-import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLMaxCardinality;
-import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLMinCardinality;
-import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLSomeValuesFrom;
-import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLUnionClass;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultRDFSLiteral;
 import edu.stanford.smi.protegex.owl.model.impl.OWLNamespaceManager;
+import edu.stanford.smi.protegex.owl.model.impl.OWLSystemFrames;
 import edu.stanford.smi.protegex.owl.model.triplestore.Triple;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreModel;
@@ -58,16 +45,10 @@ import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreUtil;
  *
  * @author Holger Knublauch  <holger@knublauch.com>
  */
-public class TripleStoreImpl implements TripleStore, ProtegeTripleAdder {
+public class TripleStoreImpl implements TripleStore {
     private static transient final Logger log = Log.getLogger(TripleStoreImpl.class);
     
     private NamespaceManager namespaceManager;
-
-    private Map<RDFProperty, AddPropertyValueHandler> addPropertyValueHandlers = new HashMap<RDFProperty, AddPropertyValueHandler>();
-
-    private Slot directInstancesSlot;
-
-    private Slot directTypesSlot;
 
     protected NarrowFrameStore frameStore;
 
@@ -97,24 +78,7 @@ public class TripleStoreImpl implements TripleStore, ProtegeTripleAdder {
         this.name = name;
 
         KnowledgeBase kb = owlModel;
-        directTypesSlot = kb.getSystemFrames().getDirectTypesSlot();
-        directInstancesSlot = kb.getSystemFrames().getDirectInstancesSlot();
         nameSlot = kb.getSystemFrames().getNameSlot();
-
-        initAACHandler(OWLNames.Slot.COMPLEMENT_OF, OWLNames.Cls.COMPLEMENT_CLASS, DefaultOWLComplementClass.class);
-        initAACHandler(OWLNames.Slot.INTERSECTION_OF, OWLNames.Cls.INTERSECTION_CLASS, DefaultOWLIntersectionClass.class);
-        initAACHandler(OWLNames.Slot.UNION_OF, OWLNames.Cls.UNION_CLASS, DefaultOWLUnionClass.class);
-        initAACHandler(OWLNames.Slot.CARDINALITY, OWLNames.Cls.CARDINALITY_RESTRICTION, DefaultOWLCardinality.class);
-        initAACHandler(OWLNames.Slot.MIN_CARDINALITY, OWLNames.Cls.MIN_CARDINALITY_RESTRICTION, DefaultOWLMinCardinality.class);
-        initAACHandler(OWLNames.Slot.MAX_CARDINALITY, OWLNames.Cls.MAX_CARDINALITY_RESTRICTION, DefaultOWLMaxCardinality.class);
-        initAACHandler(OWLNames.Slot.ALL_VALUES_FROM, OWLNames.Cls.ALL_VALUES_FROM_RESTRICTION, DefaultOWLAllValuesFrom.class);
-        initAACHandler(OWLNames.Slot.SOME_VALUES_FROM, OWLNames.Cls.SOME_VALUES_FROM_RESTRICTION, DefaultOWLSomeValuesFrom.class);
-        initAACHandler(OWLNames.Slot.HAS_VALUE, OWLNames.Cls.HAS_VALUE_RESTRICTION, DefaultOWLHasValue.class);
-
-        initHandler(OWLNames.Slot.INVERSE_OF, new AddOWLInverseOfPropertyHandler(this, kb));
-        initHandler(RDFSNames.Slot.SUB_CLASS_OF, new AddRDFSSubClassOfPropertyHandler(this, kb));
-        initHandler(RDFSNames.Slot.SUB_PROPERTY_OF, new AddRDFSSubPropertyOfPropertyHandler(this, kb));
-        initHandler(RDFNames.Slot.TYPE, new AddRDFTypePropertyHandler(this, kb, tripleStoreModel, this));
     }
     
     public NamespaceManager getNamespaceManager() {
@@ -133,22 +97,21 @@ public class TripleStoreImpl implements TripleStore, ProtegeTripleAdder {
     }
 
 
-    public Iterator listTriples() {
+    public Iterator<Triple> listTriples() {
 	    // TODO: This could be optimised so that a custom Iterator is used.
         KnowledgeBase kb = owlModel;
         Collection<Slot> ignoreProperties = new HashSet<Slot>();
-        ignoreProperties.add(owlModel.getRDFProperty(OWLNames.Slot.ONTOLOGY_PREFIXES));
-        ignoreProperties.add(owlModel.getRDFProperty(OWLNames.Slot.OWL_ONTOLOGY_POINTER_PROPERTY));
-        ignoreProperties.add(kb.getSlot(Model.Slot.DIRECT_INSTANCES));
-        ignoreProperties.add(kb.getSlot(Model.Slot.DIRECT_TYPES));
-        ignoreProperties.add(kb.getSlot(ProtegeNames.Slot.CLASSIFICATION_STATUS));
-        ignoreProperties.add(kb.getSlot(ProtegeNames.Slot.INFERRED_SUBCLASSES));
-        ignoreProperties.add(kb.getSlot(ProtegeNames.Slot.INFERRED_SUPERCLASSES));
-        ignoreProperties.add(kb.getSlot(ProtegeNames.Slot.INFERRED_TYPE));
-        List triples = new ArrayList();
-        Collection records = ((InMemoryFrameDb) frameStore).getRecords();
-        for (Iterator it = records.iterator(); it.hasNext();) {
-            Record record = (Record) it.next();
+        OWLSystemFrames systemFrames = owlModel.getSystemFrames();
+        ignoreProperties.add(systemFrames.getOwlOntologyPrefixesProperty());
+        ignoreProperties.add(systemFrames.getOwlOntologyPointerProperty());
+        ignoreProperties.add(systemFrames.getDirectInstancesSlot());
+        ignoreProperties.add(systemFrames.getDirectTypesSlot());
+        ignoreProperties.add(systemFrames.getProtegeClassificationStatusProperty());
+        ignoreProperties.add(systemFrames.getProtegeInferredSubclassesProperty());
+        ignoreProperties.add(systemFrames.getProtegeInferredSuperclassesProperty());
+        ignoreProperties.add(systemFrames.getProtegeInferredTypeProperty());
+        List<Triple> triples = new ArrayList<Triple>();
+        for (Record record : ((InMemoryFrameDb) frameStore).getRecords()) {
             Frame subject = record.getFrame();
             if (subject instanceof RDFResource) {
                 Slot predicate = record.getSlot();
@@ -157,9 +120,7 @@ public class TripleStoreImpl implements TripleStore, ProtegeTripleAdder {
                 }
                 if (predicate instanceof RDFProperty) {
                     if (record.getFacet() == null && !record.isTemplate() && !ignoreProperties.contains(predicate)) {
-                        List values = record.getValues();
-                        for (Iterator vit = values.iterator(); vit.hasNext();) {
-                            Object object = vit.next();
+                        for (Object object : record.getValues()) {
                             if (object instanceof String && DefaultRDFSLiteral.isRawValue((String) object)) {
                                 object = new DefaultRDFSLiteral(owlModel, (String) object);
                             }
@@ -184,19 +145,23 @@ public class TripleStoreImpl implements TripleStore, ProtegeTripleAdder {
     }
 
 
-    public void add(RDFResource subject, RDFProperty predicate, Object object) {
-        addValueFast(subject, predicate, object);
-        AddPropertyValueHandler handler = addPropertyValueHandlers.get(predicate);
-        if (handler != null) {
-            handler.handleAdd(subject, object);
-        }
+    public void add(final RDFResource subject, final RDFProperty predicate, final Object object) {
+        doChangesOnThisTripleStore(new Runnable() {
+            public void run() {
+                subject.addPropertyValue(predicate, object);
+            }
+        });
     }
 
 
-    public boolean addValue(Instance subject, Slot slot, Object object) {
+    public boolean addValue(final Instance subject, final Slot slot, final Object object) {
         final Collection values = getValues(subject, slot);
         if (!values.contains(object)) {
-            addValueFast(subject, slot, object);
+            doChangesOnThisTripleStore(new Runnable() {
+                public void run() {
+                    subject.addOwnSlotValue(slot, object);
+                }
+            });
             return true;
         }
         else {
@@ -204,10 +169,6 @@ public class TripleStoreImpl implements TripleStore, ProtegeTripleAdder {
         }
     }
 
-
-    public void addValueFast(Instance subject, Slot slot, Object object) {
-        frameStore.addValues(subject, slot, null, false, Collections.singleton(object));
-    }
 
 
     public boolean contains(Triple triple) {
@@ -295,18 +256,6 @@ public class TripleStoreImpl implements TripleStore, ProtegeTripleAdder {
     }
 
 
-    private void initAACHandler(String propertyName, String clsName, Class clazz) {
-        final Cls cls = ((KnowledgeBase) owlModel).getCls(clsName);
-        initHandler(propertyName,
-                new AddAnonymousClassPropertyPropertyHandler(this, cls, clazz, tripleStoreModel));
-    }
-
-
-    private void initHandler(String propertyName, AddPropertyValueHandler handler) {
-        addPropertyValueHandlers.put(owlModel.getRDFProperty(propertyName), handler);
-    }
-
-
     public Iterator<RDFResource> listHomeResources() {
         Collection frames = frameStore.getFramesWithAnyValue(nameSlot, null, false);
         Collection<RDFResource> results = AbstractOWLModel.getRDFResources(owlModel, frames);
@@ -387,11 +336,12 @@ public class TripleStoreImpl implements TripleStore, ProtegeTripleAdder {
     }
 
 
-    public void remove(RDFResource subject, RDFProperty predicate, Object object) {
-        if (predicate.equals(subject.getOWLModel().getRDFTypeProperty())) {
-            removeDirectType(subject, object);
-        }
-        removeValue(subject, predicate, object);
+    public void remove(final RDFResource subject, final RDFProperty predicate, final Object object) {
+        doChangesOnThisTripleStore(new Runnable() {
+            public void run() {
+                subject.removePropertyValue(predicate, object);
+            }
+        });
     }
 
 
@@ -401,25 +351,8 @@ public class TripleStoreImpl implements TripleStore, ProtegeTripleAdder {
     }
 
 
-    private void removeDirectType(RDFResource subject, Object object) {
-        removeValue((Instance) object, directInstancesSlot, subject);
-        removeValue(subject, directTypesSlot, object);
-    }
-
-
     public void removePrefix(String prefix) {
-        String namespace = getNamespaceForPrefix(prefix);
-        if (namespace != null) {
-            Instance ontology = TripleStoreUtil.getFirstOntology(owlModel, this);
-            Slot prefixesSlot = owlModel.getRDFProperty(OWLNames.Slot.ONTOLOGY_PREFIXES);
-            String value = prefix + ":" + namespace;
-            getNarrowFrameStore().removeValue(ontology, prefixesSlot, null, false, value);
-        }
-    }
-
-
-    protected void removeValue(Instance subject, Slot slot, Object value) {
-        frameStore.removeValue(subject, slot, null, false, value);
+        namespaceManager.removePrefix(prefix);
     }
 
 
@@ -440,21 +373,6 @@ public class TripleStoreImpl implements TripleStore, ProtegeTripleAdder {
 
     public void setPrefix(URI namespace, String prefix) {
         setPrefix(namespace.toString(), prefix);
-    }
-
-
-    public void setRDFResourceName(RDFResource resource, String name) {
-        TripleStore home = tripleStoreModel.getHomeTripleStore(resource);
-        if (home != null) {
-            final NarrowFrameStore nfs = home.getNarrowFrameStore();
-            final List values = nfs.getValues(resource, nameSlot, null, false);
-            Iterator it = values.iterator();
-            if (it.hasNext()) {
-                String oldName = (String) it.next();
-                nfs.removeValue(resource, nameSlot, null, false, oldName);
-            }
-        }
-        addValueFast(resource, nameSlot, name);
     }
 
 
@@ -489,8 +407,6 @@ public class TripleStoreImpl implements TripleStore, ProtegeTripleAdder {
     }
     
     public void dispose() {
-        addPropertyValueHandlers.clear();
-        addPropertyValueHandlers = null;
         
     }
 
@@ -506,6 +422,17 @@ public class TripleStoreImpl implements TripleStore, ProtegeTripleAdder {
 
     public void removeIOAddress(URI uri) {
         ioAddresses.remove(uri);
+    }
+    
+    private void doChangesOnThisTripleStore(Runnable changes) {
+        TripleStore activeTripleStore = tripleStoreModel.getActiveTripleStore();
+        try {
+            tripleStoreModel.setActiveTripleStore(this);
+            changes.run();
+        }
+        finally {
+            tripleStoreModel.setActiveTripleStore(activeTripleStore);
+        }
     }
     
 }
