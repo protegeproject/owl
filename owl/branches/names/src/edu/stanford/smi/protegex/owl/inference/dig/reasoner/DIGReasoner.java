@@ -1,7 +1,10 @@
 package edu.stanford.smi.protegex.owl.inference.dig.reasoner;
 
-import edu.stanford.smi.protegex.owl.inference.dig.exception.DIGReasonerException;
+import java.util.logging.Logger;
+
 import org.w3c.dom.Document;
+
+import edu.stanford.smi.protegex.owl.inference.dig.exception.DIGReasonerException;
 
 /**
  * User: matthewhorridge<br>
@@ -15,7 +18,7 @@ import org.w3c.dom.Document;
 public interface DIGReasoner {
 
     public static final String LOGGER_NAME = "edu.stanford.smi.protegex.owl.inference.dig.reasoner";
-
+    public static final Logger digLogger = Logger.getLogger(DIGReasoner.LOGGER_NAME);
 
     /**
      * Sets the URL of the reasoner.
