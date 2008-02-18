@@ -1,6 +1,10 @@
 package edu.stanford.smi.protegex.owl.ui.classform.component.property.tests;
 
-import edu.stanford.smi.protegex.owl.model.*;
+import edu.stanford.smi.protegex.owl.model.OWLIntersectionClass;
+import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
+import edu.stanford.smi.protegex.owl.model.OWLProperty;
+import edu.stanford.smi.protegex.owl.model.RDFResource;
+import edu.stanford.smi.protegex.owl.model.RDFSClass;
 import edu.stanford.smi.protegex.owl.tests.AbstractJenaTestCase;
 import edu.stanford.smi.protegex.owl.ui.classform.component.property.PropertyFormTableModel;
 
