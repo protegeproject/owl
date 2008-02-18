@@ -89,9 +89,13 @@ public class AbstractDIGReasonerTestCase extends AbstractJenaTestCase {
     }
 
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
-
+        initializeReasoner();
+    }
+    
+    protected void initializeReasoner() {
         // Get a reasoner for the (empty) OWL model from the ReasonerManager.
         ReasonerManager reasonerManager = ReasonerManager.getInstance();
         reasoner = reasonerManager.getReasoner(owlModel);
