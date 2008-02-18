@@ -12,20 +12,15 @@ import java.io.OutputStream;
  * www.cs.man.ac.uk/~horridgm<br><br>
  */
 public class DIGReasonerPreferences {
-
-
     private static DIGReasonerPreferences instance;
 
     private boolean treatErrorsAsWarnings;
-
-    private boolean logDIG;
 
     private OutputStream logOutputStream;
 
 
     private DIGReasonerPreferences() {
         treatErrorsAsWarnings = false;
-        logDIG = false;
     }
 
 
@@ -55,26 +50,6 @@ public class DIGReasonerPreferences {
      */
     public void setTreatErrorsAsWarnings(boolean b) {
         this.treatErrorsAsWarnings = b;
-    }
-
-
-    /**
-     * Determines if logging is on.  If logging is on
-     * then the DIG communication with the DIG Reasoner
-     * is logged to the specified log stream (or std out if
-     * no log stream has been specified).
-     */
-    public boolean isLogDIG() {
-        return logDIG;
-    }
-
-
-    /**
-     * Specifies whether or not the DIG communication
-     * with the reasoner should be logged.
-     */
-    public void setLogDIG(boolean b) {
-        this.logDIG = b;
     }
 
 
