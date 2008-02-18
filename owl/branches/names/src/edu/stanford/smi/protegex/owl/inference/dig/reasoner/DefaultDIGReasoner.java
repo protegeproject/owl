@@ -12,7 +12,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -64,6 +63,7 @@ public class DefaultDIGReasoner implements DIGReasoner {
     /**
      * @deprecated Use DIGReasonerPreferences to set logging
      */
+    @Deprecated
     public static boolean log = true;
 
 
@@ -190,9 +190,7 @@ public class DefaultDIGReasoner implements DIGReasoner {
 
 
     public Document performRequest(Document request) throws DIGReasonerException {
-        if (DIGReasonerPreferences.getInstance().isLogDIG() == true) {
-            log(request);
-        }
+        log(Level.FINE, request);
 
         try {
             StringWriter writer = new StringWriter();
@@ -219,9 +217,7 @@ public class DefaultDIGReasoner implements DIGReasoner {
             Document doc = docBuilder.parse(new InputSource(reader));
             reader.close();
 	        conn.disconnect();
-            if (DIGReasonerPreferences.getInstance().isLogDIG() == true) {
-                log(doc);
-            }
+	        log(Level.FINE, doc);
             performErrorCheck(doc);
             return doc;
 
@@ -279,8 +275,10 @@ public class DefaultDIGReasoner implements DIGReasoner {
      * A helper method that lets us log
      * the DIG XML used to communicate with the reasoner.
      */
-    protected void log(Document doc) {
-
+    public static void log(Level level, Document doc) {
+        if (!digLogger.isLoggable(level)) {
+            return;
+        }
         StringWriter writer = new StringWriter();
         OutputFormat format = new OutputFormat();
         format.setIndent(4);
@@ -293,7 +291,7 @@ public class DefaultDIGReasoner implements DIGReasoner {
         catch (IOException e) {
           Log.getLogger().log(Level.SEVERE, "Exception caught", e);
         }
-        Logger.getLogger(DIGReasoner.LOGGER_NAME).info(writer.getBuffer().toString());
+        digLogger.log(level, writer.getBuffer().toString());
 
     }
 }
