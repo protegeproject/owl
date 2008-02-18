@@ -248,6 +248,7 @@ public abstract class OWLSystemFrames extends SystemFrames {
         createOWLSlots();
         createOWLInstances();
         replaceProtegeFrames();
+        removeUnusedProtegeFrames();
     }
 	
     private void createOWLClses() {
@@ -379,6 +380,14 @@ public abstract class OWLSystemFrames extends SystemFrames {
         }
     }
     
+    /*
+     * replaceProtegeFrames and removeUnusedProtegeFrames are slightly different.  The first  is 
+     * used in the case that the protege core name is being kept but the java type for that object 
+     * has changed.  The second one is used in conjunction with the modified Systems calls section 
+     * just below it in the case that the protege core frame is being replaced with a frame with
+     * a different name and a different java type.
+     */
+    
     private void replaceProtegeFrames() {
        	replaceFrameWithRDFSNamedClass(Model.Cls.PAL_CONSTRAINT);
     	replaceFrameWithOWLNamedClass(Model.Cls.DIRECTED_BINARY_RELATION);
@@ -390,7 +399,15 @@ public abstract class OWLSystemFrames extends SystemFrames {
     	replaceFrameWithOWLObjectProperty(Model.Slot.CONSTRAINTS);
     }
 	
-	
+    /*
+     * Each call in here corresponds to a changed modified System getter in the section
+     * just below.
+     */
+	private void removeUnusedProtegeFrames() {
+	    removeFrame(super.getRootCls().getFrameID());
+	    removeFrame(super.getDirectSuperslotsSlot().getFrameID());
+	    removeFrame(super.getInverseSlotSlot().getFrameID());
+	}
 
 	
 	
@@ -411,9 +428,7 @@ public abstract class OWLSystemFrames extends SystemFrames {
 	public RDFProperty getInverseSlotSlot() {
         return owlInverseOfProperty;
     }
-    
 
-    
     /* **************************************************************************
      * Tell the Frame Store
      */
