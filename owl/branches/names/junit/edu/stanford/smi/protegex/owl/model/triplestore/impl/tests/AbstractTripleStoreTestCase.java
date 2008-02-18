@@ -12,8 +12,6 @@ import edu.stanford.smi.protegex.owl.tests.AbstractJenaTestCase;
  */
 public abstract class AbstractTripleStoreTestCase extends AbstractJenaTestCase {
 
-    private int frameIDCount = 19999;
-
     protected RDFProperty rdfTypeProperty;
 
     protected TripleStore ts;
@@ -24,11 +22,14 @@ public abstract class AbstractTripleStoreTestCase extends AbstractJenaTestCase {
     }
 
 
+    /*
+     * why is he creating an rdf property when the call is for an rdf resource?
+     */
     protected RDFResource createRDFResource(String name) {
         if (name == null) {
             name = owlModel.getNextAnonymousResourceName();
         }
-        RDFResource frame = new DefaultRDFProperty(owlModel, new FrameID(name));
+        RDFResource frame = owlModel.createRDFUntypedResource(name);
         return frame;
     }
 
