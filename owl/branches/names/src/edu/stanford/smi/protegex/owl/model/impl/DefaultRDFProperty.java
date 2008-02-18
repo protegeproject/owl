@@ -1,16 +1,41 @@
 package edu.stanford.smi.protegex.owl.model.impl;
 
-import edu.stanford.smi.protege.model.*;
-import edu.stanford.smi.protegex.owl.model.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
+
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+
+import edu.stanford.smi.protege.model.Cls;
+import edu.stanford.smi.protege.model.DefaultSlot;
+import edu.stanford.smi.protege.model.FrameID;
+import edu.stanford.smi.protege.model.KnowledgeBase;
+import edu.stanford.smi.protege.model.Model;
+import edu.stanford.smi.protege.model.Slot;
+import edu.stanford.smi.protege.model.ValueType;
+import edu.stanford.smi.protegex.owl.model.NamespaceUtil;
+import edu.stanford.smi.protegex.owl.model.OWLDataRange;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.model.OWLNames;
+import edu.stanford.smi.protegex.owl.model.OWLProperty;
+import edu.stanford.smi.protegex.owl.model.OWLUnionClass;
+import edu.stanford.smi.protegex.owl.model.RDFObject;
+import edu.stanford.smi.protegex.owl.model.RDFProperty;
+import edu.stanford.smi.protegex.owl.model.RDFResource;
+import edu.stanford.smi.protegex.owl.model.RDFSClass;
+import edu.stanford.smi.protegex.owl.model.RDFSDatatype;
+import edu.stanford.smi.protegex.owl.model.RDFSLiteral;
+import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
 import edu.stanford.smi.protegex.owl.model.event.PropertyAdapter;
 import edu.stanford.smi.protegex.owl.model.event.PropertyListener;
 import edu.stanford.smi.protegex.owl.model.event.PropertyValueListener;
 import edu.stanford.smi.protegex.owl.model.event.ResourceListener;
 import edu.stanford.smi.protegex.owl.model.visitor.OWLModelVisitor;
 import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
-
-import javax.swing.*;
-import java.util.*;
 
 /**
  * The default implementation of the OWLProperty interface.
@@ -119,6 +144,7 @@ public class DefaultRDFProperty extends DefaultSlot implements RDFProperty {
     }
 
 
+    @Override
     public Icon getIcon() {
         if (isEditable()) {
             return getBaseImageIcon();
@@ -274,12 +300,9 @@ public class DefaultRDFProperty extends DefaultSlot implements RDFProperty {
 
 
     public boolean isDomainDefined() {
-        if (getDirectOwnSlotValue(getKnowledgeBase().getSlot(Model.Slot.DIRECT_DOMAIN)) == null) {
-            return getDirectSuperslotCount() == 0;
-        }
-        else {
-            return !getKnowledgeBase().getRootCls().getDirectTemplateSlots().contains(this);
-        }
+        Slot directDomainSlot = getOWLModel().getSystemFrames().getDirectDomainSlot();    
+        Collection values = getDirectOwnSlotValues(directDomainSlot);
+        return values.size() > 1 || (values.size() == 1 && !values.contains(getOWLModel().getRootCls()));
     }
 
 
@@ -288,24 +311,17 @@ public class DefaultRDFProperty extends DefaultSlot implements RDFProperty {
             return isDomainDefined();
         }
         else {
-            if (getDirectOwnSlotValue(getKnowledgeBase().getSlot(Model.Slot.DIRECT_DOMAIN)) == null) {
-                if (getDirectSuperslotCount() == 0) {
-                    return false;
-                }
-                else {
-                    return isDomainDefined(new HashSet());
-                }
-            }
-            else {
-                return !getKnowledgeBase().getRootCls().hasDirectTemplateSlot(this);
-            }
+            return isDomainDefined(new HashSet<RDFProperty>());
         }
     }
 
 
-    private boolean isDomainDefined(Set reached) {
+    private boolean isDomainDefined(Set<RDFProperty> reached) {
         reached.add(this);
-        if (getDirectOwnSlotValue(getKnowledgeBase().getSlot(Model.Slot.DIRECT_DOMAIN)) == null) {
+        if (isDomainDefined()) {
+            return true;
+        }
+        else {
             for (Iterator it = getDirectSuperslots().iterator(); it.hasNext();) {
                 Slot superSlot = (Slot) it.next();
                 if (!reached.contains(superSlot) && superSlot instanceof DefaultRDFProperty) {
@@ -315,9 +331,6 @@ public class DefaultRDFProperty extends DefaultSlot implements RDFProperty {
                 }
             }
             return false;
-        }
-        else {
-            return !getKnowledgeBase().getRootCls().hasDirectTemplateSlot(this);
         }
     }
 
@@ -636,6 +649,7 @@ public class DefaultRDFProperty extends DefaultSlot implements RDFProperty {
     }
 
 
+    @Override
     public Collection getDocumentation() {
         return OWLUtil.getComments(this);
     }
@@ -916,6 +930,7 @@ public class DefaultRDFProperty extends DefaultSlot implements RDFProperty {
     }
 
 
+    @Override
     public void setDocumentation(String value) {
         OWLUtil.setComment(this, value);
     }
