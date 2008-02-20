@@ -17,10 +17,12 @@ public class SQWRLNames
   public static final String SumAggregateFunction = "sum"; 
   public static final String AvgAggregateFunction = "avg"; 
   public static final String CountAggregateFunction = "count"; 
+  public static final String CountDistinctAggregateFunction = "countDistinct"; 
 
   public static final String Select = SQWRLPrefix + ":" + "select";
   public static final String SelectDistinct = SQWRLPrefix + ":" + "selectDistinct";
   public static final String Count = SQWRLPrefix + ":" + "count";
+  public static final String CountDistinct = SQWRLPrefix + ":" + "countDistinct";
   public static final String Avg = SQWRLPrefix + ":" + "avg";
   public static final String Min = SQWRLPrefix + ":" + "min";
   public static final String Max = SQWRLPrefix + ":" + "max";
@@ -45,14 +47,14 @@ public class SQWRLNames
   public static final String Nth = SQWRLPrefix + ":" + "nth";
 
   private static final String headBuiltInNamesArray[] 
-     = { Select, SelectDistinct, Count, Avg, Min, Max, Sum, OrderBy, OrderByDescending, ColumnNames };
+     = { Select, SelectDistinct, Count, CountDistinct, Avg, Min, Max, Sum, OrderBy, OrderByDescending, ColumnNames };
 
   private static final String collectionMakeBuiltInNamesArray[] = { MakeSet, MakeList, MakeOrderedList };
 
   private static final String collectionOperationBuiltInNamesArray[] = { Size, IsEmpty, Intersect, Union, Except, Contains, First, Last, Nth };
 
   public static  final String aggregateFunctionNames[] = { MinAggregateFunction, MaxAggregateFunction, SumAggregateFunction,
-                                                           AvgAggregateFunction, CountAggregateFunction };
+                                                           AvgAggregateFunction, CountAggregateFunction, CountDistinctAggregateFunction };
 
   private static Set<String> headBuiltInNames, collectionMakeBuiltInNames, collectionOperationBuiltInNames, sqwrlBuiltInNames; 
 

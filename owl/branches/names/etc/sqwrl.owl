@@ -50,6 +50,7 @@
     >1</swrlb:minArgs>
   </swrl:Builtin>
   <swrl:Builtin rdf:ID="orderByDescending"/>
+  <swrl:Builtin rdf:ID="countDistinct"/>
 </rdf:RDF>
 
-<!-- Created with Protege (with OWL Plugin 3.4, Build 102)  http://protege.stanford.edu -->
+<!-- Created with Protege (with OWL Plugin 3.4, Build 124)  http://protege.stanford.edu -->

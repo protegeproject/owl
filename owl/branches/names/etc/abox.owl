@@ -11,17 +11,20 @@
   <owl:Ontology rdf:about=""/>
   <swrl:Builtin rdf:ID="hasValue"/>
   <swrl:Builtin rdf:ID="hasURI"/>
+  <swrl:Builtin rdf:ID="isNumeric"/>
+  <swrl:Builtin rdf:ID="notNumeric"/>
   <swrl:Builtin rdf:ID="isIndividual"/>
+  <swrl:Builtin rdf:ID="isConstant"/>
   <swrl:Builtin rdf:ID="hasClass"/>
   <swrl:Builtin rdf:ID="hasIndividual">
-    <swrlb:maxArgs rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
-    >1</swrlb:maxArgs>
     <swrlb:args rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
     >1</swrlb:args>
     <swrlb:minArgs rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
     >1</swrlb:minArgs>
+    <swrlb:maxArgs rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+    >1</swrlb:maxArgs>
   </swrl:Builtin>
   <swrl:Builtin rdf:ID="setValue"/>
 </rdf:RDF>
 
-<!-- Created with Protege (with OWL Plugin 3.3.1, Build 430)  http://protege.stanford.edu -->
+<!-- Created with Protege (with OWL Plugin 3.4, Build 124)  http://protege.stanford.edu -->

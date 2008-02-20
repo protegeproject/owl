@@ -18,7 +18,7 @@ import java.util.*;
 public class SWRLRuleImpl implements SWRLRule
 {
   private String ruleName;
-  private List<Atom> bodyAtoms, headAtoms;
+ private List<Atom> bodyAtoms, headAtoms;
   private Set<String> referencedVariableNames;
   private ResultImpl sqwrlResult = null;
   private boolean hasSQWRLBuiltIns, hasSQWRLCollectionBuiltIns;
@@ -222,6 +222,9 @@ public class SWRLRuleImpl implements SWRLRule
          } else if (builtInName.equalsIgnoreCase(SQWRLNames.Count)) {
            if (isArgumentAVariable) columnName = "count(?" + variableName + ")"; else columnName = "[" + argument + "]";
            sqwrlResult.addAggregateColumn(columnName, SQWRLNames.CountAggregateFunction);
+         } else if (builtInName.equalsIgnoreCase(SQWRLNames.CountDistinct)) {
+           if (isArgumentAVariable) columnName = "countDistinct(?" + variableName + ")"; else columnName = "[" + argument + "]";
+           sqwrlResult.addAggregateColumn(columnName, SQWRLNames.CountDistinctAggregateFunction);
          } else if (builtInName.equalsIgnoreCase(SQWRLNames.Min)) {
            if (isArgumentAVariable) columnName = "min(?" + variableName + ")"; else columnName = "min[" + argument + "]";
            sqwrlResult.addAggregateColumn(columnName, SQWRLNames.MinAggregateFunction);

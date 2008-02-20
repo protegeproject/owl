@@ -95,10 +95,11 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
       if (SWRLBuiltInUtil.isArgumentAString(1, arguments)) {
         String s2 = SWRLBuiltInUtil.getArgumentAsAString(1, arguments);
         result = s1.compareTo(s2) > 0;
-      } else throw new InvalidBuiltInArgumentException(1, "non comparable argument");
+      } else throw new InvalidBuiltInArgumentException(1, "expecting string argument for comparison, got '" + SWRLBuiltInUtil.getArgumentAsAString(1, arguments) + "'");
     } else if (SWRLBuiltInUtil.isArgumentNumeric(0, arguments)) {
-      result = compareTwoNumericArguments(arguments) > 0;
-    } else throw new InvalidBuiltInArgumentException(0, "non comparable argument");
+      if (SWRLBuiltInUtil.isArgumentNumeric(1, arguments)) result = compareTwoNumericArguments(arguments) > 0;
+      else throw new InvalidBuiltInArgumentException(1, "expecting numeric argument for comparison, got '" + SWRLBuiltInUtil.getArgumentAsAString(1, arguments) + "'");
+    } else throw new InvalidBuiltInArgumentException(0, "expecting string or numeric argument for comparison, got '" + SWRLBuiltInUtil.getArgumentAsAString(0, arguments) + "'");
 
     return result;
   } // greaterThan
@@ -114,10 +115,11 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
       if (SWRLBuiltInUtil.isArgumentAString(1, arguments)) {
         String s2 = SWRLBuiltInUtil.getArgumentAsAString(1, arguments);
         result = s1.compareTo(s2) < 0;
-      } else throw new InvalidBuiltInArgumentException(1, "non comparable argument");
+      } else throw new InvalidBuiltInArgumentException(1, "expecting string argument for comparison, got '" + SWRLBuiltInUtil.getArgumentAsAString(1, arguments) + "'");
     } else if (SWRLBuiltInUtil.isArgumentNumeric(0, arguments)) {
-      result = compareTwoNumericArguments(arguments) < 0;
-    } else throw new InvalidBuiltInArgumentException(0, "non comparable argument");
+      if (SWRLBuiltInUtil.isArgumentNumeric(1, arguments)) result = compareTwoNumericArguments(arguments) < 0;
+      else throw new InvalidBuiltInArgumentException(1, "expecting numeric argument for comparison, got '" + SWRLBuiltInUtil.getArgumentAsAString(1, arguments) + "'");
+    } else throw new InvalidBuiltInArgumentException(0, "expecting string or numeric argument for comparison, got '" + SWRLBuiltInUtil.getArgumentAsAString(0, arguments) + "'");
 
     return result;
   } // lessThan
@@ -129,7 +131,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
     SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(2, arguments.size());
 
     if (SWRLBuiltInUtil.hasUnboundArguments(arguments)) 
-      throw new InvalidBuiltInArgumentException(0, "comparison built-ins do not support binding");
+      throw new InvalidBuiltInArgumentException(0, "comparison built-ins do not support argument binding");
 
     if (SWRLBuiltInUtil.isArgumentABoolean(0, arguments)) {
       boolean b1 = SWRLBuiltInUtil.getArgumentAsABoolean(0, arguments);
@@ -144,9 +146,9 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
         result = s1.compareTo(s2) == 0;
       } else result = false;
     } else if (SWRLBuiltInUtil.isArgumentNumeric(0, arguments)) {
-      if (!SWRLBuiltInUtil.isArgumentNumeric(1, arguments)) throw new InvalidBuiltInArgumentException(1, "expecting numeric argument");
-      result = compareTwoNumericArguments(arguments) == 0;
-    } else throw new InvalidBuiltInArgumentException(0, "invalid argument");
+      if (SWRLBuiltInUtil.isArgumentNumeric(1, arguments)) result = compareTwoNumericArguments(arguments) == 0;
+      else throw new InvalidBuiltInArgumentException(1, "expecting numeric argument for comparison, got '" + SWRLBuiltInUtil.getArgumentAsAString(1, arguments) + "'");
+    } else throw new InvalidBuiltInArgumentException(0, "expecting string, numeric or boolean argument for comparison, got '" + SWRLBuiltInUtil.getArgumentAsAString(0, arguments) + "'");
 
     return result;
   } // equal
@@ -1085,7 +1087,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
     if (hasUnbound1stArgument) { // Bind the result to the first argument.
       List<BuiltInArgument> boundArguments = arguments.subList(1, arguments.size());
 
-      if (builtInName.equalsIgnoreCase(SWRLB_DIVIDE) || builtInName.equalsIgnoreCase(SWRLB_SIN) ||
+      if (builtInName.equalsIgnoreCase(SWRLB_SIN) ||
           builtInName.equalsIgnoreCase(SWRLB_COS) || builtInName.equalsIgnoreCase(SWRLB_TAN))
         arguments.set(0, argumentFactory.createDatatypeValueArgument(operationResult));
       else if (SWRLBuiltInUtil.isShortMostPreciseArgument(boundArguments))

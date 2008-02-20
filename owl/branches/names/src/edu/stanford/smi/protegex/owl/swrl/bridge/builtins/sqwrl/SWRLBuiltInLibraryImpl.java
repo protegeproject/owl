@@ -86,6 +86,11 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
     return false;
   } // count
 
+  public boolean countDistinct(List<BuiltInArgument> arguments) throws BuiltInException
+  {
+    return count(arguments);
+  } // countDistinct
+
   public boolean min(List<BuiltInArgument> arguments) throws BuiltInException
   {
     SWRLBuiltInUtil.checkForUnboundArguments(arguments);
@@ -100,7 +105,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
     else throw new InvalidBuiltInArgumentException(0, "expecting numeric literal, got '" + argument + "'");
     
     return false;
-  } // count
+  } // min
 
   public boolean max(List<BuiltInArgument> arguments) throws BuiltInException
   {
@@ -116,7 +121,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
     else throw new InvalidBuiltInArgumentException(0, "expecting numeric literal, got '" + argument + "'");
     
     return false;
-  } // count
+  } // max
 
   public boolean sum(List<BuiltInArgument> arguments) throws BuiltInException
   {
@@ -132,7 +137,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
     else throw new InvalidBuiltInArgumentException(0, "expecting numeric literal, got '" + argument + "'");
     
     return false;
-  } // count
+  } // sum
 
   public boolean avg(List<BuiltInArgument> arguments) throws BuiltInException
   {
@@ -148,7 +153,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
     else throw new InvalidBuiltInArgumentException(0, "expecting numeric literal, got '" + argument + "'");
     
     return false;
-  } // count
+  } // avg
 
   // The use of columnNames, orderBy, orderByDescending is handled at initial processing in the SWRLRule object.  
   public boolean columnNames(List<BuiltInArgument> arguments) throws BuiltInException { return false; } 
