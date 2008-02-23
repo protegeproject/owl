@@ -3385,6 +3385,10 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     }
 
     protected boolean isAbsoluteURI(String uriString) {
+        if (!uriString.contains(":")) {
+            return false;
+        }
+        
     	URI uri = URIUtilities.createURI(uriString);
     	
     	if (uri == null || !uri.isAbsolute()) {
