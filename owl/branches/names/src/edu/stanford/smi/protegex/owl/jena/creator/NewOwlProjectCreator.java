@@ -1,13 +1,13 @@
 package edu.stanford.smi.protegex.owl.jena.creator;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
 
 import edu.stanford.smi.protege.model.Project;
 import edu.stanford.smi.protegex.owl.jena.JenaKnowledgeBaseFactory;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.factory.AbstractOwlProjectCreator;
+import edu.stanford.smi.protegex.owl.model.factory.AlreadyImportedException;
 import edu.stanford.smi.protegex.owl.model.factory.FactoryUtils;
 
 public class NewOwlProjectCreator extends AbstractOwlProjectCreator {
@@ -29,8 +29,12 @@ public class NewOwlProjectCreator extends AbstractOwlProjectCreator {
         if (ontologyName == null) {
             ontologyName = FactoryUtils.generateOntologyURIBase();
         }
-        FactoryUtils.addOntologyToTripleStore(owlModel, owlModel.getTripleStoreModel().getActiveTripleStore(), ontologyName);
-        
+        try {
+            FactoryUtils.addOntologyToTripleStore(owlModel, owlModel.getTripleStoreModel().getActiveTripleStore(), ontologyName);
+        }
+        catch (AlreadyImportedException e) {
+            throw new RuntimeException("This shouldn't happen", e);
+        }
         addViewSettings(project.getSources());
         
         return project;
