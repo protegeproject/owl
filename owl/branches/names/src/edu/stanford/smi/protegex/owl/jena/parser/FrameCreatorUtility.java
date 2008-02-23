@@ -7,6 +7,7 @@ import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
 import edu.stanford.smi.protege.model.Cls;
+import edu.stanford.smi.protege.model.DefaultKnowledgeBase;
 import edu.stanford.smi.protege.model.Frame;
 import edu.stanford.smi.protege.model.FrameID;
 import edu.stanford.smi.protege.model.Instance;
@@ -22,6 +23,7 @@ import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLObjectProperty;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLOntology;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultRDFList;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultRDFProperty;
+import edu.stanford.smi.protegex.owl.model.impl.DefaultRDFSDatatype;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultRDFSNamedClass;
 import edu.stanford.smi.protegex.owl.model.impl.OWLSystemFrames;
 import edu.stanford.smi.protegex.owl.swrl.model.SWRLNames;
@@ -38,23 +40,23 @@ import edu.stanford.smi.protegex.owl.swrl.model.impl.DefaultSWRLSameIndividualAt
 import edu.stanford.smi.protegex.owl.swrl.model.impl.DefaultSWRLVariable;
 
 public class FrameCreatorUtility {
-        private static SimpleFrameStore simpleFrameStore;
-                
-        
+    //  private static SimpleFrameStore simpleFrameStore;
+
+
     public static Frame createFrameWithType(OWLModel owlModel, FrameID id, String typeUri, boolean isSubjAnon) {
         Frame frame = ((KnowledgeBase) owlModel).getFrame(id);
         OWLSystemFrames systemFrames = owlModel.getSystemFrames();
-                
+
         if (frame != null)
             return frame;
 
         Frame type = owlModel.getFrame(typeUri);
-                
+
         if (type == null)
             return null;
-                
+
         //write here all the java class names
-                        
+
         //maybe remove the anon condition
         if (typeUri.equals(OWL.Ontology.getURI())) {
             frame = new DefaultOWLOntology(owlModel, id );                          
@@ -78,7 +80,7 @@ public class FrameCreatorUtility {
             frame = new DefaultOWLObjectProperty(owlModel, id);                     
             ((DefaultOWLObjectProperty)frame).setSymmetric(true);
             //hack - because otherwise the type is set twice
-            
+
             removeInstanceType((Instance)frame, systemFrames.getOwlSymmetricPropertyClass());
         }
         else if (typeUri.equals(OWL.AnnotationProperty.getURI())) {
@@ -89,7 +91,7 @@ public class FrameCreatorUtility {
             frame = new DefaultOWLObjectProperty(owlModel, id);                     
             ((DefaultOWLObjectProperty)frame).setInverseFunctional(true);
             //hack - because otherwise the type is set twice
-            
+
             removeInstanceType((Instance)frame, systemFrames.getOwlInverseFunctionalPropertyClass());
         }
         else if (typeUri.equals(OWL.FunctionalProperty.getURI())) {
@@ -108,7 +110,9 @@ public class FrameCreatorUtility {
         else if (typeUri.equals(RDFS.Class.getURI())) {
             frame = new DefaultRDFSNamedClass(owlModel, id);
         }
-        
+        else if (typeUri.equals(RDFS.Datatype.getURI()))  {
+            frame = new DefaultRDFSDatatype(owlModel, id);
+        }
         else if (typeUri.equals(SWRLNames.Cls.ATOM_LIST)) {
             frame = new DefaultSWRLAtomList(owlModel, id);
         }
@@ -142,98 +146,86 @@ public class FrameCreatorUtility {
         else if (typeUri.equals(SWRLNames.Cls.VARIABLE)) {
             frame = new DefaultSWRLVariable(owlModel, id);
         }
-        
+
         else {
             //maybe this is an RDF individual
             frame = new DefaultOWLIndividual(owlModel, id);
         }
-                
+        frame.assertFrameName();
+
         addInstanceType((Instance)frame, (Cls)type);
         frame.assertFrameName();        
 
         return frame;
-                
+
     }
-        
-        
-        public static Frame createFrameWithType(OWLModel owlModel, FrameID id, Cls type, boolean isSubjAnon) {
-                return createFrameWithType(owlModel, id, type.getName(), isSubjAnon);           
-        }
-        
-        
-        public static boolean addInstanceType(Instance inst, Cls type) {
-            if (inst == null || type == null) {                     
-                return false;
-            }
 
-            Slot typeSlot = inst.getKnowledgeBase().getSystemFrames().getDirectTypesSlot();
-            addOwnSlotValue(inst, typeSlot , type);
-            addOwnSlotValue(type, inst.getKnowledgeBase().getSystemFrames().getDirectInstancesSlot(), inst);
 
-            return true;
+    public static Frame createFrameWithType(OWLModel owlModel, FrameID id, Cls type, boolean isSubjAnon) {
+        return createFrameWithType(owlModel, id, type.getName(), isSubjAnon);           
+    }
+
+
+    public static boolean addInstanceType(Instance inst, Cls type) {
+        if (inst == null || type == null) {                     
+            return false;
         }
 
-        public static boolean removeInstanceType(Instance inst, Cls type) {
-            Slot typeSlot = inst.getKnowledgeBase().getSystemFrames().getDirectTypesSlot();
-            simpleFrameStore.removeDirectOwnSlotValue(inst, typeSlot , type);
-            simpleFrameStore.removeDirectOwnSlotValue(type, inst.getKnowledgeBase().getSystemFrames().getDirectInstancesSlot(), inst);
-            return true;
-        }
-        
-        public static boolean createSubclassOf(Cls cls, Cls superCls) {
-                if (cls == null || superCls == null) {
-                        //Log.getLogger().warning("Error at creating subclass of relationship. Cls: " + cls + " Superclass: " + superCls);
-                        return false;
-                }
-        
-                //if (!simpleFrameStore.getDirectSuperclasses(cls).contains(superCls)) {
-                        simpleFrameStore.addDirectSuperclass(cls, superCls);
-                //}
-                
-                return true;
-        }
+        Slot typeSlot = inst.getKnowledgeBase().getSystemFrames().getDirectTypesSlot();
+        addOwnSlotValue(inst, typeSlot , type);
+        addOwnSlotValue(type, inst.getKnowledgeBase().getSystemFrames().getDirectInstancesSlot(), inst);
 
-        public static boolean createSubpropertyOf(Slot slot, Slot superSlot) {
-                if (slot == null || superSlot == null) {
-                        return false;
-                }
-                
-                //if (!simpleFrameStore.getDirectSuperslots(slot).contains(superSlot)) {
-                        simpleFrameStore.addDirectSuperslot(slot, superSlot);
-                //}
-                
-                return true;
-        }
-        
-        
-        public static SimpleFrameStore getSimpleFrameStore() {
-                return simpleFrameStore;
-        }
+        return true;
+    }
 
-        public static void setSimpleFrameStore(SimpleFrameStore simpleFrameStore) {
-                FrameCreatorUtility.simpleFrameStore = simpleFrameStore;
-        }
-        
-        
-        public static boolean addOwnSlotValue(Frame frame, Slot slot, Object value) {
-                if (frame == null || slot == null)
-                        return false;
+    public static boolean removeInstanceType(Instance inst, Cls type) {
+        Slot typeSlot = inst.getKnowledgeBase().getSystemFrames().getDirectTypesSlot();
+        getSimpleFrameStore(inst).removeDirectOwnSlotValue(inst, typeSlot , type);
+        getSimpleFrameStore(type).removeDirectOwnSlotValue(type, inst.getKnowledgeBase().getSystemFrames().getDirectInstancesSlot(), inst);
+        return true;
+    }
 
-        //      if (!simpleFrameStore.getOwnSlotValues(frame, slot).contains(value)) {
-                        simpleFrameStore.addDirectOwnSlotValue(frame, slot, value);
-        //      }
-                
-                return true;
+    public static boolean createSubclassOf(Cls cls, Cls superCls) {
+        if (cls == null || superCls == null) {
+            //Log.getLogger().warning("Error at creating subclass of relationship. Cls: " + cls + " Superclass: " + superCls);
+            return false;
         }
-        
-        public static Collection<Cls> getDirectTypes(Instance instance) {
-                return simpleFrameStore.getDirectTypes(instance);
+        getSimpleFrameStore(cls).addDirectSuperclass(cls, superCls);
+        return true;
+    }
+
+    public static boolean createSubpropertyOf(Slot slot, Slot superSlot) {
+        if (slot == null || superSlot == null) {
+            return false;
         }
-        
-        public static boolean addDirectTypeAndSwizzle(Instance instance, Cls type) {
-                simpleFrameStore.addDirectType(instance, type);
-                
-                return true;
+        getSimpleFrameStore(slot).addDirectSuperslot(slot, superSlot);
+
+        return true;
+    }
+
+
+    public static SimpleFrameStore getSimpleFrameStore(Frame frame) {
+        return (SimpleFrameStore) ((DefaultKnowledgeBase) frame.getKnowledgeBase()).getTerminalFrameStore();
+    }
+
+
+
+    public static boolean addOwnSlotValue(Frame frame, Slot slot, Object value) {
+        if (frame == null || slot == null) {
+            return false;
         }
+        getSimpleFrameStore(frame).addDirectOwnSlotValue(frame, slot, value);
+        return true;
+    }
+
+    public static Collection<Cls> getDirectTypes(Instance instance) {
+        return getSimpleFrameStore(instance).getDirectTypes(instance);
+    }
+
+    public static boolean addDirectTypeAndSwizzle(Instance instance, Cls type) {
+        getSimpleFrameStore(instance).addDirectType(instance, type);
+
+        return true;
+    }
 
 }
