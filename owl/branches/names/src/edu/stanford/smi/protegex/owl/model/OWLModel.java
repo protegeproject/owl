@@ -18,6 +18,7 @@ import edu.stanford.smi.protegex.owl.model.event.ModelListener;
 import edu.stanford.smi.protegex.owl.model.event.PropertyListener;
 import edu.stanford.smi.protegex.owl.model.event.PropertyValueListener;
 import edu.stanford.smi.protegex.owl.model.event.ResourceListener;
+import edu.stanford.smi.protegex.owl.model.factory.AlreadyImportedException;
 import edu.stanford.smi.protegex.owl.model.factory.OWLJavaFactory;
 import edu.stanford.smi.protegex.owl.model.framestore.OWLFrameStore;
 import edu.stanford.smi.protegex.owl.model.project.OWLProject;
@@ -28,8 +29,6 @@ import edu.stanford.smi.protegex.owl.model.validator.PropertyValueValidator;
 import edu.stanford.smi.protegex.owl.repository.RepositoryManager;
 import edu.stanford.smi.protegex.owl.swrl.SWRLSystemFrames;
 import edu.stanford.smi.protegex.owl.testing.OWLTestManager;
-
-import com.hp.hpl.jena.ontology.OntModel;
 
 /**
  * A KnowledgeBase with a number of convenience methods to handle anonymous classes.
@@ -322,7 +321,7 @@ public interface OWLModel extends ProtegeKnowledgeBase, OWLTestManager {
      * @deprecated developers should not need to create an owl ontology.  There is a rename method in OWLUtils.
      */
     @Deprecated
-    OWLOntology createOWLOntology(String prefix);
+    OWLOntology createOWLOntology(String prefix) throws AlreadyImportedException;
 
 
     /**
@@ -330,7 +329,7 @@ public interface OWLModel extends ProtegeKnowledgeBase, OWLTestManager {
      * @deprecated use the other createOWLOntology method instead
      */
     @Deprecated
-    OWLOntology createOWLOntology(String name, String uri);
+    OWLOntology createOWLOntology(String name, String uri) throws AlreadyImportedException;
 
 
     OWLSomeValuesFrom createOWLSomeValuesFrom();
