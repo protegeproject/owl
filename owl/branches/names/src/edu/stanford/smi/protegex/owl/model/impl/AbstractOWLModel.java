@@ -90,8 +90,10 @@ import edu.stanford.smi.protegex.owl.model.event.PropertyValueAdapter;
 import edu.stanford.smi.protegex.owl.model.event.PropertyValueListener;
 import edu.stanford.smi.protegex.owl.model.event.ResourceAdapter;
 import edu.stanford.smi.protegex.owl.model.event.ResourceListener;
+import edu.stanford.smi.protegex.owl.model.factory.AlreadyImportedException;
 import edu.stanford.smi.protegex.owl.model.factory.FactoryUtils;
 import edu.stanford.smi.protegex.owl.model.factory.OWLJavaFactory;
+import edu.stanford.smi.protegex.owl.model.framestore.FacetUpdateFrameStore;
 import edu.stanford.smi.protegex.owl.model.framestore.OWLFrameStore;
 import edu.stanford.smi.protegex.owl.model.framestore.OWLFrameStoreManager;
 import edu.stanford.smi.protegex.owl.model.project.DefaultOWLProject;
@@ -188,8 +190,6 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     
 
     private OWLClassDisplay owlClassRenderer = OWLClassDisplayFactory.getDefaultDisplay();
-
-    private OWLFrameStore owlFrameStore;
 
     private OWLProject owlProject;
 
@@ -290,8 +290,6 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
             }
         });
 
-        initOWLFrameStore();
-
         defaultAnonymousTypes.add(getRDFListClass());
         defaultAnonymousTypes.add(getOWLAllValuesFromClass());
         defaultAnonymousTypes.add(getOWLSomeValuesFromClass());
@@ -308,6 +306,8 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
         taskManager = new DefaultTaskManager();
         taskManager.setProgressDisplay(new NoopProgressDisplay());
+        
+        // getFrameStoreManager().setOwlFrameStoresEnabled(true);
 
         setGenerateEventsEnabled(eventEnabled);
 
@@ -317,7 +317,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     public void addImport(URI ontologyName) throws IOException {
         TripleStoreModel tripleStoreModel = getTripleStoreModel();
         for (TripleStore tripleStore : tripleStoreModel.getTripleStores()) {
-            if (tripleStore.getIOAddresses().contains(ontologyName)) {
+            if (tripleStore.getIOAddresses().contains(ontologyName.toString())) {
                 return;
             }
         }
@@ -326,7 +326,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
             try {
                 tripleStoreModel.setViewActiveOnly(true);
                 TripleStore importedTripleStore = rep.addImport(this, ontologyName);
-                importedTripleStore.addIOAddress(ontologyName);
+                importedTripleStore.addIOAddress(ontologyName.toString());
             }
             finally {
                 tripleStoreModel.setViewActiveOnly(false);
@@ -430,13 +430,6 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
     public abstract void initOWLFrameFactoryInvocationHandler();
 
-
-    protected void initOWLFrameStore() {
-        if (!(getFrameStores().get(0) instanceof OWLFrameStore)) {
-            owlFrameStore = new OWLFrameStore(this);
-            getFrameStoreManager().insertFrameStore(owlFrameStore);
-        }
-    }
     
     @Override
     protected SWRLJavaFactory createFrameFactory() {
@@ -533,13 +526,9 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
      * This method must be called after a file has been loaded.
      */
     public void copyFacetValuesIntoNamedClses() {
-      /*
-       * This is a little awkward - but I guess if there is no OWL Frame Store then we shouldn't
-       * be doing this.  This happens in server client mode - maybe it should be turned off on the 
-       * clients.
-       */
-      if (owlFrameStore != null) {
-    	  owlFrameStore.copyFacetValuesIntoNamedClses();
+      FacetUpdateFrameStore facetUpdateFrameStore = getFrameStoreManager().getFacetUpdateFrameStore();
+      if (FrameStoreManager.isEnabled(facetUpdateFrameStore)) {
+          facetUpdateFrameStore.copyFacetValuesIntoNamedClses();
       }
     }
 
@@ -712,6 +701,11 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     @Override
 	protected FrameStoreManager createFrameStoreManager() {
         return new OWLFrameStoreManager(this);
+    }
+    
+    @Override
+    public OWLFrameStoreManager getFrameStoreManager() {
+        return (OWLFrameStoreManager) super.getFrameStoreManager();
     }
 
 
@@ -935,7 +929,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     }
 
 
-    public OWLOntology createOWLOntology(String uri) {
+    public OWLOntology createOWLOntology(String uri) throws AlreadyImportedException {
         if (getDefaultOWLOntology() == null) {
             FactoryUtils.addOntologyToTripleStore(this, tripleStoreModel.getTopTripleStore(), uri);
         }
@@ -950,7 +944,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
      * @deprecated
      */
     @Deprecated
-	public OWLOntology createOWLOntology(String name, String uri) {
+	public OWLOntology createOWLOntology(String name, String uri) throws AlreadyImportedException {
         //String prefix = getNamespaceManager().getPrefix(uri);
         return createOWLOntology(uri);
     }
@@ -1585,7 +1579,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
 
     public OWLFrameStore getOWLFrameStore() {
-        return owlFrameStore;
+        return getFrameStoreManager().getOWLFrameStore();
     }
 
 
@@ -2433,8 +2427,8 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     @Override
     protected void adjustForClient() {
         super.adjustForClient();
-        FrameStoreManager fsm = getFrameStoreManager();
-        fsm.setEnabled(getOWLFrameStore(), false);
+        OWLFrameStoreManager fsm = getFrameStoreManager();
+        fsm.setOwlFrameStoresEnabled(false);
         tripleStoreModel=new ClientTripleStoreModel(this);
     }
 
@@ -3408,7 +3402,6 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     @Override
     public synchronized void dispose() {    	
     	super.dispose();
-    	owlFrameStore = null;
     	jenaModel = null;
     	owlProject = null;
     	
