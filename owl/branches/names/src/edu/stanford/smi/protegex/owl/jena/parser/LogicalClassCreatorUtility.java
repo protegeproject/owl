@@ -10,10 +10,8 @@ import edu.stanford.smi.protege.model.FrameID;
 import edu.stanford.smi.protege.model.Instance;
 import edu.stanford.smi.protege.model.KnowledgeBase;
 import edu.stanford.smi.protege.model.Slot;
-import edu.stanford.smi.protegex.owl.model.OWLEnumeratedClass;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLNames;
-import edu.stanford.smi.protegex.owl.model.RDFResource;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLComplementClass;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLEnumeratedClass;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLIntersectionClass;
@@ -60,8 +58,10 @@ public class LogicalClassCreatorUtility {
 		} else if (predUri.equals(OWL.oneOf.getURI())) {
 			inst = new DefaultOWLEnumeratedClass(owlModel, id);
 		}
+		inst.assertFrameName();
  
-        ((RDFResource) inst).setPropertyValue(systemFrames.getRdfTypeProperty(), systemFrames.getOwlNamedClassClass());
+		FrameCreatorUtility.addOwnSlotValue(inst, systemFrames.getRdfTypeProperty(), systemFrames.getOwlNamedClassClass());
+        // ((RDFResource) inst).setPropertyValue(systemFrames.getRdfTypeProperty(), systemFrames.getOwlNamedClassClass());
 		
 		// should be safe
 		Cls metaCls = owlModel.getCls(logicalClassURI2MetaclassName.get(predUri));
