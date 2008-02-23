@@ -27,10 +27,14 @@ public class CreateRDFSDomainTestCase extends AbstractTripleStoreTestCase {
         RDFResource subpropertyFrame = createRDFResource("subproperty");
         ts.add(superpropertyFrame, owlModel.getRDFTypeProperty(), owlModel.getRDFPropertyClass());
         ts.add(subpropertyFrame, owlModel.getRDFTypeProperty(), owlModel.getRDFPropertyClass());
-        ts.add(subpropertyFrame, owlModel.getRDFSSubPropertyOfProperty(), superpropertyFrame);
-        Slot subproperty = owlModel.getRDFProperty(subpropertyFrame.getName());
+        
+        RDFProperty subproperty = owlModel.getRDFProperty(subpropertyFrame.getName());
+        RDFProperty superproperty = owlModel.getRDFProperty(superpropertyFrame.getName());
+        
+        ts.add(subproperty, owlModel.getRDFSSubPropertyOfProperty(), superproperty);
+
         assertSize(0, subproperty.getDirectDomain());
-        Slot superproperty = owlModel.getRDFProperty(superpropertyFrame.getName());
+
         assertSize(1, superproperty.getDirectDomain());
         assertContains(owlThing, (superproperty).getDirectDomain());
     }
@@ -40,8 +44,11 @@ public class CreateRDFSDomainTestCase extends AbstractTripleStoreTestCase {
         RDFSNamedClass cls = owlModel.createRDFSNamedClass("Class");
         RDFResource propertyFrame = createRDFResource("property");
         ts.add(propertyFrame, owlModel.getRDFTypeProperty(), owlModel.getRDFPropertyClass());
-        ts.add(propertyFrame, owlModel.getRDFSDomainProperty(), cls);
+        
         RDFProperty property = owlModel.getRDFProperty(propertyFrame.getName());
+        
+        ts.add(property, owlModel.getRDFSDomainProperty(), cls);
+
         assertSize(1, ((Slot) property).getDirectDomain());
         assertContains(cls, ((Slot) property).getDirectDomain());
         assertSize(1, ((Cls) cls).getDirectTemplateSlots());
@@ -54,11 +61,14 @@ public class CreateRDFSDomainTestCase extends AbstractTripleStoreTestCase {
         RDFSNamedClass clsB = owlModel.createRDFSNamedClass("B");
         RDFResource propertyR = createRDFResource("property");
         ts.add(propertyR, owlModel.getRDFTypeProperty(), owlModel.getRDFPropertyClass());
-        ts.add(propertyR, owlModel.getRDFSDomainProperty(), clsA);
-        ts.add(propertyR, owlModel.getRDFSDomainProperty(), clsB);
-        Slot slot = owlModel.getSlot(propertyR.getName());
+        
+        RDFProperty slot = (RDFProperty) owlModel.getSlot(propertyR.getName());
+        
+        ts.add(slot, owlModel.getRDFSDomainProperty(), clsA);
+        ts.add(slot, owlModel.getRDFSDomainProperty(), clsB);
+
         assertSize(1, slot.getDirectDomain());
-        assertContains(clsA, slot.getDirectDomain());
+        assertContains(owlModel.getOWLThingClass(), slot.getDirectDomain());
     }
 
 
@@ -68,12 +78,15 @@ public class CreateRDFSDomainTestCase extends AbstractTripleStoreTestCase {
         OWLUnionClass unionClass = owlModel.createOWLUnionClass();
         unionClass.addOperand(clsA);
         unionClass.addOperand(clsB);
-        RDFResource propertyR = createRDFResource("property");
-        ts.add(propertyR, owlModel.getRDFTypeProperty(), owlModel.getRDFPropertyClass());
+        RDFResource resourceR = createRDFResource("property");
+        ts.add(resourceR, owlModel.getRDFTypeProperty(), owlModel.getRDFPropertyClass());
+        
+        RDFProperty propertyR = (RDFProperty) owlModel.getSlot(resourceR.getName());
+        
         ts.add(propertyR, owlModel.getRDFSDomainProperty(), unionClass);
-        Slot slot = owlModel.getSlot(propertyR.getName());
-        assertSize(2, slot.getDirectDomain());
-        assertContains(clsA, slot.getDirectDomain());
-        assertContains(clsB, slot.getDirectDomain());
+        
+        assertSize(2, propertyR.getDirectDomain());
+        assertContains(clsA, propertyR.getDirectDomain());
+        assertContains(clsB, propertyR.getDirectDomain());
     }
 }
