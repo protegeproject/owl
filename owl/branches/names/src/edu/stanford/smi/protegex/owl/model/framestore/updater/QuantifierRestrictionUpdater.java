@@ -1,4 +1,4 @@
-package edu.stanford.smi.protegex.owl.model.framestore;
+package edu.stanford.smi.protegex.owl.model.framestore.updater;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -11,15 +11,15 @@ import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.model.OWLAnonymousClass;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLQuantifierRestriction;
 import edu.stanford.smi.protegex.owl.model.OWLUnionClass;
 import edu.stanford.smi.protegex.owl.model.RDFSClass;
-import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
 
-abstract class QuantifierRestrictionUpdater extends AbstractRestrictionUpdater {
+public abstract class QuantifierRestrictionUpdater extends AbstractRestrictionUpdater {
     private static final transient Logger log = Log.getLogger(QuantifierRestrictionUpdater.class);
 
-    QuantifierRestrictionUpdater(AbstractOWLModel owlModel) {
+    QuantifierRestrictionUpdater(OWLModel owlModel) {
         super(owlModel);
     }
 

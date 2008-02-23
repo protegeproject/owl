@@ -1,4 +1,4 @@
-package edu.stanford.smi.protegex.owl.model.framestore;
+package edu.stanford.smi.protegex.owl.model.framestore.updater;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -12,23 +12,23 @@ import edu.stanford.smi.protege.model.Model;
 import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.model.OWLHasValue;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
 import edu.stanford.smi.protegex.owl.model.OWLNames;
 import edu.stanford.smi.protegex.owl.model.OWLRestriction;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.RDFSLiteral;
 import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
-import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
 
-class HasValueRestrictionUpdater extends AbstractRestrictionUpdater {
+public class HasValueRestrictionUpdater extends AbstractRestrictionUpdater {
     private static final transient Logger log = Log.getLogger(HasValueRestrictionUpdater.class);
 
     private Facet valuesFacet;
 
 
-    HasValueRestrictionUpdater(AbstractOWLModel owlModel) {
+    public HasValueRestrictionUpdater(OWLModel owlModel) {
         super(owlModel);
-        valuesFacet = owlModel.getFacet(Model.Facet.VALUES);
+        valuesFacet = owlModel.getSystemFrames().getValuesFacet();
     }
 
 

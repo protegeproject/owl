@@ -1,4 +1,4 @@
-package edu.stanford.smi.protegex.owl.model.framestore;
+package edu.stanford.smi.protegex.owl.model.framestore.updater;
 
 import edu.stanford.smi.protege.model.Facet;
 import edu.stanford.smi.protegex.owl.model.OWLNamedClass;

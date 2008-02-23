@@ -1,4 +1,4 @@
-package edu.stanford.smi.protegex.owl.model.framestore;
+package edu.stanford.smi.protegex.owl.model.framestore.updater;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -14,6 +14,7 @@ import edu.stanford.smi.protege.model.ValueType;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.model.OWLAllValuesFrom;
 import edu.stanford.smi.protegex.owl.model.OWLDataRange;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
 import edu.stanford.smi.protegex.owl.model.OWLNames;
 import edu.stanford.smi.protegex.owl.model.OWLQuantifierRestriction;
@@ -25,10 +26,9 @@ import edu.stanford.smi.protegex.owl.model.RDFSClass;
 import edu.stanford.smi.protegex.owl.model.RDFSDatatype;
 import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
 import edu.stanford.smi.protegex.owl.model.RDFSNames;
-import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
 import edu.stanford.smi.protegex.owl.model.impl.XMLSchemaDatatypes;
 
-class AllValuesFromRestrictionUpdater extends QuantifierRestrictionUpdater {
+public class AllValuesFromRestrictionUpdater extends QuantifierRestrictionUpdater {
     private static final transient Logger log = Log.getLogger(AllValuesFromRestrictionUpdater.class);
 
     private Cls metaCls;
@@ -36,10 +36,10 @@ class AllValuesFromRestrictionUpdater extends QuantifierRestrictionUpdater {
     private Facet valueTypeFacet;
 
 
-    AllValuesFromRestrictionUpdater(AbstractOWLModel owlModel) {
+    public AllValuesFromRestrictionUpdater(OWLModel owlModel) {
         super(owlModel);
-        metaCls = owlModel.getCls(OWLNames.Cls.ALL_VALUES_FROM_RESTRICTION);
-        valueTypeFacet = owlModel.getFacet(Model.Facet.VALUE_TYPE);
+        metaCls = owlModel.getSystemFrames().getOwlAllValuesFromClass();
+        valueTypeFacet = owlModel.getSystemFrames().getValueTypeFacet();
     }
 
 

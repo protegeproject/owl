@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -12,7 +11,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import edu.stanford.smi.protege.model.Cls;
-import edu.stanford.smi.protege.model.Facet;
 import edu.stanford.smi.protege.model.Frame;
 import edu.stanford.smi.protege.model.FrameID;
 import edu.stanford.smi.protege.model.Instance;
@@ -20,7 +18,6 @@ import edu.stanford.smi.protege.model.Model;
 import edu.stanford.smi.protege.model.Reference;
 import edu.stanford.smi.protege.model.SimpleInstance;
 import edu.stanford.smi.protege.model.Slot;
-import edu.stanford.smi.protege.model.ValueType;
 import edu.stanford.smi.protege.model.framestore.DeleteSimplificationFrameStore;
 import edu.stanford.smi.protege.model.framestore.FrameStore;
 import edu.stanford.smi.protege.model.framestore.FrameStoreAdapter;
@@ -30,11 +27,8 @@ import edu.stanford.smi.protegex.owl.model.OWLDataRange;
 import edu.stanford.smi.protegex.owl.model.OWLIntersectionClass;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
-import edu.stanford.smi.protegex.owl.model.OWLNames;
-import edu.stanford.smi.protegex.owl.model.OWLObjectProperty;
 import edu.stanford.smi.protegex.owl.model.OWLProperty;
 import edu.stanford.smi.protegex.owl.model.OWLQuantifierRestriction;
-import edu.stanford.smi.protegex.owl.model.OWLRestriction;
 import edu.stanford.smi.protegex.owl.model.OWLUnionClass;
 import edu.stanford.smi.protegex.owl.model.ProtegeNames;
 import edu.stanford.smi.protegex.owl.model.RDFList;
@@ -45,15 +39,7 @@ import edu.stanford.smi.protegex.owl.model.RDFSDatatype;
 import edu.stanford.smi.protegex.owl.model.RDFSLiteral;
 import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
 import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
-import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLAllValuesFrom;
-import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLCardinality;
-import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLHasValue;
-import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLMaxCardinality;
-import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLMinCardinality;
 import edu.stanford.smi.protegex.owl.model.impl.OWLUtil;
-import edu.stanford.smi.protegex.owl.model.impl.XMLSchemaDatatypes;
-import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
-import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreUtil;
 
 /**
  * A FrameStore with specific support for OWL ontologies.
@@ -106,217 +92,21 @@ import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreUtil;
 public class OWLFrameStore extends FrameStoreAdapter {
     private static final transient Logger log = Log.getLogger(OWLFrameStore.class);
 
-    /**
-     * A Hashtable from Java restriction Class objects to the responsible RestrictionUpdaters
-     */
-    private Hashtable<Class, AbstractRestrictionUpdater> class2Updater = new Hashtable<Class, AbstractRestrictionUpdater>();
-
-    /**
-     * A Hashtable from Facets to the responsible RestrictionUpdaters
-     */
-    private Hashtable<Facet, AbstractRestrictionUpdater> facet2Updater = new Hashtable<Facet, AbstractRestrictionUpdater>();
-
-    /**
-     * A flag to prevent infinite recursion when a superclass has been added or removed
-     */
-    protected boolean facetHandlingBlocked;
-
-    private AllValuesFromRestrictionUpdater allValuesFromRestrictionUpdater;
-
-    private CardinalityRestrictionUpdater cardinalityRestrictionUpdater;
-
-    private HasValueRestrictionUpdater hasValueRestrictionUpdater;
-
     private AbstractOWLModel owlModel;
-
-    /**
-     * A flag to prevent infinite recursion when a facet override has been changed.
-     */
-    protected boolean superclassHandlingBlocked;
-
-    private boolean suppressUpdateTemplateSlots = false;
 
     public final static String IGNORE_PREFIXES_IN_SEARCH = "OWL-TOLERATE-PREFIXES-IN-SEARCH";
 
-    private boolean superclassSynchronizationBlocked = false;
-
     private boolean deletingRDFSDatatype = false;
+
+    /**
+     * An ugly trick to prevent anonymous classes from being deleted as a side effect
+     */
+    public static boolean autoDeleteOfAnonymousClses = true;
 
 
     public OWLFrameStore(AbstractOWLModel owlModel) {
         this.owlModel = owlModel;
-        initRestrictionUpdaters();
     }
-
-
-    @Override
-    public void addDirectSuperclass(Cls cls, Cls superCls) {
-        if (!cls.hasDirectSuperclass(superCls)) {   // Disallow duplicates
-
-            // log("-> " +cls.getBrowserText() + " ADDED " + superCls.getBrowserText());
-            super.addDirectSuperclass(cls, superCls);
-            if (superCls instanceof OWLIntersectionClass &&
-                cls instanceof OWLNamedClass &&
-                superCls.hasDirectSuperclass(cls)) {
-                addNamedOperandsToDirectSuperclasses((OWLNamedClass) cls, (OWLIntersectionClass) superCls);
-            }
-            else if (cls instanceof OWLIntersectionClass &&
-                     superCls instanceof OWLNamedClass &&
-                     superCls.hasDirectSuperclass(cls)) {
-                addNamedOperandsToDirectSuperclasses((OWLNamedClass) superCls, (OWLIntersectionClass) cls);
-            }
-
-            if (!superclassHandlingBlocked && cls instanceof OWLNamedClass) {
-                OWLNamedClass namedCls = (OWLNamedClass) cls;
-                if (superCls instanceof OWLRestriction) {
-                    copyFacetValuesIntoOWLNamedClass(namedCls, (OWLRestriction) superCls);
-                }
-            }
-
-            if (cls instanceof OWLNamedClass &&
-                superCls instanceof OWLNamedClass &&
-                cls.isEditable() &&
-                ((OWLNamedClass) superCls).getSubclassesDisjoint()) {
-                OWLUtil.ensureSubclassesDisjoint((OWLNamedClass) superCls);
-            }
-
-            if (!superclassSynchronizationBlocked) {
-                if (cls instanceof RDFSNamedClass) {
-                    updateRDFSSubClassOf((RDFSNamedClass) cls);
-                }
-                if (superCls instanceof RDFSNamedClass) {
-                    updateRDFSSubClassOf((RDFSNamedClass) superCls);
-                }
-            }
-        }
-    }
-
-
-    @Override
-    public void addDirectSuperslot(Slot slot, Slot superSlot) {
-        super.addDirectSuperslot(slot, superSlot);
-        if (slot instanceof RDFProperty) {
-            RDFProperty property = (RDFProperty) slot;
-            if (property instanceof OWLProperty && superSlot instanceof OWLProperty && ((OWLProperty) superSlot).isAnnotationProperty()) {
-                addDirectType(slot, owlModel.getCls(OWLNames.Cls.ANNOTATION_PROPERTY));
-            }
-            if (property.getRange() == null) {
-                slot.setDirectOwnSlotValue(owlModel.getSlot(Model.Slot.VALUE_TYPE), null);
-            }
-            if (!property.isDomainDefined()) {
-                slot.setDirectOwnSlotValue(owlModel.getSlot(Model.Slot.DIRECT_DOMAIN), null);
-            }
-        }
-    }
-
-
-    @Override
-    public void addDirectType(Instance instance, Cls type) {
-        if (instance instanceof RDFProperty) {
-            if (type.equals(owlModel.getOWLFunctionalPropertyClass())) {
-                ((Slot) instance).setAllowsMultipleValues(false);
-            }
-        }
-        if (instance instanceof RDFResource &&
-            !instance.getDirectOwnSlotValues(owlModel.getRDFTypeProperty()).contains(type) &&
-            !type.equals(owlModel.getRDFUntypedResourcesClass())) {
-            instance.addOwnSlotValue(owlModel.getRDFTypeProperty(), type);
-        }
-        super.addDirectType(instance, type);
-    }
-
-
-    private void addNamedOperandsToDirectSuperclasses(OWLNamedClass cls, OWLIntersectionClass superCls) {
-        for (Iterator it = superCls.getOperands().iterator(); it.hasNext();) {
-            RDFSClass operand = (RDFSClass) it.next();
-            if (operand instanceof OWLNamedClass) {
-                cls.addSuperclass(operand);
-            }
-        }
-    }
-
-    public void copyFacetValuesIntoNamedClses() {
-        boolean oldUndo = owlModel.isUndoEnabled();
-        owlModel.setUndoEnabled(false);
-        try {
-            for (Iterator it = (owlModel).getRDFSClasses().iterator(); it.hasNext();) {
-                Cls cls = (Cls) it.next();
-                if (cls instanceof OWLRestriction) {  // Convert restrictions into facet overrides
-                    copyFacetValuesIntoOWLNamedClass((OWLRestriction) cls);
-                }
-            }
-        } finally {
-            owlModel.setUndoEnabled(oldUndo);
-        }
-    }
-      
-      private void copyFacetValuesIntoOWLNamedClass(OWLRestriction restriction) {
-        if (restriction.getSubclasses(false).size() == 1) {
-            RDFSNamedClass namedCls = (RDFSNamedClass) restriction.getSubclasses(false).toArray()[0];
-            copyFacetValuesIntoOWLNamedClass(namedCls, restriction);
-        }
-      }
-      
-      private void copyFacetValuesIntoOWLNamedClass(RDFSNamedClass cls, OWLRestriction restriction) {
-        Class clazz = restriction.getClass();
-        RestrictionUpdater ru = class2Updater.get(clazz);
-        if (ru != null) {
-            facetHandlingBlocked = true;
-            ru.copyFacetValuesIntoNamedClass(cls, restriction);
-            facetHandlingBlocked = false;
-        }
-      }
-      
-      
-    @Override
-    public Cls createCls(FrameID id, Collection directTypes, Collection directSuperclasses, boolean loadDefaults) {
-        Cls cls = super.createCls(id, directTypes, directSuperclasses, loadDefaults);
-        if (cls instanceof OWLNamedClass && cls.isEditable()) {
-            for (Iterator it = directSuperclasses.iterator(); it.hasNext();) {
-                Cls superCls = (Cls) it.next();
-                if (superCls instanceof OWLNamedClass &&
-                    ((OWLNamedClass) superCls).getSubclassesDisjoint()) {
-                    OWLUtil.ensureSubclassesDisjoint((OWLNamedClass) superCls);
-                }
-            }
-        }
-        if (cls instanceof RDFSNamedClass) {
-            ((RDFSNamedClass) cls).setPropertyValues(owlModel.getRDFSSubClassOfProperty(), directSuperclasses);
-            cls.setDirectOwnSlotValues(owlModel.getRDFTypeProperty(), directTypes);
-        }
-        else if (cls instanceof OWLRestriction) {
-            cls.setDirectOwnSlotValue(owlModel.getRDFTypeProperty(), owlModel.getRDFSNamedClass(OWLNames.Cls.RESTRICTION));
-        }
-        else if (cls instanceof OWLAnonymousClass) {
-            cls.setDirectOwnSlotValue(owlModel.getRDFTypeProperty(), owlModel.getOWLNamedClassClass());
-        }
-        return cls;
-    }
-
-    @Override
-    public Slot createSlot(FrameID id, Collection directTypes, Collection directSuperslots, boolean loadDefaults) {
-        Slot slot = super.createSlot(id, directTypes, directSuperslots, loadDefaults);
-        if (slot instanceof RDFProperty) {
-            RDFProperty rdfProperty = (RDFProperty) slot;
-            slot.setAllowsMultipleValues(true);
-            if (slot instanceof OWLObjectProperty && directSuperslots.isEmpty()) {
-                ((Slot) rdfProperty).setValueType(ValueType.INSTANCE);
-            }
-            slot.setDirectOwnSlotValues(owlModel.getRDFTypeProperty(), directTypes);
-            rdfProperty.setDomainDefined(false); // true
-        }
-        return slot;
-    }
-
-    @Override
-    public SimpleInstance createSimpleInstance(FrameID id, Collection directTypes, boolean loadDefaults) {
-        SimpleInstance instance = super.createSimpleInstance(id, directTypes, loadDefaults);
-        if (instance instanceof RDFResource && !directTypes.contains(owlModel.getRDFUntypedResourcesClass())) {
-            instance.setDirectOwnSlotValues(owlModel.getRDFTypeProperty(), directTypes);
-        }
-        return instance;
-    }
-
 
     private void deleteAnonymousClass(OWLAnonymousClass cls) {
        
@@ -434,21 +224,6 @@ public class OWLFrameStore extends FrameStoreAdapter {
             }
         }
         super.deleteCls(anonymousClass);
-    }
-
-
-    @Override
-    public void deleteCls(Cls cls) {
-        if (cls instanceof OWLAnonymousClass) {
-            deleteAnonymousClass((OWLAnonymousClass) cls);
-        }
-        else if (cls instanceof RDFSNamedClass) {
-            deleteNamedClass((RDFSNamedClass) cls);
-        }
-        else {
-            deleteDependingListInstances(cls);
-            super.deleteCls(cls);  // Default handling for anything else
-        }
     }
 
 
@@ -630,20 +405,6 @@ public class OWLFrameStore extends FrameStoreAdapter {
     }
 
 
-    @Override
-    public void deleteSimpleInstance(SimpleInstance simpleInstance) {
-        if (simpleInstance instanceof RDFList) {
-            deleteListChain((RDFList) simpleInstance);
-        }
-        deleteDependingListInstances(simpleInstance);
-        if (simpleInstance instanceof RDFResource && !deletingRDFSDatatype) {
-            RDFResource resource = (RDFResource) simpleInstance;
-            deleteAnonymousClses(resource.getReferringAnonymousClasses());
-        }
-        super.deleteSimpleInstance(simpleInstance);
-    }
-
-
     private void deleteListChain(RDFList list) {
         Object first = list.getFirst();
         if (first instanceof OWLAnonymousClass) {
@@ -657,30 +418,6 @@ public class OWLFrameStore extends FrameStoreAdapter {
     }
 
 
-    /**
-     * Deletes the depending classes (anonymous domains and ranges) of the slot
-     * being deleted.
-     *
-     * @param slot the Slot being deleted
-     */
-    @Override
-    public void deleteSlot(Slot slot) {
-        deleteDependingListInstances(slot);
-        if (slot instanceof RDFProperty) {
-            RDFProperty rdfProperty = (RDFProperty) slot;
-            deleteDependingAnonymousClses(rdfProperty);
-            if (rdfProperty.hasObjectRange()) {
-                deleteAnonymousClses(rdfProperty.getPropertyValues(owlModel.getRDFSRangeProperty()));
-            }
-            Collection domain = slot.getDirectDomain();
-            deleteAnonymousClses(domain);
-            RDFResource range = rdfProperty.getRange();
-            if (range instanceof RDFSDatatype && range.isAnonymous()) {
-                range.delete();
-            }
-        }
-        super.deleteSlot(slot);
-    }
 
 
     private void ensureRDFSSubClassOfStatementsExistForNamedOperands(OWLIntersectionClass intersectionClass) {
@@ -757,32 +494,133 @@ public class OWLFrameStore extends FrameStoreAdapter {
         return result;
     }
 
-    /*public List getDirectOwnSlotValues(Frame frame, Slot slot) {
-       List result = super.getDirectOwnSlotValues(frame, slot);
-       return flattenList(result);
-   }
+
+    private Collection getSlotsToDelete(Slot slot) {
+        DeleteSimplificationFrameStore fs = getDeleteSimplificationFrameStore();
+        return fs.getSlotsToDelete(slot);
+    }
 
 
-   public Collection getOwnSlotValues(Frame frame, Slot slot) {
-       Collection results = super.getOwnSlotValues(frame, slot);
-       return flattenList(results);
-   }
 
 
-   private List flattenList(Collection results) {
-       if(results.size() == 1) {
-           Object value = results.iterator().next();
-           if(value instanceof RDFList) {
-               return ((RDFList)value).getValues();
-           }
-       }
-       if(results instanceof List) {
-           return (List) results;
-       }
-       else {
-           return new ArrayList(results);
-       }
-   } */
+
+    public static boolean isIgnorePrefixesInSearch(OWLModel owlModel) {
+        return Boolean.TRUE.equals(owlModel.getOWLProject().getSettingsMap().getBoolean(IGNORE_PREFIXES_IN_SEARCH));
+    }
+
+
+    private boolean isReachableByAnotherRoute(Cls subclass, Collection classesToBeDeleted) {
+        Collection superclasses = new ArrayList(getDirectSuperclasses(subclass));
+        superclasses.remove(owlModel.getAnonymousRootCls());
+        if (superclasses.size() > 1) {
+            Iterator it = superclasses.iterator();
+            while (it.hasNext()) {
+                Cls superCls = (Cls) it.next();
+                if (superCls instanceof RDFSNamedClass && !classesToBeDeleted.contains(superCls)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /*
+     * Frame Store implementation
+     * 
+     */
+    
+    @Override
+    public void setDirectOwnSlotValues(Frame frame, Slot slot, Collection values) {
+        if (frame instanceof RDFProperty && slot.equals(owlModel.getRDFSRangeProperty())) {
+            List oldValues = frame.getDirectOwnSlotValues(slot);
+
+            super.setDirectOwnSlotValues(frame, slot, values);
+            deleteAnonymousClasses(oldValues, values);
+        }
+        else if (frame instanceof RDFProperty && slot.equals(owlModel.getRDFSDomainProperty())) {
+            List oldValues = frame.getDirectOwnSlotValues(slot);
+            super.setDirectOwnSlotValues(frame, slot, values);
+            deleteAnonymousClasses(oldValues, values);
+        }
+        else {
+            super.setDirectOwnSlotValues(frame, slot, values);
+        }
+    }
+    
+    @Override
+    public Cls createCls(FrameID id, Collection directTypes, Collection directSuperclasses, boolean loadDefaults) {
+        Cls cls = super.createCls(id, directTypes, directSuperclasses, loadDefaults);
+        if (cls instanceof RDFSNamedClass) {
+            ((RDFSNamedClass) cls).setPropertyValues(owlModel.getRDFSSubClassOfProperty(), directSuperclasses);
+        }
+        if (cls instanceof OWLNamedClass && cls.isEditable()) {
+            for (Iterator it = directSuperclasses.iterator(); it.hasNext();) {
+                Cls superCls = (Cls) it.next();
+                if (superCls instanceof OWLNamedClass &&
+                    ((OWLNamedClass) superCls).getSubclassesDisjoint()) {
+                    OWLUtil.ensureSubclassesDisjoint((OWLNamedClass) superCls);
+                }
+            }
+        }
+        return cls;
+    }
+    
+
+    @Override
+    public void deleteCls(Cls cls) {
+        if (cls instanceof OWLAnonymousClass) {
+            deleteAnonymousClass((OWLAnonymousClass) cls);
+        }
+        else if (cls instanceof RDFSNamedClass) {
+            deleteNamedClass((RDFSNamedClass) cls);
+        }
+        else {
+            deleteDependingListInstances(cls);
+            super.deleteCls(cls);  // Default handling for anything else
+        }
+    }
+
+
+    /**
+     * Deletes the depending classes (anonymous domains and ranges) of the slot
+     * being deleted.
+     *
+     * @param slot the Slot being deleted
+     */
+    @Override
+    public void deleteSlot(Slot slot) {
+        deleteDependingListInstances(slot);
+        if (slot instanceof RDFProperty) {
+            RDFProperty rdfProperty = (RDFProperty) slot;
+            deleteDependingAnonymousClses(rdfProperty);
+            if (rdfProperty.hasObjectRange()) {
+                deleteAnonymousClses(rdfProperty.getPropertyValues(owlModel.getRDFSRangeProperty()));
+            }
+            Collection domain = slot.getDirectDomain();
+            deleteAnonymousClses(domain);
+            RDFResource range = rdfProperty.getRange();
+            if (range instanceof RDFSDatatype && range.isAnonymous()) {
+                range.delete();
+            }
+        }
+        super.deleteSlot(slot);
+    }
+    
+
+    @Override
+    public void deleteSimpleInstance(SimpleInstance simpleInstance) {
+        if (simpleInstance instanceof RDFList) {
+            deleteListChain((RDFList) simpleInstance);
+        }
+        deleteDependingListInstances(simpleInstance);
+        if (simpleInstance instanceof RDFResource && !deletingRDFSDatatype) {
+            RDFResource resource = (RDFResource) simpleInstance;
+            deleteAnonymousClses(resource.getReferringAnonymousClasses());
+        }
+        super.deleteSimpleInstance(simpleInstance);
+    }
+
+
 
     @Override
     public Set getClsesWithMatchingBrowserText(String value, Collection superclasses, int maxMatches) {
@@ -820,432 +658,12 @@ public class OWLFrameStore extends FrameStoreAdapter {
     }
 
 
-    private Collection getSlotsToDelete(Slot slot) {
-        DeleteSimplificationFrameStore fs = getDeleteSimplificationFrameStore();
-        return fs.getSlotsToDelete(slot);
-    }
-
-
-    private void initRestrictionUpdaters() {
-
-        allValuesFromRestrictionUpdater = new AllValuesFromRestrictionUpdater(owlModel);
-        cardinalityRestrictionUpdater = new CardinalityRestrictionUpdater(owlModel);
-        hasValueRestrictionUpdater = new HasValueRestrictionUpdater(owlModel);
-
-        facet2Updater.put(owlModel.getFacet(Model.Facet.VALUE_TYPE), allValuesFromRestrictionUpdater);
-        facet2Updater.put(owlModel.getFacet(Model.Facet.MAXIMUM_CARDINALITY), cardinalityRestrictionUpdater);
-        facet2Updater.put(owlModel.getFacet(Model.Facet.MINIMUM_CARDINALITY), cardinalityRestrictionUpdater);
-        facet2Updater.put(owlModel.getFacet(Model.Facet.VALUES), hasValueRestrictionUpdater);
-
-        // TODO: This should be generalized, independent from Default implementation classes
-        class2Updater.put(DefaultOWLAllValuesFrom.class, allValuesFromRestrictionUpdater);
-        class2Updater.put(DefaultOWLCardinality.class, cardinalityRestrictionUpdater);
-        class2Updater.put(DefaultOWLHasValue.class, hasValueRestrictionUpdater);
-        class2Updater.put(DefaultOWLMaxCardinality.class, cardinalityRestrictionUpdater);
-        class2Updater.put(DefaultOWLMinCardinality.class, cardinalityRestrictionUpdater);
-    }
-
-
-    public static boolean isIgnorePrefixesInSearch(OWLModel owlModel) {
-        return Boolean.TRUE.equals(owlModel.getOWLProject().getSettingsMap().getBoolean(IGNORE_PREFIXES_IN_SEARCH));
-    }
-
-
-    private boolean isReachableByAnotherRoute(Cls subclass, Collection classesToBeDeleted) {
-        Collection superclasses = new ArrayList(getDirectSuperclasses(subclass));
-        superclasses.remove(owlModel.getAnonymousRootCls());
-        if (superclasses.size() > 1) {
-            Iterator it = superclasses.iterator();
-            while (it.hasNext()) {
-                Cls superCls = (Cls) it.next();
-                if (superCls instanceof RDFSNamedClass && !classesToBeDeleted.contains(superCls)) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-
-    /**
-     * An ugly trick to prevent anonymous classes from being deleted as a side effect
-     */
-    public static boolean autoDeleteOfAnonymousClses = true;
-
-
     @Override
     public void removeDirectSuperclass(Cls cls, Cls superCls) {
-
-        boolean wasEquivalentCls = superCls.hasDirectSuperclass(cls);
-
-        // log("-> " +cls.getBrowserText() + " REMOVED " + superCls.getBrowserText());
         super.removeDirectSuperclass(cls, superCls);
-
-        if (cls instanceof OWLNamedClass && superCls instanceof OWLIntersectionClass && wasEquivalentCls) {
-            removeNamedOperandsFromDirectSuperclasses((OWLNamedClass) cls,
-                                                      (OWLIntersectionClass) superCls, owlModel.getSlot(Model.Slot.DIRECT_SUPERCLASSES));
-        }
-        else if (superCls instanceof OWLNamedClass && cls instanceof OWLIntersectionClass && wasEquivalentCls) {
-            removeNamedOperandsFromDirectSuperclasses((OWLNamedClass) superCls,
-                                                      (OWLIntersectionClass) cls, owlModel.getSlot(Model.Slot.DIRECT_SUBCLASSES));
-        }
-
-        if (!superclassHandlingBlocked) {
-            if (cls instanceof OWLNamedClass && superCls instanceof OWLRestriction) {
-                copyFacetValuesIntoOWLNamedClass((OWLNamedClass) cls, (OWLRestriction) superCls);
-            }
-        }
-
         if (superCls instanceof OWLAnonymousClass && autoDeleteOfAnonymousClses) {
             superCls.delete();
         }
-
-        if (cls instanceof RDFSNamedClass) {
-            updateRDFSSubClassOf((RDFSNamedClass) cls);
-        }
-        else if (superCls instanceof RDFSNamedClass) {
-            updateRDFSSubClassOf((RDFSNamedClass) superCls);
-        }
     }
-
-
-    @Override
-    public void removeDirectSuperslot(Slot slot, Slot superslot) {
-        super.removeDirectSuperslot(slot, superslot);
-        if (slot instanceof OWLObjectProperty &&
-            slot.getDirectSuperslotCount() == 0 &&
-            slot.getAllowedClses().isEmpty()) {
-            slot.setValueType(ValueType.INSTANCE);
-        }
-        if (slot instanceof RDFProperty) {
-            if (slot.getDirectDomain().isEmpty() && slot.getDirectSuperslotCount() == 0) {
-                ((Cls) owlModel.getOWLThingClass()).addDirectTemplateSlot(slot);
-            }
-        }
-    }
-
-
-    @Override
-    public void removeDirectType(Instance instance, Cls directType) {
-        if (instance instanceof RDFProperty) {
-            if (directType.equals(owlModel.getOWLFunctionalPropertyClass())) {
-                ((Slot) instance).setAllowsMultipleValues(true);
-            }
-        }
-        if (instance instanceof RDFResource) {
-            instance.removeOwnSlotValue(owlModel.getRDFTypeProperty(), directType);
-        }
-        super.removeDirectType(instance, directType);
-    }
-
-
-    private void removeNamedOperandsFromDirectSuperclasses(OWLNamedClass cls,
-                                                           OWLIntersectionClass intersectionCls,
-                                                           Slot slot) {
-        Collection toRemove = intersectionCls.getNamedOperands();
-        if (!toRemove.isEmpty()) {
-            for (Iterator it = ((Cls) cls).getDirectOwnSlotValues(slot).iterator(); it.hasNext();) {
-                RDFSClass superClass = (RDFSClass) it.next();
-                if (superClass instanceof OWLIntersectionClass) {
-                    toRemove.removeAll(((OWLIntersectionClass) superClass).getNamedOperands());
-                }
-            }
-            for (Iterator it = toRemove.iterator(); it.hasNext();) {
-                RDFSNamedClass namedCls = (RDFSNamedClass) it.next();
-                if (!namedCls.hasEquivalentClass(cls)) {
-                    cls.removeSuperclass(namedCls);
-                }
-            }
-        }
-    }
-
-
-    public static boolean allowDuplicateOwnSlotValues = false;
-
-
-    @Override
-    public void setDirectOwnSlotValues(Frame frame, Slot slot, Collection values) {
-
-        final int valueCount = values.size();
-
-        if (!allowDuplicateOwnSlotValues &&
-            valueCount > 1 &&
-            valueCount != new HashSet(values).size()) {
-            System.err.println("[OWLFrameStore] Warning: Attempted to assign duplicate value to " +
-                               frame.getBrowserText() + "." + slot.getBrowserText());
-            for (Iterator it = values.iterator(); it.hasNext();) {
-                Object o = it.next();
-                System.err.println("[OWLFrameStore]  - " + o);
-            }
-            values = new HashSet(values);
-        }
-        if (frame instanceof RDFProperty && slot.equals(owlModel.getRDFSRangeProperty())) {
-            List oldValues = frame.getDirectOwnSlotValues(slot);
-            if (values.size() > 0 && values.iterator().next() instanceof RDFSClass) {
-                updatePropertyAllowedClasses((RDFProperty) frame, values);
-            }
-            else {
-                updatePropertyValueType((RDFProperty) frame, values);
-            }
-            super.setDirectOwnSlotValues(frame, slot, values);
-            deleteAnonymousClasses(oldValues, values);
-        }
-        else if (frame instanceof RDFProperty && slot.equals(owlModel.getRDFSDomainProperty())) {
-            if (values.size() > 1 && values.contains(owlModel.getOWLThingClass())) {
-                values = new ArrayList(values);
-                values.remove(owlModel.getOWLThingClass());
-            }
-            List oldValues = frame.getDirectOwnSlotValues(slot);
-            super.setDirectOwnSlotValues(frame, slot, values);
-            if (!suppressUpdateTemplateSlots) {
-                updateSlotDomain((Slot) frame, values);
-            }
-            deleteAnonymousClasses(oldValues, values);
-        }
-        else {
-            super.setDirectOwnSlotValues(frame, slot, values);
-        }
-    }
-
-
-    public void setSuperclassSynchronizationBlocked(boolean value) {
-        superclassSynchronizationBlocked = value;
-    }
-
-    // ----- Debugging only block
-
-    public boolean suppressUpdateRDFSDomain = false;
-
-
-    @Override
-    public void addDirectTemplateSlot(Cls cls, Slot slot) {
-        super.addDirectTemplateSlot(cls, slot);
-        if (!suppressUpdateRDFSDomain && slot instanceof RDFProperty && cls instanceof RDFSClass) {
-            //printDeprecationWarning("addDirectTemplateSlot");
-            updateRDFSDomain((RDFProperty) slot);
-        }
-    }
-
-
-    private void printDeprecationWarning(String methodName) {
-        log.warning("The method " + methodName + " is not recommended in OWL.");
-        log.warning("         Please use the rdfs:domain methods in RDFProperty.");
-        log.warning("         The following stack trace helps you replace your code.");
-        log.warning("         This message may be deleted in future versions.");
-        try {
-            throw new Exception();
-        }
-        catch (Exception ex) {
-          Log.getLogger().log(Level.SEVERE, "Exception caught", ex);
-        }
-    }
-
-
-    @Override
-    public void removeDirectTemplateSlot(Cls cls, Slot slot) {
-        super.removeDirectTemplateSlot(cls, slot);
-        if (!suppressUpdateRDFSDomain && slot instanceof RDFProperty && cls instanceof RDFSClass) {
-            //printDeprecationWarning("removeDirectTemplateSlot");
-            updateRDFSDomain((RDFProperty) slot);
-        }
-    }
-
-
-    private void updateRDFSDomain(RDFProperty property) {
-        Collection domainClses = ((Slot) property).getDirectDomain();
-        RDFSClass newDomain = null;
-        if (domainClses.size() == 1) {
-            newDomain = (RDFSClass) domainClses.iterator().next();
-        }
-        else {
-            newDomain = owlModel.createOWLUnionClass(domainClses);
-        }
-        suppressUpdateTemplateSlots = true;
-        property.setDomain(newDomain);
-        suppressUpdateTemplateSlots = false;
-    }
-
-    // ----- End
-
-
-    @Override
-    public void setDirectTemplateFacetValues(Cls cls, Slot slot, Facet facet, Collection values) {
-
-        super.setDirectTemplateFacetValues(cls, slot, facet, values);
-
-        if (!facetHandlingBlocked) {
-            if (cls instanceof OWLNamedClass && slot instanceof RDFProperty) {
-                updateRestrictions((OWLNamedClass) cls, (RDFProperty) slot, facet);
-            }
-        }
-
-        if (!superclassHandlingBlocked) {
-            if (cls instanceof OWLRestriction) {
-                OWLRestriction restriction = (OWLRestriction) cls;
-                copyFacetValuesIntoOWLNamedClass(restriction);
-            }
-        }
-    }
-
-
-    @Override
-    public void setDirectTemplateSlotValues(Cls cls, Slot slot, Collection values) {
-
-        super.setDirectTemplateSlotValues(cls, slot, values);
-
-        if (!facetHandlingBlocked) {
-            if (cls instanceof OWLNamedClass && slot instanceof RDFProperty) {
-                updateRestrictions((OWLNamedClass) cls, (RDFProperty) slot, owlModel.getFacet(Model.Facet.VALUES));
-            }
-        }
-    }
-
-
-    private void updatePropertyAllowedClasses(RDFProperty property, Collection values) {
-        ((Slot) property).setValueType(ValueType.INSTANCE);
-        RDFSClass rangeClass = (RDFSClass) values.iterator().next();
-        if (rangeClass instanceof OWLUnionClass) {
-            ((Slot) property).setAllowedClses(((OWLUnionClass) rangeClass).getOperands());
-        }
-        else {
-            ((Slot) property).setAllowedClses(Collections.singleton(rangeClass));
-        }
-    }
-
-
-    /**
-     * Updates the ValueType of a datatype slot in response to changes in the range.
-     */
-    private void updatePropertyValueType(RDFProperty property, Collection values) {
-        ValueType newValueType = ValueType.ANY;
-        if (property instanceof OWLObjectProperty && property.getSuperpropertyCount() == 0) {
-            newValueType = ValueType.INSTANCE;
-        }
-        if (!values.isEmpty()) {
-            Object range = values.iterator().next();
-            if (range instanceof RDFSDatatype) {
-                newValueType = XMLSchemaDatatypes.getValueType(((RDFSDatatype) range).getURI());
-            }
-            else if (range instanceof RDFSClass) {
-                newValueType = ValueType.INSTANCE;
-            }
-            else if (range instanceof OWLDataRange) {
-                RDFSDatatype datatype = ((OWLDataRange) range).getRDFDatatype();
-                if (datatype != null) {
-                    newValueType = XMLSchemaDatatypes.getValueType(datatype.getURI());
-                }
-            }
-        }
-        if (newValueType != ((Slot) property).getValueType()) {
-            ((Slot) property).setValueType(newValueType);
-        }
-        if (newValueType == ValueType.INSTANCE) {
-            ((Slot) property).setAllowedClses(Collections.EMPTY_LIST);
-        }
-    }
-
-
-    private void updateRestrictions(OWLNamedClass cls, RDFProperty slot, Facet facet) {
-        RestrictionUpdater ru = facet2Updater.get(facet);
-        if (ru != null) {
-            superclassHandlingBlocked = true;
-            ru.updateRestrictions(cls, slot, facet);
-            superclassHandlingBlocked = false;
-        }
-    }
-
-
-    /**
-     * Updates the values of rdfs:subClassOf (and owl:equivalentClass) in response
-     * to changes in the :SLOT-DIRECT-SUPERCLASSES.
-     *
-     * @param cls the RDFSClass that has changed its superclasses
-     */
-    private void updateRDFSSubClassOf(RDFSNamedClass cls) {
-
-        Slot directSuperclassesSlot = owlModel.getSlot(Model.Slot.DIRECT_SUPERCLASSES);
-        RDFProperty rdfsSubClassOfProperty = owlModel.getRDFSSubClassOfProperty();
-        RDFProperty owlEquivalentClassProperty = owlModel.getOWLEquivalentClassProperty();
-
-        Collection oldSuperclasses = new HashSet(cls.getPropertyValues(rdfsSubClassOfProperty));
-        Collection oldEquivalentClasses = new HashSet(cls.getPropertyValues(owlEquivalentClassProperty));
-
-        Collection newSuperclasses = new ArrayList();
-        Collection newEquivalentClasses = new ArrayList();
-
-        for (Iterator it = ((Cls) cls).getDirectSuperclasses().iterator(); it.hasNext();) {
-            Cls superClass = (Cls) it.next();
-            if (superClass instanceof RDFSClass) {
-                if (superClass.hasDirectSuperclass(cls)) {  // is equivalent class
-                    newEquivalentClasses.add(superClass);
-                    if (!oldEquivalentClasses.contains(superClass)) {
-                        TripleStore ts = TripleStoreUtil.getTripleStoreOf(cls, directSuperclassesSlot, superClass);
-                        TripleStoreUtil.addToTripleStore(owlModel, ts, cls, owlEquivalentClassProperty, superClass);
-                    }
-                    if (superClass instanceof RDFSNamedClass) {
-                        newSuperclasses.add(superClass);
-                        if (!oldSuperclasses.contains(superClass)) {
-                            TripleStore ts = TripleStoreUtil.getTripleStoreOf(cls, directSuperclassesSlot, superClass);
-                            TripleStoreUtil.addToTripleStore(owlModel, ts, cls, rdfsSubClassOfProperty, superClass);
-                        }
-                    }
-                }
-                else {
-                    newSuperclasses.add(superClass);
-                    if (!oldSuperclasses.contains(superClass)) {
-                        TripleStore ts = TripleStoreUtil.getTripleStoreOf(cls, directSuperclassesSlot, superClass);
-                        TripleStoreUtil.addToTripleStore(owlModel, ts, cls, rdfsSubClassOfProperty, superClass);
-                    }
-                }
-            }
-        }
-
-        // Remove all old values that are no longer needed
-        oldSuperclasses.removeAll(newSuperclasses);
-        for (Iterator it = oldSuperclasses.iterator(); it.hasNext();) {
-            RDFSClass oldSuperclass = (RDFSClass) it.next();
-            cls.removePropertyValue(rdfsSubClassOfProperty, oldSuperclass);
-        }
-        oldEquivalentClasses.removeAll(newEquivalentClasses);
-        for (Iterator it = oldEquivalentClasses.iterator(); it.hasNext();) {
-            RDFSClass oldEquivalentClass = (RDFSClass) it.next();
-            cls.removePropertyValue(owlEquivalentClassProperty, oldEquivalentClass);
-        }
-    }
-
-
-    /**
-     * Updates the values of :SLOT-DIRECT-DOMAIN and :SLOT-DIRECT-TEMPLATE-SLOTS
-     * in response to changes in rdfs:domain.
-     *
-     * @param slot
-     * @param values
-     */
-    private void updateSlotDomain(Slot slot, Collection values) {
-        suppressUpdateRDFSDomain = true;
-        Collection clses = new ArrayList();
-        if (values.size() == 1) {
-            RDFSClass cls = (RDFSClass) values.iterator().next();
-            if (cls instanceof OWLUnionClass) {
-                clses.addAll(((OWLUnionClass) cls).getOperands());
-            }
-            else {
-                clses.add(cls);
-            }
-        }
-        for (Iterator it = new ArrayList(slot.getDirectDomain()).iterator(); it.hasNext();) {
-            Cls oldDomainCls = (Cls) it.next();
-            if (!clses.contains(oldDomainCls)) {
-                oldDomainCls.removeDirectTemplateSlot(slot);
-            }
-        }
-        Collection oldDomain = new ArrayList(slot.getDirectDomain());
-        for (Iterator it = clses.iterator(); it.hasNext();) {
-            Cls rdfsClass = (Cls) it.next();
-            if (!oldDomain.contains(rdfsClass)) {
-                rdfsClass.addDirectTemplateSlot(slot);
-            }
-        }
-        suppressUpdateRDFSDomain = false;
-    }
+    
 }

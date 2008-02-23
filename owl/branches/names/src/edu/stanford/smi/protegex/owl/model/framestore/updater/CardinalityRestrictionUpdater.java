@@ -1,4 +1,4 @@
-package edu.stanford.smi.protegex.owl.model.framestore;
+package edu.stanford.smi.protegex.owl.model.framestore.updater;
 
 import java.util.Collections;
 import java.util.Iterator;
@@ -15,14 +15,14 @@ import edu.stanford.smi.protegex.owl.model.OWLCardinality;
 import edu.stanford.smi.protegex.owl.model.OWLCardinalityBase;
 import edu.stanford.smi.protegex.owl.model.OWLMaxCardinality;
 import edu.stanford.smi.protegex.owl.model.OWLMinCardinality;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
 import edu.stanford.smi.protegex.owl.model.OWLNames;
 import edu.stanford.smi.protegex.owl.model.OWLRestriction;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
-import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
 
-class CardinalityRestrictionUpdater extends AbstractRestrictionUpdater {
+public class CardinalityRestrictionUpdater extends AbstractRestrictionUpdater {
     private final static transient Logger log = Log.getLogger(CardinalityRestrictionUpdater.class);
 
     private Facet maxCardinalityFacet;
@@ -30,10 +30,10 @@ class CardinalityRestrictionUpdater extends AbstractRestrictionUpdater {
     private Facet minCardinalityFacet;
 
 
-    CardinalityRestrictionUpdater(AbstractOWLModel owlModel) {
+    public CardinalityRestrictionUpdater(OWLModel owlModel) {
         super(owlModel);
-        maxCardinalityFacet = owlModel.getFacet(Model.Facet.MAXIMUM_CARDINALITY);
-        minCardinalityFacet = owlModel.getFacet(Model.Facet.MINIMUM_CARDINALITY);
+        maxCardinalityFacet = owlModel.getSystemFrames().getMaximumCardinalityFacet();
+        minCardinalityFacet = owlModel.getSystemFrames().getMinimumCardinalityFacet();
     }
 
 

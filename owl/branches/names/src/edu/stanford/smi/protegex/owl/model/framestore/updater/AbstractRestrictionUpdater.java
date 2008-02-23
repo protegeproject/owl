@@ -1,4 +1,4 @@
-package edu.stanford.smi.protegex.owl.model.framestore;
+package edu.stanford.smi.protegex.owl.model.framestore.updater;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -9,19 +9,19 @@ import java.util.logging.Logger;
 import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protege.util.Log;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLRestriction;
-import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
 
-abstract class AbstractRestrictionUpdater implements RestrictionUpdater {
+public abstract class AbstractRestrictionUpdater implements RestrictionUpdater {
     private final static transient Logger log = Log.getLogger(AbstractRestrictionUpdater.class);
 
     /**
      * The OWLModel this operates on
      */
-    protected AbstractOWLModel owlModel;
+    protected OWLModel owlModel;
 
 
-    public AbstractRestrictionUpdater(AbstractOWLModel owlModel) {
+    public AbstractRestrictionUpdater(OWLModel owlModel) {
         this.owlModel = owlModel;
     }
 
