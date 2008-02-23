@@ -274,7 +274,7 @@ public class XMLSchemaDatatypes {
         if (valueType != null) {
             initHashtables(valueType, uri);
         }
-        alias2XSDDatatype.put(uri/*???.toLowerCase()*/, xsd);
+        alias2XSDDatatype.put(uri, xsd);
     }
 
 
