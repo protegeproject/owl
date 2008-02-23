@@ -2,8 +2,6 @@ package edu.stanford.smi.protegex.owl.database.creator;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
-import java.util.ArrayList;
 import java.util.Collection;
 
 import edu.stanford.smi.protege.model.Project;
@@ -14,6 +12,7 @@ import edu.stanford.smi.protegex.owl.database.OWLDatabaseKnowledgeBaseFactory;
 import edu.stanford.smi.protegex.owl.jena.JenaKnowledgeBaseFactory;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.factory.AbstractOwlProjectCreator;
+import edu.stanford.smi.protegex.owl.model.factory.AlreadyImportedException;
 import edu.stanford.smi.protegex.owl.model.factory.FactoryUtils;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreModel;
@@ -65,7 +64,7 @@ public abstract class AbstractOwlDatabaseCreator extends AbstractOwlProjectCreat
         project.save(errors);
     }
     
-    protected void writeOntologyAndPrefixInfo(OWLModel owlModel, Collection errors) {
+    protected void writeOntologyAndPrefixInfo(OWLModel owlModel, Collection errors) throws AlreadyImportedException {
         TripleStoreModel tripleStoreModel = owlModel.getTripleStoreModel();
         TripleStore activeTripleStore = tripleStoreModel.getActiveTripleStore();
         if (owlModel.getDefaultOWLOntology() == null) {
