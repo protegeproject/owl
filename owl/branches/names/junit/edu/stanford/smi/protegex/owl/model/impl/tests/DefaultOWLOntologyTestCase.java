@@ -2,6 +2,7 @@ package edu.stanford.smi.protegex.owl.model.impl.tests;
 
 import edu.stanford.smi.protegex.owl.model.OWLOntology;
 import edu.stanford.smi.protegex.owl.model.RDFUntypedResource;
+import edu.stanford.smi.protegex.owl.model.factory.AlreadyImportedException;
 import edu.stanford.smi.protegex.owl.tests.AbstractJenaTestCase;
 
 /**
@@ -9,7 +10,7 @@ import edu.stanford.smi.protegex.owl.tests.AbstractJenaTestCase;
  */
 public class DefaultOWLOntologyTestCase extends AbstractJenaTestCase {
 
-    public void testImportsByURIString() {
+    public void testImportsByURIString() throws AlreadyImportedException {
         OWLOntology ontology = owlModel.createOWLOntology("owl");
         assertSize(0, ontology.getImports());
         String importURI = "http://aldi.de/ontology.owl";
