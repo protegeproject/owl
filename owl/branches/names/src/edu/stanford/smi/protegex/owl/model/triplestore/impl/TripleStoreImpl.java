@@ -60,7 +60,7 @@ public class TripleStoreImpl implements TripleStore {
     
     protected String originalXMLBase;
 
-    private Collection<URI> ioAddresses = new ArrayList<URI>();
+    private Collection<String> ioAddresses = new ArrayList<String>();
     
     private String name;
     
@@ -98,9 +98,7 @@ public class TripleStoreImpl implements TripleStore {
 
 
     public Iterator<Triple> listTriples() {
-	    // TODO: This could be optimised so that a custom Iterator is used.
-        KnowledgeBase kb = owlModel;
-        Collection<Slot> ignoreProperties = new HashSet<Slot>();
+	    Collection<Slot> ignoreProperties = new HashSet<Slot>();
         OWLSystemFrames systemFrames = owlModel.getSystemFrames();
         ignoreProperties.add(systemFrames.getOwlOntologyPrefixesProperty());
         ignoreProperties.add(systemFrames.getOwlOntologyPointerProperty());
@@ -410,17 +408,17 @@ public class TripleStoreImpl implements TripleStore {
         
     }
 
-    public void addIOAddress(URI uri) {
+    public void addIOAddress(String uri) {
         if (!ioAddresses.contains(uri)) {
             ioAddresses.add(uri);
         }
     }
 
-    public Collection<URI> getIOAddresses() {
+    public Collection<String> getIOAddresses() {
         return Collections.unmodifiableCollection(ioAddresses);
     }
 
-    public void removeIOAddress(URI uri) {
+    public void removeIOAddress(String uri) {
         ioAddresses.remove(uri);
     }
     
