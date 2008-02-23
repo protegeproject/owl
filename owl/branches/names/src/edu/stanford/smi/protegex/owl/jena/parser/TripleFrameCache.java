@@ -13,13 +13,11 @@ import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
 import edu.stanford.smi.protege.model.Cls;
-import edu.stanford.smi.protege.model.DefaultKnowledgeBase;
 import edu.stanford.smi.protege.model.Frame;
 import edu.stanford.smi.protege.model.FrameID;
 import edu.stanford.smi.protege.model.Instance;
 import edu.stanford.smi.protege.model.KnowledgeBase;
 import edu.stanford.smi.protege.model.Slot;
-import edu.stanford.smi.protege.model.framestore.SimpleFrameStore;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.model.OWLIntersectionClass;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
@@ -76,7 +74,7 @@ public class TripleFrameCache {
 		this.owlModel = owlModel;
 		this.tripleStore = tripleStore;
 		
-		FrameCreatorUtility.setSimpleFrameStore((SimpleFrameStore)((DefaultKnowledgeBase)owlModel).getTerminalFrameStore());
+		// FrameCreatorUtility.setSimpleFrameStore((SimpleFrameStore)((DefaultKnowledgeBase)owlModel).getTerminalFrameStore());
 		
 	}
 	
@@ -133,6 +131,9 @@ public class TripleFrameCache {
 				//what should happen if objFrame is not a class? Give a warning
 				//this is another rdf:type for this resource
 				//FrameCreatorUtility.setInstanceType((Instance) subjFrame, (Cls) objFrame);
+			    if (log.isLoggable(Level.FINE)) {
+			        log.fine("found an alternative type for " + subjFrame + " = " + objFrame);
+			    }
 				multipleTypesInstanceCache.addType((Instance)subjFrame, (Cls)objFrame);
 				return true;
 			}
@@ -172,6 +173,7 @@ public class TripleFrameCache {
 
 		if (objName.equals(OWL.Ontology.getURI()) && predName.equals(RDF.type.getURI()) ) {
 			tripleStore.setName(subjName);
+			tripleStore.addIOAddress(subjName);
 		}
 		
 		
@@ -510,7 +512,8 @@ public class TripleFrameCache {
 		log.info("(" + (System.currentTimeMillis() - time0) + " ms)");
 	}
 
-	private void processInferredSuperclasses(){
+	@SuppressWarnings({ "deprecation", "unchecked" })
+    private void processInferredSuperclasses(){
 		long time0 = System.currentTimeMillis();
 				
 		OWLNamedClass owlClassClass = owlModel.getOWLNamedClassClass();
