@@ -9,7 +9,6 @@ import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
@@ -33,8 +32,8 @@ import edu.stanford.smi.protege.util.URIUtilities;
 import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
 import edu.stanford.smi.protegex.owl.model.NamespaceManager;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
-import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
 import edu.stanford.smi.protegex.owl.model.RDFUntypedResource;
+import edu.stanford.smi.protegex.owl.model.factory.AlreadyImportedException;
 import edu.stanford.smi.protegex.owl.model.factory.FactoryUtils;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreUtil;
@@ -201,6 +200,8 @@ public class ProtegeOWLParser {
 	
 	private void loadTriples(final String ontologyName, URI xmlBase, final ARPInvokation invokation) throws IOException {
 	    final TripleStore tripleStore = owlModel.getTripleStoreModel().getActiveTripleStore();
+	    if (ontologyName != null) { tripleStore.addIOAddress(ontologyName.toString()); }
+	    if (xmlBase != null) { tripleStore.addIOAddress(xmlBase.toString()); }
 	    boolean eventsEnabled = owlModel.setGenerateEventsEnabled(false);
 	    try {
 	        tfc = new TripleFrameCache(owlModel, tripleStore);
@@ -263,6 +264,10 @@ public class ProtegeOWLParser {
 	        if (!importing) {
 	            doPostProcessing();
 	        }
+	    }
+	    catch (AlreadyImportedException e) {
+	        Log.getLogger().warning("Broken import led to attempt to import the same ontology twice");
+	        owlModel.getTripleStoreModel().deleteTripleStore(tripleStore);
 	    }
 	    finally {
 	        owlModel.setGenerateEventsEnabled(eventsEnabled);
