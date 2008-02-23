@@ -1,6 +1,5 @@
 package edu.stanford.smi.protegex.owl.model.triplestore;
 
-import java.net.URI;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -152,9 +151,9 @@ public interface TripleStore extends NamespaceMap, Disposable {
      * Tracks the set of io names that have been used to retrieve this triple store.  This can be 
      * different than the ontology name in the case of a broken import statement.
      */
-    Collection<URI> getIOAddresses();
+    Collection<String> getIOAddresses();
     
-    void addIOAddress(URI uri);
+    void addIOAddress(String uri);
     
-    void removeIOAddress(URI uri);
+    void removeIOAddress(String uri);
 }
