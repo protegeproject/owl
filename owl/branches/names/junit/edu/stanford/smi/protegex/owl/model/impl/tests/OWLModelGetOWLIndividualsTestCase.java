@@ -1,11 +1,17 @@
 package edu.stanford.smi.protegex.owl.model.impl.tests;
 
-import edu.stanford.smi.protegex.owl.model.*;
-import edu.stanford.smi.protegex.owl.tests.AbstractJenaTestCase;
-
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+
+import edu.stanford.smi.protegex.owl.model.OWLAllDifferent;
+import edu.stanford.smi.protegex.owl.model.OWLIndividual;
+import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
+import edu.stanford.smi.protegex.owl.model.OWLSomeValuesFrom;
+import edu.stanford.smi.protegex.owl.model.RDFIndividual;
+import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
+import edu.stanford.smi.protegex.owl.model.factory.AlreadyImportedException;
+import edu.stanford.smi.protegex.owl.tests.AbstractJenaTestCase;
 
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
@@ -18,7 +24,7 @@ public class OWLModelGetOWLIndividualsTestCase extends AbstractJenaTestCase {
     }
 
 
-    public void testGetOWLIndividuals() {
+    public void testGetOWLIndividuals() throws AlreadyImportedException {
         OWLNamedClass personClass = owlModel.createOWLNamedClass("Person");
         OWLNamedClass parentClass = owlModel.createOWLNamedSubclass("Parent", personClass);
         OWLIndividual personA = personClass.createOWLIndividual("A");
