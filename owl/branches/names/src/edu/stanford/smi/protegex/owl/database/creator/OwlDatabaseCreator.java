@@ -10,6 +10,7 @@ import edu.stanford.smi.protege.model.Project;
 import edu.stanford.smi.protegex.owl.database.DatabaseFactoryUtils;
 import edu.stanford.smi.protegex.owl.database.OWLDatabaseKnowledgeBaseFactory;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.model.factory.AlreadyImportedException;
 import edu.stanford.smi.protegex.owl.model.factory.FactoryUtils;
 
 public class OwlDatabaseCreator extends AbstractOwlDatabaseCreator {
@@ -36,10 +37,15 @@ public class OwlDatabaseCreator extends AbstractOwlDatabaseCreator {
         if (ontologyName == null) {
             ontologyName = FactoryUtils.generateOntologyURIBase();
         }
-        FactoryUtils.addOntologyToTripleStore(owlModel, 
-                                              owlModel.getTripleStoreModel().getActiveTripleStore(), 
-                                              ontologyName);
-        writeOntologyAndPrefixInfo(owlModel, errors);
+        try {
+            FactoryUtils.addOntologyToTripleStore(owlModel, 
+                                                  owlModel.getTripleStoreModel().getActiveTripleStore(), 
+                                                  ontologyName);
+            writeOntologyAndPrefixInfo(owlModel, errors);
+        }
+        catch (AlreadyImportedException e) {
+            throw new RuntimeException("This shouldn't happen", e);
+        }
         return project;
     }
     
