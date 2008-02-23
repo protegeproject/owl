@@ -12,7 +12,6 @@ import edu.stanford.smi.protege.model.KnowledgeBase;
 import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLNames;
-import edu.stanford.smi.protegex.owl.model.RDFResource;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLAllValuesFrom;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLCardinality;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLHasValue;
@@ -69,7 +68,9 @@ public class RestrictionCreatorUtility {
 		} else if (predUri.equals(OWL.cardinality.getURI())) {
 			inst = new DefaultOWLCardinality(owlModel, id);
 		}
-        ((RDFResource) inst).setPropertyValue(systemFrames.getRdfTypeProperty(), systemFrames.getOwlNamedClassClass());
+		inst.assertFrameName();
+		FrameCreatorUtility.addOwnSlotValue(inst, systemFrames.getRdfTypeProperty(), systemFrames.getOwlNamedClassClass());
+//        ((RDFResource) inst).setPropertyValue(systemFrames.getRdfTypeProperty(), systemFrames.getOwlNamedClassClass());
 		
 		// should be safe
 		Cls metaCls = ((KnowledgeBase) owlModel).getCls(restrictionURI2MetaclassName.get(predUri));
