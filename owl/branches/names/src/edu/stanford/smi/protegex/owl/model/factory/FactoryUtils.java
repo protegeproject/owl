@@ -38,7 +38,7 @@ public class FactoryUtils {
                 names.setDefaultNamespace(ontologyName + "#");
             }
             if (tripleStore.getOriginalXMLBase() == null) {
-                tripleStore.setOriginalXMLBase(ontologyName);
+                tripleStore.setOriginalXMLBase(ontologyName + "#");
             }
         }
         finally {
