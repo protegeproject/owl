@@ -143,28 +143,15 @@ public class DefaultRDFSLiteral implements RDFSLiteral {
 
 
     public RDFSDatatype getDatatype() {
-        if (rawValue.startsWith(DATATYPE_PREFIX)) {
-            int index = rawValue.indexOf(SEPARATOR);
-            String localName = rawValue.substring(2, index);
-            if ("XMLLiteral".equals(localName)) {
-                return owlModel.getRDFXMLLiteralType();
-            }
-            //TT: hack for user defined data types. Find a better solution.
-            else {
-            	RDFSDatatype datatype = owlModel.getRDFSDatatypeByName(localName);            		
-            	if (datatype == null) {
-            		//datatype = owlModel.getRDFSDatatypeByName(localName);
-                	//WRONG!
-                    //return owlModel.getRDFSDatatypeByName(RDFNames.XSD_PREFIX + ":" + localName);
-                	datatype = owlModel.getRDFSDatatypeByName(localName);
-            	}
-            	return datatype;
-            }
-        }
-        else if (rawValue.startsWith(LANGUAGE_PREFIX)) {
+        if (rawValue.startsWith(LANGUAGE_PREFIX)) {
             return owlModel.getXSDstring();
         }
-        return null;
+        else {
+            int index = rawValue.indexOf(SEPARATOR);
+            String datatypeName = rawValue.substring(2, index);
+            RDFSDatatype datatype = owlModel.getRDFSDatatypeByName(datatypeName);                  
+            return datatype; 
+        }
     }
 
 
@@ -288,7 +275,7 @@ public class DefaultRDFSLiteral implements RDFSLiteral {
         if (!datatype.isSystem() && datatype.isAnonymous()) {
             datatype = datatype.getBaseDatatype();
         }
-        return DATATYPE_PREFIX + datatype.getLocalName() + SEPARATOR + lexicalValue;
+        return DATATYPE_PREFIX + datatype.getName() + SEPARATOR + lexicalValue;
     }
 
 
