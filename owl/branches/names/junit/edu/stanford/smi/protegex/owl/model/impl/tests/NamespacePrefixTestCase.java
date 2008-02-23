@@ -1,14 +1,15 @@
 package edu.stanford.smi.protegex.owl.model.impl.tests;
 
+import java.util.Collection;
+
 import edu.stanford.smi.protege.model.Instance;
 import edu.stanford.smi.protegex.owl.model.NamespaceManager;
 import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
 import edu.stanford.smi.protegex.owl.model.OWLNames;
 import edu.stanford.smi.protegex.owl.model.OWLOntology;
 import edu.stanford.smi.protegex.owl.model.ProtegeNames;
+import edu.stanford.smi.protegex.owl.model.factory.AlreadyImportedException;
 import edu.stanford.smi.protegex.owl.tests.AbstractJenaTestCase;
-
-import java.util.Collection;
 
 /**
  * Test cases for the Protege-only part of the namespace support.
@@ -24,7 +25,7 @@ public class NamespacePrefixTestCase extends AbstractJenaTestCase {
     }
 
 
-    public void testOtherOntologyName() {
+    public void testOtherOntologyName() throws AlreadyImportedException {
         String namespaceBase = "http://aldi.de";
         String namespace = namespaceBase + "#";
         String prefix = "aldi";
