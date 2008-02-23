@@ -1,12 +1,6 @@
 package edu.stanford.smi.protegex.owl.database.creator;
 
-import java.io.File;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.logging.Logger;
 
@@ -15,13 +9,9 @@ import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protege.util.URIUtilities;
 import edu.stanford.smi.protegex.owl.database.DatabaseFactoryUtils;
 import edu.stanford.smi.protegex.owl.database.OWLDatabaseKnowledgeBaseFactory;
-import edu.stanford.smi.protegex.owl.jena.JenaKnowledgeBaseFactory;
 import edu.stanford.smi.protegex.owl.jena.parser.ProtegeOWLParser;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
-import edu.stanford.smi.protegex.owl.model.factory.FactoryUtils;
-import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
-import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreModel;
-import edu.stanford.smi.protegex.owl.repository.util.RepositoryFileManager;
+import edu.stanford.smi.protegex.owl.model.factory.AlreadyImportedException;
 
 public class OwlDatabaseFromFileCreator extends AbstractOwlDatabaseCreator {
     private static transient Logger log = Log.getLogger(OwlDatabaseFromFileCreator.class);
@@ -46,7 +36,12 @@ public class OwlDatabaseFromFileCreator extends AbstractOwlDatabaseCreator {
         ProtegeOWLParser parser = new ProtegeOWLParser(owlModel);
         parser.run(URIUtilities.createURI(ontologySource));
 
-        writeOntologyAndPrefixInfo(owlModel, errors);
+        try {
+            writeOntologyAndPrefixInfo(owlModel, errors);
+        }
+        catch (AlreadyImportedException e) {
+            throw new RuntimeException("This shouldn't happen", e);
+        }
         DatabaseFactoryUtils.loadImports(owlModel, errors);
         
         errors.addAll(ProtegeOWLParser.getErrors());
