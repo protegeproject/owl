@@ -53,8 +53,6 @@ public class OWLDatabaseModel
     	setFrameFactory(new OWLJavaFactory(this));
         
         super.initialize();
-
-        initCustomFrameStores();
     }
 
 	public OntModel getOntModel() {
@@ -114,10 +112,6 @@ public class OWLDatabaseModel
                 return name;
             }
         }
-    }
-
-    public void initCustomFrameStores() {
-        initOWLFrameStore();
     }
 
 
