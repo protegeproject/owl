@@ -1,27 +1,78 @@
 package edu.stanford.smi.protegex.owl.jena.creator;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import com.hp.hpl.jena.datatypes.xsd.impl.XMLLiteralType;
-import com.hp.hpl.jena.ontology.*;
-import com.hp.hpl.jena.rdf.model.*;
+import com.hp.hpl.jena.ontology.AllDifferent;
+import com.hp.hpl.jena.ontology.DataRange;
+import com.hp.hpl.jena.ontology.EnumeratedClass;
+import com.hp.hpl.jena.ontology.HasValueRestriction;
+import com.hp.hpl.jena.ontology.Individual;
+import com.hp.hpl.jena.ontology.OntClass;
+import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.ontology.OntModelSpec;
+import com.hp.hpl.jena.ontology.OntProperty;
+import com.hp.hpl.jena.ontology.OntResource;
+import com.hp.hpl.jena.ontology.Ontology;
+import com.hp.hpl.jena.rdf.model.Literal;
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFList;
-import com.hp.hpl.jena.reasoner.Reasoner;
+import com.hp.hpl.jena.rdf.model.RDFNode;
+import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.vocabulary.OWL;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
+
 import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.Instance;
 import edu.stanford.smi.protege.model.Slot;
-import edu.stanford.smi.protege.util.ApplicationProperties;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.jena.Jena;
 import edu.stanford.smi.protegex.owl.jena.JenaNormalizer;
 import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
-import edu.stanford.smi.protegex.owl.model.*;
+import edu.stanford.smi.protegex.owl.model.OWLAllDifferent;
+import edu.stanford.smi.protegex.owl.model.OWLAllValuesFrom;
+import edu.stanford.smi.protegex.owl.model.OWLAnonymousClass;
+import edu.stanford.smi.protegex.owl.model.OWLCardinalityBase;
+import edu.stanford.smi.protegex.owl.model.OWLComplementClass;
+import edu.stanford.smi.protegex.owl.model.OWLDataRange;
+import edu.stanford.smi.protegex.owl.model.OWLDatatypeProperty;
+import edu.stanford.smi.protegex.owl.model.OWLEnumeratedClass;
+import edu.stanford.smi.protegex.owl.model.OWLHasValue;
+import edu.stanford.smi.protegex.owl.model.OWLIntersectionClass;
+import edu.stanford.smi.protegex.owl.model.OWLLogicalClass;
+import edu.stanford.smi.protegex.owl.model.OWLMaxCardinality;
+import edu.stanford.smi.protegex.owl.model.OWLMinCardinality;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.model.OWLNAryLogicalClass;
+import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
+import edu.stanford.smi.protegex.owl.model.OWLNames;
+import edu.stanford.smi.protegex.owl.model.OWLObjectProperty;
+import edu.stanford.smi.protegex.owl.model.OWLOntology;
+import edu.stanford.smi.protegex.owl.model.OWLProperty;
+import edu.stanford.smi.protegex.owl.model.OWLQuantifierRestriction;
+import edu.stanford.smi.protegex.owl.model.OWLRestriction;
+import edu.stanford.smi.protegex.owl.model.ProtegeNames;
+import edu.stanford.smi.protegex.owl.model.RDFIndividual;
+import edu.stanford.smi.protegex.owl.model.RDFNames;
+import edu.stanford.smi.protegex.owl.model.RDFProperty;
+import edu.stanford.smi.protegex.owl.model.RDFResource;
+import edu.stanford.smi.protegex.owl.model.RDFSClass;
+import edu.stanford.smi.protegex.owl.model.RDFSDatatype;
+import edu.stanford.smi.protegex.owl.model.RDFSLiteral;
+import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
+import edu.stanford.smi.protegex.owl.model.RDFSNames;
 import edu.stanford.smi.protegex.owl.model.impl.XMLSchemaDatatypes;
-
-import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * A class that creates a Jena OntModel from a Protege OWL model.
@@ -307,6 +358,7 @@ public class JenaCreator {
     }
 
 
+    @SuppressWarnings("unchecked")
     public static DataRange createDataRange(OWLDataRange dataRange, OntModel ontModel) {
         Collection members = new ArrayList();
         if (dataRange.getOneOf() != null) {
@@ -353,7 +405,7 @@ public class JenaCreator {
 
 
     private HasValueRestriction createHasValueRestriction(OWLHasValue hasRestriction) {
-        OntProperty property = getOntProperty((RDFProperty) hasRestriction.getOnProperty());
+        OntProperty property = getOntProperty(hasRestriction.getOnProperty());
         RDFNode node = null;
         Object value = hasRestriction.getHasValue();
         if (value instanceof RDFResource) {
@@ -584,7 +636,7 @@ public class JenaCreator {
 
     private void adjustOntPropertyRDFType(RDFProperty property, OntProperty ontProperty) {
         if (!forReasoning && !property.getProtegeType().isSystem()) {
-            OntClass metaClass = getOntClass((RDFSClass) property.getProtegeType());
+            OntClass metaClass = getOntClass(property.getProtegeType());
             ontProperty.setRDFType(metaClass);
             owlFullModel.add(ontProperty, RDF.type, RDF.Property);
         }
@@ -629,7 +681,7 @@ public class JenaCreator {
 
 
     private com.hp.hpl.jena.ontology.Restriction createQuantifierRestriction(OWLQuantifierRestriction restriction) {
-        OntProperty property = getOntProperty((RDFProperty) restriction.getOnProperty());
+        OntProperty property = getOntProperty(restriction.getOnProperty());
         RDFResource filler = restriction.getFiller();
         Resource jenaFiller = null;
         if (filler instanceof RDFSClass) {
