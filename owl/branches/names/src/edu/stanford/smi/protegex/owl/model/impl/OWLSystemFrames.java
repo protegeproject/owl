@@ -563,52 +563,10 @@ public abstract class OWLSystemFrames extends SystemFrames {
         private void addClassAssertions() {
             fs.setDirectOwnSlotValues(owlClassMetaCls, getRoleSlot(), 
                                       Collections.singleton(RoleConstraint.CONCRETE));
-            assertTemplateSlots(owlThingClass, 
-                                new Slot[] {
-                                    owlDifferentFromProperty,
-                                    owlSameAsProperty,
-                                    owlVersionInfoProperty,
-                                    rdfsIsDefinedByProperty,
-                                    rdfsLabelProperty,
-                                    rdfsSeeAlsoProperty,
-                                    rdfsMemberProperty,
-                                    rdfTypeProperty,
-                                    rdfValueProperty
-                                });
                    
             fs.setDirectOwnSlotValues(owlClassMetaCls, getRoleSlot(), 
                                       Collections.singleton(RoleConstraint.ABSTRACT));
-            assertTemplateSlot(owlClassMetaCls, owlDisjointWithProperty);
             
-            assertTemplateSlots(rdfsNamedClassClass, new Slot[] {
-                    rdfsSubClassOfProperty, owlEquivalentClassProperty,
-                    protegeClassificationStatusProperty, 
-                    protegeInferredSubclassesProperty, 
-                    protegeInferredSuperclassesProperty });
-              
-            assertTemplateSlot(owlEnumeratedClassClass, owlOneOfProperty);
-
-            assertTemplateSlot(owlRestrictionClass, owlOnPropertyProperty);      
-
-            assertTemplateSlot(owlAllValuesFromClass, owlAllValuesFromProperty);
-
-            assertTemplateSlot(owlHasValueClass, owlHasValueProperty);
-            
-            assertTemplateSlots(owlMaxCardinalityClass, new Slot[] {owlMaxCardinalityProperty, owlValuesFromProperty});
-            
-            assertTemplateSlots(owlMinCardinalityClass, new Slot[] {owlMinCardinalityProperty, owlValuesFromProperty});
-
-            assertTemplateSlots(owlCardinalityClass, new Slot[] {owlCardinalityProperty, owlValuesFromProperty});
-            
-            assertTemplateSlot(owlSomeValuesFromClass, owlSomeValuesFromProperty);
-            
-            assertTemplateSlot(owlComplementClassClass, owlComplementOfProperty);
-            assertTemplateSlot(owlIntersectionClassClass, owlIntersectionOfProperty);
-            assertTemplateSlot(owlUnionClassClass, owlUnionOfProperty);
-
-            assertTemplateSlots(rdfPropertyClass, 
-                                new Slot[] {owlEquivalentPropertyProperty, rdfsDomainProperty, rdfsRangeProperty});
-
             fs.setDirectTemplateFacetValues(owlDatatypePropertyClass, owlEquivalentPropertyProperty, 
                                             getValueTypeFacet(), Collections.singleton(owlDatatypePropertyClass));
             
@@ -616,37 +574,6 @@ public abstract class OWLSystemFrames extends SystemFrames {
                                             ValueTypeConstraint.getValues(ValueType.INSTANCE, Collections.singleton(owlObjectPropertyClass)));
             
 
-            assertTemplateSlots(owlOntologyClass, 
-                               new Slot[] {
-                                   owlIncompatibleWithProperty,
-                                   owlOntologyPrefixesProperty, 
-                                   owlImportsProperty,
-                                   owlBackwardCompatibleWithProperty,
-                                   owlPriorVersionProperty
-                               });
-            
-            assertTemplateSlots(rdfListClass, 
-                                new Slot[]{ 
-                                    rdfFirstProperty,
-                                    rdfRestProperty
-                                });
-            
-            assertTemplateSlot(owlAllDifferentClass, owlDistinctMembersProperty);
-            
-            assertTemplateSlots(rdfStatementClass, 
-                               new Slot[] {
-                                   rdfObjectProperty,
-                                   rdfPredicateProperty,
-                                   rdfSubjectProperty
-                               });
-
-
-            assertTemplateSlot(owlDataRangeClass, owlOneOfProperty);
-
-            assertTemplateSlot(rdfExternalResourceClass, owlResourceURIProperty);
-
-            assertTemplateSlot(owlOntologyPointerClass, owlOntologyPointerProperty);
-            
             assertTypeAndName(getDirectedBinaryRelationCls(), owlNamedClassClass);
             
             assertTypeAndName(getPalConstraintCls(), rdfsNamedClassClass);
@@ -654,7 +581,7 @@ public abstract class OWLSystemFrames extends SystemFrames {
 
         private void addSlotAssertions() {
             assertTypeAndName(owlAllValuesFromProperty, rdfPropertyClass);
-            assertDomain(owlAllValuesFromProperty, getOwlRestrictionClass());
+            assertDomain(owlAllValuesFromProperty, owlAllValuesFromClass);
             
             assertTypeAndName(owlBackwardCompatibleWithProperty, annotationObjectPropertyTypes);
             assertDomain(owlBackwardCompatibleWithProperty, owlOntologyClass);
@@ -662,12 +589,12 @@ public abstract class OWLSystemFrames extends SystemFrames {
             
             assertTypeAndName(owlCardinalityProperty, rdfPropertyClass);
             assertFunctional(owlCardinalityProperty);
-            assertDomain(owlCardinalityProperty, owlRestrictionClass);
+            assertDomain(owlCardinalityProperty, owlCardinalityClass);
             assertValueType(owlCardinalityProperty, ValueType.INTEGER);
             fs.setDirectOwnSlotValues(owlCardinalityProperty, rdfsRangeProperty, Collections.singleton(xsdInt));
             
             assertTypeAndName(owlComplementOfProperty, rdfPropertyClass);
-            assertDomain(owlComplementOfProperty, owlNamedClassClass);
+            assertDomain(owlComplementOfProperty, owlClassMetaCls);
             assertRange(owlComplementOfProperty, owlClassMetaCls);
             
             assertTypeAndName(owlDifferentFromProperty, rdfPropertyClass);
@@ -691,7 +618,7 @@ public abstract class OWLSystemFrames extends SystemFrames {
             assertRange(owlEquivalentPropertyProperty, rdfPropertyClass);
             
             assertTypeAndName(owlHasValueProperty, rdfPropertyClass);
-            assertDomain(owlHasValueProperty, owlRestrictionClass);
+            assertDomain(owlHasValueProperty, owlHasValueClass);
             assertFunctional(owlHasValueProperty);
             
             assertTypeAndName(owlImportsProperty, rdfPropertyClass);
@@ -710,19 +637,19 @@ public abstract class OWLSystemFrames extends SystemFrames {
             assertRange(owlInverseOfProperty, owlObjectPropertyClass);
             
             assertTypeAndName(owlMaxCardinalityProperty, rdfPropertyClass);
-            assertDomain(owlMaxCardinalityProperty, owlRestrictionClass);
+            assertDomain(owlMaxCardinalityProperty, owlMaxCardinalityClass);
             assertValueType(owlMaxCardinalityProperty, ValueType.INTEGER);
             assertFunctional(owlMaxCardinalityProperty);
             fs.setDirectOwnSlotValues(owlMaxCardinalityProperty, rdfsRangeProperty, Collections.singleton(xsdInt));
             
             assertTypeAndName(owlMinCardinalityProperty, rdfPropertyClass);
-            assertDomain(owlMinCardinalityProperty, owlRestrictionClass);
+            assertDomain(owlMinCardinalityProperty, owlMinCardinalityClass);
             assertValueType(owlMinCardinalityProperty, ValueType.INTEGER);
             assertFunctional(owlMinCardinalityProperty);
             fs.setDirectOwnSlotValues(owlMinCardinalityProperty, rdfsRangeProperty, Collections.singleton(xsdInt));
 
             assertTypeAndName(owlOneOfProperty, rdfPropertyClass);
-            assertDomain(owlOneOfProperty, owlClassMetaCls);
+            assertDomains(owlOneOfProperty, new Cls[] { owlEnumeratedClassClass, owlDataRangeClass });
             assertRange(owlOneOfProperty, rdfListClass);
             
             assertTypeAndName(owlOnPropertyProperty, rdfPropertyClass);
@@ -738,7 +665,7 @@ public abstract class OWLSystemFrames extends SystemFrames {
             assertRange(owlSameAsProperty, owlThingClass);
             
             assertTypeAndName(owlSomeValuesFromProperty, rdfPropertyClass);  
-            assertDomain(owlSomeValuesFromProperty, owlRestrictionClass);
+            assertDomain(owlSomeValuesFromProperty, owlSomeValuesFromClass);
             assertRange(owlSomeValuesFromProperty, owlClassMetaCls);
             
             assertTypeAndName(owlUnionOfProperty, rdfPropertyClass);
@@ -746,26 +673,30 @@ public abstract class OWLSystemFrames extends SystemFrames {
             assertRange(owlUnionOfProperty, rdfListClass);
             
             assertTypeAndName(owlValuesFromProperty, rdfPropertyClass);
-            assertDomain(owlValuesFromProperty, owlRestrictionClass);
+            assertDomains(owlValuesFromProperty, new Cls[] {owlMaxCardinalityClass, owlMinCardinalityClass, owlCardinalityClass });
             assertRange(owlValuesFromProperty, owlClassMetaCls);
             assertFunctional(owlValuesFromProperty);
             
             assertTypeAndName(owlVersionInfoProperty, annotationObjectPropertyTypes);
-            assertDomain(owlVersionInfoProperty, owlOntologyClass);
+            assertDomain(owlVersionInfoProperty, owlThingClass);
             assertValueType(owlVersionInfoProperty, ValueType.STRING);
             fs.setDirectOwnSlotValues(owlVersionInfoProperty, rdfsRangeProperty, Collections.singleton(xsdInt));
             
-            assertTypeAndName(protegeClassificationStatusProperty, rdfPropertyClass);      
+            assertTypeAndName(protegeClassificationStatusProperty, rdfPropertyClass);
+            assertDomain(protegeClassificationStatusProperty,rdfsNamedClassClass);
             assertFunctional(protegeClassificationStatusProperty);
             assertValueType(owlVersionInfoProperty, ValueType.BOOLEAN);
             
             assertTypeAndName(protegeInferredSubclassesProperty, rdfPropertyClass);      
+            assertDomain(protegeInferredSubclassesProperty, rdfsNamedClassClass);
             assertRange(protegeInferredSubclassesProperty, getStandardClsMetaCls());
             
             assertTypeAndName(protegeInferredSuperclassesProperty, rdfPropertyClass);      
+            assertDomain(protegeInferredSuperclassesProperty, rdfsNamedClassClass);
             assertRange(protegeInferredSuperclassesProperty, getStandardClsMetaCls());
             
-            assertTypeAndName(protegeInferredTypeProperty, rdfPropertyClass);      
+            assertTypeAndName(protegeInferredTypeProperty, rdfPropertyClass); 
+            assertDomain(protegeInferredTypeProperty, rdfsNamedClassClass);
             assertRange(protegeInferredTypeProperty, getStandardClsMetaCls());
             
             assertTypeAndName(rdfFirstProperty, rdfPropertyClass); 
@@ -838,6 +769,9 @@ public abstract class OWLSystemFrames extends SystemFrames {
             assertDomain(owlOntologyPointerProperty, owlOntologyPointerClass);
             assertFunctional(owlOntologyPointerProperty);
             assertRange(owlOntologyPointerProperty, owlOntologyClass);
+
+            assertTypeAndName(owlResourceURIProperty, rdfPropertyClass);
+            assertDomain(owlResourceURIProperty, rdfExternalResourceClass);
             
             assertTypeAndName(getFromSlot(), owlObjectPropertyClass);        
             assertTypeAndName(getToSlot(), owlObjectPropertyClass);
@@ -877,16 +811,6 @@ public abstract class OWLSystemFrames extends SystemFrames {
             return cls;
         }
         
-        protected void assertTemplateSlots(Cls cls, Slot [] slots) {
-            for (Slot slot : slots) {
-                assertTemplateSlot(cls, slot);
-            }
-        }
-        
-        protected void assertTemplateSlot(Cls cls, Slot slot) {
-            fs.addDirectTemplateSlot(cls, slot);
-        }
-        
         protected void assertFunctional(Slot slot) {
             fs.setDirectOwnSlotValues(slot, getMaximumCardinalitySlot(),
                                       MaximumCardinalityConstraint.getValues(false));
@@ -905,14 +829,21 @@ public abstract class OWLSystemFrames extends SystemFrames {
             OWLSystemFrames.this.assertTypeAndName(fs, frame, types);
         }
         
-        protected void assertDomain(Slot slot, Cls domain) {
-            if (domain == null) {
+        protected void assertDomains(Slot slot, Cls[] domains) {
+            if (domains.length == 0) {
                 fs.setDirectOwnSlotValues(slot, getDirectDomainSlot(), Collections.singleton(getOwlThingClass()));
+                return;
             }
-            else {
-                fs.setDirectOwnSlotValues(slot, getDirectDomainSlot(), Collections.singleton(domain));
-                fs.setDirectOwnSlotValues(slot, getRdfsDomainProperty(), Collections.singleton(domain));
+            for (Cls domain : domains) {
+                fs.addDirectTemplateSlot(domain, slot);
             }
+            if (domains.length == 1) {
+                fs.setDirectOwnSlotValues(slot, getRdfsDomainProperty(), Collections.singleton(domains[0]));
+            }
+        }
+
+        protected void assertDomain(Slot slot, Cls domain) {
+            assertDomains(slot, new Cls[] { domain });
         }
         
         protected void assertRange(Slot slot, Cls cls) {
