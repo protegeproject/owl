@@ -75,7 +75,7 @@ public class DefaultRDFProperty extends DefaultSlot implements RDFProperty {
 
     public void addUnionDomainClass(RDFSClass domainClass) {
         Collection directDomain = getDirectDomain();
-        if (directDomain.isEmpty()) {
+        if (directDomain.isEmpty() || (directDomain.size() == 1 && directDomain.contains(getOWLModel().getOWLThingClass()))) {
             setDomain(domainClass);
         }
         else {
