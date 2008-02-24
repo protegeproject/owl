@@ -55,7 +55,7 @@ public class DefaultOWLNamedClass extends DefaultRDFSNamedClass implements OWLNa
 
 
     public OWLIndividual createOWLIndividual(String name) {
-        return (OWLIndividual) createInstance(name);
+        return (OWLIndividual) createInstance(((AbstractOWLModel) getOWLModel()).getInternalFullName(name));
     }
 
 
