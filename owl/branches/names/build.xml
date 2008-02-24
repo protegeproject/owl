@@ -455,6 +455,7 @@
             haltonerror = "${junit.haltonerror}">
       <jvmarg value="-Xmx${junit.memory}"/>
       <jvmarg value="-Djunit.server.protege.jar=${protege.lib}"/>
+      <jvmarg value="-Djava.util.logging.config.file=junit-logging.properties"/>
       <classpath>
            <pathelement location="${classes}"/>
            <pathelement location = "${protege.lib}"/>
