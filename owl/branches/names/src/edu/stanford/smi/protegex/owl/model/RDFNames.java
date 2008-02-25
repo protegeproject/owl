@@ -42,17 +42,26 @@ public interface RDFNames {
 
     public static interface Slot {
 
-        final static String ABOUT = RDF_NAMESPACE + "about";
+        /* *********************************************
+         * These guys aren't really slots?  I think that
+         * that are actually just part of the rdf syntax.
+         */
+        final static String ABOUT = "rdf:about";
+        
+        final static String ID = "rdf:ID";
+        
+        final static String PARSE_TYPE = "rdf:parseType";
 
+        /*
+         * *********************************************
+         */
+        
+        
         final static String DATATYPE = RDF_NAMESPACE + "datatype";
 
         final static String FIRST = RDF_NAMESPACE + "first";
 
-        final static String ID = RDF_NAMESPACE + "ID";
-
         final static String OBJECT = RDF_NAMESPACE + "object";
-
-        final static String PARSE_TYPE = RDF_NAMESPACE + "parseType";
 
         final static String PREDICATE = RDF_NAMESPACE + "predicate";
 
