@@ -10,10 +10,6 @@ public interface NamespaceManager extends NamespaceMap {
 
     void addNamespaceManagerListener(NamespaceManagerListener listener);
 
-
-    void init(OWLModel owlModel);
-
-
     boolean isModifiable(String prefix);
 
 
