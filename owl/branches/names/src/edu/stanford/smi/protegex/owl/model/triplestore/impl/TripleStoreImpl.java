@@ -65,7 +65,7 @@ public class TripleStoreImpl implements TripleStore {
     private String name;
     
     public TripleStoreImpl(OWLModel owlModel, NarrowFrameStore frameStore, TripleStoreModel tripleStoreModel) {
-        this(owlModel, frameStore, tripleStoreModel, new OWLNamespaceManager(owlModel), null);
+        this(owlModel, frameStore, tripleStoreModel, new OWLNamespaceManager(), null);
     }
     
     public TripleStoreImpl(OWLModel owlModel, NarrowFrameStore frameStore, TripleStoreModel tripleStoreModel, 
