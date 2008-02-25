@@ -3389,7 +3389,13 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
             return false;
         }
         
-    	URI uri = URIUtilities.createURI(uriString);
+        URI uri = null;
+        
+        try {
+        	uri = new URI(uriString);
+		} catch (URISyntaxException e) {			
+			//do nothing - uri will be null. Hopefully this won't be the case
+		}
     	
     	if (uri == null || !uri.isAbsolute()) {
     		return false;
