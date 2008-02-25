@@ -29,16 +29,23 @@ public class NamespaceUtil {
 	    return owlModel.getNamespaceManager().getPrefix(namespace);
 	}
 	
-	public static String getPrefixedName(OWLModel owlModel, String fullURI)	{		
+	public static String getPrefixedName(OWLModel owlModel, String fullURI)	{	
+	    return getPrefixedName(owlModel.getNamespaceManager(), fullURI);
+	}
+	
+	
+	public static String getPrefixedName(NamespaceManager names, String fullURI)   {
 		String uri = getNameSpace(fullURI);
-		
+
 		if (uri == null) {
 			return fullURI;
 		}
-		
-		String prefix = owlModel.getNamespaceManager().getPrefix(uri);
+
 		String localName = getLocalName(fullURI);
 		
+		
+		String prefix = names.getPrefix(uri);
+
 		if (prefix == null) {
 			return fullURI; //do we want another strategy here?
 		} else if (prefix.equals(OWLNamespaceManager.DEFAULT_NAMESPACE_PREFIX)) {
