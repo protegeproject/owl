@@ -13,7 +13,6 @@ import edu.stanford.smi.protege.model.Localizable;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.model.NamespaceManager;
 import edu.stanford.smi.protegex.owl.model.NamespaceManagerListener;
-import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLNames;
 import edu.stanford.smi.protegex.owl.model.RDFNames;
 import edu.stanford.smi.protegex.owl.model.RDFSNames;
@@ -31,21 +30,14 @@ public class OWLNamespaceManager implements NamespaceManager, Serializable, Loca
 
     private int last_prefix_index = 0;
 
-    protected transient OWLModel owlModel;
-
     //the 2 hashmaps should be kept in sync at all times
     private HashMap<String, String> prefix2namespaceMap = new HashMap<String, String>();
     private HashMap<String, String> namespace2prefixMap = new HashMap<String, String>();
 
     private Collection<String> unmodifiablePrefixes = new HashSet<String>();
 
-    @SuppressWarnings("unused")
-    private OWLNamespaceManager() {
 
-    }
-
-    public OWLNamespaceManager(OWLModel owlModel) {
-        this.owlModel = owlModel;
+    public OWLNamespaceManager() {
         setPrefix(OWLNames.OWL_NAMESPACE, OWLNames.OWL_PREFIX);
         setModifiable(OWLNames.OWL_PREFIX, false);
         setPrefix(RDFNames.RDF_NAMESPACE, RDFNames.RDF_PREFIX);
@@ -54,10 +46,6 @@ public class OWLNamespaceManager implements NamespaceManager, Serializable, Loca
         setModifiable(RDFSNames.RDFS_PREFIX, false);
         setPrefix(XSDNames.XSD_NAMESPACE, RDFNames.XSD_PREFIX);
         setModifiable(RDFNames.XSD_PREFIX, false);
-    }
-
-    public void init(OWLModel owlModel) {
-        this.owlModel = owlModel;
     }
 
     public boolean isModifiable(String prefix) {
@@ -192,7 +180,6 @@ public class OWLNamespaceManager implements NamespaceManager, Serializable, Loca
 
 
     public void localize(KnowledgeBase kb) {
-        owlModel = (OWLModel) kb;
         listeners = new HashSet<NamespaceManagerListener>();
     }
 
