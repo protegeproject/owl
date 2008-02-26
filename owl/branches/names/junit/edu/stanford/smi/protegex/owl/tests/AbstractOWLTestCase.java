@@ -31,7 +31,6 @@ import edu.stanford.smi.protege.model.ValueType;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.ProtegeOWL;
 import edu.stanford.smi.protegex.owl.jena.Jena;
-import edu.stanford.smi.protegex.owl.jena.JenaKnowledgeBaseFactory;
 import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
 import edu.stanford.smi.protegex.owl.model.impl.XMLSchemaDatatypes;
@@ -159,6 +158,7 @@ public abstract class AbstractOWLTestCase extends TestCase {
     }
 
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
         OntDocumentManager.getInstance().reset(true);
@@ -166,10 +166,10 @@ public abstract class AbstractOWLTestCase extends TestCase {
         owlModel = ProtegeOWL.createJenaOWLModel();
         owlModel.setExpandShortNameInMethods(true);
         project = owlModel.getProject();
- 
         owlThing = owlModel.getOWLThingClass();
     }
 
+    @Override
     protected void tearDown() throws Exception {
         super.tearDown();
         project.dispose();
