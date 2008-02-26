@@ -7,6 +7,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.rdf.model.Model;
 
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.ProtegeOWL;
@@ -33,37 +34,29 @@ public abstract class AbstractRDFXMLWriterTestCases extends AbstractJenaTestCase
             log.setLevel(Level.FINER);
             OntModel ontModel1 = Protege2Jena.createOntModel(owlModel);
             if (log.isLoggable(Level.FINE)) {
-                log.fine("Jena writer ------------------------------------------------\n");
-                ByteArrayOutputStream out = new ByteArrayOutputStream();
-                Jena.dumpRDF(ontModel1, out);
-                log.fine(out.toString());
-                log.fine("\n");
+                log.fine("Jena writer ontModel1 ------------------------------------------------\n");
+                Jena.dumpRDF(ontModel1, log, Level.FINE);
             }
 
             StringWriter writer = new StringWriter();
             OWLModelWriter omw = new OWLModelWriter(owlModel, owlModel.getTripleStoreModel().getActiveTripleStore(), writer);
             omw.write();
             if (log.isLoggable(Level.FINE)) {
-                log.fine("Native writer ------------------------------------------------\n");
+                log.fine("Native writer intermediate to ontModel2 ------------------------------------------------\n");
                 log.fine(writer.getBuffer().toString());
-                log.fine("\n");
             }
 
             OWLModel model = ProtegeOWL.createJenaOWLModelFromReader(new StringReader(writer.getBuffer().toString()));
             OntModel ontModel2 = Protege2Jena.createOntModel(model);
             
             if (log.isLoggable(Level.FINE)) {
-                log.fine("Jena writer ------------------------------------------------\n");
-                ByteArrayOutputStream out = new ByteArrayOutputStream();
-                Jena.dumpRDF(ontModel1, out);
-                log.fine(out.toString());
-                log.fine("\n");
+                log.fine("Jena writer ontModel2 ------------------------------------------------\n");
+                Jena.dumpRDF(ontModel2, log, Level.FINE);
             }
 
             if (log.isLoggable(Level.FINER)) {
                 if (!ontModel1.isIsomorphicWith(ontModel2) || 
                         !ontModel2.isIsomorphicWith(ontModel1)) {
-                    log.finer("Ok - you are going to love this! Ouch! Ouch! Ouch! ;)");
                     log.finer("-----------------------ontModel1---------------------------------");
                     ByteArrayOutputStream out1 = new ByteArrayOutputStream();
                     ontModel1.write(out1, "N-TRIPLE");
@@ -71,11 +64,12 @@ public abstract class AbstractRDFXMLWriterTestCases extends AbstractJenaTestCase
                     log.finer("-----------------------ontModel1---------------------------------");
                     log.finer("-----------------------ontModel2---------------------------------");
                     ByteArrayOutputStream out2 = new ByteArrayOutputStream();
-                    ontModel1.write(out2, "N-TRIPLE");
+                    ontModel2.write(out2, "N-TRIPLE");
                     log.finer(out2.toString());
                     log.finer("-----------------------ontModel2---------------------------------");
                 }
             }
+            
             assertTrue(ontModel1.isIsomorphicWith(ontModel2));
             assertTrue(ontModel2.isIsomorphicWith(ontModel1));
         }
