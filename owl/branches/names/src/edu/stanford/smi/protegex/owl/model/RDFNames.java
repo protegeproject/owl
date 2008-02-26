@@ -43,29 +43,28 @@ public interface RDFNames {
     public static interface Slot {
 
         /* *********************************************
-         * These guys aren't really slots?  I think that
+         * These guys aren't really slots or even resources?  I think that
          * that are actually just part of the rdf syntax.
          */
         final static String ABOUT = "rdf:about";
         
         final static String ID = "rdf:ID";
         
+        final static String RESOURCE = "rdf:resource";
+        
         final static String PARSE_TYPE = "rdf:parseType";
 
+        final static String DATATYPE = "rdf:datatype";
         /*
          * *********************************************
          */
         
-        
-        final static String DATATYPE = RDF_NAMESPACE + "datatype";
 
         final static String FIRST = RDF_NAMESPACE + "first";
 
         final static String OBJECT = RDF_NAMESPACE + "object";
 
         final static String PREDICATE = RDF_NAMESPACE + "predicate";
-
-        final static String RESOURCE = RDF_NAMESPACE + "resource";
 
         final static String REST = RDF_NAMESPACE + "rest";
 
@@ -84,11 +83,15 @@ public interface RDFNames {
 
     final static String COLLECTION = "Collection";
 
-    final static String RDF = RDF_NAMESPACE + "RDF";
-
     final static String RDF_PREFIX = "rdf";
 
     final static String XSD_PREFIX = "xsd";
 
     final static String XML_LITERAL = RDF_NAMESPACE + "XMLLiteral";
+    
+    /*
+     * I don't think that this is  even a resources - it seems to just
+     * be part  of the rdf syntax.
+     */
+    final static String RDF = "rdf:RDF";
 }
