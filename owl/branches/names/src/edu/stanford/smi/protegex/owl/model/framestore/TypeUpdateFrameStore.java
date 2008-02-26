@@ -99,8 +99,7 @@ public class TypeUpdateFrameStore extends FrameStoreAdapter {
             super.setDirectOwnSlotValues(instance, rdfType, Collections.singleton(owlClass));
         }
         else if (instance instanceof RDFResource &&
-            !instance.getDirectTypes().contains(type) &&
-            !type.equals(untypedResource)) {
+                !type.equals(untypedResource)) {
             Collection types = new ArrayList(super.getDirectOwnSlotValues(instance, rdfType));
             types.add(type);
             super.setDirectOwnSlotValues(instance, rdfType, types);
