@@ -127,7 +127,7 @@ public class RDFResourceRenderer extends OWLModelVisitorAdapter {
             for (Iterator it = owlOntology.getImports().iterator(); it.hasNext();) {
                 String curImp = (String) it.next();
                 writer.writeStartElement(getPrefixedName(OWLNames.Slot.IMPORTS));
-                writer.writeAttribute(getPrefixedName(RDFNames.Slot.RESOURCE), curImp);
+                writer.writeAttribute(RDFNames.Slot.RESOURCE, curImp);
                 writer.writeEndElement();
             }
             writer.writeEndElement();
@@ -314,7 +314,7 @@ public class RDFResourceRenderer extends OWLModelVisitorAdapter {
 
     public void visitRDFExternalResource(RDFExternalResource rdfExternalResource) {
         try {
-            writer.writeStartElement(getPrefixedName(RDFNames.Slot.RESOURCE));
+            writer.writeStartElement(RDFNames.Slot.RESOURCE);
             writer.writeAttribute(RDFNames.Slot.ABOUT, rdfExternalResource.getResourceURI());
             writer.writeEndElement(); // end of external resource
         }
