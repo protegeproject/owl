@@ -570,31 +570,31 @@ public class TripleFrameCache {
 
 	
 	private void processInstancesWithMultipleTypes() {
-            long time0 = System.currentTimeMillis();
-		
-            Set<Instance> instancesWithMultipleTypes = multipleTypesInstanceCache.getInstancesWithMultipleTypes();
-		
-            log.info("Postprocess: Instances with multiple types (" + instancesWithMultipleTypes.size() + " instances) ... ");
+	    long time0 = System.currentTimeMillis();
 
-            for (Instance instance : instancesWithMultipleTypes) {
-                Set<Cls> typesSet = multipleTypesInstanceCache.getTypesForInstanceAsSet(instance);
-                adjustTypesOfInstance(instance, typesSet);
-                if (log.isLoggable(Level.FINE)) {
-                    log.fine("process instance with multiple types" + instance + ": " + typesSet);
-		}
-            }
-            log.info("(" + (System.currentTimeMillis() - time0) + " ms)");
+	    Set<Instance> instancesWithMultipleTypes = multipleTypesInstanceCache.getInstancesWithMultipleTypes();
+
+	    log.info("Postprocess: Instances with multiple types (" + instancesWithMultipleTypes.size() + " instances) ... ");
+
+	    for (Instance instance : instancesWithMultipleTypes) {
+	        Set<Cls> typesSet = multipleTypesInstanceCache.getTypesForInstanceAsSet(instance);
+	        adjustTypesOfInstance(instance, typesSet);
+	        if (log.isLoggable(Level.FINE)) {
+	            log.fine("process instance with multiple types" + instance + ": " + typesSet);
+	        }
+	    }
+	    log.info("(" + (System.currentTimeMillis() - time0) + " ms)");
 	}
 
 	private void adjustTypesOfInstance(Instance instance, Set<Cls> typesSet) {
-		Collection<Cls> existingTypes = FrameCreatorUtility.getDirectTypes(instance);
-		typesSet.removeAll(existingTypes); // types to add
-		
-		for (Cls cls : typesSet) {
-			//FrameCreatorUtility.addInstanceType(instance, cls);
-			FrameCreatorUtility.addDirectTypeAndSwizzle(instance, cls);
-		}
-		
+	    Collection<Cls> existingTypes = FrameCreatorUtility.getDirectTypes(instance);
+	    typesSet.removeAll(existingTypes); // types to add
+
+	    for (Cls cls : typesSet) {
+	        //FrameCreatorUtility.addInstanceType(instance, cls);
+	        FrameCreatorUtility.addDirectTypeAndSwizzle(instance, cls);
+	    }
+
 	}
 
 	
