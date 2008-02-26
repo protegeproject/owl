@@ -2,8 +2,10 @@ package edu.stanford.smi.protegex.owl.inference.protegeowl.tests;
 
 import java.util.Collection;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import edu.stanford.smi.protege.util.Log;
+import edu.stanford.smi.protegex.owl.inference.dig.reasoner.DIGReasoner;
 import edu.stanford.smi.protegex.owl.inference.protegeowl.ReasonerManager;
 import edu.stanford.smi.protegex.owl.inference.reasoner.ProtegeReasoner;
 import edu.stanford.smi.protegex.owl.inference.reasoner.exception.ProtegeReasonerException;
@@ -22,6 +24,13 @@ import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
  * @prowl.junit.dig
  */
 public class IndividualTestCase extends AbstractProtegeOwlTestCase {
+    private static transient final Logger log = Log.getLogger(IndividualTestCase.class);
+    
+    
+    static void enableDebugging(Level level) {
+        DIGReasoner.digLogger.setLevel(level);
+        log.setLevel(level);
+    }
 
   
     public void testTypesQuery() {
