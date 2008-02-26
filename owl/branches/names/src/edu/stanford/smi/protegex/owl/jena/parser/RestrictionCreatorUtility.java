@@ -69,7 +69,7 @@ public class RestrictionCreatorUtility {
 			inst = new DefaultOWLCardinality(owlModel, id);
 		}
 		inst.assertFrameName();
-		FrameCreatorUtility.addOwnSlotValue(inst, systemFrames.getRdfTypeProperty(), systemFrames.getOwlNamedClassClass());
+		FrameCreatorUtility.addOwnSlotValue(inst, systemFrames.getRdfTypeProperty(), systemFrames.getOwlRestrictionClass());
 //        ((RDFResource) inst).setPropertyValue(systemFrames.getRdfTypeProperty(), systemFrames.getOwlNamedClassClass());
 		
 		// should be safe
