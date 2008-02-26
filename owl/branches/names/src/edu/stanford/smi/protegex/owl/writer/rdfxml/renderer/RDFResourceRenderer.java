@@ -100,8 +100,8 @@ public class RDFResourceRenderer extends OWLModelVisitorAdapter {
     @Override
     public void visitOWLAllDifferent(OWLAllDifferent owlAllDifferent) {
         try {
-            writer.writeStartElement(getPrefixedName(OWLNames.Cls.ALL_DIFFERENT));
-            writer.writeStartElement(getPrefixedName(OWLNames.Slot.DISTINCT_MEMBERS));
+            writer.writeStartElement(Util.getPrefixedName(OWLNames.Cls.ALL_DIFFERENT, tripleStore));
+            writer.writeStartElement(Util.getPrefixedName(OWLNames.Slot.DISTINCT_MEMBERS, tripleStore));
             writer.writeAttribute(RDFNames.Slot.PARSE_TYPE, RDFNames.COLLECTION);
             for (Iterator it = owlAllDifferent.getDistinctMembers().iterator(); it.hasNext();) {
                 RDFResource curRes = (RDFResource) it.next();
@@ -120,13 +120,13 @@ public class RDFResourceRenderer extends OWLModelVisitorAdapter {
     @Override
     public void visitOWLOntology(OWLOntology owlOntology) {
         try {
-            writer.writeStartElement(getPrefixedName(OWLNames.Cls.ONTOLOGY));
+            writer.writeStartElement(Util.getPrefixedName(OWLNames.Cls.ONTOLOGY, tripleStore));
             writer.writeAttribute(RDFNames.Slot.ABOUT, Util.getResourceAttributeName(owlOntology, writer));
             insertProperties(owlOntology);
             // Imports
             for (Iterator it = owlOntology.getImports().iterator(); it.hasNext();) {
                 String curImp = (String) it.next();
-                writer.writeStartElement(getPrefixedName(OWLNames.Slot.IMPORTS));
+                writer.writeStartElement(Util.getPrefixedName(OWLNames.Slot.IMPORTS, tripleStore));
                 writer.writeAttribute(RDFNames.Slot.RESOURCE, curImp);
                 writer.writeEndElement();
             }
@@ -155,8 +155,8 @@ public class RDFResourceRenderer extends OWLModelVisitorAdapter {
     @Override
     public void visitOWLComplementClass(OWLComplementClass owlComplementClass) {
         try {
-            writer.writeStartElement(getPrefixedName(OWLNames.Cls.NAMED_CLASS));
-            writer.writeStartElement(getPrefixedName(OWLNames.Slot.COMPLEMENT_OF));
+            writer.writeStartElement(Util.getPrefixedName(OWLNames.Cls.NAMED_CLASS, tripleStore));
+            writer.writeStartElement(Util.getPrefixedName(OWLNames.Slot.COMPLEMENT_OF, tripleStore  ));
             RDFSClass complement = owlComplementClass.getComplement();
             Util.inlineObject(complement, tripleStore, writer);
             writer.writeEndElement(); // end of owl:complementOf
@@ -177,9 +177,9 @@ public class RDFResourceRenderer extends OWLModelVisitorAdapter {
     @Override
     public void visitOWLEnumeratedClass(OWLEnumeratedClass owlEnumeratedClass) {
         try {
-            writer.writeStartElement(getPrefixedName(OWLNames.Cls.NAMED_CLASS));
-            writer.writeStartElement(getPrefixedName(OWLNames.Slot.ONE_OF));
-            writer.writeAttribute(getPrefixedName(RDFNames.Slot.PARSE_TYPE), RDFNames.COLLECTION);
+            writer.writeStartElement(Util.getPrefixedName(OWLNames.Cls.NAMED_CLASS, tripleStore));
+            writer.writeStartElement(Util.getPrefixedName(OWLNames.Slot.ONE_OF, tripleStore));
+            writer.writeAttribute(Util.getPrefixedName(RDFNames.Slot.PARSE_TYPE, tripleStore), RDFNames.COLLECTION);
             TreeSet values = new TreeSet(new FrameComparator());
             values.addAll(owlEnumeratedClass.getOneOf());
             for (Iterator it = values.iterator(); it.hasNext();) {
@@ -202,7 +202,7 @@ public class RDFResourceRenderer extends OWLModelVisitorAdapter {
         try {
             // Will have restriction element to close!!
             writeRestrictionStart(owlHasValue);
-            writer.writeStartElement(getPrefixedName(OWLNames.Slot.HAS_VALUE));
+            writer.writeStartElement(Util.getPrefixedName(OWLNames.Slot.HAS_VALUE, tripleStore));
             Object value = owlHasValue.getHasValue();
             if (value instanceof RDFResource) {
                 Util.inlineObject((RDFResource) value, tripleStore, writer);
@@ -233,11 +233,11 @@ public class RDFResourceRenderer extends OWLModelVisitorAdapter {
         try {
             if (owlIndividual.isAnonymous() == false) {
                 //Util.insertResourceAsElement(owlIndividual.getRDFType(), rdfwriter);
-                writer.writeStartElement(getPrefixedName(RDFNames.Cls.DESCRIPTION));
+                writer.writeStartElement(Util.getPrefixedName(RDFNames.Cls.DESCRIPTION, tripleStore));
                 Util.insertAboutAttribute(owlIndividual, writer);
             }
             else {
-                writer.writeStartElement(getPrefixedName(RDFNames.Cls.DESCRIPTION));
+                writer.writeStartElement(Util.getPrefixedName(RDFNames.Cls.DESCRIPTION, tripleStore));
                 Util.renderTypes(owlIndividual, tripleStore, owlIndividual.getOWLModel().getOWLThingClass(), writer);
                 insertProperties(owlIndividual);
             }
@@ -272,7 +272,7 @@ public class RDFResourceRenderer extends OWLModelVisitorAdapter {
     @Override
     public void visitOWLNamedClass(OWLNamedClass owlNamedClass) {
         try {
-            writer.writeStartElement(getPrefixedName(OWLNames.Cls.NAMED_CLASS));
+            writer.writeStartElement(Util.getPrefixedName(OWLNames.Cls.NAMED_CLASS, tripleStore));
             Util.insertAboutAttribute(owlNamedClass, writer);
             writer.writeEndElement(); // End of named class
         }
@@ -298,8 +298,8 @@ public class RDFResourceRenderer extends OWLModelVisitorAdapter {
     public void visitOWLDataRange(OWLDataRange owlDataRange) {
         try {
 
-            writer.writeStartElement(getPrefixedName(OWLNames.Cls.DATA_RANGE));
-            writer.writeStartElement(getPrefixedName(OWLNames.Slot.ONE_OF));
+            writer.writeStartElement(Util.getPrefixedName(OWLNames.Cls.DATA_RANGE, tripleStore));
+            writer.writeStartElement(Util.getPrefixedName(OWLNames.Slot.ONE_OF, tripleStore));
             // Gets rendered as a list
             renderValuesAsRDFList(owlDataRange.getOneOfValueLiterals(), owlDataRange.getOWLModel());
             writer.writeEndElement(); // end of owl:oneOf
@@ -328,11 +328,11 @@ public class RDFResourceRenderer extends OWLModelVisitorAdapter {
     public void visitRDFDatatype(RDFSDatatype rdfsDatatype) {
         try {
             if (rdfsDatatype.isAnonymous()) {
-                writer.writeStartElement(getPrefixedName(RDFSNames.Cls.DATATYPE));
+                writer.writeStartElement(Util.getPrefixedName(RDFSNames.Cls.DATATYPE, tripleStore));
                 Util.insertProperties(rdfsDatatype, tripleStore, writer);
             }
             else {
-                writer.writeAttribute(getPrefixedName(RDFNames.Slot.RESOURCE), rdfsDatatype.getURI());
+                writer.writeAttribute(Util.getPrefixedName(RDFNames.Slot.RESOURCE, tripleStore), rdfsDatatype.getURI());
             }
         }
         catch (IOException e) {
@@ -364,7 +364,7 @@ public class RDFResourceRenderer extends OWLModelVisitorAdapter {
     @Override
     public void visitRDFSNamedClass(RDFSNamedClass rdfsNamedClass) {
         try {
-            writer.writeStartElement(getPrefixedName(RDFSNames.Cls.NAMED_CLASS));
+            writer.writeStartElement(Util.getPrefixedName(RDFSNames.Cls.NAMED_CLASS, tripleStore));
             Util.insertAboutAttribute(rdfsNamedClass, writer);
             insertProperties(rdfsNamedClass);
             writer.writeEndElement(); // end of rdfs:Class
@@ -377,8 +377,8 @@ public class RDFResourceRenderer extends OWLModelVisitorAdapter {
 
     private void writeRestrictionStart(OWLRestriction restriction) {
         try {
-            writer.writeStartElement(getPrefixedName(OWLNames.Cls.RESTRICTION));
-            writer.writeStartElement(getPrefixedName(OWLNames.Slot.ON_PROPERTY));
+            writer.writeStartElement(Util.getPrefixedName(OWLNames.Cls.RESTRICTION, tripleStore));
+            writer.writeStartElement(Util.getPrefixedName(OWLNames.Slot.ON_PROPERTY, tripleStore));
             Util.insertResourceAttribute(restriction.getOnProperty(), writer);
             writer.writeEndElement(); // end of owl:onProperty
         }
@@ -391,7 +391,7 @@ public class RDFResourceRenderer extends OWLModelVisitorAdapter {
     private void renderCardinalityRestriction(OWLCardinalityBase cardinalityBase, String keyWord) {
         try {
             writeRestrictionStart(cardinalityBase);
-            writer.writeStartElement(getPrefixedName(keyWord));
+            writer.writeStartElement(Util.getPrefixedName(keyWord, tripleStore));
             writer.writeAttribute(RDFNames.Slot.DATATYPE, Vocab.INT_DATATYPE);
             writer.writeTextContent(Integer.toString(cardinalityBase.getCardinality()));
             writer.writeEndElement(); // end of restriction type/filler
@@ -406,8 +406,8 @@ public class RDFResourceRenderer extends OWLModelVisitorAdapter {
 
     private void renderNAryLogicalClass(OWLNAryLogicalClass logicalClass, String keyWord) {
         try {
-            writer.writeStartElement(getPrefixedName(OWLNames.Cls.NAMED_CLASS));
-            writer.writeStartElement(getPrefixedName(keyWord));
+            writer.writeStartElement(Util.getPrefixedName(OWLNames.Cls.NAMED_CLASS, tripleStore));
+            writer.writeStartElement(Util.getPrefixedName(keyWord, tripleStore));
             writer.writeAttribute(RDFNames.Slot.PARSE_TYPE, RDFNames.COLLECTION);
             Collection ops = new TreeSet(new FrameComparator());
             ops.addAll(logicalClass.getOperands());
@@ -429,7 +429,7 @@ public class RDFResourceRenderer extends OWLModelVisitorAdapter {
         try {
             writeRestrictionStart(quantifierRestriction);
             RDFResource filler = quantifierRestriction.getFiller();
-            writer.writeStartElement(getPrefixedName(keyWord));
+            writer.writeStartElement(Util.getPrefixedName(keyWord, tripleStore));
 //            if (filler instanceof RDFSDatatype) {
 //                writer.writeAttribute(RDFNames.Slot.RESOURCE, ((RDFSDatatype) filler).getURI());
 //            }
@@ -459,8 +459,8 @@ public class RDFResourceRenderer extends OWLModelVisitorAdapter {
         try {
             int counter = 0;
             for (Iterator it = values.iterator(); it.hasNext();) {
-                writer.writeStartElement(getPrefixedName(listElementTypes));
-                writer.writeStartElement(getPrefixedName(RDFNames.Slot.FIRST));
+                writer.writeStartElement(Util.getPrefixedName(listElementTypes, tripleStore));
+                writer.writeStartElement(Util.getPrefixedName(RDFNames.Slot.FIRST, tripleStore));
                 Object curVal = it.next();
                 if (curVal instanceof RDFResource) {
                     Util.inlineObject((RDFResource) curVal, tripleStore, writer);
@@ -471,7 +471,7 @@ public class RDFResourceRenderer extends OWLModelVisitorAdapter {
                     writer.writeTextContent(curLiteral.getPlainValue().toString());
                 }
                 writer.writeEndElement(); // End of rdf:first
-                writer.writeStartElement(getPrefixedName(RDFNames.Slot.REST));
+                writer.writeStartElement(Util.getPrefixedName(RDFNames.Slot.REST, tripleStore));
                 if (it.hasNext() == false) {
                     writer.writeAttribute(RDFNames.Slot.RESOURCE, model.getRDFNil().getURI());
                 }
@@ -500,10 +500,6 @@ public class RDFResourceRenderer extends OWLModelVisitorAdapter {
     @Override
     public void visitSWRLAtomListIndividual(SWRLAtomList swrlAtomList) {    	
     	renderValuesAsSWRLAtomList(swrlAtomList.getValues(), swrlAtomList.getOWLModel());
-    }
-    
-    private String getPrefixedName(String fullName) {
-        return NamespaceUtil.getPrefixedName(tripleStore.getNamespaceManager(), fullName);
     }
 }
 
