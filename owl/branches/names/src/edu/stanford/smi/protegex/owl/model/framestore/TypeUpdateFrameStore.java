@@ -41,7 +41,6 @@ public class TypeUpdateFrameStore extends FrameStoreAdapter {
         rdfType = owlModel.getRDFTypeProperty();
         rdfSubClassOfProperty = owlModel.getRDFSSubClassOfProperty();
     }
-
     
     /*
      * FrameStore implementations
@@ -86,19 +85,26 @@ public class TypeUpdateFrameStore extends FrameStoreAdapter {
     @SuppressWarnings("unchecked")
     @Override
     public void addDirectType(Instance instance, Cls type) {
+        super.addDirectType(instance, type);
+        instance = (Instance) super.getFrame(instance.getFrameID());
         if (instance instanceof RDFProperty) {
             if (type.equals(functionalPropertyClass)) {
                 ((Slot) instance).setAllowsMultipleValues(false);
             }
         }
-        if (instance instanceof RDFResource &&
+        if (instance instanceof OWLRestriction) {
+            super.setDirectOwnSlotValues(instance, rdfType, Collections.singleton(restrictionClass));
+        }
+        else if (instance instanceof OWLAnonymousClass) {
+            super.setDirectOwnSlotValues(instance, rdfType, Collections.singleton(owlClass));
+        }
+        else if (instance instanceof RDFResource &&
             !instance.getDirectTypes().contains(type) &&
             !type.equals(untypedResource)) {
             Collection types = new ArrayList(super.getDirectOwnSlotValues(instance, rdfType));
             types.add(type);
             super.setDirectOwnSlotValues(instance, rdfType, types);
         }
-        super.addDirectType(instance, type);
     }
     
     @SuppressWarnings("unchecked")
@@ -109,7 +115,13 @@ public class TypeUpdateFrameStore extends FrameStoreAdapter {
                 ((Slot) instance).setAllowsMultipleValues(true);
             }
         }
-        if (instance instanceof RDFResource) {
+        if (instance instanceof OWLRestriction) {
+            super.setDirectOwnSlotValues(instance, rdfType, Collections.singleton(restrictionClass));
+        }
+        else if (instance instanceof OWLAnonymousClass) {
+            super.setDirectOwnSlotValues(instance, rdfType, Collections.singleton(owlClass));
+        }
+        else if (instance instanceof RDFResource) {
             Collection types = new ArrayList(super.getDirectOwnSlotValues(instance, rdfType));
             if (types.contains(directType)) {
                 types.remove(directType);
