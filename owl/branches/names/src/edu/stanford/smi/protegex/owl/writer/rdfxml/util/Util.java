@@ -7,6 +7,7 @@ import java.util.Set;
 
 import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protegex.owl.model.NamespaceManager;
+import edu.stanford.smi.protegex.owl.model.NamespaceUtil;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLNames;
 import edu.stanford.smi.protegex.owl.model.OWLOntology;
@@ -352,7 +353,7 @@ public class Util {
         for (Iterator it = tripleStore.listObjects(resource, prop); it.hasNext();) {
             RDFResource curType = (RDFResource) it.next();
             if (curType.equals(excludeType) == false) {
-                writer.writeStartElement(RDFNames.Slot.TYPE);
+                writer.writeStartElement(getPrefixedName(RDFNames.Slot.TYPE, tripleStore));
                 Util.inlineObject(curType, tripleStore, writer);
                 writer.writeEndElement();
             }
@@ -384,5 +385,9 @@ public class Util {
             }
         }
         return "<null>";
+    }
+    
+    public static String getPrefixedName(String fullName, TripleStore tripleStore) {
+        return NamespaceUtil.getPrefixedName(tripleStore.getNamespaceManager(), fullName);
     }
 }
