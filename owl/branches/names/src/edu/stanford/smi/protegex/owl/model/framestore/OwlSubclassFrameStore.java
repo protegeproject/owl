@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 
 import edu.stanford.smi.protege.model.Cls;
+import edu.stanford.smi.protege.model.FrameID;
 import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protege.model.framestore.FrameStoreAdapter;
 import edu.stanford.smi.protegex.owl.model.OWLIntersectionClass;
@@ -48,6 +49,7 @@ public class OwlSubclassFrameStore extends FrameStoreAdapter {
      *
      * @param cls the RDFSClass that has changed its superclasses
      */
+    @SuppressWarnings("unchecked")
     private void updateRDFSSubClassOf(RDFSNamedClass cls) {
         Collection oldSuperclasses = new HashSet(super.getDirectOwnSlotValues(cls, rdfsSubClassOfProperty));
         Collection oldEquivalentClasses = new HashSet(super.getDirectOwnSlotValues(cls, owlEquivalentClassProperty));
@@ -95,6 +97,7 @@ public class OwlSubclassFrameStore extends FrameStoreAdapter {
         }
     }
     
+    @SuppressWarnings("unchecked")
     private void removeNamedOperandsFromDirectSuperclasses(OWLNamedClass cls,
                                                            OWLIntersectionClass intersectionCls,
                                                            Slot slot) {
@@ -119,6 +122,15 @@ public class OwlSubclassFrameStore extends FrameStoreAdapter {
     /*
      * Frame Store implementation
      */
+    
+    @Override
+    public Cls createCls(FrameID id, Collection directTypes, Collection directSuperclasses, boolean loadDefaults) {
+        Cls cls = super.createCls(id, directTypes, directSuperclasses, loadDefaults);
+        if (cls instanceof RDFSNamedClass) {
+            super.setDirectOwnSlotValues(cls, owlModel.getRDFSSubClassOfProperty(), directSuperclasses);
+        }
+        return cls;
+    }
 
     @Override
     public void addDirectSuperclass(Cls cls, Cls superCls) {
