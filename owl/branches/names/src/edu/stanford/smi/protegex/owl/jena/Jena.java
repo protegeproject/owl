@@ -1,5 +1,6 @@
 package edu.stanford.smi.protegex.owl.jena;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -301,6 +302,17 @@ public class Jena {
 
     public static void dumpRDF(OntModel ontModel) {
         dumpRDF(ontModel, System.out);
+    }
+    
+    public static void dumpRDF(OntModel ontModel, Logger logger, Level level) {
+        if (!logger.isLoggable(level)) {
+            return;
+        }
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        dumpRDF(ontModel, out);
+        logger.log(level, "-----------------Ontology Dump Begin-----------------");
+        logger.log(level, out.toString());
+        logger.log(level, "----------------- Ontology Dump End -----------------");
     }
 
 
