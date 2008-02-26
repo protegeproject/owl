@@ -77,7 +77,7 @@ public class Jena {
 
     public final static String XML_TAG_HIDDEN_PROPERTY = "edu.stanford.smi.protegex.owl.jena.XML-Tag-Hidden";
 
-    private final static Set systemClasses = new HashSet();
+    private final static Set<Resource> systemClasses = new HashSet<Resource>();
 
     /**
      * @deprecated use ProtegeOWL.PLUGIN_FOLDER instead
