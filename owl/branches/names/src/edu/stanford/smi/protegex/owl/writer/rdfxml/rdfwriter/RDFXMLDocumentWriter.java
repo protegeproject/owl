@@ -44,8 +44,7 @@ public class RDFXMLDocumentWriter {
 
 
     private void writeDocStart() throws IOException {
-        String documentRoot = NamespaceUtil.getPrefixedName(new OWLNamespaceManager(), RDFNames.RDF);
-        xmlWriter.startDocument(documentRoot);
+        xmlWriter.startDocument(RDFNames.RDF);
     }
 
 
