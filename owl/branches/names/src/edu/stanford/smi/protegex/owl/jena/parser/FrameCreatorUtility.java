@@ -154,6 +154,7 @@ public class FrameCreatorUtility {
         frame.assertFrameName();
 
         addInstanceType((Instance)frame, (Cls)type);
+        addOwnSlotValue(frame, systemFrames.getRdfTypeProperty(), type);
         frame.assertFrameName();        
 
         return frame;
@@ -223,8 +224,8 @@ public class FrameCreatorUtility {
     }
 
     public static boolean addDirectTypeAndSwizzle(Instance instance, Cls type) {
-        getSimpleFrameStore(instance).addDirectType(instance, type);
-
+        // getSimpleFrameStore(instance).addDirectType(instance, type);
+        instance.addDirectType(type);
         return true;
     }
 
