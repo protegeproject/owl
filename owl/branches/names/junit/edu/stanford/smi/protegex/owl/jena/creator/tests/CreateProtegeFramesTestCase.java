@@ -1,10 +1,16 @@
 package edu.stanford.smi.protegex.owl.jena.creator.tests;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import com.hp.hpl.jena.ontology.Individual;
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntProperty;
+
 import edu.stanford.smi.protege.model.Model;
+import edu.stanford.smi.protege.util.Log;
+import edu.stanford.smi.protegex.owl.jena.Jena;
 import edu.stanford.smi.protegex.owl.model.RDFIndividual;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
@@ -13,6 +19,7 @@ import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
  * @author Holger Knublauch  <holger@knublauch.com>
  */
 public class CreateProtegeFramesTestCase extends AbstractJenaCreatorTestCase {
+    private static transient final Logger log = Log.getLogger(CreateProtegeFramesTestCase.class);
 
     public void testCreateUnlinkedPALConstraint() {
 
@@ -28,6 +35,7 @@ public class CreateProtegeFramesTestCase extends AbstractJenaCreatorTestCase {
         constraint.setPropertyValue(palStatementProperty, "MyStatement");
 
         OntModel newModel = runJenaCreator();
+        Jena.dumpRDF(newModel, log, Level.FINE);
 
         OntClass constraintOntClass = newModel.getOntClass(constraintClass.getURI());
         assertNotNull(constraintOntClass);
