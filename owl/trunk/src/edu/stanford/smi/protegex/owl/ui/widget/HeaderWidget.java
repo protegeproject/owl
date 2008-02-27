@@ -103,4 +103,9 @@ public class HeaderWidget extends AbstractSlotWidget {
 		super.setEnabled(enabled);
 	}
 	
+	@Override
+	public void dispose() {
+		component.dispose();
+	}
+	
 }
