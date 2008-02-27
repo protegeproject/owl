@@ -1157,33 +1157,6 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     }
 
 
-    /**
-     * Makes sure that the Protege meta ontology is imported in an ontology tag
-     * that has rdf:about="".
-     */
-    public boolean ensureProtegeMetaOntologyImported() {
-        OWLOntology owlOntology = getDefaultOWLOntology();
-        for (Iterator imports = owlOntology.getImports().iterator(); imports.hasNext();) {
-            String im = (String) imports.next();
-            if (im.equals(ProtegeNames.FILE)) {
-                return false;  // Already there
-            }
-        }
-        owlOntology.addImports(ProtegeNames.FILE);
-        ensureProtegePrefixExists();
-        return true;
-    }
-
-
-    private void ensureProtegePrefixExists() {
-        if (getNamespaceManager().getPrefix(ProtegeNames.NS) == null) {
-            String prefix = "protege";
-            getNamespaceManager().setPrefix(ProtegeNames.NS, prefix);
-            getNamespaceManager().setPrefix(XSPNames.NS, XSPNames.DEFAULT_PREFIX);
-        }
-    }
-
-
     public Collection getOWLAllDifferents() {
         Cls metaCls = getOWLAllDifferentClass();
         return metaCls.getDirectInstances();
@@ -1636,7 +1609,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
 
     public RDFProperty getProtegeAllowedParentProperty() {
-        return getRDFProperty(ProtegeNames.NS + ProtegeNames.ALLOWED_PARENT);
+        return getRDFProperty(ProtegeNames.PROTEGE_OWL_NAMESPACE + ProtegeNames.ALLOWED_PARENT);
     }
 
 
