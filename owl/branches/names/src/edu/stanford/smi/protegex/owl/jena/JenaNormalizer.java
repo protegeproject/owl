@@ -676,7 +676,7 @@ public class JenaNormalizer {
                     }
                     graph.add(new Triple(annotationProperty.getNode(), RDF.type.getNode(), OWL.DatatypeProperty.getNode()));
                     XSDDatatype datatype = XSDDatatype.XSDstring;
-                    if (annotationProperty.getURI().equals(ProtegeNames.NS + ProtegeNames.READ_ONLY)) {
+                    if (annotationProperty.getURI().equals(ProtegeNames.PROTEGE_OWL_NAMESPACE + ProtegeNames.READ_ONLY)) {
                         datatype = XSDDatatype.XSDboolean;
                     }
                     graph.add(new Triple(annotationProperty.getNode(), RDFS.range.getNode(), ontModel.getResource(datatype.getURI()).getNode()));
