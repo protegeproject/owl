@@ -206,7 +206,7 @@ public class JenaDLConverter {
         boolean reload = false;
         for (Iterator it = ontModel.listOntologies(); it.hasNext();) {
             Ontology ontology = (Ontology) it.next();
-            final Resource resource = ontModel.getResource(ProtegeNames.FILE);
+            final Resource resource = ontModel.getResource(ProtegeNames.PROTEGE_OWL_ONTOLOGY);
             if (ontology.hasProperty(OWL.imports, resource)) {
                 ontology.removeImport(resource);
                 if (log.isLoggable(Level.FINE)) {
