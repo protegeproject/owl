@@ -1,6 +1,7 @@
 package edu.stanford.smi.protegex.owl.jena.parser;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.logging.Level;
@@ -58,7 +59,8 @@ public class TripleFrameCache {
 	private UndefTripleManager undefTripleManager = new UndefTripleManager();
 
 	private SuperClsCache superClsCache = new SuperClsCache();
-	private MultipleTypesInstanceCache multipleTypesInstanceCache = new MultipleTypesInstanceCache();	
+	private MultipleTypesInstanceCache multipleTypesInstanceCache = new MultipleTypesInstanceCache();
+	private Set<RDFProperty> createdProperties = new HashSet<RDFProperty>();
 	
 	private OWLModel owlModel;
 	private TripleStore tripleStore;
@@ -125,7 +127,9 @@ public class TripleFrameCache {
 			if (!subjAlreadyExists && !subj.isAnonymous() && (objName.equals(OWL.Class.getURI()) || objName.equals(RDFS.Class.getURI())) ) {
 				superClsCache.addFrame(subjFrame);
 			}
-	
+			if (!subjAlreadyExists && subjFrame instanceof RDFProperty) {
+			    createdProperties.add((RDFProperty) subjFrame);
+			}
 
 			if (subjAlreadyExists && objFrame instanceof Cls) {
 				//what should happen if objFrame is not a class? Give a warning
@@ -181,7 +185,6 @@ public class TripleFrameCache {
 		if (predName.equals(RDFS.subClassOf.getURI()) && !obj.isAnonymous()) {
 			superClsCache.removeFrame(subjFrame);
 		}
-		
 		else	
 			//special treatment of equivalent classes
 			if (predName.equals(OWL.equivalentClass.getURI())) {
@@ -470,6 +473,7 @@ public class TripleFrameCache {
 		processInferredSuperclasses();
 		processClsesWithoutSupercls();
 		processInstancesWithMultipleTypes();
+		processCreatedProperties();
 		
 		//dump what you have not processed:
 		getUndefTripleManager().dumpUndefTriples(Level.FINE);
@@ -591,11 +595,18 @@ public class TripleFrameCache {
 	    typesSet.removeAll(existingTypes); // types to add
 
 	    for (Cls cls : typesSet) {
-	        //FrameCreatorUtility.addInstanceType(instance, cls);
 	        FrameCreatorUtility.addDirectTypeAndSwizzle(instance, cls);
 	    }
 
 	}
-
+	
+	private void processCreatedProperties() {
+	    for (RDFProperty property : createdProperties) {
+	        if (property.getDirectDomain().isEmpty()) {
+	            FrameCreatorUtility.addOwnSlotValue(property, owlModel.getSystemFrames().getDirectDomainSlot(), owlModel.getOWLThingClass());
+	            FrameCreatorUtility.addOwnSlotValue(owlModel.getOWLThingClass(), owlModel.getSystemFrames().getDirectTemplateSlotsSlot(), property);
+	        }
+	    }
+	}
 	
 }
