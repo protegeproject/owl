@@ -141,11 +141,11 @@ public interface OWLNames {
         
         //Non-OWL slots that are used internally by Protege
         
-        public final static String ONTOLOGY_PREFIXES = ProtegeNames.NS + "OWL-ONTOLOGY-PREFIXES";
+        public final static String ONTOLOGY_PREFIXES = ProtegeNames.PROTEGE_OWL_NAMESPACE + "OWL-ONTOLOGY-PREFIXES";
                       
-        public final static String RESOURCE_URI = ProtegeNames.NS + "OWL-RESOURCE-URI";
+        public final static String RESOURCE_URI = ProtegeNames.PROTEGE_OWL_NAMESPACE + "OWL-RESOURCE-URI";
         
-        public final static String OWL_ONTOLOGY_POINTER_PROPERTY = ProtegeNames.NS + "OWL-ONTOLOGY-POINTER-PROPERTY";
+        public final static String OWL_ONTOLOGY_POINTER_PROPERTY = ProtegeNames.PROTEGE_OWL_NAMESPACE + "OWL-ONTOLOGY-POINTER-PROPERTY";
         
     }
 
