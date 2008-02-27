@@ -16,7 +16,7 @@ public class CreateProtegeFramesTestCase extends AbstractProtege2JenaTestCase {
 
     public void testCreateUnlinkedPALConstraint() throws Exception {
 
-        owlModel.ensureProtegeMetaOntologyImported();
+        ensureProtegeMetaOntologyImported();
 
         RDFSNamedClass constraintClass = owlModel.getRDFSNamedClass(Model.Cls.PAL_CONSTRAINT);
         RDFIndividual constraint = constraintClass.createRDFIndividual("MyIndividual");
@@ -45,7 +45,7 @@ public class CreateProtegeFramesTestCase extends AbstractProtege2JenaTestCase {
 
     public void testCreateLinkedPALConstraint() throws Exception {
 
-        owlModel.ensureProtegeMetaOntologyImported();
+        ensureProtegeMetaOntologyImported();
 
         owlModel = reloadWithJenaLoader(owlModel);
 
