@@ -24,7 +24,7 @@ public class CreateProtegeFramesTestCase extends AbstractJenaCreatorTestCase {
 
     public void testCreateUnlinkedPALConstraint() {
 
-        owlModel.ensureProtegeMetaOntologyImported();
+        ensureProtegeMetaOntologyImported();
         owlModel.getFrameStoreManager().setProtegeOwlFrameStoreEnabled(true);
 
         RDFSNamedClass constraintClass = owlModel.getRDFSNamedClass(Model.Cls.PAL_CONSTRAINT);
@@ -54,7 +54,7 @@ public class CreateProtegeFramesTestCase extends AbstractJenaCreatorTestCase {
 
     public void testCreateLinkedPALConstraint() {
 
-        owlModel.ensureProtegeMetaOntologyImported();
+        ensureProtegeMetaOntologyImported();
         owlModel.getFrameStoreManager().setProtegeOwlFrameStoreEnabled(true);
 
         RDFSNamedClass constraintClass = owlModel.getRDFSNamedClass(Model.Cls.PAL_CONSTRAINT);
