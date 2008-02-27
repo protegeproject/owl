@@ -23,7 +23,7 @@ public interface RDFNames {
 
         final static String DESCRIPTION = RDF_NAMESPACE + "Description";
 
-        final static String EXTERNAL_RESOURCE = ProtegeNames.NS +  "ExternalResource";
+        final static String EXTERNAL_RESOURCE = ProtegeNames.PROTEGE_OWL_NAMESPACE +  "ExternalResource";
 
         final static String LIST = RDF_NAMESPACE + "List";
 
