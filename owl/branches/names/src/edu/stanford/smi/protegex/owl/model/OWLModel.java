@@ -1715,7 +1715,7 @@ public interface OWLModel extends ProtegeKnowledgeBase, OWLTestManager {
 
     String getURIForResourceName(String resourceName);
 
-
+    boolean isExpandShortNameInMethods();
     /**
      * Gets an Iterator of all OWLAnonymousClasses in the ontology.
      *
@@ -1831,7 +1831,9 @@ public interface OWLModel extends ProtegeKnowledgeBase, OWLTestManager {
      */
     boolean setDispatchEventsEnabled(boolean enabled);
 
+    void setExpandShortNameInMethods(boolean expandShortNameInMethods);
 
+    
     /**
      * @see #getGenerateEventsEnabled
      */
