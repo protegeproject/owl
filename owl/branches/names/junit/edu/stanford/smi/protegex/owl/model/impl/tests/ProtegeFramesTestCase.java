@@ -42,7 +42,7 @@ public class ProtegeFramesTestCase extends AbstractJenaTestCase {
     public void testProtegeURIs() {
         final String name = Model.Slot.TO;
         RDFProperty property = owlModel.getRDFProperty(name);
-        assertEquals(ProtegeNames.NS + name.substring(1), property.getURI());
+        assertEquals(ProtegeNames.PROTEGE_OWL_NAMESPACE + name.substring(1), property.getURI());
         assertEquals(name, owlModel.getResourceNameForURI(property.getURI()));
     }
 }
