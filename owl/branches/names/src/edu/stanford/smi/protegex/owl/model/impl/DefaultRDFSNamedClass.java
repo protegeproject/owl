@@ -62,13 +62,20 @@ public class DefaultRDFSNamedClass extends AbstractRDFSClass implements RDFSName
 
 
     public RDFResource createAnonymousInstance() {
-        String name = getOWLModel().getNextAnonymousResourceName();
-        return (RDFResource) createDirectInstance(name);
+        boolean oldExpandShortNames = getOWLModel().isExpandShortNameInMethods();
+        try {
+            getOWLModel().setExpandShortNameInMethods(false);
+            String name = getOWLModel().getNextAnonymousResourceName();
+            return (RDFResource) createDirectInstance(name);
+        }
+        finally {
+            getOWLModel().setExpandShortNameInMethods(oldExpandShortNames);
+        }
     }
 
 
     public RDFIndividual createRDFIndividual(String name) {
-        return (RDFIndividual) createInstance(name);
+        return (RDFIndividual) createInstance(((AbstractOWLModel) getOWLModel()).getInternalFullName(name));
     }
 
 
