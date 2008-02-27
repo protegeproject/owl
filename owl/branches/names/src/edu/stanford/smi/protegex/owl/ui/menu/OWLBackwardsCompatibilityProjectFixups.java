@@ -165,7 +165,7 @@ public class OWLBackwardsCompatibilityProjectFixups implements ProjectFixupPlugi
         }
         prefix = ProtegeNames.PROTEGE_PREFIX + ":";
         if (value.startsWith(prefix)) {
-            return replacePrefix(value, prefix, ProtegeNames.NS);
+            return replacePrefix(value, prefix, ProtegeNames.PROTEGE_OWL_NAMESPACE);
         }
         return value;
     }
