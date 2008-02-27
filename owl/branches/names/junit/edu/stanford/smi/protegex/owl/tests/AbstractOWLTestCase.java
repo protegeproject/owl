@@ -3,6 +3,7 @@ package edu.stanford.smi.protegex.owl.tests;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.ArrayList;
@@ -29,10 +30,15 @@ import com.hp.hpl.jena.rdf.model.StmtIterator;
 import edu.stanford.smi.protege.model.Project;
 import edu.stanford.smi.protege.model.ValueType;
 import edu.stanford.smi.protege.util.Log;
+import edu.stanford.smi.protege.util.URIUtilities;
 import edu.stanford.smi.protegex.owl.ProtegeOWL;
 import edu.stanford.smi.protegex.owl.jena.Jena;
 import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
+import edu.stanford.smi.protegex.owl.model.OWLOntology;
+import edu.stanford.smi.protegex.owl.model.ProtegeNames;
+import edu.stanford.smi.protegex.owl.model.XSPNames;
 import edu.stanford.smi.protegex.owl.model.impl.XMLSchemaDatatypes;
 
 /**
@@ -192,6 +198,38 @@ public abstract class AbstractOWLTestCase extends TestCase {
       } catch (Exception e) {
         return null;
       }
+    }
+    
+    /**
+     * Makes sure that the Protege meta ontology is imported in an ontology tag
+     * that has rdf:about="".
+     */
+    public boolean ensureProtegeMetaOntologyImported() {
+        OWLOntology owlOntology = owlModel.getDefaultOWLOntology();
+        for (Iterator imports = owlOntology.getImports().iterator(); imports.hasNext();) {
+            String im = (String) imports.next();
+            if (im.equals(ProtegeNames.PROTEGE_OWL_ONTOLOGY)) {
+                return false;  // Already there
+            }
+        }
+        owlOntology.addImports(ProtegeNames.PROTEGE_OWL_ONTOLOGY);
+        try {
+            owlModel.addImport(URIUtilities.createURI(ProtegeNames.PROTEGE_OWL_ONTOLOGY));
+        }
+        catch (IOException e) {
+            Log.getLogger().log(Level.WARNING, "error importing protege ontology", e);
+        }
+        ensureProtegePrefixExists();
+        return true;
+    }
+
+
+    private void ensureProtegePrefixExists() {
+        if (owlModel.getNamespaceManager().getPrefix(ProtegeNames.PROTEGE_OWL_NAMESPACE) == null) {
+            String prefix = "protege";
+            owlModel.getNamespaceManager().setPrefix(ProtegeNames.PROTEGE_OWL_NAMESPACE, prefix);
+            owlModel.getNamespaceManager().setPrefix(XSPNames.NS, XSPNames.DEFAULT_PREFIX);
+        }
     }
 
 
