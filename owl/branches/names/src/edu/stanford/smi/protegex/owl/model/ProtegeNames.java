@@ -30,22 +30,34 @@ public class ProtegeNames {
 
     public static interface Slot {
 
-        final static String ABSTRACT = NS + "abstract";
+        final static String ABSTRACT = PROTEGE_OWL_NAMESPACE + "abstract";
 
-        final static String CLASSIFICATION_STATUS = NS + "classificationStatus";
+        final static String CLASSIFICATION_STATUS = PROTEGE_OWL_NAMESPACE + "classificationStatus";
 
-        final static String INFERRED_TYPE = NS + "inferredType";
+        final static String INFERRED_TYPE = PROTEGE_OWL_NAMESPACE + "inferredType";
 
-        final static String INFERRED_SUBCLASSES = NS + "inferredSuperclassOf";
+        final static String INFERRED_SUBCLASSES = PROTEGE_OWL_NAMESPACE + "inferredSuperclassOf";
 
-        final static String INFERRED_SUPERCLASSES = NS + "inferredSubclassOf";
+        final static String INFERRED_SUPERCLASSES = PROTEGE_OWL_NAMESPACE + "inferredSubclassOf";
 
-	    final static String IS_COMMENTED_OUT = NS + "isCommentedOut";
+	    final static String IS_COMMENTED_OUT = PROTEGE_OWL_NAMESPACE + "isCommentedOut";
     }
 
-    public static String FILE = "http://protege.stanford.edu/plugins/owl/protege";
+    public static String PROTEGE_OWL_ONTOLOGY = "http://protege.stanford.edu/plugins/owl/protege";
+    
+    /**
+     * @deprecated use {@link #PROTEGE_OWL_ONTOLOGY}
+     */
+    @Deprecated
+    public static String FILE = PROTEGE_OWL_ONTOLOGY;
 
-    public final static String NS = FILE + "#";
+    public final static String PROTEGE_OWL_NAMESPACE = PROTEGE_OWL_ONTOLOGY + "#";
+ 
+    /**
+     * @deprecated use {@link #PROTEGE_OWL_NAMESPACE}
+     */
+    @Deprecated
+    public final static String NS = PROTEGE_OWL_NAMESPACE;
 
     public final static String ABSTRACT = "abstract";
 
@@ -82,47 +94,47 @@ public class ProtegeNames {
 
 
     public static AnnotationProperty getAbstractProperty(OntModel ontModel) {
-        return ontModel.getAnnotationProperty(NS + ABSTRACT);
+        return ontModel.getAnnotationProperty(PROTEGE_OWL_NAMESPACE + ABSTRACT);
     }
 
 
     public static AnnotationProperty getAllowedParentProperty(OntModel ontModel) {
-        return ontModel.getAnnotationProperty(NS + ALLOWED_PARENT);
+        return ontModel.getAnnotationProperty(PROTEGE_OWL_NAMESPACE + ALLOWED_PARENT);
     }
 
 
     public static String getProbeClassSlotName() {
-        return NS + PROBE_CLASS;
+        return PROTEGE_OWL_NAMESPACE + PROBE_CLASS;
     }
 
 
     public static String getReadOnlySlotName() {
-        return NS + READ_ONLY;
+        return PROTEGE_OWL_NAMESPACE + READ_ONLY;
     }
 
 
     public static String getSubclassesDisjointSlotName() {
-        return NS + SUBCLASSES_DISJOINT;
+        return PROTEGE_OWL_NAMESPACE + SUBCLASSES_DISJOINT;
     }
 
 
     public static String getTodoPrefixSlotName() {
-        return NS + TODO_PREFIX;
+        return PROTEGE_OWL_NAMESPACE + TODO_PREFIX;
     }
 
 
     public static String getTodoPropertySlotName() {
-        return NS + TODO_PROPERTY;
+        return PROTEGE_OWL_NAMESPACE + TODO_PROPERTY;
     }
 
 
     public static String getDefaultLanguageSlotName() {
-        return NS + DEFAULT_LANGUAGE;
+        return PROTEGE_OWL_NAMESPACE + DEFAULT_LANGUAGE;
     }
 
 
     public static String getUsedLanguagesSlotName() {
-        return NS + USED_LANGUAGE;
+        return PROTEGE_OWL_NAMESPACE + USED_LANGUAGE;
     }
 
 
