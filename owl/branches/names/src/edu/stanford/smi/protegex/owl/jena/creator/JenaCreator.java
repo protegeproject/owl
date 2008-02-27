@@ -72,6 +72,7 @@ import edu.stanford.smi.protegex.owl.model.RDFSDatatype;
 import edu.stanford.smi.protegex.owl.model.RDFSLiteral;
 import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
 import edu.stanford.smi.protegex.owl.model.RDFSNames;
+import edu.stanford.smi.protegex.owl.model.framestore.ProtegeOWLFrameStore;
 import edu.stanford.smi.protegex.owl.model.impl.XMLSchemaDatatypes;
 
 /**
@@ -213,10 +214,10 @@ public class JenaCreator {
     }
 
 
+    @SuppressWarnings("unchecked")
     private void addPropertyValues(RDFResource rdfResource, OntResource ontResource) {
         if (!forReasoning) {
             Collection properties = rdfResource.getPossibleRDFProperties();
-            properties.add(owlModel.getRDFProperty(edu.stanford.smi.protege.model.Model.Slot.CONSTRAINTS));
             for (Iterator it = properties.iterator(); it.hasNext();) {
                 RDFProperty property = (RDFProperty) it.next();
                 if (!isSystemOwnSlot(rdfResource, property) || property.isAnnotationProperty()) {
@@ -727,10 +728,10 @@ public class JenaCreator {
 
     private void ensureProtegeMetaOntologyImported() {
         Ontology defaultOntology = getDefaultOntology();
-        Resource o = ontModel.getResource(ProtegeNames.FILE);
+        Resource o = ontModel.getResource(ProtegeNames.PROTEGE_OWL_ONTOLOGY);
         if (!Jena.set(defaultOntology.listImports()).contains(o)) {
             defaultOntology.addImport(o);
-            ontModel.getDocumentManager().loadImport(ontModel, ProtegeNames.FILE);
+            ontModel.getDocumentManager().loadImport(ontModel, ProtegeNames.PROTEGE_OWL_ONTOLOGY);
         }
     }
 
@@ -767,9 +768,6 @@ public class JenaCreator {
         }
         else {
             collection = owlModel.getUserDefinedRDFSNamedClasses();
-            if (owlModel instanceof JenaOWLModel) {
-                collection.add(owlModel.getRDFSNamedClass(edu.stanford.smi.protege.model.Model.Cls.PAL_CONSTRAINT));
-            }
             collection.add(owlModel.getOWLThingClass());
         }
         classCount = collection.size();
