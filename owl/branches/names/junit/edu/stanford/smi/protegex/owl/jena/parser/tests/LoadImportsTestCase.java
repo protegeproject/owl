@@ -103,7 +103,7 @@ public class LoadImportsTestCase extends AbstractJenaTestCase {
 
 
     public void testLoadIncrementalImportOfProtege() throws Exception {
-        URI uri = new URI(ProtegeNames.FILE);
+        URI uri = new URI(ProtegeNames.PROTEGE_OWL_ONTOLOGY);
         String namespace = uri.toString() + "#";
         owlModel.getNamespaceManager().setPrefix(namespace, "protege");
         owlModel.addImport(uri);
