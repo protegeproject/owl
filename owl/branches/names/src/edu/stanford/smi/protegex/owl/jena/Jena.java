@@ -590,7 +590,7 @@ public class Jena {
 
     public static boolean isSystemResource(Resource ontResource) {
         String nameSpace = ontResource.getNameSpace();
-        return (nameSpace.equals(ProtegeNames.NS) &&
+        return (nameSpace.equals(ProtegeNames.PROTEGE_OWL_NAMESPACE) &&
                 !ProtegeNames.DEFAULT_LANGUAGE.equals(ontResource.getLocalName()) &&
                 !ProtegeNames.USED_LANGUAGE.equals(ontResource.getLocalName()) &&
                 !ProtegeNames.TODO_PREFIX.equals(ontResource.getLocalName()) &&
@@ -604,7 +604,7 @@ public class Jena {
 
     public static boolean isSystemClass(OntClass ontClass) {
         return systemClasses.contains(ontClass) ||
-                ontClass.getNameSpace().equals(ProtegeNames.NS);
+                ontClass.getNameSpace().equals(ProtegeNames.PROTEGE_OWL_NAMESPACE);
     }
 
 
