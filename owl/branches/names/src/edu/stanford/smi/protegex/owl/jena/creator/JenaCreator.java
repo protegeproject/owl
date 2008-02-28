@@ -102,7 +102,12 @@ public class JenaCreator {
 
     private ProgressDisplay progressDisplay;
 
+    /*
+     * what does system own slot mean??
+     */
     private Set<RDFProperty> systemOwnSlots = new HashSet<RDFProperty>();
+    
+    private Set<RDFProperty> ignoredProperties = new HashSet<RDFProperty>();
 
     /**
      * The classes that shall be processed in this creation process.
@@ -162,7 +167,13 @@ public class JenaCreator {
         systemOwnSlots.add(owlModel.getRDFProperty(ProtegeNames.Slot.INFERRED_TYPE));
         systemOwnSlots.add(owlModel.getProtegeClassificationStatusProperty());
         systemOwnSlots.add(owlModel.getRDFProperty(OWLNames.Slot.OWL_ONTOLOGY_POINTER_PROPERTY));
-
+        systemOwnSlots.add(owlModel.getSystemFrames().getFromSlot());
+        systemOwnSlots.add(owlModel.getSystemFrames().getToSlot());
+        systemOwnSlots.add(owlModel.getSystemFrames().getPalNameSlot());
+        systemOwnSlots.add(owlModel.getSystemFrames().getPalRangeSlot());
+        systemOwnSlots.add(owlModel.getSystemFrames().getPalStatementSlot());
+        systemOwnSlots.add(owlModel.getSystemFrames().getPalDescriptionSlot());
+        systemOwnSlots.add(owlModel.getSystemFrames().getConstraintsSlot());
     }
 
 
@@ -218,9 +229,15 @@ public class JenaCreator {
     private void addPropertyValues(RDFResource rdfResource, OntResource ontResource) {
         if (!forReasoning) {
             Collection properties = rdfResource.getPossibleRDFProperties();
+            if (log.isLoggable(Level.FINER)) {
+                log.finer("JenaCreator is adding property values for the resource " + rdfResource);
+            }
             for (Iterator it = properties.iterator(); it.hasNext();) {
                 RDFProperty property = (RDFProperty) it.next();
                 if (!isSystemOwnSlot(rdfResource, property) || property.isAnnotationProperty()) {
+                    if (log.isLoggable(Level.FINER)) {
+                        log.finer("\tFound Property " + property);
+                    }
                     if (rdfResource instanceof RDFIndividual &&
                         property instanceof OWLObjectProperty &&
                         rdfResource.getPropertyValueCount(property) > 0) {
@@ -235,6 +252,9 @@ public class JenaCreator {
                         addPropertyValues(rdfResource, ontResource, property);
                     }
                 }
+            }
+            if (log.isLoggable(Level.FINER)) {
+                log.finer("JenaCreator is done adding property values for the resource " + rdfResource);
             }
         }
     }
@@ -255,13 +275,22 @@ public class JenaCreator {
         for (Iterator vit = instance.getPropertyValues(rdfProperty).iterator(); vit.hasNext();) {
             Object value = vit.next();
             if (value instanceof RDFResource) {
+                if (log.isLoggable(Level.FINEST)) {
+                    log.finest("\t\tAdding <" + instance + ", " + rdfProperty + ", " + value + ">");
+                }
                 Resource valueResource = getResource((RDFResource) value);
                 ontResource.addProperty(property, valueResource);
             }
             else if (owlModel.getRDFXMLLiteralType().equals(rangeDatatype)) {
+                if (log.isLoggable(Level.FINEST)) {
+                    log.finest("\t\tAdding <" + instance + ", " + rdfProperty + ", " + value + "> using xml literal");
+                }
                 ontResource.addProperty(property, ontModel.createTypedLiteral(value, XMLLiteralType.theXMLLiteralType));
             }
             else {
+                if (log.isLoggable(Level.FINEST)) {
+                    log.finest("\t\tAdding <" + instance + ", " + rdfProperty + ", " + value + "> using literal");
+                }
                 Literal literal = createLiteral(value, ontModel);
                 ontResource.addProperty(property, literal);
             }
@@ -441,6 +470,9 @@ public class JenaCreator {
             individual = ontModel.createIndividual(uri, ontClass);
             while (it.hasNext()) {  // Add additional types
                 RDFSClass addType = (RDFSClass) it.next();
+                if (log.isLoggable(Level.FINE)) {
+                    log.fine("\tAdding type " + addType + " to individual " + rdfResource);
+                }
                 OntClass addOntClass = getOntClass(addType);
                 if (addOntClass != null) {
                     individual.addRDFType(addOntClass);
@@ -455,17 +487,26 @@ public class JenaCreator {
     }
 
 
+    /*
+     * This is scrambled since we are doing so much OWL-fullish stuff.  What are 
+     * individuals?  Since we have already collected OWLOntologies, RDFSClasses and RDFSProperties 
+     * I think I will view an individual as anything that is not one of the above.
+     * Argh.
+     */
     private void createIndividuals() {
-        Iterator it = getRDFSClassIterator();
+        if (log.isLoggable(Level.FINE)) {
+            log.fine("JenaCreator looking for individuals");
+        }
+        Iterator<RDFResource> it = getRDFSIndividualIterator();
         while (it.hasNext()) {
-            RDFSNamedClass rdfsClass = (RDFSNamedClass) it.next();
-            for (Iterator iit = rdfsClass.getInstances(false).iterator(); iit.hasNext();) {
-                Instance instance = (Instance) iit.next();
-                if (instance instanceof RDFResource && !(instance instanceof RDFProperty)) {
-                    RDFResource RDFResource = (RDFResource) instance;
-                    getOntResource(RDFResource);
-                }
+            RDFResource resource = it.next();
+            if (log.isLoggable(Level.FINE)) {
+                log.fine("\tFound individual " + resource);
             }
+            getOntResource(resource);
+        }
+        if (log.isLoggable(Level.FINE)) {
+            log.fine("JenaCreator finished looking for individuals");
         }
     }
 
@@ -546,13 +587,22 @@ public class JenaCreator {
 
 
     private void createOntClasses() {
+        if (log.isLoggable(Level.FINER)) {
+            log.finer("Jena Creator is collecting ontology classes");
+        }
         Iterator it = getRDFSClassIterator();
         while (it.hasNext()) {
             final RDFSNamedClass rdfsClass = (RDFSNamedClass) it.next();
+            if (log.isLoggable(Level.FINER)) {
+                log.finer("\tFound class " + rdfsClass);
+            }
             getOntClass(rdfsClass);
             if (rdfsClass instanceof OWLNamedClass && rdfsClass.isIncluded()) {
                 createAdditionalAnonymousSuperclassesOfIncludedClass((OWLNamedClass) rdfsClass);
             }
+        }
+        if (log.isLoggable(Level.FINER)) {
+            log.finer("Jena Creator is finished collecting ontology classes");
         }
     }
 
@@ -774,6 +824,26 @@ public class JenaCreator {
         return collection.iterator();
     }
 
+    /*
+     * I am unhappy because we are owl fullish - what is an individual exactly.
+     * This logic seems somehow broken.
+     * If we do all instances of rdf individual we get too much if we do all instances
+     * of owl individual we might get too little.
+     */
+    @SuppressWarnings("unchecked")
+    private Iterator<RDFResource> getRDFSIndividualIterator() {
+        Collection values = ((Cls) owlModel.getOWLThingClass()).getInstances();
+        Set<RDFResource> individuals = new HashSet<RDFResource>();
+        for (Object o : values) {
+            if (o instanceof RDFResource 
+                    && !(o instanceof RDFProperty) && !(o instanceof RDFSNamedClass) && !(o instanceof OWLOntology)
+                    && !(o instanceof OWLAnonymousClass) && !(o instanceof RDFList) && !(o instanceof OWLAllDifferent)
+                    && !((RDFResource) o).isSystem()) {
+                individuals.add((RDFResource) o);
+            }
+        }
+        return individuals.iterator();
+    }
 
     private OntClass getOntClass(RDFSClass rdfsClass) {
         if (rdfsClass instanceof RDFSNamedClass) {
