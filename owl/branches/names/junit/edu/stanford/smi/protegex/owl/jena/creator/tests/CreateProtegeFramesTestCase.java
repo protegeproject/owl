@@ -37,7 +37,7 @@ public class CreateProtegeFramesTestCase extends AbstractJenaCreatorTestCase {
         constraint.setPropertyValue(palStatementProperty, "MyStatement");
 
         OntModel newModel = runJenaCreator();
-        Jena.dumpRDF(newModel, log, Level.FINE);
+        // Jena.dumpRDF(newModel, log, Level.FINE);
 
         OntClass constraintOntClass = newModel.getOntClass(ProtegeOWLFrameStore.convertProtegeFrameNameToOwl(Model.Cls.PAL_CONSTRAINT));
         assertNotNull(constraintOntClass);
@@ -65,7 +65,7 @@ public class CreateProtegeFramesTestCase extends AbstractJenaCreatorTestCase {
         rdfsClass.setPropertyValue(constraintsProperty, constraint);
 
         OntModel newModel = runJenaCreator();
-        Jena.dumpRDF(newModel, log, Level.FINE);
+        // Jena.dumpRDF(newModel, log, Level.FINE);
         OntProperty constraintsOntProperty = newModel.getOntProperty(ProtegeOWLFrameStore.convertProtegeFrameNameToOwl(Model.Slot.CONSTRAINTS));
         assertNotNull(constraintsOntProperty);
 
