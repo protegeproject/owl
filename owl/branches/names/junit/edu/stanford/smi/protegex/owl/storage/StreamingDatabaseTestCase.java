@@ -30,6 +30,7 @@ public class StreamingDatabaseTestCase extends APITestCase {
         plugin.setOntologyInputSource(fileLocation);
         Project p = plugin.createProject();
         OWLModel model = (OWLModel) p.getKnowledgeBase();
+        model.setExpandShortNameInMethods(true);
         assertNotNull(model.getRDFResource("Pizza"));
       }
     }
