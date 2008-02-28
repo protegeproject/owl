@@ -52,9 +52,9 @@ public class CreateRDFLiteralValuesTestCase extends AbstractJenaCreatorTestCase 
         loadRemoteOntology("importSWRL.owl");
         String defaultOntology = owlModel.getNamespaceManager().getDefaultNamespace();
         
-        OWLNamedClass datavaluedPropertyAtomCls = (OWLNamedClass) owlModel.getCls(getFullName("swrl:DatavaluedPropertyAtom"));
+        OWLNamedClass datavaluedPropertyAtomCls = owlModel.getSystemFrames().getDataValuedPropertyAtomCls();
         assertNotNull(datavaluedPropertyAtomCls);
-        RDFProperty argument2RDFProperty = (RDFProperty) owlModel.getSlot(getFullName("swrl:argument2"));
+        RDFProperty argument2RDFProperty = owlModel.getSystemFrames().getArgument2Property();
         assertNotNull(argument2RDFProperty);
         RDFResource atom = datavaluedPropertyAtomCls.createInstance(defaultOntology + "atom");
         atom.addPropertyValue(argument2RDFProperty, "aldi");
