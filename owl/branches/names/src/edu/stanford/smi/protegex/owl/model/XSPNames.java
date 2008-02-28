@@ -45,10 +45,9 @@ public class XSPNames {
     public static String getName(OWLModel owlModel, int resourceID) {
         String name = null;
         if (resourceID >= 0 && resourceID < NAMES_COUNT) {
-            String prefix = owlModel.getNamespaceManager().getPrefix(NS);
-            name = prefix + NS_SEPERATOR + names[resourceID];
+            return NS + names[resourceID];
         }
-        return name;
+        return null;
     }
 
 
