@@ -221,7 +221,11 @@ public class OWLImporter {
 
     private Slot createSlot(Slot oldSlot) {
         Cls metaCls = getCls(oldSlot.getDirectType());
-        Slot slot = kb.createSlot(oldSlot.getName(), metaCls);
+        Slot slot = kb.getSlot(oldSlot.getName());
+        if (slot != null) { // this can happen!
+            return slot;
+        }
+        slot = kb.createSlot(oldSlot.getName(), metaCls);
         if (log.isLoggable(Level.FINE)) {
             log.fine("+ Created slot " + oldSlot.getName());
         }
