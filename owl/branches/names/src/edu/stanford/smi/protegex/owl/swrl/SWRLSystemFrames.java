@@ -201,19 +201,40 @@ public class SWRLSystemFrames extends OWLSystemFrames {
 
         public void addPropertyTypes() {
             assertTypeAndName(bodyProperty, getOwlObjectPropertyClass());
+            assertDomain(bodyProperty);
+            
             assertTypeAndName(headProperty, getOwlObjectPropertyClass());
+            assertDomain(headProperty);
+            
             assertTypeAndName(argumentsProperty, getOwlObjectPropertyClass());
+            assertDomain(argumentsProperty);
+            
             assertTypeAndName(builtInProperty, getOwlObjectPropertyClass());
+            assertDomain(builtInProperty);
+            
             assertTypeAndName(argument1Property, getOwlObjectPropertyClass());
+            assertDomain(argument1Property);
+            
             assertTypeAndName(classPredicateProperty, getOwlObjectPropertyClass());
+            assertDomain(classPredicateProperty);
+            
             assertTypeAndName(propertyPredicateProperty, getOwlObjectPropertyClass());
+            assertDomain(propertyPredicateProperty);
+            
             assertTypeAndName(dataRangeProperty, getOwlObjectPropertyClass());
+            assertDomain(dataRangeProperty);
             
             assertTypeAndName(argsProperty, getOwlDatatypePropertyClass());
+            assertDomain(argsProperty);
+            
             assertTypeAndName(minArgsProperty, getOwlDatatypePropertyClass());
+            assertDomain(minArgsProperty);
+            
             assertTypeAndName(maxArgsProperty, getOwlDatatypePropertyClass());
+            assertDomain(maxArgsProperty);
             
             assertTypeAndName(argument2Property, getRdfPropertyClass());
+            assertDomain(argument2Property);
         }
         
         public void addBuiltInTypes() {
