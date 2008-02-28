@@ -15,14 +15,9 @@ public class DefaultPropertyValueValidatorTestCase extends AbstractJenaTestCase 
     private RDFSDatatypeFactory factory;
 
 
-    protected void setUp() throws Exception {
-        super.setUp();
-        factory = owlModel.getRDFSDatatypeFactory();
-    }
-
-
     public void testIntegerRangeExclusive() throws Exception {
         loadRemoteOntologyWithProtegeMetadataOntology();
+        factory = owlModel.getRDFSDatatypeFactory();
         RDFResource subject = owlThing;
         RDFProperty property = owlModel.createRDFProperty("property");
         RDFSDatatype datatype = factory.createAnonymousDatatype(owlModel.getXSDint());
@@ -39,6 +34,7 @@ public class DefaultPropertyValueValidatorTestCase extends AbstractJenaTestCase 
 
     public void testIntegerRangeInclusive() throws Exception {
         loadRemoteOntologyWithProtegeMetadataOntology();
+        factory = owlModel.getRDFSDatatypeFactory();
         RDFResource subject = owlThing;
         RDFProperty property = owlModel.createRDFProperty("property");
         RDFSDatatype datatype = factory.createAnonymousDatatype(owlModel.getXSDint());
@@ -54,6 +50,7 @@ public class DefaultPropertyValueValidatorTestCase extends AbstractJenaTestCase 
 
     public void testStringLength() throws Exception {
         loadRemoteOntologyWithProtegeMetadataOntology();
+        factory = owlModel.getRDFSDatatypeFactory();
         RDFResource subject = owlThing;
         RDFProperty property = owlModel.createRDFProperty("property");
         RDFSDatatype datatype = factory.createAnonymousDatatype(owlModel.getXSDstring());
@@ -66,6 +63,7 @@ public class DefaultPropertyValueValidatorTestCase extends AbstractJenaTestCase 
 
     public void testStringMinMaxLength() throws Exception {
         loadRemoteOntologyWithProtegeMetadataOntology();
+        factory = owlModel.getRDFSDatatypeFactory();
         RDFResource subject = owlThing;
         RDFProperty property = owlModel.createRDFProperty("property");
         RDFSDatatype datatype = factory.createAnonymousDatatype(owlModel.getXSDstring());
