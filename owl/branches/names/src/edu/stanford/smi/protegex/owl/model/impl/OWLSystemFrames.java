@@ -400,11 +400,13 @@ public abstract class OWLSystemFrames extends SystemFrames {
     }
     
     /*
-     * replaceProtegeFrames and removeUnusedProtegeFrames are slightly different.  The first  is 
-     * used in the case that the protege core name is being kept but the java type for that object 
-     * has changed.  The second one is used in conjunction with the modified Systems calls section 
-     * just below it in the case that the protege core frame is being replaced with a frame with
-     * a different name and a different java type.
+     * replaceProtegeFrames and removeUnusedProtegeFrames are slightly
+     * different.  The first is used in the case that the protege core
+     * name is being kept but the java type for that object has
+     * changed.  The second one is used in conjunction with the
+     * modified Systems calls section just below it in the case that
+     * the protege core frame is being replaced with a frame with a
+     * different name and a different java type.
      */
     
     private void replaceProtegeFrames() {
@@ -418,6 +420,59 @@ public abstract class OWLSystemFrames extends SystemFrames {
     	replaceFrameWithOWLDatatypeProperty(Model.Slot.PAL_STATEMENT); 	
     	replaceFrameWithOWLObjectProperty(Model.Slot.CONSTRAINTS);
     }
+    
+    /*
+     * SystemFrames calls that have been changed to return a frame with the same name
+     * but a different type.
+     */
+
+    @Override
+    public RDFSNamedClass getPalConstraintCls() {
+        return (RDFSNamedClass) super.getPalConstraintCls();
+    }
+
+    @Override
+    public OWLNamedClass getDirectedBinaryRelationCls() {
+        return (OWLNamedClass) super.getDirectedBinaryRelationCls();
+    }
+
+    @Override
+    public OWLObjectProperty getFromSlot() {
+        return (OWLObjectProperty) super.getFromSlot();
+    }
+
+    @Override
+    public OWLObjectProperty getToSlot() {
+        return (OWLObjectProperty) super.getToSlot();
+    }
+
+    @Override
+    public OWLDatatypeProperty getPalDescriptionSlot() {
+        return (OWLDatatypeProperty) super.getPalDescriptionSlot();
+    }
+    
+    @Override
+    public OWLDatatypeProperty getPalNameSlot() {
+        return (OWLDatatypeProperty) super.getPalNameSlot();
+    }
+    
+
+    @Override
+    public OWLDatatypeProperty getPalRangeSlot() {
+        return (OWLDatatypeProperty) super.getPalRangeSlot();
+    }
+
+    @Override
+    public OWLDatatypeProperty getPalStatementSlot() {
+        return (OWLDatatypeProperty) super.getPalStatementSlot();
+    }
+
+    @Override
+    public OWLObjectProperty getConstraintsSlot() {
+        return (OWLObjectProperty) super.getConstraintsSlot();
+    }
+    
+    
 	
     /*
      * Each call in here corresponds to a changed modified System getter in the section
@@ -432,7 +487,7 @@ public abstract class OWLSystemFrames extends SystemFrames {
 	
 	
     /* **********************************************************************
-     * Modified SystemFrames calls.
+     * SystemFrames calls that have been change to return a new frame with a different name.
      */
     @Override
 	public OWLNamedClass getRootCls() {
@@ -829,9 +884,17 @@ public abstract class OWLSystemFrames extends SystemFrames {
             OWLSystemFrames.this.assertTypeAndName(fs, frame, types);
         }
         
+        protected void assertDomain(Slot slot) {
+            assertDomains(slot, new Cls[] { });
+        }
+        
+        protected void assertDomain(Slot slot, Cls domain) {
+            assertDomains(slot, new Cls[] { domain });
+        }
+        
         protected void assertDomains(Slot slot, Cls[] domains) {
             if (domains.length == 0) {
-                fs.setDirectOwnSlotValues(slot, getDirectDomainSlot(), Collections.singleton(getOwlThingClass()));
+                fs.addDirectTemplateSlot(getOwlThingClass(), slot);
                 return;
             }
             for (Cls domain : domains) {
@@ -840,10 +903,6 @@ public abstract class OWLSystemFrames extends SystemFrames {
             if (domains.length == 1) {
                 fs.setDirectOwnSlotValues(slot, getRdfsDomainProperty(), Collections.singleton(domains[0]));
             }
-        }
-
-        protected void assertDomain(Slot slot, Cls domain) {
-            assertDomains(slot, new Cls[] { domain });
         }
         
         protected void assertRange(Slot slot, Cls cls) {
