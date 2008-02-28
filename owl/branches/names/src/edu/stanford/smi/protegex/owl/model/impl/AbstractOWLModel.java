@@ -76,7 +76,6 @@ import edu.stanford.smi.protegex.owl.model.RDFSLiteral;
 import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
 import edu.stanford.smi.protegex.owl.model.RDFUntypedResource;
 import edu.stanford.smi.protegex.owl.model.TaskManager;
-import edu.stanford.smi.protegex.owl.model.XSPNames;
 import edu.stanford.smi.protegex.owl.model.classdisplay.OWLClassDisplay;
 import edu.stanford.smi.protegex.owl.model.classdisplay.OWLClassDisplayFactory;
 import edu.stanford.smi.protegex.owl.model.classparser.OWLClassParser;
