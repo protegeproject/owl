@@ -7,6 +7,7 @@ import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.*;
 import edu.stanford.smi.protegex.owl.swrl.util.SWRLOWLUtil;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
+import edu.stanford.smi.protegex.owl.model.RDFSDatatype;
 
 public class OWLDatatypePropertyAssertionAxiomImpl extends OWLPropertyAssertionAxiomImpl implements OWLDatatypePropertyAssertionAxiom
 {
@@ -26,6 +27,7 @@ public class OWLDatatypePropertyAssertionAxiomImpl extends OWLPropertyAssertionA
     String propertyName = getProperty().getPropertyName();
     String subjectIndividualName = getSubject().getIndividualName();
     RDFProperty property = SWRLOWLUtil.getOWLProperty(owlModel, propertyName);
+    RDFSDatatype rangeDatatype = property.getRangeDatatype();
     Object objectValue;
     
     if (property == null) throw new InvalidPropertyNameException(propertyName);
@@ -33,8 +35,8 @@ public class OWLDatatypePropertyAssertionAxiomImpl extends OWLPropertyAssertionA
     subjectIndividual = SWRLOWLUtil.getOWLIndividual(owlModel, subjectIndividualName);
     if (subjectIndividual == null) throw new InvalidIndividualNameException(subjectIndividualName);
 
-    if (getObject().isString()) objectValue = getObject().getString(); // Store strings as String objects, not RDFSLiteral objects.
-    else objectValue = getObject().asRDFSLiteral(owlModel); // Will throw exception if it cannot convert
+    if (rangeDatatype != null) objectValue = owlModel.createRDFSLiteral(getObject().getString(), rangeDatatype);
+    else objectValue = getObject().getString();
 
     if (!subjectIndividual.hasPropertyValue(property, objectValue, false)) subjectIndividual.addPropertyValue(property, objectValue);    
   } // write2OWL
