@@ -116,6 +116,6 @@ public class LoadImportsTestCase extends AbstractJenaTestCase {
         owlModel.getNamespaceManager().setPrefix(namespace, "protege");
         owlModel.addImport(uri);
         owlModel.getDefaultOWLOntology().addImports(uri.toString());
-        assertNull(owlModel.getOWLNamedClass("protege:PAL-CONSTRAINT"));
+        assertNotNull(owlModel.getOWLNamedClass("protege:PAL-CONSTRAINT"));
     }
 }
