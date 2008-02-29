@@ -51,7 +51,13 @@ public interface TripleStoreModel extends Disposable{
      * Gets the "home" triple store of a given resource.  This can be used to determine the
      * TripleStore where changes on the resource should be performed consistently.
      * In the default implementation, the home TripleStore is the one that contains a :NAME
-     * slot value of the resource.
+     * slot value of the resource.  The intention is that this will be where the resource
+     * is first defined (using the ordering defined by the imports tree with imported  ontologies
+     * first).
+     * 
+     * The reality is that this is not well defined.  It is easy to imagine that  there are 
+     * several triple stores that have  a :NAME slot value for the resource.   In  this case
+     * this routine chooses one of these triple stores at random.
      *
      * @param resource the RDFResource to find the home TripleStore of
      * @return the home TripleStore
