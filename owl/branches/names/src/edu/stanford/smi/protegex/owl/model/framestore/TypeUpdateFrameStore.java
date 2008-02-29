@@ -3,6 +3,8 @@ package edu.stanford.smi.protegex.owl.model.framestore;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.Frame;
@@ -18,8 +20,10 @@ import edu.stanford.smi.protegex.owl.model.OWLRestriction;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
 import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
+import edu.stanford.smi.protegex.owl.model.impl.OWLSystemFrames;
 
 public class TypeUpdateFrameStore extends FrameStoreAdapter {
+
     private RDFSNamedClass untypedResource;
     private RDFSNamedClass functionalPropertyClass;
     private RDFSNamedClass restrictionClass;
@@ -28,6 +32,8 @@ public class TypeUpdateFrameStore extends FrameStoreAdapter {
     private RDFProperty rdfType;
     private RDFProperty rdfSubClassOfProperty;
     private RDFSNamedClass annotationPropertyClass;
+    
+    private Map<RDFProperty, RDFSNamedClass> fillerToProtegeTypeMap = new HashMap<RDFProperty, RDFSNamedClass>();
     
 
     
@@ -40,6 +46,18 @@ public class TypeUpdateFrameStore extends FrameStoreAdapter {
         
         rdfType = owlModel.getRDFTypeProperty();
         rdfSubClassOfProperty = owlModel.getRDFSSubClassOfProperty();
+        
+        initFillerMap(owlModel);
+    }
+    
+    private void initFillerMap(OWLModel owlModel) {
+        OWLSystemFrames systemFrames = owlModel.getSystemFrames();
+        fillerToProtegeTypeMap.put(systemFrames.getOwlAllValuesFromProperty(), systemFrames.getOwlAllValuesFromClass());
+        fillerToProtegeTypeMap.put(systemFrames.getOwlSomeValuesFromProperty(), systemFrames.getOwlSomeValuesFromClass());
+        fillerToProtegeTypeMap.put(systemFrames.getOwlCardinalityProperty(), systemFrames.getOwlCardinalityClass());
+        fillerToProtegeTypeMap.put(systemFrames.getOwlMinCardinalityProperty(), systemFrames.getOwlMinCardinalityClass());
+        fillerToProtegeTypeMap.put(systemFrames.getOwlMaxCardinalityProperty(), systemFrames.getOwlMaxCardinalityClass());
+        fillerToProtegeTypeMap.put(systemFrames.getOwlHasValueProperty(), systemFrames.getOwlHasValueClass());
     }
     
     /*
@@ -133,6 +151,7 @@ public class TypeUpdateFrameStore extends FrameStoreAdapter {
     @Override
     public void setDirectOwnSlotValues(Frame frame, Slot slot, Collection values) {
         super.setDirectOwnSlotValues(frame, slot, values);
+        Cls protegeType;
         if (frame instanceof RDFResource && slot.equals(rdfType)) {
             Collection directTypes = super.getDirectTypes((RDFResource) frame);
             for (Object newType : values) {
@@ -145,6 +164,10 @@ public class TypeUpdateFrameStore extends FrameStoreAdapter {
                     super.removeDirectType((RDFResource) frame, (Cls) oldType);
                 }
             }
+        }
+        else if ((protegeType = fillerToProtegeTypeMap.get(slot)) != null &&
+                 !super.getDirectTypes((Instance) frame).contains(protegeType)) {
+            super.addDirectType((Instance) frame, protegeType);
         }
     }
     
