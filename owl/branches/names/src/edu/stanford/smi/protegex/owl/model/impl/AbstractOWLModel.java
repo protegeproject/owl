@@ -314,6 +314,10 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     
 
     public void addImport(URI ontologyName) throws IOException {
+        if (log.isLoggable(Level.FINE)) {
+            log.fine("=======================================================");
+            log.fine("Processing import " + ontologyName);
+        }
         TripleStoreModel tripleStoreModel = getTripleStoreModel();
         for (TripleStore tripleStore : tripleStoreModel.getTripleStores()) {
             if (tripleStore.getIOAddresses().contains(ontologyName.toString())) {
@@ -330,7 +334,10 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
             finally {
                 tripleStoreModel.setViewActiveOnly(false);
             }
-
+        }
+        if (log.isLoggable(Level.FINE)) {
+            log.fine("Import Processing of " + ontologyName  + " done");
+            log.fine("=======================================================");
         }
     }
 
