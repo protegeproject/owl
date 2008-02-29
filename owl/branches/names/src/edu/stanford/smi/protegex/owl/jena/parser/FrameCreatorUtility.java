@@ -154,8 +154,7 @@ public class FrameCreatorUtility {
         frame.assertFrameName();
 
         addInstanceType((Instance)frame, (Cls)type);
-        addOwnSlotValue(frame, systemFrames.getRdfTypeProperty(), type);
-        frame.assertFrameName();        
+        addOwnSlotValue(frame, systemFrames.getRdfTypeProperty(), type);      
 
         return frame;
 
