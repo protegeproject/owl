@@ -377,6 +377,9 @@ public class TripleFrameCache {
 		
 		FrameID id = new FrameID(restrName);
 		restriction = RestrictionCreatorUtility.createRestriction(owlModel, id, predName);
+		if (importing) {
+		    restriction.setIncluded(true);
+		}
 		
 		if (restriction != null){		
 			checkUndefinedResources(restrName);
@@ -394,6 +397,9 @@ public class TripleFrameCache {
 		
 		FrameID id = new FrameID(logClassName);
 		logClass = LogicalClassCreatorUtility.createLogicalClass(owlModel, id, predName);
+		if (importing) {
+		    logClass.setIncluded(true);
+		}
 		
 		if (logClass != null){		
 			checkUndefinedResources(logClassName);
