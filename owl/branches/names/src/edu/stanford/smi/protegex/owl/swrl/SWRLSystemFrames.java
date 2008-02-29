@@ -177,7 +177,7 @@ public class SWRLSystemFrames extends OWLSystemFrames {
         assertions.addPropertyTypes();
         assertions.addBuiltInTypes();
         if (log.isLoggable(Level.FINE)) {
-            log.fine("Adding system frames took " + (System.currentTimeMillis() - start) + "ms.");
+            log.fine("Adding SWRL + OWL system frames took " + (System.currentTimeMillis() - start) + "ms.");
         }
     }
     
