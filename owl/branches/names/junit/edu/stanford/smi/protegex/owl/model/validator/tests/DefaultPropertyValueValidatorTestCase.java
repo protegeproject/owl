@@ -18,7 +18,7 @@ public class DefaultPropertyValueValidatorTestCase extends AbstractJenaTestCase 
     public void testIntegerRangeExclusive() throws Exception {
         loadRemoteOntologyWithProtegeMetadataOntology();
         factory = owlModel.getRDFSDatatypeFactory();
-        RDFResource subject = owlThing;
+        RDFResource subject = owlModel.getOWLThingClass();
         RDFProperty property = owlModel.createRDFProperty("property");
         RDFSDatatype datatype = factory.createAnonymousDatatype(owlModel.getXSDint());
         factory.setMinExclusive(datatype, owlModel.createRDFSLiteral(new Integer(2)));
