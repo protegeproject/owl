@@ -10,6 +10,7 @@
   xml:base="http://swrl.stanford.edu/ontologies/built-ins/3.3/abox.owl">
   <owl:Ontology rdf:about=""/>
   <swrl:Builtin rdf:ID="hasValue"/>
+  <swrl:Builtin rdf:ID="hasProperty"/>
   <swrl:Builtin rdf:ID="hasURI"/>
   <swrl:Builtin rdf:ID="isNumeric"/>
   <swrl:Builtin rdf:ID="notNumeric"/>
