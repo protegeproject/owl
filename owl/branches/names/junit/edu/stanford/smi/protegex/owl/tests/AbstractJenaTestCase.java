@@ -71,6 +71,7 @@ public abstract class AbstractJenaTestCase extends AbstractOWLTestCase {
     }
 
 
+    @SuppressWarnings("unchecked")
     public JenaOWLModel reload(JenaOWLModel owlModel) throws Exception {
         Collection errors = new ArrayList();
         OntModel ontModel = owlModel.getOntModel();
