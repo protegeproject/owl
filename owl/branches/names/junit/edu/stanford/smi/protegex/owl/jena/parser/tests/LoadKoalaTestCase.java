@@ -9,6 +9,7 @@ import edu.stanford.smi.protegex.owl.model.OWLDatatypeProperty;
 import edu.stanford.smi.protegex.owl.model.OWLIntersectionClass;
 import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
 import edu.stanford.smi.protegex.owl.model.OWLObjectProperty;
+import edu.stanford.smi.protegex.owl.model.RDFSLiteral;
 import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
 import edu.stanford.smi.protegex.owl.tests.AbstractJenaTestCase;
 
@@ -48,12 +49,12 @@ public class LoadKoalaTestCase extends AbstractJenaTestCase {
         OWLNamedClass degreeCls = owlModel.getOWLNamedClass("Degree");
         OWLNamedClass maleCls = owlModel.getOWLNamedClass("Male");
 
-        Instance femaleInstance = owlModel.getInstance("female");
-        Instance maleInstance = owlModel.getInstance("male");
-        Instance baInstance = owlModel.getInstance("BA");
-        Instance bsInstance = owlModel.getInstance("BS");
-        Instance maInstance = owlModel.getInstance("MA");
-        Instance phdInstance = owlModel.getInstance("PhD");
+        Instance femaleInstance = owlModel.getOWLIndividual("female");
+        Instance maleInstance = owlModel.getOWLIndividual("male");
+        Instance baInstance = owlModel.getOWLIndividual("BA");
+        Instance bsInstance = owlModel.getOWLIndividual("BS");
+        Instance maInstance = owlModel.getOWLIndividual("MA");
+        Instance phdInstance = owlModel.getOWLIndividual("PhD");
 
         assertNotNull(hasChildrenSlot);
         assertNotNull(hasDegreeSlot);
@@ -100,7 +101,7 @@ public class LoadKoalaTestCase extends AbstractJenaTestCase {
         assertHasDirectSuperclass(graduateStudentCls, "hasDegree some {BA BS}");
         assertHasDirectSuperclass(maleCls, "hasGender has male");
 
-        assertEquals("1.1", animalCls.getPropertyValue(owlModel.getOWLVersionInfoProperty()));
+        assertEquals("1.1", ((RDFSLiteral) animalCls.getPropertyValue(owlModel.getOWLVersionInfoProperty())).getString());
     }
 
 
