@@ -30,6 +30,7 @@ import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLOntology;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultRDFSLiteral;
 import edu.stanford.smi.protegex.owl.model.triplestore.impl.DefaultTriple;
 import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
+import edu.stanford.smi.protegex.owl.util.job.GetTripleStoreOfTripleJob;
 
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
@@ -41,9 +42,13 @@ public class TripleStoreUtil {
     public static void addToTripleStore(OWLModel owlModel, TripleStore tripleStore, RDFResource subject, RDFProperty predicate, Object object) {
         TripleStore oldTripleStore = owlModel.getTripleStoreModel().getActiveTripleStore();
         if (oldTripleStore != tripleStore) {
-            owlModel.getTripleStoreModel().setActiveTripleStore(tripleStore);
-            subject.addPropertyValue(predicate, object);
-            owlModel.getTripleStoreModel().setActiveTripleStore(oldTripleStore);
+            try {
+                owlModel.getTripleStoreModel().setActiveTripleStore(tripleStore);
+                subject.addPropertyValue(predicate, object);
+            }
+            finally {
+                owlModel.getTripleStoreModel().setActiveTripleStore(oldTripleStore);
+            }
         }
         else {
             subject.addPropertyValue(predicate, object);
@@ -88,25 +93,17 @@ public class TripleStoreUtil {
     }
 
 
+    /**
+     * Finds the triple store where a given fact is asserted.  There may be more
+     * than one in which case a random one of these triple stores is returned.
+     * 
+     * @param subject
+     * @param slot
+     * @param object
+     * @return
+     */
     public static TripleStore getTripleStoreOf(RDFResource subject, Slot slot, Object object) {
-
-        // Temporary hard-coding of database limitation
-        if (subject.getOWLModel() instanceof OWLDatabaseModel) {
-            return subject.getOWLModel().getTripleStoreModel().getTopTripleStore();
-        }
-
-        if (object instanceof RDFSLiteral) {
-            object = ((DefaultRDFSLiteral) object).getRawValue();
-        }
-        OWLModel owlModel = subject.getOWLModel();
-        Iterator it = owlModel.getTripleStoreModel().getTripleStores().iterator();
-        while (it.hasNext()) {
-            TripleStore ts = (TripleStore) it.next();
-            if (ts.getNarrowFrameStore().getValues(subject, slot, null, false).contains(object)) {
-                return ts;
-            }
-        }
-        return null;
+        return new GetTripleStoreOfTripleJob(subject, slot, object).execute();
     }
 
 
