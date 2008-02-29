@@ -19,13 +19,14 @@ import edu.stanford.smi.protegex.owl.ui.metadatatab.OntologyURIPanel;
 
 public class FactoryUtils {
     
+    @SuppressWarnings("deprecation")
     public static void addOntologyToTripleStore(OWLModel owlModel, TripleStore tripleStore, String ontologyName) 
     throws AlreadyImportedException {
         TripleStoreModel tripleStoreModel = owlModel.getTripleStoreModel();
         TripleStore activeTripleStore = tripleStoreModel.getActiveTripleStore();
         try {
             tripleStoreModel.setActiveTripleStore(tripleStore);
-            if (owlModel.getFrame(ontologyName) != null && tripleStore.getHomeResource(ontologyName) == null) {
+            if (owlModel.getFrame(ontologyName) != null && owlModel.getTripleStoreModel().getTripleStore(ontologyName) != null) {
                 throw new AlreadyImportedException(ontologyName + " already imported");
             }
             else if (owlModel.getFrame(ontologyName) == null) {
