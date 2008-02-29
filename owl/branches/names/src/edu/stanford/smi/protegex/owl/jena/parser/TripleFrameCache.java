@@ -56,6 +56,16 @@ import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreModel;
 public class TripleFrameCache {
 	private static final transient Logger log = Log.getLogger(TripleFrameCache.class);
 	
+	/*
+	 * I don't know if this works.  It is a hack for an ugly situation.  The 
+	 * w3 specs say that the name of an ontology in a file is the first ontology
+	 * declaration occurring in the file.  Presumably this would be the first ontology
+	 * declaration found if we parse the file with an xml parser.  This variable is
+	 * based on the guess that this will the first ontology declaration found by Jena's 
+	 * ARQ parser.  I believe that Jena has trouble with this issue also.
+	 */
+	private boolean ontologyFound = false;
+	
 	private UndefTripleManager undefTripleManager = new UndefTripleManager();
 
 	private SuperClsCache superClsCache = new SuperClsCache();
@@ -64,6 +74,8 @@ public class TripleFrameCache {
 	
 	private OWLModel owlModel;
 	private TripleStore tripleStore;
+	
+	private boolean importing;
 	
 	private static int noMultipleTypes = 0;
 
@@ -75,6 +87,7 @@ public class TripleFrameCache {
 	public TripleFrameCache(OWLModel owlModel, TripleStore tripleStore) {
 		this.owlModel = owlModel;
 		this.tripleStore = tripleStore;
+		importing = !tripleStore.equals(owlModel.getTripleStoreModel().getTopTripleStore());
 		
 		// FrameCreatorUtility.setSimpleFrameStore((SimpleFrameStore)((DefaultKnowledgeBase)owlModel).getTerminalFrameStore());
 		
@@ -174,10 +187,11 @@ public class TripleFrameCache {
 			return false;
 		}
 
-
-		if (objName.equals(OWL.Ontology.getURI()) && predName.equals(RDF.type.getURI()) ) {
+		// guessing that the ontology for the parsed file is the first ontology found
+		if (objName.equals(OWL.Ontology.getURI()) && predName.equals(RDF.type.getURI()) && !ontologyFound ) {
 			tripleStore.setName(subjName);
 			tripleStore.addIOAddress(subjName);
+			ontologyFound = true;
 		}
 		
 		
@@ -294,6 +308,9 @@ public class TripleFrameCache {
 			FrameID id = new FrameID(subjName);
 			
 			Frame listFrame = FrameCreatorUtility.createFrameWithType(owlModel, id, RDF.List.getURI(), true);
+			if (importing) {
+			    listFrame.setIncluded(true); // ineffective in client-server or db mode
+			}
 			
 			if (listFrame != null) {
 				checkUndefinedResources(subjName);
@@ -329,6 +346,9 @@ public class TripleFrameCache {
 		FrameID id = new FrameID(frameUri);
 
 		frame = FrameCreatorUtility.createFrameWithType(owlModel, id, type, isSubjAnon);
+		if (importing) {
+		    frame.setIncluded(true); // doesn't have any effect in client-server or db mode
+		}
 
 		//multipleTypesInstanceCache.addType((Instance)frame, type);
 		
