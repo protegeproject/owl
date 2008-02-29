@@ -237,7 +237,6 @@ public class ProtegeOWLParser {
 
 	        if (log.isLoggable(Level.FINE)) {			
 	            log.fine("\nDump before end processing. Size: " + tfc.getUndefTripleManager().getUndefTriples().size());
-	            // tfc.getUndefTripleManager().dumpUndefTriples();
 	        }		
 
 	        if (log.isLoggable(Level.FINE)) {
