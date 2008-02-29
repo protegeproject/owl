@@ -94,7 +94,8 @@ public class TripleFrameCache {
 	}
 	
 	
-	public boolean processTriple(AResource subj, AResource pred, AResource obj, boolean alreadyInUndef) {
+	@SuppressWarnings("deprecation")
+    public boolean processTriple(AResource subj, AResource pred, AResource obj, boolean alreadyInUndef) {
 		if (log.isLoggable(Level.FINER)) {
 			log.finer("Process Triple " + subj + " " + pred + " " + obj);
 		}
@@ -104,6 +105,9 @@ public class TripleFrameCache {
 
 		if (predSlot == null) {
 			if (!alreadyInUndef) {
+			    if (log.isLoggable(Level.FINE)) {
+			        log.finer("\tAbove triple processing deferred because the predicate is undefined");
+			    }
 				undefTripleManager.addUndefTriple(new UndefTriple(subj, pred, obj, predName));
 			}
 			return false;
@@ -128,6 +132,9 @@ public class TripleFrameCache {
 			}
 			
 			if (objFrame == null) {
+			    if (log.isLoggable(Level.FINE)) {
+			        log.fine("\tAbove triple processing deferred because object is undefined");
+			    }
 				addUndefTriple(subj, pred, obj, objName, alreadyInUndef);
 				return false;
 			}
@@ -299,6 +306,9 @@ public class TripleFrameCache {
 
 	//special treatment of RDFList. Move this to a utility class
 	private void createRDFList(String subjName, String predName, String objName) {
+	    if (log.isLoggable(Level.FINE)) {
+	        log.fine("Triple <" + subjName + ", " + predName + ", " + objName + "> signals RDFList creation");
+	    }
 		
 		Frame subjList = owlModel.getFrame(subjName);
 		
