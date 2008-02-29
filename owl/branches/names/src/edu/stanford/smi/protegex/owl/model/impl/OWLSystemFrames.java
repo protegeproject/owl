@@ -5,6 +5,8 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.hp.hpl.jena.datatypes.TypeMapper;
 import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
@@ -25,6 +27,7 @@ import edu.stanford.smi.protege.model.SystemFrames;
 import edu.stanford.smi.protege.model.ValueType;
 import edu.stanford.smi.protege.model.ValueTypeConstraint;
 import edu.stanford.smi.protege.model.framestore.FrameStore;
+import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.model.OWLDatatypeProperty;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
@@ -67,6 +70,7 @@ import edu.stanford.smi.protegex.owl.model.XSDNames;
 
 
 public abstract class OWLSystemFrames extends SystemFrames {
+    private static final transient Logger log = Log.getLogger(OWLSystemFrames.class);
     protected OWLModel owlModel;
 
     /*
@@ -510,6 +514,7 @@ public abstract class OWLSystemFrames extends SystemFrames {
     
     @Override
     public void addSystemFrames(FrameStore fs) {
+        long start = System.currentTimeMillis();
         FrameFactory oldFrameFactory = ((KnowledgeBase) owlModel).getFrameFactory();
         try {
             ((KnowledgeBase) owlModel).setFrameFactory(new NonSwizzlingFactory());
@@ -522,6 +527,9 @@ public abstract class OWLSystemFrames extends SystemFrames {
         }
         finally {
             ((KnowledgeBase) owlModel).setFrameFactory(oldFrameFactory);
+        }
+        if (log.isLoggable(Level.FINE)) {
+            log.fine("Loading OWL System Frames took " + (System.currentTimeMillis() - start) + "ms");
         }
     }
 
