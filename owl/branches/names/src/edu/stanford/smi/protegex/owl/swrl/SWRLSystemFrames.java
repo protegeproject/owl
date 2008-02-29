@@ -2,10 +2,13 @@ package edu.stanford.smi.protegex.owl.swrl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.FrameID;
 import edu.stanford.smi.protege.model.framestore.FrameStore;
+import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.model.OWLDatatypeProperty;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
@@ -17,6 +20,9 @@ import edu.stanford.smi.protegex.owl.swrl.model.SWRLNames;
 import edu.stanford.smi.protegex.owl.swrl.model.impl.DefaultSWRLBuiltin;
 
 public class SWRLSystemFrames extends OWLSystemFrames {
+    private static final Logger log = Log.getLogger(SWRLSystemFrames.class);
+    
+    
     private OWLNamedClass atomListCls, builtinAtomCls, classAtomCls, dataRangeAtomCls, 
                           dataValuedPropertyAtomCls, differentIndividualsAtomCls, impCls, 
                           individualPropertyAtomCls, sameIndividualAtomCls,
@@ -164,11 +170,15 @@ public class SWRLSystemFrames extends OWLSystemFrames {
     
     @Override
     public void addSystemFrames(FrameStore fs) {
+        long start = System.currentTimeMillis();
         super.addSystemFrames(fs);
         SWRLSystemFramesAssertions assertions = new SWRLSystemFramesAssertions(fs);
         assertions.addSWRLHierarchy();
         assertions.addPropertyTypes();
         assertions.addBuiltInTypes();
+        if (log.isLoggable(Level.FINE)) {
+            log.fine("Adding system frames took " + (System.currentTimeMillis() - start) + "ms.");
+        }
     }
     
     protected class SWRLSystemFramesAssertions extends SystemFramesAsserter {
