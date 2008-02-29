@@ -1,12 +1,18 @@
 package edu.stanford.smi.protegex.owl.jena.parser.tests;
 
-import edu.stanford.smi.protegex.owl.jena.parser.ProtegeOWLParser;
-import edu.stanford.smi.protegex.owl.model.*;
-import edu.stanford.smi.protegex.owl.tests.AbstractJenaTestCase;
-
 import java.net.URI;
 import java.util.Collection;
 import java.util.Iterator;
+
+import edu.stanford.smi.protegex.owl.model.OWLEnumeratedClass;
+import edu.stanford.smi.protegex.owl.model.OWLIndividual;
+import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
+import edu.stanford.smi.protegex.owl.model.OWLNames;
+import edu.stanford.smi.protegex.owl.model.OWLOntology;
+import edu.stanford.smi.protegex.owl.model.ProtegeNames;
+import edu.stanford.smi.protegex.owl.model.RDFResource;
+import edu.stanford.smi.protegex.owl.model.RDFSClass;
+import edu.stanford.smi.protegex.owl.tests.AbstractJenaTestCase;
 
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
@@ -34,7 +40,8 @@ public class LoadImportsTestCase extends AbstractJenaTestCase {
         URI koalaURI = new URI("http://protege.stanford.edu/plugins/owl/owl-library/koala.owl");
         RDFResource oi = owlModel.getOWLOntologyByURI(koalaURI);
         assertContains(oi, ontologies);
-        assertEquals("koala:", oi.getName());
+        assertEquals(owlModel.getNamespaceManager().getNamespaceForPrefix("koala"), 
+                     oi.getName() + "#");
         assertTrue(oi.isIncluded());
         OWLNamedClass koalaCls = owlModel.getOWLNamedClass("koala:Koala");
         assertNotNull(koalaCls);
@@ -45,7 +52,8 @@ public class LoadImportsTestCase extends AbstractJenaTestCase {
         loadRemoteOntology("uglyImport.owl");
         assertEquals("http://aldi.de/ont/", owlModel.getNamespaceManager().getDefaultNamespace());
         OWLOntology oi = owlModel.getDefaultOWLOntology();
-        assertSize(1, oi.getImports());
+        assertSize(0, oi.getImports());   // the import is broken
+        assertNotNull(owlModel.getOWLNamedClass("travel:Sunbathing")); // but the data is imported
     }
 
 
@@ -75,7 +83,7 @@ public class LoadImportsTestCase extends AbstractJenaTestCase {
         String namespace = uri.toString() + "#";
         owlModel.getNamespaceManager().setPrefix(namespace, "profile");
         owlModel.addImport(uri);
-        owlModel.getDefaultOWLOntology().addImports(uri.toString());
+        owlModel.getDefaultOWLOntology().addImports(uri);
     }
 
 
