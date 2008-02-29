@@ -110,7 +110,7 @@ public class ImportTestCase extends AbstractConditionsTableTestCase {
         loadTestOntology(new URI(FILE));
         personCls = (OWLNamedClass) owlModel.getOWLNamedClass("imported:Person");
         parentCls = (OWLNamedClass) owlModel.getOWLNamedClass("imported:Parent");
-        hasChildrenProperty = (OWLObjectProperty) owlModel.getSlot("imported:hasChildren");
+        hasChildrenProperty = (OWLObjectProperty) owlModel.getOWLObjectProperty("imported:hasChildren");
         assertNotNull(personCls);
         assertNotNull(parentCls);
         assertNotNull(hasChildrenProperty);
