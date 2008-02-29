@@ -882,6 +882,7 @@ public abstract class OWLSystemFrames extends SystemFrames {
         
         protected void assertTypeAndName(Frame frame, Collection<Cls> types) {
             OWLSystemFrames.this.assertTypeAndName(fs, frame, types);
+            fs.setDirectOwnSlotValues(frame, getRdfTypeProperty(), types);
         }
         
         protected void assertDomain(Slot slot) {
