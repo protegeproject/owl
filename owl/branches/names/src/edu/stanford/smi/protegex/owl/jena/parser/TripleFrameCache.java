@@ -418,7 +418,7 @@ public class TripleFrameCache {
 
 	public boolean processTriple(AResource subj, AResource pred, ALiteral lit, boolean alreadyInUndef) {
 	    if (log.isLoggable(Level.FINER)) {
-	        log.finer("Processing triple: " + subj + " " + pred + " " + lit);
+	        log.finer("Processing triple with literal: " + subj + " " + pred + " " + lit);
 	    }
 
 		String predName = ParserUtility.getResourceName(pred);		
@@ -669,6 +669,7 @@ public class TripleFrameCache {
 	
 	public void doPostProcessing() {
 		//processAddPrefixesToOntology();
+	    processMetaClasses();
 		processInferredSuperclasses();
 		processClsesWithoutSupercls();
 		processInstancesWithMultipleTypes();
@@ -826,6 +827,36 @@ public class TripleFrameCache {
 	            }
 	            gci = owlModel.getOWLNamedClass(gci.getName());
 	            gci.rename(axiomPrefix + counter);
+	        }
+	    }
+	}
+	
+	@SuppressWarnings("unchecked")
+    private void processMetaClasses() {
+	    Collection rdfsMetaClasses = new HashSet(owlModel.getRDFSNamedClassClass().getSubclasses(true));
+	    Collection owlMetaClasses = new HashSet(owlModel.getOWLNamedClassClass().getSubclasses(true));
+	    Collection deprecatedOwlMetaClasses = new HashSet(owlModel.getOWLDeprecatedClassClass().getSubclasses(true));
+	    
+	    rdfsMetaClasses.removeAll(owlMetaClasses);
+	    rdfsMetaClasses.remove(owlModel.getOWLNamedClassClass());
+	    rdfsMetaClasses.remove(owlModel.getOWLDeprecatedClassClass());
+	    rdfsMetaClasses.remove(owlModel.getRDFSNamedClassClass());
+	    owlMetaClasses.removeAll(deprecatedOwlMetaClasses);
+	    owlMetaClasses.remove(owlModel.getOWLNamedClassClass());
+	    deprecatedOwlMetaClasses.remove(owlModel.getOWLDeprecatedClassClass());
+	 
+	    addTypeToMetaClassInstances(rdfsMetaClasses, owlModel.getRDFSNamedClassClass());
+	    addTypeToMetaClassInstances(owlMetaClasses, owlModel.getOWLNamedClassClass());
+	    addTypeToMetaClassInstances(deprecatedOwlMetaClasses, owlModel.getOWLDeprecatedClassClass());
+	}
+	
+	@SuppressWarnings("unchecked")
+    private void addTypeToMetaClassInstances(Collection metaClasses, Cls type) {
+	    for (Object o : metaClasses) {
+	        Cls metaCls = (Cls) o;
+	        for (Instance i : metaCls.getInstances()) {
+	            if (!i.getDirectTypes().contains(type))
+	                i.addDirectType(type);
 	        }
 	    }
 	}
