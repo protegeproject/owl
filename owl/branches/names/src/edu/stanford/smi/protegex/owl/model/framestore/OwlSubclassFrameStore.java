@@ -60,8 +60,13 @@ public class OwlSubclassFrameStore extends FrameStoreAdapter {
             if (superClass instanceof RDFSClass) {
                 if (super.getDirectSuperclasses(superClass).contains(cls)) {  // is equivalent class
                     newEquivalentClasses.add((RDFSClass) superClass);
+                    if (superClass instanceof RDFSNamedClass) {
+                        newSuperclasses.add((RDFSClass) superClass);
+                    }
                 }
-                newSuperclasses.add((RDFSClass) superClass);
+                else {
+                    newSuperclasses.add((RDFSClass) superClass);
+                }
             }
         }
         super.setDirectOwnSlotValues(cls, rdfsSubClassOfProperty, newSuperclasses);
@@ -108,10 +113,12 @@ public class OwlSubclassFrameStore extends FrameStoreAdapter {
     public void addDirectSuperclass(Cls cls, Cls superCls) {
         Collection<Cls> superClasses = super.getDirectSuperclasses(cls);
         if (!superClasses.contains(superCls)) {   // Disallow duplicates
+            /*
             if (superClasses.contains(owlModel.getOWLThingClass()) && superCls instanceof RDFSClass &&
                     !((RDFSClass) superCls).isAnonymous()) {
                 super.removeDirectSuperclass(cls, owlModel.getOWLThingClass());
             }
+            */
 
             if (log.isLoggable(Level.FINE)) {
                 log.fine("-> " +cls.getBrowserText() + " ADDED " + superCls.getBrowserText());
