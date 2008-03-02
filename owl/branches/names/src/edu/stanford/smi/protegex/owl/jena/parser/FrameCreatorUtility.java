@@ -16,6 +16,7 @@ import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protege.model.framestore.SimpleFrameStore;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLAllDifferent;
+import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLDataRange;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLDatatypeProperty;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLIndividual;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLNamedClass;
@@ -100,6 +101,9 @@ public class FrameCreatorUtility {
         }
         else if (typeUri.equals(OWL.AllDifferent.getURI())) {
             frame = new DefaultOWLAllDifferent(owlModel, id);
+        }
+        else if (typeUri.equals(OWL.DataRange.getURI())) {
+            frame = new DefaultOWLDataRange(owlModel, id);
         }
         else if (typeUri.equals(RDF.Property.getURI())) {
             frame = new DefaultRDFProperty(owlModel, id);
