@@ -22,12 +22,14 @@ public class LoadMetaclassesTestCase extends AbstractJenaTestCase {
         assertContains(a, b.getSuperclasses(false));
 
         OWLNamedClass instanceClsA = owlModel.getOWLNamedClass("InstanceClsA");
-        assertSize(1, instanceClsA.getProtegeTypes());
+        assertSize(2, instanceClsA.getProtegeTypes());
         assertContains(a, instanceClsA.getProtegeTypes());
+        assertContains(owlModel.getOWLNamedClassClass(), a.getProtegeTypes());
 
         OWLNamedClass instanceClsB = owlModel.getOWLNamedClass("InstanceClsB");
-        assertSize(1, instanceClsB.getProtegeTypes());
+        assertSize(2, instanceClsB.getProtegeTypes());
         assertContains(b, instanceClsB.getProtegeTypes());
+        assertContains(owlModel.getOWLNamedClassClass(), b.getProtegeTypes());
     }
 
 
