@@ -250,7 +250,6 @@ public class ProtegeOWLParser {
 	        }
 
 	        tfc.processUndefTriples();
-	        tfc.doPostProcessing();
 
 	        if (tripleStore.getName() == null) { // no ontology declaration was found
 	            String oname;
@@ -260,6 +259,8 @@ public class ProtegeOWLParser {
 
 	            FactoryUtils.addOntologyToTripleStore(owlModel, tripleStore, oname);
 	        }
+	        
+	        tfc.doPostProcessing();
 	        if (!importing) {
 	            doPostProcessing();
 	        }
