@@ -86,17 +86,14 @@ public class UpdateInferredTypesTask extends AbstractReasonerTask {
 	        	// if there is a mismatch between the two then
 	        	// mark the classification status of the individual
 	        	// as changed. (MH - 15/09/04)
-                        if (log.isLoggable(Level.FINE)) {
-                            log.fine("Current individual: " + curInd);
-                        }
+                if (log.isLoggable(Level.FINE)) {
+                    log.fine("Computing Inteffed types for individual: " + curInd);
+                }
+	        	        	
+	        	Collection<OWLClass> inferredTypes = protegeReasoner.getIndividualDirectTypes(curInd);
+
 	        	
-	        	Collection<OWLClass> inferredTypes = protegeReasoner.getIndividualTypes(curInd);
-	        	
-	        	//TT -just for test, remove	        	
-	        	//individuals2inferredTypes.put(curInd, inferredTypes);
-       	
-	        
-	        	if (inferredTypes.size() == 0) {
+	          	if (inferredTypes.size() == 0) {
 	        		inferredTypes.add(curInd.getOWLModel().getOWLThingClass());
 	        	}
 	        	final Collection assertedTypes = curInd.getProtegeTypes();
@@ -109,8 +106,7 @@ public class UpdateInferredTypesTask extends AbstractReasonerTask {
 	        	}
 	        	else {
 	        		k.setOwnSlotValues(curInd, classificationStatusSlot, Collections.singleton(new Integer(OWLNames.CLASSIFICATION_STATUS_CONSISTENT_AND_UNCHANGED)));
-	        	}
-	        
+	        	}      
 
 	        	setProgress(getProgress() + 1);
 	        	doAbortCheck();
