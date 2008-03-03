@@ -2,8 +2,21 @@
 package edu.stanford.smi.protegex.owl.swrl.model.impl;
 
 import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
-import edu.stanford.smi.protegex.owl.model.*;
-import edu.stanford.smi.protegex.owl.swrl.model.*;
+
+import edu.stanford.smi.protegex.owl.model.NamespaceManager;
+import edu.stanford.smi.protegex.owl.model.NamespaceUtil;
+import edu.stanford.smi.protegex.owl.model.OWLDataRange;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.model.RDFIndividual;
+import edu.stanford.smi.protegex.owl.model.RDFObject;
+import edu.stanford.smi.protegex.owl.model.RDFProperty;
+import edu.stanford.smi.protegex.owl.model.RDFResource;
+import edu.stanford.smi.protegex.owl.model.RDFSClass;
+import edu.stanford.smi.protegex.owl.model.RDFSLiteral;
+import edu.stanford.smi.protegex.owl.model.RDFUntypedResource;
+import edu.stanford.smi.protegex.owl.swrl.model.SWRLAtom;
+import edu.stanford.smi.protegex.owl.swrl.model.SWRLAtomList;
+import edu.stanford.smi.protegex.owl.swrl.model.SWRLVariable;
 
 /**
  * @author Daniel Elenius
@@ -40,20 +53,16 @@ public class SWRLUtil
       RDFUntypedResource resource = (RDFUntypedResource)o;
       OWLModel owlModel = resource.getOWLModel(); 
       NamespaceManager namespaceManager = owlModel.getNamespaceManager();
-      String resourceName = resource.getName();
-      String namespace = resourceName.substring(0, resourceName.indexOf("#") + 1);
-      String itemName = resourceName.substring(resourceName.indexOf("#") + 1);
-      String prefix = namespaceManager.getPrefix(namespace);
-      String name = prefix != null ? prefix + ":" + itemName : resourceName;
+      String name = NamespaceUtil.getPrefixedName(namespaceManager, resource.getName());
       s += "<INVALID_" + resourceType;
       s += "[" + name + "]>";
     } else if (o instanceof RDFSLiteral) s += SWRLUtil.getSWRLBrowserText((RDFSLiteral)o); 
     else if (o instanceof SWRLAtomList) s += ((SWRLAtomList)o).getBrowserText();
     else if (o instanceof SWRLAtom) s += ((SWRLAtom)o).getBrowserText();
     else if (o instanceof SWRLVariable) s += ((SWRLVariable)o).getBrowserText();
-    else if (o instanceof RDFSClass) s += ((RDFSClass)o).getName(); 
-    else if (o instanceof RDFIndividual) s += ((RDFIndividual)o).getName(); 
-    else if (o instanceof RDFProperty) s += ((RDFProperty)o).getName(); 
+    else if (o instanceof RDFSClass) s += ((RDFSClass)o).getBrowserText(); 
+    else if (o instanceof RDFIndividual) s += ((RDFIndividual)o).getBrowserText(); 
+    else if (o instanceof RDFProperty) s += ((RDFProperty)o).getBrowserText(); 
     else if (o instanceof OWLDataRange) s += ((OWLDataRange)o).getBrowserText();
     else if (o instanceof RDFResource) s += ((RDFResource)o).getBrowserText();
     else s += o.toString();
