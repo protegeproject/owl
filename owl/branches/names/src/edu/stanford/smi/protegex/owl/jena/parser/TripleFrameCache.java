@@ -34,6 +34,7 @@ import edu.stanford.smi.protegex.owl.model.RDFSClass;
 import edu.stanford.smi.protegex.owl.model.RDFSDatatype;
 import edu.stanford.smi.protegex.owl.model.RDFSLiteral;
 import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
+import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultRDFSLiteral;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreModel;
@@ -462,8 +463,9 @@ public class TripleFrameCache {
 		//String stringValue = rdfsLiteral.getString();
 		
 		//if (stringValue != null) {
-			FrameCreatorUtility.addOwnSlotValue(subjFrame, predSlot, ((DefaultRDFSLiteral)rdfsLiteral).getRawValue());
+		//	FrameCreatorUtility.addOwnSlotValue(subjFrame, predSlot, ((DefaultRDFSLiteral)rdfsLiteral).getRawValue());
 		//}
+		FrameCreatorUtility.addOwnSlotValue(subjFrame, predSlot, AbstractOWLModel.convertRDFSLiteralToInternalFormat(rdfsLiteral));
 		
 		return true;
 		
@@ -474,7 +476,8 @@ public class TripleFrameCache {
 	//reimplement this method
 
 	//special treatment of RDFList. Move this to a utility class
-	private void createRDFList(String subjName, String predName, String objName) {
+	@SuppressWarnings("deprecation")
+    private void createRDFList(String subjName, String predName, String objName) {
 		
 		Frame subjList = owlModel.getFrame(subjName);
 		
