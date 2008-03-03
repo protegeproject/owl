@@ -1,15 +1,40 @@
 package edu.stanford.smi.protegex.owl.model.impl;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
+
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+
 import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.FrameID;
 import edu.stanford.smi.protege.model.KnowledgeBase;
 import edu.stanford.smi.protege.model.Slot;
-import edu.stanford.smi.protegex.owl.model.*;
+import edu.stanford.smi.protegex.owl.model.OWLAllValuesFrom;
+import edu.stanford.smi.protegex.owl.model.OWLAnonymousClass;
+import edu.stanford.smi.protegex.owl.model.OWLCardinality;
+import edu.stanford.smi.protegex.owl.model.OWLCardinalityBase;
+import edu.stanford.smi.protegex.owl.model.OWLDatatypeProperty;
+import edu.stanford.smi.protegex.owl.model.OWLHasValue;
+import edu.stanford.smi.protegex.owl.model.OWLIndividual;
+import edu.stanford.smi.protegex.owl.model.OWLIntersectionClass;
+import edu.stanford.smi.protegex.owl.model.OWLMaxCardinality;
+import edu.stanford.smi.protegex.owl.model.OWLMinCardinality;
+import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
+import edu.stanford.smi.protegex.owl.model.OWLNames;
+import edu.stanford.smi.protegex.owl.model.OWLRestriction;
+import edu.stanford.smi.protegex.owl.model.OWLSomeValuesFrom;
+import edu.stanford.smi.protegex.owl.model.ProtegeNames;
+import edu.stanford.smi.protegex.owl.model.RDFProperty;
+import edu.stanford.smi.protegex.owl.model.RDFResource;
+import edu.stanford.smi.protegex.owl.model.RDFSClass;
+import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
 import edu.stanford.smi.protegex.owl.model.visitor.OWLModelVisitor;
 import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
-
-import javax.swing.*;
-import java.util.*;
 
 /**
  * The default implementation of the OWLNamedClass interface.
@@ -55,7 +80,7 @@ public class DefaultOWLNamedClass extends DefaultRDFSNamedClass implements OWLNa
 
 
     public OWLIndividual createOWLIndividual(String name) {
-        return (OWLIndividual) createInstance(((AbstractOWLModel) getOWLModel()).getInternalFullName(name));
+        return (OWLIndividual) createInstance(OWLUtil.getInternalFullName(getOWLModel(), name));
     }
 
 
@@ -76,6 +101,7 @@ public class DefaultOWLNamedClass extends DefaultRDFSNamedClass implements OWLNa
     }
 
 
+    @Override
     public Set getAssociatedProperties() {
         Set set = super.getAssociatedProperties();
         Set maxZeroProperties = new HashSet();
@@ -210,6 +236,7 @@ public class DefaultOWLNamedClass extends DefaultRDFSNamedClass implements OWLNa
     }
 
 
+    @Override
     public Icon getIcon() {
         if (!getOWLModel().getProject().isMultiUserClient() && isMetaCls()) {
             return super.getIcon();
@@ -226,6 +253,7 @@ public class DefaultOWLNamedClass extends DefaultRDFSNamedClass implements OWLNa
     }
 
 
+    @Override
     public String getIconName() {
         if(isMetaclass()) {
             return super.getIconName();
@@ -236,6 +264,7 @@ public class DefaultOWLNamedClass extends DefaultRDFSNamedClass implements OWLNa
     }
 
 
+    @Override
     public ImageIcon getImageIcon() {
         if (isMetaCls()) {
             return super.getImageIcon();
@@ -430,6 +459,7 @@ public class DefaultOWLNamedClass extends DefaultRDFSNamedClass implements OWLNa
     }
 
 
+    @Override
     public boolean isFunctionalProperty(RDFProperty property) {
         int max = getMaxCardinality(property);
         return max == 0 || max == 1;
@@ -516,6 +546,7 @@ public class DefaultOWLNamedClass extends DefaultRDFSNamedClass implements OWLNa
     }
 
 
+    @Override
     public void accept(OWLModelVisitor visitor) {
         visitor.visitOWLNamedClass(this);
     }
