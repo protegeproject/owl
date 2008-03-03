@@ -1,17 +1,19 @@
 package edu.stanford.smi.protegex.owl.jena.parser.tests;
 
+import java.net.URI;
+import java.util.List;
+
 import edu.stanford.smi.protege.model.Instance;
 import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
-import edu.stanford.smi.protegex.owl.jena.parser.ProtegeOWLParser;
-import edu.stanford.smi.protegex.owl.model.*;
+import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
+import edu.stanford.smi.protegex.owl.model.OWLNames;
+import edu.stanford.smi.protegex.owl.model.OWLObjectProperty;
+import edu.stanford.smi.protegex.owl.model.RDFProperty;
+import edu.stanford.smi.protegex.owl.model.RDFResource;
 import edu.stanford.smi.protegex.owl.swrl.model.SWRLImp;
 import edu.stanford.smi.protegex.owl.swrl.model.SWRLNames;
-import edu.stanford.smi.protegex.owl.swrl.ui.tab.SWRLTab;
 import edu.stanford.smi.protegex.owl.tests.AbstractJenaTestCase;
-
-import java.net.URI;
-import java.util.List;
 
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
@@ -38,22 +40,18 @@ public class LoadSWRLTestCase extends AbstractJenaTestCase {
 
     public void testLoadSWRL() throws Exception {
         loadTestOntology(new URI("http://www.daml.org/2004/04/swrl/swrl.owl"));
-        RDFProperty argument2Property = (RDFProperty) owlModel.getSlot("swrl:argument2");
+        RDFProperty argument2Property = owlModel.getRDFProperty("swrl:argument2");
         assertNotNull(argument2Property);
         assertNull(argument2Property.getRange());
-        OWLNamedClass datavaluedPropertyAtomCls = (OWLNamedClass) owlModel.getCls("swrl:DatavaluedPropertyAtom");
+        OWLNamedClass datavaluedPropertyAtomCls = (OWLNamedClass) owlModel.getRDFSNamedClass("swrl:DatavaluedPropertyAtom");
         assertNotNull(datavaluedPropertyAtomCls);
         //assertEquals(ValueType.ANY, datavaluedPropertyAtomCls.getTemplateSlotValueType(argument2Property));
 
-        OWLNamedClass dataRangeAtomCls = (OWLNamedClass) owlModel.getCls("swrl:DataRangeAtom");
+        OWLNamedClass dataRangeAtomCls = (OWLNamedClass) owlModel.getRDFSNamedClass("swrl:DataRangeAtom");
         assertNotNull(dataRangeAtomCls);
 
         OWLObjectProperty dataRangeSlot = owlModel.getOWLObjectProperty("swrl:dataRange");
         assertNotNull(dataRangeSlot);
-
-        //Collection clses = dataRangeAtomCls.getTemplateSlotAllowedClses(dataRangeSlot);
-        //assertSize(1, clses);
-        //assertContains(okb.getCls(OWLNames.Cls.DATA_RANGE), clses);
     }
 
 
@@ -61,7 +59,7 @@ public class LoadSWRLTestCase extends AbstractJenaTestCase {
 
         loadRemoteOntology("SWRLDataRange.owl");
 
-        Instance dataRange = owlModel.getInstance("MyDataRange");
+        Instance dataRange = owlModel.getRDFResource("MyDataRange");
         Slot oneOfSlot = owlModel.getSlot(OWLNames.Slot.ONE_OF);
         final List values = dataRange.getDirectOwnSlotValues(oneOfSlot);
         assertSize(2, values);
