@@ -2278,27 +2278,31 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
         super.setDirectOwnSlotValues(frame, slot, values);
     }
     
-    private List convertRDFSLiteralsToInternalFormat(Collection values) {
+    @SuppressWarnings("unchecked")
+    public static List convertRDFSLiteralsToInternalFormat(Collection values) {
       final List result = new LinkedList();
       for (Iterator it = values.iterator(); it.hasNext();) {
           final Object o = it.next();
-          if (o instanceof RDFSLiteral) {
-              final DefaultRDFSLiteral literal = (DefaultRDFSLiteral) o;
-              final Object optimized = literal.getPlainValue();
-              if (optimized != null) {
-                  result.add(optimized);
-              }
-              else {
-                  result.add(literal.getRawValue());
-              }
-          }
-          else {
-              result.add(o);
-          }
+          result.add(convertRDFSLiteralToInternalFormat(o));
       }
       return result;
     }
 
+    public static Object convertRDFSLiteralToInternalFormat(Object o) {
+        if (o instanceof RDFSLiteral) {
+            final DefaultRDFSLiteral literal = (DefaultRDFSLiteral) o;
+            final Object optimized = literal.getPlainValue();
+            if (optimized != null) {
+                return optimized;
+            }
+            else {
+                return literal.getRawValue();
+            }
+        }
+        else {
+            return o;
+        }
+    }
     
     /*
      * OWLTest methods
