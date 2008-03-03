@@ -26,12 +26,6 @@ public class SWRLJavaFactoryTestCase extends AbstractJenaTestCase {
     }
 
 
-    public void testFrameFactoryNotInstalled() throws Exception {
-        loadRemoteOntology("andreas.owl");  // Any other one
-        assertFalse(owlModel.getFrameFactory() instanceof SWRLJavaFactory);
-    }
-
-
     public void testSWRLBuiltin() throws Exception {
         importSWRL();
         SWRLFactory factory = new SWRLFactory(owlModel);
