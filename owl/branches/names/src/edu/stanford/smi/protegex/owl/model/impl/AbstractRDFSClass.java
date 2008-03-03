@@ -100,6 +100,7 @@ public abstract class AbstractRDFSClass extends DefaultCls implements RDFSClass 
 
 
     public RDFResource createInstance(String name) {
+        name = OWLUtil.getInternalFullName(getOWLModel(), name);
         return (RDFResource) getKnowledgeBase().createInstance(name, this);
     }
 
@@ -471,6 +472,7 @@ public abstract class AbstractRDFSClass extends DefaultCls implements RDFSClass 
     }
 
 
+    @Override
     public Collection getDocumentation() {
         return OWLUtil.getComments(this);
     }
@@ -730,6 +732,7 @@ public abstract class AbstractRDFSClass extends DefaultCls implements RDFSClass 
     }
 
 
+    @Override
     public void setDocumentation(String value) {
         OWLUtil.setComment(this, value);
     }
@@ -780,6 +783,7 @@ public abstract class AbstractRDFSClass extends DefaultCls implements RDFSClass 
     }
 
     
+    @Override
     public void setDirectBrowserSlotPattern(BrowserSlotPattern slotPattern) {
     	if ((slotPattern!= null) && !(slotPattern instanceof OWLBrowserSlotPattern))
     		slotPattern = new OWLBrowserSlotPattern(slotPattern.getElements());
