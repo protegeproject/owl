@@ -1,15 +1,18 @@
 package edu.stanford.smi.protegex.owl.swrl.model.impl;
 
+import java.util.Set;
+
+import javax.swing.Icon;
+
 import edu.stanford.smi.protege.model.FrameID;
 import edu.stanford.smi.protege.model.KnowledgeBase;
-import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLIndividual;
+import edu.stanford.smi.protegex.owl.model.NamespaceUtil;
 import edu.stanford.smi.protegex.owl.swrl.model.SWRLVariable;
 import edu.stanford.smi.protegex.owl.swrl.ui.icons.SWRLIcons;
 
-import javax.swing.*;
-import java.util.Set;
-
 public class DefaultSWRLVariable extends AbstractSWRLIndividual implements SWRLVariable {
+    private static final long serialVersionUID = -1961560060080726149L;
+
 
     public DefaultSWRLVariable(KnowledgeBase kb, FrameID id) {
         super(kb, id);
@@ -19,17 +22,19 @@ public class DefaultSWRLVariable extends AbstractSWRLIndividual implements SWRLV
     public DefaultSWRLVariable() {
     }
 
-
+    @Override
     public String getBrowserText() {
-        return "?" + getName();
+        return "?" + NamespaceUtil.getPrefixedName(getOWLModel(), getName());
     }
 
 
+    @Override
     public Icon getIcon() {
         return SWRLIcons.getVariableIcon();
     }
 
 
+    @Override
     public void getReferencedInstances(Set set) {
     }
 }
