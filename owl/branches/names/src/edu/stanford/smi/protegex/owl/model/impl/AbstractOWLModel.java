@@ -680,7 +680,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
         if (name == null) {
             name = createUniqueNewFrameName(DEFAULT_DATATYPE_PROPERTY_NAME);
         }
-        OWLDatatypeProperty slot = (OWLDatatypeProperty) createSlot(getInternalFullName(name), metaCls, loadDefaults);
+        OWLDatatypeProperty slot = (OWLDatatypeProperty) createSlot(OWLUtil.getInternalFullName(this, name), metaCls, loadDefaults);
    
         ((Slot) slot).setAllowsMultipleValues(true);
         ((Slot) slot).setValueType(ValueType.ANY);
@@ -759,7 +759,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     @Override
     public synchronized Instance createInstance(String name, Collection directTypes) {    
          // TT: should we ignore the loadDefaults for non-system classes?
-         return createInstance(new FrameID(getInternalFullName(name)), directTypes, loadDefaults);
+         return createInstance(new FrameID(OWLUtil.getInternalFullName(this, name)), directTypes, loadDefaults);
     }
     
     @Override
@@ -892,12 +892,12 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
 
     public OWLNamedClass createOWLNamedClass(String name, boolean loadDefaults) {
-        return (OWLNamedClass) createCls(getInternalFullName(name), getRootClses(), getOWLNamedClassClass(), loadDefaults);
+        return (OWLNamedClass) createCls(OWLUtil.getInternalFullName(this, name), getRootClses(), getOWLNamedClassClass(), loadDefaults);
     }
 
 
     public OWLNamedClass createOWLNamedClass(String name, OWLNamedClass metaCls) {
-        return (OWLNamedClass) createCls(getInternalFullName(name), getRootClses(), metaCls, loadDefaults);
+        return (OWLNamedClass) createCls(OWLUtil.getInternalFullName(this, name), getRootClses(), metaCls, loadDefaults);
     }
 
 
@@ -920,7 +920,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
         if (name == null) {
             name = createUniqueNewFrameName(DEFAULT_OBJECT_PROPERTY_NAME);
         }
-        OWLObjectProperty result = (OWLObjectProperty) createSlot(getInternalFullName(name), metaCls, loadDefaults);
+        OWLObjectProperty result = (OWLObjectProperty) createSlot(OWLUtil.getInternalFullName(this, name), metaCls, loadDefaults);
     
         ((Slot) result).setAllowsMultipleValues(true);
         ((Slot) result).setValueType(ValueType.INSTANCE);
@@ -962,12 +962,12 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
 
     public RDFSNamedClass createRDFSNamedClass(String name, boolean loadDefaults) {
-        return (RDFSNamedClass) createCls(getInternalFullName(name), getRootClses(), getRDFSNamedClassClass(), loadDefaults);
+        return (RDFSNamedClass) createCls(OWLUtil.getInternalFullName(this, name), getRootClses(), getRDFSNamedClassClass(), loadDefaults);
     }
 
 
     public RDFSNamedClass createRDFSNamedClass(String name, Collection parents, RDFSClass rdfType) {
-        return (RDFSNamedClass) createCls(getInternalFullName(name), parents, rdfType);
+        return (RDFSNamedClass) createCls(OWLUtil.getInternalFullName(this, name), parents, rdfType);
     }
 
 
@@ -991,7 +991,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
         if (name == null) {
             name = createUniqueNewFrameName(DEFAULT_PROPERTY_NAME);
         }
-        RDFProperty property = (RDFProperty) createSlot(getInternalFullName(name), getRDFPropertyClass(), loadDefaults);
+        RDFProperty property = (RDFProperty) createSlot(OWLUtil.getInternalFullName(this, name), getRDFPropertyClass(), loadDefaults);
         ((Slot) property).setValueType(ValueType.ANY);
         ((Slot) property).setAllowsMultipleValues(true);
         return property;
@@ -1023,12 +1023,12 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
 
     public RDFSNamedClass createSubclass(String name, RDFSNamedClass superclass) {
-        return (RDFSNamedClass) createCls(getInternalFullName(name), Collections.singleton(superclass));
+        return (RDFSNamedClass) createCls(OWLUtil.getInternalFullName(this, name), Collections.singleton(superclass));
     }
 
 
     public RDFSNamedClass createSubclass(String name, Collection superclasses) {
-        return (RDFSNamedClass) createCls(getInternalFullName(name), superclasses);
+        return (RDFSNamedClass) createCls(OWLUtil.getInternalFullName(this, name), superclasses);
     }
 
 
@@ -1056,7 +1056,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
 
     public RDFProperty createSubproperty(String name, RDFProperty superProperty) {
-        return (RDFProperty) createSlot(getInternalFullName(name), superProperty.getProtegeType(), Collections.singleton(superProperty), true);
+        return (RDFProperty) createSlot(OWLUtil.getInternalFullName(this, name), superProperty.getProtegeType(), Collections.singleton(superProperty), true);
     }
 
 
@@ -1307,7 +1307,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
 
     public OWLDatatypeProperty getOWLDatatypeProperty(String name) {    	
-        return (OWLDatatypeProperty) getSlot(getInternalFullName(name));
+        return (OWLDatatypeProperty) getSlot(OWLUtil.getInternalFullName(this, name));
     }
 
     public String getDefaultLanguage() {        
@@ -1440,7 +1440,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
 
     public OWLNamedClass getOWLNamedClass(String name) {
-        return (OWLNamedClass) getCls(getInternalFullName(name));
+        return (OWLNamedClass) getCls(OWLUtil.getInternalFullName(this, name));
     }
 
 
@@ -1469,7 +1469,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
 
     public RDFResource getRDFResource(String name) {
-        return (RDFResource) getFrame(getInternalFullName(name));
+        return (RDFResource) getFrame(OWLUtil.getInternalFullName(this, name));
     }
 
 
@@ -1485,7 +1485,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
 
     public OWLIndividual getOWLIndividual(String name) {
-        return (OWLIndividual) getFrame(getInternalFullName(name));
+        return (OWLIndividual) getFrame(OWLUtil.getInternalFullName(this, name));
     }
 
 
@@ -1512,7 +1512,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
 
     public OWLObjectProperty getOWLObjectProperty(String name) {
-        return (OWLObjectProperty) getSlot(getInternalFullName(name));
+        return (OWLObjectProperty) getSlot(OWLUtil.getInternalFullName(this, name));
     }
 
 
@@ -1583,7 +1583,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
 
     public OWLProperty getOWLProperty(String name) {
-        return (OWLProperty) getSlot(getInternalFullName(name));
+        return (OWLProperty) getSlot(OWLUtil.getInternalFullName(this, name));
     }
 
 
@@ -1625,7 +1625,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
 
     public RDFIndividual getRDFIndividual(String name) {
-        return (RDFIndividual) getFrame(getInternalFullName(name));
+        return (RDFIndividual) getFrame(OWLUtil.getInternalFullName(this, name));
     }
 
 
@@ -1661,12 +1661,12 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
 
     public RDFSNamedClass getRDFSNamedClass(String name) {
-        return (RDFSNamedClass) getCls(getInternalFullName(name));
+        return (RDFSNamedClass) getCls(OWLUtil.getInternalFullName(this, name));
     }
 
 
     public RDFProperty getRDFProperty(String name) {
-        return (RDFProperty) getSlot(getInternalFullName(name));
+        return (RDFProperty) getSlot(OWLUtil.getInternalFullName(this, name));
     }
 
 
@@ -1676,7 +1676,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
 
     public RDFSDatatype getRDFSDatatypeByName(String name) {    	
-        return getRDFSDatatypeByURI(getInternalFullName(name));
+        return getRDFSDatatypeByURI(OWLUtil.getInternalFullName(this, name));
     }
 
     public RDFSDatatype getRDFSDatatypeByURI(String uri) {
@@ -2147,7 +2147,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
 
     public RDFResource getRDFResourceByNameOrBrowserText(String text) {
-        Instance result = getInstance(getInternalFullName(text));
+        Instance result = getInstance(OWLUtil.getInternalFullName(this, text));
         if (result instanceof RDFResource) {
             return (RDFResource) result;
         }
@@ -2499,7 +2499,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
 
     public String getPrefixForResourceName(String name) {
-    	return NamespaceUtil.getPrefixForResourceName(this, getInternalFullName(name));
+    	return NamespaceUtil.getPrefixForResourceName(this, OWLUtil.getInternalFullName(this, name));
     }
 
 
@@ -2518,7 +2518,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
  
 
     public String getURIForResourceName(String name) {
-    	return getInternalFullName(name);
+    	return OWLUtil.getInternalFullName(this, name);
     }
 
     
@@ -3351,47 +3351,6 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
 	
 	
-    /*
-     * Get the full name of a resource.  We have to handle the short name instead of full URIs
-     * used in the create & getter methods. This is a backwards compatibility extension.
-     * All the create & get methods will check the expandShortNameInMethods flag, which is default false.
-     */   
-    protected String getInternalFullName(String name) {
-    	if (name == null) {
-    		return null;
-    	}
-    	if (expandShortNameInMethods && !isAbsoluteURI(name)) {
-    		name = NamespaceUtil.getFullName(this, name);
-    	}
-    	
-    	return name;
-    }
-
-    protected boolean isAbsoluteURI(String uriString) {
-        if (!uriString.contains(":")) {
-            return false;
-        }
-        
-        URI uri = null;
-        
-        try {
-        	uri = new URI(uriString);
-		} catch (URISyntaxException e) {			
-			//do nothing - uri will be null. Hopefully this won't be the case
-		}
-    	
-    	if (uri == null || !uri.isAbsolute()) {
-    		return false;
-    	}
-    	
-    	if (uri.isOpaque()) {
-    		String scheme = uri.getScheme();
-    		return getNamespaceManager().getNamespaceForPrefix(scheme) == null ? true : false;
-    	}
-    	
-    	return true;
-    }
-    
     @Override
     public synchronized void dispose() {    	
     	super.dispose();
