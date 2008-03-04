@@ -32,6 +32,8 @@ public class ProtegeOWL {
      * The name of the OWL Plugin folder (subfolder of the plugins directory)
      */
     public static String PLUGIN_FOLDER = "edu.stanford.smi.protegex.owl";
+    
+    private static File customPluginFolder = null;
 
 
     /**
@@ -87,12 +89,19 @@ public class ProtegeOWL {
      * @return the plugin folder
      */
     public static File getPluginFolder() {
-        return new File(new File(ApplicationProperties.getApplicationDirectory(),
-                    "plugins"),
-                    PLUGIN_FOLDER);
+        if (customPluginFolder == null) {
+            return new File(new File(ApplicationProperties.getApplicationDirectory(), "plugins"),
+                            PLUGIN_FOLDER);
+        }
+        else { 
+            return customPluginFolder; 
+        }
     }
 
 
+    public static void setPluginFolder(File customPluginFolder) {
+        ProtegeOWL.customPluginFolder = customPluginFolder;
+    }
     /**
      * Initializes a Project so that it points to an existing OWL file.
      * This is typically used in conjunction with the <CODE>createJenaOWLModel()</CODE>
