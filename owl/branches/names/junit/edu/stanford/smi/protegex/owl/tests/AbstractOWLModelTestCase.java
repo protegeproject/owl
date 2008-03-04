@@ -28,5 +28,6 @@ public abstract class AbstractOWLModelTestCase extends TestCase {
         project.setKnowledgeBaseFactory(factory);
         project.createDomainKnowledgeBase(factory, errors, false);
         owlModel = (OWLModel) project.getKnowledgeBase();
+        owlModel.setExpandShortNameInMethods(true);
     }
 }
