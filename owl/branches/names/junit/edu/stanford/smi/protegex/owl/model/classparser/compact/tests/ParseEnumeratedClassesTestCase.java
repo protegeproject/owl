@@ -1,5 +1,9 @@
 package edu.stanford.smi.protegex.owl.model.classparser.compact.tests;
 
+import java.io.File;
+import java.util.Collection;
+
+import edu.stanford.smi.protegex.owl.ProtegeOWL;
 import edu.stanford.smi.protegex.owl.model.OWLEnumeratedClass;
 import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
 import edu.stanford.smi.protegex.owl.model.OWLObjectProperty;
@@ -10,12 +14,14 @@ import edu.stanford.smi.protegex.owl.tests.AbstractOWLModelTestCase;
 import edu.stanford.smi.protegex.owl.ui.profiles.OWLProfiles;
 import edu.stanford.smi.protegex.owl.ui.profiles.ProfilesManager;
 
-import java.util.Collection;
-
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
  */
 public class ParseEnumeratedClassesTestCase extends AbstractOWLModelTestCase {
+    
+    static {
+        ProtegeOWL.setPluginFolder(new File("etc"));
+    }
 
     private OWLClassParser parser = new CompactOWLClassParser();
 
