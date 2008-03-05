@@ -18,6 +18,7 @@ import edu.stanford.smi.protegex.owl.tests.AbstractJenaTestCase;
  */
 public class OWLModelGetOWLIndividualsTestCase extends AbstractJenaTestCase {
 
+    @SuppressWarnings("unchecked")
     public void testDefaultOWLIndividuals() {
         Collection indis = owlModel.getOWLIndividuals();
         assertSize(0, indis);
