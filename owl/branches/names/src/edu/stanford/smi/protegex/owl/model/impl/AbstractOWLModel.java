@@ -2189,19 +2189,22 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
 
     private static void removeProtegeSystemResources(KnowledgeBase kb, Collection frames) {
-        if (frames.size() > 0) {
-            final Cls dbrClass = kb.getCls(Model.Cls.DIRECTED_BINARY_RELATION);            
-            frames.remove(dbrClass);
-            
-            frames.remove(((OWLModel) kb).getSystemFrames().getOwlOntologyPointerClass());
-            
+        if (frames.size() > 0) {                        
+        	//Protege frames - system frames
+            frames.remove(kb.getSystemFrames().getDirectedBinaryRelationCls());
             frames.remove(kb.getSystemFrames().getPalConstraintCls());
-            frames.remove(kb.getCls(OWLNames.Cls.ANONYMOUS_ROOT));
-            frames.remove(kb.getCls(OWLNames.Cls.OWL_CLASS));
-            frames.remove(kb.getSlot(OWLNames.Slot.ONTOLOGY_PREFIXES));            
-            frames.remove(kb.getSlot(OWLNames.Slot.RESOURCE_URI));
-            frames.remove(kb.getSlot(Model.Slot.CONSTRAINTS));
-            frames.remove(kb.getSlot(OWLNames.Slot.OWL_ONTOLOGY_POINTER_PROPERTY));
+            frames.remove(kb.getSystemFrames().getSlotConstraintsSlot());
+            
+            //Protege OWL - system frames
+            if (kb instanceof OWLModel) {
+            	OWLModel owlModel = (OWLModel) kb;
+            	frames.remove(owlModel.getSystemFrames().getOwlOntologyPrefixesProperty());
+            	frames.remove(owlModel.getSystemFrames().getOwlOntologyPointerClass());
+            	frames.remove(owlModel.getSystemFrames().getOwlOntologyPointerProperty());
+            	frames.remove(owlModel.getSystemFrames().getOwlResourceURIProperty());
+            	frames.remove(owlModel.getSystemFrames().getAnonymousRootCls());
+            	frames.remove(owlModel.getSystemFrames().getOwlClassMetaCls());
+            }            
         }
     }
 
