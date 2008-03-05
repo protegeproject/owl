@@ -1568,14 +1568,22 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
 
     public Collection getOWLIndividuals(boolean onlyVisibleClasses) {
-        Collection result = getRDFIndividuals(listOWLNamedClasses(), onlyVisibleClasses);
+        Collection<RDFIndividual> result = getRDFIndividuals(listOWLNamedClasses(), onlyVisibleClasses);
+        Iterator<RDFIndividual> resultIt = result.iterator();
+        while (resultIt.hasNext()) {
+            if (resultIt.next().isSystem()) {
+                resultIt.remove();
+            }
+        }
         Iterator it = listOWLAnonymousClasses();
         while (it.hasNext()) {
             OWLAnonymousClass c = (OWLAnonymousClass) it.next();
             Collection instances = c.getInstances(false);
             for (Iterator is = instances.iterator(); is.hasNext();) {
                 Instance instance = (Instance) is.next();
-                result.add(instance);
+                if (instance instanceof RDFIndividual && !instance.isSystem()) {
+                    result.add((RDFIndividual) instance);
+                }
             }
         }
         return result;
@@ -1629,18 +1637,18 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     }
 
 
-    public Collection getRDFIndividuals() {
+    public Collection<RDFIndividual> getRDFIndividuals() {
         return getRDFIndividuals(false);
     }
 
 
-    public Collection getRDFIndividuals(boolean onlyVisibleClasses) {
+    public Collection<RDFIndividual> getRDFIndividuals(boolean onlyVisibleClasses) {
         return getRDFIndividuals(listRDFSNamedClasses(), onlyVisibleClasses);
     }
 
 
-    private Collection getRDFIndividuals(Iterator it, boolean onlyVisibleClasses) {
-        Collection result = new HashSet();
+    private Collection<RDFIndividual> getRDFIndividuals(Iterator it, boolean onlyVisibleClasses) {
+        Collection<RDFIndividual> result = new HashSet<RDFIndividual>();
         while (it.hasNext()) {
             RDFSNamedClass c = (RDFSNamedClass) it.next();
             if (c.isVisible() || !onlyVisibleClasses) {
@@ -1650,8 +1658,9 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
                     if (instance instanceof RDFIndividual &&
                         !(instance instanceof OWLOntology) &&
                         !(instance instanceof RDFList) &&
-                        !(instance instanceof OWLAllDifferent)) {
-                        result.add(instance);
+                        !(instance instanceof OWLAllDifferent) &&
+                        !instance.isSystem()) {
+                        result.add((RDFIndividual) instance);
                     }
                 }
             }
@@ -1974,12 +1983,12 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     }
 
 
-    public Iterator listOWLAnonymousClasses() {
-        Collection result = new ArrayList();
+    public Iterator<OWLAnonymousClass> listOWLAnonymousClasses() {
+        Collection<OWLAnonymousClass> result = new ArrayList<OWLAnonymousClass>();
         for (Iterator it = getCls(OWLNames.Cls.ANONYMOUS_CLASS).getInstances().iterator(); it.hasNext();) {
             Object o = it.next();
             if (o instanceof OWLAnonymousClass) {
-                result.add(o);
+                result.add((OWLAnonymousClass) o);
             }
         }
         return result.iterator();
