@@ -1,11 +1,13 @@
 package edu.stanford.smi.protegex.owl.model.classparser;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 import junit.framework.TestCase;
 import edu.stanford.smi.protege.model.KnowledgeBase;
 import edu.stanford.smi.protege.model.Project;
+import edu.stanford.smi.protegex.owl.ProtegeOWL;
 import edu.stanford.smi.protegex.owl.model.OWLEnumeratedClass;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLSomeValuesFrom;
@@ -13,14 +15,21 @@ import edu.stanford.smi.protegex.owl.model.classparser.dl.DLSyntaxParser;
 import edu.stanford.smi.protegex.owl.model.classparser.manchester.ManchesterOWLParser;
 
 public class LabelModeParseTestCase extends TestCase {
+    
+  static {
+      ProtegeOWL.setPluginFolder(new File("etc"));
+  }
   
+  @SuppressWarnings("unchecked")
   private OWLModel getKb() {
     List errors = new ArrayList();
     Project p = new Project("junit/projects/parseWithLables.pprj", errors);
     if (!errors.isEmpty()) {
       fail();
     }
-    return (OWLModel) p.getKnowledgeBase();
+    OWLModel owlModel =  (OWLModel) p.getKnowledgeBase();
+    owlModel.setExpandShortNameInMethods(true);
+    return owlModel;
   }
 
   
@@ -84,21 +93,22 @@ public class LabelModeParseTestCase extends TestCase {
   
   public void testDLSyntaxParserEnumerations() 
   throws edu.stanford.smi.protegex.owl.model.classparser.dl.ParseException {
+      
     OWLModel model = getKb();
     
     OWLEnumeratedClass c;
     c = (OWLEnumeratedClass) DLSyntaxParser.parseExpression(model, "{ e1 e2 e3 e4 }", true);
     assertEquals(c.getOneOf().size(),4);
-    assertTrue(c.getOneOf().contains(((KnowledgeBase) model).getFrame("XSB0030")));
-    assertTrue(c.getOneOf().contains(((KnowledgeBase) model).getFrame("XSB0031")));   
-    assertTrue(c.getOneOf().contains(((KnowledgeBase) model).getFrame("XSB0032"))); 
-    assertTrue(c.getOneOf().contains(((KnowledgeBase) model).getFrame("XSB0033")));
+    assertTrue(c.getOneOf().contains(model.getOWLIndividual("XSB0030")));
+    assertTrue(c.getOneOf().contains(model.getOWLIndividual("XSB0031")));   
+    assertTrue(c.getOneOf().contains(model.getOWLIndividual("XSB0032"))); 
+    assertTrue(c.getOneOf().contains(model.getOWLIndividual("XSB0033")));
     
     c = (OWLEnumeratedClass) DLSyntaxParser.parseExpression(model, "{ e1 e2 e3 XSB0033 }", true);
     assertEquals(c.getOneOf().size(),4);
-    assertTrue(c.getOneOf().contains(((KnowledgeBase) model).getFrame("XSB0030")));
-    assertTrue(c.getOneOf().contains(((KnowledgeBase) model).getFrame("XSB0031")));   
-    assertTrue(c.getOneOf().contains(((KnowledgeBase) model).getFrame("XSB0032"))); 
-    assertTrue(c.getOneOf().contains(((KnowledgeBase) model).getFrame("XSB0033")));
+    assertTrue(c.getOneOf().contains(model.getOWLIndividual("XSB0030")));
+    assertTrue(c.getOneOf().contains(model.getOWLIndividual("XSB0031")));   
+    assertTrue(c.getOneOf().contains(model.getOWLIndividual("XSB0032"))); 
+    assertTrue(c.getOneOf().contains(model.getOWLIndividual("XSB0033")));
   }
 }
