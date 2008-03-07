@@ -1,10 +1,26 @@
 package edu.stanford.smi.protegex.owl.storage;
 
-import edu.stanford.smi.protege.model.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import edu.stanford.smi.protege.model.Cls;
+import edu.stanford.smi.protege.model.Facet;
+import edu.stanford.smi.protege.model.Frame;
+import edu.stanford.smi.protege.model.Instance;
+import edu.stanford.smi.protege.model.KnowledgeBase;
+import edu.stanford.smi.protege.model.Model;
+import edu.stanford.smi.protege.model.Slot;
+import edu.stanford.smi.protege.model.ValueType;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.model.OWLNames;
-
-import java.util.*;
 
 /**
  * A utility class that copies all frames from a source KnowledgeBase into a target KnowledgeBase.
@@ -12,21 +28,22 @@ import java.util.*;
  * @author Holger Knublauch  <holger@knublauch.com>
  */
 public class KnowledgeBaseCopier {
+    public static final transient Logger log = Log.getLogger(KnowledgeBaseCopier.class);
 
     private KnowledgeBase source;
 
     private KnowledgeBase target;
 
-    private Set doneSlots = new HashSet();
+    protected Set<String> doneSlots = new HashSet<String>();
 
     /**
      * A Hashtable from old frames to new Frames.  This is used to find frames that have been
      * renamed on the fly while being created in the target knowledge base.  When the direct
      * name match fails then this Hashtable is consulted.
      */
-    private Hashtable frameMap = new Hashtable();
+    private Hashtable<Frame, Frame> frameMap = new Hashtable<Frame, Frame>();
 
-    private Map todoSlots = new HashMap();
+    private Map<Slot, Slot> todoSlots = new HashMap<Slot, Slot>();
 
 
     public KnowledgeBaseCopier(KnowledgeBase source, KnowledgeBase target) {
@@ -50,9 +67,13 @@ public class KnowledgeBaseCopier {
 
 
     public void run() {
-        log("Creating Classes...");
+        if (log.isLoggable(Level.FINE)) {
+            log.fine("Creating Classes...");
+        }
         createClses();
-        log("Creating Facets...");
+        if (log.isLoggable(Level.FINE))  {
+            log.fine("Creating Facets...");
+        }
         createFacets();
         createSlots();
         createInstances();
@@ -60,10 +81,12 @@ public class KnowledgeBaseCopier {
         createFacetOverrides();
         // TODO TT: This is causing infinite looping in certain cases. Check what's going on
         setOwnSlotValues();
-        for (Iterator it = todoSlots.keySet().iterator(); it.hasNext();) {        	
-            Slot oldSlot = (Slot) it.next();
-            Slot newSlot = (Slot) todoSlots.get(oldSlot);
-            log("Setting value type of property: " + newSlot + " (Old slot: " + oldSlot + ")");
+        for (Iterator<Slot> it = todoSlots.keySet().iterator(); it.hasNext();) {        	
+            Slot oldSlot = it.next();
+            Slot newSlot = todoSlots.get(oldSlot);
+            if (log.isLoggable(Level.FINE)) {
+                log.fine("Setting value type of property: " + newSlot + " (Old slot: " + oldSlot + ")");
+            } 
             setValueType(oldSlot, newSlot);
         }
     }
@@ -77,8 +100,10 @@ public class KnowledgeBaseCopier {
             Cls oldType = (Cls) it.next();
             Cls newType = getNewCls(oldType);
             if (!(newInstance.hasDirectType(newType))) {  // Ignore duplicates due to bugs
-                log("+ Adding direct type " + newType.getBrowserText() +
+                if (log.isLoggable(Level.FINE)) {
+                    log.fine("+ Adding direct type " + newType.getBrowserText() +
                         " to " + newInstance.getBrowserText());
+                }
                 newInstance.addDirectType(newType);
             }
         }
@@ -104,7 +129,9 @@ public class KnowledgeBaseCopier {
 
 
     protected Cls createCls(String clsName, Cls metaCls) {
-        log("+ Creating Class " + clsName + " of type " + metaCls);
+        if (log.isLoggable(Level.FINE)) {
+            log.fine("+ Creating Class " + clsName + " of type " + metaCls);
+        }
         return target.createCls(clsName, target.getRootClses(), metaCls);
     }
 
@@ -141,9 +168,11 @@ public class KnowledgeBaseCopier {
         Cls newCls = getNewCls(oldCls);
         Slot newSlot = getNewSlot(oldSlot);
 
-        log("* Making facet override of " + oldSlot.getBrowserText() + "."
+        if (log.isLoggable(Level.FINE)) {
+            log.fine("* Making facet override of " + oldSlot.getBrowserText() + "."
                 + oldFacet.getBrowserText() + " at Cls " + oldCls.getBrowserText() +
                 ", new: " + newCls.getBrowserText());
+        }
 
         if (oldFacet.getName().equals(Model.Facet.VALUE_TYPE)) {
             ValueType valueType = oldCls.getTemplateSlotValueType(oldSlot);
@@ -232,13 +261,13 @@ public class KnowledgeBaseCopier {
         if (newCls == null) {
         	Cls newType = target.getCls(OWLNames.Cls.NAMED_CLASS);
         	if (oldCls.equals(oldCls.getDirectType())) {
-        		System.err.println("Warning: Class " + oldCls + " is an instance of itself.");
+        		log.warning("Warning: Class " + oldCls + " is an instance of itself.");
         		instanceOfItself = true;
         	} else {
         		newType = getNewCls(oldCls.getDirectType());
         	}
             if (newType == null) {
-                System.err.println("ERROR: No type for " + oldCls);
+                log.severe("ERROR: No type for " + oldCls);
                 newType = oldCls.getKnowledgeBase().getCls(OWLNames.Cls.NAMED_CLASS);
                 oldCls.setDirectType(newType);
             }
@@ -253,7 +282,10 @@ public class KnowledgeBaseCopier {
                 Cls newSuperCls = getNewCls(oldSuperCls);
                 if (!newCls.hasDirectSuperclass(newSuperCls)) {
                     newCls.addDirectSuperclass(newSuperCls);
-                    log("  + Adding " + newSuperCls.getName() + " to superclasses of " + newCls.getName());
+                    if (log.isLoggable(Level.FINE)) {
+                        log.fine("  + Adding " + newSuperCls.getName() + " to superclasses of " + newCls.getName());
+                    }
+
                 }
             }
             if (!oldCls.hasDirectSuperclass(source.getRootCls())) {
@@ -262,7 +294,10 @@ public class KnowledgeBaseCopier {
             for (Iterator it = oldCls.getDirectTemplateSlots().iterator(); it.hasNext();) {
                 Slot oldSlot = (Slot) it.next();
                 Slot newSlot = getNewSlot(oldSlot);
-                log("+ Added template slot " + newSlot.getBrowserText() + " to " + newCls.getBrowserText());
+                if (log.isLoggable(Level.FINE)) {
+                    log.fine("+ Added template slot " + newSlot.getBrowserText() + " to " + newCls.getBrowserText());
+                }
+
                 newCls.addDirectTemplateSlot(newSlot);
             }
             setInitialOwnSlotValues(oldCls);
@@ -305,7 +340,7 @@ public class KnowledgeBaseCopier {
             if (newInstance == null) {
                 Cls oldType = oldInstance.getDirectType();
                 if (oldType == null) {
-                    System.err.println("Warning: Instance " + oldInstance.getName() + " has no direct type [Ignored]");
+                    log.warning("Warning: Instance " + oldInstance.getName() + " has no direct type [Ignored]");
                     return null;
                 }
                 Cls newType = getNewCls(oldType);
@@ -345,12 +380,6 @@ public class KnowledgeBaseCopier {
         }
         return newSlot;
     }
-
-
-    protected void log(String str) {
-       // Log.getLogger().info("[KnowledgeBaseCopier] " + str);
-    }
-
 
     private void registerFrame(Frame oldFrame, Frame newFrame) {
         String oldName = oldFrame.getName();
@@ -397,8 +426,11 @@ public class KnowledgeBaseCopier {
     private void setOwnSlotValues(Instance oldInstance) {
         Frame newFrame = getNewInstance(oldInstance);
         if (newFrame != null) {
-            log("+ Setting own slot values of " + oldInstance.getBrowserText() +
-                    " (new: " + newFrame.getBrowserText() + ")");
+            if (log.isLoggable(Level.FINE)) {
+                log.fine("+ Setting own slot values of " + oldInstance.getBrowserText() +
+                         " (new: " + newFrame.getBrowserText() + ")");
+            }
+
             for (Iterator slots = oldInstance.getOwnSlots().iterator(); slots.hasNext();) {
                 Slot oldSlot = (Slot) slots.next();
                 if (!doneSlots.contains(oldSlot.getName())) {
@@ -413,7 +445,10 @@ public class KnowledgeBaseCopier {
         Slot newSlot = getNewSlot(oldSlot);
         Collection values = oldInstance.getOwnSlotValues(oldSlot);
         if (values.size() > 0) {
-            log(" - " + oldSlot + " (" + values.size() + " values)");
+            if (log.isLoggable(Level.FINE)) {
+                log.fine(" - " + oldSlot + " (" + values.size() + " values)");
+            }
+
             Collection clones = cloneValues(values);
             if (!clones.equals(newFrame.getOwnSlotValues(newSlot))) {
                 newFrame.setOwnSlotValues(newSlot, clones);
