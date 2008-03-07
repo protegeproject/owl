@@ -117,11 +117,19 @@ public class XMLSchemaDatatypes {
         int offset = cal.get(Calendar.ZONE_OFFSET) + cal.get(Calendar.DST_OFFSET);
         cal.add(Calendar.MILLISECOND, offset);
         XSDDateTime dt = new DateXSDDateTime(cal);
-        return dt.toString();
-        //Calendar cal = new GregorianCalendar();
-        //cal.setTime(date);
-        //XSDDateTime dt = new DateXSDDateTime(cal);
-        //return dt.toString();
+        
+        // TODO: hack! Ignoring the timezone explicitly. 
+        // This code has to be rewritten to work with the time zone, too.
+        
+        String dateStr = dt.toString();
+        
+        int index = dateStr.indexOf("Z");
+        
+        if (index >= 0) {
+        	dateStr = dateStr.substring(0, index);
+        }
+        
+        return dateStr;
     }
 
 
