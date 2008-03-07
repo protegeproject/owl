@@ -250,6 +250,11 @@ public class TriplesTableModel extends AbstractTableModel {
 	    props.add(owlModel.getOWLEquivalentPropertyProperty());
 	    props.add(owlModel.getOWLDifferentFromProperty());
 	    props.add(owlModel.getOWLVersionInfoProperty());
+	    
+	    if (!(subject instanceof RDFProperty)) {
+	    	props.remove(owlModel.getRDFSSubPropertyOfProperty());
+	    }
+	    
         //return subject.getRDFProperties();
         return props;
     }
