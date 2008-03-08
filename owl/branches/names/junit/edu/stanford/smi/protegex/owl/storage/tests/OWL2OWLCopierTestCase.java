@@ -8,17 +8,17 @@ import java.util.logging.Level;
 
 import com.hp.hpl.jena.ontology.OntProperty;
 
+import edu.stanford.smi.protege.model.DefaultKnowledgeBase;
 import edu.stanford.smi.protege.model.Instance;
-import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
 import edu.stanford.smi.protegex.owl.jena.creator.NewOwlProjectCreator;
-import edu.stanford.smi.protegex.owl.model.OWLDatatypeProperty;
 import edu.stanford.smi.protegex.owl.model.OWLEnumeratedClass;
 import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
 import edu.stanford.smi.protegex.owl.model.OWLObjectProperty;
 import edu.stanford.smi.protegex.owl.model.OWLRestriction;
 import edu.stanford.smi.protegex.owl.model.OWLSomeValuesFrom;
+import edu.stanford.smi.protegex.owl.storage.KnowledgeBaseCopier;
 import edu.stanford.smi.protegex.owl.storage.OWL2OWLCopier;
 import edu.stanford.smi.protegex.owl.tests.AbstractJenaTestCase;
 
@@ -26,6 +26,11 @@ import edu.stanford.smi.protegex.owl.tests.AbstractJenaTestCase;
  * @author Holger Knublauch  <holger@knublauch.com>
  */
 public class OWL2OWLCopierTestCase extends AbstractJenaTestCase {
+    
+    public static void debug() {
+        Log.setLoggingLevel(OWL2OWLCopierTestCase.class, Level.FINE);
+        Log.setLoggingLevel(KnowledgeBaseCopier.class, Level.FINE);
+    }
 
 
     private JenaOWLModel runCopier() {
