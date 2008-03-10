@@ -13,6 +13,7 @@ import edu.stanford.smi.protege.model.KnowledgeBase;
 import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protege.model.ValueType;
 import edu.stanford.smi.protege.util.CollectionUtilities;
+import edu.stanford.smi.protegex.owl.model.NamespaceUtil;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
@@ -39,12 +40,16 @@ public class OWLBrowserSlotPattern extends BrowserSlotPattern{
 		super(slot);
 	}
 	
-    public String getBrowserText(Instance instance) {    	
+    public String getBrowserText(Instance instance) { 
+        KnowledgeBase kb = instance.getKnowledgeBase();
         StringBuffer buffer = new StringBuffer();
         Iterator i = getElements().iterator();
         while (i.hasNext()) {
             Object o = i.next();
-            if (o instanceof Slot) {
+            if (kb instanceof OWLModel && o.equals(kb.getSystemFrames().getNameSlot())) {
+                buffer.append(NamespaceUtil.getPrefixedName((OWLModel) kb, instance.getName()));
+            }
+            else if (o instanceof Slot) {
                 buffer.append(getText((Slot) o, instance));
             } else {
                 buffer.append(o);
