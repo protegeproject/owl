@@ -162,7 +162,6 @@ public class OWLDomainUpdateFrameStore extends FrameStoreAdapter {
     public void addDirectTemplateSlot(Cls cls, Slot slot) {
         super.addDirectTemplateSlot(cls, slot);
         if (slot instanceof RDFProperty && cls instanceof RDFSClass) {
-            //printDeprecationWarning("addDirectTemplateSlot");
             updateRDFSDomain((RDFProperty) slot);
         }
     }
@@ -171,7 +170,6 @@ public class OWLDomainUpdateFrameStore extends FrameStoreAdapter {
     public void removeDirectTemplateSlot(Cls cls, Slot slot) {
         super.removeDirectTemplateSlot(cls, slot);
         if (slot instanceof RDFProperty && cls instanceof RDFSClass) {
-            //printDeprecationWarning("removeDirectTemplateSlot");
             updateRDFSDomain((RDFProperty) slot);
         }
     }
@@ -180,7 +178,7 @@ public class OWLDomainUpdateFrameStore extends FrameStoreAdapter {
     public Slot createSlot(FrameID id, Collection directTypes, Collection directSuperslots, boolean loadDefaults) {
         Slot slot = super.createSlot(id, directTypes, directSuperslots, loadDefaults);
         if (slot instanceof RDFProperty) {
-            addDirectTemplateSlot(owlModel.getOWLThingClass(), slot);
+            super.addDirectTemplateSlot(owlModel.getOWLThingClass(), slot);
         }
         return slot;
     }
