@@ -50,7 +50,8 @@ public class DomainTestCase extends AbstractJenaTestCase {
         assertEquals(owlModel.getRootClses(), slot.getUnionDomain());
         slot.setDomainDefined(true);
         assertTrue(slot.isDomainDefined());
-        assertTrue(slot.getUnionDomain().isEmpty());
+        assertTrue(slot.getUnionDomain().size() == 1);
+        assertTrue(slot.getUnionDomain().contains(owlModel.getOWLThingClass()));
     }
 
 
@@ -75,7 +76,8 @@ public class DomainTestCase extends AbstractJenaTestCase {
         assertSize(baseCount + 1, cls.getUnionDomainProperties(true));
         assertContains(slot, cls.getUnionDomainProperties(true).iterator());
         slot.setDomainDefined(true);
-        assertSize(baseCount, cls.getUnionDomainProperties(true));
+        assertSize(baseCount + 1, cls.getUnionDomainProperties(true));
+        assertContains(slot, cls.getUnionDomainProperties(true).iterator());
     }
 
 
