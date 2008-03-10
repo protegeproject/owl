@@ -14,22 +14,17 @@ public class CreateRDFSDomainTestCase extends AbstractTripleStoreTestCase {
 
 
     public void testDefaultDomain() {
-        RDFResource propertyFrame = createRDFResource("property");
-        ts.add(propertyFrame, owlModel.getRDFTypeProperty(), owlModel.getRDFPropertyClass());
-        RDFProperty property = owlModel.getRDFProperty(propertyFrame.getName());
+        RDFProperty property = owlModel.createRDFProperty("property");
         assertSize(1, ((Slot) property).getDirectDomain());
         assertContains(owlThing, ((Slot) property).getDirectDomain());
     }
 
 
+    @SuppressWarnings("deprecation")
     public void testDefaultDomainOfSubProperty() {
-        RDFResource superpropertyFrame = createRDFResource("superproperty");
-        RDFResource subpropertyFrame = createRDFResource("subproperty");
-        ts.add(superpropertyFrame, owlModel.getRDFTypeProperty(), owlModel.getRDFPropertyClass());
-        ts.add(subpropertyFrame, owlModel.getRDFTypeProperty(), owlModel.getRDFPropertyClass());
+        RDFProperty superproperty = owlModel.createRDFProperty("superproperty");
+        RDFProperty  subproperty = owlModel.createRDFProperty("subproperty");
         
-        RDFProperty subproperty = owlModel.getRDFProperty(subpropertyFrame.getName());
-        RDFProperty superproperty = owlModel.getRDFProperty(superpropertyFrame.getName());
         
         ts.add(subproperty, owlModel.getRDFSSubPropertyOfProperty(), superproperty);
 
@@ -42,11 +37,8 @@ public class CreateRDFSDomainTestCase extends AbstractTripleStoreTestCase {
 
     public void testSimpleDomain() {
         RDFSNamedClass cls = owlModel.createRDFSNamedClass("Class");
-        RDFResource propertyFrame = createRDFResource("property");
-        ts.add(propertyFrame, owlModel.getRDFTypeProperty(), owlModel.getRDFPropertyClass());
-        
-        RDFProperty property = owlModel.getRDFProperty(propertyFrame.getName());
-        
+        RDFProperty property = owlModel.createRDFProperty("property");
+
         ts.add(property, owlModel.getRDFSDomainProperty(), cls);
 
         assertSize(1, ((Slot) property).getDirectDomain());
