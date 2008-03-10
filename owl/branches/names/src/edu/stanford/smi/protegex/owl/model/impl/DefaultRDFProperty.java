@@ -302,7 +302,18 @@ public class DefaultRDFProperty extends DefaultSlot implements RDFProperty {
     public boolean isDomainDefined() {
         Slot directDomainSlot = getOWLModel().getSystemFrames().getDirectDomainSlot();    
         Collection values = getDirectOwnSlotValues(directDomainSlot);
-        return values.size() > 1 || (values.size() == 1 && !values.contains(getOWLModel().getRootCls()));
+        if (values.size() > 1) {
+            return true;
+        }
+        else if (values.size() == 1 && !values.contains(getOWLModel().getRootCls())) {
+            return true;
+        }
+        else if (values.size() == 1) {
+            RDFProperty rdfsDomainProperty = getOWLModel().getRDFSDomainProperty();
+            values = getDirectOwnSlotValues(rdfsDomainProperty);
+            return !values.isEmpty();
+        }
+        return false;
     }
 
 
@@ -409,7 +420,7 @@ public class DefaultRDFProperty extends DefaultSlot implements RDFProperty {
 
     public void setDomainDefined(boolean value) {
         if (value != isDomainDefined()) {
-            if (value) {
+            if (!value) {
                 setDomain(null);
             }
             else {
@@ -420,9 +431,6 @@ public class DefaultRDFProperty extends DefaultSlot implements RDFProperty {
                     setDomain(getOWLModel().getOWLThingClass());
                 }
             }
-        }
-        else if (!value && getSuperpropertyCount() > 0) {
-            setDomain(null);
         }
     }
 
