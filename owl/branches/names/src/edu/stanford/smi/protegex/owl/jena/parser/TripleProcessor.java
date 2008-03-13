@@ -45,20 +45,12 @@ import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreModel;
  // TODO: Use getFrame from the MNFS
  // TODO: Use java objects rather than strings for the frames-owl mapping
  // TODO: ClassCastException at sortSubclasses NCI Th. 
- // TODO: Complete the FrameCreatorUtility.createClassWithTYpe with the rest of type
- // TODO: Try to use reflection to see how fast it is
- // TODO: Try to create Java objects as soon as possible (by using heuristics) 
  // TODO: Try to process remaining undef triples by using heuristics
  // TODO: Process each triple in a try catch
 
 
-// TODO: (done) Put owl:Thing as superclass to all classes without superclass
-// TODO: (done) Add not-implemented facets/prop (range, equiv classes)
-// TODO: (done) fix the XSD datatypes (they are now xsd:string instead of the fully qualified name)
-// TODO: (done) rdf:type is added several times
-
-public class TripleFrameCache {
-	private static final transient Logger log = Log.getLogger(TripleFrameCache.class);
+public class TripleProcessor {
+	private static final transient Logger log = Log.getLogger(TripleProcessor.class);
 	
 	   
     public enum TripleStatus {
@@ -101,11 +93,11 @@ public class TripleFrameCache {
 	private Map<String, Cls> objectToNamedLogicalClassSurrogate = new HashMap<String, Cls>();
 
 	
-	public TripleFrameCache(OWLModel owlModel) {
+	public TripleProcessor(OWLModel owlModel) {
 		this(owlModel, owlModel.getTripleStoreModel().getTopTripleStore());
 	}
 
-	public TripleFrameCache(OWLModel owlModel, TripleStore tripleStore) {
+	public TripleProcessor(OWLModel owlModel, TripleStore tripleStore) {
 		this.owlModel = owlModel;
 		this.tripleStore = tripleStore;
 		importing = !tripleStore.equals(owlModel.getTripleStoreModel().getTopTripleStore());
@@ -150,14 +142,14 @@ public class TripleFrameCache {
 	        this.obj = obj;
 	        this.alreadyInUndef = alreadyInUndef;
 
-	        predName = ParserUtility.getResourceName(pred);      
+	        predName = ParserUtil.getResourceName(pred);      
 	        predSlot = (Slot) ((KnowledgeBase) owlModel).getFrame(predName);
 	        if (predSlot != null) {
 	            //do some checks if it already exists and is twice defined?
-	            subjName = ParserUtility.getResourceName(subj);
+	            subjName = ParserUtil.getResourceName(subj);
 	            subjFrame = owlModel.getFrame(subjName);
 
-	            objName = ParserUtility.getResourceName(obj);
+	            objName = ParserUtil.getResourceName(obj);
 	            objFrame = owlModel.getFrame(objName);
 	        }
 	    }
@@ -404,7 +396,7 @@ public class TripleFrameCache {
 	    }
 	    
 	    private void addUndefTriple() {
-	        TripleFrameCache.this.addUndefTriple(subj, pred, obj, objName, alreadyInUndef);
+	        TripleProcessor.this.addUndefTriple(subj, pred, obj, objName, alreadyInUndef);
 	    }
 	}
 
@@ -422,7 +414,7 @@ public class TripleFrameCache {
 	        log.finer("Processing triple with literal: " + subj + " " + pred + " " + lit);
 	    }
 
-		String predName = ParserUtility.getResourceName(pred);		
+		String predName = ParserUtil.getResourceName(pred);		
 		Slot predSlot = (Slot) owlModel.getFrame(predName);
 
 		if (predSlot == null) {
@@ -433,7 +425,7 @@ public class TripleFrameCache {
 		}
 
 		//do some checks if it already exists and is twice defined?
-		String subjName = ParserUtility.getResourceName(subj);
+		String subjName = ParserUtil.getResourceName(subj);
 		Frame subjFrame = owlModel.getFrame(subjName);
 
 		//check the order of these calls
@@ -456,22 +448,11 @@ public class TripleFrameCache {
 		if (rdfsLiteral == null) {
 			return false;
 		}
-		
-				
-		//add what it is really in the triple
-		//fix this! add the raw value!!
-		//String stringValue = rdfsLiteral.getString();
-		
-		//if (stringValue != null) {
-		//	FrameCreatorUtility.addOwnSlotValue(subjFrame, predSlot, ((DefaultRDFSLiteral)rdfsLiteral).getRawValue());
-		//}
+	
 		FrameCreatorUtility.addOwnSlotValue(subjFrame, predSlot, AbstractOWLModel.convertRDFSLiteralToInternalFormat(rdfsLiteral));
 		
-		return true;
-		
+		return true;		
 	}
-	
-	
 	
 	//reimplement this method
 
@@ -513,7 +494,6 @@ public class TripleFrameCache {
 			}					
 		}		
 	}
-
 	
 		
 	private Frame createFrameWithType(String frameUri, Cls type, boolean isSubjAnon) {
@@ -528,8 +508,6 @@ public class TripleFrameCache {
 		if (importing) {
 		    frame.setIncluded(true); // doesn't have any effect in client-server or db mode
 		}
-
-		//multipleTypesInstanceCache.addType((Instance)frame, type);
 		
 		if (frame != null) {
 			checkUndefinedResources(frameUri);
@@ -608,7 +586,6 @@ public class TripleFrameCache {
 	}
 	
 
-
 	public void processUndefTriples() {
 	    TripleStoreModel tripleStoreModel = owlModel.getTripleStoreModel();
 	    TripleStore activeTripleStore = tripleStoreModel.getActiveTripleStore();
@@ -632,8 +609,6 @@ public class TripleFrameCache {
 			
 		}		
 	}
-
-
 	
 	//move somewhere
 	// copied from old parser
@@ -671,8 +646,7 @@ public class TripleFrameCache {
 // ============================================ Post processing =================================================================
 	
 	public void doPostProcessing() {
-		//processAddPrefixesToOntology();
-	    processMetaClasses();
+	    //processMetaClasses();
 		processInferredSuperclasses();
 		processClsesWithoutSupercls();
 		processInstancesWithMultipleTypes();
@@ -682,22 +656,7 @@ public class TripleFrameCache {
 		//dump what you have not processed:
 		getUndefTripleManager().dumpUndefTriples(Level.FINE);
 	}
-	
-	
-	
-
-	private void processAddPrefixesToOntology() {
-		Slot prefixesSlot = owlModel.getSlot(OWLNames.Slot.ONTOLOGY_PREFIXES);
 		
-		//check whether this is OK at imports..
-		OWLOntology defaultOntology = owlModel.getDefaultOWLOntology();
-		
-		for (String prefix : owlModel.getNamespaceManager().getPrefixes()) {
-			String value = prefix + ":" + owlModel.getNamespaceManager().getNamespaceForPrefix(prefix);
-			defaultOntology.addOwnSlotValue(prefixesSlot, value);
-		}		
-	
-	}
 
 	private void processClsesWithoutSupercls() {
 		long time0 = System.currentTimeMillis();
