@@ -104,10 +104,23 @@ public class TripleStoreImpl implements TripleStore {
         ignoreProperties.add(systemFrames.getOwlOntologyPointerProperty());
         ignoreProperties.add(systemFrames.getDirectInstancesSlot());
         ignoreProperties.add(systemFrames.getDirectTypesSlot());
+        
         ignoreProperties.add(systemFrames.getProtegeClassificationStatusProperty());
         ignoreProperties.add(systemFrames.getProtegeInferredSubclassesProperty());
         ignoreProperties.add(systemFrames.getProtegeInferredSuperclassesProperty());
         ignoreProperties.add(systemFrames.getProtegeInferredTypeProperty());
+        
+        ignoreProperties.add(systemFrames.getFromSlot());
+        ignoreProperties.add(systemFrames.getToSlot());
+        ignoreProperties.add(systemFrames.getConstraintsSlot());
+        ignoreProperties.add(systemFrames.getPalStatementSlot());
+        ignoreProperties.add(systemFrames.getPalDescriptionSlot());
+        ignoreProperties.add(systemFrames.getPalNameSlot());
+        ignoreProperties.add(systemFrames.getPalRangeSlot());
+        
+        Collection<Cls> ignoreClses = new HashSet<Cls>();
+        ignoreClses.add(systemFrames.getPalConstraintCls());
+
         List<Triple> triples = new ArrayList<Triple>();
         for (Record record : ((InMemoryFrameDb) frameStore).getRecords()) {
             Frame subject = record.getFrame();
@@ -119,6 +132,9 @@ public class TripleStoreImpl implements TripleStore {
                 if (predicate instanceof RDFProperty) {
                     if (record.getFacet() == null && !record.isTemplate() && !ignoreProperties.contains(predicate)) {
                         for (Object object : record.getValues()) {
+                            if (ignoreClses.contains(object)) {
+                                continue;
+                            }
                             if (object instanceof String && DefaultRDFSLiteral.isRawValue((String) object)) {
                                 object = new DefaultRDFSLiteral(owlModel, (String) object);
                             }
