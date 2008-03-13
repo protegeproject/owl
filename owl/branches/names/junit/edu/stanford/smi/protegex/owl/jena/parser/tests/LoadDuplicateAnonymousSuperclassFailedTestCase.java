@@ -12,7 +12,7 @@ import java.util.Collection;
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
  */
-public class LoadDuplicateAnonymousSuperclassTestCase extends AbstractJenaTestCase {
+public class LoadDuplicateAnonymousSuperclassFailedTestCase extends AbstractJenaTestCase {
 
     public void testLoadDuplicateRestriction() throws Exception {
         OWLNamedClass oldClass = owlModel.createOWLNamedClass("Class");
