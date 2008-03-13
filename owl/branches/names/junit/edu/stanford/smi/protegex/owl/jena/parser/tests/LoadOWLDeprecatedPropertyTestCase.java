@@ -12,8 +12,8 @@ public class LoadOWLDeprecatedPropertyTestCase extends AbstractJenaTestCase {
 
     public void testLoadDeprecatedProperty() throws Exception {
         loadRemoteOntology("deprecated.owl");
-        assertTrue(owlModel.getSlot("drives") instanceof OWLObjectProperty);
-        RDFProperty property = (RDFProperty) owlModel.getSlot("hasDriver");
+        assertNotNull(owlModel.getOWLObjectProperty("drives"));
+        RDFProperty property = (RDFProperty) owlModel.getRDFProperty("hasDriver");
         assertNotNull(property);
         // assertFalse(property instanceof OWLObjectProperty);
         assertTrue(property.isDeprecated());
