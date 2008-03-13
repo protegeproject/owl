@@ -167,8 +167,10 @@ public class FrameCreatorUtility {
         }
         frame.assertFrameName();
 
-        addInstanceType((Instance)frame, (Cls)type);
-        addOwnSlotValue(frame, systemFrames.getRdfTypeProperty(), type);      
+        if (!hasDirectType((Instance)frame, (Cls)type)) {
+        	addInstanceType((Instance)frame, (Cls)type);
+        	addOwnSlotValue(frame, systemFrames.getRdfTypeProperty(), type);
+        }
 
         return frame;
 
@@ -199,6 +201,12 @@ public class FrameCreatorUtility {
         return true;
     }
 
+    
+    public static boolean hasDirectType(Instance inst, Cls type) {
+    	return getSimpleFrameStore(inst).getDirectTypes(inst).contains(type);
+    }
+    
+    
     public static boolean createSubclassOf(Cls cls, Cls superCls) {
         if (cls == null || superCls == null) {
             //Log.getLogger().warning("Error at creating subclass of relationship. Cls: " + cls + " Superclass: " + superCls);
