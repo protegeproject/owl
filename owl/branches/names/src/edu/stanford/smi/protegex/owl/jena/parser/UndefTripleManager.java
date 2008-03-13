@@ -20,9 +20,11 @@ public class UndefTripleManager {
 			log.fine(" +++ Adding undef triple: " + triple);
 		}
 		
-		if (undefTriplesMap.keySet().size() % 1000 == 0) {
-			Log.getLogger().info("*** Undef triples count: " + undefTriplesMap.keySet().size());
-		}
+		if (log.isLoggable(Level.FINE)) {			
+			if (undefTriplesMap.keySet().size() % 1000 == 0) {
+				log.fine("*** Undef triples count: " + undefTriplesMap.keySet().size());
+			}
+		}		
 		
 		Collection<UndefTriple> undefTriples = getUndefTriples(triple.getUndef());
 		undefTriples.add(triple);
@@ -51,7 +53,7 @@ public class UndefTripleManager {
 
 	public void removeUndefTriple(String uri, UndefTriple undefTriple) {
             if (log.isLoggable(Level.FINE)) {
-		log.fine(" --- Removing undef triple: " + undefTriple);
+            	log.fine(" --- Removing undef triple: " + undefTriple);
             }
             Collection<UndefTriple> undefTriples = getUndefTriples(uri);		
             undefTriples.remove(undefTriple);
