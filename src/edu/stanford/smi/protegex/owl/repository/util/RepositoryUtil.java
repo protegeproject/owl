@@ -1,10 +1,13 @@
 package edu.stanford.smi.protegex.owl.repository.util;
 
+import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protege.util.URIUtilities;
 import edu.stanford.smi.protegex.owl.jena.JenaKnowledgeBaseFactory;
+import edu.stanford.smi.protegex.owl.jena.parser.ProtegeOWLParser;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.repository.Repository;
 import edu.stanford.smi.protegex.owl.repository.RepositoryManager;
+import edu.stanford.smi.protegex.owl.repository.factory.RepositoryFactory;
 import edu.stanford.smi.protegex.owl.repository.impl.DublinCoreDLVersionRedirectRepository;
 import edu.stanford.smi.protegex.owl.repository.impl.LocalFileRepository;
 
@@ -115,7 +118,7 @@ public class RepositoryUtil {
                 return null;
             }
             URL absoluteURL = new URL(owlFileUri.toURL(), RepositoryUtil.stripQuery(s.trim()));
-            
+                              
             repositoryFile = new File(absoluteURL.toURI());
             if (repositoryFile.canRead() && repositoryFile.isFile()) {
                 return repositoryFile;
@@ -137,6 +140,46 @@ public class RepositoryUtil {
             return relativeURL;
         }
     }
+    
+    
+    /**
+     * Loads the project repositories from a given URI. The file at the URI location should be in the 
+     * repository file format expected by Protege.
+     *  
+     * @param owlModel - the owl model
+     * @param uri - the uri of the repository file
+     * @param removeExistingRepositories - if true, it will remove all existing repository entries. If false,
+     * it will append to the old repositories entries the new ones loaded from uri.
+     */
+    public static void loadProjectRepositoriesFromURI(OWLModel owlModel, URI uri, boolean removeExistingRepositories) {
+    	
+    	RepositoryManager manager = owlModel.getRepositoryManager();
+    	
+    	if (removeExistingRepositories == true) {
+    		manager.removeAllProjectRepositories();
+    	}
+    	
+		try {
+			URL url = new URL(uri.toString());
+			InputStream fis = ProtegeOWLParser.getInputStream(url);
+			BufferedReader br = new BufferedReader(new InputStreamReader(fis));
+			String line;
+			while ((line = br.readLine()) != null) {
+				line = line.trim();
+				if (line.length() > 0) {
+					RepositoryFactory factory = RepositoryFactory.getInstance();
+					Repository rep = factory.createOntRepository(owlModel, line);
+					if (rep != null) {						
+						manager.addProjectRepository(rep);
+					}
+				}
+			}			
+			fis.close();
+		} catch (IOException e) {
+			Log.getLogger().warning("[Repository Manager] Could not find repository file: "
+							+ uri.toString());
+		}
+	}
     
 }
 
