@@ -8,8 +8,6 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -32,7 +30,6 @@ import edu.stanford.smi.protege.util.URIUtilities;
 import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
 import edu.stanford.smi.protegex.owl.model.NamespaceManager;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
-import edu.stanford.smi.protegex.owl.model.RDFUntypedResource;
 import edu.stanford.smi.protegex.owl.model.factory.AlreadyImportedException;
 import edu.stanford.smi.protegex.owl.model.factory.FactoryUtils;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
@@ -61,13 +58,10 @@ public class ProtegeOWLParser {
 	private ProtegeOWLParserLogger logger;
 
 	private OWLModel owlModel;
-	
-	private Map<String, RDFUntypedResource> untypedResources = new HashMap<String, RDFUntypedResource>();
 
 	private int tripleCount;
 	
-	private TripleFrameCache tfc;
-
+	private TriplesProcessor tripleProcessor;
 
 
 	public ProtegeOWLParser(OWLModel owlModel) {
@@ -78,12 +72,77 @@ public class ProtegeOWLParser {
 		this.owlModel = owlModel;
 		logger = createLogger();
 	}
+
+
+	
+	/************************************ ARP ****************************************/
+	
+	/**
+	 * An interface needed as an abstraction of the various methods to invoke the Jena ARP
+	 * (the various load methods with different parameters).
+	 */
+	public interface ARPInvokation {
+
+		public void invokeARP(ARP arp)
+		        throws Exception;
+	}
 	
 	
-	public void setImporting(boolean importing) {
-	    this.importing = importing;
+	private ARPInvokation createARPInvokation(final InputStream inputStream, final String uri) {
+		ARPInvokation invokation = new ARPInvokation() {
+			public void invokeARP(ARP arp)
+			throws Exception {
+
+				setErrorLevel(arp);
+				arp.load(inputStream, uri);
+				inputStream.close();
+			}
+		};
+		return invokation;
 	}
 
+
+	private ARPInvokation createARPInvokation(final Reader reader,
+			final String uri) {
+		ARPInvokation invokation = new ARPInvokation() {
+			public void invokeARP(ARP arp)
+			throws Exception {
+
+				setErrorLevel(arp);				
+				arp.load(reader, uri);					
+				reader.close();
+			}
+		};
+		return invokation;
+	}
+	
+
+	protected ARP createARP() {
+		ARP arp = new ARP();
+		ARPHandlers handlers = arp.getHandlers();
+		handlers.setStatementHandler(new ProtegeOWLStatementHandler());
+		handlers.setErrorHandler(new ProtegeOWLErrorHandler());
+		handlers.setNamespaceHandler(new ProtegeOWLNamespaceHandler());
+		arp.setHandlersWith(handlers);
+		return arp;
+	}
+
+
+	private void setErrorLevel(ARP arp) {
+		String errorLevel = ApplicationProperties.getApplicationOrSystemProperty(ProtegeOWLParser.JENA_ERROR_LEVEL_PROPERTY, "lax");
+
+		if (errorLevel.equalsIgnoreCase("default")) {
+			arp.getOptions().setDefaultErrorMode();
+		} else if (errorLevel.equalsIgnoreCase("lax")) {
+			arp.getOptions().setLaxErrorMode();
+		} else if (errorLevel.equalsIgnoreCase("strict")) {
+			arp.getOptions().setStrictErrorMode();
+		} else {
+			arp.getOptions().setLaxErrorMode();
+		}				
+	}
+
+	
 	/**
 	 * This method loads an ontology pointed to by the specified URI.
 	 *
@@ -95,7 +154,7 @@ public class ProtegeOWLParser {
 		URL url = uri.toURL();		
 		ProtegeOWLParser.this.run(getInputStream(url), url.toString());
 	}
-
+	
 
 	/**
 	 * This method loads an ontology from the specified input stream using
@@ -150,49 +209,8 @@ public class ProtegeOWLParser {
 	}
 
 
-	private ARPInvokation createARPInvokation(final InputStream inputStream,
-	                                          final String uri) {
-		ARPInvokation invokation = new ARPInvokation() {
-			public void invokeARP(ARP arp)
-			        throws Exception {
-				
-				setErrorLevel(arp);
-				arp.load(inputStream, uri);
-				inputStream.close();
-			}
-		};
-		return invokation;
-	}
+	/************************************** Loading triples *********************************/
 
-
-	private ARPInvokation createARPInvokation(final Reader reader,
-	                                          final String uri) {
-		ARPInvokation invokation = new ARPInvokation() {
-			public void invokeARP(ARP arp)
-			        throws Exception {
-				
-				setErrorLevel(arp);				
-				arp.load(reader, uri);					
-				reader.close();
-			}
-		};
-		return invokation;
-	}
-
-	private void setErrorLevel(ARP arp) {
-		String errorLevel = ApplicationProperties.getApplicationOrSystemProperty(ProtegeOWLParser.JENA_ERROR_LEVEL_PROPERTY, "lax");
-
-		if (errorLevel.equalsIgnoreCase("default")) {
-			arp.getOptions().setDefaultErrorMode();
-		} else if (errorLevel.equalsIgnoreCase("lax")) {
-			arp.getOptions().setLaxErrorMode();
-		} else if (errorLevel.equalsIgnoreCase("strict")) {
-			arp.getOptions().setStrictErrorMode();
-		} else {
-			arp.getOptions().setLaxErrorMode();
-		}				
-	}
-	
 	
 	public void loadTriples(String ontologyName, URI xmlBase, InputStream is) throws IOException {
 	    loadTriples(ontologyName, xmlBase, createARPInvokation(is, ontologyName.toString()));
@@ -204,7 +222,7 @@ public class ProtegeOWLParser {
 	    if (xmlBase != null) { tripleStore.addIOAddress(xmlBase.toString()); }
 	    boolean eventsEnabled = owlModel.setGenerateEventsEnabled(false);
 	    try {
-	        tfc = new TripleFrameCache(owlModel, tripleStore);
+	        tripleProcessor = new TriplesProcessor(owlModel, tripleStore);
 
 	        Log.getLogger().info("Loading triples");
 
@@ -231,12 +249,12 @@ public class ProtegeOWLParser {
 	        Log.getLogger().info("[ProtegeOWLParser] Completed triple loading after " + (endTime - startTime) + " ms");
 
 	        // this is ok - it only logs or calculates strings if the UndefTripleManager is set for FINE logging.
-	        tfc.getUndefTripleManager().dumpUndefTriples(Level.FINE);
+	        tripleProcessor.getUndefTripleManager().dumpUndefTriples(Level.FINE);
 	
-	        tfc.processUndefTriples();
+	        tripleProcessor.processUndefTriples();
 
 	        if (log.isLoggable(Level.FINE)) {			
-	            log.fine("\nDump before end processing. Size: " + tfc.getUndefTripleManager().getUndefTriples().size());
+	            log.fine("\nDump before end processing. Size: " + tripleProcessor.getUndefTripleManager().getUndefTriples().size());
 	        }		
 
 	        if (log.isLoggable(Level.FINE)) {
@@ -249,7 +267,7 @@ public class ProtegeOWLParser {
 	            log.fine("End processing imports");
 	        }
 
-	        tfc.processUndefTriples();
+	        tripleProcessor.processUndefTriples();
 
 	        if (tripleStore.getName() == null) { // no ontology declaration was found
 	            String oname;
@@ -260,9 +278,9 @@ public class ProtegeOWLParser {
 	            FactoryUtils.addOntologyToTripleStore(owlModel, tripleStore, oname);
 	        }
 	        
-	        tfc.doPostProcessing();
+	        tripleProcessor.doPostProcessing();
 	        if (!importing) {
-	            doPostProcessing();
+	            doFinalPostProcessing();
 	        }
 	    }
 	    catch (AlreadyImportedException e) {
@@ -274,27 +292,32 @@ public class ProtegeOWLParser {
 	    }
 	}
 	
-	private  void doPostProcessing() {
+	
+	private void doFinalPostProcessing() {
         TripleStoreUtil.sortSubclasses(owlModel);
         if (owlModel instanceof JenaOWLModel)  {
             ((JenaOWLModel) owlModel).copyFacetValuesIntoNamedClses();
         }
+	}	
+	
+	
+	/************************************* Imports *************************************/
+
+
+	public void setImporting(boolean importing) {
+	    this.importing = importing;
 	}
 
-	protected ARP createARP() {
-		ARP arp = new ARP();
-		ARPHandlers handlers = arp.getHandlers();
-		handlers.setStatementHandler(new ProtegeOWLStatementHandler());
-		handlers.setErrorHandler(new ProtegeOWLErrorHandler());
-		handlers.setNamespaceHandler(new ProtegeOWLNamespaceHandler());
-		arp.setHandlersWith(handlers);
-		return arp;
+	private void processImports(TripleStore tripleStore) throws IOException {				
+		Set<String> thisOntoImports = OWLImportsCache.getOWLImportsURI(tripleStore.getName());
+		
+		for (String import_ : thisOntoImports) {
+			owlModel.addImport(URIUtilities.createURI(import_));
+		}		
 	}
 
-	protected ProtegeOWLParserLogger createLogger() {
-		return new DefaultProtegeOWLParserLogger();
-	}
-
+	
+	/*************************************** Management  *******************************/
 	
 	/**
 	 * Gets the ontology name of the most recently parsed file.  This can be used to diagnose
@@ -303,46 +326,43 @@ public class ProtegeOWLParser {
 	 */	
 	public static URI getErrorURI() {
 		return errorOntologyURI;
-	}
-
-	protected String getImplicitImport(String namespace) {
-		if(ImplicitImports.isImplicitImport(namespace)) {
-			return namespace;
-		}
-		else {
-			return null;
-		}
-	}
-
-
-	protected ProtegeOWLParserLogger getLogger() {
-		return logger;
-	}
-	
-
-	private void processImports(TripleStore tripleStore) throws IOException {				
-		Set<String> thisOntoImports = OWLImportsCache.getOWLImportsURI(tripleStore.getName());
-		
-		for (String import_ : thisOntoImports) {
-			owlModel.addImport(URIUtilities.createURI(import_));
-		}	
-		
-	}
-	
-
-
-	public void setLogger(ProtegeOWLParserLogger logger) {
-		this.logger = logger;
-	}
+	}	
 
 	public static Collection getErrors() {
 		return errors;
 	}
 	
-	/**
-	 * *****************************************************************************
-	 * ARP Interface Implementations
-	 */
+	protected ProtegeOWLParserLogger createLogger() {
+		return new DefaultProtegeOWLParserLogger();
+	}
+
+	protected ProtegeOWLParserLogger getLogger() {
+		return logger;
+	}
+
+	public void setLogger(ProtegeOWLParserLogger logger) {
+		this.logger = logger;
+	}
+	
+	public static InputStream getInputStream(URL url) throws IOException {
+		if(url.getProtocol().equals("http")) {
+			URLConnection conn = url.openConnection();
+
+			conn.setConnectTimeout(ApplicationProperties.getUrlConnectTimeout()*1000);
+			conn.setReadTimeout(ApplicationProperties.getUrlConnectReadTimeout()*1000);
+
+			conn.setRequestProperty("Accept", "application/rdf+xml");
+			conn.addRequestProperty("Accept", "text/xml");
+			conn.addRequestProperty("Accept", "*/*");
+			return conn.getInputStream();
+		}
+		else {
+			return url.openStream();
+		}
+	}	
+	
+
+	/*********************************** ARP Interface Implementations *****************************/
 
 	private class ProtegeOWLErrorHandler implements ErrorHandler {
 
@@ -379,36 +399,7 @@ public class ProtegeOWLParser {
         	
         	errors.add(new MessageError(ex, message));
 					            
-		}
-						
-	}
-
-	/**
-	 * An interface needed as an abstraction of the various methods to invoke the Jena ARP
-	 * (the various load methods with different parameters).
-	 */
-	public interface ARPInvokation {
-
-		public void invokeARP(ARP arp)
-		        throws Exception;
-	}	
-
-	public static InputStream getInputStream(URL url)
-	        throws IOException {
-		if(url.getProtocol().equals("http")) {
-			URLConnection conn = url.openConnection();
-						
-			conn.setConnectTimeout(ApplicationProperties.getUrlConnectTimeout()*1000);
-			conn.setReadTimeout(ApplicationProperties.getUrlConnectReadTimeout()*1000);
-			
-			conn.setRequestProperty("Accept", "application/rdf+xml");
-			conn.addRequestProperty("Accept", "text/xml");
-			conn.addRequestProperty("Accept", "*/*");
-			return conn.getInputStream();
-		}
-		else {
-			return url.openStream();
-		}
+		}						
 	}
 
 	
@@ -423,8 +414,7 @@ public class ProtegeOWLParser {
                         Log.getLogger().info("Loaded " + tripleCount + " triples");
                     }
 			
-                    tfc.processTriple(subj, pred, obj, false);	
-			
+                    tripleProcessor.processTriple(subj, pred, obj, false);			
 		}
 
 
@@ -438,10 +428,8 @@ public class ProtegeOWLParser {
                         Log.getLogger().info("Loaded " + tripleCount + " triples");
                     }
 			
-                    tfc.processTriple(subj, pred, lit, false);	
-			
-		}
-		
+                    tripleProcessor.processTriple(subj, pred, lit, false);			
+		}		
 	}
 
 	
@@ -459,10 +447,8 @@ public class ProtegeOWLParser {
 		public void startPrefixMapping(String prefix, String namespace) {
 		    NamespaceManager namespaceManager = owlModel.getNamespaceManager();
 		    namespaceManager.setPrefix(namespace, prefix);
-		}
-		
-	}
-	
+		}		
+	}	
 
 }
 
