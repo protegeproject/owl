@@ -61,7 +61,7 @@ public class ProtegeOWLParser {
 
 	private int tripleCount;
 	
-	private TriplesProcessor tripleProcessor;
+	private TripleProcessor tripleProcessor;
 
 
 	public ProtegeOWLParser(OWLModel owlModel) {
@@ -222,7 +222,7 @@ public class ProtegeOWLParser {
 	    if (xmlBase != null) { tripleStore.addIOAddress(xmlBase.toString()); }
 	    boolean eventsEnabled = owlModel.setGenerateEventsEnabled(false);
 	    try {
-	        tripleProcessor = new TriplesProcessor(owlModel, tripleStore);
+	        tripleProcessor = new TripleProcessor(owlModel, tripleStore);
 
 	        Log.getLogger().info("Loading triples");
 
