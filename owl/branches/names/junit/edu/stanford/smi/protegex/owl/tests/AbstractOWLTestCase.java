@@ -12,6 +12,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import junit.framework.TestCase;
 
@@ -34,7 +35,6 @@ import edu.stanford.smi.protege.util.URIUtilities;
 import edu.stanford.smi.protegex.owl.ProtegeOWL;
 import edu.stanford.smi.protegex.owl.jena.Jena;
 import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
-import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
 import edu.stanford.smi.protegex.owl.model.OWLOntology;
 import edu.stanford.smi.protegex.owl.model.ProtegeNames;
@@ -47,6 +47,8 @@ import edu.stanford.smi.protegex.owl.model.impl.XMLSchemaDatatypes;
  * @author Holger Knublauch  <holger@knublauch.com>
  */
 public abstract class AbstractOWLTestCase extends TestCase {
+    private static transient Logger log = Log.getLogger(AbstractOWLTestCase.class);
+    
     public final static String TEST_ONTOLOGY_LOCATION_PROPERTY = "junit.testontologies";
 
     protected JenaOWLModel owlModel;
@@ -103,7 +105,7 @@ public abstract class AbstractOWLTestCase extends TestCase {
 
 
     protected void dumpRDF() {
-        Jena.dumpRDF(owlModel.getOntModel());
+        Jena.dumpRDF(owlModel.getOntModel(), log, Level.FINE);
     }
     
     public static String getRemoteOntologyRoot() {
