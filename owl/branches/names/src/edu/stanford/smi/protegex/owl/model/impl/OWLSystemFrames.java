@@ -743,7 +743,6 @@ public abstract class OWLSystemFrames extends SystemFrames {
             assertTypeAndName(owlVersionInfoProperty, annotationObjectPropertyTypes);
             assertDomain(owlVersionInfoProperty, owlThingClass);
             assertValueType(owlVersionInfoProperty, ValueType.STRING);
-            fs.setDirectOwnSlotValues(owlVersionInfoProperty, rdfsRangeProperty, Collections.singleton(xsdInt));
             
             assertTypeAndName(protegeClassificationStatusProperty, rdfPropertyClass);
             assertDomain(protegeClassificationStatusProperty,rdfsNamedClassClass);
