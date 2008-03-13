@@ -1,4 +1,5 @@
 package edu.stanford.smi.protegex.owl.jena.parser;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -26,8 +27,6 @@ import edu.stanford.smi.protegex.owl.model.NamespaceManager;
 import edu.stanford.smi.protegex.owl.model.OWLIntersectionClass;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
-import edu.stanford.smi.protegex.owl.model.OWLNames;
-import edu.stanford.smi.protegex.owl.model.OWLOntology;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
 import edu.stanford.smi.protegex.owl.model.RDFSClass;
@@ -39,14 +38,20 @@ import edu.stanford.smi.protegex.owl.model.impl.DefaultRDFSLiteral;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreModel;
 
- // TODO: Find a solution for double slot value entries!! Checking at runtime slows down performance a lot!
+ 
+//TODO: Refactor Triple processor in 3 classes and pass around the tripleState
+//TODO: Use getFrame from the MNFS
+//TODO: Metaclass postprocessing: keep track of subclasses of owl:Class and post process them. Test self-referencing metaclasses
+//TODO: Postprocessing GCI - refactor in their own class
+//TODO: Postprcessing undef triples -> create them as Untyped resources (swizzle)
+//TODO: Solution for copyFacetedValues not to happen too many times. Maybe use flag in AbstractOWLModel
+//TODO: Check range and domain of properties
+//TODO: Timing logger for the parser
 
- // TODO: fix ranges with datatypes 
- // TODO: Use getFrame from the MNFS
- // TODO: Use java objects rather than strings for the frames-owl mapping
- // TODO: ClassCastException at sortSubclasses NCI Th. 
- // TODO: Try to process remaining undef triples by using heuristics
- // TODO: Process each triple in a try catch
+// -- later --
+// TODO: check ranges with datatypes 
+// TODO: Use java objects rather than strings for the frames-owl mapping
+// TODO: Process each triple in a try catch
 
 
 public class TripleProcessor {
