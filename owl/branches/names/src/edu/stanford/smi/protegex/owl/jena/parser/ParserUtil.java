@@ -4,9 +4,8 @@ import com.hp.hpl.jena.rdf.arp.AResource;
 
 import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
 
-public class ParserUtility {
-	
-    
+public class ParserUtil {
+	 
     
 	public static String getResourceName(AResource resource) {
 		if (resource.isAnonymous()) {	
