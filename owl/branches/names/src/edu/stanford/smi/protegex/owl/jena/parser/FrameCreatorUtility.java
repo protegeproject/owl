@@ -63,7 +63,12 @@ public class FrameCreatorUtility {
             frame = new DefaultOWLOntology(owlModel, id );                          
         }
         else if (typeUri.equals(OWL.Class.getURI())) {
-            frame = new DefaultOWLNamedClass(owlModel, id );                                
+            frame = new DefaultOWLNamedClass(owlModel, id );                           
+        } else if (typeUri.equals(OWL.DeprecatedClass.getURI())) {
+        	frame = new DefaultOWLNamedClass(owlModel, id );
+        	//((DefaultOWLNamedClass) frame).setDeprecated(true);     	
+        	//is this needed?
+        	//removeInstanceType((Instance)frame, systemFrames.getOwlDeprecatedClassClass());
         }
         else if (typeUri.equals(OWL.DatatypeProperty.getURI())) {
             frame = new DefaultOWLDatatypeProperty(owlModel, id);
@@ -92,7 +97,6 @@ public class FrameCreatorUtility {
             frame = new DefaultOWLObjectProperty(owlModel, id);                     
             ((DefaultOWLObjectProperty)frame).setInverseFunctional(true);
             //hack - because otherwise the type is set twice
-
             removeInstanceType((Instance)frame, systemFrames.getOwlInverseFunctionalPropertyClass());
         }
         else if (typeUri.equals(OWL.FunctionalProperty.getURI())) {
@@ -107,7 +111,13 @@ public class FrameCreatorUtility {
         }
         else if (typeUri.equals(RDF.Property.getURI())) {
             frame = new DefaultRDFProperty(owlModel, id);
-        } 
+        }  else if (typeUri.equals(OWL.DeprecatedProperty.getURI())) {
+        	//is this correct? Hopefully it will be swizzled later, if needed
+        	frame = new DefaultRDFProperty(owlModel, id);
+        	//((DefaultRDFProperty) frame).setDeprecated(true);        	
+        	//is this needed?
+        	//removeInstanceType(((Instance)frame), systemFrames.getOwlDeprecatedPropertyClass());
+        }
         else if (typeUri.equals(RDF.List.getURI())) {
             frame = new DefaultRDFList(owlModel, id);
         } 
