@@ -22,12 +22,12 @@ public class LoadMetaclassesTestCase extends AbstractJenaTestCase {
         assertContains(a, b.getSuperclasses(false));
 
         OWLNamedClass instanceClsA = owlModel.getOWLNamedClass("InstanceClsA");
-        assertSize(2, instanceClsA.getProtegeTypes());
+        assertSize(1, instanceClsA.getProtegeTypes());
         assertContains(a, instanceClsA.getProtegeTypes());
         assertContains(owlModel.getOWLNamedClassClass(), a.getProtegeTypes());
 
         OWLNamedClass instanceClsB = owlModel.getOWLNamedClass("InstanceClsB");
-        assertSize(2, instanceClsB.getProtegeTypes());
+        assertSize(1, instanceClsB.getProtegeTypes());
         assertContains(b, instanceClsB.getProtegeTypes());
         assertContains(owlModel.getOWLNamedClassClass(), b.getProtegeTypes());
     }
@@ -37,7 +37,7 @@ public class LoadMetaclassesTestCase extends AbstractJenaTestCase {
         loadRemoteOntology("rdfmetaclassbug.owl");
         RDFSNamedClass aClass = owlModel.getRDFSNamedClass("Class_01");
         assertNotNull(aClass);
-        ((Cls) aClass).setDirectOwnSlotValue(owlModel.getSlot(RDFSNames.Slot.COMMENT), "comment");
+        ((Cls) aClass).setDirectOwnSlotValue(owlModel.getRDFProperty(RDFSNames.Slot.COMMENT), "comment");
     }
 
 
@@ -48,9 +48,8 @@ public class LoadMetaclassesTestCase extends AbstractJenaTestCase {
 
     public void testLoadRecursiveMetaclass() throws Exception {
         OWLNamedClass oldClass = owlModel.createOWLNamedSubclass("Metaclass", owlModel.getOWLNamedClassClass());
-        oldClass.setRDFType(oldClass);
-        JenaOWLModel newModel = reload(owlModel);
-        OWLNamedClass newClass = newModel.getOWLNamedClass(oldClass.getName());
+        oldClass.setRDFType(oldClass);       
+        OWLNamedClass newClass = owlModel.getOWLNamedClass(oldClass.getName());
         assertSize(1, newClass.getRDFTypes());
         assertEquals(newClass, newClass.getRDFType());
     }
