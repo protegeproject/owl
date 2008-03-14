@@ -47,7 +47,7 @@ import edu.stanford.smi.protegex.owl.repository.util.XMLBaseExtractor;
 public class ProtegeOWLParser {
     private static transient Logger log = Log.getLogger(ProtegeOWLParser.class);
     
-    private final static String JENA_ERROR_LEVEL_PROPERTY = "jena.parser.error_level";          
+    private final static String JENA_ERROR_LEVEL_PROPERTY = "jena.parser.error_level";    
 
     private boolean importing = false;
     
