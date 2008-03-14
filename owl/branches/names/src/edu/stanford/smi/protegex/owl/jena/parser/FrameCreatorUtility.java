@@ -7,13 +7,11 @@ import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
 import edu.stanford.smi.protege.model.Cls;
-import edu.stanford.smi.protege.model.DefaultKnowledgeBase;
 import edu.stanford.smi.protege.model.Frame;
 import edu.stanford.smi.protege.model.FrameID;
 import edu.stanford.smi.protege.model.Instance;
 import edu.stanford.smi.protege.model.KnowledgeBase;
 import edu.stanford.smi.protege.model.Slot;
-import edu.stanford.smi.protege.model.framestore.SimpleFrameStore;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLAllDifferent;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLDataRange;
@@ -196,14 +194,14 @@ public class FrameCreatorUtility {
 
     public static boolean removeInstanceType(Instance inst, Cls type) {
         Slot typeSlot = inst.getKnowledgeBase().getSystemFrames().getDirectTypesSlot();
-        getSimpleFrameStore(inst).removeDirectOwnSlotValue(inst, typeSlot , type);
-        getSimpleFrameStore(type).removeDirectOwnSlotValue(type, inst.getKnowledgeBase().getSystemFrames().getDirectInstancesSlot(), inst);
+        ParserUtil.getSimpleFrameStore(inst).removeDirectOwnSlotValue(inst, typeSlot , type);
+        ParserUtil.getSimpleFrameStore(type).removeDirectOwnSlotValue(type, inst.getKnowledgeBase().getSystemFrames().getDirectInstancesSlot(), inst);
         return true;
     }
 
     
     public static boolean hasDirectType(Instance inst, Cls type) {
-    	return getSimpleFrameStore(inst).getDirectTypes(inst).contains(type);
+    	return ParserUtil.getSimpleFrameStore(inst).getDirectTypes(inst).contains(type);
     }
     
     
@@ -212,7 +210,7 @@ public class FrameCreatorUtility {
             //Log.getLogger().warning("Error at creating subclass of relationship. Cls: " + cls + " Superclass: " + superCls);
             return false;
         }
-        getSimpleFrameStore(cls).addDirectSuperclass(cls, superCls);
+        ParserUtil.getSimpleFrameStore(cls).addDirectSuperclass(cls, superCls);
         return true;
     }
 
@@ -220,28 +218,21 @@ public class FrameCreatorUtility {
         if (slot == null || superSlot == null) {
             return false;
         }
-        getSimpleFrameStore(slot).addDirectSuperslot(slot, superSlot);
+        ParserUtil.getSimpleFrameStore(slot).addDirectSuperslot(slot, superSlot);
 
         return true;
     }
-
-
-    public static SimpleFrameStore getSimpleFrameStore(Frame frame) {
-        return (SimpleFrameStore) ((DefaultKnowledgeBase) frame.getKnowledgeBase()).getTerminalFrameStore();
-    }
-
-
 
     public static boolean addOwnSlotValue(Frame frame, Slot slot, Object value) {
         if (frame == null || slot == null) {
             return false;
         }
-        getSimpleFrameStore(frame).addDirectOwnSlotValue(frame, slot, value);
+        ParserUtil.getSimpleFrameStore(frame).addDirectOwnSlotValue(frame, slot, value);
         return true;
     }
 
     public static Collection<Cls> getDirectTypes(Instance instance) {
-        return getSimpleFrameStore(instance).getDirectTypes(instance);
+        return ParserUtil.getSimpleFrameStore(instance).getDirectTypes(instance);
     }
 
     public static boolean addDirectTypeAndSwizzle(Instance instance, Cls type) {
