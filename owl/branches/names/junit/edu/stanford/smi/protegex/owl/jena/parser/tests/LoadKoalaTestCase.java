@@ -10,12 +10,11 @@ import edu.stanford.smi.protegex.owl.jena.parser.FrameCreatorUtility;
 import edu.stanford.smi.protegex.owl.jena.parser.LogicalClassCreatorUtility;
 import edu.stanford.smi.protegex.owl.jena.parser.ProtegeOWLParser;
 import edu.stanford.smi.protegex.owl.jena.parser.RestrictionCreatorUtility;
-import edu.stanford.smi.protegex.owl.jena.parser.TripleFrameCache;
+import edu.stanford.smi.protegex.owl.jena.parser.TripleProcessor;
 import edu.stanford.smi.protegex.owl.model.OWLDatatypeProperty;
 import edu.stanford.smi.protegex.owl.model.OWLIntersectionClass;
 import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
 import edu.stanford.smi.protegex.owl.model.OWLObjectProperty;
-import edu.stanford.smi.protegex.owl.model.RDFSLiteral;
 import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
 import edu.stanford.smi.protegex.owl.tests.AbstractJenaTestCase;
 
@@ -25,7 +24,7 @@ import edu.stanford.smi.protegex.owl.tests.AbstractJenaTestCase;
 public class LoadKoalaTestCase extends AbstractJenaTestCase {
     
     public static void enableDebug() {
-        Log.setLoggingLevel(TripleFrameCache.class, Level.FINEST);
+        Log.setLoggingLevel(TripleProcessor.class, Level.FINEST);
         Log.setLoggingLevel(ProtegeOWLParser.class, Level.FINEST);
         Log.setLoggingLevel(FrameCreatorUtility.class, Level.FINEST);
         Log.setLoggingLevel(LogicalClassCreatorUtility.class, Level.FINEST);
