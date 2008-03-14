@@ -1,0 +1,637 @@
+package edu.stanford.smi.protegex.owl.jena.parser;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import com.hp.hpl.jena.rdf.arp.AResource;
+import com.hp.hpl.jena.vocabulary.OWL;
+import com.hp.hpl.jena.vocabulary.RDF;
+import com.hp.hpl.jena.vocabulary.RDFS;
+
+import edu.stanford.smi.protege.model.Cls;
+import edu.stanford.smi.protege.model.Frame;
+import edu.stanford.smi.protege.model.FrameID;
+import edu.stanford.smi.protege.model.Instance;
+import edu.stanford.smi.protege.model.KnowledgeBase;
+import edu.stanford.smi.protege.model.Slot;
+import edu.stanford.smi.protege.util.Log;
+import edu.stanford.smi.protegex.owl.model.NamespaceManager;
+import edu.stanford.smi.protegex.owl.model.OWLIntersectionClass;
+import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
+import edu.stanford.smi.protegex.owl.model.RDFProperty;
+import edu.stanford.smi.protegex.owl.model.RDFSClass;
+import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
+
+public class TripleProcessorForResourceObjects extends AbstractStatefulTripleProcessor {
+	private static final transient Logger log = Log.getLogger(TripleProcessor.class);
+
+	public enum TripleStatus {
+		INCOMPLETE, IN_KNOWLEDGE_BASE, DUPLICATE_TRIPLE, OTHER_TRIPLE_WILL_RESOLVE, REQUIRES_MULTI_TYPES_PROCESSING, UNDEF_NEEDS_POSTPROCESS;
+	};
+
+	/*
+	 * I don't know if this works. It is a hack for an ugly situation. The w3
+	 * specs say that the name of an ontology in a file is the first ontology
+	 * declaration occurring in the file. Presumably this would be the first
+	 * ontology declaration found if we parse the file with an xml parser. This
+	 * variable is based on the guess that this will the first ontology
+	 * declaration found by Jena's ARQ parser. I believe that Jena has trouble
+	 * with this issue also.
+	 */
+	private boolean ontologyFound = false;
+
+	private SuperClsCache superClsCache = new SuperClsCache();
+	private MultipleTypesInstanceCache multipleTypesInstanceCache = new MultipleTypesInstanceCache();
+	private Set<RDFProperty> createdProperties = new HashSet<RDFProperty>();
+
+	private Collection<RDFProperty> possibleGCIPredicates = new ArrayList<RDFProperty>();
+	private Collection<RDFSClass> gciAxioms = new ArrayList<RDFSClass>();
+	private Map<String, Cls> objectToNamedLogicalClassSurrogate = new HashMap<String, Cls>();
+
+	public TripleProcessorForResourceObjects(TripleProcessor processor) {
+		super(processor);
+		initGCIPredicates();
+	}
+
+	public boolean processTriple(AResource subj, AResource pred, AResource obj, boolean alreadyInUndef) {
+		return new InternalTripleProcessorForResourceObjects(subj, pred, obj, alreadyInUndef).processTriple();
+	}
+
+	protected void initGCIPredicates() {
+		possibleGCIPredicates.add(owlModel.getOWLDisjointWithProperty());
+		possibleGCIPredicates.add(owlModel.getRDFSSubClassOfProperty());
+		possibleGCIPredicates.add(owlModel.getOWLEquivalentClassProperty());
+	}
+
+	private class InternalTripleProcessorForResourceObjects {
+
+		private AResource subj;
+		private String subjName;
+		private Frame subjFrame;
+
+		private AResource pred;
+		private String predName;
+		private Slot predSlot;
+
+		private AResource obj;
+		private String objName;
+		private Frame objFrame;
+
+		private boolean alreadyInUndef;
+
+		public InternalTripleProcessorForResourceObjects(AResource subj, AResource pred, AResource obj,
+				boolean alreadyInUndef) {
+			if (log.isLoggable(Level.FINER)) {
+				log.finer("Process Triple " + subj + " " + pred + " " + obj);
+			}
+			this.subj = subj;
+			this.pred = pred;
+			this.obj = obj;
+			this.alreadyInUndef = alreadyInUndef;
+
+			predName = ParserUtil.getResourceName(pred);
+			predSlot = (Slot) ((KnowledgeBase) owlModel).getFrame(predName);
+			if (predSlot != null) {
+				// do some checks if it already exists and is twice defined?
+				subjName = ParserUtil.getResourceName(subj);
+				subjFrame = getFrame(subjName);
+
+				objName = ParserUtil.getResourceName(obj);
+				objFrame = getFrame(objName);
+			}
+		}
+
+		public boolean processTriple() {
+			TripleStatus status = TripleStatus.INCOMPLETE;
+
+			if (handlePredUndefs() == TripleStatus.UNDEF_NEEDS_POSTPROCESS)
+				return false;
+
+			status = handleSetTypeAndCreation();
+			if (status != TripleStatus.INCOMPLETE)
+				return status != TripleStatus.UNDEF_NEEDS_POSTPROCESS;
+
+			status = handleSubjObjUndefs();
+			if (status != TripleStatus.INCOMPLETE)
+				return status != TripleStatus.UNDEF_NEEDS_POSTPROCESS;
+
+			handleOntologyDeclaration();
+
+			handleSuperClassCacheUpdate();
+
+			status = handleEquivalentClassesOrProperties();
+			if (status != TripleStatus.INCOMPLETE)
+				return status != TripleStatus.UNDEF_NEEDS_POSTPROCESS;
+
+			handleGeneralizedConceptInclusions();
+
+			addTriple();
+
+			return true;
+		}
+
+		@SuppressWarnings("deprecation")
+		private TripleStatus handleSetTypeAndCreation() {
+			TripleStatus status = TripleStatus.INCOMPLETE;
+			if (predName.equals(OWL.imports.getURI())) {
+				OWLImportsCache.addOWLImport(subjName, objName);
+			} else if (predName.equals(RDF.type.getURI())) { // creation
+				status = handleSetType();
+			}// split this in two conditions and two methods
+			else if (predName.equals(RDF.first.getURI()) || predName.equals(RDF.rest.getURI())) {
+				if (log.isLoggable(Level.FINE)) {
+					log.fine("Triple <" + subjName + ", " + predName + ", " + objName + "> signals RDFList creation");
+				}
+				createRDFList(subjName, predName, objName);
+			} else if (OWLFramesMapping.getLogicalPredicatesNames().contains(predName)) {
+				status = handleCreateLogicalClass();
+			} else if (OWLFramesMapping.getRestrictionPredicatesNames().contains(predName)) {
+				subjFrame = createRestriction(subjName, predName);
+			}
+			// do this nicer
+			subjFrame = getFrame(subjName);
+			objFrame = getFrame(objName);
+
+			return status;
+		}
+
+		/*
+		 * The simple story is that this routine would create the subject frame
+		 * by just calling createLogicalClass. But life isn't that easy. It is
+		 * possible that the the logical class being created is a named class.
+		 * This is awkward in Protege3. So we avoid representing this logical
+		 * class as a named class. We create a new unnamed class to hold the
+		 * logical expression and state that the named class is equivalent.
+		 * 
+		 * But the pain isn't over. The triple may be processed more than once.
+		 * So we need to keep track of whether it has been seen before. This is
+		 * awkward because we need to track the whole triple. It is possible
+		 * that a named class is a logical class in more than one different way.
+		 * But I think that I can track duplicates by using the object of the
+		 * triple.
+		 * 
+		 * Had enough? Here is another jolt! I worried about the possibility
+		 * that owlModel.getNextAnonymousResourceName() would generate an
+		 * anonymous name that would later appear in the parsed ontology
+		 * (generated by ParserUtility.getResourceName). So I looked in the two
+		 * routines and hacked the latter to always provide a different name
+		 * than the former.
+		 * 
+		 * This is a nasty little routine and maybe one day I will be punished
+		 * for it.
+		 */
+		private TripleStatus handleCreateLogicalClass() {
+			Frame oldSubjFrame = subjFrame;
+			boolean logicalClassIsNamed = false;
+			if (!subj.isAnonymous()) {
+				if (subjFrame == null || objFrame == null) {
+					addUndefTriple();
+					return TripleStatus.UNDEF_NEEDS_POSTPROCESS;
+				}
+				subjFrame = objectToNamedLogicalClassSurrogate.get(objName);
+				if (subjFrame != null) {
+					subjName = subjFrame.getName();
+					return TripleStatus.INCOMPLETE;
+				}
+				subjName = owlModel.getNextAnonymousResourceName(); // can this
+				// cause
+				// conflicts??
+				logicalClassIsNamed = true;
+			}
+			subjFrame = createLogicalClass(subjName, predName);
+			if (logicalClassIsNamed) {
+				objectToNamedLogicalClassSurrogate.put(objName, (Cls) subjFrame);
+				FrameCreatorUtility.addOwnSlotValue(oldSubjFrame, owlModel.getOWLEquivalentClassProperty(), subjFrame);
+				FrameCreatorUtility.createSubclassOf((Cls) subjFrame, (Cls) oldSubjFrame);
+				FrameCreatorUtility.createSubclassOf((Cls) oldSubjFrame, (Cls) subjFrame);
+			}
+			return TripleStatus.INCOMPLETE;
+		}
+
+
+		private TripleStatus handleSetType() {
+			if (objName.equals(OWL.Restriction.getURI())) {
+				return TripleStatus.OTHER_TRIPLE_WILL_RESOLVE;
+			}
+
+			if (subj.isAnonymous() && objName.equals(OWL.Class.getURI())) {
+				return TripleStatus.OTHER_TRIPLE_WILL_RESOLVE;
+			}
+
+			if (objFrame == null) {
+				addUndefTriple();
+				return TripleStatus.UNDEF_NEEDS_POSTPROCESS;
+			}
+
+			// find a better way to handle this...
+			boolean subjAlreadyExists = getFrame(subjName) != null;
+
+			subjFrame = createFrameWithType(subjName, (Cls) objFrame, subj.isAnonymous());
+			// add to frame to the cache of classes with no superclass
+			if (!subjAlreadyExists && !subj.isAnonymous()
+					&& (objName.equals(OWL.Class.getURI()) || objName.equals(RDFS.Class.getURI()))) {
+				superClsCache.addFrame(subjFrame);
+			}
+			if (!subjAlreadyExists && subjFrame instanceof RDFProperty) {
+				createdProperties.add((RDFProperty) subjFrame);
+			}
+
+			if (subjAlreadyExists && objFrame instanceof Cls) {
+				// what should happen if objFrame is not a class? Give a warning
+				// this is another rdf:type for this resource
+				// FrameCreatorUtility.setInstanceType((Instance) subjFrame,
+				// (Cls) objFrame);
+				if (log.isLoggable(Level.FINE)) {
+					log.fine("found an alternative type for " + subjFrame + " = " + objFrame);
+				}
+				multipleTypesInstanceCache.addType((Instance) subjFrame, (Cls) objFrame);
+				return TripleStatus.REQUIRES_MULTI_TYPES_PROCESSING;
+			}
+			return TripleStatus.INCOMPLETE;
+		}
+
+		private TripleStatus handlePredUndefs() {
+			if (predSlot == null) {
+				if (!alreadyInUndef) {
+					if (log.isLoggable(Level.FINE)) {
+						log.fine("\tdeferring triple because predicate is not yet defined");
+					}
+					undefTripleManager.addUndefTriple(new UndefTriple(subj, pred, obj, predName));
+				}
+				return TripleStatus.UNDEF_NEEDS_POSTPROCESS;
+			}
+			return TripleStatus.INCOMPLETE;
+		}
+
+		private TripleStatus handleSubjObjUndefs() {
+			// checking and adding to undefined
+			if (subjFrame == null) {
+				if (log.isLoggable(Level.FINE)) {
+					log.fine("\tDeferring triple because subject is not yet defined");
+				}
+				addUndefTriple();
+				return TripleStatus.UNDEF_NEEDS_POSTPROCESS;
+			}
+
+			if (objFrame == null) {
+				addUndefTriple();
+				if (log.isLoggable(Level.FINE)) {
+					log.fine("+++ Add undef triple: " + subj + " " + pred + " " + obj + " undef:" + objName);
+				}
+				return TripleStatus.UNDEF_NEEDS_POSTPROCESS;
+			}
+			return TripleStatus.INCOMPLETE;
+		}
+
+		private void handleOntologyDeclaration() {
+			// guessing that the ontology for the parsed file is the first
+			// ontology found
+			if (objName.equals(OWL.Ontology.getURI()) && predName.equals(RDF.type.getURI()) && !ontologyFound) {
+				processor.getTripleStore().setName(subjName);
+				processor.getTripleStore().addIOAddress(subjName);
+				ontologyFound = true;
+			}
+		}
+
+		private void handleSuperClassCacheUpdate() {
+			// If this is a rdfs:subclass of, then remove it from the cache of
+			// classes with no superclasses
+			if (predName.equals(RDFS.subClassOf.getURI()) && !obj.isAnonymous()) {
+				superClsCache.removeFrame(subjFrame);
+			}
+		}
+
+		private TripleStatus handleEquivalentClassesOrProperties() {
+			// special treatment of equivalent classes
+			if (predName.equals(OWL.equivalentClass.getURI())) {
+				FrameCreatorUtility.addOwnSlotValue(subjFrame, predSlot, objFrame);
+				FrameCreatorUtility.createSubclassOf((Cls) subjFrame, (Cls) objFrame);
+				FrameCreatorUtility.createSubclassOf((Cls) objFrame, (Cls) subjFrame);
+				return TripleStatus.IN_KNOWLEDGE_BASE;
+			} else if (predName.equals(OWL.equivalentProperty.getURI())) {
+				FrameCreatorUtility.addOwnSlotValue(subjFrame, predSlot, objFrame);
+				FrameCreatorUtility.createSubpropertyOf((Slot) subjFrame, (Slot) objFrame);
+				FrameCreatorUtility.createSubpropertyOf((Slot) objFrame, (Slot) subjFrame);
+				return TripleStatus.IN_KNOWLEDGE_BASE;
+			}
+			return TripleStatus.INCOMPLETE;
+		}
+
+		/*
+		 * This is not a good method but it would take too long to change it.
+		 * The protege 4 method is cleaner but makes it a little hard to find
+		 * the axioms until somebody tells you how.
+		 */
+		private void handleGeneralizedConceptInclusions() {
+			if (subjFrame instanceof RDFSClass && ((RDFSClass) subjFrame).isAnonymous()
+					&& possibleGCIPredicates.contains(predSlot)) {
+				OWLNamedClass axiom = owlModel.createOWLNamedClass(null);
+				FrameCreatorUtility.addOwnSlotValue(axiom, owlModel.getOWLEquivalentClassProperty(), subjFrame);
+				FrameCreatorUtility.createSubclassOf((Cls) subjFrame, axiom);
+				FrameCreatorUtility.createSubclassOf(axiom, (Cls) subjFrame);
+				subjFrame = axiom;
+				gciAxioms.add(axiom); // need to name these later
+			}
+		}
+
+		private void addTriple() {
+			// add what it is really in the triple
+			FrameCreatorUtility.addOwnSlotValue(subjFrame, predSlot, objFrame);
+			// add frame correspondent
+			String frameMapSlot = OWLFramesMapping.getFramesSlotMapName(predName);
+			if (frameMapSlot != null) {
+				FrameCreatorUtility.addOwnSlotValue(subjFrame, (Slot)getFrame(frameMapSlot), objFrame);
+			}
+			// add frame pair (inverse) correspondent
+			String frameMapInvSlot = OWLFramesMapping.getFramesInvSlotMapName(predName);
+			if (frameMapInvSlot != null) {
+				FrameCreatorUtility.addOwnSlotValue(objFrame, (Slot)getFrame(frameMapInvSlot), subjFrame);
+			}
+		}
+
+		private void addUndefTriple() {
+			processor.addUndefTriple(subj, pred, obj, objName, alreadyInUndef);
+		}
+
+	} // end InternalProcessorForResourceObjects class
+
+
+	// special treatment of RDFList
+	private void createRDFList(String subjName, String predName, String objName) {
+		Frame subjList = getFrame(subjName);
+
+		// applies both for rdf:fist and rdf:rest
+		if (subjList == null) {
+			// move this to a RDFListCreator
+			FrameID id = new FrameID(subjName);
+
+			Frame listFrame = FrameCreatorUtility.createFrameWithType(owlModel, id, RDF.List.getURI(), true);
+			if (importing) {
+				listFrame.setIncluded(true); // ineffective in client-server or db mode
+			}
+
+			if (listFrame != null) {
+				checkUndefinedResources(subjName);
+			}
+		}
+
+		if (!predName.equals(RDF.rest.getURI())) {
+			return;
+		}
+
+		Frame objList = getFrame(objName);
+		if (objList == null) {
+			// move this to a RDFListCreator
+			FrameID id = new FrameID(objName);
+
+			Frame listFrame = FrameCreatorUtility.createFrameWithType(owlModel, id, RDF.List.getURI(), true);
+
+			if (listFrame != null) {
+				checkUndefinedResources(objName);
+			}
+		}
+	}
+
+
+	private Frame createFrameWithType(String frameUri, Cls type, boolean isSubjAnon) {
+		Frame frame = getFrame(frameUri);
+
+		if (frame != null) {
+			return frame;
+		}
+
+		FrameID id = new FrameID(frameUri);
+
+		frame = FrameCreatorUtility.createFrameWithType(owlModel, id, type, isSubjAnon);
+		if (importing) {
+			frame.setIncluded(true); // doesn't have any effect in
+			// client-server or db mode
+		}
+
+		if (frame != null) {
+			checkUndefinedResources(frameUri);
+		}
+
+		return frame;
+	}
+
+
+	private Frame createLogicalClass(String logClassName, String predName) {
+		Frame logClass = getFrame(logClassName);
+
+		if (logClass != null)
+			return logClass;
+
+		FrameID id = new FrameID(logClassName);
+		logClass = LogicalClassCreatorUtility.createLogicalClass(owlModel, id, predName);
+
+		if (logClass != null) {
+			checkUndefinedResources(logClassName);
+		}
+		if (importing) {
+			logClass.setIncluded(true);
+		}
+
+		return logClass;
+	}
+
+
+	/*
+	 * ************************ Post-processing ******************************
+	 */
+
+
+
+	public void doPostProcessing() {
+		processMetaclasses();
+		processSubclassesOfRdfList();
+		
+		processInferredSuperclasses();
+		processClsesWithoutSupercls();
+		processInstancesWithMultipleTypes();
+		processCreatedProperties();
+		processGeneralizedConceptInclusions();
+
+		//dump what you have not processed:
+		//getUndefTripleManager().dumpUndefTriples(Level.FINE);
+	}
+
+	private void processMetaclasses() {
+		RDFSNamedClass rdfsClass = owlModel.getRDFSNamedClassClass();
+		
+		for (Iterator iterator = rdfsClass.getSubclasses(true).iterator(); iterator.hasNext();) {
+			RDFSNamedClass metaclass = (RDFSNamedClass) iterator.next();
+		
+			if (!metaclass.isSystem()) {
+				for (Iterator iterator2 = metaclass.getInstances(false).iterator(); iterator2.hasNext();) {
+					Instance inst = (Instance) iterator2.next();
+					//force to swizzle - is there a better way of doing it?
+					FrameCreatorUtility.addDirectTypeAndSwizzle(inst, metaclass);
+					FrameCreatorUtility.removeInstanceType(inst, metaclass);
+				}
+			}
+		}		
+	}
+
+	private void processSubclassesOfRdfList(){
+		RDFSNamedClass rdfListCls = owlModel.getRDFListClass();
+		
+		for (Iterator iterator = rdfListCls.getSubclasses(true).iterator(); iterator.hasNext();) {
+			RDFSNamedClass listCls = (RDFSNamedClass) iterator.next();
+		
+			if (!listCls.isSystem()) {
+				for (Iterator iterator2 = listCls.getInstances(false).iterator(); iterator2.hasNext();) {
+					Instance inst = (Instance) iterator2.next();
+					//force to swizzle - is there a better way of doing it?
+					//FrameCreatorUtility.addDirectTypeAndSwizzle(inst, listCls);
+					//ParserUtil.getSimpleFrameStore(owlModel).addDirectType(inst, listCls);
+					//FrameCreatorUtility.removeInstanceType(inst, listCls);
+				}
+			}
+		}		
+	}
+	
+	
+	private void processClsesWithoutSupercls() {
+		long time0 = System.currentTimeMillis();
+
+		log.info("Postprocess: Process classes without superclasses (" + superClsCache.getCachedFramesWithNoSuperclass().size() + " classes) ... ");
+
+		for (Iterator<Frame> iter = superClsCache.getCachedFramesWithNoSuperclass().iterator(); iter.hasNext();) {
+			Frame frame = (Frame) iter.next();
+			if (log.isLoggable(Level.FINE)) {
+				log.fine("processClsesWithoutSupercls: No declared supercls: " + frame);
+			}
+			if (frame instanceof Cls) {
+				Cls cls = (Cls) frame;				
+				FrameCreatorUtility.createSubclassOf(cls, owlModel.getOWLThingClass());
+			}
+		}
+
+		superClsCache.clearCache();
+
+		log.info("(" + (System.currentTimeMillis() - time0) + " ms)");
+	}
+
+
+	private void processInferredSuperclasses(){
+		long time0 = System.currentTimeMillis();
+
+		OWLNamedClass owlClassClass = owlModel.getOWLNamedClassClass();
+
+		log.info("Postprocess: Add inferred superclasses (" + owlModel.getInstanceCount(owlClassClass) + " classes) ... ");
+
+		for (Iterator iterator = owlClassClass.getInstances().iterator(); iterator.hasNext();) {
+			Object obj = iterator.next();
+
+			try {				
+				OWLNamedClass namedClass = (OWLNamedClass) obj;
+				Collection<Cls> inferredSuperclasses = getInferredSuperClasses(namedClass);
+
+				if (inferredSuperclasses.size() > 0) {
+					superClsCache.removeFrame(namedClass);
+				}
+
+				for (Cls inferredSupercls : inferredSuperclasses) {
+					FrameCreatorUtility.createSubclassOf(namedClass, inferredSupercls);
+				}
+
+			} catch (Exception e) {
+				Log.getLogger().log(Level.WARNING, " Error at processing " + obj, e);
+			}			
+		}
+
+		log.info("(" + (System.currentTimeMillis() - time0) + " ms)");		
+	}
+
+
+	private Collection<Cls> getInferredSuperClasses(OWLNamedClass namedClass) {
+		Collection<Cls> inferredSuperClasses = new ArrayList<Cls>();
+
+		//make this into a recursive function
+		Collection<RDFSClass> equivClasses = namedClass.getEquivalentClasses();
+		for (RDFSClass equivClass : equivClasses) {
+			if (equivClass instanceof RDFSNamedClass) {
+				inferredSuperClasses.add(equivClass);
+			} else if (equivClass instanceof OWLIntersectionClass) {
+				//add operands if defined
+				Collection<RDFSClass> operands = ((OWLIntersectionClass)equivClass).getOperands();
+
+				for (RDFSClass operand : operands) {
+					if (operand instanceof RDFSNamedClass) {
+						inferredSuperClasses.add(operand);
+					}					
+				}				
+			}
+		}
+
+		return inferredSuperClasses;
+	}
+
+
+	private void processInstancesWithMultipleTypes() {
+		long time0 = System.currentTimeMillis();
+
+		Set<Instance> instancesWithMultipleTypes = multipleTypesInstanceCache.getInstancesWithMultipleTypes();
+
+		log.info("Postprocess: Instances with multiple types (" + instancesWithMultipleTypes.size() + " instances) ... ");
+
+		for (Instance instance : instancesWithMultipleTypes) {
+			Set<Cls> typesSet = multipleTypesInstanceCache.getTypesForInstanceAsSet(instance);
+			adjustTypesOfInstance(instance, typesSet);
+			if (log.isLoggable(Level.FINE)) {
+				log.fine("process instance with multiple types" + instance + ": " + typesSet);
+			}
+		}
+		log.info("(" + (System.currentTimeMillis() - time0) + " ms)");
+	}
+
+	private void adjustTypesOfInstance(Instance instance, Set<Cls> typesSet) {
+		Collection<Cls> existingTypes = FrameCreatorUtility.getDirectTypes(instance);
+		typesSet.removeAll(existingTypes); // types to add
+
+		for (Cls cls : typesSet) {
+			FrameCreatorUtility.addDirectTypeAndSwizzle(instance, cls);
+		}
+
+	}
+
+	private void processCreatedProperties() {
+		for (RDFProperty property : createdProperties) {
+			if (property.getDirectDomain().isEmpty()) {
+				FrameCreatorUtility.addOwnSlotValue(property, owlModel.getSystemFrames().getDirectDomainSlot(), owlModel.getOWLThingClass());
+				FrameCreatorUtility.addOwnSlotValue(owlModel.getOWLThingClass(), owlModel.getSystemFrames().getDirectTemplateSlotsSlot(), property);
+			}
+		}
+	}
+
+	private void processGeneralizedConceptInclusions() {
+		// now try to give them a good name
+		NamespaceManager names = owlModel.getNamespaceManager();
+		String namespace = names.getDefaultNamespace();
+		if (namespace == null && owlModel.getDefaultOWLOntology() != null) {
+			namespace = owlModel.getDefaultOWLOntology().getName() + "#";
+		}
+		String axiomPrefix = namespace + "Axiom";
+		int counter = 0;
+
+		if (namespace != null) {
+			for (RDFSClass gci : gciAxioms) {
+				while (owlModel.getFrame(axiomPrefix + counter) != null) {
+					counter++;
+				}
+				gci = owlModel.getOWLNamedClass(gci.getName());
+				gci.rename(axiomPrefix + counter);
+			}
+		}
+	}
+
+
+}
