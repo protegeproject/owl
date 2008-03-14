@@ -11,7 +11,7 @@ import edu.stanford.smi.protege.model.Model;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.jena.parser.FrameCreatorUtility;
 import edu.stanford.smi.protegex.owl.jena.parser.ProtegeOWLParser;
-import edu.stanford.smi.protegex.owl.jena.parser.TripleFrameCache;
+import edu.stanford.smi.protegex.owl.jena.parser.TripleProcessor;
 import edu.stanford.smi.protegex.owl.model.RDFIndividual;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
@@ -25,7 +25,7 @@ public class CreateProtegeFramesTestCase extends AbstractProtege2JenaTestCase {
     public static void enableDebug() {
         Log.setLoggingLevel(AbstractJenaTestCase.class, Level.FINE);
         Log.setLoggingLevel(ProtegeOWLParser.class, Level.FINEST);
-        Log.setLoggingLevel(TripleFrameCache.class, Level.FINEST);
+        Log.setLoggingLevel(TripleProcessor.class, Level.FINEST);
         Log.setLoggingLevel(FrameCreatorUtility.class, Level.FINEST);
     }
 
