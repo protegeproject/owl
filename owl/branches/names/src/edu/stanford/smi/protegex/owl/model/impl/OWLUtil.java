@@ -1156,6 +1156,9 @@ public class OWLUtil {
     	if (name == null) {
     		return null;
     	}
+    	if (owlModel.isAnonymousResourceName(name)) {
+    		return name;
+    	}
     	if (owlModel.isExpandShortNameInMethods() && !isAbsoluteURI(owlModel, name)) {
     		name = NamespaceUtil.getFullName(owlModel, name);
     	}
