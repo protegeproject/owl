@@ -48,9 +48,9 @@ public class SynchronizeSuperclassesTestCase extends AbstractJenaTestCase {
     }
 
 
-    public void testAnonymousSuperclassToImportedClass() throws Exception {
-        RDFProperty subClassOfProperty = owlModel.getRDFProperty(RDFSNames.Slot.SUB_CLASS_OF);
+    public void testAnonymousSuperclassToImportedClass() throws Exception {        
         loadRemoteOntology("importTravel.owl");
+        RDFProperty subClassOfProperty = owlModel.getRDFProperty(RDFSNames.Slot.SUB_CLASS_OF);
         OWLNamedClass c = owlModel.getOWLNamedClass("travel:Activity");
         assertNotNull(c);
         assertSize(0, c.getPropertyValues(subClassOfProperty));
