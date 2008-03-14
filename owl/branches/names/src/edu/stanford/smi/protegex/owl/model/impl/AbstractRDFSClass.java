@@ -281,7 +281,7 @@ public abstract class AbstractRDFSClass extends DefaultCls implements RDFSClass 
 
 
     public int getSubclassCount() {
-        if (Model.ClsID.THING.equals(getFrameID())) {
+    	if (this.equals(getOWLModel().getOWLThingClass())) {
             return getSubclasses(false).size();
         }
         else {
@@ -291,7 +291,7 @@ public abstract class AbstractRDFSClass extends DefaultCls implements RDFSClass 
 
 
     public Collection getSubclasses(boolean transitive) {
-        if (Model.ClsID.THING.equals(getFrameID())) {
+    	if (this.equals(getOWLModel().getOWLThingClass())) {
             if (transitive) {
                 return AbstractOWLModel.getRDFResources(getKnowledgeBase(),
                                                         getKnowledgeBase().getSubclasses(this));
