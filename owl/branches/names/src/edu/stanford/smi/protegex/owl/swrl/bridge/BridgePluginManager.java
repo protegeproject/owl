@@ -15,6 +15,7 @@ import java.awt.Container;
 import java.awt.GridLayout;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.Icon;
@@ -58,7 +59,8 @@ public class BridgePluginManager
       Class.forName("edu.stanford.smi.protegex.owl.swrl.bridge.jess.SWRLJessBridge");
       Class.forName("edu.stanford.smi.protegex.owl.swrl.bridge.jess.ui.SWRLJessTab");
     } catch (ClassNotFoundException e) {
-      System.err.println("SWRLJessBridge load failed: could not find jess.Rete - or an error occured on initialization");
+      log.log(Level.WARNING, "SWRLJessBridge load failed: could not find jess.Rete - or an error occured on initialization", e);
+      
     } // try
 
     try { // TODO:  Hack until we can do a proper class load with the manifest
