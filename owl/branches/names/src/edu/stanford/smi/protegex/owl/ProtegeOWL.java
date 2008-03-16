@@ -73,7 +73,7 @@ public class ProtegeOWL {
     }
 
 
-    public static JenaOWLModel createJenaOWLModelFromURI(String uri) throws Exception {
+    public static JenaOWLModel createJenaOWLModelFromURI(String uri) throws IOException {
         Collection errors = new ArrayList();
         OwlProjectFromUriCreator creator = new OwlProjectFromUriCreator();
         creator.setOntologyUri(uri);
