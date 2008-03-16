@@ -661,7 +661,7 @@ public abstract class OWLSystemFrames extends SystemFrames {
             assertRange(owlComplementOfProperty, owlClassMetaCls);
             
             assertTypeAndName(owlDifferentFromProperty, rdfPropertyClass);
-            assertDomain(owlDifferentFromProperty, owlThingClass);
+            assertDomain(owlDifferentFromProperty);
             assertRange(owlDifferentFromProperty, owlThingClass);
 
             assertTypeAndName(owlDisjointWithProperty, rdfPropertyClass);
@@ -724,7 +724,7 @@ public abstract class OWLSystemFrames extends SystemFrames {
             assertRange(owlPriorVersionProperty, owlOntologyClass);
             
             assertTypeAndName(owlSameAsProperty, rdfPropertyClass);
-            assertDomain(owlSameAsProperty, owlThingClass);
+            assertDomain(owlSameAsProperty);
             assertRange(owlSameAsProperty, owlThingClass);
             
             assertTypeAndName(owlSomeValuesFromProperty, rdfPropertyClass);  
@@ -741,7 +741,7 @@ public abstract class OWLSystemFrames extends SystemFrames {
             assertFunctional(owlValuesFromProperty);
             
             assertTypeAndName(owlVersionInfoProperty, annotationObjectPropertyTypes);
-            assertDomain(owlVersionInfoProperty, owlThingClass);
+            assertDomain(owlVersionInfoProperty);
             assertValueType(owlVersionInfoProperty, ValueType.STRING);
             
             assertTypeAndName(protegeClassificationStatusProperty, rdfPropertyClass);
@@ -783,14 +783,14 @@ public abstract class OWLSystemFrames extends SystemFrames {
             assertValueType(rdfSubjectProperty, ValueType.INSTANCE);
             
             assertTypeAndName(rdfTypeProperty, rdfPropertyClass);
-            assertDomain(rdfTypeProperty, owlThingClass);
+            assertDomain(rdfTypeProperty);
             assertValueType(rdfTypeProperty, ValueType.CLS);
             
             assertTypeAndName(rdfValueProperty, rdfPropertyClass);
-            assertDomain(rdfValueProperty, owlThingClass);
+            assertDomain(rdfValueProperty);
             
             assertTypeAndName(rdfsCommentProperty, annotationDatatypePropertyTypes);
-            assertDomain(rdfsCommentProperty, owlThingClass);
+            assertDomain(rdfsCommentProperty);
             assertValueType(rdfsCommentProperty, ValueType.STRING);
             fs.setDirectOwnSlotValues(rdfsCommentProperty, rdfsRangeProperty, Collections.singleton(xsdString));
             
@@ -800,15 +800,15 @@ public abstract class OWLSystemFrames extends SystemFrames {
             assertValueType(rdfsCommentProperty, ValueType.INSTANCE);
             
             assertTypeAndName(rdfsIsDefinedByProperty, annotationObjectPropertyTypes);
-            assertDomain(rdfsIsDefinedByProperty, owlThingClass);
+            assertDomain(rdfsIsDefinedByProperty);
             
             assertTypeAndName(rdfsLabelProperty, annotationObjectPropertyTypes);
-            assertDomain(rdfsLabelProperty, owlThingClass);
+            assertDomain(rdfsLabelProperty);
             assertValueType(rdfsLabelProperty, ValueType.STRING);
             fs.setDirectOwnSlotValues(rdfsLabelProperty, rdfsRangeProperty, Collections.singleton(xsdString));
             
             assertTypeAndName(rdfsMemberProperty, rdfPropertyClass);
-            assertDomain(rdfsMemberProperty, owlThingClass);
+            assertDomain(rdfsMemberProperty);
             assertValueType(rdfsMemberProperty, ValueType.INSTANCE);
             
             assertTypeAndName(rdfsRangeProperty, rdfPropertyClass);  
@@ -816,7 +816,7 @@ public abstract class OWLSystemFrames extends SystemFrames {
             assertRange(rdfsRangeProperty, rdfsNamedClassClass);
             
             assertTypeAndName(rdfsSeeAlsoProperty, annotationObjectPropertyTypes);
-            assertDomain(rdfsSeeAlsoProperty, owlThingClass);
+            assertDomain(rdfsSeeAlsoProperty);
 
             assertTypeAndName(rdfsSubClassOfProperty, rdfPropertyClass); 
             assertDomain(rdfsSubClassOfProperty, rdfsNamedClassClass);
