@@ -93,6 +93,7 @@ public class OWLJavaFactoryTestCase extends AbstractOWLModelTestCase {
 
 
     public void testCreateRDFDatatype() {
+        owlModel.setExpandShortNameInMethods(true);
         assertTrue(owlModel.getRDFResource("xsd:int") instanceof RDFSDatatype);
     }
 
