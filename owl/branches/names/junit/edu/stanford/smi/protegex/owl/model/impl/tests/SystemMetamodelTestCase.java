@@ -81,7 +81,6 @@ public class SystemMetamodelTestCase extends AbstractJenaTestCase {
 
 
     public void testRanges() {
-        assertEquals(owlModel.getXSDstring(), owlModel.getOWLVersionInfoProperty().getRange());
         assertEquals(ValueType.STRING, ((Slot) owlModel.getRDFSLabelProperty()).getValueType());
         assertEquals(owlModel.getXSDint(), owlModel.getRDFProperty(OWLNames.Slot.MAX_CARDINALITY).getRange());
         assertEquals(owlModel.getXSDint(), owlModel.getRDFProperty(OWLNames.Slot.MIN_CARDINALITY).getRange());
