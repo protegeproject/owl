@@ -119,6 +119,8 @@ public abstract class OWLSystemFrames extends SystemFrames {
     private RDFSNamedClass owlDataRangeClass;
     private RDFSNamedClass anonymousRootCls;
     private RDFSNamedClass rdfExternalResourceClass;
+    private RDFSNamedClass rdfExternalClassClass;
+    private RDFSNamedClass rdfExternalPropertyClass;
     private RDFSNamedClass owlOntologyPointerClass;
 
     /*
@@ -316,6 +318,8 @@ public abstract class OWLSystemFrames extends SystemFrames {
         owlDataRangeClass = createRDFSNamedClass(OWLNames.Cls.DATA_RANGE);
         anonymousRootCls= createRDFSNamedClass(OWLNames.Cls.ANONYMOUS_ROOT);
         rdfExternalResourceClass= createRDFSNamedClass(RDFNames.Cls.EXTERNAL_RESOURCE);
+        rdfExternalClassClass= createRDFSNamedClass(RDFNames.Cls.EXTERNAL_CLASS);
+        rdfExternalPropertyClass= createRDFSNamedClass(RDFNames.Cls.EXTERNAL_PROPERTY);
         owlOntologyPointerClass = createRDFSNamedClass(OWLNames.Cls.OWL_ONTOLOGY_POINTER_CLASS);
     }
 	
@@ -569,7 +573,8 @@ public abstract class OWLSystemFrames extends SystemFrames {
             assertTypeAndSubclasses(owlClassMetaCls, rdfsNamedClassClass, new Cls[] {
                     assertTypeAndSubclasses(rdfsNamedClassClass, owlNamedClassClass, new Cls[] {
                             assertTypeAndSubclasses(owlNamedClassClass,      owlNamedClassClass, new Cls[] { }),
-                            assertTypeAndSubclasses(owlDeprecatedClassClass, rdfsNamedClassClass, new Cls[] { })
+                            assertTypeAndSubclasses(owlDeprecatedClassClass, rdfsNamedClassClass, new Cls[] { }),
+                            assertTypeAndSubclasses(rdfExternalClassClass, rdfsNamedClassClass, new Cls[] { })
                         }),
                     assertTypeAndSubclasses(anonymousClassMetaCls, rdfsNamedClassClass, new Cls[] {
                             assertTypeAndSubclasses(owlEnumeratedClassClass, rdfsNamedClassClass, new Cls[] { }),
@@ -598,7 +603,8 @@ public abstract class OWLSystemFrames extends SystemFrames {
                         }),
                     assertTypeAndSubclasses(owlAnnotationPropertyClass, owlNamedClassClass, new Cls[] {}),
                     assertTypeAndSubclasses(owlFunctionalPropertyClass, owlNamedClassClass, new Cls[] {}),
-                    assertTypeAndSubclasses(owlDeprecatedPropertyClass, rdfsNamedClassClass, new Cls[] {})
+                    assertTypeAndSubclasses(owlDeprecatedPropertyClass, rdfsNamedClassClass, new Cls[] {}),
+                    assertTypeAndSubclasses(rdfExternalPropertyClass, rdfsNamedClassClass, new Cls[] {})
                 });
             assertTypeAndSubclasses(owlThingClass, owlNamedClassClass, new Cls[] {
                     rdfsNamedClassClass,
@@ -617,8 +623,8 @@ public abstract class OWLSystemFrames extends SystemFrames {
                     assertTypeAndSubclasses(rdfStatementClass,        rdfsNamedClassClass, new Cls[] {}),
                     assertTypeAndSubclasses(owlDataRangeClass,        rdfsNamedClassClass, new Cls[] {}),
                     assertTypeAndSubclasses(anonymousRootCls,         rdfsNamedClassClass, new Cls[] {}),
-                    assertTypeAndSubclasses(rdfExternalResourceClass, rdfsNamedClassClass, new Cls[] {}),
-                    assertTypeAndSubclasses(owlOntologyPointerClass,      rdfsNamedClassClass, new Cls[] {}),
+                    assertTypeAndSubclasses(rdfExternalResourceClass, rdfsNamedClassClass, new Cls[] {}),                     
+                    assertTypeAndSubclasses(owlOntologyPointerClass,  rdfsNamedClassClass, new Cls[] {}),
                     getDirectedBinaryRelationCls()
                 });
         }
@@ -645,9 +651,11 @@ public abstract class OWLSystemFrames extends SystemFrames {
         private void addSlotAssertions() {
             assertTypeAndName(owlAllValuesFromProperty, rdfPropertyClass);
             assertDomain(owlAllValuesFromProperty, owlAllValuesFromClass);
+            assertRange(owlAllValuesFromProperty, rdfsNamedClassClass);
             
             assertTypeAndName(owlBackwardCompatibleWithProperty, annotationObjectPropertyTypes);
             assertDomain(owlBackwardCompatibleWithProperty, owlOntologyClass);
+            assertRange(owlBackwardCompatibleWithProperty, owlOntologyClass);
             assertValueType(owlBackwardCompatibleWithProperty, ValueType.INSTANCE);
             
             assertTypeAndName(owlCardinalityProperty, rdfPropertyClass);
@@ -676,6 +684,7 @@ public abstract class OWLSystemFrames extends SystemFrames {
             assertDomain(owlEquivalentClassProperty, owlClassMetaCls);
             assertRange(owlDistinctMembersProperty, owlClassMetaCls);
             
+            //missing owl:EquivalentProperty subproperty of rdfs:subPropertyOf
             assertTypeAndName(owlEquivalentPropertyProperty, rdfPropertyClass);
             assertDomain(owlEquivalentPropertyProperty, rdfPropertyClass);
             assertRange(owlEquivalentPropertyProperty, rdfPropertyClass);
@@ -684,8 +693,11 @@ public abstract class OWLSystemFrames extends SystemFrames {
             assertDomain(owlHasValueProperty, owlHasValueClass);
             assertFunctional(owlHasValueProperty);
             
+            //Check if the range specification causes problems.
+            //Range assertion is according to the OWL spec. 
             assertTypeAndName(owlImportsProperty, rdfPropertyClass);
             assertDomain(owlImportsProperty, owlOntologyClass);
+            assertRange(owlImportsProperty, owlOntologyClass);
             
             assertTypeAndName(owlIncompatibleWithProperty, annotationObjectPropertyTypes);
             assertDomain(owlIncompatibleWithProperty, owlOntologyClass);
@@ -711,6 +723,7 @@ public abstract class OWLSystemFrames extends SystemFrames {
             assertFunctional(owlMinCardinalityProperty);
             fs.setDirectOwnSlotValues(owlMinCardinalityProperty, rdfsRangeProperty, Collections.singleton(xsdInt));
 
+            //domain not according to OWL spec: Should be rdfs:Class
             assertTypeAndName(owlOneOfProperty, rdfPropertyClass);
             assertDomains(owlOneOfProperty, new Cls[] { owlEnumeratedClassClass, owlDataRangeClass });
             assertRange(owlOneOfProperty, rdfListClass);
@@ -727,6 +740,7 @@ public abstract class OWLSystemFrames extends SystemFrames {
             assertDomain(owlSameAsProperty);
             assertRange(owlSameAsProperty, owlThingClass);
             
+            //range not according to OWL spec: Should be rdfs:Class
             assertTypeAndName(owlSomeValuesFromProperty, rdfPropertyClass);  
             assertDomain(owlSomeValuesFromProperty, owlSomeValuesFromClass);
             assertRange(owlSomeValuesFromProperty, owlClassMetaCls);
@@ -735,17 +749,19 @@ public abstract class OWLSystemFrames extends SystemFrames {
             assertDomain(owlUnionOfProperty, owlClassMetaCls);
             assertRange(owlUnionOfProperty, rdfListClass);
             
+            //not in OWL 1.0, but in OWL 1.1 to support qualified cardinality restrictions
             assertTypeAndName(owlValuesFromProperty, rdfPropertyClass);
             assertDomains(owlValuesFromProperty, new Cls[] {owlMaxCardinalityClass, owlMinCardinalityClass, owlCardinalityClass });
             assertRange(owlValuesFromProperty, owlClassMetaCls);
             assertFunctional(owlValuesFromProperty);
             
+            //no String type assertion in OWL spec
             assertTypeAndName(owlVersionInfoProperty, annotationObjectPropertyTypes);
             assertDomain(owlVersionInfoProperty);
             assertValueType(owlVersionInfoProperty, ValueType.STRING);
             
             assertTypeAndName(protegeClassificationStatusProperty, rdfPropertyClass);
-            assertDomain(protegeClassificationStatusProperty,rdfsNamedClassClass);
+            assertDomain(protegeClassificationStatusProperty,rdfsNamedClassClass);            
             assertFunctional(protegeClassificationStatusProperty);
             assertValueType(owlVersionInfoProperty, ValueType.BOOLEAN);
             
@@ -761,66 +777,82 @@ public abstract class OWLSystemFrames extends SystemFrames {
             assertDomain(protegeInferredTypeProperty, rdfsNamedClassClass);
             assertRange(protegeInferredTypeProperty, getStandardClsMetaCls());
             
+            //range should be rdf:Resource
             assertTypeAndName(rdfFirstProperty, rdfPropertyClass); 
             assertDomain(rdfFirstProperty, rdfListClass);
             assertFunctional(rdfFirstProperty);
             
+            //range should be rdf:Resource
             assertTypeAndName(rdfObjectProperty, rdfPropertyClass);
             assertDomain(rdfObjectProperty, rdfStatementClass);
             assertValueType(rdfObjectProperty, ValueType.INSTANCE);
-            
+  
+            //range should be rdf:Resource
             assertTypeAndName(rdfPredicateProperty, rdfPropertyClass);    
             assertDomain(rdfPredicateProperty, rdfStatementClass);
             assertValueType(rdfPredicateProperty, ValueType.INSTANCE);
-            
+                        
             assertTypeAndName(rdfRestProperty, rdfPropertyClass);  
             assertFunctional(rdfRestProperty);
             assertDomain(rdfRestProperty, rdfListClass);
             assertRange(rdfRestProperty, rdfListClass);
             
+            //range should be rdf:Resource
             assertTypeAndName(rdfSubjectProperty, rdfPropertyClass);  
             assertDomain(rdfSubjectProperty, rdfStatementClass);
             assertValueType(rdfSubjectProperty, ValueType.INSTANCE);
             
+            //range should be rdf:Resource
             assertTypeAndName(rdfTypeProperty, rdfPropertyClass);
             assertDomain(rdfTypeProperty);
             assertValueType(rdfTypeProperty, ValueType.CLS);
             
+            //range should be rdf:Resource
             assertTypeAndName(rdfValueProperty, rdfPropertyClass);
             assertDomain(rdfValueProperty);
             
+            //range should be rdf:Resource
             assertTypeAndName(rdfsCommentProperty, annotationDatatypePropertyTypes);
             assertDomain(rdfsCommentProperty);
             assertValueType(rdfsCommentProperty, ValueType.STRING);
             fs.setDirectOwnSlotValues(rdfsCommentProperty, rdfsRangeProperty, Collections.singleton(xsdString));
             
+            //domain should be rdfs:Class
             assertTypeAndName(rdfsDomainProperty, rdfPropertyClass);
             assertDomain(rdfsDomainProperty, rdfPropertyClass);
             assertRange(rdfsDomainProperty, owlClassMetaCls);
             assertValueType(rdfsCommentProperty, ValueType.INSTANCE);
-            
+           
+            //range should be rdf:Resource
             assertTypeAndName(rdfsIsDefinedByProperty, annotationObjectPropertyTypes);
             assertDomain(rdfsIsDefinedByProperty);
             
+            //domain should be rdf:Resource, range should be: rdf:Literal
             assertTypeAndName(rdfsLabelProperty, annotationObjectPropertyTypes);
             assertDomain(rdfsLabelProperty);
             assertValueType(rdfsLabelProperty, ValueType.STRING);
             fs.setDirectOwnSlotValues(rdfsLabelProperty, rdfsRangeProperty, Collections.singleton(xsdString));
             
+            //range should be rdf:Resource
             assertTypeAndName(rdfsMemberProperty, rdfPropertyClass);
             assertDomain(rdfsMemberProperty);
             assertValueType(rdfsMemberProperty, ValueType.INSTANCE);
-            
+
             assertTypeAndName(rdfsRangeProperty, rdfPropertyClass);  
             assertDomain(rdfsRangeProperty, rdfPropertyClass);
             assertRange(rdfsRangeProperty, rdfsNamedClassClass);
-            
+
+            //range should be rdf:Resource
             assertTypeAndName(rdfsSeeAlsoProperty, annotationObjectPropertyTypes);
             assertDomain(rdfsSeeAlsoProperty);
 
             assertTypeAndName(rdfsSubClassOfProperty, rdfPropertyClass); 
             assertDomain(rdfsSubClassOfProperty, rdfsNamedClassClass);
             assertRange(rdfsSubClassOfProperty, rdfsNamedClassClass);
+            
+            assertTypeAndName(rdfsSubPropertyOf, rdfPropertyClass);
+            assertDomain(rdfsSubPropertyOf, rdfPropertyClass);
+            assertRange(rdfsSubPropertyOf, rdfPropertyClass);
             
             assertTypeAndName(owlOntologyPrefixesProperty, rdfPropertyClass);
             assertDomain(owlOntologyPrefixesProperty, owlOntologyClass);
@@ -1352,7 +1384,21 @@ public abstract class OWLSystemFrames extends SystemFrames {
     public RDFSNamedClass getRdfExternalResourceClass() {
         return rdfExternalResourceClass;
     }
-
+    
+    /**
+     * @return the rdfExternalClassClass
+     */
+    public RDFSNamedClass getRdfExternalClassClass() {
+        return rdfExternalClassClass;
+    }
+    
+    /**
+     * @return the rdfExternalPropertyClass
+     */
+    public RDFSNamedClass getRdfExternalPropertyClass() {
+        return rdfExternalPropertyClass;
+    }
+    
     /**
      * @return the topOWLOntologyClass
      */
