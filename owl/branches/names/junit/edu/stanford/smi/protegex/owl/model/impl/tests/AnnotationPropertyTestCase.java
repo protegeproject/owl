@@ -57,7 +57,7 @@ public class AnnotationPropertyTestCase extends AbstractJenaTestCase {
 
 
     private void assertOntologyProperty(String slotName) {
-        OWLProperty property = (OWLProperty) owlModel.getSlot(slotName);
+        RDFProperty property = owlModel.getOWLBackwardCompatibleWithProperty();
         assertTrue(property.isAnnotationProperty());
         assertTrue(property.isDomainDefined());
         assertSize(1, property.getUnionDomain());
