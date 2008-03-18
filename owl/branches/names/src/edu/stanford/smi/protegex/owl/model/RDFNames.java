@@ -22,9 +22,7 @@ public interface RDFNames {
         final static String BAG = RDF_NAMESPACE + "Bag";
 
         final static String DESCRIPTION = RDF_NAMESPACE + "Description";
-
-        final static String EXTERNAL_RESOURCE = ProtegeNames.PROTEGE_OWL_NAMESPACE +  "ExternalResource";
-
+        
         final static String LIST = RDF_NAMESPACE + "List";
 
         final static String PROPERTY = RDF_NAMESPACE + "Property";
@@ -32,6 +30,13 @@ public interface RDFNames {
         final static String SEQ = RDF_NAMESPACE + "Seq";
 
         final static String STATEMENT = RDF_NAMESPACE + "Statement";
+        
+        final static String EXTERNAL_RESOURCE = ProtegeNames.PROTEGE_OWL_NAMESPACE +  "ExternalResource";
+
+        final static String EXTERNAL_CLASS = ProtegeNames.PROTEGE_OWL_NAMESPACE +  "ExternalClass";
+        
+        final static String EXTERNAL_PROPERTY = ProtegeNames.PROTEGE_OWL_NAMESPACE +  "ExternalProperty";
+
     }
 
 
