@@ -16,7 +16,7 @@ public class LoadRDFExternalResourceTestCase extends AbstractJenaTestCase {
         loadRemoteOntology("externalSeeAlso.owl");
         OWLNamedClass cls = owlModel.getOWLNamedClass("Cls");
         assertNotNull(cls);
-        Instance instance = owlModel.getInstance("Instance");
+        Instance instance = owlModel.getOWLIndividual("Instance");
         assertNotNull(instance);
         RDFProperty seeAlsoSlot = owlModel.getRDFProperty(RDFSNames.Slot.SEE_ALSO);
         RDFProperty isDefinedBySlot = owlModel.getRDFProperty(RDFSNames.Slot.IS_DEFINED_BY);
