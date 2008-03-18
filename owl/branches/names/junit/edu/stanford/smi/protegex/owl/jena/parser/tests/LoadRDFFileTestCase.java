@@ -34,7 +34,7 @@ public class LoadRDFFileTestCase extends AbstractJenaTestCase {
         assertFalse(hasChildrenProperty instanceof OWLProperty);
         RDFIndividual purzel = owlModel.getRDFIndividual("Purzel");
         assertEquals(animalCls, purzel.getProtegeType());
-        Instance susie = owlModel.getInstance("Susie");
+        Instance susie = owlModel.getRDFIndividual("Susie");
         assertEquals(animalCls, susie.getDirectType());
         assertSize(1, purzel.getPropertyValues(hasChildrenProperty));
         assertEquals(susie, purzel.getPropertyValue(hasChildrenProperty));
