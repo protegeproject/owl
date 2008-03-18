@@ -121,11 +121,6 @@ public class FacetUpdateFrameStore extends FrameStoreAdapter {
         }
       }
       
-      
-
-    
-
-
 
     private void updateRestrictions(OWLNamedClass cls, RDFProperty slot, Facet facet) {
         RestrictionUpdater ru = facet2Updater.get(facet);
