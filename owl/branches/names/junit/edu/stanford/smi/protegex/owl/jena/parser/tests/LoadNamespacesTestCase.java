@@ -26,7 +26,7 @@ import edu.stanford.smi.protegex.owl.ui.search.finder.SearchAdapter;
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
  */
-public class LoadNamespacesFailedTestCase extends AbstractJenaTestCase {
+public class LoadNamespacesTestCase extends AbstractJenaTestCase {
 
     private URI tempSavedFileURI = new File(ProtegeOWL.getPluginFolder(), "temp.owl").toURI();
 
