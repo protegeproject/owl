@@ -52,7 +52,7 @@ public class LoadImportsTestCase extends AbstractJenaTestCase {
         loadRemoteOntology("uglyImport.owl");
         assertEquals("http://aldi.de/ont/", owlModel.getNamespaceManager().getDefaultNamespace());
         OWLOntology oi = owlModel.getDefaultOWLOntology();
-        assertSize(0, oi.getImports());   // the import is broken
+        assertSize(1, oi.getImports());   // the import is broken
         assertNotNull(owlModel.getOWLNamedClass("travel:Sunbathing")); // but the data is imported
     }
 
