@@ -1,6 +1,8 @@
 package edu.stanford.smi.protegex.owl.jena.parser;
 
 import java.util.Collection;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.hp.hpl.jena.vocabulary.OWL;
 import com.hp.hpl.jena.vocabulary.RDF;
@@ -12,7 +14,9 @@ import edu.stanford.smi.protege.model.FrameID;
 import edu.stanford.smi.protege.model.Instance;
 import edu.stanford.smi.protege.model.KnowledgeBase;
 import edu.stanford.smi.protege.model.Slot;
+import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLAllDifferent;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLDataRange;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLDatatypeProperty;
@@ -39,8 +43,7 @@ import edu.stanford.smi.protegex.owl.swrl.model.impl.DefaultSWRLSameIndividualAt
 import edu.stanford.smi.protegex.owl.swrl.model.impl.DefaultSWRLVariable;
 
 public class FrameCreatorUtility {
-    //  private static SimpleFrameStore simpleFrameStore;
-
+	private static transient Logger log = Log.getLogger(FrameCreatorUtility.class);
 
     public static Frame createFrameWithType(OWLModel owlModel, FrameID id, String typeUri, boolean isSubjAnon) {
         Frame frame = ((KnowledgeBase) owlModel).getFrame(id);
@@ -146,9 +149,17 @@ public class FrameCreatorUtility {
             //maybe this is an RDF individual
             frame = new DefaultOWLIndividual(owlModel, id);
         }
+        
         frame.assertFrameName();
-
+    	
+        if (log.getLevel() == Level.FINE) {
+    		log.fine("Created frame: " + frame);
+    	}
+        
         if (!hasDirectType((Instance)frame, (Cls)type)) {
+        	if (log.getLevel() == Level.FINE) {
+        		log.fine("Adding direct type to " + frame + " type: " + type);
+        	}
         	addInstanceType((Instance)frame, (Cls)type);
         	addOwnSlotValue(frame, systemFrames.getRdfTypeProperty(), type);
         }
