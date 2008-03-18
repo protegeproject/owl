@@ -2913,6 +2913,21 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     }
 
     /**
+     * @return the rdfExternalClassClass
+     */
+    public RDFSNamedClass getRDFExternalClassClass(){
+    	return getSystemFrames().getRdfExternalClassClass();
+    }
+
+    /**
+     * @return the rdfExternalPropertyClass
+     */
+    public RDFSNamedClass getRDFExternalPropertyClass(){
+    	return getSystemFrames().getRdfExternalPropertyClass();
+    }
+
+    
+    /**
      * @return the topOWLOntologyClass
      */
     public RDFSNamedClass getTopOWLOntologyClass() {
