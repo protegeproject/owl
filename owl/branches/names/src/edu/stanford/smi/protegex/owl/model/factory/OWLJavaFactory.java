@@ -321,6 +321,8 @@ public class OWLJavaFactory extends DefaultFrameFactory {
             }
             else if (metaCls.equals(owlModel.getOWLDeprecatedClassClass())) {
                 isRDFSNamedClass = true;
+            } else if (metaCls.equals(owlModel.getRDFExternalClassClass())) {
+            	isRDFSNamedClass = true;
             }
         }
         if (isRDFSNamedClass) {
@@ -396,6 +398,9 @@ public class OWLJavaFactory extends DefaultFrameFactory {
             }
             else if (!isRDFProperty && (metaCls.equals(rdfSlotMetaCls) || metaCls.hasSuperclass(rdfSlotMetaCls))) {
                 isRDFProperty = true;
+            } 
+            else if (metaCls.equals(owlModel.getRDFExternalPropertyClass())) {
+            	isRDFProperty = true;
             }
         }
         if (isRDFProperty) {
