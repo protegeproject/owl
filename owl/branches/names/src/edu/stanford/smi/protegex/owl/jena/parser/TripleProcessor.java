@@ -1,16 +1,23 @@
 package edu.stanford.smi.protegex.owl.jena.parser;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.logging.Level;
 
 import com.hp.hpl.jena.rdf.arp.ALiteral;
 import com.hp.hpl.jena.rdf.arp.AResource;
 
 import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.model.RDFProperty;
+import edu.stanford.smi.protegex.owl.model.RDFResource;
+import edu.stanford.smi.protegex.owl.model.RDFSClass;
+import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
+import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 
-
-//TODO: Metaclass postprocessing: keep track of subclasses of owl:Class and post process them. Test self-referencing metaclasses
+//TODO: Postprocess classes without superclasses: add owl:Thing in all triplestores where the class has a name
+//TODO: ProtegeOWLParser: is the process undef triples and postprocess in the right place?
 //TODO: Postprocessing GCI - refactor in their own class
 //TODO: Postprcessing undef triples -> create them as Untyped resources (swizzle)
 //TODO: Solution for copyFacetedValues not to happen too many times. Maybe use flag in AbstractOWLModel
@@ -18,9 +25,9 @@ import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 //TODO: Timing logger for the parser
 
 //-- later --
-//TODO: check ranges with datatypes 
-//TODO: Use java objects rather than strings for the frames-owl mapping
+//TODO: check ranges with datatypes
 //TODO: Process each triple in a try catch
+//TODO: Each post process in a try catch
 
 
 public class TripleProcessor {
@@ -107,30 +114,17 @@ public class TripleProcessor {
 		return importing;
 	}
 
-
-	public void processUndefTriples() {
-		for (Iterator<UndefTriple> iter = getUndefTripleManager().getUndefTriples().iterator(); iter.hasNext();) {
-			UndefTriple undefTriple = (UndefTriple) iter.next();
-			Object obj = undefTriple.getTripleObj();
-			
-			boolean success = false;
-
-			if (obj instanceof AResource) {			
-				success = processTriple(undefTriple.getTripleSubj(), undefTriple.getTriplePred(), (AResource) undefTriple.getTripleObj(), true);
-			} else if (obj instanceof ALiteral) {
-				success = processTriple(undefTriple.getTripleSubj(), undefTriple.getTriplePred(), (ALiteral) undefTriple.getTripleObj(), true);
-			}	
-
-			if (success) {
-				getUndefTripleManager().removeUndefTriple(undefTriple.getUndef(), undefTriple);
-			}
-		}
-	}
-
-
 	public void doPostProcessing() {
 		processorResourceObjs.doPostProcessing();
 		processorLiteralObjs.doPostProcessing();
 	}
+
+
+	public void processUndefTriples() {		
+		TripleProcessorForUntypedResources untypedProcessor = new TripleProcessorForUntypedResources(this);
+		untypedProcessor.processUndefTriples();
+		
+	}
+	
 
 }
