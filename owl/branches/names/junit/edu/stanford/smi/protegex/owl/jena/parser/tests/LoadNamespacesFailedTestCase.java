@@ -18,7 +18,6 @@ import edu.stanford.smi.protegex.owl.ProtegeOWL;
 import edu.stanford.smi.protegex.owl.model.NamespaceManager;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
-import edu.stanford.smi.protegex.owl.model.ProtegeNames;
 import edu.stanford.smi.protegex.owl.tests.AbstractJenaTestCase;
 import edu.stanford.smi.protegex.owl.ui.search.finder.DefaultClassFind;
 import edu.stanford.smi.protegex.owl.ui.search.finder.Find;
@@ -50,8 +49,9 @@ public class LoadNamespacesFailedTestCase extends AbstractJenaTestCase {
         expectedNamespaces.put("Class_3", TEST_2);
 
         Map<String, String> expectedPrefixes = new HashMap<String, String>();
-        expectedPrefixes.put("Class_1", null);
-        expectedPrefixes.put("Class_2", null);
+        //default prefix -> ""
+        expectedPrefixes.put("Class_1", "");
+        expectedPrefixes.put("Class_2", "");
         expectedPrefixes.put("Class_3", TEST_2_PREFIX);
 
         assertOntologyIsAsExpected(expectedNamespaces, expectedPrefixes);
@@ -77,9 +77,9 @@ public class LoadNamespacesFailedTestCase extends AbstractJenaTestCase {
         expectedNamespaces.put("Class_3", TEST_2);
 
         Map<String, String> expectedPrefixes = new HashMap<String, String>();
-        expectedPrefixes.put("Class_1", AUTO_1_PREFIX);
-        expectedPrefixes.put("Class_2", AUTO_1_PREFIX);
-        expectedPrefixes.put("Class_3", TEST_2_PREFIX);
+        expectedPrefixes.put("Class_1", null);
+        expectedPrefixes.put("Class_2", null);
+        expectedPrefixes.put("Class_3", "");
 
         assertOntologyIsAsExpected(expectedNamespaces, expectedPrefixes);
 
@@ -100,8 +100,8 @@ public class LoadNamespacesFailedTestCase extends AbstractJenaTestCase {
         expectedNamespaces.put("Class_3", TEST_2);
 
         Map<String, String> expectedPrefixes = new HashMap<String, String>();
-        expectedPrefixes.put("Class_1", AUTO_1_PREFIX);
-        expectedPrefixes.put("Class_2", AUTO_1_PREFIX);
+        expectedPrefixes.put("Class_1", null);
+        expectedPrefixes.put("Class_2", null);
         expectedPrefixes.put("Class_3", TEST_2_PREFIX);
 
         assertOntologyIsAsExpected(expectedNamespaces, expectedPrefixes);
@@ -125,7 +125,7 @@ public class LoadNamespacesFailedTestCase extends AbstractJenaTestCase {
         assertSize(1, ontologies);
         assertContains(newModel.getDefaultOWLOntology(), ontologies);
         NamespaceManager nsm = newModel.getNamespaceManager();
-        assertEquals(ProtegeNames.DEFAULT_DEFAULT_NAMESPACE, nsm.getDefaultNamespace());
+        //assertEquals(ProtegeNames.DEFAULT_DEFAULT_NAMESPACE, nsm.getDefaultNamespace());
         assertEquals(OWL.getURI(), nsm.getNamespaceForPrefix("owl"));
         assertEquals(RDF.getURI(), nsm.getNamespaceForPrefix("rdf"));
         assertEquals(RDFS.getURI(), nsm.getNamespaceForPrefix("rdfs"));
