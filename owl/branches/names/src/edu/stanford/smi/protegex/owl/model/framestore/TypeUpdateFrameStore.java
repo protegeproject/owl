@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
 
 import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.Frame;
@@ -12,7 +13,9 @@ import edu.stanford.smi.protege.model.FrameID;
 import edu.stanford.smi.protege.model.Instance;
 import edu.stanford.smi.protege.model.SimpleInstance;
 import edu.stanford.smi.protege.model.Slot;
+import edu.stanford.smi.protege.model.Transaction;
 import edu.stanford.smi.protege.model.framestore.FrameStoreAdapter;
+import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.model.OWLAnonymousClass;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLProperty;
@@ -103,49 +106,68 @@ public class TypeUpdateFrameStore extends FrameStoreAdapter {
     @SuppressWarnings("unchecked")
     @Override
     public void addDirectType(Instance instance, Cls type) {
-        super.addDirectType(instance, type);
-        instance = (Instance) super.getFrame(instance.getFrameID());
-        if (instance instanceof RDFProperty) {
-            if (type.equals(functionalPropertyClass)) {
-                ((Slot) instance).setAllowsMultipleValues(false);
+    	try {
+        	beginTransaction("Add to " + instance.getName() + " direct type : " + type.getName() 
+        			+ Transaction.APPLY_TO_TRAILER_STRING + instance.getName());
+            super.addDirectType(instance, type);
+            instance = (Instance) super.getFrame(instance.getFrameID());
+            if (instance instanceof RDFProperty) {
+                if (type.equals(functionalPropertyClass)) {
+                    ((Slot) instance).setAllowsMultipleValues(false);
+                }
             }
-        }
-        if (instance instanceof OWLRestriction) {
-            super.setDirectOwnSlotValues(instance, rdfType, Collections.singleton(restrictionClass));
-        }
-        else if (instance instanceof OWLAnonymousClass) {
-            super.setDirectOwnSlotValues(instance, rdfType, Collections.singleton(owlClass));
-        }
-        else if (instance instanceof RDFResource &&
-                !type.equals(untypedResource)) {
-            Collection types = new ArrayList(super.getDirectOwnSlotValues(instance, rdfType));
-            types.add(type);
-            super.setDirectOwnSlotValues(instance, rdfType, types);
-        }
+            if (instance instanceof OWLRestriction) {
+                super.setDirectOwnSlotValues(instance, rdfType, Collections.singleton(restrictionClass));
+            }
+            else if (instance instanceof OWLAnonymousClass) {
+                super.setDirectOwnSlotValues(instance, rdfType, Collections.singleton(owlClass));
+            }
+            else if (instance instanceof RDFResource &&
+                    !type.equals(untypedResource)) {
+                Collection types = new ArrayList(super.getDirectOwnSlotValues(instance, rdfType));
+                types.add(type);
+                super.setDirectOwnSlotValues(instance, rdfType, types);
+            }
+            commitTransaction();			
+		} catch (Exception e) {
+			Log.getLogger().log(Level.WARNING, "Error in transaction at adding to " + 
+					instance + " direct type: " + type, e);
+			rollbackTransaction();
+			throw new RuntimeException(e);
+		}
     }
     
     @SuppressWarnings("unchecked")
     @Override
     public void removeDirectType(Instance instance, Cls directType) {
-        if (instance instanceof RDFProperty) {
-            if (directType.equals(functionalPropertyClass)) {
-                ((Slot) instance).setAllowsMultipleValues(true);
-            }
-        }
-        if (instance instanceof OWLRestriction) {
-            super.setDirectOwnSlotValues(instance, rdfType, Collections.singleton(restrictionClass));
-        }
-        else if (instance instanceof OWLAnonymousClass) {
-            super.setDirectOwnSlotValues(instance, rdfType, Collections.singleton(owlClass));
-        }
-        else if (instance instanceof RDFResource) {
-            Collection types = new ArrayList(super.getDirectOwnSlotValues(instance, rdfType));
-            if (types.contains(directType)) {
-                types.remove(directType);
-                super.setDirectOwnSlotValues(instance, rdfType, types);
-            }
-        }
-        super.removeDirectType(instance, directType);
+    	try {
+    		beginTransaction("Remove from " + instance.getName() + " direct type : " + directType.getName() 
+    				+ Transaction.APPLY_TO_TRAILER_STRING + instance.getName());
+    		if (instance instanceof RDFProperty) {
+    			if (directType.equals(functionalPropertyClass)) {
+    				((Slot) instance).setAllowsMultipleValues(true);
+    			}
+    		}
+    		if (instance instanceof OWLRestriction) {
+    			super.setDirectOwnSlotValues(instance, rdfType, Collections.singleton(restrictionClass));
+    		}
+    		else if (instance instanceof OWLAnonymousClass) {
+    			super.setDirectOwnSlotValues(instance, rdfType, Collections.singleton(owlClass));
+    		}
+    		else if (instance instanceof RDFResource) {
+    			Collection types = new ArrayList(super.getDirectOwnSlotValues(instance, rdfType));
+    			if (types.contains(directType)) {
+    				types.remove(directType);
+    				super.setDirectOwnSlotValues(instance, rdfType, types);
+    			}
+    		}
+    		super.removeDirectType(instance, directType);
+    	} catch (Exception e) {
+    		Log.getLogger().log(Level.WARNING, "Error in transaction at removing from " + 
+    				instance + " direct type: " + directType, e);
+    		rollbackTransaction();
+    		throw new RuntimeException(e);
+    	}
     }
     
     @Override
