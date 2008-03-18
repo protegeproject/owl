@@ -7,16 +7,23 @@ import com.hp.hpl.jena.vocabulary.OWL;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
 import edu.stanford.smi.protege.model.Model;
+import edu.stanford.smi.protegex.owl.model.ProtegeNames;
 
 public class OWLFramesMapping {
-	//make it object?
 	private static HashMap<String, String> owlProp2FramesSlotMap = new HashMap<String, String>();
+
+	private final static String[] protegeRelAndPalSystSlots = new String[]{
+		Model.Slot.FROM,
+		Model.Slot.TO,
+		Model.Slot.CONSTRAINTS,
+		Model.Slot.PAL_DESCRIPTION,		
+		Model.Slot.PAL_NAME,
+		Model.Slot.PAL_RANGE,
+		Model.Slot.PAL_STATEMENT
+	};
+
 	
-	//use SystemFrames, kb.getSystemFrames
-	
-	static {
-		//owlProp2FramesSlotMap.put(RDF.type.getURI(), Model.Slot.DIRECT_TYPES);
-		
+	static {		
 		owlProp2FramesSlotMap.put(RDFS.subClassOf.getURI(), Model.Slot.DIRECT_SUPERCLASSES);		
 		owlProp2FramesSlotMap.put(RDFS.subPropertyOf.getURI(), Model.Slot.DIRECT_SUPERSLOTS);
 		owlProp2FramesSlotMap.put(RDFS.domain.getURI(), Model.Slot.DIRECT_DOMAIN);
@@ -25,20 +32,21 @@ public class OWLFramesMapping {
 		owlProp2FramesSlotMap.put(OWL.maxCardinality.getURI(), Model.Slot.MAXIMUM_CARDINALITY);
 		owlProp2FramesSlotMap.put(OWL.minCardinality.getURI(), Model.Slot.MINIMUM_CARDINALITY);		
 		//what to do with owl:Cardinality?
+		
+		for (int i = 0; i < protegeRelAndPalSystSlots.length; i++) {
+			String protegeName = protegeRelAndPalSystSlots[i];
+			owlProp2FramesSlotMap.put(ProtegeNames.PROTEGE_OWL_NAMESPACE + protegeName.substring(1), protegeName);
+		}		
 	}
-
+	
 	
 	private static HashMap<String, String> owlProp2FramesInvSlotMap = new HashMap<String, String>();
 	
 	static {
-		//owlProp2FramesInvSlotMap.put(RDF.type.getURI(), Model.Slot.DIRECT_INSTANCES);
-		
 		owlProp2FramesInvSlotMap.put(RDFS.subClassOf.getURI(), Model.Slot.DIRECT_SUBCLASSES);
 		owlProp2FramesInvSlotMap.put(RDFS.subPropertyOf.getURI(), Model.Slot.DIRECT_SUBSLOTS);
 		owlProp2FramesInvSlotMap.put(RDFS.domain.getURI(), Model.Slot.DIRECT_TEMPLATE_SLOTS);
-		//what to do with range?
 	}
-
 	
 	private final static HashSet<String> restrictionPredicates = new HashSet<String>();  
 	
