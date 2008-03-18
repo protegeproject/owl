@@ -137,7 +137,6 @@ public class TripleProcessorForResourceObjects extends AbstractStatefulTriplePro
 			return true;
 		}
 
-		@SuppressWarnings("deprecation")
 		private TripleStatus handleSetTypeAndCreation() {
 			TripleStatus status = TripleStatus.INCOMPLETE;
 			if (predName.equals(OWL.imports.getURI())) {
@@ -472,9 +471,7 @@ public class TripleProcessorForResourceObjects extends AbstractStatefulTriplePro
 			if (!metaclass.isSystem()) {
 				for (Iterator iterator2 = metaclass.getInstances(false).iterator(); iterator2.hasNext();) {
 					Instance inst = (Instance) iterator2.next();
-					//force to swizzle - is there a better way of doing it?
-					FrameCreatorUtility.addDirectTypeAndSwizzle(inst, metaclass);
-					FrameCreatorUtility.removeInstanceType(inst, metaclass);
+					ParserUtil.getSimpleFrameStore(owlModel).swizzleInstance(inst);
 				}
 			}
 		}		
@@ -489,10 +486,7 @@ public class TripleProcessorForResourceObjects extends AbstractStatefulTriplePro
 			if (!listCls.isSystem()) {
 				for (Iterator iterator2 = listCls.getInstances(false).iterator(); iterator2.hasNext();) {
 					Instance inst = (Instance) iterator2.next();
-					//force to swizzle - is there a better way of doing it?
-					//FrameCreatorUtility.addDirectTypeAndSwizzle(inst, listCls);
-					//ParserUtil.getSimpleFrameStore(owlModel).addDirectType(inst, listCls);
-					//FrameCreatorUtility.removeInstanceType(inst, listCls);
+					ParserUtil.getSimpleFrameStore(owlModel).swizzleInstance(inst);
 				}
 			}
 		}		
