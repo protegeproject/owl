@@ -6,7 +6,7 @@ import edu.stanford.smi.protegex.owl.model.RDFSClass;
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
  */
-public interface ResourceListener extends ProtegeInstanceListener {
+public interface ResourceListener extends ProtegeFrameListener {
 
     /**
      * Called when a resource has been assigned a new rdf:type.

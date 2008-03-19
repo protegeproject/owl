@@ -12,7 +12,27 @@ import edu.stanford.smi.protegex.owl.ui.properties.domain.OWLDomainTableModel;
 public class OWLDomainTableModelTestCase extends AbstractJenaTestCase {
 
 
-    public void testAddDomainCls() {
+    public void testAddDomainCls1() {
+        OWLProperty property = owlModel.createOWLObjectProperty("property");
+        OWLNamedClass aCls = owlModel.createOWLNamedClass("A");
+        OWLNamedClass bCls = owlModel.createOWLNamedClass("B");
+        OWLDomainTableModel tableModel = new OWLDomainTableModel(property);
+        assertEquals(1, tableModel.getRowCount());
+        assertSame(tableModel.getValueAt(0, 0), owlModel.getOWLThingClass());
+        
+        assertNull(property.getDomain(false));
+
+        property.setDomain(aCls);
+        assertEquals(1, tableModel.getRowCount());
+
+        property.addUnionDomainClass(bCls);
+        assertEquals(2, tableModel.getRowCount());
+
+        assertEquals(aCls, tableModel.getValueAt(0, 0));
+        assertEquals(bCls, tableModel.getValueAt(1, 0));
+    }
+    
+    public void testAddDomainCls2() {
         OWLProperty property = owlModel.createOWLObjectProperty("property");
         OWLNamedClass aCls = owlModel.createOWLNamedClass("A");
         OWLNamedClass bCls = owlModel.createOWLNamedClass("B");
@@ -20,6 +40,7 @@ public class OWLDomainTableModelTestCase extends AbstractJenaTestCase {
         assertEquals(1, tableModel.getRowCount());
         assertSame(tableModel.getValueAt(0, 0), owlModel.getOWLThingClass());
 
+        property.setDomainDefined(true);
         RDFSClass domain = property.getDomain(false);
         assertNotNull(domain);
         assertSame(owlModel.getOWLThingClass(), domain);

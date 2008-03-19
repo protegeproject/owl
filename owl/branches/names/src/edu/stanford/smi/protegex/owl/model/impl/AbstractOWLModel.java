@@ -432,7 +432,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
         if (!(listener instanceof ResourceAdapter)) {
             throw new IllegalArgumentException("Listener must be a ResourceAdapter");
         }
-        addInstanceListener(listener);
+        addFrameListener(listener);
     }
 
 
@@ -483,7 +483,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
 
     public void removeResourceListener(ResourceListener listener) {
-        removeInstanceListener(listener);
+        removeFrameListener(listener);
     }
 
 

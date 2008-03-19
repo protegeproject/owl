@@ -828,7 +828,7 @@ public class OWLUtil {
         if (!(listener instanceof ResourceAdapter)) {
             throw new IllegalArgumentException("Listener must be a ResourceAdapter");
         }
-        ((Instance) resource).addInstanceListener(listener);
+        ((Instance) resource).addFrameListener(listener);
     }
 
 
@@ -836,7 +836,7 @@ public class OWLUtil {
         if (!(listener instanceof ResourceAdapter)) {
             throw new IllegalArgumentException("Listener must be a ResourceAdapter");
         }
-        ((Instance) resource).removeInstanceListener(listener);
+        ((Instance) resource).removeFrameListener(listener);
     }
 
 
