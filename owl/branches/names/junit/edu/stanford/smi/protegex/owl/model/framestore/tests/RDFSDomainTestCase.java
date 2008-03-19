@@ -35,12 +35,14 @@ public class RDFSDomainTestCase extends AbstractJenaTestCase {
         assertTrue(property.getDomain(false) instanceof OWLUnionClass);
     }
 
-    public void testDomainCorrectOnDeletingClass(){
+    @SuppressWarnings("deprecation")
+	public void testDomainCorrectOnDeletingClass(){
         OWLNamedClass a = owlModel.createOWLNamedClass("A");
         OWLNamedClass owlThing = owlModel.getOWLThingClass();
         RDFProperty p = owlModel.createOWLObjectProperty("p");
 
-        assertSame(p.getDomain(false), owlThing);
+        assertSize(1, p.getDirectDomain());
+        assertContains(owlThing, p.getDirectDomain());
 
         p.setDomain(a);
 
@@ -48,6 +50,7 @@ public class RDFSDomainTestCase extends AbstractJenaTestCase {
 
         a.delete();
 
-        assertSame(p.getDomain(false), owlThing);
+        assertSize(1, p.getDirectDomain());
+        assertContains(owlThing, p.getDirectDomain());
     }
 }
