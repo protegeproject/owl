@@ -139,6 +139,7 @@ public class TripleProcessorForResourceObjects extends AbstractStatefulTriplePro
 
 		private TripleStatus handleSetTypeAndCreation() {
 			TripleStatus status = TripleStatus.INCOMPLETE;
+			
 			if (predName.equals(OWL.imports.getURI())) {
 				OWLImportsCache.addOWLImport(subjName, objName);
 			} else if (predName.equals(RDF.type.getURI())) { // creation
@@ -190,21 +191,29 @@ public class TripleProcessorForResourceObjects extends AbstractStatefulTriplePro
 			Frame oldSubjFrame = subjFrame;
 			boolean logicalClassIsNamed = false;
 			if (!subj.isAnonymous()) {
-				if (subjFrame == null || objFrame == null) {
-					addUndefTriple();
+				if (subjFrame == null) {
+					addUndefTriple(subjName);
+					return TripleStatus.UNDEF_NEEDS_POSTPROCESS;
+				} 
+				
+				if (objFrame == null) {
+					addUndefTriple(objName);
 					return TripleStatus.UNDEF_NEEDS_POSTPROCESS;
 				}
+				
 				subjFrame = objectToNamedLogicalClassSurrogate.get(objName);
 				if (subjFrame != null) {
 					subjName = subjFrame.getName();
 					return TripleStatus.INCOMPLETE;
 				}
-				subjName = owlModel.getNextAnonymousResourceName(); // can this
-				// cause
-				// conflicts??
+				
+				// can this cause conflicts??
+				subjName = owlModel.getNextAnonymousResourceName(); 
 				logicalClassIsNamed = true;
 			}
+			
 			subjFrame = createLogicalClass(subjName, predName);
+			
 			if (logicalClassIsNamed) {
 				objectToNamedLogicalClassSurrogate.put(objName, (Cls) subjFrame);
 				FrameCreatorUtility.addOwnSlotValue(oldSubjFrame, owlModel.getOWLEquivalentClassProperty(), subjFrame);
@@ -225,7 +234,7 @@ public class TripleProcessorForResourceObjects extends AbstractStatefulTriplePro
 			}
 
 			if (objFrame == null) {
-				addUndefTriple();
+				addUndefTriple(objName);
 				return TripleStatus.UNDEF_NEEDS_POSTPROCESS;
 			}
 
@@ -275,12 +284,12 @@ public class TripleProcessorForResourceObjects extends AbstractStatefulTriplePro
 				if (log.isLoggable(Level.FINE)) {
 					log.fine("\tDeferring triple because subject is not yet defined");
 				}
-				addUndefTriple();
+				addUndefTriple(subjName);
 				return TripleStatus.UNDEF_NEEDS_POSTPROCESS;
 			}
 
 			if (objFrame == null) {
-				addUndefTriple();
+				addUndefTriple(objName);
 				if (log.isLoggable(Level.FINE)) {
 					log.fine("+++ Add undef triple: " + subj + " " + pred + " " + obj + " undef:" + objName);
 				}
@@ -355,8 +364,8 @@ public class TripleProcessorForResourceObjects extends AbstractStatefulTriplePro
 			}
 		}
 
-		private void addUndefTriple() {
-			processor.addUndefTriple(subj, pred, obj, objName, alreadyInUndef);
+		private void addUndefTriple(String undef) {
+			processor.addUndefTriple(subj, pred, obj, undef, alreadyInUndef);
 		}
 
 	} // end InternalProcessorForResourceObjects class
