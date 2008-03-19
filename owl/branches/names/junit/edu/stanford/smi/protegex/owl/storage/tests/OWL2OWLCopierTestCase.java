@@ -8,7 +8,6 @@ import java.util.logging.Level;
 
 import com.hp.hpl.jena.ontology.OntProperty;
 
-import edu.stanford.smi.protege.model.DefaultKnowledgeBase;
 import edu.stanford.smi.protege.model.Instance;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
