@@ -25,12 +25,14 @@ public class OwlSubclassFrameStore extends FrameStoreAdapter {
     private OWLModel owlModel;
     
     private Slot directSuperclassesSlot;
+    private Slot directSubclassesSlot;
     private RDFProperty rdfsSubClassOfProperty;
     private RDFProperty owlEquivalentClassProperty;
     
     public OwlSubclassFrameStore(OWLModel owlModel) {
         this.owlModel = owlModel;
         directSuperclassesSlot =owlModel.getSystemFrames().getDirectSuperclassesSlot();
+        directSubclassesSlot = owlModel.getSystemFrames().getDirectSubclassesSlot();
         rdfsSubClassOfProperty = owlModel.getRDFSSubClassOfProperty();
         owlEquivalentClassProperty = owlModel.getOWLEquivalentClassProperty();
     }
@@ -75,16 +77,17 @@ public class OwlSubclassFrameStore extends FrameStoreAdapter {
     
     @SuppressWarnings("unchecked")
     private void removeNamedOperandsFromDirectSuperclasses(OWLNamedClass cls,
-                                                           OWLIntersectionClass intersectionCls,
-                                                           Slot slot) {
+                                                           OWLIntersectionClass intersectionCls) {
         Collection toRemove = intersectionCls.getNamedOperands();
         if (!toRemove.isEmpty()) {
-            for (Iterator it = ((Cls) cls).getDirectOwnSlotValues(slot).iterator(); it.hasNext();) {
-                RDFSClass superClass = (RDFSClass) it.next();
-                if (superClass instanceof OWLIntersectionClass) {
-                    toRemove.removeAll(((OWLIntersectionClass) superClass).getNamedOperands());
-                }
-            }
+        	for (Object o : super.getDirectSuperclasses(cls)) {
+        		if (o  instanceof RDFSClass && super.getDirectSuperclasses((RDFSClass) o).contains(cls)) {
+                    RDFSClass equivalentClass = (RDFSClass) o;
+                    if (equivalentClass instanceof OWLIntersectionClass) {
+                        toRemove.removeAll(((OWLIntersectionClass) equivalentClass).getNamedOperands());
+                    }
+        		}
+        	}
             for (Iterator it = toRemove.iterator(); it.hasNext();) {
                 RDFSNamedClass namedCls = (RDFSNamedClass) it.next();
                 if (!namedCls.hasEquivalentClass(cls)) {
@@ -113,25 +116,18 @@ public class OwlSubclassFrameStore extends FrameStoreAdapter {
     public void addDirectSuperclass(Cls cls, Cls superCls) {
         Collection<Cls> superClasses = super.getDirectSuperclasses(cls);
         if (!superClasses.contains(superCls)) {   // Disallow duplicates
-            /*
-            if (superClasses.contains(owlModel.getOWLThingClass()) && superCls instanceof RDFSClass &&
-                    !((RDFSClass) superCls).isAnonymous()) {
-                super.removeDirectSuperclass(cls, owlModel.getOWLThingClass());
-            }
-            */
-
             if (log.isLoggable(Level.FINE)) {
                 log.fine("-> " +cls.getBrowserText() + " ADDED " + superCls.getBrowserText());
             }
             super.addDirectSuperclass(cls, superCls);
             if (superCls instanceof OWLIntersectionClass &&
                 cls instanceof OWLNamedClass &&
-                superCls.hasDirectSuperclass(cls)) {
+                super.getDirectSuperclasses(superCls).contains(cls)) {
                 addNamedOperandsToDirectSuperclasses((OWLNamedClass) cls, (OWLIntersectionClass) superCls);
             }
             else if (cls instanceof OWLIntersectionClass &&
                      superCls instanceof OWLNamedClass &&
-                     superCls.hasDirectSuperclass(cls)) {
+                     super.getDirectSuperclasses(superCls).contains(cls)) {
                 addNamedOperandsToDirectSuperclasses((OWLNamedClass) superCls, (OWLIntersectionClass) cls);
             }
 
@@ -161,11 +157,11 @@ public class OwlSubclassFrameStore extends FrameStoreAdapter {
 
         if (cls instanceof OWLNamedClass && superCls instanceof OWLIntersectionClass && wasEquivalentCls) {
             removeNamedOperandsFromDirectSuperclasses((OWLNamedClass) cls,
-                                                      (OWLIntersectionClass) superCls, directSuperclassesSlot);
+                                                      (OWLIntersectionClass) superCls);
         }
         else if (superCls instanceof OWLNamedClass && cls instanceof OWLIntersectionClass && wasEquivalentCls) {
             removeNamedOperandsFromDirectSuperclasses((OWLNamedClass) superCls,
-                                                      (OWLIntersectionClass) cls, directSuperclassesSlot);
+                                                      (OWLIntersectionClass) cls);
         }
 
         if (cls instanceof RDFSNamedClass) {
