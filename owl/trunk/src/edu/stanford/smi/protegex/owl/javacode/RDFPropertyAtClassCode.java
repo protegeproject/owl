@@ -3,6 +3,7 @@ package edu.stanford.smi.protegex.owl.javacode;
 import java.util.Collection;
 
 import edu.stanford.smi.protege.util.CollectionUtilities;
+import edu.stanford.smi.protegex.owl.jena.rdf2owl.RDF2OWL;
 import edu.stanford.smi.protegex.owl.model.*;
 
 /**
@@ -40,6 +41,10 @@ public class RDFPropertyAtClassCode implements Comparable {
 
     public String getJavaType() {
         RDFResource range = ((OWLNamedClass) cls).getAllValuesFrom(property);
+        if (range instanceof OWLDataRange) {
+        	range = ((OWLDataRange) range).getRDFDatatype();
+        }
+        
         if (range instanceof RDFSDatatype) {
             OWLModel owlModel = cls.getOWLModel();
             if (owlModel.getXSDboolean().equals(range)) {
