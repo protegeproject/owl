@@ -13,7 +13,7 @@ public class LoadXMLLiteralTestCase extends AbstractJenaTestCase {
 
     public void testLoadXMLLiteral() throws Exception {
         loadRemoteOntology("XMLLiteralValue.owl");
-        OWLDatatypeProperty slot = (OWLDatatypeProperty) owlModel.getSlot("anno");
+        OWLDatatypeProperty slot = (OWLDatatypeProperty) owlModel.getOWLDatatypeProperty("anno");
         assertEquals(owlModel.getRDFXMLLiteralType(), slot.getRange());
         assertTrue(XMLSchemaDatatypes.isXMLLiteralSlot(slot));
         assertSize(1, slot.getPropertyValues(slot));
