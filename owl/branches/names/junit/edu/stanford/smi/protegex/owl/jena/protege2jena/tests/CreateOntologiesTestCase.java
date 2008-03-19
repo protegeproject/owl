@@ -52,7 +52,7 @@ public class CreateOntologiesTestCase extends AbstractProtege2JenaTestCase {
         assertSize(2, newModel.listOntologies());
         Ontology ontology = (Ontology) newModel.getOntology(namespace);
         assertEquals(namespace, ontology.getURI());
-        assertSize(0, ontology.listImports());                                                           // the ontology import is broken but
+        assertSize(1, ontology.listImports());                                                           // the ontology import is broken but
         assertNotNull(owlModel.getOWLNamedClass("http://www.owl-ontologies.com/travel.owl#Sunbathing")); // the data has arrived
     }
 }
