@@ -45,7 +45,7 @@ import edu.stanford.smi.protegex.owl.swrl.model.impl.DefaultSWRLVariable;
 public class FrameCreatorUtility {
 	private static transient Logger log = Log.getLogger(FrameCreatorUtility.class);
 
-    public static Frame createFrameWithType(OWLModel owlModel, FrameID id, String typeUri, boolean isSubjAnon) {
+    public static Frame createFrameWithType(OWLModel owlModel, FrameID id, String typeUri) {
         Frame frame = ((KnowledgeBase) owlModel).getFrame(id);
         OWLSystemFrames systemFrames = owlModel.getSystemFrames();
 
@@ -166,11 +166,6 @@ public class FrameCreatorUtility {
 
         return frame;
 
-    }
-
-
-    public static Frame createFrameWithType(OWLModel owlModel, FrameID id, Cls type, boolean isSubjAnon) {
-        return createFrameWithType(owlModel, id, type.getName(), isSubjAnon);           
     }
 
 
