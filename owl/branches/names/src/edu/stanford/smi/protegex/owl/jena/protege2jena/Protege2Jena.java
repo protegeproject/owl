@@ -11,6 +11,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
 
 import com.hp.hpl.jena.datatypes.RDFDatatype;
 import com.hp.hpl.jena.datatypes.xsd.impl.XMLLiteralType;
@@ -108,7 +109,7 @@ public class Protege2Jena {
             try {
             	stmt = createStatement(triple, model);
 			} catch (Exception e) {
-				Log.getLogger().warning("Error at creating triple: " + triple + " Error message: " + e.getMessage());
+				Log.getLogger().log(Level.WARNING, "Error at creating triple: " + triple, e);
 			}
             
 			if (stmt != null) {
