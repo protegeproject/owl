@@ -350,7 +350,13 @@ public class TripleProcessorForResourceObjects extends AbstractStatefulTriplePro
 		}
 
 		private void addTriple() {
-			// add what it is really in the triple
+			
+			//exception for the rdf:Type...			
+			if (predSlot.equals(owlModel.getRDFTypeProperty())) {
+				return;
+			}
+			
+			// add what it is really in the triple			
 			FrameCreatorUtility.addOwnSlotValue(subjFrame, predSlot, objFrame);
 			// add frame correspondent
 			String frameMapSlot = OWLFramesMapping.getFramesSlotMapName(predName);
@@ -600,8 +606,8 @@ public class TripleProcessorForResourceObjects extends AbstractStatefulTriplePro
 		Collection<Cls> existingTypes = FrameCreatorUtility.getDirectTypes(instance);
 		typesSet.removeAll(existingTypes); // types to add
 
-		for (Cls cls : typesSet) {
-			FrameCreatorUtility.addDirectTypeAndSwizzle(instance, cls);
+		for (Cls type : typesSet) {
+			FrameCreatorUtility.addDirectTypeAndSwizzle(instance, type);
 		}
 
 	}
