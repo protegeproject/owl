@@ -230,7 +230,7 @@ public class FrameCreatorUtility {
     }
 
     public static boolean addDirectTypeAndSwizzle(Instance instance, Cls type) {
-        // getSimpleFrameStore(instance).addDirectType(instance, type);
+    	//ParserUtil.getSimpleFrameStore(instance).addDirectType(instance, type);
         instance.addDirectType(type);
         return true;
     }
