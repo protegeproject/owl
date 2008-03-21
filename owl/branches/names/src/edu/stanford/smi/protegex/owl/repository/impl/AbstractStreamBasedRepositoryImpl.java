@@ -42,7 +42,13 @@ public abstract class AbstractStreamBasedRepositoryImpl implements Repository {
         } finally {
             owlModel.getTripleStoreModel().setActiveTripleStore(importingTripleStore);
         }
-        ((AbstractOWLModel) owlModel).copyFacetValuesIntoNamedClses();
+        
+        /*
+         * This call should not be needed anymore.
+         * This should be called only once at the end of all the imports. 
+         */         
+        //((AbstractOWLModel) owlModel).copyFacetValuesIntoNamedClses();
+        
         return importedTripleStore;
     }
     
