@@ -9,7 +9,7 @@ import edu.stanford.smi.protegex.owl.tests.AbstractJenaTestCase;
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
  */
-public class DefaultOWLModelPatcherTestCase extends AbstractJenaTestCase {
+public class DefaultOWLModelPatcherFailedTestCase extends AbstractJenaTestCase {
 
     private final static String IMPORT = "http://www.coop.de/ontology";
 
@@ -20,7 +20,7 @@ public class DefaultOWLModelPatcherTestCase extends AbstractJenaTestCase {
         assertNotNull(property);
         RDFResource c = owlModel.getRDFResource("ns:Class");
         assertTrue(c instanceof RDFSNamedClass);
-        assertSize(2, owlModel.getTripleStoreModel().listUserTripleStores());
+        assertSize(1, owlModel.getTripleStoreModel().listUserTripleStores());
         TripleStore importedTS = null;
         for (TripleStore ots : owlModel.getTripleStoreModel().getTripleStores()) {
             if (!(ots.equals(owlModel.getTripleStoreModel().getSystemTripleStore())) && 
@@ -40,7 +40,7 @@ public class DefaultOWLModelPatcherTestCase extends AbstractJenaTestCase {
         assertNotNull(property);
         RDFResource c = owlModel.getRDFResource("ns:Class");
         assertTrue(c instanceof RDFSNamedClass);
-        assertSize(2, owlModel.getTripleStoreModel().listUserTripleStores());
+        assertSize(1, owlModel.getTripleStoreModel().listUserTripleStores());
         TripleStore importedTS = null;
         for (TripleStore ts : owlModel.getTripleStoreModel().getTripleStores()) {
             if (!(ts.equals(owlModel.getTripleStoreModel().getSystemTripleStore())) && 
@@ -60,7 +60,7 @@ public class DefaultOWLModelPatcherTestCase extends AbstractJenaTestCase {
         assertNotNull(subclass);
         RDFResource c = owlModel.getRDFResource("ns:Class");
         assertTrue(c instanceof RDFSNamedClass);
-        assertSize(2, owlModel.getTripleStoreModel().listUserTripleStores());
+        assertSize(1, owlModel.getTripleStoreModel().listUserTripleStores());
         TripleStore importedTS = null;
         for (TripleStore ts : owlModel.getTripleStoreModel().getTripleStores()) {
             if (!(ts.equals(owlModel.getTripleStoreModel().getSystemTripleStore())) && 
@@ -83,7 +83,7 @@ public class DefaultOWLModelPatcherTestCase extends AbstractJenaTestCase {
         assertNotNull(c);
         RDFResource property = owlModel.getRDFResource("ns:property");
         assertTrue(property instanceof RDFProperty);
-        assertSize(2, owlModel.getTripleStoreModel().listUserTripleStores());
+        assertSize(1, owlModel.getTripleStoreModel().listUserTripleStores());
         TripleStore importedTS = null;
         for (TripleStore ts : owlModel.getTripleStoreModel().getTripleStores()) {
             if (!(ts.equals(owlModel.getTripleStoreModel().getSystemTripleStore())) && 
