@@ -2,11 +2,8 @@ package edu.stanford.smi.protegex.owl.jena.parser;
 
 import java.util.Iterator;
 
-import sun.org.mozilla.javascript.internal.ObjToIntMap;
-
 import com.hp.hpl.jena.rdf.arp.ALiteral;
 import com.hp.hpl.jena.rdf.arp.AResource;
-import com.sun.xml.internal.messaging.saaj.util.ParseUtil;
 
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
