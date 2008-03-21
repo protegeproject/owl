@@ -24,7 +24,7 @@ public interface OWLNAryLogicalClass extends OWLLogicalClass {
      *
      * @return the named operands (without duplicates)
      */
-    Collection getNamedOperands();
+    Collection<RDFSNamedClass> getNamedOperands();
 
 
     /**
@@ -33,7 +33,7 @@ public interface OWLNAryLogicalClass extends OWLLogicalClass {
      *
      * @return a Collection of RDFSClass instances
      */
-    Collection getOperands();
+    Collection<RDFSClass> getOperands();
 
 
     boolean hasOperandWithBrowserText(String browserText);
