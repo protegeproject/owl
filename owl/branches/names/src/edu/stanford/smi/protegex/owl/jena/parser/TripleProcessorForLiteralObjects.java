@@ -16,7 +16,7 @@ import edu.stanford.smi.protegex.owl.model.RDFSLiteral;
 import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultRDFSLiteral;
 
-public class TripleProcessorForLiteralObjects extends AbstractStatefulTripleProcessor {
+class TripleProcessorForLiteralObjects extends AbstractStatefulTripleProcessor {
 	private static final transient Logger log = Log.getLogger(TripleProcessor.class);
 	
 	
@@ -34,7 +34,7 @@ public class TripleProcessorForLiteralObjects extends AbstractStatefulTripleProc
 
 		if (predSlot == null) {
 			if (!alreadyInUndef) {
-				undefTripleManager.addUndefTriple(new UndefTriple(subj, pred, lit, predName));
+				undefTripleManager.addUndefTriple(new UndefTriple(subj, pred, lit, predName, tripleStore));
 			}
 			return false;
 		}
@@ -53,7 +53,7 @@ public class TripleProcessorForLiteralObjects extends AbstractStatefulTripleProc
 		//checking and adding to undefined
 		if (subjFrame == null) {
 			if (!alreadyInUndef) {
-				undefTripleManager.addUndefTriple(new UndefTriple(subj, pred, lit, subjName));
+				undefTripleManager.addUndefTriple(new UndefTriple(subj, pred, lit, subjName, tripleStore));
 			}
 			return false;
 		}
@@ -88,7 +88,7 @@ public class TripleProcessorForLiteralObjects extends AbstractStatefulTripleProc
 			}
 		}
 		else {
-//			If literal has no datatype, make a qualified guess using the property's range
+			// If literal has no datatype, make a qualified guess using the property's range
 			RDFResource range = property.getRange();
 			if(range instanceof RDFSDatatype) {
 				RDFSDatatype datatype = owlModel.getRDFSDatatypeByURI(range.getURI());
