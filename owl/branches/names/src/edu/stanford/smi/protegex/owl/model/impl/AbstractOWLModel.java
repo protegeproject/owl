@@ -38,6 +38,7 @@ import edu.stanford.smi.protege.util.CollectionUtilities;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protege.util.URIUtilities;
 import edu.stanford.smi.protegex.owl.jena.graph.JenaModelFactory;
+import edu.stanford.smi.protegex.owl.jena.parser.UndefTripleManager;
 import edu.stanford.smi.protegex.owl.jena.parser.UnresolvedImportHandler;
 import edu.stanford.smi.protegex.owl.model.DefaultTaskManager;
 import edu.stanford.smi.protegex.owl.model.NamespaceManager;
@@ -202,6 +203,8 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     private RDFSDatatypeFactory rdfsDatatypeFactory = new DefaultRDFSDatatypeFactory(this);
 
     private TaskManager taskManager;
+    
+    private UndefTripleManager undefTripleManager;
 
     private RepositoryManager repositoryManager;
 
@@ -218,7 +221,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     
     private TripleStoreModel tripleStoreModel;
 
-
+	
     
     public AbstractOWLModel(KnowledgeBaseFactory factory) {
         super(factory);
@@ -255,7 +258,6 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
         
         //TODO - change name validation
         setFrameNameValidator(new FrameNameValidator() {
-
 
             public String getErrorMessage(String name, Frame frame) {
                 if (frame instanceof RDFUntypedResource) {
@@ -388,46 +390,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
         addFrameListener(listener);
     }
 
-
-    public RDFSLiteral asRDFSLiteral(Object value) {
-        if (value == null) {
-            return null;
-        }
-        else if (value instanceof RDFSLiteral) {
-            return (RDFSLiteral) value;
-        }
-        else {
-            return createRDFSLiteral(value);
-        }
-    }
-
-
-    public RDFObject asRDFObject(Object object) {
-        if (object == null) {
-            return null;
-        }
-        else if (object instanceof RDFExternalResource) {
-            return null;
-        }
-        else if (object instanceof RDFResource) {
-            return (RDFObject) object;
-        }
-        else {
-            return createRDFSLiteral(object);
-        }
-    }
-
-
-    public List asRDFSLiterals(Collection values) {
-        List result = new LinkedList();
-        for (Iterator it = values.iterator(); it.hasNext();) {
-        	Object o = it.next();
-        	result.add(asRDFSLiteral(o));  
-        }
-        return result;
-    }
-
-
+    
     public void addResourceListener(ResourceListener listener) {
         if (!(listener instanceof ResourceAdapter)) {
             throw new IllegalArgumentException("Listener must be a ResourceAdapter");
@@ -1387,6 +1350,15 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     }
 
 
+    public UndefTripleManager getUndefTripleManager() {
+    	if (undefTripleManager == null) {
+    		undefTripleManager = new UndefTripleManager(this);
+    	}
+    	
+    	return undefTripleManager;
+    }
+    
+    
     public OWLClassDisplay getOWLClassDisplay() {
         return owlClassRenderer;
     }
@@ -1900,6 +1872,46 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
         return getVisibleUserDefinedInstances(getRDFPropertyClass());
     }
 
+    
+    public RDFSLiteral asRDFSLiteral(Object value) {
+        if (value == null) {
+            return null;
+        }
+        else if (value instanceof RDFSLiteral) {
+            return (RDFSLiteral) value;
+        }
+        else {
+            return createRDFSLiteral(value);
+        }
+    }
+
+
+    public RDFObject asRDFObject(Object object) {
+        if (object == null) {
+            return null;
+        }
+        else if (object instanceof RDFExternalResource) {
+            return null;
+        }
+        else if (object instanceof RDFResource) {
+            return (RDFObject) object;
+        }
+        else {
+            return createRDFSLiteral(object);
+        }
+    }
+
+
+    public List asRDFSLiterals(Collection values) {
+        List result = new LinkedList();
+        for (Iterator it = values.iterator(); it.hasNext();) {
+        	Object o = it.next();
+        	result.add(asRDFSLiteral(o));  
+        }
+        return result;
+    }
+
+    
 
     /**
      * @deprecated
