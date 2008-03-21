@@ -184,13 +184,13 @@ public class FacetUpdateFrameStore extends FrameStoreAdapter {
 
 	 @Override
 	 public void addDirectSuperclass(Cls cls, Cls superCls) {
+		 super.addDirectSuperclass(cls, superCls);
 		 if (!superclassHandlingBlocked && cls instanceof OWLNamedClass) {
 			 OWLNamedClass namedCls = (OWLNamedClass) cls;
 			 if (superCls instanceof OWLRestriction) {
 				 copyFacetValuesIntoOWLNamedClass(namedCls, (OWLRestriction) superCls);
 			 }
 		 }
-		 super.addDirectSuperclass(cls, superCls);
 	 }
 
 	 @Override
