@@ -19,6 +19,7 @@ public class OWLFrameStoreManager extends FrameStoreManager {
     private OWLFrameStore owlFrameStore;
     private FacetUpdateFrameStore facetUpdateFrameStore;
     private DuplicateValuesFrameStore duplicateValuesFrameStore;
+    private RangeUpdateFrameStore rangeUpdateFrameStore;
     
     private ProtegeOWLFrameStore protegeOwlFrameStore;
     
@@ -35,7 +36,7 @@ public class OWLFrameStoreManager extends FrameStoreManager {
         addFrameStore(duplicateValuesFrameStore = new DuplicateValuesFrameStore());
         addFrameStore(new OWLDomainUpdateFrameStore(owlModel));
         addFrameStore(facetUpdateFrameStore = new FacetUpdateFrameStore(owlModel));
-        addFrameStore(new RangeUpdateFrameStore(owlModel));
+        addFrameStore(rangeUpdateFrameStore = new RangeUpdateFrameStore(owlModel));
         addFrameStore(new OwlSubclassFrameStore(owlModel));
         addFrameStore(new TypeUpdateFrameStore(owlModel));  // this goes at the end so that the others see the swizzle.
         
@@ -97,4 +98,10 @@ public class OWLFrameStoreManager extends FrameStoreManager {
     public DuplicateValuesFrameStore getDuplicateValuesFrameStore() {
         return duplicateValuesFrameStore;
     }
+
+    public RangeUpdateFrameStore getRangeUpdateFrameStore() {
+        return rangeUpdateFrameStore;
+    }
+    
+    
 }
