@@ -130,17 +130,15 @@ public class PropertyListenerTestCase extends AbstractJenaTestCase {
         
         seenEvents.clear();
         subProperty.addSuperproperty(property);
-        assertSize(3, seenEvents);
+        assertSize(2, seenEvents);
         assertContains(new Action(ActionType.SUB_PROPERTY_ADDED, property, subProperty), seenEvents);
         assertContains(new Action(ActionType.SUPER_PROPERTY_ADDED, subProperty, property), seenEvents);
-        assertContains(new Action(ActionType.UNION_CLASS_REMOVED, subProperty, owlModel.getOWLThingClass()), seenEvents);
         
         seenEvents.clear();
         subProperty.removeSuperproperty(property);
-        assertSize(3, seenEvents);
+        assertSize(2, seenEvents);
         assertContains(new Action(ActionType.SUB_PROPERTY_REMOVED, property, subProperty), seenEvents);
         assertContains(new Action(ActionType.SUPER_PROPERTY_REMOVED, subProperty, property), seenEvents);
-        assertContains(new Action(ActionType.UNION_CLASS_ADDED, subProperty, owlModel.getOWLThingClass()), seenEvents);
         
         // in the next two the order is significant
         seenEvents.clear();
