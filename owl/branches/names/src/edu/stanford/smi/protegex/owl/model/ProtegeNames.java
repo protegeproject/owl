@@ -26,6 +26,10 @@ public class ProtegeNames {
     public static String PROTEGE_PREFIX = "protege";
 
     public final static String PREFIX = PROTEGE_PREFIX + ":";
+    
+    public static interface Cls {
+    	final static String PAL_CONSTRAINT = PROTEGE_OWL_NAMESPACE + "PAL-CONSTRAINT";
+    }
 
 
     public static interface Slot {
@@ -33,6 +37,8 @@ public class ProtegeNames {
         final static String ABSTRACT = PROTEGE_OWL_NAMESPACE + "abstract";
 
         final static String CLASSIFICATION_STATUS = PROTEGE_OWL_NAMESPACE + "classificationStatus";
+        
+        final static String CONSTRAINTS = PROTEGE_OWL_NAMESPACE + "SLOT-CONSTRAINTS";
 
         final static String INFERRED_TYPE = PROTEGE_OWL_NAMESPACE + "inferredType";
 
@@ -41,6 +47,10 @@ public class ProtegeNames {
         final static String INFERRED_SUPERCLASSES = PROTEGE_OWL_NAMESPACE + "inferredSubclassOf";
 
 	    final static String IS_COMMENTED_OUT = PROTEGE_OWL_NAMESPACE + "isCommentedOut";
+	    
+	    final static String PAL_NAME = PROTEGE_OWL_NAMESPACE + "PAL-NAME";
+	    
+	    final static String PAL_STATEMENT = PROTEGE_OWL_NAMESPACE + "PAL-STATEMENT";
     }
 
     public static String PROTEGE_OWL_ONTOLOGY = "http://protege.stanford.edu/plugins/owl/protege";
