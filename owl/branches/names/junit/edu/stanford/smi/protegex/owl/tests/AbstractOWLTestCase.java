@@ -228,7 +228,7 @@ public abstract class AbstractOWLTestCase extends TestCase {
 
     private void ensureProtegePrefixExists() {
         if (owlModel.getNamespaceManager().getPrefix(ProtegeNames.PROTEGE_OWL_NAMESPACE) == null) {
-            String prefix = "protege";
+            String prefix = ProtegeNames.PROTEGE_PREFIX;
             owlModel.getNamespaceManager().setPrefix(ProtegeNames.PROTEGE_OWL_NAMESPACE, prefix);
             owlModel.getNamespaceManager().setPrefix(XSPNames.NS, XSPNames.DEFAULT_PREFIX);
         }
