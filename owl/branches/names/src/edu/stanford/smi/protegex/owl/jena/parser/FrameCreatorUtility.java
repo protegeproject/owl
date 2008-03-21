@@ -16,7 +16,6 @@ import edu.stanford.smi.protege.model.KnowledgeBase;
 import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
-import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLAllDifferent;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLDataRange;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLDatatypeProperty;
@@ -56,8 +55,6 @@ public class FrameCreatorUtility {
 
         if (type == null)
             return null;
-
-        //write here all the java class names
 
         //maybe remove the anon condition
         if (typeUri.equals(OWL.Ontology.getURI())) {
@@ -192,11 +189,13 @@ public class FrameCreatorUtility {
     public static boolean hasDirectType(Instance inst, Cls type) {
     	return ParserUtil.getSimpleFrameStore(inst).getDirectTypes(inst).contains(type);
     }
-    
+
+    public static boolean hasSuperclass(Cls cls, Cls supercls) {
+    	return ParserUtil.getSimpleFrameStore(cls).getSuperclasses(cls).contains(supercls);
+    }
     
     public static boolean createSubclassOf(Cls cls, Cls superCls) {
-        if (cls == null || superCls == null) {
-            //Log.getLogger().warning("Error at creating subclass of relationship. Cls: " + cls + " Superclass: " + superCls);
+        if (cls == null || superCls == null) {          
             return false;
         }
         ParserUtil.getSimpleFrameStore(cls).addDirectSuperclass(cls, superCls);
