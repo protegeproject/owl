@@ -160,9 +160,9 @@ public class AllValuesFromRestrictionUpdater extends QuantifierRestrictionUpdate
      */
     void updateValueTypeFacet(RDFSNamedClass cls, Slot slot) {
         if (slot != null) {
-            Collection rs = getDirectRestrictions(cls, slot, OWLAllValuesFrom.class);
+            Collection<OWLAllValuesFrom> rs = getDirectRestrictions(cls, slot, OWLAllValuesFrom.class);
             if (rs.size() == 1) {
-                OWLQuantifierRestriction restriction = (OWLQuantifierRestriction) rs.toArray()[0];
+                OWLQuantifierRestriction restriction = rs.iterator().next();
                 updateValueTypeFacet(cls, slot, restriction);
             }
             else {
