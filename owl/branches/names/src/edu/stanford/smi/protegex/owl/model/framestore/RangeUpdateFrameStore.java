@@ -28,16 +28,30 @@ public class RangeUpdateFrameStore extends  FrameStoreAdapter {
         valueType = owlModel.getSystemFrames().getValueTypeSlot();
     }
     
+    @SuppressWarnings("unchecked")
+    public void synchronizeRDFRangeWithProtegeAllowedValues(RDFProperty property) {
+        Collection ranges = super.getOwnSlotValues(property, rdfsRangeProperty);
+        updateAllowedValues(property, ranges);
+    }
+    
     /**
      * Updates the ValueType of a datatype slot in response to changes in the range.
      */
-    private void updatePropertyValueType(RDFProperty property, Collection values) {
+    @SuppressWarnings("unchecked")
+    private void updateAllowedValues(RDFProperty property, Collection ranges) {
+        if (ranges.size() > 1) {
+            ((Slot) property).setValueType(ValueType.ANY);
+            return;
+        } else if (property instanceof OWLObjectProperty && ranges.isEmpty() && super.getSuperslots(property).size() >= 1) {
+            super.setDirectOwnSlotValues(property, valueType, Collections.EMPTY_LIST);
+            return;
+        }
         ValueType newValueType = ValueType.ANY;
-        if (property instanceof OWLObjectProperty && property.getSuperpropertyCount() == 0) {
+        if (property instanceof OWLObjectProperty) {
             newValueType = ValueType.INSTANCE;
         }
-        if (!values.isEmpty()) {
-            Object range = values.iterator().next();
+        if (!ranges.isEmpty()) {
+            Object range = ranges.iterator().next();
             if (range instanceof RDFSDatatype) {
                 newValueType = XMLSchemaDatatypes.getValueType(((RDFSDatatype) range).getURI());
             }
@@ -50,26 +64,26 @@ public class RangeUpdateFrameStore extends  FrameStoreAdapter {
                     newValueType = XMLSchemaDatatypes.getValueType(datatype.getURI());
                 }
             }
-        }
-        if (newValueType != ((Slot) property).getValueType()) {
-            ((Slot) property).setValueType(newValueType);
+            if (newValueType == ValueType.INSTANCE) {
+                if (range instanceof RDFSClass) {
+                    RDFSClass rangeClass = (RDFSClass) range;
+                    if (rangeClass instanceof OWLUnionClass) {
+                        ((Slot) property).setAllowedClses(((OWLUnionClass) rangeClass).getOperands());
+                    }
+                    else {
+                        ((Slot) property).setAllowedClses(Collections.singleton(rangeClass));
+                    }
+                    return;
+                }
+            }
         }
         if (newValueType == ValueType.INSTANCE) {
             ((Slot) property).setAllowedClses(Collections.EMPTY_LIST);
         }
-    }
-    
-    
+        else if (newValueType != ((Slot) property).getValueType()) {
+            ((Slot) property).setValueType(newValueType);
+        }
 
-    private void updatePropertyAllowedClasses(RDFProperty property, Collection values) {
-        ((Slot) property).setValueType(ValueType.INSTANCE);
-        RDFSClass rangeClass = (RDFSClass) values.iterator().next();
-        if (rangeClass instanceof OWLUnionClass) {
-            ((Slot) property).setAllowedClses(((OWLUnionClass) rangeClass).getOperands());
-        }
-        else {
-            ((Slot) property).setAllowedClses(Collections.singleton(rangeClass));
-        }
     }
     
     /*
@@ -79,12 +93,7 @@ public class RangeUpdateFrameStore extends  FrameStoreAdapter {
     @Override
     public void setDirectOwnSlotValues(Frame frame, Slot slot, Collection values) {
         if (frame instanceof RDFProperty && slot.equals(rdfsRangeProperty)) {
-            if (values.size() > 0 && values.iterator().next() instanceof RDFSClass) {
-                updatePropertyAllowedClasses((RDFProperty) frame, values);
-            }
-            else {
-                updatePropertyValueType((RDFProperty) frame, values);
-            }
+            updateAllowedValues((RDFProperty) frame, values);
         }
         super.setDirectOwnSlotValues(frame, slot, values);
     }
@@ -101,7 +110,7 @@ public class RangeUpdateFrameStore extends  FrameStoreAdapter {
     @Override
     public void addDirectSuperslot(Slot slot, Slot superSlot) {
         super.addDirectSuperslot(slot, superSlot);
-        if (slot instanceof RDFProperty && ((RDFProperty) slot).getRange() == null) {
+        if (slot instanceof OWLObjectProperty && ((RDFProperty) slot).getRange() == null) {
             slot.setDirectOwnSlotValue(valueType, null);
         }
     }
