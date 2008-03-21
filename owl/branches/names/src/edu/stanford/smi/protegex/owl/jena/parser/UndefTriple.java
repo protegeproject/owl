@@ -12,20 +12,23 @@ public class UndefTriple {
 	private AResource triplePred;
 	private Object tripleObj;
 	private String undef;
+	private TripleStore tripleStore;
 	
 	
-	public UndefTriple(AResource subj, AResource pred, AResource obj, String undef) {
+	public UndefTriple(AResource subj, AResource pred, AResource obj, String undef, TripleStore ts) {
 		this.tripleSubj = subj;
 		this.triplePred = pred;
 		this.tripleObj = obj;
 		this.undef = undef;
+		this.tripleStore = ts;
 	}
 
-	public UndefTriple(AResource subj, AResource pred, ALiteral obj, String undef) {
+	public UndefTriple(AResource subj, AResource pred, ALiteral obj, String undef, TripleStore ts) {
 		this.tripleSubj = subj;
 		this.triplePred = pred;
 		this.tripleObj = obj;
 		this.undef = undef;
+		this.tripleStore = ts;
 	}
 
 	
@@ -45,24 +48,35 @@ public class UndefTriple {
 		return undef;
 	}
 	
+	public TripleStore getTripleStore() {
+		return tripleStore;
+	}
+	
 	@Override
 	public boolean equals(Object obj) {
+		if (obj == null) {
+			return false;
+		}
+		
 		if (!(obj instanceof UndefTriple)) {
 			return false;
 		}
+				
 		UndefTriple other = (UndefTriple) obj;
 		
+		//is it necessary to compare also the triplestore?
 		return other.getTripleSubj().equals(getTripleSubj()) &&
 		       other.getTriplePred().equals(getTriplePred()) &&
 		       other.getTripleObj().equals(getTripleObj()) &&
-		       other.getUndef().equals(getUndef());
+		       other.getUndef().equals(getUndef()) && 
+		       other.getTripleStore().equals(getTripleStore());
 	
 	}
 	
+		
 	@Override
 	public String toString() {
-		return "(" + getTripleSubj() + "  " + getTriplePred() + "  " + getTripleObj() + ")" + "  undef: " + getUndef();
+		return "(" + getTripleSubj() + "  " + getTriplePred() + "  " + getTripleObj() + ")" + "  undef: " + getUndef() + " TS: " + getTripleStore();
 	}
-
 
 }
