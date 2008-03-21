@@ -84,33 +84,7 @@ public class OWLDomainUpdateFrameStore extends FrameStoreAdapter {
             }
         }
         else {
-            int superSlotsCount = super.getSuperslots(slot).size();
-            if (superSlotsCount == 0) {
-                super.setDirectOwnSlotValues(slot, directDomainSlot, Collections.singleton(owlThing));
-            }
-            else {
-                super.setDirectOwnSlotValues(slot, directDomainSlot, Collections.emptyList());
-            }
-        }
-    }
-    
-    private void updateAddSuperSlot(Slot slot) {
-        if (slot instanceof RDFProperty) {
-            RDFProperty property = (RDFProperty) slot;
-            Collection values = super.getDirectOwnSlotValues(property, directDomainSlot);
-            if (values.size() == 1 && values.contains(owlModel.getOWLThingClass())) {
-                super.setDirectOwnSlotValues(slot, directDomainSlot, Collections.emptyList());
-            }
-        }
-    }
-    
-    private void updateRemoveSuperSlot(Slot slot) {
-        if (slot instanceof RDFProperty) {
-            int valuesCount = super.getDirectOwnSlotValuesCount(slot, directDomainSlot);
-            int superSlotsCount = super.getDirectOwnSlotValuesCount(slot, superSlotsSlot);
-            if (valuesCount == 0 && superSlotsCount == 0) {
-                super.addDirectTemplateSlot(owlModel.getOWLThingClass(), slot);
-            }
+            super.setDirectOwnSlotValues(slot, directDomainSlot, Collections.singleton(owlThing));
         }
     }
     
@@ -148,13 +122,6 @@ public class OWLDomainUpdateFrameStore extends FrameStoreAdapter {
             super.setDirectOwnSlotValues(swizzledFrame, directDomainSlot, Collections.singleton(owlThing));
             return;
         }
-        else if (slot.equals(owlModel.getRDFSSubPropertyOfProperty()) && values != null) {
-            super.setDirectOwnSlotValues(frame, slot, values); 
-            if (frame instanceof Slot) {
-                updateAddSuperSlot((Slot) frame);
-            }
-            return;
-        }
         super.setDirectOwnSlotValues(frame, slot, values); 
     }
     
@@ -181,18 +148,6 @@ public class OWLDomainUpdateFrameStore extends FrameStoreAdapter {
             super.addDirectTemplateSlot(owlModel.getOWLThingClass(), slot);
         }
         return slot;
-    }
-    
-    @Override
-    public void removeDirectSuperslot(Slot slot, Slot superslot) {
-        super.removeDirectSuperslot(slot, superslot);
-        updateRemoveSuperSlot(slot);
-    }
-    
-    @Override
-    public void addDirectSuperslot(Slot slot, Slot superSlot) {
-        super.addDirectSuperslot(slot, superSlot);
-        updateAddSuperSlot(slot);
     }
 
 }
