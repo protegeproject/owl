@@ -29,7 +29,7 @@ public class RangeUpdateFrameStore extends  FrameStoreAdapter {
     }
     
     @SuppressWarnings("unchecked")
-    public void synchronizeRDFRangeWithProtegeAllowedValues(RDFProperty property) {
+    public void synchronizeRDFSRangeWithProtegeAllowedValues(RDFProperty property) {
         Collection ranges = super.getOwnSlotValues(property, rdfsRangeProperty);
         updateAllowedValues(property, ranges);
     }
