@@ -17,8 +17,9 @@ public class OWLFrameStoreManager extends FrameStoreManager {
     private OWLModel  owlModel;
     
     private OWLFrameStore owlFrameStore;
-    private FacetUpdateFrameStore facetUpdateFrameStore;
     private DuplicateValuesFrameStore duplicateValuesFrameStore;
+    private DomainUpdateFrameStore domainUpdateFrameStore;
+    private FacetUpdateFrameStore facetUpdateFrameStore;
     private RangeUpdateFrameStore rangeUpdateFrameStore;
     
     private ProtegeOWLFrameStore protegeOwlFrameStore;
@@ -34,7 +35,7 @@ public class OWLFrameStoreManager extends FrameStoreManager {
     private void initializeOwlFrameStores() {
         addFrameStore(owlFrameStore = new OWLFrameStore((AbstractOWLModel) owlModel));
         addFrameStore(duplicateValuesFrameStore = new DuplicateValuesFrameStore());
-        addFrameStore(new OWLDomainUpdateFrameStore(owlModel));
+        addFrameStore(domainUpdateFrameStore = new DomainUpdateFrameStore(owlModel));
         addFrameStore(facetUpdateFrameStore = new FacetUpdateFrameStore(owlModel));
         addFrameStore(rangeUpdateFrameStore = new RangeUpdateFrameStore(owlModel));
         addFrameStore(new OwlSubclassFrameStore(owlModel));
@@ -87,10 +88,6 @@ public class OWLFrameStoreManager extends FrameStoreManager {
     public OWLFrameStore getOWLFrameStore() {
         return owlFrameStore;
     }
-    
-    public FacetUpdateFrameStore getFacetUpdateFrameStore() {
-        return facetUpdateFrameStore;
-    }
 
     /**
      * @return the duplicateValuesFrameStore
@@ -98,7 +95,17 @@ public class OWLFrameStoreManager extends FrameStoreManager {
     public DuplicateValuesFrameStore getDuplicateValuesFrameStore() {
         return duplicateValuesFrameStore;
     }
+    
+    
 
+    public DomainUpdateFrameStore getDomainUpdateFrameStore() {
+        return domainUpdateFrameStore;
+    }
+
+    public FacetUpdateFrameStore getFacetUpdateFrameStore() {
+        return facetUpdateFrameStore;
+    }
+    
     public RangeUpdateFrameStore getRangeUpdateFrameStore() {
         return rangeUpdateFrameStore;
     }
