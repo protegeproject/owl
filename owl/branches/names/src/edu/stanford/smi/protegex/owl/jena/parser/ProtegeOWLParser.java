@@ -47,7 +47,8 @@ import edu.stanford.smi.protegex.owl.repository.util.XMLBaseExtractor;
 public class ProtegeOWLParser {
     private static transient Logger log = Log.getLogger(ProtegeOWLParser.class);
     
-    private final static String JENA_ERROR_LEVEL_PROPERTY = "jena.parser.error_level";    
+    private final static String JENA_ERROR_LEVEL_PROPERTY = "jena.parser.error_level";
+    private final static String CREATE_UNTYPED_RESOURCES = "protegeowl.parser.create.untyped.resources";
 
     private boolean importing = false;
     
@@ -102,12 +103,9 @@ public class ProtegeOWLParser {
 	}
 
 
-	private ARPInvokation createARPInvokation(final Reader reader,
-			final String uri) {
+	private ARPInvokation createARPInvokation(final Reader reader, final String uri) {
 		ARPInvokation invokation = new ARPInvokation() {
-			public void invokeARP(ARP arp)
-			throws Exception {
-
+			public void invokeARP(ARP arp) throws Exception {
 				setErrorLevel(arp);				
 				arp.load(reader, uri);					
 				reader.close();
@@ -217,9 +215,18 @@ public class ProtegeOWLParser {
 	}
 	
 	private void loadTriples(final String ontologyName, URI xmlBase, final ARPInvokation invokation) throws IOException {
+		//the triple store where the parsing will write the parsed triples
 	    final TripleStore tripleStore = owlModel.getTripleStoreModel().getActiveTripleStore();
-	    if (ontologyName != null) { tripleStore.addIOAddress(ontologyName.toString()); }
-	    if (xmlBase != null) { tripleStore.addIOAddress(xmlBase.toString()); }
+	    
+	    if (ontologyName != null) { 
+	    	tripleStore.addIOAddress(ontologyName.toString()); 
+	    }
+	    
+	    if (xmlBase != null) {
+	    	tripleStore.addIOAddress(xmlBase.toString());
+	    	tripleStore.setOriginalXMLBase(xmlBase.toString());
+	    }
+	    
 	    boolean eventsEnabled = owlModel.setGenerateEventsEnabled(false);
 	    try {
 	        tripleProcessor = new TripleProcessor(owlModel, tripleStore);
@@ -227,10 +234,6 @@ public class ProtegeOWLParser {
 	        Log.getLogger().info("Loading triples");
 
 	        ARP arp = createARP();
-
-	        if (xmlBase != null) {
-	            tripleStore.setOriginalXMLBase(xmlBase.toString());
-	        }
 
 	        long startTime = System.currentTimeMillis();	
 
@@ -246,17 +249,9 @@ public class ProtegeOWLParser {
 
 	        long endTime = System.currentTimeMillis();
 
-	        Log.getLogger().info("[ProtegeOWLParser] Completed triple loading after " + (endTime - startTime) + " ms");
-
-	        // this is ok - it only logs or calculates strings if the UndefTripleManager is set for FINE logging.
-	        tripleProcessor.getUndefTripleManager().dumpUndefTriples(Level.FINE);
-	
-	        tripleProcessor.processUndefTriples();
-
-	        if (log.isLoggable(Level.FINE)) {			
-	            log.fine("\nDump before end processing. Size: " + tripleProcessor.getUndefTripleManager().getUndefTriples().size());
-	        }		
-
+	        Log.getLogger().info("[ProtegeOWLParser] Completed triple loading after " + (endTime - startTime) + " ms");	 
+	        tripleProcessor.getUndefTripleManager().dumpUndefTriples(Level.FINE);	
+	        //tripleProcessor.processUndefTriples();
 	        if (log.isLoggable(Level.FINE)) {
 	            log.fine("Start processing imports ...");
 	        }
@@ -267,23 +262,17 @@ public class ProtegeOWLParser {
 	            log.fine("End processing imports");
 	        }
 
-	        tripleProcessor.processUndefTriples();
-
-	        if (tripleStore.getName() == null) { // no ontology declaration was found
-	            String oname;
-	            if (ontologyName != null) { oname = ontologyName; }
-	            else if (xmlBase != null) { oname = xmlBase.toString(); }
-	            else { oname = FactoryUtils.generateOntologyURIBase(); }
-
-	            FactoryUtils.addOntologyToTripleStore(owlModel, tripleStore, oname);
-	        }
+	        //tripleProcessor.processUndefTriples();
 	        
 	        tripleProcessor.doPostProcessing();
+	        
+	        handleNoOntologyDeclarationFound(tripleStore, ontologyName, xmlBase);
+	        
 	        if (!importing) {
 	            doFinalPostProcessing();
 	        }
-	    }
-	    catch (AlreadyImportedException e) {
+	        
+	    } catch (AlreadyImportedException e) {
 	        Log.getLogger().warning("Broken import led to attempt to import the same ontology twice");
 	        owlModel.getTripleStoreModel().deleteTripleStore(tripleStore);
 	    }
@@ -293,12 +282,48 @@ public class ProtegeOWLParser {
 	}
 	
 	
+	private void handleNoOntologyDeclarationFound(TripleStore tripleStore, String ontologyName, URI xmlBase) throws AlreadyImportedException {
+		 // no ontology declaration was found
+        if (tripleStore.getName() == null) {
+            String oname = null;
+            
+            if (ontologyName != null) {
+            	oname = ontologyName; 
+            } else if (xmlBase != null) {
+            	oname = xmlBase.toString(); 
+            }
+            else { 
+            	oname = FactoryUtils.generateOntologyURIBase(); 
+            }
+
+            FactoryUtils.addOntologyToTripleStore(owlModel, tripleStore, oname);
+        }
+	}
+	
+	
 	private void doFinalPostProcessing() {
-        TripleStoreUtil.sortSubclasses(owlModel);
+		//create untyped resources if needed
+		if (isCreateUntypedResourcesEnabled()) {
+			tripleProcessor.createUntypedResources();
+			
+			if (tripleProcessor.getUndefTripleManager().getUndefTriples().size() > 0) {
+    			tripleProcessor.getUndefTripleManager().dumpUndefTriples(Level.INFO);
+    		}
+		}
+        
+        //copy restrictions in facets
         if (owlModel instanceof JenaOWLModel)  {
             ((JenaOWLModel) owlModel).copyFacetValuesIntoNamedClses();
         }
+        
+		//sort subclasses if needed
+        TripleStoreUtil.sortSubclasses(owlModel);
 	}	
+	
+	
+	public boolean isCreateUntypedResourcesEnabled() {
+		return ApplicationProperties.getBooleanProperty(CREATE_UNTYPED_RESOURCES, true);
+	}
 	
 	
 	/************************************* Imports *************************************/
