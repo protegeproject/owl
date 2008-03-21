@@ -28,7 +28,8 @@ public class CreateRDFSDomainTestCase extends AbstractTripleStoreTestCase {
         
         ts.add(subproperty, owlModel.getRDFSSubPropertyOfProperty(), superproperty);
 
-        assertSize(0, subproperty.getDirectDomain());
+        assertSize(1, subproperty.getDirectDomain());
+        assertContains(owlThing, (subproperty).getDirectDomain());
 
         assertSize(1, superproperty.getDirectDomain());
         assertContains(owlThing, (superproperty).getDirectDomain());
