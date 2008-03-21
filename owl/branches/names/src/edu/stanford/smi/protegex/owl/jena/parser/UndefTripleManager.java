@@ -9,20 +9,29 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import edu.stanford.smi.protege.util.Log;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
 
 public class UndefTripleManager {
 	Logger log = Log.getLogger(UndefTripleManager.class);
-	HashMap<String, Collection<UndefTriple>> undefTriplesMap = new HashMap<String, Collection<UndefTriple>>();
 	
+	//We need to make sure that there is only one UndefTripleManager per owlModel
+	private OWLModel owlModel;
+	
+	private HashMap<String, Collection<UndefTriple>> undefTriplesMap = new HashMap<String, Collection<UndefTriple>>();
+	
+	
+	public UndefTripleManager(OWLModel owlModel) {
+		this.owlModel = owlModel;
+	}
 
 	public void addUndefTriple(UndefTriple triple) {	
 		if (log.isLoggable(Level.FINE)) {
-			log.fine(" +++ Adding undef triple: " + triple);
+			log.fine(" +++ Adding: " + triple);
 		}
 		
 		if (log.isLoggable(Level.FINE)) {			
 			if (undefTriplesMap.keySet().size() % 1000 == 0) {
-				log.fine("*** Undef triples count: " + undefTriplesMap.keySet().size());
+				log.fine(" Undef triples count: " + undefTriplesMap.keySet().size());
 			}
 		}		
 		
@@ -32,7 +41,7 @@ public class UndefTripleManager {
 	}
 
 	public Collection<UndefTriple> getUndefTriples(String uri) {
-		Collection<UndefTriple> undefTriples = (Collection) undefTriplesMap.get(uri);
+		Collection<UndefTriple> undefTriples = (Collection<UndefTriple>) undefTriplesMap.get(uri);
 		
 		if (undefTriples == null)
 			return new HashSet<UndefTriple>();
@@ -43,7 +52,7 @@ public class UndefTripleManager {
 	public Collection<UndefTriple> getUndefTriples() {
 		ArrayList<UndefTriple> values = new ArrayList<UndefTriple>();
 		
-		for (Iterator iter = undefTriplesMap.keySet().iterator(); iter.hasNext();) {
+		for (Iterator<String> iter = undefTriplesMap.keySet().iterator(); iter.hasNext();) {
 			String uri = (String) iter.next();			
 			values.addAll(undefTriplesMap.get(uri));			
 		}
@@ -53,7 +62,7 @@ public class UndefTripleManager {
 
 	public void removeUndefTriple(String uri, UndefTriple undefTriple) {
             if (log.isLoggable(Level.FINE)) {
-            	log.fine(" --- Removing undef triple: " + undefTriple);
+            	log.fine(" --- Removing: " + undefTriple);
             }
             Collection<UndefTriple> undefTriples = getUndefTriples(uri);		
             undefTriples.remove(undefTriple);
@@ -69,11 +78,11 @@ public class UndefTripleManager {
 	    if (!log.isLoggable(level)) {
 	        return;
 	    }
-        log.log(level, "\nDump before end processing. Size: " + getUndefTriples().size());
+        
 		log.log(level, "\n --------------- Begin undef triples dump ----------------");
-		for (Iterator iter = undefTriplesMap.keySet().iterator(); iter.hasNext();) {
+		for (Iterator<String> iter = undefTriplesMap.keySet().iterator(); iter.hasNext();) {
 			String uri = (String) iter.next();
-			for (Iterator iterator = undefTriplesMap.get(uri).iterator(); iterator.hasNext();) {
+			for (Iterator<UndefTriple> iterator = undefTriplesMap.get(uri).iterator(); iterator.hasNext();) {
 				UndefTriple triple = (UndefTriple) iterator.next();
 				log.log(level, " * " + triple);
 			}			
