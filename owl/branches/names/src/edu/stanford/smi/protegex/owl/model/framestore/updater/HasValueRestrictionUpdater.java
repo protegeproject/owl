@@ -63,8 +63,7 @@ public class HasValueRestrictionUpdater extends AbstractRestrictionUpdater {
         if (log.isLoggable(Level.FINE)) {
             log.fine("- :VALUES override from " + cls.getName() + "." + slot.getName());
         }
-        for (Iterator it = getDirectRestrictions(cls, slot, OWLHasValue.class).iterator(); it.hasNext();) {
-            OWLHasValue r = (OWLHasValue) it.next();
+        for (OWLHasValue r : getDirectRestrictions(cls, slot, OWLHasValue.class)) {
             if (r != null) {
                 Object value = r.getHasValue();
                 if (value != null) {
