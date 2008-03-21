@@ -4,6 +4,7 @@ import edu.stanford.smi.protege.model.Frame;
 import edu.stanford.smi.protege.model.FrameID;
 import edu.stanford.smi.protege.model.framestore.SimpleFrameStore;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 
 public abstract class AbstractStatefulTripleProcessor {
 	
@@ -14,6 +15,8 @@ public abstract class AbstractStatefulTripleProcessor {
 	
 	protected boolean importing;
 	
+	protected TripleStore tripleStore;
+	
 	protected SimpleFrameStore simpleFrameStore;
 		
 
@@ -23,11 +26,12 @@ public abstract class AbstractStatefulTripleProcessor {
 		this.undefTripleManager = processor.getUndefTripleManager();
 		this.importing = processor.isImporting();
 		this.simpleFrameStore = ParserUtil.getSimpleFrameStore(owlModel);
+		this.tripleStore = processor.getTripleStore();
 	}
 	
 	
 	protected Frame createRestriction(String restrName, String predName) {
-		Frame restriction = owlModel.getFrame(restrName);
+		Frame restriction = getFrame(restrName);
 
 		if (restriction != null)
 			return restriction;
