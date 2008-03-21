@@ -339,6 +339,9 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
                 tripleStoreModel.setViewActiveOnly(false);
             }
         }
+        if (ontologyName.toString().equals(ProtegeNames.PROTEGE_OWL_ONTOLOGY)) {
+        	getFrameStoreManager().setProtegeOwlFrameStoreEnabled(true);
+        }
         if (log.isLoggable(Level.FINE)) {
             log.fine("Import Processing of " + ontologyName  + " done");
             log.fine("=======================================================");
