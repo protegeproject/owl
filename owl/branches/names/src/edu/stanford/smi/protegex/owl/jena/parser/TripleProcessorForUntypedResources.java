@@ -1,84 +1,29 @@
 package edu.stanford.smi.protegex.owl.jena.parser;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Iterator;
-import java.util.logging.Level;
+
+import sun.org.mozilla.javascript.internal.ObjToIntMap;
 
 import com.hp.hpl.jena.rdf.arp.ALiteral;
 import com.hp.hpl.jena.rdf.arp.AResource;
+import com.sun.xml.internal.messaging.saaj.util.ParseUtil;
 
-import edu.stanford.smi.protege.util.ApplicationProperties;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
 import edu.stanford.smi.protegex.owl.model.RDFSClass;
-import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
 import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
 
-public class TripleProcessorForUntypedResources extends AbstractStatefulTripleProcessor {
+class TripleProcessorForUntypedResources extends AbstractStatefulTripleProcessor {
 	
-	public static final String PROCESS_UNTYPED_RESOURCES = "protegeowl.parser.process.untyped.resources";
-
 	public TripleProcessorForUntypedResources(TripleProcessor processor) {
 		super(processor);
 	}
 		
 	
-	/**
-	 * This method will do the following:
-	 * <ol>
-	 * <li>Check if there are untyped resources. If yes, check if they are already defined by other triplestore.
-	 * If yes, then remove the UntypedResource type and swizzle them.</li>
-	 * <li>Go again through all the undefined triples and see if it can resolve them.</li>
-	 * <li>For all remaining unresolved triples: add to them the UntypedResource type (maybe future imports will resolve them)
-	 * </ol>
-	 */
 	public void processUndefTriples() {
-		if (!processUndefTriplesEnabled()) {
-			processRemainingUndefinedTriples();
-			return;
-		}
-		
-		boolean modified = true;
-		
-		while (modified) {
-			long intialUndefSize = processor.getUndefTripleManager().getUndefTriples().size();
-			
-			processRemainingUndefinedTriples();
-			checkForUntypedResources();
-			createUntypedResources();
-			
-			modified = processor.getUndefTripleManager().getUndefTriples().size() != intialUndefSize;
-		}
+		processRemainingUndefinedTriples();	
+	}
 
-		if (processor.getUndefTripleManager().getUndefTriples().size() > 0) {
-			processor.getUndefTripleManager().dumpUndefTriples(Level.INFO);
-		}
-	}
-	
-	public boolean processUndefTriplesEnabled() {
-		return ApplicationProperties.getBooleanProperty(PROCESS_UNTYPED_RESOURCES, true);
-	}
-	
-	
-	/**
-	 * This method will go through all the untyped resources and see if there are other types defined for them.
-	 * If yes, remove the UntypedResource type and swizzle them.
-	 */
-	@SuppressWarnings("deprecation")
-	protected void checkForUntypedResources() {
-		RDFSNamedClass untypedResourceClass = owlModel.getRDFUntypedResourcesClass();
-		
-		for (Iterator iterator = untypedResourceClass.getInstances(true).iterator(); iterator.hasNext();) {
-			RDFResource untypedResource = (RDFResource) iterator.next();
-			Collection types = new ArrayList(untypedResource.getDirectTypes());
-			
-			types.remove(untypedResourceClass);
-			if (types.size() > 1) {
-				untypedResource.removeDirectType(untypedResourceClass); //this will trigger a swizzle
-			}
-		}
-	}
 	
 	protected void processRemainingUndefinedTriples() {
 		for (Iterator<UndefTriple> iter = processor.getUndefTripleManager().getUndefTriples().iterator(); iter.hasNext();) {
@@ -102,31 +47,52 @@ public class TripleProcessorForUntypedResources extends AbstractStatefulTriplePr
 	/**
 	 * This method will create untyped resources for all undefined triples.
 	 */
-	protected void createUntypedResources() {
+	public void createUntypedResources() {
+		/*
+		 * There might be triples with duplicate undef entities. 
+		 * Test subject, predicate and object from the triple
+		 */
 		for (Iterator<UndefTriple> iter = processor.getUndefTripleManager().getUndefTriples().iterator(); iter.hasNext();) {
 			UndefTriple undefTriple = (UndefTriple) iter.next();
-			String undefEntity = undefTriple.getUndef();
+
+			String pred = ParserUtil.getResourceName(undefTriple.getTriplePred());
+			resolvUndefinedTriple(undefTriple, pred);
 			
-			if (owlModel.getRDFResource(undefEntity) == null) {
-				RDFResource resource = createUntypedObject(undefTriple);
-				if (resource != null) {
-					checkUndefinedResources(undefEntity);				
-				}
-				//don't drop the undef triple - the processor will hopefully drop it later
-			}
+			String subj = ParserUtil.getResourceName(undefTriple.getTripleSubj());
+			resolvUndefinedTriple(undefTriple, subj);
+			
+			Object objObj = undefTriple.getTripleObj();
+			if (objObj instanceof AResource) {
+				String obj = ParserUtil.getResourceName((AResource)undefTriple.getTripleObj());
+				resolvUndefinedTriple(undefTriple, obj);
+			}			
 		}
+		
+		processUndefTriples();
+		
 	}
 	
+	protected void resolvUndefinedTriple(UndefTriple undefTriple, String undef) {
+		if (owlModel.getRDFResource(undef) == null) {
+			RDFResource resource = createUntypedObject(undefTriple, undef);
+			if (resource != null) {
+				checkUndefinedResources(undef);				
+			}				
+		}	
+	}
+
+
+	//TODO: create in the right TS!!
+	//if property system -> create class, if not -> create instance
 	/**
 	 * Creates either a untyped class, property or resource depending on the triple.
 	 * @param undefTriple - the undef triple
 	 */
-	protected RDFResource createUntypedObject(UndefTriple undefTriple) {
+	protected RDFResource createUntypedObject(UndefTriple undefTriple, String undef) {
 		AResource subject = undefTriple.getTripleSubj();
 		AResource predicate = undefTriple.getTriplePred();
 		Object object = undefTriple.getTripleObj();
-		String undef = undefTriple.getUndef();
-
+		
 		//what to do with resources that already exist?
 		RDFResource undefResource = owlModel.getRDFResource(undef); 
 		if (undefResource != null) {
@@ -210,7 +176,7 @@ public class TripleProcessorForUntypedResources extends AbstractStatefulTriplePr
 		}		
 	}
 
-	
+
 	@SuppressWarnings("deprecation")
 	protected RDFResource handleUndefinedObject(UndefTriple undefTriple) {	
 		RDFSClass untypedClassClass = ((AbstractOWLModel)owlModel).getRDFExternalClassClass();
