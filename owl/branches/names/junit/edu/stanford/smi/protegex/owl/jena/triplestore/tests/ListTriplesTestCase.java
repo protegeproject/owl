@@ -56,8 +56,7 @@ public class ListTriplesTestCase extends AbstractJenaTestCase {
         OWLNamedClass sub = owlModel.getOWLNamedClass("travel:Activity");
         sub.addSuperclass(sup);
         TripleStore ts = owlModel.getTripleStoreModel().getActiveTripleStore();
-        Iterator triples = ts.listTriples();
-        assertSize(DEFAULT_SIZE + 4, triples);
+        Iterator<Triple> triples = ts.listTriples();
         assertTrue(ts.contains(sub, owlModel.getRDFSSubClassOfProperty(), sup));
     }
 
