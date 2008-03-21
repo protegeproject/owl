@@ -40,14 +40,16 @@ public abstract class AbstractRestrictionUpdater implements RestrictionUpdater {
     }
 
 
-    protected Collection getDirectRestrictions(Cls cls, Slot slot, Class metaClass) {
-        Collection result = new ArrayList();
-        for (Iterator it = cls.getDirectSuperclasses().iterator(); it.hasNext();) {
-            Cls superCls = (Cls) it.next();
+    @SuppressWarnings("unchecked")
+	protected <X extends OWLRestriction> Collection<X> getDirectRestrictions(Cls cls, Slot slot, Class<? extends X> metaClass) {
+        Collection<X> result = new ArrayList<X>();
+        for (Iterator<Cls> it = cls.getDirectSuperclasses().iterator(); it.hasNext();) {
+            Cls superCls = it.next();
             if (metaClass.isAssignableFrom(superCls.getClass())) {
+            	X restriction = (X) superCls;
                 Slot restrictedSlot = ((OWLRestriction) superCls).getOnProperty();
                 if (restrictedSlot != null && restrictedSlot.equals(slot)) {
-                    result.add(superCls);
+                    result.add(restriction);
                 }
             }
         }
