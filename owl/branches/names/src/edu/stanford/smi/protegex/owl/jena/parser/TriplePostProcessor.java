@@ -203,10 +203,13 @@ class TriplePostProcessor extends AbstractStatefulTripleProcessor {
 	public void processDomainAndRange() {
 		for (Iterator iterator = owlModel.getUserDefinedRDFProperties().iterator(); iterator.hasNext();) {
 			RDFProperty property = (RDFProperty) iterator.next();
+			//domain
 			if (property.getDirectDomain().isEmpty()) {
 				FrameCreatorUtility.addOwnSlotValue(property, owlModel.getSystemFrames().getDirectDomainSlot(), owlModel.getOWLThingClass());
 				FrameCreatorUtility.addOwnSlotValue(owlModel.getOWLThingClass(), owlModel.getSystemFrames().getDirectTemplateSlotsSlot(), property);
 			}		
+			//range
+			owlModel.getFrameStoreManager().getRangeUpdateFrameStore().synchronizeRDFRangeWithProtegeAllowedValues(property);
 		}
 	}
 
