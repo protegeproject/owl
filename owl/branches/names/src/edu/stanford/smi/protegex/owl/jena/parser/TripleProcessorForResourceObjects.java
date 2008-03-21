@@ -3,10 +3,7 @@ package edu.stanford.smi.protegex.owl.jena.parser;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -22,20 +19,19 @@ import edu.stanford.smi.protege.model.Instance;
 import edu.stanford.smi.protege.model.KnowledgeBase;
 import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protege.util.Log;
-import edu.stanford.smi.protegex.owl.model.NamespaceManager;
-import edu.stanford.smi.protegex.owl.model.OWLIntersectionClass;
 import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.RDFSClass;
-import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
 
-public class TripleProcessorForResourceObjects extends AbstractStatefulTripleProcessor {
-	private static final transient Logger log = Log.getLogger(TripleProcessor.class);
+class TripleProcessorForResourceObjects extends AbstractStatefulTripleProcessor {
+	private static final transient Logger log = Log.getLogger(TripleProcessorForResourceObjects.class);
 
 	public enum TripleStatus {
 		INCOMPLETE, IN_KNOWLEDGE_BASE, DUPLICATE_TRIPLE, OTHER_TRIPLE_WILL_RESOLVE, REQUIRES_MULTI_TYPES_PROCESSING, UNDEF_NEEDS_POSTPROCESS;
 	};
 
+	private TriplePostProcessor postProcessor;
+	
 	/*
 	 * I don't know if this works. It is a hack for an ugly situation. The w3
 	 * specs say that the name of an ontology in a file is the first ontology
@@ -49,14 +45,15 @@ public class TripleProcessorForResourceObjects extends AbstractStatefulTriplePro
 
 	private SuperClsCache superClsCache = new SuperClsCache();
 	private MultipleTypesInstanceCache multipleTypesInstanceCache = new MultipleTypesInstanceCache();
-	private Set<RDFProperty> createdProperties = new HashSet<RDFProperty>();
-
+	
+	//these will be refactored
 	private Collection<RDFProperty> possibleGCIPredicates = new ArrayList<RDFProperty>();
 	private Collection<RDFSClass> gciAxioms = new ArrayList<RDFSClass>();
 	private Map<String, Cls> objectToNamedLogicalClassSurrogate = new HashMap<String, Cls>();
 
 	public TripleProcessorForResourceObjects(TripleProcessor processor) {
 		super(processor);
+		postProcessor = new TriplePostProcessor(processor);
 		initGCIPredicates();
 	}
 
@@ -144,7 +141,7 @@ public class TripleProcessorForResourceObjects extends AbstractStatefulTriplePro
 				OWLImportsCache.addOWLImport(subjName, objName);
 			} else if (predName.equals(RDF.type.getURI())) { // creation
 				status = handleSetType();
-			}// split this in two conditions and two methods
+			}
 			else if (predName.equals(RDF.first.getURI()) || predName.equals(RDF.rest.getURI())) {
 				if (log.isLoggable(Level.FINE)) {
 					log.fine("Triple <" + subjName + ", " + predName + ", " + objName + "> signals RDFList creation");
@@ -155,7 +152,7 @@ public class TripleProcessorForResourceObjects extends AbstractStatefulTriplePro
 			} else if (OWLFramesMapping.getRestrictionPredicatesNames().contains(predName)) {
 				subjFrame = createRestriction(subjName, predName);
 			}
-			// do this nicer
+
 			subjFrame = getFrame(subjName);
 			objFrame = getFrame(objName);
 
@@ -247,15 +244,8 @@ public class TripleProcessorForResourceObjects extends AbstractStatefulTriplePro
 					&& (objName.equals(OWL.Class.getURI()) || objName.equals(RDFS.Class.getURI()))) {
 				superClsCache.addFrame(subjFrame);
 			}
-			if (!subjAlreadyExists && subjFrame instanceof RDFProperty) {
-				createdProperties.add((RDFProperty) subjFrame);
-			}
-
-			if (subjAlreadyExists && objFrame instanceof Cls) {
-				// what should happen if objFrame is not a class? Give a warning
-				// this is another rdf:type for this resource
-				// FrameCreatorUtility.setInstanceType((Instance) subjFrame,
-				// (Cls) objFrame);
+		
+			if (subjAlreadyExists && objFrame instanceof Cls) {				
 				if (log.isLoggable(Level.FINE)) {
 					log.fine("found an alternative type for " + subjFrame + " = " + objFrame);
 				}
@@ -271,7 +261,7 @@ public class TripleProcessorForResourceObjects extends AbstractStatefulTriplePro
 					if (log.isLoggable(Level.FINE)) {
 						log.fine("\tdeferring triple because predicate is not yet defined");
 					}
-					undefTripleManager.addUndefTriple(new UndefTriple(subj, pred, obj, predName));
+					undefTripleManager.addUndefTriple(new UndefTriple(subj, pred, obj, predName, tripleStore));
 				}
 				return TripleStatus.UNDEF_NEEDS_POSTPROCESS;
 			}
@@ -279,7 +269,6 @@ public class TripleProcessorForResourceObjects extends AbstractStatefulTriplePro
 		}
 
 		private TripleStatus handleSubjObjUndefs() {
-			// checking and adding to undefined
 			if (subjFrame == null) {
 				if (log.isLoggable(Level.FINE)) {
 					log.fine("\tDeferring triple because subject is not yet defined");
@@ -371,7 +360,7 @@ public class TripleProcessorForResourceObjects extends AbstractStatefulTriplePro
 		}
 
 		private void addUndefTriple(String undef) {
-			processor.addUndefTriple(subj, pred, obj, undef, alreadyInUndef);
+			processor.addUndefTriple(subj, pred, obj, undef, alreadyInUndef, tripleStore);
 		}
 
 	} // end InternalProcessorForResourceObjects class
@@ -456,189 +445,23 @@ public class TripleProcessorForResourceObjects extends AbstractStatefulTriplePro
 	}
 
 
+	
 	/*
 	 * ************************ Post-processing ******************************
 	 */
 
 
-
 	public void doPostProcessing() {
-		processMetaclasses();
-		processSubclassesOfRdfList();
+		processor.processUndefTriples();
 		
-		processInferredSuperclasses();
-		processClsesWithoutSupercls();
-		processInstancesWithMultipleTypes();
-		processCreatedProperties();
-		processGeneralizedConceptInclusions();
-
-		//dump what you have not processed:
-		//getUndefTripleManager().dumpUndefTriples(Level.FINE);
-	}
-
-	private void processMetaclasses() {
-		RDFSNamedClass rdfsClass = owlModel.getRDFSNamedClassClass();
+		postProcessor.processMetaclasses();
+		postProcessor.processSubclassesOfRdfList();
 		
-		for (Iterator iterator = rdfsClass.getSubclasses(true).iterator(); iterator.hasNext();) {
-			RDFSNamedClass metaclass = (RDFSNamedClass) iterator.next();
-		
-			if (!metaclass.isSystem()) {
-				for (Iterator iterator2 = metaclass.getInstances(false).iterator(); iterator2.hasNext();) {
-					Instance inst = (Instance) iterator2.next();
-					ParserUtil.getSimpleFrameStore(owlModel).swizzleInstance(inst);
-				}
-			}
-		}		
-	}
-
-	private void processSubclassesOfRdfList(){
-		RDFSNamedClass rdfListCls = owlModel.getRDFListClass();
-		
-		for (Iterator iterator = rdfListCls.getSubclasses(true).iterator(); iterator.hasNext();) {
-			RDFSNamedClass listCls = (RDFSNamedClass) iterator.next();
-		
-			if (!listCls.isSystem()) {
-				for (Iterator iterator2 = listCls.getInstances(false).iterator(); iterator2.hasNext();) {
-					Instance inst = (Instance) iterator2.next();
-					ParserUtil.getSimpleFrameStore(owlModel).swizzleInstance(inst);
-				}
-			}
-		}		
-	}
-	
-	
-	private void processClsesWithoutSupercls() {
-		long time0 = System.currentTimeMillis();
-
-		log.info("Postprocess: Process classes without superclasses (" + superClsCache.getCachedFramesWithNoSuperclass().size() + " classes) ... ");
-
-		for (Iterator<Frame> iter = superClsCache.getCachedFramesWithNoSuperclass().iterator(); iter.hasNext();) {
-			Frame frame = (Frame) iter.next();
-			if (log.isLoggable(Level.FINE)) {
-				log.fine("processClsesWithoutSupercls: No declared supercls: " + frame);
-			}
-			if (frame instanceof Cls) {
-				Cls cls = (Cls) frame;				
-				FrameCreatorUtility.createSubclassOf(cls, owlModel.getOWLThingClass());
-			}
-		}
-
-		superClsCache.clearCache();
-
-		log.info("(" + (System.currentTimeMillis() - time0) + " ms)");
-	}
-
-
-	private void processInferredSuperclasses(){
-		long time0 = System.currentTimeMillis();
-
-		OWLNamedClass owlClassClass = owlModel.getOWLNamedClassClass();
-
-		log.info("Postprocess: Add inferred superclasses (" + owlModel.getInstanceCount(owlClassClass) + " classes) ... ");
-
-		for (Iterator iterator = owlClassClass.getInstances().iterator(); iterator.hasNext();) {
-			Object obj = iterator.next();
-
-			try {				
-				OWLNamedClass namedClass = (OWLNamedClass) obj;
-				Collection<Cls> inferredSuperclasses = getInferredSuperClasses(namedClass);
-
-				if (inferredSuperclasses.size() > 0) {
-					superClsCache.removeFrame(namedClass);
-				}
-
-				for (Cls inferredSupercls : inferredSuperclasses) {
-					FrameCreatorUtility.createSubclassOf(namedClass, inferredSupercls);
-				}
-
-			} catch (Exception e) {
-				Log.getLogger().log(Level.WARNING, " Error at processing " + obj, e);
-			}			
-		}
-
-		log.info("(" + (System.currentTimeMillis() - time0) + " ms)");		
-	}
-
-
-	private Collection<Cls> getInferredSuperClasses(OWLNamedClass namedClass) {
-		Collection<Cls> inferredSuperClasses = new ArrayList<Cls>();
-
-		//make this into a recursive function
-		Collection<RDFSClass> equivClasses = namedClass.getEquivalentClasses();
-		for (RDFSClass equivClass : equivClasses) {
-			if (equivClass instanceof RDFSNamedClass) {
-				inferredSuperClasses.add(equivClass);
-			} else if (equivClass instanceof OWLIntersectionClass) {
-				//add operands if defined
-				Collection<RDFSClass> operands = ((OWLIntersectionClass)equivClass).getOperands();
-
-				for (RDFSClass operand : operands) {
-					if (operand instanceof RDFSNamedClass) {
-						inferredSuperClasses.add(operand);
-					}					
-				}				
-			}
-		}
-
-		return inferredSuperClasses;
-	}
-
-
-	private void processInstancesWithMultipleTypes() {
-		long time0 = System.currentTimeMillis();
-
-		Set<Instance> instancesWithMultipleTypes = multipleTypesInstanceCache.getInstancesWithMultipleTypes();
-
-		log.info("Postprocess: Instances with multiple types (" + instancesWithMultipleTypes.size() + " instances) ... ");
-
-		for (Instance instance : instancesWithMultipleTypes) {
-			Set<Cls> typesSet = multipleTypesInstanceCache.getTypesForInstanceAsSet(instance);
-			adjustTypesOfInstance(instance, typesSet);
-			if (log.isLoggable(Level.FINE)) {
-				log.fine("process instance with multiple types" + instance + ": " + typesSet);
-			}
-		}
-		log.info("(" + (System.currentTimeMillis() - time0) + " ms)");
-	}
-
-	private void adjustTypesOfInstance(Instance instance, Set<Cls> typesSet) {
-		Collection<Cls> existingTypes = FrameCreatorUtility.getDirectTypes(instance);
-		typesSet.removeAll(existingTypes); // types to add
-
-		for (Cls type : typesSet) {
-			FrameCreatorUtility.addDirectTypeAndSwizzle(instance, type);
-		}
-
-	}
-
-	private void processCreatedProperties() {
-		for (RDFProperty property : createdProperties) {
-			if (property.getDirectDomain().isEmpty()) {
-				FrameCreatorUtility.addOwnSlotValue(property, owlModel.getSystemFrames().getDirectDomainSlot(), owlModel.getOWLThingClass());
-				FrameCreatorUtility.addOwnSlotValue(owlModel.getOWLThingClass(), owlModel.getSystemFrames().getDirectTemplateSlotsSlot(), property);
-			}
-		}
-	}
-
-	private void processGeneralizedConceptInclusions() {
-		// now try to give them a good name
-		NamespaceManager names = owlModel.getNamespaceManager();
-		String namespace = names.getDefaultNamespace();
-		if (namespace == null && owlModel.getDefaultOWLOntology() != null) {
-			namespace = owlModel.getDefaultOWLOntology().getName() + "#";
-		}
-		String axiomPrefix = namespace + "Axiom";
-		int counter = 0;
-
-		if (namespace != null) {
-			for (RDFSClass gci : gciAxioms) {
-				while (owlModel.getFrame(axiomPrefix + counter) != null) {
-					counter++;
-				}
-				gci = owlModel.getOWLNamedClass(gci.getName());
-				gci.rename(axiomPrefix + counter);
-			}
-		}
+		postProcessor.processInferredSuperclasses(superClsCache);
+		postProcessor.processClsesWithoutSupercls(superClsCache);
+		postProcessor.processInstancesWithMultipleTypes(multipleTypesInstanceCache);
+		postProcessor.processDomainAndRange();
+		postProcessor.processGeneralizedConceptInclusions(gciAxioms);
 	}
 
 
