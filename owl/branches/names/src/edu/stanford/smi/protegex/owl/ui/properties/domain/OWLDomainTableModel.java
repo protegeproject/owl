@@ -2,6 +2,7 @@ package edu.stanford.smi.protegex.owl.ui.properties.domain;
 
 import edu.stanford.smi.protege.model.*;
 import edu.stanford.smi.protege.util.Disposable;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.RDFSClass;
 import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
@@ -68,11 +69,14 @@ public class OWLDomainTableModel extends AbstractTableModel implements Disposabl
 
 
     private void fill() {
-        final Slot domainSlot = ((KnowledgeBase) property.getOWLModel()).getSlot(Model.Slot.DIRECT_DOMAIN);
+    	OWLModel owlModel = property.getOWLModel();
+        final Slot domainSlot = owlModel.getSystemFrames().getDirectDomainSlot();
         final Collection localDomain = ((Slot) property).getDirectOwnSlotValues(domainSlot);
-        // final Collection localDomain = property.getDirectDomain();
-        if (localDomain.isEmpty()) {
-            for (Iterator it = property.getSuperproperties(true).iterator(); it.hasNext();) {
+        Collection superProperties = property.getSuperproperties(true);
+        if (localDomain.isEmpty() || 
+        		(localDomain.size() == 1 && !superProperties.isEmpty() 
+        				&& localDomain.contains(owlModel.getOWLThingClass()))) {
+            for (Iterator it = superProperties.iterator(); it.hasNext();) {
                 Slot superSlot = (Slot) it.next();
                 for (Iterator ji = superSlot.getDirectOwnSlotValues(domainSlot).iterator(); ji.hasNext();) {
                     Cls cls = (Cls) ji.next();
