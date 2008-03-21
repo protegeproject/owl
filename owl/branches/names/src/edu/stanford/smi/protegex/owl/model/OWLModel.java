@@ -21,6 +21,7 @@ import edu.stanford.smi.protegex.owl.model.event.ResourceListener;
 import edu.stanford.smi.protegex.owl.model.factory.AlreadyImportedException;
 import edu.stanford.smi.protegex.owl.model.factory.OWLJavaFactory;
 import edu.stanford.smi.protegex.owl.model.framestore.OWLFrameStore;
+import edu.stanford.smi.protegex.owl.model.framestore.OWLFrameStoreManager;
 import edu.stanford.smi.protegex.owl.model.project.OWLProject;
 import edu.stanford.smi.protegex.owl.model.query.QueryResults;
 import edu.stanford.smi.protegex.owl.model.triplestore.Triple;
@@ -606,6 +607,8 @@ public interface OWLModel extends ProtegeKnowledgeBase, OWLTestManager {
      */
     Set getFloatDatatypes();
 
+    
+    OWLFrameStoreManager getFrameStoreManager();
 
     /**
      * @see #setGenerateEventsEnabled
@@ -1076,6 +1079,7 @@ public interface OWLModel extends ProtegeKnowledgeBase, OWLTestManager {
      * Provides low level access to some internal Protege detail - normally not needed.
      */
     OWLFrameStore getOWLFrameStore();
+    
 
     /**
      * Gets those Instances in the ontology that are instances of a OWLNamedClass.
