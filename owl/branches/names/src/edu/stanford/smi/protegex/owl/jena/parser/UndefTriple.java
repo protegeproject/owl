@@ -64,13 +64,16 @@ public class UndefTriple {
 				
 		UndefTriple other = (UndefTriple) obj;
 		
-		//is it necessary to compare also the triplestore?
 		return other.getTripleSubj().equals(getTripleSubj()) &&
 		       other.getTriplePred().equals(getTriplePred()) &&
 		       other.getTripleObj().equals(getTripleObj()) &&
 		       other.getUndef().equals(getUndef()) && 
-		       other.getTripleStore().equals(getTripleStore());
+		       other.getTripleStore().equals(getTripleStore());	
+	}
 	
+	@Override
+	public int hashCode() {
+		return 2*tripleSubj.hashCode() + 27*triplePred.hashCode() + tripleObj.hashCode();
 	}
 	
 		
