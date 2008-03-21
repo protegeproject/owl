@@ -16,7 +16,7 @@ import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.RDFSClass;
 import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
 
-public class OWLDomainUpdateFrameStore extends FrameStoreAdapter {
+public class DomainUpdateFrameStore extends FrameStoreAdapter {
     
     private OWLModel owlModel;
     
@@ -25,9 +25,8 @@ public class OWLDomainUpdateFrameStore extends FrameStoreAdapter {
     
     private RDFProperty rdfsDomainProperty;
     private Slot directDomainSlot;
-    private RDFProperty superSlotsSlot;
     
-    public OWLDomainUpdateFrameStore(OWLModel owlModel) {
+    public DomainUpdateFrameStore(OWLModel owlModel) {
         this.owlModel = owlModel;
         
         owlThing = owlModel.getOWLThingClass();
@@ -35,7 +34,12 @@ public class OWLDomainUpdateFrameStore extends FrameStoreAdapter {
         
         rdfsDomainProperty = owlModel.getRDFSDomainProperty();
         directDomainSlot = owlModel.getSystemFrames().getDirectDomainSlot();
-        superSlotsSlot = owlModel.getSystemFrames().getDirectSuperslotsSlot();
+    }
+    
+    @SuppressWarnings("unchecked")
+    public void synchronizeRDFSDomainWithProtegeDomain(RDFProperty property) {
+        Collection values = super.getDirectOwnSlotValues(property, rdfsDomainProperty);
+        updateSlotDomain(property, values);
     }
     
     
