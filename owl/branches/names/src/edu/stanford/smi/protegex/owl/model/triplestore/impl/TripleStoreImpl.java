@@ -50,7 +50,7 @@ public class TripleStoreImpl implements TripleStore {
     
     private NamespaceManager namespaceManager;
 
-    protected NarrowFrameStore frameStore;
+    protected NarrowFrameStore narrowFrameStore;
 
     protected Slot nameSlot;
 
@@ -68,9 +68,9 @@ public class TripleStoreImpl implements TripleStore {
         this(owlModel, frameStore, tripleStoreModel, new OWLNamespaceManager(), null);
     }
     
-    public TripleStoreImpl(OWLModel owlModel, NarrowFrameStore frameStore, TripleStoreModel tripleStoreModel, 
+    public TripleStoreImpl(OWLModel owlModel, NarrowFrameStore narrowFrameStore, TripleStoreModel tripleStoreModel, 
                            NamespaceManager namespaceManager, String name) {  
-        this.frameStore = frameStore;
+        this.narrowFrameStore = narrowFrameStore;
         this.owlModel = owlModel;
         this.tripleStoreModel = tripleStoreModel;
         this.namespaceManager = namespaceManager;
@@ -89,7 +89,7 @@ public class TripleStoreImpl implements TripleStore {
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof TripleStoreImpl) {
-            return frameStore.getName().equals(((TripleStoreImpl) obj).frameStore.getName());
+            return narrowFrameStore.getName().equals(((TripleStoreImpl) obj).narrowFrameStore.getName());
         }
         else {
             return false;
@@ -122,7 +122,7 @@ public class TripleStoreImpl implements TripleStore {
         ignoreClses.add(systemFrames.getPalConstraintCls());
 
         List<Triple> triples = new ArrayList<Triple>();
-        for (Record record : ((InMemoryFrameDb) frameStore).getRecords()) {
+        for (Record record : ((InMemoryFrameDb) narrowFrameStore).getRecords()) {
             Frame subject = record.getFrame();
             if (subject instanceof RDFResource) {
                 Slot predicate = record.getSlot();
@@ -209,7 +209,7 @@ public class TripleStoreImpl implements TripleStore {
     }
 
     public RDFResource getHomeResource(String name) {
-        Collection values = frameStore.getFrames(nameSlot, null, false, name);
+        Collection values = narrowFrameStore.getFrames(nameSlot, null, false, name);
         if (values.isEmpty()) {
             return null;
         }
@@ -233,25 +233,22 @@ public class TripleStoreImpl implements TripleStore {
     }
 
 
-
-
-
     public String getNamespaceForPrefix(String prefix) {
     	return getNamespaceManager().getNamespaceForPrefix(prefix);
     }
 
     public NarrowFrameStore getNarrowFrameStore() {
-        return frameStore;
+        return narrowFrameStore;
     }
 
 
     public Collection getSlotValues(Instance instance, Slot slot) {
-        return tripleStoreModel.getSlotValues(instance, slot);
+        return tripleStoreModel.getSlotValues(instance, slot);    	
     }
 
 
     protected Collection getValues(Instance instance, Slot slot) {
-        return frameStore.getValues(instance, slot, null, false);
+        return narrowFrameStore.getValues(instance, slot, null, false);
     }
 
 
@@ -266,24 +263,24 @@ public class TripleStoreImpl implements TripleStore {
 
 
     protected Collection<Reference> getReferences(Object search) {
-        return frameStore.getReferences(search);
+        return narrowFrameStore.getReferences(search);
     }
 
 
     public Iterator<RDFResource> listHomeResources() {
-        Collection frames = frameStore.getFramesWithAnyValue(nameSlot, null, false);
+        Collection frames = narrowFrameStore.getFramesWithAnyValue(nameSlot, null, false);
         Collection<RDFResource> results = AbstractOWLModel.getRDFResources(owlModel, frames);
         return results.iterator();
     }
 
 
     public Iterator listObjects(RDFResource subject, RDFProperty property) {
-        return getValues(subject, property).iterator();
+    	return new ArrayList(getValues(subject, property)).iterator();
     }
 
 
     public Iterator listSubjects(RDFProperty property) {
-        Collection frames = frameStore.getFramesWithAnyValue(property, null, false);
+        Collection frames = narrowFrameStore.getFramesWithAnyValue(property, null, false);
         return frames.iterator();
     }
 
@@ -295,7 +292,7 @@ public class TripleStoreImpl implements TripleStore {
                 object = ((DefaultRDFSLiteral) object).getRawValue();
             }
         }
-        return frameStore.getFrames(predicate, null, false, object).iterator();
+        return narrowFrameStore.getFrames(predicate, null, false, object).iterator();
     }
 
 
