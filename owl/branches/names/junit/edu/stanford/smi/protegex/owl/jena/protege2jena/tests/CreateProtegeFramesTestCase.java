@@ -12,6 +12,7 @@ import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.jena.parser.FrameCreatorUtility;
 import edu.stanford.smi.protegex.owl.jena.parser.ProtegeOWLParser;
 import edu.stanford.smi.protegex.owl.jena.parser.TripleProcessor;
+import edu.stanford.smi.protegex.owl.model.ProtegeNames;
 import edu.stanford.smi.protegex.owl.model.RDFIndividual;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
@@ -29,9 +30,7 @@ public class CreateProtegeFramesTestCase extends AbstractProtege2JenaTestCase {
         Log.setLoggingLevel(FrameCreatorUtility.class, Level.FINEST);
     }
 
-    public void testCreateUnlinkedPALConstraint() throws Exception {
-
-        
+    public void testCreateUnlinkedPALConstraint() throws Exception {    
         ensureProtegeMetaOntologyImported();
         owlModel.getFrameStoreManager().setProtegeOwlFrameStoreEnabled(true);
 
@@ -47,11 +46,39 @@ public class CreateProtegeFramesTestCase extends AbstractProtege2JenaTestCase {
         owlModel = reloadWithJenaLoader(owlModel);
         OntModel newModel = createOntModel();
 
-        OntClass constraintOntClass = newModel.getOntClass(constraintClass.getURI());
+        OntClass constraintOntClass = newModel.getOntClass(ProtegeNames.Cls.PAL_CONSTRAINT);
         assertNotNull(constraintOntClass);
-        OntProperty palNameOntProperty = newModel.getOntProperty(palNameProperty.getURI());
+        OntProperty palNameOntProperty = newModel.getOntProperty(ProtegeNames.Slot.PAL_NAME);
         assertNotNull(palNameOntProperty);
-        OntProperty palStatementOntProperty = newModel.getOntProperty(palStatementProperty.getURI());
+        OntProperty palStatementOntProperty = newModel.getOntProperty(ProtegeNames.Slot.PAL_STATEMENT);
+        assertNotNull(palStatementOntProperty);
+        Individual constraintIndividual = newModel.getIndividual(constraint.getURI());
+        assertNotNull(constraintIndividual);
+        assertSize(1, constraintIndividual.listPropertyValues(palNameOntProperty));
+        assertSize(1, constraintIndividual.listPropertyValues(palStatementOntProperty));
+    }
+    
+    public void testCreateUnlinkedPALConstraintEasy() throws Exception {    
+        ensureProtegeMetaOntologyImported();
+        owlModel.getFrameStoreManager().setProtegeOwlFrameStoreEnabled(true);
+
+        RDFSNamedClass constraintClass = owlModel.getRDFSNamedClass(ProtegeNames.Cls.PAL_CONSTRAINT);
+        RDFIndividual constraint = constraintClass.createRDFIndividual("MyIndividual");
+
+        RDFProperty palNameProperty = owlModel.getRDFProperty(ProtegeNames.Slot.PAL_NAME);
+        constraint.setPropertyValue(palNameProperty, "MyName");
+
+        RDFProperty palStatementProperty = owlModel.getRDFProperty(ProtegeNames.Slot.PAL_STATEMENT);
+        constraint.setPropertyValue(palStatementProperty, "MyStatement");
+
+        owlModel = reloadWithJenaLoader(owlModel);
+        OntModel newModel = createOntModel();
+
+        OntClass constraintOntClass = newModel.getOntClass(ProtegeNames.Cls.PAL_CONSTRAINT);
+        assertNotNull(constraintOntClass);
+        OntProperty palNameOntProperty = newModel.getOntProperty(ProtegeNames.Slot.PAL_NAME);
+        assertNotNull(palNameOntProperty);
+        OntProperty palStatementOntProperty = newModel.getOntProperty(ProtegeNames.Slot.PAL_STATEMENT);
         assertNotNull(palStatementOntProperty);
         Individual constraintIndividual = newModel.getIndividual(constraint.getURI());
         assertNotNull(constraintIndividual);
@@ -75,7 +102,7 @@ public class CreateProtegeFramesTestCase extends AbstractProtege2JenaTestCase {
         rdfsClass.setPropertyValue(constraintsProperty, constraint);
 
         OntModel newModel = createOntModel();
-        OntProperty constraintsOntProperty = newModel.getOntProperty(constraintsProperty.getURI());
+        OntProperty constraintsOntProperty = newModel.getOntProperty(ProtegeNames.Slot.CONSTRAINTS);
         assertNotNull(constraintsOntProperty);
 
         Individual constraintIndividual = newModel.getIndividual(constraint.getURI());
