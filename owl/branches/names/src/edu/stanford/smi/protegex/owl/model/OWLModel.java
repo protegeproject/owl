@@ -534,7 +534,7 @@ public interface OWLModel extends ProtegeKnowledgeBase, OWLTestManager {
      *
      * @return a Set of String URIs of the import statements
      */
-    Set getAllImports();
+    Set<String> getAllImports();
 
 
     /**

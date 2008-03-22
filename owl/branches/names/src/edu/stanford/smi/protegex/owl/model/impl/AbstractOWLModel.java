@@ -971,8 +971,8 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     }
 
 
-    public Set getAllImports() {
-        Set imports = new HashSet();
+    public Set<String> getAllImports() {
+        Set<String> imports = new HashSet<String>();
         for (Iterator it = getOWLOntologies().iterator(); it.hasNext();) {
             Object curImport = it.next();
             OWLOntology ontology = (OWLOntology) curImport;
@@ -982,7 +982,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
                     imports.add(((RDFResource) impo).getURI());
                 }
                 else if (impo instanceof String) {
-                    imports.add(impo);
+                    imports.add((String) impo);
                 }
             }
         }
