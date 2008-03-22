@@ -463,6 +463,7 @@ class TripleProcessorForResourceObjects extends AbstractStatefulTripleProcessor 
 		postProcessor.processDomainAndRange();
 		postProcessor.processGeneralizedConceptInclusions(gciAxioms);
 		postProcessor.processAbstractClasses();
+		postProcessor.processPossiblyTypedResources();
 	}
 
 
