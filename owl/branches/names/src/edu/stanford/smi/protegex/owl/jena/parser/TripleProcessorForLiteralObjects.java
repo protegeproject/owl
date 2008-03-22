@@ -63,10 +63,17 @@ class TripleProcessorForLiteralObjects extends AbstractStatefulTripleProcessor {
 		if (rdfsLiteral == null) {
 			return false;
 		}
-	
-		FrameCreatorUtility.addOwnSlotValue(subjFrame, predSlot, AbstractOWLModel.convertRDFSLiteralToInternalFormat(rdfsLiteral));
+			
+		addTriple(subjFrame, predSlot, rdfsLiteral);
 		
 		return true;	
+	}
+	
+	
+	private void addTriple(Frame subjFrame, Slot predSlot, RDFSLiteral rdfsLiteral) {		
+		// add what it is really in the triple
+		FrameCreatorUtility.addOwnSlotValue(subjFrame, predSlot, AbstractOWLModel.convertRDFSLiteralToInternalFormat(rdfsLiteral));				
+		// add frame correspondent is missing because there is no mapping for literal properties	
 	}
 	
 
