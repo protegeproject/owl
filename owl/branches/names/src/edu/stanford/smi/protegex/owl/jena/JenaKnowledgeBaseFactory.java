@@ -206,7 +206,8 @@ public class JenaKnowledgeBaseFactory implements OWLKnowledgeBaseFactory {
     }
 
 
-    public void saveKnowledgeBase(KnowledgeBase kb, PropertyList sources, Collection errors) {
+    @SuppressWarnings("unchecked")
+	public void saveKnowledgeBase(KnowledgeBase kb, PropertyList sources, Collection errors) {
         String language = getOWLFileLanguage(sources);
         if (kb instanceof JenaOWLModel) {
             JenaOWLModel owlModel = (JenaOWLModel) kb;
