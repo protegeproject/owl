@@ -18,6 +18,7 @@ import edu.stanford.smi.protegex.owl.model.ProtegeNames;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.RDFSClass;
 import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
+import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
 
 class TriplePostProcessor extends AbstractStatefulTripleProcessor {
 	private static final transient Logger log = Log.getLogger(TriplePostProcessor.class);
@@ -249,6 +250,9 @@ class TriplePostProcessor extends AbstractStatefulTripleProcessor {
 
 	@SuppressWarnings("deprecation")
 	public void processAbstractClasses() {
+		log.info("Postprocess: Abstract classes... ");
+		long time0 = System.currentTimeMillis();
+		
 		RDFProperty abstractProp = owlModel.getRDFProperty(ProtegeNames.Slot.ABSTRACT);
 		
 		if (abstractProp == null) {
@@ -262,7 +266,38 @@ class TriplePostProcessor extends AbstractStatefulTripleProcessor {
 			if (object instanceof Cls) {
 				((Cls) object).setAbstract(true);
 			}			
-		}		
+		}
+		log.info("(" + (System.currentTimeMillis() - time0) + " ms)");
+	}
+	
+	
+	@SuppressWarnings("deprecation")
+	public void processPossiblyTypedResources() {
+		RDFSClass untypedClass = ((AbstractOWLModel)owlModel).getRDFExternalClassClass();
+		RDFSClass untypedProp = ((AbstractOWLModel)owlModel).getRDFExternalPropertyClass();
+		RDFSClass untypedRes = ((AbstractOWLModel)owlModel).getRDFExternalResourceClass();
+		
+		log.info("Postprocess: Possibly typed entities ("  + 
+				  untypedClass.getDirectInstanceCount() + 
+				  untypedProp.getDirectInstanceCount() +
+				  untypedRes.getDirectInstanceCount() + " resources) ... ");
+		long time0 = System.currentTimeMillis();
+		
+		processPossiblyTypedResources(untypedClass);
+		processPossiblyTypedResources(untypedProp);
+		processPossiblyTypedResources(untypedRes);
+		
+		log.info("(" + (System.currentTimeMillis() - time0) + " ms)");
+	}
+	
+	private void processPossiblyTypedResources(Cls untypedCls) {
+		for (Iterator iterator = untypedCls.getDirectInstances().iterator(); iterator.hasNext();) {
+			Instance untypedEntity = (Instance) iterator.next();
+			
+			if (untypedEntity.getDirectTypes().size() > 1) {
+				untypedEntity.removeDirectType(untypedCls); //it will also swizzle
+			}			
+		}
 	}
 	
 }
