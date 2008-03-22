@@ -39,11 +39,21 @@ class TriplePostProcessor extends AbstractStatefulTripleProcessor {
 	@SuppressWarnings("deprecation")
 	public void processMetaclasses() {		
 		RDFSNamedClass rdfsClass = owlModel.getRDFSNamedClassClass();
+		RDFSNamedClass rdfPropClass = owlModel.getRDFPropertyClass();
 		
-		log.info("Postprocess: Process metaclasses (" + rdfsClass.getSubclassCount() + " classes) ... ");
+		log.info("Postprocess: Process metaclasses (" + rdfsClass.getSubclassCount() +
+				rdfPropClass.getSubclassCount() + " classes) ... ");
 		long time0 = System.currentTimeMillis();
 		
-		for (Iterator iterator = rdfsClass.getSubclasses(true).iterator(); iterator.hasNext();) {
+		processMetaclasses(rdfsClass);
+		processMetaclasses(rdfPropClass);
+		
+		log.info("(" + (System.currentTimeMillis() - time0) + " ms)");
+	}
+	
+	
+	private void processMetaclasses(Cls superMetaclass) {
+		for (Iterator iterator = superMetaclass.getSubclasses().iterator(); iterator.hasNext();) {
 			RDFSNamedClass metaclass = (RDFSNamedClass) iterator.next();
 		
 			if (!metaclass.isSystem()) {
@@ -53,9 +63,8 @@ class TriplePostProcessor extends AbstractStatefulTripleProcessor {
 				}
 			}
 		}
-		
-		log.info("(" + (System.currentTimeMillis() - time0) + " ms)");
 	}
+	
 
 	public void processSubclassesOfRdfList(){
 		RDFSNamedClass rdfListCls = owlModel.getRDFListClass();
