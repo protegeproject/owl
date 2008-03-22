@@ -66,6 +66,7 @@ class TripleProcessorForUntypedResources extends AbstractStatefulTripleProcessor
 		}
 		
 		processUndefTriples();
+		//should call here postProcessor.processPossiblyTypedResources()
 		
 	}
 	
@@ -144,14 +145,14 @@ class TripleProcessorForUntypedResources extends AbstractStatefulTripleProcessor
 		if (domain == null) {
 			//return owlModel.createRDFUntypedResource(subjectName);
 			//it's not clear what the default should be..
-			return untypedClassClass.createInstance(subjectName); 
+			return createUntypedClassOrResource(property, subjectName);
 		}
 		
 		//domain is not null
 		if (domain.equals(owlModel.getOWLThingClass())) {
 			//return owlModel.createRDFUntypedResource(subjectName);
 			//it's not clear what the default should be..
-			return untypedClassClass.createInstance(subjectName);
+			return createUntypedClassOrResource(property, subjectName);
 		}
 	
 		if (domain.equals(((AbstractOWLModel)owlModel).getOWLClassMetaCls())) {
@@ -198,14 +199,14 @@ class TripleProcessorForUntypedResources extends AbstractStatefulTripleProcessor
 		if (range == null) {
 			//return owlModel.createRDFUntypedResource(objectName);
 			//it's not clear what the default should be..
-			return untypedClassClass.createInstance(objectName);
+			return createUntypedClassOrResource(property, objectName);
 		}
 		
 		//range is not null
 		if (range.equals(owlModel.getOWLThingClass())) {
 			//return owlModel.createRDFUntypedResource(objectName);
 			//it's not clear what the default should be..
-			return untypedClassClass.createInstance(objectName);
+			return createUntypedClassOrResource(property, objectName);
 		}
 	
 		if (range.equals(((AbstractOWLModel)owlModel).getOWLClassMetaCls())) {
@@ -230,6 +231,26 @@ class TripleProcessorForUntypedResources extends AbstractStatefulTripleProcessor
 		
 	}
 	
+	
+	protected RDFResource createUntypedClassOrResource(RDFProperty prop, String name) {
+		RDFSClass untypedClassClass = ((AbstractOWLModel)owlModel).getRDFExternalClassClass();
+		
+		/*
+		 * Make a guess: If the property is user defined it is likely that the entity is 
+		 * an individual. Otherwise, we will guess that it is a class (less class cast exceptions)
+		 */
+		
+		if (prop.isSystem()) {
+			return untypedClassClass.createInstance(name);
+		} else {
+			return owlModel.createRDFUntypedResource(name);
+		}
+		
+		/*
+		 * More complicated algorithms can be added here.
+		 * I hope that this will work for most cases.
+		 */
+	}
 	
 	
 
