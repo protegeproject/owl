@@ -61,18 +61,25 @@ public class DefaultRDFSNamedClass extends AbstractRDFSClass implements RDFSName
     @Override
     public Icon getIcon() {
         if (isMetaCls()) {
-            return isEditable() ? OWLIcons.getMetaclassIcon() : OWLIcons.getReadOnlyClsIcon(OWLIcons.getImageIcon(OWLIcons.RDFS_METACLASS));
-        }
-        else {
-            if (isEditable()) {
-                return OWLIcons.getImageIcon(OWLIcons.RDFS_NAMED_CLASS);
-            }
-            else {
-                return OWLIcons.getReadOnlyClsIcon(OWLIcons.getImageIcon(OWLIcons.RDFS_NAMED_CLASS));
-            }
+            return isEditable() ?
+            		OWLIcons.getMetaclassIcon() :
+            		OWLIcons.getReadOnlyClsIcon(OWLIcons.getImageIcon(OWLIcons.RDFS_METACLASS));
+        } else if (isUntyped()) {
+        	return isEditable() ? 
+    				OWLIcons.getExternalResourceIcon() :
+            		OWLIcons.getReadOnlyClsIcon(OWLIcons.getExternalResourceIcon());
+        }  else {
+            return isEditable() ?
+            		OWLIcons.getImageIcon(OWLIcons.RDFS_NAMED_CLASS) : 
+            		OWLIcons.getReadOnlyClsIcon(OWLIcons.getImageIcon(OWLIcons.RDFS_NAMED_CLASS));
         }
     }
-
+   
+    
+    protected boolean isUntyped() {
+    	return this.hasDirectType((getAbstractOWLModel().getRDFExternalClassClass()));
+    }
+    
 
     public String getIconName() {
         return OWLIcons.RDFS_NAMED_CLASS;
