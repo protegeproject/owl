@@ -9,19 +9,19 @@ import com.hp.hpl.jena.rdf.arp.AResource;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
-import edu.stanford.smi.protegex.owlx.examples.UntypedResourcesExample;
 
-//TODO: Duplicate supercalsses
-//TODO: Postprocess classes without superclasses: add owl:Thing in all triplestores where the class has a name
-//TODO: ProtegeOWLParser: is the process undef triples and postprocess in the right place?
-//TODO: Postprocessing GCI - refactor in their own class
-//TODO: Solution for copyFacetedValues not to happen too many times. Maybe use flag in AbstractOWLModel
-//TODO: Timing logger for the parser
+//TODO: remove the untyped type if a type definition is found somewhere else
+//TODO: In post-processing create untyped - create in the right ts
+//TODO: Check if the untyped types are written out
+//TODO: Optimize the creation of untyped things
+//TODO: Add owl:Thing also for untyped classes
+//TODO: Use StringBuffer in place of String for all namespace methods
 
 //-- later --
-//TODO: check ranges with datatypes
+//TODO: Postprocessing GCI - refactor in their own class
 //TODO: Process each triple in a try catch
 //TODO: Each post process in a try catch
+//TODO: Timing logger for the parser
 
 
 public class TripleProcessor {
