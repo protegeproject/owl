@@ -462,6 +462,7 @@ class TripleProcessorForResourceObjects extends AbstractStatefulTripleProcessor 
 		postProcessor.processInstancesWithMultipleTypes(multipleTypesInstanceCache);
 		postProcessor.processDomainAndRange();
 		postProcessor.processGeneralizedConceptInclusions(gciAxioms);
+		postProcessor.processAbstractClasses();
 	}
 
 
