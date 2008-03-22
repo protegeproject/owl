@@ -14,6 +14,7 @@ import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.model.NamespaceManager;
 import edu.stanford.smi.protegex.owl.model.OWLIntersectionClass;
 import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
+import edu.stanford.smi.protegex.owl.model.ProtegeNames;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.RDFSClass;
 import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
@@ -246,4 +247,16 @@ class TriplePostProcessor extends AbstractStatefulTripleProcessor {
 	}
 
 
+	@SuppressWarnings("deprecation")
+	public void processAbstractClasses() {
+		Collection abstractClses = owlModel.getFramesWithValue(owlModel.getRDFProperty(ProtegeNames.Slot.ABSTRACT), null, false, Boolean.TRUE);
+		
+		for (Iterator iterator = abstractClses.iterator(); iterator.hasNext();) {
+			Object object = iterator.next();
+			if (object instanceof Cls) {
+				((Cls) object).setAbstract(true);
+			}			
+		}		
+	}
+	
 }
