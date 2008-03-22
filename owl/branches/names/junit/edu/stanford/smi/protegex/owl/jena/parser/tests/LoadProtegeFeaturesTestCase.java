@@ -47,6 +47,8 @@ public class LoadProtegeFeaturesTestCase extends AbstractJenaTestCase {
 
 
     public void testDomainOfFromAndTo() throws Exception {
+    	loadRemoteOntology("ProtegeFromTo.owl");
+    	
         final Slot directDomainSlot = owlModel.getSlot(Model.Slot.DIRECT_DOMAIN);
         RDFSNamedClass dbrClass = owlModel.getRDFSNamedClass(Model.Cls.DIRECTED_BINARY_RELATION);
         RDFProperty fromProperty = owlModel.getRDFProperty(Model.Slot.FROM);
@@ -54,8 +56,7 @@ public class LoadProtegeFeaturesTestCase extends AbstractJenaTestCase {
         Collection directDomains = ((Slot) fromProperty).getDirectOwnSlotValues(directDomainSlot);
         assertSize(1, directDomains);
         assertContains(dbrClass, directDomains);
-
-        loadRemoteOntology("ProtegeFromTo.owl");
+        
         assertNotNull(dbrClass);
         assertNotNull(fromProperty);
         assertNotNull(toProperty);
