@@ -146,15 +146,23 @@ public class DefaultRDFProperty extends DefaultSlot implements RDFProperty {
 
     @Override
     public Icon getIcon() {
-        if (isEditable()) {
-            return getBaseImageIcon();
-        }
-        else {
-            return OWLIcons.getReadOnlyPropertyIcon(OWLIcons.getImageIcon(OWLIcons.RDF_PROPERTY));
-        }
+    	if (isUntyped()) {
+        	return isEditable() ? 
+    				OWLIcons.getExternalResourceIcon() :
+            		OWLIcons.getReadOnlyClsIcon(OWLIcons.getExternalResourceIcon());
+    	} else {
+    		return isEditable() ?
+    				getBaseImageIcon() : 
+    				OWLIcons.getReadOnlyPropertyIcon(OWLIcons.getImageIcon(OWLIcons.RDF_PROPERTY));
+    	}
+        
     }
 
-
+    protected boolean isUntyped() {
+    	return this.hasDirectType(((AbstractOWLModel)getOWLModel()).getRDFExternalPropertyClass());
+    }
+    
+    
     public String getIconName() {
         return OWLIcons.RDF_PROPERTY;
     }
