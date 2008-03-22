@@ -249,7 +249,13 @@ class TriplePostProcessor extends AbstractStatefulTripleProcessor {
 
 	@SuppressWarnings("deprecation")
 	public void processAbstractClasses() {
-		Collection abstractClses = owlModel.getFramesWithValue(owlModel.getRDFProperty(ProtegeNames.Slot.ABSTRACT), null, false, Boolean.TRUE);
+		RDFProperty abstractProp = owlModel.getRDFProperty(ProtegeNames.Slot.ABSTRACT);
+		
+		if (abstractProp == null) {
+			return;
+		}
+		
+		Collection abstractClses = owlModel.getFramesWithValue(abstractProp, null, false, Boolean.TRUE);
 		
 		for (Iterator iterator = abstractClses.iterator(); iterator.hasNext();) {
 			Object object = iterator.next();
