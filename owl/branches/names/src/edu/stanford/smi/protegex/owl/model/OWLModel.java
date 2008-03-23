@@ -665,7 +665,7 @@ public interface OWLModel extends ProtegeKnowledgeBase, OWLTestManager {
      *
      * @return the annotation properties
      */
-    Collection getOWLAnnotationProperties();
+    Collection<RDFProperty> getOWLAnnotationProperties();
 
 
     RDFSNamedClass getOWLAnnotationPropertyClass();
