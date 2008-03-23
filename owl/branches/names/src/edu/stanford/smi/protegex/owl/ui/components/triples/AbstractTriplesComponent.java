@@ -40,7 +40,7 @@ public abstract class AbstractTriplesComponent extends AbstractPropertyValuesCom
 
     private OWLModel owlModel;
 
-    private static Set plugins = new HashSet();
+    private static Set<AnnotationsWidgetPlugin> plugins = new HashSet<AnnotationsWidgetPlugin>();
 
     private TriplesTable table;
 
@@ -119,8 +119,8 @@ public abstract class AbstractTriplesComponent extends AbstractPropertyValuesCom
 
 
     public static void addPlugin(AnnotationsWidgetPlugin plugin) {
-        for (Iterator it = plugins.iterator(); it.hasNext();) {
-            AnnotationsWidgetPlugin p = (AnnotationsWidgetPlugin) it.next();
+        for (Iterator<AnnotationsWidgetPlugin> it = plugins.iterator(); it.hasNext();) {
+            AnnotationsWidgetPlugin p = it.next();
             if (p.getClass() == plugin.getClass()) {
                 return;
             }
@@ -172,7 +172,7 @@ public abstract class AbstractTriplesComponent extends AbstractPropertyValuesCom
     }
 
 
-    public static Iterator plugins() {
+    public static Iterator<AnnotationsWidgetPlugin> plugins() {
         return plugins.iterator();
     }
 
@@ -236,8 +236,8 @@ public abstract class AbstractTriplesComponent extends AbstractPropertyValuesCom
                 }
             }
 
-            for (Iterator it = plugins.iterator(); it.hasNext();) {
-                AnnotationsWidgetPlugin plugin = (AnnotationsWidgetPlugin) it.next();
+            for (Iterator<AnnotationsWidgetPlugin> it = plugins.iterator(); it.hasNext();) {
+                AnnotationsWidgetPlugin plugin = it.next();
                 if (plugin.canEdit(subject, property, value)) {
                     Object newValue = plugin.editValue(null, subject, property, value);
                     if (newValue != null) {
