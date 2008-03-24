@@ -135,7 +135,7 @@ class TriplePostProcessor extends AbstractStatefulTripleProcessor {
 				}
 
 			} catch (Exception e) {
-				Log.getLogger().log(Level.WARNING, " Error at processing " + obj, e);
+				Log.getLogger().log(Level.WARNING, " Error at post processing " + obj, e);
 			}			
 		}
 		
@@ -143,10 +143,15 @@ class TriplePostProcessor extends AbstractStatefulTripleProcessor {
 		//if at the end there are classes that do not have a parent, add them under owl:Thing
 		for (Iterator iterator = superClsCache.getCachedFramesWithNoSuperclass().iterator(); iterator.hasNext();) {
 			Frame cls = (Frame) iterator.next();
+			
 			if (cls instanceof RDFSNamedClass) {
-				if (!FrameCreatorUtility.hasSuperclass((RDFSNamedClass)cls, owlModel.getOWLThingClass())) {
-					FrameCreatorUtility.createSubclassOf((RDFSNamedClass)cls, owlModel.getOWLThingClass());
-					iterator.remove();					
+				try {
+					if (!FrameCreatorUtility.hasSuperclass((RDFSNamedClass)cls, owlModel.getOWLThingClass())) {
+						FrameCreatorUtility.createSubclassOf((RDFSNamedClass)cls, owlModel.getOWLThingClass());
+						iterator.remove();					
+					}
+				} catch(Exception e) {
+					Log.getLogger().log(Level.WARNING, " Error at post processing (adding owl:Thing as parent): " + cls, e);
 				}
 			} else {
 				if (log.isLoggable(Level.FINE)) {
