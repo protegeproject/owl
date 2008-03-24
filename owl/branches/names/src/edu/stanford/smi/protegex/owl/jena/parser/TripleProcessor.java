@@ -10,17 +10,15 @@ import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 
-//TODO: remove the untyped type if a type definition is found somewhere else
+//TODO: Each post process in a try catch
 //TODO: In post-processing create untyped - create in the right ts
 //TODO: Check if the untyped types are written out
-//TODO: Optimize the creation of untyped things
 //TODO: Add owl:Thing also for untyped classes
 //TODO: Use StringBuffer in place of String for all namespace methods
 
 //-- later --
 //TODO: Postprocessing GCI - refactor in their own class
 //TODO: Process each triple in a try catch
-//TODO: Each post process in a try catch
 //TODO: Timing logger for the parser
 
 
@@ -71,7 +69,7 @@ public class TripleProcessor {
 	
 	public void addUndefTriple(AResource subj, AResource pred, AResource obj, String undefName, boolean alreadyInUndef, TripleStore ts) {
 		if (!alreadyInUndef) {		  
-			undefTripleManager.addUndefTriple(new UndefTriple(subj, pred, obj, undefName, ts));
+			undefTripleManager.addUndefTriple(new UndefTriple(subj, pred, obj, undefName, this));
 		}
 	}
 	
@@ -82,12 +80,14 @@ public class TripleProcessor {
 			UndefTriple undefTriple = (UndefTriple) iter.next();
 			Object obj = undefTriple.getTripleObj();
 
+			TripleProcessor undefTripleProcessor = undefTriple.getTripleProcessor();
+			
 			boolean success = false;
 
 			if (obj instanceof AResource) {	
-				success = processTriple(undefTriple.getTripleSubj(), undefTriple.getTriplePred(), (AResource) undefTriple.getTripleObj(), true);
+				success = undefTripleProcessor.processTriple(undefTriple.getTripleSubj(), undefTriple.getTriplePred(), (AResource) undefTriple.getTripleObj(), true);
 			} else if (obj instanceof ALiteral) {
-				success = processTriple(undefTriple.getTripleSubj(), undefTriple.getTriplePred(), (ALiteral) undefTriple.getTripleObj(), true);
+				success = undefTripleProcessor.processTriple(undefTriple.getTripleSubj(), undefTriple.getTriplePred(), (ALiteral) undefTriple.getTripleObj(), true);
 			}
 
 			if (success) {			
