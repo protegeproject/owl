@@ -1,14 +1,13 @@
 package edu.stanford.smi.protegex.owl.model.impl.tests;
 
+import java.util.Collection;
+
 import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.Model;
 import edu.stanford.smi.protege.model.Slot;
-import edu.stanford.smi.protegex.owl.model.ProtegeNames;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
 import edu.stanford.smi.protegex.owl.tests.AbstractJenaTestCase;
-
-import java.util.Collection;
 
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
