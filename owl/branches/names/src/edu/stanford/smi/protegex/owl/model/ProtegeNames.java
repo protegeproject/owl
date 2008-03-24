@@ -29,6 +29,8 @@ public class ProtegeNames {
     
     public static interface Cls {
     	final static String PAL_CONSTRAINT = PROTEGE_OWL_NAMESPACE + "PAL-CONSTRAINT";
+    	
+    	final static String DIRECTED_BINARY_RELATION = PROTEGE_OWL_NAMESPACE + "DIRECTED-BINARY-RELATION";
     }
 
 
@@ -51,6 +53,10 @@ public class ProtegeNames {
 	    final static String PAL_NAME = PROTEGE_OWL_NAMESPACE + "PAL-NAME";
 	    
 	    final static String PAL_STATEMENT = PROTEGE_OWL_NAMESPACE + "PAL-STATEMENT";
+	    
+	    final static String TO = PROTEGE_OWL_NAMESPACE + "TO";
+	    
+	    final static String FROM = PROTEGE_OWL_NAMESPACE + "FROM";
     }
 
     public static String PROTEGE_OWL_ONTOLOGY = "http://protege.stanford.edu/plugins/owl/protege";
