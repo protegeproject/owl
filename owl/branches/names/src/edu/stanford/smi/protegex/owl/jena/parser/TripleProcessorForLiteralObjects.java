@@ -34,7 +34,7 @@ class TripleProcessorForLiteralObjects extends AbstractStatefulTripleProcessor {
 
 		if (predSlot == null) {
 			if (!alreadyInUndef) {
-				undefTripleManager.addUndefTriple(new UndefTriple(subj, pred, lit, predName, tripleStore));
+				undefTripleManager.addUndefTriple(new UndefTriple(subj, pred, lit, predName, processor));
 			}
 			return false;
 		}
@@ -53,7 +53,7 @@ class TripleProcessorForLiteralObjects extends AbstractStatefulTripleProcessor {
 		//checking and adding to undefined
 		if (subjFrame == null) {
 			if (!alreadyInUndef) {
-				undefTripleManager.addUndefTriple(new UndefTriple(subj, pred, lit, subjName, tripleStore));
+				undefTripleManager.addUndefTriple(new UndefTriple(subj, pred, lit, subjName, processor));
 			}
 			return false;
 		}
