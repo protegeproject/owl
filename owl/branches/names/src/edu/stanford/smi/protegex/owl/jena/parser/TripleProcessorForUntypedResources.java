@@ -27,12 +27,14 @@ class TripleProcessorForUntypedResources extends AbstractStatefulTripleProcessor
 			UndefTriple undefTriple = (UndefTriple) iter.next();
 			Object obj = undefTriple.getTripleObj();
 			
+			TripleProcessor undefProcessor = undefTriple.getTripleProcessor();
+			
 			boolean success = false;
 
 			if (obj instanceof AResource) {			
-				success = processor.processTriple(undefTriple.getTripleSubj(), undefTriple.getTriplePred(), (AResource) undefTriple.getTripleObj(), true);
+				success = undefProcessor.processTriple(undefTriple.getTripleSubj(), undefTriple.getTriplePred(), (AResource) undefTriple.getTripleObj(), true);
 			} else if (obj instanceof ALiteral) {
-				success = processor.processTriple(undefTriple.getTripleSubj(), undefTriple.getTriplePred(), (ALiteral) undefTriple.getTripleObj(), true);
+				success = undefProcessor.processTriple(undefTriple.getTripleSubj(), undefTriple.getTriplePred(), (ALiteral) undefTriple.getTripleObj(), true);
 			}	
 
 			if (success) {
