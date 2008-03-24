@@ -415,10 +415,12 @@
     </java>
   </target>
 
-  <target name="junitOntologies">
+  <target name="junitResources">
     <copy todir="${build}/examples">
       <fileset dir="./examples"/>
     </copy>
+    <copy todir="${build}"
+          file="junit-logging.properties"/>
   </target>
 
    <!--
@@ -442,9 +444,13 @@
      means that the developer will never mistakenly believe that
      junits have succeeded.
        -->
+   <!-- 
+         <jvmarg value="-Xdebug"/>
+         <jvmarg value="-Xrunjdwp:transport=dt_socket,address=8100,server=y,suspend=y"/>
+         -->
    <target name = "junit" 
            description = "run the tests (anybody can do it)"
-           depends = "plugin.dir,junit-compile,checkJunitConfiguration, junitOntologies">
+           depends = "plugin.dir,junit-compile,checkJunitConfiguration, junitResources">
      <property file="junit.properties"/>
      <junit printsummary="withOutAndErr"
             dir = "${build}" 
@@ -453,29 +459,27 @@
             showoutput="${junit.showoutput}"
             haltonfailure = "${junit.haltonfailure}"
             haltonerror = "${junit.haltonerror}">
-      <jvmarg value="-Xmx${junit.memory}"/>
-      <jvmarg value="-Djunit.server.protege.jar=${protege.lib}"/>
-      <jvmarg value="-Djava.util.logging.config.file=junit-logging.properties"/>
-      <classpath>
-           <pathelement location="${classes}"/>
-           <pathelement location = "${protege.lib}"/>
-           <pathelement location = "${looks.lib}"/>
-           <fileset
-              dir="${plugin}">
-              <include name = "**/*.jar"/>
-           </fileset>
-           <fileset
-              dir="dbdrivers">
-              <include name = "**/*.jar"/>
-           </fileset>
-        </classpath>
-        <batchtest>
-           <fileset dir="${junit}">
-             <include name = "${junit.includes}"/>
-             <exclude name = "**/*Abstract*.java"/>
-             <exclude name = "**/*FailedTestCase.java"/>
-           </fileset>
-        </batchtest>
+         <jvmarg value="-Xmx${junit.memory}"/>
+         <jvmarg value="-Djunit.server.protege.jar=${protege.lib}"/>
+         <jvmarg value="-Djava.util.logging.config.file=junit-logging.properties"/>
+         <classpath>
+             <pathelement location="${classes}"/>
+             <pathelement location = "${protege.lib}"/>
+             <pathelement location = "${looks.lib}"/>
+             <fileset dir="${plugin}">
+                 <include name = "**/*.jar"/>
+             </fileset>
+             <fileset dir="dbdrivers">
+                 <include name = "**/*.jar"/>
+             </fileset>
+         </classpath>
+         <batchtest>
+             <fileset dir="${junit}">
+                 <include name = "${junit.includes}"/>
+                 <exclude name = "**/*Abstract*.java"/>
+                 <exclude name = "**/*FailedTestCase.java"/>
+             </fileset>
+         </batchtest>
      </junit>
    </target>
 
