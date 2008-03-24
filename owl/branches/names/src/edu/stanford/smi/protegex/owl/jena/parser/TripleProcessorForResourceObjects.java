@@ -261,7 +261,7 @@ class TripleProcessorForResourceObjects extends AbstractStatefulTripleProcessor 
 					if (log.isLoggable(Level.FINE)) {
 						log.fine("\tdeferring triple because predicate is not yet defined");
 					}
-					undefTripleManager.addUndefTriple(new UndefTriple(subj, pred, obj, predName, tripleStore));
+					undefTripleManager.addUndefTriple(new UndefTriple(subj, pred, obj, predName, processor));
 				}
 				return TripleStatus.UNDEF_NEEDS_POSTPROCESS;
 			}
