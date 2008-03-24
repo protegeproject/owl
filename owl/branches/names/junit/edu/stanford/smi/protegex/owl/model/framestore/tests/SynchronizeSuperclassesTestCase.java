@@ -48,18 +48,10 @@ public class SynchronizeSuperclassesTestCase extends AbstractJenaTestCase {
     }
 
 
-    public void testAnonymousSuperclassToImportedClass() throws Exception {        
+    @SuppressWarnings("unchecked")
+	public void testAnonymousSuperclassToImportedClass() throws Exception {        
         loadRemoteOntology("importTravel.owl");
-        RDFProperty subClassOfProperty = owlModel.getRDFProperty(RDFSNames.Slot.SUB_CLASS_OF);
-        OWLNamedClass c = owlModel.getOWLNamedClass("travel:Activity");
-        assertNotNull(c);
-        assertSize(0, c.getPropertyValues(subClassOfProperty));
-        OWLAnonymousClass anon = owlModel.createOWLComplementClass(c);
-        c.addSuperclass(anon);
-        Collection supers = c.getPropertyValues(subClassOfProperty);
-        assertSize(2, supers);
-        assertContains(owlThing, supers);
-        assertContains(anon, supers);
+        
         TripleStore topTS = owlModel.getTripleStoreModel().getTopTripleStore();
         TripleStore importedTS = null;
         for (TripleStore ts : owlModel.getTripleStoreModel().getTripleStores()) {
@@ -69,8 +61,23 @@ public class SynchronizeSuperclassesTestCase extends AbstractJenaTestCase {
                 break;
             }
         }
+        
+        RDFProperty subClassOfProperty = owlModel.getRDFProperty(RDFSNames.Slot.SUB_CLASS_OF);
+        OWLNamedClass c = owlModel.getOWLNamedClass("travel:Activity");
+        
+        boolean previousTruthValue = importedTS.contains(c, subClassOfProperty, owlThing);
+        assertNotNull(c);
+        assertSize(0, c.getPropertyValues(subClassOfProperty));
+        OWLAnonymousClass anon = owlModel.createOWLComplementClass(c);
+        
+        c.addSuperclass(anon);
+        Collection supers = c.getPropertyValues(subClassOfProperty);
+        assertSize(2, supers);
+        assertContains(owlThing, supers);
+        assertContains(anon, supers);
         assertTrue(topTS.contains(c, subClassOfProperty, anon));
-        assertTrue(importedTS.contains(c, subClassOfProperty, owlThing));
+        
+        assertEquals(previousTruthValue, importedTS.contains(c, subClassOfProperty, owlThing));
     }
 
 
