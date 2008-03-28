@@ -15,7 +15,7 @@ public class LoadObjectAnnotationPropertyValuesTestCase extends AbstractJenaTest
         loadRemoteOntology("seeAlso.owl");
         OWLNamedClass cls = owlModel.getOWLNamedClass("Cls");
         OWLNamedClass otherCls = owlModel.getOWLNamedClass("OtherCls");
-        Instance instance = owlModel.getInstance("Instance");
+        Instance instance = owlModel.getRDFIndividual("Instance");
         RDFProperty seeAlsoSlot = (RDFProperty) owlModel.getSlot(RDFSNames.Slot.SEE_ALSO);
         Object value = cls.getPropertyValue(seeAlsoSlot);
         assertTrue(value instanceof Instance);
