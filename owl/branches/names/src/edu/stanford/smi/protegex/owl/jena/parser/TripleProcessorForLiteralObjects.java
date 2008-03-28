@@ -15,6 +15,7 @@ import edu.stanford.smi.protegex.owl.model.RDFSDatatype;
 import edu.stanford.smi.protegex.owl.model.RDFSLiteral;
 import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultRDFSLiteral;
+import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 
 class TripleProcessorForLiteralObjects extends AbstractStatefulTripleProcessor {
 	private static final transient Logger log = Log.getLogger(TripleProcessor.class);
@@ -24,7 +25,7 @@ class TripleProcessorForLiteralObjects extends AbstractStatefulTripleProcessor {
 		super(processor);
 	}
 
-	public boolean processTriple(AResource subj, AResource pred, ALiteral lit, boolean alreadyInUndef) {
+	public boolean processTriple(AResource subj, AResource pred, ALiteral lit, TripleStore ts, boolean alreadyInUndef) {
 	    if (log.isLoggable(Level.FINER)) {
 	        log.finer("Processing triple with literal: " + subj + " " + pred + " " + lit);
 	    }
@@ -34,7 +35,7 @@ class TripleProcessorForLiteralObjects extends AbstractStatefulTripleProcessor {
 
 		if (predSlot == null) {
 			if (!alreadyInUndef) {
-				undefTripleManager.addUndefTriple(new UndefTriple(subj, pred, lit, predName, processor));
+				undefTripleManager.addUndefTriple(new UndefTriple(subj, pred, lit, predName, ts));
 			}
 			return false;
 		}
@@ -45,7 +46,7 @@ class TripleProcessorForLiteralObjects extends AbstractStatefulTripleProcessor {
 
 		//check the order of these calls
 		if (OWLFramesMapping.getRestrictionPredicatesNames().contains(predName)) {
-			subjFrame = createRestriction(subjName, predName);
+			subjFrame = createRestriction(subjName, predName, ts);
 		}
 		
 		subjFrame = getFrame(subjName);
@@ -53,7 +54,7 @@ class TripleProcessorForLiteralObjects extends AbstractStatefulTripleProcessor {
 		//checking and adding to undefined
 		if (subjFrame == null) {
 			if (!alreadyInUndef) {
-				undefTripleManager.addUndefTriple(new UndefTriple(subj, pred, lit, subjName, processor));
+				undefTripleManager.addUndefTriple(new UndefTriple(subj, pred, lit, subjName, ts));
 			}
 			return false;
 		}
@@ -64,15 +65,16 @@ class TripleProcessorForLiteralObjects extends AbstractStatefulTripleProcessor {
 			return false;
 		}
 			
-		addTriple(subjFrame, predSlot, rdfsLiteral);
+		addTriple(subjFrame, predSlot, rdfsLiteral, ts);
 		
 		return true;	
 	}
 	
 	
-	private void addTriple(Frame subjFrame, Slot predSlot, RDFSLiteral rdfsLiteral) {		
+	private void addTriple(Frame subjFrame, Slot predSlot, RDFSLiteral rdfsLiteral, TripleStore ts) {		
 		// add what it is really in the triple
-		FrameCreatorUtility.addOwnSlotValue(subjFrame, predSlot, AbstractOWLModel.convertRDFSLiteralToInternalFormat(rdfsLiteral));				
+		FrameCreatorUtility.addOwnSlotValue(subjFrame, predSlot, 
+				AbstractOWLModel.convertRDFSLiteralToInternalFormat(rdfsLiteral), ts);				
 		// add frame correspondent is missing because there is no mapping for literal properties	
 	}
 	

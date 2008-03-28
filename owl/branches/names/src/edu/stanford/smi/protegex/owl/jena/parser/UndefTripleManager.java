@@ -5,11 +5,15 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.model.RDFProperty;
+import edu.stanford.smi.protegex.owl.model.RDFSClass;
 
 public class UndefTripleManager {
 	Logger log = Log.getLogger(UndefTripleManager.class);
@@ -19,9 +23,22 @@ public class UndefTripleManager {
 	
 	private HashMap<String, Collection<UndefTriple>> undefTriplesMap = new HashMap<String, Collection<UndefTriple>>();
 	
+	/*
+	 * Global caches - maybe the chaches and undefTriple manager should be moved to 
+	 * another class with a more encompassing name
+	 */
+	private SuperClsCache superClsCache = new SuperClsCache();
+	private MultipleTypesInstanceCache multipleTypesInstanceCache = new MultipleTypesInstanceCache();
+	
+	//these will be refactored
+	private Collection<RDFProperty> possibleGCIPredicates = new ArrayList<RDFProperty>();
+	private Collection<RDFSClass> gciAxioms = new ArrayList<RDFSClass>();
+	private Map<String, Cls> objectToNamedLogicalClassSurrogate = new HashMap<String, Cls>();
+	
 	
 	public UndefTripleManager(OWLModel owlModel) {
 		this.owlModel = owlModel;
+		initGCIPredicates();
 	}
 
 	public void addUndefTriple(UndefTriple triple) {	
@@ -74,6 +91,8 @@ public class UndefTripleManager {
             }
 	}
 	
+	
+	
 	public void dumpUndefTriples(Level level) {
 	    if (!log.isLoggable(level)) {
 	        return;
@@ -88,6 +107,37 @@ public class UndefTripleManager {
 			}			
 		}
 		log.log(level, " --------------- End undef triples dump ----------------\n");
+	}
+
+	
+	/*
+	 * Cache methods
+	 */
+	
+	public SuperClsCache getSuperClsCache() {
+		return superClsCache;
+	}
+
+	public MultipleTypesInstanceCache getMultipleTypesInstanceCache() {
+		return multipleTypesInstanceCache;
+	}
+
+	public Collection<RDFProperty> getPossibleGCIPredicates() {
+		return possibleGCIPredicates;
+	}
+
+	public Collection<RDFSClass> getGciAxioms() {
+		return gciAxioms;
+	}
+
+	public Map<String, Cls> getObjectToNamedLogicalClassSurrogate() {
+		return objectToNamedLogicalClassSurrogate;
+	}
+	
+	protected void initGCIPredicates() {
+		possibleGCIPredicates.add(owlModel.getOWLDisjointWithProperty());
+		possibleGCIPredicates.add(owlModel.getRDFSSubClassOfProperty());
+		possibleGCIPredicates.add(owlModel.getOWLEquivalentClassProperty());
 	}
 
 }

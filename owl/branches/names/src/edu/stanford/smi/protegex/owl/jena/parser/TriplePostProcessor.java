@@ -10,6 +10,9 @@ import java.util.logging.Logger;
 import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.Frame;
 import edu.stanford.smi.protege.model.Instance;
+import edu.stanford.smi.protege.model.Slot;
+import edu.stanford.smi.protege.model.framestore.NarrowFrameStore;
+import edu.stanford.smi.protege.util.ApplicationProperties;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.model.NamespaceManager;
 import edu.stanford.smi.protegex.owl.model.OWLIntersectionClass;
@@ -19,6 +22,8 @@ import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.RDFSClass;
 import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
 import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
+import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
+import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreModel;
 
 class TriplePostProcessor extends AbstractStatefulTripleProcessor {
 	private static final transient Logger log = Log.getLogger(TriplePostProcessor.class);
@@ -26,18 +31,39 @@ class TriplePostProcessor extends AbstractStatefulTripleProcessor {
 	public TriplePostProcessor(TripleProcessor processor) {
 		super(processor);
 	}
+	
+	public void doPostProcessing() {
+		//undef triples handling
+		processor.processUndefTriples();
+		
+		//swizzling
+		processMetaclasses();
+		processSubclassesOfRdfList();		
+		processInstancesWithMultipleTypes();
 
+		//create untyped resources if needed
+		if (isCreateUntypedResourcesEnabled()) {
+			processor.createUntypedResources();			
+		}
+		
+		//classes
+		processInferredSuperclasses(); //this should be done after create untyped resources
+		processClsesWithoutSupercls(); //this should be done after create untyped resources
+		processGeneralizedConceptInclusions();
+		processAbstractClasses();
+		
+		//properties
+		processDomainAndRange();
+		
+		processPossiblyTypedResources();
+	}
 	
-	/***************************************
-	 *  Post-processsing per triplestore
-	 ***************************************/
 	
-	/*
-	 * When the post-processing methods per triplestore are called,
-	 * the just-parsed triplestore is active.
-	 * So, everything is written in the right (just parsed) triplestore.
-	 */
+	private boolean isCreateUntypedResourcesEnabled() {
+		return ApplicationProperties.getBooleanProperty(ProtegeOWLParser.CREATE_UNTYPED_RESOURCES, true); 
+	}
 	
+
 	@SuppressWarnings("deprecation")
 	public void processMetaclasses() {		
 		RDFSNamedClass rdfsClass = owlModel.getRDFSNamedClassClass();
@@ -61,6 +87,7 @@ class TriplePostProcessor extends AbstractStatefulTripleProcessor {
 			if (!metaclass.isSystem()) {
 				for (Iterator iterator2 = metaclass.getInstances(false).iterator(); iterator2.hasNext();) {					
 					Instance inst = (Instance) iterator2.next();
+					//this should be fine, because swizzling does not change anything in the NFS
 					ParserUtil.getSimpleFrameStore(owlModel).swizzleInstance(inst);
 				}
 			}
@@ -80,6 +107,7 @@ class TriplePostProcessor extends AbstractStatefulTripleProcessor {
 			if (!listCls.isSystem()) {
 				for (Iterator iterator2 = listCls.getInstances(false).iterator(); iterator2.hasNext();) {
 					Instance inst = (Instance) iterator2.next();
+					//this should be fine, because swizzling does not change anything in the NFS
 					ParserUtil.getSimpleFrameStore(owlModel).swizzleInstance(inst);
 				}
 			}
@@ -89,29 +117,49 @@ class TriplePostProcessor extends AbstractStatefulTripleProcessor {
 	}
 	
 	
-	public void processClsesWithoutSupercls(SuperClsCache superClsCache) {
+	@SuppressWarnings({"deprecation"})
+	public void processClsesWithoutSupercls() {
+		SuperClsCache superClsCache = undefTripleManager.getSuperClsCache();
+
 		log.info("Postprocess: Process classes without superclasses (" + superClsCache.getCachedFramesWithNoSuperclass().size() + " classes) ... ");
 		long time0 = System.currentTimeMillis();
+
+		Collection classes = new ArrayList<Frame>(superClsCache.getCachedFramesWithNoSuperclass());
+		classes.addAll(((AbstractOWLModel)owlModel).getRDFExternalClassClass().getInstances());
 		
-		for (Iterator<Frame> iter = superClsCache.getCachedFramesWithNoSuperclass().iterator(); iter.hasNext();) {
+		for (Iterator<Frame> iter = classes.iterator(); iter.hasNext();) {
 			Frame frame = (Frame) iter.next();
 			if (log.isLoggable(Level.FINE)) {
 				log.fine("processClsesWithoutSupercls: No declared supercls: " + frame);
 			}
-			if (frame instanceof Cls) {
-				Cls cls = (Cls) frame;				
-				FrameCreatorUtility.createSubclassOf(cls, owlModel.getOWLThingClass());
-			}
-		}
 
-		superClsCache.clearCache();
+			if (frame instanceof RDFSClass) {
+				//create subclass in the home triplestore of the cls
+				TripleStore homeTs = owlModel.getTripleStoreModel().getHomeTripleStore((RDFSClass)frame);				
+				FrameCreatorUtility.createSubclassOf((RDFSClass)frame, owlModel.getOWLThingClass(),homeTs);
+				superClsCache.removeFrame(frame);
+			} else {
+				log.warning("Wrong java type for " + frame + " Expected: RDFSClass");
+			}
+		}	
+
+		classes = superClsCache.getCachedFramesWithNoSuperclass();
+		
+		if (classes.size() > 0) {
+			//This should not be the case
+			log.warning("There are classes without explicit superclass: " + classes);
+		}
+		
+		//superClsCache.clearCache();
 
 		log.info("(" + (System.currentTimeMillis() - time0) + " ms)");
 	}
 
 
 	@SuppressWarnings({"unchecked", "deprecation"})
-	public void processInferredSuperclasses(SuperClsCache superClsCache){
+	public void processInferredSuperclasses(){
+		SuperClsCache superClsCache = undefTripleManager.getSuperClsCache();
+		
 		OWLNamedClass owlClassClass = owlModel.getOWLNamedClassClass();
 
 		log.info("Postprocess: Add inferred superclasses (" + owlModel.getInstanceCount(owlClassClass) + " classes) ... ");
@@ -122,15 +170,20 @@ class TriplePostProcessor extends AbstractStatefulTripleProcessor {
 
 			try {
 				OWLNamedClass namedClass = (OWLNamedClass) obj;
-				Collection<Cls> inferredSuperclasses = getInferredSuperClasses(namedClass);
-								
-				if (inferredSuperclasses.size() > 0) {
-					superClsCache.removeFrame(namedClass);
-				}
 				
-				for (Cls inferredSupercls : inferredSuperclasses) {
-					if (!FrameCreatorUtility.hasSuperclass(namedClass, inferredSupercls)) {
-						FrameCreatorUtility.createSubclassOf(namedClass, inferredSupercls);
+				if (!namedClass.isSystem()) {
+					Collection<Cls> inferredSuperclasses = getInferredSuperClasses(namedClass);
+
+					if (inferredSuperclasses.size() > 0) {
+						superClsCache.removeFrame(namedClass);
+					}
+
+					for (Cls inferredSupercls : inferredSuperclasses) {
+						if (!FrameCreatorUtility.hasSuperclass(namedClass, inferredSupercls)) {
+							//create the inferred superclass in the same TS and NFS as the class							
+							TripleStore homeTs = owlModel.getTripleStoreModel().getHomeTripleStore(namedClass);						
+							FrameCreatorUtility.createSubclassOf(namedClass, inferredSupercls, homeTs);
+						}
 					}
 				}
 
@@ -141,13 +194,15 @@ class TriplePostProcessor extends AbstractStatefulTripleProcessor {
 		
 		//TODO: this should be done only at the very end
 		//if at the end there are classes that do not have a parent, add them under owl:Thing
+		//this is repetitive with the previous method. Shouldn'e we call better that method?
 		for (Iterator iterator = superClsCache.getCachedFramesWithNoSuperclass().iterator(); iterator.hasNext();) {
 			Frame cls = (Frame) iterator.next();
 			
 			if (cls instanceof RDFSNamedClass) {
 				try {
 					if (!FrameCreatorUtility.hasSuperclass((RDFSNamedClass)cls, owlModel.getOWLThingClass())) {
-						FrameCreatorUtility.createSubclassOf((RDFSNamedClass)cls, owlModel.getOWLThingClass());
+						TripleStore homeTs = owlModel.getTripleStoreModel().getHomeTripleStore((RDFSClass)cls);
+						FrameCreatorUtility.createSubclassOf((RDFSNamedClass)cls, owlModel.getOWLThingClass(), homeTs);
 						iterator.remove();					
 					}
 				} catch(Exception e) {
@@ -188,7 +243,9 @@ class TriplePostProcessor extends AbstractStatefulTripleProcessor {
 	}
 
 
-	public void processInstancesWithMultipleTypes(MultipleTypesInstanceCache multipleTypesInstanceCache) {
+	public void processInstancesWithMultipleTypes() {
+		MultipleTypesInstanceCache multipleTypesInstanceCache = undefTripleManager.getMultipleTypesInstanceCache();
+		
 		Set<Instance> instancesWithMultipleTypes = multipleTypesInstanceCache.getInstancesWithMultipleTypes();
 
 		log.info("Postprocess: Instances with multiple types (" + instancesWithMultipleTypes.size() + " instances) ... ");
@@ -209,24 +266,81 @@ class TriplePostProcessor extends AbstractStatefulTripleProcessor {
 		typesSet.removeAll(existingTypes); // types to add
 
 		for (Cls type : typesSet) {
-			FrameCreatorUtility.addDirectTypeAndSwizzle(instance, type);
+			/*
+			 * This is kind of painful. We have to find out where the type 
+			 * triple came from and add the type in the same TS.
+			 * (What should happen if the same type comes from different TS-es?
+			 * Which is very likely...)
+			 */
+			
+			TripleStoreModel tsm = owlModel.getTripleStoreModel();			
+			TripleStore initialActiveTs = tsm.getActiveTripleStore();
+			
+			try {
+				TripleStore homeTs = getHomeTripleStore(instance, owlModel.getRDFTypeProperty(), type);
+				if (homeTs != null) {			
+					tsm.setActiveTripleStore(homeTs);
+					FrameCreatorUtility.addInstanceType(instance, type, homeTs);	
+					//this should not be necessary because the rdf:type triple was previously added
+					//FrameCreatorUtility.addOwnSlotValue(instance, owlModel.getRDFTypeProperty(), type, homeTs);
+					ParserUtil.getSimpleFrameStore(owlModel).swizzleInstance(instance);
+				}
+				else {
+					log.warning("Could not find home triple store of type triple for " + instance);
+				}
+			} finally {
+				tsm.setActiveTripleStore(initialActiveTs);
+			}
+			
+			
+			
 		}
-
 	}
 
-	//TODO: reimplement this to work with the NFS (maybe..)
+	//TODO: should be moved to a utility class or to the triple store model
+    private TripleStore getHomeTripleStore(Instance subject, Slot predicate, Object object) {
+        //object = DefaultRDFSLiteral.getPlainValueIfPossible(object);
+        Iterator it = owlModel.getTripleStoreModel().listUserTripleStores();
+        while (it.hasNext()) {
+            TripleStore ts = (TripleStore) it.next();
+            NarrowFrameStore nfs = ts.getNarrowFrameStore();
+            Collection values = nfs.getValues(subject, predicate, null, false);
+            
+            if (values.contains(object)) {
+                return ts;
+            }
+        }
+        return null;
+    }
+	
+
 	@SuppressWarnings("deprecation")
 	public void processDomainAndRange() {
 		for (Iterator iterator = owlModel.getUserDefinedRDFProperties().iterator(); iterator.hasNext();) {
-			RDFProperty property = (RDFProperty) iterator.next();
-			//domain
-			owlModel.getFrameStoreManager().getDomainUpdateFrameStore().synchronizeRDFSDomainWithProtegeDomain(property);
-			//range
-			owlModel.getFrameStoreManager().getRangeUpdateFrameStore().synchronizeRDFSRangeWithProtegeAllowedValues(property);
+			RDFProperty property = (RDFProperty) iterator.next();	
+			
+			// Do this postprocessing in the TS of the property 			
+			TripleStoreModel tsm = owlModel.getTripleStoreModel();
+			
+			TripleStore initialActiveTs = tsm.getActiveTripleStore();
+			
+			try {
+				TripleStore homeTs = tsm.getHomeTripleStore(property);
+				tsm.setActiveTripleStore(homeTs);
+				//domain
+				owlModel.getFrameStoreManager().getDomainUpdateFrameStore().synchronizeRDFSDomainWithProtegeDomain(property);
+				//range
+				owlModel.getFrameStoreManager().getRangeUpdateFrameStore().synchronizeRDFSRangeWithProtegeAllowedValues(property);
+			} finally {
+				tsm.setActiveTripleStore(initialActiveTs);
+			}
 		}
 	}
 
-	public void processGeneralizedConceptInclusions(Collection<RDFSClass> gciAxioms) {
+	//this method will be refactored
+	public void processGeneralizedConceptInclusions() {
+		Collection<RDFSClass> gciAxioms = undefTripleManager.getGciAxioms();
+		
 		log.info("Postprocess: Generalized Concept Inclusion (" + gciAxioms.size() + " axioms) ... ");
 		long time0 = System.currentTimeMillis();
 
@@ -268,8 +382,20 @@ class TriplePostProcessor extends AbstractStatefulTripleProcessor {
 		
 		for (Iterator iterator = abstractClses.iterator(); iterator.hasNext();) {
 			Object object = iterator.next();
-			if (object instanceof Cls) {
-				((Cls) object).setAbstract(true);
+			
+			if (object instanceof RDFSClass) {
+				// Do this postprocessing in the TS of the property 			
+				TripleStoreModel tsm = owlModel.getTripleStoreModel();
+				
+				TripleStore initialActiveTs = tsm.getActiveTripleStore();
+				
+				try {
+					TripleStore homeTs = tsm.getHomeTripleStore((RDFSClass)object);
+					tsm.setActiveTripleStore(homeTs);
+					((Cls) object).setAbstract(true);
+				} finally {
+					tsm.setActiveTripleStore(initialActiveTs);
+				}		
 			}			
 		}
 		log.info("(" + (System.currentTimeMillis() - time0) + " ms)");
@@ -282,10 +408,11 @@ class TriplePostProcessor extends AbstractStatefulTripleProcessor {
 		RDFSClass untypedProp = ((AbstractOWLModel)owlModel).getRDFExternalPropertyClass();
 		RDFSClass untypedRes = ((AbstractOWLModel)owlModel).getRDFExternalResourceClass();
 		
-		log.info("Postprocess: Possibly typed entities ("  + 
-				  untypedClass.getDirectInstanceCount() + 
-				  untypedProp.getDirectInstanceCount() +
-				  untypedRes.getDirectInstanceCount() + " resources) ... ");
+		int count = untypedClass.getDirectInstanceCount() + 
+		  			untypedProp.getDirectInstanceCount() +
+		  			untypedRes.getDirectInstanceCount(); 
+		
+		log.info("Postprocess: Possibly typed entities ("  + count  + " resources) ... ");
 		long time0 = System.currentTimeMillis();
 		
 		processPossiblyTypedResources(untypedClass);

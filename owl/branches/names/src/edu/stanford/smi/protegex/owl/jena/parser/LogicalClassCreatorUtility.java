@@ -17,6 +17,7 @@ import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLEnumeratedClass;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLIntersectionClass;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLUnionClass;
 import edu.stanford.smi.protegex.owl.model.impl.OWLSystemFrames;
+import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 
 public class LogicalClassCreatorUtility {
 	
@@ -42,7 +43,7 @@ public class LogicalClassCreatorUtility {
 	}
 
 
-	public static Frame createLogicalClass(OWLModel owlModel, FrameID id, String predUri) {
+	public static Frame createLogicalClass(OWLModel owlModel, FrameID id, String predUri, TripleStore ts) {
 		Frame inst = ((KnowledgeBase) owlModel).getFrame(id);
 		OWLSystemFrames systemFrames = owlModel.getSystemFrames();
 		
@@ -60,19 +61,19 @@ public class LogicalClassCreatorUtility {
 		}
 		inst.assertFrameName();
  
-		FrameCreatorUtility.addOwnSlotValue(inst, systemFrames.getRdfTypeProperty(), systemFrames.getOwlNamedClassClass());
+		FrameCreatorUtility.addOwnSlotValue(inst, systemFrames.getRdfTypeProperty(), systemFrames.getOwlNamedClassClass(), ts);
         // ((RDFResource) inst).setPropertyValue(systemFrames.getRdfTypeProperty(), systemFrames.getOwlNamedClassClass());
 		
 		// should be safe
 		Cls metaCls = owlModel.getCls(logicalClassURI2MetaclassName.get(predUri));
 				
-		FrameCreatorUtility.addInstanceType((Instance)inst, metaCls);
+		FrameCreatorUtility.addInstanceType((Instance)inst, metaCls, ts);
 		
 		return inst;
 	}
 
 	
-	public static boolean addLogicalFiller(OWLModel owlModel, Frame logicalClass, Frame filler, String predUri) {
+	public static boolean addLogicalFiller(OWLModel owlModel, Frame logicalClass, Frame filler, String predUri, TripleStore ts) {
 		if (logicalClass == null || filler == null)
 			return false;
 		
@@ -81,7 +82,7 @@ public class LogicalClassCreatorUtility {
 		if (fillerSlot == null)
 			return false;
 		
-		FrameCreatorUtility.addOwnSlotValue(logicalClass, fillerSlot, filler);
+		FrameCreatorUtility.addOwnSlotValue(logicalClass, fillerSlot, filler, ts);
 		
 		return true;
 	}

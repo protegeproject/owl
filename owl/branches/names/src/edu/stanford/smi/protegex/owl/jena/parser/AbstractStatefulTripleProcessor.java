@@ -13,9 +13,9 @@ public abstract class AbstractStatefulTripleProcessor {
 	protected OWLModel owlModel;	
 	protected UndefTripleManager undefTripleManager;
 	
-	protected boolean importing;
+	//protected boolean importing;
 	
-	protected TripleStore tripleStore;
+	//protected TripleStore tripleStore;
 	
 	protected SimpleFrameStore simpleFrameStore;
 		
@@ -24,26 +24,26 @@ public abstract class AbstractStatefulTripleProcessor {
 		this.processor = processor;
 		this.owlModel = processor.getOWLModel();
 		this.undefTripleManager = processor.getUndefTripleManager();
-		this.importing = processor.isImporting();
+		//this.importing = processor.isImporting();
 		this.simpleFrameStore = ParserUtil.getSimpleFrameStore(owlModel);
-		this.tripleStore = processor.getTripleStore();
+		//this.tripleStore = processor.getTripleStore();
 	}
 	
 	
-	protected Frame createRestriction(String restrName, String predName) {
+	protected Frame createRestriction(String restrName, String predName, TripleStore ts) {
 		Frame restriction = getFrame(restrName);
 
 		if (restriction != null)
 			return restriction;
 
 		FrameID id = new FrameID(restrName);
-		restriction = RestrictionCreatorUtility.createRestriction(owlModel, id, predName);
+		restriction = RestrictionCreatorUtility.createRestriction(owlModel, id, predName, ts);
 
 		if (restriction != null) {
 			checkUndefinedResources(restrName);
 		}
 
-		if (importing) {
+		if (isImporting(ts)) {
 			restriction.setIncluded(true);
 		}
 
@@ -61,6 +61,10 @@ public abstract class AbstractStatefulTripleProcessor {
 	
 	public void doPostProcessing(){
 		// do nothing by default
+	}
+	
+	public boolean isImporting(TripleStore ts) {
+		return !ts.equals(owlModel.getTripleStoreModel().getTopTripleStore());
 	}
 	
 }

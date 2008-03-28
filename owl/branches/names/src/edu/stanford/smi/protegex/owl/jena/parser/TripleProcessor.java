@@ -10,8 +10,12 @@ import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 
+// - verify - not hard --
+//TODO: Load Birnlex -> class cast (rdf:List) OWLJavaFactory doesn't do the right thing
+//TODO: When to do post processing?
+//TODO: Check Jena writer - it writes out frames classes (:PAL-CONSTRAINT)
+
 //TODO: Each post process in a try catch
-//TODO: In post-processing create untyped - create in the right ts
 //TODO: Check if the untyped types are written out
 //TODO: Add owl:Thing also for untyped classes
 //TODO: Use StringBuffer in place of String for all namespace methods
@@ -25,41 +29,34 @@ import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 public class TripleProcessor {
 
 	private OWLModel owlModel;
-	private TripleStore tripleStore;
-	
+
 	private TripleProcessorForResourceObjects processorResourceObjs;
 	private TripleProcessorForLiteralObjects processorLiteralObjs;
 	private TripleProcessorForUntypedResources untypedProcessor;
+	private TriplePostProcessor postProcessor;
 	
 	private UndefTripleManager undefTripleManager;
-	
-	private boolean importing;	
 
 
 	public TripleProcessor(OWLModel owlModel) {
-		this(owlModel, owlModel.getTripleStoreModel().getTopTripleStore());
-	}
-
-	public TripleProcessor(OWLModel owlModel, TripleStore tripleStore) {
 		this.owlModel = owlModel;
-		this.tripleStore = tripleStore;
 
 		this.undefTripleManager = ((AbstractOWLModel)owlModel).getUndefTripleManager();
-		this.importing = !tripleStore.equals(owlModel.getTripleStoreModel().getTopTripleStore());
 		
 		//should come as the last in the initialization
 		this.processorResourceObjs = new TripleProcessorForResourceObjects(this);
 		this.processorLiteralObjs = new TripleProcessorForLiteralObjects(this);
 		this.untypedProcessor = new TripleProcessorForUntypedResources(this);
+		this.postProcessor = new TriplePostProcessor(this);	
 	}
 
 
-	public boolean processTriple(AResource subj, AResource pred, AResource obj, boolean alreadyInUndef) {
-		return processorResourceObjs.processTriple(subj, pred, obj, alreadyInUndef);
+	public boolean processTriple(AResource subj, AResource pred, AResource obj, TripleStore ts, boolean alreadyInUndef) {
+		return processorResourceObjs.processTriple(subj, pred, obj, ts, alreadyInUndef);
 	}
 
-	public boolean processTriple(AResource subj, AResource pred, ALiteral lit, boolean alreadyInUndef) {
-		return processorLiteralObjs.processTriple(subj, pred, lit, alreadyInUndef);
+	public boolean processTriple(AResource subj, AResource pred, ALiteral lit, TripleStore ts, boolean alreadyInUndef) {
+		return processorLiteralObjs.processTriple(subj, pred, lit, ts, alreadyInUndef);
 	}
 
 	
@@ -69,7 +66,7 @@ public class TripleProcessor {
 	
 	public void addUndefTriple(AResource subj, AResource pred, AResource obj, String undefName, boolean alreadyInUndef, TripleStore ts) {
 		if (!alreadyInUndef) {		  
-			undefTripleManager.addUndefTriple(new UndefTriple(subj, pred, obj, undefName, this));
+			undefTripleManager.addUndefTriple(new UndefTriple(subj, pred, obj, undefName, ts));
 		}
 	}
 	
@@ -80,14 +77,14 @@ public class TripleProcessor {
 			UndefTriple undefTriple = (UndefTriple) iter.next();
 			Object obj = undefTriple.getTripleObj();
 
-			TripleProcessor undefTripleProcessor = undefTriple.getTripleProcessor();
+			TripleStore undefTripleStore = undefTriple.getTripleStore();
 			
 			boolean success = false;
 
 			if (obj instanceof AResource) {	
-				success = undefTripleProcessor.processTriple(undefTriple.getTripleSubj(), undefTriple.getTriplePred(), (AResource) undefTriple.getTripleObj(), true);
+				success = processTriple(undefTriple.getTripleSubj(), undefTriple.getTriplePred(), (AResource) undefTriple.getTripleObj(), undefTripleStore, true);
 			} else if (obj instanceof ALiteral) {
-				success = undefTripleProcessor.processTriple(undefTriple.getTripleSubj(), undefTriple.getTriplePred(), (ALiteral) undefTriple.getTripleObj(), true);
+				success = processTriple(undefTriple.getTripleSubj(), undefTriple.getTriplePred(), (ALiteral) undefTriple.getTripleObj(), undefTripleStore, true);
 			}
 
 			if (success) {			
@@ -103,19 +100,10 @@ public class TripleProcessor {
 	}	
 
 	
-	public TripleStore getTripleStore() {
-		return tripleStore;
-	}
-	
-	public boolean isImporting() {
-		return importing;
-	}
 
-	
 	public void doPostProcessing() {
 		processUndefTriples();
-		processorResourceObjs.doPostProcessing();
-		processorLiteralObjs.doPostProcessing();
+		postProcessor.doPostProcessing();
 	}
 
 

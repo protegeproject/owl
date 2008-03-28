@@ -9,6 +9,7 @@ import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
 import edu.stanford.smi.protegex.owl.model.RDFSClass;
 import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
+import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 
 class TripleProcessorForUntypedResources extends AbstractStatefulTripleProcessor {
 	
@@ -26,15 +27,15 @@ class TripleProcessorForUntypedResources extends AbstractStatefulTripleProcessor
 		for (Iterator<UndefTriple> iter = processor.getUndefTripleManager().getUndefTriples().iterator(); iter.hasNext();) {
 			UndefTriple undefTriple = (UndefTriple) iter.next();
 			Object obj = undefTriple.getTripleObj();
-			
-			TripleProcessor undefProcessor = undefTriple.getTripleProcessor();
+		
+			TripleStore undefTripleStore = undefTriple.getTripleStore();			
 			
 			boolean success = false;
 
 			if (obj instanceof AResource) {			
-				success = undefProcessor.processTriple(undefTriple.getTripleSubj(), undefTriple.getTriplePred(), (AResource) undefTriple.getTripleObj(), true);
+				success = processor.processTriple(undefTriple.getTripleSubj(), undefTriple.getTriplePred(), (AResource) undefTriple.getTripleObj(), undefTripleStore, true);
 			} else if (obj instanceof ALiteral) {
-				success = undefProcessor.processTriple(undefTriple.getTripleSubj(), undefTriple.getTriplePred(), (ALiteral) undefTriple.getTripleObj(), true);
+				success = processor.processTriple(undefTriple.getTripleSubj(), undefTriple.getTriplePred(), (ALiteral) undefTriple.getTripleObj(), undefTripleStore, true);
 			}	
 
 			if (success) {

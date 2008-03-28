@@ -19,6 +19,7 @@ import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLMaxCardinality;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLMinCardinality;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLSomeValuesFrom;
 import edu.stanford.smi.protegex.owl.model.impl.OWLSystemFrames;
+import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 
 public class RestrictionCreatorUtility {	
 	
@@ -48,7 +49,7 @@ public class RestrictionCreatorUtility {
 	
 	
 	
-	public static Frame createRestriction(OWLModel owlModel, FrameID id, String predUri) {
+	public static Frame createRestriction(OWLModel owlModel, FrameID id, String predUri, TripleStore ts) {
 		Frame inst = ((KnowledgeBase) owlModel).getFrame(id);
 		OWLSystemFrames systemFrames = owlModel.getSystemFrames();
 		
@@ -69,20 +70,20 @@ public class RestrictionCreatorUtility {
 			inst = new DefaultOWLCardinality(owlModel, id);
 		}
 		inst.assertFrameName();
-		FrameCreatorUtility.addOwnSlotValue(inst, systemFrames.getRdfTypeProperty(), systemFrames.getOwlRestrictionClass());
+		FrameCreatorUtility.addOwnSlotValue(inst, systemFrames.getRdfTypeProperty(), systemFrames.getOwlRestrictionClass(), ts);
 //        ((RDFResource) inst).setPropertyValue(systemFrames.getRdfTypeProperty(), systemFrames.getOwlNamedClassClass());
 		
 		// should be safe
 		Cls metaCls = ((KnowledgeBase) owlModel).getCls(restrictionURI2MetaclassName.get(predUri));
 				
-		FrameCreatorUtility.addInstanceType((Instance)inst, metaCls);
+		FrameCreatorUtility.addInstanceType((Instance)inst, metaCls, ts);
 		
 		return inst;
 	}
 
 
 	//remove the pred argument
-	public static boolean addRestrictionFiller(OWLModel owlModel, Frame restriction, Frame filler, String predUri) {
+	public static boolean addRestrictionFiller(OWLModel owlModel, Frame restriction, Frame filler, String predUri, TripleStore ts) {
 		if (restriction == null || filler == null)
 			return false;
 		
@@ -91,7 +92,7 @@ public class RestrictionCreatorUtility {
 		if (fillerSlot == null)
 			return false;
 		
-		FrameCreatorUtility.addOwnSlotValue(restriction, fillerSlot, filler);
+		FrameCreatorUtility.addOwnSlotValue(restriction, fillerSlot, filler, ts);
 		
 		return true;
 	}

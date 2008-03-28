@@ -331,12 +331,13 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
         Repository rep = getRepository(getTripleStoreModel().getActiveTripleStore(), ontologyName);
         if(rep != null) {
             try {
-                tripleStoreModel.setViewActiveOnly(true);
+            	//TT - not needed anymore
+                //tripleStoreModel.setViewActiveOnly(true);
                 TripleStore importedTripleStore = rep.addImport(this, ontologyName);
                 importedTripleStore.addIOAddress(ontologyName.toString());
             }
             finally {
-                tripleStoreModel.setViewActiveOnly(false);
+                //tripleStoreModel.setViewActiveOnly(false);
             }
         }
         if (ontologyName.toString().equals(ProtegeNames.PROTEGE_OWL_ONTOLOGY)) {

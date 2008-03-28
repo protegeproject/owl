@@ -14,6 +14,8 @@ import edu.stanford.smi.protege.model.FrameID;
 import edu.stanford.smi.protege.model.Instance;
 import edu.stanford.smi.protege.model.KnowledgeBase;
 import edu.stanford.smi.protege.model.Slot;
+import edu.stanford.smi.protege.model.framestore.NarrowFrameStore;
+import edu.stanford.smi.protege.util.CollectionUtilities;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLAllDifferent;
@@ -28,6 +30,7 @@ import edu.stanford.smi.protegex.owl.model.impl.DefaultRDFProperty;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultRDFSDatatype;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultRDFSNamedClass;
 import edu.stanford.smi.protegex.owl.model.impl.OWLSystemFrames;
+import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 import edu.stanford.smi.protegex.owl.swrl.model.SWRLNames;
 import edu.stanford.smi.protegex.owl.swrl.model.impl.DefaultSWRLAtomList;
 import edu.stanford.smi.protegex.owl.swrl.model.impl.DefaultSWRLBuiltin;
@@ -44,7 +47,7 @@ import edu.stanford.smi.protegex.owl.swrl.model.impl.DefaultSWRLVariable;
 public class FrameCreatorUtility {
 	private static transient Logger log = Log.getLogger(FrameCreatorUtility.class);
 
-    public static Frame createFrameWithType(OWLModel owlModel, FrameID id, String typeUri) {
+    public static Frame createFrameWithType(OWLModel owlModel, FrameID id, String typeUri, TripleStore ts) {
         Frame frame = ((KnowledgeBase) owlModel).getFrame(id);
         OWLSystemFrames systemFrames = owlModel.getSystemFrames();
 
@@ -147,8 +150,8 @@ public class FrameCreatorUtility {
             frame = new DefaultOWLIndividual(owlModel, id);
         }
         
-        frame.assertFrameName();
-    	
+        assertFrameName(ts, frame);
+  	
         if (log.getLevel() == Level.FINE) {
     		log.fine("Created frame: " + frame);
     	}
@@ -157,8 +160,9 @@ public class FrameCreatorUtility {
         	if (log.getLevel() == Level.FINE) {
         		log.fine("Adding direct type to " + frame + " type: " + type);
         	}
-        	addInstanceType((Instance)frame, (Cls)type);
-        	addOwnSlotValue(frame, systemFrames.getRdfTypeProperty(), type);
+        	addInstanceType((Instance)frame, (Cls)type, ts);
+        	//--the rdf:type will be added in addTriple in the TripleProcessorForResources
+        	//addOwnSlotValue(frame, systemFrames.getRdfTypeProperty(), type, ts);
         }
 
         return frame;
@@ -166,14 +170,21 @@ public class FrameCreatorUtility {
     }
 
 
-    public static boolean addInstanceType(Instance inst, Cls type) {
+    private static void assertFrameName(TripleStore ts, Frame frame) {
+    	NarrowFrameStore nfs = ts.getNarrowFrameStore();
+    	nfs.addValues(frame, frame.getKnowledgeBase().getSystemFrames().getNameSlot(), null, false, 
+    			CollectionUtilities.createCollection(frame.getName()));		
+	}
+
+
+	public static boolean addInstanceType(Instance inst, Cls type, TripleStore ts) {
         if (inst == null || type == null) {                     
             return false;
         }
 
         Slot typeSlot = inst.getKnowledgeBase().getSystemFrames().getDirectTypesSlot();
-        addOwnSlotValue(inst, typeSlot , type);
-        addOwnSlotValue(type, inst.getKnowledgeBase().getSystemFrames().getDirectInstancesSlot(), inst);
+        addOwnSlotValue(inst, typeSlot , type, ts);
+        addOwnSlotValue(type, inst.getKnowledgeBase().getSystemFrames().getDirectInstancesSlot(), inst, ts);
 
         return true;
     }
@@ -194,28 +205,48 @@ public class FrameCreatorUtility {
     	return ParserUtil.getSimpleFrameStore(cls).getSuperclasses(cls).contains(supercls);
     }
     
-    public static boolean createSubclassOf(Cls cls, Cls superCls) {
-        if (cls == null || superCls == null) {          
+    public static boolean createSubclassOf(Cls cls, Cls superCls, TripleStore ts) {
+        if (cls == null || superCls == null) {        	
             return false;
         }
-        ParserUtil.getSimpleFrameStore(cls).addDirectSuperclass(cls, superCls);
+        
+        NarrowFrameStore nfs = ts.getNarrowFrameStore();
+        
+    	nfs.addValues(cls, cls.getKnowledgeBase().getSystemFrames().getDirectSuperclassesSlot(), null, false,
+    			CollectionUtilities.createCollection(superCls));
+    	nfs.addValues(superCls, cls.getKnowledgeBase().getSystemFrames().getDirectSubclassesSlot(), null, false,
+    			CollectionUtilities.createCollection(cls));
+
+        //ParserUtil.getSimpleFrameStore(cls).addDirectSuperclass(cls, superCls);
         return true;
     }
+    
 
-    public static boolean createSubpropertyOf(Slot slot, Slot superSlot) {
+    public static boolean createSubpropertyOf(Slot slot, Slot superSlot, TripleStore ts) {
         if (slot == null || superSlot == null) {
             return false;
         }
-        ParserUtil.getSimpleFrameStore(slot).addDirectSuperslot(slot, superSlot);
+        
+        NarrowFrameStore nfs = ts.getNarrowFrameStore();
+        
+    	nfs.addValues(slot, slot.getKnowledgeBase().getSystemFrames().getDirectSuperslotsSlot(), null, false,
+    			CollectionUtilities.createCollection(superSlot));
+    	nfs.addValues(superSlot, slot.getKnowledgeBase().getSystemFrames().getDirectSubclassesSlot(), null, false,
+    			CollectionUtilities.createCollection(slot));
 
+//        ParserUtil.getSimpleFrameStore(slot).addDirectSuperslot(slot, superSlot);
         return true;
     }
 
-    public static boolean addOwnSlotValue(Frame frame, Slot slot, Object value) {
+    public static boolean addOwnSlotValue(Frame frame, Slot slot, Object value, TripleStore ts) {
         if (frame == null || slot == null) {
             return false;
         }
-        ParserUtil.getSimpleFrameStore(frame).addDirectOwnSlotValue(frame, slot, value);
+        
+        NarrowFrameStore nfs = ts.getNarrowFrameStore();        
+        //what should happen if value is a collection?
+        nfs.addValues(frame, slot, null, false, CollectionUtilities.createCollection(value));
+
         return true;
     }
 
@@ -223,10 +254,9 @@ public class FrameCreatorUtility {
         return ParserUtil.getSimpleFrameStore(instance).getDirectTypes(instance);
     }
 
-    public static boolean addDirectTypeAndSwizzle(Instance instance, Cls type) {
-    	//ParserUtil.getSimpleFrameStore(instance).addDirectType(instance, type);
-        instance.addDirectType(type);
-        return true;
+    public static boolean hasOwnSlotValue(Frame frame, Slot slot, Object value) {
+    	Collection values = ParserUtil.getSimpleFrameStore(frame).getDirectOwnSlotValues(frame, slot);
+    	return values.contains(value);
     }
 
 }

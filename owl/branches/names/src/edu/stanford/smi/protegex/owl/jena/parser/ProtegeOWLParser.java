@@ -48,7 +48,7 @@ public class ProtegeOWLParser {
     private static transient Logger log = Log.getLogger(ProtegeOWLParser.class);
     
     private final static String JENA_ERROR_LEVEL_PROPERTY = "jena.parser.error_level";
-    private final static String CREATE_UNTYPED_RESOURCES = "protegeowl.parser.create.untyped.resources";
+    public final static String CREATE_UNTYPED_RESOURCES = "protegeowl.parser.create.untyped.resources";
 
     private boolean importing = false;
     
@@ -115,12 +115,12 @@ public class ProtegeOWLParser {
 	}
 	
 
-	protected ARP createARP() {
+	protected ARP createARP(TripleStore tripleStore) {
 		ARP arp = new ARP();
 		ARPHandlers handlers = arp.getHandlers();
-		handlers.setStatementHandler(new ProtegeOWLStatementHandler());
+		handlers.setStatementHandler(new ProtegeOWLStatementHandler(tripleStore));
 		handlers.setErrorHandler(new ProtegeOWLErrorHandler());
-		handlers.setNamespaceHandler(new ProtegeOWLNamespaceHandler());
+		handlers.setNamespaceHandler(new ProtegeOWLNamespaceHandler(tripleStore));
 		arp.setHandlersWith(handlers);
 		return arp;
 	}
@@ -229,11 +229,11 @@ public class ProtegeOWLParser {
 	    
 	    boolean eventsEnabled = owlModel.setGenerateEventsEnabled(false);
 	    try {
-	        tripleProcessor = new TripleProcessor(owlModel, tripleStore);
+	        tripleProcessor = new TripleProcessor(owlModel);
 
 	        Log.getLogger().info("Loading triples");
 
-	        ARP arp = createARP();
+	        ARP arp = createARP(tripleStore);
 
 	        long startTime = System.currentTimeMillis();	
 
@@ -264,7 +264,8 @@ public class ProtegeOWLParser {
 
 	        //tripleProcessor.processUndefTriples();
 	        
-	        tripleProcessor.doPostProcessing();
+	        //post processing is done only at the very end..
+	        //tripleProcessor.doPostProcessing();
 	        
 	        handleNoOntologyDeclarationFound(tripleStore, ontologyName, xmlBase);
 	        
@@ -302,15 +303,8 @@ public class ProtegeOWLParser {
 	
 	
 	private void doFinalPostProcessing() {
-		//create untyped resources if needed
-		if (isCreateUntypedResourcesEnabled()) {
-			tripleProcessor.createUntypedResources();
-			
-			if (tripleProcessor.getUndefTripleManager().getUndefTriples().size() > 0) {
-    			tripleProcessor.getUndefTripleManager().dumpUndefTriples(Level.INFO);
-    		}
-		}
-        
+		tripleProcessor.doPostProcessing();
+       
         //copy restrictions in facets
         if (owlModel instanceof JenaOWLModel)  {
             ((JenaOWLModel) owlModel).copyFacetValuesIntoNamedClses();
@@ -319,11 +313,6 @@ public class ProtegeOWLParser {
 		//sort subclasses if needed
         TripleStoreUtil.sortSubclasses(owlModel);
 	}	
-	
-	
-	public boolean isCreateUntypedResourcesEnabled() {
-		return ApplicationProperties.getBooleanProperty(CREATE_UNTYPED_RESOURCES, true);
-	}
 	
 	
 	/************************************* Imports *************************************/
@@ -429,6 +418,13 @@ public class ProtegeOWLParser {
 
 	
 	class ProtegeOWLStatementHandler implements StatementHandler {
+		
+		TripleStore tripleStore;
+		
+		public ProtegeOWLStatementHandler(TripleStore tripleStore) {
+			this.tripleStore = tripleStore;
+		}
+
 
 		public void statement(AResource subj, AResource pred, AResource obj) {
                     if (log.isLoggable(Level.FINE)) {
@@ -439,7 +435,7 @@ public class ProtegeOWLParser {
                         Log.getLogger().info("Loaded " + tripleCount + " triples");
                     }
 			
-                    tripleProcessor.processTriple(subj, pred, obj, false);			
+                    tripleProcessor.processTriple(subj, pred, obj, tripleStore, false);			
 		}
 
 
@@ -453,14 +449,20 @@ public class ProtegeOWLParser {
                         Log.getLogger().info("Loaded " + tripleCount + " triples");
                     }
 			
-                    tripleProcessor.processTriple(subj, pred, lit, false);			
+                    tripleProcessor.processTriple(subj, pred, lit, tripleStore, false);			
 		}		
 	}
 
 	
 	class ProtegeOWLNamespaceHandler implements NamespaceHandler {
+		
+		TripleStore tripleStore;
 
-	    public void endPrefixMapping(String prefix) { // does nothing, just for logging
+	    public ProtegeOWLNamespaceHandler(TripleStore tripleStore) {
+	    	this.tripleStore = tripleStore;
+		}
+
+		public void endPrefixMapping(String prefix) { // does nothing, just for logging
 	        NamespaceManager namespaceManager = owlModel.getNamespaceManager();
 	        
 	        if (log.isLoggable(Level.FINE)) {

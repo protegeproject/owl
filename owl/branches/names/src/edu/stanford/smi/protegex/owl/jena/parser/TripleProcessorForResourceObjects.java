@@ -1,9 +1,5 @@
 package edu.stanford.smi.protegex.owl.jena.parser;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -20,8 +16,8 @@ import edu.stanford.smi.protege.model.KnowledgeBase;
 import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
-import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.RDFSClass;
+import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 
 class TripleProcessorForResourceObjects extends AbstractStatefulTripleProcessor {
 	private static final transient Logger log = Log.getLogger(TripleProcessorForResourceObjects.class);
@@ -30,7 +26,7 @@ class TripleProcessorForResourceObjects extends AbstractStatefulTripleProcessor 
 		INCOMPLETE, IN_KNOWLEDGE_BASE, DUPLICATE_TRIPLE, OTHER_TRIPLE_WILL_RESOLVE, REQUIRES_MULTI_TYPES_PROCESSING, UNDEF_NEEDS_POSTPROCESS;
 	};
 
-	private TriplePostProcessor postProcessor;
+
 	
 	/*
 	 * I don't know if this works. It is a hack for an ugly situation. The w3
@@ -43,29 +39,16 @@ class TripleProcessorForResourceObjects extends AbstractStatefulTripleProcessor 
 	 */
 	private boolean ontologyFound = false;
 
-	private SuperClsCache superClsCache = new SuperClsCache();
-	private MultipleTypesInstanceCache multipleTypesInstanceCache = new MultipleTypesInstanceCache();
-	
-	//these will be refactored
-	private Collection<RDFProperty> possibleGCIPredicates = new ArrayList<RDFProperty>();
-	private Collection<RDFSClass> gciAxioms = new ArrayList<RDFSClass>();
-	private Map<String, Cls> objectToNamedLogicalClassSurrogate = new HashMap<String, Cls>();
 
 	public TripleProcessorForResourceObjects(TripleProcessor processor) {
 		super(processor);
-		postProcessor = new TriplePostProcessor(processor);
-		initGCIPredicates();
+			
 	}
 
-	public boolean processTriple(AResource subj, AResource pred, AResource obj, boolean alreadyInUndef) {
-		return new InternalTripleProcessorForResourceObjects(subj, pred, obj, alreadyInUndef).processTriple();
+	public boolean processTriple(AResource subj, AResource pred, AResource obj, TripleStore ts, boolean alreadyInUndef) {
+		return new InternalTripleProcessorForResourceObjects(subj, pred, obj, ts, alreadyInUndef).processTriple();
 	}
 
-	protected void initGCIPredicates() {
-		possibleGCIPredicates.add(owlModel.getOWLDisjointWithProperty());
-		possibleGCIPredicates.add(owlModel.getRDFSSubClassOfProperty());
-		possibleGCIPredicates.add(owlModel.getOWLEquivalentClassProperty());
-	}
 
 	private class InternalTripleProcessorForResourceObjects {
 
@@ -81,10 +64,12 @@ class TripleProcessorForResourceObjects extends AbstractStatefulTripleProcessor 
 		private String objName;
 		private Frame objFrame;
 
+		private TripleStore tripleStore;
+		
 		private boolean alreadyInUndef;
 
 		public InternalTripleProcessorForResourceObjects(AResource subj, AResource pred, AResource obj,
-				boolean alreadyInUndef) {
+				TripleStore ts, boolean alreadyInUndef) {
 			if (log.isLoggable(Level.FINER)) {
 				log.finer("Process Triple " + subj + " " + pred + " " + obj);
 			}
@@ -92,6 +77,7 @@ class TripleProcessorForResourceObjects extends AbstractStatefulTripleProcessor 
 			this.pred = pred;
 			this.obj = obj;
 			this.alreadyInUndef = alreadyInUndef;
+			this.tripleStore = ts;
 
 			predName = ParserUtil.getResourceName(pred);
 			predSlot = (Slot) ((KnowledgeBase) owlModel).getFrame(predName);
@@ -146,11 +132,11 @@ class TripleProcessorForResourceObjects extends AbstractStatefulTripleProcessor 
 				if (log.isLoggable(Level.FINE)) {
 					log.fine("Triple <" + subjName + ", " + predName + ", " + objName + "> signals RDFList creation");
 				}
-				createRDFList(subjName, predName, objName);
+				createRDFList(subjName, predName, objName, tripleStore);
 			} else if (OWLFramesMapping.getLogicalPredicatesNames().contains(predName)) {
 				status = handleCreateLogicalClass();
 			} else if (OWLFramesMapping.getRestrictionPredicatesNames().contains(predName)) {
-				subjFrame = createRestriction(subjName, predName);
+				subjFrame = createRestriction(subjName, predName, tripleStore);
 			}
 
 			subjFrame = getFrame(subjName);
@@ -198,7 +184,7 @@ class TripleProcessorForResourceObjects extends AbstractStatefulTripleProcessor 
 					return TripleStatus.UNDEF_NEEDS_POSTPROCESS;
 				}
 				
-				subjFrame = objectToNamedLogicalClassSurrogate.get(objName);
+				subjFrame = undefTripleManager.getObjectToNamedLogicalClassSurrogate().get(objName);
 				if (subjFrame != null) {
 					subjName = subjFrame.getName();
 					return TripleStatus.INCOMPLETE;
@@ -209,13 +195,13 @@ class TripleProcessorForResourceObjects extends AbstractStatefulTripleProcessor 
 				logicalClassIsNamed = true;
 			}
 			
-			subjFrame = createLogicalClass(subjName, predName);
+			subjFrame = createLogicalClass(subjName, predName, tripleStore);
 			
 			if (logicalClassIsNamed) {
-				objectToNamedLogicalClassSurrogate.put(objName, (Cls) subjFrame);
-				FrameCreatorUtility.addOwnSlotValue(oldSubjFrame, owlModel.getOWLEquivalentClassProperty(), subjFrame);
-				FrameCreatorUtility.createSubclassOf((Cls) subjFrame, (Cls) oldSubjFrame);
-				FrameCreatorUtility.createSubclassOf((Cls) oldSubjFrame, (Cls) subjFrame);
+				undefTripleManager.getObjectToNamedLogicalClassSurrogate().put(objName, (Cls) subjFrame);
+				FrameCreatorUtility.addOwnSlotValue(oldSubjFrame, owlModel.getOWLEquivalentClassProperty(), subjFrame, tripleStore);
+				FrameCreatorUtility.createSubclassOf((Cls) subjFrame, (Cls) oldSubjFrame, tripleStore);
+				FrameCreatorUtility.createSubclassOf((Cls) oldSubjFrame, (Cls) subjFrame, tripleStore);
 			}
 			return TripleStatus.INCOMPLETE;
 		}
@@ -238,18 +224,24 @@ class TripleProcessorForResourceObjects extends AbstractStatefulTripleProcessor 
 			// find a better way to handle this...
 			boolean subjAlreadyExists = getFrame(subjName) != null;
 
-			subjFrame = createFrameWithType(subjName, (Cls) objFrame, subj.isAnonymous());
+			subjFrame = createFrameWithType(subjName, (Cls) objFrame, subj.isAnonymous(), tripleStore);
+			
+			//add the rdf:type triple if not already there
+			if (!FrameCreatorUtility.hasOwnSlotValue(subjFrame, predSlot, objFrame)) {				
+				FrameCreatorUtility.addOwnSlotValue(subjFrame, predSlot, objFrame, tripleStore);
+			}
+			
 			// add to frame to the cache of classes with no superclass
 			if (!subjAlreadyExists && !subj.isAnonymous()
 					&& (objName.equals(OWL.Class.getURI()) || objName.equals(RDFS.Class.getURI()))) {
-				superClsCache.addFrame(subjFrame);
+				undefTripleManager.getSuperClsCache().addFrame(subjFrame);
 			}
 		
 			if (subjAlreadyExists && objFrame instanceof Cls) {				
 				if (log.isLoggable(Level.FINE)) {
 					log.fine("found an alternative type for " + subjFrame + " = " + objFrame);
 				}
-				multipleTypesInstanceCache.addType((Instance) subjFrame, (Cls) objFrame);
+				undefTripleManager.getMultipleTypesInstanceCache().addType((Instance) subjFrame, (Cls) objFrame);
 				return TripleStatus.REQUIRES_MULTI_TYPES_PROCESSING;
 			}
 			return TripleStatus.INCOMPLETE;
@@ -261,7 +253,7 @@ class TripleProcessorForResourceObjects extends AbstractStatefulTripleProcessor 
 					if (log.isLoggable(Level.FINE)) {
 						log.fine("\tdeferring triple because predicate is not yet defined");
 					}
-					undefTripleManager.addUndefTriple(new UndefTriple(subj, pred, obj, predName, processor));
+					undefTripleManager.addUndefTriple(new UndefTriple(subj, pred, obj, predName, tripleStore));
 				}
 				return TripleStatus.UNDEF_NEEDS_POSTPROCESS;
 			}
@@ -291,8 +283,8 @@ class TripleProcessorForResourceObjects extends AbstractStatefulTripleProcessor 
 			// guessing that the ontology for the parsed file is the first
 			// ontology found
 			if (objName.equals(OWL.Ontology.getURI()) && predName.equals(RDF.type.getURI()) && !ontologyFound) {
-				processor.getTripleStore().setName(subjName);
-				processor.getTripleStore().addIOAddress(subjName);
+				tripleStore.setName(subjName);
+				tripleStore.addIOAddress(subjName);
 				ontologyFound = true;
 			}
 		}
@@ -301,21 +293,21 @@ class TripleProcessorForResourceObjects extends AbstractStatefulTripleProcessor 
 			// If this is a rdfs:subclass of, then remove it from the cache of
 			// classes with no superclasses
 			if (predName.equals(RDFS.subClassOf.getURI()) && !obj.isAnonymous()) {
-				superClsCache.removeFrame(subjFrame);
+				undefTripleManager.getSuperClsCache().removeFrame(subjFrame);
 			}
 		}
 
 		private TripleStatus handleEquivalentClassesOrProperties() {
 			// special treatment of equivalent classes
 			if (predName.equals(OWL.equivalentClass.getURI())) {
-				FrameCreatorUtility.addOwnSlotValue(subjFrame, predSlot, objFrame);
-				FrameCreatorUtility.createSubclassOf((Cls) subjFrame, (Cls) objFrame);
-				FrameCreatorUtility.createSubclassOf((Cls) objFrame, (Cls) subjFrame);
+				FrameCreatorUtility.addOwnSlotValue(subjFrame, predSlot, objFrame, tripleStore);
+				FrameCreatorUtility.createSubclassOf((Cls) subjFrame, (Cls) objFrame, tripleStore);
+				FrameCreatorUtility.createSubclassOf((Cls) objFrame, (Cls) subjFrame, tripleStore);
 				return TripleStatus.IN_KNOWLEDGE_BASE;
 			} else if (predName.equals(OWL.equivalentProperty.getURI())) {
-				FrameCreatorUtility.addOwnSlotValue(subjFrame, predSlot, objFrame);
-				FrameCreatorUtility.createSubpropertyOf((Slot) subjFrame, (Slot) objFrame);
-				FrameCreatorUtility.createSubpropertyOf((Slot) objFrame, (Slot) subjFrame);
+				FrameCreatorUtility.addOwnSlotValue(subjFrame, predSlot, objFrame, tripleStore);
+				FrameCreatorUtility.createSubpropertyOf((Slot) subjFrame, (Slot) objFrame, tripleStore);
+				FrameCreatorUtility.createSubpropertyOf((Slot) objFrame, (Slot) subjFrame, tripleStore);
 				return TripleStatus.IN_KNOWLEDGE_BASE;
 			}
 			return TripleStatus.INCOMPLETE;
@@ -328,34 +320,34 @@ class TripleProcessorForResourceObjects extends AbstractStatefulTripleProcessor 
 		 */
 		private void handleGeneralizedConceptInclusions() {
 			if (subjFrame instanceof RDFSClass && ((RDFSClass) subjFrame).isAnonymous()
-					&& possibleGCIPredicates.contains(predSlot)) {
+					&& undefTripleManager.getPossibleGCIPredicates().contains(predSlot)) {
 				OWLNamedClass axiom = owlModel.createOWLNamedClass(null);
-				FrameCreatorUtility.addOwnSlotValue(axiom, owlModel.getOWLEquivalentClassProperty(), subjFrame);
-				FrameCreatorUtility.createSubclassOf((Cls) subjFrame, axiom);
-				FrameCreatorUtility.createSubclassOf(axiom, (Cls) subjFrame);
+				FrameCreatorUtility.addOwnSlotValue(axiom, owlModel.getOWLEquivalentClassProperty(), subjFrame, tripleStore);
+				FrameCreatorUtility.createSubclassOf((Cls) subjFrame, axiom, tripleStore);
+				FrameCreatorUtility.createSubclassOf(axiom, (Cls) subjFrame, tripleStore);
 				subjFrame = axiom;
-				gciAxioms.add(axiom); // need to name these later
+				undefTripleManager.getGciAxioms().add(axiom); // need to name these later
 			}
 		}
 
 		private void addTriple() {
 			
-			//exception for the rdf:Type...			
+			//this should not be necessary - it will be deleted after refactoring the status
 			if (predSlot.equals(owlModel.getRDFTypeProperty())) {
 				return;
 			}
 			
 			// add what it is really in the triple			
-			FrameCreatorUtility.addOwnSlotValue(subjFrame, predSlot, objFrame);
+			FrameCreatorUtility.addOwnSlotValue(subjFrame, predSlot, objFrame, tripleStore);
 			// add frame correspondent
 			String frameMapSlot = OWLFramesMapping.getFramesSlotMapName(predName);
 			if (frameMapSlot != null) {
-				FrameCreatorUtility.addOwnSlotValue(subjFrame, (Slot)getFrame(frameMapSlot), objFrame);
+				FrameCreatorUtility.addOwnSlotValue(subjFrame, (Slot)getFrame(frameMapSlot), objFrame, tripleStore);
 			}
 			// add frame pair (inverse) correspondent
 			String frameMapInvSlot = OWLFramesMapping.getFramesInvSlotMapName(predName);
 			if (frameMapInvSlot != null) {
-				FrameCreatorUtility.addOwnSlotValue(objFrame, (Slot)getFrame(frameMapInvSlot), subjFrame);
+				FrameCreatorUtility.addOwnSlotValue(objFrame, (Slot)getFrame(frameMapInvSlot), subjFrame, tripleStore);
 			}
 		}
 
@@ -367,7 +359,7 @@ class TripleProcessorForResourceObjects extends AbstractStatefulTripleProcessor 
 
 
 	// special treatment of RDFList
-	private void createRDFList(String subjName, String predName, String objName) {
+	private void createRDFList(String subjName, String predName, String objName, TripleStore ts) {
 		Frame subjList = getFrame(subjName);
 
 		// applies both for rdf:fist and rdf:rest
@@ -375,8 +367,8 @@ class TripleProcessorForResourceObjects extends AbstractStatefulTripleProcessor 
 			// move this to a RDFListCreator
 			FrameID id = new FrameID(subjName);
 
-			Frame listFrame = FrameCreatorUtility.createFrameWithType(owlModel, id, RDF.List.getURI());
-			if (importing) {
+			Frame listFrame = FrameCreatorUtility.createFrameWithType(owlModel, id, RDF.List.getURI(), ts);
+			if (isImporting(ts)) {
 				listFrame.setIncluded(true); // ineffective in client-server or db mode
 			}
 
@@ -393,7 +385,7 @@ class TripleProcessorForResourceObjects extends AbstractStatefulTripleProcessor 
 		if (objList == null) {
 			FrameID id = new FrameID(objName);
 
-			Frame listFrame = FrameCreatorUtility.createFrameWithType(owlModel, id, RDF.List.getURI());
+			Frame listFrame = FrameCreatorUtility.createFrameWithType(owlModel, id, RDF.List.getURI(), ts);
 
 			if (listFrame != null) {
 				checkUndefinedResources(objName);
@@ -402,7 +394,7 @@ class TripleProcessorForResourceObjects extends AbstractStatefulTripleProcessor 
 	}
 
 
-	private Frame createFrameWithType(String frameUri, Cls type, boolean isSubjAnon) {
+	private Frame createFrameWithType(String frameUri, Cls type, boolean isSubjAnon, TripleStore ts) {
 		Frame frame = getFrame(frameUri);
 
 		if (frame != null) {
@@ -411,8 +403,8 @@ class TripleProcessorForResourceObjects extends AbstractStatefulTripleProcessor 
 
 		FrameID id = new FrameID(frameUri);
 
-		frame = FrameCreatorUtility.createFrameWithType(owlModel, id, type.getName());
-		if (importing) {
+		frame = FrameCreatorUtility.createFrameWithType(owlModel, id, type.getName(), ts);
+		if (isImporting(ts)) {
 			frame.setIncluded(true); // doesn't have any effect in
 			// client-server or db mode
 		}
@@ -425,19 +417,19 @@ class TripleProcessorForResourceObjects extends AbstractStatefulTripleProcessor 
 	}
 
 
-	private Frame createLogicalClass(String logClassName, String predName) {
+	private Frame createLogicalClass(String logClassName, String predName, TripleStore ts) {
 		Frame logClass = getFrame(logClassName);
 
 		if (logClass != null)
 			return logClass;
 
 		FrameID id = new FrameID(logClassName);
-		logClass = LogicalClassCreatorUtility.createLogicalClass(owlModel, id, predName);
+		logClass = LogicalClassCreatorUtility.createLogicalClass(owlModel, id, predName, ts);
 
 		if (logClass != null) {
 			checkUndefinedResources(logClassName);
 		}
-		if (importing) {
+		if (isImporting(ts)) {
 			logClass.setIncluded(true);
 		}
 
@@ -445,26 +437,8 @@ class TripleProcessorForResourceObjects extends AbstractStatefulTripleProcessor 
 	}
 
 
-	
-	/*
-	 * ************************ Post-processing ******************************
-	 */
-
-
 	public void doPostProcessing() {
-		processor.processUndefTriples();
-		
-		postProcessor.processMetaclasses();
-		postProcessor.processSubclassesOfRdfList();
-		
-		postProcessor.processInferredSuperclasses(superClsCache);
-		postProcessor.processClsesWithoutSupercls(superClsCache);
-		postProcessor.processInstancesWithMultipleTypes(multipleTypesInstanceCache);
-		postProcessor.processDomainAndRange();
-		postProcessor.processGeneralizedConceptInclusions(gciAxioms);
-		postProcessor.processAbstractClasses();
-		postProcessor.processPossiblyTypedResources();
+		//do nothing
 	}
-
-
+	
 }
