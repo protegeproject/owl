@@ -6,6 +6,7 @@ import java.util.List;
 import edu.stanford.smi.protege.model.Instance;
 import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
+import edu.stanford.smi.protegex.owl.jena.parser.ProtegeOWLParser;
 import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
 import edu.stanford.smi.protegex.owl.model.OWLNames;
 import edu.stanford.smi.protegex.owl.model.OWLObjectProperty;
@@ -24,8 +25,9 @@ public class LoadSWRLTestCase extends AbstractJenaTestCase {
     public void testAddSWRLImport() throws Exception {
         owlModel.getNamespaceManager().setPrefix(SWRLNames.SWRL_IMPORT, "swrlImport");
         owlModel.getNamespaceManager().setPrefix(SWRLNames.SWRLB_IMPORT, "swrlbImport");
-        owlModel.addImport(new URI(SWRLNames.SWRL_IMPORT));
-        owlModel.addImport(new URI(SWRLNames.SWRLB_IMPORT));
+        owlModel.loadImportedAssertions(new URI(SWRLNames.SWRL_IMPORT));
+        owlModel.loadImportedAssertions(new URI(SWRLNames.SWRLB_IMPORT));
+        ProtegeOWLParser.doFinalPostProcessing(owlModel);
         RDFResource atomListClass = owlModel.getRDFResource(SWRLNames.Cls.ATOM_LIST);
         assertTrue(atomListClass instanceof OWLNamedClass);
     }
