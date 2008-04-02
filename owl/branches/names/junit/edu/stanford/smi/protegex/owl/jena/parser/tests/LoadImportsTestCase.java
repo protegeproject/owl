@@ -73,8 +73,7 @@ public class LoadImportsTestCase extends AbstractJenaTestCase {
         URI uri = new URI(getRemoteOntologyRoot() + "travel.owl");
         String namespace = uri.toString() + "#";
         owlModel.getNamespaceManager().setPrefix(namespace, "travel");
-        owlModel.addImport(uri);
-        owlModel.getDefaultOWLOntology().addImports(uri.toString());
+        owlModel.loadImportedAssertions(uri);
     }
 
 
@@ -82,7 +81,7 @@ public class LoadImportsTestCase extends AbstractJenaTestCase {
         URI uri = new URI("http://www.daml.org/services/owl-s/1.1/Profile.owl");
         String namespace = uri.toString() + "#";
         owlModel.getNamespaceManager().setPrefix(namespace, "profile");
-        owlModel.addImport(uri);
+        owlModel.loadImportedAssertions(uri);
         owlModel.getDefaultOWLOntology().addImports(uri);
     }
 
@@ -92,12 +91,12 @@ public class LoadImportsTestCase extends AbstractJenaTestCase {
             URI uri = new URI("http://www.daml.org/services/owl-s/1.1/Process.owl");
             String namespace = uri.toString() + "#";
             owlModel.getNamespaceManager().setPrefix(namespace, "process");
-            owlModel.addImport(uri);
+            owlModel.loadImportedAssertions(uri);
             owlModel.getDefaultOWLOntology().addImports(uri.toString());
         }
         {
             URI uri = new URI("http://www.daml.org/services/owl-s/1.1/Grounding.owl");
-            owlModel.addImport(uri);
+            owlModel.loadImportedAssertions(uri);
             owlModel.getDefaultOWLOntology().addImports(uri.toString());
         }
     }
@@ -114,7 +113,7 @@ public class LoadImportsTestCase extends AbstractJenaTestCase {
         URI uri = new URI(ProtegeNames.PROTEGE_OWL_ONTOLOGY);
         String namespace = uri.toString() + "#";
         owlModel.getNamespaceManager().setPrefix(namespace, "protege");
-        owlModel.addImport(uri);
+        owlModel.loadImportedAssertions(uri);
         owlModel.getDefaultOWLOntology().addImports(uri.toString());
         assertNotNull(owlModel.getOWLNamedClass("protege:PAL-CONSTRAINT"));
     }
