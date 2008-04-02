@@ -317,7 +317,17 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     }
     
 
-    public void addImport(URI ontologyName) throws IOException {
+    /**
+     * This method is not intended for general consumption - use the ImportHelper instead.
+     * 
+     * This is called by internal methods such as the ProtegeOWLParser and the  various creators.
+     * Generally it is called to load the data from an import when an import statement is detected.
+     * It will not ensure that the importing ontology is actually declared to import the imported uri - 
+     * that is the job of the caller.
+     * 
+     * @param ontologyName The name of the ontology to be imported.
+     */
+    public void loadImportedAssertions(URI ontologyName) throws IOException {
         if (log.isLoggable(Level.FINE)) {
             log.fine("=======================================================");
             log.fine("Processing import " + ontologyName);
@@ -328,17 +338,11 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
                 return;
             }
         }
-        Repository rep = getRepository(getTripleStoreModel().getActiveTripleStore(), ontologyName);
+        TripleStore activeTripleStore = tripleStoreModel.getActiveTripleStore();
+        Repository rep = getRepository(activeTripleStore, ontologyName);
         if(rep != null) {
-            try {
-            	//TT - not needed anymore
-                //tripleStoreModel.setViewActiveOnly(true);
-                TripleStore importedTripleStore = rep.addImport(this, ontologyName);
-                importedTripleStore.addIOAddress(ontologyName.toString());
-            }
-            finally {
-                //tripleStoreModel.setViewActiveOnly(false);
-            }
+            TripleStore importedTripleStore = rep.loadImportedAssertions(this, ontologyName);
+            importedTripleStore.addIOAddress(ontologyName.toString());
         }
         if (ontologyName.toString().equals(ProtegeNames.PROTEGE_OWL_ONTOLOGY)) {
         	getFrameStoreManager().setProtegeOwlFrameStoreEnabled(true);
