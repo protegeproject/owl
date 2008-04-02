@@ -35,11 +35,21 @@ public class UndefTripleManager {
 	private Collection<RDFSClass> gciAxioms = new ArrayList<RDFSClass>();
 	private Map<String, Cls> objectToNamedLogicalClassSurrogate = new HashMap<String, Cls>();
 	
+	private TripleProcessor tripleProcessor;
+	
 	
 	public UndefTripleManager(OWLModel owlModel) {
 		this.owlModel = owlModel;
 		initGCIPredicates();
 	}
+	
+	public TripleProcessor getTripleProcessor() {
+	    if (tripleProcessor == null) {
+	        tripleProcessor = new TripleProcessor(owlModel);
+	    }
+	    return tripleProcessor;
+	}
+	
 
 	public void addUndefTriple(UndefTriple triple) {	
 		if (log.isLoggable(Level.FINE)) {
