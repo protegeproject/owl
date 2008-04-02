@@ -48,23 +48,6 @@ public interface OWLModel extends ProtegeKnowledgeBase, OWLTestManager {
     void addClassListener(ClassListener listener);
 
     /**
-     * A convenience method that dynamically adds an import to a JenaOWLModel.
-     * This will immediately load the file into a new TripleStore.  Prior to
-     * invoking this method, the caller should define a prefix for the expected
-     * namespace (e.g., URI + "#").  Following the call, the caller should add
-     * an import statement to an existing OWLOntology (usually the default ontology).
-     *
-     * <i>Note that the
-     * preferred method of adding imports is to use the <code>ImportHelper</code>, since
-     * this takes care of "house keeping" tasks that this "raw" addImport method does not.</i>
-     *
-     * @param owlModel
-     * @param ontologyName The name of the imported ontology.
-     * @throws Exception
-     */
-    void addImport(URI ontologyName) throws IOException;
-
-    /**
      * Adds a ModelListener to receive notifications when resources have been created, renamed
      * or deleted.
      *
