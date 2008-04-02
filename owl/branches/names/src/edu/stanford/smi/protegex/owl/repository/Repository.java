@@ -81,7 +81,7 @@ public interface Repository {
      * @param owlModel the model to add the import to
      * @param ontologyName the ontology name to use to look up the imported ontology.
      */
-    TripleStore addImport(OWLModel owlModel, URI ontologyName) throws IOException;
+    TripleStore loadImportedAssertions(OWLModel owlModel, URI ontologyName) throws IOException;
     
     /**
      * Determines if the specified ontology is writable.
