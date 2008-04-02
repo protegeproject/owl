@@ -35,6 +35,7 @@ import edu.stanford.smi.protege.util.URIUtilities;
 import edu.stanford.smi.protegex.owl.ProtegeOWL;
 import edu.stanford.smi.protegex.owl.jena.Jena;
 import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
+import edu.stanford.smi.protegex.owl.jena.parser.ProtegeOWLParser;
 import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
 import edu.stanford.smi.protegex.owl.model.OWLOntology;
 import edu.stanford.smi.protegex.owl.model.ProtegeNames;
@@ -216,7 +217,8 @@ public abstract class AbstractOWLTestCase extends TestCase {
         }
         owlOntology.addImports(ProtegeNames.PROTEGE_OWL_ONTOLOGY);
         try {
-            owlModel.addImport(URIUtilities.createURI(ProtegeNames.PROTEGE_OWL_ONTOLOGY));
+            owlModel.loadImportedAssertions(URIUtilities.createURI(ProtegeNames.PROTEGE_OWL_ONTOLOGY));
+            ProtegeOWLParser.doFinalPostProcessing(owlModel);
         }
         catch (IOException e) {
             Log.getLogger().log(Level.WARNING, "error importing protege ontology", e);
