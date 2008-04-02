@@ -173,7 +173,7 @@ public class DatabaseRepository implements Repository {
 	}
 
 	@SuppressWarnings("unchecked")
-    public TripleStore addImport(OWLModel owlModel, URI ontologyName)
+    public TripleStore loadImportedAssertions(OWLModel owlModel, URI ontologyName)
 			throws IOException {
 	    String table = ontologyToTable.get(ontologyName);
 	    DatabaseFrameDb dbFrameStore = new DatabaseFrameDb();
