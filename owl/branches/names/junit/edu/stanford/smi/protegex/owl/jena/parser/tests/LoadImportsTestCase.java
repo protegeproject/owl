@@ -21,6 +21,9 @@ public class LoadImportsTestCase extends AbstractJenaTestCase {
 
     public void testLoadImports() throws Exception {
         loadRemoteOntology("import-demo.owl");
+        URI koalaURI = new URI("http://protege.stanford.edu/plugins/owl/owl-library/koala.owl");
+        URI brokenURI = new URI("http://protege.stanford.edu/junitOntologies/testset/koala.owl");
+        
         assertEquals("http://protege.stanford.edu/plugins/owl/owl-library/import-demo.owl#",
                      owlModel.getNamespaceManager().getDefaultNamespace());
         OWLNamedClass riqClass = owlModel.getOWLNamedClass("RottnestIslandQuokka");
@@ -29,20 +32,22 @@ public class LoadImportsTestCase extends AbstractJenaTestCase {
         OWLNamedClass quokkaClass = owlModel.getOWLNamedClass("koala:Quokka");
         assertNotNull(quokkaClass);
         assertTrue(quokkaClass.isIncluded());
-        Collection ontologies = owlModel.getCls(OWLNames.Cls.ONTOLOGY).getDirectInstances();
-        assertSize(2, ontologies);
-        assertContains(owlModel.getDefaultOWLOntology(), ontologies);
-        Collection imports = owlModel.getDefaultOWLOntology().getImports();
-        for (Iterator it = imports.iterator(); it.hasNext();) {
-            Object o = it.next();
-            assertTrue(o instanceof String);
-        }
-        URI koalaURI = new URI("http://protege.stanford.edu/plugins/owl/owl-library/koala.owl");
-        RDFResource oi = owlModel.getOWLOntologyByURI(koalaURI);
-        assertContains(oi, ontologies);
+        Collection allOntologies = owlModel.getCls(OWLNames.Cls.ONTOLOGY).getDirectInstances();
+        Collection imported = owlModel.getDefaultOWLOntology().getImports();
+        assertSize(3, allOntologies);
+        assertContains(owlModel.getDefaultOWLOntology(), allOntologies);
+        assertContains(owlModel.getOWLOntologyByURI(koalaURI), allOntologies);
+        assertContains(owlModel.getOWLOntologyByURI(brokenURI), allOntologies);
+        
+        assertSize(1, imported);
+        assertContains(brokenURI.toString(), imported);
+        
+        assertSize(3, owlModel.getTripleStoreModel().getTripleStores());
+        assertNotNull(owlModel.getTripleStoreModel().getTripleStore(brokenURI.toString()));
+        
         assertEquals(owlModel.getNamespaceManager().getNamespaceForPrefix("koala"), 
-                     oi.getName() + "#");
-        assertTrue(oi.isIncluded());
+                     koalaURI.toString() + "#");
+        assertTrue(owlModel.getOWLOntologyByURI(koalaURI).isIncluded());
         OWLNamedClass koalaCls = owlModel.getOWLNamedClass("koala:Koala");
         assertNotNull(koalaCls);
     }
