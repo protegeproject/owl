@@ -43,6 +43,7 @@ public class OwlDatabaseFromFileCreator extends AbstractOwlDatabaseCreator {
             throw new RuntimeException("This shouldn't happen", e);
         }
         DatabaseFactoryUtils.loadImports(owlModel, errors);
+        ProtegeOWLParser.doFinalPostProcessing(owlModel);
         
         errors.addAll(ProtegeOWLParser.getErrors());
         
