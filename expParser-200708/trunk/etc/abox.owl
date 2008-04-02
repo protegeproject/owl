@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<rdf:RDF
+    xmlns:swrlb="http://www.w3.org/2003/11/swrlb#"
+    xmlns="http://swrl.stanford.edu/ontologies/built-ins/3.3/abox.owl#"
+    xmlns:swrl="http://www.w3.org/2003/11/swrl#"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+  xml:base="http://swrl.stanford.edu/ontologies/built-ins/3.3/abox.owl">
+  <owl:Ontology rdf:about=""/>
+  <swrl:Builtin rdf:ID="hasProperty">
+    <swrlb:args rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+    >2</swrlb:args>
+    <swrlb:maxArgs rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+    >2</swrlb:maxArgs>
+    <swrlb:minArgs rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+    >2</swrlb:minArgs>
+  </swrl:Builtin>
+  <swrl:Builtin rdf:ID="hasNumberOfPropertyValues">
+    <swrlb:args rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+    >3</swrlb:args>
+    <swrlb:maxArgs rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+    >3</swrlb:maxArgs>
+    <swrlb:minArgs rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+    >3</swrlb:minArgs>
+  </swrl:Builtin>
+  <swrl:Builtin rdf:ID="isIndividual"/>
+  <swrl:Builtin rdf:ID="hasInstance">
+    <swrlb:args rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+    >1</swrlb:args>
+    <swrlb:maxArgs rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+    >1</swrlb:maxArgs>
+    <swrlb:minArgs rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+    >1</swrlb:minArgs>
+  </swrl:Builtin>
+  <swrl:Builtin rdf:ID="hasNumberOfIndividuals">
+    <swrlb:maxArgs rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+    >2</swrlb:maxArgs>
+    <swrlb:minArgs rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+    >2</swrlb:minArgs>
+    <swrlb:args rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+    >2</swrlb:args>
+  </swrl:Builtin>
+  <swrl:Builtin rdf:ID="hasClass"/>
+</rdf:RDF>
+
+<!-- Created with Protege (with OWL Plugin 3.3, Build 407)  http://protege.stanford.edu -->

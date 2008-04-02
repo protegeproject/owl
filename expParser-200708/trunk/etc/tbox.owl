@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<rdf:RDF
+    xmlns:swrlb="http://www.w3.org/2003/11/swrlb#"
+    xmlns:swrl="http://www.w3.org/2003/11/swrl#"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns="http://swrl.stanford.edu/ontologies/built-ins/3.3/tbox.owl#"
+  xml:base="http://swrl.stanford.edu/ontologies/built-ins/3.3/tbox.owl">
+  <owl:Ontology rdf:about=""/>
+  <swrl:Builtin rdf:ID="isInDirectDomainOf"/>
+  <swrl:Builtin rdf:ID="isEquivalentTo"/>
+  <swrl:Builtin rdf:ID="isProperty"/>
+  <swrl:Builtin rdf:ID="isDirectSuperClassOf"/>
+  <swrl:Builtin rdf:ID="isDisjointWith"/>
+  <swrl:Builtin rdf:ID="isClass"/>
+  <swrl:Builtin rdf:ID="isSuperPropertyOf"/>
+  <swrl:Builtin rdf:ID="isTransitiveProperty"/>
+  <swrl:Builtin rdf:ID="sameAs"/>
+  <swrl:Builtin rdf:ID="isDirectSubClassOf"/>
+  <swrl:Builtin rdf:ID="isObjectProperty"/>
+  <swrl:Builtin rdf:ID="isFunctionalProperty"/>
+  <swrl:Builtin rdf:ID="isSymmetricProperty"/>
+  <swrl:Builtin rdf:ID="isAnnotationProperty"/>
+  <swrl:Builtin rdf:ID="isInverseFunctionalProperty"/>
+  <swrl:Builtin rdf:ID="differentFrom"/>
+  <swrl:Builtin rdf:ID="isInRangeOf"/>
+  <swrl:Builtin rdf:ID="isSubPropertyOf"/>
+  <swrl:Builtin rdf:ID="isInDomainOf"/>
+  <swrl:Builtin rdf:ID="isSuperClassOf"/>
+  <swrl:Builtin rdf:ID="isDirectSuperPropertyOf"/>
+  <swrl:Builtin rdf:ID="isSubClassOf"/>
+  <swrl:Builtin rdf:ID="isDatatypeProperty"/>
+  <swrl:Builtin rdf:ID="isDirectSubPropertyOf"/>
+</rdf:RDF>
+
+<!-- Created with Protege (with OWL Plugin 3.3, Build 407)  http://protege.stanford.edu -->
