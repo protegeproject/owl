@@ -28,35 +28,37 @@ public class ProtegeNames {
     public final static String PREFIX = PROTEGE_PREFIX + ":";
     
     public static interface Cls {
-    	final static String PAL_CONSTRAINT = PROTEGE_OWL_NAMESPACE + "PAL-CONSTRAINT";
+    	final static String PAL_CONSTRAINT = (PROTEGE_OWL_NAMESPACE + "PAL-CONSTRAINT").intern();
     	
-    	final static String DIRECTED_BINARY_RELATION = PROTEGE_OWL_NAMESPACE + "DIRECTED-BINARY-RELATION";
+    	final static String DIRECTED_BINARY_RELATION = (PROTEGE_OWL_NAMESPACE + "DIRECTED-BINARY-RELATION").intern();
+    	
+    	final static String EXTERNAL_CLASS = (PROTEGE_OWL_NAMESPACE + "ExternalClass").intern();
     }
 
 
     public static interface Slot {
 
-        final static String ABSTRACT = PROTEGE_OWL_NAMESPACE + "abstract";
+        final static String ABSTRACT = (PROTEGE_OWL_NAMESPACE + "abstract").intern();
 
-        final static String CLASSIFICATION_STATUS = PROTEGE_OWL_NAMESPACE + "classificationStatus";
+        final static String CLASSIFICATION_STATUS = (PROTEGE_OWL_NAMESPACE + "classificationStatus").intern();
         
-        final static String CONSTRAINTS = PROTEGE_OWL_NAMESPACE + "SLOT-CONSTRAINTS";
+        final static String CONSTRAINTS = (PROTEGE_OWL_NAMESPACE + "SLOT-CONSTRAINTS").intern();
 
-        final static String INFERRED_TYPE = PROTEGE_OWL_NAMESPACE + "inferredType";
+        final static String INFERRED_TYPE = (PROTEGE_OWL_NAMESPACE + "inferredType").intern();
 
-        final static String INFERRED_SUBCLASSES = PROTEGE_OWL_NAMESPACE + "inferredSuperclassOf";
+        final static String INFERRED_SUBCLASSES = (PROTEGE_OWL_NAMESPACE + "inferredSuperclassOf").intern();
 
-        final static String INFERRED_SUPERCLASSES = PROTEGE_OWL_NAMESPACE + "inferredSubclassOf";
+        final static String INFERRED_SUPERCLASSES = (PROTEGE_OWL_NAMESPACE + "inferredSubclassOf").intern();
 
-	    final static String IS_COMMENTED_OUT = PROTEGE_OWL_NAMESPACE + "isCommentedOut";
+	    final static String IS_COMMENTED_OUT = (PROTEGE_OWL_NAMESPACE + "isCommentedOut").intern();
 	    
-	    final static String PAL_NAME = PROTEGE_OWL_NAMESPACE + "PAL-NAME";
+	    final static String PAL_NAME = (PROTEGE_OWL_NAMESPACE + "PAL-NAME").intern();
 	    
-	    final static String PAL_STATEMENT = PROTEGE_OWL_NAMESPACE + "PAL-STATEMENT";
+	    final static String PAL_STATEMENT = (PROTEGE_OWL_NAMESPACE + "PAL-STATEMENT").intern();
 	    
-	    final static String TO = PROTEGE_OWL_NAMESPACE + "TO";
+	    final static String TO = (PROTEGE_OWL_NAMESPACE + "TO").intern();
 	    
-	    final static String FROM = PROTEGE_OWL_NAMESPACE + "FROM";
+	    final static String FROM = (PROTEGE_OWL_NAMESPACE + "FROM").intern();
     }
 
     public static String PROTEGE_OWL_ONTOLOGY = "http://protege.stanford.edu/plugins/owl/protege";
