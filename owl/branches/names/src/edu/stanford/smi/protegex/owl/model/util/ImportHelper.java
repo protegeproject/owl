@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
+import edu.stanford.smi.protegex.owl.jena.parser.ProtegeOWLParser;
 import edu.stanford.smi.protegex.owl.model.OWLOntology;
 import edu.stanford.smi.protegex.owl.model.impl.OWLUtil;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
@@ -25,7 +26,7 @@ public class ImportHelper {
 
     private JenaOWLModel owlModel;
 
-    private Collection ontologyURIs;
+    private Collection<URI> ontologyURIs;
 
 
     /**
@@ -44,7 +45,7 @@ public class ImportHelper {
      */
     public ImportHelper(JenaOWLModel owlModel) {
         this.owlModel = owlModel;
-        ontologyURIs = new ArrayList();
+        ontologyURIs = new ArrayList<URI>();
     }
 
 
@@ -78,24 +79,18 @@ public class ImportHelper {
      * @param reloadGUI - false if no GUI reload is desired
      */
     public void importOntologies(boolean reloadGUI) throws Exception {
-        ArrayList importedOntologies = new ArrayList();
-        for(Iterator it = ontologyURIs.iterator(); it.hasNext();) {
-            URI ontologyURI = (URI) it.next();
+        ArrayList<URI> importedOntologies = new ArrayList<URI>();
+        for(URI ontologyURI : ontologyURIs) {
             if(owlModel.getAllImports().contains(ontologyURI.toString()) == false) {
-                owlModel.addImport(ontologyURI);
-                // Add the imported URI
-                for(Iterator ontIt = owlModel.getOWLOntologies().iterator(); ontIt.hasNext();) {
-                    OWLOntology owlOntology = (OWLOntology) ontIt.next();
-                    final TripleStore ts = owlModel.getTripleStoreModel().getActiveTripleStore();
-                    if(owlModel.getTripleStoreModel().getHomeTripleStore(owlOntology) == ts) {
-                        owlOntology.addImports(ontologyURI);
-                        break;
-                    }
-                }
+                owlModel.loadImportedAssertions(ontologyURI);
                 importedOntologies.add(ontologyURI);
             }
         }
-        
+        ProtegeOWLParser.doFinalPostProcessing(owlModel);
+        OWLOntology  importingOntology = owlModel.getTripleStoreModel().getActiveTripleStore().getOWLOntology();
+        for (URI importedOntologyURI : importedOntologies) {
+            importingOntology.addImports(importedOntologyURI);
+        }
         if(importedOntologies.size() > 0 && OWLUtil.runsWithGUI(owlModel)) {
             owlModel.getTripleStoreModel().updateEditableResourceState();
             OWLMenuProjectPlugin.makeHiddenClsesWithSubclassesVisible(owlModel);
