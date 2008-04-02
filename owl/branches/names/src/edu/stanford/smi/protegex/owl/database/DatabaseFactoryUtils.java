@@ -20,6 +20,7 @@ import edu.stanford.smi.protegex.owl.model.RDFIndividual;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
 import edu.stanford.smi.protegex.owl.model.factory.FactoryUtils;
+import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
 import edu.stanford.smi.protegex.owl.model.impl.OWLSystemFrames;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreModel;
@@ -88,7 +89,7 @@ public class DatabaseFactoryUtils {
         OWLOntology ontology = activeTripleStore.getOWLOntology();
         for (String imprt : ontology.getImports()) {
             try {
-                 owlModel.addImport(URIUtilities.createURI(imprt));
+                 ((AbstractOWLModel) owlModel).loadImportedAssertions(URIUtilities.createURI(imprt));
             }
             catch (AmalgamatedIOException e) {
                 errors.addAll(e.getErrorList());
