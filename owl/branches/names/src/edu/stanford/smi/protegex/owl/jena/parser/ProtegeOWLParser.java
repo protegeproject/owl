@@ -32,6 +32,7 @@ import edu.stanford.smi.protegex.owl.model.NamespaceManager;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.factory.AlreadyImportedException;
 import edu.stanford.smi.protegex.owl.model.factory.FactoryUtils;
+import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreUtil;
 import edu.stanford.smi.protegex.owl.repository.util.XMLBaseExtractor;
@@ -229,7 +230,7 @@ public class ProtegeOWLParser {
 	    
 	    boolean eventsEnabled = owlModel.setGenerateEventsEnabled(false);
 	    try {
-	        tripleProcessor = new TripleProcessor(owlModel);
+	        tripleProcessor = ((AbstractOWLModel) owlModel).getUndefTripleManager().getTripleProcessor();
 
 	        Log.getLogger().info("Loading triples");
 
@@ -270,7 +271,7 @@ public class ProtegeOWLParser {
 	        handleNoOntologyDeclarationFound(tripleStore, ontologyName, xmlBase);
 	        
 	        if (!importing) {
-	            doFinalPostProcessing();
+	            doFinalPostProcessing(owlModel);
 	        }
 	        
 	    } catch (AlreadyImportedException e) {
@@ -302,7 +303,8 @@ public class ProtegeOWLParser {
 	}
 	
 	
-	private void doFinalPostProcessing() {
+	public static void doFinalPostProcessing(OWLModel owlModel) {
+	    TripleProcessor tripleProcessor = ((AbstractOWLModel) owlModel).getUndefTripleManager().getTripleProcessor();
 		tripleProcessor.doPostProcessing();
        
         //copy restrictions in facets
@@ -326,7 +328,7 @@ public class ProtegeOWLParser {
 		Set<String> thisOntoImports = OWLImportsCache.getOWLImportsURI(tripleStore.getName());
 		
 		for (String import_ : thisOntoImports) {
-			owlModel.addImport(URIUtilities.createURI(import_));
+			((AbstractOWLModel) owlModel).loadImportedAssertions(URIUtilities.createURI(import_));
 		}		
 	}
 
