@@ -25,7 +25,7 @@ public abstract class AbstractStreamBasedRepositoryImpl implements Repository {
      */
     public abstract InputStream getInputStream(URI ontologyName) throws IOException;
     
-    public TripleStore addImport(OWLModel owlModel, URI ontologyName) throws IOException {
+    public TripleStore loadImportedAssertions(OWLModel owlModel, URI ontologyName) throws IOException {
         ProtegeOWLParser parser = new ProtegeOWLParser(owlModel);
         parser.setImporting(true);
         InputStream is = getInputStream(ontologyName);
