@@ -1,0 +1,225 @@
+<?xml version="1.0"?>
+
+<!-- ================================================================ -->
+<!-- Protege-OWL build file for ant (build.xml)                       -->
+<!-- ================================================================ -->
+
+<!-- Send any questions, comments, fixes, etc. to "randy AT randykerber.com"
+  -->
+
+<project name="Protege-OWL" default="usage" basedir=".">
+
+    <property environment="env"/>
+
+    <property name = "src" value = "./src"/>
+    <property name = "classes" value = "./classes"/>
+    <property name = "lib" value = "./lib"/>
+    <property name = "dist" value = "./plugins"/>
+    <property name = "etc" value = "./etc"/>
+    <property name = "owlplugin" value = "edu.stanford.smi.protegex.owl"/>
+    <property name = "plugin" value = "${dist}/${owlplugin}"/>
+    <property name = "pluginName" value="protege-owl"/>
+    <property name = "debug" value = "on"/>
+    <property name = "source" value = "1.5"/>
+    <property name = "deprecation" value = "off"/>
+    <property name = "jarfile" value = "${dist}/${pluginName}.jar"/>
+
+    <property name = "junit" value = "./junit"/>
+
+	<!-- =================================================================== -->
+	<!-- USAGE -->		
+	<!-- Instructions for using the build file -->	
+	<!-- =================================================================== -->
+	<target name = "usage" depends = "init">    
+		<echo message = ""/>
+		<echo message = "protege owl build instructions"/>
+		<echo message = "-------------------------------------------------------------"/>
+		<echo message = ""/>
+		<echo message = " available targets are:"/>
+		<echo message = ""/>	
+		<echo message = "   usage      --> provides help on using the build tool (default)"/>
+		<echo message = "   clean      --> cleans up all build related files and dirs"/>
+		<echo message = "   compile    --> compiles the source code"/>
+		<echo message = "   plugin.dir --> copies files into the Protege plugin directory"/>
+		<echo message = "   plugin.zip --> creates the protege-owl.zip file, containing the plugin dir"/>		
+		<echo message = ""/>
+		<echo message = "-------------------------------------------------------------"/>
+		<echo message = ""/>  
+	</target>
+
+	
+	<!-- ================================================================ -->
+    <!-- Creates the timestamp                                            -->
+    <!-- ================================================================ -->
+
+    <target name="init.time" depends="">
+        <tstamp/>
+    </target>
+
+    <target name="init" depends="init.time">
+        <path id="classpath.compile">
+            <fileset dir="${lib}"/>
+        </path>
+        <mkdir dir="${classes}"/>
+        <mkdir dir="${dist}"/>
+    </target>
+
+    <!-- ================================================================ -->
+    <!-- Build the classpath                                              -->
+    <!--                                                                  -->
+    <!-- ================================================================ -->
+
+    <!-- ================================================================ -->
+    <!-- Clean up build directories -->
+    <!-- ================================================================ -->
+
+    <target name="clean" depends="init" 
+            description="clean up all build related files and dirs">
+        <delete dir="${classes}"/>
+        <delete dir="${dist}"/>
+        <delete dir="logs"/>
+        <delete file="out.owl"/>
+        <delete file="out.repository"/>
+    </target>
+
+
+    <!-- ================================================================ -->
+    <!-- Compile the source code                                          -->
+    <!-- ================================================================ -->
+
+    <target name="compile" depends="init" description="compile the Java files" >
+        <javac srcdir="${src}" destdir="${classes}"        	
+               deprecation = "${deprecation}"
+               debug = "${debug}"
+	       source = "${source}">
+            <classpath refid="classpath.compile"/>
+        </javac>
+        <copy todir="${classes}/edu/stanford/smi/protegex/owl/jena" 
+              file="${src}/edu/stanford/smi/protegex/owl/jena/OWL.pprj"/>
+        <copy todir="${classes}/edu/stanford/smi/protegex/owl/jena" 
+              file="${src}/edu/stanford/smi/protegex/owl/jena/OWL-min.pprj"/>
+        <copy todir="${classes}/edu/stanford/smi/protegex/owl/database" 
+              file="${src}/edu/stanford/smi/protegex/owl/database/OWL.pprj"/>
+    	<copy todir="${classes}/edu/stanford/smi/protegex/owl/resource/files">
+    		  <fileset dir="${src}/edu/stanford/smi/protegex/owl/resource/files"/> 
+    	</copy>
+    </target>
+
+    <!-- ================================================================ -->
+    <!-- create the protege-owl.jar file                                  -->
+    <!-- ================================================================ -->
+
+    <target name="jar" depends="compile" description="Create the protege-owl.jar file">
+        <jar jarfile="${jarfile}"
+             manifest="${src}/META-INF/MANIFEST.MF">
+          <fileset dir="${classes}"/>
+          <fileset dir="${src}/">
+            <include name="**/*.gif"/>
+          </fileset>
+          <fileset dir="${src}/">
+            <include name="**/*.png"/>
+          </fileset>
+            <fileset dir="${src}/">
+                <include name="**/*.db"/>
+            </fileset>
+        </jar>
+    </target>
+
+    <!-- ================================================================ -->
+    <!-- Copy files into the Protege plugin directory                     -->
+    <!-- ================================================================ -->
+
+    <target name="plugin.dir" depends="jar" 
+            description="Make the directory that becomes a Protege plugin dir">
+        <delete dir="${plugin}"/>
+        <mkdir dir="${plugin}"/>
+
+        <copy todir="${plugin}">
+            <fileset file="${jarfile}"/>
+            <fileset dir="${lib}">
+                <exclude name="looks.jar"/>
+                <exclude name="protege*.jar"/>
+            </fileset>
+            <fileset dir="${etc}">
+                <include name="plugin.properties"/>
+                <include name="ont-policy.rdf"/>
+                <include name="OWLProfiles.owl"/>
+                <include name="protege.owl"/>
+                <include name="swrl.owl"/>
+                <include name="swrlb.owl"/>
+                <exclude name="MANIFEST.MF"/>
+                <exclude name="OWL.pprj"/>
+            </fileset>
+        </copy>
+    </target>
+
+
+    <target name="plugin.zip" 
+            depends="plugin.dir" 
+            description="Create the protege-owl.zip file, containing the plugin dir">
+        <zip destfile="${dist}/${pluginName}.zip">
+            <fileset dir="${dist}">
+                <include name="${owlplugin}/**"/>
+            </fileset>
+        </zip>
+    </target>
+
+
+    <target name = "junit-compile" depends = "jar">
+       <javac srcdir = "${junit}" destdir = "${classes}" debug = "on">
+         <classpath refid = "classpath.compile"/>
+         <classpath>
+            <pathelement location = "${jarfile}"/>
+         </classpath>
+      </javac>
+   </target>
+
+   <!--
+     My experience is that "ant junit" provides almost no debugging
+     information when things go wrong.  (This was not true in my
+     previous job and I don't know the difference. log4j??)  When there is a
+     problem I generally use my development environment to debug
+     faulting junit.  For scripting problems with the junits the options
+
+        filtertrace="false" 
+        showoutput="true"
+
+     give a little more information.  Also when you know that some
+     junits are failing, removing the option 
+
+        haltonfailure = "on" 
+
+     is helpful for showing all the failures.  But in the committed
+     version I think that this option is very important because it
+     means that the developer will never mistakenly believe that
+     junits have succeeded.
+       -->
+   <target name = "junit" 
+           description = "run the tests (anybody can do it)"
+           depends = "plugin.dir,junit-compile">
+     <junit printsummary="withOutAndErr"
+            dir = "." fork = "yes"
+            haltonfailure = "on" 
+            haltonerror = "on">
+            
+      <jvmarg value="-Xmx300M"/>
+      <classpath>
+           <pathelement location="${classes}"/>
+           <pathelement location = "${lib}/protege.jar"/>
+           <fileset
+              dir="${plugin}">
+              <include name = "**/*.jar"/>
+           </fileset>
+        </classpath>
+        <batchtest>
+           <fileset dir="${junit}">
+             <include name = "**/*TestCase.java"/>
+             <exclude name = "**/*Abstract*.java"/>
+             <exclude name = "**/*FailedTestCase.java"/>
+           </fileset>
+        </batchtest>
+     </junit>
+   </target>
+
+
+</project>
