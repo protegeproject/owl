@@ -20,4 +20,7 @@ public interface EditableJavaCodeGeneratorOptions extends JavaCodeGeneratorOptio
 
 
     void setSetMode(boolean value);
+    
+    
+    void setPrefixMode(boolean value);
 }

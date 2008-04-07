@@ -149,7 +149,7 @@ public class JavaCodeGenerator {
         for (Iterator it = owlModel.getUserDefinedRDFProperties().iterator(); it.hasNext();) {
             RDFProperty property = (RDFProperty) it.next();            
             if (!property.getNamespace().equals(SWRLNames.SWRL_NAMESPACE)) {  
-                RDFPropertyCode propertyCode = new RDFPropertyCode(property);
+                RDFPropertyCode propertyCode = new RDFPropertyCode(property, options.getPrefixMode());
                 String name = propertyCode.getUpperCaseJavaName();
 
 	            printWriter.println();
@@ -193,7 +193,7 @@ public class JavaCodeGenerator {
 
 
     public void printImplementationCode(PrintWriter printWriter, RDFSNamedClass aClass) {
-        RDFSClassCode code = new RDFSClassCode(aClass);
+        RDFSClassCode code = new RDFSClassCode(aClass, options.getPrefixMode());
         boolean considerAllProperties = (hasMultipleSuperclasses(aClass) ? ALL_PROPERTIES : ONLY_LOCAL_PROPERTIES);
         if (options.getPackage() != null) {
             printWriter.println("package " + options.getPackage() + ".impl;");
@@ -307,7 +307,7 @@ public class JavaCodeGenerator {
 
 
     public void printInterfaceCode(PrintWriter printWriter, RDFSNamedClass aClass) {
-        RDFSClassCode code = new RDFSClassCode(aClass);
+        RDFSClassCode code = new RDFSClassCode(aClass, options.getPrefixMode());
         printInterfacePackageStatement(printWriter);
         printWriter.println("import edu.stanford.smi.protegex.owl.model.*;");
         printWriter.println();
@@ -603,7 +603,7 @@ public class JavaCodeGenerator {
 
 
     public String getInterfaceNamePossiblyAbstract(RDFSNamedClass aClass) {
-        String str = new RDFSClassCode(aClass).getJavaName();
+        String str = new RDFSClassCode(aClass, options.getPrefixMode()).getJavaName();
         if (options.getAbstractMode()) {
             str += "_";
         }
@@ -612,7 +612,7 @@ public class JavaCodeGenerator {
 
 
     public String getInterfaceName(RDFSNamedClass aClass) {
-        return new RDFSClassCode(aClass).getJavaName();
+        return new RDFSClassCode(aClass, options.getPrefixMode()).getJavaName();
     }
 
 

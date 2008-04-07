@@ -17,11 +17,14 @@ public class RDFPropertyAtClassCode implements Comparable {
     private RDFSNamedClass cls;
 
     private RDFProperty property;
+    
+    private boolean usePrefix;
 
 
-    public RDFPropertyAtClassCode(RDFSNamedClass cls, RDFProperty property) {
+    public RDFPropertyAtClassCode(RDFSNamedClass cls, RDFProperty property, boolean usePrefixInNames) {
         this.cls = cls;
         this.property = property;
+        this.usePrefix = usePrefixInNames;
     }
 
 
@@ -35,9 +38,14 @@ public class RDFPropertyAtClassCode implements Comparable {
 
 
     public String getJavaName() {
-        return RDFSClassCode.getValidJavaName(property.getLocalName());
-    }
-
+		String prefix = cls.getNamespacePrefix();
+		if ( usePrefix && prefix != null && (! prefix.equals("")) ) {
+			String localName = property.getLocalName().substring(0, 1).toUpperCase()
+					+ property.getLocalName().substring(1);
+			return RDFSClassCode.getValidJavaName(prefix + localName);
+		}
+		return RDFSClassCode.getValidJavaName(property.getLocalName());
+	}
 
     public String getJavaType() {
         RDFResource range = ((OWLNamedClass) cls).getAllValuesFrom(property);
@@ -64,12 +72,12 @@ public class RDFPropertyAtClassCode implements Comparable {
             }
         }
         else if (range instanceof RDFSNamedClass) {
-            return new RDFSClassCode((RDFSNamedClass) range).getJavaName();
+            return new RDFSClassCode((RDFSNamedClass) range, usePrefix).getJavaName();
         } else if (range instanceof OWLAnonymousClass) {
         	RDFResource propRange = property.getRange();
         	
         	if (propRange != null && propRange instanceof RDFSNamedClass) {
-        		return new RDFSClassCode((RDFSNamedClass) propRange).getJavaName();
+        		return new RDFSClassCode((RDFSNamedClass) propRange, usePrefix).getJavaName();
         	} else {
         		return "Object";
         	}

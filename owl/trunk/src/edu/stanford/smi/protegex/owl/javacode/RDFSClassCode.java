@@ -16,16 +16,24 @@ import java.util.*;
 public class RDFSClassCode {
 
     private RDFSNamedClass cls;
+    
+    private boolean usePrefix; 
 
 
-    public RDFSClassCode(RDFSNamedClass cls) {
+    public RDFSClassCode(RDFSNamedClass cls, boolean usePrefixInNames) {
         this.cls = cls;
+        this.usePrefix = usePrefixInNames;
     }
 
 
     public String getJavaName() {
-        return getValidJavaName(cls.getLocalName());
-    }
+		String prefix = cls.getNamespacePrefix();
+		if ( usePrefix && prefix != null && (! prefix.equals("")) ) {
+			prefix = prefix.substring(0, 1).toUpperCase() + prefix.substring(1);
+			return getValidJavaName(prefix + cls.getLocalName());
+		}
+		return getValidJavaName(cls.getLocalName());
+	}
 
 
     /**
@@ -51,14 +59,14 @@ public class RDFSClassCode {
             	continue;
             }
             properties.add(property);
-            RDFPropertyAtClassCode code = new RDFPropertyAtClassCode(cls, property);
+            RDFPropertyAtClassCode code = new RDFPropertyAtClassCode(cls, property, usePrefix);
             codes.add(code);
             Collection subproperties = property.getSubproperties(true);
             Iterator sit = subproperties.iterator();
             while (sit.hasNext()) {
                 RDFProperty subproperty = (RDFProperty) sit.next();
                 if (!subproperty.isDomainDefined() && !properties.contains(subproperty)) {
-                    codes.add(new RDFPropertyAtClassCode(cls, subproperty));
+                    codes.add(new RDFPropertyAtClassCode(cls, subproperty, usePrefix));
                     properties.add(subproperty);
                 }
             }

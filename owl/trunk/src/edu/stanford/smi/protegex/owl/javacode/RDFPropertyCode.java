@@ -12,9 +12,11 @@ public class RDFPropertyCode implements Comparable {
 
     private RDFProperty property;
 
+    private boolean usePrefix;
 
-    public RDFPropertyCode(RDFProperty property) {
+    public RDFPropertyCode(RDFProperty property, boolean usePrefixInNames) {
         this.property = property;
+        this.usePrefix = usePrefixInNames;
     }
 
 
@@ -28,9 +30,15 @@ public class RDFPropertyCode implements Comparable {
 
 
     public String getJavaName() {
-        return RDFSClassCode.getValidJavaName(property.getLocalName());
+		String prefix = property.getNamespacePrefix();
+		if ( usePrefix && prefix != null && (! prefix.equals("")) ) {
+			String localName = property.getLocalName().substring(0, 1).toUpperCase()
+					+ property.getLocalName().substring(1);
+			return RDFSClassCode.getValidJavaName(prefix + localName);
+		}
+    	return RDFSClassCode.getValidJavaName(property.getLocalName());
     }
-
+    
 
     //commented parts may be useful in the future ....
 
