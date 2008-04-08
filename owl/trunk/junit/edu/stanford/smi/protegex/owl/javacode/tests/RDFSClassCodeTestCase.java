@@ -1,5 +1,6 @@
 package edu.stanford.smi.protegex.owl.javacode.tests;
 
+import edu.stanford.smi.protegex.owl.javacode.ProjectBasedJavaCodeGeneratorOptions;
 import edu.stanford.smi.protegex.owl.javacode.RDFPropertyAtClassCode;
 import edu.stanford.smi.protegex.owl.javacode.RDFSClassCode;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
@@ -14,7 +15,7 @@ public class RDFSClassCodeTestCase extends AbstractJenaTestCase {
     public void testSimpleRDFSNamedClass() {
         final String NAME = "Test-Class";
         RDFSNamedClass cls = owlModel.createRDFSNamedClass(NAME);
-        RDFSClassCode code = new RDFSClassCode(cls);
+        RDFSClassCode code = new RDFSClassCode(cls, false);
         assertEquals("Test_Class", code.getJavaName());
         assertSize(0, code.getPropertyCodes(false));
     }
@@ -26,7 +27,7 @@ public class RDFSClassCodeTestCase extends AbstractJenaTestCase {
         RDFSNamedClass cls = owlModel.createRDFSNamedClass(CLASS_NAME);
         RDFProperty property = owlModel.createRDFProperty(PROPERTY_NAME);
         property.setDomain(cls);
-        RDFSClassCode code = new RDFSClassCode(cls);
+        RDFSClassCode code = new RDFSClassCode(cls, false);
         assertEquals(CLASS_NAME, code.getJavaName());
         assertSize(1, code.getPropertyCodes(false));
         RDFPropertyAtClassCode pc = (RDFPropertyAtClassCode) code.getPropertyCodes(false).iterator().next();
