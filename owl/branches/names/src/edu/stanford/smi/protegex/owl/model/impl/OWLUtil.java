@@ -1153,13 +1153,17 @@ public class OWLUtil {
      * All the create & get methods will check the expandShortNameInMethods flag, which is default false.
      */   
     public static String getInternalFullName(OWLModel owlModel, String name) {
+        return getInternalFullName(owlModel,  name, owlModel.isExpandShortNameInMethods());
+    }
+    
+    public static String getInternalFullName(OWLModel owlModel, String name, boolean expandShortNames) {
     	if (name == null) {
     		return null;
     	}
     	if (owlModel.isAnonymousResourceName(name)) {
     		return name;
     	}
-    	if (owlModel.isExpandShortNameInMethods() && !isAbsoluteURI(owlModel, name)) {
+    	if (expandShortNames && !isAbsoluteURI(owlModel, name)) {
     		name = NamespaceUtil.getFullName(owlModel, name);
     	}
     	

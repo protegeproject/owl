@@ -5,7 +5,10 @@ import edu.stanford.smi.protege.event.FrameEvent;
 import edu.stanford.smi.protege.event.FrameListener;
 import edu.stanford.smi.protege.model.Instance;
 import edu.stanford.smi.protege.util.DocumentChangedListener;
+import edu.stanford.smi.protegex.owl.model.NamespaceUtil;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.model.RDFResource;
+import edu.stanford.smi.protegex.owl.model.impl.OWLUtil;
 import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
 
 import javax.swing.*;
@@ -98,6 +101,9 @@ public class InstanceNameEditor extends JTextField {
     protected void attemptCommit() {
         if (instance != null && !instance.isBeingDeleted()) {
             String newName = getText();
+            if (instance instanceof RDFResource && !newName.equals("")) {
+                newName = OWLUtil.getInternalFullName((OWLModel) instance.getKnowledgeBase(), newName, true);
+            }
             if (isValidName(newName)) {
                 String oldName = instance.getName();
                 if (!oldName.equals(newName)) {
@@ -195,6 +201,17 @@ public class InstanceNameEditor extends JTextField {
             }
         });
     }
+    
+    public void selectLocalName() {
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                String name = instance.getName();
+                String namespace = NamespaceUtil.getNameSpace(name);
+                InstanceNameEditor.super.select(namespace.length(), name.length());
+                requestFocus();
+            }
+        });
+    }
 
     public void setInstance(Instance instance) {
         attemptCommit(); // first commit changes to the previous instance
@@ -222,7 +239,7 @@ public class InstanceNameEditor extends JTextField {
             setEditable(instance.isEditable());
             onTextChange();
             if (needsNameChange()) {
-                selectAll();
+                selectLocalName();
             }
         }
         else {
