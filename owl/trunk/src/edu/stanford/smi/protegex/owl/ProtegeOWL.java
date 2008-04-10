@@ -1,23 +1,23 @@
 package edu.stanford.smi.protegex.owl;
 
-import com.hp.hpl.jena.util.FileUtils;
-import edu.stanford.smi.protege.Application;
-import edu.stanford.smi.protege.model.KnowledgeBase;
-import edu.stanford.smi.protege.model.Project;
-import edu.stanford.smi.protege.util.ApplicationProperties;
-import edu.stanford.smi.protege.util.PropertyList;
-import edu.stanford.smi.protege.util.URIUtilities;
-import edu.stanford.smi.protegex.owl.jena.JenaKnowledgeBaseFactory;
-import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
-import edu.stanford.smi.protegex.owl.model.OWLModel;
-import edu.stanford.smi.protegex.owl.repository.util.RepositoryFileManager;
-
 import java.io.File;
 import java.io.InputStream;
 import java.io.Reader;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.logging.Level;
+
+import com.hp.hpl.jena.util.FileUtils;
+
+import edu.stanford.smi.protege.Application;
+import edu.stanford.smi.protege.model.Project;
+import edu.stanford.smi.protege.util.ApplicationProperties;
+import edu.stanford.smi.protege.util.Log;
+import edu.stanford.smi.protegex.owl.jena.JenaKnowledgeBaseFactory;
+import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.repository.util.RepositoryFileManager;
 
 /**
  * A singleton that provides several generic services such as creating
@@ -42,11 +42,14 @@ public class ProtegeOWL {
 		final JenaKnowledgeBaseFactory factory = new JenaKnowledgeBaseFactory();
 		Collection errors = new ArrayList();
 		Project project = Project.createNewProject(factory, errors);
-		// TODO TT: I commented out the following lines, they are duplicate with
-		// the createNewProject call. They should be removed in the release, if
-		// all tests pass.
-		// project.setKnowledgeBaseFactory(factory);
-		// project.createDomainKnowledgeBase(factory, errors, false);
+		for (Object o : errors) {
+		    if (o instanceof Throwable) {
+		        Log.getLogger().log(Level.SEVERE, "Exception caught", (Throwable) o);
+		    }
+		    else {
+		        Log.getLogger().warning("Error found: " + o);
+		    }
+		}
 		return (JenaOWLModel) project.getKnowledgeBase();
 	}
    
