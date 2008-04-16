@@ -1,6 +1,7 @@
 package edu.stanford.smi.protegex.owl.swrl.ui.table;
 
 import edu.stanford.smi.protege.util.Disposable;
+import edu.stanford.smi.protegex.owl.model.NamespaceUtil;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
@@ -23,6 +24,7 @@ import java.util.*;
  */
 public class SWRLTableModel extends AbstractTableModel implements Disposable, SymbolTableModel 
 {
+    
   public final static int COL_ENABLED = 0;
   public final static int COL_NAME = 1;
   public final static int COL_EXPRESSION = 2;
@@ -82,7 +84,7 @@ public class SWRLTableModel extends AbstractTableModel implements Disposable, Sy
   public Object getValueAt(int rowIndex, int columnIndex) 
   {
     if (columnIndex == getSymbolColumnIndex()) return getImp(rowIndex).getBrowserText();
-    else if (columnIndex == COL_NAME) return getImp(rowIndex).getName();
+    else if (columnIndex == COL_NAME) return NamespaceUtil.getPrefixedName(owlModel, getImp(rowIndex).getName());
     else if (columnIndex == COL_ENABLED) return new Boolean(getImp(rowIndex).isEnabled());
     else return null;
   } // getValueAt
