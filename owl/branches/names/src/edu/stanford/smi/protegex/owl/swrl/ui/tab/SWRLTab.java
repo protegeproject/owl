@@ -67,10 +67,8 @@ public class SWRLTab extends AbstractTabWidget
       importHelper.importOntologies();
 
       // Make ":TO" and ":FROM" visible for dynamic expansion.
-      RDFProperty to = owlModel.getOWLObjectProperty(edu.stanford.smi.protege.model.Model.Slot.TO);
-      to.setVisible(true);
-      RDFProperty from = owlModel.getOWLObjectProperty(edu.stanford.smi.protege.model.Model.Slot.FROM);
-      from.setVisible(true);
+      owlModel.getSystemFrames().getToSlot().setVisible(true);
+      owlModel.getSystemFrames().getFromSlot().setVisible(true);
       
       SWRLProjectPlugin.setSWRLClassesAndPropertiesVisible(getProject(), false);
       ProjectManager.getProjectManager().reloadUI(true);
