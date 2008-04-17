@@ -79,9 +79,9 @@ public class VisibilityPanel extends JComponent {
                 owlModel.getRDFProperty(OWLNames.Slot.ON_PROPERTY)
         };
         Instance[] protegeInstances = new Instance[]{
-                ((KnowledgeBase) owlModel).getCls(Model.Cls.DIRECTED_BINARY_RELATION), // MUM
-                owlModel.getRDFProperty(Model.Slot.FROM),
-                owlModel.getRDFProperty(Model.Slot.TO)
+                owlModel.getSystemFrames().getDirectedBinaryRelationCls(),
+                owlModel.getSystemFrames().getFromSlot(),
+                owlModel.getSystemFrames().getToSlot()
                 //((KnowledgeBase)owlModel).getCls(Model.Cls.PAL_CONSTRAINT)
         };
         Component metaClsesPanel = createCheckBoxesPanel("Metaclasses", metaClses);

@@ -56,6 +56,10 @@ public class ProtegeNames {
 	    
 	    final static String PAL_STATEMENT = (PROTEGE_OWL_NAMESPACE + "PAL-STATEMENT").intern();
 	    
+	    final static String PAL_DESCRIPTION = (PROTEGE_OWL_NAMESPACE + "PAL-DESCRIPTION").intern();
+	    
+	    final static String PAL_RANGE = (PROTEGE_OWL_NAMESPACE + "PAL-RANGE").intern();
+	    
 	    final static String TO = (PROTEGE_OWL_NAMESPACE + "TO").intern();
 	    
 	    final static String FROM = (PROTEGE_OWL_NAMESPACE + "FROM").intern();

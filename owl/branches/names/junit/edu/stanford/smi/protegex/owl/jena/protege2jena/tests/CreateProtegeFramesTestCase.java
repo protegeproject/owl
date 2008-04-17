@@ -32,15 +32,14 @@ public class CreateProtegeFramesTestCase extends AbstractProtege2JenaTestCase {
 
     public void testCreateUnlinkedPALConstraint() throws Exception {    
         ensureProtegeMetaOntologyImported();
-        owlModel.getFrameStoreManager().setProtegeOwlFrameStoreEnabled(true);
 
-        RDFSNamedClass constraintClass = owlModel.getRDFSNamedClass(Model.Cls.PAL_CONSTRAINT);
+        RDFSNamedClass constraintClass = owlModel.getSystemFrames().getPalConstraintCls();
         RDFIndividual constraint = constraintClass.createRDFIndividual("MyIndividual");
 
-        RDFProperty palNameProperty = owlModel.getRDFProperty(Model.Slot.PAL_NAME);
+        RDFProperty palNameProperty = owlModel.getSystemFrames().getPalNameSlot();
         constraint.setPropertyValue(palNameProperty, "MyName");
 
-        RDFProperty palStatementProperty = owlModel.getRDFProperty(Model.Slot.PAL_STATEMENT);
+        RDFProperty palStatementProperty = owlModel.getSystemFrames().getPalStatementSlot();
         constraint.setPropertyValue(palStatementProperty, "MyStatement");
 
         owlModel = reloadWithJenaLoader(owlModel);
@@ -60,7 +59,6 @@ public class CreateProtegeFramesTestCase extends AbstractProtege2JenaTestCase {
     
     public void testCreateUnlinkedPALConstraintEasy() throws Exception {    
         ensureProtegeMetaOntologyImported();
-        owlModel.getFrameStoreManager().setProtegeOwlFrameStoreEnabled(true);
 
         RDFSNamedClass constraintClass = owlModel.getRDFSNamedClass(ProtegeNames.Cls.PAL_CONSTRAINT);
         RDFIndividual constraint = constraintClass.createRDFIndividual("MyIndividual");
@@ -91,14 +89,13 @@ public class CreateProtegeFramesTestCase extends AbstractProtege2JenaTestCase {
         Log.setLoggingLevel(AbstractJenaTestCase.class, Level.FINE);
 
         ensureProtegeMetaOntologyImported();
-        owlModel.getFrameStoreManager().setProtegeOwlFrameStoreEnabled(true);
         owlModel = reloadWithJenaLoader(owlModel);
 
-        RDFSNamedClass constraintClass = owlModel.getRDFSNamedClass(Model.Cls.PAL_CONSTRAINT);
+        RDFSNamedClass constraintClass = owlModel.getSystemFrames().getPalConstraintCls();
         RDFIndividual constraint = constraintClass.createRDFIndividual("MyIndividual");
 
         RDFSNamedClass rdfsClass = owlModel.createRDFSNamedClass("MyClass");
-        RDFProperty constraintsProperty = owlModel.getRDFProperty(Model.Slot.CONSTRAINTS);
+        RDFProperty constraintsProperty = owlModel.getSystemFrames().getSlotConstraintsSlot();
         rdfsClass.setPropertyValue(constraintsProperty, constraint);
 
         OntModel newModel = createOntModel();

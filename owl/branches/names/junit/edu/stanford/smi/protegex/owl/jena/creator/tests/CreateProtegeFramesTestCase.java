@@ -1,6 +1,5 @@
 package edu.stanford.smi.protegex.owl.jena.creator.tests;
 
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.hp.hpl.jena.ontology.Individual;
@@ -10,11 +9,9 @@ import com.hp.hpl.jena.ontology.OntProperty;
 
 import edu.stanford.smi.protege.model.Model;
 import edu.stanford.smi.protege.util.Log;
-import edu.stanford.smi.protegex.owl.jena.Jena;
 import edu.stanford.smi.protegex.owl.model.RDFIndividual;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
-import edu.stanford.smi.protegex.owl.model.framestore.ProtegeOWLFrameStore;
 
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
@@ -25,25 +22,25 @@ public class CreateProtegeFramesTestCase extends AbstractJenaCreatorTestCase {
     public void testCreateUnlinkedPALConstraint() {
 
         ensureProtegeMetaOntologyImported();
-        owlModel.getFrameStoreManager().setProtegeOwlFrameStoreEnabled(true);
 
-        RDFSNamedClass constraintClass = owlModel.getRDFSNamedClass(Model.Cls.PAL_CONSTRAINT);
+        RDFSNamedClass constraintClass = owlModel.getSystemFrames().getPalConstraintCls();
         RDFIndividual constraint = constraintClass.createRDFIndividual("MyIndividual");
 
-        RDFProperty palNameProperty = owlModel.getRDFProperty(Model.Slot.PAL_NAME);
+        RDFProperty palNameProperty = owlModel.getSystemFrames().getPalNameSlot();
         constraint.setPropertyValue(palNameProperty, "MyName");
 
-        RDFProperty palStatementProperty = owlModel.getRDFProperty(Model.Slot.PAL_STATEMENT);
+        RDFProperty palStatementProperty = owlModel.getSystemFrames().getPalStatementSlot();
         constraint.setPropertyValue(palStatementProperty, "MyStatement");
 
         OntModel newModel = runJenaCreator();
         // Jena.dumpRDF(newModel, log, Level.FINE);
 
-        OntClass constraintOntClass = newModel.getOntClass(ProtegeOWLFrameStore.convertProtegeFrameNameToOwl(Model.Cls.PAL_CONSTRAINT));
+        OntClass constraintOntClass = newModel.getOntClass(owlModel.getSystemFrames().getPalConstraintCls().getName());
         assertNotNull(constraintOntClass);
-        OntProperty palNameOntProperty = newModel.getOntProperty(ProtegeOWLFrameStore.convertProtegeFrameNameToOwl(Model.Slot.PAL_NAME));
+        OntProperty palNameOntProperty = newModel.getOntProperty(owlModel.getSystemFrames().getPalNameSlot().getName());
         assertNotNull(palNameOntProperty);
-        OntProperty palStatementOntProperty = newModel.getOntProperty(ProtegeOWLFrameStore.convertProtegeFrameNameToOwl(Model.Slot.PAL_STATEMENT));
+        OntProperty palStatementOntProperty = newModel.getOntProperty(owlModel.getSystemFrames().getPalStatementSlot().getName());
+
         assertNotNull(palStatementOntProperty);
         Individual constraintIndividual = newModel.getIndividual(constraint.getURI());
         assertNotNull(constraintIndividual);
@@ -55,18 +52,17 @@ public class CreateProtegeFramesTestCase extends AbstractJenaCreatorTestCase {
     public void testCreateLinkedPALConstraint() {
 
         ensureProtegeMetaOntologyImported();
-        owlModel.getFrameStoreManager().setProtegeOwlFrameStoreEnabled(true);
 
-        RDFSNamedClass constraintClass = owlModel.getRDFSNamedClass(Model.Cls.PAL_CONSTRAINT);
+        RDFSNamedClass constraintClass = owlModel.getSystemFrames().getPalConstraintCls();
         RDFIndividual constraint = constraintClass.createRDFIndividual("MyIndividual");
 
         RDFSNamedClass rdfsClass = owlModel.createRDFSNamedClass("MyClass");
-        RDFProperty constraintsProperty = owlModel.getRDFProperty(Model.Slot.CONSTRAINTS);
+        RDFProperty constraintsProperty = owlModel.getSystemFrames().getConstraintsSlot();
         rdfsClass.setPropertyValue(constraintsProperty, constraint);
 
         OntModel newModel = runJenaCreator();
         // Jena.dumpRDF(newModel, log, Level.FINE);
-        OntProperty constraintsOntProperty = newModel.getOntProperty(ProtegeOWLFrameStore.convertProtegeFrameNameToOwl(Model.Slot.CONSTRAINTS));
+        OntProperty constraintsOntProperty = newModel.getOntProperty(owlModel.getSystemFrames().getConstraintsSlot().getName());
         assertNotNull(constraintsOntProperty);
 
         Individual constraintIndividual = newModel.getIndividual(constraint.getURI());

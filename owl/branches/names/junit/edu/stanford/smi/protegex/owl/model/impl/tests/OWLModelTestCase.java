@@ -42,10 +42,10 @@ public class OWLModelTestCase extends AbstractJenaTestCase {
 
     public void testRDFSClasses() {
         Collection classes = owlModel.getRDFSClasses();
-        assertFalse(classes.contains(owlModel.getCls(Model.Cls.PAL_CONSTRAINT)));
-        assertFalse(classes.contains(owlModel.getCls(Model.Cls.DIRECTED_BINARY_RELATION)));
-        assertFalse(classes.contains(owlModel.getCls(OWLNames.Cls.OWL_CLASS)));
-        assertFalse(classes.contains(owlModel.getCls(OWLNames.Cls.ANONYMOUS_ROOT)));
+        assertFalse(classes.contains(owlModel.getSystemFrames().getPalConstraintCls()));
+        assertFalse(classes.contains(owlModel.getSystemFrames().getDirectedBinaryRelationCls()));
+        assertTrue(classes.contains(owlModel.getSystemFrames().getOwlNamedClassClass()));
+        assertFalse(classes.contains(owlModel.getSystemFrames().getAnonymousRootCls()));
         assertEquals(owlModel.getRDFSClassCount(), classes.size());
         for (Iterator it = classes.iterator(); it.hasNext();) {
             assertTrue(it.next() instanceof RDFSClass);

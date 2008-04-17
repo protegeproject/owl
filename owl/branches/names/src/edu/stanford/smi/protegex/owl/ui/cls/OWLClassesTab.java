@@ -336,7 +336,7 @@ public class OWLClassesTab extends AbstractTabWidget
             if (//selectedInstance.equals(owlModel.getRootCls()) ||
                     selectedInstance.equals(owlModel.getOWLNothing()) ||
                             selectedInstance.equals(owlModel.getRDFSNamedClass(RDFSNames.Cls.LITERAL)) ||
-                            selectedInstance.equals(((KnowledgeBase) owlModel).getCls(Model.Cls.DIRECTED_BINARY_RELATION)) ||
+                            selectedInstance.equals(owlModel.getSystemFrames().getDirectedBinaryRelationCls()) ||
                             selectedInstance.equals(owlModel.getRDFListClass()) ||
                             selectedInstance.equals(owlModel.getRDFUntypedResourcesClass())) {
                 selectedInstance = null;

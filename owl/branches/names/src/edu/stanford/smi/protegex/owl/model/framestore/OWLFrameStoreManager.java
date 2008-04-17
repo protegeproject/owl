@@ -22,8 +22,6 @@ public class OWLFrameStoreManager extends FrameStoreManager {
     private FacetUpdateFrameStore facetUpdateFrameStore;
     private RangeUpdateFrameStore rangeUpdateFrameStore;
     
-    private ProtegeOWLFrameStore protegeOwlFrameStore;
-    
     private List<FrameStore> frameStores = new ArrayList<FrameStore>();
 
     public OWLFrameStoreManager(OWLModel owlModel) {
@@ -40,8 +38,6 @@ public class OWLFrameStoreManager extends FrameStoreManager {
         addFrameStore(rangeUpdateFrameStore = new RangeUpdateFrameStore(owlModel));
         addFrameStore(new OwlSubclassFrameStore(owlModel));
         addFrameStore(new TypeUpdateFrameStore(owlModel));  // this goes at the end so that the others see the swizzle.
-        
-        protegeOwlFrameStore = new ProtegeOWLFrameStore(owlModel); // not enabled by default
         
         for (FrameStore fs : frameStores) {
             insertFrameStore(fs);
@@ -72,14 +68,6 @@ public class OWLFrameStoreManager extends FrameStoreManager {
         }
     }
     
-    public void setProtegeOwlFrameStoreEnabled(boolean enabled) {
-        if (enabled && !isEnabled(protegeOwlFrameStore)) {
-            insertFrameStore(protegeOwlFrameStore, 1);
-        }
-        else if (!enabled && isEnabled(protegeOwlFrameStore)) {
-            removeFrameStore(protegeOwlFrameStore);
-        }
-    }
     
     /*
      * getters

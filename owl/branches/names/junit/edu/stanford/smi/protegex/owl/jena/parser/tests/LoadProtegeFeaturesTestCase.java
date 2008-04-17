@@ -48,9 +48,9 @@ public class LoadProtegeFeaturesTestCase extends AbstractJenaTestCase {
 
     public void testLoadFromTo() throws Exception {
         loadRemoteOntology("ProtegeFromTo.owl");
-        RDFProperty fromProperty = owlModel.getRDFProperty(Model.Slot.FROM);
+        RDFProperty fromProperty = owlModel.getSystemFrames().getFromSlot();
         assertNotNull(fromProperty);
-        RDFProperty toProperty = owlModel.getRDFProperty(Model.Slot.TO);
+        RDFProperty toProperty = owlModel.getSystemFrames().getToSlot();
         assertNotNull(toProperty);
         RDFResource relation = owlModel.getRDFResource("relation");
         assertNotNull(relation);

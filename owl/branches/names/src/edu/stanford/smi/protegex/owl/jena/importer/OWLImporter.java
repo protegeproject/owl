@@ -10,8 +10,8 @@ import java.util.logging.Logger;
 import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.Instance;
 import edu.stanford.smi.protege.model.KnowledgeBase;
-import edu.stanford.smi.protege.model.Model;
 import edu.stanford.smi.protege.model.Slot;
+import edu.stanford.smi.protege.model.SystemFrames;
 import edu.stanford.smi.protege.model.ValueType;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.model.OWLAllValuesFrom;
@@ -94,6 +94,9 @@ public class OWLImporter {
 
 
     private Cls createCls(Cls oldCls) {
+        if (oldCls.getName().startsWith(ProtegeNames.PROTEGE_OWL_NAMESPACE)) {
+            return getProtegeOwlCls(oldCls);
+        }
         Cls metaCls = getCls(oldCls.getDirectType());
         Cls cls = kb.createCls(oldCls.getName(), Collections.EMPTY_LIST, metaCls);
         if (log.isLoggable(Level.FINE)) {
@@ -105,6 +108,7 @@ public class OWLImporter {
         createDirectOwnSlotValues(oldCls, cls);
         return cls;
     }
+
 
 
     private void createDirectOwnSlotValues(Instance oldInstance, Instance newInstance) {
@@ -220,6 +224,9 @@ public class OWLImporter {
 
 
     private Slot createSlot(Slot oldSlot) {
+        if (oldSlot.getName().startsWith(ProtegeNames.PROTEGE_OWL_NAMESPACE)) {
+            return getProtegeOwlSlot(oldSlot);
+        }
         Cls metaCls = getCls(oldSlot.getDirectType());
         Slot slot = kb.getSlot(oldSlot.getName());
         if (slot != null) { // this can happen!
@@ -264,9 +271,14 @@ public class OWLImporter {
         }
         return slot;
     }
+    
+
 
 
     private Cls getCls(Cls oldCls) {
+        if (oldCls.getName().startsWith(ProtegeNames.PROTEGE_OWL_NAMESPACE)) {
+            return getProtegeOwlCls(oldCls);
+        }
         if (oldCls.equals(owlModel.getOWLThingClass())) {
             return kb.getRootCls();
         }
@@ -284,6 +296,18 @@ public class OWLImporter {
             cls = createCls(oldCls);
         }
         return cls;
+    }
+    
+    private Cls getProtegeOwlCls(Cls oldCls) {
+        String name = oldCls.getName();
+        SystemFrames systemFrames  = kb.getSystemFrames();
+        if (name.equals(ProtegeNames.Cls.DIRECTED_BINARY_RELATION)) {
+            return systemFrames.getDirectedBinaryRelationCls();
+        }
+        else if (name.equals(ProtegeNames.Cls.PAL_CONSTRAINT)) {
+            return systemFrames.getPalConstraintCls();
+        }
+        return null;
     }
 
 
@@ -319,12 +343,41 @@ public class OWLImporter {
 
 
     private Slot getSlot(Slot oldSlot) {
+        if (oldSlot.getName().startsWith(ProtegeNames.PROTEGE_OWL_NAMESPACE)) {
+            return getProtegeOwlSlot(oldSlot);
+        }
         if (!(oldSlot instanceof RDFProperty) || ((RDFProperty) oldSlot).isDomainDefined()) {
             return getSlotForced(oldSlot);
         }
         else {
             return null;
         }
+    }
+    
+    private Slot getProtegeOwlSlot(Slot oldSlot) {
+        String name = oldSlot.getName();
+        if (name.equals(ProtegeNames.Slot.FROM)) {
+            return kb.getSystemFrames().getFromSlot();
+        }
+        else if (name.equals(ProtegeNames.Slot.TO)) {
+            return kb.getSystemFrames().getToSlot();
+        }
+        else if (name.equals(ProtegeNames.Slot.CONSTRAINTS)) {
+            return kb.getSystemFrames().getConstraintsSlot();
+        }
+        else if (name.equals(ProtegeNames.Slot.PAL_STATEMENT)) {
+            return kb.getSystemFrames().getPalStatementSlot();
+        }
+        else if (name.equals(ProtegeNames.Slot.PAL_DESCRIPTION)) {
+            return kb.getSystemFrames().getPalDescriptionSlot();
+        }
+        else if (name.equals(ProtegeNames.Slot.PAL_NAME)) {
+            return kb.getSystemFrames().getPalNameSlot();
+        }
+        else if (name.equals(ProtegeNames.Slot.PAL_RANGE)) {
+            return kb.getSystemFrames().getPalRangeSlot();
+        }
+        return null;
     }
 
 
@@ -367,14 +420,8 @@ public class OWLImporter {
 
 
     private boolean isRelevantOwnSlot(Slot slot) {
-        return (slot instanceof RDFProperty &&
-                slot.isEditable() &&
-                !slot.getName().startsWith(ProtegeNames.PREFIX)) ||
-                Model.Slot.CONSTRAINTS.equals(slot.getName()) ||
-                Model.Slot.PAL_DESCRIPTION.equals(slot.getName()) ||
-                Model.Slot.PAL_NAME.equals(slot.getName()) ||
-                Model.Slot.PAL_RANGE.equals(slot.getName()) ||
-                Model.Slot.PAL_STATEMENT.equals(slot.getName());
+        return (slot instanceof RDFProperty && slot.isEditable()) ||
+                slot.getName().startsWith(ProtegeNames.PROTEGE_OWL_NAMESPACE);
     }
 
     private void updateSlotDomain() {

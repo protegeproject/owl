@@ -206,10 +206,6 @@ public class OWLPropertySubpropertyRoot extends LazyTreeRoot {
             if (slot.getDirectSuperslotCount() > 0) {
                 i.remove();
             }
-            String name = slot.getName();
-            if (name.equals(Model.Slot.FROM) || name.equals(Model.Slot.TO)) {
-            	i.remove();
-            }
         }
         results.removeAll(Arrays.asList(owlModel.getSystemAnnotationProperties()));
         Collections.sort(results, new FrameComparator());

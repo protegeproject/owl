@@ -405,13 +405,13 @@ public class RestrictionEditorPanel extends JComponent implements ModalDialogFac
                 selectableProperties.add(property);
             }
         }
-        RDFSNamedClass dbrClass = owlModel.getRDFSNamedClass(Model.Cls.DIRECTED_BINARY_RELATION);
+        RDFSNamedClass dbrClass = owlModel.getSystemFrames().getDirectedBinaryRelationCls();
         if (targetClass != null && ((Cls) targetClass).hasSuperclass(dbrClass)) {
-            RDFProperty fromProperty = owlModel.getRDFProperty(Model.Slot.FROM);
+            RDFProperty fromProperty = owlModel.getSystemFrames().getFromSlot();
             if (fromProperty.isVisible()) {
                 selectableProperties.add(fromProperty);
             }
-            RDFProperty toProperty = owlModel.getRDFProperty(Model.Slot.TO);
+            RDFProperty toProperty = owlModel.getSystemFrames().getToSlot();
             if (toProperty.isVisible()) {
                 selectableProperties.add(toProperty);
             }

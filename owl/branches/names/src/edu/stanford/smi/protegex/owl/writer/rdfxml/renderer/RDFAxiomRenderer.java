@@ -163,7 +163,7 @@ public class RDFAxiomRenderer extends OWLModelVisitorAdapter {
 	public void visitRDFIndividual(RDFIndividual rdfIndividual) {
     	//filter out the annotations and PAL constraints
     	Cls annotationCls = rdfIndividual.getKnowledgeBase().getCls(Model.Cls.ANNOTATION);
-    	Cls palCls = rdfIndividual.getKnowledgeBase().getCls(Model.Cls.PAL_CONSTRAINT);
+    	Cls palCls = rdfIndividual.getKnowledgeBase().getSystemFrames().getPalConstraintCls();
     	
     	if (rdfIndividual.hasType(annotationCls) || rdfIndividual.hasType(palCls)) {
     		return;

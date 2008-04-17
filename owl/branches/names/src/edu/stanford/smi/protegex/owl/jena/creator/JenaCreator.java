@@ -39,7 +39,6 @@ import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.jena.Jena;
 import edu.stanford.smi.protegex.owl.jena.JenaNormalizer;
-import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLAllDifferent;
 import edu.stanford.smi.protegex.owl.model.OWLAllValuesFrom;
 import edu.stanford.smi.protegex.owl.model.OWLAnonymousClass;
@@ -72,7 +71,6 @@ import edu.stanford.smi.protegex.owl.model.RDFSDatatype;
 import edu.stanford.smi.protegex.owl.model.RDFSLiteral;
 import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
 import edu.stanford.smi.protegex.owl.model.RDFSNames;
-import edu.stanford.smi.protegex.owl.model.framestore.ProtegeOWLFrameStore;
 import edu.stanford.smi.protegex.owl.model.impl.XMLSchemaDatatypes;
 
 /**
@@ -167,13 +165,6 @@ public class JenaCreator {
         systemOwnSlots.add(owlModel.getRDFProperty(ProtegeNames.Slot.INFERRED_TYPE));
         systemOwnSlots.add(owlModel.getProtegeClassificationStatusProperty());
         systemOwnSlots.add(owlModel.getRDFProperty(OWLNames.Slot.OWL_ONTOLOGY_POINTER_PROPERTY));
-        systemOwnSlots.add(owlModel.getSystemFrames().getFromSlot());
-        systemOwnSlots.add(owlModel.getSystemFrames().getToSlot());
-        systemOwnSlots.add(owlModel.getSystemFrames().getPalNameSlot());
-        systemOwnSlots.add(owlModel.getSystemFrames().getPalRangeSlot());
-        systemOwnSlots.add(owlModel.getSystemFrames().getPalStatementSlot());
-        systemOwnSlots.add(owlModel.getSystemFrames().getPalDescriptionSlot());
-        systemOwnSlots.add(owlModel.getSystemFrames().getConstraintsSlot());
     }
 
 

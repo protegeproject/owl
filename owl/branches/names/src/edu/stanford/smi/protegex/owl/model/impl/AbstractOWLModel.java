@@ -344,9 +344,6 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
             TripleStore importedTripleStore = rep.loadImportedAssertions(this, ontologyName);
             importedTripleStore.addIOAddress(ontologyName.toString());
         }
-        if (ontologyName.toString().equals(ProtegeNames.PROTEGE_OWL_ONTOLOGY)) {
-        	getFrameStoreManager().setProtegeOwlFrameStoreEnabled(true);
-        }
         if (log.isLoggable(Level.FINE)) {
             log.fine("Import Processing of " + ontologyName  + " done");
             log.fine("=======================================================");
@@ -2217,10 +2214,6 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
     private static void removeProtegeSystemResources(KnowledgeBase kb, Collection frames) {
         if (frames.size() > 0) {                        
-        	//Protege frames - system frames
-            frames.remove(kb.getSystemFrames().getDirectedBinaryRelationCls());
-            frames.remove(kb.getSystemFrames().getPalConstraintCls());
-            frames.remove(kb.getSystemFrames().getSlotConstraintsSlot());
             
             //Protege OWL - system frames
             if (kb instanceof OWLModel) {

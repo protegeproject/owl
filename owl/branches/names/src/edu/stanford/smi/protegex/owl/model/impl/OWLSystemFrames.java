@@ -122,6 +122,9 @@ public abstract class OWLSystemFrames extends SystemFrames {
     private RDFSNamedClass rdfExternalClassClass;
     private RDFSNamedClass rdfExternalPropertyClass;
     private RDFSNamedClass owlOntologyPointerClass;
+    private OWLNamedClass directedBinaryRelation;
+    private OWLNamedClass palConstraintCls;
+    
 
     /*
      * Slot declarations in the order that they appear in the Slot tab.
@@ -173,7 +176,13 @@ public abstract class OWLSystemFrames extends SystemFrames {
     private RDFProperty owlOntologyPrefixesProperty;
     private RDFProperty owlResourceURIProperty;
     private RDFProperty owlOntologyPointerProperty;
-    
+    private OWLObjectProperty toSlot;
+    private OWLObjectProperty fromSlot;
+    private OWLObjectProperty slotConstraints;
+    private OWLDatatypeProperty palStatementSlot;
+    private OWLDatatypeProperty palDescriptionSlot;
+    private OWLDatatypeProperty palNameSlot;
+    private OWLDatatypeProperty palRangeSlot;
     /* 
      * Instance Declarations
      */
@@ -203,24 +212,12 @@ public abstract class OWLSystemFrames extends SystemFrames {
         addFrame(id, cls);
         return cls;
     }
-
-    private void replaceFrameWithOWLNamedClass(String name) {
-        FrameID id = new FrameID(name);
-        OWLNamedClass cls = new DefaultOWLNamedClass(owlModel, id);
-        replaceFrame(id, cls);
-    }
     
     protected RDFSNamedClass createRDFSNamedClass(String name) {
         FrameID id = new FrameID(name);
         RDFSNamedClass cls = new DefaultRDFSNamedClass(owlModel, id);
         addFrame(id, cls);
         return cls;
-    }
-    
-    private void replaceFrameWithRDFSNamedClass(String name) {
-        FrameID id = new FrameID(name);
-        RDFSNamedClass cls = new DefaultRDFSNamedClass(owlModel, id);
-        replaceFrame(id, cls);
     }
 
     protected RDFProperty createRDFProperty(String name) {
@@ -237,23 +234,11 @@ public abstract class OWLSystemFrames extends SystemFrames {
     	return property;
     }
     
-    private void replaceFrameWithOWLDatatypeProperty(String name) {
-    	FrameID id = new FrameID(name);
-    	OWLDatatypeProperty property = new DefaultOWLDatatypeProperty(owlModel, id);
-    	replaceFrame(id, property);
-    }
-    
     protected OWLObjectProperty createOWLObjectProperty(String name) {
     	FrameID id = new FrameID(name);
     	OWLObjectProperty property = new DefaultOWLObjectProperty(owlModel, id);
     	addFrame(id, property);
     	return property;
-    }
-    
-    private void replaceFrameWithOWLObjectProperty(String name) {
-    	FrameID id = new FrameID(name);
-    	OWLObjectProperty property = new DefaultOWLObjectProperty(owlModel, id);
-    	replaceFrame(id, property);
     }
     
     protected RDFSDatatype createRDFSDatatype(String name) {
@@ -272,7 +257,6 @@ public abstract class OWLSystemFrames extends SystemFrames {
         createOWLClses();
         createOWLSlots();
         createOWLInstances();
-        replaceProtegeFrames();
         removeUnusedProtegeFrames();
     }
 	
@@ -321,6 +305,9 @@ public abstract class OWLSystemFrames extends SystemFrames {
         rdfExternalClassClass= createRDFSNamedClass(RDFNames.Cls.EXTERNAL_CLASS);
         rdfExternalPropertyClass= createRDFSNamedClass(RDFNames.Cls.EXTERNAL_PROPERTY);
         owlOntologyPointerClass = createRDFSNamedClass(OWLNames.Cls.OWL_ONTOLOGY_POINTER_CLASS);
+        
+        directedBinaryRelation = createOWLNamedClass(ProtegeNames.Cls.DIRECTED_BINARY_RELATION);
+        palConstraintCls = createOWLNamedClass(ProtegeNames.Cls.PAL_CONSTRAINT);
     }
 	
     private void createOWLSlots() {
@@ -371,6 +358,14 @@ public abstract class OWLSystemFrames extends SystemFrames {
         owlOntologyPrefixesProperty = createRDFProperty(OWLNames.Slot.ONTOLOGY_PREFIXES);
         owlResourceURIProperty= createRDFProperty(OWLNames.Slot.RESOURCE_URI);
         owlOntologyPointerProperty = createRDFProperty(OWLNames.Slot.OWL_ONTOLOGY_POINTER_PROPERTY);
+        
+        fromSlot = createOWLObjectProperty(ProtegeNames.Slot.FROM);
+        toSlot = createOWLObjectProperty(ProtegeNames.Slot.TO); 
+        slotConstraints = createOWLObjectProperty(ProtegeNames.Slot.CONSTRAINTS);
+        palStatementSlot = createOWLDatatypeProperty(ProtegeNames.Slot.PAL_STATEMENT);
+        palDescriptionSlot = createOWLDatatypeProperty(ProtegeNames.Slot.PAL_DESCRIPTION);
+        palNameSlot = createOWLDatatypeProperty(ProtegeNames.Slot.PAL_NAME);
+        palRangeSlot = createOWLDatatypeProperty(ProtegeNames.Slot.PAL_RANGE);
     }
     
     private void createOWLInstances() {
@@ -416,69 +411,7 @@ public abstract class OWLSystemFrames extends SystemFrames {
      * the protege core frame is being replaced with a frame with a
      * different name and a different java type.
      */
-    
-    private void replaceProtegeFrames() {
-       	replaceFrameWithRDFSNamedClass(Model.Cls.PAL_CONSTRAINT);
-    	replaceFrameWithOWLNamedClass(Model.Cls.DIRECTED_BINARY_RELATION);
-    	replaceFrameWithOWLObjectProperty(Model.Slot.FROM);
-    	replaceFrameWithOWLObjectProperty(Model.Slot.TO);
-    	replaceFrameWithOWLDatatypeProperty(Model.Slot.PAL_DESCRIPTION);
-    	replaceFrameWithOWLDatatypeProperty(Model.Slot.PAL_NAME);
-    	replaceFrameWithOWLDatatypeProperty(Model.Slot.PAL_RANGE);
-    	replaceFrameWithOWLDatatypeProperty(Model.Slot.PAL_STATEMENT); 	
-    	replaceFrameWithOWLObjectProperty(Model.Slot.CONSTRAINTS);
-    }
-    
-    /*
-     * SystemFrames calls that have been changed to return a frame with the same name
-     * but a different type.
-     */
-
-    @Override
-    public RDFSNamedClass getPalConstraintCls() {
-        return (RDFSNamedClass) super.getPalConstraintCls();
-    }
-
-    @Override
-    public OWLNamedClass getDirectedBinaryRelationCls() {
-        return (OWLNamedClass) super.getDirectedBinaryRelationCls();
-    }
-
-    @Override
-    public OWLObjectProperty getFromSlot() {
-        return (OWLObjectProperty) super.getFromSlot();
-    }
-
-    @Override
-    public OWLObjectProperty getToSlot() {
-        return (OWLObjectProperty) super.getToSlot();
-    }
-
-    @Override
-    public OWLDatatypeProperty getPalDescriptionSlot() {
-        return (OWLDatatypeProperty) super.getPalDescriptionSlot();
-    }
-    
-    @Override
-    public OWLDatatypeProperty getPalNameSlot() {
-        return (OWLDatatypeProperty) super.getPalNameSlot();
-    }
-    
-
-    @Override
-    public OWLDatatypeProperty getPalRangeSlot() {
-        return (OWLDatatypeProperty) super.getPalRangeSlot();
-    }
-
-    @Override
-    public OWLDatatypeProperty getPalStatementSlot() {
-        return (OWLDatatypeProperty) super.getPalStatementSlot();
-    }
-
-    @Override
-    public OWLObjectProperty getConstraintsSlot() {
-        return (OWLObjectProperty) super.getConstraintsSlot();
-    }
+  
     
     
 	
@@ -511,7 +444,57 @@ public abstract class OWLSystemFrames extends SystemFrames {
 	public RDFProperty getInverseSlotSlot() {
         return owlInverseOfProperty;
     }
+    
+    @Override
+    public OWLNamedClass getDirectedBinaryRelationCls() {
+        return directedBinaryRelation;
+    }
+    
+    @Override
+    public OWLNamedClass getPalConstraintCls() {
+        return palConstraintCls;
+    }
+    
+    @Override
+    public OWLObjectProperty getFromSlot() {
+        return fromSlot;
+    }
 
+    @Override
+    public OWLObjectProperty getToSlot() {
+        return toSlot;
+    }
+    
+    @Override
+    public OWLObjectProperty getConstraintsSlot() {
+        return slotConstraints;
+    }
+    
+    @Override
+    public OWLObjectProperty getSlotConstraintsSlot() {
+        return slotConstraints;
+    }
+    
+    @Override
+    public OWLDatatypeProperty getPalStatementSlot() {
+        return palStatementSlot;
+    }
+    
+    @Override
+    public OWLDatatypeProperty getPalDescriptionSlot() {
+        return palDescriptionSlot;
+    }
+    
+    @Override
+    public OWLDatatypeProperty getPalNameSlot() {
+        return palNameSlot;
+    }
+    
+    @Override
+    public OWLDatatypeProperty getPalRangeSlot() {
+        return palRangeSlot;
+    }
+    
     /* **************************************************************************
      * Tell the Frame Store
      */
@@ -609,6 +592,8 @@ public abstract class OWLSystemFrames extends SystemFrames {
             assertTypeAndSubclasses(owlThingClass, owlNamedClassClass, new Cls[] {
                     rdfsNamedClassClass,
                     rdfPropertyClass,
+                    directedBinaryRelation,
+                    palConstraintCls,
                     assertTypeAndSubclasses(rdfsDatatypeClass,    rdfsNamedClassClass, new Cls[] {}),
                     assertTypeAndSubclasses(owlOntologyClass,     owlNamedClassClass, new Cls[] {}),
                     assertTypeAndSubclasses(owlNothingClass,      owlNamedClassClass, new Cls[] {}),
@@ -867,13 +852,30 @@ public abstract class OWLSystemFrames extends SystemFrames {
             assertTypeAndName(owlResourceURIProperty, rdfPropertyClass);
             assertDomain(owlResourceURIProperty, rdfExternalResourceClass);
             
-            assertTypeAndName(getFromSlot(), owlObjectPropertyClass);        
-            assertTypeAndName(getToSlot(), owlObjectPropertyClass);
             assertTypeAndName(getFromSlot(), owlObjectPropertyClass);
-            assertTypeAndName(getPalDescriptionSlot(), owlDatatypePropertyClass);
-            assertTypeAndName(getPalNameSlot(), owlDatatypePropertyClass);
+            // assertDomain(getFromSlot(), getDirectedBinaryRelationCls());
+            
+            assertTypeAndName(getToSlot(), owlObjectPropertyClass);
+            // assertDomain(getToSlot(), getDirectedBinaryRelationCls());
+            
+            assertTypeAndName(getSlotConstraintsSlot(), owlObjectPropertyClass);
+            assertDomain(getSlotConstraintsSlot(), owlThingClass);
+            
             assertTypeAndName(getPalStatementSlot(), owlDatatypePropertyClass);
-            assertTypeAndName(getConstraintsSlot(), owlObjectPropertyClass);
+            // assertDomain(getPalStatementSlot(), getPalConstraintCls());
+            assertValueType(getPalStatementSlot(), ValueType.STRING);
+            
+            assertTypeAndName(getPalDescriptionSlot(), owlDatatypePropertyClass);
+            // assertDomain(getPalDescriptionSlot(), getPalConstraintCls());
+            assertValueType(getPalDescriptionSlot(), ValueType.STRING);
+            
+            assertTypeAndName(getPalNameSlot(), owlDatatypePropertyClass);
+            // assertDomain(getPalNameSlot(), getPalConstraintCls());
+            assertValueType(getPalNameSlot(), ValueType.STRING);
+            
+            assertTypeAndName(getPalRangeSlot(), owlObjectPropertyClass);
+            // assertDomain(getPalRangeSlot(), getPalConstraintCls());
+            assertValueType(getPalRangeSlot(), ValueType.STRING);
         }
         
 

@@ -12,16 +12,6 @@ import edu.stanford.smi.protegex.owl.model.ProtegeNames;
 public class OWLFramesMapping {
 	private static HashMap<String, String> owlProp2FramesSlotMap = new HashMap<String, String>();
 
-	private final static String[] protegeRelAndPalSystSlots = new String[]{
-		Model.Slot.FROM,
-		Model.Slot.TO,
-		Model.Slot.CONSTRAINTS,
-		Model.Slot.PAL_DESCRIPTION,		
-		Model.Slot.PAL_NAME,
-		Model.Slot.PAL_RANGE,
-		Model.Slot.PAL_STATEMENT
-	};
-
 	
 	static {		
 		owlProp2FramesSlotMap.put(RDFS.subClassOf.getURI(), Model.Slot.DIRECT_SUPERCLASSES);		
@@ -31,12 +21,7 @@ public class OWLFramesMapping {
 		
 		owlProp2FramesSlotMap.put(OWL.maxCardinality.getURI(), Model.Slot.MAXIMUM_CARDINALITY);
 		owlProp2FramesSlotMap.put(OWL.minCardinality.getURI(), Model.Slot.MINIMUM_CARDINALITY);		
-		//what to do with owl:Cardinality?
-		
-		for (int i = 0; i < protegeRelAndPalSystSlots.length; i++) {
-			String protegeName = protegeRelAndPalSystSlots[i];
-			owlProp2FramesSlotMap.put(ProtegeNames.PROTEGE_OWL_NAMESPACE + protegeName.substring(1), protegeName);
-		}		
+		//what to do with owl:Cardinality?	
 	}
 	
 	
