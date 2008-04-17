@@ -40,9 +40,8 @@ public class RDFPropertyAtClassCode implements Comparable {
     public String getJavaName() {
 		String prefix = property.getNamespacePrefix();
 		if ( usePrefix && prefix != null && (! prefix.equals("")) ) {
-			String localName = property.getLocalName().substring(0, 1).toUpperCase()
-					+ property.getLocalName().substring(1);
-			return RDFSClassCode.getValidJavaName(prefix + localName);
+			prefix = prefix.toUpperCase() + "_";
+			return RDFSClassCode.getValidJavaName(prefix + property.getLocalName());
 		}
 		return RDFSClassCode.getValidJavaName(property.getLocalName());
 	}

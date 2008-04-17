@@ -29,7 +29,7 @@ public class RDFSClassCode {
     public String getJavaName() {
 		String prefix = cls.getNamespacePrefix();
 		if ( usePrefix && prefix != null && (! prefix.equals("")) ) {
-			prefix = prefix.substring(0, 1).toUpperCase() + prefix.substring(1);
+			prefix = prefix.toUpperCase() + "_";
 			return getValidJavaName(prefix + cls.getLocalName());
 		}
 		return getValidJavaName(cls.getLocalName());
