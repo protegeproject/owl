@@ -4,9 +4,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 
-import edu.stanford.smi.protege.model.KnowledgeBase;
 import edu.stanford.smi.protege.model.Slot;
-import edu.stanford.smi.protege.util.Log;
+import edu.stanford.smi.protege.util.ApplicationProperties;
 import edu.stanford.smi.protegex.owl.inference.protegeowl.log.ReasonerLogRecord;
 import edu.stanford.smi.protegex.owl.inference.protegeowl.log.ReasonerLogRecordFactory;
 import edu.stanford.smi.protegex.owl.inference.reasoner.ProtegeReasoner;
@@ -23,16 +22,18 @@ import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
 
 public class UpdateInferredTypesTask extends AbstractReasonerTask {
 
+	private final static String DISPLAY_DIRECT_TYPES_ONLY = "reasoner.ui.display.direct.types.only";  
+	
     private ProtegeReasoner protegeReasoner;
     
-    //private Map<OWLIndividual, Collection<OWLClass>> individuals2inferredTypes = new HashMap<OWLIndividual, Collection<OWLClass>>();
+    private boolean isDisplayDirectTypesOnly = false;
     
 
     public UpdateInferredTypesTask(ProtegeReasoner protegeReasoner) {
         super(protegeReasoner);
         this.protegeReasoner = protegeReasoner;
+        this.isDisplayDirectTypesOnly = isDisplayDirectTypesOnly();
     }
-
 
     /**
      * Gets the size of the task.  When the progress
@@ -42,29 +43,24 @@ public class UpdateInferredTypesTask extends AbstractReasonerTask {
         return ReasonerUtil.getInstance().getIndividuals(protegeReasoner.getOWLModel()).size();
     }
 
-
     /**
      * Executes the task.
      *
      * @throws edu.stanford.smi.protegex.owl.inference.dig.exception.DIGReasonerException
      *
      */
-    public void run() throws ProtegeReasonerException {
+    @SuppressWarnings("deprecation")
+	public void run() throws ProtegeReasonerException {
         OWLModel kb = protegeReasoner.getOWLModel();
        
         ReasonerLogRecordFactory logRecordFactory = ReasonerLogRecordFactory.getInstance();
-
         ReasonerLogRecord parentRecord = logRecordFactory.createInformationMessageLogRecord("Computing inferred types", null);
-
         postLogRecord(parentRecord);
         setDescription("Computing inferred types");
       
         // Query the reasoner
-
-        setMessage("Querying reasoner and updating Protege-OWL...");
-        
-        TimeDifference td = new TimeDifference();
-               
+        setMessage("Querying reasoner and updating Protege-OWL...");        
+        TimeDifference td = new TimeDifference();               
         td.markStart();
 
         // Disable the events as we may not be updating protege
@@ -83,23 +79,25 @@ public class UpdateInferredTypesTask extends AbstractReasonerTask {
 	        	// Check the inferred types and asserted types
 	        	// if there is a mismatch between the two then
 	        	// mark the classification status of the individual
-	        	// as changed. (MH - 15/09/04)
-	        	        	
-	        	Collection<OWLClass> inferredTypes = protegeReasoner.getIndividualDirectTypes(curInd);
+	        	// as changed. (MH - 15/09/04)	        	
+	        	
+	        	Collection<OWLClass> inferredTypes = (isDisplayDirectTypesOnly == true) ? 
+	        				protegeReasoner.getIndividualDirectTypes(curInd):
+	        				protegeReasoner.getIndividualTypes(curInd);
 	        	
 	          	if (inferredTypes.size() == 0) {
 	        		inferredTypes.add(curInd.getOWLModel().getOWLThingClass());
 	        	}
-	        	final Collection assertedTypes = curInd.getProtegeTypes();
-	        	KnowledgeBase k = kb;
-	        	k.setOwnSlotValues(curInd, inferredTypesSlot, inferredTypes);
+	          	
+	        	final Collection assertedTypes = curInd.getProtegeTypes();	        
+	        	kb.setOwnSlotValues(curInd, inferredTypesSlot, inferredTypes);
 
 	        	if (inferredTypes.containsAll(assertedTypes) == false &&
 	        			assertedTypes.containsAll(inferredTypes) == false) {
-	        		k.setOwnSlotValues(curInd, classificationStatusSlot, Collections.singleton(new Integer(OWLNames.CLASSIFICATION_STATUS_CONSISTENT_AND_CHANGED)));
+	        		kb.setOwnSlotValues(curInd, classificationStatusSlot, Collections.singleton(new Integer(OWLNames.CLASSIFICATION_STATUS_CONSISTENT_AND_CHANGED)));
 	        	}
 	        	else {
-	        		k.setOwnSlotValues(curInd, classificationStatusSlot, Collections.singleton(new Integer(OWLNames.CLASSIFICATION_STATUS_CONSISTENT_AND_UNCHANGED)));
+	        		kb.setOwnSlotValues(curInd, classificationStatusSlot, Collections.singleton(new Integer(OWLNames.CLASSIFICATION_STATUS_CONSISTENT_AND_UNCHANGED)));
 	        	}      
 
 	        	setProgress(getProgress() + 1);
@@ -124,9 +122,12 @@ public class UpdateInferredTypesTask extends AbstractReasonerTask {
         td.markEnd();
         postLogRecord(ReasonerLogRecordFactory.getInstance().createInformationMessageLogRecord("Time to update Protege-OWL = " + td, parentRecord));
         setTaskCompleted();
-        
-        //System.out.println(individuals2inferredTypes);
-
     }
+    
+    
+    private boolean isDisplayDirectTypesOnly() {
+    	return ApplicationProperties.getBooleanProperty(DISPLAY_DIRECT_TYPES_ONLY, false);
+    }
+    
 }
 
