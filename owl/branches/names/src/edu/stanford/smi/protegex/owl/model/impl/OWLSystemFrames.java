@@ -630,7 +630,7 @@ public abstract class OWLSystemFrames extends SystemFrames {
 
             assertTypeAndName(getDirectedBinaryRelationCls(), owlNamedClassClass);
             
-            assertTypeAndName(getPalConstraintCls(), rdfsNamedClassClass);
+            assertTypeAndName(getPalConstraintCls(), owlNamedClassClass);
         }
 
         private void addSlotAssertions() {
@@ -853,28 +853,28 @@ public abstract class OWLSystemFrames extends SystemFrames {
             assertDomain(owlResourceURIProperty, rdfExternalResourceClass);
             
             assertTypeAndName(getFromSlot(), owlObjectPropertyClass);
-            // assertDomain(getFromSlot(), getDirectedBinaryRelationCls());
+            fs.setDirectOwnSlotValues(getFromSlot(), getRdfsDomainProperty(), Collections.singleton(getDirectedBinaryRelationCls()));
             
             assertTypeAndName(getToSlot(), owlObjectPropertyClass);
-            // assertDomain(getToSlot(), getDirectedBinaryRelationCls());
+            fs.setDirectOwnSlotValues(getToSlot(), getRdfsDomainProperty(), Collections.singleton(getDirectedBinaryRelationCls()));
             
             assertTypeAndName(getSlotConstraintsSlot(), owlObjectPropertyClass);
             assertDomain(getSlotConstraintsSlot(), owlThingClass);
             
             assertTypeAndName(getPalStatementSlot(), owlDatatypePropertyClass);
-            // assertDomain(getPalStatementSlot(), getPalConstraintCls());
+            fs.setDirectOwnSlotValues(getPalStatementSlot(), getRdfsDomainProperty(), Collections.singleton(getPalConstraintCls()));
             assertValueType(getPalStatementSlot(), ValueType.STRING);
             
             assertTypeAndName(getPalDescriptionSlot(), owlDatatypePropertyClass);
-            // assertDomain(getPalDescriptionSlot(), getPalConstraintCls());
+            fs.setDirectOwnSlotValues(getPalDescriptionSlot(), getRdfsDomainProperty(), Collections.singleton(getPalConstraintCls()));
             assertValueType(getPalDescriptionSlot(), ValueType.STRING);
             
             assertTypeAndName(getPalNameSlot(), owlDatatypePropertyClass);
-            // assertDomain(getPalNameSlot(), getPalConstraintCls());
+            fs.setDirectOwnSlotValues(getPalNameSlot(), getRdfsDomainProperty(), Collections.singleton(getPalConstraintCls()));
             assertValueType(getPalNameSlot(), ValueType.STRING);
             
             assertTypeAndName(getPalRangeSlot(), owlObjectPropertyClass);
-            // assertDomain(getPalRangeSlot(), getPalConstraintCls());
+            fs.setDirectOwnSlotValues(getPalRangeSlot(), getRdfsDomainProperty(), Collections.singleton(getPalConstraintCls()));
             assertValueType(getPalRangeSlot(), ValueType.STRING);
         }
         
