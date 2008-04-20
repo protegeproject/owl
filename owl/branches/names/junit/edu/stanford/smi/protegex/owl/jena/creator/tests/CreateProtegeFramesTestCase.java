@@ -1,5 +1,6 @@
 package edu.stanford.smi.protegex.owl.jena.creator.tests;
 
+import java.io.File;
 import java.util.logging.Logger;
 
 import com.hp.hpl.jena.ontology.Individual;
@@ -9,6 +10,7 @@ import com.hp.hpl.jena.ontology.OntProperty;
 
 import edu.stanford.smi.protege.model.Model;
 import edu.stanford.smi.protege.util.Log;
+import edu.stanford.smi.protegex.owl.ProtegeOWL;
 import edu.stanford.smi.protegex.owl.model.RDFIndividual;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
@@ -18,6 +20,12 @@ import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
  */
 public class CreateProtegeFramesTestCase extends AbstractJenaCreatorTestCase {
     private static transient final Logger log = Log.getLogger(CreateProtegeFramesTestCase.class);
+    
+    static {
+        if (!ProtegeOWL.getPluginFolder().exists()) {
+            ProtegeOWL.setPluginFolder(new File("etc"));
+        }
+    }
 
     public void testCreateUnlinkedPALConstraint() {
 
