@@ -1,5 +1,6 @@
 package edu.stanford.smi.protegex.owl.jena.protege2jena.tests;
 
+import java.io.File;
 import java.util.logging.Level;
 
 import com.hp.hpl.jena.ontology.Individual;
@@ -9,6 +10,7 @@ import com.hp.hpl.jena.ontology.OntProperty;
 
 import edu.stanford.smi.protege.model.Model;
 import edu.stanford.smi.protege.util.Log;
+import edu.stanford.smi.protegex.owl.ProtegeOWL;
 import edu.stanford.smi.protegex.owl.jena.parser.FrameCreatorUtility;
 import edu.stanford.smi.protegex.owl.jena.parser.ProtegeOWLParser;
 import edu.stanford.smi.protegex.owl.jena.parser.TripleProcessor;
@@ -23,10 +25,17 @@ import edu.stanford.smi.protegex.owl.tests.AbstractJenaTestCase;
  */
 public class CreateProtegeFramesTestCase extends AbstractProtege2JenaTestCase {
     
+    static {
+        if (!ProtegeOWL.getPluginFolder().exists()) {
+            ProtegeOWL.setPluginFolder(new File("etc"));
+        }
+    }
+    
+    
     public static void enableDebug() {
         Log.setLoggingLevel(AbstractJenaTestCase.class, Level.FINE);
-        Log.setLoggingLevel(ProtegeOWLParser.class, Level.FINEST);
-        Log.setLoggingLevel(TripleProcessor.class, Level.FINEST);
+        //Log.setLoggingLevel(ProtegeOWLParser.class, Level.FINEST);
+        //Log.setLoggingLevel(TripleProcessor.class, Level.FINEST);
         Log.setLoggingLevel(FrameCreatorUtility.class, Level.FINEST);
     }
 
