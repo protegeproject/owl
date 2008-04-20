@@ -1375,7 +1375,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
      * rdf frames  in the system is constant.  Graphviz anyone?
      */
     public int getRDFResourceCount() {
-        return getFrameCount() - 56;
+        return getFrameCount() - 62;
     }
 
 
@@ -2196,7 +2196,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
      * removeProtegeSystemResources call.
      */
     public int getRDFSClassCount() {
-        return getRDFSNamedClassClass().getInstanceCount() - 5;
+        return getRDFSNamedClassClass().getInstanceCount() - 3;
     }
 
 
