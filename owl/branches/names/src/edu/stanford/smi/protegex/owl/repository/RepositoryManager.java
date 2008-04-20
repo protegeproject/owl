@@ -25,17 +25,17 @@ import edu.stanford.smi.protegex.owl.repository.impl.ProtegeOWLPluginFolderRepos
  */
 public class RepositoryManager {
 
-    private ArrayList projectRepositories;
+    private ArrayList<Repository> projectRepositories;
 
-    private ArrayList globalRepositories;
+    private ArrayList<Repository> globalRepositories;
 
     private OWLModel model;
 
 
     public RepositoryManager(OWLModel model) {
         this.model = model;
-        projectRepositories = new ArrayList();
-        globalRepositories = new ArrayList();
+        projectRepositories = new ArrayList<Repository>();
+        globalRepositories = new ArrayList<Repository>();
         loadSystemRepositories();
     }
 
@@ -55,8 +55,8 @@ public class RepositoryManager {
     }
 
 
-    public List getAllRepositories() {
-        ArrayList list = new ArrayList();
+    public List<Repository> getAllRepositories() {
+        ArrayList<Repository> list = new ArrayList<Repository>();
         list.addAll(projectRepositories);
         list.addAll(globalRepositories);
         return list;
@@ -68,12 +68,12 @@ public class RepositoryManager {
     }
 
 
-    public List getProjectRepositories() {
+    public List<Repository> getProjectRepositories() {
         return Collections.unmodifiableList(projectRepositories);
     }
 
 
-    public List getGlobalRepositories() {
+    public List<Repository> getGlobalRepositories() {
         return Collections.unmodifiableList(globalRepositories);
     }
 
@@ -103,7 +103,7 @@ public class RepositoryManager {
 
 
     public void moveUp(Repository repository) {
-        List repositories = selectRepositories(repository);
+        List<Repository> repositories = selectRepositories(repository);
         int index = repositories.indexOf(repository);
         if (index != -1 && index > 0) {
             repositories.remove(index);
@@ -113,7 +113,7 @@ public class RepositoryManager {
 
 
     public void moveDown(Repository repository) {
-        List repositories = selectRepositories(repository);
+        List<Repository> repositories = selectRepositories(repository);
         int index = repositories.indexOf(repository);
         if (index != -1 && index < repositories.size() - 1) {
             repositories.remove(index);
@@ -122,8 +122,8 @@ public class RepositoryManager {
     }
 
 
-    private List selectRepositories(Repository repository) {
-        List repositories;
+    private List<Repository> selectRepositories(Repository repository) {
+        List<Repository> repositories;
         if (isGlobalRepository(repository)) {
             repositories = globalRepositories;
         }
@@ -146,14 +146,14 @@ public class RepositoryManager {
 
     public Repository getRepository(URI ontologyName) {
         // Process local projectRepositories first.
-        for (Iterator it = projectRepositories.iterator(); it.hasNext();) {
-            Repository curRepository = (Repository) it.next();
+        for (Iterator<Repository> it = projectRepositories.iterator(); it.hasNext();) {
+            Repository curRepository = it.next();
             if (curRepository.contains(ontologyName)) {
                 return curRepository;
             }
         }
-        for (Iterator it = globalRepositories.iterator(); it.hasNext();) {
-            Repository curRepository = (Repository) it.next();
+        for (Iterator<Repository> it = globalRepositories.iterator(); it.hasNext();) {
+            Repository curRepository =  it.next();
             if (curRepository.contains(ontologyName)) {
                 return curRepository;
             }
