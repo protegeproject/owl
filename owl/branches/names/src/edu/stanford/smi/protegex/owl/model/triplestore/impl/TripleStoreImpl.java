@@ -110,16 +110,6 @@ public class TripleStoreImpl implements TripleStore {
         ignoreProperties.add(systemFrames.getProtegeInferredSuperclassesProperty());
         ignoreProperties.add(systemFrames.getProtegeInferredTypeProperty());
         
-        ignoreProperties.add(systemFrames.getFromSlot());
-        ignoreProperties.add(systemFrames.getToSlot());
-        ignoreProperties.add(systemFrames.getConstraintsSlot());
-        ignoreProperties.add(systemFrames.getPalStatementSlot());
-        ignoreProperties.add(systemFrames.getPalDescriptionSlot());
-        ignoreProperties.add(systemFrames.getPalNameSlot());
-        ignoreProperties.add(systemFrames.getPalRangeSlot());
-        
-        Collection<Cls> ignoreClses = new HashSet<Cls>();
-        ignoreClses.add(systemFrames.getPalConstraintCls());
 
         List<Triple> triples = new ArrayList<Triple>();
         for (Record record : ((InMemoryFrameDb) narrowFrameStore).getRecords()) {
@@ -132,9 +122,6 @@ public class TripleStoreImpl implements TripleStore {
                 if (predicate instanceof RDFProperty) {
                     if (record.getFacet() == null && !record.isTemplate() && !ignoreProperties.contains(predicate)) {
                         for (Object object : record.getValues()) {
-                            if (ignoreClses.contains(object)) {
-                                continue;
-                            }
                             if (object instanceof String && DefaultRDFSLiteral.isRawValue((String) object)) {
                                 object = new DefaultRDFSLiteral(owlModel, (String) object);
                             }
