@@ -8,6 +8,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.logging.Level;
 
+import java.io.InputStream;
+import java.io.Reader;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.Collection;
+
+import com.hp.hpl.jena.util.FileUtils;
+
 import edu.stanford.smi.protege.Application;
 import edu.stanford.smi.protege.model.Project;
 import edu.stanford.smi.protege.util.ApplicationProperties;

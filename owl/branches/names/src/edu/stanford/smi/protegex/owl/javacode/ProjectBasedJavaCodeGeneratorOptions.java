@@ -20,6 +20,8 @@ public class ProjectBasedJavaCodeGeneratorOptions implements EditableJavaCodeGen
 
     public final static String SET_MODE = "JavaCodeSet";
 
+    public final static String PREFIX_MODE = "JavaCodeUsePrefix";
+
     private OWLProject project;
 
 
@@ -77,6 +79,17 @@ public class ProjectBasedJavaCodeGeneratorOptions implements EditableJavaCodeGen
     }
 
 
+    public boolean getPrefixMode() {
+    	Boolean b = project.getSettingsMap().getBoolean(PREFIX_MODE);
+    	if (b != null) {
+    		return b.booleanValue();
+    	}
+    	else {
+    		return false;
+    	}
+    }
+
+
     public void setAbstractMode(boolean value) {
         project.getSettingsMap().setBoolean(ABSTRACT_MODE, value);
     }
@@ -115,4 +128,9 @@ public class ProjectBasedJavaCodeGeneratorOptions implements EditableJavaCodeGen
     public void setSetMode(boolean value) {
         project.getSettingsMap().setBoolean(SET_MODE, value);
     }
+    
+    
+    public void setPrefixMode(boolean value) {
+    	project.getSettingsMap().setBoolean(PREFIX_MODE, value);
+}
 }

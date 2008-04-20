@@ -7,6 +7,7 @@ import edu.stanford.smi.protege.model.Facet;
 import edu.stanford.smi.protege.model.Instance;
 import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protege.util.LabeledComponent;
+import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protege.widget.ReadOnlyWidgetConfigurationPanel;
 import edu.stanford.smi.protege.widget.WidgetConfigurationPanel;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
@@ -83,6 +84,11 @@ public class OWLDateWidget extends AbstractPropertyWidget {
             if (index >= 0) {
                 s = s.substring(0, index);
             }
+            //TODO: Does not consider the timezone!
+            int zindex = s.indexOf("Z");
+            if (zindex >= 0) {
+                s = s.substring(0, zindex);
+            }
             String[] ss = s.split("-");
             if (ss.length >= 3) {
                 try {
@@ -92,7 +98,7 @@ public class OWLDateWidget extends AbstractPropertyWidget {
                     date = new Date(new GregorianCalendar(year, month, day).getTimeInMillis());
                 }
                 catch (Exception ex) {
-                    System.err.println("[OWLDateWidget] Could not parse value " + s + ": " + ex);
+                    Log.getLogger().warning("Could not parse value " + s + ": " + ex.getMessage());
                 }
             }
         }

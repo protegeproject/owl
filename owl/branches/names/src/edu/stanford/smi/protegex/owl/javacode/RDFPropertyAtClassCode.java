@@ -3,6 +3,7 @@ package edu.stanford.smi.protegex.owl.javacode;
 import java.util.Collection;
 
 import edu.stanford.smi.protege.util.CollectionUtilities;
+import edu.stanford.smi.protegex.owl.jena.rdf2owl.RDF2OWL;
 import edu.stanford.smi.protegex.owl.model.*;
 
 /**
@@ -17,10 +18,13 @@ public class RDFPropertyAtClassCode implements Comparable {
 
     private RDFProperty property;
 
+    private boolean usePrefix;
 
-    public RDFPropertyAtClassCode(RDFSNamedClass cls, RDFProperty property) {
+
+    public RDFPropertyAtClassCode(RDFSNamedClass cls, RDFProperty property, boolean usePrefixInNames) {
         this.cls = cls;
         this.property = property;
+        this.usePrefix = usePrefixInNames;
     }
 
 
@@ -34,12 +38,20 @@ public class RDFPropertyAtClassCode implements Comparable {
 
 
     public String getJavaName() {
+		String prefix = property.getNamespacePrefix();
+		if ( usePrefix && prefix != null && (! prefix.equals("")) ) {
+			prefix = prefix.toUpperCase() + "_";
+			return RDFSClassCode.getValidJavaName(prefix + property.getLocalName());
+		}
         return RDFSClassCode.getValidJavaName(property.getLocalName());
     }
 
-
     public String getJavaType() {
         RDFResource range = ((OWLNamedClass) cls).getAllValuesFrom(property);
+        if (range instanceof OWLDataRange) {
+        	range = ((OWLDataRange) range).getRDFDatatype();
+        }
+        
         if (range instanceof RDFSDatatype) {
             OWLModel owlModel = cls.getOWLModel();
             if (owlModel.getXSDboolean().equals(range)) {
@@ -59,12 +71,12 @@ public class RDFPropertyAtClassCode implements Comparable {
             }
         }
         else if (range instanceof RDFSNamedClass) {
-            return new RDFSClassCode((RDFSNamedClass) range).getJavaName();
+            return new RDFSClassCode((RDFSNamedClass) range, usePrefix).getJavaName();
         } else if (range instanceof OWLAnonymousClass) {
         	RDFResource propRange = property.getRange();
         	
         	if (propRange != null && propRange instanceof RDFSNamedClass) {
-        		return new RDFSClassCode((RDFSNamedClass) propRange).getJavaName();
+        		return new RDFSClassCode((RDFSNamedClass) propRange, usePrefix).getJavaName();
         	} else {
         		return "Object";
         	}

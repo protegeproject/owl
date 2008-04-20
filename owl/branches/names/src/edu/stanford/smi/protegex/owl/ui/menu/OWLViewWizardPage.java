@@ -38,9 +38,9 @@ public class OWLViewWizardPage extends WizardPage {
         JPanel viewPanel = new JPanel();
         String defaultClassView = SwitchClassDefinitionResourceDisplayPlugin.getDefaultClassView();
         ButtonGroup group = new ButtonGroup();
-        Iterator types = SwitchableClassDefinitionWidget.listSwitchableTypes();
+        Iterator<SwitchableType> types = SwitchableClassDefinitionWidget.listSwitchableTypes();
         while (types.hasNext()) {
-            SwitchableType type = (SwitchableType) types.next();
+            SwitchableType type = types.next();
             JRadioButton button = new JRadioButton(type.getButtonText());
             button2Type.put(button, type);
             String name = type.getClass().getName();
