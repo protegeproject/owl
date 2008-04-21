@@ -323,6 +323,15 @@
       <unzip src="${dist}/${pluginName}.zip" 
              dest = "${protege.home}/plugins"
              overwrite = "true"/>
+      <copy todir="${protege.home}/examples/pizza">
+          <fileset dir="./examples" includes="pizza.*"/>
+      </copy>
+      <copy todir="${protege.home}/examples/travel">
+          <fileset dir="./examples" includes="travel.*"/>
+      </copy>
+      <copy todir="${protege.home}/examples/family">
+          <fileset dir="./examples" includes="family.*"/>
+      </copy>
    </target>
 	
     <!-- Run targets -->
