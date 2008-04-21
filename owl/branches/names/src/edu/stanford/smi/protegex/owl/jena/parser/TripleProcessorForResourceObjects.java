@@ -18,6 +18,7 @@ import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
 import edu.stanford.smi.protegex.owl.model.RDFSClass;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
+import edu.stanford.smi.protegex.owl.model.triplestore.impl.TripleStoreImpl;
 
 class TripleProcessorForResourceObjects extends AbstractStatefulTripleProcessor {
 	private static final transient Logger log = Log.getLogger(TripleProcessorForResourceObjects.class);
@@ -25,19 +26,6 @@ class TripleProcessorForResourceObjects extends AbstractStatefulTripleProcessor 
 	public enum TripleStatus {
 		INCOMPLETE, IN_KNOWLEDGE_BASE, DUPLICATE_TRIPLE, OTHER_TRIPLE_WILL_RESOLVE, REQUIRES_MULTI_TYPES_PROCESSING, UNDEF_NEEDS_POSTPROCESS;
 	};
-
-
-	
-	/*
-	 * I don't know if this works. It is a hack for an ugly situation. The w3
-	 * specs say that the name of an ontology in a file is the first ontology
-	 * declaration occurring in the file. Presumably this would be the first
-	 * ontology declaration found if we parse the file with an xml parser. This
-	 * variable is based on the guess that this will the first ontology
-	 * declaration found by Jena's ARQ parser. I believe that Jena has trouble
-	 * with this issue also.
-	 */
-	private boolean ontologyFound = false;
 
 
 	public TripleProcessorForResourceObjects(TripleProcessor processor) {
@@ -282,10 +270,11 @@ class TripleProcessorForResourceObjects extends AbstractStatefulTripleProcessor 
 		private void handleOntologyDeclaration() {
 			// guessing that the ontology for the parsed file is the first
 			// ontology found
-			if (objName.equals(OWL.Ontology.getURI()) && predName.equals(RDF.type.getURI()) && !ontologyFound) {
+			if (objName.equals(OWL.Ontology.getURI()) && predName.equals(RDF.type.getURI()) 
+					&& !((TripleStoreImpl) tripleStore).isOntologyFound()) {
 				tripleStore.setName(subjName);
 				tripleStore.addIOAddress(subjName);
-				ontologyFound = true;
+				((TripleStoreImpl) tripleStore).setOntologyFound(true);
 			}
 		}
 
