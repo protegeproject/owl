@@ -48,14 +48,6 @@ import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreUtil;
 public class TripleStoreImpl implements TripleStore {
     private static transient final Logger log = Log.getLogger(TripleStoreImpl.class);
     
-	
-	/*
-	 * This flag is  used by the Protege  OWL  Parser to determine if the ontology declaration
-	 * has already been found.  It is only relevant for triple stores that are filled by the 
-	 * Protege OWL Parser.
-	 */
-	private boolean ontologyFound = false;
-    
     private NamespaceManager namespaceManager;
 
     protected NarrowFrameStore narrowFrameStore;
@@ -440,23 +432,5 @@ public class TripleStoreImpl implements TripleStore {
             tripleStoreModel.setActiveTripleStore(activeTripleStore);
         }
     }
-
-	/**
-	 * This flag is  used by the Protege  OWL  Parser to determine if the ontology declaration
-	 * has already been found.  It is only relevant for triple stores that are filled by the 
-	 * Protege OWL Parser.
-	 */
-	public boolean isOntologyFound() {
-		return ontologyFound;
-	}
-
-	/**
-	 * This flag is  set by the Protege  OWL  Parser to determine if the ontology declaration
-	 * has already been found.  It is only relevant for triple stores that are filled by the 
-	 * Protege OWL Parser.
-	 */
-	public void setOntologyFound(boolean ontologyFound) {
-		this.ontologyFound = ontologyFound;
-	}
     
 }

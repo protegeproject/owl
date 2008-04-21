@@ -271,10 +271,9 @@ class TripleProcessorForResourceObjects extends AbstractStatefulTripleProcessor 
 			// guessing that the ontology for the parsed file is the first
 			// ontology found
 			if (objName.equals(OWL.Ontology.getURI()) && predName.equals(RDF.type.getURI()) 
-					&& !((TripleStoreImpl) tripleStore).isOntologyFound()) {
+					&& tripleStore.getName() == null) {
 				tripleStore.setName(subjName);
 				tripleStore.addIOAddress(subjName);
-				((TripleStoreImpl) tripleStore).setOntologyFound(true);
 			}
 		}
 
