@@ -43,9 +43,9 @@ import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
  * @author Holger Knublauch  <holger@knublauch.com>
  */
 public class DefaultRDFProperty extends DefaultSlot implements RDFProperty {
+	private static final long serialVersionUID = 8950825871351060966L;
 
-
-    public DefaultRDFProperty(KnowledgeBase kb, FrameID id) {
+	public DefaultRDFProperty(KnowledgeBase kb, FrameID id) {
         super(kb, id);
     }
 
@@ -689,7 +689,10 @@ public class DefaultRDFProperty extends DefaultSlot implements RDFProperty {
     public String getLocalName() {
         return NamespaceUtil.getLocalName(getName());
     }
-
+    
+    public String getPrefixedName() {
+    	return NamespaceUtil.getPrefixedName(getOWLModel(), getName());
+    }
 
     public String getNamespace() {
         return NamespaceUtil.getNameSpace(getName());

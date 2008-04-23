@@ -260,7 +260,14 @@ public interface RDFResource extends ProtegeInstance, RDFObject, Visitable {
      * @return the part of the name after #
      */
     String getLocalName();
+    
+    /**
+     * Gets the qualified name as a namespace, local name pair (e.g. "owl:Class").
+     * 
+     * @return the qualified name of the resource.
+     */
 
+    String getPrefixedName();
 
     /**
      * Gets the full name for the resource.,
