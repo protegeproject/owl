@@ -390,7 +390,7 @@ class TripleProcessorForResourceObjects extends AbstractStatefulTripleProcessor 
 				FrameCreatorUtility.addOwnSlotValue(frame, owlModel.getSystemFrames().getNameSlot(), frameUri, ts);
 				Collection<Cls> types = FrameCreatorUtility.getDirectTypes((Instance) frame);
 				if (types == null || !types.contains(type)) {
-					FrameCreatorUtility.addOwnSlotValue(frame, owlModel.getSystemFrames().getDirectTypesSlot(), type, ts);
+					FrameCreatorUtility.addInstanceType((Instance) frame, type, ts);
 				}
 			}
 			return frame;
