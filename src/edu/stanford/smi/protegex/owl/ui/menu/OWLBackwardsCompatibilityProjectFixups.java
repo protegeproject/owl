@@ -84,7 +84,7 @@ public class OWLBackwardsCompatibilityProjectFixups implements ProjectFixupPlugi
             fixReallyAncient(internalKb);
         }
         if (isBeforeDatabaseInclusion(sources)) {
-        	Log.getLogger().info("Backwards compatibility fixup for OWL project file (before DB inclusion");        	
+        	Log.getLogger().info("Backwards compatibility fixup for OWL project file (before DB inclusion)");        	
             fixForDatabaseInclusion(internalKb);
         } 
     }
