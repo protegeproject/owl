@@ -1,5 +1,6 @@
 package edu.stanford.smi.protegex.owl.jena.parser;
 
+import java.util.Collection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -18,7 +19,6 @@ import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
 import edu.stanford.smi.protegex.owl.model.RDFSClass;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
-import edu.stanford.smi.protegex.owl.model.triplestore.impl.TripleStoreImpl;
 
 class TripleProcessorForResourceObjects extends AbstractStatefulTripleProcessor {
 	private static final transient Logger log = Log.getLogger(TripleProcessorForResourceObjects.class);
@@ -384,8 +384,15 @@ class TripleProcessorForResourceObjects extends AbstractStatefulTripleProcessor 
 
 	private Frame createFrameWithType(String frameUri, Cls type, boolean isSubjAnon, TripleStore ts) {
 		Frame frame = getFrame(frameUri);
-
+		
 		if (frame != null) {
+			if (!FrameCreatorUtility.hasOwnSlotValue(frame, owlModel.getSystemFrames().getNameSlot(), frameUri)) {
+				FrameCreatorUtility.addOwnSlotValue(frame, owlModel.getSystemFrames().getNameSlot(), frameUri, ts);
+				Collection<Cls> types = FrameCreatorUtility.getDirectTypes((Instance) frame);
+				if (types == null || !types.contains(type)) {
+					FrameCreatorUtility.addOwnSlotValue(frame, owlModel.getSystemFrames().getDirectTypesSlot(), type, ts);
+				}
+			}
 			return frame;
 		}
 
