@@ -496,7 +496,11 @@ public abstract class AbstractRDFSClass extends DefaultCls implements RDFSClass 
     public String getLocalName() {
         return NamespaceUtil.getLocalName(getName());
     }
-
+    
+    
+    public String getPrefixedName() {
+    	return NamespaceUtil.getPrefixedName(getOWLModel(), getName());
+    }
 
     public String getNamespace() {
         return NamespaceUtil.getNameSpace(getName());

@@ -182,7 +182,11 @@ public class DefaultRDFIndividual extends DefaultSimpleInstance implements RDFIn
 
 
     public String getLocalName() {
-        return NamespaceUtil.getPrefixedName(getOWLModel(), getName());
+        return NamespaceUtil.getLocalName(getName());
+    }
+    
+    public String getPrefixedName() {
+    	return NamespaceUtil.getPrefixedName(getOWLModel(), getName());
     }
 
 

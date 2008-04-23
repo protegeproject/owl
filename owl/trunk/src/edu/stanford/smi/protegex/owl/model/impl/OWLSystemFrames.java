@@ -19,7 +19,6 @@ import edu.stanford.smi.protege.model.FrameID;
 import edu.stanford.smi.protege.model.Instance;
 import edu.stanford.smi.protege.model.KnowledgeBase;
 import edu.stanford.smi.protege.model.MaximumCardinalityConstraint;
-import edu.stanford.smi.protege.model.Model;
 import edu.stanford.smi.protege.model.RoleConstraint;
 import edu.stanford.smi.protege.model.SimpleInstance;
 import edu.stanford.smi.protege.model.Slot;
