@@ -16,6 +16,7 @@ import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protege.util.MessageError;
 import edu.stanford.smi.protege.util.PropertyList;
 import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
+import edu.stanford.smi.protegex.owl.jena.parser.ProtegeOWLParser;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.factory.FactoryUtils;
 import edu.stanford.smi.protegex.owl.model.factory.OWLJavaFactory;
@@ -107,13 +108,10 @@ public class OWLDatabaseKnowledgeBaseFactory extends DatabaseKnowledgeBaseFactor
             owlModel.resetOntologyCache();
             RepositoryFileManager.loadProjectRepositories(owlModel);
             DatabaseFactoryUtils.loadImports(owlModel, errors);
+            ProtegeOWLParser.doFinalPostProcessing(owlModel);
         }
     }
-
-
-
-
-    
+   
     @Override
     protected void initializeKB(KnowledgeBase kb, 
     		String driver, 
