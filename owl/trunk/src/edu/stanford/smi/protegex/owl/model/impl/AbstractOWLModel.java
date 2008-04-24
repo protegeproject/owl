@@ -147,9 +147,11 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
     public static final String OWL_MODEL_EXPAND_SHORT_NAME_IN_METHODS = "owlmodel.expand.short.name.in.methods";
 
-    private static final String SEARCH_SYNONYMS_KEY = "OWL-SEARCH-SYNONYMS-SLOTS";
+    private static final String SEARCH_SYNONYMS_KEY = "OWL-SEARCH-SYNONYMS-SLOTS";    
 
     private static final String SEARCH_SYNONYMS_SEPARATOR = ",";
+    
+    private static final String DEFAULT_ANNOT_PROP_IN_VIEW_KEY = "OWL-DEFAULT-ANNOT-PROP-IN-VIEW";
 
     public static final String DEFAULT_TODO_PREFIX = "TODO";
 
@@ -317,6 +319,17 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     }
     
 
+    protected void initializeDefaultAnnotationView() {
+    	try {
+    		Collection existingConfig = getDefaultAnnotationPropertiesInView();
+    		if (existingConfig == null || existingConfig.size() == 0) {
+    			setDefaultAnnotationPropertiesInView(CollectionUtilities.createCollection(getRDFSCommentProperty()));
+    		}
+		} catch (Exception e) {
+			Log.getLogger().log(Level.WARNING, "Error at initializing the default annotation view configuration (it's not bad)", e);
+		}		
+	}
+    
     /**
      * This method is not intended for general consumption - use the ImportHelper instead.
      * 
@@ -1490,6 +1503,22 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
         return results;
     }
 
+    
+    public Collection getDefaultAnnotationPropertiesInView() {
+        Collection results = new HashSet();
+        String syns = getOWLProject().getSettingsMap().getString(DEFAULT_ANNOT_PROP_IN_VIEW_KEY);
+        if (syns != null) {
+            String[] ss = syns.split(SEARCH_SYNONYMS_SEPARATOR);
+            for (int i = 0; i < ss.length; i++) {
+                String s = ss[i];
+                Frame frame = getFrame(s);
+                if (frame instanceof Slot) {
+                    results.add(frame);
+                }
+            }
+        }
+        return results;
+    }
 
     public OWLObjectProperty getOWLObjectProperty(String name) {
         return (OWLObjectProperty) getSlot(OWLUtil.getInternalFullName(this, name));
@@ -1659,8 +1688,8 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     }
 
 
-    public OWLDatatypeProperty getProtegeReadOnlyProperty() {   
-    	return (OWLDatatypeProperty) getSlot(ProtegeNames.getReadOnlySlotName());   
+    public RDFProperty getProtegeReadOnlyProperty() {   
+    	return (RDFProperty) getSlot(ProtegeNames.getReadOnlySlotName());   
     }
 
 
@@ -2125,6 +2154,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
         setOWLProject(new DefaultOWLProject(project));
 
         project.setPrettyPrintSlotWidgetLabels(false);
+        initializeDefaultAnnotationView();
 
         Slot nameSlot = getSlot(Model.Slot.NAME);                       
   
@@ -2158,6 +2188,24 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
         }
     }
 
+    
+    public void setDefaultAnnotationPropertiesInView(Collection slots) {
+        if (slots.isEmpty()) {
+            getOWLProject().getSettingsMap().setString(DEFAULT_ANNOT_PROP_IN_VIEW_KEY, null);
+        }
+        else {
+            String str = "";
+            for (Iterator it = slots.iterator(); it.hasNext();) {
+                Slot slot = (Slot) it.next();
+                str += slot.getName();
+                if (it.hasNext()) {
+                    str += SEARCH_SYNONYMS_SEPARATOR;
+                }
+            }
+            getOWLProject().getSettingsMap().setString(DEFAULT_ANNOT_PROP_IN_VIEW_KEY, str);
+        }
+    }
+    
 
     public void setTaskManager(TaskManager taskManager) {
         this.taskManager = taskManager;
