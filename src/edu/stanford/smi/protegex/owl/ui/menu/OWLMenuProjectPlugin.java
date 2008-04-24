@@ -436,7 +436,7 @@ public class OWLMenuProjectPlugin extends ProjectPluginAdapter {
 
     public static void makeHiddenClsesWithSubclassesVisible(OWLModel owlModel) {
         if (owlModel.getOWLNamedClassClass().getSubclassCount() > 0 ||
-            owlModel.getRDFSNamedClassClass().getSubclassCount() > 2) {
+            owlModel.getRDFSNamedClassClass().getSubclassCount() > 3) { //3: owlClass, owl:DeprecatedClass, protege:ExternalClass
             owlModel.getRDFSNamedClassClass().setVisible(true);
             owlModel.getOWLNamedClassClass().setVisible(true);
         }
