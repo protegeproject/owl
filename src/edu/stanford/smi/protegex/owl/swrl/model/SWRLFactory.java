@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import edu.stanford.smi.protegex.owl.model.NamespaceUtil;
 import edu.stanford.smi.protegex.owl.model.OWLDatatypeProperty;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLObjectProperty;
@@ -421,6 +422,14 @@ public class SWRLFactory
 	  }
 
 	  return swrlbProperties;
+  }
+  
+  public String getOwlNameFromIdentifier(String name) {
+	  return NamespaceUtil.getFullName(owlModel, name);
+  }
+  
+  public String getIdentifierFromOwlName(String owlName) {
+	  return NamespaceUtil.getPrefixedName(owlModel, owlName);
   }
 
 

@@ -258,7 +258,7 @@ public class SWRLParser
     iObject = parseIObject();
     
     if (!parseOnly) {
-      RDFSNamedClass aClass = owlModel.getOWLNamedClass(identifier);
+      RDFSNamedClass aClass = owlModel.getOWLNamedClass(swrlFactory.getOwlNameFromIdentifier(identifier));
       atom = swrlFactory.createClassAtom(aClass, iObject);
     } // if
     
@@ -277,7 +277,7 @@ public class SWRLParser
     iObject2 = parseIObject();
     
     if (!parseOnly) {
-      OWLObjectProperty objectProperty = owlModel.getOWLObjectProperty(identifier);
+      OWLObjectProperty objectProperty = owlModel.getOWLObjectProperty(swrlFactory.getOwlNameFromIdentifier(identifier));
       if (objectProperty == null) throw new SWRLParseException("no datatype property found for IndividualPropertyAtom: " + identifier);
       atom = swrlFactory.createIndividualPropertyAtom(objectProperty, iObject1, iObject2);
     } // if
@@ -310,7 +310,7 @@ public class SWRLParser
     } else if (!token.equals(")")) throw new SWRLParseException(errorMessage + identifier + "'.");
     
     if (!parseOnly) {
-      datatypeProperty = owlModel.getOWLDatatypeProperty(identifier);
+      datatypeProperty = owlModel.getOWLDatatypeProperty(swrlFactory.getOwlNameFromIdentifier(identifier));
       atom = swrlFactory.createDatavaluedPropertyAtom(datatypeProperty, iObject, dObject);
     } // if
     
@@ -324,7 +324,7 @@ public class SWRLParser
     List objects = parseObjectList(); // Swallows ')'
 
     if (!parseOnly) {
-      builtin = swrlFactory.getBuiltin(identifier);
+      builtin = swrlFactory.getBuiltin(swrlFactory.getOwlNameFromIdentifier(identifier));
       atom = swrlFactory.createBuiltinAtom(builtin, objects.iterator());
     } // if
     
@@ -340,7 +340,7 @@ public class SWRLParser
     dObject = parseDObject();
     
     if (!parseOnly) {
-      datatype = owlModel.getRDFSDatatypeByName(identifier);
+      datatype = owlModel.getRDFSDatatypeByName(swrlFactory.getOwlNameFromIdentifier(identifier));
       atom = swrlFactory.createDataRangeAtom(datatype, dObject);
     } // if
     
@@ -596,7 +596,7 @@ public class SWRLParser
 
   private boolean isValidIndividualName(String name) throws SWRLParseException 
   {
-    RDFResource resource = getRDFResource(name); 
+    RDFResource resource = getRDFResource(swrlFactory.getOwlNameFromIdentifier(name)); 
 
     if (resource == null) return false;
 
@@ -625,7 +625,7 @@ public class SWRLParser
 
   private RDFResource getIndividual(String name) throws SWRLParseException 
   {
-    RDFResource resource = owlModel.getRDFResource(name);
+    RDFResource resource = owlModel.getRDFResource(swrlFactory.getOwlNameFromIdentifier(name));
 
     if (resource == null || (!(resource instanceof OWLIndividual))) throw new SWRLParseException("'" + name + "' is not a valid individual name");
 
@@ -634,7 +634,7 @@ public class SWRLParser
 
   private RDFResource getClass(String name) throws SWRLParseException 
   {
-    RDFResource resource = owlModel.getRDFResource(name);
+    RDFResource resource = owlModel.getRDFResource(swrlFactory.getOwlNameFromIdentifier(name));
 
     if (resource == null || (!(resource instanceof OWLNamedClass))) throw new SWRLParseException("'" + name + "' is not a valid class name");
 
@@ -643,7 +643,7 @@ public class SWRLParser
 
   private RDFResource getProperty(String name) throws SWRLParseException 
   {
-    RDFResource resource = owlModel.getRDFResource(name);
+    RDFResource resource = owlModel.getRDFResource(swrlFactory.getOwlNameFromIdentifier(name));
 
     if (resource == null || (!(resource instanceof OWLProperty))) throw new SWRLParseException("'" + name + "' is not a valid property name");
 
@@ -652,10 +652,10 @@ public class SWRLParser
 
   private SWRLVariable getSWRLVariable(String name) throws SWRLParseException 
   {
-    RDFResource resource = owlModel.getRDFResource(name);
+    RDFResource resource = owlModel.getRDFResource(swrlFactory.getOwlNameFromIdentifier(name));
     
     if (resource instanceof SWRLVariable) return (SWRLVariable) resource;
-    else if (resource == null) return swrlFactory.createVariable(name);
+    else if (resource == null) return swrlFactory.createVariable(swrlFactory.getOwlNameFromIdentifier(name));
     else throw new SWRLParseException(name + " cannot be used as a variable name");
   } // getSWRLVariable
 
@@ -666,10 +666,10 @@ public class SWRLParser
     if (parseOnly) {
       if (cachedRDFResources.containsKey(resourceName)) resource = cachedRDFResources.get(resourceName);
       else {
-        resource = owlModel.getRDFResource(resourceName);
+        resource = owlModel.getRDFResource(swrlFactory.getOwlNameFromIdentifier(resourceName));
         cachedRDFResources.put(resourceName, resource); // May be null
       } // if
-    } else resource = owlModel.getRDFResource(resourceName);
+    } else resource = owlModel.getRDFResource(swrlFactory.getOwlNameFromIdentifier(resourceName));
 
     return resource;
   } // getRDFResource

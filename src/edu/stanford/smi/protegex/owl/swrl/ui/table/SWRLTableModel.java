@@ -1,6 +1,7 @@
 package edu.stanford.smi.protegex.owl.swrl.ui.table;
 
 import edu.stanford.smi.protege.util.Disposable;
+import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.model.NamespaceUtil;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
@@ -110,7 +111,9 @@ public class SWRLTableModel extends AbstractTableModel implements Disposable, Sy
                                                               "longer be visible here.  But no reason to panic: It\n" +
                                                               "should still show up on the SWRL tab.");
         }
-      } catch (Exception ex) {}
+      } catch (Exception ex) {
+    	  Log.getLogger().warning("Exception caught defining rule " + ex);
+      }
     } else if (columnIndex == COL_NAME) {
       String newName = (String) aValue;
       if (owlModel.isValidResourceName(newName, imp)) {
