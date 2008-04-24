@@ -1,26 +1,18 @@
 package edu.stanford.smi.protegex.owl.model.impl;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Set;
-
-import javax.swing.Icon;
-
 import edu.stanford.smi.protege.model.DefaultSimpleInstance;
 import edu.stanford.smi.protege.model.FrameID;
 import edu.stanford.smi.protege.model.KnowledgeBase;
-import edu.stanford.smi.protegex.owl.model.NamespaceUtil;
-import edu.stanford.smi.protegex.owl.model.OWLModel;
-import edu.stanford.smi.protegex.owl.model.RDFIndividual;
-import edu.stanford.smi.protegex.owl.model.RDFObject;
-import edu.stanford.smi.protegex.owl.model.RDFProperty;
-import edu.stanford.smi.protegex.owl.model.RDFResource;
-import edu.stanford.smi.protegex.owl.model.RDFSClass;
-import edu.stanford.smi.protegex.owl.model.RDFSLiteral;
+import edu.stanford.smi.protegex.owl.model.*;
 import edu.stanford.smi.protegex.owl.model.event.PropertyValueListener;
 import edu.stanford.smi.protegex.owl.model.event.ResourceListener;
 import edu.stanford.smi.protegex.owl.model.visitor.OWLModelVisitor;
 import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
+
+import javax.swing.*;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Set;
 
 public class DefaultRDFIndividual extends DefaultSimpleInstance implements RDFIndividual {
 
@@ -182,21 +174,23 @@ public class DefaultRDFIndividual extends DefaultSimpleInstance implements RDFIn
 
 
     public String getLocalName() {
-        return NamespaceUtil.getLocalName(getName());
-    }
-    
-    public String getPrefixedName() {
-    	return NamespaceUtil.getPrefixedName(getOWLModel(), getName());
+        final String name = getName();
+        final OWLModel nskb = (OWLModel) getKnowledgeBase();
+        return nskb.getLocalNameForResourceName(name);
     }
 
 
     public String getNamespace() {
-        return NamespaceUtil.getNameSpace(getName());
+        final OWLModel nskb = ((OWLModel) getKnowledgeBase());
+        final String name = getName();
+        return nskb.getNamespaceForResourceName(name);
     }
 
 
     public String getNamespacePrefix() {
-        return NamespaceUtil.getPrefixForResourceName(getOWLModel(), getName());
+        final OWLModel nskb = ((OWLModel) getKnowledgeBase());
+        String name = getName();
+        return nskb.getPrefixForResourceName(name);
     }
 
 
@@ -281,8 +275,7 @@ public class DefaultRDFIndividual extends DefaultSimpleInstance implements RDFIn
 
 
     public String getURI() {
-        //return getOWLModel().getURIForResourceName(getName());
-    	return getName();
+        return getOWLModel().getURIForResourceName(getName());
     }
 
 
@@ -463,17 +456,5 @@ public class DefaultRDFIndividual extends DefaultSimpleInstance implements RDFIn
 
     public void setRDFTypes(Collection types) {
         OWLUtil.setRDFTypes(this, types);
-    }
-    
-    @Override
-    public String toString() {
-        StringBuffer buffer = new StringBuffer();
-        buffer.append(this.getClass().getSimpleName());
-        buffer.append("(");
-        buffer.append(getName());
-        buffer.append(" of ");
-        buffer.append(getDirectTypes());
-        buffer.append(")");
-        return buffer.toString();
     }
 }

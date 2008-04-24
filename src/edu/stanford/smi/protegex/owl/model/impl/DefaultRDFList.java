@@ -1,7 +1,6 @@
 package edu.stanford.smi.protegex.owl.model.impl;
 
 import edu.stanford.smi.protege.model.*;
-import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.model.*;
 import edu.stanford.smi.protegex.owl.model.visitor.OWLModelVisitor;
 
@@ -9,7 +8,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Level;
 
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
@@ -91,14 +89,6 @@ public class DefaultRDFList extends DefaultRDFIndividual implements RDFList {
 
 
     public String getBrowserText() {
-    	//TT This should not be null...
-    	if (getDirectType() == null) {
-    		if (Log.getLogger().getLevel() == Level.WARNING) {
-    			Log.getLogger().log(Level.WARNING, "Called method on deleted frame " + this);
-    		}
-    		return "deleted frame id: " + getFrameID().getName();
-    	}
-    	
         String str = getDirectType().getBrowserText() + " (";
         for (Iterator it = getValues().iterator(); it.hasNext();) {
             Object value = it.next();

@@ -1,11 +1,6 @@
 package edu.stanford.smi.protegex.owl.ui.conditions.tests;
 
-import edu.stanford.smi.protegex.owl.model.OWLIntersectionClass;
-import edu.stanford.smi.protegex.owl.model.OWLMaxCardinality;
-import edu.stanford.smi.protegex.owl.model.OWLMinCardinality;
-import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
-import edu.stanford.smi.protegex.owl.model.OWLObjectProperty;
-import edu.stanford.smi.protegex.owl.model.RDFProperty;
+import edu.stanford.smi.protegex.owl.model.*;
 import edu.stanford.smi.protegex.owl.ui.conditions.ConditionsTableModel;
 
 /**

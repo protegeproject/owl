@@ -12,6 +12,7 @@ import java.util.logging.Level;
 
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.jena.parser.ProtegeOWLParser;
+import edu.stanford.smi.protegex.owl.repository.Repository;
 import edu.stanford.smi.protegex.owl.repository.util.OntologyNameExtractor;
 
 /**
@@ -23,7 +24,7 @@ import edu.stanford.smi.protegex.owl.repository.util.OntologyNameExtractor;
  * matthew.horridge@cs.man.ac.uk<br>
  * www.cs.man.ac.uk/~horridgm<br><br>
  */
-public class ForcedURLRetrievalRepository extends AbstractStreamBasedRepositoryImpl {
+public class ForcedURLRetrievalRepository implements Repository {
 
     private URL url;
 
@@ -71,12 +72,11 @@ public class ForcedURLRetrievalRepository extends AbstractStreamBasedRepositoryI
     }
 
 
-    public Collection<URI> getOntologies() {
+    public Collection getOntologies() {
         return Collections.singleton(uri);
     }
 
 
-    @Override
     public InputStream getInputStream(URI ontologyName)
             throws IOException {
         if (uri != null) {

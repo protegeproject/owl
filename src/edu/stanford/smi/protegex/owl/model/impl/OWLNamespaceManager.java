@@ -1,154 +1,104 @@
 package edu.stanford.smi.protegex.owl.model.impl;
 
-import java.io.Serializable;
-import java.net.URI;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
+import com.hp.hpl.jena.vocabulary.OWL;
+import com.hp.hpl.jena.vocabulary.RDF;
+import com.hp.hpl.jena.vocabulary.RDFS;
+import com.hp.hpl.jena.vocabulary.XSD;
+import edu.stanford.smi.protege.model.Instance;
 import edu.stanford.smi.protege.model.KnowledgeBase;
-import edu.stanford.smi.protege.model.Localizable;
-import edu.stanford.smi.protege.util.Log;
-import edu.stanford.smi.protegex.owl.model.NamespaceManager;
+import edu.stanford.smi.protege.model.Slot;
+import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
 import edu.stanford.smi.protegex.owl.model.NamespaceManagerListener;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLNames;
-import edu.stanford.smi.protegex.owl.model.RDFNames;
-import edu.stanford.smi.protegex.owl.model.RDFSNames;
-import edu.stanford.smi.protegex.owl.model.XSDNames;
+import edu.stanford.smi.protegex.owl.model.OWLOntology;
+import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
+import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreModel;
+import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreUtil;
 
-public class OWLNamespaceManager implements NamespaceManager, Serializable, Localizable {
-    private static final long serialVersionUID = -7101015781624857363L;
-    
-    private static final transient Logger log = Log.getLogger(OWLNamespaceManager.class);
-    //TODO: The interface should be modified to throw exceptions	
-    private transient Collection<NamespaceManagerListener> listeners = new HashSet<NamespaceManagerListener>();
+import java.util.*;
 
-    private static String DEFAULT_PREFIX_START = "p";
-    public static final String DEFAULT_NAMESPACE_PREFIX = "";
+/**
+ * A NamespaceManager that maintains the prefix information by means of the values
+ * of the corresponding slot in the default OWLOntology of the knowledge base.
+ *
+ * @author Holger Knublauch  <holger@knublauch.com>
+ */
+public class OWLNamespaceManager extends AbstractNamespaceManager {
 
-    private int last_prefix_index = 0;
+    public final static String DEFAULT_DEFAULT_BASE = "http://www.owl-ontologies.com/unnamed.owl";
 
-    //the 2 hashmaps should be kept in sync at all times
-    private HashMap<String, String> prefix2namespaceMap = new HashMap<String, String>();
-    private HashMap<String, String> namespace2prefixMap = new HashMap<String, String>();
+    public final static String DEFAULT_DEFAULT_NAMESPACE = DEFAULT_DEFAULT_BASE + "#";
 
-    private Collection<String> unmodifiablePrefixes = new HashSet<String>();
+    private String defaultNamespace;
+
+    private Slot prefixesSlot;
+
+    private Map namespace2Prefix = new HashMap();
+
+    private Map prefix2Namespace = new HashMap();
+
+    private Collection systemPrefixes = new ArrayList();
 
 
     public OWLNamespaceManager() {
-        setPrefix(OWLNames.OWL_NAMESPACE, OWLNames.OWL_PREFIX);
-        setModifiable(OWLNames.OWL_PREFIX, false);
-        setPrefix(RDFNames.RDF_NAMESPACE, RDFNames.RDF_PREFIX);
-        setModifiable(RDFNames.RDF_PREFIX, false);
-        setPrefix(RDFSNames.RDFS_NAMESPACE, RDFSNames.RDFS_PREFIX);
-        setModifiable(RDFSNames.RDFS_PREFIX, false);
-        setPrefix(XSDNames.XSD_NAMESPACE, RDFNames.XSD_PREFIX);
-        setModifiable(RDFNames.XSD_PREFIX, false);
     }
 
-    public boolean isModifiable(String prefix) {
-        return !unmodifiablePrefixes.contains(prefix);
-    }
 
-    public void setModifiable(String prefix, boolean value) {
-        if (value) {
-            unmodifiablePrefixes.add(prefix);
-        }
-        else {
-            unmodifiablePrefixes.remove(prefix);
+    private void addPrefixes(Instance ontology, boolean isDefaultOntology) {
+        Collection values = ontology.getDirectOwnSlotValues(prefixesSlot);
+        for (Iterator vit = values.iterator(); vit.hasNext();) {
+            String value = (String) vit.next();
+            int index = value.indexOf(':');
+            if (index > 0 || isDefaultOntology) {
+                String prefix = value.substring(0, index);
+                String namespace = value.substring(index + 1);
+                addPrefix(prefix, namespace);
+            }
         }
     }
 
-    public void addNamespaceManagerListener(NamespaceManagerListener listener) {
-        listeners.add(listener);
+
+    private void addPrefix(String prefix, String namespace) {
+        if (!prefix2Namespace.containsKey(prefix)) { // && !namespace2Prefix.containsKey(namespace)) {
+            prefix2Namespace.put(prefix, namespace);
+        }
+        namespace2Prefix.put(namespace, prefix);
     }
-    
-    public void removeNamespaceManagerListener(NamespaceManagerListener listener) {
-        listeners.remove(listener);
-    }
+
 
     public String getDefaultNamespace() {
-        return prefix2namespaceMap.get(DEFAULT_NAMESPACE_PREFIX);
+        return defaultNamespace;
     }
+
 
     public String getNamespaceForPrefix(String prefix) {
-        return prefix2namespaceMap.get(prefix);
-    }
-
-    public String getPrefix(String namespace) {		
-        return namespace2prefixMap.get(namespace);
-    }
-
-    public Collection<String> getPrefixes() {		
-        return prefix2namespaceMap.keySet();
-    }
-    
-    public void setDefaultNamespace(String value) {
-        setPrefix(value, DEFAULT_NAMESPACE_PREFIX);
-    }
-
-    public void setDefaultNamespace(URI uri) {
-        setDefaultNamespace(uri.toString());
-    }
-
-    public void removePrefix(String prefix) {
-        String namespace = prefix2namespaceMap.get(prefix);
-        if (namespace != null) {
-            removePrefixMappingSimple(namespace, prefix);
-            tellNamespaceChanged(prefix, namespace, null);
-            tellPrefixChanged(namespace, prefix, null);
-        }
-    }
-
-    public void setPrefix(String namespace, String prefix) {
-        String existingNamespace = prefix2namespaceMap.get(prefix);
-        String existingPrefix = namespace2prefixMap.get(namespace);
-
-        if (existingNamespace != null && namespace.equals(existingNamespace)) {
-            return;
-        }
-        //should throw exception
-        if (existingNamespace != null && unmodifiablePrefixes.contains(prefix)) {
-            log.warning("Trying to set namespace to an unmodifiable prefix: " + prefix + " -> " + namespace);
-            return;
-        }
-        if (existingPrefix != null) {
-            removePrefixMappingSimple(namespace, existingPrefix);
-            tellNamespaceChanged(existingPrefix, namespace, null);
-        }
-        if (existingNamespace != null) {
-            removePrefixMappingSimple(existingNamespace, prefix);
-            tellPrefixChanged(existingNamespace, prefix, null);
-        }
-
-        addPrefixMappingSimple(namespace, prefix);
-        tellPrefixChanged(namespace, existingPrefix, prefix);
-        tellNamespaceChanged(prefix, existingNamespace, namespace);
-        return;
+        return (String) prefix2Namespace.get(prefix);
     }
 
 
-
-    public void setPrefix(URI namespace, String prefix) {
-        setPrefix(namespace.toString(), prefix);
+    public String getPrefix(String namespace) {
+        return (String) namespace2Prefix.get(namespace);
     }
 
 
-    protected String getNextAvailablePrefixName() {
-        last_prefix_index ++ ;
-
-        String prefixName = DEFAULT_PREFIX_START + last_prefix_index;
-
-        while (prefix2namespaceMap.get(prefixName) != null) {
-            last_prefix_index ++;
-            prefixName = DEFAULT_PREFIX_START + last_prefix_index;
-        }
-
-        return prefixName;		
+    public Collection getPrefixes() {
+        Collection results = new HashSet(prefix2Namespace.keySet());
+        results.remove("");
+        return results;
     }
 
+
+    public void init(OWLModel owlModel) {
+        super.init(owlModel);
+        prefixesSlot = ((KnowledgeBase) owlModel).getSlot(OWLNames.Slot.ONTOLOGY_PREFIXES);
+        update();
+    }
+
+
+    public boolean isModifiable(String prefix) {
+        return !systemPrefixes.contains(prefix);
+    }
 
 
     public static boolean isValidPrefix(String prefix) {
@@ -167,85 +117,141 @@ public class OWLNamespaceManager implements NamespaceManager, Serializable, Loca
         return true;
     }
 
-    public void removePrefixMappingSimple(String namespace, String prefix) {
-        prefix2namespaceMap.remove(prefix);
-        namespace2prefixMap.remove(namespace);
-    }
 
-    private void addPrefixMappingSimple(String namespace, String prefix) {
-        prefix2namespaceMap.put(prefix, namespace);
-        namespace2prefixMap.put(namespace, prefix);	
-    }
-
-
-
-    public void localize(KnowledgeBase kb) {
-        listeners = new HashSet<NamespaceManagerListener>();
-    }
-
-    /*
-     * Put all the weird redundant NamespaceManagerListener code here.  This type of thing might 
-     * eventually belong in an Abstract Namespace Manager.
-     * 
-     */
-
-    private void tellNamespaceChanged(String prefix, String oldNamespace, String newNamespace) {
-        for (NamespaceManagerListener listener : listeners) {
-            try {
-                listener.namespaceChanged(prefix, oldNamespace, newNamespace);
-            }
-            catch (Throwable t) {
-                handleNamespaceListenerError(listener, t);
-            }
-        }
-        if (DEFAULT_NAMESPACE_PREFIX.equals(prefix)) {
-            for (NamespaceManagerListener listener : listeners) {
-                try {
-                    listener.defaultNamespaceChanged(oldNamespace, newNamespace);
-                }
-                catch (Throwable t) {
-                    handleNamespaceListenerError(listener, t);
-                }
-            }
-        }
-        if (oldNamespace == null) {
-            for (NamespaceManagerListener listener : listeners) {
-                try {
-                    listener.prefixAdded(prefix);
-                }
-                catch (Throwable t) {
-                    handleNamespaceListenerError(listener, t);
-                }
-            }
-        }
-        if (newNamespace == null) {
-            for (NamespaceManagerListener listener : listeners) {
-                try {
-                    listener.prefixRemoved(prefix);
-                }
-                catch (Throwable t) {
-                    handleNamespaceListenerError(listener, t);
-                }
-            }
-        }
-    }
-    
-    private void tellPrefixChanged(String namespace, String oldPrefix, String newPrefix) {
-        for (NamespaceManagerListener listener : listeners) {
-            try {
-                listener.prefixChanged(namespace, oldPrefix, newPrefix);
-            }
-            catch (Throwable t) {
-                handleNamespaceListenerError(listener, t);
-            }
-        }
-    }
-    
-    private void handleNamespaceListenerError(NamespaceManagerListener listener, Throwable t) {
-        log.warning("Excepction thrown by  namespace listener (" + listener + "): " + t);
-        if (log.isLoggable(Level.FINE)) {
-            log.log(Level.FINE, "Exception caught", t);
+    public void removePrefix(String prefix) {
+        removePrefixHelper(prefix);
+        update();
+        for (Iterator it = new ArrayList(getListeners()).iterator(); it.hasNext();) {
+            NamespaceManagerListener listener = (NamespaceManagerListener) it.next();
+            listener.prefixRemoved(prefix);
         }
     }
 
+
+    private void removePrefixHelper(String prefix) {
+	    String value = prefix + ":" + getNamespaceForPrefix(prefix);
+	    for(Iterator it = owlModel.getOWLOntologies().iterator(); it.hasNext(); ) {
+		    Instance curOntology = (Instance) it.next();
+		    curOntology.removeOwnSlotValue(prefixesSlot, value);
+	    }
+    }
+
+
+    public void setDefaultNamespace(String value) {
+        String oldValue = getDefaultNamespace();
+        defaultNamespace = value;
+        OWLOntology oi = owlModel.getDefaultOWLOntology();
+        setDefaultNamespace(oi, value);
+        for (Iterator it = new ArrayList(getListeners()).iterator(); it.hasNext();) {
+            NamespaceManagerListener listener = (NamespaceManagerListener) it.next();
+            listener.defaultNamespaceChanged(oldValue, value);
+        }
+    }
+
+
+    private void setDefaultNamespace(OWLOntology oi, String value) {
+        Collection values = ((Instance) oi).getDirectOwnSlotValues(prefixesSlot);
+        for (Iterator it = values.iterator(); it.hasNext();) {
+            String str = (String) it.next();
+            if (str.startsWith(":")) {
+                ((Instance) oi).removeOwnSlotValue(prefixesSlot, str);
+                break;
+            }
+        }
+        ((Instance) oi).addOwnSlotValue(prefixesSlot, ":" + value);
+
+        update();
+    }
+
+
+    public void setModifiable(String prefix, boolean value) {
+        if (value) {
+            systemPrefixes.remove(prefix);
+        }
+        else {
+            systemPrefixes.add(prefix);
+        }
+    }
+
+
+    public void setPrefix(String namespace, String prefix) {
+        final TripleStoreModel tsm = owlModel.getTripleStoreModel();
+        TripleStore oldActiveTripleStore = tsm.getActiveTripleStore();
+        tsm.setActiveTripleStore(tsm.getTopTripleStore());
+        String oldPrefix = getPrefix(namespace);
+        String oldNamespace = getNamespaceForPrefix(prefix);
+        String value = prefix + ":" + namespace;
+        OWLOntology oi = owlModel.getDefaultOWLOntology();
+        if (oldNamespace != null) {
+            removePrefixHelper(prefix);
+            ((Instance) oi).addOwnSlotValue(prefixesSlot, value);
+            tsm.setActiveTripleStore(oldActiveTripleStore);
+            update();
+            for (Iterator it = new ArrayList(getListeners()).iterator(); it.hasNext();) {
+                NamespaceManagerListener listener = (NamespaceManagerListener) it.next();
+                listener.namespaceChanged(prefix, oldNamespace, namespace);
+            }
+        }
+        else if (oldPrefix != null) {
+            removePrefixHelper(oldPrefix);
+            ((Instance) oi).addOwnSlotValue(prefixesSlot, value);
+            tsm.setActiveTripleStore(oldActiveTripleStore);
+            update();
+            for (Iterator it = new ArrayList(getListeners()).iterator(); it.hasNext();) {
+                NamespaceManagerListener listener = (NamespaceManagerListener) it.next();
+                listener.prefixChanged(namespace, oldPrefix, prefix);
+            }
+        }
+        else {
+            ((Instance) oi).addOwnSlotValue(prefixesSlot, value);
+            tsm.setActiveTripleStore(oldActiveTripleStore);
+            update();
+            for (Iterator it = new ArrayList(getListeners()).iterator(); it.hasNext();) {
+                NamespaceManagerListener listener = (NamespaceManagerListener) it.next();
+                listener.prefixAdded(prefix);
+            }
+        }
+    }
+
+
+    public void update() {
+        prefix2Namespace.clear();
+        namespace2Prefix.clear();
+        installDefaultNamespaces();
+        Collection ontologies = owlModel.getOWLOntologies();
+        Instance defaultOntology = null;
+        TripleStoreModel tsm = owlModel.getTripleStoreModel();
+        if (!ontologies.isEmpty()) {
+            if (tsm != null) {
+                TripleStore tripleStore = tsm.getTopTripleStore();
+                defaultOntology = TripleStoreUtil.getFirstOntology(owlModel, tripleStore);
+            }
+            else {
+                defaultOntology = (Instance) ontologies.iterator().next();
+            }
+        }
+
+        // Ensure that default ontology is handled first in case prefixes contradict below
+        if (defaultOntology != null) {
+            addPrefixes(defaultOntology, true);
+            ontologies = new ArrayList(ontologies);
+            ontologies.remove(defaultOntology);
+        }
+        for (Iterator it = ontologies.iterator(); it.hasNext();) {
+            Instance ontology = (Instance) it.next();
+            addPrefixes(ontology, false);
+        }
+        defaultNamespace = getNamespaceForPrefix("");
+        if (defaultNamespace == null) {
+            defaultNamespace = OWLNamespaceManager.DEFAULT_DEFAULT_NAMESPACE;
+        }
+    }
+
+
+    private void installDefaultNamespaces() {
+        addPrefix("owl", OWL.getURI());
+        addPrefix("rdf", RDF.getURI());
+        addPrefix("rdfs", RDFS.getURI());
+        addPrefix("xsd", XSD.anyURI.getNameSpace());
+    }
 }

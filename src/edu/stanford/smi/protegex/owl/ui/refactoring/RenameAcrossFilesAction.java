@@ -10,7 +10,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import com.hp.hpl.jena.graph.impl.SimpleGraphMaker;
 import com.hp.hpl.jena.ontology.OntDocumentManager;
@@ -28,8 +27,8 @@ import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.jena.Jena;
 import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
-import edu.stanford.smi.protegex.owl.model.ProtegeNames;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
+import edu.stanford.smi.protegex.owl.model.impl.OWLNamespaceManager;
 import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
 import edu.stanford.smi.protegex.owl.ui.dialogs.ModalDialogFactory;
 import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
@@ -41,7 +40,6 @@ import edu.stanford.smi.protegex.owl.ui.widget.ModalProgressBarManager;
  * @author Holger Knublauch  <holger@knublauch.com>
  */
 public class RenameAcrossFilesAction extends RefactorResourceAction {
-    private static transient final Logger log = Log.getLogger(RenameAcrossFilesAction.class);
 
     private final static String PROPERTY = "RenameAcrossFiles";
 
@@ -52,7 +50,7 @@ public class RenameAcrossFilesAction extends RefactorResourceAction {
 
 
     public void actionPerformed(ActionEvent e) {
-        RDFResource resource = getResource();
+        RDFResource resource = (RDFResource) getResource();
         String oldPropertyValue = resource.getOWLModel().getOWLProject().getSettingsMap().getString(PROPERTY);
         String[] files = new String[0];
         if (oldPropertyValue != null) {
@@ -88,7 +86,6 @@ public class RenameAcrossFilesAction extends RefactorResourceAction {
     }
 
 
-    @Override
     public boolean isSuitable(Component component, RDFResource resource) {
         if (resource instanceof RDFResource) {
             return !resource.isSystem() && !resource.isAnonymous();
@@ -102,7 +99,7 @@ public class RenameAcrossFilesAction extends RefactorResourceAction {
     public static void performAction(RDFResource resource, String newName, Iterator files) {
         OWLModel owlModel = resource.getOWLModel();
         String oldURI = resource.getURI();
-        resource = (RDFResource) resource.rename(newName);
+        resource.setName(newName);
         String newURI = resource.getURI();
         ModalProgressBarManager man = new ModalProgressBarManager("Renaming across files...");
         man.setProgressValue(0);
@@ -115,7 +112,7 @@ public class RenameAcrossFilesAction extends RefactorResourceAction {
             File file = (File) it.next();
             man.setProgressText(file.getAbsolutePath());
             man.setProgressValue((double) step / filesSet.size());
-            log.info("[RenameAcrossFilesAction] " + file);
+            System.out.println("[RenameAcrossFilesAction] " + file);
             try {
                 performAction(resource.getProject(), file, oldURI, newURI, okFiles);
             }
@@ -169,14 +166,14 @@ public class RenameAcrossFilesAction extends RefactorResourceAction {
         OntModel ontModel = ModelFactory.createOntologyModel(spec, null);
 
         ontModel.read(new FileInputStream(file),
-                ProtegeNames.DEFAULT_DEFAULT_NAMESPACE,
+                OWLNamespaceManager.DEFAULT_DEFAULT_NAMESPACE,
                 FileUtils.langXMLAbbrev);
         Resource oldResource = ontModel.getResource(oldURI);
         if (ontModel.contains(oldResource, null, (RDFNode) null) ||
                 ontModel.contains(null, null, oldResource) ||
                 (oldResource.canAs(Property.class) &&
                         ontModel.contains(null, ((Property) oldResource.as(Property.class)), (RDFNode) null))) {
-            log.info("[RenameAcrossFilesAction]   References found, now renaming...");
+            System.out.println("[RenameAcrossFilesAction]   References found, now renaming...");
             Jena.renameResource(ontModel, oldResource, newURI);
             JenaOWLModel.save(file, ontModel, FileUtils.langXMLAbbrev,
                     ontModel.getNsPrefixURI(""));

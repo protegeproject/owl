@@ -16,12 +16,10 @@ import javax.swing.ButtonGroup;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 
-import edu.stanford.smi.protege.model.Instance;
 import edu.stanford.smi.protege.plugin.PluginUtilities;
 import edu.stanford.smi.protege.util.ApplicationProperties;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protege.util.PropertyList;
-import edu.stanford.smi.protege.widget.SlotWidget;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
@@ -135,16 +133,15 @@ public class SwitchClassDefinitionResourceDisplayPlugin implements ResourceDispl
             setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
             ButtonGroup group = new ButtonGroup();
             final OWLModel owlModel = widget.getOWLModel();
-            for (Iterator<SwitchableType> it = widget.listSwitchableTypes(); it.hasNext();) {
-                final SwitchableType type = it.next();
+            for (Iterator it = widget.listSwitchableTypes(); it.hasNext();) {
+                final SwitchableType type = (SwitchableType) it.next();
                 if (type.isSuitable(owlModel)) {
                     JRadioButton button = new JRadioButton(type.getButtonText());
                     group.add(button);
                     button.addActionListener(new ActionListener() {
                         public void actionPerformed(ActionEvent e) {
                             switchTo(type);
-                            owlModel.getOWLProject().getSettingsMap().setString(PROPERTY, type.getWidgetClassType().getName());         
-                            widget.setInstance(widget.getEditedResource());
+                            owlModel.getOWLProject().getSettingsMap().setString(PROPERTY, type.getWidgetClassType().getName());
                         }
                     });
                     add(button);
@@ -173,9 +170,9 @@ public class SwitchClassDefinitionResourceDisplayPlugin implements ResourceDispl
                     button.setEnabled(false);
                     button.setToolTipText("The selected class uses OWL features that cannot be displayed with the " + type.getButtonText() + ".");
                     if (button.isSelected()) {
-                        Iterator<SwitchableType> types = widget.listSwitchableTypes();
+                        Iterator types = widget.listSwitchableTypes();
                         while (types.hasNext()) {
-                            SwitchableType otherType = types.next();
+                            SwitchableType otherType = (SwitchableType) types.next();
                             if (otherType != type && otherType.isSufficientlyExpressive(namedClass)) {
                                 JRadioButton otherButton = getRadioButton(otherType);
                                 otherButton.setSelected(true);
@@ -211,7 +208,5 @@ public class SwitchClassDefinitionResourceDisplayPlugin implements ResourceDispl
         //    final Project project = widget.getProject();
         //    setClassesView(project.getSources(), propertyMode);
         //}
-        
-    
     }
 }

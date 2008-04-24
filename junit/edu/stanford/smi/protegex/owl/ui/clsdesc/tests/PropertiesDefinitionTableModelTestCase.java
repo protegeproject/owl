@@ -79,7 +79,7 @@ public class PropertiesDefinitionTableModelTestCase extends AbstractJenaTestCase
 
         OWLNamedClass otherCls = owlModel.createOWLNamedClass("Other");
         tableModel.addEmptyRow(1);
-        tableModel.setValueAt(otherCls.getLocalName(), 1, 0);
+        tableModel.setValueAt(otherCls.getName(), 1, 0);
         tableModel.removeEmptyRow();
 
         OWLIntersectionClass oldIntersectionCls = (OWLIntersectionClass) cls.getDefinition();
@@ -90,7 +90,7 @@ public class PropertiesDefinitionTableModelTestCase extends AbstractJenaTestCase
         assertEquals(2, tableModel.getRowCount());
         assertEquals(otherCls, tableModel.getClass(0));
         int superClsRow = tableModel.getClassRow(superCls);
-        tableModel.setValueAt("not " + otherCls.getLocalName(), superClsRow, 0);
+        tableModel.setValueAt("not " + otherCls.getName(), superClsRow, 0);
         OWLIntersectionClass newIntersectionCls = (OWLIntersectionClass) cls.getDefinition();
         final Collection operands = new ArrayList(newIntersectionCls.getOperands());
         operands.remove(otherCls);
@@ -111,7 +111,7 @@ public class PropertiesDefinitionTableModelTestCase extends AbstractJenaTestCase
         assertEquals(superCls, tableModel.getClass(0));
 
         assertEquals(1, cls.getSuperclassCount());
-        tableModel.setValueAt("not " + superCls.getLocalName(), 0, 0);
+        tableModel.setValueAt("not " + superCls.getName(), 0, 0);
         assertEquals(2, cls.getSuperclassCount());
         assertContains(owlThing, cls.getSuperclasses(false));
     }

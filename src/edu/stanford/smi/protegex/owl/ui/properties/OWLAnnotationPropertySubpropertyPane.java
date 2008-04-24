@@ -42,7 +42,6 @@ public class OWLAnnotationPropertySubpropertyPane extends OWLSubpropertyPane {
 		ArrayList actions = new ArrayList();
 		actions.add(getCreateAnnotationOWLObjectPropertyAction());
 		actions.add(getCreateAnnotationOWLDatatypePropertyAction());
-		actions.add(getCreateAnnotationPropertyAction());
 		actions.add(getCreateSubpropertyAction());
 		return actions;
 	}

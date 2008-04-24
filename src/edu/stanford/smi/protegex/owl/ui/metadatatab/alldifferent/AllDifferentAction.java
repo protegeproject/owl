@@ -4,7 +4,6 @@ import edu.stanford.smi.protege.ui.ProjectView;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
 import edu.stanford.smi.protegex.owl.ui.actions.AbstractOWLModelAction;
-import edu.stanford.smi.protegex.owl.ui.actions.OWLModelActionConstants;
 import edu.stanford.smi.protegex.owl.ui.dialogs.ModalDialogFactory;
 
 /**
@@ -13,9 +12,9 @@ import edu.stanford.smi.protegex.owl.ui.dialogs.ModalDialogFactory;
  * @author Holger Knublauch  <holger@knublauch.com>
  */
 public class AllDifferentAction extends AbstractOWLModelAction {
-			
-	public String getMenubarPath() {
-        return OWL_MENU + PATH_SEPARATOR + OWLModelActionConstants.MODEL_OPERATIONS_GROUP;
+
+    public String getMenubarPath() {
+        return OWL_MENU + PATH_SEPARATOR + "YUKK";
     }
 
 

@@ -1,29 +1,12 @@
 package edu.stanford.smi.protegex.owl.storage;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import edu.stanford.smi.protege.model.Cls;
-import edu.stanford.smi.protege.model.Instance;
-import edu.stanford.smi.protege.model.KnowledgeBase;
-import edu.stanford.smi.protege.model.Model;
-import edu.stanford.smi.protege.model.Slot;
-import edu.stanford.smi.protege.model.ValueType;
-import edu.stanford.smi.protege.util.Log;
-import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
-import edu.stanford.smi.protegex.owl.model.OWLModel;
-import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
-import edu.stanford.smi.protegex.owl.model.OWLNames;
-import edu.stanford.smi.protegex.owl.model.OWLObjectProperty;
-import edu.stanford.smi.protegex.owl.model.OWLProperty;
-import edu.stanford.smi.protegex.owl.model.RDFIndividual;
-import edu.stanford.smi.protegex.owl.model.RDFProperty;
-import edu.stanford.smi.protegex.owl.model.RDFSDatatype;
+import edu.stanford.smi.protege.model.*;
+import edu.stanford.smi.protegex.owl.model.*;
 import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
 import edu.stanford.smi.protegex.owl.model.impl.XMLSchemaDatatypes;
-import edu.stanford.smi.protegex.owl.writer.rdfxml.util.ProtegeWriterSettings;
+
+import java.util.Collection;
+import java.util.HashSet;
 
 /**
  * This class can be used to convert a legacy Protege ontology (in e.g. CLIPS format) into
@@ -40,27 +23,17 @@ import edu.stanford.smi.protegex.owl.writer.rdfxml.util.ProtegeWriterSettings;
  * @author Holger Knublauch  <holger@knublauch.com>
  */
 public class ProtegeSaver extends KnowledgeBaseCopier {
-    public static transient Logger log = Log.getLogger(ProtegeSaver.class);
 
     private OWLModel owlModel;
 
 
     public ProtegeSaver(KnowledgeBase source, OWLModel target) {
-    	this(source, target, false);
+        super(source, target);
+        this.owlModel = target;
     }
 
 
-    public ProtegeSaver(KnowledgeBase source, OWLModel target, boolean useNativeWriter) {
-        super(source, target);
-        this.owlModel = target;
-        
-        if (useNativeWriter && owlModel instanceof JenaOWLModel) {
-        	((JenaOWLModel)owlModel).setWriterSettings(new ProtegeWriterSettings((JenaOWLModel)owlModel));
-        }
-	}
-
-
-	protected void addExtraDirectTypes(Instance oldInstance, Instance newInstance) {
+    protected void addExtraDirectTypes(Instance oldInstance, Instance newInstance) {
         super.addExtraDirectTypes(oldInstance, newInstance);
         if (oldInstance instanceof Slot &&
                 !((Slot) oldInstance).getAllowsMultipleValues() &&
@@ -78,10 +51,7 @@ public class ProtegeSaver extends KnowledgeBaseCopier {
 
     protected Cls createCls(String clsName, Cls metaCls) {
         String validName = getValidName(clsName);
-        if (log.isLoggable(Level.FINE)) {
-            log.fine("+ Creating named class " + validName + " for " + clsName + " with type " + metaCls.getName());
-        }
-
+        log("+ Creating named class " + validName + " for " + clsName + " with type " + metaCls.getName());
         OWLNamedClass cls = owlModel.createOWLNamedClass(validName, (OWLNamedClass) metaCls);
         String realName = cls.getName();
         if (!realName.equals(clsName)) {
@@ -107,10 +77,7 @@ public class ProtegeSaver extends KnowledgeBaseCopier {
 
     protected Slot createSlot(String slotName, ValueType valueType) {
         String validName = getValidName(slotName);
-        if (log.isLoggable(Level.FINE)) {
-            log.fine("+ Creating slot " + validName);
-        }
-
+        log("+ Creating slot " + validName);
         RDFProperty property = null;
         if (valueType == ValueType.INSTANCE || valueType == ValueType.CLS) {
             property = owlModel.createOWLObjectProperty(validName);
@@ -208,19 +175,10 @@ public class ProtegeSaver extends KnowledgeBaseCopier {
                 RDFSDatatype datatype = owlModel.getRDFSDatatypeByURI(uri);
                 ((RDFProperty) newSlot).setRange(datatype);
             }
-           
-           //treat rdf:range for owl object properties
-           if (newSlot instanceof OWLObjectProperty && valueType == ValueType.INSTANCE) {
-        	   Collection newAllowedClses = cloneValues(oldSlot.getAllowedClses());
-               ((OWLObjectProperty)newSlot).setRanges(newAllowedClses);        
-           } else {
-        	   super.setValueType(oldSlot, newSlot);
-           }
+            super.setValueType(oldSlot, newSlot);
         }
         else {
             System.err.println("[ProtegeSaver] Warning: Slot " + oldSlot + " has value type ANY");
         }
     }
-  
-    
 }

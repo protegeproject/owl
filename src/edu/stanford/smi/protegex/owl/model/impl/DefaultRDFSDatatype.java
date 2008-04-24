@@ -405,7 +405,7 @@ public class DefaultRDFSDatatype extends DefaultRDFIndividual implements RDFSDat
                 String baseTypeName = expression.substring(0, index).trim();
                 RDFSDatatype datatype = owlModel.getRDFSDatatypeByName(baseTypeName);
                 if (datatype != null) {
-                	RDFProperty subDatatypeOfProperty = XSPNames.getRDFProperty(owlModel, XSPNames.XSP_BASE);
+                    RDFProperty subDatatypeOfProperty = owlModel.getRDFProperty(XSPNames.BASE);
                     map.put(subDatatypeOfProperty, datatype);
                     RDFProperty minProperty = null;
                     if (expression.charAt(index) == '(') {

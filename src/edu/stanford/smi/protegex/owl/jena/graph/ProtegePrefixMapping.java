@@ -2,7 +2,6 @@ package edu.stanford.smi.protegex.owl.jena.graph;
 
 import com.hp.hpl.jena.shared.PrefixMapping;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
-import edu.stanford.smi.protegex.owl.model.ProtegeNames;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 
 import java.util.HashMap;
@@ -101,7 +100,7 @@ public class ProtegePrefixMapping implements PrefixMapping {
                 String localName = owlModel.getLocalNameForURI(uri);
                 if (localName != null) {
                     if (prefix.length() > 0) {
-                        return prefix + ProtegeNames.PREFIX_LOCALNAME_SEPARATOR + localName;
+                        return prefix + ":" + localName;
                     }
                     else {
                         return localName;

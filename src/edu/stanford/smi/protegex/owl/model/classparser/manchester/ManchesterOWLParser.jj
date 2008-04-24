@@ -4,26 +4,6 @@
 //
 //////////////////////////////////////////////////////////
 
-//////////////////////////////////////////////////////////
-// This grammar has several problems.  It looks like they can be
-// solved within the confines of JavaCC.  In particular when viewing
-// the grammar we find that named classes or restrictions are expressed
-// in the grammar element
-//    IDClass 	::= 	Identifier
-// Also the Restriction production,
-//    Restriction 	::=
-// is an orphan.  What is happening is that the java implementation of IDClass is 
-// doing some parsing of its own without telling the javacc parser.  One thing that 
-// helps is the fact that when the parser consumes a token, it can check whether the 
-// consumed token is a class, property or individual.  See the DLSyntax Parser for
-// example code.
-//
-// Also there is an ambiguity in the case that an individual has the name "true" or
-// "false".  The resolution of this ambiguity depends on the context and is also 
-// causing some awkward problems with the grammar.
-//////////////////////////////////////////////////////////
-
-
 
 options {
     JAVA_UNICODE_ESCAPE = true;
@@ -241,8 +221,8 @@ TOKEN :
 {
   < ONE_OF: "owl:oneOf{" >
 |
-  < IDENTIFIER: <LETTER> (<LETTER>|<DIGIT>)* | "'" (~["'"])* "'"> {
-    if(ManchesterOWLParser.getDatatypeNameChecker().isDatatypeName(ParserUtils.dequoteIdentifier(matchedToken.image))) {
+  < IDENTIFIER: <LETTER> (<LETTER>|<DIGIT>)* > {
+    if(ManchesterOWLParser.getDatatypeNameChecker().isDatatypeName(matchedToken.image)) {
 		matchedToken.kind = DATATYPEID;
     }
   }
@@ -694,7 +674,7 @@ String Identifier() :
 }
 {
     t=<IDENTIFIER> {
-        return ParserUtils.dequoteIdentifier(t.image);
+        return t.image;
     }
 }
 

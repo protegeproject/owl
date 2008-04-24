@@ -65,11 +65,12 @@ public abstract class AbstractOWLNAryLogicalClass extends AbstractOWLLogicalClas
    } */
 
 
-    public Collection<RDFSNamedClass> getNamedOperands() {
-        Collection<RDFSNamedClass> result = new HashSet<RDFSNamedClass>();
-        for (RDFSClass operand : getOperands()) {
+    public Collection getNamedOperands() {
+        Collection result = new HashSet();
+        for (Iterator it = getOperands().iterator(); it.hasNext();) {
+            RDFSClass operand = (RDFSClass) it.next();
             if (operand instanceof RDFSNamedClass) {
-                result.add((RDFSNamedClass) operand);
+                result.add(operand);
             }
         }
         return result;
@@ -81,11 +82,10 @@ public abstract class AbstractOWLNAryLogicalClass extends AbstractOWLLogicalClas
     }
 
 
-    @SuppressWarnings("unchecked")
-    public Collection<RDFSClass> getOperands() {
+    public Collection getOperands() {
         RDFList list = (RDFList) getPropertyValue(getOperandsProperty());
         if (list == null) {
-            return Collections.emptyList();
+            return Collections.EMPTY_LIST;
         }
         else {
             return list.getValues();

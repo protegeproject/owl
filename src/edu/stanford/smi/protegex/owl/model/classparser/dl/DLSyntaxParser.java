@@ -147,8 +147,7 @@ public class DLSyntaxParser implements DLSyntaxParserConstants {
     Token t;
     t = jj_consume_token(CLASS_ID);
       try {
-        String idName = ParserUtils.dequoteIdentifier(t.image);
-        {if (true) return ParserUtils.getOWLClassFromName(owlModel, idName);}
+        {if (true) return ParserUtils.getOWLClassFromName(owlModel, t.image);}
       } catch (AmbiguousNameException ex) {
         {if (true) throw new ParseException(ex.getMessage());}
       }
@@ -528,8 +527,7 @@ public class DLSyntaxParser implements DLSyntaxParserConstants {
   final public RDFSDatatype Datatype() throws ParseException {
     Token token;
     token = jj_consume_token(DATATYPE_ID);
-        String idName = ParserUtils.dequoteIdentifier(token.image);
-        {if (true) return owlModel.getRDFSDatatypeByName(datatypeChecker.getDatatypeQName(idName));}
+        {if (true) return owlModel.getRDFSDatatypeByName(datatypeChecker.getDatatypeQName(token.image));}
     throw new Error("Missing return statement in function");
   }
 
@@ -538,8 +536,7 @@ public class DLSyntaxParser implements DLSyntaxParserConstants {
     OWLDatatypeProperty prop;
     t = jj_consume_token(DATATYPE_PROPERTY_ID);
       try {
-        String idName = ParserUtils.dequoteIdentifier(t.image);
-        prop = ParserUtils.getOWLDatatypePropertyFromName(owlModel, idName);
+        prop = ParserUtils.getOWLDatatypePropertyFromName(owlModel, t.image);
       } catch (AmbiguousNameException ex) {
         {if (true) throw new ParseException(ex.getMessage());}
       }
@@ -552,8 +549,7 @@ public class DLSyntaxParser implements DLSyntaxParserConstants {
     OWLObjectProperty prop;
     t = jj_consume_token(OBJECT_PROPERTY_ID);
        try {
-           String idName = ParserUtils.dequoteIdentifier(t.image);
-           prop = ParserUtils.getOWLObjectPropertyFromName(owlModel, idName);
+           prop = ParserUtils.getOWLObjectPropertyFromName(owlModel, t.image);
        } catch (AmbiguousNameException ex) {
                   {if (true) throw new ParseException(ex.getMessage());}
        }
@@ -565,8 +561,7 @@ public class DLSyntaxParser implements DLSyntaxParserConstants {
     Token t;
     t = jj_consume_token(INDIVIDUAL_ID);
        try {
-        String idName = ParserUtils.dequoteIdentifier(t.image);
-        {if (true) return ParserUtils.getOWLIndividualFromName(owlModel, idName);}
+        {if (true) return ParserUtils.getOWLIndividualFromName(owlModel, t.image);}
        } catch (AmbiguousNameException ex) {
           {if (true) throw new ParseException(ex.getMessage());}
        }

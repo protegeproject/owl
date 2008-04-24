@@ -1,12 +1,14 @@
 
 package edu.stanford.smi.protegex.owl.swrl.bridge.builtins;
 
+import edu.stanford.smi.protegex.owl.model.*;
+import edu.stanford.smi.protegex.owl.swrl.model.*;
 import edu.stanford.smi.protegex.owl.swrl.bridge.*;
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.*;
+import edu.stanford.smi.protegex.owl.swrl.util.SWRLOWLUtil;
+import edu.stanford.smi.protegex.owl.swrl.exceptions.*;
 
-import edu.stanford.smi.protegex.owl.swrl.bridge.impl.*;
-
-import java.util.*;
+import java.util.List;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
@@ -40,97 +42,68 @@ public class SWRLBuiltInUtil
       throw new InvalidBuiltInArgumentNumberException(expectingAtMost, actual, expectingAtLeast + " to");
   } // checkNumberOfArgumentsInRange
 
-  public static void checkThatAllArgumentsAreLiterals(List<BuiltInArgument> arguments) throws BuiltInException
+  public static void checkThatAllArgumentsAreLiterals(List<Argument> arguments) throws BuiltInException
   {
     for (int argumentNumber = 0; argumentNumber < arguments.size(); argumentNumber++) 
       checkThatArgumentIsALiteral(argumentNumber, arguments);
   } // checkThatAllArgumentsAreLiterals
 
-  public static void checkThatAllArgumentsAreNumeric(List<BuiltInArgument> arguments) throws BuiltInException
+  public static void checkThatAllArgumentsAreNumeric(List<Argument> arguments) throws BuiltInException
   {
     for (int argumentNumber = 0; argumentNumber < arguments.size(); argumentNumber++) 
       checkThatArgumentIsNumeric(argumentNumber, arguments);
   } // checkThatAllArgumentsAreNumeric
 
-  public static void checkThatAllArgumentsAreIntegers(List<BuiltInArgument> arguments) throws BuiltInException
+  public static void checkThatAllArgumentsAreIntegers(List<Argument> arguments) throws BuiltInException
   {
     for (int argumentNumber = 0; argumentNumber < arguments.size(); argumentNumber++) 
       checkThatArgumentIsAnInteger(argumentNumber, arguments);
   } // checkThatAllArgumentsAreIntegers
 
-  public static boolean areAllArgumentsShorts(List<BuiltInArgument> arguments) throws BuiltInException
+  public static boolean areAllArgumentsShorts(List<Argument> arguments) throws BuiltInException
   {
     for (int argumentNumber = 0; argumentNumber < arguments.size(); argumentNumber++) 
       if (!isArgumentAShort(argumentNumber, arguments)) return false;
     return true;
   } // areAllArgumentsShorts
 
-  public static boolean areAllArgumentsIntegers(List<BuiltInArgument> arguments) throws BuiltInException
+  public static boolean areAllArgumentsIntegers(List<Argument> arguments) throws BuiltInException
   {
     for (int argumentNumber = 0; argumentNumber < arguments.size(); argumentNumber++) 
       if (!isArgumentAnInteger(argumentNumber, arguments)) return false;
     return true;
   } // areAllArgumentsIntegers
 
-  public static boolean areAllArgumentsLongs(List<BuiltInArgument> arguments) throws BuiltInException
+  public static boolean areAllArgumentsLongs(List<Argument> arguments) throws BuiltInException
   {
     for (int argumentNumber = 0; argumentNumber < arguments.size(); argumentNumber++) 
       if (!isArgumentALong(argumentNumber, arguments)) return false;
     return true;
   } // areAllArgumentsLongs
 
-  public static boolean areAllArgumentsFloats(List<BuiltInArgument> arguments) throws BuiltInException
+  public static boolean areAllArgumentsFloats(List<Argument> arguments) throws BuiltInException
   {
     for (int argumentNumber = 0; argumentNumber < arguments.size(); argumentNumber++) 
       if (!isArgumentAFloat(argumentNumber, arguments)) return false;
     return true;
   } // areAllArgumentsFloats
 
-  public static boolean areAllArgumentsDoubles(List<BuiltInArgument> arguments) throws BuiltInException
+  public static boolean areAllArgumentsDoubles(List<Argument> arguments) throws BuiltInException
   {
     for (int argumentNumber = 0; argumentNumber < arguments.size(); argumentNumber++) 
       if (!isArgumentADouble(argumentNumber, arguments)) return false;
     return true;
   } // areAllArgumentsDoubles
 
-  public static boolean isArgumentConvertableToDouble(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException
-  {
-    return (isArgumentNumeric(argumentNumber, arguments));
-  } // isArgumentConvertableToDouble
-
-  public static boolean isArgumentConvertableToFloat(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException
-  {
-    return (isArgumentNumeric(argumentNumber, arguments) && isArgumentAShort(argumentNumber, arguments) &&
-            isArgumentAnInteger(argumentNumber, arguments) && isArgumentALong(argumentNumber, arguments) &&
-            isArgumentAFloat(argumentNumber, arguments));
-  } // isArgumentConvertableToFloat
-
-  public static boolean isArgumentConvertableToLong(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException
-  {
-    return (isArgumentNumeric(argumentNumber, arguments) && isArgumentAShort(argumentNumber, arguments) &&
-            isArgumentAnInteger(argumentNumber, arguments) && isArgumentALong(argumentNumber, arguments));
-  } // isArgumentConvertableToLong
-
-  public static boolean isArgumentConvertableToInteger(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException
-  {
-    return (isArgumentNumeric(argumentNumber, arguments) && isArgumentAShort(argumentNumber, arguments) &&
-            isArgumentAnInteger(argumentNumber, arguments));
-  } // isArgumentConvertableToInteger
-
-  public static boolean isArgumentConvertableToShort(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException
-  {
-    return (isArgumentNumeric(argumentNumber, arguments) && isArgumentAShort(argumentNumber, arguments));
-  } // isArgumentConvertableToShort
-
-  public static boolean isShortMostPreciseArgument(List<BuiltInArgument> arguments) throws BuiltInException
+  public static boolean isShortMostPreciseArgument(List<Argument> arguments) throws BuiltInException
   {
     for (int argumentNumber = 0; argumentNumber < arguments.size(); argumentNumber++) 
       if (isArgumentAnInteger(argumentNumber, arguments) || isArgumentALong(argumentNumber, arguments) || 
           isArgumentAFloat(argumentNumber, arguments) || isArgumentADouble(argumentNumber, arguments)) return false;
     return true;
-  } // isShortMostPreciseArgument
+  } // isIntegerMostPreciseArgument
 
-  public static boolean isIntegerMostPreciseArgument(List<BuiltInArgument> arguments) throws BuiltInException
+  public static boolean isIntegerMostPreciseArgument(List<Argument> arguments) throws BuiltInException
   {
     for (int argumentNumber = 0; argumentNumber < arguments.size(); argumentNumber++) 
       if (isArgumentALong(argumentNumber, arguments) || isArgumentAFloat(argumentNumber, arguments) ||
@@ -138,122 +111,109 @@ public class SWRLBuiltInUtil
     return true;
   } // isIntegerMostPreciseArgument
 
-  public static boolean isLongMostPreciseArgument(List<BuiltInArgument> arguments) throws BuiltInException
+  public static boolean isFloatMostPreciseArgument(List<Argument> arguments) throws BuiltInException
   {
     for (int argumentNumber = 0; argumentNumber < arguments.size(); argumentNumber++) 
-      if (isArgumentADouble(argumentNumber, arguments)|| isArgumentAFloat(argumentNumber, arguments)) return false;
+      if (isArgumentADouble(argumentNumber, arguments) || isArgumentALong(argumentNumber, arguments)) return false;
     return true;
   } // isLongMostPreciseArgument
 
-  public static boolean isFloatMostPreciseArgument(List<BuiltInArgument> arguments) throws BuiltInException
+  public static boolean isLongMostPreciseArgument(List<Argument> arguments) throws BuiltInException
   {
     for (int argumentNumber = 0; argumentNumber < arguments.size(); argumentNumber++) 
       if (isArgumentADouble(argumentNumber, arguments)) return false;
     return true;
-  } // isFloatMostPreciseArgument
+  } // isLongMostPreciseArgument
 
-  public static boolean areAllArgumentsBooleans(List<BuiltInArgument> arguments) throws BuiltInException
+  public static boolean areAllArgumentsBooleans(List<Argument> arguments) throws BuiltInException
   {
     for (int argumentNumber = 0; argumentNumber < arguments.size(); argumentNumber++) 
       if (!isArgumentABoolean(argumentNumber, arguments)) return false;
     return true;
   } // areAllArgumentsBooleans
 
-  public static boolean areAllArgumentLiterals(List<BuiltInArgument> arguments) throws BuiltInException
+  public static boolean areAllArgumentLiterals(List<Argument> arguments) throws BuiltInException
   {
     for (int argumentNumber = 0; argumentNumber < arguments.size(); argumentNumber++) 
       if (!isArgumentALiteral(argumentNumber, arguments)) return false;
     return true;
   } // areAllArgumentsIntegers
 
-  public static boolean areAllArgumentsNumeric(List<BuiltInArgument> arguments) throws BuiltInException
+  public static boolean areAllArgumentsNumeric(List<Argument> arguments) throws BuiltInException
   {
     for (int argumentNumber = 0; argumentNumber < arguments.size(); argumentNumber++) 
       if (!isArgumentNumeric(argumentNumber, arguments)) return false;
     return true;
   } // areAllArgumentsNumeric
 
-  public static boolean areAllArgumentsStrings(List<BuiltInArgument> arguments) throws BuiltInException
+  public static boolean areAllArgumentsStrings(List<Argument> arguments) throws BuiltInException
   {
     for (int argumentNumber = 0; argumentNumber < arguments.size(); argumentNumber++) 
       if (!isArgumentAString(argumentNumber, arguments)) return false;
     return true;
   } // areAllArgumentsStrings
 
-  public static boolean areAllArgumentsOfAnOrderedType(List<BuiltInArgument> arguments) throws BuiltInException
+  public static boolean areAllArgumentsOfAnOrderedType(List<Argument> arguments) throws BuiltInException
   {
     for (int argumentNumber = 0; argumentNumber < arguments.size(); argumentNumber++) 
       if (!isArgumentOfAnOrderedType(argumentNumber, arguments)) return false;
     return true;
   } // areAllArgumentsOfAnOrderedType
 
-  public static void checkThatAllArgumentsAreFloats(List<BuiltInArgument> arguments) throws BuiltInException
+  public static void checkThatAllArgumentsAreFloats(List<Argument> arguments) throws BuiltInException
   {
     for (int argumentNumber = 0; argumentNumber < arguments.size(); argumentNumber++) 
       checkThatArgumentIsAFloat(argumentNumber, arguments);
   } // checkThatAllArgumentsAreFloats
 
-  public static void checkThatAllArgumentsAreStrings(List<BuiltInArgument> arguments) throws BuiltInException
+  public static void checkThatAllArgumentsAreStrings(List<Argument> arguments) throws BuiltInException
   {
     for (int argumentNumber = 0; argumentNumber < arguments.size(); argumentNumber++) 
       checkThatArgumentIsAString(argumentNumber, arguments);
   } // checkThatAllArgumentsAreStrings
 
-  public static void checkThatAllArgumentsAreOfAnOrderedType(List<BuiltInArgument> arguments) throws BuiltInException
+  public static void checkThatAllArgumentsAreOfAnOrderedType(List<Argument> arguments) throws BuiltInException
   {
     for (int argumentNumber = 0; argumentNumber < arguments.size(); argumentNumber++) 
       checkThatArgumentIsOfAnOrderedType(argumentNumber, arguments);
   } // checkThatAllArgumentsAreOfAnOrderedType
 
-  public static void checkThatArgumentIsALiteral(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException
+  public static void checkThatArgumentIsALiteral(int argumentNumber, List<Argument> arguments) throws BuiltInException
   {
     checkArgumentNumber(argumentNumber, arguments);
 
-    if (!(arguments.get(argumentNumber) instanceof DatatypeValueArgument)) 
+    if (!(arguments.get(argumentNumber) instanceof LiteralInfo)) 
       throw new InvalidBuiltInArgumentException(argumentNumber,
                                                 makeInvalidArgumentTypeMessage(arguments.get(argumentNumber), "literal"));
   } // checkThatArgumentIsALiteral
 
-  public static void checkThatArgumentIsALiteral(BuiltInArgument argument) throws BuiltInException
-  {
-
-    if (!(argument instanceof DatatypeValueArgument)) throw new InvalidBuiltInArgumentException(makeInvalidArgumentTypeMessage(argument, "literal"));
-  } // checkThatArgumentIsALiteral
-
-  public static void checkThatArgumentIsNumeric(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException
+  public static void checkThatArgumentIsNumeric(int argumentNumber, List<Argument> arguments) throws BuiltInException
   {
     if (!isArgumentNumeric(argumentNumber, arguments))
       throw new InvalidBuiltInArgumentException(argumentNumber,
                                                 makeInvalidArgumentTypeMessage(arguments.get(argumentNumber), "numeric"));
   } // checkThatArgumentIsNumeric
 
-  public static void checkThatArgumentIsOfAnOrderedType(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException
+  public static void checkThatArgumentIsOfAnOrderedType(int argumentNumber, List<Argument> arguments) throws BuiltInException
   {
     if (!isArgumentOfAnOrderedType(argumentNumber, arguments))
       throw new InvalidBuiltInArgumentException(argumentNumber,
                                                 makeInvalidArgumentTypeMessage(arguments.get(argumentNumber), "ordered type"));
   } // checkThatArgumentIsOfAnOrderedType
 
-  public static boolean isArgumentOfAnOrderedType(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException
+  public static boolean isArgumentOfAnOrderedType(int argumentNumber, List<Argument> arguments) throws BuiltInException
   {
     return (isArgumentNumeric(argumentNumber, arguments) || isArgumentAString(argumentNumber, arguments));
   } // isArgumentOfAnOrderedType
 
-  public static boolean isArgumentAnIndividual(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException
+  public static boolean isArgumentAnIndividual(int argumentNumber, List<Argument> arguments) throws BuiltInException
   {
     checkArgumentNumber(argumentNumber, arguments);
 
-    return arguments.get(argumentNumber) instanceof IndividualArgument;
+    return arguments.get(argumentNumber) instanceof IndividualInfo;
   } // isArgumentAnIndividual
 
-  public static boolean isArgumentADatatypeValue(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException
-  {
-    checkArgumentNumber(argumentNumber, arguments);
-
-    return arguments.get(argumentNumber) instanceof DatatypeValueArgument;
-  } // isArgumentADatatypeValue
-
-  public static void checkThatArgumentIsAnIndividual(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException
+  public static void checkThatArgumentIsAnIndividual(int argumentNumber, List<Argument> arguments) throws BuiltInException
   {
     if (!isArgumentAnIndividual(argumentNumber, arguments)) {
       throw new InvalidBuiltInArgumentException(argumentNumber, 
@@ -261,89 +221,47 @@ public class SWRLBuiltInUtil
     } // if
   } // checkThatArgumentIsAnIndividual
 
-  public static void checkThatArgumentIsAnOWLDatatypeValue(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException
-  {
-    if (!isArgumentADatatypeValue(argumentNumber, arguments)) {
-      throw new InvalidBuiltInArgumentException(argumentNumber, 
-                                                makeInvalidArgumentTypeMessage(arguments.get(argumentNumber), "datatype value"));
-    } // if
-  } // checkThatArgumentIsAnOWLDatatypeValue
-
-  public static String getArgumentAsAnIndividualName(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException
+  public static String getArgumentAsAnIndividualName(int argumentNumber, List<Argument> arguments) throws BuiltInException
   {
     checkThatArgumentIsAnIndividual(argumentNumber, arguments);
 
-    return ((OWLIndividual)arguments.get(argumentNumber)).getIndividualName();
+    return ((IndividualInfo)arguments.get(argumentNumber)).getIndividualName();
   } // getArgumentAsAnIndividualName
 
-  public static String getArgumentAsAClassName(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException
+  public static String getArgumentAsAClassName(int argumentNumber, List<Argument> arguments) throws BuiltInException
   {
     checkThatArgumentIsAClass(argumentNumber, arguments);
 
-    return ((OWLClass)arguments.get(argumentNumber)).getClassName();
+    return ((ClassInfo)arguments.get(argumentNumber)).getClassName();
   } // getArgumentAsAClassName
 
-  public static OWLClass getArgumentAsAnOWLClass(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException
-  {
-    checkThatArgumentIsAClass(argumentNumber, arguments);
-
-    return (OWLClass)arguments.get(argumentNumber);
-  } // getArgumentAsAnOWLClass
-
-  public static OWLProperty getArgumentAsAnOWLProperty(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException
+  public static String getArgumentAsAPropertyName(int argumentNumber, List<Argument> arguments) throws BuiltInException
   {
     checkThatArgumentIsAProperty(argumentNumber, arguments);
 
-    return (OWLProperty)arguments.get(argumentNumber);
-  } // getArgumentAsAnOWLProperty
-
-  public static OWLDatatypeValue getArgumentAsAnOWLDatatypeValue(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException
-  {
-    checkThatArgumentIsAnOWLDatatypeValue(argumentNumber, arguments);
-
-    return (OWLDatatypeValue)arguments.get(argumentNumber);
-  } // getArgumentAsAnOWLDatatypeValue
-
-  public static String getArgumentAsAResourceName(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException
-  {
-    String resourceName = "";
-
-    checkThatArgumentIsAClassPropertyOrIndividual(argumentNumber, arguments);
-
-    if (isArgumentAClass(argumentNumber, arguments)) resourceName = ((OWLClass)arguments.get(argumentNumber)).getClassName();
-    else if (isArgumentAProperty(argumentNumber, arguments)) resourceName = ((OWLProperty)arguments.get(argumentNumber)).getPropertyName();
-    else if (isArgumentAnIndividual(argumentNumber, arguments)) resourceName = ((OWLIndividual)arguments.get(argumentNumber)).getIndividualName();
-
-    return resourceName;
-  } // getArgumentAsAResourceName
-
-  public static String getArgumentAsAPropertyName(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException
-  {
-    checkThatArgumentIsAProperty(argumentNumber, arguments);
-
-    return ((OWLProperty)arguments.get(argumentNumber)).getPropertyName();
+    return ((PropertyInfo)arguments.get(argumentNumber)).getPropertyName();
   } // getArgumentAsAPropertyName
 
-  public static void checkArgumentNumber(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException
+  public static void checkArgumentNumber(int argumentNumber, List<Argument> arguments) throws BuiltInException
   {
     if ((argumentNumber < 0) || (argumentNumber >= arguments.size()))
-      throw new BuiltInException("(0-offset) argument number #" + argumentNumber + " is out of bounds");
+      throw new BuiltInException("argument number #" + argumentNumber + " out of bounds");
   } // checkArgumentNumber
 
-  public static boolean isArgumentNumeric(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException
+  public static boolean isArgumentNumeric(int argumentNumber, List<Argument> arguments) throws BuiltInException
   {
     if (isArgumentALiteral(argumentNumber, arguments)) return getArgumentAsALiteral(argumentNumber, arguments).isNumeric();
     else return false;
   } // isArgumentNumeric
 
-  public static boolean isArgumentNonNumeric(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException
+  public static boolean isArgumentNonNumeric(int argumentNumber, List<Argument> arguments) throws BuiltInException
   {
     if (isArgumentALiteral(argumentNumber, arguments))
       return !getArgumentAsALiteral(argumentNumber, arguments).isNumeric();
     else return false;
   } // isArgumentNonNumeric
 
-  public static void checkThatArgumentIsNonNumeric(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException
+  public static void checkThatArgumentIsNonNumeric(int argumentNumber, List<Argument> arguments) throws BuiltInException
   {
     if (!isArgumentNonNumeric(argumentNumber, arguments))
       throw new InvalidBuiltInArgumentException(argumentNumber, 
@@ -352,202 +270,175 @@ public class SWRLBuiltInUtil
 
   // Integers
   
-  public static void checkThatArgumentIsAnInteger(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException
+  public static void checkThatArgumentIsAnInteger(int argumentNumber, List<Argument> arguments) throws BuiltInException
   {
     if (!isArgumentAnInteger(argumentNumber, arguments))
       throw new InvalidBuiltInArgumentException(argumentNumber,
                                                 makeInvalidArgumentTypeMessage(arguments.get(argumentNumber), "integer"));
   } // checkThatArgumentIsAnInteger
 
-  public static boolean isArgumentAnInteger(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException
+  public static boolean isArgumentAnInteger(int argumentNumber, List<Argument> arguments) throws BuiltInException
   {
     if (isArgumentALiteral(argumentNumber, arguments)) 
       return (getArgumentAsALiteral(argumentNumber, arguments).isInteger());
     else return false;
   } // isArgumentAnInteger
 
-  public static int getArgumentAsAnInteger(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException
+  public static int getArgumentAsAnInteger(int argumentNumber, List<Argument> arguments) throws BuiltInException
   {
     return getArgumentAsALiteral(argumentNumber, arguments).getInt(); // Will throw DatatypeConversionException if invalid.
   } // getArgumentAsAnInteger
 
   // Shorts
 
-  public static boolean isArgumentAShort(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException
+  public static boolean isArgumentAShort(int argumentNumber, List<Argument> arguments) throws BuiltInException
   {
     if (isArgumentALiteral(argumentNumber, arguments)) 
       return (getArgumentAsALiteral(argumentNumber, arguments).isShort());
     else return false;
   } // isArgumentAShort
 
-  public static short getArgumentAsAShort(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException
+  public static int getArgumentAsAShort(int argumentNumber, List<Argument> arguments) throws BuiltInException
   {
-    return getArgumentAsALiteral(argumentNumber, arguments).getShort(); // Will throw DatatypeConversionException if invalid.
+    return getArgumentAsALiteral(argumentNumber, arguments).getInt(); // Will throw DatatypeConversionException if invalid.
   } // getArgumentAsAShort
 
   // BigDecimal
 
-  public static BigDecimal getArgumentAsABigDecimal(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException
+  public static BigDecimal getArgumentAsABigDecimal(int argumentNumber, List<Argument> arguments) throws BuiltInException
   {
     return getArgumentAsALiteral(argumentNumber, arguments).getBigDecimal(); // Will throw DatatypeConversionException if invalid.
   } // getArgumentAsABigDecimal
 
   // BigInteger
 
-  public static BigInteger getArgumentAsABigInteger(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException
+  public static BigInteger getArgumentAsABigInteger(int argumentNumber, List<Argument> arguments) throws BuiltInException
   {
     return getArgumentAsALiteral(argumentNumber, arguments).getBigInteger(); // Will throw DatatypeConversionException if invalid.
   } // getArgumentAsABigInteger
 
-  public static boolean isArgumentALiteral(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException
+  public static boolean isArgumentALiteral(int argumentNumber, List<Argument> arguments) throws BuiltInException
   {
     checkThatArgumentIsBound(argumentNumber, arguments);
 
-    return (arguments.get(argumentNumber) instanceof DatatypeValueArgument);
+    return (arguments.get(argumentNumber) instanceof LiteralInfo);
   } // isArgumentALiteral
 
-  public static boolean isArgumentAProperty(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException
+  public static boolean isArgumentAProperty(int argumentNumber, List<Argument> arguments) throws BuiltInException
   {
     checkThatArgumentIsBound(argumentNumber, arguments);
 
-    return (arguments.get(argumentNumber) instanceof PropertyArgument);
+    return (arguments.get(argumentNumber) instanceof PropertyInfo);
   } // isArgumentAProperty
 
-  public static void checkThatArgumentIsAProperty(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException
+  public static void checkThatArgumentIsAProperty(int argumentNumber, List<Argument> arguments) throws BuiltInException
   {
     if (!isArgumentAProperty(argumentNumber, arguments))
       throw new InvalidBuiltInArgumentException(argumentNumber,
                                                 makeInvalidArgumentTypeMessage(arguments.get(argumentNumber), "property"));
   } // checkThatArgumentIsAProperty
 
-  public static void checkThatArgumentIsAClassPropertyOrIndividual(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException
-  {
-    if (!isArgumentAClassPropertyOrIndividual(argumentNumber, arguments))
-      throw new InvalidBuiltInArgumentException(argumentNumber,
-                                                makeInvalidArgumentTypeMessage(arguments.get(argumentNumber), "class, property, or individual"));
-  } // checkThatArgumentIsAClassPropertyOrIndividual
-
-  public static boolean isArgumentAClassPropertyOrIndividual(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException
-  {
-    return isArgumentAClass(argumentNumber, arguments) || isArgumentAProperty(argumentNumber, arguments) ||
-           isArgumentAnIndividual(argumentNumber, arguments);
-  } // isArgumentAClassPropertyOrIndividual
-
-  public static boolean isArgumentAClass(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException
+  public static boolean isArgumentAClass(int argumentNumber, List<Argument> arguments) throws BuiltInException
   {
     checkThatArgumentIsBound(argumentNumber, arguments);
 
-    return (arguments.get(argumentNumber) instanceof ClassArgument);
+    return (arguments.get(argumentNumber) instanceof ClassInfo);
   } // isArgumentAClass
 
-  public static void checkThatArgumentIsAClass(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException
+  public static void checkThatArgumentIsAClass(int argumentNumber, List<Argument> arguments) throws BuiltInException
   {
     if (!isArgumentAClass(argumentNumber, arguments))
       throw new InvalidBuiltInArgumentException(argumentNumber,
                                                 makeInvalidArgumentTypeMessage(arguments.get(argumentNumber), "class"));
   } // checkThatArgumentIsAClass
 
-  public static OWLDatatypeValue getArgumentAsALiteral(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException
+  public static LiteralInfo getArgumentAsALiteral(int argumentNumber, List<Argument> arguments) throws BuiltInException
   {
     checkThatArgumentIsALiteral(argumentNumber, arguments);
 
-    return (OWLDatatypeValue)arguments.get(argumentNumber);
-  } // getArgumentAsALiteral
-
-  public static OWLDatatypeValue getArgumentAsALiteral(BuiltInArgument argument) throws BuiltInException
-  {
-    checkThatArgumentIsALiteral(argument);
-
-    return (OWLDatatypeValue)argument;
+    return (LiteralInfo)arguments.get(argumentNumber);
   } // getArgumentAsALiteral
 
   // Longs
 
-  public static void checkThatArgumentIsALong(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException
+  public static void checkThatArgumentIsALong(int argumentNumber, List<Argument> arguments) throws BuiltInException
   {
     if (!isArgumentALong(argumentNumber, arguments))
       throw new InvalidBuiltInArgumentException(argumentNumber, 
                                                 makeInvalidArgumentTypeMessage(arguments.get(argumentNumber), "long"));
   } // checkThatArgumentIsALong
 
-  public static boolean isArgumentALong(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException
+  public static boolean isArgumentALong(int argumentNumber, List<Argument> arguments) throws BuiltInException
   {
     if (isArgumentALiteral(argumentNumber, arguments)) 
       return (getArgumentAsALiteral(argumentNumber, arguments).isLong());
     else return false;
   } // isArgumentALong
 
-  public static long getArgumentAsALong(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException
+  public static long getArgumentAsALong(int argumentNumber, List<Argument> arguments) throws BuiltInException
   {
     return getArgumentAsALiteral(argumentNumber, arguments).getLong(); // Will throw DatatypeConversionException if invalid.
   } // getArgumentAsALong
 
   // Floats
 
-  public static void checkThatArgumentIsAFloat(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException
+  public static void checkThatArgumentIsAFloat(int argumentNumber, List<Argument> arguments) throws BuiltInException
   {
     if (!isArgumentAFloat(argumentNumber, arguments))
       throw new InvalidBuiltInArgumentException(argumentNumber,
                                                 makeInvalidArgumentTypeMessage(arguments.get(argumentNumber), "float"));
   } // checkThatArgumentIsAFloat
 
-  public static boolean isArgumentAFloat(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException
+  public static boolean isArgumentAFloat(int argumentNumber, List<Argument> arguments) throws BuiltInException
   {
     if (isArgumentALiteral(argumentNumber, arguments)) 
       return (getArgumentAsALiteral(argumentNumber, arguments).isFloat());
     else return false;
   } // isArgumentAFloat
 
-  public static float getArgumentAsAFloat(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException
+  public static float getArgumentAsAFloat(int argumentNumber, List<Argument> arguments) throws BuiltInException
   {
     return getArgumentAsALiteral(argumentNumber, arguments).getFloat(); // Will throw DatatypeConversionException if invalid.
   } // getArgumentAsAFloat
 
   // Double
 
-  public static void checkThatArgumentIsADouble(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException
+  public static void checkThatArgumentIsADouble(int argumentNumber, List<Argument> arguments) throws BuiltInException
   {
     if (!isArgumentADouble(argumentNumber, arguments))
       throw new InvalidBuiltInArgumentException(argumentNumber, 
                                                 makeInvalidArgumentTypeMessage(arguments.get(argumentNumber), "double"));
   } // checkThatArgumentIsADouble
 
-  public static boolean isArgumentADouble(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException
+  public static boolean isArgumentADouble(int argumentNumber, List<Argument> arguments) throws BuiltInException
   {
     if (isArgumentALiteral(argumentNumber, arguments)) 
       return (getArgumentAsALiteral(argumentNumber, arguments).isDouble());
     else return false;
   } // isArgumentADouble
 
-  public static double getArgumentAsADouble(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException
+  public static double getArgumentAsADouble(int argumentNumber, List<Argument> arguments) throws BuiltInException
   {
-    checkArgumentNumber(argumentNumber, arguments);
-
-    return getArgumentAsADouble(arguments.get(argumentNumber));
-  } // getArgumentAsADouble
-
-  public static double getArgumentAsADouble(BuiltInArgument argument) throws BuiltInException
-  {
-    return getArgumentAsALiteral(argument).getDouble(); // Will throw DatatypeConversionException if invalid.
+    return getArgumentAsALiteral(argumentNumber, arguments).getDouble(); // Will throw DatatypeConversionException if invalid.
   } // getArgumentAsADouble
 
   // Booleans
 
-  public static void checkThatArgumentIsABoolean(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException
+  public static void checkThatArgumentIsABoolean(int argumentNumber, List<Argument> arguments) throws BuiltInException
   {
     if (!isArgumentABoolean(argumentNumber, arguments))
       throw new InvalidBuiltInArgumentException(argumentNumber,
                                                 makeInvalidArgumentTypeMessage(arguments.get(argumentNumber), "boolean"));
   } // checkThatArgumentIsABoolean
 
-  public static boolean isArgumentABoolean(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException
+  public static boolean isArgumentABoolean(int argumentNumber, List<Argument> arguments) throws BuiltInException
   {
     if (isArgumentALiteral(argumentNumber, arguments)) 
       return (getArgumentAsALiteral(argumentNumber, arguments).isBoolean());
     else return false;
   } // isArgumentABoolean
 
-  public static boolean getArgumentAsABoolean(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException
+  public static boolean getArgumentAsABoolean(int argumentNumber, List<Argument> arguments) throws BuiltInException
   {
     checkThatArgumentIsABoolean(argumentNumber, arguments);
 
@@ -556,21 +447,21 @@ public class SWRLBuiltInUtil
 
   // Strings
 
-  public static void checkThatArgumentIsAString(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException
+  public static void checkThatArgumentIsAString(int argumentNumber, List<Argument> arguments) throws BuiltInException
   {
     if (!isArgumentAString(argumentNumber, arguments))
       throw new InvalidBuiltInArgumentException(argumentNumber, 
                                                 makeInvalidArgumentTypeMessage(arguments.get(argumentNumber), "string"));
   } // checkThatArgumentIsAString
 
-  public static boolean isArgumentAString(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException
+  public static boolean isArgumentAString(int argumentNumber, List<Argument> arguments) throws BuiltInException
   {
     if (isArgumentALiteral(argumentNumber, arguments)) 
       return getArgumentAsALiteral(argumentNumber, arguments).isString();
     else return false;
   } // isArgumentAString
 
-  public static String getArgumentAsAString(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException
+  public static String getArgumentAsAString(int argumentNumber, List<Argument> arguments) throws BuiltInException
   {
     checkThatArgumentIsAString(argumentNumber, arguments);
 
@@ -579,101 +470,74 @@ public class SWRLBuiltInUtil
 
   // Unbound argument processing methods.
 
-  public static boolean hasUnboundArguments(List<BuiltInArgument> arguments) throws BuiltInException
+  public static boolean hasUnboundArguments(List<Argument> arguments) throws BuiltInException
   {
-    for (BuiltInArgument argument : arguments) if (argument.isUnbound()) return true;
-
-    return false;
+    return !arguments.isEmpty() && arguments.contains(null); // An argument is unbound if its value is null.
   } // hasUnboundArguments
 
-  public static void checkThatAllArgumentsAreBound(List<BuiltInArgument> arguments) throws BuiltInException
-  {
-    if (hasUnboundArguments(arguments)) throw new BuiltInException("all arguments must be bound");
-  } // checkThatAllArgumentsAreBound
-
-  public static void checkThatArgumentIsBound(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException
+  public static void checkThatArgumentIsBound(int argumentNumber, List<Argument> arguments) throws BuiltInException
   {
     if (isUnboundArgument(argumentNumber, arguments)) 
-      throw new BuiltInException("not expecting an unbound argument for (0-offset) argument #" + argumentNumber);
+      throw new BuiltInException("not expecting an unbound argument for argument #" + argumentNumber + ".");
   } // checkThatArgumentIsBound
 
-  public static boolean isUnboundArgument(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException
+  public static boolean isUnboundArgument(int argumentNumber, List<Argument> arguments)
   {
-    checkArgumentNumber(argumentNumber, arguments);
-
-    return arguments.get(argumentNumber).isUnbound();
+    return (argumentNumber >= 0) && (argumentNumber < arguments.size()) && (arguments.get(argumentNumber) == null);
   } // isUnboundArgument
 
   /**
    ** Get 0-offset position of first unbound argument; return -1 if no unbound arguments are found.
    */
-  public static int getFirstUnboundArgument(List<BuiltInArgument> arguments) throws BuiltInException
+  public static int getFirstUnboundArgument(List<Argument> arguments) throws BuiltInException
   {
-    for (int index = 0; index < arguments.size(); index++) if (arguments.get(index).isUnbound()) return index;
-
-    return -1;
+    if (hasUnboundArguments(arguments)) return arguments.indexOf(null);
+    else return -1;
   } // getFirstUnboundArgument
 
-  public static void checkForUnboundArguments(List<BuiltInArgument> arguments) throws BuiltInException
-  {
-    checkForUnboundArguments(arguments, "built-in does not support variable binding - unbound argument '" +
-                             getFirstUnboundArgument(arguments) + "'");
-  } // checkForUnboundArguments
-
-  public static void checkForUnboundArguments(List<BuiltInArgument> arguments, String message) throws BuiltInException
+  public static void checkForUnboundArguments(List<Argument> arguments) throws BuiltInException
   {
     if (hasUnboundArguments(arguments))
-      throw new BuiltInException(message + " '" + getFirstUnboundArgument(arguments) + "'");
+      throw new BuiltInException("built-in does not support variable binding. Unbound variable used for argument #" +
+                                 getFirstUnboundArgument(arguments) + ".");
   } // checkForUnboundArguments
 
-  public static void checkForNonVariableArguments(List<BuiltInArgument> arguments, String message) throws BuiltInException
-  {
-    for (BuiltInArgument argument : arguments) if (!argument.isVariable()) throw new BuiltInException(message + " '" + argument + "'");
-  } // checkForNonVariableArguments
-
-  public static void checkForUnboundNonFirstArguments(List<BuiltInArgument> arguments) throws BuiltInException
+  public static void checkForUnboundNonFirstArguments(List<Argument> arguments) throws BuiltInException
   {
     if (hasUnboundArguments(arguments.subList(1, arguments.size())))
-      throw new BuiltInException("built-in supports variable binding only for the first argument - " +
-                                 "unbound variables used as other arguments");
+      throw new BuiltInException("built-in supports variable binding only for the first argument. " +
+                                 "Unbound variable used in other arguments.");
   } // checkForUnboundArguments
 
-  public static String getVariableName(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException
+  private static String makeInvalidArgumentTypeMessage(Argument argument, String expectedTypeName)
   {
-    checkArgumentNumber(argumentNumber, arguments);
-
-    return arguments.get(argumentNumber).getVariableName(); // Will throw an exception if it does not contain a variable name
-  } // getVariableName
-
-  private static String makeInvalidArgumentTypeMessage(BuiltInArgument argument, String expectedTypeName) throws BuiltInException
-  {
-    String message = "expecting " + expectedTypeName + ", got ";
-    if (argument.isUnbound()) message += "unbound argument with variable name '" + argument.getVariableName() + "'";
+    String message = "Expecting " + expectedTypeName + ", got ";
+    if (argument == null) message += "unbound argument";
     else {
-      if (argument instanceof ClassArgument) {
-        OWLClass owlClass = (OWLClass)argument;
-        message += "class with name '" + owlClass.getClassName() + "'";
-      } else if (argument instanceof PropertyArgument) {
-        OWLProperty property = (OWLProperty)argument;
-        message += "property with name '" + property.getPropertyName() + "'";
-      } else if (argument instanceof IndividualArgument) {
-        OWLIndividual individual = (OWLIndividual)argument;
-        message += "individual with name '" + individual.getIndividualName() + "'";
-      } else if (argument instanceof DatatypeValueArgument) {
-        OWLDatatypeValue literal = (OWLDatatypeValue)argument;
-        message += "literal with value '" + literal.toString() + "'";
+      if (argument instanceof ClassInfo) {
+        ClassInfo classInfo = (ClassInfo)argument;
+        message += "class with name '" + classInfo.getClassName() + "'";
+      } else if (argument instanceof PropertyInfo) {
+        PropertyInfo propertyInfo = (PropertyInfo)argument;
+        message += "property with name '" + propertyInfo.getPropertyName() + "'";
+      } else if (argument instanceof IndividualInfo) {
+        IndividualInfo individualInfo = (IndividualInfo)argument;
+        message += "individual with name '" + individualInfo.getIndividualName() + "'";
+      } else if (argument instanceof LiteralInfo) {
+        LiteralInfo literalInfo = (LiteralInfo)argument;
+        message += "literal with value '" + literalInfo.toString() + "' of type '" + literalInfo.getValueClassName() + "'";
       } else message += "unknown type '" + argument.getClass().getName() + "'";
     } // if
     return message;
   } // makeInvalidArgumentTypeMessage
 
   /**
-   ** Take an bound Argument object with types ClassArgument, PropertyArgument, IndividualArgument, or DatatypeValueArgument and return it as a
-   ** property value representation. Class, property and individual argument are represented by strings containing their class, property or
-   ** individual names, respectively; literal objects are represented by the appropriate Java type. Primitive XSD datatypes that do not have
-   ** a corresponding Java type are not yet supported.
+   ** Take an bound Argument object with types ClassInfo, PropertyInfo, IndividualInfo, or LiteralInfo and return it as a property value
+   ** representation. Class, property and individual info objects are represented by strings containing their class, property or individual
+   ** names, respectively; literal objects are represented by the appropriate Java type. Primitive XSD datatypes that do not have a
+   ** corresponding Java type are not yet supported.
    */
-  public static Object getArgumentAsAPropertyValue(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException
+  public static Object getArgumentAsAPropertyValue(int argumentNumber, List<Argument> arguments) throws BuiltInException
   {
     Argument argument;
     Object result = null;
@@ -682,21 +546,22 @@ public class SWRLBuiltInUtil
 
     argument = arguments.get(argumentNumber);
 
-    if (argument instanceof ClassArgument) {
-      OWLClass owlClass = (OWLClass)argument;
-      result = owlClass.getClassName();
-    } else if (argument instanceof PropertyArgument) {
-      OWLProperty property = (OWLProperty)argument;
-      result = property.getPropertyName();
-    } else if (argument instanceof IndividualArgument) {
-      OWLIndividual individual = (OWLIndividual)argument;
-      result = individual.getIndividualName();
-    } else if (argument instanceof DatatypeValueArgument) {
-      OWLDatatypeValue literal = (OWLDatatypeValue)argument;
-      if (literal.isNumeric()) result = literal.getNumber();
-      else if (literal.isString()) result = literal.getString();
-      else throw new BuiltInException("literal with value '" + literal.toString() + "' not supported - strings and number literals only");
-    } else throw new BuiltInException("argument '" + argument + "' of unknown type '" + argument.getClass().getName() + "'");
+    if (argument instanceof ClassInfo) {
+      ClassInfo classInfo = (ClassInfo)argument;
+      result = classInfo.getClassName();
+    } else if (argument instanceof PropertyInfo) {
+      PropertyInfo propertyInfo = (PropertyInfo)argument;
+      result = propertyInfo.getPropertyName();
+    } else if (argument instanceof IndividualInfo) {
+      IndividualInfo individualInfo = (IndividualInfo)argument;
+      result = individualInfo.getIndividualName();
+    } else if (argument instanceof LiteralInfo) {
+      LiteralInfo literalInfo = (LiteralInfo)argument;
+      if (literalInfo.isNumeric()) result = literalInfo.getNumber();
+      else if (literalInfo.isString()) result = literalInfo.getString();
+      else throw new BuiltInException("LiteralInfo of type '" + literalInfo.getValueClassName() + "' with value '" + 
+                                      literalInfo.toString() + "' not supported. Only strings and number literals supported.");
+    } else throw new BuiltInException("Argument '" + argument + "' of unknown type '" + argument.getClass().getName() + "'.");
 
     return result;
   } // getArgumentAsAPropertyValue
@@ -705,7 +570,7 @@ public class SWRLBuiltInUtil
    ** Create a string that represents a unique invocation pattern for a built-in for a bridge/rule/built-in/argument combination.  
    */
   public static String createInvocationPattern(SWRLRuleEngineBridge invokingBridge, String invokingRuleName, int invokingBuiltInIndex,
-                                               List<BuiltInArgument> arguments) throws BuiltInException
+                                               List<Argument> arguments) throws BuiltInException
   {
     String pattern = "" + invokingBridge.hashCode() + "." + invokingRuleName + "." + invokingBuiltInIndex;
 
@@ -713,94 +578,5 @@ public class SWRLBuiltInUtil
 
     return pattern;
   } // createInvocationPattern
-
-  public static void checkForUnboundArguments(String ruleName, String builtInName, List<BuiltInArgument> arguments) throws BuiltInException
-  {
-    int argumentNumber = 0;
-
-    for (BuiltInArgument argument : arguments) {
-      if (argument.isUnbound())  throw new BuiltInException("built-in '" + builtInName + "' in rule '" + ruleName + "' " +
-                                                            "returned with unbound argument ?" + argument.getVariableName());
-      else if (argument instanceof MultiArgument && ((MultiArgument)argument).hasNoArguments())
-        throw new BuiltInException("built-in '" + builtInName + "' in rule '" + ruleName + "' " +
-                                   "returned with empty multi-argument ?" + argument.getVariableName());
-      argumentNumber++;
-    } // for
-  } // checkForUnboundArguments
-
-  public static void generateBuiltInBindings(SWRLRuleEngineBridge bridge, String ruleName, String builtInName, int builtInIndex, List<BuiltInArgument> arguments)
-    throws BuiltInException
-  {
-    List<Integer> multiArgumentIndexes = getMultiArgumentIndexes(arguments);
-    
-    if (multiArgumentIndexes.isEmpty()) 
-      bridge.generateBuiltInBinding(ruleName, builtInName, builtInIndex, arguments); // No multi-arguments - do a simple bind
-    else {
-      List<Integer> multiArgumentCounts = new ArrayList<Integer>();
-      List<Integer> multiArgumentSizes = new ArrayList<Integer>();
-      List<BuiltInArgument> argumentsPattern;
-
-      for (int i = 0; i < multiArgumentIndexes.size(); i++) multiArgumentCounts.add(Integer.valueOf(0));
-      for (int i = 0; i < multiArgumentIndexes.size(); i++) {
-        MultiArgument multiArgument = (MultiArgument)arguments.get(multiArgumentIndexes.get(i).intValue());
-        multiArgumentSizes.add(Integer.valueOf(multiArgument.getNumberOfArguments()));
-      } // for
-
-      do {
-        argumentsPattern = generateArgumentsPattern(arguments, multiArgumentCounts);
-        bridge.generateBuiltInBinding(ruleName, builtInName, builtInIndex, argumentsPattern); // Call the rule engine method.
-      } while (!nextMultiArgumentCounts(multiArgumentCounts, multiArgumentSizes));
-    } // if
-  } // generateBuiltInBindings
-
-  public static List<BuiltInArgument> copyArguments(List<BuiltInArgument> arguments) throws BuiltInException
-  {
-    return new ArrayList<BuiltInArgument>(arguments);
-  } // copyArguments
-
-  private static boolean nextMultiArgumentCounts(List<Integer> multiArgumentCounts, List<Integer> multiArgumentSizes)
-  {
-    if (multiArgumentSizes.isEmpty()) return true;
-    
-    if (nextMultiArgumentCounts(multiArgumentCounts.subList(1, multiArgumentCounts.size()), 
-                                multiArgumentSizes.subList(1, multiArgumentSizes.size()))) {
-      // No more permutations of rest of list so increment this count and if we are not at the end set rest of the list to begin at 0 again.
-      int count = multiArgumentCounts.get(0).intValue();
-      int size = multiArgumentSizes.get(0).intValue();
-      
-      if (++count == size) return true;
-
-      multiArgumentCounts.set(0, Integer.valueOf(count));
-
-      for (int i = 1; i < multiArgumentCounts.size(); i++) multiArgumentCounts.set(i, Integer.valueOf(0));
-    } // if
-    return false;
-  } // nextMultiArgumentCounts
-
-  private static List<BuiltInArgument> generateArgumentsPattern(List<BuiltInArgument> arguments, List<Integer> multiArgumentCounts)
-  {
-    List<BuiltInArgument> result = new ArrayList<BuiltInArgument>();
-    int multiArgumentIndex = 0;
-
-    for (BuiltInArgument argument: arguments) {
-      if (argument instanceof MultiArgument) {
-        MultiArgument multiArgument = (MultiArgument)argument;
-        result.add(multiArgument.getArguments().get((multiArgumentCounts.get(multiArgumentIndex).intValue())));
-        multiArgumentIndex++;
-      } else result.add(argument);
-    } // for
-
-    return result;
-  } // generateArgumentsPattern
-    
-  private static List<Integer> getMultiArgumentIndexes(List<BuiltInArgument> arguments)
-  {
-    List<Integer> result = new ArrayList<Integer>();
-
-    for (int i = 0; i < arguments.size(); i++) 
-      if (arguments.get(i) instanceof MultiArgument) result.add(Integer.valueOf(i));
-
-    return result;
-  } // getMultiArgumentIndexes
 
 } // SWRLBuiltInUtil

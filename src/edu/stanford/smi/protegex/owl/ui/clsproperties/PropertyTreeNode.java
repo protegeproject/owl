@@ -1,34 +1,15 @@
 package edu.stanford.smi.protegex.owl.ui.clsproperties;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-
-import javax.swing.Icon;
-import javax.swing.tree.DefaultMutableTreeNode;
-
 import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.util.Disposable;
-import edu.stanford.smi.protegex.owl.model.OWLAllValuesFrom;
-import edu.stanford.smi.protegex.owl.model.OWLAnonymousClass;
-import edu.stanford.smi.protegex.owl.model.OWLCardinalityBase;
-import edu.stanford.smi.protegex.owl.model.OWLIntersectionClass;
-import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
-import edu.stanford.smi.protegex.owl.model.OWLRestriction;
-import edu.stanford.smi.protegex.owl.model.OWLSomeValuesFrom;
-import edu.stanford.smi.protegex.owl.model.RDFProperty;
-import edu.stanford.smi.protegex.owl.model.RDFResource;
-import edu.stanford.smi.protegex.owl.model.RDFSClass;
-import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
+import edu.stanford.smi.protegex.owl.model.*;
 import edu.stanford.smi.protegex.owl.model.event.PropertyValueAdapter;
 import edu.stanford.smi.protegex.owl.model.event.PropertyValueListener;
 import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
-import edu.stanford.smi.protegex.owl.util.ExpressionInfo;
+
+import javax.swing.*;
+import javax.swing.tree.DefaultMutableTreeNode;
+import java.util.*;
 
 public class PropertyTreeNode extends DefaultMutableTreeNode
         implements Comparable, Disposable {
@@ -46,39 +27,23 @@ public class PropertyTreeNode extends DefaultMutableTreeNode
     };
 
 
-    public PropertyTreeNode(PropertyRestrictionsTree tree, 
-                            OWLNamedClass cls, 
-                            RDFProperty property, 
-                            boolean inherited) {
+    public PropertyTreeNode(PropertyRestrictionsTree tree, OWLNamedClass cls, RDFProperty property, boolean inherited) {
         setUserObject(property);
         this.inherited = inherited;
         this.cls = cls;
         this.tree = tree;
+        addChildNodes();
         property.addPropertyValueListener(valueListener);
     }
 
-    public PropertyTreeNode(PropertyRestrictionsTree tree, 
-                            OWLNamedClass cls, 
-                            RDFProperty property, 
-                            boolean inherited,
-                            List<ExpressionInfo<OWLRestriction>> restrictions) {
-      setUserObject(property);
-      this.inherited = inherited;
-      this.cls = cls;
-      this.tree = tree;
-      addChildNodes(restrictions);
-      property.addPropertyValueListener(valueListener);
-    }
-    
+
     private void addChildNodes() {
-        List<ExpressionInfo<OWLRestriction>> restrictions = getRestrictions();
-        addChildNodes(restrictions);
-    }
-    
-    private void addChildNodes(List<ExpressionInfo<OWLRestriction>> restrictions) {
-        for (ExpressionInfo<OWLRestriction> ri : restrictions) {
-            OWLRestriction restriction = ri.getExpression();
-            RDFSClass inheritedFromClass = ri.getDirectNamedClass();
+        List restrictions = getRestrictions();
+        for (Iterator it = restrictions.iterator(); it.hasNext();) {
+            OWLRestriction restriction = (OWLRestriction) it.next();
+            OWLAnonymousClass expressionRoot = restriction.getExpressionRoot();
+            Collection subclasses = expressionRoot.getSubclasses(false);
+            RDFSClass inheritedFromClass = (RDFSClass) subclasses.iterator().next();
             if (cls.equals(inheritedFromClass)) {
                 inheritedFromClass = null;
             }
@@ -132,12 +97,12 @@ public class PropertyTreeNode extends DefaultMutableTreeNode
      *
      * @return a List of OWLRestriction instances
      */
-    private List<ExpressionInfo<OWLRestriction>> getRestrictions() {
-        List<ExpressionInfo<OWLRestriction>> rs = new ArrayList<ExpressionInfo<OWLRestriction>>();
-        List<OWLNamedClass> queue = new ArrayList<OWLNamedClass>();
+    private List getRestrictions() {
+        List rs = new ArrayList();
+        List queue = new ArrayList();
         queue.add(cls);
-        Set<OWLNamedClass> reachedClses = new HashSet<OWLNamedClass>();
-        Set<RDFSClass> overloadedClses = new HashSet<RDFSClass>();
+        Set reachedClses = new HashSet();
+        Set overloadedClses = new HashSet();
         boolean first = true;
         while (!queue.isEmpty()) {
 
@@ -148,29 +113,26 @@ public class PropertyTreeNode extends DefaultMutableTreeNode
             for (Iterator it = c.getSuperclasses(false).iterator(); it.hasNext();) {
                 RDFSClass superClass = (RDFSClass) it.next();
                 if (superClass instanceof OWLRestriction) {
-                    ExpressionInfo<OWLRestriction> ri = new ExpressionInfo<OWLRestriction>((OWLRestriction) superClass, 
-                                                             (OWLAnonymousClass) superClass, c);
-                    perhapsAddRestriction(ri, rs, overloadedClses);
+                    perhapsAddRestriction((OWLRestriction) superClass, rs, overloadedClses);
                 }
                 else if (superClass instanceof OWLIntersectionClass) {
                     OWLIntersectionClass intersectionClass = (OWLIntersectionClass) superClass;
                     for (Iterator ot = intersectionClass.getOperands().iterator(); ot.hasNext();) {
                         RDFSClass operand = (RDFSClass) ot.next();
                         if (operand instanceof OWLRestriction) {
-                            ExpressionInfo<OWLRestriction> ri = new ExpressionInfo<OWLRestriction>((OWLRestriction) operand, intersectionClass, c);
-                            perhapsAddRestriction(ri, rs, overloadedClses);
+                            perhapsAddRestriction((OWLRestriction) operand, rs, overloadedClses);
                         }
                     }
                 }
                 else if (superClass instanceof OWLNamedClass && !reachedClses.contains(superClass)) {
-                    queue.add((OWLNamedClass) superClass);
+                    queue.add(superClass);
                 }
             }
             if (first) {
-                Collections.sort(rs, new Comparator<ExpressionInfo<OWLRestriction>>() {
-                    public int compare(ExpressionInfo<OWLRestriction> o1, ExpressionInfo<OWLRestriction> o2) {
-                        RDFSClass directType1 = o1.getExpression().getProtegeType();
-                        RDFSClass directType2 = o2.getExpression().getProtegeType();
+                Collections.sort(rs, new Comparator() {
+                    public int compare(Object o1, Object o2) {
+                        RDFSClass directType1 = ((OWLRestriction) o1).getProtegeType();
+                        RDFSClass directType2 = ((OWLRestriction) o2).getProtegeType();
                         return directType1.getName().compareTo(directType2.getName());
                     }
                 });
@@ -248,13 +210,13 @@ public class PropertyTreeNode extends DefaultMutableTreeNode
     }
 
 
-    private void perhapsAddRestriction(ExpressionInfo<OWLRestriction> ri, List<ExpressionInfo<OWLRestriction>> rs, Set overloadedClses) {
-        OWLRestriction restriction = ri.getExpression();
+    private void perhapsAddRestriction(OWLRestriction restriction, List rs, Set overloadedClses) {
+
         // Avoid duplicates
-        String browserText = ri.getExpression().getBrowserText();
-        for (ExpressionInfo<OWLRestriction> alreadyIncludedRi : rs) {
-            OWLRestriction alreadyIncludedRestriction = alreadyIncludedRi.getExpression();
-            if (browserText.equals(alreadyIncludedRestriction.getBrowserText())) {
+        String browserText = restriction.getBrowserText();
+        for (Iterator it = rs.iterator(); it.hasNext();) {
+            OWLRestriction owlRestriction = (OWLRestriction) it.next();
+            if (browserText.equals(owlRestriction.getBrowserText())) {
                 return;
             }
         }
@@ -264,10 +226,10 @@ public class PropertyTreeNode extends DefaultMutableTreeNode
             OWLSomeValuesFrom someValuesFrom = (OWLSomeValuesFrom) restriction;
             if (someValuesFrom.getSomeValuesFrom() instanceof RDFSNamedClass) {
                 RDFSNamedClass namedClass = (RDFSNamedClass) someValuesFrom.getSomeValuesFrom();
-                for (ExpressionInfo<OWLRestriction> alreadyIncludedRi : rs) {
-                    OWLRestriction alreadyIncludedRestriction = alreadyIncludedRi.getExpression();
-                    if (alreadyIncludedRestriction instanceof OWLSomeValuesFrom) {
-                        OWLSomeValuesFrom other = (OWLSomeValuesFrom) alreadyIncludedRestriction;
+                for (Iterator it = rs.iterator(); it.hasNext();) {
+                    OWLRestriction owlRestriction = (OWLRestriction) it.next();
+                    if (owlRestriction instanceof OWLSomeValuesFrom) {
+                        OWLSomeValuesFrom other = (OWLSomeValuesFrom) owlRestriction;
                         if (other.getSomeValuesFrom() instanceof RDFSNamedClass) {
                             RDFSNamedClass subclass = (RDFSNamedClass) other.getSomeValuesFrom();
                             if (subclass.getSuperclasses(true).contains(namedClass)) {
@@ -286,24 +248,23 @@ public class PropertyTreeNode extends DefaultMutableTreeNode
                 isQCR = base.isQualified();
             }
             if (isQCR) {
-                rs.add(ri);
+                rs.add(restriction);
             }
             else if (!overloadedClses.contains(restriction.getProtegeType())) {
                 if (restriction instanceof OWLCardinalityBase) {
                     overloadedClses.add(restriction.getProtegeType());
                 }
-                rs.add(ri);
+                rs.add(restriction);
             }
         }
     }
 
 
-    private void removeOverloadedAllRestrictions(List<ExpressionInfo<OWLRestriction>> rs) {
+    private void removeOverloadedAllRestrictions(List rs) {
         boolean changed = false;
         do {
             for (int i = 0; i < rs.size(); i++) {
-                ExpressionInfo<OWLRestriction> ri = rs.get(i);
-                OWLRestriction restriction = ri.getExpression();
+                OWLRestriction restriction = (OWLRestriction) rs.get(i);
                 if (restriction instanceof OWLAllValuesFrom &&
                         ((OWLAllValuesFrom) restriction).getFiller() instanceof RDFSClass) {
                     removeOverloadedAllRestrictions(rs, i);
@@ -314,14 +275,13 @@ public class PropertyTreeNode extends DefaultMutableTreeNode
     }
 
 
-    private boolean removeOverloadedAllRestrictions(List<ExpressionInfo<OWLRestriction>> rs, int index) {
+    private boolean removeOverloadedAllRestrictions(List rs, int index) {
         boolean changed = false;
-        OWLAllValuesFrom allRestriction = (OWLAllValuesFrom) rs.get(index).getExpression();
+        OWLAllValuesFrom allRestriction = (OWLAllValuesFrom) rs.get(index);
         RDFSClass superFiller = (RDFSClass) allRestriction.getFiller();
         RDFSClass superCls = allRestriction.getOwner();
         for (int i = index + 1; i < rs.size(); i++) {
-            ExpressionInfo<OWLRestriction> ri = rs.get(i);
-            final OWLRestriction restriction = ri.getExpression();
+            final OWLRestriction restriction = (OWLRestriction) rs.get(i);
             if (restriction instanceof OWLAllValuesFrom &&
                     restriction.getOnProperty().equals(allRestriction.getOnProperty())) {
                 OWLAllValuesFrom a = (OWLAllValuesFrom) restriction;
@@ -337,5 +297,4 @@ public class PropertyTreeNode extends DefaultMutableTreeNode
         }
         return changed;
     }
-    
 }

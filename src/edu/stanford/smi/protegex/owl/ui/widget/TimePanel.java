@@ -91,23 +91,12 @@ public class TimePanel extends JPanel {
 
 
     public String getTime() {
-        int hours = getHours();
-        int minutes = getMinutes();
-        int seconds = getSeconds();
+        int hours = getInt(hoursField, 24);
+        int minutes = getInt(minutesField, 60);
+        int seconds = getInt(secondsField, 60);
         return XMLSchemaDatatypes.getTimeString(hours, minutes, seconds);
     }
 
-    public int getHours() {
-    	return getInt(hoursField, 24);
-    }
-
-    public int getMinutes(){
-    	return getInt(minutesField, 60); 
-    }
-    
-    public int getSeconds() {
-    	return getInt(secondsField, 60);
-    }
 
     public boolean isNull() {
         return hoursField.getText().length() +
@@ -149,14 +138,5 @@ public class TimePanel extends JPanel {
     public static interface Listener {
 
         void timeChanged(TimePanel timePanel);
-    }
-    
-    @Override
-    public void setEnabled(boolean enabled) {
-    	hoursField.setEnabled(enabled);
-    	minutesField.setEnabled(enabled);
-    	secondsField.setEnabled(enabled);
-    	
-    	super.setEnabled(enabled);
     }
 }

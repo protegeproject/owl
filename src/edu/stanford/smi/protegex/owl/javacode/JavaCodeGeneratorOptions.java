@@ -20,7 +20,4 @@ public interface JavaCodeGeneratorOptions {
 
 
     boolean getSetMode();
-    
-    
-    boolean getPrefixMode();
 }

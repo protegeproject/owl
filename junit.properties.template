@@ -1,32 +1,3 @@
-#
-# These are general controls for how all the junits run.
-#
-#     My experience is that "ant junit" provides almost no debugging
-#     information when things go wrong.  (This was not true in my
-#     previous job and I don't know the difference. log4j??)  When there is a
-#     problem I generally use my development environment to debug
-#     faulting junit.  For scripting problems with the junits the options
-#
-#        filtertrace="false" 
-#        showoutput="true"
-#
-#     give a little more information.  Also when you know that some
-#     junits are failing, removing the option 
-#
-#        haltonfailure = "on" 
-#
-#     is helpful for showing all the failures.  But in the committed
-#     version I think that this option is very important because it
-#     means that the developer will never mistakenly believe that
-#     junits have succeeded.
-#
-
-junit.filtertrace=true
-junit.showoutput=false
-junit.haltonerror=on
-junit.haltonfailure=on
-junit.includes=**/*TestCase.java
-junit.memory=700M
 
 #==---==---==---==---==---==---==---==---==---==---==---==---==---==---==---==
 # URL for the reasoner
@@ -42,6 +13,14 @@ junit.dig.url=http://localhost:8081
 
 #junit.testongologies=http://www.co-ode.org/ontologies/testset/
 
+
+#--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==
+# The server test depends on the rmi_registry to be running.  The
+# server tests are disabled if there is no pointer to the location of
+# the jar file. 
+#
+
+junit.server.protege.jar=file:///Users/tredmond/dev/workspaces/protege-head/dist/protege.jar
 
 #--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==
 # Configuration file for database.  Makes it easier to run the junit tests 

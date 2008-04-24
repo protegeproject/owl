@@ -1,7 +1,5 @@
 package edu.stanford.smi.protegex.owl.inference.dig.exception;
 
-import edu.stanford.smi.protegex.owl.inference.reasoner.exception.ProtegeReasonerException;
-
 /**
  * User: matthewhorridge<br>
  * The Univeristy Of Manchester<br>
@@ -11,7 +9,7 @@ import edu.stanford.smi.protegex.owl.inference.reasoner.exception.ProtegeReasone
  * matthew.horridge@cs.man.ac.uk<br>
  * www.cs.man.ac.uk/~horridgm<br><br>
  */
-public class DIGReasonerException extends ProtegeReasonerException {
+public class DIGReasonerException extends Exception {
 
     public DIGReasonerException(String message) {
         super(message);

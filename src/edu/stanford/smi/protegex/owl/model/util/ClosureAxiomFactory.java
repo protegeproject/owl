@@ -88,7 +88,7 @@ public class ClosureAxiomFactory {
         Iterator<OWLAllValuesFrom> candidates = getUniversals(namedClass);
         while (candidates.hasNext()) {
             OWLAllValuesFrom current = candidates.next();
-            if (current.getOnProperty().equals(prop) ||
+            if (current.getOnProperty() == prop ||
                     prop.isSubpropertyOf(current.getOnProperty(), true)) {
                 RDFResource filler = current.getFiller();
                 if (filler instanceof RDFSNamedClass) {
@@ -126,7 +126,7 @@ public class ClosureAxiomFactory {
         while (candidates.hasNext()) {
             OWLAllValuesFrom current = candidates.next();
             RDFProperty onProp = current.getOnProperty();
-            if (onProp.equals(prop) || prop.isSubpropertyOf(onProp, true)) {
+            if (onProp == prop || prop.isSubpropertyOf(onProp, true)) {
                 RDFResource currentfiller = current.getFiller();
                 if (currentfiller instanceof OWLUnionClass &&
                         ((OWLUnionClass) currentfiller).getOperands().contains(filler)) {

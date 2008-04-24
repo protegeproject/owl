@@ -8,26 +8,25 @@
 <project name="Protege-OWL" default="usage" basedir=".">
 
     <property environment="env"/>
-    <property name="protege.home" location="${env.PROTEGE_HOME}"/>
+    <property name="protege.home" value="${env.PROTEGE_HOME}"/>
 
     <property file = "local.properties"/>  
 
 
     <property name = "src" value = "./src"/>
+
     <property name = "lib" value = "./lib"/>
+    <property name = "etc" value = "./etc"/>
+
+
     <property name = "build" value = "./build"/>
     <property name = "classes" value = "${build}/classes"/>
     <property name = "dist" value = "${build}/dist"/>
     <property name = "plugins" value = "${build}/plugins"/>
-    <property name = "etc" value = "./etc"/>
     <property name = "owlplugin" value = "edu.stanford.smi.protegex.owl"/>
     <property name = "plugin" value = "${plugins}/${owlplugin}"/>
     <property name = "pluginName" value="protege-owl"/>
-    <property name = "debug" value = "on"/>
-    <property name = "source" value = "1.5"/>
-    <property name = "deprecation" value = "off"/>
     <property name = "jarfile" value = "${dist}/${pluginName}.jar"/>
-
 
     <property name = "debug" value = "on"/>
     <property name = "source" value = "1.5"/>
@@ -41,7 +40,6 @@
               value = "${src}/edu/stanford/smi/protegex/owl/model/classparser/compact"/>
 
     <property name = "junit" value = "./junit"/>
-
 
 
 	<!-- =================================================================== -->
@@ -82,15 +80,13 @@
     <target name="useProtegeHome" depends="checkProtegeHome" 
             if="protege.home.set">
       <echo message="Using Protege Home = ${protege.home} to find protege jars"/>
-      <property name="protege.lib" location="${protege.home}/protege.jar"/>
-      <property name="looks.lib"   location="${protege.home}/looks-2.1.3.jar"/>
+      <property name="protege.lib" value="${protege.home}/protege.jar"/>
     </target>
     
     <target name="useLibDir" depends="checkProtegeHome" 
             unless="protege.home.set">
        <echo message="Using lib dir to find protege jars"/>
       <property name="protege.lib" value="${lib}/protege.jar"/>
-      <property name="looks.lib" value="${lib}/looks-2.1.3.jar"/>
     </target>
 
 
@@ -98,14 +94,11 @@
       <condition property="libs.found">
         <and>
           <available file="${protege.lib}" type = "file"/>
-          <available file="${looks.lib}" type = "file"/>
         </and>
       </condition>
       <path id="classpath.compile">
         <pathelement location = "${protege.lib}"/>
-        <fileset dir="${lib}">
-          <include name="**/*.jar"/>
-        </fileset>
+        <fileset dir="${lib}"/>
       </path>
 
     </target>
@@ -117,7 +110,7 @@
       <echo message="protege installation directory where the"/>
       <echo message="appropriate plugins have been installed or copy the"/>
       <echo message="needed jars into the lib directory"/>
-      <echo message="Use the -v option to find the missing jar"/>
+      <echo message="The jar file in question is protege.jar."/>
       <fail message="build aborted."/>
     </target>
       
@@ -130,12 +123,12 @@
     <!-- Creates the timestamp                                            -->
     <!-- ================================================================ -->
 
-  <target name="init.time" depends="checkProtegeLibsAndReport">
+
+    <target name="init.time">
 	  <tstamp>
          <format property="build.time" pattern="MM/dd/yyyy hh:mm aa"/>
       </tstamp>
     </target>
-
 
     <target name="init" depends="init.time">
         <mkdir dir="${build}"/>
@@ -218,8 +211,7 @@
         <javac srcdir="${src}" destdir="${classes}"        	
                deprecation = "${deprecation}"
                debug = "${debug}"
-	       source = "${source}"
-               includeAntRuntime="false">
+	       source = "${source}">
             <classpath refid="classpath.compile"/>
           <!--  <compilerarg value="-Xlint:all"/> -->
         </javac>
@@ -288,13 +280,16 @@
         <copy todir="${plugin}">
             <fileset file="${jarfile}"/>
             <fileset dir="${lib}">
-                <exclude name="looks-2.1.3.jar"/>
+                <exclude name="looks.jar"/>
                 <exclude name="protege*.jar"/>
             </fileset>
             <fileset dir="${etc}">
                 <include name="plugin.properties"/>
                 <include name="ont-policy.rdf"/>
-                <include name="*.owl"/>
+                <include name="OWLProfiles.owl"/>
+                <include name="protege.owl"/>
+                <include name="swrl.owl"/>
+                <include name="swrlb.owl"/>
                 <exclude name="MANIFEST.MF"/>
                 <exclude name="OWL.pprj"/>
             </fileset>
@@ -312,6 +307,7 @@
         </zip>
     </target>
 
+
     <target name = "install" depends = "plugin.zip">
       <fail message = "set the protege.home variable to do an install">
          <condition>
@@ -323,84 +319,11 @@
       <unzip src="${dist}/${pluginName}.zip" 
              dest = "${protege.home}/plugins"
              overwrite = "true"/>
-      <copy todir="${protege.home}/examples/pizza">
-          <fileset dir="./examples" includes="pizza.*"/>
-      </copy>
-      <copy todir="${protege.home}/examples/travel">
-          <fileset dir="./examples" includes="travel.*"/>
-      </copy>
-      <copy todir="${protege.home}/examples/family">
-          <fileset dir="./examples" includes="family.*"/>
-      </copy>
    </target>
-	
-    <!-- Run targets -->
-
-    <target name="debug" depends="install">
-        <java fork="true" dir="${protege.home}" 
-              classname="edu.stanford.smi.protege.Application">
-            <jvmarg value = "-Xdebug"/>
-            <jvmarg value = "-Xrunjdwp:transport=dt_socket,address=8100,server=y,suspend=y"/> 
-            <classpath>
-                <pathelement path="${protege.home}/protege.jar"/>
-                <pathelement path="${protege.home}/looks-2.1.3.jar"/>
-                <pathelement path="${protege.home}/unicode_panel.jar"/>
-                <pathelement path="${protege.home}/plugins/edu.stanford.smi.protegex.changes/change-model.jar"/>
-                <fileset dir="./dbdrivers"/>
-            </classpath>
-        </java>
-    </target>
-	
-    <target name="run" depends="install">
-        <java fork="true" dir="${protege.home}" 
-              classname="edu.stanford.smi.protege.Application">
-            <classpath>
-                <pathelement path="${protege.home}/protege.jar"/>
-                <pathelement path="${protege.home}/looks-2.1.3.jar"/>
-                <pathelement path="${protege.home}/unicode_panel.jar"/>
-                <pathelement path="${protege.home}/plugins/edu.stanford.smi.protegex.changes/change-model.jar"/>
-                <fileset dir="./dbdrivers"/>
-            </classpath>
-        </java>
-    </target>
-	
-	   <target name="run.server" depends="install">
-	        <java fork="true" dir="${protege.home}" 
-	              classname="edu.stanford.smi.protege.server.Server">
-	        	<jvmarg value = "-Djava.rmi.server.codebase=file:${protege.home}/protege.jar"/>
-	            <classpath>
-	                <pathelement path="${protege.home}/protege.jar"/>
-	                <pathelement path="${protege.home}/looks-2.1.3.jar"/>
-	                <pathelement path="${protege.home}/unicode_panel.jar"/>
-	                <pathelement path="${protege.home}/plugins/edu.stanford.smi.protegex.changes/change-model.jar"/>
-	                <fileset dir="./dbdrivers"/>
-	            </classpath>
-	        	<arg value="examples/server/metaproject.pprj"/>
-	        </java>
-	    </target>
-	
-	   <target name="debug.server" depends="install">
-	        <java fork="true" dir="${protege.home}" 
-	              classname="edu.stanford.smi.protege.server.Server">
-	            <jvmarg value = "-Xdebug"/>
-	            <jvmarg value = "-Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=y"/> 
-	        	<jvmarg value = "-Djava.rmi.server.codebase=file:${protege.home}/protege.jar"/>
-	            <classpath>
-	                <pathelement path="${protege.home}/protege.jar"/>
-	                <pathelement path="${protege.home}/looks-2.1.3.jar"/>
-	                <pathelement path="${protege.home}/unicode_panel.jar"/>
-	                <pathelement path="${protege.home}/plugins/edu.stanford.smi.protegex.changes/change-model.jar"/>
-	                <fileset dir="./dbdrivers"/>
-	            </classpath>
-	        	<arg value="examples/server/metaproject.pprj"/>
-	        </java>
-	    </target>
-
 
 
     <target name = "junit-compile" depends = "jar">
-       <javac srcdir = "${junit}" destdir = "${classes}" debug = "on" 
-              includeAntRuntime="false">
+       <javac srcdir = "${junit}" destdir = "${classes}" debug = "on">
          <classpath refid = "classpath.compile"/>
          <classpath>
             <pathelement location = "${jarfile}"/>
@@ -418,18 +341,9 @@
       <classpath>
         <pathelement location="${classes}"/>
         <pathelement location = "${protege.lib}"/>
-        <pathelement location = "${looks.lib}"/>
         <pathelement location = "${lib}/junit.jar"/>
       </classpath>
     </java>
-  </target>
-
-  <target name="junitResources">
-    <copy todir="${build}/examples">
-      <fileset dir="./examples"/>
-    </copy>
-    <copy todir="${build}"
-          file="junit-logging.properties"/>
   </target>
 
    <!--
@@ -453,43 +367,36 @@
      means that the developer will never mistakenly believe that
      junits have succeeded.
        -->
-   <!-- 
-         <jvmarg value="-Xdebug"/>
-         <jvmarg value="-Xrunjdwp:transport=dt_socket,address=8100,server=y,suspend=y"/>
-         -->
    <target name = "junit" 
            description = "run the tests (anybody can do it)"
-           depends = "plugin.dir,junit-compile,checkJunitConfiguration, junitResources">
-     <property file="junit.properties"/>
+           depends = "plugin.dir,junit-compile,checkJunitConfiguration">
      <junit printsummary="withOutAndErr"
             dir = "${build}" 
             fork = "yes"
-            filtertrace="${junit.filtertrace}"
-            showoutput="${junit.showoutput}"
-            haltonfailure = "${junit.haltonfailure}"
-            haltonerror = "${junit.haltonerror}">
-         <jvmarg value="-Xmx${junit.memory}"/>
-         <jvmarg value="-Djunit.server.protege.jar=${protege.lib}"/>
-         <jvmarg value="-Djava.util.logging.config.file=junit-logging.properties"/>
-         <classpath>
-             <pathelement location="${classes}"/>
-             <pathelement location = "${protege.lib}"/>
-             <pathelement location = "${looks.lib}"/>
-             <fileset dir="${plugin}">
-                 <include name = "**/*.jar"/>
-             </fileset>
-             <fileset dir="dbdrivers">
-                 <include name = "**/*.jar"/>
-             </fileset>
-         </classpath>
-         <batchtest>
-             <fileset dir="${junit}">
-                 <include name = "${junit.includes}"/>
-                 <exclude name = "**/*Abstract*.java"/>
-                 <exclude name = "**/*FailedTestCase.java"/>
-             </fileset>
-         </batchtest>
+            haltonfailure = "on" 
+            haltonerror = "on">
+      <jvmarg value="-Xmx300M"/>
+      <classpath>
+           <pathelement location="${classes}"/>
+           <pathelement location = "${protege.lib}"/>
+           <fileset
+              dir="${plugin}">
+              <include name = "**/*.jar"/>
+           </fileset>
+           <fileset
+              dir="dbdrivers">
+              <include name = "**/*.jar"/>
+           </fileset>
+        </classpath>
+        <batchtest>
+           <fileset dir="${junit}">
+             <include name = "**/*TestCase.java"/>
+             <exclude name = "**/*Abstract*.java"/>
+             <exclude name = "**/*FailedTestCase.java"/>
+           </fileset>
+        </batchtest>
      </junit>
    </target>
+
 
 </project>

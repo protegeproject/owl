@@ -2,7 +2,6 @@ package edu.stanford.smi.protegex.owl.ui.subsumption;
 
 import edu.stanford.smi.protege.util.LazyTreeNode;
 import edu.stanford.smi.protege.util.LazyTreeRoot;
-import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protege.util.SelectableTree;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
 import edu.stanford.smi.protegex.owl.ui.owltable.OWLTable;
@@ -39,11 +38,8 @@ public class TooltippedSelectableTree extends SelectableTree {
                 RDFResource res = null;
                 if (last instanceof LazyTreeNode) {
                     LazyTreeNode node = (LazyTreeNode) path.getLastPathComponent();
-                    if (node.getUserObject() instanceof RDFResource) {
+                    if (res instanceof RDFResource) {
                     	res = (RDFResource) node.getUserObject();
-                    }
-                    else { 
-                    	Log.getLogger().warning(res + " is not an RDFResource");
                     }
                 }
                 if (res != null) {

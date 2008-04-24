@@ -29,7 +29,7 @@ public class SetSubclassesDisjointFalseAction extends RefactorResourceAction {
         OWLModel owlModel = cls.getOWLModel();
         try {
             owlModel.beginTransaction("" + getValue(Action.NAME) +
-                    " at " + cls.getBrowserText(), cls.getName());
+                    " at " + cls.getBrowserText());
             cls.setSubclassesDisjoint(false);
             for (Iterator it = cls.getSubclasses(true).iterator(); it.hasNext();) {
                 Cls subCls = (Cls) it.next();
@@ -37,11 +37,12 @@ public class SetSubclassesDisjointFalseAction extends RefactorResourceAction {
                     ((OWLNamedClass) subCls).setSubclassesDisjoint(false);
                 }
             }
-            owlModel.commitTransaction();
         }
         catch (Exception ex) {
-        	owlModel.rollbackTransaction();
             OWLUI.handleError(owlModel, ex);
+        }
+        finally {
+            owlModel.endTransaction();
         }
     }
 

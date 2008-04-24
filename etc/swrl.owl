@@ -19,7 +19,7 @@
 
 <owl:Ontology rdf:about="">
   <rdfs:comment>OWL definition of the RDF Concrete Syntax for the Semantic Web Rule Language</rdfs:comment>
-  <owl:versionInfo>$Id: swrl.owl,v 1.15 2004/11/09 11:58:28 mdean Exp $</owl:versionInfo>
+  <owl:versionInfo>$Id: swrl.owl,v 1.1 2004/12/06 03:25:23 knublauch Exp $</owl:versionInfo>
 </owl:Ontology>
 
 <owl:Class rdf:ID="Imp">

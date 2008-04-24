@@ -1,32 +1,13 @@
 package edu.stanford.smi.protegex.owl.model;
 
+import edu.stanford.smi.protege.event.*;
+import edu.stanford.smi.protege.model.*;
+import edu.stanford.smi.protege.model.framestore.FrameStore;
+
 import java.net.URI;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
-
-import edu.stanford.smi.protege.event.ClsListener;
-import edu.stanford.smi.protege.event.FacetListener;
-import edu.stanford.smi.protege.event.FrameListener;
-import edu.stanford.smi.protege.event.InstanceListener;
-import edu.stanford.smi.protege.event.KnowledgeBaseListener;
-import edu.stanford.smi.protege.event.SlotListener;
-import edu.stanford.smi.protege.model.BrowserSlotPattern;
-import edu.stanford.smi.protege.model.Cls;
-import edu.stanford.smi.protege.model.CommandManager;
-import edu.stanford.smi.protege.model.Facet;
-import edu.stanford.smi.protege.model.Frame;
-import edu.stanford.smi.protege.model.FrameCounts;
-import edu.stanford.smi.protege.model.FrameFactory;
-import edu.stanford.smi.protege.model.FrameID;
-import edu.stanford.smi.protege.model.FrameNameValidator;
-import edu.stanford.smi.protege.model.Instance;
-import edu.stanford.smi.protege.model.KnowledgeBase;
-import edu.stanford.smi.protege.model.Project;
-import edu.stanford.smi.protege.model.SimpleInstance;
-import edu.stanford.smi.protege.model.Slot;
-import edu.stanford.smi.protege.model.ValueType;
-import edu.stanford.smi.protege.model.framestore.FrameStore;
 
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
@@ -37,7 +18,6 @@ public interface ProtegeKnowledgeBase extends KnowledgeBase {
      * @see OWLModel#addClassListener
      * @deprecated
      */
-    @Deprecated
     void addClsListener(ClsListener listener);
 
 
@@ -45,7 +25,6 @@ public interface ProtegeKnowledgeBase extends KnowledgeBase {
      * @see RDFSClass#addClassListener
      * @deprecated
      */
-    @Deprecated
     void addClsListener(Cls cls, ClsListener listener);
 
 
@@ -53,7 +32,6 @@ public interface ProtegeKnowledgeBase extends KnowledgeBase {
      * @see RDFResource#addPropertyValueListener
      * @deprecated not needed
      */
-    @Deprecated
     void addFrameListener(Frame frame, FrameListener listener);
 
 
@@ -61,7 +39,6 @@ public interface ProtegeKnowledgeBase extends KnowledgeBase {
      * @see OWLModel#addPropertyValueListener
      * @deprecated
      */
-    @Deprecated
     void addFrameListener(FrameListener listener);
 
 
@@ -69,7 +46,6 @@ public interface ProtegeKnowledgeBase extends KnowledgeBase {
      * @see RDFResource#addResourceListener
      * @deprecated
      */
-    @Deprecated
     void addInstanceListener(Instance instance, InstanceListener listener);
 
 
@@ -77,7 +53,6 @@ public interface ProtegeKnowledgeBase extends KnowledgeBase {
      * @see OWLModel#addResourceListener
      * @deprecated
      */
-    @Deprecated
     void addInstanceListener(InstanceListener listener);
 
 
@@ -85,7 +60,6 @@ public interface ProtegeKnowledgeBase extends KnowledgeBase {
      * @see OWLModel#addModelListener
      * @deprecated
      */
-    @Deprecated
     void addKnowledgeBaseListener(KnowledgeBaseListener listener);
 
 
@@ -93,7 +67,6 @@ public interface ProtegeKnowledgeBase extends KnowledgeBase {
      * @see RDFProperty#addPropertyListener
      * @deprecated
      */
-    @Deprecated
     void addSlotListener(Slot slot, SlotListener listener);
 
 
@@ -101,21 +74,18 @@ public interface ProtegeKnowledgeBase extends KnowledgeBase {
      * @see OWLModel#addPropertyListener
      * @deprecated
      */
-    @Deprecated
     void addSlotListener(SlotListener listener);
 
 
     /**
      * @deprecated this method is based on facets which are not supported in OWL
      */
-    @Deprecated
     boolean areValidOwnSlotValues(Frame frame, Slot slot, Collection values);
 
 
     /**
      * @deprecated not needed
      */
-    @Deprecated
     boolean containsFrame(String name);
 
 
@@ -124,7 +94,6 @@ public interface ProtegeKnowledgeBase extends KnowledgeBase {
      * @see OWLModel#createOWLNamedClass
      * @deprecated
      */
-    @Deprecated
     Cls createCls(String name, Collection parents);
 
 
@@ -132,28 +101,24 @@ public interface ProtegeKnowledgeBase extends KnowledgeBase {
      * @see RDFSNamedClass#createInstance
      * @deprecated
      */
-    @Deprecated
     Cls createCls(String name, Collection parents, Cls metaCls);
 
 
     /**
      * @deprecated not needed in OWL
      */
-    @Deprecated
     Cls createCls(String name, Collection parents, Cls metaCls, boolean initializeDefaults);
 
 
     /**
      * @deprecated not needed in OWL
      */
-    @Deprecated
-    Cls createCls(FrameID id, Collection parents, Collection metaClses, boolean initializeDefaults);
+    Cls createCls(FrameID id, String name, Collection parents, Collection metaClses, boolean initializeDefaults);
 
 
     /**
      * @deprecated no OWL equivalent
      */
-    @Deprecated
     Facet createFacet(String name);
 
 
@@ -166,7 +131,6 @@ public interface ProtegeKnowledgeBase extends KnowledgeBase {
     /**
      * @deprecated no OWL equivalent
      */
-    @Deprecated
     Facet createFacet(String name, Cls metaCls, boolean initializeDefaults);
 
 
@@ -174,37 +138,32 @@ public interface ProtegeKnowledgeBase extends KnowledgeBase {
      * @see RDFSClass#createInstance
      * @deprecated
      */
-    @Deprecated
     Instance createInstance(String name, Cls directType);
 
 
     /**
      * @deprecated not needed
      */
-    @Deprecated
     Instance createInstance(String name, Cls directType, boolean initializeDefaults);
 
 
     /**
      * @deprecated not needed
      */
-    @Deprecated
-    Instance createInstance(FrameID id, Cls directType, boolean initializeDefaults);
+    Instance createInstance(FrameID id, String name, Cls directType, boolean initializeDefaults);
 
 
     /**
      * @deprecated not needed
      */
-    @Deprecated
-    Instance createInstance(FrameID id, Collection directTypes, boolean initializeDefaults);
+    Instance createInstance(FrameID id, String name, Collection directTypes, boolean initializeDefaults);
 
 
     /**
      * @see RDFSClass#createInstance
      * @deprecated
      */
-    @Deprecated
-    SimpleInstance createSimpleInstance(FrameID id, Collection directTypes, boolean initializeDefaults);
+    SimpleInstance createSimpleInstance(FrameID id, String name, Collection directTypes, boolean initializeDefaults);
 
 
     /**
@@ -213,7 +172,6 @@ public interface ProtegeKnowledgeBase extends KnowledgeBase {
      * @see OWLModel#createOWLObjectProperty
      * @deprecated
      */
-    @Deprecated
     Slot createSlot(String name);
 
 
@@ -221,14 +179,12 @@ public interface ProtegeKnowledgeBase extends KnowledgeBase {
      * @see RDFSClass#createInstance
      * @deprecated
      */
-    @Deprecated
     Slot createSlot(String name, Cls metaCls);
 
 
     /**
      * @deprecated not needed
      */
-    @Deprecated
     Slot createSlot(String name, Cls metaCls, boolean initializeDefaults);
 
 
@@ -236,7 +192,6 @@ public interface ProtegeKnowledgeBase extends KnowledgeBase {
      * @see OWLModel#createSubproperty
      * @deprecated
      */
-    @Deprecated
     Slot createSlot(String name, Cls metaCls, Collection superslots, boolean initializeDefaults);
 
 
@@ -244,14 +199,12 @@ public interface ProtegeKnowledgeBase extends KnowledgeBase {
      * @see RDFResource#delete
      * @deprecated
      */
-    @Deprecated
     void deleteCls(Cls cls);
 
 
     /**
      * @deprecated not needed in OWL
      */
-    @Deprecated
     void deleteFacet(Facet facet);
 
 
@@ -259,7 +212,6 @@ public interface ProtegeKnowledgeBase extends KnowledgeBase {
      * @see RDFResource#delete
      * @deprecated
      */
-    @Deprecated
     void deleteFrame(Frame frame);
 
 
@@ -267,7 +219,6 @@ public interface ProtegeKnowledgeBase extends KnowledgeBase {
      * @see RDFResource#delete
      * @deprecated
      */
-    @Deprecated
     void deleteInstance(Instance instance);
 
 
@@ -275,7 +226,6 @@ public interface ProtegeKnowledgeBase extends KnowledgeBase {
      * @see RDFResource#delete
      * @deprecated
      */
-    @Deprecated
     void deleteSlot(Slot slot);
 
 
@@ -283,7 +233,6 @@ public interface ProtegeKnowledgeBase extends KnowledgeBase {
      * @see OWLModel#getRDFSNamedClass
      * @deprecated
      */
-    @Deprecated
     Cls getCls(String name);
 
 
@@ -291,7 +240,6 @@ public interface ProtegeKnowledgeBase extends KnowledgeBase {
      * @see OWLModel#getRDFSClassCount
      * @deprecated
      */
-    @Deprecated
     int getClsCount();
 
 
@@ -299,7 +247,6 @@ public interface ProtegeKnowledgeBase extends KnowledgeBase {
      * @see OWLModel#getRDFSClasses
      * @deprecated
      */
-    @Deprecated
     Collection getClses();
 
 
@@ -313,35 +260,30 @@ public interface ProtegeKnowledgeBase extends KnowledgeBase {
     /**
      * @deprecated
      */
-    @Deprecated
     Cls getDefaultClsMetaCls();
 
 
     /**
      * @deprecated not supported in OWL
      */
-    @Deprecated
     Cls getDefaultFacetMetaCls();
 
 
     /**
      * @deprecated
      */
-    @Deprecated
     Cls getDefaultSlotMetaCls();
 
 
     /**
      * @deprecated not supported in OWL
      */
-    @Deprecated
     Facet getFacet(String name);
 
 
     /**
      * @deprecated not supported in OWL
      */
-    @Deprecated
     int getFacetCount();
 
 
@@ -349,7 +291,6 @@ public interface ProtegeKnowledgeBase extends KnowledgeBase {
      * @return
      * @deprecated not supported in OWL
      */
-    @Deprecated
     Collection getFacets();
 
 
@@ -357,14 +298,12 @@ public interface ProtegeKnowledgeBase extends KnowledgeBase {
      * @see OWLModel#getRDFResource
      * @deprecated
      */
-    @Deprecated
     Frame getFrame(String name);
 
 
     /**
      * @deprecated not needed
      */
-    @Deprecated
     Frame getFrame(FrameID id);
 
 
@@ -372,35 +311,30 @@ public interface ProtegeKnowledgeBase extends KnowledgeBase {
      * @see OWLModel#getRDFResourceCount
      * @deprecated
      */
-    @Deprecated
     int getFrameCount();
 
 
     /**
      * @deprecated not needed
      */
-    @Deprecated
     String getFrameCreationTimestamp(Frame frame);
 
 
     /**
      * @deprecated not needed
      */
-    @Deprecated
     String getFrameCreator(Frame frame);
 
 
     /**
      * @deprecated not needed
      */
-    @Deprecated
     String getFrameLastModificationTimestamp(Frame frame);
 
 
     /**
      * @deprecated not needed
      */
-    @Deprecated
     String getFrameLastModifier(Frame frame);
 
 
@@ -408,14 +342,12 @@ public interface ProtegeKnowledgeBase extends KnowledgeBase {
      * @see OWLModel#getResourceNameMatches
      * @deprecated
      */
-    @Deprecated
     Collection getFrameNameMatches(String s, int maxMatches);
 
 
     /**
      * @deprecated not supported in OWL
      */
-    @Deprecated
     String getFrameNamePrefix();
 
 
@@ -423,7 +355,6 @@ public interface ProtegeKnowledgeBase extends KnowledgeBase {
      * @see OWLModel#getRDFResources
      * @deprecated
      */
-    @Deprecated
     Collection getFrames();
 
 
@@ -431,7 +362,6 @@ public interface ProtegeKnowledgeBase extends KnowledgeBase {
      * @see OWLModel#getRDFResourcesWithPropertyValue
      * @deprecated
      */
-    @Deprecated
     Collection getFramesWithValue(Slot slot, Facet facet, boolean isTemplate, Object value);
 
 
@@ -439,7 +369,6 @@ public interface ProtegeKnowledgeBase extends KnowledgeBase {
      * @see OWLModel#getRDFResource
      * @deprecated
      */
-    @Deprecated
     Instance getInstance(String fullname);
 
 
@@ -447,7 +376,6 @@ public interface ProtegeKnowledgeBase extends KnowledgeBase {
      * @see OWLModel#getRDFResources
      * @deprecated
      */
-    @Deprecated
     Collection getInstances();
 
 
@@ -455,21 +383,18 @@ public interface ProtegeKnowledgeBase extends KnowledgeBase {
      * @see RDFSClass#getInstances
      * @deprecated
      */
-    @Deprecated
     Collection getInstances(Cls cls);
 
 
     /**
      * @deprecated not supported
      */
-    @Deprecated
     String getInvalidOwnSlotValuesText(Frame frame, Slot slot, Collection values);
 
 
     /**
      * @deprecated not supported
      */
-    @Deprecated
     String getInvalidOwnSlotValueText(Frame frame, Slot slot, Object value);
 
 
@@ -477,21 +402,18 @@ public interface ProtegeKnowledgeBase extends KnowledgeBase {
      * @see OWLModel#getMatchingResources
      * @deprecated
      */
-    @Deprecated
     Collection getMatchingFrames(Slot slot, Facet facet, boolean isTemplate, String matchString, int maxMatches);
 
 
     /**
      * @deprecated not needed
      */
-    @Deprecated
     String getName();
 
 
     /**
      * @deprecated not needed
      */
-    @Deprecated
     int getNextFrameNumber();
 
 
@@ -506,7 +428,6 @@ public interface ProtegeKnowledgeBase extends KnowledgeBase {
     /**
      * @deprecated not needed
      */
-    @Deprecated
     Collection getReachableSimpleInstances(Collection roots);
 
 
@@ -514,49 +435,49 @@ public interface ProtegeKnowledgeBase extends KnowledgeBase {
      * @deprecated
      * @see OWLModel#listReferences
      */
-    @Deprecated
     Collection getReferences(Object o, int maxReferences);
 
 
     /**
      * @deprecated
      */
-    @Deprecated
     Collection getMatchingReferences(String s, int maxReferences);
+
+
+    /**
+     * @see OWLModel#getOWLThingClass
+     * @deprecated
+     */
+    Cls getRootCls();
 
 
     /**
      * @deprecated not needed
      */
-    @Deprecated
     Collection getRootClses();
 
 
     /**
      * @deprecated not needed
      */
-    @Deprecated
     Cls getRootClsMetaCls();
 
 
     /**
      * @deprecated not needed
      */
-    @Deprecated
     Cls getRootFacetMetaCls();
 
 
     /**
      * @deprecated not needed
      */
-    @Deprecated
     Cls getRootSlotMetaCls();
 
 
     /**
      * @deprecated not needed
      */
-    @Deprecated
     Collection getRootSlots();
 
 
@@ -564,14 +485,12 @@ public interface ProtegeKnowledgeBase extends KnowledgeBase {
      * @see OWLModel#getRDFProperty
      * @deprecated
      */
-    @Deprecated
     Slot getSlot(String name);
 
 
     /**
      * @deprecated not needed
      */
-    @Deprecated
     int getSlotCount();
 
 
@@ -579,21 +498,18 @@ public interface ProtegeKnowledgeBase extends KnowledgeBase {
      * @see OWLModel#getRDFProperties
      * @deprecated
      */
-    @Deprecated
     Collection getSlots();
 
 
     /**
      * @deprecated not needed
      */
-    @Deprecated
     String getSlotValueLastModificationTimestamp(Frame frame, Slot slot, boolean isTemplate);
 
 
     /**
      * @deprecated not needed
      */
-    @Deprecated
     String getSlotValueLastModifier(Frame frame, Slot slot, boolean isTemplate);
 
 
@@ -601,91 +517,78 @@ public interface ProtegeKnowledgeBase extends KnowledgeBase {
      * @see RDFSClass#getSubclasses
      * @deprecated
      */
-    @Deprecated
     Collection getSubclasses(Cls cls);
 
 
     /**
      * @deprecated not needed
      */
-    @Deprecated
     Collection getUnreachableSimpleInstances(Collection roots);
 
 
     /**
      * @deprecated not needed
      */
-    @Deprecated
     String getUserName();
 
 
     /**
      * @deprecated not needed
      */
-    @Deprecated
     String getVersionString();
 
 
     /**
      * @deprecated not supported in OWL
      */
-    @Deprecated
     boolean isAutoUpdatingFacetValues();
 
 
     /**
      * @deprecated not needed
      */
-    @Deprecated
     boolean isClsMetaCls(Cls cls);
 
 
     /**
      * @deprecated not needed
      */
-    @Deprecated
     boolean isDefaultClsMetaCls(Cls cls);
 
 
     /**
      * @deprecated not needed
      */
-    @Deprecated
     boolean isDefaultFacetMetaCls(Cls cls);
 
 
     /**
      * @deprecated not needed
      */
-    @Deprecated
     boolean isDefaultSlotMetaCls(Cls cls);
 
 
     /**
      * @deprecated not needed
      */
-    @Deprecated
     boolean isFacetMetaCls(Cls cls);
 
 
     /**
      * @deprecated not needed
      */
-    @Deprecated
     boolean isLoading();
 
 
     /**
      * @deprecated not needed
      */
-    @Deprecated
     boolean isSlotMetaCls(Cls cls);
 
 
     /**
      * @deprecated not supported in OWL
      */
-    @Deprecated
     boolean isValidOwnSlotValue(Frame frame, Slot slot, Object value);
 
 
@@ -693,7 +596,6 @@ public interface ProtegeKnowledgeBase extends KnowledgeBase {
      * @see RDFSClass#removeClassListener
      * @deprecated
      */
-    @Deprecated
     void removeClsListener(Cls cls, ClsListener listener);
 
 
@@ -701,14 +603,12 @@ public interface ProtegeKnowledgeBase extends KnowledgeBase {
      * @see OWLModel#removeClassListener
      * @deprecated
      */
-    @Deprecated
     void removeClsListener(ClsListener listener);
 
 
     /**
      * @deprecated not needed
      */
-    @Deprecated
     void removeFrameListener(Frame frame, FrameListener listener);
 
 
@@ -716,14 +616,12 @@ public interface ProtegeKnowledgeBase extends KnowledgeBase {
      * @see OWLModel#removePropertyValueListener
      * @deprecated
      */
-    @Deprecated
     void removeFrameListener(FrameListener listener);
 
 
     /**
      * @deprecated not needed
      */
-    @Deprecated
     void removeJavaLoadPackage(String path);
 
 
@@ -731,7 +629,6 @@ public interface ProtegeKnowledgeBase extends KnowledgeBase {
      * @see OWLModel#removeModelListener
      * @deprecated
      */
-    @Deprecated
     void removeKnowledgeBaseListener(KnowledgeBaseListener listener);
 
 
@@ -739,7 +636,6 @@ public interface ProtegeKnowledgeBase extends KnowledgeBase {
      * @see RDFResource#removeResourceListener
      * @deprecated
      */
-    @Deprecated
     void removeInstanceListener(Instance instance, InstanceListener listener);
 
 
@@ -747,7 +643,6 @@ public interface ProtegeKnowledgeBase extends KnowledgeBase {
      * @see OWLModel#removeResourceListener
      * @deprecated
      */
-    @Deprecated
     void removeInstanceListener(InstanceListener listener);
 
 
@@ -755,7 +650,6 @@ public interface ProtegeKnowledgeBase extends KnowledgeBase {
      * @see RDFProperty#removePropertyListener
      * @deprecated
      */
-    @Deprecated
     void removeSlotListener(Slot slot, SlotListener listener);
 
 
@@ -763,42 +657,36 @@ public interface ProtegeKnowledgeBase extends KnowledgeBase {
      * @see OWLModel#removePropertyListener
      * @deprecated
      */
-    @Deprecated
     void removeSlotListener(SlotListener listener);
 
 
     /**
      * @deprecated not supported in OWL
      */
-    @Deprecated
     void setAutoUpdateFacetValues(boolean b);
 
 
     /**
      * @deprecated not needed
      */
-    @Deprecated
     void setBuildString(String s);
 
 
     /**
      * @deprecated not needed
      */
-    @Deprecated
     void setChanged(boolean b);
 
 
     /**
      * @deprecated not needed
      */
-    @Deprecated
     void setDefaultClsMetaCls(Cls cls);
 
 
     /**
      * @deprecated not needed
      */
-    @Deprecated
     void setDefaultFacetMetaCls(Cls cls);
 
 
@@ -806,6 +694,13 @@ public interface ProtegeKnowledgeBase extends KnowledgeBase {
      * @deprecated not needed
      */
     void setDefaultSlotMetaCls(Cls cls);
+
+
+    /**
+     * @see RDFResource#setName
+     * @deprecated
+     */
+    void setFrameName(Frame oldFrame, String newFrameName);
 
 
     boolean setUndoEnabled(boolean enabled);
@@ -1914,6 +1809,13 @@ public interface ProtegeKnowledgeBase extends KnowledgeBase {
      * @deprecated internal Protege detail
      */
     List getFrameStores();
+
+
+    /**
+     * @deprecated internal Protege detail
+     */
+    SystemFrames getSystemFrames();
+
 
     /**
      * @deprecated whatever this does

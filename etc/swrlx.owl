@@ -9,8 +9,7 @@
     xmlns:owl="http://www.w3.org/2002/07/owl#"
   xml:base="http://swrl.stanford.edu/ontologies/built-ins/3.3/swrlx.owl">
   <owl:Ontology rdf:about=""/>
-  <swrl:Builtin rdf:ID="makeOWLThing"/>
   <swrl:Builtin rdf:ID="createOWLThing"/>
 </rdf:RDF>
 
-<!-- Created with Protege (with OWL Plugin 3.4, Build 102)  http://protege.stanford.edu -->
+<!-- Created with Protege (with OWL Plugin 3.3, Build 385)  http://protege.stanford.edu -->

@@ -3,10 +3,7 @@ package edu.stanford.smi.protegex.owl.repository.util;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
-
-import edu.stanford.smi.protege.util.Log;
 
 /**
  * User: matthewhorridge<br>
@@ -58,17 +55,6 @@ public class OntologyNameExtractor {
                 String rootElementName = extractor.getRootElementName();
                 if (rootElementName != null) {
                     rdfRootPresent = rootElementName.toLowerCase().equals("rdf:rdf");
-                    
-                    //TT - if no xml:base and no owl:Ontology statement, then use the physical location as the ontology name
-                    if (rdfRootPresent && uri == null) {
-                    	try {
-							uri = url.toURI();
-							Log.getLogger().warning("Could not find the logical URI for the ontology located at " + url + 
-									". Using the physical location as the ontology logical URI.");
-						} catch (URISyntaxException e) {
-							Log.emptyCatchBlock(e);
-						}
-                    }
                 }
                 else {
                     uri = null;

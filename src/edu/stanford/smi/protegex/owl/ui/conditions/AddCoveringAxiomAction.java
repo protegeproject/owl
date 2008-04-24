@@ -84,7 +84,7 @@ public class AddCoveringAxiomAction extends ResourceAction {
         if (pures.size() > 1) {
             OWLModel owlModel = namedClass.getOWLModel();
             try {
-                owlModel.beginTransaction("Add covering axiom for " + namedClass.getBrowserText(), namedClass.getName());
+                owlModel.beginTransaction("Add covering axiom for " + namedClass.getBrowserText());
                 OWLUnionClass unionClass = namedClass.getOWLModel().createOWLUnionClass();
                 for (Iterator it = pures.iterator(); it.hasNext();) {
                     RDFSClass subclass = (RDFSClass) it.next();
@@ -92,11 +92,12 @@ public class AddCoveringAxiomAction extends ResourceAction {
                     unionClass.addOperand(c);
                 }
                 namedClass.addEquivalentClass(unionClass);
-                owlModel.commitTransaction();
             }
             catch (Exception ex) {
-            	owlModel.rollbackTransaction();
                 OWLUI.handleError(owlModel, ex);
+            }
+            finally {
+                owlModel.endTransaction();
             }
         }
         else {

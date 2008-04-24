@@ -5,8 +5,6 @@ import com.hp.hpl.jena.ontology.Ontology;
 import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.vocabulary.OWL;
 
-import edu.stanford.smi.protegex.owl.model.impl.OWLUtil;
-
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
  */
@@ -34,7 +32,7 @@ public class CreateOntologiesTestCase extends AbstractProtege2JenaTestCase {
     public void testOntologyWithNiceNamespace() {
         owlModel.createOWLNamedClass("Cls");
         String namespace = "http://aldi.de/ont";
-        OWLUtil.renameOntology(owlModel, owlModel.getDefaultOWLOntology(), namespace);
+        owlModel.getNamespaceManager().setDefaultNamespace(namespace + "#");
         OntModel newModel = createOntModel();
         assertSize(1, newModel.listOntologies());
         Ontology ontology = (Ontology) newModel.listOntologies().next();
@@ -46,13 +44,12 @@ public class CreateOntologiesTestCase extends AbstractProtege2JenaTestCase {
         owlModel.getDefaultOWLOntology().addImports(getRemoteOntologyRoot() + "travel.owl");
         owlModel.createOWLNamedClass("Cls");
         String namespace = "http://aldi.de/ont/";
-        OWLUtil.renameOntology(owlModel, owlModel.getDefaultOWLOntology(), namespace);
+        owlModel.getNamespaceManager().setDefaultNamespace(namespace);
         owlModel = reload(owlModel);
         OntModel newModel = createOntModel();
-        assertSize(3, newModel.listOntologies());
+        assertSize(2, newModel.listOntologies());
         Ontology ontology = (Ontology) newModel.getOntology(namespace);
         assertEquals(namespace, ontology.getURI());
-        assertSize(1, ontology.listImports());                                                           // the ontology import is broken but
-        assertNotNull(owlModel.getOWLNamedClass("http://www.owl-ontologies.com/travel.owl#Sunbathing")); // the data has arrived
+        assertSize(1, ontology.listImports());
     }
 }

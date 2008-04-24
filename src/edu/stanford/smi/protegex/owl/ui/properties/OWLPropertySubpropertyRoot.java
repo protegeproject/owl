@@ -1,18 +1,5 @@
 package edu.stanford.smi.protegex.owl.ui.properties;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.List;
-
-import edu.stanford.smi.protege.event.FrameEvent;
-import edu.stanford.smi.protege.event.KnowledgeBaseEvent;
-import edu.stanford.smi.protege.event.SlotEvent;
-import edu.stanford.smi.protege.model.Cls;
-import edu.stanford.smi.protege.model.Frame;
 import edu.stanford.smi.protege.model.Model;
 import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protege.ui.FrameComparator;
@@ -24,12 +11,9 @@ import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
 import edu.stanford.smi.protegex.owl.model.RDFSClass;
-import edu.stanford.smi.protegex.owl.model.event.ModelAdapter;
-import edu.stanford.smi.protegex.owl.model.event.ModelListener;
-import edu.stanford.smi.protegex.owl.model.event.PropertyAdapter;
-import edu.stanford.smi.protegex.owl.model.event.PropertyListener;
-import edu.stanford.smi.protegex.owl.model.event.ResourceAdapter;
-import edu.stanford.smi.protegex.owl.model.event.ResourceListener;
+import edu.stanford.smi.protegex.owl.model.event.*;
+
+import java.util.*;
 
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
@@ -39,10 +23,7 @@ public class OWLPropertySubpropertyRoot extends LazyTreeRoot {
     private OWLModel owlModel;
 
     private ModelListener modelListener = new ModelAdapter() {
-        @Override
-		public void propertyCreated(RDFProperty property, KnowledgeBaseEvent event) {
-        	if (event.isReplacementEvent()) return;
-        	
+        public void propertyCreated(RDFProperty property) {
             if (property.getSuperproperties(false).isEmpty() && isSuitable(property)) {
                 List properties = (List) getUserObject();
                 int index = 0;
@@ -58,43 +39,24 @@ public class OWLPropertySubpropertyRoot extends LazyTreeRoot {
         }
 
 
-        @Override
-		public void propertyDeleted(RDFProperty property, KnowledgeBaseEvent event) {
-        	if (event.isReplacementEvent()) return;
-        	
+        public void propertyDeleted(RDFProperty property) {
             List properties = (List) getUserObject();
             boolean changed = properties.remove(property);
             if (changed) {
                 childRemoved(property);
             }
         }
-        
-      	public void resourceReplaced(RDFResource oldResource, RDFResource newResource, String oldName) {
-      		Object userObj = getUserObject();
-      		
-      		if (userObj != null && userObj.equals(oldResource)) {
-      			reload(newResource);
-      		}
-    	}
-        
-        
     };
 
     public PropertyListener propertyListener = new PropertyAdapter() {
-        @Override
-		public void superpropertyAdded(RDFProperty property, RDFProperty superproperty, SlotEvent event) {
-        	if (event.isReplacementEvent()) return;
-        	
+        public void superpropertyAdded(RDFProperty property, RDFProperty superproperty) {
             if (property.getSuperpropertyCount() == 1 && isSuitable(property)) {
                 removeChild(property);
             }
         }
 
 
-        @Override
-		public void superpropertyRemoved(RDFProperty property, RDFProperty superproperty, SlotEvent event) {
-        	if (event.isReplacementEvent()) return;
-        	
+        public void superpropertyRemoved(RDFProperty property, RDFProperty superproperty) {
             if (property.getSuperpropertyCount() == 0 && isSuitable(property)) {
                 addChild(property);
             }
@@ -116,7 +78,6 @@ public class OWLPropertySubpropertyRoot extends LazyTreeRoot {
     };
 
 	public ResourceListener resourceListener = new ResourceAdapter() {
-		@Override
 		public void typeAdded(RDFResource resource,
 		                      RDFSClass type) {
 			if(resource instanceof RDFProperty) {
@@ -126,7 +87,6 @@ public class OWLPropertySubpropertyRoot extends LazyTreeRoot {
 		}
 
 
-		@Override
 		public void typeRemoved(RDFResource resource,
 		                        RDFSClass type) {
 			if(resource instanceof RDFProperty) {
@@ -177,28 +137,24 @@ public class OWLPropertySubpropertyRoot extends LazyTreeRoot {
     }
 
 
-    @Override
-	public LazyTreeNode createNode(Object o) {
+    public LazyTreeNode createNode(Object o) {
         return new SlotSubslotNode(this, (Slot) o);
     }
 
 
-    @Override
-	public void dispose() {
+    public void dispose() {
         super.dispose();
         owlModel.removeModelListener(modelListener);
         owlModel.removePropertyListener(propertyListener);
     }
 
 
-    @Override
-	public Comparator getComparator() {
+    public Comparator getComparator() {
         return new LazyTreeNodeFrameComparator();
     }
 
 
-    @SuppressWarnings("unchecked")
-	private static Collection getValidSlots(OWLModel owlModel) {
+    private static Collection getValidSlots(OWLModel owlModel) {
         List results = new ArrayList(owlModel.getVisibleUserDefinedRDFProperties());
         Iterator i = results.iterator();
         while (i.hasNext()) {
@@ -207,6 +163,8 @@ public class OWLPropertySubpropertyRoot extends LazyTreeRoot {
                 i.remove();
             }
         }
+        results.remove(owlModel.getRDFProperty(Model.Slot.FROM));
+        results.remove(owlModel.getRDFProperty(Model.Slot.TO));
         results.removeAll(Arrays.asList(owlModel.getSystemAnnotationProperties()));
         Collections.sort(results, new FrameComparator());
         return results;

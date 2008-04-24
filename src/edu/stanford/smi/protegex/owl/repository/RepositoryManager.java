@@ -1,17 +1,17 @@
 package edu.stanford.smi.protegex.owl.repository;
 
+import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.repository.impl.DublinCoreDLVersionRedirectRepository;
+import edu.stanford.smi.protegex.owl.repository.impl.ForcedURLRetrievalRepository;
+import edu.stanford.smi.protegex.owl.repository.impl.HTTPRepository;
+import edu.stanford.smi.protegex.owl.repository.impl.ProtegeOWLPluginFolderRepository;
+
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-
-import edu.stanford.smi.protegex.owl.model.OWLModel;
-import edu.stanford.smi.protegex.owl.repository.impl.DublinCoreDLVersionRedirectRepository;
-import edu.stanford.smi.protegex.owl.repository.impl.ForcedURLRetrievalRepository;
-import edu.stanford.smi.protegex.owl.repository.impl.HTTPRepository;
-import edu.stanford.smi.protegex.owl.repository.impl.ProtegeOWLPluginFolderRepository;
 
 
 /**
@@ -25,17 +25,17 @@ import edu.stanford.smi.protegex.owl.repository.impl.ProtegeOWLPluginFolderRepos
  */
 public class RepositoryManager {
 
-    private ArrayList<Repository> projectRepositories;
+    private ArrayList projectRepositories;
 
-    private ArrayList<Repository> globalRepositories;
+    private ArrayList globalRepositories;
 
     private OWLModel model;
 
 
     public RepositoryManager(OWLModel model) {
         this.model = model;
-        projectRepositories = new ArrayList<Repository>();
-        globalRepositories = new ArrayList<Repository>();
+        projectRepositories = new ArrayList();
+        globalRepositories = new ArrayList();
         loadSystemRepositories();
     }
 
@@ -55,8 +55,8 @@ public class RepositoryManager {
     }
 
 
-    public List<Repository> getAllRepositories() {
-        ArrayList<Repository> list = new ArrayList<Repository>();
+    public List getAllRepositories() {
+        ArrayList list = new ArrayList();
         list.addAll(projectRepositories);
         list.addAll(globalRepositories);
         return list;
@@ -68,12 +68,12 @@ public class RepositoryManager {
     }
 
 
-    public List<Repository> getProjectRepositories() {
+    public List getProjectRepositories() {
         return Collections.unmodifiableList(projectRepositories);
     }
 
 
-    public List<Repository> getGlobalRepositories() {
+    public List getGlobalRepositories() {
         return Collections.unmodifiableList(globalRepositories);
     }
 
@@ -103,7 +103,7 @@ public class RepositoryManager {
 
 
     public void moveUp(Repository repository) {
-        List<Repository> repositories = selectRepositories(repository);
+        List repositories = selectRepositories(repository);
         int index = repositories.indexOf(repository);
         if (index != -1 && index > 0) {
             repositories.remove(index);
@@ -113,7 +113,7 @@ public class RepositoryManager {
 
 
     public void moveDown(Repository repository) {
-        List<Repository> repositories = selectRepositories(repository);
+        List repositories = selectRepositories(repository);
         int index = repositories.indexOf(repository);
         if (index != -1 && index < repositories.size() - 1) {
             repositories.remove(index);
@@ -122,8 +122,8 @@ public class RepositoryManager {
     }
 
 
-    private List<Repository> selectRepositories(Repository repository) {
-        List<Repository> repositories;
+    private List selectRepositories(Repository repository) {
+        List repositories;
         if (isGlobalRepository(repository)) {
             repositories = globalRepositories;
         }
@@ -146,14 +146,14 @@ public class RepositoryManager {
 
     public Repository getRepository(URI ontologyName) {
         // Process local projectRepositories first.
-        for (Iterator<Repository> it = projectRepositories.iterator(); it.hasNext();) {
-            Repository curRepository = it.next();
+        for (Iterator it = projectRepositories.iterator(); it.hasNext();) {
+            Repository curRepository = (Repository) it.next();
             if (curRepository.contains(ontologyName)) {
                 return curRepository;
             }
         }
-        for (Iterator<Repository> it = globalRepositories.iterator(); it.hasNext();) {
-            Repository curRepository =  it.next();
+        for (Iterator it = globalRepositories.iterator(); it.hasNext();) {
+            Repository curRepository = (Repository) it.next();
             if (curRepository.contains(ontologyName)) {
                 return curRepository;
             }

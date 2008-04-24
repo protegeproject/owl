@@ -108,7 +108,7 @@ public class InstancesList extends TooltippedSelectableList
 
     public boolean displayHostResource(RDFResource resource) {
         for (int i = getModel().getSize() - 1; i >= 0; i--) {
-            if (resource.equals(getModel().getElementAt(i))) {
+            if (resource == getModel().getElementAt(i)) {
                 setSelectedValue(resource);
                 return true;
             }

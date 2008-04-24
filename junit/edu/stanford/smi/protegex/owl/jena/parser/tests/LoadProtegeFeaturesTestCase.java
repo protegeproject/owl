@@ -1,31 +1,18 @@
 package edu.stanford.smi.protegex.owl.jena.parser.tests;
 
-import java.io.File;
-import java.util.Collection;
-
 import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.Model;
 import edu.stanford.smi.protege.model.Slot;
-import edu.stanford.smi.protegex.owl.ProtegeOWL;
-import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
-import edu.stanford.smi.protegex.owl.model.OWLOntology;
-import edu.stanford.smi.protegex.owl.model.ProtegeNames;
-import edu.stanford.smi.protegex.owl.model.RDFProperty;
-import edu.stanford.smi.protegex.owl.model.RDFResource;
-import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
+import edu.stanford.smi.protegex.owl.model.*;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 import edu.stanford.smi.protegex.owl.tests.AbstractJenaTestCase;
+
+import java.util.Collection;
 
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
  */
 public class LoadProtegeFeaturesTestCase extends AbstractJenaTestCase {
-	
-	static {
-		if (!ProtegeOWL.getPluginFolder().exists()) {
-			ProtegeOWL.setPluginFolder(new File("etc"));
-		}
-	}
 
     public void testLoadAbstractFlag() throws Exception {
         loadRemoteOntology("abstractClass.owl");
@@ -48,9 +35,9 @@ public class LoadProtegeFeaturesTestCase extends AbstractJenaTestCase {
 
     public void testLoadFromTo() throws Exception {
         loadRemoteOntology("ProtegeFromTo.owl");
-        RDFProperty fromProperty = owlModel.getSystemFrames().getFromSlot();
+        RDFProperty fromProperty = owlModel.getRDFProperty(Model.Slot.FROM);
         assertNotNull(fromProperty);
-        RDFProperty toProperty = owlModel.getSystemFrames().getToSlot();
+        RDFProperty toProperty = owlModel.getRDFProperty(Model.Slot.TO);
         assertNotNull(toProperty);
         RDFResource relation = owlModel.getRDFResource("relation");
         assertNotNull(relation);
@@ -60,16 +47,15 @@ public class LoadProtegeFeaturesTestCase extends AbstractJenaTestCase {
 
 
     public void testDomainOfFromAndTo() throws Exception {
-    	loadRemoteOntology("ProtegeFromTo.owl");
-    	
         final Slot directDomainSlot = owlModel.getSlot(Model.Slot.DIRECT_DOMAIN);
-        RDFSNamedClass dbrClass = owlModel.getRDFSNamedClass(ProtegeNames.Cls.DIRECTED_BINARY_RELATION);
-        RDFProperty fromProperty = owlModel.getRDFProperty(ProtegeNames.Slot.FROM);
-        RDFProperty toProperty = owlModel.getRDFProperty(ProtegeNames.Slot.TO);
+        RDFSNamedClass dbrClass = owlModel.getRDFSNamedClass(Model.Cls.DIRECTED_BINARY_RELATION);
+        RDFProperty fromProperty = owlModel.getRDFProperty(Model.Slot.FROM);
+        RDFProperty toProperty = owlModel.getRDFProperty(Model.Slot.TO);
         Collection directDomains = ((Slot) fromProperty).getDirectOwnSlotValues(directDomainSlot);
         assertSize(1, directDomains);
         assertContains(dbrClass, directDomains);
-        
+
+        loadRemoteOntology("ProtegeFromTo.owl");
         assertNotNull(dbrClass);
         assertNotNull(fromProperty);
         assertNotNull(toProperty);

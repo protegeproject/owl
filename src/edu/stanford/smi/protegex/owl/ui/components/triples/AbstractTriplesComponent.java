@@ -40,27 +40,22 @@ public abstract class AbstractTriplesComponent extends AbstractPropertyValuesCom
 
     private OWLModel owlModel;
 
-    private static Set<AnnotationsWidgetPlugin> plugins = new HashSet<AnnotationsWidgetPlugin>();
+    private static Set plugins = new HashSet();
 
     private TriplesTable table;
 
     private TriplesTableModel tableModel;
 
     private Action viewValueAction;
-    
-    private boolean enabled = true; 
 
 
     public AbstractTriplesComponent(RDFProperty predicate) {
         this(predicate, "Triples", OWLIcons.getImageIcon(OWLIcons.TRIPLE));
     }
 
+
     public AbstractTriplesComponent(RDFProperty predicate, String label, Icon icon) {
-    	this(predicate, label, icon, false);
-    }
-    
-    public AbstractTriplesComponent(RDFProperty predicate, String label, Icon icon, boolean isReadOnly) {
-        super(predicate, label, isReadOnly);
+        super(predicate);
 
         this.icon = icon;
 
@@ -88,7 +83,7 @@ public abstract class AbstractTriplesComponent extends AbstractPropertyValuesCom
 
         table.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
-                if (e.getClickCount() == 2 && isEnabled()) {                	
+                if (e.getClickCount() == 2) {
                     handleTableDoubleClick();
                 }
             }
@@ -119,8 +114,8 @@ public abstract class AbstractTriplesComponent extends AbstractPropertyValuesCom
 
 
     public static void addPlugin(AnnotationsWidgetPlugin plugin) {
-        for (Iterator<AnnotationsWidgetPlugin> it = plugins.iterator(); it.hasNext();) {
-            AnnotationsWidgetPlugin p = it.next();
+        for (Iterator it = plugins.iterator(); it.hasNext();) {
+            AnnotationsWidgetPlugin p = (AnnotationsWidgetPlugin) it.next();
             if (p.getClass() == plugin.getClass()) {
                 return;
             }
@@ -172,7 +167,7 @@ public abstract class AbstractTriplesComponent extends AbstractPropertyValuesCom
     }
 
 
-    public static Iterator<AnnotationsWidgetPlugin> plugins() {
+    public static Iterator plugins() {
         return plugins.iterator();
     }
 
@@ -236,8 +231,8 @@ public abstract class AbstractTriplesComponent extends AbstractPropertyValuesCom
                 }
             }
 
-            for (Iterator<AnnotationsWidgetPlugin> it = plugins.iterator(); it.hasNext();) {
-                AnnotationsWidgetPlugin plugin = it.next();
+            for (Iterator it = plugins.iterator(); it.hasNext();) {
+                AnnotationsWidgetPlugin plugin = (AnnotationsWidgetPlugin) it.next();
                 if (plugin.canEdit(subject, property, value)) {
                     Object newValue = plugin.editValue(null, subject, property, value);
                     if (newValue != null) {
@@ -251,7 +246,7 @@ public abstract class AbstractTriplesComponent extends AbstractPropertyValuesCom
             JTextArea textArea = new JTextArea(value.toString());
             textArea.setLineWrap(true);
             textArea.setWrapStyleWord(true);
-            //textArea.setEnabled(tableModel.isCellEditable(row, TriplesTableModel.COL_VALUE));
+            textArea.setEnabled(tableModel.isCellEditable(row, TriplesTableModel.COL_VALUE));
             Component comp = new JScrollPane(textArea);
             LabeledComponent lc = new LabeledComponent(name, comp);
             lc.setPreferredSize(new Dimension(400, 400));
@@ -281,16 +276,4 @@ public abstract class AbstractTriplesComponent extends AbstractPropertyValuesCom
         }
         return true;
     }
-
-
-	public boolean isEnabled() {
-		return enabled;
-	}
-
-
-	public void setEnabled(boolean enabled) {
-		this.enabled = enabled;
-	}
-    
-    
 }

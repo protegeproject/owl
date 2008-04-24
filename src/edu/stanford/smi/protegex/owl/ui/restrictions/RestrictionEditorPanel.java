@@ -398,25 +398,25 @@ public class RestrictionEditorPanel extends JComponent implements ModalDialogFac
 
     private void updatePropertiesList() {
         Collection allProperties = owlModel.getVisibleUserDefinedRDFProperties();
-        Collection<RDFProperty> selectableProperties = new ArrayList();
+        Collection selectableProperties = new ArrayList();
         for (Iterator it = allProperties.iterator(); it.hasNext();) {
             RDFProperty property = (RDFProperty) it.next();
             if (!property.isAnnotationProperty()) {
                 selectableProperties.add(property);
             }
         }
-        RDFSNamedClass dbrClass = owlModel.getSystemFrames().getDirectedBinaryRelationCls();
+        RDFSNamedClass dbrClass = owlModel.getRDFSNamedClass(Model.Cls.DIRECTED_BINARY_RELATION);
         if (targetClass != null && ((Cls) targetClass).hasSuperclass(dbrClass)) {
-            RDFProperty fromProperty = owlModel.getSystemFrames().getFromSlot();
+            RDFProperty fromProperty = owlModel.getRDFProperty(Model.Slot.FROM);
             if (fromProperty.isVisible()) {
                 selectableProperties.add(fromProperty);
             }
-            RDFProperty toProperty = owlModel.getSystemFrames().getToSlot();
+            RDFProperty toProperty = owlModel.getRDFProperty(Model.Slot.TO);
             if (toProperty.isVisible()) {
                 selectableProperties.add(toProperty);
             }
         }
-        RDFProperty[] propertiesArray = selectableProperties.toArray(new RDFProperty[0]);
+        Object[] propertiesArray = selectableProperties.toArray();
         Arrays.sort(propertiesArray, new FrameComparator());
         java.util.List propertiesList = Arrays.asList(propertiesArray);
         propertyList.setListData(propertiesList.toArray());

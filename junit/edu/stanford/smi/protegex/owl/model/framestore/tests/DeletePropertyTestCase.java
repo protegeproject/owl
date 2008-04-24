@@ -55,6 +55,6 @@ public class DeletePropertyTestCase extends AbstractJenaTestCase {
         property.delete();
         assertSize(1, cls.getPropertyValues(s));
         OWLNamedClass superclass = (OWLNamedClass) cls.getPropertyValues(s).iterator().next();
-        assertEquals("http://www.owl-ontologies.com/travel.owl#Destination", superclass.getName());
+        assertEquals("Destination", superclass.getName());
     }
 }

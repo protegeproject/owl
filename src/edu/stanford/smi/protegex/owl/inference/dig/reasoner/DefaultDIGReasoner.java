@@ -12,6 +12,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -25,7 +26,6 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-import edu.stanford.smi.protege.util.ApplicationProperties;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.inference.dig.exception.DIGError;
 import edu.stanford.smi.protegex.owl.inference.dig.exception.DIGErrorException;
@@ -45,8 +45,8 @@ import edu.stanford.smi.protegex.owl.inference.dig.translator.DIGVocabulary;
  * www.cs.man.ac.uk/~horridgm<br><br>
  */
 public class DefaultDIGReasoner implements DIGReasoner {
-  public static final String DEFAULT_URL_PROPERTY = "edu.stanford.smi.protegex.owl.jena.reasoner.URL";
-  private static final String defaultURL = ApplicationProperties.getString(DEFAULT_URL_PROPERTY, "http://localhost:8080");
+  public static final String DEFAULT_URL_PROPERTY = "protege.dig.url";
+  private static final String defaultURL = System.getProperty(DEFAULT_URL_PROPERTY, "http://localhost:8080");
 
   private URL reasonerURL;
 
@@ -63,7 +63,6 @@ public class DefaultDIGReasoner implements DIGReasoner {
     /**
      * @deprecated Use DIGReasonerPreferences to set logging
      */
-    @Deprecated
     public static boolean log = true;
 
 
@@ -190,7 +189,9 @@ public class DefaultDIGReasoner implements DIGReasoner {
 
 
     public Document performRequest(Document request) throws DIGReasonerException {
-        log(Level.FINE, request);
+        if (DIGReasonerPreferences.getInstance().isLogDIG() == true) {
+            log(request);
+        }
 
         try {
             StringWriter writer = new StringWriter();
@@ -217,7 +218,9 @@ public class DefaultDIGReasoner implements DIGReasoner {
             Document doc = docBuilder.parse(new InputSource(reader));
             reader.close();
 	        conn.disconnect();
-	        log(Level.FINE, doc);
+            if (DIGReasonerPreferences.getInstance().isLogDIG() == true) {
+                log(doc);
+            }
             performErrorCheck(doc);
             return doc;
 
@@ -275,10 +278,8 @@ public class DefaultDIGReasoner implements DIGReasoner {
      * A helper method that lets us log
      * the DIG XML used to communicate with the reasoner.
      */
-    public static void log(Level level, Document doc) {
-        if (!digLogger.isLoggable(level)) {
-            return;
-        }
+    protected void log(Document doc) {
+
         StringWriter writer = new StringWriter();
         OutputFormat format = new OutputFormat();
         format.setIndent(4);
@@ -291,7 +292,7 @@ public class DefaultDIGReasoner implements DIGReasoner {
         catch (IOException e) {
           Log.getLogger().log(Level.SEVERE, "Exception caught", e);
         }
-        digLogger.log(level, writer.getBuffer().toString());
+        Logger.getLogger(DIGReasoner.LOGGER_NAME).info(writer.getBuffer().toString());
 
     }
 }

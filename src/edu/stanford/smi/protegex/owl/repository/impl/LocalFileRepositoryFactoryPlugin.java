@@ -19,37 +19,30 @@ import java.net.URISyntaxException;
  * www.cs.man.ac.uk/~horridgm<br><br>
  */
 public class LocalFileRepositoryFactoryPlugin implements RepositoryFactoryPlugin {
-    public final static String FILE_PREFIX = "file:";
-    
+
     public boolean isSuitable(OWLModel model, String s) {
-        return getRepositoryFile(model, s) != null;
+        if (s.trim().startsWith("file:")) {
+            try {
+                File f = new File(new URI(s).getPath());
+                return f.isFile();
+            }
+            catch (URISyntaxException e) {
+                return false;
+            }
+        }
+        return false;
     }
 
 
     public Repository createRepository(OWLModel model, String s) {
         try {
-            URI u = new URI(s);
-            return new LocalFileRepository(getRepositoryFile(model, s), 
-                                           RepositoryUtil.isForcedToBeReadOnly(u.getQuery()));
+            URI uri = new URI(s);
+            File f = new File(uri.getPath());
+            return new LocalFileRepository(f, RepositoryUtil.isForcedToBeReadOnly(uri.getQuery()));
         }
         catch (URISyntaxException e) {
             return null;
         }
-    }
-    
-    private File getRepositoryFile(OWLModel model, String s) {
-        if (s.trim().startsWith(FILE_PREFIX)) {
-            try {
-                File f = new File(new URI(s).getPath());
-                if (f.isFile() && f.canRead()) {
-                    return f;
-                }
-            }
-            catch (Throwable t) {
-                return null;
-            }
-        }
-        return null;
     }
 }
 

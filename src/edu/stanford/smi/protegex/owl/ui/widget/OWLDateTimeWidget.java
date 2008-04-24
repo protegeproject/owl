@@ -25,7 +25,7 @@ public class OWLDateTimeWidget extends OWLDateWidget implements TimePanel.Listen
 
     public OWLDateTimeWidget() {
         setPreferredColumns(3);
-        timePanel = new TimePanel(this);      
+        timePanel = new TimePanel(this);
     }
 
 
@@ -81,7 +81,7 @@ public class OWLDateTimeWidget extends OWLDateWidget implements TimePanel.Listen
 
         RDFResource resource = getEditedResource();
         RDFProperty property = getRDFProperty();
-        timePanel.setEnabled(!isReadOnlyConfiguredWidget() && resource != null && property != null && resource.isEditable());
+        timePanel.setEnabled(resource != null && property != null && resource.isEditable());
     }
 
 

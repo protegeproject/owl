@@ -7,7 +7,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.StringTokenizer;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.daml.kazuki.ClassCatalog;
 import org.daml.kazuki.Datatypes;
@@ -33,7 +32,6 @@ import edu.stanford.smi.protegex.owl.ui.jena.JenaSchemagenAction;
  * @author Holger Knublauch  <holger@knublauch.com>
  */
 public class KazukiAction extends AbstractOWLModelAction {
-    private static transient final Logger log = Log.getLogger(KazukiAction.class);
 
     public final static String SCHEMA = "Schema";
 
@@ -112,9 +110,9 @@ public class KazukiAction extends AbstractOWLModelAction {
         }
 
         File schemaFile = new File(folder, SCHEMA + ".java");
-        log.info("Generating schema " + schemaFile);
+        System.out.println("Generating schema " + schemaFile);
         JenaSchemagenAction.generate(ontModelProvider, schemaFile, null);
-        log.info("Compiling schema");
+        System.out.println("Compiling schema");
         Runtime.getRuntime().exec(javac + " -classpath plugins/edu.stanford.smi.protegex.owl/jena.jar " +
                 schemaFile.toString());
         System.gc();
@@ -164,7 +162,6 @@ public class KazukiAction extends AbstractOWLModelAction {
         }
 
 
-        @Override
         protected Class findClass(String sClass) throws ClassNotFoundException {
             StringTokenizer st = new StringTokenizer(sClass, ".");
             StringBuffer sPath = new StringBuffer(_sRoot);

@@ -1,32 +1,23 @@
 package edu.stanford.smi.protegex.owl;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Reader;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.logging.Level;
+import com.hp.hpl.jena.util.FileUtils;
+import edu.stanford.smi.protege.Application;
+import edu.stanford.smi.protege.model.KnowledgeBase;
+import edu.stanford.smi.protege.model.Project;
+import edu.stanford.smi.protege.util.ApplicationProperties;
+import edu.stanford.smi.protege.util.PropertyList;
+import edu.stanford.smi.protege.util.URIUtilities;
+import edu.stanford.smi.protegex.owl.jena.JenaKnowledgeBaseFactory;
+import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.repository.util.RepositoryFileManager;
 
+import java.io.File;
 import java.io.InputStream;
 import java.io.Reader;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
-
-import com.hp.hpl.jena.util.FileUtils;
-
-import edu.stanford.smi.protege.Application;
-import edu.stanford.smi.protege.model.Project;
-import edu.stanford.smi.protege.util.ApplicationProperties;
-import edu.stanford.smi.protege.util.Log;
-import edu.stanford.smi.protegex.owl.jena.JenaKnowledgeBaseFactory;
-import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
-import edu.stanford.smi.protegex.owl.jena.creator.NewOwlProjectCreator;
-import edu.stanford.smi.protegex.owl.jena.creator.OwlProjectFromReaderCreator;
-import edu.stanford.smi.protegex.owl.jena.creator.OwlProjectFromStreamCreator;
-import edu.stanford.smi.protegex.owl.jena.creator.OwlProjectFromUriCreator;
-import edu.stanford.smi.protegex.owl.model.factory.FactoryUtils;
 
 /**
  * A singleton that provides several generic services such as creating
@@ -40,8 +31,6 @@ public class ProtegeOWL {
      * The name of the OWL Plugin folder (subfolder of the plugins directory)
      */
     public static String PLUGIN_FOLDER = "edu.stanford.smi.protegex.owl";
-    
-    private static File customPluginFolder = null;
 
 
     /**
@@ -49,45 +38,49 @@ public class ProtegeOWL {
      *
      * @return a new OWLModel
      */
-    public static JenaOWLModel createJenaOWLModel() throws IOException {
-        Collection errors = new ArrayList();
-        NewOwlProjectCreator creator = new NewOwlProjectCreator();
-        creator.setOntologyName(FactoryUtils.generateOntologyURIBase());
-        JenaOWLModel owlModel = (JenaOWLModel) creator.create(errors).getKnowledgeBase();
-        handleErrors(errors);
-        return owlModel;
+    public static JenaOWLModel createJenaOWLModel() {
+		final JenaKnowledgeBaseFactory factory = new JenaKnowledgeBaseFactory();
+		Collection errors = new ArrayList();
+		Project project = Project.createNewProject(factory, errors);
+		// TODO TT: I commented out the following lines, they are duplicate with
+		// the createNewProject call. They should be removed in the release, if
+		// all tests pass.
+		// project.setKnowledgeBaseFactory(factory);
+		// project.createDomainKnowledgeBase(factory, errors, false);
+		return (JenaOWLModel) project.getKnowledgeBase();
 	}
    
     
+    public static JenaOWLModel createJenaOWLModelFromInputStream(InputStream is) throws Exception {    	
+        JenaOWLModel owlModel = ProtegeOWL.createJenaOWLModel();
+        owlModel.load(is, FileUtils.langXMLAbbrev);
+        return owlModel;
+    }
 
+
+    public static JenaOWLModel createJenaOWLModelFromReader(Reader reader) throws Exception {
+        JenaOWLModel owlModel = ProtegeOWL.createJenaOWLModel();
+        owlModel.load(reader, FileUtils.langXMLAbbrev);
+        return owlModel;
+    }
+
+
+    public static JenaOWLModel createJenaOWLModelFromURI(String uri) throws Exception {
+        JenaOWLModel owlModel = ProtegeOWL.createJenaOWLModel();
+        
+        Project project = owlModel.getProject();
+        if (project != null) {
+        	JenaKnowledgeBaseFactory.setOWLFileName(project.getSources(),uri);
+        }
     
-    public static JenaOWLModel createJenaOWLModelFromInputStream(InputStream is) throws IOException { 
-        Collection errors = new ArrayList();
-        OwlProjectFromStreamCreator creator = new OwlProjectFromStreamCreator();
-        creator.setStream(is);
-        JenaOWLModel owlModel =  (JenaOWLModel) creator.create(errors).getKnowledgeBase();
-        handleErrors(errors);
+        loadRepositories(owlModel);
+        owlModel.load(new URI(uri), FileUtils.langXMLAbbrev);
         return owlModel;
     }
 
-
-    public static JenaOWLModel createJenaOWLModelFromReader(Reader reader) throws IOException {
-        Collection errors = new ArrayList();
-        OwlProjectFromReaderCreator creator = new OwlProjectFromReaderCreator();
-        creator.setReader(reader);
-        JenaOWLModel owlModel = (JenaOWLModel) creator.create(errors).getKnowledgeBase();
-        handleErrors(errors);
-        return owlModel;
-    }
-
-
-    public static JenaOWLModel createJenaOWLModelFromURI(String uri) throws IOException {
-        Collection errors = new ArrayList();
-        OwlProjectFromUriCreator creator = new OwlProjectFromUriCreator();
-        creator.setOntologyUri(uri);
-        JenaOWLModel owlModel = (JenaOWLModel) creator.create(errors).getKnowledgeBase();
-        handleErrors(errors);
-        return owlModel;
+    private static void loadRepositories(OWLModel owlModel) {
+        RepositoryFileManager man = new RepositoryFileManager(owlModel);
+        man.loadProjectRepositories();
     }
     
 
@@ -97,19 +90,12 @@ public class ProtegeOWL {
      * @return the plugin folder
      */
     public static File getPluginFolder() {
-        if (customPluginFolder == null) {
-            return new File(new File(ApplicationProperties.getApplicationDirectory(), "plugins"),
-                            PLUGIN_FOLDER);
-        }
-        else { 
-            return customPluginFolder; 
-        }
+        return new File(new File(ApplicationProperties.getApplicationDirectory(),
+                    "plugins"),
+                    PLUGIN_FOLDER);
     }
 
 
-    public static void setPluginFolder(File customPluginFolder) {
-        ProtegeOWL.customPluginFolder = customPluginFolder;
-    }
     /**
      * Initializes a Project so that it points to an existing OWL file.
      * This is typically used in conjunction with the <CODE>createJenaOWLModel()</CODE>
@@ -125,16 +111,6 @@ public class ProtegeOWL {
         JenaKnowledgeBaseFactory.setOWLFileName(project.getSources(), owlFilePath);
     }
 
-    private static void handleErrors(Collection errors) {
-        for (Object o : errors) {
-            if (o instanceof Throwable) {
-                Log.getLogger().log(Level.WARNING, "Exception caught ", (Throwable) o);
-            }
-            else {
-                Log.getLogger().warning("Error found " + o);
-            }
-        }
-    }
 
     /**
      * Starts the Protege UI, optionally with a given Project file.

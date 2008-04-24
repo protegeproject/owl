@@ -1,68 +1,30 @@
 package edu.stanford.smi.protegex.owl.ui.individuals;
 
-import java.awt.BorderLayout;
-import java.awt.event.ActionEvent;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
-
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.Icon;
-import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JRadioButtonMenuItem;
-import javax.swing.ListModel;
-
 import edu.stanford.smi.protege.action.DeleteInstancesAction;
 import edu.stanford.smi.protege.action.MakeCopiesAction;
 import edu.stanford.smi.protege.action.ReferencersAction;
-import edu.stanford.smi.protege.event.ClsAdapter;
-import edu.stanford.smi.protege.event.ClsEvent;
-import edu.stanford.smi.protege.event.ClsListener;
-import edu.stanford.smi.protege.event.FrameAdapter;
-import edu.stanford.smi.protege.event.FrameEvent;
-import edu.stanford.smi.protege.event.FrameListener;
-import edu.stanford.smi.protege.model.BrowserSlotPattern;
-import edu.stanford.smi.protege.model.Cls;
-import edu.stanford.smi.protege.model.Instance;
-import edu.stanford.smi.protege.model.Model;
-import edu.stanford.smi.protege.model.SimpleInstance;
-import edu.stanford.smi.protege.model.Slot;
+import edu.stanford.smi.protege.event.*;
+import edu.stanford.smi.protege.model.*;
+import edu.stanford.smi.protege.model.Frame;
 import edu.stanford.smi.protege.resource.Colors;
+import edu.stanford.smi.protege.resource.Icons;
 import edu.stanford.smi.protege.resource.LocalizedText;
 import edu.stanford.smi.protege.resource.ResourceKey;
 import edu.stanford.smi.protege.ui.ConfigureAction;
 import edu.stanford.smi.protege.ui.FrameComparator;
 import edu.stanford.smi.protege.ui.FrameRenderer;
 import edu.stanford.smi.protege.ui.HeaderComponent;
-import edu.stanford.smi.protege.ui.ListFinder;
-import edu.stanford.smi.protege.util.AllowableAction;
-import edu.stanford.smi.protege.util.ApplicationProperties;
-import edu.stanford.smi.protege.util.CollectionUtilities;
-import edu.stanford.smi.protege.util.ComponentFactory;
-import edu.stanford.smi.protege.util.ComponentUtilities;
-import edu.stanford.smi.protege.util.CreateAction;
-import edu.stanford.smi.protege.util.Disposable;
-import edu.stanford.smi.protege.util.LabeledComponent;
-import edu.stanford.smi.protege.util.ModalDialog;
-import edu.stanford.smi.protege.util.SelectableContainer;
-import edu.stanford.smi.protege.util.SimpleListModel;
-import edu.stanford.smi.protege.util.ViewAction;
-import edu.stanford.smi.protegex.owl.model.NamespaceUtil;
+import edu.stanford.smi.protege.util.*;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
-import edu.stanford.smi.protegex.owl.model.RDFSClass;
 import edu.stanford.smi.protegex.owl.ui.OWLLabeledComponent;
 import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
+import edu.stanford.smi.protegex.owl.ui.search.finder.*;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.util.*;
+import java.util.List;
 
 /**
  * The panel that holds the list of direct instances of one or more classes. If
@@ -144,11 +106,6 @@ public class AssertedInstancesListPanel extends SelectableContainer implements D
         lc = new OWLLabeledComponent(null, ComponentFactory.createScrollPane(list));
         addButtons(viewAction, lc);
 
-        /*
-         * FIXME: TT: This search code does not handle the browser text of the individuals correctly.
-         * Temporary fix: use the frames instance finder.         
-         */
-        /*
         ResultsViewModelFind findAlg = new DefaultIndividualFind(owlModel, Find.CONTAINS) {
             protected boolean isValidFrameToSearch(Frame f) {
                 return (((SimpleListModel) list.getModel()).getValues()).contains(f) &&
@@ -165,9 +122,6 @@ public class AssertedInstancesListPanel extends SelectableContainer implements D
 
         ResourceFinder finder = new ResourceFinder(fAction);
         lc.setFooterComponent(finder);
-        */
-        
-        lc.setFooterComponent(new ListFinder(list, ResourceKey.INSTANCE_SEARCH_FOR));
 
         lc.setBorder(ComponentUtilities.getAlignBorder());
         add(lc, BorderLayout.CENTER);
@@ -272,10 +226,7 @@ public class AssertedInstancesListPanel extends SelectableContainer implements D
         createAction = new CreateAction("Create instance", OWLIcons.getCreateIndividualIcon(OWLIcons.RDF_INDIVIDUAL)) {
             public void onCreate() {
                 if (!classes.isEmpty()) {
-                	RDFSClass firstType = (RDFSClass) CollectionUtilities.getFirstItem(classes);
-                	String name = owlModel.createNewResourceName(NamespaceUtil.getLocalName(firstType.getName()));
-                	
-                    Instance instance = owlModel.createInstance(name, classes);
+                    Instance instance = owlModel.createInstance(null, classes);
                     if (instance instanceof Cls) {
                         Cls newCls = (Cls) instance;
                         if (newCls.getDirectSuperclassCount() == 0) {

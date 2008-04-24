@@ -1,35 +1,7 @@
 package edu.stanford.smi.protegex.owl.model.impl;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
-
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-
-import edu.stanford.smi.protege.model.Cls;
-import edu.stanford.smi.protege.model.DefaultSlot;
-import edu.stanford.smi.protege.model.FrameID;
-import edu.stanford.smi.protege.model.KnowledgeBase;
-import edu.stanford.smi.protege.model.Model;
-import edu.stanford.smi.protege.model.Slot;
-import edu.stanford.smi.protege.model.ValueType;
-import edu.stanford.smi.protegex.owl.model.NamespaceUtil;
-import edu.stanford.smi.protegex.owl.model.OWLDataRange;
-import edu.stanford.smi.protegex.owl.model.OWLModel;
-import edu.stanford.smi.protegex.owl.model.OWLNames;
-import edu.stanford.smi.protegex.owl.model.OWLProperty;
-import edu.stanford.smi.protegex.owl.model.OWLUnionClass;
-import edu.stanford.smi.protegex.owl.model.RDFObject;
-import edu.stanford.smi.protegex.owl.model.RDFProperty;
-import edu.stanford.smi.protegex.owl.model.RDFResource;
-import edu.stanford.smi.protegex.owl.model.RDFSClass;
-import edu.stanford.smi.protegex.owl.model.RDFSDatatype;
-import edu.stanford.smi.protegex.owl.model.RDFSLiteral;
-import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
+import edu.stanford.smi.protege.model.*;
+import edu.stanford.smi.protegex.owl.model.*;
 import edu.stanford.smi.protegex.owl.model.event.PropertyAdapter;
 import edu.stanford.smi.protegex.owl.model.event.PropertyListener;
 import edu.stanford.smi.protegex.owl.model.event.PropertyValueListener;
@@ -37,15 +9,18 @@ import edu.stanford.smi.protegex.owl.model.event.ResourceListener;
 import edu.stanford.smi.protegex.owl.model.visitor.OWLModelVisitor;
 import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
 
+import javax.swing.*;
+import java.util.*;
+
 /**
  * The default implementation of the OWLProperty interface.
  *
  * @author Holger Knublauch  <holger@knublauch.com>
  */
 public class DefaultRDFProperty extends DefaultSlot implements RDFProperty {
-	private static final long serialVersionUID = 8950825871351060966L;
 
-	public DefaultRDFProperty(KnowledgeBase kb, FrameID id) {
+
+    public DefaultRDFProperty(KnowledgeBase kb, FrameID id) {
         super(kb, id);
     }
 
@@ -75,7 +50,7 @@ public class DefaultRDFProperty extends DefaultSlot implements RDFProperty {
 
     public void addUnionDomainClass(RDFSClass domainClass) {
         Collection directDomain = getDirectDomain();
-        if (directDomain.isEmpty() || (directDomain.size() == 1 && directDomain.contains(getOWLModel().getOWLThingClass()))) {
+        if (directDomain.isEmpty()) {
             setDomain(domainClass);
         }
         else {
@@ -144,25 +119,16 @@ public class DefaultRDFProperty extends DefaultSlot implements RDFProperty {
     }
 
 
-    @Override
     public Icon getIcon() {
-    	if (isUntyped()) {
-        	return isEditable() ? 
-    				OWLIcons.getExternalResourceIcon() :
-            		OWLIcons.getReadOnlyClsIcon(OWLIcons.getExternalResourceIcon());
-    	} else {
-    		return isEditable() ?
-    				getBaseImageIcon() : 
-    				OWLIcons.getReadOnlyPropertyIcon(OWLIcons.getImageIcon(OWLIcons.RDF_PROPERTY));
-    	}
-        
+        if (isEditable()) {
+            return getBaseImageIcon();
+        }
+        else {
+            return OWLIcons.getReadOnlyPropertyIcon(OWLIcons.getImageIcon(OWLIcons.RDF_PROPERTY));
+        }
     }
 
-    protected boolean isUntyped() {
-    	return this.hasDirectType(((AbstractOWLModel)getOWLModel()).getRDFExternalPropertyClass());
-    }
-    
-    
+
     public String getIconName() {
         return OWLIcons.RDF_PROPERTY;
     }
@@ -308,20 +274,12 @@ public class DefaultRDFProperty extends DefaultSlot implements RDFProperty {
 
 
     public boolean isDomainDefined() {
-        Slot directDomainSlot = getOWLModel().getSystemFrames().getDirectDomainSlot();    
-        Collection values = getDirectOwnSlotValues(directDomainSlot);
-        if (values.size() > 1) {
-            return true;
+        if (getDirectOwnSlotValue(getKnowledgeBase().getSlot(Model.Slot.DIRECT_DOMAIN)) == null) {
+            return getDirectSuperslotCount() == 0;
         }
-        else if (values.size() == 1 && !values.contains(getOWLModel().getRootCls())) {
-            return true;
+        else {
+            return !getKnowledgeBase().getRootCls().getDirectTemplateSlots().contains(this);
         }
-        else if (values.size() == 1) {
-            RDFProperty rdfsDomainProperty = getOWLModel().getRDFSDomainProperty();
-            values = getDirectOwnSlotValues(rdfsDomainProperty);
-            return !values.isEmpty();
-        }
-        return false;
     }
 
 
@@ -330,17 +288,24 @@ public class DefaultRDFProperty extends DefaultSlot implements RDFProperty {
             return isDomainDefined();
         }
         else {
-            return isDomainDefined(new HashSet<RDFProperty>());
+            if (getDirectOwnSlotValue(getKnowledgeBase().getSlot(Model.Slot.DIRECT_DOMAIN)) == null) {
+                if (getDirectSuperslotCount() == 0) {
+                    return false;
+                }
+                else {
+                    return isDomainDefined(new HashSet());
+                }
+            }
+            else {
+                return !getKnowledgeBase().getRootCls().hasDirectTemplateSlot(this);
+            }
         }
     }
 
 
-    private boolean isDomainDefined(Set<RDFProperty> reached) {
+    private boolean isDomainDefined(Set reached) {
         reached.add(this);
-        if (isDomainDefined()) {
-            return true;
-        }
-        else {
+        if (getDirectOwnSlotValue(getKnowledgeBase().getSlot(Model.Slot.DIRECT_DOMAIN)) == null) {
             for (Iterator it = getDirectSuperslots().iterator(); it.hasNext();) {
                 Slot superSlot = (Slot) it.next();
                 if (!reached.contains(superSlot) && superSlot instanceof DefaultRDFProperty) {
@@ -350,6 +315,9 @@ public class DefaultRDFProperty extends DefaultSlot implements RDFProperty {
                 }
             }
             return false;
+        }
+        else {
+            return !getKnowledgeBase().getRootCls().hasDirectTemplateSlot(this);
         }
     }
 
@@ -428,7 +396,7 @@ public class DefaultRDFProperty extends DefaultSlot implements RDFProperty {
 
     public void setDomainDefined(boolean value) {
         if (value != isDomainDefined()) {
-            if (!value) {
+            if (value) {
                 setDomain(null);
             }
             else {
@@ -439,6 +407,9 @@ public class DefaultRDFProperty extends DefaultSlot implements RDFProperty {
                     setDomain(getOWLModel().getOWLThingClass());
                 }
             }
+        }
+        else if (!value && getSuperpropertyCount() > 0) {
+            setDomain(null);
         }
     }
 
@@ -665,7 +636,6 @@ public class DefaultRDFProperty extends DefaultSlot implements RDFProperty {
     }
 
 
-    @Override
     public Collection getDocumentation() {
         return OWLUtil.getComments(this);
     }
@@ -687,20 +657,23 @@ public class DefaultRDFProperty extends DefaultSlot implements RDFProperty {
 
 
     public String getLocalName() {
-        return NamespaceUtil.getLocalName(getName());
-    }
-    
-    public String getPrefixedName() {
-    	return NamespaceUtil.getPrefixedName(getOWLModel(), getName());
+        final String name = getName();
+        final OWLModel nskb = (OWLModel) getKnowledgeBase();
+        return nskb.getLocalNameForResourceName(name);
     }
 
+
     public String getNamespace() {
-        return NamespaceUtil.getNameSpace(getName());
+        final OWLModel nskb = ((OWLModel) getKnowledgeBase());
+        final String name = getName();
+        return nskb.getNamespaceForResourceName(name);
     }
 
 
     public String getNamespacePrefix() {
-        return NamespaceUtil.getPrefixForResourceName(getOWLModel(), getName());
+        final OWLModel nskb = ((OWLModel) getKnowledgeBase());
+        String name = getName();
+        return nskb.getPrefixForResourceName(name);
     }
 
 
@@ -785,7 +758,7 @@ public class DefaultRDFProperty extends DefaultSlot implements RDFProperty {
 
 
     public String getURI() {
-        return getName();
+        return getOWLModel().getURIForResourceName(getName());
     }
 
 
@@ -949,7 +922,6 @@ public class DefaultRDFProperty extends DefaultSlot implements RDFProperty {
     }
 
 
-    @Override
     public void setDocumentation(String value) {
         OWLUtil.setComment(this, value);
     }
@@ -1010,14 +982,4 @@ public class DefaultRDFProperty extends DefaultSlot implements RDFProperty {
         visitor.visitRDFProperty(this);
     }
 
-    @Override
-    public String toString() {
-        StringBuffer buffer = new StringBuffer();
-        buffer.append(this.getClass().getSimpleName());
-        buffer.append("(");
-        buffer.append(getName());
-        buffer.append(")");
-        return buffer.toString();
-    }
-    
 }

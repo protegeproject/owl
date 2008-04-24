@@ -12,8 +12,9 @@ public class LoadOWLNothingTestCase extends AbstractJenaTestCase {
 
     public void testLoadNothing() throws Exception {
 
-        loadRemoteOntology("nothing.owl");
         OWLNamedClass nothingCls = owlModel.getOWLNothing();
+
+        loadRemoteOntology("nothing.owl");
 
         OWLNamedClass cls = owlModel.getOWLNamedClass("Cls");
         Iterator it = cls.getSuperclasses(false).iterator();

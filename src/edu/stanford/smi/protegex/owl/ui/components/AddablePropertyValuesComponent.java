@@ -13,13 +13,8 @@ public abstract class AddablePropertyValuesComponent extends AbstractPropertyVal
     }
 
     protected AddablePropertyValuesComponent(RDFProperty predicate, String label) {
-    	this(predicate, label, false);
+    	super(predicate, label);
     }
-    
-    protected AddablePropertyValuesComponent(RDFProperty predicate, String label, boolean isReadOnly) {
-    	super(predicate, label, isReadOnly);
-    }
-    
 
     public void addObject(RDFResource resource, boolean symmetric) {
         getSubject().addPropertyValue(getPredicate(), resource);

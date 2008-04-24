@@ -30,13 +30,13 @@ public class LoadRDFListTestCase extends AbstractJenaTestCase {
             assertTrue(instance instanceof RDFList);
             //assertFalse(li.getName().startsWith("Anonymous"));
         }
-        Slot personsSlot = owlModel.getRDFProperty("persons");
+        Slot personsSlot = owlModel.getSlot("persons");
         assertNotNull(personsSlot);
-        Instance myRanking = owlModel.getOWLIndividual("MyRanking");
+        Instance myRanking = owlModel.getInstance("MyRanking");
         assertNotNull(myRanking);
         RDFList head = (RDFList) myRanking.getDirectOwnSlotValue(personsSlot);
         assertNotNull(head);
-        Instance first = owlModel.getOWLIndividual("FirstPerson");
+        Instance first = owlModel.getInstance("FirstPerson");
         assertNotNull(first);
         assertEquals(first, head.getFirst());
     }
@@ -44,8 +44,8 @@ public class LoadRDFListTestCase extends AbstractJenaTestCase {
 
     public void testLoadPetList() throws Exception {
         loadRemoteOntology("randy.owl");
-        Instance randy = owlModel.getOWLIndividual("Randy");
-        Slot petsSlot = owlModel.getRDFProperty("pets");
+        Instance randy = owlModel.getInstance("Randy");
+        Slot petsSlot = owlModel.getSlot("pets");
         RDFList li = (RDFList) randy.getDirectOwnSlotValue(petsSlot);
         assertSize(3, li.getValues());
     }

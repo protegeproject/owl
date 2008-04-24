@@ -34,7 +34,7 @@ public class SetSubclassesDisjointTrueAction extends RefactorResourceAction {
         else {
             try {
                 OWLNamedClass cls = (OWLNamedClass) getResource();
-                owlModel.beginTransaction("" + getValue(Action.NAME) + " at " + cls.getBrowserText(), (cls == null ? null : cls.getName()));
+                owlModel.beginTransaction("" + getValue(Action.NAME) + " at " + cls.getBrowserText());
                 cls.setSubclassesDisjoint(true);
                 for (Iterator it = cls.getSubclasses(true).iterator(); it.hasNext();) {
                     RDFSClass subCls = (RDFSClass) it.next();
@@ -42,11 +42,12 @@ public class SetSubclassesDisjointTrueAction extends RefactorResourceAction {
                         ((OWLNamedClass) subCls).setSubclassesDisjoint(true);
                     }
                 }
-                owlModel.commitTransaction();
             }
             catch (Exception ex) {
-            	owlModel.rollbackTransaction();            	
                 OWLUI.handleError(owlModel, ex);
+            }
+            finally {
+                owlModel.endTransaction();
             }
         }
     }

@@ -37,7 +37,6 @@ import javax.swing.text.JTextComponent;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.classparser.OWLClassParseException;
-import edu.stanford.smi.protegex.owl.model.classparser.ParserUtils;
 import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
 
 /**
@@ -240,14 +239,6 @@ public class SuggestionPopup extends JWindow {
             }
             catch (OWLClassParseException e) {
                 offerSuggestions(e);
-            }
-            catch (Error e) {
-                if (ParserUtils.isLexError(e)) {
-                    Log.emptyCatchBlock(e);
-                }
-                else {
-                    throw e;
-                }
             }
         }
     }

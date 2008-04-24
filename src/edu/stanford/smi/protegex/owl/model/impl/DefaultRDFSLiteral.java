@@ -11,14 +11,18 @@ import java.math.BigInteger;
  * @author Holger Knublauch  <holger@knublauch.com>
  */
 public class DefaultRDFSLiteral implements RDFSLiteral {
-    
-    public static final String DATATYPE_PREFIX = "~@";
-    public static final String LANGUAGE_PREFIX = "~#";
-    public static final char SEPARATOR = ' ';       
 
     private OWLModel owlModel;
-    private String rawValue;    
-    private String language; 
+
+    private String rawValue;
+    
+    private String language;
+
+    private static final String DATATYPE_PREFIX = "~@";
+
+    private static final String LANGUAGE_PREFIX = "~#";
+
+    private static final char SEPARATOR = ' ';    
 
 
     public DefaultRDFSLiteral(OWLModel owlModel, String rawValue) {
@@ -78,9 +82,9 @@ public class DefaultRDFSLiteral implements RDFSLiteral {
             datatype = owlModel.getXSDfloat();
         }
         else if (value instanceof String) {
-        	if (isRawValue((String)value)) {
-        		return new DefaultRDFSLiteral(owlModel, (String)value);
-        	}
+            if (((String) value).startsWith(DATATYPE_PREFIX)) {
+                return new DefaultRDFSLiteral(owlModel, (String) value);
+            }
             datatype = owlModel.getXSDstring();
         }
         else if (value instanceof byte[]) {
@@ -143,15 +147,20 @@ public class DefaultRDFSLiteral implements RDFSLiteral {
 
 
     public RDFSDatatype getDatatype() {
-        if (rawValue.startsWith(LANGUAGE_PREFIX)) {
+        if (rawValue.startsWith(DATATYPE_PREFIX)) {
+            int index = rawValue.indexOf(SEPARATOR);
+            String localName = rawValue.substring(2, index);
+            if ("XMLLiteral".equals(localName)) {
+                return owlModel.getRDFXMLLiteralType();
+            }
+            else {
+                return owlModel.getRDFSDatatypeByName(RDFNames.XSD_PREFIX + ":" + localName);
+            }
+        }
+        else if (rawValue.startsWith(LANGUAGE_PREFIX)) {
             return owlModel.getXSDstring();
         }
-        else {
-            int index = rawValue.indexOf(SEPARATOR);
-            String datatypeName = rawValue.substring(2, index);
-            RDFSDatatype datatype = owlModel.getRDFSDatatypeByName(datatypeName);                  
-            return datatype; 
-        }
+        return null;
     }
 
 
@@ -266,7 +275,7 @@ public class DefaultRDFSLiteral implements RDFSLiteral {
     }
 
 
-    public final static String getRawValue(String lexicalValue, RDFSDatatype datatype) {   	
+    public final static String getRawValue(String lexicalValue, RDFSDatatype datatype) {
         if (datatype.equals(datatype.getOWLModel().getXSDboolean())) {
             if ("1".equals(lexicalValue)) {
                 lexicalValue = Boolean.TRUE.toString();
@@ -275,7 +284,7 @@ public class DefaultRDFSLiteral implements RDFSLiteral {
         if (!datatype.isSystem() && datatype.isAnonymous()) {
             datatype = datatype.getBaseDatatype();
         }
-        return DATATYPE_PREFIX + datatype.getName() + SEPARATOR + lexicalValue;
+        return DATATYPE_PREFIX + datatype.getLocalName() + SEPARATOR + lexicalValue;
     }
 
 

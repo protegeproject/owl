@@ -62,7 +62,7 @@ public interface OWLOntology extends RDFResource {
      *
      * @return a Collection of strings
      */
-    Collection<String> getImports();
+    Collection getImports();
 
 
     /**

@@ -550,7 +550,7 @@ public class ManchesterOWLParser implements ManchesterOWLParserConstants {
   final public String Identifier() throws ParseException {
     Token t;
     t = jj_consume_token(IDENTIFIER);
-        {if (true) return ParserUtils.dequoteIdentifier(t.image);}
+        {if (true) return t.image;}
     throw new Error("Missing return statement in function");
   }
 

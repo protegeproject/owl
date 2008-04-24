@@ -26,7 +26,7 @@ public class LoadRDFPropertiesTestCase extends AbstractJenaTestCase {
         RDFProperty objectProperty = owlModel.getRDFProperty("objectSlot");
         assertTrue(objectProperty.hasObjectRange());
         assertSize(1, objectProperty.getUnionRangeClasses());
-        assertEquals(owlModel.getOWLNamedClass("Cls"), objectProperty.getUnionRangeClasses().iterator().next());
+        assertEquals(owlModel.getCls("Cls"), objectProperty.getUnionRangeClasses().iterator().next());
     }
 
 

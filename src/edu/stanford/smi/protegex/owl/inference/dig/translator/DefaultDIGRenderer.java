@@ -10,9 +10,6 @@ import edu.stanford.smi.protegex.owl.inference.util.ReasonerPreferences;
 import edu.stanford.smi.protegex.owl.inference.util.ReasonerUtil;
 import edu.stanford.smi.protegex.owl.model.*;
 import edu.stanford.smi.protegex.owl.model.util.ClassCommenter;
-import edu.stanford.smi.protegex.owl.swrl.model.SWRLFactory;
-import edu.stanford.smi.protegex.owl.swrl.model.factory.SWRLJavaFactory;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -36,9 +33,6 @@ public class DefaultDIGRenderer implements DIGRenderer {
     private HashSet clsesToIgnore;
 
     private DIGReasonerIdentity reasonerIdentity;
-    
-    private SWRLFactory swrlFactory;
-       
 
 
     public DefaultDIGRenderer() {
@@ -116,10 +110,7 @@ public class DefaultDIGRenderer implements DIGRenderer {
         clsesToIgnore.removeAll(clsesToIgnore);
 
         slotsToIgnore.removeAll(slotsToIgnore);
-        
-        //If this is a SWRLModel, add to the ignored classes, properties and individuals all the SWRL concepts.
-        updateIgnoredCollections(kb);
-        
+
         // Render classes and their axioms
         renderClasses(kb, doc, parentNode);
 
@@ -132,10 +123,10 @@ public class DefaultDIGRenderer implements DIGRenderer {
         // Render the All Different instances
         Collection allDifferent = kb.getOWLAllDifferents();
         if (allDifferent.isEmpty() == false) {
+
+            Element allDifferentElement = doc.createElement(DIGVocabulary.Tell.ALL_DIFFERENT);
             Iterator allDifferentIt = allDifferent.iterator();
-            
             while (allDifferentIt.hasNext()) {
-            	 Element allDifferentElement = doc.createElement(DIGVocabulary.Tell.ALL_DIFFERENT);
                 OWLAllDifferent curOWLAllDifferent = (OWLAllDifferent) allDifferentIt.next();
                 if (isSupportedTellElement(DIGVocabulary.Tell.ALL_DIFFERENT) == true) {
                     Iterator distinctMembersIt = curOWLAllDifferent.getDistinctMembers().iterator();
@@ -146,17 +137,17 @@ public class DefaultDIGRenderer implements DIGRenderer {
                 } else {
                     renderFakedDifferentFrom(curOWLAllDifferent.getDistinctMembers(), doc, parentNode);
                 }
-                if (allDifferentElement.getChildNodes().getLength() > 0) {
-                    parentNode.appendChild(allDifferentElement);
-                }
             }
+            if (allDifferentElement.getChildNodes().getLength() > 0) {
+                parentNode.appendChild(allDifferentElement);
+            }
+
 
         }
     }
 
 
-
-	protected void renderFakedDifferentFrom(Collection differentFromIndividuals, Document doc, Node parentNode) throws DIGReasonerException {
+    protected void renderFakedDifferentFrom(Collection differentFromIndividuals, Document doc, Node parentNode) throws DIGReasonerException {
         // We want to put each individual into its
         // own iset element, and make these disjoint from each other.
         if (isSupportedTellElement(DIGVocabulary.Tell.DISJOINT)) {
@@ -186,9 +177,6 @@ public class DefaultDIGRenderer implements DIGRenderer {
                                  Node parentNode)
             throws DIGReasonerException {
         Collection namedClses = ReasonerUtil.getInstance().getNamedClses(kb);
-        
-        //ignoring ignored classes
-        namedClses.removeAll(clsesToIgnore);
 
         Iterator namedClsesIt = namedClses.iterator();
 
@@ -214,9 +202,6 @@ public class DefaultDIGRenderer implements DIGRenderer {
                                     Node parentNode)
             throws DIGReasonerException {
         Collection properties = ReasonerUtil.getInstance().getProperties(kb);
-        
-        //ignoring ignored properties
-        properties.removeAll(slotsToIgnore);
 
         Iterator propertiesIt = properties.iterator();
 
@@ -249,12 +234,11 @@ public class DefaultDIGRenderer implements DIGRenderer {
         Iterator individualsIt = individuals.iterator();
         while (individualsIt.hasNext()) {
             final OWLIndividual owlIndividual = (OWLIndividual) individualsIt.next();
-            if (!isSWRLResource(owlIndividual)) {
-            	final Element curElement = doc.createElement(DIGVocabulary.Tell.DEF_INDIVIDUAL);
-            	curElement.setAttribute("name", owlIndividual.getName());
-            	parentNode.appendChild(curElement);
-            	renderAxioms(owlIndividual, doc, parentNode);
-            }
+            final Element curElement = doc.createElement(DIGVocabulary.Tell.DEF_INDIVIDUAL);
+            curElement.setAttribute("name", owlIndividual.getName());
+            parentNode.appendChild(curElement);
+            renderAxioms(owlIndividual, doc, parentNode);
+
         }
     }
 
@@ -894,12 +878,6 @@ public class DefaultDIGRenderer implements DIGRenderer {
     public boolean render(RDFIndividual instance,
                           Document doc,
                           Node parentNode) throws DIGReasonerException {
-    	
-    	//ignoring SWRL individuals
-    	if (isSWRLResource(instance)) {
-    		return false;
-    	}
-    	
         boolean ret = true;
         //if(isSupportedLanguageElement(DIGVocabulary.Language.INDIVIDUAL) == true) {
         Element element = doc.createElement(DIGVocabulary.Language.INDIVIDUAL);
@@ -1540,31 +1518,5 @@ public class DefaultDIGRenderer implements DIGRenderer {
             ReasonerLogger.getInstance().postLogRecord(logRecord);
         }
     }
-    
-    
-    //Methods for ignoring SWRL concepts in the DIG translation
-   
-    private void updateIgnoredCollections(OWLModel owlModel) {
-    	if (!isSWRLModel(owlModel)) {
-    		return;
-    	}
-    	
-    	swrlFactory = new SWRLFactory(owlModel);
-    	clsesToIgnore.addAll(swrlFactory.getSWRLClasses());
-    	slotsToIgnore.addAll(swrlFactory.getSWRLProperties());
-    	slotsToIgnore.addAll(swrlFactory.getSWRLBProperties());
-	}
-    
-    private boolean isSWRLModel(OWLModel owlModel) {    
-    	return (owlModel.getOWLJavaFactory() instanceof SWRLJavaFactory);    	
-    }
-    
-    /* This returns correctly only if the swrlFactory was initialized before
-     * in the updateIgnoredCollections(), which is the typical case.
-     */
-    private boolean isSWRLResource(RDFResource resource) {
-    	return (swrlFactory == null ? false : swrlFactory.isSWRLResource(resource));
-    }
-    
 }
 

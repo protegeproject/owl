@@ -1,6 +1,5 @@
 package edu.stanford.smi.protegex.owl.repository.impl;
 
-import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.repository.Repository;
 import edu.stanford.smi.protegex.owl.repository.factory.RepositoryFactoryPlugin;
@@ -27,7 +26,7 @@ public class HTTPRepositoryFactoryPlugin implements RepositoryFactoryPlugin {
                 return true;
             }
             catch (MalformedURLException e) {
-                Log.getLogger().warning("[URL Repository Factory] Could not create a HTTP repository because the specified URL, " +
+                System.err.println("[URL Repository Factory] Could not create a HTTP repository because the specified URL, " +
                         s + " was malformed.");
                 return false;
             }

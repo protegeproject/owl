@@ -1,60 +1,68 @@
-; Tue Jan 30 17:59:01 PST 2007
+; Wed Sep 27 12:42:02 PDT 2006
 ; 
-;+ (version "3.2.1")
-;+ (build "Build 365")
+;+ (version "3.2")
+;+ (build "Build 339")
 
-([metaproject_Instance_0] of  Group
+([metaproject_Instance_0] of  Project
 
-	(name "World"))
-
-([metaproject_Instance_10000] of  Project
-
-	(allowedGroupOperation [metaproject_Instance_10008])
-	(location "examples/pizza.owl.pprj")
+	(description "An owl file project in server-client mode.")
+	(location "junit/projects/pizza.owl.pprj")
 	(name "Pizza")
-	(owner [metaproject_Instance_10005]))
+	(owner [metaproject_Instance_1]))
 
-([metaproject_Instance_10002] of  User
+([metaproject_Instance_1] of  User
 
-	(name "Guest")
-	(password "guest"))
-
-([metaproject_Instance_10003] of  User
-
-	(name "Jennifer Vendetti")
-	(password "jenny"))
-
-([metaproject_Instance_10004] of  User
-
-	(name "Natasha Noy")
-	(password "natalia"))
-
-([metaproject_Instance_10005] of  User
-
-	(name "Ray Fergerson")
-	(password "claudia"))
-
-([metaproject_Instance_10006] of  User
-
-	(name "Tania Tudorache")
-	(password "tania"))
-
-([metaproject_Instance_10007] of  User
-
+	(groups
+		[projects_00016]
+		[projects_00018]
+		[projects_00022])
 	(name "Timothy Redmond")
 	(password "timothy"))
 
-([metaproject_Instance_10008] of  GroupOperation
+([projects_00014] of  User
 
-	(allowedGroup [metaproject_Instance_0])
-	(allowedOperation
-		[nci_metaproject_Instance_60009]
-		[nci_metaproject_Instance_60010]))
+	(groups [projects_00016])
+	(name "Ray Fergerson")
+	(password "claudia"))
 
-([nci_metaproject_Instance_60009] of  Operation
+([projects_00015] of  User
 
-	(name "Read"))
+	(groups [projects_00018])
+	(name "Jennifer Vendetti")
+	(password "jenny"))
 
-([nci_metaproject_Instance_60010] of  Operation
+([projects_00016] of  Group
 
-	(name "Write"))
+	(members
+		[projects_00019]
+		[projects_00014]
+		[metaproject_Instance_1])
+	(name "Developers"))
+
+([projects_00018] of  Group
+
+	(members
+		[projects_00019]
+		[projects_00015]
+		[metaproject_Instance_1])
+	(name "Staff"))
+
+([projects_00019] of  User
+
+	(groups
+		[projects_00018]
+		[projects_00016])
+	(name "Natasha Noy")
+	(password "natalia"))
+
+([projects_00022] of  Group
+
+	(description "A special group that implicitly contains all people")
+	(members [metaproject_Instance_1])
+	(name "World"))
+
+([projects_00023] of  User
+
+	(description "Special user that is only a member of world.")
+	(name "Guest")
+	(password "guest"))

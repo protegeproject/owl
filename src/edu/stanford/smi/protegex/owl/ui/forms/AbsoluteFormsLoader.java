@@ -1,34 +1,18 @@
 package edu.stanford.smi.protegex.owl.ui.forms;
 
-import java.awt.Rectangle;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.logging.Level;
-
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntDocumentManager;
 import com.hp.hpl.jena.ontology.OntModel;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.rdf.model.Property;
-import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.rdf.model.Statement;
-import com.hp.hpl.jena.rdf.model.StmtIterator;
+import com.hp.hpl.jena.rdf.model.*;
 import com.hp.hpl.jena.util.FileUtils;
 import com.hp.hpl.jena.vocabulary.OWL;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
-
 import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.Project;
 import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protege.model.WidgetDescriptor;
+import edu.stanford.smi.protege.plugin.PluginUtilities;
 import edu.stanford.smi.protege.util.ApplicationProperties;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protege.util.PropertyList;
@@ -36,6 +20,8 @@ import edu.stanford.smi.protege.util.URIUtilities;
 import edu.stanford.smi.protege.widget.ClsWidget;
 import edu.stanford.smi.protege.widget.SlotWidget;
 import edu.stanford.smi.protegex.owl.ProtegeOWL;
+import edu.stanford.smi.protegex.owl.jena.JenaKnowledgeBaseFactory;
+import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLOntology;
 import edu.stanford.smi.protegex.owl.model.ProtegeNames;
@@ -43,8 +29,22 @@ import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.impl.OWLUtil;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 import edu.stanford.smi.protegex.owl.repository.Repository;
-import edu.stanford.smi.protegex.owl.repository.impl.AbstractStreamBasedRepositoryImpl;
+import edu.stanford.smi.protegex.owl.repository.impl.LocalFileRepository;
 import edu.stanford.smi.protegex.owl.repository.impl.LocalFolderRepository;
+import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
+
+import java.awt.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.logging.Level;
 
 /**
  * An object capable of loading forms files into a Protege Project.
@@ -334,9 +334,9 @@ public class AbsoluteFormsLoader {
 		
     	if (rep != null) {
     		//If there is already a repository entry for the form file, use it
-    		if (rep.contains(formsFileURI) && rep instanceof AbstractStreamBasedRepositoryImpl) {
+    		if (rep.contains(formsFileURI)) {
     			Log.getLogger().info("Loading forms from " + formsFileURI);
-    			load(((AbstractStreamBasedRepositoryImpl) rep).getInputStream(formsFileURI));
+    			load(rep.getInputStream(formsFileURI));
     			return;
     		}
     	}

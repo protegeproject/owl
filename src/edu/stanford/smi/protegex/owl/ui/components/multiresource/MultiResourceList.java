@@ -136,7 +136,7 @@ public class MultiResourceList extends SelectableList implements TripleSelectabl
         if (cls != null) {
             RDFResource instance = cls.createInstance(null);
             if (instance instanceof RDFUntypedResource) {
-                instance = OWLUtil.assignUniqueURI((RDFUntypedResource) instance);
+                OWLUtil.assignUniqueURI((RDFUntypedResource) instance);
             }
             else if (instance instanceof RDFSClass) {
                 RDFSClass newcls = (RDFSClass) instance;

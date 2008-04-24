@@ -11,38 +11,28 @@
  */
 package edu.stanford.smi.protegex.owl.swrl.bridge;
 
-import java.awt.Container;
-import java.awt.GridLayout;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.swing.Icon;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-
-import edu.stanford.smi.protege.event.ProjectAdapter;
-import edu.stanford.smi.protege.event.ProjectEvent;
-import edu.stanford.smi.protege.event.ProjectListener;
-import edu.stanford.smi.protege.model.Project;
-import edu.stanford.smi.protege.util.Log;
-import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.swrl.bridge.ui.SWRLPluginGUIAdapter;
 import edu.stanford.smi.protegex.owl.swrl.ui.tab.SWRLTab;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
+
+import edu.stanford.smi.protege.model.Project;
+import edu.stanford.smi.protege.event.*;
+
+import java.util.*;
+import java.util.logging.*;
+import javax.swing.*;
+import java.awt.GridLayout;
+import java.awt.BorderLayout;
+import java.awt.Container;
 
 public class BridgePluginManager
 {
-    private static transient final Logger log = Log.getLogger(BridgePluginManager.class);
-
-  private static HashMap<String, PluginRegistration> registeredPlugins = new HashMap<String, PluginRegistration>();
+  private static HashMap<String, PluginRegistrationInfo> registeredPlugins = new HashMap<String, PluginRegistrationInfo>();
   private static String visiblePluginName = "";
   private static String selectedRuleName = "";
   
   private static ProjectListener projectListener = new ProjectAdapter() 
   {
-    @Override
     public void projectClosed(ProjectEvent event) 
     { 
       Project project = (Project)event.getSource();
@@ -59,15 +49,14 @@ public class BridgePluginManager
       Class.forName("edu.stanford.smi.protegex.owl.swrl.bridge.jess.SWRLJessBridge");
       Class.forName("edu.stanford.smi.protegex.owl.swrl.bridge.jess.ui.SWRLJessTab");
     } catch (ClassNotFoundException e) {
-      log.log(Level.WARNING, "SWRLJessBridge load failed: could not find jess.Rete - or an error occured on initialization", e);
-      
+      System.err.println("SWRLJessBridge load failed: Could not find jess.Rete - or an error occured on initialization");
     } // try
 
     try { // TODO:  Hack until we can do a proper class load with the manifest
       Class.forName("jess.Rete");
-      Class.forName("edu.stanford.smi.protegex.owl.swrl.sqwrl.ui.SQWRLQueryTab");
+      Class.forName("edu.stanford.smi.protegex.owl.swrl.bridge.query.ui.SWRLQueryTab");
     } catch (ClassNotFoundException e) {
-      System.err.println("SQWRLQueryTab load failed: could not find jess.Rete - or an error occured on initialization");
+      System.err.println("SWRLQueryTab load failed: Could not find jess.Rete - or an error occured on initialization");
     } // try
 
   } // static
@@ -76,18 +65,20 @@ public class BridgePluginManager
   public static boolean hasSelectedRule() { return !selectedRuleName.equals(""); }
   public static void setSelectedRuleName(String ruleName) { selectedRuleName = ruleName; }
 
-  public static Collection<PluginRegistration> getRegisteredPlugins() { return registeredPlugins.values(); }
+  public static Collection<PluginRegistrationInfo> getRegisteredPlugins() { return registeredPlugins.values(); }
 
   public static void hideVisiblePlugin() { hidePlugin(visiblePluginName, true); }
   public static boolean hidePlugin(String pluginName) { return hidePlugin(pluginName, false); }
   public static boolean isVisible(String pluginName) { return !visiblePluginName.equals("") && pluginName.equals(visiblePluginName); } 
 
-  // Called by each plugin as it is loaded to inform the adapter of its presence
+  // Called by each plugin as it is loaded to inform the adapter of its presence.
   public static void registerPlugin(String pluginName, String toolTip, Icon icon, SWRLPluginGUIAdapter guiAdapter)
   {
     if (registeredPlugins.containsKey(pluginName)) registeredPlugins.remove(pluginName);
-    registeredPlugins.put(pluginName, new PluginRegistration(pluginName, toolTip, icon, guiAdapter));
-    log.info("Plugin '" + pluginName + "' registered with the SWRLTab plugin manager.");
+
+    registeredPlugins.put(pluginName, new PluginRegistrationInfo(pluginName, toolTip, icon, guiAdapter));
+
+    System.out.println("Plugin '" + pluginName + "' registered with the SWRLTab plugin manager.");
   } // registerPlugin
 
   public static void unregisterPlugin(String pluginName)
@@ -102,12 +93,12 @@ public class BridgePluginManager
   {
     if (!isVisible(pluginName)) {
       if (hidePlugin(visiblePluginName)) { // Hide may fail if user does not confirm it.
-        
+      
         if (registeredPlugins.containsKey(pluginName)) {
-          PluginRegistration registration = registeredPlugins.get(pluginName);
-          Container pluginGUI = registration.getGUIAdapter().createPluginGUI(owlModel);
+          PluginRegistrationInfo info = (PluginRegistrationInfo)registeredPlugins.get(pluginName);
+          Container pluginGUI = info.getGUIAdapter().createPluginGUI(owlModel);
 
-          registration.setOWLModel(owlModel); // Set the owlModel so that we can deregister ourselves on deactivation.
+          info.setOWLModel(owlModel); // Set the owlModel so that we can deregister ourselves on deactivation.
           
           if (pluginGUI != null) {
             swrlTab.setVisible(false); 
@@ -130,8 +121,8 @@ public class BridgePluginManager
                                                    JOptionPane.YES_NO_OPTION) != JOptionPane.YES_OPTION)) return false;
 
       if (registeredPlugins.containsKey(pluginName)) {
-        PluginRegistration registration = registeredPlugins.get(pluginName);
-        Container pluginGUI = registration.getGUIAdapter().getPluginGUI();
+        PluginRegistrationInfo info = registeredPlugins.get(pluginName);
+        Container pluginGUI = info.getGUIAdapter().getPluginGUI();
         SWRLTab swrlTab = (SWRLTab)pluginGUI.getParent();
         if (swrlTab != null) {
           swrlTab.setVisible(false); 
@@ -139,14 +130,14 @@ public class BridgePluginManager
           swrlTab.reconfigure();
           swrlTab.setVisible(true);
         } // if
-        if (registration.hasOWLModel()) registration.getOWLModel().getProject().removeProjectListener(projectListener); 
+        if (info.hasOWLModel()) info.getOWLModel().getProject().removeProjectListener(projectListener); 
         visiblePluginName = "";
       } // if
     } // if
     return true;
   } // hidePlugin
   
-  public static class PluginRegistration
+  public static class PluginRegistrationInfo
   {
     private String pluginName;
     private String toolTip;
@@ -154,14 +145,14 @@ public class BridgePluginManager
     private Icon icon;
     private OWLModel owlModel;
 
-    public PluginRegistration(String pluginName, String toolTip, Icon icon, SWRLPluginGUIAdapter guiAdapter)
+    public PluginRegistrationInfo(String pluginName, String toolTip, Icon icon, SWRLPluginGUIAdapter guiAdapter)
     {
       this.pluginName = pluginName;
       this.toolTip = toolTip;
       this.guiAdapter = guiAdapter;
       this.icon = icon;
       owlModel = null; // An OWL model is supplied when a GUI associated with the plugin is activated.
-    } // PluginRegistration
+    } // PluginRegistrationInfo
 
     public void setOWLModel(OWLModel owlModel) { this.owlModel = owlModel; }
 
@@ -172,7 +163,7 @@ public class BridgePluginManager
     public OWLModel getOWLModel() { return owlModel; } 
     public boolean hasOWLModel() { return owlModel != null; }
       
-  } // PluginRegistration
+  } // PluginRegistrationInfo
 
   private static void makeTextPanel(SWRLTab swrlTab, String text) 
   { 

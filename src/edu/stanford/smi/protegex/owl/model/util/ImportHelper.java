@@ -1,17 +1,20 @@
 package edu.stanford.smi.protegex.owl.model.util;
 
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-
 import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
 import edu.stanford.smi.protegex.owl.jena.parser.ProtegeOWLParser;
 import edu.stanford.smi.protegex.owl.model.OWLOntology;
 import edu.stanford.smi.protegex.owl.model.impl.OWLUtil;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
+import edu.stanford.smi.protegex.owl.swrl.ui.SWRLProjectPlugin;
 import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
 import edu.stanford.smi.protegex.owl.ui.menu.OWLMenuProjectPlugin;
+
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 
 /**
  * User: matthewhorridge<br>
@@ -26,7 +29,7 @@ public class ImportHelper {
 
     private JenaOWLModel owlModel;
 
-    private Collection<URI> ontologyURIs;
+    private Collection ontologyURIs;
 
 
     /**
@@ -45,7 +48,7 @@ public class ImportHelper {
      */
     public ImportHelper(JenaOWLModel owlModel) {
         this.owlModel = owlModel;
-        ontologyURIs = new ArrayList<URI>();
+        ontologyURIs = new ArrayList();
     }
 
 
@@ -79,18 +82,24 @@ public class ImportHelper {
      * @param reloadGUI - false if no GUI reload is desired
      */
     public void importOntologies(boolean reloadGUI) throws Exception {
-        ArrayList<URI> importedOntologies = new ArrayList<URI>();
-        for(URI ontologyURI : ontologyURIs) {
+        ArrayList importedOntologies = new ArrayList();
+        for(Iterator it = ontologyURIs.iterator(); it.hasNext();) {
+            URI ontologyURI = (URI) it.next();
             if(owlModel.getAllImports().contains(ontologyURI.toString()) == false) {
-                owlModel.loadImportedAssertions(ontologyURI);
+                ProtegeOWLParser.addImport(owlModel, ontologyURI);
+                // Add the imported URI
+                for(Iterator ontIt = owlModel.getOWLOntologies().iterator(); ontIt.hasNext();) {
+                    OWLOntology owlOntology = (OWLOntology) ontIt.next();
+                    final TripleStore ts = owlModel.getTripleStoreModel().getActiveTripleStore();
+                    if(owlModel.getTripleStoreModel().getHomeTripleStore(owlOntology) == ts) {
+                        owlOntology.addImports(ontologyURI);
+                        break;
+                    }
+                }
                 importedOntologies.add(ontologyURI);
             }
         }
-        ProtegeOWLParser.doFinalPostProcessing(owlModel);
-        OWLOntology  importingOntology = owlModel.getTripleStoreModel().getActiveTripleStore().getOWLOntology();
-        for (URI importedOntologyURI : importedOntologies) {
-            importingOntology.addImports(importedOntologyURI);
-        }
+        
         if(importedOntologies.size() > 0 && OWLUtil.runsWithGUI(owlModel)) {
             owlModel.getTripleStoreModel().updateEditableResourceState();
             OWLMenuProjectPlugin.makeHiddenClsesWithSubclassesVisible(owlModel);

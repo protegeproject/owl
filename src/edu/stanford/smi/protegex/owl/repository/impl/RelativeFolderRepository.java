@@ -33,7 +33,7 @@ public class RelativeFolderRepository extends LocalFolderRepository {
 
         super(new File(getURI(baseURL, relativeURL).getPath()),
                 forceReadOnly);
-        this.relativeURL = RepositoryUtil.stripQuery(relativeURL);
+        this.relativeURL = stripQuery(relativeURL);
     }
 
 
@@ -43,7 +43,15 @@ public class RelativeFolderRepository extends LocalFolderRepository {
     }
 
 
-
+    private static String stripQuery(String relativeURL) {
+        int index = relativeURL.indexOf('?');
+        if (index != -1) {
+            return relativeURL.substring(0, index);
+        }
+        else {
+            return relativeURL;
+        }
+    }
 
 
     public String getRepositoryDescriptor() {

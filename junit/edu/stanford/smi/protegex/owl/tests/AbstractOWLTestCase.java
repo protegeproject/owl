@@ -3,7 +3,6 @@ package edu.stanford.smi.protegex.owl.tests;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.ArrayList;
@@ -12,7 +11,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import junit.framework.TestCase;
 
@@ -31,15 +29,10 @@ import com.hp.hpl.jena.rdf.model.StmtIterator;
 import edu.stanford.smi.protege.model.Project;
 import edu.stanford.smi.protege.model.ValueType;
 import edu.stanford.smi.protege.util.Log;
-import edu.stanford.smi.protege.util.URIUtilities;
-import edu.stanford.smi.protegex.owl.ProtegeOWL;
 import edu.stanford.smi.protegex.owl.jena.Jena;
+import edu.stanford.smi.protegex.owl.jena.JenaKnowledgeBaseFactory;
 import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
-import edu.stanford.smi.protegex.owl.jena.parser.ProtegeOWLParser;
 import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
-import edu.stanford.smi.protegex.owl.model.OWLOntology;
-import edu.stanford.smi.protegex.owl.model.ProtegeNames;
-import edu.stanford.smi.protegex.owl.model.XSPNames;
 import edu.stanford.smi.protegex.owl.model.impl.XMLSchemaDatatypes;
 
 /**
@@ -48,8 +41,6 @@ import edu.stanford.smi.protegex.owl.model.impl.XMLSchemaDatatypes;
  * @author Holger Knublauch  <holger@knublauch.com>
  */
 public abstract class AbstractOWLTestCase extends TestCase {
-    private static transient Logger log = Log.getLogger(AbstractOWLTestCase.class);
-    
     public final static String TEST_ONTOLOGY_LOCATION_PROPERTY = "junit.testontologies";
 
     protected JenaOWLModel owlModel;
@@ -106,7 +97,7 @@ public abstract class AbstractOWLTestCase extends TestCase {
 
 
     protected void dumpRDF() {
-        Jena.dumpRDF(owlModel.getOntModel(), log, Level.FINE);
+        Jena.dumpRDF(owlModel.getOntModel());
     }
     
     public static String getRemoteOntologyRoot() {
@@ -167,18 +158,17 @@ public abstract class AbstractOWLTestCase extends TestCase {
     }
 
 
-    @Override
     protected void setUp() throws Exception {
         super.setUp();
         OntDocumentManager.getInstance().reset(true);
-                
-        owlModel = ProtegeOWL.createJenaOWLModel();
-        owlModel.setExpandShortNameInMethods(true);
-        project = owlModel.getProject();
+        Collection errors = new ArrayList();
+        final JenaKnowledgeBaseFactory factory = new JenaKnowledgeBaseFactory();
+        project = Project.createNewProject(factory, errors);
+        project.setKnowledgeBaseFactory(factory);
+        owlModel = (JenaOWLModel) project.getKnowledgeBase();
         owlThing = owlModel.getOWLThingClass();
     }
 
-    @Override
     protected void tearDown() throws Exception {
         super.tearDown();
         project.dispose();
@@ -201,39 +191,6 @@ public abstract class AbstractOWLTestCase extends TestCase {
       } catch (Exception e) {
         return null;
       }
-    }
-    
-    /**
-     * Makes sure that the Protege meta ontology is imported in an ontology tag
-     * that has rdf:about="".
-     */
-    public boolean ensureProtegeMetaOntologyImported() {
-        OWLOntology owlOntology = owlModel.getDefaultOWLOntology();
-        for (Iterator imports = owlOntology.getImports().iterator(); imports.hasNext();) {
-            String im = (String) imports.next();
-            if (im.equals(ProtegeNames.PROTEGE_OWL_ONTOLOGY)) {
-                return false;  // Already there
-            }
-        }
-        owlOntology.addImports(ProtegeNames.PROTEGE_OWL_ONTOLOGY);
-        try {
-            owlModel.loadImportedAssertions(URIUtilities.createURI(ProtegeNames.PROTEGE_OWL_ONTOLOGY));
-            ProtegeOWLParser.doFinalPostProcessing(owlModel);
-        }
-        catch (IOException e) {
-            Log.getLogger().log(Level.WARNING, "error importing protege ontology", e);
-        }
-        ensureProtegePrefixExists();
-        return true;
-    }
-
-
-    private void ensureProtegePrefixExists() {
-        if (owlModel.getNamespaceManager().getPrefix(ProtegeNames.PROTEGE_OWL_NAMESPACE) == null) {
-            String prefix = ProtegeNames.PROTEGE_PREFIX;
-            owlModel.getNamespaceManager().setPrefix(ProtegeNames.PROTEGE_OWL_NAMESPACE, prefix);
-            owlModel.getNamespaceManager().setPrefix(XSPNames.NS, XSPNames.DEFAULT_PREFIX);
-        }
     }
 
 

@@ -5,10 +5,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.logging.Level;
 
-import edu.stanford.smi.protege.model.Cls;
-import edu.stanford.smi.protege.model.Model;
 import edu.stanford.smi.protege.util.Log;
-import edu.stanford.smi.protegex.owl.model.NamespaceUtil;
 import edu.stanford.smi.protegex.owl.model.OWLAllValuesFrom;
 import edu.stanford.smi.protegex.owl.model.OWLCardinality;
 import edu.stanford.smi.protegex.owl.model.OWLComplementClass;
@@ -33,7 +30,6 @@ import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
 import edu.stanford.smi.protegex.owl.model.RDFSNames;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 import edu.stanford.smi.protegex.owl.model.visitor.OWLModelVisitorAdapter;
-import edu.stanford.smi.protegex.owl.swrl.model.SWRLIndividual;
 import edu.stanford.smi.protegex.owl.writer.rdfxml.util.Util;
 import edu.stanford.smi.protegex.owl.writer.xml.XMLWriter;
 
@@ -153,23 +149,9 @@ public class RDFAxiomRenderer extends OWLModelVisitorAdapter {
         renderPropertyAxioms(owlObjectProperty);
     }
 
-    @Override
-    public void visitSWRLIndividual(SWRLIndividual swrlIndividual) {    
-    	renderIndividualAxioms(swrlIndividual);
-    }
-    
-    
-    @SuppressWarnings("deprecation")
-	public void visitRDFIndividual(RDFIndividual rdfIndividual) {
-    	//filter out the annotations and PAL constraints
-    	Cls annotationCls = rdfIndividual.getKnowledgeBase().getCls(Model.Cls.ANNOTATION);
-    	Cls palCls = rdfIndividual.getKnowledgeBase().getSystemFrames().getPalConstraintCls();
-    	
-    	if (rdfIndividual.hasType(annotationCls) || rdfIndividual.hasType(palCls)) {
-    		return;
-    	}
-    	
-    	renderIndividualAxioms(rdfIndividual);
+
+    public void visitRDFIndividual(RDFIndividual rdfIndividual) {
+        renderIndividualAxioms(rdfIndividual);
     }
 
 
@@ -193,7 +175,7 @@ public class RDFAxiomRenderer extends OWLModelVisitorAdapter {
                 Util.insertResourceAsElement(type, writer);
             }
             else {
-                writer.writeStartElement(Util.getPrefixedName(RDFNames.Cls.DESCRIPTION, tripleStore));
+                writer.writeStartElement(RDFNames.Cls.DESCRIPTION);
             }
             Util.insertIDOrAboutAttribute(cls, tripleStore, writer);
 
@@ -220,7 +202,7 @@ public class RDFAxiomRenderer extends OWLModelVisitorAdapter {
                 }
                 // Equivalent classes
                 renderedEquivalentClasses.add(curSuper);
-                writer.writeStartElement(Util.getPrefixedName(OWLNames.Slot.EQUIVALENT_CLASS, tripleStore));
+                writer.writeStartElement(OWLNames.Slot.EQUIVALENT_CLASS);
                 Util.inlineObject(curSuper, tripleStore, writer);
                 writer.writeEndElement(); // end of owl:equivalentClass
             }
@@ -241,7 +223,7 @@ public class RDFAxiomRenderer extends OWLModelVisitorAdapter {
                     if (isOWLThing == false ||
                             isOWLThing && it.hasNext() ||
                             isOWLThing && processedSupers > 0) {
-                        writer.writeStartElement(Util.getPrefixedName(RDFSNames.Slot.SUB_CLASS_OF, tripleStore));
+                        writer.writeStartElement(RDFSNames.Slot.SUB_CLASS_OF);
                         Util.inlineObject(curSupCls, tripleStore, writer);
                         writer.writeEndElement(); // end of rdfs:ubClassOf
                     }
@@ -266,7 +248,7 @@ public class RDFAxiomRenderer extends OWLModelVisitorAdapter {
                 Util.insertResourceAsElement(type, writer);
             }
             else {
-                writer.writeStartElement(Util.getPrefixedName(RDFNames.Cls.DESCRIPTION, tripleStore));
+                writer.writeStartElement(RDFNames.Cls.DESCRIPTION);
             }
 
             Util.insertIDOrAboutAttribute(property, tripleStore, writer);
@@ -275,7 +257,7 @@ public class RDFAxiomRenderer extends OWLModelVisitorAdapter {
             // Domain - special handling to filter out owl:Thing
             RDFSClass domain = property.getDomain(false);
             if (domain != null && domain.equals(property.getOWLModel().getOWLThingClass()) == false) {
-                writer.writeStartElement(Util.getPrefixedName(RDFSNames.Slot.DOMAIN, tripleStore));
+                writer.writeStartElement(RDFSNames.Slot.DOMAIN);
                 Util.inlineObject(domain, tripleStore, writer);
                 writer.writeEndElement();
             }
@@ -298,7 +280,7 @@ public class RDFAxiomRenderer extends OWLModelVisitorAdapter {
                 Util.insertResourceAsElement(type, writer);
             }
             else {
-                writer.writeStartElement(Util.getPrefixedName(RDFNames.Cls.DESCRIPTION, tripleStore));
+                writer.writeStartElement(RDFNames.Cls.DESCRIPTION);
             }
             Util.insertIDOrAboutAttribute(individual, tripleStore, writer);
             renderTypes(individual, type);

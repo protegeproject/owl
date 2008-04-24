@@ -1,6 +1,5 @@
 package edu.stanford.smi.protegex.owl.inference.protegeowl.task;
 
-
 /**
  * User: matthewhorridge<br>
  * The Univeristy Of Manchester<br>

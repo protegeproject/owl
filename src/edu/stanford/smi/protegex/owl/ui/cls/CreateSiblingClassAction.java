@@ -1,11 +1,9 @@
 package edu.stanford.smi.protegex.owl.ui.cls;
 
-import edu.stanford.smi.protege.util.LazyTreeNode;
 import edu.stanford.smi.protegex.owl.model.*;
 import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
 import edu.stanford.smi.protegex.owl.ui.actions.ResourceAction;
 import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
-import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -42,35 +40,24 @@ public class CreateSiblingClassAction extends ResourceAction {
 
 
     public static void performAction(RDFSNamedClass sibling, ClassTreePanel classTreePanel) {
-    	RDFSNamedClass cls = null;
         Collection parents = sibling.getNamedSuperclasses();
         if (!parents.isEmpty()) {
             OWLModel owlModel = sibling.getOWLModel();
+            owlModel.beginTransaction("Create sibling of class " + sibling.getBrowserText());
             String name = owlModel.createNewResourceName(AbstractOWLModel.DEFAULT_CLASS_NAME);
-            
-            owlModel.beginTransaction("Create sibling of class " + sibling.getBrowserText(), name);
-            
-            try {                
-                RDFSClass siblingType = sibling.getRDFType();
-                if(siblingType == null) {
-                    siblingType = sibling.getProtegeType();
+            RDFSClass siblingType = sibling.getRDFType();
+            if(siblingType == null) {
+                siblingType = sibling.getProtegeType();
+            }
+            RDFSNamedClass cls = owlModel.createRDFSNamedClass(name, parents, siblingType);
+            if (cls instanceof OWLNamedClass) {
+                for (Iterator it = parents.iterator(); it.hasNext();) {
+                    RDFSNamedClass s = (RDFSNamedClass) it.next();
+                    ((OWLNamedClass) cls).addInferredSuperclass(s);
                 }
-                cls = owlModel.createRDFSNamedClass(name, parents, siblingType);
-                if (cls instanceof OWLNamedClass) {
-                    for (Iterator it = parents.iterator(); it.hasNext();) {
-                        RDFSNamedClass s = (RDFSNamedClass) it.next();
-                        ((OWLNamedClass) cls).addInferredSuperclass(s);
-                    }
-                }
-                owlModel.commitTransaction();                
-			} catch (Exception e) {
-				owlModel.rollbackTransaction();
-				OWLUI.handleError(owlModel, e);
-			}
-			
-			if (cls != null) 
-				classTreePanel.setSelectedClass(cls);			
-			
+            }
+            owlModel.endTransaction();
+            classTreePanel.setSelectedClass(cls);
         }
     }
 }

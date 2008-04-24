@@ -4,7 +4,6 @@ import edu.stanford.smi.protegex.owl.model.OWLRestriction;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.classdisplay.AbstractOWLClassDisplay;
 import edu.stanford.smi.protegex.owl.model.classparser.OWLClassParser;
-import edu.stanford.smi.protegex.owl.model.classparser.ParserUtils;
 import edu.stanford.smi.protegex.owl.model.classparser.compact.CompactOWLClassParser;
 import edu.stanford.smi.protegex.owl.model.impl.*;
 
@@ -19,7 +18,7 @@ public class CompactOWLClassDisplay extends AbstractOWLClassDisplay {
     // Overloaded to improve performance
     protected String getDisplayTextOfOWLRestriction(OWLRestriction restriction) {
         RDFProperty onProperty = restriction.getOnProperty();
-        return (onProperty != null ? ParserUtils.quoteIfNeeded(onProperty.getBrowserText()) : "?") +
+        return (onProperty != null ? onProperty.getBrowserText() : "?") +
                 " " + restriction.getOperator() +
                 " " + getOWLRestrictionFillerText(restriction);
     }

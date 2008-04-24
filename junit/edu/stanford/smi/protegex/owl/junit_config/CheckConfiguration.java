@@ -2,6 +2,7 @@ package edu.stanford.smi.protegex.owl.junit_config;
 
 import java.util.Properties;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import edu.stanford.smi.protege.server.Server_Test;
 import edu.stanford.smi.protege.test.APITestCase;
@@ -45,4 +46,3 @@ public class CheckConfiguration {
     }
   }
 }
-

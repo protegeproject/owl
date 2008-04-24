@@ -9,13 +9,11 @@ import edu.stanford.smi.protege.plugin.PluginUtilities;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.repository.Repository;
-import edu.stanford.smi.protegex.owl.repository.impl.DatabaseRepositoryFactoryPlugin;
 import edu.stanford.smi.protegex.owl.repository.impl.DublinCoreDLVersionRedirectRepositoryFactoryPlugin;
 import edu.stanford.smi.protegex.owl.repository.impl.FTPRepositoryFactoryPlugin;
 import edu.stanford.smi.protegex.owl.repository.impl.HTTPRepositoryFactoryPlugin;
 import edu.stanford.smi.protegex.owl.repository.impl.LocalFileRepositoryFactoryPlugin;
 import edu.stanford.smi.protegex.owl.repository.impl.LocalFolderRepositoryFactoryPlugin;
-import edu.stanford.smi.protegex.owl.repository.impl.RelativeFileRepositoryFactoryPlugin;
 import edu.stanford.smi.protegex.owl.repository.impl.RelativeFolderRepositoryFactoryPlugin;
 
 /**
@@ -31,24 +29,22 @@ public class RepositoryFactory {
 
     private static RepositoryFactory instance;
 
-    private ArrayList<RepositoryFactoryPlugin> factories;
+    private ArrayList factories;
 
 
     private RepositoryFactory() {
-        factories = new ArrayList<RepositoryFactoryPlugin>();
+        factories = new ArrayList();
         factories.add(new DublinCoreDLVersionRedirectRepositoryFactoryPlugin());
         factories.add(new LocalFileRepositoryFactoryPlugin());
-        factories.add(new RelativeFileRepositoryFactoryPlugin());
         factories.add(new LocalFolderRepositoryFactoryPlugin());
         factories.add(new HTTPRepositoryFactoryPlugin());
         factories.add(new RelativeFolderRepositoryFactoryPlugin());
         factories.add(new FTPRepositoryFactoryPlugin());
-        factories.add(new DatabaseRepositoryFactoryPlugin());
-        Collection<Class> plugins = PluginUtilities.getClassesWithAttribute(RepositoryFactoryPlugin.PLUGIN_TYPE, "True");
-        for (Iterator<Class> it = plugins.iterator(); it.hasNext();) {
-            Class cls =  it.next();
+        Collection plugins = PluginUtilities.getClassesWithAttribute(RepositoryFactoryPlugin.PLUGIN_TYPE, "True");
+        for (Iterator it = plugins.iterator(); it.hasNext();) {
+            Class cls = (Class) it.next();
             try {
-                factories.add((RepositoryFactoryPlugin) cls.newInstance());
+                factories.add(cls.newInstance());
             }
             catch (InstantiationException e) {
               Log.getLogger().log(Level.SEVERE, "Exception caught", e);
@@ -74,8 +70,8 @@ public class RepositoryFactory {
 
 
     public Repository createOntRepository(OWLModel model, String s) {
-        for (Iterator<RepositoryFactoryPlugin> it = factories.iterator(); it.hasNext();) {
-            RepositoryFactoryPlugin curPlugin = it.next();
+        for (Iterator it = factories.iterator(); it.hasNext();) {
+            RepositoryFactoryPlugin curPlugin = (RepositoryFactoryPlugin) it.next();
             if (curPlugin.isSuitable(model, s)) {
                 return curPlugin.createRepository(model, s);
             }
@@ -84,8 +80,8 @@ public class RepositoryFactory {
     }
 
 
-    public Collection<RepositoryFactoryPlugin> getFactories() {
-        return new ArrayList<RepositoryFactoryPlugin>(factories);
+    public Collection getFactories() {
+        return new ArrayList(factories);
     }
 }
 

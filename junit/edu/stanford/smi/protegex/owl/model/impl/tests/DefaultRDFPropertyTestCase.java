@@ -272,7 +272,7 @@ public class DefaultRDFPropertyTestCase extends AbstractJenaTestCase {
         assertFalse(subProperty.isDomainDefined());
         assertEquals(domainClass, subProperty.getDomain(true));
         Slot directDomainSlot = owlModel.getSlot(Model.Slot.DIRECT_DOMAIN);
-        assertEquals(owlModel.getOWLThingClass(), ((Slot) subProperty).getDirectOwnSlotValue(directDomainSlot));
+        assertNull(((Slot) subProperty).getDirectOwnSlotValue(directDomainSlot));
         subProperty.removeSuperproperty(superProperty);
         assertFalse(subProperty.isDomainDefined());
         assertSize(1, ((Slot) subProperty).getDirectOwnSlotValues(directDomainSlot));

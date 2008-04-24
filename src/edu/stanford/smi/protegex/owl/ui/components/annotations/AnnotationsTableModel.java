@@ -14,7 +14,6 @@ import java.util.Collections;
  * @author Holger Knublauch  <holger@knublauch.com>
  */
 public class AnnotationsTableModel extends TriplesTableModel {
-    private static final long serialVersionUID = 6541633464862122745L;
 
 
     public AnnotationsTableModel() {
@@ -26,7 +25,7 @@ public class AnnotationsTableModel extends TriplesTableModel {
     }
 
 
-    protected Collection<RDFProperty> getRelevantProperties() {
+    protected Collection getRelevantProperties() {
         OWLModel owlModel = getOWLModel();
         return owlModel.getOWLAnnotationProperties();
     }
@@ -41,8 +40,8 @@ public class AnnotationsTableModel extends TriplesTableModel {
     }
 
 
-	public Collection<RDFProperty> getDefaultProperties() {
+	public Collection getDefaultProperties() {
 		OWLModel owlModel = getOWLModel();
-		return Collections.singleton((RDFProperty) owlModel.getRDFSCommentProperty());
+		return Collections.singleton(owlModel.getRDFSCommentProperty());
 	}
 }

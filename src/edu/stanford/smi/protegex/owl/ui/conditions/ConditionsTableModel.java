@@ -19,12 +19,10 @@ import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.KnowledgeBase;
 import edu.stanford.smi.protege.model.Model;
 import edu.stanford.smi.protege.model.Slot;
-import edu.stanford.smi.protege.util.ApplicationProperties;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.model.OWLAllValuesFrom;
 import edu.stanford.smi.protegex.owl.model.OWLAnonymousClass;
 import edu.stanford.smi.protegex.owl.model.OWLCardinalityBase;
-import edu.stanford.smi.protegex.owl.model.OWLClass;
 import edu.stanford.smi.protegex.owl.model.OWLHasValue;
 import edu.stanford.smi.protegex.owl.model.OWLIntersectionClass;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
@@ -36,10 +34,10 @@ import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
 import edu.stanford.smi.protegex.owl.model.RDFSClass;
 import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
-import edu.stanford.smi.protegex.owl.model.classparser.OWLClassParseException;
 import edu.stanford.smi.protegex.owl.model.classparser.OWLClassParser;
 import edu.stanford.smi.protegex.owl.model.event.ClassAdapter;
 import edu.stanford.smi.protegex.owl.model.event.ClassListener;
+import edu.stanford.smi.protegex.owl.model.impl.AbstractRDFSClass;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLIntersectionClass;
 import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
 import edu.stanford.smi.protegex.owl.ui.owltable.OWLTableModel;
@@ -47,46 +45,36 @@ import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
 
 /**
  * The TableModel used by the AssertedConditionsWidget.
- * 
+ *
  * @author Holger Knublauch  <holger@knublauch.com>
  */
 public class ConditionsTableModel extends AbstractTableModel
         implements ConditionsTableConstants, OWLTableModel {
-    private static transient final Logger log = Log.getLogger(ConditionsTableModel.class);
-	private static final String SHOW_INHERITED_RESTRICTIONS = "restriction.show.inherited";
+    private static transient Logger log = Log.getLogger(ConditionsTableModel.class);
 
-
-	//TT:2006-08-03: Do a cache with the snapshot of the conditionstable model at the beginning and
-	//work on the cache.
-	
     private ClassListener classListener = new ClassAdapter() {
-        @Override
-        public void subclassAdded(RDFSClass cls, RDFSClass subclass) {        	
-        		refill();
+        public void subclassAdded(RDFSClass cls, RDFSClass subclass) {
+            refill();
         }
 
 
-        @Override
-        public void subclassRemoved(RDFSClass cls, RDFSClass subclass) {       	
-        		refill();
+        public void subclassRemoved(RDFSClass cls, RDFSClass subclass) {
+            refill();
         }
 
 
-        @Override
-        public void superclassAdded(RDFSClass cls, RDFSClass superclass) {        	
-        		refill();
+        public void superclassAdded(RDFSClass cls, RDFSClass superclass) {
+            refill();
         }
 
 
-        @Override
-        public void superclassRemoved(RDFSClass cls, RDFSClass superclass) {        	
-        		refill();
+        public void superclassRemoved(RDFSClass cls, RDFSClass superclass) {
+            refill();
         }
     };
 
 
     private FrameListener frameListener = new FrameAdapter() {
-        @Override
         public void ownSlotValueChanged(FrameEvent event) {
             if (event.getSlot().equals(superclassesSlot)) {
                 refill();
@@ -102,9 +90,9 @@ public class ConditionsTableModel extends AbstractTableModel
     /**
      * One Item object for each row
      */
-    private List<ConditionsTableItem> items = new ArrayList<ConditionsTableItem>();
+    private List items = new ArrayList();
 
-    private Collection<RDFSClass> listenedToClses = new ArrayList<RDFSClass>();
+    private Collection listenedToClses = new ArrayList();
 
     private OWLModel owlModel;
 
@@ -114,9 +102,6 @@ public class ConditionsTableModel extends AbstractTableModel
     public Cls previouslyEditedCls;
 
     private Slot superclassesSlot;
-
-
-	private boolean inEditing = false;
 
 
     /**
@@ -171,9 +156,8 @@ public class ConditionsTableModel extends AbstractTableModel
             return 1;
         }
         else {  */
-    	ConditionsTableItem item = ConditionsTableItem.createNew(getType(selectedRow));
-        
-    	int index = selectedRow + 1;
+        ConditionsTableItem item = ConditionsTableItem.createNew(getType(selectedRow));
+        int index = selectedRow + 1;
         addItem(index, item);
         fireTableRowsInserted(index, index);
         return index;
@@ -183,12 +167,10 @@ public class ConditionsTableModel extends AbstractTableModel
 
     private void addItem(int index, ConditionsTableItem item) {
         items.add(index, item);
-        //updateLocalIndices();
+        updateLocalIndices();
     }
 
 
-    //TODO: TT - this mehtod has to be re-written to be more efficient. Currently it is
-    // not used.
     /**
      * Adds a given Item, unless it represents a restriction that has been overloaded
      * in the existing entries.  A restriction is overloaded iff a restriction of the
@@ -292,44 +274,30 @@ public class ConditionsTableModel extends AbstractTableModel
      * @param selectedRow the row to add to
      * @return true if the row has been added
      */
-    public boolean addRow(RDFSClass aClass, int selectedRow) {       
-        return addRowAllowMove(aClass, selectedRow);       
+    public boolean addRow(RDFSClass aClass, int selectedRow) {
+        String browserText = aClass.getBrowserText();
+        if (isDefinition(selectedRow) ||
+                !((AbstractRDFSClass) hostClass).hasPropertyValueWithBrowserText(((KnowledgeBase) owlModel).getSlot(Model.Slot.DIRECT_SUPERCLASSES), browserText)) {
+            return addRowAllowMove(aClass, selectedRow);
+        }
+        else {
+            return false;
+        }
     }
 
 
-    public boolean addRowAllowMove(RDFSClass aClass, int selectedRow) {    	
+    public boolean addRowAllowMove(RDFSClass aClass, int selectedRow) {
         if (aClass.equals(hostClass) ||
                 (!isCreateEnabledAt(selectedRow) && aClass instanceof OWLAnonymousClass) ||
                 (!isAddEnabledAt(selectedRow) && aClass instanceof OWLNamedClass)) {
             return false;
         }
-        
-        inEditing = true;       
-       
-        boolean succeded = handleAddRestriction(aClass, selectedRow);
-        
-        inEditing = false;
-        
-        refill();
-        
-        return succeded;
-    }
 
-    
-    private boolean handleAddRestriction(RDFSClass aClass, int selectedRow) {
-        //handle superclasses
-        if (getType(selectedRow) == TYPE_SUPERCLASS) {
+        int type = getType(selectedRow);
+        if (type == TYPE_SUPERCLASS) {
             hostClass.addSuperclass(aClass);
-            
-            if (isSeparator(selectedRow)) {
-                selectedRow++;
-            }
-            
-            return true;
         }
-        
-        //handle definitions (equivalent classes)
-        if (isDefinition(selectedRow)) { // Definition
+        else if (isDefinition(selectedRow)) { // Definition
             if (aClass.equals(owlModel.getOWLThingClass())) {
                 return false;  // Don't allow to add owl:Thing to any definition
             }
@@ -337,143 +305,122 @@ public class ConditionsTableModel extends AbstractTableModel
                 selectedRow++;
             }
             DefaultOWLIntersectionClass definition = (DefaultOWLIntersectionClass) getDefinition(selectedRow);
-            if (definition != null) { //there is already a definition which is an intersection; add the new operand
+            if (definition != null) {
                 String browserText = aClass.getBrowserText();
                 if (definition.hasOperandWithBrowserText(browserText)) {
                     return false;
                 }
-                
-                definition.addOperand(aClass);
-                
-                //ensure it is added as a superclass if it is a named class
-                if (aClass instanceof OWLNamedClass) {
-                	hostClass.addDirectSuperclass(aClass);
-                }
-               
-            } else 	{ 
-                RDFSClass oldEquivalentClass = getClass(selectedRow);
-                if (oldEquivalentClass != null) { //there is one class in the definition, create an intersection and add the old and new classes to it               	
-                    
-                    RDFSClass clonedOldEquivalentClass = oldEquivalentClass;
-                    
-                    if (oldEquivalentClass instanceof OWLAnonymousClass) 
-                    	clonedOldEquivalentClass = oldEquivalentClass.createClone();
-                    
+                OWLIntersectionClass copy = (OWLIntersectionClass) definition.createClone();
+                copy.addOperand(aClass);
+                hostClass.addEquivalentClass(copy);  // Was swapped with line below
+                definition.delete();                 // Was swapped with line above
+            }
+            else {
+                RDFSClass oldEquivalentClass = (RDFSClass) getClass(selectedRow);
+                if (oldEquivalentClass != null) {
+                    if (oldEquivalentClass.getBrowserText().equals(aClass.getBrowserText())) {
+                        return false;
+                    }
+                    OWLModel owlModel = aClass.getOWLModel();
                     OWLIntersectionClass newDefinition = owlModel.createOWLIntersectionClass();
-                    newDefinition.addOperand(clonedOldEquivalentClass);
-                    newDefinition.addOperand(aClass);                
-                    
+                    newDefinition.addOperand(oldEquivalentClass.createClone());
+                    newDefinition.addOperand(aClass);
+                    hostClass.removeSuperclass(oldEquivalentClass);
+                    if (oldEquivalentClass instanceof OWLNamedClass) {
+                        oldEquivalentClass.removeSuperclass(hostClass);
+                    }
                     hostClass.addEquivalentClass(newDefinition);
-                    
-                    hostClass.removeEquivalentClass(oldEquivalentClass);
-                    
-                    if (clonedOldEquivalentClass instanceof OWLNamedClass)
-                    	hostClass.addDirectSuperclass(clonedOldEquivalentClass);
                 }
                 else {
                     hostClass.addEquivalentClass(aClass);
-                    
                 }
             }
         }
-       return true;    	
+        return true;
     }
 
-    /**
-     * @param index
-     * @return
-     */
-    private boolean deleteDefinitionRow(int index) {
-    	if (!isDefinition(index))
-    		return false;
-    	
-        RDFSClass rowClass = getClass(index);
-        
-        OWLIntersectionClass definition = getDefinition(index);
-        
-        if (definition == null) {//only one equivalent class        	
-        	hostClass.removeEquivalentClass(rowClass);
 
-        	//TT: this is arguably the right behavior.. At least according to the junits
-        	rowClass.addSuperclass(hostClass);
-       	
-        	return true;        	
-        } 
-        	
-        	//return false;
-        
-        Collection operands = new ArrayList(definition.getOperands());
-        if (operands.size() == 2) {
-        	operands.remove(rowClass);
-            RDFSClass remainder = (RDFSClass) operands.iterator().next();
-            
-            RDFSClass copy = remainder.createClone();
-            hostClass.addEquivalentClass(copy);
-            
-            definition.delete();
+    private boolean deleteDefinitionRow(int index) {
+        RDFSClass rowClass = (RDFSClass) getClass(index);
+        if (isDefinition(index)) {
+            OWLIntersectionClass definition = getDefinition(index);
+            if (definition != null) {
+                Collection operands = new ArrayList(definition.getOperands());
+                if (operands.size() == 2) {
+                    operands.remove(rowClass);
+                    RDFSClass remainder = (RDFSClass) operands.iterator().next();
+                    RDFSClass copy = remainder.createClone();
+                    hostClass.addEquivalentClass(copy);
+                    definition.delete();
+                }
+                else {
+                    OWLModel owlModel = rowClass.getOWLModel();
+                    operands.remove(rowClass);
+                    OWLIntersectionClass newDefinition = owlModel.createOWLIntersectionClass();
+                    for (Iterator it = operands.iterator(); it.hasNext();) {
+                        RDFSClass oldOperand = (RDFSClass) it.next();
+                        newDefinition.addOperand(oldOperand.createClone());
+                    }
+                    hostClass.addEquivalentClass(newDefinition);
+                    definition.delete();
+                }
+                if (!hostClass.hasNamedSuperclass()) {
+                    hostClass.addSuperclass(owlModel.getOWLThingClass());
+                }
+                return true;
+            }
         }
-        else {
-        	definition.removeOperand(rowClass);
-        }
-        
-        return true;
+        return false;
     }
 
 
     public void deleteRow(int index) {
         try {
-        	RDFSClass rdfsClass = getEditedCls();
-        		
             owlModel.beginTransaction("Delete condition " + getClass(index).getBrowserText() +
-                    " from " + rdfsClass.getBrowserText(), rdfsClass.getName());
-            
-            inEditing = true;
-            
+                    " from " + getEditedCls().getBrowserText());
             deleteRow(index, false);
-            
-            inEditing = false;           
-            
-            owlModel.commitTransaction();
         }
         catch (Exception ex) {
-        	owlModel.rollbackTransaction();
-        	
-        	inEditing = false;
-        	
-        	OWLUI.handleError(owlModel, ex);	
-        } finally {
-        	refill();
+            OWLUI.handleError(owlModel, ex);
+        }
+        finally {
+            owlModel.endTransaction();
         }
     }
 
 
     public void deleteRow(int index, boolean forceDelete) {
-        RDFSClass rowClass = getClass(index);
+        RDFSClass rowClass = (RDFSClass) getClass(index);
         boolean definition = getDefinition(index) != null;
         boolean isDefinition = isDefinition(index);
-        
         boolean deleted = deleteDefinitionRow(index);
-                
-        if (!deleted && isDefinition && rowClass instanceof OWLNamedClass && forceDelete) {            
+        if (!deleted && isDefinition && rowClass instanceof OWLNamedClass && forceDelete) {
             rowClass.removeSuperclass(hostClass);
-                        
-        } else if (hostClass.isSubclassOf(rowClass)) {
+            rowClass.removeSuperclass(hostClass);
+        }
+        else if (hostClass.isSubclassOf(rowClass)) {
             if (!getNamedDefinitionClses(definition).contains(rowClass) || forceDelete) {
-                if (rowClass instanceof RDFSNamedClass) { //Remove a named class               	
-                	hostClass.removeSuperclass(rowClass);                	
+                if (rowClass instanceof RDFSNamedClass) {
+                    int namedSuperclassCount = hostClass.getNamedSuperclasses().size();
+                    if (namedSuperclassCount == 1) {
+                        hostClass.addSuperclass(owlModel.getOWLThingClass());
+                    }
+                    if (!rowClass.equals(owlModel.getOWLThingClass())) {
+                        hostClass.removeSuperclass(rowClass);
+                    }
+                    else {  // owl:Thing deleted as superclass
+                        Collection nss = new HashSet(hostClass.getNamedSuperclasses());
+                        nss.remove(rowClass);
+                        if (nss.size() > 0) {
+                            hostClass.removeSuperclass(rowClass);
+                        }
+                    }
                 }
                 else {
-                    hostClass.removeSuperclass(rowClass);                   
+                    hostClass.removeSuperclass(rowClass);
                 }
-            }            
+            }
         }
-        
-       ensureHasOneNamedSuperclass(hostClass);
-       
-       if (rowClass instanceof RDFSNamedClass) {
-    	   ensureHasOneNamedSuperclass((RDFSNamedClass) rowClass);
-       }
-        
     }
 
 
@@ -508,14 +455,7 @@ public class ConditionsTableModel extends AbstractTableModel
                 classificationStatus != OWLNames.CLASSIFICATION_STATUS_UNDEFINED) {
             fillDefinitionItems(coveredClses);
             fillDirectSuperclassItems(coveredClses);
-       
-           	String showInheritedRestrictionsString = ApplicationProperties.getApplicationOrSystemProperty(SHOW_INHERITED_RESTRICTIONS, "true");        	
-        	boolean showInheritedRestrictions = (showInheritedRestrictionsString.equals("true"));
-        	
-        	if (showInheritedRestrictions) {        	
-        		fillInheritedItems(coveredClses);
-        	}
-        	
+            fillInheritedItems(coveredClses);
             sortItems();
         }
     }
@@ -590,7 +530,7 @@ public class ConditionsTableModel extends AbstractTableModel
             if (superCls instanceof OWLNamedClass && !superCls.equals(hostClass)) {
                 OWLNamedClass namedSuperclass = (OWLNamedClass) superCls;
                 fillInheritedItems(namedSuperclass, coveredClses);
-                listenedToClses.add((RDFSClass) superCls);
+                listenedToClses.add(superCls);
                 namedSuperclass.addClassListener(classListener);
                 ((Cls) namedSuperclass).addFrameListener(frameListener);
             }
@@ -611,7 +551,6 @@ public class ConditionsTableModel extends AbstractTableModel
 
 
     private void fillInheritedAnonymousClses(OWLNamedClass originCls, Collection coveredClses) {
-  	
         for (Iterator it = originCls.getSuperclasses(false).iterator(); it.hasNext();) {
             Cls ss = (Cls) it.next();
             if (ss instanceof OWLAnonymousClass) {
@@ -619,13 +558,13 @@ public class ConditionsTableModel extends AbstractTableModel
                     Collection operands = ((OWLIntersectionClass) ss).getOperands();
                     for (Iterator oit = operands.iterator(); oit.hasNext();) {
                         RDFSClass operand = (RDFSClass) oit.next();
-                        if (operand instanceof OWLAnonymousClass) {                  	
-                        	addItemUnlessOverloaded(operand, originCls);
+                        if (operand instanceof OWLAnonymousClass) {
+                            addItemUnlessOverloaded(operand, originCls);
                         }
                     }
                 }
                 else if (!coveredClses.contains(ss)) {
-                   	addItemUnlessOverloaded((OWLAnonymousClass) ss, originCls);
+                    addItemUnlessOverloaded((OWLAnonymousClass) ss, originCls);
                 }
             }
         }
@@ -700,7 +639,6 @@ public class ConditionsTableModel extends AbstractTableModel
 
 
     // Implements TableModel
-    @Override
     public Class getColumnClass(int columnIndex) {
         if (columnIndex == COL_EXPRESSION) {
             return String.class;
@@ -737,7 +675,7 @@ public class ConditionsTableModel extends AbstractTableModel
 
 
     private ConditionsTableItem getItem(int rowIndex) {
-        return items.get(rowIndex);
+        return (ConditionsTableItem) items.get(rowIndex);
     }
 
 
@@ -874,7 +812,6 @@ public class ConditionsTableModel extends AbstractTableModel
 
 
     // Implements TableModel
-    @Override
     public boolean isCellEditable(int rowIndex, int columnIndex) {
         if (columnIndex == COL_EXPRESSION &&
                 !isSeparator(rowIndex) &&
@@ -988,19 +925,15 @@ public class ConditionsTableModel extends AbstractTableModel
     }
 
 
-    private void refill() {    	
-    	if (inEditing)
-    		return;    	
+    private void refill() {
         items.clear();
         removeListeners();
         fillItems();
         fireTableDataChanged();
     }
-   
-    
+
+
     public void refresh() {
-    	if (inEditing)
-    		return;
         items.clear();
         if (hostClass != null) {
             fillItems();
@@ -1015,7 +948,8 @@ public class ConditionsTableModel extends AbstractTableModel
                 items.remove(i);
                 fireTableRowsDeleted(i, i);
             }
-        }        
+        }
+        updateLocalIndices();
     }
 
 
@@ -1055,7 +989,6 @@ public class ConditionsTableModel extends AbstractTableModel
     }
 
 
-    @Override
     public void setValueAt(Object value, int rowIndex, int columnIndex) {
         if (rowIndex >= getRowCount()) {
             return;
@@ -1075,243 +1008,119 @@ public class ConditionsTableModel extends AbstractTableModel
 
     public void setValueAt(int rowIndex, OWLModel owlModel, String parsableText)
             throws Exception {
-    	
-    	RDFSClass newRestriction = null;    	
-    	RDFSClass oldRestriction = getClass(rowIndex);
 
-    	try {
-			owlModel.beginTransaction("Set condition at " + getEditedCls().getBrowserText() + " to " + parsableText, getEditedCls().getName());
-			
-			try {
-				OWLClassParser parser = owlModel.getOWLClassDisplay().getParser();
-				newRestriction = parser.parseClass(owlModel, parsableText);
-				
-		    	if ((oldRestriction != null && newRestriction != null && 
-		    			oldRestriction.getBrowserText().equals(newRestriction.getBrowserText()))
-		    			|| getEditedCls().equals(newRestriction)) {
-		    		owlModel.rollbackTransaction();
-		    		return;
-		    	}
-			}
-            catch (OWLClassParseException e) {
-            	owlModel.rollbackTransaction();
-    			Log.getLogger().warning("Error at parsing restriction: " + parsableText);
-    			ProtegeUI.getModalDialogFactory().showErrorMessageDialog(owlModel, "Error at parsing restriction: " + parsableText, "Parse Error");
-    			return;
-    		}
-            
-            inEditing = true;      
-            
-            //this is where the editing is done
-            handleAddOrReplaceRestriction(newRestriction, rowIndex);
-            
-            ensureHasOneNamedSuperclass(hostClass);
-            
-            if (oldRestriction instanceof RDFSNamedClass) {
-            	ensureHasOneNamedSuperclass((RDFSNamedClass)oldRestriction);
+        try {
+            owlModel.beginTransaction("Set condition at " + getEditedCls().getBrowserText() + " to " + parsableText);
+            OWLClassParser parser = owlModel.getOWLClassDisplay().getParser();
+            RDFSClass newClass = parser.parseClass(owlModel, parsableText);
+            if (getEditedCls().equals(newClass)) {
+                return;
             }
-            
-            inEditing = false;
-            
-            owlModel.commitTransaction();
-		} 
-		catch (Exception e) {		
-			owlModel.rollbackTransaction();
-			
-			inEditing = false;
-			
-			OWLUI.handleError(owlModel, e);
-		} finally {
-			refill();
-		}
-    }
-
-
-    /**
-     * This method handles the addion or replacement of a restriction 
-     * in the Conditions Table.  
-     * @param newRestriction
-     * @param selectedRow
-     * @return true - if a new restriction was added/replaced; false - otherwise
-     * 
-     */
-    private boolean handleAddOrReplaceRestriction(RDFSClass newRestriction, int selectedRow) {
-        if (log.isLoggable(Level.FINE)) {
-            log.fine("In handleAddOrReplaceRestriction. Old restr: " + getClass(selectedRow) + " New rest." + newRestriction.getBrowserText() + " Row: " + selectedRow);
-        }
-        if (newRestriction.equals(hostClass) || (!isCreateEnabledAt(selectedRow) && newRestriction instanceof OWLAnonymousClass) ||
-                (!isAddEnabledAt(selectedRow) && newRestriction instanceof OWLNamedClass)) {
-            return false;
-        }
-        
-        RDFSClass oldRestriction = getClass(selectedRow);
-        
-        // treat superclasses
-        if (getType(selectedRow) == TYPE_SUPERCLASS) {
-            hostClass.addSuperclass(newRestriction);
-                    
-            if (oldRestriction != null)
-            	hostClass.removeSuperclass(oldRestriction);
-            return true;
-        }  
-        
-        if (!isDefinition(selectedRow))
-        	return false;
-        
-        //treat equivalent classes        
-        if (newRestriction.equals(owlModel.getOWLThingClass())) {
-            return false;  // don't allow to add owl:Thing to any definition
-        }
-        
-        OWLIntersectionClass definitionContext = getDefinitionContext(selectedRow);
-        
-        if (definitionContext != null) { // new restriction is part of an owl:intersection        	
-        	if (oldRestriction != null) { // replacing an old restriction
-        		
-        		// if the old and new restrictions have the same browser text, don't do anything           	
-                if (oldRestriction.getBrowserText().equals(newRestriction.getBrowserText())) {
-                    return false;
+            String newBrowserText = newClass.getBrowserText();
+            RDFSClass oldClass = (RDFSClass) getClass(rowIndex);
+            Slot directSuperclassesSlot = ((KnowledgeBase) owlModel).getSlot(Model.Slot.DIRECT_SUPERCLASSES);
+            if (oldClass == null) {
+                if (((AbstractRDFSClass) hostClass).hasPropertyValueWithBrowserText(directSuperclassesSlot, newBrowserText)) {
+                    handleDuplicateEntry(newClass);
+                    return;
                 }
-        		
-        		if (oldRestriction.getBrowserText().equals(newRestriction.getBrowserText())) 
-        			return false;
-        		
-				boolean replaceSucceeded = OWLClassUtil.replaceOperand(definitionContext, oldRestriction, newRestriction);
-				
-				if (replaceSucceeded) {					
-					if (oldRestriction instanceof OWLAnonymousClass)
-						deleteOldRestriction(oldRestriction);		
-					return true;
-				}
-				return false;
-			}
-        	else { //adding a new operand to the intersection
-        		 		
-        		definitionContext.addOperand(newRestriction);
-        		
-        		//ensure that if the new restriction is a named class, it is also added to the direct superclasses
-        		if (newRestriction instanceof OWLNamedClass) {
-        			hostClass.addDirectSuperclass(newRestriction);
-        		}
-        		
-        		return true;
-        	}
+                items.remove(rowIndex);
+                previouslyEditedCls = newClass;
+                if (!addRow(newClass, rowIndex - 1) && newClass instanceof OWLAnonymousClass) {
+                    newClass.delete();
+                }
+            }
+            else if (!oldClass.getBrowserText().equals(newBrowserText)) {
+                if (((AbstractRDFSClass) hostClass).hasPropertyValueWithBrowserText(directSuperclassesSlot, newBrowserText)) {
+                    handleDuplicateEntry(newClass);
+                    return;
+                }
+                int type = getType(rowIndex);
+                if (type == TYPE_SUPERCLASS) {
+                    hostClass.addSuperclass(newClass);
+                    if (oldClass != null) {
+                        hostClass.removeSuperclass(oldClass);
+                    }
+                }
+                else { // Definition
+                    DefaultOWLIntersectionClass definition = (DefaultOWLIntersectionClass) getDefinition(rowIndex);
+                    if (definition != null) {
+                        if (definition.hasOperandWithBrowserText(newBrowserText)) {
+                            handleDuplicateEntry(newClass);
+                            return;
+                        }
+                        OWLIntersectionClass copy = owlModel.createOWLIntersectionClass();
+                        for (Iterator it = definition.getOperands().iterator(); it.hasNext();) {
+                            RDFSClass operand = (RDFSClass) it.next();
+                            if (operand.equals(oldClass)) {
+                                copy.addOperand(newClass);
+                            }
+                            else {
+                                copy.addOperand(operand.createClone());
+                            }
+                        }
+                        if (oldClass == null) {
+                            copy.addOperand(newClass);
+                        }
+                        else if (oldClass instanceof RDFSNamedClass) {
+                            hostClass.removeSuperclass(oldClass);
+                        }
+                        hostClass.addEquivalentClass(copy); // Changed 1
+                        definition.delete();              // Changed 2
+                        if (newClass instanceof RDFSNamedClass) {
+                            hostClass.addSuperclass(newClass);
+                        }
+                    }
+                    else {
+                        hostClass.addEquivalentClass(newClass);
+                        if (oldClass != null) {
+                            hostClass.removeSuperclass(oldClass);
+                            if (oldClass instanceof RDFSNamedClass && oldClass.isSubclassOf(hostClass)) {
+                                oldClass.removeSuperclass(hostClass);
+                                if (oldClass.getNamedSuperclasses().isEmpty()) {
+                                    oldClass.addSuperclass(owlModel.getOWLThingClass());
+                                }
+                            }
+                        }
+                        if (newClass instanceof OWLIntersectionClass) {
+                            for (Iterator it = ((OWLIntersectionClass) newClass).getOperands().iterator(); it.hasNext();) {
+                                RDFSClass operand = (RDFSClass) it.next();
+                                if (operand instanceof RDFSNamedClass && !hostClass.isSubclassOf(operand)) {
+                                    hostClass.addSuperclass(operand);
+                                }
+                            }
+                        }
+                    }
+                }
+                if (!hostClass.hasNamedSuperclass()) {
+                    hostClass.addSuperclass(owlModel.getOWLThingClass());
+                }
+                previouslyEditedCls = newClass;
+            }
+            else if (newClass instanceof OWLAnonymousClass) {
+                newClass.delete();
+            }
         }
-        else {
-        	if (oldRestriction != null) { //one single restiction in the equivalent block, replace it with the new one
-        		hostClass.addEquivalentClass(newRestriction);
-        		hostClass.removeEquivalentClass(oldRestriction);
-        		return true;
-        	}
-        	
-        	oldRestriction = getClassContext(selectedRow); 
-        	
-        	if (oldRestriction == null) { // no restriction was in this equivalent block before
-        		hostClass.addEquivalentClass(newRestriction);
-
-        		return true;
-        	} else { //there is an equivalent class that needs to be converted in an owl:intersection
-        		
-        		RDFSClass clonedOldRestrcition = oldRestriction;
-        		
-        		if (oldRestriction instanceof OWLAnonymousClass) {
-        			clonedOldRestrcition = oldRestriction.createClone();
-        		}
-        		
-	        	OWLIntersectionClass newDefinition = owlModel.createOWLIntersectionClass();
-	            newDefinition.addOperand(clonedOldRestrcition);
-	            newDefinition.addOperand(newRestriction);
-	            
-	            hostClass.addEquivalentClass(newDefinition);
-	            				
-	            hostClass.removeEquivalentClass(oldRestriction);
-	            
-	            //ensure that if the oldRestriction was a named class, it is still a superclass of the host class
-	            if (clonedOldRestrcition instanceof OWLNamedClass) {
-	            	hostClass.addDirectSuperclass(clonedOldRestrcition);
-	            }
-	            
-	            return true;
-	       }
+        catch (Exception ex) {
+            OWLUI.handleError(owlModel, ex);
+        }
+        finally {
+            owlModel.endTransaction();
         }
     }
-    
 
-	/**
-     * This method computes whether a certain row belongs to a definition block 
-     * and if yes it returns the corresponding intersection class
-     * If none is found, it returns null.
-     * @param selectedRow
-     * @return defintion class (OWLIntersectionClass) if found, or null otherwise
-     */
-    private OWLIntersectionClass getDefinitionContext(int selectedRow) {
-    	OWLIntersectionClass definitionContext = getDefinition(selectedRow);
-        
-    	if (definitionContext != null)
-    		return definitionContext;
-    	
-    	// check the next row
-    	if (selectedRow < items.size()) {
-    		definitionContext = getDefinition(selectedRow+1);
 
-    		if (definitionContext != null)
-    			return definitionContext;
-    	}
-    	
-    	// check previous row
-    	if (selectedRow > 0)
-    		definitionContext = getDefinition(selectedRow-1);
-   	
-		return definitionContext;
-	}
-
-    
-    private RDFSClass getClassContext(int selectedRow) {
-    	RDFSClass rdfsClass = getClass(selectedRow);
-    	
-    	if (rdfsClass != null)
-    		return rdfsClass;
-    	
-    	//check next row
-    	if (selectedRow < items.size()) {
-    		rdfsClass = getClass(selectedRow +1);
-    		
-    		if (rdfsClass != null ) 
-    			return rdfsClass;
-    	}
-    	
-    	//check previous row
-    	if (selectedRow > 0) 
-    		rdfsClass = getClass(selectedRow - 1);    	
-    	    	
-    	return rdfsClass;
-    }
-
-	/**
-	 * This method deletes the old restriction that has been replaced by
-	 * a newer restriction. It may need to do some clean up and preparation
-	 * before deletion.
-	 * 
-	 * @param restriction
-	 */
-    private void deleteOldRestriction(RDFSClass restriction) {
-    	// commented out the code if delete is very slow		 
-    	// and treat deletion of old, unused restriction in another place (in a different thread?)
-    	//Log.getLogger().warning("Old restriction: " + restriction.getBrowserText() + " should be deleted");
-    	 restriction.delete();
-    }
-    
     /**
      * Sorts the items according to their <CODE>compareTo</CODE> method.
      *
      * @see ConditionsTableItem#compareTo
-     */    
-	private void sortItems() {
+     */
+    private void sortItems() {
         Collections.sort(items);
-        //updateLocalIndices();
+        updateLocalIndices();
     }
-	
-	
+
+
     /**
      * Assumes that the items list contains nothing but at least two non-
      * empty definition blocks.
@@ -1347,31 +1156,22 @@ public class ConditionsTableModel extends AbstractTableModel
         replaceItemType(-10, typeB);
         sortItems();
     }
- 
-    private void ensureHasOneNamedSuperclass(RDFSNamedClass cls) {
-    	OWLClass owlThing = owlModel.getOWLThingClass(); 
-    	
-    	if (cls.equals(owlThing)) {
-    		return;
-    	}
-    	    	
-    	Collection<Cls> superclses = cls.getSuperclasses(true);
-    	
-    	if (!superclses.contains(owlThing)) {
-    		cls.addSuperclass(owlThing);
-    		return;
-    	}
-    	
-    	Collection<Cls> directSuperclses = cls.getSuperclasses(false);
-    	
-    	for (Cls supercls : directSuperclses) {
-    		if (supercls instanceof RDFSNamedClass && 
-    				!supercls.equals(cls)) {
-    			return;
-    		}
-		}
-    	
-    	cls.addSuperclass(owlModel.getOWLThingClass());
+
+
+    private void updateLocalIndices() {
+        int row = 0;
+        for (Iterator it = items.iterator(); it.hasNext(); row++) {
+            ConditionsTableItem item = (ConditionsTableItem) it.next();
+            if (item.isSeparator()) {
+                updateLocalIndices(row + 1);
+            }
+        }
     }
-    
+
+
+    private void updateLocalIndices(int startRow) {
+        for (int i = startRow; i < items.size() && !getItem(i).isSeparator(); i++) {
+            getItem(i).setLocalIndex(i - startRow);
+        }
+    }
 }

@@ -27,8 +27,6 @@ public class JavaCodeGeneratorPanel extends JPanel {
 
     private JCheckBox setCheckBox;
 
-    private JCheckBox prefixCheckBox;
-
 
     public JavaCodeGeneratorPanel(EditableJavaCodeGeneratorOptions options) {
 
@@ -57,9 +55,6 @@ public class JavaCodeGeneratorPanel extends JPanel {
         setCheckBox = new JCheckBox("Return Set instead of Collection");
         setCheckBox.setSelected(options.getSetMode());
 
-        prefixCheckBox = new JCheckBox("Include prefixes in generated Java names");
-        prefixCheckBox.setSelected(options.getPrefixMode());
-        
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         LabeledComponent lc = new LabeledComponent("Root output folder", rootFolderTextField);
         lc.addHeaderButton(new AbstractAction("Select folder...", Icons.getAddIcon()) {
@@ -76,8 +71,6 @@ public class JavaCodeGeneratorPanel extends JPanel {
         add(createCheckBoxPanel(abstractCheckBox));
         add(Box.createVerticalStrut(8));
         add(createCheckBoxPanel(setCheckBox));
-        add(Box.createVerticalStrut(8));
-        add(createCheckBoxPanel(prefixCheckBox));
         add(Box.createVerticalStrut(8));
     }
 
@@ -101,7 +94,6 @@ public class JavaCodeGeneratorPanel extends JPanel {
 
         options.setAbstractMode(abstractCheckBox.isSelected());
         options.setSetMode(setCheckBox.isSelected());
-        options.setPrefixMode(prefixCheckBox.isSelected());
         options.setFactoryClassName(factoryClassNameTextField.getText());
 
         String pack = packageTextField.getText().trim();

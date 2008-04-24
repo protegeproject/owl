@@ -15,10 +15,7 @@
     >The Protege class for binary relations (used by the Graph Widget).</rdfs:comment>
   </owl:Class>
   <owl:Class rdf:ID="PAL-CONSTRAINT"/>
-  <owl:AnnotationProperty rdf:ID="SLOT-CONSTRAINTS">
-    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
-  </owl:AnnotationProperty>
-  
+  <owl:ObjectProperty rdf:ID="SLOT-CONSTRAINTS"/>
   <owl:ObjectProperty rdf:ID="TO">
     <rdfs:domain rdf:resource="#DIRECTED-BINARY-RELATION"/>
     <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"

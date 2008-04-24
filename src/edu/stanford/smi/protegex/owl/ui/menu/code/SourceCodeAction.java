@@ -4,7 +4,6 @@ import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
 import edu.stanford.smi.protegex.owl.ui.actions.AbstractOWLModelAction;
-import edu.stanford.smi.protegex.owl.ui.actions.OWLModelActionConstants;
 import edu.stanford.smi.protegex.owl.ui.dialogs.ModalDialogFactory;
 import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
 
@@ -25,7 +24,7 @@ public class SourceCodeAction extends AbstractOWLModelAction {
 
 
     public String getMenubarPath() {
-        return CODE_MENU + PATH_SEPARATOR + OWLModelActionConstants.ONT_LANGUAGE_GROUP;
+        return CODE_MENU;
     }
 
 

@@ -1,8 +1,6 @@
 package edu.stanford.smi.protegex.owl.repository.util;
 
-import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.logging.Level;
@@ -15,8 +13,6 @@ import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 
 import edu.stanford.smi.protege.util.Log;
-import edu.stanford.smi.protege.util.URIUtilities;
-import edu.stanford.smi.protegex.owl.jena.parser.ProtegeOWLParser;
 
 /**
  * User: matthewhorridge<br>
@@ -42,17 +38,6 @@ public class XMLBaseExtractor {
         this.is = is;
         this.xmlBase = null;
     }
-    
-    public static URI getXMLBase(InputStream is) {
-        XMLBaseExtractor xmlBaseExtractor = new XMLBaseExtractor(is);
-        return xmlBaseExtractor.getXMLBase();
-    }
-    
-    public static URI getXMLBase(String ontologyName) throws MalformedURLException, IOException {
-        URI ontologyURI = URIUtilities.createURI(ontologyName);             
-        InputStream is = ProtegeOWLParser.getInputStream(ontologyURI.toURL());
-        return getXMLBase(is);
-    }
 
 
     public URI getXMLBase() {
@@ -61,8 +46,8 @@ public class XMLBaseExtractor {
         try {
             parser.parse(new InputSource(is));
         }
-        catch (Throwable t) {
-          Log.emptyCatchBlock(t);
+        catch (Exception e) {
+          Log.emptyCatchBlock(e);
         }
         return xmlBase;
     }
@@ -100,11 +85,6 @@ public class XMLBaseExtractor {
         public void startPrefixMapping(String prefix,
                                        String uri)
                 throws SAXException {
-        	
-        	if (prefix == null || prefix.equals("")) {
-        		defaultNamespace = uri;
-        	}
-        	
         }
 
 
@@ -120,7 +100,7 @@ public class XMLBaseExtractor {
                 throws SAXException {
             if (startElement == false) {
                 rootElementName = qName;
-                for (int i = 0; i < atts.getLength(); i++) {                	
+                for (int i = 0; i < atts.getLength(); i++) {
                     if (atts.getQName(i).equals("xml:base")) {
                         URI attURL = null;
                         try {
@@ -130,14 +110,16 @@ public class XMLBaseExtractor {
                             Log.getLogger().log(Level.SEVERE, "Exception caught", e);
                         }
                         xmlBase = attURL;
-                    }           
+                    }
+                    else if (atts.getLocalName(i).equals("xmlns")) {
+                        defaultNamespace = atts.getValue(i);
+                    }
                 }
                 startElement = true;
-           }   
+            }
             else {
                 throw new SAXException("No xml:base");
             }
-            
         }
 
 

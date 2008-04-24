@@ -102,7 +102,7 @@ public class NewRestrictionTreeNode extends RestrictionTreeNode {
             OWLNamedClass cls = getParentNode().getRestrictedClass();
             owlModel.beginTransaction("Add restriction on property " +
                     getParentNode().getRDFProperty().getBrowserText() +
-                    " at class " + cls.getBrowserText(), cls.getName());
+                    " at class " + cls.getBrowserText());
             Cls anonRootCls = ((KnowledgeBase) owlModel).getCls(OWLNames.Cls.ANONYMOUS_ROOT);
             OWLRestriction restriction = (OWLRestriction) kb.createCls(null,
                     Collections.singleton(anonRootCls), metaCls);
@@ -113,7 +113,7 @@ public class NewRestrictionTreeNode extends RestrictionTreeNode {
             if (definition != null) {
                 if (definition instanceof OWLIntersectionClass) {
                     ((OWLIntersectionClass) definition).addOperand(restriction);
-                    owlModel.commitTransaction();
+                    owlModel.endTransaction();
                     tree.refill(); // Needed because no event is issued
                 }
                 else {
@@ -121,18 +121,18 @@ public class NewRestrictionTreeNode extends RestrictionTreeNode {
                     intersectionCls.addOperand(definition.createClone());
                     intersectionCls.addOperand(restriction);
                     cls.setDefinition(intersectionCls);
-                    owlModel.commitTransaction();
+                    owlModel.endTransaction();
                 }
             }
             else {
                 cls.addSuperclass(restriction);
-                owlModel.commitTransaction();
+                owlModel.endTransaction();
             }
             tree.setSelectedRestriction(restriction);
         }
         catch (Exception ex) {
-        	owlModel.rollbackTransaction();
-            OWLUI.handleError(owlModel, ex);            
+            OWLUI.handleError(owlModel, ex);
+            owlModel.endTransaction();
         }
     }
 }

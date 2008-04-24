@@ -1,64 +1,42 @@
 package edu.stanford.smi.protegex.owl.storage.tests;
 
-import java.io.IOException;
+import com.hp.hpl.jena.ontology.OntProperty;
+import edu.stanford.smi.protege.model.Instance;
+import edu.stanford.smi.protege.model.Project;
+import edu.stanford.smi.protegex.owl.jena.JenaKnowledgeBaseFactory;
+import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
+import edu.stanford.smi.protegex.owl.model.*;
+import edu.stanford.smi.protegex.owl.storage.OWL2OWLCopier;
+import edu.stanford.smi.protegex.owl.tests.AbstractJenaTestCase;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.logging.Level;
-
-import com.hp.hpl.jena.ontology.OntProperty;
-
-import edu.stanford.smi.protege.model.Instance;
-import edu.stanford.smi.protege.util.Log;
-import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
-import edu.stanford.smi.protegex.owl.jena.creator.NewOwlProjectCreator;
-import edu.stanford.smi.protegex.owl.model.OWLEnumeratedClass;
-import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
-import edu.stanford.smi.protegex.owl.model.OWLObjectProperty;
-import edu.stanford.smi.protegex.owl.model.OWLRestriction;
-import edu.stanford.smi.protegex.owl.model.OWLSomeValuesFrom;
-import edu.stanford.smi.protegex.owl.storage.KnowledgeBaseCopier;
-import edu.stanford.smi.protegex.owl.storage.OWL2OWLCopier;
-import edu.stanford.smi.protegex.owl.tests.AbstractJenaTestCase;
 
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
  */
 public class OWL2OWLCopierTestCase extends AbstractJenaTestCase {
-    
-    public static void debug() {
-        Log.setLoggingLevel(OWL2OWLCopierTestCase.class, Level.FINE);
-        Log.setLoggingLevel(KnowledgeBaseCopier.class, Level.FINE);
-    }
 
 
     private JenaOWLModel runCopier() {
         Collection errors = new ArrayList();
-        try {
-            project = new NewOwlProjectCreator().create(errors);
-        }
-        catch (IOException e) {
-            Log.getLogger().log(Level.SEVERE, "Exception caught", e);
-            fail();
-        }
-        if (!errors.isEmpty()) {
-            Log.getLogger().severe("Errors  found trying to create empty owl ontology");
-            fail();
-        }
+        project = new Project(null, errors);
+        final JenaKnowledgeBaseFactory factory = new JenaKnowledgeBaseFactory();
+        project.setKnowledgeBaseFactory(factory);
+        project.createDomainKnowledgeBase(factory, errors, false);
         JenaOWLModel target = (JenaOWLModel) project.getKnowledgeBase();
         new OWL2OWLCopier(owlModel, target).run();
         return target;
     }
 
-    /*
-    public void testAnnotation() {
+    /*public void testAnnotation() {
        OWLDatatypeProperty annotationSlot = owlModel.createAnnotationOWLDatatypeProperty("anno");
        annotationSlot.setDomainDefined(false);
        annotationSlot.addPropertyValue(annotationSlot, "Value");
 
        JenaOWLModel target = runCopier();
-       target.setExpandShortNameInMethods(true);
-       Slot newSlot = target.getOWLDatatypeProperty("anno");
+       Slot newSlot = target.getSlot("anno");
        assertEquals(1, newSlot.getDirectOwnSlotValues(newSlot).size());
        assertTrue(newSlot.getDirectOwnSlotValues(newSlot).contains("Value"));
    } */

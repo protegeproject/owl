@@ -28,149 +28,162 @@ import edu.stanford.smi.protegex.owl.ui.dialogs.ModalDialogFactory;
  *
  * @author Holger Knublauch  <holger@knublauch.com>
  */
-public class SWRLTextAreaPanel extends JPanel implements ModalDialogFactory.CloseCallback 
-{
-  private static final String SWRL_RULE_PANEL_TITLE = "SWRL Rule";
-  private OWLModel owlModel;
-  private SWRLSymbolPanel symbolPanel;
-  private SWRLTextArea textArea;
+public class SWRLTextAreaPanel extends JPanel implements ModalDialogFactory.CloseCallback {
 
-  public SWRLTextAreaPanel(OWLModel owlModel) { this(owlModel, null); }
+    private static final String SWRL_RULE_PANEL_TITLE = "SWRL Rule";
+
+	private OWLModel owlModel;
+
+    private SWRLSymbolPanel symbolPanel;
+
+    private SWRLTextArea textArea;
 
 
-  public SWRLTextAreaPanel(OWLModel anOWLModel, SWRLImp imp) 
-  {
-    this.owlModel = anOWLModel;
-    symbolPanel = new SWRLSymbolPanel(anOWLModel, false, false);
-    textArea = new SWRLTextArea(anOWLModel, symbolPanel) {
-        protected void checkExpression(String text) throws Throwable {
-          owlModel.getOWLClassDisplay().getParser().checkClass(owlModel, text);
-        }
-      };
-    if (imp != null && imp.getHead() != null) {
-      String text = imp.getBrowserText();
+    public SWRLTextAreaPanel(OWLModel owlModel) {
+        this(owlModel, null);
+    }
+
+
+    public SWRLTextAreaPanel(OWLModel anOWLModel, SWRLImp imp) {
+        this.owlModel = anOWLModel;
+        symbolPanel = new SWRLSymbolPanel(anOWLModel, false, false);
+        textArea = new SWRLTextArea(anOWLModel, symbolPanel) {
+            protected void checkExpression(String text) throws Throwable {
+                owlModel.getOWLClassDisplay().getParser().checkClass(owlModel, text);
+            }
+        };
+        if (imp != null && imp.getHead() != null) {
+            String text = imp.getBrowserText();
             textArea.setText(text);
             textArea.reformatText();
-    }	
-    symbolPanel.setSymbolEditor(textArea);
-  }
+        }	
+        symbolPanel.setSymbolEditor(textArea);
+    }
 
-  public boolean canClose(int result) {
-    if (result == ModalDialogFactory.OPTION_OK) {
-      String uniCodeText = textArea.getText();
-      if (uniCodeText.length() == 0) {
-        return false;
-      }
-      else {
-        try {
-          SWRLParser parser = new SWRLParser(owlModel);
-          parser.parse(uniCodeText);
-          return true;
-        }
-                catch (Exception ex) {
-                  symbolPanel.displayError(ex);
-                  return false;
+
+    public boolean canClose(int result) {
+        if (result == ModalDialogFactory.OPTION_OK) {
+            String uniCodeText = textArea.getText();
+            if (uniCodeText.length() == 0) {
+                return false;
+            }
+            else {
+                try {
+                    SWRLParser parser = new SWRLParser(owlModel);
+                    parser.parse(uniCodeText);
+                    return true;
                 }
-      }
-    }
-    else return true;  
-  } // canClose
-
-  public SWRLImp getResultAsImp() 
-  {
-    try {
-      String uniCodeText = textArea.getText();
-      SWRLParser parser = new SWRLParser(owlModel);
-      parser.setParseOnly(false);
-      return parser.parse(uniCodeText);
-    }
-    catch (Exception ex) {
-      Log.getLogger().warning("Error at parsing SWRL rule " + (textArea == null ? "" : textArea.getText()));
-      return null;
-    }
-  }
-
-  public String getResultAsString() { return textArea.getText();  }
-
-  public static boolean showEditDialog(Component parent, OWLModel owlModel, SWRLImp imp) 
-  {
-    if (imp == null) return false;
-    
-    InstanceDisplay instanceDisplay = new InstanceDisplay(owlModel.getProject(), false, false);
-    instanceDisplay.setInstance(imp);
-    
-    showFrame(instanceDisplay);
-    
-    //TT: what should we return?
-    return true;
-    }
-  
-  private static JFrame showFrame(final InstanceDisplay display) 
-  {
-    final JFrame frame = ComponentFactory.createFrame();
-    
-    frame.addWindowListener(new WindowAdapter() {
-        @Override
-    		public void windowClosing(WindowEvent e) {	
-          
-          if (hasChangedRule(display)) {
-            int ret = ModalDialog.showMessageDialog(display,
-                                                    "Rule has not been saved, probably because rule is invalid.\n" +
-                                                    "If you continue changes will be lost.\n\n" +
-                                                    "Do you want to continue?",
-                                                    "Rule not saved", ModalDialog.MODE_YES_NO);
-            
-            if (ret == ModalDialog.OPTION_NO) {
-              return;
+                catch (Exception ex) {
+                    symbolPanel.displayError(ex);
+                    return false;
+                }
             }
-          }
-          
-          JFrame frame = (JFrame) e.getWindow();
-          frame.setVisible(false);                              
-          ComponentUtilities.dispose(frame);
-          edu.stanford.smi.protege.Application.repaint();
-          
         }
+        else
+            return true;
+
+    }
+
+
+    public SWRLImp getResultAsImp() {
+        try {
+            String uniCodeText = textArea.getText();
+            SWRLParser parser = new SWRLParser(owlModel);
+            parser.setParseOnly(false);
+            return parser.parse(uniCodeText);
+        }
+        catch (Exception ex) {
+        	Log.getLogger().warning("Error at parsing SWRL rule " + (textArea == null ? "" : textArea.getText()));
+            return null;
+        }
+    }
+
+
+    public String getResultAsString() { 
+    	return textArea.getText(); 
+    }
+
+    public static boolean showEditDialog(Component parent, OWLModel owlModel, SWRLImp imp) {
+    	
+    	if (imp == null) {
+    		return false;
+    	}
+    	
+    	InstanceDisplay instanceDisplay = new InstanceDisplay(owlModel.getProject(), false, false);
+    	instanceDisplay.setInstance(imp);
+    	
+    	showFrame(instanceDisplay);
+    	
+    	//TT: what should we return?
+    	return true;
+    }
+    
+    private static JFrame showFrame(final InstanceDisplay display) {
+        final JFrame frame = ComponentFactory.createFrame();
         
-        private boolean hasChangedRule(InstanceDisplay display) {
-          
-          try {
-            ClsWidget clsWidget = display.getFirstClsWidget();
-            Slot swrlBodySlot = display.getCurrentInstance().getKnowledgeBase().getSlot(SWRLNames.Slot.BODY);
-            
-            SWRLRuleSlotWidget swrlWidget = (SWRLRuleSlotWidget) clsWidget.getSlotWidget(swrlBodySlot);
-            
-            if (swrlWidget.commitChanges()) {
-              return false;
-            }
-            
-            String newRuleText = swrlWidget.getSwrlTextAreaText();
-            
-            SWRLImp swrlImp = (SWRLImp) swrlWidget.getInstance();					
-            String oldRuleText = SWRLTextArea.reformatText(swrlImp.getBrowserText());
-            
-            return !(oldRuleText.equals(newRuleText));
-            
-          } catch (Exception e) {
-            // do nothing, probably not using the SWRLRuleSlotWidget
-            return false;
-          }				
-        }
-      });
-    
-    
-    display.setResizeVertically(true);
-    
-    frame.getContentPane().add(display, BorderLayout.CENTER);        
-    
-    frame.setPreferredSize(new Dimension(500, 500));
-    frame.setTitle(SWRL_RULE_PANEL_TITLE);        
-    
-    ComponentUtilities.pack(frame);
-    ComponentUtilities.center(frame);
-    frame.setVisible(true);
-    
-    return frame;
-  }
+        frame.addWindowListener(new WindowAdapter() {
+    		@Override
+    		public void windowClosing(WindowEvent e) {	
+    			
+    			if (hasChangedRule(display)) {
+    				int ret = ModalDialog.showMessageDialog(display,
+    						"Rule has not been saved, probably because rule is invalid.\n" +
+    						"If you continue changes will be lost.\n\n" +
+    						"Do you want to continue?",
+    						"Rule not saved", ModalDialog.MODE_YES_NO);
+    				
+    				if (ret == ModalDialog.OPTION_NO) {
+    					return;
+    				}
+    			}
+    			
+    		    JFrame frame = (JFrame) e.getWindow();
+                frame.setVisible(false);                              
+                ComponentUtilities.dispose(frame);
+                edu.stanford.smi.protege.Application.repaint();
+    			
+    		}
 
-} // SWRLTextAreaPanel
+			private boolean hasChangedRule(InstanceDisplay display) {
+							 			 
+				 try {
+					ClsWidget clsWidget = display.getFirstClsWidget();
+					Slot swrlBodySlot = display.getCurrentInstance().getKnowledgeBase().getSlot(SWRLNames.Slot.BODY);
+					
+					SWRLRuleSlotWidget swrlWidget = (SWRLRuleSlotWidget) clsWidget.getSlotWidget(swrlBodySlot);
+					
+					if (swrlWidget.commitChanges()) {
+						return false;
+					}
+							
+					String newRuleText = swrlWidget.getSwrlTextAreaText();
+					
+					SWRLImp swrlImp = (SWRLImp) swrlWidget.getInstance();					
+					String oldRuleText = SWRLTextArea.reformatText(swrlImp.getBrowserText());
+					
+					return !(oldRuleText.equals(newRuleText));
+					
+				} catch (Exception e) {
+					// do nothing, probably not using the SWRLRuleSlotWidget
+					return false;
+				}				
+			}
+    	});
+        
+    
+        display.setResizeVertically(true);
+        
+        frame.getContentPane().add(display, BorderLayout.CENTER);        
+        
+        frame.setPreferredSize(new Dimension(500, 500));
+        frame.setTitle(SWRL_RULE_PANEL_TITLE);        
+        
+        ComponentUtilities.pack(frame);
+        ComponentUtilities.center(frame);
+        frame.setVisible(true);
+        
+        return frame;
+    }
+    
+
+}

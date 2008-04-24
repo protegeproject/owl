@@ -1,7 +1,7 @@
 package edu.stanford.smi.protegex.owl.inference.protegeowl.task;
 
-import edu.stanford.smi.protegex.owl.inference.reasoner.exception.ProtegeReasonerException;
 
+import edu.stanford.smi.protegex.owl.inference.dig.exception.DIGReasonerException;
 
 /**
  * User: matthewhorridge<br>
@@ -66,9 +66,9 @@ public interface ReasonerTask {
     /**
      * Executes the task.
      *
-     * @throws ProtegeReasonerException
+     * @throws DIGReasonerException
      */
-    public void run() throws ProtegeReasonerException;
+    public void run() throws DIGReasonerException;
 
 
     /**

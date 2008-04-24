@@ -1,22 +1,17 @@
 package edu.stanford.smi.protegex.owl.repository.impl;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.PrintStream;
+import edu.stanford.smi.protege.util.Log;
+import edu.stanford.smi.protegex.owl.repository.Repository;
+import edu.stanford.smi.protegex.owl.repository.util.OntologyNameExtractor;
+import edu.stanford.smi.protegex.owl.repository.util.RepositoryUtil;
+
+import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-
-import edu.stanford.smi.protege.util.Log;
-import edu.stanford.smi.protegex.owl.repository.util.OntologyNameExtractor;
-import edu.stanford.smi.protegex.owl.repository.util.RepositoryUtil;
 
 /**
  * User: matthewhorridge<br>
@@ -27,19 +22,19 @@ import edu.stanford.smi.protegex.owl.repository.util.RepositoryUtil;
  * matthew.horridge@cs.man.ac.uk<br>
  * www.cs.man.ac.uk/~horridgm<br><br>
  */
-public abstract class AbstractLocalRepository extends AbstractStreamBasedRepositoryImpl {
+public abstract class AbstractLocalRepository implements Repository {
 
     private File file;
 
     private boolean forceReadOnly;
 
-    private Map<URI, File> ontologies;
+    private Map ontologies;
 
 
     public AbstractLocalRepository(File file, boolean forceReadOnly) {
         this.file = file;
         this.forceReadOnly = forceReadOnly;
-        ontologies = new HashMap<URI, File>();
+        ontologies = new HashMap();
     }
 
 
@@ -49,7 +44,7 @@ public abstract class AbstractLocalRepository extends AbstractStreamBasedReposit
 
 
     public void refresh() {
-        ontologies = new HashMap<URI, File>();
+        ontologies = new HashMap();
     }
 
 
@@ -63,15 +58,14 @@ public abstract class AbstractLocalRepository extends AbstractStreamBasedReposit
     }
 
 
-    public Collection<URI> getOntologies() {
+    public Collection getOntologies() {
         return Collections.unmodifiableCollection(ontologies.keySet());
     }
 
 
-    @Override
     public InputStream getInputStream(URI ontologyName)
             throws IOException {
-        File f = ontologies.get(ontologyName);
+        File f = (File) ontologies.get(ontologyName);
         if (f != null) {
             return new FileInputStream(f);
         }
@@ -84,7 +78,7 @@ public abstract class AbstractLocalRepository extends AbstractStreamBasedReposit
     public OutputStream getOutputStream(URI ontologyName)
             throws IOException {
         if (isWritable(ontologyName)) {
-            File f = ontologies.get(ontologyName);
+            File f = (File) ontologies.get(ontologyName);
             return new FileOutputStream(f);
         }
         else {
@@ -99,7 +93,7 @@ public abstract class AbstractLocalRepository extends AbstractStreamBasedReposit
 
 
     public String getOntologyLocationDescription(URI ontologyName) {
-        File f = ontologies.get(ontologyName);
+        File f = (File) ontologies.get(ontologyName);
         if (f != null) {
             return f.getAbsolutePath();
         }
@@ -122,7 +116,7 @@ public abstract class AbstractLocalRepository extends AbstractStreamBasedReposit
 
     public boolean isWritable(URI ontologyName) {
         if (forceReadOnly == false) {
-            File f = ontologies.get(ontologyName);
+            File f = (File) ontologies.get(ontologyName);
             if (f != null) {
                 return f.canWrite();
             }
@@ -151,7 +145,6 @@ public abstract class AbstractLocalRepository extends AbstractStreamBasedReposit
         try {
             PrintStream oldErr = System.err;
             System.setErr(new PrintStream(new OutputStream() {
-                @Override
                 public void write(int b)
                         throws IOException {
                 }
@@ -163,8 +156,9 @@ public abstract class AbstractLocalRepository extends AbstractStreamBasedReposit
         } catch (Exception e) {
           Log.emptyCatchBlock(e);
         }
-
         return ontologyName;
     }
+
+
 }
 

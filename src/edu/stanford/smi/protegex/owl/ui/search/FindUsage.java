@@ -82,7 +82,7 @@ public class FindUsage {
                     if (!host.isAnonymous()) {
                         items.add(new FindUsageTableItem(FindUsageTableItem.VALUE,
                                 host, property));
-                   }
+                    }
                 }
             }
         }
@@ -95,7 +95,7 @@ public class FindUsage {
         Set result = new HashSet();
         result.add(owlModel.getRDFTypeProperty());
         result.add(owlModel.getRDFSRangeProperty());
-        //result.add(owlModel.getRDFSDomainProperty());
+        result.add(owlModel.getRDFSDomainProperty());
         result.add(owlModel.getOWLDisjointWithProperty());
         result.add(owlModel.getRDFSSubClassOfProperty());
         result.add(owlModel.getOWLEquivalentClassProperty());

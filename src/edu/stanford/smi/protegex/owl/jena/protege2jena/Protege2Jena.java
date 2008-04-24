@@ -1,36 +1,14 @@
 package edu.stanford.smi.protegex.owl.jena.protege2jena;
 
-import java.io.File;
-import java.io.OutputStream;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.logging.Level;
-
 import com.hp.hpl.jena.datatypes.RDFDatatype;
 import com.hp.hpl.jena.datatypes.xsd.impl.XMLLiteralType;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntModelSpec;
-import com.hp.hpl.jena.rdf.model.AnonId;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.rdf.model.Property;
-import com.hp.hpl.jena.rdf.model.RDFList;
-import com.hp.hpl.jena.rdf.model.RDFNode;
-import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.rdf.model.Statement;
+import com.hp.hpl.jena.rdf.model.*;
 import com.hp.hpl.jena.util.FileUtils;
 import com.hp.hpl.jena.vocabulary.OWL;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
-
-import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.jena.Jena;
 import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
@@ -43,6 +21,11 @@ import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreModel;
 import edu.stanford.smi.protegex.owl.repository.Repository;
 import edu.stanford.smi.protegex.owl.repository.util.RepositoryFileManager;
+
+import java.io.File;
+import java.io.OutputStream;
+import java.net.URI;
+import java.util.*;
 
 /**
  * An object that can convert an OWLModel into an OntModel.
@@ -61,7 +44,7 @@ public class Protege2Jena {
      */
     private Model dummyModel = ModelFactory.createDefaultModel();
 
-    private Collection<TripleStore> fillTripleStores;
+    private Collection fillTripleStores;
 
     /**
      * The source OWLModel
@@ -76,10 +59,11 @@ public class Protege2Jena {
     /**
      * A Map from TripleStores to Jena Models
      */
-    private Map<TripleStore, Model> tripleStore2Model;
+    private Map tripleStore2Model;
 
     private TripleStoreModel tripleStoreModel;
-    
+
+    private static final String TEMP_SUFFIX = ".temp";
 
 
     private Protege2Jena(OWLModel owlModel,
@@ -105,16 +89,8 @@ public class Protege2Jena {
         Iterator it = tripleStore.listTriples();
         while (it.hasNext()) {
             Triple triple = (Triple) it.next();
-            Statement stmt = null;
-            try {
-            	stmt = createStatement(triple, model);
-			} catch (Exception e) {
-				Log.getLogger().log(Level.WARNING, "Error at creating triple: " + triple, e);
-			}
-            
-			if (stmt != null) {
-				model.add(stmt);
-			}
+            Statement stmt = createStatement(triple, model);
+            model.add(stmt);
         }
     }
 
@@ -141,7 +117,7 @@ public class Protege2Jena {
 
 
     public static OntModel createOntModel(OWLModel owlModel, OntModelSpec spec, Collection fillTripleStores, Map tripleStore2Model) {
-        OntModel ontModel = ModelFactory.createOntologyModel(spec);
+        OntModel ontModel = (OntModel) ModelFactory.createOntologyModel(spec);
         new Protege2Jena(owlModel, ontModel, fillTripleStores, tripleStore2Model);
         return ontModel;
     }
@@ -184,10 +160,10 @@ public class Protege2Jena {
 
 
     private Statement createStatement(Triple triple, Model model) {
-    	Resource subject = getResource(triple.getSubject(), model);
-    	Property predicate = getProperty(triple.getPredicate(), model);
-    	RDFNode object = getRDFNode(triple.getObject(), model);			
-    	return model.createStatement(subject, predicate, object);
+        Resource subject = getResource(triple.getSubject(), model);
+        Property predicate = getProperty(triple.getPredicate(), model);
+        RDFNode object = getRDFNode(triple.getObject(), model);
+        return model.createStatement(subject, predicate, object);
     }
 
 
@@ -208,7 +184,7 @@ public class Protege2Jena {
 
 
     private Model getModel(TripleStore tripleStore) {
-        return tripleStore2Model.get(tripleStore);
+        return (Model) tripleStore2Model.get(tripleStore);
     }
 
 
@@ -259,8 +235,7 @@ public class Protege2Jena {
 
     private Resource getResource(RDFResource rdfResource, Model model) {
         if (rdfResource.isAnonymous()) {
-            //AnonId anonId = new AnonId("_:" + rdfResource.getName());
-        	AnonId anonId = new AnonId(rdfResource.getName());
+            AnonId anonId = new AnonId("_:" + rdfResource.getName());
             return model.createResource(anonId);
         }
         else {
@@ -366,19 +341,16 @@ public class Protege2Jena {
 
 
     public static void saveAll(OWLModel owlModel, URI uri, String language) throws Exception {
-        List<TripleStore> fillTripleStores = new ArrayList<TripleStore>();
-        Iterator<TripleStore> ts = owlModel.getTripleStoreModel().listUserTripleStores();
-        TripleStore topTripleStore = ts.next();
-        String topXmlBase = topTripleStore.getOriginalXMLBase();
-        
-        fillTripleStores.add(topTripleStore);
+        List fillTripleStores = new ArrayList();
+        Iterator ts = owlModel.getTripleStoreModel().listUserTripleStores();
+        fillTripleStores.add(ts.next());
         while (ts.hasNext()) {
-            TripleStore tripleStore = ts.next();
+            TripleStore tripleStore = (TripleStore) ts.next();
             String name = tripleStore.getName();
             URI ontologyName = new URI(name);
             Repository rep = owlModel.getRepositoryManager().getRepository(ontologyName);
             if (rep != null) {
-                if (rep.hasOutputStream(ontologyName)) {
+                if (rep.isWritable(ontologyName)) {
                     fillTripleStores.add(tripleStore);
                 }
             }
@@ -387,24 +359,23 @@ public class Protege2Jena {
         Map tripleStore2Model = new HashMap();
         OntModel ontModel = createOntModel(owlModel, fillTripleStores, tripleStore2Model);
 
+
         File file = new File(uri);
-        
         String namespace = owlModel.getNamespaceManager().getDefaultNamespace();
-    	//String namespace = owlModel.getDefaultOWLOntology().getName();
-    	
-        JenaOWLModel.save(file, ontModel, language, namespace, topXmlBase);
-        Iterator<TripleStore> tripleStores = owlModel.getTripleStoreModel().listUserTripleStores();
+        JenaOWLModel.save(file, ontModel, language, namespace);
+        Iterator tripleStores = owlModel.getTripleStoreModel().listUserTripleStores();
         tripleStores.next();
         while (tripleStores.hasNext()) {
-            TripleStore tripleStore = tripleStores.next();
+            TripleStore tripleStore = (TripleStore) tripleStores.next();
             if (fillTripleStores.contains(tripleStore)) {
                 Model model = (Model) tripleStore2Model.get(tripleStore);
                 String name = tripleStore.getName();
                 URI ontologyName = new URI(name);
                 Repository rep = owlModel.getRepositoryManager().getRepository(ontologyName);
-                Log.getLogger().info("Saving import " + ontologyName + " to " + rep.getOntologyLocationDescription(ontologyName));
+                System.out.println("Saving import " + ontologyName + " to " +
+                        rep.getOntologyLocationDescription(ontologyName));
                 OutputStream os = rep.getOutputStream(ontologyName);
-                JenaOWLModel.saveModel(os, model, language, ontologyName + "#", tripleStore.getOriginalXMLBase());
+                JenaOWLModel.saveModel(os, model, language, ontologyName + "#");
             }
         }
 
@@ -413,6 +384,6 @@ public class Protege2Jena {
         fm.saveGlobalRepositories();
         fm.saveProjectRepositories(uri);
 
-        Log.getLogger().info("... saving successful to: " + file.getAbsolutePath());
+        System.out.println("... saving successful.");
     }
 }

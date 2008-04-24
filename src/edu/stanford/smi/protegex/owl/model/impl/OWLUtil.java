@@ -1,54 +1,16 @@
 package edu.stanford.smi.protegex.owl.model.impl;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-import java.util.logging.Level;
-
-import javax.swing.JComponent;
-
-import edu.stanford.smi.protege.model.Cls;
-import edu.stanford.smi.protege.model.Frame;
-import edu.stanford.smi.protege.model.Instance;
-import edu.stanford.smi.protege.model.KnowledgeBase;
-import edu.stanford.smi.protege.model.Model;
-import edu.stanford.smi.protege.model.Project;
-import edu.stanford.smi.protege.model.Reference;
-import edu.stanford.smi.protege.model.Slot;
+import edu.stanford.smi.protege.model.*;
 import edu.stanford.smi.protege.model.framestore.MergingNarrowFrameStore;
 import edu.stanford.smi.protege.model.framestore.NarrowFrameStore;
 import edu.stanford.smi.protege.ui.FrameComparator;
 import edu.stanford.smi.protege.ui.ProjectManager;
+import edu.stanford.smi.protege.ui.ProjectView;
+import edu.stanford.smi.protege.util.FileUtilities;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protege.util.URIUtilities;
 import edu.stanford.smi.protegex.owl.jena.JenaKnowledgeBaseFactory;
-import edu.stanford.smi.protegex.owl.model.NamespaceUtil;
-import edu.stanford.smi.protegex.owl.model.OWLAnonymousClass;
-import edu.stanford.smi.protegex.owl.model.OWLEnumeratedClass;
-import edu.stanford.smi.protegex.owl.model.OWLIntersectionClass;
-import edu.stanford.smi.protegex.owl.model.OWLModel;
-import edu.stanford.smi.protegex.owl.model.OWLNAryLogicalClass;
-import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
-import edu.stanford.smi.protegex.owl.model.OWLNames;
-import edu.stanford.smi.protegex.owl.model.OWLOntology;
-import edu.stanford.smi.protegex.owl.model.OWLProperty;
-import edu.stanford.smi.protegex.owl.model.OWLRestriction;
-import edu.stanford.smi.protegex.owl.model.ProtegeNames;
-import edu.stanford.smi.protegex.owl.model.RDFList;
-import edu.stanford.smi.protegex.owl.model.RDFObject;
-import edu.stanford.smi.protegex.owl.model.RDFProperty;
-import edu.stanford.smi.protegex.owl.model.RDFResource;
-import edu.stanford.smi.protegex.owl.model.RDFSClass;
-import edu.stanford.smi.protegex.owl.model.RDFSLiteral;
-import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
-import edu.stanford.smi.protegex.owl.model.RDFUntypedResource;
+import edu.stanford.smi.protegex.owl.model.*;
 import edu.stanford.smi.protegex.owl.model.classparser.OWLClassParser;
 import edu.stanford.smi.protegex.owl.model.event.PropertyValueAdapter;
 import edu.stanford.smi.protegex.owl.model.event.PropertyValueListener;
@@ -60,6 +22,10 @@ import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
 import edu.stanford.smi.protegex.owl.ui.profiles.OWLProfiles;
 import edu.stanford.smi.protegex.owl.ui.profiles.ProfilesManager;
 import edu.stanford.smi.protegex.owl.util.OWLFrameStoreUtils;
+
+import java.net.URI;
+import java.util.*;
+import java.util.logging.Level;
 
 /**
  * A collection of static utility methods for OWL classes.
@@ -104,22 +70,21 @@ public class OWLUtil {
     }
 
 
-    public static RDFUntypedResource assignUniqueURI(RDFUntypedResource eri) {
-        OWLModel owlModel = eri.getOWLModel();
+    public static void assignUniqueURI(RDFUntypedResource eri) {
+        OWLModel owlModel = (OWLModel) eri.getOWLModel();
         String prefix = "http://protege.stanford.edu/";
         String suffix = "";
         int index = 1;
         while (owlModel.getRDFUntypedResource(prefix + index + suffix, false) != null) {
             index++;
         }
-        return (RDFUntypedResource) eri.rename(prefix + index + suffix);
+        eri.setName(prefix + index + suffix);
     }
 
 
     /**
      * @deprecated use the version with project parameter instead
      */
-    @Deprecated
     public static boolean confirmSaveAndReload() {
         return confirmSaveAndReload(null);
     }
@@ -215,7 +180,6 @@ public class OWLUtil {
      * @return a clone of cls or cls itself if it is a named class
      * @deprecated use CloneFactory and ResourceCopier instead
      */
-    @Deprecated
     public static edu.stanford.smi.protege.model.Cls createClone(edu.stanford.smi.protege.model.Cls cls) {
         String expression = cls.getBrowserText();
         OWLModel owlModel = (OWLModel) cls.getKnowledgeBase();
@@ -230,7 +194,6 @@ public class OWLUtil {
      * @return
      * @deprecated use CloneFactory and ResourceCopier instead
      */
-    @Deprecated
     public static RDFSClass createClone(OWLModel owlModel, String expression) {
         OWLClassParser parser = owlModel.getOWLClassParser();
         try {
@@ -549,7 +512,6 @@ public class OWLUtil {
             ((Cls) owlCls).setOwnSlotValues(computedSuperClassesSlot, Collections.EMPTY_LIST);
         }
         ((Cls) owlModel.getOWLThingClass()).setOwnSlotValues(computedSubClassesSlot, Collections.EMPTY_LIST);
-        ((Cls) owlModel.getOWLNothing()).setOwnSlotValues(computedSubClassesSlot, Collections.EMPTY_LIST);
     }
 
 
@@ -595,8 +557,7 @@ public class OWLUtil {
             List oldSuperclasses = new ArrayList(superCls.getDirectSubclasses());
             List clses = new ArrayList(oldSuperclasses);
             Collections.sort(clses, new FrameComparator() {
-                @Override
-                public int compare(Frame o1, Frame o2) {
+                public int compare(Object o1, Object o2) {
                     if (o1 instanceof RDFSNamedClass && o2 instanceof RDFSNamedClass) {
                         return ((RDFSNamedClass) o1).getBrowserText().compareTo(((RDFSNamedClass) o2).getBrowserText());
                     }
@@ -690,7 +651,7 @@ public class OWLUtil {
 
 
     public static void addPropertyValue(RDFResource resource, RDFProperty property, Object value) {
-        KnowledgeBase kb = resource.getOWLModel();
+        KnowledgeBase kb = (KnowledgeBase) resource.getOWLModel();
         kb.addOwnSlotValue(resource, property, value);
     }
 
@@ -828,7 +789,7 @@ public class OWLUtil {
         if (!(listener instanceof ResourceAdapter)) {
             throw new IllegalArgumentException("Listener must be a ResourceAdapter");
         }
-        ((Instance) resource).addFrameListener(listener);
+        ((Instance) resource).addInstanceListener(listener);
     }
 
 
@@ -836,7 +797,7 @@ public class OWLUtil {
         if (!(listener instanceof ResourceAdapter)) {
             throw new IllegalArgumentException("Listener must be a ResourceAdapter");
         }
-        ((Instance) resource).removeFrameListener(listener);
+        ((Instance) resource).removeInstanceListener(listener);
     }
 
 
@@ -1098,97 +1059,14 @@ public class OWLUtil {
     		return false;
     	}    	  	
     	
-    	JComponent mainPanel = ProjectManager.getProjectManager().getMainPanel();
+    	ProjectView projectView = ProjectManager.getProjectManager().getCurrentProjectView();
     	
-    	//TT: This is a rather week test
-    	return (mainPanel != null);        
-    	
+    	if (projectView == null) {
+    		return false;
+    	}
+        //TT: How does this behave in client-server?
+    	return project.equals(projectView.getProject());  
     }
     
     
-    /**
-     * Renames an ontology. Returns a new ontology object with the new name.
-     * @param owlModel - the OWL model
-     * @param oldOntology - the old OWL Ontology
-     * @param newName - the new name of the ontology
-     * @return - a new OWL ontology with the name <code>newName</code> 
-     */
-    public static OWLOntology renameOntology(OWLModel owlModel, OWLOntology oldOntology, String newName) {
-    	String oldOntoloyName = oldOntology.getName();
-    	OWLOntology newOntology = (OWLOntology) owlModel.rename(oldOntology, newName);
-
-    	synchronizeTripleStoreAfterOntologyRename(owlModel, oldOntoloyName, newOntology);
-
-    	return newOntology;
-    }
-    
-    /**
-     * Ensures that the triple store and the renamed ontology have the same name.
-     * @param owlModel - the OWL model
-     * @param oldName - old name of the ontology
-     * @param newOntology - new (renamed) OWL ontology
-     */
-    public static void synchronizeTripleStoreAfterOntologyRename(OWLModel owlModel, String oldName, OWLOntology newOntology) {
-    	TripleStoreModel tsm = owlModel.getTripleStoreModel();
-    	
-    	//set triple store name to be the same as the new ontology name
-    	TripleStore ts = tsm.getTripleStore(oldName);
-    	if (ts == null) { //what to do in this case?
-    		Log.getLogger().severe("Error at ontology rename. Could not find triplestore " + oldName);
-    		return;
-    	}
-    	
-    	ts.setName(newOntology.getName());
-    	    	
-    	if (ts.equals(tsm.getTopTripleStore())) {
-    		//reset the model ontology cache - this will ensure that ontology and triplestore have the same name
-    		owlModel.resetOntologyCache();
-    	}
-    }
-
-
-    /*
-     * Get the full name of a resource.  We have to handle the short name instead of full URIs
-     * used in the create & getter methods. This is a backwards compatibility extension.
-     * All the create & get methods will check the expandShortNameInMethods flag, which is default false.
-     */   
-    public static String getInternalFullName(OWLModel owlModel, String name) {
-        return getInternalFullName(owlModel,  name, owlModel.isExpandShortNameInMethods());
-    }
-    
-    public static String getInternalFullName(OWLModel owlModel, String name, boolean expandShortNames) {
-    	if (name == null) {
-    		return null;
-    	}
-    	if (owlModel.isAnonymousResourceName(name)) {
-    		return name;
-    	}
-    	if (expandShortNames && !isAbsoluteURI(owlModel, name)) {
-    		name = NamespaceUtil.getFullName(owlModel, name);
-    	}
-    	
-    	return name;
-    }
-    
-    protected static boolean isAbsoluteURI(OWLModel owlModel, String uriString) {
-        if (!uriString.contains(":")) {
-            return false;
-        }
-        
-        URI uri = null;
-        
-        try {
-            uri = new URI(uriString);
-        } catch (URISyntaxException e) {            
-            //do nothing - uri will be null. Hopefully this won't be the case
-        }
-        if (uri == null || !uri.isAbsolute()) {
-            return false;
-        }
-        if (uri.isOpaque()) {
-            String scheme = uri.getScheme();
-            return owlModel.getNamespaceManager().getNamespaceForPrefix(scheme) == null ? true : false;
-        }
-        return true;
-    }
 }

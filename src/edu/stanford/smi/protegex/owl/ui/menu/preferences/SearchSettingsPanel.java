@@ -72,7 +72,7 @@ public class SearchSettingsPanel extends JPanel {
         for (Iterator it = properties.iterator(); it.hasNext();) {
             RDFProperty property = (RDFProperty) it.next();
             if (oldValues.contains(property) ||
-                    ( ((Slot) property).getValueType() != ValueType.STRING && !property.isAnnotationProperty())   ){
+                    ((Slot) property).getValueType() != ValueType.STRING) {
                 it.remove();
             }
         }

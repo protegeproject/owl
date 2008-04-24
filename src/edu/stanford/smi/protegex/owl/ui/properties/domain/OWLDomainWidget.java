@@ -1,8 +1,6 @@
 package edu.stanford.smi.protegex.owl.ui.properties.domain;
 
 import edu.stanford.smi.protege.model.*;
-import edu.stanford.smi.protege.server.framestore.RemoteClientFrameStore;
-import edu.stanford.smi.protege.server.metaproject.impl.OperationImpl;
 import edu.stanford.smi.protege.util.*;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
@@ -55,7 +53,7 @@ public class OWLDomainWidget extends AbstractPropertyWidget {
             }
         });
         addAction = new AddClassToDomainAction(this);
-                        
+        updateActions();
         lc.addHeaderButton(addAction);
         removeAction = new AllowableAction("Remove from Domain",
                                            OWLIcons.getRemoveIcon(OWLIcons.PRIMITIVE_OWL_CLASS), table) {
@@ -71,34 +69,20 @@ public class OWLDomainWidget extends AbstractPropertyWidget {
 
             public void onSelectionChange() {
                 Collection sel = table.getSelection();
-                
-                if (sel.isEmpty()) {
-                	setAllowed(false);
-                	return;
-                }
-                
-                RDFProperty prop = (RDFProperty) getEditedResource();
-                
-                if (!prop.isEditable()) {
-                	setAllowed(false);
-                	return;
-                }
-                
-                
                 boolean allowed = false;
-                for (Iterator it = sel.iterator(); it.hasNext();) {
-                    RDFSClass cls = (RDFSClass) it.next();
-                    Collection unionDomain = prop.getUnionDomain();
-                    if (    (!cls.equals(cls.getOWLModel().getOWLThingClass()) &&  unionDomain.contains(cls)) ||
-                    		( cls.equals(cls.getOWLModel().getOWLThingClass()) &&  unionDomain.size() > 1) ) {
-                        allowed = true;
+                if (!sel.isEmpty()) {
+                    RDFProperty prop = (RDFProperty) getEditedResource();
+                    for (Iterator it = sel.iterator(); it.hasNext();) {
+                        RDFSClass cls = (RDFSClass) it.next();
+                        if (cls != cls.getOWLModel().getOWLThingClass() &&
+                            prop.getUnionDomain(false).contains(cls)) {
+                            allowed = true;
+                        }
                     }
                 }
-                
                 setAllowed(allowed);
             }
         };
-        updateActions();        
         lc.addHeaderButton(removeAction);
         setLayout(new BorderLayout());
         add(BorderLayout.CENTER, lc);
@@ -110,46 +94,44 @@ public class OWLDomainWidget extends AbstractPropertyWidget {
                slot.getName().equals(Model.Slot.DIRECT_DOMAIN);
     }
 
-    //FIXME TT: Check this method.     
+    //TT: This method does the wrong thing. Should be fixed.
     private void removeFromDomain(RDFSClass cls, RDFProperty property) {
         try {
-            beginTransaction("Remove " + cls.getBrowserText() + " from the domain of " + property.getBrowserText(), property.getName());
+            beginTransaction("Remove " + cls.getBrowserText() + " from the domain of " + property.getBrowserText());
             if (property.isDomainDefined()) {
-				property.removeUnionDomainClass(cls);
-			} else {
-				Collection classes = new ArrayList();
-
-				classes.addAll(property.getUnionDomain());
-				/* TT: This was the previous implementation, but it is not clear that it is
-				 * the desired behavior 
-				 */
-				// classes.addAll(property.getUnionDomain(true));
-
-				if (classes.remove(cls)) {
-					if (classes.size() == 1) {
-						property.setDomain((RDFSClass) classes.iterator()
-								.next());
-					} else {
-						RDFSClass domain = cls.getOWLModel().createOWLUnionClass(classes);
-						property.setDomain(domain);
-					}
-				}
-			}
+                property.removeUnionDomainClass(cls);
+//                if (property.getUnionDomain(true).size() == 0){
+//                    property.setDomain(cls.getOWLModel().getOWLThingClass());
+//                }
+            }
+            else {
+                Collection classes = new ArrayList(property.getUnionDomain(true));
+                if (classes.remove(cls)) {
+                    if (classes.size() == 1) {
+                        property.setDomain((RDFSClass) classes.iterator().next());
+                    }
+                    else {
+                       // System.out.println("classes = " + classes);
+                        RDFSClass domain = cls.getOWLModel().createOWLUnionClass(classes);
+                        property.setDomain(domain);
+                    }
+                }
+            }
             property.synchronizeDomainAndRangeOfInverse();
-            commitTransaction();
         }
         catch (Exception ex) {
-        	rollbackTransaction();
             OWLUI.handleError(getOWLModel(), ex);
+        }
+        finally {
+            endTransaction();
         }
     }
 
 
-    public void setEditable(boolean b) {        
-        //table.setEnabled(b);
-        setEnabled(b);
-        //addAction.setEnabled(b);
-        //removeAction.setAllowed(b);
+    public void setEditable(boolean b) {
+        super.setEditable(b);
+        addAction.setEnabled(b);
+        removeAction.setAllowed(b);
     }
 
 
@@ -175,33 +157,6 @@ public class OWLDomainWidget extends AbstractPropertyWidget {
     private void updateActions() {
         RDFProperty property = tableModel.getSlot();
         boolean enabled = property != null && property.isEditable();
-        setEnabled(enabled);       
-    }
-    
-    public void setEnabled(boolean enabled) {
-    	enabled = enabled && RemoteClientFrameStore.isOperationAllowed(getOWLModel(), OperationImpl.PROPERTY_TAB_WRITE);
-    	
-    	RDFProperty property = tableModel.getSlot();
-    	
-    	if (property != null) {
-    		enabled = enabled && property.isEditable();
-    	}
-    	
-    	addAction.setEnabled(enabled);    	
-    	
-    	if (property != null && !property.isDomainDefined()) {
-         	removeAction.setEnabled(false);
-        } else {
-        	removeAction.setAllowed(enabled);
-        }
-    	
-    	//table.setEnabled(enabled);
-    	
-    };
-    
-    @Override
-    public void dispose() {
-    	tableModel.dispose();
-    	super.dispose();
+        addAction.setEnabled(enabled);
     }
 }

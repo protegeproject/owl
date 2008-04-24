@@ -260,17 +260,15 @@ public interface RDFResource extends ProtegeInstance, RDFObject, Visitable {
      * @return the part of the name after #
      */
     String getLocalName();
-    
-    /**
-     * Gets the qualified name as a namespace, local name pair (e.g. "owl:Class").
-     * 
-     * @return the qualified name of the resource.
-     */
 
-    String getPrefixedName();
 
     /**
-     * Gets the full name for the resource.,
+     * Gets the Protege name of this resource.
+     * The name consists of a local name and an optional prefix,
+     * separated with ":".
+     * The Protege system uses names as primary access mechanism
+     * for resources and has some optimizations for searching and
+     * handling resources by name.
      *
      * @return the name
      */
@@ -694,6 +692,17 @@ public interface RDFResource extends ProtegeInstance, RDFObject, Visitable {
 
 
     void setInferredTypes(Collection types);
+
+
+    /**
+     * Sets the Protege name of this resource.
+     * The new name must be valid, i.e. be well-formed and only refer
+     * to valid namespace prefixes.  The new name must also be unique.
+     *
+     * @param newName the name name of this
+     * @see #getName
+     */
+    void setName(String newName);
 
 
     void setPropertyValue(RDFProperty property, Object value);

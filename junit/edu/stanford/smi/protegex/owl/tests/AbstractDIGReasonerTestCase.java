@@ -10,11 +10,9 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Properties;
 
-import edu.stanford.smi.protege.util.ApplicationProperties;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.inference.dig.exception.DIGReasonerException;
 import edu.stanford.smi.protegex.owl.inference.dig.reasoner.DIGReasonerIdentity;
-import edu.stanford.smi.protegex.owl.inference.dig.reasoner.DefaultDIGReasoner;
 import edu.stanford.smi.protegex.owl.inference.protegeowl.ProtegeOWLReasoner;
 import edu.stanford.smi.protegex.owl.inference.protegeowl.ReasonerManager;
 import edu.stanford.smi.protegex.owl.inference.protegeowl.log.MessageLogRecord;
@@ -42,8 +40,6 @@ public class AbstractDIGReasonerTestCase extends AbstractJenaTestCase {
         Properties jup = getJunitProperties();
         if (jup != null) {
           REASONER_URL = jup.getProperty(REASONER_URL_PROPERTY);
-          ApplicationProperties.setString(DefaultDIGReasoner.DEFAULT_URL_PROPERTY, 
-                                          AbstractDIGReasonerTestCase.REASONER_URL);
         }
       } catch (Exception e) {
         Log.getLogger().info("Reasoner not configured - tests ignored.");
@@ -89,13 +85,9 @@ public class AbstractDIGReasonerTestCase extends AbstractJenaTestCase {
     }
 
 
-    @Override
     protected void setUp() throws Exception {
         super.setUp();
-        initializeReasoner();
-    }
-    
-    protected void initializeReasoner() {
+
         // Get a reasoner for the (empty) OWL model from the ReasonerManager.
         ReasonerManager reasonerManager = ReasonerManager.getInstance();
         reasoner = reasonerManager.getReasoner(owlModel);

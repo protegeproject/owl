@@ -17,21 +17,13 @@ public class RDFSClassCode {
 
     private RDFSNamedClass cls;
 
-    private boolean usePrefix; 
 
-
-    public RDFSClassCode(RDFSNamedClass cls, boolean usePrefixInNames) {
+    public RDFSClassCode(RDFSNamedClass cls) {
         this.cls = cls;
-        this.usePrefix = usePrefixInNames;
     }
 
 
     public String getJavaName() {
-		String prefix = cls.getNamespacePrefix();
-		if ( usePrefix && prefix != null && (! prefix.equals("")) ) {
-			prefix = prefix.toUpperCase() + "_";
-			return getValidJavaName(prefix + cls.getLocalName());
-		}
         return getValidJavaName(cls.getLocalName());
     }
 
@@ -40,10 +32,10 @@ public class RDFSClassCode {
      * @return a List of RDFPropertyAtClassCodes
      * @see RDFPropertyAtClassCode
      */
-    public List getPropertyCodes(boolean transitive) {
+    public List getPropertyCodes() {
         Set properties = new HashSet();
         List codes = new ArrayList();
-        Collection unionDomainProperties = cls.getUnionDomainProperties(transitive);
+        Collection unionDomainProperties = cls.getUnionDomainProperties();
         Set relevantProperties = new HashSet(unionDomainProperties);
         if (cls instanceof OWLNamedClass) {
             OWLNamedClass owlNamedClass = (OWLNamedClass) cls;
@@ -54,19 +46,15 @@ public class RDFSClassCode {
         }
         for (Iterator it = relevantProperties.iterator(); it.hasNext();) {
             RDFProperty property = (RDFProperty) it.next();
-            if (property.isSystem()) {
-            	//skip system properties
-            	continue;
-            }
             properties.add(property);
-            RDFPropertyAtClassCode code = new RDFPropertyAtClassCode(cls, property, usePrefix);
+            RDFPropertyAtClassCode code = new RDFPropertyAtClassCode(cls, property);
             codes.add(code);
             Collection subproperties = property.getSubproperties(true);
             Iterator sit = subproperties.iterator();
             while (sit.hasNext()) {
                 RDFProperty subproperty = (RDFProperty) sit.next();
                 if (!subproperty.isDomainDefined() && !properties.contains(subproperty)) {
-                    codes.add(new RDFPropertyAtClassCode(cls, subproperty, usePrefix));
+                    codes.add(new RDFPropertyAtClassCode(cls, subproperty));
                     properties.add(subproperty);
                 }
             }

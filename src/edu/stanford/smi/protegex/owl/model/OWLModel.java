@@ -1,35 +1,27 @@
 package edu.stanford.smi.protegex.owl.model;
 
-import java.io.IOException;
-import java.net.URI;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-
 import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.Frame;
 import edu.stanford.smi.protege.model.ValueType;
 import edu.stanford.smi.protege.model.framestore.FrameStore;
 import edu.stanford.smi.protegex.owl.model.classdisplay.OWLClassDisplay;
 import edu.stanford.smi.protegex.owl.model.classparser.OWLClassParser;
-import edu.stanford.smi.protegex.owl.model.event.ClassListener;
-import edu.stanford.smi.protegex.owl.model.event.ModelListener;
-import edu.stanford.smi.protegex.owl.model.event.PropertyListener;
-import edu.stanford.smi.protegex.owl.model.event.PropertyValueListener;
-import edu.stanford.smi.protegex.owl.model.event.ResourceListener;
-import edu.stanford.smi.protegex.owl.model.factory.AlreadyImportedException;
+import edu.stanford.smi.protegex.owl.model.event.*;
 import edu.stanford.smi.protegex.owl.model.factory.OWLJavaFactory;
 import edu.stanford.smi.protegex.owl.model.framestore.OWLFrameStore;
-import edu.stanford.smi.protegex.owl.model.framestore.OWLFrameStoreManager;
 import edu.stanford.smi.protegex.owl.model.project.OWLProject;
 import edu.stanford.smi.protegex.owl.model.query.QueryResults;
 import edu.stanford.smi.protegex.owl.model.triplestore.Triple;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreModel;
 import edu.stanford.smi.protegex.owl.model.validator.PropertyValueValidator;
 import edu.stanford.smi.protegex.owl.repository.RepositoryManager;
-import edu.stanford.smi.protegex.owl.swrl.SWRLSystemFrames;
 import edu.stanford.smi.protegex.owl.testing.OWLTestManager;
+
+import java.net.URI;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 /**
  * A KnowledgeBase with a number of convenience methods to handle anonymous classes.
@@ -46,6 +38,7 @@ public interface OWLModel extends ProtegeKnowledgeBase, OWLTestManager {
      * @see #removeClassListener
      */
     void addClassListener(ClassListener listener);
+
 
     /**
      * Adds a ModelListener to receive notifications when resources have been created, renamed
@@ -81,7 +74,7 @@ public interface OWLModel extends ProtegeKnowledgeBase, OWLTestManager {
      * Gets an RDFSLiteral for a given value.  If the value is already an RDFSLiteral, then
      * the method will return it.  If the value is a String, Float, Integer or Boolean, then
      * the method will wrap it into a corresponding RDFSLiteral.  If the object is null, then
-     * the method return null.  Objects of other types are not permitted for this method.
+     * the method retrurn null.  Objects of other types are not permitted for this method.
      * This is a convenience method to post-process those calls that return either an Object
      * or an RDFSLiteral, if only an RDFSLiteral is desired.
      *
@@ -115,16 +108,23 @@ public interface OWLModel extends ProtegeKnowledgeBase, OWLTestManager {
      * @see #removeResourceListener
      */
     void addResourceListener(ResourceListener listener);
-    
-    
+
+
     /**
-     * Creates a simple owl:AnnotationProperty.
-     * @param name - the name of the annotation property. If name is null, a new name will be generated 
-     * @return the owl:AnnotationProperty
+     * Tells the system that one or more edit actions will follow which should
+     * be handled as a unit for undo.  Editing components should wrap set/add/remove
+     * calls to any resource in a <CODE>beginTransaction() - endTransaction()</CODE>
+     * block.
+     *
+     * @param name the human-readable name of the following transaction
+     * @return true
+     * @see #endTransaction()
      */
-    RDFProperty createAnnotationProperty(String name);
-  
+    boolean beginTransaction(String name);
+
+
     OWLDatatypeProperty createAnnotationOWLDatatypeProperty(String name);
+
 
     OWLObjectProperty createAnnotationOWLObjectProperty(String name);
 
@@ -302,18 +302,15 @@ public interface OWLModel extends ProtegeKnowledgeBase, OWLTestManager {
      *
      * @param prefix a valid namespace prefix
      * @return the new OWLOntology
-     * @deprecated developers should not need to create an owl ontology.  There is a rename method in OWLUtils.
      */
-    @Deprecated
-    OWLOntology createOWLOntology(String prefix) throws AlreadyImportedException;
+    OWLOntology createOWLOntology(String prefix);
 
 
     /**
      * @see #createOWLOntology(String)
      * @deprecated use the other createOWLOntology method instead
      */
-    @Deprecated
-    OWLOntology createOWLOntology(String name, String uri) throws AlreadyImportedException;
+    OWLOntology createOWLOntology(String name, String uri);
 
 
     OWLSomeValuesFrom createOWLSomeValuesFrom();
@@ -334,7 +331,6 @@ public interface OWLModel extends ProtegeKnowledgeBase, OWLTestManager {
     /**
      * @deprecated use createRDFUntypedResource instead
      */
-    @Deprecated
     RDFExternalResource createRDFExternalResource(String uri);
 
 
@@ -496,7 +492,16 @@ public interface OWLModel extends ProtegeKnowledgeBase, OWLTestManager {
     Triple createTriple(RDFResource subject, RDFProperty predicate, Object object);
 
 
-   
+    /**
+     * Ends the recently opened transaction and commits the state.
+     *
+     * @return true
+     * @see #beginTransaction
+     */
+    boolean endTransaction();
+
+
+    boolean endTransaction(boolean doCommit);
 
 
     /**
@@ -517,13 +522,12 @@ public interface OWLModel extends ProtegeKnowledgeBase, OWLTestManager {
      *
      * @return a Set of String URIs of the import statements
      */
-    Set<String> getAllImports();
+    Set getAllImports();
 
 
     /**
      * @deprecated internal Protege detail
      */
-    @Deprecated
     Cls getAnonymousRootCls();
 
 
@@ -537,22 +541,14 @@ public interface OWLModel extends ProtegeKnowledgeBase, OWLTestManager {
      */
     Collection getChangedInferredClasses();
 
-    
-    /**
-     * Gets the most specific common named superclasses of a given collection of named classes.
-     *
-     * @param classes the RDFSNamedClasses to get the superclass of (at least one)
-     * @return the most specific common superclass of all classes, e.g. owl:Thing
-     */
-    Set<RDFSNamedClass> getCommonSuperclasses(Collection<RDFSNamedClass> classes);
 
     /**
-     * Chooses a most specific common named superclass of a given collection of named classes.
+     * Gets the most specific common superclass of a given collection of named classes.
      *
      * @param classes the RDFSNamedClasses to get the superclass of (at least one)
      * @return the most specific common superclass of all classes, e.g. owl:Thing
      */
-    RDFSNamedClass getCommonSuperclass(Collection<RDFSNamedClass> classes);
+    RDFSNamedClass getCommonSuperclass(Collection classes);
 
 
     /**
@@ -590,8 +586,6 @@ public interface OWLModel extends ProtegeKnowledgeBase, OWLTestManager {
      */
     Set getFloatDatatypes();
 
-    
-    OWLFrameStoreManager getFrameStoreManager();
 
     /**
      * @see #setGenerateEventsEnabled
@@ -616,8 +610,6 @@ public interface OWLModel extends ProtegeKnowledgeBase, OWLTestManager {
     com.hp.hpl.jena.rdf.model.Model getJenaModel();
 
 
-    com.hp.hpl.jena.ontology.OntModel getOntModel();
-    
     RDFProperty getOWLDifferentFromProperty();
 
 
@@ -648,7 +640,7 @@ public interface OWLModel extends ProtegeKnowledgeBase, OWLTestManager {
      *
      * @return the annotation properties
      */
-    Collection<RDFProperty> getOWLAnnotationProperties();
+    Collection getOWLAnnotationProperties();
 
 
     RDFSNamedClass getOWLAnnotationPropertyClass();
@@ -765,7 +757,6 @@ public interface OWLModel extends ProtegeKnowledgeBase, OWLTestManager {
     /**
      * @deprecated use getRDFUntypedResource instead
      */
-    @Deprecated
     RDFExternalResource getRDFExternalResource(String uri);
 
 
@@ -773,7 +764,6 @@ public interface OWLModel extends ProtegeKnowledgeBase, OWLTestManager {
      * @see #getRDFUntypedResourcesClass()
      * @deprecated use getRDFUntypedResourcesClass
      */
-    @Deprecated
     RDFSClass getRDFExternalResourceClass();
 
 
@@ -923,7 +913,6 @@ public interface OWLModel extends ProtegeKnowledgeBase, OWLTestManager {
      */
     Collection getResourceNameMatches(String nameExpression, int maxMatches);
 
-    RDFProperty getOWLCardinalityProperty();
 
     /**
      * Gets the class owl:DataRange, which is used to represent enumerations of
@@ -946,9 +935,6 @@ public interface OWLModel extends ProtegeKnowledgeBase, OWLTestManager {
      */
     OWLJavaFactory getOWLJavaFactory();
 
-    RDFProperty getOWLMaxCardinalityProperty();
-    
-    RDFProperty getOWLMinCardinalityProperty();
 
     /**
      * A convenience method which includes the typecast after <CODE>getCls()</CODE>.
@@ -1028,7 +1014,6 @@ public interface OWLModel extends ProtegeKnowledgeBase, OWLTestManager {
      *             DO NOT PASS IN THE URI OF AN UNRESOLVED IMPORT AS THIS WILL
      *             CAUSE A Class Cast Exception
      */
-    @Deprecated
     OWLOntology getOWLOntologyByURI(String uri);
 
     /**
@@ -1062,7 +1047,7 @@ public interface OWLModel extends ProtegeKnowledgeBase, OWLTestManager {
      * Provides low level access to some internal Protege detail - normally not needed.
      */
     OWLFrameStore getOWLFrameStore();
-    
+
 
     /**
      * Gets those Instances in the ontology that are instances of a OWLNamedClass.
@@ -1229,12 +1214,6 @@ public interface OWLModel extends ProtegeKnowledgeBase, OWLTestManager {
      */
     RDFProperty getRDFRestProperty();
 
-    /**
-     * Gets the meta class that represents some values from restrictions.
-     * 
-     * @return the class of all somevaluesfrom restrictions.
-     */
-    RDFSNamedClass getOWLSomeValuesFromRestrictionClass();
 
     /**
      * Gets the metaclasses of the available OWLRestriction kinds.
@@ -1331,8 +1310,6 @@ public interface OWLModel extends ProtegeKnowledgeBase, OWLTestManager {
      * @return the system annotation slots
      */
     RDFProperty[] getSystemAnnotationProperties();
-    
-    SWRLSystemFrames getSystemFrames();
 
 
     /**
@@ -1595,7 +1572,6 @@ public interface OWLModel extends ProtegeKnowledgeBase, OWLTestManager {
      * @see RDFResource#isAnonymous()
      * @deprecated
      */
-    @Deprecated
     boolean isAnonymousResource(RDFResource resource);
 
 
@@ -1609,7 +1585,6 @@ public interface OWLModel extends ProtegeKnowledgeBase, OWLTestManager {
      * @return true if frame is one of the system frames
      * @deprecated
      */
-    @Deprecated
     boolean isOWLSystemFrame(Frame frame);
 
 
@@ -1702,7 +1677,7 @@ public interface OWLModel extends ProtegeKnowledgeBase, OWLTestManager {
 
     String getURIForResourceName(String resourceName);
 
-    boolean isExpandShortNameInMethods();
+
     /**
      * Gets an Iterator of all OWLAnonymousClasses in the ontology.
      *
@@ -1799,28 +1774,14 @@ public interface OWLModel extends ProtegeKnowledgeBase, OWLTestManager {
      * @see #addResourceListener
      */
     void removeResourceListener(ResourceListener listener);
-    
-    
-    /**
-     * resets the Jena model so that it can be rebuilt.
-     */
-    void resetJenaModel();
-    
-    /*
-     * resets the OWL ontology cache so that the default ontology is recalculated on 
-     * the next call.
-     */
 
-    void resetOntologyCache();
 
     /**
      * @see #getDispatchEventsEnabled
      */
     boolean setDispatchEventsEnabled(boolean enabled);
 
-    void setExpandShortNameInMethods(boolean expandShortNameInMethods);
 
-    
     /**
      * @see #getGenerateEventsEnabled
      */

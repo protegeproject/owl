@@ -1,15 +1,10 @@
 package edu.stanford.smi.protegex.owl.ui.conditions.tests;
 
+import edu.stanford.smi.protegex.owl.model.*;
+import edu.stanford.smi.protegex.owl.ui.conditions.ConditionsTableModel;
+
 import java.util.Collection;
 import java.util.Iterator;
-
-import edu.stanford.smi.protegex.owl.model.OWLIntersectionClass;
-import edu.stanford.smi.protegex.owl.model.OWLMinCardinality;
-import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
-import edu.stanford.smi.protegex.owl.model.OWLObjectProperty;
-import edu.stanford.smi.protegex.owl.model.OWLRestriction;
-import edu.stanford.smi.protegex.owl.model.RDFSClass;
-import edu.stanford.smi.protegex.owl.ui.conditions.ConditionsTableModel;
 
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
@@ -416,7 +411,7 @@ public class AddRowTestCase extends AbstractConditionsTableTestCase {
         OWLNamedClass cls = owlModel.createOWLNamedClass("Person");
         ConditionsTableModel tableModel = getTableModel(cls);
         assertFalse(tableModel.addRowAllowMove((RDFSClass) owlThing, 0));
-        //assertEquals(0, events.size()); //TT- test not valid anymore
+        assertEquals(0, events.size());
     }
 
 

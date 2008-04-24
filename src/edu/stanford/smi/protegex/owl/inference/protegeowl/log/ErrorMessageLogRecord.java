@@ -37,7 +37,7 @@ public class ErrorMessageLogRecord extends MessageLogRecord {
             }
         }
         else {
-            causeText = "";
+            causeText = " (Unknown)";
         }
 
         JLabel label = getJLabel();
@@ -46,7 +46,7 @@ public class ErrorMessageLogRecord extends MessageLogRecord {
 
         label.setText("<html><body color=\"6E6E6E\">" +
                 "<font color=\"ff6600\">ERROR<br></font>" +
-                (causeText.equals("") ? "" : "<font color=\"ff6600\">CAUSE: </font><font color=\"000000\">" + causeText + "</font><br>" ) +
+                "<font color=\"ff6600\">CAUSE: </font><font color=\"000000\">" + causeText + "</font><br>" +
                 getHTMLMessage() + "</body></html>");
 
         label.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));

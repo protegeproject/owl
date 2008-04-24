@@ -1,13 +1,7 @@
 package edu.stanford.smi.protegex.owlx.examples;
 
-import java.io.IOException;
-
 import edu.stanford.smi.protegex.owl.ProtegeOWL;
-import edu.stanford.smi.protegex.owl.model.OWLModel;
-import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
-import edu.stanford.smi.protegex.owl.model.RDFProperty;
-import edu.stanford.smi.protegex.owl.model.RDFResource;
-import edu.stanford.smi.protegex.owl.model.RDFSClass;
+import edu.stanford.smi.protegex.owl.model.*;
 import edu.stanford.smi.protegex.owl.model.event.ClassAdapter;
 import edu.stanford.smi.protegex.owl.model.event.ModelAdapter;
 
@@ -16,7 +10,7 @@ import edu.stanford.smi.protegex.owl.model.event.ModelAdapter;
  */
 public class ListenerExample {
 
-    public static void main(String[] args) throws IOException  {
+    public static void main(String[] args) {
 
         OWLModel owlModel = ProtegeOWL.createJenaOWLModel();
 

@@ -13,7 +13,7 @@ import javax.swing.JToolBar;
 import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protege.util.Log;
-import edu.stanford.smi.protegex.owl.model.classparser.compact.TokenMgrError;
+import edu.stanford.smi.protegex.owl.compactparser.TokenMgrError;
 import edu.stanford.smi.protegex.owl.model.OWLDatatypeProperty;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLNames;

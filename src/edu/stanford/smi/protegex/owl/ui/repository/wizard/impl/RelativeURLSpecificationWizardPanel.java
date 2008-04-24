@@ -63,7 +63,7 @@ public class  RelativeURLSpecificationWizardPanel extends RepositoryCreatorWizar
         holderPanel.add(lc, BorderLayout.NORTH);
         holderPanel.add(forceReadOnlyCheckBox = new JCheckBox("Force Read-Only"), BorderLayout.SOUTH);
         add(holderPanel, BorderLayout.NORTH);
-        add(OWLUI.createHelpPanel(getDocumentation(), null, OWLUI.WIZARD_HELP_HEIGHT), BorderLayout.SOUTH);
+        add(OWLUI.createHelpPanel(HELP_TEXT, null, OWLUI.WIZARD_HELP_HEIGHT), BorderLayout.SOUTH);
         updateWizardPageState();
     }
 
@@ -74,8 +74,8 @@ public class  RelativeURLSpecificationWizardPanel extends RepositoryCreatorWizar
     public Repository createRepository() {
         try {
             return new RelativeFolderRepository(getBaseURL(),
-                    getRelativePath(),
-                    isForcedReadOnlySelected());
+                    textField.getText().trim(),
+                    forceReadOnlyCheckBox.isSelected());
         }
         catch (Exception e) {
             return null;
@@ -83,7 +83,7 @@ public class  RelativeURLSpecificationWizardPanel extends RepositoryCreatorWizar
     }
 
 
-	protected URL getBaseURL() {
+	private URL getBaseURL() {
         try {
             URI projectURI = model.getProject().getProjectURI();
             File f = new File(projectURI).getParentFile();
@@ -118,22 +118,7 @@ public class  RelativeURLSpecificationWizardPanel extends RepositoryCreatorWizar
         }
     }
 
-    protected boolean isForcedReadOnlySelected() {
-    	 return forceReadOnlyCheckBox.isSelected();
-    }
-    
-    protected String getRelativePath() {
-    	return textField.getText().trim();
-    }
-    
-    protected OWLModel getOWLModel() {
-    	return model;
-    }
-    
-    protected String getDocumentation(){
-    	return HELP_TEXT;
-    }
-    
+
     private static final String HELP_TEXT = "<p>Please specify a relative <b>URL</b> that points " +
             "to a folder containing ontologies.</p>" +
             "<p>The URL should be relative to the folder containing " +

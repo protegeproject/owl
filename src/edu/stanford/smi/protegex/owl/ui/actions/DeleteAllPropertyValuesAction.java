@@ -39,7 +39,7 @@ public class DeleteAllPropertyValuesAction extends AbstractAction {
     public void actionPerformed(ActionEvent e) {
         OWLModel owlModel = property.getOWLModel();
         try {
-            owlModel.beginTransaction((String) getValue(Action.NAME), (property == null ? null : property.getName()));
+            owlModel.beginTransaction((String) getValue(Action.NAME));
             for (Iterator it = targetFrames.iterator(); it.hasNext();) {
                 RDFResource resource = (RDFResource) it.next();
                 Collection values = resource.getPropertyValues(property);
@@ -48,11 +48,12 @@ public class DeleteAllPropertyValuesAction extends AbstractAction {
                     resource.removePropertyValue(property, val);
                 }
             }
-            owlModel.commitTransaction();
         }
         catch (Exception ex) {
-        	owlModel.rollbackTransaction();
             OWLUI.handleError(owlModel, ex);
+        }
+        finally {
+            owlModel.endTransaction();
         }
     }
 }

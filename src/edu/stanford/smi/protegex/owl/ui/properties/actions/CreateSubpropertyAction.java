@@ -62,8 +62,8 @@ public class CreateSubpropertyAction extends ResourceAction {
     public static void performAction(OWLModel owlModel, RDFProperty superProperty, OWLSubpropertyPane pane) {
         RDFProperty subproperty = null;
         try {
-        	String name = owlModel.createNewResourceName(superProperty.getLocalName());
-            owlModel.beginTransaction("Create subproperty of " + superProperty.getName(), name);            
+            owlModel.beginTransaction("Create subproperty of " + superProperty.getName());
+            String name = owlModel.createNewResourceName(superProperty.getLocalName());
             subproperty = owlModel.createSubproperty(name, superProperty);
             final Set superproperties = Collections.singleton(superProperty);
             createInverseSlot(subproperty, superproperties);
@@ -72,11 +72,12 @@ public class CreateSubpropertyAction extends ResourceAction {
                     ((OWLProperty) superProperty).isInverseFunctional()) {
                 ((OWLProperty) subproperty).setInverseFunctional(true);
             }
-            owlModel.commitTransaction();
         }
         catch (Exception ex) {
-        	owlModel.rollbackTransaction();
             OWLUI.handleError(owlModel, ex);
+        }
+        finally {
+            owlModel.endTransaction();
         }
         pane.extendSelection(subproperty);
     }

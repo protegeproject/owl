@@ -1,6 +1,5 @@
 package edu.stanford.smi.protegex.owl.model.util;
 
-import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
 import edu.stanford.smi.protegex.owl.model.RDFSClass;
@@ -18,23 +17,17 @@ import java.util.Iterator;
 public class CloneFactory {
 
     public static OWLNamedClass cloneOWLNamedClass(OWLNamedClass source) {
-    	return cloneOWLNamedClass(source, getNextAvailableCloneName(source));
-    }
-    
-    public static OWLNamedClass cloneOWLNamedClass(OWLNamedClass source, String cloneName) {
-    	if (cloneName == null) {
-    		Log.getLogger().warning("Cannot create clone of " + source + " Clone name should not be null.");
-    		return null;
-    	}
-    	
-    	OWLModel owlModel = source.getOWLModel();
-    	
-    	if (owlModel.getRDFResource(cloneName) != null) {
-    		Log.getLogger().warning("RDFResource with name " + cloneName + " already exists.");
-    		return null;
-    	}
-    	
-        OWLNamedClass clone = owlModel.createOWLNamedClass(cloneName);
+        OWLModel owlModel = source.getOWLModel();
+
+        String newName = null;
+        int i = 2;
+        do {
+            newName = source.getName() + "_" + i;
+            i++;
+        }
+        while (owlModel.getRDFResource(newName) != null);
+
+        OWLNamedClass clone = owlModel.createOWLNamedClass(newName);
 
         ResourceCopier scopier = new ResourceCopier();
 
@@ -62,20 +55,4 @@ public class CloneFactory {
 
         return clone;
     }
-    
-    public static String getNextAvailableCloneName(OWLNamedClass source) {
-    	OWLModel owlModel = source.getOWLModel();
-    	
-    	 String newName = null;
-    	 
-         int i = 2;
-         do {
-             newName = source.getName() + "_" + i;
-             i++;
-         }
-         while (owlModel.getRDFResource(newName) != null);
-         
-         return newName;
-    }
-    
 }

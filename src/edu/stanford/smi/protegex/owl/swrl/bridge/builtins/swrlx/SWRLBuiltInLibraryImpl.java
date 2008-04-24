@@ -1,9 +1,14 @@
 
 package edu.stanford.smi.protegex.owl.swrl.bridge.builtins.swrlx;
 
+import edu.stanford.smi.protegex.owl.model.*;
+import edu.stanford.smi.protegex.owl.swrl.model.*;
 import edu.stanford.smi.protegex.owl.swrl.bridge.*;
 import edu.stanford.smi.protegex.owl.swrl.bridge.builtins.*;
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.*;
+
+import edu.stanford.smi.protegex.owl.swrl.util.SWRLOWLUtil;
+import edu.stanford.smi.protegex.owl.swrl.exceptions.SWRLOWLUtilException;
 
 import java.util.*;
 
@@ -13,59 +18,45 @@ import java.util.*;
  **
  ** See <a href="http://protege.cim3.net/cgi-bin/wiki.pl?SWRLBuiltInBridge">here</a> for documentation on defining SWRL built-in libraries.
  */
-public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
+public class SWRLBuiltInLibraryImpl extends SWRLBuiltInLibrary
 {
   private static String SWRLXLibraryName = "SWRLExtensionsBuiltIns";
 
-  private ArgumentFactory argumentFactory;
+  private HashMap<String, IndividualInfo> createInvocationMap;
 
-  private HashMap<String, OWLIndividual> createInvocationMap;
-
-  public SWRLBuiltInLibraryImpl() 
-  { 
-    super(SWRLXLibraryName); 
-
-    argumentFactory = ArgumentFactory.getFactory();
-  } // SWRLBuiltInLibraryImpl
+  public SWRLBuiltInLibraryImpl() { super(SWRLXLibraryName); }
 
   public void reset() 
   {
-    createInvocationMap = new HashMap<String, OWLIndividual>();
+    createInvocationMap = new HashMap<String, IndividualInfo>();
   } // reset
 
   /**
    ** For every pattern of second and subsequent arguments, create an OWL individual of type OWL:Thing and bind it to the first argument. If
    ** the first argument is already bound when the built-in is called, this method returns true.
    */
-  public boolean makeOWLThing(List<BuiltInArgument> arguments) throws BuiltInException
+  public boolean createOWLThing(List<Argument> arguments) throws BuiltInException
   {
     SWRLBuiltInUtil.checkNumberOfArgumentsAtLeast(2, arguments.size());
 
     if (SWRLBuiltInUtil.isUnboundArgument(0, arguments)) {
-      OWLIndividual owlIndividual = null;
       String createInvocationPattern 
         = SWRLBuiltInUtil.createInvocationPattern(getInvokingBridge(), getInvokingRuleName(), getInvokingBuiltInIndex(), 
                                                   arguments.subList(1, arguments.size()));
-
-      if (createInvocationMap.containsKey(createInvocationPattern)) owlIndividual = createInvocationMap.get(createInvocationPattern);
+      IndividualInfo individualInfo = null;
+      if (createInvocationMap.containsKey(createInvocationPattern)) individualInfo = createInvocationMap.get(createInvocationPattern);
       else {
         try {
-          owlIndividual = getInvokingBridge().createOWLIndividual();
+          individualInfo = getInvokingBridge().createIndividual();
         } catch (SWRLRuleEngineBridgeException e) {
           throw new BuiltInException("error calling bridge to create OWL individual: " + e.getMessage());
         } // 
-        createInvocationMap.put(createInvocationPattern, owlIndividual);
+        createInvocationMap.put(createInvocationPattern, individualInfo);
       } // if
-      arguments.set(0, owlIndividual); // Bind the result to the first parameter      
+      arguments.set(0, individualInfo); // Bind the result to the first parameter      
     } // if
     
     return true;
-  } // makeOWLThing
-
-  // For backwards compatability
-  public boolean createOWLThing(List<BuiltInArgument> arguments) throws BuiltInException
-  {
-    return makeOWLThing(arguments);
   } // createOWLThing
 
 } // SWRLBuiltInLibraryImpl

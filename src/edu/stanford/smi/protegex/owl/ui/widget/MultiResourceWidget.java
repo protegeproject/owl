@@ -33,7 +33,7 @@ public class MultiResourceWidget extends AbstractPropertyValuesWidget {
                 symmetric = true;
             }
         }
-        return new MultiResourceComponent(predicate, symmetric, getLabel(), isReadOnlyConfiguredWidget());
+        return new MultiResourceComponent(predicate, symmetric, getLabel());
     }
 
 

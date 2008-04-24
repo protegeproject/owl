@@ -74,6 +74,18 @@ public class JenaKnowledgeBaseSourcesEditor extends KnowledgeBaseSourcesEditor {
 
     private String constructName(String projectPath, String extension) {
         return FileUtilities.replaceExtension(projectPath, extension);
+
+        /*String name = null;
+        if (projectPath != null) {
+            File projectFile = new File(getProjectPath());
+            String projectName = projectFile.getName();
+            int index = projectName.indexOf(".");
+            if (index != -1) {
+                name = projectName.substring(0, index) + "." + extension;
+            }
+        }
+        return name;
+        */
     }
 
 

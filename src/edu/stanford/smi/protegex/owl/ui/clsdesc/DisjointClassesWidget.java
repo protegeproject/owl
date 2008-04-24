@@ -37,7 +37,7 @@ public class DisjointClassesWidget extends ClassDescriptionWidget {
         if (noDialog || ProtegeUI.getModalDialogFactory().showDialog(this, siblingsPanel,
                 "Add siblings to disjoints", ModalDialogFactory.MODE_OK_CANCEL) == ModalDialogFactory.OPTION_OK) {
             try {
-                beginTransaction("Add siblings to disjoints of " + getEditedCls().getBrowserText(), getEditedCls().getName());
+                beginTransaction("Add siblings to disjoints of " + getEditedCls().getBrowserText());
                 mutuallyIsDefault = siblingsPanel.isMutuallySelected();
                 OWLNamedClass editedCls = getEditedCls();
                 if (mutuallyIsDefault) {
@@ -59,11 +59,12 @@ public class DisjointClassesWidget extends ClassDescriptionWidget {
                         }
                     }
                 }
-                commitTransaction();
             }
             catch (Exception ex) {
-            	rollbackTransaction();
                 OWLUI.handleError(getOWLModel(), ex);
+            }
+            finally {
+                endTransaction();
             }
         }
     }
@@ -163,7 +164,7 @@ public class DisjointClassesWidget extends ClassDescriptionWidget {
                 "Remove siblings from disjoints", ModalDialogFactory.MODE_OK_CANCEL) == ModalDialogFactory.OPTION_OK) {
             try {
                 beginTransaction("Remove siblings from disjoints of " +
-                        getEditedCls().getBrowserText(), getEditedCls().getName());
+                        getEditedCls().getBrowserText());
                 mutuallyIsDefault = siblingsPanel.isMutuallySelected();
                 OWLNamedClass editedCls = getEditedCls();
                 if (mutuallyIsDefault) {
@@ -188,11 +189,12 @@ public class DisjointClassesWidget extends ClassDescriptionWidget {
                         }
                     }
                 }
-                commitTransaction();
             }
             catch (Exception ex) {
-            	rollbackTransaction();
                 OWLUI.handleError(getOWLModel(), ex);
+            }
+            finally {
+                endTransaction();
             }
         }
     }

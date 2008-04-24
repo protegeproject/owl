@@ -1,27 +1,17 @@
 
 package edu.stanford.smi.protegex.owl.swrl.model;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
-
-import edu.stanford.smi.protegex.owl.model.NamespaceUtil;
-import edu.stanford.smi.protegex.owl.model.OWLDatatypeProperty;
-import edu.stanford.smi.protegex.owl.model.OWLModel;
-import edu.stanford.smi.protegex.owl.model.OWLObjectProperty;
-import edu.stanford.smi.protegex.owl.model.RDFList;
-import edu.stanford.smi.protegex.owl.model.RDFObject;
-import edu.stanford.smi.protegex.owl.model.RDFProperty;
-import edu.stanford.smi.protegex.owl.model.RDFResource;
-import edu.stanford.smi.protegex.owl.model.RDFSClass;
-import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
-import edu.stanford.smi.protegex.owl.swrl.SWRLSystemFrames;
-import edu.stanford.smi.protegex.owl.swrl.exceptions.SWRLFactoryException;
+import edu.stanford.smi.protegex.owl.model.*;
 import edu.stanford.smi.protegex.owl.swrl.parser.SWRLParseException;
 import edu.stanford.smi.protegex.owl.swrl.parser.SWRLParser;
+import edu.stanford.smi.protegex.owl.swrl.exceptions.SWRLFactoryException;
+
+import edu.stanford.smi.protegex.owl.model.factory.OWLJavaFactoryUpdater;
+import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
+import edu.stanford.smi.protegex.owl.swrl.model.factory.SWRLJavaFactory;
+import edu.stanford.smi.protegex.owl.swrl.model.SWRLImp;
+
+import java.util.*;
 
 /**
  * A utility class that can (and should) be used to create and access SWRL related objects in an ontology.
@@ -30,21 +20,54 @@ import edu.stanford.smi.protegex.owl.swrl.parser.SWRLParser;
  */
 public class SWRLFactory 
 {
+  private OWLNamedClass atomListCls;
+  
+  private OWLNamedClass builtinAtomCls;
+  
+  private OWLNamedClass classAtomCls;
+  
+  private OWLNamedClass dataRangeAtomCls;
+  
+  private OWLNamedClass dataValuedPropertyAtomCls;
+  
+  private OWLNamedClass differentIndividualsAtomCls;
+  
+  private OWLNamedClass impCls;
+
+  private OWLNamedClass individualPropertyAtom;
+  
   private OWLModel owlModel;
-  private SWRLSystemFrames systemFrames;
-
-
+  
+  private OWLNamedClass sameIndividualAtomCls;
+  
+  
   public SWRLFactory(OWLModel owlModel) 
   {
     this.owlModel = owlModel;
-    systemFrames = owlModel.getSystemFrames();
+
+    if (!(owlModel.getAllImports().contains(SWRLNames.SWRL_IMPORT) || owlModel.getAllImports().contains(SWRLNames.SWRL_ALT_IMPORT)))
+      System.err.println("Attempt to create SWRLFactory with an OWL model that does not import SWRL.");
+
+    atomListCls = owlModel.getOWLNamedClass(SWRLNames.Cls.ATOM_LIST);
+    builtinAtomCls = owlModel.getOWLNamedClass(SWRLNames.Cls.BUILTIN_ATOM);
+    classAtomCls = owlModel.getOWLNamedClass(SWRLNames.Cls.CLASS_ATOM);
+    dataRangeAtomCls = owlModel.getOWLNamedClass(SWRLNames.Cls.DATA_RANGE_ATOM);
+    dataValuedPropertyAtomCls = owlModel.getOWLNamedClass(SWRLNames.Cls.DATAVALUED_PROPERTY_ATOM);
+    differentIndividualsAtomCls = owlModel.getOWLNamedClass(SWRLNames.Cls.DIFFERENT_INDIVIDUALS_ATOM);
+    impCls = owlModel.getOWLNamedClass(SWRLNames.Cls.IMP);
+    individualPropertyAtom = owlModel.getOWLNamedClass(SWRLNames.Cls.INDIVIDUAL_PROPERTY_ATOM);
+    sameIndividualAtomCls = owlModel.getOWLNamedClass(SWRLNames.Cls.SAME_INDIVIDUAL_ATOM);
+    
+    // Activate OWL-Java mappings.
+    SWRLJavaFactory factory = new SWRLJavaFactory(owlModel);
+    owlModel.setOWLJavaFactory(factory);
+    if(owlModel instanceof JenaOWLModel) OWLJavaFactoryUpdater.run((JenaOWLModel)owlModel);
   } // SWRLFactory
   
-
   public SWRLImp createImp() 
   {
     String name = getNewImpName();
-    return (SWRLImp) systemFrames.getImpCls().createInstance(name);
+    return (SWRLImp) impCls.createInstance(name);
   }
 
   public SWRLImp createImpWithGivenName(String name)
@@ -73,23 +96,23 @@ public class SWRLFactory
     return createImp(head, body);
   }
   
-  public SWRLImp createImp(SWRLAtomList head, SWRLAtomList body) 
-  {
+  
+  public SWRLImp createImp(SWRLAtomList head, SWRLAtomList body) {
     SWRLImp swrlImp = createImp();
     swrlImp.setHead(head);
     swrlImp.setBody(body);
     return swrlImp;
   } // SWRLImp
- 
-  public SWRLAtomList createAtomList() 
-  {
-    return (SWRLAtomList) systemFrames.getAtomListCls().createAnonymousInstance();
+  
+  
+  public SWRLAtomList createAtomList() {
+    return (SWRLAtomList) atomListCls.createAnonymousInstance();
   } // createAtomList
 
-  public SWRLAtomList createAtomList(Collection<SWRLAtom> atoms) 
-  {
+
+  public SWRLAtomList createAtomList(Collection atoms) {
     SWRLAtomList list = createAtomList();
-    for (Iterator<SWRLAtom> it = atoms.iterator(); it.hasNext();) {
+    for (Iterator it = atoms.iterator(); it.hasNext();) {
       Object o = it.next();
       list.append(o);
     }
@@ -101,12 +124,13 @@ public class SWRLFactory
     RDFList li = owlModel.createRDFList(arguments);
     return createBuiltinAtom(swrlBuiltin, li);    
   } // createBuiltinAtom
+  
 
   public SWRLBuiltinAtom createBuiltinAtom(SWRLBuiltin swrlBuiltin, RDFList arguments) 
   {
     SWRLBuiltinAtom swrlBuiltinAtom;
     
-    swrlBuiltinAtom = (SWRLBuiltinAtom) systemFrames.getBuiltinAtomCls().createAnonymousInstance();
+    swrlBuiltinAtom = (SWRLBuiltinAtom) builtinAtomCls.createAnonymousInstance();
     
     swrlBuiltinAtom.setBuiltin(swrlBuiltin);
     swrlBuiltinAtom.setArguments(arguments);
@@ -114,138 +138,120 @@ public class SWRLFactory
     return swrlBuiltinAtom;
   } // createBuiltinAtom
 
-  public SWRLClassAtom createClassAtom(RDFSNamedClass aClass, RDFResource iObject) 
-  {
-    SWRLClassAtom swrlClassAtom;
-    
-    swrlClassAtom = (SWRLClassAtom) systemFrames.getClassAtomCls().createAnonymousInstance();
-    
-    swrlClassAtom.setClassPredicate(aClass);
-    swrlClassAtom.setArgument1(iObject);
-    
-    return swrlClassAtom;
-    
-  } // createClassAtom
 
-  public SWRLDataRangeAtom createDataRangeAtom(RDFResource dataRange, RDFObject dObject) 
-  {
-    SWRLDataRangeAtom swrlDataRangeAtom = (SWRLDataRangeAtom) systemFrames.getDataRangeAtomCls().createAnonymousInstance();
-    
-    swrlDataRangeAtom.setArgument1(dObject);
-    swrlDataRangeAtom.setDataRange(dataRange);
-    
-    return swrlDataRangeAtom;
-  } // createDataRangeAtom
-  
-  public SWRLDatavaluedPropertyAtom createDatavaluedPropertyAtom(OWLDatatypeProperty datatypeSlot, RDFResource iObject, RDFObject dObject) 
-  {
-    SWRLDatavaluedPropertyAtom swrlDatavaluedPropertyAtom 
-            = (SWRLDatavaluedPropertyAtom) systemFrames.getDataValuedPropertyAtomCls().createAnonymousInstance();
-    
-    swrlDatavaluedPropertyAtom.setPropertyPredicate(datatypeSlot);
-    swrlDatavaluedPropertyAtom.setArgument1(iObject);
-    swrlDatavaluedPropertyAtom.setArgument2(dObject);
+    public SWRLClassAtom createClassAtom(RDFSNamedClass aClass,
+                                         RDFResource iObject) {
+        SWRLClassAtom swrlClassAtom;
 
-    return swrlDatavaluedPropertyAtom;
-    
-  } // createDatavaluedPropertyAtom
-  
-  public SWRLIndividualPropertyAtom createIndividualPropertyAtom(OWLObjectProperty objectSlot, RDFResource iObject1, RDFResource iObject2) 
-  {
-    SWRLIndividualPropertyAtom swrlIndividualPropertyAtom;
-    
-    swrlIndividualPropertyAtom = (SWRLIndividualPropertyAtom) systemFrames.getIndividualPropertyAtomCls().createAnonymousInstance();
-    
-    swrlIndividualPropertyAtom.setPropertyPredicate(objectSlot);
-    swrlIndividualPropertyAtom.setArgument1(iObject1);
-    swrlIndividualPropertyAtom.setArgument2(iObject2);
-    
-    return swrlIndividualPropertyAtom;
-  } // createIndividualPropertyAtom
-  
-  public SWRLDifferentIndividualsAtom createDifferentIndividualsAtom(RDFResource argument1, RDFResource argument2) 
-  {
-    SWRLDifferentIndividualsAtom swrlDifferentIndividualsAtom;
-    
-    swrlDifferentIndividualsAtom = (SWRLDifferentIndividualsAtom) systemFrames.getDifferentIndividualsAtomCls().createAnonymousInstance();
-    swrlDifferentIndividualsAtom.setArgument1(argument1);
-    swrlDifferentIndividualsAtom.setArgument2(argument2);
-    
-    return swrlDifferentIndividualsAtom;
-  } // createDifferentIndividualsAtom
+        swrlClassAtom = (SWRLClassAtom) classAtomCls.createAnonymousInstance();
 
-  public SWRLSameIndividualAtom createSameIndividualAtom(RDFResource argument1, RDFResource argument2) 
-  {
-    SWRLSameIndividualAtom swrlSameIndividualAtom;
-    
-    swrlSameIndividualAtom = (SWRLSameIndividualAtom) systemFrames.getSameIndividualAtomCls().createAnonymousInstance();
-    swrlSameIndividualAtom.setArgument1(argument1);
-    swrlSameIndividualAtom.setArgument2(argument2);
-    
-    return swrlSameIndividualAtom;
-  } // createSameIndividualAtom
-  
-  public SWRLVariable createVariable(String name) 
-  {
-    return (SWRLVariable) owlModel.getRDFSNamedClass(SWRLNames.Cls.VARIABLE).createInstance(name);
-  } // createVariable
+        swrlClassAtom.setClassPredicate(aClass);
+        swrlClassAtom.setArgument1(iObject);
 
-  public SWRLBuiltin createBuiltin(String name) 
-  {
-    return (SWRLBuiltin)owlModel.getRDFSNamedClass(SWRLNames.Cls.BUILTIN).createInstance(name);
-  } // createBuiltin
+        return swrlClassAtom;
 
-  public SWRLBuiltin getBuiltin(String name) 
-  {
-    RDFResource resource = owlModel.getRDFResource(name);
-    if (resource instanceof SWRLBuiltin) {
-      return (SWRLBuiltin) resource;
+    } // createClassAtom
+
+
+    public SWRLDataRangeAtom createDataRangeAtom(RDFResource dataRange,
+                                                 RDFObject dObject) {
+
+        SWRLDataRangeAtom swrlDataRangeAtom = (SWRLDataRangeAtom) dataRangeAtomCls.createAnonymousInstance();
+
+        swrlDataRangeAtom.setArgument1(dObject);
+        swrlDataRangeAtom.setDataRange(dataRange);
+
+        return swrlDataRangeAtom;
+    } // createDataRangeAtom
+
+
+    public SWRLDatavaluedPropertyAtom createDatavaluedPropertyAtom(OWLDatatypeProperty datatypeSlot,
+                                                                   RDFResource iObject,
+                                                                   RDFObject dObject) {
+        SWRLDatavaluedPropertyAtom swrlDatavaluedPropertyAtom = (SWRLDatavaluedPropertyAtom) dataValuedPropertyAtomCls.createAnonymousInstance();
+
+        swrlDatavaluedPropertyAtom.setPropertyPredicate(datatypeSlot);
+        swrlDatavaluedPropertyAtom.setArgument1(iObject);
+        swrlDatavaluedPropertyAtom.setArgument2(dObject);
+
+        return swrlDatavaluedPropertyAtom;
+
+    } // createDatavaluedPropertyAtom
+
+
+    public SWRLIndividualPropertyAtom createIndividualPropertyAtom(OWLObjectProperty objectSlot,
+                                                                   RDFResource iObject1,
+                                                                   RDFResource iObject2) {
+        SWRLIndividualPropertyAtom swrlIndividualPropertyAtom;
+
+        swrlIndividualPropertyAtom = (SWRLIndividualPropertyAtom) individualPropertyAtom.createAnonymousInstance();
+
+        swrlIndividualPropertyAtom.setPropertyPredicate(objectSlot);
+        swrlIndividualPropertyAtom.setArgument1(iObject1);
+        swrlIndividualPropertyAtom.setArgument2(iObject2);
+
+        return swrlIndividualPropertyAtom;
+
+    } // createIndividualPropertyAtom
+
+
+    public SWRLDifferentIndividualsAtom createDifferentIndividualsAtom(RDFResource argument1,
+                                                                       RDFResource argument2) {
+        SWRLDifferentIndividualsAtom swrlDifferentIndividualsAtom;
+
+        swrlDifferentIndividualsAtom = (SWRLDifferentIndividualsAtom) differentIndividualsAtomCls.createAnonymousInstance();
+        swrlDifferentIndividualsAtom.setArgument1(argument1);
+        swrlDifferentIndividualsAtom.setArgument2(argument2);
+
+        return swrlDifferentIndividualsAtom;
+    } // createDifferentIndividualsAtom
+
+
+    public SWRLSameIndividualAtom createSameIndividualAtom(RDFResource argument1,
+                                                           RDFResource argument2) {
+        SWRLSameIndividualAtom swrlSameIndividualAtom;
+
+        swrlSameIndividualAtom = (SWRLSameIndividualAtom) sameIndividualAtomCls.createAnonymousInstance();
+        swrlSameIndividualAtom.setArgument1(argument1);
+        swrlSameIndividualAtom.setArgument2(argument2);
+
+        return swrlSameIndividualAtom;
+    } // createSameIndividualAtom
+
+
+    public SWRLVariable createVariable(String name) {
+        return (SWRLVariable) owlModel.getRDFSNamedClass(SWRLNames.Cls.VARIABLE).createInstance(name);
+    } // createVariable
+
+
+    public SWRLBuiltin createBuiltin(String name) {
+        return (SWRLBuiltin) owlModel.getRDFSNamedClass(SWRLNames.Cls.BUILTIN).createInstance(name);
+    } // createBuiltin
+
+
+    public SWRLBuiltin getBuiltin(String name) {
+        RDFResource resource = owlModel.getRDFResource(name);
+        if (resource instanceof SWRLBuiltin) {
+            return (SWRLBuiltin) resource;
+        }
+        else {
+            System.err.println("[SWRLFactory]  Invalid attempt to cast " + name +
+                    " into SWRLBuiltin (real type is " + resource.getProtegeType() + ")");
+            return null;
+        }
+    } // createBuiltin
+
+
+    public Collection getBuiltins() {
+        RDFSNamedClass builtinCls = owlModel.getRDFSNamedClass(SWRLNames.Cls.BUILTIN);
+        return builtinCls.getInstances(true);
     }
-    else {
-      System.err.println("[SWRLFactory]  Invalid attempt to cast " + name +
-                         " into SWRLBuiltin (real type is " + resource.getProtegeType() + ")");
-      return null;
+
+
+    public Collection getImps() {
+        RDFSClass impCls = owlModel.getRDFSNamedClass(SWRLNames.Cls.IMP);
+        return impCls.getInstances(true);
     }
-  } // getBuiltin
-
-  public Collection getBuiltins() 
-  {
-    RDFSNamedClass builtinCls = owlModel.getRDFSNamedClass(SWRLNames.Cls.BUILTIN);
-    return builtinCls.getInstances(true);
-  }
-
-  public Collection getImps() 
-  {
-    return systemFrames.getImpCls().getInstances(true);
-  } // getImps
-
-  public Collection getEnabledImps() { return getImps(new HashSet<String>(), true); }
-  public Collection getEnabledImps(Set<String> ruleGroupNames) { return getImps(ruleGroupNames, true); }
-
-  public Collection getEnabledImps(String ruleGroupName) 
-  { 
-    Set<String> ruleGroupNames = new HashSet<String>();
-    ruleGroupNames.add(ruleGroupName);
-    return getImps(ruleGroupNames, true); 
-  } // getEnabledImps
-
-  // If the ruleGroupNames is empty, return all imps.
-  private Collection getImps(Set<String> ruleGroupNames, boolean isEnabled) 
-  {
-    Collection result = new ArrayList();
-    Collection imps = getImps();
-
-    if (imps != null) {
-      Iterator iterator = imps.iterator();
-      while (iterator.hasNext()) {
-        SWRLImp imp = (SWRLImp)iterator.next();
-        if (ruleGroupNames.isEmpty() || imp.isInRuleGroups(ruleGroupNames)) {
-          if (imp.isEnabled() == isEnabled) result.add(imp);
-        } // if
-      } // while
-    } // if
-    return result;
-  } // getImps
 
   public void deleteImps()
   {
@@ -270,10 +276,10 @@ public class SWRLFactory
       String ruleName = imp.getLocalName();
       String expression = imp.getBrowserText();
 
-      if (hasImp(ruleName)) throw new SWRLFactoryException("attempt to copy rule '" + ruleName + "' that has same name as an existing rule");
+      if (hasImp(ruleName)) throw new SWRLFactoryException("Attempt to copy rule '" + ruleName + "' that has same name as an existing rule.");
 
       try { createImp(ruleName, expression); }
-      catch (SWRLParseException e) { throw new SWRLFactoryException("error copying rule '" + ruleName + "': " + e.getMessage()); }
+      catch (SWRLParseException e) { throw new SWRLFactoryException("Error copying rule '" + ruleName + "': " + e.getMessage()); }
     } // for
   } // copyImps
 
@@ -283,7 +289,8 @@ public class SWRLFactory
     SWRLImp result = null;
 
     if (resource instanceof SWRLImp) result = (SWRLImp) resource;
-    else throw new SWRLFactoryException("invalid attempt to cast " + name + " into SWRLBuiltin (real type is " + resource.getProtegeType() + ")");
+    else throw new SWRLFactoryException("Invalid attempt to cast " + name +
+                                        " into SWRLBuiltin (real type is " + resource.getProtegeType() + ")");
 
     return result;
   } // getImp
@@ -297,7 +304,7 @@ public class SWRLFactory
 
   public String getNewImpName() {
     String base = "Rule-";
-    int i = Math.max(1, systemFrames.getImpCls().getInstances(false).size());
+    int i = Math.max(1, impCls.getInstances(false).size());
     while (owlModel.getRDFResource(base + i) != null) {
       i++;
         }
@@ -330,107 +337,22 @@ public class SWRLFactory
     return result;
   } // getReferencedImps
 
-  public void enableAll() { enableStatusUpdate(new HashSet<String>(), true); }
-  public void disableAll() { enableStatusUpdate(new HashSet<String>(), false); }
-
-  public void enableAll(Set<String> ruleGroupNames) { enableStatusUpdate(ruleGroupNames, true); }
-  public void disableAll(Set<String> ruleGroupNames) { enableStatusUpdate(ruleGroupNames, false); }
-
-  public void enableAll(String ruleGroupName) 
-  {
-    Set<String> ruleGroupNames = new HashSet<String>();
-    ruleGroupNames.add(ruleGroupName);
-    enableStatusUpdate(ruleGroupNames, true); 
-  } // enable
-
-  public void disableAll(String ruleGroupName) 
-  {
-    Set<String> ruleGroupNames = new HashSet<String>();
-    ruleGroupNames.add(ruleGroupName);
-    enableStatusUpdate(ruleGroupNames, false); 
-  } // enable
-
-  public boolean isSWRLResource(RDFResource resource)
-  {
-    return  (resource instanceof SWRLAtomList) || (resource instanceof SWRLBuiltinAtom) || (resource instanceof SWRLClassAtom) || 
-            (resource instanceof SWRLDataRangeAtom) || (resource instanceof SWRLDatavaluedPropertyAtom) ||
-            (resource instanceof SWRLDifferentIndividualsAtom) || (resource instanceof SWRLImp) || 
-            (resource instanceof SWRLIndividualPropertyAtom) || (resource instanceof SWRLSameIndividualAtom) || 
-            (resource instanceof SWRLBuiltin) || (resource instanceof SWRLAtom) || (resource instanceof SWRLVariable);
-  } // isSWRLResource
-
-  private void enableStatusUpdate(Set<String> ruleGroupNames, boolean enable)
+  public void enableAll()
   {
     Iterator iterator = getImps().iterator();
     while (iterator.hasNext()) {
       SWRLImp imp = (SWRLImp)iterator.next();
-      if (ruleGroupNames.isEmpty() || imp.isInRuleGroups(ruleGroupNames)) {
-        if (enable) imp.enable(); else imp.disable();
-      } // if
+      imp.enable();
     } // while
   } // enableAll
 
-  public Collection<RDFSNamedClass> getSWRLClasses() {
-	  ArrayList<RDFSNamedClass> swrlClasses = new ArrayList<RDFSNamedClass>();
-	  swrlClasses.add(systemFrames.getAtomListCls());		
-	  swrlClasses.add(systemFrames.getBuiltinAtomCls());    
-	  swrlClasses.add(systemFrames.getClassAtomCls());
-	  swrlClasses.add(systemFrames.getDataRangeAtomCls());
-	  swrlClasses.add(systemFrames.getDataValuedPropertyAtomCls());
-	  swrlClasses.add(systemFrames.getDifferentIndividualsAtomCls());
-	  swrlClasses.add(systemFrames.getImpCls());
-	  swrlClasses.add(systemFrames.getIndividualPropertyAtomCls());
-	  swrlClasses.add(systemFrames.getSameIndividualAtomCls());
-	  swrlClasses.add(systemFrames.getBuiltInCls());
-	  swrlClasses.add(systemFrames.getAtomCls());
-	  swrlClasses.add(systemFrames.getVariableCls());
-	  
-	  return swrlClasses;
-  }
-  
-  public Collection<RDFProperty> getSWRLProperties() {
-	  ArrayList<RDFProperty> swrlProperties = new ArrayList<RDFProperty>();
-	  swrlProperties.add(systemFrames.getBodyProperty());
-	  swrlProperties.add(systemFrames.getHeadProperty());
-	  swrlProperties.add(systemFrames.getArgumentsProperty());
-	  swrlProperties.add(systemFrames.getBuiltInProperty());
-	  swrlProperties.add(systemFrames.getArgument1Property());
-	  swrlProperties.add(systemFrames.getArgument2Property());
-	  swrlProperties.add(systemFrames.getClassPredicateProperty());
-	  swrlProperties.add(systemFrames.getPropertyPredicateProperty());
-	  swrlProperties.add(systemFrames.getDataRangeProperty());
-	  
-	  return swrlProperties;
-  }
-  
-  public Collection<RDFProperty> getSWRLBProperties(){
-	  ArrayList<RDFProperty> swrlbProperties = new ArrayList<RDFProperty>();
-	  	  
-	  RDFProperty swrlbArgs = owlModel.getRDFProperty(SWRLNames.Slot.ARGS);
-	  if (swrlbArgs != null) {
-		  swrlbProperties.add(swrlbArgs);
-	  }
-	  
-	  RDFProperty swrlbMinArgs = owlModel.getRDFProperty(SWRLNames.Slot.MIN_ARGS);
-	  if (swrlbMinArgs != null) {
-		  swrlbProperties.add(swrlbMinArgs);
-	  }
-
-	  RDFProperty swrlbMaxArgs = owlModel.getRDFProperty(SWRLNames.Slot.MAX_ARGS);
-	  if (swrlbMaxArgs != null) {
-		  swrlbProperties.add(swrlbMaxArgs);
-	  }
-
-	  return swrlbProperties;
-  }
-  
-  public String getOwlNameFromIdentifier(String name) {
-	  return NamespaceUtil.getFullName(owlModel, name);
-  }
-  
-  public String getIdentifierFromOwlName(String owlName) {
-	  return NamespaceUtil.getPrefixedName(owlModel, owlName);
-  }
-
+  public void disableAll()
+  {
+    Iterator iterator = getImps().iterator();
+    while (iterator.hasNext()) {
+      SWRLImp imp = (SWRLImp)iterator.next();
+      imp.disable();
+    } // while
+  } // disable
 
 } // SWRLFactory

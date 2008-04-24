@@ -20,7 +20,7 @@ public class OWLClassRendererFactoryFailedTestCase extends AbstractJenaTestCase 
 
     public void testAvailables() {
         Collection classes = Arrays.asList(OWLClassDisplayFactory.getAvailableDisplayClasses());
-        assertEquals(3, classes.size());
+        assertEquals(2, classes.size());
         assertContains(CompactOWLClassDisplay.class, classes);
         assertContains(ManchesterOWLClassDisplay.class, classes);
     }

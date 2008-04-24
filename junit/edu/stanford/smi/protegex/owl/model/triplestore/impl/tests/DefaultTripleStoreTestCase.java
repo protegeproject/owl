@@ -1,16 +1,16 @@
 package edu.stanford.smi.protegex.owl.model.triplestore.impl.tests;
 
-import java.util.Collections;
-import java.util.List;
-
 import edu.stanford.smi.protege.model.FrameID;
 import edu.stanford.smi.protege.model.Model;
 import edu.stanford.smi.protege.model.framestore.NarrowFrameStore;
+import edu.stanford.smi.protegex.owl.jena.triplestore.JenaTripleStore;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultRDFProperty;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
-import edu.stanford.smi.protegex.owl.model.triplestore.impl.TripleStoreImpl;
 import edu.stanford.smi.protegex.owl.tests.AbstractJenaTestCase;
+
+import java.util.Collections;
+import java.util.List;
 
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
@@ -28,17 +28,11 @@ public class DefaultTripleStoreTestCase extends AbstractJenaTestCase {
         owlModel.getTripleStoreModel().setActiveTripleStore(userStore);
         assertEquals(userStore, owlModel.getTripleStoreModel().getActiveTripleStore());
 
-        NarrowFrameStore nfs = ((TripleStoreImpl) systemStore).getNarrowFrameStore();
+        NarrowFrameStore nfs = ((JenaTripleStore) systemStore).getNarrowFrameStore();
         nfs.getValues(owlModel.getOWLThingClass(), owlModel.getSlot(Model.Slot.DIRECT_TYPES), null, false);
-        RDFProperty aldi = new DefaultRDFProperty(owlModel, createFrameID());
+        RDFProperty aldi = new DefaultRDFProperty(owlModel, FrameID.createLocal(99998));
         nfs.addValues(aldi, aldi, null, false, Collections.singleton("Value"));
     }
-    
-    private int frameCounter = 0;
-    public FrameID createFrameID() {
-        return new FrameID("OWLTestEntity" + frameCounter++);
-    }
-
 
 
 }

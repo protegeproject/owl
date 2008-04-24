@@ -4,12 +4,9 @@ import edu.stanford.smi.protege.event.FrameAdapter;
 import edu.stanford.smi.protege.event.FrameEvent;
 import edu.stanford.smi.protege.event.FrameListener;
 import edu.stanford.smi.protege.model.*;
-import edu.stanford.smi.protege.server.framestore.RemoteClientFrameStore;
-import edu.stanford.smi.protege.server.metaproject.impl.OperationImpl;
 import edu.stanford.smi.protege.ui.FrameRenderer;
 import edu.stanford.smi.protege.util.*;
 import edu.stanford.smi.protegex.owl.model.*;
-import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
 import edu.stanford.smi.protegex.owl.ui.OWLLabeledComponent;
 import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
 import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
@@ -31,17 +28,11 @@ public class OWLInversePropertyWidget extends AbstractPropertyWidget {
             OWLIcons.getAddIcon(OWLIcons.OWL_OBJECT_PROPERTY), false) {
 
         public void resourceSelected(RDFResource resource) {
-        	try {
-                beginTransaction("Set inverse property of " + getEditedResource().getBrowserText() + 
-                		" to " + resource.getBrowserText(), getEditedResource().getName());
-                final OWLProperty inverseProperty = (OWLProperty) resource;
-                adjustDomainAndRange((OWLProperty) getEditedResource(), inverseProperty);
-                setInverseProperty(inverseProperty);
-                commitTransaction();				
-			} catch (Exception e) {
-				rollbackTransaction();
-				// TODO: handle exception
-			}
+            beginTransaction("Set inverse property");
+            final OWLProperty inverseProperty = (OWLProperty) resource;
+            adjustDomainAndRange((OWLProperty) getEditedResource(), inverseProperty);
+            setInverseProperty(inverseProperty);
+            endTransaction();
         }
 
 
@@ -111,8 +102,7 @@ public class OWLInversePropertyWidget extends AbstractPropertyWidget {
         OWLProperty inverseProperty = null;
         try {
             OWLProperty forwardProperty = (OWLProperty) getEditedResource();
-            //TT: Maybe this should be on the inverse property, not on the forward one
-            beginTransaction("Create inverse property for " + forwardProperty.getName(), forwardProperty.getName());
+            beginTransaction("Create inverse property for " + forwardProperty.getName());
             String propertyName = "";
             String prefix = forwardProperty.getNamespacePrefix();
             if (prefix != null && prefix.length() > 0) {
@@ -131,11 +121,12 @@ public class OWLInversePropertyWidget extends AbstractPropertyWidget {
             if (forwardProperty.isAnnotationProperty() && !inverseProperty.isAnnotationProperty()) {
                 inverseProperty.addProtegeType(forwardProperty.getOWLModel().getOWLAnnotationPropertyClass());
             }
-            commitTransaction();
         }
         catch (Exception ex) {
-        	rollbackTransaction();
             OWLUI.handleError(getOWLModel(), ex);
+        }
+        finally {
+            endTransaction();
         }
         return inverseProperty;
     }
@@ -287,7 +278,7 @@ public class OWLInversePropertyWidget extends AbstractPropertyWidget {
             oldInstance.removeFrameListener(frameListener);
         }
         super.setInstance(newInstance);
-        if (newInstance != null && !isSlotAtCls()) {        	
+        if (newInstance != null && !isSlotAtCls()) {
             newInstance.addFrameListener(frameListener);
         }
     }
@@ -323,25 +314,8 @@ public class OWLInversePropertyWidget extends AbstractPropertyWidget {
             ValueType type = ((Slot) resource).getValueType();
             editable = equals(type, ValueType.INSTANCE) || equals(type, ValueType.CLS);
         }
-        setEnabled(editable);
-    }
-    
-    @Override
-    public void setEnabled(boolean enabled) {
-    	enabled = enabled && RemoteClientFrameStore.isOperationAllowed(getOWLModel(), OperationImpl.PROPERTY_TAB_WRITE);
-        createAction.setAllowed(enabled);
-        addAction.setEnabled(enabled);
-        removeAction.setAllowed(enabled);    	
-    	super.setEnabled(enabled);
-    }
-    
-    @Override
-    public void dispose() {
-    	Instance resource = getEditedResource();
-    	 if (resource != null && !isSlotAtCls()) {         	
-         	resource.removeFrameListener(frameListener);
-         }
-    	    	
-    	super.dispose();
+        createAction.setAllowed(editable);
+        addAction.setEnabled(editable);
+        removeAction.setAllowed(editable);
     }
 }

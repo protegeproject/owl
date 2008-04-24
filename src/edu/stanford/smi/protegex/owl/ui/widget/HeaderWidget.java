@@ -38,7 +38,6 @@ public class HeaderWidget extends AbstractSlotWidget {
 
         component = newComponent;
         component.setSubject((RDFResource) getInstance());
-        component.setEnabled(isEnabled());
         add(BorderLayout.CENTER, component);
         revalidate();
     }
@@ -46,7 +45,7 @@ public class HeaderWidget extends AbstractSlotWidget {
 
     public void activateAnnotationsComponent() {
         RDFProperty property = (RDFProperty) getSlot();
-        activate(new AnnotationsComponent(property, isReadOnlyConfiguredWidget()) {
+        activate(new AnnotationsComponent(property) {
             protected void addButtons(LabeledComponent lc) {
                 super.addButtons(lc);
                 lc.addHeaderSeparator();
@@ -63,7 +62,7 @@ public class HeaderWidget extends AbstractSlotWidget {
 
     public void activateTriplesComponent() {
         RDFProperty property = (RDFProperty) getSlot();
-        activate(new TriplesComponent(property, isReadOnlyConfiguredWidget()) {
+        activate(new TriplesComponent(property) {
             protected void addButtons(LabeledComponent lc) {
                 super.addButtons(lc);
                 lc.addHeaderSeparator();
@@ -96,16 +95,4 @@ public class HeaderWidget extends AbstractSlotWidget {
             component.setSubject(resource);
         }
     }
-    
-	@Override
-	public void setEnabled(boolean enabled) {
-		component.setEnabled(enabled);	
-		super.setEnabled(enabled);
-	}
-	
-	@Override
-	public void dispose() {
-		component.dispose();
-	}
-	
 }

@@ -14,7 +14,6 @@ import java.awt.event.KeyListener;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.logging.Level;
 
@@ -38,7 +37,6 @@ import edu.stanford.smi.protege.ui.FrameRenderer;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
-import edu.stanford.smi.protegex.owl.model.classparser.ParserUtils;
 import edu.stanford.smi.protegex.owl.model.classparser.manchester.ManchesterOWLParserUtil;
 import edu.stanford.smi.protegex.owl.ui.code.OWLResourceNameMatcher;
 import edu.stanford.smi.protegex.owl.ui.code.OWLTextFormatter;
@@ -92,7 +90,7 @@ public class ManchesterOWLTextPane extends JTextPane implements KeyListener {
 
     private DocumentListener docListener;
 
-    private Map<String, Style> styleMap;
+    private Map styleMap;
 
     private Style defaultStyle;
 
@@ -120,7 +118,7 @@ public class ManchesterOWLTextPane extends JTextPane implements KeyListener {
             public void caretUpdate(CaretEvent e) {
                 if (previousKeyPressed != null) {
                     int keyCode = previousKeyPressed.getKeyCode();
-                    if (!ParserUtils.isIdChar(previousKeyPressed.getKeyChar()) &&
+                    if (!isIdChar(previousKeyPressed.getKeyChar()) &&
                             keyCode != KeyEvent.VK_BACK_SPACE &&
                             keyCode != KeyEvent.VK_DELETE) {
                         closeComboBox();
@@ -170,7 +168,7 @@ public class ManchesterOWLTextPane extends JTextPane implements KeyListener {
         Style logicalKWStyle = doc.addStyle("lk", null);
         StyleConstants.setForeground(logicalKWStyle, LOGICAL_OPERAND_KEYWORD_COLOR);
         StyleConstants.setBold(logicalKWStyle, true);
-        styleMap = new HashMap<String, Style>();
+        styleMap = new HashMap();
         styleMap.put(ManchesterOWLParserUtil.getAllKeyword(), restrictionKWStyle);
         styleMap.put(ManchesterOWLParserUtil.getSomeKeyword(), restrictionKWStyle);
         styleMap.put(ManchesterOWLParserUtil.getHasKeyword(), restrictionKWStyle);
@@ -198,7 +196,7 @@ public class ManchesterOWLTextPane extends JTextPane implements KeyListener {
                 StyledDocument doc = (StyledDocument) getDocument();
                 while (tokenizer.hasMoreTokens()) {
                     String curToken = tokenizer.nextToken();
-                    Style style = styleMap.get(curToken);
+                    Style style = (Style) styleMap.get(curToken);
                     if (style != null) {
                         doc.setCharacterAttributes(start, curToken.length(), style, true);
                     }
@@ -216,8 +214,11 @@ public class ManchesterOWLTextPane extends JTextPane implements KeyListener {
     private void acceptSelectedResource() {
         String text = getText();
         int pos = getCaretPosition();
-        int i = ParserUtils.findSplittingPoint(text.substring(0, pos));
-        String prefix = text.substring(i, pos);
+        int i = pos - 1;
+        while (i >= 0 && isIdChar(text.charAt(i))) {
+            i--;
+        }
+        String prefix = text.substring(i + 1, pos);
         RDFResource resource = ((RDFResource) comboBox.getSelectedItem());
         extendPartialName(prefix, resourceNameMatcher.getInsertString(resource));
         updateErrorDisplay();
@@ -273,12 +274,15 @@ public class ManchesterOWLTextPane extends JTextPane implements KeyListener {
     private void extendPartialName(boolean autoInsert) {
         String text = getText();
         int pos = getCaretPosition();
-        int i = ParserUtils.findSplittingPoint(text.substring(0, pos));
-        String prefix = text.substring(i, pos);
-        String leftString = text.substring(0, i);
-        Set<RDFResource> resources = resourceNameMatcher.getMatchingResources(prefix, leftString, model);
+        int i = pos - 1;
+        while (i >= 0 && isIdChar(text.charAt(i))) {
+            i--;
+        }
+        String prefix = text.substring(i + 1, pos);
+        String leftString = text.substring(0, i + 1);
+        java.util.List resources = resourceNameMatcher.getMatchingResources(prefix, leftString, model);
         if (autoInsert && resources.size() == 1) {
-            RDFResource resource = resources.iterator().next();
+            RDFResource resource = (RDFResource) resources.get(0);
             extendPartialName(prefix, resourceNameMatcher.getInsertString(resource));
             closeComboBox();
         }
@@ -398,6 +402,11 @@ public class ManchesterOWLTextPane extends JTextPane implements KeyListener {
     }
 
 
+    public static boolean isIdChar(char ch) {
+        return Character.isJavaIdentifierPart(ch) || ch == ':' || ch == '-';
+    }
+
+
     public void keyPressed(KeyEvent e) {
         updateErrorDisplay();
         previousKeyPressed = e;
@@ -457,7 +466,7 @@ public class ManchesterOWLTextPane extends JTextPane implements KeyListener {
         if (syntaxConverter != null) {
             char ch = e.getKeyChar();
             int code = e.getKeyCode();
-            if (!ParserUtils.isIdChar(ch) &&
+            if (!isIdChar(ch) &&
                     code != KeyEvent.VK_BACK_SPACE &&
                     code != KeyEvent.VK_DELETE) {
                 syntaxConverter.convertSyntax(this);
@@ -470,10 +479,13 @@ public class ManchesterOWLTextPane extends JTextPane implements KeyListener {
         if (isComboBoxVisible()) {
             String text = getText();
             int pos = getCaretPosition();
-            int i = ParserUtils.findSplittingPoint(text.substring(0, pos));
-            String prefix = text.substring(i, pos);
-            String leftString = text.substring(0, i);
-            Set<RDFResource> frames = resourceNameMatcher.getMatchingResources(prefix, leftString, model);
+            int i = pos - 1;
+            while (i >= 0 && isIdChar(text.charAt(i))) {
+                i--;
+            }
+            String prefix = text.substring(i + 1, pos);
+            String leftString = text.substring(0, i + 1);
+            java.util.List frames = resourceNameMatcher.getMatchingResources(prefix, leftString, model);
             if (frames.size() == 0) {
                 closeComboBox();
             }
@@ -503,7 +515,7 @@ public class ManchesterOWLTextPane extends JTextPane implements KeyListener {
 //    public void setCellEditor(CellEditor cellEditor) {
 //        this.cellEditor = cellEditor;
 //    }
-    private void showComboBox(Set<RDFResource> frames, int startIndex) {
+    private void showComboBox(java.util.List frames, int startIndex) {
         closeComboBox();
         edu.stanford.smi.protege.model.Frame[] fs = (edu.stanford.smi.protege.model.Frame[]) frames.toArray(new edu.stanford.smi.protege.model.Frame[0]);
         Arrays.sort(fs, new ResourceIgnoreCaseComparator());
@@ -636,18 +648,14 @@ public class ManchesterOWLTextPane extends JTextPane implements KeyListener {
 
 
     private boolean isCaretAfterClosingBracket() {
-    	try {
-            int caretPos = getCaretPosition();
-            if (caretPos > 1) {
-                return getText().charAt(caretPos - 1) == ')';
-            }
-            else {
-                return false;
-            }    		
-    	} catch (Exception e) {
-    		// do nothing
-    		return false;
-    	}
+        int caretPos = getCaretPosition();
+        if (caretPos > 1) {
+            return getText().charAt(caretPos - 1) == ')';
+        }
+        else {
+            return false;
+        }
+
     }
 
 

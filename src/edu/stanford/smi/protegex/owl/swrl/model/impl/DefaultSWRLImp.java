@@ -1,172 +1,106 @@
 
 package edu.stanford.smi.protegex.owl.swrl.model.impl;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.swing.Icon;
-
-import edu.stanford.smi.protege.model.Frame;
-import edu.stanford.smi.protege.model.FrameID;
-import edu.stanford.smi.protege.model.KnowledgeBase;
-import edu.stanford.smi.protege.model.Model;
-import edu.stanford.smi.protege.model.Reference;
-import edu.stanford.smi.protege.model.Slot;
-import edu.stanford.smi.protege.util.Log;
-import edu.stanford.smi.protegex.owl.model.OWLIndividual;
-import edu.stanford.smi.protegex.owl.model.OWLModel;
-import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
-import edu.stanford.smi.protegex.owl.model.OWLProperty;
-import edu.stanford.smi.protegex.owl.swrl.model.SWRLAtomList;
-import edu.stanford.smi.protegex.owl.swrl.model.SWRLBuiltin;
-import edu.stanford.smi.protegex.owl.swrl.model.SWRLImp;
-import edu.stanford.smi.protegex.owl.swrl.model.SWRLIndividual;
-import edu.stanford.smi.protegex.owl.swrl.model.SWRLNames;
+import edu.stanford.smi.protege.model.*;
+import edu.stanford.smi.protegex.owl.model.*;
+import edu.stanford.smi.protegex.owl.model.impl.*;
+import edu.stanford.smi.protegex.owl.swrl.model.*;
 import edu.stanford.smi.protegex.owl.swrl.parser.SWRLParseException;
 import edu.stanford.smi.protegex.owl.swrl.parser.SWRLParser;
 import edu.stanford.smi.protegex.owl.swrl.ui.icons.SWRLIcons;
 import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
+import edu.stanford.smi.protegex.owl.swrl.model.impl.SWRLUtil;
 
-public class DefaultSWRLImp extends AbstractSWRLIndividual implements SWRLImp 
+import javax.swing.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
+
+public class DefaultSWRLImp extends DefaultOWLIndividual implements SWRLImp 
 {
-  private Logger log = Log.getLogger(DefaultSWRLImp.class);
-    
   public static final String EMPTY_RULE_TEXT = "<EMPTY_RULE>";
-  private boolean isRuleEnabled = true;
-  private Map<String, Boolean> ruleGroups; // Contains rule groups and their enabled status.
+  private boolean isEnabled;
 
-  private OWLProperty ruleEnabledProperty, ruleGroupProperty, ruleGroupEnabledProperty;
-  private OWLNamedClass ruleGroupClass;
- 
   public DefaultSWRLImp(KnowledgeBase kb, FrameID id) 
   {
     super(kb, id);
-    initialize();
+    isEnabled = getIsEnabledAnnotation();
   } // DefaultSWRLImp
 
   public DefaultSWRLImp() 
   {
-    initialize();
+    isEnabled = getIsEnabledAnnotation();
   } // DefaultSWRLImp
 
-  private void initialize()
-  {
-    ruleEnabledProperty = getOWLModel().getOWLProperty(SWRLNames.Annotations.IS_RULE_ENABLED);
-    ruleGroupProperty = getOWLModel().getOWLProperty(SWRLNames.Annotations.HAS_RULE_GROUP);
-    ruleGroupEnabledProperty = getOWLModel().getOWLProperty(SWRLNames.Annotations.IS_RULE_GROUP_ENABLED);
-    ruleGroupClass = getOWLModel().getOWLNamedClass(SWRLNames.Annotations.RULE_GROUP);
-
-    isRuleEnabled = getIsRuleEnabledAnnotation();
-    ruleGroups = getRuleGroupAnnotations();
-  } // initialize
-
-  public SWRLImp createClone() 
-  {
+  public SWRLImp createClone() {
     String text = getBrowserText();
-    OWLModel owlModel = (OWLModel)getKnowledgeBase();
+    OWLModel owlModel = (OWLModel) getKnowledgeBase();
     SWRLParser parser = new SWRLParser(owlModel);
     parser.setParseOnly(false);
     try {
       return parser.parse(text);
-    } catch (SWRLParseException ex) {
-      log.log(Level.SEVERE, "Shouldn't Happen ", ex);
-      return null;  // Should not happen
-    } // try
-  } // createClone
+    }
+    catch (Exception ex) {
+      return null;  // Cannot happen
+    }
+  }
 
-  private boolean getIsRuleEnabledAnnotation()
+  private boolean getIsEnabledAnnotation()
   {
-    if (ruleEnabledProperty == null) return true;
-    Object value = getPropertyValue(ruleEnabledProperty);
+    OWLProperty property = getOWLModel().getOWLProperty(SWRLNames.Annotations.IS_ENABLED);
+    if (property == null) return true;
+    Object value = getPropertyValue(property);
     if (value == null) return true;
     if (!(value instanceof Boolean)) return true; // Should not happen
     
     return ((Boolean)value).booleanValue();
-  } // getIsRuleEnabledAnnotation
+  } // getIsEnabledAnnotation
 
-  private Map<String, Boolean> getRuleGroupAnnotations()
-  {
-    Map<String, Boolean> result = new HashMap<String, Boolean>();
-
-    if (ruleGroupProperty != null && ruleGroupEnabledProperty != null) {
-      Collection values = getPropertyValues(ruleGroupProperty);
-      if (values != null) {
-        Iterator iterator = values.iterator();
-        while (iterator.hasNext()) {
-          Boolean enabled = Boolean.TRUE;
-          OWLIndividual ruleGroupIndividual = (OWLIndividual)iterator.next();
-          Object isEnabled = ruleGroupIndividual.getPropertyValue(ruleGroupEnabledProperty);
-          if (isEnabled != null) enabled = (Boolean)isEnabled;
-          result.put(ruleGroupIndividual.getName(), enabled);
-        } // while
-      } // if
-    } // if
-    
-    return result;
-  } // getRuleGroupNamesAnnotation
-
-  private void deleteHeadAndBody() {
-    Slot directInstancesSlot = getKnowledgeBase().getSlot(Model.Slot.DIRECT_INSTANCES);
-    Collection instances = getReferencedInstances();
-    for (Iterator it = instances.iterator(); it.hasNext();) {
-      Object o = it.next();
-      if (o instanceof SWRLIndividual && !(o instanceof SWRLBuiltin)) {
-        SWRLIndividual swrlIndividual = (SWRLIndividual) o;
-        if (!swrlIndividual.isDeleted()) {
-          Collection references = getKnowledgeBase().getReferences(swrlIndividual, -1);
-          boolean hasExternalRef = false;
-          for (Iterator rit = references.iterator(); rit.hasNext();) {
-            Reference reference = (Reference) rit.next();
-            if (!directInstancesSlot.equals(reference.getSlot())) {
-              Frame frame = reference.getFrame();
-              if (!instances.contains(frame) && !equals(frame)) {
-                hasExternalRef = true;
-              }
-            }
-          }
-                    if (!hasExternalRef) {
-                      swrlIndividual.delete();
+    private void deleteHeadAndBody() {
+        Slot directInstancesSlot = getKnowledgeBase().getSlot(Model.Slot.DIRECT_INSTANCES);
+        Collection instances = getReferencedInstances();
+        for (Iterator it = instances.iterator(); it.hasNext();) {
+            Object o = it.next();
+            if (o instanceof SWRLIndividual && !(o instanceof SWRLBuiltin)) {
+                SWRLIndividual swrlIndividual = (SWRLIndividual) o;
+                if (!swrlIndividual.isDeleted()) {
+                    Collection references = getKnowledgeBase().getReferences(swrlIndividual, -1);
+                    boolean hasExternalRef = false;
+                    for (Iterator rit = references.iterator(); rit.hasNext();) {
+                        Reference reference = (Reference) rit.next();
+                        if (!directInstancesSlot.equals(reference.getSlot())) {
+                            Frame frame = reference.getFrame();
+                            if (!instances.contains(frame) && !equals(frame)) {
+                                hasExternalRef = true;
+                            }
+                        }
                     }
+                    if (!hasExternalRef) {
+                        swrlIndividual.delete();
+                    }
+                }
+            }
         }
-      }
     }
-  }
 
-  public void deleteImp() {
-    deleteHeadAndBody();
-    delete();
-  }
 
-  public SWRLAtomList getHead() 
-  { 
-    Object propertyValue = getPropertyValue(getOWLModel().getRDFProperty(SWRLNames.Slot.HEAD)); 
+    public void deleteImp() {
+        deleteHeadAndBody();
+        delete();
+    }
 
-    if (propertyValue instanceof SWRLAtomList) return (SWRLAtomList)propertyValue;
-    else return null;
-  } // getHead
 
-  public SWRLAtomList getBody() 
-  { 
-    Object propertyValue = getPropertyValue(getOWLModel().getRDFProperty(SWRLNames.Slot.BODY)); 
+    public SWRLAtomList getHead() {
+        return (SWRLAtomList) getPropertyValue(getOWLModel().getRDFProperty(SWRLNames.Slot.HEAD));
+    } // getHead
 
-    if (propertyValue instanceof SWRLAtomList) return (SWRLAtomList)propertyValue;
-    else return null;
-  } // getBody
 
-  public void setBody(SWRLAtomList swrlAtomList) { setPropertyValue(getOWLModel().getRDFProperty(SWRLNames.Slot.BODY), swrlAtomList); } 
-  public void setHead(SWRLAtomList swrlAtomList) { setPropertyValue(getOWLModel().getRDFProperty(SWRLNames.Slot.HEAD), swrlAtomList); }
-
-  @Override
-public Icon getIcon() {
-    return isEditable() ? SWRLIcons.getImpIcon() :
+    public Icon getIcon() {
+        return isEditable() ? SWRLIcons.getImpIcon() :
                 OWLIcons.getReadOnlyIcon(SWRLIcons.getImpIcon(), "RoundedBoxFrame");
-  }
+    }
+
 
   public Set getReferencedInstances() 
   {
@@ -175,8 +109,7 @@ public Icon getIcon() {
     return set;
   }
 
-  @Override
-public void getReferencedInstances(Set set) 
+  public void getReferencedInstances(Set set) 
   {
     SWRLAtomList head = getHead();
     if (head != null) {
@@ -189,9 +122,18 @@ public void getReferencedInstances(Set set)
       body.getReferencedInstances(set);
     }
   }
+
+  public SWRLAtomList getBody() 
+  {
+    return (SWRLAtomList) getPropertyValue(getOWLModel().getRDFProperty(SWRLNames.Slot.BODY));
+  } // getBody
+
+  public void setBody(SWRLAtomList swrlAtomList) 
+  {
+    setPropertyValue(getOWLModel().getRDFProperty(SWRLNames.Slot.BODY), swrlAtomList);
+  } // setBody
   
-  @Override
-public String getBrowserText() 
+  public String getBrowserText() 
   {
     SWRLAtomList body = getBody();
     SWRLAtomList head = getHead();
@@ -208,6 +150,11 @@ public String getBrowserText()
     return s;
   } // toString
 
+  public void setHead(SWRLAtomList swrlAtomList) 
+  {
+    setPropertyValue(getOWLModel().getRDFProperty(SWRLNames.Slot.HEAD), swrlAtomList);
+  } // setHead
+
   public void setExpression(String parsableText) throws SWRLParseException 
   {
     SWRLParser parser = new SWRLParser(getOWLModel());
@@ -219,121 +166,25 @@ public String getBrowserText()
 
   public boolean isEnabled() 
   { 
-    return isRuleEnabled;
+    return isEnabled;
   } // isEnabled
 
-  public void enable() { enable(new HashSet<String>()); }
+  public void enable() 
+  { 
+    OWLProperty property = getOWLModel().getOWLProperty(SWRLNames.Annotations.IS_ENABLED);
 
-  public void enable(String ruleGroupName)
-  {
-    Set<String> ruleGroupNames = new HashSet<String>();
-    ruleGroupNames.add(ruleGroupName);
-    enable(ruleGroupNames);
+    if (property != null) setPropertyValue(property, Boolean.TRUE);
+    
+    isEnabled = true;
   } // enable
 
-  public void enable(Set<String> ruleGroupNames) 
+  public void disable() 
   { 
-    if (ruleGroupNames.isEmpty()) {
-      if (ruleEnabledProperty != null) setPropertyValue(ruleEnabledProperty, Boolean.TRUE);
-      isRuleEnabled = true;
-    } else {
-      for (String ruleGroupName : ruleGroupNames) {
-        OWLIndividual ruleGroupIndividual = getOWLModel().getOWLIndividual(ruleGroupName);
-        if (ruleGroupIndividual != null && ruleGroupProperty != null) {
-          addPropertyValue(ruleGroupProperty, ruleGroupIndividual);
-          ruleGroupIndividual.addPropertyValue(ruleGroupEnabledProperty, Boolean.TRUE);
-        }  // if
-        ruleGroups.put(ruleGroupName, Boolean.TRUE);
-      } // for
-    } // if  
-  } // enable
+    OWLProperty property = getOWLModel().getOWLProperty(SWRLNames.Annotations.IS_ENABLED);
 
-  public void disable() { disable(new HashSet<String>()); }
+    if (property != null) setPropertyValue(property, Boolean.FALSE);
 
-  public void disable(String ruleGroupName)
-  {
-    Set<String> ruleGroupNames = new HashSet<String>();
-    ruleGroupNames.add(ruleGroupName);
-    disable(ruleGroupNames);
+    isEnabled = false;
   } // disable
-
-  public void disable(Set<String> ruleGroupNames) 
-  { 
-    if (ruleGroupNames.isEmpty()) {
-      if (ruleEnabledProperty != null) setPropertyValue(ruleEnabledProperty, Boolean.FALSE);
-      isRuleEnabled = false;
-    } else {
-      for (String ruleGroupName : ruleGroupNames) {
-        OWLIndividual ruleGroupIndividual = getOWLModel().getOWLIndividual(ruleGroupName);
-        if (ruleGroupIndividual != null && ruleGroupProperty != null) {
-          addPropertyValue(ruleGroupProperty, ruleGroupIndividual);
-          ruleGroupIndividual.addPropertyValue(ruleGroupEnabledProperty, Boolean.FALSE);
-        }  // if
-        ruleGroups.put(ruleGroupName, Boolean.FALSE);
-      } // for
-    } // if  
-  } // disable
-
-  public Set<String> getRuleGroupNames() { return ruleGroups.keySet(); }
-  public boolean isInRuleGroup(String name) { return ruleGroups.containsKey(name); }
-
-  public boolean isInRuleGroups(Set<String> names) 
-  { 
-    for (String name : names) if (!ruleGroups.containsKey(name)) return false;
-    return true;
-  }  // isInRuleGroups
-
-  /**
-   ** Add a rule group name to a rule. Returns true on success. The name must the name of an OWL individual of class RuleGroup defined in
-   ** the ontology http://swrl.stanford.edu/ontologies/3.3/swrla.owl. Make the group enabled by default.
-   */
-  public boolean addRuleGroup(String name) 
-  { 
-    OWLNamedClass ruleGroupClass = getOWLModel().getOWLNamedClass(SWRLNames.Annotations.RULE_GROUP);
-    OWLProperty ruleGroupProperty = getOWLModel().getOWLProperty(SWRLNames.Annotations.HAS_RULE_GROUP);
-    OWLProperty ruleGroupEnabledProperty = getOWLModel().getOWLProperty(SWRLNames.Annotations.IS_RULE_GROUP_ENABLED);
-    boolean result = false;
-
-    if (isInRuleGroup(name)) return true;
-
-    if (ruleGroupClass != null) {
-      OWLIndividual ruleGroupIndividual = getOWLModel().getOWLIndividual(name);
-      if (ruleGroupIndividual != null) {
-        if (ruleGroupProperty != null) {
-          addPropertyValue(ruleGroupProperty, ruleGroupIndividual);
-          ruleGroupIndividual.addPropertyValue(ruleGroupEnabledProperty, Boolean.TRUE);
-          ruleGroups.put(name, Boolean.TRUE);
-          result = true;
-        } // if
-      } // if
-    } // if
-
-    return result;
-  } // addRuleGroupName
-
-  /**
-   ** Remove a rule group name from a rule. Returns true on success. 
-   */
-  public boolean removeRuleGroup(String name) 
-  { 
-    OWLNamedClass ruleGroupClass = getOWLModel().getOWLNamedClass(SWRLNames.Annotations.RULE_GROUP);
-    boolean result = false;
-
-    if (!isInRuleGroup(name)) return true;
-
-    if (ruleGroupClass != null) {
-      OWLIndividual individual = getOWLModel().getOWLIndividual(name);
-      if (individual != null) {
-        OWLProperty property = getOWLModel().getOWLProperty(SWRLNames.Annotations.HAS_RULE_GROUP);
-        if (property != null) {
-          removePropertyValue(property, individual);
-          ruleGroups.remove(name);
-          result = true;
-        } // if
-      } // if
-    } // if
-
-    return result;
-  } // removeRuleGroupName
 
 } // DefaultSWRLImp

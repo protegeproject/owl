@@ -52,8 +52,7 @@ public class OWLModelContentWriter implements RDFXMLContentWriter {
         // Render the appropriate ontology and its properties
         for (Iterator it = model.getOWLOntologies().iterator(); it.hasNext();) {
             OWLOntology ont = (OWLOntology) it.next();
-            TripleStore homeTripleStore = ont.getOWLModel().getTripleStoreModel().getHomeTripleStore(ont);
-			if ( homeTripleStore!= null && homeTripleStore.equals(tripleStore)) {
+            if (ont.getOWLModel().getTripleStoreModel().getHomeTripleStore(ont).equals(tripleStore)) {
                 RDFResourceRenderer renderer = new RDFResourceRenderer(ont, tripleStore, writer);
                 renderer.write();
                 renderedResources.add(ont);

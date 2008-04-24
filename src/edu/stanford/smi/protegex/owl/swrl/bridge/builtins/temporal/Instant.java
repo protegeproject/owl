@@ -5,6 +5,7 @@ import edu.stanford.smi.protegex.owl.swrl.bridge.builtins.temporal.exceptions.*;
 
 import java.sql.*;
 import java.util.*;
+import java.io.Serializable;
 
 /**
  ** Class that represents a single instant in time.

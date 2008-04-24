@@ -3,7 +3,6 @@ package edu.stanford.smi.protegex.owl.ui.repository;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
 import edu.stanford.smi.protegex.owl.ui.actions.AbstractOWLModelAction;
-import edu.stanford.smi.protegex.owl.ui.actions.OWLModelActionConstants;
 
 import java.awt.*;
 
@@ -18,7 +17,7 @@ import java.awt.*;
  */
 public class ShowRepositoryEditorAction extends AbstractOWLModelAction {
 
-    public final static String GROUP = OWLModelActionConstants.REPOSITORY_GROUP;
+    public final static String GROUP = "Preferences";
 
 
     public String getIconFileName() {

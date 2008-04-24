@@ -2,7 +2,6 @@ package edu.stanford.smi.protegex.owl.jena.parser.tests;
 
 import edu.stanford.smi.protege.model.Model;
 import edu.stanford.smi.protege.model.Slot;
-import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.jena.Jena;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
@@ -11,20 +10,12 @@ import edu.stanford.smi.protegex.owl.model.OWLUnionClass;
 import edu.stanford.smi.protegex.owl.tests.AbstractJenaTestCase;
 
 import java.util.Collection;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
  */
 public class LoadRDFSDomainTestCase extends AbstractJenaTestCase {
-    private static final Logger log = Log.getLogger(LoadRDFSDomainTestCase.class);
-    
-    public static void enableDebug() {
-        log.setLevel(Level.FINE);
-    }
 
-    @SuppressWarnings("unchecked")
     public void testLoadUnionDomain() throws Exception {
 
         OWLNamedClass oldPersonClass = owlModel.createOWLNamedClass("Person");
@@ -37,7 +28,7 @@ public class LoadRDFSDomainTestCase extends AbstractJenaTestCase {
         assertContains(oldPersonClass, oldDomain);
         assertContains(oldCorporationClass, oldDomain);
 
-        Jena.dumpRDF(owlModel.getOntModel(), log, Level.FINE);
+        Jena.dumpRDF(owlModel.getOntModel());
 
         OWLModel newModel = reload(owlModel);
         OWLNamedClass newPersonClass = newModel.getOWLNamedClass(oldPersonClass.getName());
@@ -57,7 +48,6 @@ public class LoadRDFSDomainTestCase extends AbstractJenaTestCase {
     public void testLoadInheritedDomain() throws Exception {
         loadRemoteOntology("inheritedDomain.owl");
         Slot subProperty = owlModel.getOWLProperty("subSlot");
-        assertSize(1, subProperty.getDirectOwnSlotValues(owlModel.getSlot(Model.Slot.DIRECT_DOMAIN)));
-        assertContains(owlModel.getOWLThingClass(), subProperty.getDirectOwnSlotValues(owlModel.getSlot(Model.Slot.DIRECT_DOMAIN)));
+        assertNull(subProperty.getDirectOwnSlotValue(owlModel.getSlot(Model.Slot.DIRECT_DOMAIN)));
     }
 }

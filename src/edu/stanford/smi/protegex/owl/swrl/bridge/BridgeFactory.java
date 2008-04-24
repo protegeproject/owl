@@ -1,25 +1,17 @@
 
-// TODO: should probably a more specific exception - not SWRLRuleEngineBridgeException
-
 package edu.stanford.smi.protegex.owl.swrl.bridge;
 
-import java.util.HashMap;
-import java.util.Set;
-import java.util.logging.Logger;
+import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.*;
 
-import edu.stanford.smi.protege.plugin.PluginUtilities;
-import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
-import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.InvalidBridgeNameException;
-import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.NoRegisteredBridgesException;
-import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.SWRLRuleEngineBridgeException;
+
+import java.util.*;
 
 /**
- ** Factory to create instances of common bridge entities
+ ** Factory to create instances of rule engine bridges. 
  */
 public class BridgeFactory
 {
-    private static transient final Logger log = Log.getLogger(BridgeFactory.class);
   private static HashMap<String, BridgeCreator> registeredBridges;
 
   static {
@@ -27,9 +19,13 @@ public class BridgeFactory
   } // static
 
   static {
-    Class cls = PluginUtilities.forName("edu.stanford.smi.protegex.owl.swrl.bridge.jess.SWRLJessBridge", true);
-    if (cls == null) System.err.println("SWRLJessBridge load failed - could not find class");
-   } // static
+
+    try { // TODO:  Hack until we can do a proper class load with the manifest
+      Class.forName("edu.stanford.smi.protegex.owl.swrl.bridge.jess.SWRLJessBridge");
+    } catch (ClassNotFoundException e) {
+      System.err.println("SWRLJessBridge load failed");
+    } // try
+  } // static
 
   public static void registerBridge(String bridgeName, BridgeCreator bridgeCreator)
   {
@@ -38,14 +34,14 @@ public class BridgeFactory
       registeredBridges.put(bridgeName, bridgeCreator);
     } else registeredBridges.put(bridgeName, bridgeCreator);
 
-    log.info("Rule engine '" + bridgeName + "' registered with the SWRLTab bridge.");
+    System.out.println("Rule engine '" + bridgeName + "' registered with the SWRLTab bridge.");
   } // registerBridge
 
   public static boolean isBridgeRegistered(String bridgeName) { return registeredBridges.containsKey(bridgeName); }
   public static Set<String> getRegisteredBridgeNames() { return registeredBridges.keySet(); }
 
   /**
-   ** Create an instance of a rule engine - a random registered engine is returned. If no engine is registered, a
+   ** Create an instance of a rule engine - a random registered engine is returned. If no engines are registered, a
    ** NoRegisteredBridgesException is returned.
    */
   public static SWRLRuleEngineBridge createBridge(OWLModel owlModel) throws SWRLRuleEngineBridgeException

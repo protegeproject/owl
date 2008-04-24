@@ -2,13 +2,9 @@ package edu.stanford.smi.protegex.owl.emf;
 
 import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.Slot;
-import edu.stanford.smi.protege.model.ValueType;
-import edu.stanford.smi.protege.util.ComponentUtilities;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
-import edu.stanford.smi.protegex.owl.model.RDFResource;
 import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
-import edu.stanford.smi.protegex.owl.ui.components.ComponentUtil;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -26,13 +22,11 @@ import java.util.Iterator;
  */
 public class EMFGenerator {
 
-	private final static String OBJECT_JAVA_CLASS_NAME = "Object";
-	
     private OWLModel owlModel;
 
     private EMFGeneratorOptions options;
-    
-    
+
+
     public EMFGenerator(OWLModel owlModel, EMFGeneratorOptions options) {
         this.owlModel = owlModel;
         this.options = options;
@@ -113,11 +107,10 @@ public class EMFGenerator {
         else {
             name = name.toUpperCase();
         }
-        
+        Class javaType = ((Cls) aClass).getTemplateSlotValueType(property).getJavaType();
         String javaTypeName = null;
         String modelAnnotations = null;
         if (((Cls) aClass).getTemplateSlotAllowsMultipleValues(property)) {
-        	//multiple cardinality
             javaTypeName = "java.util.List";
             if (!((Cls) aClass).getTemplateSlotAllowedClses(property).isEmpty()) {
                 RDFSNamedClass range = (RDFSNamedClass) ((Cls) aClass).getTemplateSlotAllowedClses(property).iterator().next();
@@ -125,27 +118,7 @@ public class EMFGenerator {
             }
         }
         else {
-        	//simple cardinality        	
-        	ValueType valueType = ((Cls) aClass).getTemplateSlotValueType(property);
-        	
-        	if (valueType == ValueType.INSTANCE) {
-        		
-        		if (property.hasRange(false)) {
-            		//only the first range is considered
-        			RDFResource range = property.getRange();
-        			if (range instanceof RDFSNamedClass) {
-        				javaTypeName = getInterfaceName((RDFSNamedClass) range);
-        			} else {
-        				javaTypeName = OBJECT_JAVA_CLASS_NAME;
-        			}
-        		} else {
-        			javaTypeName = OBJECT_JAVA_CLASS_NAME;
-        		}
-        	} else {        	
-        		Class javaType = valueType.getJavaType();
-        		javaTypeName = javaType.toString();
-        	}     	        	
-            
+            javaTypeName = javaType.toString();
             int index = javaTypeName.lastIndexOf('.');
             if (index > 0) {
                 javaTypeName = javaTypeName.substring(index + 1);
@@ -154,7 +127,7 @@ public class EMFGenerator {
         printWriter.println();
         printWriter.println("    /**");
         printWriter.println("     * Generated from property #" + property.getLocalName());
-        printWriter.println("     * @model " + modelAnnotations);
+        printWriter.println("     * @model" + modelAnnotations);
         printWriter.println("     */");
         printWriter.println("    " + javaTypeName + " get" + name + "();");
         //printWriter.println();

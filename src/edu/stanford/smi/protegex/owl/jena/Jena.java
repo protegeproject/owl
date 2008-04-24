@@ -1,6 +1,5 @@
 package edu.stanford.smi.protegex.owl.jena;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -18,7 +17,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import com.hp.hpl.jena.enhanced.EnhNode;
 import com.hp.hpl.jena.graph.Graph;
@@ -65,7 +63,6 @@ import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
  * @author Holger Knublauch  <holger@knublauch.com>
  */
 public class Jena {
-    private static transient final Logger log = Log.getLogger(Jena.class);
 
     public static final String DEFAULT_NAMESPACE_SEPARATOR = "#";
 
@@ -77,12 +74,11 @@ public class Jena {
 
     public final static String XML_TAG_HIDDEN_PROPERTY = "edu.stanford.smi.protegex.owl.jena.XML-Tag-Hidden";
 
-    private final static Set<Resource> systemClasses = new HashSet<Resource>();
+    private final static Set systemClasses = new HashSet();
 
     /**
      * @deprecated use ProtegeOWL.PLUGIN_FOLDER instead
      */
-    @Deprecated
     public final static String ROOT_FOLDER = "edu.stanford.smi.protegex.owl";
 
     public final static String DEFAULT_ONT_POLICY_FILE_PATH =
@@ -281,7 +277,7 @@ public class Jena {
                 Resource type = (Resource) tit.next();
                 if (!type.equals(annotationPropertyClass)) {
                     property.removeRDFType(type);
-                    log.info("Temporarily removed type " + type + " from " + property);
+                    System.out.println("Temporarily removed type " + type + " from " + property);
                 }
             }
         }
@@ -302,17 +298,6 @@ public class Jena {
 
     public static void dumpRDF(OntModel ontModel) {
         dumpRDF(ontModel, System.out);
-    }
-    
-    public static void dumpRDF(OntModel ontModel, Logger logger, Level level) {
-        if (!logger.isLoggable(level)) {
-            return;
-        }
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        dumpRDF(ontModel, out);
-        logger.log(level, "-----------------Ontology Dump Begin-----------------");
-        logger.log(level, out.toString());
-        logger.log(level, "----------------- Ontology Dump End -----------------");
     }
 
 
@@ -590,7 +575,7 @@ public class Jena {
 
     public static boolean isSystemResource(Resource ontResource) {
         String nameSpace = ontResource.getNameSpace();
-        return (nameSpace.equals(ProtegeNames.PROTEGE_OWL_NAMESPACE) &&
+        return (nameSpace.equals(ProtegeNames.NS) &&
                 !ProtegeNames.DEFAULT_LANGUAGE.equals(ontResource.getLocalName()) &&
                 !ProtegeNames.USED_LANGUAGE.equals(ontResource.getLocalName()) &&
                 !ProtegeNames.TODO_PREFIX.equals(ontResource.getLocalName()) &&
@@ -604,7 +589,7 @@ public class Jena {
 
     public static boolean isSystemClass(OntClass ontClass) {
         return systemClasses.contains(ontClass) ||
-                ontClass.getNameSpace().equals(ProtegeNames.PROTEGE_OWL_NAMESPACE);
+                ontClass.getNameSpace().equals(ProtegeNames.NS);
     }
 
 
@@ -637,25 +622,15 @@ public class Jena {
         return namespace.endsWith("#") || namespace.endsWith(":");
     }
 
-    
-    //backward compatibility
-    /**
-     * @deprecated - Use {@link prepareWriter(RDFWriter writer, String language, String namespace, String xmlBase)}  
-     */
-    @Deprecated
-    public static void prepareWriter(RDFWriter writer, String language, String namespace) {
-        String xmlBase = namespace;
-        if (Jena.isNamespaceWithSeparator(xmlBase) && !namespace.endsWith("/")) {
-            xmlBase = xmlBase.substring(0, xmlBase.length() - 1);
-        }
-    	
-        prepareWriter(writer, language, namespace, xmlBase);
-    }
 
-    public static void prepareWriter(RDFWriter writer, String language, String namespace, String xmlBase) {
+    public static void prepareWriter(RDFWriter writer, String language, String namespace) {
         if (FileUtils.langXMLAbbrev.equals(language) || FileUtils.langXML.equals(language)) {
             writer.setProperty("showXmlDeclaration", "" + !Jena.isXMLTagHidden());  // Suggested by Alix
             writer.setProperty("relativeURIs", "same-document");
+            String xmlBase = namespace;
+            if (Jena.isNamespaceWithSeparator(xmlBase) && !namespace.endsWith("/")) {
+                xmlBase = xmlBase.substring(0, xmlBase.length() - 1);
+            }
             writer.setProperty("xmlbase", xmlBase);
             if (FileUtils.langXMLAbbrev.equals(language)) {
                 writer.setProperty("blockRules", "propertyAttr");
@@ -689,7 +664,6 @@ public class Jena {
      * @deprecated this has a bug (it does not rename the resource in all models) -
      *             use the other renameResource method instead
      */
-    @Deprecated
     public static Resource renameResource(Resource old, String uri, Model owlFullModel) {
 
         OntModel homeModel = (OntModel) old.getModel();
@@ -753,7 +727,6 @@ public class Jena {
     /**
      * @deprecated wrong
      */
-    @Deprecated
     public static void renameResourceInModel(Model m, Resource old, Resource newResource) {
         List stmts = new ArrayList();
 
@@ -832,11 +805,11 @@ public class Jena {
            Resource res = (Resource) it.next();
            String namespace = res.getNameSpace();
            if (namespace != null) {
-               log.info("Namespace: " + namespace);
-               log.info("RDFS: " + RDFS.getURI().toString());
+               System.out.println("Namespace: " + namespace);
+               System.out.println("RDFS: " + RDFS.getURI().toString());
                if (namespace.equals(RDFS.getURI().toString()) ||
                        namespace.equals(RDF.getURI().toString())) {
-                   log.info("Note: " + res);
+                   System.out.println("Note: " + res);
                    return true;
                }
            }
@@ -921,7 +894,6 @@ public class Jena {
     /**
      * @deprecated
      */
-    @Deprecated
     public static String getOntPolicyFilePath(Project project) {
         if (project == null) {
             return DEFAULT_ONT_POLICY_FILE_PATH;
@@ -939,7 +911,6 @@ public class Jena {
     /**
      * @deprecated
      */
-    @Deprecated
     public static void setOntPolicyFilePath(Project project, String path) {
         project.getSources().setString(ONT_POLICY_PROPERTY, path);
     }

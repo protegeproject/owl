@@ -57,12 +57,15 @@ public interface ProtegeCls extends ProtegeInstance, Cls {
     Collection getConcreteSubclasses();
 
 
+    // Will be deprecated later
     BrowserSlotPattern getBrowserSlotPattern();
 
 
+    // Will be deprecated later
     BrowserSlotPattern getDirectBrowserSlotPattern();
 
 
+    // Will be deprecated later
     BrowserSlotPattern getInheritedBrowserSlotPattern();
 
 
@@ -105,7 +108,7 @@ public interface ProtegeCls extends ProtegeInstance, Cls {
      * @see RDFSClass#getSuperclasses (false)
      * @deprecated
      */
-    Collection<Cls> getDirectSuperclasses();
+    Collection getDirectSuperclasses();
 
 
     /**

@@ -1,7 +1,6 @@
 package edu.stanford.smi.protegex.owl.jena;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.URI;
 import java.util.Collection;
 import java.util.logging.Level;
@@ -9,9 +8,13 @@ import java.util.logging.Level;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.util.FileUtils;
 
+import edu.stanford.smi.protege.Application;
+import edu.stanford.smi.protege.model.ClientInitializerKnowledgeBaseFactory;
 import edu.stanford.smi.protege.model.KnowledgeBase;
 import edu.stanford.smi.protege.model.KnowledgeBaseSourcesEditor;
 import edu.stanford.smi.protege.model.Project;
+import edu.stanford.smi.protege.model.framestore.FrameStore;
+import edu.stanford.smi.protege.model.framestore.NarrowFrameStore;
 import edu.stanford.smi.protege.ui.ProjectManager;
 import edu.stanford.smi.protege.util.ApplicationProperties;
 import edu.stanford.smi.protege.util.Log;
@@ -19,13 +22,17 @@ import edu.stanford.smi.protege.util.MessageError;
 import edu.stanford.smi.protege.util.PropertyList;
 import edu.stanford.smi.protege.util.URIUtilities;
 import edu.stanford.smi.protegex.owl.database.OWLDatabaseModel;
+import edu.stanford.smi.protegex.owl.database.triplestore.DatabaseTripleStoreModel;
 import edu.stanford.smi.protegex.owl.jena.parser.ProtegeOWLParser;
+import edu.stanford.smi.protegex.owl.jena.triplestore.JenaTripleStoreModel;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.model.impl.OWLNamespaceManager;
 import edu.stanford.smi.protegex.owl.model.impl.OWLUtil;
-import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreModel;
 import edu.stanford.smi.protegex.owl.repository.util.RepositoryFileManager;
+import edu.stanford.smi.protegex.owl.resource.OWLText;
 import edu.stanford.smi.protegex.owl.storage.OWLKnowledgeBaseFactory;
 import edu.stanford.smi.protegex.owl.storage.ProtegeSaver;
-import edu.stanford.smi.protegex.owl.ui.menu.OWLBackwardsCompatibilityProjectFixups;
+import edu.stanford.smi.protegex.owl.ui.ProgressDisplayDialog;
 import edu.stanford.smi.protegex.owl.ui.resourceselection.ResourceSelectionAction;
 
 /**
@@ -33,13 +40,15 @@ import edu.stanford.smi.protegex.owl.ui.resourceselection.ResourceSelectionActio
  *
  * @author Holger Knublauch  <holger@knublauch.com>
  */
-public class JenaKnowledgeBaseFactory implements OWLKnowledgeBaseFactory {
+public class JenaKnowledgeBaseFactory implements OWLKnowledgeBaseFactory, ClientInitializerKnowledgeBaseFactory {
 
     public static final String JENA_SYNCHRONIZED = JenaKnowledgeBaseFactory.class.getName() + ".synchronized";
 
     public static final String OWL_FILE_URI_PROPERTY = "owl_file_name";
 
     public static final String OWL_FILE_LANGUAGE_PROPERTY = "owl_file_language";
+
+    public static final String OWL_BUILD_PROPERTY = "owl_build";
 
     public final static String[] fileLanguages = {
             FileUtils.langXMLAbbrev,
@@ -68,12 +77,15 @@ public class JenaKnowledgeBaseFactory implements OWLKnowledgeBaseFactory {
 
     public KnowledgeBase createKnowledgeBase(Collection errors) {
     	//have to test this in a different way..
-    	boolean inUI = ProjectManager.getProjectManager().getMainPanel() != null;
-        useStandalone = !inUI;
-
+    	boolean inUI = ProjectManager.getProjectManager().getCurrentProjectView() == null;
+        useStandalone = inUI == false;
+        OWLNamespaceManager namespaceManager = new OWLNamespaceManager();
         ResourceSelectionAction.setActivated(true);
-	    JenaOWLModel owlModel = new JenaOWLModel(this);
+	    JenaOWLModel owlModel = new JenaOWLModel(this, namespaceManager);
         owlModel.getRepositoryManager().addDefaultRepositories();
+	    if(inUI) {
+		    owlModel.getTaskManager().setProgressDisplay(new ProgressDisplayDialog());
+	    }
         return owlModel;
     }
 
@@ -96,6 +108,7 @@ public class JenaKnowledgeBaseFactory implements OWLKnowledgeBaseFactory {
             else {
                 URI projectURI = project.getProjectURI();
                 if (projectURI == null) {
+                    //return new File(owlURI).toURI();
                     return new URI(owlURI);
                 }
                 else {
@@ -162,41 +175,9 @@ public class JenaKnowledgeBaseFactory implements OWLKnowledgeBaseFactory {
             final URI absoluteURI = getFileURI(sources, owlModel.getProject());
 
             JenaKnowledgeBaseFactory.setOWLFileName(sources, absoluteURI.toString());
-            
-		    RepositoryFileManager.loadProjectRepositories(owlModel);
-		    try {
-		        ProtegeOWLParser parser = new ProtegeOWLParser(owlModel);    
-		        parser.run(absoluteURI);
-		    }
-	        catch (IOException t) {
-	            Log.getLogger().log(Level.SEVERE, "Error at loading file "+ absoluteURI, t);
-	            
-	            Collection parseErrors = ProtegeOWLParser.getErrors(); 
-	            if (parseErrors != null && parseErrors.size() > 0) {
-	                errors.addAll(parseErrors);
-	            }
-	            
-	            errors.add(t);
-	            
-	            String message = "Errors at loading OWL file from " + absoluteURI + "\n";
-	            message = message + "\nPlease consider running the file through an RDF or OWL validation service such as:";
-	            message = message + "\n  - RDF Validator: http://www.w3.org/RDF/Validator";
-	            message = message + "\n  - OWL Validator: http://phoebus.cs.man.ac.uk:9999/OWL/Validator";
-	            if (owlModel.getNamespaceManager().getPrefix("http://protege.stanford.edu/system#") != null ||
-	                    owlModel.getNamespaceManager().getPrefix("http://protege.stanford.edu/kb#") != null) {
-	                message = message + "\nThis file seems to have been created with the frame-based Protege RDF Backend. " +
-	                        "Please try to use the RDF Backend of Protege to open this file and then export it to OWL " +
-	                        "using Export to Format...";
-	            }
-	   
-	            errors.add(new MessageError(message));
-	        }
-	        //TODO: Improve this.
-	        Collection parseErrors = ProtegeOWLParser.getErrors(); 
-	        if (parseErrors != null && parseErrors.size() > 0) {
-	            errors.addAll(parseErrors);
-	        }
-
+                        
+		    loadRepositories(owlModel, absoluteURI);
+			owlModel.load(absoluteURI, language, errors);
         }
         else {
         	String message = "This plugin can currently only load OWL files into OWL projects";
@@ -206,12 +187,18 @@ public class JenaKnowledgeBaseFactory implements OWLKnowledgeBaseFactory {
     }
 
 
-    @SuppressWarnings("unchecked")
-	public void saveKnowledgeBase(KnowledgeBase kb, PropertyList sources, Collection errors) {
+    private void loadRepositories(OWLModel owlModel, URI uri) {    	
+        // Load any project repositories
+        RepositoryFileManager man = new RepositoryFileManager(owlModel);
+        man.loadProjectRepositories();
+    }
+
+
+    public void saveKnowledgeBase(KnowledgeBase kb, PropertyList sources, Collection errors) {
         String language = getOWLFileLanguage(sources);
         if (kb instanceof JenaOWLModel) {
             JenaOWLModel owlModel = (JenaOWLModel) kb;
-            OWLBackwardsCompatibilityProjectFixups.insertVersionData(sources);
+            sources.setInteger(OWL_BUILD_PROPERTY, OWLText.getBuildNumber());
             URI absoluteURI = getFileURI(sources, owlModel.getProject());
             owlModel.save(absoluteURI, language, errors);
             makeOWLFileNameRelativeIfPossible(owlModel.getProject());
@@ -239,7 +226,7 @@ public class JenaKnowledgeBaseFactory implements OWLKnowledgeBaseFactory {
     protected void makeOWLFileNameRelativeIfPossible(Project project) {
         String path = getOWLFilePath(project.getSources());
         URI projectDirURI = project.getProjectDirectoryURI();
-        if (projectDirURI != null && projectDirURI.toString().startsWith("file:")) {
+        if (projectDirURI.toString().startsWith("file:")) {
             try {
                 URI fileURI = new URI(path);
                 File fileFile = new File(fileURI);
@@ -270,7 +257,13 @@ public class JenaKnowledgeBaseFactory implements OWLKnowledgeBaseFactory {
         sources.setString(OWL_FILE_URI_PROPERTY, filePath);
     }
     
-    public static String getOWLFileName(PropertyList sources) {
-        return sources.getString(OWL_FILE_URI_PROPERTY);
+    public void initializeClientKnowledgeBase(FrameStore fs, 
+                                              NarrowFrameStore nfs,
+                                              KnowledgeBase kb) { 
+      if (kb instanceof OWLModel) {
+        JenaOWLModel owlModel = (JenaOWLModel) kb;
+        JenaTripleStoreModel tsm = new JenaTripleStoreModel(owlModel,nfs);
+        owlModel.setTripleStoreModel(tsm);
+      }
     }
 }

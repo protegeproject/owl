@@ -1,17 +1,11 @@
 package edu.stanford.smi.protegex.owl.ui.conditions.tests;
 
-import java.util.Arrays;
-
 import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.Instance;
-import edu.stanford.smi.protegex.owl.model.OWLHasValue;
-import edu.stanford.smi.protegex.owl.model.OWLIntersectionClass;
-import edu.stanford.smi.protegex.owl.model.OWLMaxCardinality;
-import edu.stanford.smi.protegex.owl.model.OWLMinCardinality;
-import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
-import edu.stanford.smi.protegex.owl.model.OWLObjectProperty;
-import edu.stanford.smi.protegex.owl.model.OWLRestriction;
+import edu.stanford.smi.protegex.owl.model.*;
 import edu.stanford.smi.protegex.owl.ui.conditions.ConditionsTableModel;
+
+import java.util.Arrays;
 
 /**
  * @author Holger Knublauch  <holger@knublauch.com>

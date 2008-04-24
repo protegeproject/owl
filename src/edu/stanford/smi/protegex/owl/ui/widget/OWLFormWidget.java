@@ -1,7 +1,6 @@
 package edu.stanford.smi.protegex.owl.ui.widget;
 
 import edu.stanford.smi.protege.model.*;
-import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protege.widget.AbstractSlotWidget;
 import edu.stanford.smi.protege.widget.FormWidget;
 import edu.stanford.smi.protege.widget.WidgetMapper;
@@ -50,12 +49,7 @@ public class OWLFormWidget extends FormWidget {
         if (cls instanceof RDFSNamedClass) {
             RDFSNamedClass namedClass = ((RDFSNamedClass) cls);
             OWLModel owlModel = namedClass.getOWLModel();
-            Set properties = new HashSet();
-            try {
-            	properties = namedClass.getAssociatedProperties();
-            } catch (Exception e) {
-            	Log.getLogger().warning("Problem at getting class form slots for " + cls);
-            }
+            Set properties = namedClass.getAssociatedProperties();
             properties = new HashSet(owlModel.getVisibleResources(properties.iterator()));
             Iterator i = getPropertyList().getNames().iterator();
             while (i.hasNext()) {

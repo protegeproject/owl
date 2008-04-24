@@ -3,8 +3,6 @@ package edu.stanford.smi.protegex.owl.ui.properties.range;
 import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.Facet;
 import edu.stanford.smi.protege.model.Instance;
-import edu.stanford.smi.protege.server.framestore.RemoteClientFrameStore;
-import edu.stanford.smi.protege.server.metaproject.impl.OperationImpl;
 import edu.stanford.smi.protege.ui.FrameComparator;
 import edu.stanford.smi.protege.ui.FrameRenderer;
 import edu.stanford.smi.protege.util.LabeledComponent;
@@ -223,7 +221,7 @@ public class OWLRangeWidget extends AbstractPropertyWidget {
 
     public void setEditable(boolean b) {
         dataRangeComponent.setEditable(b);
-        //classesComponent.setEditable(b);
+        classesComponent.setEditable(b);
         comboBox.setEnabled(b);
         if (facetsPanel != null) {
             facetsPanel.setEditable(b);
@@ -273,11 +271,4 @@ public class OWLRangeWidget extends AbstractPropertyWidget {
             }
         }
     }
-    
-    public void setEnabled(boolean enabled) {
-    	enabled = enabled && RemoteClientFrameStore.isOperationAllowed(getOWLModel(), OperationImpl.PROPERTY_TAB_WRITE);
-    	classesComponent.setEnabled(enabled);
-    	dataRangeComponent.setEnabled(enabled);
-    	super.setEnabled(enabled);
-    };
 }

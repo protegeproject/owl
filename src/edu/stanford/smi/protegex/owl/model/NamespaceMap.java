@@ -21,7 +21,7 @@ public interface NamespaceMap {
     String getPrefix(String namespace);
 
 
-    Collection<String> getPrefixes();
+    Collection getPrefixes();
 
 
     void removePrefix(String prefix);

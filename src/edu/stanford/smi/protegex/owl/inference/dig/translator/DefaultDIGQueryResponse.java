@@ -1,12 +1,8 @@
 package edu.stanford.smi.protegex.owl.inference.dig.translator;
 
-import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.model.OWLClass;
 import edu.stanford.smi.protegex.owl.model.OWLIndividual;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
-import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
-import edu.stanford.smi.protegex.owl.model.RDFResource;
-
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
@@ -51,14 +47,9 @@ public class DefaultDIGQueryResponse implements DIGQueryResponse {
             final NodeList catomList = ((Element) synonymsList.item(i)).getElementsByTagName(DIGVocabulary.Language.CATOM);
             for (int j = 0; j < catomList.getLength(); j++) {
                 String name = ((Element) catomList.item(j)).getAttribute("name");
-                final RDFResource aClass = kb.getRDFResource(name);
+                final OWLClass aClass = kb.getOWLNamedClass(name);
                 if (aClass != null) {
-                	if (aClass instanceof OWLNamedClass) {
-                		conceptList.add(aClass);
-                	} else {
-                		Log.getLogger().warning("Error at getting inferred type from DIG Response." +
-                				" Expected an OWL Named Class, got: " + aClass);
-                	}
+                    conceptList.add(aClass);
                 }
             }
             if (((Element) synonymsList.item(i)).getElementsByTagName(DIGVocabulary.Language.TOP).getLength() != 0) {

@@ -1,54 +1,31 @@
 package edu.stanford.smi.protegex.owl.model.triplestore;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import edu.stanford.smi.protege.model.Frame;
-import edu.stanford.smi.protege.model.Instance;
-import edu.stanford.smi.protege.model.KnowledgeBase;
-import edu.stanford.smi.protege.model.Model;
-import edu.stanford.smi.protege.model.Slot;
+import edu.stanford.smi.protege.model.*;
 import edu.stanford.smi.protege.model.framestore.MergingNarrowFrameStore;
 import edu.stanford.smi.protege.model.framestore.NarrowFrameStore;
 import edu.stanford.smi.protege.ui.FrameComparator;
-import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protege.util.WaitCursor;
 import edu.stanford.smi.protegex.owl.database.OWLDatabaseModel;
-import edu.stanford.smi.protegex.owl.model.OWLModel;
-import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
-import edu.stanford.smi.protegex.owl.model.RDFProperty;
-import edu.stanford.smi.protegex.owl.model.RDFResource;
-import edu.stanford.smi.protegex.owl.model.RDFSLiteral;
-import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
+import edu.stanford.smi.protegex.owl.model.*;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLOntology;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultRDFSLiteral;
 import edu.stanford.smi.protegex.owl.model.triplestore.impl.DefaultTriple;
 import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
-import edu.stanford.smi.protegex.owl.util.job.GetTripleStoreOfTripleJob;
+
+import java.util.*;
 
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
  */
 public class TripleStoreUtil {
-    private static transient final Logger log = Log.getLogger(TripleStoreUtil.class);
 
 
     public static void addToTripleStore(OWLModel owlModel, TripleStore tripleStore, RDFResource subject, RDFProperty predicate, Object object) {
         TripleStore oldTripleStore = owlModel.getTripleStoreModel().getActiveTripleStore();
         if (oldTripleStore != tripleStore) {
-            try {
-                owlModel.getTripleStoreModel().setActiveTripleStore(tripleStore);
-                subject.addPropertyValue(predicate, object);
-            }
-            finally {
-                owlModel.getTripleStoreModel().setActiveTripleStore(oldTripleStore);
-            }
+            owlModel.getTripleStoreModel().setActiveTripleStore(tripleStore);
+            subject.addPropertyValue(predicate, object);
+            owlModel.getTripleStoreModel().setActiveTripleStore(oldTripleStore);
         }
         else {
             subject.addPropertyValue(predicate, object);
@@ -71,7 +48,7 @@ public class TripleStoreUtil {
 
 
     public static RDFResource getFirstOntology(OWLModel owlModel, TripleStore tripleStore) {
-        if (!(owlModel instanceof OWLDatabaseModel)) { // there is only one ontology in this triple store.
+        if (!(owlModel instanceof OWLDatabaseModel)) { // there is only one ontology in this triple store
             RDFSNamedClass owlOntologyClass = owlModel.getOWLOntologyClass();
             Iterator ontologies = tripleStore.listSubjects(owlModel.getRDFTypeProperty(), owlOntologyClass);
             if (ontologies.hasNext()) {
@@ -93,17 +70,25 @@ public class TripleStoreUtil {
     }
 
 
-    /**
-     * Finds the triple store where a given fact is asserted.  There may be more
-     * than one in which case a random one of these triple stores is returned.
-     * 
-     * @param subject
-     * @param slot
-     * @param object
-     * @return
-     */
     public static TripleStore getTripleStoreOf(RDFResource subject, Slot slot, Object object) {
-        return new GetTripleStoreOfTripleJob(subject, slot, object).execute();
+
+        // Temporary hard-coding of database limitation
+        if (subject.getOWLModel() instanceof OWLDatabaseModel) {
+            return subject.getOWLModel().getTripleStoreModel().getTopTripleStore();
+        }
+
+        if (object instanceof RDFSLiteral) {
+            object = ((DefaultRDFSLiteral) object).getRawValue();
+        }
+        OWLModel owlModel = subject.getOWLModel();
+        Iterator it = owlModel.getTripleStoreModel().getTripleStores().iterator();
+        while (it.hasNext()) {
+            TripleStore ts = (TripleStore) it.next();
+            if (ts.getNarrowFrameStore().getValues(subject, slot, null, false).contains(object)) {
+                return ts;
+            }
+        }
+        return null;
     }
 
 
@@ -277,9 +262,7 @@ public class TripleStoreUtil {
                 if (frameStore.getValuesCount(frame, nameSlot, null, false) > 0) {
                     frame.setIncluded(included);
                     frame.setEditable(!included);
-                    if (log.isLoggable(Level.FINE)) {
-                        log.fine("- " + frame.getName() + ": " + included);
-                    }
+                    // System.out.println("- " + frame.getName() + ": " + included);
                 }
             }
         }

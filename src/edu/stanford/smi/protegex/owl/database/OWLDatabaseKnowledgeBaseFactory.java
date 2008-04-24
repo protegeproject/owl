@@ -5,27 +5,24 @@ import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import edu.stanford.smi.protege.model.ClientInitializerKnowledgeBaseFactory;
 import edu.stanford.smi.protege.model.Cls;
-import edu.stanford.smi.protege.model.FrameFactory;
+import edu.stanford.smi.protege.model.DefaultKnowledgeBase;
 import edu.stanford.smi.protege.model.Instance;
 import edu.stanford.smi.protege.model.KnowledgeBase;
 import edu.stanford.smi.protege.model.Slot;
-import edu.stanford.smi.protege.storage.database.DatabaseFrameDb;
+import edu.stanford.smi.protege.model.framestore.FrameStore;
+import edu.stanford.smi.protege.model.framestore.NarrowFrameStore;
 import edu.stanford.smi.protege.storage.database.DatabaseKnowledgeBaseFactory;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protege.util.MessageError;
 import edu.stanford.smi.protege.util.PropertyList;
+import edu.stanford.smi.protegex.owl.database.triplestore.DatabaseTripleStoreModel;
+import edu.stanford.smi.protegex.owl.jena.JenaKnowledgeBaseFactory;
 import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
-import edu.stanford.smi.protegex.owl.jena.parser.ProtegeOWLParser;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
-import edu.stanford.smi.protegex.owl.model.factory.FactoryUtils;
-import edu.stanford.smi.protegex.owl.model.factory.OWLJavaFactory;
-import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
-import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
-import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreModel;
-import edu.stanford.smi.protegex.owl.repository.util.RepositoryFileManager;
+import edu.stanford.smi.protegex.owl.resource.OWLText;
 import edu.stanford.smi.protegex.owl.storage.OWLKnowledgeBaseFactory;
-import edu.stanford.smi.protegex.owl.ui.menu.OWLBackwardsCompatibilityProjectFixups;
 import edu.stanford.smi.protegex.owl.ui.resourceselection.ResourceSelectionAction;
 
 /**
@@ -34,27 +31,20 @@ import edu.stanford.smi.protegex.owl.ui.resourceselection.ResourceSelectionActio
  * @author Holger Knublauch  <holger@knublauch.com>
  */
 public class OWLDatabaseKnowledgeBaseFactory extends DatabaseKnowledgeBaseFactory
-        implements OWLKnowledgeBaseFactory {
+        implements OWLKnowledgeBaseFactory, ClientInitializerKnowledgeBaseFactory {
     private static Logger log = Log.getLogger(OWLDatabaseKnowledgeBaseFactory.class);
-    
-    public final static String NAMESPACE_PREFIX_SEPARATOR = ":";
 
-    
     public OWLDatabaseKnowledgeBaseFactory() {
      	setOwlMode(true);
     }
 
 
-    @Override
-    public KnowledgeBase createKnowledgeBase(Collection errors) {   	
-    	         
+    public KnowledgeBase createKnowledgeBase(Collection errors) {
         ResourceSelectionAction.setActivated(false);
-              
-        OWLDatabaseModel owlModel = new OWLDatabaseModel(this);
-       	   
-        return owlModel;    	 	
+        OWLDatabaseModel kb = new OWLDatabaseModel(this);
+        // kb.getOWLSystemResources(); <<-- I don't think that this is needed
+        return kb;
     }
-    
 
 
     private void dump(Cls cls, String tabs) {
@@ -69,7 +59,7 @@ public class OWLDatabaseKnowledgeBaseFactory extends DatabaseKnowledgeBaseFactor
                 catch (Exception ex) {
                     log.fine("ERROR at " + cls + " / " + subCls);
                     for (Iterator sit = subCls.getDirectSubclasses().iterator(); sit.hasNext();) {
-                        Object o = sit.next();
+                        Object o = (Object) sit.next();
                         log.fine("- " + o + " = " + (o instanceof Slot) + " " +
                                 ((Instance) o).getDirectType());
                     }
@@ -81,80 +71,40 @@ public class OWLDatabaseKnowledgeBaseFactory extends DatabaseKnowledgeBaseFactor
     }
 
 
-    @Override
     public String getProjectFilePath() {
         return "OWL.pprj";
     }
 
 
-    @Override
     public String getDescription() {
         return "OWL / RDF Database";
     }
 
-    @Override
-    public void loadKnowledgeBase(KnowledgeBase kb, 
-                                  PropertyList sources, 
+
+    public void loadKnowledgeBase(KnowledgeBase kb,
+                                  String driver,
+                                  String table,
+                                  String url,
+                                  String user,
+                                  String password,
                                   Collection errors) {
-        OWLModel owlModel = (OWLModel) kb;
 
-        super.loadKnowledgeBase(kb, sources, errors);
-        TripleStoreModel tripleStoreModel = owlModel.getTripleStoreModel();
-        TripleStore activeTripleStore = tripleStoreModel.getActiveTripleStore();
-        tripleStoreModel.setTopTripleStore(activeTripleStore);
-        if (DatabaseFactoryUtils.readOWLOntologyFromDatabase(owlModel, activeTripleStore)) {
-            FactoryUtils.loadEncodedNamespaceFromModel(owlModel, activeTripleStore, errors);
-            FactoryUtils.addPrefixesToModelListener(owlModel, activeTripleStore);
-            owlModel.resetOntologyCache();
-            RepositoryFileManager.loadProjectRepositories(owlModel);
-            DatabaseFactoryUtils.loadImports(owlModel, errors);
-            ProtegeOWLParser.doFinalPostProcessing(owlModel);
-        }
+        OWLDatabaseModel owlModel = (OWLDatabaseModel) kb;
+
+        super.loadKnowledgeBase(kb, driver, table, url, user, password, errors);
+
+        owlModel.initialize();
     }
-   
-    @Override
-    protected void initializeKB(KnowledgeBase kb, 
-    		String driver, 
-    		String url, 
-    		String user, 
-    		String password,
-    		String table,
-    		boolean isInclude) {
 
-    	AbstractOWLModel dkb = (AbstractOWLModel) kb;
-    	
-    	FrameFactory factory = dkb.getFrameFactory();
-    	
-    	if (!(factory instanceof OWLJavaFactory)) {
-    		Log.getLogger().warning("Adapting the java factory to OWLJavaFactory");
-    		factory = new OWLJavaFactory(dkb);
-    	}
-    	
-    	//TT remove IDA?
-    	DatabaseFrameDb db = getDatabaseFrameDb(dkb);
-    	db.initialize(factory, driver, url, user, password, table, isInclude);
-    	kb.flushCache();
-    }    
 
-    @Override
     public void saveKnowledgeBase(KnowledgeBase kb, PropertyList sources, Collection errors) {
         if (kb instanceof OWLModel) {
             OWLModel owlModel = (OWLModel) kb;
-            TripleStoreModel tripleStoreModel = owlModel.getTripleStoreModel();
-            OWLBackwardsCompatibilityProjectFixups.insertVersionData(sources);
-            
-            //move this from here
-            if (owlModel instanceof JenaOWLModel) {
-                TripleStore activeTripleStore = tripleStoreModel.getActiveTripleStore();
-                DatabaseFactoryUtils.writeOWLOntologyToDatabase(owlModel, activeTripleStore);
-            	FactoryUtils.encodeNamespaceIntoModel(owlModel, activeTripleStore);
-            }
-            
+            sources.setInteger(JenaKnowledgeBaseFactory.OWL_BUILD_PROPERTY, OWLText.getBuildNumber());
             if (owlModel instanceof JenaOWLModel) {
                 kb.removeFrameStore(owlModel.getOWLFrameStore());
             }
             super.saveKnowledgeBase(kb, sources, errors);
-            RepositoryFileManager.saveProjectRepositories(owlModel);
             if (owlModel instanceof JenaOWLModel) {
                 kb.insertFrameStore(owlModel.getOWLFrameStore(), 0);
             }
@@ -166,4 +116,20 @@ public class OWLDatabaseKnowledgeBaseFactory extends DatabaseKnowledgeBaseFactor
         }
     }
 
+
+    protected void updateKnowledgeBase(DefaultKnowledgeBase kb) {
+        // Overloaded to suppress super call
+    }
+
+
+    public void initializeClientKnowledgeBase(FrameStore fs, 
+                                              NarrowFrameStore nfs,
+                                              KnowledgeBase kb) { 
+      if (kb instanceof OWLDatabaseModel) {
+        OWLDatabaseModel owlModel = (OWLDatabaseModel) kb;
+        DatabaseTripleStoreModel tsm = new DatabaseTripleStoreModel(owlModel,nfs);
+        owlModel.setTripleStoreModel(tsm);
+        owlModel.initializeClient();
+      }
+    }
 }

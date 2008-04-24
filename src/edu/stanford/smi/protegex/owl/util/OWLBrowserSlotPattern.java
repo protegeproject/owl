@@ -13,7 +13,6 @@ import edu.stanford.smi.protege.model.KnowledgeBase;
 import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protege.model.ValueType;
 import edu.stanford.smi.protege.util.CollectionUtilities;
-import edu.stanford.smi.protegex.owl.model.NamespaceUtil;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
@@ -40,16 +39,12 @@ public class OWLBrowserSlotPattern extends BrowserSlotPattern{
 		super(slot);
 	}
 	
-    public String getBrowserText(Instance instance) { 
-        KnowledgeBase kb = instance.getKnowledgeBase();
+    public String getBrowserText(Instance instance) {    	
         StringBuffer buffer = new StringBuffer();
         Iterator i = getElements().iterator();
         while (i.hasNext()) {
             Object o = i.next();
-            if (kb instanceof OWLModel && o.equals(kb.getSystemFrames().getNameSlot())) {
-                buffer.append(NamespaceUtil.getPrefixedName((OWLModel) kb, instance.getName()));
-            }
-            else if (o instanceof Slot) {
+            if (o instanceof Slot) {
                 buffer.append(getText((Slot) o, instance));
             } else {
                 buffer.append(o);
@@ -107,12 +102,12 @@ public class OWLBrowserSlotPattern extends BrowserSlotPattern{
 				text = instance.getName();
 		} else { // single value
 			Object o = CollectionUtilities.getFirstItem(values);
+			if (o == null)
+				return instance.getName();
 
 			text = getText(o, instance, defaultLang);
-			if (text == null) {
-				//text = instance.getName();
-				text = "";
-			}
+			if (text == null)
+				text = instance.getName();
 		}
 
 		return text;
@@ -177,8 +172,7 @@ public class OWLBrowserSlotPattern extends BrowserSlotPattern{
 				return text;
 			}
 		} else { //default language is not null
-			String lang = rdfsValue.getLanguage();
-			if (lang != null && lang.equals(defaultLanguage)) {
+			if (rdfsValue.getLanguage().equals(defaultLanguage)) {
 				String text = ((RDFSLiteral)value).getString();				
 				return text;
 			} 

@@ -159,13 +159,12 @@ TOKEN :
 {
   < ONE_OF: "owl:oneOf{" >
 |
-  < IDENTIFIER: <LETTER> (<LETTER>|<DIGIT>)* | "'" (~["'"])* "'"> {
-    String idName = ParserUtils.dequoteIdentifier(matchedToken.image);
-    if(DLSyntaxParser.getDatatypeNameChecker().isDatatypeName(idName)) {
+  < IDENTIFIER: <LETTER> (<LETTER>|<DIGIT>)* > {
+    if(DLSyntaxParser.getDatatypeNameChecker().isDatatypeName(matchedToken.image)) {
 		matchedToken.kind = DATATYPE_ID;
     }
     else {
-        Frame f = ParserUtils.getFrameByName(owlModel, idName);
+        Frame f = ParserUtils.getFrameByName(owlModel, matchedToken.image);
         if(f instanceof OWLClass) {
             matchedToken.kind = CLASS_ID;
         }
@@ -322,8 +321,7 @@ OWLClass OWLNamedClass() :
 {
     t=<CLASS_ID> {
       try {
-        String idName = ParserUtils.dequoteIdentifier(t.image);
-        return ParserUtils.getOWLClassFromName(owlModel, idName);
+        return ParserUtils.getOWLClassFromName(owlModel, t.image);
       } catch (AmbiguousNameException ex) {
         throw new ParseException(ex.getMessage());
       }
@@ -709,8 +707,7 @@ RDFSDatatype Datatype() :
     token=<DATATYPE_ID>
     )
     {
-        String idName = ParserUtils.dequoteIdentifier(token.image);
-        return owlModel.getRDFSDatatypeByName(datatypeChecker.getDatatypeQName(idName));
+        return owlModel.getRDFSDatatypeByName(datatypeChecker.getDatatypeQName(token.image));
     }
 
 }
@@ -723,8 +720,7 @@ OWLDatatypeProperty DatatypeProperty() :
 {
     t=<DATATYPE_PROPERTY_ID>{
       try {
-        String idName = ParserUtils.dequoteIdentifier(t.image);
-        prop = ParserUtils.getOWLDatatypePropertyFromName(owlModel, idName);
+        prop = ParserUtils.getOWLDatatypePropertyFromName(owlModel, t.image);
       } catch (AmbiguousNameException ex) {
         throw new ParseException(ex.getMessage());
       }
@@ -740,8 +736,7 @@ OWLObjectProperty ObjectProperty() :
 {
     t=<OBJECT_PROPERTY_ID>{
        try {
-           String idName = ParserUtils.dequoteIdentifier(t.image);
-           prop = ParserUtils.getOWLObjectPropertyFromName(owlModel, idName); 
+           prop = ParserUtils.getOWLObjectPropertyFromName(owlModel, t.image); 
        } catch (AmbiguousNameException ex) {
                   throw new ParseException(ex.getMessage());
        }
@@ -756,8 +751,7 @@ OWLIndividual Individual() :
 {
     t=<INDIVIDUAL_ID>{
        try {
-        String idName = ParserUtils.dequoteIdentifier(t.image);
-        return ParserUtils.getOWLIndividualFromName(owlModel, idName);
+        return ParserUtils.getOWLIndividualFromName(owlModel, t.image);
        } catch (AmbiguousNameException ex) {
           throw new ParseException(ex.getMessage());
        } 

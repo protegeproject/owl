@@ -37,17 +37,18 @@ public class AddPropertyAction extends ResourceSelectionAction {
         RDFSClass rootCls = cls.getOWLModel().getOWLThingClass();
         OWLModel owlModel = resource.getOWLModel();
         try {
-            owlModel.beginTransaction("Add " + cls.getBrowserText() + " to the domain of " + property.getBrowserText(), property.getName());
+            owlModel.beginTransaction("Add " + cls.getBrowserText() + " to the domain of " + property.getBrowserText());
             if (property.getUnionDomain(false).contains(rootCls)) {
                 property.removeUnionDomainClass(rootCls);
             }
             property.addUnionDomainClass(cls);
             property.synchronizeDomainAndRangeOfInverse();
-            owlModel.commitTransaction();
         }
         catch (Exception ex) {
-        	owlModel.rollbackTransaction();
             OWLUI.handleError(owlModel, ex);
+        }
+        finally {
+            owlModel.endTransaction();
         }
     }
 
@@ -67,7 +68,7 @@ public class AddPropertyAction extends ResourceSelectionAction {
         for (Iterator it = properties.iterator(); it.hasNext();) {
             RDFProperty property = (RDFProperty) it.next();
             if (!(property instanceof OWLProperty) || !property.isAnnotationProperty()) {
-                if (!property.isSystem()) {
+                if (property.isEditable()) {
                     choice.add(property);
                 }
             }

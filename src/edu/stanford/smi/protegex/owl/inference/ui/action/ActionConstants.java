@@ -1,8 +1,5 @@
 package edu.stanford.smi.protegex.owl.inference.ui.action;
 
-import edu.stanford.smi.protegex.owl.ui.actions.OWLModelAction;
-import edu.stanford.smi.protegex.owl.ui.actions.OWLModelActionConstants;
-
 /**
  * User: matthewhorridge<br>
  * The Univeristy Of Manchester<br>
@@ -14,8 +11,5 @@ import edu.stanford.smi.protegex.owl.ui.actions.OWLModelActionConstants;
  */
 public interface ActionConstants {
 
-    public static final String ACTION_GROUP = OWLModelActionConstants.INFERENCE_GROUP;
-    
-    public static final String ACTION_GROUP_DIRECT_REASONER = OWLModelActionConstants.DIRECT_INFERENCE_GROUP;
-        
+    public static final String ACTION_GROUP = "Inference/";
 }

@@ -54,11 +54,7 @@ public abstract class AbstractSingleLiteralComponent extends AbstractPropertyVal
     }
     
     public AbstractSingleLiteralComponent(RDFProperty predicate, String label) {
-    	this(predicate, label, false);
-    }
-    
-    public AbstractSingleLiteralComponent(RDFProperty predicate, String label, boolean isReadOnly) {
-        super(predicate, label, isReadOnly);
+        super(predicate, label);
 
         final OWLModel owlModel = getOWLModel();
         this.datatypeComboBox = ComponentUtil.createDatatypeComboBox(owlModel);
@@ -261,7 +257,7 @@ public abstract class AbstractSingleLiteralComponent extends AbstractPropertyVal
     public void setSubject(RDFResource subject) {
         super.setSubject(subject);
         updateComboBoxVisibility();
-        boolean editable = !isReadOnly() && hasOnlyEditableValues();
+        boolean editable = hasOnlyEditableValues();
         boolean b = editable && hasOnlyActiveValues() && subject.getHasValuesOnTypes(getPredicate()).isEmpty();
         textComponent.setEditable(b);
         booleanComboBox.setEnabled(b);
@@ -270,26 +266,13 @@ public abstract class AbstractSingleLiteralComponent extends AbstractPropertyVal
 
 
     private void updateActionStatus() {
-        boolean editable = !isReadOnly() && hasOnlyEditableValues();
+        boolean editable = hasOnlyEditableValues();
         deleteAction.setEnabled(getSubject() != null &&
                 getSubject().getPropertyValue(getPredicate()) != null &&
                 editable);
         final Object object = getObject();
-        PropertyValueEditor editor = getEditor(object);        
+        PropertyValueEditor editor = getEditor(object);
         viewAction.setEnabled(editable && editor != null);
-        
-        if (datatypeComboBox != null) {
-        	datatypeComboBox.setEnabled(!isReadOnly());
-        }
-        
-        if (booleanComboBox != null) {
-        	booleanComboBox.setEnabled(!isReadOnly());
-        }
-        
-        if (textComponent != null) {
-        	textComponent.setEditable(!isReadOnly());
-        }
-        
     }
 
 

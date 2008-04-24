@@ -11,18 +11,14 @@ import java.awt.*;
  */
 public class SingleLiteralAreaComponent extends AbstractSingleLiteralComponent {
 
+    public SingleLiteralAreaComponent(RDFProperty predicate, String label) {
+        super(predicate, label);
+    }
+    
     public SingleLiteralAreaComponent(RDFProperty predicate) {
         this(predicate, null);
     }
-	
-    public SingleLiteralAreaComponent(RDFProperty predicate, String label) {
-    	this(predicate, label, false);
-    }
-    
-    public SingleLiteralAreaComponent(RDFProperty predicate, String label, boolean isReadOnly) {
-        super(predicate, label, isReadOnly);
-    }
-    
+
     protected JTextComponent createTextComponent() {
         JTextArea textArea = new JTextArea();
         textArea.setLineWrap(true);

@@ -9,10 +9,6 @@ import java.util.Set;
 import java.util.logging.Level;
 
 import edu.stanford.smi.protege.model.Cls;
-import edu.stanford.smi.protege.model.DefaultCls;
-import edu.stanford.smi.protege.model.DefaultFacet;
-import edu.stanford.smi.protege.model.DefaultSimpleInstance;
-import edu.stanford.smi.protege.model.DefaultSlot;
 import edu.stanford.smi.protege.model.Frame;
 import edu.stanford.smi.protege.model.FrameID;
 import edu.stanford.smi.protege.model.Instance;
@@ -21,7 +17,6 @@ import edu.stanford.smi.protege.model.Model;
 import edu.stanford.smi.protege.model.SimpleInstance;
 import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protege.model.framestore.DefaultFrameFactory;
-import edu.stanford.smi.protege.model.framestore.MergingNarrowFrameStore;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.model.OWLClass;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
@@ -45,7 +40,6 @@ import edu.stanford.smi.protegex.owl.model.impl.DefaultRDFProperty;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultRDFSDatatype;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultRDFSNamedClass;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultRDFUntypedResource;
-import edu.stanford.smi.protegex.owl.model.impl.OWLSystemFrames;
 
 /**
  * A DefaultFrameFactory that creates the proper Java objects for Protege frames.
@@ -53,7 +47,7 @@ import edu.stanford.smi.protegex.owl.model.impl.OWLSystemFrames;
  * @author Holger Knublauch  <holger@knublauch.com>
  */
 public class OWLJavaFactory extends DefaultFrameFactory {
-	
+
     /**
      * A Hashtable from Protege metaclass names to Java class names from this package
      */
@@ -94,94 +88,15 @@ public class OWLJavaFactory extends DefaultFrameFactory {
 
 
     private final static String CLASSNAME_PREFIX = "edu.stanford.smi.protegex.owl.model.impl.Default";
-    
-    private static final Class[] CONSTRUCTOR_PARAMETERS = { KnowledgeBase.class, FrameID.class };
 
     private AbstractOWLModel owlModel;
-    
-    private OWLSystemFrames systemFrames;
 
 
     public OWLJavaFactory(AbstractOWLModel owlModel) {
         super(owlModel);
         this.owlModel = owlModel;
-        systemFrames = owlModel.getSystemFrames();
     }
 
-    
-    @Override
-    public Frame createFrameFromClassId(int javaClassId, FrameID id) {
-        Frame frame = null;
-        
-        //copied from DefaultFramefactory
-        switch (javaClassId) {
-            case DEFAULT_CLS_JAVA_CLASS_ID:
-                frame = createCls(id, DefaultCls.class);
-                break;
-            case DEFAULT_SLOT_JAVA_CLASS_ID:
-                frame = createSlot(id, DefaultSlot.class);
-                break;
-            case DEFAULT_FACET_JAVA_CLASS_ID:
-                frame = createFacet(id, DefaultFacet.class);
-                break;
-            case DEFAULT_SIMPLE_INSTANCE_JAVA_CLASS_ID:
-                frame = createSimpleInstance(id, DefaultSimpleInstance.class);
-                break;                
-        }
-        
-        //TT: should this be rewritten?
-        if (frame != null) {
-        	return frame;
-        }
-        
-        Class javaType = null;
-        
-        try {
-			javaType = FrameTypeId2OWLJavaClass.getJavaClass(javaClassId);
-		} catch (Exception e) {
-			//this should never happen!
-			Log.getLogger().log(Level.WARNING, "Error at creating Java class with Java Frame type id: " + javaClassId , e);
-		}
-        
-		if (javaType == null) {
-			throw new RuntimeException("Invalid java class id: " + javaClassId);
-		}
-      				
-        return createInstance(id, javaType);
-    }
-    
-    
-    @Override
-    public int getJavaClassId(Frame frame) {	
-    	for (Iterator iter = FrameTypeId2OWLJavaClass.getOrderedJavaClasses().iterator(); iter.hasNext();) {
-    		try {
-    			Class javaType = (Class) iter.next();
-    			if (javaType.isInstance(frame)) {
-    				return FrameTypeId2OWLJavaClass.getFrameTypeId(javaType);
-    			}
-			} catch (Exception e) {
-				// this should never happen!
-				Log.getLogger().log(Level.WARNING, "Error at getting the Java class Id for: " + frame , e);
-			}
-		}
-
-    	return super.getJavaClassId(frame);
-    
-    }
-    
-    
-    private Instance createInstance(FrameID id, Class type) {
-        Instance instance = null;
-        try {
-            Constructor constructor = type.getConstructor(CONSTRUCTOR_PARAMETERS);
-            instance = (Instance) constructor.newInstance(new Object[] { owlModel, id });
-        } catch (Exception e) {
-            Log.getLogger().severe(Log.toString(e));
-        }
-        return instance;
-    }
-    
-    
 
     public RDFResource as(RDFResource resource, Class javaInterface) {
         if (javaInterface.isAssignableFrom(resource.getClass())) {
@@ -290,9 +205,7 @@ public class OWLJavaFactory extends DefaultFrameFactory {
      * @param directTypes
      * @return the new Cls object
      */
-    @Override
-	public Cls createCls(FrameID id, Collection directTypes) { 	
-    	
+    public Cls createCls(FrameID id, Collection directTypes) {
         if (id.equals(Model.ClsID.THING)) {
             return new DefaultOWLNamedClass(owlModel, id);
         }
@@ -302,7 +215,7 @@ public class OWLJavaFactory extends DefaultFrameFactory {
         for (Iterator it = directTypes.iterator(); it.hasNext();) {
             final Instance metaCls = (Instance) it.next();
             final String metaClsName = metaCls.getName();
-            final String javaClassName = clsNames.get(metaClsName);
+            final String javaClassName = (String) clsNames.get(metaClsName);
             if (javaClassName != null) {
                 return createCls(javaClassName, id);
             }
@@ -321,8 +234,6 @@ public class OWLJavaFactory extends DefaultFrameFactory {
             }
             else if (metaCls.equals(owlModel.getOWLDeprecatedClassClass())) {
                 isRDFSNamedClass = true;
-            } else if (metaCls.equals(owlModel.getRDFExternalClassClass())) {
-            	isRDFSNamedClass = true;
             }
         }
         if (isRDFSNamedClass) {
@@ -348,8 +259,7 @@ public class OWLJavaFactory extends DefaultFrameFactory {
     }
 
 
-    @Override
-	public SimpleInstance createSimpleInstance(FrameID id, Collection directTypes) {
+    public SimpleInstance createSimpleInstance(FrameID id, Collection directTypes) {
         if (directTypes.contains(owlModel.getOWLAllDifferentClassCls())) {
             return new DefaultOWLAllDifferent(owlModel, id);
         }
@@ -378,16 +288,11 @@ public class OWLJavaFactory extends DefaultFrameFactory {
     }
 
 
-    @Override
-	public Slot createSlot(FrameID id, Collection directTypes) {
+    public Slot createSlot(FrameID id, Collection directTypes) {
         final Cls datatypeSlotMetaCls = owlModel.getOWLDatatypePropertyClass();
         final Cls objectSlotMetaCls = owlModel.getOWLObjectPropertyClass();
         final Cls rdfSlotMetaCls = owlModel.getRDFPropertyClass();
         boolean isRDFProperty = false;
-        if (directTypes.isEmpty()) {
-            MergingNarrowFrameStore mnfs = MergingNarrowFrameStore.get(owlModel);
-            return (Slot) mnfs.getFrame(id);
-        }
         for (Iterator it = directTypes.iterator(); it.hasNext();) {
             Cls metaCls = (Cls) it.next();
             if (metaCls.equals(datatypeSlotMetaCls) || metaCls.hasSuperclass(datatypeSlotMetaCls)) {
@@ -398,9 +303,6 @@ public class OWLJavaFactory extends DefaultFrameFactory {
             }
             else if (!isRDFProperty && (metaCls.equals(rdfSlotMetaCls) || metaCls.hasSuperclass(rdfSlotMetaCls))) {
                 isRDFProperty = true;
-            } 
-            else if (metaCls.equals(owlModel.getRDFExternalPropertyClass())) {
-            	isRDFProperty = true;
             }
         }
         if (isRDFProperty) {
@@ -410,14 +312,13 @@ public class OWLJavaFactory extends DefaultFrameFactory {
     }
 
 
-    @Override
-	public boolean isCorrectJavaImplementationClass(FrameID id, Collection types, Class clas) {
+    public boolean isCorrectJavaImplementationClass(FrameID id, Collection types, Class clas) {
         Cls namedClsMetaCls = owlModel.getOWLNamedClassMetaClassCls();
         Cls datatypeSlotMetaCls = owlModel.getOWLDatatypePropertyMetaClassCls();
         Cls objectSlotMetaCls = owlModel.getOWLObjectPropertyMetaClassCls();
         for (Iterator it = types.iterator(); it.hasNext();) {
             Cls metaCls = (Cls) it.next();
-            String javaClassName = clsNames.get(metaCls.getName());
+            String javaClassName = (String) clsNames.get(metaCls.getName());
             if (javaClassName != null) {
                 return clas.getName().equals(CLASSNAME_PREFIX + javaClassName);
             }

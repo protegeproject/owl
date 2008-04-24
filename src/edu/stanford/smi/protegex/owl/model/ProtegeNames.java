@@ -12,74 +12,28 @@ import com.hp.hpl.jena.ontology.OntModel;
  */
 public class ProtegeNames {
 
-	public final static String PREFIX_LOCALNAME_SEPARATOR = ":";
-
-	//maybe move this later to a different class 
-	public final static String DEFAULT_DEFAULT_BASE = "http://www.owl-ontologies.com/unnamed.owl";
-	
-	//maybe move this later to a different class
-	public final static String DEFAULT_DEFAULT_NAMESPACE = DEFAULT_DEFAULT_BASE + "#";
-	
-	//should be used only in initializations
-	public final static String DEFAULT_ONTOLOGY = DEFAULT_DEFAULT_BASE;
-
     public static String PROTEGE_PREFIX = "protege";
 
     public final static String PREFIX = PROTEGE_PREFIX + ":";
-    
-    public static interface Cls {
-    	final static String PAL_CONSTRAINT = (PROTEGE_OWL_NAMESPACE + "PAL-CONSTRAINT").intern();
-    	
-    	final static String DIRECTED_BINARY_RELATION = (PROTEGE_OWL_NAMESPACE + "DIRECTED-BINARY-RELATION").intern();
-    	
-    	final static String EXTERNAL_CLASS = (PROTEGE_OWL_NAMESPACE + "ExternalClass").intern();
-    }
-
 
     public static interface Slot {
 
-        final static String ABSTRACT = (PROTEGE_OWL_NAMESPACE + "abstract").intern();
+        final static String ABSTRACT = PREFIX + "abstract";
 
-        final static String CLASSIFICATION_STATUS = (PROTEGE_OWL_NAMESPACE + "classificationStatus").intern();
-        
-        final static String CONSTRAINTS = (PROTEGE_OWL_NAMESPACE + "SLOT-CONSTRAINTS").intern();
+        final static String CLASSIFICATION_STATUS = PREFIX + "classificationStatus";
 
-        final static String INFERRED_TYPE = (PROTEGE_OWL_NAMESPACE + "inferredType").intern();
+        final static String INFERRED_TYPE = PREFIX + "inferredType";
 
-        final static String INFERRED_SUBCLASSES = (PROTEGE_OWL_NAMESPACE + "inferredSuperclassOf").intern();
+        final static String INFERRED_SUBCLASSES = PREFIX + "inferredSuperclassOf";
 
-        final static String INFERRED_SUPERCLASSES = (PROTEGE_OWL_NAMESPACE + "inferredSubclassOf").intern();
+        final static String INFERRED_SUPERCLASSES = PREFIX + "inferredSubclassOf";
 
-	    final static String IS_COMMENTED_OUT = (PROTEGE_OWL_NAMESPACE + "isCommentedOut").intern();
-	    
-	    final static String PAL_NAME = (PROTEGE_OWL_NAMESPACE + "PAL-NAME").intern();
-	    
-	    final static String PAL_STATEMENT = (PROTEGE_OWL_NAMESPACE + "PAL-STATEMENT").intern();
-	    
-	    final static String PAL_DESCRIPTION = (PROTEGE_OWL_NAMESPACE + "PAL-DESCRIPTION").intern();
-	    
-	    final static String PAL_RANGE = (PROTEGE_OWL_NAMESPACE + "PAL-RANGE").intern();
-	    
-	    final static String TO = (PROTEGE_OWL_NAMESPACE + "TO").intern();
-	    
-	    final static String FROM = (PROTEGE_OWL_NAMESPACE + "FROM").intern();
+	    final static String IS_COMMENTED_OUT = PREFIX + "isCommentedOut";
     }
 
-    public static String PROTEGE_OWL_ONTOLOGY = "http://protege.stanford.edu/plugins/owl/protege";
-    
-    /**
-     * @deprecated use {@link #PROTEGE_OWL_ONTOLOGY}
-     */
-    @Deprecated
-    public static String FILE = PROTEGE_OWL_ONTOLOGY;
+    public static String FILE = "http://protege.stanford.edu/plugins/owl/protege";
 
-    public final static String PROTEGE_OWL_NAMESPACE = PROTEGE_OWL_ONTOLOGY + "#";
- 
-    /**
-     * @deprecated use {@link #PROTEGE_OWL_NAMESPACE}
-     */
-    @Deprecated
-    public final static String NS = PROTEGE_OWL_NAMESPACE;
+    public final static String NS = FILE + "#";
 
     public final static String ABSTRACT = "abstract";
 
@@ -116,48 +70,46 @@ public class ProtegeNames {
 
 
     public static AnnotationProperty getAbstractProperty(OntModel ontModel) {
-        return ontModel.getAnnotationProperty(PROTEGE_OWL_NAMESPACE + ABSTRACT);
+        return ontModel.getAnnotationProperty(NS + ABSTRACT);
     }
 
 
     public static AnnotationProperty getAllowedParentProperty(OntModel ontModel) {
-        return ontModel.getAnnotationProperty(PROTEGE_OWL_NAMESPACE + ALLOWED_PARENT);
+        return ontModel.getAnnotationProperty(NS + ALLOWED_PARENT);
     }
 
 
     public static String getProbeClassSlotName() {
-        return PROTEGE_OWL_NAMESPACE + PROBE_CLASS;
+        return PREFIX + PROBE_CLASS;
     }
 
 
     public static String getReadOnlySlotName() {
-        return PROTEGE_OWL_NAMESPACE + READ_ONLY;
+        return PREFIX + READ_ONLY;
     }
 
 
     public static String getSubclassesDisjointSlotName() {
-        return PROTEGE_OWL_NAMESPACE + SUBCLASSES_DISJOINT;
+        return PREFIX + SUBCLASSES_DISJOINT;
     }
 
 
     public static String getTodoPrefixSlotName() {
-        return PROTEGE_OWL_NAMESPACE + TODO_PREFIX;
+        return PREFIX + TODO_PREFIX;
     }
 
 
     public static String getTodoPropertySlotName() {
-        return PROTEGE_OWL_NAMESPACE + TODO_PROPERTY;
+        return PREFIX + TODO_PROPERTY;
     }
 
 
     public static String getDefaultLanguageSlotName() {
-        return PROTEGE_OWL_NAMESPACE + DEFAULT_LANGUAGE;
+        return PREFIX + DEFAULT_LANGUAGE;
     }
 
 
     public static String getUsedLanguagesSlotName() {
-        return PROTEGE_OWL_NAMESPACE + USED_LANGUAGE;
+        return PREFIX + USED_LANGUAGE;
     }
-
-
 }

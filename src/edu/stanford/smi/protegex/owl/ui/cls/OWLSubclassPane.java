@@ -175,12 +175,10 @@ public class OWLSubclassPane extends SelectableContainer implements ClassTreePan
         setSelectedClassDelegate(cls);
     }
 
-    
+
     private void setSelectedClassDelegate(Cls cls) {
-    	if (!getSelection().contains(cls) && !cls.isDeleted()) {
-    		Collection path = ModelUtilities.getPathToRoot(cls);
-    		setSelectedObjectPath(getTree(), path);
-    	}
+	    if (cls instanceof RDFResource)
+	       	OWLUI.setSelectedNodeInTree(tree, (RDFResource)cls);
     }
 
 
@@ -207,22 +205,6 @@ public class OWLSubclassPane extends SelectableContainer implements ClassTreePan
     public void setSelectedClses(Collection clses) {
         setSelectedClassesDelegate(clses);
     }
-
-
-    private void setSelectedObjectPath(final JTree tree, Collection objectPath) {    	
-        final TreePath path = ComponentUtilities.getTreePath(tree, objectPath);        
-        
-        if (path != null) {
-        	final WaitCursor cursor = new WaitCursor(tree);       	
-            tree.scrollPathToVisible(path);          
-            tree.setSelectionPath(path);
-            cursor.hide();
-            tree.updateUI();
-        }
-    }
-
-
-
 
    protected void setupDragAndDrop() {
         if (OWLUI.isDragAndDropSupported(owlModel)) {

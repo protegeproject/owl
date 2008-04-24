@@ -1,25 +1,24 @@
 package edu.stanford.smi.protegex.owl.ui.cls;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-
-import javax.swing.Action;
-import javax.swing.tree.TreeNode;
-import javax.swing.tree.TreePath;
-
+import edu.stanford.smi.protege.model.Cls;
+import edu.stanford.smi.protege.model.ModelUtilities;
+import edu.stanford.smi.protege.model.Slot;
+import edu.stanford.smi.protege.util.ComponentUtilities;
 import edu.stanford.smi.protege.util.LazyTreeNode;
 import edu.stanford.smi.protege.util.LazyTreeRoot;
-import edu.stanford.smi.protegex.owl.model.RDFProperty;
-import edu.stanford.smi.protegex.owl.model.RDFResource;
-import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
+import edu.stanford.smi.protege.util.WaitCursor;
+import edu.stanford.smi.protegex.owl.model.*;
 import edu.stanford.smi.protegex.owl.model.triplestore.Triple;
 import edu.stanford.smi.protegex.owl.model.triplestore.impl.DefaultTriple;
 import edu.stanford.smi.protegex.owl.ui.TripleSelectable;
 import edu.stanford.smi.protegex.owl.ui.results.HostResourceDisplay;
 import edu.stanford.smi.protegex.owl.ui.subsumption.TooltippedSelectableTree;
 import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
+
+import javax.swing.*;
+import javax.swing.tree.TreeNode;
+import javax.swing.tree.TreePath;
+import java.util.*;
 
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
@@ -81,12 +80,31 @@ public class ClassTree extends TooltippedSelectableTree implements TripleSelecta
 
 
     public boolean displayHostResource(RDFResource resource) {
-    	return OWLUI.setSelectedNodeInTree(this, resource);
+        return OWLUI.setSelectedNodeInTree(this, resource);
     }
 
     public Collection getRoots() {
         return (Collection) ((LazyTreeRoot) getModel().getRoot()).getUserObject();
     }
 
+    private List getPathToRoot(RDFSClass cls, RDFSClass rootCls, LinkedList list) {
+   	
+        list.add(0, cls);
+        Collection superclasses = cls.getSuperclasses(false);
+        for (Iterator it = superclasses.iterator(); it.hasNext();) {
+            RDFSClass superclass = (RDFSClass) it.next();
+            if (list.contains(superclass))
+            	continue;
+            if (superclass.equals(rootCls)) {
+                list.add(0, superclass);
+                return list;
+            }
+            else if (cls.isVisible() && superclass instanceof OWLNamedClass) {
+                getPathToRoot((OWLNamedClass) superclass, rootCls, list);
+                break;
+            }
+        }
+        return list;
+    }
   
 }

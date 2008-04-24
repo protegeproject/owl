@@ -155,7 +155,7 @@ public class ResourceDisplay extends InstanceDisplay implements ResourcePanel {
         // setLayout(new BorderLayout());
 
         suppressedTypes.add(owlModel.getOWLFunctionalPropertyClass());
-        //suppressedTypes.add(owlModel.getRDFSNamedClass(OWLNames.Cls.ANNOTATION_PROPERTY));
+        suppressedTypes.add(owlModel.getRDFSNamedClass(OWLNames.Cls.ANNOTATION_PROPERTY));
         suppressedTypes.add(owlModel.getRDFSNamedClass(OWLNames.Cls.INVERSE_FUNCTIONAL_PROPERTY));
         suppressedTypes.add(owlModel.getRDFSNamedClass(OWLNames.Cls.SYMMETRIC_PROPERTY));
         suppressedTypes.add(owlModel.getRDFSNamedClass(OWLNames.Cls.TRANSITIVE_PROPERTY));
@@ -257,12 +257,6 @@ public class ResourceDisplay extends InstanceDisplay implements ResourcePanel {
         if (triplesComponent != null) {
             triplesComponent.dispose();
         }
-        testInstanceAction = null;
-        if (getCurrentInstance() != null && getCurrentInstance() instanceof RDFResource) {
-            ((RDFResource) getCurrentInstance()).removePropertyValueListener(propertyValueListener);
-        }
-     
-        owlModel = null;
     }
 
 
@@ -298,7 +292,7 @@ public class ResourceDisplay extends InstanceDisplay implements ResourcePanel {
 
 
     protected ClsWidget getWidget(Cls type, Instance instance, Cls associatedCls) {
-        if (isSuppressedType(type, instance)) {
+        if (isSuppressedType(type)) {
             return null;
         }
         else {
@@ -350,22 +344,6 @@ public class ResourceDisplay extends InstanceDisplay implements ResourcePanel {
     }
 
 
-    protected boolean isSuppressedType(Cls type, Instance instance) {
-        return (suppressedTypes.contains(type) && hasUnsuppressedTypes(instance));
-    }
-    
-    protected boolean hasUnsuppressedTypes(Instance instance) {
-    	Collection<Cls> types = instance.getDirectTypes();
-    	
-    	for (Cls type : types) {
-			if (!suppressedTypes.contains(type)) {
-				return true;
-			}
-		}
-    	
-    	return false;
-    }
-    
     protected boolean isSuppressedType(Cls type) {
         return suppressedTypes.contains(type);
     }
@@ -600,15 +578,4 @@ public class ResourceDisplay extends InstanceDisplay implements ResourcePanel {
         }
         triplesComponent.setSubject((RDFResource) getCurrentInstance());
     }
-    
-    public void setEnabled(boolean enabled) {
-    	edu.stanford.smi.protege.widget.WidgetUtilities.setEnabledInstanceDisplay(this, enabled);
-    	
-    	if (instanceNameComponent != null)
-    		instanceNameComponent.setEnabled(enabled);
-    	
-    	super.setEnabled(enabled);    	
-    };
-    
-   
 }

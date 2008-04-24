@@ -21,8 +21,6 @@ import edu.stanford.smi.protegex.owl.ui.restrictions.RestrictionEditorPanel;
 import edu.stanford.smi.protegex.owl.ui.restrictions.RestrictionKindRenderer;
 import edu.stanford.smi.protegex.owl.ui.results.ResultsPanelManager;
 import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
-import edu.stanford.smi.protegex.owl.util.ExpressionInfo;
-import edu.stanford.smi.protegex.owl.util.ExpressionInfoUtils;
 
 import javax.swing.*;
 import javax.swing.event.CellEditorListener;
@@ -93,13 +91,14 @@ public class PropertyRestrictionsTree extends SelectableTree implements Disposab
             Instance sel = getSelectedInstance();
             OWLModel owlModel = (OWLModel) sel.getKnowledgeBase();
             try {
-                owlModel.beginTransaction("Delete restriction " + sel.getBrowserText() + " from class " + cls.getBrowserText(), cls.getName());
+                owlModel.beginTransaction("Delete restriction " + sel.getBrowserText());
                 sel.delete();
-                owlModel.commitTransaction();
             }
             catch (Exception ex) {
-            	owlModel.rollbackTransaction();
                 OWLUI.handleError(owlModel, ex);
+            }
+            finally {
+                owlModel.endTransaction();
             }
         }
 
@@ -242,101 +241,48 @@ public class PropertyRestrictionsTree extends SelectableTree implements Disposab
     }
 
     private void addChildNodes() {
-        Set<RDFProperty> doneProperties = new HashSet<RDFProperty>();
+
         if (cls != null && !cls.equals(cls.getOWLModel().getOWLThingClass())) {
-            addRestrictionChildNodes(doneProperties);
-            addDomainChildNodes(doneProperties);
-            sortPropertyTreeNodes();
-        }
-    }
-    
-    private void addDomainChildNodes(Set<RDFProperty> doneProperties) {
 
-        // Breadth-First Search into tree
-        List<RDFSNamedClass> list = new ArrayList<RDFSNamedClass>();
-        list.add(cls);
-        Set<RDFSNamedClass> reachedClses = new HashSet<RDFSNamedClass>();
-        boolean inherited = false;
-        while (!list.isEmpty()) {
+            Collection domainProperties = cls.getUnionDomainProperties(true);
 
-            RDFSNamedClass c = (RDFSNamedClass) list.get(0);
-            reachedClses.add(c);
-            list.remove(0);
+            // Breadth-First Search into tree
+            List list = new ArrayList();
+            list.add(cls);
+            Set reachedClses = new HashSet();
+            boolean inherited = false;
+            Set doneProperties = new HashSet();
+            while (!list.isEmpty()) {
 
-            addNodesForDirectUnionDomainProperty(c, doneProperties, inherited);
+                RDFSNamedClass c = (RDFSNamedClass) list.get(0);
+                reachedClses.add(c);
+                list.remove(0);
 
-            List superClses = getNextSuperclasses(c, reachedClses);
-            list.addAll(superClses);
-            inherited = true;
-        }
-    }
-    
-    private void addRestrictionChildNodes(Set<RDFProperty> doneProperties) {
-        List<ExpressionInfo<OWLRestriction>> restrictions = new ArrayList<ExpressionInfo<OWLRestriction>>();
+                addNodesForDirectUnionDomainProperty(c, domainProperties, doneProperties, inherited);
 
-        Collection<RDFProperty> directProperties = new ArrayList<RDFProperty>();
-        for (Slot s : ((Cls) cls).getDirectTemplateSlots()) {
-            if (s instanceof RDFProperty) {
-                directProperties.add((RDFProperty) s);
+                List superClses = getNextSuperclasses(c, reachedClses);
+                list.addAll(superClses);
+                inherited = true;
             }
-        }
-        for (RDFSNamedClass superClass : getNamedSuperclassesClosure(cls)) {
-            if (superClass instanceof OWLNamedClass) {
-                List<ExpressionInfo<OWLRestriction>> myRestrictions = 
-                    ExpressionInfoUtils.getDirectContainingRestrictions((OWLNamedClass) superClass);
-                restrictions.addAll(myRestrictions);
-                if (superClass.equals(cls)) {
-                    for (ExpressionInfo<OWLRestriction> myRestriction : myRestrictions) {
-                        directProperties.add(myRestriction.getExpression().getOnProperty());
-                    }
+
+            Set associatedProperties = cls.getAssociatedProperties();
+            associatedProperties.removeAll(doneProperties);
+            for (Iterator it = associatedProperties.iterator(); it.hasNext();) {
+                RDFProperty rdfProperty = (RDFProperty) it.next();
+                if (rdfProperty.isVisible()) {
+                    PropertyTreeNode node = new PropertyTreeNode(this, cls, rdfProperty, inherited);
+                    rootNode.add(node);
+                    addNodesForSubproperties(rdfProperty, doneProperties, domainProperties);
                 }
             }
-        }
-        Map<RDFProperty, List<ExpressionInfo<OWLRestriction>>> propertyMap = 
-            new HashMap<RDFProperty, List<ExpressionInfo<OWLRestriction>>>();
-        for (ExpressionInfo<OWLRestriction> restrictionInfo : restrictions) {
-            OWLRestriction restriction = restrictionInfo.getExpression();
-            RDFProperty property = restriction.getOnProperty();
-            List<ExpressionInfo<OWLRestriction>> propertyRestrictions = propertyMap.get(property);
-            if (propertyRestrictions == null) {
-                propertyRestrictions = new ArrayList<ExpressionInfo<OWLRestriction>>();
-                propertyMap.put(property, propertyRestrictions);
-            }
-            propertyRestrictions.add(restrictionInfo);
-        }
-        for (RDFProperty property : propertyMap.keySet()) {
-            if (!doneProperties.contains(property)) {
-                doneProperties.add(property);
-                PropertyTreeNode node = new PropertyTreeNode(this, 
-                                                             cls, 
-                                                             property, 
-                                                             !directProperties.contains(property),
-                                                             propertyMap.get(property));
-                rootNode.add(node);
-            }
+
+            sortPropertyTreeNodes();
+
+            updateCreateRestrictionActionAllowed();
         }
         expandPath(new TreePath(rootNode));
     }
-    
-    private Set<RDFSNamedClass> getNamedSuperclassesClosure(RDFSNamedClass c) {
-      Set<RDFSNamedClass> results = new HashSet<RDFSNamedClass>();
-      addNamedSuperclassesClosure(c, results);
-      return results;
-    }
 
-    private void addNamedSuperclassesClosure(RDFSNamedClass c, Set<RDFSNamedClass> results) {
-      OWLNamedClass owlThing = c.getOWLModel().getOWLThingClass();
-      if (c.equals(owlThing)) {
-        return;
-      } else {
-        results.add(c);
-      }
-      for (Cls cls : c.getDirectSuperclasses()) {
-        if (cls instanceof RDFSNamedClass && !cls.equals(owlThing) && !results.contains(cls)) {
-          addNamedSuperclassesClosure((RDFSNamedClass) cls, results);
-        }
-      }
-    }
 
     void addCreateRestrictionActions(JPopupMenu menu) {
         if (!isMixedClass()) {
@@ -370,14 +316,13 @@ public class PropertyRestrictionsTree extends SelectableTree implements Disposab
     }
 
 
-    private void addNodesForDirectUnionDomainProperty(RDFSNamedClass c, 
-                                                      Set<RDFProperty> doneProperties, 
-                                                      boolean inherited) {
-        List<RDFProperty> properties = new ArrayList<RDFProperty>();
+    private void addNodesForDirectUnionDomainProperty(RDFSNamedClass c, Collection allowedProperties,
+                                                      Set doneProperties, boolean inherited) {
+        List properties = new ArrayList();
         for (Iterator it = c.getUnionDomainProperties().iterator(); it.hasNext();) {
             RDFProperty property = (RDFProperty) it.next();
             if (!doneProperties.contains(property)) {
-                if (!property.isAnnotationProperty()) {
+                if (!property.isAnnotationProperty() && allowedProperties.contains(property)) {
                     properties.add(property);
                 }
             }
@@ -387,6 +332,10 @@ public class PropertyRestrictionsTree extends SelectableTree implements Disposab
             PropertyTreeNode node = new PropertyTreeNode(this, cls, rdfProperty, inherited);
             rootNode.add(node);
             doneProperties.add(rdfProperty);
+        }
+        for (Iterator it = properties.iterator(); it.hasNext();) {
+            RDFProperty rdfProperty = (RDFProperty) it.next();
+            addNodesForSubproperties(rdfProperty, doneProperties, allowedProperties);
         }
     }
 
@@ -451,7 +400,7 @@ public class PropertyRestrictionsTree extends SelectableTree implements Disposab
                     newNode
             });
             setSelectionPath(path);
-            scrollPathToVisible(path);            
+            scrollPathToVisible(path);
             updateUI();
             startEditingAtPath(path);
             owlTextField.setCaretPosition(0);
@@ -481,7 +430,7 @@ public class PropertyRestrictionsTree extends SelectableTree implements Disposab
     private void createRestrictionFromDialog(Cls restrictionMetaCls, RDFProperty property) {
         OWLModel owlModel = cls.getOWLModel();
         try {
-            owlModel.beginTransaction("Create restriction at " + cls.getBrowserText(), cls.getName());
+            owlModel.beginTransaction("Create restriction at " + cls.getBrowserText());
             OWLRestriction newRestriction = RestrictionEditorPanel.showCreateDialog(this,
                                                                                     cls, restrictionMetaCls, property);
             if (newRestriction != null) {
@@ -500,11 +449,12 @@ public class PropertyRestrictionsTree extends SelectableTree implements Disposab
                     addRestrictionToDefinition(newRestriction);
                 }
             }
-            owlModel.commitTransaction();           
         }
         catch (Exception ex) {
-        	owlModel.rollbackTransaction();
             OWLUI.handleError(owlModel, ex);
+        }
+        finally {
+            owlModel.endTransaction();
         }
     }
 

@@ -32,15 +32,6 @@ public abstract class RestrictionTreeNode extends DefaultMutableTreeNode impleme
 
     public String getOperatorName() {
         Cls metaCls = getRestrictionMetaCls();
-        /* TT - The type of a restriction is null, if the restriction was deleted. 
-         * So, theoretically, this should not be the case. This condition was 
-         * necessary to fix Mantis bug: 445.
-         * http://www.co-ode.org/mantis/view.php?id=445 
-         */         
-        if (metaCls == null) {
-        	return "?";
-        }
-        
         String name = metaCls.getName();
         if (OWLNames.Cls.ALL_VALUES_FROM_RESTRICTION.equals(name)) {
             return "allValuesFrom";

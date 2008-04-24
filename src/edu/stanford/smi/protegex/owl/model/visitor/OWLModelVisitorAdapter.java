@@ -1,8 +1,6 @@
 package edu.stanford.smi.protegex.owl.model.visitor;
 
 import edu.stanford.smi.protegex.owl.model.*;
-import edu.stanford.smi.protegex.owl.swrl.model.SWRLAtomList;
-import edu.stanford.smi.protegex.owl.swrl.model.SWRLIndividual;
 
 /**
  * User: matthewhorridge<br>
@@ -112,13 +110,5 @@ public class OWLModelVisitorAdapter implements OWLModelVisitor {
 
     public void visitRDFUntypedResource(RDFUntypedResource rdfUntypedResource) {
     }
-
-
-	public void visitSWRLIndividual(SWRLIndividual swrlIndividual) {		
-	}
-
-
-	public void visitSWRLAtomListIndividual(SWRLAtomList swrlAtomList) {		
-	}
 }
 

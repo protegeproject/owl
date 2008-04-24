@@ -209,13 +209,9 @@ public class RDFListComponent extends AbstractPropertyValuesComponent implements
     public RDFListComponent(RDFProperty predicate) {
     	this(predicate, null);
     }
-
-    public RDFListComponent(RDFProperty predicate, String label) {
-        this(predicate, label, false);
-    }
     
-    public RDFListComponent(RDFProperty predicate, String label, boolean isReadOnly) {
-        super(predicate, label, isReadOnly);
+    public RDFListComponent(RDFProperty predicate, String label) {
+        super(predicate, label);
         addAction.setEnabled(false);
         listModel = new DefaultListModel();
         list = new JList(listModel);
@@ -511,14 +507,12 @@ public class RDFListComponent extends AbstractPropertyValuesComponent implements
 
 
     private void updateActions() {
-    	boolean editable = !isReadOnly();
-    	
-        addAction.setEnabled(editable && isAddEnabled());
-        createAction.setEnabled(editable && isCreateEnabled());
-        deleteAction.setEnabled(editable && isDeleteEnabled());
-        moveDownAction.setEnabled(editable && isMoveDownEnabled());
-        moveUpAction.setEnabled(editable && isMoveUpEnabled());
-        removeAction.setEnabled(editable && isRemoveEnabled());
+        addAction.setEnabled(isAddEnabled());
+        createAction.setEnabled(isCreateEnabled());
+        deleteAction.setEnabled(isDeleteEnabled());
+        moveDownAction.setEnabled(isMoveDownEnabled());
+        moveUpAction.setEnabled(isMoveUpEnabled());
+        removeAction.setEnabled(isRemoveEnabled());
     }
 
 

@@ -266,7 +266,6 @@ public class RDFXMLWriterTestCase extends AbstractRDFXMLWriterTestCases {
 
 
     public void testAnonymousIndividualChain() {
-        owlModel.setExpandShortNameInMethods(false);
         RDFResource anonA = clsA.createOWLIndividual(owlModel.getNextAnonymousResourceName());
         RDFResource anonB = clsA.createOWLIndividual(owlModel.getNextAnonymousResourceName());
         RDFResource anonC = clsA.createOWLIndividual(owlModel.getNextAnonymousResourceName());

@@ -23,14 +23,13 @@ import edu.stanford.smi.protege.action.ArchiveProject;
 import edu.stanford.smi.protege.action.Copy;
 import edu.stanford.smi.protege.action.CreateProject;
 import edu.stanford.smi.protege.action.Cut;
-import edu.stanford.smi.protege.action.DisplayHtml;
 import edu.stanford.smi.protege.action.OpenProject;
 import edu.stanford.smi.protege.action.Paste;
 import edu.stanford.smi.protege.action.RedoAction;
 import edu.stanford.smi.protege.action.RevertProject;
 import edu.stanford.smi.protege.action.SaveProject;
-import edu.stanford.smi.protege.action.ShowAboutPluginsBox;
 import edu.stanford.smi.protege.action.UndoAction;
+import edu.stanford.smi.protege.model.BrowserSlotPattern;
 import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.Frame;
 import edu.stanford.smi.protege.model.KnowledgeBase;
@@ -42,6 +41,7 @@ import edu.stanford.smi.protege.model.WidgetDescriptor;
 import edu.stanford.smi.protege.plugin.ProjectPluginAdapter;
 import edu.stanford.smi.protege.resource.LocalizedText;
 import edu.stanford.smi.protege.resource.ResourceKey;
+import edu.stanford.smi.protege.resource.Text;
 import edu.stanford.smi.protege.ui.ProjectMenuBar;
 import edu.stanford.smi.protege.ui.ProjectToolBar;
 import edu.stanford.smi.protege.ui.ProjectView;
@@ -49,11 +49,9 @@ import edu.stanford.smi.protege.util.ComponentFactory;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protege.util.StandardAction;
 import edu.stanford.smi.protege.util.SystemUtilities;
-import edu.stanford.smi.protege.widget.ClsWidget;
-import edu.stanford.smi.protege.widget.FormWidget;
 import edu.stanford.smi.protegex.owl.database.OWLDatabaseModel;
-import edu.stanford.smi.protegex.owl.inference.protegeowl.ReasonerPluginMenuManager;
 import edu.stanford.smi.protegex.owl.javacode.JavaCodeGeneratorResourceAction;
+import edu.stanford.smi.protegex.owl.jena.JenaKnowledgeBaseFactory;
 import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.ProtegeNames;
@@ -61,12 +59,12 @@ import edu.stanford.smi.protegex.owl.model.RDFNames;
 import edu.stanford.smi.protegex.owl.model.RDFSNames;
 import edu.stanford.smi.protegex.owl.model.project.OWLProject;
 import edu.stanford.smi.protegex.owl.model.util.XSDVisibility;
+import edu.stanford.smi.protegex.owl.resource.OWLText;
 import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
 import edu.stanford.smi.protegex.owl.ui.actions.AbstractOWLModelAction;
 import edu.stanford.smi.protegex.owl.ui.actions.OWLModelAction;
 import edu.stanford.smi.protegex.owl.ui.actions.OWLModelActionManager;
 import edu.stanford.smi.protegex.owl.ui.actions.ResourceActionManager;
-import edu.stanford.smi.protegex.owl.ui.actions.ShowAboutProtegeOWLAction;
 import edu.stanford.smi.protegex.owl.ui.forms.AbsoluteFormsGenerator;
 import edu.stanford.smi.protegex.owl.ui.forms.AbsoluteFormsLoader;
 import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
@@ -76,9 +74,10 @@ import edu.stanford.smi.protegex.owl.ui.resourcedisplay.ResourceDisplay;
 import edu.stanford.smi.protegex.owl.ui.subsumption.ChangedClassesPanel;
 import edu.stanford.smi.protegex.owl.ui.tooltips.ClassDescriptionToolTipGenerator;
 import edu.stanford.smi.protegex.owl.ui.tooltips.HomeOntologyToolTipGenerator;
-import edu.stanford.smi.protegex.owl.ui.widget.OWLToolTipGenerator;
+import edu.stanford.smi.protegex.owl.ui.triplestore.TripleStoreSelectionAction;
 import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
 import edu.stanford.smi.protegex.owl.ui.widget.OWLWidgetMapper;
+import edu.stanford.smi.protegex.owl.util.OWLBrowserSlotPattern;
 
 /**
  * A ProjectPlugin that makes a couple of initializing adjustments to
@@ -88,12 +87,10 @@ import edu.stanford.smi.protegex.owl.ui.widget.OWLWidgetMapper;
  */
 public class OWLMenuProjectPlugin extends ProjectPluginAdapter {
     private final static String CHANGED_WIDGETS = "ChangedWidgets";
-    private final static String HELP_URL_GETTING_STARTED = "http://protege.stanford.edu/doc/owl/getting-started.html";
-    private final static String HELP_URL_FAQ = "http://protege.stanford.edu/doc/owl-faq.html";
-    private final static String HELP_URL_OWL_TUTORIAL = "http://www.co-ode.org/resources/tutorials/protege-owl-tutorial.php";
     private static JCheckBoxMenuItem proseBox;
     private OWLModelAction recentAction = null;
     private SyntaxHelpAction syntaxHelpAction = new SyntaxHelpAction();
+    private TripleStoreSelectionAction tripleStoreSelectionAction;
     public static final String MENU_NAME = AbstractOWLModelAction.OWL_MENU;
     public static final String PROSE_PROPERTY = "OWL-Prose";
 
@@ -107,15 +104,9 @@ public class OWLMenuProjectPlugin extends ProjectPluginAdapter {
         addToolBarButton(toolBar, action);
     }
 
-    private void adjustMenuAndToolBar(final OWLModel owlModel, 
-    								  final ProjectMenuBar menuBar, 
-    								  final ProjectToolBar toolBar) {
-    	
+    private void adjustMenuAndToolBar(final OWLModel owlModel, final ProjectMenuBar menuBar, final ProjectToolBar toolBar) {
         JMenu owlMenu = new JMenu(AbstractOWLModelAction.OWL_MENU);
         owlMenu.setMnemonic(KeyEvent.VK_O);
-        
-        JMenu reasoningMenu = new JMenu(AbstractOWLModelAction.REASONING_MENU);
-        reasoningMenu.setMnemonic(KeyEvent.VK_R);
 
         JMenu codeMenu = new JMenu(AbstractOWLModelAction.CODE_MENU);
         codeMenu.setMnemonic(KeyEvent.VK_C);
@@ -123,20 +114,53 @@ public class OWLMenuProjectPlugin extends ProjectPluginAdapter {
         JMenu toolsMenu = new JMenu(AbstractOWLModelAction.TOOLS_MENU);
         toolsMenu.setMnemonic(KeyEvent.VK_T);
 
-        // Added - JLV.  Decided to completely regenerate the Help menu.
-        // It is too error prone to guess what Core Protege added and then 
-        // figure out where OWL specific menu items should be inserted.
+	// Get the Help menu.
         JMenu helpMenu = menuBar.getMenu(menuBar.getMenuCount() - 1);
-        regenerateHelpMenu(helpMenu, owlModel);
+
+        // Disable and/or remove some of the Core Protege Help menu items.
+        disableHelpMenuItem(menuBar, ResourceKey.HELP_MENU_ONTOLOGIES_101);
+        disableHelpMenuItem(menuBar, ResourceKey.HELP_MENU_PLUGINS);
+        disableHelpMenuItem(menuBar, ResourceKey.HELP_MENU_ICONS);
+        disableHelpMenuItem(menuBar, ResourceKey.HELP_MENU_FAQ);
+        disableHelpMenuItem(menuBar, ResourceKey.HELP_MENU_GETTING_STARTED);
+        disableHelpMenuItem(menuBar, ResourceKey.HELP_MENU_USERS_GUIDE);
+        helpMenu.remove(0);
+
+        // Insert some Help menu items, specific to Protege-OWL.
+        helpMenu.insert(new AbstractAction("Prot\u00E9g\u00E9-OWL Tutorial...") {
+            public void actionPerformed(ActionEvent e) {
+                SystemUtilities.showHTML("http://www.co-ode.org/resources/tutorials/");
+            }
+        }, 0);
+        helpMenu.insert(syntaxHelpAction, 1);
+
+        // prose tooltips selector
+        proseBox = new JCheckBoxMenuItem("Display prose as tool tip of OWL expressions", true);
+        helpMenu.insert(proseBox, 2);
+        proseBox.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                owlModel.getOWLProject().getSettingsMap().setBoolean(PROSE_PROPERTY, proseBox.isSelected());
+                if (proseBox.isSelected()) {
+                    OWLUI.setOWLToolTipGenerator(new ClassDescriptionToolTipGenerator());
+                }
+                else {
+                    OWLUI.setOWLToolTipGenerator(new HomeOntologyToolTipGenerator());
+                }
+            }
+        });
+        proseBox.setSelected(Boolean.TRUE.equals(owlModel.getOWLProject().getSettingsMap().getBoolean(PROSE_PROPERTY)));
+        if (proseBox.isSelected()) {
+            OWLUI.setOWLToolTipGenerator(new ClassDescriptionToolTipGenerator());
+        }
+        else {
+            OWLUI.setOWLToolTipGenerator(new HomeOntologyToolTipGenerator());
+        }
 
         // add OWLMenu to mainMenuBar
         menuBar.add(owlMenu, 3);
-        menuBar.add(reasoningMenu, 4);
-        menuBar.add(codeMenu, 5);
-        menuBar.add(toolsMenu, 6);
+        menuBar.add(codeMenu, 4);
+        menuBar.add(toolsMenu, 5);
 
-        ReasonerPluginMenuManager.fillReasoningMenu(owlModel, reasoningMenu);
-        
         disableProjectMenuItem(menuBar, ResourceKey.PROJECT_MANAGE_INCLUDED);
         disableProjectMenuItem(menuBar, ResourceKey.PROJECT_CHANGE_INCLUDED);
         disableProjectMenuItem(menuBar, ResourceKey.PROJECT_MERGE_INCLUDED);
@@ -260,31 +284,47 @@ public class OWLMenuProjectPlugin extends ProjectPluginAdapter {
 
     public void afterLoad(Project project) {
         KnowledgeBase kb = project.getKnowledgeBase();
-        if (!(kb instanceof OWLModel)) {
-            return;
-        }
-	
-        OWLModel owlModel = (OWLModel) kb;
-        makeHiddenClsesWithSubclassesVisible(owlModel);
-        project.setWidgetMapper(new OWLWidgetMapper(owlModel));
-        
-        // added TT:
-        OWLUI.fixBrowserSlotPatterns(project);
-        
-        fix(owlModel);
-        
-        if (project.getSources().getString(AbsoluteFormsGenerator.SAVE_FORMS_KEY) != null) {
-            try {
-                AbsoluteFormsLoader absoluteFormsLoader = new AbsoluteFormsLoader(owlModel);
-                absoluteFormsLoader.loadAll();
+        if (kb instanceof OWLModel) {
+            OWLModel owlModel = (OWLModel) kb;
+            owlModel.getNamespaceManager().update();
+            makeHiddenClsesWithSubclassesVisible(owlModel);
+            project.setWidgetMapper(new OWLWidgetMapper(owlModel));
+
+            //added TT:
+            OWLUI.fixBrowserSlotPatterns(project);
+
+            Integer build = owlModel.getOWLProject().getSettingsMap().getInteger(JenaKnowledgeBaseFactory.OWL_BUILD_PROPERTY);
+            if (build == null) {
+                fix(owlModel);
+                /*OWLUI.showMessageDialog("Warning: Your Protege project (pprj) file does not contain information" +
+                        "\nabout which version of Protege-OWL it was created with.  Some forms" +
+                        "\nor tabs may not show up correctly.  In that case, you should rebuild your" +
+                        "\nproject from the .owl file." +
+                        "\nIf you think your project file is ok you just need to save the project" +
+                        "\nusing this version to get rid of this warning in the future.");*/
             }
-            catch (Exception ex) {
-                Log.getLogger().log(Level.SEVERE, "Exception caught at loading absolute forms", ex);
+            else if (build.intValue() < OWLText.getLatestCompatibleBuild()) {
+                fix(owlModel);
+                /*
+                OWLUI.showMessageDialog("Warning: Your Protege project (pprj) file has been created with a" +
+                        "\nprevious version of Protege-OWL (" + build + ").  As a result, some forms or" +
+                        "\ntabs may not show up correctly.  In that case, you should rebuild your" +
+                        "\nproject from the .owl file.");
+                        */
+            }
+            if (project.getSources().getString(AbsoluteFormsGenerator.SAVE_FORMS_KEY) != null) {
+                try {
+                    AbsoluteFormsLoader absoluteFormsLoader = new AbsoluteFormsLoader(owlModel);
+                    absoluteFormsLoader.loadAll();
+                }
+                catch (Exception ex) {
+                  Log.getLogger().log(Level.SEVERE, "Exception caught at loading absolute forms", ex);
+                }
             }
         }
     }
 
-    public void afterSave(Project p) {
+	public void afterSave(Project p) {
         if (p.getKnowledgeBase() instanceof OWLModel) {
             OWLModel owlModel = ((OWLModel) p.getKnowledgeBase());
             restoreWidgetsAfterSave(owlModel);
@@ -304,47 +344,26 @@ public class OWLMenuProjectPlugin extends ProjectPluginAdapter {
 
             owlModel.getProject().setInstanceDisplayClass(ResourceDisplay.class);
             adjustMenuAndToolBar(owlModel, menuBar, toolBar);
-            adjustOWLAnnotationPropertyForm(view.getProject());
 
             ResourceActionManager.addResourceActionClass(JavaCodeGeneratorResourceAction.class);
+
+            int buildNumber = Integer.parseInt(Text.getBuildNumber());
+            if (buildNumber < OWLText.getRequiresProtegeBuild()) {
+                ProtegeUI.getModalDialogFactory().showMessageDialog(owlModel,
+                                                                    "Warning: This version of the OWL Plugin requires Protege 3.2 beta build " +
+                                                                    OWLText.getRequiresProtegeBuild() + ",\nbut you currently have Protege " +
+                                                                    Text.getVersion() + ", Build " + buildNumber + ". Please do a clean reinstall.");
+            }
         }
     }
 
-    // Make sure that the annotation property class form does not contain
-    // rdfs:domain and rdfs:range widgets
-    private void adjustOWLAnnotationPropertyForm(Project project) {
-    	OWLModel owlModel = (OWLModel) project.getKnowledgeBase();
-    	
-    	try {
-        	ClsWidget clsWidget = project.getDesignTimeClsWidget(owlModel.getOWLAnnotationPropertyClass());   
-        	
-    		Slot s1 = owlModel.getRDFSDomainProperty();
-    		clsWidget.replaceWidget(s1, null);
-
-    		Slot s2 = owlModel.getRDFSRangeProperty();
-    		clsWidget.replaceWidget(s2, null);
-
-    		Slot s3 = owlModel.getSlot(Model.Slot.DIRECT_DOMAIN);
-    		clsWidget.replaceWidget(s3, null);
-    		
-    		((FormWidget)clsWidget).setVerticalStretcher(FormWidget.STRETCH_NONE);
-    		((FormWidget)clsWidget).setHorizontalStretcher(FormWidget.STRETCH_ALL);
-			
-		} catch (Exception e) {
-			Log.getLogger().warning("Problems at adjusting the class form of owl:AnnotationProperty.");
-		}
-		
-	}
-
-	public void beforeClose(Project p) {
+    public void beforeClose(Project p) {
         if (p.getKnowledgeBase() instanceof OWLModel) {
             ProjectView view = ProtegeUI.getProjectView(p);
             if (view != null) {
                 ProtegeUI.unregister(view);
             }
             ChangedClassesPanel.dispose((OWLModel) p.getKnowledgeBase());
-            OWLUI.setOWLToolTipGenerator(null);
-            proseBox = null;            
         }
     }
 
@@ -373,6 +392,10 @@ public class OWLMenuProjectPlugin extends ProjectPluginAdapter {
         return new OWLModelActionAction(owlModelAction, owlModel);
     }
 
+    private void disableHelpMenuItem(ProjectMenuBar menuBar, ResourceKey resourceKey) {
+        disableMenuItem(menuBar, ResourceKey.MENUBAR_HELP, resourceKey, false);
+    }
+
     private void disableProjectMenuItem(ProjectMenuBar menuBar, ResourceKey resourceKey) {
         disableMenuItem(menuBar, ResourceKey.MENUBAR_PROJECT, resourceKey, true);
     }
@@ -398,8 +421,7 @@ public class OWLMenuProjectPlugin extends ProjectPluginAdapter {
 
     private void fix(OWLModel owlModel) {
         if (!owlModel.getProject().isMultiUserClient()) {
-        	//TODO: TT - this must not be called
-            //OWLBackwardsCompatibilityProjectFixups.fix(owlModel);
+            OWLBackwardsCompatibilityProjectFixups.fix(owlModel);
             XSDVisibility.updateVisibility(owlModel);
         }
     }
@@ -441,9 +463,9 @@ public class OWLMenuProjectPlugin extends ProjectPluginAdapter {
             owlModel.getOWLNamedClassClass().setVisible(true);
         }
         Set systemFrames = new HashSet(owlModel.getOWLSystemResources());
-        if (owlModel.getOWLObjectPropertyClass().getSubclassCount() > 3 || //better test needed
+        if (owlModel.getOWLObjectPropertyClass().getSubclassCount() > 0 ||
             owlModel.getOWLDatatypePropertyClass().getSubclassCount() > 0 ||
-            isUsedInRange(owlModel.getOWLObjectPropertyClass(), systemFrames) || 
+            isUsedInRange(owlModel.getOWLObjectPropertyClass(), systemFrames) ||
             isUsedInRange(owlModel.getOWLDatatypePropertyClass(), systemFrames) ||
             isUsedInRange(owlModel.getRDFPropertyClass(), systemFrames)) {
             owlModel.getRDFPropertyClass().setVisible(true);
@@ -458,7 +480,7 @@ public class OWLMenuProjectPlugin extends ProjectPluginAdapter {
     }
 
     private static void makeVisibleIfSubclassesExist(Cls cls, Set systemFrames) {
-        if (cls.getVisibleDirectSubclassCount() > 0 || isUsedInRange(cls, systemFrames)) {
+        if (cls.getDirectSubclassCount() > 0 || isUsedInRange(cls, systemFrames)) {
             cls.setVisible(true);
         }
     }
@@ -499,55 +521,5 @@ public class OWLMenuProjectPlugin extends ProjectPluginAdapter {
             }
             owlProject.setSessionObject(CHANGED_WIDGETS, null);
         }
-    }
-    
-    private void regenerateHelpMenu(JMenu helpMenu, final OWLModel owlModel) {
-    	// Remove everything that was added by Core Protege and 
-    	// build menu again.  This seems safer than removing select items 
-    	// and then inserting items in particular places.
-    	helpMenu.removeAll();
-    	
-    	ComponentFactory.addMenuItemNoIcon(helpMenu, 
-    		new DisplayHtml(ResourceKey.HELP_MENU_GETTING_STARTED, HELP_URL_GETTING_STARTED));
-    	
-    	ComponentFactory.addMenuItemNoIcon(helpMenu, 
-    		new DisplayHtml(ResourceKey.HELP_MENU_FAQ, HELP_URL_FAQ));
-
-    	ComponentFactory.addMenuItemNoIcon(helpMenu, 
-    	new AbstractAction("Prot\u00E9g\u00E9-OWL Tutorial...") {
-        	public void actionPerformed(ActionEvent e) {
-        		SystemUtilities.showHTML(HELP_URL_OWL_TUTORIAL);
-        	}
-        });
-        
-        helpMenu.addSeparator();
-        
-        ComponentFactory.addMenuItemNoIcon(helpMenu, syntaxHelpAction);
-
-	    // prose tooltips selector
-	    proseBox = new JCheckBoxMenuItem("Display prose as tool tip of OWL expressions", true);
-	    helpMenu.add(proseBox);
-	    proseBox.addActionListener(new ActionListener() {
-	        public void actionPerformed(ActionEvent e) {
-	            owlModel.getOWLProject().getSettingsMap().setBoolean(PROSE_PROPERTY, proseBox.isSelected());
-	            if (proseBox.isSelected()) {
-	                OWLUI.setOWLToolTipGenerator(new ClassDescriptionToolTipGenerator());
-	            }
-	            else {
-	                OWLUI.setOWLToolTipGenerator(new HomeOntologyToolTipGenerator());
-	            }
-	        }
-	    });
-	    proseBox.setSelected(Boolean.TRUE.equals(owlModel.getOWLProject().getSettingsMap().getBoolean(PROSE_PROPERTY)));
-    
-	    OWLToolTipGenerator toolTipGenerator = OWLUI.getOWLToolTipGenerator();
-	    //TT: Temporary solution. This is kind of hacky, but needed for the case in which a tab widget sets its own tooltip generator
-	    if (toolTipGenerator == null || toolTipGenerator instanceof ClassDescriptionToolTipGenerator || toolTipGenerator instanceof HomeOntologyToolTipGenerator) {        
-	        OWLUI.setOWLToolTipGenerator(proseBox.isSelected() ? new ClassDescriptionToolTipGenerator() : new HomeOntologyToolTipGenerator());
-	    }
-	    
-        helpMenu.addSeparator();
-	    ComponentFactory.addMenuItemNoIcon(helpMenu, new ShowAboutProtegeOWLAction());
-	    ComponentFactory.addMenuItemNoIcon(helpMenu, new ShowAboutPluginsBox());
     }
 }

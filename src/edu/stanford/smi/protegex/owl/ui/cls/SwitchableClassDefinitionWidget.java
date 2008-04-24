@@ -12,11 +12,9 @@ import javax.swing.JPanel;
 
 import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.Facet;
-import edu.stanford.smi.protege.model.Instance;
 import edu.stanford.smi.protege.model.Model;
 import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protege.util.Log;
-import edu.stanford.smi.protege.widget.SlotWidget;
 import edu.stanford.smi.protege.widget.Widget;
 import edu.stanford.smi.protege.plugin.PluginUtilities;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
@@ -35,7 +33,7 @@ public class SwitchableClassDefinitionWidget extends MultiWidgetPropertyWidget {
 
     private Widget activeWidget;
 
-    private static List<SwitchableType> registry = new ArrayList<SwitchableType>();
+    private static List registry = new ArrayList();
 
 
     static {
@@ -69,8 +67,8 @@ public class SwitchableClassDefinitionWidget extends MultiWidgetPropertyWidget {
         }
 
         int s = 0;
-        for (Iterator<SwitchableType> it = registry.iterator(); it.hasNext();) {
-            SwitchableType type = it.next();
+        for (Iterator it = registry.iterator(); it.hasNext();) {
+            SwitchableType type = (SwitchableType) it.next();
             Class cls = type.getWidgetClassType();
             try {
                 PropertyWidget widget = (PropertyWidget) cls.newInstance();
@@ -92,7 +90,7 @@ public class SwitchableClassDefinitionWidget extends MultiWidgetPropertyWidget {
             return activeWidget.getClass();
         }
         else {
-            SwitchableType type = registry.get(0);
+            SwitchableType type = (SwitchableType) registry.get(0);
             return type.getWidgetClassType();
         }
     }
@@ -127,14 +125,14 @@ public class SwitchableClassDefinitionWidget extends MultiWidgetPropertyWidget {
     }
 
 
-    public static Iterator<SwitchableType> listSwitchableTypes() {
+    public static Iterator listSwitchableTypes() {
         return registry.iterator();
     }
 
 
     public static void registerSwitchableType(SwitchableType type) {
-        for (Iterator<SwitchableType> it = registry.iterator(); it.hasNext();) {
-            SwitchableType switchableType = it.next();
+        for (Iterator it = registry.iterator(); it.hasNext();) {
+            SwitchableType switchableType = (SwitchableType) it.next();
             if (switchableType.getClass() == type.getClass()) {
                 return; // Already there
             }
@@ -163,25 +161,4 @@ public class SwitchableClassDefinitionWidget extends MultiWidgetPropertyWidget {
             }
         }
     }
-    
-    @Override
-    public void setInstance(Instance newInstance) {
-        if (instance != null) {
-            instance.removeFrameListener(valueListener);
-        }
-        for (Iterator it = listWidgets(); it.hasNext();) {
-            SlotWidget widget = (SlotWidget) it.next();
-            if (getActiveWidgetClass().equals(widget.getClass())) {
-            	widget.setInstance(newInstance);
-            }
-        }
-        instance = newInstance;
-        
-        if (instance != null) {
-            instance.addFrameListener(valueListener);
-        }
-    }
-    
-    
-    
 }

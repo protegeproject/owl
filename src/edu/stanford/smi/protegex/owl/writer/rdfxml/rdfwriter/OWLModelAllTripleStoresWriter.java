@@ -1,7 +1,6 @@
 package edu.stanford.smi.protegex.owl.writer.rdfxml.rdfwriter;
 
 import edu.stanford.smi.protege.util.FileUtilities;
-import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 import edu.stanford.smi.protegex.owl.repository.Repository;
@@ -37,22 +36,17 @@ public class OWLModelAllTripleStoresWriter {
 
 
     public void write() throws Exception {
-        Iterator ts = model.getTripleStoreModel().listUserTripleStores();        
+        Iterator ts = model.getTripleStoreModel().listUserTripleStores();
         TripleStore mainTS = (TripleStore) ts.next();
-        
         File file = new File(uri);
         FileOutputStream mainOS = new FileOutputStream(file);
-        String encoding = FileUtilities.getWriteEncoding();
-	    OutputStreamWriter osw = new OutputStreamWriter(mainOS, encoding);
+	    OutputStreamWriter osw = new OutputStreamWriter(mainOS, FileUtilities.getWriteEncoding());
         BufferedWriter bw = new BufferedWriter(osw);
-        
         OWLModelWriter mainWriter = getOwlModelWriter(mainTS, bw);
-	   // mainWriter.getXmlWriter().setEncoding(osw.getEncoding());
-        mainWriter.getXmlWriter().setEncoding(encoding);
+	    mainWriter.getXmlWriter().setEncoding(osw.getEncoding());
         mainWriter.write();
         bw.flush();
         bw.close();
-        
         while (ts.hasNext()) {
             TripleStore tripleStore = (TripleStore) ts.next();
             String name = tripleStore.getName();
@@ -60,7 +54,8 @@ public class OWLModelAllTripleStoresWriter {
             Repository rep = model.getRepositoryManager().getRepository(ontologyName);
             if (rep != null) {
                 if (rep.isWritable(ontologyName)) {
-                	Log.getLogger().info("Saving import " + ontologyName + " to " + rep.getOntologyLocationDescription(ontologyName));
+                    System.out.println("Saving import " + ontologyName + " to " +
+                            rep.getOntologyLocationDescription(ontologyName));
                     OutputStream os = rep.getOutputStream(ontologyName);
 	                OutputStreamWriter outputStreamWriter = new OutputStreamWriter(os, FileUtilities.getWriteEncoding());
                     bw = new BufferedWriter(outputStreamWriter);
@@ -78,7 +73,7 @@ public class OWLModelAllTripleStoresWriter {
         fm.saveGlobalRepositories();
         fm.saveProjectRepositories(uri);
 
-        Log.getLogger().info("... saving successful.");
+        System.out.println("... saving successful.");
     }
 
 

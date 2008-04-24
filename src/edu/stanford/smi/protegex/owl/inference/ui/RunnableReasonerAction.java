@@ -1,7 +1,7 @@
 package edu.stanford.smi.protegex.owl.inference.ui;
 
+import edu.stanford.smi.protegex.owl.inference.dig.exception.DIGReasonerException;
 import edu.stanford.smi.protegex.owl.inference.protegeowl.task.ReasonerTaskListener;
-import edu.stanford.smi.protegex.owl.inference.reasoner.exception.ProtegeReasonerException;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 
 /**
@@ -19,9 +19,9 @@ public interface RunnableReasonerAction {
      * Will be called by the runner to execute some reasoner actions.
      *
      * @param taskListener
-     * @throws ProtegeReasonerException
+     * @throws DIGReasonerException
      */
-    void executeReasonerActions(ReasonerTaskListener taskListener) throws ProtegeReasonerException;
+    void executeReasonerActions(ReasonerTaskListener taskListener) throws DIGReasonerException;
 
 
     OWLModel getOWLModel();

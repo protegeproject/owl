@@ -48,13 +48,13 @@ public class OntologyURIWidget extends AbstractPropertyWidget {
         nameField.addKeyListener(new KeyAdapter() {
             public void keyReleased(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                    setDefaultOntology();
+                    setDefaultNamespace();
                 }
             }
         });
         nameField.addFocusListener(new FocusAdapter() {
             public void focusLost(FocusEvent e) {
-                setDefaultOntology();
+                setDefaultNamespace();
             }
         });
         nameField.getDocument().addDocumentListener(new DocumentListener() {
@@ -79,9 +79,19 @@ public class OntologyURIWidget extends AbstractPropertyWidget {
 
     public void setInstance(Instance instance) {
         super.setInstance(instance);
-        TripleStoreModel tsm = getOWLModel().getTripleStoreModel();
-        nameField.setEditable(tsm.getActiveTripleStore().equals(tsm.getTopTripleStore()));
+        nameField.setEditable(isCurrentTripleStoreTop());
         updateOntologyName();
+    }
+
+    private boolean isCurrentTripleStoreTop() {
+        TripleStoreModel tsm = getOWLModel().getTripleStoreModel();
+        TripleStore ontHome = tsm.getHomeTripleStore(getEditedResource());
+        return tsm.getTopTripleStore().equals(ontHome);
+    }
+
+    private boolean isTopTripleStoreActive() {
+        TripleStoreModel tsm = getOWLModel().getTripleStoreModel();
+        return tsm.getActiveTripleStore().equals(tsm.getTopTripleStore());
     }
 
     private boolean validateName() {
@@ -108,10 +118,15 @@ public class OntologyURIWidget extends AbstractPropertyWidget {
     }
 
 
-    private void setDefaultOntology() {
+    private void setDefaultNamespace() {
         if (validateName()) {
-        	OWLOntology ontology = (OWLOntology) getEditedResource();
-        	ontology.rename(nameField.getText());
+            if (isTopTripleStoreActive()) {
+                String nameSpace = nameField.getText();
+                if (nameSpace.endsWith("/") == false) {
+                    nameSpace += "#";
+                }
+                getOWLModel().getNamespaceManager().setDefaultNamespace(nameSpace);
+            }
             updateOntologyName();
         }
         else {
@@ -126,11 +141,5 @@ public class OntologyURIWidget extends AbstractPropertyWidget {
                                                 "The name is a URI that other ontologies will use to import<br>" +
                                                 "this ontology.  It is recommended that it resembles a http URL that points<br>" +
                                                 "to the location where the ontology can be downloaded from.</html></body>";
-    
-    public void setEnabled(boolean enabled) {
-    	nameField.setEnabled(enabled);
-    	nameField.setEditable(enabled);
-    	super.setEnabled(enabled);
-    };
 }
 

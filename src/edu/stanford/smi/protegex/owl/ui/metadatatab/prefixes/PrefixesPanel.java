@@ -32,13 +32,14 @@ public class PrefixesPanel extends JPanel implements Disposable {
         public void actionPerformed(ActionEvent e) {
             OWLModel owlModel = ontology.getOWLModel();
             try {
-                owlModel.beginTransaction("Add new namespace prefix", ontology.getName());
+                owlModel.beginTransaction("Add new namespace prefix");
                 addPrefix();
-                owlModel.commitTransaction();
             }
             catch (Exception ex) {
-            	owlModel.rollbackTransaction();
                 OWLUI.handleError(owlModel, ex);
+            }
+            finally {
+                owlModel.endTransaction();
             }
         }
     };
@@ -196,7 +197,7 @@ public class PrefixesPanel extends JPanel implements Disposable {
         final boolean enabled = selIndex >= 0 &&
                                 tableModel.getNamespaceManager().isModifiable(tableModel.getPrefix(selIndex));
         //makeDefaultAction.setEnabled(enabled);
-        removeAction.setEnabled(enabled && isEnabled());
+        removeAction.setEnabled(enabled);
     }
 
 
@@ -223,18 +224,15 @@ public class PrefixesPanel extends JPanel implements Disposable {
             String prefix = tableModel.getPrefix(row);
             NamespaceManager nsm = tableModel.getNamespaceManager();
             String namespace = nsm.getNamespaceForPrefix(prefix);
-            try {
-                owlModel.beginTransaction("Make " + namespace + " the default namespace", ontology.getName());
-                nsm.setDefaultNamespace(namespace);
-                nsm.removePrefix(prefix);
-                owlModel.commitTransaction();
-			} catch (Exception e) {
-				owlModel.rollbackTransaction();
-				OWLUI.handleError(owlModel, e);
-			}
+            owlModel.beginTransaction("Make " + namespace + " the default namespace");
+            nsm.setDefaultNamespace(namespace);
+            nsm.removePrefix(prefix);
         }
         catch (Exception ex) {
             OWLUI.handleError(owlModel, ex);
+        }
+        finally {
+            owlModel.endTransaction();
         }
     }
 
@@ -255,13 +253,14 @@ public class PrefixesPanel extends JPanel implements Disposable {
         else {
             NamespaceManager nsm = tableModel.getNamespaceManager();
             try {
-                owlModel.beginTransaction("Remove namespace prefix " + prefix, ontology.getName());
+                owlModel.beginTransaction("Remove namespace prefix " + prefix);
                 nsm.removePrefix(prefix);
-                owlModel.commitTransaction();
             }
             catch (Exception ex) {
-            	owlModel.rollbackTransaction();
                 OWLUI.handleError(owlModel, ex);
+            }
+            finally {
+                owlModel.endTransaction();
             }
         }
     }
@@ -279,10 +278,10 @@ public class PrefixesPanel extends JPanel implements Disposable {
     }
 
 
-    public void setEnabled(boolean enabled) {        
+    public void setEnabled(boolean enabled) {
+        super.setEnabled(enabled);
         addAction.setEnabled(enabled);
         removeAction.setEnabled(enabled);
         table.setEnabled(enabled);
-        super.setEnabled(enabled);
     }
 }

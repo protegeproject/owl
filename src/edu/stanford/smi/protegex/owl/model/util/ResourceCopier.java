@@ -1,48 +1,18 @@
 package edu.stanford.smi.protegex.owl.model.util;
 
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
-
 import edu.stanford.smi.protege.model.Model;
 import edu.stanford.smi.protege.model.Slot;
-import edu.stanford.smi.protegex.owl.model.OWLAllDifferent;
-import edu.stanford.smi.protegex.owl.model.OWLAllValuesFrom;
-import edu.stanford.smi.protegex.owl.model.OWLCardinality;
-import edu.stanford.smi.protegex.owl.model.OWLComplementClass;
-import edu.stanford.smi.protegex.owl.model.OWLDataRange;
-import edu.stanford.smi.protegex.owl.model.OWLDatatypeProperty;
-import edu.stanford.smi.protegex.owl.model.OWLEnumeratedClass;
-import edu.stanford.smi.protegex.owl.model.OWLHasValue;
-import edu.stanford.smi.protegex.owl.model.OWLIndividual;
-import edu.stanford.smi.protegex.owl.model.OWLIntersectionClass;
-import edu.stanford.smi.protegex.owl.model.OWLMaxCardinality;
-import edu.stanford.smi.protegex.owl.model.OWLMinCardinality;
-import edu.stanford.smi.protegex.owl.model.OWLModel;
-import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
-import edu.stanford.smi.protegex.owl.model.OWLNames;
-import edu.stanford.smi.protegex.owl.model.OWLObjectProperty;
-import edu.stanford.smi.protegex.owl.model.OWLOntology;
-import edu.stanford.smi.protegex.owl.model.OWLSomeValuesFrom;
-import edu.stanford.smi.protegex.owl.model.OWLUnionClass;
-import edu.stanford.smi.protegex.owl.model.RDFIndividual;
-import edu.stanford.smi.protegex.owl.model.RDFList;
-import edu.stanford.smi.protegex.owl.model.RDFObject;
-import edu.stanford.smi.protegex.owl.model.RDFProperty;
-import edu.stanford.smi.protegex.owl.model.RDFResource;
-import edu.stanford.smi.protegex.owl.model.RDFSDatatype;
-import edu.stanford.smi.protegex.owl.model.RDFSLiteral;
-import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
-import edu.stanford.smi.protegex.owl.model.RDFSNames;
-import edu.stanford.smi.protegex.owl.model.RDFUntypedResource;
-import edu.stanford.smi.protegex.owl.model.factory.AlreadyImportedException;
+import edu.stanford.smi.protegex.owl.model.*;
 import edu.stanford.smi.protegex.owl.model.impl.OWLUtil;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreModel;
 import edu.stanford.smi.protegex.owl.model.visitor.OWLModelVisitorAdapter;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
 
 /**
  * A utility visitor class to copy resources by their slot values.
@@ -66,7 +36,7 @@ public class ResourceCopier extends OWLModelVisitorAdapter {
             Model.Slot.NAME
     };
 
-    private Set<Slot> doNotCopySlotsList = new HashSet<Slot>();
+    private Collection doNotCopySlotsList;
 
     private OWLModel owlModel;
 
@@ -82,42 +52,34 @@ public class ResourceCopier extends OWLModelVisitorAdapter {
 
     //////////////////////////////////// DO NOT copy the below - give a reference
 
-    @Override
     public void visitOWLNamedClass(OWLNamedClass source) {
         visitResourceToBeReferenced(source);
     }
 
-    @Override
     public void visitOWLIndividual(OWLIndividual source) {
         visitResourceToBeReferenced(source);
     }
 
-    @Override
     public void visitOWLObjectProperty(OWLObjectProperty source) {
         visitResourceToBeReferenced(source);
     }
 
-    @Override
     public void visitOWLDatatypeProperty(OWLDatatypeProperty source) {
         visitResourceToBeReferenced(source);
     }
 
-    @Override
     public void visitRDFSNamedClass(RDFSNamedClass source) {
         visitResourceToBeReferenced(source);
     }
 
-    @Override
     public void visitRDFIndividual(RDFIndividual source) {
         visitResourceToBeReferenced(source);
     }
 
-    @Override
     public void visitRDFProperty(RDFProperty source) {
         visitResourceToBeReferenced(source);
     }
 
-    @Override
     public void visitRDFDatatype(RDFSDatatype source) {
         visitResourceToBeReferenced(source);
     }
@@ -125,7 +87,7 @@ public class ResourceCopier extends OWLModelVisitorAdapter {
     protected void visitResourceToBeReferenced(RDFResource source) {
         if (!source.isSystem()) {
 
-            if (source.getOWLModel().equals(owlModel) == false) {
+            if (source.getOWLModel() != owlModel) {
                 owlModel = source.getOWLModel();
             }
 
@@ -135,24 +97,14 @@ public class ResourceCopier extends OWLModelVisitorAdapter {
                 TripleStore ts = tsm.getHomeTripleStore(source);
                 TripleStore activeTs = tsm.getActiveTripleStore();
 
-                if (activeTs.equals(ts) == false) {
+                if (activeTs != ts) {
 
-                    /* ND: @@TODO the following should operate on the ts.getName()
-                       but this does always return the ontology name (xml:base)
-               	
+                    /* @@TODO the following should operate on the ts.getName()
+                       but this does always return the ontology name (xml:base) */
+
                     String ns = ts.getDefaultNamespace();
                     String homeOntologyName = ns.substring(0, ns.length() - 1);
-                    */
-                	
-                	/* TT: ts.getDefaultNampespace returned null when there was not default                	
-                	 * namespace defined for an imported ontology.
-                	 * Use ts.getName() which should return the name of the ontology
-                	 * where this resource belongs to.
-                	 */
 
-                	//TODO: Check whether this works right
-                	String homeOntologyName = ts.getName();
-                	
                     OWLOntology activeOnt = OWLUtil.getActiveOntology(owlModel);
 
                     if (!activeOnt.getImports().contains(homeOntologyName)) {
@@ -165,12 +117,10 @@ public class ResourceCopier extends OWLModelVisitorAdapter {
         copy = source;
     }
 
-    @Override
     public void visitRDFSLiteral(RDFSLiteral source) {
         copy = source;
     }
 
-    @Override
     public void visitRDFUntypedResource(RDFUntypedResource source) {
         copy = source;
     }
@@ -179,63 +129,52 @@ public class ResourceCopier extends OWLModelVisitorAdapter {
 
     /////////////////////////////////// anonymous classes
 
-    @Override
     public void visitOWLUnionClass(OWLUnionClass source) {
         copyMultipleSlotValues(source, source.getOWLModel().createOWLUnionClass());
     }
 
-    @Override
     public void visitOWLIntersectionClass(OWLIntersectionClass source) {
         copyMultipleSlotValues(source, source.getOWLModel().createOWLIntersectionClass());
     }
 
-    @Override
     public void visitOWLEnumeratedClass(OWLEnumeratedClass source) {
         copyMultipleSlotValues(source, source.getOWLModel().createOWLEnumeratedClass());
     }
 
-    @Override
     public void visitOWLComplementClass(OWLComplementClass source) {
         copyMultipleSlotValues(source, source.getOWLModel().createOWLComplementClass());
     }
 
     /////////////////////////////////// restrictions
 
-    @Override
     public void visitOWLSomeValuesFrom(OWLSomeValuesFrom source) {
         copyMultipleSlotValues(source, source.getOWLModel().createOWLSomeValuesFrom());
     }
 
-    @Override
     public void visitOWLAllValuesFrom(OWLAllValuesFrom source) {
         copyMultipleSlotValues(source, source.getOWLModel().createOWLAllValuesFrom());
     }
 
-    @Override
     public void visitOWLCardinality(OWLCardinality source) {
         copyMultipleSlotValues(source, source.getOWLModel().createOWLCardinality());
     }
 
-    @Override
     public void visitOWLMaxCardinality(OWLMaxCardinality source) {
         copyMultipleSlotValues(source, source.getOWLModel().createOWLMaxCardinality());
     }
 
-    @Override
     public void visitOWLMinCardinality(OWLMinCardinality source) {
         copyMultipleSlotValues(source, source.getOWLModel().createOWLMinCardinality());
     }
 
-    @Override
     public void visitOWLHasValue(OWLHasValue source) {
         copyMultipleSlotValues(source, source.getOWLModel().createOWLHasValue());
     }
 
     /////////////////////////////////// rdf components
 
-    @Override
     public void visitRDFList(RDFList source) {
-        if (source.equals(source.getOWLModel().getRDFNil())) {
+        if (source == source.getOWLModel().getRDFNil()) {
             copy = source;
         }
         else {
@@ -245,17 +184,14 @@ public class ResourceCopier extends OWLModelVisitorAdapter {
 
     /////////////////////////////////// other
 
-    @Override
     public void visitOWLAllDifferent(OWLAllDifferent source) {
         copyMultipleSlotValues(source, source.getOWLModel().createOWLAllDifferent());
     }
 
-    @Override
     public void visitOWLDataRange(OWLDataRange source) {
         copyMultipleSlotValues(source, source.getOWLModel().createOWLDataRange());
     }
 
-    @Override
     public void visitOWLOntology(OWLOntology source) {
         String newName = null;
         int i = 2;
@@ -264,12 +200,7 @@ public class ResourceCopier extends OWLModelVisitorAdapter {
             i++;
         }
         while (source.getOWLModel().getRDFResource(newName) != null);
-        try {
-            copyMultipleSlotValues(source, source.getOWLModel().createOWLOntology(newName));
-        }
-        catch (AlreadyImportedException e) {
-            new RuntimeException("This shouldn't happen", e);
-        }
+        copyMultipleSlotValues(source, source.getOWLModel().createOWLOntology(newName));
     }
 
     /////////////////////////////////// Utility methods
@@ -277,9 +208,10 @@ public class ResourceCopier extends OWLModelVisitorAdapter {
 
     public void copyMultipleSlotValues(RDFResource source, RDFResource target) {
 
-        if (source.getOWLModel().equals(owlModel) == false) {
+        if (source.getOWLModel() != owlModel) {
             owlModel = source.getOWLModel();
-         
+
+            doNotCopySlotsList = new HashSet();
             for (int i = 0; i < doNotCopySlots.length; i++) {
                 doNotCopySlotsList.add(owlModel.getSlot(doNotCopySlots[i]));
             }
@@ -298,26 +230,9 @@ public class ResourceCopier extends OWLModelVisitorAdapter {
         copy = target;
     }
 
-    @SuppressWarnings("deprecation")
-	public void copySlotValues(RDFResource source, RDFResource target, Slot slot) {
-    	
-    	OWLModel sourceKb = source.getOWLModel();
-    	OWLModel targetKb = target.getOWLModel();
+    public void copySlotValues(RDFResource source, RDFResource target, Slot slot) {
 
-    	Collection values = source.getDirectOwnSlotValues(slot);
-    	
-    	//TT - The slot should be the target slot.
-    	//TT - This method does not treat the case that the target slot is not present
-    	if (sourceKb.equals(targetKb) == false) {
-    		//this does not treat the case that slot has a different name in the target kb
-    		slot = targetKb.getSlot(slot.getName());
-    		
-    		if (slot == null) {
-    			//Log.getLogger().warning("Slot not found. Did not copy " + target + " " + slot);
-    			return;
-    		}    		
-    	}
-    	        
+        Collection values = source.getDirectOwnSlotValues(slot);
 
         if ((values != null) && (values.size() > 0)) {
 

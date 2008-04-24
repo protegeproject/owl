@@ -1,7 +1,5 @@
 package edu.stanford.smi.protegex.owl.ui.properties.range;
 
-import edu.stanford.smi.protege.server.framestore.RemoteClientFrameStore;
-import edu.stanford.smi.protege.server.metaproject.impl.OperationImpl;
 import edu.stanford.smi.protege.util.LabeledComponent;
 import edu.stanford.smi.protegex.owl.model.*;
 import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
@@ -21,12 +19,8 @@ import java.util.Iterator;
 public class OWLDataRangeComponent extends JComponent {
 
     private Action createAction = new AbstractAction("Create value...", OWLIcons.getAddIcon()) {
-        public void actionPerformed(ActionEvent e) {        	
+        public void actionPerformed(ActionEvent e) {
             createValue();
-        }
-        @Override
-        public boolean isEnabled() {        	
-        	return datatype != null;
         }
     };
 
@@ -63,15 +57,8 @@ public class OWLDataRangeComponent extends JComponent {
     }
 
 
-    //FIXME: Not initialized correctly when browsing a different datatype. If "Any", you should not 
-    //be able to add a value
     private void createValue() {
-    	if (datatype == null) {
-    		return;
-    	}
-    	
-        String newValue = ProtegeUI.getModalDialogFactory().showInputDialog(this, "Enter a new " + 
-        		datatype.getBrowserText() + " literal", null);
+        String newValue = ProtegeUI.getModalDialogFactory().showInputDialog(this, "Enter a new " + datatype.getBrowserText() + " literal", null);
         if (newValue != null) {
             RDFProperty property = rangeWidget.getEditedProperty();
             newValue = newValue.trim();
@@ -156,16 +143,7 @@ public class OWLDataRangeComponent extends JComponent {
 
 
     private void updateActions(boolean editable) {
-    	editable = editable && RemoteClientFrameStore.isOperationAllowed(rangeWidget.getOWLModel(), OperationImpl.PROPERTY_TAB_WRITE);
         createAction.setEnabled(editable);
         deleteAction.setEnabled(editable && list.getSelectedValue() != null);
     }
-    
-    public void setEnabled(boolean enabled) {
-    	enabled = enabled && RemoteClientFrameStore.isOperationAllowed(rangeWidget.getOWLModel(), OperationImpl.PROPERTY_TAB_WRITE);
-    	createAction.setEnabled(enabled);
-    	deleteAction.setEnabled(enabled);
-    	setEditable(enabled);
-    	super.setEnabled(enabled);
-    };
 }

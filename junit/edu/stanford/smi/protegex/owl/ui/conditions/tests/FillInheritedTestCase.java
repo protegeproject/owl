@@ -1,14 +1,7 @@
 package edu.stanford.smi.protegex.owl.ui.conditions.tests;
 
 import edu.stanford.smi.protege.model.Instance;
-import edu.stanford.smi.protegex.owl.model.OWLAllValuesFrom;
-import edu.stanford.smi.protegex.owl.model.OWLComplementClass;
-import edu.stanford.smi.protegex.owl.model.OWLHasValue;
-import edu.stanford.smi.protegex.owl.model.OWLIntersectionClass;
-import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
-import edu.stanford.smi.protegex.owl.model.OWLObjectProperty;
-import edu.stanford.smi.protegex.owl.model.OWLRestriction;
-import edu.stanford.smi.protegex.owl.model.OWLSomeValuesFrom;
+import edu.stanford.smi.protegex.owl.model.*;
 import edu.stanford.smi.protegex.owl.ui.conditions.ConditionsTableModel;
 
 /**

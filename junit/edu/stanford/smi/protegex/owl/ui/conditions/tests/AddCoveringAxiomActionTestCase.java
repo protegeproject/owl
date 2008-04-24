@@ -1,12 +1,12 @@
 package edu.stanford.smi.protegex.owl.ui.conditions.tests;
 
-import java.awt.HeadlessException;
-
 import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
 import edu.stanford.smi.protegex.owl.model.OWLUnionClass;
 import edu.stanford.smi.protegex.owl.tests.AbstractJenaTestCase;
 import edu.stanford.smi.protegex.owl.ui.conditions.AddCoveringAxiomAction;
 import edu.stanford.smi.protegex.owl.ui.resourcedisplay.ResourceDisplay;
+
+import java.awt.*;
 
 /**
  * @author Holger Knublauch  <holger@knublauch.com>

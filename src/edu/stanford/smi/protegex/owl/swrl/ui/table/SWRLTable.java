@@ -37,6 +37,8 @@ public class SWRLTable extends SymbolTable implements Disposable {
     enabledColumn.setMaxWidth(60);
     nameColumn.setPreferredWidth(100);
     expressionColumn.setPreferredWidth(700);
+    //    setDefaultRenderer(SWRLImp.class, new ResourceRenderer());
+    //enabledColumn.setCellEditor(new DefaultCellEditor(new JCheckBox()));
   }
 
   protected SymbolEditorComponent createSymbolEditorComponent(OWLModel model, SymbolErrorDisplay errorDisplay) 

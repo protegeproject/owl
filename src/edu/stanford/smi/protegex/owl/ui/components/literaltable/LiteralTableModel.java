@@ -1,7 +1,6 @@
 package edu.stanford.smi.protegex.owl.ui.components.literaltable;
 
 import edu.stanford.smi.protegex.owl.model.*;
-import edu.stanford.smi.protegex.owl.model.impl.DefaultRDFSLiteral;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreModel;
 import edu.stanford.smi.protegex.owl.ui.components.ComponentUtil;
 import edu.stanford.smi.protegex.owl.ui.editors.PropertyValueEditor;
@@ -279,17 +278,8 @@ public class LiteralTableModel extends AbstractTableModel {
             }
             else {
                 final String lexicalValue = (String) aValue;
-                
-                RDFSLiteral newValue = oldLiteral;
-                                
                 RDFSDatatype datatype = oldLiteral.getDatatype();
-                
-                if (datatype.equals(owlModel.getXSDstring())) {
-                	newValue = DefaultRDFSLiteral.create(owlModel, lexicalValue, oldLiteral.getLanguage());
-                } else {
-                	newValue = owlModel.createRDFSLiteral(lexicalValue, datatype);
-                }              
-                
+                RDFSLiteral newValue = owlModel.createRDFSLiteral(lexicalValue, datatype);
                 values.set(rowIndex, newValue);
             }
             subject.setPropertyValues(predicate, getNewValues(rowIndex));  // Will fire back events etc

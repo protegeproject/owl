@@ -51,7 +51,9 @@ public class LocalFolderRepository extends AbstractLocalRepository {
 
     private void update() {
         if (getFile().isDirectory() == false) {        	
+            //if(ProtegeOWLParser.inUI) {
 	            Log.getLogger().warning("[Local Folder Repository] The specified file must be a directory. (" + getFile() + ")");
+            //}
 	        return;
         }
 	    update(getFile());

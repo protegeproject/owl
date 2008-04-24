@@ -4,8 +4,6 @@ import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.KnowledgeBase;
 import edu.stanford.smi.protege.model.Model;
 import edu.stanford.smi.protege.model.Slot;
-import edu.stanford.smi.protege.server.framestore.RemoteClientFrameStore;
-import edu.stanford.smi.protege.server.metaproject.impl.OperationImpl;
 import edu.stanford.smi.protege.ui.FrameComparator;
 import edu.stanford.smi.protege.util.LabeledComponent;
 import edu.stanford.smi.protegex.owl.model.*;
@@ -99,7 +97,7 @@ public class UnionRangeClassesComponent extends JComponent {
 
         public Collection getSelectableResources() {
             RDFProperty property = tableModel.getEditedProperty();
-            Collection<Cls> clses = new HashSet();
+            Collection clses = new HashSet();
             final Collection allowedClses = property.getUnionRangeClasses();
             final Cls rootCls = property.getOWLModel().getOWLThingClass();
             if (property.getSuperpropertyCount() > 0 &&
@@ -120,7 +118,7 @@ public class UnionRangeClassesComponent extends JComponent {
                 clses.removeAll(tableModel.getValues());
             }
             clses.remove(rootCls);
-            Cls[] cs = clses.toArray(new Cls[0]);
+            Object[] cs = clses.toArray();
             Arrays.sort(cs, new FrameComparator());
             return Arrays.asList(cs);
         }
@@ -185,10 +183,7 @@ public class UnionRangeClassesComponent extends JComponent {
 
 
                 public boolean isEnabledFor(RDFSClass cls, int rowIndex) {
-                    //return cls != null && tableModel.isDeleteEnabledFor(cls) && isEnabled();
-                	RDFProperty property = tableModel.getEditedProperty();
-                	
-                	return cls != null && tableModel.isDeleteEnabledFor(cls) && (property != null && property.isEditable());
+                    return cls != null && tableModel.isDeleteEnabledFor(cls);
                 }
             };
 
@@ -250,7 +245,7 @@ public class UnionRangeClassesComponent extends JComponent {
         return this;
     }
 
-/*
+
     public void setEditable(boolean b) {
         super.setEnabled(b);
         if (getComponentCount() > 0) {
@@ -263,25 +258,10 @@ public class UnionRangeClassesComponent extends JComponent {
             table.enableActions();
         }
     }
-*/
+
 
     public void refill() {
         table.hideSymbolPanel();
         tableModel.refill();
     }
-    
-    public void setEnabled(boolean enabled) {
-    	enabled = enabled && RemoteClientFrameStore.isOperationAllowed(owlModel, OperationImpl.PROPERTY_TAB_WRITE);
-    	RDFProperty property = tableModel.getEditedProperty();
-    	
-    	if (property != null) {
-    		enabled = enabled && property.isEditable(); 
-    	}
-    	
-    	//table.setEnabled(enabled);
-    	addAction.setEnabled(enabled);
-    	createAction.setEnabled(enabled);
-    	deleteAction.setEnabled(enabled);    	
-    	super.setEnabled(enabled);
-    };
 }

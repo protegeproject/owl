@@ -1,40 +1,17 @@
 package edu.stanford.smi.protegex.owl.model.impl;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
-import java.util.logging.Level;
-
-import edu.stanford.smi.protege.model.BrowserSlotPattern;
-import edu.stanford.smi.protege.model.Cls;
-import edu.stanford.smi.protege.model.DefaultCls;
-import edu.stanford.smi.protege.model.Facet;
-import edu.stanford.smi.protege.model.Frame;
-import edu.stanford.smi.protege.model.FrameID;
-import edu.stanford.smi.protege.model.KnowledgeBase;
-import edu.stanford.smi.protege.model.Model;
-import edu.stanford.smi.protege.model.Slot;
-import edu.stanford.smi.protege.util.Log;
-import edu.stanford.smi.protegex.owl.model.NamespaceUtil;
-import edu.stanford.smi.protegex.owl.model.OWLAnonymousClass;
-import edu.stanford.smi.protegex.owl.model.OWLIntersectionClass;
-import edu.stanford.smi.protegex.owl.model.OWLModel;
-import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
-import edu.stanford.smi.protegex.owl.model.ProtegeNames;
-import edu.stanford.smi.protegex.owl.model.RDFProperty;
-import edu.stanford.smi.protegex.owl.model.RDFResource;
-import edu.stanford.smi.protegex.owl.model.RDFSClass;
-import edu.stanford.smi.protegex.owl.model.RDFSLiteral;
-import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
+import edu.stanford.smi.protege.model.*;
+import edu.stanford.smi.protegex.owl.model.*;
 import edu.stanford.smi.protegex.owl.model.event.ClassAdapter;
 import edu.stanford.smi.protegex.owl.model.event.ClassListener;
 import edu.stanford.smi.protegex.owl.model.event.PropertyValueListener;
 import edu.stanford.smi.protegex.owl.model.event.ResourceListener;
 import edu.stanford.smi.protegex.owl.model.util.ResourceCopier;
 import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
+import edu.stanford.smi.protegex.owl.ui.menu.OWLBackwardsCompatibilityProjectFixups;
 import edu.stanford.smi.protegex.owl.util.OWLBrowserSlotPattern;
+
+import java.util.*;
 
 /**
  * A basic implementation of the RDFSClass interface that provides support for disjoint classes.
@@ -82,25 +59,13 @@ public abstract class AbstractRDFSClass extends DefaultCls implements RDFSClass 
 
 
     public RDFSClass createClone() {
-    	RDFSClass clone = null;
-    	
-    	try {
-    		getOWLModel().beginTransaction("Created clone of " + this.getBrowserText());
-            ResourceCopier copier = new ResourceCopier();
-            accept(copier);
-            
-            clone = (RDFSClass) copier.getCopy();
-            getOWLModel().commitTransaction();
-		} catch (Exception e) {
-			getOWLModel().rollbackTransaction();
-			Log.getLogger().log(Level.WARNING, "There were errors while creating clone of " + this, e);
-		}
-        return clone;
+        ResourceCopier copier = new ResourceCopier();
+        accept(copier);
+        return (RDFSClass) copier.getCopy();
     }
 
 
     public RDFResource createInstance(String name) {
-        name = OWLUtil.getInternalFullName(getOWLModel(), name);
         return (RDFResource) getKnowledgeBase().createInstance(name, this);
     }
 
@@ -281,7 +246,7 @@ public abstract class AbstractRDFSClass extends DefaultCls implements RDFSClass 
 
 
     public int getSubclassCount() {
-    	if (this.equals(getOWLModel().getOWLThingClass())) {
+        if (Model.ClsID.THING.equals(getFrameID())) {
             return getSubclasses(false).size();
         }
         else {
@@ -291,7 +256,7 @@ public abstract class AbstractRDFSClass extends DefaultCls implements RDFSClass 
 
 
     public Collection getSubclasses(boolean transitive) {
-    	if (this.equals(getOWLModel().getOWLThingClass())) {
+        if (Model.ClsID.THING.equals(getFrameID())) {
             if (transitive) {
                 return AbstractOWLModel.getRDFResources(getKnowledgeBase(),
                                                         getKnowledgeBase().getSubclasses(this));
@@ -472,7 +437,6 @@ public abstract class AbstractRDFSClass extends DefaultCls implements RDFSClass 
     }
 
 
-    @Override
     public Collection getDocumentation() {
         return OWLUtil.getComments(this);
     }
@@ -494,21 +458,23 @@ public abstract class AbstractRDFSClass extends DefaultCls implements RDFSClass 
 
 
     public String getLocalName() {
-        return NamespaceUtil.getLocalName(getName());
-    }
-    
-    
-    public String getPrefixedName() {
-    	return NamespaceUtil.getPrefixedName(getOWLModel(), getName());
+        final String name = getName();
+        final OWLModel nskb = (OWLModel) getKnowledgeBase();
+        return nskb.getLocalNameForResourceName(name);
     }
 
+
     public String getNamespace() {
-        return NamespaceUtil.getNameSpace(getName());
+        final OWLModel nskb = ((OWLModel) getKnowledgeBase());
+        final String name = getName();
+        return nskb.getNamespaceForResourceName(name);
     }
 
 
     public String getNamespacePrefix() {
-        return NamespaceUtil.getPrefixForResourceName(getOWLModel(), getName());
+        final OWLModel nskb = ((OWLModel) getKnowledgeBase());
+        String name = getName();
+        return nskb.getPrefixForResourceName(name);
     }
 
 
@@ -736,7 +702,6 @@ public abstract class AbstractRDFSClass extends DefaultCls implements RDFSClass 
     }
 
 
-    @Override
     public void setDocumentation(String value) {
         OWLUtil.setComment(this, value);
     }
@@ -775,19 +740,8 @@ public abstract class AbstractRDFSClass extends DefaultCls implements RDFSClass 
     public void setProtegeTypes(Collection types) {
         OWLUtil.setProtegeTypes(this, types);
     }
-
-    @Override
-    public String toString() {
-        StringBuffer buffer = new StringBuffer();       
-        buffer.append(this.getClass().getSimpleName());
-        buffer.append("(");
-        buffer.append(getName());
-        buffer.append(")");
-        return buffer.toString();    	
-    }
-
     
-    @Override
+    
     public void setDirectBrowserSlotPattern(BrowserSlotPattern slotPattern) {
     	if ((slotPattern!= null) && !(slotPattern instanceof OWLBrowserSlotPattern))
     		slotPattern = new OWLBrowserSlotPattern(slotPattern.getElements());
@@ -804,5 +758,5 @@ public abstract class AbstractRDFSClass extends DefaultCls implements RDFSClass 
     	    	
     	return new OWLBrowserSlotPattern(pattern);    		
     }
-
+    
 }

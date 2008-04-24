@@ -39,9 +39,9 @@ public class ResourceRenderer extends FrameRenderer {
 
     private Slot directSuperclassesSlot;
 
-    private HashMap<String, Color> colorMap;
+    private HashMap colorMap;
 
-    private HashMap<String, Color> greyedColorMap;
+    private HashMap greyedColorMap;
 
     private static final Color RESTRICTION_KEYWORD_COLOR = Color.MAGENTA.darker();
 
@@ -62,8 +62,8 @@ public class ResourceRenderer extends FrameRenderer {
     public ResourceRenderer(Slot directSuperclassesSlot) {
         this.directSuperclassesSlot = directSuperclassesSlot;
         setDisplayHiddenIcon(false);
-        colorMap = new HashMap<String, Color>();
-        greyedColorMap = new HashMap<String, Color>();
+        colorMap = new HashMap();
+        greyedColorMap = new HashMap();
         addKeyword(ManchesterOWLParserUtil.getMinKeyword(), RESTRICTION_KEYWORD_COLOR, GREYED_RESTRICTION_KEYWORD_COLOR);
         addKeyword(ManchesterOWLParserUtil.getExactKeyword(), RESTRICTION_KEYWORD_COLOR, GREYED_RESTRICTION_KEYWORD_COLOR);
         addKeyword(ManchesterOWLParserUtil.getMaxKeyword(), RESTRICTION_KEYWORD_COLOR, GREYED_RESTRICTION_KEYWORD_COLOR);
@@ -129,10 +129,10 @@ public class ResourceRenderer extends FrameRenderer {
     private Color getTextColor(String text) {
         Color c = null;
         if (_grayedText == false) {
-            c =colorMap.get(text);
+            c = (Color) colorMap.get(text);
         }
         else {
-            c = greyedColorMap.get(text);
+            c = (Color) greyedColorMap.get(text);
         }
         return c;
     }
@@ -196,7 +196,7 @@ public class ResourceRenderer extends FrameRenderer {
         else {
             if (loadedInstance != null) {
                 OWLModel model = ((RDFResource) loadedInstance).getOWLModel();
-                if (loadedInstance.getDirectType().equals(model.getOWLOntologyClass())) {
+                if (loadedInstance.getDirectType() == model.getOWLOntologyClass()) {
                     if (!((DefaultOWLOntology) loadedInstance).isAssociatedTriplestoreEditable()) {
                         color = Color.GRAY;
                         graphics.setFont(graphics.getFont().deriveFont(Font.ITALIC));

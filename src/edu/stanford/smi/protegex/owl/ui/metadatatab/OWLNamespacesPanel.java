@@ -33,8 +33,8 @@ public class OWLNamespacesPanel extends JPanel implements Disposable {
     }
 
 
-    public void setEnabled(boolean enabled) {        
-        prefixesPanel.setEnabled(enabled);
+    public void setEnabled(boolean enabled) {
         super.setEnabled(enabled);
+        prefixesPanel.setEnabled(enabled);
     }
 }

@@ -3,9 +3,9 @@ package edu.stanford.smi.protegex.owl.inference.protegeowl.tests;
 import java.util.logging.Level;
 
 import edu.stanford.smi.protege.util.Log;
+import edu.stanford.smi.protegex.owl.inference.dig.exception.DIGReasonerException;
+import edu.stanford.smi.protegex.owl.inference.protegeowl.ProtegeOWLReasoner;
 import edu.stanford.smi.protegex.owl.inference.protegeowl.ReasonerManager;
-import edu.stanford.smi.protegex.owl.inference.reasoner.ProtegeReasoner;
-import edu.stanford.smi.protegex.owl.inference.reasoner.exception.ProtegeReasonerException;
 import edu.stanford.smi.protegex.owl.model.OWLClass;
 import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
 
@@ -24,13 +24,11 @@ public class SatisfiabilityTestCase extends AbstractProtegeOwlTestCase {
 
 
     public void testOWLThingSatisfiableQuery() {
-        try {           
-            ReasonerManager rm = ReasonerManager.getInstance();
-            ProtegeReasoner reasoner = rm.createProtegeReasoner(owlModel, rm.getDefaultDIGReasonerClass());
-            
-            assertTrue(reasoner.isSatisfiable(owlModel.getOWLThingClass()));
+        try {
+            ProtegeOWLReasoner reasoner = ReasonerManager.getInstance().createReasoner(owlModel);
+            assertTrue(reasoner.isSatisfiable(owlModel.getOWLThingClass(), null));
         }
-        catch (ProtegeReasonerException e) {
+        catch (DIGReasonerException e) {
             fail(e.getMessage());
             Log.getLogger().log(Level.SEVERE, "Exception caught", e);
         }
@@ -39,12 +37,10 @@ public class SatisfiabilityTestCase extends AbstractProtegeOwlTestCase {
 
     public void testOWLNothingSatisfiableQuery() {
         try {
-            ReasonerManager rm = ReasonerManager.getInstance();
-            ProtegeReasoner reasoner = rm.createProtegeReasoner(owlModel, rm.getDefaultDIGReasonerClass());
-            
-            assertFalse(reasoner.isSatisfiable(owlModel.getOWLNothing()));
+            ProtegeOWLReasoner reasoner = ReasonerManager.getInstance().createReasoner(owlModel);
+            assertFalse(reasoner.isSatisfiable(owlModel.getOWLNothing(), null));
         }
-        catch (ProtegeReasonerException e) {
+        catch (DIGReasonerException e) {
             fail(e.getMessage());
             Log.getLogger().log(Level.SEVERE, "Exception caught", e);
         }
@@ -58,15 +54,12 @@ public class SatisfiabilityTestCase extends AbstractProtegeOwlTestCase {
             OWLNamedClass clsC = owlModel.createOWLNamedClass("C");
             clsC.addSuperclass(clsA);
             clsC.addSuperclass(clsB);
-           
-            ReasonerManager rm = ReasonerManager.getInstance();
-            ProtegeReasoner reasoner = rm.createProtegeReasoner(owlModel, rm.getDefaultDIGReasonerClass());
-            
-            assertTrue(reasoner.isSatisfiable(clsC));
+            ProtegeOWLReasoner reasoner = ReasonerManager.getInstance().createReasoner(owlModel);
+            assertTrue(reasoner.isSatisfiable(clsC, null));
             clsA.addDisjointClass(clsB);
-            assertFalse(reasoner.isSatisfiable(clsC));
+            assertFalse(reasoner.isSatisfiable(clsC, null));
         }
-        catch (ProtegeReasonerException e) {
+        catch (DIGReasonerException e) {
             fail(e.getMessage());
             Log.getLogger().log(Level.SEVERE, "Exception caught", e);
         }
@@ -78,16 +71,13 @@ public class SatisfiabilityTestCase extends AbstractProtegeOwlTestCase {
             OWLNamedClass clsA = owlModel.createOWLNamedClass("A");
             OWLNamedClass clsB = owlModel.createOWLNamedClass("B");
             OWLNamedClass clsC = owlModel.createOWLNamedClass("C");
-            
-            ReasonerManager rm = ReasonerManager.getInstance();
-            ProtegeReasoner reasoner = rm.createProtegeReasoner(owlModel, rm.getDefaultDIGReasonerClass());
-                        
+            ProtegeOWLReasoner reasoner = ReasonerManager.getInstance().createReasoner(owlModel);
             OWLClass [] clses = new OWLClass []{clsA, clsB, clsC};
-            assertTrue(reasoner.isIntersectionSatisfiable(clses));
+            assertTrue(reasoner.isIntersectionSatisfiable(clses, null));
             clsA.addDisjointClass(clsB);
-            assertFalse(reasoner.isIntersectionSatisfiable(clses));
+            assertFalse(reasoner.isIntersectionSatisfiable(clses, null));
         }
-        catch (ProtegeReasonerException e) {
+        catch (DIGReasonerException e) {
             fail(e.getMessage());
             Log.getLogger().log(Level.SEVERE, "Exception caught", e);
         }

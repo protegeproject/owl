@@ -80,7 +80,6 @@ public class PropertyRestrictionsTreeWidget extends AbstractPropertyWidget {
 
 
     private RDFProperty createProperty(RDFSNamedClass propertyMetaclass, RDFSClass cls) {
-    	RDFProperty property = null;
         try {
             beginTransaction("Create new " + propertyMetaclass.getBrowserText());
             String baseName = propertyMetaclass.getName();
@@ -89,17 +88,18 @@ public class PropertyRestrictionsTreeWidget extends AbstractPropertyWidget {
                 baseName = baseName.substring(index + 1);
             }
             String name = ((AbstractOWLModel) getKnowledgeBase()).createNewResourceName(baseName);
-            property = (RDFProperty) propertyMetaclass.createInstance(name);
+            RDFProperty property = (RDFProperty) propertyMetaclass.createInstance(name);
             property.setDomainDefined(true);
             property.addUnionDomainClass(cls);
-            commitTransaction();            
+            return property;
         }
         catch (Exception ex) {
-        	rollbackTransaction();
-            OWLUI.handleError(getOWLModel(), ex);            
+            OWLUI.handleError(getOWLModel(), ex);
+            return null;
         }
-        return property;
-        
+        finally {
+            endTransaction();
+        }
     }
 
 
@@ -161,16 +161,17 @@ public class PropertyRestrictionsTreeWidget extends AbstractPropertyWidget {
                 RDFProperty property = (RDFProperty) o;
                 RDFSClass cls = (RDFSClass) getEditedResource();
                 try {
-                    owlModel.beginTransaction("Remove " + cls.getBrowserText() + " from the domain of " + property.getBrowserText(), property.getName());
+                    owlModel.beginTransaction("Remove " + cls.getBrowserText() + " from the domain of " + property.getBrowserText());
                     property.removeUnionDomainClass(cls);
                     if (property instanceof RDFProperty) {
                         ((RDFProperty) property).synchronizeDomainAndRangeOfInverse();
                     }
-                    owlModel.commitTransaction();
                 }
                 catch (Exception ex) {
-                	owlModel.rollbackTransaction();
                     OWLUI.handleError(owlModel, ex);
+                }
+                finally {
+                    owlModel.endTransaction();
                 }
             }
 

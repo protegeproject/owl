@@ -4,7 +4,6 @@ import edu.stanford.smi.protegex.owl.model.*;
 import edu.stanford.smi.protegex.owl.swrl.model.SWRLIndividual;
 import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
 import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
-import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -33,13 +32,14 @@ public class ConvertIndividualToClassAction extends ResourceAction {
                                                                 "Confirm conversion")) {
             OWLModel owlModel = instance.getOWLModel();
             try {
-                owlModel.beginTransaction("Convert individual " + instance.getBrowserText() + " to class", clsName);
+                owlModel.beginTransaction("Convert individual " + instance.getBrowserText() + " to class");
                 performAction(instance);
-                owlModel.commitTransaction();
             }
             catch (Exception ex) {
-            	owlModel.rollbackTransaction();
-            	OWLUI.handleError(owlModel, ex);                
+                ProtegeUI.getModalDialogFactory().showThrowable(owlModel, ex);
+            }
+            finally {
+                owlModel.endTransaction();
             }
         }
     }

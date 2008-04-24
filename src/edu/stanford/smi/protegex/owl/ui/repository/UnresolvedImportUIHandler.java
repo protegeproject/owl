@@ -1,11 +1,8 @@
 package edu.stanford.smi.protegex.owl.ui.repository;
 
-import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protege.util.Wizard;
-import edu.stanford.smi.protegex.owl.ProtegeOWL;
 import edu.stanford.smi.protegex.owl.jena.parser.UnresolvedImportHandler;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
-import edu.stanford.smi.protegex.owl.model.impl.OWLUtil;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 import edu.stanford.smi.protegex.owl.repository.Repository;
 import edu.stanford.smi.protegex.owl.ui.repository.wizard.RepositoryWizard;
@@ -43,12 +40,6 @@ public class UnresolvedImportUIHandler implements UnresolvedImportHandler {
                                                TripleStore tripleStore,
                                                URI ontologyName) {
         try {
-        	//FIXME: Check this with UI and without!!
-        	if (!OWLUtil.runsWithGUI(model)) {
-        		Log.getLogger().warning("The system cannot find the ontology " + ontologyName + " in any of the repositories. This import will be ignored.");
-        		return null;
-        	}
-        	
             Repository rep = null;
             while (rep == null) {
                 if (showMessage(ontologyName) == OPTIONS.indexOf(CANCEL_OPTION)) {

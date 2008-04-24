@@ -209,9 +209,4 @@ public abstract class AbstractPropertyTypesWidget extends AbstractPropertyWidget
             checkBox.updateSelection();
         }
     }
-    
-    public void setEnabled(boolean enabled) {
-    	setEditable(enabled);
-    	super.setEnabled(enabled);
-    };
 }

@@ -1,7 +1,5 @@
 package edu.stanford.smi.protegex.owl.jena.triplestore.tests;
 
-import edu.stanford.smi.protege.model.framestore.InMemoryFrameDb;
-import edu.stanford.smi.protege.model.framestore.NarrowFrameStore;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreModel;
@@ -22,11 +20,8 @@ public class HomeTripleStoreTestCase extends AbstractJenaTestCase {
     public void testSetHomeTripleStore() {
         RDFResource resource = owlModel.createOWLNamedClass("Class");
         TripleStoreModel tripleStoreModel = owlModel.getTripleStoreModel();
-        TripleStore activeTripleStore = tripleStoreModel.getActiveTripleStore();
-        assertEquals(activeTripleStore, tripleStoreModel.getHomeTripleStore(resource));
-        NarrowFrameStore nfs = new InMemoryFrameDb("Test");
-        TripleStore newTripleStore = tripleStoreModel.createActiveImportedTripleStore(nfs);
-        tripleStoreModel.setActiveTripleStore(activeTripleStore);
+        assertEquals(tripleStoreModel.getActiveTripleStore(), tripleStoreModel.getHomeTripleStore(resource));
+        TripleStore newTripleStore = tripleStoreModel.createTripleStore("Test");
         tripleStoreModel.setHomeTripleStore(resource, newTripleStore);
         assertEquals(newTripleStore, tripleStoreModel.getHomeTripleStore(resource));
     }

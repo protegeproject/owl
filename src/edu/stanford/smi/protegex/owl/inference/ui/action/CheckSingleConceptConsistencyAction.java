@@ -1,21 +1,18 @@
 package edu.stanford.smi.protegex.owl.inference.ui.action;
 
-import java.awt.Component;
-import java.awt.event.ActionEvent;
-
+import edu.stanford.smi.protegex.owl.inference.dig.exception.DIGReasonerException;
 import edu.stanford.smi.protegex.owl.inference.protegeowl.ProtegeOWLReasoner;
 import edu.stanford.smi.protegex.owl.inference.protegeowl.ReasonerManager;
 import edu.stanford.smi.protegex.owl.inference.protegeowl.task.ReasonerTaskListener;
-import edu.stanford.smi.protegex.owl.inference.protegeowl.task.protegereasoner.GetConceptSatisfiableTask;
-import edu.stanford.smi.protegex.owl.inference.reasoner.AbstractProtegeReasoner;
-import edu.stanford.smi.protegex.owl.inference.reasoner.ProtegeReasoner;
-import edu.stanford.smi.protegex.owl.inference.reasoner.exception.ProtegeReasonerException;
 import edu.stanford.smi.protegex.owl.inference.ui.ReasonerActionRunner;
 import edu.stanford.smi.protegex.owl.inference.ui.RunnableReasonerAction;
 import edu.stanford.smi.protegex.owl.model.OWLClass;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
 import edu.stanford.smi.protegex.owl.ui.actions.ResourceAction;
 import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
+
+import java.awt.*;
+import java.awt.event.ActionEvent;
 
 /**
  * User: matthewhorridge<br>
@@ -47,19 +44,9 @@ public class CheckSingleConceptConsistencyAction extends ResourceAction implemen
     }
 
 
-    public void executeReasonerActions(ReasonerTaskListener taskListener) throws ProtegeReasonerException {
-        ProtegeReasoner reasoner = ReasonerManager.getInstance().getProtegeReasoner(getResource().getOWLModel());
-        reasoner.setReasonerTaskListener(taskListener);
-        
-        //ugly handling of different dig vs. direct reasoner - for backwards compatibility reasons
-		if (reasoner instanceof AbstractProtegeReasoner && !(reasoner instanceof ProtegeOWLReasoner)) {
-			AbstractProtegeReasoner protegeReasoner = (AbstractProtegeReasoner) reasoner;
-        	GetConceptSatisfiableTask task = new GetConceptSatisfiableTask((OWLClass) getResource(), reasoner);
-    		protegeReasoner.performTask(task);
-        } else {
-        	reasoner.isSatisfiable((OWLClass) getResource());
-        }
-       
+    public void executeReasonerActions(ReasonerTaskListener taskListener) throws DIGReasonerException {
+        ProtegeOWLReasoner reasoner = ReasonerManager.getInstance().getReasoner(getResource().getOWLModel());
+        reasoner.isSatisfiable((OWLClass) getResource(), taskListener);
     }
 }
 

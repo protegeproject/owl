@@ -2,7 +2,6 @@ package edu.stanford.smi.protegex.owl.ui.importstree;
 
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.ui.actions.AbstractOWLModelAction;
-import edu.stanford.smi.protegex.owl.ui.actions.OWLModelActionConstants;
 import edu.stanford.smi.protegex.owl.ui.repository.ShowRepositoryEditorAction;
 
 /**
@@ -11,7 +10,7 @@ import edu.stanford.smi.protegex.owl.ui.repository.ShowRepositoryEditorAction;
 public class ImportsTreeAction extends AbstractOWLModelAction {
 
     public String getMenubarPath() {
-        return OWL_MENU + PATH_SEPARATOR + OWLModelActionConstants.REPOSITORY_GROUP;
+        return OWL_MENU + PATH_SEPARATOR + ShowRepositoryEditorAction.GROUP;
     }
 
 

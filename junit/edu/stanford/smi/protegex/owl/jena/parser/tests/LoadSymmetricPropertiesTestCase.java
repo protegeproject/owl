@@ -23,7 +23,7 @@ public class LoadSymmetricPropertiesTestCase extends AbstractJenaTestCase {
 
     public void testLoadTransitiveProperty() throws Exception {
         loadRemoteOntology("symmetric-only.owl");
-        OWLObjectProperty partOfSlot = (OWLObjectProperty) owlModel.getRDFProperty("partOf");
+        OWLObjectProperty partOfSlot = (OWLObjectProperty) owlModel.getSlot("partOf");
         assertNotNull(partOfSlot);
     }
 }

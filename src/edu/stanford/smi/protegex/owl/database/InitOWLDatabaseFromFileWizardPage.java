@@ -1,26 +1,25 @@
 package edu.stanford.smi.protegex.owl.database;
 
-import java.awt.BorderLayout;
-
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-
 import edu.stanford.smi.protege.util.URIField;
 import edu.stanford.smi.protege.util.Wizard;
 import edu.stanford.smi.protege.util.WizardPage;
 import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
+
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import java.awt.*;
 
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
  */
 public class InitOWLDatabaseFromFileWizardPage extends WizardPage {
 
-    private CreateOWLDatabaseFromFileProjectPlugin plugin;
+    private OWLDatabasePlugin plugin;
 
     private URIField uriField;
 
 
-    public InitOWLDatabaseFromFileWizardPage(Wizard wizard, CreateOWLDatabaseFromFileProjectPlugin plugin) {
+    public InitOWLDatabaseFromFileWizardPage(Wizard wizard, OWLDatabasePlugin plugin) {
         super("Specify Ontology File", wizard);
         this.plugin = plugin;
         uriField = new URIField("URI of OWL file to populate the new database with",
@@ -37,16 +36,12 @@ public class InitOWLDatabaseFromFileWizardPage extends WizardPage {
     }
 
 
-    @Override
     public WizardPage getNextPage() {
-        OWLDatabaseWizardPageExistingSources wizard = new OWLDatabaseWizardPageExistingSources(getWizard(), plugin);
-        wizard.setFileToDatabase(true);
-        return wizard;
+        return new OWLDatabaseWizardPage(getWizard(), plugin, true);
     }
 
 
-    @Override
     public void onFinish() {
-        plugin.setOntologyInputSource(uriField.getAbsoluteURI());
+        plugin.setOntologyFileURI(uriField.getAbsoluteURI());
     }
 }

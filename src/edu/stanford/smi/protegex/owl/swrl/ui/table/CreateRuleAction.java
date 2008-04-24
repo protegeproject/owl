@@ -15,29 +15,29 @@ import java.awt.event.ActionEvent;
  */
 public class CreateRuleAction extends AbstractAction {
 
-  private OWLModel owlModel;
-  private SWRLTable table;
-  private SWRLFactory factory;
+    private OWLModel owlModel;
 
-  public CreateRuleAction(SWRLTable table, OWLModel owlModel) {
-    super("Create new rule...", OWLIcons.getCreateIcon(SWRLIcons.IMP, SWRLIcons.class));
-    this.owlModel = owlModel;
-    this.table = table;
-    factory = new SWRLFactory(owlModel);
-  }
+    private SWRLTable table;
 
-  public void actionPerformed(ActionEvent e) 
-  {
-    final SWRLImp newImp = factory.createImp();
-    if (SWRLTextAreaPanel.showEditDialog(table, owlModel, newImp)) {
-      SwingUtilities.invokeLater(new Runnable() {
-          public void run() {
-            table.setSelectedRow(newImp);
-          }
-        });
+
+    public CreateRuleAction(SWRLTable table, OWLModel owlModel) {
+        super("Create new rule...", OWLIcons.getCreateIcon(SWRLIcons.IMP, SWRLIcons.class));
+        this.owlModel = owlModel;
+        this.table = table;
     }
-    else {
-      newImp.delete();
+
+
+    public void actionPerformed(ActionEvent e) {
+        final SWRLImp newImp = new SWRLFactory(owlModel).createImp();
+        if (SWRLTextAreaPanel.showEditDialog(table, owlModel, newImp)) {
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    table.setSelectedRow(newImp);
+                }
+            });
+        }
+        else {
+            newImp.delete();
+        }
     }
-  }
 }

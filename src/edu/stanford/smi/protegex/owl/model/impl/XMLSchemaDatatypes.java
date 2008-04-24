@@ -1,17 +1,5 @@
 package edu.stanford.smi.protegex.owl.model.impl;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.GregorianCalendar;
-import java.util.Hashtable;
-import java.util.List;
-
-import junit.framework.Assert;
-
 import com.hp.hpl.jena.datatypes.RDFDatatype;
 import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
 import com.hp.hpl.jena.datatypes.xsd.XSDDateTime;
@@ -19,11 +7,14 @@ import com.hp.hpl.jena.datatypes.xsd.impl.XMLLiteralType;
 import com.hp.hpl.jena.datatypes.xsd.impl.XSDDateTimeType;
 import com.hp.hpl.jena.vocabulary.OWL;
 import com.hp.hpl.jena.vocabulary.RDFS;
-
 import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protege.model.ValueType;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
+import junit.framework.Assert;
+
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * A utility class to manage the mapping of XML datatypes and the OWL classes.
@@ -83,11 +74,11 @@ public class XMLSchemaDatatypes {
     /**
      * Short form (e.g. "string") to Jena XSDDatatype object
      */
-    private final static Hashtable<String, XSDDatatype> alias2XSDDatatype = new Hashtable<String, XSDDatatype>();
+    private final static Hashtable alias2XSDDatatype = new Hashtable();
 
-    private final static Hashtable<String, ValueType> uri2ValueTypeHashtable = new Hashtable<String, ValueType>();
+    private final static Hashtable uri2ValueTypeHashtable = new Hashtable();
 
-    private final static Hashtable<ValueType, String> valueType2URIHashtable = new Hashtable<ValueType,String>();
+    private final static Hashtable valueType2URIHashtable = new Hashtable();
 
 
     static {
@@ -97,18 +88,17 @@ public class XMLSchemaDatatypes {
         initHashtables(ValueType.STRING, stringTypes);
         initHashtables(ValueType.SYMBOL, XSDDatatype.XSDstring);
         initHashtables(null, XSDDatatype.XSDbase64Binary);
-        initHashtables(null, XSDDatatype.XSDhexBinary);
         // initHashtables(ValueType.STRING,  XML_LITERAL);
     }
 
 
     public static XSDDatatype[] getAllTypes() {
-        List<XSDDatatype> list = new ArrayList<XSDDatatype>();
+        List list = new ArrayList();
         list.addAll(Arrays.asList(stringTypes));
         list.add(XSDDatatype.XSDboolean);
         list.addAll(Arrays.asList(floatTypes));
         list.addAll(Arrays.asList(integerTypes));
-        return list.toArray(new XSDDatatype[0]);
+        return (XSDDatatype[]) list.toArray(new XSDDatatype[0]);
     }
 
 
@@ -126,19 +116,11 @@ public class XMLSchemaDatatypes {
         int offset = cal.get(Calendar.ZONE_OFFSET) + cal.get(Calendar.DST_OFFSET);
         cal.add(Calendar.MILLISECOND, offset);
         XSDDateTime dt = new DateXSDDateTime(cal);
-        
-        // TODO: hack! Ignoring the timezone explicitly. 
-        // This code has to be rewritten to work with the time zone, too.
-        
-        String dateStr = dt.toString();
-        
-        int index = dateStr.indexOf("Z");
-        
-        if (index >= 0) {
-        	dateStr = dateStr.substring(0, index);
-    }
-
-        return dateStr;
+        return dt.toString();
+        //Calendar cal = new GregorianCalendar();
+        //cal.setTime(date);
+        //XSDDateTime dt = new DateXSDDateTime(cal);
+        //return dt.toString();
     }
 
 
@@ -173,10 +155,10 @@ public class XMLSchemaDatatypes {
     }
 
 
-    public static List<String> getSlotSymbols() {
-        List<String> values = new ArrayList<String>();
-        for (Enumeration<String> enu = uri2ValueTypeHashtable.keys(); enu.hasMoreElements();) {
-            String str = enu.nextElement();
+    public static List getSlotSymbols() {
+        List values = new ArrayList();
+        for (Enumeration enu = uri2ValueTypeHashtable.keys(); enu.hasMoreElements();) {
+            String str = (String) enu.nextElement();
             values.add(str);
         }
         return values;
@@ -212,7 +194,11 @@ public class XMLSchemaDatatypes {
         else if (uri.equals("http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral")) {
             return ValueType.STRING;
         }
-        ValueType result = uri2ValueTypeHashtable.get(uri); // ???.toLowerCase());
+        int index = uri.lastIndexOf('#');
+        if (index >= 0) {
+            uri = uri.substring(index + 1);
+        }
+        ValueType result = (ValueType) uri2ValueTypeHashtable.get(uri); // ???.toLowerCase());
         if (result == null) {
             return ValueType.ANY;
         }
@@ -226,12 +212,12 @@ public class XMLSchemaDatatypes {
             System.err.println("Warning: Replaced illegal value type \"Any\" with \"String\"");
             valueType = ValueType.STRING;
         }
-        return valueType2URIHashtable.get(valueType);
+        return XSDDatatype.XSD + "#" + valueType2URIHashtable.get(valueType);
     }
 
 
     public static XSDDatatype getXSDDatatype(String alias) {
-        return alias2XSDDatatype.get(alias);
+        return (XSDDatatype) alias2XSDDatatype.get(alias);
     }
 
 
@@ -247,7 +233,7 @@ public class XMLSchemaDatatypes {
 
     public static XSDDatatype getXSDDatatype(edu.stanford.smi.protegex.owl.model.RDFSDatatype datatype) {
         if (datatype.isSystem()) {
-            return alias2XSDDatatype.get(datatype.getName());
+            return (XSDDatatype) alias2XSDDatatype.get(datatype.getLocalName());
         }
         else {
             return getXSDDatatype(datatype.getBaseDatatype());
@@ -262,7 +248,8 @@ public class XMLSchemaDatatypes {
 
 
     public static String getXSDDatatypeAlias(String uri) {
-    	return uri;
+        int index = uri.lastIndexOf('#');
+        return uri.substring(index + 1);
     }
 
 
@@ -278,11 +265,13 @@ public class XMLSchemaDatatypes {
 
 
     private static void initHashtables(ValueType valueType, XSDDatatype xsd) {
-        String uri = xsd.getURI();
+        String fullURI = xsd.getURI();
+        int index = fullURI.lastIndexOf('#');
+        String uri = fullURI.substring(index + 1);
         if (valueType != null) {
             initHashtables(valueType, uri);
         }
-        alias2XSDDatatype.put(uri, xsd);
+        alias2XSDDatatype.put(uri/*???.toLowerCase()*/, xsd);
     }
 
 

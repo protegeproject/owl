@@ -5,8 +5,6 @@ import edu.stanford.smi.protege.model.Instance;
 import edu.stanford.smi.protege.model.KnowledgeBase;
 import edu.stanford.smi.protege.ui.FrameRenderer;
 import edu.stanford.smi.protege.util.*;
-import edu.stanford.smi.protege.widget.ReadOnlyWidgetConfigurationPanel;
-import edu.stanford.smi.protege.widget.WidgetConfigurationPanel;
 import edu.stanford.smi.protegex.owl.model.*;
 import edu.stanford.smi.protegex.owl.model.event.PropertyValueAdapter;
 import edu.stanford.smi.protegex.owl.model.event.PropertyValueListener;
@@ -30,7 +28,7 @@ import java.util.Iterator;
  */
 public class SingleResourceComponent extends AbstractPropertyValuesComponent implements Disposable {
 
-	
+
     private PropertyValueListener browserTextListener = new PropertyValueAdapter() {
         public void browserTextChanged(RDFResource resource) {
             list.repaint();
@@ -63,13 +61,10 @@ public class SingleResourceComponent extends AbstractPropertyValuesComponent imp
     	this(predicate, null);
 	}
     
-    public SingleResourceComponent(RDFProperty predicate, String label) {
-    	this(predicate, label, false);
-    }
 
-    public SingleResourceComponent(RDFProperty predicate, String label, boolean isReadOnly) {
-        super(predicate, label, isReadOnly);
-        
+    public SingleResourceComponent(RDFProperty predicate, String label) {
+        super(predicate, label);
+
         list = ComponentFactory.createSingleItemList(new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
                 handleDoubleClick();
@@ -149,7 +144,7 @@ public class SingleResourceComponent extends AbstractPropertyValuesComponent imp
         if (cls != null) {
             Instance instance = ((KnowledgeBase) owlModel).createInstance(null, cls);
             if (instance instanceof RDFUntypedResource) {
-                instance = OWLUtil.assignUniqueURI((RDFUntypedResource) instance);
+                OWLUtil.assignUniqueURI((RDFUntypedResource) instance);
             }
             else if (instance instanceof RDFSClass) {
                 RDFSClass newClass = (RDFSClass) instance;
@@ -205,11 +200,9 @@ public class SingleResourceComponent extends AbstractPropertyValuesComponent imp
 
 
     private void updateActions() {
-    	boolean isEditable = !isReadOnly();
-    	
-        createAction.setEnabled(isEditable && isCreateEnabled());
-        setAction.setEnabled(isEditable && isSetEnabled());
-        removeAction.setEnabled(isEditable && isRemoveEnabled());
+        createAction.setEnabled(isCreateEnabled());
+        setAction.setEnabled(isSetEnabled());
+        removeAction.setEnabled(isRemoveEnabled());
     }
 
 
@@ -237,6 +230,4 @@ public class SingleResourceComponent extends AbstractPropertyValuesComponent imp
         updateActions();
         updateList();
     }
-  
-
 }

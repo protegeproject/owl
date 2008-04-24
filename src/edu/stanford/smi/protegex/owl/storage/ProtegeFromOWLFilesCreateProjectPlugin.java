@@ -19,6 +19,7 @@ import edu.stanford.smi.protegex.owl.ProtegeOWL;
 import edu.stanford.smi.protegex.owl.jena.JenaKnowledgeBaseFactory;
 import edu.stanford.smi.protegex.owl.jena.OWLFilesPlugin;
 import edu.stanford.smi.protegex.owl.jena.importer.OWLImporter;
+import edu.stanford.smi.protegex.owl.jena.parser.ProtegeOWLParser;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.ui.jena.ProtegeFromOWLFilesWizardPage;
 
@@ -97,7 +98,7 @@ public class ProtegeFromOWLFilesCreateProjectPlugin
     }
 
 
-    public void setOntologyName(String namespace) {
+    public void setDefaultNamespace(String namespace) {
     }
 
 

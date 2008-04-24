@@ -1,28 +1,10 @@
 package edu.stanford.smi.protegex.owl.model.classdisplay;
 
+import edu.stanford.smi.protegex.owl.model.*;
+import edu.stanford.smi.protegex.owl.model.impl.OWLUtil;
+
 import java.util.Collection;
 import java.util.Iterator;
-
-import edu.stanford.smi.protegex.owl.model.OWLAllValuesFrom;
-import edu.stanford.smi.protegex.owl.model.OWLAnonymousClass;
-import edu.stanford.smi.protegex.owl.model.OWLCardinality;
-import edu.stanford.smi.protegex.owl.model.OWLComplementClass;
-import edu.stanford.smi.protegex.owl.model.OWLEnumeratedClass;
-import edu.stanford.smi.protegex.owl.model.OWLHasValue;
-import edu.stanford.smi.protegex.owl.model.OWLIntersectionClass;
-import edu.stanford.smi.protegex.owl.model.OWLMaxCardinality;
-import edu.stanford.smi.protegex.owl.model.OWLMinCardinality;
-import edu.stanford.smi.protegex.owl.model.OWLNAryLogicalClass;
-import edu.stanford.smi.protegex.owl.model.OWLQuantifierRestriction;
-import edu.stanford.smi.protegex.owl.model.OWLRestriction;
-import edu.stanford.smi.protegex.owl.model.OWLSomeValuesFrom;
-import edu.stanford.smi.protegex.owl.model.OWLUnionClass;
-import edu.stanford.smi.protegex.owl.model.ProtegeNames;
-import edu.stanford.smi.protegex.owl.model.RDFProperty;
-import edu.stanford.smi.protegex.owl.model.RDFResource;
-import edu.stanford.smi.protegex.owl.model.RDFSClass;
-import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
-import edu.stanford.smi.protegex.owl.model.classparser.ParserUtils;
 
 /**
  * A basic implementation of OWLClassRenderer which uses infix notation based on the
@@ -32,13 +14,15 @@ import edu.stanford.smi.protegex.owl.model.classparser.ParserUtils;
  */
 public abstract class AbstractOWLClassDisplay implements OWLClassDisplay {
 
+	private RDFProperty commentedOutProperty;
+
 	public AbstractOWLClassDisplay() {
 
 	}
 
     public String getDisplayText(RDFSClass cls) {
         if (cls instanceof RDFSNamedClass) {
-            return ParserUtils.quoteIfNeeded(cls.getBrowserText());
+            return cls.getBrowserText();
         }
         else if (cls instanceof OWLRestriction) {
             return getCommentText(cls) + getDisplayTextOfOWLRestriction((OWLRestriction) cls);
@@ -123,7 +107,7 @@ public abstract class AbstractOWLClassDisplay implements OWLClassDisplay {
         String str = "{";
         for (Iterator it = values.iterator(); it.hasNext();) {
             RDFResource resource = (RDFResource) it.next();
-            str += ParserUtils.quoteIfNeeded(resource.getBrowserText());
+            str += resource.getBrowserText();
             if (it.hasNext()) {
                 str += " ";
             }
@@ -134,7 +118,7 @@ public abstract class AbstractOWLClassDisplay implements OWLClassDisplay {
 
     protected String getDisplayTextOfOWLRestriction(OWLRestriction restriction) {
         RDFProperty onProperty = restriction.getOnProperty();
-        return (onProperty != null ? ParserUtils.quoteIfNeeded(onProperty.getBrowserText()) : "?")
+        return (onProperty != null ? onProperty.getBrowserText() : "?")
                 + " " + getSymbol(restriction) + " " + getOWLRestrictionFillerText(restriction);
     }
 

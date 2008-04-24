@@ -42,7 +42,7 @@ class AddNamedClassAction extends ResourceSelectionAction
 
 
     public Collection getSelectableResources() {
-        Collection<OWLNamedClass> clses = table.getOWLModel().getUserDefinedOWLNamedClasses();
+        Collection clses = table.getOWLModel().getUserDefinedOWLNamedClasses();
         clses.add(table.getOWLModel().getOWLThingClass());
         clses.remove(((OWLTableModel) table.getModel()).getEditedCls());
         ConditionsTableModel tableModel = (ConditionsTableModel) table.getModel();
@@ -52,6 +52,8 @@ class AddNamedClassAction extends ResourceSelectionAction
                 clses.remove(cls);
             }
         }
+        Object[] cs = clses.toArray();
+        Arrays.sort(cs, new FrameComparator());
         return clses;
     }
 

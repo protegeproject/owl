@@ -31,11 +31,7 @@ public class DataRangeFieldComponent extends AbstractPropertyValuesComponent {
     }
 
     public DataRangeFieldComponent(RDFProperty predicate, String label) {
-        this(predicate, label, false);
-    }
-    
-    public DataRangeFieldComponent(RDFProperty predicate, String label, boolean isReadOnly) {
-        super(predicate, label, isReadOnly);
+        super(predicate, label);
 
         comboBox = new JComboBox();
         comboBox.addActionListener(new ActionListener() {

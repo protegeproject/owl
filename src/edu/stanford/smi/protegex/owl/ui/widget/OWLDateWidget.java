@@ -7,9 +7,6 @@ import edu.stanford.smi.protege.model.Facet;
 import edu.stanford.smi.protege.model.Instance;
 import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protege.util.LabeledComponent;
-import edu.stanford.smi.protege.util.Log;
-import edu.stanford.smi.protege.widget.ReadOnlyWidgetConfigurationPanel;
-import edu.stanford.smi.protege.widget.WidgetConfigurationPanel;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
 import edu.stanford.smi.protegex.owl.model.RDFSDatatype;
@@ -84,11 +81,6 @@ public class OWLDateWidget extends AbstractPropertyWidget {
             if (index >= 0) {
                 s = s.substring(0, index);
             }
-            //TODO: Does not consider the timezone!
-            int zindex = s.indexOf("Z");
-            if (zindex >= 0) {
-                s = s.substring(0, zindex);
-            }
             String[] ss = s.split("-");
             if (ss.length >= 3) {
                 try {
@@ -98,7 +90,7 @@ public class OWLDateWidget extends AbstractPropertyWidget {
                     date = new Date(new GregorianCalendar(year, month, day).getTimeInMillis());
                 }
                 catch (Exception ex) {
-                    Log.getLogger().warning("Could not parse value " + s + ": " + ex.getMessage());
+                    System.err.println("[OWLDateWidget] Could not parse value " + s + ": " + ex);
                 }
             }
         }
@@ -115,7 +107,6 @@ public class OWLDateWidget extends AbstractPropertyWidget {
                 }
             }
         });
-        
         setLayout(new BorderLayout());
         lc = new LabeledComponent(getRDFProperty().getBrowserText(), getCenterComponent());
         lc.addHeaderButton(setAction);
@@ -134,7 +125,7 @@ public class OWLDateWidget extends AbstractPropertyWidget {
 
     protected void setValue(String s) {
         Date date = getDate(s);
-        dateChooser.setDate(date);    
+        dateChooser.setDate(date);
     }
 
 
@@ -149,7 +140,7 @@ public class OWLDateWidget extends AbstractPropertyWidget {
 
 
     public void setEnabled(boolean enabled) {
-        super.setEnabled(!isReadOnlyConfiguredWidget() && enabled);
+        super.setEnabled(enabled);
         updateComponents();
     }
 
@@ -173,35 +164,23 @@ public class OWLDateWidget extends AbstractPropertyWidget {
 
 
     protected void updateComponents() {
-    	boolean isEditable = !isReadOnlyConfiguredWidget();
-    	
         RDFResource resource = getEditedResource();
         RDFProperty property = getRDFProperty();
         if (resource != null && property != null && resource.isEditable()) {
             boolean value = resource.getPropertyValue(property) != null;
-            setAction.setEnabled(isEditable && !value);
-            deleteAction.setEnabled(isEditable && value);
-            //dateChooser.setEnabled(isEditable && value);
-            enableDateChooser(isEditable && value);
+            setAction.setEnabled(!value);
+            deleteAction.setEnabled(value);
+            dateChooser.setEnabled(value);
             lc.revalidate();
         }
         else {
             setAction.setEnabled(false);
             deleteAction.setEnabled(false);
-            //dateChooser.setEnabled(false);
-            enableDateChooser(false);
+            dateChooser.setEnabled(false);
         }
-          
-        
     }
 
-    private void enableDateChooser(boolean enable) {    	 
-    	 for (Component comp : dateChooser.getComponents()) {
-    		 comp.setEnabled(enable);
-    	 }
-    }
-    
-    
+
     private boolean ignoreUpdate = false;
 
 
@@ -212,16 +191,6 @@ public class OWLDateWidget extends AbstractPropertyWidget {
         }
     }
 
-    
-    @Override
-    public WidgetConfigurationPanel createWidgetConfigurationPanel() {
-    	WidgetConfigurationPanel confPanel = super.createWidgetConfigurationPanel();
-    	
-    	confPanel.addTab("Options", new ReadOnlyWidgetConfigurationPanel(this));
-    	
-    	return confPanel;
-    }
-    
 
     /**
      * @param cls

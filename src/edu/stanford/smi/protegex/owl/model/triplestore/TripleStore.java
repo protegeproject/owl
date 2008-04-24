@@ -1,15 +1,11 @@
 package edu.stanford.smi.protegex.owl.model.triplestore;
 
-import java.util.Collection;
 import java.util.Comparator;
 import java.util.Iterator;
-import java.util.logging.Level;
 
+import edu.stanford.smi.protege.model.FrameID;
 import edu.stanford.smi.protege.model.framestore.NarrowFrameStore;
-import edu.stanford.smi.protege.util.Disposable;
-import edu.stanford.smi.protegex.owl.model.NamespaceManager;
 import edu.stanford.smi.protegex.owl.model.NamespaceMap;
-import edu.stanford.smi.protegex.owl.model.OWLOntology;
 import edu.stanford.smi.protegex.owl.model.RDFObject;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
@@ -23,11 +19,9 @@ import edu.stanford.smi.protegex.owl.model.RDFResource;
  *
  * @author Holger Knublauch  <holger@knublauch.com>
  */
-public interface TripleStore extends NamespaceMap, Disposable {
+public interface TripleStore extends NamespaceMap {
     
-    NamespaceManager getNamespaceManager();
-    
-    OWLOntology  getOWLOntology();
+    FrameID generateFrameID();
 
     void add(Triple triple);
 
@@ -62,7 +56,7 @@ public interface TripleStore extends NamespaceMap, Disposable {
      *
      * @return an Iterator of RDFResources
      */
-    Iterator<RDFResource> listHomeResources();
+    Iterator listHomeResources();
 
 
     /**
@@ -82,7 +76,7 @@ public interface TripleStore extends NamespaceMap, Disposable {
      * @param property the property to look for
      * @return an Iterator of RDFResources
      */
-    Iterator<RDFResource> listSubjects(RDFProperty property);
+    Iterator listSubjects(RDFProperty property);
 
 
     /**
@@ -95,7 +89,7 @@ public interface TripleStore extends NamespaceMap, Disposable {
     Iterator listSubjects(RDFProperty predicate, Object object);
 
 
-    Iterator<Triple> listTriples();
+    Iterator listTriples();
 
 
     /**
@@ -104,7 +98,7 @@ public interface TripleStore extends NamespaceMap, Disposable {
      * @param object the object to get the triples of
      * @return an Iterator of Triples
      */
-    Iterator<Triple> listTriplesWithObject(RDFObject object);
+    Iterator listTriplesWithObject(RDFObject object);
 
 
     /**
@@ -115,7 +109,7 @@ public interface TripleStore extends NamespaceMap, Disposable {
      * @param subject the subject in the triples
      * @return an Iterator of Triples
      */
-    Iterator<Triple> listTriplesWithSubject(RDFResource subject);
+    Iterator listTriplesWithSubject(RDFResource subject);
 
 
     void remove(Triple triple);
@@ -127,33 +121,14 @@ public interface TripleStore extends NamespaceMap, Disposable {
     void setName(String value);
 
 
+    void setRDFResourceName(RDFResource resource, String name);
+
+
     void sortPropertyValues(RDFResource resource, RDFProperty property, Comparator comparator);
 
 
-    String getOriginalXMLBase();
-    
-    void setOriginalXMLBase(String xmlBase);
-    
-    
     /**
      * Debugging only.
      */
-    void dump(Level level);
-    
-    
-    /**
-     * Disposes this triple store. Called by the triple store manager when an 
-     * OWL model is disposed.
-     */
-    void dispose();
-    
-    /**
-     * Tracks the set of io names that have been used to retrieve this triple store.  This can be 
-     * different than the ontology name in the case of a broken import statement.
-     */
-    Collection<String> getIOAddresses();
-    
-    void addIOAddress(String uri);
-    
-    void removeIOAddress(String uri);
+    void dump();
 }

@@ -16,31 +16,23 @@ import java.util.Iterator;
  * @author Holger Knublauch  <holger@knublauch.com>
  */
 public class TriplesComponent extends AbstractTriplesComponent {
-    
+
+
     private Action deleteRowAction;
-    private Action createObjectPropertyValueAction;
-    private Action createDatatypePropertyValueAction;    
-    private Action addResourceAction;
+
 
     public TriplesComponent(RDFProperty predicate) {
         this(predicate, "Triples", OWLIcons.getImageIcon(OWLIcons.TRIPLES));
     }
 
-    public TriplesComponent(RDFProperty predicate, boolean isreadOnly) {
-    	this(predicate, "Triples", OWLIcons.getImageIcon(OWLIcons.TRIPLES), isreadOnly);
-    }
 
     public TriplesComponent(RDFProperty predicate, String label, Icon icon) {
-        this(predicate, label, icon, false);
+        super(predicate, label, icon);
     }
 
-    public TriplesComponent(RDFProperty predicate, String label, Icon icon, boolean isReadOnly) {
-        super(predicate, label, icon, isReadOnly);
-    }
 
-        
     protected void addButtons(LabeledComponent lc) {
-    	createDatatypePropertyValueAction = new CreateValueAction(getTable(), "Create datatype property value...", OWLIcons.getCreateIndividualIcon(OWLIcons.DATATYPE_TRIPLE)) {
+        lc.addHeaderButton(new CreateValueAction(getTable(), "Create datatype property value...", OWLIcons.getCreateIndividualIcon(OWLIcons.DATATYPE_TRIPLE)) {
             protected Collection getAllowedProperties(OWLModel owlModel) {
                 Collection results = new ArrayList();
                 Iterator it = owlModel.getRDFProperties().iterator();
@@ -52,17 +44,14 @@ public class TriplesComponent extends AbstractTriplesComponent {
                         results.add(property);
                     }
                 }
-                results.remove(owlModel.getSystemFrames().getPalDescriptionSlot());
-                results.remove(owlModel.getSystemFrames().getPalNameSlot());
-                results.remove(owlModel.getSystemFrames().getPalRangeSlot());
-                results.remove(owlModel.getSystemFrames().getPalStatementSlot());
+                results.remove(owlModel.getRDFProperty(Model.Slot.PAL_DESCRIPTION));
+                results.remove(owlModel.getRDFProperty(Model.Slot.PAL_NAME));
+                results.remove(owlModel.getRDFProperty(Model.Slot.PAL_RANGE));
+                results.remove(owlModel.getRDFProperty(Model.Slot.PAL_STATEMENT));
                 return results;
             }
-        };
-        
-        lc.addHeaderButton(createDatatypePropertyValueAction);
-        
-        createObjectPropertyValueAction = new CreateValueAction(getTable(), "Create object property value...", OWLIcons.getCreateIndividualIcon(OWLIcons.RDF_INDIVIDUAL)) {
+        });
+        lc.addHeaderButton(new CreateValueAction(getTable(), "Create object property value...", OWLIcons.getCreateIndividualIcon(OWLIcons.RDF_INDIVIDUAL)) {
             protected Collection getAllowedProperties(OWLModel owlModel) {
                 Collection results = new ArrayList();
                 Iterator it = super.getAllowedProperties(owlModel).iterator();
@@ -75,15 +64,11 @@ public class TriplesComponent extends AbstractTriplesComponent {
                 }
                 return results;
             }
-        };
-        lc.addHeaderButton(createObjectPropertyValueAction);
-        
-        addResourceAction = new AddResourceAction(getTable());
-        lc.addHeaderButton(addResourceAction);
-        
+        });
+        lc.addHeaderButton(new AddResourceAction(getTable()));
         deleteRowAction = new DeleteTripleAction(getTable());
         lc.addHeaderButton(deleteRowAction);
-        
+        deleteRowAction.setEnabled(false);
     }
 
 
@@ -102,6 +87,7 @@ public class TriplesComponent extends AbstractTriplesComponent {
         return false;
     }
 
+
     protected void updateActions() {
         super.updateActions();
         final int row = getTable().getSelectedRow();
@@ -110,15 +96,6 @@ public class TriplesComponent extends AbstractTriplesComponent {
         if (row >= 0) {
             deleteRowEnabled = tableModel.isDeleteEnabled(row);
         }
-        deleteRowAction.setEnabled(isEnabled() && deleteRowEnabled);
+        deleteRowAction.setEnabled(deleteRowEnabled);
     }
-    
-    public void setEnabled(boolean enabled) {    	
-    	createDatatypePropertyValueAction.setEnabled(enabled);
-    	createObjectPropertyValueAction.setEnabled(enabled);
-    	addResourceAction.setEnabled(enabled);
-    	deleteRowAction.setEnabled(enabled);
-    	getTable().setEnabled(enabled);
-    	super.setEnabled(enabled);
-    };
 }

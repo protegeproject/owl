@@ -1,17 +1,25 @@
 package edu.stanford.smi.protegex.owl.jena;
 
-import java.io.File;
-import java.net.URI;
-import java.util.Collection;
-import java.util.logging.Level;
-
 import edu.stanford.smi.protege.model.Project;
 import edu.stanford.smi.protege.plugin.CreateProjectFromFilePlugin;
+import edu.stanford.smi.protege.ui.ProjectManager;
 import edu.stanford.smi.protege.util.FileUtilities;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protege.util.MessageError;
+import edu.stanford.smi.protege.util.ModalDialog;
 import edu.stanford.smi.protege.util.URIUtilities;
-import edu.stanford.smi.protegex.owl.jena.creator.OwlProjectFromUriCreator;
+import edu.stanford.smi.protegex.owl.ProtegeOWL;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.logging.Level;
+
+import com.hp.hpl.jena.util.FileUtils;
 
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
@@ -20,17 +28,32 @@ public class CreateOWLProjectFromFilePlugin implements CreateProjectFromFilePlug
 
 
     public Project createProject(File file, Collection errors) {
-        try {   
-            JenaKnowledgeBaseFactory.useStandalone = false;
-            OwlProjectFromUriCreator creator = new OwlProjectFromUriCreator();
-            creator.setOntologyUri(URIUtilities.createURI(file.getPath()).toString());
-            Project p = creator.create(errors);
-            return p;
+    	JenaOWLModel owlModel = null;
+    	
+    	JenaKnowledgeBaseFactory factory = new JenaKnowledgeBaseFactory();    	
+    	JenaKnowledgeBaseFactory.useStandalone = false;
+    	
+        try {                               
+            Project project = Project.createNewProject(factory, errors);
+            
+            if (project != null) {
+            	JenaKnowledgeBaseFactory.setOWLFileName(project.getSources(),URIUtilities.createURI(file.getPath()).toString());
+            }
+            
+            URI uri = getBuildProjectURI(file);
+            if (uri != null) {
+                project.setProjectURI(uri);
+            }
+                        
+            project.createDomainKnowledgeBase(factory, errors, true);
+                     
+            return project;
         }
         catch (Exception ex) {
             errors.add(new MessageError(ex, "Ontology content might be incomplete or corrupted.\nSee console or log for the full stack trace."));
             Log.getLogger().log(Level.SEVERE, "Error loading file with the CreateOWLProjectFromFilePlugin", ex);
-            return null;
+                        
+            return (owlModel == null) ? null : owlModel.getProject();
         }
     }
 

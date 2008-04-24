@@ -1,6 +1,5 @@
 package edu.stanford.smi.protegex.owl.ui.tooltips;
 
-import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.model.*;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreUtil;
@@ -57,7 +56,6 @@ public class HomeOntologyToolTipGenerator implements OWLToolTipGenerator {
                     text += "<br><b>location:</b> " + homeLocation;
                 }
                 catch (Exception e) { // just do not print
-                    Log.emptyCatchBlock(e);
                 }
             }
 

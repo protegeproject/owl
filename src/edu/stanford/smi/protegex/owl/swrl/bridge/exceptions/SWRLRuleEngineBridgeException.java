@@ -1,9 +1,7 @@
   
 package edu.stanford.smi.protegex.owl.swrl.bridge.exceptions;
 
-import edu.stanford.smi.protegex.owl.swrl.exceptions.SWRLRuleEngineException;
-
-public class SWRLRuleEngineBridgeException extends SWRLRuleEngineException
+public class SWRLRuleEngineBridgeException extends Throwable
 {
   public SWRLRuleEngineBridgeException(String message) { super(message); }
 

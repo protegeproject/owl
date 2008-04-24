@@ -39,10 +39,4 @@ public abstract class AbstractClassDefinitionWidget extends MultiWidgetPropertyW
             setResizeWeight(resizeWeight);
         }
     }
-    
-    @Override
-    public void dispose() {    
-    	super.dispose();
-    	disjointClassesWidget = null;
-    }
 }

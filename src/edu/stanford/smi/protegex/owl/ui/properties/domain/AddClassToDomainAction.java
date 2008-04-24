@@ -83,7 +83,7 @@ public class AddClassToDomainAction extends ResourceSelectionAction {
         String msg = checkCls(cls);
         if (msg == null) {
             try {
-                owlModel.beginTransaction("Add " + resource.getBrowserText() + " to the domain of " + property.getBrowserText(), property.getName());
+                owlModel.beginTransaction("Add " + resource.getBrowserText() + " to the domain of " + property.getBrowserText());
                 if (((Slot) property).getDirectOwnSlotValue(((KnowledgeBase) owlModel).getSlot(Model.Slot.DIRECT_DOMAIN)) == null) {
                     property.addUnionDomainClass(cls);
                     for (Iterator it = property.getSuperproperties(true).iterator(); it.hasNext();) {
@@ -103,11 +103,12 @@ public class AddClassToDomainAction extends ResourceSelectionAction {
                     property.addUnionDomainClass(cls);
                 }
                 property.synchronizeDomainAndRangeOfInverse();
-                owlModel.commitTransaction();
             }
             catch (Exception ex) {
-            	owlModel.rollbackTransaction();
                 OWLUI.handleError(owlModel, ex);
+            }
+            finally {
+                owlModel.endTransaction();
             }
         }
         else {
@@ -144,6 +145,8 @@ public class AddClassToDomainAction extends ResourceSelectionAction {
             clses.add(owlModel.getOWLThingClass());
             clses.removeAll(property.getUnionDomain());
         }
+        Object[] cs = clses.toArray();
+        Arrays.sort(cs, new FrameComparator());
         return clses;
     }
 

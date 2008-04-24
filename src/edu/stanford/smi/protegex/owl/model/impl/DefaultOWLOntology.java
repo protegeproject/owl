@@ -1,31 +1,23 @@
 package edu.stanford.smi.protegex.owl.model.impl;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-
 import edu.stanford.smi.protege.model.FrameID;
 import edu.stanford.smi.protege.model.KnowledgeBase;
 import edu.stanford.smi.protege.model.Slot;
-import edu.stanford.smi.protegex.owl.model.OWLModel;
-import edu.stanford.smi.protegex.owl.model.OWLNames;
-import edu.stanford.smi.protegex.owl.model.OWLOntology;
-import edu.stanford.smi.protegex.owl.model.RDFExternalResource;
-import edu.stanford.smi.protegex.owl.model.RDFObject;
-import edu.stanford.smi.protegex.owl.model.RDFResource;
-import edu.stanford.smi.protegex.owl.model.RDFUntypedResource;
+import edu.stanford.smi.protegex.owl.model.*;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreUtil;
 import edu.stanford.smi.protegex.owl.model.visitor.OWLModelVisitor;
 import edu.stanford.smi.protegex.owl.repository.Repository;
 import edu.stanford.smi.protegex.owl.repository.RepositoryManager;
 import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
+
+import javax.swing.*;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * The default implementation of the OWLObjectProperty interface.
@@ -43,7 +35,6 @@ public class DefaultOWLOntology extends DefaultRDFIndividual implements OWLOntol
     }
 
 
-    @Override
     public void accept(OWLModelVisitor visitor) {
         visitor.visitOWLOntology(this);
     }
@@ -113,7 +104,6 @@ public class DefaultOWLOntology extends DefaultRDFIndividual implements OWLOntol
     }
 
 
-    @Override
     public boolean equalsStructurally(RDFObject object) {
         if (object instanceof OWLOntology) {
             OWLOntology ontology = (OWLOntology) object;
@@ -129,7 +119,6 @@ public class DefaultOWLOntology extends DefaultRDFIndividual implements OWLOntol
     }
 
 
-    @Override
     public String getBrowserText() {
         String uri = getOntologyURI();
         if (uri == null) {
@@ -141,7 +130,6 @@ public class DefaultOWLOntology extends DefaultRDFIndividual implements OWLOntol
     }
 
 
-    @Override
     public Icon getIcon() {
         Icon icon = OWLIcons.getImageIcon("OWLOntology");
         if (!isAssociatedTriplestoreEditable() || !isActive()) {
@@ -152,12 +140,12 @@ public class DefaultOWLOntology extends DefaultRDFIndividual implements OWLOntol
     }
 
 
-    @SuppressWarnings("unchecked")
-    public Collection<String> getImports() {
+    public Collection getImports() {
         Collection resources = getImportResources();
-        List<String> results = new ArrayList<String>();
+        List results = new ArrayList();
         for (Iterator it = resources.iterator(); it.hasNext();) {
             Object o = it.next();
+            //TODO: Database inclusion problem
             if (o instanceof RDFResource) {
             	results.add(((RDFResource) o).getURI());
             }
@@ -226,7 +214,7 @@ public class DefaultOWLOntology extends DefaultRDFIndividual implements OWLOntol
         boolean result = false;
         OWLModel owlModel = getOWLModel();
         TripleStore top = owlModel.getTripleStoreModel().getTopTripleStore();
-        if (this.equals(TripleStoreUtil.getFirstOntology(owlModel, top))) {
+        if (this == TripleStoreUtil.getFirstOntology(owlModel, top)) {
             result = true;
         }
         else {
@@ -248,11 +236,6 @@ public class DefaultOWLOntology extends DefaultRDFIndividual implements OWLOntol
 
     private boolean isActive() {
         TripleStore active = getOWLModel().getTripleStoreModel().getActiveTripleStore();
-        return this.equals(TripleStoreUtil.getFirstOntology(getOWLModel(), active));
-    }
-    
-    @Override
-    public String toString() {
-    	return "OWLOntology(" + getName() + ")";
+        return this == TripleStoreUtil.getFirstOntology(getOWLModel(), active);
     }
 }

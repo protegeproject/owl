@@ -3,8 +3,6 @@ package edu.stanford.smi.protegex.owl.model.classdisplay.dl;
 import edu.stanford.smi.protegex.owl.model.visitor.OWLModelVisitor;
 import edu.stanford.smi.protegex.owl.model.*;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLSomeValuesFrom;
-import edu.stanford.smi.protegex.owl.swrl.model.SWRLAtomList;
-import edu.stanford.smi.protegex.owl.swrl.model.SWRLIndividual;
 
 /**
  * Author: Matthew Horridge<br>
@@ -130,14 +128,5 @@ public class DLSymbolGenerator implements OWLModelVisitor {
     public void visitRDFUntypedResource(RDFUntypedResource rdfUntypedResource) {
         // NONE
     }
-
-	public void visitSWRLIndividual(SWRLIndividual swrlIndividual) {		
-		visitOWLIndividual(swrlIndividual);
-	}
-
-	public void visitSWRLAtomListIndividual(SWRLAtomList swrlAtomList) {
-		visitRDFList(swrlAtomList);
-		
-	}
 
 }

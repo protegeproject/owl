@@ -13,7 +13,6 @@ import edu.stanford.smi.protegex.owl.ui.profiles.ProfilesManager;
  *
  * @author Holger Knublauch  <holger@knublauch.com>
  */
-@SuppressWarnings("deprecation")
 public class RDFSNamedClassMetadataWidget extends OWLMetadataWidget {
 
     protected void createExtraWidgets() {

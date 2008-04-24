@@ -18,8 +18,6 @@ public class SimpleConsistencyTestCase extends AbstractDIGReasonerTestCase {
           return;
         }
         loadTestOntology(URIUtilities.createURI("junit/projects/inconsistent.owl"));
-        initializeReasoner();
         computeAndCheckInconsistentConcepts();
     }
 }
-

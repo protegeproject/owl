@@ -1,12 +1,12 @@
 package edu.stanford.smi.protegex.owl.tests;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
-import junit.framework.TestCase;
 import edu.stanford.smi.protege.model.Project;
 import edu.stanford.smi.protegex.owl.jena.JenaKnowledgeBaseFactory;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
+import junit.framework.TestCase;
+
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * The base class of various JUnit tests on OWL ontologies.
@@ -20,7 +20,6 @@ public abstract class AbstractOWLModelTestCase extends TestCase {
     protected Project project;
 
 
-    @Override
     protected void setUp() throws Exception {
         super.setUp();
         Collection errors = new ArrayList();
@@ -29,6 +28,5 @@ public abstract class AbstractOWLModelTestCase extends TestCase {
         project.setKnowledgeBaseFactory(factory);
         project.createDomainKnowledgeBase(factory, errors, false);
         owlModel = (OWLModel) project.getKnowledgeBase();
-        owlModel.setExpandShortNameInMethods(true);
     }
 }

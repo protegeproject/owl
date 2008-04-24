@@ -9,23 +9,39 @@
     xmlns:owl="http://www.w3.org/2002/07/owl#"
   xml:base="http://swrl.stanford.edu/ontologies/built-ins/3.3/abox.owl">
   <owl:Ontology rdf:about=""/>
-  <swrl:Builtin rdf:ID="hasValue"/>
-  <swrl:Builtin rdf:ID="hasProperty"/>
-  <swrl:Builtin rdf:ID="hasURI"/>
-  <swrl:Builtin rdf:ID="isNumeric"/>
-  <swrl:Builtin rdf:ID="notNumeric"/>
-  <swrl:Builtin rdf:ID="isIndividual"/>
-  <swrl:Builtin rdf:ID="isConstant"/>
-  <swrl:Builtin rdf:ID="hasClass"/>
-  <swrl:Builtin rdf:ID="hasIndividual">
+  <swrl:Builtin rdf:ID="hasProperty">
+    <swrlb:maxArgs rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+    >2</swrlb:maxArgs>
     <swrlb:args rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
-    >1</swrlb:args>
+    >2</swrlb:args>
+    <swrlb:minArgs rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+    >2</swrlb:minArgs>
+  </swrl:Builtin>
+  <swrl:Builtin rdf:ID="hasIndividuals">
     <swrlb:minArgs rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
     >1</swrlb:minArgs>
     <swrlb:maxArgs rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
     >1</swrlb:maxArgs>
+    <swrlb:args rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+    >1</swrlb:args>
   </swrl:Builtin>
-  <swrl:Builtin rdf:ID="setValue"/>
+  <swrl:Builtin rdf:ID="hasNumberOfPropertyValues">
+    <swrlb:maxArgs rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+    >3</swrlb:maxArgs>
+    <swrlb:args rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+    >3</swrlb:args>
+    <swrlb:minArgs rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+    >3</swrlb:minArgs>
+  </swrl:Builtin>
+  <swrl:Builtin rdf:ID="isIndividual"/>
+  <swrl:Builtin rdf:ID="hasNumberOfIndividuals">
+    <swrlb:args rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+    >2</swrlb:args>
+    <swrlb:maxArgs rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+    >2</swrlb:maxArgs>
+    <swrlb:minArgs rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+    >2</swrlb:minArgs>
+  </swrl:Builtin>
 </rdf:RDF>
 
-<!-- Created with Protege (with OWL Plugin 3.4, Build 124)  http://protege.stanford.edu -->
+<!-- Created with Protege (with OWL Plugin 3.3, Build 394)  http://protege.stanford.edu -->
