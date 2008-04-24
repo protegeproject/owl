@@ -1115,7 +1115,7 @@ public interface OWLModel extends ProtegeKnowledgeBase, OWLTestManager {
     /**
      * @return the Slot ProtegeNames.READ_ONLY
      */
-    OWLDatatypeProperty getProtegeReadOnlyProperty();
+    RDFProperty getProtegeReadOnlyProperty();
 
 
     RDFIndividual getRDFIndividual(String name);
