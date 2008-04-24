@@ -157,6 +157,10 @@ public class ProfilesManager {
                 if (ontClass == null) {
                     ontClass = getCustomProfileFeaturesClass(ontModel);
                 }
+                
+                if (ontClass == null) {
+                	return null;
+                }
                 set = getSelectedClasses(ontModel, ontClass);
             }
             catch (Exception ex) {
