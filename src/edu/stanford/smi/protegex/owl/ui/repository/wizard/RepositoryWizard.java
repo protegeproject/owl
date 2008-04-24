@@ -1,6 +1,5 @@
 package edu.stanford.smi.protegex.owl.ui.repository.wizard;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -14,7 +13,6 @@ import edu.stanford.smi.protege.util.Wizard;
 import edu.stanford.smi.protegex.owl.ProtegeOWL;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.repository.Repository;
-import edu.stanford.smi.protegex.owl.ui.repository.wizard.impl.DatabaseRepositoryCreatorWizardPlugin;
 import edu.stanford.smi.protegex.owl.ui.repository.wizard.impl.HTTPRepositoryCreatorWizardPlugin;
 import edu.stanford.smi.protegex.owl.ui.repository.wizard.impl.LocalFileRepositoryCreatorWizardPlugin;
 import edu.stanford.smi.protegex.owl.ui.repository.wizard.impl.LocalFolderRepositoryCreatorWizardPlugin;
@@ -33,7 +31,7 @@ import edu.stanford.smi.protegex.owl.ui.wizard.OWLWizard;
  */
 public class RepositoryWizard extends OWLWizard {
 
-    private ArrayList<RepositoryCreatorWizardPlugin> plugins;
+    private ArrayList plugins;
 
     private RepositoryCreatorWizardPlugin selectedPlugin;
 
@@ -41,19 +39,18 @@ public class RepositoryWizard extends OWLWizard {
 
     public RepositoryWizard(JComponent component, OWLModel owlModel) {
         super(component, "Create Ontology Repository");
-        plugins = new ArrayList<RepositoryCreatorWizardPlugin>();
+        plugins = new ArrayList();
         plugins.add(new LocalFolderRepositoryCreatorWizardPlugin());        
         plugins.add(new RelativeFolderRepositoryCreatorWizardPlugin());
         plugins.add(new LocalFileRepositoryCreatorWizardPlugin());
         plugins.add(new RelativeFileRepositoryCreatorWizardPlugin());
-        plugins.add(new HTTPRepositoryCreatorWizardPlugin());   
-        plugins.add(new DatabaseRepositoryCreatorWizardPlugin());
-        Collection<Class> pluginClses = PluginUtilities.getClassesWithAttribute(RepositoryCreatorWizardPlugin.PLUGIN_TYPE,
+        plugins.add(new HTTPRepositoryCreatorWizardPlugin());        
+        Collection pluginClses = PluginUtilities.getClassesWithAttribute(RepositoryCreatorWizardPlugin.PLUGIN_TYPE,
                 "True");
-        for (Iterator<Class> it = pluginClses.iterator(); it.hasNext();) {
-            Class cls = it.next();
+        for (Iterator it = pluginClses.iterator(); it.hasNext();) {
+            Class cls = (Class) it.next();
             try {
-                plugins.add((RepositoryCreatorWizardPlugin) cls.newInstance());
+                plugins.add(cls.newInstance());
             }
             catch (InstantiationException e) {
               Log.getLogger().log(Level.SEVERE, "Exception caught", e);
@@ -70,7 +67,7 @@ public class RepositoryWizard extends OWLWizard {
         return pluginPanelHolder.getRepository();
     }
 
-    public ArrayList<RepositoryCreatorWizardPlugin> getPlugins() {
+    public ArrayList getPlugins() {
         return plugins;
     }
 
@@ -82,7 +79,7 @@ public class RepositoryWizard extends OWLWizard {
 		return selectedPlugin;
 	}
 
-	public static void main(String [] args) throws IOException {
+	public static void main(String [] args) {
 		OWLModel owlModel = ProtegeOWL.createJenaOWLModel();
 		RepositoryWizard wiz = new RepositoryWizard(null, owlModel);
 		if(wiz.execute() == Wizard.RESULT_FINISH) {

@@ -17,7 +17,7 @@ public class RDFPropertyAtClassCode implements Comparable {
     private RDFSNamedClass cls;
 
     private RDFProperty property;
-
+    
     private boolean usePrefix;
 
 
@@ -43,8 +43,8 @@ public class RDFPropertyAtClassCode implements Comparable {
 			prefix = prefix.toUpperCase() + "_";
 			return RDFSClassCode.getValidJavaName(prefix + property.getLocalName());
 		}
-        return RDFSClassCode.getValidJavaName(property.getLocalName());
-    }
+		return RDFSClassCode.getValidJavaName(property.getLocalName());
+	}
 
     public String getJavaType() {
         RDFResource range = ((OWLNamedClass) cls).getAllValuesFrom(property);

@@ -9,7 +9,7 @@ import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLRestriction;
 import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
-import edu.stanford.smi.protegex.owl.model.framestore.updater.RestrictionUpdater;
+import edu.stanford.smi.protegex.owl.model.framestore.RestrictionUpdater;
 import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultRDFSLiteral;
 

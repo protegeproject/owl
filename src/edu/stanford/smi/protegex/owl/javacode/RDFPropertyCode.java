@@ -35,9 +35,9 @@ public class RDFPropertyCode implements Comparable {
 			prefix = prefix.toUpperCase() + "_";
 			return RDFSClassCode.getValidJavaName(prefix + property.getLocalName());
 		}
-        return RDFSClassCode.getValidJavaName(property.getLocalName());
+    	return RDFSClassCode.getValidJavaName(property.getLocalName());
     }
-
+    
 
     //commented parts may be useful in the future ....
 

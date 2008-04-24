@@ -1,13 +1,11 @@
 package edu.stanford.smi.protegex.owl.writer.rdfxml.rdfwriter;
 
+import edu.stanford.smi.protegex.owl.model.RDFNames;
+import edu.stanford.smi.protegex.owl.writer.xml.XMLWriter;
+
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
-
-import edu.stanford.smi.protegex.owl.model.NamespaceUtil;
-import edu.stanford.smi.protegex.owl.model.RDFNames;
-import edu.stanford.smi.protegex.owl.model.impl.OWLNamespaceManager;
-import edu.stanford.smi.protegex.owl.writer.xml.XMLWriter;
 
 /**
  * User: matthewhorridge<br>

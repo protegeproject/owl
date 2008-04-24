@@ -58,9 +58,7 @@ import edu.stanford.smi.protege.util.ModalDialog;
 import edu.stanford.smi.protege.util.SelectableContainer;
 import edu.stanford.smi.protege.util.SimpleListModel;
 import edu.stanford.smi.protege.util.ViewAction;
-import edu.stanford.smi.protegex.owl.model.NamespaceUtil;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
-import edu.stanford.smi.protegex.owl.model.RDFSClass;
 import edu.stanford.smi.protegex.owl.ui.OWLLabeledComponent;
 import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
 
@@ -272,10 +270,7 @@ public class AssertedInstancesListPanel extends SelectableContainer implements D
         createAction = new CreateAction("Create instance", OWLIcons.getCreateIndividualIcon(OWLIcons.RDF_INDIVIDUAL)) {
             public void onCreate() {
                 if (!classes.isEmpty()) {
-                	RDFSClass firstType = (RDFSClass) CollectionUtilities.getFirstItem(classes);
-                	String name = owlModel.createNewResourceName(NamespaceUtil.getLocalName(firstType.getName()));
-                	
-                    Instance instance = owlModel.createInstance(name, classes);
+                    Instance instance = owlModel.createInstance(null, classes);
                     if (instance instanceof Cls) {
                         Cls newCls = (Cls) instance;
                         if (newCls.getDirectSuperclassCount() == 0) {

@@ -1,6 +1,7 @@
 package edu.stanford.smi.protegex.owl.model.factory;
 
 import java.lang.reflect.Constructor;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -22,6 +23,7 @@ import edu.stanford.smi.protege.model.SimpleInstance;
 import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protege.model.framestore.DefaultFrameFactory;
 import edu.stanford.smi.protege.model.framestore.MergingNarrowFrameStore;
+import edu.stanford.smi.protege.model.framestore.NarrowFrameStore;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.model.OWLClass;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
@@ -33,19 +35,29 @@ import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
 import edu.stanford.smi.protegex.owl.model.RDFSNames;
 import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLAllDifferent;
+import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLAllValuesFrom;
+import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLCardinality;
+import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLComplementClass;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLDataRange;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLDatatypeProperty;
+import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLEnumeratedClass;
+import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLHasValue;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLIndividual;
+import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLIntersectionClass;
+import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLMaxCardinality;
+import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLMinCardinality;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLNamedClass;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLObjectProperty;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLOntology;
+import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLSomeValuesFrom;
+import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLUnionClass;
+import edu.stanford.smi.protegex.owl.model.impl.DefaultRDFExternalResource;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultRDFIndividual;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultRDFList;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultRDFProperty;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultRDFSDatatype;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultRDFSNamedClass;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultRDFUntypedResource;
-import edu.stanford.smi.protegex.owl.model.impl.OWLSystemFrames;
 
 /**
  * A DefaultFrameFactory that creates the proper Java objects for Protege frames.
@@ -98,14 +110,11 @@ public class OWLJavaFactory extends DefaultFrameFactory {
     private static final Class[] CONSTRUCTOR_PARAMETERS = { KnowledgeBase.class, FrameID.class };
 
     private AbstractOWLModel owlModel;
-    
-    private OWLSystemFrames systemFrames;
 
 
     public OWLJavaFactory(AbstractOWLModel owlModel) {
         super(owlModel);
         this.owlModel = owlModel;
-        systemFrames = owlModel.getSystemFrames();
     }
 
     
@@ -153,6 +162,12 @@ public class OWLJavaFactory extends DefaultFrameFactory {
     
     @Override
     public int getJavaClassId(Frame frame) {	
+    	int javaClassId = 0;
+    	
+      	// The order of checking the type is very important!!! 
+    	// The most specific Java types are tested first and only after that 
+    	// the more generic ones. 
+        
     	for (Iterator iter = FrameTypeId2OWLJavaClass.getOrderedJavaClasses().iterator(); iter.hasNext();) {
     		try {
     			Class javaType = (Class) iter.next();
@@ -290,8 +305,7 @@ public class OWLJavaFactory extends DefaultFrameFactory {
      * @param directTypes
      * @return the new Cls object
      */
-    @Override
-	public Cls createCls(FrameID id, Collection directTypes) { 	
+    public Cls createCls(FrameID id, Collection directTypes) { 	
     	
         if (id.equals(Model.ClsID.THING)) {
             return new DefaultOWLNamedClass(owlModel, id);
@@ -302,7 +316,7 @@ public class OWLJavaFactory extends DefaultFrameFactory {
         for (Iterator it = directTypes.iterator(); it.hasNext();) {
             final Instance metaCls = (Instance) it.next();
             final String metaClsName = metaCls.getName();
-            final String javaClassName = clsNames.get(metaClsName);
+            final String javaClassName = (String) clsNames.get(metaClsName);
             if (javaClassName != null) {
                 return createCls(javaClassName, id);
             }
@@ -321,8 +335,6 @@ public class OWLJavaFactory extends DefaultFrameFactory {
             }
             else if (metaCls.equals(owlModel.getOWLDeprecatedClassClass())) {
                 isRDFSNamedClass = true;
-            } else if (metaCls.equals(owlModel.getRDFExternalClassClass())) {
-            	isRDFSNamedClass = true;
             }
         }
         if (isRDFSNamedClass) {
@@ -348,8 +360,7 @@ public class OWLJavaFactory extends DefaultFrameFactory {
     }
 
 
-    @Override
-	public SimpleInstance createSimpleInstance(FrameID id, Collection directTypes) {
+    public SimpleInstance createSimpleInstance(FrameID id, Collection directTypes) {
         if (directTypes.contains(owlModel.getOWLAllDifferentClassCls())) {
             return new DefaultOWLAllDifferent(owlModel, id);
         }
@@ -378,15 +389,16 @@ public class OWLJavaFactory extends DefaultFrameFactory {
     }
 
 
-    @Override
-	public Slot createSlot(FrameID id, Collection directTypes) {
+    public Slot createSlot(FrameID id, Collection directTypes) {
         final Cls datatypeSlotMetaCls = owlModel.getOWLDatatypePropertyClass();
         final Cls objectSlotMetaCls = owlModel.getOWLObjectPropertyClass();
         final Cls rdfSlotMetaCls = owlModel.getRDFPropertyClass();
         boolean isRDFProperty = false;
-        if (directTypes.isEmpty()) {
+        if (id.isSystem() && directTypes.isEmpty()) {
             MergingNarrowFrameStore mnfs = MergingNarrowFrameStore.get(owlModel);
-            return (Slot) mnfs.getFrame(id);
+            if (mnfs != null) {
+                return (Slot) mnfs.getSystemFrameStore().getFrame(id);
+            }
         }
         for (Iterator it = directTypes.iterator(); it.hasNext();) {
             Cls metaCls = (Cls) it.next();
@@ -398,9 +410,6 @@ public class OWLJavaFactory extends DefaultFrameFactory {
             }
             else if (!isRDFProperty && (metaCls.equals(rdfSlotMetaCls) || metaCls.hasSuperclass(rdfSlotMetaCls))) {
                 isRDFProperty = true;
-            } 
-            else if (metaCls.equals(owlModel.getRDFExternalPropertyClass())) {
-            	isRDFProperty = true;
             }
         }
         if (isRDFProperty) {
@@ -410,14 +419,13 @@ public class OWLJavaFactory extends DefaultFrameFactory {
     }
 
 
-    @Override
-	public boolean isCorrectJavaImplementationClass(FrameID id, Collection types, Class clas) {
+    public boolean isCorrectJavaImplementationClass(FrameID id, Collection types, Class clas) {
         Cls namedClsMetaCls = owlModel.getOWLNamedClassMetaClassCls();
         Cls datatypeSlotMetaCls = owlModel.getOWLDatatypePropertyMetaClassCls();
         Cls objectSlotMetaCls = owlModel.getOWLObjectPropertyMetaClassCls();
         for (Iterator it = types.iterator(); it.hasNext();) {
             Cls metaCls = (Cls) it.next();
-            String javaClassName = clsNames.get(metaCls.getName());
+            String javaClassName = (String) clsNames.get(metaCls.getName());
             if (javaClassName != null) {
                 return clas.getName().equals(CLASSNAME_PREFIX + javaClassName);
             }

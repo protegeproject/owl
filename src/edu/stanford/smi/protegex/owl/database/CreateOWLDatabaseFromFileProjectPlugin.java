@@ -1,23 +1,26 @@
 package edu.stanford.smi.protegex.owl.database;
 
+import java.io.File;
 import java.io.IOException;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.logging.Level;
 
 import edu.stanford.smi.protege.model.KnowledgeBaseFactory;
 import edu.stanford.smi.protege.model.Project;
+import edu.stanford.smi.protege.model.framestore.MergingNarrowFrameStore;
 import edu.stanford.smi.protege.plugin.CreateProjectWizard;
+import edu.stanford.smi.protege.util.Log;
+import edu.stanford.smi.protege.util.MessageError;
 import edu.stanford.smi.protege.util.WizardPage;
-import edu.stanford.smi.protegex.owl.database.creator.OwlDatabaseFromFileCreator;
 import edu.stanford.smi.protegex.owl.jena.JenaKnowledgeBaseFactory;
+import edu.stanford.smi.protegex.owl.jena.parser.ProtegeOWLParser;
+import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
  */
 public class CreateOWLDatabaseFromFileProjectPlugin extends CreateOWLDatabaseProjectPlugin {
-    
-    protected URI ontologyInputSource;
 
     public CreateOWLDatabaseFromFileProjectPlugin() {
         super("OWL File (.owl or .rdf)");
@@ -27,23 +30,50 @@ public class CreateOWLDatabaseFromFileProjectPlugin extends CreateOWLDatabasePro
     protected Project buildNewProject(KnowledgeBaseFactory factory) {
         JenaKnowledgeBaseFactory.useStandalone = false;
         Collection errors = new ArrayList();
-        OwlDatabaseFromFileCreator creator = new OwlDatabaseFromFileCreator((OWLDatabaseKnowledgeBaseFactory) factory);
-        creator.setDriver(getDriver());
-        creator.setURL(getUrl());
-        creator.setTable(getTable());
-        creator.setUsername(getUsername());
-        creator.setPassword(getPassword());
-        creator.setOntologySource(getOntologyInputSource().toString());
-
-        Project project = null;
+        Project project = super.createNewProject(factory);
+        initializeSources(project.getSources());
         try {
-            project = creator.create(errors);
+            File tempProjectFile = File.createTempFile("protege", "temp");
+            project.setProjectFilePath(tempProjectFile.getPath());
+            project.save(errors);
+            project = Project.loadProjectFromFile(tempProjectFile.getPath(), errors);
+
+            OWLDatabaseModel owlModel = (OWLDatabaseModel) project.getKnowledgeBase();
+            updateTripleStores(owlModel);
+            ProtegeOWLParser parser = new ProtegeOWLParser(owlModel, false);
+            try {
+                parser.run(ontologyFileURI);
+            }
+            catch (Exception ex) {
+            	String message = "Could not load OWL file into database";
+                Log.getLogger().severe(message);
+                Log.getLogger().log(Level.SEVERE, "Exception caught", ex);
+                errors.add(new MessageError(ex, message));
+            }
+            owlModel.resetTripleStoreModel();
+            handleErrors(errors);
+            project.setProjectFilePath(null);
+            tempProjectFile.delete();
+            updateTripleStores(owlModel);
+
+            // Sorting doesn't seem to work yet
+            //System.out.println("Sorting subclasses...");
+            //OWLUtil.sortSubclasses(owlModel);
+            //System.out.println("... done");
         }
-        catch (IOException ioe) {
-            errors.add(ioe);
+        catch (IOException e) {
+            Log.getLogger().severe(Log.toString(e));
         }
-        handleErrors(errors);
         return project;
+    }
+
+
+    private void updateTripleStores(OWLDatabaseModel owlModel) {
+        owlModel.resetTripleStoreModel();
+        TripleStore topTripleStore = owlModel.getTripleStoreModel().getTopTripleStore();
+        owlModel.getTripleStoreModel().setActiveTripleStore(topTripleStore);
+        MergingNarrowFrameStore mnfs = MergingNarrowFrameStore.get(owlModel);
+        mnfs.setTopFrameStore(mnfs.getActiveFrameStore().getName());
     }
 
 
@@ -55,15 +85,4 @@ public class CreateOWLDatabaseFromFileProjectPlugin extends CreateOWLDatabasePro
     public WizardPage createCreateProjectWizardPage(CreateProjectWizard wizard, boolean useExistingSources) {
         return new InitOWLDatabaseFromFileWizardPage(wizard, this);
     }
-    
-    
-
-    public void setOntologyInputSource(URI uri) {
-        this.ontologyInputSource = uri;
-    }
-    
-    public URI getOntologyInputSource() {
-        return ontologyInputSource;
-    }
-
 }

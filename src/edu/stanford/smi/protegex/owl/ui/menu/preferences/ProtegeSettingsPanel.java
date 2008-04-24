@@ -74,7 +74,7 @@ public class ProtegeSettingsPanel extends JComponent {
 
     private void disableProtegeOntology() {
         if (OWLUtil.confirmSaveAndReload(owlModel.getProject())) {
-            owlModel.getDefaultOWLOntology().removeImports(ProtegeNames.PROTEGE_OWL_ONTOLOGY);
+            owlModel.getDefaultOWLOntology().removeImports(ProtegeNames.FILE);
             OWLUtil.saveAndReloadProject();
         }
 
@@ -87,10 +87,10 @@ public class ProtegeSettingsPanel extends JComponent {
         if (!owlModel.isProtegeMetaOntologyImported()) {
             ImportHelper importHelper = new ImportHelper((JenaOWLModel) owlModel);
             try {
-                URI uri = new URI(ProtegeNames.PROTEGE_OWL_ONTOLOGY);
+                URI uri = new URI(ProtegeNames.FILE);
                 importHelper.addImport(uri);
                 importHelper.importOntologies();
-                owlModel.getNamespaceManager().setPrefix(ProtegeNames.PROTEGE_OWL_NAMESPACE, ProtegeNames.PROTEGE_PREFIX);
+                owlModel.getNamespaceManager().setPrefix(ProtegeNames.NS, ProtegeNames.PROTEGE_PREFIX);
                 userDatatypesCBox.setEnabled(true);
             }
             catch (Exception e) {
@@ -118,7 +118,7 @@ public class ProtegeSettingsPanel extends JComponent {
     private RDFResource getMetadataOnt() {
         RDFResource result = null;
         try {
-            URI metaURI = new URI(ProtegeNames.PROTEGE_OWL_ONTOLOGY);
+            URI metaURI = new URI(ProtegeNames.FILE);
             result = owlModel.getOWLOntologyByURI(metaURI);
         }
         catch (URISyntaxException e) {

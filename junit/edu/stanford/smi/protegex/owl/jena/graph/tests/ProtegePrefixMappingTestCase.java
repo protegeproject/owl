@@ -2,7 +2,6 @@ package edu.stanford.smi.protegex.owl.jena.graph.tests;
 
 import com.hp.hpl.jena.vocabulary.OWL;
 import edu.stanford.smi.protegex.owl.jena.graph.ProtegePrefixMapping;
-import edu.stanford.smi.protegex.owl.model.NamespaceUtil;
 import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 import edu.stanford.smi.protegex.owl.tests.AbstractJenaTestCase;
@@ -48,7 +47,7 @@ public class ProtegePrefixMappingTestCase extends AbstractJenaTestCase {
     public void testShortFormOWLThing() {
         TripleStore ts = owlModel.getTripleStoreModel().getActiveTripleStore();
         ProtegePrefixMapping mapping = new ProtegePrefixMapping(owlModel, ts);
-        assertEquals(NamespaceUtil.getPrefixedName(owlModel, owlThing.getName()), mapping.shortForm(OWL.Thing.getURI()));
+        assertEquals(owlThing.getName(), mapping.shortForm(OWL.Thing.getURI()));
     }
 
 

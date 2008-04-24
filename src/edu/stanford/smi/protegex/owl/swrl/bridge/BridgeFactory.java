@@ -3,23 +3,23 @@
 
 package edu.stanford.smi.protegex.owl.swrl.bridge;
 
-import java.util.HashMap;
-import java.util.Set;
-import java.util.logging.Logger;
+import edu.stanford.smi.protegex.owl.swrl.bridge.impl.*;
+import edu.stanford.smi.protegex.owl.swrl.bridge.xsd.*;
+import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.*;
+
+import edu.stanford.smi.protegex.owl.swrl.model.*;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.model.RDFSLiteral;
 
 import edu.stanford.smi.protege.plugin.PluginUtilities;
-import edu.stanford.smi.protege.util.Log;
-import edu.stanford.smi.protegex.owl.model.OWLModel;
-import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.InvalidBridgeNameException;
-import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.NoRegisteredBridgesException;
-import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.SWRLRuleEngineBridgeException;
+
+import java.util.*;
 
 /**
  ** Factory to create instances of common bridge entities
  */
 public class BridgeFactory
 {
-    private static transient final Logger log = Log.getLogger(BridgeFactory.class);
   private static HashMap<String, BridgeCreator> registeredBridges;
 
   static {
@@ -38,7 +38,7 @@ public class BridgeFactory
       registeredBridges.put(bridgeName, bridgeCreator);
     } else registeredBridges.put(bridgeName, bridgeCreator);
 
-    log.info("Rule engine '" + bridgeName + "' registered with the SWRLTab bridge.");
+    System.out.println("Rule engine '" + bridgeName + "' registered with the SWRLTab bridge.");
   } // registerBridge
 
   public static boolean isBridgeRegistered(String bridgeName) { return registeredBridges.containsKey(bridgeName); }

@@ -1,14 +1,10 @@
 package edu.stanford.smi.protegex.owl.model.framestore.tests;
 
-import java.util.Collection;
-
-import edu.stanford.smi.protegex.owl.model.OWLAnonymousClass;
-import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
-import edu.stanford.smi.protegex.owl.model.RDFProperty;
-import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
-import edu.stanford.smi.protegex.owl.model.RDFSNames;
+import edu.stanford.smi.protegex.owl.model.*;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 import edu.stanford.smi.protegex.owl.tests.AbstractJenaTestCase;
+
+import java.util.Collection;
 
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
@@ -48,36 +44,22 @@ public class SynchronizeSuperclassesTestCase extends AbstractJenaTestCase {
     }
 
 
-    @SuppressWarnings("unchecked")
-	public void testAnonymousSuperclassToImportedClass() throws Exception {        
-        loadRemoteOntology("importTravel.owl");
-        
-        TripleStore topTS = owlModel.getTripleStoreModel().getTopTripleStore();
-        TripleStore importedTS = null;
-        for (TripleStore ts : owlModel.getTripleStoreModel().getTripleStores()) {
-            if (!(ts.equals(owlModel.getTripleStoreModel().getSystemTripleStore())) && 
-                    !(ts.equals(topTS))) {
-                importedTS = ts;
-                break;
-            }
-        }
-        
+    public void testAnonymousSuperclassToImportedClass() throws Exception {
         RDFProperty subClassOfProperty = owlModel.getRDFProperty(RDFSNames.Slot.SUB_CLASS_OF);
+        loadRemoteOntology("importTravel.owl");
         OWLNamedClass c = owlModel.getOWLNamedClass("travel:Activity");
-        
-        boolean previousTruthValue = importedTS.contains(c, subClassOfProperty, owlThing);
         assertNotNull(c);
         assertSize(0, c.getPropertyValues(subClassOfProperty));
         OWLAnonymousClass anon = owlModel.createOWLComplementClass(c);
-        
         c.addSuperclass(anon);
         Collection supers = c.getPropertyValues(subClassOfProperty);
         assertSize(2, supers);
         assertContains(owlThing, supers);
         assertContains(anon, supers);
+        TripleStore topTS = owlModel.getTripleStoreModel().getTopTripleStore();
+        TripleStore importedTS = owlModel.getTripleStoreModel().getTripleStore(2);
         assertTrue(topTS.contains(c, subClassOfProperty, anon));
-        
-        assertEquals(previousTruthValue, importedTS.contains(c, subClassOfProperty, owlThing));
+        assertTrue(importedTS.contains(c, subClassOfProperty, owlThing));
     }
 
 

@@ -3,10 +3,7 @@ package edu.stanford.smi.protegex.owl.inference.protegeowl.task.protegereasoner;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protege.util.ApplicationProperties;
 import edu.stanford.smi.protegex.owl.inference.protegeowl.log.ReasonerLogRecord;
@@ -24,7 +21,7 @@ import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
 
 
 public class UpdateInferredTypesTask extends AbstractReasonerTask {
-    private static transient final Logger log = Log.getLogger(UpdateInferredTypesTask.class);
+
 	private final static String DISPLAY_DIRECT_TYPES_ONLY = "reasoner.ui.display.direct.types.only";  
 	
     private ProtegeReasoner protegeReasoner;
@@ -53,7 +50,7 @@ public class UpdateInferredTypesTask extends AbstractReasonerTask {
      *
      */
     @SuppressWarnings("deprecation")
-    public void run() throws ProtegeReasonerException {
+	public void run() throws ProtegeReasonerException {
         OWLModel kb = protegeReasoner.getOWLModel();
        
         ReasonerLogRecordFactory logRecordFactory = ReasonerLogRecordFactory.getInstance();
@@ -62,8 +59,8 @@ public class UpdateInferredTypesTask extends AbstractReasonerTask {
         setDescription("Computing inferred types");
       
         // Query the reasoner
-        setMessage("Querying reasoner and updating Protege-OWL...");
-        TimeDifference td = new TimeDifference();
+        setMessage("Querying reasoner and updating Protege-OWL...");        
+        TimeDifference td = new TimeDifference();               
         td.markStart();
 
         // Disable the events as we may not be updating protege
@@ -82,21 +79,17 @@ public class UpdateInferredTypesTask extends AbstractReasonerTask {
 	        	// Check the inferred types and asserted types
 	        	// if there is a mismatch between the two then
 	        	// mark the classification status of the individual
-	        	// as changed. (MH - 15/09/04)
-                if (log.isLoggable(Level.FINE)) {
-                    log.fine("Computing Inteffed types for individual: " + curInd);
-                }
-	        	        	
+	        	// as changed. (MH - 15/09/04)	        	
+	        	
 	        	Collection<OWLClass> inferredTypes = (isDisplayDirectTypesOnly == true) ? 
 	        				protegeReasoner.getIndividualDirectTypes(curInd):
 	        				protegeReasoner.getIndividualTypes(curInd);
-
 	        	
 	          	if (inferredTypes.size() == 0) {
 	        		inferredTypes.add(curInd.getOWLModel().getOWLThingClass());
 	        	}
 	          	
-	        	final Collection assertedTypes = curInd.getProtegeTypes();
+	        	final Collection assertedTypes = curInd.getProtegeTypes();	        
 	        	kb.setOwnSlotValues(curInd, inferredTypesSlot, inferredTypes);
 
 	        	if (inferredTypes.containsAll(assertedTypes) == false &&

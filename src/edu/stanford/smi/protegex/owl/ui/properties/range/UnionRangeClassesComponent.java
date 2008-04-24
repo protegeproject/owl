@@ -99,7 +99,7 @@ public class UnionRangeClassesComponent extends JComponent {
 
         public Collection getSelectableResources() {
             RDFProperty property = tableModel.getEditedProperty();
-            Collection<Cls> clses = new HashSet();
+            Collection clses = new HashSet();
             final Collection allowedClses = property.getUnionRangeClasses();
             final Cls rootCls = property.getOWLModel().getOWLThingClass();
             if (property.getSuperpropertyCount() > 0 &&
@@ -120,7 +120,7 @@ public class UnionRangeClassesComponent extends JComponent {
                 clses.removeAll(tableModel.getValues());
             }
             clses.remove(rootCls);
-            Cls[] cs = clses.toArray(new Cls[0]);
+            Object[] cs = clses.toArray();
             Arrays.sort(cs, new FrameComparator());
             return Arrays.asList(cs);
         }

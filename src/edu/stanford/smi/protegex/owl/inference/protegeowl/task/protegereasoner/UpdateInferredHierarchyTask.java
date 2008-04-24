@@ -2,8 +2,6 @@ package edu.stanford.smi.protegex.owl.inference.protegeowl.task.protegereasoner;
 
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.inference.protegeowl.log.ReasonerLogRecord;
@@ -27,7 +25,6 @@ import edu.stanford.smi.protegex.owl.model.RDFSClass;
  * www.cs.man.ac.uk/~horridgm<br><br>
  */
 public class UpdateInferredHierarchyTask extends AbstractReasonerTask {
-    private static transient final Logger log = Log.getLogger(UpdateInferredHierarchyTask.class);
 
     private ProtegeReasoner protegeReasoner;
 
@@ -77,11 +74,9 @@ public class UpdateInferredHierarchyTask extends AbstractReasonerTask {
 	            //TT- maybe this should be removed	            
 	               if (curNamedCls.isConsistent()) {
 	            	   
-	            	    long t0 = System.currentTimeMillis();
+	            	    //t0 = System.currentTimeMillis();
 	                    Collection infSuperClses = protegeReasoner.getSuperclasses(curNamedCls);
-                            if (log.isLoggable(Level.FINE)) {
-                                log.fine("Query to get inf superclses for  " + curNamedCls.getName() + ": " + (System.currentTimeMillis() - t0));
-                            }
+	                    //System.out.println("Query to get inf superclses for  " + curNamedCls.getName() + ": " + (System.currentTimeMillis() - t0));
 	                    
 	                    for (Iterator clsesIt = infSuperClses.iterator(); clsesIt.hasNext();) {
 	                        final RDFSClass curSuperClass = (RDFSClass) clsesIt.next();

@@ -6,20 +6,33 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
-import edu.stanford.smi.protegex.owl.model.NamespaceUtil;
+import edu.stanford.smi.protege.model.FrameID;
+import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLDatatypeProperty;
+import edu.stanford.smi.protegex.owl.model.OWLIndividual;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
 import edu.stanford.smi.protegex.owl.model.OWLObjectProperty;
+import edu.stanford.smi.protegex.owl.model.OWLProperty;
 import edu.stanford.smi.protegex.owl.model.RDFList;
 import edu.stanford.smi.protegex.owl.model.RDFObject;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
 import edu.stanford.smi.protegex.owl.model.RDFSClass;
 import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
-import edu.stanford.smi.protegex.owl.swrl.SWRLSystemFrames;
+import edu.stanford.smi.protegex.owl.model.factory.OWLJavaFactoryUpdater;
+import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLDatatypeProperty;
+import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLIndividual;
+import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLNamedClass;
+import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLObjectProperty;
+import edu.stanford.smi.protegex.owl.model.impl.DefaultRDFProperty;
+import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
+import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreModel;
 import edu.stanford.smi.protegex.owl.swrl.exceptions.SWRLFactoryException;
+import edu.stanford.smi.protegex.owl.swrl.model.factory.SWRLJavaFactory;
 import edu.stanford.smi.protegex.owl.swrl.parser.SWRLParseException;
 import edu.stanford.smi.protegex.owl.swrl.parser.SWRLParser;
 
@@ -30,21 +43,172 @@ import edu.stanford.smi.protegex.owl.swrl.parser.SWRLParser;
  */
 public class SWRLFactory 
 {
-  private OWLModel owlModel;
-  private SWRLSystemFrames systemFrames;
+  private OWLNamedClass atomListCls, builtinAtomCls, classAtomCls, dataRangeAtomCls, dataValuedPropertyAtomCls,
+                        differentIndividualsAtomCls, impCls, individualPropertyAtomCls, sameIndividualAtomCls,
+                        atomCls, variableCls, builtInCls;
+  private OWLObjectProperty bodyProperty, headProperty, argumentsProperty, builtInProperty, argument1Property, classPredicateProperty, 
+                            propertyPredicateProperty, dataRangeProperty;
+  private OWLDatatypeProperty argsProperty, minArgsProperty, maxArgsProperty; 
+  private RDFProperty argument2Property;
 
+  private OWLModel owlModel;
+  private List<SWRLBuiltin> coreSWRLBuiltIns;
 
   public SWRLFactory(OWLModel owlModel) 
   {
     this.owlModel = owlModel;
-    systemFrames = owlModel.getSystemFrames();
+
+    initSWRLClasses();
+    
+    if (!(owlModel.getOWLJavaFactory() instanceof SWRLJavaFactory)) {    
+    	// Activate OWL-Java mappings.
+    	SWRLJavaFactory factory = new SWRLJavaFactory(owlModel);
+    	owlModel.setOWLJavaFactory(factory);
+        
+    	if(owlModel instanceof JenaOWLModel) OWLJavaFactoryUpdater.run((JenaOWLModel)owlModel);
+    }
   } // SWRLFactory
   
+  private void initSWRLClasses() 
+  {
+    TripleStoreModel tsm = owlModel.getTripleStoreModel();               
+    TripleStore activeTs = tsm.getActiveTripleStore();
+    TripleStore systemTS = tsm.getTripleStore(0);
+    int swrlFrameID = 9500; // IDs of of 9500 and greater will be system frames so they will not be saved
 
+    tsm.setActiveTripleStore(systemTS);
+
+    impCls = getOrCreateOWLNamedClass(SWRLNames.Cls.IMP, swrlFrameID++);
+    variableCls = getOrCreateOWLNamedClass(SWRLNames.Cls.VARIABLE, swrlFrameID++);
+    builtInCls = getOrCreateOWLNamedClass(SWRLNames.Cls.BUILTIN, swrlFrameID++);
+
+    atomListCls = getOrCreateOWLNamedClass(SWRLNames.Cls.ATOM_LIST, swrlFrameID++, owlModel.getRDFListClass());
+
+    atomCls = getOrCreateOWLNamedClass(SWRLNames.Cls.ATOM, swrlFrameID++);
+    classAtomCls = getOrCreateOWLNamedClass(SWRLNames.Cls.CLASS_ATOM, swrlFrameID++, atomCls);
+    builtinAtomCls = getOrCreateOWLNamedClass(SWRLNames.Cls.BUILTIN_ATOM, swrlFrameID++, atomCls);
+    dataRangeAtomCls = getOrCreateOWLNamedClass(SWRLNames.Cls.DATA_RANGE_ATOM, swrlFrameID++, atomCls);
+    dataValuedPropertyAtomCls = getOrCreateOWLNamedClass(SWRLNames.Cls.DATAVALUED_PROPERTY_ATOM, swrlFrameID++, atomCls);
+    differentIndividualsAtomCls = getOrCreateOWLNamedClass(SWRLNames.Cls.DIFFERENT_INDIVIDUALS_ATOM, swrlFrameID++, atomCls);
+    individualPropertyAtomCls = getOrCreateOWLNamedClass(SWRLNames.Cls.INDIVIDUAL_PROPERTY_ATOM, swrlFrameID++, atomCls);
+    sameIndividualAtomCls = getOrCreateOWLNamedClass(SWRLNames.Cls.SAME_INDIVIDUAL_ATOM, swrlFrameID++, atomCls);
+    
+    bodyProperty = getOrCreateOWLObjectProperty(SWRLNames.Slot.BODY, swrlFrameID++);
+    headProperty = getOrCreateOWLObjectProperty(SWRLNames.Slot.HEAD, swrlFrameID++);
+    argumentsProperty = getOrCreateOWLObjectProperty(SWRLNames.Slot.ARGUMENTS, swrlFrameID++);
+    builtInProperty = getOrCreateOWLObjectProperty(SWRLNames.Slot.BUILTIN, swrlFrameID++);
+    argument1Property = getOrCreateOWLObjectProperty(SWRLNames.Slot.ARGUMENT1, swrlFrameID++);
+    argument2Property = getOrCreateOWLProperty(SWRLNames.Slot.ARGUMENT2, swrlFrameID++);
+    classPredicateProperty = getOrCreateOWLObjectProperty(SWRLNames.Slot.CLASS_PREDICATE, swrlFrameID++);
+    propertyPredicateProperty = getOrCreateOWLObjectProperty(SWRLNames.Slot.PROPERTY_PREDICATE, swrlFrameID++);
+    dataRangeProperty = getOrCreateOWLObjectProperty(SWRLNames.Slot.DATA_RANGE, swrlFrameID++);
+
+    argsProperty = getOrCreateOWLDatatypeProperty(SWRLNames.Slot.ARGS, swrlFrameID++);
+    minArgsProperty = getOrCreateOWLDatatypeProperty(SWRLNames.Slot.MIN_ARGS, swrlFrameID++);
+    maxArgsProperty = getOrCreateOWLDatatypeProperty(SWRLNames.Slot.MAX_ARGS, swrlFrameID++);
+
+    initCoreSWRLBuiltIns(swrlFrameID); // Must be called after class and property creations
+
+    tsm.setActiveTripleStore(activeTs); 
+  } // initSWRLClasses
+	
+  private OWLNamedClass getOrCreateOWLNamedClass(String className, int frameID) 
+  {
+    return getOrCreateOWLNamedClass(className, frameID, null);
+  } // getOrCreateOWLNamedClass
+
+  private OWLNamedClass getOrCreateOWLNamedClass(String className, int frameID, RDFSNamedClass superclass)
+  {
+    RDFResource resource = owlModel.getRDFResource(className);
+    OWLNamedClass cls;
+
+    if (resource == null) {
+      cls = new DefaultOWLNamedClass(owlModel, FrameID.createSystem(frameID));
+      cls.setName(className);
+      cls.setProtegeType(owlModel.getOWLNamedClassClass());
+      if (superclass != null) {
+        cls.addSuperclass(superclass);
+        cls.removeSuperclass(owlModel.getOWLThingClass());
+      } else cls.addSuperclass(owlModel.getOWLThingClass());   
+    } else if (!(resource instanceof OWLNamedClass)) {
+      resource.setProtegeType(owlModel.getOWLNamedClassClass());
+      cls = owlModel.getOWLNamedClass(className);
+      if (superclass != null) {
+        cls.addSuperclass(superclass);
+        cls.removeSuperclass(owlModel.getOWLThingClass());
+      } else cls.addSuperclass(owlModel.getOWLThingClass());   
+    } // if
+
+    return owlModel.getOWLNamedClass(className);
+  } // getOrCreateOWLNamedClass
+  
+  private OWLObjectProperty getOrCreateOWLObjectProperty(String propertyName, int frameID) 
+  {
+    RDFResource resource = owlModel.getRDFResource(propertyName);
+    
+    if (resource == null) {
+      OWLProperty property = new DefaultOWLObjectProperty(owlModel, FrameID.createSystem(frameID));
+      property.setName(propertyName);
+      property.setProtegeType(owlModel.getOWLObjectPropertyClass());
+    } else if (!(resource instanceof OWLObjectProperty)) {
+      resource.setProtegeType(owlModel.getOWLObjectPropertyClass());		
+    } // if
+    return owlModel.getOWLObjectProperty(propertyName);
+  } // getOrCreateOWLObjectProperty
+
+  private OWLDatatypeProperty getOrCreateOWLDatatypeProperty(String propertyName, int frameID) 
+  {
+    RDFResource resource = owlModel.getRDFResource(propertyName);
+    
+    if (resource == null) {
+      OWLProperty property = new DefaultOWLDatatypeProperty(owlModel, FrameID.createSystem(frameID));
+      property.setName(propertyName);
+      property.setProtegeType(owlModel.getOWLDatatypePropertyClass());
+    } else if (!(resource instanceof OWLDatatypeProperty)) {
+      resource.setProtegeType(owlModel.getOWLDatatypePropertyClass());		
+    } // if
+    return owlModel.getOWLDatatypeProperty(propertyName);
+  } // getOrCreateOWLDatatypeProperty
+
+  private RDFProperty getOrCreateOWLProperty(String propertyName, int frameID) 
+  {
+    RDFResource resource = owlModel.getRDFResource(propertyName);
+    
+    if (resource == null) {
+      RDFProperty property = new DefaultRDFProperty(owlModel, FrameID.createSystem(frameID));
+      property.setName(propertyName);
+      property.setProtegeType(owlModel.getRDFPropertyClass());
+    } else if (!(resource instanceof RDFProperty)) {
+      resource.setProtegeType(owlModel.getRDFPropertyClass());		
+    } // if
+    return owlModel.getRDFProperty(propertyName);
+  } // getOrCreateOWLProperty
+
+  private SWRLBuiltin getOrCreateBuiltIn(String builtInName, int frameID)
+  {
+    RDFResource resource = owlModel.getRDFResource(builtInName);
+
+    if (resource == null) { // See if it is an external resource
+      String name = (builtInName.indexOf(":") == -1) ? builtInName : builtInName.substring(builtInName.indexOf(":") + 1);
+      resource = owlModel.getRDFResource(SWRLNames.SWRLB_NAMESPACE + name);
+      if (resource != null) resource.setName(builtInName); // Found external resource - set its name to the friendly name with prefix
+    } // if
+
+    if (resource == null) {
+      OWLIndividual individual = new DefaultOWLIndividual(owlModel, FrameID.createSystem(frameID));
+      individual.setName(builtInName);
+      individual.setProtegeType(builtInCls);
+    } else {
+      if (!(resource instanceof SWRLBuiltin)) resource.setProtegeType(builtInCls);
+    } // if
+
+    return (SWRLBuiltin)owlModel.getOWLIndividual(builtInName);
+  } // getOrCreateBuiltIn    
+  
   public SWRLImp createImp() 
   {
     String name = getNewImpName();
-    return (SWRLImp) systemFrames.getImpCls().createInstance(name);
+    return (SWRLImp)impCls.createInstance(name);
   }
 
   public SWRLImp createImpWithGivenName(String name)
@@ -83,13 +247,13 @@ public class SWRLFactory
  
   public SWRLAtomList createAtomList() 
   {
-    return (SWRLAtomList) systemFrames.getAtomListCls().createAnonymousInstance();
+    return (SWRLAtomList) atomListCls.createAnonymousInstance();
   } // createAtomList
 
-  public SWRLAtomList createAtomList(Collection<SWRLAtom> atoms) 
+  public SWRLAtomList createAtomList(Collection atoms) 
   {
     SWRLAtomList list = createAtomList();
-    for (Iterator<SWRLAtom> it = atoms.iterator(); it.hasNext();) {
+    for (Iterator it = atoms.iterator(); it.hasNext();) {
       Object o = it.next();
       list.append(o);
     }
@@ -106,7 +270,7 @@ public class SWRLFactory
   {
     SWRLBuiltinAtom swrlBuiltinAtom;
     
-    swrlBuiltinAtom = (SWRLBuiltinAtom) systemFrames.getBuiltinAtomCls().createAnonymousInstance();
+    swrlBuiltinAtom = (SWRLBuiltinAtom) builtinAtomCls.createAnonymousInstance();
     
     swrlBuiltinAtom.setBuiltin(swrlBuiltin);
     swrlBuiltinAtom.setArguments(arguments);
@@ -118,7 +282,7 @@ public class SWRLFactory
   {
     SWRLClassAtom swrlClassAtom;
     
-    swrlClassAtom = (SWRLClassAtom) systemFrames.getClassAtomCls().createAnonymousInstance();
+    swrlClassAtom = (SWRLClassAtom) classAtomCls.createAnonymousInstance();
     
     swrlClassAtom.setClassPredicate(aClass);
     swrlClassAtom.setArgument1(iObject);
@@ -129,7 +293,7 @@ public class SWRLFactory
 
   public SWRLDataRangeAtom createDataRangeAtom(RDFResource dataRange, RDFObject dObject) 
   {
-    SWRLDataRangeAtom swrlDataRangeAtom = (SWRLDataRangeAtom) systemFrames.getDataRangeAtomCls().createAnonymousInstance();
+    SWRLDataRangeAtom swrlDataRangeAtom = (SWRLDataRangeAtom) dataRangeAtomCls.createAnonymousInstance();
     
     swrlDataRangeAtom.setArgument1(dObject);
     swrlDataRangeAtom.setDataRange(dataRange);
@@ -139,8 +303,7 @@ public class SWRLFactory
   
   public SWRLDatavaluedPropertyAtom createDatavaluedPropertyAtom(OWLDatatypeProperty datatypeSlot, RDFResource iObject, RDFObject dObject) 
   {
-    SWRLDatavaluedPropertyAtom swrlDatavaluedPropertyAtom 
-            = (SWRLDatavaluedPropertyAtom) systemFrames.getDataValuedPropertyAtomCls().createAnonymousInstance();
+    SWRLDatavaluedPropertyAtom swrlDatavaluedPropertyAtom = (SWRLDatavaluedPropertyAtom) dataValuedPropertyAtomCls.createAnonymousInstance();
     
     swrlDatavaluedPropertyAtom.setPropertyPredicate(datatypeSlot);
     swrlDatavaluedPropertyAtom.setArgument1(iObject);
@@ -154,7 +317,7 @@ public class SWRLFactory
   {
     SWRLIndividualPropertyAtom swrlIndividualPropertyAtom;
     
-    swrlIndividualPropertyAtom = (SWRLIndividualPropertyAtom) systemFrames.getIndividualPropertyAtomCls().createAnonymousInstance();
+    swrlIndividualPropertyAtom = (SWRLIndividualPropertyAtom) individualPropertyAtomCls.createAnonymousInstance();
     
     swrlIndividualPropertyAtom.setPropertyPredicate(objectSlot);
     swrlIndividualPropertyAtom.setArgument1(iObject1);
@@ -167,7 +330,7 @@ public class SWRLFactory
   {
     SWRLDifferentIndividualsAtom swrlDifferentIndividualsAtom;
     
-    swrlDifferentIndividualsAtom = (SWRLDifferentIndividualsAtom) systemFrames.getDifferentIndividualsAtomCls().createAnonymousInstance();
+    swrlDifferentIndividualsAtom = (SWRLDifferentIndividualsAtom) differentIndividualsAtomCls.createAnonymousInstance();
     swrlDifferentIndividualsAtom.setArgument1(argument1);
     swrlDifferentIndividualsAtom.setArgument2(argument2);
     
@@ -178,7 +341,7 @@ public class SWRLFactory
   {
     SWRLSameIndividualAtom swrlSameIndividualAtom;
     
-    swrlSameIndividualAtom = (SWRLSameIndividualAtom) systemFrames.getSameIndividualAtomCls().createAnonymousInstance();
+    swrlSameIndividualAtom = (SWRLSameIndividualAtom) sameIndividualAtomCls.createAnonymousInstance();
     swrlSameIndividualAtom.setArgument1(argument1);
     swrlSameIndividualAtom.setArgument2(argument2);
     
@@ -216,7 +379,8 @@ public class SWRLFactory
 
   public Collection getImps() 
   {
-    return systemFrames.getImpCls().getInstances(true);
+    RDFSClass impCls = owlModel.getRDFSNamedClass(SWRLNames.Cls.IMP);
+    return impCls.getInstances(true);
   } // getImps
 
   public Collection getEnabledImps() { return getImps(new HashSet<String>(), true); }
@@ -297,7 +461,7 @@ public class SWRLFactory
 
   public String getNewImpName() {
     String base = "Rule-";
-    int i = Math.max(1, systemFrames.getImpCls().getInstances(false).size());
+    int i = Math.max(1, impCls.getInstances(false).size());
     while (owlModel.getRDFResource(base + i) != null) {
       i++;
         }
@@ -372,33 +536,33 @@ public class SWRLFactory
 
   public Collection<RDFSNamedClass> getSWRLClasses() {
 	  ArrayList<RDFSNamedClass> swrlClasses = new ArrayList<RDFSNamedClass>();
-	  swrlClasses.add(systemFrames.getAtomListCls());		
-	  swrlClasses.add(systemFrames.getBuiltinAtomCls());    
-	  swrlClasses.add(systemFrames.getClassAtomCls());
-	  swrlClasses.add(systemFrames.getDataRangeAtomCls());
-	  swrlClasses.add(systemFrames.getDataValuedPropertyAtomCls());
-	  swrlClasses.add(systemFrames.getDifferentIndividualsAtomCls());
-	  swrlClasses.add(systemFrames.getImpCls());
-	  swrlClasses.add(systemFrames.getIndividualPropertyAtomCls());
-	  swrlClasses.add(systemFrames.getSameIndividualAtomCls());
-	  swrlClasses.add(systemFrames.getBuiltInCls());
-	  swrlClasses.add(systemFrames.getAtomCls());
-	  swrlClasses.add(systemFrames.getVariableCls());
+	  swrlClasses.add(atomListCls);		
+	  swrlClasses.add(builtinAtomCls);    
+	  swrlClasses.add(classAtomCls);
+	  swrlClasses.add(dataRangeAtomCls);
+	  swrlClasses.add(dataValuedPropertyAtomCls);
+	  swrlClasses.add(differentIndividualsAtomCls);
+	  swrlClasses.add(impCls);
+	  swrlClasses.add(individualPropertyAtomCls);
+	  swrlClasses.add(sameIndividualAtomCls);
+	  swrlClasses.add(builtInCls);
+	  swrlClasses.add(atomCls);
+	  swrlClasses.add(variableCls);
 	  
 	  return swrlClasses;
   }
   
   public Collection<RDFProperty> getSWRLProperties() {
 	  ArrayList<RDFProperty> swrlProperties = new ArrayList<RDFProperty>();
-	  swrlProperties.add(systemFrames.getBodyProperty());
-	  swrlProperties.add(systemFrames.getHeadProperty());
-	  swrlProperties.add(systemFrames.getArgumentsProperty());
-	  swrlProperties.add(systemFrames.getBuiltInProperty());
-	  swrlProperties.add(systemFrames.getArgument1Property());
-	  swrlProperties.add(systemFrames.getArgument2Property());
-	  swrlProperties.add(systemFrames.getClassPredicateProperty());
-	  swrlProperties.add(systemFrames.getPropertyPredicateProperty());
-	  swrlProperties.add(systemFrames.getDataRangeProperty());
+	  swrlProperties.add(bodyProperty);
+	  swrlProperties.add(headProperty);
+	  swrlProperties.add(argumentsProperty);
+	  swrlProperties.add(builtInProperty);
+	  swrlProperties.add(argument1Property);
+	  swrlProperties.add(argument2Property);
+	  swrlProperties.add(classPredicateProperty);
+	  swrlProperties.add(propertyPredicateProperty);
+	  swrlProperties.add(dataRangeProperty);
 	  
 	  return swrlProperties;
   }
@@ -423,14 +587,79 @@ public class SWRLFactory
 
 	  return swrlbProperties;
   }
-  
-  public String getOwlNameFromIdentifier(String name) {
-	  return NamespaceUtil.getFullName(owlModel, name);
-  }
-  
-  public String getIdentifierFromOwlName(String owlName) {
-	  return NamespaceUtil.getPrefixedName(owlModel, owlName);
-  }
 
+  private void initCoreSWRLBuiltIns(int swrlFrameID)
+  {
+    coreSWRLBuiltIns = new ArrayList<SWRLBuiltin>();
+
+    coreSWRLBuiltIns.add(getOrCreateBuiltIn(SWRLNames.CoreBuiltIns.EQUAL, swrlFrameID++));
+    coreSWRLBuiltIns.add(getOrCreateBuiltIn(SWRLNames.CoreBuiltIns.NOT_EQUAL, swrlFrameID++));
+    coreSWRLBuiltIns.add(getOrCreateBuiltIn(SWRLNames.CoreBuiltIns.LESS_THAN, swrlFrameID++));
+    coreSWRLBuiltIns.add(getOrCreateBuiltIn(SWRLNames.CoreBuiltIns.LESS_THAN_OR_EQUAL, swrlFrameID++));
+    coreSWRLBuiltIns.add(getOrCreateBuiltIn(SWRLNames.CoreBuiltIns.GREATER_THAN, swrlFrameID++));
+    coreSWRLBuiltIns.add(getOrCreateBuiltIn(SWRLNames.CoreBuiltIns.GREATER_THAN_OR_EQUAL, swrlFrameID++));
+    coreSWRLBuiltIns.add(getOrCreateBuiltIn(SWRLNames.CoreBuiltIns.ADD, swrlFrameID++));
+    coreSWRLBuiltIns.add(getOrCreateBuiltIn(SWRLNames.CoreBuiltIns.SUBTRACT, swrlFrameID++));
+    coreSWRLBuiltIns.add(getOrCreateBuiltIn(SWRLNames.CoreBuiltIns.MULTIPLY, swrlFrameID++));
+    coreSWRLBuiltIns.add(getOrCreateBuiltIn(SWRLNames.CoreBuiltIns.DIVIDE, swrlFrameID++));
+    coreSWRLBuiltIns.add(getOrCreateBuiltIn(SWRLNames.CoreBuiltIns.INTEGER_DIVIDE, swrlFrameID++));
+    coreSWRLBuiltIns.add(getOrCreateBuiltIn(SWRLNames.CoreBuiltIns.MOD, swrlFrameID++));
+    coreSWRLBuiltIns.add(getOrCreateBuiltIn(SWRLNames.CoreBuiltIns.POW, swrlFrameID++));
+    coreSWRLBuiltIns.add(getOrCreateBuiltIn(SWRLNames.CoreBuiltIns.UNARY_PLUS, swrlFrameID++));
+    coreSWRLBuiltIns.add(getOrCreateBuiltIn(SWRLNames.CoreBuiltIns.UNARY_MINUS, swrlFrameID++));
+    coreSWRLBuiltIns.add(getOrCreateBuiltIn(SWRLNames.CoreBuiltIns.ABS, swrlFrameID++));
+    coreSWRLBuiltIns.add(getOrCreateBuiltIn(SWRLNames.CoreBuiltIns.CEILING, swrlFrameID++));
+    coreSWRLBuiltIns.add(getOrCreateBuiltIn(SWRLNames.CoreBuiltIns.FLOOR, swrlFrameID++));
+    coreSWRLBuiltIns.add(getOrCreateBuiltIn(SWRLNames.CoreBuiltIns.ROUND, swrlFrameID++));
+    coreSWRLBuiltIns.add(getOrCreateBuiltIn(SWRLNames.CoreBuiltIns.ROUND_HALF_TO_EVEN, swrlFrameID++));
+    coreSWRLBuiltIns.add(getOrCreateBuiltIn(SWRLNames.CoreBuiltIns.SIN, swrlFrameID++));
+    coreSWRLBuiltIns.add(getOrCreateBuiltIn(SWRLNames.CoreBuiltIns.COS, swrlFrameID++));
+    coreSWRLBuiltIns.add(getOrCreateBuiltIn(SWRLNames.CoreBuiltIns.TAN, swrlFrameID++));
+    coreSWRLBuiltIns.add(getOrCreateBuiltIn(SWRLNames.CoreBuiltIns.BOOLEAN_NOT, swrlFrameID++));
+    coreSWRLBuiltIns.add(getOrCreateBuiltIn(SWRLNames.CoreBuiltIns.STRING_EQUAL_IGNORE_CASE, swrlFrameID++));
+    coreSWRLBuiltIns.add(getOrCreateBuiltIn(SWRLNames.CoreBuiltIns.STRING_CONCAT, swrlFrameID++));
+    coreSWRLBuiltIns.add(getOrCreateBuiltIn(SWRLNames.CoreBuiltIns.SUBSTRING, swrlFrameID++));
+    coreSWRLBuiltIns.add(getOrCreateBuiltIn(SWRLNames.CoreBuiltIns.STRING_LENGTH, swrlFrameID++));
+    coreSWRLBuiltIns.add(getOrCreateBuiltIn(SWRLNames.CoreBuiltIns.NORMALIZE_SPACE, swrlFrameID++));
+    coreSWRLBuiltIns.add(getOrCreateBuiltIn(SWRLNames.CoreBuiltIns.UPPER_CASE, swrlFrameID++));
+    coreSWRLBuiltIns.add(getOrCreateBuiltIn(SWRLNames.CoreBuiltIns.LOWER_CASE, swrlFrameID++));
+    coreSWRLBuiltIns.add(getOrCreateBuiltIn(SWRLNames.CoreBuiltIns.TRANSLATE, swrlFrameID++));
+    coreSWRLBuiltIns.add(getOrCreateBuiltIn(SWRLNames.CoreBuiltIns.CONTAINS, swrlFrameID++));
+    coreSWRLBuiltIns.add(getOrCreateBuiltIn(SWRLNames.CoreBuiltIns.CONTAINS_IGNORE_CASE, swrlFrameID++));
+    coreSWRLBuiltIns.add(getOrCreateBuiltIn(SWRLNames.CoreBuiltIns.STARTS_WITH, swrlFrameID++));
+    coreSWRLBuiltIns.add(getOrCreateBuiltIn(SWRLNames.CoreBuiltIns.ENDS_WITH, swrlFrameID++));
+    coreSWRLBuiltIns.add(getOrCreateBuiltIn(SWRLNames.CoreBuiltIns.SUBSTRING_BEFORE, swrlFrameID++));
+    coreSWRLBuiltIns.add(getOrCreateBuiltIn(SWRLNames.CoreBuiltIns.SUBSTRING_AFTER, swrlFrameID++));
+    coreSWRLBuiltIns.add(getOrCreateBuiltIn(SWRLNames.CoreBuiltIns.MATCHES, swrlFrameID++));
+    coreSWRLBuiltIns.add(getOrCreateBuiltIn(SWRLNames.CoreBuiltIns.REPLACE, swrlFrameID++));
+    coreSWRLBuiltIns.add(getOrCreateBuiltIn(SWRLNames.CoreBuiltIns.TOKENIZE, swrlFrameID++));
+    coreSWRLBuiltIns.add(getOrCreateBuiltIn(SWRLNames.CoreBuiltIns.YEAR_MONTH_DURATION, swrlFrameID++));
+    coreSWRLBuiltIns.add(getOrCreateBuiltIn(SWRLNames.CoreBuiltIns.DAY_TIME_DURATION, swrlFrameID++));
+    coreSWRLBuiltIns.add(getOrCreateBuiltIn(SWRLNames.CoreBuiltIns.DATETIME, swrlFrameID++));
+    coreSWRLBuiltIns.add(getOrCreateBuiltIn(SWRLNames.CoreBuiltIns.DATE, swrlFrameID++));
+    coreSWRLBuiltIns.add(getOrCreateBuiltIn(SWRLNames.CoreBuiltIns.TIME, swrlFrameID++));
+    coreSWRLBuiltIns.add(getOrCreateBuiltIn(SWRLNames.CoreBuiltIns.ADD_YEAR_MONTH_DURATIONS, swrlFrameID++));
+    coreSWRLBuiltIns.add(getOrCreateBuiltIn(SWRLNames.CoreBuiltIns.SUBTRACT_YEAR_MONTH_DURATIONS, swrlFrameID++));
+    coreSWRLBuiltIns.add(getOrCreateBuiltIn(SWRLNames.CoreBuiltIns.MULTIPLY_YEAR_MONTH_DURATION, swrlFrameID++));
+    coreSWRLBuiltIns.add(getOrCreateBuiltIn(SWRLNames.CoreBuiltIns.DIVIDE_YEAR_MONTH_DURATIONS, swrlFrameID++));
+    coreSWRLBuiltIns.add(getOrCreateBuiltIn(SWRLNames.CoreBuiltIns.ADD_DAY_TIME_DURATIONS, swrlFrameID++));
+    coreSWRLBuiltIns.add(getOrCreateBuiltIn(SWRLNames.CoreBuiltIns.SUBTRACT_DAY_TIME_DURATIONS, swrlFrameID++));
+    coreSWRLBuiltIns.add(getOrCreateBuiltIn(SWRLNames.CoreBuiltIns.MULTIPLY_DAY_TIME_DURATIONS, swrlFrameID++));
+    coreSWRLBuiltIns.add(getOrCreateBuiltIn(SWRLNames.CoreBuiltIns.DIVIDE_DAY_TIME_DURATION, swrlFrameID++));
+    coreSWRLBuiltIns.add(getOrCreateBuiltIn(SWRLNames.CoreBuiltIns.SUBTRACT_DATES, swrlFrameID++));
+    coreSWRLBuiltIns.add(getOrCreateBuiltIn(SWRLNames.CoreBuiltIns.SUBTRACT_TIMES, swrlFrameID++));
+    coreSWRLBuiltIns.add(getOrCreateBuiltIn(SWRLNames.CoreBuiltIns.ADD_YEAR_MONTH_DURATION_TO_DATETIME, swrlFrameID++));
+    coreSWRLBuiltIns.add(getOrCreateBuiltIn(SWRLNames.CoreBuiltIns.ADD_DAY_TIME_DURATION_TO_DATETIME, swrlFrameID++));
+    coreSWRLBuiltIns.add(getOrCreateBuiltIn(SWRLNames.CoreBuiltIns.SUBTRACT_YEAR_MONTH_DURATION_FROM_DATETIME, swrlFrameID++));
+    coreSWRLBuiltIns.add(getOrCreateBuiltIn(SWRLNames.CoreBuiltIns.SUBTRACT_DAY_TIME_DURATION_FROM_DATETIME, swrlFrameID++));
+    coreSWRLBuiltIns.add(getOrCreateBuiltIn(SWRLNames.CoreBuiltIns.ADD_YEAR_MONTH_DURATION_TO_DATE, swrlFrameID++));
+    coreSWRLBuiltIns.add(getOrCreateBuiltIn(SWRLNames.CoreBuiltIns.ADD_DAY_TIME_DURATION_TO_DATE, swrlFrameID++));
+    coreSWRLBuiltIns.add(getOrCreateBuiltIn(SWRLNames.CoreBuiltIns.SUBTRACT_YEAR_MONTH_DURATION_FROM_DATE, swrlFrameID++));
+    coreSWRLBuiltIns.add(getOrCreateBuiltIn(SWRLNames.CoreBuiltIns.SUBTRACT_DAY_TIME_DURATION_FROM_DATE, swrlFrameID++));
+    coreSWRLBuiltIns.add(getOrCreateBuiltIn(SWRLNames.CoreBuiltIns.ADD_DAY_TIME_DURATION_TO_TIME, swrlFrameID++));
+    coreSWRLBuiltIns.add(getOrCreateBuiltIn(SWRLNames.CoreBuiltIns.SUBTRACT_DAY_TIME_DURATION_FROM_TIME, swrlFrameID++));
+    coreSWRLBuiltIns.add(getOrCreateBuiltIn(SWRLNames.CoreBuiltIns.SUBTRACT_DATETIMES_YIELDING_YEAR_MONTH_DURATION, swrlFrameID++));
+    coreSWRLBuiltIns.add(getOrCreateBuiltIn(SWRLNames.CoreBuiltIns.SUBTRACT_DATETIMES_YIELDING_DAY_TIME_DURATION, swrlFrameID++));
+  } // initCoreSWRLBuiltIns
 
 } // SWRLFactory

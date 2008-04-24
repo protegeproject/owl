@@ -6,8 +6,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.swing.Icon;
 import javax.swing.table.AbstractTableModel;
@@ -52,7 +50,7 @@ import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
  */
 public class ConditionsTableModel extends AbstractTableModel
         implements ConditionsTableConstants, OWLTableModel {
-    private static transient final Logger log = Log.getLogger(ConditionsTableModel.class);
+	
 	private static final String SHOW_INHERITED_RESTRICTIONS = "restriction.show.inherited";
 
 
@@ -60,25 +58,21 @@ public class ConditionsTableModel extends AbstractTableModel
 	//work on the cache.
 	
     private ClassListener classListener = new ClassAdapter() {
-        @Override
         public void subclassAdded(RDFSClass cls, RDFSClass subclass) {        	
         		refill();
         }
 
 
-        @Override
         public void subclassRemoved(RDFSClass cls, RDFSClass subclass) {       	
         		refill();
         }
 
 
-        @Override
         public void superclassAdded(RDFSClass cls, RDFSClass superclass) {        	
         		refill();
         }
 
 
-        @Override
         public void superclassRemoved(RDFSClass cls, RDFSClass superclass) {        	
         		refill();
         }
@@ -86,7 +80,6 @@ public class ConditionsTableModel extends AbstractTableModel
 
 
     private FrameListener frameListener = new FrameAdapter() {
-        @Override
         public void ownSlotValueChanged(FrameEvent event) {
             if (event.getSlot().equals(superclassesSlot)) {
                 refill();
@@ -351,7 +344,7 @@ public class ConditionsTableModel extends AbstractTableModel
                 }
                
             } else 	{ 
-                RDFSClass oldEquivalentClass = getClass(selectedRow);
+                RDFSClass oldEquivalentClass = (RDFSClass) getClass(selectedRow);
                 if (oldEquivalentClass != null) { //there is one class in the definition, create an intersection and add the old and new classes to it               	
                     
                     RDFSClass clonedOldEquivalentClass = oldEquivalentClass;
@@ -387,7 +380,7 @@ public class ConditionsTableModel extends AbstractTableModel
     	if (!isDefinition(index))
     		return false;
     	
-        RDFSClass rowClass = getClass(index);
+        RDFSClass rowClass = (RDFSClass) getClass(index);
         
         OWLIntersectionClass definition = getDefinition(index);
         
@@ -448,7 +441,7 @@ public class ConditionsTableModel extends AbstractTableModel
 
 
     public void deleteRow(int index, boolean forceDelete) {
-        RDFSClass rowClass = getClass(index);
+        RDFSClass rowClass = (RDFSClass) getClass(index);
         boolean definition = getDefinition(index) != null;
         boolean isDefinition = isDefinition(index);
         
@@ -700,7 +693,6 @@ public class ConditionsTableModel extends AbstractTableModel
 
 
     // Implements TableModel
-    @Override
     public Class getColumnClass(int columnIndex) {
         if (columnIndex == COL_EXPRESSION) {
             return String.class;
@@ -737,7 +729,7 @@ public class ConditionsTableModel extends AbstractTableModel
 
 
     private ConditionsTableItem getItem(int rowIndex) {
-        return items.get(rowIndex);
+        return (ConditionsTableItem) items.get(rowIndex);
     }
 
 
@@ -874,7 +866,6 @@ public class ConditionsTableModel extends AbstractTableModel
 
 
     // Implements TableModel
-    @Override
     public boolean isCellEditable(int rowIndex, int columnIndex) {
         if (columnIndex == COL_EXPRESSION &&
                 !isSeparator(rowIndex) &&
@@ -1055,7 +1046,6 @@ public class ConditionsTableModel extends AbstractTableModel
     }
 
 
-    @Override
     public void setValueAt(Object value, int rowIndex, int columnIndex) {
         if (rowIndex >= getRowCount()) {
             return;
@@ -1077,7 +1067,7 @@ public class ConditionsTableModel extends AbstractTableModel
             throws Exception {
     	
     	RDFSClass newRestriction = null;    	
-    	RDFSClass oldRestriction = getClass(rowIndex);
+    	RDFSClass oldRestriction = (RDFSClass) getClass(rowIndex);
 
     	try {
 			owlModel.beginTransaction("Set condition at " + getEditedCls().getBrowserText() + " to " + parsableText, getEditedCls().getName());
@@ -1136,9 +1126,7 @@ public class ConditionsTableModel extends AbstractTableModel
      * 
      */
     private boolean handleAddOrReplaceRestriction(RDFSClass newRestriction, int selectedRow) {
-        if (log.isLoggable(Level.FINE)) {
-            log.fine("In handleAddOrReplaceRestriction. Old restr: " + getClass(selectedRow) + " New rest." + newRestriction.getBrowserText() + " Row: " + selectedRow);
-        }
+    	//System.out.println("In handleAddOrReplaceRestriction. Old restr: " + getClass(selectedRow) + " New rest." + newRestriction.getBrowserText() + " Row: " + selectedRow);
         if (newRestriction.equals(hostClass) || (!isCreateEnabledAt(selectedRow) && newRestriction instanceof OWLAnonymousClass) ||
                 (!isAddEnabledAt(selectedRow) && newRestriction instanceof OWLNamedClass)) {
             return false;
@@ -1245,7 +1233,7 @@ public class ConditionsTableModel extends AbstractTableModel
      * @return defintion class (OWLIntersectionClass) if found, or null otherwise
      */
     private OWLIntersectionClass getDefinitionContext(int selectedRow) {
-    	OWLIntersectionClass definitionContext = getDefinition(selectedRow);
+    	OWLIntersectionClass definitionContext = (OWLIntersectionClass) getDefinition(selectedRow);
         
     	if (definitionContext != null)
     		return definitionContext;

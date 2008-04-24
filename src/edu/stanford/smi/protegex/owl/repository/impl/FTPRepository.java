@@ -13,7 +13,6 @@ import java.net.URL;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
@@ -23,6 +22,7 @@ import com.enterprisedt.net.ftp.FTPException;
 
 import edu.stanford.smi.protege.util.LabeledComponent;
 import edu.stanford.smi.protege.util.Log;
+import edu.stanford.smi.protegex.owl.repository.Repository;
 import edu.stanford.smi.protegex.owl.repository.util.OntologyNameExtractor;
 
 /**
@@ -34,8 +34,8 @@ import edu.stanford.smi.protegex.owl.repository.util.OntologyNameExtractor;
  * matthew.horridge@cs.man.ac.uk<br>
  * www.cs.man.ac.uk/~horridgm<br><br>
  */
-public class FTPRepository extends AbstractStreamBasedRepositoryImpl {
-    private static transient final Logger log = Log.getLogger(FTPRepository.class);
+public class FTPRepository implements Repository {
+
     private URI ftpURI;
 
     private URI projectDirectory;
@@ -112,7 +112,7 @@ public class FTPRepository extends AbstractStreamBasedRepositoryImpl {
             FileInputStream fis = new FileInputStream(localCopy);
             OntologyNameExtractor extractor = new OntologyNameExtractor(fis, localCopy.toURI().toURL());
             ontologyName = extractor.getOntologyName();
-            log.info("ftp get = " + extractor.getOntologyName());
+            System.out.println(extractor.getOntologyName());
         }
         catch (IOException e) {
           Log.getLogger().log(Level.SEVERE, "Exception caught", e);
@@ -136,7 +136,7 @@ public class FTPRepository extends AbstractStreamBasedRepositoryImpl {
             FileInputStream fis = new FileInputStream(localCopy);
             ftpClient.put(fis, f.getName());
             ftpClient.quit();
-            log.info("Put!");
+            System.out.println("Put!");
 
         }
         catch (IOException e) {
@@ -153,17 +153,16 @@ public class FTPRepository extends AbstractStreamBasedRepositoryImpl {
     }
 
 
-    public Collection<URI> getOntologies() {
+    public Collection getOntologies() {
         if (ontologyName != null) {
             return Collections.singleton(ontologyName);
         }
         else {
-            return Collections.emptyList();
+            return Collections.EMPTY_LIST;
         }
     }
 
 
-    @Override
     public InputStream getInputStream(URI ontologyName)
             throws IOException {
         if (contains(ontologyName)) {

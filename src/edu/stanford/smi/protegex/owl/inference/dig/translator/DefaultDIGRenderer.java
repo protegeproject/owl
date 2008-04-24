@@ -132,8 +132,8 @@ public class DefaultDIGRenderer implements DIGRenderer {
         // Render the All Different instances
         Collection allDifferent = kb.getOWLAllDifferents();
         if (allDifferent.isEmpty() == false) {
+           
             Iterator allDifferentIt = allDifferent.iterator();
-            
             while (allDifferentIt.hasNext()) {
             	 Element allDifferentElement = doc.createElement(DIGVocabulary.Tell.ALL_DIFFERENT);
                 OWLAllDifferent curOWLAllDifferent = (OWLAllDifferent) allDifferentIt.next();
@@ -146,6 +146,7 @@ public class DefaultDIGRenderer implements DIGRenderer {
                 } else {
                     renderFakedDifferentFrom(curOWLAllDifferent.getDistinctMembers(), doc, parentNode);
                 }
+
                 if (allDifferentElement.getChildNodes().getLength() > 0) {
                     parentNode.appendChild(allDifferentElement);
                 }

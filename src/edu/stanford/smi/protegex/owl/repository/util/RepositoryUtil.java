@@ -1,33 +1,23 @@
 package edu.stanford.smi.protegex.owl.repository.util;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.Iterator;
-import java.util.StringTokenizer;
-import java.util.logging.Logger;
-
 import edu.stanford.smi.protege.util.Log;
-
 import edu.stanford.smi.protege.util.URIUtilities;
 import edu.stanford.smi.protegex.owl.jena.JenaKnowledgeBaseFactory;
 import edu.stanford.smi.protegex.owl.jena.parser.ProtegeOWLParser;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.repository.Repository;
 import edu.stanford.smi.protegex.owl.repository.RepositoryManager;
-import edu.stanford.smi.protegex.owl.repository.impl.AbstractStreamBasedRepositoryImpl;
 import edu.stanford.smi.protegex.owl.repository.factory.RepositoryFactory;
 import edu.stanford.smi.protegex.owl.repository.impl.DublinCoreDLVersionRedirectRepository;
 import edu.stanford.smi.protegex.owl.repository.impl.LocalFileRepository;
+
+import java.io.*;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.Iterator;
+import java.util.StringTokenizer;
 
 /**
  * User: matthewhorridge<br>
@@ -39,7 +29,6 @@ import edu.stanford.smi.protegex.owl.repository.impl.LocalFileRepository;
  * www.cs.man.ac.uk/~horridgm<br><br>
  */
 public class RepositoryUtil {
-    private final static transient Logger log = Log.getLogger(RepositoryUtil.class);
 
     public static final String FORCE_READ_ONLY_FLAG = "forceReadOnly";
 
@@ -66,8 +55,8 @@ public class RepositoryUtil {
 
     public static boolean createImportLocalCopy(OWLModel model, URI ontologyURI, File localFile) throws IOException {
         Repository rep = model.getRepositoryManager().getRepository(ontologyURI);
-        if (rep != null && rep instanceof AbstractStreamBasedRepositoryImpl) {
-            InputStream is = ((AbstractStreamBasedRepositoryImpl) rep).getInputStream(ontologyURI);
+        if (rep != null) {
+            InputStream is = rep.getInputStream(ontologyURI);
             BufferedReader br = new BufferedReader(new InputStreamReader(is));
             BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(localFile)));
             String line;
@@ -79,10 +68,6 @@ public class RepositoryUtil {
             br.close();
             model.getRepositoryManager().addProjectRepository(0, new LocalFileRepository(localFile));
             return true;
-        }
-        else if (rep != null) {
-            // for the non-stream based ontology we could also save the owl file but we will need to write this later.
-            log.warning("Can't write non-stream based repositories yet (though it wouldn't be hard to fix this)");
         }
         return false;
     }
@@ -133,7 +118,7 @@ public class RepositoryUtil {
                 return null;
             }
             URL absoluteURL = new URL(owlFileUri.toURL(), RepositoryUtil.stripQuery(s.trim()));
-            
+                              
             repositoryFile = new File(absoluteURL.toURI());
             if (repositoryFile.canRead() && repositoryFile.isFile()) {
                 return repositoryFile;
@@ -172,8 +157,8 @@ public class RepositoryUtil {
     	
     	if (removeExistingRepositories == true) {
     		manager.removeAllProjectRepositories();
-}
-
+    	}
+    	
 		try {
 			URL url = new URL(uri.toString());
 			InputStream fis = ProtegeOWLParser.getInputStream(url);

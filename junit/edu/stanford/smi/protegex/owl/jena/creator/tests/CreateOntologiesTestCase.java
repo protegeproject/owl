@@ -5,8 +5,6 @@ import com.hp.hpl.jena.ontology.Ontology;
 import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.vocabulary.OWL;
 
-import edu.stanford.smi.protegex.owl.model.impl.OWLUtil;
-
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
  */
@@ -35,7 +33,6 @@ public class CreateOntologiesTestCase extends AbstractJenaCreatorTestCase {
         owlModel.createOWLNamedClass("Cls");
         String namespace = "http://aldi.de/ont";
         owlModel.getNamespaceManager().setDefaultNamespace(namespace + "#");
-        OWLUtil.renameOntology(owlModel, owlModel.getDefaultOWLOntology(), namespace);
         OntModel newModel = runJenaCreator();
         assertSize(1, newModel.listOntologies());
         Ontology ontology = (Ontology) newModel.listOntologies().next();
@@ -48,10 +45,9 @@ public class CreateOntologiesTestCase extends AbstractJenaCreatorTestCase {
         owlModel.createOWLNamedClass("Cls");
         String namespace = "http://aldi.de/ont/";
         owlModel.getNamespaceManager().setDefaultNamespace(namespace);
-        OWLUtil.renameOntology(owlModel, owlModel.getDefaultOWLOntology(), namespace);
         OntModel newModel = runJenaCreator();
         assertSize(2, newModel.listOntologies());
-        Ontology ontology = newModel.getOntology(namespace);
+        Ontology ontology = (Ontology) newModel.getOntology(namespace);
         assertEquals(namespace, ontology.getURI());
         assertSize(1, ontology.listImports());
     }

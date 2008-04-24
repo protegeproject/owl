@@ -1,15 +1,14 @@
 package edu.stanford.smi.protegex.owl.ui.repository.action;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
-
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.repository.Repository;
 import edu.stanford.smi.protegex.owl.repository.impl.FTPRepository;
 import edu.stanford.smi.protegex.owl.ui.repository.AbstractRepositoriesPanel;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
 
 /**
  * User: matthewhorridge<br>
@@ -24,11 +23,11 @@ public class RepositoryActionManager {
 
     private static RepositoryActionManager instance;
 
-    private Set<RepositoryAction> actions;
+    private HashSet actions;
 
 
     private RepositoryActionManager() {
-        actions = new HashSet<RepositoryAction>();
+        actions = new HashSet();
         actions.add(new RepositoryAction() {
             public String getName() {
                 return "Refresh repository";
@@ -78,10 +77,10 @@ public class RepositoryActionManager {
     }
 
 
-    public Collection<RepositoryAction> getActions(Repository repository, OWLModel owlModel) {
-        ArrayList<RepositoryAction> suitableActions = new ArrayList<RepositoryAction>();
-        for (Iterator<RepositoryAction> it = actions.iterator(); it.hasNext();) {
-            RepositoryAction curAction = it.next();
+    public Collection getActions(Repository repository, OWLModel owlModel) {
+        ArrayList suitableActions = new ArrayList();
+        for (Iterator it = actions.iterator(); it.hasNext();) {
+            RepositoryAction curAction = (RepositoryAction) it.next();
             if (curAction.isSuitable(repository, owlModel)) {
                 suitableActions.add(curAction);
             }

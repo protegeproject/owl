@@ -100,7 +100,7 @@ public class TimePanel extends JPanel {
     public int getHours() {
     	return getInt(hoursField, 24);
     }
-
+    
     public int getMinutes(){
     	return getInt(minutesField, 60); 
     }

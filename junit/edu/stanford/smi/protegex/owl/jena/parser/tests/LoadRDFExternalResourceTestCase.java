@@ -2,9 +2,7 @@ package edu.stanford.smi.protegex.owl.jena.parser.tests;
 
 import edu.stanford.smi.protege.model.Instance;
 import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
-import edu.stanford.smi.protegex.owl.model.ProtegeNames;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
-import edu.stanford.smi.protegex.owl.model.RDFResource;
 import edu.stanford.smi.protegex.owl.model.RDFSNames;
 import edu.stanford.smi.protegex.owl.model.RDFUntypedResource;
 import edu.stanford.smi.protegex.owl.tests.AbstractJenaTestCase;
@@ -18,19 +16,19 @@ public class LoadRDFExternalResourceTestCase extends AbstractJenaTestCase {
         loadRemoteOntology("externalSeeAlso.owl");
         OWLNamedClass cls = owlModel.getOWLNamedClass("Cls");
         assertNotNull(cls);
-        Instance instance = owlModel.getOWLIndividual("Instance");
+        Instance instance = owlModel.getInstance("Instance");
         assertNotNull(instance);
         RDFProperty seeAlsoSlot = owlModel.getRDFProperty(RDFSNames.Slot.SEE_ALSO);
         RDFProperty isDefinedBySlot = owlModel.getRDFProperty(RDFSNames.Slot.IS_DEFINED_BY);
 
         Object seeAlsoValue = cls.getPropertyValue(seeAlsoSlot);
-        assertTrue(seeAlsoValue instanceof RDFResource);
-        RDFResource ur = (RDFResource) seeAlsoValue;
+        assertTrue(seeAlsoValue instanceof RDFUntypedResource);
+        RDFUntypedResource ur = (RDFUntypedResource) seeAlsoValue;
         assertEquals("http://aldi.de", ur.getURI());
 
         Object isDefinedByValue = cls.getPropertyValue(isDefinedBySlot);
         assertEquals(instance, isDefinedByValue);
 
-        assertEquals(ProtegeNames.Cls.EXTERNAL_CLASS, ur.getRDFType().getName());
+        assertNull(ur.getRDFType());
     }
 }

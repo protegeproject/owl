@@ -1,20 +1,7 @@
 package edu.stanford.smi.protegex.owl.ui.cls;
 
-import java.awt.Component;
-import java.awt.event.ActionEvent;
-import java.io.File;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.logging.Logger;
-
-import javax.swing.Action;
-import javax.swing.JFileChooser;
-
 import com.hp.hpl.jena.ontology.OntModel;
-
 import edu.stanford.smi.protege.resource.Icons;
-import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.database.OWLDatabaseModel;
 import edu.stanford.smi.protegex.owl.jena.Jena;
 import edu.stanford.smi.protegex.owl.jena.JenaDLConverter;
@@ -28,13 +15,21 @@ import edu.stanford.smi.protegex.owl.ui.actions.ResourceAction;
 import edu.stanford.smi.protegex.owl.ui.dialogs.ModalDialogFactory;
 import edu.stanford.smi.protegex.owl.ui.widget.ModalProgressBarManager;
 
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.io.File;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+
 /**
  * Currently only working in database mode!
  *
  * @author Holger Knublauch  <holger@knublauch.com>
  */
 public class ExtractOntologyAction extends ResourceAction {
-    private static transient final Logger log = Log.getLogger(ExtractOntologyAction.class);
+
     private JFileChooser fileChooser;
 
 
@@ -72,7 +67,7 @@ public class ExtractOntologyAction extends ResourceAction {
                 new ModalProgressBarManager("Preparing Ontology"));
         OntModel ontModel = creator.createOntModel();
         if (result == ModalDialogFactory.OPTION_OK) {
-            log.info("Running JenaDLConverter...");
+            System.out.println("Running JenaDLConverter...");
             JenaDLConverter c = new JenaDLConverter(ontModel, owlModel.getNamespaceManager());
             ontModel = c.convertOntModel();
         }
@@ -87,7 +82,6 @@ public class ExtractOntologyAction extends ResourceAction {
     }
 
 
-    @Override
     public boolean isSuitable(Component component, RDFResource resource) {
         return component instanceof OWLSubclassPane &&
                 resource instanceof RDFSNamedClass &&

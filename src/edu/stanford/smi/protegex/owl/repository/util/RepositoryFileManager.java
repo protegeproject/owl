@@ -1,21 +1,5 @@
 package edu.stanford.smi.protegex.owl.repository.util;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.net.URI;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 import edu.stanford.smi.protege.model.Project;
 import edu.stanford.smi.protege.plugin.PluginUtilities;
 import edu.stanford.smi.protege.util.FileUtilities;
@@ -28,6 +12,13 @@ import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.repository.Repository;
 import edu.stanford.smi.protegex.owl.repository.RepositoryManager;
 import edu.stanford.smi.protegex.owl.repository.factory.RepositoryFactory;
+
+import java.io.*;
+import java.net.URI;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * User: matthewhorridge<br>
@@ -48,18 +39,7 @@ public class RepositoryFileManager {
 
     private OWLModel model;
 
-    public static void loadProjectRepositories(OWLModel owlModel) {     
-        // Load any project repositories
-        RepositoryFileManager man = new RepositoryFileManager(owlModel);
-        man.loadProjectRepositories();
-    }
-    
-    public static void saveProjectRepositories(OWLModel owlModel) {
-        RepositoryFileManager man = new RepositoryFileManager(owlModel);
-        man.saveGlobalRepositories();
-        man.saveProjectRepositories();
-    }
-    
+
     public RepositoryFileManager(OWLModel model) {
         this.model = model;
         this.manager = this.model.getRepositoryManager();

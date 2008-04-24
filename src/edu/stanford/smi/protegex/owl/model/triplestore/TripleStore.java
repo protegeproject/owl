@@ -1,15 +1,12 @@
 package edu.stanford.smi.protegex.owl.model.triplestore;
 
-import java.util.Collection;
 import java.util.Comparator;
 import java.util.Iterator;
-import java.util.logging.Level;
 
+import edu.stanford.smi.protege.model.FrameID;
 import edu.stanford.smi.protege.model.framestore.NarrowFrameStore;
 import edu.stanford.smi.protege.util.Disposable;
-import edu.stanford.smi.protegex.owl.model.NamespaceManager;
 import edu.stanford.smi.protegex.owl.model.NamespaceMap;
-import edu.stanford.smi.protegex.owl.model.OWLOntology;
 import edu.stanford.smi.protegex.owl.model.RDFObject;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
@@ -25,9 +22,7 @@ import edu.stanford.smi.protegex.owl.model.RDFResource;
  */
 public interface TripleStore extends NamespaceMap, Disposable {
     
-    NamespaceManager getNamespaceManager();
-    
-    OWLOntology  getOWLOntology();
+    FrameID generateFrameID();
 
     void add(Triple triple);
 
@@ -127,18 +122,16 @@ public interface TripleStore extends NamespaceMap, Disposable {
     void setName(String value);
 
 
+    void setRDFResourceName(RDFResource resource, String name);
+
+
     void sortPropertyValues(RDFResource resource, RDFProperty property, Comparator comparator);
 
 
-    String getOriginalXMLBase();
-    
-    void setOriginalXMLBase(String xmlBase);
-    
-    
     /**
      * Debugging only.
      */
-    void dump(Level level);
+    void dump();
     
     
     /**
@@ -146,14 +139,4 @@ public interface TripleStore extends NamespaceMap, Disposable {
      * OWL model is disposed.
      */
     void dispose();
-    
-    /**
-     * Tracks the set of io names that have been used to retrieve this triple store.  This can be 
-     * different than the ontology name in the case of a broken import statement.
-     */
-    Collection<String> getIOAddresses();
-    
-    void addIOAddress(String uri);
-    
-    void removeIOAddress(String uri);
 }

@@ -1,29 +1,14 @@
 package edu.stanford.smi.protegex.owl.storage;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import edu.stanford.smi.protege.model.Cls;
-import edu.stanford.smi.protege.model.Instance;
-import edu.stanford.smi.protege.model.KnowledgeBase;
-import edu.stanford.smi.protege.model.Model;
-import edu.stanford.smi.protege.model.Slot;
-import edu.stanford.smi.protege.model.ValueType;
-import edu.stanford.smi.protege.util.Log;
+import edu.stanford.smi.protege.model.*;
 import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
-import edu.stanford.smi.protegex.owl.model.OWLModel;
-import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
-import edu.stanford.smi.protegex.owl.model.OWLNames;
-import edu.stanford.smi.protegex.owl.model.OWLObjectProperty;
-import edu.stanford.smi.protegex.owl.model.OWLProperty;
-import edu.stanford.smi.protegex.owl.model.RDFIndividual;
-import edu.stanford.smi.protegex.owl.model.RDFProperty;
-import edu.stanford.smi.protegex.owl.model.RDFSDatatype;
+import edu.stanford.smi.protegex.owl.model.*;
 import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
 import edu.stanford.smi.protegex.owl.model.impl.XMLSchemaDatatypes;
 import edu.stanford.smi.protegex.owl.writer.rdfxml.util.ProtegeWriterSettings;
+
+import java.util.Collection;
+import java.util.HashSet;
 
 /**
  * This class can be used to convert a legacy Protege ontology (in e.g. CLIPS format) into
@@ -40,7 +25,6 @@ import edu.stanford.smi.protegex.owl.writer.rdfxml.util.ProtegeWriterSettings;
  * @author Holger Knublauch  <holger@knublauch.com>
  */
 public class ProtegeSaver extends KnowledgeBaseCopier {
-    public static transient Logger log = Log.getLogger(ProtegeSaver.class);
 
     private OWLModel owlModel;
 
@@ -78,10 +62,7 @@ public class ProtegeSaver extends KnowledgeBaseCopier {
 
     protected Cls createCls(String clsName, Cls metaCls) {
         String validName = getValidName(clsName);
-        if (log.isLoggable(Level.FINE)) {
-            log.fine("+ Creating named class " + validName + " for " + clsName + " with type " + metaCls.getName());
-        }
-
+        log("+ Creating named class " + validName + " for " + clsName + " with type " + metaCls.getName());
         OWLNamedClass cls = owlModel.createOWLNamedClass(validName, (OWLNamedClass) metaCls);
         String realName = cls.getName();
         if (!realName.equals(clsName)) {
@@ -107,10 +88,7 @@ public class ProtegeSaver extends KnowledgeBaseCopier {
 
     protected Slot createSlot(String slotName, ValueType valueType) {
         String validName = getValidName(slotName);
-        if (log.isLoggable(Level.FINE)) {
-            log.fine("+ Creating slot " + validName);
-        }
-
+        log("+ Creating slot " + validName);
         RDFProperty property = null;
         if (valueType == ValueType.INSTANCE || valueType == ValueType.CLS) {
             property = owlModel.createOWLObjectProperty(validName);

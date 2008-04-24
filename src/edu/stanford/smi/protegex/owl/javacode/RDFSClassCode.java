@@ -16,7 +16,7 @@ import java.util.*;
 public class RDFSClassCode {
 
     private RDFSNamedClass cls;
-
+    
     private boolean usePrefix; 
 
 
@@ -32,8 +32,8 @@ public class RDFSClassCode {
 			prefix = prefix.toUpperCase() + "_";
 			return getValidJavaName(prefix + cls.getLocalName());
 		}
-        return getValidJavaName(cls.getLocalName());
-    }
+		return getValidJavaName(cls.getLocalName());
+	}
 
 
     /**

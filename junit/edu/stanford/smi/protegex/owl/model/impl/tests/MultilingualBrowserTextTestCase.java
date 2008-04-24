@@ -11,7 +11,7 @@ public class MultilingualBrowserTextTestCase extends AbstractJenaTestCase {
     public void testDefaultBrowserText() {
         OWLNamedClass cls = owlModel.createOWLNamedClass("Cls");
         RDFIndividual instance = cls.createRDFIndividual("Instance");
-        assertEquals(instance.getLocalName(), instance.getBrowserText());
+        assertEquals(instance.getName(), instance.getBrowserText());
     }
 
 

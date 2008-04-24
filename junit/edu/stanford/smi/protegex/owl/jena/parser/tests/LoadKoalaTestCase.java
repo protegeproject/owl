@@ -1,16 +1,10 @@
 package edu.stanford.smi.protegex.owl.jena.parser.tests;
 
 import java.util.Iterator;
-import java.util.logging.Level;
 
 import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.Instance;
 import edu.stanford.smi.protege.util.Log;
-import edu.stanford.smi.protegex.owl.jena.parser.FrameCreatorUtility;
-import edu.stanford.smi.protegex.owl.jena.parser.LogicalClassCreatorUtility;
-import edu.stanford.smi.protegex.owl.jena.parser.ProtegeOWLParser;
-import edu.stanford.smi.protegex.owl.jena.parser.RestrictionCreatorUtility;
-import edu.stanford.smi.protegex.owl.jena.parser.TripleProcessor;
 import edu.stanford.smi.protegex.owl.model.OWLDatatypeProperty;
 import edu.stanford.smi.protegex.owl.model.OWLIntersectionClass;
 import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
@@ -22,15 +16,6 @@ import edu.stanford.smi.protegex.owl.tests.AbstractJenaTestCase;
  * @author Holger Knublauch  <holger@knublauch.com>
  */
 public class LoadKoalaTestCase extends AbstractJenaTestCase {
-    
-    public static void enableDebug() {
-        Log.setLoggingLevel(TripleProcessor.class, Level.FINEST);
-        Log.setLoggingLevel(ProtegeOWLParser.class, Level.FINEST);
-        Log.setLoggingLevel(FrameCreatorUtility.class, Level.FINEST);
-        Log.setLoggingLevel(LogicalClassCreatorUtility.class, Level.FINEST);
-        Log.setLoggingLevel(RestrictionCreatorUtility.class, Level.FINEST);
-    }
-    
 
     public void testLoadKoala() throws Exception {
 
@@ -63,12 +48,12 @@ public class LoadKoalaTestCase extends AbstractJenaTestCase {
         OWLNamedClass degreeCls = owlModel.getOWLNamedClass("Degree");
         OWLNamedClass maleCls = owlModel.getOWLNamedClass("Male");
 
-        Instance femaleInstance = owlModel.getOWLIndividual("female");
-        Instance maleInstance = owlModel.getOWLIndividual("male");
-        Instance baInstance = owlModel.getOWLIndividual("BA");
-        Instance bsInstance = owlModel.getOWLIndividual("BS");
-        Instance maInstance = owlModel.getOWLIndividual("MA");
-        Instance phdInstance = owlModel.getOWLIndividual("PhD");
+        Instance femaleInstance = owlModel.getInstance("female");
+        Instance maleInstance = owlModel.getInstance("male");
+        Instance baInstance = owlModel.getInstance("BA");
+        Instance bsInstance = owlModel.getInstance("BS");
+        Instance maInstance = owlModel.getInstance("MA");
+        Instance phdInstance = owlModel.getInstance("PhD");
 
         assertNotNull(hasChildrenSlot);
         assertNotNull(hasDegreeSlot);

@@ -52,10 +52,10 @@ public class TriplesComponent extends AbstractTriplesComponent {
                         results.add(property);
                     }
                 }
-                results.remove(owlModel.getSystemFrames().getPalDescriptionSlot());
-                results.remove(owlModel.getSystemFrames().getPalNameSlot());
-                results.remove(owlModel.getSystemFrames().getPalRangeSlot());
-                results.remove(owlModel.getSystemFrames().getPalStatementSlot());
+                results.remove(owlModel.getRDFProperty(Model.Slot.PAL_DESCRIPTION));
+                results.remove(owlModel.getRDFProperty(Model.Slot.PAL_NAME));
+                results.remove(owlModel.getRDFProperty(Model.Slot.PAL_RANGE));
+                results.remove(owlModel.getRDFProperty(Model.Slot.PAL_STATEMENT));
                 return results;
             }
         };

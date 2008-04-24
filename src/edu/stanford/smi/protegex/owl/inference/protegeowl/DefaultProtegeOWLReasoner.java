@@ -132,11 +132,6 @@ public class DefaultProtegeOWLReasoner implements ProtegeOWLReasoner {
         public void individualDeleted(RDFResource resource) {
             reactToKnowledgeBaseChange();
         }
-        
-        @Override
-        public void resourceReplaced(RDFResource oldResource, RDFResource newResource, String oldName) {
-        	reactToKnowledgeBaseChange();
-        }
     };
 
     private ResourceAdapter resourceAdapter = new ResourceAdapter() {

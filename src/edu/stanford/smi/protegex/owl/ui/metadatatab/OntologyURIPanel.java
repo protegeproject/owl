@@ -1,7 +1,7 @@
 package edu.stanford.smi.protegex.owl.ui.metadatatab;
 
+import edu.stanford.smi.protege.util.ApplicationProperties;
 import edu.stanford.smi.protege.util.LabeledComponent;
-import edu.stanford.smi.protegex.owl.model.factory.FactoryUtils;
 import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
 
 import javax.swing.*;
@@ -14,6 +14,7 @@ import java.awt.event.ActionEvent;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Iterator;
 
 /**
@@ -59,14 +60,54 @@ public class OntologyURIPanel extends JPanel {
 
 
     private void setDefautOntologyURIBase() {
-        textField.setText(FactoryUtils.generateOntologyURIBase());
+        String defaultBase = ApplicationProperties.getString(URI_BASE_PROPERTY);
+        if (defaultBase == null) {
+            defaultBase = DEFAULT_BASE;
+            ApplicationProperties.setString(URI_BASE_PROPERTY, DEFAULT_BASE);
+        }
+        if (defaultBase != null) {
+            defaultBase = getOntologyURIBase(defaultBase,
+                    ApplicationProperties.getBooleanProperty(URI_BASE_APPEND_YEAR_PROPERTY, false),
+                    ApplicationProperties.getBooleanProperty(URI_BASE_APPEND_MONTH_PROPERTY, false),
+                    ApplicationProperties.getBooleanProperty(URI_BASE_APPEND_DAY_PROPERTY, false));
+            String fileName = "Ontology";
+            fileName += System.currentTimeMillis() / 1000;
+            fileName += ".owl";
+            textField.setText(defaultBase + fileName);
+        }
     }
-    
+
+
     private void fireChangeEvent() {
         for (Iterator it = new ArrayList(changeListeners).iterator(); it.hasNext();) {
             ChangeListener lsnr = (ChangeListener) it.next();
             lsnr.stateChanged(new ChangeEvent(this));
         }
+    }
+
+
+    public static String getOntologyURIBase(String defaultBase,
+                                            boolean appendYear,
+                                            boolean appendMonth,
+                                            boolean appendDay) {
+        if (defaultBase != null && defaultBase.trim().length() > 0) {
+            if (defaultBase.endsWith("/") == false) {
+                defaultBase += "/";
+            }
+            if (appendYear) {
+                int year = Calendar.getInstance().get(Calendar.YEAR);
+                defaultBase += year + "/";
+                if (appendMonth) {
+                    int month = Calendar.getInstance().get(Calendar.MONTH) + 1;
+                    defaultBase += month + "/";
+                    if (appendDay) {
+                        int day = Calendar.getInstance().get(Calendar.DAY_OF_MONTH);
+                        defaultBase += day + "/";
+                    }
+                }
+            }
+        }
+        return defaultBase;
     }
 
 

@@ -149,7 +149,7 @@ public class SingleResourceComponent extends AbstractPropertyValuesComponent imp
         if (cls != null) {
             Instance instance = ((KnowledgeBase) owlModel).createInstance(null, cls);
             if (instance instanceof RDFUntypedResource) {
-                instance = OWLUtil.assignUniqueURI((RDFUntypedResource) instance);
+                OWLUtil.assignUniqueURI((RDFUntypedResource) instance);
             }
             else if (instance instanceof RDFSClass) {
                 RDFSClass newClass = (RDFSClass) instance;

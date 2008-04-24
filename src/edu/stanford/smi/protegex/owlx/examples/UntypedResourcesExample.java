@@ -1,7 +1,5 @@
 package edu.stanford.smi.protegex.owlx.examples;
 
-import java.io.IOException;
-
 import edu.stanford.smi.protegex.owl.ProtegeOWL;
 import edu.stanford.smi.protegex.owl.jena.Jena;
 import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
@@ -15,7 +13,7 @@ import edu.stanford.smi.protegex.owl.model.RDFUntypedResource;
  */
 public class UntypedResourcesExample {
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         JenaOWLModel owlModel = ProtegeOWL.createJenaOWLModel();
 
         OWLNamedClass personClass = owlModel.createOWLNamedClass("Person");

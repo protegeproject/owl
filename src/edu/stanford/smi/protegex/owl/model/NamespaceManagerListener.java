@@ -7,13 +7,17 @@ package edu.stanford.smi.protegex.owl.model;
  */
 public interface NamespaceManagerListener {
 
-    void defaultNamespaceChanged(String oldNamespace, String newNamespace);
+    void defaultNamespaceChanged(String oldValue, String newValue);
 
-    void namespaceChanged(String prefix, String oldNamespace, String newNamespace);
+
+    void namespaceChanged(String prefix, String oldValue, String newValue);
+
 
     void prefixAdded(String prefix);
 
+
     void prefixChanged(String namespace, String oldPrefix, String newPrefix);
+
 
     void prefixRemoved(String prefix);
 }

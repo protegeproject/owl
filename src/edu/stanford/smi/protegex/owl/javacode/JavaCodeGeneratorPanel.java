@@ -26,7 +26,7 @@ public class JavaCodeGeneratorPanel extends JPanel {
     private JTextField rootFolderTextField;
 
     private JCheckBox setCheckBox;
-
+    
     private JCheckBox prefixCheckBox;
 
 

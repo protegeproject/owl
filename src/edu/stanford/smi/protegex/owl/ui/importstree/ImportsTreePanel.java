@@ -217,7 +217,7 @@ public class ImportsTreePanel extends JPanel implements HostResourceDisplay, Dis
                 importHelper.importOntologies();
                 
                 //TODO: This should be moved in the import code
-                owlModel.getNamespaceManager().setPrefix(ProtegeNames.PROTEGE_OWL_NAMESPACE, ProtegeNames.PROTEGE_PREFIX);
+                owlModel.getNamespaceManager().setPrefix(ProtegeNames.NS, ProtegeNames.PROTEGE_PREFIX);
                 
                 Collection addedPrefixes = new ArrayList(owlModel.getNamespaceManager().getPrefixes());
                 addedPrefixes.removeAll(prefixes);
@@ -263,7 +263,7 @@ public class ImportsTreePanel extends JPanel implements HostResourceDisplay, Dis
         OWLOntology ont = (OWLOntology) CollectionUtilities.getFirstItem(sel);
         OWLModel owlModel = ont.getOWLModel();
 
-        if (!ont.equals(OWLUtil.getActiveOntology(owlModel))) {
+        if (ont != OWLUtil.getActiveOntology(owlModel)) {
             TripleStoreModel tsm = owlModel.getTripleStoreModel();
             TripleStore tripleStore = tsm.getHomeTripleStore(ont);
             TripleStoreUtil.switchTripleStore(owlModel, tripleStore);

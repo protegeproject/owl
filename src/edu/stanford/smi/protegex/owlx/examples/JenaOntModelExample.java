@@ -1,12 +1,9 @@
 package edu.stanford.smi.protegex.owlx.examples;
 
-import java.io.IOException;
-
 import com.hp.hpl.jena.ontology.DatatypeProperty;
 import com.hp.hpl.jena.ontology.Individual;
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
-
 import edu.stanford.smi.protegex.owl.ProtegeOWL;
 import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLDatatypeProperty;
@@ -18,7 +15,7 @@ import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
  */
 public class JenaOntModelExample {
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
 
         JenaOWLModel owlModel = ProtegeOWL.createJenaOWLModel();
 

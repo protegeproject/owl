@@ -14,7 +14,7 @@ public class LoadOWLEnumeratedClassTestCase extends AbstractJenaTestCase {
         loadRemoteOntology("enum-with-class.owl");
         OWLNamedClass cls = owlModel.getOWLNamedClass("Cls");
         OWLNamedClass enumCls = owlModel.getOWLNamedClass("Enum");
-        OWLObjectProperty slot = owlModel.getOWLObjectProperty("slot");
+        OWLObjectProperty slot = (OWLObjectProperty) owlModel.getSlot("slot");
         assertNotNull(cls);
         assertNotNull(enumCls);
         assertNotNull(slot);

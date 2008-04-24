@@ -4,6 +4,7 @@ import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protege.model.Transaction;
 import edu.stanford.smi.protege.model.framestore.DeleteSimplificationFrameStore;
+import edu.stanford.smi.protege.util.transaction.TransactionMonitor;
 
 /**
  * A modified DeleteSimplificationFrameStore that does not automatically delete
@@ -13,7 +14,6 @@ import edu.stanford.smi.protege.model.framestore.DeleteSimplificationFrameStore;
  */
 public class OWLDeleteSimplificationFrameStore extends DeleteSimplificationFrameStore {
 
-    @Override
     public void removeDirectTemplateSlot(Cls cls, Slot slot) {
         if (slot.isBeingDeleted()) {
             super.removeDirectTemplateSlot(cls, slot);

@@ -9,7 +9,6 @@ import edu.stanford.smi.protege.model.Frame;
 import edu.stanford.smi.protege.model.Instance;
 import edu.stanford.smi.protege.model.KnowledgeBase;
 import edu.stanford.smi.protege.model.Slot;
-import edu.stanford.smi.protegex.owl.model.NamespaceUtil;
 import edu.stanford.smi.protegex.owl.model.OWLClass;
 import edu.stanford.smi.protegex.owl.model.OWLDatatypeProperty;
 import edu.stanford.smi.protegex.owl.model.OWLIndividual;
@@ -84,16 +83,6 @@ public class ParserUtils {
     }
     else {
       resource = null;
-    }
-    String fullName = NamespaceUtil.getFullName(model, name);
-    if (fullName != null && !name.equals(fullName)) {
-        resource = (RDFResource) ((KnowledgeBase) model).getFrame(fullName);
-        if (resource != null && resourceCorrectlyTyped(resource, targetClass)) {
-          return resource;
-        }
-        else {
-          resource = null;
-        }
     }
     
     String lang = model.getDefaultLanguage();

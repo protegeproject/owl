@@ -1,42 +1,21 @@
 
 package edu.stanford.smi.protegex.owl.swrl.model.impl;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.swing.Icon;
-
-import edu.stanford.smi.protege.model.Frame;
-import edu.stanford.smi.protege.model.FrameID;
-import edu.stanford.smi.protege.model.KnowledgeBase;
-import edu.stanford.smi.protege.model.Model;
-import edu.stanford.smi.protege.model.Reference;
-import edu.stanford.smi.protege.model.Slot;
-import edu.stanford.smi.protege.util.Log;
-import edu.stanford.smi.protegex.owl.model.OWLIndividual;
-import edu.stanford.smi.protegex.owl.model.OWLModel;
-import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
-import edu.stanford.smi.protegex.owl.model.OWLProperty;
-import edu.stanford.smi.protegex.owl.swrl.model.SWRLAtomList;
-import edu.stanford.smi.protegex.owl.swrl.model.SWRLBuiltin;
-import edu.stanford.smi.protegex.owl.swrl.model.SWRLImp;
-import edu.stanford.smi.protegex.owl.swrl.model.SWRLIndividual;
-import edu.stanford.smi.protegex.owl.swrl.model.SWRLNames;
+import edu.stanford.smi.protege.model.*;
+import edu.stanford.smi.protegex.owl.model.*;
+import edu.stanford.smi.protegex.owl.model.impl.*;
+import edu.stanford.smi.protegex.owl.swrl.model.*;
 import edu.stanford.smi.protegex.owl.swrl.parser.SWRLParseException;
 import edu.stanford.smi.protegex.owl.swrl.parser.SWRLParser;
 import edu.stanford.smi.protegex.owl.swrl.ui.icons.SWRLIcons;
 import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
+import edu.stanford.smi.protegex.owl.swrl.model.impl.SWRLUtil;
+
+import javax.swing.*;
+import java.util.*;
 
 public class DefaultSWRLImp extends AbstractSWRLIndividual implements SWRLImp 
 {
-  private Logger log = Log.getLogger(DefaultSWRLImp.class);
-    
   public static final String EMPTY_RULE_TEXT = "<EMPTY_RULE>";
   private boolean isRuleEnabled = true;
   private Map<String, Boolean> ruleGroups; // Contains rule groups and their enabled status.
@@ -74,8 +53,7 @@ public class DefaultSWRLImp extends AbstractSWRLIndividual implements SWRLImp
     parser.setParseOnly(false);
     try {
       return parser.parse(text);
-    } catch (SWRLParseException ex) {
-      log.log(Level.SEVERE, "Shouldn't Happen ", ex);
+    } catch (Exception ex) {
       return null;  // Should not happen
     } // try
   } // createClone
@@ -162,8 +140,7 @@ public class DefaultSWRLImp extends AbstractSWRLIndividual implements SWRLImp
   public void setBody(SWRLAtomList swrlAtomList) { setPropertyValue(getOWLModel().getRDFProperty(SWRLNames.Slot.BODY), swrlAtomList); } 
   public void setHead(SWRLAtomList swrlAtomList) { setPropertyValue(getOWLModel().getRDFProperty(SWRLNames.Slot.HEAD), swrlAtomList); }
 
-  @Override
-public Icon getIcon() {
+  public Icon getIcon() {
     return isEditable() ? SWRLIcons.getImpIcon() :
                 OWLIcons.getReadOnlyIcon(SWRLIcons.getImpIcon(), "RoundedBoxFrame");
   }
@@ -175,8 +152,7 @@ public Icon getIcon() {
     return set;
   }
 
-  @Override
-public void getReferencedInstances(Set set) 
+  public void getReferencedInstances(Set set) 
   {
     SWRLAtomList head = getHead();
     if (head != null) {
@@ -190,8 +166,7 @@ public void getReferencedInstances(Set set)
     }
   }
   
-  @Override
-public String getBrowserText() 
+  public String getBrowserText() 
   {
     SWRLAtomList body = getBody();
     SWRLAtomList head = getHead();

@@ -69,7 +69,6 @@ public class ParseQuantifierRestrictionsTestCase extends AbstractJenaTestCase {
 
 
     public void testParseAllRestriction() throws Exception {
-        String defaultNamespace = owlModel.getNamespaceManager().getDefaultNamespace();
         owlModel.createOWLObjectProperty("children");
         owlModel.createOWLNamedClass("RichPerson");
         String expression = "children * RichPerson";
@@ -77,39 +76,36 @@ public class ParseQuantifierRestrictionsTestCase extends AbstractJenaTestCase {
         assertTrue(aClass instanceof OWLAllValuesFrom);
         OWLAllValuesFrom restriction = (OWLAllValuesFrom) aClass;
         assertTrue(restriction.isDefined());
-        assertTrue(restriction.getOnProperty().getName().equals(defaultNamespace + "children"));
-        assertTrue(restriction.getFiller().getName().equals(defaultNamespace + "RichPerson"));
+        assertTrue(restriction.getOnProperty().getName().equals("children"));
+        assertTrue(restriction.getFiller().getName().equals("RichPerson"));
     }
 
 
     public void testParseAllRestrictionDataType() throws Exception {
-        String defaultNamespace = owlModel.getNamespaceManager().getDefaultNamespace();
         owlModel.createOWLDatatypeProperty("property", owlModel.getXSDstring());
         String expression = "property * int";
         RDFSClass aClass = parser.parseClass(owlModel, expression);
         assertTrue(aClass instanceof OWLAllValuesFrom);
         OWLAllValuesFrom restriction = (OWLAllValuesFrom) aClass;
         assertTrue(restriction.isDefined());
-        assertTrue(restriction.getOnProperty().getName().equals(defaultNamespace + "property"));
+        assertTrue(restriction.getOnProperty().getName().equals("property"));
         assertEquals(restriction.getFiller(), owlModel.getXSDint());
     }
 
 
     public void testParseAllRestrictionDataTypeAbbrev() throws Exception {
-        String defaultNamespace = owlModel.getNamespaceManager().getDefaultNamespace();
         owlModel.createOWLDatatypeProperty("property", owlModel.getXSDstring());
         String expression = "property * int";
         RDFSClass aClass = parser.parseClass(owlModel, expression);
         assertTrue(aClass instanceof OWLAllValuesFrom);
         OWLAllValuesFrom restriction = (OWLAllValuesFrom) aClass;
         assertTrue(restriction.isDefined());
-        assertTrue(restriction.getOnProperty().getName().equals(defaultNamespace + "property"));
+        assertTrue(restriction.getOnProperty().getName().equals("property"));
         assertEquals(restriction.getFiller(), owlModel.getXSDint());
     }
 
 
     public void testParseSomeValuesFromWithNamedClass() throws Exception {
-        String defaultNamespace = owlModel.getNamespaceManager().getDefaultNamespace();
         owlModel.createOWLNamedClass("RichPerson");
         owlModel.createOWLObjectProperty("children");
         String expression = "children ? RichPerson";
@@ -117,13 +113,12 @@ public class ParseQuantifierRestrictionsTestCase extends AbstractJenaTestCase {
         assertTrue(aClass instanceof OWLSomeValuesFrom);
         OWLSomeValuesFrom restriction = (OWLSomeValuesFrom) aClass;
         assertTrue(restriction.isDefined());
-        assertTrue(restriction.getOnProperty().getName().equals(defaultNamespace + "children"));
-        assertTrue(restriction.getFiller().getName().equals(defaultNamespace + "RichPerson"));
+        assertTrue(restriction.getOnProperty().getName().equals("children"));
+        assertTrue(restriction.getFiller().getName().equals("RichPerson"));
     }
 
 
     public void testParseSomeValuesFromWithAnonymousClass() throws Exception {
-        String defaultNamespace = owlModel.getNamespaceManager().getDefaultNamespace();
         owlModel.createOWLNamedClass("RichPerson");
         owlModel.createOWLObjectProperty("children");
         String expression = "children ? !RichPerson";
@@ -132,7 +127,7 @@ public class ParseQuantifierRestrictionsTestCase extends AbstractJenaTestCase {
         assertTrue(aClass instanceof OWLSomeValuesFrom);
         OWLSomeValuesFrom restriction = (OWLSomeValuesFrom) aClass;
         assertTrue(restriction.isDefined());
-        assertTrue(restriction.getOnProperty().getName().equals(defaultNamespace + "children"));
+        assertTrue(restriction.getOnProperty().getName().equals("children"));
         assertTrue(restriction.getFiller() instanceof OWLComplementClass);
     }
 }

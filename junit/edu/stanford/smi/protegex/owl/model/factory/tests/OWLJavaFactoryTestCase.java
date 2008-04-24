@@ -1,43 +1,14 @@
 package edu.stanford.smi.protegex.owl.model.factory.tests;
 
-import java.util.Collection;
-import java.util.Collections;
-
 import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.Frame;
 import edu.stanford.smi.protege.model.KnowledgeBase;
-import edu.stanford.smi.protegex.owl.model.OWLAllDifferent;
-import edu.stanford.smi.protegex.owl.model.OWLAllValuesFrom;
-import edu.stanford.smi.protegex.owl.model.OWLDataRange;
-import edu.stanford.smi.protegex.owl.model.OWLDatatypeProperty;
-import edu.stanford.smi.protegex.owl.model.OWLHasValue;
-import edu.stanford.smi.protegex.owl.model.OWLIndividual;
-import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
-import edu.stanford.smi.protegex.owl.model.OWLNames;
-import edu.stanford.smi.protegex.owl.model.OWLObjectProperty;
-import edu.stanford.smi.protegex.owl.model.OWLOntology;
-import edu.stanford.smi.protegex.owl.model.OWLSomeValuesFrom;
-import edu.stanford.smi.protegex.owl.model.RDFIndividual;
-import edu.stanford.smi.protegex.owl.model.RDFList;
-import edu.stanford.smi.protegex.owl.model.RDFNames;
-import edu.stanford.smi.protegex.owl.model.RDFProperty;
-import edu.stanford.smi.protegex.owl.model.RDFResource;
-import edu.stanford.smi.protegex.owl.model.RDFSClass;
-import edu.stanford.smi.protegex.owl.model.RDFSDatatype;
-import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
-import edu.stanford.smi.protegex.owl.model.RDFSNames;
-import edu.stanford.smi.protegex.owl.model.RDFUntypedResource;
-import edu.stanford.smi.protegex.owl.model.factory.AlreadyImportedException;
-import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLAllDifferent;
-import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLAllValuesFrom;
-import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLHasValue;
-import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLNamedClass;
-import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLOntology;
-import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLSomeValuesFrom;
-import edu.stanford.smi.protegex.owl.model.impl.DefaultRDFList;
-import edu.stanford.smi.protegex.owl.model.impl.DefaultRDFSNamedClass;
-import edu.stanford.smi.protegex.owl.model.impl.DefaultRDFUntypedResource;
+import edu.stanford.smi.protegex.owl.model.*;
+import edu.stanford.smi.protegex.owl.model.impl.*;
 import edu.stanford.smi.protegex.owl.tests.AbstractOWLModelTestCase;
+
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * Various tests which verify whether the DefaultOWLFrameFactory generates the correct Java
@@ -93,7 +64,6 @@ public class OWLJavaFactoryTestCase extends AbstractOWLModelTestCase {
 
 
     public void testCreateRDFDatatype() {
-        owlModel.setExpandShortNameInMethods(true);
         assertTrue(owlModel.getRDFResource("xsd:int") instanceof RDFSDatatype);
     }
 
@@ -126,7 +96,7 @@ public class OWLJavaFactoryTestCase extends AbstractOWLModelTestCase {
     }
 
 
-    public void testCreateOntologyInstance() throws AlreadyImportedException {
+    public void testCreateOntologyInstance() {
         owlModel.getNamespaceManager().setPrefix("http://aldi.de#", "test");
         OWLOntology owlOntology = owlModel.createOWLOntology("test");
         assertEquals(DefaultOWLOntology.class, owlOntology.getClass());

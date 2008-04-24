@@ -7,7 +7,6 @@ import java.util.Set;
 
 import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protegex.owl.model.NamespaceManager;
-import edu.stanford.smi.protegex.owl.model.NamespaceUtil;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLNames;
 import edu.stanford.smi.protegex.owl.model.OWLOntology;
@@ -85,8 +84,6 @@ public class Util {
 
         excludedPropertyNames.add(OWLNames.OWL_PREFIX);
         excludedPropertyNames.add(OWLNames.Slot.ONTOLOGY_PREFIXES);
-        
-        excludedPropertyNames.add(OWLNames.Slot.OWL_ONTOLOGY_POINTER_PROPERTY);
 
         // Handle imports in a special way
         excludedPropertyNames.add(OWLNames.Slot.IMPORTS);
@@ -353,7 +350,7 @@ public class Util {
         for (Iterator it = tripleStore.listObjects(resource, prop); it.hasNext();) {
             RDFResource curType = (RDFResource) it.next();
             if (curType.equals(excludeType) == false) {
-                writer.writeStartElement(getPrefixedName(RDFNames.Slot.TYPE, tripleStore));
+                writer.writeStartElement(RDFNames.Slot.TYPE);
                 Util.inlineObject(curType, tripleStore, writer);
                 writer.writeEndElement();
             }
@@ -385,9 +382,5 @@ public class Util {
             }
         }
         return "<null>";
-    }
-    
-    public static String getPrefixedName(String fullName, TripleStore tripleStore) {
-        return NamespaceUtil.getPrefixedName(tripleStore.getNamespaceManager(), fullName);
     }
 }

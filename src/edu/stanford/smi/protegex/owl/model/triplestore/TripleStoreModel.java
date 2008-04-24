@@ -1,15 +1,15 @@
 package edu.stanford.smi.protegex.owl.model.triplestore;
 
+import edu.stanford.smi.protege.model.Instance;
+import edu.stanford.smi.protege.model.Slot;
+import edu.stanford.smi.protege.util.Disposable;
+import edu.stanford.smi.protegex.owl.model.RDFObject;
+import edu.stanford.smi.protegex.owl.model.RDFProperty;
+import edu.stanford.smi.protegex.owl.model.RDFResource;
+
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-
-import edu.stanford.smi.protege.model.Instance;
-import edu.stanford.smi.protege.model.Slot;
-import edu.stanford.smi.protege.model.framestore.NarrowFrameStore;
-import edu.stanford.smi.protege.util.Disposable;
-import edu.stanford.smi.protegex.owl.model.RDFProperty;
-import edu.stanford.smi.protegex.owl.model.RDFResource;
 
 /**
  * The TripleStoreModel is an access layer on top of the normal OWLModel.
@@ -22,10 +22,10 @@ public interface TripleStoreModel extends Disposable{
     /**
      * A low level method that creates and adds a new TripleStore to implement imports.
      *
-     * @param frameStore the FrameStore to be used with the TripleStore
+     * @param name the name of the new TripleStore (must be unique)
      * @return the new TripleStore
      */
-    TripleStore createActiveImportedTripleStore(NarrowFrameStore frameStore);
+    TripleStore createTripleStore(String name);
 
 
     /**
@@ -34,6 +34,14 @@ public interface TripleStoreModel extends Disposable{
      * @param tripleStore the TripleStore to delete (must be neither system nor top TripleStore)
      */
     void deleteTripleStore(TripleStore tripleStore);
+
+
+    /**
+     * Must be called after changes were made in any TripleStore.
+     * This will internally synchronize several Protege model features with
+     * the OWL/RDF triples.
+     */
+    void endTripleStoreChanges();
 
 
     /**
@@ -51,13 +59,7 @@ public interface TripleStoreModel extends Disposable{
      * Gets the "home" triple store of a given resource.  This can be used to determine the
      * TripleStore where changes on the resource should be performed consistently.
      * In the default implementation, the home TripleStore is the one that contains a :NAME
-     * slot value of the resource.  The intention is that this will be where the resource
-     * is first defined (using the ordering defined by the imports tree with imported  ontologies
-     * first).
-     * 
-     * The reality is that this is not well defined.  It is easy to imagine that  there are 
-     * several triple stores that have  a :NAME slot value for the resource.   In  this case
-     * this routine chooses one of these triple stores at random.
+     * slot value of the resource.
      *
      * @param resource the RDFResource to find the home TripleStore of
      * @return the home TripleStore
@@ -104,13 +106,16 @@ public interface TripleStoreModel extends Disposable{
      * @return the TripleStore or null
      */
     TripleStore getTripleStoreByDefaultNamespace(String namespace);
-    
+
+
     /**
-     * Gets the System Triple Store.
-     * 
-     * @return the system triple store
+     * Gets a TripleStore by its index.
+     * This is equivalent to <CODE>getTripleStores().get(index);</CODE>.
+     *
+     * @param index the index of the TripleStore to get
+     * @return the TripleStore
      */
-    TripleStore getSystemTripleStore();
+    TripleStore getTripleStore(int index);
 
 
     /**
@@ -206,18 +211,7 @@ public interface TripleStoreModel extends Disposable{
      */
     void setHomeTripleStore(RDFResource resource, TripleStore tripleStore);
 
-    
-    /**
-     * Sets the top level triple store to the currently active triple store.
-     * 
-     * This should only be called early on in the initialization sequence.
-     * Use of this after an owl model is loaded will lead to unpredictable 
-     * behavior.
-     */
-    void setTopTripleStore(TripleStore tripleStore);
-    
-    void setViewActiveOnly(boolean viewActiveOnly);
-    
+
     /**
      * Changes the <CODE>isIncluded()</CODE> value of all resources to reflect the
      * currently active TripleStore.  This should be called if the editable flag
@@ -225,10 +219,11 @@ public interface TripleStoreModel extends Disposable{
      */
     void updateEditableResourceState();
     
+    
     /**
      * Cleans up all the triple stores managed by this.
      * This is called when an OWLModel is disposed (e.g. at project close in the UI).
      */
     void dispose();
-
+    
 }

@@ -144,6 +144,8 @@ public class AddClassToDomainAction extends ResourceSelectionAction {
             clses.add(owlModel.getOWLThingClass());
             clses.removeAll(property.getUnionDomain());
         }
+        Object[] cs = clses.toArray();
+        Arrays.sort(cs, new FrameComparator());
         return clses;
     }
 

@@ -24,12 +24,11 @@ import java.util.*;
  * @author Holger Knublauch  <holger@knublauch.com>
  */
 public class TriplesTableModel extends AbstractTableModel {
-    private static final long serialVersionUID = 4888649374752349462L;
 
     /**
      * The list of Properties currently displayed
      */
-    private ArrayList<RDFProperty> properties = new ArrayList<RDFProperty>();
+    private ArrayList properties = new ArrayList();
 
     /**
      * The resource being annotated
@@ -43,7 +42,6 @@ public class TriplesTableModel extends AbstractTableModel {
      * properties and then updates the table model accordingly.
      */
     private PropertyValueListener valueListener = new PropertyValueAdapter() {
-        @SuppressWarnings("unchecked")
         public void propertyValueChanged(RDFResource resource, RDFProperty property, Collection oldValues) {
             if (isRelevantProperty(property)) {
                 updateValues();
@@ -94,10 +92,9 @@ public class TriplesTableModel extends AbstractTableModel {
     }
 
 
-    @SuppressWarnings("unchecked")
     private Object createDefaultValue(RDFProperty property) {
-        for (Iterator<AnnotationsWidgetPlugin> it = TriplesComponent.plugins(); it.hasNext();) {
-            AnnotationsWidgetPlugin plugin = it.next();
+        for (Iterator it = TriplesComponent.plugins(); it.hasNext();) {
+            AnnotationsWidgetPlugin plugin = (AnnotationsWidgetPlugin) it.next();
             if (plugin.canEdit(subject, property, null)) {
                 Object defaultValue = plugin.createDefaultValue((RDFResource) subject, property);
                 if (defaultValue != null) {
@@ -156,7 +153,6 @@ public class TriplesTableModel extends AbstractTableModel {
     }
 
 
-    @SuppressWarnings("unchecked")
     public Class getColumnClass(int column) {
         if (column == COL_PROPERTY) {
             return RDFProperty.class;
@@ -218,7 +214,7 @@ public class TriplesTableModel extends AbstractTableModel {
 
 
     public RDFProperty getPredicate(int rowIndex) {
-        return properties.get(rowIndex);
+        return (RDFProperty) properties.get(rowIndex);
     }
 
 
@@ -238,9 +234,9 @@ public class TriplesTableModel extends AbstractTableModel {
     }
 
 
-    protected Collection<RDFProperty> getRelevantProperties() {
+    protected Collection getRelevantProperties() {
         OWLModel owlModel = subject.getOWLModel();
-	    Collection<RDFProperty> props = new HashSet<RDFProperty>();
+	    Collection props = new HashSet();
 	    for(Iterator it = owlModel.getRDFProperties().iterator(); it.hasNext();) {
 		    RDFProperty curProp = (RDFProperty) it.next();
 		    if(curProp.isVisible()) {
@@ -315,8 +311,8 @@ public class TriplesTableModel extends AbstractTableModel {
             RDFProperty property = getPredicate(rowIndex);
             if (columnIndex == COL_VALUE) {
                 Object value = getValue(rowIndex);
-                for (Iterator<AnnotationsWidgetPlugin> it = TriplesComponent.plugins(); it.hasNext();) {
-                    AnnotationsWidgetPlugin plugin = it.next();
+                for (Iterator it = TriplesComponent.plugins(); it.hasNext();) {
+                    AnnotationsWidgetPlugin plugin = (AnnotationsWidgetPlugin) it.next();
                     if (plugin.canEdit(subject, property, value)) {
                         return false;
                     }
@@ -331,7 +327,8 @@ public class TriplesTableModel extends AbstractTableModel {
                 return getValueAt(rowIndex, columnIndex) instanceof RDFSDatatype;
             }
             else {
-                return property.getOWLModel().getXSDstring().equals(property.getRange()) &&
+                return property instanceof OWLDatatypeProperty &&
+                        property.getOWLModel().getXSDstring().equals(property.getRange()) &&
                         !property.isReadOnly();
             }
         }
@@ -370,11 +367,10 @@ public class TriplesTableModel extends AbstractTableModel {
     }
 
 
-    @SuppressWarnings("unchecked")
     private void refill() {
         if (subject != null) {
-            Collection<RDFProperty> properties = getRelevantProperties();
-            RDFProperty[] ss = properties.toArray(new RDFProperty[0]);
+            Collection properties = getRelevantProperties();
+            RDFProperty[] ss = (RDFProperty[]) properties.toArray(new RDFProperty[0]);
             Arrays.sort(ss, new FrameComparator());
             for (int i = 0; i < ss.length; i++) {
                 RDFProperty property = ss[i];
@@ -385,8 +381,8 @@ public class TriplesTableModel extends AbstractTableModel {
 		            this.values.add(value);
 		        }
             }
-	        for(Iterator<RDFProperty> it = getDefaultProperties().iterator(); it.hasNext(); ) {
-		        RDFProperty curProp = it.next();
+	        for(Iterator it = getDefaultProperties().iterator(); it.hasNext(); ) {
+		        RDFProperty curProp = (RDFProperty) it.next();
 		        if(this.properties.contains(curProp) == false) {
 			        this.properties.add(0, curProp);
 			        this.values.add(0, null);
@@ -438,6 +434,7 @@ public class TriplesTableModel extends AbstractTableModel {
         RDFProperty property = getPredicate(row);
         Object oldValue = getValue(row);
         if (oldValue == null || !oldValue.equals(aValue)) {
+            RDFResource range = property.getRange();
             try {
                 Object newValue;
                 String str = aValue.toString();
@@ -544,7 +541,7 @@ public class TriplesTableModel extends AbstractTableModel {
         this.table = table;
     }
 
-	public Collection<RDFProperty> getDefaultProperties() {
-		return Collections.emptyList();
+	public Collection getDefaultProperties() {
+		return Collections.EMPTY_LIST;
 	}
 }

@@ -9,7 +9,6 @@ import edu.stanford.smi.protege.plugin.PluginUtilities;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.repository.Repository;
-import edu.stanford.smi.protegex.owl.repository.impl.DatabaseRepositoryFactoryPlugin;
 import edu.stanford.smi.protegex.owl.repository.impl.DublinCoreDLVersionRedirectRepositoryFactoryPlugin;
 import edu.stanford.smi.protegex.owl.repository.impl.FTPRepositoryFactoryPlugin;
 import edu.stanford.smi.protegex.owl.repository.impl.HTTPRepositoryFactoryPlugin;
@@ -43,10 +42,9 @@ public class RepositoryFactory {
         factories.add(new HTTPRepositoryFactoryPlugin());
         factories.add(new RelativeFolderRepositoryFactoryPlugin());
         factories.add(new FTPRepositoryFactoryPlugin());
-        factories.add(new DatabaseRepositoryFactoryPlugin());
-        Collection<Class> plugins = PluginUtilities.getClassesWithAttribute(RepositoryFactoryPlugin.PLUGIN_TYPE, "True");
-        for (Iterator<Class> it = plugins.iterator(); it.hasNext();) {
-            Class cls =  it.next();
+        Collection plugins = PluginUtilities.getClassesWithAttribute(RepositoryFactoryPlugin.PLUGIN_TYPE, "True");
+        for (Iterator it = plugins.iterator(); it.hasNext();) {
+            Class cls = (Class) it.next();
             try {
                 factories.add((RepositoryFactoryPlugin) cls.newInstance());
             }

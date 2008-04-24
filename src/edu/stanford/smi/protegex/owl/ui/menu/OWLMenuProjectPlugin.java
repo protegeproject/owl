@@ -51,9 +51,12 @@ import edu.stanford.smi.protege.util.StandardAction;
 import edu.stanford.smi.protege.util.SystemUtilities;
 import edu.stanford.smi.protege.widget.ClsWidget;
 import edu.stanford.smi.protege.widget.FormWidget;
+
 import edu.stanford.smi.protegex.owl.database.OWLDatabaseModel;
+import edu.stanford.smi.protegex.owl.inference.protegeowl.ReasonerPluginManager;
 import edu.stanford.smi.protegex.owl.inference.protegeowl.ReasonerPluginMenuManager;
 import edu.stanford.smi.protegex.owl.javacode.JavaCodeGeneratorResourceAction;
+import edu.stanford.smi.protegex.owl.jena.JenaKnowledgeBaseFactory;
 import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.ProtegeNames;
@@ -61,6 +64,7 @@ import edu.stanford.smi.protegex.owl.model.RDFNames;
 import edu.stanford.smi.protegex.owl.model.RDFSNames;
 import edu.stanford.smi.protegex.owl.model.project.OWLProject;
 import edu.stanford.smi.protegex.owl.model.util.XSDVisibility;
+import edu.stanford.smi.protegex.owl.resource.OWLText;
 import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
 import edu.stanford.smi.protegex.owl.ui.actions.AbstractOWLModelAction;
 import edu.stanford.smi.protegex.owl.ui.actions.OWLModelAction;
@@ -260,31 +264,35 @@ public class OWLMenuProjectPlugin extends ProjectPluginAdapter {
 
     public void afterLoad(Project project) {
         KnowledgeBase kb = project.getKnowledgeBase();
-        if (!(kb instanceof OWLModel)) {
-            return;
-        }
-	
-        OWLModel owlModel = (OWLModel) kb;
-        makeHiddenClsesWithSubclassesVisible(owlModel);
-        project.setWidgetMapper(new OWLWidgetMapper(owlModel));
-        
-        // added TT:
-        OWLUI.fixBrowserSlotPatterns(project);
-        
-        fix(owlModel);
-        
-        if (project.getSources().getString(AbsoluteFormsGenerator.SAVE_FORMS_KEY) != null) {
-            try {
-                AbsoluteFormsLoader absoluteFormsLoader = new AbsoluteFormsLoader(owlModel);
-                absoluteFormsLoader.loadAll();
+        if (kb instanceof OWLModel) {
+            OWLModel owlModel = (OWLModel) kb;
+            owlModel.getNamespaceManager().update();
+            makeHiddenClsesWithSubclassesVisible(owlModel);
+            project.setWidgetMapper(new OWLWidgetMapper(owlModel));
+
+            //added TT:
+            OWLUI.fixBrowserSlotPatterns(project);
+
+            Integer build = owlModel.getOWLProject().getSettingsMap().getInteger(JenaKnowledgeBaseFactory.OWL_BUILD_PROPERTY);
+            if (build == null) {
+                fix(owlModel);
             }
-            catch (Exception ex) {
-                Log.getLogger().log(Level.SEVERE, "Exception caught at loading absolute forms", ex);
+            else if (build.intValue() < OWLText.getLatestCompatibleBuild()) {
+                fix(owlModel);
+            }
+            if (project.getSources().getString(AbsoluteFormsGenerator.SAVE_FORMS_KEY) != null) {
+                try {
+                    AbsoluteFormsLoader absoluteFormsLoader = new AbsoluteFormsLoader(owlModel);
+                    absoluteFormsLoader.loadAll();
+                }
+                catch (Exception ex) {
+                  Log.getLogger().log(Level.SEVERE, "Exception caught at loading absolute forms", ex);
+                }
             }
         }
     }
 
-    public void afterSave(Project p) {
+	public void afterSave(Project p) {
         if (p.getKnowledgeBase() instanceof OWLModel) {
             OWLModel owlModel = ((OWLModel) p.getKnowledgeBase());
             restoreWidgetsAfterSave(owlModel);
@@ -398,8 +406,7 @@ public class OWLMenuProjectPlugin extends ProjectPluginAdapter {
 
     private void fix(OWLModel owlModel) {
         if (!owlModel.getProject().isMultiUserClient()) {
-        	//TODO: TT - this must not be called
-            //OWLBackwardsCompatibilityProjectFixups.fix(owlModel);
+            OWLBackwardsCompatibilityProjectFixups.fix(owlModel);
             XSDVisibility.updateVisibility(owlModel);
         }
     }
@@ -458,7 +465,7 @@ public class OWLMenuProjectPlugin extends ProjectPluginAdapter {
     }
 
     private static void makeVisibleIfSubclassesExist(Cls cls, Set systemFrames) {
-        if (cls.getVisibleDirectSubclassCount() > 0 || isUsedInRange(cls, systemFrames)) {
+        if (cls.getDirectSubclassCount() > 0 || isUsedInRange(cls, systemFrames)) {
             cls.setVisible(true);
         }
     }

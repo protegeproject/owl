@@ -1,21 +1,12 @@
 package edu.stanford.smi.protegex.owl.storage;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import edu.stanford.smi.protege.model.Cls;
+import edu.stanford.smi.protege.model.Frame;
 import edu.stanford.smi.protege.model.Instance;
-import edu.stanford.smi.protege.util.Log;
-import edu.stanford.smi.protegex.owl.model.NamespaceManager;
-import edu.stanford.smi.protegex.owl.model.OWLModel;
-import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
-import edu.stanford.smi.protegex.owl.model.OWLNames;
-import edu.stanford.smi.protegex.owl.model.OWLOntology;
-import edu.stanford.smi.protegex.owl.model.OWLRestriction;
-import edu.stanford.smi.protegex.owl.model.RDFNames;
-import edu.stanford.smi.protegex.owl.model.impl.OWLUtil;
+import edu.stanford.smi.protege.model.Slot;
+import edu.stanford.smi.protegex.owl.model.*;
+
+import java.util.Iterator;
 
 /**
  * A KnowledgeBaseCopier that can be used to generate a Jena OntModel from an
@@ -26,7 +17,6 @@ import edu.stanford.smi.protegex.owl.model.impl.OWLUtil;
  * @author Holger Knublauch  <holger@knublauch.com>
  */
 public class OWL2OWLCopier extends KnowledgeBaseCopier {
-    public static final transient Logger log = Log.getLogger(OWL2OWLCopier.class);
 
     private OWLModel source;
 
@@ -37,32 +27,8 @@ public class OWL2OWLCopier extends KnowledgeBaseCopier {
         super(source, target);
         this.source = source;
         this.target = target;
-        
-        doneSlots.add(RDFNames.Slot.TYPE);
-        doneSlots.add(OWLNames.Slot.ONTOLOGY_PREFIXES);
-    }
-    
-    @Override
-    public void run() {
-        copyNamespaces();
-        super.run();
     }
 
-    private void copyNamespaces() {
-        OWLUtil.renameOntology(target, target.getDefaultOWLOntology(), source.getDefaultOWLOntology().getName());
-        NamespaceManager sourceNames = source.getNamespaceManager();
-        NamespaceManager targetNames = target.getNamespaceManager();
-        for (String prefix : new ArrayList<String>(targetNames.getPrefixes())) {
-            if (targetNames.isModifiable(prefix)) {
-                targetNames.removePrefix(prefix);
-            }
-        }
-        for (String prefix : sourceNames.getPrefixes()) {
-            if (targetNames.isModifiable(prefix)) {
-                targetNames.setPrefix(sourceNames.getNamespaceForPrefix(prefix), prefix);
-            }
-        }
-    }
 
     protected void createClses() {
         // Overloaded to make sure that named classes are created first
@@ -102,9 +68,33 @@ public class OWL2OWLCopier extends KnowledgeBaseCopier {
             OWLRestriction oldRestriction = (OWLRestriction) oldInstance;
             OWLRestriction newRestriction = (OWLRestriction) getNewInstance(oldRestriction);
             createFacetOverrides(oldRestriction);
-            if (log.isLoggable(Level.FINE)) {
-                log.fine("+ Initialized OWLRestriction " + newRestriction.getBrowserText());
+            log("+ Initialized OWLRestriction " + newRestriction.getBrowserText());
+        }
+    }
+
+
+    /**
+     * Overloaded to capture special handling of namespace prefixes: Currently they
+     * need to be changed through the NamespaceManager - setOwnSlotValues is not enough.
+     *
+     * @param newFrame
+     * @param oldInstance
+     * @param oldSlot
+     */
+    protected void setOwnSlotValues(Frame newFrame, Instance oldInstance, Slot oldSlot) {
+        if (newFrame instanceof OWLOntology &&
+                oldSlot.getName().equals(OWLNames.Slot.ONTOLOGY_PREFIXES) &&
+                newFrame.equals(target.getDefaultOWLOntology())) {
+            OWLOntology oi = (OWLOntology) newFrame;
+            for (Iterator it = source.getNamespaceManager().getPrefixes().iterator(); it.hasNext();) {
+                String prefix = (String) it.next();
+                String namespace = source.getNamespaceManager().getNamespaceForPrefix(prefix);
+                target.getNamespaceManager().setPrefix(namespace, prefix);
             }
+            target.getNamespaceManager().setDefaultNamespace(source.getNamespaceManager().getDefaultNamespace());
+        }
+        else {
+            super.setOwnSlotValues(newFrame, oldInstance, oldSlot);
         }
     }
 }

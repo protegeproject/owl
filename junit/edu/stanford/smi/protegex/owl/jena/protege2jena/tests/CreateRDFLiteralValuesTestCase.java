@@ -17,12 +17,12 @@ public class CreateRDFLiteralValuesTestCase extends AbstractProtege2JenaTestCase
 
     public void testRDFValueInRDFLiteral() throws Exception {
         loadTestOntology(new URI("http://www.daml.org/2004/04/swrl/swrl.owl"));
-        OWLNamedClass datavaluedPropertyAtomCls = (OWLNamedClass) owlModel.getOWLNamedClass("swrl:DatavaluedPropertyAtom");
+        OWLNamedClass datavaluedPropertyAtomCls = (OWLNamedClass) owlModel.getCls("swrl:DatavaluedPropertyAtom");
         assertNotNull(datavaluedPropertyAtomCls);
-        RDFProperty argument2Property = (RDFProperty) owlModel.getRDFProperty("swrl:argument2");
+        RDFProperty argument2Property = (RDFProperty) owlModel.getSlot("swrl:argument2");
         assertNotNull(argument2Property);
         RDFResource atom = (RDFResource) datavaluedPropertyAtomCls.createInstance("atom");
-        Cls literalCls = owlModel.getRDFSNamedClass(RDFSNames.Cls.LITERAL);
+        Cls literalCls = owlModel.getCls(RDFSNames.Cls.LITERAL);
         Instance literal = literalCls.createDirectInstance("myLiteral");
         Slot valueSlot = owlModel.getSlot(RDFNames.Slot.VALUE);
         final String value = "aldi";
@@ -34,9 +34,9 @@ public class CreateRDFLiteralValuesTestCase extends AbstractProtege2JenaTestCase
 
     public void testValuesOfImportedProperties() throws Exception {
         loadRemoteOntology("importSWRL.owl");
-        OWLNamedClass datavaluedPropertyAtomCls = (OWLNamedClass) owlModel.getOWLNamedClass("swrl:DatavaluedPropertyAtom");
+        OWLNamedClass datavaluedPropertyAtomCls = (OWLNamedClass) owlModel.getCls("swrl:DatavaluedPropertyAtom");
         assertNotNull(datavaluedPropertyAtomCls);
-        RDFProperty argument2RDFProperty = (RDFProperty) owlModel.getRDFProperty("swrl:argument2");
+        RDFProperty argument2RDFProperty = (RDFProperty) owlModel.getSlot("swrl:argument2");
         assertNotNull(argument2RDFProperty);
         RDFResource atom = (RDFResource) datavaluedPropertyAtomCls.createInstance("atom");
         atom.addPropertyValue(argument2RDFProperty, "aldi");

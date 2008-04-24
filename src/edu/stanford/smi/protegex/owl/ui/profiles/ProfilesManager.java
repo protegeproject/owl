@@ -61,6 +61,7 @@ public class ProfilesManager {
 
 
     public static void addAltEntryForOWLProfiles(OntModel ontModel) {
+        String applDir = ApplicationProperties.getApplicationDirectory().getAbsolutePath();
         String altEntry = new File(ProtegeOWL.getPluginFolder(),
                 "OWLProfiles.owl").toURI().toString();
         //String altEntry = "file:" + applDir + "/plugins/" + JenaLoader.ROOT_FOLDER +

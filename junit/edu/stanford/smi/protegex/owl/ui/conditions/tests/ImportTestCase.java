@@ -1,15 +1,9 @@
 package edu.stanford.smi.protegex.owl.ui.conditions.tests;
 
-import java.net.URI;
-
-import edu.stanford.smi.protegex.owl.model.OWLAllValuesFrom;
-import edu.stanford.smi.protegex.owl.model.OWLMaxCardinality;
-import edu.stanford.smi.protegex.owl.model.OWLMinCardinality;
-import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
-import edu.stanford.smi.protegex.owl.model.OWLObjectProperty;
-import edu.stanford.smi.protegex.owl.model.OWLSomeValuesFrom;
-import edu.stanford.smi.protegex.owl.model.RDFSClass;
+import edu.stanford.smi.protegex.owl.model.*;
 import edu.stanford.smi.protegex.owl.ui.conditions.ConditionsTableModel;
+
+import java.net.URI;
 
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
@@ -110,7 +104,7 @@ public class ImportTestCase extends AbstractConditionsTableTestCase {
         loadTestOntology(new URI(FILE));
         personCls = (OWLNamedClass) owlModel.getOWLNamedClass("imported:Person");
         parentCls = (OWLNamedClass) owlModel.getOWLNamedClass("imported:Parent");
-        hasChildrenProperty = (OWLObjectProperty) owlModel.getOWLObjectProperty("imported:hasChildren");
+        hasChildrenProperty = (OWLObjectProperty) owlModel.getSlot("imported:hasChildren");
         assertNotNull(personCls);
         assertNotNull(parentCls);
         assertNotNull(hasChildrenProperty);

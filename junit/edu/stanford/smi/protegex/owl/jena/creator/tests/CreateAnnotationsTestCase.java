@@ -28,6 +28,7 @@ public class CreateAnnotationsTestCase extends AbstractJenaCreatorTestCase {
         OWLAnonymousClass anonymousClass = owlModel.createOWLComplementClass(namedClass);
         namedClass.addSuperclass(anonymousClass);
         OWLProperty annotationOWLProperty = owlModel.getRDFSCommentProperty();
+        assertFalse(annotationOWLProperty.isDomainDefined());
         anonymousClass.setPropertyValue(annotationOWLProperty, "A");
         OntModel newModel = runJenaCreator();
         ComplementClass anonClass = (ComplementClass) newModel.listComplementClasses().next();

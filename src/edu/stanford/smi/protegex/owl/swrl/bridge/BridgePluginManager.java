@@ -11,38 +11,28 @@
  */
 package edu.stanford.smi.protegex.owl.swrl.bridge;
 
-import java.awt.Container;
-import java.awt.GridLayout;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.swing.Icon;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-
-import edu.stanford.smi.protege.event.ProjectAdapter;
-import edu.stanford.smi.protege.event.ProjectEvent;
-import edu.stanford.smi.protege.event.ProjectListener;
-import edu.stanford.smi.protege.model.Project;
-import edu.stanford.smi.protege.util.Log;
-import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.swrl.bridge.ui.SWRLPluginGUIAdapter;
 import edu.stanford.smi.protegex.owl.swrl.ui.tab.SWRLTab;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
+
+import edu.stanford.smi.protege.model.Project;
+import edu.stanford.smi.protege.event.*;
+
+import java.util.*;
+import java.util.logging.*;
+import javax.swing.*;
+import java.awt.GridLayout;
+import java.awt.BorderLayout;
+import java.awt.Container;
 
 public class BridgePluginManager
 {
-    private static transient final Logger log = Log.getLogger(BridgePluginManager.class);
-
   private static HashMap<String, PluginRegistration> registeredPlugins = new HashMap<String, PluginRegistration>();
   private static String visiblePluginName = "";
   private static String selectedRuleName = "";
   
   private static ProjectListener projectListener = new ProjectAdapter() 
   {
-    @Override
     public void projectClosed(ProjectEvent event) 
     { 
       Project project = (Project)event.getSource();
@@ -59,8 +49,7 @@ public class BridgePluginManager
       Class.forName("edu.stanford.smi.protegex.owl.swrl.bridge.jess.SWRLJessBridge");
       Class.forName("edu.stanford.smi.protegex.owl.swrl.bridge.jess.ui.SWRLJessTab");
     } catch (ClassNotFoundException e) {
-      log.log(Level.WARNING, "SWRLJessBridge load failed: could not find jess.Rete - or an error occured on initialization", e);
-      
+      System.err.println("SWRLJessBridge load failed: could not find jess.Rete - or an error occured on initialization");
     } // try
 
     try { // TODO:  Hack until we can do a proper class load with the manifest
@@ -87,7 +76,7 @@ public class BridgePluginManager
   {
     if (registeredPlugins.containsKey(pluginName)) registeredPlugins.remove(pluginName);
     registeredPlugins.put(pluginName, new PluginRegistration(pluginName, toolTip, icon, guiAdapter));
-    log.info("Plugin '" + pluginName + "' registered with the SWRLTab plugin manager.");
+    System.out.println("Plugin '" + pluginName + "' registered with the SWRLTab plugin manager.");
   } // registerPlugin
 
   public static void unregisterPlugin(String pluginName)
