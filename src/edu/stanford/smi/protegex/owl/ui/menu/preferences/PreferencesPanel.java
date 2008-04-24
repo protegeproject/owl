@@ -48,7 +48,6 @@ public class PreferencesPanel extends ValidatableTabComponent {
         addComponents(owlModel);
     }
 
-
     private void addComponents(OWLModel owlModel) {
 
         JPanel generalTab = createGeneralTab(owlModel);
@@ -62,6 +61,7 @@ public class PreferencesPanel extends ValidatableTabComponent {
         addTab("Visibility", visibilityPanel);
         addTab("Datatypes", datatypeSettingsPanel);
         addTab("Searching", new SearchSettingsPanel(owlModel));
+        addTab("Annotations", new AnnotationsViewSettingsPanel(owlModel));
         addTab("Encoding", encodingTab);
         addTab("Tabs", configureTabsPanel);
         addTab("Tests", testsPanel);
