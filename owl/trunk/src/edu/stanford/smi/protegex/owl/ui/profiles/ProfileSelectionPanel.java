@@ -179,24 +179,30 @@ public class ProfileSelectionPanel extends JPanel {
 
 
     private JComboBox createComboBox(final OWLModel owlModel) {
-        final OntClass[] items = new OntClass[DEFAULT_PROFILES.length];
+        final OntClass[] items = new OntClass[]{};
         for (int i = 0; i < items.length; i++) {
-            items[i] = defaultOntModel.getOntClass(DEFAULT_PROFILES[i]);
+        	OntClass profileCls = defaultOntModel.getOntClass(DEFAULT_PROFILES[i]);
+        	if (profileCls != null) {
+        		items[i] = profileCls ;  
+        	}
         }
 
         final JComboBox comboBox = new JComboBox(items);
 
         String predefinedURI = ProfilesManager.getPredefinedProfile(owlModel);
-        int i = 0;
-        while (!predefinedURI.equals(items[i].getURI())) {
-            i++;
-        }
-        comboBox.setSelectedIndex(i);
+        
+        for (int i = 0; i < items.length; i++) {
+			if (items[i] != null && predefinedURI.equals(items[i].getURI())) {
+				comboBox.setSelectedIndex(i);
+				break;
+			}
+		}
+                
 
         comboBox.setRenderer(new DefaultListCellRenderer() {
             public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
                 OntClass ontClass = (OntClass) value;
-                String label = ontClass.getLabel("");
+                String label = ontClass == null ? "" : ontClass.getLabel("");
                 return super.getListCellRendererComponent(list, label, index, isSelected, cellHasFocus);
             }
         });
