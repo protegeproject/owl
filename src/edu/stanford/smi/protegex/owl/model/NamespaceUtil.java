@@ -51,8 +51,12 @@ public class NamespaceUtil {
 		} else if (prefix.equals(OWLNamespaceManager.DEFAULT_NAMESPACE_PREFIX)) {
 			return localName;
 		} else {
-			return prefix + ":" + localName; 
-		}			
+			StringBuffer buffer = new StringBuffer();
+			buffer.append(prefix);
+			buffer.append(':');
+			buffer.append(localName);
+			return buffer.toString();
+		}
 	}
 	
 	public static String getFullName(OWLModel owlModel, String prefixedName) {
@@ -67,7 +71,11 @@ public class NamespaceUtil {
 				return prefixedName;
 			}
 			
-			return defaultNamespace + prefixedName;	
+			StringBuffer buffer = new StringBuffer();
+			buffer.append(defaultNamespace);
+			buffer.append(prefixedName);
+			
+			return buffer.toString();	
 		}
 						
 		if (ind == 0) {//e.g. ":protege" - what to do in this case?
@@ -84,7 +92,11 @@ public class NamespaceUtil {
 			return null;
 		}
 		
-		return namespace + localName;
+		StringBuffer buffer = new StringBuffer();
+		buffer.append(namespace);
+		buffer.append(localName);
+		
+		return buffer.toString();	
 				
 	}
 	
