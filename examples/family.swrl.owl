@@ -16,8 +16,8 @@
     xmlns:dc="http://purl.org/dc/elements/1.1/"
   xml:base="http://a.com/ontology">
   <owl:Ontology rdf:about="">
-    <owl:imports rdf:resource="http://www.daml.org/rules/proposal/swrlb.owl"/>
-    <owl:imports rdf:resource="http://www.daml.org/rules/proposal/swrl.owl"/>
+    <owl:imports rdf:resource="http://www.w3.org/2003/11/swrlb"/>
+    <owl:imports rdf:resource="http://www.w3.org/2003/11/swrl"/>
   </owl:Ontology>
   <owl:Class rdf:ID="Gender">
     <owl:equivalentClass>
