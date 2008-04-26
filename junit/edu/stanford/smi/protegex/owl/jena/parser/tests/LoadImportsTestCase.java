@@ -2,7 +2,6 @@ package edu.stanford.smi.protegex.owl.jena.parser.tests;
 
 import java.net.URI;
 import java.util.Collection;
-import java.util.Iterator;
 
 import edu.stanford.smi.protegex.owl.model.OWLEnumeratedClass;
 import edu.stanford.smi.protegex.owl.model.OWLIndividual;
@@ -34,16 +33,15 @@ public class LoadImportsTestCase extends AbstractJenaTestCase {
         assertTrue(quokkaClass.isIncluded());
         Collection allOntologies = owlModel.getCls(OWLNames.Cls.ONTOLOGY).getDirectInstances();
         Collection imported = owlModel.getDefaultOWLOntology().getImports();
-        assertSize(3, allOntologies);
+        assertSize(2, allOntologies);
         assertContains(owlModel.getDefaultOWLOntology(), allOntologies);
         assertContains(owlModel.getOWLOntologyByURI(koalaURI), allOntologies);
-        assertContains(owlModel.getOWLOntologyByURI(brokenURI), allOntologies);
         
         assertSize(1, imported);
         assertContains(brokenURI.toString(), imported);
         
         assertSize(3, owlModel.getTripleStoreModel().getTripleStores());
-        assertNotNull(owlModel.getTripleStoreModel().getTripleStore(brokenURI.toString()));
+        assertNotNull(owlModel.getTripleStoreModel().getTripleStore(koalaURI.toString()));
         
         assertEquals(owlModel.getNamespaceManager().getNamespaceForPrefix("koala"), 
                      koalaURI.toString() + "#");
