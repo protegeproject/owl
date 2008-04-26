@@ -49,7 +49,7 @@ public class CreateOntologiesTestCase extends AbstractProtege2JenaTestCase {
         OWLUtil.renameOntology(owlModel, owlModel.getDefaultOWLOntology(), namespace);
         owlModel = reload(owlModel);
         OntModel newModel = createOntModel();
-        assertSize(3, newModel.listOntologies());
+        assertSize(2, newModel.listOntologies());
         Ontology ontology = (Ontology) newModel.getOntology(namespace);
         assertEquals(namespace, ontology.getURI());
         assertSize(1, ontology.listImports());                                                           // the ontology import is broken but
