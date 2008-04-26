@@ -2,8 +2,11 @@ package edu.stanford.smi.protegex.owl.jena.parser;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
+import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -19,9 +22,11 @@ import edu.stanford.smi.protegex.owl.model.OWLIntersectionClass;
 import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
 import edu.stanford.smi.protegex.owl.model.ProtegeNames;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
+import edu.stanford.smi.protegex.owl.model.RDFResource;
 import edu.stanford.smi.protegex.owl.model.RDFSClass;
 import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
 import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
+import edu.stanford.smi.protegex.owl.model.impl.OWLSystemFrames;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreModel;
 
@@ -56,6 +61,7 @@ class TriplePostProcessor extends AbstractStatefulTripleProcessor {
 		processDomainAndRange();
 		
 		processPossiblyTypedResources();
+		processProtegeOWLImport();
 	}
 	
 	
@@ -430,6 +436,38 @@ class TriplePostProcessor extends AbstractStatefulTripleProcessor {
 				untypedEntity.removeDirectType(untypedCls); //it will also swizzle
 			}			
 		}
+	}
+	
+	private Map<RDFResource, RDFSNamedClass> protegeSystemTypeMap = new HashMap<RDFResource, RDFSNamedClass>();
+	{
+	    OWLSystemFrames systemFrames = owlModel.getSystemFrames();
+	    protegeSystemTypeMap.put(systemFrames.getDirectedBinaryRelationCls(), systemFrames.getOwlNamedClassClass());
+	    protegeSystemTypeMap.put(systemFrames.getPalConstraintCls(), systemFrames.getOwlNamedClassClass());
+	    protegeSystemTypeMap.put(systemFrames.getFromSlot(), systemFrames.getOwlObjectPropertyClass());
+	    protegeSystemTypeMap.put(systemFrames.getToSlot(), systemFrames.getOwlObjectPropertyClass());
+	    protegeSystemTypeMap.put(systemFrames.getSlotConstraintsSlot(), systemFrames.getOwlObjectPropertyClass());
+	    protegeSystemTypeMap.put(systemFrames.getPalStatementSlot(), systemFrames.getOwlDatatypePropertyClass());
+	    protegeSystemTypeMap.put(systemFrames.getPalDescriptionSlot(), systemFrames.getOwlDatatypePropertyClass());
+	    protegeSystemTypeMap.put(systemFrames.getPalNameSlot(), systemFrames.getOwlDatatypePropertyClass());
+	    protegeSystemTypeMap.put(systemFrames.getPalRangeSlot(), systemFrames.getOwlDatatypePropertyClass());
+	}
+	private void processProtegeOWLImport() {
+	    TripleStoreModel tripleStoreModel = owlModel.getTripleStoreModel();
+	    TripleStore protegeOwlTripleStore = tripleStoreModel.getTripleStore(ProtegeNames.PROTEGE_OWL_ONTOLOGY);
+	    if (protegeOwlTripleStore == null) {
+	        return;
+	    }
+	    OWLSystemFrames systemFrames = owlModel.getSystemFrames();
+	    for (Entry<RDFResource, RDFSNamedClass> entry : protegeSystemTypeMap.entrySet()) {
+	        RDFResource protegeSysFrame = entry.getKey();
+	        RDFSNamedClass type = entry.getValue();
+	        // these assertions are lost from the protege owl triple store because we avoid adding duplicate types.
+	        FrameCreatorUtility.addInstanceType(protegeSysFrame, type, protegeOwlTripleStore);
+	        FrameCreatorUtility.addOwnSlotValue(protegeSysFrame, systemFrames.getRdfTypeProperty(), type, protegeOwlTripleStore);
+	        FrameCreatorUtility.addOwnSlotValue(protegeSysFrame, systemFrames.getNameSlot(), protegeSysFrame.getName(), protegeOwlTripleStore);
+	    }
+	    // now we have duplicate information (type, domain, range) contained in both the system frames
+	    // and the protege owl triple store but maybe nobody will notice.
 	}
 	
 }
