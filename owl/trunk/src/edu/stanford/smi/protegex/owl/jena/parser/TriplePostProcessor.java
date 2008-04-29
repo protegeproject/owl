@@ -7,6 +7,9 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.Formatter;
+import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -16,6 +19,7 @@ import edu.stanford.smi.protege.model.Instance;
 import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protege.model.framestore.NarrowFrameStore;
 import edu.stanford.smi.protege.util.ApplicationProperties;
+import edu.stanford.smi.protege.util.ConsoleFormatter;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.model.NamespaceManager;
 import edu.stanford.smi.protegex.owl.model.OWLIntersectionClass;
@@ -32,9 +36,36 @@ import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreModel;
 
 class TriplePostProcessor extends AbstractStatefulTripleProcessor {
 	private static final transient Logger log = Log.getLogger(TriplePostProcessor.class);
+	static {
+		try {
+			initLogger();			
+		} catch (Throwable t) {		
+			System.err.println("Could not initialize logger for TriplePostProcessor");
+		}
+	}
+	
+	static void initLogger() {
+		Log.makeInheritedLoggersLocal(log);
+		
+		Handler[] handlers = log.getHandlers();
+		
+		for (int i = 0; i < handlers.length; i++) {
+			Handler handler = handlers[i]; 
+			if (handler.getFormatter() instanceof ConsoleFormatter) {
+				//replace the existing console handler
+				log.removeHandler(handler);
+				
+				ConsoleHandler consoleHandler = new ConsoleHandler();
+				Formatter consoleFormatter = new TriplePostProcessorLogFormatter();				
+				consoleHandler.setFormatter(consoleFormatter);
+				log.addHandler(consoleHandler);
+			}
+		}
+	}
 	
 	public TriplePostProcessor(TripleProcessor processor) {
 		super(processor);
+		
 	}
 	
 	public void doPostProcessing() {
@@ -73,8 +104,7 @@ class TriplePostProcessor extends AbstractStatefulTripleProcessor {
 	@SuppressWarnings("deprecation")
 	public void processMetaclasses() {		
 		RDFSNamedClass rdfsClass = owlModel.getRDFSNamedClassClass();
-		RDFSNamedClass rdfPropClass = owlModel.getRDFPropertyClass();
-		
+		RDFSNamedClass rdfPropClass = owlModel.getRDFPropertyClass();		
 		log.info("Postprocess: Process metaclasses (" + rdfsClass.getSubclassCount() +
 				rdfPropClass.getSubclassCount() + " classes) ... ");
 		long time0 = System.currentTimeMillis();
@@ -82,7 +112,7 @@ class TriplePostProcessor extends AbstractStatefulTripleProcessor {
 		processMetaclasses(rdfsClass);
 		processMetaclasses(rdfPropClass);
 		
-		log.info("(" + (System.currentTimeMillis() - time0) + " ms)");
+		log.info((System.currentTimeMillis() - time0) + " ms\n");		
 	}
 	
 	
@@ -119,7 +149,7 @@ class TriplePostProcessor extends AbstractStatefulTripleProcessor {
 			}
 		}
 		
-		log.info("(" + (System.currentTimeMillis() - time0) + " ms)");
+		log.info((System.currentTimeMillis() - time0) + " ms\n");
 	}
 	
 	
@@ -136,7 +166,7 @@ class TriplePostProcessor extends AbstractStatefulTripleProcessor {
 		for (Iterator<Frame> iter = classes.iterator(); iter.hasNext();) {
 			Frame frame = (Frame) iter.next();
 			if (log.isLoggable(Level.FINE)) {
-				log.fine("processClsesWithoutSupercls: No declared supercls: " + frame);
+				log.fine("processClsesWithoutSupercls: No declared supercls: " + frame + "\n");
 			}
 
 			if (frame instanceof RDFSClass) {
@@ -145,7 +175,7 @@ class TriplePostProcessor extends AbstractStatefulTripleProcessor {
 				FrameCreatorUtility.createSubclassOf((RDFSClass)frame, owlModel.getOWLThingClass(),homeTs);
 				superClsCache.removeFrame(frame);
 			} else {
-				log.warning("Wrong java type for " + frame + " Expected: RDFSClass");
+				log.warning("Wrong java type for " + frame + " Expected: RDFSClass\n");
 			}
 		}	
 
@@ -153,12 +183,12 @@ class TriplePostProcessor extends AbstractStatefulTripleProcessor {
 		
 		if (classes.size() > 0) {
 			//This should not be the case
-			log.warning("There are classes without explicit superclass: " + classes);
+			log.warning("There are classes without explicit superclass: " + classes + "\n");
 		}
 		
 		//superClsCache.clearCache();
 
-		log.info("(" + (System.currentTimeMillis() - time0) + " ms)");
+		log.info((System.currentTimeMillis() - time0) + " ms\n");
 	}
 
 
@@ -194,7 +224,7 @@ class TriplePostProcessor extends AbstractStatefulTripleProcessor {
 				}
 
 			} catch (Exception e) {
-				Log.getLogger().log(Level.WARNING, " Error at post processing " + obj, e);
+				Log.getLogger().log(Level.WARNING, " Error at post processing " + obj + "\n", e);
 			}			
 		}
 		
@@ -212,16 +242,16 @@ class TriplePostProcessor extends AbstractStatefulTripleProcessor {
 						iterator.remove();					
 					}
 				} catch(Exception e) {
-					Log.getLogger().log(Level.WARNING, " Error at post processing (adding owl:Thing as parent): " + cls, e);
+					Log.getLogger().log(Level.WARNING, " Error at post processing (adding owl:Thing as parent): " + cls + "\n", e);
 				}
 			} else {
 				if (log.isLoggable(Level.FINE)) {
-					log.fine("Class without parent: " + cls);
+					log.fine("Class without parent: " + cls + "\n");
 				}
 			}			
 		}
 
-		log.info("(" + (System.currentTimeMillis() - time0) + " ms)");		
+		log.info((System.currentTimeMillis() - time0) + " ms\n");		
 	}
 
 
@@ -261,10 +291,10 @@ class TriplePostProcessor extends AbstractStatefulTripleProcessor {
 			Set<Cls> typesSet = multipleTypesInstanceCache.getTypesForInstanceAsSet(instance);
 			adjustTypesOfInstance(instance, typesSet);
 			if (log.isLoggable(Level.FINE)) {
-				log.fine("process instance with multiple types" + instance + ": " + typesSet);
+				log.fine("process instance with multiple types" + instance + ": " + typesSet + "\n");
 			}
 		}
-		log.info("(" + (System.currentTimeMillis() - time0) + " ms)");
+		log.info((System.currentTimeMillis() - time0) + " ms\n");
 	}
 
 	private void adjustTypesOfInstance(Instance instance, Set<Cls> typesSet) {
@@ -292,14 +322,11 @@ class TriplePostProcessor extends AbstractStatefulTripleProcessor {
 					ParserUtil.getSimpleFrameStore(owlModel).swizzleInstance(instance);
 				}
 				else {
-					log.warning("Could not find home triple store of type triple for " + instance);
+					log.warning("Could not find home triple store of type triple for " + instance + "\n");
 				}
 			} finally {
 				tsm.setActiveTripleStore(initialActiveTs);
-			}
-			
-			
-			
+			}			
 		}
 	}
 
@@ -369,7 +396,7 @@ class TriplePostProcessor extends AbstractStatefulTripleProcessor {
 			}
 		}
 		
-		log.info("(" + (System.currentTimeMillis() - time0) + " ms)");
+		log.info((System.currentTimeMillis() - time0) + " ms\n");
 	}
 
 
@@ -404,7 +431,7 @@ class TriplePostProcessor extends AbstractStatefulTripleProcessor {
 				}		
 			}			
 		}
-		log.info("(" + (System.currentTimeMillis() - time0) + " ms)");
+		log.info((System.currentTimeMillis() - time0) + " ms\n");
 	}
 	
 	
@@ -425,7 +452,7 @@ class TriplePostProcessor extends AbstractStatefulTripleProcessor {
 		processPossiblyTypedResources(untypedProp);
 		processPossiblyTypedResources(untypedRes);
 		
-		log.info("(" + (System.currentTimeMillis() - time0) + " ms)");
+		log.info((System.currentTimeMillis() - time0) + " ms\n");
 	}
 	
 	private void processPossiblyTypedResources(Cls untypedCls) {
