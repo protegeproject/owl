@@ -78,7 +78,8 @@ public class HTTPRepository extends AbstractStreamBasedRepositoryImpl {
             System.setErr(oldErr);
         }
         catch (IOException e) {
-          Log.getLogger().log(Level.SEVERE, "Exception caught", e);
+        	Log.getLogger().warning("Could not get ontology from URL: " + ontologyURL);       	
+
         }
     }
 
