@@ -57,8 +57,6 @@ public class ProtegeOWLParser {
 
 	private static URI errorOntologyURI;
 
-	private ProtegeOWLParserLogger logger;
-
 	private OWLModel owlModel;
 
 	private int tripleCount;
@@ -71,8 +69,7 @@ public class ProtegeOWLParser {
 		errorOntologyURI = null;
 		errors = new ArrayList();
 		
-		this.owlModel = owlModel;
-		logger = createLogger();
+		this.owlModel = owlModel;		
 	}
 
 
@@ -230,9 +227,9 @@ public class ProtegeOWLParser {
 	    
 	    boolean eventsEnabled = owlModel.setGenerateEventsEnabled(false);
 	    try {
-	        tripleProcessor = ((AbstractOWLModel) owlModel).getUndefTripleManager().getTripleProcessor();
+	        tripleProcessor = ((AbstractOWLModel) owlModel).getGlobalParserCache().getTripleProcessor();
 
-	        Log.getLogger().info("Loading triples");
+	        Log.getLogger().info("Loading triples from: " + ontologyName);
 
 	        ARP arp = createARP(tripleStore);
 
@@ -250,8 +247,8 @@ public class ProtegeOWLParser {
 
 	        long endTime = System.currentTimeMillis();
 
-	        Log.getLogger().info("[ProtegeOWLParser] Completed triple loading after " + (endTime - startTime) + " ms");	 
-	        tripleProcessor.getUndefTripleManager().dumpUndefTriples(Level.FINE);	
+	        Log.getLogger().info("    Completed triple loading after " + (endTime - startTime) + " ms");	 
+	        tripleProcessor.getGlobalParserCache().dumpUndefTriples(Level.FINE);	
 	        //tripleProcessor.processUndefTriples();
 	        if (log.isLoggable(Level.FINE)) {
 	            log.fine("Start processing imports ...");
@@ -304,7 +301,7 @@ public class ProtegeOWLParser {
 	
 	
 	public static void doFinalPostProcessing(OWLModel owlModel) {
-	    TripleProcessor tripleProcessor = ((AbstractOWLModel) owlModel).getUndefTripleManager().getTripleProcessor();
+	    TripleProcessor tripleProcessor = ((AbstractOWLModel) owlModel).getGlobalParserCache().getTripleProcessor();
 		tripleProcessor.doPostProcessing();
        
         //copy restrictions in facets
@@ -346,18 +343,6 @@ public class ProtegeOWLParser {
 
 	public static Collection getErrors() {
 		return errors;
-	}
-	
-	protected ProtegeOWLParserLogger createLogger() {
-		return new DefaultProtegeOWLParserLogger();
-	}
-
-	protected ProtegeOWLParserLogger getLogger() {
-		return logger;
-	}
-
-	public void setLogger(ProtegeOWLParserLogger logger) {
-		this.logger = logger;
 	}
 	
 	public static InputStream getInputStream(URL url) throws IOException {
@@ -434,7 +419,7 @@ public class ProtegeOWLParser {
                     }
                     tripleCount++;
                     if(tripleCount % 5000 == 0) {			
-                        Log.getLogger().info("Loaded " + tripleCount + " triples");
+                        Log.getLogger().info("    Loaded " + tripleCount + " triples");
                     }
 			
                     tripleProcessor.processTriple(subj, pred, obj, tripleStore, false);			
@@ -448,7 +433,7 @@ public class ProtegeOWLParser {
 			
                     tripleCount++;
                     if(tripleCount % 5000 == 0) {			
-                        Log.getLogger().info("Loaded " + tripleCount + " triples");
+                        Log.getLogger().info("    Loaded " + tripleCount + " triples");
                     }
 			
                     tripleProcessor.processTriple(subj, pred, lit, tripleStore, false);			
