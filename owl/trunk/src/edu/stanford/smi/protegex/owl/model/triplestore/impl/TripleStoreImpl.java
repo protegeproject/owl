@@ -345,7 +345,9 @@ public class TripleStoreImpl implements TripleStore {
 
     public void setName(String value) {
         name = value;
-        getNarrowFrameStore().setName(value);
+        if (name != null) {
+            getNarrowFrameStore().setName(value);
+        }
     }
 
 
