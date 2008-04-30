@@ -15,6 +15,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
 
 import edu.stanford.smi.protege.model.Project;
 import edu.stanford.smi.protege.plugin.PluginUtilities;
@@ -212,8 +213,10 @@ public class RepositoryFileManager {
 			}			
 			fis.close();
 		} catch (IOException e) {
-			Log.getLogger().warning("[Repository Manager] Could not find repository file: "
+			if (Log.getLogger().getLevel() == Level.FINE) {
+				Log.getLogger().fine("[Repository Manager] Could not find repository file: "
 							+ uri.toString());
+			}
 		}
 	}
     
