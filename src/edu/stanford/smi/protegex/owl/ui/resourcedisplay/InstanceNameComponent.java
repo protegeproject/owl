@@ -2,17 +2,14 @@ package edu.stanford.smi.protegex.owl.ui.resourcedisplay;
 
 import java.util.Iterator;
 
-import javax.swing.JLabel;
+import javax.swing.BoxLayout;
 import javax.swing.JPanel;
-import javax.swing.SpringLayout;
 
 import edu.stanford.smi.protege.event.FrameAdapter;
 import edu.stanford.smi.protege.event.FrameEvent;
 import edu.stanford.smi.protege.event.FrameListener;
 import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.Instance;
-import edu.stanford.smi.protege.ui.SpringUtilities;
-import edu.stanford.smi.protege.util.ComponentFactory;
 import edu.stanford.smi.protege.util.Disposable;
 
 /**
@@ -30,27 +27,14 @@ public class InstanceNameComponent extends JPanel implements Disposable {
     };
 
     private Instance instance;
-
-    private JLabel leftLabel;
-
-    private JLabel rightLabel;
-
     private InstanceNameEditor textField;
 
 
     public InstanceNameComponent() {
-        leftLabel = ComponentFactory.createLabel();
-        rightLabel = ComponentFactory.createLabel();
         textField = new InstanceNameEditor();
-        
-        SpringLayout layout = new SpringLayout();
-        setLayout(layout);
-
-        add(leftLabel);
+   
+        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         add(textField);
-        add(rightLabel);
-        
-        SpringUtilities.makeCompactGrid(this, 1, 3, 0, 0, 5,0);
     }
 
 
@@ -98,24 +82,9 @@ public class InstanceNameComponent extends JPanel implements Disposable {
 
     private void updateAll() {
         if (instance != null) {
-            leftLabel.setIcon(instance.getIcon());
-            String browserText = instance.getBrowserText();
-            String name = instance.getName();
-            if (name.equals(browserText)) {
-                leftLabel.setText("");
-            }
-            else {
-                leftLabel.setText(browserText + " -   Internal name:");
-            }
-            textField.setText(name);
-            String typeText = getTypeText(instance);
-            rightLabel.setText("  (instance of " + typeText + ")  ");
-            setEditable(instance.isEditable());
+            textField.setText(instance.getName());
         }
         else {
-            leftLabel.setIcon(null);
-            leftLabel.setText("");
-            rightLabel.setText("");
             textField.setText("");
             setEditable(false);
         }
