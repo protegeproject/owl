@@ -41,11 +41,13 @@ public abstract class AbstractOwlDatabaseCreator extends AbstractOwlProjectCreat
         super(factory);
     }
 
-    @Override
+    @SuppressWarnings("unchecked")
+	@Override
     public Project create(Collection errors) throws IOException {
         Project project = Project.createBuildProject(factory, errors);
         initializeSources(project.getSources());
         project.createDomainKnowledgeBase(factory, errors, true);
+        insertRepositoriesIntoOwlModel((OWLModel) project.getKnowledgeBase());
         return project;
     }
     
