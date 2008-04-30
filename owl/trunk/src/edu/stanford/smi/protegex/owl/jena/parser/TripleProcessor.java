@@ -12,18 +12,16 @@ import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 
 // - verify - not hard --
 //TODO: Load Birnlex -> class cast (rdf:List) OWLJavaFactory doesn't do the right thing
-//TODO: When to do post processing?
 //TODO: Check Jena writer - it writes out frames classes (:PAL-CONSTRAINT)
 
 //TODO: Each post process in a try catch
 //TODO: Check if the untyped types are written out
 //TODO: Add owl:Thing also for untyped classes
-//TODO: Use StringBuffer in place of String for all namespace methods
+
 
 //-- later --
 //TODO: Postprocessing GCI - refactor in their own class
 //TODO: Process each triple in a try catch
-//TODO: Timing logger for the parser
 
 
 public class TripleProcessor {
@@ -35,13 +33,13 @@ public class TripleProcessor {
 	private TripleProcessorForUntypedResources untypedProcessor;
 	private TriplePostProcessor postProcessor;
 	
-	private UndefTripleManager undefTripleManager;
+	private GlobalParserCache globalParserCache;
 
 
 	public TripleProcessor(OWLModel owlModel) {
 		this.owlModel = owlModel;
 
-		this.undefTripleManager = ((AbstractOWLModel)owlModel).getUndefTripleManager();
+		this.globalParserCache = ((AbstractOWLModel)owlModel).getGlobalParserCache();
 		
 		//should come as the last in the initialization
 		this.processorResourceObjs = new TripleProcessorForResourceObjects(this);
@@ -66,12 +64,12 @@ public class TripleProcessor {
 	
 	public void addUndefTriple(AResource subj, AResource pred, AResource obj, String undefName, boolean alreadyInUndef, TripleStore ts) {
 		if (!alreadyInUndef) {		  
-			undefTripleManager.addUndefTriple(new UndefTriple(subj, pred, obj, undefName, ts));
+			globalParserCache.addUndefTriple(new UndefTriple(subj, pred, obj, undefName, ts));
 		}
 	}
 	
 	protected void checkUndefinedResources(String uri) {		
-		Collection<UndefTriple> undefTriples = undefTripleManager.getUndefTriples(uri); 
+		Collection<UndefTriple> undefTriples = globalParserCache.getUndefTriples(uri); 
 
 		for (Iterator<UndefTriple> iter = undefTriples.iterator(); iter.hasNext();) {
 			UndefTriple undefTriple = (UndefTriple) iter.next();
@@ -89,16 +87,15 @@ public class TripleProcessor {
 
 			if (success) {			
 				iter.remove();
-				undefTripleManager.removeUndefTriple(uri, undefTriple);
+				globalParserCache.removeUndefTriple(uri, undefTriple);
 			}
 		}
 	}
 	
 
-	public UndefTripleManager getUndefTripleManager() {
-		return undefTripleManager;
+	public GlobalParserCache getGlobalParserCache() {
+		return globalParserCache;
 	}	
-
 	
 
 	public void doPostProcessing() {
@@ -113,7 +110,6 @@ public class TripleProcessor {
 	
 	public void createUntypedResources() {
 		untypedProcessor.createUntypedResources();
-	}
-	
+	}	
 
 }
