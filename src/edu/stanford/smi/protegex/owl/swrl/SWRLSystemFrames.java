@@ -1,12 +1,14 @@
 package edu.stanford.smi.protegex.owl.swrl;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.FrameID;
+import edu.stanford.smi.protege.model.ValueType;
 import edu.stanford.smi.protege.model.framestore.FrameStore;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.model.OWLDatatypeProperty;
@@ -26,11 +28,14 @@ public class SWRLSystemFrames extends OWLSystemFrames {
     private OWLNamedClass atomListCls, builtinAtomCls, classAtomCls, dataRangeAtomCls, 
                           dataValuedPropertyAtomCls, differentIndividualsAtomCls, impCls, 
                           individualPropertyAtomCls, sameIndividualAtomCls,
-                          atomCls, variableCls, builtInCls;
+                          atomCls, variableCls, builtInCls,
+                          ruleGroupCls;
     private OWLObjectProperty bodyProperty, headProperty, argumentsProperty, builtInProperty, 
                               argument1Property, classPredicateProperty, 
-                              propertyPredicateProperty, dataRangeProperty;
-    private OWLDatatypeProperty argsProperty, minArgsProperty, maxArgsProperty; 
+                              propertyPredicateProperty, dataRangeProperty,
+                              hasRuleGroupProperty;
+    private OWLDatatypeProperty argsProperty, minArgsProperty, maxArgsProperty,
+                                isRuleEnabledProperty, isRuleGroupEnabledProperty; 
     
     private RDFProperty argument2Property;
     
@@ -64,7 +69,9 @@ public class SWRLSystemFrames extends OWLSystemFrames {
         dataValuedPropertyAtomCls = createOWLNamedClass(SWRLNames.Cls.DATAVALUED_PROPERTY_ATOM);
         differentIndividualsAtomCls = createOWLNamedClass(SWRLNames.Cls.DIFFERENT_INDIVIDUALS_ATOM);
         individualPropertyAtomCls = createOWLNamedClass(SWRLNames.Cls.INDIVIDUAL_PROPERTY_ATOM);
-        sameIndividualAtomCls =createOWLNamedClass(SWRLNames.Cls.SAME_INDIVIDUAL_ATOM);
+        sameIndividualAtomCls =createOWLNamedClass(SWRLNames.Cls.SAME_INDIVIDUAL_ATOM);    
+        
+        ruleGroupCls = createOWLNamedClass(SWRLNames.Annotations.RULE_GROUP);
     }
     
     private void createSWRLObjectProperties() {
@@ -77,12 +84,17 @@ public class SWRLSystemFrames extends OWLSystemFrames {
         classPredicateProperty = createOWLObjectProperty(SWRLNames.Slot.CLASS_PREDICATE);
         propertyPredicateProperty = createOWLObjectProperty(SWRLNames.Slot.PROPERTY_PREDICATE);
         dataRangeProperty = createOWLObjectProperty(SWRLNames.Slot.DATA_RANGE);
+        
+        hasRuleGroupProperty = createOWLObjectProperty(SWRLNames.Annotations.HAS_RULE_GROUP);
     }
     
     private void createSWRLDatatypeProperties() {
         argsProperty = createOWLDatatypeProperty(SWRLNames.Slot.ARGS);
         minArgsProperty = createOWLDatatypeProperty(SWRLNames.Slot.MIN_ARGS);
         maxArgsProperty = createOWLDatatypeProperty(SWRLNames.Slot.MAX_ARGS);
+        
+        isRuleEnabledProperty = createOWLDatatypeProperty(SWRLNames.Annotations.IS_RULE_ENABLED);
+        isRuleGroupEnabledProperty = createOWLDatatypeProperty(SWRLNames.Annotations.IS_RULE_GROUP_ENABLED);
     }
     
     private void createSWRLBuiltIns() {
@@ -197,6 +209,9 @@ public class SWRLSystemFrames extends OWLSystemFrames {
             fs.addDirectSuperclass(atomListCls, getRdfListClass());
             assertTypeAndSubclasses(atomListCls, getOwlNamedClassClass(), new Cls[] {});
             
+            fs.addDirectSuperclass(ruleGroupCls, getRootCls());
+            assertTypeAndSubclasses(ruleGroupCls,getOwlNamedClassClass(), new Cls[] {});
+            
             fs.addDirectSuperclass(atomCls, getRootCls());
             assertTypeAndSubclasses(atomCls, getOwlNamedClassClass(), new Cls[] {
                 assertTypeAndSubclasses(classAtomCls, getOwlNamedClassClass(), new Cls[] {}),
@@ -245,6 +260,21 @@ public class SWRLSystemFrames extends OWLSystemFrames {
             
             assertTypeAndName(argument2Property, getRdfPropertyClass());
             assertDomain(argument2Property);
+            
+            assertTypeAndName(hasRuleGroupProperty, getOwlObjectPropertyClass());
+            assertDomain(hasRuleGroupProperty, impCls);
+            assertRange(hasRuleGroupProperty, ruleGroupCls);
+            
+            assertTypeAndName(isRuleEnabledProperty, functionalDatatypePropertyTypes);
+            assertDomain(isRuleEnabledProperty, impCls);
+            assertValueType(isRuleEnabledProperty, ValueType.BOOLEAN);
+            fs.setDirectOwnSlotValues(isRuleEnabledProperty, getRdfsRangeProperty(), Collections.singleton(getXsdBoolean()));
+            
+            assertTypeAndName(isRuleGroupEnabledProperty, functionalDatatypePropertyTypes);
+            assertDomain(isRuleGroupEnabledProperty, ruleGroupCls);
+            assertValueType(isRuleGroupEnabledProperty, ValueType.BOOLEAN);
+            fs.setDirectOwnSlotValues(isRuleGroupEnabledProperty, getRdfsRangeProperty(), Collections.singleton(getXsdBoolean()));
+
         }
         
         public void addBuiltInTypes() {
@@ -433,8 +463,21 @@ public class SWRLSystemFrames extends OWLSystemFrames {
     public RDFProperty getArgument2Property() {
         return argument2Property;
     }
-    
-    
-    
+
+    public OWLNamedClass getRuleGroupCls() {
+        return ruleGroupCls;
+    }
+
+    public OWLObjectProperty getHasRuleGroupProperty() {
+        return hasRuleGroupProperty;
+    }
+
+    public OWLDatatypeProperty getIsRuleEnabledProperty() {
+        return isRuleEnabledProperty;
+    }
+
+    public OWLDatatypeProperty getIsRuleGroupEnabledProperty() {
+        return isRuleGroupEnabledProperty;
+    }
 
 }
