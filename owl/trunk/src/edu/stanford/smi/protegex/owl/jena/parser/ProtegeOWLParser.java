@@ -124,7 +124,7 @@ public class ProtegeOWLParser {
 	}
 
 
-	private void setErrorLevel(ARP arp) {
+	public void setErrorLevel(ARP arp) {
 		String errorLevel = ApplicationProperties.getApplicationOrSystemProperty(ProtegeOWLParser.JENA_ERROR_LEVEL_PROPERTY, "lax");
 
 		if (errorLevel.equalsIgnoreCase("default")) {
