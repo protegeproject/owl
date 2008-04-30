@@ -38,7 +38,7 @@ import edu.stanford.smi.protege.util.CollectionUtilities;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protege.util.URIUtilities;
 import edu.stanford.smi.protegex.owl.jena.graph.JenaModelFactory;
-import edu.stanford.smi.protegex.owl.jena.parser.UndefTripleManager;
+import edu.stanford.smi.protegex.owl.jena.parser.GlobalParserCache;
 import edu.stanford.smi.protegex.owl.jena.parser.UnresolvedImportHandler;
 import edu.stanford.smi.protegex.owl.model.DefaultTaskManager;
 import edu.stanford.smi.protegex.owl.model.NamespaceManager;
@@ -206,7 +206,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
     private TaskManager taskManager;
     
-    private UndefTripleManager undefTripleManager;
+    private GlobalParserCache globalParserCache;
 
     private RepositoryManager repositoryManager;
 
@@ -352,8 +352,9 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
             }
         }
         TripleStore activeTripleStore = tripleStoreModel.getActiveTripleStore();
-        Repository rep = getRepository(activeTripleStore, ontologyName);
+        Repository rep = getRepository(activeTripleStore, ontologyName);        
         if(rep != null) {
+        	log.info("Importing " + ontologyName + " from location: " + rep.getOntologyLocationDescription(ontologyName));
             TripleStore importedTripleStore = rep.loadImportedAssertions(this, ontologyName);
             importedTripleStore.addIOAddress(ontologyName.toString());
         }
@@ -1368,12 +1369,12 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     }
 
 
-    public UndefTripleManager getUndefTripleManager() {
-    	if (undefTripleManager == null) {
-    		undefTripleManager = new UndefTripleManager(this);
+    public GlobalParserCache getGlobalParserCache() {
+    	if (globalParserCache == null) {
+    		globalParserCache = new GlobalParserCache(this);
     	}
     	
-    	return undefTripleManager;
+    	return globalParserCache;
     }
     
     
