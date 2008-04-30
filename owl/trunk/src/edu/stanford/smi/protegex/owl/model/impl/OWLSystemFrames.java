@@ -523,20 +523,12 @@ public abstract class OWLSystemFrames extends SystemFrames {
     protected class OWLSystemFramesAssertions extends SystemFramesAsserter {
     	private RDFSDatatype xsdInt;
     	private RDFSDatatype xsdString;
-    	private Collection<Cls> annotationObjectPropertyTypes = new HashSet<Cls>();
-    	private Collection<Cls> annotationDatatypePropertyTypes = new HashSet<Cls>();
     	
     	
     	public OWLSystemFramesAssertions(FrameStore fs) {
     	    super(fs);
             xsdInt = (RDFSDatatype) getFrame(new FrameID(XSDNames.INT));
             xsdString = (RDFSDatatype) getFrame(new FrameID(XSDNames.STRING));
-            
-            annotationObjectPropertyTypes.add(owlAnnotationPropertyClass);
-            annotationObjectPropertyTypes.add(owlObjectPropertyClass);
-            
-            annotationDatatypePropertyTypes.add(owlAnnotationPropertyClass);
-            annotationDatatypePropertyTypes.add(owlDatatypePropertyClass);
     	}
     	
 
@@ -889,9 +881,22 @@ public abstract class OWLSystemFrames extends SystemFrames {
     
     public class SystemFramesAsserter {
         protected FrameStore fs;
+        protected Collection<Cls> annotationObjectPropertyTypes = new HashSet<Cls>();
+        protected Collection<Cls> annotationDatatypePropertyTypes = new HashSet<Cls>();
+        protected Collection<Cls> functionalDatatypePropertyTypes = new HashSet<Cls>();
+        
+        
         
         public SystemFramesAsserter(FrameStore fs) {
             this.fs = fs;
+            annotationObjectPropertyTypes.add(owlAnnotationPropertyClass);
+            annotationObjectPropertyTypes.add(owlObjectPropertyClass);
+            
+            annotationDatatypePropertyTypes.add(owlAnnotationPropertyClass);
+            annotationDatatypePropertyTypes.add(owlDatatypePropertyClass);
+            
+            functionalDatatypePropertyTypes.add(owlDatatypePropertyClass);
+            functionalDatatypePropertyTypes.add(owlFunctionalPropertyClass);
         }
         
         /* ***********************************************************
@@ -952,6 +957,7 @@ public abstract class OWLSystemFrames extends SystemFrames {
                                       ValueTypeConstraint.getValues(ValueType.INSTANCE, 
                                                                     Collections.singleton(cls)));
         }
+
         
     }
     
