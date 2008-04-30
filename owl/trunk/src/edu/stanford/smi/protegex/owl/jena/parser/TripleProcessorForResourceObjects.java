@@ -191,7 +191,7 @@ class TripleProcessorForResourceObjects extends AbstractStatefulTripleProcessor 
 					return TripleStatus.TRIPLE_HAS_UNDEF_NEEDS_POST_PROCESS;
 				}
 				
-				subjFrame = undefTripleManager.getObjectToNamedLogicalClassSurrogate().get(objName);
+				subjFrame = globalParserCache.getObjectToNamedLogicalClassSurrogate().get(objName);
 				if (subjFrame != null) {
 					subjName = subjFrame.getName();
 					return TripleStatus.TRIPLE_PROCESSING_SHOULD_CONTINUE;
@@ -205,7 +205,7 @@ class TripleProcessorForResourceObjects extends AbstractStatefulTripleProcessor 
 			subjFrame = createLogicalClass();
 			
 			if (logicalClassIsNamed) {
-				undefTripleManager.getObjectToNamedLogicalClassSurrogate().put(objName, (Cls) subjFrame);
+				globalParserCache.getObjectToNamedLogicalClassSurrogate().put(objName, (Cls) subjFrame);
 				FrameCreatorUtility.addOwnSlotValue(oldSubjFrame, owlModel.getOWLEquivalentClassProperty(), subjFrame, tripleStore);
 				FrameCreatorUtility.createSubclassOf((Cls) subjFrame, (Cls) oldSubjFrame, tripleStore);
 				FrameCreatorUtility.createSubclassOf((Cls) oldSubjFrame, (Cls) subjFrame, tripleStore);
@@ -241,14 +241,14 @@ class TripleProcessorForResourceObjects extends AbstractStatefulTripleProcessor 
 			// add to frame to the cache of classes with no superclass
 			if (!subjAlreadyExists && !subj.isAnonymous()
 					&& (objName.equals(OWL.Class.getURI()) || objName.equals(RDFS.Class.getURI()))) {
-				undefTripleManager.getSuperClsCache().addFrame(subjFrame);
+				globalParserCache.getSuperClsCache().addFrame(subjFrame);
 			}
 		
 			if (subjAlreadyExists && objFrame instanceof Cls) {				
 				if (log.isLoggable(Level.FINE)) {
 					log.fine("found an alternative type for " + subjFrame + " = " + objFrame);
 				}
-				undefTripleManager.getMultipleTypesInstanceCache().addType((Instance) subjFrame, (Cls) objFrame);
+				globalParserCache.getMultipleTypesInstanceCache().addType((Instance) subjFrame, (Cls) objFrame);
 				return TripleStatus.TRIPLE_PROCESSING_COMPLETE;
 			}
 			return TripleStatus.TRIPLE_PROCESSING_SHOULD_CONTINUE;
@@ -260,7 +260,7 @@ class TripleProcessorForResourceObjects extends AbstractStatefulTripleProcessor 
 					if (log.isLoggable(Level.FINE)) {
 						log.fine("\tdeferring triple because predicate is not yet defined");
 					}
-					undefTripleManager.addUndefTriple(new UndefTriple(subj, pred, obj, predName, tripleStore));
+					globalParserCache.addUndefTriple(new UndefTriple(subj, pred, obj, predName, tripleStore));
 				}
 				return TripleStatus.TRIPLE_HAS_UNDEF_NEEDS_POST_PROCESS;
 			}
@@ -300,7 +300,7 @@ class TripleProcessorForResourceObjects extends AbstractStatefulTripleProcessor 
 			// If this is a rdfs:subclass of, then remove it from the cache of
 			// classes with no superclasses
 			if (predName.equals(RDFS.subClassOf.getURI()) && !obj.isAnonymous()) {
-				undefTripleManager.getSuperClsCache().removeFrame(subjFrame);
+				globalParserCache.getSuperClsCache().removeFrame(subjFrame);
 			}
 		}
 
@@ -327,13 +327,13 @@ class TripleProcessorForResourceObjects extends AbstractStatefulTripleProcessor 
 		 */
 		private void handleGeneralizedConceptInclusions() {
 			if (subjFrame instanceof RDFSClass && ((RDFSClass) subjFrame).isAnonymous()
-					&& undefTripleManager.getPossibleGCIPredicates().contains(predSlot)) {
+					&& globalParserCache.getPossibleGCIPredicates().contains(predSlot)) {
 				OWLNamedClass axiom = owlModel.createOWLNamedClass(null);
 				FrameCreatorUtility.addOwnSlotValue(axiom, owlModel.getOWLEquivalentClassProperty(), subjFrame, tripleStore);
 				FrameCreatorUtility.createSubclassOf((Cls) subjFrame, axiom, tripleStore);
 				FrameCreatorUtility.createSubclassOf(axiom, (Cls) subjFrame, tripleStore);
 				subjFrame = axiom;
-				undefTripleManager.getGciAxioms().add(axiom); // need to name these later
+				globalParserCache.getGciAxioms().add(axiom); // need to name these later
 			}
 		}
 
