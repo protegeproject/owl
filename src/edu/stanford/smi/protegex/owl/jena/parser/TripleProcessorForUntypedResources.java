@@ -24,7 +24,7 @@ class TripleProcessorForUntypedResources extends AbstractStatefulTripleProcessor
 
 	
 	protected void processRemainingUndefinedTriples() {
-		for (Iterator<UndefTriple> iter = processor.getUndefTripleManager().getUndefTriples().iterator(); iter.hasNext();) {
+		for (Iterator<UndefTriple> iter = processor.getGlobalParserCache().getUndefTriples().iterator(); iter.hasNext();) {
 			UndefTriple undefTriple = (UndefTriple) iter.next();
 			Object obj = undefTriple.getTripleObj();
 		
@@ -39,7 +39,7 @@ class TripleProcessorForUntypedResources extends AbstractStatefulTripleProcessor
 			}	
 
 			if (success) {
-				processor.getUndefTripleManager().removeUndefTriple(undefTriple.getUndef(), undefTriple);
+				processor.getGlobalParserCache().removeUndefTriple(undefTriple.getUndef(), undefTriple);
 			}
 		}
 	}
@@ -52,7 +52,7 @@ class TripleProcessorForUntypedResources extends AbstractStatefulTripleProcessor
 		 * There might be triples with duplicate undef entities. 
 		 * Test subject, predicate and object from the triple
 		 */
-		for (Iterator<UndefTriple> iter = processor.getUndefTripleManager().getUndefTriples().iterator(); iter.hasNext();) {
+		for (Iterator<UndefTriple> iter = processor.getGlobalParserCache().getUndefTriples().iterator(); iter.hasNext();) {
 			UndefTriple undefTriple = (UndefTriple) iter.next();
 
 			String pred = ParserUtil.getResourceName(undefTriple.getTriplePred());
