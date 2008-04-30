@@ -19,9 +19,11 @@ import edu.stanford.smi.protege.model.Model;
 import edu.stanford.smi.protege.model.Reference;
 import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protege.util.Log;
+import edu.stanford.smi.protegex.owl.model.OWLDatatypeProperty;
 import edu.stanford.smi.protegex.owl.model.OWLIndividual;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
+import edu.stanford.smi.protegex.owl.model.OWLObjectProperty;
 import edu.stanford.smi.protegex.owl.model.OWLProperty;
 import edu.stanford.smi.protegex.owl.swrl.model.SWRLAtomList;
 import edu.stanford.smi.protegex.owl.swrl.model.SWRLBuiltin;
@@ -42,28 +44,15 @@ public class DefaultSWRLImp extends AbstractSWRLIndividual implements SWRLImp
   private boolean isCacheInitialized = false;
   private boolean isRuleEnabled = true;
   private Map<String, Boolean> ruleGroups; // Contains rule groups and their enabled status.
-
-  private OWLProperty ruleEnabledProperty, ruleGroupProperty, ruleGroupEnabledProperty;
-  private OWLNamedClass ruleGroupClass;
  
   public DefaultSWRLImp(KnowledgeBase kb, FrameID id) 
   {
     super(kb, id);
-    initialize();
   } // DefaultSWRLImp
 
   public DefaultSWRLImp() 
   {
-    initialize();
-  } // DefaultSWRLImp
-
-  private void initialize()
-  {
-    ruleEnabledProperty = getOWLModel().getSystemFrames().getIsRuleEnabledProperty();
-    ruleGroupProperty = getOWLModel().getSystemFrames().getHasRuleGroupProperty();
-    ruleGroupEnabledProperty = getOWLModel().getSystemFrames().getIsRuleGroupEnabledProperty();
-    ruleGroupClass = getOWLModel().getSystemFrames().getRuleGroupCls();
-  } // initialize
+  }
   
   private void checkCacheInitialized() {
       if (!isCacheInitialized) {
@@ -89,31 +78,35 @@ public class DefaultSWRLImp extends AbstractSWRLIndividual implements SWRLImp
 
   private boolean getIsRuleEnabledAnnotation()
   {
-    if (ruleEnabledProperty == null) return true;
-    Object value = getPropertyValue(ruleEnabledProperty);
-    if (value == null) return true;
-    if (!(value instanceof Boolean)) return true; // Should not happen
-    
-    return ((Boolean)value).booleanValue();
+      OWLDatatypeProperty ruleEnabledProperty = getRuleEnabledProperty();
+      if (ruleEnabledProperty == null) return true;
+      Object value = getPropertyValue(ruleEnabledProperty);
+      if (value == null) return true;
+      if (!(value instanceof Boolean)) return true; // Should not happen
+
+      return ((Boolean)value).booleanValue();
   } // getIsRuleEnabledAnnotation
 
+  @SuppressWarnings("unchecked")
   private Map<String, Boolean> getRuleGroupAnnotations()
   {
-    Map<String, Boolean> result = new HashMap<String, Boolean>();
+      OWLObjectProperty ruleGroupProperty = getRuleGroupProperty();
+      OWLDatatypeProperty ruleGroupEnabledProperty = getRuleGroupEnabledProperty();
+      Map<String, Boolean> result = new HashMap<String, Boolean>();
 
-    if (ruleGroupProperty != null && ruleGroupEnabledProperty != null) {
-      Collection values = getPropertyValues(ruleGroupProperty);
-      if (values != null) {
-        Iterator iterator = values.iterator();
-        while (iterator.hasNext()) {
-          Boolean enabled = Boolean.TRUE;
-          OWLIndividual ruleGroupIndividual = (OWLIndividual)iterator.next();
-          Object isEnabled = ruleGroupIndividual.getPropertyValue(ruleGroupEnabledProperty);
-          if (isEnabled != null) enabled = (Boolean)isEnabled;
-          result.put(ruleGroupIndividual.getName(), enabled);
-        } // while
+      if (ruleGroupProperty != null && ruleGroupEnabledProperty != null) {
+          Collection values = getPropertyValues(ruleGroupProperty);
+          if (values != null) {
+              Iterator iterator = values.iterator();
+              while (iterator.hasNext()) {
+                  Boolean enabled = Boolean.TRUE;
+                  OWLIndividual ruleGroupIndividual = (OWLIndividual)iterator.next();
+                  Object isEnabled = ruleGroupIndividual.getPropertyValue(ruleGroupEnabledProperty);
+                  if (isEnabled != null) enabled = (Boolean)isEnabled;
+                  result.put(ruleGroupIndividual.getName(), enabled);
+              } // while
+          } // if
       } // if
-    } // if
     
     return result;
   } // getRuleGroupNamesAnnotation
@@ -240,12 +233,15 @@ public String getBrowserText()
   } // enable
 
   public void enable(Set<String> ruleGroupNames) 
-  { 
+  {
       checkCacheInitialized();
       if (ruleGroupNames.isEmpty()) {
+          OWLDatatypeProperty ruleEnabledProperty = getRuleEnabledProperty();
           if (ruleEnabledProperty != null) setPropertyValue(ruleEnabledProperty, Boolean.TRUE);
           isRuleEnabled = true;
       } else {
+          OWLObjectProperty ruleGroupProperty = getRuleGroupProperty();
+          OWLDatatypeProperty ruleGroupEnabledProperty = getRuleGroupEnabledProperty();
           for (String ruleGroupName : ruleGroupNames) {
               OWLIndividual ruleGroupIndividual = getOWLModel().getOWLIndividual(ruleGroupName);
               if (ruleGroupIndividual != null && ruleGroupProperty != null) {
@@ -270,9 +266,12 @@ public String getBrowserText()
   { 
       checkCacheInitialized();
       if (ruleGroupNames.isEmpty()) {
+          OWLDatatypeProperty ruleEnabledProperty = getRuleEnabledProperty();
           if (ruleEnabledProperty != null) setPropertyValue(ruleEnabledProperty, Boolean.FALSE);
           isRuleEnabled = false;
       } else {
+          OWLObjectProperty ruleGroupProperty = getRuleGroupProperty();
+          OWLDatatypeProperty ruleGroupEnabledProperty = getRuleGroupEnabledProperty();
           for (String ruleGroupName : ruleGroupNames) {
               OWLIndividual ruleGroupIndividual = getOWLModel().getOWLIndividual(ruleGroupName);
               if (ruleGroupIndividual != null && ruleGroupProperty != null) {
@@ -307,6 +306,10 @@ public String getBrowserText()
    */
   public boolean addRuleGroup(String name) 
   { 
+      OWLNamedClass ruleGroupClass = getRuleGroupClass();
+      OWLObjectProperty ruleGroupProperty = getRuleGroupProperty();
+      OWLDatatypeProperty ruleGroupEnabledProperty = getRuleGroupEnabledProperty();
+      
       checkCacheInitialized();
       boolean result = false;
 
@@ -332,6 +335,8 @@ public String getBrowserText()
    */
   public boolean removeRuleGroup(String name) 
   { 
+      OWLNamedClass ruleGroupClass = getRuleGroupClass();
+      OWLObjectProperty ruleGroupProperty = getRuleGroupProperty();
       checkCacheInitialized();
       boolean result = false;
 
@@ -350,5 +355,22 @@ public String getBrowserText()
 
       return result;
   } // removeRuleGroupName
+  
+  
+  private OWLDatatypeProperty getRuleEnabledProperty() {
+      return getOWLModel().getOWLDatatypeProperty(SWRLNames.Annotations.IS_RULE_ENABLED);
+  }
+  
+  private OWLDatatypeProperty getRuleGroupEnabledProperty() {
+      return getOWLModel().getOWLDatatypeProperty(SWRLNames.Annotations.IS_RULE_GROUP_ENABLED);
+  }
+  
+  private OWLObjectProperty getRuleGroupProperty() {
+      return getOWLModel().getOWLObjectProperty(SWRLNames.Annotations.HAS_RULE_GROUP);
+  }
+  
+  private OWLNamedClass getRuleGroupClass() {
+      return getOWLModel().getOWLNamedClass(SWRLNames.Annotations.RULE_GROUP);
+  }
 
 } // DefaultSWRLImp
