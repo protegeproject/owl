@@ -1,6 +1,7 @@
 package edu.stanford.smi.protegex.owl.tests;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.StringReader;
 import java.net.URI;
 import java.util.ArrayList;
@@ -38,7 +39,7 @@ public abstract class AbstractJenaTestCase extends AbstractOWLTestCase {
     }
 
 
-    public void loadRemoteOntology(String localFileName) throws Exception {
+    public void loadRemoteOntology(String localFileName) throws IOException {
         loadTestOntology(getRemoteOntologyURI(localFileName));
     }
 
@@ -48,7 +49,7 @@ public abstract class AbstractJenaTestCase extends AbstractOWLTestCase {
     }
 
 
-    public void loadTestOntology(URI uri) throws Exception {
+    public void loadTestOntology(URI uri) throws IOException {
         Collection errors = new ArrayList();
         OwlProjectFromUriCreator creator = new OwlProjectFromUriCreator();
         creator.setOntologyUri(uri.toString());
