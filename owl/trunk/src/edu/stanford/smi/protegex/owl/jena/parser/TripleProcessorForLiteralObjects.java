@@ -35,7 +35,7 @@ class TripleProcessorForLiteralObjects extends AbstractStatefulTripleProcessor {
 
 		if (predSlot == null) {
 			if (!alreadyInUndef) {
-				undefTripleManager.addUndefTriple(new UndefTriple(subj, pred, lit, predName, ts));
+				globalParserCache.addUndefTriple(new UndefTriple(subj, pred, lit, predName, ts));
 			}
 			return false;
 		}
@@ -54,7 +54,7 @@ class TripleProcessorForLiteralObjects extends AbstractStatefulTripleProcessor {
 		//checking and adding to undefined
 		if (subjFrame == null) {
 			if (!alreadyInUndef) {
-				undefTripleManager.addUndefTriple(new UndefTriple(subj, pred, lit, subjName, ts));
+				globalParserCache.addUndefTriple(new UndefTriple(subj, pred, lit, subjName, ts));
 			}
 			return false;
 		}
@@ -79,20 +79,18 @@ class TripleProcessorForLiteralObjects extends AbstractStatefulTripleProcessor {
 	}
 	
 
-	// copied from old parser
+
 	private RDFSLiteral createRDFSLiteral(ALiteral literal, RDFProperty property) {
 		if(literal.getLang() != null && literal.getLang().length() > 0) {
-			//return owlModel.createRDFSLiteral(literal.toString(), literal.getLang());
 			return DefaultRDFSLiteral.create(owlModel, literal.toString(), literal.getLang());
 		}
 		else if(literal.getDatatypeURI() != null) {
 			RDFSDatatype datatype = owlModel.getRDFSDatatypeByURI(literal.getDatatypeURI());
-			if(datatype == null) {
-				//return owlModel.createRDFSLiteral(literal.toString());
+			if(datatype == null) {				
 				return DefaultRDFSLiteral.create(owlModel, literal.toString());
 			}
 			else {
-				//return owlModel.createRDFSLiteral(literal.toString(), datatype);
+				
 				return DefaultRDFSLiteral.create(owlModel, literal.toString(), datatype);
 			}
 		}
@@ -101,12 +99,10 @@ class TripleProcessorForLiteralObjects extends AbstractStatefulTripleProcessor {
 			RDFResource range = property.getRange();
 			if(range instanceof RDFSDatatype) {
 				RDFSDatatype datatype = owlModel.getRDFSDatatypeByURI(range.getURI());
-				//return owlModel.createRDFSLiteral(literal.toString(), datatype);
 				return DefaultRDFSLiteral.create(owlModel, literal.toString(), datatype);
 			}
 			else {
 				return DefaultRDFSLiteral.create(owlModel, literal.toString());
-				//return owlModel.createRDFSLiteral(literal.toString());
 			}
 		}
 	}
