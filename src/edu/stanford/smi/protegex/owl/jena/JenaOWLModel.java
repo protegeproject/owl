@@ -35,12 +35,16 @@ import edu.stanford.smi.protege.model.KnowledgeBaseFactory;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protege.util.MessageError;
 import edu.stanford.smi.protege.util.SystemUtilities;
+import edu.stanford.smi.protegex.owl.database.creator.OwlDatabaseFromFileCreator;
 import edu.stanford.smi.protegex.owl.jena.creator.JenaCreator;
+import edu.stanford.smi.protegex.owl.jena.creator.OwlProjectFromReaderCreator;
+import edu.stanford.smi.protegex.owl.jena.creator.OwlProjectFromStreamCreator;
 import edu.stanford.smi.protegex.owl.jena.parser.ProtegeOWLParser;
 import edu.stanford.smi.protegex.owl.jena.protege2jena.Protege2Jena;
 import edu.stanford.smi.protegex.owl.jena.writersettings.JenaWriterSettings;
 import edu.stanford.smi.protegex.owl.jena.writersettings.WriterSettings;
 import edu.stanford.smi.protegex.owl.model.NamespaceManager;
+import edu.stanford.smi.protegex.owl.model.OWLOntology;
 import edu.stanford.smi.protegex.owl.model.RDFList;
 import edu.stanford.smi.protegex.owl.model.RDFNames;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
@@ -401,4 +405,86 @@ public class JenaOWLModel extends AbstractOWLModel implements OntModelProvider {
             getOWLProject().getSettingsMap().remove(WRITER_SETTINGS_PROPERTY);
         }
     }
+    
+    
+    /**
+     * @deprecated use {@link OwlProjectFromStreamCreator}, {@link OwlProjectFromReaderCreator} or {@link OwlDatabaseFromFileCreator}
+     */
+    @Deprecated
+    public void load(URI uri, String language) throws IOException {
+        ensureDefaultOntologyDeleted();
+        ProtegeOWLParser parser = new ProtegeOWLParser(this);
+        parser.run(uri);
+    }
+    
+    /**
+     * @deprecated use {@link OwlProjectFromStreamCreator}, {@link OwlProjectFromReaderCreator} or {@link OwlDatabaseFromFileCreator}
+     */
+    @Deprecated
+    public void load(InputStream is, String language) throws IOException {
+        ensureDefaultOntologyDeleted();
+        ProtegeOWLParser parser = new ProtegeOWLParser(this);
+        parser.run(is, null);
+    }
+    
+    /**
+     * @deprecated use {@link OwlProjectFromStreamCreator}, {@link OwlProjectFromReaderCreator} or {@link OwlDatabaseFromFileCreator}
+     */
+    @Deprecated
+    public void load(Reader reader, String language) throws IOException {
+        ensureDefaultOntologyDeleted();
+        ProtegeOWLParser parser = new ProtegeOWLParser(this);
+        parser.run(reader, null);
+    }
+    
+    /**
+     * @deprecated use {@link OwlProjectFromStreamCreator}, {@link OwlProjectFromReaderCreator} or {@link OwlDatabaseFromFileCreator}
+     */
+    @Deprecated
+    @SuppressWarnings("unchecked")
+    public void load(URI uri, String language, Collection errors) {
+        try {
+            load(uri, language);
+        }
+        catch (Throwable t) {
+            Log.getLogger().log(Level.SEVERE, "Error at loading file "+uri, t);
+            
+            Collection parseErrors = ProtegeOWLParser.getErrors(); 
+            if (parseErrors != null && parseErrors.size() > 0) {
+                errors.addAll(parseErrors);
+            }
+            
+            errors.add(t);
+            
+            String message = "Errors at loading OWL file from " + uri + "\n";
+            message = message + "\nPlease consider running the file through an RDF or OWL validation service such as:";
+            message = message + "\n  - RDF Validator: http://www.w3.org/RDF/Validator";
+            message = message + "\n  - OWL Validator: http://phoebus.cs.man.ac.uk:9999/OWL/Validator";
+            if (getNamespaceManager().getPrefix("http://protege.stanford.edu/system#") != null ||
+                    getNamespaceManager().getPrefix("http://protege.stanford.edu/kb#") != null) {
+                message = message + "\nThis file seems to have been created with the frame-based Protege RDF Backend. " +
+                        "Please try to use the RDF Backend of Protege to open this file and then export it to OWL " +
+                        "using Export to Format...";
+            }
+   
+            errors.add(new MessageError(message));
+        }
+        
+        //TODO: Improve this.
+        Collection parseErrors = ProtegeOWLParser.getErrors(); 
+        if (parseErrors != null && parseErrors.size() > 0) {
+            errors.addAll(parseErrors);
+        }
+    }
+    
+    private void ensureDefaultOntologyDeleted() {
+        OWLOntology ontology = getDefaultOWLOntology();
+        if (ontology != null) {
+            ontology.delete();
+        }
+        getTripleStoreModel().getActiveTripleStore().setName(null);
+        resetOntologyCache();
+    }
+    
+    
 }
