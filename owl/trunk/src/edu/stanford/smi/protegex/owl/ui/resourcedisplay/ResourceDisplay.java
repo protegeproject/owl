@@ -429,17 +429,24 @@ public class ResourceDisplay extends InstanceDisplay implements ResourcePanel {
         }
     }
 
+    
+    @Override
+    protected void loadHeaderWithCls(Cls cls) {    	
+    	super.loadHeaderWithCls(cls);
+    	String className = cls == null ? "" : ": " + cls.getBrowserText();
+    	getHeaderComponent().setTitle(getTitleString(cls, "CLASS EDITOR"), false);
+    }
 
     protected void loadHeaderWithSimpleInstance(Instance instance) {
         super.loadHeaderWithSimpleInstance(instance);
-        getHeaderComponent().setTitle("Individual Editor");
+        getHeaderComponent().setTitle(getTitleString(instance, "INDIVIDUAL EDITOR"), false);
         getHeaderComponent().setComponentLabel("For Individual:");
     }
 
 
     protected void loadHeaderWithSlot(Slot slot) {
-        super.loadHeaderWithSlot(slot);
-        getHeaderComponent().setTitle("Property Editor");
+        super.loadHeaderWithSlot(slot);        
+        getHeaderComponent().setTitle(getTitleString(slot, "PROPERTY EDITOR"), false);
         getHeaderComponent().setComponentLabel("For Property:");
     }
 
@@ -452,6 +459,38 @@ public class ResourceDisplay extends InstanceDisplay implements ResourcePanel {
     }
 
 
+    protected String getTitleString(Instance instance, String title) {    	
+    	StringBuffer buffer = new StringBuffer();
+    	buffer.append(title);
+    	
+    	if (instance != null) {
+    		buffer.append(" for ");
+    		buffer.append(instance.getBrowserText());
+    		buffer.append("   (instance of ");
+    		buffer.append(getTypeText(instance));
+    		buffer.append(")");
+    	}
+    	
+    	return buffer.toString();
+    }
+    
+    protected String getTypeText(Instance instance) {
+    	if (instance == null) {
+    		return "";
+    	}
+    	
+        StringBuffer typeText = new StringBuffer();
+        Iterator i = instance.getDirectTypes().iterator();
+        while (i.hasNext()) {
+            Cls type = (Cls) i.next();
+            typeText.append(type.getBrowserText());
+            if (i.hasNext()) {
+                typeText.append(", ");
+            }
+        }
+        return typeText.toString();
+    }
+    
     public void notifySelectionListeners() {
     }
 
