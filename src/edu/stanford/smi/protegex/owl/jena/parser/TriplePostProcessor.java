@@ -155,7 +155,7 @@ class TriplePostProcessor extends AbstractStatefulTripleProcessor {
 	
 	@SuppressWarnings({"deprecation"})
 	public void processClsesWithoutSupercls() {
-		SuperClsCache superClsCache = undefTripleManager.getSuperClsCache();
+		SuperClsCache superClsCache = globalParserCache.getSuperClsCache();
 
 		log.info("Postprocess: Process classes without superclasses (" + superClsCache.getCachedFramesWithNoSuperclass().size() + " classes) ... ");
 		long time0 = System.currentTimeMillis();
@@ -194,7 +194,7 @@ class TriplePostProcessor extends AbstractStatefulTripleProcessor {
 
 	@SuppressWarnings({"unchecked", "deprecation"})
 	public void processInferredSuperclasses(){
-		SuperClsCache superClsCache = undefTripleManager.getSuperClsCache();
+		SuperClsCache superClsCache = globalParserCache.getSuperClsCache();
 		
 		OWLNamedClass owlClassClass = owlModel.getOWLNamedClassClass();
 
@@ -280,7 +280,7 @@ class TriplePostProcessor extends AbstractStatefulTripleProcessor {
 
 
 	public void processInstancesWithMultipleTypes() {
-		MultipleTypesInstanceCache multipleTypesInstanceCache = undefTripleManager.getMultipleTypesInstanceCache();
+		MultipleTypesInstanceCache multipleTypesInstanceCache = globalParserCache.getMultipleTypesInstanceCache();
 		
 		Set<Instance> instancesWithMultipleTypes = multipleTypesInstanceCache.getInstancesWithMultipleTypes();
 
@@ -372,7 +372,7 @@ class TriplePostProcessor extends AbstractStatefulTripleProcessor {
 
 	//this method will be refactored
 	public void processGeneralizedConceptInclusions() {
-		Collection<RDFSClass> gciAxioms = undefTripleManager.getGciAxioms();
+		Collection<RDFSClass> gciAxioms = globalParserCache.getGciAxioms();
 		
 		log.info("Postprocess: Generalized Concept Inclusion (" + gciAxioms.size() + " axioms) ... ");
 		long time0 = System.currentTimeMillis();
