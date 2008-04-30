@@ -38,6 +38,8 @@ public class DefaultSWRLImp extends AbstractSWRLIndividual implements SWRLImp
   private Logger log = Log.getLogger(DefaultSWRLImp.class);
     
   public static final String EMPTY_RULE_TEXT = "<EMPTY_RULE>";
+  
+  private boolean isCacheInitialized = false;
   private boolean isRuleEnabled = true;
   private Map<String, Boolean> ruleGroups; // Contains rule groups and their enabled status.
 
@@ -57,14 +59,19 @@ public class DefaultSWRLImp extends AbstractSWRLIndividual implements SWRLImp
 
   private void initialize()
   {
-    ruleEnabledProperty = getOWLModel().getOWLProperty(SWRLNames.Annotations.IS_RULE_ENABLED);
-    ruleGroupProperty = getOWLModel().getOWLProperty(SWRLNames.Annotations.HAS_RULE_GROUP);
-    ruleGroupEnabledProperty = getOWLModel().getOWLProperty(SWRLNames.Annotations.IS_RULE_GROUP_ENABLED);
-    ruleGroupClass = getOWLModel().getOWLNamedClass(SWRLNames.Annotations.RULE_GROUP);
-
-    isRuleEnabled = getIsRuleEnabledAnnotation();
-    ruleGroups = getRuleGroupAnnotations();
+    ruleEnabledProperty = getOWLModel().getSystemFrames().getIsRuleEnabledProperty();
+    ruleGroupProperty = getOWLModel().getSystemFrames().getHasRuleGroupProperty();
+    ruleGroupEnabledProperty = getOWLModel().getSystemFrames().getIsRuleGroupEnabledProperty();
+    ruleGroupClass = getOWLModel().getSystemFrames().getRuleGroupCls();
   } // initialize
+  
+  private void checkCacheInitialized() {
+      if (!isCacheInitialized) {
+          isRuleEnabled = getIsRuleEnabledAnnotation();
+          ruleGroups = getRuleGroupAnnotations();
+          isCacheInitialized = true;
+      }
+  }
 
   public SWRLImp createClone() 
   {
@@ -219,7 +226,8 @@ public String getBrowserText()
 
   public boolean isEnabled() 
   { 
-    return isRuleEnabled;
+      checkCacheInitialized();
+      return isRuleEnabled;
   } // isEnabled
 
   public void enable() { enable(new HashSet<String>()); }
@@ -233,19 +241,20 @@ public String getBrowserText()
 
   public void enable(Set<String> ruleGroupNames) 
   { 
-    if (ruleGroupNames.isEmpty()) {
-      if (ruleEnabledProperty != null) setPropertyValue(ruleEnabledProperty, Boolean.TRUE);
-      isRuleEnabled = true;
-    } else {
-      for (String ruleGroupName : ruleGroupNames) {
-        OWLIndividual ruleGroupIndividual = getOWLModel().getOWLIndividual(ruleGroupName);
-        if (ruleGroupIndividual != null && ruleGroupProperty != null) {
-          addPropertyValue(ruleGroupProperty, ruleGroupIndividual);
-          ruleGroupIndividual.addPropertyValue(ruleGroupEnabledProperty, Boolean.TRUE);
-        }  // if
-        ruleGroups.put(ruleGroupName, Boolean.TRUE);
-      } // for
-    } // if  
+      checkCacheInitialized();
+      if (ruleGroupNames.isEmpty()) {
+          if (ruleEnabledProperty != null) setPropertyValue(ruleEnabledProperty, Boolean.TRUE);
+          isRuleEnabled = true;
+      } else {
+          for (String ruleGroupName : ruleGroupNames) {
+              OWLIndividual ruleGroupIndividual = getOWLModel().getOWLIndividual(ruleGroupName);
+              if (ruleGroupIndividual != null && ruleGroupProperty != null) {
+                  addPropertyValue(ruleGroupProperty, ruleGroupIndividual);
+                  ruleGroupIndividual.addPropertyValue(ruleGroupEnabledProperty, Boolean.TRUE);
+              }  // if
+              ruleGroups.put(ruleGroupName, Boolean.TRUE);
+          } // for
+      } // if  
   } // enable
 
   public void disable() { disable(new HashSet<String>()); }
@@ -259,28 +268,37 @@ public String getBrowserText()
 
   public void disable(Set<String> ruleGroupNames) 
   { 
-    if (ruleGroupNames.isEmpty()) {
-      if (ruleEnabledProperty != null) setPropertyValue(ruleEnabledProperty, Boolean.FALSE);
-      isRuleEnabled = false;
-    } else {
-      for (String ruleGroupName : ruleGroupNames) {
-        OWLIndividual ruleGroupIndividual = getOWLModel().getOWLIndividual(ruleGroupName);
-        if (ruleGroupIndividual != null && ruleGroupProperty != null) {
-          addPropertyValue(ruleGroupProperty, ruleGroupIndividual);
-          ruleGroupIndividual.addPropertyValue(ruleGroupEnabledProperty, Boolean.FALSE);
-        }  // if
-        ruleGroups.put(ruleGroupName, Boolean.FALSE);
-      } // for
-    } // if  
+      checkCacheInitialized();
+      if (ruleGroupNames.isEmpty()) {
+          if (ruleEnabledProperty != null) setPropertyValue(ruleEnabledProperty, Boolean.FALSE);
+          isRuleEnabled = false;
+      } else {
+          for (String ruleGroupName : ruleGroupNames) {
+              OWLIndividual ruleGroupIndividual = getOWLModel().getOWLIndividual(ruleGroupName);
+              if (ruleGroupIndividual != null && ruleGroupProperty != null) {
+                  addPropertyValue(ruleGroupProperty, ruleGroupIndividual);
+                  ruleGroupIndividual.addPropertyValue(ruleGroupEnabledProperty, Boolean.FALSE);
+              }  // if
+              ruleGroups.put(ruleGroupName, Boolean.FALSE);
+          } // for
+      } // if  
   } // disable
 
-  public Set<String> getRuleGroupNames() { return ruleGroups.keySet(); }
-  public boolean isInRuleGroup(String name) { return ruleGroups.containsKey(name); }
+  public Set<String> getRuleGroupNames() { 
+      checkCacheInitialized();
+      return ruleGroups.keySet(); 
+  }
+  
+  public boolean isInRuleGroup(String name) { 
+      checkCacheInitialized();
+      return ruleGroups.containsKey(name); 
+  }
 
   public boolean isInRuleGroups(Set<String> names) 
   { 
-    for (String name : names) if (!ruleGroups.containsKey(name)) return false;
-    return true;
+      checkCacheInitialized();
+      for (String name : names) if (!ruleGroups.containsKey(name)) return false;
+      return true;
   }  // isInRuleGroups
 
   /**
@@ -289,24 +307,22 @@ public String getBrowserText()
    */
   public boolean addRuleGroup(String name) 
   { 
-    OWLNamedClass ruleGroupClass = getOWLModel().getOWLNamedClass(SWRLNames.Annotations.RULE_GROUP);
-    OWLProperty ruleGroupProperty = getOWLModel().getOWLProperty(SWRLNames.Annotations.HAS_RULE_GROUP);
-    OWLProperty ruleGroupEnabledProperty = getOWLModel().getOWLProperty(SWRLNames.Annotations.IS_RULE_GROUP_ENABLED);
-    boolean result = false;
+      checkCacheInitialized();
+      boolean result = false;
 
-    if (isInRuleGroup(name)) return true;
+      if (isInRuleGroup(name)) return true;
 
-    if (ruleGroupClass != null) {
-      OWLIndividual ruleGroupIndividual = getOWLModel().getOWLIndividual(name);
-      if (ruleGroupIndividual != null) {
-        if (ruleGroupProperty != null) {
-          addPropertyValue(ruleGroupProperty, ruleGroupIndividual);
-          ruleGroupIndividual.addPropertyValue(ruleGroupEnabledProperty, Boolean.TRUE);
-          ruleGroups.put(name, Boolean.TRUE);
-          result = true;
-        } // if
+      if (ruleGroupClass != null) {
+          OWLIndividual ruleGroupIndividual = getOWLModel().getOWLIndividual(name);
+          if (ruleGroupIndividual != null) {
+              if (ruleGroupProperty != null) {
+                  addPropertyValue(ruleGroupProperty, ruleGroupIndividual);
+                  ruleGroupIndividual.addPropertyValue(ruleGroupEnabledProperty, Boolean.TRUE);
+                  ruleGroups.put(name, Boolean.TRUE);
+                  result = true;
+              } // if
+          } // if
       } // if
-    } // if
 
     return result;
   } // addRuleGroupName
@@ -316,24 +332,23 @@ public String getBrowserText()
    */
   public boolean removeRuleGroup(String name) 
   { 
-    OWLNamedClass ruleGroupClass = getOWLModel().getOWLNamedClass(SWRLNames.Annotations.RULE_GROUP);
-    boolean result = false;
+      checkCacheInitialized();
+      boolean result = false;
 
-    if (!isInRuleGroup(name)) return true;
+      if (!isInRuleGroup(name)) return true;
 
-    if (ruleGroupClass != null) {
-      OWLIndividual individual = getOWLModel().getOWLIndividual(name);
-      if (individual != null) {
-        OWLProperty property = getOWLModel().getOWLProperty(SWRLNames.Annotations.HAS_RULE_GROUP);
-        if (property != null) {
-          removePropertyValue(property, individual);
-          ruleGroups.remove(name);
-          result = true;
-        } // if
+      if (ruleGroupClass != null) {
+          OWLIndividual individual = getOWLModel().getOWLIndividual(name);
+          if (individual != null) {
+              if (ruleGroupProperty != null) {
+                  removePropertyValue(ruleGroupProperty, individual);
+                  ruleGroups.remove(name);
+                  result = true;
+              } // if
+          } // if
       } // if
-    } // if
 
-    return result;
+      return result;
   } // removeRuleGroupName
 
 } // DefaultSWRLImp
