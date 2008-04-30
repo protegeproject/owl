@@ -11,19 +11,14 @@ public abstract class AbstractStatefulTripleProcessor {
 	protected TripleProcessor processor;
 	
 	protected OWLModel owlModel;	
-	protected UndefTripleManager undefTripleManager;
-	
-	//protected boolean importing;
-	
-	//protected TripleStore tripleStore;
-	
+	protected GlobalParserCache globalParserCache;
 	protected SimpleFrameStore simpleFrameStore;
-		
+	
 
 	public AbstractStatefulTripleProcessor(TripleProcessor processor) {
 		this.processor = processor;
 		this.owlModel = processor.getOWLModel();
-		this.undefTripleManager = processor.getUndefTripleManager();
+		this.globalParserCache = processor.getGlobalParserCache();
 		//this.importing = processor.isImporting();
 		this.simpleFrameStore = ParserUtil.getSimpleFrameStore(owlModel);
 		//this.tripleStore = processor.getTripleStore();
