@@ -596,7 +596,7 @@ public class SWRLParser
 
   private boolean isValidIndividualName(String name) throws SWRLParseException 
   {
-    RDFResource resource = getRDFResource(swrlFactory.getOwlNameFromIdentifier(name)); 
+    RDFResource resource = getRDFResource(name); 
 
     if (resource == null) return false;
 
