@@ -14,12 +14,13 @@ import edu.stanford.smi.protegex.owl.model.OWLModel;
 */
 public class DatavaluedPropertyAtomImpl extends AtomImpl implements DatavaluedPropertyAtom
 {
-  private String propertyName;
+  private String propertyName, prefixedPropertyName;
   private AtomArgument argument1, argument2;
   
   public DatavaluedPropertyAtomImpl(OWLModel owlModel, SWRLDatavaluedPropertyAtom atom) throws OWLFactoryException, DatatypeConversionException
   {
     propertyName = (atom.getPropertyPredicate() != null) ? atom.getPropertyPredicate().getName() : null;
+    prefixedPropertyName = (atom.getPropertyPredicate() != null) ? atom.getPropertyPredicate().getPrefixedName() : null;
 
     if (propertyName == null) throw new OWLFactoryException("empty property name in SWRLDatavaluedPropertyAtom '" + atom.getBrowserText() + "'");
 
@@ -27,7 +28,7 @@ public class DatavaluedPropertyAtomImpl extends AtomImpl implements DatavaluedPr
 
     if (atom.getArgument1() instanceof SWRLVariable) {
       SWRLVariable variable = (SWRLVariable)atom.getArgument1();
-      AtomArgument argument = OWLFactory.createVariableAtomArgument(variable.getName());
+      AtomArgument argument = OWLFactory.createVariableAtomArgument(variable.getName(), variable.getPrefixedName());
       addReferencedVariableName(variable.getName());
       argument1 = argument;
     } else if (atom.getArgument1() instanceof edu.stanford.smi.protegex.owl.model.OWLIndividual) {
@@ -40,7 +41,7 @@ public class DatavaluedPropertyAtomImpl extends AtomImpl implements DatavaluedPr
 
     if (atom.getArgument2() instanceof SWRLVariable) {
       SWRLVariable variable = (SWRLVariable)atom.getArgument2();
-      AtomArgument argument = OWLFactory.createVariableAtomArgument(variable.getName());
+      AtomArgument argument = OWLFactory.createVariableAtomArgument(variable.getName(), variable.getPrefixedName());
       addReferencedVariableName(variable.getName());
       argument2 = argument;
     } else if (atom.getArgument2() instanceof RDFSLiteral) argument2 = OWLFactory.createOWLDatatypeValue(owlModel, (RDFSLiteral)atom.getArgument2());
@@ -49,12 +50,13 @@ public class DatavaluedPropertyAtomImpl extends AtomImpl implements DatavaluedPr
   } // DatavaluedPropertyAtomImpl
 
   public String getPropertyName() { return propertyName; }  
+  public String getPrefixedPropertyName() { return prefixedPropertyName; }  
   public AtomArgument getArgument1() { return argument1; }
   public AtomArgument getArgument2() { return argument2; }
 
   public String toString() 
   { 
-    String result = "" + getPropertyName() + "(" + getArgument1() + ", ";
+    String result = "" + getPrefixedPropertyName() + "(" + getArgument1() + ", ";
 
     if (getArgument2() instanceof OWLDatatypeValue && ((OWLDatatypeValue)getArgument2()).isString())
       result += "\"" + getArgument2() + "\"";

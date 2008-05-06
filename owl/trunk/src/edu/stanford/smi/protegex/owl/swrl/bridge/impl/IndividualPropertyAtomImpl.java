@@ -12,12 +12,13 @@ import edu.stanford.smi.protegex.owl.swrl.model.SWRLVariable;
 */
 public class IndividualPropertyAtomImpl extends AtomImpl implements IndividualPropertyAtom
 {
-  private String propertyName;
+  private String propertyName, prefixedPropertyName;
   private AtomArgument argument1, argument2;
 
   public IndividualPropertyAtomImpl(SWRLIndividualPropertyAtom atom) throws OWLFactoryException
   {
     propertyName = (atom.getPropertyPredicate() != null) ? atom.getPropertyPredicate().getName() : null;
+    prefixedPropertyName = (atom.getPropertyPredicate() != null) ? atom.getPropertyPredicate().getPrefixedName() : null;
 
     if (propertyName == null) throw new OWLFactoryException("empty property name in SWRLIndividualPropertyAtom '" + atom + "'");
     
@@ -25,7 +26,7 @@ public class IndividualPropertyAtomImpl extends AtomImpl implements IndividualPr
 
     if (atom.getArgument1() instanceof SWRLVariable) {
       SWRLVariable variable = (SWRLVariable)atom.getArgument1();
-      AtomArgument argument = OWLFactory.createVariableAtomArgument(variable.getName());
+      AtomArgument argument = OWLFactory.createVariableAtomArgument(variable.getName(), variable.getPrefixedName());
       addReferencedVariableName(variable.getName());
       argument1 = argument;
     } else if (atom.getArgument1() instanceof edu.stanford.smi.protegex.owl.model.OWLIndividual) {
@@ -38,7 +39,7 @@ public class IndividualPropertyAtomImpl extends AtomImpl implements IndividualPr
 
     if (atom.getArgument2() instanceof SWRLVariable) {
       SWRLVariable variable = (SWRLVariable)atom.getArgument2();
-      AtomArgument argument = OWLFactory.createVariableAtomArgument(variable.getName());
+      AtomArgument argument = OWLFactory.createVariableAtomArgument(variable.getName(), variable.getPrefixedName());
       addReferencedVariableName(variable.getName());
       argument2 = argument;
     } else if (atom.getArgument2() instanceof edu.stanford.smi.protegex.owl.model.OWLIndividual) {
@@ -65,8 +66,9 @@ public class IndividualPropertyAtomImpl extends AtomImpl implements IndividualPr
   } // IndividualPropertyAtomImpl
 
   public String getPropertyName() { return propertyName; }  
+  public String getPrefixedPropertyName() { return prefixedPropertyName; }  
   public AtomArgument getArgument1() { return argument1; }
   public AtomArgument getArgument2() { return argument2; }  
 
-  public String toString() { return getPropertyName() + "(" + getArgument1() + ", " + getArgument2() + ")"; }
+  public String toString() { return getPrefixedPropertyName() + "(" + getArgument1() + ", " + getArgument2() + ")"; }
 } // IndividualPropertyAtomImpl

@@ -12,11 +12,12 @@ import edu.stanford.smi.protegex.owl.swrl.model.SWRLVariable;
 public class ClassAtomImpl extends AtomImpl implements ClassAtom
 {
   private AtomArgument argument1;
-  private String className;
+  private String className, prefixedClassName;
   
   public ClassAtomImpl(SWRLClassAtom atom) throws OWLFactoryException
   {
     className = (atom.getClassPredicate() != null) ? atom.getClassPredicate().getName() : null;
+    prefixedClassName = (atom.getClassPredicate() != null) ? atom.getClassPredicate().getPrefixedName() : null;
 
     if (className == null) throw new OWLFactoryException("empty class name in SWRLClassAtom: " + atom);
 
@@ -24,7 +25,7 @@ public class ClassAtomImpl extends AtomImpl implements ClassAtom
     
     if (atom.getArgument1() instanceof SWRLVariable) {
       SWRLVariable variable = (SWRLVariable)atom.getArgument1();
-      AtomArgument argument = OWLFactory.createVariableAtomArgument(variable.getName());
+      AtomArgument argument = OWLFactory.createVariableAtomArgument(variable.getName(), variable.getPrefixedName());
       addReferencedVariableName(variable.getName());
       argument1 = argument;
     } else if (atom.getArgument1() instanceof edu.stanford.smi.protegex.owl.model.OWLIndividual) {
@@ -48,8 +49,9 @@ public class ClassAtomImpl extends AtomImpl implements ClassAtom
   } // ClassAtomImpl
   
   public String getClassName() { return className; }
+  public String getPrefixedClassName() { return prefixedClassName; }
   public AtomArgument getArgument1() { return argument1; }
 
-  public String toString() { return getClassName() + "(" + getArgument1() + ")"; }
+  public String toString() { return getPrefixedClassName() + "(" + getArgument1() + ")"; }
 } // ClassAtomImpl
 

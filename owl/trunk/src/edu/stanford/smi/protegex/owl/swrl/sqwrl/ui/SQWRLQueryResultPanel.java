@@ -209,13 +209,26 @@ public class SQWRLQueryResultPanel extends JPanel
 
     public Object getValueAt(int row, int column) 
     { 
-      Object value = null;
+      String representation = "";
       
       try { 
-        value = (result == null) ? null : result.getValue(column, row);
+        ResultValue value = (result == null) ? null : result.getValue(column, row);
+        if (value instanceof ObjectValue) {
+          ObjectValue objectValue = (ObjectValue)value;
+          representation += objectValue.getPrefixedIndividualName();
+        } else if (value instanceof DatatypeValue) {
+          DatatypeValue datatypeValue = (DatatypeValue)value;
+          representation += datatypeValue.toString();
+        } else if (value instanceof ClassValue) {
+          ClassValue classValue = (ClassValue)value;
+          representation += classValue.getPrefixedClassName();
+        } else if (value instanceof PropertyValue) {
+          PropertyValue propertyValue = (PropertyValue)value;
+          representation += propertyValue.getPrefixedPropertyName();
+        } // if
       } catch (SQWRLException e) {}
 
-      return value;
+      return representation;
     } // getValueAt
     
   } // SQWRLQueryResultModel

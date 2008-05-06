@@ -273,14 +273,14 @@ public class SWRLBuiltInUtil
   {
     checkThatArgumentIsAnIndividual(argumentNumber, arguments);
 
-    return ((OWLIndividual)arguments.get(argumentNumber)).getIndividualName();
+    return ((IndividualArgument)arguments.get(argumentNumber)).getIndividualName();
   } // getArgumentAsAnIndividualName
 
   public static String getArgumentAsAClassName(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException
   {
     checkThatArgumentIsAClass(argumentNumber, arguments);
 
-    return ((OWLClass)arguments.get(argumentNumber)).getClassName();
+    return ((ClassArgument)arguments.get(argumentNumber)).getClassName();
   } // getArgumentAsAClassName
 
   public static OWLClass getArgumentAsAnOWLClass(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException
@@ -310,9 +310,9 @@ public class SWRLBuiltInUtil
 
     checkThatArgumentIsAClassPropertyOrIndividual(argumentNumber, arguments);
 
-    if (isArgumentAClass(argumentNumber, arguments)) resourceName = ((OWLClass)arguments.get(argumentNumber)).getClassName();
-    else if (isArgumentAProperty(argumentNumber, arguments)) resourceName = ((OWLProperty)arguments.get(argumentNumber)).getPropertyName();
-    else if (isArgumentAnIndividual(argumentNumber, arguments)) resourceName = ((OWLIndividual)arguments.get(argumentNumber)).getIndividualName();
+    if (isArgumentAClass(argumentNumber, arguments)) resourceName = ((ClassArgument)arguments.get(argumentNumber)).getClassName();
+    else if (isArgumentAProperty(argumentNumber, arguments)) resourceName = ((PropertyArgument)arguments.get(argumentNumber)).getPropertyName();
+    else if (isArgumentAnIndividual(argumentNumber, arguments)) resourceName = ((IndividualArgument)arguments.get(argumentNumber)).getIndividualName();
 
     return resourceName;
   } // getArgumentAsAResourceName
@@ -321,7 +321,7 @@ public class SWRLBuiltInUtil
   {
     checkThatArgumentIsAProperty(argumentNumber, arguments);
 
-    return ((OWLProperty)arguments.get(argumentNumber)).getPropertyName();
+    return ((PropertyArgument)arguments.get(argumentNumber)).getPropertyName();
   } // getArgumentAsAPropertyName
 
   public static void checkArgumentNumber(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException
@@ -623,7 +623,7 @@ public class SWRLBuiltInUtil
   public static void checkForUnboundArguments(List<BuiltInArgument> arguments, String message) throws BuiltInException
   {
     if (hasUnboundArguments(arguments))
-      throw new BuiltInException(message + " '" + getFirstUnboundArgument(arguments) + "'");
+      throw new BuiltInException(message + " (0-offset) argument #" + getFirstUnboundArgument(arguments));
   } // checkForUnboundArguments
 
   public static void checkForNonVariableArguments(List<BuiltInArgument> arguments, String message) throws BuiltInException
@@ -645,22 +645,29 @@ public class SWRLBuiltInUtil
     return arguments.get(argumentNumber).getVariableName(); // Will throw an exception if it does not contain a variable name
   } // getVariableName
 
+  public static String getPrefixedVariableName(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException
+  {
+    checkArgumentNumber(argumentNumber, arguments);
+
+    return arguments.get(argumentNumber).getPrefixedVariableName(); // Will throw an exception if it does not contain a variable name
+  } // getPrefixedVariableName
+
   private static String makeInvalidArgumentTypeMessage(BuiltInArgument argument, String expectedTypeName) throws BuiltInException
   {
     String message = "expecting " + expectedTypeName + ", got ";
     if (argument.isUnbound()) message += "unbound argument with variable name '" + argument.getVariableName() + "'";
     else {
       if (argument instanceof ClassArgument) {
-        OWLClass owlClass = (OWLClass)argument;
-        message += "class with name '" + owlClass.getClassName() + "'";
+        ClassArgument classArgument = (ClassArgument)argument;
+        message += "class with name '" + classArgument.getClassName() + "'";
       } else if (argument instanceof PropertyArgument) {
-        OWLProperty property = (OWLProperty)argument;
-        message += "property with name '" + property.getPropertyName() + "'";
+        PropertyArgument propertyArgument = (PropertyArgument)argument;
+        message += "property with name '" + propertyArgument.getPropertyName() + "'";
       } else if (argument instanceof IndividualArgument) {
-        OWLIndividual individual = (OWLIndividual)argument;
-        message += "individual with name '" + individual.getIndividualName() + "'";
+        IndividualArgument individualArgument = (IndividualArgument)argument;
+        message += "individual with name '" + individualArgument.getIndividualName() + "'";
       } else if (argument instanceof DatatypeValueArgument) {
-        OWLDatatypeValue literal = (OWLDatatypeValue)argument;
+        DatatypeValueArgument literal = (DatatypeValueArgument)argument;
         message += "literal with value '" + literal.toString() + "'";
       } else message += "unknown type '" + argument.getClass().getName() + "'";
     } // if
@@ -683,15 +690,15 @@ public class SWRLBuiltInUtil
     argument = arguments.get(argumentNumber);
 
     if (argument instanceof ClassArgument) {
-      OWLClass owlClass = (OWLClass)argument;
-      result = owlClass.getClassName();
+      ClassArgument classArgument = (ClassArgument)argument;
+      result = classArgument.getClassName();
     } else if (argument instanceof PropertyArgument) {
-      OWLProperty property = (OWLProperty)argument;
-      result = property.getPropertyName();
+      PropertyArgument propertyArgument = (PropertyArgument)argument;
+      result = propertyArgument.getPropertyName();
     } else if (argument instanceof IndividualArgument) {
-      OWLIndividual individual = (OWLIndividual)argument;
-      result = individual.getIndividualName();
-    } else if (argument instanceof DatatypeValueArgument) {
+      IndividualArgument individualArgument = (IndividualArgument)argument;
+      result = individualArgument.getIndividualName();
+    } else if (argument instanceof OWLDatatypeValue) {
       OWLDatatypeValue literal = (OWLDatatypeValue)argument;
       if (literal.isNumeric()) result = literal.getNumber();
       else if (literal.isString()) result = literal.getString();
@@ -705,9 +712,9 @@ public class SWRLBuiltInUtil
    ** Create a string that represents a unique invocation pattern for a built-in for a bridge/rule/built-in/argument combination.  
    */
   public static String createInvocationPattern(SWRLRuleEngineBridge invokingBridge, String invokingRuleName, int invokingBuiltInIndex,
-                                               List<BuiltInArgument> arguments) throws BuiltInException
+                                               boolean isInConsequent, List<BuiltInArgument> arguments) throws BuiltInException
   {
-    String pattern = "" + invokingBridge.hashCode() + "." + invokingRuleName + "." + invokingBuiltInIndex;
+    String pattern = "" + invokingBridge.hashCode() + "." + invokingRuleName + "." + invokingBuiltInIndex + "." + isInConsequent;
 
     for (int i = 0; i < arguments.size(); i++) pattern += "." + getArgumentAsAPropertyValue(i, arguments);
 
@@ -728,7 +735,8 @@ public class SWRLBuiltInUtil
     } // for
   } // checkForUnboundArguments
 
-  public static void generateBuiltInBindings(SWRLRuleEngineBridge bridge, String ruleName, String builtInName, int builtInIndex, List<BuiltInArgument> arguments)
+  public static void generateBuiltInBindings(SWRLRuleEngineBridge bridge, String ruleName, String builtInName, int builtInIndex,
+                                             List<BuiltInArgument> arguments)
     throws BuiltInException
   {
     List<Integer> multiArgumentIndexes = getMultiArgumentIndexes(arguments);

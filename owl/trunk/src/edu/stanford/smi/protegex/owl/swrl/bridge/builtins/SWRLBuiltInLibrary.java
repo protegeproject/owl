@@ -19,12 +19,14 @@ public interface SWRLBuiltInLibrary
   SWRLRuleEngineBridge getInvokingBridge() throws BuiltInException;
   String getInvokingRuleName() throws BuiltInException;
   int getInvokingBuiltInIndex() throws BuiltInException;
+  boolean getIsInConsequent() throws BuiltInException;
 
   void reset() throws BuiltInException;
   void invokeResetMethod(SWRLRuleEngineBridge bridge) throws BuiltInException;
 
   boolean invokeBuiltInMethod(Method method, SWRLRuleEngineBridge bridge, String ruleName, 
-                              String prefix, String builtInMethodName, int builtInIndex, List<BuiltInArgument> arguments) 
+                              String prefix, String builtInMethodName, int builtInIndex, boolean isInConsequent,
+                              List<BuiltInArgument> arguments) 
     throws BuiltInException;
 
 } // SWRLBuiltInLibrary

@@ -70,6 +70,16 @@ public class SWRLOWLUtil
     if (errors.size() != 0) throwException("error creating output OWL file '" + outputOWLFileName + "': " + errors);
   } // writeJenaOWLModel2File
   
+  public static OWLNamedClass createOWLNamedClass(OWLModel owlModel, String className)
+    throws SWRLOWLUtilException
+  {
+    OWLNamedClass cls = owlModel.createOWLNamedClass(className);
+
+    if (cls == null) throw new SWRLOWLUtilException("cannot create OWL class '" + className + "'");
+
+    return cls;
+  } // createOWLNamedClass
+
   public static OWLIndividual createIndividualOfClass(OWLModel owlModel, String className)
     throws SWRLOWLUtilException
   {
@@ -1177,9 +1187,9 @@ public class SWRLOWLUtil
     return !owlModel.getInconsistentClasses().isEmpty();
   } // hasInconsistentClasses
 
-  public static String createNewResourceName(OWLModel owlModel, String prefix) 
+  public static String createNewResourceName(OWLModel owlModel, String localNamePrefix) 
   {
-    return owlModel.createNewResourceName(prefix);
+    return owlModel.createNewResourceName(localNamePrefix);
   } // createNewResourceName
 
   public static OWLNamedClass getOWLThingClass(OWLModel owlModel) 

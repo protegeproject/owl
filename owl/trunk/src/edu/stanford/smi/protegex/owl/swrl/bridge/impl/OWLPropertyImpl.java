@@ -22,7 +22,7 @@ import java.util.*;
 public abstract class OWLPropertyImpl extends BuiltInArgumentImpl implements OWLProperty
 {
   // There is an equals method defined on this class.
-  private String propertyName;
+  private String propertyName, prefixedPropertyName;
   private Set<String> domainClassNames, rangeClassNames, superPropertyNames, subPropertyNames, 
     equivalentPropertyNames, equivalentPropertySuperPropertyNames;
   
@@ -34,6 +34,7 @@ public abstract class OWLPropertyImpl extends BuiltInArgumentImpl implements OWL
 
     property = SWRLOWLUtil.getOWLProperty(owlModel, propertyName);
     if (property == null) throw new InvalidPropertyNameException(propertyName);
+    prefixedPropertyName = property.getPrefixedName();
 
     domainClassNames = SWRLOWLUtil.rdfResources2Names(property.getUnionDomain(true));
     rangeClassNames = SWRLOWLUtil.rdfResources2Names(property.getUnionRangeClasses());
@@ -56,10 +57,12 @@ public abstract class OWLPropertyImpl extends BuiltInArgumentImpl implements OWL
   public OWLPropertyImpl(String propertyName) 
   {
     this.propertyName = propertyName;
+    prefixedPropertyName = propertyName;
     initialize();
   } // OWLPropertyImpl
   
   public String getPropertyName() { return propertyName; }
+  public String getPrefixedPropertyName() { return prefixedPropertyName; }
   public Set<String> getDomainClassNames() { return domainClassNames; }
   public Set<String> getRangeClassNames() { return rangeClassNames; }
   public Set<String> getSuperPropertyNames() { return superPropertyNames; }
@@ -67,9 +70,9 @@ public abstract class OWLPropertyImpl extends BuiltInArgumentImpl implements OWL
   public Set<String> getEquivalentPropertyNames() { return equivalentPropertyNames; }
   public Set<String> getEquivalentPropertySuperPropertyNames() { return equivalentPropertySuperPropertyNames; }
   
-  public String getRepresentation() { return getPropertyName(); }
+  public String getRepresentation() { return getPrefixedPropertyName(); }
 
-  public String toString() { return getPropertyName(); }
+  public String toString() { return getPrefixedPropertyName(); }
 
   public boolean equals(Object obj)
   {
@@ -77,6 +80,7 @@ public abstract class OWLPropertyImpl extends BuiltInArgumentImpl implements OWL
     if((obj == null) || (obj.getClass() != this.getClass())) return false;
     OWLPropertyImpl impl = (OWLPropertyImpl)obj;
     return (getPropertyName() == impl.getPropertyName() || (getPropertyName() != null && getPropertyName().equals(impl.getPropertyName()))) && 
+      (getPrefixedPropertyName() == impl.getPrefixedPropertyName() || (getPrefixedPropertyName() != null && getPrefixedPropertyName().equals(impl.getPrefixedPropertyName()))) && 
       (domainClassNames == impl.domainClassNames || (domainClassNames != null && domainClassNames.equals(impl.domainClassNames))) &&
       (rangeClassNames == impl.rangeClassNames || (rangeClassNames != null && rangeClassNames.equals(impl.rangeClassNames))) &&
       (subPropertyNames == impl.subPropertyNames || (subPropertyNames != null && subPropertyNames.equals(impl.subPropertyNames))) &&
@@ -89,6 +93,7 @@ public abstract class OWLPropertyImpl extends BuiltInArgumentImpl implements OWL
   {
     int hash = 767;
     hash = hash + (null == getPropertyName() ? 0 : getPropertyName().hashCode());
+    hash = hash + (null == getPrefixedPropertyName() ? 0 : getPrefixedPropertyName().hashCode());
     hash = hash + (null == domainClassNames ? 0 : domainClassNames.hashCode());
     hash = hash + (null == rangeClassNames ? 0 : rangeClassNames.hashCode());
     hash = hash + (null == subPropertyNames ? 0 : subPropertyNames.hashCode());

@@ -166,7 +166,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
     BuiltInArgument value = arguments.get(1);
     Set<BuiltInArgument> set = sets.containsKey(collectionID) ? sets.get(collectionID) : new HashSet<BuiltInArgument>();
     String invocationPattern  = SWRLBuiltInUtil.createInvocationPattern(getInvokingBridge(), 
-                                                                        getInvokingRuleName(), getInvokingBuiltInIndex(), 
+                                                                        getInvokingRuleName(), getInvokingBuiltInIndex(), getIsInConsequent(),
                                                                         arguments.subList(1, arguments.size()));
     if (!invocationPatterns.contains(invocationPattern)) {
       invocationPatterns.add(invocationPattern);
@@ -184,7 +184,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
     List<BuiltInArgument> list = lists.containsKey(collectionID) ? lists.get(collectionID) : new ArrayList<BuiltInArgument>();
     BuiltInArgument value = arguments.get(1);
     String invocationPattern  = SWRLBuiltInUtil.createInvocationPattern(getInvokingBridge(), 
-                                                                        getInvokingRuleName(), getInvokingBuiltInIndex(), 
+                                                                        getInvokingRuleName(), getInvokingBuiltInIndex(), getIsInConsequent(),
                                                                         arguments.subList(1, arguments.size()));
     if (!invocationPatterns.contains(invocationPattern)) {
       invocationPatterns.add(invocationPattern);
@@ -202,7 +202,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
     BuiltInArgument value = arguments.get(1);
     SortedSet<BuiltInArgument> sortedSet = sortedSets.containsKey(collectionID) ? sortedSets.get(collectionID) : new TreeSet<BuiltInArgument>();
     String invocationPattern  = SWRLBuiltInUtil.createInvocationPattern(getInvokingBridge(), 
-                                                                        getInvokingRuleName(), getInvokingBuiltInIndex(), 
+                                                                        getInvokingRuleName(), getInvokingBuiltInIndex(), getIsInConsequent(),
                                                                         arguments.subList(1, arguments.size()));
     if (!invocationPatterns.contains(invocationPattern)) {
       invocationPatterns.add(invocationPattern);
@@ -311,7 +311,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
     String ruleName = getInvokingRuleName();
     String collectionName = SWRLBuiltInUtil.getVariableName(collectionArgumentNumber, arguments);
     boolean hasInvocationPattern  = (arguments.size() > coreArgumentNumber);
-    String invocationPattern = !hasInvocationPattern ? "" : SWRLBuiltInUtil.createInvocationPattern(getInvokingBridge(), ruleName, 0, 
+    String invocationPattern = !hasInvocationPattern ? "" : SWRLBuiltInUtil.createInvocationPattern(getInvokingBridge(), ruleName, 0, false,
                                                                                                     arguments.subList(coreArgumentNumber, arguments.size()));
     return ruleName + ":" + collectionName + ":" + invocationPattern;
   } // getCollectionIDInOperation

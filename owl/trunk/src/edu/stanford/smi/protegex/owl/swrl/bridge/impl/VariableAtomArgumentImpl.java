@@ -9,11 +9,12 @@ import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.*;
  */
 public class VariableAtomArgumentImpl implements VariableAtomArgument
 {
-  private String variableName;
+  private String variableName, prefixedVariableName;
 
-  public VariableAtomArgumentImpl(String variableName) { this.variableName = variableName; }
+  public VariableAtomArgumentImpl(String variableName, String prefixedVariableName) { this.variableName = variableName; this.prefixedVariableName = prefixedVariableName; }
 
   public String getVariableName() { return variableName; }
+  public String getPrefixedVariableName() { return prefixedVariableName; }
 
-  public String toString() { return "?" + getVariableName(); }
+  public String toString() { return "?" + getPrefixedVariableName(); }
 } // VariableAtomArgumentImpl

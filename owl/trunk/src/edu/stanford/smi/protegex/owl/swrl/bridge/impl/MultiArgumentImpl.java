@@ -13,15 +13,15 @@ public class MultiArgumentImpl extends BuiltInArgumentImpl implements MultiArgum
 {
   private List<BuiltInArgument> arguments;
 
-  public MultiArgumentImpl(String variableName)
+  public MultiArgumentImpl(String variableName, String prefixedVariableName)
   {
-    super(variableName);
+    super(variableName, prefixedVariableName);
     arguments = new ArrayList<BuiltInArgument>();
   } // MultiArgumentImpl
 
-  public MultiArgumentImpl(String variableName, List<BuiltInArgument> arguments)
+  public MultiArgumentImpl(String variableName, String prefixedVariableName, List<BuiltInArgument> arguments)
   {
-    super(variableName);
+    super(variableName, prefixedVariableName);
     this.arguments = arguments;
   } // MultiArgumentImpl
 

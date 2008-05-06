@@ -12,11 +12,13 @@ import java.util.Set;
 public interface OWLIndividual extends OWLPropertyValue, IndividualArgument, ObjectValue
 {
   String getIndividualName();
+  String getPrefixedIndividualName();
 
-  Set<String> getDefiningClassNames();
-  Set<String> getDefiningSuperclassNames();
-  Set<String> getDefiningEquivalentClassNames();
-  Set<String> getDefiningEquivalentClassSuperclassNames();
-  Set<String> getSameAsIndividualNames();
+  Set<OWLClass> getDefiningClasses();
+  Set<OWLClass> getDefiningSuperclasses();
+  Set<OWLClass> getDefiningEquivalentClasses();
+  Set<OWLClass> getDefiningEquivalentClassSuperclasses();
+  Set<OWLIndividual> getSameAsIndividuals();
+
   void write2OWL(OWLModel owlModel) throws SWRLRuleEngineBridgeException;
 } // OWLIndividual

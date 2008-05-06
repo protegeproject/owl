@@ -30,6 +30,8 @@ public interface SWRLRuleEngineBridge extends SWRLRuleEngine, SQWRLQueryEngine
   void inferIndividual(OWLIndividual owlIndividual) throws SWRLRuleEngineBridgeException;
   
   // The create methods can be used by built-ins to assert new axioms into a bridge and also reflect them in the underlying engine
+  void createOWLClass(String className) throws SWRLRuleEngineBridgeException;
+  void createOWLClass(String className, String superclassName) throws SWRLRuleEngineBridgeException;
   OWLIndividual createOWLIndividual() throws SWRLRuleEngineBridgeException;
   void createOWLIndividual(OWLIndividual owlIndividual) throws SWRLRuleEngineBridgeException;
   OWLIndividual createOWLIndividual(OWLClass owlClass) throws SWRLRuleEngineBridgeException;
@@ -46,11 +48,12 @@ public interface SWRLRuleEngineBridge extends SWRLRuleEngine, SQWRLQueryEngine
     throws SWRLRuleEngineBridgeException;
   void createOWLObjectPropertyAssertionAxioms(Set<OWLObjectPropertyAssertionAxiom> axioms) throws SWRLRuleEngineBridgeException;
 
+  boolean isClass(String className);
   boolean isCreatedIndividual(String individualName);
   boolean isCreatedPropertyAssertionAxiom(OWLPropertyAssertionAxiom axiom);
 
   // Built-in invocation and argument binding 
-  boolean invokeSWRLBuiltIn(String ruleName, String builtInName, int builtInIndex, List<BuiltInArgument> arguments) throws BuiltInException;
+  boolean invokeSWRLBuiltIn(String ruleName, String builtInName, int builtInIndex, boolean isInConsequent, List<BuiltInArgument> arguments) throws BuiltInException;
   void generateBuiltInBinding(String ruleName, String builtInName, int builtInIndex, List<BuiltInArgument> arguments) throws BuiltInException;
 
   // Mapper to non OWL storage formats
@@ -68,6 +71,7 @@ public interface SWRLRuleEngineBridge extends SWRLRuleEngine, SQWRLQueryEngine
   int getNumberOfImportedAxioms();
   int getNumberOfInferredIndividuals();
   int getNumberOfInferredPropertyAssertionAxioms();
+  int getNumberOfCreatedClasses();
   int getNumberOfCreatedIndividuals();
   int getNumberOfCreatedPropertyAssertionAxioms();
 

@@ -490,6 +490,10 @@ public class ResultImpl implements ResultGenerator, SQWRLResult, Serializable
               ", isOrdered: " + isOrdered + ", isAscending " + isAscending + ", isDistinct: " + isDistinct + 
               ", hasAggregates: " + hasAggregates + "]\n";
 
+    result += "[columnDisplayNames: ";
+    for (String columnDisplayName : columnDisplayNames) result += "" + columnDisplayName + "";
+    result += "]\n";
+
     for (List<ResultValue> row : rows) {
       for (ResultValue value : row) {
         result += "" + value + " ";

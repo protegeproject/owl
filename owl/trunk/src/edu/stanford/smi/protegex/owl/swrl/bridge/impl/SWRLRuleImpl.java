@@ -18,7 +18,7 @@ import java.util.*;
 public class SWRLRuleImpl implements SWRLRule
 {
   private String ruleName;
- private List<Atom> bodyAtoms, headAtoms;
+  private List<Atom> bodyAtoms, headAtoms;
   private Set<String> referencedVariableNames;
   private ResultImpl sqwrlResult = null;
   private boolean hasSQWRLBuiltIns, hasSQWRLCollectionBuiltIns;
@@ -146,7 +146,7 @@ public class SWRLRuleImpl implements SWRLRule
     for (Atom atom : atoms) {
       if (atom instanceof BuiltInAtom) {
         BuiltInAtom builtInAtom = (BuiltInAtom)atom;
-        if (builtInNames.contains(builtInAtom.getBuiltInName())) result.add(builtInAtom);
+        if (builtInNames.contains(builtInAtom.getBuiltInPrefixedName())) result.add(builtInAtom);
         } // if
     } // for
     return result;
@@ -200,7 +200,7 @@ public class SWRLRuleImpl implements SWRLRule
      preprocessBuiltInIndexes();
 
      for (BuiltInAtom builtInAtom : getBuiltInAtomsFromHead(SQWRLNames.getHeadBuiltInNames())) {
-       String builtInName = builtInAtom.getBuiltInName();
+       String builtInName = builtInAtom.getBuiltInPrefixedName();
        hasSQWRLBuiltIns = true;
        
        for (BuiltInArgument argument : builtInAtom.getArguments()) {
@@ -209,7 +209,7 @@ public class SWRLRuleImpl implements SWRLRule
          int argumentIndex = 0, columnIndex;
 
          if (isArgumentAVariable) {
-           variableName = argument.getVariableName(); selectedVariableNames.add(variableName);
+           variableName = argument.getPrefixedVariableName(); selectedVariableNames.add(variableName);
          } // if
          
          if (builtInName.equalsIgnoreCase(SQWRLNames.Select)) {
@@ -266,7 +266,6 @@ public class SWRLRuleImpl implements SWRLRule
       String collectionName = builtInAtom.getArgumentVariableName(0); // First argument is the collection name
 
       hasSQWRLCollectionBuiltIns = true;
-      System.err.println("preprocessSQWRLMakeBuiltIns");
 
       builtInAtom.setIsSQWRLMakeCollection();
       
@@ -295,14 +294,13 @@ public class SWRLRuleImpl implements SWRLRule
     Set<String> cascadedUnboundVariableNames = new HashSet<String>();
 
     for (BuiltInAtom builtInAtom : getBuiltInAtomsFromBody()) {
-      String builtInName = builtInAtom.getBuiltInName();
+      String builtInName = builtInAtom.getBuiltInPrefixedName();
       if (SQWRLNames.getCollectionOperationBuiltInNames().contains(builtInName)) {
 
         if (builtInAtom.getNumberOfArguments() < 1) 
           throw new SQWRLException("collection-operation built-ins must have at least one argument");
 
         hasSQWRLCollectionBuiltIns = true;
-        System.err.println("preprocessSQWRLOperationBuiltIns");
 
         for (String variableName : builtInAtom.getArgumentsVariableNames()) {
           if (makeCollectionPatternArguments.containsKey(variableName)) { // Variable refers to a set

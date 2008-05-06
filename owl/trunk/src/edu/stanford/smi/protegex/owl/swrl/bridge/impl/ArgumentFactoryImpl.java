@@ -36,7 +36,6 @@ public class ArgumentFactoryImpl extends ArgumentFactory
   public DatatypeValueArgument createDatatypeValueArgument(PrimitiveXSDType xsd) { return new OWLDatatypeValueImpl(xsd); }
   public DatatypeValueArgument createDatatypeValueArgument(OWLModel owlModel, RDFSLiteral literal) throws DatatypeConversionException { return new OWLDatatypeValueImpl(owlModel, literal); }
 
-  public MultiArgument createMultiArgument(String variableName) { return new MultiArgumentImpl(variableName); }
-  public MultiArgument createMultiArgument(String variableName, List<BuiltInArgument> arguments) { return new MultiArgumentImpl(variableName, arguments); }
-
+  public MultiArgument createMultiArgument(String variableName, String prefixedVariableName) { return new MultiArgumentImpl(variableName, prefixedVariableName); }
+  public MultiArgument createMultiArgument(String variableName, String prefixedVariableName, List<BuiltInArgument> arguments) { return new MultiArgumentImpl(variableName, prefixedVariableName, arguments); }
 } // ArgumentFactory
