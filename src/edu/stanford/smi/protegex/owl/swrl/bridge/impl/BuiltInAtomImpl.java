@@ -20,7 +20,7 @@ import java.util.*;
  */
 public class BuiltInAtomImpl extends AtomImpl implements BuiltInAtom
 {
-  private String builtInName;
+  private String builtInName, builtInPrefixedName;
   private List<BuiltInArgument> arguments; 
   private int builtInIndex = -1; // Index of this built-in atom in rule body; left-to-right, first built-in index is 0, second in 1, and so on
   private boolean sqwrlVariablesUsed = false, isASQWRLMakeCollection = false;
@@ -28,19 +28,23 @@ public class BuiltInAtomImpl extends AtomImpl implements BuiltInAtom
   public BuiltInAtomImpl(OWLModel owlModel, SWRLBuiltinAtom atom) throws OWLFactoryException, DatatypeConversionException
   {
     builtInName = (atom.getBuiltin() != null) ? atom.getBuiltin().getName() : null;
+    builtInPrefixedName = (atom.getBuiltin() != null) ? atom.getBuiltin().getPrefixedName() : null;
 
     if (builtInName == null) throw new OWLFactoryException("empty built-in name in SWRLBuiltinAtom: " + atom);
 
     arguments = buildArgumentList(owlModel, atom);
   } // BuiltInAtomImpl
 
-  public BuiltInAtomImpl(String builtInName, List<BuiltInArgument> arguments)
+  public BuiltInAtomImpl(String builtInName, String builtInPrefixedName, List<BuiltInArgument> arguments)
   {
     this.builtInName = builtInName;
+    this.builtInPrefixedName = builtInPrefixedName;
     this.arguments = arguments;
   } // BuiltInArgument
 
   public String getBuiltInName() { return builtInName; }  
+  public String getBuiltInPrefixedName() { return builtInPrefixedName; }  
+
   public List<BuiltInArgument> getArguments() { return arguments; }
   public int getNumberOfArguments() { return arguments.size(); }
   public int getBuiltInIndex() { return builtInIndex; }
@@ -131,7 +135,7 @@ public class BuiltInAtomImpl extends AtomImpl implements BuiltInAtom
       Object o = iterator.next();
       if (o instanceof SWRLVariable) {
         SWRLVariable variable = (SWRLVariable)o;
-	BuiltInArgument builtInArgument = OWLFactory.createVariableBuiltInArgument(variable.getName());
+	BuiltInArgument builtInArgument = OWLFactory.createVariableBuiltInArgument(variable.getName(), variable.getPrefixedName());
         result.add(builtInArgument);
         addReferencedVariableName(variable.getName());
       } else if (o instanceof edu.stanford.smi.protegex.owl.model.OWLIndividual) {
@@ -156,7 +160,7 @@ public class BuiltInAtomImpl extends AtomImpl implements BuiltInAtom
 
   public String toString() 
   {
-    String result = getBuiltInName() + "(";
+    String result = builtInPrefixedName + "(";
     boolean isFirst = true;
 
     for (BuiltInArgument argument : getArguments()) {

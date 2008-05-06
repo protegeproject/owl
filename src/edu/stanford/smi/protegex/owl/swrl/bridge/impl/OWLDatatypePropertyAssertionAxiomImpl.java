@@ -35,8 +35,8 @@ public class OWLDatatypePropertyAssertionAxiomImpl extends OWLPropertyAssertionA
     subjectIndividual = SWRLOWLUtil.getOWLIndividual(owlModel, subjectIndividualName);
     if (subjectIndividual == null) throw new InvalidIndividualNameException(subjectIndividualName);
 
-    if (rangeDatatype != null) objectValue = owlModel.createRDFSLiteral(getObject().getString(), rangeDatatype);
-    else objectValue = getObject().getString();
+    if (getObject().isString()) objectValue = getObject().getString();
+    else objectValue = owlModel.createRDFSLiteral(getObject().getString(), rangeDatatype);   
 
     if (!subjectIndividual.hasPropertyValue(property, objectValue, false)) subjectIndividual.addPropertyValue(property, objectValue);    
   } // write2OWL

@@ -39,10 +39,9 @@ public class SQWRLTest
 
       SQWRLResult result = ruleEngine.getSQWRLResult("Rule-6");
       while (result.hasNext()) {
-        DatatypeValue value = result.getDatatypeValue("?y");
-        System.err.println("value: " + value);
-        System.err.println("value isString: " + value.isString());
-        System.err.println("value isBoolean: " + value.isBoolean());
+        ObjectValue p = result.getObjectValue("?p");
+        ObjectValue c = result.getObjectValue("?c");
+        System.err.println("value: p=" + p + ", c=" + c);
         result.next();
       } // while
 

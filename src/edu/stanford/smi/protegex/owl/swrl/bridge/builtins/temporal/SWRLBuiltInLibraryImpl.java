@@ -25,6 +25,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
   public static final String TemporalLibraryName = "SWRLTemporalBuiltIns";
   
   public static final String Prefix = "temporal:";
+  public static final String Namespace = "http://swrl.stanford.edu/ontologies/built-ins/3.3/temporal.owl#";
   
   private static String TemporalDuration = Prefix + "duration";
   private static String TemporalDurationLessThan = Prefix + "durationLessThan";
@@ -50,13 +51,13 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
   private static String TemporalFinishedBy = Prefix + "finishedBy";
   private static String TemporalIntersects = Prefix + "intersects";
 
-  private static String ValidInstantClassName = Prefix + "ValidInstant";
-  private static String ValidPeriodClassName = Prefix + "ValidPeriod";
-  private static String GranularityClassName = Prefix + "Granularity";
-  private static String HasGranularityPropertyName = Prefix + "hasGranularity";
-  private static String HasTimePropertyName = Prefix + "hasTime";
-  private static String HasStartTimePropertyName = Prefix + "hasStartTime";
-  private static String HasFinishTimePropertyName = Prefix + "hasFinishTime";
+  private static String ValidInstantClassName = Namespace + "ValidInstant";
+  private static String ValidPeriodClassName = Namespace + "ValidPeriod";
+  private static String GranularityClassName = Namespace + "Granularity";
+  private static String HasGranularityPropertyName = Namespace + "hasGranularity";
+  private static String HasTimePropertyName = Namespace + "hasTime";
+  private static String HasStartTimePropertyName = Namespace + "hasStartTime";
+  private static String HasFinishTimePropertyName = Namespace + "hasFinishTime";
 
   private Temporal temporal;
   private ArgumentFactory argumentFactory;
@@ -385,9 +386,9 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
     } else if (SWRLBuiltInUtil.isArgumentAnIndividual(argumentNumber, arguments)) {
       String individualName = SWRLBuiltInUtil.getArgumentAsAnIndividualName(argumentNumber, arguments);
       if (SWRLOWLUtil.isIndividualOfClass(owlModel, individualName, GranularityClassName)) {
-        int colonIndex = individualName.indexOf(':');
-        if (colonIndex == -1) granularityName = individualName;
-        else granularityName = individualName.substring(colonIndex + 1, individualName.length());
+        int hashIndex = individualName.indexOf('#');
+        if (hashIndex == -1) granularityName = individualName;
+        else granularityName = individualName.substring(hashIndex + 1, individualName.length());
         granularity = Temporal.getIntegerGranularityRepresentation(granularityName);
       } else throw new InvalidBuiltInArgumentException(argumentNumber, "individual '" + individualName + "' is not a " +
                                                        GranularityClassName);

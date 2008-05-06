@@ -12,6 +12,7 @@ import java.util.List;
 public interface BuiltInAtom extends Atom
 {
   String getBuiltInName();
+  String getBuiltInPrefixedName();
   List<BuiltInArgument> getArguments();
   int getNumberOfArguments();
   int getBuiltInIndex();

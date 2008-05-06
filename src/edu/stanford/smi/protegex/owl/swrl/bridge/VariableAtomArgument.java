@@ -9,4 +9,5 @@ import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.*;
 public interface VariableAtomArgument extends AtomArgument
 {
   String getVariableName();
+  String getPrefixedVariableName();
 } // VariableAtomArgument

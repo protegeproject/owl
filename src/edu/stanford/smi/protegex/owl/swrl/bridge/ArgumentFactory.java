@@ -40,6 +40,6 @@ public abstract class ArgumentFactory
   public abstract DatatypeValueArgument createDatatypeValueArgument(PrimitiveXSDType xsd);
   public abstract DatatypeValueArgument createDatatypeValueArgument(OWLModel owlModel, RDFSLiteral literal) throws DatatypeConversionException;
 
-  public abstract MultiArgument createMultiArgument(String variableName);
-  public abstract MultiArgument createMultiArgument(String variableName, List<BuiltInArgument> arguments);
+  public abstract MultiArgument createMultiArgument(String variableName, String prefixedVariableName);
+  public abstract MultiArgument createMultiArgument(String variableName, String prefixedVariableName, List<BuiltInArgument> arguments);
 } // ArgumentFactory

@@ -10,6 +10,7 @@ import java.util.Set;
 public interface OWLClass extends ClassArgument, ClassValue, AtomArgument // AtomArgument is for SWRL Full
 {
   String getClassName();
+  String getPrefixedClassName();
 
   Set<String> getSuperclassNames();
   Set<String> getDirectSuperClassNames();

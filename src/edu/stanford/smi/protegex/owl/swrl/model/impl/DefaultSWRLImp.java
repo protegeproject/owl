@@ -25,6 +25,7 @@ import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
 import edu.stanford.smi.protegex.owl.model.OWLObjectProperty;
 import edu.stanford.smi.protegex.owl.model.OWLProperty;
+import edu.stanford.smi.protegex.owl.model.RDFList;
 import edu.stanford.smi.protegex.owl.swrl.model.SWRLAtomList;
 import edu.stanford.smi.protegex.owl.swrl.model.SWRLBuiltin;
 import edu.stanford.smi.protegex.owl.swrl.model.SWRLImp;
@@ -148,7 +149,10 @@ public class DefaultSWRLImp extends AbstractSWRLIndividual implements SWRLImp
     Object propertyValue = getPropertyValue(getOWLModel().getRDFProperty(SWRLNames.Slot.HEAD)); 
 
     if (propertyValue instanceof SWRLAtomList) return (SWRLAtomList)propertyValue;
-    else return null;
+    else if (propertyValue instanceof RDFList) { // To deal with: <swrl:head rdf:parseType="Collection">
+      ((RDFList)propertyValue).setRDFType(getOWLModel().getSystemFrames().getAtomListCls());
+      return (SWRLAtomList)getOWLModel().getFrame(((RDFList)propertyValue).getName());
+    } else return null;
   } // getHead
 
   public SWRLAtomList getBody() 
@@ -156,7 +160,10 @@ public class DefaultSWRLImp extends AbstractSWRLIndividual implements SWRLImp
     Object propertyValue = getPropertyValue(getOWLModel().getRDFProperty(SWRLNames.Slot.BODY)); 
 
     if (propertyValue instanceof SWRLAtomList) return (SWRLAtomList)propertyValue;
-    else return null;
+    else if (propertyValue instanceof RDFList) { // To deal with: <swrl:body rdf:parseType="Collection">
+      ((RDFList)propertyValue).setRDFType(getOWLModel().getSystemFrames().getAtomListCls());
+      return (SWRLAtomList)getOWLModel().getFrame(((RDFList)propertyValue).getName());
+    } else return null;
   } // getBody
 
   public void setBody(SWRLAtomList swrlAtomList) { setPropertyValue(getOWLModel().getRDFProperty(SWRLNames.Slot.BODY), swrlAtomList); } 

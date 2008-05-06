@@ -16,12 +16,14 @@ public abstract class AbstractSWRLBuiltInLibrary implements SWRLBuiltInLibrary
 {
   private String libraryName;
 
-  // Bridge, rule and index within rule of built-in currently invoking its associated Java implementation. The invokingRuleName and
-  // invokingBuiltInIndex variables are valid only when a built-in currently being invoked so should only be retrieved through their
-  // asociated accessor methods from within a built-in; the invokingBridge method is valid only in built-ins and in the reset method.
+  // Bridge, rule name, built-in index, and head or body location within rule of built-in currently invoking its associated Java
+  // implementation. The invokingRuleName, invokingBuiltInIndex, and isInConsequent variables are valid only when a built-in currently being
+  // invoked so should only be retrieved through their asociated accessor methods from within a built-in; the invokingBridge method is valid
+  // only in built-ins and in the reset method.
   private SWRLRuleEngineBridge invokingBridge;
   private String invokingRuleName = "";
   private int invokingBuiltInIndex = -1;
+  private boolean isInConsequent = false;
 
   public AbstractSWRLBuiltInLibrary(String libraryName) { this.libraryName = libraryName; }
 
@@ -51,6 +53,14 @@ public abstract class AbstractSWRLBuiltInLibrary implements SWRLBuiltInLibrary
     return invokingBuiltInIndex;
   } // getInvokingBuiltInIndex
 
+  public boolean getIsInConsequent() throws BuiltInException
+  {
+    if (invokingBridge == null) 
+      throw new BuiltInException("invalid call to getIsInConsequent - should only be called from within a built-in");
+
+    return isInConsequent;
+  } // getIsInConsequent
+
   public abstract void reset() throws BuiltInException;
 
   public void invokeResetMethod(SWRLRuleEngineBridge bridge) throws BuiltInException
@@ -65,14 +75,15 @@ public abstract class AbstractSWRLBuiltInLibrary implements SWRLBuiltInLibrary
   } // invokeResetMethod
 
   public boolean invokeBuiltInMethod(Method method, SWRLRuleEngineBridge bridge, String ruleName, 
-                                     String prefix, String builtInMethodName, int builtInIndex, List<BuiltInArgument> arguments) 
+                                     String prefix, String builtInMethodName, int builtInIndex, boolean isInConsequent,
+                                     List<BuiltInArgument> arguments) 
     throws BuiltInException
   {
     Boolean result = null;
     String builtInName = prefix + ":" + builtInMethodName;
 
-    synchronized(this) {
-      invokingBridge = bridge; invokingRuleName = ruleName; invokingBuiltInIndex = builtInIndex; 
+    synchronized(this) { // Only one built-in per library may be invoked simultaneously.
+      invokingBridge = bridge; invokingRuleName = ruleName; invokingBuiltInIndex = builtInIndex; this.isInConsequent = isInConsequent;
       
       try { // Invoke the built-in method.
         result = (Boolean)method.invoke(this, new Object[] { arguments });
@@ -90,7 +101,7 @@ public abstract class AbstractSWRLBuiltInLibrary implements SWRLBuiltInLibrary
                                    ruleName + "': " + e.getMessage(), e);        
       } // try
       
-      invokingBridge = null; invokingRuleName = ""; invokingBuiltInIndex = -1;
+      invokingBridge = null; invokingRuleName = ""; invokingBuiltInIndex = -1; this.isInConsequent = false;
     } // synchronized
 
     return result.booleanValue();

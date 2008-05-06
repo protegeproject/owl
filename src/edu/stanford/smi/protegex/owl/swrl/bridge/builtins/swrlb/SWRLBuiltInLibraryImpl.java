@@ -581,7 +581,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
 
     String input = SWRLBuiltInUtil.getArgumentAsAString(1, arguments);
     String regex = SWRLBuiltInUtil.getArgumentAsAString(2, arguments);
-    String replacement = SWRLBuiltInUtil.getArgumentAsAString(2, arguments);
+    String replacement = SWRLBuiltInUtil.getArgumentAsAString(3, arguments);
 
     Pattern p = Pattern.compile(regex);
     Matcher m = p.matcher(input);
@@ -638,7 +638,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
 
     tokenizer = new StringTokenizer(inputString.trim(), delimeters);
     
-    MultiArgument multiArgument = argumentFactory.createMultiArgument(SWRLBuiltInUtil.getVariableName(0, arguments));
+    MultiArgument multiArgument = argumentFactory.createMultiArgument(SWRLBuiltInUtil.getVariableName(0, arguments), SWRLBuiltInUtil.getPrefixedVariableName(0, arguments));
     while (tokenizer.hasMoreTokens()) {
       String token = tokenizer.nextToken();
       multiArgument.addArgument(argumentFactory.createDatatypeValueArgument(token));

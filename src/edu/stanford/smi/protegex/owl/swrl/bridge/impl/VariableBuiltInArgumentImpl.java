@@ -9,14 +9,14 @@ import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.*;
  */
 public class VariableBuiltInArgumentImpl extends BuiltInArgumentImpl implements VariableBuiltInArgument
 {
-  public VariableBuiltInArgumentImpl(String variableName) { super(variableName); }
+  public VariableBuiltInArgumentImpl(String variableName, String prefixedVariableName) { super(variableName, prefixedVariableName); }
 
   public String toString() 
   {
     String result = "";
 
     try {
-      result = "?" + getVariableName();
+      result = "?" + getPrefixedVariableName();
     } catch (BuiltInException e) {
       result = "INVALID VariableBuiltInArgument: " + e.getMessage();
     } // try

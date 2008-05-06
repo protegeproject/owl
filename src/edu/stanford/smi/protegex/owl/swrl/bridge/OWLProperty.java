@@ -13,6 +13,7 @@ import java.util.Set;
 public interface OWLProperty extends PropertyValue, AtomArgument // AtomArgument is for SWRL Full
 {
   String getPropertyName();
+  String getPrefixedPropertyName();
 
   Set<String> getDomainClassNames();
   Set<String> getRangeClassNames();

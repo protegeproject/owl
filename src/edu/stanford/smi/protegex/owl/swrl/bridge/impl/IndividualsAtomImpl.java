@@ -18,7 +18,7 @@ public abstract class IndividualsAtomImpl extends AtomImpl implements Individual
   {
     if (atom.getArgument1() instanceof SWRLVariable) {
       SWRLVariable variable = (SWRLVariable)atom.getArgument1();
-      AtomArgument argument = OWLFactory.createVariableAtomArgument(variable.getName());
+      AtomArgument argument = OWLFactory.createVariableAtomArgument(variable.getName(), variable.getPrefixedName());
       addReferencedVariableName(variable.getName());
       argument1 = argument;
     } else if (atom.getArgument1() instanceof edu.stanford.smi.protegex.owl.model.OWLIndividual) {
@@ -31,7 +31,7 @@ public abstract class IndividualsAtomImpl extends AtomImpl implements Individual
 
     if (atom.getArgument2() instanceof SWRLVariable) {
       SWRLVariable variable = (SWRLVariable)atom.getArgument2();
-      AtomArgument argument = OWLFactory.createVariableAtomArgument(variable.getName());
+      AtomArgument argument = OWLFactory.createVariableAtomArgument(variable.getName(), variable.getPrefixedName());
       addReferencedVariableName(variable.getName());
       argument2 = argument;
     } else if (atom.getArgument2() instanceof edu.stanford.smi.protegex.owl.model.OWLIndividual) {

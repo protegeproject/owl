@@ -111,7 +111,7 @@ public class RelationalMapper implements Mapper, MapperGenerator
       
       while (rs.next()) {
         String individualName = rs.getString(primaryKeyColumnName);
-        result.add(OWLFactory.generateOWLIndividual(individualName));
+        result.add(OWLFactory.createOWLIndividual(individualName));
       } // while
     } catch (JDBCException e) {
       throw new MapperException("JDBC error mapping class '" + className + "': " + e.getMessage());
@@ -153,8 +153,8 @@ public class RelationalMapper implements Mapper, MapperGenerator
       rs = databaseConnection.executeQuery(query);
       
       while (rs.next()) {
-        OWLIndividual subject = OWLFactory.generateOWLIndividual(rs.getString(subjectPrimaryKeyColumnName));
-        OWLIndividual object = OWLFactory.generateOWLIndividual(rs.getString(objectPrimaryKeyColumnName));
+        OWLIndividual subject = OWLFactory.createOWLIndividual(rs.getString(subjectPrimaryKeyColumnName));
+        OWLIndividual object = OWLFactory.createOWLIndividual(rs.getString(objectPrimaryKeyColumnName));
         OWLObjectPropertyAssertionAxiom axiom = OWLFactory.createOWLObjectPropertyAssertionAxiom(subject, owlProperty, object);
         result.add(axiom);
       } // while
@@ -214,7 +214,7 @@ public class RelationalMapper implements Mapper, MapperGenerator
       rs = databaseConnection.executeQuery(query);
       
       while (rs.next()) {
-        OWLIndividual subject = OWLFactory.generateOWLIndividual(rs.getString(subjectPrimaryKeyColumnName));
+        OWLIndividual subject = OWLFactory.createOWLIndividual(rs.getString(subjectPrimaryKeyColumnName));
         OWLDatatypeValue value = OWLFactory.createOWLDatatypeValue(rs.getFloat(valueColumnName)); // TODO: float only
         OWLDatatypePropertyAssertionAxiom axiom = OWLFactory.createOWLDatatypePropertyAssertionAxiom(subject, owlProperty, value);
         result.add(axiom);
@@ -323,7 +323,7 @@ public class RelationalMapper implements Mapper, MapperGenerator
         String serverName  = result.getDatatypeValue("?ddm:serverName").getString();
         int portNumber  = result.getDatatypeValue("?ddm:portNumber").getInt();
 
-        owlDatatypeProperty = OWLFactory.getOWLDatatypeProperty(propertyName);
+        owlDatatypeProperty = OWLFactory.createOWLDatatypeProperty(propertyName);
 
         database = DDMFactory.createDatabase(jdbcDriverName, serverName, databaseName, portNumber);
         if (!databases.contains(database)) databases.add(database);

@@ -281,17 +281,25 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
     boolean result = false;
 
     try {
-      if (isUnboundArgument) {
-        MultiArgument multiArgument = argumentFactory.createMultiArgument(SWRLBuiltInUtil.getVariableName(0, arguments));
-        for (edu.stanford.smi.protegex.owl.model.OWLNamedClass cls : SWRLOWLUtil.getUserDefinedOWLNamedClasses(getInvokingBridge().getOWLModel()))
-          multiArgument.addArgument(argumentFactory.createClassArgument(cls.getName()));
-        arguments.set(0, multiArgument);
-        result = !multiArgument.hasNoArguments();
+      if (getIsInConsequent()) {
+        String className = SWRLBuiltInUtil.getArgumentAsAString(0, arguments);
+        if (!getInvokingBridge().isClass(className)) getInvokingBridge().createOWLClass(className);
+        result = true;
       } else {
-        String className = SWRLBuiltInUtil.getArgumentAsAClassName(0, arguments);
-        result = SWRLOWLUtil.isClass(getInvokingBridge().getOWLModel(), className, false);
+        if (isUnboundArgument) {
+          MultiArgument multiArgument = argumentFactory.createMultiArgument(SWRLBuiltInUtil.getVariableName(0, arguments), SWRLBuiltInUtil.getPrefixedVariableName(0, arguments));
+          for (edu.stanford.smi.protegex.owl.model.OWLNamedClass cls : SWRLOWLUtil.getUserDefinedOWLNamedClasses(getInvokingBridge().getOWLModel()))
+            multiArgument.addArgument(argumentFactory.createClassArgument(cls.getName()));
+          arguments.set(0, multiArgument);
+          result = !multiArgument.hasNoArguments();
+        } else {
+          String className = SWRLBuiltInUtil.getArgumentAsAClassName(0, arguments);
+          result = SWRLOWLUtil.isClass(getInvokingBridge().getOWLModel(), className, false);
+        } // if
       } // if
     } catch (SWRLOWLUtilException e) {
+      throw new BuiltInException(e.getMessage());
+    } catch (SWRLRuleEngineBridgeException e) {
       throw new BuiltInException(e.getMessage());
     } // try
 
@@ -356,7 +364,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
 
     try {
       if (isUnboundArgument) {
-        MultiArgument multiArgument = argumentFactory.createMultiArgument(SWRLBuiltInUtil.getVariableName(0, arguments));
+        MultiArgument multiArgument = argumentFactory.createMultiArgument(SWRLBuiltInUtil.getVariableName(0, arguments), SWRLBuiltInUtil.getPrefixedVariableName(0, arguments));
         for (edu.stanford.smi.protegex.owl.model.OWLProperty property : SWRLOWLUtil.getUserDefinedOWLDatatypeProperties(getInvokingBridge().getOWLModel())) {
           if (property.isObjectProperty()) multiArgument.addArgument(argumentFactory.createObjectPropertyArgument(property.getName()));
           else multiArgument.addArgument(argumentFactory.createDatatypePropertyArgument(property.getName()));
@@ -742,7 +750,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
 
     try {
       if (isUnboundArgument) {
-        MultiArgument multiArgument = argumentFactory.createMultiArgument(SWRLBuiltInUtil.getVariableName(0, arguments));
+        MultiArgument multiArgument = argumentFactory.createMultiArgument(SWRLBuiltInUtil.getVariableName(0, arguments), SWRLBuiltInUtil.getPrefixedVariableName(0, arguments));
         for (edu.stanford.smi.protegex.owl.model.OWLProperty property : SWRLOWLUtil.getUserDefinedOWLObjectProperties(getInvokingBridge().getOWLModel())) {
           if (property.isObjectProperty()) multiArgument.addArgument(argumentFactory.createObjectPropertyArgument(property.getName()));
           else multiArgument.addArgument(argumentFactory.createDatatypePropertyArgument(property.getName()));
@@ -795,7 +803,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
 
     try {
       if (isUnboundArgument) {
-        MultiArgument multiArgument = argumentFactory.createMultiArgument(SWRLBuiltInUtil.getVariableName(0, arguments));
+        MultiArgument multiArgument = argumentFactory.createMultiArgument(SWRLBuiltInUtil.getVariableName(0, arguments), SWRLBuiltInUtil.getPrefixedVariableName(0, arguments));
         for (edu.stanford.smi.protegex.owl.model.OWLProperty property : SWRLOWLUtil.getUserDefinedOWLProperties(getInvokingBridge().getOWLModel())) {
           if (property.isObjectProperty()) multiArgument.addArgument(argumentFactory.createObjectPropertyArgument(property.getName()));
           else multiArgument.addArgument(argumentFactory.createDatatypePropertyArgument(property.getName()));
@@ -1053,7 +1061,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
         if (transitive) superClasses = SWRLOWLUtil.getSuperClassesOf(getInvokingBridge().getOWLModel(), className);
         else superClasses = SWRLOWLUtil.getDirectSuperClassesOf(getInvokingBridge().getOWLModel(), className);
         if (!superClasses.isEmpty()) {
-          MultiArgument multiArgument = argumentFactory.createMultiArgument(SWRLBuiltInUtil.getVariableName(0, arguments));
+          MultiArgument multiArgument = argumentFactory.createMultiArgument(SWRLBuiltInUtil.getVariableName(0, arguments), SWRLBuiltInUtil.getPrefixedVariableName(0, arguments));
           for (edu.stanford.smi.protegex.owl.model.OWLNamedClass superClass : superClasses) multiArgument.addArgument(argumentFactory.createClassArgument(superClass.getName()));
           arguments.set(0, multiArgument);
         result = !multiArgument.hasNoArguments();
@@ -1082,22 +1090,31 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
     className = SWRLBuiltInUtil.getArgumentAsAClassName(1, arguments);
 
     try {
-      if (subClassArgumentUnbound) {
-        List<edu.stanford.smi.protegex.owl.model.OWLNamedClass> subClasses;
-        if (transitive) subClasses = SWRLOWLUtil.getSubClassesOf(getInvokingBridge().getOWLModel(), className);
-        else subClasses = SWRLOWLUtil.getDirectSubClassesOf(getInvokingBridge().getOWLModel(), className);
-        if (!subClasses.isEmpty()) {
-          MultiArgument multiArgument = argumentFactory.createMultiArgument(SWRLBuiltInUtil.getVariableName(0, arguments));
-          for (edu.stanford.smi.protegex.owl.model.OWLNamedClass subClass : subClasses) multiArgument.addArgument(argumentFactory.createClassArgument(subClass.getName()));
-          arguments.set(0, multiArgument);
-        result = !multiArgument.hasNoArguments();
-        } // if
+      if (getIsInConsequent()) {
+        String superclassName = SWRLBuiltInUtil.getArgumentAsAClassName(1, arguments);
+        className = SWRLBuiltInUtil.getArgumentAsAClassName(0, arguments);
+        if (!getInvokingBridge().isClass(className)) getInvokingBridge().createOWLClass(className, superclassName);
+        result = true;
       } else {
-        String subClassName = SWRLBuiltInUtil.getArgumentAsAClassName(0, arguments);
-        if (transitive) result = SWRLOWLUtil.isSubClassOf(getInvokingBridge().getOWLModel(), subClassName, className, true);
-        else  result = SWRLOWLUtil.isDirectSubClassOf(getInvokingBridge().getOWLModel(), subClassName, className, true);
+        if (subClassArgumentUnbound) {
+          List<edu.stanford.smi.protegex.owl.model.OWLNamedClass> subClasses;
+          if (transitive) subClasses = SWRLOWLUtil.getSubClassesOf(getInvokingBridge().getOWLModel(), className);
+          else subClasses = SWRLOWLUtil.getDirectSubClassesOf(getInvokingBridge().getOWLModel(), className);
+          if (!subClasses.isEmpty()) {
+            MultiArgument multiArgument = argumentFactory.createMultiArgument(SWRLBuiltInUtil.getVariableName(0, arguments), SWRLBuiltInUtil.getPrefixedVariableName(0, arguments));
+            for (edu.stanford.smi.protegex.owl.model.OWLNamedClass subClass : subClasses) multiArgument.addArgument(argumentFactory.createClassArgument(subClass.getName()));
+            arguments.set(0, multiArgument);
+            result = !multiArgument.hasNoArguments();
+          } // if
+        } else {
+          String subClassName = SWRLBuiltInUtil.getArgumentAsAClassName(0, arguments);
+          if (transitive) result = SWRLOWLUtil.isSubClassOf(getInvokingBridge().getOWLModel(), subClassName, className, true);
+          else  result = SWRLOWLUtil.isDirectSubClassOf(getInvokingBridge().getOWLModel(), subClassName, className, true);
+        } // if
       } // if
     } catch (SWRLOWLUtilException e) {
+      throw new BuiltInException(e.getMessage());
+    } catch (SWRLRuleEngineBridgeException e) {
       throw new BuiltInException(e.getMessage());
     } // try
 
@@ -1120,7 +1137,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
         if (transitive) subProperties = SWRLOWLUtil.getSubPropertiesOf(getInvokingBridge().getOWLModel(), propertyName);
         else subProperties = SWRLOWLUtil.getDirectSubPropertiesOf(getInvokingBridge().getOWLModel(), propertyName);
         if (!subProperties.isEmpty()) {
-          MultiArgument multiArgument = argumentFactory.createMultiArgument(SWRLBuiltInUtil.getVariableName(0, arguments));
+          MultiArgument multiArgument = argumentFactory.createMultiArgument(SWRLBuiltInUtil.getVariableName(0, arguments), SWRLBuiltInUtil.getPrefixedVariableName(0, arguments));
           for (edu.stanford.smi.protegex.owl.model.OWLProperty subProperty : subProperties) {
             if (subProperty.isObjectProperty()) multiArgument.addArgument(argumentFactory.createObjectPropertyArgument(subProperty.getName()));
             else multiArgument.addArgument(argumentFactory.createDatatypePropertyArgument(subProperty.getName()));
@@ -1156,7 +1173,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
         if (transitive) superProperties = SWRLOWLUtil.getSuperPropertiesOf(getInvokingBridge().getOWLModel(), propertyName);
         else superProperties = SWRLOWLUtil.getDirectSuperPropertiesOf(getInvokingBridge().getOWLModel(), propertyName);
         if (!superProperties.isEmpty()) {
-          MultiArgument multiArgument = argumentFactory.createMultiArgument(SWRLBuiltInUtil.getVariableName(0, arguments));
+          MultiArgument multiArgument = argumentFactory.createMultiArgument(SWRLBuiltInUtil.getVariableName(0, arguments), SWRLBuiltInUtil.getPrefixedVariableName(0, arguments));
           for (edu.stanford.smi.protegex.owl.model.OWLProperty superProperty : superProperties) {
             if (superProperty.isObjectProperty()) multiArgument.addArgument(argumentFactory.createObjectPropertyArgument(superProperty.getName()));
             else multiArgument.addArgument(argumentFactory.createDatatypePropertyArgument(superProperty.getName()));
@@ -1196,7 +1213,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
         if (includingSuperproperties) domainClasses = SWRLOWLUtil.getDomainClasses(getInvokingBridge().getOWLModel(), propertyName);
         else domainClasses = SWRLOWLUtil.getDirectDomainClasses(getInvokingBridge().getOWLModel(), propertyName);
         if (!domainClasses.isEmpty()) {
-          MultiArgument multiArgument = argumentFactory.createMultiArgument(SWRLBuiltInUtil.getVariableName(0, arguments));
+          MultiArgument multiArgument = argumentFactory.createMultiArgument(SWRLBuiltInUtil.getVariableName(0, arguments), SWRLBuiltInUtil.getPrefixedVariableName(0, arguments));
           for (edu.stanford.smi.protegex.owl.model.OWLNamedClass domainClass : domainClasses) multiArgument.addArgument(argumentFactory.createClassArgument(domainClass.getName()));
           arguments.set(0, multiArgument);
         result = !multiArgument.hasNoArguments();
@@ -1206,7 +1223,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
         domainClassName = SWRLBuiltInUtil.getArgumentAsAClassName(0, arguments);
         domainProperties = SWRLOWLUtil.getDomainProperties(getInvokingBridge().getOWLModel(), domainClassName, includingSuperproperties);
         if (!domainProperties.isEmpty()) {
-          MultiArgument multiArgument = argumentFactory.createMultiArgument(SWRLBuiltInUtil.getVariableName(1, arguments));
+          MultiArgument multiArgument = argumentFactory.createMultiArgument(SWRLBuiltInUtil.getVariableName(1, arguments), SWRLBuiltInUtil.getPrefixedVariableName(1, arguments));
           for (edu.stanford.smi.protegex.owl.model.OWLProperty property : domainProperties) {
             if (property.isObjectProperty()) multiArgument.addArgument(argumentFactory.createObjectPropertyArgument(property.getName()));
             else multiArgument.addArgument(argumentFactory.createDatatypePropertyArgument(property.getName()));
@@ -1246,7 +1263,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
         if (includingSuperproperties) rangeClasses = SWRLOWLUtil.getRangeClasses(getInvokingBridge().getOWLModel(), propertyName);
         else rangeClasses = SWRLOWLUtil.getDirectRangeClasses(getInvokingBridge().getOWLModel(), propertyName);
         if (!rangeClasses.isEmpty()) {
-          MultiArgument multiArgument = argumentFactory.createMultiArgument(SWRLBuiltInUtil.getVariableName(0, arguments));
+          MultiArgument multiArgument = argumentFactory.createMultiArgument(SWRLBuiltInUtil.getVariableName(0, arguments), SWRLBuiltInUtil.getPrefixedVariableName(0, arguments));
           for (edu.stanford.smi.protegex.owl.model.OWLNamedClass rangeClass : rangeClasses) 
             multiArgument.addArgument(argumentFactory.createClassArgument(rangeClass.getName()));
           arguments.set(0, multiArgument);

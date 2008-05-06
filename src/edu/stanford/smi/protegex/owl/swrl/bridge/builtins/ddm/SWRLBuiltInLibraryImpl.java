@@ -69,7 +69,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
     if (!isUnboundIndividualArgument) throw new BuiltInException("bound arguments not yet implemented, class = '" + className + "'");
 
     try {
-      owlClass = OWLFactory.getOWLClass(className);    
+      owlClass = OWLFactory.createOWLClass(className);
 
       mapper = getInvokingBridge().getMapper();
       if (!mapper.isMapped(owlClass)) return false;
@@ -78,7 +78,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
       
       //if (!individuals.isEmpty()) getInvokingBridge().createOWLIndividuals(individuals);
       if (isUnboundIndividualArgument) {
-        MultiArgument multiArgument = argumentFactory.createMultiArgument(SWRLBuiltInUtil.getVariableName(1, arguments));
+        MultiArgument multiArgument = argumentFactory.createMultiArgument(SWRLBuiltInUtil.getVariableName(1, arguments), SWRLBuiltInUtil.getPrefixedVariableName(1, arguments));
         for (OWLIndividual individual : individuals) multiArgument.addArgument(individual);
         arguments.set(1, multiArgument);
         result = !multiArgument.hasNoArguments();
@@ -110,10 +110,10 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
     hasObject = (arguments.size() > 2);
 
     try {
-      owlProperty = OWLFactory.getOWLObjectProperty(propertyName);
+      owlProperty = OWLFactory.createOWLObjectProperty(propertyName);
       
-      if (hasSubject) subjectOWLIndividual = OWLFactory.getOWLIndividual(SWRLBuiltInUtil.getArgumentAsAnIndividualName(1, arguments));
-      if (hasObject) objectOWLIndividual = OWLFactory.getOWLIndividual(SWRLBuiltInUtil.getArgumentAsAnIndividualName(2, arguments));
+      if (hasSubject) subjectOWLIndividual = OWLFactory.createOWLIndividual(SWRLBuiltInUtil.getArgumentAsAnIndividualName(1, arguments));
+      if (hasObject) objectOWLIndividual = OWLFactory.createOWLIndividual(SWRLBuiltInUtil.getArgumentAsAnIndividualName(2, arguments));
       
       mapper = getInvokingBridge().getMapper();
       
@@ -152,9 +152,9 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
     hasSubject = (arguments.size() > 1) && SWRLBuiltInUtil.isArgumentAnIndividual(1, arguments);
     hasValue = (arguments.size() > 2 || (arguments.size() > 1 && SWRLBuiltInUtil.isArgumentADatatypeValue(1, arguments)));
     try {
-      owlProperty = OWLFactory.getOWLDatatypeProperty(propertyName);
+      owlProperty = OWLFactory.createOWLDatatypeProperty(propertyName);
       
-      if (hasSubject) subjectOWLIndividual = OWLFactory.getOWLIndividual(SWRLBuiltInUtil.getArgumentAsAnIndividualName(1, arguments));
+      if (hasSubject) subjectOWLIndividual = OWLFactory.createOWLIndividual(SWRLBuiltInUtil.getArgumentAsAnIndividualName(1, arguments));
       if (hasValue) {
         if (hasSubject) value = SWRLBuiltInUtil.getArgumentAsAnOWLDatatypeValue(2, arguments);
         else value = SWRLBuiltInUtil.getArgumentAsAnOWLDatatypeValue(1, arguments);

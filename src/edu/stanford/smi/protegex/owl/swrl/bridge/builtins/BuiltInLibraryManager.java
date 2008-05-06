@@ -31,13 +31,14 @@ public abstract class BuiltInLibraryManager
 
   /**
    ** Invoke a SWRL built-in. This method is called from the invokeSWRLBuiltIn method in the bridge and should not be called directly from a
-   ** rule engine. The built-in name should be the fully qualified name of the built-in (e.g., swrlb:lessThanOrEqual).
+   ** rule engine. The built-in name should be the fully qualified name of the built-in (e.g.,
+   ** http://www.w3.org/2003/11/swrlb#lessThanOrEqual).
    */
   public static boolean invokeSWRLBuiltIn(SWRLRuleEngineBridge bridge, String ruleName, String builtInName, int builtInIndex, 
-                                          List<BuiltInArgument> arguments) 
+                                          boolean isInConsequent, List<BuiltInArgument> arguments) 
     throws BuiltInException
   {
-    String prefix = getPrefix(builtInName);
+    String prefix = getPrefix(bridge, builtInName);
     String implementationClassName = getBuiltInLibraryImplementationClassName(prefix);
     String builtInMethodName = getBuiltInMethodName(builtInName);
     SWRLBuiltInLibrary library = loadBuiltInLibrary(bridge, ruleName, prefix, implementationClassName);
@@ -45,7 +46,7 @@ public abstract class BuiltInLibraryManager
 
     checkBuiltInMethodSignature(ruleName, prefix, builtInMethodName, method); // Check signature of method.
 
-    return library.invokeBuiltInMethod(method, bridge, ruleName, prefix, builtInMethodName, builtInIndex, arguments);
+    return library.invokeBuiltInMethod(method, bridge, ruleName, prefix, builtInMethodName, builtInIndex, isInConsequent, arguments);
   } // invokeSWRLBuiltIn
 
   /**
@@ -64,8 +65,7 @@ public abstract class BuiltInLibraryManager
 
   private static Set<String> getBuiltInLibraryPrefixes() { return builtInLibraries.keySet(); }
 
-  private static SWRLBuiltInLibrary loadBuiltInLibrary(SWRLRuleEngineBridge bridge, String ruleName, String prefix, 
-                                                       String implementationClassName)
+  private static SWRLBuiltInLibrary loadBuiltInLibrary(SWRLRuleEngineBridge bridge, String ruleName, String prefix, String implementationClassName)
     throws BuiltInException
   {
     SWRLBuiltInLibrary library;
@@ -80,12 +80,13 @@ public abstract class BuiltInLibraryManager
     return library;
   } // loadBuiltInLibrary
 
-  private static String getPrefix(String builtInName) 
+  private static String getPrefix(SWRLRuleEngineBridge bridge, String builtInName) 
   {
-    int colonIndex = builtInName.indexOf(':');
+    int hashIndex = builtInName.indexOf('#');
 
-    if (colonIndex != -1) return builtInName.substring(0, colonIndex);
-    else return ""; // No prefix - try the base built-ins package. Ordinarily, built-ins should not be located here.
+    if (hashIndex != -1) {
+      return bridge.getOWLModel().getPrefixForResourceName(builtInName);
+    } else return ""; // No prefix - try the base built-ins package. Ordinarily, built-ins should not be located here.
   } // getPrefix
 
   private static String getBuiltInLibraryImplementationClassName(String prefix)
@@ -98,8 +99,8 @@ public abstract class BuiltInLibraryManager
   {
     String builtInMethodName;
 
-    if (builtInName.indexOf(":") == -1) builtInMethodName = builtInName;
-    else builtInMethodName = builtInName.substring(builtInName.indexOf(":") + 1, builtInName.length());
+    if (builtInName.indexOf("#") == -1) builtInMethodName = builtInName;
+    else builtInMethodName = builtInName.substring(builtInName.indexOf("#") + 1, builtInName.length());
 
     return builtInMethodName;
   } // getBuiltInMethodName
