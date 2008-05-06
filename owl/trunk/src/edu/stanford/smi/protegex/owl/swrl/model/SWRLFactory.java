@@ -296,7 +296,8 @@ public class SWRLFactory
   } // hasImp
 
   public String getNewImpName() {
-    String base = "Rule-";
+    String prefix = owlModel.getNamespaceManager().getDefaultNamespace();
+    String base = prefix + "Rule-";
     int i = Math.max(1, systemFrames.getImpCls().getInstances(false).size());
     while (owlModel.getRDFResource(base + i) != null) {
       i++;
