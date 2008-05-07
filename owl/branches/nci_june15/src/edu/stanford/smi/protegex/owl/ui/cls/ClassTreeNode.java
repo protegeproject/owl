@@ -20,8 +20,12 @@ public class ClassTreeNode extends LazyTreeNode {
 
     private ClsListener _clsListener = new ClsAdapter() {
         public void directSubclassAdded(ClsEvent event) {
-            if (event.getSubclass().isVisible()) {
-                childAdded(event.getSubclass());
+            if (event.getSubclass().isVisible()) {            	
+            	Cls newSubclass = event.getSubclass();
+            	            	
+            	if (getUserObjectIndex(newSubclass) == -1) {            	
+            		childAdded(newSubclass);
+            	}
             }
         }
 
@@ -58,7 +62,7 @@ public class ClassTreeNode extends LazyTreeNode {
         }
 
 
-        public void directSuperclassAdded(ClsEvent event) {
+        public void directSuperclassAdded(ClsEvent event) {        	
             notifyNodeChanged();
         }
     };
