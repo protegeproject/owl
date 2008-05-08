@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 
+import edu.stanford.smi.protege.model.Instance;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLAllDifferent;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLAllValuesFrom;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLCardinality;
@@ -37,11 +38,14 @@ import edu.stanford.smi.protegex.owl.model.impl.DefaultRDFUntypedResource;
  */
 public class FrameTypeId2OWLJavaClass {
 
-    private static HashMap<Integer, Class> frameTypeId2JavaClass = new HashMap<Integer, Class>();
-    private static HashMap<Class, Integer> javaClass2frameTypeId = new HashMap<Class, Integer>();
+    private static HashMap<Integer, Class<? extends Instance>> frameTypeId2JavaClass 
+                        = new HashMap<Integer, Class<? extends Instance>>();
+    private static HashMap<Class<? extends Instance>, Integer> javaClass2frameTypeId 
+                        = new HashMap<Class<? extends Instance>, Integer>();
     
     // Used for finding the most specialized Java class of a frame 
-    private static Collection<Class> orderedJavaClasses = new ArrayList<Class>();
+    private static Collection<Class<? extends Instance>> orderedJavaClasses 
+                        = new ArrayList<Class<? extends Instance>>();
     
     // The basic Protege frames types have ids between 5 -8. Don't override them!
     private static final int OWL_CLASS_FRAME_TYPE_ID_BASE = 9; 
@@ -98,23 +102,23 @@ public class FrameTypeId2OWLJavaClass {
     	        
     }
 	
-    protected static void addMappedValues(int frameTypeId, Class javaClass) {
+    protected static void addMappedValues(int frameTypeId, Class<? extends Instance> javaClass) {
     	frameTypeId2JavaClass.put(new Integer(frameTypeId), javaClass);
     	javaClass2frameTypeId.put(javaClass, new Integer(frameTypeId));
     }
     
-    public static int getFrameTypeId(Class javaClass) {
+    public static int getFrameTypeId(Class<? extends Instance> javaClass) {
     	Integer integer = javaClass2frameTypeId.get(javaClass); 
     	
     	return (integer == null ? 0 : integer.intValue());
     }
        
     
-    public static Class getJavaClass(int frameTypeId) {
+    public static Class<? extends Instance> getJavaClass(int frameTypeId) {
     	return frameTypeId2JavaClass.get(new Integer(frameTypeId));
     }
 
-	public static Collection<Class> getOrderedJavaClasses() {
+	public static Collection<Class<? extends Instance>> getOrderedJavaClasses() {
 		return orderedJavaClasses;
 	}
 
