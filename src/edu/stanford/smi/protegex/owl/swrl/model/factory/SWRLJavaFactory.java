@@ -10,10 +10,12 @@ import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.DefaultSimpleInstance;
 import edu.stanford.smi.protege.model.Frame;
 import edu.stanford.smi.protege.model.FrameID;
+import edu.stanford.smi.protege.model.Instance;
 import edu.stanford.smi.protege.model.KnowledgeBase;
 import edu.stanford.smi.protege.model.SimpleInstance;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.model.factory.FrameTypeId2OWLJavaClass;
 import edu.stanford.smi.protegex.owl.model.factory.OWLJavaFactory;
 import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
 import edu.stanford.smi.protegex.owl.swrl.model.SWRLIndividual;
@@ -112,6 +114,39 @@ public class SWRLJavaFactory extends OWLJavaFactory {
             }
         }
         return super.isCorrectJavaImplementationClass(id, types, clas);
+    }
+    
+    @Override
+    public Frame createFrameFromClassId(int javaClassId, FrameID id) {
+ 
+        if (javaClassId >= SWRLFrameTypeId.SWRL_FRAME_TYPE_ID_BASE &&
+                javaClassId <= SWRLFrameTypeId.SWRL_FRAME_TYPE_ID_END) {
+            int index = javaClassId - SWRLFrameTypeId.SWRL_FRAME_TYPE_ID_BASE;
+            SWRLFrameTypeId typeId = SWRLFrameTypeId.values()[index];
+            Frame frame = createInstance(id, typeId.getJavaClass());
+            if (frame != null) {
+                return frame;
+            }
+        }
+        return super.createFrameFromClassId(javaClassId, id);
+    }
+    
+    @Override
+    public int getJavaClassId(Frame frame) {    
+        for (SWRLFrameTypeId frameTypeId : SWRLFrameTypeId.values()) {
+            try {
+                Class<? extends Instance> javaType = frameTypeId.getJavaClass();
+                if (javaType.isInstance(frame)) {
+                    return frameTypeId.getFrameTypeId();
+                }
+            } catch (Exception e) {
+                // this should never happen!
+                Log.getLogger().log(Level.WARNING, "Error at getting the Java class Id for: " + frame , e);
+            }
+        }
+
+        return super.getJavaClassId(frame);
+    
     }
 
 } // SWRLJavaFactory
