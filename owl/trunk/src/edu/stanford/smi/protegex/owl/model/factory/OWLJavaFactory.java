@@ -45,7 +45,6 @@ import edu.stanford.smi.protegex.owl.model.impl.DefaultRDFProperty;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultRDFSDatatype;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultRDFSNamedClass;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultRDFUntypedResource;
-import edu.stanford.smi.protegex.owl.model.impl.OWLSystemFrames;
 
 /**
  * A DefaultFrameFactory that creates the proper Java objects for Protege frames.
@@ -95,17 +94,13 @@ public class OWLJavaFactory extends DefaultFrameFactory {
 
     private final static String CLASSNAME_PREFIX = "edu.stanford.smi.protegex.owl.model.impl.Default";
     
-    private static final Class[] CONSTRUCTOR_PARAMETERS = { KnowledgeBase.class, FrameID.class };
+    private static final Class<?>[] CONSTRUCTOR_PARAMETERS = { KnowledgeBase.class, FrameID.class };
 
     private AbstractOWLModel owlModel;
-    
-    private OWLSystemFrames systemFrames;
-
 
     public OWLJavaFactory(AbstractOWLModel owlModel) {
         super(owlModel);
         this.owlModel = owlModel;
-        systemFrames = owlModel.getSystemFrames();
     }
 
     
@@ -134,7 +129,7 @@ public class OWLJavaFactory extends DefaultFrameFactory {
         	return frame;
         }
         
-        Class javaType = null;
+        Class<? extends Instance> javaType = null;
         
         try {
 			javaType = FrameTypeId2OWLJavaClass.getJavaClass(javaClassId);
@@ -153,9 +148,9 @@ public class OWLJavaFactory extends DefaultFrameFactory {
     
     @Override
     public int getJavaClassId(Frame frame) {	
-    	for (Iterator iter = FrameTypeId2OWLJavaClass.getOrderedJavaClasses().iterator(); iter.hasNext();) {
+    	for (Iterator<Class<? extends Instance>> iter = FrameTypeId2OWLJavaClass.getOrderedJavaClasses().iterator(); iter.hasNext();) {
     		try {
-    			Class javaType = (Class) iter.next();
+    			Class<? extends Instance> javaType = iter.next();
     			if (javaType.isInstance(frame)) {
     				return FrameTypeId2OWLJavaClass.getFrameTypeId(javaType);
     			}
@@ -170,11 +165,11 @@ public class OWLJavaFactory extends DefaultFrameFactory {
     }
     
     
-    private Instance createInstance(FrameID id, Class type) {
+    protected Instance createInstance(FrameID id, Class<? extends Instance> type) {
         Instance instance = null;
         try {
-            Constructor constructor = type.getConstructor(CONSTRUCTOR_PARAMETERS);
-            instance = (Instance) constructor.newInstance(new Object[] { owlModel, id });
+            Constructor<? extends Instance> constructor = type.getConstructor(CONSTRUCTOR_PARAMETERS);
+            instance = constructor.newInstance(new Object[] { owlModel, id });
         } catch (Exception e) {
             Log.getLogger().severe(Log.toString(e));
         }
