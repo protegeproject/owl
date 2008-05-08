@@ -340,27 +340,38 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
      * 
      * @param ontologyName The name of the ontology to be imported.
      */
-    public void loadImportedAssertions(URI ontologyName) throws IOException {
-        if (log.isLoggable(Level.FINE)) {
-            log.fine("=======================================================");
-            log.fine("Processing import " + ontologyName);
-        }
-        TripleStoreModel tripleStoreModel = getTripleStoreModel();
-        for (TripleStore tripleStore : tripleStoreModel.getTripleStores()) {
-            if (tripleStore.getIOAddresses().contains(ontologyName.toString())) {
-                return;
+    public URI loadImportedAssertions(URI ontologyName) throws IOException {
+        try {
+            if (log.isLoggable(Level.FINE)) {
+                log.fine("=======================================================");
+                log.fine("Processing import " + ontologyName);
+            }
+            TripleStoreModel tripleStoreModel = getTripleStoreModel();
+            for (TripleStore tripleStore : tripleStoreModel.getTripleStores()) {
+                if (tripleStore.getIOAddresses().contains(ontologyName.toString())) {
+                    return new URI(tripleStore.getName());
+                }
+            }
+            TripleStore activeTripleStore = tripleStoreModel.getActiveTripleStore();
+            Repository rep = getRepository(activeTripleStore, ontologyName);        
+            if(rep != null) {
+                log.info("Importing " + ontologyName + " from location: " + rep.getOntologyLocationDescription(ontologyName));
+                TripleStore importedTripleStore = rep.loadImportedAssertions(this, ontologyName);
+                importedTripleStore.addIOAddress(ontologyName.toString());
+                if (log.isLoggable(Level.FINE)) {
+                    log.fine("Import Processing of " + ontologyName  + " done");
+                    log.fine("=======================================================");
+                }
+                return new URI(importedTripleStore.getName());
+            }
+            else {
+                return null;
             }
         }
-        TripleStore activeTripleStore = tripleStoreModel.getActiveTripleStore();
-        Repository rep = getRepository(activeTripleStore, ontologyName);        
-        if(rep != null) {
-        	log.info("Importing " + ontologyName + " from location: " + rep.getOntologyLocationDescription(ontologyName));
-            TripleStore importedTripleStore = rep.loadImportedAssertions(this, ontologyName);
-            importedTripleStore.addIOAddress(ontologyName.toString());
-        }
-        if (log.isLoggable(Level.FINE)) {
-            log.fine("Import Processing of " + ontologyName  + " done");
-            log.fine("=======================================================");
+        catch (URISyntaxException e) {
+            IOException ioe = new IOException(e.getMessage());
+            ioe.initCause(e);
+            throw ioe;
         }
     }
 

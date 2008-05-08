@@ -1,10 +1,14 @@
 package edu.stanford.smi.protegex.owl.model.util;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 
+import edu.stanford.smi.protege.model.framestore.InMemoryFrameDb;
+import edu.stanford.smi.protege.model.framestore.NarrowFrameStore;
 import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
 import edu.stanford.smi.protegex.owl.jena.parser.ProtegeOWLParser;
 import edu.stanford.smi.protegex.owl.model.OWLOntology;
@@ -27,6 +31,8 @@ public class ImportHelper {
     private JenaOWLModel owlModel;
 
     private Collection<URI> ontologyURIs;
+    
+    private Collection<InputStream> ontologyStreams;
 
 
     /**
@@ -46,6 +52,7 @@ public class ImportHelper {
     public ImportHelper(JenaOWLModel owlModel) {
         this.owlModel = owlModel;
         ontologyURIs = new ArrayList<URI>();
+        ontologyStreams = new ArrayList<InputStream>();
     }
 
 
@@ -60,6 +67,16 @@ public class ImportHelper {
     public void addImport(URI ontologyURI) {
         ontologyURIs.add(ontologyURI);
     }
+    
+    /**
+     * Adds the ontology in an input stream to the set of ontologies that will be imported.
+     * Note that this does not actually import the ontology - it merely adds it to the list of
+     * ontologies to be imported.  To perform the actual imports use the <code>importOntologes()</code>
+     * method.
+     */
+    public void addImport(InputStream is) {
+        ontologyStreams.add(is);
+    }
 
 
     /**
@@ -68,7 +85,7 @@ public class ImportHelper {
      * Use the alternative <code>reloadGUI(boolean)</code> in TabWidget
      * initialisation code to prevent the GUI being reloaded
      */
-    public void importOntologies() throws Exception {
+    public void importOntologies() throws IOException {
         importOntologies(true);
     }
 
@@ -78,12 +95,22 @@ public class ImportHelper {
      * reload (for example when initialising TabPlugins)
      * @param reloadGUI - false if no GUI reload is desired
      */
-    public void importOntologies(boolean reloadGUI) throws Exception {
+    public void importOntologies(boolean reloadGUI) throws IOException {
         ArrayList<URI> importedOntologies = new ArrayList<URI>();
-        for(URI ontologyURI : ontologyURIs) {
-            if(owlModel.getAllImports().contains(ontologyURI.toString()) == false) {
-                owlModel.loadImportedAssertions(ontologyURI);
+        for (InputStream is : ontologyStreams) {
+            URI ontologyURI = loadImportedAssertions(is);
+            is.close();
+            if (ontologyURI != null) {
                 importedOntologies.add(ontologyURI);
+            }
+        }
+        for(URI ontologyURI : ontologyURIs) {
+            if (owlModel.getAllImports().contains(ontologyURI.toString()) == false &&
+                    !importedOntologies.contains(ontologyURI)) {
+                URI realOntologyUri = owlModel.loadImportedAssertions(ontologyURI);
+                if (realOntologyUri != null) {
+                    importedOntologies.add(realOntologyUri);
+                }
             }
         }
         ProtegeOWLParser.doFinalPostProcessing(owlModel);
@@ -97,6 +124,27 @@ public class ImportHelper {
             if (reloadGUI){
                 ProtegeUI.reloadUI(owlModel);
             }
+        }
+    }
+    
+    private URI loadImportedAssertions(InputStream is) throws IOException {
+        ProtegeOWLParser parser = new ProtegeOWLParser(owlModel);
+        parser.setImporting(true);
+        TripleStore importedTripleStore = null;
+        TripleStore importingTripleStore = owlModel.getTripleStoreModel().getActiveTripleStore();
+        try {
+            NarrowFrameStore frameStore = new InMemoryFrameDb("**temp_name**");
+            importedTripleStore = owlModel.getTripleStoreModel().createActiveImportedTripleStore(frameStore);
+            parser.run(is, null);
+            String ontologyName = importedTripleStore.getName();
+            return new URI(ontologyName);
+        }
+        catch (URISyntaxException e) {
+            IOException ioe = new IOException(e.getMessage());
+            ioe.initCause(e);
+            throw ioe;
+        } finally {
+            owlModel.getTripleStoreModel().setActiveTripleStore(importingTripleStore);
         }
     }
 }
