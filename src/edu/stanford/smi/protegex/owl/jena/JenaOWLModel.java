@@ -30,6 +30,7 @@ import com.hp.hpl.jena.shared.PrefixMapping;
 import com.hp.hpl.jena.util.FileUtils;
 import com.hp.hpl.jena.vocabulary.ReasonerVocabulary;
 
+import edu.stanford.smi.protege.exception.OntologyLoadException;
 import edu.stanford.smi.protege.model.Instance;
 import edu.stanford.smi.protege.model.KnowledgeBaseFactory;
 import edu.stanford.smi.protege.util.Log;
@@ -411,7 +412,7 @@ public class JenaOWLModel extends AbstractOWLModel implements OntModelProvider {
      * @deprecated use {@link OwlProjectFromStreamCreator}, {@link OwlProjectFromReaderCreator} or {@link OwlDatabaseFromFileCreator}
      */
     @Deprecated
-    public void load(URI uri, String language) throws IOException {
+    public void load(URI uri, String language) throws OntologyLoadException {
         ensureDefaultOntologyDeleted();
         ProtegeOWLParser parser = new ProtegeOWLParser(this);
         parser.run(uri);
@@ -421,7 +422,7 @@ public class JenaOWLModel extends AbstractOWLModel implements OntModelProvider {
      * @deprecated use {@link OwlProjectFromStreamCreator}, {@link OwlProjectFromReaderCreator} or {@link OwlDatabaseFromFileCreator}
      */
     @Deprecated
-    public void load(InputStream is, String language) throws IOException {
+    public void load(InputStream is, String language) throws OntologyLoadException {
         ensureDefaultOntologyDeleted();
         ProtegeOWLParser parser = new ProtegeOWLParser(this);
         parser.run(is, null);
@@ -431,7 +432,7 @@ public class JenaOWLModel extends AbstractOWLModel implements OntModelProvider {
      * @deprecated use {@link OwlProjectFromStreamCreator}, {@link OwlProjectFromReaderCreator} or {@link OwlDatabaseFromFileCreator}
      */
     @Deprecated
-    public void load(Reader reader, String language) throws IOException {
+    public void load(Reader reader, String language) throws OntologyLoadException {
         ensureDefaultOntologyDeleted();
         ProtegeOWLParser parser = new ProtegeOWLParser(this);
         parser.run(reader, null);

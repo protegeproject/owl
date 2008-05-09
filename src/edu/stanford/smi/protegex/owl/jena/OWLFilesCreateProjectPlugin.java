@@ -6,7 +6,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.logging.Logger;
 
-import edu.stanford.smi.protege.exception.AmalgamatedIOException;
+import edu.stanford.smi.protege.exception.AmalgamatedLoadException;
+import edu.stanford.smi.protege.exception.OntologyLoadException;
 import edu.stanford.smi.protege.model.KnowledgeBaseFactory;
 import edu.stanford.smi.protege.model.Project;
 import edu.stanford.smi.protege.plugin.AbstractCreateProjectPlugin;
@@ -54,7 +55,7 @@ public class OWLFilesCreateProjectPlugin extends AbstractCreateProjectPlugin imp
         try {
             creator.create(errors);
         }
-        catch (IOException ioe) {
+        catch (OntologyLoadException ioe) {
             errors.add(ioe);
         }
         finally {
@@ -89,11 +90,11 @@ public class OWLFilesCreateProjectPlugin extends AbstractCreateProjectPlugin imp
         try {
             creator.create(errors);
         }
-        catch (AmalgamatedIOException ioe) {
-            errors.addAll(ioe.getErrorList());
+        catch (AmalgamatedLoadException ale) {
+            errors.addAll(ale.getErrorList());
         }
-        catch (IOException ioe) {
-            errors.add(ioe);
+        catch (OntologyLoadException ole) {
+            errors.add(ole);
         }
         finally {
             handleErrors(errors);
@@ -101,8 +102,6 @@ public class OWLFilesCreateProjectPlugin extends AbstractCreateProjectPlugin imp
         return creator.getProject();
     }
  
-
-
 
     /*
      * ---------------------------------------------------------------------------

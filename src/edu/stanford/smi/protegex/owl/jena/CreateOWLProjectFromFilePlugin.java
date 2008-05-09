@@ -24,7 +24,7 @@ public class CreateOWLProjectFromFilePlugin implements CreateProjectFromFilePlug
         OwlProjectFromUriCreator creator = new OwlProjectFromUriCreator();
         try {   
             JenaKnowledgeBaseFactory.useStandalone = false;
-            creator.setOntologyUri(URIUtilities.createURI(file.getPath()).toString());
+            creator.setOntologyUri(URIUtilities.createURI(file.getPath()).toString());            
             creator.create(errors);
         }
         catch (Exception ex) {
