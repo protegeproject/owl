@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import edu.stanford.smi.protege.exception.OntologyLoadException;
 import edu.stanford.smi.protege.model.Project;
 import edu.stanford.smi.protegex.owl.jena.JenaKnowledgeBaseFactory;
 import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
@@ -36,7 +37,7 @@ public class OwlProjectFromReaderCreator extends AbstractOwlProjectCreator {
 
     @SuppressWarnings("unchecked")
     @Override
-    public void create(Collection errors) throws IOException {
+    public void create(Collection errors) throws OntologyLoadException {
         project = Project.createNewProject(factory, errors);
         owlModel = (JenaOWLModel) project.getKnowledgeBase();
         insertRepositoriesIntoOwlModel(owlModel);
@@ -45,7 +46,7 @@ public class OwlProjectFromReaderCreator extends AbstractOwlProjectCreator {
         try {
             parser.run(reader, xmlBase);
         }
-        catch (IOException e) {
+        catch (OntologyLoadException e) {
             errors.add(e);
         }
     }
