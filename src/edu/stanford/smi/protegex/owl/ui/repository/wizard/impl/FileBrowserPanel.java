@@ -1,6 +1,7 @@
 package edu.stanford.smi.protegex.owl.ui.repository.wizard.impl;
 
 import edu.stanford.smi.protege.resource.Icons;
+import edu.stanford.smi.protege.util.ComponentFactory;
 import edu.stanford.smi.protege.util.LabeledComponent;
 import edu.stanford.smi.protege.util.WizardPage;
 import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
@@ -92,7 +93,7 @@ public class FileBrowserPanel extends JPanel {
 
 
     public void browse() {
-        JFileChooser chooser = new JFileChooser();
+    	JFileChooser chooser = ComponentFactory.createFileChooser("", (String)null);
         if (showOnlyFolders) {
             chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         }
