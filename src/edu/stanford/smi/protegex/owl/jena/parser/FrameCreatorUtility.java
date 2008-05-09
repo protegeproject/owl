@@ -29,7 +29,6 @@ import edu.stanford.smi.protegex.owl.model.impl.DefaultRDFList;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultRDFProperty;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultRDFSDatatype;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultRDFSNamedClass;
-import edu.stanford.smi.protegex.owl.model.impl.OWLSystemFrames;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 import edu.stanford.smi.protegex.owl.swrl.model.SWRLNames;
 import edu.stanford.smi.protegex.owl.swrl.model.impl.DefaultSWRLAtomList;
@@ -49,12 +48,11 @@ public class FrameCreatorUtility {
 
     public static Frame createFrameWithType(OWLModel owlModel, FrameID id, String typeUri, TripleStore ts) {
         Frame frame = ((KnowledgeBase) owlModel).getFrame(id);
-        OWLSystemFrames systemFrames = owlModel.getSystemFrames();
-
+        
         if (frame != null)
             return frame;
 
-        Frame type = owlModel.getFrame(typeUri);
+        Frame type = owlModel.getFrame(typeUri); // use simple FS
 
         if (type == null)
             return null;
@@ -143,8 +141,8 @@ public class FrameCreatorUtility {
         }
         else if (typeUri.equals(SWRLNames.Cls.VARIABLE)) {
             frame = new DefaultSWRLVariable(owlModel, id);
-        }
-
+        } 
+        
         else {
             //maybe this is an RDF individual
             frame = new DefaultOWLIndividual(owlModel, id);
@@ -217,7 +215,6 @@ public class FrameCreatorUtility {
     	nfs.addValues(superCls, cls.getKnowledgeBase().getSystemFrames().getDirectSubclassesSlot(), null, false,
     			CollectionUtilities.createCollection(cls));
 
-        //ParserUtil.getSimpleFrameStore(cls).addDirectSuperclass(cls, superCls);
         return true;
     }
     
@@ -234,7 +231,6 @@ public class FrameCreatorUtility {
     	nfs.addValues(superSlot, slot.getKnowledgeBase().getSystemFrames().getDirectSubclassesSlot(), null, false,
     			CollectionUtilities.createCollection(slot));
 
-//        ParserUtil.getSimpleFrameStore(slot).addDirectSuperslot(slot, superSlot);
         return true;
     }
 
