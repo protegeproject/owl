@@ -2,6 +2,7 @@ package edu.stanford.smi.protegex.owl.repository.impl;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,6 +15,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import edu.stanford.smi.protege.exception.OntologyLoadException;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.repository.util.OntologyNameExtractor;
 import edu.stanford.smi.protegex.owl.repository.util.RepositoryUtil;
@@ -70,10 +72,14 @@ public abstract class AbstractLocalRepository extends AbstractStreamBasedReposit
 
     @Override
     public InputStream getInputStream(URI ontologyName)
-            throws IOException {
+            throws OntologyLoadException {
         File f = ontologies.get(ontologyName);
         if (f != null) {
-            return new FileInputStream(f);
+            try {
+				return new FileInputStream(f);
+			} catch (FileNotFoundException e) {
+				throw new OntologyLoadException(e, "Could not open file: " + f);
+			}
         }
         else {
             return null;

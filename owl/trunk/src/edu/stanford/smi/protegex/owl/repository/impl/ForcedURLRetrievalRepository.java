@@ -10,6 +10,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.logging.Level;
 
+import edu.stanford.smi.protege.exception.OntologyLoadException;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.jena.parser.ProtegeOWLParser;
 import edu.stanford.smi.protegex.owl.repository.util.OntologyNameExtractor;
@@ -65,9 +66,11 @@ public class ForcedURLRetrievalRepository extends AbstractStreamBasedRepositoryI
             }
 
         }
-        catch (IOException e) {
+        catch (OntologyLoadException e) {
             uri = null;
-        }
+        } catch (IOException e) {
+        	uri = null;
+		}
     }
 
 
@@ -78,7 +81,7 @@ public class ForcedURLRetrievalRepository extends AbstractStreamBasedRepositoryI
 
     @Override
     public InputStream getInputStream(URI ontologyName)
-            throws IOException {
+            throws OntologyLoadException {
         if (uri != null) {
             return ProtegeOWLParser.getInputStream(url);
         }

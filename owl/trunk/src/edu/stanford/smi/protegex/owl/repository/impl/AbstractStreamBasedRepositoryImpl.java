@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 
+import edu.stanford.smi.protege.exception.OntologyLoadException;
 import edu.stanford.smi.protege.model.framestore.InMemoryFrameDb;
 import edu.stanford.smi.protege.model.framestore.NarrowFrameStore;
 import edu.stanford.smi.protegex.owl.jena.parser.ProtegeOWLParser;
@@ -22,9 +23,9 @@ public abstract class AbstractStreamBasedRepositoryImpl implements Repository {
      *         from, or <code>null</code> if the repository does not
      *         contain the ontology or the ontology cannot be retrieved.
      */
-    public abstract InputStream getInputStream(URI ontologyName) throws IOException;
+    public abstract InputStream getInputStream(URI ontologyName) throws OntologyLoadException;
     
-    public TripleStore loadImportedAssertions(OWLModel owlModel, URI ontologyName) throws IOException {
+    public TripleStore loadImportedAssertions(OWLModel owlModel, URI ontologyName) throws OntologyLoadException {
         ProtegeOWLParser parser = new ProtegeOWLParser(owlModel);
         parser.setImporting(true);
         InputStream is = getInputStream(ontologyName);

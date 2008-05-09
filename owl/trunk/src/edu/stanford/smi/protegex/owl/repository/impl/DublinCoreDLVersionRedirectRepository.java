@@ -11,6 +11,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.logging.Level;
 
+import edu.stanford.smi.protege.exception.OntologyLoadException;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.jena.parser.ProtegeOWLParser;
 
@@ -67,7 +68,7 @@ public class DublinCoreDLVersionRedirectRepository extends AbstractStreamBasedRe
 
     @Override
     public InputStream getInputStream(URI ontologyName)
-            throws IOException {
+            throws OntologyLoadException {
         return ProtegeOWLParser.getInputStream(redirectURL);
     }
 
