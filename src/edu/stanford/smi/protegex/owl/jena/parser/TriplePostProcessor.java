@@ -104,9 +104,11 @@ class TriplePostProcessor extends AbstractStatefulTripleProcessor {
 	@SuppressWarnings("deprecation")
 	public void processMetaclasses() {		
 		RDFSNamedClass rdfsClass = owlModel.getRDFSNamedClassClass();
-		RDFSNamedClass rdfPropClass = owlModel.getRDFPropertyClass();		
-		log.info("Postprocess: Process metaclasses (" + rdfsClass.getSubclassCount() +
-				rdfPropClass.getSubclassCount() + " classes) ... ");
+		RDFSNamedClass rdfPropClass = owlModel.getRDFPropertyClass();
+		
+		int userMetaClassesCount = rdfsClass.getSubclassCount(); // - 36; // 36 comes from experience.. 
+		
+		log.info("Postprocess: Process metaclasses (" + userMetaClassesCount + " classes) ... ");
 		long time0 = System.currentTimeMillis();
 		
 		processMetaclasses(rdfsClass);
@@ -133,7 +135,8 @@ class TriplePostProcessor extends AbstractStatefulTripleProcessor {
 
 	public void processSubclassesOfRdfList(){
 		RDFSNamedClass rdfListCls = owlModel.getRDFListClass();
-				
+		
+		// there will always be 1 subclass - swrl:atomList			
 		log.info("Postprocess: Process subclasses of rdf:List (" + rdfListCls.getSubclassCount() + " classes) ... ");
 		long time0 = System.currentTimeMillis();
 		
@@ -147,8 +150,7 @@ class TriplePostProcessor extends AbstractStatefulTripleProcessor {
 					ParserUtil.getSimpleFrameStore(owlModel).swizzleInstance(inst);
 				}
 			}
-		}
-		
+		}		
 		log.info((System.currentTimeMillis() - time0) + " ms\n");
 	}
 	
@@ -184,10 +186,8 @@ class TriplePostProcessor extends AbstractStatefulTripleProcessor {
 		if (classes.size() > 0) {
 			//This should not be the case
 			log.warning("There are classes without explicit superclass: " + classes + "\n");
-		}
-		
+		}	
 		//superClsCache.clearCache();
-
 		log.info((System.currentTimeMillis() - time0) + " ms\n");
 	}
 
@@ -316,9 +316,7 @@ class TriplePostProcessor extends AbstractStatefulTripleProcessor {
 				TripleStore homeTs = getHomeTripleStore(instance, owlModel.getRDFTypeProperty(), type);
 				if (homeTs != null) {			
 					tsm.setActiveTripleStore(homeTs);
-					FrameCreatorUtility.addInstanceType(instance, type, homeTs);	
-					//this should not be necessary because the rdf:type triple was previously added
-					//FrameCreatorUtility.addOwnSlotValue(instance, owlModel.getRDFTypeProperty(), type, homeTs);
+					FrameCreatorUtility.addInstanceType(instance, type, homeTs);				
 					ParserUtil.getSimpleFrameStore(owlModel).swizzleInstance(instance);
 				}
 				else {
@@ -331,8 +329,7 @@ class TriplePostProcessor extends AbstractStatefulTripleProcessor {
 	}
 
 	//TODO: should be moved to a utility class or to the triple store model
-    private TripleStore getHomeTripleStore(Instance subject, Slot predicate, Object object) {
-        //object = DefaultRDFSLiteral.getPlainValueIfPossible(object);
+    private TripleStore getHomeTripleStore(Instance subject, Slot predicate, Object object) {       
         Iterator it = owlModel.getTripleStoreModel().listUserTripleStores();
         while (it.hasNext()) {
             TripleStore ts = (TripleStore) it.next();
@@ -350,7 +347,7 @@ class TriplePostProcessor extends AbstractStatefulTripleProcessor {
 	@SuppressWarnings("deprecation")
 	public void processDomainAndRange() {
 		for (Iterator iterator = owlModel.getUserDefinedRDFProperties().iterator(); iterator.hasNext();) {
-			RDFProperty property = (RDFProperty) iterator.next();	
+			RDFProperty property = (RDFProperty) iterator.next();
 			
 			// Do this postprocessing in the TS of the property 			
 			TripleStoreModel tsm = owlModel.getTripleStoreModel();
@@ -408,6 +405,7 @@ class TriplePostProcessor extends AbstractStatefulTripleProcessor {
 		RDFProperty abstractProp = owlModel.getRDFProperty(ProtegeNames.Slot.ABSTRACT);
 		
 		if (abstractProp == null) {
+			log.info("\n");
 			return;
 		}
 		
