@@ -16,6 +16,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import junit.framework.Assert;
+import edu.stanford.smi.protege.exception.OntologyLoadException;
 import edu.stanford.smi.protege.model.BrowserSlotPattern;
 import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.DefaultKnowledgeBase;
@@ -340,7 +341,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
      * 
      * @param ontologyName The name of the ontology to be imported.
      */
-    public URI loadImportedAssertions(URI ontologyName) throws IOException {
+    public URI loadImportedAssertions(URI ontologyName) throws OntologyLoadException {
         try {
             if (log.isLoggable(Level.FINE)) {
                 log.fine("=======================================================");
@@ -369,9 +370,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
             }
         }
         catch (URISyntaxException e) {
-            IOException ioe = new IOException(e.getMessage());
-            ioe.initCause(e);
-            throw ioe;
+            throw new OntologyLoadException(e, e.getMessage());
         }
     }
 
