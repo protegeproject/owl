@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import edu.stanford.smi.protege.exception.OntologyLoadException;
 import edu.stanford.smi.protege.model.KnowledgeBase;
 import edu.stanford.smi.protege.model.Project;
 import edu.stanford.smi.protege.plugin.ImportPlugin;
@@ -60,7 +61,7 @@ public class JenaImportPlugin implements ImportPlugin {
         try {
             creator.create(errors);
         }
-        catch (IOException ioe) {
+        catch (OntologyLoadException ioe) {
             errors.add(ioe);
         }
         JenaOWLModel owlModel = creator.getOwlModel();
