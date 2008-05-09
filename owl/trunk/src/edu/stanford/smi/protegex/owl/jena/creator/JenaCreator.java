@@ -821,7 +821,7 @@ public class JenaCreator {
      * If we do all instances of rdf individual we get too much if we do all instances
      * of owl individual we might get too little.
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "deprecation" })
     private Iterator<RDFResource> getRDFSIndividualIterator() {
         Collection values = ((Cls) owlModel.getOWLThingClass()).getInstances();
         Set<RDFResource> individuals = new HashSet<RDFResource>();
@@ -829,7 +829,8 @@ public class JenaCreator {
             if (o instanceof RDFResource 
                     && !(o instanceof RDFProperty) && !(o instanceof RDFSNamedClass) && !(o instanceof OWLOntology)
                     && !(o instanceof OWLAnonymousClass) && !(o instanceof RDFList) && !(o instanceof OWLAllDifferent)
-                    && !((RDFResource) o).isSystem()) {
+                    && !((RDFResource) o).isSystem()
+                    && !((RDFResource) o).hasDirectType(owlModel.getSystemFrames().getOwlOntologyPointerClass())) {
                 individuals.add((RDFResource) o);
             }
         }
