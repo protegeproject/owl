@@ -14,6 +14,7 @@ import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntResource;
 import com.hp.hpl.jena.rdf.model.Model;
 
+import edu.stanford.smi.protege.exception.OntologyLoadException;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.ProtegeOWL;
 import edu.stanford.smi.protegex.owl.jena.Jena;
@@ -39,7 +40,7 @@ public abstract class AbstractJenaTestCase extends AbstractOWLTestCase {
     }
 
 
-    public void loadRemoteOntology(String localFileName) throws IOException {
+    public void loadRemoteOntology(String localFileName) throws OntologyLoadException {
         loadTestOntology(getRemoteOntologyURI(localFileName));
     }
 
@@ -50,7 +51,7 @@ public abstract class AbstractJenaTestCase extends AbstractOWLTestCase {
 
 
     @SuppressWarnings("unchecked")
-    public void loadTestOntology(URI uri) throws IOException {
+    public void loadTestOntology(URI uri) throws OntologyLoadException {
         Collection errors = new ArrayList();
         OwlProjectFromUriCreator creator = new OwlProjectFromUriCreator();
         creator.setOntologyUri(uri.toString());
