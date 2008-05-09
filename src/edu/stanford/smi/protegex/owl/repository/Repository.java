@@ -5,6 +5,7 @@ import java.io.OutputStream;
 import java.net.URI;
 import java.util.Collection;
 
+import edu.stanford.smi.protege.exception.OntologyLoadException;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 
@@ -81,7 +82,7 @@ public interface Repository {
      * @param owlModel the model to add the import to
      * @param ontologyName the ontology name to use to look up the imported ontology.
      */
-    TripleStore loadImportedAssertions(OWLModel owlModel, URI ontologyName) throws IOException;
+    TripleStore loadImportedAssertions(OWLModel owlModel, URI ontologyName) throws OntologyLoadException;
     
     /**
      * Determines if the specified ontology is writable.
