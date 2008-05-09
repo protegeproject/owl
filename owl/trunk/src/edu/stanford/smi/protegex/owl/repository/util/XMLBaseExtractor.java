@@ -14,6 +14,7 @@ import org.xml.sax.InputSource;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 
+import edu.stanford.smi.protege.exception.OntologyLoadException;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protege.util.URIUtilities;
 import edu.stanford.smi.protegex.owl.jena.parser.ProtegeOWLParser;
@@ -48,7 +49,7 @@ public class XMLBaseExtractor {
         return xmlBaseExtractor.getXMLBase();
     }
     
-    public static URI getXMLBase(String ontologyName) throws MalformedURLException, IOException {
+    public static URI getXMLBase(String ontologyName) throws MalformedURLException, OntologyLoadException {
         URI ontologyURI = URIUtilities.createURI(ontologyName);             
         InputStream is = ProtegeOWLParser.getInputStream(ontologyURI.toURL());
         return getXMLBase(is);

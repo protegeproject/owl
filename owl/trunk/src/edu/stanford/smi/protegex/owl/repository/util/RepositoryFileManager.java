@@ -17,6 +17,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 
+import edu.stanford.smi.protege.exception.OntologyLoadException;
 import edu.stanford.smi.protege.model.Project;
 import edu.stanford.smi.protege.plugin.PluginUtilities;
 import edu.stanford.smi.protege.util.FileUtilities;
@@ -212,8 +213,13 @@ public class RepositoryFileManager {
 				}
 			}			
 			fis.close();
+		} catch (OntologyLoadException e) {
+			if (Log.getLogger().isLoggable(Level.FINE)) {
+				Log.getLogger().fine("[Repository Manager] Could not find repository file: "
+							+ uri.toString());
+			}
 		} catch (IOException e) {
-			if (Log.getLogger().getLevel() == Level.FINE) {
+			if (Log.getLogger().isLoggable(Level.FINE)) {
 				Log.getLogger().fine("[Repository Manager] Could not find repository file: "
 							+ uri.toString());
 			}
