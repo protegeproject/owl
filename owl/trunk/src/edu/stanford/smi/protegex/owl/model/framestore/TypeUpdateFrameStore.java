@@ -23,11 +23,15 @@ import edu.stanford.smi.protegex.owl.model.OWLRestriction;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
 import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
+import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
 import edu.stanford.smi.protegex.owl.model.impl.OWLSystemFrames;
 
 public class TypeUpdateFrameStore extends FrameStoreAdapter {
 
     private RDFSNamedClass untypedResource;
+    private RDFSNamedClass untypedClass;
+    private RDFSNamedClass untypedProperty;
+    
     private RDFSNamedClass functionalPropertyClass;
     private RDFSNamedClass restrictionClass;
     private RDFSNamedClass owlClass;
@@ -42,6 +46,9 @@ public class TypeUpdateFrameStore extends FrameStoreAdapter {
     
     public TypeUpdateFrameStore(OWLModel owlModel) {
         untypedResource = owlModel.getRDFUntypedResourcesClass();
+        untypedClass = ((AbstractOWLModel) owlModel).getRDFExternalClassClass();
+        untypedProperty = ((AbstractOWLModel)owlModel).getRDFExternalPropertyClass();
+        
         functionalPropertyClass = owlModel.getOWLFunctionalPropertyClass();
         restrictionClass = owlModel.getSystemFrames().getOwlRestrictionClass();
         owlClass = owlModel.getOWLNamedClassClass();
@@ -73,7 +80,9 @@ public class TypeUpdateFrameStore extends FrameStoreAdapter {
         Cls cls = super.createCls(id, directTypes, directSuperclasses, loadDefaults);
         if (cls instanceof RDFSNamedClass) {
             ((RDFSNamedClass) cls).setPropertyValues(rdfSubClassOfProperty, directSuperclasses);
-            super.setDirectOwnSlotValues(cls, rdfType, directTypes);
+            if (!directTypes.contains(untypedClass)) {
+            	super.setDirectOwnSlotValues(cls, rdfType, directTypes);
+            }
         }
         else if (cls instanceof OWLRestriction) {
             super.setDirectOwnSlotValues(cls, rdfType, Collections.singleton(restrictionClass));
@@ -87,7 +96,8 @@ public class TypeUpdateFrameStore extends FrameStoreAdapter {
     @Override
     public Slot createSlot(FrameID id, Collection directTypes, Collection directSuperslots, boolean loadDefaults) {
         Slot slot = super.createSlot(id, directTypes, directSuperslots, loadDefaults);
-        if (slot instanceof RDFProperty) {
+        if (slot instanceof RDFProperty &&
+        	 !directTypes.contains(untypedProperty)) {
             super.setDirectOwnSlotValues(slot, rdfType, directTypes);
         }
         return slot;
@@ -96,7 +106,8 @@ public class TypeUpdateFrameStore extends FrameStoreAdapter {
     @Override
     public SimpleInstance createSimpleInstance(FrameID id, Collection directTypes, boolean loadDefaults) {
         SimpleInstance instance = super.createSimpleInstance(id, directTypes, loadDefaults);
-        if (instance instanceof RDFResource && !directTypes.contains(untypedResource)) {
+        if (instance instanceof RDFResource && 
+        		!directTypes.contains(untypedResource)) {
             super.setDirectOwnSlotValues(instance, rdfType, directTypes);
         }
         return instance;
