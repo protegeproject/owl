@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import edu.stanford.smi.protege.exception.OntologyLoadException;
 import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.FrameFactory;
 import edu.stanford.smi.protege.model.Instance;
@@ -108,7 +109,12 @@ public class OWLDatabaseKnowledgeBaseFactory extends DatabaseKnowledgeBaseFactor
             owlModel.resetOntologyCache();
             RepositoryFileManager.loadProjectRepositories(owlModel);
             DatabaseFactoryUtils.loadImports(owlModel, errors);
-            ProtegeOWLParser.doFinalPostProcessing(owlModel);
+            try {
+				ProtegeOWLParser.doFinalPostProcessing(owlModel);
+			} catch (OntologyLoadException e) {
+				Log.getLogger().log(Level.SEVERE, "Errors at loading knowledge base", e);
+				errors.add(new MessageError(e, "Errors at loading knowledge base"));
+			}
         }
     }
    
