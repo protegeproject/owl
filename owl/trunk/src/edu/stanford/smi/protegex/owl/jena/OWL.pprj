@@ -7271,7 +7271,6 @@
 		":VALUES"
 		"http://www.w3.org/2002/07/owl#MaxCardinalityRestriction"
 		"http://www.w3.org/2001/XMLSchema#gYearMonth"
-		"http://www.w3.org/2002/07/owl#Thing"
 		"http://www.w3.org/2002/07/owl#SymmetricProperty"
 		"http://protege.stanford.edu/plugins/owl/protege#ExternalResource"
 		"http://www.w3.org/2000/01/rdf-schema#domain"
