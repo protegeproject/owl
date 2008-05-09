@@ -1,18 +1,10 @@
 package edu.stanford.smi.protegex.owl.database;
 
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.swing.JOptionPane;
-
-import edu.stanford.smi.protege.exception.ProtegeIOException;
+import edu.stanford.smi.protege.exception.OntologyLoadException;
 import edu.stanford.smi.protege.model.KnowledgeBaseFactory;
 import edu.stanford.smi.protege.model.Project;
 import edu.stanford.smi.protege.plugin.AbstractCreateProjectPlugin;
@@ -74,7 +66,7 @@ public class CreateOWLDatabaseProjectPlugin extends
         try {
             creator.create(errors);
         }
-        catch (IOException ioe) {
+        catch (OntologyLoadException ioe) {
             errors.add(ioe);
         }
         handleErrors(errors);

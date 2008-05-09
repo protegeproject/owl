@@ -1,6 +1,5 @@
 package edu.stanford.smi.protegex.owl.database;
 
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -8,7 +7,8 @@ import java.sql.Statement;
 import java.util.Collection;
 import java.util.logging.Logger;
 
-import edu.stanford.smi.protege.exception.AmalgamatedIOException;
+import edu.stanford.smi.protege.exception.AmalgamatedLoadException;
+import edu.stanford.smi.protege.exception.OntologyLoadException;
 import edu.stanford.smi.protege.model.Model;
 import edu.stanford.smi.protege.model.framestore.NarrowFrameStore;
 import edu.stanford.smi.protege.util.Log;
@@ -19,12 +19,10 @@ import edu.stanford.smi.protegex.owl.model.OWLOntology;
 import edu.stanford.smi.protegex.owl.model.RDFIndividual;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
-import edu.stanford.smi.protegex.owl.model.factory.FactoryUtils;
 import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
 import edu.stanford.smi.protegex.owl.model.impl.OWLSystemFrames;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreModel;
-import edu.stanford.smi.protegex.owl.repository.util.RepositoryFileManager;
 
 /**
  * This class is for internal use only.  It is used during the loading, saving and importing
@@ -91,10 +89,10 @@ public class DatabaseFactoryUtils {
             try {
                  ((AbstractOWLModel) owlModel).loadImportedAssertions(URIUtilities.createURI(imprt));
             }
-            catch (AmalgamatedIOException e) {
+            catch (AmalgamatedLoadException e) {
                 errors.addAll(e.getErrorList());
             }
-            catch (IOException e) {
+            catch (OntologyLoadException e) {
                 errors.add(e);
             }
         }
