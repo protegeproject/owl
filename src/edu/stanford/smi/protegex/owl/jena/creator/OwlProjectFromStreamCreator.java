@@ -9,8 +9,8 @@ import java.util.List;
 
 import edu.stanford.smi.protege.model.Project;
 import edu.stanford.smi.protegex.owl.jena.JenaKnowledgeBaseFactory;
+import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
 import edu.stanford.smi.protegex.owl.jena.parser.ProtegeOWLParser;
-import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.factory.AbstractOwlProjectCreator;
 import edu.stanford.smi.protegex.owl.repository.Repository;
 
@@ -18,6 +18,9 @@ public class OwlProjectFromStreamCreator extends AbstractOwlProjectCreator {
     private InputStream stream;
     private String xmlBase;
     private List<Repository> repositories = new ArrayList<Repository>();
+    
+    private Project project;
+    private JenaOWLModel owlModel;
 
 
     public OwlProjectFromStreamCreator() {
@@ -30,9 +33,9 @@ public class OwlProjectFromStreamCreator extends AbstractOwlProjectCreator {
 
     @SuppressWarnings("unchecked")
     @Override
-    public Project create(Collection errors) throws IOException {
-        Project project = Project.createNewProject(factory, errors);
-        OWLModel owlModel = (OWLModel) project.getKnowledgeBase();
+    public void create(Collection errors) throws IOException {
+        project = Project.createNewProject(factory, errors);
+        owlModel = (JenaOWLModel) project.getKnowledgeBase();
         insertRepositoriesIntoOwlModel(owlModel);
         
         ProtegeOWLParser parser = new ProtegeOWLParser(owlModel);
@@ -42,6 +45,15 @@ public class OwlProjectFromStreamCreator extends AbstractOwlProjectCreator {
         catch  (IOException e) {
             errors.add(e);
         }
+    }
+    
+    @Override
+    public JenaOWLModel getOwlModel() {
+        return owlModel;
+    }
+    
+    @Override
+    public Project getProject() {
         return project;
     }
     

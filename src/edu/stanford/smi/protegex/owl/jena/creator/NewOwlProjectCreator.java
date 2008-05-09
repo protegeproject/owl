@@ -5,6 +5,7 @@ import java.util.Collection;
 
 import edu.stanford.smi.protege.model.Project;
 import edu.stanford.smi.protegex.owl.jena.JenaKnowledgeBaseFactory;
+import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.factory.AbstractOwlProjectCreator;
 import edu.stanford.smi.protegex.owl.model.factory.AlreadyImportedException;
@@ -12,6 +13,9 @@ import edu.stanford.smi.protegex.owl.model.factory.FactoryUtils;
 
 public class NewOwlProjectCreator extends AbstractOwlProjectCreator {
     private String ontologyName;
+    
+    private Project project;
+    private JenaOWLModel owlModel;
     
     public NewOwlProjectCreator() {
         this(new JenaKnowledgeBaseFactory());
@@ -22,9 +26,9 @@ public class NewOwlProjectCreator extends AbstractOwlProjectCreator {
     }
 
     @Override
-    public Project create(Collection errors) throws IOException {
-        Project project = Project.createNewProject(factory, errors);
-        OWLModel owlModel = (OWLModel) project.getKnowledgeBase();
+    public void create(Collection errors) throws IOException {
+        project = Project.createNewProject(factory, errors);
+        owlModel = (JenaOWLModel) project.getKnowledgeBase();
         
         if (ontologyName == null) {
             ontologyName = FactoryUtils.generateOntologyURIBase();
@@ -36,10 +40,18 @@ public class NewOwlProjectCreator extends AbstractOwlProjectCreator {
             throw new RuntimeException("This shouldn't happen", e);
         }
         addViewSettings(project.getSources());
-        
-        return project;
     }
 
+    @Override
+    public JenaOWLModel getOwlModel() {
+        return owlModel;
+    }
+    
+    @Override
+    public Project getProject() {
+        return project;
+    }
+    
     /*
      * ---------------------------------------------------------------------
      * setters and getters

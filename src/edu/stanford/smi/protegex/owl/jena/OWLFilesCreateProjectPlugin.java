@@ -43,6 +43,7 @@ public class OWLFilesCreateProjectPlugin extends AbstractCreateProjectPlugin imp
         JenaKnowledgeBaseFactory.useStandalone = false;
     }
 
+    @SuppressWarnings("unchecked")
     protected Project buildNewProject(KnowledgeBaseFactory factory) {   
         Collection errors = new ArrayList();
         OwlProjectFromUriCreator creator = new OwlProjectFromUriCreator((JenaKnowledgeBaseFactory) factory);
@@ -51,16 +52,15 @@ public class OWLFilesCreateProjectPlugin extends AbstractCreateProjectPlugin imp
         creator.setDefaultClassView(defaultClassView);
         creator.setProfileURI(profileURI);
         try {
-            return creator.create(errors);
+            creator.create(errors);
         }
         catch (IOException ioe) {
             errors.add(ioe);
-            return null;
         }
         finally {
             handleErrors(errors);
         }
-        
+        return creator.getProject();
     }
 
     public boolean canCreateProject(KnowledgeBaseFactory factory, boolean useExistingSources) {
@@ -79,6 +79,7 @@ public class OWLFilesCreateProjectPlugin extends AbstractCreateProjectPlugin imp
     }
 
 
+    @SuppressWarnings("unchecked")
     protected Project createNewProject(KnowledgeBaseFactory factory) {
         Collection errors = new ArrayList();
         NewOwlProjectCreator creator = new NewOwlProjectCreator((JenaKnowledgeBaseFactory) factory);
@@ -86,19 +87,18 @@ public class OWLFilesCreateProjectPlugin extends AbstractCreateProjectPlugin imp
         creator.setDefaultClassView(defaultClassView);
         creator.setProfileURI(profileURI);
         try {
-            return creator.create(errors);
+            creator.create(errors);
         }
         catch (AmalgamatedIOException ioe) {
             errors.addAll(ioe.getErrorList());
-            return null;
         }
         catch (IOException ioe) {
             errors.add(ioe);
-            return null;
         }
         finally {
             handleErrors(errors);
         }
+        return creator.getProject();
     }
  
 

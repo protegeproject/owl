@@ -24,6 +24,7 @@ public class CreateOWLDatabaseFromFileProjectPlugin extends CreateOWLDatabasePro
     }
 
 
+    @SuppressWarnings("unchecked")
     protected Project buildNewProject(KnowledgeBaseFactory factory) {
         JenaKnowledgeBaseFactory.useStandalone = false;
         Collection errors = new ArrayList();
@@ -35,15 +36,14 @@ public class CreateOWLDatabaseFromFileProjectPlugin extends CreateOWLDatabasePro
         creator.setPassword(getPassword());
         creator.setOntologySource(getOntologyInputSource().toString());
 
-        Project project = null;
         try {
-            project = creator.create(errors);
+            creator.create(errors);
         }
         catch (IOException ioe) {
             errors.add(ioe);
         }
         handleErrors(errors);
-        return project;
+        return creator.getProject();
     }
 
 

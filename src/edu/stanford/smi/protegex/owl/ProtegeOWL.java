@@ -53,39 +53,45 @@ public class ProtegeOWL {
         Collection errors = new ArrayList();
         NewOwlProjectCreator creator = new NewOwlProjectCreator();
         creator.setOntologyName(FactoryUtils.generateOntologyURIBase());
-        JenaOWLModel owlModel = (JenaOWLModel) creator.create(errors).getKnowledgeBase();
+        creator.create(errors);
         handleErrors(errors);
-        return owlModel;
+        return creator.getOwlModel();
 	}
    
     
 
     
+    @SuppressWarnings("unchecked")
     public static JenaOWLModel createJenaOWLModelFromInputStream(InputStream is) throws IOException { 
         Collection errors = new ArrayList();
         OwlProjectFromStreamCreator creator = new OwlProjectFromStreamCreator();
         creator.setStream(is);
-        JenaOWLModel owlModel =  (JenaOWLModel) creator.create(errors).getKnowledgeBase();
+        creator.create(errors);
+        JenaOWLModel owlModel =  creator.getOwlModel();
         handleErrors(errors);
         return owlModel;
     }
 
 
+    @SuppressWarnings("unchecked")
     public static JenaOWLModel createJenaOWLModelFromReader(Reader reader) throws IOException {
         Collection errors = new ArrayList();
         OwlProjectFromReaderCreator creator = new OwlProjectFromReaderCreator();
         creator.setReader(reader);
-        JenaOWLModel owlModel = (JenaOWLModel) creator.create(errors).getKnowledgeBase();
+        creator.create(errors);
+        JenaOWLModel owlModel = creator.getOwlModel();
         handleErrors(errors);
         return owlModel;
     }
 
 
+    @SuppressWarnings("unchecked")
     public static JenaOWLModel createJenaOWLModelFromURI(String uri) throws IOException {
         Collection errors = new ArrayList();
         OwlProjectFromUriCreator creator = new OwlProjectFromUriCreator();
         creator.setOntologyUri(uri);
-        JenaOWLModel owlModel = (JenaOWLModel) creator.create(errors).getKnowledgeBase();
+        creator.create(errors);
+        JenaOWLModel owlModel = creator.getOwlModel();
         handleErrors(errors);
         return owlModel;
     }

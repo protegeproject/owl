@@ -12,6 +12,7 @@ import edu.stanford.smi.protege.util.FileUtilities;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protege.util.PropertyList;
 import edu.stanford.smi.protegex.owl.jena.JenaKnowledgeBaseFactory;
+import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
 import edu.stanford.smi.protegex.owl.jena.parser.ProtegeOWLParser;
 import edu.stanford.smi.protegex.owl.model.factory.AbstractOwlProjectCreator;
 
@@ -20,6 +21,10 @@ public class OwlProjectFromUriCreator extends AbstractOwlProjectCreator {
     private String ontologyUri;
 
     private String lang = FileUtils.langXMLAbbrev;
+    
+    private Project project;
+    
+    private JenaOWLModel owlModel;
 
     public  OwlProjectFromUriCreator() {
         this(new JenaKnowledgeBaseFactory());
@@ -31,8 +36,9 @@ public class OwlProjectFromUriCreator extends AbstractOwlProjectCreator {
 
     
     @SuppressWarnings("unchecked")
-    public Project create(Collection errors) throws IOException {
-        Project project = Project.createBuildProject(factory, errors);
+    public void create(Collection errors) throws IOException {
+        project = Project.createBuildProject(factory, errors);
+        owlModel = (JenaOWLModel) project.getKnowledgeBase();
         
         initializeSources(project.getSources());
         URI uri = getBuildProjectURI();
@@ -40,9 +46,18 @@ public class OwlProjectFromUriCreator extends AbstractOwlProjectCreator {
             project.setProjectURI(uri);
         }
         project.createDomainKnowledgeBase(factory, errors, true);
-        return project;
     }
     
+    
+    @Override
+    public JenaOWLModel getOwlModel() {
+        return owlModel;
+    }
+    
+    @Override
+    public Project getProject() {
+        return project;
+    }
     
     
     protected void initializeSources(PropertyList sources) {

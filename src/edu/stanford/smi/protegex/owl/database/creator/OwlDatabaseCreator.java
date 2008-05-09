@@ -6,10 +6,8 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Collection;
 
-import edu.stanford.smi.protege.model.Project;
 import edu.stanford.smi.protegex.owl.database.DatabaseFactoryUtils;
 import edu.stanford.smi.protegex.owl.database.OWLDatabaseKnowledgeBaseFactory;
-import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.factory.AlreadyImportedException;
 import edu.stanford.smi.protegex.owl.model.factory.FactoryUtils;
 
@@ -28,12 +26,11 @@ public class OwlDatabaseCreator extends AbstractOwlDatabaseCreator {
     }
     
     @Override
-    public Project create(Collection errors) throws IOException {
+    public void create(Collection errors) throws IOException {
         if (pleaseCleanDatabase()) {
             initializeTable(errors);
         }
-        Project project = super.create(errors);
-        OWLModel owlModel = (OWLModel) project.getKnowledgeBase();
+        super.create(errors);
         if (ontologyName == null) {
             ontologyName = FactoryUtils.generateOntologyURIBase();
         }
@@ -46,7 +43,6 @@ public class OwlDatabaseCreator extends AbstractOwlDatabaseCreator {
         catch (AlreadyImportedException e) {
             throw new RuntimeException("This shouldn't happen", e);
         }
-        return project;
     }
     
     private boolean pleaseCleanDatabase() throws IOException {
