@@ -9,6 +9,7 @@ import java.util.logging.Level;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.util.FileUtils;
 
+import edu.stanford.smi.protege.exception.OntologyLoadException;
 import edu.stanford.smi.protege.model.KnowledgeBase;
 import edu.stanford.smi.protege.model.KnowledgeBaseSourcesEditor;
 import edu.stanford.smi.protege.model.Project;
@@ -20,6 +21,7 @@ import edu.stanford.smi.protege.util.PropertyList;
 import edu.stanford.smi.protege.util.URIUtilities;
 import edu.stanford.smi.protegex.owl.database.OWLDatabaseModel;
 import edu.stanford.smi.protegex.owl.jena.parser.ProtegeOWLParser;
+import edu.stanford.smi.protegex.owl.jena.parser.ProtegeOWLParserException;
 import edu.stanford.smi.protegex.owl.model.impl.OWLUtil;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreModel;
 import edu.stanford.smi.protegex.owl.repository.util.RepositoryFileManager;
@@ -168,35 +170,15 @@ public class JenaKnowledgeBaseFactory implements OWLKnowledgeBaseFactory {
 		        ProtegeOWLParser parser = new ProtegeOWLParser(owlModel);    
 		        parser.run(absoluteURI);
 		    }
-	        catch (IOException t) {
-	            Log.getLogger().log(Level.SEVERE, "Error at loading file "+ absoluteURI, t);
-	            
-	            Collection parseErrors = ProtegeOWLParser.getErrors(); 
-	            if (parseErrors != null && parseErrors.size() > 0) {
-	                errors.addAll(parseErrors);
-	            }
-	            
-	            errors.add(t);
-	            
-	            String message = "Errors at loading OWL file from " + absoluteURI + "\n";
-	            message = message + "\nPlease consider running the file through an RDF or OWL validation service such as:";
-	            message = message + "\n  - RDF Validator: http://www.w3.org/RDF/Validator";
-	            message = message + "\n  - OWL Validator: http://phoebus.cs.man.ac.uk:9999/OWL/Validator";
-	            if (owlModel.getNamespaceManager().getPrefix("http://protege.stanford.edu/system#") != null ||
-	                    owlModel.getNamespaceManager().getPrefix("http://protege.stanford.edu/kb#") != null) {
-	                message = message + "\nThis file seems to have been created with the frame-based Protege RDF Backend. " +
-	                        "Please try to use the RDF Backend of Protege to open this file and then export it to OWL " +
-	                        "using Export to Format...";
-	            }
-	   
-	            errors.add(new MessageError(message));
-	        }
+	        catch (OntologyLoadException t) {
+	        	handleException(t, owlModel, absoluteURI, errors);
+	        }	     
+	        
 	        //TODO: Improve this.
 	        Collection parseErrors = ProtegeOWLParser.getErrors(); 
 	        if (parseErrors != null && parseErrors.size() > 0) {
 	            errors.addAll(parseErrors);
 	        }
-
         }
         else {
         	String message = "This plugin can currently only load OWL files into OWL projects";
@@ -206,6 +188,31 @@ public class JenaKnowledgeBaseFactory implements OWLKnowledgeBaseFactory {
     }
 
 
+    protected void handleException(Throwable t, JenaOWLModel owlModel, URI absoluteURI, Collection errors) {
+        Log.getLogger().log(Level.SEVERE, "Error at loading file "+ absoluteURI, t);
+        
+        Collection parseErrors = ProtegeOWLParser.getErrors(); 
+        if (parseErrors != null && parseErrors.size() > 0) {
+            errors.addAll(parseErrors);
+        }        
+        errors.add(t);
+        
+        String message = "Errors at loading OWL file from " + absoluteURI + "\n";
+        message = message + "\nPlease consider running the file through an RDF or OWL validation service such as:";
+        message = message + "\n  - RDF Validator: http://www.w3.org/RDF/Validator";
+        message = message + "\n  - OWL Validator: http://phoebus.cs.man.ac.uk:9999/OWL/Validator";
+        
+        if (owlModel.getNamespaceManager().getPrefix("http://protege.stanford.edu/system#") != null ||
+                owlModel.getNamespaceManager().getPrefix("http://protege.stanford.edu/kb#") != null) {
+            message = message + "\nThis file seems to have been created with the frame-based Protege RDF Backend. " +
+                    "Please try to use the RDF Backend of Protege to open this file and then export it to OWL " +
+                    "using Export to Format...";
+        }
+
+        errors.add(new MessageError(message));
+    }
+    
+    
     @SuppressWarnings("unchecked")
 	public void saveKnowledgeBase(KnowledgeBase kb, PropertyList sources, Collection errors) {
         String language = getOWLFileLanguage(sources);
