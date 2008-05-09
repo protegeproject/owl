@@ -1,6 +1,5 @@
 package edu.stanford.smi.protegex.owl.ui.repository.wizard;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -8,6 +7,7 @@ import java.util.logging.Level;
 
 import javax.swing.JComponent;
 
+import edu.stanford.smi.protege.exception.OntologyLoadException;
 import edu.stanford.smi.protege.plugin.PluginUtilities;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protege.util.Wizard;
@@ -82,7 +82,7 @@ public class RepositoryWizard extends OWLWizard {
 		return selectedPlugin;
 	}
 
-	public static void main(String [] args) throws IOException {
+	public static void main(String [] args) throws OntologyLoadException {
 		OWLModel owlModel = ProtegeOWL.createJenaOWLModel();
 		RepositoryWizard wiz = new RepositoryWizard(null, owlModel);
 		if(wiz.execute() == Wizard.RESULT_FINISH) {
