@@ -1,6 +1,5 @@
 package edu.stanford.smi.protegex.owl.storage.tests;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -8,6 +7,7 @@ import java.util.logging.Level;
 
 import com.hp.hpl.jena.ontology.OntProperty;
 
+import edu.stanford.smi.protege.exception.OntologyLoadException;
 import edu.stanford.smi.protege.model.Instance;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
@@ -39,7 +39,7 @@ public class OWL2OWLCopierTestCase extends AbstractJenaTestCase {
             creator.create(errors);
             project = creator.getProject();
         }
-        catch (IOException e) {
+        catch (OntologyLoadException e) {
             Log.getLogger().log(Level.SEVERE, "Exception caught", e);
             fail();
         }
