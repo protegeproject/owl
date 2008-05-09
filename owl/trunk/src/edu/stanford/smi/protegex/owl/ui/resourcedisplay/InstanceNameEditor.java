@@ -205,10 +205,12 @@ public class InstanceNameEditor extends JTextField {
     public void selectLocalName() {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                String name = instance.getName();
-                String namespace = NamespaceUtil.getNameSpace(name);
-                InstanceNameEditor.super.select(namespace.length(), name.length());
-                requestFocus();
+            	if (instance != null) {
+            		String name = instance.getName();
+            		String namespace = NamespaceUtil.getNameSpace(name);
+            		InstanceNameEditor.super.select(namespace.length(), name.length());
+            		requestFocus();
+            	}
             }
         });
     }
