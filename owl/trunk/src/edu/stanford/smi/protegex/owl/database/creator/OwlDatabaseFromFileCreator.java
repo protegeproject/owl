@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
 
+import edu.stanford.smi.protege.exception.OntologyLoadException;
 import edu.stanford.smi.protege.model.Project;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protege.util.URIUtilities;
@@ -35,8 +36,13 @@ public class OwlDatabaseFromFileCreator extends AbstractOwlDatabaseCreator {
 
     @SuppressWarnings("unchecked")
     @Override
-    public void create(Collection errors) throws IOException {
-        initializeTable(errors);
+    public void create(Collection errors) throws OntologyLoadException {
+        try {
+			initializeTable(errors);
+		} catch (IOException e1) {
+			throw new OntologyLoadException(e1, "Could not initialize DB tables");
+		}
+
         super.create(errors);
         insertRepositoriesIntoOwlModel(owlModel);
         ProtegeOWLParser parser = new ProtegeOWLParser(owlModel);

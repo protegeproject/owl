@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 
+import edu.stanford.smi.protege.exception.OntologyLoadException;
 import edu.stanford.smi.protege.model.Project;
 import edu.stanford.smi.protege.storage.database.DatabaseKnowledgeBaseFactory;
 import edu.stanford.smi.protege.util.PropertyList;
@@ -47,7 +48,7 @@ public abstract class AbstractOwlDatabaseCreator extends AbstractOwlProjectCreat
 
     @SuppressWarnings("unchecked")
 	@Override
-    public void create(Collection errors) throws IOException {
+    public void create(Collection errors) throws OntologyLoadException {
         project = Project.createBuildProject(factory, errors);
         owlModel = (OWLDatabaseModel) project.getKnowledgeBase();
         initializeSources(project.getSources());
