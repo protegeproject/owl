@@ -22,6 +22,7 @@ import com.hp.hpl.jena.vocabulary.OWL;
 
 import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.Slot;
+import edu.stanford.smi.protege.util.ComponentFactory;
 import edu.stanford.smi.protege.util.LazyTreeRoot;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.jena.Jena;
@@ -143,7 +144,7 @@ public class InferredSubsumptionTreePanel extends SubsumptionTreePanel {
 
 
     private void saveInferred() {
-        JFileChooser fileChooser = new JFileChooser(".");
+        JFileChooser fileChooser = ComponentFactory.createFileChooser("Select file", "owl");
         if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
             File file = fileChooser.getSelectedFile();
             OWLModel owlModel = getOWLModel();
