@@ -3,6 +3,7 @@ package edu.stanford.smi.protegex.owl.jena.parser;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
@@ -23,6 +24,7 @@ import com.hp.hpl.jena.rdf.arp.AResource;
 import com.hp.hpl.jena.rdf.arp.NamespaceHandler;
 import com.hp.hpl.jena.rdf.arp.StatementHandler;
 
+import edu.stanford.smi.protege.exception.OntologyLoadException;
 import edu.stanford.smi.protege.util.ApplicationProperties;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protege.util.MessageError;
@@ -145,9 +147,14 @@ public class ProtegeOWLParser {
 	 * @param uri The <code>URI</code> that points to the ontology.
 	 */
 	public void run(final URI uri)
-	        throws IOException {
+	        throws OntologyLoadException {
 		
-		URL url = uri.toURL();		
+		URL url;
+		try {
+			url = uri.toURL();
+		} catch (MalformedURLException e) {
+			throw new OntologyLoadException(e);
+		}		
 		ProtegeOWLParser.this.run(getInputStream(url), url.toString());
 	}
 	
@@ -163,7 +170,7 @@ public class ProtegeOWLParser {
 	 */
 	public void run(final InputStream is,
 	                final String xmlBase)
-	        throws IOException {
+	        throws OntologyLoadException {
 		
 		run(xmlBase, createARPInvokation(is, xmlBase));
 	}
@@ -182,7 +189,7 @@ public class ProtegeOWLParser {
 	 */
 	public void run(final Reader reader,
 	                final String xmlBase)
-	        throws IOException {
+	        throws OntologyLoadException {
 		
 		run(xmlBase, createARPInvokation(reader, xmlBase));
 	}
@@ -190,13 +197,19 @@ public class ProtegeOWLParser {
 
 	protected void run(final String uri,
 	                   final ARPInvokation invokation)
-	        throws IOException {
+	        throws OntologyLoadException {
 		
 		errors = new ArrayList();
 		errorOntologyURI = null;
 		URI xmlBase = null;
 		if (uri != null) {
-		    xmlBase = XMLBaseExtractor.getXMLBase(uri);
+		    try {
+				xmlBase = XMLBaseExtractor.getXMLBase(uri);
+			} catch (MalformedURLException e) {
+				throw new OntologyLoadException(e, "Malformed URL: " + uri);
+			} catch (IOException e) {
+				throw new OntologyLoadException(e);
+			}
 		}
 		if (xmlBase == null) {
 		    xmlBase = URIUtilities.createURI(uri);
@@ -208,11 +221,12 @@ public class ProtegeOWLParser {
 	/************************************** Loading triples *********************************/
 
 	
-	public void loadTriples(String ontologyName, URI xmlBase, InputStream is) throws IOException {
+	public void loadTriples(String ontologyName, URI xmlBase, InputStream is) throws OntologyLoadException {
 	    loadTriples(ontologyName, xmlBase, createARPInvokation(is, ontologyName.toString()));
 	}
 	
-	private void loadTriples(final String ontologyName, URI xmlBase, final ARPInvokation invokation) throws IOException {
+	private void loadTriples(final String ontologyName, URI xmlBase, final ARPInvokation invokation) 
+						throws OntologyLoadException {
 		//the triple store where the parsing will write the parsed triples
 	    final TripleStore tripleStore = owlModel.getTripleStoreModel().getActiveTripleStore();
 	    
@@ -237,11 +251,10 @@ public class ProtegeOWLParser {
 
 	        try {
 	            invokation.invokeARP(arp);
-	        } catch (IOException e) {
+	        } catch (ProtegeOWLParserException e) {
 	            throw e;
 	        } catch (Exception e) {
-	            IOException ioe = new IOException(e.getMessage());
-	            ioe.initCause(e);
+	        	ProtegeOWLParserException ioe = new ProtegeOWLParserException(e, e.getMessage(), "");	            
 	            throw ioe;
 	        }
 
@@ -300,17 +313,21 @@ public class ProtegeOWLParser {
 	}
 	
 	
-	public static void doFinalPostProcessing(OWLModel owlModel) {
-	    TripleProcessor tripleProcessor = ((AbstractOWLModel) owlModel).getGlobalParserCache().getTripleProcessor();
-		tripleProcessor.doPostProcessing();
-       
-        //copy restrictions in facets
-        if (owlModel instanceof JenaOWLModel)  {
-            ((JenaOWLModel) owlModel).copyFacetValuesIntoNamedClses();
-        }
-        
-		//sort subclasses if needed
-        TripleStoreUtil.sortSubclasses(owlModel);
+	public static void doFinalPostProcessing(OWLModel owlModel) throws OntologyLoadException {
+		try {
+			TripleProcessor tripleProcessor = ((AbstractOWLModel) owlModel).getGlobalParserCache().getTripleProcessor();
+			tripleProcessor.doPostProcessing();
+
+			//copy restrictions in facets
+			if (owlModel instanceof JenaOWLModel)  {
+				((JenaOWLModel) owlModel).copyFacetValuesIntoNamedClses();
+			}
+
+			//sort subclasses if needed
+			TripleStoreUtil.sortSubclasses(owlModel);
+		} catch (Exception e) {
+			throw new OntologyLoadException(e, " Errors at post processing ontology");
+		}
 	}	
 	
 	
@@ -321,7 +338,7 @@ public class ProtegeOWLParser {
 	    this.importing = importing;
 	}
 
-	private void processImports(TripleStore tripleStore) throws IOException {				
+	private void processImports(TripleStore tripleStore) throws OntologyLoadException {				
 		Set<String> thisOntoImports = OWLImportsCache.getOWLImportsURI(tripleStore.getName());
 		
 		for (String import_ : thisOntoImports) {
@@ -345,22 +362,27 @@ public class ProtegeOWLParser {
 		return errors;
 	}
 	
-	public static InputStream getInputStream(URL url) throws IOException {
-		if(url.getProtocol().equals("http")) {
-			URLConnection conn = url.openConnection();
+	public static InputStream getInputStream(URL url) throws OntologyLoadException {
+		try {
+			if(url.getProtocol().equals("http")) {
+				URLConnection conn;
 
-			conn.setConnectTimeout(ApplicationProperties.getUrlConnectTimeout()*1000);
-			conn.setReadTimeout(ApplicationProperties.getUrlConnectReadTimeout()*1000);
+				conn = url.openConnection();
+				conn.setConnectTimeout(ApplicationProperties.getUrlConnectTimeout()*1000);
+				conn.setReadTimeout(ApplicationProperties.getUrlConnectReadTimeout()*1000);
 
-			conn.setRequestProperty("Accept", "application/rdf+xml");
-			conn.addRequestProperty("Accept", "text/xml");
-			conn.addRequestProperty("Accept", "*/*");
-			return conn.getInputStream();
+				conn.setRequestProperty("Accept", "application/rdf+xml");
+				conn.addRequestProperty("Accept", "text/xml");
+				conn.addRequestProperty("Accept", "*/*");
+				return conn.getInputStream();
+			}
+			else {
+				return url.openStream();
+			}
+		} catch (IOException e) {
+			throw new OntologyLoadException(e, "Could not get input stream for " + url);
 		}
-		else {
-			return url.openStream();
-		}
-	}	
+	}
 	
 
 	/*********************************** ARP Interface Implementations *****************************/
@@ -414,29 +436,41 @@ public class ProtegeOWLParser {
 
 
 		public void statement(AResource subj, AResource pred, AResource obj) {
-                    if (log.isLoggable(Level.FINE)) {
-                        log.fine("NewStatementHandler: " + subj + "  " + pred + "  " + obj);
-                    }
-                    tripleCount++;
-                    if(tripleCount % 5000 == 0) {			
-                        Log.getLogger().info("    Loaded " + tripleCount + " triples");
-                    }
-			
-                    tripleProcessor.processTriple(subj, pred, obj, tripleStore, false);			
+			if (log.isLoggable(Level.FINE)) {
+				log.fine("NewStatementHandler: " + subj + "  " + pred + "  " + obj);
+			}
+			tripleCount++;
+			if(tripleCount % 5000 == 0) {
+				Log.getLogger().info("    Loaded " + tripleCount + " triples");
+			}
+
+			try {
+				tripleProcessor.processTriple(subj, pred, obj, tripleStore, false);
+			} catch (Exception e) { //specialize
+				Log.getLogger().log(Level.SEVERE, "Error at parsing triple: " + 
+						subj + " " + pred + " " + obj, e);
+			}
+
 		}
 
 
 		public void statement(AResource subj, AResource pred, ALiteral lit) {
-                    if (log.isLoggable(Level.FINE)) {
-                        log.fine(subj + "  " + pred + "  " + lit);
-                    }
-			
-                    tripleCount++;
-                    if(tripleCount % 5000 == 0) {			
-                        Log.getLogger().info("    Loaded " + tripleCount + " triples");
-                    }
-			
-                    tripleProcessor.processTriple(subj, pred, lit, tripleStore, false);			
+			if (log.isLoggable(Level.FINE)) {
+				log.fine(subj + "  " + pred + "  " + lit);
+			}
+
+			tripleCount++;
+			if(tripleCount % 5000 == 0) {			
+				Log.getLogger().info("    Loaded " + tripleCount + " triples");
+			}
+
+			try {
+				tripleProcessor.processTriple(subj, pred, lit, tripleStore, false);
+			} catch (Exception e) { //specialize
+				Log.getLogger().log(Level.SEVERE, "Error at parsing triple: " + 
+						subj + " " + pred + " " + lit, e);
+			}
+
 		}		
 	}
 
