@@ -1,11 +1,11 @@
 package edu.stanford.smi.protegex.owl.ui.search.finder.tests;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import edu.stanford.smi.protege.exception.OntologyLoadException;
 import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.jena.creator.OwlProjectFromUriCreator;
@@ -103,7 +103,7 @@ public class FindTestCase extends AbstractJenaTestCase {
                 fail();
             }
         }
-        catch (IOException ioe) {
+        catch (OntologyLoadException ioe) {
             fail(ioe.getMessage());
         }
     }

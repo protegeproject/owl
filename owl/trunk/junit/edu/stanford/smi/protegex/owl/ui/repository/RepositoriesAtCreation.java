@@ -5,12 +5,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 
 import com.hp.hpl.jena.util.FileUtils;
 
+import edu.stanford.smi.protege.exception.OntologyLoadException;
 import edu.stanford.smi.protege.model.Project;
 import edu.stanford.smi.protege.test.APITestCase;
 import edu.stanford.smi.protegex.owl.ProtegeOWL;
@@ -42,7 +44,7 @@ public class RepositoriesAtCreation extends APITestCase {
 			assertEquals(1, owlModel.getOWLOntologyClass().getInstanceCount(false));
 			assertNull(owlModel.getOWLNamedClass(sampleClass));
 			assertEquals(actualOntologyName, owlModel.getDefaultOWLOntology().getName());
-		} catch (IOException e) {
+		} catch (OntologyLoadException e) {
 			e.printStackTrace();
 		}
 	}
@@ -69,7 +71,7 @@ public class RepositoriesAtCreation extends APITestCase {
 				Project p = creator.getProject();
 				owlModel = (OWLModel) p.getKnowledgeBase();
 			}
-			catch (IOException e) {
+			catch (OntologyLoadException e) {
 				fail("Exception caught creating owl model from database " + e);
 				return;
 			}
@@ -88,10 +90,10 @@ public class RepositoriesAtCreation extends APITestCase {
 			creator.setReader(makeReader());
 			creator.create(errors);
 			owlModel = creator.getOwlModel();
-		} catch (IOException e) {
+		} catch (OntologyLoadException e) {
 			fail("Exception caught creating owl model from file reader" + e);
 			return;
-		}
+		} 
         assertEquals(0, errors.size());
 		checkForSuccess(owlModel);
 	}
@@ -106,7 +108,7 @@ public class RepositoriesAtCreation extends APITestCase {
 			creator.setStream(makeInputStream());
 			creator.create(errors);
 			owlModel = creator.getOwlModel();
-		} catch (IOException e) {
+		} catch (OntologyLoadException e) {
 			fail("Exception caught creating owl model from file reader" + e);
 			return;
 		}
@@ -122,7 +124,7 @@ public class RepositoriesAtCreation extends APITestCase {
 	        owlModel.load(ontologyUri, FileUtils.langXMLAbbrev);
 	        checkForSuccess(owlModel);
 	    }
-	    catch (IOException e) {
+	    catch (OntologyLoadException e) {
 	        fail("Exception caught " + e);
 	    }
 	}
@@ -135,7 +137,7 @@ public class RepositoriesAtCreation extends APITestCase {
             owlModel.load(makeInputStream(), FileUtils.langXMLAbbrev);
             checkForSuccess(owlModel);
         }
-        catch (IOException e) {
+        catch (OntologyLoadException e) {
             fail("Exception caught " + e);
         }
     }
@@ -148,7 +150,7 @@ public class RepositoriesAtCreation extends APITestCase {
             owlModel.load(makeReader(), FileUtils.langXMLAbbrev);
             checkForSuccess(owlModel);
         }
-        catch (IOException e) {
+        catch (OntologyLoadException e) {
             fail("Exception caught " + e);
         }
     }
@@ -163,7 +165,7 @@ public class RepositoriesAtCreation extends APITestCase {
             assertEquals(0, errors.size());
             checkForSuccess(owlModel);
         }
-        catch (IOException e) {
+        catch (OntologyLoadException e) {
             fail("Exception caught " + e);
         }
     }
@@ -174,12 +176,25 @@ public class RepositoriesAtCreation extends APITestCase {
 		assertEquals(actualOntologyName, owlModel.getDefaultOWLOntology().getName());
 	}
 	
-	private InputStream makeInputStream() throws IOException {
-	    return ontologyUri.toURL().openStream();
+	private InputStream makeInputStream() throws OntologyLoadException {
+	    try {
+			return ontologyUri.toURL().openStream();
+		} catch (MalformedURLException e) {
+			throw new OntologyLoadException(e);			
+		} catch (IOException e) {
+			throw new OntologyLoadException(e);
+		}
 	}
 	
-	private Reader makeReader() throws IOException {
-        InputStream inputStream = ontologyUri.toURL().openStream();
+	private Reader makeReader() throws OntologyLoadException {
+        InputStream inputStream;
+		try {
+			inputStream = ontologyUri.toURL().openStream();
+		} catch (MalformedURLException e) {
+			throw new OntologyLoadException(e);	
+		} catch (IOException e) {
+			throw new OntologyLoadException(e);	
+		}
         return new InputStreamReader(inputStream);
 	}
 }
