@@ -1,5 +1,6 @@
 package edu.stanford.smi.protegex.owl.ui.repository;
 
+import edu.stanford.smi.protege.exception.OntologyLoadException;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.repository.util.RepositoryUtil;
 import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
@@ -91,7 +92,7 @@ public class RepositoryEntryLabel extends JLabel {
             try {
                 RepositoryUtil.createImportLocalCopy(model, name, f);
             }
-            catch (IOException e) {
+            catch (OntologyLoadException e) {
                 ProtegeUI.getModalDialogFactory().showErrorMessageDialog(model, e.getMessage());
             }
         }
