@@ -21,6 +21,8 @@ public class OWLFrameStoreManager extends FrameStoreManager {
     private DomainUpdateFrameStore domainUpdateFrameStore;
     private FacetUpdateFrameStore facetUpdateFrameStore;
     private RangeUpdateFrameStore rangeUpdateFrameStore;
+    private OwlSubclassFrameStore owlSubclassFrameStore;
+    private TypeUpdateFrameStore typeUpdateFrameStore;
     
     private List<FrameStore> frameStores = new ArrayList<FrameStore>();
 
@@ -36,8 +38,8 @@ public class OWLFrameStoreManager extends FrameStoreManager {
         addFrameStore(domainUpdateFrameStore = new DomainUpdateFrameStore(owlModel));
         addFrameStore(facetUpdateFrameStore = new FacetUpdateFrameStore(owlModel));
         addFrameStore(rangeUpdateFrameStore = new RangeUpdateFrameStore(owlModel));
-        addFrameStore(new OwlSubclassFrameStore(owlModel));
-        addFrameStore(new TypeUpdateFrameStore(owlModel));  // this goes at the end so that the others see the swizzle.
+        addFrameStore(owlSubclassFrameStore = new OwlSubclassFrameStore(owlModel));
+        addFrameStore(typeUpdateFrameStore = new TypeUpdateFrameStore(owlModel));  // this goes at the end so that the others see the swizzle.
         
         for (FrameStore fs : frameStores) {
             insertFrameStore(fs);
@@ -76,15 +78,10 @@ public class OWLFrameStoreManager extends FrameStoreManager {
     public OWLFrameStore getOWLFrameStore() {
         return owlFrameStore;
     }
-
-    /**
-     * @return the duplicateValuesFrameStore
-     */
+    
     public DuplicateValuesFrameStore getDuplicateValuesFrameStore() {
         return duplicateValuesFrameStore;
-    }
-    
-    
+    }    
 
     public DomainUpdateFrameStore getDomainUpdateFrameStore() {
         return domainUpdateFrameStore;
@@ -97,6 +94,6 @@ public class OWLFrameStoreManager extends FrameStoreManager {
     public RangeUpdateFrameStore getRangeUpdateFrameStore() {
         return rangeUpdateFrameStore;
     }
-    
+
     
 }
