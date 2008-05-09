@@ -17,25 +17,25 @@ public interface RDFNames {
 
     public static interface Cls {
 
-        final static String ALT = RDF_NAMESPACE + "Alt";
+        final static String ALT = (RDF_NAMESPACE + "Alt").intern();
 
-        final static String BAG = RDF_NAMESPACE + "Bag";
+        final static String BAG = (RDF_NAMESPACE + "Bag").intern();
 
-        final static String DESCRIPTION = RDF_NAMESPACE + "Description";
+        final static String DESCRIPTION = (RDF_NAMESPACE + "Description").intern();
         
-        final static String LIST = RDF_NAMESPACE + "List";
+        final static String LIST = (RDF_NAMESPACE + "List").intern();
 
-        final static String PROPERTY = RDF_NAMESPACE + "Property";
+        final static String PROPERTY = (RDF_NAMESPACE + "Property").intern();
 
-        final static String SEQ = RDF_NAMESPACE + "Seq";
+        final static String SEQ = (RDF_NAMESPACE + "Seq").intern();
 
-        final static String STATEMENT = RDF_NAMESPACE + "Statement";
+        final static String STATEMENT = (RDF_NAMESPACE + "Statement").intern();
         
-        final static String EXTERNAL_RESOURCE = ProtegeNames.PROTEGE_OWL_NAMESPACE +  "ExternalResource";
+        final static String EXTERNAL_RESOURCE = (ProtegeNames.PROTEGE_OWL_NAMESPACE +  "ExternalResource").intern();
 
-        final static String EXTERNAL_CLASS = ProtegeNames.PROTEGE_OWL_NAMESPACE +  "ExternalClass";
+        final static String EXTERNAL_CLASS = (ProtegeNames.PROTEGE_OWL_NAMESPACE +  "ExternalClass").intern();
         
-        final static String EXTERNAL_PROPERTY = ProtegeNames.PROTEGE_OWL_NAMESPACE +  "ExternalProperty";
+        final static String EXTERNAL_PROPERTY = (ProtegeNames.PROTEGE_OWL_NAMESPACE +  "ExternalProperty").intern();
 
     }
 
@@ -65,25 +65,25 @@ public interface RDFNames {
          */
         
 
-        final static String FIRST = RDF_NAMESPACE + "first";
+        final static String FIRST = (RDF_NAMESPACE + "first").intern();
 
-        final static String OBJECT = RDF_NAMESPACE + "object";
+        final static String OBJECT = (RDF_NAMESPACE + "object").intern();
 
-        final static String PREDICATE = RDF_NAMESPACE + "predicate";
+        final static String PREDICATE = (RDF_NAMESPACE + "predicate").intern();
 
-        final static String REST = RDF_NAMESPACE + "rest";
+        final static String REST = (RDF_NAMESPACE + "rest").intern();
 
-        final static String SUBJECT = RDF_NAMESPACE + "subject";
+        final static String SUBJECT = (RDF_NAMESPACE + "subject").intern();
 
-        final static String TYPE = RDF_NAMESPACE + "type";
+        final static String TYPE = (RDF_NAMESPACE + "type").intern();
 
-        final static String VALUE = RDF_NAMESPACE + "value";
+        final static String VALUE = (RDF_NAMESPACE + "value").intern();
     }
 
 
     public static interface Instance {
 
-        final static String NIL = RDF_NAMESPACE + "nil";
+        final static String NIL = (RDF_NAMESPACE + "nil").intern();
     }
 
     final static String COLLECTION = "Collection";
@@ -92,7 +92,7 @@ public interface RDFNames {
 
     final static String XSD_PREFIX = "xsd";
 
-    final static String XML_LITERAL = RDF_NAMESPACE + "XMLLiteral";
+    final static String XML_LITERAL = (RDF_NAMESPACE + "XMLLiteral").intern();
     
     /*
      * I don't think that this is  even a resources - it seems to just
