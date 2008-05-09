@@ -3,6 +3,7 @@ package edu.stanford.smi.protegex.owl.jena.creator;
 import java.io.IOException;
 import java.util.Collection;
 
+import edu.stanford.smi.protege.exception.OntologyLoadException;
 import edu.stanford.smi.protege.model.Project;
 import edu.stanford.smi.protegex.owl.jena.JenaKnowledgeBaseFactory;
 import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
@@ -26,7 +27,7 @@ public class NewOwlProjectCreator extends AbstractOwlProjectCreator {
     }
 
     @Override
-    public void create(Collection errors) throws IOException {
+    public void create(Collection errors) throws OntologyLoadException {
         project = Project.createNewProject(factory, errors);
         owlModel = (JenaOWLModel) project.getKnowledgeBase();
         

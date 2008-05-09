@@ -7,6 +7,7 @@ import java.util.Collection;
 
 import com.hp.hpl.jena.util.FileUtils;
 
+import edu.stanford.smi.protege.exception.OntologyLoadException;
 import edu.stanford.smi.protege.model.Project;
 import edu.stanford.smi.protege.util.FileUtilities;
 import edu.stanford.smi.protege.util.Log;
@@ -36,7 +37,7 @@ public class OwlProjectFromUriCreator extends AbstractOwlProjectCreator {
 
     
     @SuppressWarnings("unchecked")
-    public void create(Collection errors) throws IOException {
+    public void create(Collection errors) throws OntologyLoadException {
         project = Project.createBuildProject(factory, errors);
         owlModel = (JenaOWLModel) project.getKnowledgeBase();
         
