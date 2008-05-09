@@ -1,27 +1,12 @@
 package edu.stanford.smi.protegex.owl.jena.parser;
 
-/**
- * @author Holger Knublauch  <holger@knublauch.com>
- */
-public class ProtegeOWLParserException extends RuntimeException {
+import edu.stanford.smi.protege.exception.OntologyLoadException;
 
-    private String message;
+public class ProtegeOWLParserException extends OntologyLoadException {
 
-    private String suggestion;
+	public ProtegeOWLParserException(Throwable t, String message,
+			String suggestion) {
+		super(t, message, suggestion);	
+	}
 
-
-    public ProtegeOWLParserException(String message, String suggestion) {
-        super(message);
-        this.message = message;
-        this.suggestion = suggestion;
-    }
-
-
-    public String toString() {
-        String str = message;
-        if (suggestion != null) {
-            str += "\nSuggestion: " + suggestion;
-        }
-        return str;
-    }
 }
