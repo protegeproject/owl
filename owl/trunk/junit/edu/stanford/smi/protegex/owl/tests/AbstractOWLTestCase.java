@@ -3,7 +3,6 @@ package edu.stanford.smi.protegex.owl.tests;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.ArrayList;
@@ -28,6 +27,7 @@ import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 
+import edu.stanford.smi.protege.exception.OntologyLoadException;
 import edu.stanford.smi.protege.model.Project;
 import edu.stanford.smi.protege.model.ValueType;
 import edu.stanford.smi.protege.util.Log;
@@ -220,7 +220,7 @@ public abstract class AbstractOWLTestCase extends TestCase {
             owlModel.loadImportedAssertions(URIUtilities.createURI(ProtegeNames.PROTEGE_OWL_ONTOLOGY));
             ProtegeOWLParser.doFinalPostProcessing(owlModel);
         }
-        catch (IOException e) {
+        catch (OntologyLoadException e) {
             Log.getLogger().log(Level.WARNING, "error importing protege ontology", e);
         }
         ensureProtegePrefixExists();
