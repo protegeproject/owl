@@ -1,11 +1,10 @@
 package edu.stanford.smi.protegex.owl.model.factory;
 
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import edu.stanford.smi.protege.exception.OntologyLoadException;
 import edu.stanford.smi.protege.model.Project;
 import edu.stanford.smi.protege.util.PropertyList;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
@@ -26,11 +25,12 @@ public abstract class AbstractOwlProjectCreator {
     }
     
     @SuppressWarnings("unchecked")
-    public abstract void create(Collection errors) throws IOException;
-    
+    public abstract void create(Collection errors) throws OntologyLoadException;
+   
     public abstract OWLModel getOwlModel();
     
     public abstract Project getProject();
+
     
     protected void addViewSettings(PropertyList sources) {
         String typeName = null;
