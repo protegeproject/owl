@@ -8,15 +8,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.logging.Level;
 
-import java.io.InputStream;
-import java.io.Reader;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.Collection;
-
-import com.hp.hpl.jena.util.FileUtils;
-
 import edu.stanford.smi.protege.Application;
+import edu.stanford.smi.protege.exception.OntologyLoadException;
 import edu.stanford.smi.protege.model.Project;
 import edu.stanford.smi.protege.util.ApplicationProperties;
 import edu.stanford.smi.protege.util.Log;
@@ -49,7 +42,7 @@ public class ProtegeOWL {
      *
      * @return a new OWLModel
      */
-    public static JenaOWLModel createJenaOWLModel() throws IOException {
+    public static JenaOWLModel createJenaOWLModel() throws OntologyLoadException {
         Collection errors = new ArrayList();
         NewOwlProjectCreator creator = new NewOwlProjectCreator();
         creator.setOntologyName(FactoryUtils.generateOntologyURIBase());
@@ -58,11 +51,9 @@ public class ProtegeOWL {
         return creator.getOwlModel();
 	}
    
-    
 
-    
     @SuppressWarnings("unchecked")
-    public static JenaOWLModel createJenaOWLModelFromInputStream(InputStream is) throws IOException { 
+    public static JenaOWLModel createJenaOWLModelFromInputStream(InputStream is) throws OntologyLoadException {
         Collection errors = new ArrayList();
         OwlProjectFromStreamCreator creator = new OwlProjectFromStreamCreator();
         creator.setStream(is);
@@ -72,9 +63,8 @@ public class ProtegeOWL {
         return owlModel;
     }
 
-
     @SuppressWarnings("unchecked")
-    public static JenaOWLModel createJenaOWLModelFromReader(Reader reader) throws IOException {
+    public static JenaOWLModel createJenaOWLModelFromReader(Reader reader) throws OntologyLoadException {
         Collection errors = new ArrayList();
         OwlProjectFromReaderCreator creator = new OwlProjectFromReaderCreator();
         creator.setReader(reader);
@@ -84,9 +74,8 @@ public class ProtegeOWL {
         return owlModel;
     }
 
-
     @SuppressWarnings("unchecked")
-    public static JenaOWLModel createJenaOWLModelFromURI(String uri) throws IOException {
+    public static JenaOWLModel createJenaOWLModelFromURI(String uri) throws OntologyLoadException {
         Collection errors = new ArrayList();
         OwlProjectFromUriCreator creator = new OwlProjectFromUriCreator();
         creator.setOntologyUri(uri);
