@@ -14,6 +14,7 @@ import java.util.Collections;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import edu.stanford.smi.protege.exception.OntologyLoadException;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.jena.parser.ProtegeOWLParser;
 import edu.stanford.smi.protegex.owl.repository.factory.RepositoryFactory;
@@ -77,10 +78,11 @@ public class HTTPRepository extends AbstractStreamBasedRepositoryImpl {
             ontologyName = extractor.getOntologyName();
             System.setErr(oldErr);
         }
-        catch (IOException e) {
-        	Log.getLogger().warning("Could not get ontology from URL: " + ontologyURL);       	
-
-        }
+        catch (OntologyLoadException e) {
+        	Log.getLogger().warning("Could not get ontology from URL: " + ontologyURL);
+        } catch (IOException e) {
+        	Log.getLogger().warning("Could not get ontology from URL: " + ontologyURL);
+		}
     }
 
 
@@ -132,7 +134,7 @@ public class HTTPRepository extends AbstractStreamBasedRepositoryImpl {
 
     @Override
     public InputStream getInputStream(URI ontologyName)
-            throws IOException {
+            throws OntologyLoadException {
         return ProtegeOWLParser.getInputStream(ontologyURL);
     }
 

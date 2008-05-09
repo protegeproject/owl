@@ -2,6 +2,7 @@ package edu.stanford.smi.protegex.owl.repository.impl;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -21,6 +22,7 @@ import javax.swing.JPasswordField;
 import com.enterprisedt.net.ftp.FTPClient;
 import com.enterprisedt.net.ftp.FTPException;
 
+import edu.stanford.smi.protege.exception.OntologyLoadException;
 import edu.stanford.smi.protege.util.LabeledComponent;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.repository.util.OntologyNameExtractor;
@@ -165,10 +167,14 @@ public class FTPRepository extends AbstractStreamBasedRepositoryImpl {
 
     @Override
     public InputStream getInputStream(URI ontologyName)
-            throws IOException {
+            throws OntologyLoadException {
         if (contains(ontologyName)) {
             if (isWritable(ontologyName)) {
-                return new FileInputStream(localCopy);
+                try {
+					return new FileInputStream(localCopy);
+				} catch (FileNotFoundException e) {
+					throw new OntologyLoadException(e, "Could not find file: " + localCopy);
+				}
             }
             else {
                 return null;

@@ -21,7 +21,8 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import edu.stanford.smi.protege.exception.AmalgamatedIOException;
+import edu.stanford.smi.protege.exception.AmalgamatedLoadException;
+import edu.stanford.smi.protege.exception.OntologyLoadException;
 import edu.stanford.smi.protege.storage.database.DatabaseFrameDb;
 import edu.stanford.smi.protege.storage.database.DatabaseProperty;
 import edu.stanford.smi.protege.storage.database.ValueCachingNarrowFrameStore;
@@ -174,7 +175,7 @@ public class DatabaseRepository implements Repository {
 
 	@SuppressWarnings("unchecked")
     public TripleStore loadImportedAssertions(OWLModel owlModel, URI ontologyName)
-			throws IOException {
+			throws OntologyLoadException {
 	    String table = ontologyToTable.get(ontologyName);
 	    DatabaseFrameDb dbFrameStore = new DatabaseFrameDb();
 	    dbFrameStore.initialize(owlModel.getOWLJavaFactory(), getDriver(), getUrl(), getUser(), getPassword(), table, true);
@@ -191,7 +192,7 @@ public class DatabaseRepository implements Repository {
 	        FactoryUtils.addPrefixesToModelListener(owlModel, importedTripleStore);
 	        DatabaseFactoryUtils.loadImports(owlModel, errors);
 	        if (!errors.isEmpty()) {
-	            throw new AmalgamatedIOException(errors);
+	            throw new AmalgamatedLoadException(errors);
 	        }
 	    }
 	    finally {
