@@ -49,11 +49,13 @@ public abstract class AbstractJenaTestCase extends AbstractOWLTestCase {
     }
 
 
+    @SuppressWarnings("unchecked")
     public void loadTestOntology(URI uri) throws IOException {
         Collection errors = new ArrayList();
         OwlProjectFromUriCreator creator = new OwlProjectFromUriCreator();
         creator.setOntologyUri(uri.toString());
-        owlModel = (JenaOWLModel) creator.create(errors).getKnowledgeBase();
+        creator.create(errors);
+        owlModel = creator.getOwlModel();
         owlModel.setExpandShortNameInMethods(true);
         project = owlModel.getProject();
         owlThing = owlModel.getOWLThingClass();
@@ -87,7 +89,8 @@ public abstract class AbstractJenaTestCase extends AbstractOWLTestCase {
         }
         OwlProjectFromReaderCreator creator = new OwlProjectFromReaderCreator();
         creator.setReader(reader);
-        return (JenaOWLModel) creator.create(errors).getKnowledgeBase();
+        creator.create(errors);
+        return creator.getOwlModel();
     }
 
 

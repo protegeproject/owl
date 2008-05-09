@@ -9,6 +9,7 @@ import edu.stanford.smi.protege.storage.database.DatabaseKnowledgeBaseFactory;
 import edu.stanford.smi.protege.util.PropertyList;
 import edu.stanford.smi.protegex.owl.database.DatabaseFactoryUtils;
 import edu.stanford.smi.protegex.owl.database.OWLDatabaseKnowledgeBaseFactory;
+import edu.stanford.smi.protegex.owl.database.OWLDatabaseModel;
 import edu.stanford.smi.protegex.owl.jena.JenaKnowledgeBaseFactory;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.factory.AbstractOwlProjectCreator;
@@ -36,6 +37,9 @@ public abstract class AbstractOwlDatabaseCreator extends AbstractOwlProjectCreat
     private String password;
 
     private String url;
+    
+    protected Project project;
+    protected OWLDatabaseModel owlModel;
    
     protected AbstractOwlDatabaseCreator(OWLDatabaseKnowledgeBaseFactory factory) {
         super(factory);
@@ -43,11 +47,21 @@ public abstract class AbstractOwlDatabaseCreator extends AbstractOwlProjectCreat
 
     @SuppressWarnings("unchecked")
 	@Override
-    public Project create(Collection errors) throws IOException {
-        Project project = Project.createBuildProject(factory, errors);
+    public void create(Collection errors) throws IOException {
+        project = Project.createBuildProject(factory, errors);
+        owlModel = (OWLDatabaseModel) project.getKnowledgeBase();
         initializeSources(project.getSources());
         project.createDomainKnowledgeBase(factory, errors, true);
         insertRepositoriesIntoOwlModel((OWLModel) project.getKnowledgeBase());
+    }
+    
+    @Override
+    public OWLDatabaseModel getOwlModel() {
+        return owlModel;
+    }
+    
+    @Override
+    public Project getProject() {
         return project;
     }
     

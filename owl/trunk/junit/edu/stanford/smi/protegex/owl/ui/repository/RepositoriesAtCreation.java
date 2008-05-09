@@ -36,7 +36,8 @@ public class RepositoriesAtCreation extends APITestCase {
 	        Collection errors = new ArrayList();
 	        OwlProjectFromUriCreator creator = new OwlProjectFromUriCreator();
 	        creator.setOntologyUri(ontologyUri.toString());
-	        OWLModel owlModel = (JenaOWLModel) creator.create(errors).getKnowledgeBase();
+	        creator.create(errors);
+	        OWLModel owlModel = creator.getOwlModel();
 	        assertEquals(0, errors.size());
 			assertEquals(1, owlModel.getOWLOntologyClass().getInstanceCount(false));
 			assertNull(owlModel.getOWLNamedClass(sampleClass));
@@ -64,7 +65,8 @@ public class RepositoriesAtCreation extends APITestCase {
 			creator.setOntologySource(ontologyUri.toString());
 			OWLModel owlModel;
 			try  {
-				Project p = creator.create(errors);
+			    creator.create(errors);
+				Project p = creator.getProject();
 				owlModel = (OWLModel) p.getKnowledgeBase();
 			}
 			catch (IOException e) {
@@ -84,7 +86,8 @@ public class RepositoriesAtCreation extends APITestCase {
 		creator.addRepository(repository);
 		try {
 			creator.setReader(makeReader());
-			owlModel = (OWLModel) creator.create(errors).getKnowledgeBase();
+			creator.create(errors);
+			owlModel = creator.getOwlModel();
 		} catch (IOException e) {
 			fail("Exception caught creating owl model from file reader" + e);
 			return;
@@ -101,7 +104,8 @@ public class RepositoriesAtCreation extends APITestCase {
 		creator.addRepository(repository);
 		try {
 			creator.setStream(makeInputStream());
-			owlModel = (OWLModel) creator.create(errors).getKnowledgeBase();
+			creator.create(errors);
+			owlModel = creator.getOwlModel();
 		} catch (IOException e) {
 			fail("Exception caught creating owl model from file reader" + e);
 			return;

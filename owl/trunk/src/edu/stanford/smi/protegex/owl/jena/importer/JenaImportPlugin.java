@@ -52,17 +52,18 @@ public class JenaImportPlugin implements ImportPlugin {
     }
 
 
+    @SuppressWarnings("unchecked")
     private Project importProject(URI uri) {
         java.util.Collection errors = new ArrayList();
         OwlProjectFromUriCreator creator  = new OwlProjectFromUriCreator();
         creator.setOntologyUri(uri.toString());
-        JenaOWLModel owlModel = null;
         try {
-            owlModel = (JenaOWLModel) creator.create(errors).getKnowledgeBase();
+            creator.create(errors);
         }
         catch (IOException ioe) {
             errors.add(ioe);
         }
+        JenaOWLModel owlModel = creator.getOwlModel();
         if (errors.isEmpty()) {
             Project project = Project.createNewProject(null, new ArrayList());
             KnowledgeBase kb = project.getKnowledgeBase();

@@ -71,15 +71,14 @@ public class CreateOWLDatabaseProjectPlugin extends
         creator.setPassword(password);
         creator.setOntologyName(ontologyName);
         Collection errors = new ArrayList();
-        Project  project = null;
         try {
-            project = creator.create(errors);
+            creator.create(errors);
         }
         catch (IOException ioe) {
             errors.add(ioe);
         }
         handleErrors(errors);
-        return project;
+        return creator.getProject();
     }
 
 

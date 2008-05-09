@@ -32,7 +32,8 @@ public class SWRLFactoryTest {
         Collection errors = new ArrayList();
         OwlProjectFromUriCreator creator = new OwlProjectFromUriCreator();
         creator.setOntologyUri("http://protege.stanford.edu/plugins/owl/testdata/importSWRL.owl");
-        JenaOWLModel owlModel = (JenaOWLModel) creator.create(errors).getKnowledgeBase();
+        creator.create(errors);
+        JenaOWLModel owlModel = creator.getOwlModel();
 
         if (!errors.isEmpty()) {
             System.err.println("Error loading importSWRL.owl.");

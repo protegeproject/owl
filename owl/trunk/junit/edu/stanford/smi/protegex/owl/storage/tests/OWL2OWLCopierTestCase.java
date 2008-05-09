@@ -35,7 +35,9 @@ public class OWL2OWLCopierTestCase extends AbstractJenaTestCase {
     private JenaOWLModel runCopier() {
         Collection errors = new ArrayList();
         try {
-            project = new NewOwlProjectCreator().create(errors);
+            NewOwlProjectCreator creator = new NewOwlProjectCreator();
+            creator.create(errors);
+            project = creator.getProject();
         }
         catch (IOException e) {
             Log.getLogger().log(Level.SEVERE, "Exception caught", e);

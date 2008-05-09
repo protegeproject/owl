@@ -19,19 +19,19 @@ import edu.stanford.smi.protegex.owl.jena.creator.OwlProjectFromUriCreator;
 public class CreateOWLProjectFromFilePlugin implements CreateProjectFromFilePlugin {
 
 
+    @SuppressWarnings("unchecked")
     public Project createProject(File file, Collection errors) {
+        OwlProjectFromUriCreator creator = new OwlProjectFromUriCreator();
         try {   
             JenaKnowledgeBaseFactory.useStandalone = false;
-            OwlProjectFromUriCreator creator = new OwlProjectFromUriCreator();
             creator.setOntologyUri(URIUtilities.createURI(file.getPath()).toString());
-            Project p = creator.create(errors);
-            return p;
+            creator.create(errors);
         }
         catch (Exception ex) {
             errors.add(new MessageError(ex, "Ontology content might be incomplete or corrupted.\nSee console or log for the full stack trace."));
             Log.getLogger().log(Level.SEVERE, "Error loading file with the CreateOWLProjectFromFilePlugin", ex);
-            return null;
         }
+        return creator.getProject();
     }
 
 

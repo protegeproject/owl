@@ -25,8 +25,12 @@ public abstract class AbstractOwlProjectCreator {
         this.factory = factory;
     }
     
-
-    public abstract Project create(Collection errors) throws IOException;
+    @SuppressWarnings("unchecked")
+    public abstract void create(Collection errors) throws IOException;
+    
+    public abstract OWLModel getOwlModel();
+    
+    public abstract Project getProject();
     
     protected void addViewSettings(PropertyList sources) {
         String typeName = null;

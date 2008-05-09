@@ -35,10 +35,9 @@ public class OwlDatabaseFromFileCreator extends AbstractOwlDatabaseCreator {
 
     @SuppressWarnings("unchecked")
     @Override
-    public Project create(Collection errors) throws IOException {
+    public void create(Collection errors) throws IOException {
         initializeTable(errors);
-        Project project = super.create(errors);
-        OWLModel owlModel = (OWLModel) project.getKnowledgeBase();
+        super.create(errors);
         insertRepositoriesIntoOwlModel(owlModel);
         ProtegeOWLParser parser = new ProtegeOWLParser(owlModel);
         parser.run(URIUtilities.createURI(ontologySource));
@@ -53,8 +52,6 @@ public class OwlDatabaseFromFileCreator extends AbstractOwlDatabaseCreator {
         ProtegeOWLParser.doFinalPostProcessing(owlModel);
         
         errors.addAll(ProtegeOWLParser.getErrors());
-        
-        return project;
     }
     
     
