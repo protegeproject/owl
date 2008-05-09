@@ -1,10 +1,14 @@
 package edu.stanford.smi.protegex.owlx.examples;
 
-import java.io.IOException;
-
-import edu.stanford.smi.protegex.owl.ProtegeOWL;
-import edu.stanford.smi.protegex.owl.model.*;
 import junit.framework.Assert;
+import edu.stanford.smi.protege.exception.OntologyLoadException;
+import edu.stanford.smi.protegex.owl.ProtegeOWL;
+import edu.stanford.smi.protegex.owl.model.OWLDatatypeProperty;
+import edu.stanford.smi.protegex.owl.model.OWLIndividual;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
+import edu.stanford.smi.protegex.owl.model.RDFSDatatype;
+import edu.stanford.smi.protegex.owl.model.RDFSLiteral;
 
 /**
  * Illustrates the use of XML Schema datatypes, values and RDFS Literals.
@@ -13,7 +17,7 @@ import junit.framework.Assert;
  */
 public class RDFSDatatypeExamples {
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws OntologyLoadException {
 
         OWLModel owlModel = ProtegeOWL.createJenaOWLModel();
         OWLNamedClass cls = owlModel.createOWLNamedClass("Class");
