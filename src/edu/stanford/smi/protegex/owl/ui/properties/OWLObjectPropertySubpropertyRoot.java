@@ -4,6 +4,7 @@ import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLObjectProperty;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
+import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -20,7 +21,7 @@ import java.util.Iterator;
 public class OWLObjectPropertySubpropertyRoot extends OWLPropertySubpropertyRoot {
 
 	public OWLObjectPropertySubpropertyRoot(OWLModel owlModel) {
-		super(owlModel, getTopLevelObjectProperties(owlModel));
+		super(owlModel, getTopLevelObjectProperties(owlModel), OWLUI.getPropertiesTreeSortedOption());
 	}
 
 	public static Collection getTopLevelObjectProperties(OWLModel owlModel) {
