@@ -1,5 +1,18 @@
 package edu.stanford.smi.protegex.owl.ui.explorer.filter;
 
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+
+import javax.swing.AbstractAction;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTree;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
+import javax.swing.tree.TreePath;
+import javax.swing.tree.TreeSelectionModel;
+
 import edu.stanford.smi.protege.ui.SlotSubslotNode;
 import edu.stanford.smi.protege.util.SelectableTree;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
@@ -8,14 +21,7 @@ import edu.stanford.smi.protegex.owl.ui.OWLLabeledComponent;
 import edu.stanford.smi.protegex.owl.ui.ResourceRenderer;
 import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
 import edu.stanford.smi.protegex.owl.ui.properties.OWLPropertySubpropertyRoot;
-
-import javax.swing.*;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
-import javax.swing.tree.TreePath;
-import javax.swing.tree.TreeSelectionModel;
-import java.awt.*;
-import java.awt.event.ActionEvent;
+import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
 
 /**
  * A JPanel to select a valid RDFProperty for a DefaultExplorerFilter.
@@ -31,7 +37,7 @@ public class ValidPropertyPanel extends JPanel {
 
     public ValidPropertyPanel(OWLModel owlModel, DefaultExplorerFilter filter) {
         this.filter = filter;
-        tree = new SelectableTree(null, new OWLPropertySubpropertyRoot(owlModel));
+        tree = new SelectableTree(null, new OWLPropertySubpropertyRoot(owlModel, OWLUI.getPropertiesTreeSortedOption()));
         tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
         tree.getSelectionModel().addTreeSelectionListener(new TreeSelectionListener() {
             public void valueChanged(TreeSelectionEvent e) {
