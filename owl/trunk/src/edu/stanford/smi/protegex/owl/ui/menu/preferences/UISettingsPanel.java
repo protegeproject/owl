@@ -1,6 +1,7 @@
 package edu.stanford.smi.protegex.owl.ui.menu.preferences;
 
 import edu.stanford.smi.protege.util.ApplicationProperties;
+import edu.stanford.smi.protege.util.ComponentFactory;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.classdisplay.OWLClassDisplay;
 import edu.stanford.smi.protegex.owl.model.classdisplay.OWLClassDisplayFactory;
@@ -21,21 +22,20 @@ import java.awt.event.ActionListener;
 public class UISettingsPanel extends JComponent {
 
     private JRadioButton[] classDisplayButtons;
-
     private JCheckBox constraintCheckingCheckBox;
-
-    private JCheckBox dragAndDropCheckBox;
-
+    private JCheckBox dragAndDropCheckBox;    
     private JCheckBox externalResourcesCheckBox;
-
+    private JCheckBox sortClassTreeCheckBox;    
+    private JCheckBox sortPropertiesTreeCheckBox;    
+    private JCheckBox sortClassTreeAfterLoadCheckBox;    
     private JComboBox iconsComboBox;
-
-    private String initialStyle;
-
-    private boolean initialDDValue;
-
-    private OWLModel owlModel;
     
+    private String initialStyle;
+    private boolean initialDDValue;    
+    private boolean initialSortClassTreeValue;
+    private boolean initialSortPropertiesTreeValue;
+    
+    private OWLModel owlModel;    
     private boolean owlClassDisplayModified;
 
 
@@ -117,12 +117,42 @@ public class UISettingsPanel extends JComponent {
                 updateIconsStyle();
             }
         });
+        
+        sortClassTreeCheckBox = ComponentFactory.createCheckBox("Sort class tree (OWLClasses Tab)");
+        initialSortClassTreeValue =OWLUI.getClassTreeSortedOption();
+        sortClassTreeCheckBox.setSelected(initialSortClassTreeValue);
+        sortClassTreeCheckBox.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				updateSortClassTree();				
+			}        	
+        });
 
-        JPanel leftPanel = new JPanel(new GridLayout(3, 1));
+        sortPropertiesTreeCheckBox = ComponentFactory.createCheckBox("Sort properties tree (Properties Tab)");
+        initialSortPropertiesTreeValue =OWLUI.getPropertiesTreeSortedOption();
+        sortPropertiesTreeCheckBox.setSelected(initialSortPropertiesTreeValue);
+        sortPropertiesTreeCheckBox.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				updateSortPropertiesTree();				
+			}        	
+        });
+
+
+        sortClassTreeAfterLoadCheckBox = ComponentFactory.createCheckBox("One-time sorting of class tree after load");        
+        sortClassTreeAfterLoadCheckBox.setSelected(OWLUI.getClassTreeSortedAfterLoadOption());
+        sortClassTreeAfterLoadCheckBox.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				updateSortClassTreeAfterLoad();				
+			}
+        });      
+        
+        JPanel leftPanel = new JPanel(new GridLayout(6, 1));
         leftPanel.setBorder(BorderFactory.createTitledBorder("User Interface Features"));
         leftPanel.add(dragAndDropCheckBox);
         leftPanel.add(constraintCheckingCheckBox);
         leftPanel.add(externalResourcesCheckBox);
+        leftPanel.add(sortClassTreeCheckBox);
+        leftPanel.add(sortPropertiesTreeCheckBox);
+        leftPanel.add(sortClassTreeAfterLoadCheckBox);
 
         Box iconsPanel = Box.createHorizontalBox();
         iconsPanel.add(new JLabel("Icon Style: "));
@@ -150,7 +180,9 @@ public class UISettingsPanel extends JComponent {
     public boolean getRequiresReloadUI() {
         return initialDDValue != dragAndDropCheckBox.isSelected() ||
                 !initialStyle.equals(iconsComboBox.getSelectedItem()) ||
-                owlClassDisplayModified;
+                owlClassDisplayModified ||
+                initialSortClassTreeValue != sortClassTreeCheckBox.isSelected() ||
+                initialSortPropertiesTreeValue != sortPropertiesTreeCheckBox.isSelected();
     }
 
 
@@ -165,4 +197,17 @@ public class UISettingsPanel extends JComponent {
         OWLIcons.setStyle(newStyle);
         ApplicationProperties.setString(OWLIcons.STYLE_VARIABLE, newStyle);
     }
+    
+    private void updateSortClassTree() {
+    	OWLUI.setSortClassTreeOption(sortClassTreeCheckBox.isSelected());
+    }
+    
+    private void updateSortPropertiesTree() {
+    	OWLUI.setSortPropertiesTreeOption(sortPropertiesTreeCheckBox.isSelected());
+    }
+    
+    private void updateSortClassTreeAfterLoad() {
+    	OWLUI.setSortClassTreeAfterLoadOption(sortClassTreeAfterLoadCheckBox.isSelected());
+    }
+
 }
