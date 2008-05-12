@@ -8,16 +8,11 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
-import edu.stanford.smi.protege.event.FrameEvent;
 import edu.stanford.smi.protege.event.KnowledgeBaseEvent;
 import edu.stanford.smi.protege.event.SlotEvent;
-import edu.stanford.smi.protege.model.Cls;
-import edu.stanford.smi.protege.model.Frame;
-import edu.stanford.smi.protege.model.Model;
 import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protege.ui.FrameComparator;
 import edu.stanford.smi.protege.ui.LazyTreeNodeFrameComparator;
-import edu.stanford.smi.protege.ui.SlotSubslotNode;
 import edu.stanford.smi.protege.util.LazyTreeNode;
 import edu.stanford.smi.protege.util.LazyTreeRoot;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
@@ -30,6 +25,7 @@ import edu.stanford.smi.protegex.owl.model.event.PropertyAdapter;
 import edu.stanford.smi.protegex.owl.model.event.PropertyListener;
 import edu.stanford.smi.protegex.owl.model.event.ResourceAdapter;
 import edu.stanford.smi.protegex.owl.model.event.ResourceListener;
+import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
 
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
@@ -156,20 +152,24 @@ public class OWLPropertySubpropertyRoot extends LazyTreeRoot {
 	};
 
 	public OWLPropertySubpropertyRoot(OWLModel owlModel, Collection topLevelProperties) {
-		super(topLevelProperties);
+		this(owlModel, topLevelProperties, false);
+	}
+	
+	public OWLPropertySubpropertyRoot(OWLModel owlModel, Collection topLevelProperties, boolean isSorted) {
+		super(topLevelProperties, isSorted);
 		this.owlModel = owlModel;
 		this.owlModel.addModelListener(modelListener);
 		this.owlModel.addPropertyListener(propertyListener);
 		this.owlModel.addResourceListener(resourceListener);
 	}
 
-	public boolean isSuitable(RDFProperty rdfProperty) {
-		return true;
+	
+	public OWLPropertySubpropertyRoot(OWLModel owlModel) {
+		this(owlModel, false);
 	}
-
-
-    public OWLPropertySubpropertyRoot(OWLModel owlModel) {
-        super(getValidSlots(owlModel));
+	
+    public OWLPropertySubpropertyRoot(OWLModel owlModel, boolean isSorted) {
+        super(getValidSlots(owlModel), isSorted);
         owlModel.addModelListener(modelListener);
         owlModel.addPropertyListener(propertyListener);
 	    owlModel.addResourceListener(resourceListener);
@@ -179,7 +179,7 @@ public class OWLPropertySubpropertyRoot extends LazyTreeRoot {
 
     @Override
 	public LazyTreeNode createNode(Object o) {
-        return new SlotSubslotNode(this, (Slot) o);
+        return new OWLPropertySubpropertyNode(this, (Slot) o);
     }
 
 
@@ -208,7 +208,15 @@ public class OWLPropertySubpropertyRoot extends LazyTreeRoot {
             }
         }
         results.removeAll(Arrays.asList(owlModel.getSystemAnnotationProperties()));
-        Collections.sort(results, new FrameComparator());
+        
+        if (OWLUI.getPropertiesTreeSortedOption()) {
+        	Collections.sort(results, new FrameComparator());
+        }
         return results;
     }
+    
+	public boolean isSuitable(RDFProperty rdfProperty) {
+		return true;
+	}
+
 }
