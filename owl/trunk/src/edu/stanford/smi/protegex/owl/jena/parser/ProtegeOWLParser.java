@@ -38,6 +38,7 @@ import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreUtil;
 import edu.stanford.smi.protegex.owl.repository.util.XMLBaseExtractor;
+import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
 
 /**
  * An OWL parser that reads an OWL stream triple-by-triple and writes the
@@ -323,8 +324,11 @@ public class ProtegeOWLParser {
 				((JenaOWLModel) owlModel).copyFacetValuesIntoNamedClses();
 			}
 
-			//sort subclasses if needed
-			TripleStoreUtil.sortSubclasses(owlModel);
+			if (OWLUI.getClassTreeSortedAfterLoadOption()) {
+				long t0 = System.currentTimeMillis();			
+				TripleStoreUtil.sortSubclasses(owlModel);
+				log.info("Sorting OWL class tree in " + (System.currentTimeMillis() - t0) + " ms");
+			}
 		} catch (Exception e) {
 			throw new OntologyLoadException(e, " Errors at post processing ontology");
 		}
