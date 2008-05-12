@@ -1,23 +1,6 @@
 package edu.stanford.smi.protegex.owl.ui.cls;
 
-import edu.stanford.smi.protege.model.*;
-import edu.stanford.smi.protege.resource.Icons;
-import edu.stanford.smi.protege.ui.ClsesTreeTarget;
-import edu.stanford.smi.protege.ui.FrameRenderer;
-import edu.stanford.smi.protege.util.*;
-import edu.stanford.smi.protegex.owl.model.*;
-import edu.stanford.smi.protegex.owl.model.impl.OWLUtil;
-import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
-import edu.stanford.smi.protegex.owl.ui.ResourceRenderer;
-import edu.stanford.smi.protegex.owl.ui.actions.ResourceActionManager;
-import edu.stanford.smi.protegex.owl.ui.components.ComponentUtil;
-import edu.stanford.smi.protegex.owl.ui.existential.ExistentialAction;
-import edu.stanford.smi.protegex.owl.ui.search.finder.*;
-import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
-
-import javax.swing.*;
-import javax.swing.tree.TreePath;
-import java.awt.*;
+import java.awt.BorderLayout;
 import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DragSource;
 import java.awt.dnd.DropTarget;
@@ -25,6 +8,46 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
+
+import javax.swing.Action;
+import javax.swing.JComponent;
+import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
+import javax.swing.JTree;
+import javax.swing.tree.TreePath;
+
+import edu.stanford.smi.protege.model.Cls;
+import edu.stanford.smi.protege.model.KnowledgeBase;
+import edu.stanford.smi.protege.model.Model;
+import edu.stanford.smi.protege.model.ModelUtilities;
+import edu.stanford.smi.protege.model.Slot;
+import edu.stanford.smi.protege.resource.Icons;
+import edu.stanford.smi.protege.ui.ClsesTreeTarget;
+import edu.stanford.smi.protege.ui.FrameRenderer;
+import edu.stanford.smi.protege.util.ComponentFactory;
+import edu.stanford.smi.protege.util.ComponentUtilities;
+import edu.stanford.smi.protege.util.DefaultRenderer;
+import edu.stanford.smi.protege.util.LazyTreeRoot;
+import edu.stanford.smi.protege.util.SelectableContainer;
+import edu.stanford.smi.protege.util.SuperclassTraverser;
+import edu.stanford.smi.protege.util.TreePopupMenuMouseListener;
+import edu.stanford.smi.protege.util.WaitCursor;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
+import edu.stanford.smi.protegex.owl.model.RDFResource;
+import edu.stanford.smi.protegex.owl.model.RDFSClass;
+import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
+import edu.stanford.smi.protegex.owl.model.impl.OWLUtil;
+import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
+import edu.stanford.smi.protegex.owl.ui.ResourceRenderer;
+import edu.stanford.smi.protegex.owl.ui.actions.ResourceActionManager;
+import edu.stanford.smi.protegex.owl.ui.existential.ExistentialAction;
+import edu.stanford.smi.protegex.owl.ui.search.finder.DefaultClassFind;
+import edu.stanford.smi.protegex.owl.ui.search.finder.Find;
+import edu.stanford.smi.protegex.owl.ui.search.finder.FindAction;
+import edu.stanford.smi.protegex.owl.ui.search.finder.FindInDialogAction;
+import edu.stanford.smi.protegex.owl.ui.search.finder.ResourceFinder;
+import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
 
 /**
  * A SubclassPane optimized for OWLModels.
@@ -104,9 +127,7 @@ public class OWLSubclassPane extends SelectableContainer implements ClassTreePan
 
     protected ClassTree createSelectableTree(Action doubleClickAction, Cls rootCls) {
         this.owlModel = (OWLModel) rootCls.getKnowledgeBase();
-        // LazyTreeRoot root = new ParentChildRoot(rootCls);
-        // LazyTreeRoot root = new SubsumptionTreeRoot(rootCls, rootCls.getKnowledgeBase().getSlot(Model.Slot.DIRECT_SUBCLASSES));
-        LazyTreeRoot root = new ClassTreeRoot(rootCls);
+        LazyTreeRoot root = new ClassTreeRoot(rootCls, OWLUI.getClassTreeSortedOption());
         return new ClassTree(doubleClickAction, root);
     }
 
