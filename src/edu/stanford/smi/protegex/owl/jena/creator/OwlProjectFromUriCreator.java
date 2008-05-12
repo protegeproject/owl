@@ -24,8 +24,6 @@ public class OwlProjectFromUriCreator extends AbstractOwlProjectCreator {
     private String lang = FileUtils.langXMLAbbrev;
     
     private Project project;
-    
-    private JenaOWLModel owlModel;
 
     public  OwlProjectFromUriCreator() {
         this(new JenaKnowledgeBaseFactory());
@@ -39,7 +37,6 @@ public class OwlProjectFromUriCreator extends AbstractOwlProjectCreator {
     @SuppressWarnings("unchecked")
     public void create(Collection errors) throws OntologyLoadException {
         project = Project.createBuildProject(factory, errors);
-        owlModel = (JenaOWLModel) project.getKnowledgeBase();
         
         initializeSources(project.getSources());
         URI uri = getBuildProjectURI();
@@ -52,7 +49,12 @@ public class OwlProjectFromUriCreator extends AbstractOwlProjectCreator {
     
     @Override
     public JenaOWLModel getOwlModel() {
-        return owlModel;
+        if (project != null) {
+            return (JenaOWLModel) project.getKnowledgeBase();
+        }
+        else {
+            return null;
+        }
     }
     
     @Override
