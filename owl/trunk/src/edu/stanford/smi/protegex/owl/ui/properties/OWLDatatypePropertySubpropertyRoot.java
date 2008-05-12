@@ -5,6 +5,7 @@ import edu.stanford.smi.protegex.owl.model.OWLDatatypeProperty;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLObjectProperty;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
+import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -21,7 +22,7 @@ import java.util.Iterator;
 public class OWLDatatypePropertySubpropertyRoot extends OWLPropertySubpropertyRoot {
 
 	public OWLDatatypePropertySubpropertyRoot(OWLModel owlModel) {
-		super(owlModel, getTopLevelProperties(owlModel));
+		super(owlModel, getTopLevelProperties(owlModel), OWLUI.getPropertiesTreeSortedOption());
 	}
 
 
