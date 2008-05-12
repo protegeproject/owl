@@ -23,8 +23,16 @@ public class ClassTreeRoot extends LazyTreeRoot {
         super(root);
     }
 
+    public ClassTreeRoot(Cls root, boolean isSorted) {
+        super(root, isSorted);
+    }
+    
     public ClassTreeRoot(Collection roots) {
         super(filter(roots));
+    }
+    
+    public ClassTreeRoot(Collection roots, boolean isSorted) {
+        super(filter(roots), isSorted);
     }
 
     public LazyTreeNode createNode(Object o) {
