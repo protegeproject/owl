@@ -1,9 +1,13 @@
 package edu.stanford.smi.protegex.owl.ui.properties;
 
+import edu.stanford.smi.protege.ui.FrameComparator;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
+import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 
 /**
@@ -18,7 +22,7 @@ import java.util.Iterator;
 public class OWLAnnotationPropertySubpropertyRoot extends OWLPropertySubpropertyRoot {
 
 	public OWLAnnotationPropertySubpropertyRoot(OWLModel owlModel) {
-		super(owlModel, getTopLevelObjectProperties(owlModel));
+		super(owlModel, getTopLevelObjectProperties(owlModel), OWLUI.getPropertiesTreeSortedOption());
 	}
 
 	public static Collection getTopLevelObjectProperties(OWLModel owlModel) {
@@ -29,10 +33,10 @@ public class OWLAnnotationPropertySubpropertyRoot extends OWLPropertySubproperty
 				it.remove();
 			}
 		}
+		
 		return properties;
 	}
-
-
+	
 	public boolean isSuitable(RDFProperty rdfProperty) {
 		return rdfProperty.isAnnotationProperty();
 	}
