@@ -1,6 +1,17 @@
 package edu.stanford.smi.protegex.owl.ui.cls;
 
-import edu.stanford.smi.protege.event.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.List;
+
+import edu.stanford.smi.protege.event.ClsAdapter;
+import edu.stanford.smi.protege.event.ClsEvent;
+import edu.stanford.smi.protege.event.ClsListener;
+import edu.stanford.smi.protege.event.FrameAdapter;
+import edu.stanford.smi.protege.event.FrameEvent;
+import edu.stanford.smi.protege.event.FrameListener;
 import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.Frame;
 import edu.stanford.smi.protege.model.Model;
@@ -8,8 +19,7 @@ import edu.stanford.smi.protege.ui.LazyTreeNodeFrameComparator;
 import edu.stanford.smi.protege.util.LazyTreeNode;
 import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
 import edu.stanford.smi.protegex.owl.model.RDFSClass;
-
-import java.util.*;
+import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
 
 /**
  * Tree node that contains the superclass-subclass relations.
@@ -86,6 +96,12 @@ public class ClassTreeNode extends LazyTreeNode {
     		Cls cls = getCls();
     		if (cls != null && cls.equals(oldFrame)) {
     			reload(newFrame);
+    			//the commented lines should provide support for 
+    			//inserting in order, but they don't work right
+    			//in all cases. We need to figure this out later.
+    			//((LazyTreeNode)getParent()).childRemoved(oldFrame);    			
+    			//((LazyTreeNode)getParent()).childRemoved(newFrame);
+    			//((LazyTreeNode)getParent()).childAdded(newFrame);
     		}
     	}
     	
@@ -116,7 +132,7 @@ public class ClassTreeNode extends LazyTreeNode {
 
 
     public ClassTreeNode(LazyTreeNode parentNode, Cls parentCls) {
-        super(parentNode, parentCls);
+        super(parentNode, parentCls, OWLUI.getClassTreeSortedOption());
         parentCls.addClsListener(_clsListener);
         parentCls.addFrameListener(_frameListener);
     }
