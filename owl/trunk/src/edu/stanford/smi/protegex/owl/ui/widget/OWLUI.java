@@ -33,6 +33,8 @@ import javax.swing.JTree;
 import javax.swing.text.JTextComponent;
 import javax.swing.tree.TreePath;
 
+import com.hp.hpl.jena.graph.query.Expression.Application;
+
 import edu.stanford.smi.protege.action.Copy;
 import edu.stanford.smi.protege.action.Cut;
 import edu.stanford.smi.protege.action.InsertUnicodeCharacterAction;
@@ -47,6 +49,7 @@ import edu.stanford.smi.protege.model.Project;
 import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protege.ui.Finder;
 import edu.stanford.smi.protege.ui.ProjectView;
+import edu.stanford.smi.protege.util.ApplicationProperties;
 import edu.stanford.smi.protege.util.CollectionUtilities;
 import edu.stanford.smi.protege.util.ComponentFactory;
 import edu.stanford.smi.protege.util.ComponentUtilities;
@@ -86,6 +89,12 @@ import edu.stanford.smi.protegex.owl.util.OWLBrowserSlotPattern;
  */
 public class OWLUI {
     private static final transient Logger log = Log.getLogger(OWLUI.class);
+    
+    public static final String SORT_CLASS_TREE = "ui.sort.class.tree";
+    
+    public static final String SORT_PROPERTIES_TREE = "ui.sort.properties.tree";
+    
+    public static final String SORT_CLASS_TREE_AFTER_LOAD = "ui.sort.class.tree.after.load";
 
     /**
      * @deprecated use constant from AbstractOWLModelAction
@@ -975,6 +984,30 @@ public class OWLUI {
         }
         
         return owlBrowswePattern;       
+    }
+    
+    public static void setSortClassTreeOption(boolean classTreeSorted) {
+    	ApplicationProperties.setBoolean(SORT_CLASS_TREE, classTreeSorted);
+    }
+
+    public static void setSortClassTreeAfterLoadOption(boolean classTreeSortedAfterLoad) {
+    	ApplicationProperties.setBoolean(SORT_CLASS_TREE_AFTER_LOAD, classTreeSortedAfterLoad);
+    }
+    
+    public static void setSortPropertiesTreeOption(boolean propertiesTreeSorted) {
+    	ApplicationProperties.setBoolean(SORT_PROPERTIES_TREE, propertiesTreeSorted);
+    }
+    
+    public static boolean getClassTreeSortedOption() {
+    	return ApplicationProperties.getBooleanProperty(SORT_CLASS_TREE, true);
+    }
+
+    public static boolean getPropertiesTreeSortedOption() {
+    	return ApplicationProperties.getBooleanProperty(SORT_PROPERTIES_TREE, true);
+    }
+    
+    public static boolean getClassTreeSortedAfterLoadOption() {
+    	return ApplicationProperties.getBooleanProperty(SORT_CLASS_TREE_AFTER_LOAD, false);
     }
     
 }
