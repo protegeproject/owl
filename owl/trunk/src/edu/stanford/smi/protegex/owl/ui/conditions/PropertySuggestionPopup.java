@@ -117,7 +117,7 @@ public class PropertySuggestionPopup {
 		if(selProperty != null) {
 			JTextComponent textComponent = table.getSymbolEditorComponent().getTextComponent();
 			try {
-				textComponent.getDocument().insertString(textComponent.getCaretPosition(), selProperty.getName(), null);
+				textComponent.getDocument().insertString(textComponent.getCaretPosition(), selProperty.getPrefixedName(), null);
 			}
 			catch(BadLocationException e) {
                           Log.getLogger().log(Level.SEVERE, "Exception caught", e);
