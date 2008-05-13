@@ -426,7 +426,7 @@ public class OWLMenuProjectPlugin extends ProjectPluginAdapter {
                 Frame frame = reference.getFrame();
                 if (reference.getSlot().equals(rangeSlot) &&
                     !systemFrames.contains(frame) &&
-                    !frame.getName().startsWith(ProtegeNames.PREFIX)) {
+                    !frame.getName().startsWith(ProtegeNames.PROTEGE_OWL_NAMESPACE)) {
                     return true;
                 }
             }
