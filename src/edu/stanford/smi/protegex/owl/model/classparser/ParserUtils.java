@@ -18,7 +18,6 @@ import edu.stanford.smi.protegex.owl.model.OWLObjectProperty;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultRDFSLiteral;
-import edu.stanford.smi.protegex.owl.ui.clsdesc.manchester.ManchesterOWLTextPane;
 
 public class ParserUtils {
     public final static String SINGLE_QUOTE_STRING = "'";
