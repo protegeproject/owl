@@ -143,9 +143,8 @@ public class FrameCreatorUtility {
             frame = new DefaultSWRLVariable(owlModel, id);
         } 
         
-        else {
-            //maybe this is an RDF individual
-            frame = new DefaultOWLIndividual(owlModel, id);
+        else {         
+            frame = createDefaultEntity(owlModel, id, (Cls)type, ts);
         }
         
         assertFrameName(ts, frame);
@@ -165,6 +164,18 @@ public class FrameCreatorUtility {
 
         return frame;
 
+    }
+    
+    private static Frame createDefaultEntity(OWLModel owlModel, FrameID id, Cls type, TripleStore ts) {
+    	//This is actually the job of the Java factory, but we don't want to invoke it because it is too expensive
+    	//We try to make some guess about the type of the entity, so that we minimize postprocessing
+    	if (type.hasSuperclass(owlModel.getRDFSNamedClassClass())) { //type is a metaclass, so this should be a named owl (or rdfs) class
+    		return new DefaultOWLNamedClass(owlModel, id);
+    	} else if (type.hasSuperclass(owlModel.getRDFPropertyClass())) { //type is metaproperty
+    		return new DefaultRDFProperty(owlModel, id);
+    	}    	
+    	
+    	return new DefaultOWLIndividual(owlModel, id);
     }
 
 
