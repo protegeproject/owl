@@ -363,7 +363,7 @@ public class OWLSubpropertyPane extends SelectableContainer implements HostResou
 
 
 	protected OWLPropertySubpropertyRoot createRoot() {
-		return new OWLPropertySubpropertyRoot(getOWLModel(), OWLUI.getPropertiesTreeSortedOption());
+		return new OWLPropertySubpropertyRoot(getOWLModel());
 	}
 
 

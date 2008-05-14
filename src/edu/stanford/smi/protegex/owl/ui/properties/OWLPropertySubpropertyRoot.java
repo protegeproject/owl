@@ -152,7 +152,7 @@ public class OWLPropertySubpropertyRoot extends LazyTreeRoot {
 	};
 
 	public OWLPropertySubpropertyRoot(OWLModel owlModel, Collection topLevelProperties) {
-		this(owlModel, topLevelProperties, false);
+		this(owlModel, topLevelProperties, OWLUI.getSortPropertiesTreeOption());
 	}
 	
 	public OWLPropertySubpropertyRoot(OWLModel owlModel, Collection topLevelProperties, boolean isSorted) {
@@ -165,7 +165,7 @@ public class OWLPropertySubpropertyRoot extends LazyTreeRoot {
 
 	
 	public OWLPropertySubpropertyRoot(OWLModel owlModel) {
-		this(owlModel, false);
+		this(owlModel, OWLUI.getSortPropertiesTreeOption());
 	}
 	
     public OWLPropertySubpropertyRoot(OWLModel owlModel, boolean isSorted) {
@@ -209,7 +209,7 @@ public class OWLPropertySubpropertyRoot extends LazyTreeRoot {
         }
         results.removeAll(Arrays.asList(owlModel.getSystemAnnotationProperties()));
         
-        if (OWLUI.getPropertiesTreeSortedOption()) {
+        if (OWLUI.getSortPropertiesTreeOption()) {
         	Collections.sort(results, new FrameComparator());
         }
         return results;

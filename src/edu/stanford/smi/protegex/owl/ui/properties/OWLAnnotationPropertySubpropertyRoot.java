@@ -22,7 +22,7 @@ import java.util.Iterator;
 public class OWLAnnotationPropertySubpropertyRoot extends OWLPropertySubpropertyRoot {
 
 	public OWLAnnotationPropertySubpropertyRoot(OWLModel owlModel) {
-		super(owlModel, getTopLevelObjectProperties(owlModel), OWLUI.getPropertiesTreeSortedOption());
+		super(owlModel, getTopLevelObjectProperties(owlModel));
 	}
 
 	public static Collection getTopLevelObjectProperties(OWLModel owlModel) {
