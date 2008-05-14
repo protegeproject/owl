@@ -6,10 +6,12 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import edu.stanford.smi.protege.model.Cls;
+import edu.stanford.smi.protege.model.Frame;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
@@ -28,6 +30,7 @@ public class GlobalParserCache {
 	 */
 	private SuperClsCache superClsCache = new SuperClsCache();
 	private MultipleTypesInstanceCache multipleTypesInstanceCache = new MultipleTypesInstanceCache();
+	private Set<String> framesWithWrongJavaType = new HashSet<String>();
 	
 	//the GCI caches will be refactored
 	private Collection<RDFProperty> possibleGCIPredicates = new ArrayList<RDFProperty>();
@@ -145,6 +148,10 @@ public class GlobalParserCache {
 		possibleGCIPredicates.add(owlModel.getOWLDisjointWithProperty());
 		possibleGCIPredicates.add(owlModel.getRDFSSubClassOfProperty());
 		possibleGCIPredicates.add(owlModel.getOWLEquivalentClassProperty());
+	}
+
+	public Set<String> getFramesWithWrongJavaType() {
+		return framesWithWrongJavaType;
 	}
 
 }
