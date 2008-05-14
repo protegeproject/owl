@@ -1,12 +1,22 @@
 package edu.stanford.smi.protegex.owl.jena.parser;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.Frame;
 import edu.stanford.smi.protege.model.FrameID;
+import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protege.model.framestore.SimpleFrameStore;
+import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.model.RDFResource;
+import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLNamedClass;
+import edu.stanford.smi.protegex.owl.model.impl.DefaultRDFProperty;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 
 public abstract class AbstractStatefulTripleProcessor {
+	private static final transient Logger log = Log.getLogger(AbstractStatefulTripleProcessor.class);
 	
 	protected TripleProcessor processor;
 	
@@ -19,9 +29,7 @@ public abstract class AbstractStatefulTripleProcessor {
 		this.processor = processor;
 		this.owlModel = processor.getOWLModel();
 		this.globalParserCache = processor.getGlobalParserCache();
-		//this.importing = processor.isImporting();
 		this.simpleFrameStore = ParserUtil.getSimpleFrameStore(owlModel);
-		//this.tripleStore = processor.getTripleStore();
 	}
 	
 	
@@ -50,10 +58,6 @@ public abstract class AbstractStatefulTripleProcessor {
 		processor.checkUndefinedResources(uri);
 	}
 	
-	protected Frame getFrame(String name) {
-		return simpleFrameStore.getFrame(name);
-	}
-	
 	public void doPostProcessing(){
 		// do nothing by default
 	}
@@ -61,5 +65,77 @@ public abstract class AbstractStatefulTripleProcessor {
 	public boolean isImporting(TripleStore ts) {
 		return !ts.equals(owlModel.getTripleStoreModel().getTopTripleStore());
 	}
+	
+	protected Frame getFrame(String name) {
+		return simpleFrameStore.getFrame(name);
+	}
+	
+	protected Cls getCls(String name) {		
+		return getCls(getFrame(name));
+	}	
+	
+	protected Cls getCls(Frame frame) {
+		if (frame == null) {
+			return (Cls) frame;
+		}		
+		if (frame instanceof Cls) {
+			return (Cls) frame;
+		}
+		
+		//frame is not a class
+		if (log.isLoggable(Level.FINE)) { 
+			log.warning("    Frame with wrong Java type: " + frame.getName() +
+					". Expected: RDFSClass (or subclass), got: " + frame.getClass().getName());
+		}
+				
+		try {
+			//should not necessarily be a owl named class - it will be swizzled later anyway
+			Frame newFrame = new DefaultOWLNamedClass(frame.getKnowledgeBase(), new FrameID(frame.getName()));
+			TripleStore homeTs = owlModel.getTripleStoreModel().getHomeTripleStore((RDFResource)frame);
+			homeTs.getNarrowFrameStore().replaceFrame(newFrame);
+			frame = newFrame;			
+		} catch (Exception e) {
+			log.log(Level.WARNING, "Error at changing Java type of: " + frame + " to DefaultOWLNamedClass", e);
+		}
+	
+		globalParserCache.getFramesWithWrongJavaType().add(frame.getName());
+		
+		//TODO: should we replace it?
+		return (Cls) frame;
+	}
+	
+	
+	protected Slot getSlot(String name) {
+		return getSlot(getFrame(name));
+	}
+	
+	protected Slot getSlot(Frame frame) {
+		if (frame == null) {
+			return (Slot) frame;
+		}		
+		if (frame instanceof Slot) {
+			return (Slot) frame;
+		}
+		
+		//frame is not a slot
+		if (log.isLoggable(Level.FINE)) {
+			log.fine("    Frame with wrong Java type: " + frame.getName() +
+					". Expected: RDFProperty (or subclass), got: " + frame.getClass().getName());
+		}
+				
+		try {
+			Frame newFrame = new DefaultRDFProperty(frame.getKnowledgeBase(), new FrameID(frame.getName()));
+			TripleStore homeTs = owlModel.getTripleStoreModel().getHomeTripleStore((RDFResource)frame);
+			homeTs.getNarrowFrameStore().replaceFrame(newFrame);
+			frame = newFrame;			
+		} catch (Exception e) {
+			log.log(Level.WARNING, "Error at changing Java type of: " + frame + " to DefaultRDFProperty", e);
+		}
+	
+		globalParserCache.getFramesWithWrongJavaType().add(frame.getName());
+		
+		return (Slot) frame;
+	}
+
 	
 }
