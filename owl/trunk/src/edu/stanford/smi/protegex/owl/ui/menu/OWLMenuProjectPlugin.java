@@ -434,7 +434,8 @@ public class OWLMenuProjectPlugin extends ProjectPluginAdapter {
         return false;
     }
 
-    public static void makeHiddenClsesWithSubclassesVisible(OWLModel owlModel) {
+    @SuppressWarnings("deprecation")
+	public static void makeHiddenClsesWithSubclassesVisible(OWLModel owlModel) {
         if (owlModel.getOWLNamedClassClass().getSubclassCount() > 0 ||
             owlModel.getRDFSNamedClassClass().getSubclassCount() > 3) { //3: owlClass, owl:DeprecatedClass, protege:ExternalClass
             owlModel.getRDFSNamedClassClass().setVisible(true);
@@ -455,6 +456,11 @@ public class OWLMenuProjectPlugin extends ProjectPluginAdapter {
         makeVisibleIfSubclassesExist(owlModel.getRDFSNamedClass(RDFSNames.Cls.LITERAL), systemFrames);
         makeVisibleIfSubclassesExist(owlModel.getOWLNothing(), systemFrames);
         makeVisibleIfSubclassesExist(owlModel.getRDFSNamedClass(RDFNames.Cls.STATEMENT), systemFrames);
+        
+        //make visibile the external resource if instances exist
+        if (owlModel.getDirectInstanceCount(owlModel.getRDFUntypedResourcesClass()) > 0) {
+        	owlModel.getRDFUntypedResourcesClass().setVisible(true);
+        }
     }
 
     private static void makeVisibleIfSubclassesExist(Cls cls, Set systemFrames) {
