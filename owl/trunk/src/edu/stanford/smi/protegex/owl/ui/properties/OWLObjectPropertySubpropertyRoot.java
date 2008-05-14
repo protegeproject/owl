@@ -21,7 +21,7 @@ import java.util.Iterator;
 public class OWLObjectPropertySubpropertyRoot extends OWLPropertySubpropertyRoot {
 
 	public OWLObjectPropertySubpropertyRoot(OWLModel owlModel) {
-		super(owlModel, getTopLevelObjectProperties(owlModel), OWLUI.getPropertiesTreeSortedOption());
+		super(owlModel, getTopLevelObjectProperties(owlModel));
 	}
 
 	public static Collection getTopLevelObjectProperties(OWLModel owlModel) {
