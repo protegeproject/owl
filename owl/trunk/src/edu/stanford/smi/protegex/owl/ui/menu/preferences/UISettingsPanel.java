@@ -119,7 +119,7 @@ public class UISettingsPanel extends JComponent {
         });
         
         sortClassTreeCheckBox = ComponentFactory.createCheckBox("Sort class tree (OWLClasses Tab)");
-        initialSortClassTreeValue =OWLUI.getClassTreeSortedOption();
+        initialSortClassTreeValue = OWLUI.getSortClassTreeOption();
         sortClassTreeCheckBox.setSelected(initialSortClassTreeValue);
         sortClassTreeCheckBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -128,7 +128,7 @@ public class UISettingsPanel extends JComponent {
         });
 
         sortPropertiesTreeCheckBox = ComponentFactory.createCheckBox("Sort properties tree (Properties Tab)");
-        initialSortPropertiesTreeValue =OWLUI.getPropertiesTreeSortedOption();
+        initialSortPropertiesTreeValue = OWLUI.getSortPropertiesTreeOption();
         sortPropertiesTreeCheckBox.setSelected(initialSortPropertiesTreeValue);
         sortPropertiesTreeCheckBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -138,7 +138,7 @@ public class UISettingsPanel extends JComponent {
 
 
         sortClassTreeAfterLoadCheckBox = ComponentFactory.createCheckBox("One-time sorting of class tree after load");        
-        sortClassTreeAfterLoadCheckBox.setSelected(OWLUI.getClassTreeSortedAfterLoadOption());
+        sortClassTreeAfterLoadCheckBox.setSelected(OWLUI.getSortClassTreeAfterLoadOption());
         sortClassTreeAfterLoadCheckBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				updateSortClassTreeAfterLoad();				
