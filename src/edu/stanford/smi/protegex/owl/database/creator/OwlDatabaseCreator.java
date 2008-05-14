@@ -41,10 +41,10 @@ public class OwlDatabaseCreator extends AbstractOwlDatabaseCreator {
 			ontologyName = FactoryUtils.generateOntologyURIBase();
 		}
 		try {
-			FactoryUtils.addOntologyToTripleStore(owlModel, 
-					owlModel.getTripleStoreModel().getActiveTripleStore(), 
+			FactoryUtils.addOntologyToTripleStore(getOwlModel(), 
+					getOwlModel().getTripleStoreModel().getActiveTripleStore(), 
 					ontologyName);
-			writeOntologyAndPrefixInfo(owlModel, errors);
+			writeOntologyAndPrefixInfo(getOwlModel(), errors);
 		}
 		catch (AlreadyImportedException e) {
 			throw new RuntimeException("This shouldn't happen", e);

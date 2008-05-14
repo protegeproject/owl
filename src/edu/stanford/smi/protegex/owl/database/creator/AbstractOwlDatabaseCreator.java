@@ -40,7 +40,6 @@ public abstract class AbstractOwlDatabaseCreator extends AbstractOwlProjectCreat
     private String url;
     
     protected Project project;
-    protected OWLDatabaseModel owlModel;
    
     protected AbstractOwlDatabaseCreator(OWLDatabaseKnowledgeBaseFactory factory) {
         super(factory);
@@ -50,7 +49,6 @@ public abstract class AbstractOwlDatabaseCreator extends AbstractOwlProjectCreat
 	@Override
     public void create(Collection errors) throws OntologyLoadException {
         project = Project.createBuildProject(factory, errors);
-        owlModel = (OWLDatabaseModel) project.getKnowledgeBase();
         initializeSources(project.getSources());
         project.createDomainKnowledgeBase(factory, errors, true);
         insertRepositoriesIntoOwlModel((OWLModel) project.getKnowledgeBase());
@@ -58,7 +56,10 @@ public abstract class AbstractOwlDatabaseCreator extends AbstractOwlProjectCreat
     
     @Override
     public OWLDatabaseModel getOwlModel() {
-        return owlModel;
+        if (project != null) {
+            return (OWLDatabaseModel) project.getKnowledgeBase();
+        }
+        return null;
     }
     
     @Override
