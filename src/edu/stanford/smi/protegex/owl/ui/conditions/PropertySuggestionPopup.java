@@ -23,6 +23,7 @@ import edu.stanford.smi.protege.util.LabeledComponent;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
+import edu.stanford.smi.protegex.owl.model.classparser.ParserUtils;
 import edu.stanford.smi.protegex.owl.ui.ResourceRenderer;
 
 /**
@@ -117,7 +118,8 @@ public class PropertySuggestionPopup {
 		if(selProperty != null) {
 			JTextComponent textComponent = table.getSymbolEditorComponent().getTextComponent();
 			try {
-				textComponent.getDocument().insertString(textComponent.getCaretPosition(), selProperty.getPrefixedName(), null);
+				textComponent.getDocument().insertString(textComponent.getCaretPosition(), 
+				                                         ParserUtils.quoteIfNeeded(selProperty.getBrowserText()), null);
 			}
 			catch(BadLocationException e) {
                           Log.getLogger().log(Level.SEVERE, "Exception caught", e);
