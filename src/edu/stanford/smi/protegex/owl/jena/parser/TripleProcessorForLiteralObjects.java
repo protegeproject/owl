@@ -31,7 +31,7 @@ class TripleProcessorForLiteralObjects extends AbstractStatefulTripleProcessor {
 	    }
 
 		String predName = ParserUtil.getResourceName(pred);		
-		Slot predSlot = (Slot) getFrame(predName);
+		Slot predSlot = getSlot(predName);
 
 		if (predSlot == null) {
 			if (!alreadyInUndef) {
