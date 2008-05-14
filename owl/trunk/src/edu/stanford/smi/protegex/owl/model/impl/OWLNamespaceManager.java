@@ -14,9 +14,12 @@ import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.model.NamespaceManager;
 import edu.stanford.smi.protegex.owl.model.NamespaceManagerListener;
 import edu.stanford.smi.protegex.owl.model.OWLNames;
+import edu.stanford.smi.protegex.owl.model.ProtegeNames;
 import edu.stanford.smi.protegex.owl.model.RDFNames;
 import edu.stanford.smi.protegex.owl.model.RDFSNames;
 import edu.stanford.smi.protegex.owl.model.XSDNames;
+import edu.stanford.smi.protegex.owl.model.XSPNames;
+import edu.stanford.smi.protegex.owl.swrl.model.SWRLNames;
 
 public class OWLNamespaceManager implements NamespaceManager, Serializable, Localizable {
     private static final long serialVersionUID = -7101015781624857363L;
@@ -40,12 +43,27 @@ public class OWLNamespaceManager implements NamespaceManager, Serializable, Loca
     public OWLNamespaceManager() {
         setPrefix(OWLNames.OWL_NAMESPACE, OWLNames.OWL_PREFIX);
         setModifiable(OWLNames.OWL_PREFIX, false);
+        
         setPrefix(RDFNames.RDF_NAMESPACE, RDFNames.RDF_PREFIX);
         setModifiable(RDFNames.RDF_PREFIX, false);
+        
         setPrefix(RDFSNames.RDFS_NAMESPACE, RDFSNames.RDFS_PREFIX);
         setModifiable(RDFSNames.RDFS_PREFIX, false);
+        
         setPrefix(XSDNames.XSD_NAMESPACE, RDFNames.XSD_PREFIX);
         setModifiable(RDFNames.XSD_PREFIX, false);
+        
+        setPrefix(XSPNames.NS, XSPNames.DEFAULT_PREFIX);
+        setModifiable(XSPNames.DEFAULT_PREFIX, false);
+        
+        setPrefix(ProtegeNames.PROTEGE_OWL_NAMESPACE, ProtegeNames.PROTEGE_PREFIX);
+        setModifiable(ProtegeNames.PROTEGE_PREFIX, false);
+        
+        setPrefix(SWRLNames.SWRL_NAMESPACE, SWRLNames.SWRL_PREFIX);
+        setModifiable(SWRLNames.SWRL_PREFIX, false);
+        
+        setPrefix(SWRLNames.SWRLB_NAMESPACE, SWRLNames.SWRLB_PREFIX);
+        setModifiable(SWRLNames.SWRLB_PREFIX, false);
     }
 
     public boolean isModifiable(String prefix) {
