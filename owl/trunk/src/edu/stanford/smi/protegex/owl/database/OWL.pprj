@@ -1,7 +1,7 @@
 ; Sat Feb 09 08:41:41 PST 2008
 ; 
 ;+ (version "3.4")
-;+ (build "Build 125")
+;+ (build "Build 130")
 
 ([BROWSER_SLOT_NAMES] of  Property_List
 
@@ -7326,15 +7326,10 @@
 		"http://www.w3.org/2000/01/rdf-schema#Class"
 		"http://www.w3.org/2000/01/rdf-schema#Container"
 		"http://www.w3.org/2000/01/rdf-schema#Datatype"
-		"http://www.w3.org/2000/01/rdf-schema#Literal"
-		"http://www.w3.org/2000/01/rdf-schema#comment"
+		"http://www.w3.org/2000/01/rdf-schema#Literal"		
 		"http://www.w3.org/2000/01/rdf-schema#domain"
-		"http://www.w3.org/2000/01/rdf-schema#isDefinedBy"
-		"http://www.w3.org/2000/01/rdf-schema#label"
 		"http://www.w3.org/2000/01/rdf-schema#member"
 		"http://www.w3.org/2000/01/rdf-schema#range"
-		"http://www.w3.org/2000/01/rdf-schema#seeAlso"
-		"http://www.w3.org/2000/01/rdf-schema#subClassOf"
 		"http://www.w3.org/2000/01/rdf-schema#subPropertyOf"
 		"http://www.w3.org/2001/XMLSchema#ENTITY"
 		"http://www.w3.org/2001/XMLSchema#ID"
@@ -7347,10 +7342,7 @@
 		"http://www.w3.org/2001/XMLSchema#anySimpleType"
 		"http://www.w3.org/2001/XMLSchema#anyURI"
 		"http://www.w3.org/2001/XMLSchema#base64Binary"
-		"http://www.w3.org/2001/XMLSchema#boolean"
 		"http://www.w3.org/2001/XMLSchema#byte"
-		"http://www.w3.org/2001/XMLSchema#date"
-		"http://www.w3.org/2001/XMLSchema#dateTime"
 		"http://www.w3.org/2001/XMLSchema#decimal"
 		"http://www.w3.org/2001/XMLSchema#double"
 		"http://www.w3.org/2001/XMLSchema#duration"
@@ -7361,7 +7353,6 @@
 		"http://www.w3.org/2001/XMLSchema#gYear"
 		"http://www.w3.org/2001/XMLSchema#gYearMonth"
 		"http://www.w3.org/2001/XMLSchema#hexBinary"
-		"http://www.w3.org/2001/XMLSchema#int"
 		"http://www.w3.org/2001/XMLSchema#integer"
 		"http://www.w3.org/2001/XMLSchema#language"
 		"http://www.w3.org/2001/XMLSchema#long"
@@ -7371,8 +7362,6 @@
 		"http://www.w3.org/2001/XMLSchema#normalizedString"
 		"http://www.w3.org/2001/XMLSchema#positiveInteger"
 		"http://www.w3.org/2001/XMLSchema#short"
-		"http://www.w3.org/2001/XMLSchema#string"
-		"http://www.w3.org/2001/XMLSchema#time"
 		"http://www.w3.org/2001/XMLSchema#token"
 		"http://www.w3.org/2001/XMLSchema#unsignedByte"
 		"http://www.w3.org/2001/XMLSchema#unsignedInt"
