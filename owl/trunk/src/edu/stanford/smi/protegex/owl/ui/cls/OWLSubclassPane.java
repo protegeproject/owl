@@ -127,7 +127,7 @@ public class OWLSubclassPane extends SelectableContainer implements ClassTreePan
 
     protected ClassTree createSelectableTree(Action doubleClickAction, Cls rootCls) {
         this.owlModel = (OWLModel) rootCls.getKnowledgeBase();
-        LazyTreeRoot root = new ClassTreeRoot(rootCls, OWLUI.getClassTreeSortedOption());
+        LazyTreeRoot root = new ClassTreeRoot(rootCls, OWLUI.getSortClassTreeOption());
         return new ClassTree(doubleClickAction, root);
     }
 
