@@ -1,15 +1,16 @@
 package edu.stanford.smi.protegex.owl.ui.cls;
 
-import edu.stanford.smi.protege.model.Cls;
-import edu.stanford.smi.protege.ui.LazyTreeNodeFrameComparator;
-import edu.stanford.smi.protege.util.CollectionUtilities;
-import edu.stanford.smi.protege.util.LazyTreeNode;
-import edu.stanford.smi.protege.util.LazyTreeRoot;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Iterator;
+
+import edu.stanford.smi.protege.model.Cls;
+import edu.stanford.smi.protege.ui.ParentChildNodeComparator;
+import edu.stanford.smi.protege.util.CollectionUtilities;
+import edu.stanford.smi.protege.util.LazyTreeNode;
+import edu.stanford.smi.protege.util.LazyTreeRoot;
+import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
 
 /**
  * Tree Root for the superclass-subclass relationship
@@ -20,7 +21,7 @@ import java.util.Iterator;
 public class ClassTreeRoot extends LazyTreeRoot {
 
     public ClassTreeRoot(Cls root) {
-        super(root);
+        this(root, OWLUI.getSortClassTreeOption());
     }
 
     public ClassTreeRoot(Cls root, boolean isSorted) {
@@ -28,7 +29,7 @@ public class ClassTreeRoot extends LazyTreeRoot {
     }
     
     public ClassTreeRoot(Collection roots) {
-        super(filter(roots));
+        this(filter(roots), OWLUI.getSortClassTreeOption());
     }
     
     public ClassTreeRoot(Collection roots, boolean isSorted) {
@@ -55,6 +56,6 @@ public class ClassTreeRoot extends LazyTreeRoot {
     }
 
     public Comparator getComparator() {
-        return new LazyTreeNodeFrameComparator();
+    	return new ParentChildNodeComparator();
     }
 }

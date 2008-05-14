@@ -16,6 +16,7 @@ import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.Frame;
 import edu.stanford.smi.protege.model.Model;
 import edu.stanford.smi.protege.ui.LazyTreeNodeFrameComparator;
+import edu.stanford.smi.protege.ui.ParentChildNodeComparator;
 import edu.stanford.smi.protege.util.LazyTreeNode;
 import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
 import edu.stanford.smi.protegex.owl.model.RDFSClass;
@@ -132,7 +133,7 @@ public class ClassTreeNode extends LazyTreeNode {
 
 
     public ClassTreeNode(LazyTreeNode parentNode, Cls parentCls) {
-        super(parentNode, parentCls, OWLUI.getClassTreeSortedOption());
+        super(parentNode, parentCls, parentNode.isSorted());
         parentCls.addClsListener(_clsListener);
         parentCls.addFrameListener(_frameListener);
     }
@@ -189,7 +190,7 @@ public class ClassTreeNode extends LazyTreeNode {
 
 
     protected Comparator getComparator() {
-        return new LazyTreeNodeFrameComparator();
+        return new ParentChildNodeComparator();
     }
 
 
