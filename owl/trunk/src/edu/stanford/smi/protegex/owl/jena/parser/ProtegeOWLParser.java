@@ -51,18 +51,20 @@ import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
 public class ProtegeOWLParser {
     private static transient Logger log = Log.getLogger(ProtegeOWLParser.class);
     
-    private final static String JENA_ERROR_LEVEL_PROPERTY = "jena.parser.error_level";
+    public final static String JENA_ERROR_LEVEL_PROPERTY = "jena.parser.error_level";
     public final static String CREATE_UNTYPED_RESOURCES = "protegeowl.parser.create.untyped.resources";
-
-    private boolean importing = false;
+    public final static String PRINT_LOAD_TRIPLES_LOG = "protegeowl.parser.print.load.triples.log";
+    public final static String PRINT_LOAD_TRIPLES_LOG_INCREMENT = "protegeowl.parser.print.load.triples.log.increment";
     
 	private static Collection errors;
-
 	private static URI errorOntologyURI;
 
 	private OWLModel owlModel;
+	private boolean importing = false;
 
 	private int tripleCount;
+	private boolean printLoadTriplesLog = true;
+	private int printLoadTriplesLogIncrement = 10000;
 	
 	private TripleProcessor tripleProcessor;
 
@@ -71,6 +73,8 @@ public class ProtegeOWLParser {
 		tripleCount = 0;
 		errorOntologyURI = null;
 		errors = new ArrayList();
+		printLoadTriplesLog = ApplicationProperties.getBooleanProperty(PRINT_LOAD_TRIPLES_LOG, true);
+		printLoadTriplesLogIncrement = ApplicationProperties.getIntegerProperty(PRINT_LOAD_TRIPLES_LOG_INCREMENT, 10000);
 		
 		this.owlModel = owlModel;		
 	}
@@ -263,7 +267,7 @@ public class ProtegeOWLParser {
 
 	        Log.getLogger().info("    Completed triple loading after " + (endTime - startTime) + " ms");	 
 	        tripleProcessor.getGlobalParserCache().dumpUndefTriples(Level.FINE);	
-	        //tripleProcessor.processUndefTriples();
+
 	        if (log.isLoggable(Level.FINE)) {
 	            log.fine("Start processing imports ...");
 	        }
@@ -273,11 +277,6 @@ public class ProtegeOWLParser {
 	        if (log.isLoggable(Level.FINE)) {
 	            log.fine("End processing imports");
 	        }
-
-	        //tripleProcessor.processUndefTriples();
-	        
-	        //post processing is done only at the very end..
-	        //tripleProcessor.doPostProcessing();
 	        
 	        handleNoOntologyDeclarationFound(tripleStore, ontologyName, xmlBase);
 	        
@@ -324,7 +323,7 @@ public class ProtegeOWLParser {
 				((JenaOWLModel) owlModel).copyFacetValuesIntoNamedClses();
 			}
 
-			if (OWLUI.getClassTreeSortedAfterLoadOption()) {
+			if (OWLUI.getSortClassTreeAfterLoadOption()) {
 				long t0 = System.currentTimeMillis();			
 				TripleStoreUtil.sortSubclasses(owlModel);
 				log.info("Sorting OWL class tree in " + (System.currentTimeMillis() - t0) + " ms");
@@ -424,8 +423,7 @@ public class ProtegeOWLParser {
         	
         	Log.getLogger().log(isError ? Level.SEVERE : Level.WARNING, message, ex);
         	
-        	errors.add(new MessageError(ex, message));
-					            
+        	errors.add(new MessageError(ex, message));					            
 		}						
 	}
 
@@ -443,10 +441,9 @@ public class ProtegeOWLParser {
 			if (log.isLoggable(Level.FINE)) {
 				log.fine("NewStatementHandler: " + subj + "  " + pred + "  " + obj);
 			}
-			tripleCount++;
-			if(tripleCount % 5000 == 0) {
-				Log.getLogger().info("    Loaded " + tripleCount + " triples");
-			}
+			
+			tripleCount++;			
+			printTriplesLoadLogMessage();
 
 			try {
 				tripleProcessor.processTriple(subj, pred, obj, tripleStore, false);
@@ -454,7 +451,6 @@ public class ProtegeOWLParser {
 				Log.getLogger().log(Level.SEVERE, "Error at parsing triple: " + 
 						subj + " " + pred + " " + obj, e);
 			}
-
 		}
 
 
@@ -463,10 +459,8 @@ public class ProtegeOWLParser {
 				log.fine(subj + "  " + pred + "  " + lit);
 			}
 
-			tripleCount++;
-			if(tripleCount % 5000 == 0) {			
-				Log.getLogger().info("    Loaded " + tripleCount + " triples");
-			}
+			tripleCount++;			
+			printTriplesLoadLogMessage();
 
 			try {
 				tripleProcessor.processTriple(subj, pred, lit, tripleStore, false);
@@ -474,8 +468,13 @@ public class ProtegeOWLParser {
 				Log.getLogger().log(Level.SEVERE, "Error at parsing triple: " + 
 						subj + " " + pred + " " + lit, e);
 			}
-
-		}		
+		}
+		
+		protected void printTriplesLoadLogMessage() {
+			if(printLoadTriplesLog && tripleCount % printLoadTriplesLogIncrement == 0) {
+				Log.getLogger().info("    Loaded " + tripleCount + " triples");
+			}
+		}
 	}
 
 	
@@ -503,4 +502,3 @@ public class ProtegeOWLParser {
 	}	
 
 }
-
