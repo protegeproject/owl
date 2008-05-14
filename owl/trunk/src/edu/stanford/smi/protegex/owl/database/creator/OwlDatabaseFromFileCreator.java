@@ -44,18 +44,18 @@ public class OwlDatabaseFromFileCreator extends AbstractOwlDatabaseCreator {
 		}
 
         super.create(errors);
-        insertRepositoriesIntoOwlModel(owlModel);
-        ProtegeOWLParser parser = new ProtegeOWLParser(owlModel);
+        insertRepositoriesIntoOwlModel(getOwlModel());
+        ProtegeOWLParser parser = new ProtegeOWLParser(getOwlModel());
         parser.run(URIUtilities.createURI(ontologySource));
 
         try {
-            writeOntologyAndPrefixInfo(owlModel, errors);
+            writeOntologyAndPrefixInfo(getOwlModel(), errors);
         }
         catch (AlreadyImportedException e) {
             throw new RuntimeException("This shouldn't happen", e);
         }
-        DatabaseFactoryUtils.loadImports(owlModel, errors);
-        ProtegeOWLParser.doFinalPostProcessing(owlModel);
+        DatabaseFactoryUtils.loadImports(getOwlModel(), errors);
+        ProtegeOWLParser.doFinalPostProcessing(getOwlModel());
         
         errors.addAll(ProtegeOWLParser.getErrors());
     }
