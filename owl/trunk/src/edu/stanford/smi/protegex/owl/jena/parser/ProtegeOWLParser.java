@@ -487,7 +487,7 @@ public class ProtegeOWLParser {
 		}
 
 		public void endPrefixMapping(String prefix) { // does nothing, just for logging
-	        NamespaceManager namespaceManager = owlModel.getNamespaceManager();
+	        NamespaceManager namespaceManager = tripleStore.getNamespaceManager();
 	        
 	        if (log.isLoggable(Level.FINE)) {
                 log.fine("*** " + prefix + " -> " + namespaceManager.getNamespaceForPrefix(prefix));
@@ -496,7 +496,7 @@ public class ProtegeOWLParser {
 	    }
 
 		public void startPrefixMapping(String prefix, String namespace) {
-		    NamespaceManager namespaceManager = owlModel.getNamespaceManager();
+		    NamespaceManager namespaceManager = tripleStore.getNamespaceManager();
 		    namespaceManager.setPrefix(namespace, prefix);
 		}		
 	}	
