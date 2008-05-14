@@ -90,10 +90,6 @@ import edu.stanford.smi.protegex.owl.util.OWLBrowserSlotPattern;
 public class OWLUI {
     private static final transient Logger log = Log.getLogger(OWLUI.class);
     
-    public static final String SORT_CLASS_TREE = "ui.sort.class.tree";
-    
-    public static final String SORT_PROPERTIES_TREE = "ui.sort.properties.tree";
-    
     public static final String SORT_CLASS_TREE_AFTER_LOAD = "ui.sort.class.tree.after.load";
 
     /**
@@ -985,29 +981,30 @@ public class OWLUI {
         
         return owlBrowswePattern;       
     }
+
+    
+    public static boolean getSortClassTreeOption() {
+    	return ApplicationProperties.getSortClassTreeOption();
+    }
     
     public static void setSortClassTreeOption(boolean classTreeSorted) {
-    	ApplicationProperties.setBoolean(SORT_CLASS_TREE, classTreeSorted);
+    	ApplicationProperties.setSortClassTreeOption(classTreeSorted);
     }
 
-    public static void setSortClassTreeAfterLoadOption(boolean classTreeSortedAfterLoad) {
-    	ApplicationProperties.setBoolean(SORT_CLASS_TREE_AFTER_LOAD, classTreeSortedAfterLoad);
-    }
+    public static boolean getSortPropertiesTreeOption() {
+    	return ApplicationProperties.getSortSlotTreeOption();
+    } 
     
     public static void setSortPropertiesTreeOption(boolean propertiesTreeSorted) {
-    	ApplicationProperties.setBoolean(SORT_PROPERTIES_TREE, propertiesTreeSorted);
+    	ApplicationProperties.setSortSlotTreeOption(propertiesTreeSorted);
     }
     
-    public static boolean getClassTreeSortedOption() {
-    	return ApplicationProperties.getBooleanProperty(SORT_CLASS_TREE, true);
-    }
-
-    public static boolean getPropertiesTreeSortedOption() {
-    	return ApplicationProperties.getBooleanProperty(SORT_PROPERTIES_TREE, true);
-    }
-    
-    public static boolean getClassTreeSortedAfterLoadOption() {
+    public static boolean getSortClassTreeAfterLoadOption() {
     	return ApplicationProperties.getBooleanProperty(SORT_CLASS_TREE_AFTER_LOAD, false);
+    }
+    
+    public static void setSortClassTreeAfterLoadOption(boolean classTreeSortedAfterLoad) {
+    	ApplicationProperties.setBoolean(SORT_CLASS_TREE_AFTER_LOAD, classTreeSortedAfterLoad);
     }
     
 }
