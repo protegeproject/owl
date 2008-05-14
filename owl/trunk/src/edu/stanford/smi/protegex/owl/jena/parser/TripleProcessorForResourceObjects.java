@@ -13,7 +13,6 @@ import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.Frame;
 import edu.stanford.smi.protege.model.FrameID;
 import edu.stanford.smi.protege.model.Instance;
-import edu.stanford.smi.protege.model.KnowledgeBase;
 import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
@@ -70,8 +69,8 @@ class TripleProcessorForResourceObjects extends AbstractStatefulTripleProcessor 
 			this.tripleStore = ts;
 
 			predName = ParserUtil.getResourceName(pred);
-			predSlot = (Slot) ((KnowledgeBase) owlModel).getFrame(predName);
-			if (predSlot != null) {
+			predSlot = getSlot(predName);
+			if (predSlot != null) { //TT - Why?
 				// do some checks if it already exists and is twice defined?
 				subjName = ParserUtil.getResourceName(subj);
 				subjFrame = getFrame(subjName);
@@ -205,10 +204,10 @@ class TripleProcessorForResourceObjects extends AbstractStatefulTripleProcessor 
 			subjFrame = createLogicalClass();
 			
 			if (logicalClassIsNamed) {
-				globalParserCache.getObjectToNamedLogicalClassSurrogate().put(objName, (Cls) subjFrame);
+				globalParserCache.getObjectToNamedLogicalClassSurrogate().put(objName, getCls(subjFrame));
 				FrameCreatorUtility.addOwnSlotValue(oldSubjFrame, owlModel.getOWLEquivalentClassProperty(), subjFrame, tripleStore);
-				FrameCreatorUtility.createSubclassOf((Cls) subjFrame, (Cls) oldSubjFrame, tripleStore);
-				FrameCreatorUtility.createSubclassOf((Cls) oldSubjFrame, (Cls) subjFrame, tripleStore);
+				FrameCreatorUtility.createSubclassOf(getCls(subjFrame), getCls(oldSubjFrame), tripleStore);
+				FrameCreatorUtility.createSubclassOf(getCls(oldSubjFrame), getCls(subjFrame), tripleStore);
 			}
 			return TripleStatus.TRIPLE_PROCESSING_SHOULD_CONTINUE;
 		}
@@ -231,7 +230,7 @@ class TripleProcessorForResourceObjects extends AbstractStatefulTripleProcessor 
 			// find a better way to handle this...
 			boolean subjAlreadyExists = getFrame(subjName) != null;
 
-			subjFrame = createFrameWithType(subjName, (Cls) objFrame, subj.isAnonymous());
+			subjFrame = createFrameWithType(subjName, getCls(objFrame), subj.isAnonymous());
 			
 			//add the rdf:type triple if not already there
 			if (!FrameCreatorUtility.hasOwnSlotValue(subjFrame, predSlot, objFrame)) {				
@@ -248,7 +247,7 @@ class TripleProcessorForResourceObjects extends AbstractStatefulTripleProcessor 
 				if (log.isLoggable(Level.FINE)) {
 					log.fine("found an alternative type for " + subjFrame + " = " + objFrame);
 				}
-				globalParserCache.getMultipleTypesInstanceCache().addType((Instance) subjFrame, (Cls) objFrame);
+				globalParserCache.getMultipleTypesInstanceCache().addType((Instance) subjFrame, getCls(objFrame));
 				return TripleStatus.TRIPLE_PROCESSING_COMPLETE;
 			}
 			return TripleStatus.TRIPLE_PROCESSING_SHOULD_CONTINUE;
@@ -308,13 +307,13 @@ class TripleProcessorForResourceObjects extends AbstractStatefulTripleProcessor 
 			// special treatment of equivalent classes
 			if (predName.equals(OWL.equivalentClass.getURI())) {
 				FrameCreatorUtility.addOwnSlotValue(subjFrame, predSlot, objFrame, tripleStore);
-				FrameCreatorUtility.createSubclassOf((Cls) subjFrame, (Cls) objFrame, tripleStore);
-				FrameCreatorUtility.createSubclassOf((Cls) objFrame, (Cls) subjFrame, tripleStore);
+				FrameCreatorUtility.createSubclassOf(getCls(subjFrame), getCls(objFrame), tripleStore);
+				FrameCreatorUtility.createSubclassOf(getCls(objFrame), getCls(subjFrame), tripleStore);
 				return TripleStatus.TRIPLE_PROCESSING_COMPLETE;
 			} else if (predName.equals(OWL.equivalentProperty.getURI())) {
 				FrameCreatorUtility.addOwnSlotValue(subjFrame, predSlot, objFrame, tripleStore);
-				FrameCreatorUtility.createSubpropertyOf((Slot) subjFrame, (Slot) objFrame, tripleStore);
-				FrameCreatorUtility.createSubpropertyOf((Slot) objFrame, (Slot) subjFrame, tripleStore);
+				FrameCreatorUtility.createSubpropertyOf(getSlot(subjFrame), getSlot(objFrame), tripleStore);
+				FrameCreatorUtility.createSubpropertyOf(getSlot(objFrame), getSlot(subjFrame), tripleStore);
 				return TripleStatus.TRIPLE_PROCESSING_COMPLETE;
 			}
 			return TripleStatus.TRIPLE_PROCESSING_SHOULD_CONTINUE;
@@ -330,16 +329,14 @@ class TripleProcessorForResourceObjects extends AbstractStatefulTripleProcessor 
 					&& globalParserCache.getPossibleGCIPredicates().contains(predSlot)) {
 				OWLNamedClass axiom = owlModel.createOWLNamedClass(null);
 				FrameCreatorUtility.addOwnSlotValue(axiom, owlModel.getOWLEquivalentClassProperty(), subjFrame, tripleStore);
-				FrameCreatorUtility.createSubclassOf((Cls) subjFrame, axiom, tripleStore);
-				FrameCreatorUtility.createSubclassOf(axiom, (Cls) subjFrame, tripleStore);
+				FrameCreatorUtility.createSubclassOf(getCls(subjFrame), axiom, tripleStore);
+				FrameCreatorUtility.createSubclassOf(axiom, getCls(subjFrame), tripleStore);
 				subjFrame = axiom;
 				globalParserCache.getGciAxioms().add(axiom); // need to name these later
 			}
 		}
 
-		private void addTriple() {
-			
-			//this should not be necessary - it will be deleted after refactoring the status
+		private void addTriple() {			
 			if (predSlot.equals(owlModel.getRDFTypeProperty())) {
 				return;
 			}
@@ -349,12 +346,12 @@ class TripleProcessorForResourceObjects extends AbstractStatefulTripleProcessor 
 			// add frame correspondent
 			String frameMapSlot = OWLFramesMapping.getFramesSlotMapName(predName);
 			if (frameMapSlot != null) {
-				FrameCreatorUtility.addOwnSlotValue(subjFrame, (Slot)getFrame(frameMapSlot), objFrame, tripleStore);
+				FrameCreatorUtility.addOwnSlotValue(subjFrame, getSlot(frameMapSlot), objFrame, tripleStore);
 			}
 			// add frame pair (inverse) correspondent
 			String frameMapInvSlot = OWLFramesMapping.getFramesInvSlotMapName(predName);
 			if (frameMapInvSlot != null) {
-				FrameCreatorUtility.addOwnSlotValue(objFrame, (Slot)getFrame(frameMapInvSlot), subjFrame, tripleStore);
+				FrameCreatorUtility.addOwnSlotValue(objFrame, getSlot(frameMapInvSlot), subjFrame, tripleStore);
 			}
 		}
 
