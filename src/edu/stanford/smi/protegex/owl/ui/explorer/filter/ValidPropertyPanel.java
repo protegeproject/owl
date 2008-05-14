@@ -37,7 +37,7 @@ public class ValidPropertyPanel extends JPanel {
 
     public ValidPropertyPanel(OWLModel owlModel, DefaultExplorerFilter filter) {
         this.filter = filter;
-        tree = new SelectableTree(null, new OWLPropertySubpropertyRoot(owlModel, OWLUI.getPropertiesTreeSortedOption()));
+        tree = new SelectableTree(null, new OWLPropertySubpropertyRoot(owlModel));
         tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
         tree.getSelectionModel().addTreeSelectionListener(new TreeSelectionListener() {
             public void valueChanged(TreeSelectionEvent e) {
