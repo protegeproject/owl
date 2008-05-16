@@ -3,6 +3,7 @@ package edu.stanford.smi.protegex.owl.ui.metadatatab.prefixes;
 import edu.stanford.smi.protege.util.Disposable;
 import edu.stanford.smi.protegex.owl.jena.Jena;
 import edu.stanford.smi.protegex.owl.model.NamespaceManager;
+import edu.stanford.smi.protegex.owl.model.NamespaceManagerAdapter;
 import edu.stanford.smi.protegex.owl.model.NamespaceManagerListener;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLOntology;
@@ -43,6 +44,13 @@ public class PrefixesTableModel extends AbstractTableModel  {
     public PrefixesTableModel(OWLOntology ontology) {
         this.ontology = ontology;
         fill();
+        getNamespaceManager().addNamespaceManagerListener(new NamespaceManagerAdapter() {
+           @Override
+           public void namespaceChanged(String prefix, String oldValue, String newValue) {
+               fill();
+               fireTableDataChanged();
+           } 
+        });
     }
 
     private void fill() {
@@ -151,6 +159,7 @@ public class PrefixesTableModel extends AbstractTableModel  {
             }
         }
         fill();
+        fireTableDataChanged();
     }
 
 
