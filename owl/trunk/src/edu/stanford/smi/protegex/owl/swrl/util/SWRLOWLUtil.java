@@ -4,10 +4,12 @@ package edu.stanford.smi.protegex.owl.swrl.util;
 import edu.stanford.smi.protegex.owl.swrl.exceptions.SWRLOWLUtilException;
 
 import edu.stanford.smi.protegex.owl.model.*;
+import edu.stanford.smi.protegex.owl.model.impl.OWLUtil;
 import edu.stanford.smi.protegex.owl.swrl.model.SWRLVariable;
 import edu.stanford.smi.protegex.owl.ProtegeOWL;
 import edu.stanford.smi.protegex.owl.model.util.ImportHelper;
 import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
+
 
 import edu.stanford.smi.protege.util.*;
 
@@ -122,6 +124,23 @@ public class SWRLOWLUtil
 
     return individual.hasRDFType(cls, true);
   } // getClass
+
+  public static void setClass(OWLModel owlModel, String individualName, String className) throws SWRLOWLUtilException
+  {
+    OWLNamedClass cls = getClass(owlModel, className);
+    OWLIndividual individual = getIndividual(owlModel, individualName);
+
+    if (!individual.hasRDFType(cls, true)) individual.setRDFType(cls);
+  } // setClass
+
+  public static String getFullName(OWLModel owlModel, String name) throws SWRLOWLUtilException
+  {
+    String result = OWLUtil.getInternalFullName(owlModel, name, true);
+
+    if (result == null) throw new SWRLOWLUtilException("cannot get full name for resource '" + name + "'");
+
+    return result;
+  } // getFullName
 
   public static OWLIndividual getIndividual(OWLModel owlModel, OWLNamedClass cls, boolean mustExist, int mustHaveExactlyN)
     throws SWRLOWLUtilException
@@ -583,7 +602,7 @@ public class SWRLOWLUtil
 
   public static boolean isClass(OWLModel owlModel, String className) throws SWRLOWLUtilException
   {
-    return isClass(owlModel, className, true);
+    return isClass(owlModel, className, false);
   } // isClass
 
   public static boolean isClass(OWLModel owlModel, String className, boolean mustExist) throws SWRLOWLUtilException
@@ -593,7 +612,7 @@ public class SWRLOWLUtil
 
   public static boolean isProperty(OWLModel owlModel, String propertyName) throws SWRLOWLUtilException
   {
-    return isProperty(owlModel, propertyName, true);
+    return isProperty(owlModel, propertyName, false);
   } // isProperty
 
   public static boolean isProperty(OWLModel owlModel, String propertyName, boolean mustExist) throws SWRLOWLUtilException
@@ -634,7 +653,7 @@ public class SWRLOWLUtil
 
   public static boolean isIndividual(OWLModel owlModel, String individualName) throws SWRLOWLUtilException
   {
-    return (getIndividual(owlModel, individualName, true) != null);
+    return (getIndividual(owlModel, individualName, false) != null);
   } // isIndividual
 
   public static int getNumberOfPropertyValues(OWLModel owlModel, String individualName, String propertyName, boolean mustExist) 
@@ -729,12 +748,12 @@ public class SWRLOWLUtil
 
   public static Set<Object> getObjectPropertyValues(OWLModel owlModel, String individualName, String propertyName) throws SWRLOWLUtilException
   { 
-    return getObjectPropertyValues(owlModel, individualName, propertyName, false);
+    return getObjectPropertyValues(owlModel, individualName, propertyName, true);
   } // getObjectPropertyValues
 
   public static Set<Object> getObjectPropertyValues(OWLModel owlModel, OWLIndividual individual, String propertyName) throws SWRLOWLUtilException
   { 
-    return getObjectPropertyValues(owlModel, individual.getName(), propertyName, false);
+    return getObjectPropertyValues(owlModel, individual.getName(), propertyName, true);
   } // getObjectPropertyValues
 
   public static Set<Object> getObjectPropertyValues(OWLModel owlModel, OWLIndividual individual, String propertyName, boolean mustExist) throws SWRLOWLUtilException
@@ -766,6 +785,12 @@ public class SWRLOWLUtil
     throws SWRLOWLUtilException
   {
     return getObjectPropertyValue(owlModel, individual.getName(), propertyName, mustExist);
+  } // getObjectPropertyValue
+
+  public static Object getObjectPropertyValue(OWLModel owlModel, String individualName, String propertyName)
+    throws SWRLOWLUtilException
+  {
+    return getObjectPropertyValue(owlModel, individualName, propertyName, true);
   } // getObjectPropertyValue
 
   public static Object getObjectPropertyValue(OWLModel owlModel, String individualName, String propertyName, boolean mustExist)
@@ -1016,7 +1041,7 @@ public class SWRLOWLUtil
   public static Collection getDatavaluedPropertyValueAsCollection(OWLModel owlModel, OWLIndividual individual, String propertyName)
     throws SWRLOWLUtilException
   {
-    return getDatavaluedPropertyValueAsCollection(owlModel, individual, propertyName, false);
+    return getDatavaluedPropertyValueAsCollection(owlModel, individual, propertyName, true);
   } // getDatavaluedPropertyValueAsCollection
 
   public static Collection getDatavaluedPropertyValueAsCollection(OWLModel owlModel, String individualName, String propertyName)

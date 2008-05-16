@@ -276,6 +276,13 @@ public class SWRLBuiltInUtil
     return ((IndividualArgument)arguments.get(argumentNumber)).getIndividualName();
   } // getArgumentAsAnIndividualName
 
+  public static OWLIndividual getArgumentAsAnOWLIndividual(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException
+  {
+    checkThatArgumentIsAnIndividual(argumentNumber, arguments);
+
+    return (OWLIndividual)arguments.get(argumentNumber);
+  } // getArgumentAsAnIndividualName
+
   public static String getArgumentAsAClassName(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException
   {
     checkThatArgumentIsAClass(argumentNumber, arguments);
@@ -361,8 +368,7 @@ public class SWRLBuiltInUtil
 
   public static boolean isArgumentAnInteger(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException
   {
-    if (isArgumentALiteral(argumentNumber, arguments)) 
-      return (getArgumentAsALiteral(argumentNumber, arguments).isInteger());
+    if (isArgumentALiteral(argumentNumber, arguments)) return (getArgumentAsALiteral(argumentNumber, arguments).isInteger());
     else return false;
   } // isArgumentAnInteger
 
@@ -565,14 +571,13 @@ public class SWRLBuiltInUtil
 
   public static boolean isArgumentAString(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException
   {
-    if (isArgumentALiteral(argumentNumber, arguments)) 
-      return getArgumentAsALiteral(argumentNumber, arguments).isString();
+    if (isArgumentALiteral(argumentNumber, arguments)) return getArgumentAsALiteral(argumentNumber, arguments).isString();
     else return false;
   } // isArgumentAString
 
   public static String getArgumentAsAString(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException
   {
-    checkThatArgumentIsAString(argumentNumber, arguments);
+   checkThatArgumentIsAString(argumentNumber, arguments);
 
     return getArgumentAsALiteral(argumentNumber, arguments).getString();
   } // getArgumentAsAString

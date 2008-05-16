@@ -25,7 +25,6 @@
     <swrlb:maxArgs rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
     >1</swrlb:maxArgs>
   </swrl:Builtin>
-  <swrl:Builtin rdf:ID="setValue"/>
 </rdf:RDF>
 
 <!-- Created with Protege (with OWL Plugin 3.4, Build 124)  http://protege.stanford.edu -->

@@ -47,8 +47,8 @@ public interface SWRLRuleEngine
   SWRLRule getRule(String ruleName) throws InvalidRuleNameException;
 
   int getNumberOfInferredIndividuals();
-  int getNumberOfInferredPropertyAssertionAxioms();
+  int getNumberOfInferredAxioms();
 
   Set<OWLIndividual> getInferredIndividuals();
-  Set<OWLPropertyAssertionAxiom> getInferredPropertyAssertionAxioms();
+  Set<OWLAxiom> getInferredAxioms();
 } // SWRLRuleEngine

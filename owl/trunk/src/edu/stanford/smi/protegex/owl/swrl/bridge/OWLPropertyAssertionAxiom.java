@@ -9,7 +9,4 @@ public interface OWLPropertyAssertionAxiom extends OWLAxiom
 {
   OWLIndividual getSubject();
   OWLProperty getProperty();
-
-  // TODO: temporary
-  void write2OWL(OWLModel owlModel) throws SWRLRuleEngineBridgeException;
 } // OWLPropertyAssertionAxiom
