@@ -204,12 +204,18 @@ class TriplePostProcessor extends AbstractStatefulTripleProcessor {
 			}
 
 			if (frame instanceof RDFSClass) {
-				//create subclass in the home triplestore of the cls
-				TripleStore homeTs = owlModel.getTripleStoreModel().getHomeTripleStore((RDFSClass)frame);				
-				FrameCreatorUtility.createSubclassOf((RDFSClass)frame, owlModel.getOWLThingClass(),homeTs);
-				superClsCache.removeFrame(frame);
+				try {
+					//create subclass in the home triplestore of the cls
+					TripleStore homeTs = owlModel.getTripleStoreModel().getHomeTripleStore((RDFSClass)frame);				
+					FrameCreatorUtility.createSubclassOf((RDFSClass)frame, owlModel.getOWLThingClass(),homeTs);
+					superClsCache.removeFrame(frame);					
+				} catch (Exception e) {
+					Log.getLogger().log(Level.WARNING, "Error at adding owl:Thing as a superclass of " + frame, e);
+				}
 			} else {
-				log.warning("Wrong java type for " + frame + " Expected: RDFSClass\n");
+				if (log.isLoggable(Level.FINE)) {
+					log.fine("Wrong java type for " + frame + " Expected: RDFSClass\n");
+				}
 			}
 		}	
 
@@ -293,17 +299,21 @@ class TriplePostProcessor extends AbstractStatefulTripleProcessor {
 		//make this into a recursive function
 		Collection<RDFSClass> equivClasses = namedClass.getEquivalentClasses();
 		for (RDFSClass equivClass : equivClasses) {
-			if (equivClass instanceof RDFSNamedClass) {
-				inferredSuperClasses.add(equivClass);
-			} else if (equivClass instanceof OWLIntersectionClass) {
-				//add operands if defined
-				Collection<RDFSClass> operands = ((OWLIntersectionClass)equivClass).getOperands();
+			try {
+				if (equivClass instanceof RDFSNamedClass) {
+					inferredSuperClasses.add(equivClass);
+				} else if (equivClass instanceof OWLIntersectionClass) {
+					//add operands if defined
+					Collection<RDFSClass> operands = ((OWLIntersectionClass)equivClass).getOperands();
 
-				for (RDFSClass operand : operands) {
-					if (operand instanceof RDFSNamedClass) {
-						inferredSuperClasses.add(operand);
-					}					
+					for (RDFSClass operand : operands) {
+						if (operand instanceof RDFSNamedClass) {
+							inferredSuperClasses.add(operand);
+						}					
+					}				
 				}				
+			} catch (Exception e) {
+				Log.getLogger().log(Level.WARNING, "Errors at adding inferred superclasses to: " + equivClass, e);
 			}
 		}
 
@@ -354,6 +364,8 @@ class TriplePostProcessor extends AbstractStatefulTripleProcessor {
 				else {
 					log.warning("Could not find home triple store of type triple for " + instance + "\n");
 				}
+			} catch (Exception e) {
+				Log.getLogger().log(Level.WARNING, "Error at adjusting types of: " + instance, e);
 			} finally {
 				tsm.setActiveTripleStore(initialActiveTs);
 			}			
@@ -393,7 +405,10 @@ class TriplePostProcessor extends AbstractStatefulTripleProcessor {
 				owlModel.getFrameStoreManager().getDomainUpdateFrameStore().synchronizeRDFSDomainWithProtegeDomain(property);
 				//range
 				owlModel.getFrameStoreManager().getRangeUpdateFrameStore().synchronizeRDFSRangeWithProtegeAllowedValues(property);
-			} finally {
+			} catch (Exception e) {
+				Log.getLogger().log(Level.WARNING, "Errors at post-processing domain and range of: " + property, e);
+			}
+			finally {			
 				tsm.setActiveTripleStore(initialActiveTs);
 			}
 		}
@@ -417,11 +432,15 @@ class TriplePostProcessor extends AbstractStatefulTripleProcessor {
 
 		if (namespace != null) {
 			for (RDFSClass gci : gciAxioms) {
-				while (getFrame(axiomPrefix + counter) != null) {
-					counter++;
+				try {
+					while (getFrame(axiomPrefix + counter) != null) {
+						counter++;
+					}
+					gci = owlModel.getOWLNamedClass(gci.getName());
+					gci.rename(axiomPrefix + counter);
+				} catch (Exception e) {
+					Log.getLogger().log(Level.WARNING, "Error at post-processing GCI: " + gci, e);
 				}
-				gci = owlModel.getOWLNamedClass(gci.getName());
-				gci.rename(axiomPrefix + counter);
 			}
 		}
 
@@ -456,7 +475,9 @@ class TriplePostProcessor extends AbstractStatefulTripleProcessor {
 					TripleStore homeTs = tsm.getHomeTripleStore((RDFSClass)object);
 					tsm.setActiveTripleStore(homeTs);
 					((Cls) object).setAbstract(true);
-				} finally {
+				} catch (Exception e) {
+					Log.getLogger().log(Level.WARNING, "Error at post-processing abstract class: " +  object, e);
+				} finally{
 					tsm.setActiveTripleStore(initialActiveTs);
 				}		
 			}			
@@ -516,12 +537,16 @@ class TriplePostProcessor extends AbstractStatefulTripleProcessor {
 		}
 		OWLSystemFrames systemFrames = owlModel.getSystemFrames();
 		for (Entry<RDFResource, RDFSNamedClass> entry : protegeSystemTypeMap.entrySet()) {
-			RDFResource protegeSysFrame = entry.getKey();
-			RDFSNamedClass type = entry.getValue();
-			// these assertions are lost from the protege owl triple store because we avoid adding duplicate types.
-			FrameCreatorUtility.addInstanceType(protegeSysFrame, type, protegeOwlTripleStore);
-			FrameCreatorUtility.addOwnSlotValue(protegeSysFrame, systemFrames.getRdfTypeProperty(), type, protegeOwlTripleStore);
-			FrameCreatorUtility.addOwnSlotValue(protegeSysFrame, systemFrames.getNameSlot(), protegeSysFrame.getName(), protegeOwlTripleStore);
+			try {
+				RDFResource protegeSysFrame = entry.getKey();
+				RDFSNamedClass type = entry.getValue();
+				// these assertions are lost from the protege owl triple store because we avoid adding duplicate types.
+				FrameCreatorUtility.addInstanceType(protegeSysFrame, type, protegeOwlTripleStore);
+				FrameCreatorUtility.addOwnSlotValue(protegeSysFrame, systemFrames.getRdfTypeProperty(), type, protegeOwlTripleStore);
+				FrameCreatorUtility.addOwnSlotValue(protegeSysFrame, systemFrames.getNameSlot(), protegeSysFrame.getName(), protegeOwlTripleStore);
+			} catch (Exception e) {
+				Log.getLogger().log(Level.WARNING, "Error at post processing: " + entry.getKey(), e);
+			} 
 		}
 		// now we have duplicate information (type, domain, range) contained in both the system frames
 		// and the protege owl triple store but maybe nobody will notice.
