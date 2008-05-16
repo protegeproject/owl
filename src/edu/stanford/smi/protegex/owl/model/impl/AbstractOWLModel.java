@@ -1,6 +1,5 @@
 package edu.stanford.smi.protegex.owl.model.impl;
 
-import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -147,6 +146,8 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     public static final String OWL_MODEL_INIT_DEFAULTS_AT_CREATION = "owlmodel.init.defaults";
 
     public static final String OWL_MODEL_EXPAND_SHORT_NAME_IN_METHODS = "owlmodel.expand.short.name.in.methods";
+    
+    public static final String OWL_MODEL_IMPORT_NAMESPACES = "owlmodel.import.namespaces";
 
     private static final String SEARCH_SYNONYMS_KEY = "OWL-SEARCH-SYNONYMS-SLOTS";    
 
@@ -186,7 +187,9 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     
     private boolean loadDefaults = false;
     
-    private boolean expandShortNameInMethods = false;
+    private boolean expandShortNameInMethods = true;
+    
+    private boolean importNamespaces = true;
     
     
     private static UnresolvedImportHandler unresolvedImportHandler = new UnresolvedImportUIHandler();
@@ -233,6 +236,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
         
         initializeLoadDefaults();
         initializeExpandShortNamesInMethods();
+        intializeImportOwlNamespaces();
 
         initialize();
     }
@@ -243,7 +247,11 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
     
     protected void initializeExpandShortNamesInMethods() {
-    	expandShortNameInMethods = ApplicationProperties.getBooleanProperty(OWL_MODEL_EXPAND_SHORT_NAME_IN_METHODS, false);
+    	expandShortNameInMethods = ApplicationProperties.getBooleanProperty(OWL_MODEL_EXPAND_SHORT_NAME_IN_METHODS, true);
+    }
+    
+    protected void intializeImportOwlNamespaces() {
+        importNamespaces = ApplicationProperties.getBooleanProperty(OWL_MODEL_IMPORT_NAMESPACES, true);
     }
 
     
@@ -363,6 +371,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
                     log.fine("Import Processing of " + ontologyName  + " done");
                     log.fine("=======================================================");
                 }
+                getNamespaceManager().addImport(importedTripleStore.getName());
                 return new URI(importedTripleStore.getName());
             }
             else {
@@ -2578,10 +2587,19 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     	return NamespaceUtil.getLocalName(uri);
     }
 
-
+    private ImportingOwlNamespaceManager importingNamespaceManager;
+    
     public NamespaceManager getNamespaceManager() {
-    	//TODO change this with an aggregation of prefixes
-        return getTripleStoreModel().getActiveTripleStore().getNamespaceManager();
+        if (importNamespaces) {
+            if (importingNamespaceManager == null) {
+                importingNamespaceManager = new ImportingOwlNamespaceManager(this);
+            }
+            return importingNamespaceManager;
+        }
+        else {
+            importingNamespaceManager = null;
+            return tripleStoreModel.getActiveTripleStore().getNamespaceManager();
+        }
     }
 
     public String getNamespaceForURI(String uri) {
