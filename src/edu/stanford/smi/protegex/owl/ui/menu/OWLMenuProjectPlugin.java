@@ -265,6 +265,8 @@ public class OWLMenuProjectPlugin extends ProjectPluginAdapter {
         }
 	
         OWLModel owlModel = (OWLModel) kb;
+        //make sure owl:Thing is visible
+        owlModel.getOWLThingClass().setVisible(true);
         makeHiddenClsesWithSubclassesVisible(owlModel);
         project.setWidgetMapper(new OWLWidgetMapper(owlModel));
         
