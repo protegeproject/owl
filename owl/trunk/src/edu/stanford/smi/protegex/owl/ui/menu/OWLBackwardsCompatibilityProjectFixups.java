@@ -101,7 +101,15 @@ public class OWLBackwardsCompatibilityProjectFixups implements ProjectFixupPlugi
     @SuppressWarnings("unchecked")
     private static void fixForDatabaseInclusion(KnowledgeBase internalKb) {
         adjustNamespacePrefix(internalKb);        
-        fixSWRLVisibility(internalKb);
+        fixFramesVisibility(internalKb);
+    }
+    
+    private static void fixFramesVisibility(KnowledgeBase internalKb) {
+    	//fix owl:Thing to be visible
+    	Instance projectInstance = getProjectInstance(internalKb);
+    	ModelUtilities.removeOwnSlotValue(projectInstance, SLOT_HIDDEN_FRAMES, OWLNames.Cls.THING);
+    	
+    	fixSWRLVisibility(internalKb);
     }
     
     private static void fixSWRLVisibility(KnowledgeBase internalKb) {
@@ -187,7 +195,7 @@ public class OWLBackwardsCompatibilityProjectFixups implements ProjectFixupPlugi
     private static void fixReallyAncient(KnowledgeBase internalKb) {        
         updateStandardForms(internalKb);
         renameWidgets(internalKb);
-        fixSWRLVisibility(internalKb);
+        fixFramesVisibility(internalKb);
     }
     
     
