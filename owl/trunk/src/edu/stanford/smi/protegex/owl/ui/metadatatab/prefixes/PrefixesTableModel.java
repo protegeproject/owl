@@ -6,11 +6,12 @@ import edu.stanford.smi.protegex.owl.model.NamespaceManager;
 import edu.stanford.smi.protegex.owl.model.NamespaceManagerListener;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLOntology;
-import edu.stanford.smi.protegex.owl.model.impl.OWLNamespaceManager;
+import edu.stanford.smi.protegex.owl.model.impl.AbstractNamespaceManager;
 import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
 
 import javax.swing.table.AbstractTableModel;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -19,47 +20,8 @@ import java.util.List;
  *
  * @author Holger Knublauch  <holger@knublauch.com>
  */
-public class PrefixesTableModel extends AbstractTableModel implements Disposable {
-
-
-    private NamespaceManagerListener listener = new NamespaceManagerListener() {
-
-        public void defaultNamespaceChanged(String oldValue, String newValue) {
-            // Do nothing
-        }
-
-
-        public void namespaceChanged(String prefix, String oldValue, String newValue) {
-            int row = getPrefixRow(prefix);
-            fireTableCellUpdated(row, COL_NAMESPACE);
-        }
-
-
-        public void prefixAdded(String prefix) {
-            int index = prefixes.size();
-            prefixes.add(prefix);
-            fireTableRowsInserted(index, index);
-        }
-
-
-        public void prefixChanged(String namespace, String oldPrefix, String newPrefix) {
-            int row = getPrefixRow(oldPrefix);
-            if (row >= 0) {
-                prefixes.remove(row);
-                prefixes.add(row, newPrefix);
-                fireTableCellUpdated(row, COL_PREFIX);
-            }
-        }
-
-
-        public void prefixRemoved(String prefix) {
-            int row = getPrefixRow(prefix);
-            if (row >= 0) {
-                prefixes.remove(row);
-                fireTableRowsDeleted(row, row);
-            }
-        }
-    };
+public class PrefixesTableModel extends AbstractTableModel  {
+    private static final long serialVersionUID = 4288139995372553605L;
 
     private OWLOntology ontology;
 
@@ -68,27 +30,24 @@ public class PrefixesTableModel extends AbstractTableModel implements Disposable
     public final static int COL_NAMESPACE = 1;
 
     public final static int COL_COUNT = 2;
+    
+    
+    
 
     /**
      * A list of prefixes (one String value for each row)
      */
-    private List prefixes = new ArrayList();
+    private List<String> prefixes = new ArrayList<String>();
 
 
     public PrefixesTableModel(OWLOntology ontology) {
         this.ontology = ontology;
-        getNamespaceManager().addNamespaceManagerListener(listener);
         fill();
     }
 
-
-    public void dispose() {
-        getNamespaceManager().removeNamespaceManagerListener(listener);
-    }
-
-
     private void fill() {
-        prefixes = new ArrayList(getNamespaceManager().getPrefixes());
+        prefixes = new ArrayList<String>(getNamespaceManager().getPrefixes());
+        Collections.sort(prefixes);
     }
 
 
@@ -176,7 +135,7 @@ public class PrefixesTableModel extends AbstractTableModel implements Disposable
         if (columnIndex == COL_PREFIX) {
             String value = (String) aValue;
             if (nsm.getNamespaceForPrefix(value) == null) {
-                if (OWLNamespaceManager.isValidPrefix(value)) {
+                if (AbstractNamespaceManager.isValidPrefix(value)) {
                     String namespace = getNamespace(rowIndex);
                     setPrefixOfNamespace(namespace, value);
                 }
@@ -191,6 +150,7 @@ public class PrefixesTableModel extends AbstractTableModel implements Disposable
                 }
             }
         }
+        fill();
     }
 
 
@@ -219,5 +179,9 @@ public class PrefixesTableModel extends AbstractTableModel implements Disposable
         	owlModel.rollbackTransaction();
             OWLUI.handleError(owlModel, ex);
         }
+    }
+    
+    public int getRowOfPrefix(String prefix) {
+        return prefixes.indexOf(prefix);
     }
 }
