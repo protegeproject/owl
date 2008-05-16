@@ -13,6 +13,8 @@ import edu.stanford.smi.protege.exception.OntologyLoadException;
 import edu.stanford.smi.protege.model.Project;
 import edu.stanford.smi.protege.util.ApplicationProperties;
 import edu.stanford.smi.protege.util.Log;
+import edu.stanford.smi.protege.util.MessageError;
+import edu.stanford.smi.protege.util.MessageError.Severity;
 import edu.stanford.smi.protegex.owl.jena.JenaKnowledgeBaseFactory;
 import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
 import edu.stanford.smi.protegex.owl.jena.creator.NewOwlProjectCreator;
@@ -120,10 +122,22 @@ public class ProtegeOWL {
         JenaKnowledgeBaseFactory.setOWLFileName(project.getSources(), owlFilePath);
     }
 
-    private static void handleErrors(Collection errors) {
+    private static void handleErrors(Collection errors) throws OntologyLoadException {
         for (Object o : errors) {
             if (o instanceof Throwable) {
+                Throwable t = (Throwable) o;
                 Log.getLogger().log(Level.WARNING, "Exception caught ", (Throwable) o);
+                throw t instanceof OntologyLoadException ? (OntologyLoadException) t : new OntologyLoadException(t, t.getMessage());
+            }
+            else if (o instanceof MessageError) {
+                MessageError me = (MessageError) o;
+                if (me.getSeverity() == Severity.FATAL && me.getException() != null) {
+                    Throwable t = me.getException();
+                    throw t instanceof OntologyLoadException ? (OntologyLoadException) t : new OntologyLoadException(t, t.getMessage());
+                }
+                else {
+                    Log.getLogger().warning("Error found " + o);
+                }
             }
             else {
                 Log.getLogger().warning("Error found " + o);
