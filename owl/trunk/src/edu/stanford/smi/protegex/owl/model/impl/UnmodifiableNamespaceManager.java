@@ -67,4 +67,9 @@ public class UnmodifiableNamespaceManager implements NamespaceManager {
         throw new UnsupportedOperationException();
     }
 
+    public void addImport(String imported) {
+        // TODO Auto-generated method stub
+        
+    }
+
 }
