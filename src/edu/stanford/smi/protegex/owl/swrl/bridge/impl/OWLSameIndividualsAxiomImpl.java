@@ -3,6 +3,9 @@ package edu.stanford.smi.protegex.owl.swrl.bridge.impl;
 
 import edu.stanford.smi.protegex.owl.swrl.bridge.*;
 
+import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.SWRLRuleEngineBridgeException;
+
 public class OWLSameIndividualsAxiomImpl extends OWLNaryIndividualAxiomImpl implements OWLSameIndividualsAxiom
 {
   private OWLIndividual individual1, individual2;
@@ -17,6 +20,11 @@ public class OWLSameIndividualsAxiomImpl extends OWLNaryIndividualAxiomImpl impl
 
   public OWLIndividual getIndividual1() { return individual1; }
   public OWLIndividual getIndividual2() { return individual2; }
+
+  public void write2OWL(OWLModel owlModel) throws SWRLRuleEngineBridgeException
+  {
+    // TODO:
+  } // write2OWL
 
   public String toString() { return "sameAs" + super.toString(); }  
 } // OWLSameIndividualsAxiomImpl

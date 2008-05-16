@@ -75,6 +75,8 @@ import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.*;
 import edu.stanford.smi.protegex.owl.swrl.util.SWRLOWLUtil;
 import edu.stanford.smi.protegex.owl.swrl.exceptions.SWRLOWLUtilException;
 
+import edu.stanford.smi.protegex.owl.model.impl.OWLUtil;
+
 import java.util.*;
 
 /**
@@ -271,7 +273,6 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
   } // isCardinalityRestriction
 
   /**
-  /**
    ** Determine if a single argument is an OWL named class. If the argument is unbound, bind it to all OWL named classes in an ontology.
    */
   public boolean isClass(List<BuiltInArgument> arguments) throws BuiltInException
@@ -282,8 +283,10 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
 
     try {
       if (getIsInConsequent()) {
-        String className = SWRLBuiltInUtil.getArgumentAsAString(0, arguments);
-        if (!getInvokingBridge().isClass(className)) getInvokingBridge().createOWLClass(className);
+        if (SWRLBuiltInUtil.isArgumentAString(0, arguments)) {
+          String className = SWRLOWLUtil.getFullName(getInvokingBridge().getOWLModel(), SWRLBuiltInUtil.getArgumentAsAString(0, arguments));
+          if (!getInvokingBridge().isClass(className)) getInvokingBridge().createOWLClass(className);
+        } else SWRLBuiltInUtil.checkThatArgumentIsAClass(0, arguments);
         result = true;
       } else {
         if (isUnboundArgument) {
@@ -1091,8 +1094,17 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
 
     try {
       if (getIsInConsequent()) {
-        String superclassName = SWRLBuiltInUtil.getArgumentAsAClassName(1, arguments);
-        className = SWRLBuiltInUtil.getArgumentAsAClassName(0, arguments);
+        String superclassName;
+
+        if (SWRLBuiltInUtil.isArgumentAString(1, arguments)) {
+          superclassName = SWRLOWLUtil.getFullName(getInvokingBridge().getOWLModel(), SWRLBuiltInUtil.getArgumentAsAString(1, arguments));
+          if (!getInvokingBridge().isClass(superclassName)) getInvokingBridge().createOWLClass(superclassName);
+        } else superclassName = SWRLBuiltInUtil.getArgumentAsAClassName(1, arguments);
+
+        if (SWRLBuiltInUtil.isArgumentAString(0, arguments)) 
+          className = SWRLOWLUtil.getFullName(getInvokingBridge().getOWLModel(), SWRLBuiltInUtil.getArgumentAsAString(0, arguments));
+        else className = SWRLBuiltInUtil.getArgumentAsAClassName(0, arguments);
+
         if (!getInvokingBridge().isClass(className)) getInvokingBridge().createOWLClass(className, superclassName);
         result = true;
       } else {

@@ -37,6 +37,9 @@ public interface SWRLRuleEngineBridge extends SWRLRuleEngine, SQWRLQueryEngine
   OWLIndividual createOWLIndividual(OWLClass owlClass) throws SWRLRuleEngineBridgeException;
   void createOWLIndividuals(Set<OWLIndividual> individuals) throws SWRLRuleEngineBridgeException;
 
+  void createOWLAxiom(OWLAxiom axiom) throws SWRLRuleEngineBridgeException;
+
+  // TODO: merge these into createOWLAxiom().
   OWLDatatypePropertyAssertionAxiom createOWLDatatypePropertyAssertionAxiom(OWLIndividual subject, OWLProperty property, OWLDatatypeValue object) 
     throws SWRLRuleEngineBridgeException;
   OWLDatatypePropertyAssertionAxiom createOWLDatatypePropertyAssertionAxiom(OWLDatatypePropertyAssertionAxiom axiom)
@@ -50,7 +53,7 @@ public interface SWRLRuleEngineBridge extends SWRLRuleEngine, SQWRLQueryEngine
 
   boolean isClass(String className);
   boolean isCreatedIndividual(String individualName);
-  boolean isCreatedPropertyAssertionAxiom(OWLPropertyAssertionAxiom axiom);
+  boolean isCreatedAxiom(OWLAxiom axiom);
 
   // Built-in invocation and argument binding 
   boolean invokeSWRLBuiltIn(String ruleName, String builtInName, int builtInIndex, boolean isInConsequent, List<BuiltInArgument> arguments) throws BuiltInException;
@@ -67,13 +70,14 @@ public interface SWRLRuleEngineBridge extends SWRLRuleEngine, SQWRLQueryEngine
   int getNumberOfImportedSWRLRules();
   int getNumberOfImportedClasses();
   int getNumberOfImportedIndividuals();
-  int getNumberOfImportedPropertyAssertionAxioms();
   int getNumberOfImportedAxioms();
+
   int getNumberOfInferredIndividuals();
-  int getNumberOfInferredPropertyAssertionAxioms();
+  int getNumberOfInferredAxioms();
+
   int getNumberOfCreatedClasses();
   int getNumberOfCreatedIndividuals();
-  int getNumberOfCreatedPropertyAssertionAxioms();
+  int getNumberOfCreatedAxioms();
 
   // Convenience methods to display the contents of the bridge, including inferred and created knowledge
   Set<SWRLRule> getImportedSWRLRules();
@@ -81,13 +85,13 @@ public interface SWRLRuleEngineBridge extends SWRLRuleEngine, SQWRLQueryEngine
   Set<OWLClass> getImportedClasses();
   Set<OWLIndividual> getImportedIndividuals();
 
-  Set<OWLPropertyAssertionAxiom> getImportedPropertyAssertionAxioms();
   Set<OWLAxiom> getImportedAxioms();
 
   Set<OWLIndividual> getInferredIndividuals();
-  Set<OWLPropertyAssertionAxiom> getInferredPropertyAssertionAxioms();
+  Set<OWLAxiom> getInferredAxioms();
 
+  Set<OWLClass> getCreatedClasses();
   Set<OWLIndividual> getCreatedIndividuals();
-  Set<OWLPropertyAssertionAxiom> getCreatedPropertyAssertionAxioms();
+  Set<OWLAxiom> getCreatedAxioms();
 
 } // SWRLRuleEngineBridge

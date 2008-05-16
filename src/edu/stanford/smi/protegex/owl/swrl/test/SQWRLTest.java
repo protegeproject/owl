@@ -31,7 +31,7 @@ public class SQWRLTest
       ruleEngine = BridgeFactory.createBridge(owlModel);
       ruleEngine.infer();
 
-      for (OWLPropertyAssertionAxiom axiom : ruleEngine.getInferredPropertyAssertionAxioms()) {
+      for (OWLAxiom axiom : ruleEngine.getInferredAxioms()) {
         if (axiom instanceof OWLDatatypePropertyAssertionAxiom) {
           OWLDatatypePropertyAssertionAxiom da = (OWLDatatypePropertyAssertionAxiom)axiom;
         }
