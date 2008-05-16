@@ -28,6 +28,7 @@ import edu.stanford.smi.protege.exception.OntologyLoadException;
 import edu.stanford.smi.protege.util.ApplicationProperties;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protege.util.MessageError;
+import edu.stanford.smi.protege.util.MessageError.Severity;
 import edu.stanford.smi.protege.util.URIUtilities;
 import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
 import edu.stanford.smi.protegex.owl.model.NamespaceManager;
@@ -394,36 +395,32 @@ public class ProtegeOWLParser {
 
 		public void error(SAXParseException exception)
 		        throws SAXException {
-			saveErrors(exception);
+			saveErrors(exception, Severity.ERROR);
 		}
 
 
 		public void fatalError(SAXParseException exception)
 		        throws SAXException {
-			saveErrors(exception);
+			saveErrors(exception, Severity.FATAL);
 		}
 
 
 		public void warning(SAXParseException exception)
 		        throws SAXException {
-            saveErrors(exception, false);
+            saveErrors(exception, Severity.WARNING);
 		}
 		
-		protected void saveErrors(SAXParseException ex) {
-			saveErrors(ex, true);
-		}
-		
-		protected void saveErrors(SAXParseException ex, boolean isError) {			
+		protected void saveErrors(SAXParseException ex, Severity severity) {			
 			
-			String message = (isError ? "An error " : "A warning ") + "occurred at parsing the OWL ontology ";
+			String message = (severity == Severity.WARNING ? "A warning " : "An error " ) + "occurred at parsing the OWL ontology ";
 			
 			message = message + "\n\n    " + errorOntologyURI + "\n\n";
            	message = message + "    at line " + ex.getLineNumber() + " and column " + ex.getColumnNumber() + ".\n";            	
         	message = message + "    Jena parse error message: " + ex.getMessage();
         	
-        	Log.getLogger().log(isError ? Level.SEVERE : Level.WARNING, message, ex);
+        	Log.getLogger().log(severity == Severity.WARNING ? Level.WARNING : Level.SEVERE, message, ex);
         	
-        	errors.add(new MessageError(ex, message));					            
+        	errors.add(new MessageError(ex, message, severity));					            
 		}						
 	}
 
