@@ -17,4 +17,6 @@ public interface NamespaceManager extends NamespaceMap {
 
 
     void setModifiable(String prefix, boolean value);
+    
+    void addImport(String imported);
 }
