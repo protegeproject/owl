@@ -1,7 +1,7 @@
 package edu.stanford.smi.protegex.owl.ui.metadatatab.imports.wizard;
 
 import edu.stanford.smi.protegex.owl.model.NamespaceManager;
-import edu.stanford.smi.protegex.owl.model.impl.OWLNamespaceManager;
+import edu.stanford.smi.protegex.owl.model.impl.AbstractNamespaceManager;
 
 import javax.swing.table.AbstractTableModel;
 import java.util.ArrayList;
@@ -72,7 +72,7 @@ public class AddedPrefixesTableModel extends AbstractTableModel {
                            int columnIndex) {
         if (columnIndex == PREFIX_COLUMN) {
             if (manager.getNamespaceForPrefix((String) aValue) == null &&
-                    OWLNamespaceManager.isValidPrefix((String) aValue)) {
+                    AbstractNamespaceManager.isValidPrefix((String) aValue)) {
                 String namespace = (String) getValueAt(rowIndex, NAMESPACE_COLUMN);
                 manager.setPrefix(namespace, (String) aValue);
                 prefixes.set(rowIndex, aValue);
