@@ -8,13 +8,18 @@ import edu.stanford.smi.protege.util.ComponentFactory;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
+import edu.stanford.smi.protegex.owl.model.RDFSDatatype;
 import edu.stanford.smi.protegex.owl.model.XSDNames;
+import edu.stanford.smi.protegex.owl.model.classparser.ParserUtils;
 import edu.stanford.smi.protegex.owl.model.impl.OWLUtil;
 import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
 import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
 import edu.stanford.smi.protegex.owl.ui.resourceselection.ResourceSelectionAction;
 
 import javax.swing.*;
+
+import sun.net.www.ParseUtil;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
@@ -225,22 +230,25 @@ public abstract class SymbolPanel extends JPanel implements SymbolErrorDisplay {
 
 
     protected void insertCls(Cls cls) {
-        String name = cls.getName();
+        String name = ParserUtils.quoteIfNeeded(cls.getBrowserText());
         symbolEditor.insertText(name + " ");
     }
 
 
     protected void insertIndividual(RDFResource instance) {
-        String name = instance.getName();
-        if (name.startsWith(XSDNames.PREFIX)) {
+        String name;
+        if (instance instanceof RDFSDatatype) {
             name = instance.getLocalName();
+        }
+        else {
+            name = ParserUtils.quoteIfNeeded(instance.getBrowserText());
         }
         symbolEditor.insertText(name + " ");
     }
 
 
     protected void insertSlot(Slot slot) {
-        String name = slot.getName();
+        String name = ParserUtils.quoteIfNeeded(slot.getBrowserText());
         symbolEditor.insertText(name + " ");
     }
 
