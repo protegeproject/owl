@@ -1,7 +1,10 @@
 package edu.stanford.smi.protegex.owl.ui.metadatatab.prefixes;
 
+import edu.stanford.smi.protege.util.ComponentUtilities;
 import edu.stanford.smi.protege.util.Disposable;
 import edu.stanford.smi.protege.util.LabeledComponent;
+import edu.stanford.smi.protege.util.SelectableTable;
+import edu.stanford.smi.protege.widget.PropertiesTableModel;
 import edu.stanford.smi.protegex.owl.model.NamespaceManager;
 import edu.stanford.smi.protegex.owl.model.NamespaceManagerAdapter;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
@@ -83,7 +86,7 @@ public class PrefixesPanel extends JPanel implements Disposable {
         }
     };
 
-    private JTable table;
+    private SelectableTable table;
 
     private PrefixesTableModel tableModel;
 
@@ -94,8 +97,31 @@ public class PrefixesPanel extends JPanel implements Disposable {
 
         this.ontology = ontology;
 
+
+        table = new SelectableTable() {
+            private static final long serialVersionUID = 6379511196511156925L;
+
+            public void editingStopped(javax.swing.event.ChangeEvent e) {               
+                int editingColumn = getEditingColumn();
+                String cellValue = (String) getCellEditor().getCellEditorValue();
+                    
+                super.editingStopped(e);
+                
+                if (editingColumn == PrefixesTableModel.COL_PREFIX) {                   
+                    int newRow = ((PrefixesTableModel) getModel()).getRowOfPrefix(cellValue);
+                    
+                    if (newRow >= 0) {
+                        ComponentUtilities.scrollToVisible(table, newRow, PrefixesTableModel.COL_PREFIX);
+                        table.setRowSelectionInterval(newRow, newRow);                       
+                        table.editCellAt(newRow, PropertiesTableModel.getValueColumnIndex());
+                        table.requestFocus();                                
+                    }
+                }               
+            };
+        };
+        
         tableModel = new PrefixesTableModel(ontology);
-        table = new JTable(tableModel);
+        table.setModel(tableModel);
         table.getTableHeader().setReorderingAllowed(false);
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         TableColumn prefixColumn = table.getColumnModel().getColumn(PrefixesTableModel.COL_PREFIX);
@@ -186,8 +212,6 @@ public class PrefixesPanel extends JPanel implements Disposable {
 
 
     public void dispose() {
-        tableModel.getNamespaceManager().removeNamespaceManagerListener(namespaceManagerListener);
-        tableModel.dispose();
     }
 
 
