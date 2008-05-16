@@ -24,7 +24,7 @@ public class SWRLResourceNameMatcher implements ResourceNameMatcher
 
   public String getInsertString(RDFResource resource) 
   {
-    if (resource instanceof SWRLVariable) return resource.getName();
+    if (resource instanceof SWRLVariable) return "?" + resource.getPrefixedName();
     else return resource.getBrowserText();
   } // getInsertString
 
