@@ -1977,7 +1977,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
 
     public boolean isAnonymousResourceName(String name) {
-        return name.charAt(0) == '@';    // name.startsWith(ANONYMOUS_BASE); but faster
+        return name.length() > 0 && name.charAt(0) == '@';    // name.startsWith(ANONYMOUS_BASE); but faster
     }
 
 
