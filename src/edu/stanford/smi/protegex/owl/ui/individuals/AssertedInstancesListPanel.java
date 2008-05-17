@@ -552,7 +552,7 @@ public class AssertedInstancesListPanel extends SelectableContainer implements D
             if (text.length() != 0) {
                 text.append(", ");
             }
-            text.append(cls.getName());
+            text.append(cls.getBrowserText());
         }
         JLabel label = (JLabel) header.getComponent();
         label.setText(text.toString());
