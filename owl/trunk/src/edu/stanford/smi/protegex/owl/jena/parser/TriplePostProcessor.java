@@ -72,31 +72,56 @@ class TriplePostProcessor extends AbstractStatefulTripleProcessor {
 		//undef triples handling
 		processor.processUndefTriples();
 
+		/*
+		 * TODO: The reinitialize() between the post processing calls
+		 * are necessary for the update of the caches, because
+		 * we mix high-level and low-level calls.
+		 * This is a temporary solution, which will be fixed
+		 * in the first beta after the db-inclusion beta release.
+		 */ 
+		
 		//swizzling
 		processFramesWithWrongJavaType();
+		reinitCaches();
 		processMetaclasses();
-		processSubclassesOfRdfList();		
+		reinitCaches();
+		processSubclassesOfRdfList();
+		reinitCaches();
 		processInstancesWithMultipleTypes();
+		reinitCaches();
 
 		//create untyped resources if needed
 		if (isCreateUntypedResourcesEnabled()) {
-			processor.createUntypedResources();			
+			processor.createUntypedResources();
+			reinitCaches();
 		}
 
 		//classes
 		processInferredSuperclasses(); //this should be done after create untyped resources
+		reinitCaches();
 		processClsesWithoutSupercls(); //this should be done after create untyped resources
+		reinitCaches();
 		processGeneralizedConceptInclusions();
+		reinitCaches();
 		processAbstractClasses();
+		reinitCaches();
 
 		//properties
 		processDomainAndRange();
+		reinitCaches();
 
 		processPossiblyTypedResources();
+		reinitCaches();
 		processProtegeOWLImport();
+		reinitCaches();
 	}
 
 
+	private void reinitCaches() {
+		owlModel.getFrameStoreManager().reinitialize();
+	}
+	
+	
 	private boolean isCreateUntypedResourcesEnabled() {
 		return ApplicationProperties.getBooleanProperty(ProtegeOWLParser.CREATE_UNTYPED_RESOURCES, true); 
 	}
