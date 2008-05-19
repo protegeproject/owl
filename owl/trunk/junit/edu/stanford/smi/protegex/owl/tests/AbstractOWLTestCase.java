@@ -199,6 +199,7 @@ public abstract class AbstractOWLTestCase extends TestCase {
         junitProperties = dbp;
         return junitProperties;
       } catch (Exception e) {
+        log.severe("Exception reading junit.properties - probably needs to be configured by the user");
         return null;
       }
     }
