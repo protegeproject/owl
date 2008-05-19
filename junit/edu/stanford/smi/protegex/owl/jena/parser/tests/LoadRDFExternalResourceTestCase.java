@@ -6,7 +6,6 @@ import edu.stanford.smi.protegex.owl.model.ProtegeNames;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
 import edu.stanford.smi.protegex.owl.model.RDFSNames;
-import edu.stanford.smi.protegex.owl.model.RDFUntypedResource;
 import edu.stanford.smi.protegex.owl.tests.AbstractJenaTestCase;
 
 /**
@@ -30,7 +29,9 @@ public class LoadRDFExternalResourceTestCase extends AbstractJenaTestCase {
 
         Object isDefinedByValue = cls.getPropertyValue(isDefinedBySlot);
         assertEquals(instance, isDefinedByValue);
-
-        assertEquals(ProtegeNames.Cls.EXTERNAL_CLASS, ur.getRDFType().getName());
+        
+        assertEquals(0, ur.getRDFTypes().size());
+        assertEquals(1, ur.getProtegeTypes().size());
+        assertEquals(ProtegeNames.Cls.EXTERNAL_CLASS, ur.getProtegeType().getName());
     }
 }
