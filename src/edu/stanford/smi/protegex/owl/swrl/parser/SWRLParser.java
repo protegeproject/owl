@@ -596,31 +596,46 @@ public class SWRLParser
 
   private boolean isValidIndividualName(String name) throws SWRLParseException 
   {
-    RDFResource resource = getRDFResource(name); 
+      try {
+          RDFResource resource = getRDFResource(name); 
 
-    if (resource == null) return false;
+          if (resource == null) return false;
 
-    return (resource instanceof OWLIndividual);
+          return (resource instanceof OWLIndividual);
+      }
+      catch (Throwable t) {
+          return false;
+      }
   } // isValidIndividualName
 
   private boolean isValidClassName(String name) throws SWRLParseException 
   {
-    RDFResource resource = getRDFResource(name);
+      try {
+          RDFResource resource = getRDFResource(name);
 
-    if (resource == null) return false;
+          if (resource == null) return false;
 
-    if (resource instanceof OWLNamedClass) return true;
-    else return false;
+          if (resource instanceof OWLNamedClass) return true;
+          else return false;
+      }
+      catch (Throwable t) {
+          return false;
+      }
   } // isValidClassName
 
   private boolean isValidPropertyName(String name) throws SWRLParseException 
   {
-    RDFResource resource = getRDFResource(name);
+      try {
+          RDFResource resource = getRDFResource(name);
 
-    if (resource == null) return false;
+          if (resource == null) return false;
 
-    if (resource instanceof OWLProperty) return true;
-    else return false;
+          if (resource instanceof OWLProperty) return true;
+          else return false;
+      }
+      catch (Throwable t) {
+          return false;
+      }
   } // isValidPropertyName
 
   private RDFResource getIndividual(String name) throws SWRLParseException 
