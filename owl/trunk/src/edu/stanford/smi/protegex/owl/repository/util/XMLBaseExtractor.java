@@ -18,6 +18,7 @@ import edu.stanford.smi.protege.exception.OntologyLoadException;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protege.util.URIUtilities;
 import edu.stanford.smi.protegex.owl.jena.parser.ProtegeOWLParser;
+import edu.stanford.smi.protegex.owl.model.factory.FactoryUtils;
 
 /**
  * User: matthewhorridge<br>
@@ -125,7 +126,7 @@ public class XMLBaseExtractor {
                     if (atts.getQName(i).equals("xml:base")) {
                         URI attURL = null;
                         try {
-                            attURL = new URI(atts.getValue(i));
+                            attURL = new URI(FactoryUtils.adjustOntologyName(atts.getValue(i)));
                         }
                         catch (URISyntaxException e) {
                             Log.getLogger().log(Level.SEVERE, "Exception caught", e);

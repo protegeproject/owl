@@ -19,6 +19,13 @@ import edu.stanford.smi.protegex.owl.ui.metadatatab.OntologyURIPanel;
 
 public class FactoryUtils {
     
+    public static String adjustOntologyName(String name) {
+        if (name.endsWith("#")) {
+            name = name.substring(0, name.length() - 1);
+        }
+        return name;
+    }
+    
     @SuppressWarnings("deprecation")
     public static void addOntologyToTripleStore(OWLModel owlModel, TripleStore tripleStore, String ontologyName) 
     throws AlreadyImportedException {
