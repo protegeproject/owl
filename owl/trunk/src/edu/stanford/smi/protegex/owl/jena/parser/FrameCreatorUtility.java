@@ -265,5 +265,10 @@ public class FrameCreatorUtility {
     	Collection values = ParserUtil.getSimpleFrameStore(frame).getDirectOwnSlotValues(frame, slot);
     	return values.contains(value);
     }
+    
+    public static boolean hasRDFType(Frame frame, Slot rdfTypeSlot, Cls type, TripleStore ts) {
+    	NarrowFrameStore nfs = ts.getNarrowFrameStore();
+    	return nfs.getValues(frame, rdfTypeSlot, null, false).contains(type);
+    }
 
 }
