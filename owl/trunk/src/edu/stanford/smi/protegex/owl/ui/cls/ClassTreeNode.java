@@ -3,8 +3,9 @@ package edu.stanford.smi.protegex.owl.ui.cls;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
+import java.util.Set;
 
 import edu.stanford.smi.protege.event.ClsAdapter;
 import edu.stanford.smi.protege.event.ClsEvent;
@@ -15,12 +16,10 @@ import edu.stanford.smi.protege.event.FrameListener;
 import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.Frame;
 import edu.stanford.smi.protege.model.Model;
-import edu.stanford.smi.protege.ui.LazyTreeNodeFrameComparator;
 import edu.stanford.smi.protege.ui.ParentChildNodeComparator;
 import edu.stanford.smi.protege.util.LazyTreeNode;
 import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
 import edu.stanford.smi.protegex.owl.model.RDFSClass;
-import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
 
 /**
  * Tree node that contains the superclass-subclass relations.
@@ -163,11 +162,11 @@ public class ClassTreeNode extends LazyTreeNode {
 
     protected Collection getChildObjects() {
         if (showHidden()) {
-            return getCls().getDirectSubclasses();
+            return new HashSet(getCls().getDirectSubclasses());
         }
         else {
             Cls cls = getCls();
-            List result = new ArrayList(cls.getVisibleDirectSubclasses());
+            Collection result = new HashSet(cls.getVisibleDirectSubclasses());
             // Collections.sort(result);
             // Remove all equivalent classes that have other superclasses as well
             if (cls instanceof OWLNamedClass) {
