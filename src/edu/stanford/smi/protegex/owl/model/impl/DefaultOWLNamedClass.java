@@ -465,14 +465,19 @@ public class DefaultOWLNamedClass extends DefaultRDFSNamedClass implements OWLNa
     }
 
 
-    public void removeEquivalentClass(RDFSClass equivalentClass) {
-        if (equivalentClass instanceof OWLAnonymousClass) {
-            removeDirectSuperclass(equivalentClass);
-        }
-        else {
-            removeDirectSuperclass(equivalentClass);
-            equivalentClass.removeSuperclass(this);
-        }
+    public void removeEquivalentClass(final RDFSClass equivalentClass) {
+        new Transaction(getOWLModel(), "Remove Equivalent Class" + Transaction.APPLY_TO_TRAILER_STRING + this.getName()) {
+            public boolean doOperations() {
+		        if (equivalentClass instanceof OWLAnonymousClass) {
+		            removeDirectSuperclass(equivalentClass);
+		        }
+		        else {
+		            removeDirectSuperclass(equivalentClass);
+		            equivalentClass.removeSuperclass(DefaultOWLNamedClass.this);
+		        }
+		        return true;
+            };
+        }.execute();
     }
 
 
