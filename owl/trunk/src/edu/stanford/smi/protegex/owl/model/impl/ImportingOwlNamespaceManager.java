@@ -33,7 +33,7 @@ public class ImportingOwlNamespaceManager extends AbstractNamespaceManager {
     }
     
     @Override
-    public void addImport(String imported) {
+    public void addImport(TripleStore imported) {
         needsRebuild = true;
         super.addImport(imported);
     }

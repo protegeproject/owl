@@ -6,6 +6,7 @@ import java.util.Collection;
 import edu.stanford.smi.protegex.owl.model.NamespaceManager;
 import edu.stanford.smi.protegex.owl.model.NamespaceManagerListener;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 
 public class UnmodifiableNamespaceManager implements NamespaceManager {
     private NamespaceManager manager;
@@ -67,9 +68,7 @@ public class UnmodifiableNamespaceManager implements NamespaceManager {
         throw new UnsupportedOperationException();
     }
 
-    public void addImport(String imported) {
-        // TODO Auto-generated method stub
-        
+    public void addImport(TripleStore imported) {
     }
 
 }

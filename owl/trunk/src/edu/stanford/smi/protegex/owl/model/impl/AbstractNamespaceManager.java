@@ -12,6 +12,8 @@ import edu.stanford.smi.protege.model.Localizable;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.model.NamespaceManager;
 import edu.stanford.smi.protegex.owl.model.NamespaceManagerListener;
+import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
+import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreModel;
 
 public abstract class AbstractNamespaceManager implements NamespaceManager, Serializable, Localizable {
     private static transient final Logger log = Log.getLogger(AbstractNamespaceManager.class);
@@ -81,9 +83,9 @@ public abstract class AbstractNamespaceManager implements NamespaceManager, Seri
         setPrefix(namespace.toString(), prefix);
     }
     
-    public void addImport(String imported) {
-        String namespace = imported + "#";
-        if (getPrefix(namespace) != null) {
+    public void addImport(TripleStore imported) {
+        String namespace = imported.getNamespaceManager().getDefaultNamespace();
+        if (namespace == null || getPrefix(namespace) != null) {
             return;
         }
         setPrefix(namespace, getNextAvailablePrefixName());

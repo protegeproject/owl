@@ -371,7 +371,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
                     log.fine("Import Processing of " + ontologyName  + " done");
                     log.fine("=======================================================");
                 }
-                getNamespaceManager().addImport(importedTripleStore.getName());
+                getNamespaceManager().addImport(importedTripleStore);
                 return new URI(importedTripleStore.getName());
             }
             else {
