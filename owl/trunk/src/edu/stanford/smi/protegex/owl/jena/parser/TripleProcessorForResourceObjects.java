@@ -234,7 +234,7 @@ class TripleProcessorForResourceObjects extends AbstractStatefulTripleProcessor 
 			subjFrame = createFrameWithType(subjName, getCls(objFrame), subj.isAnonymous());
 			
 			//add the rdf:type triple if not already there
-			if (!FrameCreatorUtility.hasOwnSlotValue(subjFrame, predSlot, objFrame)) {				
+			if (!FrameCreatorUtility.hasRDFType(subjFrame, predSlot, getCls(objFrame), tripleStore)) {				
 				FrameCreatorUtility.addOwnSlotValue(subjFrame, predSlot, objFrame, tripleStore);
 			}
 			
