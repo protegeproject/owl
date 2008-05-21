@@ -60,7 +60,7 @@
   <swrl:Builtin rdf:ID="isOntology"/>
   <swrl:Builtin rdf:ID="isVersionInfoAnnotation"/>
   <swrl:Builtin rdf:ID="isDirectSubPropertyOf"/>
-  <swrl:Builtin rdf:ID="isSomeValuesFromRestriction"/>
+  <swrl:Builtin rdf:ID="isSomeValuesFrom"/>
   <swrl:Builtin rdf:ID="isTransitivePropertyDescription"/>
   <swrl:Builtin rdf:ID="hasSeeAlso"/>
   <swrl:Builtin rdf:ID="isEquivalentClass"/>
@@ -101,6 +101,7 @@
   <swrl:Builtin rdf:ID="isDifferentFromAxiom"/>
   <swrl:Builtin rdf:ID="onValue"/>
   <swrl:Builtin rdf:ID="isAnnotation"/>
+  <swrl:Builtin rdf:ID="isRestriction"/>
 </rdf:RDF>
 
 <!-- Created with Protege (with OWL Plugin 3.4, Build 108)  http://protege.stanford.edu -->

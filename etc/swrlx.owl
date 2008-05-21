@@ -9,6 +9,8 @@
     xmlns:owl="http://www.w3.org/2002/07/owl#"
   xml:base="http://swrl.stanford.edu/ontologies/built-ins/3.3/swrlx.owl">
   <owl:Ontology rdf:about=""/>
+  <swrl:Builtin rdf:ID="makeOWLClass"/>
+  <swrl:Builtin rdf:ID="makeOWLIndividual"/>
   <swrl:Builtin rdf:ID="makeOWLThing"/>
   <swrl:Builtin rdf:ID="createOWLThing"/>
 </rdf:RDF>

@@ -38,6 +38,7 @@ public class OWLFactory
   // SWRL and basic OWL entities
   public static SWRLRule createSWRLRule(String ruleName, List<Atom> bodyAtoms, List<Atom> headAtoms) throws SQWRLException, BuiltInException { return new SWRLRuleImpl(ruleName, bodyAtoms, headAtoms); }
 
+  public static OWLClass createOWLClass(OWLModel owlModel) throws OWLFactoryException { return new OWLClassImpl(owlModel); }
   public static OWLClass createOWLClass(OWLModel owlModel, String className) throws OWLFactoryException { return new OWLClassImpl(owlModel, className); }
   public static OWLClass createOWLClass(edu.stanford.smi.protegex.owl.model.OWLNamedClass cls) throws OWLFactoryException { return new OWLClassImpl(cls.getOWLModel(), cls.getName()); }
   public static OWLClass createOWLClass(String className) { return new OWLClassImpl(className); }
@@ -81,6 +82,8 @@ public class OWLFactory
   public static OWLClassPropertyAssertionAxiom createOWLClassPropertyAssertionAxiom(OWLIndividual subject, OWLProperty property, OWLClass object)  { return new OWLClassPropertyAssertionAxiomImpl(subject, property, object); } // OWL Full
   public static OWLPropertyPropertyAssertionAxiom createOWLPropertyPropertyAssertionAxiom(OWLIndividual subject, OWLProperty property, OWLProperty object)  { return new OWLPropertyPropertyAssertionAxiomImpl(subject, property, object); } // OWL Full
   public static OWLClassAssertionAxiom createOWLClassAssertionAxiom(OWLIndividual individual, OWLClass description)  { return new OWLClassAssertionAxiomImpl(individual, description); } // TODO: should be OWLDescription
+
+  public static OWLSomeValuesFrom createOWLSomeValuesFrom(OWLClass owlClass, OWLProperty onProperty, OWLClass someValuesFrom)  { return new OWLSomeValuesFromImpl(owlClass, onProperty, someValuesFrom); } // TODO: should be OWLDescription
 
   // Arguments to atoms and built-ins
   public static VariableAtomArgument createVariableAtomArgument(String variableName, String prefixedVariableName) { return new VariableAtomArgumentImpl(variableName, prefixedVariableName); }

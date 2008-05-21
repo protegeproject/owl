@@ -607,9 +607,9 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
 
     String input = SWRLBuiltInUtil.getArgumentAsAString(1, arguments);
 
-    Pattern p = Pattern.compile("\\s*");
+    Pattern p = Pattern.compile("\\s+");
     Matcher m = p.matcher(input);
-    String operationResult = m.replaceAll(" ");
+    String operationResult = m.replaceAll(" ").trim();
 
     if (SWRLBuiltInUtil.isUnboundArgument(0, arguments)) {
       arguments.set(0, argumentFactory.createDatatypeValueArgument(operationResult)); 

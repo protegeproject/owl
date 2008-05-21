@@ -98,16 +98,23 @@ public class OWLIndividualImpl extends PropertyValueImpl implements OWLIndividua
   
   public void write2OWL(OWLModel owlModel) throws SWRLRuleEngineBridgeException
   {
-    edu.stanford.smi.protegex.owl.model.OWLIndividual individual = owlModel.getOWLIndividual(getIndividualName());
+    try {
+      edu.stanford.smi.protegex.owl.model.OWLIndividual individual;
 
-    if (individual == null) throw new InvalidIndividualNameException(getIndividualName());
+      if (SWRLOWLUtil.isIndividual(owlModel, individualName)) individual = SWRLOWLUtil.getIndividual(owlModel, individualName);
+      else individual = SWRLOWLUtil.createIndividual(owlModel, individualName);
+      
+      for (OWLClass owlClass : getDefiningClasses()) {
+        edu.stanford.smi.protegex.owl.model.RDFSClass cls = SWRLOWLUtil.getOWLNamedClass(owlModel, owlClass.getClassName());
 
-    for (OWLClass owlClass : getDefiningClasses()) {
-      RDFSClass rdfsClass = owlModel.getOWLNamedClass(owlClass.getClassName());
-      if (!individual.hasRDFType(rdfsClass)) 
-        if (individual.hasRDFType(owlModel.getOWLThingClass())) individual.setRDFType(rdfsClass);
-        else individual.addRDFType(rdfsClass);
-    } // for
+        if (!individual.hasRDFType(cls)) { 
+          if (individual.hasRDFType(SWRLOWLUtil.getOWLThingClass(owlModel))) individual.setRDFType(cls);
+          else individual.addRDFType(cls);
+        } // if
+      } // for
+    } catch (SWRLOWLUtilException e) {
+      throw new SWRLRuleEngineBridgeException("error writing OWL individual '" + individualName + "': " + e.getMessage());
+    } // try
   } // write2OWL
 
   public String getRepresentation() { return getPrefixedIndividualName(); }

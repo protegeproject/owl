@@ -24,20 +24,24 @@ public interface SWRLRuleEngineBridge extends SWRLRuleEngine, SQWRLQueryEngine
   void defineClass(OWLClass owlClass) throws SWRLRuleEngineBridgeException;
   void defineIndividual(OWLIndividual owlIndividual) throws SWRLRuleEngineBridgeException;
   void defineAxiom(OWLAxiom axiom) throws SWRLRuleEngineBridgeException;
+  void defineRestriction(OWLRestriction restriction) throws SWRLRuleEngineBridgeException;
 
   // The infer methods can be used by rule engines to assert axioms that they infer into the bridge
   void inferPropertyAssertionAxiom(OWLPropertyAssertionAxiom owlPropertyAssertionAxiom) throws SWRLRuleEngineBridgeException;
   void inferIndividual(OWLIndividual owlIndividual) throws SWRLRuleEngineBridgeException;
   
   // The create methods can be used by built-ins to assert new axioms into a bridge and also reflect them in the underlying engine
+  OWLClass createOWLAnonymousClass() throws SWRLRuleEngineBridgeException;
   void createOWLClass(String className) throws SWRLRuleEngineBridgeException;
   void createOWLClass(String className, String superclassName) throws SWRLRuleEngineBridgeException;
+
   OWLIndividual createOWLIndividual() throws SWRLRuleEngineBridgeException;
   void createOWLIndividual(OWLIndividual owlIndividual) throws SWRLRuleEngineBridgeException;
   OWLIndividual createOWLIndividual(OWLClass owlClass) throws SWRLRuleEngineBridgeException;
   void createOWLIndividuals(Set<OWLIndividual> individuals) throws SWRLRuleEngineBridgeException;
 
   void createOWLAxiom(OWLAxiom axiom) throws SWRLRuleEngineBridgeException;
+  void createOWLRestriction(OWLRestriction restriction) throws SWRLRuleEngineBridgeException;
 
   // TODO: merge these into createOWLAxiom().
   OWLDatatypePropertyAssertionAxiom createOWLDatatypePropertyAssertionAxiom(OWLIndividual subject, OWLProperty property, OWLDatatypeValue object) 
@@ -52,6 +56,7 @@ public interface SWRLRuleEngineBridge extends SWRLRuleEngine, SQWRLQueryEngine
   void createOWLObjectPropertyAssertionAxioms(Set<OWLObjectPropertyAssertionAxiom> axioms) throws SWRLRuleEngineBridgeException;
 
   boolean isClass(String className);
+  boolean isCreatedClass(String className);
   boolean isCreatedIndividual(String individualName);
   boolean isCreatedAxiom(OWLAxiom axiom);
 
@@ -78,6 +83,7 @@ public interface SWRLRuleEngineBridge extends SWRLRuleEngine, SQWRLQueryEngine
   int getNumberOfCreatedClasses();
   int getNumberOfCreatedIndividuals();
   int getNumberOfCreatedAxioms();
+  int getNumberOfCreatedRestrictions();
 
   // Convenience methods to display the contents of the bridge, including inferred and created knowledge
   Set<SWRLRule> getImportedSWRLRules();
@@ -93,5 +99,6 @@ public interface SWRLRuleEngineBridge extends SWRLRuleEngine, SQWRLQueryEngine
   Set<OWLClass> getCreatedClasses();
   Set<OWLIndividual> getCreatedIndividuals();
   Set<OWLAxiom> getCreatedAxioms();
+  Set<OWLRestriction> getCreatedRestrictions();
 
 } // SWRLRuleEngineBridge

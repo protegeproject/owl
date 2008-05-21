@@ -9,7 +9,7 @@ import edu.stanford.smi.protegex.owl.swrl.model.SWRLVariable;
 import edu.stanford.smi.protegex.owl.ProtegeOWL;
 import edu.stanford.smi.protegex.owl.model.util.ImportHelper;
 import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
-
+import edu.stanford.smi.protege.util.URIUtilities;
 
 import edu.stanford.smi.protege.util.*;
 
@@ -82,6 +82,11 @@ public class SWRLOWLUtil
     return cls;
   } // createOWLNamedClass
 
+  public static OWLIndividual createIndividual(OWLModel owlModel, String individualName) throws SWRLOWLUtilException
+  {
+    return createIndividualOfClass(owlModel, getOWLThingClass(owlModel), individualName);
+  } // createIndividualOfClass
+
   public static OWLIndividual createIndividualOfClass(OWLModel owlModel, String className)
     throws SWRLOWLUtilException
   {
@@ -91,7 +96,7 @@ public class SWRLOWLUtil
   public static OWLIndividual createIndividualOfClass(OWLModel owlModel, String className, String individualName)
     throws SWRLOWLUtilException
   {
-    OWLNamedClass cls = getClass(owlModel, className);
+    OWLNamedClass cls = getNamedClass(owlModel, className);
 
     return createIndividualOfClass(owlModel, cls, individualName);
   } // createIndividualOfClass
@@ -112,14 +117,19 @@ public class SWRLOWLUtil
     return individual;
   } // createIndividualOfClass
 
-  public static OWLNamedClass getClass(OWLModel owlModel, String className) throws SWRLOWLUtilException
+  public static OWLNamedClass getNamedClass(OWLModel owlModel, String className) throws SWRLOWLUtilException
+  {
+    return getNamedClass(owlModel, className, true);
+  } // getNamedClass
+
+  public static OWLClass getClass(OWLModel owlModel, String className) throws SWRLOWLUtilException
   {
     return getClass(owlModel, className, true);
   } // getClass
 
   public static boolean isIndividualOfClass(OWLModel owlModel, String individualName, String className) throws SWRLOWLUtilException
   {
-    OWLNamedClass cls = getClass(owlModel, className);
+    OWLNamedClass cls = getNamedClass(owlModel, className);
     OWLIndividual individual = getIndividual(owlModel, individualName);
 
     return individual.hasRDFType(cls, true);
@@ -127,7 +137,7 @@ public class SWRLOWLUtil
 
   public static void setClass(OWLModel owlModel, String individualName, String className) throws SWRLOWLUtilException
   {
-    OWLNamedClass cls = getClass(owlModel, className);
+    OWLNamedClass cls = getNamedClass(owlModel, className);
     OWLIndividual individual = getIndividual(owlModel, individualName);
 
     if (!individual.hasRDFType(cls, true)) individual.setRDFType(cls);
@@ -141,6 +151,11 @@ public class SWRLOWLUtil
 
     return result;
   } // getFullName
+
+  public static OWLSomeValuesFrom getOWLSomeValuesFrom(OWLModel owlModel, String className) throws SWRLOWLUtilException
+  {
+    return (OWLSomeValuesFrom)owlModel.getOWLSomeValuesFromRestrictionClass().createInstance(className);    
+  } // getOWLSomeValuesFrom
 
   public static OWLIndividual getIndividual(OWLModel owlModel, OWLNamedClass cls, boolean mustExist, int mustHaveExactlyN)
     throws SWRLOWLUtilException
@@ -171,7 +186,7 @@ public class SWRLOWLUtil
 
   public static Set<OWLIndividual> getIndividuals(OWLModel owlModel, String className) throws SWRLOWLUtilException
   {
-    OWLNamedClass cls = getClass(owlModel, className);
+    OWLNamedClass cls = getNamedClass(owlModel, className);
 
     return new HashSet<OWLIndividual>(getIndividuals(cls));
   } // getIndividuals
@@ -215,8 +230,8 @@ public class SWRLOWLUtil
   public static boolean isEquivalentClass(OWLModel owlModel, String className1, String className2, boolean mustExist) 
     throws SWRLOWLUtilException
   {
-    OWLNamedClass class1 = getClass(owlModel, className1, mustExist);
-    OWLNamedClass class2 = getClass(owlModel, className2, mustExist);
+    OWLNamedClass class1 = getNamedClass(owlModel, className1, mustExist);
+    OWLNamedClass class2 = getNamedClass(owlModel, className2, mustExist);
 
     return (class1 != null && class2 != null && class1.hasEquivalentClass(class2));
   } // isEquivalentClass
@@ -224,8 +239,8 @@ public class SWRLOWLUtil
   public static boolean isDisjointClass(OWLModel owlModel, String className1, String className2, boolean mustExist) 
     throws SWRLOWLUtilException
   {
-    OWLNamedClass class1 = getClass(owlModel, className1, mustExist);
-    OWLNamedClass class2 = getClass(owlModel, className2, mustExist);
+    OWLNamedClass class1 = getNamedClass(owlModel, className1, mustExist);
+    OWLNamedClass class2 = getNamedClass(owlModel, className2, mustExist);
 
     return (class1 != null && class2 != null && class1.getDisjointClasses().contains(class2));
   } // isDisjointClass
@@ -269,8 +284,8 @@ public class SWRLOWLUtil
   public static boolean isDirectSubClassOf(OWLModel owlModel, String subClassName, String className, boolean mustExist) 
     throws SWRLOWLUtilException
   {
-    OWLNamedClass subClass = getClass(owlModel, subClassName, mustExist);
-    OWLNamedClass cls = getClass(owlModel, className, mustExist);
+    OWLNamedClass subClass = getNamedClass(owlModel, subClassName, mustExist);
+    OWLNamedClass cls = getNamedClass(owlModel, className, mustExist);
 
     return (subClass != null && cls != null && subClass.isSubclassOf(cls));
   } // isDirectSubclassOf
@@ -278,8 +293,8 @@ public class SWRLOWLUtil
   public static boolean isSubClassOf(OWLModel owlModel, String subClassName, String className, boolean mustExist) 
     throws SWRLOWLUtilException
   {
-    OWLNamedClass subClass = getClass(owlModel, subClassName, mustExist);
-    OWLNamedClass cls = getClass(owlModel, className, mustExist);
+    OWLNamedClass subClass = getNamedClass(owlModel, subClassName, mustExist);
+    OWLNamedClass cls = getNamedClass(owlModel, className, mustExist);
 
     return (subClass != null && cls != null && cls.getSubclasses().contains(subClass)); // TODO: uses deprecated getSubclasses
   } // isDirectSubclassOf
@@ -287,8 +302,8 @@ public class SWRLOWLUtil
   public static boolean isDirectSuperClassOf(OWLModel owlModel, String superClassName, String className, boolean mustExist) 
     throws SWRLOWLUtilException
   {
-    OWLNamedClass superClass = getClass(owlModel, superClassName, mustExist);
-    OWLNamedClass cls = getClass(owlModel, className, mustExist);
+    OWLNamedClass superClass = getNamedClass(owlModel, superClassName, mustExist);
+    OWLNamedClass cls = getNamedClass(owlModel, className, mustExist);
 
     return (superClass != null && cls != null && cls.isSubclassOf(superClass)); // No isSuperclassOf call
   } // isDirectSuperclassOf
@@ -302,8 +317,8 @@ public class SWRLOWLUtil
   public static boolean isSuperClassOf(OWLModel owlModel, String superClassName, String className, boolean mustExist) 
     throws SWRLOWLUtilException
   {
-    OWLNamedClass superClass = getClass(owlModel, superClassName, mustExist);
-    OWLNamedClass cls = getClass(owlModel, className, mustExist);
+    OWLNamedClass superClass = getNamedClass(owlModel, superClassName, mustExist);
+    OWLNamedClass cls = getNamedClass(owlModel, className, mustExist);
 
     return (superClass != null && cls != null && cls.getSuperclasses(true).contains(superClass));
   } // isSuperclassOf
@@ -315,7 +330,7 @@ public class SWRLOWLUtil
 
   public static int getNumberOfIndividualsOfClass(OWLModel owlModel, String className, boolean mustExist) throws SWRLOWLUtilException
   {
-    OWLNamedClass cls = getClass(owlModel, className, mustExist);
+    OWLNamedClass cls = getNamedClass(owlModel, className, mustExist);
     int numberOfIndividuals = 0;
 
     if (cls != null) numberOfIndividuals = cls.getInstances(true).size();
@@ -325,7 +340,7 @@ public class SWRLOWLUtil
 
   public static int getNumberOfDirectInstancesOfClass(OWLModel owlModel, String className, boolean mustExist) throws SWRLOWLUtilException
   {
-    OWLNamedClass cls = getClass(owlModel, className, mustExist);
+    OWLNamedClass cls = getNamedClass(owlModel, className, mustExist);
     int numberOfIndividuals = 0;
 
     if (cls != null) numberOfIndividuals = cls.getInstances(false).size();
@@ -335,7 +350,7 @@ public class SWRLOWLUtil
 
   public static boolean isConsistentClass(OWLModel owlModel, String className, boolean mustExist) throws SWRLOWLUtilException
   {
-    OWLNamedClass cls = getClass(owlModel, className, mustExist);
+    OWLNamedClass cls = getNamedClass(owlModel, className, mustExist);
 
     return cls != null && cls.isConsistent();
   } //  getNumberOfDirectInstancesOfClass
@@ -432,7 +447,7 @@ public class SWRLOWLUtil
     throws SWRLOWLUtilException
   {
     OWLProperty property = getProperty(owlModel, propertyName, mustExist);
-    OWLNamedClass cls = getClass(owlModel, className, mustExist);
+    OWLNamedClass cls = getNamedClass(owlModel, className, mustExist);
 
     return (property != null && cls != null && property.getDomains(true).contains(cls));
   } // isInPropertyDomain
@@ -441,7 +456,7 @@ public class SWRLOWLUtil
     throws SWRLOWLUtilException
   {
     OWLProperty property = getProperty(owlModel, propertyName, mustExist);
-    OWLNamedClass cls = getClass(owlModel, className, mustExist);
+    OWLNamedClass cls = getNamedClass(owlModel, className, mustExist);
 
     return (property != null && cls != null && property.getDomains(false).contains(cls));
   } // isInDirectPropertyDomain
@@ -450,7 +465,7 @@ public class SWRLOWLUtil
     throws SWRLOWLUtilException
   {
     OWLProperty property = getProperty(owlModel, propertyName, mustExist);
-    OWLNamedClass cls = getClass(owlModel, className, mustExist);
+    OWLNamedClass cls = getNamedClass(owlModel, className, mustExist);
 
     return (property != null && cls != null && property.getRanges(true).contains(cls));
   } // isInPropertyRange
@@ -459,7 +474,7 @@ public class SWRLOWLUtil
     throws SWRLOWLUtilException
   {
     OWLProperty property = getProperty(owlModel, propertyName, mustExist);
-    OWLNamedClass cls = getClass(owlModel, className, mustExist);
+    OWLNamedClass cls = getNamedClass(owlModel, className, mustExist);
 
     return (property != null && cls != null && property.getRanges(false).contains(cls));
   } // isInDirectPropertyRange
@@ -478,7 +493,7 @@ public class SWRLOWLUtil
 
   public static boolean isObjectProperty(OWLModel owlModel, String propertyName) throws SWRLOWLUtilException
   {
-    return isObjectProperty(owlModel, propertyName, true);
+    return isObjectProperty(owlModel, propertyName, false);
   } // isObjectProperty
 
   public static boolean isDatatypeProperty(OWLModel owlModel, String propertyName, boolean mustExist) throws SWRLOWLUtilException
@@ -533,6 +548,11 @@ public class SWRLOWLUtil
     return property != null && property.isInverseFunctional();
   } // isInverseFunctionalProperty
 
+  public static boolean isAnonymousResourceName(OWLModel owlModel, String resourceName) throws SWRLOWLUtilException
+  {
+    return owlModel.isAnonymousResourceName(resourceName);
+  } // isAnonymousResourceName
+
   public static OWLIndividual getIndividual(OWLModel owlModel, String individualName, boolean mustExist) throws SWRLOWLUtilException
   {
     RDFResource resource = owlModel.getRDFResource(individualName);
@@ -546,7 +566,7 @@ public class SWRLOWLUtil
     } else return null;
   } // getIndividual
 
-  public static OWLNamedClass getClass(OWLModel owlModel, String className, boolean mustExist) throws SWRLOWLUtilException
+  public static OWLNamedClass getNamedClass(OWLModel owlModel, String className, boolean mustExist) throws SWRLOWLUtilException
   {
     RDFResource resource = owlModel.getRDFResource(className);
 
@@ -555,6 +575,19 @@ public class SWRLOWLUtil
         
     if (resource != null) {
       if (resource instanceof OWLNamedClass) return (OWLNamedClass)resource;
+      else return null;
+    } else return null;
+  } // getNamedClass
+
+  public static OWLClass getClass(OWLModel owlModel, String className, boolean mustExist) throws SWRLOWLUtilException
+  {
+    RDFResource resource = owlModel.getRDFResource(className);
+
+    if (mustExist && (resource == null || !(resource instanceof OWLClass))) 
+      throwException("no class named '" + className + "' in ontology");
+        
+    if (resource != null) {
+      if (resource instanceof OWLClass) return (OWLClass)resource;
       else return null;
     } else return null;
   } // getClass
@@ -585,6 +618,11 @@ public class SWRLOWLUtil
     return result;
   } // getClassesOfIndividual
 
+  public static String getNextAnonymousResourceName(OWLModel owlModel)
+  {
+    return owlModel.getNextAnonymousResourceName();
+  } // getNextAnonymousResourceName
+
   public static OWLProperty getProperty(OWLModel owlModel, String propertyName, boolean mustExist) throws SWRLOWLUtilException
   {
     RDFResource resource = owlModel.getRDFResource(propertyName);
@@ -607,7 +645,7 @@ public class SWRLOWLUtil
 
   public static boolean isClass(OWLModel owlModel, String className, boolean mustExist) throws SWRLOWLUtilException
   {
-    return(getClass(owlModel, className, mustExist) != null);
+    return(getNamedClass(owlModel, className, mustExist) != null);
   } // isClassName
 
   public static boolean isProperty(OWLModel owlModel, String propertyName) throws SWRLOWLUtilException
@@ -1084,28 +1122,28 @@ public class SWRLOWLUtil
 
   public static List<OWLNamedClass> getDirectSubClassesOf(OWLModel owlModel, String className) throws SWRLOWLUtilException
   { 
-    OWLNamedClass cls = getClass(owlModel, className);
+    OWLNamedClass cls = getNamedClass(owlModel, className);
 
     return new ArrayList<OWLNamedClass>(cls.getNamedSubclasses(false));
   } // getDirectSubClassesOf
 
   public static List<OWLNamedClass> getSubClassesOf(OWLModel owlModel, String className) throws SWRLOWLUtilException
   { 
-    OWLNamedClass cls = getClass(owlModel, className);
+    OWLNamedClass cls = getNamedClass(owlModel, className);
 
     return new ArrayList<OWLNamedClass>(cls.getNamedSubclasses(true));
   } // getSubClassesOf
 
   public static List<OWLNamedClass> getDirectSuperClassesOf(OWLModel owlModel, String className) throws SWRLOWLUtilException
   { 
-    OWLNamedClass cls = getClass(owlModel, className);
+    OWLNamedClass cls = getNamedClass(owlModel, className);
 
     return new ArrayList<OWLNamedClass>(cls.getNamedSuperclasses(false));
   } // getDirectSuperClassesOf
 
   public static List<OWLNamedClass> getSuperClassesOf(OWLModel owlModel, String className) throws SWRLOWLUtilException
   { 
-    OWLNamedClass cls = getClass(owlModel, className);
+    OWLNamedClass cls = getNamedClass(owlModel, className);
 
     return new ArrayList<OWLNamedClass>(cls.getNamedSuperclasses(true));
   } // getSuperClassesOf
@@ -1262,6 +1300,11 @@ public class SWRLOWLUtil
     RDFResource resource = owlModel.getRDFResource(builtInName);
     return resource != null && resource.getProtegeType().getName().equals(edu.stanford.smi.protegex.owl.swrl.model.SWRLNames.Cls.BUILTIN);
   } // isSWRLBuiltIn
+
+  public static boolean isValidURI(String uri)
+  {
+    return URIUtilities.isValidURI(uri);
+  } // isValidURI
 
   private static void throwException(String message) throws SWRLOWLUtilException
   {

@@ -22,6 +22,13 @@ public class OWLClassImpl extends BuiltInArgumentImpl implements OWLClass
   private String className, prefixedClassName;
   private Set<String> superclassNames, directSuperClassNames, directSubClassNames, equivalentClassNames, equivalentClassSuperclassNames;
     
+  public OWLClassImpl(OWLModel owlModel) throws OWLFactoryException
+  {
+    String anonymousName = SWRLOWLUtil.getNextAnonymousResourceName(owlModel);
+
+    initialize(anonymousName, anonymousName);
+  } // OWLClassImpl
+
   public OWLClassImpl(OWLModel owlModel, String className) throws OWLFactoryException
   {
     edu.stanford.smi.protegex.owl.model.OWLNamedClass owlNamedClass;
@@ -82,6 +89,25 @@ public class OWLClassImpl extends BuiltInArgumentImpl implements OWLClass
   public String getRepresentation() { return getPrefixedClassName(); }
 
   public String toString() { return getPrefixedClassName(); }
+
+  public void write2OWL(OWLModel owlModel) throws SWRLRuleEngineBridgeException
+  {
+    try {
+      edu.stanford.smi.protegex.owl.model.OWLClass cls, superclass;
+
+      if (SWRLOWLUtil.isClass(owlModel, className)) cls = SWRLOWLUtil.getOWLNamedClass(owlModel, className);
+      else cls = SWRLOWLUtil.createOWLNamedClass(owlModel, className);
+        
+      for (String superclassName : getSuperclassNames()) {
+        if (SWRLOWLUtil.isClass(owlModel, superclassName)) superclass = SWRLOWLUtil.getOWLNamedClass(owlModel, superclassName);
+        else superclass = SWRLOWLUtil.createOWLNamedClass(owlModel, superclassName);
+
+        if (!cls.isSubclassOf(superclass)) cls.addSuperclass(superclass);
+      } // for
+    } catch (SWRLOWLUtilException e) {
+      throw new SWRLRuleEngineBridgeException("error writing OWL class '" + className + "': " + e.getMessage());
+    } // try
+  } // write2OWL
 
   // We consider classes to be equal if they have the same name.
   public boolean equals(Object obj)
