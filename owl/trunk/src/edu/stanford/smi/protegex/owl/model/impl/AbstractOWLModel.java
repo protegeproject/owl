@@ -1467,11 +1467,10 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
    
     public String getNextAnonymousResourceName() {
         for (; ;) {
-            String name = ANONYMOUS_BASE + anonCount;
+            String name = ANONYMOUS_BASE + (anonCount++);
             if (getFrame(name) == null) {
                 return name;
             }
-            anonCount++;
         }
     }
 
