@@ -9,7 +9,7 @@ import edu.stanford.smi.protegex.owl.model.OWLModel;
 
 import java.util.Set;
 
-public interface OWLIndividual extends OWLPropertyValue, IndividualArgument, ObjectValue
+public interface OWLIndividual extends OWLObject, OWLPropertyValue, IndividualArgument, ObjectValue
 {
   String getIndividualName();
   String getPrefixedIndividualName();
@@ -19,6 +19,4 @@ public interface OWLIndividual extends OWLPropertyValue, IndividualArgument, Obj
   Set<OWLClass> getDefiningEquivalentClasses();
   Set<OWLClass> getDefiningEquivalentClassSuperclasses();
   Set<OWLIndividual> getSameAsIndividuals();
-
-  void write2OWL(OWLModel owlModel) throws SWRLRuleEngineBridgeException;
 } // OWLIndividual

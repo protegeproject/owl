@@ -29,7 +29,7 @@
 // (3) property restriction class descriptions
 // 3.1.2 cardinality restrictions = isCardinalityRestriction(?a), isMinCardinalityRestriction(?a), isMaxCardinalityRestriction(?a), hasCardinality(?a, ?d)
 // 3.1.2.1.1 allValuesFromRestriction: isAllValuesFromRestriction(?a), onProperty(?a, ?p), hasValue(?a, ?{i, d})
-// 3.1.2.1.2 someValuesFromRestriction: isSomeValuesFromRestriction(?a), onProperty(?a, ?p), hasValue(?a, ?{i,d})
+// 3.1.2.1.2 someValuesFrom: isSomeValuesFrom(?a), onProperty(?a, ?p), hasValue(?a, ?{i,d})
 // 3.1.2.1.3 hasValueRestriction: isHasValueRestriction(?a), onProperty(?a, ?p), hasValue(?a, ?{i,d})
 
 // (4) intersection of class description
@@ -848,18 +848,6 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
   } // isSameAsAxiom
 
   /**
-   ** Is the single argument an owl:SomeValuesFrom restriction.
-   */
-  public boolean isSomeValuesFromRestriction(List<BuiltInArgument> arguments) throws BuiltInException
-  {
-    boolean result = false;
-
-    if (!result) throw new BuiltInNotImplementedException();
-
-    return result;
-  } // isSomeValuesFromRestriction
-
-  /**
    ** Check that the first class argument is a subclass of the second class argument. If the first argument is unbound, bind it to
    ** the subclasses of the second argument (if any exist).
    */
@@ -955,6 +943,21 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
     return result;
   } // isTransitivePropertyAxiom
 
+  public boolean isRestriction(List<BuiltInArgument> arguments) throws BuiltInException
+  {
+    SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(1, arguments.size());
+    String className = SWRLBuiltInUtil.getArgumentAsAClassName(0, arguments);
+    boolean result = false;
+
+    try {
+      result = SWRLOWLUtil.isAnonymousResourceName(getInvokingBridge().getOWLModel(), className);
+    } catch (SWRLOWLUtilException e) {
+      throw new BuiltInException(e.getMessage());
+    } // try
+
+    return result;
+  } // isRestriction
+    
   /**
    ** Is the single argument an owl:UnionOf class description.
    */
@@ -1009,11 +1012,44 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
    ** It the second property argument a subject of the first property axiom argument. If the second argument is unbound, bind it to the
    ** property axiom's subject(s).
    */
-  public boolean onProperty(List<BuiltInArgument> arguments) throws BuiltInException
+  public boolean isSomeValuesFrom(List<BuiltInArgument> arguments) throws BuiltInException
   {
     boolean result = false;
+    String restrictionName, onPropertyName, onClassName;
 
-    if (!result) throw new BuiltInNotImplementedException();
+    SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(3, arguments.size());
+    restrictionName  = SWRLBuiltInUtil.getArgumentAsAClassName(0, arguments);
+    onPropertyName = SWRLBuiltInUtil.getArgumentAsAPropertyName(1, arguments);
+
+    try {
+      if (getIsInConsequent()) {
+        OWLSomeValuesFrom someValuesFrom;
+        OWLProperty onProperty;
+
+        if (SWRLBuiltInUtil.isArgumentAString(2, arguments)) {
+          onClassName = SWRLOWLUtil.getFullName(getInvokingBridge().getOWLModel(), SWRLBuiltInUtil.getArgumentAsAString(2, arguments));
+          if (!getInvokingBridge().isClass(onClassName)) getInvokingBridge().createOWLClass(onClassName);
+        } else onClassName = SWRLBuiltInUtil.getArgumentAsAClassName(2, arguments);
+
+        System.err.println("isSomeValuesFrom: restrictionName: " + restrictionName + ", propertyName: " + onPropertyName + ", className: " + onClassName);
+
+        if (SWRLOWLUtil.isObjectProperty(getInvokingBridge().getOWLModel(), onPropertyName)) onProperty = OWLFactory.createOWLObjectProperty(onPropertyName);
+        else onProperty = OWLFactory.createOWLDatatypeProperty(onPropertyName);
+
+        someValuesFrom = OWLFactory.createOWLSomeValuesFrom(OWLFactory.createOWLClass(restrictionName), onProperty, OWLFactory.createOWLClass(onClassName));
+
+        getInvokingBridge().createOWLRestriction(someValuesFrom);
+      } else {
+        onClassName = SWRLBuiltInUtil.getArgumentAsAClassName(2, arguments);
+        throw new BuiltInNotImplementedException();
+      } // if
+    } catch (OWLFactoryException e) {
+      throw new BuiltInException(e.getMessage());
+    } catch (SWRLOWLUtilException e) {
+      throw new BuiltInException(e.getMessage());
+    } catch (SWRLRuleEngineBridgeException e) {
+      throw new BuiltInException(e.getMessage());
+    } // try
 
     return result;
   } // onProperty
@@ -1090,7 +1126,6 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
     SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(2, arguments.size());
 
     subClassArgumentUnbound = SWRLBuiltInUtil.isUnboundArgument(0, arguments);
-    className = SWRLBuiltInUtil.getArgumentAsAClassName(1, arguments);
 
     try {
       if (getIsInConsequent()) {
@@ -1108,6 +1143,8 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
         if (!getInvokingBridge().isClass(className)) getInvokingBridge().createOWLClass(className, superclassName);
         result = true;
       } else {
+        className = SWRLBuiltInUtil.getArgumentAsAClassName(1, arguments);
+
         if (subClassArgumentUnbound) {
           List<edu.stanford.smi.protegex.owl.model.OWLNamedClass> subClasses;
           if (transitive) subClasses = SWRLOWLUtil.getSubClassesOf(getInvokingBridge().getOWLModel(), className);

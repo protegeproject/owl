@@ -19,7 +19,8 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
 
   private ArgumentFactory argumentFactory;
 
-  private HashMap<String, OWLIndividual> createInvocationMap;
+  private HashMap<String, OWLClass> classInvocationMap;
+  private HashMap<String, OWLIndividual> individualInvocationMap;
 
   public SWRLBuiltInLibraryImpl() 
   { 
@@ -30,14 +31,44 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
 
   public void reset() 
   {
-    createInvocationMap = new HashMap<String, OWLIndividual>();
+    classInvocationMap = new HashMap<String, OWLClass>();
+    individualInvocationMap = new HashMap<String, OWLIndividual>();
   } // reset
+
+  /**
+   ** For every pattern of second and subsequent arguments, create an OWL anonymous class and bind it to the first argument. If
+   ** the first argument is already bound when the built-in is called, this method returns true.
+   */
+  public boolean makeOWLClass(List<BuiltInArgument> arguments) throws BuiltInException
+  {
+    SWRLBuiltInUtil.checkNumberOfArgumentsAtLeast(2, arguments.size());
+
+    if (SWRLBuiltInUtil.isUnboundArgument(0, arguments)) {
+      OWLClass owlClass = null;
+      String createInvocationPattern 
+        = SWRLBuiltInUtil.createInvocationPattern(getInvokingBridge(), getInvokingRuleName(), getInvokingBuiltInIndex(), getIsInConsequent(),
+                                                  arguments.subList(1, arguments.size()));
+
+      if (classInvocationMap.containsKey(createInvocationPattern)) owlClass = classInvocationMap.get(createInvocationPattern);
+      else {
+        try {
+          owlClass = getInvokingBridge().createOWLAnonymousClass();
+        } catch (SWRLRuleEngineBridgeException e) {
+          throw new BuiltInException("error calling bridge to create OWL class: " + e.getMessage());
+        } // 
+        classInvocationMap.put(createInvocationPattern, owlClass);
+      } // if
+      arguments.set(0, owlClass); // Bind the result to the first parameter      
+    } // if
+    
+    return true;
+  } // makeOWLClass
 
   /**
    ** For every pattern of second and subsequent arguments, create an OWL individual of type OWL:Thing and bind it to the first argument. If
    ** the first argument is already bound when the built-in is called, this method returns true.
    */
-  public boolean makeOWLThing(List<BuiltInArgument> arguments) throws BuiltInException
+  public boolean makeOWLIndividual(List<BuiltInArgument> arguments) throws BuiltInException
   {
     SWRLBuiltInUtil.checkNumberOfArgumentsAtLeast(2, arguments.size());
 
@@ -47,25 +78,31 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
         = SWRLBuiltInUtil.createInvocationPattern(getInvokingBridge(), getInvokingRuleName(), getInvokingBuiltInIndex(), getIsInConsequent(),
                                                   arguments.subList(1, arguments.size()));
 
-      if (createInvocationMap.containsKey(createInvocationPattern)) owlIndividual = createInvocationMap.get(createInvocationPattern);
+      if (individualInvocationMap.containsKey(createInvocationPattern)) owlIndividual = individualInvocationMap.get(createInvocationPattern);
       else {
         try {
           owlIndividual = getInvokingBridge().createOWLIndividual();
         } catch (SWRLRuleEngineBridgeException e) {
           throw new BuiltInException("error calling bridge to create OWL individual: " + e.getMessage());
         } // 
-        createInvocationMap.put(createInvocationPattern, owlIndividual);
+        individualInvocationMap.put(createInvocationPattern, owlIndividual);
       } // if
       arguments.set(0, owlIndividual); // Bind the result to the first parameter      
     } // if
     
     return true;
-  } // makeOWLThing
+  } // makeOWLIndividual
 
   // For backwards compatability
+  public boolean makeOWLThing(List<BuiltInArgument> arguments) throws BuiltInException
+  {
+    return makeOWLIndividual(arguments);
+  } // createOWLThing
+
+ // For backwards compatability
   public boolean createOWLThing(List<BuiltInArgument> arguments) throws BuiltInException
   {
-    return makeOWLThing(arguments);
+    return makeOWLIndividual(arguments);
   } // createOWLThing
 
 } // SWRLBuiltInLibraryImpl
