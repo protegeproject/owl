@@ -56,6 +56,7 @@ public interface SWRLRuleEngineBridge extends SWRLRuleEngine, SQWRLQueryEngine
   void createOWLObjectPropertyAssertionAxioms(Set<OWLObjectPropertyAssertionAxiom> axioms) throws SWRLRuleEngineBridgeException;
 
   boolean isClass(String className);
+  boolean isCreatedAnonymousClass(String className);
   boolean isCreatedClass(String className);
   boolean isCreatedIndividual(String individualName);
   boolean isCreatedAxiom(OWLAxiom axiom);

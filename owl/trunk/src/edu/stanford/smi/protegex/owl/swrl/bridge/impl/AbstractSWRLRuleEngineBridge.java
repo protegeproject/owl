@@ -58,8 +58,9 @@ public abstract class AbstractSWRLRuleEngineBridge implements SWRLRuleEngineBrid
   private Set<OWLAxiom> inferredAxioms; 
 
   // Created individuals
-  private HashMap<String, OWLIndividual> createdIndividuals;
+  private HashMap<String, OWLClass> createdAnonymousClasses;
   private HashMap<String, OWLClass> createdClasses;
+  private HashMap<String, OWLIndividual> createdIndividuals;
   private Set<OWLAxiom> createdAxioms;
   private Set<OWLRestriction> createdRestrictions;
 
@@ -258,6 +259,7 @@ public abstract class AbstractSWRLRuleEngineBridge implements SWRLRuleEngineBrid
   public boolean isIndividual(String individualName) { return importedIndividuals.containsKey(individualName); }
 
   public boolean isCreatedClass(String className) { return createdClasses.containsKey(className); }
+  public boolean isCreatedAnonymousClass(String className) { return createdAnonymousClasses.containsKey(className); }
   public boolean isCreatedIndividual(String individualName) { return createdIndividuals.containsKey(individualName); }
   public boolean isCreatedAxiom(OWLAxiom axiom) { return createdAxioms.contains(axiom); }
   public boolean isCreatedRestriction(OWLRestriction restriction) { return createdRestrictions.contains(restriction); }
@@ -273,6 +275,7 @@ public abstract class AbstractSWRLRuleEngineBridge implements SWRLRuleEngineBrid
   public Set<OWLAxiom> getInferredAxioms() { return inferredAxioms; }
 
   public Set<OWLClass> getCreatedClasses() { return new HashSet<OWLClass>(createdClasses.values()); }
+  public Set<OWLClass> getCreatedAnonymousClasses() { return new HashSet<OWLClass>(createdAnonymousClasses.values()); }
   public Set<OWLIndividual> getCreatedIndividuals() { return new HashSet<OWLIndividual>(createdIndividuals.values()); }
   public Set<OWLAxiom> getCreatedAxioms() { return createdAxioms; }
   public Set<OWLRestriction> getCreatedRestrictions() { return createdRestrictions; }
@@ -329,8 +332,8 @@ public abstract class AbstractSWRLRuleEngineBridge implements SWRLRuleEngineBrid
     OWLClass owlClass = OWLFactory.createOWLClass(owlModel);
     String className = owlClass.getClassName();
 
-    if (!createdClasses.containsKey(className)) {
-      createdClasses.put(className, owlClass);
+    if (!createdAnonymousClasses.containsKey(className)) {
+      createdAnonymousClasses.put(className, owlClass);
       defineClass(owlClass); // Export the class to the rule engine
     } // if
 
@@ -460,7 +463,7 @@ public abstract class AbstractSWRLRuleEngineBridge implements SWRLRuleEngineBrid
     if (!createdRestrictions.contains(restriction)) createdRestrictions.add(restriction);
 
     defineRestriction(restriction);
-  } // createOWLAxiom
+  } // createOWLRestriction
 
   public void createOWLObjectPropertyAssertionAxioms(Set<OWLObjectPropertyAssertionAxiom> axioms)
      throws SWRLRuleEngineBridgeException
@@ -985,6 +988,7 @@ public abstract class AbstractSWRLRuleEngineBridge implements SWRLRuleEngineBrid
     inferredAxioms = new HashSet<OWLAxiom>(); 
 
     createdClasses = new HashMap<String, OWLClass>();
+    createdAnonymousClasses = new HashMap<String, OWLClass>();
     createdIndividuals = new HashMap<String, OWLIndividual>();
     createdAxioms = new HashSet<OWLAxiom>();
     createdRestrictions = new HashSet<OWLRestriction>();
