@@ -10,6 +10,7 @@ import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 
 /**
@@ -55,9 +56,15 @@ public class CreateSiblingClassAction extends ResourceAction {
                 if(siblingType == null) {
                     siblingType = sibling.getProtegeType();
                 }
-                cls = owlModel.createRDFSNamedClass(name, parents, siblingType);
+                /*
+                 * The set is necessary to treat duplicates
+                 * for the case that a class is defined in 
+                 * multiple imports.
+                 */
+                HashSet parentsSet = new HashSet(parents);
+                cls = owlModel.createRDFSNamedClass(name, parentsSet, siblingType);
                 if (cls instanceof OWLNamedClass) {
-                    for (Iterator it = parents.iterator(); it.hasNext();) {
+                    for (Iterator it = parentsSet.iterator(); it.hasNext();) {
                         RDFSNamedClass s = (RDFSNamedClass) it.next();
                         ((OWLNamedClass) cls).addInferredSuperclass(s);
                     }
