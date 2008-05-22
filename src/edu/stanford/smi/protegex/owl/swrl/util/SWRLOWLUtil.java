@@ -137,10 +137,18 @@ public class SWRLOWLUtil
 
   public static void setClass(OWLModel owlModel, String individualName, String className) throws SWRLOWLUtilException
   {
-    OWLNamedClass cls = getNamedClass(owlModel, className);
+    OWLClass cls = (OWLClass)owlModel.getCls(className);
     OWLIndividual individual = getIndividual(owlModel, individualName);
 
     if (!individual.hasRDFType(cls, true)) individual.setRDFType(cls);
+  } // setClass
+
+  public static void addClass(OWLModel owlModel, String individualName, String className) throws SWRLOWLUtilException
+  {
+    OWLClass cls = (OWLClass)owlModel.getCls(className);
+    OWLIndividual individual = getIndividual(owlModel, individualName);
+
+    if (!individual.hasRDFType(cls, true)) individual.addRDFType(cls);
   } // setClass
 
   public static String getFullName(OWLModel owlModel, String name) throws SWRLOWLUtilException

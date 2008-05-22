@@ -31,9 +31,9 @@ public class OWLClassAssertionAxiomImpl implements OWLClassAssertionAxiom
     String individualName = getIndividual().getIndividualName();
 
     try {
-      SWRLOWLUtil.setClass(owlModel, individualName, className);
+      SWRLOWLUtil.addClass(owlModel, individualName, className);
     } catch (SWRLOWLUtilException e) {
-      throw new SWRLRuleEngineBridgeException("exception creating OWLClassAssertionAxiom '" + toString() + "'");
+      throw new SWRLRuleEngineBridgeException("exception creating OWLClassAssertionAxiom '" + toString() + "': " + e.getMessage());
     } // try
   } // write2OWL
 
