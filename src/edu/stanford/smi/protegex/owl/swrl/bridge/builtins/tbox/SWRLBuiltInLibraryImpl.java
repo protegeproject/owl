@@ -1031,8 +1031,6 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
           if (!getInvokingBridge().isClass(onClassName)) getInvokingBridge().createOWLClass(onClassName);
         } else onClassName = SWRLBuiltInUtil.getArgumentAsAClassName(2, arguments);
 
-        System.err.println("isSomeValuesFrom: restrictionName: " + restrictionName + ", propertyName: " + onPropertyName + ", className: " + onClassName);
-
         if (SWRLOWLUtil.isObjectProperty(getInvokingBridge().getOWLModel(), onPropertyName)) onProperty = OWLFactory.createOWLObjectProperty(onPropertyName);
         else onProperty = OWLFactory.createOWLDatatypeProperty(onPropertyName);
 
