@@ -59,7 +59,7 @@ public class BridgePluginManager
       Class.forName("edu.stanford.smi.protegex.owl.swrl.bridge.jess.SWRLJessBridge");
       Class.forName("edu.stanford.smi.protegex.owl.swrl.bridge.jess.ui.SWRLJessTab");
     } catch (ClassNotFoundException e) {
-      log.log(Level.WARNING, "SWRLJessBridge load failed: could not find jess.Rete - or an error occured on initialization", e);
+      log.info("SWRLJessBridge load failed: could not find jess.Rete - or an error occured on initialization");
       
     } // try
 
@@ -67,7 +67,7 @@ public class BridgePluginManager
       Class.forName("jess.Rete");
       Class.forName("edu.stanford.smi.protegex.owl.swrl.sqwrl.ui.SQWRLQueryTab");
     } catch (ClassNotFoundException e) {
-      System.err.println("SQWRLQueryTab load failed: could not find jess.Rete - or an error occured on initialization");
+      log.info("SQWRLQueryTab load failed: could not find jess.Rete - or an error occured on initialization");
     } // try
 
   } // static
