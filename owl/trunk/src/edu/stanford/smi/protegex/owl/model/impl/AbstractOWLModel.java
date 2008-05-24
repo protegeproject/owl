@@ -1795,7 +1795,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
                 }
             }
         }
-        return (OWLDatatypeProperty) getSlot(OWLNames.Slot.VERSION_INFO);
+        return (OWLDatatypeProperty) getOWLVersionInfoProperty();
     }
     
     public TripleStoreModel getTripleStoreModel() {
