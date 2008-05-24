@@ -151,7 +151,7 @@ public abstract class OWLSystemFrames extends SystemFrames {
     private RDFProperty owlSomeValuesFromProperty;
     private RDFProperty owlUnionOfProperty;
     private RDFProperty owlValuesFromProperty;
-    private RDFProperty owlVersionInfoProperty;
+    private OWLDatatypeProperty owlVersionInfoProperty;
     private RDFProperty protegeClassificationStatusProperty;
     private RDFProperty protegeInferredSubclassesProperty;
     private RDFProperty protegeInferredSuperclassesProperty;
@@ -333,7 +333,7 @@ public abstract class OWLSystemFrames extends SystemFrames {
         owlSomeValuesFromProperty = createRDFProperty(OWLNames.Slot.SOME_VALUES_FROM);
         owlUnionOfProperty = createRDFProperty(OWLNames.Slot.UNION_OF);
         owlValuesFromProperty = createRDFProperty(OWLNames.Slot.VALUES_FROM);
-        owlVersionInfoProperty = createRDFProperty(OWLNames.Slot.VERSION_INFO);
+        owlVersionInfoProperty = createOWLDatatypeProperty(OWLNames.Slot.VERSION_INFO);
         protegeClassificationStatusProperty = createRDFProperty(ProtegeNames.Slot.CLASSIFICATION_STATUS);
         protegeInferredSubclassesProperty = createRDFProperty(ProtegeNames.Slot.INFERRED_SUBCLASSES);
         protegeInferredSuperclassesProperty = createRDFProperty(ProtegeNames.Slot.INFERRED_SUPERCLASSES);
@@ -732,7 +732,14 @@ public abstract class OWLSystemFrames extends SystemFrames {
             assertFunctional(owlValuesFromProperty);
             
             //no String type assertion in OWL spec
-            assertTypeAndName(owlVersionInfoProperty, annotationObjectPropertyTypes);
+            //this is the correct one
+            //assertTypeAndName(owlVersionInfoProperty, annotationObjectPropertyTypes);
+            /* 
+             * Although it should be just an annotation property,
+             * we make it an annotation datatype property, so that 
+             * we don't change the OWLModel interface..
+             */ 
+            assertTypeAndName(owlVersionInfoProperty, annotationDatatypePropertyTypes);            
             assertDomain(owlVersionInfoProperty);
             assertValueType(owlVersionInfoProperty, ValueType.STRING);
             
