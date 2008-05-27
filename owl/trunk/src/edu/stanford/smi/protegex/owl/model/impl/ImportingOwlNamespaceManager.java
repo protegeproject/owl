@@ -42,14 +42,17 @@ public class ImportingOwlNamespaceManager extends AbstractNamespaceManager {
         if (!needsRebuild)  {
             return;
         }
+        TripleStore topTripleStore = owlModel.getTripleStoreModel().getTopTripleStore();
+        
         prefix2namespaceMap = new HashMap<String, String>();
         namespace2prefixMap = new HashMap<String, String>();
+        
         MultiMap<String, String> prefix2namespaceMultiMap = new SetMultiMap<String, String>();
         MultiMap<String, String> namespace2prefixMultiMap = new SetMultiMap<String, String>();
         for (TripleStore tripleStore : owlModel.getTripleStoreModel().getTripleStores()) {
             NamespaceManager names = tripleStore.getNamespaceManager();
             for (String prefix : names.getPrefixes()) {
-                if (prefix.equals(DEFAULT_NAMESPACE_PREFIX)) {
+                if (tripleStore != topTripleStore  && prefix.equals(DEFAULT_NAMESPACE_PREFIX)) {
                     continue;
                 }
                 String namespace = names.getNamespaceForPrefix(prefix);
@@ -57,7 +60,6 @@ public class ImportingOwlNamespaceManager extends AbstractNamespaceManager {
                 namespace2prefixMultiMap.addValue(namespace, prefix);
             }
         }
-        TripleStore topTripleStore = owlModel.getTripleStoreModel().getTopTripleStore();
         NamespaceManager topNamespaceManager = topTripleStore.getNamespaceManager();
         Collection<String> topPrefixes = topNamespaceManager.getPrefixes();
         for (String prefix : topPrefixes) {
