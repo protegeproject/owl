@@ -226,10 +226,8 @@ public class ImportsTreePanel extends JPanel implements HostResourceDisplay, Dis
                     AddedPrefixesTable.showDialog(topLevelContainer, owlModel, addedPrefixes);
                 }
                 
-            	if (SWRLProjectPlugin.isSWRLImported(owlModel)) {
-            		SWRLProjectPlugin.adjustGUI(owlModel.getProject());
-            	}
-            	
+                SWRLProjectPlugin.adjustGUI(owlModel.getProject());
+                
             	ProtegeUI.reloadUI(owlModel);
             }
         }

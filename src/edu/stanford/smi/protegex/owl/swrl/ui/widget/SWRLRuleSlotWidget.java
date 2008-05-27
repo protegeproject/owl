@@ -167,10 +167,6 @@ public class SWRLRuleSlotWidget extends AbstractSlotWidget {
 			return false;
 		}
 
-		if (!SWRLProjectPlugin.isSWRLImported((OWLModel)kb)) {
-			return false;
-		}
-
 		if (slot.getName().equals(SWRLNames.Slot.BODY)) {
 			return true;
 		}

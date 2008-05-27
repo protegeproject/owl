@@ -197,10 +197,8 @@ public class ResourceDisplay extends InstanceDisplay implements ResourcePanel {
     private void addDefaultToolBarButtons() {
         southToolBar.addSeparator(new Dimension(7, 0));
         ComponentFactory.addToolBarButton(southToolBar, findUsageAction);
-        if (SWRLProjectPlugin.isSWRLImported(owlModel)) {
-            southToolBar.addSeparator();
-            ComponentFactory.addToolBarButton(southToolBar, findRulesAction);
-        }
+        southToolBar.addSeparator();
+        ComponentFactory.addToolBarButton(southToolBar, findRulesAction);
         southToolBar.addSeparator();
         ComponentFactory.addToolBarButton(southToolBar, testInstanceAction);
     }
