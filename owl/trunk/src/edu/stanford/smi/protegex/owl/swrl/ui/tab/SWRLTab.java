@@ -6,6 +6,7 @@ import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.logging.Level;
@@ -42,27 +43,24 @@ public class SWRLTab extends AbstractTabWidget
   {
     JenaOWLModel owlModel = (JenaOWLModel) getKnowledgeBase();
     try {
-      owlModel.getNamespaceManager().setPrefix(new URI(SWRLNames.SWRL_NAMESPACE), SWRLNames.SWRL_PREFIX);
-      owlModel.getNamespaceManager().setPrefix(new URI(SWRLNames.SWRLB_NAMESPACE), SWRLNames.SWRLB_PREFIX);
       owlModel.getNamespaceManager().setPrefix(new URI(SWRLNames.SWRLA_NAMESPACE), SWRLNames.SWRLA_PREFIX);
       owlModel.getNamespaceManager().setPrefix(new URI(SWRLNames.SWRLX_NAMESPACE), SWRLNames.SWRLX_PREFIX);
       owlModel.getNamespaceManager().setPrefix(new URI(SWRLNames.SWRLM_NAMESPACE), SWRLNames.SWRLM_PREFIX);
       owlModel.getNamespaceManager().setPrefix(new URI(SWRLNames.SWRLTBOX_NAMESPACE), SWRLNames.SWRLTBOX_PREFIX);
       owlModel.getNamespaceManager().setPrefix(new URI(SWRLNames.SWRLABOX_NAMESPACE), SWRLNames.SWRLABOX_PREFIX);
       owlModel.getNamespaceManager().setPrefix(new URI(SWRLNames.SWRLTEMPORAL_NAMESPACE), SWRLNames.SWRLTEMPORAL_PREFIX);
-      owlModel.getNamespaceManager().setPrefix(new URI(SWRLNames.SWRLXML_NAMESPACE), SWRLNames.SWRLXML_PREFIX);
       owlModel.getNamespaceManager().setPrefix(new URI(SWRLNames.SQWRL_NAMESPACE), SWRLNames.SQWRL_PREFIX);
   
       ImportHelper importHelper = new ImportHelper((JenaOWLModel)getKnowledgeBase());
+      boolean importsAdded  = false;
       
-      importHelper.addImport(new URI(SWRLNames.SWRLA_IMPORT));
-      importHelper.addImport(new URI(SWRLNames.SWRLX_IMPORT));
-      importHelper.addImport(new URI(SWRLNames.SWRLM_IMPORT));
-      importHelper.addImport(new URI(SWRLNames.SWRLTBOX_IMPORT));
-      importHelper.addImport(new URI(SWRLNames.SWRLABOX_IMPORT));
-      importHelper.addImport(new URI(SWRLNames.SWRLTEMPORAL_IMPORT));
-      importHelper.addImport(new URI(SWRLNames.SWRLXML_IMPORT));
-      importHelper.addImport(new URI(SWRLNames.SQWRL_IMPORT));
+      importsAdded |= addImport(owlModel, SWRLNames.SWRLA_IMPORT, importHelper);
+      importsAdded |= addImport(owlModel, SWRLNames.SWRLX_IMPORT, importHelper);
+      importsAdded |= addImport(owlModel, SWRLNames.SWRLM_IMPORT, importHelper);
+      importsAdded |= addImport(owlModel, SWRLNames.SWRLTBOX_IMPORT, importHelper);
+      importsAdded |= addImport(owlModel, SWRLNames.SWRLABOX_IMPORT, importHelper);
+      importsAdded |= addImport(owlModel, SWRLNames.SWRLTEMPORAL_IMPORT, importHelper);
+      importsAdded |= addImport(owlModel, SWRLNames.SQWRL_IMPORT, importHelper);
       
       importHelper.importOntologies();
 
@@ -70,8 +68,11 @@ public class SWRLTab extends AbstractTabWidget
       owlModel.getSystemFrames().getToSlot().setVisible(true);
       owlModel.getSystemFrames().getFromSlot().setVisible(true);
       
-      SWRLProjectPlugin.setSWRLClassesAndPropertiesVisible(getProject(), false);
-      ProjectManager.getProjectManager().reloadUI(true);
+
+      if (importsAdded)  {
+          SWRLProjectPlugin.setSWRLClassesAndPropertiesVisible(getProject(), false);
+          ProjectManager.getProjectManager().reloadUI(true);
+      }
       
     } catch (Exception ex) {
       ProtegeUI.getModalDialogFactory().showErrorMessageDialog(owlModel, "Could not activate SWRLTab: " + ex +
@@ -79,6 +80,14 @@ public class SWRLTab extends AbstractTabWidget
       Log.getLogger().log(Level.SEVERE, "Exception caught", ex);
     } // try
   } // activateSWRL
+  
+  private boolean addImport(OWLModel owlModel, String importUri, ImportHelper importHelper) throws URISyntaxException {
+      if  (owlModel.getTripleStoreModel().getTripleStore(importUri)  == null) {
+          importHelper.addImport(new URI(importUri));
+          return true;
+      }
+      return false;
+  }
 
   public void initialize() 
   {
@@ -91,27 +100,10 @@ public class SWRLTab extends AbstractTabWidget
     
     OWLModel owlModel = (OWLModel) getKnowledgeBase();
     
-    if (!SWRLProjectPlugin.isSWRLImported(owlModel)) {
-      if (!isSWRLImported(owlModel)) {
-        setLayout(new FlowLayout());
-        add(new JLabel("Your ontology needs to reference the SWRL ontology (" + SWRLNames.SWRL_NAMESPACE + ")."));
-
-        JButton activateButton = new JButton("Activate SWRL...");
-        activateButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-              activateSWRL();
-            }
-          });
-        add(activateButton);
-        if (!(owlModel instanceof JenaOWLModel)) activateButton.setEnabled(false);
-      } // if
-    } // if
+    activateSWRL();
         
-    // Have to check again because the activateSWRLFactoryIfNecessary may have failed
-    if (SWRLProjectPlugin.isSWRLImported(owlModel)) {
-      panel = new SWRLTablePanel(owlModel, null, this);
-      add(panel);
-    }        
+    panel = new SWRLTablePanel(owlModel, null, this);
+    add(panel);    
     
     SWRLProjectPlugin.adjustGUI(getProject());
   } // initialize 
@@ -125,24 +117,6 @@ public class SWRLTab extends AbstractTabWidget
     } // if
   } // reconfigure
 
-  private boolean isSWRLImported(OWLModel owlModel) 
-  {
-    boolean swrlFound = false;
-    boolean swrlbFound = false;
-    
-    Iterator iter = owlModel.getOWLOntologies().iterator();
-    
-    try {
-      while (iter.hasNext() && !(swrlbFound && swrlFound)) {
-        OWLOntology ont = (OWLOntology) iter.next();
-        if (ont.getNamespace().equals(SWRLNames.SWRL_NAMESPACE)) swrlFound = true;
-        if (ont.getNamespace().equals(SWRLNames.SWRLB_NAMESPACE)) swrlbFound = true;				
-      }
-    } catch (Exception e) {
-      // TODO: handle exception
-    }
-    return swrlFound && swrlbFound;
-  } // isSWRLImported
   
   public static boolean isSuitable(Project p, Collection errors) 
   {

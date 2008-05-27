@@ -117,20 +117,29 @@ public class SWRLProjectPlugin extends ProjectPluginAdapter
 	} // addSWRLTab
 
 	
-	private static boolean isSWRLPresent(Project project) 
+	public static boolean isSWRLPresent(Project project) 
 	{
 		KnowledgeBase kb = project.getKnowledgeBase();
 
 		if (!(kb instanceof OWLModel)) return false;
-
-		Cls impCls = kb.getCls(SWRLNames.Cls.IMP);
-
-		return impCls.getInstanceCount() != 0;
+		return isSWRLPresent((OWLModel) kb);
 	} // isSWRLPresent
 
+	public static boolean isSWRLPresent(OWLModel owlModel) {
+
+        Cls impCls = owlModel.getSystemFrames().getImpCls();
+
+        return impCls.getInstanceCount() != 0;
+	}
 	
-	public static boolean isSWRLImported(OWLModel owlModel) { 
-		return owlModel.getOWLJavaFactory() instanceof SWRLJavaFactory; 
+	/**
+	 * @deprecated always returns  true - swrl is included in the system frames.
+	 * @param project
+	 * @return true
+	 */
+	@Deprecated
+	public static boolean isSWRLImported(Project project) {
+	    return true;
 	}
 
 } // SWRLProjectPlugin

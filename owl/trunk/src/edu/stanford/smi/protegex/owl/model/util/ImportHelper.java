@@ -100,6 +100,9 @@ public class ImportHelper {
      */
     public void importOntologies(boolean reloadGUI) throws OntologyLoadException {
         ArrayList<URI> importedOntologies = new ArrayList<URI>();
+        if (ontologyStreams.isEmpty() && ontologyURIs.isEmpty()) {
+            return;
+        }
         for (InputStream is : ontologyStreams) {
             URI ontologyURI = loadImportedAssertions(is);
             try {
