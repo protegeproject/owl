@@ -1,5 +1,24 @@
 package edu.stanford.smi.protegex.owl.ui.metadatatab.prefixes;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
+import javax.swing.JViewport;
+import javax.swing.ListSelectionModel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
+
 import edu.stanford.smi.protege.util.ComponentUtilities;
 import edu.stanford.smi.protege.util.Disposable;
 import edu.stanford.smi.protege.util.LabeledComponent;
@@ -9,19 +28,11 @@ import edu.stanford.smi.protegex.owl.model.NamespaceManager;
 import edu.stanford.smi.protegex.owl.model.NamespaceManagerAdapter;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLOntology;
+import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 import edu.stanford.smi.protegex.owl.ui.OWLLabeledComponent;
 import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
 import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
 import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
-
-import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableColumn;
-import java.awt.*;
-import java.awt.event.ActionEvent;
 
 /**
  * A JPanel hosting a JTable of all prefixes and their namespaces.
@@ -216,11 +227,24 @@ public class PrefixesPanel extends JPanel implements Disposable {
 
 
     private void enableActions() {
+        removeAction.setEnabled(enableRemove());
+    }
+    
+    private boolean enableRemove() {
         int selIndex = table.getSelectedRow();
-        final boolean enabled = selIndex >= 0 &&
-                                tableModel.getNamespaceManager().isModifiable(tableModel.getPrefix(selIndex));
-        //makeDefaultAction.setEnabled(enabled);
-        removeAction.setEnabled(enabled && isEnabled());
+        if (selIndex < 0 || !isEnabled()) {
+            return false;
+        }
+        if (!tableModel.getNamespaceManager().isModifiable(tableModel.getPrefix(selIndex))) {
+            return false;
+        }
+        TripleStore topTripleStore = ontology.getOWLModel().getTripleStoreModel().getTopTripleStore();
+        NamespaceManager topNamespaceManager = topTripleStore.getNamespaceManager();
+        Object prefix = table.getValueAt(selIndex, PrefixesTableModel.COL_PREFIX);
+        if (prefix != null && prefix instanceof String  && topNamespaceManager.getNamespaceForPrefix((String) prefix) != null) {
+            return true;
+        }
+        return false;
     }
 
 
