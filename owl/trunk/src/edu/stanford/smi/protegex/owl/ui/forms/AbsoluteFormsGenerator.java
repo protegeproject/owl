@@ -160,10 +160,10 @@ public class AbsoluteFormsGenerator {
                 Resource layoutData = model.createResource(null, AbsoluteLayoutNames.AbsoluteLayoutData);
                 widget.addProperty(FormsNames.layoutData, layoutData);
                 Rectangle bounds = slotWidget.getDescriptor().getBounds();
-                layoutData.addProperty(AbsoluteLayoutNames.x, model.createLiteral((int) bounds.getX()));
-                layoutData.addProperty(AbsoluteLayoutNames.y, model.createLiteral((int) bounds.getY()));
-                layoutData.addProperty(AbsoluteLayoutNames.width, model.createLiteral((int) bounds.getWidth()));
-                layoutData.addProperty(AbsoluteLayoutNames.height, model.createLiteral((int) bounds.getHeight()));
+                layoutData.addProperty(AbsoluteLayoutNames.x, model.createTypedLiteral((int) bounds.getX()));
+                layoutData.addProperty(AbsoluteLayoutNames.y, model.createTypedLiteral((int) bounds.getY()));
+                layoutData.addProperty(AbsoluteLayoutNames.width, model.createTypedLiteral((int) bounds.getWidth()));
+                layoutData.addProperty(AbsoluteLayoutNames.height, model.createTypedLiteral((int) bounds.getHeight()));
             }
         }
     }

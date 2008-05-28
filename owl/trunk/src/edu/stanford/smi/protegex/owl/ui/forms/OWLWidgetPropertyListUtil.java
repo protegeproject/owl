@@ -73,7 +73,7 @@ public class OWLWidgetPropertyListUtil {
 		if (intValue != null){
 			Resource resource = formsPropList.getModel().createResource(null, FormsNames.Integer);
 			resource.addProperty(FormsNames.name, getAbsoluteWidgetPropertyName(owlModel, widgetPropName, javaClassName));
-			resource.addProperty(FormsNames.integer_value, resource.getModel().createLiteral(intValue.intValue()));
+			resource.addProperty(FormsNames.integer_value, resource.getModel().createTypedLiteral(intValue.intValue()));
 			formsPropList.addProperty(FormsNames.properties, resource);
 			return;
 		}
@@ -82,7 +82,7 @@ public class OWLWidgetPropertyListUtil {
 		if (boolValue != null){
 			Resource resource = formsPropList.getModel().createResource(null, FormsNames.Boolean);
 			resource.addProperty(FormsNames.name, getAbsoluteWidgetPropertyName(owlModel, widgetPropName, javaClassName));			
-			resource.addProperty(FormsNames.booleanValue, resource.getModel().createLiteral(boolValue.booleanValue()));
+			resource.addProperty(FormsNames.booleanValue, resource.getModel().createTypedLiteral(boolValue.booleanValue()));
 			formsPropList.addProperty(FormsNames.properties, resource);
 			return;
 		}
