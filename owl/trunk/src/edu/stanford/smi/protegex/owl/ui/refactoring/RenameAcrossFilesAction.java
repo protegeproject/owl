@@ -20,7 +20,6 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.rdf.model.impl.ModelMakerImpl;
 import com.hp.hpl.jena.util.FileUtils;
 
 import edu.stanford.smi.protege.model.Project;
@@ -155,7 +154,9 @@ public class RenameAcrossFilesAction extends RefactorResourceAction {
         OntDocumentManager dm = new OntDocumentManager();
 
         // Temporary hack to circumnavigate a Jena bug
-        SimpleGraphMaker sgm = (SimpleGraphMaker) ((ModelMakerImpl) spec.getModelMaker()).getGraphMaker();
+        //SimpleGraphMaker sgm = (SimpleGraphMaker) ((ModelMakerImpl) spec.getModelMaker()).getGraphMaker();
+        //TODO: TT - check if this is the right call. Had to change at transition from Jena 2.5.4 -> Jena 2.5.5 
+        SimpleGraphMaker sgm = (SimpleGraphMaker) spec.getBaseModelMaker().getGraphMaker();
         Collection toGo = Jena.set(sgm.listGraphs());
         for (Iterator i = toGo.iterator(); i.hasNext(); sgm.removeGraph((String) i.next()))
             ;
