@@ -127,6 +127,9 @@ public class ProtegeUI {
 
 
     public static void reloadUI(ProjectView projectView) {
+    	if (projectView == null) {
+    		return;
+    	}
         int oldTabMode = projectView.getTabbedPane().getTabPlacement();
         projectView.reload(true);
         projectView.getTabbedPane().setTabPlacement(oldTabMode);
