@@ -2,26 +2,18 @@
 package edu.stanford.smi.protegex.owl.swrl.ui.tab;
 
 import java.awt.BorderLayout;
-import java.awt.FlowLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.logging.Level;
-
-import javax.swing.JButton;
-import javax.swing.JLabel;
 
 import edu.stanford.smi.protege.model.Project;
 import edu.stanford.smi.protege.ui.ProjectManager;
+import edu.stanford.smi.protege.ui.ProjectView;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protege.widget.AbstractTabWidget;
 import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
-import edu.stanford.smi.protegex.owl.model.OWLOntology;
-import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.util.ImportHelper;
 import edu.stanford.smi.protegex.owl.swrl.model.SWRLNames;
 import edu.stanford.smi.protegex.owl.swrl.ui.SWRLProjectPlugin;
@@ -39,9 +31,18 @@ public class SWRLTab extends AbstractTabWidget
 { 
   private SWRLTablePanel panel = null;
   
+  public void initialize() {  
+	    setLabel("SWRL Rules");
+	    setIcon(SWRLIcons.getImpsIcon());
+	 
+	  	activateSWRL();
+	    panel = new SWRLTablePanel((OWLModel) getKnowledgeBase(), null, this);
+	    add(panel);
+  } // initialize 
+  
   private void activateSWRL() 
   {
-    JenaOWLModel owlModel = (JenaOWLModel) getKnowledgeBase();
+    OWLModel owlModel = (OWLModel) getKnowledgeBase();
     try {
       owlModel.getNamespaceManager().setPrefix(new URI(SWRLNames.SWRLA_NAMESPACE), SWRLNames.SWRLA_PREFIX);
       owlModel.getNamespaceManager().setPrefix(new URI(SWRLNames.SWRLX_NAMESPACE), SWRLNames.SWRLX_PREFIX);
@@ -62,16 +63,17 @@ public class SWRLTab extends AbstractTabWidget
       importsAdded |= addImport(owlModel, SWRLNames.SWRLTEMPORAL_IMPORT, importHelper);
       importsAdded |= addImport(owlModel, SWRLNames.SQWRL_IMPORT, importHelper);
       
-      importHelper.importOntologies();
-
+      importHelper.importOntologies(false);
+      
       // Make ":TO" and ":FROM" visible for dynamic expansion.
       owlModel.getSystemFrames().getToSlot().setVisible(true);
       owlModel.getSystemFrames().getFromSlot().setVisible(true);
+      SWRLProjectPlugin.setSWRLClassesAndPropertiesVisible(getProject(), false);
+      SWRLProjectPlugin.adjustWidgets(getProject());
       
-
       if (importsAdded)  {
-          SWRLProjectPlugin.setSWRLClassesAndPropertiesVisible(getProject(), false);
-          ProjectManager.getProjectManager().reloadUI(true);
+    	  ProjectView prjView = ProjectManager.getProjectManager().getCurrentProjectView();    
+    	  prjView.reloadAllTabsExcept(this);  
       }
       
     } catch (Exception ex) {
@@ -82,32 +84,13 @@ public class SWRLTab extends AbstractTabWidget
   } // activateSWRL
   
   private boolean addImport(OWLModel owlModel, String importUri, ImportHelper importHelper) throws URISyntaxException {
-      if  (owlModel.getTripleStoreModel().getTripleStore(importUri)  == null) {
+      if  (owlModel.getTripleStoreModel().getTripleStore(importUri) == null) {
           importHelper.addImport(new URI(importUri));
           return true;
       }
       return false;
   }
-
-  public void initialize() 
-  {
-    setLabel("SWRL Rules");
-    setIcon(SWRLIcons.getImpsIcon());
-    if (!(getKnowledgeBase() instanceof OWLModel)) {
-      add(BorderLayout.CENTER, new JLabel("This tab can only be used with OWL projects."));
-      return;
-    } // if
-    
-    OWLModel owlModel = (OWLModel) getKnowledgeBase();
-    
-    activateSWRL();
-        
-    panel = new SWRLTablePanel(owlModel, null, this);
-    add(panel);    
-    
-    SWRLProjectPlugin.adjustGUI(getProject());
-  } // initialize 
-
+  
   public void reconfigure()
   {
     if (panel != null) {
