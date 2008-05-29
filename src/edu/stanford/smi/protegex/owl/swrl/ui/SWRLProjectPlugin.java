@@ -57,18 +57,18 @@ public class SWRLProjectPlugin extends ProjectPluginAdapter
 		SWRLFactory swrlFactory = new SWRLFactory(owlModel);
 		
 		for (RDFSNamedClass swrlClass : swrlFactory.getSWRLClasses()) {
-			swrlClass.setVisible(false);
+			swrlClass.setVisible(visible);
 		}
 
 		for (RDFProperty swrlProperty : swrlFactory.getSWRLProperties()) {
-			swrlProperty.setVisible(false);
+			swrlProperty.setVisible(visible);
 		}
 
 		for (RDFProperty swrlbProperty : swrlFactory.getSWRLBProperties()) {
-			swrlbProperty.setVisible(false);
+			swrlbProperty.setVisible(visible);
 		}
 		
-		owlModel.getRDFListClass().setVisible(false);
+		owlModel.getRDFListClass().setVisible(visible);
 	}
 
 	
@@ -126,9 +126,7 @@ public class SWRLProjectPlugin extends ProjectPluginAdapter
 	} // isSWRLPresent
 
 	public static boolean isSWRLPresent(OWLModel owlModel) {
-
         Cls impCls = owlModel.getSystemFrames().getImpCls();
-
         return impCls.getInstanceCount() != 0;
 	}
 	
