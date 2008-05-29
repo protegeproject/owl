@@ -129,14 +129,12 @@ public class OWLDatabaseModel
 
 
     @Override
-	public void setProject(Project project) {
+    public void setProject(Project project) {
         super.setProject(project);
 
-        if (!project.isMultiUserServer()) {
-            int position = getFrameStores().size() - 1;
-            if (!(getFrameStores().get(position) instanceof LocalClassificationFrameStore)) {
-                insertFrameStore(new LocalClassificationFrameStore(this), position);
-            }
+        int position = getFrameStores().size() - 1;
+        if (!(getFrameStores().get(position) instanceof LocalClassificationFrameStore)) {
+            insertFrameStore(new LocalClassificationFrameStore(this), position);
         }
     }
 
