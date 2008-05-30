@@ -72,8 +72,10 @@ public class SWRLTab extends AbstractTabWidget
       SWRLProjectPlugin.adjustWidgets(getProject());
       
       if (importsAdded)  {
-    	  ProjectView prjView = ProjectManager.getProjectManager().getCurrentProjectView();    
-    	  prjView.reloadAllTabsExcept(this);  
+    	  ProjectView prjView = ProjectManager.getProjectManager().getCurrentProjectView();
+    	  if (prjView != null) {
+    		  prjView.reloadAllTabsExcept(this);
+    	  }
       }
       
     } catch (Exception ex) {
