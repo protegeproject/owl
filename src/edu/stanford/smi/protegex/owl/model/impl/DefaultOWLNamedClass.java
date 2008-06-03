@@ -142,6 +142,19 @@ public class DefaultOWLNamedClass extends DefaultRDFSNamedClass implements OWLNa
         return result;
     }
 
+    
+    public Collection getHasValues(RDFProperty property) {
+    	Set hasValues = new HashSet();
+    	
+        for (Iterator it = getRestrictions(property, true).iterator(); it.hasNext();) {
+            OWLRestriction restriction = (OWLRestriction) it.next();
+            if (restriction instanceof OWLHasValue) {
+                OWLHasValue hasValue = (OWLHasValue) restriction;
+                hasValues.add(hasValue.getHasValue());
+            }
+        }
+        return hasValues;    	
+    }
 
     public Object getHasValue(RDFProperty property) {
         for (Iterator it = getRestrictions(property, true).iterator(); it.hasNext();) {
