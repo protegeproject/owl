@@ -994,11 +994,9 @@ public class OWLUtil {
         for (Iterator it = resource.getRDFTypes().iterator(); it.hasNext();) {
             RDFSClass type = (RDFSClass) it.next();
             if (type instanceof OWLNamedClass) {
-                Object hasValue = ((OWLNamedClass) type).getHasValue(property);
-                if (hasValue != null) {
-                    results.add(hasValue);
-                }
-            }
+                Collection hasValues = ((OWLNamedClass) type).getHasValues(property);                
+                results.addAll(hasValues);
+           }
         }
         return results;
     }
