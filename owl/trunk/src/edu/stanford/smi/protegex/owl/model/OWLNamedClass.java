@@ -76,7 +76,7 @@ public interface OWLNamedClass extends RDFSNamedClass, OWLClass {
 
 
     /**
-     * Gets the value of any owl:hasValue restriction defined on this class.
+     * Gets the value of an arbitrary owl:hasValue restriction defined on this class.
      * Note that this will also check for restrictions defined on superclasses.
      *
      * @param property the property to look for hasValue restrictions on
@@ -84,6 +84,16 @@ public interface OWLNamedClass extends RDFSNamedClass, OWLClass {
      */
     Object getHasValue(RDFProperty property);
 
+
+    /**
+     * Gets a collection of values for all owl:hasValue restrictions defined on this class.
+     * Note that this will also check for restrictions defined on superclasses.
+     *
+     * @param property the property to look for hasValue restrictions on
+     * @return a collection of fillers for the hasValue restrictions on this class and the property given as argument.
+     */
+    Collection getHasValues(RDFProperty property);
+    
 
     Collection getInferredEquivalentClasses();
 
