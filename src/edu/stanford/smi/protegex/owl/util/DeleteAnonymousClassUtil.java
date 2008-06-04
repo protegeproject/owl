@@ -19,6 +19,20 @@ public class DeleteAnonymousClassUtil {
                     hook.delete(root, cls);
                 }
             }
+
+            public void beginTransaction(String name) {
+                hook.beginTransaction(name);
+            }
+
+            public void commitTransaction() {
+                hook.commitTransaction();
+            }
+
+            public void rollbackTransaction() {
+                hook.rollbackTransaction();
+            }
+            
+            
             
         });
     }

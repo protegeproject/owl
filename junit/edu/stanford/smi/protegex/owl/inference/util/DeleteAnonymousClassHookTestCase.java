@@ -71,6 +71,21 @@ public class DeleteAnonymousClassHookTestCase extends AbstractJenaTestCase {
                     deletedMap.put(root, root.getBrowserText());
                 }
             }
+
+            public void beginTransaction(String name) {
+                // TODO Auto-generated method stub
+                
+            }
+
+            public void commitTransaction() {
+                // TODO Auto-generated method stub
+                
+            }
+
+            public void rollbackTransaction() {
+                // TODO Auto-generated method stub
+                
+            }
             
         });
         
@@ -96,6 +111,21 @@ public class DeleteAnonymousClassHookTestCase extends AbstractJenaTestCase {
         public void delete(OWLAnonymousClass root,
                            OWLAnonymousClass cls) {
             deleted.add(new ClassAndRoot(cls, root));
+        }
+
+        public void beginTransaction(String name) {
+            // TODO Auto-generated method stub
+            
+        }
+
+        public void commitTransaction() {
+            // TODO Auto-generated method stub
+            
+        }
+
+        public void rollbackTransaction() {
+            // TODO Auto-generated method stub
+            
         }
         
     }

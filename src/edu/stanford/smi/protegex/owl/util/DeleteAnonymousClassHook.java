@@ -6,4 +6,10 @@ public interface DeleteAnonymousClassHook {
 
     void delete(OWLAnonymousClass root, OWLAnonymousClass cls);
     
+    void beginTransaction(String name);
+    
+    void commitTransaction();
+    
+    void rollbackTransaction();
+    
 }
