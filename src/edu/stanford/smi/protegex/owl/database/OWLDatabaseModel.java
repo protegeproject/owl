@@ -22,6 +22,7 @@ import edu.stanford.smi.protege.model.Project;
 import edu.stanford.smi.protege.model.framestore.AbstractFrameStoreInvocationHandler;
 import edu.stanford.smi.protege.model.framestore.EventGeneratorFrameStore;
 import edu.stanford.smi.protege.model.framestore.FrameStore;
+import edu.stanford.smi.protege.model.framestore.FrameStoreManager;
 import edu.stanford.smi.protege.model.framestore.MergingNarrowFrameStore;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.database.triplestore.DatabaseTripleStoreModel;
@@ -218,11 +219,10 @@ public class OWLDatabaseModel
     public void setProject(Project project) {
         super.setProject(project);
 
-        if (!project.isMultiUserServer()) {
+        FrameStoreManager fsm = getFrameStoreManager();
+        if (fsm.getFrameStoreFromClass(LocalClassificationFrameStore.class) == null) {
             int position = getFrameStores().size() - 1;
-            if (!(getFrameStores().get(position) instanceof LocalClassificationFrameStore)) {
-                insertFrameStore(new LocalClassificationFrameStore(this), position);
-            }
+            fsm.insertFrameStore(new LocalClassificationFrameStore(this), position);
         }
     }
 }
