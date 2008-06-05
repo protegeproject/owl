@@ -2,6 +2,7 @@ package edu.stanford.smi.protegex.owl.ui.repository.wizard.impl;
 
 import edu.stanford.smi.protege.resource.Icons;
 import edu.stanford.smi.protege.util.ComponentFactory;
+import edu.stanford.smi.protege.util.ExtensionFilter;
 import edu.stanford.smi.protege.util.LabeledComponent;
 import edu.stanford.smi.protege.util.WizardPage;
 import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
@@ -12,6 +13,7 @@ import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.File;
+import java.util.Arrays;
 
 /**
  * User: matthewhorridge<br>
@@ -93,9 +95,13 @@ public class FileBrowserPanel extends JPanel {
 
 
     public void browse() {
-    	JFileChooser chooser = ComponentFactory.createFileChooser("", (String)null);
+    	 java.util.List<String> extensions = (java.util.List<String>) Arrays.asList((new String[]{"owl" , "rdfs", "rdf"}));
+ 	    ExtensionFilter extensionFilter = new ExtensionFilter(extensions.iterator(), "Select OWL or RDF(S) files");
+    	JFileChooser chooser = ComponentFactory.createFileChooser("OWL or RDF(S) file", extensionFilter);
         if (showOnlyFolders) {
             chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        } else {
+        	chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
         }
         if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
             fileNameField.setText(getPathName(chooser.getSelectedFile()));
