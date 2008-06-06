@@ -195,6 +195,9 @@ public class TypeUpdateFrameStore extends FrameStoreAdapter {
     @Override
     public void setDirectOwnSlotValues(Frame frame, Slot slot, Collection values) {
         super.setDirectOwnSlotValues(frame, slot, values);
+        if (frame instanceof OWLAnonymousClass) {
+            return;
+        }
         Cls protegeType;
         if (frame instanceof RDFResource && slot.equals(rdfType)) {
             Collection directTypes = super.getDirectTypes((RDFResource) frame);
@@ -204,8 +207,7 @@ public class TypeUpdateFrameStore extends FrameStoreAdapter {
                 }
             }
             for (Object oldType : directTypes) {
-                if (!values.contains(oldType) && oldType instanceof Cls 
-                        && !fakeProtege3FactoryTypes.contains(((Cls) oldType).getName())) {
+                if (!values.contains(oldType) && oldType instanceof Cls) {
                     super.removeDirectType((RDFResource) frame, (Cls) oldType);
                 }
             }
