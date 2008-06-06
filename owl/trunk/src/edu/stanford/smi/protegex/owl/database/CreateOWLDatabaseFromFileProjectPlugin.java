@@ -8,6 +8,7 @@ import edu.stanford.smi.protege.exception.OntologyLoadException;
 import edu.stanford.smi.protege.model.KnowledgeBaseFactory;
 import edu.stanford.smi.protege.model.Project;
 import edu.stanford.smi.protege.plugin.CreateProjectWizard;
+import edu.stanford.smi.protege.util.URIUtilities;
 import edu.stanford.smi.protege.util.WizardPage;
 import edu.stanford.smi.protegex.owl.database.creator.OwlDatabaseFromFileCreator;
 import edu.stanford.smi.protegex.owl.jena.JenaKnowledgeBaseFactory;
@@ -60,6 +61,19 @@ public class CreateOWLDatabaseFromFileProjectPlugin extends CreateOWLDatabasePro
 
     public void setOntologyInputSource(URI uri) {
         this.ontologyInputSource = uri;
+    }
+    
+    
+    /**
+     * @deprecated Use {@link #setOntologyInputSource(URI)}
+     */
+    @Deprecated
+    public void setOntologyFileURI(String uri) {
+    	URI uritemp = URIUtilities.createURI(uri); 
+    	if (uritemp == null) {
+    		throw new RuntimeException("Invalid uri " + uri);
+    	}
+    	setOntologyInputSource(uritemp);
     }
     
     public URI getOntologyInputSource() {
