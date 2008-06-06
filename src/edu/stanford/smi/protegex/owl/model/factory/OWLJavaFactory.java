@@ -25,12 +25,9 @@ import edu.stanford.smi.protege.model.framestore.MergingNarrowFrameStore;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.model.OWLClass;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
-import edu.stanford.smi.protegex.owl.model.OWLNames;
-import edu.stanford.smi.protegex.owl.model.RDFNames;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
 import edu.stanford.smi.protegex.owl.model.RDFSClass;
 import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
-import edu.stanford.smi.protegex.owl.model.RDFSNames;
 import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLAllDifferent;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLDataRange;
@@ -56,44 +53,15 @@ public class OWLJavaFactory extends DefaultFrameFactory {
     /**
      * A Hashtable from Protege metaclass names to Java class names from this package
      */
-    private static Hashtable<String, String> clsNames = new Hashtable<String, String>();
+    private static Hashtable<String, Class<? extends RDFResource>> clsNames = new Hashtable<String, Class<? extends RDFResource>>();
 
 
     static {
-
-        clsNames.put(OWLNames.Cls.NAMED_CLASS, "OWLNamedClass");
-
-        clsNames.put(RDFNames.Cls.PROPERTY, "RDFProperty");
-
-        clsNames.put(RDFSNames.Cls.NAMED_CLASS, "RDFSNamedClass");
-
-        clsNames.put(OWLNames.Cls.ENUMERATED_CLASS, "OWLEnumeratedClass");
-
-        clsNames.put(OWLNames.Cls.ALL_VALUES_FROM_RESTRICTION, "OWLAllValuesFrom");
-        clsNames.put(OWLNames.Cls.SOME_VALUES_FROM_RESTRICTION, "OWLSomeValuesFrom");
-        clsNames.put(OWLNames.Cls.HAS_VALUE_RESTRICTION, "OWLHasValue");
-        clsNames.put(OWLNames.Cls.MAX_CARDINALITY_RESTRICTION, "OWLMaxCardinality");
-        clsNames.put(OWLNames.Cls.MIN_CARDINALITY_RESTRICTION, "OWLMinCardinality");
-        clsNames.put(OWLNames.Cls.CARDINALITY_RESTRICTION, "OWLCardinality");
-
-        clsNames.put(OWLNames.Cls.COMPLEMENT_CLASS, "OWLComplementClass");
-        clsNames.put(OWLNames.Cls.INTERSECTION_CLASS, "OWLIntersectionClass");
-        clsNames.put(OWLNames.Cls.UNION_CLASS, "OWLUnionClass");
-
-        clsNames.put(OWLNames.Cls.ALL_DIFFERENT, "OWLAllDifferent");
-        clsNames.put(RDFNames.Cls.EXTERNAL_RESOURCE, "RDFUntypedResource");
-        clsNames.put(RDFSNames.Cls.DATATYPE, "RDFSDatatype");
-        clsNames.put(OWLNames.Cls.DATA_RANGE, "OWLDataRange");
-        clsNames.put(RDFNames.Cls.LIST, "RDFList");
-        clsNames.put(OWLNames.Cls.ONTOLOGY, "OWLOntology");
-
-        clsNames.put(OWLNames.Cls.DATATYPE_PROPERTY, "OWLDatatypeProperty");
-        clsNames.put(OWLNames.Cls.OBJECT_PROPERTY, "OWLObjectProperty");
+        for (OWLFactoryClassType type : OWLFactoryClassType.values()) {
+            clsNames.put(type.getTypeName(), type.getImplementingClass());
+        }
     }
 
-
-    private final static String CLASSNAME_PREFIX = "edu.stanford.smi.protegex.owl.model.impl.Default";
-    
     private static final Class<?>[] CONSTRUCTOR_PARAMETERS = { KnowledgeBase.class, FrameID.class };
 
     private AbstractOWLModel owlModel;
@@ -297,9 +265,9 @@ public class OWLJavaFactory extends DefaultFrameFactory {
         for (Iterator it = directTypes.iterator(); it.hasNext();) {
             final Instance metaCls = (Instance) it.next();
             final String metaClsName = metaCls.getName();
-            final String javaClassName = clsNames.get(metaClsName);
-            if (javaClassName != null) {
-                return createCls(javaClassName, id);
+            final Class<? extends RDFResource> javaClass = clsNames.get(metaClsName);
+            if (javaClass != null) {
+                return createCls(javaClass, id);
             }
             if (!metaCls.isSystem()) {
                 if (metaCls instanceof Cls) {
@@ -327,16 +295,15 @@ public class OWLJavaFactory extends DefaultFrameFactory {
     }
 
 
-    private Cls createCls(String javaClassName, FrameID id) {
+    private Cls createCls(Class<? extends RDFResource> clazz, FrameID id) {
         try {
-            Class clazz = Class.forName(CLASSNAME_PREFIX + javaClassName);
-            Class[] parameterTypes = {KnowledgeBase.class, FrameID.class};
-            Constructor constructor = clazz.getConstructor(parameterTypes);
+            Class<?>[] parameterTypes = {KnowledgeBase.class, FrameID.class};
+            Constructor<? extends RDFResource> constructor = clazz.getConstructor(parameterTypes);
             Object[] args = {owlModel, id};
             return (Cls) constructor.newInstance(args);
         }
         catch (Exception ex) {
-            System.err.println("Fatal Error: Could not create Cls from OWL metaclass " + javaClassName);
+            System.err.println("Fatal Error: Could not create Cls from OWL metaclass " + clazz.getSimpleName());
             Log.getLogger().log(Level.SEVERE, "Exception caught", ex);
             return new DefaultOWLNamedClass(owlModel, id);
         }
@@ -412,20 +379,20 @@ public class OWLJavaFactory extends DefaultFrameFactory {
         Cls objectSlotMetaCls = owlModel.getOWLObjectPropertyMetaClassCls();
         for (Iterator it = types.iterator(); it.hasNext();) {
             Cls metaCls = (Cls) it.next();
-            String javaClassName = clsNames.get(metaCls.getName());
+            Class<? extends RDFResource> javaClassName = clsNames.get(metaCls.getName());
             if (javaClassName != null) {
-                return clas.getName().equals(CLASSNAME_PREFIX + javaClassName);
+                return clas.equals(javaClassName);
             }
             if (metaCls.hasSuperclass(namedClsMetaCls)) {
-                return clas.getName().equals(CLASSNAME_PREFIX + "OWLNamedClass");
+                return clas.equals(DefaultOWLNamedClass.class);
             }
             if (metaCls.hasSuperclass(datatypeSlotMetaCls)) {
-                return clas.getName().equals(CLASSNAME_PREFIX + "OWLDatatypeProperty");
+                return clas.equals(DefaultOWLDatatypeProperty.class);
             }
             if (metaCls.hasSuperclass(objectSlotMetaCls)) {
-                return clas.getName().equals(CLASSNAME_PREFIX + "OWLObjectProperty");
+                return clas.equals(DefaultOWLObjectProperty.class);
             }
         }
-        return clas.getName().equals(CLASSNAME_PREFIX + "RDFIndividual");
+        return clas.equals(DefaultRDFIndividual.class);
     }
 }
