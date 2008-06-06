@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 
 import edu.stanford.smi.protege.model.Cls;
@@ -23,6 +25,7 @@ import edu.stanford.smi.protegex.owl.model.OWLRestriction;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
 import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
+import edu.stanford.smi.protegex.owl.model.factory.OWLFactoryClassType;
 import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
 import edu.stanford.smi.protegex.owl.model.impl.OWLSystemFrames;
 
@@ -42,6 +45,14 @@ public class TypeUpdateFrameStore extends FrameStoreAdapter {
     
     private Map<RDFProperty, RDFSNamedClass> fillerToProtegeTypeMap = new HashMap<RDFProperty, RDFSNamedClass>();
     
+    private static Set<String> fakeProtege3FactoryTypes = new  HashSet<String>();
+    static {
+        for (OWLFactoryClassType factoryType  : OWLFactoryClassType.values()) {
+            if (factoryType.isFakeProtege3Type()) {
+                fakeProtege3FactoryTypes.add(factoryType.getTypeName());
+            }
+        }
+    }
 
     
     public TypeUpdateFrameStore(OWLModel owlModel) {
@@ -193,7 +204,8 @@ public class TypeUpdateFrameStore extends FrameStoreAdapter {
                 }
             }
             for (Object oldType : directTypes) {
-                if (!values.contains(oldType) && oldType instanceof Cls) {
+                if (!values.contains(oldType) && oldType instanceof Cls 
+                        && !fakeProtege3FactoryTypes.contains(((Cls) oldType).getName())) {
                     super.removeDirectType((RDFResource) frame, (Cls) oldType);
                 }
             }
