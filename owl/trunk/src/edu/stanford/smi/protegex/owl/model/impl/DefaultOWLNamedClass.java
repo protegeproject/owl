@@ -33,6 +33,8 @@ import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
 import edu.stanford.smi.protegex.owl.model.RDFSClass;
 import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
+import edu.stanford.smi.protege.model.Transaction;
+import edu.stanford.smi.protegex.owl.model.*;
 import edu.stanford.smi.protegex.owl.model.visitor.OWLModelVisitor;
 import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
 
@@ -59,13 +61,18 @@ public class DefaultOWLNamedClass extends DefaultRDFSNamedClass implements OWLNa
     }
 
 
-    public void addEquivalentClass(RDFSClass aClass) {
-        if (!hasDirectSuperclass(aClass)) {
-            addDirectSuperclass(aClass);
-        }
-        if (!aClass.isSubclassOf(this)) {
-            aClass.addSuperclass(this);
-        }
+    public void addEquivalentClass(final RDFSClass aClass) {
+        new Transaction(getOWLModel(), "Add Equivalent Class" + Transaction.APPLY_TO_TRAILER_STRING + this.getName()) {
+            public boolean doOperations() {
+                if (!hasDirectSuperclass(aClass)) {
+                    addDirectSuperclass(aClass);
+                }
+                if (!aClass.isSubclassOf(DefaultOWLNamedClass.this)) {
+                    aClass.addSuperclass(DefaultOWLNamedClass.this);
+                }
+                return true;
+            };
+        }.execute();
     }
 
 
