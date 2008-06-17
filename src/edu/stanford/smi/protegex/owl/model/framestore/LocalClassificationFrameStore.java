@@ -9,10 +9,12 @@ import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protege.model.framestore.EventDispatchFrameStore;
 import edu.stanford.smi.protege.model.framestore.FrameStore;
 import edu.stanford.smi.protege.model.framestore.FrameStoreAdapter;
+import edu.stanford.smi.protege.util.SimpleStringMatcher;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.ProtegeNames;
 
 import java.util.*;
+import java.util.Map.Entry;
 
 /**
  * A FrameStore that intercepts any access to those slots that store the
@@ -84,6 +86,23 @@ public class LocalClassificationFrameStore extends FrameStoreAdapter {
             return super.getDirectOwnSlotValues(frame, slot);
         }
     }
+    
+    @Override
+    public Collection getOwnSlotValues(Frame frame, Slot slot) {
+        final Map<Frame,List> instancesMap = slotsMap.get(slot);
+        if (instancesMap != null) {
+            final List values = instancesMap.get(frame);
+            if (values == null) {
+                return Collections.EMPTY_LIST;
+            }
+            else {
+                return values;
+            }
+        }
+        else {
+            return super.getOwnSlotValues(frame, slot);
+        }
+    }
 
 
     public int getDirectOwnSlotValuesCount(Frame frame, Slot slot) {
@@ -126,6 +145,29 @@ public class LocalClassificationFrameStore extends FrameStoreAdapter {
         }
     }
 
+    @SuppressWarnings("unchecked")
+    @Override
+    public Set<Frame> getFramesWithMatchingDirectOwnSlotValue(Slot slot, String regexp,
+                                                       int maxMatches) {
+        final Map<Frame, List> instancesMap = slotsMap.get(slot);
+        if (instancesMap != null) {
+            SimpleStringMatcher matcher = new SimpleStringMatcher(regexp);
+            final Set<Frame> result = new HashSet<Frame>();
+            for (Entry<Frame, List> entry : instancesMap.entrySet()) {
+                Frame frame = entry.getKey();
+                List values = entry.getValue();
+                for (Object value : values) {
+                    if (value instanceof String && matcher.isMatch((String) value)) {
+                        result.add(frame);
+                    }
+                }
+            }
+            return result;
+        }
+        else  {
+            return super.getFramesWithMatchingDirectOwnSlotValue(slot, regexp, maxMatches);
+        }
+    }
 
     public void setDirectOwnSlotValues(Frame frame, Slot slot, Collection values) {
         final Map<Frame, List> instancesMap = slotsMap.get(slot);
