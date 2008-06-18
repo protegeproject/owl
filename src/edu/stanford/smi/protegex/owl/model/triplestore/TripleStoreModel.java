@@ -54,8 +54,8 @@ public interface TripleStoreModel extends Disposable{
      * slot value of the resource.  The intention is that this will be where the resource
      * is first defined (using the ordering defined by the imports tree with imported  ontologies
      * first).
-     * 
-     * The reality is that this is not well defined.  It is easy to imagine that  there are 
+     *
+     * The reality is that this is not well defined.  It is easy to imagine that  there are
      * several triple stores that have  a :NAME slot value for the resource.   In  this case
      * this routine chooses one of these triple stores at random.
      *
@@ -63,6 +63,16 @@ public interface TripleStoreModel extends Disposable{
      * @return the home TripleStore
      */
     TripleStore getHomeTripleStore(RDFResource resource);
+
+
+    /**
+     * The home triple store of the triple defined by the method arguments.
+     * @param subject - the subject of the triple
+     * @param predicate - the predicate of the triple
+     * @param object - the object of the triple
+     * @return - the triplestore in which the triple <code>(subject, predicate, object)</code> is defined
+     */
+    TripleStore getHomeTripleStore(Instance subject, Slot predicate, Object object);
 
 
     /**
@@ -104,10 +114,10 @@ public interface TripleStoreModel extends Disposable{
      * @return the TripleStore or null
      */
     TripleStore getTripleStoreByDefaultNamespace(String namespace);
-    
+
     /**
      * Gets the System Triple Store.
-     * 
+     *
      * @return the system triple store
      */
     TripleStore getSystemTripleStore();
@@ -167,14 +177,14 @@ public interface TripleStoreModel extends Disposable{
      */
     Iterator<Triple> listTriplesWithSubject(RDFResource subject);
 
-    
+
     /**
      * Returns an iterator of all subjects in any triplestore
      * that have a value for property.
      */
     Iterator<RDFResource> listSubjects(RDFProperty property);
-    
-    
+
+
     /**
      * Provides an Iterator on all user TripleStores, i.e. all results of <CODE>getTripleStores()</CODE>
      * except for the first (system) TripleStore.
@@ -206,25 +216,25 @@ public interface TripleStoreModel extends Disposable{
      */
     void setHomeTripleStore(RDFResource resource, TripleStore tripleStore);
 
-    
+
     /**
      * Sets the top level triple store to the currently active triple store.
-     * 
+     *
      * This should only be called early on in the initialization sequence.
-     * Use of this after an owl model is loaded will lead to unpredictable 
+     * Use of this after an owl model is loaded will lead to unpredictable
      * behavior.
      */
     void setTopTripleStore(TripleStore tripleStore);
-    
+
     void setViewActiveOnly(boolean viewActiveOnly);
-    
+
     /**
      * Changes the <CODE>isIncluded()</CODE> value of all resources to reflect the
      * currently active TripleStore.  This should be called if the editable flag
      * is relevant (e.g. in a user interface) after changes of the active TripleStore.
      */
     void updateEditableResourceState();
-    
+
     /**
      * Cleans up all the triple stores managed by this.
      * This is called when an OWLModel is disposed (e.g. at project close in the UI).
