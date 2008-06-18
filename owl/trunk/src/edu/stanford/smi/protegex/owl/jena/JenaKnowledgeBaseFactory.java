@@ -1,10 +1,10 @@
 package edu.stanford.smi.protegex.owl.jena;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.URI;
 import java.util.Collection;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.util.FileUtils;
@@ -21,9 +21,8 @@ import edu.stanford.smi.protege.util.PropertyList;
 import edu.stanford.smi.protege.util.URIUtilities;
 import edu.stanford.smi.protegex.owl.database.OWLDatabaseModel;
 import edu.stanford.smi.protegex.owl.jena.parser.ProtegeOWLParser;
-import edu.stanford.smi.protegex.owl.jena.parser.ProtegeOWLParserException;
-import edu.stanford.smi.protegex.owl.model.impl.OWLUtil;
-import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreModel;
+import edu.stanford.smi.protegex.owl.model.factory.AlreadyImportedException;
+import edu.stanford.smi.protegex.owl.model.factory.FactoryUtils;
 import edu.stanford.smi.protegex.owl.repository.util.RepositoryFileManager;
 import edu.stanford.smi.protegex.owl.storage.OWLKnowledgeBaseFactory;
 import edu.stanford.smi.protegex.owl.storage.ProtegeSaver;
@@ -36,6 +35,7 @@ import edu.stanford.smi.protegex.owl.ui.resourceselection.ResourceSelectionActio
  * @author Holger Knublauch  <holger@knublauch.com>
  */
 public class JenaKnowledgeBaseFactory implements OWLKnowledgeBaseFactory {
+    private static final transient Logger log = Log.getLogger(JenaKnowledgeBaseFactory.class);
 
     public static final String JENA_SYNCHRONIZED = JenaKnowledgeBaseFactory.class.getName() + ".synchronized";
 
@@ -235,6 +235,11 @@ public class JenaKnowledgeBaseFactory implements OWLKnowledgeBaseFactory {
             }
             else {  // Any other Protege format
                 // TODO: owlModel.initWithProtegeMetadataOntology(errors);
+                try {
+                    FactoryUtils.addOntologyToTripleStore(owlModel, owlModel.getTripleStoreModel().getTopTripleStore(), FactoryUtils.generateOntologyURIBase());
+                } catch (AlreadyImportedException e) {
+                    log.log(Level.WARNING, "Unexpected Exception - Could not set default ontology", e);
+                }
                 new ProtegeSaver(kb, owlModel).run();
                 URI absoluteURI = getFileURI(sources, owlModel.getProject());
                 owlModel.save(absoluteURI, language, errors);
