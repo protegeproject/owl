@@ -14,6 +14,7 @@ import edu.stanford.smi.protegex.owl.model.OWLOntology;
 import edu.stanford.smi.protegex.owl.model.RDFObject;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
+import edu.stanford.smi.protegex.owl.model.RDFSClass;
 import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
 
 /**
@@ -109,6 +110,16 @@ public interface TripleStore extends NamespaceMap, Disposable {
      */
     Set<RDFProperty> getUserDefinedProperties();
 
+
+    /**
+     * Returns the direct class instances defined in this triplestore as objects of <code>X</code>.
+     */
+    <X extends RDFResource> Set<X> getUserDefinedDirectInstancesOf(RDFSClass rdfsClass, Class<? extends X> javaClass);
+
+    /**
+     * Returns the all (direct and indirect) class instances defined in this triplestore as objects of <code>X</code>.
+     */
+    <X extends RDFResource> Set<X> getUserDefinedInstancesOf(RDFSClass rdfsClass, Class<? extends X> javaClass);
 
     /**
      * Lists all Triples that have a given object.
