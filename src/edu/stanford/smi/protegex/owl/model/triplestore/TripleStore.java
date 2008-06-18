@@ -3,6 +3,7 @@ package edu.stanford.smi.protegex.owl.model.triplestore;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.Set;
 import java.util.logging.Level;
 
 import edu.stanford.smi.protege.model.framestore.NarrowFrameStore;
@@ -13,6 +14,7 @@ import edu.stanford.smi.protegex.owl.model.OWLOntology;
 import edu.stanford.smi.protegex.owl.model.RDFObject;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
+import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
 
 /**
  * An interface for low-level access to the single triples in an OWLModel.
@@ -96,6 +98,8 @@ public interface TripleStore extends NamespaceMap, Disposable {
 
 
     Iterator<Triple> listTriples();
+    
+    Set<RDFSNamedClass> getUserDefinedClasses();
 
 
     /**
