@@ -919,7 +919,7 @@
 ([KB_325529_Class4] of  String
 
 	(name "owl_file_name")
-	(string_value "empty.owl.owl"))
+	(string_value "empty.owl"))
 
 ([KB_444675_Instance_0] of  String
 
