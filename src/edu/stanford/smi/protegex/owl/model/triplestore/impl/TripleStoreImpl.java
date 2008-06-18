@@ -125,6 +125,9 @@ public class TripleStoreImpl implements TripleStore {
                 if (predicate instanceof RDFProperty) {
                     if (record.getFacet() == null && !record.isTemplate() && !ignoreProperties.contains(predicate)) {
                         for (Object object : record.getValues()) {
+                            if (log.isLoggable(Level.FINER)) {
+                                log.finer("\tObject = " + object);
+                            }
                             if (object instanceof String && DefaultRDFSLiteral.isRawValue((String) object)) {
                                 object = new DefaultRDFSLiteral(owlModel, (String) object);
                             }
