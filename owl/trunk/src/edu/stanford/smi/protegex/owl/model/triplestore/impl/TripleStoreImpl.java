@@ -8,6 +8,7 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -24,12 +25,15 @@ import edu.stanford.smi.protege.model.framestore.Record;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.model.NamespaceManager;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
 import edu.stanford.smi.protegex.owl.model.OWLOntology;
 import edu.stanford.smi.protegex.owl.model.RDFNames;
 import edu.stanford.smi.protegex.owl.model.RDFObject;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
+import edu.stanford.smi.protegex.owl.model.RDFSClass;
 import edu.stanford.smi.protegex.owl.model.RDFSLiteral;
+import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
 import edu.stanford.smi.protegex.owl.model.factory.OWLJavaFactory;
 import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultRDFSLiteral;
@@ -326,6 +330,39 @@ public class TripleStoreImpl implements TripleStore {
             }
         }
         return triples.iterator();
+    }
+    
+    public Set<RDFSNamedClass> getUserDefinedClasses() {
+        Set<RDFSClass> possibleTypesForUserDefinedClasses = new HashSet<RDFSClass>();
+        for (Object o : owlModel.getRDFSNamedClassClass().getSuperclasses(true)) {
+            if (o instanceof RDFSNamedClass) {
+                RDFSNamedClass rdfsClass = (RDFSNamedClass) o;
+                if (!rdfsClass.isSystem()) {
+                    possibleTypesForUserDefinedClasses.add(rdfsClass);
+                }
+            }
+        }
+        possibleTypesForUserDefinedClasses.add(owlModel.getRDFSNamedClassClass());
+        possibleTypesForUserDefinedClasses.add(owlModel.getOWLNamedClassClass());
+        Set<RDFSNamedClass> userDefinedClasses = new HashSet<RDFSNamedClass>();
+        for (RDFSClass type : possibleTypesForUserDefinedClasses) {
+            userDefinedClasses.addAll(getUserDefinedInstancesOf(type, RDFSNamedClass.class));
+        }
+        return userDefinedClasses;
+    }
+    
+    private <X extends RDFResource> Set<X> getUserDefinedInstancesOf(RDFSClass rdfsClass, Class<? extends X> javaClass) {
+        Collection<?> allInstances = getNarrowFrameStore().getValues(rdfsClass, owlModel.getSystemFrames().getDirectInstancesSlot(), null, false);
+        Set<X> userDefinedInstances = new HashSet<X>();
+        for (Object o : allInstances) {
+            if (javaClass.isInstance(o)) {
+                X resource = javaClass.cast(o);
+                if (!resource.isSystem()) {
+                    userDefinedInstances.add(resource);
+                }
+            }
+        }
+        return userDefinedInstances;
     }
 
 
