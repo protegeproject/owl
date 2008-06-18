@@ -31,17 +31,17 @@ import edu.stanford.smi.protegex.owl.util.OWLFrameStoreUtils;
  * @author Holger Knublauch  <holger@knublauch.com>
  */
 public class TripleStoreModelImpl implements TripleStoreModel {
-    
+
     protected MergingNarrowFrameStore mnfs;
-    
+
     private Slot nameSlot;
-    
+
     private OWLModel owlModel;
-    
+
     private List<TripleStore> allTripleStores = new ArrayList<TripleStore>();
-    
+
     private Map<NarrowFrameStore, TripleStore> tripleStoreMap = new HashMap<NarrowFrameStore, TripleStore>();
-    
+
     private TripleStore topTripleStore;
 
 
@@ -51,7 +51,7 @@ public class TripleStoreModelImpl implements TripleStoreModel {
         this.owlModel = owlModel;
         initTripleStores();
     }
-    
+
     public TripleStore createActiveImportedTripleStore(NarrowFrameStore frameStore) {
         String parentName = getActiveTripleStore().getNarrowFrameStore().getName();
         mnfs.addActiveChildFrameStore(frameStore, parentName);
@@ -75,8 +75,7 @@ public class TripleStoreModelImpl implements TripleStoreModel {
 
 
     public TripleStore getTripleStoreByDefaultNamespace(String namespace) {
-        for (Iterator<TripleStore> it = allTripleStores.iterator(); it.hasNext();) {
-            TripleStore tripleStore = it.next();
+        for (TripleStore tripleStore : allTripleStores) {
             if (namespace.equals(tripleStore.getDefaultNamespace())) {
                 return tripleStore;
             }
@@ -102,7 +101,7 @@ public class TripleStoreModelImpl implements TripleStoreModel {
         mnfs.setRemoveFrameStores(allFrameStores);
         owlModel.resetJenaModel();
     }
-    
+
     public TripleStore getActiveTripleStore() {
         if (mnfs == null) {
             /**
@@ -116,14 +115,26 @@ public class TripleStoreModelImpl implements TripleStoreModel {
 
 
     public TripleStore getHomeTripleStore(RDFResource resource) {
-        for (Iterator<TripleStore> it = allTripleStores.iterator(); it.hasNext();) {
-            TripleStore tripleStore = it.next();
+        for (TripleStore tripleStore : allTripleStores) {
             if (tripleStore.getNarrowFrameStore().getValuesCount(resource, nameSlot, null, false) > 0) {
                 return tripleStore;
             }
         }
         return null;
     }
+
+	public TripleStore getHomeTripleStore(Instance subject, Slot predicate, Object object) {
+		Iterator it = owlModel.getTripleStoreModel().listUserTripleStores();
+		while (it.hasNext()) {
+			TripleStore ts = (TripleStore) it.next();
+			NarrowFrameStore nfs = ts.getNarrowFrameStore();
+			Collection values = nfs.getValues(subject, predicate, null, false);
+			if (values.contains(object)) {
+				return ts;
+			}
+		}
+		return null;
+	}
 
 
     public Collection getPropertyValues(RDFResource resource, RDFProperty property) {
@@ -162,7 +173,7 @@ public class TripleStoreModelImpl implements TripleStoreModel {
     public TripleStore getTopTripleStore() {
         return topTripleStore;
     }
-    
+
     public void setTopTripleStore(TripleStore tripleStore) {
         topTripleStore = tripleStore;
         setViewActiveOnly(false);
@@ -220,14 +231,14 @@ public class TripleStoreModelImpl implements TripleStoreModel {
         }
         return result.iterator();
     }
-    
-    
-    public Iterator<RDFResource> listSubjects(RDFProperty property) {       
+
+
+    public Iterator<RDFResource> listSubjects(RDFProperty property) {
          Set<RDFResource> result = new HashSet<RDFResource>();
-         
+
          Iterator<TripleStore> it = getTripleStores().iterator();
          while (it.hasNext()) {
-             TripleStore ts = it.next();    
+             TripleStore ts = it.next();
              Iterator subjects = ts.listSubjects(property);
              while (subjects.hasNext()) {
                  Frame frame = (Frame) subjects.next();
@@ -240,7 +251,7 @@ public class TripleStoreModelImpl implements TripleStoreModel {
     }
 
 
-    public Iterator listUserTripleStores() {
+    public Iterator<TripleStore> listUserTripleStores() {
         //TT: This has to be checked whether it is working right.
         if (mnfs == null && allTripleStores.size() == 1) {
             /**
@@ -248,8 +259,8 @@ public class TripleStoreModelImpl implements TripleStoreModel {
              */
             return CollectionUtilities.createCollection(allTripleStores.get(0)).iterator();
         }
-        
-        Iterator it = getTripleStores().iterator();
+
+        Iterator<TripleStore> it = getTripleStores().iterator();
         it.next(); // drop the system triple store.
         return it;
     }
@@ -288,22 +299,22 @@ public class TripleStoreModelImpl implements TripleStoreModel {
     public void updateEditableResourceState() {
         TripleStoreUtil.updateFrameInclusion(mnfs, nameSlot);
     }
-    
+
     public void dispose() {
         for (TripleStore tripleStore : allTripleStores) {
             tripleStore.dispose();
         }
-        
+
         if (mnfs != null) {
             mnfs.close();
         }
-        
+
         allTripleStores.clear();
         tripleStoreMap.clear();
         allTripleStores = null;
         tripleStoreMap = null;
     }
-    
+
     public void setViewActiveOnly(boolean viewActiveOnly) {
         if (mnfs == null) {
             throw new  UnsupportedOperationException("Can't restrict visibility to active triple store");
@@ -316,10 +327,10 @@ public class TripleStoreModelImpl implements TripleStoreModel {
             mnfs.setTopFrameStore(getTopTripleStore().getNarrowFrameStore().getName());
         }
     }
-    
+
     @Override
     public String toString() {
         return "TripleStoreModel(" + getTopTripleStore().getOWLOntology().getBrowserText() + ")";
     }
-    
+
 }
