@@ -46,14 +46,22 @@ public class ResourceAdapter extends FrameAdapter implements ResourceListener {
 			RDFResource resource = (RDFResource) event.getFrame();
 			Collection types = resource.getRDFTypes();
 			Collection oldTypes = event.getOldValues();
+			
 			for (Object newType : types) {
-				if (newType instanceof RDFSClass && !oldTypes.contains(newType)) {
-					typeAdded(resource, (RDFSClass) newType, event);
+				if (newType instanceof RDFSClass) {
+					if (oldTypes == null || !oldTypes.contains(newType)) {
+						typeAdded(resource, (RDFSClass) newType, event);
+					}					
 				}
 			}
+			
+			if (oldTypes == null) {
+				return;
+			}
+			
 			for (Object oldType : oldTypes) {
-				if (oldType instanceof RDFSClass && !types.contains(oldType)) {
-					typeRemoved(resource, (RDFSClass) oldType, event);
+				if (oldType instanceof RDFSClass && !types.contains(oldType)) {					
+					typeRemoved(resource, (RDFSClass) oldType, event);					
 				}
 			}
 		}
