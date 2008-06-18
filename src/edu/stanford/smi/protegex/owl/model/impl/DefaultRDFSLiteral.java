@@ -148,6 +148,10 @@ public class DefaultRDFSLiteral implements RDFSLiteral {
         }
         else {
             int index = rawValue.indexOf(SEPARATOR);
+            
+            if (index == -1) { // no separator - should not be the case
+            	return owlModel.getXSDstring();
+            }
             String datatypeName = rawValue.substring(2, index);
             RDFSDatatype datatype = owlModel.getRDFSDatatypeByName(datatypeName);                  
             return datatype; 
