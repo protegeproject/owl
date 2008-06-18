@@ -331,6 +331,20 @@ public class TripleStoreImpl implements TripleStore {
         return triples.iterator();
     }
 
+
+    public Set<RDFProperty> getUserDefinedProperties() {
+        Collection<?> possibleTypesForUserDefinedClasses = owlModel.getRDFPropertyClass().getSubclasses(true);
+        Set<RDFProperty> userDefinedClasses = new HashSet<RDFProperty>();
+        for (Object type : possibleTypesForUserDefinedClasses) {
+        	if (type instanceof RDFSClass) {
+        		userDefinedClasses.addAll(getUserDefinedInstancesOf((RDFSClass) type, RDFProperty.class));
+        	}
+        }
+        return userDefinedClasses;
+    }
+
+
+
     public Set<RDFSNamedClass> getUserDefinedClasses() {
         Collection<?> possibleTypesForUserDefinedClasses = owlModel.getRDFSNamedClassClass().getSubclasses(true);
         Set<RDFSNamedClass> userDefinedClasses = new HashSet<RDFSNamedClass>();
