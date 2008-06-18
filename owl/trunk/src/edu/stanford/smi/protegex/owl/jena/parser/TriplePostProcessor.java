@@ -61,7 +61,7 @@ class TriplePostProcessor extends AbstractStatefulTripleProcessor {
 		}
 	}
 	//should rather be a list? Is the order of ts important?
-	Collection<TripleStore> nonDBTripleStores = new HashSet<TripleStore>();
+	Collection<TripleStore> parsedTripleStores = new HashSet<TripleStore>();
 
 	public TriplePostProcessor(TripleProcessor processor) {
 		super(processor);
@@ -120,7 +120,7 @@ class TriplePostProcessor extends AbstractStatefulTripleProcessor {
 	 * Computation not good - keep track of what has been parsed
 	 */
 	private void computeNonDbTripleStores() {
-		nonDBTripleStores = ((AbstractOWLModel) owlModel).getGlobalParserCache().getParsedTripleStores();
+		parsedTripleStores = ((AbstractOWLModel) owlModel).getGlobalParserCache().getParsedTripleStores();
 		/*
 		TripleStoreModel tsm = owlModel.getTripleStoreModel();
 		TripleStore systemTs = tsm.getSystemTripleStore();
@@ -142,7 +142,7 @@ class TriplePostProcessor extends AbstractStatefulTripleProcessor {
 		log.info("Postprocess: Process metaclasses (" + userMetaClassesCount + " metaclasses) ... ");
 		long time0 = System.currentTimeMillis();
 
-		for (TripleStore ts : nonDBTripleStores) {
+		for (TripleStore ts : parsedTripleStores) {
 			processMetaclasses(ts);
 		}
 
@@ -154,7 +154,7 @@ class TriplePostProcessor extends AbstractStatefulTripleProcessor {
 		log.info("Postprocess: Process subclasses of rdf:List (" + owlModel.getRDFListClass().getSubclassCount() + " classes) ... ");
 		long time0 = System.currentTimeMillis();
 
-		for (TripleStore ts : nonDBTripleStores) {
+		for (TripleStore ts : parsedTripleStores) {
 			processSubclassesOfRdfList(ts);
 		}
 		log.info(System.currentTimeMillis() - time0 + " ms\n");
@@ -164,7 +164,7 @@ class TriplePostProcessor extends AbstractStatefulTripleProcessor {
 		log.info("Postprocess: Add inferred superclasses ... ");
 		long time0 = System.currentTimeMillis();
 
-		for (TripleStore ts : nonDBTripleStores) {
+		for (TripleStore ts : parsedTripleStores) {
 			processInferredSuperclasses(ts);
 		}
 
@@ -175,7 +175,7 @@ class TriplePostProcessor extends AbstractStatefulTripleProcessor {
 		log.info("Postprocess: Abstract classes... ");
 		long time0 = System.currentTimeMillis();
 
-		for (TripleStore ts : nonDBTripleStores) {
+		for (TripleStore ts : parsedTripleStores) {
 			processAbstractClasses(ts);
 		}
 		log.info(System.currentTimeMillis() - time0 + " ms\n");
@@ -185,7 +185,7 @@ class TriplePostProcessor extends AbstractStatefulTripleProcessor {
 		log.info("Postprocess: Domain and range of properties... ");
 		long time0 = System.currentTimeMillis();
 
-		for (TripleStore ts : nonDBTripleStores) {
+		for (TripleStore ts : parsedTripleStores) {
 			processDomainAndRange(ts);
 		}
 
@@ -230,18 +230,10 @@ class TriplePostProcessor extends AbstractStatefulTripleProcessor {
 		log.info(System.currentTimeMillis() - time0 + " ms\n");
 	}
 
-	@SuppressWarnings("deprecation")
 	private void processMetaclasses(TripleStore ts) {
-		RDFSNamedClass rdfsClass = owlModel.getRDFSNamedClassClass();
-		RDFSNamedClass rdfPropClass = owlModel.getRDFPropertyClass();
-
-
-		processMetaclasses(rdfsClass, ts);
-		processMetaclasses(rdfPropClass, ts);
-
-
+		processMetaclasses(owlModel.getRDFSNamedClassClass(), ts);
+		processMetaclasses(owlModel.getRDFPropertyClass(), ts);
 	}
-
 
 	private void processMetaclasses(Cls superMetaclass, TripleStore ts) {
 		for (Iterator iterator = superMetaclass.getSubclasses().iterator(); iterator.hasNext();) {
@@ -276,20 +268,21 @@ class TriplePostProcessor extends AbstractStatefulTripleProcessor {
 		log.info("Postprocess: Process classes without superclasses (" + superClsCache.getCachedFramesWithNoSuperclass().size() + " classes) ... ");
 		long time0 = System.currentTimeMillis();
 
-		Collection classes = new ArrayList<Frame>(superClsCache.getCachedFramesWithNoSuperclass());
+		Collection<Frame> classes = new ArrayList<Frame>(superClsCache.getCachedFramesWithNoSuperclass());
 		classes.addAll(owlModel.getSystemFrames().getRdfExternalClassClass().getInstances());
 
-		for (Iterator<Frame> iter = classes.iterator(); iter.hasNext();) {
-			Frame frame = iter.next();
+		for (Frame frame : classes) {
 			if (log.isLoggable(Level.FINE)) {
 				log.fine("processClsesWithoutSupercls: No declared supercls: " + frame + "\n");
 			}
 
 			if (frame instanceof RDFSClass) {
 				try {
-					//create subclass in the home triplestore of the cls
-					TripleStore homeTs = owlModel.getTripleStoreModel().getHomeTripleStore((RDFSClass)frame);
-					FrameCreatorUtility.createSubclassOf((RDFSClass)frame, owlModel.getOWLThingClass(),homeTs);
+					//reinitCaches(); //TODO: check if needed
+					if (((RDFSClass)frame).getSuperclassCount() == 0) {
+						TripleStore homeTs = owlModel.getTripleStoreModel().getHomeTripleStore((RDFSClass)frame);
+						FrameCreatorUtility.createSubclassOf((RDFSClass)frame, owlModel.getOWLThingClass(), homeTs);
+					}
 					superClsCache.removeFrame(frame);
 				} catch (Exception e) {
 					Log.getLogger().log(Level.WARNING, "Error at adding owl:Thing as a superclass of " + frame, e);
@@ -342,32 +335,6 @@ class TriplePostProcessor extends AbstractStatefulTripleProcessor {
 				Log.getLogger().log(Level.WARNING, " Error at post processing " + obj + "\n", e);
 			}
 		}
-
-		/*
-		//TODO: this should be done only at the very end
-		//if at the end there are classes that do not have a parent, add them under owl:Thing
-		//this is repetitive with the previous method. Shouldn'e we call better that method?
-		for (Iterator iterator = superClsCache.getCachedFramesWithNoSuperclass().iterator(); iterator.hasNext();) {
-			Frame cls = (Frame) iterator.next();
-
-			if (cls instanceof RDFSNamedClass) {
-				try {
-					if (!FrameCreatorUtility.hasSuperclass((RDFSNamedClass)cls, owlModel.getOWLThingClass())) {
-						TripleStore homeTs = owlModel.getTripleStoreModel().getHomeTripleStore((RDFSClass)cls);
-						FrameCreatorUtility.createSubclassOf((RDFSNamedClass)cls, owlModel.getOWLThingClass(), homeTs);
-						iterator.remove();
-					}
-				} catch(Exception e) {
-					Log.getLogger().log(Level.WARNING, " Error at post processing (adding owl:Thing as parent): " + cls + "\n", e);
-				}
-			} else {
-				if (log.isLoggable(Level.FINE)) {
-					log.fine("Class without parent: " + cls + "\n");
-				}
-			}
-		}
-*/
-
 	}
 
 
