@@ -26,9 +26,9 @@ import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
  * @author Holger Knublauch  <holger@knublauch.com>
  */
 public interface TripleStore extends NamespaceMap, Disposable {
-    
+
     NamespaceManager getNamespaceManager();
-    
+
     OWLOntology  getOWLOntology();
 
     void add(Triple triple);
@@ -98,8 +98,16 @@ public interface TripleStore extends NamespaceMap, Disposable {
 
 
     Iterator<Triple> listTriples();
-    
+
+    /**
+     * @return All the user defined classes (non-system) defined in this triplestore.
+     */
     Set<RDFSNamedClass> getUserDefinedClasses();
+
+    /**
+     * @return All the user defined properties (non-system) defined in this triplestore.
+     */
+    Set<RDFProperty> getUserDefinedProperties();
 
 
     /**
@@ -135,29 +143,30 @@ public interface TripleStore extends NamespaceMap, Disposable {
 
 
     String getOriginalXMLBase();
-    
+
     void setOriginalXMLBase(String xmlBase);
-    
-    
+
+
     /**
      * Debugging only.
      */
     void dump(Level level);
-    
-    
+
+
     /**
-     * Disposes this triple store. Called by the triple store manager when an 
+     * Disposes this triple store. Called by the triple store manager when an
      * OWL model is disposed.
      */
     void dispose();
-    
+
     /**
-     * Tracks the set of io names that have been used to retrieve this triple store.  This can be 
+     * Tracks the set of io names that have been used to retrieve this triple store.  This can be
      * different than the ontology name in the case of a broken import statement.
      */
     Collection<String> getIOAddresses();
-    
+
     void addIOAddress(String uri);
-    
+
     void removeIOAddress(String uri);
+
 }
