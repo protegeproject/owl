@@ -31,21 +31,21 @@ public class ClientTripleStoreModel implements TripleStoreModel {
     private Map<String, TripleStore> tripleStores = new HashMap<String, TripleStore>();
     private String activeTripleStoreName;
     private String systemTripleStoreName;
-    
+
     public ClientTripleStoreModel(OWLModel owlModel) {
         this.owlModel = owlModel;
         initialize();
     }
-    
+
     private void initialize() {
         initialize(getRemoteSession());
     }
-    
+
     private RemoteSession getRemoteSession() {
         RemoteClientFrameStore frameStore = owlModel.getFrameStoreManager().getFrameStoreFromClass(RemoteClientFrameStore.class);
         return frameStore.getSession();
     }
-    
+
     private void initialize(RemoteSession  session) {
         Package p = (Package) new GetPackage(owlModel).execute();
         activeTripleStoreName = p.getActiveTripleStore();
@@ -55,13 +55,13 @@ public class ClientTripleStoreModel implements TripleStoreModel {
             NamespaceManager namespaceManager = p.getNamespaceManagers().get(i);
             namespaceManager = new UnmodifiableNamespaceManager(namespaceManager);
             String name = p.getTripleStoreNames().get(i);
-            
+
             NarrowFrameStore narrowFrameStore = new RemoteClientInvocationHandler(owlModel, remoteNarrowFrameStore, session).getNarrowFrameStore();
             TripleStore tripleStore = new TripleStoreImpl(owlModel, narrowFrameStore ,this, namespaceManager, name);
             tripleStores.put(name, tripleStore);
         }
     }
-    
+
 
     public TripleStore createActiveImportedTripleStore(NarrowFrameStore frameStore) {
         throw new UnsupportedOperationException();
@@ -82,6 +82,10 @@ public class ClientTripleStoreModel implements TripleStoreModel {
     public TripleStore getHomeTripleStore(RDFResource resource) {
         return getActiveTripleStore();
     }
+
+	public TripleStore getHomeTripleStore(Instance subject, Slot predicate,	Object object) {
+		throw new UnsupportedOperationException();
+	}
 
     public Collection getPropertyValues(RDFResource resource,
                                         RDFProperty property) {
