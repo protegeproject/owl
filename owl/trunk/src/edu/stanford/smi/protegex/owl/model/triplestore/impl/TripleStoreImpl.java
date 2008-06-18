@@ -337,7 +337,7 @@ public class TripleStoreImpl implements TripleStore {
         Set<RDFProperty> userDefinedClasses = new HashSet<RDFProperty>();
         for (Object type : possibleTypesForUserDefinedClasses) {
         	if (type instanceof RDFSClass) {
-        		userDefinedClasses.addAll(getUserDefinedInstancesOf((RDFSClass) type, RDFProperty.class));
+        		userDefinedClasses.addAll(getUserDefinedDirectInstancesOf((RDFSClass) type, RDFProperty.class));
         	}
         }
         return userDefinedClasses;
@@ -350,13 +350,13 @@ public class TripleStoreImpl implements TripleStore {
         Set<RDFSNamedClass> userDefinedClasses = new HashSet<RDFSNamedClass>();
         for (Object type : possibleTypesForUserDefinedClasses) {
         	if (type instanceof RDFSClass) {
-        		userDefinedClasses.addAll(getUserDefinedInstancesOf((RDFSClass) type, RDFSNamedClass.class));
+        		userDefinedClasses.addAll(getUserDefinedDirectInstancesOf((RDFSClass) type, RDFSNamedClass.class));
         	}
         }
         return userDefinedClasses;
     }
 
-    private <X extends RDFResource> Set<X> getUserDefinedInstancesOf(RDFSClass rdfsClass, Class<? extends X> javaClass) {
+    public <X extends RDFResource> Set<X> getUserDefinedDirectInstancesOf(RDFSClass rdfsClass, Class<? extends X> javaClass) {
         Collection<?> allInstances = getNarrowFrameStore().getValues(rdfsClass, owlModel.getSystemFrames().getDirectInstancesSlot(), null, false);
         Set<X> userDefinedInstances = new HashSet<X>();
         for (Object o : allInstances) {
@@ -367,6 +367,17 @@ public class TripleStoreImpl implements TripleStore {
                 }
             }
         }
+        return userDefinedInstances;
+    }
+
+    public <X extends RDFResource> Set<X> getUserDefinedInstancesOf(RDFSClass rdfsClass, Class<? extends X> javaClass) {
+        Set<X> userDefinedInstances = new HashSet<X>(getUserDefinedDirectInstancesOf(rdfsClass, javaClass));
+        for (Iterator iterator = rdfsClass.getSubclasses(true).iterator(); iterator.hasNext();) {
+			RDFSClass subcls = (RDFSClass) iterator.next();
+			if (!subcls.isSystem()) {
+				userDefinedInstances.addAll(getUserDefinedInstancesOf(subcls, javaClass));
+			}
+		}
         return userDefinedInstances;
     }
 
