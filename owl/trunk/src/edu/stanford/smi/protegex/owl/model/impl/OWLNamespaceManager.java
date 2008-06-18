@@ -16,9 +16,9 @@ import edu.stanford.smi.protegex.owl.swrl.model.SWRLNames;
 
 public class OWLNamespaceManager extends AbstractNamespaceManager {
     private static final long serialVersionUID = -7101015781624857363L;
-    
+
     private static final transient Logger log = Log.getLogger(OWLNamespaceManager.class);
-    //TODO: The interface should be modified to throw exceptions	
+    //TODO: The interface should be modified to throw exceptions
 
     //the 2 hashmaps should be kept in sync at all times
     private HashMap<String, String> prefix2namespaceMap = new HashMap<String, String>();
@@ -30,13 +30,13 @@ public class OWLNamespaceManager extends AbstractNamespaceManager {
     public OWLNamespaceManager() {
         setPrefix(OWLNames.OWL_NAMESPACE, OWLNames.OWL_PREFIX);
         setModifiable(OWLNames.OWL_PREFIX, false);
-        
+
         setPrefix(RDFNames.RDF_NAMESPACE, RDFNames.RDF_PREFIX);
         setModifiable(RDFNames.RDF_PREFIX, false);
-        
+
         setPrefix(RDFSNames.RDFS_NAMESPACE, RDFSNames.RDFS_PREFIX);
         setModifiable(RDFSNames.RDFS_PREFIX, false);
-        
+
         setPrefix(XSDNames.XSD_NAMESPACE, RDFNames.XSD_PREFIX);
         setModifiable(RDFNames.XSD_PREFIX, false);
 
@@ -44,7 +44,6 @@ public class OWLNamespaceManager extends AbstractNamespaceManager {
         setModifiable(XSPNames.DEFAULT_PREFIX, false);
 
         setPrefix(ProtegeNames.PROTEGE_OWL_NAMESPACE, ProtegeNames.PROTEGE_PREFIX);
-        setModifiable(ProtegeNames.PROTEGE_PREFIX, false);
 
         setPrefix(SWRLNames.SWRL_NAMESPACE, SWRLNames.SWRL_PREFIX);
         setModifiable(SWRLNames.SWRL_PREFIX, false);
@@ -71,11 +70,11 @@ public class OWLNamespaceManager extends AbstractNamespaceManager {
         return prefix2namespaceMap.get(prefix);
     }
 
-    public String getPrefix(String namespace) {		
+    public String getPrefix(String namespace) {
         return namespace2prefixMap.get(namespace);
     }
 
-    public Collection<String> getPrefixes() {		
+    public Collection<String> getPrefixes() {
         return prefix2namespaceMap.keySet();
     }
 
@@ -128,7 +127,7 @@ public class OWLNamespaceManager extends AbstractNamespaceManager {
 
     private void addPrefixMappingSimple(String namespace, String prefix) {
         prefix2namespaceMap.put(prefix, namespace);
-        namespace2prefixMap.put(namespace, prefix);	
+        namespace2prefixMap.put(namespace, prefix);
     }
 
 
