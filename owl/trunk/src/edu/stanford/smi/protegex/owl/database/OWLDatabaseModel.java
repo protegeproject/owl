@@ -17,6 +17,7 @@ import com.hp.hpl.jena.vocabulary.ReasonerVocabulary;
 
 import edu.stanford.smi.protege.model.KnowledgeBaseFactory;
 import edu.stanford.smi.protege.model.Project;
+import edu.stanford.smi.protege.model.framestore.FrameStoreManager;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.jena.Jena;
 import edu.stanford.smi.protegex.owl.jena.OntModelProvider;
@@ -131,10 +132,11 @@ public class OWLDatabaseModel
     @Override
     public void setProject(Project project) {
         super.setProject(project);
-
-        int position = getFrameStores().size() - 1;
-        if (!(getFrameStores().get(position) instanceof LocalClassificationFrameStore)) {
-            insertFrameStore(new LocalClassificationFrameStore(this), position);
+        
+        FrameStoreManager fsm = getFrameStoreManager();
+        if (fsm.getFrameStoreFromClass(LocalClassificationFrameStore.class) == null) {
+            int position = getFrameStores().size() - 1;
+            fsm.insertFrameStore(new LocalClassificationFrameStore(this), position);
         }
     }
 
