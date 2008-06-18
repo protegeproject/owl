@@ -14,7 +14,9 @@ import edu.stanford.smi.protege.model.framestore.NarrowFrameStore;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
 import edu.stanford.smi.protegex.owl.jena.parser.ProtegeOWLParser;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLOntology;
+import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
 import edu.stanford.smi.protegex.owl.model.impl.OWLUtil;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
@@ -31,7 +33,7 @@ import edu.stanford.smi.protegex.owl.ui.menu.OWLMenuProjectPlugin;
  */
 public class ImportHelper {
 
-    private JenaOWLModel owlModel;
+    private OWLModel owlModel;
 
     private Collection<URI> ontologyURIs;
     
@@ -52,7 +54,7 @@ public class ImportHelper {
      *
      *
      */
-    public ImportHelper(JenaOWLModel owlModel) {
+    public ImportHelper(OWLModel owlModel) {
         this.owlModel = owlModel;
         ontologyURIs = new ArrayList<URI>();
         ontologyStreams = new ArrayList<InputStream>();
@@ -117,7 +119,7 @@ public class ImportHelper {
         for(URI ontologyURI : ontologyURIs) {
             if (owlModel.getAllImports().contains(ontologyURI.toString()) == false &&
                     !importedOntologies.contains(ontologyURI)) {
-                URI realOntologyUri = owlModel.loadImportedAssertions(ontologyURI);
+                URI realOntologyUri = ((AbstractOWLModel)owlModel).loadImportedAssertions(ontologyURI);
                 if (realOntologyUri != null) {
                     importedOntologies.add(realOntologyUri);
                 }
