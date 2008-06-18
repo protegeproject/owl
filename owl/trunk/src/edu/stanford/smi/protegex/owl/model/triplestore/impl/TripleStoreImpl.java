@@ -332,21 +332,12 @@ public class TripleStoreImpl implements TripleStore {
     }
 
     public Set<RDFSNamedClass> getUserDefinedClasses() {
-        Set<RDFSClass> possibleTypesForUserDefinedClasses = new HashSet<RDFSClass>();
-        for (Object o : owlModel.getRDFSNamedClassClass().getSuperclasses(true)) {
-            if (o instanceof RDFSNamedClass) {
-                RDFSNamedClass rdfsClass = (RDFSNamedClass) o;
-                if (!rdfsClass.isSystem()) {
-                    possibleTypesForUserDefinedClasses.add(rdfsClass);
-                }
-            }
-        }
-        possibleTypesForUserDefinedClasses.add(owlModel.getRDFSNamedClassClass());
-        possibleTypesForUserDefinedClasses.add(owlModel.getOWLNamedClassClass());
-        possibleTypesForUserDefinedClasses.add(owlModel.getSystemFrames().getRdfExternalClassClass());
+        Collection<?> possibleTypesForUserDefinedClasses = owlModel.getRDFSNamedClassClass().getSubclasses(true);
         Set<RDFSNamedClass> userDefinedClasses = new HashSet<RDFSNamedClass>();
-        for (RDFSClass type : possibleTypesForUserDefinedClasses) {
-            userDefinedClasses.addAll(getUserDefinedInstancesOf(type, RDFSNamedClass.class));
+        for (Object type : possibleTypesForUserDefinedClasses) {
+        	if (type instanceof RDFSClass) {
+        		userDefinedClasses.addAll(getUserDefinedInstancesOf((RDFSClass) type, RDFSNamedClass.class));
+        	}
         }
         return userDefinedClasses;
     }
