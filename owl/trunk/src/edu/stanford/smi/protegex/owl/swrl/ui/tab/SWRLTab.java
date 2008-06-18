@@ -12,7 +12,6 @@ import edu.stanford.smi.protege.ui.ProjectManager;
 import edu.stanford.smi.protege.ui.ProjectView;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protege.widget.AbstractTabWidget;
-import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.util.ImportHelper;
 import edu.stanford.smi.protegex.owl.swrl.model.SWRLNames;
@@ -27,20 +26,20 @@ import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
  *
  * Full documentation is available <a href="http://protege.cim3.net/cgi-bin/wiki.pl?SWRLTab">here</a>.
  */
-public class SWRLTab extends AbstractTabWidget 
-{ 
+public class SWRLTab extends AbstractTabWidget
+{
   private SWRLTablePanel panel = null;
-  
-  public void initialize() {  
+
+  public void initialize() {
 	    setLabel("SWRL Rules");
 	    setIcon(SWRLIcons.getImpsIcon());
-	 
+
 	  	activateSWRL();
 	    panel = new SWRLTablePanel((OWLModel) getKnowledgeBase(), null, this);
 	    add(panel);
-  } // initialize 
-  
-  private void activateSWRL() 
+  } // initialize
+
+  private void activateSWRL()
   {
     OWLModel owlModel = (OWLModel) getKnowledgeBase();
     try {
@@ -51,10 +50,10 @@ public class SWRLTab extends AbstractTabWidget
       owlModel.getNamespaceManager().setPrefix(new URI(SWRLNames.SWRLABOX_NAMESPACE), SWRLNames.SWRLABOX_PREFIX);
       owlModel.getNamespaceManager().setPrefix(new URI(SWRLNames.SWRLTEMPORAL_NAMESPACE), SWRLNames.SWRLTEMPORAL_PREFIX);
       owlModel.getNamespaceManager().setPrefix(new URI(SWRLNames.SQWRL_NAMESPACE), SWRLNames.SQWRL_PREFIX);
-  
-      ImportHelper importHelper = new ImportHelper((JenaOWLModel)getKnowledgeBase());
+
+      ImportHelper importHelper = new ImportHelper(owlModel);
       boolean importsAdded  = false;
-      
+
       importsAdded |= addImport(owlModel, SWRLNames.SWRLA_IMPORT, importHelper);
       importsAdded |= addImport(owlModel, SWRLNames.SWRLX_IMPORT, importHelper);
       importsAdded |= addImport(owlModel, SWRLNames.SWRLM_IMPORT, importHelper);
@@ -62,29 +61,29 @@ public class SWRLTab extends AbstractTabWidget
       importsAdded |= addImport(owlModel, SWRLNames.SWRLABOX_IMPORT, importHelper);
       importsAdded |= addImport(owlModel, SWRLNames.SWRLTEMPORAL_IMPORT, importHelper);
       importsAdded |= addImport(owlModel, SWRLNames.SQWRL_IMPORT, importHelper);
-      
+
       importHelper.importOntologies(false);
-      
+
       // Make ":TO" and ":FROM" visible for dynamic expansion.
       owlModel.getSystemFrames().getToSlot().setVisible(true);
       owlModel.getSystemFrames().getFromSlot().setVisible(true);
       SWRLProjectPlugin.setSWRLClassesAndPropertiesVisible(getProject(), false);
       SWRLProjectPlugin.adjustWidgets(getProject());
-      
+
       if (importsAdded)  {
     	  ProjectView prjView = ProjectManager.getProjectManager().getCurrentProjectView();
     	  if (prjView != null) {
     		  prjView.reloadAllTabsExcept(this);
     	  }
       }
-      
+
     } catch (Exception ex) {
       ProtegeUI.getModalDialogFactory().showErrorMessageDialog(owlModel, "Could not activate SWRLTab: " + ex +
                                                                "\n. Your project might be in an inconsistent state now.");
       Log.getLogger().log(Level.SEVERE, "Exception caught", ex);
     } // try
   } // activateSWRL
-  
+
   private boolean addImport(OWLModel owlModel, String importUri, ImportHelper importHelper) throws URISyntaxException {
       if  (owlModel.getTripleStoreModel().getTripleStore(importUri) == null) {
           importHelper.addImport(new URI(importUri));
@@ -92,7 +91,7 @@ public class SWRLTab extends AbstractTabWidget
       }
       return false;
   }
-  
+
   public void reconfigure()
   {
     if (panel != null) {
@@ -102,8 +101,8 @@ public class SWRLTab extends AbstractTabWidget
     } // if
   } // reconfigure
 
-  
-  public static boolean isSuitable(Project p, Collection errors) 
+
+  public static boolean isSuitable(Project p, Collection errors)
   {
     if (p.getKnowledgeBase() instanceof OWLModel) {
       return true;
