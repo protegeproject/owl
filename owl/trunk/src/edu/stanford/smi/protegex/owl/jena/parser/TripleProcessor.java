@@ -12,12 +12,8 @@ import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 
 // - verify - not hard --
 //TODO: Load Birnlex -> class cast (rdf:List) OWLJavaFactory doesn't do the right thing
-//TODO: Check Jena writer - it writes out frames classes (:PAL-CONSTRAINT)
 
-//TODO: Each post process in a try catch
-//TODO: Check if the untyped types are written out
 //TODO: Add owl:Thing also for untyped classes
-
 
 //-- later --
 //TODO: Postprocessing GCI - refactor in their own class
@@ -32,7 +28,7 @@ public class TripleProcessor {
 	private TripleProcessorForLiteralObjects processorLiteralObjs;
 	private TripleProcessorForUntypedResources untypedProcessor;
 	private TriplePostProcessor postProcessor;
-	
+
 	private GlobalParserCache globalParserCache;
 
 
@@ -40,12 +36,12 @@ public class TripleProcessor {
 		this.owlModel = owlModel;
 
 		this.globalParserCache = ((AbstractOWLModel)owlModel).getGlobalParserCache();
-		
+
 		//should come as the last in the initialization
 		this.processorResourceObjs = new TripleProcessorForResourceObjects(this);
 		this.processorLiteralObjs = new TripleProcessorForLiteralObjects(this);
 		this.untypedProcessor = new TripleProcessorForUntypedResources(this);
-		this.postProcessor = new TriplePostProcessor(this);	
+		this.postProcessor = new TriplePostProcessor(this);
 	}
 
 
@@ -57,46 +53,46 @@ public class TripleProcessor {
 		return processorLiteralObjs.processTriple(subj, pred, lit, ts, alreadyInUndef);
 	}
 
-	
+
 	public OWLModel getOWLModel() {
 		return owlModel;
 	}
-	
+
 	public void addUndefTriple(AResource subj, AResource pred, AResource obj, String undefName, boolean alreadyInUndef, TripleStore ts) {
-		if (!alreadyInUndef) {		  
+		if (!alreadyInUndef) {
 			globalParserCache.addUndefTriple(new UndefTriple(subj, pred, obj, undefName, ts));
 		}
 	}
-	
-	protected void checkUndefinedResources(String uri) {		
-		Collection<UndefTriple> undefTriples = globalParserCache.getUndefTriples(uri); 
+
+	protected void checkUndefinedResources(String uri) {
+		Collection<UndefTriple> undefTriples = globalParserCache.getUndefTriples(uri);
 
 		for (Iterator<UndefTriple> iter = undefTriples.iterator(); iter.hasNext();) {
-			UndefTriple undefTriple = (UndefTriple) iter.next();
+			UndefTriple undefTriple = iter.next();
 			Object obj = undefTriple.getTripleObj();
 
 			TripleStore undefTripleStore = undefTriple.getTripleStore();
-			
+
 			boolean success = false;
 
-			if (obj instanceof AResource) {	
+			if (obj instanceof AResource) {
 				success = processTriple(undefTriple.getTripleSubj(), undefTriple.getTriplePred(), (AResource) undefTriple.getTripleObj(), undefTripleStore, true);
 			} else if (obj instanceof ALiteral) {
 				success = processTriple(undefTriple.getTripleSubj(), undefTriple.getTriplePred(), (ALiteral) undefTriple.getTripleObj(), undefTripleStore, true);
 			}
 
-			if (success) {			
+			if (success) {
 				iter.remove();
 				globalParserCache.removeUndefTriple(uri, undefTriple);
 			}
 		}
 	}
-	
+
 
 	public GlobalParserCache getGlobalParserCache() {
 		return globalParserCache;
-	}	
-	
+	}
+
 
 	public void doPostProcessing() {
 		processUndefTriples();
@@ -104,12 +100,12 @@ public class TripleProcessor {
 	}
 
 
-	public void processUndefTriples() {		
-		untypedProcessor.processUndefTriples();		
+	public void processUndefTriples() {
+		untypedProcessor.processUndefTriples();
 	}
-	
+
 	public void createUntypedResources() {
 		untypedProcessor.createUntypedResources();
-	}	
+	}
 
 }
