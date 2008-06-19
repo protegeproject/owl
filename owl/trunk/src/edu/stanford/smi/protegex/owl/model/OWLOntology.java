@@ -29,18 +29,14 @@ public interface OWLOntology extends RDFResource {
      *
      * @param uri an URI (not ending with a deliminator such as #)
      * @see edu.stanford.smi.protegex.owl.jena.parser.ProtegeOWLParser#addImport
-     * @deprecated don't use until fixed
      */
-    @Deprecated
     void addImports(String uri);
 
 
     /**
      * 
      * @param uri
-     * @deprecated don't use until fixed
      */
-    @Deprecated
     void addImports(URI uri);
 
 

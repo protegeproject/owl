@@ -67,29 +67,6 @@ public class TripleStoreUtil {
         }
     }
 
-
-    public static RDFResource getFirstOntology(OWLModel owlModel, TripleStore tripleStore) {
-        OWLOntology ontology = tripleStore.getOWLOntology();
-        if (ontology != null) {
-            return ontology;
-        }
-        log.warning("Missing ontology object for imported ontology.  Reverting to old (suspect) algorithm");
-        RDFSNamedClass owlOntologyClass = owlModel.getOWLOntologyClass();
-        Iterator ontologies = tripleStore.listSubjects(owlModel.getRDFTypeProperty(), owlOntologyClass);
-        if (ontologies.hasNext()) {
-            Frame next = (Frame) ontologies.next();
-            if (next instanceof RDFResource) {
-                return (RDFResource) next;
-            }
-            else {
-                return new DefaultOWLOntology(owlModel, next.getFrameID());
-            }
-        }
-        else {
-            return null;
-        }
-    }
-
     /**
      * Finds the triple store where a given fact is asserted.  There may be more
      * than one in which case a random one of these triple stores is returned.
