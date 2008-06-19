@@ -128,6 +128,7 @@ public class ImportHelper {
         ProtegeOWLParser.doFinalPostProcessing(owlModel);
         OWLOntology  importingOntology = owlModel.getTripleStoreModel().getActiveTripleStore().getOWLOntology();
         for (URI importedOntologyURI : importedOntologies) {
+            // TODO - this is very bad.  addImports depends on suspect assumptions.
             importingOntology.addImports(importedOntologyURI);
         }       
         
