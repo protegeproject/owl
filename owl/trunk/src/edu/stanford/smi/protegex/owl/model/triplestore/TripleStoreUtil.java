@@ -19,15 +19,13 @@ import edu.stanford.smi.protege.model.framestore.NarrowFrameStore;
 import edu.stanford.smi.protege.ui.FrameComparator;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protege.util.WaitCursor;
-import edu.stanford.smi.protegex.owl.database.OWLDatabaseModel;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
+import edu.stanford.smi.protegex.owl.model.OWLOntology;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
-import edu.stanford.smi.protegex.owl.model.RDFSLiteral;
 import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLOntology;
-import edu.stanford.smi.protegex.owl.model.impl.DefaultRDFSLiteral;
 import edu.stanford.smi.protegex.owl.model.triplestore.impl.DefaultTriple;
 import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
 import edu.stanford.smi.protegex.owl.util.job.GetTripleStoreOfTripleJob;
@@ -71,27 +69,26 @@ public class TripleStoreUtil {
 
 
     public static RDFResource getFirstOntology(OWLModel owlModel, TripleStore tripleStore) {
-        if (!(owlModel instanceof OWLDatabaseModel)) { // there is only one ontology in this triple store.
-            RDFSNamedClass owlOntologyClass = owlModel.getOWLOntologyClass();
-            Iterator ontologies = tripleStore.listSubjects(owlModel.getRDFTypeProperty(), owlOntologyClass);
-            if (ontologies.hasNext()) {
-                Frame next = (Frame) ontologies.next();
-                if (next instanceof RDFResource) {
-                    return (RDFResource) next;
-                }
-                else {
-                    return new DefaultOWLOntology(owlModel, next.getFrameID());
-                }
+        OWLOntology ontology = tripleStore.getOWLOntology();
+        if (ontology != null) {
+            return ontology;
+        }
+        log.warning("Missing ontology object for imported ontology.  Reverting to old (suspect) algorithm");
+        RDFSNamedClass owlOntologyClass = owlModel.getOWLOntologyClass();
+        Iterator ontologies = tripleStore.listSubjects(owlModel.getRDFTypeProperty(), owlOntologyClass);
+        if (ontologies.hasNext()) {
+            Frame next = (Frame) ontologies.next();
+            if (next instanceof RDFResource) {
+                return (RDFResource) next;
             }
             else {
-                return null;
+                return new DefaultOWLOntology(owlModel, next.getFrameID());
             }
         }
-        else { // there is only one triple store but it contains multiple ontology instances
-            return owlModel.getDefaultOWLOntology();
+        else {
+            return null;
         }
     }
-
 
     /**
      * Finds the triple store where a given fact is asserted.  There may be more
