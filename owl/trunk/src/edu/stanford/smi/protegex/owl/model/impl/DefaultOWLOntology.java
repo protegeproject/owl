@@ -57,13 +57,22 @@ public class DefaultOWLOntology extends DefaultRDFIndividual implements OWLOntol
 
     /**
      * Imprtant - for usage see <CODE>OWLOntology</CODE>
-     *
+     * <p>
+     * <b>Warning</b> the following code is wrong but I am a little nervous about fixing it.
+     * <pre>
+     *   resource = owlModel.getRDFResource(uri)
+     *   if (resource != null) {
+     *      addImportsHelper(resource);
+     *   }
+     * </pre>
+     * would be more likely to be correct.
      * @param uri
      */
     public void addImports(String uri) {
-
+        // The idea that the triple store calculated below is the triplestore for the uri ontology is wrong.
         TripleStore ts = getOWLModel().getTripleStoreModel().getTripleStore(uri);
         if (ts != null) {
+            // ont could be the wrong ontology object.
             OWLOntology ont = (OWLOntology) TripleStoreUtil.getFirstOntology(getOWLModel(), ts);
             addImportsHelper(ont);
         }
@@ -74,7 +83,9 @@ public class DefaultOWLOntology extends DefaultRDFIndividual implements OWLOntol
         }
     }
 
-
+    /*
+     * Depends on addImports(String) which is known to be wrong.
+     */
     public void addImports(URI uri) {
         addImports(uri.toString());
     }
