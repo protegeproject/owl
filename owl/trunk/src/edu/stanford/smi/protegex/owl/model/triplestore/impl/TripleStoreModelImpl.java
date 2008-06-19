@@ -103,12 +103,6 @@ public class TripleStoreModelImpl implements TripleStoreModel {
     }
 
     public TripleStore getActiveTripleStore() {
-        if (mnfs == null) {
-            /**
-             * Probably a client talking to a server.
-             */
-            return allTripleStores.get(allTripleStores.size() - 1);
-        }
         NarrowFrameStore activeFrameStore = mnfs.getActiveFrameStore();
         return tripleStoreMap.get(activeFrameStore);
     }
@@ -252,14 +246,6 @@ public class TripleStoreModelImpl implements TripleStoreModel {
 
 
     public Iterator<TripleStore> listUserTripleStores() {
-        //TT: This has to be checked whether it is working right.
-        if (mnfs == null && allTripleStores.size() == 1) {
-            /**
-             * Probably a client talking to a server and server is using database mode.
-             */
-            return CollectionUtilities.createCollection(allTripleStores.get(0)).iterator();
-        }
-
         Iterator<TripleStore> it = getTripleStores().iterator();
         it.next(); // drop the system triple store.
         return it;
@@ -272,13 +258,6 @@ public class TripleStoreModelImpl implements TripleStoreModel {
 
 
     public void setActiveTripleStore(TripleStore tripleStore) {
-        if (mnfs == null && allTripleStores.size() == 1) {
-            /**
-             * Probably a client talking to a server and server is using database mode.
-             * When we will support database inclusion, we should fix this implementation
-             */
-            return;
-        }
         if (mnfs.getActiveFrameStore() != tripleStore.getNarrowFrameStore()) {
             mnfs.setActiveFrameStore(tripleStore.getNarrowFrameStore());
         }
@@ -305,10 +284,6 @@ public class TripleStoreModelImpl implements TripleStoreModel {
             tripleStore.dispose();
         }
 
-        if (mnfs != null) {
-            mnfs.close();
-        }
-
         allTripleStores.clear();
         tripleStoreMap.clear();
         allTripleStores = null;
@@ -316,9 +291,6 @@ public class TripleStoreModelImpl implements TripleStoreModel {
     }
 
     public void setViewActiveOnly(boolean viewActiveOnly) {
-        if (mnfs == null) {
-            throw new  UnsupportedOperationException("Can't restrict visibility to active triple store");
-        }
         mnfs.setQueryAllFrameStores(false);
         if (viewActiveOnly) {
             mnfs.setTopFrameStore(null);
