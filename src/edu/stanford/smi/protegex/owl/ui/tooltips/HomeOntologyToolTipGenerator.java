@@ -36,7 +36,7 @@ public class HomeOntologyToolTipGenerator implements OWLToolTipGenerator {
             OWLModel owlModel = res.getOWLModel();
             TripleStore homeTS = owlModel.getTripleStoreModel().getHomeTripleStore(res);
             if (homeTS != null) {
-                OWLOntology homeOnt = (OWLOntology) TripleStoreUtil.getFirstOntology(owlModel, homeTS);
+                OWLOntology homeOnt = (OWLOntology) homeTS.getOWLOntology();
                 try {
                     URI homeOntURI = new URI(homeOnt.getURI());
                     text += "<br><b>ontology:</b> " + homeOntURI;

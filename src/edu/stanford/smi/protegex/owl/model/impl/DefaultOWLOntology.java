@@ -6,13 +6,16 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Logger;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
+import edu.stanford.smi.protege.model.Frame;
 import edu.stanford.smi.protege.model.FrameID;
 import edu.stanford.smi.protege.model.KnowledgeBase;
 import edu.stanford.smi.protege.model.Slot;
+import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLNames;
 import edu.stanford.smi.protegex.owl.model.OWLOntology;
@@ -33,6 +36,7 @@ import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
  * @author Holger Knublauch  <holger@knublauch.com>
  */
 public class DefaultOWLOntology extends DefaultRDFIndividual implements OWLOntology {
+    private static  final Logger log = Log.getLogger(DefaultOWLOntology.class);
 
     public DefaultOWLOntology(KnowledgeBase kb, FrameID id) {
         super(kb, id);
@@ -69,17 +73,13 @@ public class DefaultOWLOntology extends DefaultRDFIndividual implements OWLOntol
      * @param uri
      */
     public void addImports(String uri) {
-        // The idea that the triple store calculated below is the triplestore for the uri ontology is wrong.
-        TripleStore ts = getOWLModel().getTripleStoreModel().getTripleStore(uri);
-        if (ts != null) {
-            // ont could be the wrong ontology object.
-            OWLOntology ont = (OWLOntology) TripleStoreUtil.getFirstOntology(getOWLModel(), ts);
-            addImportsHelper(ont);
+        Frame ontology = getKnowledgeBase().getFrame(uri);
+        if (ontology != null 
+                && (ontology instanceof RDFExternalResource || ontology instanceof RDFUntypedResource || ontology instanceof OWLOntology)) {
+            addImportsHelper(ontology);
         }
         else {
-            RDFUntypedResource resource = getOWLModel().getRDFUntypedResource(uri, true);
-            addImportsHelper(resource);
-            // @@TODO we should probably ALWAYS create an owl:Ontology (but not sure if this will have negative side-effects)
+          log.warning("could not add import " + uri + "to the import tree.");  
         }
     }
 
@@ -237,7 +237,7 @@ public class DefaultOWLOntology extends DefaultRDFIndividual implements OWLOntol
         boolean result = false;
         OWLModel owlModel = getOWLModel();
         TripleStore top = owlModel.getTripleStoreModel().getTopTripleStore();
-        if (this.equals(TripleStoreUtil.getFirstOntology(owlModel, top))) {
+        if (this.equals(top.getOWLOntology())) {
             result = true;
         }
         else {
@@ -259,7 +259,7 @@ public class DefaultOWLOntology extends DefaultRDFIndividual implements OWLOntol
 
     private boolean isActive() {
         TripleStore active = getOWLModel().getTripleStoreModel().getActiveTripleStore();
-        return this.equals(TripleStoreUtil.getFirstOntology(getOWLModel(), active));
+        return this.equals(active.getOWLOntology());
     }
     
     @Override

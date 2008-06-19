@@ -123,7 +123,7 @@ public class TripleStoreSelectionAction extends AbstractAction {
         //TripleStoreTableModel tableModel = new TripleStoreTableModel(owlModel);
         //int row = tableModel.getSelectedTripleStoreRow();
         TripleStore ts = owlModel.getTripleStoreModel().getActiveTripleStore();
-        OWLOntology ont = (OWLOntology) TripleStoreUtil.getFirstOntology(owlModel, ts);
+        OWLOntology ont = ts.getOWLOntology();
         if (ont != null) {
             String file = ont.getURI();
             int index = file.lastIndexOf('/');
