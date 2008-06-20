@@ -335,8 +335,10 @@ public class TripleStoreImpl implements TripleStore {
     }
 
 
+    @SuppressWarnings("unchecked")
     public Set<RDFProperty> getUserDefinedProperties() {
-        Collection<?> possibleTypesForUserDefinedClasses = owlModel.getRDFPropertyClass().getSubclasses(true);
+        Collection possibleTypesForUserDefinedClasses = new HashSet(owlModel.getRDFPropertyClass().getSubclasses(true));
+        possibleTypesForUserDefinedClasses.add(owlModel.getRDFPropertyClass());
         Set<RDFProperty> userDefinedClasses = new HashSet<RDFProperty>();
         for (Object type : possibleTypesForUserDefinedClasses) {
         	if (type instanceof RDFSClass) {
@@ -348,8 +350,10 @@ public class TripleStoreImpl implements TripleStore {
 
 
 
+    @SuppressWarnings("unchecked")
     public Set<RDFSNamedClass> getUserDefinedClasses() {
-        Collection<?> possibleTypesForUserDefinedClasses = owlModel.getRDFSNamedClassClass().getSubclasses(true);
+        Collection possibleTypesForUserDefinedClasses = new HashSet(owlModel.getRDFSNamedClassClass().getSubclasses(true));
+        possibleTypesForUserDefinedClasses.add(owlModel.getRDFSNamedClassClass());
         Set<RDFSNamedClass> userDefinedClasses = new HashSet<RDFSNamedClass>();
         for (Object type : possibleTypesForUserDefinedClasses) {
         	if (type instanceof RDFSClass) {

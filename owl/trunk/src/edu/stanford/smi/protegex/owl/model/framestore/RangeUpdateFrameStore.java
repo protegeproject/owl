@@ -35,7 +35,7 @@ public class RangeUpdateFrameStore extends  FrameStoreAdapter {
     }
     
     /**
-     * Updates the ValueType of a datatype slot in response to changes in the range.
+     * Updates the ValueType of a slot in response to changes in the range.
      */
     @SuppressWarnings("unchecked")
     private void updateAllowedValues(RDFProperty property, Collection ranges) {
