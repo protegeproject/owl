@@ -95,6 +95,7 @@ import edu.stanford.smi.protegex.owl.model.factory.AlreadyImportedException;
 import edu.stanford.smi.protegex.owl.model.factory.FactoryUtils;
 import edu.stanford.smi.protegex.owl.model.factory.OWLJavaFactory;
 import edu.stanford.smi.protegex.owl.model.framestore.FacetUpdateFrameStore;
+import edu.stanford.smi.protegex.owl.model.framestore.LocalClassificationFrameStore;
 import edu.stanford.smi.protegex.owl.model.framestore.OWLFrameStore;
 import edu.stanford.smi.protegex.owl.model.framestore.OWLFrameStoreManager;
 import edu.stanford.smi.protegex.owl.model.project.DefaultOWLProject;
@@ -2187,6 +2188,14 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
         getProtegeInferredSuperclassesProperty().setVisible(false);
         getProtegeInferredSubclassesProperty().setVisible(false);
         getOWLOntologyClass().setVisible(false);
+
+        if (project.isMultiUserClient()) {
+            FrameStoreManager fsm = getFrameStoreManager();
+            if (fsm.getFrameStoreFromClass(LocalClassificationFrameStore.class) == null) {
+                int position = getFrameStores().size() - 1;
+                fsm.insertFrameStore(new LocalClassificationFrameStore(this), position);
+            }
+        }
     }
     
 
