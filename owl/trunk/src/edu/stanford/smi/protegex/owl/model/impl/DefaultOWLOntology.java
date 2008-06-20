@@ -74,6 +74,9 @@ public class DefaultOWLOntology extends DefaultRDFIndividual implements OWLOntol
      */
     public void addImports(String uri) {
         Frame ontology = getKnowledgeBase().getFrame(uri);
+        if (ontology  == null) {
+            ontology = getOWLModel().createRDFUntypedResource(uri);
+        }
         if (ontology != null 
                 && (ontology instanceof RDFExternalResource || ontology instanceof RDFUntypedResource || ontology instanceof OWLOntology)) {
             addImportsHelper(ontology);
