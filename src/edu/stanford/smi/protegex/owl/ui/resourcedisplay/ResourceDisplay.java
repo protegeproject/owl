@@ -1,5 +1,27 @@
 package edu.stanford.smi.protegex.owl.ui.resourcedisplay;
 
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
+
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.JToolBar;
+
 import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.Instance;
 import edu.stanford.smi.protege.model.Project;
@@ -10,25 +32,23 @@ import edu.stanford.smi.protege.ui.InstanceDisplay;
 import edu.stanford.smi.protege.util.ComponentFactory;
 import edu.stanford.smi.protege.util.SelectionListener;
 import edu.stanford.smi.protege.widget.ClsWidget;
-import edu.stanford.smi.protegex.owl.model.*;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
+import edu.stanford.smi.protegex.owl.model.OWLNames;
+import edu.stanford.smi.protegex.owl.model.OWLOntology;
+import edu.stanford.smi.protegex.owl.model.RDFProperty;
+import edu.stanford.smi.protegex.owl.model.RDFResource;
+import edu.stanford.smi.protegex.owl.model.RDFSClass;
 import edu.stanford.smi.protegex.owl.model.event.PropertyValueAdapter;
 import edu.stanford.smi.protegex.owl.model.event.PropertyValueListener;
-import edu.stanford.smi.protegex.owl.swrl.ui.SWRLProjectPlugin;
 import edu.stanford.smi.protegex.owl.swrl.ui.actions.FindRulesAction;
 import edu.stanford.smi.protegex.owl.testing.OWLTestManager;
-import edu.stanford.smi.protegex.owl.ui.actions.ResourceActionManager;
 import edu.stanford.smi.protegex.owl.ui.components.triples.TriplesComponent;
 import edu.stanford.smi.protegex.owl.ui.results.HostResourceDisplay;
 import edu.stanford.smi.protegex.owl.ui.search.FindUsageAction;
 import edu.stanford.smi.protegex.owl.ui.testing.OWLTestInstanceAction;
 import edu.stanford.smi.protegex.owl.ui.widget.InferredModeWidget;
 import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
-
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.*;
 
 /**
  * An InstanceDisplay with the "type" actions instead of the yellow sticky ones
@@ -41,17 +61,20 @@ public class ResourceDisplay extends InstanceDisplay implements ResourcePanel {
     /**
      * @deprecated
      */
-    public final static int DEFAULT_TYPE_CLS = ResourcePanel.DEFAULT_TYPE_CLASS;
+    @Deprecated
+	public final static int DEFAULT_TYPE_CLS = ResourcePanel.DEFAULT_TYPE_CLASS;
 
     /**
      * @deprecated
      */
-    public final static int DEFAULT_TYPE_SLOT = ResourcePanel.DEFAULT_TYPE_PROPERTY;
+    @Deprecated
+	public final static int DEFAULT_TYPE_SLOT = ResourcePanel.DEFAULT_TYPE_PROPERTY;
 
     /**
      * @deprecated
      */
-    public final static int DEFAULT_TYPE_INSTANCE = ResourcePanel.DEFAULT_TYPE_INDIVIDUAL;
+    @Deprecated
+	public final static int DEFAULT_TYPE_INSTANCE = ResourcePanel.DEFAULT_TYPE_INDIVIDUAL;
 
     private AddPropertyWidgetToFormAction addPropertyWidgetToFormAction;
 
@@ -98,7 +121,8 @@ public class ResourceDisplay extends InstanceDisplay implements ResourcePanel {
     private Set actionRefreshProperties;
 
     private PropertyValueListener propertyValueListener = new PropertyValueAdapter() {
-        public void propertyValueChanged(RDFResource resource,
+        @Override
+		public void propertyValueChanged(RDFResource resource,
                                          RDFProperty property,
                                          Collection oldValues) {
             if (actionRefreshProperties.contains(property)) {
@@ -228,7 +252,8 @@ public class ResourceDisplay extends InstanceDisplay implements ResourcePanel {
      * @see #displayHostResource
      * @deprecated
      */
-    public boolean displayHostInstance(Instance instance) {
+    @Deprecated
+	public boolean displayHostInstance(Instance instance) {
         if (instance instanceof RDFResource) {
             return displayHostResource((RDFResource) instance);
         }
@@ -250,7 +275,8 @@ public class ResourceDisplay extends InstanceDisplay implements ResourcePanel {
     }
 
 
-    public void dispose() {
+    @Override
+	public void dispose() {
         super.dispose();
         if (triplesComponent != null) {
             triplesComponent.dispose();
@@ -259,7 +285,7 @@ public class ResourceDisplay extends InstanceDisplay implements ResourcePanel {
         if (getCurrentInstance() != null && getCurrentInstance() instanceof RDFResource) {
             ((RDFResource) getCurrentInstance()).removePropertyValueListener(propertyValueListener);
         }
-     
+
         owlModel = null;
     }
 
@@ -269,7 +295,8 @@ public class ResourceDisplay extends InstanceDisplay implements ResourcePanel {
     }
 
 
-    public Dimension getPreferredSize() {
+    @Override
+	public Dimension getPreferredSize() {
         return mainPanel.getPreferredSize();
     }
 
@@ -295,7 +322,8 @@ public class ResourceDisplay extends InstanceDisplay implements ResourcePanel {
     }
 
 
-    protected ClsWidget getWidget(Cls type, Instance instance, Cls associatedCls) {
+    @Override
+	protected ClsWidget getWidget(Cls type, Instance instance, Cls associatedCls) {
         if (isSuppressedType(type, instance)) {
             return null;
         }
@@ -316,7 +344,8 @@ public class ResourceDisplay extends InstanceDisplay implements ResourcePanel {
         addDefaultToolBarButtons();
 
         if (resource != null) {
-            ResourceActionManager.addResourceActions(southToolBar, this, resource);
+        	//this call does not seem to be necessary - and it makes unnecessary calls to the server
+            //ResourceActionManager.addResourceActions(southToolBar, this, resource);
             ResourceDisplayPluginManager.initInstanceDisplay(resource, southEastPanel);
         }
 
@@ -349,21 +378,21 @@ public class ResourceDisplay extends InstanceDisplay implements ResourcePanel {
 
 
     protected boolean isSuppressedType(Cls type, Instance instance) {
-        return (suppressedTypes.contains(type) && hasUnsuppressedTypes(instance));
+        return suppressedTypes.contains(type) && hasUnsuppressedTypes(instance);
     }
-    
+
     protected boolean hasUnsuppressedTypes(Instance instance) {
     	Collection<Cls> types = instance.getDirectTypes();
-    	
+
     	for (Cls type : types) {
 			if (!suppressedTypes.contains(type)) {
 				return true;
 			}
 		}
-    	
+
     	return false;
     }
-    
+
     protected boolean isSuppressedType(Cls type) {
         return suppressedTypes.contains(type);
     }
@@ -374,7 +403,8 @@ public class ResourceDisplay extends InstanceDisplay implements ResourcePanel {
     }
 
 
-    protected void loadHeader() {
+    @Override
+	protected void loadHeader() {
         if (getCurrentInstance() == null) {
             switch (defaultType) {
                 case ResourcePanel.DEFAULT_TYPE_CLASS:
@@ -399,7 +429,8 @@ public class ResourceDisplay extends InstanceDisplay implements ResourcePanel {
     }
 
 
-    protected void loadHeaderLabel(Instance instance) {
+    @Override
+	protected void loadHeaderLabel(Instance instance) {
 
         if (instanceNameComponent != null) {
             instanceNameComponent.setInstance(instance);
@@ -427,23 +458,25 @@ public class ResourceDisplay extends InstanceDisplay implements ResourcePanel {
         }
     }
 
-    
+
     @Override
-    protected void loadHeaderWithCls(Cls cls) {    	
+    protected void loadHeaderWithCls(Cls cls) {
     	super.loadHeaderWithCls(cls);
     	String className = cls == null ? "" : ": " + cls.getBrowserText();
     	getHeaderComponent().setTitle(getTitleString(cls, "CLASS EDITOR"), false);
     }
 
-    protected void loadHeaderWithSimpleInstance(Instance instance) {
+    @Override
+	protected void loadHeaderWithSimpleInstance(Instance instance) {
         super.loadHeaderWithSimpleInstance(instance);
         getHeaderComponent().setTitle(getTitleString(instance, "INDIVIDUAL EDITOR"), false);
         getHeaderComponent().setComponentLabel("For Individual:");
     }
 
 
-    protected void loadHeaderWithSlot(Slot slot) {
-        super.loadHeaderWithSlot(slot);        
+    @Override
+	protected void loadHeaderWithSlot(Slot slot) {
+        super.loadHeaderWithSlot(slot);
         getHeaderComponent().setTitle(getTitleString(slot, "PROPERTY EDITOR"), false);
         getHeaderComponent().setComponentLabel("For Property:");
     }
@@ -457,10 +490,10 @@ public class ResourceDisplay extends InstanceDisplay implements ResourcePanel {
     }
 
 
-    protected String getTitleString(Instance instance, String title) {    	
+    protected String getTitleString(Instance instance, String title) {
     	StringBuffer buffer = new StringBuffer();
     	buffer.append(title);
-    	
+
     	if (instance != null) {
     		buffer.append(" for ");
     		buffer.append(instance.getBrowserText());
@@ -468,15 +501,16 @@ public class ResourceDisplay extends InstanceDisplay implements ResourcePanel {
     		buffer.append(getTypeText(instance));
     		buffer.append(")");
     	}
-    	
+
     	return buffer.toString();
     }
-    
-    protected String getTypeText(Instance instance) {
+
+    @Override
+	protected String getTypeText(Instance instance) {
     	if (instance == null) {
     		return "";
     	}
-    	
+
         StringBuffer typeText = new StringBuffer();
         Iterator i = instance.getDirectTypes().iterator();
         while (i.hasNext()) {
@@ -488,12 +522,13 @@ public class ResourceDisplay extends InstanceDisplay implements ResourcePanel {
         }
         return typeText.toString();
     }
-    
+
     public void notifySelectionListeners() {
     }
 
 
-    protected void onDirectTypeAdded(Cls type) {
+    @Override
+	protected void onDirectTypeAdded(Cls type) {
         if (!isSuppressedType(type)) {
             super.onDirectTypeAdded(type);
         }
@@ -503,7 +538,8 @@ public class ResourceDisplay extends InstanceDisplay implements ResourcePanel {
     }
 
 
-    protected void onDirectTypeRemoved(Cls type) {
+    @Override
+	protected void onDirectTypeRemoved(Cls type) {
         if (!isSuppressedType(type)) {
             super.onDirectTypeRemoved(type);
         }
@@ -572,13 +608,15 @@ public class ResourceDisplay extends InstanceDisplay implements ResourcePanel {
     }
 
 
-    public void setBounds(int x, int y, int width, int height) {
+    @Override
+	public void setBounds(int x, int y, int width, int height) {
         super.setBounds(x, y, width, height);
         mainPanel.setBounds(0, 0, width, height);
     }
 
 
-    public void setInstance(Instance instance) {
+    @Override
+	public void setInstance(Instance instance) {
         if (getCurrentInstance() instanceof RDFResource) {
             ((RDFResource) getCurrentInstance()).removePropertyValueListener(propertyValueListener);
         }
@@ -602,7 +640,8 @@ public class ResourceDisplay extends InstanceDisplay implements ResourcePanel {
     }
 
 
-    public void setInstance(Instance instance, Cls associatedCls) {
+    @Override
+	public void setInstance(Instance instance, Cls associatedCls) {
         super.setInstance(instance, associatedCls);
         initInstanceDisplayActions(instance instanceof RDFResource ?
                 (RDFResource) instance : null);
@@ -614,7 +653,8 @@ public class ResourceDisplay extends InstanceDisplay implements ResourcePanel {
     }
 
 
-    protected boolean shouldDisplaySlot(Cls cls, Slot slot) {
+    @Override
+	protected boolean shouldDisplaySlot(Cls cls, Slot slot) {
         if (slot instanceof RDFProperty && !((RDFProperty) slot).isDomainDefined()) {
             //WidgetMapper mapper = cls.getProject().getWidgetMapper();
             //return mapper.getDefaultWidgetClassName(cls, slot, null) != null;
@@ -637,15 +677,17 @@ public class ResourceDisplay extends InstanceDisplay implements ResourcePanel {
         }
         triplesComponent.setSubject((RDFResource) getCurrentInstance());
     }
-    
-    public void setEnabled(boolean enabled) {
+
+    @Override
+	public void setEnabled(boolean enabled) {
     	edu.stanford.smi.protege.widget.WidgetUtilities.setEnabledInstanceDisplay(this, enabled);
-    	
-    	if (instanceNameComponent != null)
-    		instanceNameComponent.setEnabled(enabled);
-    	
-    	super.setEnabled(enabled);    	
+
+    	if (instanceNameComponent != null) {
+			instanceNameComponent.setEnabled(enabled);
+		}
+
+    	super.setEnabled(enabled);
     };
-    
-   
+
+
 }
