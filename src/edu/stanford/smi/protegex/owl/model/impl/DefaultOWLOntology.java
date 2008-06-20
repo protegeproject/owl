@@ -61,20 +61,15 @@ public class DefaultOWLOntology extends DefaultRDFIndividual implements OWLOntol
 
     /**
      * Imprtant - for usage see <CODE>OWLOntology</CODE>
-     * <p>
-     * <b>Warning</b> the following code is wrong but I am a little nervous about fixing it.
-     * <pre>
-     *   resource = owlModel.getRDFResource(uri)
-     *   if (resource != null) {
-     *      addImportsHelper(resource);
-     *   }
-     * </pre>
-     * would be more likely to be correct.
+     * 
      * @param uri
      */
     public void addImports(String uri) {
         Frame ontology = getKnowledgeBase().getFrame(uri);
         if (ontology  == null) {
+            // Other developers have asked "why use untyped resources?"
+            // the answer is that the owl spec is broken with regard to ontology declarations
+            // if there is only one ontology declaration in a file everything is ok but otherwise things become ill-defined
             ontology = getOWLModel().createRDFUntypedResource(uri);
         }
         if (ontology != null 
