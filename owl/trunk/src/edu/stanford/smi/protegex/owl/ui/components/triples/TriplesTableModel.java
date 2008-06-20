@@ -1,21 +1,36 @@
 package edu.stanford.smi.protegex.owl.ui.components.triples;
 
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+
+import javax.swing.JTable;
+import javax.swing.table.AbstractTableModel;
+
 import com.hp.hpl.jena.datatypes.xsd.impl.XMLLiteralType;
 
 import edu.stanford.smi.protege.model.Instance;
 import edu.stanford.smi.protege.ui.FrameComparator;
-import edu.stanford.smi.protegex.owl.model.*;
+import edu.stanford.smi.protegex.owl.model.OWLDataRange;
+import edu.stanford.smi.protegex.owl.model.OWLDatatypeProperty;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.model.OWLObjectProperty;
+import edu.stanford.smi.protegex.owl.model.RDFList;
+import edu.stanford.smi.protegex.owl.model.RDFProperty;
+import edu.stanford.smi.protegex.owl.model.RDFResource;
+import edu.stanford.smi.protegex.owl.model.RDFSDatatype;
+import edu.stanford.smi.protegex.owl.model.RDFSLiteral;
+import edu.stanford.smi.protegex.owl.model.RDFSNames;
 import edu.stanford.smi.protegex.owl.model.event.PropertyValueAdapter;
 import edu.stanford.smi.protegex.owl.model.event.PropertyValueListener;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultRDFSLiteral;
 import edu.stanford.smi.protegex.owl.model.impl.XMLSchemaDatatypes;
 import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
 import edu.stanford.smi.protegex.owl.ui.metadata.AnnotationsWidgetPlugin;
-
-import javax.swing.*;
-import javax.swing.table.AbstractTableModel;
-import java.net.URI;
-import java.util.*;
 
 /**
  * A TableModel to display property values for a given subject.
@@ -43,7 +58,8 @@ public class TriplesTableModel extends AbstractTableModel {
      * properties and then updates the table model accordingly.
      */
     private PropertyValueListener valueListener = new PropertyValueAdapter() {
-        @SuppressWarnings("unchecked")
+        @Override
+		@SuppressWarnings("unchecked")
         public void propertyValueChanged(RDFResource resource, RDFProperty property, Collection oldValues) {
             if (isRelevantProperty(property)) {
                 updateValues();
@@ -99,7 +115,7 @@ public class TriplesTableModel extends AbstractTableModel {
         for (Iterator<AnnotationsWidgetPlugin> it = TriplesComponent.plugins(); it.hasNext();) {
             AnnotationsWidgetPlugin plugin = it.next();
             if (plugin.canEdit(subject, property, null)) {
-                Object defaultValue = plugin.createDefaultValue((RDFResource) subject, property);
+                Object defaultValue = plugin.createDefaultValue(subject, property);
                 if (defaultValue != null) {
                     return defaultValue;
                 }
@@ -156,7 +172,8 @@ public class TriplesTableModel extends AbstractTableModel {
     }
 
 
-    @SuppressWarnings("unchecked")
+    @Override
+	@SuppressWarnings("unchecked")
     public Class getColumnClass(int column) {
         if (column == COL_PROPERTY) {
             return RDFProperty.class;
@@ -178,7 +195,8 @@ public class TriplesTableModel extends AbstractTableModel {
     }
 
 
-    public String getColumnName(int column) {
+    @Override
+	public String getColumnName(int column) {
         if (column == COL_PROPERTY) {
             return "Property";
         }
@@ -252,13 +270,14 @@ public class TriplesTableModel extends AbstractTableModel {
 	    props.add(owlModel.getRDFProperty(RDFSNames.Slot.SEE_ALSO));
 	    props.add(owlModel.getOWLSameAsProperty());
 	    props.add(owlModel.getOWLEquivalentPropertyProperty());
+	    props.add(owlModel.getOWLEquivalentClassProperty());
 	    props.add(owlModel.getOWLDifferentFromProperty());
 	    props.add(owlModel.getOWLVersionInfoProperty());
-	    
+
 	    if (!(subject instanceof RDFProperty)) {
 	    	props.remove(owlModel.getRDFSSubPropertyOfProperty());
 	    }
-	    
+
         //return subject.getRDFProperties();
         return props;
     }
@@ -310,7 +329,8 @@ public class TriplesTableModel extends AbstractTableModel {
     }
 
 
-    public boolean isCellEditable(int rowIndex, int columnIndex) {
+    @Override
+	public boolean isCellEditable(int rowIndex, int columnIndex) {
         if (columnIndex != COL_PROPERTY) {
             RDFProperty property = getPredicate(rowIndex);
             if (columnIndex == COL_VALUE) {
@@ -322,9 +342,9 @@ public class TriplesTableModel extends AbstractTableModel {
                     }
                 }
                 OWLModel owlModel = property.getOWLModel();
-                return ((property instanceof OWLDatatypeProperty || (property.isAnnotationProperty() && !(value instanceof Instance))) &&
+                return (property instanceof OWLDatatypeProperty || property.isAnnotationProperty() && !(value instanceof Instance)) &&
                         !property.isReadOnly() &&
-                        owlModel.getTripleStoreModel().isActiveTriple(subject, property, value)) ||
+                        owlModel.getTripleStoreModel().isActiveTriple(subject, property, value) ||
                        getDefaultProperties().contains(property) && value == null;
             }
             else if (isTypeColumn(columnIndex)) {
@@ -376,17 +396,15 @@ public class TriplesTableModel extends AbstractTableModel {
             Collection<RDFProperty> properties = getRelevantProperties();
             RDFProperty[] ss = properties.toArray(new RDFProperty[0]);
             Arrays.sort(ss, new FrameComparator());
-            for (int i = 0; i < ss.length; i++) {
-                RDFProperty property = ss[i];
-		        Collection values = subject.getPropertyValues(property);
+            for (RDFProperty property : ss) {
+                Collection values = subject.getPropertyValues(property);
 		        for (Iterator it = values.iterator(); it.hasNext();) {
 		            Object value = it.next();
 		            this.properties.add(property);
 		            this.values.add(value);
 		        }
             }
-	        for(Iterator<RDFProperty> it = getDefaultProperties().iterator(); it.hasNext(); ) {
-		        RDFProperty curProp = it.next();
+	        for (RDFProperty curProp : getDefaultProperties()) {
 		        if(this.properties.contains(curProp) == false) {
 			        this.properties.add(0, curProp);
 			        this.values.add(0, null);
@@ -493,7 +511,8 @@ public class TriplesTableModel extends AbstractTableModel {
     }
 
 
-    public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
+    @Override
+	public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
         setValueAndGetIt(aValue, rowIndex, columnIndex);
     }
 
