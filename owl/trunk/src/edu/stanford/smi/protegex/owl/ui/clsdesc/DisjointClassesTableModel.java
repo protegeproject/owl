@@ -21,7 +21,6 @@ import edu.stanford.smi.protegex.owl.model.classparser.OWLClassParser;
 import edu.stanford.smi.protegex.owl.model.event.PropertyValueAdapter;
 import edu.stanford.smi.protegex.owl.model.event.PropertyValueListener;
 import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
-import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
 import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
 
 /**
@@ -47,7 +46,8 @@ public class DisjointClassesTableModel extends AbstractTableModel
      * The FrameListener that detects changes in the disjoint classes own slot of the Cls
      */
     private PropertyValueListener valueListener = new PropertyValueAdapter() {
-        public void propertyValueChanged(RDFResource resource, RDFProperty property, Collection oldValues) {
+        @Override
+		public void propertyValueChanged(RDFResource resource, RDFProperty property, Collection oldValues) {
             if (property.getName().equals(OWLNames.Slot.DISJOINT_WITH)) {
                 clearRows();
                 addRows();
@@ -171,12 +171,14 @@ public class DisjointClassesTableModel extends AbstractTableModel
     }
 
 
-    public String getColumnName(int column) {
+    @Override
+	public String getColumnName(int column) {
         return "Expression";
     }
 
 
-    public Class getColumnClass(int columnIndex) {
+    @Override
+	public Class getColumnClass(int columnIndex) {
         return String.class;
     }
 
@@ -217,17 +219,6 @@ public class DisjointClassesTableModel extends AbstractTableModel
 
 
     public Icon getIcon(RDFResource resource) {
-        if (resource instanceof RDFSClass) {
-            int row = getRow((RDFSClass) resource);
-            if (isCellEditable(row, 0) && resource instanceof OWLNamedClass) {
-                if (((OWLNamedClass) resource).isDefinedClass()) {
-                    return OWLIcons.getImageIcon(OWLIcons.DEFINED_OWL_CLASS);
-                }
-                else {
-                    return OWLIcons.getImageIcon(OWLIcons.PRIMITIVE_OWL_CLASS);
-                }
-            }
-        }
         return ProtegeUI.getIcon(resource);
     }
 
@@ -265,7 +256,8 @@ public class DisjointClassesTableModel extends AbstractTableModel
     }
 
 
-    public boolean isCellEditable(int rowIndex, int columnIndex) {
+    @Override
+	public boolean isCellEditable(int rowIndex, int columnIndex) {
         RDFSClass cls = getClass(rowIndex);
         return cls == null || isDeleteEnabledFor(cls);
     }
@@ -330,7 +322,8 @@ public class DisjointClassesTableModel extends AbstractTableModel
     }
 
 
-    public void setValueAt(Object value, int rowIndex, int columnIndex) {
+    @Override
+	public void setValueAt(Object value, int rowIndex, int columnIndex) {
         if (rowIndex >= getRowCount()) {
             return;
         }
