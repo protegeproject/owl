@@ -69,14 +69,21 @@ class TriplePostProcessor extends AbstractStatefulTripleProcessor {
 
 	@Override
 	public void doPostProcessing() {
+		parsedTripleStores = globalParserCache.getParsedTripleStores();
+		if (parsedTripleStores.size() == 0) {
+			/*
+			 * There are no new parsed triple store to postprocess.
+			 * Probably all triplestores are database.
+			 */
+			return;
+		}
+
 		//undef triples handling
 		processor.processUndefTriples();
 
-		computeNonDbTripleStores();
-
 		/*
-		 * The reinitialize() between the post processing calls
-		 * are necessary for the update of the caches, because
+		 * The reinitCaches() between the post processing calls
+		 * is necessary for the update of the caches, because
 		 * we mix high-level and low-level calls.
 		 */
 
@@ -116,25 +123,6 @@ class TriplePostProcessor extends AbstractStatefulTripleProcessor {
 		reinitCaches();
 	}
 
-	/*
-	 * Computation not good - keep track of what has been parsed
-	 */
-	private void computeNonDbTripleStores() {
-		parsedTripleStores = ((AbstractOWLModel) owlModel).getGlobalParserCache().getParsedTripleStores();
-		/*
-		TripleStoreModel tsm = owlModel.getTripleStoreModel();
-		TripleStore systemTs = tsm.getSystemTripleStore();
-		nonDBTripleStores = tsm.getTripleStores();
-		Iterator<TripleStore> it = nonDBTripleStores.iterator();
-		while (it.hasNext()) {
-			TripleStore ts = it.next();
-			NarrowFrameStore nfs = ts.getNarrowFrameStore();
-			if (ts.equals(systemTs) || nfs instanceof DatabaseFrameDb) {
-				it.remove();
-			}
-		}
-		*/
-	}
 
 	private void processMetaclasses() {
 		int userMetaClassesCount = owlModel.getSystemFrames().getRdfsNamedClassClass().getSubclassCount(); // - 36; // 36 comes from experience..
