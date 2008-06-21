@@ -16,7 +16,6 @@ import java.util.logging.Logger;
 
 import junit.framework.Assert;
 import edu.stanford.smi.protege.exception.OntologyLoadException;
-import edu.stanford.smi.protege.model.BrowserSlotPattern;
 import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.DefaultKnowledgeBase;
 import edu.stanford.smi.protege.model.Facet;
@@ -240,6 +239,9 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
         intializeImportOwlNamespaces();
 
         initialize();
+
+        //init namespace manager
+        //getNamespaceManager();
     }
 
     protected void initializeLoadDefaults() {
@@ -1204,10 +1206,10 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
         	return getMissingTypeString(instance);
        	}
 
-       	BrowserSlotPattern slotPattern = null;
+       	OWLBrowserSlotPattern slotPattern = null;
 
        	try {
-       		slotPattern = getProject().getBrowserSlotPattern(directType);
+       		slotPattern = (OWLBrowserSlotPattern) getProject().getBrowserSlotPattern(directType);
        	} catch (ClassCastException e) {
        		try {
 			slotPattern = OWLUI.fixBrowserSlotPattern(getProject(), directType);
@@ -1216,7 +1218,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
        			Log.getLogger().log(Level.WARNING, "Error at getting browser slot pattern for " + instance, ex);
        		}
 		} catch(Exception e) {
-       		slotPattern = getProject().getBrowserSlotPattern(directType);
+       		slotPattern = null;
        		Log.getLogger().log(Level.WARNING, "Unknown error at getting the browser slot for: " + directType, e);
        	}
 
