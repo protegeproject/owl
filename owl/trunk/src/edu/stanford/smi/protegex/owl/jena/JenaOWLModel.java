@@ -49,10 +49,8 @@ import edu.stanford.smi.protegex.owl.model.OWLOntology;
 import edu.stanford.smi.protegex.owl.model.RDFList;
 import edu.stanford.smi.protegex.owl.model.RDFNames;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
-import edu.stanford.smi.protegex.owl.model.factory.OWLJavaFactory;
 import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreModel;
-import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreUtil;
 import edu.stanford.smi.protegex.owl.resource.OWLText;
 import edu.stanford.smi.protegex.owl.ui.widget.ModalProgressBarManager;
 import edu.stanford.smi.protegex.owl.writer.rdfxml.rdfwriter.OWLModelAllTripleStoresWriter;
@@ -92,8 +90,8 @@ public class JenaOWLModel extends AbstractOWLModel implements OntModelProvider {
 
 
     private void closeRDFLists() {
-        for (Iterator it = getCls(RDFNames.Cls.LIST).getInstances().iterator(); it.hasNext();) {
-            Instance instance = (Instance) it.next();
+        for (Object element : getCls(RDFNames.Cls.LIST).getInstances()) {
+            Instance instance = (Instance) element;
             if (instance instanceof RDFList &&
                     instance.isEditable()) {
                 RDFList li = (RDFList) instance;
@@ -182,12 +180,6 @@ public class JenaOWLModel extends AbstractOWLModel implements OntModelProvider {
     }
 
 
-    @Override
-    public void initOWLFrameFactoryInvocationHandler() {
-        setFrameFactory(new OWLJavaFactory(this));
-    }
-
-
     public void initPrefixes(OntModel ontModel) {
         NamespaceManager nsm = getNamespaceManager();
         initPrefixes(nsm, ontModel);
@@ -249,9 +241,9 @@ public class JenaOWLModel extends AbstractOWLModel implements OntModelProvider {
                 Protege2Jena.saveAll(this, fileURI, language);
             }
             catch (Exception ex) {
-            	String message = "Failed to save file " + fileURI + " using Protege2Jena."; 
+            	String message = "Failed to save file " + fileURI + " using Protege2Jena.";
             	Log.getLogger().log(Level.SEVERE, message, ex);
-                errors.add(new MessageError(ex, message));                
+                errors.add(new MessageError(ex, message));
             }
         }
         else if (getWriterSettings() instanceof ProtegeWriterSettings) {
@@ -264,7 +256,7 @@ public class JenaOWLModel extends AbstractOWLModel implements OntModelProvider {
                 writer.write();
             }
             catch (Exception ex) {
-               	String message = "Failed to save file " + fileURI; 
+               	String message = "Failed to save file " + fileURI;
             	Log.getLogger().log(Level.SEVERE, message, ex);
                 errors.add(new MessageError(ex, message));
             }
@@ -290,12 +282,12 @@ public class JenaOWLModel extends AbstractOWLModel implements OntModelProvider {
             save(file, ontModel, language, namespace);
         }
         catch (Throwable t) {
-           	String message = "Failed to save file " + fileURI; 
+           	String message = "Failed to save file " + fileURI;
         	Log.getLogger().log(Level.SEVERE, message, t);
             errors.add(new MessageError(new Exception(t), message));
         }
     }
-    
+
     /**
      * @deprecated -Use save(File file, OntModel ontModel, String language, String namespace, String xmlBase)
      */
@@ -322,7 +314,7 @@ public class JenaOWLModel extends AbstractOWLModel implements OntModelProvider {
             save(os, ontModel, language, namespace, namespace);
         }
         catch (Throwable t) {
-           	String message = "Failed to save file to output stream"; 
+           	String message = "Failed to save file to output stream";
         	Log.getLogger().log(Level.SEVERE, message, t);
             errors.add(new MessageError(new Exception(t), message));
         }
@@ -334,13 +326,13 @@ public class JenaOWLModel extends AbstractOWLModel implements OntModelProvider {
     }
 
     /**
-     * @deprecated Use 
+     * @deprecated Use
      */
     @Deprecated
-    public static void saveModel(OutputStream outputStream, Model model, String language, String namespace) throws IOException {    	
+    public static void saveModel(OutputStream outputStream, Model model, String language, String namespace) throws IOException {
     	saveModel(outputStream, model, language, namespace, namespace);
     }
-    
+
 
 
     public static void saveModel(OutputStream outputStream, Model model, String language, String namespace, String xmlBase) throws IOException {
@@ -406,8 +398,8 @@ public class JenaOWLModel extends AbstractOWLModel implements OntModelProvider {
             getOWLProject().getSettingsMap().remove(WRITER_SETTINGS_PROPERTY);
         }
     }
-    
-    
+
+
     /**
      * @deprecated use {@link OwlProjectFromStreamCreator}, {@link OwlProjectFromReaderCreator} or {@link OwlDatabaseFromFileCreator}
      */
@@ -417,7 +409,7 @@ public class JenaOWLModel extends AbstractOWLModel implements OntModelProvider {
         ProtegeOWLParser parser = new ProtegeOWLParser(this);
         parser.run(uri);
     }
-    
+
     /**
      * @deprecated use {@link OwlProjectFromStreamCreator}, {@link OwlProjectFromReaderCreator} or {@link OwlDatabaseFromFileCreator}
      */
@@ -427,7 +419,7 @@ public class JenaOWLModel extends AbstractOWLModel implements OntModelProvider {
         ProtegeOWLParser parser = new ProtegeOWLParser(this);
         parser.run(is, null);
     }
-    
+
     /**
      * @deprecated use {@link OwlProjectFromStreamCreator}, {@link OwlProjectFromReaderCreator} or {@link OwlDatabaseFromFileCreator}
      */
@@ -437,7 +429,7 @@ public class JenaOWLModel extends AbstractOWLModel implements OntModelProvider {
         ProtegeOWLParser parser = new ProtegeOWLParser(this);
         parser.run(reader, null);
     }
-    
+
     /**
      * @deprecated use {@link OwlProjectFromStreamCreator}, {@link OwlProjectFromReaderCreator} or {@link OwlDatabaseFromFileCreator}
      */
@@ -449,14 +441,14 @@ public class JenaOWLModel extends AbstractOWLModel implements OntModelProvider {
         }
         catch (Throwable t) {
             Log.getLogger().log(Level.SEVERE, "Error at loading file "+uri, t);
-            
-            Collection parseErrors = ProtegeOWLParser.getErrors(); 
+
+            Collection parseErrors = ProtegeOWLParser.getErrors();
             if (parseErrors != null && parseErrors.size() > 0) {
                 errors.addAll(parseErrors);
             }
-            
+
             errors.add(t);
-            
+
             String message = "Errors at loading OWL file from " + uri + "\n";
             message = message + "\nPlease consider running the file through an RDF or OWL validation service such as:";
             message = message + "\n  - RDF Validator: http://www.w3.org/RDF/Validator";
@@ -467,17 +459,17 @@ public class JenaOWLModel extends AbstractOWLModel implements OntModelProvider {
                         "Please try to use the RDF Backend of Protege to open this file and then export it to OWL " +
                         "using Export to Format...";
             }
-   
+
             errors.add(new MessageError(message));
         }
-        
+
         //TODO: Improve this.
-        Collection parseErrors = ProtegeOWLParser.getErrors(); 
+        Collection parseErrors = ProtegeOWLParser.getErrors();
         if (parseErrors != null && parseErrors.size() > 0) {
             errors.addAll(parseErrors);
         }
     }
-    
+
     private void ensureDefaultOntologyDeleted() {
         OWLOntology ontology = getDefaultOWLOntology();
         if (ontology != null) {
@@ -486,6 +478,6 @@ public class JenaOWLModel extends AbstractOWLModel implements OntModelProvider {
         getTripleStoreModel().getActiveTripleStore().setName(null);
         resetOntologyCache();
     }
-    
-    
+
+
 }
