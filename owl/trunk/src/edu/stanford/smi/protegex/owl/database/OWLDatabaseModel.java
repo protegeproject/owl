@@ -27,7 +27,6 @@ import edu.stanford.smi.protegex.owl.model.OWLNames;
 import edu.stanford.smi.protegex.owl.model.OWLOntology;
 import edu.stanford.smi.protegex.owl.model.RDFNames;
 import edu.stanford.smi.protegex.owl.model.RDFSNames;
-import edu.stanford.smi.protegex.owl.model.factory.OWLJavaFactory;
 import edu.stanford.smi.protegex.owl.model.framestore.LocalClassificationFrameStore;
 import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
 import edu.stanford.smi.protegex.owl.ui.widget.ModalProgressBarManager;
@@ -41,20 +40,14 @@ public class OWLDatabaseModel
         extends AbstractOWLModel
         implements OntModelProvider {
     private static transient Logger log = Log.getLogger(OWLDatabaseModel.class);
-    
+
     private OWLOntology defaultDBOWLOntology;
 
 
-    public OWLDatabaseModel(KnowledgeBaseFactory factory) {    	
+    public OWLDatabaseModel(KnowledgeBaseFactory factory) {
         super(factory);
     }
 
-    @Override
-    public void initialize() {
-    	setFrameFactory(new OWLJavaFactory(this));
-        
-        super.initialize();
-    }
 
 	public OntModel getOntModel() {
 
@@ -132,7 +125,7 @@ public class OWLDatabaseModel
     @Override
     public void setProject(Project project) {
         super.setProject(project);
-        
+
         FrameStoreManager fsm = getFrameStoreManager();
         if (fsm.getFrameStoreFromClass(LocalClassificationFrameStore.class) == null) {
             int position = getFrameStores().size() - 1;
@@ -140,9 +133,4 @@ public class OWLDatabaseModel
         }
     }
 
-    
-	@Override
-	public void initOWLFrameFactoryInvocationHandler() {
-		Log.getLogger().warning("This method should not be invoked!");		
-	}
 }
