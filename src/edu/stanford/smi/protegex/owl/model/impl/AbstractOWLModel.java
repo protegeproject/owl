@@ -437,10 +437,6 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
         addFrameListener(listener);
     }
 
-
-    public abstract void initOWLFrameFactoryInvocationHandler();
-
-
     @Override
     protected SWRLJavaFactory createFrameFactory() {
         return new SWRLJavaFactory(this);
