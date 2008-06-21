@@ -7,7 +7,6 @@ import java.util.logging.Logger;
 
 import edu.stanford.smi.protege.exception.OntologyLoadException;
 import edu.stanford.smi.protege.model.Cls;
-import edu.stanford.smi.protege.model.FrameFactory;
 import edu.stanford.smi.protege.model.Instance;
 import edu.stanford.smi.protege.model.KnowledgeBase;
 import edu.stanford.smi.protege.model.Slot;
@@ -20,7 +19,6 @@ import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
 import edu.stanford.smi.protegex.owl.jena.parser.ProtegeOWLParser;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.factory.FactoryUtils;
-import edu.stanford.smi.protegex.owl.model.factory.OWLJavaFactory;
 import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreModel;
@@ -37,25 +35,25 @@ import edu.stanford.smi.protegex.owl.ui.resourceselection.ResourceSelectionActio
 public class OWLDatabaseKnowledgeBaseFactory extends DatabaseKnowledgeBaseFactory
         implements OWLKnowledgeBaseFactory {
     private static Logger log = Log.getLogger(OWLDatabaseKnowledgeBaseFactory.class);
-    
+
     public final static String NAMESPACE_PREFIX_SEPARATOR = ":";
 
-    
+
     public OWLDatabaseKnowledgeBaseFactory() {
      	setOwlMode(true);
     }
 
 
     @Override
-    public KnowledgeBase createKnowledgeBase(Collection errors) {   	
-    	         
+    public KnowledgeBase createKnowledgeBase(Collection errors) {
+
         ResourceSelectionAction.setActivated(false);
-              
+
         OWLDatabaseModel owlModel = new OWLDatabaseModel(this);
-       	   
-        return owlModel;    	 	
+
+        return owlModel;
     }
-    
+
 
 
     private void dump(Cls cls, String tabs) {
@@ -94,8 +92,8 @@ public class OWLDatabaseKnowledgeBaseFactory extends DatabaseKnowledgeBaseFactor
     }
 
     @Override
-    public void loadKnowledgeBase(KnowledgeBase kb, 
-                                  PropertyList sources, 
+    public void loadKnowledgeBase(KnowledgeBase kb,
+                                  PropertyList sources,
                                   Collection errors) {
         OWLModel owlModel = (OWLModel) kb;
 
@@ -117,30 +115,22 @@ public class OWLDatabaseKnowledgeBaseFactory extends DatabaseKnowledgeBaseFactor
 			}
         }
     }
-   
+
     @Override
-    protected void initializeKB(KnowledgeBase kb, 
-    		String driver, 
-    		String url, 
-    		String user, 
+    protected void initializeKB(KnowledgeBase kb,
+    		String driver,
+    		String url,
+    		String user,
     		String password,
     		String table,
     		boolean isInclude) {
 
     	AbstractOWLModel dkb = (AbstractOWLModel) kb;
-    	
-    	FrameFactory factory = dkb.getFrameFactory();
-    	
-    	if (!(factory instanceof OWLJavaFactory)) {
-    		Log.getLogger().warning("Adapting the java factory to OWLJavaFactory");
-    		factory = new OWLJavaFactory(dkb);
-    	}
-    	
-    	//TT remove IDA?
+
     	DatabaseFrameDb db = getDatabaseFrameDb(dkb);
-    	db.initialize(factory, driver, url, user, password, table, isInclude);
+    	db.initialize(dkb.getFrameFactory(), driver, url, user, password, table, isInclude);
     	kb.flushCache();
-    }    
+    }
 
     @Override
     public void saveKnowledgeBase(KnowledgeBase kb, PropertyList sources, Collection errors) {
@@ -148,14 +138,14 @@ public class OWLDatabaseKnowledgeBaseFactory extends DatabaseKnowledgeBaseFactor
             OWLModel owlModel = (OWLModel) kb;
             TripleStoreModel tripleStoreModel = owlModel.getTripleStoreModel();
             OWLBackwardsCompatibilityProjectFixups.insertVersionData(sources);
-            
+
             //move this from here
             if (owlModel instanceof JenaOWLModel) {
                 TripleStore activeTripleStore = tripleStoreModel.getActiveTripleStore();
                 DatabaseFactoryUtils.writeOWLOntologyToDatabase(owlModel, activeTripleStore);
             	FactoryUtils.encodeNamespaceIntoModel(owlModel, activeTripleStore);
             }
-            
+
             if (owlModel instanceof JenaOWLModel) {
                 kb.removeFrameStore(owlModel.getOWLFrameStore());
             }
