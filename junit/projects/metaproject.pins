@@ -1,10 +1,17 @@
-; Tue Jan 30 17:59:01 PST 2007
+; Mon Jun 23 11:47:56 PDT 2008
 ; 
-;+ (version "3.2.1")
-;+ (build "Build 365")
+;+ (version "3.4")
+;+ (build "Build 501")
 
 ([metaproject_Instance_0] of  Group
 
+	(member
+		[metaproject_Instance_10002]
+		[metaproject_Instance_10003]
+		[metaproject_Instance_10004]
+		[metaproject_Instance_10005]
+		[metaproject_Instance_10006]
+		[metaproject_Instance_10007])
 	(name "World"))
 
 ([metaproject_Instance_10000] of  Project
@@ -16,31 +23,37 @@
 
 ([metaproject_Instance_10002] of  User
 
+	(group [metaproject_Instance_0])
 	(name "Guest")
 	(password "guest"))
 
 ([metaproject_Instance_10003] of  User
 
+	(group [metaproject_Instance_0])
 	(name "Jennifer Vendetti")
 	(password "jenny"))
 
 ([metaproject_Instance_10004] of  User
 
+	(group [metaproject_Instance_0])
 	(name "Natasha Noy")
 	(password "natalia"))
 
 ([metaproject_Instance_10005] of  User
 
+	(group [metaproject_Instance_0])
 	(name "Ray Fergerson")
 	(password "claudia"))
 
 ([metaproject_Instance_10006] of  User
 
+	(group [metaproject_Instance_0])
 	(name "Tania Tudorache")
 	(password "tania"))
 
 ([metaproject_Instance_10007] of  User
 
+	(group [metaproject_Instance_0])
 	(name "Timothy Redmond")
 	(password "timothy"))
 
