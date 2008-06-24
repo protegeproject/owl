@@ -7,7 +7,6 @@ import java.util.logging.Logger;
 import com.hp.hpl.jena.rdf.arp.AResource;
 import com.hp.hpl.jena.vocabulary.OWL;
 import com.hp.hpl.jena.vocabulary.RDF;
-import com.hp.hpl.jena.vocabulary.RDFS;
 
 import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.Frame;
@@ -110,8 +109,6 @@ class TripleProcessorForResourceObjects extends AbstractStatefulTripleProcessor 
 			}
 
 			handleOntologyDeclaration();
-
-			handleSuperClassCacheUpdate();
 
 			status = handleEquivalentClassesOrProperties();
 			switch (status) {
@@ -239,11 +236,6 @@ class TripleProcessorForResourceObjects extends AbstractStatefulTripleProcessor 
 				FrameCreatorUtility.addOwnSlotValue(subjFrame, predSlot, objFrame, tripleStore);
 			}
 
-			// add to frame to the cache of classes with no superclass
-			if (!subjAlreadyExists && !subj.isAnonymous() && subjFrame instanceof Cls) {
-				globalParserCache.getSuperClsCache().addFrame(subjFrame);
-			}
-
 			if (subjAlreadyExists && objFrame instanceof Cls) {
 				if (log.isLoggable(Level.FINE)) {
 					log.fine("found an alternative type for " + subjFrame + " = " + objFrame);
@@ -296,13 +288,6 @@ class TripleProcessorForResourceObjects extends AbstractStatefulTripleProcessor 
 			}
 		}
 
-		private void handleSuperClassCacheUpdate() {
-			// If this is a rdfs:subclass of, then remove it from the cache of
-			// classes with no superclasses
-			if (predName.equals(RDFS.subClassOf.getURI()) && !obj.isAnonymous()) {
-				globalParserCache.getSuperClsCache().removeFrame(subjFrame);
-			}
-		}
 
 		private TripleStatus handleEquivalentClassesOrProperties() {
 			// special treatment of equivalent classes
