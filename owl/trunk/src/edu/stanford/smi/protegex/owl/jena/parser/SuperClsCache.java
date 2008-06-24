@@ -3,37 +3,35 @@ package edu.stanford.smi.protegex.owl.jena.parser;
 import java.util.Collection;
 import java.util.HashSet;
 
-import edu.stanford.smi.protege.model.Frame;
+import edu.stanford.smi.protege.model.Cls;
 
 public class SuperClsCache {
-	
-	//maybe it should be singleton?
-	
-	private HashSet<Frame> framesWithNoSuperClass = new HashSet<Frame>();
-	
-	
-	public boolean hasFrameDeclaredSuperclass(Frame frame) {
-		return !framesWithNoSuperClass.contains(frame);
-	}
-	
-	public void addFrame(Frame frame) {
-		if (frame != null) {
-			framesWithNoSuperClass.add(frame);
-		}
-	}
-	
-	public void removeFrame(Frame frame) {
-		if (frame != null) {
-			framesWithNoSuperClass.remove(frame);
-		}
-	}
-	
-	public void clearCache() {
-		framesWithNoSuperClass.clear();		
+
+	private HashSet<Cls> clsesWithNoSuperClass = new HashSet<Cls>();
+
+
+	public boolean hasFrameDeclaredSuperclass(Cls cls) {
+		return !clsesWithNoSuperClass.contains(cls);
 	}
 
-	public Collection<Frame> getCachedFramesWithNoSuperclass() {
-		return framesWithNoSuperClass;
+	public void addFrame(Cls cls) {
+		if (cls != null) {
+			clsesWithNoSuperClass.add(cls);
+		}
 	}
-	
+
+	public void removeFrame(Cls cls) {
+		if (cls != null) {
+			clsesWithNoSuperClass.remove(cls);
+		}
+	}
+
+	public void clearCache() {
+		clsesWithNoSuperClass.clear();
+	}
+
+	public Collection<Cls> getCachedFramesWithNoSuperclass() {
+		return clsesWithNoSuperClass;
+	}
+
 }
