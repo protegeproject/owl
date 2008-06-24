@@ -294,7 +294,9 @@ class TripleProcessorForResourceObjects extends AbstractStatefulTripleProcessor 
 			if (predName.equals(OWL.equivalentClass.getURI())) {
 				FrameCreatorUtility.addOwnSlotValue(subjFrame, predSlot, objFrame, tripleStore);
 				FrameCreatorUtility.createSubclassOf(getCls(subjFrame), getCls(objFrame), tripleStore);
-				FrameCreatorUtility.createSubclassOf(getCls(objFrame), getCls(subjFrame), tripleStore);
+				if (!subjFrame.equals(objFrame)) {
+					FrameCreatorUtility.createSubclassOf(getCls(objFrame), getCls(subjFrame), tripleStore);
+				}
 				return TripleStatus.TRIPLE_PROCESSING_COMPLETE;
 			}
 			//this piece of code cause StackOverflow when calling rdfProp.isFunctional().
