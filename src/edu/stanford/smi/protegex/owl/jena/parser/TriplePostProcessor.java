@@ -14,6 +14,9 @@ import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.protege.editor.owl.model.hierarchy.roots.Relation;
+import org.protege.editor.owl.model.hierarchy.roots.TerminalElementFinder;
+
 import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.Frame;
 import edu.stanford.smi.protege.model.Instance;
@@ -232,12 +235,6 @@ class TriplePostProcessor extends AbstractStatefulTripleProcessor {
 					Instance inst = (Instance) element;
 					//this should be fine, because swizzling does not change anything in the NFS
 					ParserUtil.getSimpleFrameStore(owlModel).swizzleInstance(inst);
-
-					if (inst instanceof RDFSNamedClass) {
-						//make sure that they have at least owl:Thing as a superclass
-						//we could optimize memory if we check first if they have a superclass
-						globalParserCache.getSuperClsCache().addFrame(owlModel.getRDFSNamedClass(inst.getName()));
-					}
 				}
 			}
 		}
@@ -251,52 +248,56 @@ class TriplePostProcessor extends AbstractStatefulTripleProcessor {
 
 	@SuppressWarnings({"deprecation"})
 	private void processClsesWithoutSupercls() {
-		SuperClsCache superClsCache = globalParserCache.getSuperClsCache();
+		Set<RDFSNamedClass> classes = new HashSet<RDFSNamedClass>();
+		for (TripleStore ts : parsedTripleStores) {
+			classes.addAll(ts.getUserDefinedClasses());
+		};
 
-		log.info("Postprocess: Process classes without superclasses (" + superClsCache.getCachedFramesWithNoSuperclass().size() + " classes) ... ");
+		TerminalElementFinder<RDFSNamedClass> rootFinder =
+			new TerminalElementFinder<RDFSNamedClass>(new Relation<RDFSNamedClass> (){
+
+				public Collection<RDFSNamedClass> getR(RDFSNamedClass x) {
+					ArrayList<RDFSNamedClass> parents = new ArrayList<RDFSNamedClass>();
+
+					for (Object element : x.getDirectSuperclasses()) {
+						if (element instanceof RDFSNamedClass) {
+							parents.add((RDFSNamedClass) element);
+						}
+					}
+					return parents;
+				}
+			});
+
+		classes.addAll(owlModel.getSystemFrames().getRdfExternalClassClass().getInstances());
+		classes.remove(owlModel.getOWLThingClass());
+
+		log.info("Postprocess: Process orphan classes (" + classes.size() + " classes) ... ");
 		long time0 = System.currentTimeMillis();
 
-		Collection<Frame> classes = new ArrayList<Frame>(superClsCache.getCachedFramesWithNoSuperclass());
-		classes.addAll(owlModel.getSystemFrames().getRdfExternalClassClass().getInstances());
+		rootFinder.appendTerminalElements(classes);
+		Set<RDFSNamedClass> orphanClasses = new HashSet<RDFSNamedClass>(rootFinder.getTerminalElements());
 
-		for (Frame frame : classes) {
+		orphanClasses.remove(owlModel.getOWLThingClass());
+
+		for (RDFSNamedClass cls : orphanClasses) {
 			if (log.isLoggable(Level.FINE)) {
-				log.fine("processClsesWithoutSupercls: No declared supercls: " + frame + "\n");
+				log.fine("processClsesWithoutSupercls: No declared supercls: " + cls + "\n");
 			}
-
-			if (frame instanceof RDFSClass) {
-				try {
-					//reinitCaches(); //TODO: check if needed
-					if (((RDFSClass)frame).getSuperclassCount() == 0) {
-						TripleStore homeTs = owlModel.getTripleStoreModel().getHomeTripleStore((RDFSClass)frame);
-						FrameCreatorUtility.createSubclassOf((RDFSClass)frame, owlModel.getOWLThingClass(), homeTs);
-					}
-					superClsCache.removeFrame(frame);
-				} catch (Exception e) {
-					Log.getLogger().log(Level.WARNING, "Error at adding owl:Thing as a superclass of " + frame, e);
-				}
-			} else {
-				if (log.isLoggable(Level.FINE)) {
-					log.fine("Wrong java type for " + frame + " Expected: RDFSClass\n");
-				}
+			try {
+				TripleStore homeTs = owlModel.getTripleStoreModel().getHomeTripleStore(cls);
+				FrameCreatorUtility.createSubclassOf(cls, owlModel.getOWLThingClass(), homeTs);
+			} catch (Exception e) {
+				Log.getLogger().log(Level.WARNING, "Error at adding owl:Thing as a superclass of " + cls, e);
 			}
 		}
 
-		classes = superClsCache.getCachedFramesWithNoSuperclass();
-
-		if (classes.size() > 0) {
-			//This should not be the case
-			log.warning("There are classes without explicit superclass: " + classes + "\n");
-		}
-		//superClsCache.clearCache();
+		rootFinder.clear();
 		log.info(System.currentTimeMillis() - time0 + " ms\n");
 	}
 
 
 	@SuppressWarnings({"unchecked", "deprecation"})
 	private void processInferredSuperclasses(TripleStore ts){
-		SuperClsCache superClsCache = globalParserCache.getSuperClsCache();
-
 		Collection<RDFSNamedClass> namedClasses = getNamedClassesWithEquivalentClasses(ts);
 
 		for (Object obj : namedClasses) {
@@ -305,10 +306,6 @@ class TriplePostProcessor extends AbstractStatefulTripleProcessor {
 
 				if (!namedClass.isSystem()) {
 					Collection<Cls> inferredSuperclasses = getInferredSuperClasses(namedClass);
-
-					if (inferredSuperclasses.size() > 0) {
-						superClsCache.removeFrame(namedClass);
-					}
 
 					for (Cls inferredSupercls : inferredSuperclasses) {
 						if (!FrameCreatorUtility.hasSuperclass(namedClass, inferredSupercls)) {
