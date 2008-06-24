@@ -1,19 +1,18 @@
 package edu.stanford.smi.protegex.owl.ui.metadatatab.prefixes;
 
-import edu.stanford.smi.protege.util.Disposable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import javax.swing.table.AbstractTableModel;
+
 import edu.stanford.smi.protegex.owl.jena.Jena;
 import edu.stanford.smi.protegex.owl.model.NamespaceManager;
 import edu.stanford.smi.protegex.owl.model.NamespaceManagerAdapter;
-import edu.stanford.smi.protegex.owl.model.NamespaceManagerListener;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLOntology;
 import edu.stanford.smi.protegex.owl.model.impl.AbstractNamespaceManager;
 import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
-
-import javax.swing.table.AbstractTableModel;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * A TableModel for editing prefixes in an OWLModel.
@@ -31,9 +30,9 @@ public class PrefixesTableModel extends AbstractTableModel  {
     public final static int COL_NAMESPACE = 1;
 
     public final static int COL_COUNT = 2;
-    
-    
-    
+
+
+
 
     /**
      * A list of prefixes (one String value for each row)
@@ -49,7 +48,7 @@ public class PrefixesTableModel extends AbstractTableModel  {
            public void namespaceChanged(String prefix, String oldValue, String newValue) {
                fill();
                fireTableDataChanged();
-           } 
+           }
         });
     }
 
@@ -64,12 +63,14 @@ public class PrefixesTableModel extends AbstractTableModel  {
     }
 
 
-    public Class getColumnClass(int columnIndex) {
+    @Override
+	public Class getColumnClass(int columnIndex) {
         return String.class;
     }
 
 
-    public String getColumnName(int column) {
+    @Override
+	public String getColumnName(int column) {
         if (column == COL_PREFIX) {
             return "Prefix";
         }
@@ -94,7 +95,7 @@ public class PrefixesTableModel extends AbstractTableModel  {
 
 
     public String getPrefix(int row) {
-        return (String) prefixes.get(row);
+        return prefixes.get(row);
     }
 
 
@@ -121,7 +122,8 @@ public class PrefixesTableModel extends AbstractTableModel  {
     }
 
 
-    public boolean isCellEditable(int rowIndex, int columnIndex) {
+    @Override
+	public boolean isCellEditable(int rowIndex, int columnIndex) {
         String prefix = getPrefix(rowIndex);
         return isPrefixEditable(prefix);
     }
@@ -138,12 +140,13 @@ public class PrefixesTableModel extends AbstractTableModel  {
     }
 
 
-    public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
+    @Override
+	public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
         NamespaceManager nsm = getNamespaceManager();
         if (columnIndex == COL_PREFIX) {
             String value = (String) aValue;
             if (nsm.getNamespaceForPrefix(value) == null) {
-                if (value.equals(AbstractNamespaceManager.DEFAULT_NAMESPACE_PREFIX) 
+                if (value.equals(AbstractNamespaceManager.DEFAULT_NAMESPACE_PREFIX)
                         || AbstractNamespaceManager.isValidPrefix(value)) {
                     String namespace = getNamespace(rowIndex);
                     setPrefixOfNamespace(namespace, value);
@@ -152,7 +155,8 @@ public class PrefixesTableModel extends AbstractTableModel  {
         }
         else if (columnIndex == COL_NAMESPACE) {
             String value = (String) aValue;
-            if (nsm.getPrefix(value) == null && !value.equals(nsm.getDefaultNamespace())) {
+            String defaultPrefix = nsm.getDefaultNamespace();
+            if (nsm.getPrefix(value) == null && (defaultPrefix == null || !defaultPrefix.equals(value))) {
                 if (Jena.isNamespaceWithSeparator(value)) {
                     String prefix = getPrefix(rowIndex);
                     setNamespaceOfPrefix(prefix, value);
@@ -183,14 +187,14 @@ public class PrefixesTableModel extends AbstractTableModel  {
         try {
             owlModel.beginTransaction("Change prefix of " + namespace + " to " + value, ontology.getName());
             owlModel.getNamespaceManager().setPrefix(namespace, value);
-            owlModel.commitTransaction();           
+            owlModel.commitTransaction();
         }
         catch (Exception ex) {
         	owlModel.rollbackTransaction();
             OWLUI.handleError(owlModel, ex);
         }
     }
-    
+
     public int getRowOfPrefix(String prefix) {
         return prefixes.indexOf(prefix);
     }
