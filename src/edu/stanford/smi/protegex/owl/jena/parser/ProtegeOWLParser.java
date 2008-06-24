@@ -250,6 +250,8 @@ public class ProtegeOWLParser {
 	    }
 
 	    boolean eventsEnabled = owlModel.setGenerateEventsEnabled(false);
+	    boolean isExpandShortNamesEnabled = owlModel.isExpandShortNameInMethods();
+	    owlModel.setExpandShortNameInMethods(false);
 	    try {
 	        tripleProcessor = ((AbstractOWLModel) owlModel).getGlobalParserCache().getTripleProcessor();
 
@@ -295,6 +297,7 @@ public class ProtegeOWLParser {
 	    }
 	    finally {
 	        owlModel.setGenerateEventsEnabled(eventsEnabled);
+	        owlModel.setExpandShortNameInMethods(isExpandShortNamesEnabled);
 	    }
 	}
 
