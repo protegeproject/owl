@@ -143,7 +143,8 @@ public class PrefixesTableModel extends AbstractTableModel  {
         if (columnIndex == COL_PREFIX) {
             String value = (String) aValue;
             if (nsm.getNamespaceForPrefix(value) == null) {
-                if (AbstractNamespaceManager.isValidPrefix(value)) {
+                if (value.equals(AbstractNamespaceManager.DEFAULT_NAMESPACE_PREFIX) 
+                        || AbstractNamespaceManager.isValidPrefix(value)) {
                     String namespace = getNamespace(rowIndex);
                     setPrefixOfNamespace(namespace, value);
                 }
@@ -151,7 +152,7 @@ public class PrefixesTableModel extends AbstractTableModel  {
         }
         else if (columnIndex == COL_NAMESPACE) {
             String value = (String) aValue;
-            if (nsm.getPrefix(value) == null && !nsm.getDefaultNamespace().equals(value)) {
+            if (nsm.getPrefix(value) == null && !value.equals(nsm.getDefaultNamespace())) {
                 if (Jena.isNamespaceWithSeparator(value)) {
                     String prefix = getPrefix(rowIndex);
                     setNamespaceOfPrefix(prefix, value);
