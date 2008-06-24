@@ -19,6 +19,7 @@ import org.xml.sax.SAXParseException;
 
 import com.hp.hpl.jena.rdf.arp.ALiteral;
 import com.hp.hpl.jena.rdf.arp.ARP;
+import com.hp.hpl.jena.rdf.arp.ARPErrorNumbers;
 import com.hp.hpl.jena.rdf.arp.ARPHandlers;
 import com.hp.hpl.jena.rdf.arp.AResource;
 import com.hp.hpl.jena.rdf.arp.NamespaceHandler;
@@ -144,6 +145,8 @@ public class ProtegeOWLParser {
 		} else {
 			arp.getOptions().setLaxErrorMode();
 		}
+
+		arp.getOptions().setErrorMode(ARPErrorNumbers.WARN_REDEFINITION_OF_ID, ARPErrorNumbers.EM_IGNORE);
 	}
 
 
