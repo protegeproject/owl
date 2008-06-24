@@ -27,7 +27,6 @@ public class GlobalParserCache {
 	/*
 	 * Global caches
 	 */
-	private SuperClsCache superClsCache = new SuperClsCache();
 	private MultipleTypesInstanceCache multipleTypesInstanceCache = new MultipleTypesInstanceCache();
 	private Set<String> framesWithWrongJavaType = new HashSet<String>();
 	private Set<TripleStore> parsedTripleStores = new HashSet<TripleStore>();
@@ -125,9 +124,6 @@ public class GlobalParserCache {
 	 * Cache methods
 	 */
 
-	public SuperClsCache getSuperClsCache() {
-		return superClsCache;
-	}
 
 	public MultipleTypesInstanceCache getMultipleTypesInstanceCache() {
 		return multipleTypesInstanceCache;
