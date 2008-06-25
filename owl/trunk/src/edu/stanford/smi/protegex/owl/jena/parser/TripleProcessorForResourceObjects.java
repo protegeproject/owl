@@ -293,9 +293,12 @@ class TripleProcessorForResourceObjects extends AbstractStatefulTripleProcessor 
 			// special treatment of equivalent classes
 			if (predName.equals(OWL.equivalentClass.getURI())) {
 				FrameCreatorUtility.addOwnSlotValue(subjFrame, predSlot, objFrame, tripleStore);
-				FrameCreatorUtility.createSubclassOf(getCls(subjFrame), getCls(objFrame), tripleStore);
-				if (!subjFrame.equals(objFrame)) {
-					FrameCreatorUtility.createSubclassOf(getCls(objFrame), getCls(subjFrame), tripleStore);
+				//test for duplicates
+				if(!FrameCreatorUtility.hasOwnSlotValue(objFrame, predSlot, subjFrame)) {
+					FrameCreatorUtility.createSubclassOf(getCls(subjFrame), getCls(objFrame), tripleStore);
+					if (!subjFrame.equals(objFrame)) {
+						FrameCreatorUtility.createSubclassOf(getCls(objFrame), getCls(subjFrame), tripleStore);
+					}
 				}
 				return TripleStatus.TRIPLE_PROCESSING_COMPLETE;
 			}
