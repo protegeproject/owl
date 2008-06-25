@@ -411,13 +411,14 @@
 			</classpath>
 		</javac>
 		<delete dir="${gensrc}"/>
+        <mkdir dir="${gensrc}"/>
 		<java classname = "edu.stanford.smi.protegex.owl.javacode.tests.GenerateJunitCode" fork="true">
 			<classpath>
 				<pathelement location="${classes}"/>
 				<pathelement location = "${protege.lib}"/>
 				<pathelement location = "${looks.lib}"/>
-				<fileset dir="${plugin}">
-					<include name = "**/*.jar"/>
+				<fileset dir="${lib}">
+					<include name = "*.jar"/>
 				</fileset>
 			</classpath>
 			<jvmarg value="-Djava.util.logging.config.file=junit-logging.properties"/>
@@ -425,11 +426,13 @@
 	</target>
 
 	<target name = "junit-compile" depends = "jar,codeGeneration">
-		<javac srcdir = "${junit}" destdir = "${classes}" debug = "on" 
+		<javac srcdir = "${junit};${gensrc}" 
+               destdir = "${classes}" debug = "on" 
               includeAntRuntime="false">
 			<classpath refid = "classpath.compile"/>
 			<classpath>
 				<pathelement location = "${jarfile}"/>
+                <pathelement location = "${classes}"/>
 			</classpath>
 		</javac>
 		<copy todir = "${build}/junit/projects">
