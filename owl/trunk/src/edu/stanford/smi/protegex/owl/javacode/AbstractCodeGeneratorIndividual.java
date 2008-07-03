@@ -82,7 +82,7 @@ public abstract class AbstractCodeGeneratorIndividual extends DefaultRDFIndividu
     
     private RDFResource as(RDFResource resource, Class javaInterface) {
         if (javaInterface.isAssignableFrom(resource.getClass())) {
-            return this;
+            return resource;
         }
         Class type = getJavaImplementation(resource, javaInterface);
         try {
