@@ -5,11 +5,9 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import edu.stanford.smi.protege.util.Log;
-import edu.stanford.smi.protegex.owl.jena.parser.ProtegeOWLParser;
 import edu.stanford.smi.protegex.owl.repository.util.OntologyNameExtractor;
 
 /**

@@ -2,7 +2,10 @@ package edu.stanford.smi.protegex.owl.jena;
 
 import java.io.File;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -23,6 +26,8 @@ import edu.stanford.smi.protegex.owl.database.OWLDatabaseModel;
 import edu.stanford.smi.protegex.owl.jena.parser.ProtegeOWLParser;
 import edu.stanford.smi.protegex.owl.model.factory.AlreadyImportedException;
 import edu.stanford.smi.protegex.owl.model.factory.FactoryUtils;
+import edu.stanford.smi.protegex.owl.repository.Repository;
+import edu.stanford.smi.protegex.owl.repository.RepositoryManager;
 import edu.stanford.smi.protegex.owl.repository.util.RepositoryFileManager;
 import edu.stanford.smi.protegex.owl.storage.OWLKnowledgeBaseFactory;
 import edu.stanford.smi.protegex.owl.storage.ProtegeSaver;
@@ -66,8 +71,22 @@ public class JenaKnowledgeBaseFactory implements OWLKnowledgeBaseFactory {
      * should be true (default), but the Protege UI will set it to false.
      */
     public static boolean useStandalone = true;
+    
+    private static List<Repository> repositories = new ArrayList<Repository>();
 
-
+    public static void addRepository(Repository repository) {
+        repositories.add(repository);
+    }
+    
+    public static void clearRepositories() {
+        repositories.clear();
+    }
+    
+    public static Collection<Repository> getRepositories() {
+        return Collections.unmodifiableCollection(repositories);
+    }
+    
+    
     public KnowledgeBase createKnowledgeBase(Collection errors) {
     	//have to test this in a different way..
     	boolean inUI = ProjectManager.getProjectManager().getMainPanel() != null;
@@ -166,6 +185,12 @@ public class JenaKnowledgeBaseFactory implements OWLKnowledgeBaseFactory {
             JenaKnowledgeBaseFactory.setOWLFileName(sources, absoluteURI.toString());
             
 		    RepositoryFileManager.loadProjectRepositories(owlModel);
+		    RepositoryManager repositoryManager = owlModel.getRepositoryManager();
+		    for (Repository repository : repositories) {
+		        repositoryManager.addProjectRepository(repository);
+		    }
+		    repositories.clear();
+		    
 		    try {
 		        ProtegeOWLParser parser = new ProtegeOWLParser(owlModel);    
 		        parser.run(absoluteURI);

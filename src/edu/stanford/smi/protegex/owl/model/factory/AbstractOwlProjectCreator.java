@@ -67,8 +67,12 @@ public abstract class AbstractOwlProjectCreator {
         this.profileURI = profileURI;
     }
     
-    public List<Repository> getRepositories() {
+    public Collection<Repository> getRepositories() {
     	return Collections.emptyList();
+    }
+    
+    public OWLKnowledgeBaseFactory getFactory() {
+        return factory;
     }
     
 }

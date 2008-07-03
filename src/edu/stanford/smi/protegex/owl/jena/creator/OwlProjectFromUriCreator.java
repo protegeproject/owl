@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 import com.hp.hpl.jena.util.FileUtils;
 
@@ -16,6 +18,7 @@ import edu.stanford.smi.protegex.owl.jena.JenaKnowledgeBaseFactory;
 import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
 import edu.stanford.smi.protegex.owl.jena.parser.ProtegeOWLParser;
 import edu.stanford.smi.protegex.owl.model.factory.AbstractOwlProjectCreator;
+import edu.stanford.smi.protegex.owl.repository.Repository;
 
 public class OwlProjectFromUriCreator extends AbstractOwlProjectCreator {
 
@@ -24,6 +27,8 @@ public class OwlProjectFromUriCreator extends AbstractOwlProjectCreator {
     private String lang = FileUtils.langXMLAbbrev;
     
     private Project project;
+    
+    private List<Repository> repositories = new ArrayList<Repository>();
 
     public  OwlProjectFromUriCreator() {
         this(new JenaKnowledgeBaseFactory());
@@ -37,7 +42,7 @@ public class OwlProjectFromUriCreator extends AbstractOwlProjectCreator {
     @SuppressWarnings("unchecked")
     public void create(Collection errors) throws OntologyLoadException {
         project = Project.createBuildProject(factory, errors);
-        
+
         initializeSources(project.getSources());
         URI uri = getBuildProjectURI();
         if (uri != null) {
@@ -66,6 +71,9 @@ public class OwlProjectFromUriCreator extends AbstractOwlProjectCreator {
     protected void initializeSources(PropertyList sources) {
         JenaKnowledgeBaseFactory.setOWLFileName(sources, ontologyUri);
         JenaKnowledgeBaseFactory.setOWLFileLanguage(sources, lang);
+        for (Repository repository : repositories) {
+            JenaKnowledgeBaseFactory.addRepository(repository);
+        }
         addViewSettings(sources);
     }
     
@@ -100,7 +108,22 @@ public class OwlProjectFromUriCreator extends AbstractOwlProjectCreator {
     public void setLang(String lang) {
         this.lang = lang;
     }
+    
+    public JenaKnowledgeBaseFactory getFactory() {
+        return (JenaKnowledgeBaseFactory) super.getFactory();
+    }
 
+    public void addRepository(Repository repository) {
+        repositories.add(repository);
+    }
+    
+    public void clearRepositories() {
+        repositories.clear();
+    }
+    
+    public Collection<Repository> getRepositories() {
+        return Collections.unmodifiableCollection(repositories);
+    }
 
 
 }
