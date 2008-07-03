@@ -164,7 +164,21 @@ public class ProtegeOWLParser {
 		} catch (MalformedURLException e) {
 			throw new OntologyLoadException(e);
 		}
-		ProtegeOWLParser.this.run(getInputStream(url), url.toString());
+		URI xmlBase = null;
+		if (uri != null) {
+		    try {
+		        xmlBase = XMLBaseExtractor.getXMLBase(uri.toString());
+		    } catch (MalformedURLException e) {
+		        throw new OntologyLoadException(e, "Malformed URL: " + uri);
+		    } catch (IOException e) {
+		        throw new OntologyLoadException(e);
+		    }
+		}
+		if (xmlBase == null) {
+		    xmlBase = uri;
+		}
+
+		loadTriples(url.toString(), xmlBase, createARPInvokation(getInputStream(url), xmlBase.toString()));
 	}
 
 
@@ -181,7 +195,7 @@ public class ProtegeOWLParser {
 	                final String xmlBase)
 	        throws OntologyLoadException {
 
-		run(xmlBase, createARPInvokation(is, xmlBase));
+	    loadTriples(null, URIUtilities.createURI(xmlBase), createARPInvokation(is, xmlBase));
 	}
 
 
@@ -200,30 +214,7 @@ public class ProtegeOWLParser {
 	                final String xmlBase)
 	        throws OntologyLoadException {
 
-		run(xmlBase, createARPInvokation(reader, xmlBase));
-	}
-
-
-	protected void run(final String uri,
-	                   final ARPInvokation invokation)
-	        throws OntologyLoadException {
-
-		errors = new ArrayList();
-		errorOntologyURI = null;
-		URI xmlBase = null;
-		if (uri != null) {
-		    try {
-				xmlBase = XMLBaseExtractor.getXMLBase(uri);
-			} catch (MalformedURLException e) {
-				throw new OntologyLoadException(e, "Malformed URL: " + uri);
-			} catch (IOException e) {
-				throw new OntologyLoadException(e);
-			}
-		}
-		if (xmlBase == null) {
-		    xmlBase = URIUtilities.createURI(uri);
-		}
-		loadTriples(uri, xmlBase, invokation);
+	    loadTriples(null, URIUtilities.createURI(xmlBase),  createARPInvokation(reader, xmlBase));
 	}
 
 
