@@ -18,7 +18,9 @@ import edu.stanford.smi.protege.storage.database.DatabaseFrameDb;
 import edu.stanford.smi.protege.test.APITestCase;
 import edu.stanford.smi.protege.test.APITestCase.DBType;
 import edu.stanford.smi.protege.util.Log;
+import edu.stanford.smi.protegex.owl.database.creator.OwlDatabaseCreator;
 import edu.stanford.smi.protegex.owl.database.creator.OwlDatabaseFromFileCreator;
+import edu.stanford.smi.protegex.owl.jena.creator.NewOwlProjectCreator;
 import edu.stanford.smi.protegex.owl.jena.creator.OwlProjectFromReaderCreator;
 import edu.stanford.smi.protegex.owl.jena.creator.OwlProjectFromStreamCreator;
 import edu.stanford.smi.protegex.owl.jena.creator.OwlProjectFromUriCreator;
@@ -43,6 +45,26 @@ public class CreatorTestCase extends AbstractCreatorTestCase {
     
     
     private Collection errors = new ArrayList();
+    
+    public void testNewOwlProjectCreator01() throws OntologyLoadException {
+        NewOwlProjectCreator creator = new NewOwlProjectCreator();
+        creator.create(errors);
+        handleErrors();
+        OWLModel owlModel = creator.getOwlModel();
+
+        String name = owlModel.getDefaultOWLOntology().getName();
+        checkBase(owlModel, name, name);
+    }
+    
+    public void testNewOwlProjectCreator02() throws OntologyLoadException {
+        NewOwlProjectCreator creator = new NewOwlProjectCreator();
+        creator.setOntologyName(IMPORTED_BASE);
+        creator.create(errors);
+        handleErrors();
+        OWLModel owlModel = creator.getOwlModel();
+
+        checkBase(owlModel, IMPORTED_BASE, IMPORTED_BASE);
+    }
     
     public void testUriCreatorRepositoryBaseline() throws OntologyLoadException {
         File ontology = new File(IMPORTING_LOCATION);
