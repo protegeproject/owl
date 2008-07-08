@@ -1,13 +1,5 @@
 package edu.stanford.smi.protegex.owl.ui.importstree;
 
-import edu.stanford.smi.protegex.owl.model.OWLModel;
-import edu.stanford.smi.protegex.owl.model.RDFResource;
-import edu.stanford.smi.protegex.owl.repository.Repository;
-import edu.stanford.smi.protegex.owl.repository.impl.LocalFolderRepository;
-import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
-import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
-
-import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -17,25 +9,35 @@ import java.net.URL;
 import java.util.Iterator;
 import java.util.Set;
 
+import javax.swing.AbstractAction;
+import javax.swing.JFileChooser;
+
+import edu.stanford.smi.protege.util.ComponentFactory;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.model.RDFResource;
+import edu.stanford.smi.protegex.owl.repository.Repository;
+import edu.stanford.smi.protegex.owl.repository.impl.LocalFolderRepository;
+import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
+import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
+
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
  */
 public class DownloadImportsAction extends AbstractAction {
-
-    private JFileChooser fileChooser;
 
     private ImportsTree tree;
 
 
     public DownloadImportsAction(ImportsTree tree) {
         super("Download ontologies to folder...", OWLIcons.getImageIcon(OWLIcons.SAVE_INFERRED));
-        fileChooser = new JFileChooser();
-        fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         this.tree = tree;
     }
 
 
     public void actionPerformed(ActionEvent e) {
+    	JFileChooser fileChooser = ComponentFactory.createFileChooser("Choose download folder", "", null);
+        fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+
         if (fileChooser.showDialog(tree, "Download") == JFileChooser.APPROVE_OPTION) {
             File folder = fileChooser.getSelectedFile();
             Set sels = tree.getSelectedResources();
