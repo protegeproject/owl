@@ -1,7 +1,6 @@
 package edu.stanford.smi.protegex.owl.javacode;
 
 import java.lang.reflect.Constructor;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -9,34 +8,38 @@ import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.FrameID;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
+import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
 
 public class ProtegeJavaMapping {
     
-    private static Map<String, Class> protege2ImplementationMap = new HashMap<String, Class>();
-    private static Map<Class, Class> interface2ImplementationMap = new HashMap<Class, Class>();
+    private static Map<String, Entry> protegeMap  = new HashMap<String, Entry>();
+    private static Map<Class, Entry> interfaceMap = new HashMap<Class, Entry>();
+    private static Map<Class, Entry> implementationMap = new HashMap<Class, Entry>();
 
     public static void add(String protegeClassName, 
                            Class<? extends RDFResource> javaInterface, 
                            Class<? extends RDFResource> javaImplementation) {
-        protege2ImplementationMap.put(protegeClassName, javaImplementation);
-        interface2ImplementationMap.put(javaInterface, javaImplementation);
+        Entry entry = new Entry(protegeClassName, javaInterface, javaImplementation);
+        protegeMap.put(protegeClassName, entry);
+        interfaceMap.put(javaInterface, entry);
+        implementationMap.put(javaImplementation, entry);
     }
     
     @SuppressWarnings("unchecked")
     public static <X> X create(OWLModel owlModel, Class<? extends X> javaInterface, String name) {
-        Class<? extends X> implementation = (Class<? extends X>) interface2ImplementationMap.get(javaInterface);
-        if (implementation == null) {
+        Entry entry = interfaceMap.get(javaInterface);
+        if (entry == null) {
             return null;
         }
         if (name == null) {
             name = owlModel.getNextAnonymousResourceName();
         }
-        return constructImplementation(owlModel, implementation, new FrameID(name));
-    }
-    
-    @SuppressWarnings("unchecked")
-    public static Map<String, Class> getProtege2ImplementationMap() {
-        return Collections.unmodifiableMap(protege2ImplementationMap);
+        RDFSNamedClass cls = owlModel.getRDFSNamedClass(entry.getProtegeClass());
+        if (cls == null) {
+            return null;
+        }
+        cls.createInstance(name);
+        return constructImplementation(owlModel, (Class<? extends X>) entry.getJavaImplementation(), new FrameID(name));
     }
     
     public static boolean canAs(RDFResource resource, Class<? extends RDFResource> javaInterface) {
@@ -73,12 +76,42 @@ public class ProtegeJavaMapping {
                 continue;
             }
             Cls type = (Cls) o;
-            Class<?> javaImplementationClass = getProtege2ImplementationMap().get(type.getName());
+            Entry entry = protegeMap.get(type.getName());
+            if (entry == null) {
+                continue;
+            }
+            Class<? extends RDFResource> javaImplementationClass = entry.getJavaImplementation();
             if (javaInterface.isAssignableFrom(javaImplementationClass)) {
                 return javaImplementationClass.asSubclass(javaInterface);
             }
         }
         return null;
+    }
+    
+    private static class Entry {
+        private String protegeClass;
+        private Class<? extends RDFResource> javaInterface;
+        private Class<? extends RDFResource> javaImplementation;
+        
+        public Entry(String protegeClass,
+                     Class<? extends RDFResource> javaInterface,
+                     Class<? extends RDFResource> javaImplementation) {
+            this.protegeClass = protegeClass;
+            this.javaInterface = javaInterface;
+            this.javaImplementation = javaImplementation;
+        }
+
+        public String getProtegeClass() {
+            return protegeClass;
+        }
+
+        public Class<? extends RDFResource> getJavaInterface() {
+            return javaInterface;
+        }
+
+        public Class<? extends RDFResource> getJavaImplementation() {
+            return javaImplementation;
+        }        
     }
     
 }

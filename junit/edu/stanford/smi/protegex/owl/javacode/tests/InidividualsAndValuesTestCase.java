@@ -92,18 +92,20 @@ public class InidividualsAndValuesTestCase extends TestCase {
         a1 = factory.getArm(iarm);
         assertNotNull(a1);
         assertFalse(a1.isAnonymous());
-        boolean foundAnonymous = false;
+        int foundNamed = 0;
+        int foundAnonymous = 0;
         for (Object o : owlModel.getUserDefinedRDFIndividuals(true)) {
             assertTrue(o instanceof OWLIndividual);
             OWLIndividual ind = (OWLIndividual) o;
             if (!ind.isAnonymous()) {
                 assertEquals(a1, ind);
+                foundNamed++;
             }
             else {
-                assertFalse(foundAnonymous);
-                foundAnonymous = true;
+                foundAnonymous++;
             }
         }
-        assertTrue(foundAnonymous);
+        assertEquals(1, foundNamed);
+        assertEquals(2, foundAnonymous);
     }
 }
