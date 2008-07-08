@@ -18,8 +18,6 @@ import edu.stanford.smi.protegex.owl.model.impl.DefaultRDFIndividual;
 
 public abstract class AbstractCodeGeneratorIndividual extends DefaultRDFIndividual {
     private static final long serialVersionUID = -406831192956223749L;
-    
-    private Map<String, Class> protege2ImplementationMap = new HashMap<String, Class>();
 
     public AbstractCodeGeneratorIndividual() {
         

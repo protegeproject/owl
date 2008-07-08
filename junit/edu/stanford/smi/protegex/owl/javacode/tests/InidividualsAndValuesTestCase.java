@@ -8,6 +8,7 @@ import edu.stanford.smi.protege.model.Project;
 import edu.stanford.smi.protegex.owl.code.generation.test03.Arm;
 import edu.stanford.smi.protegex.owl.code.generation.test03.Factory;
 import edu.stanford.smi.protegex.owl.code.generation.test03.StudySchema;
+import edu.stanford.smi.protegex.owl.model.OWLIndividual;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.RDFIndividual;
 import junit.framework.TestCase;
@@ -42,6 +43,15 @@ public class InidividualsAndValuesTestCase extends TestCase {
         owlModel = null;
     }
     
+    private void reload() throws OntologyLoadException {
+        Collection errors = new ArrayList();
+        p.save(errors);
+        p = new Project(GenerateJunitCode.SOURCE_ONTOLOGY_03, errors);
+        GenerateJunitCode.handleErrors(errors);
+        owlModel = (OWLModel) p.getKnowledgeBase();
+        factory = new Factory(owlModel);
+    }
+    
     public void testSetPropertiesAndSave() throws OntologyLoadException {
         String schemaName = "MyStudySchema";
         StudySchema schema = factory.createStudySchema(schemaName);
@@ -56,11 +66,7 @@ public class InidividualsAndValuesTestCase extends TestCase {
             assertTrue(o instanceof Arm);
         }
         
-        Collection errors = new ArrayList();
-        p.save(errors);
-        p = new Project(GenerateJunitCode.SOURCE_ONTOLOGY_03, errors);
-        GenerateJunitCode.handleErrors(errors);
-        owlModel = (OWLModel) p.getKnowledgeBase();
+        reload();
         
         schema = factory.getStudySchema(schemaName);
         assertEquals(3, schema.getHasArms().size());
@@ -70,7 +76,7 @@ public class InidividualsAndValuesTestCase extends TestCase {
         
     }
     
-    public void testInterfaceCreation() {
+    public void testInterfaceCreation() throws OntologyLoadException {
         String iarm = "interfaceArm";
         Arm a1  = factory.create(Arm.class, iarm);
         assertNotNull(a1);
@@ -80,5 +86,24 @@ public class InidividualsAndValuesTestCase extends TestCase {
         assertTrue(a2.isAnonymous());
         Arm a3 = factory.createArm(null);
         assertTrue(a3.isAnonymous());
+
+        reload();
+        
+        a1 = factory.getArm(iarm);
+        assertNotNull(a1);
+        assertFalse(a1.isAnonymous());
+        boolean foundAnonymous = false;
+        for (Object o : owlModel.getUserDefinedRDFIndividuals(true)) {
+            assertTrue(o instanceof OWLIndividual);
+            OWLIndividual ind = (OWLIndividual) o;
+            if (!ind.isAnonymous()) {
+                assertEquals(a1, ind);
+            }
+            else {
+                assertFalse(foundAnonymous);
+                foundAnonymous = true;
+            }
+        }
+        assertTrue(foundAnonymous);
     }
 }
