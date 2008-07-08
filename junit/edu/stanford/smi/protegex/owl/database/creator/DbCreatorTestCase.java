@@ -21,6 +21,7 @@ public class DbCreatorTestCase extends AbstractCreatorTestCase {
             if (!APITestCase.dbConfigured()) {
                 continue;
             }
+            String tableName = "JunitImported";
             OwlDatabaseCreator creator = new OwlDatabaseCreator(true);
             configureDbCreator(creator);
             creator.setTable("JunitImported");
@@ -30,6 +31,28 @@ public class DbCreatorTestCase extends AbstractCreatorTestCase {
             
             String name = owlModel.getDefaultOWLOntology().getName();
             checkBase(owlModel, name, name);
+            
+            String className = "AnInsertedClass";
+            assertNotNull(owlModel.createOWLNamedClass(className));
+            owlModel.getProject().dispose();
+            
+            creator  = new OwlDatabaseCreator(false);
+            configureDbCreator(creator);
+            creator.setTable(tableName);
+            creator.create(errors);
+            handleErrors();
+            owlModel = creator.getOwlModel();
+            assertNotNull(owlModel.getOWLNamedClass(className));
+            owlModel.getProject().dispose();
+            
+            creator  = new OwlDatabaseCreator(true);
+            configureDbCreator(creator);
+            creator.setTable(tableName);
+            creator.create(errors);
+            handleErrors();
+            owlModel = creator.getOwlModel();
+            assertNull(owlModel.getOWLNamedClass(className));
+            owlModel.getProject().dispose();
         }
     }
     
@@ -46,9 +69,9 @@ public class DbCreatorTestCase extends AbstractCreatorTestCase {
             creator.create(errors);
             handleErrors();
             OWLModel owlModel = creator.getOwlModel();
-            
             checkUnsucessfulImport(owlModel);
             checkBase(owlModel, IMPORTING_BASE, IMPORTING_BASE);
+
         }
     }
     
