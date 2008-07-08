@@ -86,13 +86,6 @@ public interface ProtegeInstance extends Instance {
      */
     Collection getDocumentation();
 
-
-    /**
-     * @deprecated Protege internal
-     */
-    FrameID getFrameID();
-
-
     /**
      * @deprecated not needed
      */

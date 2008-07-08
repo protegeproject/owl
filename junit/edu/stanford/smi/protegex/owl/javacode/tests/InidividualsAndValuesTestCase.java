@@ -12,7 +12,7 @@ import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.RDFIndividual;
 import junit.framework.TestCase;
 
-public class PropertyValuesTestCase extends TestCase {
+public class InidividualsAndValuesTestCase extends TestCase {
     private Project p;
     private OWLModel owlModel;
     private Factory factory;
@@ -68,5 +68,17 @@ public class PropertyValuesTestCase extends TestCase {
             assertTrue(o instanceof Arm);
         }
         
+    }
+    
+    public void testInterfaceCreation() {
+        String iarm = "interfaceArm";
+        Arm a1  = factory.create(Arm.class, iarm);
+        assertNotNull(a1);
+        assertEquals(iarm, a1.getName());
+        assertFalse(a1.isAnonymous());
+        Arm a2 = factory.create(Arm.class, null);
+        assertTrue(a2.isAnonymous());
+        Arm a3 = factory.createArm(null);
+        assertTrue(a3.isAnonymous());
     }
 }

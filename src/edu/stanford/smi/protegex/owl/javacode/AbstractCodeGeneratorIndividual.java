@@ -29,22 +29,20 @@ public abstract class AbstractCodeGeneratorIndividual extends DefaultRDFIndividu
         super(kb, id);
     }
     
-    @SuppressWarnings("unchecked")
-    protected abstract Map<String, Class> getProtege2ImplementationMap();  
-    
     // Can't java 5 here because the super class does not
     @SuppressWarnings("unchecked")
     @Override
     public RDFResource as(Class javaInterface) {
-        return as(this, javaInterface);
+        return ProtegeJavaMapping.as(this, javaInterface);
     }
     
     @SuppressWarnings("unchecked")
     @Override
     public boolean canAs(Class javaInterface) {
-        return canAs(this, javaInterface);
+        return ProtegeJavaMapping.canAs(this, javaInterface);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public Collection getPropertyValuesAs(RDFProperty property,
                                            Class javaInterface) {
@@ -53,8 +51,8 @@ public abstract class AbstractCodeGeneratorIndividual extends DefaultRDFIndividu
             Object o = it.next();
             if (o instanceof RDFIndividual) {
                 RDFIndividual  resource = (RDFIndividual) o;
-                if (canAs(resource, javaInterface)) {
-                    results.add(as(resource, javaInterface));
+                if (ProtegeJavaMapping.canAs(resource, javaInterface)) {
+                    results.add(ProtegeJavaMapping.as(resource, javaInterface));
                 }
                 else {
                     results.add(resource);
@@ -70,44 +68,6 @@ public abstract class AbstractCodeGeneratorIndividual extends DefaultRDFIndividu
     @Override
     public Iterator listPropertyValuesAs(RDFProperty property, Class javaInterface) {
         return getPropertyValuesAs(property, javaInterface).iterator();
-    }
-    
-    
-    private boolean canAs(RDFResource resource, Class javaInterface) {
-        if (javaInterface.isAssignableFrom(resource.getClass())) {
-            return true;
-        }
-        return getJavaImplementation(resource, javaInterface) != null;
-    }
-    
-    private RDFResource as(RDFResource resource, Class javaInterface) {
-        if (javaInterface.isAssignableFrom(resource.getClass())) {
-            return resource;
-        }
-        Class type = getJavaImplementation(resource, javaInterface);
-        try {
-            Constructor con = type.getConstructor(new Class[] { OWLModel.class, FrameID.class});
-            return (RDFResource) con.newInstance(new Object[] { getOWLModel(), resource.getFrameID() });
-        }
-        catch (Throwable t) {
-            ClassCastException classcast = new ClassCastException("Resource " + resource + " could not be cast to type " + javaInterface);
-            classcast.initCause(t);
-            throw classcast;
-        }
-    }
-    
-    private <X> Class<? extends X> getJavaImplementation(RDFResource resource, Class<? extends X> javaInterface) {
-        for (Object o  : resource.getProtegeTypes()) {
-            if  (!(o instanceof Cls)) {
-                continue;
-            }
-            Cls type = (Cls) o;
-            Class<?> javaImplementationClass = getProtege2ImplementationMap().get(type.getName());
-            if (javaInterface.isAssignableFrom(javaImplementationClass)) {
-                return javaImplementationClass.asSubclass(javaInterface);
-            }
-        }
-        return null;
     }
     
 }
