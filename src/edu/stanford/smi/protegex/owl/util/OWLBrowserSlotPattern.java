@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import jena.owlsyntax;
 import edu.stanford.smi.protege.model.BrowserSlotPattern;
 import edu.stanford.smi.protege.model.Frame;
 import edu.stanford.smi.protege.model.Instance;
@@ -18,10 +17,9 @@ import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
 import edu.stanford.smi.protegex.owl.model.RDFSLiteral;
-import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
 
 /**
- * The OWL browser slot pattern used to display the name of OWL elements. It treats the RDFSLiterals 
+ * The OWL browser slot pattern used to display the name of OWL elements. It treats the RDFSLiterals
  * in a special manner based on the default language.
  * @author ttania
  *
@@ -31,16 +29,17 @@ public class OWLBrowserSlotPattern extends BrowserSlotPattern{
 	public OWLBrowserSlotPattern(BrowserSlotPattern pattern) {
 		super(pattern.getElements());
 	}
-	
+
 	public OWLBrowserSlotPattern(List elements) {
-		super(elements);		
+		super(elements);
 	}
 
 	public OWLBrowserSlotPattern(Slot slot) {
 		super(slot);
 	}
-	
-    public String getBrowserText(Instance instance) { 
+
+    @Override
+	public String getBrowserText(Instance instance) {
         KnowledgeBase kb = instance.getKnowledgeBase();
         StringBuffer buffer = new StringBuffer();
         Iterator i = getElements().iterator();
@@ -55,47 +54,50 @@ public class OWLBrowserSlotPattern extends BrowserSlotPattern{
                 buffer.append(o);
             }
         }
-        return (buffer.length() == 0) ? null : (buffer.toString());
+        return buffer.length() == 0 ? null : buffer.toString();
     }
 
     private String getText(Slot slot, Instance instance) {
 		String text = null;
 		String defaultLang = null;
 		Collection values = null;
-			
+
 		if (slot instanceof RDFProperty) {
 			values = ((RDFResource) instance)
 					.getPropertyValues((RDFProperty) slot);
 			defaultLang = getDefaultLanguage(instance.getKnowledgeBase());
-		} else
+		} else {
 			values = instance.getDirectOwnSlotValues(slot);
+		}
 
 		if (values.size() > 1) { // multiple values
 //			TODO: find a more efficient implementation of this!!
 			Collection rdfLabelsWithNullLang = new ArrayList();
 			Collection rdfLabelsWithNonNullLang = new ArrayList();
-			
+
 			StringBuffer buffer = new StringBuffer();
 			int valuesNo = 0;
-			
+
 			if (defaultLang == null || slot.getValueType() != ValueType.STRING) { //no default language
 				valuesNo = getBrowserTextFromValues(instance, values, null, buffer);
 			} else {//default language set
-				
+
 				for (Iterator iter = values.iterator(); iter.hasNext();) {
-					Object o = (Object) iter.next();
-					if ((o instanceof RDFSLiteral && (((RDFSLiteral)o).getLanguage() == null)) || (o instanceof String))
+					Object o = iter.next();
+					if (o instanceof RDFSLiteral && ((RDFSLiteral)o).getLanguage() == null || o instanceof String) {
 						rdfLabelsWithNullLang.add(o);
-					else
+					} else {
 						rdfLabelsWithNonNullLang.add(o);
+					}
 				}
-				
+
 				valuesNo = getBrowserTextFromValues(instance, rdfLabelsWithNonNullLang, defaultLang, buffer);
-				
-				if (valuesNo == 0)
-					valuesNo = getBrowserTextFromValues(instance, rdfLabelsWithNullLang, defaultLang, buffer);				
+
+				if (valuesNo == 0) {
+					valuesNo = getBrowserTextFromValues(instance, rdfLabelsWithNullLang, defaultLang, buffer);
+				}
 			}
-					
+
 			if (valuesNo > 1) {
 				buffer.insert(0, "{");
 				buffer.insert(buffer.length(), "}");
@@ -103,8 +105,9 @@ public class OWLBrowserSlotPattern extends BrowserSlotPattern{
 
 			if (valuesNo > 0) {
 				text = buffer.toString();
-			} else
-				text = instance.getName();
+			} else {
+				text = NamespaceUtil.getPrefixedName((OWLModel)instance.getKnowledgeBase(), instance.getName());
+			}
 		} else { // single value
 			Object o = CollectionUtilities.getFirstItem(values);
 
@@ -117,11 +120,11 @@ public class OWLBrowserSlotPattern extends BrowserSlotPattern{
 
 		return text;
 	}
-        
-    private int getBrowserTextFromValues(Instance instance, Collection values, String lang, StringBuffer buffer) {   	
+
+    private int getBrowserTextFromValues(Instance instance, Collection values, String lang, StringBuffer buffer) {
     	 boolean isFirst = true;
     	 int valuesNo = 0;
-    	 
+
     	 Iterator i = values.iterator();
          while (i.hasNext()) {
              Object o = i.next();
@@ -131,11 +134,11 @@ public class OWLBrowserSlotPattern extends BrowserSlotPattern{
                      isFirst = false;
                  } else {
                      buffer.append(", ");
-                 }                	
+                 }
              	buffer.append(partialText);
-             	valuesNo ++;               	
+             	valuesNo ++;
              }
-         }         
+         }
          return valuesNo;
     }
 
@@ -157,37 +160,40 @@ public class OWLBrowserSlotPattern extends BrowserSlotPattern{
         return text;
     }
 
-	
+
     private String getDefaultLanguage(KnowledgeBase kb) {
-    	if (kb == null || !(kb instanceof OWLModel))
-    		return null;
-    	
-    	return ((OWLModel) kb).getDefaultLanguage();		
+    	if (kb == null || !(kb instanceof OWLModel)) {
+			return null;
+		}
+
+    	return ((OWLModel) kb).getDefaultLanguage();
 	}
 
 	private String getLangBrowserText(Object value, String defaultLanguage) {
-		if (value == null || !(value  instanceof RDFSLiteral))
+		if (value == null || !(value  instanceof RDFSLiteral)) {
 			return null;
-		
+		}
+
 		RDFSLiteral rdfsValue = (RDFSLiteral) value;
-		   	
+
     	if (defaultLanguage == null) {
 			if (rdfsValue.getLanguage() == null) {
-				String text = rdfsValue.getString();			
+				String text = rdfsValue.getString();
 				return text;
 			}
 		} else { //default language is not null
 			String lang = rdfsValue.getLanguage();
 			if (lang != null && lang.equals(defaultLanguage)) {
-				String text = ((RDFSLiteral)value).getString();				
+				String text = ((RDFSLiteral)value).getString();
 				return text;
-			} 
-		}		
-	    
+			}
+		}
+
 		return null;
 	}
-	
-    public String toString() {
+
+    @Override
+	public String toString() {
         return "OWLBrowserSlotPattern(" + getSerialization() + ")";
     }
 }
