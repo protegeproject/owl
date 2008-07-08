@@ -16,6 +16,7 @@ import java.util.logging.Logger;
 
 import junit.framework.Assert;
 import edu.stanford.smi.protege.exception.OntologyLoadException;
+import edu.stanford.smi.protege.model.BrowserSlotPattern;
 import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.DefaultKnowledgeBase;
 import edu.stanford.smi.protege.model.Facet;
@@ -1233,6 +1234,16 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
          return value;
 	}
+
+    @Override
+	protected String getDisplaySlotPatternValueNotSetString(Instance instance, BrowserSlotPattern slotPattern) {
+    	return NamespaceUtil.getPrefixedName(this, instance.getName());
+    }
+
+    @Override
+	protected String getDisplaySlotNotSetString(Instance instance) {
+    	return NamespaceUtil.getPrefixedName(this, instance.getName());
+    }
 
 
 
