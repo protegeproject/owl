@@ -9,7 +9,9 @@ import edu.stanford.smi.protege.util.CollectionUtilities;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
+import edu.stanford.smi.protegex.owl.model.RDFSDatatype;
 import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
+import edu.stanford.smi.protegex.owl.swrl.ui.code.SWRLSymbolPanel;
 import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
 
 import java.awt.*;
@@ -107,6 +109,14 @@ public class DefaultSelectionDialogFactory extends AbstractSelectionDialogFactor
         }
         return cls;
     }
+    
+    private static RDFSDatatype pickDatatype(Component component, OWLModel owlModel) {
+        RDFSDatatype datatype = null;
+        Collection<RDFSDatatype> datatypes = owlModel.getRDFSDatatypes();
+        return (RDFSDatatype) ProtegeUI.getSelectionDialogFactory().selectResourceFromCollection(component, owlModel,
+                                                                                                datatypes, 
+                                                                                                "Select the XML Schema datatype to insert");
+    }
 
 
     private static Instance pickInstanceFromCollection(Component component, Collection collection, int initialSelection, String label) {
@@ -188,6 +198,13 @@ public class DefaultSelectionDialogFactory extends AbstractSelectionDialogFactor
         else {
             return null;
         }
+    }
+    
+    public RDFSDatatype selectDatatype(Component parent, OWLModel owlModel)  {
+        if (parent == null) {
+            parent = ProtegeUI.getProjectView(owlModel.getProject());
+        }
+        return pickDatatype(parent, owlModel);
     }
 
 
