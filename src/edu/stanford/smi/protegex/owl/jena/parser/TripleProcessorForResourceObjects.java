@@ -362,7 +362,7 @@ class TripleProcessorForResourceObjects extends AbstractStatefulTripleProcessor 
 				// move this to a RDFListCreator
 				FrameID id = new FrameID(subjName);
 
-				Frame listFrame = FrameCreatorUtility.createFrameWithType(owlModel, id, RDF.List.getURI(), tripleStore);
+				Frame listFrame = FrameCreatorUtility.createFrameWithType(owlModel, id, owlModel.getSystemFrames().getRdfListClass(), tripleStore);
 				if (isImporting(tripleStore)) {
 					listFrame.setIncluded(true); // ineffective in client-server or db mode
 				}
@@ -380,7 +380,7 @@ class TripleProcessorForResourceObjects extends AbstractStatefulTripleProcessor 
 			if (objList == null) {
 				FrameID id = new FrameID(objName);
 
-				Frame listFrame = FrameCreatorUtility.createFrameWithType(owlModel, id, RDF.List.getURI(), tripleStore);
+				Frame listFrame = FrameCreatorUtility.createFrameWithType(owlModel, id, owlModel.getSystemFrames().getRdfListClass(), tripleStore);
 
 				if (listFrame != null) {
 					checkUndefinedResources(objName);
@@ -404,7 +404,7 @@ class TripleProcessorForResourceObjects extends AbstractStatefulTripleProcessor 
 
 			FrameID id = new FrameID(frameUri);
 
-			frame = FrameCreatorUtility.createFrameWithType(owlModel, id, type.getName(), tripleStore);
+			frame = FrameCreatorUtility.createFrameWithType(owlModel, id, type, tripleStore);
 			if (isImporting(tripleStore)) {
 				frame.setIncluded(true); // doesn't have any effect in
 				// client-server or db mode
