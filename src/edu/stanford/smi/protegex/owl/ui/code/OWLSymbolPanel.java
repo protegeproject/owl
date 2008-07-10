@@ -13,15 +13,17 @@ import javax.swing.JToolBar;
 import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protege.util.Log;
-import edu.stanford.smi.protegex.owl.model.classparser.compact.TokenMgrError;
 import edu.stanford.smi.protegex.owl.model.OWLDatatypeProperty;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLNames;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
+import edu.stanford.smi.protegex.owl.model.RDFSDatatype;
 import edu.stanford.smi.protegex.owl.model.classdisplay.OWLClassDisplay;
 import edu.stanford.smi.protegex.owl.model.classparser.OWLClassParseException;
+import edu.stanford.smi.protegex.owl.model.classparser.compact.TokenMgrError;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLMinCardinality;
 import edu.stanford.smi.protegex.owl.model.impl.OWLUtil;
+import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
 import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
 import edu.stanford.smi.protegex.owl.ui.profiles.OWLProfiles;
 import edu.stanford.smi.protegex.owl.ui.profiles.ProfilesManager;
@@ -196,6 +198,11 @@ public class OWLSymbolPanel extends SymbolPanel {
 
             public void resourceSelected(RDFResource resource) {
                 insertIndividual(resource);
+            }
+            
+            @Override
+            public RDFSDatatype pickResource() {
+                return ProtegeUI.getSelectionDialogFactory().selectDatatype(OWLSymbolPanel.this, getOWLModel());
             }
         };
         JButton db = addButton(middleBar, rdfDatatypeAction);
