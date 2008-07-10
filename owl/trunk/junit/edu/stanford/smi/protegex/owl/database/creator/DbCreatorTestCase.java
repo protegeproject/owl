@@ -60,7 +60,7 @@ public class DbCreatorTestCase extends AbstractCreatorTestCase {
         for (DBType dbt : DBType.values()) {
             APITestCase.setDBType(dbt);
             if (!APITestCase.dbConfigured()) {
-                continue;
+                continue; 
             }
             OwlDatabaseFromFileCreator creator = new OwlDatabaseFromFileCreator();
             configureDbCreator(creator);
@@ -72,6 +72,7 @@ public class DbCreatorTestCase extends AbstractCreatorTestCase {
             checkUnsucessfulImport(owlModel);
             checkBase(owlModel, IMPORTING_BASE, IMPORTING_BASE);
 
+            creator.getProject().dispose();
         }
     }
     
@@ -92,6 +93,8 @@ public class DbCreatorTestCase extends AbstractCreatorTestCase {
             
             checkSuccessfulImport(owlModel);
             checkBase(owlModel, IMPORTING_BASE, IMPORTING_BASE);
+            
+            creator.getProject().dispose();
         }
     }
     
@@ -115,6 +118,8 @@ public class DbCreatorTestCase extends AbstractCreatorTestCase {
             checkBase(owlModel, IMPORTING_BASE, IMPORTING_BASE);
             checkIsDatabaseModel(owlModel, IMPORTING_BASE);
             checkIsDatabaseModel(owlModel, IMPORTED_BASE);
+            
+            creator.getProject().dispose();
         }
     }
 }
