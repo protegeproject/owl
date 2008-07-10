@@ -1205,7 +1205,7 @@ public interface OWLModel extends ProtegeKnowledgeBase, OWLTestManager {
      *
      * @return the datatype objects (instance of RDFSDatatype)
      */
-    Collection getRDFSDatatypes();
+    Collection<RDFSDatatype> getRDFSDatatypes();
 
 
     /**
