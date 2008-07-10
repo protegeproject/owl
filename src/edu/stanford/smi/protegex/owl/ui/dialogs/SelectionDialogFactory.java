@@ -3,6 +3,7 @@ package edu.stanford.smi.protegex.owl.ui.dialogs;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
+import edu.stanford.smi.protegex.owl.model.RDFSDatatype;
 import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
 
 import java.awt.*;
@@ -59,6 +60,8 @@ public interface SelectionDialogFactory {
 
     RDFProperty selectProperty(Component parent, OWLModel owlModel, Collection allowedProperties, String title);
 
+    RDFSDatatype selectDatatype(Component parent, OWLModel owlModel);
+    
     // selectResource -----------------------------------------
 
 
