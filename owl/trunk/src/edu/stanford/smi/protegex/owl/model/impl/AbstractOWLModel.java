@@ -1742,11 +1742,11 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     }
 
 
-    public Collection<RDFResource> getRDFSDatatypes() {
-        List<RDFResource> results = new ArrayList<RDFResource>();
+    public Collection<RDFSDatatype> getRDFSDatatypes() {
+        List<RDFSDatatype> results = new ArrayList<RDFSDatatype>();
         Iterator it = getRDFSDatatypeClass().getDirectInstances().iterator();
         while (it.hasNext()) {
-            RDFResource datatype = (RDFResource) it.next();
+            RDFSDatatype datatype = (RDFSDatatype) it.next();
             if (!datatype.isAnonymous()) {
                 results.add(datatype);
             }
