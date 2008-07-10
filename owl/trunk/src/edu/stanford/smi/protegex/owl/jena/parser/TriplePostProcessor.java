@@ -25,6 +25,7 @@ import edu.stanford.smi.protege.util.ApplicationProperties;
 import edu.stanford.smi.protege.util.ConsoleFormatter;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.model.NamespaceManager;
+import edu.stanford.smi.protegex.owl.model.OWLEnumeratedClass;
 import edu.stanford.smi.protegex.owl.model.OWLIntersectionClass;
 import edu.stanford.smi.protegex.owl.model.ProtegeNames;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
@@ -214,11 +215,26 @@ class TriplePostProcessor extends AbstractStatefulTripleProcessor {
 			}
 		}
 
+		processWrongOneOfTypes();
+
 		if (framesWithWrongJavaType.size() > 0) {
 			log.warning("\n    Frames with wrong Java type: " + globalParserCache.getFramesWithWrongJavaType() + "\n");
 		}
 
 		log.info(System.currentTimeMillis() - time0 + " ms\n");
+	}
+
+	private void processWrongOneOfTypes() {
+		for (TripleStore ts : parsedTripleStores) {
+			NarrowFrameStore nfs = ts.getNarrowFrameStore();
+			Collection<Frame> frames = nfs.getFrames(owlModel.getSystemFrames().getRdfTypeProperty(), null, false, owlModel.getSystemFrames().getOwlDataRangeClass());
+			for (Frame frame : frames) {
+				if (frame instanceof OWLEnumeratedClass) {
+					simpleFrameStore.swizzleInstance((Instance)frame);
+				}
+			}
+		}
+
 	}
 
 	private void processMetaclasses(TripleStore ts) {
