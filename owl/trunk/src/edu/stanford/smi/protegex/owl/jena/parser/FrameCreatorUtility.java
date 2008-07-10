@@ -46,23 +46,21 @@ import edu.stanford.smi.protegex.owl.swrl.model.impl.DefaultSWRLVariable;
 public class FrameCreatorUtility {
 	private static transient Logger log = Log.getLogger(FrameCreatorUtility.class);
 
-    public static Frame createFrameWithType(OWLModel owlModel, FrameID id, String typeUri, TripleStore ts) {
+    public static Frame createFrameWithType(OWLModel owlModel, FrameID id, Cls type, TripleStore ts) {
         Frame frame = ((KnowledgeBase) owlModel).getFrame(id);
-        
-        if (frame != null)
-            return frame;
 
-        Frame type = owlModel.getFrame(typeUri); // use simple FS
+        if (frame != null) {
+			return frame;
+		}
 
-        if (type == null)
-            return null;
+        String typeUri = type.getName();
 
         //maybe remove the anon condition
         if (typeUri.equals(OWL.Ontology.getURI())) {
-            frame = new DefaultOWLOntology(owlModel, id );                          
+            frame = new DefaultOWLOntology(owlModel, id );
         }
         else if (typeUri.equals(OWL.Class.getURI())) {
-            frame = new DefaultOWLNamedClass(owlModel, id );                           
+            frame = new DefaultOWLNamedClass(owlModel, id );
         } else if (typeUri.equals(OWL.DeprecatedClass.getURI())) {
         	frame = new DefaultOWLNamedClass(owlModel, id );
         }
@@ -73,20 +71,20 @@ public class FrameCreatorUtility {
             frame = new DefaultOWLObjectProperty(owlModel, id);
         }
         else if (typeUri.equals(OWL.TransitiveProperty.getURI())) {
-            frame = new DefaultOWLObjectProperty(owlModel, id);                     
+            frame = new DefaultOWLObjectProperty(owlModel, id);
         }
         else if (typeUri.equals(OWL.SymmetricProperty.getURI())) {
-            frame = new DefaultOWLObjectProperty(owlModel, id);                     
+            frame = new DefaultOWLObjectProperty(owlModel, id);
         }
         else if (typeUri.equals(OWL.AnnotationProperty.getURI())) {
             frame = new DefaultRDFProperty(owlModel, id);  //should this be abstract owl prop?
         }
         else if (typeUri.equals(OWL.InverseFunctionalProperty.getURI())) {
-            frame = new DefaultOWLObjectProperty(owlModel, id);                     
+            frame = new DefaultOWLObjectProperty(owlModel, id);
         }
         else if (typeUri.equals(OWL.FunctionalProperty.getURI())) {
-            frame = new DefaultRDFProperty(owlModel, id);                   
-            ((DefaultRDFProperty)frame).setFunctional(true);                
+            frame = new DefaultRDFProperty(owlModel, id);
+            ((DefaultRDFProperty)frame).setFunctional(true);
         }
         else if (typeUri.equals(OWL.AllDifferent.getURI())) {
             frame = new DefaultOWLAllDifferent(owlModel, id);
@@ -102,7 +100,7 @@ public class FrameCreatorUtility {
         }
         else if (typeUri.equals(RDF.List.getURI())) {
             frame = new DefaultRDFList(owlModel, id);
-        } 
+        }
         else if (typeUri.equals(RDFS.Class.getURI())) {
             frame = new DefaultRDFSNamedClass(owlModel, id);
         }
@@ -117,7 +115,7 @@ public class FrameCreatorUtility {
         }
         else if (typeUri.equals(SWRLNames.Cls.BUILTIN)) {
             frame = new DefaultSWRLBuiltin(owlModel, id);
-        }               
+        }
         else if (typeUri.equals(SWRLNames.Cls.CLASS_ATOM)) {
             frame = new DefaultSWRLClassAtom(owlModel, id);
         }
@@ -135,29 +133,29 @@ public class FrameCreatorUtility {
         }
         else if (typeUri.equals(SWRLNames.Cls.INDIVIDUAL_PROPERTY_ATOM)) {
             frame = new DefaultSWRLIndividualPropertyAtom(owlModel, id);
-        }   
+        }
         else if (typeUri.equals(SWRLNames.Cls.SAME_INDIVIDUAL_ATOM)) {
             frame = new DefaultSWRLSameIndividualAtom(owlModel, id);
         }
         else if (typeUri.equals(SWRLNames.Cls.VARIABLE)) {
             frame = new DefaultSWRLVariable(owlModel, id);
-        } 
-        
-        else {         
-            frame = createDefaultEntity(owlModel, id, (Cls)type, ts);
         }
-        
+
+        else {
+            frame = createDefaultEntity(owlModel, id, type, ts);
+        }
+
         assertFrameName(ts, frame);
-  	
+
         if (log.getLevel() == Level.FINE) {
     		log.fine("Created frame: " + frame);
     	}
-        
-        if (!hasDirectType((Instance)frame, (Cls)type)) {
+
+        if (!hasDirectType((Instance)frame, type)) {
         	if (log.getLevel() == Level.FINE) {
         		log.fine("Adding direct type to " + frame + " type: " + type);
         	}
-        	addInstanceType((Instance)frame, (Cls)type, ts);
+        	addInstanceType((Instance)frame, type, ts);
         	//--the rdf:type will be added in addTriple in the TripleProcessorForResources
         	//addOwnSlotValue(frame, systemFrames.getRdfTypeProperty(), type, ts);
         }
@@ -165,7 +163,7 @@ public class FrameCreatorUtility {
         return frame;
 
     }
-    
+
     private static Frame createDefaultEntity(OWLModel owlModel, FrameID id, Cls type, TripleStore ts) {
     	//This is actually the job of the Java factory, but we don't want to invoke it because it is too expensive
     	//We try to make some guess about the type of the entity, so that we minimize postprocessing
@@ -173,21 +171,21 @@ public class FrameCreatorUtility {
     		return new DefaultOWLNamedClass(owlModel, id);
     	} else if (type.hasSuperclass(owlModel.getRDFPropertyClass())) { //type is metaproperty
     		return new DefaultRDFProperty(owlModel, id);
-    	}    	
-    	
+    	}
+
     	return new DefaultOWLIndividual(owlModel, id);
     }
 
 
     private static void assertFrameName(TripleStore ts, Frame frame) {
     	NarrowFrameStore nfs = ts.getNarrowFrameStore();
-    	nfs.addValues(frame, frame.getKnowledgeBase().getSystemFrames().getNameSlot(), null, false, 
-    			CollectionUtilities.createCollection(frame.getName()));		
+    	nfs.addValues(frame, frame.getKnowledgeBase().getSystemFrames().getNameSlot(), null, false,
+    			CollectionUtilities.createCollection(frame.getName()));
 	}
 
 
 	public static boolean addInstanceType(Instance inst, Cls type, TripleStore ts) {
-        if (inst == null || type == null) {                     
+        if (inst == null || type == null) {
             return false;
         }
 
@@ -205,7 +203,7 @@ public class FrameCreatorUtility {
         return true;
     }
 
-    
+
     public static boolean hasDirectType(Instance inst, Cls type) {
     	return ParserUtil.getSimpleFrameStore(inst).getDirectTypes(inst).contains(type);
     }
@@ -213,14 +211,14 @@ public class FrameCreatorUtility {
     public static boolean hasSuperclass(Cls cls, Cls supercls) {
     	return ParserUtil.getSimpleFrameStore(cls).getSuperclasses(cls).contains(supercls);
     }
-    
+
     public static boolean createSubclassOf(Cls cls, Cls superCls, TripleStore ts) {
-        if (cls == null || superCls == null) {        	
+        if (cls == null || superCls == null) {
             return false;
         }
-        
+
         NarrowFrameStore nfs = ts.getNarrowFrameStore();
-        
+
     	nfs.addValues(cls, cls.getKnowledgeBase().getSystemFrames().getDirectSuperclassesSlot(), null, false,
     			CollectionUtilities.createCollection(superCls));
     	nfs.addValues(superCls, cls.getKnowledgeBase().getSystemFrames().getDirectSubclassesSlot(), null, false,
@@ -228,15 +226,15 @@ public class FrameCreatorUtility {
 
         return true;
     }
-    
+
 
     public static boolean createSubpropertyOf(Slot slot, Slot superSlot, TripleStore ts) {
         if (slot == null || superSlot == null) {
             return false;
         }
-        
+
         NarrowFrameStore nfs = ts.getNarrowFrameStore();
-        
+
     	nfs.addValues(slot, slot.getKnowledgeBase().getSystemFrames().getDirectSuperslotsSlot(), null, false,
     			CollectionUtilities.createCollection(superSlot));
     	nfs.addValues(superSlot, slot.getKnowledgeBase().getSystemFrames().getDirectSubclassesSlot(), null, false,
@@ -249,8 +247,8 @@ public class FrameCreatorUtility {
         if (frame == null || slot == null) {
             return false;
         }
-        
-        NarrowFrameStore nfs = ts.getNarrowFrameStore();        
+
+        NarrowFrameStore nfs = ts.getNarrowFrameStore();
         //what should happen if value is a collection?
         nfs.addValues(frame, slot, null, false, CollectionUtilities.createCollection(value));
 
@@ -265,7 +263,7 @@ public class FrameCreatorUtility {
     	Collection values = ParserUtil.getSimpleFrameStore(frame).getDirectOwnSlotValues(frame, slot);
     	return values.contains(value);
     }
-    
+
     public static boolean hasRDFType(Frame frame, Slot rdfTypeSlot, Cls type, TripleStore ts) {
     	NarrowFrameStore nfs = ts.getNarrowFrameStore();
     	return nfs.getValues(frame, rdfTypeSlot, null, false).contains(type);
