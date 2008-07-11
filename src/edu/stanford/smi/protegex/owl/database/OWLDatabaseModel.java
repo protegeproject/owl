@@ -219,10 +219,12 @@ public class OWLDatabaseModel
     public void setProject(Project project) {
         super.setProject(project);
 
-        FrameStoreManager fsm = getFrameStoreManager();
-        if (fsm.getFrameStoreFromClass(LocalClassificationFrameStore.class) == null) {
-            int position = getFrameStores().size() - 1;
-            fsm.insertFrameStore(new LocalClassificationFrameStore(this), position);
+        if (!project.isMultiUserClient()) {
+            FrameStoreManager fsm = getFrameStoreManager();
+            if (fsm.getFrameStoreFromClass(LocalClassificationFrameStore.class) == null) {
+                int position = getFrameStores().size() - 1;
+                fsm.insertFrameStore(new LocalClassificationFrameStore(this), position);
+            }
         }
     }
 }
