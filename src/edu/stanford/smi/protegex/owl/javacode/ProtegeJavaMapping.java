@@ -1,7 +1,10 @@
 package edu.stanford.smi.protegex.owl.javacode;
 
 import java.lang.reflect.Constructor;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 import edu.stanford.smi.protege.model.Cls;
@@ -71,7 +74,23 @@ public class ProtegeJavaMapping {
     }
     
     private static <X> Class<? extends X> getJavaImplementation(RDFResource resource, Class<? extends X> javaInterface) {
-        for (Object o  : resource.getProtegeTypes()) {
+    	Collection protegeTypes = resource.getProtegeTypes();
+    	Collection allTypes = new ArrayList();
+    	allTypes.addAll(protegeTypes);
+    	for (Object o  : protegeTypes) {
+            if  (!(o instanceof RDFSNamedClass)) {
+                continue;
+            }
+            RDFSNamedClass type = (RDFSNamedClass) o;
+    		Collection superclasses = type.getSuperclasses(true);
+    		for (Object sup : superclasses) {
+				if ( ! allTypes.contains(sup) ) {
+					allTypes.add(sup);
+				}
+			}
+    	}
+        //for (Object o  : resource.getProtegeTypes()) {
+    	for (Object o  : allTypes) {
             if  (!(o instanceof Cls)) {
                 continue;
             }
