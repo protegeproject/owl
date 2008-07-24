@@ -28,7 +28,8 @@ public class OwlDatabaseCreator extends AbstractOwlDatabaseCreator {
 
 	@Override
 	public void create(Collection errors) throws OntologyLoadException {
-		if (pleaseCleanDatabase()) {
+	    boolean useExistingDb = useExistingDb();
+		if (!useExistingDb) {
 			try {
 				initializeTable(errors);
 			} catch (IOException e) {
@@ -37,22 +38,24 @@ public class OwlDatabaseCreator extends AbstractOwlDatabaseCreator {
 		}
 
 		super.create(errors);
-		if (ontologyName == null) {
-			ontologyName = FactoryUtils.generateOntologyURIBase();
-		}
-		try {
-			FactoryUtils.addOntologyToTripleStore(getOwlModel(), 
-					getOwlModel().getTripleStoreModel().getActiveTripleStore(), 
-					ontologyName);
-			writeOntologyAndPrefixInfo(getOwlModel(), errors);
-		}
-		catch (AlreadyImportedException e) {
-			throw new RuntimeException("This shouldn't happen", e);
+		if (!useExistingDb) {
+		    if (ontologyName == null) {
+		        ontologyName = FactoryUtils.generateOntologyURIBase();
+		    }
+		    try {
+		        FactoryUtils.addOntologyToTripleStore(getOwlModel(), 
+		                                              getOwlModel().getTripleStoreModel().getActiveTripleStore(), 
+		                                              ontologyName);
+		        writeOntologyAndPrefixInfo(getOwlModel(), errors);
+		    }
+		    catch (AlreadyImportedException e) {
+		        throw new RuntimeException("This shouldn't happen", e);
+		    }
 		}
 	}
 
-	private boolean pleaseCleanDatabase() throws OntologyLoadException {
-		if (wipe) { return true; }
+	private boolean useExistingDb() throws OntologyLoadException {
+		if (wipe) { return false; }
 		Connection connection = null;
 		try {
 			Class.forName(getDriver());
@@ -65,7 +68,7 @@ public class OwlDatabaseCreator extends AbstractOwlDatabaseCreator {
 			rethrow(sqle);
 		}
 		try {
-			return DatabaseFactoryUtils.getOntologyFromTable(connection, getTable()) == null;
+			return DatabaseFactoryUtils.getOntologyFromTable(connection, getTable()) != null;
 		}
 		catch (SQLException sqle) {
 			return true;
