@@ -227,16 +227,14 @@
            source = "${source}"
                includeAntRuntime="false">
             <classpath refid="classpath.compile"/>
-            <!--  <compilerarg value="-Xlint:all"/> -->
         </javac>
-        <copy todir="${classes}/edu/stanford/smi/protegex/owl/jena" 
-              file="${src}/edu/stanford/smi/protegex/owl/jena/OWL.pprj"/>
-        <copy todir="${classes}/edu/stanford/smi/protegex/owl/jena" 
-              file="${src}/edu/stanford/smi/protegex/owl/jena/OWL-min.pprj"/>
-        <copy todir="${classes}/edu/stanford/smi/protegex/owl/database" 
-              file="${src}/edu/stanford/smi/protegex/owl/database/OWL.pprj"/>
-        <copy todir="${classes}/edu/stanford/smi/protegex/owl/resource/files">
-            <fileset dir="${src}/edu/stanford/smi/protegex/owl/resource/files"/>
+        <copy todir="${classes}">
+            <fileset dir="${src}">
+                <include name="**/*"/>
+                <exclude name="**/*.java"/>
+                <exclude name="**/MANIFEST.MF"/>
+                <exclude name="**/manifest.mf"/>
+            </fileset>
         </copy>
     </target>
 
@@ -254,15 +252,6 @@
         <jar jarfile="${jarfile}"
              manifest="${build}/MANIFEST.MF">
             <fileset dir="${classes}"/>
-            <fileset dir="${src}/">
-                <include name="**/*.gif"/>
-            </fileset>
-            <fileset dir="${src}/">
-                <include name="**/*.png"/>
-            </fileset>
-            <fileset dir="${src}/">
-                <include name="**/*.db"/>
-            </fileset>
         </jar>
     </target>
 
