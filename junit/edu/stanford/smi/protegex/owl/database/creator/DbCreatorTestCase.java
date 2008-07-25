@@ -43,6 +43,7 @@ public class DbCreatorTestCase extends AbstractCreatorTestCase {
             handleErrors();
             owlModel = creator.getOwlModel();
             assertNotNull(owlModel.getOWLNamedClass(className));
+            assertTrue(owlModel.getOWLOntologyClass().getInstanceCount(true) == 1);
             owlModel.getProject().dispose();
             
             creator  = new OwlDatabaseCreator(true);
