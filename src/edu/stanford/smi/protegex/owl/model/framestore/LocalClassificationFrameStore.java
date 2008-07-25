@@ -61,16 +61,6 @@ public class LocalClassificationFrameStore extends FrameStoreAdapter {
     }
 
 
-    private void dispatchEvent(Frame frame, Slot slot) {
-        EventDispatchFrameStore e = getEventDispatchFrameStore();
-        Collection ls = new ArrayList(e.getListeners(FrameListener.class, frame));
-        for (Iterator it = ls.iterator(); it.hasNext();) {
-            FrameListener listener = (FrameListener) it.next();
-            listener.ownSlotValueChanged(new FrameEvent(frame, FrameEvent.OWN_SLOT_VALUE_CHANGED, slot));
-        }
-    }
-
-
     public List getDirectOwnSlotValues(Frame frame, Slot slot) {
         final Map<Frame,List> instancesMap = slotsMap.get(slot);
         if (instancesMap != null) {
