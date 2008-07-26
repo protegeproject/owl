@@ -1,24 +1,48 @@
 package edu.stanford.smi.protegex.owl.ui.properties;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.List;
+
+import javax.swing.Action;
+import javax.swing.JList;
+
 import edu.stanford.smi.protege.event.FrameAdapter;
 import edu.stanford.smi.protege.event.FrameEvent;
 import edu.stanford.smi.protege.event.FrameListener;
-import edu.stanford.smi.protege.model.*;
+import edu.stanford.smi.protege.model.Cls;
+import edu.stanford.smi.protege.model.Facet;
+import edu.stanford.smi.protege.model.Instance;
+import edu.stanford.smi.protege.model.Slot;
+import edu.stanford.smi.protege.model.ValueType;
 import edu.stanford.smi.protege.server.framestore.RemoteClientFrameStore;
 import edu.stanford.smi.protege.server.metaproject.impl.OperationImpl;
 import edu.stanford.smi.protege.ui.FrameRenderer;
-import edu.stanford.smi.protege.util.*;
-import edu.stanford.smi.protegex.owl.model.*;
-import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
+import edu.stanford.smi.protege.util.AllowableAction;
+import edu.stanford.smi.protege.util.ComponentFactory;
+import edu.stanford.smi.protege.util.ComponentUtilities;
+import edu.stanford.smi.protege.util.CreateAction;
+import edu.stanford.smi.protege.util.LabeledComponent;
+import edu.stanford.smi.protege.util.RemoveAction;
+import edu.stanford.smi.protege.util.ViewAction;
+import edu.stanford.smi.protegex.owl.model.NamespaceUtil;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.model.OWLNames;
+import edu.stanford.smi.protegex.owl.model.OWLObjectProperty;
+import edu.stanford.smi.protegex.owl.model.OWLProperty;
+import edu.stanford.smi.protegex.owl.model.RDFProperty;
+import edu.stanford.smi.protegex.owl.model.RDFResource;
+import edu.stanford.smi.protegex.owl.model.RDFSClass;
+import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
 import edu.stanford.smi.protegex.owl.ui.OWLLabeledComponent;
 import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
 import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
 import edu.stanford.smi.protegex.owl.ui.resourceselection.ResourceSelectionAction;
 import edu.stanford.smi.protegex.owl.ui.widget.AbstractPropertyWidget;
 import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
-
-import javax.swing.*;
-import java.util.*;
 
 /**
  * An adjusted version of the InverseSlotWidget that honors the OWL look and feel.
@@ -35,7 +59,6 @@ public class OWLInversePropertyWidget extends AbstractPropertyWidget {
                 beginTransaction("Set inverse property of " + getEditedResource().getBrowserText() + 
                 		" to " + resource.getBrowserText(), getEditedResource().getName());
                 final OWLProperty inverseProperty = (OWLProperty) resource;
-                adjustDomainAndRange((OWLProperty) getEditedResource(), inverseProperty);
                 setInverseProperty(inverseProperty);
                 commitTransaction();				
 			} catch (Exception e) {
@@ -78,54 +101,26 @@ public class OWLInversePropertyWidget extends AbstractPropertyWidget {
 
     private AllowableAction viewAction;
 
-
-    private void adjustDomainAndRange(OWLProperty forwardProperty, OWLProperty inverseProperty) {
-        Collection range = forwardProperty.getUnionRangeClasses();
-        Collection domain = new ArrayList(forwardProperty.getUnionDomain());
-        for (Iterator it = domain.iterator(); it.hasNext();) {
-            Cls cls = (Cls) it.next();
-            if (cls instanceof OWLAnonymousClass) {
-                it.remove();
-            }
-        }
-        if (domain.size() != 1 || !domain.contains(getOWLModel().getOWLThingClass())) {
-            inverseProperty.setUnionRangeClasses(domain);
-        }
-        if (inverseProperty.isDomainDefined()) {
-            inverseProperty.setDomainDefined(false);
-        }
-        if (!inverseProperty.getUnionDomain().isEmpty()) {
-            inverseProperty.removeUnionDomainClass(getOWLModel().getOWLThingClass());
-        }
-        if (range.isEmpty() && inverseProperty.getSuperpropertyCount() == 0) {
-            range = Collections.singleton(getOWLModel().getOWLThingClass());
-        }
-        setDomain(inverseProperty, range);
-        if (!forwardProperty.isDomainDefined()) {
-            inverseProperty.setDomainDefined(false);
-        }
-    }
-
-
     private RDFProperty createInverseProperty() {
         OWLProperty inverseProperty = null;
         try {
             OWLProperty forwardProperty = (OWLProperty) getEditedResource();
             //TT: Maybe this should be on the inverse property, not on the forward one
             beginTransaction("Create inverse property for " + forwardProperty.getName(), forwardProperty.getName());
-            String propertyName = "";
-            String prefix = forwardProperty.getNamespacePrefix();
-            if (prefix != null && prefix.length() > 0) {
-                propertyName = prefix + ":";
-            }
-            propertyName += "inverse_of_" + forwardProperty.getLocalName();
-            while (getKnowledgeBase().getFrame(propertyName) != null) {
-                propertyName += "_";
+            String forwardName = forwardProperty.getName();
+            String forwardNamespace = NamespaceUtil.getNameSpace(forwardName);
+            String forwardLocalName = NamespaceUtil.getLocalName(forwardName);
+            String propertyName = forwardNamespace + "inverse_of_" + forwardLocalName;
+            if (getKnowledgeBase().getFrame(propertyName) != null) {
+                int i = 0;
+                while (getKnowledgeBase().getFrame(propertyName + "_"  + i) != null) {
+                    i++;
+                }
+                propertyName  = propertyName + "_"  + i;
             }
             Collection inverseSuperproperties = getSuperpropertyInverses(forwardProperty);
             RDFSNamedClass type = (RDFSNamedClass) forwardProperty.getRDFType();
             inverseProperty = (OWLProperty) getKnowledgeBase().createSlot(propertyName, type, inverseSuperproperties, true);
-            adjustDomainAndRange(forwardProperty, inverseProperty);
             inverseProperty.setFunctional(false);
             setInverseProperty(inverseProperty);
             if (forwardProperty.isAnnotationProperty() && !inverseProperty.isAnnotationProperty()) {
@@ -304,9 +299,6 @@ public class OWLInversePropertyWidget extends AbstractPropertyWidget {
         if (getEditedResource() instanceof OWLObjectProperty) {
             OWLObjectProperty objectSlot = (OWLObjectProperty) getEditedResource();
             objectSlot.setSymmetric(objectSlot.equals(property));
-        }
-        if (getEditedResource() instanceof RDFProperty) {
-            ((RDFProperty) getEditedResource()).synchronizeDomainAndRangeOfInverse();
         }
     }
 
