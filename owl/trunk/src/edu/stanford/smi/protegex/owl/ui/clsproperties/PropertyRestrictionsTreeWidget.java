@@ -1,11 +1,38 @@
 package edu.stanford.smi.protegex.owl.ui.clsproperties;
 
-import edu.stanford.smi.protege.model.*;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.Collection;
+import java.util.Iterator;
+
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
+
+import edu.stanford.smi.protege.model.Cls;
+import edu.stanford.smi.protege.model.Facet;
+import edu.stanford.smi.protege.model.Instance;
+import edu.stanford.smi.protege.model.Model;
+import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protege.util.AllowableAction;
 import edu.stanford.smi.protege.util.LabeledComponent;
 import edu.stanford.smi.protege.widget.SlotWidget;
 import edu.stanford.smi.protege.widget.WidgetConfigurationPanel;
-import edu.stanford.smi.protegex.owl.model.*;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
+import edu.stanford.smi.protegex.owl.model.RDFProperty;
+import edu.stanford.smi.protegex.owl.model.RDFSClass;
+import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
 import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
 import edu.stanford.smi.protegex.owl.ui.OWLLabeledComponent;
 import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
@@ -17,15 +44,8 @@ import edu.stanford.smi.protegex.owl.ui.resourceselection.ResourceSelectionActio
 import edu.stanford.smi.protegex.owl.ui.widget.AbstractPropertyWidget;
 import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.util.Collection;
-import java.util.Iterator;
-
 public class PropertyRestrictionsTreeWidget extends AbstractPropertyWidget {
+    private static final long serialVersionUID = 7648920625842859833L;
 
     private ResourceSelectionAction addPropertyAction = new AddPropertyAction(this);
 
@@ -163,9 +183,6 @@ public class PropertyRestrictionsTreeWidget extends AbstractPropertyWidget {
                 try {
                     owlModel.beginTransaction("Remove " + cls.getBrowserText() + " from the domain of " + property.getBrowserText(), property.getName());
                     property.removeUnionDomainClass(cls);
-                    if (property instanceof RDFProperty) {
-                        ((RDFProperty) property).synchronizeDomainAndRangeOfInverse();
-                    }
                     owlModel.commitTransaction();
                 }
                 catch (Exception ex) {
