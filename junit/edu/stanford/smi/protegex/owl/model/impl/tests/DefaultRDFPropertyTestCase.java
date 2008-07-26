@@ -59,58 +59,6 @@ public class DefaultRDFPropertyTestCase extends AbstractJenaTestCase {
     }
 
 
-    public void testSynchronizeRangeOfInverseWithDomainOfThis() {
-        RDFProperty property = owlModel.createOWLObjectProperty("property");
-        RDFProperty inverseProperty = owlModel.createOWLObjectProperty("inverseProperty");
-        OWLNamedClass clsA = owlModel.createOWLNamedClass("A");
-        OWLNamedClass clsB = owlModel.createOWLNamedClass("B");
-
-        property.setDomain(clsA);
-        assertSize(1, property.getUnionDomain());
-        property.setInverseProperty(inverseProperty);
-        property.synchronizeDomainAndRangeOfInverse();
-        assertSize(1, inverseProperty.getUnionRangeClasses());
-        assertContains(clsA, inverseProperty.getUnionRangeClasses());
-
-        property.removeUnionDomainClass(clsA);
-        property.synchronizeDomainAndRangeOfInverse();
-        assertSize(0, inverseProperty.getUnionRangeClasses());
-
-        property.addUnionDomainClass(clsA);
-        property.addUnionDomainClass(clsB);
-        property.synchronizeDomainAndRangeOfInverse();
-        assertSize(2, inverseProperty.getUnionRangeClasses());
-    }
-
-
-    public void testSynchronizeDomainOfInverseWithRangeOfThis() {
-        RDFProperty property = owlModel.createOWLObjectProperty("property");
-        RDFProperty inverseProperty = owlModel.createOWLObjectProperty("inverseProperty");
-        OWLNamedClass classA = owlModel.createOWLNamedClass("A");
-        OWLNamedClass classB = owlModel.createOWLNamedClass("B");
-        property.setInverseProperty(inverseProperty);
-
-        property.setRange(classA);
-        property.synchronizeDomainAndRangeOfInverse();
-        assertSize(1, inverseProperty.getUnionDomain());
-        assertContains(classA, inverseProperty.getUnionDomain());
-
-        property.setRange(null);
-        assertSize(0, property.getUnionRangeClasses());
-        property.synchronizeDomainAndRangeOfInverse();
-        assertSize(1, inverseProperty.getUnionDomain());
-
-        Collection as = new ArrayList();
-        as.add(classA);
-        as.add(classB);
-        property.setUnionRangeClasses(as);
-        property.synchronizeDomainAndRangeOfInverse();
-        assertSize(2, inverseProperty.getUnionDomain());
-        assertContains(classA, inverseProperty.getUnionDomain());
-        assertContains(classB, inverseProperty.getUnionDomain());
-    }
-
-
     public void testRangeRDFDatatype() {
 
         RDFProperty property = owlModel.createRDFProperty("property");
