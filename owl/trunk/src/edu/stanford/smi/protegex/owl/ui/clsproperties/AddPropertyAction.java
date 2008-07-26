@@ -42,7 +42,6 @@ public class AddPropertyAction extends ResourceSelectionAction {
                 property.removeUnionDomainClass(rootCls);
             }
             property.addUnionDomainClass(cls);
-            property.synchronizeDomainAndRangeOfInverse();
             owlModel.commitTransaction();
         }
         catch (Exception ex) {
