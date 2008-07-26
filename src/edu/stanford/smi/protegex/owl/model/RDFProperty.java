@@ -421,12 +421,4 @@ public interface RDFProperty extends ProtegeSlot, RDFResource, Deprecatable {
 
 
     void setUnionRangeClasses(Collection classes);
-
-
-    /**
-     * Makes sure that the range and domain of the current inverse property match
-     * the domain and range of this.  This method should be called after editing
-     * steps to ensure that the domain of the inverse equals the range of this etc.
-     */
-    void synchronizeDomainAndRangeOfInverse();
 }
