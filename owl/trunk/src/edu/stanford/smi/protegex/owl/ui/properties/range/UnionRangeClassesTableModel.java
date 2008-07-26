@@ -72,7 +72,6 @@ class UnionRangeClassesTableModel extends AbstractTableModel
             aClass.getOWLModel().beginTransaction("Add " + aClass.getBrowserText() +
                     " to range of " + property.getBrowserText(), property.getName());
             property.setUnionRangeClasses(newClses);
-            property.synchronizeDomainAndRangeOfInverse();
             aClass.getOWLModel().commitTransaction();
         }
         catch (Exception ex) {
@@ -119,13 +118,11 @@ class UnionRangeClassesTableModel extends AbstractTableModel
                     " from range of " + cls.getBrowserText(), property.getName());
             if (newClses.isEmpty() && property.getSuperpropertyCount() > 0) {
                 property.setRange(null);
-                property.synchronizeDomainAndRangeOfInverse();
                 property.getOWLModel().commitTransaction();
                 fireTableDataChanged();
             }
             else {
                 property.setUnionRangeClasses(newClses);
-                property.synchronizeDomainAndRangeOfInverse();
                 property.getOWLModel().commitTransaction();
                 fireTableRowsDeleted(index, index);
             }
