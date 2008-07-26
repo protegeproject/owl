@@ -135,7 +135,6 @@ public class OWLDomainWidget extends AbstractPropertyWidget {
 					}
 				}
 			}
-            property.synchronizeDomainAndRangeOfInverse();
             commitTransaction();
         }
         catch (Exception ex) {
