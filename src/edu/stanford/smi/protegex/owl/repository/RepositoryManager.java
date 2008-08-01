@@ -4,9 +4,10 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
 
+import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.repository.impl.DublinCoreDLVersionRedirectRepository;
 import edu.stanford.smi.protegex.owl.repository.impl.ForcedURLRetrievalRepository;
@@ -46,7 +47,12 @@ public class RepositoryManager {
 
 
     private void loadSystemRepositories() {
-        globalRepositories.add(new ProtegeOWLPluginFolderRepository());
+    	try {
+    		globalRepositories.add(new ProtegeOWLPluginFolderRepository());
+		} catch (Exception e) {
+			Log.getLogger().log(Level.WARNING, "Failed to load system repositories.", e);
+		}
+
     }
 
 
@@ -146,14 +152,12 @@ public class RepositoryManager {
 
     public Repository getRepository(URI ontologyName) {
         // Process local projectRepositories first.
-        for (Iterator<Repository> it = projectRepositories.iterator(); it.hasNext();) {
-            Repository curRepository = it.next();
+        for (Repository curRepository : projectRepositories) {
             if (curRepository.contains(ontologyName)) {
                 return curRepository;
             }
         }
-        for (Iterator<Repository> it = globalRepositories.iterator(); it.hasNext();) {
-            Repository curRepository =  it.next();
+        for (Repository curRepository : globalRepositories) {
             if (curRepository.contains(ontologyName)) {
                 return curRepository;
             }
