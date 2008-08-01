@@ -13,8 +13,8 @@ public class UndefTriple {
 	private Object tripleObj;
 	private String undef;
 	private TripleStore tripleStore;
-	
-	
+
+
 	public UndefTriple(AResource subj, AResource pred, AResource obj, String undef, TripleStore ts) {
 		this.tripleSubj = subj;
 		this.triplePred = pred;
@@ -31,7 +31,7 @@ public class UndefTriple {
 		this.tripleStore = ts;
 	}
 
-	
+
 	public Object getTripleObj() {
 		return tripleObj;
 	}
@@ -47,36 +47,36 @@ public class UndefTriple {
 	public String getUndef() {
 		return undef;
 	}
-	
+
 	public TripleStore getTripleStore() {
 		return tripleStore;
 	}
-	
+
 	@Override
 	public boolean equals(Object obj) {
 		if (obj == null) {
 			return false;
 		}
-		
+
 		if (!(obj instanceof UndefTriple)) {
 			return false;
 		}
-				
+
 		UndefTriple other = (UndefTriple) obj;
-		
+
 		return other.getTripleSubj().equals(getTripleSubj()) &&
 		       other.getTriplePred().equals(getTriplePred()) &&
 		       other.getTripleObj().equals(getTripleObj()) &&
-		       other.getUndef().equals(getUndef()) && 
-		       other.getTripleStore().equals(getTripleStore());	
+		       (other.getUndef() == null && getUndef() == null || other.getUndef().equals(getUndef()) )&&
+		       other.getTripleStore().equals(getTripleStore());
 	}
-	
+
 	@Override
 	public int hashCode() {
 		return 2*tripleSubj.hashCode() + 27*triplePred.hashCode() + tripleObj.hashCode();
 	}
-	
-		
+
+
 	@Override
 	public String toString() {
 		return "(" + getTripleSubj() + "  " + getTriplePred() + "  " + getTripleObj() + ")" + "  undef: " + getUndef() + " triplestore: " + getTripleStore();
