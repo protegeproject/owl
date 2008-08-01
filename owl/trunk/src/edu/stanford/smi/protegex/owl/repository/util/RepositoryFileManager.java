@@ -50,18 +50,18 @@ public class RepositoryFileManager {
 
     private OWLModel model;
 
-    public static void loadProjectRepositories(OWLModel owlModel) {     
+    public static void loadProjectRepositories(OWLModel owlModel) {
         // Load any project repositories
         RepositoryFileManager man = new RepositoryFileManager(owlModel);
         man.loadProjectRepositories();
     }
-    
+
     public static void saveProjectRepositories(OWLModel owlModel) {
         RepositoryFileManager man = new RepositoryFileManager(owlModel);
         man.saveGlobalRepositories();
         man.saveProjectRepositories();
     }
-    
+
     public RepositoryFileManager(OWLModel model) {
         this.model = model;
         this.manager = this.model.getRepositoryManager();
@@ -72,7 +72,7 @@ public class RepositoryFileManager {
     	URI uri = getProjectRepositoryURI();
     	if (uri != null) {
             manager.removeAllProjectRepositories();
-            loadRepositoriesFromURI(uri);    		
+            loadRepositoriesFromURI(uri);
     	}
     }
 
@@ -85,11 +85,15 @@ public class RepositoryFileManager {
 
 
     public void loadGlobalRepositories() {
-        File f = ProtegeOWL.getPluginFolder();
-        f = new File(f, GLOBAL_REPOSITORY_FILE_NAME);
-        if (f.exists()) {
-            loadGlobalRepositories(f);
-        }
+    	try {
+            File f = ProtegeOWL.getPluginFolder();
+            f = new File(f, GLOBAL_REPOSITORY_FILE_NAME);
+            if (f.exists()) {
+                loadGlobalRepositories(f);
+            }
+		} catch (Exception e) {
+			Log.getLogger().log(Level.WARNING, "Failed to load global repositories", e);
+		}
     }
 
 
@@ -116,8 +120,8 @@ public class RepositoryFileManager {
 
     private void saveProjectRepositories(File file) {
         ArrayList list = new ArrayList();
-        for (Iterator it = manager.getProjectRepositories().iterator(); it.hasNext();) {
-            Repository rep = (Repository) it.next();
+        for (Object element : manager.getProjectRepositories()) {
+            Repository rep = (Repository) element;
             if (rep.isSystem() == false) {
                 list.add(rep);
             }
@@ -165,11 +169,11 @@ public class RepositoryFileManager {
         }
     }
 
-    
+
 
     private void loadRepositoriesFromFile(final File f,
                                           final boolean global) {
-        try {       	
+        try {
                     FileInputStream fis = new FileInputStream(f);
 					BufferedReader br = new BufferedReader(new InputStreamReader(fis));
 					String line;
@@ -195,7 +199,7 @@ public class RepositoryFileManager {
         }
     }
 
-    
+
     private void loadRepositoriesFromURI(final URI uri) {
 		try {
 			URL url = new URL(uri.toString());
@@ -207,11 +211,11 @@ public class RepositoryFileManager {
 				if (line.length() > 0) {
 					RepositoryFactory factory = RepositoryFactory.getInstance();
 					Repository rep = factory.createOntRepository(model, line);
-					if (rep != null) {						
+					if (rep != null) {
 						manager.addProjectRepository(rep);
 					}
 				}
-			}			
+			}
 			fis.close();
 		} catch (OntologyLoadException e) {
 			if (Log.getLogger().isLoggable(Level.FINE)) {
@@ -225,46 +229,46 @@ public class RepositoryFileManager {
 			}
 		}
 	}
-    
+
 
     private File getProjectRepositoryFile() {
         Project project = model.getProject();
         if (project != null) {
             URI projectURI = project.getProjectURI();
-            
+
             //If the project does not have a name, try to retrieve the repository file from the owl file path
             try {
                 if (projectURI == null && project.getKnowledgeBaseFactory() instanceof JenaKnowledgeBaseFactory) {
                 	String owlFileUriString = JenaKnowledgeBaseFactory.getOWLFilePath(project.getSources());
                 	projectURI = URIUtilities.createURI(owlFileUriString);
-                }				
+                }
 			} catch (Exception e) {
 				Log.getLogger().warning("Failed to find repository file for " + project);
 			}
-            
+
             if (projectURI != null) {
                 return getProjectRepositoryFile(projectURI);
             }
         }
         return null;
     }
-    
-        
+
+
     private URI getProjectRepositoryURI() {
         Project project = model.getProject();
         if (project != null) {
             URI projectURI = project.getProjectURI();
-            
+
             //If the project does not have a name, try to retrieve the repository file from the owl file path
             try {
                 if (projectURI == null && project.getKnowledgeBaseFactory() instanceof JenaKnowledgeBaseFactory) {
                 	String owlFileUriString = JenaKnowledgeBaseFactory.getOWLFilePath(project.getSources());
                 	projectURI = URIUtilities.createURI(owlFileUriString);
-                }				
+                }
 			} catch (Exception e) {
 				Log.getLogger().warning("Failed to find repository file for " + project);
 			}
-            
+
             if (projectURI != null) {
                 return getProjectRepositoryURI(projectURI);
             }
@@ -276,13 +280,13 @@ public class RepositoryFileManager {
     private URI getProjectRepositoryURI(URI owlFileURI) {
     	return URIUtilities.replaceExtension(owlFileURI, REPOSITORY_EXTENTION);
     }
-    
-    private File getProjectRepositoryFile(URI owlFileURI) {        
+
+    private File getProjectRepositoryFile(URI owlFileURI) {
     	File f = new File(owlFileURI);
         String repName = f.getName();
         repName = FileUtilities.replaceExtension(repName, REPOSITORY_EXTENTION);
-        repName = FileUtilities.ensureExtension(repName, REPOSITORY_EXTENTION);      
+        repName = FileUtilities.ensureExtension(repName, REPOSITORY_EXTENTION);
         f = new File(f.getParentFile(), repName);
-        return f;       
+        return f;
     }
 }
