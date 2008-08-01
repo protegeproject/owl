@@ -12,11 +12,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.util.Collection;
-import java.util.Iterator;
-import java.util.Map;
 import java.util.logging.Level;
 
-import com.hp.hpl.jena.graph.Graph;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntModelSpec;
 import com.hp.hpl.jena.rdf.model.Model;
@@ -26,7 +23,6 @@ import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.reasoner.ReasonerRegistry;
 import com.hp.hpl.jena.reasoner.dig.DIGReasoner;
 import com.hp.hpl.jena.reasoner.dig.DIGReasonerFactory;
-import com.hp.hpl.jena.shared.PrefixMapping;
 import com.hp.hpl.jena.util.FileUtils;
 import com.hp.hpl.jena.vocabulary.ReasonerVocabulary;
 
@@ -44,7 +40,6 @@ import edu.stanford.smi.protegex.owl.jena.parser.ProtegeOWLParser;
 import edu.stanford.smi.protegex.owl.jena.protege2jena.Protege2Jena;
 import edu.stanford.smi.protegex.owl.jena.writersettings.JenaWriterSettings;
 import edu.stanford.smi.protegex.owl.jena.writersettings.WriterSettings;
-import edu.stanford.smi.protegex.owl.model.NamespaceManager;
 import edu.stanford.smi.protegex.owl.model.OWLOntology;
 import edu.stanford.smi.protegex.owl.model.RDFList;
 import edu.stanford.smi.protegex.owl.model.RDFNames;
@@ -179,7 +174,7 @@ public class JenaOWLModel extends AbstractOWLModel implements OntModelProvider {
         }
     }
 
-
+/*
     public void initPrefixes(OntModel ontModel) {
         NamespaceManager nsm = getNamespaceManager();
         initPrefixes(nsm, ontModel);
@@ -215,7 +210,7 @@ public class JenaOWLModel extends AbstractOWLModel implements OntModelProvider {
             }
         }
     }
-
+*/
 
     /**
      * Saves the current OWLModel in the standard format.
