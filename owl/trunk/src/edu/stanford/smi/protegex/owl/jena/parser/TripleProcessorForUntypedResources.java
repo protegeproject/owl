@@ -1,14 +1,22 @@
 package edu.stanford.smi.protegex.owl.jena.parser;
 
 
+import java.util.logging.Level;
+
 import com.hp.hpl.jena.rdf.arp.ALiteral;
 import com.hp.hpl.jena.rdf.arp.AResource;
+import com.hp.hpl.jena.vocabulary.OWL;
 
+import edu.stanford.smi.protege.model.FrameID;
+import edu.stanford.smi.protege.util.Log;
+import edu.stanford.smi.protegex.owl.model.OWLEnumeratedClass;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
 import edu.stanford.smi.protegex.owl.model.RDFSClass;
+import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
 import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
+import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLEnumeratedClass;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 
 class TripleProcessorForUntypedResources extends AbstractStatefulTripleProcessor {
@@ -30,6 +38,11 @@ class TripleProcessorForUntypedResources extends AbstractStatefulTripleProcessor
 
 			TripleStore undefTripleStore = undefTriple.getTripleStore();
 
+			//special handling of owl:oneOf
+			if (ParserUtil.getResourceName(undefTriple.getTriplePred()).equals(OWL.oneOf.getURI())) {
+				handleCreationOfOneOf(undefTriple);
+			}
+
 			boolean success = false;
 
 			if (obj instanceof AResource) {
@@ -43,6 +56,27 @@ class TripleProcessorForUntypedResources extends AbstractStatefulTripleProcessor
 			}
 		}
 	}
+
+
+
+	private void handleCreationOfOneOf(UndefTriple undefTriple) {
+		AResource tripleSubj = undefTriple.getTripleSubj();
+		TripleStore ts = undefTriple.getTripleStore();
+		if (ParserUtil.getResourceName(tripleSubj).equals(undefTriple.getUndef())) {
+			try {
+				//this means it is an enumeration cls (data range classes are created elsewhere)
+				OWLEnumeratedClass cls = new DefaultOWLEnumeratedClass(owlModel, new FrameID(ParserUtil.getResourceName(tripleSubj)));
+				FrameCreatorUtility.assertFrameName(ts, cls);
+				RDFSNamedClass owlEnumeratedClassClass = owlModel.getSystemFrames().getOwlEnumeratedClassClass();
+				FrameCreatorUtility.addInstanceType(cls, owlEnumeratedClassClass, ts);
+				FrameCreatorUtility.addOwnSlotValue(cls, owlModel.getRDFTypeProperty(), owlModel.getOWLNamedClassClass(), ts);
+			} catch (Exception e) {
+				Log.getLogger().log(Level.WARNING, "Error at creating enumeration class", e);
+			}
+		}
+
+	}
+
 
 	/**
 	 * This method will create untyped resources for all undefined triples.
