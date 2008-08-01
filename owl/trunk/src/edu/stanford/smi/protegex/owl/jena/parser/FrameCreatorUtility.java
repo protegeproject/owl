@@ -177,7 +177,7 @@ public class FrameCreatorUtility {
     }
 
 
-    private static void assertFrameName(TripleStore ts, Frame frame) {
+    public static void assertFrameName(TripleStore ts, Frame frame) {
     	NarrowFrameStore nfs = ts.getNarrowFrameStore();
     	nfs.addValues(frame, frame.getKnowledgeBase().getSystemFrames().getNameSlot(), null, false,
     			CollectionUtilities.createCollection(frame.getName()));
