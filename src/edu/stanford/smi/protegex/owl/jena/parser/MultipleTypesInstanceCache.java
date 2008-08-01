@@ -8,13 +8,14 @@ import java.util.Set;
 
 import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.Instance;
+import edu.stanford.smi.protege.util.Disposable;
 
-public class MultipleTypesInstanceCache {
-	
+public class MultipleTypesInstanceCache implements Disposable {
+
 	//maybe it should be singleton?
-	
+
 	private HashMap<Instance, Collection<Cls>> instWithMultipleTypesMap = new HashMap<Instance, Collection<Cls>>();
-	
+
 	public void addType(Instance inst, Cls type) {
 		Collection<Cls> types = getTypesForInstance(inst);
 		types.add(type);
@@ -22,22 +23,24 @@ public class MultipleTypesInstanceCache {
 	}
 
 	public Collection<Cls> getTypesForInstance(Instance inst) {
-		Collection<Cls> types = instWithMultipleTypesMap.get(inst); 
+		Collection<Cls> types = instWithMultipleTypesMap.get(inst);
 		if (types == null) {
 			types = new ArrayList<Cls>();
 		}
-		
+
 		return types;
 	}
-	
+
 	public Set<Instance> getInstancesWithMultipleTypes() {
 		return instWithMultipleTypesMap.keySet();
 	}
-	
+
 	public Set<Cls> getTypesForInstanceAsSet(Instance inst) {
 		return new HashSet<Cls>(getTypesForInstance(inst));
 	}
-	
-	
-		
+
+	public void dispose() {
+		instWithMultipleTypesMap.clear();
+	}
+
 }
