@@ -19,8 +19,8 @@ import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 
 class TripleProcessorForLiteralObjects extends AbstractStatefulTripleProcessor {
 	private static final transient Logger log = Log.getLogger(TripleProcessor.class);
-	
-	
+
+
 	public TripleProcessorForLiteralObjects(TripleProcessor processor) {
 		super(processor);
 	}
@@ -30,7 +30,7 @@ class TripleProcessorForLiteralObjects extends AbstractStatefulTripleProcessor {
 	        log.finer("Processing triple with literal: " + subj + " " + pred + " " + lit);
 	    }
 
-		String predName = ParserUtil.getResourceName(pred);		
+		String predName = ParserUtil.getResourceName(pred);
 		Slot predSlot = getSlot(predName);
 
 		if (predSlot == null) {
@@ -48,7 +48,7 @@ class TripleProcessorForLiteralObjects extends AbstractStatefulTripleProcessor {
 		if (OWLFramesMapping.getRestrictionPredicatesNames().contains(predName)) {
 			subjFrame = createRestriction(subjName, predName, ts);
 		}
-		
+
 		subjFrame = getFrame(subjName);
 
 		//checking and adding to undefined
@@ -58,26 +58,26 @@ class TripleProcessorForLiteralObjects extends AbstractStatefulTripleProcessor {
 			}
 			return false;
 		}
-		
+
 		RDFSLiteral rdfsLiteral = createRDFSLiteral(lit, (RDFProperty) predSlot);
-		
+
 		if (rdfsLiteral == null) {
 			return false;
 		}
-			
+
 		addTriple(subjFrame, predSlot, rdfsLiteral, ts);
-		
-		return true;	
+
+		return true;
 	}
-	
-	
-	private void addTriple(Frame subjFrame, Slot predSlot, RDFSLiteral rdfsLiteral, TripleStore ts) {		
+
+
+	private void addTriple(Frame subjFrame, Slot predSlot, RDFSLiteral rdfsLiteral, TripleStore ts) {
 		// add what it is really in the triple
-		FrameCreatorUtility.addOwnSlotValue(subjFrame, predSlot, 
-				AbstractOWLModel.convertRDFSLiteralToInternalFormat(rdfsLiteral), ts);				
-		// add frame correspondent is missing because there is no mapping for literal properties	
+		FrameCreatorUtility.addOwnSlotValue(subjFrame, predSlot,
+				AbstractOWLModel.convertRDFSLiteralToInternalFormat(rdfsLiteral), ts);
+		// add frame correspondent is missing because there is no mapping for literal properties
 	}
-	
+
 
 
 	private RDFSLiteral createRDFSLiteral(ALiteral literal, RDFProperty property) {
@@ -86,11 +86,11 @@ class TripleProcessorForLiteralObjects extends AbstractStatefulTripleProcessor {
 		}
 		else if(literal.getDatatypeURI() != null) {
 			RDFSDatatype datatype = owlModel.getRDFSDatatypeByURI(literal.getDatatypeURI());
-			if(datatype == null) {				
+			if(datatype == null) {
 				return DefaultRDFSLiteral.create(owlModel, literal.toString());
 			}
 			else {
-				
+
 				return DefaultRDFSLiteral.create(owlModel, literal.toString(), datatype);
 			}
 		}
@@ -106,5 +106,5 @@ class TripleProcessorForLiteralObjects extends AbstractStatefulTripleProcessor {
 			}
 		}
 	}
-	
+
 }
