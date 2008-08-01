@@ -89,6 +89,10 @@ public class GlobalParserCache {
 		return values;
 	}
 
+	public int getUndefTripleSize() {
+		return undefTriplesMap.size();
+	}
+
 	public void removeUndefTriple(String uri, UndefTriple undefTriple) {
             if (log.isLoggable(Level.FINE)) {
             	log.fine(" --- Removing: " + undefTriple);
