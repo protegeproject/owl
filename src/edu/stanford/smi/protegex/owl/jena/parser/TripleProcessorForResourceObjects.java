@@ -16,6 +16,7 @@ import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
 import edu.stanford.smi.protegex.owl.model.RDFSClass;
+import edu.stanford.smi.protegex.owl.model.impl.DefaultRDFProperty;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 
 class TripleProcessorForResourceObjects extends AbstractStatefulTripleProcessor {
@@ -69,14 +70,13 @@ class TripleProcessorForResourceObjects extends AbstractStatefulTripleProcessor 
 
 			predName = ParserUtil.getResourceName(pred);
 			predSlot = getSlot(predName);
-			if (predSlot != null) { //TT - Why?
-				// do some checks if it already exists and is twice defined?
-				subjName = ParserUtil.getResourceName(subj);
-				subjFrame = getFrame(subjName);
 
-				objName = ParserUtil.getResourceName(obj);
-				objFrame = getFrame(objName);
-			}
+			// do some checks if it already exists and is twice defined?
+			subjName = ParserUtil.getResourceName(subj);
+			subjFrame = getFrame(subjName);
+
+			objName = ParserUtil.getResourceName(obj);
+			objFrame = getFrame(objName);
 		}
 
 		public boolean processTriple() {
@@ -248,6 +248,12 @@ class TripleProcessorForResourceObjects extends AbstractStatefulTripleProcessor 
 
 		private TripleStatus handlePredUndefs() {
 			if (predSlot == null) {
+				//TODO - check if this works fine!!
+				predSlot = new DefaultRDFProperty(owlModel, new FrameID(predName));
+				globalParserCache.getFramesWithWrongJavaType().add(predName);
+
+				//old code that used to work
+				/*
 				if (!alreadyInUndef) {
 					if (log.isLoggable(Level.FINE)) {
 						log.fine("\tdeferring triple because predicate is not yet defined");
@@ -255,6 +261,7 @@ class TripleProcessorForResourceObjects extends AbstractStatefulTripleProcessor 
 					globalParserCache.addUndefTriple(new UndefTriple(subj, pred, obj, predName, tripleStore));
 				}
 				return TripleStatus.TRIPLE_HAS_UNDEF_NEEDS_POST_PROCESS;
+				*/
 			}
 			return TripleStatus.TRIPLE_PROCESSING_SHOULD_CONTINUE;
 		}
