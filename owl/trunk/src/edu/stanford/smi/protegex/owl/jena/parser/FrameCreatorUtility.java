@@ -17,10 +17,13 @@ import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protege.model.framestore.NarrowFrameStore;
 import edu.stanford.smi.protege.util.CollectionUtilities;
 import edu.stanford.smi.protege.util.Log;
+import edu.stanford.smi.protegex.owl.model.OWLEnumeratedClass;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLAllDifferent;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLDataRange;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLDatatypeProperty;
+import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLEnumeratedClass;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLIndividual;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLNamedClass;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLObjectProperty;
@@ -267,6 +270,15 @@ public class FrameCreatorUtility {
     public static boolean hasRDFType(Frame frame, Slot rdfTypeSlot, Cls type, TripleStore ts) {
     	NarrowFrameStore nfs = ts.getNarrowFrameStore();
     	return nfs.getValues(frame, rdfTypeSlot, null, false).contains(type);
+    }
+
+    public static OWLEnumeratedClass createOWLEnumeratedCls(OWLModel owlModel, String enumClsName, TripleStore ts) {
+    	OWLEnumeratedClass cls = new DefaultOWLEnumeratedClass(owlModel, new FrameID(enumClsName));
+		FrameCreatorUtility.assertFrameName(ts, cls);
+		RDFSNamedClass owlEnumeratedClassClass = owlModel.getSystemFrames().getOwlEnumeratedClassClass();
+		FrameCreatorUtility.addInstanceType(cls, owlEnumeratedClassClass, ts);
+		FrameCreatorUtility.addOwnSlotValue(cls, owlModel.getRDFTypeProperty(), owlModel.getOWLNamedClassClass(), ts);
+		return cls;
     }
 
 }
