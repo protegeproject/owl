@@ -7,16 +7,12 @@ import com.hp.hpl.jena.rdf.arp.ALiteral;
 import com.hp.hpl.jena.rdf.arp.AResource;
 import com.hp.hpl.jena.vocabulary.OWL;
 
-import edu.stanford.smi.protege.model.FrameID;
 import edu.stanford.smi.protege.util.Log;
-import edu.stanford.smi.protegex.owl.model.OWLEnumeratedClass;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
 import edu.stanford.smi.protegex.owl.model.RDFSClass;
-import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
 import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
-import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLEnumeratedClass;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 
 class TripleProcessorForUntypedResources extends AbstractStatefulTripleProcessor {
@@ -64,12 +60,7 @@ class TripleProcessorForUntypedResources extends AbstractStatefulTripleProcessor
 		TripleStore ts = undefTriple.getTripleStore();
 		if (ParserUtil.getResourceName(tripleSubj).equals(undefTriple.getUndef())) {
 			try {
-				//this means it is an enumeration cls (data range classes are created elsewhere)
-				OWLEnumeratedClass cls = new DefaultOWLEnumeratedClass(owlModel, new FrameID(ParserUtil.getResourceName(tripleSubj)));
-				FrameCreatorUtility.assertFrameName(ts, cls);
-				RDFSNamedClass owlEnumeratedClassClass = owlModel.getSystemFrames().getOwlEnumeratedClassClass();
-				FrameCreatorUtility.addInstanceType(cls, owlEnumeratedClassClass, ts);
-				FrameCreatorUtility.addOwnSlotValue(cls, owlModel.getRDFTypeProperty(), owlModel.getOWLNamedClassClass(), ts);
+				FrameCreatorUtility.createOWLEnumeratedCls(owlModel, ParserUtil.getResourceName(tripleSubj), ts);
 			} catch (Exception e) {
 				Log.getLogger().log(Level.WARNING, "Error at creating enumeration class", e);
 			}
