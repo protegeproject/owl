@@ -10,14 +10,15 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import edu.stanford.smi.protege.model.Cls;
+import edu.stanford.smi.protege.util.Disposable;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.RDFSClass;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 
-public class GlobalParserCache {
-	Logger log = Log.getLogger(GlobalParserCache.class);
+public class GlobalParserCache implements Disposable {
+	transient Logger log = Log.getLogger(GlobalParserCache.class);
 
 	//We need to make sure that there is only one UndefTripleManager per owlModel
 	private OWLModel owlModel;
@@ -30,6 +31,7 @@ public class GlobalParserCache {
 	private MultipleTypesInstanceCache multipleTypesInstanceCache = new MultipleTypesInstanceCache();
 	private Set<String> framesWithWrongJavaType = new HashSet<String>();
 	private Set<TripleStore> parsedTripleStores = new HashSet<TripleStore>();
+	private Set<UndefTriple> oneOfTriples = new HashSet<UndefTriple>();
 
 	//the GCI caches will be refactored
 	private Collection<RDFProperty> possibleGCIPredicates = new ArrayList<RDFProperty>();
@@ -157,6 +159,20 @@ public class GlobalParserCache {
 
 	public Set<String> getFramesWithWrongJavaType() {
 		return framesWithWrongJavaType;
+	}
+
+	public Set<UndefTriple> getOneOfTriples() {
+		return oneOfTriples;
+	}
+
+	public void dispose() {
+		multipleTypesInstanceCache.dispose();
+		framesWithWrongJavaType.clear();
+		parsedTripleStores.clear();
+		oneOfTriples.clear();
+		possibleGCIPredicates.clear();
+		gciAxioms.clear();
+		objectToNamedLogicalClassSurrogate.clear();
 	}
 
 }
