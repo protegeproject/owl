@@ -9,16 +9,19 @@ import edu.stanford.smi.protege.model.framestore.SimpleFrameStore;
 import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
 
 public class ParserUtil {
-	 
-    
+
+
 	public static String getResourceName(AResource resource) {
-		if (resource.isAnonymous()) {	
+		if (resource.isAnonymous()) {
 		    /*
 		     * Argh...  Must ensure that this cannot conflict with owlModel.getNextAnonymousId();
-		     *          See the stuff involving the creation of logical named classes in the 
+		     *          See the stuff involving the creation of logical named classes in the
 		     *          TripleFrameCache code.  This is *nasty* but I don't yet the better way.
 		     */
-			return AbstractOWLModel.ANONYMOUS_BASE + "PARSE_" + resource.getAnonymousID();
+			StringBuffer buffer = new StringBuffer(AbstractOWLModel.ANONYMOUS_BASE);
+			buffer.append("_");
+			buffer.append(resource.getAnonymousID());
+			return buffer.toString();
 		} else {
 			return resource.getURI();
 		}
@@ -28,9 +31,9 @@ public class ParserUtil {
 	    return (SimpleFrameStore) ((DefaultKnowledgeBase) kb).getTerminalFrameStore();
 	}
 
-	
+
 	public static SimpleFrameStore getSimpleFrameStore(Frame frame) {
 	    return getSimpleFrameStore(frame.getKnowledgeBase());
 	}
-	
+
 }
