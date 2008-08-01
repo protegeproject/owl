@@ -1,5 +1,22 @@
 package edu.stanford.smi.protegex.owl.ui.profiles;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintStream;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+import java.util.logging.Level;
+
 import com.hp.hpl.jena.ontology.IntersectionClass;
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
@@ -11,8 +28,9 @@ import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.util.FileUtils;
 import com.hp.hpl.jena.vocabulary.OWL;
 import com.hp.hpl.jena.vocabulary.RDF;
+
 import edu.stanford.smi.protege.model.Cls;
-import edu.stanford.smi.protege.util.ApplicationProperties;
+import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protege.util.PropertyList;
 import edu.stanford.smi.protege.util.SystemUtilities;
 import edu.stanford.smi.protegex.owl.ProtegeOWL;
@@ -22,10 +40,6 @@ import edu.stanford.smi.protegex.owl.model.OWLNames;
 import edu.stanford.smi.protegex.owl.model.project.OWLProject;
 import edu.stanford.smi.protegex.owl.model.project.SettingsMap;
 import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
-
-import java.io.*;
-import java.nio.charset.Charset;
-import java.util.*;
 
 /**
  * <P>A singleton that provides access to the language profile of an OWLModel
@@ -61,14 +75,19 @@ public class ProfilesManager {
 
 
     public static void addAltEntryForOWLProfiles(OntModel ontModel) {
-        String altEntry = new File(ProtegeOWL.getPluginFolder(),
-                "OWLProfiles.owl").toURI().toString();
-        //String altEntry = "file:" + applDir + "/plugins/" + JenaLoader.ROOT_FOLDER +
-        //        "/OWLProfiles.owl";
-        String ns = OWLProfiles.NS;
-        ontModel.getDocumentManager().addAltEntry(ns, altEntry);
-        ns = ns.substring(0, ns.length() - 1);
-        ontModel.getDocumentManager().addAltEntry(ns, altEntry);
+    	try {
+    		String altEntry = new File(ProtegeOWL.getPluginFolder(),
+    				"OWLProfiles.owl").toURI().toString();
+    		//String altEntry = "file:" + applDir + "/plugins/" + JenaLoader.ROOT_FOLDER +
+    		//        "/OWLProfiles.owl";
+    		String ns = OWLProfiles.NS;
+    		ontModel.getDocumentManager().addAltEntry(ns, altEntry);
+    		ns = ns.substring(0, ns.length() - 1);
+    		ontModel.getDocumentManager().addAltEntry(ns, altEntry);
+
+    	} catch (Exception e) {
+    		Log.getLogger().log(Level.WARNING, "Error at getting profiles", e);
+    	}
     }
 
 
@@ -129,15 +148,19 @@ public class ProfilesManager {
             addAltEntryForOWLProfiles(defaultOntModel);
             String ns = OWLProfiles.NS;
             ns = ns.substring(0, ns.length() - 1);
-            defaultOntModel.read(ns, FileUtils.langXMLAbbrev);
-            if (defaultOntModel.getOntClass(OWLProfiles.OWL_Full.getURI()) == null) {
-                ProtegeUI.getModalDialogFactory().showErrorMessageDialog((OWLModel)null,
-                        "Could not open default OWL Profiles file.\n" +
-                                "Please make sure that the OWLProfiles.owl file\n" +
-                                "can be found in your OWL Plugin folder.");
-                defaultOntModel = null;
-                return null;
-            }
+            try {
+                defaultOntModel.read(ns, FileUtils.langXMLAbbrev);
+                if (defaultOntModel.getOntClass(OWLProfiles.OWL_Full.getURI()) == null) {
+                    ProtegeUI.getModalDialogFactory().showErrorMessageDialog((OWLModel)null,
+                            "Could not open default OWL Profiles file.\n" +
+                                    "Please make sure that the OWLProfiles.owl file\n" +
+                                    "can be found in your OWL Plugin folder.");
+                    defaultOntModel = null;
+                    return null;
+                }
+			} catch (Exception e) {
+				Log.getLogger().log(Level.WARNING, "Could not open default Profile file", e);
+			}
         }
         return defaultOntModel;
     }
@@ -157,7 +180,7 @@ public class ProfilesManager {
                 if (ontClass == null) {
                     ontClass = getCustomProfileFeaturesClass(ontModel);
                 }
-                
+
                 if (ontClass == null) {
                 	return null;
                 }
