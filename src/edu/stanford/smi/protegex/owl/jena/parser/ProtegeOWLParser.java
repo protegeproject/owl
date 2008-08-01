@@ -469,7 +469,7 @@ public class ProtegeOWLParser {
 
 		protected void printTriplesLoadLogMessage() {
 			if(printLoadTriplesLog && tripleCount % printLoadTriplesLogIncrement == 0) {
-				Log.getLogger().info("    Loaded " + tripleCount + " triples " + tripleProcessor.getGlobalParserCache().getUndefTriples().size());
+				Log.getLogger().info("    Loaded " + tripleCount + " triples " + tripleProcessor.getGlobalParserCache().getUndefTripleSize());
 			}
 		}
 	}
