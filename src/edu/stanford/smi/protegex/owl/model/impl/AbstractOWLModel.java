@@ -3495,6 +3495,11 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     	jenaModel = null;
     	owlProject = null;
 
+    	if (globalParserCache != null) {
+    		globalParserCache.dispose();
+    		globalParserCache = null;
+    	}
+
     	if (tripleStoreModel != null) {
     		tripleStoreModel.dispose();
     		tripleStoreModel = null;
