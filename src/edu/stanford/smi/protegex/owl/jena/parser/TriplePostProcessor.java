@@ -208,7 +208,9 @@ class TriplePostProcessor extends AbstractStatefulTripleProcessor {
 					log.fine("Fixing wrong Java type of: " + frameName);
 				}
 				Instance instance = (Instance) simpleFrameStore.getFrame(frameName);
-				simpleFrameStore.swizzleInstance(instance);
+				if (instance != null) {
+					simpleFrameStore.swizzleInstance(instance);
+				}
 				iterator.remove();
 			} catch (Exception e) {
 				log.log(Level.WARNING, "\nError at processing entity with incorrect Java type: " + frameName, e);
