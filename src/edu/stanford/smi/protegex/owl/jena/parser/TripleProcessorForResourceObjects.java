@@ -14,8 +14,10 @@ import edu.stanford.smi.protege.model.FrameID;
 import edu.stanford.smi.protege.model.Instance;
 import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protege.util.Log;
+import edu.stanford.smi.protegex.owl.model.OWLEnumeratedClass;
 import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
 import edu.stanford.smi.protegex.owl.model.RDFSClass;
+import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultRDFProperty;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 
@@ -143,9 +145,20 @@ class TripleProcessorForResourceObjects extends AbstractStatefulTripleProcessor 
 				status = handleCreateLogicalClass();
 			} else if (OWLFramesMapping.getRestrictionPredicatesNames().contains(predName)) {
 				subjFrame = createRestriction(subjName, predName, tripleStore);
-			} /*else if (predName.equals(OWL.oneOf.getURI())) {
-				globalParserCache.getOneOfTriples().add(new UndefTriple(subj, pred, obj, null, tripleStore));
-			}*/
+			} else if (predName.equals(OWL.oneOf.getURI())) {
+				subjFrame = getFrame(subjName);
+				objFrame = getFrame(objName);
+
+				if (subjFrame != null && objFrame != null && subjFrame instanceof RDFSNamedClass) {
+					OWLEnumeratedClass enCls = FrameCreatorUtility.createOWLEnumeratedCls(owlModel, owlModel.getNextAnonymousResourceName(), tripleStore);
+					FrameCreatorUtility.addOwnSlotValue(enCls, owlModel.getSystemFrames().getOwlOneOfProperty(), objFrame, tripleStore);
+					FrameCreatorUtility.createSubclassOf((Cls)subjFrame, enCls, tripleStore);
+					FrameCreatorUtility.createSubclassOf(enCls,(Cls) subjFrame, tripleStore);
+					FrameCreatorUtility.addOwnSlotValue(subjFrame, owlModel.getSystemFrames().getOwlEquivalentClassProperty(), enCls, tripleStore);
+					status = TripleStatus.TRIPLE_PROCESSING_COMPLETE;
+				}
+				//globalParserCache.getOneOfTriples().add(new UndefTriple(subj, pred, obj, null, tripleStore));
+			}
 
 			subjFrame = getFrame(subjName);
 			objFrame = getFrame(objName);
