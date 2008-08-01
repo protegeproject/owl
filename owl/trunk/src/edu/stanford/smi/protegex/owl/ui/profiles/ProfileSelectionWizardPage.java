@@ -1,7 +1,21 @@
 package edu.stanford.smi.protegex.owl.ui.profiles;
 
+import java.awt.BorderLayout;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.ButtonGroup;
+import javax.swing.JLabel;
+import javax.swing.JRadioButton;
+
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
+
 import edu.stanford.smi.protege.util.ApplicationProperties;
 import edu.stanford.smi.protege.util.WaitCursor;
 import edu.stanford.smi.protege.util.Wizard;
@@ -9,14 +23,6 @@ import edu.stanford.smi.protege.util.WizardPage;
 import edu.stanford.smi.protegex.owl.jena.OWLFilesPlugin;
 import edu.stanford.smi.protegex.owl.ui.menu.OWLViewWizardPage;
 import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
-
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
 
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
@@ -45,7 +51,8 @@ public class ProfileSelectionWizardPage extends WizardPage {
         this.plugin = plugin;
 
         addComponentListener(new ComponentAdapter() {
-            public void componentShown(ComponentEvent e) {
+            @Override
+			public void componentShown(ComponentEvent e) {
                 if (profileRadioButtons2URI == null) {
                     addProfilesButtons();
                     revalidate();
@@ -65,7 +72,8 @@ public class ProfileSelectionWizardPage extends WizardPage {
         setPageComplete(ApplicationProperties.getString(DEFAULT_PROFILE_KEY) != null);
 
         addComponentListener(new ComponentAdapter() {
-            public void componentShown(ComponentEvent e) {
+            @Override
+			public void componentShown(ComponentEvent e) {
                 setPageComplete(true);
             }
         });
@@ -82,29 +90,32 @@ public class ProfileSelectionWizardPage extends WizardPage {
             profilesButtonsPanel.removeAll();
             String defaultURI = ApplicationProperties.getString(DEFAULT_PROFILE_KEY, OWLProfiles.OWL_DL.getURI());
             String[] uris = ProfileSelectionPanel.DEFAULT_PROFILES;
-            for (int i = 0; i < uris.length; i++) {
-                String uri = uris[i];
+            for (String uri : uris) {
                 OntClass ontClass = defaultOntModel.getOntClass(uri);
-                String label = ontClass.getLabel("");
-                JRadioButton radioButton = new JRadioButton(label);
-                if (uri.equals(defaultURI)) {
-                    radioButton.setSelected(true);
+                if (ontClass != null) {
+	                String label = ontClass.getLabel("");
+	                JRadioButton radioButton = new JRadioButton(label);
+	                if (uri.equals(defaultURI)) {
+	                    radioButton.setSelected(true);
+	                }
+	                profileRadioButtons2URI.put(radioButton, uri);
+	                profileButtonsGroup.add(radioButton);
+	                profilesButtonsPanel.add(radioButton);
                 }
-                profileRadioButtons2URI.put(radioButton, uri);
-                profileButtonsGroup.add(radioButton);
-                profilesButtonsPanel.add(radioButton);
             }
         }
         waitCursor.hide();
     }
 
 
-    public WizardPage getNextPage() {
+    @Override
+	public WizardPage getNextPage() {
         return new OWLViewWizardPage(getWizard(), plugin);
     }
 
 
-    public void onFinish() {
+    @Override
+	public void onFinish() {
         if (profileRadioButtons2URI != null) {
             for (Iterator it = profileRadioButtons2URI.keySet().iterator(); it.hasNext();) {
                 JRadioButton radioButton = (JRadioButton) it.next();
