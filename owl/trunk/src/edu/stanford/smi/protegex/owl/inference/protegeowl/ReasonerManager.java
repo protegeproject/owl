@@ -22,28 +22,29 @@ import edu.stanford.smi.protegex.owl.model.OWLModel;
  * The Univeristy Of Manchester<br>
  * Medical Informatics Group<br>
  * Date: Jun 22, 2004<br><br>
- * 
- * @author Matthew Horridge <matthew.horridge@cs.man.ac.uk> 
+ *
+ * @author Matthew Horridge <matthew.horridge@cs.man.ac.uk>
  * @author Tania Tudorache <tudorache@stanford.edu>
  */
 public class ReasonerManager implements Disposable {
 
 	public static final String CURRENT_REASONER_PROPERTY = "current.reasoner.class.name";
-	
-    private Map<OWLModel, ProtegeReasoner> owlModel2reasonerMap;    
+
+    private Map<OWLModel, ProtegeReasoner> owlModel2reasonerMap;
 
     private static ReasonerManager instance;
-    
+
     static {
     	//move this to a more central place?
     	initializeUncaughtExceptionHandler();
     }
-    
+
 
     private ProjectListener projectListener = new ProjectAdapter() {
-        public void projectClosed(ProjectEvent event) {
-            Project project = (Project) event.getSource();            
-            disposeReasoner((OWLModel) project.getKnowledgeBase());            
+        @Override
+		public void projectClosed(ProjectEvent event) {
+            Project project = (Project) event.getSource();
+            disposeReasoner((OWLModel) project.getKnowledgeBase());
         }
     };
 
@@ -54,7 +55,12 @@ public class ReasonerManager implements Disposable {
 
 
     private static void initializeUncaughtExceptionHandler() {
-		Thread.setDefaultUncaughtExceptionHandler(new DefaultUncaughtExceptionHandler());		
+    	try {
+    		Thread.setDefaultUncaughtExceptionHandler(new DefaultUncaughtExceptionHandler());
+		} catch (Exception e) {
+			Log.getLogger().log(Level.WARNING, "Could not initialize default uncaught exception handler", e);
+		}
+
 	}
 
 
@@ -73,38 +79,39 @@ public class ReasonerManager implements Disposable {
      * @param owlModel The {@link OWLModel}
      * @return A reasoner to be used for reasoning over
      *         the specified knowledge base.
-     * @deprecated         
+     * @deprecated
      */
-    public ProtegeOWLReasoner getReasoner(OWLModel owlModel) {
+    @Deprecated
+	public ProtegeOWLReasoner getReasoner(OWLModel owlModel) {
     	ProtegeReasoner reasoner = owlModel2reasonerMap.get(owlModel);
-    	
+
     	if (reasoner == null) {
     		return (ProtegeOWLReasoner) getProtegeReasoner(owlModel, getDefaultDIGReasonerClass(), false);
     	}
-    	
+
     	if (reasoner instanceof ProtegeOWLReasoner) {
     		return (ProtegeOWLReasoner) reasoner;
     	}
-    	
+
     	return (ProtegeOWLReasoner) replaceReasoner(owlModel, getDefaultDIGReasonerClass());
     }
 
-    
+
     public ProtegeReasoner getProtegeReasoner(OWLModel owlModel) {
     	return getProtegeReasoner(owlModel, getDefaultReasonerClass(), false);
     }
-    
-        
+
+
     private ProtegeReasoner getProtegeReasoner(OWLModel owlModel, Class reasonerJavaClass, boolean replace ) {
-    	
+
     	if (replace == true) {
     		disposeReasoner(owlModel);
     	}
-    	
+
     	if (reasonerJavaClass == null) {
-    		return null; 
+    		return null;
     	}
-    	
+
     	ProtegeReasoner reasoner = owlModel2reasonerMap.get(owlModel);
 
     	if (reasoner == null) {
@@ -116,21 +123,22 @@ public class ReasonerManager implements Disposable {
 
     	return reasoner;
     }
-    
-    
+
+
     private ProtegeReasoner internalCreateReasoner(OWLModel owlModel, Class reasonerJavaClass) {
-    	if (reasonerJavaClass == null) {    	
+    	if (reasonerJavaClass == null) {
     		return null;
     	}
-    	
+
     	return ReasonerPluginManager.getReasonerPluginInstance(owlModel, reasonerJavaClass);
     }
 
-    
+
     /**
      * @deprecated Use <code>createProtegeReasoner(owlModel, DefaultProtegeOWLReasoner.class)</code>
      */
-    public ProtegeOWLReasoner getReasoner(OWLModel owlModel, boolean createNew) {
+    @Deprecated
+	public ProtegeOWLReasoner getReasoner(OWLModel owlModel, boolean createNew) {
         return createReasoner(owlModel);
     }
 
@@ -138,113 +146,114 @@ public class ReasonerManager implements Disposable {
     /**
      * @deprecated Use <code>createProtegeReasoner(owlModel, DefaultProtegeOWLReasoner.class)</code>
      */
-    public ProtegeOWLReasoner createReasoner(OWLModel owlModel) {
+    @Deprecated
+	public ProtegeOWLReasoner createReasoner(OWLModel owlModel) {
         return (ProtegeOWLReasoner) createProtegeReasoner(owlModel, getDefaultDIGReasonerClass());
     }
-   
-     
+
+
     public ProtegeReasoner createProtegeReasoner(OWLModel owlModel) {
 		return createProtegeReasoner(owlModel, getDefaultReasonerClass());
     }
-    
+
     public ProtegeReasoner createProtegeReasoner(OWLModel owlModel, Class reasonerJavaClass) {
-    	return getProtegeReasoner(owlModel, reasonerJavaClass, true); 
+    	return getProtegeReasoner(owlModel, reasonerJavaClass, true);
     }
-	
-	
+
+
 	public String getDefaultReasonerClassName() {
 		String className = ApplicationProperties.getString(CURRENT_REASONER_PROPERTY, getDefaultDIGReasonerClass().getName());
-		
+
 		if (className.equals(ReasonerPluginMenuManager.NONE_REASONER)) {
 			return ReasonerPluginMenuManager.NONE_REASONER;
 		}
-		
+
 		//make sure that this class exists, otherwise use the DIG resoner as the default;
 		Class reasonerClass = ReasonerPluginManager.getReasonerJavaClass(className);
 		if (reasonerClass == null) {
 			className = getDefaultDIGReasonerClass().getName();
 		}
-		
+
 		return className;
 	}
-	
+
 	public Class getDefaultReasonerClass() {
 		return ReasonerPluginManager.getReasonerJavaClass(getDefaultReasonerClassName());
 	}
-	
+
 	public void setDefaultReasonerClass(String javaClassName) {
 		if (javaClassName == null) {
 			javaClassName = ReasonerPluginMenuManager.NONE_REASONER;
 		}
-		ApplicationProperties.setString(ReasonerManager.CURRENT_REASONER_PROPERTY, javaClassName);				
+		ApplicationProperties.setString(ReasonerManager.CURRENT_REASONER_PROPERTY, javaClassName);
 	}
-	
-    
-	
-	private ProtegeReasoner replaceReasoner(OWLModel owlModel, Class reasonerJavaClass) {		
+
+
+
+	private ProtegeReasoner replaceReasoner(OWLModel owlModel, Class reasonerJavaClass) {
 		disposeReasoner(owlModel);
-		
-		return createProtegeReasoner(owlModel, reasonerJavaClass);				
+
+		return createProtegeReasoner(owlModel, reasonerJavaClass);
 	}
 
 
 	public void disposeReasoner(OWLModel owlModel) {
 		ProtegeReasoner existingReasoner = owlModel2reasonerMap.get(owlModel);
-		
+
 		try {
 			if (existingReasoner != null) {
 				existingReasoner.dispose();
-				
+
 				owlModel.getProject().removeProjectListener(projectListener);
 				owlModel2reasonerMap.remove(owlModel);
-			}			
+			}
 		} catch (Exception e) {
 			Log.getLogger().log(Level.WARNING, "Error at disposing reasoner " + existingReasoner, e);
 		}
 	}
-	
+
 	public Class getDefaultDIGReasonerClass() {
 		return DefaultProtegeDIGReasoner.class;
 	}
-	
-	
+
+
 	public ProtegeReasoner setProtegeReasonerClass(OWLModel owlModel, Class reasonerJavaClass) {
 		ProtegeReasoner reasoner = replaceReasoner(owlModel, reasonerJavaClass);
-		
+
 		return reasoner;
 	}
 
-	
+
 	public ProtegeReasoner setProtegeReasonerClass(OWLModel owlModel, String reasonerJavaClassName) {
 		Class reasonerJavaClass = null;
-		
+
 		if (reasonerJavaClassName != null && !reasonerJavaClassName.equals(ReasonerPluginMenuManager.NONE_REASONER)) {
 			reasonerJavaClass = ReasonerPluginManager.getReasonerJavaClass(reasonerJavaClassName);
 		}
-		
+
 		return setProtegeReasonerClass(owlModel, reasonerJavaClass);
 	}
 
-	
+
 	public boolean hasAttachedReasoner(OWLModel owlModel) {
 		return owlModel2reasonerMap.get(owlModel) != null;
 	}
-	
-	
-	/* Releases all the owl model <-> reasonser connections and 
+
+
+	/* Releases all the owl model <-> reasonser connections and
 	 * disposes all reasoners.
 	 *
 	 * @see edu.stanford.smi.protege.util.Disposable#dispose()
 	 */
 	public void dispose() {
-		for (OWLModel owlModel : owlModel2reasonerMap.keySet()) {			
+		for (OWLModel owlModel : owlModel2reasonerMap.keySet()) {
 			disposeReasoner(owlModel);
 		}
 		owlModel2reasonerMap.clear();
-		
+
 		ReasonerUtil.getInstance().dispose();
 	}
-	
+
 }
 
 
