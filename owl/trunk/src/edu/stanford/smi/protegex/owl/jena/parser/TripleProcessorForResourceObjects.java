@@ -62,6 +62,7 @@ class TripleProcessorForResourceObjects extends AbstractStatefulTripleProcessor 
 			if (log.isLoggable(Level.FINER)) {
 				log.finer("Process Triple " + subj + " " + pred + " " + obj);
 			}
+
 			this.subj = subj;
 			this.pred = pred;
 			this.obj = obj;
@@ -142,7 +143,9 @@ class TripleProcessorForResourceObjects extends AbstractStatefulTripleProcessor 
 				status = handleCreateLogicalClass();
 			} else if (OWLFramesMapping.getRestrictionPredicatesNames().contains(predName)) {
 				subjFrame = createRestriction(subjName, predName, tripleStore);
-			}
+			} /*else if (predName.equals(OWL.oneOf.getURI())) {
+				globalParserCache.getOneOfTriples().add(new UndefTriple(subj, pred, obj, null, tripleStore));
+			}*/
 
 			subjFrame = getFrame(subjName);
 			objFrame = getFrame(objName);
