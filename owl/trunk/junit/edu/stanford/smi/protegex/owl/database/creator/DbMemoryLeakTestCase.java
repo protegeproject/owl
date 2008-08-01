@@ -19,7 +19,7 @@ import edu.stanford.smi.protegex.owl.jena.creator.notont.AbstractCreatorTestCase
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 
 public class DbMemoryLeakTestCase extends AbstractCreatorTestCase {
-    public static final int REPETITIONS = 10;
+    public static final int REPETITIONS = 1;
     public static final String PIZZA_FILE = "examples/pizza.owl";
     
     public void testStreamingParseMemoryLeak() throws MalformedURLException, OntologyLoadException {
