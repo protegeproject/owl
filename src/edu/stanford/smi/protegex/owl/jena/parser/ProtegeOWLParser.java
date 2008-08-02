@@ -42,6 +42,7 @@ import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreUtil;
 import edu.stanford.smi.protegex.owl.repository.impl.AbstractStreamBasedRepositoryImpl;
+import edu.stanford.smi.protegex.owl.repository.util.OntologyNameExtractor;
 import edu.stanford.smi.protegex.owl.repository.util.XMLBaseExtractor;
 import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
 
@@ -60,10 +61,10 @@ public class ProtegeOWLParser {
     public final static String CREATE_UNTYPED_RESOURCES = "protegeowl.parser.create.untyped.resources";
     public final static String PRINT_LOAD_TRIPLES_LOG = "protegeowl.parser.print.load.triples.log";
     public final static String PRINT_LOAD_TRIPLES_LOG_INCREMENT = "protegeowl.parser.print.load.triples.log.increment";
-    public final static String MERGING_IMPORT_MODE = "protegeowl.parser.merging.import.mode";
 
 	private static Collection errors;
 	private static URI errorOntologyURI;
+	private static boolean isMergeImportMode = false;
 
 	private OWLModel owlModel;
 	private boolean importing = false;
@@ -131,7 +132,11 @@ public class ProtegeOWLParser {
 		ARPHandlers handlers = arp.getHandlers();
 		handlers.setStatementHandler(new ProtegeOWLStatementHandler(tripleStore));
 		handlers.setErrorHandler(new ProtegeOWLErrorHandler());
-		handlers.setNamespaceHandler(new ProtegeOWLNamespaceHandler(tripleStore));
+		if (isMergingImportMode()) {
+			handlers.setNamespaceHandler(new ProtegeOWLMergingNamespaceHandler(tripleStore));
+		} else {
+			handlers.setNamespaceHandler(new ProtegeOWLNamespaceHandler(tripleStore));
+		}
 		arp.setHandlersWith(handlers);
 		return arp;
 	}
@@ -237,6 +242,7 @@ public class ProtegeOWLParser {
 
 	    if (ontologyLocation != null) {
 	    	tripleStore.addIOAddress(ontologyLocation.toString());
+	    	errorOntologyURI = URIUtilities.createURI(ontologyLocation);
 	    }
 
 	    if (xmlBase != null) {
@@ -276,7 +282,7 @@ public class ProtegeOWLParser {
 
 	        if (isMergingImportMode()) {
 	        	//we'll fix the tripleStore name later
-	        	processMergingImports(tripleStore, tripleStore.getName());
+	        	processMergingImports(tripleStore, ontologyLocation);
 	        } else {
 	        	processImports(tripleStore);
 	        }
@@ -377,21 +383,46 @@ public class ProtegeOWLParser {
 		}
 	}
 
-	private void processMergingImports(TripleStore tripleStore, String parsingOntologyName) throws OntologyLoadException {
-		Set<String> thisOntoImports = OWLImportsCache.getOWLImportsURI(parsingOntologyName);
+	private void processMergingImports(TripleStore tripleStore, String parsingOntologyLocation) throws OntologyLoadException {
+		String ontologyName = OWLImportsCache.getOntologyName(parsingOntologyLocation);
+		if (ontologyName == null) {
+			URI ontologyURI = null;
+			URI parsingOntologyURI = URIUtilities.createURI(parsingOntologyLocation);
+
+			try {
+				OntologyNameExtractor one = new OntologyNameExtractor(getInputStreamForMerge(parsingOntologyURI), parsingOntologyURI.toURL());
+				ontologyURI = one.getOntologyName();
+			} catch (MalformedURLException e) {
+				throw new OntologyLoadException(e, "Malformed ontology URL: " + parsingOntologyLocation);
+			} catch (IOException e) {
+				throw new OntologyLoadException(e, "IO exception at getting: " + parsingOntologyLocation);
+			}
+
+			if (ontologyURI == null) {
+				Log.getLogger().warning("Problem at getting import " + parsingOntologyLocation + " (Ontology name is null)");
+				return;
+			}
+			ontologyName = ontologyURI.toString();
+		}
+
+		Set<String> thisOntoImports = OWLImportsCache.getOWLImportsURI(ontologyName);
 
 		for (String importedOntologyName : thisOntoImports) {
+			if (OWLImportsCache.isImported(importedOntologyName)) {
+				continue;
+			}
+
 			URI ontologyURI = URIUtilities.createURI(importedOntologyName);
 			AbstractStreamBasedRepositoryImpl rep = (AbstractStreamBasedRepositoryImpl) owlModel.getRepositoryManager().getRepository(ontologyURI);
 
-		    URI xmlBase = XMLBaseExtractor.getXMLBase(getInputStreamForMerge(ontologyURI));
-		    if (xmlBase == null) {
-		    	xmlBase = ontologyURI;
-		    }
+			URI xmlBase = XMLBaseExtractor.getXMLBase(getInputStreamForMerge(ontologyURI));
+			if (xmlBase == null) {
+				xmlBase = ontologyURI;
+			}
 
 			ProtegeOWLParser parser = new ProtegeOWLParser(owlModel);
 			parser.setImporting(true);
-		    parser.loadTriples(importedOntologyName, xmlBase, getInputStreamForMerge(ontologyURI));
+			parser.loadTriples(importedOntologyName, xmlBase, getInputStreamForMerge(ontologyURI));
 		}
 	}
 
@@ -542,11 +573,9 @@ public class ProtegeOWLParser {
 
 		public void endPrefixMapping(String prefix) { // does nothing, just for logging
 	        NamespaceManager namespaceManager = tripleStore.getNamespaceManager();
-
 	        if (log.isLoggable(Level.FINE)) {
                 log.fine("*** " + prefix + " -> " + namespaceManager.getNamespaceForPrefix(prefix));
             }
-
 	    }
 
 		public void startPrefixMapping(String prefix, String namespace) {
@@ -555,14 +584,43 @@ public class ProtegeOWLParser {
 		}
 	}
 
+	/**
+	 * Will merge automatically the imported prefixes.
+	 * Depends on the fact that the the top is parsed first,
+	 * then the imports, in a deep-search way.
+	 * It does not catch the namespaces without prefixes
+	 */
+	class ProtegeOWLMergingNamespaceHandler implements NamespaceHandler {
+
+		TripleStore tripleStore;
+
+	    public ProtegeOWLMergingNamespaceHandler(TripleStore tripleStore) {
+	    	this.tripleStore = tripleStore;
+		}
+
+		public void endPrefixMapping(String prefix) { // does nothing, just for logging
+	        NamespaceManager namespaceManager = tripleStore.getNamespaceManager();
+	        if (log.isLoggable(Level.FINE)) {
+                log.fine("*** " + prefix + " -> " + namespaceManager.getNamespaceForPrefix(prefix));
+            }
+	    }
+
+		public void startPrefixMapping(String prefix, String namespace) {
+		    NamespaceManager namespaceManager = tripleStore.getNamespaceManager();
+		    if (!namespaceManager.getPrefixes().contains(prefix)) {
+		    	namespaceManager.setPrefix(namespace, prefix);
+		    }
+		}
+	}
+
 
 	//TODO: Maybe we'll move these methods somewhere else later
 	public static boolean isMergingImportMode() {
-		return ApplicationProperties.getBooleanProperty(MERGING_IMPORT_MODE, false);
+		return isMergeImportMode;
 	}
 
 	public static void setMergingImportMode(boolean isMergingImport) {
-		ApplicationProperties.setBoolean(MERGING_IMPORT_MODE, isMergingImport);
+		isMergeImportMode = isMergingImport;
 	}
 
 }
