@@ -39,6 +39,7 @@ import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protege.util.URIUtilities;
 import edu.stanford.smi.protegex.owl.jena.graph.JenaModelFactory;
 import edu.stanford.smi.protegex.owl.jena.parser.GlobalParserCache;
+import edu.stanford.smi.protegex.owl.jena.parser.OWLImportsCache;
 import edu.stanford.smi.protegex.owl.jena.parser.UnresolvedImportHandler;
 import edu.stanford.smi.protegex.owl.model.DefaultTaskManager;
 import edu.stanford.smi.protegex.owl.model.NamespaceManager;
@@ -3499,6 +3500,8 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     		globalParserCache.dispose();
     		globalParserCache = null;
     	}
+
+    	OWLImportsCache.dispose();
 
     	if (tripleStoreModel != null) {
     		tripleStoreModel.dispose();
