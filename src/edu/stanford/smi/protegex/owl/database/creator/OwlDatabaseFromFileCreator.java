@@ -1,27 +1,31 @@
 package edu.stanford.smi.protegex.owl.database.creator;
 
 import java.io.IOException;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import edu.stanford.smi.protege.exception.OntologyLoadException;
+import edu.stanford.smi.protege.util.FileUtilities;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protege.util.URIUtilities;
 import edu.stanford.smi.protegex.owl.database.OWLDatabaseKnowledgeBaseFactory;
+import edu.stanford.smi.protegex.owl.database.OWLDatabaseModel;
 import edu.stanford.smi.protegex.owl.jena.parser.ProtegeOWLParser;
 import edu.stanford.smi.protegex.owl.model.factory.AlreadyImportedException;
 import edu.stanford.smi.protegex.owl.repository.Repository;
+import edu.stanford.smi.protegex.owl.repository.util.RepositoryUtil;
 
 public class OwlDatabaseFromFileCreator extends AbstractOwlDatabaseCreator {
     private static transient Logger log = Log.getLogger(OwlDatabaseFromFileCreator.class);
 
     private List<Repository> repositories = new ArrayList<Repository>();
-
-
-    private String ontologySource;
+    private boolean isMergeImportMode = false;
+	private String ontologySource;
 
     public OwlDatabaseFromFileCreator() {
         this(new OWLDatabaseKnowledgeBaseFactory());
@@ -42,8 +46,16 @@ public class OwlDatabaseFromFileCreator extends AbstractOwlDatabaseCreator {
 
         super.create(errors);
         insertRepositoriesIntoOwlModel(getOwlModel());
-        ProtegeOWLParser parser = new ProtegeOWLParser(getOwlModel());
-        parser.run(URIUtilities.createURI(ontologySource));
+        loadProjectRepositories(getOwlModel());
+
+        boolean initialMergeMode = ProtegeOWLParser.isMergingImportMode();
+        try {
+        	ProtegeOWLParser.setMergingImportMode(isMergeImportMode);
+        	ProtegeOWLParser parser = new ProtegeOWLParser(getOwlModel());
+        	parser.run(URIUtilities.createURI(ontologySource));
+        } finally {
+        	ProtegeOWLParser.setMergingImportMode(initialMergeMode);
+        }
 
         try {
             writeOntologyAndPrefixInfo(getOwlModel(), errors);
@@ -56,7 +68,22 @@ public class OwlDatabaseFromFileCreator extends AbstractOwlDatabaseCreator {
     }
 
 
-    /*
+    protected void loadProjectRepositories(OWLDatabaseModel owlModel) {
+    	URI prjUri = owlModel.getProject().getProjectURI(); //hack for relative repositories
+		try {
+			String pprjString = FileUtilities.replaceExtension(ontologySource, ".pprj");
+			owlModel.getProject().setProjectURI(URIUtilities.createURI(pprjString));
+			String repString = FileUtilities.replaceExtension(ontologySource, ".repository");
+			RepositoryUtil.loadProjectRepositoriesFromURI(owlModel, URIUtilities.createURI(repString), false);
+		} catch (Exception e) {
+			Log.getLogger().log(Level.WARNING, "Error at loading project repositories", e);
+		} finally {
+			owlModel.getProject().setProjectURI(prjUri); //end hack
+		}
+
+	}
+
+	/*
      * setters and getters
      */
 
@@ -76,5 +103,13 @@ public class OwlDatabaseFromFileCreator extends AbstractOwlDatabaseCreator {
 	public List<Repository> getRepositories() {
     	return Collections.unmodifiableList(repositories);
     }
+
+    public boolean isMergeImportMode() {
+		return isMergeImportMode;
+	}
+
+	public void setMergeImportMode(boolean isMergeImportMode) {
+		this.isMergeImportMode = isMergeImportMode;
+	}
 
 }
