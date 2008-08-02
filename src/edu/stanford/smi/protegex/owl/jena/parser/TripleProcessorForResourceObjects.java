@@ -309,6 +309,17 @@ class TripleProcessorForResourceObjects extends AbstractStatefulTripleProcessor 
 				tripleStore.setName(subjName);
 				tripleStore.addIOAddress(subjName);
 			}
+
+			//TT: This piece of code had some logic.. but now it seems wrong..
+			/*
+			String parsedOnt = ProtegeOWLParser.getErrorURI().toString();
+			if (parsedOnt == null) {
+				String parsedOntName = OWLImportsCache.getOntologyName(parsedOnt.toString());
+				if (parsedOntName == null) {
+					OWLImportsCache.setOntologyName(parsedOnt.toString(), subjName);
+				}
+			}
+			*/
 		}
 
 
