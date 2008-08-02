@@ -9,6 +9,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -34,11 +35,13 @@ import edu.stanford.smi.protege.util.MessageError.Severity;
 import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
 import edu.stanford.smi.protegex.owl.model.NamespaceManager;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.model.RDFResource;
 import edu.stanford.smi.protegex.owl.model.factory.AlreadyImportedException;
 import edu.stanford.smi.protegex.owl.model.factory.FactoryUtils;
 import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreUtil;
+import edu.stanford.smi.protegex.owl.repository.impl.AbstractStreamBasedRepositoryImpl;
 import edu.stanford.smi.protegex.owl.repository.util.XMLBaseExtractor;
 import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
 
@@ -57,6 +60,7 @@ public class ProtegeOWLParser {
     public final static String CREATE_UNTYPED_RESOURCES = "protegeowl.parser.create.untyped.resources";
     public final static String PRINT_LOAD_TRIPLES_LOG = "protegeowl.parser.print.load.triples.log";
     public final static String PRINT_LOAD_TRIPLES_LOG_INCREMENT = "protegeowl.parser.print.load.triples.log.increment";
+    public final static String MERGING_IMPORT_MODE = "protegeowl.parser.merging.import.mode";
 
 	private static Collection errors;
 	private static URI errorOntologyURI;
@@ -221,18 +225,18 @@ public class ProtegeOWLParser {
 	/************************************** Loading triples *********************************/
 
 
-	public void loadTriples(String ontologyName, URI xmlBase, InputStream is) throws OntologyLoadException {
-	    loadTriples(ontologyName, xmlBase, createARPInvokation(is, ontologyName.toString()));
+	public void loadTriples(String ontologyLocation, URI xmlBase, InputStream is) throws OntologyLoadException {
+	    loadTriples(ontologyLocation, xmlBase, createARPInvokation(is, ontologyLocation.toString()));
 	}
 
-	private void loadTriples(final String ontologyName, URI xmlBase, final ARPInvokation invokation)
+	private void loadTriples(final String ontologyLocation, URI xmlBase, final ARPInvokation invokation)
 						throws OntologyLoadException {
 		//the triple store where the parsing will write the parsed triples
 	    final TripleStore tripleStore = owlModel.getTripleStoreModel().getActiveTripleStore();
 	    ((AbstractOWLModel) owlModel).getGlobalParserCache().getParsedTripleStores().add(tripleStore);
 
-	    if (ontologyName != null) {
-	    	tripleStore.addIOAddress(ontologyName.toString());
+	    if (ontologyLocation != null) {
+	    	tripleStore.addIOAddress(ontologyLocation.toString());
 	    }
 
 	    if (xmlBase != null) {
@@ -246,7 +250,7 @@ public class ProtegeOWLParser {
 	    try {
 	        tripleProcessor = ((AbstractOWLModel) owlModel).getGlobalParserCache().getTripleProcessor();
 
-	        Log.getLogger().info("Loading triples from: " + ontologyName);
+	        Log.getLogger().info("Loading triples from: " + ontologyLocation);
 
 	        ARP arp = createARP(tripleStore);
 
@@ -270,13 +274,19 @@ public class ProtegeOWLParser {
 	            log.fine("Start processing imports ...");
 	        }
 
-	        processImports(tripleStore);
+	        if (isMergingImportMode()) {
+	        	//we'll fix the tripleStore name later
+	        	processMergingImports(tripleStore, tripleStore.getName());
+	        } else {
+	        	processImports(tripleStore);
+	        }
+
 
 	        if (log.isLoggable(Level.FINE)) {
 	            log.fine("End processing imports");
 	        }
 
-	        handleNoOntologyDeclarationFound(tripleStore, ontologyName, xmlBase);
+	        handleNoOntologyDeclarationFound(tripleStore, ontologyLocation, xmlBase);
 
 	        if (!importing) {
 	            doFinalPostProcessing(owlModel);
@@ -329,9 +339,26 @@ public class ProtegeOWLParser {
 				TripleStoreUtil.sortSubclasses(owlModel);
 				log.info("Sorting OWL class tree in " + (System.currentTimeMillis() - t0) + " ms");
 			}
+
+			if (isMergingImportMode()) {
+				doFinalPostProcessingMergingMode(owlModel);
+			}
 		} catch (Exception e) {
 			throw new OntologyLoadException(e, " Errors at post processing ontology");
 		}
+	}
+
+
+	private static void doFinalPostProcessingMergingMode(OWLModel owlModel) {
+		//delete ontology instances - should destroy also imports tree
+		Collection ontologies = owlModel.getOWLOntologies();
+		ontologies.remove(owlModel.getDefaultOWLOntology());
+
+		for (Iterator iterator = ontologies.iterator(); iterator.hasNext();) {
+			RDFResource ont = (RDFResource) iterator.next();
+			ont.delete();
+		}
+
 	}
 
 
@@ -348,6 +375,36 @@ public class ProtegeOWLParser {
 		for (String import_ : thisOntoImports) {
 			((AbstractOWLModel) owlModel).loadImportedAssertions(URIUtilities.createURI(import_));
 		}
+	}
+
+	private void processMergingImports(TripleStore tripleStore, String parsingOntologyName) throws OntologyLoadException {
+		Set<String> thisOntoImports = OWLImportsCache.getOWLImportsURI(parsingOntologyName);
+
+		for (String importedOntologyName : thisOntoImports) {
+			URI ontologyURI = URIUtilities.createURI(importedOntologyName);
+			AbstractStreamBasedRepositoryImpl rep = (AbstractStreamBasedRepositoryImpl) owlModel.getRepositoryManager().getRepository(ontologyURI);
+
+		    URI xmlBase = XMLBaseExtractor.getXMLBase(getInputStreamForMerge(ontologyURI));
+		    if (xmlBase == null) {
+		    	xmlBase = ontologyURI;
+		    }
+
+			ProtegeOWLParser parser = new ProtegeOWLParser(owlModel);
+			parser.setImporting(true);
+		    parser.loadTriples(importedOntologyName, xmlBase, getInputStreamForMerge(ontologyURI));
+		}
+	}
+
+	private InputStream getInputStreamForMerge(URI ontologyURI) throws OntologyLoadException {
+		AbstractStreamBasedRepositoryImpl rep = (AbstractStreamBasedRepositoryImpl) owlModel.getRepositoryManager().getRepository(ontologyURI);
+		InputStream is = null;
+		try {
+			is = rep == null ? getInputStream(ontologyURI.toURL()) : rep.getInputStream(ontologyURI);
+
+		} catch (MalformedURLException e) {
+			throw new OntologyLoadException(e, "Malformed ontology name: " + ontologyURI);
+		}
+		return is;
 	}
 
 
@@ -496,6 +553,16 @@ public class ProtegeOWLParser {
 		    NamespaceManager namespaceManager = tripleStore.getNamespaceManager();
 		    namespaceManager.setPrefix(namespace, prefix);
 		}
+	}
+
+
+	//TODO: Maybe we'll move these methods somewhere else later
+	public static boolean isMergingImportMode() {
+		return ApplicationProperties.getBooleanProperty(MERGING_IMPORT_MODE, false);
+	}
+
+	public static void setMergingImportMode(boolean isMergingImport) {
+		ApplicationProperties.setBoolean(MERGING_IMPORT_MODE, isMergingImport);
 	}
 
 }
