@@ -1,6 +1,7 @@
 package edu.stanford.smi.protegex.owl.writer.rdfxml.renderer;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.logging.Level;
@@ -8,7 +9,6 @@ import java.util.logging.Level;
 import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.Model;
 import edu.stanford.smi.protege.util.Log;
-import edu.stanford.smi.protegex.owl.model.NamespaceUtil;
 import edu.stanford.smi.protegex.owl.model.OWLAllValuesFrom;
 import edu.stanford.smi.protegex.owl.model.OWLCardinality;
 import edu.stanford.smi.protegex.owl.model.OWLComplementClass;
@@ -273,13 +273,19 @@ public class RDFAxiomRenderer extends OWLModelVisitorAdapter {
             renderTypes(property, type);
             // Super properties rendered as property values
             // Domain - special handling to filter out owl:Thing
-            RDFSClass domain = property.getDomain(false);
-            if (domain != null && domain.equals(property.getOWLModel().getOWLThingClass()) == false) {
-                writer.writeStartElement(Util.getPrefixedName(RDFSNames.Slot.DOMAIN, tripleStore));
-                Util.inlineObject(domain, tripleStore, writer);
-                writer.writeEndElement();
+            Collection domains = property.getDomains(false);
+            if (domains != null) {
+                for (Object o : domains) {
+                    if (o instanceof RDFSClass) {
+                        RDFSClass domain = (RDFSClass) o;
+                        if (domain.equals(property.getOWLModel().getOWLThingClass()) == false) {
+                            writer.writeStartElement(Util.getPrefixedName(RDFSNames.Slot.DOMAIN, tripleStore));
+                            Util.inlineObject(domain, tripleStore, writer);
+                            writer.writeEndElement();
+                        }
+                    }
+                }
             }
-
             // Range
             // Rendered with property values
             Util.insertProperties(property, tripleStore, writer);
