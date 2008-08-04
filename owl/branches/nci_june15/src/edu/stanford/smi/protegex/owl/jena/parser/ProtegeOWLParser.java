@@ -83,8 +83,6 @@ import edu.stanford.smi.protegex.owl.ui.repository.UnresolvedImportUIHandler;
 public class ProtegeOWLParser {
         private static transient Logger log = Log.getLogger(ProtegeOWLParser.class);
 
-	private int count = 29920;
-
 	/**
 	 * The default namespace to use if the current file does not define one by itself.
 	 * This is typically the file's URL (import URI).
@@ -154,12 +152,6 @@ public class ProtegeOWLParser {
 		rdfFirstProperty = owlModel.getRDFFirstProperty();
 		rdfRestProperty = owlModel.getRDFRestProperty();
 		if(incremental) {
-			int max = count;
-			for(Iterator it = owlModel.getRDFResources().iterator(); it.hasNext();) {
-				RDFResource resource = (RDFResource) it.next();
-				max = Math.max(max, ((Instance) resource).getFrameID().getLocalPart());
-			}
-			count = max + 1;
 			populateUntypedResourcesMap();
 		}
 		logger = createLogger();
@@ -945,7 +937,7 @@ public class ProtegeOWLParser {
 						defaultNamespace = currentDefaultNamespace;
 						prefix2Namespace.put("", defaultNamespace);
 					}
-					FrameID id = FrameID.createLocal(count++);
+					FrameID id = tripleStore.getNarrowFrameStore().generateFrameID();
 					ontology = new DefaultOWLOntology(owlModel, id);
 					String tempName = uri2NameConverter.getTemporaryRDFResourceName(defaultNamespace);
 					tripleStore.setRDFResourceName(ontology, tempName);
