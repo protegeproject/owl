@@ -173,6 +173,7 @@ public class GlobalParserCache implements Disposable {
 		possibleGCIPredicates.clear();
 		gciAxioms.clear();
 		objectToNamedLogicalClassSurrogate.clear();
+		undefTriplesMap.clear();
 	}
 
 }
