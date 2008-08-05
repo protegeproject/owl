@@ -154,7 +154,7 @@ public class JavaCodeGenerator {
 	            printWriter.println("    }");
 	            printWriter.println();
 	            printWriter.println("    public " + interfaceName + " get" + interfaceName + "(String name) {");
-	            printWriter.println("        RDFResource res = owlModel.getRDFResource(name);");
+	            printWriter.println("        RDFResource res = owlModel.getRDFResource(OWLUtil.getInternalFullName(owlModel, name));");
 	            printWriter.println("        if (res == null) {return null;}");
 	            printWriter.println("        if (res instanceof " + interfaceName + ") {");
 	            printWriter.println("            return (" + interfaceName + ") res;");
