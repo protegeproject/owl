@@ -17,6 +17,7 @@ import edu.stanford.smi.protegex.owl.database.OWLDatabaseKnowledgeBaseFactory;
 import edu.stanford.smi.protegex.owl.database.OWLDatabaseModel;
 import edu.stanford.smi.protegex.owl.jena.parser.ProtegeOWLParser;
 import edu.stanford.smi.protegex.owl.model.factory.AlreadyImportedException;
+import edu.stanford.smi.protegex.owl.model.factory.FactoryUtils;
 import edu.stanford.smi.protegex.owl.repository.Repository;
 import edu.stanford.smi.protegex.owl.repository.util.RepositoryUtil;
 
@@ -48,17 +49,17 @@ public class OwlDatabaseFromFileCreator extends AbstractOwlDatabaseCreator {
         insertRepositoriesIntoOwlModel(getOwlModel());
         loadProjectRepositories(getOwlModel());
 
-        boolean initialMergeMode = ProtegeOWLParser.isMergingImportMode();
+        ProtegeOWLParser parser = new ProtegeOWLParser(getOwlModel());
+        boolean initialMergeMode = parser.isMergingImportMode();
+        parser.setMergingImportMode(isMergeImportMode);
         try {
-        	ProtegeOWLParser.setMergingImportMode(isMergeImportMode);
-        	ProtegeOWLParser parser = new ProtegeOWLParser(getOwlModel());
         	parser.run(URIUtilities.createURI(ontologySource));
         } finally {
-        	ProtegeOWLParser.setMergingImportMode(initialMergeMode);
+        	parser.setMergingImportMode(initialMergeMode);
         }
 
         try {
-            writeOntologyAndPrefixInfo(getOwlModel(), errors);
+            FactoryUtils.writeOntologyAndPrefixInfo(getOwlModel(), errors);
         }
         catch (AlreadyImportedException e) {
             throw new RuntimeException("This shouldn't happen", e);
