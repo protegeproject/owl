@@ -46,7 +46,7 @@ public class OwlDatabaseCreator extends AbstractOwlDatabaseCreator {
 		        FactoryUtils.addOntologyToTripleStore(getOwlModel(), 
 		                                              getOwlModel().getTripleStoreModel().getActiveTripleStore(), 
 		                                              ontologyName);
-		        writeOntologyAndPrefixInfo(getOwlModel(), errors);
+		        FactoryUtils.writeOntologyAndPrefixInfo(getOwlModel(), errors);
 		    }
 		    catch (AlreadyImportedException e) {
 		        throw new RuntimeException("This shouldn't happen", e);
