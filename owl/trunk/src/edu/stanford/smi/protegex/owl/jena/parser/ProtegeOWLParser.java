@@ -64,7 +64,7 @@ public class ProtegeOWLParser {
 
 	private static Collection errors;
 	private static URI errorOntologyURI;
-	private static boolean isMergeImportMode = false;
+	private boolean isMergeImportMode = false;
 
 	private OWLModel owlModel;
 	private boolean importing = false;
@@ -296,6 +296,9 @@ public class ProtegeOWLParser {
 
 	        if (!importing) {
 	            doFinalPostProcessing(owlModel);
+	            if (isMergingImportMode()) {
+					doFinalPostProcessingMergingMode(owlModel);
+				}
 	        }
 
 	    } catch (AlreadyImportedException e) {
@@ -345,17 +348,13 @@ public class ProtegeOWLParser {
 				TripleStoreUtil.sortSubclasses(owlModel);
 				log.info("Sorting OWL class tree in " + (System.currentTimeMillis() - t0) + " ms");
 			}
-
-			if (isMergingImportMode()) {
-				doFinalPostProcessingMergingMode(owlModel);
-			}
 		} catch (Exception e) {
 			throw new OntologyLoadException(e, " Errors at post processing ontology");
 		}
 	}
 
 
-	private static void doFinalPostProcessingMergingMode(OWLModel owlModel) {
+	private void doFinalPostProcessingMergingMode(OWLModel owlModel) {
 		//delete ontology instances - should destroy also imports tree
 		Collection ontologies = owlModel.getOWLOntologies();
 		ontologies.remove(owlModel.getDefaultOWLOntology());
@@ -421,6 +420,7 @@ public class ProtegeOWLParser {
 			}
 
 			ProtegeOWLParser parser = new ProtegeOWLParser(owlModel);
+			parser.setMergingImportMode(isMergingImportMode());
 			parser.setImporting(true);
 			parser.loadTriples(importedOntologyName, xmlBase, getInputStreamForMerge(ontologyURI));
 		}
@@ -615,11 +615,11 @@ public class ProtegeOWLParser {
 
 
 	//TODO: Maybe we'll move these methods somewhere else later
-	public static boolean isMergingImportMode() {
+	public boolean isMergingImportMode() {
 		return isMergeImportMode;
 	}
 
-	public static void setMergingImportMode(boolean isMergingImport) {
+	public void setMergingImportMode(boolean isMergingImport) {
 		isMergeImportMode = isMergingImport;
 	}
 
