@@ -8,27 +8,22 @@ import edu.stanford.smi.protege.exception.OntologyLoadException;
 import edu.stanford.smi.protege.model.Project;
 import edu.stanford.smi.protege.storage.database.DatabaseKnowledgeBaseFactory;
 import edu.stanford.smi.protege.util.PropertyList;
-import edu.stanford.smi.protegex.owl.database.DatabaseFactoryUtils;
 import edu.stanford.smi.protegex.owl.database.OWLDatabaseKnowledgeBaseFactory;
 import edu.stanford.smi.protegex.owl.database.OWLDatabaseModel;
 import edu.stanford.smi.protegex.owl.jena.JenaKnowledgeBaseFactory;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.factory.AbstractOwlProjectCreator;
-import edu.stanford.smi.protegex.owl.model.factory.AlreadyImportedException;
-import edu.stanford.smi.protegex.owl.model.factory.FactoryUtils;
-import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
-import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreModel;
 
 /**
  * This is the common part  of all the owl database project creators.  It is abstract because
  * it does not ensure that the ontology is not null.
- * 
+ *
  * @author tredmond
  *
  */
 
 public abstract class AbstractOwlDatabaseCreator extends AbstractOwlProjectCreator {
-    
+
     private String driver;
 
     private String table;
@@ -38,9 +33,9 @@ public abstract class AbstractOwlDatabaseCreator extends AbstractOwlProjectCreat
     private String password;
 
     private String url;
-    
+
     protected Project project;
-   
+
     protected AbstractOwlDatabaseCreator(OWLDatabaseKnowledgeBaseFactory factory) {
         super(factory);
     }
@@ -53,7 +48,7 @@ public abstract class AbstractOwlDatabaseCreator extends AbstractOwlProjectCreat
         project.createDomainKnowledgeBase(factory, errors, true);
         insertRepositoriesIntoOwlModel((OWLModel) project.getKnowledgeBase());
     }
-    
+
     @Override
     public OWLDatabaseModel getOwlModel() {
         if (project != null) {
@@ -61,16 +56,16 @@ public abstract class AbstractOwlDatabaseCreator extends AbstractOwlProjectCreat
         }
         return null;
     }
-    
+
     @Override
     public Project getProject() {
         return project;
     }
-    
+
     protected void initializeSources(PropertyList sources) {
         DatabaseKnowledgeBaseFactory.setSources(sources, driver, url, table, username, password);
     }
-    
+
     @SuppressWarnings("unchecked")
     protected void initializeTable(Collection errors) throws IOException {
         JenaKnowledgeBaseFactory.useStandalone = false;
@@ -81,23 +76,7 @@ public abstract class AbstractOwlDatabaseCreator extends AbstractOwlProjectCreat
         project.setProjectFilePath(tempProjectFile.getPath());
         project.save(errors);
     }
-    
-    protected void writeOntologyAndPrefixInfo(OWLModel owlModel, Collection errors) throws AlreadyImportedException {
-        TripleStoreModel tripleStoreModel = owlModel.getTripleStoreModel();
-        TripleStore activeTripleStore = tripleStoreModel.getActiveTripleStore();
-        if (owlModel.getDefaultOWLOntology() == null) {
-            FactoryUtils.addOntologyToTripleStore(owlModel, activeTripleStore, FactoryUtils.generateOntologyURIBase());
-        }
-        DatabaseFactoryUtils.writeOWLOntologyToDatabase(owlModel, activeTripleStore);
-        FactoryUtils.encodeNamespaceIntoModel(owlModel, activeTripleStore);
-        FactoryUtils.addPrefixesToModelListener(owlModel, activeTripleStore);
-        owlModel.resetOntologyCache();
-    }
 
-    /*
-     * setters and getters
-     */
-    
     public void setDriver(String driver) {
         this.driver = driver;
     }
@@ -141,6 +120,6 @@ public abstract class AbstractOwlDatabaseCreator extends AbstractOwlProjectCreat
     public String getUrl() {
         return url;
     }
-    
-    
+
+
 }
