@@ -163,4 +163,16 @@ public class FactoryUtils {
         return defaultBase + fileName;
     }
 
+	public static void writeOntologyAndPrefixInfo(OWLModel owlModel, Collection errors) throws AlreadyImportedException {
+	    TripleStoreModel tripleStoreModel = owlModel.getTripleStoreModel();
+	    TripleStore activeTripleStore = tripleStoreModel.getActiveTripleStore();
+	    if (owlModel.getDefaultOWLOntology() == null) {
+	        addOntologyToTripleStore(owlModel, activeTripleStore, generateOntologyURIBase());
+	    }
+	    DatabaseFactoryUtils.writeOWLOntologyToDatabase(owlModel, activeTripleStore);
+	    encodeNamespaceIntoModel(owlModel, activeTripleStore);
+	    addPrefixesToModelListener(owlModel, activeTripleStore);
+	    owlModel.resetOntologyCache();
+	}
+
 }
