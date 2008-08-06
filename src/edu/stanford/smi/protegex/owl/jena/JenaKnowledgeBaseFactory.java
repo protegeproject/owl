@@ -64,29 +64,31 @@ public class JenaKnowledgeBaseFactory implements OWLKnowledgeBaseFactory {
             "turtle.owl"
     };
 
+    private static boolean isMergingImportMode = false;
 
-    /**
+
+	/**
      * A global flag that is used to select the default .pprj file for new project.
      * If you are using the Protege-OWL API in a stand-alone application, then this
      * should be true (default), but the Protege UI will set it to false.
      */
     public static boolean useStandalone = true;
-    
+
     private static List<Repository> repositories = new ArrayList<Repository>();
 
     public static void addRepository(Repository repository) {
         repositories.add(repository);
     }
-    
+
     public static void clearRepositories() {
         repositories.clear();
     }
-    
+
     public static Collection<Repository> getRepositories() {
         return Collections.unmodifiableCollection(repositories);
     }
-    
-    
+
+
     public KnowledgeBase createKnowledgeBase(Collection errors) {
     	//have to test this in a different way..
     	boolean inUI = ProjectManager.getProjectManager().getMainPanel() != null;
@@ -183,24 +185,25 @@ public class JenaKnowledgeBaseFactory implements OWLKnowledgeBaseFactory {
             final URI absoluteURI = getFileURI(sources, owlModel.getProject());
 
             JenaKnowledgeBaseFactory.setOWLFileName(sources, absoluteURI.toString());
-            
+
 		    RepositoryFileManager.loadProjectRepositories(owlModel);
 		    RepositoryManager repositoryManager = owlModel.getRepositoryManager();
 		    for (Repository repository : repositories) {
 		        repositoryManager.addProjectRepository(repository);
 		    }
 		    repositories.clear();
-		    
+
 		    try {
-		        ProtegeOWLParser parser = new ProtegeOWLParser(owlModel);    
+		        ProtegeOWLParser parser = new ProtegeOWLParser(owlModel);
+		        parser.setMergingImportMode(isMergingImportMode());
 		        parser.run(absoluteURI);
 		    }
 	        catch (OntologyLoadException t) {
 	        	handleException(t, owlModel, absoluteURI, errors);
-	        }	     
-	        
+	        }
+
 	        //TODO: Improve this.
-	        Collection parseErrors = ProtegeOWLParser.getErrors(); 
+	        Collection parseErrors = ProtegeOWLParser.getErrors();
 	        if (parseErrors != null && parseErrors.size() > 0) {
 	            errors.addAll(parseErrors);
 	        }
@@ -215,18 +218,18 @@ public class JenaKnowledgeBaseFactory implements OWLKnowledgeBaseFactory {
 
     protected void handleException(Throwable t, JenaOWLModel owlModel, URI absoluteURI, Collection errors) {
         Log.getLogger().log(Level.SEVERE, "Error at loading file "+ absoluteURI, t);
-        
-        Collection parseErrors = ProtegeOWLParser.getErrors(); 
+
+        Collection parseErrors = ProtegeOWLParser.getErrors();
         if (parseErrors != null && parseErrors.size() > 0) {
             errors.addAll(parseErrors);
-        }        
+        }
         errors.add(t);
-        
+
         String message = "Errors at loading OWL file from " + absoluteURI + "\n";
         message = message + "\nPlease consider running the file through an RDF or OWL validation service such as:";
         message = message + "\n  - RDF Validator: http://www.w3.org/RDF/Validator";
         message = message + "\n  - OWL Validator: http://phoebus.cs.man.ac.uk:9999/OWL/Validator";
-        
+
         if (owlModel.getNamespaceManager().getPrefix("http://protege.stanford.edu/system#") != null ||
                 owlModel.getNamespaceManager().getPrefix("http://protege.stanford.edu/kb#") != null) {
             message = message + "\nThis file seems to have been created with the frame-based Protege RDF Backend. " +
@@ -236,8 +239,8 @@ public class JenaKnowledgeBaseFactory implements OWLKnowledgeBaseFactory {
 
         errors.add(new MessageError(message));
     }
-    
-    
+
+
     @SuppressWarnings("unchecked")
 	public void saveKnowledgeBase(KnowledgeBase kb, PropertyList sources, Collection errors) {
         String language = getOWLFileLanguage(sources);
@@ -306,8 +309,16 @@ public class JenaKnowledgeBaseFactory implements OWLKnowledgeBaseFactory {
         }
         sources.setString(OWL_FILE_URI_PROPERTY, filePath);
     }
-    
+
     public static String getOWLFileName(PropertyList sources) {
         return sources.getString(OWL_FILE_URI_PROPERTY);
     }
+
+    public static boolean isMergingImportMode() {
+		return isMergingImportMode;
+	}
+
+	public static void setMergingImportMode(boolean isMergingImportMode) {
+		JenaKnowledgeBaseFactory.isMergingImportMode = isMergingImportMode;
+	}
 }
