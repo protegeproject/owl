@@ -30,6 +30,17 @@ public class OWLImportsCache {
 		return set;
 	}
 
+	public static Set<String> getAllOntologies() {
+		HashSet<String> set = new HashSet<String>();
+		set.addAll(owlOntologyLocToOntologName.keySet());
+		set.addAll(owlOntologyLocToOntologName.values());
+		set.addAll(owlOntoloyToImportsMap.keySet());
+		for (String ont : owlOntoloyToImportsMap.keySet()) {
+			set.addAll(owlOntoloyToImportsMap.get(ont));
+		}
+		return set;
+	}
+
 	public static boolean isImported(String ontology) {
  		return owlOntologyLocToOntologName.keySet().contains(ontology) ||
  			owlOntologyLocToOntologName.values().contains(ontology) ||
