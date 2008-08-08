@@ -2,7 +2,6 @@ package edu.stanford.smi.protegex.owl.jena.parser.tests;
 
 import edu.stanford.smi.protege.model.Instance;
 import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
-import edu.stanford.smi.protegex.owl.model.ProtegeNames;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
 import edu.stanford.smi.protegex.owl.model.RDFSNames;
@@ -29,9 +28,9 @@ public class LoadRDFExternalResourceTestCase extends AbstractJenaTestCase {
 
         Object isDefinedByValue = cls.getPropertyValue(isDefinedBySlot);
         assertEquals(instance, isDefinedByValue);
-        
+
         assertEquals(0, ur.getRDFTypes().size());
         assertEquals(1, ur.getProtegeTypes().size());
-        assertEquals(ProtegeNames.Cls.EXTERNAL_CLASS, ur.getProtegeType().getName());
+        assertEquals(owlModel.getSystemFrames().getRdfExternalResourceClass(), ur.getProtegeType());
     }
 }
