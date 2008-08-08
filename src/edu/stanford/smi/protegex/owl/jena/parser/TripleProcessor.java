@@ -10,14 +10,8 @@ import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 
-// - verify - not hard --
-//TODO: Load Birnlex -> class cast (rdf:List) OWLJavaFactory doesn't do the right thing
-
-//TODO: Add owl:Thing also for untyped classes
-
 //-- later --
 //TODO: Postprocessing GCI - refactor in their own class
-//TODO: Process each triple in a try catch
 
 
 public class TripleProcessor {
@@ -60,7 +54,7 @@ public class TripleProcessor {
 
 	public void addUndefTriple(AResource subj, AResource pred, AResource obj, String undefName, boolean alreadyInUndef, TripleStore ts) {
 		if (!alreadyInUndef) {
-			globalParserCache.addUndefTriple(new UndefTriple(subj, pred, obj, undefName, ts));
+			globalParserCache.addUndefTriple(new UndefTriple(subj, pred, obj, ts), undefName);
 		}
 	}
 
@@ -83,9 +77,16 @@ public class TripleProcessor {
 
 			if (success) {
 				iter.remove();
-				globalParserCache.removeUndefTriple(uri, undefTriple);
+				//globalParserCache.removeUndefTriple(uri, undefTriple);
 			}
 		}
+
+		//clean up
+		undefTriples = globalParserCache.getUndefTriples(uri);
+		if (undefTriples.isEmpty()) {
+			globalParserCache.removeUndefTripleKey(uri);
+		}
+
 	}
 
 
