@@ -19,7 +19,7 @@ public class PrefixCanAsTestCase extends TestCase {
     private Project p;
     private OWLModel owlModel;
     private Test01Factory factory;
-    
+
     @Override
     protected void setUp() throws Exception {
         Collection errors = new ArrayList();
@@ -28,17 +28,17 @@ public class PrefixCanAsTestCase extends TestCase {
         owlModel = (OWLModel)  p.getKnowledgeBase();
         factory = new Test01Factory(owlModel);
     }
-    
+
     @Override
     protected void tearDown() throws Exception {
         p.dispose();
         p = null;
         owlModel = null;
     }
-    
+
     public void testSimpleAs() {
         CODE1_C fC = factory.getCODE1_C("fC");
-        CODE1_C fD = factory.getCODE1_C("fD");
+        CODE1_D fD = factory.getCODE1_D("fD");
         assertFalse(fC.canAs(CODE1_D.class));
         assertTrue(fD.canAs(CODE1_D.class));
         assertNotNull(fD.as(CODE1_D.class));
@@ -48,7 +48,7 @@ public class PrefixCanAsTestCase extends TestCase {
         assertTrue(fDAlt != null);
         assertTrue(fDAlt.equals(fD));
     }
-    
+
     public void testGetP() {
         Top t = factory.getTop("fTop");
         for (Object o : t.getCODE1_p()) {
@@ -57,7 +57,7 @@ public class PrefixCanAsTestCase extends TestCase {
             }
         }
     }
-    
+
     public void testIncompatibleTypes() {
         CODE2_X x = factory.getCODE2_X("fX");
         assertTrue(x.canAs(CODE1_B.class));
