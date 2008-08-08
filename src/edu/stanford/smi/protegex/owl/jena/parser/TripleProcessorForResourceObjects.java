@@ -308,18 +308,12 @@ class TripleProcessorForResourceObjects extends AbstractStatefulTripleProcessor 
 					&& tripleStore.getName() == null) {
 				tripleStore.setName(subjName);
 				tripleStore.addIOAddress(subjName);
-			}
-
-			//TT: This piece of code had some logic.. but now it seems wrong..
-			/*
-			String parsedOnt = ProtegeOWLParser.getErrorURI().toString();
-			if (parsedOnt == null) {
-				String parsedOntName = OWLImportsCache.getOntologyName(parsedOnt.toString());
-				if (parsedOntName == null) {
-					OWLImportsCache.setOntologyName(parsedOnt.toString(), subjName);
+				//For the top level ontology, we don't know the name
+				//and we only discover it here..
+				if (!isImporting(tripleStore)) {
+					ProtegeOWLParser.setTopOntologyName(subjName);
 				}
 			}
-			*/
 		}
 
 
@@ -336,14 +330,7 @@ class TripleProcessorForResourceObjects extends AbstractStatefulTripleProcessor 
 				}
 				return TripleStatus.TRIPLE_PROCESSING_COMPLETE;
 			}
-			//this piece of code cause StackOverflow when calling rdfProp.isFunctional().
-			//TODO: will fix later
-			/*else if (predName.equals(OWL.equivalentProperty.getURI())) {
-				FrameCreatorUtility.addOwnSlotValue(subjFrame, predSlot, objFrame, tripleStore);
-				FrameCreatorUtility.createSubpropertyOf(getSlot(subjFrame), getSlot(objFrame), tripleStore);
-				FrameCreatorUtility.createSubpropertyOf(getSlot(objFrame), getSlot(subjFrame), tripleStore);
-				return TripleStatus.TRIPLE_PROCESSING_COMPLETE;
-			} */
+
 			return TripleStatus.TRIPLE_PROCESSING_SHOULD_CONTINUE;
 		}
 
