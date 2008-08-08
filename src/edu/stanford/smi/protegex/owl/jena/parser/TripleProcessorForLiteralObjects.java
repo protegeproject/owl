@@ -35,7 +35,7 @@ class TripleProcessorForLiteralObjects extends AbstractStatefulTripleProcessor {
 
 		if (predSlot == null) {
 			if (!alreadyInUndef) {
-				globalParserCache.addUndefTriple(new UndefTriple(subj, pred, lit, predName, ts));
+				globalParserCache.addUndefTriple(new UndefTriple(subj, pred, lit, ts), predName);
 			}
 			return false;
 		}
@@ -54,7 +54,7 @@ class TripleProcessorForLiteralObjects extends AbstractStatefulTripleProcessor {
 		//checking and adding to undefined
 		if (subjFrame == null) {
 			if (!alreadyInUndef) {
-				globalParserCache.addUndefTriple(new UndefTriple(subj, pred, lit, subjName, ts));
+				globalParserCache.addUndefTriple(new UndefTriple(subj, pred, lit, ts), subjName);
 			}
 			return false;
 		}
