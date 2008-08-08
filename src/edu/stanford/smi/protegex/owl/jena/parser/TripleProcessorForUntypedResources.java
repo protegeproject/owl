@@ -226,6 +226,15 @@ class TripleProcessorForUntypedResources extends AbstractStatefulTripleProcessor
 			return untypedClassClass.createInstance(objectName);
 		}
 
+		//rdfs:seeAlso is probably just a string or untyped resource
+		if (property.equals(owlModel.getSystemFrames().getRdfsSeeAlsoProperty())) {
+			return owlModel.createRDFUntypedResource(objectName);
+		}
+
+		//owl:versionInfo should be a literal.. create it as an untyped resource for now
+		if (property.equals(owlModel.getSystemFrames().getOwlVersionInfoProperty())) {
+			return owlModel.createRDFUntypedResource(objectName);
+		}
 
 		/*
 		 * Try to create the new resource using the range of the property
