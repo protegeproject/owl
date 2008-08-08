@@ -522,12 +522,14 @@ public abstract class OWLSystemFrames extends SystemFrames {
     
     protected class OWLSystemFramesAssertions extends SystemFramesAsserter {
     	private RDFSDatatype xsdInt;
+    	private RDFSDatatype xsdNonNegativeInteger;
     	private RDFSDatatype xsdString;
     	
     	
     	public OWLSystemFramesAssertions(FrameStore fs) {
     	    super(fs);
             xsdInt = (RDFSDatatype) getFrame(new FrameID(XSDNames.INT));
+            xsdNonNegativeInteger = (RDFSDatatype) getFrame(new FrameID(XSDNames.NON_NEGATIVE_INTEGER));
             xsdString = (RDFSDatatype) getFrame(new FrameID(XSDNames.STRING));
     	}
     	
@@ -638,7 +640,7 @@ public abstract class OWLSystemFrames extends SystemFrames {
             assertFunctional(owlCardinalityProperty);
             assertDomain(owlCardinalityProperty, owlCardinalityClass);
             assertValueType(owlCardinalityProperty, ValueType.INTEGER);
-            fs.setDirectOwnSlotValues(owlCardinalityProperty, rdfsRangeProperty, Collections.singleton(xsdInt));
+            fs.setDirectOwnSlotValues(owlCardinalityProperty, rdfsRangeProperty, Collections.singleton(xsdNonNegativeInteger));
             
             assertTypeAndName(owlComplementOfProperty, rdfPropertyClass);
             assertDomain(owlComplementOfProperty, owlClassMetaCls);
@@ -691,13 +693,13 @@ public abstract class OWLSystemFrames extends SystemFrames {
             assertDomain(owlMaxCardinalityProperty, owlMaxCardinalityClass);
             assertValueType(owlMaxCardinalityProperty, ValueType.INTEGER);
             assertFunctional(owlMaxCardinalityProperty);
-            fs.setDirectOwnSlotValues(owlMaxCardinalityProperty, rdfsRangeProperty, Collections.singleton(xsdInt));
+            fs.setDirectOwnSlotValues(owlMaxCardinalityProperty, rdfsRangeProperty, Collections.singleton(xsdNonNegativeInteger));
             
             assertTypeAndName(owlMinCardinalityProperty, rdfPropertyClass);
             assertDomain(owlMinCardinalityProperty, owlMinCardinalityClass);
             assertValueType(owlMinCardinalityProperty, ValueType.INTEGER);
             assertFunctional(owlMinCardinalityProperty);
-            fs.setDirectOwnSlotValues(owlMinCardinalityProperty, rdfsRangeProperty, Collections.singleton(xsdInt));
+            fs.setDirectOwnSlotValues(owlMinCardinalityProperty, rdfsRangeProperty, Collections.singleton(xsdNonNegativeInteger));
 
             //domain not according to OWL spec: Should be rdfs:Class
             assertTypeAndName(owlOneOfProperty, rdfPropertyClass);
