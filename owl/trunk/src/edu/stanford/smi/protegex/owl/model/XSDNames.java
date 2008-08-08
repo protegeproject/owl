@@ -34,6 +34,8 @@ public interface XSDNames {
     final static String INT = (XSD_NAMESPACE + "int").intern();
 
     final static String INTEGER = (XSD_NAMESPACE + "integer").intern();
+    
+    final static String NON_NEGATIVE_INTEGER = (XSD_NAMESPACE + "nonNegativeInteger").intern();
 
     final static String LONG = (XSD_NAMESPACE + "long").intern();
 
