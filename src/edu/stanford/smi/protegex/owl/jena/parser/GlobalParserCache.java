@@ -54,7 +54,7 @@ public class GlobalParserCache implements Disposable {
 	}
 
 
-	public void addUndefTriple(UndefTriple triple) {
+	public void addUndefTriple(UndefTriple triple, String undef) {
 		if (log.isLoggable(Level.FINE)) {
 			log.fine(" +++ Adding: " + triple);
 		}
@@ -65,30 +65,23 @@ public class GlobalParserCache implements Disposable {
 			}
 		}
 
-		Collection<UndefTriple> undefTriples = getUndefTriples(triple.getUndef());
+		Collection<UndefTriple> undefTriples = getUndefTriples(undef);
 		undefTriples.add(triple);
-		undefTriplesMap.put(triple.getUndef(), undefTriples);
+		undefTriplesMap.put(undef, undefTriples); //don't think it's necessary
 	}
 
 	public Collection<UndefTriple> getUndefTriples(String uri) {
 		Collection<UndefTriple> undefTriples = undefTriplesMap.get(uri);
 
 		if (undefTriples == null) {
-			return new HashSet<UndefTriple>();
+			return new ArrayList<UndefTriple>();
 		}
 
 		return undefTriples;
 	}
 
-	public Collection<UndefTriple> getUndefTriples() {
-		ArrayList<UndefTriple> values = new ArrayList<UndefTriple>();
-
-		for (String string : undefTriplesMap.keySet()) {
-			String uri = string;
-			values.addAll(undefTriplesMap.get(uri));
-		}
-
-		return values;
+	public Set<String> getUndefTriplesKeys() {
+		return undefTriplesMap.keySet();
 	}
 
 	public int getUndefTripleSize() {
@@ -107,6 +100,10 @@ public class GlobalParserCache implements Disposable {
             } else {
                 undefTriplesMap.put(uri, undefTriples);
             }
+	}
+
+	public void removeUndefTripleKey(String uri) {
+		undefTriplesMap.remove(uri);
 	}
 
 	public void dumpUndefTriples(Level level) {
