@@ -38,7 +38,7 @@ import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
 
 public class DefaultSWRLImp extends AbstractSWRLIndividual implements SWRLImp 
 {
-  private Logger log = Log.getLogger(DefaultSWRLImp.class);
+  private transient Logger log = Log.getLogger(DefaultSWRLImp.class);
     
   public static final String EMPTY_RULE_TEXT = "<EMPTY_RULE>";
   
