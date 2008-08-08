@@ -43,6 +43,9 @@ public class SWRLTab extends AbstractTabWidget
   {
     OWLModel owlModel = (OWLModel) getKnowledgeBase();
     try {
+      if (owlModel.getProject().isMultiUserClient()) {
+          return;
+      }
       owlModel.getNamespaceManager().setPrefix(new URI(SWRLNames.SWRLA_NAMESPACE), SWRLNames.SWRLA_PREFIX);
       owlModel.getNamespaceManager().setPrefix(new URI(SWRLNames.SWRLX_NAMESPACE), SWRLNames.SWRLX_PREFIX);
       owlModel.getNamespaceManager().setPrefix(new URI(SWRLNames.SWRLM_NAMESPACE), SWRLNames.SWRLM_PREFIX);
