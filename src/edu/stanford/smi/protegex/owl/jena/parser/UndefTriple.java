@@ -11,23 +11,20 @@ public class UndefTriple {
 	private AResource tripleSubj;
 	private AResource triplePred;
 	private Object tripleObj;
-	private String undef;
 	private TripleStore tripleStore;
 
 
-	public UndefTriple(AResource subj, AResource pred, AResource obj, String undef, TripleStore ts) {
+	public UndefTriple(AResource subj, AResource pred, AResource obj, TripleStore ts) {
 		this.tripleSubj = subj;
 		this.triplePred = pred;
 		this.tripleObj = obj;
-		this.undef = undef;
 		this.tripleStore = ts;
 	}
 
-	public UndefTriple(AResource subj, AResource pred, ALiteral obj, String undef, TripleStore ts) {
+	public UndefTriple(AResource subj, AResource pred, ALiteral obj, TripleStore ts) {
 		this.tripleSubj = subj;
 		this.triplePred = pred;
 		this.tripleObj = obj;
-		this.undef = undef;
 		this.tripleStore = ts;
 	}
 
@@ -42,10 +39,6 @@ public class UndefTriple {
 
 	public AResource getTripleSubj() {
 		return tripleSubj;
-	}
-
-	public String getUndef() {
-		return undef;
 	}
 
 	public TripleStore getTripleStore() {
@@ -67,7 +60,6 @@ public class UndefTriple {
 		return other.getTripleSubj().equals(getTripleSubj()) &&
 		       other.getTriplePred().equals(getTriplePred()) &&
 		       other.getTripleObj().equals(getTripleObj()) &&
-		       (other.getUndef() == null && getUndef() == null || other.getUndef().equals(getUndef()) )&&
 		       other.getTripleStore().equals(getTripleStore());
 	}
 
@@ -79,7 +71,7 @@ public class UndefTriple {
 
 	@Override
 	public String toString() {
-		return "(" + getTripleSubj() + "  " + getTriplePred() + "  " + getTripleObj() + ")" + "  undef: " + getUndef() + " triplestore: " + getTripleStore();
+		return "(" + getTripleSubj() + "  " + getTriplePred() + "  " + getTripleObj() + ") triplestore: " + getTripleStore();
 	}
 
 }
