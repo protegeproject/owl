@@ -63,11 +63,11 @@ public class ProtegeOWLParser {
     public final static String PRINT_LOAD_TRIPLES_LOG_INCREMENT = "protegeowl.parser.print.load.triples.log.increment";
 
 	private static Collection errors;
-	private static URI errorOntologyURI;
-	private boolean isMergeImportMode = false;
+	private static String topOntologyName;
 
 	private OWLModel owlModel;
 	private boolean importing = false;
+	private boolean isMergeImportMode = false;
 
 	private int tripleCount;
 	private boolean printLoadTriplesLog = true;
@@ -78,7 +78,7 @@ public class ProtegeOWLParser {
 
 	public ProtegeOWLParser(OWLModel owlModel) {
 		tripleCount = 0;
-		errorOntologyURI = null;
+		topOntologyName = null;
 		errors = new ArrayList();
 		printLoadTriplesLog = ApplicationProperties.getBooleanProperty(PRINT_LOAD_TRIPLES_LOG, true);
 		printLoadTriplesLogIncrement = ApplicationProperties.getIntegerProperty(PRINT_LOAD_TRIPLES_LOG_INCREMENT, 10000);
@@ -234,15 +234,18 @@ public class ProtegeOWLParser {
 	    loadTriples(ontologyLocation, xmlBase, createARPInvokation(is, ontologyLocation.toString()));
 	}
 
-	private void loadTriples(final String ontologyLocation, URI xmlBase, final ARPInvokation invokation)
+	/*
+	 * ontologyURI - is not clearly defined - it is either the location URL (the top-level parse), or the
+	 *  ontology name (for imports)
+	 */
+	private void loadTriples(final String ontologyURI, URI xmlBase, final ARPInvokation invokation)
 						throws OntologyLoadException {
 		//the triple store where the parsing will write the parsed triples
 	    final TripleStore tripleStore = owlModel.getTripleStoreModel().getActiveTripleStore();
 	    ((AbstractOWLModel) owlModel).getGlobalParserCache().getParsedTripleStores().add(tripleStore);
 
-	    if (ontologyLocation != null) {
-	    	tripleStore.addIOAddress(ontologyLocation.toString());
-	    	errorOntologyURI = URIUtilities.createURI(ontologyLocation);
+	    if (ontologyURI != null) {
+	    	tripleStore.addIOAddress(ontologyURI.toString());
 	    }
 
 	    if (xmlBase != null) {
@@ -250,13 +253,16 @@ public class ProtegeOWLParser {
 	    	tripleStore.setOriginalXMLBase(xmlBase.toString());
 	    }
 
+	    topOntologyName = ontologyURI != null ? ontologyURI :
+	    					xmlBase != null ? xmlBase.toString() : null;
+
 	    boolean eventsEnabled = owlModel.setGenerateEventsEnabled(false);
 	    boolean isExpandShortNamesEnabled = owlModel.isExpandShortNameInMethods();
 	    owlModel.setExpandShortNameInMethods(false);
 	    try {
 	        tripleProcessor = ((AbstractOWLModel) owlModel).getGlobalParserCache().getTripleProcessor();
 
-	        Log.getLogger().info("Loading triples from: " + ontologyLocation);
+	        Log.getLogger().info("Loading triples from: " + ontologyURI);
 
 	        ARP arp = createARP(tripleStore);
 
@@ -281,18 +287,16 @@ public class ProtegeOWLParser {
 	        }
 
 	        if (isMergingImportMode()) {
-	        	//we'll fix the tripleStore name later
-	        	processMergingImports(tripleStore, ontologyLocation);
+	        	processMergingImports(tripleStore, ontologyURI);
 	        } else {
 	        	processImports(tripleStore);
 	        }
-
 
 	        if (log.isLoggable(Level.FINE)) {
 	            log.fine("End processing imports");
 	        }
 
-	        handleNoOntologyDeclarationFound(tripleStore, ontologyLocation, xmlBase);
+	        handleNoOntologyDeclarationFound(tripleStore, ontologyURI, xmlBase);
 
 	        if (!importing) {
 	            doFinalPostProcessing(owlModel);
@@ -354,6 +358,7 @@ public class ProtegeOWLParser {
 	}
 
 
+	@SuppressWarnings("deprecation")
 	private void doFinalPostProcessingMergingMode(OWLModel owlModel) {
 		//delete ontology instances - should destroy also imports tree
 		Collection ontologies = owlModel.getOWLOntologies();
@@ -363,7 +368,15 @@ public class ProtegeOWLParser {
 			RDFResource ont = (RDFResource) iterator.next();
 			ont.delete();
 		}
-
+		//make sure to remove invalid ontologies
+		Collection<String> allOntologies = OWLImportsCache.getAllOntologies();
+		allOntologies.remove(owlModel.getDefaultOWLOntology().getName());
+		for (String ont : allOntologies) {
+			RDFResource res = owlModel.getRDFResource(ont);
+			if (res != null && res.hasDirectType(owlModel.getSystemFrames().getRdfExternalResourceClass())) {
+				res.delete();
+			}
+		}
 	}
 
 
@@ -382,29 +395,17 @@ public class ProtegeOWLParser {
 		}
 	}
 
-	private void processMergingImports(TripleStore tripleStore, String parsingOntologyLocation) throws OntologyLoadException {
-		String ontologyName = OWLImportsCache.getOntologyName(parsingOntologyLocation);
-		if (ontologyName == null) {
-			URI ontologyURI = null;
-			URI parsingOntologyURI = URIUtilities.createURI(parsingOntologyLocation);
-
-			try {
-				OntologyNameExtractor one = new OntologyNameExtractor(getInputStreamForMerge(parsingOntologyURI), parsingOntologyURI.toURL());
-				ontologyURI = one.getOntologyName();
-			} catch (MalformedURLException e) {
-				throw new OntologyLoadException(e, "Malformed ontology URL: " + parsingOntologyLocation);
-			} catch (IOException e) {
-				throw new OntologyLoadException(e, "IO exception at getting: " + parsingOntologyLocation);
-			}
-
-			if (ontologyURI == null) {
-				Log.getLogger().warning("Problem at getting import " + parsingOntologyLocation + " (Ontology name is null)");
-				return;
-			}
-			ontologyName = ontologyURI.toString();
+	private void processMergingImports(TripleStore tripleStore, String importingOntologyName) throws OntologyLoadException {
+		if (!importing && topOntologyName != null) {
+			//In the top level parse, we get the ontology name from the triple processor
+			importingOntologyName = topOntologyName;
 		}
 
-		Set<String> thisOntoImports = OWLImportsCache.getOWLImportsURI(ontologyName);
+		if (importingOntologyName == null) {
+			return; // no imports if no ontology declaration
+		}
+
+		Set<String> thisOntoImports = OWLImportsCache.getOWLImportsURI(importingOntologyName);
 
 		for (String importedOntologyName : thisOntoImports) {
 			if (OWLImportsCache.isImported(importedOntologyName)) {
@@ -412,17 +413,20 @@ public class ProtegeOWLParser {
 			}
 
 			URI ontologyURI = URIUtilities.createURI(importedOntologyName);
-			AbstractStreamBasedRepositoryImpl rep = (AbstractStreamBasedRepositoryImpl) owlModel.getRepositoryManager().getRepository(ontologyURI);
+			URI xmlBase = null;
 
-			URI xmlBase = XMLBaseExtractor.getXMLBase(getInputStreamForMerge(ontologyURI));
-			if (xmlBase == null) {
-				xmlBase = ontologyURI;
+			try {
+				//does other checking, too
+				xmlBase = getXMLBaseForMerge(ontologyURI);
+			} catch (OntologyLoadException e) {
+				Log.getLogger().warning("Could not load import from: " + ontologyURI + " (Skipping this import)");
+				continue;
 			}
 
 			ProtegeOWLParser parser = new ProtegeOWLParser(owlModel);
 			parser.setMergingImportMode(isMergingImportMode());
 			parser.setImporting(true);
-			parser.loadTriples(importedOntologyName, xmlBase, getInputStreamForMerge(ontologyURI));
+			parser.loadTriples(importedOntologyName, xmlBase , getInputStreamForMerge(ontologyURI));
 		}
 	}
 
@@ -438,16 +442,26 @@ public class ProtegeOWLParser {
 		return is;
 	}
 
+	private URI getXMLBaseForMerge(URI ontologyURI) throws OntologyLoadException {
+		URI xmlBase = ontologyURI;
+		try {
+			OntologyNameExtractor one = new OntologyNameExtractor(getInputStreamForMerge(ontologyURI), ontologyURI.toURL());
+			xmlBase = one.getOntologyName();
+			if (!one.isRDFRootElementPresent()) {
+				throw new OntologyLoadException(null, "Document at location " + ontologyURI + " is not a valid OWL/RDF file.");
+			}
+		} catch (MalformedURLException e) {
+			throw new OntologyLoadException(e);
+		} catch (IOException e) {
+			throw new OntologyLoadException(e);
+		}
+		return xmlBase;
+	}
 
 	/*************************************** Management  *******************************/
 
-	/**
-	 * Gets the ontology name of the most recently parsed file.  This can be used to diagnose
-	 * where an exception has occured.
-	 * @return the error ontology URI or null
-	 */
-	public static URI getErrorURI() {
-		return errorOntologyURI;
+	static void setTopOntologyName(String ontName) {
+		topOntologyName = ontName;
 	}
 
 	public static Collection getErrors() {
@@ -502,7 +516,7 @@ public class ProtegeOWLParser {
 
 			String message = (severity == Severity.WARNING ? "A warning " : "An error " ) + "occurred at parsing the OWL ontology ";
 
-			message = message + "\n\n    " + errorOntologyURI + "\n\n";
+			message = message + "\n\n    " + topOntologyName + "\n\n";
            	message = message + "    at line " + ex.getLineNumber() + " and column " + ex.getColumnNumber() + ".\n";
         	message = message + "    Jena parse error message: " + ex.getMessage();
 
