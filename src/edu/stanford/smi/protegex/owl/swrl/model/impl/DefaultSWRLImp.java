@@ -303,8 +303,8 @@ public String getBrowserText()
   public boolean isInRuleGroups(Set<String> names) 
   { 
       checkCacheInitialized();
-      for (String name : names) if (!ruleGroups.containsKey(name)) return false;
-      return true;
+      for (String name : names) if (ruleGroups.containsKey(name)) return true;
+      return false;
   }  // isInRuleGroups
 
   /**
