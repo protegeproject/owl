@@ -159,7 +159,7 @@ public class ProfilesManager {
                     return null;
                 }
 			} catch (Exception e) {
-				Log.getLogger().log(Level.WARNING, "Could not open default Profile file", e);
+				Log.getLogger().warning("Could not open default Profile file. Message: " + e.getMessage());
 			}
         }
         return defaultOntModel;
