@@ -1,6 +1,9 @@
 package edu.stanford.smi.protegex.owl.jena.parser;
 
 
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.logging.Level;
 
 import com.hp.hpl.jena.rdf.arp.ALiteral;
@@ -21,51 +24,58 @@ class TripleProcessorForUntypedResources extends AbstractStatefulTripleProcessor
 		super(processor);
 	}
 
-
 	public void processUndefTriples() {
 		processRemainingUndefinedTriples();
 	}
 
-
 	protected void processRemainingUndefinedTriples() {
-		for (UndefTriple undefTriple2 : processor.getGlobalParserCache().getUndefTriples()) {
-			UndefTriple undefTriple = undefTriple2;
-			Object obj = undefTriple.getTripleObj();
+		for (Iterator<String> iterator = processor.getGlobalParserCache().getUndefTriplesKeys().iterator(); iterator.hasNext();) {
+			String undef = iterator.next();
+			Collection<UndefTriple> undefTriples = processor.getGlobalParserCache().getUndefTriples(undef);
 
-			TripleStore undefTripleStore = undefTriple.getTripleStore();
+			for (Iterator<UndefTriple> iterator2 = undefTriples.iterator(); iterator2.hasNext();) {
+				UndefTriple undefTriple = iterator2.next();
 
-			//special handling of owl:oneOf
-			if (ParserUtil.getResourceName(undefTriple.getTriplePred()).equals(OWL.oneOf.getURI())) {
-				handleCreationOfOneOf(undefTriple);
+				Object obj = undefTriple.getTripleObj();
+				TripleStore undefTripleStore = undefTriple.getTripleStore();
+
+				//special handling of owl:oneOf
+				if (ParserUtil.getResourceName(undefTriple.getTriplePred()).equals(OWL.oneOf.getURI())) {
+					handleCreationOfOneOf(undefTriple, undef);
+				}
+
+				boolean success = false;
+
+				if (obj instanceof AResource) {
+					success = processor.processTriple(undefTriple.getTripleSubj(), undefTriple.getTriplePred(), (AResource) undefTriple.getTripleObj(), undefTripleStore, true);
+				} else if (obj instanceof ALiteral) {
+					success = processor.processTriple(undefTriple.getTripleSubj(), undefTriple.getTriplePred(), (ALiteral) undefTriple.getTripleObj(), undefTripleStore, true);
+				}
+
+				if (success) {
+					iterator2.remove();
+				}
 			}
 
-			boolean success = false;
-
-			if (obj instanceof AResource) {
-				success = processor.processTriple(undefTriple.getTripleSubj(), undefTriple.getTriplePred(), (AResource) undefTriple.getTripleObj(), undefTripleStore, true);
-			} else if (obj instanceof ALiteral) {
-				success = processor.processTriple(undefTriple.getTripleSubj(), undefTriple.getTriplePred(), (ALiteral) undefTriple.getTripleObj(), undefTripleStore, true);
-			}
-
-			if (success) {
-				processor.getGlobalParserCache().removeUndefTriple(undefTriple.getUndef(), undefTriple);
+			//clean-up, if no more undef triples for this undef
+			Collection<UndefTriple> remainingUndefs = processor.getGlobalParserCache().getUndefTriples(undef);
+			if (remainingUndefs.isEmpty()) {
+				iterator.remove();
 			}
 		}
 	}
 
 
-
-	private void handleCreationOfOneOf(UndefTriple undefTriple) {
+	private void handleCreationOfOneOf(UndefTriple undefTriple, String undef) {
 		AResource tripleSubj = undefTriple.getTripleSubj();
 		TripleStore ts = undefTriple.getTripleStore();
-		if (ParserUtil.getResourceName(tripleSubj).equals(undefTriple.getUndef())) {
+		if (ParserUtil.getResourceName(tripleSubj).equals(undef)) {
 			try {
 				FrameCreatorUtility.createOWLEnumeratedCls(owlModel, ParserUtil.getResourceName(tripleSubj), ts);
 			} catch (Exception e) {
 				Log.getLogger().log(Level.WARNING, "Error at creating enumeration class", e);
 			}
 		}
-
 	}
 
 
@@ -73,40 +83,54 @@ class TripleProcessorForUntypedResources extends AbstractStatefulTripleProcessor
 	 * This method will create untyped resources for all undefined triples.
 	 */
 	public void createUntypedResources() {
-		/*
-		 * There might be triples with duplicate undef entities.
-		 * Test subject, predicate and object from the triple
-		 */
-		for (UndefTriple undefTriple2 : processor.getGlobalParserCache().getUndefTriples()) {
-			UndefTriple undefTriple = undefTriple2;
-			resolveUndefinedTriple(undefTriple);
+		Collection<String> createdObjs = new HashSet<String>();
+		for (String undef : processor.getGlobalParserCache().getUndefTriplesKeys()) {
+			Collection<UndefTriple> undefTriples = processor.getGlobalParserCache().getUndefTriples(undef);
+			for (UndefTriple undefTriple : undefTriples) {
+				if (resolveUndefinedTriple(undefTriple)) {
+					createdObjs.add(undef);
+				}
+			}
+		}
+
+		//had to do it this way, because of concurrent modif exception
+		for (String undef : createdObjs) {
+			checkUndefinedResources(undef);
 		}
 
 		processUndefTriples();
-		//should call here postProcessor.processPossiblyTypedResources()
 	}
 
-	protected void resolveUndefinedTriple(UndefTriple undefTriple) {
+	/**
+	 * returns true - if it created new object
+	 */
+	protected boolean resolveUndefinedTriple(UndefTriple undefTriple) {
+		boolean createObject = false;
+
 		String pred = ParserUtil.getResourceName(undefTriple.getTriplePred());
-		resolvUndefinedTriple(undefTriple, pred);
+		createObject = createObject || resolvUndefinedTriple(undefTriple, pred);
 
 		String subj = ParserUtil.getResourceName(undefTriple.getTripleSubj());
-		resolvUndefinedTriple(undefTriple, subj);
+		createObject = createObject || resolvUndefinedTriple(undefTriple, subj);
 
 		Object objObj = undefTriple.getTripleObj();
 		if (objObj instanceof AResource) {
 			String obj = ParserUtil.getResourceName((AResource)undefTriple.getTripleObj());
-			resolvUndefinedTriple(undefTriple, obj);
+			createObject = createObject || resolvUndefinedTriple(undefTriple, obj);
 		}
+
+		return createObject;
 	}
 
-	protected void resolvUndefinedTriple(UndefTriple undefTriple, String undef) {
+	/**
+	 * returns true - if it created new object
+	 */
+	protected boolean resolvUndefinedTriple(UndefTriple undefTriple, String undef) {
 		if (owlModel.getRDFResource(undef) == null) {
 			RDFResource resource = createUntypedObject(undefTriple, undef);
-			if (resource != null) {
-				checkUndefinedResources(undef);
-			}
+			return resource != null;
 		}
+		return false;
 	}
 
 
