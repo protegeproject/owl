@@ -34,17 +34,17 @@ public class TypeUpdateFrameStore extends FrameStoreAdapter {
     private RDFSNamedClass untypedResource;
     private RDFSNamedClass untypedClass;
     private RDFSNamedClass untypedProperty;
-    
+
     private RDFSNamedClass functionalPropertyClass;
     private RDFSNamedClass restrictionClass;
     private RDFSNamedClass owlClass;
-    
+
     private RDFProperty rdfType;
     private RDFProperty rdfSubClassOfProperty;
     private RDFSNamedClass annotationPropertyClass;
-    
+
     private Map<RDFProperty, RDFSNamedClass> fillerToProtegeTypeMap = new HashMap<RDFProperty, RDFSNamedClass>();
-    
+
     private static Set<String> fakeProtege3FactoryTypes = new  HashSet<String>();
     static {
         for (OWLFactoryClassType factoryType  : OWLFactoryClassType.values()) {
@@ -54,23 +54,23 @@ public class TypeUpdateFrameStore extends FrameStoreAdapter {
         }
     }
 
-    
+
     public TypeUpdateFrameStore(OWLModel owlModel) {
         untypedResource = owlModel.getRDFUntypedResourcesClass();
         untypedClass = ((AbstractOWLModel) owlModel).getRDFExternalClassClass();
         untypedProperty = ((AbstractOWLModel)owlModel).getRDFExternalPropertyClass();
-        
+
         functionalPropertyClass = owlModel.getOWLFunctionalPropertyClass();
         restrictionClass = owlModel.getSystemFrames().getOwlRestrictionClass();
         owlClass = owlModel.getOWLNamedClassClass();
         annotationPropertyClass = owlModel.getOWLAnnotationPropertyClass();
-        
+
         rdfType = owlModel.getRDFTypeProperty();
         rdfSubClassOfProperty = owlModel.getRDFSSubClassOfProperty();
-        
+
         initFillerMap(owlModel);
     }
-    
+
     private void initFillerMap(OWLModel owlModel) {
         OWLSystemFrames systemFrames = owlModel.getSystemFrames();
         fillerToProtegeTypeMap.put(systemFrames.getOwlAllValuesFromProperty(), systemFrames.getOwlAllValuesFromClass());
@@ -80,12 +80,12 @@ public class TypeUpdateFrameStore extends FrameStoreAdapter {
         fillerToProtegeTypeMap.put(systemFrames.getOwlMaxCardinalityProperty(), systemFrames.getOwlMaxCardinalityClass());
         fillerToProtegeTypeMap.put(systemFrames.getOwlHasValueProperty(), systemFrames.getOwlHasValueClass());
     }
-    
+
     /*
      * FrameStore implementations
      */
-    
-    
+
+
     @Override
     public Cls createCls(FrameID id, Collection directTypes, Collection directSuperclasses, boolean loadDefaults) {
         Cls cls = super.createCls(id, directTypes, directSuperclasses, loadDefaults);
@@ -103,7 +103,7 @@ public class TypeUpdateFrameStore extends FrameStoreAdapter {
         }
         return cls;
     }
-    
+
     @Override
     public Slot createSlot(FrameID id, Collection directTypes, Collection directSuperslots, boolean loadDefaults) {
         Slot slot = super.createSlot(id, directTypes, directSuperslots, loadDefaults);
@@ -113,23 +113,23 @@ public class TypeUpdateFrameStore extends FrameStoreAdapter {
         }
         return slot;
     }
-    
+
     @Override
     public SimpleInstance createSimpleInstance(FrameID id, Collection directTypes, boolean loadDefaults) {
         SimpleInstance instance = super.createSimpleInstance(id, directTypes, loadDefaults);
-        if (instance instanceof RDFResource && 
+        if (instance instanceof RDFResource &&
         		!directTypes.contains(untypedResource)) {
             super.setDirectOwnSlotValues(instance, rdfType, directTypes);
         }
         return instance;
     }
-    
-    
+
+
     @SuppressWarnings("unchecked")
     @Override
     public void addDirectType(Instance instance, Cls type) {
     	try {
-        	beginTransaction("Add to " + instance.getName() + " direct type : " + type.getName() 
+        	beginTransaction("Add to " + instance.getName() + " direct type : " + type.getName()
         			+ Transaction.APPLY_TO_TRAILER_STRING + instance.getName());
             super.addDirectType(instance, type);
             instance = (Instance) super.getFrame(instance.getFrameID());
@@ -150,20 +150,20 @@ public class TypeUpdateFrameStore extends FrameStoreAdapter {
                 types.add(type);
                 super.setDirectOwnSlotValues(instance, rdfType, types);
             }
-            commitTransaction();			
-		} catch (Exception e) {
-			Log.getLogger().log(Level.WARNING, "Error in transaction at adding to " + 
+            commitTransaction();
+		} catch (Throwable e) {
+			Log.getLogger().log(Level.WARNING, "Error in transaction at adding to " +
 					instance + " direct type: " + type, e);
 			rollbackTransaction();
 			throw new RuntimeException(e);
 		}
     }
-    
+
     @SuppressWarnings("unchecked")
     @Override
     public void removeDirectType(Instance instance, Cls directType) {
     	try {
-    		beginTransaction("Remove from " + instance.getName() + " direct type : " + directType.getName() 
+    		beginTransaction("Remove from " + instance.getName() + " direct type : " + directType.getName()
     				+ Transaction.APPLY_TO_TRAILER_STRING + instance.getName());
     		if (instance instanceof RDFProperty) {
     			if (directType.equals(functionalPropertyClass)) {
@@ -184,14 +184,15 @@ public class TypeUpdateFrameStore extends FrameStoreAdapter {
     			}
     		}
     		super.removeDirectType(instance, directType);
-    	} catch (Exception e) {
-    		Log.getLogger().log(Level.WARNING, "Error in transaction at removing from " + 
+    		commitTransaction();
+    	} catch (Throwable e) {
+    		Log.getLogger().log(Level.WARNING, "Error in transaction at removing from " +
     				instance + " direct type: " + directType, e);
     		rollbackTransaction();
     		throw new RuntimeException(e);
     	}
     }
-    
+
     @Override
     public void setDirectOwnSlotValues(Frame frame, Slot slot, Collection values) {
         super.setDirectOwnSlotValues(frame, slot, values);
@@ -203,7 +204,7 @@ public class TypeUpdateFrameStore extends FrameStoreAdapter {
             Collection directTypes = super.getDirectTypes((RDFResource) frame);
             for (Object newType : values) {
                 if (!directTypes.contains(newType) && newType instanceof Cls) {
-                    super.addDirectType((RDFResource) frame, (Cls) newType); 
+                    super.addDirectType((RDFResource) frame, (Cls) newType);
                 }
             }
             for (Object oldType : directTypes) {
@@ -217,7 +218,7 @@ public class TypeUpdateFrameStore extends FrameStoreAdapter {
             super.addDirectType((Instance) frame, protegeType);
         }
     }
-    
+
     @Override
     public void addDirectSuperslot(Slot slot, Slot superSlot) {
         super.addDirectSuperslot(slot, superSlot);
