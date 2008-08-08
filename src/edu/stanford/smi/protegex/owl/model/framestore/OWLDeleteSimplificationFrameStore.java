@@ -20,10 +20,18 @@ public class OWLDeleteSimplificationFrameStore extends DeleteSimplificationFrame
         }
         else {
         	//TT: This is a little bit cheating, but harmless...
+        	boolean success = false;
             beginTransaction("Remove template slot from class " + cls + Transaction.APPLY_TO_TRAILER_STRING +
             		(cls == null ? null : cls.getName()));
-            getDelegate().removeDirectTemplateSlot(cls, slot);
-            commitTransaction();
+            try {
+            	getDelegate().removeDirectTemplateSlot(cls, slot);
+            	success = true;
+            	commitTransaction();
+            } finally {
+            	if (!success) {
+            		rollbackTransaction();
+            	}
+            }
         }
     }
 }
