@@ -3418,6 +3418,10 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     public RDFSDatatype getXSDint() {
         return getSystemFrames().getXsdInt();
     }
+    
+    public RDFSDatatype getXSDNonNegativeInteger() {
+        return getSystemFrames().getXsdNonNegativeInteger();
+    }
 
     public RDFSDatatype getXSDshort() {
         return getSystemFrames().getXsdShort();
