@@ -1565,6 +1565,13 @@ public interface OWLModel extends ProtegeKnowledgeBase, OWLTestManager {
      * @return xsd:long
      */
     RDFSDatatype getXSDlong();
+    
+    /**
+     * Gets the default datatype for non-negative values
+     * 
+     * @return
+     */
+    RDFSDatatype getXSDNonNegativeInteger();
 
 
     /**

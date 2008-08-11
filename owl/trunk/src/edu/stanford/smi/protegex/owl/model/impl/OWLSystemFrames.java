@@ -1104,6 +1104,10 @@ public abstract class OWLSystemFrames extends SystemFrames {
     public RDFSDatatype getXsdInteger() {
         return (RDFSDatatype) getFrame(new FrameID(XSDNames.INTEGER));
     }
+    
+    public RDFSDatatype getXsdNonNegativeInteger() {
+        return (RDFSDatatype) getFrame(new FrameID(XSDNames.NON_NEGATIVE_INTEGER));
+    }
 
     public RDFSDatatype getXmlLiteralType() {
         return (RDFSDatatype) getFrame(new FrameID(RDFNames.XML_LITERAL));
