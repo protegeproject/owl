@@ -232,31 +232,33 @@ public class JenaCreator {
 
 
     private void addSuperclasses(RDFSNamedClass rdfsClass, OntClass ontClass) {
-    	Collection superClasses = rdfsClass.getPureSuperclasses();
+
     	if (inferred && (rdfsClass instanceof OWLNamedClass)) {
     		OWLNamedClass namedCls = (OWLNamedClass) rdfsClass;
-    		for (Iterator it = superClasses.iterator(); it.hasNext();) {
-    			Cls superCls = (Cls) it.next();
-    			if (superCls instanceof RDFSNamedClass) {
-    				it.remove();
-    			}
-    		}           
-    		superClasses.addAll(namedCls.getInferredSuperclasses());
-    		superClasses.removeAll(namedCls.getInferredEquivalentClasses());
+    		if (exportInheritedAsAsserted) { //NCI case
+    			addInferredInheritedAnonymousSuperclasses(namedCls);    			
+    		} else { // general case
+    			Collection superClasses = rdfsClass.getPureSuperclasses();
+    			for (Iterator it = superClasses.iterator(); it.hasNext();) {
+    				Cls superCls = (Cls) it.next();
+    				if (superCls instanceof RDFSNamedClass) {
+    					it.remove();
+    				}
+    			}           
+    			superClasses.addAll(namedCls.getInferredSuperclasses());
+    			superClasses.removeAll(namedCls.getInferredEquivalentClasses());
 
-    		if (exportInheritedAsAsserted == true) {
-    			addInferredInheritedAnonymousSuperclasses(namedCls);
+    			if (superClasses.size() > 0 &&
+    					(superClasses.size() > 1 || !superClasses.iterator().next().equals(owlModel.getOWLThingClass()))) {
+    				for (Iterator it = superClasses.iterator(); it.hasNext();) {
+    					Cls superCls = (Cls) it.next();
+    					RDFSClass superClass = (RDFSClass) superCls;
+    					OntClass superOntClass = getOntClass(superClass);
+    					ontClass.addSuperClass(superOntClass);
+    				}
+    			}
     		}
     	}
-        if (superClasses.size() > 0 &&
-            (superClasses.size() > 1 || !superClasses.iterator().next().equals(owlModel.getOWLThingClass()))) {
-            for (Iterator it = superClasses.iterator(); it.hasNext();) {
-                Cls superCls = (Cls) it.next();
-                RDFSClass superClass = (RDFSClass) superCls;
-                OntClass superOntClass = getOntClass(superClass);
-                ontClass.addSuperClass(superOntClass);
-            }
-        }
     }
 
 
@@ -306,49 +308,55 @@ public class JenaCreator {
     }
 
 
-	//TT - this should not be committed to the head. It is a NCI specific extension.
+	//TT - this should not be committed to the head. It is a NCI specific extension. Gforge - 16191
     private void addInferredInheritedAnonymousSuperclasses(OWLNamedClass namedCls) {
 
-    	Set<RDFSClass> inheritedInferredRestrictions = new HashSet<RDFSClass>();
-
-    	ArrayList<RDFSClass> inferredSuperclasses = new ArrayList<RDFSClass>();
-    	getInferredSuperclasses(namedCls, inferredSuperclasses);
+    	Set<RDFSClass> inheritedInferredRestrictions = new HashSet<RDFSClass>();   	
+    	// add what is asserted at this class, but not the equivalent classes - NCI request
+    	inheritedInferredRestrictions.addAll(namedCls.getPureSuperclasses());       	
     	
-    	Collection<RDFSClass> allSuperclasses = new HashSet<RDFSClass>(namedCls.getSuperclasses(true));    	
+    	ArrayList<RDFSClass> inferredSuperclasses = new ArrayList<RDFSClass>();
+    	// get the closure of inferred superclasses (recursive)
+    	// this will include also the inferred equivalent classes
+    	getInferredSuperclasses(namedCls, inferredSuperclasses);   	
+    	
+		Collection<RDFSClass> allSuperclasses = new HashSet<RDFSClass>(namedCls.getSuperclasses(true));    	
     	allSuperclasses.addAll(inferredSuperclasses);
-    	allSuperclasses.addAll(namedCls.getInferredEquivalentClasses());
+    	allSuperclasses.remove(namedCls);
+  	
 
-    	for (RDFSClass superClass : allSuperclasses) {
-    		Collection<RDFSClass> superclassesOfInfSuperclass = superClass.getSuperclasses(true);
-    		
-    		if (superClass instanceof OWLNamedClass) {
-    			superclassesOfInfSuperclass.addAll(((OWLNamedClass)superClass).getInferredSuperclasses());
-    			superclassesOfInfSuperclass.addAll(((OWLNamedClass)superClass).getInferredEquivalentClasses());
+    	for (RDFSClass superClass : allSuperclasses) {   		
+    		if (!(superClass instanceof OWLNamedClass)) {
+    			continue;
     		}
+    		Collection<RDFSClass> superclassesOfInfSuperclass = superClass.getSuperclasses(true);    	
 
     		for (RDFSClass superOfInfSuperCls : superclassesOfInfSuperclass) {
-    			if (superOfInfSuperCls instanceof OWLAnonymousClass) {
-    				inheritedInferredRestrictions.add(superOfInfSuperCls);
-    				
-    				//if intersection add also the operands ...    				
-    				if (superOfInfSuperCls instanceof OWLIntersectionClass) {
-    					Collection operands = ((OWLIntersectionClass)superOfInfSuperCls).getOperands();
-    					for (Iterator iterator = operands.iterator(); iterator.hasNext();) {
-							RDFSClass operand = (RDFSClass) iterator.next();
-							if (operand instanceof OWLAnonymousClass) {
-								inheritedInferredRestrictions.add(operand);
-							}
-						}
-    				}
-    				
+    			if (!(superOfInfSuperCls instanceof OWLAnonymousClass)) {
+    				continue;
     			}
+    			inheritedInferredRestrictions.add(superOfInfSuperCls);
+
+    			/*
+    			// Taken out as requested by NCI - Gforge - 16191
+    			//if intersection add also the operands ...    				
+    			if (superOfInfSuperCls instanceof OWLIntersectionClass) {
+    				Collection operands = ((OWLIntersectionClass)superOfInfSuperCls).getOperands();
+    				for (Iterator iterator = operands.iterator(); iterator.hasNext();) {
+    					RDFSClass operand = (RDFSClass) iterator.next();
+    					if (operand instanceof OWLAnonymousClass) {
+    						inheritedInferredRestrictions.add(operand);
+    					}
+    				}
+    			}
+    			*/
     		}
     	}     	
 
     	OntClass ontClass = ontModel.getOntClass(namedCls.getURI());
     	
     	for (RDFSClass superCls : inheritedInferredRestrictions) {
-    		OntClass ontSuperClass = getOntClass((OWLAnonymousClass) superCls);
+    		OntClass ontSuperClass = getOntClass(superCls);
 			ontClass.addSuperClass(ontSuperClass);
 		}
     	
