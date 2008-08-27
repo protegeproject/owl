@@ -65,7 +65,7 @@ public class OWLModelAllTripleStoresWriter {
 	                OutputStreamWriter outputStreamWriter = new OutputStreamWriter(os, FileUtilities.getWriteEncoding());
                     bw = new BufferedWriter(outputStreamWriter);
                     OWLModelWriter omw = getOwlModelWriter(tripleStore, bw);
-	                omw.getXmlWriter().setEncoding(outputStreamWriter.getEncoding());
+	                omw.getXmlWriter().setEncoding(FileUtilities.getWriteEncoding());
                     omw.write();
                     bw.flush();
                     bw.close();
