@@ -92,6 +92,7 @@ class TriplePostProcessor extends AbstractStatefulTripleProcessor {
 		 */
 
 		//swizzling
+		reinitCaches();
 		processFramesWithWrongJavaType();
 		reinitCaches();
 		processMetaclasses();
@@ -292,10 +293,19 @@ class TriplePostProcessor extends AbstractStatefulTripleProcessor {
 		log.info("Postprocess: Process orphan classes (" + classes.size() + " classes) ... ");
 		long time0 = System.currentTimeMillis();
 
-		rootFinder.appendTerminalElements(classes);
-		Set<RDFSNamedClass> orphanClasses = new HashSet<RDFSNamedClass>(rootFinder.getTerminalElements());
+		reinitCaches();
+		Set<RDFSNamedClass> orphanClasses = new HashSet<RDFSNamedClass>();
+		try {
+			rootFinder.appendTerminalElements(classes);
+			orphanClasses.addAll(rootFinder.getTerminalElements());
+		} catch (Exception e) {
+			log.log(Level.WARNING, "Error at computing orphan classes. Error message: " + e.getMessage(), e);
+		} finally {
+			rootFinder.clear();
+		}
 
 		orphanClasses.remove(owlModel.getOWLThingClass());
+		reinitCaches();
 
 		for (RDFSNamedClass cls : orphanClasses) {
 			if (log.isLoggable(Level.FINE)) {
@@ -309,7 +319,6 @@ class TriplePostProcessor extends AbstractStatefulTripleProcessor {
 			}
 		}
 
-		rootFinder.clear();
 		log.info(System.currentTimeMillis() - time0 + " ms\n");
 	}
 
