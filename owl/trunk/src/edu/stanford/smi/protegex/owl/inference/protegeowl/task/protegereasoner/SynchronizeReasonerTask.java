@@ -1,5 +1,8 @@
 package edu.stanford.smi.protegex.owl.inference.protegeowl.task.protegereasoner;
 
+import java.util.logging.Level;
+
+import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.inference.protegeowl.log.ReasonerLogRecord;
 import edu.stanford.smi.protegex.owl.inference.protegeowl.log.ReasonerLogRecordFactory;
 import edu.stanford.smi.protegex.owl.inference.reasoner.ProtegeReasoner;
@@ -40,20 +43,21 @@ public class SynchronizeReasonerTask extends AbstractReasonerTask {
 
         OWLModel owlModel = protegeReasoner.getOWLModel();
         boolean eventsEnabled = owlModel.setGenerateEventsEnabled(false);
-        
+
         try {
             // Clear the knowledgebase
             clearKnowledgeBase(parentRecord);
             doAbortCheck();
-            
+
             // Transmit the kb to the reasoner
-            transmitToReasoner(parentRecord);            			
+            transmitToReasoner(parentRecord);
 		} catch (Exception e) {
+			Log.getLogger().log(Level.WARNING, "Errors at synchronizing OWL model with the reasoner", e);
 			postLogRecord(ReasonerLogRecordFactory.getInstance().createErrorMessageLogRecord("Errors at synchronization: " + e.getMessage(), null));
 		} finally {
 			owlModel.setGenerateEventsEnabled(eventsEnabled);
 		}
-		
+
 		doAbortCheck();
         setProgressIndeterminate(false);
         td.markEnd();
@@ -61,18 +65,18 @@ public class SynchronizeReasonerTask extends AbstractReasonerTask {
         setMessage("Reasoner synchronized");
         setProgress(1);
         setTaskCompleted();
-        
+
    }
 
 
-    
+
     protected void clearKnowledgeBase(ReasonerLogRecord parentRecord) throws ProtegeReasonerException {
         TimeDifference td = new TimeDifference();
         td.markStart();
         setMessage("Clearing knowledge base...");
-        
+
         protegeReasoner.reset();
-   
+
         td.markEnd();
         postLogRecord(ReasonerLogRecordFactory.getInstance().createInformationMessageLogRecord("Time to clear knowledgebase = " + td, parentRecord));
     }
@@ -86,11 +90,11 @@ public class SynchronizeReasonerTask extends AbstractReasonerTask {
         // Send the whole knowledge base to the reasoner
 
         protegeReasoner.rebind();
-        td.markEnd();        
-        doAbortCheck(); 
+        td.markEnd();
+        doAbortCheck();
         postLogRecord(ReasonerLogRecordFactory.getInstance().createInformationMessageLogRecord("Time to update reasoner = " + td, parentRecord));
 
     }
-    
+
 }
 
