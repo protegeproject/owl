@@ -1,14 +1,18 @@
 package edu.stanford.smi.protegex.owl.model.impl.tests;
 
+import java.util.Collection;
+import java.util.Iterator;
+
 import edu.stanford.smi.protege.model.Frame;
 import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protege.model.ValueType;
-import edu.stanford.smi.protegex.owl.model.*;
+import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
+import edu.stanford.smi.protegex.owl.model.OWLNames;
+import edu.stanford.smi.protegex.owl.model.RDFProperty;
+import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
+import edu.stanford.smi.protegex.owl.model.RDFSNames;
 import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
 import edu.stanford.smi.protegex.owl.tests.AbstractJenaTestCase;
-
-import java.util.Collection;
-import java.util.Iterator;
 
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
@@ -82,9 +86,9 @@ public class SystemMetamodelTestCase extends AbstractJenaTestCase {
 
     public void testRanges() {
         assertEquals(ValueType.STRING, ((Slot) owlModel.getRDFSLabelProperty()).getValueType());
-        assertEquals(owlModel.getXSDint(), owlModel.getRDFProperty(OWLNames.Slot.MAX_CARDINALITY).getRange());
-        assertEquals(owlModel.getXSDint(), owlModel.getRDFProperty(OWLNames.Slot.MIN_CARDINALITY).getRange());
-        assertEquals(owlModel.getXSDint(), owlModel.getRDFProperty(OWLNames.Slot.CARDINALITY).getRange());
+        assertEquals(owlModel.getXSDNonNegativeInteger(), owlModel.getRDFProperty(OWLNames.Slot.MAX_CARDINALITY).getRange());
+        assertEquals(owlModel.getXSDNonNegativeInteger(), owlModel.getRDFProperty(OWLNames.Slot.MIN_CARDINALITY).getRange());
+        assertEquals(owlModel.getXSDNonNegativeInteger(), owlModel.getRDFProperty(OWLNames.Slot.CARDINALITY).getRange());
         assertEquals(owlModel.getRDFSNamedClassClass(), owlModel.getRDFSSubClassOfProperty().getRange());
     }
 
