@@ -806,7 +806,7 @@ public abstract class OWLSystemFrames extends SystemFrames {
             assertTypeAndName(rdfsDomainProperty, rdfPropertyClass);
             assertDomain(rdfsDomainProperty, rdfPropertyClass);
             assertRange(rdfsDomainProperty, owlClassMetaCls);
-            assertValueType(rdfsCommentProperty, ValueType.INSTANCE);
+            assertValueType(rdfsDomainProperty, ValueType.INSTANCE);
            
             //range should be rdf:Resource
             assertTypeAndName(rdfsIsDefinedByProperty, annotationObjectPropertyTypes);
