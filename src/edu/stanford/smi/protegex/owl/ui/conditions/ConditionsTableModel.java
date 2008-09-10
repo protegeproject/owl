@@ -1,6 +1,5 @@
 package edu.stanford.smi.protegex.owl.ui.conditions;
 
-import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -11,10 +10,6 @@ import java.util.List;
 import javax.swing.Icon;
 import javax.swing.table.AbstractTableModel;
 
-
-import com.hp.hpl.jena.vocabulary.OWL;
-
-import edu.stanford.smi.protege.action.DetachCurrentView;
 import edu.stanford.smi.protege.event.FrameAdapter;
 import edu.stanford.smi.protege.event.FrameEvent;
 import edu.stanford.smi.protege.event.FrameListener;
@@ -22,14 +17,11 @@ import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.KnowledgeBase;
 import edu.stanford.smi.protege.model.Model;
 import edu.stanford.smi.protege.model.Slot;
-import edu.stanford.smi.protege.server.framestore.RemoteClientFrameStore;
-import edu.stanford.smi.protege.ui.ProjectManager;
 import edu.stanford.smi.protege.util.ApplicationProperties;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.model.OWLAllValuesFrom;
 import edu.stanford.smi.protegex.owl.model.OWLAnonymousClass;
 import edu.stanford.smi.protegex.owl.model.OWLCardinalityBase;
-import edu.stanford.smi.protegex.owl.model.OWLComplementClass;
 import edu.stanford.smi.protegex.owl.model.OWLHasValue;
 import edu.stanford.smi.protegex.owl.model.OWLIntersectionClass;
 import edu.stanford.smi.protegex.owl.model.OWLLogicalClass;
@@ -38,7 +30,6 @@ import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
 import edu.stanford.smi.protegex.owl.model.OWLNames;
 import edu.stanford.smi.protegex.owl.model.OWLRestriction;
 import edu.stanford.smi.protegex.owl.model.OWLSomeValuesFrom;
-import edu.stanford.smi.protegex.owl.model.RDFList;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
 import edu.stanford.smi.protegex.owl.model.RDFSClass;
@@ -47,12 +38,8 @@ import edu.stanford.smi.protegex.owl.model.classparser.OWLClassParseException;
 import edu.stanford.smi.protegex.owl.model.classparser.OWLClassParser;
 import edu.stanford.smi.protegex.owl.model.event.ClassAdapter;
 import edu.stanford.smi.protegex.owl.model.event.ClassListener;
-import edu.stanford.smi.protegex.owl.model.impl.AbstractRDFSClass;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLIntersectionClass;
-import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLNamedClass;
-import edu.stanford.smi.protegex.owl.model.impl.OWLUtil;
 import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
-import edu.stanford.smi.protegex.owl.ui.clsproperties.OldRestrictionTreeNode;
 import edu.stanford.smi.protegex.owl.ui.owltable.OWLTableModel;
 import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
 
@@ -66,31 +53,20 @@ public class ConditionsTableModel extends AbstractTableModel
 	
 	private static final String SHOW_INHERITED_RESTRICTIONS = "restriction.show.inherited";
 
-
-	//TT:2006-08-03: Do a cache with the snapshot of the conditionstable model at the beginning and
-	//work on this one! It's crazy to ask for the same information about a class several times!
-	
     private ClassListener classListener = new ClassAdapter() {
         public void subclassAdded(RDFSClass cls, RDFSClass subclass) {        	
         		refill();
         }
-
-
         public void subclassRemoved(RDFSClass cls, RDFSClass subclass) {       	
         		refill();
         }
-
-
         public void superclassAdded(RDFSClass cls, RDFSClass superclass) {        	
         		refill();
         }
-
-
         public void superclassRemoved(RDFSClass cls, RDFSClass superclass) {        	
         		refill();
         }
     };
-
 
     private FrameListener frameListener = new FrameAdapter() {
         public void ownSlotValueChanged(FrameEvent event) {
@@ -194,7 +170,7 @@ public class ConditionsTableModel extends AbstractTableModel
 
 
     //TODO: TT - this mehtod has to be re-written to be more efficient. Currently it is
-    // not used.
+    // used only if showInheritedRestrictions property is true.
     /**
      * Adds a given Item, unless it represents a restriction that has been overloaded
      * in the existing entries.  A restriction is overloaded iff a restriction of the
@@ -229,7 +205,7 @@ public class ConditionsTableModel extends AbstractTableModel
     		} else if (aClass instanceof OWLSomeValuesFrom) {
     			final OWLSomeValuesFrom someRestriction = ((OWLSomeValuesFrom) aClass);
     			if (someRestriction.getFiller() instanceof RDFSClass) {
-    				RDFSClass someClass = (RDFSClass) someRestriction.getFiller();
+    				RDFSClass filler = (RDFSClass) someRestriction.getFiller();
     				String browserText = aClass.getBrowserText();
     				for (Iterator it = items.iterator(); it.hasNext();) {
     					ConditionsTableItem existing = (ConditionsTableItem) it.next();
@@ -240,10 +216,12 @@ public class ConditionsTableModel extends AbstractTableModel
     						OWLSomeValuesFrom other = (OWLSomeValuesFrom) existing.aClass;
     						if (other.getOnProperty().equals(property)) {
     							if (other.getFiller() instanceof RDFSClass) {
-    								RDFSClass otherSomeClass = (RDFSClass) other.getFiller();
-    								if (otherSomeClass.equals(someClass) || 
-    										otherSomeClass.isSubclassOf(someClass)) {
+    								RDFSClass otherFiller = (RDFSClass) other.getFiller();
+    								if (otherFiller.equals(filler) || 
+    										otherFiller.isSubclassOf(filler)) {
     									return;  // Don't add if OWLSomeValuesFrom with a subclass exists
+    								} else if (filler.isSubclassOf(otherFiller)) {
+    									it.remove();
     								}
     							}
     						}
@@ -273,6 +251,8 @@ public class ConditionsTableModel extends AbstractTableModel
     								!existingSourceCls.equals(newSourceClass)) ||
     								(existingFiller.getBrowserText().equals(newRestrictionFiller.getBrowserText())) ) {
     							return;
+    						} else if (newRestrictionFiller.isSubclassOf(existingFiller)) {
+    							it.remove();
     						}
     					}
     				}
@@ -643,36 +623,34 @@ public class ConditionsTableModel extends AbstractTableModel
 
     private void fillInheritedAnonymousClses(OWLNamedClass originCls, Collection coveredClses) {
     	String showInheritedRestrictionsString = ApplicationProperties.getApplicationOrSystemProperty(SHOW_INHERITED_RESTRICTIONS, "false");
-    	
+
     	boolean showInheritedRestrictions = (showInheritedRestrictionsString.equals("true"));
-    	
-        for (Iterator it = originCls.getSuperclasses(false).iterator(); it.hasNext();) {
-            Cls ss = (Cls) it.next();
-            if (ss instanceof OWLAnonymousClass) {
-                if (ss instanceof OWLIntersectionClass) {
-                    Collection operands = ((OWLIntersectionClass) ss).getOperands();
-                    for (Iterator oit = operands.iterator(); oit.hasNext();) {
-                        RDFSClass operand = (RDFSClass) oit.next();
-                        if (operand instanceof OWLAnonymousClass) {
-                        
-                        if (showInheritedRestrictions) {
-                        	addItemUnlessOverloaded(operand, originCls);
-                        } else {
-                        	items.add(ConditionsTableItem.createInherited(operand, originCls));
-                        }
-                        
-                        }
-                    }
-                }
-                else if (!coveredClses.contains(ss)) {
-                    if (showInheritedRestrictions) {
-                    	addItemUnlessOverloaded((OWLAnonymousClass) ss, originCls);
-                    } else {
-                    	items.add(ConditionsTableItem.createInherited((OWLAnonymousClass)ss, originCls));
-                    }                   
-                }
-            }
-        }
+
+    	for (Iterator it = originCls.getSuperclasses(false).iterator(); it.hasNext();) {
+    		Cls ss = (Cls) it.next();
+    		if (ss instanceof OWLAnonymousClass) {
+    			if (ss instanceof OWLIntersectionClass) {
+    				Collection operands = ((OWLIntersectionClass) ss).getOperands();
+    				for (Iterator oit = operands.iterator(); oit.hasNext();) {
+    					RDFSClass operand = (RDFSClass) oit.next();
+    					if (operand instanceof OWLAnonymousClass) {
+    						if (showInheritedRestrictions) {
+    							addItemUnlessOverloaded(operand, originCls);
+    						} else {
+    							items.add(ConditionsTableItem.createInherited(operand, originCls));
+    						}
+    					}
+    				}
+    			}
+    			else if (!coveredClses.contains(ss)) {
+    				if (showInheritedRestrictions) {
+    					addItemUnlessOverloaded((OWLAnonymousClass) ss, originCls);
+    				} else {
+    					items.add(ConditionsTableItem.createInherited((OWLAnonymousClass)ss, originCls));
+    				}                   
+    			}
+    		}
+    	}
     }
 
 
