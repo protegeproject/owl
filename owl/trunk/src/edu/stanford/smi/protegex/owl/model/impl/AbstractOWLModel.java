@@ -1495,7 +1495,11 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
     public RDFResource getRDFResource(String name) {
     	String internalName = OWLUtil.getInternalFullName(this, name);
-        return internalName == null ? null : (RDFResource) getFrame(internalName);
+    	if (internalName == null) {
+    		return null;
+    	}
+    	Frame frame = getFrame(internalName);
+        return frame instanceof RDFResource ? (RDFResource) frame : null ;
     }
 
 
@@ -3418,7 +3422,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     public RDFSDatatype getXSDint() {
         return getSystemFrames().getXsdInt();
     }
-    
+
     public RDFSDatatype getXSDNonNegativeInteger() {
         return getSystemFrames().getXsdNonNegativeInteger();
     }
