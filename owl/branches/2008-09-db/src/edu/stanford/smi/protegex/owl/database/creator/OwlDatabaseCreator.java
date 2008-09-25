@@ -68,7 +68,7 @@ public class OwlDatabaseCreator extends AbstractOwlDatabaseCreator {
 			rethrow(sqle);
 		}
 		try {
-			return DatabaseFactoryUtils.getOntologyFromTable(connection, getTable()) != null;
+			return DatabaseFactoryUtils.getOntologyFromTable(getDriver(), getUrl(), getUsername(), getPassword(), getTable()) != null;
 		}
 		catch (SQLException sqle) {
 			return true;
