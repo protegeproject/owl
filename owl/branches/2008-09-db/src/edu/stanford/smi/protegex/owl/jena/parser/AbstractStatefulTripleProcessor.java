@@ -1,5 +1,7 @@
 package edu.stanford.smi.protegex.owl.jena.parser;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -133,6 +135,15 @@ public abstract class AbstractStatefulTripleProcessor {
 
 		globalParserCache.getFramesWithWrongJavaType().add(frame.getName());
 		return (Slot) frame;
+	}
+	
+	protected Collection getTypes(Frame frame) {
+		Collection types = simpleFrameStore.getDirectOwnSlotValues(frame, 
+																	owlModel.getSystemFrames().getDirectTypesSlot());
+		if (types == null) {
+			return Collections.emptyList();
+		}
+		return types;
 	}
 
 
