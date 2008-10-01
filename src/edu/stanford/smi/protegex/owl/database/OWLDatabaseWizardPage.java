@@ -29,6 +29,7 @@ import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protege.util.ModalDialog;
 import edu.stanford.smi.protege.util.Wizard;
 import edu.stanford.smi.protegex.owl.model.factory.FactoryUtils;
+import edu.stanford.smi.protegex.owl.model.factory.OWLJavaFactory;
 
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
@@ -125,7 +126,7 @@ public class OWLDatabaseWizardPage extends DatabaseWizardPage {
         }
         String existingOntologyName;
         try {
-            existingOntologyName = DatabaseFactoryUtils.getOntologyFromTable(connection, getFieldText(TABLENAME_PROPERTY));
+            existingOntologyName = DatabaseFactoryUtils.getOntologyFromTable(getFieldText(DRIVER_PROPERTY), getFieldText(URL_PROPERTY), getFieldText(USERNAME_PROPERTY), getFieldText(PASSWORD_PROPERTY), getFieldText(TABLENAME_PROPERTY));
         }
         catch (SQLException sqle) {
             existingOntologyName = null;

@@ -280,7 +280,7 @@ class TripleProcessorForResourceObjects extends AbstractStatefulTripleProcessor 
 			}
 
 			// find a better way to handle this...
-			boolean subjAlreadyExists = getFrame(subjName) != null;
+			boolean subjAlreadyHasType = subjFrame != null && !getTypes(subjFrame).isEmpty();
 
 			objFrame = getCls(objFrame);
 			subjFrame = createFrameWithType(subjName, (Cls) objFrame, subj.isAnonymous());
@@ -290,7 +290,7 @@ class TripleProcessorForResourceObjects extends AbstractStatefulTripleProcessor 
 				FrameCreatorUtility.addOwnSlotValue(subjFrame, predSlot, objFrame, tripleStore);
 			}
 
-			if (subjAlreadyExists && objFrame instanceof Cls) {
+			if (subjAlreadyHasType && objFrame instanceof Cls) {
 				if (log.isLoggable(Level.FINE)) {
 					log.fine("found an alternative type for " + subjFrame + " = " + objFrame);
 				}
