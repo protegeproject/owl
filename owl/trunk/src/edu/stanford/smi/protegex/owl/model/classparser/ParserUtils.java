@@ -25,39 +25,39 @@ public class ParserUtils {
     public final static String[] SUBSTRINGS_REQUIRING_QUOTES = {" ", ";", " "};
     
     
-  public static Frame getFrameByName(OWLModel model, String name) 
+  public static RDFResource getFrameByName(OWLModel model, String name) 
   throws AmbiguousNameException {
-    return getFrameByName(model, name, null);
+    return getFrameByName(model, name, RDFResource.class);
   }
   
   public static OWLNamedClass getOWLClassFromName(OWLModel model, String name) 
   throws AmbiguousNameException {
-    return (OWLNamedClass) getFrameByName(model, name, OWLClass.class);
+    return getFrameByName(model, name, OWLNamedClass.class);
   }
   
   public static RDFProperty getRDFPropertyFromName(OWLModel model, String name) 
   throws AmbiguousNameException {
-    return (RDFProperty) getFrameByName(model, name, RDFProperty.class);
+    return getFrameByName(model, name, RDFProperty.class);
   }
   
   public static OWLDatatypeProperty getOWLDatatypePropertyFromName(OWLModel model, String name) 
   throws AmbiguousNameException {
-    return (OWLDatatypeProperty) getFrameByName(model, name, OWLDatatypeProperty.class);
+    return getFrameByName(model, name, OWLDatatypeProperty.class);
   }
   
   public static OWLObjectProperty getOWLObjectPropertyFromName(OWLModel model, String name) 
   throws AmbiguousNameException {
-    return (OWLObjectProperty) getFrameByName(model, name, OWLObjectProperty.class);
+    return getFrameByName(model, name, OWLObjectProperty.class);
   }
   
   public static RDFResource getRDFResourceFromName(OWLModel model, String name) 
   throws AmbiguousNameException {
-    return (RDFResource) getFrameByName(model, name, RDFResource.class);
+    return getFrameByName(model, name, RDFResource.class);
   }
   
   public static OWLIndividual getOWLIndividualFromName(OWLModel model, String  name)  
   throws AmbiguousNameException {
-    return (OWLIndividual) getFrameByName(model, name, OWLIndividual.class); 
+    return getFrameByName(model, name, OWLIndividual.class); 
   }
   
   /**
@@ -74,13 +74,13 @@ public class ParserUtils {
    * @throws AmbiguousNameException
    */
   @SuppressWarnings("unchecked")
-  private static RDFResource getFrameByName(OWLModel model, 
-                                            String name, 
-                                            Class targetClass) 
+  private static <X extends RDFResource> X getFrameByName(OWLModel model, 
+                                                          String name, 
+                                                          Class<? extends X> targetClass) 
   throws AmbiguousNameException {
     RDFResource resource = (RDFResource) ((KnowledgeBase) model).getFrame(name);
     if (resource != null && resourceCorrectlyTyped(resource, targetClass)) {
-      return resource;
+      return targetClass.cast(resource);
     }
     else {
       resource = null;
@@ -89,7 +89,7 @@ public class ParserUtils {
     if (fullName != null && !name.equals(fullName)) {
         resource = (RDFResource) ((KnowledgeBase) model).getFrame(fullName);
         if (resource != null && resourceCorrectlyTyped(resource, targetClass)) {
-          return resource;
+          return targetClass.cast(resource);
         }
         else {
           resource = null;
@@ -110,7 +110,7 @@ public class ParserUtils {
       }
     }
     if (resource != null) {
-      return resource;
+      return targetClass.cast(resource);
     }
     // if the above failed try again with the null language
     if (lang != null) {
@@ -127,7 +127,7 @@ public class ParserUtils {
         }
       }
     }
-    return resource;
+    return targetClass.cast(resource);
   }
   
   private static boolean displaysWithRDFSLabel(OWLModel model, Instance i) {
