@@ -424,14 +424,6 @@ public class SWRLFactory
 
 	  return swrlbProperties;
   }
-  
-  public String getOwlNameFromIdentifier(String name) {
-	  return NamespaceUtil.getFullName(owlModel, name);
-  }
-  
-  public String getIdentifierFromOwlName(String owlName) {
-	  return NamespaceUtil.getPrefixedName(owlModel, owlName);
-  }
 
 
 } // SWRLFactory
