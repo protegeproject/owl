@@ -3,12 +3,37 @@
 
 package edu.stanford.smi.protegex.owl.swrl.parser;
 
-import edu.stanford.smi.protegex.owl.model.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.StringTokenizer;
+
+import edu.stanford.smi.protegex.owl.model.NamespaceUtil;
+import edu.stanford.smi.protegex.owl.model.OWLDataRange;
+import edu.stanford.smi.protegex.owl.model.OWLDatatypeProperty;
+import edu.stanford.smi.protegex.owl.model.OWLIndividual;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
+import edu.stanford.smi.protegex.owl.model.OWLObjectProperty;
+import edu.stanford.smi.protegex.owl.model.OWLProperty;
+import edu.stanford.smi.protegex.owl.model.RDFObject;
+import edu.stanford.smi.protegex.owl.model.RDFProperty;
+import edu.stanford.smi.protegex.owl.model.RDFResource;
+import edu.stanford.smi.protegex.owl.model.RDFSDatatype;
 import edu.stanford.smi.protegex.owl.model.classparser.ParserUtils;
 import edu.stanford.smi.protegex.owl.model.impl.XMLSchemaDatatypes;
-import edu.stanford.smi.protegex.owl.swrl.model.*;
-
-import java.util.*;
+import edu.stanford.smi.protegex.owl.swrl.model.SWRLAtom;
+import edu.stanford.smi.protegex.owl.swrl.model.SWRLAtomList;
+import edu.stanford.smi.protegex.owl.swrl.model.SWRLBuiltin;
+import edu.stanford.smi.protegex.owl.swrl.model.SWRLFactory;
+import edu.stanford.smi.protegex.owl.swrl.model.SWRLImp;
+import edu.stanford.smi.protegex.owl.swrl.model.SWRLNames;
+import edu.stanford.smi.protegex.owl.swrl.model.SWRLVariable;
 
 /**
  * @author Martin O'Connor  <moconnor@smi.stanford.edu>
@@ -18,11 +43,12 @@ public class SWRLParser
 {
   public final static char AND_CHAR = '\u2227';   // ^
   public final static char IMP_CHAR = '\u2192';   // >
+  public final static String delimiters = " ?\n\t()[],\"'" + AND_CHAR + IMP_CHAR; // Note space.
+
   private OWLModel owlModel;
   private SWRLFactory swrlFactory;
   private boolean parseOnly;
-  private StringTokenizer tokenizer;
-  private String delimiters = " ?\n\t()[],\"" + AND_CHAR + IMP_CHAR; // Note space.
+  private Tokenizer tokenizer;
   private Collection xmlSchemaSymbols = XMLSchemaDatatypes.getSlotSymbols();
   private HashSet variables;
   private boolean inHead = false;
@@ -80,7 +106,7 @@ public class SWRLParser
     inHead = false;
     
     variables.clear();
-    tokenizer = new StringTokenizer(rule.trim(), delimiters, true);
+    tokenizer = new Tokenizer(rule.trim());
     
     if (!parseOnly) {
       head = swrlFactory.createAtomList();
@@ -199,7 +225,7 @@ public class SWRLParser
     } // if
 
     while (tokenizer.hasMoreTokens()) {
-      token = tokenizer.nextToken(delimiters);
+      token = tokenizer.nextToken();
       if (!(token.equals(" ") || token.equals("\n") || token.equals("\t"))) return token;
     } // while
     
@@ -211,7 +237,7 @@ public class SWRLParser
   {
     if (!tokenizer.hasMoreTokens()) return false;
     while (tokenizer.hasMoreTokens()) {
-      String token = tokenizer.nextToken(delimiters);
+      String token = tokenizer.nextToken();
       if (!(token.equals(" ") || token.equals("\n") || token.equals("\t"))) return true;
     } // while
     return false;  
@@ -685,5 +711,37 @@ public class SWRLParser
   } // getRDFResource
 
   private void clearRDFResourceCache() { cachedRDFResources = new HashMap<String, RDFResource>(); }
+  
+  private static class  Tokenizer {
+      private StringTokenizer internalTokenizer;
+      
+      public Tokenizer(String input) {
+          internalTokenizer = new StringTokenizer(input, delimiters, true);
+      }
+      
+      public boolean hasMoreTokens() {
+          return internalTokenizer.hasMoreTokens();
+      }
+      
+      public String nextToken() throws NoSuchElementException {
 
+          String token = internalTokenizer.nextToken();
+          if  (!token.equals("'")) {
+              return token;
+          }
+          StringBuffer buffer = new StringBuffer();
+          while (internalTokenizer.hasMoreTokens() &&
+                  !(token = internalTokenizer.nextToken()).equals("'")) {
+              buffer.append(token);
+          }
+          return buffer.toString();
+      }
+      
+      public String nextToken(String myDelimiters) {
+          return internalTokenizer.nextToken(myDelimiters);
+      }
+  }
+  
+  
+  
 } // SWRLParser
