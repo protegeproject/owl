@@ -104,7 +104,7 @@ public class ParserUtils {
     for (Object o : frames) {
       if (resourceCorrectlyTyped((Frame) o, targetClass) && displaysWithRDFSLabel(model, (Instance) o)) {
         if (resource != null) {
-          throw new AmbiguousNameException("Multiple resourcese share the same name "  + name);
+          throw new AmbiguousNameException("Multiple resources share the same name "  + name);
         }
         resource = (RDFResource) o;
       }
