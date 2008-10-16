@@ -39,28 +39,49 @@ public class OWLResourceNameMatcher implements ResourceNameMatcher {
 
 
     public Set<RDFResource> getMatchingResources(String prefix, String leftString, OWLModel owlModel) {
-        boolean matchToQuote = false;
+        boolean couldBeClass = couldBeClass(owlModel,prefix);
+        boolean couldBeIndividual = couldBeIndividual(owlModel, prefix);
+        boolean couldBeProperty = couldBeProperty(owlModel, prefix);
+        boolean couldBeDatatype = couldBeDatatype(owlModel, prefix);
         
         if (prefix.startsWith(ParserUtils.SINGLE_QUOTE_STRING)) {
-            matchToQuote = true;
             prefix = prefix.substring(1);
         }
-
         Set<RDFResource> frames = new HashSet<RDFResource>();
-        OWLClassParseException ex = OWLClassParseException.getRecentInstance();
-        if (ex.nextCouldBeClass || owlModel.getRDFResource(prefix) instanceof RDFSNamedClass || matchToQuote) {
+
+        if (couldBeClass) {
             addMatchingRDFSNamedClasses(prefix, frames, owlModel);
         }
-        if (ex.nextCouldBeIndividual || owlModel.getRDFResource(prefix) != null || matchToQuote) {
+        if (couldBeIndividual) {
             addMatchingRDFIndividuals(prefix, frames, owlModel);
         }
-        if (ex.nextCouldBeProperty || owlModel.getRDFResource(prefix) instanceof RDFProperty || matchToQuote) {
+        if (couldBeProperty) {
             addMatchingRDFProperties(prefix, frames, owlModel);
         }
-	    if(ex.nextCouldBeDatatypeName || owlModel.getRDFResource(prefix) instanceof RDFSDatatype) {
+	    if(couldBeDatatype) {
 		    getMatchingDatatypeNames(prefix, frames, owlModel);
 	    }
         return frames;
+    }
+    
+    protected boolean couldBeClass(OWLModel owlModel, String prefix) {
+        OWLClassParseException ex = OWLClassParseException.getRecentInstance();
+        return ex.nextCouldBeClass || owlModel.getRDFResource(prefix) instanceof RDFSNamedClass || prefix.startsWith(ParserUtils.SINGLE_QUOTE_STRING);
+    }
+    
+    protected boolean couldBeIndividual(OWLModel owlModel, String prefix) {
+        OWLClassParseException ex = OWLClassParseException.getRecentInstance();
+        return ex.nextCouldBeIndividual || owlModel.getRDFResource(prefix) != null || prefix.startsWith(ParserUtils.SINGLE_QUOTE_STRING);
+    }
+    
+    protected boolean couldBeProperty(OWLModel owlModel, String prefix) {
+        OWLClassParseException ex = OWLClassParseException.getRecentInstance();
+        return ex.nextCouldBeProperty || owlModel.getRDFResource(prefix) instanceof RDFProperty || prefix.startsWith(ParserUtils.SINGLE_QUOTE_STRING);
+    }
+    
+    protected boolean couldBeDatatype(OWLModel owlModel, String prefix) {
+        OWLClassParseException ex = OWLClassParseException.getRecentInstance();
+        return ex.nextCouldBeDatatypeName || owlModel.getRDFResource(prefix) instanceof RDFSDatatype;
     }
 
 
