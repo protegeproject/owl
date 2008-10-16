@@ -35,5 +35,26 @@ public class SWRLResourceNameMatcher extends OWLResourceNameMatcher
       }
 
   } // getMatchingResources
+  
+  @Override
+    protected boolean couldBeClass(OWLModel owlModel, String prefix) {
+      return true;
+    }
+  
+  @Override
+    protected boolean couldBeProperty(OWLModel owlModel, String prefix) {
+      return true;
+    }
+  
+    @Override
+    protected boolean couldBeIndividual(OWLModel owlModel, String prefix) {
+        return true;
+    }
+    
+    @Override
+   protected boolean couldBeDatatype(OWLModel owlModel, String prefix) {
+     return true;
+   }
+
 
 } // SWRLResourceNameMatcher
