@@ -725,7 +725,7 @@ public class SWRLParser
       
       public String nextToken() throws NoSuchElementException {
 
-          String token = internalTokenizer.nextToken();
+          String token = internalTokenizer.nextToken(delimiters);
           if  (!token.equals("'")) {
               return token;
           }
