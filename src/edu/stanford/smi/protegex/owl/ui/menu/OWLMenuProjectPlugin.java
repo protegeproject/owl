@@ -46,6 +46,7 @@ import edu.stanford.smi.protege.ui.ProjectMenuBar;
 import edu.stanford.smi.protege.ui.ProjectToolBar;
 import edu.stanford.smi.protege.ui.ProjectView;
 import edu.stanford.smi.protege.util.ComponentFactory;
+import edu.stanford.smi.protege.util.ComponentUtilities;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protege.util.StandardAction;
 import edu.stanford.smi.protege.util.SystemUtilities;
@@ -107,24 +108,24 @@ public class OWLMenuProjectPlugin extends ProjectPluginAdapter {
         addToolBarButton(toolBar, action);
     }
 
-    private void adjustMenuAndToolBar(final OWLModel owlModel, 
-    								  final ProjectMenuBar menuBar, 
+    private void adjustMenuAndToolBar(final OWLModel owlModel,
+    								  final ProjectMenuBar menuBar,
     								  final ProjectToolBar toolBar) {
-    	
+
         JMenu owlMenu = new JMenu(AbstractOWLModelAction.OWL_MENU);
         owlMenu.setMnemonic(KeyEvent.VK_O);
-        
+
         JMenu reasoningMenu = new JMenu(AbstractOWLModelAction.REASONING_MENU);
         reasoningMenu.setMnemonic(KeyEvent.VK_R);
 
-        JMenu codeMenu = new JMenu(AbstractOWLModelAction.CODE_MENU);
+        JMenu codeMenu = ComponentUtilities.getMenu(menuBar, AbstractOWLModelAction.CODE_MENU, true, menuBar.getComponentCount() - 2);
         codeMenu.setMnemonic(KeyEvent.VK_C);
 
         JMenu toolsMenu = new JMenu(AbstractOWLModelAction.TOOLS_MENU);
         toolsMenu.setMnemonic(KeyEvent.VK_T);
 
         // Added - JLV.  Decided to completely regenerate the Help menu.
-        // It is too error prone to guess what Core Protege added and then 
+        // It is too error prone to guess what Core Protege added and then
         // figure out where OWL specific menu items should be inserted.
         JMenu helpMenu = menuBar.getMenu(menuBar.getMenuCount() - 1);
         regenerateHelpMenu(helpMenu, owlModel);
@@ -136,7 +137,7 @@ public class OWLMenuProjectPlugin extends ProjectPluginAdapter {
         menuBar.add(toolsMenu, 6);
 
         ReasonerPluginMenuManager.fillReasoningMenu(owlModel, reasoningMenu);
-        
+
         disableProjectMenuItem(menuBar, ResourceKey.PROJECT_MANAGE_INCLUDED);
         disableProjectMenuItem(menuBar, ResourceKey.PROJECT_CHANGE_INCLUDED);
         disableProjectMenuItem(menuBar, ResourceKey.PROJECT_MERGE_INCLUDED);
@@ -243,7 +244,8 @@ public class OWLMenuProjectPlugin extends ProjectPluginAdapter {
         toolBar.addSeparator();
     }
 
-    public void afterCreate(Project p) {
+    @Override
+	public void afterCreate(Project p) {
         final KnowledgeBase kb = p.getKnowledgeBase();
         if (kb instanceof OWLModel) {
 
@@ -258,23 +260,24 @@ public class OWLMenuProjectPlugin extends ProjectPluginAdapter {
         }
     }
 
-    public void afterLoad(Project project) {
+    @Override
+	public void afterLoad(Project project) {
         KnowledgeBase kb = project.getKnowledgeBase();
         if (!(kb instanceof OWLModel)) {
             return;
         }
-	
+
         OWLModel owlModel = (OWLModel) kb;
         //make sure owl:Thing is visible
         owlModel.getOWLThingClass().setVisible(true);
         makeHiddenClsesWithSubclassesVisible(owlModel);
         project.setWidgetMapper(new OWLWidgetMapper(owlModel));
-        
+
         // added TT:
         OWLUI.fixBrowserSlotPatterns(project);
-        
+
         fix(owlModel);
-        
+
         if (project.getSources().getString(AbsoluteFormsGenerator.SAVE_FORMS_KEY) != null) {
             try {
                 AbsoluteFormsLoader absoluteFormsLoader = new AbsoluteFormsLoader(owlModel);
@@ -286,14 +289,16 @@ public class OWLMenuProjectPlugin extends ProjectPluginAdapter {
         }
     }
 
-    public void afterSave(Project p) {
+    @Override
+	public void afterSave(Project p) {
         if (p.getKnowledgeBase() instanceof OWLModel) {
-            OWLModel owlModel = ((OWLModel) p.getKnowledgeBase());
+            OWLModel owlModel = (OWLModel) p.getKnowledgeBase();
             restoreWidgetsAfterSave(owlModel);
         }
     }
 
-    public void afterShow(ProjectView view, ProjectToolBar toolBar, ProjectMenuBar menuBar) {
+    @Override
+	public void afterShow(ProjectView view, ProjectToolBar toolBar, ProjectMenuBar menuBar) {
         KnowledgeBase kb = view.getProject().getKnowledgeBase();
         if (kb instanceof OWLModel) {
             OWLModel owlModel = (OWLModel) kb;
@@ -316,10 +321,10 @@ public class OWLMenuProjectPlugin extends ProjectPluginAdapter {
     // rdfs:domain and rdfs:range widgets
     private void adjustOWLAnnotationPropertyForm(Project project) {
     	OWLModel owlModel = (OWLModel) project.getKnowledgeBase();
-    	
+
     	try {
-        	ClsWidget clsWidget = project.getDesignTimeClsWidget(owlModel.getOWLAnnotationPropertyClass());   
-        	
+        	ClsWidget clsWidget = project.getDesignTimeClsWidget(owlModel.getOWLAnnotationPropertyClass());
+
     		Slot s1 = owlModel.getRDFSDomainProperty();
     		clsWidget.replaceWidget(s1, null);
 
@@ -328,16 +333,17 @@ public class OWLMenuProjectPlugin extends ProjectPluginAdapter {
 
     		Slot s3 = owlModel.getSlot(Model.Slot.DIRECT_DOMAIN);
     		clsWidget.replaceWidget(s3, null);
-    		
+
     		((FormWidget)clsWidget).setVerticalStretcher(FormWidget.STRETCH_NONE);
     		((FormWidget)clsWidget).setHorizontalStretcher(FormWidget.STRETCH_ALL);
-			
+
 		} catch (Exception e) {
 			Log.getLogger().warning("Problems at adjusting the class form of owl:AnnotationProperty.");
 		}
-		
+
 	}
 
+	@Override
 	public void beforeClose(Project p) {
         if (p.getKnowledgeBase() instanceof OWLModel) {
             ProjectView view = ProtegeUI.getProjectView(p);
@@ -346,11 +352,12 @@ public class OWLMenuProjectPlugin extends ProjectPluginAdapter {
             }
             ChangedClassesPanel.dispose((OWLModel) p.getKnowledgeBase());
             OWLUI.setOWLToolTipGenerator(null);
-            proseBox = null;            
+            proseBox = null;
         }
     }
 
-    public void beforeSave(Project p) {
+    @Override
+	public void beforeSave(Project p) {
         if (p.getKnowledgeBase() instanceof OWLModel) {
             OWLModel owlModel = (OWLModel) p.getKnowledgeBase();
             String value = owlModel.getOWLProject().getSettingsMap().getString(AbsoluteFormsGenerator.SAVE_FORMS_KEY);
@@ -359,7 +366,7 @@ public class OWLMenuProjectPlugin extends ProjectPluginAdapter {
                 try {
                     generator.generateFiles(value);
                 }
-                catch (Exception ex) {                 
+                catch (Exception ex) {
                     Log.getLogger().warning("Could not save .forms files");
                     Log.getLogger().log(Level.WARNING, "Exception caught", ex);
                 }
@@ -446,7 +453,7 @@ public class OWLMenuProjectPlugin extends ProjectPluginAdapter {
         Set systemFrames = new HashSet(owlModel.getOWLSystemResources());
         if (owlModel.getOWLObjectPropertyClass().getSubclassCount() > 3 || //better test needed
             owlModel.getOWLDatatypePropertyClass().getSubclassCount() > 0 ||
-            isUsedInRange(owlModel.getOWLObjectPropertyClass(), systemFrames) || 
+            isUsedInRange(owlModel.getOWLObjectPropertyClass(), systemFrames) ||
             isUsedInRange(owlModel.getOWLDatatypePropertyClass(), systemFrames) ||
             isUsedInRange(owlModel.getRDFPropertyClass(), systemFrames)) {
             owlModel.getRDFPropertyClass().setVisible(true);
@@ -458,7 +465,7 @@ public class OWLMenuProjectPlugin extends ProjectPluginAdapter {
         makeVisibleIfSubclassesExist(owlModel.getRDFSNamedClass(RDFSNames.Cls.LITERAL), systemFrames);
         makeVisibleIfSubclassesExist(owlModel.getOWLNothing(), systemFrames);
         makeVisibleIfSubclassesExist(owlModel.getRDFSNamedClass(RDFNames.Cls.STATEMENT), systemFrames);
-        
+
         //make visibile the external resource if instances exist
         if (owlModel.getDirectInstanceCount(owlModel.getRDFUntypedResourcesClass()) > 0) {
         	owlModel.getRDFUntypedResourcesClass().setVisible(true);
@@ -508,28 +515,28 @@ public class OWLMenuProjectPlugin extends ProjectPluginAdapter {
             owlProject.setSessionObject(CHANGED_WIDGETS, null);
         }
     }
-    
+
     private void regenerateHelpMenu(JMenu helpMenu, final OWLModel owlModel) {
-    	// Remove everything that was added by Core Protege and 
-    	// build menu again.  This seems safer than removing select items 
+    	// Remove everything that was added by Core Protege and
+    	// build menu again.  This seems safer than removing select items
     	// and then inserting items in particular places.
     	helpMenu.removeAll();
-    	
-    	ComponentFactory.addMenuItemNoIcon(helpMenu, 
+
+    	ComponentFactory.addMenuItemNoIcon(helpMenu,
     		new DisplayHtml(ResourceKey.HELP_MENU_GETTING_STARTED, HELP_URL_GETTING_STARTED));
-    	
-    	ComponentFactory.addMenuItemNoIcon(helpMenu, 
+
+    	ComponentFactory.addMenuItemNoIcon(helpMenu,
     		new DisplayHtml(ResourceKey.HELP_MENU_FAQ, HELP_URL_FAQ));
 
-    	ComponentFactory.addMenuItemNoIcon(helpMenu, 
+    	ComponentFactory.addMenuItemNoIcon(helpMenu,
     	new AbstractAction("Prot\u00E9g\u00E9-OWL Tutorial...") {
         	public void actionPerformed(ActionEvent e) {
         		SystemUtilities.showHTML(HELP_URL_OWL_TUTORIAL);
         	}
         });
-        
+
         helpMenu.addSeparator();
-        
+
         ComponentFactory.addMenuItemNoIcon(helpMenu, syntaxHelpAction);
 
 	    // prose tooltips selector
@@ -547,13 +554,13 @@ public class OWLMenuProjectPlugin extends ProjectPluginAdapter {
 	        }
 	    });
 	    proseBox.setSelected(Boolean.TRUE.equals(owlModel.getOWLProject().getSettingsMap().getBoolean(PROSE_PROPERTY)));
-    
+
 	    OWLToolTipGenerator toolTipGenerator = OWLUI.getOWLToolTipGenerator();
 	    //TT: Temporary solution. This is kind of hacky, but needed for the case in which a tab widget sets its own tooltip generator
-	    if (toolTipGenerator == null || toolTipGenerator instanceof ClassDescriptionToolTipGenerator || toolTipGenerator instanceof HomeOntologyToolTipGenerator) {        
+	    if (toolTipGenerator == null || toolTipGenerator instanceof ClassDescriptionToolTipGenerator || toolTipGenerator instanceof HomeOntologyToolTipGenerator) {
 	        OWLUI.setOWLToolTipGenerator(proseBox.isSelected() ? new ClassDescriptionToolTipGenerator() : new HomeOntologyToolTipGenerator());
 	    }
-	    
+
         helpMenu.addSeparator();
 	    ComponentFactory.addMenuItemNoIcon(helpMenu, new ShowAboutProtegeOWLAction());
 	    ComponentFactory.addMenuItemNoIcon(helpMenu, new ShowAboutPluginsBox());
