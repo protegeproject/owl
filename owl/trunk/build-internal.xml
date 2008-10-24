@@ -60,7 +60,16 @@
 	<!-- COMPILE -->
 	<!-- =================================================================== -->
 	<target name = "compile" depends = "prepare-src">
-		<javac srcdir = "${build.src}" destdir = "${build.dest}" debug = "true" debuglevel = "lines" optimize = "on" includeAntRuntime = "no" source = "1.5" fork = "yes" memoryInitialSize = "200m" memoryMaximumSize = "200m">
+		<javac srcdir = "${build.src}" 
+		          destdir = "${build.dest}" 
+		          debug = "true" 
+		          debuglevel = "lines" 
+		          optimize = "on" 
+		          includeAntRuntime = "no" 
+		          source = "1.5" 
+		          fork = "yes" 
+		          memoryInitialSize = "200m" 
+		          memoryMaximumSize = "200m">
 			<classpath>
 				<pathelement path = "${protege.jar}"/>
 				<fileset dir = "${lib.dir}">
@@ -128,10 +137,18 @@
 	<!-- JAVADOC -->
 	<!-- Create the API documentation. -->
 	<!-- =================================================================== -->
-	<target name = "javadoc" depends = "init">
+	<target name = "javadoc" depends = "init" unless = "testbuild">
 		<property file = "${build.dir}/src/edu/stanford/smi/protegex/owl/resource/files/build.properties"/>
 		<mkdir dir = "${build.javadoc}"/>
-		<javadoc destdir = "${build.javadoc}" doctitle = "${name} ${build.version} ${build.status}" header = "${name} ${build.version} ${build.status}" footer = "${name} ${build.version} ${build.status}" windowtitle = "${name} ${build.version} ${build.status}" author = "true" source = "1.5" linksource = "yes">
+		
+		<javadoc destdir = "${build.javadoc}" 
+		              doctitle = "${name} ${build.version} ${build.status}" 
+		              header = "${name} ${build.version} ${build.status}" 
+		              footer = "${name} ${build.version} ${build.status}" 
+		              windowtitle = "${name} ${build.version} ${build.status}" 
+		              author = "true" 
+		              source = "1.5"
+		              maxmemory = "256M">
 			<bottom><![CDATA[
 					<small>
 					<a href=mailto:protege-owl@lists.stanford.edu>Submit a bug report or feature request</a><br>
@@ -148,7 +165,6 @@
 				</fileset>
 			</classpath>
 			<link href = "${jdk.javadoc}"/>
-			<arg value = "-J-Xmx200m"/>        
 		</javadoc>
 	</target>
 	
