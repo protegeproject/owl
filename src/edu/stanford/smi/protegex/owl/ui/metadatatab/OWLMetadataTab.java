@@ -147,8 +147,11 @@ public class OWLMetadataTab extends AbstractTabWidget implements HostResourceDis
     	}
 	}
 
-	public String getLabel() {           
-        return "Metadata" + "(" + NamespaceUtil.getLocalName(getOWLModel().getDefaultOWLOntology().getName()) + ")";
+	public String getLabel() {   
+	    // Tania can change it back?
+	    // OWLOntology displayedOntology = getOWLModel().getDefaultOWLOntology();
+	    OWLOntology displayedOntology =  OWLUtil.getActiveOntology(getOWLModel());
+        return "Metadata" + "(" + NamespaceUtil.getLocalName(displayedOntology.getName()) + ")";
     }
 
     public static boolean isSuitable(Project p, Collection errors) {
