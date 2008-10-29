@@ -1,15 +1,16 @@
 package edu.stanford.smi.protegex.owl.writer.rdfxml.rdfwriter;
 
+import java.io.IOException;
+import java.io.Writer;
+import java.util.Collections;
+
+import edu.stanford.smi.protegex.owl.model.NamespaceManager;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 import edu.stanford.smi.protegex.owl.writer.rdfxml.util.Util;
 import edu.stanford.smi.protegex.owl.writer.xml.XMLWriter;
 import edu.stanford.smi.protegex.owl.writer.xml.XMLWriterFactory;
 import edu.stanford.smi.protegex.owl.writer.xml.XMLWriterNamespaceManager;
-
-import java.io.IOException;
-import java.io.Writer;
-import java.util.Collections;
 
 /**
  * User: matthewhorridge<br>
@@ -48,10 +49,11 @@ public class OWLModelWriter {
                           Writer writer) {
         this.model = model;
         this.tripleStore = tripleStore;
-        XMLWriterNamespaceManager nsm;
-        nsm = Util.getNamespacePrefixes(model.getNamespaceManager(), model.getNamespaceManager().getDefaultNamespace());
+        XMLWriterNamespaceManager xmlnsm;
+        NamespaceManager nsm = tripleStore.getNamespaceManager();
+        xmlnsm = Util.getNamespacePrefixes(nsm, nsm.getDefaultNamespace());
         String ontologyName = Util.getOntologyName(model, tripleStore);
-        this.xmlWriter = XMLWriterFactory.getInstance().createXMLWriter(writer, nsm, ontologyName);
+        this.xmlWriter = XMLWriterFactory.getInstance().createXMLWriter(writer, xmlnsm, ontologyName);
     }
 
 
