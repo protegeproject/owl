@@ -1,9 +1,28 @@
 package edu.stanford.smi.protegex.owl.ui.components.multiresource;
 
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+
+import javax.swing.JComponent;
+import javax.swing.JPopupMenu;
+import javax.swing.ListCellRenderer;
+
 import edu.stanford.smi.protege.model.Project;
 import edu.stanford.smi.protege.util.PopupMenuMouseListener;
 import edu.stanford.smi.protege.util.SelectableList;
-import edu.stanford.smi.protegex.owl.model.*;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.model.RDFProperty;
+import edu.stanford.smi.protegex.owl.model.RDFResource;
+import edu.stanford.smi.protegex.owl.model.RDFSClass;
+import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
+import edu.stanford.smi.protegex.owl.model.RDFUntypedResource;
 import edu.stanford.smi.protegex.owl.model.impl.OWLUtil;
 import edu.stanford.smi.protegex.owl.model.triplestore.Triple;
 import edu.stanford.smi.protegex.owl.model.triplestore.impl.DefaultTriple;
@@ -12,11 +31,6 @@ import edu.stanford.smi.protegex.owl.ui.ResourceRenderer;
 import edu.stanford.smi.protegex.owl.ui.TripleSelectable;
 import edu.stanford.smi.protegex.owl.ui.actions.ResourceActionManager;
 import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
-
-import javax.swing.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.util.*;
 
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
@@ -34,7 +48,8 @@ public class MultiResourceList extends SelectableList implements TripleSelectabl
         setModel(listModel);
         setCellRenderer(createRenderer());
         addMouseListener(new MouseAdapter() {
-            public void mouseClicked(MouseEvent e) {
+            @Override
+			public void mouseClicked(MouseEvent e) {
                 if (e.getClickCount() == 2) {
                     handleDoubleClick();
                 }
@@ -42,12 +57,14 @@ public class MultiResourceList extends SelectableList implements TripleSelectabl
         });
         addMouseListener(new PopupMenuMouseListener(this) {
 
-            protected JPopupMenu getPopupMenu() {
+            @Override
+			protected JPopupMenu getPopupMenu() {
                 return createPopupMenu();
             }
 
 
-            protected void setSelection(JComponent c, int x, int y) {
+            @Override
+			protected void setSelection(JComponent c, int x, int y) {
                 for (int i = 0; i < listModel.getSize(); i++) {
                     if (getCellBounds(i, i).contains(x, y)) {
                         setSelectedIndex(i);
@@ -62,10 +79,13 @@ public class MultiResourceList extends SelectableList implements TripleSelectabl
 
     protected ListCellRenderer createRenderer() {
         return new ResourceRenderer() {
-            public void load(Object value) {
+            @Override
+			public void load(Object value) {
                 int row = listModel.getRowOf(value);
-                if (row >= 0 && !listModel.isEditable(row)) {
-                    setGrayedText(true);
+                if (!listModel.getPredicate().getOWLModel().getProject().isMultiUserClient()) {
+                	if (row >= 0 && !listModel.isEditable(row)) {
+                		setGrayedText(true);
+                	}
                 }
                 super.load(value);
             }
@@ -156,8 +176,7 @@ public class MultiResourceList extends SelectableList implements TripleSelectabl
     private void handleDoubleClick() {
         Project project = listModel.getPredicate().getOWLModel().getProject();
         int[] sels = getSelectedIndices();
-        for (int i = 0; i < sels.length; i++) {
-            int sel = sels[i];
+        for (int sel : sels) {
             Object value = listModel.getElementAt(sel);
             if (value instanceof RDFResource) {
                 project.show((RDFResource) value);
@@ -169,8 +188,7 @@ public class MultiResourceList extends SelectableList implements TripleSelectabl
     protected void handleRemove() {
         int[] sels = getSelectedIndices();
         Set valuesToRemove = new HashSet();
-        for (int i = 0; i < sels.length; i++) {
-            int sel = sels[i];
+        for (int sel : sels) {
             valuesToRemove.add(listModel.getElementAt(sel));
         }
         RDFProperty predicate = listModel.getPredicate();
@@ -191,8 +209,7 @@ public class MultiResourceList extends SelectableList implements TripleSelectabl
     public boolean isRemoveEnabled() {
         int[] sels = getSelectedIndices();
         if (sels.length > 0) {
-            for (int i = 0; i < sels.length; i++) {
-                int sel = sels[i];
+            for (int sel : sels) {
                 if (!isRemoveEnabled(sel)) {
                     return false;
                 }
