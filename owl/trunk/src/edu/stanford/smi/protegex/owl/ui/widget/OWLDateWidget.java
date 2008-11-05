@@ -1,7 +1,20 @@
 package edu.stanford.smi.protegex.owl.ui.widget;
 
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.util.Collection;
+import java.util.Date;
+import java.util.GregorianCalendar;
+
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+
 import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
 import com.toedter.calendar.JDateChooser;
+
 import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.Facet;
 import edu.stanford.smi.protege.model.Instance;
@@ -17,30 +30,27 @@ import edu.stanford.smi.protegex.owl.model.RDFSLiteral;
 import edu.stanford.smi.protegex.owl.model.impl.XMLSchemaDatatypes;
 import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.util.Collection;
-import java.util.Date;
-import java.util.GregorianCalendar;
-
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
  */
 public class OWLDateWidget extends AbstractPropertyWidget {
 
     private JDateChooser dateChooser;
+    private LabeledComponent lc;
+
+    private PropertyChangeListener propertyChangeListener = new PropertyChangeListener() {
+        public void propertyChange(PropertyChangeEvent evt) {
+            if ("date".equals(evt.getPropertyName())) {
+                updateValues();
+            }
+        }
+    };
 
     private Action deleteAction = new AbstractAction("Delete value", OWLIcons.getDeleteIcon()) {
         public void actionPerformed(ActionEvent e) {
             deleteValue();
         }
     };
-
-
-    private LabeledComponent lc;
 
     private Action setAction = new AbstractAction("Set value", OWLIcons.getAddIcon()) {
         public void actionPerformed(ActionEvent e) {
@@ -107,20 +117,13 @@ public class OWLDateWidget extends AbstractPropertyWidget {
 
 
     public void initialize() {
-        dateChooser = new JDateChooser();
-        dateChooser.addPropertyChangeListener(new PropertyChangeListener() {
-            public void propertyChange(PropertyChangeEvent evt) {
-                if ("date".equals(evt.getPropertyName())) {
-                    updateValues();
-                }
-            }
-        });
-        
         setLayout(new BorderLayout());
+        dateChooser = new JDateChooser();
         lc = new LabeledComponent(getRDFProperty().getBrowserText(), getCenterComponent());
         lc.addHeaderButton(setAction);
         lc.addHeaderButton(deleteAction);
         add(BorderLayout.CENTER, lc);
+        enabledCompListeners();
     }
 
 
@@ -133,8 +136,10 @@ public class OWLDateWidget extends AbstractPropertyWidget {
 
 
     protected void setValue(String s) {
+    	disableCompListeners();
         Date date = getDate(s);
-        dateChooser.setDate(date);    
+        dateChooser.setDate(date);
+        enabledCompListeners();
     }
 
 
@@ -148,22 +153,27 @@ public class OWLDateWidget extends AbstractPropertyWidget {
     }
 
 
-    public void setEnabled(boolean enabled) {
+    @Override
+	public void setEnabled(boolean enabled) {
         super.setEnabled(!isReadOnlyConfiguredWidget() && enabled);
         updateComponents();
     }
 
 
-    public void setInstance(Instance newInstance) {
+    @Override
+	public void setInstance(Instance newInstance) {
         super.setInstance(newInstance);
+        disableCompListeners();
         if (newInstance != null) {
             setDateChooserValue();
         }
         updateComponents();
+        enabledCompListeners();
     }
 
 
-    public void setValues(Collection values) {
+    @Override
+	public void setValues(Collection values) {
         super.setValues(values);
         updateComponents();
         ignoreUpdate = true;
@@ -174,7 +184,7 @@ public class OWLDateWidget extends AbstractPropertyWidget {
 
     protected void updateComponents() {
     	boolean isEditable = !isReadOnlyConfiguredWidget();
-    	
+
         RDFResource resource = getEditedResource();
         RDFProperty property = getRDFProperty();
         if (resource != null && property != null && resource.isEditable()) {
@@ -191,17 +201,17 @@ public class OWLDateWidget extends AbstractPropertyWidget {
             //dateChooser.setEnabled(false);
             enableDateChooser(false);
         }
-          
-        
+
+
     }
 
-    private void enableDateChooser(boolean enable) {    	 
+    private void enableDateChooser(boolean enable) {
     	 for (Component comp : dateChooser.getComponents()) {
     		 comp.setEnabled(enable);
     	 }
     }
-    
-    
+
+
     private boolean ignoreUpdate = false;
 
 
@@ -212,16 +222,24 @@ public class OWLDateWidget extends AbstractPropertyWidget {
         }
     }
 
-    
+
     @Override
     public WidgetConfigurationPanel createWidgetConfigurationPanel() {
     	WidgetConfigurationPanel confPanel = super.createWidgetConfigurationPanel();
-    	
+
     	confPanel.addTab("Options", new ReadOnlyWidgetConfigurationPanel(this));
-    	
+
     	return confPanel;
     }
-    
+
+    protected void enabledCompListeners() {
+    	dateChooser.addPropertyChangeListener(propertyChangeListener);
+    }
+
+    protected void disableCompListeners() {
+    	dateChooser.removePropertyChangeListener(propertyChangeListener);
+    }
+
 
     /**
      * @param cls
@@ -230,7 +248,8 @@ public class OWLDateWidget extends AbstractPropertyWidget {
      * @return
      * @deprecated
      */
-    public static boolean isSuitable(Cls cls, Slot slot, Facet facet) {
+    @Deprecated
+	public static boolean isSuitable(Cls cls, Slot slot, Facet facet) {
         return OWLWidgetMapper.isSuitable(OWLDateWidget.class, cls, slot);
     }
 }
