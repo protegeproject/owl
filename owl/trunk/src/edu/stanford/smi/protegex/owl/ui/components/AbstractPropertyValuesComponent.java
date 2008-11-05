@@ -1,16 +1,21 @@
 package edu.stanford.smi.protegex.owl.ui.components;
 
-import edu.stanford.smi.protege.util.StringUtilities;
-import edu.stanford.smi.protegex.owl.model.*;
-import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreModel;
-import edu.stanford.smi.protegex.owl.ui.editors.PropertyValueEditor;
-import edu.stanford.smi.protegex.owl.ui.editors.PropertyValueEditorManager;
-
-import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
+
+import javax.swing.JComponent;
+
+import edu.stanford.smi.protege.util.StringUtilities;
+import edu.stanford.smi.protegex.owl.model.OWLEnumeratedClass;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
+import edu.stanford.smi.protegex.owl.model.RDFProperty;
+import edu.stanford.smi.protegex.owl.model.RDFResource;
+import edu.stanford.smi.protegex.owl.model.RDFSClass;
+import edu.stanford.smi.protegex.owl.ui.editors.PropertyValueEditor;
+import edu.stanford.smi.protegex.owl.ui.editors.PropertyValueEditorManager;
 
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
@@ -20,13 +25,13 @@ public abstract class AbstractPropertyValuesComponent extends JComponent impleme
     private final RDFProperty predicate;
 
     private RDFResource subject;
-    
+
     private String label;
-    
+
     private boolean editable = true;
-    
+
     private boolean isReadOnly = false;
-    
+
 
     protected AbstractPropertyValuesComponent(RDFProperty predicate) {
     	this(predicate, null);
@@ -35,14 +40,14 @@ public abstract class AbstractPropertyValuesComponent extends JComponent impleme
     protected AbstractPropertyValuesComponent(RDFProperty predicate, String label) {
     	this(predicate, label, false);
     }
-    
+
     protected AbstractPropertyValuesComponent(RDFProperty predicate, String label, boolean isReadOnly) {
         this.predicate = predicate;
         setLayout(new BorderLayout());
         this.label = label;
         this.isReadOnly = isReadOnly;
     }
-    
+
 
     protected PropertyValueEditor getEditor(Object value) {
         final RDFResource subject = getSubject();
@@ -60,7 +65,7 @@ public abstract class AbstractPropertyValuesComponent extends JComponent impleme
 	        }
 	        return text;
 	    }
-    	
+
     	return label;
     }
 
@@ -134,6 +139,8 @@ public abstract class AbstractPropertyValuesComponent extends JComponent impleme
 
 
     protected boolean hasOnlyEditableValues() {
+    	//TT - this is a strange condition. It doesn't seem to make sense in OWL
+    	/*
         Collection values = getObjects();
         TripleStoreModel tsm = getOWLModel().getTripleStoreModel();
         for (Iterator it = values.iterator(); it.hasNext();) {
@@ -141,7 +148,7 @@ public abstract class AbstractPropertyValuesComponent extends JComponent impleme
             if (!tsm.isEditableTriple(getSubject(), getPredicate(), value)) {
                 return false;
             }
-        }
+        }*/
         return true;
     }
 
@@ -183,7 +190,7 @@ public abstract class AbstractPropertyValuesComponent extends JComponent impleme
     protected void showResource(RDFResource resource) {
         getOWLModel().getProject().show(resource);
     }
-        
+
 	public boolean isEditable() {
 		return editable;
 	}
@@ -191,7 +198,7 @@ public abstract class AbstractPropertyValuesComponent extends JComponent impleme
 	public void setEditable(boolean editable) {
 		this.editable = editable;
 	}
-	
+
 	public boolean isReadOnly() {
 		return isReadOnly;
 	}
