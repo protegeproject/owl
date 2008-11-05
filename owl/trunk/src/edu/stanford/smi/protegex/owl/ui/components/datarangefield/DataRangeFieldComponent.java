@@ -1,17 +1,26 @@
 package edu.stanford.smi.protegex.owl.ui.components.datarangefield;
 
-import edu.stanford.smi.protegex.owl.model.*;
-import edu.stanford.smi.protegex.owl.ui.OWLLabeledComponent;
-import edu.stanford.smi.protegex.owl.ui.components.AbstractPropertyValuesComponent;
-import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
-
-import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
+
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JComboBox;
+
+import edu.stanford.smi.protegex.owl.model.OWLDataRange;
+import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
+import edu.stanford.smi.protegex.owl.model.RDFProperty;
+import edu.stanford.smi.protegex.owl.model.RDFResource;
+import edu.stanford.smi.protegex.owl.model.RDFSLiteral;
+import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
+import edu.stanford.smi.protegex.owl.ui.OWLLabeledComponent;
+import edu.stanford.smi.protegex.owl.ui.components.AbstractPropertyValuesComponent;
+import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
 
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
@@ -26,6 +35,12 @@ public class DataRangeFieldComponent extends AbstractPropertyValuesComponent {
         }
     };
 
+    private ActionListener comboBoxListener = new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+            assignComboBoxValue();
+        }
+    };
+
     public DataRangeFieldComponent(RDFProperty predicate) {
     	this(predicate, null);
     }
@@ -33,21 +48,16 @@ public class DataRangeFieldComponent extends AbstractPropertyValuesComponent {
     public DataRangeFieldComponent(RDFProperty predicate, String label) {
         this(predicate, label, false);
     }
-    
+
     public DataRangeFieldComponent(RDFProperty predicate, String label, boolean isReadOnly) {
         super(predicate, label, isReadOnly);
 
         comboBox = new JComboBox();
-        comboBox.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                assignComboBoxValue();
-            }
-        });
-     
         OWLLabeledComponent lc = new OWLLabeledComponent((label == null ? getLabel():label), comboBox);
         lc.addHeaderButton(deleteAction);
 
         add(BorderLayout.CENTER, lc);
+        enabledCompListeners();
     }
 
 
@@ -63,7 +73,7 @@ public class DataRangeFieldComponent extends AbstractPropertyValuesComponent {
         for (Iterator it = getSubject().getRDFTypes().iterator(); it.hasNext();) {
             RDFSNamedClass type = (RDFSNamedClass) it.next();
             if (type instanceof OWLNamedClass) {
-                final OWLNamedClass namedClass = ((OWLNamedClass) type);
+                final OWLNamedClass namedClass = (OWLNamedClass) type;
                 RDFResource allValuesFrom = namedClass.getAllValuesFrom(predicate);
                 if (allValuesFrom instanceof OWLDataRange) {
                     dataRange = (OWLDataRange) allValuesFrom;
@@ -102,13 +112,16 @@ public class DataRangeFieldComponent extends AbstractPropertyValuesComponent {
     }
 
 
-    public void setSubject(RDFResource subject) {
+    @Override
+	public void setSubject(RDFResource subject) {
         super.setSubject(subject);
+        disableCompListeners();
         updateActionState();
         Collection values = getDataRangeValues();
         Object[] items = values.toArray();
         comboBox.setModel(new DefaultComboBoxModel(items));
         updateComboBoxState();
+        enabledCompListeners();
     }
 
 
@@ -125,6 +138,7 @@ public class DataRangeFieldComponent extends AbstractPropertyValuesComponent {
 
 
     public void valuesChanged() {
+    	disableCompListeners();
         Object value = getObject();
         if (value != null &&
                 !(value instanceof RDFSLiteral) &&
@@ -134,5 +148,14 @@ public class DataRangeFieldComponent extends AbstractPropertyValuesComponent {
         comboBox.setSelectedItem(value);
         updateActionState();
         updateComboBoxState();
+        enabledCompListeners();
+    }
+
+    protected void enabledCompListeners() {
+    	comboBox.addActionListener(comboBoxListener);
+    }
+
+    protected void disableCompListeners() {
+    	comboBox.removeActionListener(comboBoxListener);
     }
 }
