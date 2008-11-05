@@ -1173,13 +1173,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
 
     public Collection<RDFProperty> getOWLAnnotationProperties() {
-        Collection<RDFProperty> result = new ArrayList<RDFProperty>();
-        for (Slot slot : getSlots()) {
-            if (slot instanceof RDFProperty && ((RDFProperty) slot).isAnnotationProperty()) {
-                result.add((RDFProperty) slot);
-            }
-        }
-        return result;
+    	return getOWLAnnotationPropertyClass().getInstances(true);
     }
 
 
