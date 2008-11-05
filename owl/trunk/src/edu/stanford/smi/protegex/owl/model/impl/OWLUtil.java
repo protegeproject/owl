@@ -150,8 +150,8 @@ public class OWLUtil {
         if (equivalentClass instanceof OWLIntersectionClass) {
             OWLIntersectionClass intersectionCls = (OWLIntersectionClass) equivalentClass;
             Collection neo = new ArrayList();
-            for (Iterator it = intersectionCls.getOperands().iterator(); it.hasNext();) {
-                RDFSClass operand = (RDFSClass) it.next();
+            for (Object element : intersectionCls.getOperands()) {
+                RDFSClass operand = (RDFSClass) element;
                 RDFSClass copy = operand.createClone();
                 neo.add(copy);
             }
@@ -189,8 +189,8 @@ public class OWLUtil {
             OWLModel owlModel = ownerCls.getOWLModel();
             if (definition instanceof OWLIntersectionClass) {
                 OWLIntersectionClass intersection = (OWLIntersectionClass) definition;
-                for (Iterator it = intersection.getOperands().iterator(); it.hasNext();) {
-                    RDFSClass oldOperand = (RDFSClass) it.next();
+                for (Object element : intersection.getOperands()) {
+                    RDFSClass oldOperand = (RDFSClass) element;
                     RDFSClass newOperand = oldOperand.createClone();
                     operands.add(newOperand);
                 }
@@ -422,8 +422,8 @@ public class OWLUtil {
 
 
     public static boolean hasDirectRestriction(edu.stanford.smi.protege.model.Cls cls, Slot slot, edu.stanford.smi.protege.model.Cls metaCls) {
-        for (Iterator it = cls.getDirectSuperclasses().iterator(); it.hasNext();) {
-            edu.stanford.smi.protege.model.Cls superCls = (edu.stanford.smi.protege.model.Cls) it.next();
+        for (Object element : cls.getDirectSuperclasses()) {
+            edu.stanford.smi.protege.model.Cls superCls = (edu.stanford.smi.protege.model.Cls) element;
             if (superCls.getDirectType().equals(metaCls)) {
                 OWLRestriction restriction = (OWLRestriction) superCls;
                 if (restriction.getOnProperty().equals(slot)) {
@@ -994,7 +994,7 @@ public class OWLUtil {
         for (Iterator it = resource.getRDFTypes().iterator(); it.hasNext();) {
             RDFSClass type = (RDFSClass) it.next();
             if (type instanceof OWLNamedClass) {
-                Collection hasValues = ((OWLNamedClass) type).getHasValues(property);                
+                Collection hasValues = ((OWLNamedClass) type).getHasValues(property);
                 results.addAll(hasValues);
            }
         }
@@ -1046,7 +1046,7 @@ public class OWLUtil {
 
 
     public static OWLOntology getActiveOntology(OWLModel owlModel) {
-        OWLOntology owlOntology = owlModel.getDefaultOWLOntology();
+        /*OWLOntology owlOntology = owlModel.getDefaultOWLOntology();
         for (Iterator it = owlModel.getOWLOntologies().iterator(); it.hasNext();) {
             OWLOntology curOnt = (OWLOntology) it.next();
             TripleStoreModel tsm = owlModel.getTripleStoreModel();
@@ -1058,9 +1058,26 @@ public class OWLUtil {
                 break;
             }
         }
+        */
+        //TODO: please check implementation
+    	// Triple store should have as the name the ontology name
+    	// If TS name is null, use the default ontology
+    	OWLOntology owlOntology = owlModel.getDefaultOWLOntology();
+        TripleStoreModel tsm = owlModel.getTripleStoreModel();
+        TripleStore activeTripleStore = tsm.getActiveTripleStore();
+
+        String name = activeTripleStore.getName();
+        if (name != null) {
+        	try {
+        		owlOntology = (OWLOntology) owlModel.getOWLOntologyByURI(URIUtilities.createURI(name));
+			} catch (Exception e) {
+				Log.emptyCatchBlock(e);
+			}
+        }
+
         return owlOntology;
     }
-    
+
     public static URI getOWLFileURI(OWLModel owlModel) {
         try {
         	Project project = owlModel.getProject();
@@ -1087,29 +1104,29 @@ public class OWLUtil {
         }
         return null;
     }
-    
+
 
     public static boolean runsWithGUI(OWLModel owlModel) {
     	Project project = owlModel.getProject();
-    	
+
     	if (project == null) {
     		return false;
-    	}    	  	
-    	
+    	}
+
     	JComponent mainPanel = ProjectManager.getProjectManager().getMainPanel();
-    	
+
     	//TT: This is a rather week test
-    	return (mainPanel != null);        
-    	
+    	return mainPanel != null;
+
     }
-    
-    
+
+
     /**
      * Renames an ontology. Returns a new ontology object with the new name.
      * @param owlModel - the OWL model
      * @param oldOntology - the old OWL Ontology
      * @param newName - the new name of the ontology
-     * @return - a new OWL ontology with the name <code>newName</code> 
+     * @return - a new OWL ontology with the name <code>newName</code>
      */
     public static OWLOntology renameOntology(OWLModel owlModel, OWLOntology oldOntology, String newName) {
     	String oldOntoloyName = oldOntology.getName();
@@ -1119,7 +1136,7 @@ public class OWLUtil {
 
     	return newOntology;
     }
-    
+
     /**
      * Ensures that the triple store and the renamed ontology have the same name.
      * @param owlModel - the OWL model
@@ -1128,16 +1145,16 @@ public class OWLUtil {
      */
     public static void synchronizeTripleStoreAfterOntologyRename(OWLModel owlModel, String oldName, OWLOntology newOntology) {
     	TripleStoreModel tsm = owlModel.getTripleStoreModel();
-    	
+
     	//set triple store name to be the same as the new ontology name
     	TripleStore ts = tsm.getTripleStore(oldName);
     	if (ts == null) { //what to do in this case?
     		Log.getLogger().severe("Error at ontology rename. Could not find triplestore " + oldName);
     		return;
     	}
-    	
+
     	ts.setName(newOntology.getName());
-    	    	
+
     	if (ts.equals(tsm.getTopTripleStore())) {
     		//reset the model ontology cache - this will ensure that ontology and triplestore have the same name
     		owlModel.resetOntologyCache();
@@ -1149,11 +1166,11 @@ public class OWLUtil {
      * Get the full name of a resource.  We have to handle the short name instead of full URIs
      * used in the create & getter methods. This is a backwards compatibility extension.
      * All the create & get methods will check the expandShortNameInMethods flag, which is default false.
-     */   
+     */
     public static String getInternalFullName(OWLModel owlModel, String name) {
         return getInternalFullName(owlModel,  name, owlModel.isExpandShortNameInMethods());
     }
-    
+
     public static String getInternalFullName(OWLModel owlModel, String name, boolean expandShortNames) {
     	if (name == null) {
     		return null;
@@ -1164,20 +1181,20 @@ public class OWLUtil {
     	if (expandShortNames && !isAbsoluteURI(owlModel, name)) {
     		name = NamespaceUtil.getFullName(owlModel, name);
     	}
-    	
+
     	return name;
     }
-    
+
     protected static boolean isAbsoluteURI(OWLModel owlModel, String uriString) {
         if (!uriString.contains(":")) {
             return false;
         }
-        
+
         URI uri = null;
-        
+
         try {
             uri = new URI(uriString);
-        } catch (URISyntaxException e) {            
+        } catch (URISyntaxException e) {
             //do nothing - uri will be null. Hopefully this won't be the case
         }
         if (uri == null || !uri.isAbsolute()) {
