@@ -1,5 +1,11 @@
 package edu.stanford.smi.protegex.owl.ui.widget;
 
+import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
+import java.util.Collection;
+
+import javax.swing.AbstractAction;
+
 import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.Facet;
 import edu.stanford.smi.protege.model.Instance;
@@ -13,10 +19,6 @@ import edu.stanford.smi.protegex.owl.ui.components.annotations.AnnotationsCompon
 import edu.stanford.smi.protegex.owl.ui.components.triples.AbstractTriplesComponent;
 import edu.stanford.smi.protegex.owl.ui.components.triples.TriplesComponent;
 import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
-
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
 
 /**
  * The SlotWidget showing up as default on the top of all forms.
@@ -47,7 +49,8 @@ public class HeaderWidget extends AbstractSlotWidget {
     public void activateAnnotationsComponent() {
         RDFProperty property = (RDFProperty) getSlot();
         activate(new AnnotationsComponent(property, isReadOnlyConfiguredWidget()) {
-            protected void addButtons(LabeledComponent lc) {
+            @Override
+			protected void addButtons(LabeledComponent lc) {
                 super.addButtons(lc);
                 lc.addHeaderSeparator();
                 lc.addHeaderSeparator();
@@ -64,7 +67,8 @@ public class HeaderWidget extends AbstractSlotWidget {
     public void activateTriplesComponent() {
         RDFProperty property = (RDFProperty) getSlot();
         activate(new TriplesComponent(property, isReadOnlyConfiguredWidget()) {
-            protected void addButtons(LabeledComponent lc) {
+            @Override
+			protected void addButtons(LabeledComponent lc) {
                 super.addButtons(lc);
                 lc.addHeaderSeparator();
                 lc.addHeaderSeparator();
@@ -89,23 +93,30 @@ public class HeaderWidget extends AbstractSlotWidget {
     }
 
 
-    public void setInstance(Instance newInstance) {
+    @Override
+	public void setInstance(Instance newInstance) {
         super.setInstance(newInstance);
         if (newInstance instanceof RDFResource) {
             RDFResource resource = (RDFResource) newInstance;
             component.setSubject(resource);
         }
     }
-    
+
+
+    @Override
+    protected String getInvalidValueText(Collection values) {
+    	return "";
+    }
+
 	@Override
 	public void setEnabled(boolean enabled) {
-		component.setEnabled(enabled);	
+		component.setEnabled(enabled);
 		super.setEnabled(enabled);
 	}
-	
+
 	@Override
 	public void dispose() {
 		component.dispose();
 	}
-	
+
 }
