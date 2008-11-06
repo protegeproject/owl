@@ -1,5 +1,16 @@
 package edu.stanford.smi.protegex.owl.ui;
 
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Point;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.StringTokenizer;
+
+import javax.swing.Icon;
+
 import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.Frame;
 import edu.stanford.smi.protege.model.SimpleInstance;
@@ -7,16 +18,17 @@ import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protege.resource.Colors;
 import edu.stanford.smi.protege.ui.FrameRenderer;
 import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
-import edu.stanford.smi.protegex.owl.model.*;
+import edu.stanford.smi.protegex.owl.model.Deprecatable;
+import edu.stanford.smi.protegex.owl.model.OWLAnonymousClass;
+import edu.stanford.smi.protegex.owl.model.OWLClass;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
+import edu.stanford.smi.protegex.owl.model.OWLProperty;
+import edu.stanford.smi.protegex.owl.model.RDFResource;
+import edu.stanford.smi.protegex.owl.model.RDFSClass;
 import edu.stanford.smi.protegex.owl.model.classparser.manchester.ManchesterOWLParserUtil;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLOntology;
 import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
-
-import javax.swing.*;
-import java.awt.*;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.StringTokenizer;
 
 /**
  * A FrameRenderer which displays a small A behind those anonymous classes
@@ -88,8 +100,8 @@ public class ResourceRenderer extends FrameRenderer {
 
 
     public static void addAnnotationFlag(FrameRenderer renderer, Cls cls) {
-        for (Iterator it = cls.getKnowledgeBase().getSlots().iterator(); it.hasNext();) {
-            Slot slot = (Slot) it.next();
+        for (Object element : cls.getOwnSlots()) {
+            Slot slot = (Slot) element;
             if (slot instanceof OWLProperty && ((OWLProperty) slot).isAnnotationProperty()) {
                 if (cls.getDirectOwnSlotValues(slot).size() > 0) {
                     renderer.appendIcon(OWLIcons.getImageIcon("Annotations"));
@@ -138,7 +150,8 @@ public class ResourceRenderer extends FrameRenderer {
     }
 
 
-    protected void paintString(Graphics graphics,
+    @Override
+	protected void paintString(Graphics graphics,
                                String s,
                                Point point,
                                Color color,
@@ -208,13 +221,15 @@ public class ResourceRenderer extends FrameRenderer {
     }
 
 
-    protected void loadCls(Cls cls) {
+    @Override
+	protected void loadCls(Cls cls) {
         setMainIcon(getClsIcon(cls));
         loadClsAfterIcon(cls);
     }
 
 
-    public void load(Object o) {
+    @Override
+	public void load(Object o) {
         super.load(o);
         if (o instanceof RDFSClass) {
             loadedClass = (RDFSClass) o;
@@ -247,7 +262,8 @@ public class ResourceRenderer extends FrameRenderer {
     }
 
 
-    protected void loadSlot(Slot slot) {
+    @Override
+	protected void loadSlot(Slot slot) {
         super.loadSlot(slot);
         addInverseSlot(slot);
         if (slot instanceof Deprecatable && ((Deprecatable) slot).isDeprecated()) {
@@ -256,7 +272,8 @@ public class ResourceRenderer extends FrameRenderer {
     }
 
 
-    public void paint(Graphics g) {
+    @Override
+	public void paint(Graphics g) {
         super.paint(g);
         if (loadedClass != null && focusedFrame != null) {
             int ICON_TEXT_GAP = 3;
