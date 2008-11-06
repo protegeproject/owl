@@ -6,65 +6,54 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import edu.stanford.smi.protege.model.Frame;
-import edu.stanford.smi.protege.model.Model;
 import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protege.model.framestore.FrameStore;
 import edu.stanford.smi.protege.server.framestore.background.ServerCacheStateMachine;
 import edu.stanford.smi.protege.server.framestore.background.ServerCachedState;
 import edu.stanford.smi.protege.util.Log;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.model.impl.OWLSystemFrames;
 
-/*
- * TODO - this class must be made pluggable and this implementation goes with the OWL stuff.
- * 
- */
+
 public class OwlStateMachine implements ServerCacheStateMachine {
   private static transient Logger log = Log.getLogger(OwlStateMachine.class);
   
   private FrameStore fs;
-  private final Object kbLock;
+  private final OWLModel kb;
   
   private Map<StateAndSlot, OwlState> transitionMap = new HashMap<StateAndSlot, OwlState>();
   
   
 
-  public OwlStateMachine(FrameStore fs, Object kbLock) {
+  public OwlStateMachine(FrameStore fs, OWLModel model) {
     this.fs = fs;
-    this.kbLock = kbLock;
-    synchronized (kbLock) {
-      addTransition(OwlState.Start, Model.Slot.DIRECT_SUPERCLASSES, OwlState.OwlExpr);
+    this.kb = model;
+    OWLSystemFrames systemFrames = model.getSystemFrames();
+    synchronized (model) {
+      addTransition(OwlState.Start, systemFrames.getDirectSuperclassesSlot(), OwlState.OwlExpr);
       
-      addTransition(OwlState.Start, "owl:equivalentClass", OwlState.OwlExpr);
+      addTransition(OwlState.Start, systemFrames.getOwlEquivalentClassProperty(), OwlState.OwlExpr);
       
       
-      addTransition(OwlState.OwlExpr, "owl:intersectionOf", OwlState.RDFList);
-      addTransition(OwlState.OwlExpr, Model.Slot.DIRECT_SUPERCLASSES, OwlState.End);
-      addTransition(OwlState.OwlExpr, "owl:someValuesFrom", OwlState.End);
+      addTransition(OwlState.OwlExpr, systemFrames.getOwlIntersectionOfProperty(), OwlState.RDFList);
+      addTransition(OwlState.OwlExpr, systemFrames.getDirectSuperclassesSlot(), OwlState.End);
+      addTransition(OwlState.OwlExpr, systemFrames.getOwlSomeValuesFromProperty(), OwlState.End);
       
-      addTransition(OwlState.RDFList, "rdf:rest", OwlState.RDFList);
-      addTransition(OwlState.RDFList, "rdf:first", OwlState.OwlExpr);
+      addTransition(OwlState.RDFList, systemFrames.getRdfRestProperty(), OwlState.RDFList);
+      addTransition(OwlState.RDFList, systemFrames.getRdfFirstProperty(), OwlState.OwlExpr);
       
-      addTransition(OwlState.Start, Model.Slot.DIRECT_INSTANCES, OwlState.UserIndividual);
+      addTransition(OwlState.Start, systemFrames.getDirectInstancesSlot(), OwlState.UserIndividual);
 
     }
   }
   
-  private void addTransition(OwlState start, String slotName, OwlState end) {
-    Slot slot = null;
+  private void addTransition(OwlState start, Slot slot, OwlState end) {
     try {
-      Frame sframe = fs.getFrame(slotName);
-      if (sframe == null || !(sframe instanceof Slot)) {
-        if (log.isLoggable(Level.FINE)) {
-          log.fine("frame found for transition " + 
-              start + ", " + slotName + "/" + sframe + " -> " + end + " but not a slot");
-        }
-        return;
-      }
-      slot = (Slot) sframe;
       transitionMap.put(new StateAndSlot(start, slot), end);
     } catch (Exception e) {
       if (log.isLoggable(Level.FINE)) {
         log.fine("Exception caught creating transition " + 
-            start + ", " + slotName+ " -> " + end + ": " + e);
+            start + ", " + slot.getFrameID().getName() + " -> " + end + ": " + e);
         log.log(Level.FINER, "Exception = ", e);
       }
     }
@@ -79,7 +68,7 @@ public class OwlStateMachine implements ServerCacheStateMachine {
         return null;
     }
     OwlState endState = transitionMap.get(new StateAndSlot((OwlState) state, slot));
-    synchronized (kbLock) {
+    synchronized (kb) {
       if (endState != null && OwlState.allowTransition(fs, (OwlState) state, beginningFrame,  endState, endingFrame)) {
         return endState;
       }
