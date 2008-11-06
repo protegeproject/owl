@@ -271,9 +271,7 @@ public abstract class AbstractSingleLiteralComponent extends AbstractPropertyVal
 
 
 	private void setDatatypeComboBoxItem(RDFResource range) {
-		if (!datatypeComboBox.getSelectedItem().equals(range)) { // To suppress event
-			datatypeComboBox.setSelectedItem(range);
-		}
+		datatypeComboBox.setSelectedItem(range);
 	}
 
 
