@@ -1,5 +1,16 @@
 package edu.stanford.smi.protegex.owl.ui.navigation;
 
+import java.awt.event.ContainerEvent;
+import java.awt.event.ContainerListener;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+
+import javax.swing.JComponent;
+
 import edu.stanford.smi.protege.model.Project;
 import edu.stanford.smi.protege.ui.ProjectView;
 import edu.stanford.smi.protege.util.Disposable;
@@ -10,11 +21,6 @@ import edu.stanford.smi.protege.widget.TabWidget;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
 import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
-
-import javax.swing.*;
-import java.awt.event.ContainerEvent;
-import java.awt.event.ContainerListener;
-import java.util.*;
 
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
@@ -29,20 +35,19 @@ public class TabNavigationHistorySelectable implements Disposable, NavigationHis
 
     private Collection tabs = new ArrayList();
 
+    private ContainerListener containerListener = new ContainerListener() {
+        public void componentAdded(ContainerEvent e) {
+            reinit();
+        }
+        public void componentRemoved(ContainerEvent e) {
+            reinit();
+        }
+    };
 
     public TabNavigationHistorySelectable(OWLModel owlModel) {
         this.project = owlModel.getProject();
         ProjectView view = ProtegeUI.getProjectView(project);
-        view.getTabbedPane().addContainerListener(new ContainerListener() {
-            public void componentAdded(ContainerEvent e) {
-                reinit();
-            }
-
-
-            public void componentRemoved(ContainerEvent e) {
-                reinit();
-            }
-        });
+		view.getTabbedPane().addContainerListener(containerListener);
         reinit();
     }
 
@@ -64,6 +69,8 @@ public class TabNavigationHistorySelectable implements Disposable, NavigationHis
 
 
     public void dispose() {
+    	ProjectView view = ProtegeUI.getProjectView(project);
+    	view.getTabbedPane().removeContainerListener(containerListener);
         removeListener();
     }
 
