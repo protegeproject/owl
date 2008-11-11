@@ -47,10 +47,10 @@ public class OWLMetadataTab extends AbstractTabWidget implements HostResourceDis
     private ImportsTreePanel importsTreePanel;
 
     private SelectionListener treeSelectionListener;
-    
+
     private FrameListener frameListener;
-    
-        
+
+
 
     private JComponent createMainPanel() {
 
@@ -83,38 +83,40 @@ public class OWLMetadataTab extends AbstractTabWidget implements HostResourceDis
     }
 
 
-    public void dispose() {
+    @Override
+	public void dispose() {
         super.dispose();
 
-        importsTreePanel.getImportsTree().removeSelectionListener(treeSelectionListener);        
+        importsTreePanel.getImportsTree().removeSelectionListener(treeSelectionListener);
         treeSelectionListener = null;
-        
+
         try {
 			removeFrameListner();
 		} catch (Exception e) {
 			Log.getLogger().log(Level.WARNING, "Error at removing frame listener from " + getOWLModel().getDefaultOWLOntology(), e);
 		}
-		
+
 		importsTreePanel.dispose();
+		resourceDisplay.dispose();
     }
 
 
     public void initialize() {
-        
+
         setIcon(OWLIcons.getImageIcon("Metadata"));
-        
+
         JComponent comp = createMainPanel();
         add(comp);
         setClsTree(importsTreePanel.getImportsTree());
         setEnabled(true);
-        
+
         /* It's important that the frame listener is added
-         * after the imports tree is initialized, because 
+         * after the imports tree is initialized, because
          * the order of attaching listeners is important.
          * We want first the imports tree to get the event that
          * the top ontology name has changed and then the tab should
          * get the event.
-         */         
+         */
         addFrameListener();
     }
 
@@ -124,7 +126,7 @@ public class OWLMetadataTab extends AbstractTabWidget implements HostResourceDis
     		@Override
     		public void frameReplaced(FrameEvent event) {
     			setLabel(getLabel());
-    			
+
     			try {
     				JTabbedPane tabbedPane = ProjectManager.getProjectManager().getCurrentProjectView().getTabbedPane();
     				int index = tabbedPane.indexOfComponent(OWLMetadataTab.this);
@@ -132,13 +134,13 @@ public class OWLMetadataTab extends AbstractTabWidget implements HostResourceDis
 				} catch (Exception e) {
 					//it's fine to do nothing
 					Log.emptyCatchBlock(e);
-				}			
-    			
+				}
+
     			repaint();
     		}
     	};
-    	
-    	getOWLModel().getDefaultOWLOntology().addFrameListener(frameListener);		
+
+    	getOWLModel().getDefaultOWLOntology().addFrameListener(frameListener);
 	}
 
     protected void removeFrameListner() {
@@ -147,7 +149,8 @@ public class OWLMetadataTab extends AbstractTabWidget implements HostResourceDis
     	}
 	}
 
-	public String getLabel() {   
+	@Override
+	public String getLabel() {
 	    // Tania can change it back?
 	    // OWLOntology displayedOntology = getOWLModel().getDefaultOWLOntology();
 	    OWLOntology displayedOntology =  OWLUtil.getActiveOntology(getOWLModel());
@@ -163,7 +166,8 @@ public class OWLMetadataTab extends AbstractTabWidget implements HostResourceDis
      * @see #setOntology
      * @deprecated
      */
-    public void setOntologyInstance(OWLOntology oi) {
+    @Deprecated
+	public void setOntologyInstance(OWLOntology oi) {
         setOntology(oi);
     }
 
@@ -176,13 +180,14 @@ public class OWLMetadataTab extends AbstractTabWidget implements HostResourceDis
     public boolean displayHostResource(RDFResource resource) {
         return importsTreePanel.displayHostResource(resource);
     }
-    
-    public void setEnabled(boolean enabled) {
+
+    @Override
+	public void setEnabled(boolean enabled) {
     	enabled = enabled && RemoteClientFrameStore.isOperationAllowed(getOWLModel(), OperationImpl.ONTOLOGY_TAB_WRITE);
     	((ResourceDisplay)resourceDisplay).setEnabled(enabled);
     	importsTreePanel.setEnabled(enabled);
     	super.setEnabled(enabled);
     };
-    
-    
+
+
 }
