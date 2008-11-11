@@ -37,6 +37,7 @@ import edu.stanford.smi.protege.util.ApplicationProperties;
 import edu.stanford.smi.protege.util.CollectionUtilities;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protege.util.URIUtilities;
+import edu.stanford.smi.protegex.owl.inference.protegeowl.ReasonerManager;
 import edu.stanford.smi.protegex.owl.jena.graph.JenaModelFactory;
 import edu.stanford.smi.protegex.owl.jena.parser.GlobalParserCache;
 import edu.stanford.smi.protegex.owl.jena.parser.OWLImportsCache;
@@ -2347,6 +2348,9 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
 
     public void resetJenaModel() {
+    	if (jenaModel != null) {
+    		jenaModel.close();
+    	}
         jenaModel = null;
     }
 
@@ -3495,7 +3499,10 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     @Override
     public synchronized void dispose() {
     	super.dispose();
-    	jenaModel = null;
+    	if (jenaModel != null) {
+    		jenaModel.close();
+    		jenaModel = null;
+    	}
     	owlProject = null;
 
     	if (globalParserCache != null) {
@@ -3509,6 +3516,8 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     		tripleStoreModel.dispose();
     		tripleStoreModel = null;
     	}
+
+    	ReasonerManager.getInstance().disposeReasoner(this);
 
     	repositoryManager = null;
     	taskManager = null;
