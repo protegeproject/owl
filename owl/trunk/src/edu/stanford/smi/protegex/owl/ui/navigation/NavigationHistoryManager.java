@@ -1,5 +1,18 @@
 package edu.stanford.smi.protegex.owl.ui.navigation;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+
+import javax.swing.ComboBoxModel;
+import javax.swing.DefaultListModel;
+
 import edu.stanford.smi.protege.util.Disposable;
 import edu.stanford.smi.protege.util.SelectionEvent;
 import edu.stanford.smi.protege.util.SelectionListener;
@@ -11,11 +24,6 @@ import edu.stanford.smi.protegex.owl.model.event.ModelAdapter;
 import edu.stanford.smi.protegex.owl.model.event.ModelListener;
 import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
 import edu.stanford.smi.protegex.owl.ui.resourceselection.ResourceSelectionAction;
-
-import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.*;
 
 /**
  * An object that manages the navigation history across in a certain context.
@@ -29,7 +37,8 @@ public class NavigationHistoryManager extends DefaultListModel implements ComboB
 
     private ResourceSelectionAction backAction = new ResourceSelectionAction("Back",
             OWLIcons.getNavigateBackIcon()) {
-        public void actionPerformed(ActionEvent e) {
+        @Override
+		public void actionPerformed(ActionEvent e) {
             back();
         }
 
@@ -43,7 +52,8 @@ public class NavigationHistoryManager extends DefaultListModel implements ComboB
         }
 
 
-        public Collection getSelectableResources() {
+        @Override
+		public Collection getSelectableResources() {
             Set set = new HashSet();
             for (int i = index - 1; i >= 0; i--) {
                 set.add(getResource(i));
@@ -54,27 +64,31 @@ public class NavigationHistoryManager extends DefaultListModel implements ComboB
         }
 
 
-        public RDFResource pickResource() {
+        @Override
+		public RDFResource pickResource() {
             return null;
         }
     };
 
     private ModelListener deleteListener = new ModelAdapter() {
-        public void classDeleted(RDFSClass cls) {
+        @Override
+		public void classDeleted(RDFSClass cls) {
             if (resourcesSet.contains(cls)) {
                 removeResource(cls);
             }
         }
 
 
-        public void individualDeleted(RDFResource resource) {
+        @Override
+		public void individualDeleted(RDFResource resource) {
             if (resourcesSet.contains(resource)) {
                 removeResource(resource);
             }
         }
 
 
-        public void propertyDeleted(RDFProperty property) {
+        @Override
+		public void propertyDeleted(RDFProperty property) {
             if (resourcesSet.contains(property)) {
                 removeResource(property);
             }
@@ -84,7 +98,8 @@ public class NavigationHistoryManager extends DefaultListModel implements ComboB
 
     private ResourceSelectionAction forwardAction = new ResourceSelectionAction("Forward",
             OWLIcons.getNavigateForwardIcon()) {
-        public void actionPerformed(ActionEvent e) {
+        @Override
+		public void actionPerformed(ActionEvent e) {
             forward();
         }
 
@@ -98,7 +113,8 @@ public class NavigationHistoryManager extends DefaultListModel implements ComboB
         }
 
 
-        public Collection getSelectableResources() {
+        @Override
+		public Collection getSelectableResources() {
             Set set = new HashSet();
             for (int i = index; i < getSize(); i++) {
                 set.add(getResource(i));
@@ -109,7 +125,8 @@ public class NavigationHistoryManager extends DefaultListModel implements ComboB
         }
 
 
-        public RDFResource pickResource() {
+        @Override
+		public RDFResource pickResource() {
             return null;  // Never called
         }
     };
@@ -180,6 +197,7 @@ public class NavigationHistoryManager extends DefaultListModel implements ComboB
 
     public void dispose() {
         navigationHistorySelectable.removeSelectionListener(selectionListener);
+        navigationHistorySelectable.dispose();
         owlModel.removeModelListener(deleteListener);
     }
 
