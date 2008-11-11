@@ -1,8 +1,15 @@
 package edu.stanford.smi.protegex.owl.ui;
 
+import java.awt.Component;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.swing.Icon;
+
 import edu.stanford.smi.protege.model.Project;
 import edu.stanford.smi.protege.ui.ProjectManager;
 import edu.stanford.smi.protege.ui.ProjectView;
+import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
 import edu.stanford.smi.protegex.owl.ui.dialogs.DefaultModalDialogFactory;
@@ -11,13 +18,10 @@ import edu.stanford.smi.protegex.owl.ui.dialogs.ModalDialogFactory;
 import edu.stanford.smi.protegex.owl.ui.dialogs.SelectionDialogFactory;
 import edu.stanford.smi.protegex.owl.ui.icons.DefaultIconFactory;
 import edu.stanford.smi.protegex.owl.ui.icons.IconFactory;
+import edu.stanford.smi.protegex.owl.ui.navigation.NavigationHistoryManager;
+import edu.stanford.smi.protegex.owl.ui.navigation.TabNavigationHistorySelectable;
 import edu.stanford.smi.protegex.owl.ui.resourcedisplay.DefaultResourcePanelFactory;
 import edu.stanford.smi.protegex.owl.ui.resourcedisplay.ResourcePanelFactory;
-
-import javax.swing.*;
-import java.awt.*;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * A utility class that can be used to access and manipulate the high-level Swing
@@ -29,12 +33,11 @@ public class ProtegeUI {
 
     private static IconFactory iconFactory = new DefaultIconFactory();
 
-    private static Map map = new HashMap();
+    private static Map<Project, ProjectView> viewMap = new HashMap<Project, ProjectView>();
+    private static Map<OWLModel, NavigationHistoryManager> navMap = new HashMap<OWLModel, NavigationHistoryManager>();
 
     private static ModalDialogFactory mdf = new DefaultModalDialogFactory();
-
     private static SelectionDialogFactory sdf = new DefaultSelectionDialogFactory();
-
     private static ResourcePanelFactory resourcePanelFactory = new DefaultResourcePanelFactory();
 
 
@@ -75,19 +78,29 @@ public class ProtegeUI {
 
     public static ProjectView getProjectView(Project project) {
         if (project != null) {
-            ProjectView view = (ProjectView) map.get(project);
+            ProjectView view = viewMap.get(project);
             if (view != null) {
                 return view;
             }
             else {
-                System.err.println("[ProtegeUI]  Warning: No ProjectView registered for project " + project.getName());
+                Log.getLogger().warning("No ProjectView registered for project " + project.getName());
                 return ProjectManager.getProjectManager().getCurrentProjectView();
             }
         }
         else {
-            System.err.println("[ProtegeUI]  Warning: Unsafe access to ProjectView using null Project");
+        	Log.getLogger().warning("Unsafe access to ProjectView using null Project");
             return ProjectManager.getProjectManager().getCurrentProjectView();
         }
+    }
+
+    public static NavigationHistoryManager getNavigationHistoryManager(OWLModel owlModel) {
+    	NavigationHistoryManager nhm = navMap.get(owlModel);
+    	if (nhm == null) {
+    		TabNavigationHistorySelectable selectable = new TabNavigationHistorySelectable(owlModel);
+    		nhm = new NavigationHistoryManager(selectable, owlModel);
+    		navMap.put(owlModel, nhm);
+    	}
+    	return nhm;
     }
 
 
@@ -116,7 +129,7 @@ public class ProtegeUI {
 
 
     public static void register(ProjectView projectView) {
-        map.put(projectView.getProject(), projectView);
+        viewMap.put(projectView.getProject(), projectView);
     }
 
 
@@ -178,6 +191,12 @@ public class ProtegeUI {
 
 
     public static void unregister(ProjectView projectView) {
-        map.remove(projectView.getProject());
+        Project project = projectView.getProject();
+        NavigationHistoryManager nhm = navMap.get(project.getKnowledgeBase());
+        if (nhm != null) {
+        	nhm.dispose();
+        	navMap.remove(project.getKnowledgeBase());
+        }
+        viewMap.remove(project);
     }
 }
