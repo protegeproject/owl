@@ -1,5 +1,6 @@
 package edu.stanford.smi.protegex.owl.ui.resourcedisplay;
 
+import edu.stanford.smi.protege.util.Disposable;
 import edu.stanford.smi.protege.util.Selectable;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
 import edu.stanford.smi.protegex.owl.ui.widget.InferredModeWidget;
@@ -10,7 +11,7 @@ import edu.stanford.smi.protegex.owl.ui.widget.InferredModeWidget;
  *
  * @author Holger Knublauch  <holger@knublauch.com>
  */
-public interface ResourcePanel extends InferredModeWidget, Selectable {
+public interface ResourcePanel extends InferredModeWidget, Selectable, Disposable {
 
     final static int DEFAULT_TYPE_CLASS = 0;
 
@@ -23,6 +24,7 @@ public interface ResourcePanel extends InferredModeWidget, Selectable {
 
     RDFResource getResource();
 
-
     void setResource(RDFResource resource);
+
+    void dispose();
 }
