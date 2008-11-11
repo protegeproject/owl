@@ -72,7 +72,6 @@ import edu.stanford.smi.protegex.owl.ui.forms.AbsoluteFormsGenerator;
 import edu.stanford.smi.protegex.owl.ui.forms.AbsoluteFormsLoader;
 import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
 import edu.stanford.smi.protegex.owl.ui.navigation.NavigationHistoryManager;
-import edu.stanford.smi.protegex.owl.ui.navigation.TabNavigationHistorySelectable;
 import edu.stanford.smi.protegex.owl.ui.resourcedisplay.ResourceDisplay;
 import edu.stanford.smi.protegex.owl.ui.subsumption.ChangedClassesPanel;
 import edu.stanford.smi.protegex.owl.ui.tooltips.ClassDescriptionToolTipGenerator;
@@ -92,11 +91,14 @@ public class OWLMenuProjectPlugin extends ProjectPluginAdapter {
     private final static String HELP_URL_GETTING_STARTED = "http://protege.stanford.edu/doc/owl/getting-started.html";
     private final static String HELP_URL_FAQ = "http://protege.stanford.edu/doc/owl-faq.html";
     private final static String HELP_URL_OWL_TUTORIAL = "http://www.co-ode.org/resources/tutorials/protege-owl-tutorial.php";
-    private static JCheckBoxMenuItem proseBox;
-    private OWLModelAction recentAction = null;
-    private SyntaxHelpAction syntaxHelpAction = new SyntaxHelpAction();
-    public static final String MENU_NAME = AbstractOWLModelAction.OWL_MENU;
     public static final String PROSE_PROPERTY = "OWL-Prose";
+
+    public static final String MENU_NAME = AbstractOWLModelAction.OWL_MENU;
+
+    private SyntaxHelpAction syntaxHelpAction = new SyntaxHelpAction();
+    private JCheckBoxMenuItem proseBox;
+    private OWLModelAction recentAction = null;
+
 
     private void addToolBarButton(JToolBar toolBar, Action action) {
         ComponentFactory.addToolBarButton(toolBar, action);
@@ -164,8 +166,7 @@ public class OWLMenuProjectPlugin extends ProjectPluginAdapter {
 
         toolBar.addSeparator();
 
-        TabNavigationHistorySelectable selectable = new TabNavigationHistorySelectable(owlModel);
-        NavigationHistoryManager manager = new NavigationHistoryManager(selectable, owlModel);
+        NavigationHistoryManager manager = ProtegeUI.getNavigationHistoryManager(owlModel);
         manager.add(owlModel.getOWLThingClass());
         toolBar.add(manager.getBackAction());
         toolBar.add(manager.getForwardAction());
@@ -331,7 +332,7 @@ public class OWLMenuProjectPlugin extends ProjectPluginAdapter {
     		Slot s2 = owlModel.getRDFSRangeProperty();
     		clsWidget.replaceWidget(s2, null);
 
-    		Slot s3 = owlModel.getSlot(Model.Slot.DIRECT_DOMAIN);
+    		Slot s3 = owlModel.getSystemFrames().getDirectDomainSlot();
     		clsWidget.replaceWidget(s3, null);
 
     		((FormWidget)clsWidget).setVerticalStretcher(FormWidget.STRETCH_NONE);
@@ -343,18 +344,18 @@ public class OWLMenuProjectPlugin extends ProjectPluginAdapter {
 
 	}
 
+
 	@Override
-	public void beforeClose(Project p) {
-        if (p.getKnowledgeBase() instanceof OWLModel) {
-            ProjectView view = ProtegeUI.getProjectView(p);
-            if (view != null) {
-                ProtegeUI.unregister(view);
-            }
-            ChangedClassesPanel.dispose((OWLModel) p.getKnowledgeBase());
-            OWLUI.setOWLToolTipGenerator(null);
-            proseBox = null;
-        }
-    }
+	public void beforeHide(ProjectView view, ProjectToolBar toolBar,
+			ProjectMenuBar menuBar) {
+		KnowledgeBase kb = view.getProject().getKnowledgeBase();
+		if (kb instanceof OWLModel) {
+			ProtegeUI.unregister(view);
+			ChangedClassesPanel.dispose((OWLModel) kb);
+			OWLUI.setOWLToolTipGenerator(null);
+			proseBox = null;
+		}
+	}
 
     @Override
 	public void beforeSave(Project p) {
@@ -413,7 +414,8 @@ public class OWLMenuProjectPlugin extends ProjectPluginAdapter {
         }
     }
 
-    public static boolean isProseActivated() {
+
+    public boolean isProseActivated() {
         return proseBox != null && proseBox.isSelected();
     }
 
