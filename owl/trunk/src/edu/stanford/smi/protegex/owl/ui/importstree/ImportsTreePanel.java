@@ -202,7 +202,7 @@ public class ImportsTreePanel extends JPanel implements HostResourceDisplay, Dis
             OWLModel owlModel = rootOntology.getOWLModel();
             ImportWizard wizard = new ImportWizard(this, owlModel);
             if (wizard.execute() == Wizard.RESULT_FINISH) {
-                ImportHelper importHelper = new ImportHelper((JenaOWLModel) owlModel);
+                ImportHelper importHelper = new ImportHelper(owlModel);
                 Collection prefixes = new ArrayList(owlModel.getNamespaceManager().getPrefixes());
                 
                 for (Iterator it = wizard.getImportData().getImportEntries().iterator(); it.hasNext();) {
