@@ -260,6 +260,7 @@ public class JenaKnowledgeBaseFactory implements OWLKnowledgeBaseFactory {
                 OntModel newModel = ((OWLDatabaseModel) kb).getOntModel();
                 URI absoluteURI = getFileURI(sources, owlModel.getProject());
                 owlModel.save(absoluteURI, language, errors, newModel);
+                newModel.close();
             }
             else {  // Any other Protege format
                 // TODO: owlModel.initWithProtegeMetadataOntology(errors);
