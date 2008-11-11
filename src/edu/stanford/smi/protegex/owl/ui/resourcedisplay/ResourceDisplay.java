@@ -285,8 +285,6 @@ public class ResourceDisplay extends InstanceDisplay implements ResourcePanel {
         if (getCurrentInstance() != null && getCurrentInstance() instanceof RDFResource) {
             ((RDFResource) getCurrentInstance()).removePropertyValueListener(propertyValueListener);
         }
-
-        owlModel = null;
     }
 
 
