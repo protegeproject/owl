@@ -31,21 +31,14 @@ import edu.stanford.smi.protegex.owl.model.RDFSClass;
 public class SelectResourcesPanel extends SelectInstancesPanel {
 
     private final static String DIRECT_ASSERTED = "Direct Asserted Instances";
-
     private final static String DIRECT_INFERRED = "Direct Inferred Instances";
-
     private final static String ALL_ASSERTED = "All Asserted Instances";
-
-    private final static String CLASS_HIERARCHY = "Class Hierarchy";
-    
+    private final static String CLASS_HIERARCHY = "Class Hierarchy";    
     private final static String ALL_INFERRED = "All Inferred Instances";
 
     private JComboBox instancesComboBox;
-
-    private JTree _clsHierarchyTree;
-    
-    private LabeledComponent instanceLabelComponent;
-    
+    private JTree _clsHierarchyTree;    
+    private LabeledComponent instanceLabelComponent;    
     private Finder _instanceFinder;
     
     public SelectResourcesPanel(OWLModel owlModel, Collection classes) {
@@ -60,17 +53,14 @@ public class SelectResourcesPanel extends SelectInstancesPanel {
         }
     }
 
-    protected LabeledComponent createClsesLabeledComponent(KnowledgeBase kb, Collection clses) {
-        LabeledComponent lc = super.createClsesLabeledComponent(kb, clses);
-        //lc.setHeaderLabel(null);
-        //classComboBox = new JComboBox();
-        //classComboBox.addItem("Asserted Hierarchy");
-        //classComboBox.addItem("Inferred Hierarchy");
-        //lc.setHeaderComponent(classComboBox, BorderLayout.WEST);        
+    @Override
+	protected LabeledComponent createClsesLabeledComponent(KnowledgeBase kb, Collection clses) {
+        LabeledComponent lc = super.createClsesLabeledComponent(kb, clses);            
         return lc;
     }
 
-    protected JComboBox createDirectAllInstanceComboBox() {
+    @Override
+	protected JComboBox createDirectAllInstanceComboBox() {
         super.createDirectAllInstanceComboBox(); // Only not to break stuff
         instancesComboBox = ComponentFactory.createComboBox();
         instancesComboBox.addItem(DIRECT_ASSERTED);
@@ -97,16 +87,23 @@ public class SelectResourcesPanel extends SelectInstancesPanel {
         return _clsHierarchyTree;
     }    
         
-    protected LabeledComponent createInstanceLabeledComponent() {
-    	instanceLabelComponent = super.createInstanceLabeledComponent();
+    @Override
+	protected LabeledComponent createInstanceLabeledComponent() {
+    	instanceLabelComponent = createOWLIndividualsLabledComponent();
         createClassHierarchyTree();
         // set the instance finder so that we can disable it later when
         // the class hierarchy tree is shown
         _instanceFinder = (Finder) instanceLabelComponent.getFooterComponent();
         return instanceLabelComponent;
     }
+  
+    protected LabeledComponent createOWLIndividualsLabledComponent() {
+    	return super.createInstanceLabeledComponent();
+    }
+        
     
-    protected Collection getInstances(Cls cls) {
+    @Override
+	protected Collection getInstances(Cls cls) {
         Object selectedItem = instancesComboBox.getSelectedItem();
         
         // toggle the visibility of the instance list and the class hierarcy tree
@@ -127,7 +124,7 @@ public class SelectResourcesPanel extends SelectInstancesPanel {
             }
         }
         else if (ALL_ASSERTED.equals(selectedItem)) {
-            return cls.getInstances();
+            return getInstances(cls, false);
         }
         else if (ALL_INFERRED.equals(selectedItem)) {
             if (cls instanceof RDFSClass) {
@@ -143,18 +140,27 @@ public class SelectResourcesPanel extends SelectInstancesPanel {
         	// return empty list of instances since the instance list is hidden
         	return Collections.EMPTY_LIST;
         }
-    	return cls.getDirectInstances();
+    	return getInstances(cls, true);
     }
     
-    public Collection getSelection() {
+    protected Collection getInstances(Cls cls, boolean direct) {
+    	return direct ? cls.getDirectInstances() : cls.getInstances();
+    }
+    
+    @Override
+	public Collection getSelection() {
         Object selectedItem = instancesComboBox.getSelectedItem();
         // if the class hierarchy is shown, then return the selection 
         // from the tree not the instance list 
         if (CLASS_HIERARCHY.equals(selectedItem)) {
         	return ComponentUtilities.getSelection(_clsHierarchyTree);
         } else {
-        	return super.getSelection();
+        	return getInstanceSelection();
         }
+    }
+    
+    protected Collection getInstanceSelection() {
+    	return super.getSelection();
     }
     
 }
