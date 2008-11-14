@@ -1,5 +1,16 @@
 package edu.stanford.smi.protegex.owl.ui.individuals;
 
+import java.awt.BorderLayout;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
+
+import javax.swing.Action;
+import javax.swing.JScrollPane;
+
 import edu.stanford.smi.protege.action.DeleteInstancesAction;
 import edu.stanford.smi.protege.ui.FrameComparator;
 import edu.stanford.smi.protege.util.AllowableAction;
@@ -7,10 +18,6 @@ import edu.stanford.smi.protege.util.SelectableContainer;
 import edu.stanford.smi.protegex.owl.model.RDFSClass;
 import edu.stanford.smi.protegex.owl.ui.OWLLabeledComponent;
 import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
-
-import javax.swing.*;
-import java.awt.*;
-import java.util.*;
 
 /**
  * A JPanel to display the inferred instances of a collection of classes.
@@ -20,11 +27,8 @@ import java.util.*;
 public class InferredInstancesListPanel extends SelectableContainer {
 
     private AllowableAction deleteAction;
-
     private OWLLabeledComponent lc;
-
     private InstancesList list;
-
     private Collection types;
 
 
@@ -32,7 +36,8 @@ public class InferredInstancesListPanel extends SelectableContainer {
         list = new InstancesList(null);
         lc = new OWLLabeledComponent("Inferred Instances", new JScrollPane(list));
         deleteAction = new DeleteInstancesAction(this) {
-            protected void onAfterDelete(Object o) {
+            @Override
+			protected void onAfterDelete(Object o) {
                 refill();
             }
         };
@@ -44,7 +49,8 @@ public class InferredInstancesListPanel extends SelectableContainer {
     }
 
 
-    public void dispose() {
+    @Override
+	public void dispose() {
     }
 
 
