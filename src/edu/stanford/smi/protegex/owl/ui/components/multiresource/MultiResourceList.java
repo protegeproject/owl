@@ -15,6 +15,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.ListCellRenderer;
 
 import edu.stanford.smi.protege.model.Project;
+import edu.stanford.smi.protege.util.FrameWithBrowserText;
 import edu.stanford.smi.protege.util.PopupMenuMouseListener;
 import edu.stanford.smi.protege.util.SelectableList;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
@@ -38,7 +39,6 @@ import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
 public class MultiResourceList extends SelectableList implements TripleSelectable {
 
     private MultiResourceListModel listModel;
-
     private boolean symmetric;
 
 
@@ -81,13 +81,19 @@ public class MultiResourceList extends SelectableList implements TripleSelectabl
         return new ResourceRenderer() {
             @Override
 			public void load(Object value) {
-                int row = listModel.getRowOf(value);
-                if (!listModel.getPredicate().getOWLModel().getProject().isMultiUserClient()) {
-                	if (row >= 0 && !listModel.isEditable(row)) {
-                		setGrayedText(true);
-                	}
-                }
-                super.load(value);
+            	if (value instanceof FrameWithBrowserText) {
+            		FrameWithBrowserText fbt = (FrameWithBrowserText) value;
+            		setMainText(fbt.getBrowserText());
+            		setMainIcon(fbt.getFrame().getIcon());
+            		if (!listModel.getPredicate().getOWLModel().getProject().isMultiUserClient()) {
+            			int row = listModel.getRowOf(value);
+                    	if (row >= 0 && !listModel.isEditable(row)) {
+                    		setGrayedText(true);
+                    	}
+            		}
+            	} else {
+            		super.load(value);
+            	}
             }
         };
     }
@@ -177,7 +183,7 @@ public class MultiResourceList extends SelectableList implements TripleSelectabl
         Project project = listModel.getPredicate().getOWLModel().getProject();
         int[] sels = getSelectedIndices();
         for (int sel : sels) {
-            Object value = listModel.getElementAt(sel);
+            Object value = listModel.getResourceAt(sel);
             if (value instanceof RDFResource) {
                 project.show((RDFResource) value);
             }
@@ -189,7 +195,7 @@ public class MultiResourceList extends SelectableList implements TripleSelectabl
         int[] sels = getSelectedIndices();
         Set valuesToRemove = new HashSet();
         for (int sel : sels) {
-            valuesToRemove.add(listModel.getElementAt(sel));
+            valuesToRemove.add(listModel.getResourceAt(sel));
         }
         RDFProperty predicate = listModel.getPredicate();
         RDFResource subject = listModel.getSubject();
