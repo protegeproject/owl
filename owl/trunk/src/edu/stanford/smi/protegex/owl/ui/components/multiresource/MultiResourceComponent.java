@@ -1,17 +1,21 @@
 package edu.stanford.smi.protegex.owl.ui.components.multiresource;
 
+import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
+
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.JScrollPane;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
 import edu.stanford.smi.protegex.owl.ui.OWLLabeledComponent;
 import edu.stanford.smi.protegex.owl.ui.components.AddResourceAction;
+import edu.stanford.smi.protegex.owl.ui.components.AddResourcesWithBrowserTextAction;
 import edu.stanford.smi.protegex.owl.ui.components.AddablePropertyValuesComponent;
 import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
-
-import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import java.awt.*;
-import java.awt.event.ActionEvent;
 
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
@@ -68,7 +72,7 @@ public class MultiResourceComponent extends AddablePropertyValuesComponent {
 	}
 
 	protected AddResourceAction createAddAction(boolean symmetric) {
-        return new AddResourceAction(this, symmetric);
+        return new AddResourcesWithBrowserTextAction(this, symmetric);
     }
 
 
@@ -96,7 +100,8 @@ public class MultiResourceComponent extends AddablePropertyValuesComponent {
     }
 
 
-    public void setSubject(RDFResource subject) {
+    @Override
+	public void setSubject(RDFResource subject) {
         super.setSubject(subject);
         list.getListModel().setSubject(subject);
         updateActions();
