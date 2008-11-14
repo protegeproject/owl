@@ -1,5 +1,17 @@
 package edu.stanford.smi.protegex.owl.ui.individuals;
 
+import java.awt.Component;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+
+import javax.swing.Action;
+import javax.swing.ListModel;
+
 import edu.stanford.smi.protege.util.DoubleClickActionAdapter;
 import edu.stanford.smi.protege.util.SimpleListModel;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
@@ -12,11 +24,6 @@ import edu.stanford.smi.protegex.owl.ui.ResourceRenderer;
 import edu.stanford.smi.protegex.owl.ui.TripleSelectable;
 import edu.stanford.smi.protegex.owl.ui.components.TooltippedSelectableList;
 import edu.stanford.smi.protegex.owl.ui.results.HostResourceDisplay;
-
-import javax.swing.*;
-import java.awt.*;
-import java.util.*;
-import java.util.List;
 
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
