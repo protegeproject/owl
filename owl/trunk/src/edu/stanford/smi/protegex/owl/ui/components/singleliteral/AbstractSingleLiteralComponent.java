@@ -152,6 +152,9 @@ public abstract class AbstractSingleLiteralComponent extends AbstractPropertyVal
 		Object newValue = null;
 		if (text.length() > 0) {
 			RDFSDatatype datatype = getDatatype();
+			if (datatype == null) {
+				datatype = getOWLModel().getXSDstring();
+			}
 			if (getOWLModel().getXSDstring().equals(datatype)) {
 				String language = null;
 				if (oldValue instanceof RDFSLiteral) {
