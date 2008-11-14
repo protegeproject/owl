@@ -5,10 +5,8 @@ import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -41,11 +39,10 @@ import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protege.resource.Colors;
 import edu.stanford.smi.protege.resource.LocalizedText;
 import edu.stanford.smi.protege.resource.ResourceKey;
+import edu.stanford.smi.protege.ui.BrowserTextListFinder;
 import edu.stanford.smi.protege.ui.ConfigureAction;
-import edu.stanford.smi.protege.ui.FrameComparator;
 import edu.stanford.smi.protege.ui.FrameRenderer;
 import edu.stanford.smi.protege.ui.HeaderComponent;
-import edu.stanford.smi.protege.ui.ListFinder;
 import edu.stanford.smi.protege.util.AllowableAction;
 import edu.stanford.smi.protege.util.ApplicationProperties;
 import edu.stanford.smi.protege.util.CollectionUtilities;
@@ -53,6 +50,8 @@ import edu.stanford.smi.protege.util.ComponentFactory;
 import edu.stanford.smi.protege.util.ComponentUtilities;
 import edu.stanford.smi.protege.util.CreateAction;
 import edu.stanford.smi.protege.util.Disposable;
+import edu.stanford.smi.protege.util.FrameWithBrowserText;
+import edu.stanford.smi.protege.util.GetInstancesAndBrowserTextJob;
 import edu.stanford.smi.protege.util.LabeledComponent;
 import edu.stanford.smi.protege.util.ModalDialog;
 import edu.stanford.smi.protege.util.SelectableContainer;
@@ -74,103 +73,90 @@ import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
  */
 public class AssertedInstancesListPanel extends SelectableContainer implements Disposable {
 
-    private Collection classes = Collections.EMPTY_LIST;
+	private OWLModel owlModel;
+    private Collection<Cls> classes = Collections.emptyList();
 
     private AllowableAction createAction;
-
     private AllowableAction createAnonymousAction;
-    
     private AllowableAction copyAction;
-
     private AllowableAction deleteAction;
 
     private HeaderComponent header;
-
     private OWLLabeledComponent lc;
-
     private InstancesList list;
 
-    private Collection listenedToInstances = new ArrayList();
-
-    private OWLModel owlModel;
-
-    private static final int SORT_LIMIT;
-
+    private Collection<Instance> listenedToInstances = new ArrayList<Instance> ();
     private boolean showSubclassInstances;
 
-
+    private static final int SORT_LIMIT;
     static {
+    	//Not applicable anymore - instances are always sorted when displayed.
+    	//If in client-server mode, the instances are sorted on the server
+    	//and they are retrieved by a client using a Protege Job
         SORT_LIMIT = ApplicationProperties.getIntegerProperty("ui.DirectInstancesList.sort_limit", 1000);
     }
 
-
     private ClsListener _clsListener = new ClsAdapter() {
-        public void directInstanceAdded(ClsEvent event) {
+        @Override
+		public void directInstanceAdded(ClsEvent event) {
+        	if (event.isReplacementEvent()) { return; }
             Instance instance = event.getInstance();
-            if (!getModel().contains(instance)) {
-                ComponentUtilities.addListValue(list, instance);
+            FrameWithBrowserText fbt = new FrameWithBrowserText(instance, instance.getBrowserText(), instance.getDirectTypes());
+			if (!getModel().contains(fbt)) {
+                ComponentUtilities.addListValue(list, fbt);
                 instance.addFrameListener(_instanceFrameListener);
             }
         }
 
-
-        public void directInstanceRemoved(ClsEvent event) {
-            removeInstance(event.getInstance());
+        @Override
+		public void directInstanceRemoved(ClsEvent event) {
+        	if (event.isReplacementEvent()) { return; }
+        	removeInstanceListener(event.getInstance());
+        	ComponentUtilities.removeListValue(list, new FrameWithBrowserText(event.getInstance()));            
         }
     };
 
     private FrameListener _clsFrameListener = new FrameAdapter() {
-        public void ownSlotValueChanged(FrameEvent event) {
+        @Override
+		public void ownSlotValueChanged(FrameEvent event) {
             super.ownSlotValueChanged(event);
             updateButtons();
         }
     };
 
     private FrameListener _instanceFrameListener = new FrameAdapter() {
-        public void browserTextChanged(FrameEvent event) {
+        @Override
+		public void browserTextChanged(FrameEvent event) {
             super.browserTextChanged(event);
             sort();
             repaint();
+        }
+
+        @Override
+        public void frameReplaced(FrameEvent event) {        	
+        	Instance oldInst = (Instance) event.getFrame();
+        	Instance newInst = (Instance) event.getNewFrame();
+        	
+        	ComponentUtilities.replaceListValue(list, 
+        			new FrameWithBrowserText(oldInst, oldInst.getBrowserText(), oldInst.getDirectTypes()), 
+        			new FrameWithBrowserText(newInst, newInst.getBrowserText(), newInst.getDirectTypes()));       	 
         }
     };
 
 
     public AssertedInstancesListPanel(OWLModel owlModel) {
         this.owlModel = owlModel;
+
         Action viewAction = createViewAction();
-
         list = new InstancesList(viewAction);
-
+        createListRenderer();
         lc = new OWLLabeledComponent(null, ComponentFactory.createScrollPane(list));
         addButtons(viewAction, lc);
-
-        /*
-         * FIXME: TT: This search code does not handle the browser text of the individuals correctly.
-         * Temporary fix: use the frames instance finder.         
-         */
-        /*
-        ResultsViewModelFind findAlg = new DefaultIndividualFind(owlModel, Find.CONTAINS) {
-            protected boolean isValidFrameToSearch(Frame f) {
-                return (((SimpleListModel) list.getModel()).getValues()).contains(f) &&
-                       super.isValidFrameToSearch(f);
-            }
-
-            public String getDescription() {
-                return "Find Individual Of Selected Class";
-            }
-        };
-        FindAction fAction = new FindInDialogAction(findAlg,
-                                                    Icons.getFindInstanceIcon(),
-                                                    list, true);
-
-        ResourceFinder finder = new ResourceFinder(fAction);
-        lc.setFooterComponent(finder);
-        */
-        
-        lc.setFooterComponent(new ListFinder(list, ResourceKey.INSTANCE_SEARCH_FOR));
+        lc.setFooterComponent(new BrowserTextListFinder(list, ResourceKey.INSTANCE_SEARCH_FOR));
 
         lc.setBorder(ComponentUtilities.getAlignBorder());
         add(lc, BorderLayout.CENTER);
+
         JPanel panel = new JPanel(new BorderLayout());
         panel.add(createHeader(), BorderLayout.NORTH);
         add(panel, BorderLayout.NORTH);
@@ -181,10 +167,10 @@ public class AssertedInstancesListPanel extends SelectableContainer implements D
     }
 
 
-    private void updateLabel() {
+	private void updateLabel() {
         String text;
         Cls cls = getSoleAllowedCls();
-        BrowserSlotPattern pattern = (cls == null) ? null : cls.getBrowserSlotPattern();
+        BrowserSlotPattern pattern = cls == null ? null : cls.getBrowserSlotPattern();
         if (pattern == null) {
             text = null;
         }
@@ -214,6 +200,7 @@ public class AssertedInstancesListPanel extends SelectableContainer implements D
     }
 
 
+    //TODO: fix me
     private void fixRenderer() {
         FrameRenderer frameRenderer = (FrameRenderer) list.getCellRenderer();
         frameRenderer.setDisplayType(showSubclassInstances);
@@ -241,13 +228,14 @@ public class AssertedInstancesListPanel extends SelectableContainer implements D
 
 
     private void addInstanceListeners() {
-        ListModel model = list.getModel();
+        ListModel model = getModel();
         int start = list.getFirstVisibleIndex();
         int stop = list.getLastVisibleIndex();
-        for (int i = start; i < stop; ++i) {
-            Instance instance = (Instance) model.getElementAt(i);
-            addInstanceListener(instance);
-
+        if (start < 0) { return; }        
+        for (int i = start; i < stop + 1 ; i++) {
+           FrameWithBrowserText fbt = (FrameWithBrowserText) model.getElementAt(i);
+           Instance instance = (Instance)fbt.getFrame();
+           addInstanceListener(instance);
         }
     }
 
@@ -268,13 +256,15 @@ public class AssertedInstancesListPanel extends SelectableContainer implements D
     }
 
 
+    //TODO
     protected Action createCreateAction() {
-        createAction = new CreateAction("Create instance", OWLIcons.getCreateIndividualIcon(OWLIcons.RDF_INDIVIDUAL)) {
-            public void onCreate() {
+        createAction = new CreateAction("Create instance ", OWLIcons.getCreateIndividualIcon(OWLIcons.RDF_INDIVIDUAL)) {
+            @Override
+			public void onCreate() {
                 if (!classes.isEmpty()) {
                 	RDFSClass firstType = (RDFSClass) CollectionUtilities.getFirstItem(classes);
                 	String name = owlModel.createNewResourceName(NamespaceUtil.getLocalName(firstType.getName()));
-                	
+
                     Instance instance = owlModel.createInstance(name, classes);
                     if (instance instanceof Cls) {
                         Cls newCls = (Cls) instance;
@@ -282,17 +272,19 @@ public class AssertedInstancesListPanel extends SelectableContainer implements D
                             newCls.addDirectSuperclass(owlModel.getOWLThingClass());
                         }
                     }
-                    list.setSelectedValue(instance, true);
+                    list.setSelectedValue(new FrameWithBrowserText(instance), true);
                 }
             }
         };
         return createAction;
     }
 
-    
+
+    //TODO
     protected Action createCreateAnonymousAction() {
         createAnonymousAction = new CreateAction("Create anonymous instance", OWLIcons.getCreateIndividualIcon(OWLIcons.RDF_ANON_INDIVIDUAL)) {
-            public void onCreate() {
+            @Override
+			public void onCreate() {
                 if (!classes.isEmpty()) {
                 	String name = owlModel.getNextAnonymousResourceName();
                     Instance instance = owlModel.createInstance(name, classes);
@@ -302,17 +294,18 @@ public class AssertedInstancesListPanel extends SelectableContainer implements D
                             newCls.addDirectSuperclass(owlModel.getOWLThingClass());
                         }
                     }
-                    list.setSelectedValue(instance, true);
+                    list.setSelectedValue(new FrameWithBrowserText(instance), true);
                 }
             }
         };
         return createAnonymousAction;
     }
-    
+
 
     protected Action createConfigureAction() {
         return new ConfigureAction() {
-            public void loadPopupMenu(JPopupMenu menu) {
+            @Override
+			public void loadPopupMenu(JPopupMenu menu) {
                 menu.add(createSetDisplaySlotAction());
                 menu.add(createShowAllInstancesAction());
             }
@@ -349,7 +342,7 @@ public class AssertedInstancesListPanel extends SelectableContainer implements D
     protected Cls getSoleAllowedCls() {
         Cls cls;
         if (classes.size() == 1) {
-            cls = (Cls) CollectionUtilities.getFirstItem(classes);
+            cls = CollectionUtilities.getFirstItem(classes);
         }
         else {
             cls = null;
@@ -364,7 +357,7 @@ public class AssertedInstancesListPanel extends SelectableContainer implements D
         Cls cls = getSoleAllowedCls();
         if (cls != null) {
             BrowserSlotPattern pattern = cls.getBrowserSlotPattern();
-            Slot browserSlot = (pattern != null && pattern.isSimple()) ? pattern.getFirstSlot() : null;
+            Slot browserSlot = pattern != null && pattern.isSimple() ? pattern.getFirstSlot() : null;
             Iterator i = cls.getVisibleTemplateSlots().iterator();
             while (i.hasNext()) {
                 Slot slot = (Slot) i.next();
@@ -426,7 +419,8 @@ public class AssertedInstancesListPanel extends SelectableContainer implements D
 
     protected Action createCopyAction() {
         copyAction = new MakeCopiesAction(ResourceKey.INSTANCE_COPY, this) {
-            protected Instance copy(Instance instance, boolean isDeep) {
+            @Override
+			protected Instance copy(Instance instance, boolean isDeep) {
                 Instance copy = super.copy(instance, isDeep);
                 setSelectedInstance(copy);
                 return copy;
@@ -443,14 +437,16 @@ public class AssertedInstancesListPanel extends SelectableContainer implements D
 
     protected Action createViewAction() {
         return new ViewAction(ResourceKey.INSTANCE_VIEW, this) {
-            public void onView(Object o) {
+            @Override
+			public void onView(Object o) {
                 owlModel.getProject().show((Instance) o);
             }
         };
     }
 
 
-    public void dispose() {
+    @Override
+	public void dispose() {
         removeClsListeners();
         removeInstanceListeners();
     }
@@ -480,7 +476,8 @@ public class AssertedInstancesListPanel extends SelectableContainer implements D
     }
 
 
-    public void onSelectionChange() {
+    @Override
+	public void onSelectionChange() {
         // Log.enter(this, "onSelectionChange");
         boolean editable = isSelectionEditable();
         ComponentUtilities.setDragAndDropEnabled(list, editable);
@@ -488,9 +485,9 @@ public class AssertedInstancesListPanel extends SelectableContainer implements D
     }
 
 
-    private void removeInstance(Instance instance) {
-        ComponentUtilities.removeListValue(list, instance);
+    private void removeInstanceListener(Instance instance) {                
         instance.removeFrameListener(_instanceFrameListener);
+        listenedToInstances.remove(instance);
     }
 
 
@@ -515,25 +512,8 @@ public class AssertedInstancesListPanel extends SelectableContainer implements D
 
 
     public void reload() {
-        removeInstanceListeners();
-        Object selectedValue = list.getSelectedValue();
-        Set instanceSet = new LinkedHashSet();
-        Iterator i = classes.iterator();
-        while (i.hasNext()) {
-            Cls cls = (Cls) i.next();
-            instanceSet.addAll(getInstances(cls));
-        }
-        List instances = new ArrayList(instanceSet);
-        if (instances.size() <= SORT_LIMIT) {
-            Collections.sort(instances, new FrameComparator());
-        }
-        getModel().setValues(instances);
-        if (instances.contains(selectedValue)) {
-            list.setSelectedValue(selectedValue, true);
-        }
-        else if (!instances.isEmpty()) {
-            list.setSelectedIndex(0);
-        }
+        removeInstanceListeners();   
+        getModel().setValues(getFramesWithBrowserText(classes));
         addInstanceListeners();
         reloadHeader(classes);
         updateLabel();
@@ -557,6 +537,11 @@ public class AssertedInstancesListPanel extends SelectableContainer implements D
         JLabel label = (JLabel) header.getComponent();
         label.setText(text.toString());
         label.setIcon(icon);
+    }
+
+    private Collection<FrameWithBrowserText> getFramesWithBrowserText(Collection<Cls> clses) {
+    	GetInstancesAndBrowserTextJob job = new GetInstancesAndBrowserTextJob(owlModel, clses, !showSubclassInstances);
+    	return job.execute();
     }
 
 
@@ -589,6 +574,7 @@ public class AssertedInstancesListPanel extends SelectableContainer implements D
 
 
     public void sort() {
+    	/*
         list.setListenerNotificationEnabled(false);
         Object selectedValue = list.getSelectedValue();
         List instances = new ArrayList(getModel().getValues());
@@ -598,6 +584,8 @@ public class AssertedInstancesListPanel extends SelectableContainer implements D
         getModel().setValues(instances);
         list.setSelectedValue(selectedValue);
         list.setListenerNotificationEnabled(true);
+        */
+    	//TODO: fix me
     }
 
 
@@ -608,13 +596,45 @@ public class AssertedInstancesListPanel extends SelectableContainer implements D
 
 
     private void updateButtons() {
-        Cls cls = (Cls) CollectionUtilities.getFirstItem(classes);        
+        Cls cls = CollectionUtilities.getFirstItem(classes);
         createAction.setEnabled(cls == null ? false : cls.isConcrete());
         createAnonymousAction.setEnabled(cls == null ? false : cls.isConcrete());
-        
+
         Instance instance = (Instance) getSoleSelection();
         boolean allowed = instance != null && instance instanceof SimpleInstance;
         copyAction.setAllowed(allowed);
+    }
+
+
+
+    private void createListRenderer() {
+    	FrameRenderer listRenderer = new FrameRenderer() {
+    		@Override
+    		public void load(Object value) {
+    			if (value instanceof FrameWithBrowserText) {
+    				showFrameWithBrowserText((FrameWithBrowserText)value);
+    			} else {
+    				super.load(value);
+    			}
+    		}
+
+			private void showFrameWithBrowserText(FrameWithBrowserText fbt) {
+				setMainText(fbt.getBrowserText());
+				setMainIcon(fbt.getFrame().getIcon()); //should not go to the server
+			}
+    	};
+    	list.setCellRenderer(listRenderer);
+	}
+
+    @Override
+    public Collection getSelection() {
+    	Collection<FrameWithBrowserText> fbts = super.getSelection();
+    	if (fbts == null) { return null; }
+    	Collection<Instance> instances = new HashSet<Instance>();
+    	for (FrameWithBrowserText fbt : fbts) {
+			instances.add((Instance)fbt.getFrame());
+		}
+    	return instances;
     }
 
 
@@ -623,7 +643,9 @@ public class AssertedInstancesListPanel extends SelectableContainer implements D
      *
      * @deprecated
      */
-    public void setShowDisplaySlotPanel(boolean b) {
+    @Deprecated
+	public void setShowDisplaySlotPanel(boolean b) {
 
     }
+
 }
