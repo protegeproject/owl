@@ -1,13 +1,33 @@
 package edu.stanford.smi.protegex.owl.ui.components.singleresource;
 
+import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.JComponent;
+import javax.swing.JList;
+import javax.swing.JPopupMenu;
+
 import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.Instance;
 import edu.stanford.smi.protege.model.KnowledgeBase;
 import edu.stanford.smi.protege.ui.FrameRenderer;
-import edu.stanford.smi.protege.util.*;
-import edu.stanford.smi.protege.widget.ReadOnlyWidgetConfigurationPanel;
-import edu.stanford.smi.protege.widget.WidgetConfigurationPanel;
-import edu.stanford.smi.protegex.owl.model.*;
+import edu.stanford.smi.protege.util.CollectionUtilities;
+import edu.stanford.smi.protege.util.ComponentFactory;
+import edu.stanford.smi.protege.util.ComponentUtilities;
+import edu.stanford.smi.protege.util.Disposable;
+import edu.stanford.smi.protege.util.PopupMenuMouseListener;
+import edu.stanford.smi.protegex.owl.model.OWLAnonymousClass;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.model.RDFProperty;
+import edu.stanford.smi.protegex.owl.model.RDFResource;
+import edu.stanford.smi.protegex.owl.model.RDFSClass;
+import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
+import edu.stanford.smi.protegex.owl.model.RDFUntypedResource;
 import edu.stanford.smi.protegex.owl.model.event.PropertyValueAdapter;
 import edu.stanford.smi.protegex.owl.model.event.PropertyValueListener;
 import edu.stanford.smi.protegex.owl.model.impl.OWLUtil;
@@ -18,13 +38,6 @@ import edu.stanford.smi.protegex.owl.ui.components.AbstractPropertyValuesCompone
 import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
 import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
  */
@@ -32,7 +45,8 @@ public class SingleResourceComponent extends AbstractPropertyValuesComponent imp
 
 	
     private PropertyValueListener browserTextListener = new PropertyValueAdapter() {
-        public void browserTextChanged(RDFResource resource) {
+        @Override
+		public void browserTextChanged(RDFResource resource) {
             list.repaint();
         }
     };
@@ -78,12 +92,14 @@ public class SingleResourceComponent extends AbstractPropertyValuesComponent imp
         list.setCellRenderer(FrameRenderer.createInstance());
         list.addMouseListener(new PopupMenuMouseListener(list) {
 
-            protected JPopupMenu getPopupMenu() {
+            @Override
+			protected JPopupMenu getPopupMenu() {
                 return createPopupMenu();
             }
 
 
-            protected void setSelection(JComponent c, int x, int y) {
+            @Override
+			protected void setSelection(JComponent c, int x, int y) {
             }
         });
         OWLLabeledComponent lc = new OWLLabeledComponent((label == null ? getLabel():label), list);
@@ -130,7 +146,7 @@ public class SingleResourceComponent extends AbstractPropertyValuesComponent imp
     protected void handleCreate() {
         OWLModel owlModel = getOWLModel();
         RDFSNamedClass clas = (RDFSNamedClass) getSubjectType();
-        Collection clses = new ArrayList(clas.getUnionRangeClasses((RDFProperty) getPredicate()));
+        Collection clses = new ArrayList(clas.getUnionRangeClasses(getPredicate()));
         if (containsAnonymousClass(clses)) {
             clses.clear();
         }
