@@ -1,9 +1,16 @@
 package edu.stanford.smi.protegex.owl.ui.dialogs;
 
+import java.awt.Component;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
+
 import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.Instance;
 import edu.stanford.smi.protege.ui.SelectClsesPanel;
-import edu.stanford.smi.protege.ui.SelectInstanceFromCollectionPanel;
 import edu.stanford.smi.protege.util.Assert;
 import edu.stanford.smi.protege.util.CollectionUtilities;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
@@ -11,11 +18,7 @@ import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
 import edu.stanford.smi.protegex.owl.model.RDFSDatatype;
 import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
-import edu.stanford.smi.protegex.owl.swrl.ui.code.SWRLSymbolPanel;
 import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
-
-import java.awt.*;
-import java.util.*;
 
 /**
  * The default implementation based on the core Protege dialogs.
@@ -187,7 +190,8 @@ public class DefaultSelectionDialogFactory extends AbstractSelectionDialogFactor
     }
 
 
-    public RDFSNamedClass selectClass(Component parent, OWLModel owlModel, Collection rootClasses, String title) {
+    @Override
+	public RDFSNamedClass selectClass(Component parent, OWLModel owlModel, Collection rootClasses, String title) {
         if (parent == null) {
             parent = ProtegeUI.getProjectView(owlModel.getProject());
         }
@@ -254,6 +258,28 @@ public class DefaultSelectionDialogFactory extends AbstractSelectionDialogFactor
         return null;
     }
 
+    
+    public RDFResource selectResourceWithBrowserTextByType(Component parent, OWLModel owlModel, Collection allowedClasses, String title) {
+        if (!allowedClasses.isEmpty()) {
+            if (parent == null) {
+                parent = ProtegeUI.getTopLevelContainer(owlModel.getProject());
+            }
+            Collection modifiedVis = ensureResourcesHaveVisibility(allowedClasses, true);
+            SelectResourcesPanel panel = new SelectResourcesWithBrowserTextPanel(owlModel, allowedClasses, true);
+            int result = ProtegeUI.getModalDialogFactory().showDialog(parent, panel, title, ModalDialogFactory.MODE_OK_CANCEL);
+            ensureResourcesHaveVisibility(modifiedVis, false);
+            if (result == ModalDialogFactory.OPTION_OK) {
+                Collection instances = panel.getSelection();
+                for (Iterator it = instances.iterator(); it.hasNext();) {
+                    Instance instance = (Instance) it.next();
+                    if (instance instanceof RDFResource) {
+                        return (RDFResource) instance;
+                    }
+                }
+            }
+        }
+        return null;
+    }
 
     public Set selectResourcesByType(Component parent, OWLModel owlModel, Collection allowedClasses, String title) {
         if (!allowedClasses.isEmpty()) {
@@ -278,6 +304,32 @@ public class DefaultSelectionDialogFactory extends AbstractSelectionDialogFactor
         }
         return Collections.EMPTY_SET;
     }
+    
+    
+    public Set selectResourcesWithBrowserTextByType(Component parent, OWLModel owlModel, Collection allowedClasses, String title) {
+        if (!allowedClasses.isEmpty()) {
+            Collection modifiedVis = ensureResourcesHaveVisibility(allowedClasses, true);
+            if (parent == null) {
+                parent = ProtegeUI.getTopLevelContainer(owlModel.getProject());
+            }
+            SelectResourcesPanel panel = new SelectResourcesWithBrowserTextPanel(owlModel, allowedClasses, true);
+            int result = ProtegeUI.getModalDialogFactory().showDialog(parent, panel, title, ModalDialogFactory.MODE_OK_CANCEL);
+            ensureResourcesHaveVisibility(modifiedVis, false);
+            if (result == ModalDialogFactory.OPTION_OK) {
+                Collection instances = panel.getSelection();
+                Set set = new HashSet();
+                for (Iterator it = instances.iterator(); it.hasNext();) {
+                    Instance instance = (Instance) it.next();
+                    if (instance instanceof RDFResource) {
+                        set.add(instance);
+                    }
+                }
+                return set;
+            }
+        }
+        return Collections.EMPTY_SET;
+    }
+
 
 
     public Set selectResourcesFromCollection(Component parent, OWLModel owlModel, Collection resources, String title) {
