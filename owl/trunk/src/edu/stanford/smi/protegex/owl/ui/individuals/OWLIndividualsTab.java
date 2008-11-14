@@ -1,12 +1,40 @@
 package edu.stanford.smi.protegex.owl.ui.individuals;
 
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.dnd.DnDConstants;
+import java.awt.dnd.DragSource;
+import java.awt.dnd.DropTarget;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+
+import javax.swing.JComponent;
+import javax.swing.JList;
+import javax.swing.JPopupMenu;
+import javax.swing.JSplitPane;
+import javax.swing.JTabbedPane;
+
 import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.Instance;
 import edu.stanford.smi.protege.model.Project;
-import edu.stanford.smi.protege.ui.FrameRenderer;
-import edu.stanford.smi.protege.util.*;
+import edu.stanford.smi.protege.util.CollectionUtilities;
+import edu.stanford.smi.protege.util.ComponentFactory;
+import edu.stanford.smi.protege.util.LabeledComponent;
+import edu.stanford.smi.protege.util.PopupMenuMouseListener;
+import edu.stanford.smi.protege.util.Selectable;
+import edu.stanford.smi.protege.util.SelectionEvent;
+import edu.stanford.smi.protege.util.SelectionListener;
+import edu.stanford.smi.protege.util.WaitCursor;
 import edu.stanford.smi.protegex.owl.database.OWLDatabaseModel;
-import edu.stanford.smi.protegex.owl.model.*;
+import edu.stanford.smi.protegex.owl.model.OWLAllDifferent;
+import edu.stanford.smi.protegex.owl.model.OWLOntology;
+import edu.stanford.smi.protegex.owl.model.RDFIndividual;
+import edu.stanford.smi.protegex.owl.model.RDFResource;
+import edu.stanford.smi.protegex.owl.model.RDFSClass;
+import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
 import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
 import edu.stanford.smi.protegex.owl.ui.actions.ResourceActionManager;
 import edu.stanford.smi.protegex.owl.ui.cls.OWLClassesTab;
@@ -16,16 +44,6 @@ import edu.stanford.smi.protegex.owl.ui.resourcedisplay.ResourceDisplay;
 import edu.stanford.smi.protegex.owl.ui.resourcedisplay.ResourcePanel;
 import edu.stanford.smi.protegex.owl.ui.widget.AbstractTabWidget;
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.dnd.DnDConstants;
-import java.awt.dnd.DragSource;
-import java.awt.dnd.DropTarget;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-
 /**
  * A tab used to acquire individuals.
  *
@@ -33,14 +51,10 @@ import java.util.Iterator;
  */
 public class OWLIndividualsTab extends AbstractTabWidget implements NavigationHistoryTabWidget {
 
+	private IndividualsTabClassesPanel classesPanel;
     private AssertedInstancesListPanel assertedInstancesListPanel;
-
-    private IndividualsTabClassesPanel classesPanel;
-
     private InferredInstancesListPanel inferredInstancesListPanel;
-
     private ResourcePanel resourcePanel;
-
     private AssertedTypesListPanel typesListPanel;
 
 
@@ -87,7 +101,8 @@ public class OWLIndividualsTab extends AbstractTabWidget implements NavigationHi
         setInstanceSelectable((Selectable) result.getDragComponent());
         final JList list = (JList) result.getDragComponent();
         list.addMouseListener(new PopupMenuMouseListener(list) {
-            protected JPopupMenu getPopupMenu() {
+            @Override
+			protected JPopupMenu getPopupMenu() {
                 Instance instance = (Instance) list.getSelectedValue();
                 if (instance instanceof RDFResource) {
                     JPopupMenu menu = new JPopupMenu();
@@ -100,7 +115,8 @@ public class OWLIndividualsTab extends AbstractTabWidget implements NavigationHi
             }
 
 
-            protected void setSelection(JComponent c, int x, int y) {
+            @Override
+			protected void setSelection(JComponent c, int x, int y) {
                 for (int i = 0; i < list.getModel().getSize(); i++) {
                     if (list.getCellBounds(i, i).contains(x, y)) {
                         list.setSelectedIndex(i);
@@ -238,7 +254,8 @@ public class OWLIndividualsTab extends AbstractTabWidget implements NavigationHi
     /**
      * @deprecated
      */
-    public void setSelectedCls(Cls cls) {
+    @Deprecated
+	public void setSelectedCls(Cls cls) {
         if (cls instanceof RDFSNamedClass) {
             setSelectedClass((RDFSNamedClass) cls);
         }
@@ -253,7 +270,8 @@ public class OWLIndividualsTab extends AbstractTabWidget implements NavigationHi
     /**
      * @deprecated
      */
-    public void setSelectedInstance(Instance instance) {
+    @Deprecated
+	public void setSelectedInstance(Instance instance) {
         if (instance instanceof RDFResource) {
             setSelectedResource((RDFResource) instance);
         }
