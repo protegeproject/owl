@@ -1,18 +1,25 @@
 package edu.stanford.smi.protegex.owl.ui.components.singleresource;
 
-import edu.stanford.smi.protegex.owl.model.*;
-import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
-import edu.stanford.smi.protegex.owl.ui.components.PropertyValuesComponent;
-import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
-import edu.stanford.smi.protegex.owl.ui.resourceselection.ResourceSelectionAction;
-import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
-
-import javax.swing.*;
-import java.awt.*;
+import java.awt.Component;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+
+import javax.swing.Action;
+
+import edu.stanford.smi.protegex.owl.model.OWLEnumeratedClass;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.model.RDFProperty;
+import edu.stanford.smi.protegex.owl.model.RDFResource;
+import edu.stanford.smi.protegex.owl.model.RDFSClass;
+import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
+import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
+import edu.stanford.smi.protegex.owl.ui.components.PropertyValuesComponent;
+import edu.stanford.smi.protegex.owl.ui.dialogs.DefaultSelectionDialogFactory;
+import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
+import edu.stanford.smi.protegex.owl.ui.resourceselection.ResourceSelectionAction;
+import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
 
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
@@ -40,7 +47,8 @@ public class SetResourceAction extends ResourceSelectionAction {
     }
 
 
-    public Collection getSelectableResources() {
+    @Override
+	public Collection getSelectableResources() {
         RDFResource subject = component.getSubject();
         RDFProperty predicate = component.getPredicate();
         Set clses = getUnionRangeClasses(subject, predicate, true);
@@ -86,7 +94,8 @@ public class SetResourceAction extends ResourceSelectionAction {
     }
 
 
-    public RDFResource pickResource() {
+    @Override
+	public RDFResource pickResource() {
         RDFResource subject = component.getSubject();
         RDFProperty predicate = component.getPredicate();
         OWLModel owlModel = predicate.getOWLModel();
@@ -98,7 +107,8 @@ public class SetResourceAction extends ResourceSelectionAction {
                 owlModel.getRDFUntypedResourcesClass().setVisible(true);
                 clses.add(owlModel.getRDFUntypedResourcesClass());
             }
-            RDFResource resource = ProtegeUI.getSelectionDialogFactory().selectResourceByType((Component) component, owlModel, clses);
+            //RDFResource resource = ProtegeUI.getSelectionDialogFactory().selectResourceByType((Component) component, owlModel, clses);
+            RDFResource resource = new DefaultSelectionDialogFactory().selectResourceWithBrowserTextByType((Component) component, owlModel, clses, "Select Resource");
             owlModel.getRDFUntypedResourcesClass().setVisible(false);
             return resource;
         }
