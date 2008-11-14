@@ -1,5 +1,17 @@
 package edu.stanford.smi.protegex.owl.ui.resourcedisplay;
 
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+
+import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.DocumentEvent;
+
 import edu.stanford.smi.protege.event.FrameAdapter;
 import edu.stanford.smi.protege.event.FrameEvent;
 import edu.stanford.smi.protege.event.FrameListener;
@@ -11,15 +23,6 @@ import edu.stanford.smi.protegex.owl.model.RDFResource;
 import edu.stanford.smi.protegex.owl.model.impl.OWLUtil;
 import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
 
-import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.DocumentEvent;
-import java.awt.*;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-
 /**
  * @author Nick Drummond, Medical Informatics Group, University of Manchester
  *         17-Jan-2006
@@ -27,7 +30,8 @@ import java.awt.event.KeyEvent;
 public class InstanceNameEditor extends JTextField {
 
     private DocumentChangedListener documentListener = new DocumentChangedListener() {
-        public void insertUpdate(DocumentEvent event) {
+        @Override
+		public void insertUpdate(DocumentEvent event) {
             if (getText().indexOf(' ') > 0) {
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
@@ -46,11 +50,9 @@ public class InstanceNameEditor extends JTextField {
     };
 
     private FrameListener frameListener = new FrameAdapter() {
-        public void nameChanged(FrameEvent event) {
-            updateAll();
-        }
-
-        public void deleted(FrameEvent event) {
+        @Override
+		public void deleted(FrameEvent event) {
+        	if (event.isReplacementEvent()) { return; }
             instance = null;
             updateAll();
         }
@@ -64,13 +66,15 @@ public class InstanceNameEditor extends JTextField {
         OWLUI.addCopyPastePopup(this);
 
         addFocusListener(new FocusAdapter() {
-            public void focusLost(FocusEvent e) {
+            @Override
+			public void focusLost(FocusEvent e) {
                 attemptCommit();
             }
         });
 
         addKeyListener(new KeyAdapter() {
-            public void keyPressed(KeyEvent event) {
+            @Override
+			public void keyPressed(KeyEvent event) {
                 switch (event.getKeyCode()) {
                     case KeyEvent.VK_ENTER:
                         attemptCommit();
@@ -85,12 +89,14 @@ public class InstanceNameEditor extends JTextField {
         getDocument().addDocumentListener(documentListener);
     }
 
-    public Dimension getPreferredSize() {
+    @Override
+	public Dimension getPreferredSize() {
         Dimension size = super.getPreferredSize();
         return new Dimension(size.width + 130, size.height);
     }
 
-    public void addNotify() {
+    @Override
+	public void addNotify() {
         super.addNotify();
         if (needsNameChange()) {
             selectAll();
@@ -106,13 +112,12 @@ public class InstanceNameEditor extends JTextField {
             }
             if (isValidName(newName)) {
                 String oldName = instance.getName();
-                if (!oldName.equals(newName)) {
+                if (!oldName.equals(newName)) {                	
                     try {
-                        instance = (Instance) instance.rename(newName);
+                    	instance = (Instance) instance.rename(newName);
                     } catch (Exception e) {
                         OWLUI.handleError(((OWLModel)instance.getKnowledgeBase()),e);
                     }
-
                 }
             }
         }
@@ -142,7 +147,7 @@ public class InstanceNameEditor extends JTextField {
         edu.stanford.smi.protege.model.Frame currentFrame = getInstance();
         if (currentFrame != null) {
             edu.stanford.smi.protege.model.Frame frame = currentFrame.getKnowledgeBase().getFrame(name);
-            boolean isDuplicate = (frame != null) && !frame.equals(currentFrame);
+            boolean isDuplicate = frame != null && !frame.equals(currentFrame);
             boolean isValid = currentFrame.getKnowledgeBase().isValidFrameName(name, currentFrame);
             return isValid && !isDuplicate && name.length() > 0;
         }
@@ -193,7 +198,8 @@ public class InstanceNameEditor extends JTextField {
     }
 
 
-    public void selectAll() {
+    @Override
+	public void selectAll() {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 InstanceNameEditor.super.selectAll();
@@ -201,7 +207,7 @@ public class InstanceNameEditor extends JTextField {
             }
         });
     }
-    
+
     public void selectLocalName() {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
@@ -226,7 +232,8 @@ public class InstanceNameEditor extends JTextField {
     }
 
 
-    public void setText(String text) {
+    @Override
+	public void setText(String text) {
         documentListener.disable();
         super.setText(text == null ? "" : text);
         documentListener.enable();
