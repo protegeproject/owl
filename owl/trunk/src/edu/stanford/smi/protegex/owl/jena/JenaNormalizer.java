@@ -314,35 +314,6 @@ public class JenaNormalizer {
     }
 
 
-    private void assignNamesToAnonymousIndividuals(OntModel ontModel, String defaultNamespace) {
-        String baseName = defaultNamespace + AbstractOWLModel.ANONYMOUS_BASE;
-        int index = 1;
-        for (Iterator it = Jena.cloneIt(ontModel.listIndividuals()); it.hasNext();) {
-            Individual individual = (Individual) it.next();
-            if (individual.getURI() == null) {
-                Resource type = individual.getRDFType();
-                String ns = type.getNameSpace();
-                if (!ns.equals(OWL.NS) &&
-                        !type.equals(RDF.List) &&
-                        !ns.equals(RDFS.getURI().toString()) &&
-                        !ns.equals(RDF.getURI().toString())) {
-                    if (!type.canAs(OntClass.class) ||
-                            !((OntClass) type.as(OntClass.class)).hasSuperClass(RDF.List)) {
-                        String name;
-                        do {
-                            name = baseName + index++;
-                        }
-                        while (ontModel.getIndividual(name) != null);
-                        Jena.renameResource(ontModel, individual, name);
-                        if (log.isLoggable(Level.FINE)) {
-                            log.fine("* Assigned name " + name + " to anonymous individual " + individual);
-                        }
-                    }
-                }
-            }
-        }
-    }
-
 
     private void assignNamesToAnonymousTopLevelClasses(OntModel ontModel, String defaultNamespace) {
         String baseName = defaultNamespace + AbstractOWLModel.ANONYMOUS_BASE;
