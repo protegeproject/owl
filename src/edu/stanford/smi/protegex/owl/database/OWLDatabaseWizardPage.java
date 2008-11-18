@@ -22,7 +22,9 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
 import edu.stanford.smi.protege.exception.ProtegeIOException;
+import edu.stanford.smi.protege.storage.database.DatabaseFrameDb;
 import edu.stanford.smi.protege.storage.database.DatabaseWizardPage;
+import edu.stanford.smi.protege.storage.database.DefaultDatabaseFrameDb;
 import edu.stanford.smi.protege.util.ComponentFactory;
 import edu.stanford.smi.protege.util.LabeledComponent;
 import edu.stanford.smi.protege.util.Log;
@@ -46,6 +48,10 @@ public class OWLDatabaseWizardPage extends DatabaseWizardPage {
     public OWLDatabaseWizardPage(Wizard wizard, OWLDatabasePlugin plugin) {
         super(wizard, plugin);
         this.plugin = plugin;
+    }
+    
+    protected Class<? extends DatabaseFrameDb> getDatabaseFrameDbClass() {
+        return DefaultDatabaseFrameDb.class;
     }
     
     @Override
@@ -126,7 +132,10 @@ public class OWLDatabaseWizardPage extends DatabaseWizardPage {
         }
         String existingOntologyName;
         try {
-            existingOntologyName = DatabaseFactoryUtils.getOntologyFromTable(getFieldText(DRIVER_PROPERTY), getFieldText(URL_PROPERTY), getFieldText(USERNAME_PROPERTY), getFieldText(PASSWORD_PROPERTY), getFieldText(TABLENAME_PROPERTY));
+            existingOntologyName = DatabaseFactoryUtils.getOntologyFromTable(getDatabaseFrameDbClass(),
+                                                                             getFieldText(DRIVER_PROPERTY), getFieldText(URL_PROPERTY), 
+                                                                             getFieldText(USERNAME_PROPERTY), getFieldText(PASSWORD_PROPERTY), 
+                                                                             getFieldText(TABLENAME_PROPERTY));
         }
         catch (SQLException sqle) {
             existingOntologyName = null;
