@@ -26,6 +26,7 @@ import edu.stanford.smi.protege.exception.OntologyLoadException;
 import edu.stanford.smi.protege.storage.database.DatabaseFrameDb;
 import edu.stanford.smi.protege.storage.database.DatabaseFrameDbFactory;
 import edu.stanford.smi.protege.storage.database.DatabaseProperty;
+import edu.stanford.smi.protege.storage.database.DefaultDatabaseFrameDb;
 import edu.stanford.smi.protege.storage.database.ValueCachingNarrowFrameStore;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.database.DatabaseFactoryUtils;
@@ -156,6 +157,7 @@ public class DatabaseRepository implements Repository {
         String ontology = null;
 	    try {
 	        ontology = DatabaseFactoryUtils.getOntologyFromTable(
+	                DefaultDatabaseFrameDb.class,
 					getDriver(), getUrl(), getUser(), getPassword(), table );
 	        if (ontology != null) {
 	            ontologyToTable.put(new URI(ontology), table);
@@ -179,7 +181,7 @@ public class DatabaseRepository implements Repository {
     public TripleStore loadImportedAssertions(OWLModel owlModel, URI ontologyName)
 			throws OntologyLoadException {
 	    String table = ontologyToTable.get(ontologyName);
-	    DatabaseFrameDb dbFrameStore = DatabaseFrameDbFactory.createDatabaseFrameDb();
+	    DatabaseFrameDb dbFrameStore = DatabaseFrameDbFactory.createDatabaseFrameDb(DefaultDatabaseFrameDb.class);
 	    dbFrameStore.initialize(owlModel.getOWLJavaFactory(), getDriver(), getUrl(), getUser(), getPassword(), table, true);
 	    ValueCachingNarrowFrameStore valueCache = new ValueCachingNarrowFrameStore(dbFrameStore);
 	    valueCache.setName(ontologyName.toString());
