@@ -7,6 +7,8 @@ import java.sql.SQLException;
 import java.util.Collection;
 
 import edu.stanford.smi.protege.exception.OntologyLoadException;
+import edu.stanford.smi.protege.storage.database.DatabaseFrameDb;
+import edu.stanford.smi.protege.storage.database.DefaultDatabaseFrameDb;
 import edu.stanford.smi.protegex.owl.database.DatabaseFactoryUtils;
 import edu.stanford.smi.protegex.owl.database.OWLDatabaseKnowledgeBaseFactory;
 import edu.stanford.smi.protegex.owl.model.factory.AlreadyImportedException;
@@ -16,6 +18,8 @@ public class OwlDatabaseCreator extends AbstractOwlDatabaseCreator {
 	private boolean wipe;
 
 	private String ontologyName;
+	
+	private Class<? extends DatabaseFrameDb> databaseFrameDbClass;
 
 	public OwlDatabaseCreator(boolean wipe) {
 		this(new OWLDatabaseKnowledgeBaseFactory(), wipe);
@@ -24,6 +28,7 @@ public class OwlDatabaseCreator extends AbstractOwlDatabaseCreator {
 	public OwlDatabaseCreator(OWLDatabaseKnowledgeBaseFactory factory, boolean wipe) {
 		super(factory);
 		this.wipe = wipe;
+		databaseFrameDbClass = DefaultDatabaseFrameDb.class;
 	}
 
 	@Override
@@ -68,7 +73,8 @@ public class OwlDatabaseCreator extends AbstractOwlDatabaseCreator {
 			rethrow(sqle);
 		}
 		try {
-			return DatabaseFactoryUtils.getOntologyFromTable(getDriver(), getUrl(), getUsername(), getPassword(), getTable()) != null;
+			return DatabaseFactoryUtils.getOntologyFromTable(databaseFrameDbClass, 
+			                                                 getDriver(), getUrl(), getUsername(), getPassword(), getTable()) != null;
 		}
 		catch (SQLException sqle) {
 			return true;
