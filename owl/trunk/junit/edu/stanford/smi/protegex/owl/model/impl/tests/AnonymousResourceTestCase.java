@@ -11,13 +11,6 @@ import edu.stanford.smi.protegex.owl.tests.AbstractJenaTestCase;
  */
 public class AnonymousResourceTestCase extends AbstractJenaTestCase {
 
-    public void testNextName() {
-        OWLNamedClass cls = owlModel.createOWLNamedClass("Cls");
-        assertEquals(AbstractOWLModel.ANONYMOUS_BASE + "1", owlModel.getNextAnonymousResourceName());
-        assertEquals(AbstractOWLModel.ANONYMOUS_BASE + "2", owlModel.getNextAnonymousResourceName());
-        cls.createInstance(owlModel.getNextAnonymousResourceName());
-        assertEquals(AbstractOWLModel.ANONYMOUS_BASE + "4", owlModel.getNextAnonymousResourceName());
-    }
 
 
     public void testIsAnonymous() {
