@@ -1,6 +1,28 @@
 package edu.stanford.smi.protegex.owl.ui.individuals;
 
-import edu.stanford.smi.protege.util.*;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.util.Collection;
+import java.util.Iterator;
+
+import javax.swing.Action;
+import javax.swing.DefaultListModel;
+import javax.swing.JComponent;
+import javax.swing.JScrollPane;
+import javax.swing.ListModel;
+import javax.swing.TransferHandler;
+
+import edu.stanford.smi.protege.util.AddAction;
+import edu.stanford.smi.protege.util.ComponentFactory;
+import edu.stanford.smi.protege.util.ComponentUtilities;
+import edu.stanford.smi.protege.util.Log;
+import edu.stanford.smi.protege.util.RemoveAction;
+import edu.stanford.smi.protege.util.SelectableContainer;
+import edu.stanford.smi.protege.util.SelectableList;
+import edu.stanford.smi.protege.util.SimpleListModel;
+import edu.stanford.smi.protege.util.TransferableCollection;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
 import edu.stanford.smi.protegex.owl.model.RDFSClass;
@@ -10,13 +32,6 @@ import edu.stanford.smi.protegex.owl.ui.OWLLabeledComponent;
 import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
 import edu.stanford.smi.protegex.owl.ui.ResourceRenderer;
 import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
-
-import javax.swing.*;
-import java.awt.*;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.Transferable;
-import java.util.Collection;
-import java.util.Iterator;
 
 /**
  * A panel showing the asserted types of the currently selected instance.
@@ -35,12 +50,14 @@ public class AssertedTypesListPanel extends SelectableContainer {
     private RDFResource resource;
 
     private ResourceListener resourceListener = new ResourceAdapter() {
-        public void typeAdded(RDFResource resource, RDFSClass type) {
+        @Override
+		public void typeAdded(RDFResource resource, RDFSClass type) {
             ComponentUtilities.addListValue(list, type);
         }
 
 
-        public void typeRemoved(RDFResource resource, RDFSClass type) {
+        @Override
+		public void typeRemoved(RDFResource resource, RDFSClass type) {
             ComponentUtilities.removeListValue(list, type);
         }
     };
@@ -58,6 +75,7 @@ public class AssertedTypesListPanel extends SelectableContainer {
         setLayout(new BorderLayout());
         add(lc);
         setPreferredSize(new Dimension(0, 100));
+        updateAddButton();
 
         list.setDragEnabled(true);
         list.setTransferHandler(new FrameTransferHandler());
@@ -66,23 +84,27 @@ public class AssertedTypesListPanel extends SelectableContainer {
 
     private class FrameTransferHandler extends TransferHandler {
 
-        protected Transferable createTransferable(JComponent c) {
+        @Override
+		protected Transferable createTransferable(JComponent c) {
             Collection collection = getSelection();
             return collection.isEmpty() ? null : new TransferableCollection(collection);
         }
 
 
-        public boolean canImport(JComponent c, DataFlavor[] flavors) {
+        @Override
+		public boolean canImport(JComponent c, DataFlavor[] flavors) {
             return true;
         }
 
 
-        public boolean importData(JComponent component, Transferable data) {
+        @Override
+		public boolean importData(JComponent component, Transferable data) {
             return true;
         }
 
 
-        protected void exportDone(JComponent source, Transferable data, int action) {
+        @Override
+		protected void exportDone(JComponent source, Transferable data, int action) {
             if (action == MOVE) {
                 Iterator i = getSelection().iterator();
                 while (i.hasNext()) {
@@ -96,7 +118,8 @@ public class AssertedTypesListPanel extends SelectableContainer {
         }
 
 
-        public int getSourceActions(JComponent c) {
+        @Override
+		public int getSourceActions(JComponent c) {
             return MOVE;
         }
     }
@@ -135,7 +158,8 @@ public class AssertedTypesListPanel extends SelectableContainer {
 
     private Action createAddTypeAction() {
         addAction = new AddAction("Add type...", OWLIcons.getAddIcon(OWLIcons.PRIMITIVE_OWL_CLASS)) {
-            public void onAdd() {
+            @Override
+			public void onAdd() {
                 Collection clses = ProtegeUI.getSelectionDialogFactory().selectClasses(AssertedTypesListPanel.this, owlModel, "Select type to add");
                 Iterator i = clses.iterator();
                 while (i.hasNext()) {
@@ -150,7 +174,8 @@ public class AssertedTypesListPanel extends SelectableContainer {
 
     private Action createRemoveTypeAction() {
         return new RemoveAction("Remove selected type", list, OWLIcons.getRemoveIcon(OWLIcons.PRIMITIVE_OWL_CLASS)) {
-            public void onRemove(Object o) {
+            @Override
+			public void onRemove(Object o) {
                 if (o instanceof RDFSClass) {
                     if (resource.getRDFTypes().size() > 1) {
                         resource.removeProtegeType((RDFSClass) o);
