@@ -11,6 +11,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -163,6 +164,8 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     public static final String[] DEFAULT_USED_LANGUAGES = {"de", "en", "es", "fr", "it", "nl", "pt", "ru" };
 
     public static final String ANONYMOUS_BASE = "@";
+    
+    public static final String UNIQUE_SESSION_ID = UUID.randomUUID().toString().replace("-", "_");
 
     public static final String DEFAULT_ANNOTATION_PROPERTY_NAME = "annotationProperty";
 
@@ -1471,15 +1474,21 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     }
 
 
-    private int anonCount = 1;
+    private static int anonCount = 1;
 
     public String getNextAnonymousResourceName() {
-        for (; ;) {
-            String name = ANONYMOUS_BASE + anonCount++;
-            if (getFrame(name) == null) {
-                return name;
-            }
-        }
+        return AbstractOWLModel.getNextAnonymousResourceNameStatic();
+    }
+    
+    /*
+     * values must be guaranteed to be distinct from values 
+     */
+    public static String getNextAnonymousResourceNameStatic() {
+        StringBuffer sb = new StringBuffer(ANONYMOUS_BASE);
+        sb.append(anonCount++);
+        sb.append('_');
+        sb.append(UNIQUE_SESSION_ID);
+        return sb.toString();
     }
 
 
