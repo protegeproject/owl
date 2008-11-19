@@ -85,7 +85,7 @@ public class MultiResourceListModel extends AbstractListModel {
     private List<FrameWithBrowserText> getValues() {
     	OWLGetOwnSlotValuesBrowserTextJob job = new OWLGetOwnSlotValuesBrowserTextJob(subject.getOWLModel(), subject, predicate, true);
     	Collection<FrameWithBrowserText> vals = job.execute();
-    	return new ArrayList(vals);
+    	return new ArrayList<FrameWithBrowserText>(vals);
     }
 
 }
