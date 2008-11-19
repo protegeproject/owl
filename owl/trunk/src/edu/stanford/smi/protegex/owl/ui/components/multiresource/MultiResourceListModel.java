@@ -67,7 +67,7 @@ public class MultiResourceListModel extends AbstractListModel {
     }
 
     public boolean isRDFResource(int row) {
-        return getElementAt(row) instanceof RDFResource;
+        return ((FrameWithBrowserText) getElementAt(row)).getFrame() instanceof RDFResource;
     }
 
     public void setSubject(RDFResource subject) {
