@@ -1063,7 +1063,15 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
 
     public RDFProperty createSubproperty(String name, RDFProperty superProperty) {
-        return (RDFProperty) createSlot(OWLUtil.getInternalFullName(this, name), superProperty.getProtegeType(), Collections.singleton(superProperty), true);
+    	Collection<Cls> metaClses = new ArrayList<Cls>(superProperty.getProtegeTypes());
+    	Cls firstMetaCls = CollectionUtilities.getFirstItem(metaClses);
+        Slot slot = createSlot(OWLUtil.getInternalFullName(this, name), firstMetaCls, Collections.singleton(superProperty), true);        	
+        metaClses.remove(firstMetaCls);
+        for (Iterator iterator = metaClses.iterator(); iterator.hasNext();) {
+			Cls metacls = (Cls) iterator.next();
+			slot.addDirectType(metacls);
+		}
+        return (RDFProperty)slot; 
     }
 
 
