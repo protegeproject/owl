@@ -24,10 +24,10 @@ public class MultiResourceListTestCase extends AbstractJenaTestCase {
         list.getListModel().setSubject(subject);
         assertFalse(list.isRemoveEnabled());
         list.setSelectedIndex(0);
-        assertTrue(list.isRemoveEnabled());
+        assertFalse(list.isRemoveEnabled());
         list.setSelectedIndices(new int[]{0, 1});
         assertFalse(list.isRemoveEnabled());
         list.setSelectedIndex(1);
-        assertFalse(list.isRemoveEnabled());
+        assertTrue(list.isRemoveEnabled());
     }
 }

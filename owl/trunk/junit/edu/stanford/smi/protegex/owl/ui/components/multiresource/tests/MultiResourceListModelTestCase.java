@@ -62,7 +62,7 @@ public class MultiResourceListModelTestCase extends AbstractJenaTestCase {
         MultiResourceListModel listModel = new MultiResourceListModel(predicate);
         listModel.setSubject(subject);
         assertEquals(1, listModel.getSize());
-        assertEquals(owlThing, listModel.getElementAt(0));
+        assertEquals(owlThing, listModel.getResourceAt(0));
         assertFalse(listModel.isEditable(0));
     }
 }
