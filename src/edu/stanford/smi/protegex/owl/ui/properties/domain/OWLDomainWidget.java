@@ -1,11 +1,33 @@
 package edu.stanford.smi.protegex.owl.ui.properties.domain;
 
-import edu.stanford.smi.protege.model.*;
+import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+
+import javax.swing.JScrollPane;
+import javax.swing.JViewport;
+
+import edu.stanford.smi.protege.event.FrameAdapter;
+import edu.stanford.smi.protege.event.FrameEvent;
+import edu.stanford.smi.protege.event.FrameListener;
+import edu.stanford.smi.protege.model.Cls;
+import edu.stanford.smi.protege.model.Facet;
+import edu.stanford.smi.protege.model.Frame;
+import edu.stanford.smi.protege.model.Instance;
+import edu.stanford.smi.protege.model.Model;
+import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protege.server.framestore.RemoteClientFrameStore;
 import edu.stanford.smi.protege.server.metaproject.impl.OperationImpl;
-import edu.stanford.smi.protege.util.*;
+import edu.stanford.smi.protege.util.AllowableAction;
+import edu.stanford.smi.protege.util.LabeledComponent;
+import edu.stanford.smi.protege.util.SelectionEvent;
+import edu.stanford.smi.protege.util.SelectionListener;
+import edu.stanford.smi.protege.util.ViewAction;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
+import edu.stanford.smi.protegex.owl.model.RDFResource;
 import edu.stanford.smi.protegex.owl.model.RDFSClass;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLUnionClass;
 import edu.stanford.smi.protegex.owl.ui.OWLLabeledComponent;
@@ -13,13 +35,6 @@ import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
 import edu.stanford.smi.protegex.owl.ui.widget.AbstractPropertyWidget;
 import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
 import edu.stanford.smi.protegex.owl.ui.widget.WidgetUtilities;
-
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
 
 /**
  * A Widget for the domain of an RDFProperty.
@@ -35,6 +50,14 @@ public class OWLDomainWidget extends AbstractPropertyWidget {
     private OWLDomainTable table;
 
     private OWLDomainTableModel tableModel;
+    
+    private FrameListener frameListener = new FrameAdapter(){
+    	@Override
+    	public void frameReplaced(FrameEvent event) {
+    		Frame newFrame = event.getNewFrame();    		
+    		setInstance((RDFResource)newFrame);
+    	}
+    };
 
     public void initialize() {
 
@@ -50,7 +73,8 @@ public class OWLDomainWidget extends AbstractPropertyWidget {
         viewPort.setBackground(table.getBackground());
         LabeledComponent lc = new OWLLabeledComponent("Domain  " + DefaultOWLUnionClass.OPERATOR, scrollPane);
         WidgetUtilities.addViewButton(lc, new ViewAction("View class", table) {
-            public void onView(Object o) {
+            @Override
+			public void onView(Object o) {
                 getProject().show((Instance) o);
             }
         });
@@ -69,7 +93,8 @@ public class OWLDomainWidget extends AbstractPropertyWidget {
             }
 
 
-            public void onSelectionChange() {
+            @Override
+			public void onSelectionChange() {
                 Collection sel = table.getSelection();
                 
                 if (sel.isEmpty()) {
@@ -144,7 +169,8 @@ public class OWLDomainWidget extends AbstractPropertyWidget {
     }
 
 
-    public void setEditable(boolean b) {        
+    @Override
+	public void setEditable(boolean b) {        
         //table.setEnabled(b);
         setEnabled(b);
         //addAction.setEnabled(b);
@@ -152,8 +178,16 @@ public class OWLDomainWidget extends AbstractPropertyWidget {
     }
 
 
-    public void setInstance(Instance newInstance) {
+    @SuppressWarnings("deprecation")
+	@Override
+	public void setInstance(Instance newInstance) {
+    	if (getInstance() != null) {
+    		getInstance().removeFrameListener(frameListener);
+    	}
         super.setInstance(newInstance);
+        if (getInstance() != null) {
+        	getInstance().addFrameListener(frameListener);
+        }
         if (newInstance instanceof RDFProperty) {
             final RDFProperty newProperty = (RDFProperty) newInstance;
             tableModel.setSlot(newProperty);
@@ -165,7 +199,8 @@ public class OWLDomainWidget extends AbstractPropertyWidget {
     }
 
 
-    public void setValues(Collection values) {
+    @Override
+	public void setValues(Collection values) {
         super.setValues(values);
         updateActions();
     }
@@ -177,7 +212,8 @@ public class OWLDomainWidget extends AbstractPropertyWidget {
         setEnabled(enabled);       
     }
     
-    public void setEnabled(boolean enabled) {
+    @Override
+	public void setEnabled(boolean enabled) {
     	enabled = enabled && RemoteClientFrameStore.isOperationAllowed(getOWLModel(), OperationImpl.PROPERTY_TAB_WRITE);
     	
     	RDFProperty property = tableModel.getSlot();
