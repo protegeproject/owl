@@ -1,5 +1,6 @@
 package edu.stanford.smi.protegex.owl.ui.components.multiresource.tests;
 
+import edu.stanford.smi.protege.util.FrameWithBrowserText;
 import edu.stanford.smi.protegex.owl.model.OWLIndividual;
 import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
@@ -22,7 +23,7 @@ public class MultiResourceListModelTestCase extends AbstractJenaTestCase {
         subject.addPropertyValue(predicate, owlThing);
         listModel.updateValues();
         assertEquals(1, listModel.getSize());
-        assertEquals(owlThing, listModel.getElementAt(0));
+        assertEquals(owlThing, ((FrameWithBrowserText) listModel.getElementAt(0)).getFrame());
         assertTrue(listModel.isRDFResource(0));
         assertEquals(owlThing, listModel.getResourceAt(0));
         assertTrue(listModel.isEditable(0));
@@ -46,8 +47,8 @@ public class MultiResourceListModelTestCase extends AbstractJenaTestCase {
         subject.addPropertyValue(predicate, b);
         listModel.updateValues();
         assertEquals(2, listModel.getSize());
-        assertEquals(b, listModel.getResourceAt(0));
-        assertEquals(a, listModel.getResourceAt(1));
+        assertTrue(a.equals(listModel.getResourceAt(0)) || a.equals(listModel.getResourceAt(1)));
+        assertTrue(b.equals(listModel.getResourceAt(0)) || b.equals(listModel.getResourceAt(1)));
     }
 
 
