@@ -1,9 +1,29 @@
 package edu.stanford.smi.protegex.owl.ui.properties;
 
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.JScrollPane;
+import javax.swing.ListModel;
+
+import edu.stanford.smi.protege.event.FrameAdapter;
+import edu.stanford.smi.protege.event.FrameEvent;
 import edu.stanford.smi.protege.model.Project;
 import edu.stanford.smi.protege.server.framestore.RemoteClientFrameStore;
 import edu.stanford.smi.protege.server.metaproject.impl.OperationImpl;
-import edu.stanford.smi.protege.util.*;
+import edu.stanford.smi.protege.util.AddAction;
+import edu.stanford.smi.protege.util.ComponentFactory;
+import edu.stanford.smi.protege.util.ComponentUtilities;
+import edu.stanford.smi.protege.util.RemoveAction;
+import edu.stanford.smi.protege.util.SelectableContainer;
+import edu.stanford.smi.protege.util.SelectableList;
+import edu.stanford.smi.protege.util.SimpleListModel;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.event.PropertyAdapter;
@@ -13,13 +33,6 @@ import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
 import edu.stanford.smi.protegex.owl.ui.ResourceRenderer;
 import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
 import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
-
-import javax.swing.*;
-import java.awt.*;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
 
 /**
  * A SelectableContainer showing the superproperties of given RDFProperty.
@@ -39,16 +52,25 @@ public class OWLSuperpropertiesPanel extends SelectableContainer {
 
     private PropertyListener propertyListener = new PropertyAdapter() {
 
-        public void superpropertyAdded(RDFProperty property, RDFProperty superproperty) {
+        @Override
+		public void superpropertyAdded(RDFProperty property, RDFProperty superproperty) {
             ComponentUtilities.addListValue(list, superproperty);
         }
 
 
-        public void superpropertyRemoved(RDFProperty property, RDFProperty superproperty) {
+        @Override
+		public void superpropertyRemoved(RDFProperty property, RDFProperty superproperty) {
             boolean wasEnabled = setNotificationsEnabled(false);
             ComponentUtilities.removeListValue(list, superproperty);
             setNotificationsEnabled(wasEnabled);
         }
+    };
+    
+    private FrameAdapter frameListener = new FrameAdapter() {
+    	@Override
+    	public void frameReplaced(FrameEvent event) {
+    		setProperty((RDFProperty)event.getNewFrame(), null);
+    	}
     };
 
     private AbstractAction removeAction;
@@ -59,7 +81,8 @@ public class OWLSuperpropertiesPanel extends SelectableContainer {
     /**
      * @deprecated
      */
-    public OWLSuperpropertiesPanel(OWLSubpropertyPane subpropertyPane, Project project) {
+    @Deprecated
+	public OWLSuperpropertiesPanel(OWLSubpropertyPane subpropertyPane, Project project) {
         this(subpropertyPane, (OWLModel) project.getKnowledgeBase());
     }
 
@@ -101,7 +124,8 @@ public class OWLSuperpropertiesPanel extends SelectableContainer {
 
     private AbstractAction createAddAction() {
         return new AddAction("Add super properties...", OWLIcons.getAddIcon(OWLIcons.RDF_PROPERTY)) {
-            public void onAdd() {
+            @Override
+			public void onAdd() {
                 if (property != null) {
                     addProperties();
                 }
@@ -112,7 +136,8 @@ public class OWLSuperpropertiesPanel extends SelectableContainer {
 
     private AbstractAction createRemoveAction() {
         return new RemoveAction("Remove super property", list, OWLIcons.getRemoveIcon(OWLIcons.RDF_PROPERTY)) {
-            public void onRemove(Collection superproperties) {
+            @Override
+			public void onRemove(Collection superproperties) {
                 removeProperties(superproperties);
             }
         };
@@ -175,10 +200,12 @@ public class OWLSuperpropertiesPanel extends SelectableContainer {
     public void setProperty(RDFProperty property, RDFProperty parent) {
         if (this.property != null) {
             this.property.removePropertyListener(propertyListener);
+            this.property.removeFrameListener(frameListener);
         }
         this.property = property;
         if (this.property != null) {
             this.property.addPropertyListener(propertyListener);
+            this.property.addFrameListener(frameListener);
         }
         updateModel();
         addAction.setEnabled(property != null && property.isEditable() && isEnabled());      
