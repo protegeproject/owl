@@ -83,6 +83,12 @@ public class MultiResourceList extends SelectableList implements TripleSelectabl
 			public void load(Object value) {
             	if (value instanceof FrameWithBrowserText) {
             		FrameWithBrowserText fbt = (FrameWithBrowserText) value;
+            		if (fbt.getFrame() == null) {
+            			String str = fbt.getBrowserText();
+            			//super.load(value); //TODO: what is the right approach?
+            			super.load(str != null ? str: "");
+            			return;
+            		}
             		setMainText(fbt.getBrowserText());
             		setMainIcon(fbt.getFrame().getIcon());
             		if (!listModel.getPredicate().getOWLModel().getProject().isMultiUserClient()) {
