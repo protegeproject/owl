@@ -1,7 +1,16 @@
 package edu.stanford.smi.protegex.owl.ui.properties.actions;
 
+import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.Set;
+
 import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.Slot;
+import edu.stanford.smi.protege.util.CollectionUtilities;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLProperty;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
@@ -10,10 +19,6 @@ import edu.stanford.smi.protegex.owl.ui.actions.ResourceAction;
 import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
 import edu.stanford.smi.protegex.owl.ui.properties.OWLSubpropertyPane;
 import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
-
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.util.*;
 
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
@@ -34,27 +39,31 @@ public class CreateSubpropertyAction extends ResourceAction {
 
 
     public static void createInverseSlot(Slot slot, Collection superslots) {
-        Collection superInverses = new ArrayList();
-        Cls metaCls = null;
-        Iterator i = superslots.iterator();
-        while (i.hasNext()) {
-            Slot superslot = (Slot) i.next();
-            Slot inverse = superslot.getInverseSlot();
-            if (inverse != null) {
-                superInverses.add(inverse);
-                if (metaCls == null) {
-                    metaCls = inverse.getDirectType();
-                }
-            }
-        }
-        if (!superInverses.isEmpty()) {
-            Slot inverse = slot.getKnowledgeBase().createSlot("inverse_of_" + slot.getName(), metaCls, superInverses, true);
-            slot.setInverseSlot(inverse);
-        }
+    	//It is safe to assume that it is just one superslot.    	
+    	Slot superSlot = (Slot) CollectionUtilities.getFirstItem(superslots);
+    	Slot invSuperSlot = superSlot.getInverseSlot();
+    	if (invSuperSlot == null) {
+    		return;
+    	}    	
+    	Collection<Cls> metaClses = new ArrayList<Cls>(invSuperSlot.getDirectTypes());
+    	String invName = slot.getName();
+    	if (slot instanceof RDFResource) {
+    		RDFResource resource = (RDFResource)slot;        		
+			invName = resource.getNamespace() + "inverse_of_" + resource.getLocalName();
+    	}
+    	Cls firstMetaCls = CollectionUtilities.getFirstItem(metaClses);
+        Slot inverse = slot.getKnowledgeBase().createSlot(invName, firstMetaCls, CollectionUtilities.createCollection(invSuperSlot), true);
+        metaClses.remove(firstMetaCls);
+        for (Iterator iterator = metaClses.iterator(); iterator.hasNext();) {
+			Cls metacls = (Cls) iterator.next();
+			inverse.addDirectType(metacls);
+		}
+        slot.setInverseSlot(inverse);
     }
 
 
-    public boolean isSuitable(Component component, RDFResource resource) {
+    @Override
+	public boolean isSuitable(Component component, RDFResource resource) {
         return component instanceof OWLSubpropertyPane && resource instanceof RDFProperty;
     }
 
