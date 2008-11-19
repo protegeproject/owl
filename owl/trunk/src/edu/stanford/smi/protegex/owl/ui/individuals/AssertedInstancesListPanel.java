@@ -620,7 +620,9 @@ public class AssertedInstancesListPanel extends SelectableContainer implements D
 
 			private void showFrameWithBrowserText(FrameWithBrowserText fbt) {
 				setMainText(fbt.getBrowserText());
-				setMainIcon(fbt.getFrame().getIcon()); //should not go to the server
+				if (fbt.getFrame() != null) {
+					setMainIcon(fbt.getFrame().getIcon()); //should not go to the server
+				}
 			}
     	};
     	list.setCellRenderer(listRenderer);
