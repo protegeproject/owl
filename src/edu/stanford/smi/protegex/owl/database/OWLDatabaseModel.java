@@ -40,6 +40,8 @@ public class OWLDatabaseModel
         extends AbstractOWLModel
         implements OntModelProvider {
     private static transient Logger log = Log.getLogger(OWLDatabaseModel.class);
+    
+    static int idCounter = 0;
 
     private OWLOntology defaultDBOWLOntology;
 
@@ -94,18 +96,6 @@ public class OWLDatabaseModel
         OntModel m = Jena.cloneOntModel(getOntModel(), spec);
         //m.getBaseModel().write(System.out, ModelLoader.langXMLAbbrev, getNamespaceManager().getDefaultNamespace());
         return m;
-    }
-
-
-    @Override
-	public String getNextAnonymousResourceName() {
-        for (; ;) {
-            int rand = (int) (Math.random() * 1000000);
-            String name = ANONYMOUS_BASE + rand;
-            if (getFrame(name) == null) {
-                return name;
-            }
-        }
     }
 
 
