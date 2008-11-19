@@ -316,11 +316,10 @@ public class JenaNormalizer {
 
 
     private void assignNamesToAnonymousTopLevelClasses(OntModel ontModel, String defaultNamespace) {
-        String baseName = defaultNamespace + AbstractOWLModel.ANONYMOUS_BASE;
         int index = 1;
         for (Iterator it = Jena.set(listAnonTopLevelClasses(ontModel)).iterator(); it.hasNext();) {
             OntClass ontClass = (OntClass) it.next();
-            String name = baseName + index++;
+            String name = AbstractOWLModel.getNextAnonymousResourceNameStatic();
             ResourceUtils.renameResource(ontClass, name);
             if (log.isLoggable(Level.FINE)) {
                 log.fine("* Assigned name " + name + " to anonymous top-level class " + ontClass);
