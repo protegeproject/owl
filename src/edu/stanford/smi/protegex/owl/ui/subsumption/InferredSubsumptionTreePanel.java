@@ -25,6 +25,7 @@ import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protege.util.ComponentFactory;
 import edu.stanford.smi.protege.util.LazyTreeRoot;
 import edu.stanford.smi.protege.util.Log;
+import edu.stanford.smi.protege.util.SelectableTree;
 import edu.stanford.smi.protegex.owl.jena.Jena;
 import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
 import edu.stanford.smi.protegex.owl.jena.creator.JenaCreator;
@@ -113,12 +114,14 @@ public class InferredSubsumptionTreePanel extends SubsumptionTreePanel {
     }
 
 
-    protected ClassTree createSelectableTree(Action viewAction, LazyTreeRoot root) {
+    @Override
+	protected ClassTree createSelectableTree(Action viewAction, LazyTreeRoot root) {
         return new InferredChangesClassTree(viewAction, root);
     }
 
 
-    protected Action createViewClsAction() {
+    @Override
+	protected Action createViewClsAction() {
         return new AbstractAction("View class", OWLIcons.getViewIcon()) {
             public void actionPerformed(ActionEvent e) {
                 Collection selection = getSelection();
@@ -140,6 +143,11 @@ public class InferredSubsumptionTreePanel extends SubsumptionTreePanel {
         if (resource instanceof RDFSClass) {
             setSelectedClass((RDFSClass) resource);
         }
+    }
+    
+    @Override
+	public void setSelectedClass(RDFSClass cls) {
+    	OWLUI.setSelectedNodeInTree((SelectableTree) getTree(), cls, getOWLModel().getSystemFrames().getProtegeInferredSuperclassesProperty());
     }
 
 
@@ -187,7 +195,8 @@ public class InferredSubsumptionTreePanel extends SubsumptionTreePanel {
     }
 
 
-    protected void updateActions() {
+    @Override
+	protected void updateActions() {
         super.updateActions();
         OWLNamedClass cls = getSelectedCls();
         assertAction.setEnabled(cls != null &&
@@ -205,7 +214,8 @@ public class InferredSubsumptionTreePanel extends SubsumptionTreePanel {
             setCellRenderer(new MovedResourcesRenderer(property));
         }
 
-        public String getToolTipText(MouseEvent event) {
+        @Override
+		public String getToolTipText(MouseEvent event) {
             String str = null;
             int row = getRowForLocation(event.getX(), event.getY());
             TreePath path = getPathForRow(row);
@@ -228,7 +238,8 @@ public class InferredSubsumptionTreePanel extends SubsumptionTreePanel {
             super(directSuperclassesSlot);
         }
 
-        protected Color getTextColor() {
+        @Override
+		protected Color getTextColor() {
             ChangedClassesPanel ccp = ChangedClassesPanel.get(getOWLModel());
             if (ccp.contains(loadedClass)) {
                 return Color.blue;
