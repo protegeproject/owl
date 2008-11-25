@@ -18,10 +18,12 @@ import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 
 import edu.stanford.smi.protege.model.Cls;
+import edu.stanford.smi.protege.model.Frame;
 import edu.stanford.smi.protege.model.Instance;
 import edu.stanford.smi.protege.model.Project;
 import edu.stanford.smi.protege.util.CollectionUtilities;
 import edu.stanford.smi.protege.util.ComponentFactory;
+import edu.stanford.smi.protege.util.FrameWithBrowserText;
 import edu.stanford.smi.protege.util.LabeledComponent;
 import edu.stanford.smi.protege.util.PopupMenuMouseListener;
 import edu.stanford.smi.protege.util.Selectable;
@@ -103,10 +105,16 @@ public class OWLIndividualsTab extends AbstractTabWidget implements NavigationHi
         list.addMouseListener(new PopupMenuMouseListener(list) {
             @Override
 			protected JPopupMenu getPopupMenu() {
-                Instance instance = (Instance) list.getSelectedValue();
-                if (instance instanceof RDFResource) {
+            	Object selection = list.getSelectedValue();
+            	Frame frame = null;
+            	if (selection instanceof FrameWithBrowserText) {
+            		frame = ((FrameWithBrowserText) selection).getFrame();
+            	} else if (selection instanceof Frame) {
+            		frame = (Frame) selection;
+            	}                 
+                if (frame != null && frame instanceof RDFResource) {
                     JPopupMenu menu = new JPopupMenu();
-                    ResourceActionManager.addResourceActions(menu, list, (RDFResource) instance);
+                    ResourceActionManager.addResourceActions(menu, list, (RDFResource) frame);
                     if (menu.getComponentCount() > 0) {
                         return menu;
                     }
