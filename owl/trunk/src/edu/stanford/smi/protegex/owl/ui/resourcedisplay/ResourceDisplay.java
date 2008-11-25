@@ -43,6 +43,7 @@ import edu.stanford.smi.protegex.owl.model.event.PropertyValueAdapter;
 import edu.stanford.smi.protegex.owl.model.event.PropertyValueListener;
 import edu.stanford.smi.protegex.owl.swrl.ui.actions.FindRulesAction;
 import edu.stanford.smi.protegex.owl.testing.OWLTestManager;
+import edu.stanford.smi.protegex.owl.ui.actions.ResourceActionManager;
 import edu.stanford.smi.protegex.owl.ui.components.triples.TriplesComponent;
 import edu.stanford.smi.protegex.owl.ui.results.HostResourceDisplay;
 import edu.stanford.smi.protegex.owl.ui.search.FindUsageAction;
@@ -88,7 +89,7 @@ public class ResourceDisplay extends InstanceDisplay implements ResourcePanel {
 
     private FindUsageAction findUsageAction;
 
-    private FindRulesAction findRulesAction;
+    private FindRulesAction findRulesAction;    
 
     private JCheckBox inferredBox;
 
@@ -342,8 +343,11 @@ public class ResourceDisplay extends InstanceDisplay implements ResourcePanel {
         addDefaultToolBarButtons();
 
         if (resource != null) {
-        	//this call does not seem to be necessary - and it makes unnecessary calls to the server
-            //ResourceActionManager.addResourceActions(southToolBar, this, resource);
+        	//The addResourceActions makes calls to the remote server in client-server mode
+        	//Optimize: only show in standalone mode
+        	if (!owlModel.getProject().isMultiUserClient()) {
+        		ResourceActionManager.addResourceActions(southToolBar, this, resource);
+        	}
             ResourceDisplayPluginManager.initInstanceDisplay(resource, southEastPanel);
         }
 
