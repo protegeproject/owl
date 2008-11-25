@@ -68,7 +68,8 @@ public class OWLSubclassPane extends SelectableContainer implements ClassTreePan
     /**
      * @deprecated
      */
-    public OWLSubclassPane(OWLModel owlModel, Action doubleClickAction,
+    @Deprecated
+	public OWLSubclassPane(OWLModel owlModel, Action doubleClickAction,
                            Cls root, Action deleteClsAction) {
         this(owlModel, doubleClickAction, (RDFSNamedClass) root);
     }
@@ -93,9 +94,18 @@ public class OWLSubclassPane extends SelectableContainer implements ClassTreePan
 
         add(BorderLayout.SOUTH, finder);
         setupDragAndDrop();
-        getTree().setCellRenderer(FrameRenderer.createInstance());
+        /*
+         * Optimization for client-server: 
+         * In client mode, only use the frames renderer (less expensive to compute)
+         */
+        if (owlModel.getProject().isMultiUserClient()) {
+        	getTree().setCellRenderer(FrameRenderer.createInstance());
+        } else {
+        	getTree().setCellRenderer(new ResourceRenderer());
+        }
         getTree().addMouseListener(new TreePopupMenuMouseListener(tree) {
-            public JPopupMenu getPopupMenu() {
+            @Override
+			public JPopupMenu getPopupMenu() {
                 return OWLSubclassPane.this.getPopupMenu();
             }
         });
@@ -192,7 +202,8 @@ public class OWLSubclassPane extends SelectableContainer implements ClassTreePan
      * @see #setSelectedClass
      * @deprecated
      */
-    public void setSelectedCls(Cls cls) {
+    @Deprecated
+	public void setSelectedCls(Cls cls) {
         setSelectedClassDelegate(cls);
     }
 
@@ -225,7 +236,8 @@ public class OWLSubclassPane extends SelectableContainer implements ClassTreePan
      * @see #setSelectedClasses
      * @deprecated
      */
-    public void setSelectedClses(Collection clses) {
+    @Deprecated
+	public void setSelectedClses(Collection clses) {
         setSelectedClassesDelegate(clses);
     }
 
@@ -276,7 +288,8 @@ public class OWLSubclassPane extends SelectableContainer implements ClassTreePan
     }
 
 
-    public String toString() {
+    @Override
+	public String toString() {
         return "SubclassPane";
     }
 }
