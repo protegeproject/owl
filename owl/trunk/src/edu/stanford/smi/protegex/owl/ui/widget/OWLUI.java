@@ -33,8 +33,6 @@ import javax.swing.JTree;
 import javax.swing.text.JTextComponent;
 import javax.swing.tree.TreePath;
 
-import com.hp.hpl.jena.graph.query.Expression.Application;
-
 import edu.stanford.smi.protege.action.Copy;
 import edu.stanford.smi.protege.action.Cut;
 import edu.stanford.smi.protege.action.InsertUnicodeCharacterAction;
@@ -903,7 +901,7 @@ public class OWLUI {
     	
         if (!tree.getSelection().contains(resource)) {        	
             if (resourceClass.isInstance(resource)) {
-                Collection paths = getPathsToRoot(resource);
+                Collection paths = getPathsToRoot(resource, navigationSlot);
               
                 TreePath[] array = new TreePath[paths.size()];
                 int i = 0;
