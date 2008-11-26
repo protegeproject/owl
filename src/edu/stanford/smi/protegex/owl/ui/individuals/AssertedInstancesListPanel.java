@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -36,9 +37,11 @@ import edu.stanford.smi.protege.model.Instance;
 import edu.stanford.smi.protege.model.Model;
 import edu.stanford.smi.protege.model.SimpleInstance;
 import edu.stanford.smi.protege.model.Slot;
+import edu.stanford.smi.protege.model.ValueType;
 import edu.stanford.smi.protege.resource.Colors;
 import edu.stanford.smi.protege.resource.LocalizedText;
 import edu.stanford.smi.protege.resource.ResourceKey;
+import edu.stanford.smi.protege.server.framestore.RemoteClientFrameStore;
 import edu.stanford.smi.protege.ui.BrowserTextListFinder;
 import edu.stanford.smi.protege.ui.ConfigureAction;
 import edu.stanford.smi.protege.ui.FrameRenderer;
@@ -51,6 +54,7 @@ import edu.stanford.smi.protege.util.ComponentUtilities;
 import edu.stanford.smi.protege.util.CreateAction;
 import edu.stanford.smi.protege.util.Disposable;
 import edu.stanford.smi.protege.util.FrameWithBrowserText;
+import edu.stanford.smi.protege.util.FrameWithBrowserTextComparator;
 import edu.stanford.smi.protege.util.GetInstancesAndBrowserTextJob;
 import edu.stanford.smi.protege.util.LabeledComponent;
 import edu.stanford.smi.protege.util.ModalDialog;
@@ -62,6 +66,7 @@ import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.RDFSClass;
 import edu.stanford.smi.protegex.owl.ui.OWLLabeledComponent;
 import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
+import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
 
 /**
  * The panel that holds the list of direct instances of one or more classes. If
@@ -539,12 +544,6 @@ public class AssertedInstancesListPanel extends SelectableContainer implements D
         label.setIcon(icon);
     }
 
-    private Collection<FrameWithBrowserText> getFramesWithBrowserText(Collection<Cls> clses) {
-    	GetInstancesAndBrowserTextJob job = new GetInstancesAndBrowserTextJob(owlModel, clses, !showSubclassInstances);
-    	return job.execute();
-    }
-
-
     private Collection getInstances(Cls cls) {
         Collection instances;
         if (showSubclassInstances) {
@@ -649,5 +648,80 @@ public class AssertedInstancesListPanel extends SelectableContainer implements D
 	public void setShowDisplaySlotPanel(boolean b) {
 
     }
+    
+    /*
+     * Code for getting the instances of classes that tries to optimize performance
+     * for client-server
+     */
+    
+    private Collection<FrameWithBrowserText> getFramesWithBrowserText(Collection<Cls> clses) {
+    	if (!showSubclassInstances && useCacheHeuristics() &&
+    			owlModel.getProject().isMultiUserClient() &&
+    			hasOnlyDataBrowserSlots(clses) && isCached(clses)) {
+    		//use the cache
+    		return getValuesFromCache(clses);    		
+    	} else { //go to the server
+    		GetInstancesAndBrowserTextJob job = new GetInstancesAndBrowserTextJob(owlModel, clses, !showSubclassInstances);
+    		return job.execute();
+    	}
+    }
+    
+    /**
+     * Determine whether the browser slots are nested (e.g. they are one level deep).
+     * If they are, then don't use the local cache, use the job to get the instances.
+     */
+    private boolean hasOnlyDataBrowserSlots(Collection<Cls> clses) {
+    	for (Cls cls : clses) {
+    		BrowserSlotPattern bsp = cls.getBrowserSlotPattern();
+    		if (bsp != null) {
+    			List<Slot> slots = bsp.getSlots();
+    			for (Slot slot : slots) {
+					if (slot.getValueType() == ValueType.INSTANCE || slot.getValueType() == ValueType.CLS) {
+						return false;
+					}
+				}
+    		}
+		}
+    	return true;
+	}
 
+
+	/**
+     * This is a heuristic if the instances of clses are cached
+     */
+    private boolean isCached(Collection<Cls> clses) {    	
+    	for (Cls cls : clses) {
+			if (!RemoteClientFrameStore.isCached(cls, owlModel.getSystemFrames().getDirectInstancesSlot(), null, false)) {
+				return false;
+			}
+			Collection<Instance> instances = cls.getDirectInstances(); //should not call the server
+			for (Instance instance : instances) {
+				if (!RemoteClientFrameStore.isCacheComplete(instance)) {
+					return false;
+				}
+			}
+		}
+    	return true;
+    }
+    
+    
+    //TODO: refactor out
+    private List<FrameWithBrowserText> getValuesFromCache(Collection<Cls> clses) {
+    	List<FrameWithBrowserText> framesWithBrowserText = new ArrayList<FrameWithBrowserText>();
+		for (Cls cls : clses) {
+			Collection<Instance> instances = showSubclassInstances ? cls.getInstances() : cls.getDirectInstances();
+			for (Instance instance : instances) {
+				framesWithBrowserText.add(
+						new FrameWithBrowserText(instance, instance.getBrowserText(), instance.getDirectTypes()));
+			}			
+		}
+		Collections.sort(framesWithBrowserText, new FrameWithBrowserTextComparator());
+		return framesWithBrowserText;
+    }   
+    
+
+    private boolean useCacheHeuristics() {
+    	return ApplicationProperties.getBooleanProperty(OWLUI.USE_CACHE_HEURISTICS_PROP, true);
+    }
+    
 }
