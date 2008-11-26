@@ -8,6 +8,7 @@ import edu.stanford.smi.protege.model.FrameID;
 import edu.stanford.smi.protege.model.Model;
 import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protege.model.ValueType;
+import edu.stanford.smi.protege.model.ValueTypeConstraint;
 import edu.stanford.smi.protege.model.framestore.FrameStoreAdapter;
 import edu.stanford.smi.protegex.owl.model.OWLDataRange;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
@@ -68,10 +69,10 @@ public class RangeUpdateFrameStore extends  FrameStoreAdapter {
                 if (range instanceof RDFSClass) {
                     RDFSClass rangeClass = (RDFSClass) range;
                     if (rangeClass instanceof OWLUnionClass) {
-                        ((Slot) property).setAllowedClses(((OWLUnionClass) rangeClass).getOperands());
+                        super.setDirectOwnSlotValues(property, valueType, ValueTypeConstraint.getValues(ValueType.INSTANCE, ((OWLUnionClass) rangeClass).getOperands()));
                     }
                     else {
-                        ((Slot) property).setAllowedClses(Collections.singleton(rangeClass));
+                        super.setDirectOwnSlotValues(property, valueType, ValueTypeConstraint.getValues(ValueType.INSTANCE, Collections.singleton(rangeClass)));
                     }
                     return;
                 }
@@ -81,7 +82,7 @@ public class RangeUpdateFrameStore extends  FrameStoreAdapter {
             ((Slot) property).setAllowedClses(Collections.EMPTY_LIST);
         }
         else if (newValueType != ((Slot) property).getValueType()) {
-            ((Slot) property).setValueType(newValueType);
+            super.setDirectOwnSlotValues(property, valueType, ValueTypeConstraint.getValues(newValueType));
         }
 
     }
