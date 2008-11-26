@@ -89,6 +89,8 @@ public class OWLUI {
     private static final transient Logger log = Log.getLogger(OWLUI.class);
     
     public static final String SORT_CLASS_TREE_AFTER_LOAD = "ui.sort.class.tree.after.load";
+    
+    public final static String USE_CACHE_HEURISTICS_PROP = "owl.ui.use.cache.heuristics";
 
     /**
      * @deprecated use constant from AbstractOWLModelAction
