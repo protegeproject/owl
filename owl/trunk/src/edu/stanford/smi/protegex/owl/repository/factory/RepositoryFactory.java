@@ -34,6 +34,7 @@ public class RepositoryFactory {
     private ArrayList<RepositoryFactoryPlugin> factories;
 
 
+    @SuppressWarnings("unchecked")
     private RepositoryFactory() {
         factories = new ArrayList<RepositoryFactoryPlugin>();
         factories.add(new DublinCoreDLVersionRedirectRepositoryFactoryPlugin());
