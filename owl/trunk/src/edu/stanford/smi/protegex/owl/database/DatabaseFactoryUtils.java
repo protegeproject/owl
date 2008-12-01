@@ -109,9 +109,10 @@ public class DatabaseFactoryUtils {
 	public static String getOntologyFromTable(Class<? extends DatabaseFrameDb> databaseFrameDbClass, 
 	                                          String driver, String url, 
 	                                          String username, String password, String table) throws SQLException {
+	    DatabaseFrameDb frameDb = null;
 		try {
 			FrameFactory factory = new OWLJavaFactory( null );
-			DatabaseFrameDb frameDb = DatabaseFrameDbFactory.createDatabaseFrameDb(databaseFrameDbClass);
+			frameDb = DatabaseFrameDbFactory.createDatabaseFrameDb(databaseFrameDbClass);
 			frameDb.initialize( factory, driver, url, username, password, table, false );
 			Frame owlOntologyPointerCls = new DefaultRDFSNamedClass( null, new FrameID(
 					OWLNames.Cls.OWL_ONTOLOGY_POINTER_CLASS ) );
@@ -136,6 +137,11 @@ public class DatabaseFactoryUtils {
 				throw (SQLException)cause;
 			else
 				throw e;
+		}
+		finally {
+		    if (frameDb != null) {
+		        frameDb.close();
+		    }
 		}
 		return null;
 	}
