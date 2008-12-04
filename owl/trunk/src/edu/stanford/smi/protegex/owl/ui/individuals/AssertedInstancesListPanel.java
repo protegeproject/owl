@@ -37,6 +37,7 @@ import edu.stanford.smi.protege.model.Instance;
 import edu.stanford.smi.protege.model.Model;
 import edu.stanford.smi.protege.model.SimpleInstance;
 import edu.stanford.smi.protege.model.Slot;
+import edu.stanford.smi.protege.model.Transaction;
 import edu.stanford.smi.protege.model.ValueType;
 import edu.stanford.smi.protege.resource.Colors;
 import edu.stanford.smi.protege.resource.LocalizedText;
@@ -268,22 +269,34 @@ public class AssertedInstancesListPanel extends SelectableContainer implements D
 			public void onCreate() {
                 if (!classes.isEmpty()) {
                 	RDFSClass firstType = (RDFSClass) CollectionUtilities.getFirstItem(classes);
-                	String name = owlModel.createNewResourceName(NamespaceUtil.getLocalName(firstType.getName()));
+                	final String name = owlModel.createNewResourceName(NamespaceUtil.getLocalName(firstType.getName()));
 
-                    Instance instance = owlModel.createInstance(name, classes);
-                    if (instance instanceof Cls) {
-                        Cls newCls = (Cls) instance;
-                        if (newCls.getDirectSuperclassCount() == 0) {
-                            newCls.addDirectSuperclass(owlModel.getOWLThingClass());
-                        }
-                    }
-                    list.setSelectedValue(new FrameWithBrowserText(instance), true);
+                	Transaction<Instance> t = new Transaction<Instance>(owlModel, "Create Individual " + name, name) {
+                	    private Instance instance;
+                	    
+                	    @Override
+                	    public boolean doOperations() {
+                            instance = owlModel.createInstance(name, classes);
+                            if (instance instanceof Cls) {
+                                Cls newCls = (Cls) instance;
+                                if (newCls.getDirectSuperclassCount() == 0) {
+                                    newCls.addDirectSuperclass(owlModel.getOWLThingClass());
+                                }
+                            }
+                            return true;
+                	    }
+                	    
+                	    public Instance getResult() {
+                	        return instance;
+                	    }
+                	}
+                	t.execute();
+                    list.setSelectedValue(new FrameWithBrowserText(t.getResult()), true);
                 }
             }
         };
         return createAction;
     }
-
 
     //TODO
     protected Action createCreateAnonymousAction() {
