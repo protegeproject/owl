@@ -74,7 +74,7 @@ public class PropertyAdapter implements PropertyListener {
     /**
      * @deprecated
      */
-    public final void templateSlotClsRemoved(SlotEvent event) {
+    public void templateSlotClsRemoved(SlotEvent event) {
         if (event.getSlot() instanceof RDFProperty && event.getCls() instanceof RDFSClass) {
             unionDomainClassRemoved((RDFProperty) event.getSlot(), (RDFSClass) event.getCls(), event);
         }
@@ -83,7 +83,7 @@ public class PropertyAdapter implements PropertyListener {
     /**
      * @deprecated
      */
-    public final void directSubslotAdded(SlotEvent event) {
+    public void directSubslotAdded(SlotEvent event) {
         if (event.getSlot() instanceof RDFProperty && event.getSubslot() instanceof RDFProperty) {
             subpropertyAdded((RDFProperty) event.getSlot(), (RDFProperty) event.getSubslot(), event);
         }
@@ -100,7 +100,7 @@ public class PropertyAdapter implements PropertyListener {
     /**
      * @deprecated
      */
-    public final void directSubslotRemoved(SlotEvent event) {
+    public void directSubslotRemoved(SlotEvent event) {
         if (event.getSlot() instanceof RDFProperty && event.getSubslot() instanceof RDFProperty) {
             subpropertyRemoved((RDFProperty) event.getSlot(), (RDFProperty) event.getSubslot(), event);
         }
@@ -110,7 +110,7 @@ public class PropertyAdapter implements PropertyListener {
     /**
      * @deprecated
      */
-    public final void directSuperslotAdded(SlotEvent event) {
+    public void directSuperslotAdded(SlotEvent event) {
         if (event.getSlot() instanceof RDFProperty && event.getSubslot() instanceof RDFProperty) {
             superpropertyAdded((RDFProperty) event.getSlot(), (RDFProperty) event.getSubslot(), event);
         }
@@ -120,7 +120,7 @@ public class PropertyAdapter implements PropertyListener {
     /**
      * @deprecated
      */
-    public final void directSuperslotRemoved(SlotEvent event) {
+    public void directSuperslotRemoved(SlotEvent event) {
         if (event.getSlot() instanceof RDFProperty && event.getSubslot() instanceof RDFProperty) {
             superpropertyRemoved((RDFProperty) event.getSlot(), (RDFProperty) event.getSubslot(), event);
         }
