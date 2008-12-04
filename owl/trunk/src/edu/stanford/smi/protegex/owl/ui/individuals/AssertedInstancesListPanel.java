@@ -289,7 +289,7 @@ public class AssertedInstancesListPanel extends SelectableContainer implements D
                 	    public Instance getResult() {
                 	        return instance;
                 	    }
-                	}
+                	};
                 	t.execute();
                     list.setSelectedValue(new FrameWithBrowserText(t.getResult()), true);
                 }
