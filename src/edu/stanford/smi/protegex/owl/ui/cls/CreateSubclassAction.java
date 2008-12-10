@@ -1,18 +1,22 @@
 package edu.stanford.smi.protegex.owl.ui.cls;
 
-import edu.stanford.smi.protegex.owl.model.*;
+import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+
+import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
+import edu.stanford.smi.protegex.owl.model.RDFResource;
+import edu.stanford.smi.protegex.owl.model.RDFSClass;
+import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
 import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
 import edu.stanford.smi.protegex.owl.ui.actions.ResourceAction;
 import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
 import edu.stanford.smi.protegex.owl.ui.profiles.OWLProfiles;
 import edu.stanford.smi.protegex.owl.ui.profiles.ProfilesManager;
 import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
-
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
 
 /**
  * A ResourceAction for named classes, to create a subclass of the currently selected class.
@@ -36,12 +40,14 @@ public class CreateSubclassAction extends ResourceAction {
     }
 
 
-    public int getPriority() {
+    @Override
+	public int getPriority() {
         return 1;  // So that it shows up before "create sibling class"
     }
 
 
-    public boolean isSuitable(Component component, RDFResource resource) {
+    @Override
+	public boolean isSuitable(Component component, RDFResource resource) {
         return component instanceof ClassTreePanel &&
                 resource instanceof RDFSNamedClass;
     }
@@ -61,7 +67,7 @@ public class CreateSubclassAction extends ResourceAction {
         
         String name = owlModel.createNewResourceName(AbstractOWLModel.DEFAULT_CLASS_NAME);
         try {
-            owlModel.beginTransaction("Create subclass of type " + type.getBrowserText(), name);            
+            owlModel.beginTransaction("Create subclass of " + superclass == null ? "(unknown)" : superclass.getBrowserText(), name);            
             cls = owlModel.createRDFSNamedClass(name, superclasses, type);
             if (cls instanceof OWLNamedClass) {
                 for (Iterator it = superclasses.iterator(); it.hasNext();) {
