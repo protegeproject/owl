@@ -10,7 +10,6 @@ import java.util.Set;
 
 import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.Instance;
-import edu.stanford.smi.protege.ui.SelectClsesPanel;
 import edu.stanford.smi.protege.util.Assert;
 import edu.stanford.smi.protege.util.CollectionUtilities;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
@@ -77,9 +76,7 @@ public class DefaultSelectionDialogFactory extends AbstractSelectionDialogFactor
             clses = rootClses;
         }
         else {
-            SelectClassPanel panel = new SelectClassPanel(owlModel, rootClses,
-                                                          multiple, editable);
-
+            SelectOWLClsesPanel panel = new SelectOWLClsesPanel(owlModel, rootClses);
             int result = ProtegeUI.getModalDialogFactory().showDialog(component, panel, label, ModalDialogFactory.MODE_OK_CANCEL);
             if (result == ModalDialogFactory.OPTION_OK) {
                 clses = panel.getSelection();
@@ -160,8 +157,8 @@ public class DefaultSelectionDialogFactory extends AbstractSelectionDialogFactor
 
     private static RDFSNamedClass promptForClass(final Component component, OWLModel owlModel, Collection clses,
                                                  final String label) {
-        final SelectClsesPanel p = new SelectClsesPanel(owlModel, clses);
-
+    	final SelectOWLClsesPanel p = new SelectOWLClsesPanel(owlModel, clses);
+    	
         ModalDialogFactory.CloseCallback callback = new ModalDialogFactory.CloseCallback() {
             public boolean canClose(int result) {
                 boolean canClose;
