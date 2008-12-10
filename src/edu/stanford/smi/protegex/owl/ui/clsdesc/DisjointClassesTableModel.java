@@ -133,13 +133,24 @@ public class DisjointClassesTableModel extends AbstractTableModel
                     namedCls.removeDisjointClass(getEditedCls());
                 }
             }
-            cls.removeDisjointClass(disjointClass);
-            fireTableRowsDeleted(index, index);
+            cls.removeDisjointClass(disjointClass);            
             owlModel.commitTransaction();
         }
         catch (Exception ex) {
         	owlModel.rollbackTransaction();
             OWLUI.handleError(owlModel, ex);
+        }
+        
+        //events might have already dealt with this
+        //following code might be unnecessary
+        int row = getClassRow(disjointClass);
+
+        if (row != -1) {
+        	try {
+        		fireTableRowsDeleted(row, row);
+        	} catch (Exception e) {
+        		Log.getLogger().log(Level.WARNING, "Error at removing disjoint class from disjoint table: " + disjointClass + " Row: " + row, e);
+        	}
         }
     }
 
