@@ -17,10 +17,7 @@ import javax.swing.JTree;
 import javax.swing.tree.TreePath;
 
 import edu.stanford.smi.protege.model.Cls;
-import edu.stanford.smi.protege.model.KnowledgeBase;
-import edu.stanford.smi.protege.model.Model;
 import edu.stanford.smi.protege.model.ModelUtilities;
-import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protege.resource.Icons;
 import edu.stanford.smi.protege.ui.ClsesTreeTarget;
 import edu.stanford.smi.protege.ui.FrameRenderer;
@@ -101,7 +98,7 @@ public class OWLSubclassPane extends SelectableContainer implements ClassTreePan
         if (owlModel.getProject().isMultiUserClient()) {
         	getTree().setCellRenderer(FrameRenderer.createInstance());
         } else {
-        	getTree().setCellRenderer(new ResourceRenderer());
+        	getTree().setCellRenderer(new ResourceRenderer(owlModel.getSystemFrames().getDirectSuperclassesSlot()));
         }
         getTree().addMouseListener(new TreePopupMenuMouseListener(tree) {
             @Override
@@ -109,9 +106,6 @@ public class OWLSubclassPane extends SelectableContainer implements ClassTreePan
                 return OWLSubclassPane.this.getPopupMenu();
             }
         });
-        this.owlModel = owlModel;
-        Slot directSuperclassesSlot = ((KnowledgeBase) owlModel).getSlot(Model.Slot.DIRECT_SUPERCLASSES);
-        ((JTree) getSelectable()).setCellRenderer(new ResourceRenderer(directSuperclassesSlot));
     }
 
 
