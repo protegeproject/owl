@@ -337,6 +337,10 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     }
 
 
+    /**
+     * @deprecated - Not called anymore
+     */
+    @Deprecated
     protected void initializeDefaultAnnotationView() {
     	try {
     		Collection existingConfig = getDefaultAnnotationPropertiesInView();
@@ -1365,6 +1369,9 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
 
     public OWLProject getOWLProject() {
+    	if (owlProject == null) {
+    		owlProject = new DefaultOWLProject(getProject());
+    	}
         return owlProject;
     }
 
@@ -1563,6 +1570,8 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
                     results.add(frame);
                 }
             }
+        } else { //the default case
+        	results.add(getRDFSCommentProperty());
         }
         return results;
     }
@@ -2197,10 +2206,8 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     @Override
     public void setProject(Project project) {
         super.setProject(project);
-        setOWLProject(new DefaultOWLProject(project));
-
+    
         project.setPrettyPrintSlotWidgetLabels(false);
-        initializeDefaultAnnotationView();
 
         Slot nameSlot = getSlot(Model.Slot.NAME);
 
