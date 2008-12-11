@@ -133,6 +133,7 @@ public class ManchesterOWLTextPane extends JTextPane implements KeyListener {
         docListener = new DocumentListener() {
             public void insertUpdate(DocumentEvent e) {
                 performHighlighting();
+                updateErrorDisplay();
             }
 
 
