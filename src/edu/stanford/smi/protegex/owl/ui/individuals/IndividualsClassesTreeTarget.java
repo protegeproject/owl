@@ -43,7 +43,13 @@ class IndividualsClassesTreeTarget extends TreeTarget {
 
         TreePath path = tree.getPathForRow(row);
         Cls targetCls = (Cls) ((LazyTreeNode) path.getLastPathComponent()).getUserObject();
-        Instance sourceInstance = (Instance) source;
+        Instance sourceInstance = null;
+        if (source instanceof Instance) {
+            sourceInstance = (Instance) source;
+        }
+        else if (source instanceof FrameWithBrowserText) {
+            sourceInstance = (Instance) ((FrameWithBrowserText) source).getFrame();
+        }
 
         if (targetCls.isAbstract()) {
             // do nothing
