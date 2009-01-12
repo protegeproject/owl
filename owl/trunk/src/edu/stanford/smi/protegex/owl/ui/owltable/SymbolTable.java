@@ -1,12 +1,61 @@
 package edu.stanford.smi.protegex.owl.ui.owltable;
 
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.FontMetrics;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.datatransfer.Clipboard;
+import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.EventObject;
+import java.util.Iterator;
+import java.util.List;
+
+import javax.swing.AbstractAction;
+import javax.swing.CellEditor;
+import javax.swing.Icon;
+import javax.swing.JComponent;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JLayeredPane;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JViewport;
+import javax.swing.JWindow;
+import javax.swing.ListSelectionModel;
+import javax.swing.ToolTipManager;
+import javax.swing.UIManager;
+import javax.swing.event.CellEditorListener;
+import javax.swing.event.ChangeEvent;
+import javax.swing.table.TableCellEditor;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableModel;
+
 import edu.stanford.smi.protege.resource.Icons;
 import edu.stanford.smi.protege.ui.FrameRenderer;
 import edu.stanford.smi.protege.ui.ProjectView;
 import edu.stanford.smi.protege.util.Disposable;
 import edu.stanford.smi.protege.util.SelectableTable;
+import edu.stanford.smi.protege.util.SelectionEvent;
+import edu.stanford.smi.protege.util.SelectionListener;
 import edu.stanford.smi.protege.util.TablePopupMenuMouseListener;
-import edu.stanford.smi.protegex.owl.model.*;
+import edu.stanford.smi.protegex.owl.model.OWLAnonymousClass;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.model.RDFProperty;
+import edu.stanford.smi.protegex.owl.model.RDFResource;
+import edu.stanford.smi.protegex.owl.model.RDFSClass;
 import edu.stanford.smi.protegex.owl.model.triplestore.Triple;
 import edu.stanford.smi.protegex.owl.model.triplestore.impl.DefaultTriple;
 import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
@@ -19,23 +68,6 @@ import edu.stanford.smi.protegex.owl.ui.code.SymbolErrorDisplay;
 import edu.stanford.smi.protegex.owl.ui.code.SymbolPanel;
 import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
 import edu.stanford.smi.protegex.owl.ui.results.ResultsPanelManager;
-
-import javax.swing.*;
-import javax.swing.event.CellEditorListener;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.table.TableCellEditor;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableColumn;
-import javax.swing.table.TableModel;
-import java.awt.*;
-import java.awt.datatransfer.Clipboard;
-import java.awt.event.ActionEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.util.*;
-import java.util.List;
 
 /**
  * A JTable in which one column displays an expression in an expression
@@ -119,26 +151,28 @@ public abstract class SymbolTable extends SelectableTable implements TripleSelec
         setIntercellSpacing(new Dimension(0, 0));
         getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         initSymbolColumn();
-        getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-            public void valueChanged(ListSelectionEvent e) {
-                enableActions();
-            }
+        addSelectionListener(new SelectionListener() {
+			public void selectionChanged(SelectionEvent event) {
+				enableActions();				
+			}        	
         });
-
         final int oldDelay = ToolTipManager.sharedInstance().getDismissDelay();
         addMouseListener(new MouseAdapter() {
-            public void mouseExited(MouseEvent e) {
+            @Override
+			public void mouseExited(MouseEvent e) {
                 ToolTipManager.sharedInstance().setDismissDelay(oldDelay);
             }
         });
         addMouseListener(new TablePopupMenuMouseListener(this) {
-            public JPopupMenu getPopupMenu() {
+            @Override
+			public JPopupMenu getPopupMenu() {
                 return createPopupMenu();
             }
 
 
             // Overloaded to fix bug
-            public void setSelection(JComponent c, int x, int y) {
+            @Override
+			public void setSelection(JComponent c, int x, int y) {
                 if (getSelectedRowCount() > 0) {
                     super.setSelection(c, x, y);
                 }
@@ -177,7 +211,8 @@ public abstract class SymbolTable extends SelectableTable implements TripleSelec
      * Overloaded to prevent the creation of the table header.
      * Found at <a href="http://www.codeguru.com/java/articles/180.shtml">CodeGuru</A>.
      */
-    protected void configureEnclosingScrollPane() {
+    @Override
+	protected void configureEnclosingScrollPane() {
         if (isTableHeaderHidden()) {
             Container p = getParent();
             if (p instanceof JViewport) {
@@ -247,7 +282,8 @@ public abstract class SymbolTable extends SelectableTable implements TripleSelec
     }
 
 
-    public boolean editCellAt(int row, int column, EventObject e) {
+    @Override
+	public boolean editCellAt(int row, int column, EventObject e) {
         boolean result = super.editCellAt(row, column, e);
         if (column == tableModel.getSymbolColumnIndex()) {
             symbolEditorComponent.getTextComponent().requestFocus();
@@ -308,7 +344,8 @@ public abstract class SymbolTable extends SelectableTable implements TripleSelec
     }
 
 
-    public Dimension getPreferredSize() {
+    @Override
+	public Dimension getPreferredSize() {
         Dimension s = super.getPreferredSize();
         int h = getRowHeight();   // was: 20
         return new Dimension(s.width, Math.max(h, s.height));
@@ -371,7 +408,8 @@ public abstract class SymbolTable extends SelectableTable implements TripleSelec
      *
      * @return the (valid) indices of the selected values
      */
-    public int[] getSelectedRows() {
+    @Override
+	public int[] getSelectedRows() {
         int[] sels = super.getSelectedRows();
         List oks = new ArrayList();
         for (int i = 0; i < sels.length; i++) {
@@ -394,7 +432,8 @@ public abstract class SymbolTable extends SelectableTable implements TripleSelec
      * @see #getSelectedResource()
      * @deprecated renamed to getSelectedResource
      */
-    public RDFResource getSelectedOWLInstance() {
+    @Deprecated
+	public RDFResource getSelectedOWLInstance() {
         return getSelectedResource();
     }
 
@@ -443,7 +482,8 @@ public abstract class SymbolTable extends SelectableTable implements TripleSelec
     }
 
 
-    public String getToolTipText(MouseEvent event) {
+    @Override
+	public String getToolTipText(MouseEvent event) {
         ToolTipManager.sharedInstance().setDismissDelay(INFINITE_TIME);
 //        if (OWLMenuProjectPlugin.isProseActivated()) {
         int rowCount = getModel().getRowCount();
@@ -500,7 +540,8 @@ public abstract class SymbolTable extends SelectableTable implements TripleSelec
         symbolEditorComponent = createSymbolEditorComponent(owlModel, symbolPanel);
         symbolPanel.setSymbolEditor(symbolEditorComponent);
         symbolCellEditor = new SymbolCellEditor(symbolEditorComponent) {
-            public Component getTableCellEditorComponent(JTable table, Object value,
+            @Override
+			public Component getTableCellEditorComponent(JTable table, Object value,
                                                          boolean isSelected,
                                                          int row, int column) {
                 Component c = super.getTableCellEditorComponent(table, value, isSelected, row, column);
@@ -578,7 +619,8 @@ public abstract class SymbolTable extends SelectableTable implements TripleSelec
     }
 
 
-    public Component prepareEditor(TableCellEditor editor, int row, int column) {
+    @Override
+	public Component prepareEditor(TableCellEditor editor, int row, int column) {
         Component c = super.prepareEditor(editor, row, column);
         if (column == tableModel.getSymbolColumnIndex()) {
             Object value = getModel().getValueAt(row, column);
@@ -590,7 +632,8 @@ public abstract class SymbolTable extends SelectableTable implements TripleSelec
     }
 
 
-    public Component prepareRenderer(TableCellRenderer renderer, int row, int column) {
+    @Override
+	public Component prepareRenderer(TableCellRenderer renderer, int row, int column) {
         if (column == tableModel.getSymbolColumnIndex() && renderer instanceof FrameRenderer) {
             RDFResource RDFResource = tableModel.getRDFResource(row);
             boolean isSelected = isCellSelected(row, column);
@@ -644,7 +687,8 @@ public abstract class SymbolTable extends SelectableTable implements TripleSelec
     }
 
 
-    public void setModel(TableModel newModel) {
+    @Override
+	public void setModel(TableModel newModel) {
         TableModel oldModel = getModel();
         if (oldModel instanceof Disposable) {
             ((Disposable) oldModel).dispose();
