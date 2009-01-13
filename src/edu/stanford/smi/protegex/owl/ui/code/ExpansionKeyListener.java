@@ -25,7 +25,7 @@ import edu.stanford.smi.protegex.owl.ui.resourceselection.ResourceIgnoreCaseComp
  * 
  * <br/>
  * The default expansion key is Ctrl + Space. To change the 
- * default expansion key, overide the {@link #isExpansionEvent(KeyEvent)} method.
+ * default expansion key, override the {@link #isExpansionEvent(KeyEvent)} method.
  */
 public class ExpansionKeyListener extends KeyAdapter {
 	private JTextComponent textComponent;
