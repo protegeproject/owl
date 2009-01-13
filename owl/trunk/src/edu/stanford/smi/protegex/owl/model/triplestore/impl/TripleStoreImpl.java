@@ -184,16 +184,28 @@ public class TripleStoreImpl implements TripleStore {
 
 
     public boolean contains(RDFResource subject, RDFProperty predicate, Object object) {
-        Collection values = getValues(subject, predicate);
-        if (values != null) {
-            if (object instanceof RDFSLiteral) {
-                values = subject.getOWLModel().asRDFSLiterals(values);
-            }
-            return values.contains(object);
-        }
-        else {
-            return false;
-        }
+    	Collection values = getValues(subject, predicate);
+    	if (values == null) { return false;}
+
+    	if (object instanceof RDFSLiteral) {
+    		OWLModel owlModel = subject.getOWLModel();
+    		for (Iterator iterator = values.iterator(); iterator.hasNext();) {
+    			Object value = iterator.next();
+    			try {
+    				RDFSLiteral lit = owlModel.asRDFSLiteral(value);
+    				if (lit.equals(object)) {
+    					return true;
+    				}
+    			} catch (IllegalArgumentException e) {
+    				//convert to RDFLiteral throws IllegalArgumentException if it is a 
+    				//OWLClass, etc.
+    				Log.emptyCatchBlock(e); 
+    			}
+    		}
+    		return false;
+    	} else {
+    		return values.contains(object);
+    	}
     }
 
 
