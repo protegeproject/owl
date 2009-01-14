@@ -10,6 +10,8 @@ import com.hp.hpl.jena.rdf.arp.ALiteral;
 import com.hp.hpl.jena.rdf.arp.AResource;
 import com.hp.hpl.jena.vocabulary.OWL;
 
+import edu.stanford.smi.protege.model.Cls;
+import edu.stanford.smi.protege.model.Instance;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
@@ -87,9 +89,26 @@ class TripleProcessorForUntypedResources extends AbstractStatefulTripleProcessor
 		for (String undef : processor.getGlobalParserCache().getUndefTriplesKeys()) {
 			Collection<UndefTriple> undefTriples = processor.getGlobalParserCache().getUndefTriples(undef);
 			for (UndefTriple undefTriple : undefTriples) {
-				if (resolveUndefinedTriple(undefTriple)) {
-					createdObjs.add(undef);
+				//check for undefined predicate
+				String pred = ParserUtil.getResourceName(undefTriple.getTriplePred());
+				if (resolvUndefinedTriple(undefTriple, pred)) { //undef predicate was created
+					createdObjs.add(pred);
 				}
+				
+				//check for undefined subjects
+				String subj = ParserUtil.getResourceName(undefTriple.getTripleSubj());
+				if (resolvUndefinedTriple(undefTriple, subj)) { //undef subject was created
+					createdObjs.add(subj);
+				}
+				
+				//check for undefined objects
+				Object objObj = undefTriple.getTripleObj();
+				if (objObj instanceof AResource) {
+					String obj = ParserUtil.getResourceName((AResource)undefTriple.getTripleObj());
+					if (resolvUndefinedTriple(undefTriple, obj)) { //undef object was created
+						createdObjs.add(obj);
+					}
+				}				
 			}
 		}
 
@@ -99,27 +118,6 @@ class TripleProcessorForUntypedResources extends AbstractStatefulTripleProcessor
 		}
 
 		processUndefTriples();
-	}
-
-	/**
-	 * returns true - if it created new object
-	 */
-	protected boolean resolveUndefinedTriple(UndefTriple undefTriple) {
-		boolean createObject = false;
-
-		String pred = ParserUtil.getResourceName(undefTriple.getTriplePred());
-		createObject = createObject || resolvUndefinedTriple(undefTriple, pred);
-
-		String subj = ParserUtil.getResourceName(undefTriple.getTripleSubj());
-		createObject = createObject || resolvUndefinedTriple(undefTriple, subj);
-
-		Object objObj = undefTriple.getTripleObj();
-		if (objObj instanceof AResource) {
-			String obj = ParserUtil.getResourceName((AResource)undefTriple.getTripleObj());
-			createObject = createObject || resolvUndefinedTriple(undefTriple, obj);
-		}
-
-		return createObject;
 	}
 
 	/**
@@ -188,8 +186,19 @@ class TripleProcessorForUntypedResources extends AbstractStatefulTripleProcessor
 		if (property == null) {
 			property = handleUndefinedPredicate(undefTriple);
 		}
-
+		
 		String subjectName = ParserUtil.getResourceName(undefTriple.getTripleSubj());
+		
+		//custom case for rdf:type
+		if (property.equals(owlModel.getSystemFrames().getRdfTypeProperty())) {
+			Object tripleObj = undefTriple.getTripleObj();
+			if (tripleObj instanceof AResource) {
+				return createInstanceWithType(subjectName, ParserUtil.getResourceName((AResource)tripleObj));
+			} else {
+				Log.getLogger().warning("Invalid triple: " + undefTriple);
+				createUntypedResource(owlModel, subjectName);
+			}
+		}
 
 		/*
 		 * Try to create the new resource using the domain of the property
@@ -227,7 +236,6 @@ class TripleProcessorForUntypedResources extends AbstractStatefulTripleProcessor
 			return owlModel.createRDFUntypedResource(subjectName);
 		}
 	}
-
 
 	@SuppressWarnings("deprecation")
 	protected RDFResource handleUndefinedObject(UndefTriple undefTriple) {
@@ -331,6 +339,20 @@ class TripleProcessorForUntypedResources extends AbstractStatefulTripleProcessor
 
 	public static RDFResource createUntypedResource(OWLModel owlModel, String name) {
 		return owlModel.createRDFUntypedResource(name);
+	}
+	
+	//TODO: class cast territory
+	private RDFResource createInstanceWithType(String subjectName, String typeName) {
+		Cls type = getCls(typeName);		
+		if (type == null) { //create the type
+			type = (Cls) createUntypedClass(owlModel, typeName);
+		}
+		Instance inst = (Instance)getFrame(subjectName);
+		if (inst != null) {
+			return (RDFResource) inst; //TODO: should we add the type?
+		}
+		inst = type.createDirectInstance(subjectName); //rdf:type triple will be added by processTriple
+		return (RDFResource)inst;
 	}
 
 
