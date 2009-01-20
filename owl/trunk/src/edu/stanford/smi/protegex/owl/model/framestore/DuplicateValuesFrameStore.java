@@ -1,8 +1,8 @@
 package edu.stanford.smi.protegex.owl.model.framestore;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.logging.Logger;
 
 import edu.stanford.smi.protege.model.Frame;
@@ -21,15 +21,16 @@ public class DuplicateValuesFrameStore extends FrameStoreAdapter {
     public void setDirectOwnSlotValues(Frame frame, Slot slot, Collection values) {
         final int valueCount = values.size();
 
-        if (valueCount > 1 &&
-            valueCount != new HashSet(values).size()) {
+        LinkedHashSet valuesSet = new LinkedHashSet(values);
+		if (valueCount > 1 &&
+            valueCount != valuesSet.size()) {
             log.warning("[OWLFrameStore] Warning: Attempted to assign duplicate value to " +
                                frame.getBrowserText() + "." + slot.getBrowserText());
             for (Iterator it = values.iterator(); it.hasNext();) {
                 Object o = it.next();
                 log.warning("[OWLFrameStore]  - " + o);
             }
-            values = new HashSet(values);
+            values = valuesSet;
         }
         super.setDirectOwnSlotValues(frame, slot, values);
     }
