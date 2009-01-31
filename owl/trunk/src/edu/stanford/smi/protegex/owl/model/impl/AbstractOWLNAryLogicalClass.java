@@ -1,10 +1,18 @@
 package edu.stanford.smi.protegex.owl.model.impl;
 
+import edu.stanford.smi.protege.exception.ProtegeException;
 import edu.stanford.smi.protege.model.FrameID;
 import edu.stanford.smi.protege.model.KnowledgeBase;
+import edu.stanford.smi.protege.util.LocalizeUtils;
+import edu.stanford.smi.protege.util.Log;
+import edu.stanford.smi.protege.util.ProtegeJob;
 import edu.stanford.smi.protegex.owl.model.*;
+import edu.stanford.smi.protegex.owl.swrl.bridge.OWLNaryClassAxiom;
 
 import java.util.*;
+import java.util.logging.Level;
+
+import com.hp.hpl.jena.sparql.algebra.op.OpReduced;
 
 /**
  * The base class of DefaultOWLIntersectionClass and DefaultOWLUnionClass.
@@ -83,13 +91,14 @@ public abstract class AbstractOWLNAryLogicalClass extends AbstractOWLLogicalClas
 
     @SuppressWarnings("unchecked")
     public Collection<RDFSClass> getOperands() {
-        RDFList list = (RDFList) getPropertyValue(getOperandsProperty());
-        if (list == null) {
-            return Collections.emptyList();
+        Collection<RDFSClass> operands = null;
+        try {
+            operands = (Collection<RDFSClass>) new GetOperandsJob(getOWLModel(), 
+                                                                  this, getOperandsProperty()).execute();
+        } catch (Throwable t) {
+            Log.getLogger().log(Level.WARNING, "Could not get operands for " + this, t);
         }
-        else {
-            return list.getValues();
-        }
+        return (Collection<RDFSClass>) (operands == null ? Collections.emptyList() : operands);
     }
 
 
@@ -132,5 +141,35 @@ public abstract class AbstractOWLNAryLogicalClass extends AbstractOWLLogicalClas
 
     public void removeOperand(RDFSClass operand) {
         DefaultRDFList.removeListValue(this, getOperandsProperty(), operand);
+    }
+    
+    private static class GetOperandsJob extends ProtegeJob {
+
+        private OWLClass owlClass;
+        private RDFProperty operandsProp;
+        
+        public GetOperandsJob(KnowledgeBase kb, OWLNAryLogicalClass owlClass, RDFProperty operandsProp) {
+            super(kb);
+            this.owlClass = owlClass;
+            this.operandsProp = operandsProp;
+        }
+
+        @Override
+        public Object run() throws ProtegeException {
+            RDFList list = (RDFList) owlClass.getPropertyValue(operandsProp);
+            if (list == null) {
+                return Collections.emptyList();
+            }
+            else {
+                return list.getValues();
+            }
+        }
+        
+        @Override
+        public void localize(KnowledgeBase kb) {         
+            super.localize(kb);
+            LocalizeUtils.localize(owlClass, kb);
+            LocalizeUtils.localize(operandsProp, kb);
+        }
     }
 }
