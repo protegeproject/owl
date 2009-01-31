@@ -1,5 +1,7 @@
 package edu.stanford.smi.protegex.owl.ui.subsumption;
 
+import edu.stanford.smi.protege.model.Frame;
+import edu.stanford.smi.protege.util.FrameWithBrowserText;
 import edu.stanford.smi.protege.util.LazyTreeNode;
 import edu.stanford.smi.protege.util.LazyTreeRoot;
 import edu.stanford.smi.protege.util.Log;
@@ -39,12 +41,15 @@ public class TooltippedSelectableTree extends SelectableTree {
                 RDFResource res = null;
                 if (last instanceof LazyTreeNode) {
                     LazyTreeNode node = (LazyTreeNode) path.getLastPathComponent();
-                    if (node.getUserObject() instanceof RDFResource) {
-                    	res = (RDFResource) node.getUserObject();
-                    }
-                    else { 
-                    	Log.getLogger().warning(res + " is not an RDFResource");
-                    }
+                    Object userObject = node.getUserObject();
+                    if (userObject instanceof RDFResource) {
+                    	res = (RDFResource) userObject;
+                    } else if (userObject instanceof FrameWithBrowserText) {
+                        Frame frame = ((FrameWithBrowserText)userObject).getFrame();
+                        if (frame instanceof RDFResource) {
+                            res = (RDFResource) frame;
+                        }                        
+                    }                    
                 }
                 if (res != null) {
                     ToolTipManager.sharedInstance().setDismissDelay(OWLTable.INFINITE_TIME);

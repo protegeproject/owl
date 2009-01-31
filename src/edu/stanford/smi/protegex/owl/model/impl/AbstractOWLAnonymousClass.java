@@ -3,6 +3,7 @@ package edu.stanford.smi.protegex.owl.model.impl;
 import edu.stanford.smi.protege.model.FrameID;
 import edu.stanford.smi.protege.model.KnowledgeBase;
 import edu.stanford.smi.protege.model.Reference;
+import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.model.OWLAnonymousClass;
 import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
 import edu.stanford.smi.protegex.owl.model.RDFList;
@@ -11,6 +12,7 @@ import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
 
 import javax.swing.*;
 import java.util.*;
+import java.util.logging.Level;
 
 /**
  * A base implementation of OWLAnonymousClass.
@@ -42,26 +44,13 @@ public abstract class AbstractOWLAnonymousClass extends AbstractRDFSClass
 
 
     public OWLAnonymousClass getExpressionRoot() {
-        final RDFProperty rdfFirstProperty = getOWLModel().getRDFFirstProperty();
-        Collection refs = getReferences();
-        for (Iterator it = refs.iterator(); it.hasNext();) {
-            Reference reference = (Reference) it.next();
-            if (reference.getFrame() instanceof OWLAnonymousClass) {
-                OWLAnonymousClass reverend = (OWLAnonymousClass) reference.getFrame();
-                return reverend.getExpressionRoot();
-            }
-            else if (reference.getFrame() instanceof RDFList && rdfFirstProperty.equals(reference.getSlot())) {
-                RDFList list = (RDFList) reference.getFrame();
-                RDFList start = list.getStart();
-                Set set = new HashSet();
-                OWLUtil.getReferringLogicalClasses(start, set);
-                if (set.size() > 0) {
-                    OWLAnonymousClass reverend = (OWLAnonymousClass) set.iterator().next();
-                    return reverend.getExpressionRoot();
-                }
-            }
+        OWLAnonymousClass root = this;
+        try {
+            root = (OWLAnonymousClass) new GetExpressionRootForAnonymousClassJob(getOWLModel(), this).execute();
+        } catch (Throwable t) { 
+            Log.getLogger().log(Level.SEVERE, "Could not compute expression root for anonymous class " + this, t);
         }
-        return this;
+        return root;
     }
 
 
@@ -89,19 +78,13 @@ public abstract class AbstractOWLAnonymousClass extends AbstractRDFSClass
 
 
     public OWLNamedClass getOwner() {
-        Collection subclasses = getSubclasses(false);
-        if (subclasses.isEmpty()) {
-            OWLAnonymousClass root = getExpressionRoot();
-            if (this.equals(root)) {
-                return null;
-            }
-            else {
-                return root.getOwner();
-            }
+        OWLNamedClass owner = null;
+        try {
+            owner = (OWLNamedClass) new GetOwnerForAnonymousClassJob(getOWLModel(), this).execute();
+        } catch (Throwable t) {
+            Log.getLogger().log(Level.SEVERE, "Could not get owner for anonymous class: " + this, t);
         }
-        else {
-            return (OWLNamedClass) subclasses.iterator().next();
-        }
+        return owner;
     }
 
 

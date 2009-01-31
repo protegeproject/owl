@@ -16,6 +16,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import junit.framework.Assert;
+import edu.stanford.smi.protege.event.FrameAdapter;
+import edu.stanford.smi.protege.event.FrameEvent;
+import edu.stanford.smi.protege.event.FrameListener;
 import edu.stanford.smi.protege.exception.OntologyLoadException;
 import edu.stanford.smi.protege.model.BrowserSlotPattern;
 import edu.stanford.smi.protege.model.Cls;
@@ -232,7 +235,11 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     private Slot protegeSubclassesDisjointProperty;
 
     private TripleStoreModel tripleStoreModel;
-
+    
+    private String defaultLanguage;
+    //just for optimization purpose
+    private boolean defaultLanguageInitialized = false;
+    private FrameListener defaultLanguageListener;
 
 
     public AbstractOWLModel(KnowledgeBaseFactory factory) {
@@ -1334,7 +1341,12 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     }
 
     public String getDefaultLanguage() {
-        RDFProperty metaSlot = getRDFProperty(ProtegeNames.getDefaultLanguageSlotName());
+        if (defaultLanguageInitialized == true) {
+            return defaultLanguage;
+        }
+        //default language not initialized
+        defaultLanguage = null;
+        RDFProperty metaSlot = getDefaultLanguageProperty();
         if (metaSlot != null) {
             OWLOntology oi = getDefaultOWLOntology();
             if (oi != null) {
@@ -1342,15 +1354,21 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
                 if (value instanceof String) {
                 	String stringValue = (String) value;
                 	if (stringValue != null && stringValue.length() > 0) {
-                		return stringValue;
+                		defaultLanguage = stringValue;
                 	}
                 }
             }
         }
-        return null;
+        defaultLanguageInitialized = true;
+        return defaultLanguage;
+    }
+    
+    public RDFProperty getDefaultLanguageProperty() {
+        return getRDFProperty(ProtegeNames.getDefaultLanguageSlotName());
     }
 
     public void resetOntologyCache() {
+        detachDefaultLanguageListener();
         topOWLOntology = null;
     }
 
@@ -1358,10 +1376,29 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     public OWLOntology getDefaultOWLOntology() {
         if (topOWLOntology == null) {
             topOWLOntology= getTripleStoreModel().getTopTripleStore().getOWLOntology();
+            attachDefaultLanguageListener();
         }
         return topOWLOntology;
     }
 
+
+    @SuppressWarnings("deprecation")
+    protected void attachDefaultLanguageListener() {
+        if (topOWLOntology == null) { return; }
+        defaultLanguageListener = createDefaultLanguageListener();
+        topOWLOntology.addFrameListener(defaultLanguageListener);
+    }
+    
+    protected void detachDefaultLanguageListener() {
+        if (topOWLOntology == null) { return; }
+        try {
+            topOWLOntology.removeFrameListener(defaultLanguageListener);
+        }  catch (Throwable t) {
+            Log.getLogger().log(Level.WARNING, "Error in dispose of OWL Model: Could not detach default language listener", t);
+        }
+        defaultLanguage = null;
+        defaultLanguageInitialized = false;
+    }
 
     public Collection getDomainlessProperties() {
         return getRootCls().getDirectTemplateSlots();
@@ -2228,9 +2265,23 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
                 int position = getFrameStores().size() - 1;
                 fsm.insertFrameStore(new LocalClassificationFrameStore(this), position);
             }
-        }
+        }        
     }
 
+    
+    protected FrameListener createDefaultLanguageListener() {
+        return new FrameAdapter() {
+            @Override
+            public void ownSlotValueChanged(FrameEvent event) {
+                Slot slot = event.getSlot();
+                if (slot.equals(getDefaultLanguageProperty())) {
+                    defaultLanguageInitialized = false;
+                    defaultLanguage = getDefaultLanguage();
+                }
+            }  
+        };
+    }
+    
 
     public void setSearchSynonymProperties(Collection slots) {
         if (slots.isEmpty()) {
@@ -3522,7 +3573,10 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
     @Override
     public synchronized void dispose() {
-    	super.dispose();
+        detachDefaultLanguageListener();    
+        
+    	super.dispose();    	
+    	
     	if (jenaModel != null) {
     		jenaModel.close();
     		jenaModel = null;
