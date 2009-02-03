@@ -111,7 +111,7 @@ class TriplePostProcessor extends AbstractStatefulTripleProcessor {
 		//classes
 		processInferredSuperclasses(); //this should be done after create untyped resources
 		reinitCaches();
-		processClsesWithoutSupercls(); //this should be done after create untyped resources
+		processOrphanClses(); //this should be done after create untyped resources
 		reinitCaches();
 		processGeneralizedConceptInclusions();
 		reinitCaches();
@@ -266,7 +266,7 @@ class TriplePostProcessor extends AbstractStatefulTripleProcessor {
 
 
 	@SuppressWarnings({"deprecation"})
-	private void processClsesWithoutSupercls() {
+	private void processOrphanClses() {
 		Set<RDFSNamedClass> classes = new HashSet<RDFSNamedClass>();
 		for (TripleStore ts : parsedTripleStores) {
 			classes.addAll(ts.getUserDefinedClasses());
@@ -276,13 +276,14 @@ class TriplePostProcessor extends AbstractStatefulTripleProcessor {
 			new TerminalElementFinder<RDFSNamedClass>(new Relation<RDFSNamedClass> (){
 
 				public Collection<RDFSNamedClass> getR(RDFSNamedClass x) {
-					ArrayList<RDFSNamedClass> parents = new ArrayList<RDFSNamedClass>();
+					HashSet<RDFSNamedClass> parents = new HashSet<RDFSNamedClass>();
 
 					for (Object element : x.getDirectSuperclasses()) {
 						if (element instanceof RDFSNamedClass) {
 							parents.add((RDFSNamedClass) element);
 						}
 					}
+					
 					return parents;
 				}
 			});
@@ -335,7 +336,7 @@ class TriplePostProcessor extends AbstractStatefulTripleProcessor {
 					Collection<Cls> inferredSuperclasses = getInferredSuperClasses(namedClass);
 
 					for (Cls inferredSupercls : inferredSuperclasses) {
-						if (!FrameCreatorUtility.hasSuperclass(namedClass, inferredSupercls)) {
+						if (!FrameCreatorUtility.hasDirectSuperclass(namedClass, inferredSupercls)) {
 							//create the inferred superclass in the same TS and NFS as the class
 							TripleStore homeTs = owlModel.getTripleStoreModel().getHomeTripleStore(namedClass);
 							FrameCreatorUtility.createSubclassOf(namedClass, inferredSupercls, homeTs);
