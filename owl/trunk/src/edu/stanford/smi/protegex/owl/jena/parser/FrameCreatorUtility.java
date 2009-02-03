@@ -236,8 +236,8 @@ public class FrameCreatorUtility {
     	return ParserUtil.getSimpleFrameStore(inst).getDirectTypes(inst).contains(type);
     }
 
-    public static boolean hasSuperclass(Cls cls, Cls supercls) {
-    	return ParserUtil.getSimpleFrameStore(cls).getSuperclasses(cls).contains(supercls);
+    public static boolean hasDirectSuperclass(Cls cls, Cls supercls) {
+    	return ParserUtil.getSimpleFrameStore(cls).getDirectSuperclasses(cls).contains(supercls);
     }
 
     public static boolean createSubclassOf(Cls cls, Cls superCls, TripleStore ts) {
