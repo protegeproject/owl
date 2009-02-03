@@ -16,6 +16,7 @@ import edu.stanford.smi.protege.model.Instance;
 import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protege.model.framestore.MergingNarrowFrameStore;
 import edu.stanford.smi.protege.model.framestore.NarrowFrameStore;
+import edu.stanford.smi.protege.util.ApplicationProperties;
 import edu.stanford.smi.protege.util.CollectionUtilities;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
@@ -31,6 +32,7 @@ import edu.stanford.smi.protegex.owl.util.OWLFrameStoreUtils;
  * @author Holger Knublauch  <holger@knublauch.com>
  */
 public class TripleStoreModelImpl implements TripleStoreModel {
+    public static final String SUPPRESS_DUPLICATE_PROPERTY_VALUES = "suppress.duplicate.owl.values";
 
     protected MergingNarrowFrameStore mnfs;
 
@@ -171,6 +173,7 @@ public class TripleStoreModelImpl implements TripleStoreModel {
     public void setTopTripleStore(TripleStore tripleStore) {
         topTripleStore = tripleStore;
         setViewActiveOnly(false);
+        mnfs.setSuppressDuplicates(ApplicationProperties.getBooleanProperty(SUPPRESS_DUPLICATE_PROPERTY_VALUES, true));
     }
 
 
