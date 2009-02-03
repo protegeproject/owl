@@ -198,8 +198,33 @@ public class FrameCreatorUtility {
 
         return true;
     }
+	
+	
+	public static boolean setInstanceType(Instance inst, Cls type, TripleStore ts) {
+        if (inst == null || type == null) {
+            return false;
+        }
 
-    public static boolean removeInstanceType(Instance inst, Cls type) {
+        Slot typeSlot = inst.getKnowledgeBase().getSystemFrames().getDirectTypesSlot();
+        setOwnSlotValue(inst, typeSlot , type, ts);
+        setOwnSlotValue(type, inst.getKnowledgeBase().getSystemFrames().getDirectInstancesSlot(), inst, ts);
+
+        return true;
+    }
+
+    public static boolean setOwnSlotValue(Frame frame, Slot slot, Frame value, TripleStore ts) {
+    	 if (frame == null || slot == null) {
+             return false;
+         }
+
+         NarrowFrameStore nfs = ts.getNarrowFrameStore();
+         //what should happen if value is a collection?
+         nfs.setValues(frame, slot, null, false, CollectionUtilities.createCollection(value));
+
+         return true;		
+	}
+
+	public static boolean removeInstanceType(Instance inst, Cls type) {
         Slot typeSlot = inst.getKnowledgeBase().getSystemFrames().getDirectTypesSlot();
         ParserUtil.getSimpleFrameStore(inst).removeDirectOwnSlotValue(inst, typeSlot , type);
         ParserUtil.getSimpleFrameStore(type).removeDirectOwnSlotValue(type, inst.getKnowledgeBase().getSystemFrames().getDirectInstancesSlot(), inst);
