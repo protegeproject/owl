@@ -1,5 +1,6 @@
 package edu.stanford.smi.protegex.owl.jena.parser;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -20,12 +21,16 @@ import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.RDFSClass;
 import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
+import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultRDFProperty;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 
 class TripleProcessorForResourceObjects extends AbstractStatefulTripleProcessor {
 	private static final transient Logger log = Log.getLogger(TripleProcessorForResourceObjects.class);
 
+	//optimization
+	private Collection<RDFSNamedClass> untypedMetaClasses = new ArrayList<RDFSNamedClass>();
+	
 	public enum TripleStatus {
 		TRIPLE_PROCESSING_SHOULD_CONTINUE,
 		TRIPLE_PROCESSING_COMPLETE,
@@ -35,7 +40,13 @@ class TripleProcessorForResourceObjects extends AbstractStatefulTripleProcessor 
 
 	public TripleProcessorForResourceObjects(TripleProcessor processor) {
 		super(processor);
-
+		initUntypedMetaClasses();
+	}
+	
+	protected void initUntypedMetaClasses() {
+		untypedMetaClasses.add(((AbstractOWLModel)owlModel).getRDFExternalClassClass());
+		untypedMetaClasses.add(((AbstractOWLModel)owlModel).getRDFExternalPropertyClass());
+		untypedMetaClasses.add(((AbstractOWLModel)owlModel).getRDFExternalResourceClass());	
 	}
 
 	public boolean processTriple(AResource subj, AResource pred, AResource obj, TripleStore ts, boolean alreadyInUndef) {
@@ -286,7 +297,7 @@ class TripleProcessorForResourceObjects extends AbstractStatefulTripleProcessor 
 			boolean subjAlreadyHasType = subjFrame != null && !getTypes(subjFrame).isEmpty();
 
 			objFrame = getCls(objFrame);
-			subjFrame = createFrameWithType(subjName, (Cls) objFrame, subj.isAnonymous());
+			subjFrame = createFrameWithType(subjName, (Cls) objFrame);
 
 			//add the rdf:type triple if not already there
 			if (!FrameCreatorUtility.hasRDFType(subjFrame, predSlot, (Cls)objFrame, tripleStore)) {
@@ -443,47 +454,64 @@ class TripleProcessorForResourceObjects extends AbstractStatefulTripleProcessor 
 			}
 		}
 
-		private Frame createFrameWithType(String frameUri, Cls type, boolean isSubjAnon) {
+		private Frame createFrameWithType(String frameUri, Cls type) {
 			Frame frame = getFrame(frameUri);
-
-			//existing frame, probably new type
 			if (frame != null) {
-				if (!FrameCreatorUtility.hasOwnSlotValue(frame, owlModel.getSystemFrames().getNameSlot(), frameUri)) {
-					FrameCreatorUtility.addOwnSlotValue(frame, owlModel.getSystemFrames().getNameSlot(), frameUri, tripleStore);
-				}
-				Collection<Cls> types = FrameCreatorUtility.getDirectTypes((Instance) frame);
-				if (types == null || !types.contains(type)) {
-					//TODO: fix for FMA_small - top class is untyped, although it is typed
-					//TODO - before release
-					if (types.isEmpty()) {
-						FrameCreatorUtility.addInstanceType((Instance) frame, type, tripleStore);
-					} else {
-						//FrameCreatorUtility.addInstanceType((Instance) frame, type, tripleStore);
-						globalParserCache.getMultipleTypesInstanceCache().addType((Instance)frame, type);
-					}
-				}
-
-				//because we create the properties on the fly
-				if (frame instanceof RDFProperty) {
-					frame.setIncluded(isImporting(tripleStore));
-				}
-				return frame;
+				return addTypeToInstance(frameUri, (Instance)frame, type);				
 			}
 
 			FrameID id = new FrameID(frameUri);
-
 			frame = FrameCreatorUtility.createFrameWithType(owlModel, id, type, tripleStore);
 			if (isImporting(tripleStore)) {
-				frame.setIncluded(true); // doesn't have any effect in
-				// client-server or db mode
+				frame.setIncluded(true); 
 			}
-
 			if (frame != null) {
 				checkUndefinedResources(frameUri);
 			}
-
 			return frame;
 		}
+		
+		private Frame addTypeToInstance(String instanceURI, Instance instance, Cls type) {
+			if (!FrameCreatorUtility.hasOwnSlotValue(instance, owlModel.getSystemFrames().getNameSlot(), instanceURI)) {
+				FrameCreatorUtility.addOwnSlotValue(instance, owlModel.getSystemFrames().getNameSlot(), instanceURI, tripleStore);
+			}
+			
+			Collection<Cls> types = FrameCreatorUtility.getDirectTypes(instance);
+		
+			if (types!= null && types.contains(type)) { //duplicate types in imports are lost
+				return instance;
+			}
+			
+			if (alreadyInUndef) {//frame is undefined
+				if (types != null) {
+					types = new ArrayList<Cls>(types);
+					types.removeAll(untypedMetaClasses);
+				}
+			}
+			
+			if (types == null || types.isEmpty()) {//frame was an external resource/class/property 		
+				FrameCreatorUtility.addInstanceType(instance, type, tripleStore);				
+				globalParserCache.getFramesWithWrongJavaType().add(instanceURI);
+				return getFrame(instanceURI);
+			}
+			
+			if (alreadyInUndef) { //optimization
+				FrameCreatorUtility.addInstanceType(instance, type, tripleStore);
+				simpleFrameStore.swizzleInstance(instance);
+			} else {
+				globalParserCache.getMultipleTypesInstanceCache().addType(instance, type);
+			}
+
+			instance = (Instance) getFrame(instanceURI);
+			
+			//might be needed because we create the properties on the fly
+			if (instance instanceof RDFProperty) {
+				instance.setIncluded(isImporting(tripleStore));
+			}
+			
+			return instance;
+		}
+		
 
 		private Frame createLogicalClass() {
 			Frame logClass = getFrame(subjName);
