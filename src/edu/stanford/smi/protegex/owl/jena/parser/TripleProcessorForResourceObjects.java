@@ -121,8 +121,6 @@ class TripleProcessorForResourceObjects extends AbstractStatefulTripleProcessor 
 			 */
 			adjustJavaTypes();
 
-			handleOntologyDeclaration();
-
 			status = handleEquivalentClassesOrProperties();
 			switch (status) {
 			case TRIPLE_PROCESSING_COMPLETE:
@@ -265,14 +263,19 @@ class TripleProcessorForResourceObjects extends AbstractStatefulTripleProcessor 
 		}
 
 
-		private TripleStatus handleSetType() {
+		private TripleStatus handleSetType() {			
 			if (objName.equals(OWL.Restriction.getURI())) {
 				return TripleStatus.TRIPLE_PROCESSING_COMPLETE;
 			}
-
+			
 			if (subj.isAnonymous() && objName.equals(OWL.Class.getURI())) {
 				return TripleStatus.TRIPLE_PROCESSING_COMPLETE;
 			}
+			
+			if (objName.equals(OWL.Ontology.getURI())) {
+				handleOntologyDeclaration();
+			}
+			
 
 			if (objFrame == null) {
 				addUndefTriple(objName);
@@ -333,8 +336,7 @@ class TripleProcessorForResourceObjects extends AbstractStatefulTripleProcessor 
 		private void handleOntologyDeclaration() {
 			// guessing that the ontology for the parsed file is the first
 			// ontology found
-			if (objName.equals(OWL.Ontology.getURI()) && predName.equals(RDF.type.getURI())
-					&& tripleStore.getName() == null) {
+			if (tripleStore.getName() == null) {
 				tripleStore.setName(subjName);
 				tripleStore.addIOAddress(subjName);
 				//For the top level ontology, we don't know the name
@@ -444,14 +446,23 @@ class TripleProcessorForResourceObjects extends AbstractStatefulTripleProcessor 
 		private Frame createFrameWithType(String frameUri, Cls type, boolean isSubjAnon) {
 			Frame frame = getFrame(frameUri);
 
+			//existing frame, probably new type
 			if (frame != null) {
 				if (!FrameCreatorUtility.hasOwnSlotValue(frame, owlModel.getSystemFrames().getNameSlot(), frameUri)) {
 					FrameCreatorUtility.addOwnSlotValue(frame, owlModel.getSystemFrames().getNameSlot(), frameUri, tripleStore);
-					Collection<Cls> types = FrameCreatorUtility.getDirectTypes((Instance) frame);
-					if (types == null || !types.contains(type)) {
+				}
+				Collection<Cls> types = FrameCreatorUtility.getDirectTypes((Instance) frame);
+				if (types == null || !types.contains(type)) {
+					//TODO: fix for FMA_small - top class is untyped, although it is typed
+					//TODO - before release
+					if (types.isEmpty()) {
 						FrameCreatorUtility.addInstanceType((Instance) frame, type, tripleStore);
+					} else {
+						//FrameCreatorUtility.addInstanceType((Instance) frame, type, tripleStore);
+						globalParserCache.getMultipleTypesInstanceCache().addType((Instance)frame, type);
 					}
 				}
+
 				//because we create the properties on the fly
 				if (frame instanceof RDFProperty) {
 					frame.setIncluded(isImporting(tripleStore));
