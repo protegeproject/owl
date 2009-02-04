@@ -286,7 +286,8 @@ public class AssertedInstancesListPanel extends SelectableContainer implements D
                             return true;
                 	    }
                 	    
-                	    public Instance getResult() {
+                	    @Override
+						public Instance getResult() {
                 	        return instance;
                 	    }
                 	};
@@ -602,7 +603,7 @@ public class AssertedInstancesListPanel extends SelectableContainer implements D
 
 
     public void setSelectedInstance(Instance instance) {
-        list.setSelectedValue(instance, true);
+        list.setSelectedValue(new FrameWithBrowserText(instance), true);
         updateButtons();
     }
 
