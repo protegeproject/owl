@@ -1,13 +1,37 @@
 package edu.stanford.smi.protegex.owl.ui.search.finder;
 
-import edu.stanford.smi.protege.resource.Icons;
-import edu.stanford.smi.protegex.owl.ui.results.ResultsPanelManager;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.FontMetrics;
+import java.awt.event.ActionEvent;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.logging.Logger;
 
-import javax.swing.*;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import java.awt.*;
-import java.awt.event.*;
+
+import edu.stanford.smi.protege.resource.Icons;
+import edu.stanford.smi.protege.util.Log;
+import edu.stanford.smi.protegex.owl.ui.results.ResultsPanelManager;
 
 /**
  * A JPanel for modal dialogs that can be used to String-matching search for a certain
@@ -17,6 +41,7 @@ import java.awt.event.*;
  *         12-Oct-2005
  */
 public class FindResultsPanel extends JComponent {
+    private static Logger log = Log.getLogger(FindResultsPanel.class);
 
     private static final String SEARCH_AS_YOU_TYPE_LABEL = "Search as you type";
     private static final String SEARCH_PATTERN_LABEL = "Search Pattern";
@@ -132,11 +157,6 @@ public class FindResultsPanel extends JComponent {
 //        fireResultsChanged();
     }
 
-
-    public void setSearcher(Find s) {
-        this.find = s;
-    }
-
     public void setSaveResultsEnabled(boolean canSave) {
         if (canSave) {
             if (saveResultButton == null) {
@@ -161,9 +181,9 @@ public class FindResultsPanel extends JComponent {
      * @param searchType
      */
     public void refresh(int searchType) {
-        String string = textField.getText();
+        String searchString = textField.getText();
         find.cancelSearch();
-        find.startSearch(string, searchType);
+        find.startSearch(searchString, searchType);
     }
 
 //    private void fireResultsChanged() {
