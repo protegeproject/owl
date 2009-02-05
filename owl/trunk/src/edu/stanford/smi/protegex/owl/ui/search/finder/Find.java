@@ -10,6 +10,10 @@ import java.util.Set;
  *         03-Oct-2005
  */
 public interface Find {
+    
+    public enum FindStatus {
+        INIT, RUNNING, ABORTING, COMPLETED, CANCELLED;
+    }
 
     int STARTS_WITH = 0;
     int CONTAINS = 1;
