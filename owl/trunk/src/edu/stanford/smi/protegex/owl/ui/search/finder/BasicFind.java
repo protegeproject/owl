@@ -8,10 +8,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import edu.stanford.smi.protege.model.Frame;
 import edu.stanford.smi.protege.model.KnowledgeBase;
 import edu.stanford.smi.protege.model.Slot;
+import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.model.OWLIndividual;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
@@ -23,6 +26,7 @@ import edu.stanford.smi.protegex.owl.model.RDFResource;
  *         17-Mar-2006
  */
 public class BasicFind implements Find {
+    private static Logger log = Log.getLogger(BasicFind.class);
 
     private static final int MAX_MATCHES = -1;
 
@@ -51,6 +55,9 @@ public class BasicFind implements Find {
     }
 
     public void startSearch(String s, int type) {
+      if (log.isLoggable(Level.FINE)) {
+          log.fine("Starting search on " + s + " with type " + type + " [" + Thread.currentThread().getName() + "]");
+      }
       try {
         synchronized (lock) {
           if (!aborted()) { 
@@ -69,6 +76,9 @@ public class BasicFind implements Find {
           List searchProps = getSearchProperties();
 
           for (Iterator i = searchProps.iterator(); i.hasNext() && !aborted();) {
+            if (aborted()) {
+                break;
+            }
             Map<RDFResource, FindResult> res = searchOnSlot((Slot) i.next(), s, null, type);
             synchronized (lock) {
               results.putAll(res);
@@ -79,6 +89,9 @@ public class BasicFind implements Find {
           if (lang != null) {
             for (Iterator i = searchProps.iterator(); i.hasNext() && !aborted();) {
               Slot slot = (Slot) i.next();
+              if(aborted()) {
+                  break;
+              }
               if (!slot.equals(((KnowledgeBase) owlModel).getNameSlot())) {
                 Map<RDFResource, FindResult> res = searchOnSlot(slot, s, lang, type);
                 synchronized (lock) {
@@ -101,6 +114,9 @@ public class BasicFind implements Find {
           running = false;
         }
       }
+      if (log.isLoggable(Level.FINE)) {
+          log.fine("Finished search on " + s + " with type " + type + " [" + Thread.currentThread().getName() + "]");
+      }
     }
 
     public void cancelSearch() {
@@ -121,10 +137,12 @@ public class BasicFind implements Find {
                                                         String searchStr,
                                                         String lang, 
                                                         int searchType) {
-
+        if (log.isLoggable(Level.FINE)) {
+            log.fine("Starting search on slot = " + searchProp + " [" + Thread.currentThread().getName() + "]");
+        }
         Map<RDFResource, FindResult> slotResults = new HashMap<RDFResource, FindResult>();
 
-        Collection frames = null;
+        Collection<Frame> frames = null;
 
         String actualSearchString = searchStr;
 
@@ -147,8 +165,10 @@ public class BasicFind implements Find {
         frames = ((KnowledgeBase) owlModel).getMatchingFrames(searchProp, null, false, actualSearchString, BasicFind.MAX_MATCHES);
 
         if (frames != null) {
-            for (Iterator j = frames.iterator(); j.hasNext();) {
-                Frame f = (Frame) j.next();
+            for (Frame f : frames) {
+                if (aborted()) {
+                    break;
+                }
                 if (isValidFrameToSearch(f)) {
                     RDFResource res = (RDFResource) f;
                     FindResult item = FindResult.createFindResult(res, searchProp, searchStr);
@@ -158,7 +178,9 @@ public class BasicFind implements Find {
                 }
             }
         }
-
+        if (log.isLoggable(Level.FINE)) {
+            log.fine("Finished searching on slot " + searchProp + " [" + Thread.currentThread().getName() + "]");
+        }
         return slotResults;
     }
 
