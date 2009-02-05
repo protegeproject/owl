@@ -1,7 +1,7 @@
 package edu.stanford.smi.protegex.owl.ui.search.finder;
 
-import java.util.Map;
-import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import edu.stanford.smi.protege.util.ExclusiveRunnable;
 import edu.stanford.smi.protege.util.Log;
@@ -12,6 +12,7 @@ import edu.stanford.smi.protegex.owl.model.OWLModel;
  *         17-Mar-2006
  */
 public class ThreadedFind extends BasicFind {
+    private static Logger log = Log.getLogger(ThreadedFind.class);
 
     private Thread searchThread;
     private DoFind currentfind;
@@ -52,6 +53,9 @@ public class ThreadedFind extends BasicFind {
     }
 
     public void cancelSearch() {
+      if (log.isLoggable(Level.FINE)) {
+          log.fine("Cancelling search [" + Thread.currentThread().getName() + "]");
+      }
       if (currentfind != null) {
         currentfind.abort();
         currentfind.waitForShutdown();
