@@ -14,11 +14,11 @@ abstract class AbstractFindAction extends AbstractAction implements FindAction {
 
     private JTextComponent searchBox;
 
-    protected ResultsViewModelFind find;
+    protected ResultsViewModelFind findModel;
 
     protected boolean allowSave;
 
-    private HostResourceDisplay hrd;
+    private HostResourceDisplay hostResourceDisplay;
 
     public AbstractFindAction(ResultsViewModelFind find, Icon icon) {
         this(find, icon, null);
@@ -29,9 +29,9 @@ abstract class AbstractFindAction extends AbstractAction implements FindAction {
     }
 
     public AbstractFindAction(ResultsViewModelFind find, Icon icon, HostResourceDisplay hrd, boolean allowSave) {
-        super(find.getDescription(), icon);
-        this.find = find;
-        this.hrd = hrd;
+        super(find.getFind().getDescription(), icon);
+        this.findModel = find;
+        this.hostResourceDisplay = hrd;
         this.allowSave = allowSave;
     }
 
@@ -47,7 +47,7 @@ abstract class AbstractFindAction extends AbstractAction implements FindAction {
             txt = searchBox.getText();
         }
 
-        find.startSearch(txt);
+        findModel.getFind().startSearch(txt);
 //        Map results = find.getResults();
 
         // for a single result, just go and select the resource
@@ -57,11 +57,11 @@ abstract class AbstractFindAction extends AbstractAction implements FindAction {
 //        }
 //        else {
         // determine whether to show a table or a simple list
-        if (find.getNumSearchProperties() > 1) {
-            showResults(new FindResultsTableView(find, hrd));
+        if (findModel.getFind().getNumSearchProperties() > 1) {
+            showResults(new FindResultsTableView(findModel, hostResourceDisplay));
         }
         else {
-            showResults(new FindResultsListView(find, hrd));
+            showResults(new FindResultsListView(findModel, hostResourceDisplay));
         }
 //        }
 
