@@ -12,7 +12,7 @@ import java.util.Set;
 public interface Find {
     
     public enum FindStatus {
-        INIT, RUNNING, ABORTING, COMPLETED, CANCELLED;
+        INIT, RUNNING, CANCELLING, COMPLETED, CANCELLED;
     }
 
     int STARTS_WITH = 0;
@@ -22,7 +22,7 @@ public interface Find {
 
     String[] searchTypeString = {"starts with", "contains", "ends with", "matches"};
 
-    public void startSearch(String s);
+    void startSearch(String s);
 
     /**
      * This method should start the search.
@@ -30,7 +30,7 @@ public interface Find {
      * @param s          the string to search for
      * @param searchType
      */
-    public void startSearch(String s, int searchType);
+    void startSearch(String s, int searchType);
 
 //  /**
 //   * Search again within the current results
@@ -38,34 +38,40 @@ public interface Find {
 //   * to the search string
 //   * @param s the string to seach for
 //   */
-//  public void refineSearch(String s);
+//  void refineSearch(String s);
 
-    public void cancelSearch();
+    void cancelSearch();
 
     /**
      * This method can be called to get the current results
      *
      * @return a map of Resources as keys with SearchResultItem objects as values
      */
-    public Map getResults();
+    Map getResults();
 
-    public Set getResultResources();
+    Set getResultResources();
 
-    public int getResultCount();
+    int getResultCount();
 
-    public String getLastSearch();
+    String getLastSearch();
+    
+    int getSearchType();
 
-    public String getSummaryText();
+    String getSummaryText();
 
-    public String getDescription();
+    String getDescription();
 
     OWLModel getModel();
 
     int getNumSearchProperties();
 
-    int getSearchType();
-
     void addResultListener(SearchListener l);
 
     boolean removeResultListener(SearchListener l);
+    
+    FindStatus getFindStatus();
+    
+    void waitForSearchComplete();
+
+    void reset();
 }
