@@ -19,7 +19,7 @@ public class FindInPanelAction extends AbstractFindAction {
 
 
     protected void showResults(AbstractFindResultsView view) {
-        resultsPanel = new RetainFindResultsPanel(find, view);
-        ResultsPanelManager.addResultsPanel(find.getModel(), resultsPanel, true);
+        resultsPanel = new RetainFindResultsPanel(findModel.getFind(), view);
+        ResultsPanelManager.addResultsPanel(findModel.getFind().getModel(), resultsPanel, true);
     }
 }
