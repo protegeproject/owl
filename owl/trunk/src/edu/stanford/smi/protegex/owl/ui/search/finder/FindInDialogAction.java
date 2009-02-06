@@ -32,8 +32,8 @@ public class FindInDialogAction extends AbstractFindAction {
 
         this.view = view;
 
-        resultsPanel = new FindResultsPanel(find, view);
-        find.addResultListener(new SearchAdapter() {
+        resultsPanel = new FindResultsPanel(findModel.getFind(), view);
+        findModel.getFind().addResultListener(new SearchAdapter() {
             public void searchEvent(Find source) {
                 rename(source.getSummaryText());
             }
@@ -53,7 +53,7 @@ public class FindInDialogAction extends AbstractFindAction {
         Component win = ProtegeUI.getTopLevelContainer(ProjectManager.getProjectManager().getCurrentProject());
 
         ModalDialogFactory fac = ProtegeUI.getModalDialogFactory();
-        int result = fac.showDialog(win, resultsPanel, find.getSummaryText(),
+        int result = fac.showDialog(win, resultsPanel, findModel.getFind().getSummaryText(),
                                     ModalDialogFactory.MODE_OK_CANCEL,
                                     new ModalDialogFactory.CloseCallback() {
                                         public boolean canClose(int result) {
@@ -70,19 +70,21 @@ public class FindInDialogAction extends AbstractFindAction {
                 resultsPanel.selectResource();
                 break;
             case ModalDialogFactory.OPTION_CANCEL:
-                find.cancelSearch();
+                synchronized (findModel) {
+                    findModel.getFind().cancelSearch();
+                    findModel.getFind().waitForSearchComplete();
+                    findModel.getFind().reset();
+                }
                 break;
         }
     }
 
     private void rename(String name) {
-        try {
-            JDialog dialog = (JDialog) resultsPanel.getTopLevelAncestor();
-            if (dialog != null) { // because you cannot rename before its visible
-                dialog.setTitle(name);
-            }
+        Object ancestor = resultsPanel.getTopLevelAncestor();
+        if (ancestor != null && ancestor instanceof JDialog) {
+            ((JDialog) ancestor).setTitle(name);
         }
-        catch (ClassCastException e) {
-        } // do nothing
     }
+    
+    
 }
