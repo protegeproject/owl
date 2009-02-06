@@ -31,12 +31,15 @@ public class OWLClassImpl extends BuiltInArgumentImpl implements OWLClass
 
   public OWLClassImpl(OWLModel owlModel, String className) throws OWLFactoryException
   {
-    edu.stanford.smi.protegex.owl.model.OWLNamedClass owlNamedClass;
+    edu.stanford.smi.protegex.owl.model.OWLNamedClass owlNamedClass = null;
 
     this.className = className;
 
-    owlNamedClass = SWRLOWLUtil.getOWLNamedClass(owlModel, className);
-    if (owlNamedClass == null) throw new InvalidClassNameException(className);
+    try {
+      owlNamedClass = SWRLOWLUtil.getOWLNamedClass(owlModel, className);
+    } catch (SWRLOWLUtilException e) {
+      throw new InvalidClassNameException(className);
+    } // try
 
     prefixedClassName = owlNamedClass.getPrefixedName();
 
@@ -50,8 +53,15 @@ public class OWLClassImpl extends BuiltInArgumentImpl implements OWLClass
       equivalentClassSuperclassNames = new HashSet<String>();
 
       for (String equivalentClassName : equivalentClassNames) {
-        OWLNamedClass equivalentClass = SWRLOWLUtil.getOWLNamedClass(owlModel, equivalentClassName);
+        OWLNamedClass equivalentClass = null;
         Iterator equivalentClassSuperClassesIterator = equivalentClass.getNamedSuperclasses(true).iterator();
+
+        try {
+          equivalentClass = SWRLOWLUtil.getOWLNamedClass(owlModel, equivalentClassName);
+        } catch (SWRLOWLUtilException e) {
+          throw new InvalidClassNameException(className);
+        } // try
+
         while (equivalentClassSuperClassesIterator.hasNext()) {
           Object o = equivalentClassSuperClassesIterator.next();
           if (o instanceof OWLNamedClass) { // Ignore anonymous classes

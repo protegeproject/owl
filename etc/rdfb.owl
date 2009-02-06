@@ -9,6 +9,7 @@
     xmlns:owl="http://www.w3.org/2002/07/owl#"
   xml:base="http://swrl.stanford.edu/ontologies/built-ins/3.4/rdfb.owl">
   <owl:Ontology rdf:about=""/>
+  <swrl:Builtin rdf:ID="hasLabel"/>
   <swrl:Builtin rdf:ID="isResource"/>
   <swrl:Builtin rdf:ID="isProperty"/>
   <swrl:Builtin rdf:ID="isList"/>

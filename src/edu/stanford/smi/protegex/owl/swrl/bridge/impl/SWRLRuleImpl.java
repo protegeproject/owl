@@ -181,7 +181,7 @@ public class SWRLRuleImpl implements SWRLRule
     
     sqwrlResult.configured();
     sqwrlResult.openRow();
-    
+
     if (hasSQWRLCollectionBuiltIns) sqwrlResult.setIsDistinct(); 
   } // configureResult
 
