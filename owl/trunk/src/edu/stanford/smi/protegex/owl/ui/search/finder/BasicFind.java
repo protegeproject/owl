@@ -27,6 +27,8 @@ import edu.stanford.smi.protegex.owl.model.RDFResource;
  */
 public class BasicFind implements Find {
     private static Logger log = Log.getLogger(BasicFind.class);
+    
+    private FindStatus status = FindStatus.INIT;
 
     private static final int MAX_MATCHES = -1;
 
@@ -34,20 +36,15 @@ public class BasicFind implements Find {
 
     private Map<RDFResource, FindResult> results = new HashMap<RDFResource, FindResult>();
     
-    private String string;
+    private String searchString;
 
     private int searchType;
 
     private List<SearchListener> listeners;
 
-    private boolean running = false;
-
-    private Object lock;
-
     public BasicFind(OWLModel owlModel, int type) {
         this.owlModel = owlModel;
         this.searchType = type;
-        lock = owlModel;
     }
 
     public void startSearch(String s) {
@@ -59,60 +56,76 @@ public class BasicFind implements Find {
           log.fine("Starting search on " + s + " with type " + type + " [" + Thread.currentThread().getName() + "]");
       }
       try {
-        synchronized (lock) {
-          if (!aborted()) { 
-            string = s;
-            searchType = type;
-            results.clear();
-            running = true;
-          } else {
-            return;
-          }
+        synchronized (this) {
+            switch (status) {
+            case INIT:
+            case COMPLETED:
+            case CANCELLED:
+                searchString = s;
+                searchType = type;
+                results.clear();
+                status = FindStatus.RUNNING;
+                break;
+            default:
+                throw new IllegalStateException("Should not start new search before existing search completes");
+            }
         }
+
         notifySearchStarted();
         
         if ((s != null) && (s.length() > 0)) {
 
-          List searchProps = getSearchProperties();
-
-          for (Iterator i = searchProps.iterator(); i.hasNext() && !aborted();) {
-            if (aborted()) {
-                break;
-            }
-            Map<RDFResource, FindResult> res = searchOnSlot((Slot) i.next(), s, null, type);
-            synchronized (lock) {
-              results.putAll(res);
-            }
-            notifyResultsUpdated();
+          List<Slot> searchProps = getSearchProperties();
+          for (Slot searchProp : searchProps) {
+              if (status == FindStatus.CANCELLING) {
+                  break;
+              }
+              Map<RDFResource, FindResult> res = searchOnSlot(searchProp, s, null, type);
+              synchronized (this) {
+                  results.putAll(res);
+              }
+              notifyResultsUpdated();
           }
           String lang = owlModel.getDefaultLanguage();
           if (lang != null) {
-            for (Iterator i = searchProps.iterator(); i.hasNext() && !aborted();) {
-              Slot slot = (Slot) i.next();
-              if(aborted()) {
-                  break;
+              for (Slot searchProp : searchProps) {
+                  if (status == FindStatus.CANCELLING) {
+                      break;
+                  }
+                  if (!searchProp.equals(((KnowledgeBase) owlModel).getNameSlot())) {
+                      Map<RDFResource, FindResult> res = searchOnSlot(searchProp, s, lang, type);
+                      synchronized (this) {
+                          results.putAll(res);
+                      }
+                      notifyResultsUpdated();
+                  }
               }
-              if (!slot.equals(((KnowledgeBase) owlModel).getNameSlot())) {
-                Map<RDFResource, FindResult> res = searchOnSlot(slot, s, lang, type);
-                synchronized (lock) {
-                  results.putAll(res);
-                }
-                notifyResultsUpdated();
-              }
-            }
           }
         }
-
-        if (!aborted()) {
-          notifySearchComplete();
-        }
-        else {
-          notifySearchCancelled();
-        }
       } finally {
-        synchronized (lock) {
-          running = false;
-        }
+        synchronized (this) {
+            switch (status) {
+            case RUNNING:
+                status = FindStatus.COMPLETED;
+                break;
+            case CANCELLING:
+                status = FindStatus.CANCELLED;
+                break;
+            default:
+                throw new RuntimeException("Programmer error");
+            }
+            this.notifyAll();
+        }  
+      }
+      switch (status) {
+      case COMPLETED:
+          notifySearchComplete();
+          break;
+      case CANCELLED:
+          notifySearchCancelled();
+          break;
+      default:
+          throw new RuntimeException("Programmer error");
       }
       if (log.isLoggable(Level.FINE)) {
           log.fine("Finished search on " + s + " with type " + type + " [" + Thread.currentThread().getName() + "]");
@@ -120,17 +133,16 @@ public class BasicFind implements Find {
     }
 
     public void cancelSearch() {
-      throw new UnsupportedOperationException("Can't abort non-threaded search");
-    }
+        synchronized (this) {
+            switch (status) {
+            case RUNNING:
+                status = FindStatus.CANCELLING;
+                break;
+            default:
+                break;
+            }
 
-    protected boolean aborted() {
-      return false;
-    }
-    
-    public boolean isRunning() {
-      synchronized (lock) {
-        return running;
-      }
+        }
     }
 
     protected Map<RDFResource, FindResult> searchOnSlot(Slot searchProp, 
@@ -166,7 +178,7 @@ public class BasicFind implements Find {
 
         if (frames != null) {
             for (Frame f : frames) {
-                if (aborted()) {
+                if (status == FindStatus.CANCELLING) {
                     break;
                 }
                 if (isValidFrameToSearch(f)) {
@@ -189,8 +201,9 @@ public class BasicFind implements Find {
      * as well as the search synonym slots (if set)
      * FIXME: TT: This method is wrong. It does not treat correctly the browser text
      */
-    protected List getSearchProperties() {
-        List searchProps = new ArrayList();
+    @SuppressWarnings("unchecked")
+    protected List<Slot> getSearchProperties() {
+        List<Slot> searchProps = new ArrayList<Slot>();
 
         Collection synonymProps = owlModel.getSearchSynonymProperties();
         searchProps.addAll(synonymProps);
@@ -211,40 +224,46 @@ public class BasicFind implements Find {
      */
 
     public Map<RDFResource, FindResult> getResults() {
-      synchronized (lock) {
+      synchronized (this) {
         return new HashMap<RDFResource, FindResult>(results);
       }
     }
 
-    public Set getResultResources() {
-      synchronized (lock) {
-        return new HashSet(results.keySet());
+    public Set<RDFResource> getResultResources() {
+      synchronized (this) {
+        return new HashSet<RDFResource>(results.keySet());
       }
     }
 
 
     public int getResultCount() {
-      synchronized (lock) {
+      synchronized (this) {
         return results.size();
       }
     }
 
 
     public String getSummaryText() {
-      synchronized (lock) {
-        if (isRunning()) {
-          return "Searching for \"" + string + "\" : (" + results.size() + " matches)";
+        synchronized (this) {
+            switch (status) {
+            case RUNNING:
+            case CANCELLING:
+                return "Searching for \"" + searchString + "\" : (" + results.size() + " matches)";
+            case COMPLETED:
+            case CANCELLED:
+                return "Results for \"" + searchString + "\" : (" + results.size() + " matches)";
+            case INIT:
+                return "Search Starting...";
+            default:
+                throw new RuntimeException("Programmer error: unknown state");
+            }
         }
-        else {
-          return "Results for \"" + string + "\" : (" + results.size() + " matches)";
-        }
-      }
     }
 
 
     public String getLastSearch() {
-      synchronized  (lock) {
-        return string;
+      synchronized  (this) {
+        return searchString;
       }
     }
 
@@ -277,53 +296,41 @@ public class BasicFind implements Find {
     }
 
     public int getSearchType() {
-      synchronized (lock) {
+      synchronized (this) {
         return searchType;
       }
     }
     
     protected void notifySearchStarted() {
-      synchronized (lock) {
-        for (Iterator i = listeners.iterator(); i.hasNext();) {
-            SearchListener l = (SearchListener) i.next();
+        for (SearchListener l : getListeners()) {
             l.searchStartedEvent(this);
             l.searchEvent(this);
         }
-      }
     }
 
     protected void notifyResultsUpdated() {
-      synchronized (lock) {
-        for (Iterator<SearchListener> i = listeners.iterator(); i.hasNext();) {
-            SearchListener l = i.next();
+        for (SearchListener l : getListeners()) {
             l.resultsUpdatedEvent(results.size(), this);
             l.searchEvent(this);
         }
-      }
     }
 
     protected void notifySearchComplete() {
-      synchronized (lock) {
-        for (Iterator<SearchListener> i = listeners.iterator(); i.hasNext();) {
-            SearchListener l = i.next();
+        for (SearchListener l : getListeners()) {
             l.searchCompleteEvent(results.size(), this);
             l.searchEvent(this);
         }
-      }
     }
 
     protected void notifySearchCancelled() {
-      synchronized (lock) {
-        for (Iterator<SearchListener> i = listeners.iterator(); i.hasNext();) {
-            SearchListener l = i.next();
+        for (SearchListener l : getListeners()) {
             l.searchCancelledEvent(this);
             l.searchEvent(this);
         }
-      }
     }
 
     public void addResultListener(SearchListener l) {
-      synchronized (lock) {
+      synchronized (this) {
         if (listeners == null) {
             listeners = new ArrayList<SearchListener>();
         }
@@ -332,11 +339,59 @@ public class BasicFind implements Find {
     }
 
     public boolean removeResultListener(SearchListener l) {
-      synchronized (lock) {
+      synchronized (this) {
         if (listeners != null) {
             return listeners.remove(l);
         }
         return false;
       }
+    }
+
+    public Collection<SearchListener> getListeners() {
+        synchronized (this) {
+            return new ArrayList<SearchListener>(listeners);
+        }
+    }
+    
+    public FindStatus getFindStatus() {
+        synchronized (this) {
+            return status;
+        }
+    }
+    
+    public void waitForSearchComplete() {
+        synchronized (this) {
+            while (true) {
+                switch (status) {
+                case RUNNING:
+                case CANCELLING:
+                    try {
+                        wait();
+                    }
+                    catch (InterruptedException ie) {
+                        log.log(Level.SEVERE, "Unexpeccted interrupt", ie);
+                    }
+                    break;
+                default:
+                    return;
+                }
+            }
+        }
+    }
+    
+    public void reset() {   
+        synchronized (this) {
+            switch (status) {
+            case INIT:
+            case COMPLETED:
+            case CANCELLED:
+                searchString = "";
+                results.clear();   
+                break;
+            default:
+                throw new IllegalStateException("Attempted reset while still running");
+            }
+
+        }
     }
 }
