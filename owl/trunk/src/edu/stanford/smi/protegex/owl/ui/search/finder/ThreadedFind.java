@@ -16,11 +16,9 @@ public class ThreadedFind extends BasicFind {
 
     private Thread searchThread;
     private DoFind currentfind;
-    private Object lock;
 
     public ThreadedFind(OWLModel owlModel, int type) {
         super(owlModel, type);
-        lock = owlModel;
         currentfind = new DoFind();
     }
 
@@ -34,7 +32,7 @@ public class ThreadedFind extends BasicFind {
      * 
      */
     public void startSearch(String s, int type) {
-      synchronized (lock) {
+      synchronized (this) {
         currentfind.setString(s);
         currentfind.setType(type);
 
@@ -47,18 +45,14 @@ public class ThreadedFind extends BasicFind {
     private void startSuperSearch(String s, int type) {
       super.startSearch(s, type);
     }
-    
-    protected boolean aborted() {
-      return currentfind.isAborted();
-    }
 
     public void cancelSearch() {
       if (log.isLoggable(Level.FINE)) {
           log.fine("Cancelling search [" + Thread.currentThread().getName() + "]");
       }
+      super.cancelSearch();
       if (currentfind != null) {
         currentfind.abort();
-        currentfind.waitForShutdown();
       }
     }
     
