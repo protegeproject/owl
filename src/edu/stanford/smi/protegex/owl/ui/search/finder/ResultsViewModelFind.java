@@ -16,7 +16,7 @@ import java.util.*;
  *         03-Oct-2005
  */
 public class ResultsViewModelFind extends AbstractTableModel
-        implements Find, ListModel {
+        implements ListModel {
 
     protected List orderedKeys; // used for sorting alphabetically
 
@@ -89,7 +89,7 @@ public class ResultsViewModelFind extends AbstractTableModel
     }
 
 
-    public synchronized Object getValueAt(int rowIndex, int columnIndex) {
+    public Object getValueAt(int rowIndex, int columnIndex) {
         if (orderedKeys.size() > rowIndex) {
             Object key = orderedKeys.get(rowIndex);
             FindResult item = (FindResult) map.get(key);
@@ -100,8 +100,8 @@ public class ResultsViewModelFind extends AbstractTableModel
     }
 
 
-    private synchronized void fireDataChanged() {
-        map = new HashMap(getResults());
+    private void fireDataChanged() {
+        map = new HashMap(findAlg.getResults());
         orderedKeys = new LinkedList(map.keySet());
         //Collections.sort(orderedKeys);
 
@@ -115,68 +115,11 @@ public class ResultsViewModelFind extends AbstractTableModel
         // notify table listeners
         this.fireTableDataChanged();
     }
-
-    /**
-     * Delegates to internal find
-     *
-     * @param s
-     */
-    public void startSearch(String s) {
-        findAlg.startSearch(s);
+    
+    public Find getFind() {
+        return findAlg;
     }
-
-    public void startSearch(String s, int searchType) {
-        findAlg.startSearch(s, searchType);
-    }
-
-    public void cancelSearch() {
-        findAlg.cancelSearch();
-    }
-
-    public Map getResults() {
-        return findAlg.getResults();
-    }
-
-    public Set getResultResources() {
-        return findAlg.getResultResources();
-    }
-
-    public int getResultCount() {
-        return findAlg.getResultCount();
-    }
-
-    public String getLastSearch() {
-        return findAlg.getLastSearch();
-    }
-
-    public String getSummaryText() {
-        return findAlg.getSummaryText();
-    }
-
-    public String getDescription() {
-        return findAlg.getDescription();
-    }
-
-    public OWLModel getModel() {
-        return findAlg.getModel();
-    }
-
-    public int getNumSearchProperties() {
-        return findAlg.getNumSearchProperties();
-    }
-
-    public int getSearchType() {
-        return findAlg.getSearchType();
-    }
-
-    public void addResultListener(SearchListener l) {
-        findAlg.addResultListener(l);
-    }
-
-    public boolean removeResultListener(SearchListener l) {
-        return findAlg.removeResultListener(l);
-    }
-
+    
     protected boolean isValidFrameToSearch(Frame f) {
         return true;
     }
