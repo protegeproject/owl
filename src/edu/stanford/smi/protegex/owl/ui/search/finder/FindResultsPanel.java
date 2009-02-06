@@ -5,6 +5,7 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FontMetrics;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ItemEvent;
@@ -19,15 +20,12 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 
 import edu.stanford.smi.protege.resource.Icons;
 import edu.stanford.smi.protege.util.Log;
@@ -43,7 +41,6 @@ import edu.stanford.smi.protegex.owl.ui.results.ResultsPanelManager;
 public class FindResultsPanel extends JComponent {
     private static Logger log = Log.getLogger(FindResultsPanel.class);
 
-    private static final String SEARCH_AS_YOU_TYPE_LABEL = "Search as you type";
     private static final String SEARCH_PATTERN_LABEL = "Search Pattern";
     private static final String SAVE_RESULTS_LABEL = "Save Results";
 
@@ -56,30 +53,13 @@ public class FindResultsPanel extends JComponent {
     private JComboBox searchTypeCombo;
 
     private JTextField textField;
-
-    private JCheckBox searchAsYouTypeCheckbox;
+    
+    private JButton searchButton;
 
     private JPanel mainPanel;
 
     private AbstractFindResultsView view;
-
-    private static boolean searchAsYouType = true;
-
-
-    private DocumentListener searchAsYouTypeListener = new DocumentListener() {
-        public void insertUpdate(DocumentEvent e) {
-            refresh(); // should refine the existing search rather than from scratch
-        }
-
-        public void removeUpdate(DocumentEvent e) {
-            refresh();
-        }
-
-        public void changedUpdate(DocumentEvent e) {
-            refresh();
-        }
-    };
-
+    
     // action to send these results to the Results panel at the south of the main window
     private Action saveResultsAction = new AbstractAction(SAVE_RESULTS_LABEL, Icons.getDownIcon()) {
         public void actionPerformed(ActionEvent e) {
@@ -92,7 +72,7 @@ public class FindResultsPanel extends JComponent {
     };
 
 
-    public FindResultsPanel(Find find, AbstractFindResultsView view) {
+    public FindResultsPanel(final Find find, AbstractFindResultsView view) {
         super();
 
         setLayout(new BorderLayout());
@@ -101,7 +81,34 @@ public class FindResultsPanel extends JComponent {
         this.view = view;
 
         textField = createTextField();
+        find.addResultListener(new SearchAdapter() {
+            @Override
+            public void searchCancelledEvent(Find source) {
+                if (textField != null) {
+                    textField.setEnabled(true);
+                }
+            }
+            
+            @Override
+            public void searchCompleteEvent(int numResults, Find source) {  
+                if (textField != null) {
+                    textField.setEnabled(true);
+                }
+            }
+        });
+        textField.addActionListener(new ActionListener() {
+           public void actionPerformed(ActionEvent e) {
+               refresh();
+            } 
+        });
 
+        searchButton = new JButton("Search");
+        searchButton.addActionListener(new ActionListener() {
+           public void actionPerformed(ActionEvent e) {
+               refresh();
+            } 
+        });
+        
         // when in the dialog, this component never gets a componentShown
         addComponentListener(new ComponentAdapter() {
             public void componentMoved(ComponentEvent e) {
@@ -117,36 +124,13 @@ public class FindResultsPanel extends JComponent {
             }
         });
 
-        view.addKeyListener(new KeyAdapter() {
-            public void keyPressed(KeyEvent e) {
-                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                    e.consume();
-                }
-            }
-
-            public void keyReleased(KeyEvent e) {
-                switch (e.getKeyCode()) {
-                    case KeyEvent.VK_ENTER:
-                        e.consume(); // do not break
-                    case KeyEvent.VK_SPACE:
-                        selectResource();
-                        break;
-                    default:
-                        if (!e.isActionKey()) requestFocus();
-                }
-            }
-        });
-
         searchTypeCombo = createTypeCombo();
-
-        searchAsYouTypeCheckbox = createSearchAsYouType();
-        refreshSearchAsYouType();
 
         JPanel northPanel = new JPanel();
         northPanel.add(new JLabel(SEARCH_PATTERN_LABEL));
         northPanel.add(searchTypeCombo);
         northPanel.add(textField);
-        northPanel.add(searchAsYouTypeCheckbox);
+        northPanel.add(searchButton);
 
         mainPanel = new JPanel(new BorderLayout());
         mainPanel.add(northPanel, BorderLayout.NORTH);
@@ -181,9 +165,11 @@ public class FindResultsPanel extends JComponent {
      * @param searchType
      */
     public void refresh(int searchType) {
+        textField.setEnabled(false);
         String searchString = textField.getText();
-        find.cancelSearch();
-        find.startSearch(searchString, searchType);
+        if (!find.getLastSearch().equals(searchString)) {
+            find.startSearch(searchString, searchType);
+        }
     }
 
 //    private void fireResultsChanged() {
@@ -194,7 +180,6 @@ public class FindResultsPanel extends JComponent {
 
     public void selectResource() {
         view.selectResource();
-        find.cancelSearch();
     }
 
 //    public void addRenameListener(RenameListener listener) {
@@ -216,8 +201,6 @@ public class FindResultsPanel extends JComponent {
         tField.addKeyListener(new KeyAdapter() {
             public void keyReleased(KeyEvent e) {
                 switch (e.getKeyCode()) {
-                    case KeyEvent.VK_ENTER:
-                        if (!searchAsYouType) refresh(); // NO BREAK
                     case KeyEvent.VK_DOWN:
                         view.requestFocus();
                         break;
@@ -253,24 +236,5 @@ public class FindResultsPanel extends JComponent {
         });
 
         return combo;
-    }
-
-    private JCheckBox createSearchAsYouType() {
-        JCheckBox cBox = new JCheckBox(new AbstractAction(SEARCH_AS_YOU_TYPE_LABEL) {
-            public void actionPerformed(ActionEvent e) {
-                refreshSearchAsYouType();
-            }
-        });
-        cBox.setSelected(searchAsYouType);
-        return cBox;
-    }
-
-    private void refreshSearchAsYouType() {
-        searchAsYouType = searchAsYouTypeCheckbox.isSelected();
-        if (searchAsYouType) {
-            textField.getDocument().addDocumentListener(searchAsYouTypeListener);
-        } else {
-            textField.getDocument().removeDocumentListener(searchAsYouTypeListener);
-        }
     }
 }
