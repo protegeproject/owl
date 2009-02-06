@@ -486,7 +486,7 @@ public class ResultImpl implements ResultGenerator, SQWRLResult, Serializable
 
   public String toString()
   {
-    String result = "[isConfigured: " + isConfigured + ", isPrepared: " + isPrepared + ", isRowOpen: " + isRowOpen +
+    String result = "[numberOfColumns: " + numberOfColumns + ", isConfigured: " + isConfigured + ", isPrepared: " + isPrepared + ", isRowOpen: " + isRowOpen +
               ", isOrdered: " + isOrdered + ", isAscending " + isAscending + ", isDistinct: " + isDistinct + 
               ", hasAggregates: " + hasAggregates + "]\n";
 

@@ -11,6 +11,14 @@ import edu.stanford.smi.protegex.owl.swrl.sqwrl.exceptions.SQWRLException;
 import edu.stanford.smi.protegex.owl.swrl.util.SWRLOWLUtil;
 import edu.stanford.smi.protegex.owl.swrl.exceptions.SWRLRuleEngineException;
 import edu.stanford.smi.protegex.owl.swrl.exceptions.SWRLOWLUtilException;
+import edu.stanford.smi.protegex.owl.swrl.bridge.SWRLRuleEngineBridge;
+import edu.stanford.smi.protegex.owl.swrl.bridge.BridgeFactory;
+import edu.stanford.smi.protegex.owl.swrl.model.SWRLFactory;
+import edu.stanford.smi.protegex.owl.swrl.sqwrl.SQWRLQueryEngine;
+import edu.stanford.smi.protegex.owl.swrl.sqwrl.SQWRLQueryEngineFactory;
+import edu.stanford.smi.protegex.owl.swrl.model.SWRLImp;
+import edu.stanford.smi.protegex.owl.swrl.parser.SWRLParseException;
+import edu.stanford.smi.protegex.owl.swrl.parser.SWRLParser;
 
 public class SQWRLTest
 {
@@ -29,27 +37,43 @@ public class SQWRLTest
     try {
       owlModel = SWRLOWLUtil.createJenaOWLModel(owlFileName);
       ruleEngine = BridgeFactory.createBridge(owlModel);
-      ruleEngine.infer();
+      SWRLFactory factory = new SWRLFactory(owlModel);
+      SQWRLQueryEngine queryEngine = SQWRLQueryEngineFactory.create(owlModel);
 
-      for (OWLAxiom axiom : ruleEngine.getInferredAxioms()) {
+      /*
+        ruleEngine.infer();
+        
+        for (OWLAxiom axiom : ruleEngine.getInferredAxioms()) {
         if (axiom instanceof OWLDatatypePropertyAssertionAxiom) {
-          OWLDatatypePropertyAssertionAxiom da = (OWLDatatypePropertyAssertionAxiom)axiom;
+        OWLDatatypePropertyAssertionAxiom da = (OWLDatatypePropertyAssertionAxiom)axiom;
         }
-      }
+        }
+      */
 
-      SQWRLResult result = ruleEngine.getSQWRLResult("Rule-6");
+      // SQWRLResult result = ruleEngine.getSQWRLResult("Rule-6");
+
+      //      SWRLImp imp = factory.createImp("T1", "Adult(?a) " + SWRLParser.IMP_CHAR + " sqwrl:select(?a)");
+      SWRLImp imp = factory.createImp("T1", "Adult(?a) ^ Adult(?b) -> sqwrl:select(?a)");
+
+      queryEngine.runSQWRLQueries();
+
+      /*
       while (result.hasNext()) {
         ObjectValue p = result.getObjectValue("?p");
         ObjectValue c = result.getObjectValue("?c");
         System.err.println("value: p=" + p + ", c=" + c);
         result.next();
       } // while
+      */
 
     } catch (SQWRLException e) {
-      System.err.println("Exception: " + e.getMessage());
+      System.err.println("SQWRL exception: " + e.getMessage());
       e.printStackTrace();
     } catch (SWRLRuleEngineException e) {
-      System.err.println("Exception: " + e.getMessage());
+      System.err.println("Rule engine exception: " + e.getMessage());
+      e.printStackTrace();
+    } catch (SWRLParseException e) {
+      System.err.println("Parse exception: " + e.getMessage());
       e.printStackTrace();
     } catch (SWRLOWLUtilException e) {
       System.err.println("Exception: " + e.getMessage());

@@ -5,6 +5,7 @@ import edu.stanford.smi.protegex.owl.swrl.bridge.*;
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.*;
 
 import edu.stanford.smi.protegex.owl.swrl.util.SWRLOWLUtil;
+import edu.stanford.smi.protegex.owl.swrl.exceptions.SWRLOWLUtilException;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
@@ -28,15 +29,18 @@ public class OWLClassPropertyAssertionAxiomImpl extends OWLPropertyAssertionAxio
     String objectClassName = getObject().getClassName();
     RDFProperty property = SWRLOWLUtil.getOWLProperty(owlModel, propertyName);
     edu.stanford.smi.protegex.owl.model.OWLIndividual subjectIndividual;
-    edu.stanford.smi.protegex.owl.model.OWLNamedClass objectClass;
+    edu.stanford.smi.protegex.owl.model.OWLNamedClass objectClass = null;
     
     if (property == null) throw new InvalidPropertyNameException(propertyName);
     
     subjectIndividual = SWRLOWLUtil.getOWLIndividual(owlModel, subjectIndividualName);
     if (subjectIndividual == null) throw new InvalidIndividualNameException(subjectIndividualName);
 
-    objectClass = SWRLOWLUtil.getOWLNamedClass(owlModel, objectClassName); 
-    if (objectClass == null) throw new InvalidClassNameException(objectClassName);
+    try {
+      objectClass = SWRLOWLUtil.getOWLNamedClass(owlModel, objectClassName); 
+    } catch (SWRLOWLUtilException e) {
+      throw new InvalidClassNameException(objectClassName);
+    } // try
 
     if (!subjectIndividual.hasPropertyValue(property, objectClass, false)) subjectIndividual.addPropertyValue(property, objectClass);
   } // write2OWL

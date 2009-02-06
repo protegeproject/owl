@@ -126,13 +126,13 @@ public class SWRLParser
       
       token = getNextNonSpaceToken(message);
       
-      if (token.equals("" + IMP_CHAR)) { // A rule can have an empty body.
+      if (token.equals("" + IMP_CHAR) || token.equals("->")) { // A rule can have an empty body.
         if (inHead) throw new SWRLParseException("Second occurence of '" + IMP_CHAR + "'.");
         inHead = true; 
         justProcessedAtom = false;
-      } else if (token.equals("-") || token.equals("->")) {
+      } else if (token.equals("-")) {        
         continue; // Ignore "->" while we build up IMP_CHAR.
-      } else if (token.equals("" + AND_CHAR)) {
+      } else if (token.equals("" + AND_CHAR) || token.equals("^")) {
         if (!justProcessedAtom) throw new SWRLParseException("'" + AND_CHAR + "' may occur only after an atom.");
         justProcessedAtom = false;
       } else {
@@ -712,36 +712,29 @@ public class SWRLParser
 
   private void clearRDFResourceCache() { cachedRDFResources = new HashMap<String, RDFResource>(); }
   
-  private static class  Tokenizer {
-      private StringTokenizer internalTokenizer;
-      
-      public Tokenizer(String input) {
-          internalTokenizer = new StringTokenizer(input, delimiters, true);
-      }
-      
-      public boolean hasMoreTokens() {
-          return internalTokenizer.hasMoreTokens();
-      }
-      
-      public String nextToken() throws NoSuchElementException {
+  private static class Tokenizer 
+  {
+    private StringTokenizer internalTokenizer;
+    
+    public Tokenizer(String input) { internalTokenizer = new StringTokenizer(input, delimiters, true); }
 
-          String token = internalTokenizer.nextToken(delimiters);
-          if  (!token.equals("'")) {
-              return token;
-          }
-          StringBuffer buffer = new StringBuffer();
-          while (internalTokenizer.hasMoreTokens() &&
-                  !(token = internalTokenizer.nextToken()).equals("'")) {
-              buffer.append(token);
-          }
-          return buffer.toString();
-      }
+    public boolean hasMoreTokens() { return internalTokenizer.hasMoreTokens();  }
+    public String nextToken(String myDelimiters) { return internalTokenizer.nextToken(myDelimiters); }
       
-      public String nextToken(String myDelimiters) {
-          return internalTokenizer.nextToken(myDelimiters);
+    public String nextToken() throws NoSuchElementException 
+    {
+      String token = internalTokenizer.nextToken(delimiters);
+      if  (!token.equals("'")) return token;
+
+      StringBuffer buffer = new StringBuffer();
+      while (internalTokenizer.hasMoreTokens() &&
+             !(token = internalTokenizer.nextToken()).equals("'")) {
+        buffer.append(token);
       }
-  }
-  
-  
+      return buffer.toString();
+    } // nextToken
+   
+  } // Tokenizer
+
   
 } // SWRLParser

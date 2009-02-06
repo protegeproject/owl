@@ -42,6 +42,10 @@ public interface SWRLImp extends SWRLIndividual
   boolean removeRuleGroup(String name); // Return true on successful deletion
   boolean isInRuleGroups(Set<String> names);
   boolean isInRuleGroup(String name);
+  boolean enable(String ruleGroupName);
+  boolean enable(Set<String> ruleGroupNames);
+  boolean disable(String ruleGroupName);
+  boolean disable(Set<String> ruleGroupNames);
 
 } // SWRLImp
 

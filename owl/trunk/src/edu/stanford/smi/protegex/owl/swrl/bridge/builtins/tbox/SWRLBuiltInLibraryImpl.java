@@ -1070,7 +1070,12 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
    */
   public boolean equalTo(List<BuiltInArgument> arguments) throws BuiltInException
   {
-    throw new BuiltInNotImplementedException();
+    SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(2, arguments.size());
+
+    String resourceName1 = SWRLBuiltInUtil.getArgumentAsAResourceName(0, arguments);
+    String resourceName2 = SWRLBuiltInUtil.getArgumentAsAResourceName(1, arguments);
+
+    return resourceName1.equals(resourceName2); // According to RDF specification URI names must character (and cas)e match.
   } // equalTo
 
   /**
@@ -1078,7 +1083,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
    */
   public boolean notEqualTo(List<BuiltInArgument> arguments) throws BuiltInException
   {
-    throw new BuiltInNotImplementedException();
+    return !equalTo(arguments);
   } // notEqualTo
 
   private boolean isSuperClassOf(List<BuiltInArgument> arguments, boolean transitive) throws BuiltInException
