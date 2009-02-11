@@ -67,22 +67,16 @@ public class LoadProtegeFeaturesTestCase extends AbstractJenaTestCase {
         RDFProperty fromProperty = owlModel.getRDFProperty(ProtegeNames.Slot.FROM);
         RDFProperty toProperty = owlModel.getRDFProperty(ProtegeNames.Slot.TO);
         Collection directDomains = ((Slot) fromProperty).getDirectOwnSlotValues(directDomainSlot);
-        assertSize(2, directDomains);
-        assertContains(dbrClass, directDomains); // we have a duplicate - one from system  frames and one from protege.owl
-        for (Object o : directDomains) {         // maybe this should be fixed?
-            assertEquals(dbrClass, o);
-        }
+        assertSize(1, directDomains);
+        assertContains(dbrClass, directDomains);
         
         assertNotNull(dbrClass);
         assertNotNull(fromProperty);
         assertNotNull(toProperty);
-        assertSize(2, fromProperty.getDomains(false));
+        assertSize(1, fromProperty.getDomains(false));
         assertEquals(dbrClass, fromProperty.getDomain(false));
         directDomains = ((Slot) fromProperty).getDirectOwnSlotValues(directDomainSlot);
-        assertSize(2, directDomains);
-        assertContains(dbrClass, directDomains); // we have a duplicate - one from system  frames and one from protege.owl
-        for (Object o : directDomains) {         // maybe this should be fixed?
-            assertEquals(dbrClass, o);
-        }
+        assertSize(1, directDomains);
+        assertContains(dbrClass, directDomains);
     }
 }
