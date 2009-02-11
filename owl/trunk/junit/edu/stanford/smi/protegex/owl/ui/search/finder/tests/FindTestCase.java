@@ -72,7 +72,7 @@ public class FindTestCase extends AbstractJenaTestCase {
         loadPizza();
         Cls metaCls = owlModel.getOWLNamedClassMetaClassCls();
         metaCls.setDirectBrowserSlot(owlModel.getRDFProperty(RDFSNames.Slot.LABEL));
-        findAlg = new DefaultClassFind(owlModel, Find.CONTAINS);
+        findAlg = new DefaultClassFind(owlModel, Find.CONTAINS).getFind();
 
         findAlg.addResultListener(searchResultListener);
 
