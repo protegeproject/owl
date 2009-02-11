@@ -144,7 +144,7 @@ public class LoadNamespacesTestCase extends AbstractJenaTestCase {
 
     private void assertOntologyIsAsExpected(Map<String, String> expectedNamespaces, Map<String, String> expectedPrefixes) {
         final Object lock = new Object();
-        Find find = new DefaultClassFind(owlModel, Find.ENDS_WITH);
+        Find find = new DefaultClassFind(owlModel, Find.ENDS_WITH).getFind();
         find.addResultListener(new SearchAdapter() {
             public void searchCompleteEvent(int numResults, Find source) {
               synchronized (lock) {
