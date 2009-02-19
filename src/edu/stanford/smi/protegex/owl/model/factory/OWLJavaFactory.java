@@ -103,7 +103,7 @@ public class OWLJavaFactory extends DefaultFrameFactory {
 			javaType = FrameTypeId2OWLJavaClass.getJavaClass(javaClassId);
 		} catch (Exception e) {
 			//this should never happen!
-			Log.getLogger().log(Level.WARNING, "Error at creating Java class with Java Frame type id: " + javaClassId , e);
+			Log.getLogger().log(Level.SEVERE, "Error at creating Java class with Java Frame type id: " + javaClassId , e);
 		}
         
 		if (javaType == null) {
@@ -124,7 +124,7 @@ public class OWLJavaFactory extends DefaultFrameFactory {
     			}
 			} catch (Exception e) {
 				// this should never happen!
-				Log.getLogger().log(Level.WARNING, "Error at getting the Java class Id for: " + frame , e);
+				Log.getLogger().log(Level.SEVERE, "Error at getting the Java class Id for: " + frame , e);
 			}
 		}
 
@@ -302,9 +302,8 @@ public class OWLJavaFactory extends DefaultFrameFactory {
             Object[] args = {owlModel, id};
             return (Cls) constructor.newInstance(args);
         }
-        catch (Exception ex) {
-            System.err.println("Fatal Error: Could not create Cls from OWL metaclass " + clazz.getSimpleName());
-            Log.getLogger().log(Level.SEVERE, "Exception caught", ex);
+        catch (Exception ex) {            
+            Log.getLogger().log(Level.SEVERE, "Could not create class: " + id + " of Java type: " + clazz.getSimpleName(), ex);
             return new DefaultOWLNamedClass(owlModel, id);
         }
     }
