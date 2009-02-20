@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 
+import edu.stanford.smi.protegex.owl.model.NamespaceUtil;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
@@ -67,7 +68,7 @@ public class CreateSubclassAction extends ResourceAction {
         
         String name = owlModel.createNewResourceName(AbstractOWLModel.DEFAULT_CLASS_NAME);
         try {
-            owlModel.beginTransaction("Create subclass of " + superclass == null ? "(unknown)" : superclass.getBrowserText(), name);            
+            owlModel.beginTransaction("Create class " + NamespaceUtil.getLocalName(name) + " as subclass of " + (superclass == null ? "(unknown)" : superclass.getBrowserText()), name);            
             cls = owlModel.createRDFSNamedClass(name, superclasses, type);
             if (cls instanceof OWLNamedClass) {
                 for (Iterator it = superclasses.iterator(); it.hasNext();) {
