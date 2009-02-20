@@ -271,7 +271,8 @@ public class AssertedInstancesListPanel extends SelectableContainer implements D
                 	RDFSClass firstType = (RDFSClass) CollectionUtilities.getFirstItem(classes);
                 	final String name = owlModel.createNewResourceName(NamespaceUtil.getLocalName(firstType.getName()));
 
-                	Transaction<Instance> t = new Transaction<Instance>(owlModel, "Create Individual " + name, name) {
+                	Transaction<Instance> t = new Transaction<Instance>(owlModel, "Create Individual: " +
+                			NamespaceUtil.getLocalName(name) + " of " + CollectionUtilities.toString(classes), name) {
                 	    private Instance instance;
                 	    
                 	    @Override
