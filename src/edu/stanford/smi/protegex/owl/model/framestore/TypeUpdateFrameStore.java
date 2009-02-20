@@ -129,7 +129,7 @@ public class TypeUpdateFrameStore extends FrameStoreAdapter {
     @Override
     public void addDirectType(Instance instance, Cls type) {
     	try {
-        	beginTransaction("Add to " + instance.getName() + " direct type : " + type.getName()
+        	beginTransaction("Add to " + instance.getBrowserText() + " direct type : " + type.getBrowserText()
         			+ Transaction.APPLY_TO_TRAILER_STRING + instance.getName());
             super.addDirectType(instance, type);
             instance = (Instance) super.getFrame(instance.getFrameID());
@@ -163,7 +163,7 @@ public class TypeUpdateFrameStore extends FrameStoreAdapter {
     @Override
     public void removeDirectType(Instance instance, Cls directType) {
     	try {
-    		beginTransaction("Remove from " + instance.getName() + " direct type : " + directType.getName()
+    		beginTransaction("Remove from " + instance.getBrowserText() + " direct type : " + directType.getBrowserText()
     				+ Transaction.APPLY_TO_TRAILER_STRING + instance.getName());
     		if (instance instanceof RDFProperty) {
     			if (directType.equals(functionalPropertyClass)) {
