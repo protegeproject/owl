@@ -115,7 +115,7 @@ class UnionRangeClassesTableModel extends AbstractTableModel
         }
         try {
             property.getOWLModel().beginTransaction("Remove " + cls.getBrowserText() +
-                    " from range of " + cls.getBrowserText(), property.getName());
+                    " from range of " + property.getBrowserText(), property.getName());
             if (newClses.isEmpty() && property.getSuperpropertyCount() > 0) {
                 property.setRange(null);
                 property.getOWLModel().commitTransaction();
@@ -148,12 +148,14 @@ class UnionRangeClassesTableModel extends AbstractTableModel
     }
 
 
-    public String getColumnName(int column) {
+    @Override
+	public String getColumnName(int column) {
         return "Expression";
     }
 
 
-    public Class getColumnClass(int columnIndex) {
+    @Override
+	public Class getColumnClass(int columnIndex) {
         return String.class;
     }
 
@@ -237,7 +239,8 @@ class UnionRangeClassesTableModel extends AbstractTableModel
     }
 
 
-    public boolean isCellEditable(int rowIndex, int columnIndex) {
+    @Override
+	public boolean isCellEditable(int rowIndex, int columnIndex) {
         return true;
     }
 
@@ -293,7 +296,8 @@ class UnionRangeClassesTableModel extends AbstractTableModel
     }
 
 
-    public void setValueAt(Object value, int rowIndex, int columnIndex) {
+    @Override
+	public void setValueAt(Object value, int rowIndex, int columnIndex) {
         if (rowIndex >= getRowCount()) {
             return;
         }
