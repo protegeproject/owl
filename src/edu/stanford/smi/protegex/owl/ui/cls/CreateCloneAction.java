@@ -1,15 +1,16 @@
 package edu.stanford.smi.protegex.owl.ui.cls;
 
+import java.awt.Component;
+import java.awt.event.ActionEvent;
+
 import edu.stanford.smi.protege.resource.Icons;
+import edu.stanford.smi.protegex.owl.model.NamespaceUtil;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
 import edu.stanford.smi.protegex.owl.model.util.CloneFactory;
 import edu.stanford.smi.protegex.owl.ui.actions.ResourceAction;
 import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
-
-import java.awt.*;
-import java.awt.event.ActionEvent;
 
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
@@ -28,7 +29,8 @@ public class CreateCloneAction extends ResourceAction {
         //TT: This is may be dangerous.. Needs some testing
         String cloneName = CloneFactory.getNextAvailableCloneName(namedCls);
         try {
-            owlModel.beginTransaction("Create clone of " + namedCls.getBrowserText(), cloneName);
+            owlModel.beginTransaction("Create " + NamespaceUtil.getLocalName(cloneName) + 
+            		" as clone of " + namedCls.getBrowserText(), cloneName);
             c = createClone(namedCls, cloneName);
             owlModel.commitTransaction();
         }
@@ -94,7 +96,8 @@ public class CreateCloneAction extends ResourceAction {
 //    }
 
 
-    public boolean isSuitable(Component component, RDFResource resource) {
+    @Override
+	public boolean isSuitable(Component component, RDFResource resource) {
         return component instanceof ClassTreePanel &&
                resource instanceof OWLNamedClass &&
                !(resource.equals(resource.getOWLModel().getOWLThingClass()));
