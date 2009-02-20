@@ -1,17 +1,21 @@
 package edu.stanford.smi.protegex.owl.ui.cls;
 
-import edu.stanford.smi.protege.util.LazyTreeNode;
-import edu.stanford.smi.protegex.owl.model.*;
-import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
-import edu.stanford.smi.protegex.owl.ui.actions.ResourceAction;
-import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
-import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
-
-import java.awt.*;
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
+
+import edu.stanford.smi.protegex.owl.model.NamespaceUtil;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
+import edu.stanford.smi.protegex.owl.model.RDFResource;
+import edu.stanford.smi.protegex.owl.model.RDFSClass;
+import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
+import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
+import edu.stanford.smi.protegex.owl.ui.actions.ResourceAction;
+import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
+import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
 
 /**
  * A ResourceAction for named classes, to create a sibling of the currently selected class.
@@ -35,7 +39,8 @@ public class CreateSiblingClassAction extends ResourceAction {
     }
 
 
-    public boolean isSuitable(Component component, RDFResource resource) {
+    @Override
+	public boolean isSuitable(Component component, RDFResource resource) {
         return component instanceof OWLSubclassPane &&
                 resource instanceof RDFSNamedClass &&
                 !(resource.equals(resource.getOWLModel().getOWLThingClass()));
@@ -47,9 +52,9 @@ public class CreateSiblingClassAction extends ResourceAction {
         Collection parents = sibling.getNamedSuperclasses();
         if (!parents.isEmpty()) {
             OWLModel owlModel = sibling.getOWLModel();
-            String name = owlModel.createNewResourceName(AbstractOWLModel.DEFAULT_CLASS_NAME);
-            
-            owlModel.beginTransaction("Create sibling of class " + sibling.getBrowserText(), name);
+            String name = owlModel.createNewResourceName(AbstractOWLModel.DEFAULT_CLASS_NAME);            
+            owlModel.beginTransaction("Create class " + NamespaceUtil.getLocalName(name) + 
+            		" as sibling of class " + sibling.getBrowserText(), name);
             
             try {                
                 RDFSClass siblingType = sibling.getRDFType();
