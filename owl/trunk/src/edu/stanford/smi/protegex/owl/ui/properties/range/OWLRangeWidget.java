@@ -1,5 +1,17 @@
 package edu.stanford.smi.protegex.owl.ui.properties.range;
 
+import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Vector;
+
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JComboBox;
+import javax.swing.JPanel;
+
 import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.Facet;
 import edu.stanford.smi.protege.model.Instance;
@@ -8,19 +20,18 @@ import edu.stanford.smi.protege.server.metaproject.impl.OperationImpl;
 import edu.stanford.smi.protege.ui.FrameComparator;
 import edu.stanford.smi.protege.ui.FrameRenderer;
 import edu.stanford.smi.protege.util.LabeledComponent;
-import edu.stanford.smi.protegex.owl.model.*;
+import edu.stanford.smi.protegex.owl.model.OWLDataRange;
+import edu.stanford.smi.protegex.owl.model.OWLDatatypeProperty;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.model.OWLObjectProperty;
+import edu.stanford.smi.protegex.owl.model.RDFProperty;
+import edu.stanford.smi.protegex.owl.model.RDFResource;
+import edu.stanford.smi.protegex.owl.model.RDFSClass;
+import edu.stanford.smi.protegex.owl.model.RDFSDatatype;
+import edu.stanford.smi.protegex.owl.model.RDFSNames;
 import edu.stanford.smi.protegex.owl.model.impl.OWLUtil;
 import edu.stanford.smi.protegex.owl.ui.menu.preferences.ProtegeSettingsPanel;
 import edu.stanford.smi.protegex.owl.ui.widget.AbstractPropertyWidget;
-
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Vector;
 
 /**
  * A property widget to edit the range of an RDFProperty (or subclasses).
@@ -126,6 +137,7 @@ public class OWLRangeWidget extends AbstractPropertyWidget {
         }
         if (ANY.equals(newValue)) {
             setRange(null);
+            dataRangeComponent.setDatatype(null);            
         }
         else if (OBJECTS.equals(newValue)) {
             if (getEditedProperty().getRange() != null) {
@@ -221,7 +233,8 @@ public class OWLRangeWidget extends AbstractPropertyWidget {
     }
 
 
-    public void setEditable(boolean b) {
+    @Override
+	public void setEditable(boolean b) {
         dataRangeComponent.setEditable(b);
         //classesComponent.setEditable(b);
         comboBox.setEnabled(b);
@@ -231,7 +244,8 @@ public class OWLRangeWidget extends AbstractPropertyWidget {
     }
 
 
-    public void setInstance(Instance newInstance) {
+    @Override
+	public void setInstance(Instance newInstance) {
         super.setInstance(newInstance);
         refillAll();
     }
@@ -250,7 +264,8 @@ public class OWLRangeWidget extends AbstractPropertyWidget {
     }
 
 
-    public void setValues(Collection collection) {
+    @Override
+	public void setValues(Collection collection) {
         refillAll();
     }
 
@@ -274,7 +289,8 @@ public class OWLRangeWidget extends AbstractPropertyWidget {
         }
     }
     
-    public void setEnabled(boolean enabled) {
+    @Override
+	public void setEnabled(boolean enabled) {
     	enabled = enabled && RemoteClientFrameStore.isOperationAllowed(getOWLModel(), OperationImpl.PROPERTY_TAB_WRITE);
     	classesComponent.setEnabled(enabled);
     	dataRangeComponent.setEnabled(enabled);
