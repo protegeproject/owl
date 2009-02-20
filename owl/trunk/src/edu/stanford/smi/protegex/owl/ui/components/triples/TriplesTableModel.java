@@ -498,7 +498,9 @@ public class TriplesTableModel extends AbstractTableModel {
                     newValue = str;
                 }
                 if (!subject.getPropertyValues(property).contains(newValue)) {
-                    subject.removePropertyValue(property, oldValue);
+                	if (oldValue != null) {
+                		subject.removePropertyValue(property, oldValue);
+                	}
                     subject.addPropertyValue(property, newValue);
                 }
                 return newValue;
