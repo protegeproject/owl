@@ -18,6 +18,7 @@ import edu.stanford.smi.protege.model.Project;
 import edu.stanford.smi.protege.server.framestore.RemoteClientFrameStore;
 import edu.stanford.smi.protege.server.metaproject.impl.OperationImpl;
 import edu.stanford.smi.protege.util.AddAction;
+import edu.stanford.smi.protege.util.CollectionUtilities;
 import edu.stanford.smi.protege.util.ComponentFactory;
 import edu.stanford.smi.protege.util.ComponentUtilities;
 import edu.stanford.smi.protege.util.RemoveAction;
@@ -101,16 +102,30 @@ public class OWLSuperpropertiesPanel extends SelectableContainer {
 
 
     private void addProperties() {
-        Collection allowedProperties = new ArrayList(owlModel.getRDFProperties());
-        allowedProperties.remove(property);
-        allowedProperties.removeAll(property.getSubproperties(true));
-        allowedProperties.removeAll(property.getSuperproperties(true));
-        Iterator it = selectProperties(allowedProperties).iterator();
-        while (it.hasNext()) {
-            RDFProperty superproperty = (RDFProperty) it.next();
-            property.addSuperproperty(superproperty);
-        }
-        updateModel();
+    	Collection allowedProperties = new ArrayList(owlModel.getRDFProperties());
+    	allowedProperties.remove(property);
+    	allowedProperties.removeAll(property.getSubproperties(true));
+    	allowedProperties.removeAll(property.getSuperproperties(true));
+    	Iterator it = selectProperties(allowedProperties).iterator();
+    	ArrayList<RDFProperty> superProps = new ArrayList<RDFProperty>();
+    	while (it.hasNext()) {
+    		superProps.add((RDFProperty) it.next());
+    	}
+    	Iterator<RDFProperty> it2 = superProps.iterator();
+    	try {
+    		owlModel.beginTransaction("Add to " + property.getBrowserText() + 
+    				" superproperties " + CollectionUtilities.toString(superProps));
+    		while (it2.hasNext()) {
+    			RDFProperty superproperty = it2.next();
+    			property.addSuperproperty(superproperty);
+    		}
+    		owlModel.commitTransaction();
+    	}
+    	catch(Exception ex) {
+    		owlModel.rollbackTransaction();
+    		OWLUI.handleError(owlModel, ex);        	
+    	}
+    	updateModel();
     }
 
 
@@ -177,10 +192,10 @@ public class OWLSuperpropertiesPanel extends SelectableContainer {
     }
 
 
-    private void removeProperties(Collection superproperties) {
-    	//TT:this was commented out. Why?
+    private void removeProperties(Collection superproperties) {    	
         try {
-        	owlModel.beginTransaction("Remove superproperties from " + property, property.getName());
+        	owlModel.beginTransaction("Remove from " + property.getBrowserText() + 
+        			" superproperties: " + CollectionUtilities.toString(superproperties), property.getName());
         	Iterator i = superproperties.iterator();
         	while (i.hasNext()) {
         		RDFProperty superslot = (RDFProperty) i.next();
