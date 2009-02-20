@@ -37,11 +37,11 @@ import edu.stanford.smi.protege.util.DefaultRenderer;
 import edu.stanford.smi.protege.util.DeleteAction;
 import edu.stanford.smi.protege.util.LabeledComponent;
 import edu.stanford.smi.protege.util.LazyTreeNode;
-import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protege.util.SelectableContainer;
 import edu.stanford.smi.protege.util.SuperslotTraverser;
 import edu.stanford.smi.protege.util.TreePopupMenuMouseListener;
 import edu.stanford.smi.protege.util.ViewAction;
+import edu.stanford.smi.protegex.owl.model.NamespaceUtil;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLProperty;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
@@ -84,7 +84,7 @@ public class OWLSubpropertyPane extends SelectableContainer implements HostResou
 			OWLProperty property = null;
 			try {
 				String name = owlModel.createNewResourceName(AbstractOWLModel.DEFAULT_ANNOTATION_PROPERTY_NAME);
-				owlModel.beginTransaction(getValue(Action.NAME).toString(), name);                        
+				owlModel.beginTransaction(getValue(Action.NAME).toString()  + " " + NamespaceUtil.getLocalName(name), name);                        
 				property = owlModel.createAnnotationOWLDatatypeProperty(name);
 				owlModel.commitTransaction();                       
 			}
@@ -103,7 +103,7 @@ public class OWLSubpropertyPane extends SelectableContainer implements HostResou
 			RDFProperty property = null;
 			try {
 				String name = owlModel.createNewResourceName(AbstractOWLModel.DEFAULT_ANNOTATION_PROPERTY_NAME);
-				owlModel.beginTransaction(getValue(Action.NAME).toString(), name);                        
+				owlModel.beginTransaction(getValue(Action.NAME).toString()  + " " + NamespaceUtil.getLocalName(name), name);                        
 				property = owlModel.createAnnotationOWLObjectProperty(name);
 				owlModel.commitTransaction();
 			}
@@ -122,7 +122,7 @@ public class OWLSubpropertyPane extends SelectableContainer implements HostResou
 			RDFProperty property = null;
 			try {
 				String name = owlModel.createNewResourceName(AbstractOWLModel.DEFAULT_ANNOTATION_PROPERTY_NAME);
-				owlModel.beginTransaction(getValue(Action.NAME).toString(), name);                        
+				owlModel.beginTransaction(getValue(Action.NAME).toString()  + " " + NamespaceUtil.getLocalName(name), name);                        
 				property = owlModel.createAnnotationProperty(name);
 				owlModel.commitTransaction();
 			}
@@ -142,7 +142,7 @@ public class OWLSubpropertyPane extends SelectableContainer implements HostResou
 			OWLProperty property = null;
 			try {
 				String name = owlModel.createNewResourceName(AbstractOWLModel.DEFAULT_DATATYPE_PROPERTY_NAME);
-				owlModel.beginTransaction(getValue(Action.NAME).toString(), name);                        
+				owlModel.beginTransaction(getValue(Action.NAME).toString() + " " + NamespaceUtil.getLocalName(name), name);                        
 				property = owlModel.createOWLDatatypeProperty(name);
 				property.setDomainDefined(false);
 				owlModel.commitTransaction();
@@ -163,7 +163,7 @@ public class OWLSubpropertyPane extends SelectableContainer implements HostResou
 			OWLProperty property = null;
 			try {
 				String name = owlModel.createNewResourceName(AbstractOWLModel.DEFAULT_OBJECT_PROPERTY_NAME);
-				owlModel.beginTransaction(getValue(Action.NAME).toString(), name);                        
+				owlModel.beginTransaction(getValue(Action.NAME).toString() + " " + NamespaceUtil.getLocalName(name), name);                        
 				property = owlModel.createOWLObjectProperty(name);
 				property.setDomainDefined(false);
 				owlModel.commitTransaction();
@@ -184,7 +184,7 @@ public class OWLSubpropertyPane extends SelectableContainer implements HostResou
 			RDFProperty property = null;
 			try {
 				String name = owlModel.createNewResourceName(AbstractOWLModel.DEFAULT_PROPERTY_NAME);
-				owlModel.beginTransaction(getValue(Action.NAME).toString(), name);                        
+				owlModel.beginTransaction(getValue(Action.NAME).toString()  + " " + NamespaceUtil.getLocalName(name), name);                        
 				property = owlModel.createRDFProperty(name);
 				owlModel.commitTransaction();
 			}
@@ -209,11 +209,13 @@ public class OWLSubpropertyPane extends SelectableContainer implements HostResou
 	};
 
 	private Action deletePropertyAction = new DeleteAction("Delete properties", this, OWLIcons.getDeleteIcon(OWLIcons.RDF_PROPERTY)) {
+		@Override
 		public void onDelete(Collection slots) {
 			handleDelete(slots);
 		}
 
 
+		@Override
 		public void onSelectionChange() {
 			RDFProperty slot = (RDFProperty) CollectionUtilities.getFirstItem(this.getSelection());
 			if (slot != null) {
@@ -227,6 +229,7 @@ public class OWLSubpropertyPane extends SelectableContainer implements HostResou
 	private OWLPropertySubpropertyRoot root;
 
 	private Action viewPropertyAction = new ViewAction("View selected properties", this) {
+		@Override
 		public void onView(Object o) {
 			owlModel.getProject().show((RDFProperty) o);
 		}
@@ -235,6 +238,7 @@ public class OWLSubpropertyPane extends SelectableContainer implements HostResou
 	/**
 	 * @deprecated the other constructor is better
 	 */
+	@Deprecated
 	public OWLSubpropertyPane(Project p) {
 		this((OWLModel) p.getKnowledgeBase());
 	}
@@ -257,6 +261,7 @@ public class OWLSubpropertyPane extends SelectableContainer implements HostResou
 		add(labeledComponent, BorderLayout.CENTER);
 
 		ResultsViewModelFind findAlg = new DefaultPropertyFind(owlModel, Find.CONTAINS) {
+			@Override
 			protected boolean isValidFrameToSearch(Frame f) {
 				return super.isValidFrameToSearch(f) &&
 				root.isSuitable((RDFProperty) f);
@@ -272,6 +277,7 @@ public class OWLSubpropertyPane extends SelectableContainer implements HostResou
 		finder.addButton(new PropertyMatrixAction(owlModel));
 
 		tree.addMouseListener(new TreePopupMenuMouseListener(tree) {
+			@Override
 			public JPopupMenu getPopupMenu() {
 				return OWLSubpropertyPane.this.getPopupMenu();
 			}
@@ -453,7 +459,7 @@ public class OWLSubpropertyPane extends SelectableContainer implements HostResou
 	protected void handleDelete(Collection properties) {
 		removeSelection();
 		try {
-			owlModel.beginTransaction("Delete properties " + properties);
+			owlModel.beginTransaction("Delete properties " + CollectionUtilities.toString(properties));
 			Iterator i = properties.iterator();
 			while (i.hasNext()) {
 				RDFProperty property = (RDFProperty) i.next();
@@ -463,7 +469,7 @@ public class OWLSubpropertyPane extends SelectableContainer implements HostResou
 		}
 		catch (Exception e) {
 			owlModel.rollbackTransaction();
-			Log.getLogger().warning("Error at delete properties " + properties); 
+			OWLUI.handleError(owlModel, e);			 
 		}
 	}
 
@@ -504,6 +510,7 @@ public class OWLSubpropertyPane extends SelectableContainer implements HostResou
 		return true;
 	}
 
+	@Override
 	public void setEnabled(boolean enabled) {
 		enabled = enabled && RemoteClientFrameStore.isOperationAllowed(getOWLModel(), OperationImpl.PROPERTY_TAB_WRITE);
 		createAnnotationOWLDatatypePropertyAction.setEnabled(enabled);
