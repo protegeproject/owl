@@ -11,6 +11,7 @@ import java.util.Set;
 import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protege.util.CollectionUtilities;
+import edu.stanford.smi.protegex.owl.model.NamespaceUtil;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLProperty;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
@@ -72,7 +73,7 @@ public class CreateSubpropertyAction extends ResourceAction {
         RDFProperty subproperty = null;
         try {
         	String name = owlModel.createNewResourceName(superProperty.getLocalName());
-            owlModel.beginTransaction("Create subproperty of " + superProperty.getName(), name);            
+            owlModel.beginTransaction("Create " + NamespaceUtil.getLocalName(name) + " as subproperty of " + NamespaceUtil.getLocalName(superProperty.getName()), name);            
             subproperty = owlModel.createSubproperty(name, superProperty);
             final Set superproperties = Collections.singleton(superProperty);
             createInverseSlot(subproperty, superproperties);
