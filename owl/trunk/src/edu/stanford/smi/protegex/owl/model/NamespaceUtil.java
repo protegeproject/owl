@@ -18,6 +18,7 @@ public class NamespaceUtil {
 
 	
 	public static String getLocalName(String fullURI)	{
+		if (fullURI == null) { return null; }
 		if (!URIUtilities.isAbsoluteURI(fullURI)) {
 			return fullURI;
 		}
