@@ -125,38 +125,26 @@ public class ResourceCopier extends OWLModelVisitorAdapter {
     protected void visitResourceToBeReferenced(RDFResource source) {
         if (!source.isSystem()) {
 
-            if (source.getOWLModel().equals(owlModel) == false) {
-                owlModel = source.getOWLModel();
-            }
+            owlModel = source.getOWLModel();
 
+            // if needed copy the declaration into the active ontology.
             if (owlModel.getDefaultOWLOntology().getImports().size() > 0) {
 
                 TripleStoreModel tsm = owlModel.getTripleStoreModel();
-                TripleStore ts = tsm.getHomeTripleStore(source);
+                TripleStore topTs = tsm.getTopTripleStore();
                 TripleStore activeTs = tsm.getActiveTripleStore();
 
-                if (activeTs.equals(ts) == false) {
-
-                    /* ND: @@TODO the following should operate on the ts.getName()
-                       but this does always return the ontology name (xml:base)
-               	
-                    String ns = ts.getDefaultNamespace();
-                    String homeOntologyName = ns.substring(0, ns.length() - 1);
-                    */
-                	
-                	/* TT: ts.getDefaultNampespace returned null when there was not default                	
-                	 * namespace defined for an imported ontology.
-                	 * Use ts.getName() which should return the name of the ontology
-                	 * where this resource belongs to.
-                	 */
-
-                	//TODO: Check whether this works right
-                	String homeOntologyName = ts.getName();
-                	
-                    OWLOntology activeOnt = OWLUtil.getActiveOntology(owlModel);
-
-                    if (!activeOnt.getImports().contains(homeOntologyName)) {
-                        activeOnt.addImports(homeOntologyName);
+                if (!activeTs.equals(topTs)) {
+                    Collection types = source.getRDFTypes();
+                    try {
+                        tsm.setViewActiveOnly(true);
+                        Collection typesSeenByActive = source.getRDFTypes();
+                        if (typesSeenByActive == null || typesSeenByActive.isEmpty()) {
+                            source.setRDFTypes(types);
+                        }
+                    }
+                    finally {
+                        tsm.setViewActiveOnly(false);
                     }
                 }
             }
