@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Iterator;
 
 import javax.swing.JTable;
@@ -24,7 +23,6 @@ import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
 import edu.stanford.smi.protegex.owl.model.RDFSDatatype;
 import edu.stanford.smi.protegex.owl.model.RDFSLiteral;
-import edu.stanford.smi.protegex.owl.model.RDFSNames;
 import edu.stanford.smi.protegex.owl.model.event.PropertyValueAdapter;
 import edu.stanford.smi.protegex.owl.model.event.PropertyValueListener;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultRDFSLiteral;
@@ -256,30 +254,9 @@ public class TriplesTableModel extends AbstractTableModel {
     }
 
 
-    protected Collection<RDFProperty> getRelevantProperties() {
+    protected Collection<RDFProperty> getRelevantProperties() {    	
         OWLModel owlModel = subject.getOWLModel();
-	    Collection<RDFProperty> props = new HashSet<RDFProperty>();
-	    for(Iterator it = owlModel.getRDFProperties().iterator(); it.hasNext();) {
-		    RDFProperty curProp = (RDFProperty) it.next();
-		    if(curProp.isVisible()) {
-			    props.add(curProp);
-		    }
-	    }
-	    props.add(owlModel.getRDFSIsDefinedByProperty());
-	    props.add(owlModel.getRDFSLabelProperty());
-	    props.add(owlModel.getRDFProperty(RDFSNames.Slot.SEE_ALSO));
-	    props.add(owlModel.getOWLSameAsProperty());
-	    props.add(owlModel.getOWLEquivalentPropertyProperty());
-	    props.add(owlModel.getOWLEquivalentClassProperty());
-	    props.add(owlModel.getOWLDifferentFromProperty());
-	    props.add(owlModel.getOWLVersionInfoProperty());
-
-	    if (!(subject instanceof RDFProperty)) {
-	    	props.remove(owlModel.getRDFSSubPropertyOfProperty());
-	    }
-
-        //return subject.getRDFProperties();
-        return props;
+        return owlModel.getRDFProperties(); //show everything!
     }
 
 
