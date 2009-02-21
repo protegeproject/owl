@@ -170,7 +170,17 @@ class TripleProcessorForUntypedResources extends AbstractStatefulTripleProcessor
 
 	protected RDFProperty handleUndefinedPredicate(UndefTriple undefTriple) {
 		String predicateName = ParserUtil.getResourceName(undefTriple.getTriplePred());
-		return createUntypedPredicate(owlModel, predicateName);
+		Cls extraType = null;
+		Object obj = undefTriple.getTripleObj();
+		//try to get the most specific type of property
+		/*//TODO: probably we need a more complicated algorithm here
+		if (obj instanceof AResource) {
+			extraType = owlModel.getSystemFrames().getOwlObjectPropertyClass();
+		} else if (obj instanceof ALiteral) {
+			extraType = owlModel.getSystemFrames().getOwlDatatypePropertyClass();
+		}
+		*/
+		return createUntypedPredicate(owlModel, predicateName, extraType);
 	}
 
 	@SuppressWarnings("deprecation")
@@ -196,7 +206,7 @@ class TripleProcessorForUntypedResources extends AbstractStatefulTripleProcessor
 				return createInstanceWithType(subjectName, ParserUtil.getResourceName((AResource)tripleObj));
 			} else {
 				Log.getLogger().warning("Invalid triple: " + undefTriple);
-				createUntypedResource(owlModel, subjectName);
+				return createUntypedResource(owlModel, subjectName);
 			}
 		}
 
@@ -313,9 +323,13 @@ class TripleProcessorForUntypedResources extends AbstractStatefulTripleProcessor
 		/*
 		 * Make a guess: If the property is user defined it is likely that the entity is
 		 * an individual. Otherwise, we will guess that it is a class (less class cast exceptions)
-		 */
+		 */		
 
 		if (prop.isSystem()) {
+			//special case for rdf:value - it will accomodate SKOS..
+			if (prop.equals(owlModel.getSystemFrames().getRdfValueProperty())) {
+				return owlModel.createRDFUntypedResource(name);
+			}
 			return createUntypedClass(owlModel, name);
 		} else {
 			return owlModel.createRDFUntypedResource(name);
@@ -328,8 +342,13 @@ class TripleProcessorForUntypedResources extends AbstractStatefulTripleProcessor
 	}
 
 	//should be created in the right ts
-	public static RDFProperty createUntypedPredicate(OWLModel owlModel, String predicateName) {
-		return (RDFProperty) ((AbstractOWLModel)owlModel).getRDFExternalPropertyClass().createInstance(predicateName);
+	@SuppressWarnings("deprecation")
+	public static RDFProperty createUntypedPredicate(OWLModel owlModel, String predicateName, Cls extraType) {
+		RDFProperty prop = (RDFProperty) ((AbstractOWLModel)owlModel).getRDFExternalPropertyClass().createInstance(predicateName);
+		if (extraType != null) {
+			prop.addDirectType(extraType);
+		}
+		return  prop;
 	}
 
 	public static RDFResource createUntypedClass(OWLModel owlModel, String className) {
