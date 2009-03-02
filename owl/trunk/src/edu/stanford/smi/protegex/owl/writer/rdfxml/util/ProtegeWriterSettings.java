@@ -1,21 +1,21 @@
 package edu.stanford.smi.protegex.owl.writer.rdfxml.util;
 
-import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
 import edu.stanford.smi.protegex.owl.jena.writersettings.WriterSettings;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
 
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
  */
 public class ProtegeWriterSettings implements WriterSettings {
 
-    private JenaOWLModel owlModel;
+    private OWLModel owlModel;
 
     public final static String SORT_ALPHABETICALLY_PROPERTY = ProtegeWriterSettings.class.getName() + ".sortAlphabetically";
 
     public final static String USE_XML_ENTITIES_PROPERTY = ProtegeWriterSettings.class.getName() + ".useXMLEntities";
 
 
-    public ProtegeWriterSettings(JenaOWLModel owlModel) {
+    public ProtegeWriterSettings(OWLModel owlModel) {
         this.owlModel = owlModel;
     }
 
