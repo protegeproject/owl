@@ -1,21 +1,30 @@
 package edu.stanford.smi.protegex.owl.ui.menu.preferences;
 
+import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
+import javax.swing.JCheckBox;
+import javax.swing.JComponent;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+
 import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
 import edu.stanford.smi.protegex.owl.jena.writersettings.JenaWriterSettings;
 import edu.stanford.smi.protegex.owl.jena.writersettings.WriterSettings;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.writer.rdfxml.util.ProtegeWriterSettings;
-
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
  */
 public class WriterSettingsPanel extends JComponent {
 
-    private JenaOWLModel owlModel;
+    private OWLModel owlModel;
 
     private JRadioButton jenaButton;
 
@@ -28,7 +37,7 @@ public class WriterSettingsPanel extends JComponent {
     private JCheckBox useXMLEntitiesBox;
 
 
-    public WriterSettingsPanel(JenaOWLModel owlModel) {
+    public WriterSettingsPanel(OWLModel owlModel) {
         this.owlModel = owlModel;
 
         jenaButton = new JRadioButton("Default Jena writer");
