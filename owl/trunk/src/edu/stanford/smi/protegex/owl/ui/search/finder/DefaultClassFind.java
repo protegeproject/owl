@@ -3,6 +3,7 @@ package edu.stanford.smi.protegex.owl.ui.search.finder;
 import edu.stanford.smi.protege.model.Frame;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
+import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
 
 /**
  * @author Nick Drummond, Medical Informatics Group, University of Manchester
@@ -15,7 +16,7 @@ public class DefaultClassFind extends ResultsViewModelFind {
     }
 
     protected boolean isValidFrameToSearch(Frame f) {
-        return f instanceof OWLNamedClass && f.isVisible();
+        return f instanceof RDFSNamedClass && f.isVisible();
     }
 
     public String getDescription() {
