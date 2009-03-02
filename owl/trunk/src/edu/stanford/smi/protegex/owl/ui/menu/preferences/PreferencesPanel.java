@@ -87,10 +87,10 @@ public class PreferencesPanel extends ValidatableTabComponent {
         owlProfilePanel = new ProfileSelectionPanel(owlModel);
         generalTab.add(Box.createVerticalStrut(8));
         generalTab.add(owlProfilePanel);
-        if (owlModel instanceof JenaOWLModel) {
-            generalTab.add(Box.createVerticalStrut(8));
-            generalTab.add(new WriterSettingsPanel((JenaOWLModel) owlModel));
-        }
+        
+        generalTab.add(Box.createVerticalStrut(8));
+        generalTab.add(new WriterSettingsPanel(owlModel));
+
         if(AbsoluteFormsGenerator.optional) {
             generalTab.add(Box.createVerticalStrut(8));
             generalTab.add(new FormsSettingsPanel(owlModel));
