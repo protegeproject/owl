@@ -164,16 +164,6 @@ public class JenaOWLModel extends AbstractOWLModel implements OntModelProvider {
         return Jena.cloneOntModel(getOntModel(), spec);
     }
 
-    public WriterSettings getWriterSettings() {
-        String value = getOWLProject().getSettingsMap().getString(WRITER_SETTINGS_PROPERTY);
-        if (WRITER_PROTEGE.equals(value)) {
-            return new ProtegeWriterSettings(this);
-        }
-        else {
-            return new JenaWriterSettings(this);
-        }
-    }
-
 /*
     public void initPrefixes(OntModel ontModel) {
         NamespaceManager nsm = getNamespaceManager();
@@ -381,16 +371,6 @@ public class JenaOWLModel extends AbstractOWLModel implements OntModelProvider {
             getOWLProject().getSettingsMap().setString(JenaKnowledgeBaseFactory.OWL_FILE_URI_PROPERTY, uri.toString());
         } catch (URISyntaxException e) {
             Log.getLogger().log(Level.SEVERE, "Exception caught", e);
-        }
-    }
-
-
-    public void setWriterSettings(WriterSettings writerSettings) {
-        if (writerSettings instanceof ProtegeWriterSettings) {
-            getOWLProject().getSettingsMap().setString(WRITER_SETTINGS_PROPERTY, WRITER_PROTEGE);
-        }
-        else {
-            getOWLProject().getSettingsMap().remove(WRITER_SETTINGS_PROPERTY);
         }
     }
 
