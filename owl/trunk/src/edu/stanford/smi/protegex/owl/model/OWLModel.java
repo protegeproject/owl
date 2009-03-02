@@ -1,6 +1,5 @@
 package edu.stanford.smi.protegex.owl.model;
 
-import java.io.IOException;
 import java.net.URI;
 import java.util.Collection;
 import java.util.Iterator;
@@ -11,6 +10,7 @@ import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.Frame;
 import edu.stanford.smi.protege.model.ValueType;
 import edu.stanford.smi.protege.model.framestore.FrameStore;
+import edu.stanford.smi.protegex.owl.jena.writersettings.WriterSettings;
 import edu.stanford.smi.protegex.owl.model.classdisplay.OWLClassDisplay;
 import edu.stanford.smi.protegex.owl.model.classparser.OWLClassParser;
 import edu.stanford.smi.protegex.owl.model.event.ClassListener;
@@ -1887,4 +1887,8 @@ public interface OWLModel extends ProtegeKnowledgeBase, OWLTestManager {
      * @see #getTaskManager
      */
     void setTaskManager(TaskManager taskManager);
+    
+    WriterSettings getWriterSettings();
+    
+    void setWriterSettings(WriterSettings writerSettings);
 }
