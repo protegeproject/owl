@@ -290,9 +290,7 @@ public class BasicFind implements Find {
      */
     protected boolean isValidFrameToSearch(Frame f) {
         Class fclass = f.getClass();
-        return (OWLNamedClass.class.isAssignableFrom(fclass)) ||
-               (OWLProperty.class.isAssignableFrom(fclass)) ||
-               (OWLIndividual.class.isAssignableFrom(fclass));
+        return (RDFResource.class.isAssignableFrom(fclass));
     }
 
     public int getSearchType() {
