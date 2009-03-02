@@ -42,10 +42,13 @@ import edu.stanford.smi.protege.util.CollectionUtilities;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protege.util.URIUtilities;
 import edu.stanford.smi.protegex.owl.inference.protegeowl.ReasonerManager;
+import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
 import edu.stanford.smi.protegex.owl.jena.graph.JenaModelFactory;
 import edu.stanford.smi.protegex.owl.jena.parser.GlobalParserCache;
 import edu.stanford.smi.protegex.owl.jena.parser.OWLImportsCache;
 import edu.stanford.smi.protegex.owl.jena.parser.UnresolvedImportHandler;
+import edu.stanford.smi.protegex.owl.jena.writersettings.JenaWriterSettings;
+import edu.stanford.smi.protegex.owl.jena.writersettings.WriterSettings;
 import edu.stanford.smi.protegex.owl.model.DefaultTaskManager;
 import edu.stanford.smi.protegex.owl.model.NamespaceManager;
 import edu.stanford.smi.protegex.owl.model.NamespaceUtil;
@@ -131,6 +134,7 @@ import edu.stanford.smi.protegex.owl.ui.widget.OWLFormWidget;
 import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
 import edu.stanford.smi.protegex.owl.ui.widget.OWLWidgetMapper;
 import edu.stanford.smi.protegex.owl.util.OWLBrowserSlotPattern;
+import edu.stanford.smi.protegex.owl.writer.rdfxml.util.ProtegeWriterSettings;
 
 
 /**
@@ -3569,7 +3573,24 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
         return (RDFProperty) protegeSubclassesDisjointProperty;
     }
 
-
+    public WriterSettings getWriterSettings() {
+        String value = getOWLProject().getSettingsMap().getString(JenaOWLModel.WRITER_SETTINGS_PROPERTY);
+        if (JenaOWLModel.WRITER_PROTEGE.equals(value)) {
+            return new ProtegeWriterSettings(this);
+        }
+        else {
+            return new JenaWriterSettings(this);
+        }
+    }
+    
+    public void setWriterSettings(WriterSettings writerSettings) {
+        if (writerSettings instanceof ProtegeWriterSettings) {
+            getOWLProject().getSettingsMap().setString(JenaOWLModel.WRITER_SETTINGS_PROPERTY, JenaOWLModel.WRITER_PROTEGE);
+        }
+        else {
+            getOWLProject().getSettingsMap().remove(JenaOWLModel.WRITER_SETTINGS_PROPERTY);
+        }
+    }
 
     @Override
     public synchronized void dispose() {
