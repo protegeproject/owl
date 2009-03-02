@@ -54,8 +54,8 @@ public class ProtegeSaver extends KnowledgeBaseCopier {
         super(source, target);
         this.owlModel = target;
         
-        if (useNativeWriter && owlModel instanceof JenaOWLModel) {
-        	((JenaOWLModel)owlModel).setWriterSettings(new ProtegeWriterSettings((JenaOWLModel)owlModel));
+        if (useNativeWriter) {
+        	(owlModel).setWriterSettings(new ProtegeWriterSettings(owlModel));
         }
 	}
 
