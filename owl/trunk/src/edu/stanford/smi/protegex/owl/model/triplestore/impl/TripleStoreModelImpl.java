@@ -251,6 +251,9 @@ public class TripleStoreModelImpl implements TripleStoreModel {
     public Iterator<TripleStore> listUserTripleStores() {
         Iterator<TripleStore> it = getTripleStores().iterator();
         it.next(); // drop the system triple store.
+        if (allTripleStores.size() > 1 && allTripleStores.get(1).getName() == null) {
+            it.next();  // this is really funky - owl db = drop the extra triple store
+        }
         return it;
     }
 
