@@ -24,6 +24,8 @@ import edu.stanford.smi.protege.util.PropertyList;
 import edu.stanford.smi.protege.util.URIUtilities;
 import edu.stanford.smi.protegex.owl.database.OWLDatabaseModel;
 import edu.stanford.smi.protegex.owl.jena.parser.ProtegeOWLParser;
+import edu.stanford.smi.protegex.owl.jena.writersettings.JenaWriterSettings;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.factory.AlreadyImportedException;
 import edu.stanford.smi.protegex.owl.model.factory.FactoryUtils;
 import edu.stanford.smi.protegex.owl.repository.Repository;
@@ -33,6 +35,9 @@ import edu.stanford.smi.protegex.owl.storage.OWLKnowledgeBaseFactory;
 import edu.stanford.smi.protegex.owl.storage.ProtegeSaver;
 import edu.stanford.smi.protegex.owl.ui.menu.OWLBackwardsCompatibilityProjectFixups;
 import edu.stanford.smi.protegex.owl.ui.resourceselection.ResourceSelectionAction;
+import edu.stanford.smi.protegex.owl.writer.rdfxml.rdfwriter.OWLModelAllTripleStoresWriter;
+import edu.stanford.smi.protegex.owl.writer.rdfxml.util.ProtegeWriterSettings;
+import edu.stanford.smi.protegex.owl.writer.xml.XMLWriterPreferences;
 
 /**
  * A backend for OWL based on the Jena2 API.
@@ -256,11 +261,30 @@ public class JenaKnowledgeBaseFactory implements OWLKnowledgeBaseFactory {
             Project newProject = Project.createNewProject(this, errors);
             newProject.setProjectURI(kb.getProject().getProjectURI());
             JenaOWLModel owlModel = (JenaOWLModel) newProject.getKnowledgeBase();
-            if (kb instanceof OWLDatabaseModel) {
+            boolean useProtegeWriterSettings = kb instanceof OWLModel && ((OWLModel) kb).getWriterSettings() instanceof ProtegeWriterSettings;
+            if (kb instanceof OWLDatabaseModel && !useProtegeWriterSettings) {
                 OntModel newModel = ((OWLDatabaseModel) kb).getOntModel();
                 URI absoluteURI = getFileURI(sources, owlModel.getProject());
                 owlModel.save(absoluteURI, language, errors, newModel);
                 newModel.close();
+            }
+            else if (useProtegeWriterSettings) {
+                URI absoluteURI = getFileURI(sources, owlModel.getProject());
+                ProtegeWriterSettings ws = (ProtegeWriterSettings) ((OWLModel) kb).getWriterSettings();
+                try {
+                    boolean useEntities = ws.getUseXMLEntities();
+                    XMLWriterPreferences.getInstance().setUseNamespaceEntities(useEntities);
+
+                    OWLModelAllTripleStoresWriter writer = new OWLModelAllTripleStoresWriter((OWLModel) kb, 
+                                                                                             absoluteURI,
+                                                                                             ws.isSortAlphabetically());
+                    writer.write();
+                }
+                catch (Exception ex) {
+                    String message = "Failed to save file " + absoluteURI;
+                    Log.getLogger().log(Level.SEVERE, message, ex);
+                    errors.add(new MessageError(ex, message));
+                }
             }
             else {  // Any other Protege format
                 // TODO: owlModel.initWithProtegeMetadataOntology(errors);
@@ -269,7 +293,7 @@ public class JenaKnowledgeBaseFactory implements OWLKnowledgeBaseFactory {
                 } catch (AlreadyImportedException e) {
                     log.log(Level.WARNING, "Unexpected Exception - Could not set default ontology", e);
                 }
-                new ProtegeSaver(kb, owlModel).run();
+                new ProtegeSaver(kb, owlModel, useProtegeWriterSettings).run();
                 URI absoluteURI = getFileURI(sources, owlModel.getProject());
                 owlModel.save(absoluteURI, language, errors);
             }
