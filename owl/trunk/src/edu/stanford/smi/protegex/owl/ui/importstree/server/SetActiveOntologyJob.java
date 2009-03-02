@@ -21,13 +21,16 @@ public class SetActiveOntologyJob extends ProtegeJob {
         super(owlModel);
         this.ontology = ontology;
     }
+    
+    public static boolean isAllowed() {
+        return ApplicationProperties.getBooleanProperty(ALLOW_MULTIUSER_SET_ACTIVE_ONTOLOGY, false);
+    }
 
     @Override
     public Boolean run() throws ProtegeException {
         OWLModel owlModel = (OWLModel) getKnowledgeBase();
-        
-        boolean isAllowed = ApplicationProperties.getBooleanProperty(ALLOW_MULTIUSER_SET_ACTIVE_ONTOLOGY, false);
-        if (!isAllowed || !((DefaultOWLOntology) ontology).isAssociatedTriplestoreEditable()) {
+
+        if (!isAllowed() || !((DefaultOWLOntology) ontology).isAssociatedTriplestoreEditable()) {
             return false;
         }
         
