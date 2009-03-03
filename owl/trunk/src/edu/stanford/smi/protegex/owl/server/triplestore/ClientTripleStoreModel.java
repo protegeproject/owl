@@ -148,7 +148,7 @@ public class ClientTripleStoreModel implements TripleStoreModel {
     }
 
     public void setActiveTripleStore(TripleStore tripleStore) {
-        throw new UnsupportedOperationException();
+        activeTripleStoreName = tripleStore.getName();
     }
 
     public void setHomeTripleStore(RDFResource resource, TripleStore tripleStore) {
