@@ -14,23 +14,19 @@ import edu.stanford.smi.protegex.owl.model.OWLOntology;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLOntology;
 
 public class SetActiveOntologyJob extends ProtegeJob {
-    public static String ALLOW_MULTIUSER_SET_ACTIVE_ONTOLOGY = "allow.multiuser.client.set.active.ontology";
+
     private OWLOntology ontology;
     
     public SetActiveOntologyJob(OWLModel owlModel, OWLOntology ontology) {
         super(owlModel);
         this.ontology = ontology;
     }
-    
-    public static boolean isAllowed() {
-        return ApplicationProperties.getBooleanProperty(ALLOW_MULTIUSER_SET_ACTIVE_ONTOLOGY, false);
-    }
 
     @Override
     public Boolean run() throws ProtegeException {
         OWLModel owlModel = (OWLModel) getKnowledgeBase();
 
-        if (!isAllowed() || !((DefaultOWLOntology) ontology).isAssociatedTriplestoreEditable()) {
+        if (!((DefaultOWLOntology) ontology).isAssociatedTriplestoreEditable()) {
             return false;
         }
         
