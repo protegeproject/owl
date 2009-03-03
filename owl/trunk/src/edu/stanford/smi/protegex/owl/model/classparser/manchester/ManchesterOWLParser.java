@@ -166,8 +166,8 @@ public class ManchesterOWLParser implements ManchesterOWLParserConstants {
                 }
             }
         }
-        {if (true) return result;}
     jj_consume_token(0);
+         {if (true) return result;}
     throw new Error("Missing return statement in function");
   }
 
@@ -892,6 +892,11 @@ public class ManchesterOWLParser implements ManchesterOWLParserConstants {
     finally { jj_save(1, xla); }
   }
 
+  final private boolean jj_3R_13() {
+    if (jj_scan_token(30)) return true;
+    return false;
+  }
+
   final private boolean jj_3R_12() {
     if (jj_scan_token(OPENPAR)) return true;
     return false;
@@ -964,11 +969,6 @@ public class ManchesterOWLParser implements ManchesterOWLParserConstants {
 
   final private boolean jj_3R_8() {
     if (jj_3R_9()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_13() {
-    if (jj_scan_token(30)) return true;
     return false;
   }
 
