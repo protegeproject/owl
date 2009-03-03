@@ -1046,19 +1046,6 @@ public class OWLUtil {
 
 
     public static OWLOntology getActiveOntology(OWLModel owlModel) {
-        /*OWLOntology owlOntology = owlModel.getDefaultOWLOntology();
-        for (Iterator it = owlModel.getOWLOntologies().iterator(); it.hasNext();) {
-            OWLOntology curOnt = (OWLOntology) it.next();
-            TripleStoreModel tsm = owlModel.getTripleStoreModel();
-            TripleStore activeTripleStore = tsm.getActiveTripleStore();
-            if (activeTripleStore.contains(curOnt,
-                                           owlModel.getRDFTypeProperty(),
-                                           owlModel.getOWLOntologyClass())) {
-                owlOntology = curOnt;
-                break;
-            }
-        }
-        */
         //TODO: please check implementation
     	// Triple store should have as the name the ontology name
     	// If TS name is null, use the default ontology
