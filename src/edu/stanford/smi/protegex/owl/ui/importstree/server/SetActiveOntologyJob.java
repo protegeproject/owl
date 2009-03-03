@@ -6,7 +6,6 @@ import edu.stanford.smi.protege.exception.ProtegeException;
 import edu.stanford.smi.protege.model.KnowledgeBase;
 import edu.stanford.smi.protege.model.framestore.FrameStore;
 import edu.stanford.smi.protege.model.framestore.FrameStoreManager;
-import edu.stanford.smi.protege.util.ApplicationProperties;
 import edu.stanford.smi.protege.util.LocalizeUtils;
 import edu.stanford.smi.protege.util.ProtegeJob;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
@@ -14,7 +13,8 @@ import edu.stanford.smi.protegex.owl.model.OWLOntology;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLOntology;
 
 public class SetActiveOntologyJob extends ProtegeJob {
-
+    private static final long serialVersionUID = 7139921119966372858L;
+    
     private OWLOntology ontology;
     
     public SetActiveOntologyJob(OWLModel owlModel, OWLOntology ontology) {
