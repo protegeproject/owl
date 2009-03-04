@@ -213,7 +213,7 @@ public class DefaultRDFSNamedClass extends AbstractRDFSClass implements RDFSName
 
 
     public boolean isAnonymous() {
-        return false;
+        return getOWLModel().isAnonymousResourceName(getName());
     }
 
 
