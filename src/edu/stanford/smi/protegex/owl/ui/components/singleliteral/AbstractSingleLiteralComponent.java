@@ -298,10 +298,9 @@ public abstract class AbstractSingleLiteralComponent extends AbstractPropertyVal
 		deleteAction.setEnabled(getSubject() != null &&
 				getSubject().getPropertyValue(getPredicate()) != null &&
 				editable);
-		final Object object = getObject();
-		PropertyValueEditor editor = getEditor(object);
-		viewAction.setEnabled(editable && editor != null);
-
+		final Object object = getObject();		
+		viewAction.setEnabled(true);
+		
 		if (datatypeComboBox != null) {
 			datatypeComboBox.setEnabled(!isReadOnly());
 		}
