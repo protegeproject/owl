@@ -33,6 +33,7 @@ import edu.stanford.smi.protege.event.FrameEvent;
 import edu.stanford.smi.protege.event.FrameListener;
 import edu.stanford.smi.protege.model.BrowserSlotPattern;
 import edu.stanford.smi.protege.model.Cls;
+import edu.stanford.smi.protege.model.FrameID;
 import edu.stanford.smi.protege.model.Instance;
 import edu.stanford.smi.protege.model.Model;
 import edu.stanford.smi.protege.model.SimpleInstance;
@@ -307,7 +308,7 @@ public class AssertedInstancesListPanel extends SelectableContainer implements D
 			public void onCreate() {
                 if (!classes.isEmpty()) {
                 	String name = owlModel.getNextAnonymousResourceName();
-                    Instance instance = owlModel.createInstance(name, classes);
+                    Instance instance = owlModel.createInstance(new FrameID(name), classes, false);
                     if (instance instanceof Cls) {
                         Cls newCls = (Cls) instance;
                         if (newCls.getDirectSuperclassCount() == 0) {
