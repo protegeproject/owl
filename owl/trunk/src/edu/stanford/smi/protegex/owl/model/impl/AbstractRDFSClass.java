@@ -14,7 +14,6 @@ import edu.stanford.smi.protege.model.Facet;
 import edu.stanford.smi.protege.model.Frame;
 import edu.stanford.smi.protege.model.FrameID;
 import edu.stanford.smi.protege.model.KnowledgeBase;
-import edu.stanford.smi.protege.model.Model;
 import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.model.NamespaceUtil;
@@ -255,7 +254,9 @@ public abstract class AbstractRDFSClass extends DefaultCls implements RDFSClass 
         Collection result = new ArrayList();
         for (Iterator it = getSubclasses(transitive).iterator(); it.hasNext();) {
             Cls cls = (Cls) it.next();
-            if (cls instanceof RDFSNamedClass) {
+            //extra condition necessary because of untyped classes that are named classes
+            //with an anonymous name
+            if (cls instanceof RDFSNamedClass && !((RDFSNamedClass)cls).isAnonymous()) {
                 result.add(cls);
             }
         }
@@ -267,7 +268,9 @@ public abstract class AbstractRDFSClass extends DefaultCls implements RDFSClass 
         Collection result = new ArrayList();
         for (Iterator it = getSuperclasses(transitive).iterator(); it.hasNext();) {
             Cls cls = (Cls) it.next();
-            if (cls instanceof RDFSNamedClass) {
+            //extra condition necessary because of untyped classes that are named classes
+            //with an anonymous name
+            if (cls instanceof RDFSNamedClass && !((RDFSNamedClass)cls).isAnonymous()) {
                 result.add(cls);
             }
         }
