@@ -49,6 +49,8 @@ public interface SWRLNames extends OWLNames {
   public final static String SWRLTEMPORAL_PREFIX = "temporal";
   public final static String SWRLXML_PREFIX = "swrlxml";
   public final static String SQWRL_PREFIX = "sqwrl";
+
+  public final static String EXCLUDE_STANDARD_IMPORTS = "protege.owl.swrl.exclude_standard_imports";
   
   public static interface Cls {
     

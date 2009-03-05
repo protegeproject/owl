@@ -11,6 +11,7 @@ import edu.stanford.smi.protege.model.Project;
 import edu.stanford.smi.protege.ui.ProjectManager;
 import edu.stanford.smi.protege.ui.ProjectView;
 import edu.stanford.smi.protege.util.Log;
+import edu.stanford.smi.protege.util.ApplicationProperties;
 import edu.stanford.smi.protege.widget.AbstractTabWidget;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.util.ImportHelper;
@@ -47,25 +48,17 @@ public class SWRLTab extends AbstractTabWidget
           return;
       }
       owlModel.getNamespaceManager().setPrefix(new URI(SWRLNames.SWRLA_NAMESPACE), SWRLNames.SWRLA_PREFIX);
-      owlModel.getNamespaceManager().setPrefix(new URI(SWRLNames.SWRLX_NAMESPACE), SWRLNames.SWRLX_PREFIX);
-      owlModel.getNamespaceManager().setPrefix(new URI(SWRLNames.SWRLM_NAMESPACE), SWRLNames.SWRLM_PREFIX);
-      owlModel.getNamespaceManager().setPrefix(new URI(SWRLNames.SWRLTBOX_NAMESPACE), SWRLNames.SWRLTBOX_PREFIX);
-      owlModel.getNamespaceManager().setPrefix(new URI(SWRLNames.SWRLABOX_NAMESPACE), SWRLNames.SWRLABOX_PREFIX);
-      owlModel.getNamespaceManager().setPrefix(new URI(SWRLNames.SWRLTEMPORAL_NAMESPACE), SWRLNames.SWRLTEMPORAL_PREFIX);
       owlModel.getNamespaceManager().setPrefix(new URI(SWRLNames.SQWRL_NAMESPACE), SWRLNames.SQWRL_PREFIX);
 
       ImportHelper importHelper = new ImportHelper(owlModel);
       boolean importsAdded  = false;
 
-      importsAdded |= addImport(owlModel, SWRLNames.SWRLA_IMPORT, importHelper);
-      importsAdded |= addImport(owlModel, SWRLNames.SWRLX_IMPORT, importHelper);
-      importsAdded |= addImport(owlModel, SWRLNames.SWRLM_IMPORT, importHelper);
-      importsAdded |= addImport(owlModel, SWRLNames.SWRLTBOX_IMPORT, importHelper);
-      importsAdded |= addImport(owlModel, SWRLNames.SWRLABOX_IMPORT, importHelper);
-      importsAdded |= addImport(owlModel, SWRLNames.SWRLTEMPORAL_IMPORT, importHelper);
-      importsAdded |= addImport(owlModel, SWRLNames.SQWRL_IMPORT, importHelper);
+      if (!ApplicationProperties.getBooleanProperty(SWRLNames.EXCLUDE_STANDARD_IMPORTS, false)) {
+        importsAdded |= addImport(owlModel, SWRLNames.SWRLA_IMPORT, importHelper);
+        importsAdded |= addImport(owlModel, SWRLNames.SQWRL_IMPORT, importHelper);
 
-      importHelper.importOntologies(false);
+        importHelper.importOntologies(false);
+      } // if
 
       // Make ":TO" and ":FROM" visible for dynamic expansion.
       owlModel.getSystemFrames().getToSlot().setVisible(true);
