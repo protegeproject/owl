@@ -208,7 +208,7 @@ public class OWLDomainWidget extends AbstractPropertyWidget {
 
     private void updateActions() {
         RDFProperty property = tableModel.getSlot();
-        boolean enabled = property != null && property.isEditable();
+        boolean enabled = property != null;
         setEnabled(enabled);       
     }
     
@@ -219,17 +219,17 @@ public class OWLDomainWidget extends AbstractPropertyWidget {
     	RDFProperty property = tableModel.getSlot();
     	
     	if (property != null) {
-    		enabled = enabled && property.isEditable();
+    		addAction.setEnabled(enabled);
+    		enabled = enabled && property.isEditable();    	
+    	}    	    	
+    	
+    	if (property != null) {
+    		if (!property.isEditable() || !property.isDomainDefined()) {    			
+    			removeAction.setEnabled(false);
+    		} else {
+    			removeAction.setAllowed(enabled);
+    		}
     	}
-    	
-    	addAction.setEnabled(enabled);    	
-    	
-    	if (property != null && !property.isDomainDefined()) {
-         	removeAction.setEnabled(false);
-        } else {
-        	removeAction.setAllowed(enabled);
-        }
-    	
     	//table.setEnabled(enabled);
     	
     };
