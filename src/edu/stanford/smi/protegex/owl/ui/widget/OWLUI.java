@@ -37,6 +37,7 @@ import edu.stanford.smi.protege.action.Copy;
 import edu.stanford.smi.protege.action.Cut;
 import edu.stanford.smi.protege.action.InsertUnicodeCharacterAction;
 import edu.stanford.smi.protege.action.Paste;
+import edu.stanford.smi.protege.exception.ModificationException;
 import edu.stanford.smi.protege.model.BrowserSlotPattern;
 import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.Frame;
@@ -326,8 +327,10 @@ public class OWLUI {
 
 
     public static void handleError(OWLModel owlModel, Throwable t) {  
-        if (!(handleSQLException(owlModel, t)  ||
-                handleConnectionLostException(owlModel, t))) {
+        if (!(	handleSQLException(owlModel, t)  ||
+                handleConnectionLostException(owlModel, t)  ||
+                handleModificationException(owlModel, t)
+           )) {
             handleDefaultException(owlModel, t);
         }
     }
@@ -337,7 +340,7 @@ public class OWLUI {
     	ProtegeUI.getModalDialogFactory().
 
     	showErrorMessageDialog(owlModel,
-    			"Internal Error: " + t +
+    			"Error: " + t +
     			"\nPlease see Java console for details, and possibly report" +
     			"\nthis on our OWL mailing lists." +
     			"\nhttp://protege.stanford.edu/community/lists.html" +
@@ -375,6 +378,24 @@ public class OWLUI {
 
     	return foundSqlEx;	
     }
+    
+    
+    private static boolean handleModificationException(OWLModel owlModel, Throwable t) {  
+    	Throwable exception = t;
+    	boolean foundModEx = false;
+    	while (!foundModEx && exception != null) {
+    		if (exception instanceof ModificationException) {
+    			ProtegeUI.getModalDialogFactory().showErrorMessageDialog(owlModel,
+    					"You do not have permission to make this modification.",
+    					"Write error");             	    			
+    			foundModEx = true;
+    			break;
+    		}
+    		exception = exception.getCause();
+    	}
+    	return foundModEx;	
+    }
+    
     
     private static long lastConnectFailureTime = -1;
     private static long CONNECT_NOTIFICATION_TIMEOUT = 30000; // 30 seconds
