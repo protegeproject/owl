@@ -10,6 +10,7 @@ import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.jena.creator.OwlProjectFromUriCreator;
 import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
+import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
 import edu.stanford.smi.protegex.owl.model.RDFSNames;
 import edu.stanford.smi.protegex.owl.tests.AbstractJenaTestCase;
 import edu.stanford.smi.protegex.owl.ui.search.finder.DefaultClassFind;
@@ -89,7 +90,7 @@ public class FindTestCase extends AbstractJenaTestCase {
             FindResult result = (FindResult) i.next();
             assertNotNull(result.getMatchValue());
             assertTrue(Pattern.matches(".*[pP].*", result.getMatchValue()));
-            assertTrue(result.getMatchingResource() instanceof OWLNamedClass);
+            assertTrue(result.getMatchingResource() instanceof RDFSNamedClass);
         }
     }
 
