@@ -1,14 +1,32 @@
 package edu.stanford.smi.protegex.owl.ui.properties.range;
 
+import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.JComponent;
+import javax.swing.JScrollPane;
+import javax.swing.JViewport;
+
 import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.KnowledgeBase;
 import edu.stanford.smi.protege.model.Model;
 import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protege.server.framestore.RemoteClientFrameStore;
-import edu.stanford.smi.protege.server.metaproject.impl.OperationImpl;
+import edu.stanford.smi.protege.server.metaproject.MetaProjectConstants;
 import edu.stanford.smi.protege.ui.FrameComparator;
 import edu.stanford.smi.protege.util.LabeledComponent;
-import edu.stanford.smi.protegex.owl.model.*;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.model.OWLProperty;
+import edu.stanford.smi.protegex.owl.model.RDFProperty;
+import edu.stanford.smi.protegex.owl.model.RDFResource;
+import edu.stanford.smi.protegex.owl.model.RDFSClass;
+import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLUnionClass;
 import edu.stanford.smi.protegex.owl.model.impl.OWLUtil;
 import edu.stanford.smi.protegex.owl.ui.OWLLabeledComponent;
@@ -22,14 +40,6 @@ import edu.stanford.smi.protegex.owl.ui.profiles.ProfilesManager;
 import edu.stanford.smi.protegex.owl.ui.resourceselection.ResourceSelectionAction;
 import edu.stanford.smi.protegex.owl.ui.widget.PropertyWidget;
 import edu.stanford.smi.protegex.owl.ui.widget.WidgetUtilities;
-
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
 
 /**
  * A component that can be used to edit arbitrary class expressions as rdfs:range values.
@@ -97,7 +107,8 @@ public class UnionRangeClassesComponent extends JComponent {
         }
 
 
-        public Collection getSelectableResources() {
+        @Override
+		public Collection getSelectableResources() {
             RDFProperty property = tableModel.getEditedProperty();
             Collection<Cls> clses = new HashSet();
             final Collection allowedClses = property.getUnionRangeClasses();
@@ -126,7 +137,8 @@ public class UnionRangeClassesComponent extends JComponent {
         }
 
 
-        public Collection pickResources() {
+        @Override
+		public Collection pickResources() {
             RDFSNamedClass rdfsClass = owlModel.getRDFSNamedClassClass();
             boolean rdfsClassWasVisible = rdfsClass.isVisible();
             RDFSNamedClass owlClass = owlModel.getOWLNamedClassClass();
@@ -270,17 +282,17 @@ public class UnionRangeClassesComponent extends JComponent {
         tableModel.refill();
     }
     
-    public void setEnabled(boolean enabled) {
-    	enabled = enabled && RemoteClientFrameStore.isOperationAllowed(owlModel, OperationImpl.PROPERTY_TAB_WRITE);
+    @Override
+	public void setEnabled(boolean enabled) {
+    	enabled = enabled && RemoteClientFrameStore.isOperationAllowed(owlModel, MetaProjectConstants.OPERATION_PROPERTY_TAB_WRITE);
     	RDFProperty property = tableModel.getEditedProperty();
     	
     	if (property != null) {
+    		addAction.setEnabled(enabled);
+    		createAction.setEnabled(enabled);
     		enabled = enabled && property.isEditable(); 
-    	}
-    	
-    	//table.setEnabled(enabled);
-    	addAction.setEnabled(enabled);
-    	createAction.setEnabled(enabled);
+    	}    	
+    	//table.setEnabled(enabled);    	
     	deleteAction.setEnabled(enabled);    	
     	super.setEnabled(enabled);
     };
