@@ -19,7 +19,7 @@ import edu.stanford.smi.protege.model.Instance;
 import edu.stanford.smi.protege.model.Model;
 import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protege.server.framestore.RemoteClientFrameStore;
-import edu.stanford.smi.protege.server.metaproject.impl.OperationImpl;
+import edu.stanford.smi.protege.server.metaproject.MetaProjectConstants;
 import edu.stanford.smi.protege.util.AllowableAction;
 import edu.stanford.smi.protege.util.LabeledComponent;
 import edu.stanford.smi.protege.util.SelectionEvent;
@@ -214,7 +214,7 @@ public class OWLDomainWidget extends AbstractPropertyWidget {
     
     @Override
 	public void setEnabled(boolean enabled) {
-    	enabled = enabled && RemoteClientFrameStore.isOperationAllowed(getOWLModel(), OperationImpl.PROPERTY_TAB_WRITE);
+    	enabled = enabled && RemoteClientFrameStore.isOperationAllowed(getOWLModel(), MetaProjectConstants.OPERATION_PROPERTY_TAB_WRITE);
     	
     	RDFProperty property = tableModel.getSlot();
     	
