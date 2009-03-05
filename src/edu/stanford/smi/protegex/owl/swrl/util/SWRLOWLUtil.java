@@ -20,6 +20,7 @@ import com.hp.hpl.jena.util.FileUtils;
 
 import java.io.File;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.*;
 
 /**
@@ -67,6 +68,15 @@ public class SWRLOWLUtil
     } // try
   } // importOWLFile
 
+  public static void setPrefix(OWLModel owlModel, String prefix, String namespace) throws SWRLOWLUtilException
+  {
+    try {
+      owlModel.getNamespaceManager().setPrefix(new URI(namespace), prefix);
+    } catch (URISyntaxException e) {
+      throwException("error setting prefix '" + prefix + "' for namespace '" + namespace + "': " + e.getMessage());
+    } // try
+  } // setPrefix
+
   public static void writeJenaOWLModel2File(JenaOWLModel owlModel, String outputOWLFileName) throws SWRLOWLUtilException
   {
     ArrayList errors = new ArrayList();
@@ -111,7 +121,7 @@ public class SWRLOWLUtil
     return createIndividualOfClass(owlModel, cls, individualName);
   } // createIndividualOfClass
 
-  public static OWLIndividual createIndividualOfClass(OWLModel owlModel, OWLNamedClass cls)
+  public static OWLIndividual createIndividualOfClass(OWLModel owlModel, OWLClass cls)
     throws SWRLOWLUtilException
   {
     return createIndividualOfClass(owlModel, cls, null);
@@ -333,6 +343,11 @@ public class SWRLOWLUtil
     OWLNamedClass subClass = getNamedClass(owlModel, subClassName);
     OWLNamedClass superClass = getNamedClass(owlModel, superClassName);
 
+    subClass.addSuperclass(superClass);
+  } // addSuperClass
+
+  public static void addSuperClass(OWLClass subClass, OWLClass superClass) 
+  {
     subClass.addSuperclass(superClass);
   } // addSuperClass
     
