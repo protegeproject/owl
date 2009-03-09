@@ -140,9 +140,14 @@ public class ClientTripleStoreModel implements TripleStoreModel {
     }
 
     public Iterator<TripleStore> listUserTripleStores() {
-        throw new UnsupportedOperationException();
+        Iterator<TripleStore> it = getTripleStores().iterator();
+        it.next(); // drop the system triple store.
+        if (tripleStores.size() > 1 && tripleStores.get(1).getName() == null) {
+            it.next();  // this is really funky - owl db = drop the extra triple store
+        }
+        return it;
     }
-
+    
     public void replaceJavaObject(RDFResource subject) {
         throw new UnsupportedOperationException();
     }
