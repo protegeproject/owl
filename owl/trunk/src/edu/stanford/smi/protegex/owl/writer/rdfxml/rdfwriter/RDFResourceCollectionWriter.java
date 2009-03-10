@@ -1,16 +1,16 @@
 package edu.stanford.smi.protegex.owl.writer.rdfxml.rdfwriter;
 
+import java.io.IOException;
+import java.io.Writer;
+import java.util.Collection;
+import java.util.Collections;
+
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 import edu.stanford.smi.protegex.owl.writer.rdfxml.util.Util;
 import edu.stanford.smi.protegex.owl.writer.xml.XMLWriter;
 import edu.stanford.smi.protegex.owl.writer.xml.XMLWriterFactory;
 import edu.stanford.smi.protegex.owl.writer.xml.XMLWriterNamespaceManager;
-
-import java.io.IOException;
-import java.io.Writer;
-import java.util.Collection;
-import java.util.Collections;
 
 /**
  * User: matthewhorridge<br>
@@ -36,8 +36,11 @@ public class RDFResourceCollectionWriter {
                                        Writer writer,
                                        boolean encloseInRDFElement) {
         String ontologyName = Util.getOntologyName(model, tripleStore);
-        XMLWriterNamespaceManager nsm = Util.getNamespacePrefixes(model.getNamespaceManager(),
-                model.getNamespaceManager().getDefaultNamespace());
+        String defaultNamespace = model.getNamespaceManager().getDefaultNamespace();
+        if (defaultNamespace == null) {
+        	defaultNamespace = tripleStore.getName() + "#";
+        }
+        XMLWriterNamespaceManager nsm = Util.getNamespacePrefixes(model.getNamespaceManager(), defaultNamespace);                
         this.xmlWriter = XMLWriterFactory.getInstance().createXMLWriter(writer, nsm, ontologyName);
         this.enclose = encloseInRDFElement;
         collectionContentWriter = new RDFResourceCollectionContentWriter(resources, tripleStore);
