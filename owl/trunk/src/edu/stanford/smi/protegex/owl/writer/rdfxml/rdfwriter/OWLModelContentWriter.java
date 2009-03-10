@@ -1,14 +1,18 @@
 package edu.stanford.smi.protegex.owl.writer.rdfxml.rdfwriter;
 
-import edu.stanford.smi.protegex.owl.model.*;
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.Iterator;
+
+import edu.stanford.smi.protegex.owl.model.OWLAllDifferent;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.model.OWLOntology;
+import edu.stanford.smi.protegex.owl.model.RDFProperty;
+import edu.stanford.smi.protegex.owl.model.RDFResource;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 import edu.stanford.smi.protegex.owl.writer.rdfxml.renderer.RDFAxiomRenderer;
 import edu.stanford.smi.protegex.owl.writer.rdfxml.renderer.RDFResourceRenderer;
 import edu.stanford.smi.protegex.owl.writer.xml.XMLWriter;
-
-import java.io.IOException;
-import java.util.HashSet;
-import java.util.Iterator;
 
 /**
  * User: matthewhorridge<br>
@@ -51,9 +55,8 @@ public class OWLModelContentWriter implements RDFXMLContentWriter {
         HashSet renderedResources = new HashSet();
         // Render the appropriate ontology and its properties
         for (Iterator it = model.getOWLOntologies().iterator(); it.hasNext();) {
-            OWLOntology ont = (OWLOntology) it.next();
-            TripleStore homeTripleStore = ont.getOWLModel().getTripleStoreModel().getHomeTripleStore(ont);
-			if ( homeTripleStore!= null && homeTripleStore.equals(tripleStore)) {
+            OWLOntology ont = (OWLOntology) it.next();        
+			if (ont.getName().equals(tripleStore.getName())) {
                 RDFResourceRenderer renderer = new RDFResourceRenderer(ont, tripleStore, writer);
                 renderer.write();
                 renderedResources.add(ont);
