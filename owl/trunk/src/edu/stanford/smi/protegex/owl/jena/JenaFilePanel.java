@@ -1,11 +1,13 @@
 package edu.stanford.smi.protegex.owl.jena;
 
+import java.awt.BorderLayout;
+import java.io.File;
+
+import javax.swing.JCheckBox;
+import javax.swing.JPanel;
+
 import edu.stanford.smi.protege.util.ComponentFactory;
 import edu.stanford.smi.protege.util.FileField;
-
-import javax.swing.*;
-import java.awt.*;
-import java.io.File;
 
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
@@ -44,6 +46,10 @@ public class JenaFilePanel extends JPanel {
     
     public boolean getUseNativeWriter() {
     	return useNativeWriterChechBox.isSelected();
+    }
+    
+    public JCheckBox getUseNativeWriterCheckBox() {
+    	return useNativeWriterChechBox;
     }
     
 }
