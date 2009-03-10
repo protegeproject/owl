@@ -50,8 +50,12 @@ public class OWLModelWriter {
         this.model = model;
         this.tripleStore = tripleStore;
         XMLWriterNamespaceManager xmlnsm;
-        NamespaceManager nsm = tripleStore.getNamespaceManager();
-        xmlnsm = Util.getNamespacePrefixes(nsm, nsm.getDefaultNamespace());
+        NamespaceManager nsm = tripleStore.getNamespaceManager();        
+        String defaultNamespace = nsm.getDefaultNamespace();
+        if (defaultNamespace == null) {
+        	defaultNamespace = tripleStore.getName() + "#";
+        }
+		xmlnsm = Util.getNamespacePrefixes(nsm, defaultNamespace);
         String ontologyName = Util.getOntologyName(model, tripleStore);
         this.xmlWriter = XMLWriterFactory.getInstance().createXMLWriter(writer, xmlnsm, ontologyName);
     }
