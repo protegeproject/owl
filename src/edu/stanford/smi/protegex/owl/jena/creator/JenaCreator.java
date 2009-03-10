@@ -201,13 +201,8 @@ public class JenaCreator {
     }
 
 
-    private void addImports(OWLOntology oi, Ontology ontology) {
-
-        String ns = ontModel.getNsPrefixURI("");
-        if (ns.endsWith("#")) {
-            ns = ns.substring(0, ns.length() - 1);
-        }
-        ontModel.getDocumentManager().addIgnoreImport(ns);
+    private void addImports(OWLOntology oi, Ontology ontology) {      
+        ontModel.getDocumentManager().addIgnoreImport(oi.getName());        
         for (Iterator it = oi.getImports().iterator(); it.hasNext();) {
             String uri = (String) it.next();
             ontology.addImport(ontModel.getResource(uri));
@@ -713,7 +708,9 @@ public class JenaCreator {
             ontModel.removeNsPrefix(prefix);
         }
         String defaultNS = owlModel.getNamespaceManager().getDefaultNamespace();
-        ontModel.setNsPrefix("", defaultNS);
+        if (defaultNS != null) {
+        	ontModel.setNsPrefix("", defaultNS);
+        }
         for (Iterator it = owlModel.getNamespaceManager().getPrefixes().iterator(); it.hasNext();) {
             String prefix = (String) it.next();
             String ns = owlModel.getNamespaceManager().getNamespaceForPrefix(prefix);
