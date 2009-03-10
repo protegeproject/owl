@@ -5,12 +5,10 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protegex.owl.model.NamespaceManager;
 import edu.stanford.smi.protegex.owl.model.NamespaceUtil;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLNames;
-import edu.stanford.smi.protegex.owl.model.OWLOntology;
 import edu.stanford.smi.protegex.owl.model.ProtegeNames;
 import edu.stanford.smi.protegex.owl.model.RDFExternalResource;
 import edu.stanford.smi.protegex.owl.model.RDFNames;
@@ -294,19 +292,20 @@ public class Util {
      * @return A <code>Map</code> of <code>String</code> pairs.  The keyset
      *         contains the prefixes.
      */
-    public static XMLWriterNamespaceManager getNamespacePrefixes(NamespaceManager nsm, String defaultNamespace) {
+    public static XMLWriterNamespaceManager getNamespacePrefixes(NamespaceManager nsm, String defaultNamespace) {    	
         XMLWriterNamespaceManager xmlWriterNamespaceManager = new XMLWriterNamespaceManager(defaultNamespace);
         for (Iterator it = nsm.getPrefixes().iterator(); it.hasNext();) {
             String curPrefix = (String) it.next();
             String curNamespace = nsm.getNamespaceForPrefix(curPrefix);
-            if (curNamespace.equals(defaultNamespace) == false) {
+            if (defaultNamespace != null && curNamespace.equals(defaultNamespace) == false) {
                 xmlWriterNamespaceManager.setPrefix(curPrefix, nsm.getNamespaceForPrefix(curPrefix));
             }
         }
         // Create a prefix for the default namespace if the default namespace is
         // not equal to the Writer's default namespace
-        if (nsm.getDefaultNamespace().equals(defaultNamespace) == false) {
-            xmlWriterNamespaceManager.createPrefixForNamespace(nsm.getDefaultNamespace());
+        String tsDefaultNamespace = nsm.getDefaultNamespace();
+		if (tsDefaultNamespace != null && tsDefaultNamespace.equals(defaultNamespace) == false) {
+            xmlWriterNamespaceManager.createPrefixForNamespace(tsDefaultNamespace);
         }
         return xmlWriterNamespaceManager;
     }
@@ -376,15 +375,7 @@ public class Util {
 
 
     public static String getOntologyName(OWLModel model, TripleStore tripleStore) {
-        for (Iterator it = model.getOWLOntologies().iterator(); it.hasNext();) {
-            OWLOntology ont = (OWLOntology) it.next();
-            TripleStore homeTripleStore = model.getTripleStoreModel().getHomeTripleStore(ont); 
-            //happens in client-server
-            if (homeTripleStore != null && homeTripleStore.equals(tripleStore)) {
-                return ont.getURI();
-            }
-        }
-        return "<null>";
+    	return tripleStore.getName();
     }
     
     public static String getPrefixedName(String fullName, TripleStore tripleStore) {
