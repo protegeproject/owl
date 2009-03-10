@@ -39,7 +39,6 @@ import edu.stanford.smi.protegex.owl.jena.creator.OwlProjectFromStreamCreator;
 import edu.stanford.smi.protegex.owl.jena.parser.ProtegeOWLParser;
 import edu.stanford.smi.protegex.owl.jena.protege2jena.Protege2Jena;
 import edu.stanford.smi.protegex.owl.jena.writersettings.JenaWriterSettings;
-import edu.stanford.smi.protegex.owl.jena.writersettings.WriterSettings;
 import edu.stanford.smi.protegex.owl.model.OWLOntology;
 import edu.stanford.smi.protegex.owl.model.RDFList;
 import edu.stanford.smi.protegex.owl.model.RDFNames;
@@ -164,43 +163,6 @@ public class JenaOWLModel extends AbstractOWLModel implements OntModelProvider {
         return Jena.cloneOntModel(getOntModel(), spec);
     }
 
-/*
-    public void initPrefixes(OntModel ontModel) {
-        NamespaceManager nsm = getNamespaceManager();
-        initPrefixes(nsm, ontModel);
-        String defaultNamespace = ontModel.getNsPrefixURI("");
-        if (defaultNamespace != null) {
-            nsm.setDefaultNamespace(defaultNamespace);
-        }
-
-        for (Iterator it = ontModel.getSubGraphs().iterator(); it.hasNext();) {
-            Graph graph = (Graph) it.next();
-            PrefixMapping mapping = graph.getPrefixMapping();
-            initPrefixes(nsm, mapping);
-        }
-    }
-
-
-    private void initPrefixes(NamespaceManager nsm, PrefixMapping mapping) {
-        Map map = mapping.getNsPrefixMap();
-        for (Iterator it = map.keySet().iterator(); it.hasNext();) {
-            String prefix = (String) it.next();
-            if (prefix.length() > 0) {
-                String uri = (String) map.get(prefix);
-                if (nsm.getPrefix(uri) == null && nsm.getNamespaceForPrefix(prefix) == null) {
-                    nsm.setPrefix(uri, prefix);
-                }
-                else {
-                    String oldNS = nsm.getNamespaceForPrefix(prefix);
-                    if (oldNS != null && !oldNS.equals(uri)) {
-                        System.err.println("[JenaOWLModel] Error: Conflicting prefix " +
-                                prefix + " (was: " + oldNS + ") was redefined as " + uri);
-                    }
-                }
-            }
-        }
-    }
-*/
 
     /**
      * Saves the current OWLModel in the standard format.
