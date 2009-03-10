@@ -2,8 +2,8 @@ package edu.stanford.smi.protegex.owl.server.triplestore;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -28,7 +28,7 @@ import edu.stanford.smi.protegex.owl.util.OWLFrameStoreUtils;
 
 public class ClientTripleStoreModel implements TripleStoreModel {
     private  OWLModel owlModel;
-    private Map<String, TripleStore> tripleStores = new HashMap<String, TripleStore>();
+    private Map<String, TripleStore> tripleStores = new LinkedHashMap<String, TripleStore>();
     private String activeTripleStoreName;
     private String systemTripleStoreName;
 
@@ -140,7 +140,8 @@ public class ClientTripleStoreModel implements TripleStoreModel {
     }
 
     public Iterator<TripleStore> listUserTripleStores() {
-        Iterator<TripleStore> it = getTripleStores().iterator();
+    	List<TripleStore> tripleStores = getTripleStores();    	
+        Iterator<TripleStore> it = tripleStores.iterator();
         it.next(); // drop the system triple store.
         if (tripleStores.size() > 1 && tripleStores.get(1).getName() == null) {
             it.next();  // this is really funky - owl db = drop the extra triple store
