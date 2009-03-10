@@ -14,86 +14,119 @@ import edu.stanford.smi.protege.model.Project;
 import edu.stanford.smi.protege.plugin.ExportPlugin;
 import edu.stanford.smi.protege.ui.ProjectManager;
 import edu.stanford.smi.protege.util.Log;
+import edu.stanford.smi.protege.util.MessageError;
 import edu.stanford.smi.protege.util.WaitCursor;
 import edu.stanford.smi.protegex.owl.database.OWLDatabaseModel;
 import edu.stanford.smi.protegex.owl.jena.JenaFilePanel;
 import edu.stanford.smi.protegex.owl.jena.JenaKnowledgeBaseFactory;
 import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
+import edu.stanford.smi.protegex.owl.jena.writersettings.JenaWriterSettings;
+import edu.stanford.smi.protegex.owl.jena.writersettings.WriterSettings;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.storage.ProtegeSaver;
 import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
 import edu.stanford.smi.protegex.owl.ui.dialogs.ModalDialogFactory;
+import edu.stanford.smi.protegex.owl.writer.rdfxml.rdfwriter.OWLModelAllTripleStoresWriter;
+import edu.stanford.smi.protegex.owl.writer.rdfxml.util.ProtegeWriterSettings;
+import edu.stanford.smi.protegex.owl.writer.xml.XMLWriterPreferences;
 
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
  */
 public class JenaExportPlugin implements ExportPlugin {
 
-    public void dispose() {
-    }
+	public void handleExportRequest(Project project) {	
+		JenaFilePanel panel = new JenaFilePanel();
+		if (project.isMultiUserClient()) {
+			panel.getUseNativeWriterCheckBox().setSelected(true);
+			panel.getUseNativeWriterCheckBox().setEnabled(false);
+		}
+		
+		int rval = ProtegeUI.getModalDialogFactory().showDialog(ProtegeUI.getTopLevelContainer(project),
+				panel, "OWL File to Export", ModalDialogFactory.MODE_OK_CANCEL);
+		if (rval == ModalDialogFactory.OPTION_OK) {
+			String filePath = panel.getOWLFilePath();
+			WaitCursor cursor = new WaitCursor(ProjectManager.getProjectManager().getMainPanel());
+			try {
+				exportProject(project.getKnowledgeBase(), filePath, panel.getUseNativeWriter());
+			}
+			catch (Exception ex) {
+				Log.getLogger().log(Level.SEVERE, "Exception caught", ex);
+				ProtegeUI.getModalDialogFactory().showErrorMessageDialog(panel,
+						"Export failed. Please see console for details.\n" + ex);
+			}
+			finally {
+				cursor.hide();
+			}
+		}
+	}
 
+	private void exportProject(KnowledgeBase kb, String filePath, boolean useNativeWriter) {
+		Collection errors = new ArrayList();        
+		JenaKnowledgeBaseFactory factory = new JenaKnowledgeBaseFactory();
+		Project newProject = Project.createNewProject(factory, errors);
+		JenaOWLModel newOWLModel = (JenaOWLModel) newProject.getKnowledgeBase();
+		URI fileURI = new File(filePath).toURI();
+		newProject.setProjectURI(fileURI);
 
-    public String getName() {
-        return "OWL";
-    }
+		if (kb instanceof OWLModel) { //OWL -> OWL
+			OWLModel oldOWLModel = (OWLModel)kb;
+			WriterSettings writerSettings = oldOWLModel.getWriterSettings();
+			oldOWLModel.setWriterSettings(useNativeWriter ? new ProtegeWriterSettings(newOWLModel) : new JenaWriterSettings(newOWLModel));
+			if (oldOWLModel instanceof JenaOWLModel) {
+				((JenaOWLModel)oldOWLModel).save(fileURI, FileUtils.langXMLAbbrev, errors);
+			} else if (oldOWLModel instanceof OWLDatabaseModel) { // export an OWL Database model   	
+				if (useNativeWriter) { //native writer
+					ProtegeWriterSettings newWriterSettings = null;
+					if (writerSettings instanceof ProtegeWriterSettings) { //try to preserve settings from exported model
+						newWriterSettings = (ProtegeWriterSettings)writerSettings;
+					} else {
+						newWriterSettings = new ProtegeWriterSettings(newOWLModel);
+						newWriterSettings.setSortAlphabetically(true);
+					}            		 
+					try {
+						boolean useEntities = newWriterSettings.getUseXMLEntities();
+						XMLWriterPreferences.getInstance().setUseNamespaceEntities(useEntities);
+						OWLModelAllTripleStoresWriter writer = new OWLModelAllTripleStoresWriter
+						(oldOWLModel, fileURI, newWriterSettings.isSortAlphabetically());
+						writer.write();
+					}
+					catch (Exception ex) {
+						String message = "Failed to save file " + fileURI;
+						Log.getLogger().log(Level.SEVERE, message, ex);
+						errors.add(new MessageError(ex, message));
+					}
+				} else { // Jena writer
+					OntModel newModel = ((OWLDatabaseModel) oldOWLModel).getOntModel();
+					newOWLModel.save(fileURI, FileUtils.langXML, errors, newModel);            		
+				}
+			}
+			oldOWLModel.setWriterSettings(writerSettings);
+		} else {  // Any other Protege format
+			new ProtegeSaver(kb, newOWLModel, useNativeWriter).run();
+			newOWLModel.save(fileURI, FileUtils.langXMLAbbrev, errors);
+		}		
 
+		if (errors.size() == 0) {
+			ProtegeUI.getModalDialogFactory().showMessageDialog(newOWLModel,
+					"Project has been exported to:\n" + filePath);
+		} else {
+			ProtegeUI.getModalDialogFactory().showErrorMessageDialog(newOWLModel,
+					"Export failed.\nPlease see console and logs for more details.");
+		}
+		
+		try {
+			newOWLModel.getProject().dispose();
+		} catch (Exception e) {
+			Log.getLogger().log(Level.WARNING, "Errors at disposing temporary exported OWL model", e);
+		}
+		
+	}   
 
-    public void handleExportRequest(Project project) {
-        if (project.getKnowledgeBase() instanceof JenaOWLModel) {
-            ProtegeUI.getModalDialogFactory().showMessageDialog((OWLModel) project.getKnowledgeBase(),
-                    "This project is already an OWL Files project.");
-        }
-        else {
-            JenaFilePanel panel = new JenaFilePanel();
-            int rval = ProtegeUI.getModalDialogFactory().showDialog(ProtegeUI.getTopLevelContainer(project),
-                    panel, "OWL File to Export", ModalDialogFactory.MODE_OK_CANCEL);
-            if (rval == ModalDialogFactory.OPTION_OK) {
-                String filePath = panel.getOWLFilePath();
-                WaitCursor cursor = new WaitCursor(ProjectManager.getProjectManager().getMainPanel());
-                try {
-                    exportProject(project.getKnowledgeBase(), filePath, panel.getUseNativeWriter());
-                }
-                catch (Exception ex) {
-                    Log.getLogger().log(Level.SEVERE, "Exception caught", ex);
-                    ProtegeUI.getModalDialogFactory().showErrorMessageDialog(panel,
-                            "Export failed. Please see console for details.\n" + ex);
-                }
-                finally {
-                    cursor.hide();
-                }
-            }
-        }
-    }
+	public String getName() {
+		return "OWL";
+	}
+	
+	public void dispose() {}
 
-    private void exportProject(KnowledgeBase kb, String filePath) {
-    	exportProject(kb, filePath, false);
-    }
-
-    private void exportProject(KnowledgeBase kb, String filePath, boolean useNativeWriter) {
-        Collection errors = new ArrayList();
-        
-        JenaKnowledgeBaseFactory factory = new JenaKnowledgeBaseFactory();
-        Project newProject = Project.createNewProject(factory, errors);
-        
-        URI fileURI = new File(filePath).toURI();
-        newProject.setProjectURI(fileURI);
-        
-        JenaOWLModel owlModel = (JenaOWLModel) newProject.getKnowledgeBase();
-        if (kb instanceof OWLDatabaseModel) {
-            OntModel newModel = ((OWLDatabaseModel) kb).getOntModel();
-            owlModel.save(fileURI, FileUtils.langXML, errors, newModel);
-        } else {  // Any other Protege format
-            // TODO: owlModel.initWithProtegeMetadataOntology(errors);
-            new ProtegeSaver(kb, owlModel, useNativeWriter).run();
-            owlModel.save(fileURI, FileUtils.langXMLAbbrev, errors);
-        }
-        
-        if (errors.size() == 0) {
-            ProtegeUI.getModalDialogFactory().showMessageDialog(owlModel,
-                    "Project has been exported to " + filePath);
-        } else {
-            ProtegeUI.getModalDialogFactory().showErrorMessageDialog(owlModel,
-                    "Export Failed: " + errors.iterator().next());
-        }
-    }
 }
