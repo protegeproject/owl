@@ -560,21 +560,6 @@ public class AssertedInstancesListPanel extends SelectableContainer implements D
         label.setIcon(icon);
     }
 
-    private Collection getInstances(Cls cls) {
-        Collection instances;
-        if (showSubclassInstances) {
-            instances = cls.getInstances();
-        }
-        else {
-            instances = cls.getDirectInstances();
-        }
-        if (!owlModel.getProject().getDisplayHiddenFrames()) {
-            instances = removeHiddenInstances(instances);
-        }
-        return instances;
-    }
-
-
     private static Collection removeHiddenInstances(Collection instances) {
         Collection visibleInstances = new ArrayList(instances);
         Iterator i = visibleInstances.iterator();
