@@ -1,9 +1,11 @@
 package edu.stanford.smi.protegex.owl.ui.components.triples;
 
-import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
-
-import javax.swing.*;
 import java.awt.event.ActionEvent;
+
+import javax.swing.AbstractAction;
+import javax.swing.Icon;
+
+import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
 
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
@@ -30,6 +32,8 @@ public class DeleteTripleAction extends AbstractAction {
     	
         table.removeEditor();
         int row = table.getSelectedRow();
-        table.getTableModel().deleteRow(row);
+        if (row >= 0) {
+        	table.getTableModel().deleteRow(row);
+        }
     }
 }
