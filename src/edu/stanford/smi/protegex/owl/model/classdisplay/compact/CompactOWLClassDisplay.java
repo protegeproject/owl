@@ -19,7 +19,7 @@ public class CompactOWLClassDisplay extends AbstractOWLClassDisplay {
     // Overloaded to improve performance
     protected String getDisplayTextOfOWLRestriction(OWLRestriction restriction) {
         RDFProperty onProperty = restriction.getOnProperty();
-        return (onProperty != null ? ParserUtils.quoteIfNeeded(onProperty.getBrowserText()) : "?") +
+        return (onProperty != null ? onProperty.getBrowserText() : "?") +
                 " " + restriction.getOperator() +
                 " " + getOWLRestrictionFillerText(restriction);
     }
