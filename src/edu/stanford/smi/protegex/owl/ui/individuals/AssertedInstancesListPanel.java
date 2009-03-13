@@ -7,7 +7,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedHashSet;
 import java.util.List;
 
 import javax.swing.AbstractAction;
@@ -48,6 +47,7 @@ import edu.stanford.smi.protege.resource.ResourceKey;
 import edu.stanford.smi.protege.server.framestore.RemoteClientFrameStore;
 import edu.stanford.smi.protege.ui.BrowserTextListFinder;
 import edu.stanford.smi.protege.ui.ConfigureAction;
+import edu.stanford.smi.protege.ui.FrameComparator;
 import edu.stanford.smi.protege.ui.FrameRenderer;
 import edu.stanford.smi.protege.ui.HeaderComponent;
 import edu.stanford.smi.protege.util.AllowableAction;
@@ -385,8 +385,9 @@ public class AssertedInstancesListPanel extends SelectableContainer implements D
         if (cls != null) {
             BrowserSlotPattern pattern = cls.getBrowserSlotPattern();
             Slot browserSlot = pattern != null && pattern.isSimple() ? pattern.getFirstSlot() : null;
-            LinkedHashSet<Slot> slots = new LinkedHashSet<Slot>(cls.getVisibleTemplateSlots());
+            ArrayList<Slot> slots = new ArrayList<Slot>(cls.getVisibleTemplateSlots());
             slots.add(cls.getKnowledgeBase().getNameSlot());
+            Collections.sort(slots, new FrameComparator());
             Iterator i = slots.iterator();
             while (i.hasNext()) {
                 Slot slot = (Slot) i.next();
