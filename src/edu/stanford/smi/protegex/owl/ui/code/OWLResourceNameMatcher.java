@@ -183,13 +183,15 @@ public class OWLResourceNameMatcher implements ResourceNameMatcher {
     private static void removeFilteredElements(Set<RDFResource> frames,
     		                                   List<Class<? extends RDFResource>> classes) {
     	Set<RDFResource> toRemove = new HashSet<RDFResource>();
-        for (RDFResource resource  : frames) {
+        for (RDFResource resource  : frames) {        	
         	boolean remove = true;
-        	for (Class<? extends RDFResource> clazz : classes) {
-        		if (clazz.isAssignableFrom(resource.getClass()) && isVisible(resource)) {
-        			remove = false;
-        			break;
-        		}
+        	if (!resource.isAnonymous()) {
+        		for (Class<? extends RDFResource> clazz : classes) {
+        			if (clazz.isAssignableFrom(resource.getClass()) && isVisible(resource)) {
+        				remove = false;
+        				break;
+        			}
+        		}        	
         	}
         	if (remove) {
         		toRemove.add(resource);
