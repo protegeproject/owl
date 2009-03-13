@@ -33,8 +33,7 @@ public class OWLResourceNameMatcher implements ResourceNameMatcher {
 
 
     public String getInsertString(RDFResource resource) {
-        String insert = resource.getBrowserText();
-        return ParserUtils.quoteIfNeeded(insert);
+        return  resource.getBrowserText();
     }
 
 
