@@ -38,7 +38,7 @@ public abstract class AbstractOWLClassDisplay implements OWLClassDisplay {
 
     public String getDisplayText(RDFSClass cls) {
         if (cls instanceof RDFSNamedClass) {
-            return ParserUtils.quoteIfNeeded(cls.getBrowserText());
+            return cls.getBrowserText();
         }
         else if (cls instanceof OWLRestriction) {
             return getCommentText(cls) + getDisplayTextOfOWLRestriction((OWLRestriction) cls);
@@ -123,7 +123,7 @@ public abstract class AbstractOWLClassDisplay implements OWLClassDisplay {
         String str = "{";
         for (Iterator it = values.iterator(); it.hasNext();) {
             RDFResource resource = (RDFResource) it.next();
-            str += ParserUtils.quoteIfNeeded(resource.getBrowserText());
+            str += resource.getBrowserText();
             if (it.hasNext()) {
                 str += " ";
             }
@@ -134,7 +134,7 @@ public abstract class AbstractOWLClassDisplay implements OWLClassDisplay {
 
     protected String getDisplayTextOfOWLRestriction(OWLRestriction restriction) {
         RDFProperty onProperty = restriction.getOnProperty();
-        return (onProperty != null ? ParserUtils.quoteIfNeeded(onProperty.getBrowserText()) : "?")
+        return (onProperty != null ? onProperty.getBrowserText() : "?")
                 + " " + getSymbol(restriction) + " " + getOWLRestrictionFillerText(restriction);
     }
 
