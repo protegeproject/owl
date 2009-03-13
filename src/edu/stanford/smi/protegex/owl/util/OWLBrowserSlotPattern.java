@@ -17,6 +17,7 @@ import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
 import edu.stanford.smi.protegex.owl.model.RDFSLiteral;
+import edu.stanford.smi.protegex.owl.model.classparser.ParserUtils;
 
 /**
  * The OWL browser slot pattern used to display the name of OWL elements. It treats the RDFSLiterals
@@ -156,6 +157,7 @@ public class OWLBrowserSlotPattern extends BrowserSlotPattern{
         	text = getLangBrowserText(o, lang);
         } else {
             text = o.toString();
+        	text = ParserUtils.quoteIfNeeded(text);
         }
         return text;
     }
@@ -179,12 +181,14 @@ public class OWLBrowserSlotPattern extends BrowserSlotPattern{
     	if (defaultLanguage == null) {
 			if (rdfsValue.getLanguage() == null) {
 				String text = rdfsValue.getString();
+				text = ParserUtils.quoteIfNeeded(text);
 				return text;
 			}
 		} else { //default language is not null
 			String lang = rdfsValue.getLanguage();
 			if (lang != null && lang.equals(defaultLanguage)) {
 				String text = ((RDFSLiteral)value).getString();
+				text = ParserUtils.quoteIfNeeded(text);
 				return text;
 			}
 		}
