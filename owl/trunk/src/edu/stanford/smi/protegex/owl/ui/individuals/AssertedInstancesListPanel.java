@@ -33,6 +33,7 @@ import edu.stanford.smi.protege.event.FrameEvent;
 import edu.stanford.smi.protege.event.FrameListener;
 import edu.stanford.smi.protege.model.BrowserSlotPattern;
 import edu.stanford.smi.protege.model.Cls;
+import edu.stanford.smi.protege.model.Frame;
 import edu.stanford.smi.protege.model.FrameID;
 import edu.stanford.smi.protege.model.Instance;
 import edu.stanford.smi.protege.model.Model;
@@ -121,6 +122,8 @@ public class AssertedInstancesListPanel extends SelectableContainer implements D
         	removeInstanceListener(event.getInstance());
         	ComponentUtilities.removeListValue(list, new FrameWithBrowserText(event.getInstance()));            
         }
+        
+        
     };
 
     private FrameListener _clsFrameListener = new FrameAdapter() {
@@ -128,14 +131,16 @@ public class AssertedInstancesListPanel extends SelectableContainer implements D
 		public void ownSlotValueChanged(FrameEvent event) {
             super.ownSlotValueChanged(event);
             updateButtons();
-        }
+        }       
     };
 
     private FrameListener _instanceFrameListener = new FrameAdapter() {
         @Override
 		public void browserTextChanged(FrameEvent event) {
-            super.browserTextChanged(event);
-            sort();
+        	Frame frame = event.getFrame();
+        	ComponentUtilities.replaceListValue(list, 
+        			new FrameWithBrowserText(frame), 
+        			new FrameWithBrowserText(frame, frame.getBrowserText(), ((Instance)frame).getDirectTypes()));
             repaint();
         }
 
@@ -571,23 +576,6 @@ public class AssertedInstancesListPanel extends SelectableContainer implements D
         }
         return visibleInstances;
     }
-
-
-    public void sort() {
-    	/*
-        list.setListenerNotificationEnabled(false);
-        Object selectedValue = list.getSelectedValue();
-        List instances = new ArrayList(getModel().getValues());
-        if (instances.size() <= SORT_LIMIT) {
-            Collections.sort(instances, new FrameComparator());
-        }
-        getModel().setValues(instances);
-        list.setSelectedValue(selectedValue);
-        list.setListenerNotificationEnabled(true);
-        */
-    	//TODO: fix me
-    }
-
 
     public void setSelectedInstance(Instance instance) {
         list.setSelectedValue(new FrameWithBrowserText(instance), true);
