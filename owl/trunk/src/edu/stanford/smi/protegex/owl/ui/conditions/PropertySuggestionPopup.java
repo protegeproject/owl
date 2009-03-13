@@ -119,7 +119,7 @@ public class PropertySuggestionPopup {
 			JTextComponent textComponent = table.getSymbolEditorComponent().getTextComponent();
 			try {
 				textComponent.getDocument().insertString(textComponent.getCaretPosition(), 
-				                                         ParserUtils.quoteIfNeeded(selProperty.getBrowserText()), null);
+				                                         selProperty.getBrowserText(), null);
 			}
 			catch(BadLocationException e) {
                           Log.getLogger().log(Level.SEVERE, "Exception caught", e);
