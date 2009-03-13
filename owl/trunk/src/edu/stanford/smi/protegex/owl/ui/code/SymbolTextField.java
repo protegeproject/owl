@@ -8,7 +8,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 
@@ -223,7 +222,8 @@ public abstract class SymbolTextField extends JTextField
     private int getXOfPosition(int pos) {
         Font font = getFont();
         FontMetrics metrics = getFontMetrics(font);
-        return metrics.stringWidth(getText().substring(0, pos));
+        String text = getText();       
+        return (text.length() > pos) ? metrics.stringWidth(text.substring(0, pos)) : metrics.stringWidth(text);        
     }
 
 
@@ -418,7 +418,7 @@ public abstract class SymbolTextField extends JTextField
 
     private void showComboBox(Set<RDFResource> frames, int startIndex) {
         closeComboBox();
-        Frame[] fs = (Frame[]) frames.toArray(new Frame[0]);
+        Frame[] fs = frames.toArray(new Frame[0]);
         Arrays.sort(fs, new ResourceIgnoreCaseComparator());
         comboBox = new JComboBox(fs);
         comboBox.setBackground(Color.white);
