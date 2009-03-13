@@ -23,6 +23,7 @@ import edu.stanford.smi.protegex.owl.model.classparser.OWLClassParseException;
 import edu.stanford.smi.protegex.owl.model.classparser.ParserUtils;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultRDFSLiteral;
 import edu.stanford.smi.protegex.owl.model.impl.OWLUtil;
+import edu.stanford.smi.protegex.owl.swrl.model.SWRLFactory;
 
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
@@ -185,7 +186,7 @@ public class OWLResourceNameMatcher implements ResourceNameMatcher {
     	Set<RDFResource> toRemove = new HashSet<RDFResource>();
         for (RDFResource resource  : frames) {        	
         	boolean remove = true;
-        	if (!resource.isAnonymous()) {
+        	if (!isFilteredOutResource(resource)) {
         		for (Class<? extends RDFResource> clazz : classes) {
         			if (clazz.isAssignableFrom(resource.getClass()) && isVisible(resource)) {
         				remove = false;
@@ -199,6 +200,11 @@ public class OWLResourceNameMatcher implements ResourceNameMatcher {
         }
         frames.removeAll(toRemove);
     }
+    
+    protected boolean isFilteredOutResource(RDFResource resource) {
+    	return resource.isAnonymous() || SWRLFactory.isSWRLResource(resource);
+    }
+    
     
     protected static boolean isVisible(Frame frame) {
         if (frame instanceof RDFSNamedClass) {
