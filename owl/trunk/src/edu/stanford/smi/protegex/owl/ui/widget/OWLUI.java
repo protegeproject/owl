@@ -65,6 +65,7 @@ import edu.stanford.smi.protege.widget.SlotWidget;
 import edu.stanford.smi.protege.widget.SlotsTab;
 import edu.stanford.smi.protege.widget.TabWidget;
 import edu.stanford.smi.protegex.owl.database.OWLDatabaseModel;
+import edu.stanford.smi.protegex.owl.model.OWLIndividual;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
@@ -1003,6 +1004,46 @@ public class OWLUI {
         return owlBrowswePattern;       
     }
 
+    
+    /**
+     * Get one named direct type for an owl individual.
+     * If the individual has several types, select the ones that are named
+     * and from them try to get one that has a configured browser pattern.
+     * If none is found, then return one of the named types.
+     * If none named types found, return null
+     */
+    @SuppressWarnings("deprecation")
+	public static Cls getOneNamedDirectTypeWithBrowserPattern(OWLIndividual instance) {
+    	Cls directType = null;
+    	Collection<Cls> types = instance.getDirectTypes();
+		Project prj = instance.getProject();
+		BrowserSlotPattern defaultBP = instance.getOWLModel().getOWLThingClass().getBrowserSlotPattern();
+		Cls namedCls = null;
+		Cls namedClsWithInheritedBP = null;
+		//try direct types
+		for (Cls t : types) {
+			if (t instanceof RDFSNamedClass) {
+				namedCls = t;
+				if (prj.getDirectBrowserSlotPattern(t) != null) {
+					directType = t;
+					break;
+				} else {
+					BrowserSlotPattern bp = prj.getInheritedBrowserSlotPattern(t);				
+					if (bp != null && !bp.equals(defaultBP)) {
+						namedClsWithInheritedBP = t;
+					}
+				}
+			}
+		}
+		if (directType == null) {
+			directType = namedClsWithInheritedBP;
+		}
+		if (directType == null) {
+			directType = namedCls;
+		}
+		return directType;
+    }
+    
     
     public static boolean getSortClassTreeOption() {
     	return ApplicationProperties.getSortClassTreeOption();
