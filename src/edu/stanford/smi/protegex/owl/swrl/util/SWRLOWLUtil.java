@@ -97,6 +97,13 @@ public class SWRLOWLUtil
     return cls;
   } // createOWLNamedClass
 
+  public static boolean isOWLNamedClass(OWLModel owlModel, String className)
+  {
+    OWLNamedClass cls = owlModel.getOWLNamedClass(className);
+
+    return cls != null;
+  } // isOWLNamedClass
+
   public static OWLIndividual createIndividual(OWLModel owlModel, String individualName) throws SWRLOWLUtilException
   {
     return createIndividualOfClass(owlModel, getOWLThingClass(owlModel), individualName);
