@@ -19,11 +19,11 @@ import edu.stanford.smi.protegex.owl.model.OWLIndividual;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
 import edu.stanford.smi.protegex.owl.model.OWLObjectProperty;
-import edu.stanford.smi.protegex.owl.model.RDFIndividual;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
 import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultRDFSLiteral;
+import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
 
 
 public class ParserUtils {
@@ -197,7 +197,13 @@ public class ParserUtils {
   }
   
   private static boolean displaysWithProperty(OWLModel model, Instance i, RDFProperty property) {
-    Cls type = i.getDirectType();
+	Cls type;
+	if (i instanceof OWLIndividual) {
+		type = OWLUI.getOneNamedDirectTypeWithBrowserPattern((OWLIndividual) i);
+		if (type == null) { return false; }
+	} else {
+		type = i.getDirectType();
+	}
     BrowserSlotPattern bsp = type.getBrowserSlotPattern();
     List<Slot> slots = bsp.getSlots();
     return slots.size() == 1 && slots.contains(property);
