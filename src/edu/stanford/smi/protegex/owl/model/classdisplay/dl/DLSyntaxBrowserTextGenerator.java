@@ -189,7 +189,7 @@ public class DLSyntaxBrowserTextGenerator implements OWLModelVisitor {
     }
 
     public void visitOWLDatatypeProperty(OWLDatatypeProperty owlDatatypeProperty) {
-        write(ParserUtils.quoteIfNeeded(owlDatatypeProperty.getBrowserText()));
+        write(owlDatatypeProperty.getBrowserText());
     }
 
     public void visitOWLEnumeratedClass(OWLEnumeratedClass owlEnumeratedClass) {
@@ -232,7 +232,7 @@ public class DLSyntaxBrowserTextGenerator implements OWLModelVisitor {
     }
 
     public void visitOWLIndividual(OWLIndividual owlIndividual) {
-        write(ParserUtils.quoteIfNeeded(owlIndividual.getBrowserText()));
+        write(owlIndividual.getBrowserText());
     }
 
     public void visitOWLIntersectionClass(OWLIntersectionClass owlIntersectionClass) {
@@ -255,12 +255,12 @@ public class DLSyntaxBrowserTextGenerator implements OWLModelVisitor {
 
     public void visitOWLNamedClass(OWLNamedClass owlNamedClass) {
         push(owlNamedClass);
-        write(ParserUtils.quoteIfNeeded(owlNamedClass.getBrowserText()));
+        write(owlNamedClass.getBrowserText());
         pop();
     }
 
     public void visitOWLObjectProperty(OWLObjectProperty owlObjectProperty) {
-        write(ParserUtils.quoteIfNeeded(owlObjectProperty.getBrowserText()));
+        write(owlObjectProperty.getBrowserText());
     }
 
     public void visitOWLOntology(OWLOntology owlOntology) {
@@ -284,7 +284,7 @@ public class DLSyntaxBrowserTextGenerator implements OWLModelVisitor {
     }
 
     public void visitRDFIndividual(RDFIndividual rdfIndividual) {
-        write(ParserUtils.quoteIfNeeded(rdfIndividual.getBrowserText()));
+        write(rdfIndividual.getBrowserText());
     }
 
     public void visitRDFList(RDFList rdfList) {
@@ -292,7 +292,7 @@ public class DLSyntaxBrowserTextGenerator implements OWLModelVisitor {
     }
 
     public void visitRDFProperty(RDFProperty rdfProperty) {
-        write(ParserUtils.quoteIfNeeded(rdfProperty.getBrowserText()));
+        write(rdfProperty.getBrowserText());
     }
 
     public void visitRDFSLiteral(RDFSLiteral rdfsLiteral) {
