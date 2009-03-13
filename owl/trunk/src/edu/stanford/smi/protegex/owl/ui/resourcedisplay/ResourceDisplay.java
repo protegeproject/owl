@@ -379,7 +379,10 @@ public class ResourceDisplay extends InstanceDisplay implements ResourcePanel {
     }
 
 
-    protected boolean isSuppressedType(Cls type, Instance instance) {
+    protected boolean isSuppressedType(Cls type, Instance instance) {    	
+    	if (type instanceof RDFResource) {
+    		if (((RDFResource)type).isAnonymous()) { return true; }
+    	}
         return suppressedTypes.contains(type) && hasUnsuppressedTypes(instance);
     }
 
