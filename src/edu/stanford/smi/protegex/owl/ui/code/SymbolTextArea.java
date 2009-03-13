@@ -211,7 +211,8 @@ public abstract class SymbolTextArea extends JTextArea
   private int getXOfPosition(int pos) {
     Font font = getFont();
     FontMetrics metrics = getFontMetrics(font);
-    return metrics.stringWidth(getText().substring(0, pos));
+    String text = getText();       
+    return (text.length() > pos) ? metrics.stringWidth(text.substring(0, pos)) : metrics.stringWidth(text);    
   }
   
   
