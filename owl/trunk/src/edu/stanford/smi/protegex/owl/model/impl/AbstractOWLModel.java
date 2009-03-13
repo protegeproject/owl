@@ -1206,25 +1206,23 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
     @Override
 	public synchronized String getBrowserText(Instance instance) {
-
     	if (!(instance instanceof RDFResource)) {
 			return super.getBrowserText(instance);
 		}
-
     	if (instance.isDeleted()) {
 			return "<deleted>";
 		}
-
     	if (instance instanceof OWLAnonymousClass) {
 			return instance.getBrowserText();
 		}
-
     	if (getProject() == null) {
 			return getName(instance);
 		}
 
-       	Cls directType = instance.getDirectType();
-
+    	//special case for OWLIndividuals
+    	Cls directType = (instance instanceof OWLIndividual) ? 
+    			OWLUI.getOneNamedDirectTypeWithBrowserPattern((OWLIndividual) instance) : instance.getDirectType();
+    	    	
        	if (directType == null) {
         	return getMissingTypeString(instance);
        	}
@@ -1256,6 +1254,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
          return value;
 	}
+     
 
     @Override
 	protected String getDisplaySlotPatternValueNotSetString(Instance instance, BrowserSlotPattern slotPattern) {
