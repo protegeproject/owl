@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 import javax.swing.AbstractAction;
@@ -378,13 +379,15 @@ public class AssertedInstancesListPanel extends SelectableContainer implements D
 
 
     protected JMenu createSetDisplaySlotAction() {
-        JMenu menu = ComponentFactory.createMenu("Set Display Slot");
+        JMenu menu = ComponentFactory.createMenu("Set Display Property");
         boolean enabled = false;
         Cls cls = getSoleAllowedCls();
         if (cls != null) {
             BrowserSlotPattern pattern = cls.getBrowserSlotPattern();
             Slot browserSlot = pattern != null && pattern.isSimple() ? pattern.getFirstSlot() : null;
-            Iterator i = cls.getVisibleTemplateSlots().iterator();
+            LinkedHashSet<Slot> slots = new LinkedHashSet<Slot>(cls.getVisibleTemplateSlots());
+            slots.add(cls.getKnowledgeBase().getNameSlot());
+            Iterator i = slots.iterator();
             while (i.hasNext()) {
                 Slot slot = (Slot) i.next();
                 JRadioButtonMenuItem item = new JRadioButtonMenuItem(createSetDisplaySlotAction(slot));
