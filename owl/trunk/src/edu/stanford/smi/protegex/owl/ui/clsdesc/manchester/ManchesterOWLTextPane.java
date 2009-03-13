@@ -303,7 +303,8 @@ public class ManchesterOWLTextPane extends JTextPane implements KeyListener {
     private int getXOfPosition(int pos) {
         Font font = getFont();
         FontMetrics metrics = getFontMetrics(font);
-        return metrics.stringWidth(getText().substring(0, pos));
+        String text = getText();       
+        return (text.length() > pos) ? metrics.stringWidth(text.substring(0, pos)) : metrics.stringWidth(text);
     }
 
 
@@ -506,7 +507,7 @@ public class ManchesterOWLTextPane extends JTextPane implements KeyListener {
 //    }
     private void showComboBox(Set<RDFResource> frames, int startIndex) {
         closeComboBox();
-        edu.stanford.smi.protege.model.Frame[] fs = (edu.stanford.smi.protege.model.Frame[]) frames.toArray(new edu.stanford.smi.protege.model.Frame[0]);
+        edu.stanford.smi.protege.model.Frame[] fs = frames.toArray(new edu.stanford.smi.protege.model.Frame[0]);
         Arrays.sort(fs, new ResourceIgnoreCaseComparator());
         comboBox = new JComboBox(fs);
         comboBox.setBackground(Color.white);
@@ -558,7 +559,8 @@ public class ManchesterOWLTextPane extends JTextPane implements KeyListener {
     };
 
     private FocusListener focusListener = new FocusAdapter() {
-        public void focusLost(FocusEvent e) {
+        @Override
+		public void focusLost(FocusEvent e) {
             cleanupPrevious();
         }
     };
