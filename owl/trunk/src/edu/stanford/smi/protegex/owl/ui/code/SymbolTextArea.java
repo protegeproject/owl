@@ -10,7 +10,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.Arrays;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 
@@ -30,9 +29,8 @@ import edu.stanford.smi.protegex.owl.model.OWLNAryLogicalClass;
 import edu.stanford.smi.protegex.owl.model.OWLUnionClass;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
 import edu.stanford.smi.protegex.owl.model.RDFSClass;
+import edu.stanford.smi.protegex.owl.model.classdisplay.OWLClassDisplay;
 import edu.stanford.smi.protegex.owl.model.classparser.ParserUtils;
-import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLIntersectionClass;
-import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLUnionClass;
 import edu.stanford.smi.protegex.owl.ui.resourceselection.ResourceIgnoreCaseComparator;
 
 /**
@@ -179,9 +177,10 @@ public abstract class SymbolTextArea extends JTextArea
   public String getIndentedClsString(OWLNAryLogicalClass cls, String indentation) {
     boolean first = indentation.length() == 0;
     String str = first ? "" : "(";
-    char operator = cls instanceof OWLUnionClass ?
-                DefaultOWLUnionClass.OPERATOR :
-                DefaultOWLIntersectionClass.OPERATOR;
+    OWLClassDisplay classDisplay = owlModel.getOWLClassDisplay();    
+    String operator = cls instanceof OWLUnionClass ?
+                classDisplay.getOWLUnionOfSymbol() :
+                classDisplay.getOWLIntersectionOfSymbol();
     for (Iterator it = cls.getOperands().iterator(); it.hasNext();) {
       RDFSClass operand = (RDFSClass) it.next();
       str += indentation;
@@ -381,7 +380,7 @@ public abstract class SymbolTextArea extends JTextArea
   
   private void showComboBox(Set<RDFResource> frames, int startIndex) {
     closeComboBox();
-    Frame[] fs = (Frame[]) frames.toArray(new Frame[0]);
+    Frame[] fs = frames.toArray(new Frame[0]);
     Arrays.sort(fs, new ResourceIgnoreCaseComparator());
     comboBox = new JComboBox(fs);
     comboBox.setBackground(Color.white);
