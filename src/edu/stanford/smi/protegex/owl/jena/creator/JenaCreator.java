@@ -202,7 +202,7 @@ public class JenaCreator {
 
 
     private void addImports(OWLOntology oi, Ontology ontology) {      
-        ontModel.getDocumentManager().addIgnoreImport(oi.getName());        
+        ontModel.getDocumentManager().addIgnoreImport(owlModel.getDefaultOWLOntology().getName());      
         for (Iterator it = oi.getImports().iterator(); it.hasNext();) {
             String uri = (String) it.next();
             ontology.addImport(ontModel.getResource(uri));
