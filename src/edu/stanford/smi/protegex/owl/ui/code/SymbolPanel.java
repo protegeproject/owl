@@ -230,7 +230,7 @@ public abstract class SymbolPanel extends JPanel implements SymbolErrorDisplay {
 
 
     protected void insertCls(Cls cls) {
-        String name = ParserUtils.quoteIfNeeded(cls.getBrowserText());
+        String name = cls.getBrowserText();
         symbolEditor.insertText(name + " ");
     }
 
@@ -241,14 +241,14 @@ public abstract class SymbolPanel extends JPanel implements SymbolErrorDisplay {
             name = instance.getLocalName();
         }
         else {
-            name = ParserUtils.quoteIfNeeded(instance.getBrowserText());
+            name = instance.getBrowserText();
         }
         symbolEditor.insertText(name + " ");
     }
 
 
     protected void insertSlot(Slot slot) {
-        String name = ParserUtils.quoteIfNeeded(slot.getBrowserText());
+        String name = slot.getBrowserText();
         symbolEditor.insertText(name + " ");
     }
 
