@@ -180,7 +180,7 @@ public class OWLResourceNameMatcher implements ResourceNameMatcher {
     }
     
     
-    private static void removeFilteredElements(Set<RDFResource> frames,
+    protected void removeFilteredElements(Set<RDFResource> frames,
     		                                   List<Class<? extends RDFResource>> classes) {
     	Set<RDFResource> toRemove = new HashSet<RDFResource>();
         for (RDFResource resource  : frames) {        	
@@ -200,7 +200,7 @@ public class OWLResourceNameMatcher implements ResourceNameMatcher {
         frames.removeAll(toRemove);
     }
     
-    private static boolean isVisible(Frame frame) {
+    protected static boolean isVisible(Frame frame) {
         if (frame instanceof RDFSNamedClass) {
             return frame.isVisible() && 
                 (isSlowProject(frame.getKnowledgeBase()) ||
