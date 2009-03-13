@@ -2,13 +2,11 @@ package edu.stanford.smi.protegex.owl.swrl.ui.code;
 
 import javax.swing.UIManager;
 
-import edu.stanford.smi.protege.model.Frame;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.swrl.parser.SWRLIncompleteRuleException;
 import edu.stanford.smi.protegex.owl.swrl.parser.SWRLParser;
 import edu.stanford.smi.protegex.owl.ui.code.SymbolErrorDisplay;
 import edu.stanford.smi.protegex.owl.ui.code.SymbolTextArea;
-import edu.stanford.smi.protegex.owl.ui.code.SymbolTextField;
 
 /**
  * A SymbolTextArea with special support for editing SWRL expressions.
@@ -27,7 +25,8 @@ public class SWRLTextArea extends SymbolTextArea
     SWRLTextField.initKeymap(this);
   } // SWRLTextArea
 
-  protected void checkUniCodeExpression(String uniCodeText) throws Throwable 
+  @Override
+protected void checkUniCodeExpression(String uniCodeText) throws Throwable 
   {
     try {
       parser.parse(uniCodeText);
@@ -50,23 +49,6 @@ public class SWRLTextArea extends SymbolTextArea
     text = text.replaceAll("" + SWRLParser.IMP_CHAR, "\n  " + SWRLParser.IMP_CHAR);
     
     return text;
-  } // reformatText
-  
-  protected void acceptSelectedFrame() 
-  {
-    String text = getText();
-    int pos = getCaretPosition();
-    int i = pos - 1;
-    while (i >= 0 && (SymbolTextField.isIdChar(text.charAt(i)) || text.charAt(i) == '?')) {
-      i--;
-    }
-    String prefix = text.substring(i + 1, pos);
-    
-    extendPartialName(prefix, ((Frame) getComboBox().getSelectedItem()).getBrowserText());
-    updateErrorDisplay();
-    closeComboBox();
-  } // acceptSelectedFrame
-  
-  
+  } // reformatText 
 
 } // SWRLTextArea
