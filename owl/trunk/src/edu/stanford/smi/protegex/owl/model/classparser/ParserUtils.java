@@ -1,28 +1,37 @@
 package edu.stanford.smi.protegex.owl.model.classparser;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import edu.stanford.smi.protege.model.BrowserSlotPattern;
 import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.Frame;
 import edu.stanford.smi.protege.model.Instance;
 import edu.stanford.smi.protege.model.KnowledgeBase;
+import edu.stanford.smi.protege.model.Project;
 import edu.stanford.smi.protege.model.Slot;
+import edu.stanford.smi.protege.util.ApplicationProperties;
 import edu.stanford.smi.protegex.owl.model.NamespaceUtil;
-import edu.stanford.smi.protegex.owl.model.OWLClass;
 import edu.stanford.smi.protegex.owl.model.OWLDatatypeProperty;
 import edu.stanford.smi.protegex.owl.model.OWLIndividual;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
 import edu.stanford.smi.protegex.owl.model.OWLObjectProperty;
+import edu.stanford.smi.protegex.owl.model.RDFIndividual;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
+import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultRDFSLiteral;
 
+
 public class ParserUtils {
+    public final static String RESTRICTIONS_CAN_USE_BROWSER_TEXT="protege.owl.edit.restrictions.with.browser.text";
     public final static String SINGLE_QUOTE_STRING = "'";
     public final static String[] SUBSTRINGS_REQUIRING_QUOTES = {" ", ";", " "};
+    
+    private static boolean editUsingBrowserText = ApplicationProperties.getBooleanProperty(RESTRICTIONS_CAN_USE_BROWSER_TEXT, true);
     
     
   public static RDFResource getFrameByName(OWLModel model, String name) 
@@ -77,64 +86,121 @@ public class ParserUtils {
   private static <X extends RDFResource> X getFrameByName(OWLModel model, 
                                                           String name, 
                                                           Class<? extends X> targetClass) 
-  throws AmbiguousNameException {
-    RDFResource resource = (RDFResource) ((KnowledgeBase) model).getFrame(name);
-    if (resource != null && resourceCorrectlyTyped(resource, targetClass)) {
-      return targetClass.cast(resource);
+  throws AmbiguousNameException { // there is a priority order here as we get more and more desperate
+    X resource;
+    if ((resource = getFrameByURI(model, name, targetClass)) != null) {
+        return resource;
     }
-    else {
-      resource = null;
+    if ((resource = getFrameByRDFSLabel(model, name, targetClass)) != null) {
+        return resource;
     }
-    String fullName = NamespaceUtil.getFullName(model, name);
-    if (fullName != null && !name.equals(fullName)) {
-        resource = (RDFResource) ((KnowledgeBase) model).getFrame(fullName);
-        if (resource != null && resourceCorrectlyTyped(resource, targetClass)) {
-          return targetClass.cast(resource);
-        }
-        else {
-          resource = null;
-        }
+    if ((resource = getFrameByBrowserText(model, name, targetClass)) != null) {
+        return resource;
     }
-    
-    String lang = model.getDefaultLanguage();
-    Collection frames = ((KnowledgeBase) model).getFramesWithValue(model.getRDFSLabelProperty(), 
-                                                                   null, 
-                                                                   false, 
-                                                                   DefaultRDFSLiteral.getRawValue(name, lang));
-    for (Object o : frames) {
-      if (resourceCorrectlyTyped((Frame) o, targetClass) && displaysWithRDFSLabel(model, (Instance) o)) {
-        if (resource != null) {
-          throw new AmbiguousNameException("Multiple resources share the same name "  + name);
-        }
-        resource = (RDFResource) o;
-      }
-    }
-    if (resource != null) {
-      return targetClass.cast(resource);
-    }
-    // if the above failed try again with the null language
-    if (lang != null) {
-      frames = ((KnowledgeBase) model).getFramesWithValue(model.getRDFSLabelProperty(), 
-                                                          null, 
-                                                          false, 
-                                                          DefaultRDFSLiteral.getRawValue(name, (String) null));
-      for (Object o : frames) {
-        if (resourceCorrectlyTyped((Frame) o, targetClass) && displaysWithRDFSLabel(model, (Instance) o)) {
-          if (resource != null) {
-            throw new AmbiguousNameException("After falling back to the null language multiple resources share the same name " + name);
-          }
-          resource = (RDFResource) o;
-        }
-      }
-    }
-    return targetClass.cast(resource);
+    return null;
   }
   
-  private static boolean displaysWithRDFSLabel(OWLModel model, Instance i) {
+  private static <X extends RDFResource> X getFrameByURI(OWLModel model, 
+                                                         String name, 
+                                                         Class<? extends X> targetClass) {
+      RDFResource resource = (RDFResource) ((KnowledgeBase) model).getFrame(name);
+      if (resource != null && resourceCorrectlyTyped(resource, targetClass)) {
+        return targetClass.cast(resource);
+      }
+      else {
+        resource = null;
+      }
+      String fullName = NamespaceUtil.getFullName(model, name);
+      if (fullName != null && !name.equals(fullName)) {
+          resource = (RDFResource) ((KnowledgeBase) model).getFrame(fullName);
+          if (resource != null && resourceCorrectlyTyped(resource, targetClass)) {
+            return targetClass.cast(resource);
+          }
+      }
+      return null;
+  }
+  
+  private static <X extends RDFResource> X getFrameByRDFSLabel(OWLModel model, 
+                                                               String name, 
+                                                               Class<? extends X> targetClass) {
+      return getFrameUsingDatatypeProperty(model, name, targetClass, model.getRDFSLabelProperty());
+  }
+  
+  private static <X extends RDFResource> X getFrameByBrowserText(OWLModel model, 
+                                                                 String name, 
+                                                                 Class<? extends X> targetClass) 
+  throws AmbiguousNameException {
+      X resource = null;
+      Set<RDFProperty> browserSlots = new HashSet<RDFProperty>();
+      if (editUsingBrowserText) {
+          Project p = model.getProject();
+          for (Cls cls : p.getClsesWithDirectBrowserSlots()) {
+              if (cls instanceof RDFSNamedClass) {
+                  BrowserSlotPattern pattern = cls.getBrowserSlotPattern();
+                  Slot slot;
+                  if (pattern.isSimple() && ((slot = pattern.getFirstSlot()) instanceof RDFProperty)) {
+                      browserSlots.add((RDFProperty) slot);
+                  }
+              }
+          }
+          for (RDFProperty property : browserSlots) {
+              X newResource = getFrameUsingDatatypeProperty(model, name, targetClass, property);
+              if (resource != null && newResource != null) {
+                  throw new AmbiguousNameException("Multiple resources share the same name "  + name);
+              }
+              else {
+                  resource = newResource;
+              }
+          }
+      }
+      return resource;
+  }
+  
+  private static <X extends RDFResource> X getFrameUsingDatatypeProperty(OWLModel model, 
+                                                                 String name, 
+                                                                 Class<? extends X> targetClass,
+                                                                 RDFProperty property) 
+  throws AmbiguousNameException {
+      String lang = model.getDefaultLanguage();
+      RDFResource resource = null;
+      Collection frames = ((KnowledgeBase) model).getFramesWithValue(property, 
+                                                                     null, 
+                                                                     false, 
+                                                                     DefaultRDFSLiteral.getRawValue(name, lang));
+      for (Object o : frames) {
+          if (resourceCorrectlyTyped((Frame) o, targetClass) && displaysWithProperty(model, (Instance) o, property)) {
+              if (resource != null) {
+                  throw new AmbiguousNameException("Multiple resources share the same name "  + name);
+              }
+              resource = (RDFResource) o;
+          }
+      }
+      if (resource != null) {
+          return targetClass.cast(resource);
+      }
+      // if the above failed try again with the null language
+      if (lang != null) {
+          frames = ((KnowledgeBase) model).getFramesWithValue(property, 
+                                                              null, 
+                                                              false, 
+                                                              DefaultRDFSLiteral.getRawValue(name, (String) null));
+          for (Object o : frames) {
+              if (resourceCorrectlyTyped((Frame) o, targetClass) && displaysWithProperty(model, (Instance) o, property)) {
+                  if (resource != null) {
+                      throw new AmbiguousNameException("After falling back to the null language multiple resources share the same name " + name);
+                  }
+                  resource = (RDFResource) o;
+              }
+          }
+      }
+      return targetClass.cast(resource);
+  }
+  
+  private static boolean displaysWithProperty(OWLModel model, Instance i, RDFProperty property) {
     Cls type = i.getDirectType();
     BrowserSlotPattern bsp = type.getBrowserSlotPattern();
     List<Slot> slots = bsp.getSlots();
-    return slots.size() == 1 && slots.contains(model.getRDFSLabelProperty());
+    return slots.size() == 1 && slots.contains(property);
   }
   
   @SuppressWarnings("unchecked")
@@ -146,7 +212,10 @@ public class ParserUtils {
   }
  
   public static String quoteIfNeeded(String id) {
-      if (quoteNeeded(id)) {
+      if (id == null) {
+          return null;
+      }
+      else if (quoteNeeded(id)) {
           return SINGLE_QUOTE_STRING + id + SINGLE_QUOTE_STRING;
       }
       return id;
