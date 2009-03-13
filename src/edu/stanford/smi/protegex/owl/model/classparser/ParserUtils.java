@@ -149,7 +149,9 @@ public class ParserUtils {
                   throw new AmbiguousNameException("Multiple resources share the same name "  + name);
               }
               else {
-                  resource = newResource;
+            	  if (resource == null) {
+            		  resource = newResource;
+            	  }
               }
           }
       }
