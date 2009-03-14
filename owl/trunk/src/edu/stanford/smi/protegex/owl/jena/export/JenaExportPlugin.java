@@ -9,6 +9,7 @@ import java.util.logging.Level;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.util.FileUtils;
 
+import edu.stanford.smi.protege.exception.OntologyLoadException;
 import edu.stanford.smi.protege.model.KnowledgeBase;
 import edu.stanford.smi.protege.model.Project;
 import edu.stanford.smi.protege.plugin.ExportPlugin;
@@ -20,6 +21,7 @@ import edu.stanford.smi.protegex.owl.database.OWLDatabaseModel;
 import edu.stanford.smi.protegex.owl.jena.JenaFilePanel;
 import edu.stanford.smi.protegex.owl.jena.JenaKnowledgeBaseFactory;
 import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
+import edu.stanford.smi.protegex.owl.jena.creator.NewOwlProjectCreator;
 import edu.stanford.smi.protegex.owl.jena.writersettings.JenaWriterSettings;
 import edu.stanford.smi.protegex.owl.jena.writersettings.WriterSettings;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
@@ -41,7 +43,7 @@ public class JenaExportPlugin implements ExportPlugin {
 			panel.getUseNativeWriterCheckBox().setSelected(true);
 			panel.getUseNativeWriterCheckBox().setEnabled(false);
 		}
-		
+
 		int rval = ProtegeUI.getModalDialogFactory().showDialog(ProtegeUI.getTopLevelContainer(project),
 				panel, "OWL File to Export", ModalDialogFactory.MODE_OK_CANCEL);
 		if (rval == ModalDialogFactory.OPTION_OK) {
@@ -64,12 +66,14 @@ public class JenaExportPlugin implements ExportPlugin {
 	private void exportProject(KnowledgeBase kb, String filePath, boolean useNativeWriter) {
 		Collection errors = new ArrayList();        
 		JenaKnowledgeBaseFactory factory = new JenaKnowledgeBaseFactory();
-		Project newProject = Project.createNewProject(factory, errors);
-		JenaOWLModel newOWLModel = (JenaOWLModel) newProject.getKnowledgeBase();
+		JenaOWLModel newOWLModel = null;
 		URI fileURI = new File(filePath).toURI();
-		newProject.setProjectURI(fileURI);
 
 		if (kb instanceof OWLModel) { //OWL -> OWL
+			Project newProject = Project.createNewProject(factory, errors);
+			newOWLModel = (JenaOWLModel) newProject.getKnowledgeBase();			
+			newProject.setProjectURI(fileURI);
+
 			OWLModel oldOWLModel = (OWLModel)kb;
 			WriterSettings writerSettings = oldOWLModel.getWriterSettings();
 			oldOWLModel.setWriterSettings(useNativeWriter ? new ProtegeWriterSettings(newOWLModel) : new JenaWriterSettings(newOWLModel));
@@ -102,9 +106,18 @@ public class JenaExportPlugin implements ExportPlugin {
 				}
 			}
 			oldOWLModel.setWriterSettings(writerSettings);
-		} else {  // Any other Protege format
-			new ProtegeSaver(kb, newOWLModel, useNativeWriter).run();
-			newOWLModel.save(fileURI, FileUtils.langXMLAbbrev, errors);
+		} else {  // Any other Protege format	
+			NewOwlProjectCreator creator = new NewOwlProjectCreator();
+			try {
+				creator.create(errors);				
+			} catch (OntologyLoadException e) {
+				Log.getLogger().log(Level.SEVERE, "Could not create new Jena OWL project", e);
+			}
+			newOWLModel = creator.getOwlModel();
+			if (newOWLModel != null) {
+				new ProtegeSaver(kb, newOWLModel, useNativeWriter).run();
+				newOWLModel.save(fileURI, FileUtils.langXMLAbbrev, errors);
+			}
 		}		
 
 		if (errors.size() == 0) {
@@ -112,21 +125,23 @@ public class JenaExportPlugin implements ExportPlugin {
 					"Project has been exported to:\n" + filePath);
 		} else {
 			ProtegeUI.getModalDialogFactory().showErrorMessageDialog(newOWLModel,
-					"Export failed.\nPlease see console and logs for more details.");
+			"Export failed.\nPlease see console and logs for more details.");
 		}
-		
-		try {
-			newOWLModel.getProject().dispose();
-		} catch (Exception e) {
-			Log.getLogger().log(Level.WARNING, "Errors at disposing temporary exported OWL model", e);
+
+		if (newOWLModel != null) {
+			try {			
+				newOWLModel.getProject().dispose();
+			} catch (Exception e) {
+				Log.getLogger().log(Level.WARNING, "Errors at disposing temporary exported OWL model", e);
+			}
 		}
-		
+
 	}   
 
 	public String getName() {
 		return "OWL";
 	}
-	
+
 	public void dispose() {}
 
 }
