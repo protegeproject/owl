@@ -84,72 +84,86 @@ public class RDFAxiomRenderer extends OWLModelVisitorAdapter {
     }
 
 
-    public void visitOWLAllValuesFrom(OWLAllValuesFrom owlAllValuesFrom) {
+    @Override
+	public void visitOWLAllValuesFrom(OWLAllValuesFrom owlAllValuesFrom) {
         renderClassAxioms(owlAllValuesFrom);
     }
 
 
-    public void visitOWLCardinality(OWLCardinality owlCardinality) {
+    @Override
+	public void visitOWLCardinality(OWLCardinality owlCardinality) {
         renderClassAxioms(owlCardinality);
     }
 
 
-    public void visitOWLComplementClass(OWLComplementClass owlComplementClass) {
+    @Override
+	public void visitOWLComplementClass(OWLComplementClass owlComplementClass) {
         renderClassAxioms(owlComplementClass);
     }
 
 
-    public void visitOWLEnumeratedClass(OWLEnumeratedClass owlEnumeratedClass) {
+    @Override
+	public void visitOWLEnumeratedClass(OWLEnumeratedClass owlEnumeratedClass) {
         renderClassAxioms(owlEnumeratedClass);
     }
 
 
-    public void visitOWLHasValue(OWLHasValue owlHasValue) {
+    @Override
+	public void visitOWLHasValue(OWLHasValue owlHasValue) {
         renderClassAxioms(owlHasValue);
     }
 
 
-    public void visitOWLIntersectionClass(OWLIntersectionClass owlIntersectionClass) {
+    @Override
+	public void visitOWLIntersectionClass(OWLIntersectionClass owlIntersectionClass) {
         renderClassAxioms(owlIntersectionClass);
     }
 
 
-    public void visitOWLMaxCardinality(OWLMaxCardinality owlMaxCardinality) {
+    @Override
+	public void visitOWLMaxCardinality(OWLMaxCardinality owlMaxCardinality) {
         renderClassAxioms(owlMaxCardinality);
     }
 
 
-    public void visitOWLMinCardinality(OWLMinCardinality owlMinCardinality) {
+    @Override
+	public void visitOWLMinCardinality(OWLMinCardinality owlMinCardinality) {
         renderClassAxioms(owlMinCardinality);
     }
 
 
-    public void visitOWLSomeValuesFrom(OWLSomeValuesFrom owlSomeValuesFrom) {
+    @Override
+	public void visitOWLSomeValuesFrom(OWLSomeValuesFrom owlSomeValuesFrom) {
         renderClassAxioms(owlSomeValuesFrom);
     }
 
 
-    public void visitOWLUnionClass(OWLUnionClass owlUnionClass) {
+    @Override
+	public void visitOWLUnionClass(OWLUnionClass owlUnionClass) {
         renderClassAxioms(owlUnionClass);
     }
 
 
-    public void visitOWLDatatypeProperty(OWLDatatypeProperty owlDatatypeProperty) {
+    @Override
+	public void visitOWLDatatypeProperty(OWLDatatypeProperty owlDatatypeProperty) {
         renderPropertyAxioms(owlDatatypeProperty);
     }
 
 
-    public void visitOWLIndividual(OWLIndividual owlIndividual) {
+    @Override
+	public void visitOWLIndividual(OWLIndividual owlIndividual) {
         renderIndividualAxioms(owlIndividual);
     }
 
 
-    public void visitOWLNamedClass(OWLNamedClass owlNamedClass) {
+    @Override
+	public void visitOWLNamedClass(OWLNamedClass owlNamedClass) {
         renderClassAxioms(owlNamedClass);
     }
 
 
-    public void visitOWLObjectProperty(OWLObjectProperty owlObjectProperty) {
+    @Override
+	public void visitOWLObjectProperty(OWLObjectProperty owlObjectProperty) {
         renderPropertyAxioms(owlObjectProperty);
     }
 
@@ -159,7 +173,8 @@ public class RDFAxiomRenderer extends OWLModelVisitorAdapter {
     }
     
     
-    @SuppressWarnings("deprecation")
+    @Override
+	@SuppressWarnings("deprecation")
 	public void visitRDFIndividual(RDFIndividual rdfIndividual) {
     	//filter out the annotations and PAL constraints
     	Cls annotationCls = rdfIndividual.getKnowledgeBase().getCls(Model.Cls.ANNOTATION);
@@ -173,12 +188,14 @@ public class RDFAxiomRenderer extends OWLModelVisitorAdapter {
     }
 
 
-    public void visitRDFProperty(RDFProperty rdfProperty) {
+    @Override
+	public void visitRDFProperty(RDFProperty rdfProperty) {
         renderPropertyAxioms(rdfProperty);
     }
 
 
-    public void visitRDFSNamedClass(RDFSNamedClass rdfsNamedClass) {
+    @Override
+	public void visitRDFSNamedClass(RDFSNamedClass rdfsNamedClass) {
         renderClassAxioms(rdfsNamedClass);
     }
 
@@ -253,7 +270,7 @@ public class RDFAxiomRenderer extends OWLModelVisitorAdapter {
             Util.insertProperties(cls, tripleStore, writer);
             writer.writeEndElement(); // end of getRDFType element
         }
-        catch (IOException e) {
+        catch (Exception e) {
           Log.getLogger().log(Level.SEVERE, "Exception caught", e);
         }
     }
@@ -291,7 +308,7 @@ public class RDFAxiomRenderer extends OWLModelVisitorAdapter {
             Util.insertProperties(property, tripleStore, writer);
             writer.writeEndElement(); // End of property
         }
-        catch (IOException e) {
+        catch (Exception e) {
           Log.getLogger().log(Level.SEVERE, "Exception caught", e);
         }
     }
@@ -311,7 +328,7 @@ public class RDFAxiomRenderer extends OWLModelVisitorAdapter {
             Util.insertProperties(individual, tripleStore, writer);
             writer.writeEndElement(); // end of owl:Class
         }
-        catch (IOException e) {
+        catch (Exception e) {
           Log.getLogger().log(Level.SEVERE, "Exception caught", e);
         }
     }
@@ -341,87 +358,104 @@ public class RDFAxiomRenderer extends OWLModelVisitorAdapter {
         }
 
 
-        public void visitOWLAllValuesFrom(OWLAllValuesFrom owlAllValuesFrom) {
+        @Override
+		public void visitOWLAllValuesFrom(OWLAllValuesFrom owlAllValuesFrom) {
             renderable = true;
         }
 
 
-        public void visitOWLCardinality(OWLCardinality owlCardinality) {
+        @Override
+		public void visitOWLCardinality(OWLCardinality owlCardinality) {
             renderable = true;
         }
 
 
-        public void visitOWLComplementClass(OWLComplementClass owlComplementClass) {
+        @Override
+		public void visitOWLComplementClass(OWLComplementClass owlComplementClass) {
             renderable = true;
         }
 
 
-        public void visitOWLDatatypeProperty(OWLDatatypeProperty owlDatatypeProperty) {
+        @Override
+		public void visitOWLDatatypeProperty(OWLDatatypeProperty owlDatatypeProperty) {
             renderable = true;
         }
 
 
-        public void visitOWLEnumeratedClass(OWLEnumeratedClass owlEnumeratedClass) {
+        @Override
+		public void visitOWLEnumeratedClass(OWLEnumeratedClass owlEnumeratedClass) {
             renderable = true;
         }
 
 
-        public void visitOWLHasValue(OWLHasValue owlHasValue) {
+        @Override
+		public void visitOWLHasValue(OWLHasValue owlHasValue) {
             renderable = true;
         }
 
 
-        public void visitOWLIndividual(OWLIndividual owlIndividual) {
+        @Override
+		public void visitOWLIndividual(OWLIndividual owlIndividual) {
             renderable = true;
         }
 
 
-        public void visitOWLIntersectionClass(OWLIntersectionClass owlIntersectionClass) {
+        @Override
+		public void visitOWLIntersectionClass(OWLIntersectionClass owlIntersectionClass) {
             renderable = true;
         }
 
 
-        public void visitOWLMaxCardinality(OWLMaxCardinality owlMaxCardinality) {
+        @Override
+		public void visitOWLMaxCardinality(OWLMaxCardinality owlMaxCardinality) {
             renderable = true;
         }
 
 
-        public void visitOWLMinCardinality(OWLMinCardinality owlMinCardinality) {
+        @Override
+		public void visitOWLMinCardinality(OWLMinCardinality owlMinCardinality) {
             renderable = true;
         }
 
 
-        public void visitOWLNamedClass(OWLNamedClass owlNamedClass) {
+        @Override
+		public void visitOWLNamedClass(OWLNamedClass owlNamedClass) {
             renderable = true;
         }
 
 
-        public void visitOWLObjectProperty(OWLObjectProperty owlObjectProperty) {
+        @Override
+		public void visitOWLObjectProperty(OWLObjectProperty owlObjectProperty) {
             renderable = true;
         }
 
 
-        public void visitOWLSomeValuesFrom(OWLSomeValuesFrom owlSomeValuesFrom) {
+        @Override
+		public void visitOWLSomeValuesFrom(OWLSomeValuesFrom owlSomeValuesFrom) {
             renderable = true;
         }
 
 
-        public void visitOWLUnionClass(OWLUnionClass owlUnionClass) {
+        @Override
+		public void visitOWLUnionClass(OWLUnionClass owlUnionClass) {
             renderable = true;
         }
 
 
-        public void visitRDFIndividual(RDFIndividual rdfIndividual) {
+        @Override
+		public void visitRDFIndividual(RDFIndividual rdfIndividual) {
             renderable = true;
         }
 
 
-        public void visitRDFProperty(RDFProperty rdfProperty) {
+        @Override
+		public void visitRDFProperty(RDFProperty rdfProperty) {
             renderable = true;
         }
 
 
-        public void visitRDFSNamedClass(RDFSNamedClass rdfsNamedClass) {
+        @Override
+		public void visitRDFSNamedClass(RDFSNamedClass rdfsNamedClass) {
             renderable = true;
         }
     }
