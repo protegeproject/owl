@@ -160,6 +160,7 @@ public class ClassTreeNode extends LazyTreeNode {
     }
 
 
+    @SuppressWarnings("unchecked")
     protected Collection getChildObjects() {
         if (showHidden()) {
             return new HashSet(getCls().getDirectSubclasses());
