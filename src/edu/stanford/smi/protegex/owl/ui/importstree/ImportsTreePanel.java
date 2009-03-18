@@ -256,16 +256,13 @@ public class ImportsTreePanel extends JPanel implements HostResourceDisplay, Dis
         wizard.execute();
     }
 
+    @SuppressWarnings("unchecked")
     private void setActiveOntology() {
         Collection sel = tree.getSelection();
         OWLOntology ont = (OWLOntology) CollectionUtilities.getFirstItem(sel);
         OWLModel owlModel = ont.getOWLModel();
 
-        if (!ont.equals(OWLUtil.getActiveOntology(owlModel))) {
-            TripleStoreModel tsm = owlModel.getTripleStoreModel();
-            TripleStore tripleStore = tsm.getHomeTripleStore(ont);
-            TripleStoreUtil.switchTripleStore(owlModel, tripleStore);
-        }
+        OWLUtil.setActiveOntology(owlModel, ont);
     }
 
     public void dispose() {
