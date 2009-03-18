@@ -56,6 +56,7 @@ import edu.stanford.smi.protegex.owl.model.event.ResourceAdapter;
 import edu.stanford.smi.protegex.owl.model.event.ResourceListener;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreModel;
+import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreUtil;
 import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
 import edu.stanford.smi.protegex.owl.ui.profiles.OWLProfiles;
 import edu.stanford.smi.protegex.owl.ui.profiles.ProfilesManager;
@@ -1063,6 +1064,14 @@ public class OWLUtil {
         }
 
         return owlOntology;
+    }
+    
+    public static void setActiveOntology(OWLModel owlModel, OWLOntology ont) {
+        if (ont != null && !ont.equals(OWLUtil.getActiveOntology(owlModel))) {
+            TripleStoreModel tsm = owlModel.getTripleStoreModel();
+            TripleStore tripleStore = tsm.getHomeTripleStore(ont);
+            TripleStoreUtil.switchTripleStore(owlModel, tripleStore);
+        }
     }
 
     public static URI getOWLFileURI(OWLModel owlModel) {
