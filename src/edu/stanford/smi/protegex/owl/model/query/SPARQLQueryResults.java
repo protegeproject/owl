@@ -1,25 +1,19 @@
 package edu.stanford.smi.protegex.owl.model.query;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
-import com.hp.hpl.jena.query.Query;
-import com.hp.hpl.jena.query.QueryExecution;
-import com.hp.hpl.jena.query.QueryExecutionFactory;
-import com.hp.hpl.jena.query.QueryFactory;
-import com.hp.hpl.jena.query.QuerySolution;
-import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.query.*;
 import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.RDFNode;
-
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
 import edu.stanford.smi.protegex.owl.model.RDFSDatatype;
 import edu.stanford.smi.protegex.owl.model.RDFSLiteral;
 import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
+
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
@@ -64,24 +58,22 @@ public class SPARQLQueryResults implements QueryResults {
      * @return a prefix declaration string
      */
     public static String createPrefixDeclarations(OWLModel owlModel) {
-    	String queryString = "";
-    	String defaultNamespace = owlModel.getNamespaceManager().getDefaultNamespace();
-    	if (defaultNamespace != null) {
-    		if (defaultNamespace.endsWith("#")) {
-    			queryString += "BASE <" + defaultNamespace.substring(0, defaultNamespace.length() - 1) + ">\n";
-    		}
-    		else {
-    			queryString += "BASE <" + defaultNamespace + ">\n";
-    		}
-    		queryString += "PREFIX :   <" + defaultNamespace + ">\n";
-    	}
-    	Iterator prefixes = owlModel.getNamespaceManager().getPrefixes().iterator();
-    	while (prefixes.hasNext()) {
-    		String prefix = (String) prefixes.next();
-    		String namespace = owlModel.getNamespaceManager().getNamespaceForPrefix(prefix);
-    		queryString += "PREFIX " + prefix + ": <" + namespace + ">\n";
-    	}
-    	return queryString;
+        String queryString = "";
+        String defaultNamespace = owlModel.getNamespaceManager().getDefaultNamespace();
+        if (defaultNamespace.endsWith("#")) {
+            queryString += "BASE <" + defaultNamespace.substring(0, defaultNamespace.length() - 1) + ">\n";
+        }
+        else {
+            queryString += "BASE <" + defaultNamespace + ">\n";
+        }
+        queryString += "PREFIX :   <" + defaultNamespace + ">\n";
+        Iterator prefixes = owlModel.getNamespaceManager().getPrefixes().iterator();
+        while (prefixes.hasNext()) {
+            String prefix = (String) prefixes.next();
+            String namespace = owlModel.getNamespaceManager().getNamespaceForPrefix(prefix);
+            queryString += "PREFIX " + prefix + ": <" + namespace + ">\n";
+        }
+        return queryString;
     }
 
 
