@@ -236,8 +236,7 @@ public class DatabaseRepository implements Repository {
 	        sb.append(table);
 	        sb.append(SEPARATOR_CHAR);
 	    }
-	    sb.substring(0, sb.length() - 2);
-		return sb.toString();
+	    return sb.substring(0, sb.length() - 1);
 	}
 
 	public boolean isSystem() {
