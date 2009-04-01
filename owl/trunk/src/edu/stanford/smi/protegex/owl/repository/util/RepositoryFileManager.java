@@ -30,6 +30,7 @@ import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.repository.Repository;
 import edu.stanford.smi.protegex.owl.repository.RepositoryManager;
 import edu.stanford.smi.protegex.owl.repository.factory.RepositoryFactory;
+import edu.stanford.smi.protegex.owl.repository.impl.ProtegeOWLPluginFolderRepository;
 
 /**
  * User: matthewhorridge<br>
@@ -91,6 +92,7 @@ public class RepositoryFileManager {
             if (f.exists()) {
                 loadGlobalRepositories(f);
             }
+            manager.addGlobalRepository(new ProtegeOWLPluginFolderRepository());
 		} catch (Exception e) {
 			Log.getLogger().log(Level.WARNING, "Failed to load global repositories", e);
 		}
