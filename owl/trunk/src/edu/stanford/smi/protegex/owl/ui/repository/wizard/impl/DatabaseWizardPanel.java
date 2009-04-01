@@ -11,8 +11,6 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.swing.BoxLayout;
-import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
@@ -44,8 +42,8 @@ public class DatabaseWizardPanel extends RepositoryCreatorWizardPanel {
     public DatabaseWizardPanel(WizardPage wizardPage,
                        OWLModel owlModel) {
         TextDocumentListener listener = new TextDocumentListener();
-        this.wizardPage = wizardPage;
-        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+        this.wizardPage = wizardPage;    
+        setLayout(new GridLayout(DatabaseRepository.DATABASE_FIELDS.length + 1, 1));
         for (DatabaseProperty field : DatabaseRepository.DATABASE_FIELDS) {
             JTextField text;
             if (field == DatabaseProperty.PASSWORD_PROPERTY) {
@@ -61,7 +59,8 @@ public class DatabaseWizardPanel extends RepositoryCreatorWizardPanel {
             add(component);
         }
         tablesBox = new JComboBox();
-        add(tablesBox);
+        LabeledComponent tcLb = new LabeledComponent("Table Name", tablesBox);        
+        add(tcLb);
         wizardPage.setPageComplete(validateFields());
         tablesBox.setSelectedIndex(0);
     }
