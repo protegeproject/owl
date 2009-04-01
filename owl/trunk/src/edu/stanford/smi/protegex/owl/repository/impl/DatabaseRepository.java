@@ -43,7 +43,6 @@ public class DatabaseRepository implements Repository {
 	private Map<DatabaseProperty, String> fieldMap = new EnumMap<DatabaseProperty, String>(DatabaseProperty.class);
 	
 	private Map<URI, String> ontologyToTable = new HashMap<URI, String>();
-	private Set<String> allTables = new HashSet<String>();
 	
 	public final static String REPOSITORY_DESCRIPTOR_PREFIX = "database:";
 	public final static char SEPARATOR_CHAR = ',';
@@ -102,6 +101,19 @@ public class DatabaseRepository implements Repository {
 	    }
 	}
 	
+	   public DatabaseRepository(String driver,
+	                              String url,
+	                              String user,
+	                              String password,
+	                              String table) throws SQLException, ClassNotFoundException {
+	        fieldMap.put(DatabaseProperty.DRIVER_PROPERTY, driver);
+	        fieldMap.put(DatabaseProperty.URL_PROPERTY, url);
+	        fieldMap.put(DatabaseProperty.USERNAME_PROPERTY, user);
+	        fieldMap.put(DatabaseProperty.PASSWORD_PROPERTY, password);
+	        Class.forName(getDriver());
+	        addTable(table);      
+	    }
+	
 	public DatabaseRepository(String repositoryDescriptor) throws ClassNotFoundException, SQLException {
 		List<String> fields = parse(repositoryDescriptor);
 		for (DatabaseProperty field : DATABASE_FIELDS) {
@@ -113,7 +125,6 @@ public class DatabaseRepository implements Repository {
 		    for (int index = DATABASE_FIELDS.length; index < fields.size(); index++) {
 		        String table = fields.get(index);
 		        addTable(table);
-		        allTables.add(table);
 		    }
 		} finally {
 		    disconnect();
@@ -135,11 +146,9 @@ public class DatabaseRepository implements Repository {
 	    ResultSet tableSet = metaData.getTables(null, null, null, tableTypes.toArray(new String[1]));
 	    while (tableSet.next()) {
 	        String table = tableSet.getString(SQL_GET_TABLES_TABLENAME_COL);
-	        if (addTable(table)) {
-	            allTables.add(table);
-	        }
+	        addTable(table);
 	    }
-	    if (allTables.isEmpty()) {
+	    if (ontologyToTable.isEmpty()) {
 	        throw new SQLException("No tables containing ontologies found");
 	    }
 	}
@@ -212,6 +221,10 @@ public class DatabaseRepository implements Repository {
 	public Collection<URI> getOntologies() {
 	    return Collections.unmodifiableCollection(ontologyToTable.keySet());
 	}
+	
+	public String getDBTable(URI ontologyName) {
+	    return ontologyToTable.get(ontologyName);
+	}
 
 	public String getOntologyLocationDescription(URI ontologyName) {
 		return "Table " + ontologyToTable.get(ontologyName) + " of the database " + getUrl();
@@ -232,7 +245,7 @@ public class DatabaseRepository implements Repository {
 	        sb.append(fieldMap.get(field));
 	        sb.append(SEPARATOR_CHAR);
 	    }
-	    for (String table : allTables) {
+	    for (String table : ontologyToTable.values()) {
 	        sb.append(table);
 	        sb.append(SEPARATOR_CHAR);
 	    }
