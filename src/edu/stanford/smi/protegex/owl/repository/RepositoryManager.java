@@ -37,24 +37,12 @@ public class RepositoryManager {
         this.model = model;
         projectRepositories = new ArrayList<Repository>();
         globalRepositories = new ArrayList<Repository>();
-        loadSystemRepositories();
     }
 
 
     public void addDefaultRepositories() {
         projectRepositories.add(new DublinCoreDLVersionRedirectRepository());
     }
-
-
-    private void loadSystemRepositories() {
-    	try {
-    		globalRepositories.add(new ProtegeOWLPluginFolderRepository());
-		} catch (Exception e) {
-			Log.getLogger().log(Level.WARNING, "Failed to load system repositories.", e);
-		}
-
-    }
-
 
     public void removeAllProjectRepositories() {
         projectRepositories.clear();
