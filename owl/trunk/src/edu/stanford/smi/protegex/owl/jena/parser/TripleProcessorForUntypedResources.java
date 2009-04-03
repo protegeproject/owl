@@ -4,6 +4,7 @@ package edu.stanford.smi.protegex.owl.jena.parser;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 import java.util.logging.Level;
 
 import com.hp.hpl.jena.rdf.arp.ALiteral;
@@ -31,7 +32,9 @@ class TripleProcessorForUntypedResources extends AbstractStatefulTripleProcessor
 	}
 
 	protected void processRemainingUndefinedTriples() {
-		for (Iterator<String> iterator = processor.getGlobalParserCache().getUndefTriplesKeys().iterator(); iterator.hasNext();) {
+		Collection<String> emtpyUndefsToRemove = new HashSet<String>();
+		Set<String> undefTriplesKeys = new HashSet(processor.getGlobalParserCache().getUndefTriplesKeys());
+		for (Iterator<String> iterator = undefTriplesKeys.iterator(); iterator.hasNext();) {
 			String undef = iterator.next();
 			Collection<UndefTriple> undefTriples = processor.getGlobalParserCache().getUndefTriples(undef);
 
@@ -59,12 +62,17 @@ class TripleProcessorForUntypedResources extends AbstractStatefulTripleProcessor
 				}
 			}
 
-			//clean-up, if no more undef triples for this undef
+			//clean-up, if no more undef triples for this undef - moved to outside of for because of concurrent modification 
 			Collection<UndefTriple> remainingUndefs = processor.getGlobalParserCache().getUndefTriples(undef);
 			if (remainingUndefs.isEmpty()) {
-				iterator.remove();
+				emtpyUndefsToRemove.add(undef);
 			}
 		}
+		
+		for (String emptyUndefKey : emtpyUndefsToRemove) {
+			processor.getGlobalParserCache().removeUndefTripleKey(emptyUndefKey);
+		}
+		
 	}
 
 
