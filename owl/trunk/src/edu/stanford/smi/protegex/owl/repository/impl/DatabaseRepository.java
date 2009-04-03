@@ -14,10 +14,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -42,7 +40,10 @@ public class DatabaseRepository implements Repository {
 	private Connection connection;
 	private Map<DatabaseProperty, String> fieldMap = new EnumMap<DatabaseProperty, String>(DatabaseProperty.class);
 	
+	//FIXME: This map has a problem if the DB contains tables with the same ontology name
 	private Map<URI, String> ontologyToTable = new HashMap<URI, String>();
+	//This map contains all tables (also the ones with the same ontology name)
+	private Map<String, URI> tableToOntology = new HashMap<String, URI>();
 	
 	public final static String REPOSITORY_DESCRIPTOR_PREFIX = "database:";
 	public final static char SEPARATOR_CHAR = ',';
@@ -124,7 +125,12 @@ public class DatabaseRepository implements Repository {
 		try {
 		    for (int index = DATABASE_FIELDS.length; index < fields.size(); index++) {
 		        String table = fields.get(index);
-		        addTable(table);
+		        if (table == null || table.length() == 0) { //backwards compatibility fix for 3.4
+		        	log.warning("Invalid table description in database repository. Table name is empty." +
+		        			" Repository Description: " + repositoryDescriptor);
+		        } else {
+		        	addTable(table);
+		        }
 		    }
 		} finally {
 		    disconnect();
@@ -170,6 +176,7 @@ public class DatabaseRepository implements Repository {
 					getDriver(), getUrl(), getUser(), getPassword(), table );
 	        if (ontology != null) {
 	            ontologyToTable.put(new URI(ontology), table);
+	            tableToOntology.put(table, new URI(ontology));
 	            return true;
 	        }
 	    }
@@ -283,5 +290,9 @@ public class DatabaseRepository implements Repository {
 
 	public String getPassword() {
 		return fieldMap.get(DatabaseProperty.PASSWORD_PROPERTY);
+	}
+	
+	public Map<String, URI> getTableToOntologyMap() { 
+		return new HashMap<String, URI>(tableToOntology);
 	}
 }
