@@ -5,8 +5,11 @@ package edu.stanford.smi.protegex.owl.ui.repository.wizard.impl;
 
 import java.awt.GridLayout;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -136,23 +139,29 @@ public class DatabaseWizardPanel extends RepositoryCreatorWizardPanel {
     }
     
     private boolean validateFields() {
-        DatabaseRepository rep =  createRepository();
-        descriptionToTableMap.clear();
-        tablesBox.removeAllItems();
-        tablesBox.addItem(ANY_TABLE_ENTRY);
-        if (rep != null) {
-            for (URI ontology : rep.getOntologies()) {
-                String table = rep.getDBTable(ontology);
-                String description = new StringBuffer(table)
-                                        .append(" (")
-                                        .append(ontology.toString())
-                                        .append(")")
-                                           .toString();
-                descriptionToTableMap.put(description, table);
-                tablesBox.addItem(description);
-            }
-        }
-        return rep != null;
+    	DatabaseRepository rep =  createRepository();
+    	descriptionToTableMap.clear();
+    	tablesBox.removeAllItems();
+    	tablesBox.addItem(ANY_TABLE_ENTRY);
+    	List<String> tableDescriptions = new ArrayList<String>(); 
+    	if (rep != null) {
+    		Map<String, URI> tableToOntologyMap = rep.getTableToOntologyMap();
+    		for (String table : tableToOntologyMap.keySet()) {
+    			URI ontology = tableToOntologyMap.get(table);
+    			String description = new StringBuffer(table)
+    			.append(" (")
+    					.append(ontology.toString())
+    					.append(")")
+    					.toString();
+    			descriptionToTableMap.put(description, table);
+    			tableDescriptions.add(description);
+    		}        
+    		Collections.sort(tableDescriptions);
+    		for (String description : tableDescriptions) {
+    			tablesBox.addItem(description);
+    		}
+    	}
+    	return rep != null;
     }
     
     private class TextDocumentListener implements DocumentListener {
