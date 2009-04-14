@@ -56,6 +56,13 @@ public interface ModalDialogFactory {
                           boolean enableCloseButton);
 
 
+    int showDialog(Component parent, Component panel,
+            String title, int mode, CloseCallback callback,
+            boolean enableCloseButton, Component componentToFocus);
+    
+    
+    int showDialog(Component parent, Component panel, String title, int mode, Component componentToFocus);
+    
     int showConfirmCancelDialog(OWLModel owlModel, String message, String title);
 
 

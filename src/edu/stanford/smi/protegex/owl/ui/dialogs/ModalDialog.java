@@ -1,12 +1,35 @@
 package edu.stanford.smi.protegex.owl.ui.dialogs;
 
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Dialog;
+import java.awt.FlowLayout;
+import java.awt.Frame;
+import java.awt.GridLayout;
+import java.awt.Window;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
+
 import edu.stanford.smi.protege.resource.LocalizedText;
 import edu.stanford.smi.protege.resource.ResourceKey;
-import edu.stanford.smi.protege.util.*;
-
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.*;
+import edu.stanford.smi.protege.util.ComponentFactory;
+import edu.stanford.smi.protege.util.ComponentUtilities;
+import edu.stanford.smi.protege.util.Disposable;
+import edu.stanford.smi.protege.util.MessagePanel;
+import edu.stanford.smi.protege.util.StandardAction;
+import edu.stanford.smi.protege.util.Validatable;
 
 /**
  * A class to handle all modal dialog processing.  This class just wraps the JDialog modal dialog implementation but adds
@@ -67,16 +90,16 @@ class ModalDialog extends JDialog implements Disposable {
 
 
     private ModalDialog(Dialog parent, Component panel, String title, int mode, ModalDialogFactory.CloseCallback callback,
-                        boolean enableClose) {
+                        boolean enableClose, Component componentToFocus) {
         super(parent, title, true);
-        init(panel, mode, callback, enableClose);
+        init(panel, mode, callback, enableClose, componentToFocus);
     }
 
 
     private ModalDialog(Frame parentFrame, Component panel, String title, int mode, ModalDialogFactory.CloseCallback callback,
-                        boolean enableCloseButton) {
+                        boolean enableCloseButton, Component componentToFocus) {
         super(parentFrame, title, true);
-        init(panel, mode, callback, enableCloseButton);
+        init(panel, mode, callback, enableCloseButton, componentToFocus);
     }
 
 
@@ -179,19 +202,26 @@ class ModalDialog extends JDialog implements Disposable {
         return _currentDialog;
     }
 
+    
+    private void getFocus(final Component component) {
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                component.requestFocusInWindow();                
+            }
+        });
+    }
 
-    //  Doesn't work!
     private void getFocus() {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 JButton button = (JButton) ((Container) _buttonsPanel.getComponent(0)).getComponent(0);
-                button.requestFocus();
+                button.requestFocusInWindow();
             }
         });
     }
 
 
-    private void init(Component panel, int mode, ModalDialogFactory.CloseCallback callback, boolean enableCloseButton) {
+    private void init(Component panel, int mode, ModalDialogFactory.CloseCallback callback, boolean enableCloseButton, final Component componentToFocus) {
         _currentDialog = this;
         _closeCallback = callback;
         _enableCloseButton = enableCloseButton;
@@ -220,7 +250,11 @@ class ModalDialog extends JDialog implements Disposable {
 
         pack();
         ComponentUtilities.center(this);
-        getFocus();
+        if (componentToFocus == null) {
+        	getFocus(); //focuses the button
+        } else {
+        	getFocus(componentToFocus);
+        }
         setVisible(true);
     }
 
@@ -246,9 +280,14 @@ class ModalDialog extends JDialog implements Disposable {
         return showDialog(parent, panel, title, mode, callback, true);
     }
 
+    
+    public static int showDialog(Component parent, Component panel, String title, int mode, ModalDialogFactory.CloseCallback callback,
+            boolean enableCloseButton) {
+    	return showDialog(parent, panel, title, mode, callback, enableCloseButton, null);
+    }
 
     public static int showDialog(Component parent, Component panel, String title, int mode, ModalDialogFactory.CloseCallback callback,
-                                 boolean enableCloseButton) {
+                                 boolean enableCloseButton, Component focusComponent) {
         ModalDialog dialog;
         Window window;
         if (parent == null || parent instanceof Window) {
@@ -258,10 +297,10 @@ class ModalDialog extends JDialog implements Disposable {
             window = SwingUtilities.windowForComponent(parent);
         }
         if (window instanceof Frame || window == null) {
-            dialog = new ModalDialog((Frame) window, panel, title, mode, callback, enableCloseButton);
+            dialog = new ModalDialog((Frame) window, panel, title, mode, callback, enableCloseButton, focusComponent);
         }
         else {
-            dialog = new ModalDialog((Dialog) window, panel, title, mode, callback, enableCloseButton);
+            dialog = new ModalDialog((Dialog) window, panel, title, mode, callback, enableCloseButton, focusComponent);
         }
         int result;
         if (dialog == null) {
@@ -304,6 +343,6 @@ class ModalDialog extends JDialog implements Disposable {
                 }
             }
         };
-    }
-
+    }    
+  
 }
