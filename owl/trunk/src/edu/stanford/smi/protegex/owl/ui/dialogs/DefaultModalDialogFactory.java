@@ -62,8 +62,9 @@ public class DefaultModalDialogFactory extends AbstractModalDialogFactory {
     }
 
 
-    public int showDialog(Component parent, Component panel, String title, int mode, CloseCallback callback, boolean enableCloseButton) {
-        return ModalDialog.showDialog(parent, panel, title, mode, callback, enableCloseButton);
+    public int showDialog(Component parent, Component panel, String title, int mode, CloseCallback callback, 
+    		boolean enableCloseButton, Component componentToFocus) {
+        return ModalDialog.showDialog(parent, panel, title, mode, callback, enableCloseButton, componentToFocus);
     }
 
 

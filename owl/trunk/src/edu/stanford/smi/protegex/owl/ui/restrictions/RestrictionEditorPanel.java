@@ -43,6 +43,7 @@ import edu.stanford.smi.protegex.owl.model.impl.OWLUtil;
 import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
 import edu.stanford.smi.protegex.owl.ui.code.OWLSymbolPanel;
 import edu.stanford.smi.protegex.owl.ui.dialogs.ModalDialogFactory;
+import edu.stanford.smi.protegex.owl.ui.dialogs.ModalDialogFactory.CloseCallback;
 import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
 import edu.stanford.smi.protegex.owl.ui.profiles.ProfilesManager;
 import edu.stanford.smi.protegex.owl.ui.resourcedisplay.InstanceNameComponent;
@@ -362,7 +363,7 @@ public class RestrictionEditorPanel extends JComponent implements ModalDialogFac
                 }
             }
         });
-        if (ProtegeUI.getModalDialogFactory().showDialog(parent, panel, "Create Restriction", ModalDialogFactory.MODE_OK_CANCEL, panel) == ModalDialogFactory.OPTION_OK) {
+        if (ProtegeUI.getModalDialogFactory().showDialog(parent, panel, "Create Restriction", ModalDialogFactory.MODE_OK_CANCEL, (CloseCallback) panel) == ModalDialogFactory.OPTION_OK) {
             return panel.getResult();
         }
         else {

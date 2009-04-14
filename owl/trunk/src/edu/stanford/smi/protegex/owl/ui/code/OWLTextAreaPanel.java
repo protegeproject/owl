@@ -4,6 +4,7 @@ import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.RDFSClass;
 import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
 import edu.stanford.smi.protegex.owl.ui.dialogs.ModalDialogFactory;
+import edu.stanford.smi.protegex.owl.ui.dialogs.ModalDialogFactory.CloseCallback;
 
 import javax.swing.*;
 import java.awt.*;
@@ -84,7 +85,7 @@ public class OWLTextAreaPanel extends JPanel implements ModalDialogFactory.Close
     public static String showEditDialog(Component parent, OWLModel owlModel, RDFSClass input) {
         OWLTextAreaPanel panel = new OWLTextAreaPanel(owlModel, input);
         String title = "Edit OWL Expression";
-        if (ProtegeUI.getModalDialogFactory().showDialog(parent, panel, title, ModalDialogFactory.MODE_OK_CANCEL, panel) == ModalDialogFactory.OPTION_OK) {
+        if (ProtegeUI.getModalDialogFactory().showDialog(parent, panel, title, ModalDialogFactory.MODE_OK_CANCEL, (CloseCallback)panel) == ModalDialogFactory.OPTION_OK) {
             return panel.getResultAsString();
         }
         else {
