@@ -55,7 +55,7 @@ public class OWLSubclassPane extends SelectableContainer implements ClassTreePan
 
     private HierarchyManager hierarchyManager;
 
-    private OWLModel owlModel;
+    public OWLModel owlModel;
 
     private ClassTree tree;
 
