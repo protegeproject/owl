@@ -20,7 +20,7 @@ import java.util.List;
 public class ConditionsTableItem implements ConditionsTableConstants, Comparable {
 
 
-    RDFSClass aClass;
+    protected RDFSClass aClass;
 
     private OWLIntersectionClass definition;
 
@@ -39,7 +39,7 @@ public class ConditionsTableItem implements ConditionsTableConstants, Comparable
 	private List<RDFSNamedClass> owlRestrictionMetaClses = null;
 
 
-    private ConditionsTableItem(RDFSClass aClass,
+    protected ConditionsTableItem(RDFSClass aClass,
                                 int type,
                                 OWLNamedClass originCls,
                                 OWLIntersectionClass definition,
@@ -146,42 +146,42 @@ public class ConditionsTableItem implements ConditionsTableConstants, Comparable
     }
 
 
-    static ConditionsTableItem create(RDFSClass aClass, int type) {
+    protected static ConditionsTableItem create(RDFSClass aClass, int type) {
         return new ConditionsTableItem(aClass, type, null, null, false);
     }
 
 
-    static ConditionsTableItem createInherited(RDFSClass aClass, OWLNamedClass originCls) {
+    protected static ConditionsTableItem createInherited(RDFSClass aClass, OWLNamedClass originCls) {
         return new ConditionsTableItem(aClass, TYPE_INHERITED, originCls, null, false);
     }
 
 
-    static ConditionsTableItem createNew(int type) {
+    protected static ConditionsTableItem createNew(int type) {
         return new ConditionsTableItem(null, type, null, null, true);
     }
 
 
-    static ConditionsTableItem createSufficient(RDFSClass aClass, int type, OWLIntersectionClass definition) {
+    protected static ConditionsTableItem createSufficient(RDFSClass aClass, int type, OWLIntersectionClass definition) {
         return new ConditionsTableItem(aClass, type, null, definition, false);
     }
 
 
-    static ConditionsTableItem createSeparator(int type) {
+    protected static ConditionsTableItem createSeparator(int type) {
         return new ConditionsTableItem(null, type, null, null, false);
     }
 
 
-    RDFSClass getCls() {
+    public RDFSClass getCls() {
         return aClass;
     }
 
 
-    OWLIntersectionClass getDefinition() {
+    protected OWLIntersectionClass getDefinition() {
         return definition;
     }
 
 
-    Icon getIcon(int rowHeight) {
+    protected Icon getIcon(int rowHeight) {
         if (isSeparator()) {
             return null;
         }
@@ -201,41 +201,41 @@ public class ConditionsTableItem implements ConditionsTableConstants, Comparable
     }
 
 
-    OWLNamedClass getOriginCls() {
+    public OWLNamedClass getOriginCls() {
         return originCls;
     }
 
 
-    static Icon getSuperclassIcon() {
+    protected static Icon getSuperclassIcon() {
         return OWLIcons.getImageIcon("Superclass");
     }
 
 
-    int getType() {
+    protected int getType() {
         return type;
     }
 
 
-    boolean isDefinition() {
+    protected boolean isDefinition() {
         return type >= TYPE_DEFINITION_BASE;
     }
 
 
-    boolean isInherited() {
+    protected boolean isInherited() {
         return type == TYPE_INHERITED;
     }
 
 
-    boolean isNew() {
+    protected boolean isNew() {
         return isNew;
     }
 
 
-    boolean isSeparator() {
+    protected boolean isSeparator() {
         return aClass == null && !isNew();
     }
 
-    void setType(int value) {
+    protected void setType(int value) {
         this.type = value;
     }
 
