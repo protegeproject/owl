@@ -90,23 +90,23 @@ implements ConditionsTableConstants, OWLTableModel {
 	/**
 	 * The edited class
 	 */
-	private OWLNamedClass hostClass;
+	protected OWLNamedClass hostClass;
 
 	/**
 	 * One Item object for each row
 	 */
-	private List<ConditionsTableItem> items = new ArrayList<ConditionsTableItem>();
+	protected List<ConditionsTableItem> items = new ArrayList<ConditionsTableItem>();
 
 	private Collection<RDFSClass> listenedToClses = new ArrayList<RDFSClass>();
 
-	private OWLModel owlModel;
+	protected OWLModel owlModel;
 
 	/**
 	 * Needed to select the most recently edited row after closing the expression editor
 	 */
 	public Cls previouslyEditedCls;
 
-	private Slot superclassesSlot;
+	protected Slot superclassesSlot;
 
 
 	private boolean inEditing = false;
@@ -166,7 +166,7 @@ implements ConditionsTableConstants, OWLTableModel {
 	}
 
 
-	private void addItem(int index, ConditionsTableItem item) {
+	protected void addItem(int index, ConditionsTableItem item) {
 		items.add(index, item);
 		//updateLocalIndices();
 	}
@@ -608,7 +608,8 @@ implements ConditionsTableConstants, OWLTableModel {
 	}
 
 
-	private void fillInheritedItems(Collection coveredClses) {
+	@SuppressWarnings("unchecked")
+	protected void fillInheritedItems(Collection coveredClses) {
 		coveredClses.removeAll(getNamedDefinitionClses(false));
 		for (Iterator it = ((Cls) hostClass).getDirectOwnSlotValues(superclassesSlot).iterator(); it.hasNext();) {
 			Cls superCls = (Cls) it.next();
