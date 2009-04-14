@@ -26,6 +26,7 @@ import edu.stanford.smi.protege.util.LabeledComponent;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protege.util.WizardPage;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.repository.Repository;
 import edu.stanford.smi.protegex.owl.repository.impl.DatabaseRepository;
 import edu.stanford.smi.protegex.owl.ui.repository.wizard.RepositoryCreatorWizardPanel;
 
@@ -69,7 +70,7 @@ public class DatabaseWizardPanel extends RepositoryCreatorWizardPanel {
     }
 
     @Override
-    public DatabaseRepository createRepository() {
+    public Repository createRepository() {
         Object selectedTable = tablesBox.getSelectedItem();
         if (selectedTable == null || selectedTable.equals(ANY_TABLE_ENTRY)) {
             return createAllTablesRepository();
@@ -139,13 +140,13 @@ public class DatabaseWizardPanel extends RepositoryCreatorWizardPanel {
     }
     
     private boolean validateFields() {
-    	DatabaseRepository rep =  createRepository();
+    	Repository rep =  createRepository();
     	descriptionToTableMap.clear();
     	tablesBox.removeAllItems();
     	tablesBox.addItem(ANY_TABLE_ENTRY);
     	List<String> tableDescriptions = new ArrayList<String>(); 
     	if (rep != null) {
-    		Map<String, URI> tableToOntologyMap = rep.getTableToOntologyMap();
+    		Map<String, URI> tableToOntologyMap = getTableToOntologyMap(rep);
     		for (String table : tableToOntologyMap.keySet()) {
     			URI ontology = tableToOntologyMap.get(table);
     			String description = new StringBuffer(table)
@@ -162,6 +163,13 @@ public class DatabaseWizardPanel extends RepositoryCreatorWizardPanel {
     		}
     	}
     	return rep != null;
+    }
+    
+    /*
+     * TODO - this is hacky - see Clark Parsia's CPDatabaseRepository TODO item.
+     */
+    protected Map<String, URI> getTableToOntologyMap(Repository rep) {
+    	return ((DatabaseRepository) rep).getTableToOntologyMap();
     }
     
     private class TextDocumentListener implements DocumentListener {
