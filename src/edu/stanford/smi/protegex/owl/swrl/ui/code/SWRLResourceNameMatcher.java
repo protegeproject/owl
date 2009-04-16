@@ -56,5 +56,10 @@ public class SWRLResourceNameMatcher extends OWLResourceNameMatcher
 	protected boolean couldBeDatatype(OWLModel owlModel, String prefix) {
 		return true;
 	}
+	
+	@Override
+	protected boolean isFilteredOutResource(RDFResource resource) {
+		return resource.isAnonymous();		
+	}
 
 } // SWRLResourceNameMatcher
