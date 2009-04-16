@@ -343,11 +343,7 @@ public class ResourceDisplay extends InstanceDisplay implements ResourcePanel {
         addDefaultToolBarButtons();
 
         if (resource != null) {
-        	//The addResourceActions makes calls to the remote server in client-server mode
-        	//Optimize: only show in standalone mode
-        	if (!owlModel.getProject().isMultiUserClient()) {
-        		ResourceActionManager.addResourceActions(southToolBar, this, resource);
-        	}
+        	ResourceActionManager.addResourceActions(southToolBar, this, resource);       
             ResourceDisplayPluginManager.initInstanceDisplay(resource, southEastPanel);
         }
 
