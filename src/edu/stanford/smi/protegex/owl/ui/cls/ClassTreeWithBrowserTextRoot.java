@@ -10,6 +10,7 @@ import edu.stanford.smi.protege.util.CollectionUtilities;
 import edu.stanford.smi.protege.util.FrameWithBrowserText;
 import edu.stanford.smi.protege.util.LazyTreeNode;
 import edu.stanford.smi.protege.util.LazyTreeRoot;
+import edu.stanford.smi.protegex.owl.model.RDFResource;
 
 public class ClassTreeWithBrowserTextRoot extends LazyTreeRoot {
 
@@ -18,7 +19,8 @@ public class ClassTreeWithBrowserTextRoot extends LazyTreeRoot {
     }
     
     public ClassTreeWithBrowserTextRoot(Cls rootCls, boolean isSorted) {
-        super(new FrameWithBrowserText(rootCls, rootCls.getBrowserText(), rootCls.getDirectTypes()), isSorted);
+        super(new FrameWithBrowserText(rootCls, rootCls.getBrowserText(), rootCls.getDirectTypes(), 
+        		(rootCls instanceof RDFResource) ? ((RDFResource)rootCls).getIconName() : null), isSorted);
     }
 
     @Override
