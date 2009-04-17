@@ -14,6 +14,7 @@ import javax.swing.JComponent;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
+import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreePath;
 
 import edu.stanford.smi.protege.model.Cls;
@@ -91,15 +92,8 @@ public class OWLSubclassPane extends SelectableContainer implements ClassTreePan
 
         add(BorderLayout.SOUTH, finder);
         setupDragAndDrop();
-        /*
-         * Optimization for client-server: 
-         * In client mode, only use the frames renderer (less expensive to compute)
-         */
-        if (owlModel.getProject().isMultiUserClient()) {
-        	getTree().setCellRenderer(FrameRenderer.createInstance());
-        } else {
-        	getTree().setCellRenderer(new ResourceRenderer(owlModel.getSystemFrames().getDirectSuperclassesSlot()));
-        }
+        initializeTreeRenderer();
+        
         getTree().addMouseListener(new TreePopupMenuMouseListener(tree) {
             @Override
 			public JPopupMenu getPopupMenu() {
@@ -129,6 +123,18 @@ public class OWLSubclassPane extends SelectableContainer implements ClassTreePan
     }
 
 
+    protected void initializeTreeRenderer() {
+        /*
+         * Optimization for client-server: 
+         * In client mode, only use the frames renderer (less expensive to compute)
+         */
+    	TreeCellRenderer renderer = owlModel.getProject().isMultiUserClient() ? 
+    			new ResourceRenderer(owlModel.getSystemFrames().getDirectSuperclassesSlot()) : 
+    				FrameRenderer.createInstance();
+    	getTree().setCellRenderer(renderer);
+    }
+    
+    
     protected ClassTree createSelectableTree(Action doubleClickAction, Cls rootCls) {
         this.owlModel = (OWLModel) rootCls.getKnowledgeBase();
         LazyTreeRoot root = new ClassTreeRoot(rootCls, OWLUI.getSortClassTreeOption());
@@ -202,7 +208,7 @@ public class OWLSubclassPane extends SelectableContainer implements ClassTreePan
     }
 
     
-    private void setSelectedClassDelegate(Cls cls) {
+    protected void setSelectedClassDelegate(Cls cls) {
     	if (!getSelection().contains(cls) && !cls.isDeleted()) {
     		Collection path = ModelUtilities.getPathToRoot(cls);
     		setSelectedObjectPath(getTree(), path);
@@ -215,7 +221,7 @@ public class OWLSubclassPane extends SelectableContainer implements ClassTreePan
     }
 
 
-    private void setSelectedClassesDelegate(Collection clses) {
+    protected void setSelectedClassesDelegate(Collection clses) {
         Collection paths = new ArrayList();
         Iterator i = clses.iterator();
         while (i.hasNext()) {
@@ -236,7 +242,7 @@ public class OWLSubclassPane extends SelectableContainer implements ClassTreePan
     }
 
 
-    private void setSelectedObjectPath(final JTree tree, Collection objectPath) {    	
+    protected void setSelectedObjectPath(final JTree tree, Collection objectPath) {    	
         final TreePath path = ComponentUtilities.getTreePath(tree, objectPath);        
         
         if (path != null) {
