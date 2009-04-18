@@ -55,8 +55,19 @@ public class ChangedClassesPanel extends ResultsPanel {
             saveClassificationResults();
         }
     };
-
     
+    private JButton sortJButton;
+    private boolean sortedByClass = true;
+    public static final String SORT_BY_CLASS = "Sort Classification Results by Class";
+    public static final String SORT_BY_CHANGE = "Sort Classification Results by Change Type";
+    private Action sortAction = new AbstractAction(SORT_BY_CHANGE,
+                                                   OWLIcons.getDisplayChangedClassesIcon()) {
+        public void actionPerformed(ActionEvent e) {
+            sortClassificationResults();
+        }
+    };
+
+
     private ChangedClassesTableModel tableModel;
 
     private JTable table;
@@ -94,6 +105,7 @@ public class ChangedClassesPanel extends ResultsPanel {
         viewPort.setBackground(table.getBackground());
         // addButton(showAction);
         addButton(assertAction);
+        sortJButton = addButton(sortAction);
         addButton(saveAction);
         updateActions();
         setCenterComponent(scrollPane);
@@ -244,6 +256,12 @@ public class ChangedClassesPanel extends ResultsPanel {
 		}
 		
 		return classificationResults;		
+	}
+	
+	public void sortClassificationResults() {
+	    sortedByClass = !sortedByClass;
+	    tableModel.refill(sortedByClass);
+	    sortJButton.setToolTipText(sortedByClass ? SORT_BY_CHANGE : SORT_BY_CLASS);
 	}
     
 }
