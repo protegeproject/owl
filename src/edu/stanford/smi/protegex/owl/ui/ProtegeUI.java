@@ -6,6 +6,7 @@ import java.util.Map;
 
 import javax.swing.Icon;
 
+import edu.stanford.smi.protege.model.Frame;
 import edu.stanford.smi.protege.model.Project;
 import edu.stanford.smi.protege.ui.ProjectManager;
 import edu.stanford.smi.protege.ui.ProjectView;
@@ -199,4 +200,8 @@ public class ProtegeUI {
         }
         viewMap.remove(project);
     }
+    
+	public static String getPotentialIconName(Frame frame) {
+		return (frame instanceof RDFResource) ? ((RDFResource)frame).getIconName() : null;
+	}	
 }
