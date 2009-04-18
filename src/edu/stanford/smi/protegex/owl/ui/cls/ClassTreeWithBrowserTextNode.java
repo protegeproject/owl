@@ -36,8 +36,8 @@ import edu.stanford.smi.protege.util.LocalizeUtils;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protege.util.ProtegeJob;
 import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
-import edu.stanford.smi.protegex.owl.model.RDFResource;
 import edu.stanford.smi.protegex.owl.model.RDFSClass;
+import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
 
 public class ClassTreeWithBrowserTextNode extends LazyTreeNode {
 	private static transient Logger log = Log.getLogger(ClassTreeWithBrowserTextNode.class);
@@ -162,8 +162,7 @@ public class ClassTreeWithBrowserTextNode extends LazyTreeNode {
 
 	 protected FrameWithBrowserText createFrameWithBrowserText(Frame frame) {
 		 if (frame == null) { return null; }
-		 return new FrameWithBrowserText(frame, frame.getBrowserText(), null, 
-				 (frame instanceof RDFResource) ? ((RDFResource) frame).getIconName() : null );
+		 return new FrameWithBrowserText(frame, frame.getBrowserText(), null, ProtegeUI.getPotentialIconName(frame));
 	 }
 
 	 
@@ -261,7 +260,7 @@ public class ClassTreeWithBrowserTextNode extends LazyTreeNode {
 		 List<FrameWithBrowserText> fbtList = new ArrayList<FrameWithBrowserText>();		 
 		 for (Cls child : clsChildrenList) {
 			 fbtList.add(new FrameWithBrowserText(child, child.getBrowserText(), child.getDirectTypes(),
-					 (child instanceof RDFResource) ? ((RDFResource) child).getIconName() : null));
+					 ProtegeUI.getPotentialIconName(child)));
 		 }
 		 return fbtList;
 	 }
@@ -342,7 +341,7 @@ public class ClassTreeWithBrowserTextNode extends LazyTreeNode {
 			 for (Cls child : clsChildrenList) {
 				 addRequestsToFrameCalculator(child);				 
 				 fbtList.add(new FrameWithBrowserText(child, child.getBrowserText(), child.getDirectTypes(), 
-						 (child instanceof RDFResource) ? ((RDFResource) child).getIconName() : null));
+						 ProtegeUI.getPotentialIconName(child)));
 			 }
 			 return fbtList;
 		 }
