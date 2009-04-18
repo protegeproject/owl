@@ -15,13 +15,13 @@ import java.util.Iterator;
  *
  * @author Holger Knublauch  <holger@knublauch.com>
  */
-class ChangedClassItem implements Comparable {
+class ChangedClassItem implements Comparable<ChangedClassItem> {
 
     private OWLNamedClass cls;
 
-    private Collection addedSuperClses = new ArrayList();
+    private Collection<RDFSClass> addedSuperClses = new ArrayList<RDFSClass>();
 
-    private Collection removedSuperClses = new ArrayList();
+    private Collection<RDFSClass> removedSuperClses = new ArrayList<RDFSClass>();
 
 
     ChangedClassItem(OWLNamedClass cls) {
@@ -30,21 +30,21 @@ class ChangedClassItem implements Comparable {
 
 
     void addAddedSuperCls(Cls superCls) {
-        addedSuperClses.add(superCls);
+        addedSuperClses.add((RDFSClass) superCls);
     }
 
 
     void addRemovedSuperCls(Cls superCls) {
-        removedSuperClses.add(superCls);
+        removedSuperClses.add((RDFSClass) superCls);
     }
 
 
     void assertChange() {
-        for (Iterator it = addedSuperClses.iterator(); it.hasNext();) {
-            RDFSClass superCls = (RDFSClass) it.next();
+        for (Iterator<RDFSClass> it = addedSuperClses.iterator(); it.hasNext();) {
+            RDFSClass superCls = it.next();
             cls.addSuperclass(superCls);
         }
-        for (Iterator it = removedSuperClses.iterator(); it.hasNext();) {
+        for (Iterator<RDFSClass> it = removedSuperClses.iterator(); it.hasNext();) {
             RDFSClass superCls = (RDFSClass) it.next();
             cls.removeSuperclass(superCls);
         }
@@ -52,8 +52,7 @@ class ChangedClassItem implements Comparable {
     }
 
 
-    public int compareTo(Object o) {
-        ChangedClassItem other = (ChangedClassItem) o;
+    public int compareTo(ChangedClassItem other) {
         return cls.compareTo(other.cls);
     }
 
@@ -64,7 +63,7 @@ class ChangedClassItem implements Comparable {
 
 
     void removeAddedSuperCls(Cls superCls) {
-        removedSuperClses.add(superCls);
+        removedSuperClses.add((RDFSClass) superCls);
     }
 
 
@@ -84,11 +83,11 @@ class ChangedClassItem implements Comparable {
                         toString(" to", addedSuperClses.iterator());
             }
             else if (addedSuperClses.size() > 0) {
-                Iterator added = addedSuperClses.iterator();
+                Iterator<RDFSClass> added = addedSuperClses.iterator();
                 return toString("Added", added);
             }
             else {
-                Iterator removed = removedSuperClses.iterator();
+                Iterator<RDFSClass> removed = removedSuperClses.iterator();
                 return toString("Removed", removed);
             }
         }
