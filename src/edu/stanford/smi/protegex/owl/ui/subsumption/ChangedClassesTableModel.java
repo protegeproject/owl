@@ -28,9 +28,10 @@ public class ChangedClassesTableModel extends AbstractTableModel implements Disp
 
     public final static int COL_COUNT = 2;
 
-    private List items = new ArrayList();
+    private List<ChangedClassItem> items = new ArrayList<ChangedClassItem>();
 
-    private Hashtable itemsByCls = new Hashtable();
+    private Hashtable<OWLNamedClass, ChangedClassItem> itemsByCls 
+            = new Hashtable<OWLNamedClass, ChangedClassItem>();
 
     private ModelListener modelListener = new ModelAdapter() {
         public void classDeleted(RDFSClass cls) {
@@ -67,7 +68,7 @@ public class ChangedClassesTableModel extends AbstractTableModel implements Disp
         Collection is = new ArrayList();
         for (int i = 0; i < rows.length; i++) {
             int row = rows[i];
-            ChangedClassItem item = (ChangedClassItem) items.get(row);
+            ChangedClassItem item = items.get(row);
             OWLNamedClass cls = item.getCls();
             if (!OWLUtil.isInconsistent(cls) && cls.isEditable()) {
                 is.add(item);
@@ -77,11 +78,11 @@ public class ChangedClassesTableModel extends AbstractTableModel implements Disp
     }
 
 
-    private void assertChanges(Collection items) {
+    private void assertChanges(Collection<ChangedClassItem> items) {
     	try {
             owlModel.beginTransaction("Assert classification changes");
-            for (Iterator it = items.iterator(); it.hasNext();) {
-                ChangedClassItem item = (ChangedClassItem) it.next();
+            for (Iterator<ChangedClassItem> it = items.iterator(); it.hasNext();) {
+                ChangedClassItem item = it.next();
                 assertChange(item);
             }
             owlModel.commitTransaction();			
@@ -182,7 +183,7 @@ public class ChangedClassesTableModel extends AbstractTableModel implements Disp
 
 
     public Object getValueAt(int rowIndex, int columnIndex) {
-        ChangedClassItem item = (ChangedClassItem) items.get(rowIndex);
+        ChangedClassItem item = items.get(rowIndex);
         if (columnIndex == COL_CLS) {
             return item.getCls();
         }
@@ -191,10 +192,13 @@ public class ChangedClassesTableModel extends AbstractTableModel implements Disp
         }
     }
 
-
     public void refill() {
+        refill(true);
+    }
 
-        items = new ArrayList();
+    public void refill(boolean refillByCls) {
+
+        items = new ArrayList<ChangedClassItem>();
         itemsByCls = new Hashtable();
 
         for (Iterator it = owlModel.getChangedInferredClasses().iterator(); it.hasNext();) {
@@ -221,8 +225,12 @@ public class ChangedClassesTableModel extends AbstractTableModel implements Disp
             OWLNamedClass cls = (OWLNamedClass) it.next();
             getOrCreateItem(cls);
         }
-
-        Collections.sort(items);
+        if (refillByCls) {
+            Collections.sort(items);
+        }
+        else {
+            Collections.sort(items, new ChangedClassesChangeComporator());
+        }
         fireTableDataChanged();
     }
 
