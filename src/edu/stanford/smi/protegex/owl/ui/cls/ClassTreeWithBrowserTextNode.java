@@ -135,6 +135,11 @@ public class ClassTreeWithBrowserTextNode extends LazyTreeNode {
 
 		 public void browserTextChanged(FrameEvent event) {
 			 if (event.isReplacementEvent()) return;
+			 FrameWithBrowserText fbt = (FrameWithBrowserText) getUserObject();
+			 Frame frame = fbt.getFrame();
+			 if (frame != null) {
+				 fbt.setBrowserText(frame.getBrowserText());
+			 }			 
 			 notifyNodeChanged();
 		 }
 
