@@ -129,8 +129,12 @@ public class OWLMenuProjectPlugin extends ProjectPluginAdapter {
         // Added - JLV.  Decided to completely regenerate the Help menu.
         // It is too error prone to guess what Core Protege added and then
         // figure out where OWL specific menu items should be inserted.
-        JMenu helpMenu = menuBar.getMenu(menuBar.getMenuCount() - 1);
-        regenerateHelpMenu(helpMenu, owlModel);
+        JMenu helpMenu = ComponentUtilities.getMenu(menuBar, LocalizedText.getText(ResourceKey.MENUBAR_HELP));
+        if (helpMenu != null) {
+            regenerateHelpMenu(helpMenu, owlModel);
+        } else {
+            Log.getLogger().warning("Protege-OWL could not adapt the Help menu.");
+        }
 
         // add OWLMenu to mainMenuBar
         menuBar.add(owlMenu, 3);
