@@ -13,7 +13,6 @@ import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 
-import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
 import edu.stanford.smi.protegex.owl.jena.writersettings.JenaWriterSettings;
 import edu.stanford.smi.protegex.owl.jena.writersettings.WriterSettings;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
@@ -41,7 +40,7 @@ public class WriterSettingsPanel extends JComponent {
         this.owlModel = owlModel;
 
         jenaButton = new JRadioButton("Default Jena writer");
-        protegeButton = new JRadioButton("Experimental native writer");
+        protegeButton = new JRadioButton("Native writer");
 
         writerSettings = owlModel.getWriterSettings();
         if (writerSettings instanceof JenaWriterSettings) {
