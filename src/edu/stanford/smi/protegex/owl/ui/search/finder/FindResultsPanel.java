@@ -167,8 +167,11 @@ public class FindResultsPanel extends JComponent {
     public void refresh(int searchType) {
         textField.setEnabled(false);
         String searchString = textField.getText();
-        if (!find.getLastSearch().equals(searchString)) {
+        if (!find.getLastSearch().equals(searchString) || find.getSearchType() != searchType) {
             find.startSearch(searchString, searchType);
+        }
+        else {
+            textField.setEnabled(true);
         }
     }
 
