@@ -34,14 +34,16 @@ public class LogicalClassDefinitions {
         OWLNamedClass kidClass = owlModel.createOWLNamedClass("Kid");
         kidClass.addSuperclass(intersectionClass);
 
-        String expression = "Person & !(Man | Woman)";
+       // String expression = "Person & !(Man | Woman)";
+        String expression = "Person and not (Man or Woman)";
         OWLIntersectionClass ic = (OWLIntersectionClass) owlModel.createRDFSClassFromExpression(expression);
         System.out.println("Browser text: " + ic.getBrowserText());
 
         String parsable = intersectionClass.getParsableExpression();
         System.out.println("Expression: " + parsable);
 
-        RDFSClass c = owlModel.createRDFSClassFromExpression("!(" + parsable + ")");
+        //RDFSClass c = owlModel.createRDFSClassFromExpression("!(" + parsable + ")");
+        RDFSClass c = owlModel.createRDFSClassFromExpression("not(" + parsable + ")");
         System.out.println("New expression: " + c.getParsableExpression());
     }
 }
