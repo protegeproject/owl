@@ -1,7 +1,6 @@
 package edu.stanford.smi.protegex.owl.server;
 
 import edu.stanford.smi.protege.model.Cls;
-import edu.stanford.smi.protege.model.KnowledgeBase;
 import edu.stanford.smi.protege.model.Project;
 import edu.stanford.smi.protege.server.RemoteProjectManager;
 import edu.stanford.smi.protege.server.Server_Test;
