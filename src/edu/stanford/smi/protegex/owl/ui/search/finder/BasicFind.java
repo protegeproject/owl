@@ -145,6 +145,7 @@ public class BasicFind implements Find {
         }
     }
 
+    @SuppressWarnings("deprecation")
     protected Map<RDFResource, FindResult> searchOnSlot(Slot searchProp, 
                                                         String searchStr,
                                                         String lang, 
@@ -153,6 +154,7 @@ public class BasicFind implements Find {
             log.fine("Starting search on slot = " + searchProp + " [" + Thread.currentThread().getName() + "]");
         }
         Map<RDFResource, FindResult> slotResults = new HashMap<RDFResource, FindResult>();
+        Slot nameSlot = owlModel.getNameSlot();
 
         Collection<Frame> frames = null;
 
@@ -162,7 +164,7 @@ public class BasicFind implements Find {
             case STARTS_WITH:
                 actualSearchString += "*"; // no break
             case EXACTLY_MATCHES:
-                if (lang != null) {
+                if (!searchProp.equals(nameSlot) && lang != null) {
                     actualSearchString = "~#" + lang + " " + actualSearchString;
                 }
                 break;
@@ -173,9 +175,27 @@ public class BasicFind implements Find {
                 actualSearchString = "*" + actualSearchString;
                 break;
         }
+        if ((searchType == STARTS_WITH || searchType == EXACTLY_MATCHES) && searchProp.equals(nameSlot)) {
+            actualSearchString = "*" + actualSearchString;
+        }
 
         frames = ((KnowledgeBase) owlModel).getMatchingFrames(searchProp, null, false, actualSearchString, BasicFind.MAX_MATCHES);
 
+        if ((searchType == STARTS_WITH || searchType == EXACTLY_MATCHES) && searchProp.equals(nameSlot)) {
+            Set<Frame> selectedFrames = new HashSet<Frame>();
+            for (Frame frame : frames) {
+                if (searchType == STARTS_WITH && frame instanceof RDFResource 
+                        && ((RDFResource) frame).getLocalName().startsWith(searchStr)) {
+                    selectedFrames.add(frame);
+                }
+                else if (searchType == EXACTLY_MATCHES && frame instanceof RDFResource
+                            && ((RDFResource) frame).getLocalName().equals(searchStr)) {
+                    selectedFrames.add(frame);
+                }
+            }
+            frames = selectedFrames;
+        }
+        
         if (frames != null) {
             for (Frame f : frames) {
                 if (status == FindStatus.CANCELLING) {
