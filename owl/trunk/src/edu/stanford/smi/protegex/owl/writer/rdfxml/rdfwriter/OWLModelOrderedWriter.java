@@ -1,10 +1,10 @@
 package edu.stanford.smi.protegex.owl.writer.rdfxml.rdfwriter;
 
+import java.io.Writer;
+
 import edu.stanford.smi.protege.ui.FrameComparator;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
-
-import java.io.Writer;
 
 /**
  * User: matthewhorridge<br>
