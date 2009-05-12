@@ -58,6 +58,8 @@ public class RDFAxiomRenderer extends OWLModelVisitorAdapter {
     private RDFResource resource;
 
     private TripleStore tripleStore;
+    
+    private boolean sort = false;
 
 
     public RDFAxiomRenderer(RDFResource resource,
@@ -68,7 +70,15 @@ public class RDFAxiomRenderer extends OWLModelVisitorAdapter {
         this.resource = resource;
     }
 
-
+    public RDFAxiomRenderer(RDFResource resource,
+                            TripleStore tripleStore,
+                            XMLWriter writer,
+                            boolean sort) {
+        this.writer = writer;
+        this.tripleStore = tripleStore;
+        this.resource = resource;
+        this.sort = sort;
+    }
     protected RDFAxiomRenderer() {
 
     }
@@ -267,7 +277,7 @@ public class RDFAxiomRenderer extends OWLModelVisitorAdapter {
             }
 
             // Annotations, sameAs, differentFrom etc. and other misc properties
-            Util.insertProperties(cls, tripleStore, writer);
+            Util.insertProperties(cls, tripleStore, writer, sort);
             writer.writeEndElement(); // end of getRDFType element
         }
         catch (Exception e) {
@@ -305,7 +315,7 @@ public class RDFAxiomRenderer extends OWLModelVisitorAdapter {
             }
             // Range
             // Rendered with property values
-            Util.insertProperties(property, tripleStore, writer);
+            Util.insertProperties(property, tripleStore, writer, sort);
             writer.writeEndElement(); // End of property
         }
         catch (Exception e) {
@@ -325,7 +335,7 @@ public class RDFAxiomRenderer extends OWLModelVisitorAdapter {
             }
             Util.insertIDOrAboutAttribute(individual, tripleStore, writer);
             renderTypes(individual, type);
-            Util.insertProperties(individual, tripleStore, writer);
+            Util.insertProperties(individual, tripleStore, writer, sort);
             writer.writeEndElement(); // end of owl:Class
         }
         catch (Exception e) {

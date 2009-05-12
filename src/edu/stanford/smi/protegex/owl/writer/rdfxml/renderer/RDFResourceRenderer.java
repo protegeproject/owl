@@ -69,6 +69,8 @@ public class RDFResourceRenderer extends OWLModelVisitorAdapter {
     private XMLWriter writer;
 
     private TripleStore tripleStore;
+    
+    private boolean sort = false;
 
 
     public RDFResourceRenderer(Visitable rdfResource, TripleStore tripleStore, XMLWriter writer) {
@@ -77,6 +79,12 @@ public class RDFResourceRenderer extends OWLModelVisitorAdapter {
         this.writer = writer;
     }
 
+    public RDFResourceRenderer(Visitable rdfResource, TripleStore tripleStore, XMLWriter writer, boolean sort) {
+        this.resource = rdfResource;
+        this.tripleStore = tripleStore;
+        this.writer = writer;
+        this.sort = sort;
+    }
 
     public void write() {
         resource.accept(this);
@@ -329,7 +337,7 @@ public class RDFResourceRenderer extends OWLModelVisitorAdapter {
         try {
             if (rdfsDatatype.isAnonymous()) {
                 writer.writeStartElement(Util.getPrefixedName(RDFSNames.Cls.DATATYPE, tripleStore));
-                Util.insertProperties(rdfsDatatype, tripleStore, writer);
+                Util.insertProperties(rdfsDatatype, tripleStore, writer, sort);
             }
             else {
                 writer.writeAttribute(Util.getPrefixedName(RDFNames.Slot.RESOURCE, tripleStore), rdfsDatatype.getURI());
@@ -489,7 +497,7 @@ public class RDFResourceRenderer extends OWLModelVisitorAdapter {
 
 
     private void insertProperties(RDFResource resource) throws IOException {
-        Util.insertProperties(resource, tripleStore, writer);
+        Util.insertProperties(resource, tripleStore, writer, sort);
     }
 
     @Override
