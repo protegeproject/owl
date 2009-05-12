@@ -1,9 +1,11 @@
 package edu.stanford.smi.protegex.owl.writer.rdfxml.util;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.TreeSet;
 
 import edu.stanford.smi.protegex.owl.model.NamespaceManager;
 import edu.stanford.smi.protegex.owl.model.NamespaceUtil;
@@ -18,6 +20,7 @@ import edu.stanford.smi.protegex.owl.model.RDFSLiteral;
 import edu.stanford.smi.protegex.owl.model.RDFSNames;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 import edu.stanford.smi.protegex.owl.model.visitor.Visitable;
+import edu.stanford.smi.protegex.owl.writer.rdfxml.rdfwriter.NativeValueComparator;
 import edu.stanford.smi.protegex.owl.writer.rdfxml.renderer.RDFResourceRenderer;
 import edu.stanford.smi.protegex.owl.writer.rdfxml.renderer.Vocab;
 import edu.stanford.smi.protegex.owl.writer.xml.XMLWriter;
@@ -107,12 +110,31 @@ public class Util {
      */
     public static void insertProperties(RDFResource resource,
                                         TripleStore tripleStore,
-                                        XMLWriter writer) throws IOException {
-        for (Iterator it = resource.getRDFProperties().iterator(); it.hasNext();) {
-            RDFProperty curProp = (RDFProperty) it.next();
+                                        XMLWriter writer, 
+                                        boolean sort) throws IOException {
+        Collection<RDFProperty> properties;
+        if (sort) {
+            properties = new TreeSet<RDFProperty>();
+            for (Object o : resource.getRDFProperties()) {
+                if (o instanceof RDFProperty) {
+                    properties.add((RDFProperty) o);
+                }
+            }
+        }
+        else {
+            properties = resource.getRDFProperties();
+        }
+        for (RDFProperty curProp :properties) {
             if (excludedPropertyNames.contains(curProp.getName()) == false) {
-                for (Iterator valIt = resource.getPropertyValues(curProp).iterator(); valIt.hasNext();) {
-                    Object curVal = valIt.next();
+                Collection values;
+                if (sort) {
+                    values = new TreeSet(new NativeValueComparator());
+                    values.addAll(resource.getPropertyValues(curProp));
+                }
+                else {
+                    values = resource.getPropertyValues(curProp);
+                }
+                for (Object curVal : values) {
                     if (tripleStore.contains(resource, curProp, curVal)) {
                         if (curVal instanceof RDFResource || curVal instanceof RDFExternalResource) {
                             insertResourceAsElement(curProp, writer);
