@@ -1,7 +1,7 @@
-; Mon Jun 23 11:47:56 PDT 2008
+; Mon May 11 12:32:08 PDT 2009
 ; 
 ;+ (version "3.4")
-;+ (build "Build 501")
+;+ (build "Build 533")
 
 
 (defclass %3ACLIPS_TOP_LEVEL_SLOT_CLASS "Fake class to save top-level slot information"
@@ -11,6 +11,10 @@
 		(type INSTANCE)
 ;+		(allowed-classes User)
 ;+		(inverse-slot group)
+		(create-accessor read-write))
+	(single-slot hostName
+		(type STRING)
+;+		(cardinality 0 1)
 		(create-accessor read-write))
 	(single-slot allowedGroup
 		(type INSTANCE)
@@ -43,36 +47,11 @@
 		(type INSTANCE)
 ;+		(allowed-classes Operation)
 		(create-accessor read-write))
-	(single-slot description
-		(type STRING)
-;+		(cardinality 0 1)
-		(create-accessor read-write))
-	(multislot allowedGroupOperation
-		(type INSTANCE)
-;+		(allowed-classes GroupOperation)
-		(create-accessor read-write)))
-
-(defclass Project "This class represents the class of all projects.  When the server reads this ontology, it examines each instance of this class and attempts to load the project associated with that instance.  The only two fields that the server examines are the location, which represents the location of the project file in the file system (relative paths  are allowed) and the name, which represents the string thhat is shown to the user so the user  can choose a project to edit."
-	(is-a USER)
-	(role concrete)
-	(single-slot description
-		(type STRING)
-;+		(cardinality 0 1)
-		(create-accessor read-write))
 	(multislot allowedGroupOperation
 		(type INSTANCE)
 ;+		(allowed-classes GroupOperation)
 		(create-accessor read-write))
-	(single-slot name_
-		(type STRING)
-;+		(cardinality 0 1)
-		(create-accessor read-write))
-	(single-slot owner
-		(type INSTANCE)
-;+		(allowed-classes User)
-;+		(cardinality 0 1)
-		(create-accessor read-write))
-	(single-slot location
+	(single-slot description
 		(type STRING)
 ;+		(cardinality 0 1)
 		(create-accessor read-write)))
@@ -135,5 +114,42 @@
 	(single-slot allowedGroup
 		(type INSTANCE)
 ;+		(allowed-classes Group)
+;+		(cardinality 0 1)
+		(create-accessor read-write)))
+
+(defclass PolicyControlledObject
+	(is-a USER)
+	(role concrete)
+	(multislot allowedGroupOperation
+		(type INSTANCE)
+;+		(allowed-classes GroupOperation)
+		(create-accessor read-write))
+	(single-slot description
+		(type STRING)
+;+		(cardinality 0 1)
+		(create-accessor read-write))
+	(single-slot name_
+		(type STRING)
+;+		(cardinality 0 1)
+		(create-accessor read-write)))
+
+(defclass Server
+	(is-a PolicyControlledObject)
+	(role concrete)
+	(single-slot hostName
+		(type STRING)
+;+		(cardinality 0 1)
+		(create-accessor read-write)))
+
+(defclass Project "This class represents the class of all projects.  When the server reads this ontology, it examines each instance of this class and attempts to load the project associated with that instance.  The only two fields that the server examines are the location, which represents the location of the project file in the file system (relative paths  are allowed) and the name, which represents the string thhat is shown to the user so the user  can choose a project to edit."
+	(is-a PolicyControlledObject)
+	(role concrete)
+	(single-slot owner
+		(type INSTANCE)
+;+		(allowed-classes User)
+;+		(cardinality 0 1)
+		(create-accessor read-write))
+	(single-slot location
+		(type STRING)
 ;+		(cardinality 0 1)
 		(create-accessor read-write)))
