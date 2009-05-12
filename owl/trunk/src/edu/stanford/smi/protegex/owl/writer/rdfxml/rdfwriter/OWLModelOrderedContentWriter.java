@@ -99,7 +99,7 @@ public class OWLModelOrderedContentWriter implements RDFXMLContentWriter {
         for (Iterator it = model.getOWLOntologies().iterator(); it.hasNext();) {
             OWLOntology ont = (OWLOntology) it.next();
             if (ont.getName().equals(tripleStore.getName())) {
-                RDFResourceRenderer renderer = new RDFResourceRenderer(ont, tripleStore, writer);
+                RDFResourceRenderer renderer = new RDFResourceRenderer(ont, tripleStore, writer, true);
                 renderer.write();
                 renderedResources.add(ont);
             }
@@ -109,7 +109,7 @@ public class OWLModelOrderedContentWriter implements RDFXMLContentWriter {
         for (Iterator it = model.getOWLAllDifferents().iterator(); it.hasNext();) {
             OWLAllDifferent curAllDifferent = (OWLAllDifferent) it.next();
             if (model.getTripleStoreModel().getHomeTripleStore(curAllDifferent).equals(tripleStore)) {
-                RDFResourceRenderer ren = new RDFResourceRenderer(curAllDifferent, tripleStore, writer);
+                RDFResourceRenderer ren = new RDFResourceRenderer(curAllDifferent, tripleStore, writer, true);
                 ren.write();
                 renderedResources.add(curAllDifferent);
             }
@@ -119,7 +119,7 @@ public class OWLModelOrderedContentWriter implements RDFXMLContentWriter {
         // triplestore
         for (Iterator it = getResources().iterator(); it.hasNext();) {
             RDFResource curRes = (RDFResource) it.next();
-            RDFAxiomRenderer axiomRenderer = new RDFAxiomRenderer(curRes, tripleStore, writer);
+            RDFAxiomRenderer axiomRenderer = new RDFAxiomRenderer(curRes, tripleStore, writer, true);
             axiomRenderer.write();
             renderedResources.add(curRes);
         }
