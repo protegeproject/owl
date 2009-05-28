@@ -5,8 +5,6 @@ import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.SWRLRuleEngineBridge
 
 import edu.stanford.smi.protegex.owl.swrl.sqwrl.ObjectValue;
 
-import edu.stanford.smi.protegex.owl.model.OWLModel;
-
 import java.util.Set;
 
 public interface OWLIndividual extends OWLObject, OWLPropertyValue, IndividualArgument, ObjectValue

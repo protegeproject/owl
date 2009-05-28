@@ -25,6 +25,7 @@ public interface BuiltInAtom extends Atom
   Set<String> getUnboundArgumentVariableNames() throws BuiltInException;
   String getArgumentVariableName(int argumentNumber) throws BuiltInException;
   Set<String> getArgumentsVariableNames() throws BuiltInException;
+  Set<String> getArgumentsVariableNamesExceptFirst() throws BuiltInException;
   void addArguments(List<BuiltInArgument> additionalArguments);
 
   boolean usesSQWRLVariables();

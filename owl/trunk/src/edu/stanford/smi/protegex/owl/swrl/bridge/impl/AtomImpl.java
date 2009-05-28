@@ -33,22 +33,22 @@ public class AtomImpl implements Atom
   public boolean hasReferencedVariables() { return referencedVariableNames.size() != 0; }
   public Set<String> getReferencedVariableNames() { return referencedVariableNames; }
   
-  protected void addReferencedClassName(String className) 
+  public void addReferencedClassName(String className) 
   { 
     if (!referencedClassNames.contains(className)) referencedClassNames.add(className); 
   } // addReferencedIndividualName
 
-  protected void addReferencedPropertyName(String propertyName) 
+  public void addReferencedPropertyName(String propertyName) 
   { 
     if (!referencedPropertyNames.contains(propertyName)) referencedPropertyNames.add(propertyName); 
   } // addReferencedIndividualName
 
-  protected void addReferencedIndividualName(String individualName) 
+  public void addReferencedIndividualName(String individualName) 
   { 
     if (!referencedIndividualNames.contains(individualName)) referencedIndividualNames.add(individualName); 
   } // addReferencedIndividualName
   
-  protected void addReferencedVariableName(String variableName) 
+  public void addReferencedVariableName(String variableName) 
   { 
     if (!referencedVariableNames.contains(variableName)) referencedVariableNames.add(variableName); 
   } // addReferencedVariableName

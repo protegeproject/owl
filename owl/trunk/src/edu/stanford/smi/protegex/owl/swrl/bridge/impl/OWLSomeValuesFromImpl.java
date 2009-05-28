@@ -4,12 +4,6 @@ package edu.stanford.smi.protegex.owl.swrl.bridge.impl;
 import edu.stanford.smi.protegex.owl.swrl.bridge.OWLSomeValuesFrom;
 import edu.stanford.smi.protegex.owl.swrl.bridge.OWLClass;
 import edu.stanford.smi.protegex.owl.swrl.bridge.OWLProperty;
-import edu.stanford.smi.protegex.owl.swrl.util.SWRLOWLUtil;
-import edu.stanford.smi.protegex.owl.swrl.exceptions.SWRLOWLUtilException;
-
-import edu.stanford.smi.protegex.owl.model.OWLModel;
-
-import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.SWRLRuleEngineBridgeException;
 
 public class OWLSomeValuesFromImpl extends OWLRestrictionImpl implements OWLSomeValuesFrom 
 {
@@ -22,20 +16,6 @@ public class OWLSomeValuesFromImpl extends OWLRestrictionImpl implements OWLSome
   } // OWLRestrictionImpl
 
   public OWLClass getSomeValuesFrom() { return someValuesFrom; }
-
-  public void write2OWL(OWLModel owlModel) throws SWRLRuleEngineBridgeException
-  {
-    try {
-      edu.stanford.smi.protegex.owl.model.OWLSomeValuesFrom someValuesFrom = SWRLOWLUtil.getOWLSomeValuesFrom(owlModel, asOWLClass().getClassName());
-      edu.stanford.smi.protegex.owl.model.OWLProperty property = SWRLOWLUtil.getOWLProperty(owlModel, getProperty().getPropertyName());
-      edu.stanford.smi.protegex.owl.model.RDFResource filler = SWRLOWLUtil.getClass(owlModel, getSomeValuesFrom().getClassName());
-      
-      someValuesFrom.setOnProperty(property);
-      someValuesFrom.setFiller(filler); 
-    } catch (SWRLOWLUtilException e) {
-      throw new SWRLRuleEngineBridgeException("error writing someValuesFrom " + toString() + ": " + e.getMessage());
-    } // try
-  } // write2OWL
 
   public String toString()
   {
@@ -63,4 +43,4 @@ public class OWLSomeValuesFromImpl extends OWLRestrictionImpl implements OWLSome
     return hash;
   } // hashCode
 
-} // OWLRestrictionImpl
+} // OWLSomeValuesFromImpl

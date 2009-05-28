@@ -27,5 +27,5 @@ public class Literal extends OWLDatatypeValueImpl implements ResultValue, Dataty
   public Literal(float f) { super(f); }
   public Literal(double d) { super(d); }
   public Literal(PrimitiveXSDType value) { super(value); }
-  public Literal(OWLModel owlModel, RDFSLiteral literal) throws DatatypeConversionException { super(owlModel, literal); }
+  //  public Literal(OWLModel owlModel, RDFSLiteral literal) throws DatatypeConversionException { super(owlModel, literal); }
 } // Literal

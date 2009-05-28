@@ -7,4 +7,5 @@ package edu.stanford.smi.protegex.owl.swrl.bridge;
 public interface IndividualArgument extends BuiltInArgument, AtomArgument
 {
   String getIndividualName();
+  String getPrefixedIndividualName();
 } // IndividualArgument

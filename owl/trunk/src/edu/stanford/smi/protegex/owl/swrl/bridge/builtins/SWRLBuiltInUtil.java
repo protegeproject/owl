@@ -269,6 +269,13 @@ public class SWRLBuiltInUtil
     } // if
   } // checkThatArgumentIsAnOWLDatatypeValue
 
+  public static String getArgumentAsAPrefixedIndividualName(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException
+  {
+    checkThatArgumentIsAnIndividual(argumentNumber, arguments);
+
+    return ((IndividualArgument)arguments.get(argumentNumber)).getPrefixedIndividualName();
+  } // getArgumentAsAPrefixedIndividualName
+
   public static String getArgumentAsAnIndividualName(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException
   {
     checkThatArgumentIsAnIndividual(argumentNumber, arguments);

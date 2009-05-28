@@ -43,8 +43,6 @@ public interface DatatypeValue extends ResultValue
   BigInteger getBigInteger() throws DatatypeConversionException;
   Number getNumber() throws DatatypeConversionException;
 
-  RDFSLiteral asRDFSLiteral(OWLModel owlModel) throws DatatypeConversionException;
-
   // Primitive XML Schema types not covered by Java types.
   boolean isPrimitiveXSDType();
 

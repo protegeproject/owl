@@ -5,8 +5,6 @@ import edu.stanford.smi.protegex.owl.swrl.bridge.*;
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.*;
 import edu.stanford.smi.protegex.owl.swrl.bridge.xsd.*;
 
-import edu.stanford.smi.protegex.owl.model.*;
-
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.io.*;
@@ -27,47 +25,6 @@ public class OWLDatatypeValueImpl extends BuiltInArgumentImpl implements OWLData
   public OWLDatatypeValueImpl(double d) { value = Double.valueOf(d); }
   public OWLDatatypeValueImpl(short s) { value = Short.valueOf(s); }
   public OWLDatatypeValueImpl(PrimitiveXSDType value) { this.value = value; }
-
-  public OWLDatatypeValueImpl(OWLModel owlModel, RDFSLiteral literal) throws DatatypeConversionException
-  {
-    RDFSDatatype datatype = literal.getDatatype();
-
-    if ((datatype == owlModel.getXSDint()) || (datatype == owlModel.getXSDinteger()))  value = Integer.valueOf(literal.getInt());
-    else if (datatype == owlModel.getXSDshort()) value = Short.valueOf(literal.getShort());
-    else if (datatype == owlModel.getXSDlong()) value = Long.valueOf(literal.getLong());
-    else if (datatype == owlModel.getXSDboolean()) value = Boolean.valueOf(literal.getBoolean());
-    else if (datatype == owlModel.getXSDfloat()) value = Float.valueOf(literal.getFloat());
-    else if (datatype == owlModel.getXSDdouble()) value = Double.valueOf(literal.getDouble());
-    else if ((datatype == owlModel.getXSDstring())) value = String.valueOf(literal.getString());
-    else if ((datatype == owlModel.getXSDtime())) value = new Time(literal.getString());
-    else if ((datatype == owlModel.getXSDanyURI())) value = new AnyURI(literal.getString());
-    else if ((datatype == owlModel.getXSDbase64Binary())) value = new Base64Binary(literal.getString());
-    else if ((datatype == owlModel.getXSDbyte())) value = Byte.valueOf(literal.getString());
-    else if ((datatype == owlModel.getXSDduration())) value = new Duration(literal.getString());
-    else if ((datatype == owlModel.getXSDdateTime())) value = new DateTime(literal.getString());
-    else if ((datatype == owlModel.getXSDdate())) value = new Date(literal.getString());
-    else throw new DatatypeConversionException("cannot create an OWLDatatypeValue object for RDFS literal '" + literal.getString()
-                                               + "' of type '" + datatype + "'");
-  } // OWLDatatypeValueImpl
-
-  public RDFSLiteral asRDFSLiteral(OWLModel owlModel) throws DatatypeConversionException
-  {
-    RDFSLiteral literal = null;
-
-    if (isString()) literal = owlModel.asRDFSLiteral(getString());
-    else if (isInteger()) literal = owlModel.asRDFSLiteral(getInt());
-    else if (isLong()) literal = owlModel.asRDFSLiteral(getLong());
-    else if (isBoolean()) literal = owlModel.asRDFSLiteral(getBoolean());
-    else if (isFloat()) literal = owlModel.asRDFSLiteral(getFloat());
-    else if (isDouble()) literal = owlModel.asRDFSLiteral(getDouble());
-    else if (isShort()) literal = owlModel.asRDFSLiteral(getShort());
-    else if (isBigDecimal()) literal = owlModel.asRDFSLiteral(getBigDecimal());
-    else if (isBigInteger()) literal = owlModel.asRDFSLiteral(getBigInteger());
-    else if (isByte()) literal = owlModel.asRDFSLiteral(getByte());
-    else throw new DatatypeConversionException("cannot convert OWLDatatypeValue with value '" + value + "' to RDFSLiteral");
-
-    return literal;
-  } // asRDFSLiteral
 
   // Java String type
   public boolean isString() { return value instanceof String; }

@@ -5,9 +5,6 @@ import edu.stanford.smi.protegex.owl.swrl.bridge.*;
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.DatatypeConversionException;
 import edu.stanford.smi.protegex.owl.swrl.bridge.xsd.PrimitiveXSDType;
 
-import edu.stanford.smi.protegex.owl.model.OWLModel;
-import edu.stanford.smi.protegex.owl.model.RDFSLiteral;
-
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
@@ -34,7 +31,8 @@ public class ArgumentFactoryImpl extends ArgumentFactory
   public DatatypeValueArgument createDatatypeValueArgument(BigDecimal bd) { return new OWLDatatypeValueImpl(bd); }
   public DatatypeValueArgument createDatatypeValueArgument(BigInteger bi) { return new OWLDatatypeValueImpl(bi); }
   public DatatypeValueArgument createDatatypeValueArgument(PrimitiveXSDType xsd) { return new OWLDatatypeValueImpl(xsd); }
-  public DatatypeValueArgument createDatatypeValueArgument(OWLModel owlModel, RDFSLiteral literal) throws DatatypeConversionException { return new OWLDatatypeValueImpl(owlModel, literal); }
+
+  public DatatypeValueArgument createDatatypeValueArgument(OWLDatatypeValue datatypeValue) { return datatypeValue; }
 
   public MultiArgument createMultiArgument(String variableName, String prefixedVariableName) { return new MultiArgumentImpl(variableName, prefixedVariableName); }
   public MultiArgument createMultiArgument(String variableName, String prefixedVariableName, List<BuiltInArgument> arguments) { return new MultiArgumentImpl(variableName, prefixedVariableName, arguments); }

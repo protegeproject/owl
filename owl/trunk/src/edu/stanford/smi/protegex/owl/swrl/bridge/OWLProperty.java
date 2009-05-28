@@ -3,8 +3,6 @@ package edu.stanford.smi.protegex.owl.swrl.bridge;
 
 import edu.stanford.smi.protegex.owl.swrl.sqwrl.PropertyValue;
 
-import edu.stanford.smi.protegex.owl.model.OWLModel;
-
 import java.util.Set;
 
 /**

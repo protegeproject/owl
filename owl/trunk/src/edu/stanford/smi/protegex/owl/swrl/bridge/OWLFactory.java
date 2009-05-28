@@ -10,12 +10,7 @@ import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.*;
 
 import edu.stanford.smi.protegex.owl.swrl.sqwrl.exceptions.*;
 
-import edu.stanford.smi.protegex.owl.swrl.model.*;
-import edu.stanford.smi.protegex.owl.model.OWLModel;
-import edu.stanford.smi.protegex.owl.model.RDFSLiteral;
-import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
-
-import java.util.*;
+ import java.util.*;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
@@ -25,41 +20,24 @@ import java.math.BigInteger;
  */
 public class OWLFactory
 {
-  // SWRL atoms
-  public static BuiltInAtom createBuiltInAtom(OWLModel owlModel, SWRLBuiltinAtom atom) throws OWLFactoryException, DatatypeConversionException  { return new BuiltInAtomImpl(owlModel, atom); } 
-  public static BuiltInAtom createBuiltInAtom(String builtInName, String builtInPrefixedName, List<BuiltInArgument> arguments) { return new BuiltInAtomImpl(builtInName, builtInPrefixedName, arguments); } 
-  public static ClassAtom createClassAtom(SWRLClassAtom atom) throws OWLFactoryException { return new ClassAtomImpl(atom); }
-  public static DataRangeAtom createDataRangeAtom(SWRLDataRangeAtom atom) throws OWLFactoryException { return new DataRangeAtomImpl(atom); }
-  public static DatavaluedPropertyAtom createDatavaluedPropertyAtom(OWLModel owlModel, SWRLDatavaluedPropertyAtom atom) throws OWLFactoryException, DatatypeConversionException { return new DatavaluedPropertyAtomImpl(owlModel, atom); }
-  public static DifferentIndividualsAtom createDifferentIndividualsAtom(SWRLDifferentIndividualsAtom atom) throws OWLFactoryException { return new DifferentIndividualsAtomImpl(atom); }
-  public static IndividualPropertyAtom createIndividualPropertyAtom(SWRLIndividualPropertyAtom atom) throws OWLFactoryException { return new IndividualPropertyAtomImpl(atom); }
-  public static SameIndividualAtom createSameIndividualAtom(SWRLSameIndividualAtom atom) throws OWLFactoryException { return new SameIndividualAtomImpl(atom); }
-
-  // SWRL and basic OWL entities
+  // SWRL entities
   public static SWRLRule createSWRLRule(String ruleName, List<Atom> bodyAtoms, List<Atom> headAtoms) throws SQWRLException, BuiltInException { return new SWRLRuleImpl(ruleName, bodyAtoms, headAtoms); }
 
-  public static OWLClass createOWLClass(OWLModel owlModel) throws OWLFactoryException { return new OWLClassImpl(owlModel); }
-  public static OWLClass createOWLClass(OWLModel owlModel, String className) throws OWLFactoryException { return new OWLClassImpl(owlModel, className); }
-  public static OWLClass createOWLClass(edu.stanford.smi.protegex.owl.model.OWLNamedClass cls) throws OWLFactoryException { return new OWLClassImpl(cls.getOWLModel(), cls.getName()); }
-  public static OWLClass createOWLClass(String className) { return new OWLClassImpl(className); }
-  public static OWLClass createOWLClass(String className, String superclassName) { return new OWLClassImpl(className, superclassName); }
+  public static BuiltInAtom createBuiltInAtom(String builtInURI, String builtInPrefixedName, List<BuiltInArgument> arguments) { return new BuiltInAtomImpl(builtInURI, builtInPrefixedName, arguments); } 
+  // Basic OWL entities
 
-  public static OWLIndividual createOWLIndividual(OWLModel owlModel, String individualName) throws OWLFactoryException { return new OWLIndividualImpl(owlModel, individualName); }
-  public static OWLIndividual createOWLIndividual(edu.stanford.smi.protegex.owl.model.OWLIndividual individual) throws OWLFactoryException { return new OWLIndividualImpl(individual); }
-  public static OWLIndividual createOWLIndividual(OWLIndividual owlIndividual, OWLClass owlClass) throws OWLFactoryException { return new OWLIndividualImpl(owlIndividual, owlClass); }
-  public static OWLIndividual createOWLIndividual(String individualName) { return new OWLIndividualImpl(individualName); }
+  public static OWLClass createOWLClass(String classURI) { return new OWLClassImpl(classURI); }
+  public static OWLClass createOWLClass(String classURI, String superclassURI) { return new OWLClassImpl(classURI, superclassURI); }
 
-  public static OWLIndividual generateOWLIndividual(String individualName, String prefixedIndividualName, OWLClass owlClass) { return new OWLIndividualImpl(individualName, prefixedIndividualName, owlClass); }
+  public static OWLIndividual createOWLIndividual(String individualURI) { return new OWLIndividualImpl(individualURI); }
+  public static OWLIndividual createOWLIndividual(String individualURI, OWLClass owlClass) { return new OWLIndividualImpl(individualURI, individualURI, owlClass); }
 
-  public static OWLObjectProperty createOWLObjectProperty(edu.stanford.smi.protegex.owl.model.OWLObjectProperty property) throws OWLFactoryException { return new OWLObjectPropertyImpl(property.getOWLModel(), property.getName()); }
-  public static OWLObjectProperty createOWLObjectProperty(OWLModel owlModel, String propertyName) throws OWLFactoryException { return new OWLObjectPropertyImpl(owlModel, propertyName); }
-  public static OWLObjectProperty createOWLObjectProperty(String propertyName) { return new OWLObjectPropertyImpl(propertyName); }
+  public static OWLIndividual generateOWLIndividual(String individualURI, String prefixedIndividualName, OWLClass owlClass) { return new OWLIndividualImpl(individualURI, prefixedIndividualName, owlClass); }
 
-  public static OWLDatatypeProperty createOWLDatatypeProperty(edu.stanford.smi.protegex.owl.model.OWLDatatypeProperty property) throws OWLFactoryException { return new OWLDatatypePropertyImpl(property.getOWLModel(), property.getName()); }
-  public static OWLDatatypeProperty createOWLDatatypeProperty(OWLModel owlModel, String propertyName) throws OWLFactoryException { return new OWLDatatypePropertyImpl(owlModel, propertyName); }
-  public static OWLDatatypeProperty createOWLDatatypeProperty(String propertyName) { return new OWLDatatypePropertyImpl(propertyName); }
+  public static OWLObjectProperty createOWLObjectProperty(String propertyURI) { return new OWLObjectPropertyImpl(propertyURI); }
 
-  public static OWLDatatypeValue createOWLDatatypeValue(OWLModel owlModel, RDFSLiteral literal) throws DatatypeConversionException { return new OWLDatatypeValueImpl(owlModel, literal); }
+  public static OWLDatatypeProperty createOWLDatatypeProperty(String propertyURI) { return new OWLDatatypePropertyImpl(propertyURI); }
+
   public static OWLDatatypeValue createOWLDatatypeValue(String s) { return new OWLDatatypeValueImpl(s); }
   public static OWLDatatypeValue createOWLDatatypeValue(Number n) { return new OWLDatatypeValueImpl(n); }
   public static OWLDatatypeValue createOWLDatatypeValue(boolean b){ return new OWLDatatypeValueImpl(b); }
@@ -82,12 +60,13 @@ public class OWLFactory
   public static OWLClassPropertyAssertionAxiom createOWLClassPropertyAssertionAxiom(OWLIndividual subject, OWLProperty property, OWLClass object)  { return new OWLClassPropertyAssertionAxiomImpl(subject, property, object); } // OWL Full
   public static OWLPropertyPropertyAssertionAxiom createOWLPropertyPropertyAssertionAxiom(OWLIndividual subject, OWLProperty property, OWLProperty object)  { return new OWLPropertyPropertyAssertionAxiomImpl(subject, property, object); } // OWL Full
   public static OWLClassAssertionAxiom createOWLClassAssertionAxiom(OWLIndividual individual, OWLClass description)  { return new OWLClassAssertionAxiomImpl(individual, description); } // TODO: should be OWLDescription
+  public static OWLSubClassAxiom createOWLSubClassAxiom(OWLClass subClass, OWLClass superClass)  { return new OWLSubClassAxiomImpl(subClass, superClass); } // TODO: should be OWLDescription
 
   public static OWLSomeValuesFrom createOWLSomeValuesFrom(OWLClass owlClass, OWLProperty onProperty, OWLClass someValuesFrom)  { return new OWLSomeValuesFromImpl(owlClass, onProperty, someValuesFrom); } // TODO: should be OWLDescription
 
   // Arguments to atoms and built-ins
-  public static VariableAtomArgument createVariableAtomArgument(String variableName, String prefixedVariableName) { return new VariableAtomArgumentImpl(variableName, prefixedVariableName); }
-  public static VariableBuiltInArgument createVariableBuiltInArgument(String variableName, String prefixedVariableName) { return new VariableBuiltInArgumentImpl(variableName, prefixedVariableName); }
-  public static BuiltInArgument createBuiltInArgument(String variableName, String prefixedVariableName) { return new BuiltInArgumentImpl(variableName, prefixedVariableName); }
+  public static VariableAtomArgument createVariableAtomArgument(String variableURI, String prefixedVariableName) { return new VariableAtomArgumentImpl(variableURI, prefixedVariableName); }
+  public static VariableBuiltInArgument createVariableBuiltInArgument(String variableURI, String prefixedVariableName) { return new VariableBuiltInArgumentImpl(variableURI, prefixedVariableName); }
+  public static BuiltInArgument createBuiltInArgument(String variableURI, String prefixedVariableName) { return new BuiltInArgumentImpl(variableURI, prefixedVariableName); }
 
 } // OWLFactory

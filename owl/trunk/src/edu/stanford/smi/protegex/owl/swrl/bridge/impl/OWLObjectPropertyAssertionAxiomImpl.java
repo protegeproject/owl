@@ -4,10 +4,6 @@ package edu.stanford.smi.protegex.owl.swrl.bridge.impl;
 import edu.stanford.smi.protegex.owl.swrl.bridge.*;
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.*;
 
-import edu.stanford.smi.protegex.owl.swrl.util.SWRLOWLUtil;
-import edu.stanford.smi.protegex.owl.model.OWLModel;
-import edu.stanford.smi.protegex.owl.model.RDFProperty;
-
 public class OWLObjectPropertyAssertionAxiomImpl extends OWLPropertyAssertionAxiomImpl implements OWLObjectPropertyAssertionAxiom
 {
   private OWLIndividual object;
@@ -19,25 +15,6 @@ public class OWLObjectPropertyAssertionAxiomImpl extends OWLPropertyAssertionAxi
   } // OWLObjectPropertyAssertionAxiomImpl
 
   public OWLIndividual getObject() { return object; }
-
-  public void write2OWL(OWLModel owlModel) throws SWRLRuleEngineBridgeException
-  {
-    edu.stanford.smi.protegex.owl.model.OWLIndividual subjectIndividual, objectIndividual;
-    String propertyName = getProperty().getPropertyName();
-    String subjectIndividualName = getSubject().getIndividualName();
-    String objectIndividualName = getObject().getIndividualName();
-    RDFProperty property = SWRLOWLUtil.getOWLProperty(owlModel, propertyName);
-    
-    if (property == null) throw new InvalidPropertyNameException(propertyName);
-    
-    subjectIndividual = SWRLOWLUtil.getOWLIndividual(owlModel, subjectIndividualName);
-    if (subjectIndividual == null) throw new InvalidIndividualNameException(subjectIndividualName);
- 
-    objectIndividual = SWRLOWLUtil.getOWLIndividual(owlModel, objectIndividualName); 
-    if (objectIndividual == null) throw new InvalidIndividualNameException(objectIndividualName);
-
-    if (!subjectIndividual.hasPropertyValue(property, objectIndividual, false)) subjectIndividual.addPropertyValue(property, objectIndividual);
-  } // write2OWL
 
   public boolean equals(Object obj)
   {

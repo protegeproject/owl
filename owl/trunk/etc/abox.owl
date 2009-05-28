@@ -16,6 +16,7 @@
   <swrl:Builtin rdf:ID="notNumeric"/>
   <swrl:Builtin rdf:ID="isIndividual"/>
   <swrl:Builtin rdf:ID="isConstant"/>
+  <swrl:Builtin rdf:ID="hasNumberOfPropertyValues"/>
   <swrl:Builtin rdf:ID="hasClass"/>
   <swrl:Builtin rdf:ID="hasIndividual">
     <swrlb:args rdf:datatype="http://www.w3.org/2001/XMLSchema#int"

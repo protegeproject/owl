@@ -15,55 +15,24 @@ public class IndividualPropertyAtomImpl extends AtomImpl implements IndividualPr
   private String propertyName, prefixedPropertyName;
   private AtomArgument argument1, argument2;
 
-  public IndividualPropertyAtomImpl(SWRLIndividualPropertyAtom atom) throws OWLFactoryException
+  public IndividualPropertyAtomImpl(String propertyName, String prefixedPropertyName, AtomArgument argument1, AtomArgument argument2)
   {
-    propertyName = (atom.getPropertyPredicate() != null) ? atom.getPropertyPredicate().getName() : null;
-    prefixedPropertyName = (atom.getPropertyPredicate() != null) ? atom.getPropertyPredicate().getPrefixedName() : null;
-
-    if (propertyName == null) throw new OWLFactoryException("empty property name in SWRLIndividualPropertyAtom '" + atom + "'");
-    
-    addReferencedPropertyName(propertyName);
-
-    if (atom.getArgument1() instanceof SWRLVariable) {
-      SWRLVariable variable = (SWRLVariable)atom.getArgument1();
-      AtomArgument argument = OWLFactory.createVariableAtomArgument(variable.getName(), variable.getPrefixedName());
-      addReferencedVariableName(variable.getName());
-      argument1 = argument;
-    } else if (atom.getArgument1() instanceof edu.stanford.smi.protegex.owl.model.OWLIndividual) {
-      edu.stanford.smi.protegex.owl.model.OWLIndividual individual = (edu.stanford.smi.protegex.owl.model.OWLIndividual)atom.getArgument1();
-      OWLIndividual argument = OWLFactory.createOWLIndividual(individual);
-      addReferencedIndividualName(argument.getIndividualName());
-      argument1 = argument;
-    } else throw new OWLFactoryException("unexpected first argument to individual property atom '" + atom.getBrowserText() + 
-                                         "' - expecting variable or individual, got instance of " + atom.getArgument1().getClass());
-
-    if (atom.getArgument2() instanceof SWRLVariable) {
-      SWRLVariable variable = (SWRLVariable)atom.getArgument2();
-      AtomArgument argument = OWLFactory.createVariableAtomArgument(variable.getName(), variable.getPrefixedName());
-      addReferencedVariableName(variable.getName());
-      argument2 = argument;
-    } else if (atom.getArgument2() instanceof edu.stanford.smi.protegex.owl.model.OWLIndividual) {
-      edu.stanford.smi.protegex.owl.model.OWLIndividual individual = (edu.stanford.smi.protegex.owl.model.OWLIndividual)atom.getArgument2();
-      OWLIndividual argument = OWLFactory.createOWLIndividual(individual);
-      addReferencedIndividualName(argument.getIndividualName());
-      argument2 = argument;
-    } else if (atom.getArgument2() instanceof edu.stanford.smi.protegex.owl.model.OWLNamedClass) {
-      edu.stanford.smi.protegex.owl.model.OWLNamedClass cls = (edu.stanford.smi.protegex.owl.model.OWLNamedClass)atom.getArgument2();
-      OWLClass argument = OWLFactory.createOWLClass(cls);
-      addReferencedClassName(argument.getClassName());
-      argument2 = argument;
-    } else if (atom.getArgument2() instanceof edu.stanford.smi.protegex.owl.model.OWLProperty) {
-      edu.stanford.smi.protegex.owl.model.OWLProperty property = (edu.stanford.smi.protegex.owl.model.OWLProperty)atom.getArgument2();
-      OWLProperty argument;
-      if (property.isObjectProperty()) 
-        argument = OWLFactory.createOWLObjectProperty((edu.stanford.smi.protegex.owl.model.OWLObjectProperty)property);
-      else 
-        argument = OWLFactory.createOWLDatatypeProperty((edu.stanford.smi.protegex.owl.model.OWLDatatypeProperty)property);
-      addReferencedPropertyName(argument.getPropertyName());
-      argument2 = argument;
-    } else throw new OWLFactoryException("unexpected second argument to individual property atom '" + atom.getBrowserText() + 
-                                         "' - expecting variable or individual, got instance of " + atom.getArgument2().getClass());
+    this.propertyName = propertyName;
+    this.prefixedPropertyName = prefixedPropertyName;
+    this.argument1 = argument1;
+    this.argument2 = argument2;
   } // IndividualPropertyAtomImpl
+
+  public IndividualPropertyAtomImpl(String propertyName, String prefixedPropertyName)
+  {
+    this.propertyName = propertyName;
+    this.prefixedPropertyName = prefixedPropertyName;
+    this.argument1 = null;
+    this.argument2 = null;
+  } // IndividualPropertyAtomImpl
+    
+  public void setArgument1(AtomArgument argument1) { this.argument1 = argument1; }
+  public void setArgument2(AtomArgument argument2) { this.argument2 = argument2; }
 
   public String getPropertyName() { return propertyName; }  
   public String getPrefixedPropertyName() { return prefixedPropertyName; }  
