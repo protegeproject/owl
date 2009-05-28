@@ -11,10 +11,8 @@ import edu.stanford.smi.protegex.owl.swrl.model.SWRLDifferentIndividualsAtom;
 */
 public class DifferentIndividualsAtomImpl extends IndividualsAtomImpl implements DifferentIndividualsAtom
 {
-  public DifferentIndividualsAtomImpl(SWRLDifferentIndividualsAtom sameIndividualAtom) throws OWLFactoryException
-  { 
-    super(sameIndividualAtom); 
-  } // DifferentIndividualsAtomImpl
+  public DifferentIndividualsAtomImpl(AtomArgument argument1, AtomArgument argument2) { super(argument1, argument2); }
+  public DifferentIndividualsAtomImpl() { super(); }
 
   public String toString() { return "differentFrom(" + getArgument1() + ", " + getArgument2() + ")"; }
 } // DifferentIndividualsAtomImpl

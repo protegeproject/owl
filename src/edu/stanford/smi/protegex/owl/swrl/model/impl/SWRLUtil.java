@@ -65,7 +65,7 @@ public class SWRLUtil
     else if (o instanceof RDFSClass 
                || o instanceof RDFIndividual 
                || o instanceof RDFProperty) {
-        s += ((RDFResource) o).getBrowserText(); 
+        s += ParserUtils.quoteIfNeeded(((RDFResource) o).getBrowserText()); 
     }
     else if (o instanceof OWLDataRange) s += ((OWLDataRange)o).getBrowserText();
     else if (o instanceof RDFResource) s += ((RDFResource)o).getBrowserText();

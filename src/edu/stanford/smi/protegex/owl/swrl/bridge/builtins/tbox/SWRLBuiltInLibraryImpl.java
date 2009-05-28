@@ -1036,7 +1036,8 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
 
         someValuesFrom = OWLFactory.createOWLSomeValuesFrom(OWLFactory.createOWLClass(restrictionName), onProperty, OWLFactory.createOWLClass(onClassName));
 
-        getInvokingBridge().createOWLRestriction(someValuesFrom);
+        // getInvokingBridge().createOWLRestriction(someValuesFrom); // TODO
+        if (someValuesFrom != null) throw new BuiltInNotImplementedException();
       } else {
         onClassName = SWRLBuiltInUtil.getArgumentAsAClassName(2, arguments);
         throw new BuiltInNotImplementedException();

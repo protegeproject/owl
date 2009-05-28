@@ -13,6 +13,7 @@
   <swrl:Builtin rdf:ID="makeOWLIndividual"/>
   <swrl:Builtin rdf:ID="makeOWLThing"/>
   <swrl:Builtin rdf:ID="createOWLThing"/>
+  <swrl:Builtin rdf:ID="invokeSWRLBuiltIn"/>
 </rdf:RDF>
 
 <!-- Created with Protege (with OWL Plugin 3.4, Build 102)  http://protege.stanford.edu -->

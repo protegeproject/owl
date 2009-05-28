@@ -1,14 +1,10 @@
 
 package edu.stanford.smi.protegex.owl.swrl.bridge;
 
-import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.DatatypeConversionException;
 import edu.stanford.smi.protegex.owl.swrl.bridge.impl.ArgumentFactoryImpl;
-import edu.stanford.smi.protegex.owl.swrl.bridge.xsd.PrimitiveXSDType;
 
+import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.DatatypeConversionException;
 import edu.stanford.smi.protegex.owl.swrl.bridge.xsd.PrimitiveXSDType;
-
-import edu.stanford.smi.protegex.owl.model.OWLModel;
-import edu.stanford.smi.protegex.owl.model.RDFSLiteral;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -20,9 +16,7 @@ public abstract class ArgumentFactory
   public static ArgumentFactory getFactory() { return new ArgumentFactoryImpl(); }
 
   public abstract ClassArgument createClassArgument(String className);
-
   public abstract IndividualArgument createIndividualArgument(String individualName);
-
   public abstract ObjectPropertyArgument createObjectPropertyArgument(String propertyName);
   public abstract DatatypePropertyArgument createDatatypePropertyArgument(String propertyName);
 
@@ -38,7 +32,8 @@ public abstract class ArgumentFactory
   public abstract DatatypeValueArgument createDatatypeValueArgument(BigDecimal bd);
   public abstract DatatypeValueArgument createDatatypeValueArgument(BigInteger bi);
   public abstract DatatypeValueArgument createDatatypeValueArgument(PrimitiveXSDType xsd);
-  public abstract DatatypeValueArgument createDatatypeValueArgument(OWLModel owlModel, RDFSLiteral literal) throws DatatypeConversionException;
+
+  public abstract DatatypeValueArgument createDatatypeValueArgument(OWLDatatypeValue datatypeValue);
 
   public abstract MultiArgument createMultiArgument(String variableName, String prefixedVariableName);
   public abstract MultiArgument createMultiArgument(String variableName, String prefixedVariableName, List<BuiltInArgument> arguments);

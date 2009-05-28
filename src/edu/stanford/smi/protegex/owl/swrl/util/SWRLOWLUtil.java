@@ -85,8 +85,7 @@ public class SWRLOWLUtil
     if (errors.size() != 0) throwException("error creating output OWL file '" + outputOWLFileName + "': " + errors);
   } // writeJenaOWLModel2File
   
-  public static OWLNamedClass createOWLNamedClass(OWLModel owlModel, String className)
-    throws SWRLOWLUtilException
+  public static OWLNamedClass createOWLNamedClass(OWLModel owlModel, String className) throws SWRLOWLUtilException
   {
     OWLNamedClass cls = owlModel.getOWLNamedClass(className);
 
@@ -97,12 +96,44 @@ public class SWRLOWLUtil
     return cls;
   } // createOWLNamedClass
 
+  public static Set<OWLIndividual> getMatchingIndividuals(OWLModel owlModel, String propertyName, String matchString) 
+    throws SWRLOWLUtilException
+  {
+    RDFProperty property = getOWLProperty(owlModel, propertyName, true);
+    Collection matchingResources = owlModel.getMatchingResources(property, matchString, -1);
+    Set<OWLIndividual> matchingIndividuals = new HashSet<OWLIndividual>();
+
+    for (Object o : matchingResources) if (o instanceof OWLIndividual) matchingIndividuals.add((OWLIndividual)o);
+
+    return matchingIndividuals;
+  } // getMatchingIndividuals
+
+  public static Set<OWLIndividual> getMatchingIndividualsOfClass(OWLModel owlModel, String className, String propertyName, String matchString) 
+    throws SWRLOWLUtilException
+  {
+    Set<OWLIndividual> matchingIndividuals = new HashSet<OWLIndividual>();
+
+    for (OWLIndividual owlIndividual : getMatchingIndividuals(owlModel, propertyName, matchString))
+      if (isIndividualOfClass(owlModel, owlIndividual, className)) matchingIndividuals.add(owlIndividual);
+
+    return matchingIndividuals;
+  } // getMatchingIndividualsOfClass    
+
   public static boolean isOWLNamedClass(OWLModel owlModel, String className)
   {
     OWLNamedClass cls = owlModel.getOWLNamedClass(className);
 
     return cls != null;
   } // isOWLNamedClass
+
+  public static OWLNamedClass getOWLNamedClass(OWLModel owlModel, String className) throws SWRLOWLUtilException
+  {
+    OWLNamedClass cls = owlModel.getOWLNamedClass(className);
+
+    if (cls == null) throw new SWRLOWLUtilException("invalid OWL named class '" + className + "'");
+
+    return cls;
+  } // getOWLNamedClass
 
   public static OWLIndividual createIndividual(OWLModel owlModel, String individualName) throws SWRLOWLUtilException
   {
@@ -840,7 +871,13 @@ public class SWRLOWLUtil
 
   public static Object getObjectPropertyValue(OWLIndividual individual, OWLProperty property) throws SWRLOWLUtilException
   { 
-    return individual.getPropertyValue(property);
+    Object o = individual.getPropertyValue(property);
+
+    if (!(o instanceof RDFResource)) throw new SWRLOWLUtilException("value '" + o + "' of object property '" + property.getName() + 
+                                                                    "' associated with individual '" + individual.getName() + 
+                                                                    "' is not a valid object value");
+
+    return o;
   } // getObjectPropertyValue
 
   public static Set<Object> getObjectPropertyValues(OWLModel owlModel, String individualName, String propertyName) throws SWRLOWLUtilException
@@ -948,6 +985,12 @@ public class SWRLOWLUtil
 
     return propertyValue;
   } // getObjectPropertyValue
+
+  public static Object getDatavaluedPropertyValue(OWLModel owlModel, String individualName, String propertyName)
+    throws SWRLOWLUtilException
+  { 
+    return getDatavaluedPropertyValue(owlModel, individualName, propertyName, true);
+  } // getDatavaluedPropertyValue
 
   public static Object getDatavaluedPropertyValue(OWLModel owlModel, String individualName, String propertyName, boolean mustExist)
     throws SWRLOWLUtilException
@@ -1436,6 +1479,15 @@ public class SWRLOWLUtil
     return owlModel.getOWLProperty(propertyName);
   } // getOWLProperty
 
+  public static OWLProperty getOWLProperty(OWLModel owlModel, String propertyName, boolean mustExist) throws SWRLOWLUtilException
+  {
+    OWLProperty property = owlModel.getOWLProperty(propertyName);
+
+    if (mustExist && property == null) throw new SWRLOWLUtilException("no property named '" + propertyName + "' in ontology");
+
+    return property;
+  } // getOWLProperty
+
   public static OWLIndividual getOWLIndividual(OWLModel owlModel, String individualName)
   {
     return owlModel.getOWLIndividual(individualName);
@@ -1445,13 +1497,6 @@ public class SWRLOWLUtil
   {
     return owlModel.getRDFSNamedClass(className);
   } // getRDFSNamedClass
-
-  public static OWLNamedClass getOWLNamedClass(OWLModel owlModel, String className) throws SWRLOWLUtilException
-  {
-    OWLNamedClass cls = owlModel.getOWLNamedClass(className);
-
-    return cls;
-  } // getOWLNamedClass
 
   public static boolean isSWRLBuiltIn(OWLModel owlModel, String builtInName)
   {

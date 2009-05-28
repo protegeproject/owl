@@ -17,37 +17,24 @@ public class DatavaluedPropertyAtomImpl extends AtomImpl implements DatavaluedPr
   private String propertyName, prefixedPropertyName;
   private AtomArgument argument1, argument2;
   
-  public DatavaluedPropertyAtomImpl(OWLModel owlModel, SWRLDatavaluedPropertyAtom atom) throws OWLFactoryException, DatatypeConversionException
+  public DatavaluedPropertyAtomImpl(String propertyName, String prefixedPropertyName, AtomArgument argument1, AtomArgument argument2)
   {
-    propertyName = (atom.getPropertyPredicate() != null) ? atom.getPropertyPredicate().getName() : null;
-    prefixedPropertyName = (atom.getPropertyPredicate() != null) ? atom.getPropertyPredicate().getPrefixedName() : null;
-
-    if (propertyName == null) throw new OWLFactoryException("empty property name in SWRLDatavaluedPropertyAtom '" + atom.getBrowserText() + "'");
-
-    addReferencedPropertyName(propertyName);
-
-    if (atom.getArgument1() instanceof SWRLVariable) {
-      SWRLVariable variable = (SWRLVariable)atom.getArgument1();
-      AtomArgument argument = OWLFactory.createVariableAtomArgument(variable.getName(), variable.getPrefixedName());
-      addReferencedVariableName(variable.getName());
-      argument1 = argument;
-    } else if (atom.getArgument1() instanceof edu.stanford.smi.protegex.owl.model.OWLIndividual) {
-      edu.stanford.smi.protegex.owl.model.OWLIndividual individual = (edu.stanford.smi.protegex.owl.model.OWLIndividual)atom.getArgument1();
-      OWLIndividual argument = OWLFactory.createOWLIndividual(individual);
-      addReferencedIndividualName(argument.getIndividualName());
-      argument1 = argument;
-    } else throw new OWLFactoryException("unexpected argument first to datavalued property atom '" + atom.getBrowserText() + 
-                                         "' - expecting variable or individual, got instance of " + atom.getArgument1().getClass());
-
-    if (atom.getArgument2() instanceof SWRLVariable) {
-      SWRLVariable variable = (SWRLVariable)atom.getArgument2();
-      AtomArgument argument = OWLFactory.createVariableAtomArgument(variable.getName(), variable.getPrefixedName());
-      addReferencedVariableName(variable.getName());
-      argument2 = argument;
-    } else if (atom.getArgument2() instanceof RDFSLiteral) argument2 = OWLFactory.createOWLDatatypeValue(owlModel, (RDFSLiteral)atom.getArgument2());
-    else throw new OWLFactoryException("unexpected second to datavalued property atom '" + atom.getBrowserText()  + 
-                                       "' - expecting variable or literal, got instance of " + atom.getArgument2().getClass());
+    this.propertyName = propertyName;
+    this.prefixedPropertyName = prefixedPropertyName;
+    this.argument1 = argument1;
+    this.argument2 = argument2;
   } // DatavaluedPropertyAtomImpl
+
+  public DatavaluedPropertyAtomImpl(String propertyName, String prefixedPropertyName)
+  {
+    this.propertyName = propertyName;
+    this.prefixedPropertyName = prefixedPropertyName;
+    this.argument1 = null;
+    this.argument2 = null;
+  } // DatavaluedPropertyAtomImpl
+
+  public void setArgument1(AtomArgument argument1) { this.argument1 = argument1; }
+  public void setArgument2(AtomArgument argument2) { this.argument2 = argument2; }
 
   public String getPropertyName() { return propertyName; }  
   public String getPrefixedPropertyName() { return prefixedPropertyName; }  

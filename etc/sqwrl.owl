@@ -9,48 +9,27 @@
     xmlns="http://sqwrl.stanford.edu/ontologies/built-ins/3.4/sqwrl.owl#"
   xml:base="http://sqwrl.stanford.edu/ontologies/built-ins/3.4/sqwrl.owl">
   <owl:Ontology rdf:about=""/>
-  <swrl:Builtin rdf:ID="element"/>
-  <swrl:Builtin rdf:ID="makeSortedSet"/>
-  <swrl:Builtin rdf:ID="size"/>
-  <swrl:Builtin rdf:ID="empty"/>
-  <swrl:Builtin rdf:ID="count">
-    <swrlb:args rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
-    >1</swrlb:args>
-  </swrl:Builtin>
-  <swrl:Builtin rdf:ID="min">
-    <swrlb:args rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
-    >1</swrlb:args>
-  </swrl:Builtin>
   <swrl:Builtin rdf:ID="selectDistinct"/>
-  <swrl:Builtin rdf:ID="max">
-    <swrlb:args rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
-    >1</swrlb:args>
-  </swrl:Builtin>
-  <swrl:Builtin rdf:ID="first"/>
-  <swrl:Builtin rdf:ID="avg">
-    <swrlb:args rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
-    >1</swrlb:args>
-  </swrl:Builtin>
-  <swrl:Builtin rdf:ID="columnNames">
-    <swrlb:minArgs rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
-    >1</swrlb:minArgs>
-  </swrl:Builtin>
-  <swrl:Builtin rdf:ID="makeSet"/>
+  <swrl:Builtin rdf:ID="select"/>
+  <swrl:Builtin rdf:ID="count"/>
+  <swrl:Builtin rdf:ID="columnNames"/>
   <swrl:Builtin rdf:ID="orderBy"/>
-  <swrl:Builtin rdf:ID="intersect"/>
-  <swrl:Builtin rdf:ID="sum">
-    <swrlb:args rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
-    >1</swrlb:args>
-  </swrl:Builtin>
-  <swrl:Builtin rdf:ID="makeList"/>
-  <swrl:Builtin rdf:ID="last"/>
-  <swrl:Builtin rdf:ID="nth"/>
-  <swrl:Builtin rdf:ID="select">
-    <swrlb:minArgs rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
-    >1</swrlb:minArgs>
-  </swrl:Builtin>
   <swrl:Builtin rdf:ID="orderByDescending"/>
-  <swrl:Builtin rdf:ID="countDistinct"/>
+  <swrl:Builtin rdf:ID="min"/>
+  <swrl:Builtin rdf:ID="max"/>
+  <swrl:Builtin rdf:ID="avg"/>
+  <swrl:Builtin rdf:ID="sum"/>
+  <swrl:Builtin rdf:ID="median"/>
+  <swrl:Builtin rdf:ID="makeSet"/>
+  <swrl:Builtin rdf:ID="element"/>
+  <swrl:Builtin rdf:ID="size"/>
+  <swrl:Builtin rdf:ID="isEmpty"/>
+  <swrl:Builtin rdf:ID="notEmpty"/>
+  <swrl:Builtin rdf:ID="intersection"/>
+  <swrl:Builtin rdf:ID="difference"/>
+  <swrl:Builtin rdf:ID="union"/>
+  <swrl:Builtin rdf:ID="intersects"/>
+  <swrl:Builtin rdf:ID="notIntersects"/>
 </rdf:RDF>
 
 <!-- Created with Protege (with OWL Plugin 3.4, Build 124)  http://protege.stanford.edu -->

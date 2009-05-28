@@ -99,10 +99,23 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
     return makeOWLIndividual(arguments);
   } // createOWLThing
 
- // For backwards compatability
+  // For backwards compatability
   public boolean createOWLThing(List<BuiltInArgument> arguments) throws BuiltInException
   {
     return makeOWLIndividual(arguments);
   } // createOWLThing
+
+  // TODO: check for invocations to swrlx built-ins, which will cause blocking
+  public boolean invokeSWRLBuiltIn(List<BuiltInArgument> arguments) throws BuiltInException
+  {
+    SWRLBuiltInUtil.checkNumberOfArgumentsAtLeast(2, arguments.size());
+    
+    String builtInName = SWRLBuiltInUtil.getArgumentAsAnIndividualName(0, arguments);
+
+    return getInvokingBridge().invokeSWRLBuiltIn(getInvokingRuleName(), builtInName, getInvokingBuiltInIndex(), getIsInConsequent(),
+                                                 arguments.subList(1, arguments.size()));
+
+  } // invokeSWRLBuiltIn
+
 
 } // SWRLBuiltInLibraryImpl
