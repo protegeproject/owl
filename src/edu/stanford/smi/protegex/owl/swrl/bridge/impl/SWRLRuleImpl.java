@@ -38,7 +38,7 @@ public class SWRLRuleImpl implements SWRLRule
   public String getRuleName() { return ruleName; }
   public List<Atom> getHeadAtoms() { return headAtoms; }
   public List<Atom> getBodyAtoms() { return bodyAtoms; }
-  public boolean isSQWRL() { return hasSQWRLBuiltIns; }
+  public boolean isSQWRL() { return hasSQWRLBuiltIns || hasSQWRLCollectionBuiltIns; }
   public boolean usesSQWRLCollections() { return hasSQWRLCollectionBuiltIns; }
 
   public List<BuiltInAtom> getBuiltInAtomsFromHead() { return getBuiltInAtoms(headAtoms); }
@@ -346,6 +346,7 @@ public class SWRLRuleImpl implements SWRLRule
         // Mark later non SQWRL built-ins that (directly or indirectly) use variables bound by collection operation built-ins
         if (builtInAtom.usesAtLeastOneVariableOf(cascadedUnboundVariableNames)) {
           builtInAtom.setUsesSQWRLVariables();
+          //System.err.println("marking built-in as using SQWRL variables '" + builtInAtom + "'");
           cascadedUnboundVariableNames.addAll(builtInAtom.getUnboundArgumentVariableNames()); // Record its unbound variables.
         } // if
       } // if

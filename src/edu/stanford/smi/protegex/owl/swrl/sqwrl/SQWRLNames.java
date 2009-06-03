@@ -38,29 +38,31 @@ public class SQWRLNames
   // Set operations
   public static final String Size = SQWRLPrefix + ":" + "size";
   public static final String IsEmpty = SQWRLPrefix + ":" + "isEmpty";
+  public static final String NotIsEmpty = SQWRLPrefix + ":" + "notIsEmpty";
 
   public static final String Intersection = SQWRLPrefix + ":" + "intersection";
   public static final String Union = SQWRLPrefix + ":" + "union";
   public static final String Difference = SQWRLPrefix + ":" + "difference";
   public static final String Contains = SQWRLPrefix + ":" + "contains";
-  public static final String First = SQWRLPrefix + ":" + "first";
-  public static final String Last = SQWRLPrefix + ":" + "last";
-  public static final String Nth = SQWRLPrefix + ":" + "nth";
 
-  public static final String NotIsEmpty = SQWRLPrefix + ":" + "notEmpty";
+  public static final String Greatest = SQWRLPrefix + ":" + "greatest";
+  public static final String GreatestN = SQWRLPrefix + ":" + "greatestN";
+  public static final String NotGreatestN = SQWRLPrefix + ":" + "notGreatestN";
+  public static final String Least = SQWRLPrefix + ":" + "least";
+  public static final String LeastN = SQWRLPrefix + ":" + "leastN";
+
+
   public static final String NotIntersects = SQWRLPrefix + ":" + "notIntersects";
   public static final String NotContains = SQWRLPrefix + ":" + "notContains";
-  public static final String NotFirst = SQWRLPrefix + ":" + "notFirst";
-  public static final String NotLast = SQWRLPrefix + ":" + "notLast";
-  public static final String NotNth = SQWRLPrefix + ":" + "notNth";
 
   private static final String headBuiltInNamesArray[] 
      = { Select, SelectDistinct, Count, CountDistinct, Avg, Min, Max, Sum, OrderBy, OrderByDescending, ColumnNames };
 
   private static final String collectionMakeBuiltInNamesArray[] = { MakeSet };
 
-  private static final String singleCollectionOperationBuiltInNamesArray[] = { Size, IsEmpty, Contains, First, Last, Nth, 
-                                                                               NotIsEmpty, NotContains, NotFirst, NotLast, NotNth,
+  private static final String singleCollectionOperationBuiltInNamesArray[] = { Size, IsEmpty, Contains, 
+                                                                               Greatest, GreatestN, NotGreatestN, Least, LeastN,
+                                                                               NotIsEmpty, NotContains, NotIntersects,
                                                                                Min, Max, Sum, Avg, Median};
 
   private static final String createCollectionOperationBuiltInNamesArray[] = { Intersection, Union, Difference };

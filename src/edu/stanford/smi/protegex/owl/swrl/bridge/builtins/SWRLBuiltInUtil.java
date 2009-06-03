@@ -516,6 +516,11 @@ public class SWRLBuiltInUtil
     return getArgumentAsALiteral(argumentNumber, arguments).getFloat(); // Will throw DatatypeConversionException if invalid.
   } // getArgumentAsAFloat
 
+  public static float getArgumentAsAFloat(BuiltInArgument argument) throws BuiltInException
+  {
+    return getArgumentAsALiteral(argument).getFloat(); // Will throw DatatypeConversionException if invalid.
+  } // getArgumentAsAFloat
+
   // Double
 
   public static void checkThatArgumentIsADouble(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException
@@ -777,6 +782,99 @@ public class SWRLBuiltInUtil
   {
     return new ArrayList<BuiltInArgument>(arguments);
   } // copyArguments
+
+  public static boolean processResultArgument(List<BuiltInArgument> arguments, int argumentNumber, 
+                                              ArgumentFactory argumentFactory, Set<BuiltInArgument> resultArguments) throws BuiltInException
+  {
+    boolean result = false;
+
+    checkArgumentNumber(argumentNumber, arguments);
+
+    if (isUnboundArgument(0, arguments)) {
+      MultiArgument multiArgument = argumentFactory.createMultiArgument(SWRLBuiltInUtil.getVariableName(argumentNumber, arguments), SWRLBuiltInUtil.getPrefixedVariableName(argumentNumber, arguments));
+      for (BuiltInArgument argument : resultArguments) multiArgument.addArgument(argument);
+      arguments.set(argumentNumber, multiArgument);
+      result = !multiArgument.hasNoArguments();
+    } else {
+      BuiltInArgument argument = arguments.get(argumentNumber);
+      result = resultArguments.contains(argument);
+    } //if
+    
+    return result;
+  } // processResultArgument
+
+  public static boolean processResultArgument(List<BuiltInArgument> arguments, int argumentNumber, 
+                                              ArgumentFactory argumentFactory, BuiltInArgument resultArgument) 
+    throws BuiltInException
+  {
+    boolean result = false;
+
+    checkArgumentNumber(argumentNumber, arguments);
+
+    if (isUnboundArgument(argumentNumber, arguments)) {
+      arguments.set(argumentNumber, resultArgument); 
+      result = true;
+    } else {
+      BuiltInArgument argument = arguments.get(argumentNumber);
+      result = (argument.equals(resultArgument));
+    } //if
+    
+    return result;
+  } // processResultArgument
+
+  public static boolean processResultArgument(List<BuiltInArgument> arguments, int argumentNumber, 
+                                              ArgumentFactory argumentFactory, OWLDatatypeValue resultArgument) throws BuiltInException
+  {
+    boolean result = false;
+
+    checkArgumentNumber(argumentNumber, arguments);
+
+    if (isUnboundArgument(argumentNumber, arguments)) {
+      arguments.set(argumentNumber, argumentFactory.createDatatypeValueArgument(resultArgument));
+      result = true;
+    } else {
+      OWLDatatypeValue argument = getArgumentAsAnOWLDatatypeValue(argumentNumber, arguments);
+      result = argument.equals(resultArgument);
+    } //if
+    
+    return result;
+  } // processResultArgument
+
+  public static boolean processResultArgument(List<BuiltInArgument> arguments, int argumentNumber, 
+                                              ArgumentFactory argumentFactory, short resultArgument) throws BuiltInException
+  {
+    return processResultArgument(arguments, argumentNumber, argumentFactory, argumentFactory.createDatatypeValueArgument(resultArgument));
+  } // processResultArgument
+
+  public static boolean processResultArgument(List<BuiltInArgument> arguments, int argumentNumber, 
+                                              ArgumentFactory argumentFactory, int resultArgument) throws BuiltInException
+  {
+    return processResultArgument(arguments, argumentNumber, argumentFactory, argumentFactory.createDatatypeValueArgument(resultArgument));
+  } // processResultArgument
+
+  public static boolean processResultArgument(List<BuiltInArgument> arguments, int argumentNumber, 
+                                              ArgumentFactory argumentFactory, long resultArgument) throws BuiltInException
+  {
+    return processResultArgument(arguments, argumentNumber, argumentFactory, argumentFactory.createDatatypeValueArgument(resultArgument));
+  } // processResultArgument
+
+  public static boolean processResultArgument(List<BuiltInArgument> arguments, int argumentNumber, 
+                                              ArgumentFactory argumentFactory, float resultArgument) throws BuiltInException
+  {
+    return processResultArgument(arguments, argumentNumber, argumentFactory, argumentFactory.createDatatypeValueArgument(resultArgument));
+  } // processResultArgument
+
+  public static boolean processResultArgument(List<BuiltInArgument> arguments, int argumentNumber, 
+                                              ArgumentFactory argumentFactory, double resultArgument) throws BuiltInException
+  {
+    return processResultArgument(arguments, argumentNumber, argumentFactory, argumentFactory.createDatatypeValueArgument(resultArgument));
+  } // processResultArgument
+
+  public static boolean processResultArgument(List<BuiltInArgument> arguments, int argumentNumber, 
+                                              ArgumentFactory argumentFactory, byte resultArgument) throws BuiltInException
+  {
+    return processResultArgument(arguments, argumentNumber, argumentFactory, argumentFactory.createDatatypeValueArgument(resultArgument));
+  } // processResultArgument
 
   private static boolean nextMultiArgumentCounts(List<Integer> multiArgumentCounts, List<Integer> multiArgumentSizes)
   {
