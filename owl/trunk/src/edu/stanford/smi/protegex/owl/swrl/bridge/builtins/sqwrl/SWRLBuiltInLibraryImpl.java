@@ -1,4 +1,7 @@
 
+// TODO: a lot of cut-and-paste repetition here needs to be fixed.
+// TODO: replace set operators min, max with least, greatest?
+
 package edu.stanford.smi.protegex.owl.swrl.bridge.builtins.sqwrl;
 
 import edu.stanford.smi.protegex.owl.swrl.exceptions.*;
@@ -103,6 +106,11 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
     String invocationPattern  = SWRLBuiltInUtil.createInvocationPattern(getInvokingBridge(), getInvokingRuleName(), 
                                                                         getInvokingBuiltInIndex(), getIsInConsequent(),
                                                                         arguments.subList(1, arguments.size()));
+
+    //System.err.println("sqwrl.makeSet: arguments: " + arguments);
+    //System.err.println("sqwrl.makeSet: invocationPattern: " + invocationPattern);
+    //System.err.println("sqwrl.makeSet: collectionID: " + collectionID);
+
     if (!invocationPatterns.contains(invocationPattern)) {
       BuiltInArgument value = arguments.get(arguments.size() - 1); // The last argument is always the value
       Set<BuiltInArgument> set; 
@@ -151,24 +159,12 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
   public boolean size(List<BuiltInArgument> arguments) throws BuiltInException
   {
     String collectionID = getCollectionIDInOperation(arguments, 1, 2); // Does argument checking
-    long size = -1;
-    boolean result;
+    long size = getSet(collectionID).size(); // Checks set ID validity
 
     // System.err.println("size: arguments: " + arguments);
     // System.err.println("size: collectionID: " + collectionID);
-    
-    if (isSet(collectionID)) size = sets.get(collectionID).size();
-    else throw new BuiltInException("internal error: no collection found for ID '" + collectionID + "'");
 
-    if (SWRLBuiltInUtil.isUnboundArgument(0, arguments)) {
-      arguments.set(0, argumentFactory.createDatatypeValueArgument(size)); // Bind the result to the first parameter
-      result = true;
-    } else {
-      long argument1 = SWRLBuiltInUtil.getArgumentAsALong(0, arguments);
-      result = (argument1 == size);
-    } //if
-
-    return result;
+    return SWRLBuiltInUtil.processResultArgument(arguments, 0, argumentFactory, size);
   } // size
 
   public boolean min(List<BuiltInArgument> arguments) throws BuiltInException
@@ -193,8 +189,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
       Set<BuiltInArgument> set;
       OWLDatatypeValue minValue = null, value;
       
-      if (isSet(collectionID)) set = sets.get(collectionID);
-      else throw new BuiltInException("internal error: no collection found for ID '" + collectionID + "'");
+      set = getSet(collectionID); // Check collectionID validity
       
       if (set.isEmpty()) result = false;
       else {
@@ -208,14 +203,8 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
         
         // System.err.println("setMin: set: " + set);
         // System.err.println("setMin: min: " + minValue);
-        
-        if (SWRLBuiltInUtil.isUnboundArgument(0, arguments)) {
-          arguments.set(0, argumentFactory.createDatatypeValueArgument(minValue)); // Bind the result to the first parameter
-          result = true;
-        } else {
-          OWLDatatypeValue argument1 = SWRLBuiltInUtil.getArgumentAsAnOWLDatatypeValue(0, arguments);
-          result = (argument1 == minValue);
-        } //if
+
+        result = SWRLBuiltInUtil.processResultArgument(arguments, 0, argumentFactory, minValue);
       } // if
     } // if
     return result;
@@ -240,14 +229,11 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
       result = true;
     } else { // set operator
       String collectionID = getCollectionIDInOperation(arguments, 1, 2); // Does argument checking
-      Set<BuiltInArgument> set;
-      OWLDatatypeValue maxValue = null, value;
-
-      if (isSet(collectionID)) set = sets.get(collectionID);
-      else throw new BuiltInException("internal error: no collection found for ID '" + collectionID + "'");
+      Set<BuiltInArgument> set = getSet(collectionID); // Checks collectionID validity
       
       if (set.isEmpty()) result = false;
       else {
+        OWLDatatypeValue maxValue = null, value;
         for (BuiltInArgument element : set) {
           checkThatElementIsNumeric(element);
           value = (OWLDatatypeValue)element;
@@ -256,13 +242,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
           else if (value.compareTo(maxValue) > 0) maxValue = value;
         } // for
         
-        if (SWRLBuiltInUtil.isUnboundArgument(0, arguments)) {
-          arguments.set(0, argumentFactory.createDatatypeValueArgument(maxValue)); // Bind the result to the first parameter
-          result = true;
-        } else {
-          OWLDatatypeValue argument1 = SWRLBuiltInUtil.getArgumentAsAnOWLDatatypeValue(0, arguments);
-          result = (argument1 == maxValue);
-        } //if
+        result = SWRLBuiltInUtil.processResultArgument(arguments, 0, argumentFactory, maxValue);
       } // if
     } // if
     return result;
@@ -287,27 +267,18 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
       result = true;
     } else { // set operator
       String collectionID = getCollectionIDInOperation(arguments, 1, 2); // Does argument checking
-      Set<BuiltInArgument> set;
-      double sumValue = 0.0, value;
-
-      if (isSet(collectionID)) set = sets.get(collectionID);
-      else throw new BuiltInException("internal error: no collection found for ID '" + collectionID + "'");
+      Set<BuiltInArgument> set = getSet(collectionID); // Checks collectionID validity
       
       if (set.isEmpty()) result = false;
       else {
+        float sumValue = 0, value;
         for (BuiltInArgument element : set) {
           checkThatElementIsNumeric(element);
-          value = SWRLBuiltInUtil.getArgumentAsADouble(element);
+          value = SWRLBuiltInUtil.getArgumentAsAFloat(element);
           sumValue += value;
         } // for
         
-        if (SWRLBuiltInUtil.isUnboundArgument(0, arguments)) {
-          arguments.set(0, argumentFactory.createDatatypeValueArgument(sumValue)); // Bind the result to the first parameter
-          result = true;
-        } else {
-          double argument1 = SWRLBuiltInUtil.getArgumentAsADouble(0, arguments);
-          result = (argument1 == sumValue);
-        } //if
+        result = SWRLBuiltInUtil.processResultArgument(arguments, 0, argumentFactory, sumValue);
       } // if
     } // if
 
@@ -331,30 +302,19 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
       else throw new InvalidBuiltInArgumentException(0, "expecting numeric literal, got '" + argument + "'");
     } else { // set operator
       String collectionID = getCollectionIDInOperation(arguments, 1, 2); // Does argument checking
-      Set<BuiltInArgument> set;
-      double avgValue, sumValue = 0.0, value;
-      
-      if (isSet(collectionID)) set = sets.get(collectionID);
-      else throw new BuiltInException("internal error: no collection found for ID '" + collectionID + "'");
+      Set<BuiltInArgument> set = getSet(collectionID); // Checks collectionID validity
       
       if (set.isEmpty()) result = false;
       else {
+        float avgValue, sumValue = 0, value;
         for (BuiltInArgument element : set) {
           checkThatElementIsNumeric(element);
-          value = SWRLBuiltInUtil.getArgumentAsADouble(element);
-          
+          value = SWRLBuiltInUtil.getArgumentAsAFloat(element);
           sumValue += value;
         } // for
-        
         avgValue = sumValue / set.size();
         
-        if (SWRLBuiltInUtil.isUnboundArgument(0, arguments)) {
-          arguments.set(0, argumentFactory.createDatatypeValueArgument(avgValue)); // Bind the result to the first parameter
-          result = true;
-        } else {
-          double argument1 = SWRLBuiltInUtil.getArgumentAsADouble(0, arguments);
-          result = (argument1 == avgValue);
-        } //if
+        result = SWRLBuiltInUtil.processResultArgument(arguments, 0, argumentFactory, avgValue);
       } // if
     } // if
 
@@ -369,34 +329,26 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
       throw new BuiltInException("not implemented");
     } else { // set operator
       String collectionID = getCollectionIDInOperation(arguments, 1, 2); // Does argument checking
-      Set<BuiltInArgument> set;
-      double medianValue, value;
+      Set<BuiltInArgument> set = getSet(collectionID); // Checks collectionID validity
       
-      if (isSet(collectionID)) set = sets.get(collectionID);
-      else throw new BuiltInException("internal error: no collection found for ID '" + collectionID + "'");
-
       if (set.isEmpty()) result = false;
       else {
-        double[] valueArray = new double[set.size()];
+        float[] valueArray = new float[set.size()];
         int count = 0, middle = set.size() / 2;
+        float medianValue, value;
+
         for (BuiltInArgument element : set) {
           checkThatElementIsNumeric(element);
-          value = SWRLBuiltInUtil.getArgumentAsADouble(element);
+          value = SWRLBuiltInUtil.getArgumentAsAFloat(element);
           valueArray[count++] = value;
         } // for
         
         Arrays.sort(valueArray);
 
         if (set.size() % 2 == 1) medianValue = valueArray[middle];
-        else medianValue = (valueArray[middle - 1] + valueArray[middle]) / 2.0;
+        else medianValue = (valueArray[middle - 1] + valueArray[middle]) / 2;
         
-        if (SWRLBuiltInUtil.isUnboundArgument(0, arguments)) {
-          arguments.set(0, argumentFactory.createDatatypeValueArgument(medianValue)); // Bind the result to the first parameter
-          result = true;
-        } else {
-          double argument1 = SWRLBuiltInUtil.getArgumentAsADouble(0, arguments);
-          result = (argument1 == medianValue);
-        } //if
+        result = SWRLBuiltInUtil.processResultArgument(arguments, 0, argumentFactory, medianValue);
       } // if
     } // if
 
@@ -513,23 +465,155 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
 
   public boolean contains(List<BuiltInArgument> arguments) throws BuiltInException 
   { 
-    throw new BuiltInException("not implemented");
+    String collectionID = getCollectionIDInOperation(arguments, 0, 2); // Does argument checking
+    boolean result = false;
+
+    // System.err.println("sqwrl.contains: arguments: " + arguments);
+    
+    if (isSet(collectionID)) {
+      BuiltInArgument element = arguments.get(1);
+      System.err.println("sqwrl.contains: element: " + element);
+      result = sets.get(collectionID).contains(element);
+    } else throw new BuiltInException("internal error: no collection found for ID '" + collectionID + "'");
+    
+    return result;
   } // contains
 
-  public boolean except(List<BuiltInArgument> arguments) throws BuiltInException 
+  public boolean notContains(List<BuiltInArgument> arguments) throws BuiltInException 
   { 
-    throw new BuiltInException("not implemented");
-  } // except
+    return !contains(arguments);
+  } // notContains
 
-  public boolean nth(List<BuiltInArgument> arguments) throws BuiltInException 
+  public boolean greatest(List<BuiltInArgument> arguments) throws BuiltInException 
   { 
-    throw new BuiltInException("not implemented");
-  } // nth
+    String collectionID = getCollectionIDInOperation(arguments, 1, 2); // Does argument checking
+    Set<BuiltInArgument> set;
+    boolean result = false;
 
-  public boolean last(List<BuiltInArgument> arguments) throws BuiltInException 
+    if (isSet(collectionID)) set = sets.get(collectionID);
+      else throw new BuiltInException("internal error: no collection found for ID '" + collectionID + "'");
+    
+    if (!set.isEmpty()) {
+      SortedSet<BuiltInArgument> sortedSet = new TreeSet<BuiltInArgument>(set);
+      BuiltInArgument greatest = sortedSet.last();
+
+      result = SWRLBuiltInUtil.processResultArgument(arguments, 0, argumentFactory, greatest);
+    } // if
+
+    return result;
+  } // greatest
+
+  public boolean greatestN(List<BuiltInArgument> arguments) throws BuiltInException 
   { 
-    throw new BuiltInException("not implemented");
-  } // last
+    String collectionID = getCollectionIDInOperation(arguments, 1, 3); // Does argument checking
+    long n = SWRLBuiltInUtil.getArgumentAsALong(2, arguments);
+    Set<BuiltInArgument> set;
+    boolean result = false;
+
+    // System.err.println("sqwrl.greatestN: arguments: " + arguments);
+
+    if (isSet(collectionID)) set = sets.get(collectionID);
+      else throw new BuiltInException("internal error: no collection found for ID '" + collectionID + "'");
+    
+    if (!set.isEmpty()) {
+      SortedSet<BuiltInArgument> sortedSet = new TreeSet<BuiltInArgument>(set);
+      BuiltInArgument array[] = (BuiltInArgument[])sortedSet.toArray(new BuiltInArgument[sortedSet.size()]);
+      Set<BuiltInArgument> greatestNSet = new HashSet<BuiltInArgument>();
+
+      for (int i = set.size() - 1; i >= set.size() - n && i >= 0; i--) greatestNSet.add(array[i]);
+
+      SWRLBuiltInUtil.processResultArgument(arguments, 0, argumentFactory, greatestNSet);
+    } // if
+
+    return result;
+  } // greatestN
+ 
+  public boolean notGreatestN(List<BuiltInArgument> arguments) throws BuiltInException 
+  { 
+    String collectionID = getCollectionIDInOperation(arguments, 1, 3); // Does argument checking
+    long n = SWRLBuiltInUtil.getArgumentAsALong(2, arguments);
+    Set<BuiltInArgument> set;
+    boolean result = false;
+
+    // System.err.println("sqwrl.greatestN: arguments: " + arguments);
+
+    if (isSet(collectionID)) set = sets.get(collectionID);
+      else throw new BuiltInException("internal error: no collection found for ID '" + collectionID + "'");
+    
+    if (!set.isEmpty()) {
+      SortedSet<BuiltInArgument> sortedSet = new TreeSet<BuiltInArgument>(set);
+      BuiltInArgument array[] = (BuiltInArgument[])sortedSet.toArray(new BuiltInArgument[sortedSet.size()]);
+      Set<BuiltInArgument> notGreatestNSet = new HashSet<BuiltInArgument>();
+
+      for (int i = 0; i < set.size() - n; i++) notGreatestNSet.add(array[i]);
+      
+      if (SWRLBuiltInUtil.isUnboundArgument(0, arguments)) {
+        MultiArgument multiArgument = argumentFactory.createMultiArgument(SWRLBuiltInUtil.getVariableName(0, arguments), SWRLBuiltInUtil.getPrefixedVariableName(0, arguments));
+        for (BuiltInArgument argument : notGreatestNSet) multiArgument.addArgument(argument);
+        arguments.set(0, multiArgument);
+        result = !multiArgument.hasNoArguments();
+      } else {
+        BuiltInArgument argument1 = arguments.get(0);
+        result = notGreatestNSet.contains(argument1);
+      } //if
+    } // if
+
+    return result;
+  } // notGreatestN
+
+  public boolean leastN(List<BuiltInArgument> arguments) throws BuiltInException 
+  { 
+    String collectionID = getCollectionIDInOperation(arguments, 1, 3); // Does argument checking
+    long n = SWRLBuiltInUtil.getArgumentAsALong(2, arguments);
+    Set<BuiltInArgument> set;
+    boolean result = false;
+
+    // System.err.println("sqwrl.leastN: arguments: " + arguments);
+
+    if (isSet(collectionID)) set = sets.get(collectionID);
+      else throw new BuiltInException("internal error: no collection found for ID '" + collectionID + "'");
+    
+    if (!set.isEmpty()) {
+      SortedSet<BuiltInArgument> sortedSet = new TreeSet<BuiltInArgument>(set);
+      BuiltInArgument array[] = (BuiltInArgument[])sortedSet.toArray(new BuiltInArgument[sortedSet.size()]);
+      Set<BuiltInArgument> leastNSet = new HashSet<BuiltInArgument>();
+
+      for (int i = 0; i < n && i < set.size(); i++) leastNSet.add(array[i]);
+      
+      if (SWRLBuiltInUtil.isUnboundArgument(0, arguments)) {
+        MultiArgument multiArgument = argumentFactory.createMultiArgument(SWRLBuiltInUtil.getVariableName(0, arguments), SWRLBuiltInUtil.getPrefixedVariableName(0, arguments));
+        for (BuiltInArgument argument : leastNSet) multiArgument.addArgument(argument);
+        arguments.set(0, multiArgument);
+        result = !multiArgument.hasNoArguments();
+      } else {
+        BuiltInArgument argument1 = arguments.get(0);
+        result = leastNSet.contains(argument1);
+      } //if
+    } // if
+
+    return result;
+  } // leastN
+
+  public boolean least(List<BuiltInArgument> arguments) throws BuiltInException 
+  { 
+    String collectionID = getCollectionIDInOperation(arguments, 1, 2); // Does argument checking
+    Set<BuiltInArgument> set;
+    boolean result = false;
+
+    // System.err.println("sqwrl.least: arguments: " + arguments);
+
+    if (isSet(collectionID)) set = sets.get(collectionID);
+      else throw new BuiltInException("internal error: no collection found for ID '" + collectionID + "'");
+    
+    if (!set.isEmpty()) {
+      SortedSet<BuiltInArgument> sortedSet = new TreeSet<BuiltInArgument>(set);
+      BuiltInArgument least = sortedSet.first();
+
+      result = SWRLBuiltInUtil.processResultArgument(arguments, 0, argumentFactory, least);
+    } // if
+
+    return result;
+  } // least
 
   // Internal methods
 
@@ -610,5 +694,11 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
     if (!(element instanceof DatatypeValue) || !((DatatypeValue)element).isNumeric()) 
       throw new BuiltInException("may only be applied to sets with numeric data values");
   } // checkThatElementIsNumeric
+
+  private Set getSet(String collectionID) throws BuiltInException
+  {
+    if (!isSet(collectionID)) throw new BuiltInException("internal error: no collection found for ID '" + collectionID + "'");
+    return sets.get(collectionID);
+  } // checkThatCollectionIsSet
 
 } // SWRLBuiltInLibraryImpl
