@@ -11,11 +11,13 @@ import javax.swing.tree.TreePath;
 
 import edu.stanford.smi.protege.util.LazyTreeNode;
 import edu.stanford.smi.protege.util.LazyTreeRoot;
+import edu.stanford.smi.protege.util.StringUtilities;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
 import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
 import edu.stanford.smi.protegex.owl.model.triplestore.Triple;
 import edu.stanford.smi.protegex.owl.model.triplestore.impl.DefaultTriple;
+import edu.stanford.smi.protegex.owl.ui.ResourceRenderer;
 import edu.stanford.smi.protegex.owl.ui.TripleSelectable;
 import edu.stanford.smi.protegex.owl.ui.results.HostResourceDisplay;
 import edu.stanford.smi.protegex.owl.ui.subsumption.TooltippedSelectableTree;
@@ -28,6 +30,12 @@ public class ClassTree extends TooltippedSelectableTree implements TripleSelecta
 
     public ClassTree(Action doubleClickAction, LazyTreeRoot root) {
         super(doubleClickAction, root);
+        setCellRenderer(new ResourceRenderer() {
+        	@Override
+        	public void setMainText(String text) {        	
+        		super.setMainText(StringUtilities.unquote(text));
+        	}
+        });
     }
 
 
