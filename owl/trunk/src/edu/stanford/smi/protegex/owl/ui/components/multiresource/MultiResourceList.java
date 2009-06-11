@@ -15,6 +15,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.ListCellRenderer;
 
 import edu.stanford.smi.protege.model.Project;
+import edu.stanford.smi.protege.util.Disposable;
 import edu.stanford.smi.protege.util.FrameWithBrowserText;
 import edu.stanford.smi.protege.util.PopupMenuMouseListener;
 import edu.stanford.smi.protege.util.SelectableList;
@@ -36,7 +37,7 @@ import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
  */
-public class MultiResourceList extends SelectableList implements TripleSelectable {
+public class MultiResourceList extends SelectableList implements TripleSelectable, Disposable {
 
     private MultiResourceListModel listModel;
     private boolean symmetric;
@@ -250,4 +251,9 @@ public class MultiResourceList extends SelectableList implements TripleSelectabl
             }
         }
     }
+    
+    public void dispose() {
+    	listModel.dispose();
+    }
+    
 }
