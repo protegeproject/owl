@@ -5,15 +5,21 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
 
 import javax.swing.AbstractListModel;
 
+import edu.stanford.smi.protege.event.FrameAdapter;
+import edu.stanford.smi.protege.event.FrameEvent;
+import edu.stanford.smi.protege.event.FrameListener;
 import edu.stanford.smi.protege.model.Frame;
 import edu.stanford.smi.protege.model.Instance;
 import edu.stanford.smi.protege.server.framestore.RemoteClientFrameStore;
 import edu.stanford.smi.protege.util.ApplicationProperties;
+import edu.stanford.smi.protege.util.Disposable;
 import edu.stanford.smi.protege.util.FrameWithBrowserText;
 import edu.stanford.smi.protege.util.FrameWithBrowserTextComparator;
+import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreModel;
@@ -25,19 +31,56 @@ import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
  *
  * @author Holger Knublauch  <holger@knublauch.com>
  */
-public class MultiResourceListModel extends AbstractListModel {
+public class MultiResourceListModel extends AbstractListModel implements Disposable {
 
 	private static final long serialVersionUID = -7197293909519481988L;
 
 	private RDFProperty predicate;
     private RDFResource subject;
     private List<FrameWithBrowserText> values = new ArrayList<FrameWithBrowserText>();
+    
+    private FrameListener frameListener;
 
     public MultiResourceListModel(RDFProperty predicate) {
         this.predicate = predicate;
+        this.frameListener = getFrameListener();
+        addListener();
     }
 
-    public Object getElementAt(int index) {
+    @SuppressWarnings("deprecation")
+	private void addListener() {
+		if (predicate != null) {
+			predicate.getKnowledgeBase().addFrameListener(getFrameListener());
+		}		
+	}
+    
+    @SuppressWarnings("deprecation")
+	private void removeListener() {
+		if (predicate != null) {
+			predicate.getKnowledgeBase().removeFrameListener(getFrameListener());
+		}		
+	}
+
+
+    private FrameListener getFrameListener() {
+    	if (frameListener == null) {
+    		frameListener = new FrameAdapter() {
+    			@Override
+    			public void browserTextChanged(FrameEvent event) {
+    				Frame frame = event.getFrame();
+    				for (FrameWithBrowserText fbt : values) {
+						Frame f = fbt.getFrame();
+						if (f != null && f.equals(frame)) {
+							updateValues();
+						}
+					}
+    			}
+    		};
+    	}
+    	return frameListener;
+    }
+
+	public Object getElementAt(int index) {
     	return  values.get(index);
     }
 
@@ -158,4 +201,12 @@ public class MultiResourceListModel extends AbstractListModel {
     }
     
 
+    public void dispose() {
+    	try {
+			removeListener();
+		} catch (Exception e) {
+			Log.getLogger().log(Level.WARNING, "Could not remove KB listener from multi resource widget for: " + predicate, e);
+		}
+    }
+    
 }
