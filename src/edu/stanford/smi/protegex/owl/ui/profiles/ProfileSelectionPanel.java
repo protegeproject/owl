@@ -179,14 +179,11 @@ public class ProfileSelectionPanel extends JPanel {
 
 
     private JComboBox createComboBox(final OWLModel owlModel) {
-        final OntClass[] items = new OntClass[]{};
+        final OntClass[] items = new OntClass[DEFAULT_PROFILES.length];
         for (int i = 0; i < items.length; i++) {
-        	OntClass profileCls = defaultOntModel.getOntClass(DEFAULT_PROFILES[i]);
-        	if (profileCls != null) {
-        		items[i] = profileCls ;  
-        	}
+            items[i] = defaultOntModel.getOntClass(DEFAULT_PROFILES[i]);
         }
-
+    	
         final JComboBox comboBox = new JComboBox(items);
 
         String predefinedURI = ProfilesManager.getPredefinedProfile(owlModel);
