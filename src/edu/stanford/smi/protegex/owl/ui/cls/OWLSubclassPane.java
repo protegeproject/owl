@@ -19,9 +19,9 @@ import javax.swing.tree.TreePath;
 
 import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.ModelUtilities;
+import edu.stanford.smi.protege.resource.Colors;
 import edu.stanford.smi.protege.resource.Icons;
 import edu.stanford.smi.protege.ui.ClsesTreeTarget;
-import edu.stanford.smi.protege.ui.FrameRenderer;
 import edu.stanford.smi.protege.util.ComponentFactory;
 import edu.stanford.smi.protege.util.ComponentUtilities;
 import edu.stanford.smi.protege.util.DefaultRenderer;
@@ -31,6 +31,7 @@ import edu.stanford.smi.protege.util.StringUtilities;
 import edu.stanford.smi.protege.util.SuperclassTraverser;
 import edu.stanford.smi.protege.util.TreePopupMenuMouseListener;
 import edu.stanford.smi.protege.util.WaitCursor;
+import edu.stanford.smi.protegex.owl.model.Deprecatable;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
@@ -41,6 +42,7 @@ import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
 import edu.stanford.smi.protegex.owl.ui.ResourceRenderer;
 import edu.stanford.smi.protegex.owl.ui.actions.ResourceActionManager;
 import edu.stanford.smi.protegex.owl.ui.existential.ExistentialAction;
+import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
 import edu.stanford.smi.protegex.owl.ui.search.finder.DefaultClassFind;
 import edu.stanford.smi.protegex.owl.ui.search.finder.Find;
 import edu.stanford.smi.protegex.owl.ui.search.finder.FindAction;
@@ -127,10 +129,10 @@ public class OWLSubclassPane extends SelectableContainer implements ClassTreePan
     protected void initializeTreeRenderer() {
         /*
          * Optimization for client-server: 
-         * In client mode, only use the frames renderer (less expensive to compute)
+         * In client mode, show only things that are not expensive to compute
          */
     	TreeCellRenderer renderer = owlModel.getProject().isMultiUserClient() ? 
-    			FrameRenderer.createInstance() :
+    			getRemoteResourceRenderer() :
     			getLocalResourceRenderer();
     				
     	getTree().setCellRenderer(renderer);
@@ -145,6 +147,31 @@ public class OWLSubclassPane extends SelectableContainer implements ClassTreePan
         	}
         };
     }
+    
+    protected ResourceRenderer getRemoteResourceRenderer() {
+    	return new ResourceRenderer(owlModel.getSystemFrames().getDirectSuperclassesSlot()) {
+        	@Override
+        	public void setMainText(String text) {        	
+        		super.setMainText(StringUtilities.unquote(text));
+        	}
+        	@Override
+        	protected void loadClsAfterIcon(Cls cls) {
+                setMainText(cls.getBrowserText());
+                appendText(getInstanceCountString(cls));
+                setBackgroundSelectionColor(Colors.getClsSelectionColor());
+                if (cls instanceof RDFSClass) {                                     
+                    if (cls instanceof Deprecatable && ((Deprecatable) cls).isDeprecated()) {
+                        addIcon(OWLIcons.getDeprecatedIcon());
+                    }
+                    loadedClass = (RDFSClass) cls;
+                }
+                else {
+                    loadedClass = null;
+                }
+            }
+        };
+    }
+
     
     protected ClassTree createSelectableTree(Action doubleClickAction, Cls rootCls) {
         this.owlModel = (OWLModel) rootCls.getKnowledgeBase();
