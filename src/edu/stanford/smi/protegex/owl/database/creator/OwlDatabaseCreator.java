@@ -4,21 +4,28 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 import edu.stanford.smi.protege.exception.OntologyLoadException;
+import edu.stanford.smi.protege.model.Project;
+import edu.stanford.smi.protege.model.framestore.MergingNarrowFrameStore;
+import edu.stanford.smi.protege.model.framestore.NarrowFrameStore;
 import edu.stanford.smi.protege.storage.database.DatabaseFrameDb;
 import edu.stanford.smi.protege.storage.database.DefaultDatabaseFrameDb;
 import edu.stanford.smi.protegex.owl.database.DatabaseFactoryUtils;
 import edu.stanford.smi.protegex.owl.database.OWLDatabaseKnowledgeBaseFactory;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.factory.AlreadyImportedException;
 import edu.stanford.smi.protegex.owl.model.factory.FactoryUtils;
+import edu.stanford.smi.protegex.owl.repository.Repository;
 
 public class OwlDatabaseCreator extends AbstractOwlDatabaseCreator {
 	private boolean wipe;
-
+    private List<Repository> repositories = new ArrayList<Repository>();
 	private String ontologyName;
-	
 	private Class<? extends DatabaseFrameDb> databaseFrameDbClass;
 
 	public OwlDatabaseCreator(boolean wipe) {
@@ -33,30 +40,53 @@ public class OwlDatabaseCreator extends AbstractOwlDatabaseCreator {
 
 	@Override
 	public void create(Collection errors) throws OntologyLoadException {
-	    boolean useExistingDb = useExistingDb();
-		if (!useExistingDb) {
-			try {
-				initializeTable(errors);
-			} catch (IOException e) {
-				throw new OntologyLoadException(e, "Could not initialize DB tables");
-			}
+		if (!useExistingDb()) {
+		    createFromNewEmptySources(errors);
 		}
-
-		super.create(errors);
-		if (!useExistingDb) {
-		    if (ontologyName == null) {
-		        ontologyName = FactoryUtils.generateOntologyURIBase();
-		    }
-		    try {
-		        FactoryUtils.addOntologyToTripleStore(getOwlModel(), 
-		                                              getOwlModel().getTripleStoreModel().getActiveTripleStore(), 
-		                                              ontologyName);
-		        FactoryUtils.writeOntologyAndPrefixInfo(getOwlModel(), errors);
-		    }
-		    catch (AlreadyImportedException e) {
-		        throw new RuntimeException("This shouldn't happen", e);
-		    }
+		else {
+		    createFromExistingSources(errors);
 		}
+	}
+	
+	private void createFromNewEmptySources(Collection errors) throws OntologyLoadException {
+        try {
+            initializeTable(errors);
+        } catch (IOException e) {
+            throw new OntologyLoadException(e, "Could not initialize DB tables");
+        }
+        super.create(errors);
+        if (ontologyName == null) {
+            ontologyName = FactoryUtils.generateOntologyURIBase();
+        }
+        try {
+            FactoryUtils.addOntologyToTripleStore(getOwlModel(), 
+                                                  getOwlModel().getTripleStoreModel().getActiveTripleStore(), 
+                                                  ontologyName);
+            FactoryUtils.writeOntologyAndPrefixInfo(getOwlModel(), errors);
+        }
+        catch (AlreadyImportedException e) {
+            throw new RuntimeException("This shouldn't happen", e);
+        }
+	}
+	
+	private void createFromExistingSources(Collection errors) {
+        OWLDatabaseKnowledgeBaseFactory factory = new OWLDatabaseKnowledgeBaseFactory();
+        project = Project.createBuildProject(factory, errors);
+        initializeSources(project.getSources());
+        project.createDomainKnowledgeBase(factory, errors, false);
+        OWLModel owlModel = (OWLModel) project.getKnowledgeBase();
+        
+        insertRepositoriesIntoOwlModel(owlModel);
+        
+        MergingNarrowFrameStore mnfs = MergingNarrowFrameStore.get(owlModel);
+        owlModel.setGenerateEventsEnabled(false);
+        NarrowFrameStore nfs = factory.createNarrowFrameStore("<new>");
+        mnfs.addActiveFrameStore(nfs);
+        factory.loadKnowledgeBase(owlModel, project.getSources(), errors);
+        
+        owlModel.setGenerateEventsEnabled(true);
+        owlModel.setChanged(false);
+        owlModel.setChanged(false);
 	}
 
 	private boolean useExistingDb() throws OntologyLoadException {
@@ -95,5 +125,18 @@ public class OwlDatabaseCreator extends AbstractOwlDatabaseCreator {
 	public void setOntologyName(String ontologyName) {
 		this.ontologyName = ontologyName;
 	}
+
+    public void addRepository(Repository repository) {
+        repositories.add(repository);
+    }
+
+    public void clearRepositories() {
+        repositories.clear();
+    }
+
+    @Override
+    public List<Repository> getRepositories() {
+        return Collections.unmodifiableList(repositories);
+    }
 
 }
