@@ -72,7 +72,7 @@ public class AssertedTypesListPanel extends SelectableContainer {
 	public AssertedTypesListPanel(OWLModel owlModel) {
 		this.owlModel = owlModel;
 		list = ComponentFactory.createSelectableList(createDoubleClickAction());
-		list.setCellRenderer(new ResourceRenderer());        
+		list.setCellRenderer(new ResourceRenderer(false));        
 		setSelectable(list);
 
 		OWLLabeledComponent lc = new OWLLabeledComponent("Asserted Types", new JScrollPane(list));
