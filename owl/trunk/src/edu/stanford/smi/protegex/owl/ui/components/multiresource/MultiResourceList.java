@@ -78,7 +78,7 @@ public class MultiResourceList extends SelectableList implements TripleSelectabl
 
 
     protected ListCellRenderer createRenderer() {
-        return new ResourceRenderer() {
+        return new ResourceRenderer(false) {
             @Override
 			public void load(Object value) {
             	if (value instanceof FrameWithBrowserText) {
