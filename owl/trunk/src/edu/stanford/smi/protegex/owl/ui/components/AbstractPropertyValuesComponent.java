@@ -202,4 +202,8 @@ public abstract class AbstractPropertyValuesComponent extends JComponent impleme
 	public boolean isReadOnly() {
 		return isReadOnly;
 	}
+	
+	public void dispose() {
+		//TO BE implemented in sublcasses
+	}
 }
