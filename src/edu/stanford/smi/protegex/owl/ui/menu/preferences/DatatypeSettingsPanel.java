@@ -1,17 +1,24 @@
 package edu.stanford.smi.protegex.owl.ui.menu.preferences;
 
-import com.hp.hpl.jena.vocabulary.XSD;
-import edu.stanford.smi.protegex.owl.model.OWLModel;
-import edu.stanford.smi.protegex.owl.model.RDFSDatatype;
-import edu.stanford.smi.protegex.owl.ui.ResourceComparator;
-
-import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
+
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JCheckBox;
+import javax.swing.JPanel;
+
+import com.hp.hpl.jena.vocabulary.XSD;
+
+import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.model.RDFSDatatype;
+import edu.stanford.smi.protegex.owl.ui.ResourceComparator;
 
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
@@ -103,9 +110,8 @@ public class DatatypeSettingsPanel extends JPanel {
 
         private RDFSDatatype datatype;
 
-
         DatatypeCheckBox(RDFSDatatype datatype) {
-            super(datatype.getName());
+            super(datatype.getBrowserText());
             this.datatype = datatype;
             setSelected(datatype.isVisible());
             addActionListener(new ActionListener() {
@@ -114,7 +120,6 @@ public class DatatypeSettingsPanel extends JPanel {
                 }
             });
         }
-
 
         private void handleChanged() {
             datatype.setVisible(isSelected());
