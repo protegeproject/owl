@@ -20,6 +20,7 @@ import edu.stanford.smi.protege.util.CollectionUtilities;
 import edu.stanford.smi.protege.util.FrameWithBrowserText;
 import edu.stanford.smi.protege.util.FrameWithBrowserTextComparator;
 import edu.stanford.smi.protege.util.GetInstancesAndBrowserTextJob;
+import edu.stanford.smi.protege.util.StringUtilities;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 
 public class SelectResourcesWithBrowserTextPanel extends SelectResourcesPanel {
@@ -39,7 +40,12 @@ public class SelectResourcesWithBrowserTextPanel extends SelectResourcesPanel {
 	@Override
 	protected JComponent createInstanceList() {	
 		JComponent instList = super.createInstanceList();
-		((JList)instList).setCellRenderer(new FrameWithBrowserTextRenderer());
+		((JList)instList).setCellRenderer(new FrameWithBrowserTextRenderer() {
+			@Override
+			public void setMainText(String text) {			
+				super.setMainText(StringUtilities.unquote(text));
+			}
+		});
 		return instList;
 	}
 	
