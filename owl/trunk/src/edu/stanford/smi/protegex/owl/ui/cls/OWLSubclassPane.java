@@ -27,7 +27,6 @@ import edu.stanford.smi.protege.util.ComponentUtilities;
 import edu.stanford.smi.protege.util.DefaultRenderer;
 import edu.stanford.smi.protege.util.LazyTreeRoot;
 import edu.stanford.smi.protege.util.SelectableContainer;
-import edu.stanford.smi.protege.util.StringUtilities;
 import edu.stanford.smi.protege.util.SuperclassTraverser;
 import edu.stanford.smi.protege.util.TreePopupMenuMouseListener;
 import edu.stanford.smi.protege.util.WaitCursor;
@@ -140,20 +139,11 @@ public class OWLSubclassPane extends SelectableContainer implements ClassTreePan
     
     
     protected ResourceRenderer getLocalResourceRenderer() {
-    	return new ResourceRenderer(owlModel.getSystemFrames().getDirectSuperclassesSlot()) {
-        	@Override
-        	public void setMainText(String text) {        	
-        		super.setMainText(StringUtilities.unquote(text));
-        	}
-        };
+    	return new ResourceRenderer(owlModel.getSystemFrames().getDirectSuperclassesSlot(), false);        	
     }
     
     protected ResourceRenderer getRemoteResourceRenderer() {
-    	return new ResourceRenderer(owlModel.getSystemFrames().getDirectSuperclassesSlot()) {
-        	@Override
-        	public void setMainText(String text) {        	
-        		super.setMainText(StringUtilities.unquote(text));
-        	}
+    	return new ResourceRenderer(owlModel.getSystemFrames().getDirectSuperclassesSlot(), false) {        	
         	@Override
         	protected void loadClsAfterIcon(Cls cls) {
                 setMainText(cls.getBrowserText());
