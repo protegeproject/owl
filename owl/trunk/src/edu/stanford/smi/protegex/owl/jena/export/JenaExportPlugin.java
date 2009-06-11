@@ -102,7 +102,21 @@ public class JenaExportPlugin implements ExportPlugin {
 					}
 				} else { // Jena writer
 					OntModel newModel = ((OWLDatabaseModel) oldOWLModel).getOntModel();
-					newOWLModel.save(fileURI, FileUtils.langXML, errors, newModel);            		
+					OWLDatabaseModel dbModel = (OWLDatabaseModel) oldOWLModel;
+					String xmlBase = dbModel.getTripleStoreModel().getActiveTripleStore().getOriginalXMLBase();
+					String defaultNS = dbModel.getNamespaceManager().getDefaultNamespace();
+					if (xmlBase == null) {
+						if (defaultNS != null && defaultNS.endsWith("#")) {
+							xmlBase = defaultNS.substring(0, defaultNS.length() -1);
+						}
+					}
+					try {
+						File file = new File(fileURI);
+						//TT: writing to langXMl rather than langXMLAbbrev might be more efficient for DB mode; to be checked
+						JenaOWLModel.save(file, newModel, FileUtils.langXML, defaultNS , xmlBase);
+					} catch (Throwable t) {
+						Log.getLogger().log(Level.SEVERE, "Errors at exporting the OWL Database to OWL file", t);
+					}					            		
 				}
 			}
 			oldOWLModel.setWriterSettings(writerSettings);
