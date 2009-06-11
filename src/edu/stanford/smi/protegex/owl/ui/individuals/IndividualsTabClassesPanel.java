@@ -22,6 +22,7 @@ import edu.stanford.smi.protege.util.ComponentUtilities;
 import edu.stanford.smi.protege.util.LabeledComponent;
 import edu.stanford.smi.protege.util.PopupMenuMouseListener;
 import edu.stanford.smi.protege.util.SelectableContainer;
+import edu.stanford.smi.protege.util.StringUtilities;
 import edu.stanford.smi.protege.util.ViewAction;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
@@ -73,13 +74,8 @@ public class IndividualsTabClassesPanel extends SelectableContainer implements C
     private JComponent createClsesPanel() {
         RDFSNamedClass root = owlModel.getOWLThingClass();
         classTree = new ClassTree(null, new ParentChildRoot(root));
-        classTree.setLargeModel(true);
-
-        FrameRenderer renderer = FrameRenderer.createInstance();
-        renderer.setDisplayDirectInstanceCount(true);
-        classTree.setCellRenderer(renderer);
-        classTree.setSelectionRow(0);
-        
+        classTree.setLargeModel(true);       
+        classTree.setSelectionRow(0);       
         
         classTree.setCellRenderer(new InferredInstancesCountRenderer());
         classTree.addMouseListener(new PopupMenuMouseListener(classTree) {
@@ -175,6 +171,11 @@ public class IndividualsTabClassesPanel extends SelectableContainer implements C
 
         InferredInstancesCountRenderer() {
             setDisplayDirectInstanceCount(true);
+        }
+        
+        @Override
+        public void setMainText(String text) {        
+        	super.setMainText(StringUtilities.unquote(text));
         }
 
 
