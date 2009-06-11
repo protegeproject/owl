@@ -86,7 +86,7 @@ public class OwlDatabaseCreator extends AbstractOwlDatabaseCreator {
         
         owlModel.setGenerateEventsEnabled(true);
         owlModel.setChanged(false);
-        owlModel.setChanged(false);
+        project.getInternalProjectKnowledgeBase().setChanged(false);
 	}
 
 	private boolean useExistingDb() throws OntologyLoadException {
