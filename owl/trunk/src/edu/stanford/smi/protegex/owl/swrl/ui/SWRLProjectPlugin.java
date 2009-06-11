@@ -17,7 +17,6 @@ import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
 import edu.stanford.smi.protegex.owl.swrl.model.SWRLFactory;
 import edu.stanford.smi.protegex.owl.swrl.model.SWRLNames;
-import edu.stanford.smi.protegex.owl.swrl.model.factory.SWRLJavaFactory;
 import edu.stanford.smi.protegex.owl.swrl.ui.tab.SWRLTab;
 import edu.stanford.smi.protegex.owl.swrl.ui.widget.SWRLRuleSlotWidget;
 import edu.stanford.smi.protegex.owl.ui.metadata.NameDocumentationWidget;
@@ -103,6 +102,8 @@ public class SWRLProjectPlugin extends ProjectPluginAdapter
 			((FormWidget)clsWidget).setVerticalStretcher(SWRLNames.Slot.BODY);
 			((FormWidget)clsWidget).setHorizontalStretcher(FormWidget.STRETCH_ALL);
 			((FormWidget)clsWidget).setModified(true);
+			
+			clsWidget.relayout();
 
 		} catch (Exception e) {
 			Log.getLogger().warning("Error at configuring SWRL forms: " + e.getMessage());
