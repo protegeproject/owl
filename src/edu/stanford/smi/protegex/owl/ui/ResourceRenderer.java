@@ -17,6 +17,7 @@ import edu.stanford.smi.protege.model.SimpleInstance;
 import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protege.resource.Colors;
 import edu.stanford.smi.protege.ui.FrameRenderer;
+import edu.stanford.smi.protege.util.StringUtilities;
 import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
 import edu.stanford.smi.protegex.owl.model.Deprecatable;
 import edu.stanford.smi.protegex.owl.model.OWLAnonymousClass;
@@ -37,12 +38,16 @@ import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
  * @author Holger Knublauch  <holger@knublauch.com>
  */
 public class ResourceRenderer extends FrameRenderer {
+   
+	private static final long serialVersionUID = 7348775773884916553L;
 
-    /**
+	/**
      * The Frame that is focused, i.e. displayed with a frame around it
      */
     private Frame focusedFrame;
 
+    protected boolean showQuotes = true;
+    
     protected RDFSClass loadedClass;
 
     protected SimpleInstance loadedInstance;
@@ -70,8 +75,16 @@ public class ResourceRenderer extends FrameRenderer {
         this(null);
     }
 
-
+    public ResourceRenderer(boolean showQuotes) {
+        this(null, showQuotes);
+    }
+    
     public ResourceRenderer(Slot directSuperclassesSlot) {
+    	this(directSuperclassesSlot, true);
+    }
+    
+    public ResourceRenderer(Slot directSuperclassesSlot, boolean showQuotes) {
+    	this.showQuotes = showQuotes;
         this.directSuperclassesSlot = directSuperclassesSlot;
         setDisplayHiddenIcon(false);
         colorMap = new HashMap<String, Color>();
@@ -148,6 +161,11 @@ public class ResourceRenderer extends FrameRenderer {
         }
         return c;
     }
+    
+    @Override
+	public void setMainText(String text) {        	
+		super.setMainText(showQuotes ? text : StringUtilities.unquote(text));
+	}
 
 
     @Override
