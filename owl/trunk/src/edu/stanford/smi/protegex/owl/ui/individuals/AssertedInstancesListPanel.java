@@ -64,6 +64,7 @@ import edu.stanford.smi.protege.util.LabeledComponent;
 import edu.stanford.smi.protege.util.ModalDialog;
 import edu.stanford.smi.protege.util.SelectableContainer;
 import edu.stanford.smi.protege.util.SimpleListModel;
+import edu.stanford.smi.protege.util.StringUtilities;
 import edu.stanford.smi.protege.util.ViewAction;
 import edu.stanford.smi.protegex.owl.model.NamespaceUtil;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
@@ -611,7 +612,7 @@ public class AssertedInstancesListPanel extends SelectableContainer implements D
     		}
 
 			private void showFrameWithBrowserText(FrameWithBrowserText fbt) {
-				setMainText(fbt.getBrowserText());
+				setMainText(StringUtilities.unquote(fbt.getBrowserText()));
 				if (fbt.getFrame() != null) {
 					setMainIcon(fbt.getFrame().getIcon()); //should not go to the server
 				}
