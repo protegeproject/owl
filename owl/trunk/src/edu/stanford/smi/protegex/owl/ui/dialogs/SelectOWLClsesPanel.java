@@ -9,13 +9,13 @@ import javax.swing.JComponent;
 import javax.swing.JScrollPane;
 
 import edu.stanford.smi.protege.resource.Icons;
-import edu.stanford.smi.protege.ui.FrameRenderer;
 import edu.stanford.smi.protege.util.CollectionUtilities;
 import edu.stanford.smi.protege.util.DefaultRenderer;
 import edu.stanford.smi.protege.util.LazyTreeRoot;
 import edu.stanford.smi.protege.util.ModalDialog;
 import edu.stanford.smi.protege.util.Validatable;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.ui.ResourceRenderer;
 import edu.stanford.smi.protegex.owl.ui.cls.ClassTree;
 import edu.stanford.smi.protegex.owl.ui.cls.ClassTreeRoot;
 import edu.stanford.smi.protegex.owl.ui.search.finder.DefaultClassFind;
@@ -55,7 +55,7 @@ public class SelectOWLClsesPanel extends JComponent implements Validatable {
         LazyTreeRoot root = new ClassTreeRoot(clses, OWLUI.getSortClassTreeOption());
         _tree = new ClassTree(null, root);
          
-        _tree.setCellRenderer(FrameRenderer.createInstance());
+        _tree.setCellRenderer(new ResourceRenderer(false));
         int rows = _tree.getRowCount();
         int diff = rows - clses.size();
         for (int i = rows - 1; i > diff; --i) {
