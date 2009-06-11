@@ -1,5 +1,9 @@
 package edu.stanford.smi.protegex.owl.ui.widget;
 
+import java.awt.Component;
+import java.util.Collection;
+import java.util.Iterator;
+
 import edu.stanford.smi.protege.model.Instance;
 import edu.stanford.smi.protege.widget.AbstractSlotWidget;
 import edu.stanford.smi.protege.widget.ReadOnlyWidgetConfigurationPanel;
@@ -10,10 +14,6 @@ import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
 import edu.stanford.smi.protegex.owl.ui.components.AbstractPropertyValuesComponent;
 import edu.stanford.smi.protegex.owl.ui.components.PropertyValuesComponent;
-
-import java.awt.*;
-import java.util.Collection;
-import java.util.Iterator;
 
 /**
  * A container for PropertyValuesComponents, so that they can be placed on a
@@ -123,6 +123,12 @@ public abstract class AbstractPropertyValuesWidget extends AbstractSlotWidget {
     	confPanel.addTab("Options", new ReadOnlyWidgetConfigurationPanel(this));
     	
     	return confPanel;
+    }
+    
+    @Override
+    public void dispose() {
+    	component.dispose();
+    	super.dispose();
     }
     
 }
