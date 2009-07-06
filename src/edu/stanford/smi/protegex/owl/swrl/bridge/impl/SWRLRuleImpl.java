@@ -73,6 +73,8 @@ public class SWRLRuleImpl implements SWRLRule
       result.add(atom);
     } // for
 
+    System.err.println("SWRLRuleImpl.getSQWRLPhase2BodyAtoms: " + result);
+
     return result;
   } // getSQWRLPhase2BodyAtoms
 
@@ -340,13 +342,13 @@ public class SWRLRuleImpl implements SWRLRule
         } // for
 
         builtInAtom.setUsesSQWRLVariables();
-        //System.err.println("adding unbound variables for built-in '" + builtInName + "': " + builtInAtom.getUnboundArgumentVariableNames());
+        System.err.println("adding unbound variables for built-in '" + builtInName + "': " + builtInAtom.getUnboundArgumentVariableNames());
         cascadedUnboundVariableNames.addAll(builtInAtom.getUnboundArgumentVariableNames());
       } else if (!SQWRLNames.isSQWRLBuiltIn(builtInName)) {
         // Mark later non SQWRL built-ins that (directly or indirectly) use variables bound by collection operation built-ins
         if (builtInAtom.usesAtLeastOneVariableOf(cascadedUnboundVariableNames)) {
           builtInAtom.setUsesSQWRLVariables();
-          //System.err.println("marking built-in as using SQWRL variables '" + builtInAtom + "'");
+          System.err.println("marking built-in as using SQWRL variables '" + builtInAtom + "'");
           cascadedUnboundVariableNames.addAll(builtInAtom.getUnboundArgumentVariableNames()); // Record its unbound variables.
         } // if
       } // if

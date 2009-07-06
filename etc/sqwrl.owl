@@ -25,11 +25,18 @@
   <swrl:Builtin rdf:ID="size"/>
   <swrl:Builtin rdf:ID="isEmpty"/>
   <swrl:Builtin rdf:ID="notEmpty"/>
+  <swrl:Builtin rdf:ID="contains"/>
+  <swrl:Builtin rdf:ID="notContains"/>
   <swrl:Builtin rdf:ID="intersection"/>
   <swrl:Builtin rdf:ID="difference"/>
   <swrl:Builtin rdf:ID="union"/>
   <swrl:Builtin rdf:ID="intersects"/>
   <swrl:Builtin rdf:ID="notIntersects"/>
+  <swrl:Builtin rdf:ID="greatest"/>
+  <swrl:Builtin rdf:ID="greatestN"/>
+  <swrl:Builtin rdf:ID="notGreatestN"/>
+  <swrl:Builtin rdf:ID="least"/>
+  <swrl:Builtin rdf:ID="leastN"/>
 </rdf:RDF>
 
 <!-- Created with Protege (with OWL Plugin 3.4, Build 124)  http://protege.stanford.edu -->
