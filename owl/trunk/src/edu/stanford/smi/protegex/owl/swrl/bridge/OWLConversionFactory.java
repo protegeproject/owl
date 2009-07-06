@@ -176,6 +176,18 @@ public class OWLConversionFactory
     return createOWLDatatypeProperty(property.getOWLModel(), property.getName()); 
   } // createOWLDatatypeProperty
 
+  public static OWLDatatypeValue createOWLDatatypeValue(Object o) throws OWLFactoryException 
+  {
+    OWLDatatypeValue result = null;
+
+    try {
+      result = new OWLDatatypeValueImpl(o);
+    } catch (DatatypeConversionException e) {
+      throw new OWLFactoryException("error creating an OWLDatatypeValue object for object '" + o + "': " + e.getMessage());
+    } // try
+    return result;
+  } // createOWLDatatypeValue
+
   public static OWLDatatypeValue createOWLDatatypeValue(edu.stanford.smi.protegex.owl.model.OWLModel owlModel, 
      edu.stanford.smi.protegex.owl.model.RDFSLiteral literal) throws OWLFactoryException 
   { 

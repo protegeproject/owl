@@ -15,8 +15,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 
 /**
- ** Factory to create bridge instances of OWL entities that reflect OWL entities in a source OWL model or entities created inside the bridge
- ** (that may or may not ultimately be transferred to the source OWL model).
+ ** Factory to create OWL-API-like entities. Provides a rough starting point for a port to the OWL-API.
  */
 public class OWLFactory
 {

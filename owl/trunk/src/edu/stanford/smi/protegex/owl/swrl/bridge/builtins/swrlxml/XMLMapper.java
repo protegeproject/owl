@@ -60,7 +60,7 @@ public class XMLMapper
 
     edu.stanford.smi.protegex.owl.model.OWLNamedClass xmlDocumentMappingClass;
     edu.stanford.smi.protegex.owl.model.OWLIndividual xmlDocumentMapping, xmlRootElementMapping = null;
-    Object propertyValue;
+    edu.stanford.smi.protegex.owl.model.RDFResource propertyValue;
     Document doc = new Document();
 
     try {
@@ -88,23 +88,23 @@ public class XMLMapper
     String elementName = SWRLOWLUtil.getDatavaluedPropertyValueAsString(bridge.getOWLModel(), xmlElementMapping, XMLMappingHasNamePropertyName, true);
     String elementNamespacePrefix = SWRLOWLUtil.getDatavaluedPropertyValueAsString(bridge.getOWLModel(), xmlElementMapping, XMLMappingHasNamespacePrefixPropertyName, false, "");
     String elementNamespaceURI = SWRLOWLUtil.getDatavaluedPropertyValueAsString(bridge.getOWLModel(), xmlElementMapping, XMLMappingHasNamespaceURIPropertyName, false, "");
-    Set<Object> attributes = SWRLOWLUtil.getObjectPropertyValues(bridge.getOWLModel(), xmlElementMapping, XMLElementMappingHasAttributesPropertyName, false);
-    Set<Object> subElements = SWRLOWLUtil.getObjectPropertyValues(bridge.getOWLModel(), xmlElementMapping, XMLElementMappingHasSubElementsPropertyName, false);
+    Set<edu.stanford.smi.protegex.owl.model.RDFResource> attributes = SWRLOWLUtil.getObjectPropertyValues(bridge.getOWLModel(), xmlElementMapping, XMLElementMappingHasAttributesPropertyName, false);
+    Set<edu.stanford.smi.protegex.owl.model.RDFResource> subElements = SWRLOWLUtil.getObjectPropertyValues(bridge.getOWLModel(), xmlElementMapping, XMLElementMappingHasSubElementsPropertyName, false);
     String content = SWRLOWLUtil.getDatavaluedPropertyValueAsString(bridge.getOWLModel(), xmlElementMapping, XMLElementMappingHasContentPropertyName, false, "");
     Element element = createElement(doc, parentElement, elementName);
 
     element.setNamespace(Namespace.getNamespace(elementNamespacePrefix, elementNamespaceURI));
 
     if (content != null) element.addContent(content);
-      
-    for (Object value : subElements) {
+
+    for (edu.stanford.smi.protegex.owl.model.RDFResource value : subElements) {
       if (value instanceof edu.stanford.smi.protegex.owl.model.OWLIndividual) {
         edu.stanford.smi.protegex.owl.model.OWLIndividual xmlSubElementMapping = (edu.stanford.smi.protegex.owl.model.OWLIndividual)value;
         xmlElementMapping2Element(doc, bridge, xmlSubElementMapping, element);
       } //if
     } // for
 
-    for (Object value : attributes) {
+    for (edu.stanford.smi.protegex.owl.model.RDFResource value : attributes) {
       if (value instanceof edu.stanford.smi.protegex.owl.model.OWLIndividual) {
         edu.stanford.smi.protegex.owl.model.OWLIndividual xmlAttributeMapping = (edu.stanford.smi.protegex.owl.model.OWLIndividual)value;
         xmlAttributeMapping2Attribute(doc, bridge, xmlAttributeMapping, element);

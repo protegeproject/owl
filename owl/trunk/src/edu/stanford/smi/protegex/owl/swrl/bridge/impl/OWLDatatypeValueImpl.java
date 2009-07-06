@@ -26,6 +26,14 @@ public class OWLDatatypeValueImpl extends BuiltInArgumentImpl implements OWLData
   public OWLDatatypeValueImpl(short s) { value = Short.valueOf(s); }
   public OWLDatatypeValueImpl(PrimitiveXSDType value) { this.value = value; }
 
+  public OWLDatatypeValueImpl(Object o) throws DatatypeConversionException
+  { 
+    if (!((o instanceof Number) || (o instanceof String) || (o instanceof PrimitiveXSDType)))
+      throw new DatatypeConversionException("cannot convert value of type '" + o.getClass().getCanonicalName() + "' to OWLDatatypeValue"); 
+
+    value = o;
+  } // OWLDatatypeValueImpl
+
   // Java String type
   public boolean isString() { return value instanceof String; }
 

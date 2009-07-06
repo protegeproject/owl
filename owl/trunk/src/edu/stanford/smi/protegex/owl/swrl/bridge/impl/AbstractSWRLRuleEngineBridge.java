@@ -93,6 +93,8 @@ public abstract class AbstractSWRLRuleEngineBridge implements SWRLRuleEngineBrid
     importSWRLRulesAndOWLKnowledge(ruleGroupNames);
   } // importSWRLRulesAndOWLKnowledge
 
+  // TODO: this needs to be more principled
+
   /**
    ** Load rules from all the named rule groups and associated knowledge from OWL into bridge. All existing bridge rules and knowledge will
    ** first be cleared and the associated rule engine will be reset.
@@ -104,13 +106,15 @@ public abstract class AbstractSWRLRuleEngineBridge implements SWRLRuleEngineBrid
 
     importSWRLRules(ruleGroupNames); // Fills in importedSWRLRules, referencedClassNames, referencedPropertyNames, and referencedIndividualNames
 
-    importOWLClassNames(referencedClassNames); // Import all referenced classes (and their superclasses and subclasses).
-    importOWLPropertyAssertionAxioms(referencedPropertyNames); // Import all referenced properties (and the necessary classes).
-    importOWLIndividuals(referencedIndividualNames); // Import all referenced individuals (and their classes).
+    importOWLClassNames(referencedClassNames); // Import all (directly or indirectly) referenced classes.
+
+    importOWLPropertyAssertionAxioms(referencedPropertyNames); // Import property assertion axioms for (directly or indirectly) referenced properties
+
+    importOWLIndividuals(referencedIndividualNames); // Import all directly referenced individuals.
 
     importAllOWLIndividualsOfClasses(referencedClassNames); // Import all individuals that are members of imported classes.
 
-    importAxioms();
+    importAxioms(); // Import some other axioms (owl:sameAs, owl:differentFrom, and owl:allDifferent for the moment).
 
     exportSWRLRulesAndOWLKnowledge();
   } // importSWRLRulesAndOWLKnowledge
@@ -120,10 +124,16 @@ public abstract class AbstractSWRLRuleEngineBridge implements SWRLRuleEngineBrid
    */
   private void exportSWRLRulesAndOWLKnowledge() throws SWRLRuleEngineBridgeException
   {
+    long startTime = System.currentTimeMillis();
     exportClasses(); // Classes should be exported before rules because rules usually use class definitions.
+
+    startTime = System.currentTimeMillis();
     exportSWRLRules();
+
+    startTime = System.currentTimeMillis();
     exportIndividuals();
-    exportAxioms();
+
+    startTime = System.currentTimeMillis();
     exportAxioms();
   } // exportSWRLRulesAndOWLKnowledge
 
@@ -134,7 +144,6 @@ public abstract class AbstractSWRLRuleEngineBridge implements SWRLRuleEngineBrid
   {
     exportClasses();
     exportIndividuals();
-    exportAxioms();
     exportAxioms();
   } // exportOWLKnowledge
 
@@ -363,8 +372,8 @@ public abstract class AbstractSWRLRuleEngineBridge implements SWRLRuleEngineBrid
   public OWLIndividual createOWLIndividual() throws SWRLRuleEngineBridgeException
   {
     String individualName = SWRLOWLUtil.createNewResourceName(owlModel, "SWRLInjected");
-    String prefix = owlModel.getPrefixForResourceName(individualName);
-    String localName = owlModel.getLocalNameForURI(individualName);
+    String prefix = SWRLOWLUtil.getPrefixForResourceName(owlModel, individualName);
+    String localName = SWRLOWLUtil.getLocalNameForURI(owlModel, individualName);
     String prefixedIndividualName = prefix.equals("") ? localName : prefix + ":" + localName;
     OWLClass owlClass = OWLFactory.createOWLClass(edu.stanford.smi.protegex.owl.model.OWLNames.Cls.THING);
     OWLIndividual owlIndividual = OWLFactory.generateOWLIndividual(individualName, prefixedIndividualName, owlClass);
@@ -383,8 +392,8 @@ public abstract class AbstractSWRLRuleEngineBridge implements SWRLRuleEngineBrid
   public OWLIndividual createOWLIndividual(OWLClass owlClass) throws SWRLRuleEngineBridgeException
   {
     String individualName = SWRLOWLUtil.createNewResourceName(owlModel, "SWRLInjected");
-    String prefix = owlModel.getPrefixForResourceName(individualName);
-    String localName = owlModel.getLocalNameForURI(individualName);
+    String prefix = SWRLOWLUtil.getPrefixForResourceName(owlModel, individualName);
+    String localName = SWRLOWLUtil.getLocalNameForURI(owlModel, individualName);
     String prefixedIndividualName = prefix.equals("") ? localName : prefix + ":" + localName;
     OWLIndividual owlIndividual = OWLFactory.generateOWLIndividual(individualName, prefixedIndividualName, owlClass);
 
@@ -563,7 +572,7 @@ public abstract class AbstractSWRLRuleEngineBridge implements SWRLRuleEngineBrid
   
   private void importOWLClass(String className) throws SWRLRuleEngineBridgeException
   {
-    // TODO: workaround becuase owlModel.createOWLNamedClass() called in OWLClass does not always return an OWL named class.
+    // TODO: workaround because owlModel.createOWLNamedClass() called in OWLClass does not always return an OWL named class.
     RDFSNamedClass rdfsNamedClass = SWRLOWLUtil.getRDFSNamedClass(owlModel, className);
     if (rdfsNamedClass == null) throw new InvalidClassNameException(className);
 
@@ -654,15 +663,16 @@ public abstract class AbstractSWRLRuleEngineBridge implements SWRLRuleEngineBrid
     } // if
   } // importOWLIndividual
 
-  // We only import owl:sameAs, owl:differentFrom, and owl:allDifferent, owl:equivalentProperty, and owl:equivalentClass axioms at the
-  // moment. We support owl:equivalentProperty and owl:equivalentClass axioms indirectly through the OWLIndividual class.
+  // We only import rdfs:subClassOf, rdfs:subPropertyOf, owl:sameAs, owl:differentFrom, and owl:allDifferent, owl:equivalentProperty, and
+  // owl:equivalentClass axioms at the moment. We support owl:equivalentProperty and owl:equivalentClass axioms indirectly through the
+  // OWLIndividual class.
   private void importAxioms() throws SWRLRuleEngineBridgeException
   {
     importClassDescriptions(); // cf. http://www.w3.org/TR/owl-ref, Section  3.1
     importClassAxioms(); // cf. http://www.w3.org/TR/owl-ref, Section  3
     importPropertyAxioms(); // cf. http://www.w3.org/TR/owl-ref, Section  4 
     importIndividualAxioms(); // cf. http://www.w3.org/TR/owl-ref, Section  5
-    importDatatypeAxioms(); // cf. http://www.w3.org/TR/owl-ref, Section 6
+    importDataValuedPropertyAxioms(); // cf. http://www.w3.org/TR/owl-ref, Section 6
     importAnnotations(); // cf. http://www.w3.org/TR/owl-ref, Section 7
   } // importAxioms
 
@@ -683,24 +693,10 @@ public abstract class AbstractSWRLRuleEngineBridge implements SWRLRuleEngineBrid
     importDisjointWithAxioms();
   } // importClassAxioms
 
-  // cf. http://www.w3.org/TR/owl-ref, Section 3.1.1
-  private void importClassEnumerationDescriptions() throws SWRLRuleEngineBridgeException {}
-
-  // cf. http://www.w3.org/TR/owl-ref, Section 3.1.2
-  private void importPropertyRestrictions() throws SWRLRuleEngineBridgeException
-  {
-    importCardinalityRestrictions();
-    importMinCardinalityRestrictions();
-    importMaxCardinalityRestrictions();
-    importAllValuesFromRestrictions();
-    importSomeValuesFromRestrictions();
-    importHasValueRestrictions();
-  } // importPropertyRestrictions
-
   // cf. http://www.w3.org/TR/owl-ref, Section 4
   private void importPropertyAxioms() throws SWRLRuleEngineBridgeException
   {
-    //importRDFSchemaPropertyAxioms();
+    //importRDFSchemaPropertyAxioms() - rdfs:subPropertyOf, rdfs:domain, rdfs:range
     importEquivalentPropertyAxioms();
     importInverseOfAxioms();
     importFunctionalPropertyAxioms();
@@ -717,8 +713,22 @@ public abstract class AbstractSWRLRuleEngineBridge implements SWRLRuleEngineBrid
     importAllDifferentsAxioms();
   } // importIndividualAxioms
 
+  // cf. http://www.w3.org/TR/owl-ref, Section 3.1.1
+  private void importClassEnumerationDescriptions() throws SWRLRuleEngineBridgeException {}
+
+  // cf. http://www.w3.org/TR/owl-ref, Section 3.1.2
+  private void importPropertyRestrictions() throws SWRLRuleEngineBridgeException
+  {
+    importCardinalityRestrictions();
+    importMinCardinalityRestrictions();
+    importMaxCardinalityRestrictions();
+    importAllValuesFromRestrictions();
+    importSomeValuesFromRestrictions();
+    importHasValueRestrictions();
+  } // importPropertyRestrictions
+
   // cf. http://www.w3.org/TR/owl-ref, Section 6
-  private void importDatatypeAxioms() throws SWRLRuleEngineBridgeException {}
+  private void importDataValuedPropertyAxioms() throws SWRLRuleEngineBridgeException {}
 
   // cf. http://www.w3.org/TR/owl-ref, Section 7
   private void importAnnotations() throws SWRLRuleEngineBridgeException
