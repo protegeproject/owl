@@ -825,7 +825,7 @@ public class JenaCreator {
         for (Object o : values) {
             if (o instanceof RDFResource 
                     && !(o instanceof RDFProperty) && !(o instanceof RDFSNamedClass) && !(o instanceof OWLOntology)
-                    && !(o instanceof OWLAnonymousClass) && !(o instanceof RDFList) && !(o instanceof OWLAllDifferent)
+                    && !(o instanceof OWLAnonymousClass) && !(o instanceof edu.stanford.smi.protegex.owl.model.RDFList) && !(o instanceof OWLAllDifferent)
                     && !((RDFResource) o).isSystem()
                     && !((RDFResource) o).hasDirectType(owlModel.getSystemFrames().getOwlOntologyPointerClass())) {
                 individuals.add((RDFResource) o);
