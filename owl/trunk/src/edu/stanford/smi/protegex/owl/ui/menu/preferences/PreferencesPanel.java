@@ -1,5 +1,20 @@
 package edu.stanford.smi.protegex.owl.ui.menu.preferences;
 
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JCheckBox;
+import javax.swing.JComponent;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+
 import edu.stanford.smi.protege.util.LabeledComponent;
 import edu.stanford.smi.protege.util.ValidatableTabComponent;
 import edu.stanford.smi.protegex.owl.inference.util.ReasonerPreferences;
@@ -7,17 +22,10 @@ import edu.stanford.smi.protegex.owl.jena.Jena;
 import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
-import edu.stanford.smi.protegex.owl.ui.testing.OWLTestSettingsPanel;
 import edu.stanford.smi.protegex.owl.ui.forms.AbsoluteFormsGenerator;
 import edu.stanford.smi.protegex.owl.ui.profiles.ProfileSelectionPanel;
 import edu.stanford.smi.protegex.owl.ui.projectview.ConfigureTabsPanel;
-
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
+import edu.stanford.smi.protegex.owl.ui.testing.OWLTestSettingsPanel;
 
 /**
  * This dialog allows the user to edit general owl settings.
@@ -40,6 +48,8 @@ public class PreferencesPanel extends ValidatableTabComponent {
     private UISettingsPanel uiSettingsPanel;
 
     private VisibilityPanel visibilityPanel;
+    
+    private RenderingPanel renderingPanel;
 
     private OWLTestSettingsPanel testsPanel;
 
@@ -51,6 +61,7 @@ public class PreferencesPanel extends ValidatableTabComponent {
     private void addComponents(OWLModel owlModel) {
 
         JPanel generalTab = createGeneralTab(owlModel);
+        renderingPanel = new  RenderingPanel(owlModel);
         JPanel encodingTab = createEncodingTab();
         visibilityPanel = new VisibilityPanel(owlModel);
         datatypeSettingsPanel = new DatatypeSettingsPanel(owlModel);
@@ -58,6 +69,7 @@ public class PreferencesPanel extends ValidatableTabComponent {
         testsPanel = new OWLTestSettingsPanel(owlModel);
 
         addTab("General", generalTab);
+        addTab("Rendering", renderingPanel);
         addTab("Visibility", visibilityPanel);
         addTab("Datatypes", datatypeSettingsPanel);
         addTab("Searching", new SearchSettingsPanel(owlModel));
