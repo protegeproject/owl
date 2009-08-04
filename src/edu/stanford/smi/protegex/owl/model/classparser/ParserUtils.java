@@ -231,6 +231,9 @@ public class ParserUtils {
   }
   
   public static boolean quoteNeeded(String id) {
+      if (id.length() == 0) {
+          return true;
+      }
       for (String bad : SUBSTRINGS_REQUIRING_QUOTES) {
           if (id.contains(bad)) {
               return true;
