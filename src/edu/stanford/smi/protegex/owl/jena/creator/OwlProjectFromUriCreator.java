@@ -17,6 +17,7 @@ import edu.stanford.smi.protege.util.PropertyList;
 import edu.stanford.smi.protegex.owl.jena.JenaKnowledgeBaseFactory;
 import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
 import edu.stanford.smi.protegex.owl.model.factory.AbstractOwlProjectCreator;
+import edu.stanford.smi.protegex.owl.model.factory.FactoryUtils;
 import edu.stanford.smi.protegex.owl.repository.Repository;
 
 public class OwlProjectFromUriCreator extends AbstractOwlProjectCreator {
@@ -59,6 +60,7 @@ public class OwlProjectFromUriCreator extends AbstractOwlProjectCreator {
     			project.setProjectURI(uri);
     		}
     		project.createDomainKnowledgeBase(factory, errors, true);
+    		FactoryUtils.adjustBrowserTextBasedOnPreferences(getOwlModel());
     	} finally {
     		JenaKnowledgeBaseFactory.setMergingImportMode(initialMergeMode);
     	}
