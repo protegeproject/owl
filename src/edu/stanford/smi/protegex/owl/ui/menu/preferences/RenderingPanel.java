@@ -1,8 +1,8 @@
 package edu.stanford.smi.protegex.owl.ui.menu.preferences;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
@@ -18,9 +18,9 @@ import javax.swing.JPanel;
 
 import edu.stanford.smi.protege.model.BrowserSlotPattern;
 import edu.stanford.smi.protege.model.Cls;
-import edu.stanford.smi.protege.model.Project;
 import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protege.util.ApplicationProperties;
+import edu.stanford.smi.protege.util.ComponentFactory;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLNames;
 import edu.stanford.smi.protegex.owl.model.RDFNames;
@@ -114,28 +114,38 @@ public class RenderingPanel extends JPanel {
      */
     
     private JComponent createCenterPanel() {
-        Box panel = new Box(BoxLayout.Y_AXIS);
-        
-        JPanel inner = new JPanel(new GridLayout(0,2));
-        inner.add(new JLabel("Render owl entities with: "));
-        renderingPropertyBox = makePropertyComboBox(getCommonBrowserSlot(owlModel));
-        renderingPropertyBox.setPreferredSize(new Dimension(132, 16));
-        renderingPropertyBox.setMaximumSize(new Dimension(132, 16));
-        inner.add(renderingPropertyBox);
-        panel.add(inner);
+    	JPanel panel = new JPanel();
+    	panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
+    	panel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 10));
+    	
+    	JLabel lbl0 = new JLabel("Render owl entities with: ");
+    	panel.add(lbl0);
+    	lbl0.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+    	panel.add(Box.createRigidArea(new Dimension(0, 5)));
+
+    	renderingPropertyBox = makePropertyComboBox(getCommonBrowserSlot(owlModel));
+    	renderingPropertyBox.setPreferredSize(new Dimension(250, ComponentFactory.STANDARD_FIELD_HEIGHT));
+    	renderingPropertyBox.setMaximumSize(new Dimension(250, ComponentFactory.STANDARD_FIELD_HEIGHT));
+    	panel.add(renderingPropertyBox);
+    	renderingPropertyBox.setAlignmentX(Component.LEFT_ALIGNMENT);
         renderingPropertyBox.addActionListener(new SetRendererActionListener());
+    	
+    	panel.add(Box.createRigidArea(new Dimension(0, 10)));
+    	
+    	JLabel lbl1 = new JLabel("For new OWL files, render with: ");
+    	panel.add(lbl1);
+    	lbl1.setAlignmentX(Component.LEFT_ALIGNMENT);
+    	
+    	panel.add(Box.createRigidArea(new Dimension(0, 5)));
 
-        inner = new JPanel(new GridLayout(0,2));
-        inner.add(new JLabel("For new OWL files, render with: "));
-        defaultRenderingPropertyBox = makePropertyComboBox(getDefaultBrowserSlot(owlModel));
-        defaultRenderingPropertyBox.setPreferredSize(new Dimension(132, 16));
-        defaultRenderingPropertyBox.setMaximumSize(new Dimension(132, 16));
-        inner.add(defaultRenderingPropertyBox);
-        panel.add(inner);
+    	defaultRenderingPropertyBox = makePropertyComboBox(getDefaultBrowserSlot(owlModel));
+    	defaultRenderingPropertyBox.setPreferredSize(new Dimension(250, ComponentFactory.STANDARD_FIELD_HEIGHT));
+    	defaultRenderingPropertyBox.setMaximumSize(new Dimension(250, ComponentFactory.STANDARD_FIELD_HEIGHT));
+    	panel.add(defaultRenderingPropertyBox);
+    	defaultRenderingPropertyBox.setAlignmentX(Component.LEFT_ALIGNMENT);
         defaultRenderingPropertyBox.addActionListener(new SetDefaultRendererActionListener());
-
-        panel.add(inner);
-        
+    	
         return panel;
     }
     
