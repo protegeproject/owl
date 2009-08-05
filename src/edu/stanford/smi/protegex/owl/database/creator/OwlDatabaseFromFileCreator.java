@@ -64,6 +64,7 @@ public class OwlDatabaseFromFileCreator extends AbstractOwlDatabaseCreator {
         catch (AlreadyImportedException e) {
             throw new RuntimeException("This shouldn't happen", e);
         }
+        FactoryUtils.adjustBrowserTextBasedOnPreferences(getOwlModel());
 
         errors.addAll(ProtegeOWLParser.getErrors());
     }

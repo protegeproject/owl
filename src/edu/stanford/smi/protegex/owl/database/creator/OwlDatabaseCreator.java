@@ -46,6 +46,7 @@ public class OwlDatabaseCreator extends AbstractOwlDatabaseCreator {
 		else {
 		    createFromExistingSources(errors);
 		}
+		FactoryUtils.adjustBrowserTextBasedOnPreferences(getOwlModel());
 	}
 	
 	private void createFromNewEmptySources(Collection errors) throws OntologyLoadException {
