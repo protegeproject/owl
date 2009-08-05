@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.logging.Level;
 
+import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protege.util.ApplicationProperties;
 import edu.stanford.smi.protegex.owl.database.DatabaseFactoryUtils;
 import edu.stanford.smi.protegex.owl.database.OWLDatabaseKnowledgeBaseFactory;
@@ -15,6 +16,7 @@ import edu.stanford.smi.protegex.owl.model.OWLOntology;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreModel;
+import edu.stanford.smi.protegex.owl.ui.menu.preferences.RenderingPanel;
 import edu.stanford.smi.protegex.owl.ui.metadatatab.OntologyURIPanel;
 
 public class FactoryUtils {
@@ -175,4 +177,10 @@ public class FactoryUtils {
 	    owlModel.resetOntologyCache();
 	}
 
+	public static void adjustBrowserTextBasedOnPreferences(OWLModel owlModel) {
+	    Slot slot  = RenderingPanel.getDefaultBrowserSlot(owlModel);
+	    if (slot != null) {
+	        RenderingPanel.setCommonBrowserSlot(owlModel, slot);
+	    }
+	}
 }
