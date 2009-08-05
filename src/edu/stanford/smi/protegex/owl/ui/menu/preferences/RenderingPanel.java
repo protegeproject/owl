@@ -34,7 +34,7 @@ public class RenderingPanel extends JPanel {
     public static String RENDERING_PANEL_TITLE = "Rendering";
     public static String DEFAULT_BROWSER_SLOT_PROP = "owl.default.browser.slot";
     public static String[] META_SLOT_NAMES = {
-        OWLNames.Cls.OWL_CLASS, RDFSNames.Cls.NAMED_CLASS, RDFNames.Cls.PROPERTY, OWLNames.Cls.THING
+        OWLNames.Cls.NAMED_CLASS, RDFSNames.Cls.NAMED_CLASS, RDFNames.Cls.PROPERTY, OWLNames.Cls.THING
     };
     private OWLModel owlModel;
     private JComboBox renderingPropertyBox;
@@ -118,17 +118,19 @@ public class RenderingPanel extends JPanel {
         
         JPanel inner = new JPanel(new GridLayout(0,2));
         inner.add(new JLabel("Render owl entities with: "));
-        inner.add(renderingPropertyBox = makePropertyComboBox(getCommonBrowserSlot(owlModel)));
+        renderingPropertyBox = makePropertyComboBox(getCommonBrowserSlot(owlModel));
         renderingPropertyBox.setPreferredSize(new Dimension(132, 16));
         renderingPropertyBox.setMaximumSize(new Dimension(132, 16));
+        inner.add(renderingPropertyBox);
         panel.add(inner);
         renderingPropertyBox.addActionListener(new SetRendererActionListener());
 
         inner = new JPanel(new GridLayout(0,2));
         inner.add(new JLabel("For new OWL files, render with: "));
-        inner.add(defaultRenderingPropertyBox = makePropertyComboBox(getDefaultBrowserSlot(owlModel)));
+        defaultRenderingPropertyBox = makePropertyComboBox(getDefaultBrowserSlot(owlModel));
         defaultRenderingPropertyBox.setPreferredSize(new Dimension(132, 16));
         defaultRenderingPropertyBox.setMaximumSize(new Dimension(132, 16));
+        inner.add(defaultRenderingPropertyBox);
         panel.add(inner);
         defaultRenderingPropertyBox.addActionListener(new SetDefaultRendererActionListener());
 
@@ -183,7 +185,6 @@ public class RenderingPanel extends JPanel {
     private class SetRendererActionListener implements ActionListener {
         @SuppressWarnings("deprecation")
         public void actionPerformed(ActionEvent e) {
-            Project p = owlModel.getProject();
             Slot slot = (Slot) renderingPropertyBox.getSelectedItem();
             setCommonBrowserSlot(owlModel, slot);
             requiresReloadUI = true;
