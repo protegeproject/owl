@@ -15,6 +15,7 @@ import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 
 import edu.stanford.smi.protege.model.BrowserSlotPattern;
 import edu.stanford.smi.protege.model.Cls;
@@ -33,12 +34,14 @@ public class RenderingPanel extends JPanel {
     private static final long serialVersionUID = -2021694698732430578L;
     public static String RENDERING_PANEL_TITLE = "Rendering";
     public static String DEFAULT_BROWSER_SLOT_PROP = "owl.default.browser.slot";
+    public static String DEFAULT_LANGUATE_PROPERTY = "owl.default.language.slot";
     public static String[] META_SLOT_NAMES = {
         OWLNames.Cls.NAMED_CLASS, RDFSNames.Cls.NAMED_CLASS, RDFNames.Cls.PROPERTY, OWLNames.Cls.THING
     };
     private OWLModel owlModel;
     private JComboBox renderingPropertyBox;
     private JComboBox defaultRenderingPropertyBox;
+    private JTextField defaultLanguageField;
     private boolean requiresReloadUI = false;
     
     public RenderingPanel(OWLModel owlModel) {
@@ -118,7 +121,7 @@ public class RenderingPanel extends JPanel {
     	panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
     	panel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 10));
     	
-    	JLabel lbl0 = new JLabel("Render owl entities with: ");
+    	JLabel lbl0 = new JLabel("Render names in this ontology with: ");
     	panel.add(lbl0);
     	lbl0.setAlignmentX(Component.LEFT_ALIGNMENT);
 
@@ -133,7 +136,7 @@ public class RenderingPanel extends JPanel {
     	
     	panel.add(Box.createRigidArea(new Dimension(0, 10)));
     	
-    	JLabel lbl1 = new JLabel("For new OWL files, render with: ");
+    	JLabel lbl1 = new JLabel("Render entities in other owl files (no pprj) with: ");
     	panel.add(lbl1);
     	lbl1.setAlignmentX(Component.LEFT_ALIGNMENT);
     	
@@ -146,6 +149,21 @@ public class RenderingPanel extends JPanel {
     	defaultRenderingPropertyBox.setAlignmentX(Component.LEFT_ALIGNMENT);
         defaultRenderingPropertyBox.addActionListener(new SetDefaultRendererActionListener());
     	
+        panel.add(Box.createRigidArea(new Dimension(0, 10)));
+        
+        JLabel lbl2 = new JLabel("Default language (en, pt, de,...):");
+        panel.add(lbl2);
+        lbl2.setAlignmentX(Component.LEFT_ALIGNMENT);
+        
+        panel.add(Box.createRigidArea(new Dimension(0, 5)));
+        
+        defaultLanguageField = makeDefaultLanguageField();
+        defaultLanguageField.setPreferredSize(new Dimension(250, ComponentFactory.STANDARD_FIELD_HEIGHT));
+        defaultLanguageField.setMaximumSize(new Dimension(250, ComponentFactory.STANDARD_FIELD_HEIGHT));
+        panel.add(defaultLanguageField);
+        defaultLanguageField.setAlignmentX(Component.LEFT_ALIGNMENT);
+        defaultLanguageField.addActionListener(new SetDefaultLanguageActionListener());
+        
         return panel;
     }
     
@@ -173,6 +191,15 @@ public class RenderingPanel extends JPanel {
             combo.setSelectedIndex(-1);
         }
         return combo;
+    }
+    
+    private JTextField makeDefaultLanguageField() {
+        JTextField langField = new JTextField();
+        String lang = ApplicationProperties.getString(DEFAULT_LANGUATE_PROPERTY);
+        if (lang != null) {
+            langField.setText(lang);
+        }
+        return langField;
     }
     
     /* ****************************************************************
@@ -205,6 +232,15 @@ public class RenderingPanel extends JPanel {
         public void actionPerformed(ActionEvent e) {
             Slot slot = (Slot) defaultRenderingPropertyBox.getSelectedItem();
             setDefaultBrowserSlot(owlModel, slot);
+        }
+    }
+    
+    private class SetDefaultLanguageActionListener implements ActionListener {
+        public void actionPerformed(ActionEvent e) {
+            String lang = defaultLanguageField.getText();
+            if (lang != null && !lang.equals("")) {
+                ApplicationProperties.setString(DEFAULT_LANGUATE_PROPERTY, lang);
+            }
         }
     }
 }
