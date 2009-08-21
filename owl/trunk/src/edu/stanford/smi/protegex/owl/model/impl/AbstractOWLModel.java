@@ -129,6 +129,7 @@ import edu.stanford.smi.protegex.owl.swrl.SWRLSystemFrames;
 import edu.stanford.smi.protegex.owl.swrl.model.factory.SWRLJavaFactory;
 import edu.stanford.smi.protegex.owl.testing.OWLTest;
 import edu.stanford.smi.protegex.owl.testing.OWLTestLibrary;
+import edu.stanford.smi.protegex.owl.ui.menu.preferences.RenderingPanel;
 import edu.stanford.smi.protegex.owl.ui.repository.UnresolvedImportUIHandler;
 import edu.stanford.smi.protegex.owl.ui.widget.OWLFormWidget;
 import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
@@ -1344,6 +1345,10 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     }
 
     public String getDefaultLanguage() {
+        String langaugeFromProperty = ApplicationProperties.getString(RenderingPanel.DEFAULT_LANGUATE_PROPERTY);
+        if (langaugeFromProperty != null) {
+            return langaugeFromProperty;
+        }
         if (defaultLanguageInitialized == true) {
             return defaultLanguage;
         }
