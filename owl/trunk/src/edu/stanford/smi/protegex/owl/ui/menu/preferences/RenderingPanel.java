@@ -16,12 +16,15 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 import edu.stanford.smi.protege.model.BrowserSlotPattern;
 import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protege.util.ApplicationProperties;
 import edu.stanford.smi.protege.util.ComponentFactory;
+import edu.stanford.smi.protege.util.Validatable;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLNames;
 import edu.stanford.smi.protegex.owl.model.RDFNames;
@@ -51,7 +54,6 @@ public class RenderingPanel extends JPanel {
         setBorder(BorderFactory.createTitledBorder(RENDERING_PANEL_TITLE));
         add(createCenterPanel(), BorderLayout.CENTER);
     }
-    
     
     public boolean getRequiresReloadUI() {
         return requiresReloadUI;
@@ -162,7 +164,7 @@ public class RenderingPanel extends JPanel {
         defaultLanguageField.setMaximumSize(new Dimension(250, ComponentFactory.STANDARD_FIELD_HEIGHT));
         panel.add(defaultLanguageField);
         defaultLanguageField.setAlignmentX(Component.LEFT_ALIGNMENT);
-        defaultLanguageField.addActionListener(new SetDefaultLanguageActionListener());
+        defaultLanguageField.getDocument().addDocumentListener(new  SetLanguageDocumentListener());
         
         return panel;
     }
@@ -234,9 +236,22 @@ public class RenderingPanel extends JPanel {
             setDefaultBrowserSlot(owlModel, slot);
         }
     }
-    
-    private class SetDefaultLanguageActionListener implements ActionListener {
-        public void actionPerformed(ActionEvent e) {
+
+    private class SetLanguageDocumentListener implements DocumentListener {
+
+        public void changedUpdate(DocumentEvent e) {
+            saveContents();
+        }
+
+        public void insertUpdate(DocumentEvent e) {
+            saveContents();
+        }
+
+        public void removeUpdate(DocumentEvent e) {
+            saveContents();
+        }
+        
+        private void saveContents() {
             String lang = defaultLanguageField.getText();
             if (lang != null && !lang.equals("")) {
                 ApplicationProperties.setString(DEFAULT_LANGUATE_PROPERTY, lang);
