@@ -1219,10 +1219,9 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     	if (getProject() == null) {
 			return getName(instance);
 		}
-
-    	//special case for OWLIndividuals
-    	Cls directType = (instance instanceof OWLIndividual) ? 
-    			OWLUI.getOneNamedDirectTypeWithBrowserPattern((OWLIndividual) instance) : instance.getDirectType();
+    	
+    	Cls directType = (instance instanceof RDFResource) ? 
+    			OWLUI.getOneNamedDirectTypeWithBrowserPattern((RDFResource) instance) : instance.getDirectType();
     	    	
        	if (directType == null) {
         	return getMissingTypeString(instance);
