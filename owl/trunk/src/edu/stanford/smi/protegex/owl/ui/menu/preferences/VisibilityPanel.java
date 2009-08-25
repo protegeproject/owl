@@ -104,25 +104,6 @@ public class VisibilityPanel extends JComponent {
         Component annotationsPanel = createCheckBoxesPanel("Annotation Properties",
                 owlModel.getSystemAnnotationProperties());
 
-        /*JPanel importsPanel = new JPanel();
-        importsPanel.setBorder(BorderFactory.createTitledBorder("Imported resources"));
-        importsPanel.setLayout(new BoxLayout(importsPanel, BoxLayout.Y_AXIS));
-
-        JButton hideImportsButton = new JButton("Hide imports");
-        hideImportsButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                setImportsVisible(owlModel, false);
-            }
-        });
-        JButton showImportsButton = new JButton("Show imports");
-        showImportsButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                setImportsVisible(owlModel, true);
-            }
-        });
-        importsPanel.add(hideImportsButton);
-        importsPanel.add(showImportsButton);*/
-
         JPanel leftPanel = new JPanel(new BorderLayout());
         leftPanel.add(BorderLayout.CENTER, metaClsesPanel);
         leftPanel.add(BorderLayout.SOUTH, clsesPanel);
