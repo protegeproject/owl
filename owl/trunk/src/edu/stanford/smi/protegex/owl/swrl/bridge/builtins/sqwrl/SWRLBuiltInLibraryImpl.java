@@ -119,7 +119,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
       else { 
         String collectionName = getCollectionName(arguments, 0);
         int numberOfGroupElements = arguments.size() == 2 ? 0 : arguments.size() - 2;
-        collectionGroupElementNumbersMap.put(collectionName, new Integer(numberOfGroupElements));
+        collectionGroupElementNumbersMap.put(collectionName, numberOfGroupElements);
         set = new HashSet<BuiltInArgument>(); sets.put(collectionID, set); 
         
         //System.err.println("making new set with ID '" + collectionID + "', number of group elements " + numberOfGroupElements);
@@ -369,10 +369,10 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
 
     // System.err.println("intersection.collectionName1: " + collectionName1);
     // System.err.println("intersection.collectionName2: " + collectionName2);
-
+    // 
     // System.err.println("intersection.collection1NumberOfGroupElements: " + collection1NumberOfGroupElements);
     // System.err.println("intersection.collection2NumberOfGroupElements: " + collection2NumberOfGroupElements);
-
+    // 
     // System.err.println("intersection.collectionID1: " + collectionID1);
     // System.err.println("intersection.collectionID2: " + collectionID2);
 
@@ -408,7 +408,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
 
     // System.err.println("union.collection1NumberOfGroupElements: " + collection1NumberOfGroupElements);
     // System.err.println("union.collection2NumberOfGroupElements: " + collection2NumberOfGroupElements);
-
+    // 
     // System.err.println("union.collectionID1: " + collectionID1);
     // System.err.println("union.collectionID2: " + collectionID2);
 
@@ -441,10 +441,10 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
 
     // System.err.println("difference.collectionName1: " + collectionName1);
     // System.err.println("difference.collectionName2: " + collectionName2);
-
+    // 
     // System.err.println("difference.collection1NumberOfGroupElements: " + collection1NumberOfGroupElements);
     // System.err.println("difference.collection2NumberOfGroupElements: " + collection2NumberOfGroupElements);
-
+    // 
     // System.err.println("difference.collectionID1: " + collectionID1);
     // System.err.println("difference.collectionID2: " + collectionID2);
 
@@ -472,7 +472,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
     
     if (isSet(collectionID)) {
       BuiltInArgument element = arguments.get(1);
-      System.err.println("sqwrl.contains: element: " + element);
+      // System.err.println("sqwrl.contains: element: " + element);
       result = sets.get(collectionID).contains(element);
     } else throw new BuiltInException("internal error: no collection found for ID '" + collectionID + "'");
     
@@ -510,8 +510,6 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
     Set<BuiltInArgument> set;
     boolean result = false;
 
-    // System.err.println("sqwrl.greatestN: arguments: " + arguments);
-
     if (isSet(collectionID)) set = sets.get(collectionID);
       else throw new BuiltInException("internal error: no collection found for ID '" + collectionID + "'");
     
@@ -534,8 +532,6 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
     long n = SWRLBuiltInUtil.getArgumentAsALong(2, arguments);
     Set<BuiltInArgument> set;
     boolean result = false;
-
-    // System.err.println("sqwrl.greatestN: arguments: " + arguments);
 
     if (isSet(collectionID)) set = sets.get(collectionID);
       else throw new BuiltInException("internal error: no collection found for ID '" + collectionID + "'");
@@ -568,8 +564,6 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
     Set<BuiltInArgument> set;
     boolean result = false;
 
-    // System.err.println("sqwrl.leastN: arguments: " + arguments);
-
     if (isSet(collectionID)) set = sets.get(collectionID);
       else throw new BuiltInException("internal error: no collection found for ID '" + collectionID + "'");
     
@@ -600,11 +594,9 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
     Set<BuiltInArgument> set;
     boolean result = false;
 
-    // System.err.println("sqwrl.least: arguments: " + arguments);
-
     if (isSet(collectionID)) set = sets.get(collectionID);
       else throw new BuiltInException("internal error: no collection found for ID '" + collectionID + "'");
-    
+
     if (!set.isEmpty()) {
       SortedSet<BuiltInArgument> sortedSet = new TreeSet<BuiltInArgument>(set);
       BuiltInArgument least = sortedSet.first();
@@ -631,7 +623,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
     if (!collectionGroupElementNumbersMap.containsKey(collectionName)) 
       throw new BuiltInException("internal error: invalid collection name '" + collectionName + "'; no group element number found");
 
-    return collectionGroupElementNumbersMap.get(collectionName).intValue();
+    return collectionGroupElementNumbersMap.get(collectionName);
   } // getCollectionNumberOfGroupElements
 
   private String getCollectionIDInMake(List<BuiltInArgument> arguments) throws BuiltInException

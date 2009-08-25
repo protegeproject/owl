@@ -876,6 +876,12 @@ public class SWRLBuiltInUtil
     return processResultArgument(arguments, argumentNumber, argumentFactory, argumentFactory.createDatatypeValueArgument(resultArgument));
   } // processResultArgument
 
+  public static boolean processResultArgument(List<BuiltInArgument> arguments, int argumentNumber, 
+                                              ArgumentFactory argumentFactory, String resultArgument) throws BuiltInException
+  {
+    return processResultArgument(arguments, argumentNumber, argumentFactory, argumentFactory.createDatatypeValueArgument(resultArgument));
+  } // processResultArgument
+
   private static boolean nextMultiArgumentCounts(List<Integer> multiArgumentCounts, List<Integer> multiArgumentSizes)
   {
     if (multiArgumentSizes.isEmpty()) return true;

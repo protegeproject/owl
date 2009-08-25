@@ -25,7 +25,6 @@ public class SWRLTest
 
   public static void main(String args[]) 
   {
-    XMLMapper xmlMapper = new XMLMapper();
     XMLProcessor xmlProcessor = new XMLProcessor();
     Document doc;
     OWLModel owlModel;

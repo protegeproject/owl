@@ -114,9 +114,6 @@ public class BuiltInAtomImpl extends AtomImpl implements BuiltInAtom
 
   public void addArguments(List<BuiltInArgument> additionalArguments) 
   { 
-    if (arguments == null) System.err.println("XXX");
-    if (additionalArguments == null) System.err.println("XXX");
-
     arguments.addAll(additionalArguments); 
   } // addArguments
 

@@ -263,6 +263,8 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
 
     individualName = SWRLBuiltInUtil.getArgumentAsAnIndividualName(0, arguments);
 
+    System.err.println("abox.hasClass: " + arguments);
+
     try {
       if (getIsInConsequent()) {
         String className;
@@ -297,6 +299,8 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
     } catch (SWRLRuleEngineBridgeException e) {
       throw new BuiltInException(e.getMessage());
     } // try
+
+    System.err.println("abox.hasClass result: " + result);
 
     return result;
   } // hasClass
