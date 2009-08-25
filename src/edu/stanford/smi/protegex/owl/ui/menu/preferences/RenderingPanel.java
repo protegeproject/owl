@@ -1,11 +1,9 @@
 package edu.stanford.smi.protegex.owl.ui.menu.preferences;
 
-import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.List;
 import java.util.TreeSet;
 
 import javax.swing.BorderFactory;
@@ -13,25 +11,24 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-import edu.stanford.smi.protege.model.BrowserSlotPattern;
-import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protege.util.ApplicationProperties;
-import edu.stanford.smi.protege.util.ComponentFactory;
-import edu.stanford.smi.protege.util.Validatable;
+import edu.stanford.smi.protege.util.LabeledComponent;
+import edu.stanford.smi.protegex.owl.model.NamespaceUtil;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLNames;
+import edu.stanford.smi.protegex.owl.model.OWLOntology;
 import edu.stanford.smi.protegex.owl.model.RDFNames;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.RDFSNames;
+import edu.stanford.smi.protegex.owl.model.impl.OWLUtil;
 import edu.stanford.smi.protegex.owl.ui.ResourceRenderer;
-import edu.stanford.smi.protegex.owl.util.OWLBrowserSlotPattern;
+import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
 
 public class RenderingPanel extends JPanel {
     private static final long serialVersionUID = -2021694698732430578L;
@@ -50,124 +47,61 @@ public class RenderingPanel extends JPanel {
     public RenderingPanel(OWLModel owlModel) {
         this.owlModel = owlModel;
         
-        setLayout(new BorderLayout());
-        setBorder(BorderFactory.createTitledBorder(RENDERING_PANEL_TITLE));
-        add(createCenterPanel(), BorderLayout.CENTER);
+        setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
+    	setAlignmentX(Component.LEFT_ALIGNMENT);
+    	setBorder(BorderFactory.createTitledBorder(RENDERING_PANEL_TITLE));
+    	
+        add(getLocalSettingsPanel());
+        add(Box.createVerticalStrut(10));        
+    	add(getGlobalSettingsPanel());
     }
     
     public boolean getRequiresReloadUI() {
         return requiresReloadUI;
     }
     
-    /* ****************************************************************
-     * Beans - made static with owlModel argument so that they can be used elsewhere.
-     */
-    
-    @SuppressWarnings("deprecation")
-    public static void setCommonBrowserSlot(OWLModel owlModel, Slot slot) {
-        OWLBrowserSlotPattern pattern = new OWLBrowserSlotPattern(slot);
-        for (String metaClsName : META_SLOT_NAMES) {
-            owlModel.setDirectBrowserSlotPattern(owlModel.getCls(metaClsName), pattern);
-        }
-    }
-    
-    @SuppressWarnings("deprecation")
-    public static Slot getCommonBrowserSlot(OWLModel owlModel) {
-        Slot candidateSlot = null;
-        for (String metaClsName : META_SLOT_NAMES) {
-            Cls cls = owlModel.getCls(metaClsName);
-            BrowserSlotPattern pattern  = cls.getBrowserSlotPattern();
-            if (pattern == null) { 
-                return null;
-            }
-            List<Slot> slots = pattern.getSlots();
-            if (slots == null || slots.size() != 1) {
-                return null;
-            }
-            Slot slot = slots.iterator().next();
-            
-            if (candidateSlot == null) {
-                candidateSlot = slot;
-            }
-            else if (!candidateSlot.equals(slot)) {
-                return null;
-            }
-        }
-        return candidateSlot;
-    }
-    
-    @SuppressWarnings("deprecation")
-    public static Slot getDefaultBrowserSlot(OWLModel  owlModel) {
-        String slotName = ApplicationProperties.getString(DEFAULT_BROWSER_SLOT_PROP);
-        if (slotName == null) {
-            return null;
-        }
-        return owlModel.getSlot(slotName);
-    }
-    
-    public static void setDefaultBrowserSlot(OWLModel owlModel, Slot defaultSlot) {
-        if (defaultSlot == null) {
-            ApplicationProperties.setString(DEFAULT_BROWSER_SLOT_PROP, null);
-        }
-        else {
-            ApplicationProperties.setString(DEFAULT_BROWSER_SLOT_PROP, defaultSlot.getName());
-        }
-    }
-    
-    /* ****************************************************************
-     * Internal Methods
-     */
-    
-    private JComponent createCenterPanel() {
-    	JPanel panel = new JPanel();
-    	panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
-    	panel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 10));
-    	
-    	JLabel lbl0 = new JLabel("Render names in this ontology with: ");
-    	panel.add(lbl0);
-    	lbl0.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-    	panel.add(Box.createRigidArea(new Dimension(0, 5)));
-
-    	renderingPropertyBox = makePropertyComboBox(getCommonBrowserSlot(owlModel));
-    	renderingPropertyBox.setPreferredSize(new Dimension(250, ComponentFactory.STANDARD_FIELD_HEIGHT));
-    	renderingPropertyBox.setMaximumSize(new Dimension(250, ComponentFactory.STANDARD_FIELD_HEIGHT));
-    	panel.add(renderingPropertyBox);
+   
+    private JComponent getLocalSettingsPanel() {
+    	JPanel localSettingsPanel = new JPanel();
+    	localSettingsPanel.setLayout(new BoxLayout(localSettingsPanel, BoxLayout.PAGE_AXIS));
+    	localSettingsPanel.setBorder(BorderFactory.createTitledBorder("Local Settings"));
+    	localSettingsPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+    	localSettingsPanel.setMaximumSize(new Dimension(Short.MAX_VALUE, 80));
+       	
+    	renderingPropertyBox = makePropertyComboBox(OWLUI.getCommonBrowserSlot(owlModel));
     	renderingPropertyBox.setAlignmentX(Component.LEFT_ALIGNMENT);
-        renderingPropertyBox.addActionListener(new SetRendererActionListener());
-    	
-    	panel.add(Box.createRigidArea(new Dimension(0, 10)));
-    	
-    	JLabel lbl1 = new JLabel("Render entities in other owl files (no pprj) with: ");
-    	panel.add(lbl1);
-    	lbl1.setAlignmentX(Component.LEFT_ALIGNMENT);
-    	
-    	panel.add(Box.createRigidArea(new Dimension(0, 5)));
+        renderingPropertyBox.addActionListener(new SetRendererActionListener());      
 
-    	defaultRenderingPropertyBox = makePropertyComboBox(getDefaultBrowserSlot(owlModel));
-    	defaultRenderingPropertyBox.setPreferredSize(new Dimension(250, ComponentFactory.STANDARD_FIELD_HEIGHT));
-    	defaultRenderingPropertyBox.setMaximumSize(new Dimension(250, ComponentFactory.STANDARD_FIELD_HEIGHT));
-    	panel.add(defaultRenderingPropertyBox);
-    	defaultRenderingPropertyBox.setAlignmentX(Component.LEFT_ALIGNMENT);
-        defaultRenderingPropertyBox.addActionListener(new SetDefaultRendererActionListener());
-    	
-        panel.add(Box.createRigidArea(new Dimension(0, 10)));
+        localSettingsPanel.add(new LabeledComponent("Render entities in this ontology (" + getOntologyName() + ") using property: ", renderingPropertyBox));
+        localSettingsPanel.setToolTipText("The local setting will apply only to the current ontology and it will be saved in the pprj file.");
         
-        JLabel lbl2 = new JLabel("Default language (en, pt, de,...):");
-        panel.add(lbl2);
-        lbl2.setAlignmentX(Component.LEFT_ALIGNMENT);
-        
-        panel.add(Box.createRigidArea(new Dimension(0, 5)));
-        
-        defaultLanguageField = makeDefaultLanguageField();
-        defaultLanguageField.setPreferredSize(new Dimension(250, ComponentFactory.STANDARD_FIELD_HEIGHT));
-        defaultLanguageField.setMaximumSize(new Dimension(250, ComponentFactory.STANDARD_FIELD_HEIGHT));
-        panel.add(defaultLanguageField);
-        defaultLanguageField.setAlignmentX(Component.LEFT_ALIGNMENT);
-        defaultLanguageField.getDocument().addDocumentListener(new  SetLanguageDocumentListener());
-        
-        return panel;
+    	return localSettingsPanel;
     }
+    
+    private JComponent getGlobalSettingsPanel() {
+    	JPanel globalSettingsPanel = new JPanel();
+    	globalSettingsPanel.setLayout(new BoxLayout(globalSettingsPanel, BoxLayout.PAGE_AXIS));
+    	globalSettingsPanel.setBorder(BorderFactory.createTitledBorder("Global Settings"));
+    	globalSettingsPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+    	globalSettingsPanel.setMaximumSize(new Dimension(Short.MAX_VALUE, 160));
+    	
+    	defaultRenderingPropertyBox = makePropertyComboBox(OWLUI.getDefaultBrowserSlot(owlModel));
+    	defaultRenderingPropertyBox.setAlignmentX(Component.LEFT_ALIGNMENT);    	
+        defaultRenderingPropertyBox.addActionListener(new SetDefaultRendererActionListener());     
+        globalSettingsPanel.add(new LabeledComponent("Render entities in all OWL files using property:", defaultRenderingPropertyBox));        
+      
+        defaultLanguageField = makeDefaultLanguageField();
+        defaultLanguageField.setAlignmentX(Component.LEFT_ALIGNMENT);
+        defaultLanguageField.getDocument().addDocumentListener(new  SetLanguageDocumentListener());    	
+        globalSettingsPanel.add(new LabeledComponent("Default language for all OWL files (en, pt, de, ...):", defaultLanguageField));
+                      
+        globalSettingsPanel.add(Box.createGlue());
+        globalSettingsPanel.setToolTipText("<html>The global settings will apply to all ontologies open by an OWL file (and not to the ones open by a pprj file).<br>" +
+        		"The global settings will be saved in the protege.properties file.<html>");
+        
+    	return globalSettingsPanel;
+    }
+    
     
     @SuppressWarnings("deprecation")
     private JComboBox makePropertyComboBox(Slot defaultSlot) {
@@ -204,6 +138,12 @@ public class RenderingPanel extends JPanel {
         return langField;
     }
     
+    private String getOntologyName() {
+    	OWLOntology displayedOntology =  OWLUtil.getActiveOntology(owlModel);
+        return NamespaceUtil.getLocalName(displayedOntology.getName());
+    }
+    
+    
     /* ****************************************************************
      * Inner Classes
      */
@@ -225,7 +165,7 @@ public class RenderingPanel extends JPanel {
         @SuppressWarnings("deprecation")
         public void actionPerformed(ActionEvent e) {
             Slot slot = (Slot) renderingPropertyBox.getSelectedItem();
-            setCommonBrowserSlot(owlModel, slot);
+            OWLUI.setCommonBrowserSlot(owlModel, slot);
             requiresReloadUI = true;
         }
     }
@@ -233,7 +173,7 @@ public class RenderingPanel extends JPanel {
     private class SetDefaultRendererActionListener implements ActionListener  {
         public void actionPerformed(ActionEvent e) {
             Slot slot = (Slot) defaultRenderingPropertyBox.getSelectedItem();
-            setDefaultBrowserSlot(owlModel, slot);
+            OWLUI.setDefaultBrowserSlot(owlModel, slot);
         }
     }
 
