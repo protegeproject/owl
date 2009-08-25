@@ -39,7 +39,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
   } // SWRLBuiltInLibraryImpl
 
   private XMLProcessor xmlProcessor;
-  private XMLMapper xmlMapper;
+  private XMLBridgeMapper xmlMapper;
 
   private Map<String, OWLIndividual> documentMappings; // File name to OWL document individuals
   private Map<String, Document> documents; // Individual name to Document
@@ -50,7 +50,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
   public void reset() 
   {
     xmlProcessor = new XMLProcessor();
-    xmlMapper = new XMLMapper();
+    xmlMapper = new XMLBridgeMapper();
 
     documentMappings = new HashMap<String, OWLIndividual>();
     documents = new HashMap<String, Document>();
@@ -80,7 +80,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
           documents.put(xmlDocument.getIndividualName(), doc);
         } catch (XMLProcessorException e) {
           throw new BuiltInException("error processing XML stream '" + inputXMLStreamName + "': " + e.getMessage());
-        } catch (XMLMapperException e) {
+        } catch (XMLBridgeMapperException e) {
           throw new BuiltInException("error mapping XML stream '" + inputXMLStreamName + "': " + e.getMessage());
         } // try
       } else xmlDocument = documentMappings.get(inputXMLStreamName);
@@ -112,7 +112,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
           
           while (elementIterator.hasNext()) {
             Object o = elementIterator.next();
-            OWLIndividual xmlElement = getInvokingBridge().createOWLIndividual(OWLFactory.createOWLClass(XMLMapper.XMLElementMappingOWLClassName));
+            OWLIndividual xmlElement = getInvokingBridge().createOWLIndividual(OWLFactory.createOWLClass(XMLBridgeMapper.XMLElementMappingOWLClassName));
             Element element;
             
             if (!(o instanceof Element)) 
@@ -166,7 +166,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
         
         while (elementIterator.hasNext()) {
           Object o = elementIterator.next();
-          OWLIndividual xmlElement = getInvokingBridge().createOWLIndividual(OWLFactory.createOWLClass(XMLMapper.XMLElementMappingOWLClassName));
+          OWLIndividual xmlElement = getInvokingBridge().createOWLIndividual(OWLFactory.createOWLClass(XMLBridgeMapper.XMLElementMappingOWLClassName));
           Element element;
           
           if (!(o instanceof Element)) 
@@ -227,14 +227,14 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
     if (SWRLBuiltInUtil.isArgumentAnIndividual(argumentNumber, arguments)) {
       String individualName = SWRLBuiltInUtil.getArgumentAsAnIndividualName(argumentNumber, arguments);
       
-      if (isIndividualOfClass(individualName, XMLMapper.XMLDocumentMappingOWLClassName)) {
+      if (isIndividualOfClass(individualName, XMLBridgeMapper.XMLDocumentMappingOWLClassName)) {
       } else throw new InvalidBuiltInArgumentException(argumentNumber, "individual '" + individualName + "' is not a " +
-                                                       XMLMapper.XMLDocumentMappingOWLClassName);
+                                                       XMLBridgeMapper.XMLDocumentMappingOWLClassName);
 
       if (documents.containsKey(individualName)) document = documents.get(individualName);
-      else throw new InvalidBuiltInArgumentException(argumentNumber, "" + XMLMapper.XMLDocumentMappingOWLClassName + " individual '" + 
+      else throw new InvalidBuiltInArgumentException(argumentNumber, "" + XMLBridgeMapper.XMLDocumentMappingOWLClassName + " individual '" + 
                                                      individualName + "' does not refer to a valid document");
-    } else throw new InvalidBuiltInArgumentException(argumentNumber, "expecting a " +  XMLMapper.XMLDocumentMappingOWLClassName + " individual" +
+    } else throw new InvalidBuiltInArgumentException(argumentNumber, "expecting a " +  XMLBridgeMapper.XMLDocumentMappingOWLClassName + " individual" +
                                                      ", got '" + arguments.get(argumentNumber) + "'");
     return document;
   } // getArgumentAsADocument
@@ -246,14 +246,14 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
     if (SWRLBuiltInUtil.isArgumentAnIndividual(argumentNumber, arguments)) {
       String individualName = SWRLBuiltInUtil.getArgumentAsAnIndividualName(argumentNumber, arguments);
       
-      if (isIndividualOfClass(individualName, XMLMapper.XMLElementMappingOWLClassName)) {
+      if (isIndividualOfClass(individualName, XMLBridgeMapper.XMLElementMappingOWLClassName)) {
       } else throw new InvalidBuiltInArgumentException(argumentNumber, "individual '" + individualName + "' is not a " +
-                                                       XMLMapper.XMLElementMappingOWLClassName);
+                                                       XMLBridgeMapper.XMLElementMappingOWLClassName);
 
       if (elements.containsKey(individualName)) element = elements.get(individualName);
-      else throw new InvalidBuiltInArgumentException(argumentNumber, "" + XMLMapper.XMLElementMappingOWLClassName + " individual '" + 
+      else throw new InvalidBuiltInArgumentException(argumentNumber, "" + XMLBridgeMapper.XMLElementMappingOWLClassName + " individual '" + 
                                                      individualName + "' does not refer to a valid element");
-    } else throw new InvalidBuiltInArgumentException(argumentNumber, "expecting a " +  XMLMapper.XMLElementMappingOWLClassName + " individual" +
+    } else throw new InvalidBuiltInArgumentException(argumentNumber, "expecting a " +  XMLBridgeMapper.XMLElementMappingOWLClassName + " individual" +
                                                      ", got '" + arguments.get(argumentNumber) + "'");
     return element;
   } // getArgumentAsAnElement

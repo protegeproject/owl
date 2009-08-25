@@ -43,9 +43,9 @@ public class ExpansionKeyListener extends KeyAdapter {
 		try {
 			// This nastiness is required to keep the Manchester class parser
 			// (which is unsed by the expansionHandler) happy.
-			owlModel.getOWLClassDisplay().getParser().checkClass(owlModel, textComponent.getText());
+                  owlModel.getOWLClassDisplay().getParser().checkClass(owlModel, textComponent.getText());
 		} catch (OWLClassParseException ex) {
-			Log.emptyCatchBlock(ex);
+                  Log.emptyCatchBlock(ex);
 		} // try
 		
 		if (isExpansionEvent(e)) {

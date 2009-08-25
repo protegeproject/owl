@@ -7,8 +7,12 @@ import edu.stanford.smi.protegex.owl.swrl.bridge.*;
 import edu.stanford.smi.protegex.owl.swrl.bridge.builtins.*;
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.*;
 
-import org.apache.commons.lang.StringUtils;
+import edu.stanford.smi.protegex.owl.swrl.bridge.xsd.*;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.axis.types.*;
+
+import java.text.*;
 import java.util.*;
 import java.util.regex.*;
 import java.lang.Math.*;
@@ -26,13 +30,18 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
 
   private static String SWRLBPrefix = "swrlb:";
 
+  private ArgumentFactory argumentFactory;
+
+  private static String dateFormatString = "y-M-d'T'h:m:sZ";
+  private DateFormat dateFormat;
+  private Calendar calendar2, calendar3;
+
   private static String SWRLB_GREATER_THAN = SWRLBPrefix + "greaterThan";
   private static String SWRLB_LESS_THAN = SWRLBPrefix + "lessThan";
   private static String SWRLB_EQUAL = SWRLBPrefix + "equal";
   private static String SWRLB_NOT_EQUAL = SWRLBPrefix + "notEqual";
   private static String SWRLB_LESS_THAN_OR_EQUAL = SWRLBPrefix + "lessThanOrEqual";
   private static String SWRLB_GREATER_THAN_OR_EQUAL = SWRLBPrefix + "greaterThanOrEqual";
-
   private static String SWRLB_ADD = SWRLBPrefix + "add";
   private static String SWRLB_SUBTRACT = SWRLBPrefix + "subtract";
   private static String SWRLB_MULTIPLY = SWRLBPrefix + "multiply";
@@ -50,28 +59,6 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
   private static String SWRLB_SIN = SWRLBPrefix + "sin";
   private static String SWRLB_COS = SWRLBPrefix + "cos";
   private static String SWRLB_TAN = SWRLBPrefix + "tan";
-
-  private static String SWRLB_BOOLEAN_NOT = SWRLBPrefix + "booleanNot";
-
-  private static String SWRLB_STRING_EQUAL_IGNORECASE = SWRLBPrefix + "stringEqualIgnoreCase";
-  private static String SWRLB_STRING_CONCAT = SWRLBPrefix + "stringConcat";
-  private static String SWRLB_SUBSTRING = SWRLBPrefix + "substring";
-  private static String SWRLB_STRING_LENGTH = SWRLBPrefix + "stringLength";
-  private static String SWRLB_NORMALIZE_SPACE = SWRLBPrefix + "normalizeSpace";
-  private static String SWRLB_UPPER_CASE = SWRLBPrefix + "upperCase";
-  private static String SWRLB_LOWER_CASE = SWRLBPrefix + "lowerCase";
-  private static String SWRLB_TRANSLATE = SWRLBPrefix + "translate";
-  private static String SWRLB_CONTAINS = SWRLBPrefix + "contains";
-  private static String SWRLB_CONTAINS_IGNORE_CASE = SWRLBPrefix + "containsIgnoreCase";
-  private static String SWRLB_STARTS_WITH = SWRLBPrefix + "startsWith";
-  private static String SWRLB_ENDS_WITH = SWRLBPrefix + "endsWith";
-  private static String SWRLB_SUBSTRING_BEFORE = SWRLBPrefix + "substringBefore";
-  private static String SWRLB_SUBSTRING_AFTER = SWRLBPrefix + "substringAfter"; 
-  private static String SWRLB_MATCHES = SWRLBPrefix + "matches"; 
-  private static String SWRLB_REPLACE = SWRLBPrefix + "replace"; 
-  private static String SWRLB_TOKENIZE = SWRLBPrefix + "tokenize"; // TODO: not implemented
-
-  private ArgumentFactory argumentFactory;
 
   public SWRLBuiltInLibraryImpl() 
   { 
@@ -654,245 +641,333 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
 
   public boolean yearMonthDuration(List<BuiltInArgument> arguments) throws BuiltInException
   {
-    boolean result = false;
+    SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(3, arguments.size());
+    int year = SWRLBuiltInUtil.getArgumentAsAnInteger(1, arguments);
+    int month = SWRLBuiltInUtil.getArgumentAsAnInteger(2, arguments);
+    org.apache.axis.types.Duration duration = new org.apache.axis.types.Duration();
 
-    if (!result) throw new BuiltInNotImplementedException();
+    duration.setYears(year);
+    duration.setMonths(month);
 
-    return result;
+    return SWRLBuiltInUtil.processResultArgument(arguments, 0, argumentFactory, duration.toString());
   } // yearMonthDuration
 
   public boolean dayTimeDuration(List<BuiltInArgument> arguments) throws BuiltInException
   {
-    boolean result = false;
+    SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(5, arguments.size());
+    int days =  SWRLBuiltInUtil.getArgumentAsAnInteger(1, arguments);
+    int hours =  SWRLBuiltInUtil.getArgumentAsAnInteger(2, arguments);
+    int minutes =  SWRLBuiltInUtil.getArgumentAsAnInteger(3, arguments);
+    int seconds =  SWRLBuiltInUtil.getArgumentAsAnInteger(4, arguments);
+    org.apache.axis.types.Duration duration = new org.apache.axis.types.Duration();
 
-    if (!result) throw new BuiltInNotImplementedException();
+    duration.setDays(days);
+    duration.setHours(hours);
+    duration.setMinutes(minutes);
+    duration.setSeconds(seconds);
 
-    return result;
+    return SWRLBuiltInUtil.processResultArgument(arguments, 0, argumentFactory, duration.toString());
   } // dayTimeDuration
 
   public boolean dateTime(List<BuiltInArgument> arguments) throws BuiltInException
   {
-    boolean result = false;
+    String operationResult;
 
-    if (!result) throw new BuiltInNotImplementedException();
+    SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(8, arguments.size());
 
-    return result;
+    int year =  SWRLBuiltInUtil.getArgumentAsAnInteger(1, arguments);
+    int month =  SWRLBuiltInUtil.getArgumentAsAnInteger(2, arguments);
+    int days =  SWRLBuiltInUtil.getArgumentAsAnInteger(3, arguments);
+    int hours =  SWRLBuiltInUtil.getArgumentAsAnInteger(4, arguments);
+    int minutes =  SWRLBuiltInUtil.getArgumentAsAnInteger(5, arguments);
+    int seconds =  SWRLBuiltInUtil.getArgumentAsAnInteger(6, arguments);
+    String timeZone  =  SWRLBuiltInUtil.getArgumentAsAString(7, arguments);
+    Calendar calendar = new GregorianCalendar();
+
+    calendar.set(year, month, days, hours, minutes, seconds);
+    calendar.setTimeZone(TimeZone.getTimeZone(timeZone));
+
+    operationResult = "" + calendar.get(Calendar.YEAR) + "-" + calendar.get(Calendar.MONTH) + "-" + calendar.get(Calendar.DAY_OF_MONTH) + "T" +
+                      calendar.get(Calendar.HOUR) + ":" + calendar.get(Calendar.MINUTE) + ":" + calendar.get(Calendar.SECOND) + calendar.getTimeZone().getID();
+
+    return SWRLBuiltInUtil.processResultArgument(arguments, 0, argumentFactory, operationResult);
   } // dateTime
 
   public boolean date(List<BuiltInArgument> arguments) throws BuiltInException
   {
-    boolean result = false;
+    String operationResult;
 
-    if (!result) throw new BuiltInNotImplementedException();
+    SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(5, arguments.size());
 
-    return result;
+    int year =  SWRLBuiltInUtil.getArgumentAsAnInteger(1, arguments);
+    int month =  SWRLBuiltInUtil.getArgumentAsAnInteger(2, arguments);
+    int days =  SWRLBuiltInUtil.getArgumentAsAnInteger(3, arguments);
+    String timeZone  =  SWRLBuiltInUtil.getArgumentAsAString(4, arguments);
+    Calendar calendar = new GregorianCalendar();
+
+    calendar.set(year, month, days);
+    calendar.setTimeZone(TimeZone.getTimeZone(timeZone));
+
+    operationResult = "" + calendar.get(Calendar.YEAR) + "-" + calendar.get(Calendar.MONTH) + "-" + calendar.get(Calendar.DAY_OF_MONTH) + calendar.getTimeZone().getID();
+
+    return SWRLBuiltInUtil.processResultArgument(arguments, 0, argumentFactory, operationResult);
   } // date
 
   public boolean time(List<BuiltInArgument> arguments) throws BuiltInException
   {
-    boolean result = false;
+    SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(5, arguments.size());
 
-    if (!result) throw new BuiltInNotImplementedException();
+    int hours =  SWRLBuiltInUtil.getArgumentAsAnInteger(1, arguments);
+    int minutes =  SWRLBuiltInUtil.getArgumentAsAnInteger(2, arguments);
+    int seconds =  SWRLBuiltInUtil.getArgumentAsAnInteger(3, arguments);
+    String timeZone  =  SWRLBuiltInUtil.getArgumentAsAString(4, arguments);
+    String operationResult = "" + hours + ":" + minutes + ":" + seconds + timeZone;
 
-    return result;
+    return SWRLBuiltInUtil.processResultArgument(arguments, 0, argumentFactory, operationResult);
   } // time
 
   public boolean addYearMonthDurations(List<BuiltInArgument> arguments) throws BuiltInException
   {
-    boolean result = false;
+    SWRLBuiltInUtil.checkNumberOfArgumentsAtLeast(3, arguments.size());
 
-    if (!result) throw new BuiltInNotImplementedException();
+    org.apache.axis.types.Duration operationDuration = new org.apache.axis.types.Duration();
 
-    return result;
+    for (int i = 1; i < arguments.size(); i++) {
+      org.apache.axis.types.Duration duration = getArgumentAsADuration(i, arguments);
+      operationDuration = XSDTimeUtil.addYearMonthDurations(operationDuration, duration);
+    } // for
+
+    return SWRLBuiltInUtil.processResultArgument(arguments, 0, argumentFactory, operationDuration.toString());
   } // addYearMonthDurations
 
   public boolean subtractYearMonthDurations(List<BuiltInArgument> arguments) throws BuiltInException
   {
-    boolean result = false;
+    SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(3, arguments.size());
 
-    if (!result) throw new BuiltInNotImplementedException();
+    org.apache.axis.types.Duration duration2 = getArgumentAsADuration(1, arguments);
+    org.apache.axis.types.Duration duration3 = getArgumentAsADuration(2, arguments);
+    org.apache.axis.types.Duration operationDuration = XSDTimeUtil.subtractYearMonthDurations(duration2, duration3);
 
-    return result;
+    return SWRLBuiltInUtil.processResultArgument(arguments, 0, argumentFactory, operationDuration.toString());
   } // subtractYearMonthDurations
 
   public boolean multiplyYearMonthDuration(List<BuiltInArgument> arguments) throws BuiltInException
   {
-    boolean result = false;
+    SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(3, arguments.size());
 
-    if (!result) throw new BuiltInNotImplementedException();
+    org.apache.axis.types.Duration duration2 = getArgumentAsADuration(1, arguments);
+    org.apache.axis.types.Duration duration3 = getArgumentAsADuration(2, arguments);
+    org.apache.axis.types.Duration operationDuration = XSDTimeUtil.multiplyYearMonthDurations(duration2, duration3);
 
-    return result;
+    return SWRLBuiltInUtil.processResultArgument(arguments, 0, argumentFactory, operationDuration.toString());
   } // multiplyYearMonthDuration
 
   public boolean divideYearMonthDurations(List<BuiltInArgument> arguments) throws BuiltInException
   {
-    boolean result = false;
+    SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(3, arguments.size());
 
-    if (!result) throw new BuiltInNotImplementedException();
+    org.apache.axis.types.Duration duration2 = getArgumentAsADuration(1, arguments);
+    org.apache.axis.types.Duration duration3 = getArgumentAsADuration(2, arguments);
+    org.apache.axis.types.Duration operationDuration = XSDTimeUtil.divideYearMonthDurations(duration2, duration3);
 
-    return result;
+    return SWRLBuiltInUtil.processResultArgument(arguments, 0, argumentFactory, operationDuration.toString());
   } // divideYearMonthDurations
 
   public boolean addDayTimeDurations(List<BuiltInArgument> arguments) throws BuiltInException
   {
-    boolean result = false;
+    org.apache.axis.types.Duration operationDuration = new org.apache.axis.types.Duration();
 
-    if (!result) throw new BuiltInNotImplementedException();
+    SWRLBuiltInUtil.checkNumberOfArgumentsAtLeast(3, arguments.size());
 
-    return result;
+    for (int i = 1; i < arguments.size(); i++) {
+      org.apache.axis.types.Duration duration = getArgumentAsADuration(i, arguments);
+      operationDuration = XSDTimeUtil.addDayTimeDurations(operationDuration, duration);      
+    } // for
+
+    return SWRLBuiltInUtil.processResultArgument(arguments, 0, argumentFactory, operationDuration.toString());
   } // addDayTimeDurations
 
   public boolean subtractDayTimeDurations(List<BuiltInArgument> arguments) throws BuiltInException
   {
-    boolean result = false;
+    SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(3, arguments.size());
 
-    if (!result) throw new BuiltInNotImplementedException();
+    org.apache.axis.types.Duration duration2 = getArgumentAsADuration(1, arguments);
+    org.apache.axis.types.Duration duration3 = getArgumentAsADuration(2, arguments);
+    org.apache.axis.types.Duration operationDuration = XSDTimeUtil.subtractDayTimeDurations(duration2, duration3);
 
-    return result;
+    return SWRLBuiltInUtil.processResultArgument(arguments, 0, argumentFactory, operationDuration.toString());
   } // subtractDayTimeDurations
 
   public boolean multiplyDayTimeDurations(List<BuiltInArgument> arguments) throws BuiltInException
   {
-    boolean result = false;
+    SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(3, arguments.size());
 
-    if (!result) throw new BuiltInNotImplementedException();
+    org.apache.axis.types.Duration duration2 = getArgumentAsADuration(1, arguments);
+    org.apache.axis.types.Duration duration3 = getArgumentAsADuration(2, arguments);
+    org.apache.axis.types.Duration operationDuration = XSDTimeUtil.multiplyDayTimeDurations(duration2, duration3);
 
-    return result;
+    return SWRLBuiltInUtil.processResultArgument(arguments, 0, argumentFactory, operationDuration.toString());
   } // multiplyDayTimeDurations
 
   public boolean divideDayTimeDuration(List<BuiltInArgument> arguments) throws BuiltInException
   {
-    boolean result = false;
+    SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(3, arguments.size());
 
-    if (!result) throw new BuiltInNotImplementedException();
+    org.apache.axis.types.Duration duration2 = getArgumentAsADuration(1, arguments);
+    org.apache.axis.types.Duration duration3 = getArgumentAsADuration(2, arguments);
+    org.apache.axis.types.Duration operationDuration = XSDTimeUtil.divideDayTimeDurations(duration2, duration3);
 
-    return result;
+    return SWRLBuiltInUtil.processResultArgument(arguments, 0, argumentFactory, operationDuration.toString());
   } // divideDayTimeDuration
 
   public boolean subtractDates(List<BuiltInArgument> arguments) throws BuiltInException
   {
-    boolean result = false;
+    SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(3, arguments.size());
 
-    if (!result) throw new BuiltInNotImplementedException();
+    java.util.Date date2 = getArgumentAsADate(1, arguments);
+    java.util.Date date3 = getArgumentAsADate(2, arguments);
+    org.apache.axis.types.Duration operationDuration = XSDTimeUtil.subtractDates(date2, date3);
 
-    return result;
+    return SWRLBuiltInUtil.processResultArgument(arguments, 0, argumentFactory, operationDuration.toString());
   } // subtractDates
 
   public boolean subtractTimes(List<BuiltInArgument> arguments) throws BuiltInException
   {
-    boolean result = false;
+    SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(3, arguments.size());
 
-    if (!result) throw new BuiltInNotImplementedException();
+    org.apache.axis.types.Time time2 = getArgumentAsATime(1, arguments);
+    org.apache.axis.types.Time time3 = getArgumentAsATime(2, arguments);
+    org.apache.axis.types.Duration operationDuration = XSDTimeUtil.subtractTimes(time2, time3);
 
-    return result;
+    return SWRLBuiltInUtil.processResultArgument(arguments, 0, argumentFactory, operationDuration.toString());
   } // subtractTimes
 
   public boolean addYearMonthDurationToDateTime(List<BuiltInArgument> arguments) throws BuiltInException
   {
-    boolean result = false;
+    SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(3, arguments.size());
 
-    if (!result) throw new BuiltInNotImplementedException();
+    java.util.Date date = getArgumentAsADate(1, arguments);
+    org.apache.axis.types.Duration duration = getArgumentAsADuration(2, arguments);
+    java.util.Date operationDateTime = XSDTimeUtil.addYearMonthDurationToDateTime(date, duration);
 
-    return result;
+    return SWRLBuiltInUtil.processResultArgument(arguments, 0, argumentFactory, XSDTimeUtil.date2XSDDateTimeString(operationDateTime));
   } // addYearMonthDurationToDateTime
-
-  public boolean addDayTimeDurationToDateTime(List<BuiltInArgument> arguments) throws BuiltInException
-  {
-    boolean result = false;
-
-    if (!result) throw new BuiltInNotImplementedException();
-
-    return result;
-  } // addDayTimeDurationToDateTime
 
   public boolean subtractYearMonthDurationFromDateTime(List<BuiltInArgument> arguments) throws BuiltInException
   {
-    boolean result = false;
+    SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(3, arguments.size());
 
-    if (!result) throw new BuiltInNotImplementedException();
-
-    return result;
+    java.util.Date date = getArgumentAsADate(1, arguments);
+    org.apache.axis.types.Duration duration = getArgumentAsADuration(2, arguments);
+    java.util.Date operationDateTime = XSDTimeUtil.subtractYearMonthDurationFromDateTime(date, duration);
+ 
+    return SWRLBuiltInUtil.processResultArgument(arguments, 0, argumentFactory, XSDTimeUtil.date2XSDDateTimeString(operationDateTime));
   } // subtractYearMonthDurationFromDateTime
+
+  public boolean addDayTimeDurationToDateTime(List<BuiltInArgument> arguments) throws BuiltInException
+  {
+    SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(3, arguments.size());
+
+    java.util.Date date = getArgumentAsADate(1, arguments);
+    org.apache.axis.types.Duration duration = getArgumentAsADuration(2, arguments);
+    java.util.Date operationDateTime = XSDTimeUtil.addDayTimeDurationToDateTime(date, duration);
+ 
+    return SWRLBuiltInUtil.processResultArgument(arguments, 0, argumentFactory, XSDTimeUtil.date2XSDDateTimeString(operationDateTime));
+  } // addDayTimeDurationToDateTime
 
   public boolean subtractDayTimeDurationFromDateTime(List<BuiltInArgument> arguments) throws BuiltInException
   {
-    boolean result = false;
+    SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(3, arguments.size());
 
-    if (!result) throw new BuiltInNotImplementedException();
-
-    return result;
+    java.util.Date date = getArgumentAsADate(1, arguments);
+    org.apache.axis.types.Duration duration = getArgumentAsADuration(2, arguments);
+    java.util.Date operationDateTime = XSDTimeUtil.subtractDayTimeDurationFromDateTime(date, duration);
+ 
+    return SWRLBuiltInUtil.processResultArgument(arguments, 0, argumentFactory, XSDTimeUtil.date2XSDDateTimeString(operationDateTime));
   } // subtractDayTimeDurationFromDateTime
 
   public boolean addYearMonthDurationToDate(List<BuiltInArgument> arguments) throws BuiltInException
   {
-    boolean result = false;
+    SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(3, arguments.size());
 
-    if (!result) throw new BuiltInNotImplementedException();
-
-    return result;
+    java.util.Date date = getArgumentAsADate(1, arguments);
+    org.apache.axis.types.Duration duration = getArgumentAsADuration(2, arguments);
+    java.util.Date operationDateTime = XSDTimeUtil.addYearMonthDurationToDate(date, duration);
+ 
+    return SWRLBuiltInUtil.processResultArgument(arguments, 0, argumentFactory, XSDTimeUtil.date2XSDDateTimeString(operationDateTime));
   } // addYearMonthDurationToDate
-
-  public boolean addDayTimeDurationToDate(List<BuiltInArgument> arguments) throws BuiltInException
-  {
-    boolean result = false;
-
-    if (!result) throw new BuiltInNotImplementedException();
-
-    return result;
-  } // addDayTimeDurationToDate
 
   public boolean subtractYearMonthDurationFromDate(List<BuiltInArgument> arguments) throws BuiltInException
   {
-    boolean result = false;
+    SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(3, arguments.size());
 
-    if (!result) throw new BuiltInNotImplementedException();
-
-    return result;
+    java.util.Date date = getArgumentAsADate(1, arguments);
+    org.apache.axis.types.Duration duration = getArgumentAsADuration(2, arguments);
+    java.util.Date operationDateTime = XSDTimeUtil.subtractYearMonthDurationFromDate(date, duration);
+ 
+    return SWRLBuiltInUtil.processResultArgument(arguments, 0, argumentFactory, XSDTimeUtil.date2XSDDateTimeString(operationDateTime));
   } // subtractYearMonthDurationFromDate
+
+  public boolean addDayTimeDurationToDate(List<BuiltInArgument> arguments) throws BuiltInException
+  {
+    SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(3, arguments.size());
+
+    java.util.Date date = getArgumentAsADate(1, arguments);
+    org.apache.axis.types.Duration duration = getArgumentAsADuration(2, arguments);
+    java.util.Date operationDateTime = XSDTimeUtil.addDayTimeDurationToDateTime(date, duration);
+ 
+    return SWRLBuiltInUtil.processResultArgument(arguments, 0, argumentFactory, XSDTimeUtil.date2XSDDateTimeString(operationDateTime));
+  } // addDayTimeDurationToDate
 
   public boolean subtractDayTimeDurationFromDate(List<BuiltInArgument> arguments) throws BuiltInException
   {
-    boolean result = false;
+    SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(3, arguments.size());
 
-    if (!result) throw new BuiltInNotImplementedException();
-
-    return result;
+    java.util.Date date = getArgumentAsADate(1, arguments);
+    org.apache.axis.types.Duration duration = getArgumentAsADuration(2, arguments);
+    java.util.Date operationDateTime = XSDTimeUtil.subtractDayTimeDurationFromDateTime(date, duration);
+ 
+    return SWRLBuiltInUtil.processResultArgument(arguments, 0, argumentFactory, XSDTimeUtil.date2XSDDateTimeString(operationDateTime));
   } // subtractDayTimeDurationFromDate
 
   public boolean addDayTimeDurationToTime(List<BuiltInArgument> arguments) throws BuiltInException
   {
-    boolean result = false;
+    SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(3, arguments.size());
 
-    if (!result) throw new BuiltInNotImplementedException();
+    org.apache.axis.types.Time time = getArgumentAsATime(1, arguments);
+    org.apache.axis.types.Duration duration = getArgumentAsADuration(2, arguments);
+    org.apache.axis.types.Time operationTime = XSDTimeUtil.addDayTimeDurationToTime(time, duration);
 
-    return result;
+    return SWRLBuiltInUtil.processResultArgument(arguments, 0, argumentFactory, operationTime.toString());
   } // addDayTimeDurationToTime
 
   public boolean subtractDayTimeDurationFromTime(List<BuiltInArgument> arguments) throws BuiltInException
   {
-    boolean result = false;
+    SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(3, arguments.size());
 
-    if (!result) throw new BuiltInNotImplementedException();
+    org.apache.axis.types.Time time = getArgumentAsATime(1, arguments);
+    org.apache.axis.types.Duration duration = getArgumentAsADuration(2, arguments);
+    org.apache.axis.types.Time operationTime = XSDTimeUtil.subtractDayTimeDurationFromTime(time, duration);
 
-    return result;
-  } // 
+    return SWRLBuiltInUtil.processResultArgument(arguments, 0, argumentFactory, operationTime.toString());
+  } // subtractDayTimeDurationFromTime
 
   public boolean subtractDateTimesYieldingYearMonthDuration(List<BuiltInArgument> arguments) throws BuiltInException
   {
-    boolean result = false;
-
-    if (!result) throw new BuiltInNotImplementedException();
-
-    return result;
+   java.util.Date date1 = getArgumentAsADate(1, arguments);
+   java.util.Date date2 = getArgumentAsADate(2, arguments);
+   org.apache.axis.types.Duration operationDuration = XSDTimeUtil.subtractDateTimesYieldingYearMonthDuration(date1, date2);
+ 
+   return SWRLBuiltInUtil.processResultArgument(arguments, 0, argumentFactory, operationDuration.toString());
   } // subtractDateTimesYieldingYearMonthDuration
 
-  public boolean subtractDateTimesYieldingDayTimeDuration (List<BuiltInArgument> arguments) throws BuiltInException
+  public boolean subtractDateTimesYieldingDayTimeDuration(List<BuiltInArgument> arguments) throws BuiltInException
   {
-    boolean result = false;
-
-    if (!result) throw new BuiltInNotImplementedException();
-
-    return result;
+    java.util.Date date1 = getArgumentAsADate(1, arguments);
+    java.util.Date date2 = getArgumentAsADate(2, arguments);
+    org.apache.axis.types.Duration operationDuration = XSDTimeUtil.subtractDateTimesYieldingDayTimeDuration(date1, date2);
+    
+   return SWRLBuiltInUtil.processResultArgument(arguments, 0, argumentFactory, operationDuration.toString());
   } // subtractDateTimesYieldingDayTimeDuration 
 
   // Built-ins for URIs
@@ -1105,5 +1180,51 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
 
     return result;
   } // mathOperation
+
+  private org.apache.axis.types.Duration getArgumentAsADuration(int argumentNumber, List<BuiltInArgument> arguments) 
+    throws BuiltInException
+  {
+    org.apache.axis.types.Duration result = null;
+    String argument = "";
+
+    try {
+      argument = SWRLBuiltInUtil.getArgumentAsAString(argumentNumber, arguments);
+      result = new org.apache.axis.types.Duration(argument);
+    } catch (IllegalArgumentException e) {
+      throw new BuiltInException("invalid xsd:duration '" + argument + "': " + e.getMessage());
+    } // try
+
+    return result;
+  } // getArgumentAsADuration
+
+  private java.util.Date getArgumentAsADate(int argumentNumber,  List<BuiltInArgument> arguments) throws BuiltInException
+  {
+    java.util.Date result = null;
+    String argument = "";
+
+    try {
+      argument = SWRLBuiltInUtil.getArgumentAsAString(argumentNumber, arguments);
+      result = dateFormat.parse(argument); 
+    } catch (ParseException e) {
+      throw new BuiltInException("invalid xsd:date '" + argument + "': " + e.getMessage());
+    } // try
+
+    return result;
+  } // getArgumentAsADate
+
+  private org.apache.axis.types.Time getArgumentAsATime(int argumentNumber,  List<BuiltInArgument> arguments) throws BuiltInException
+  {
+    org.apache.axis.types.Time  result = null;
+    String argument = "";
+
+    try {
+      argument = SWRLBuiltInUtil.getArgumentAsAString(argumentNumber, arguments);
+      result = new org.apache.axis.types.Time(argument); 
+    } catch (NumberFormatException e) {
+      throw new BuiltInException("invalid xsd:time '" + argument + "': " + e.getMessage());
+    } // try
+
+    return result;
+  } // getArgumentAsATime
 
 } // SWRLBuiltInLibraryImpl

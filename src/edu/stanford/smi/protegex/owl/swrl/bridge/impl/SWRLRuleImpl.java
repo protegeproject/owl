@@ -73,7 +73,7 @@ public class SWRLRuleImpl implements SWRLRule
       result.add(atom);
     } // for
 
-    System.err.println("SWRLRuleImpl.getSQWRLPhase2BodyAtoms: " + result);
+    //System.err.println("SWRLRuleImpl.getSQWRLPhase2BodyAtoms: " + result);
 
     return result;
   } // getSQWRLPhase2BodyAtoms
@@ -283,16 +283,16 @@ public class SWRLRuleImpl implements SWRLRule
         List<BuiltInArgument> groupArguments = builtInArguments.subList(1, builtInArguments.size() - 1);
 
         if (collectionGroupArgumentsMap.containsKey(collectionName)) // Group should only be supplied once
-          throw new SQWRLException("group specified more than once for collection ?" + collectionName);
+          throw new SQWRLException("group specified more than once for same set ?" + collectionName);
         
         collectionGroupArgumentsMap.put(collectionName, groupArguments); // Store group arguments
 
-        //System.err.println("found group argument for collection ?" + collectionName + " and it is " + groupArguments);
+        //System.err.println("found group argument for set ?" + collectionName + " and it is " + groupArguments);
       } else { // No group arguments
         if (collectionGroupArgumentsMap.containsKey(collectionName)) { // See if we have stored ones for this collection
           builtInAtom.addArguments(collectionGroupArgumentsMap.get(collectionName)); // Append stored group arguments to built-in
           
-          //System.err.println("make-collection - adding stored group arguments: " + collectionGroupArgumentsMap.get(collectionName));
+          //System.err.println("make-set - adding stored group arguments: " + collectionGroupArgumentsMap.get(collectionName));
         } // if
       } // if
     } // for
@@ -342,13 +342,13 @@ public class SWRLRuleImpl implements SWRLRule
         } // for
 
         builtInAtom.setUsesSQWRLVariables();
-        System.err.println("adding unbound variables for built-in '" + builtInName + "': " + builtInAtom.getUnboundArgumentVariableNames());
+        //System.err.println("adding unbound variables for built-in '" + builtInName + "': " + builtInAtom.getUnboundArgumentVariableNames());
         cascadedUnboundVariableNames.addAll(builtInAtom.getUnboundArgumentVariableNames());
       } else if (!SQWRLNames.isSQWRLBuiltIn(builtInName)) {
         // Mark later non SQWRL built-ins that (directly or indirectly) use variables bound by collection operation built-ins
         if (builtInAtom.usesAtLeastOneVariableOf(cascadedUnboundVariableNames)) {
           builtInAtom.setUsesSQWRLVariables();
-          System.err.println("marking built-in as using SQWRL variables '" + builtInAtom + "'");
+          //System.err.println("marking built-in as using SQWRL variables '" + builtInAtom + "'");
           cascadedUnboundVariableNames.addAll(builtInAtom.getUnboundArgumentVariableNames()); // Record its unbound variables.
         } // if
       } // if

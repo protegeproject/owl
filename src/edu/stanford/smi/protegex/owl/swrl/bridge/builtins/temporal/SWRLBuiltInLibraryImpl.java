@@ -254,7 +254,11 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
       int granularity = getArgumentAsAGranularity(3, arguments);
       Instant operationResult = getArgumentAsAnInstant(1, arguments, granularity);
 
+      System.err.println("temporal:add before: " + operationResult.toString());
+
       operationResult.addGranuleCount(granuleCount, granularity);
+
+      System.err.println("temporal:add after: " + operationResult.toString());
 
       if (SWRLBuiltInUtil.isUnboundArgument(0, arguments)) {
         arguments.set(0, argumentFactory.createDatatypeValueArgument(new DateTime(operationResult.toString()))); // Bind the result to the first parameter
@@ -365,10 +369,8 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
       String individualName = SWRLBuiltInUtil.getArgumentAsAnIndividualName(argumentNumber, arguments);
       if (SWRLOWLUtil.isIndividualOfClass(owlModel, individualName, ValidInstantClassName)) {
         result = getValidInstant(owlModel, individualName, granularity);
-      } else throw new InvalidBuiltInArgumentException(argumentNumber, "individual '" + individualName + "' is not a " +
-                                                       ValidInstantClassName);
-    } else throw new InvalidBuiltInArgumentException(argumentNumber, "expecting an XSD datetime or " +
-                                                     ValidInstantClassName + " individual" +
+      } else throw new InvalidBuiltInArgumentException(argumentNumber, "individual '" + individualName + "' is not a " + ValidInstantClassName);
+    } else throw new InvalidBuiltInArgumentException(argumentNumber, "expecting an XSD datetime or " + ValidInstantClassName + " individual" +
                                                      ", got '" + arguments.get(argumentNumber) + "'");
     return result;
   } // getArgumentAsAnInstant
@@ -390,8 +392,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
         if (hashIndex == -1) granularityName = individualName;
         else granularityName = individualName.substring(hashIndex + 1, individualName.length());
         granularity = Temporal.getIntegerGranularityRepresentation(granularityName);
-      } else throw new InvalidBuiltInArgumentException(argumentNumber, "individual '" + individualName + "' is not a " +
-                                                       GranularityClassName);
+      } else throw new InvalidBuiltInArgumentException(argumentNumber, "individual '" + individualName + "' is not a " + GranularityClassName);
     } else throw new InvalidBuiltInArgumentException(argumentNumber, "expecting a " + GranularityClassName + " individual" +
                                                      ", got '" + arguments.get(argumentNumber) + "'");
 
