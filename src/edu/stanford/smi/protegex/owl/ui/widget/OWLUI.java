@@ -76,6 +76,7 @@ import edu.stanford.smi.protegex.owl.model.project.OWLProject;
 import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
 import edu.stanford.smi.protegex.owl.ui.actions.AbstractOWLModelAction;
 import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
+import edu.stanford.smi.protegex.owl.ui.menu.preferences.RenderingPanel;
 import edu.stanford.smi.protegex.owl.ui.results.HostResourceDisplay;
 import edu.stanford.smi.protegex.owl.util.OWLBrowserSlotPattern;
 
@@ -1077,5 +1078,60 @@ public class OWLUI {
     public static void setSortClassTreeAfterLoadOption(boolean classTreeSortedAfterLoad) {
     	ApplicationProperties.setBoolean(SORT_CLASS_TREE_AFTER_LOAD, classTreeSortedAfterLoad);
     }
+
+
+	@SuppressWarnings("deprecation")
+	public static void setCommonBrowserSlot(OWLModel owlModel, Slot slot) {
+	    OWLBrowserSlotPattern pattern = new OWLBrowserSlotPattern(slot);
+	    for (String metaClsName : RenderingPanel.META_SLOT_NAMES) {
+	        owlModel.setDirectBrowserSlotPattern(owlModel.getCls(metaClsName), pattern);
+	    }
+	}
+
+
+	@SuppressWarnings("deprecation")
+	public static Slot getCommonBrowserSlot(OWLModel owlModel) {
+	    Slot candidateSlot = null;
+	    for (String metaClsName : RenderingPanel.META_SLOT_NAMES) {
+	        Cls cls = owlModel.getCls(metaClsName);
+	        BrowserSlotPattern pattern  = cls.getBrowserSlotPattern();
+	        if (pattern == null) { 
+	            return null;
+	        }
+	        List<Slot> slots = pattern.getSlots();
+	        if (slots == null || slots.size() != 1) {
+	            return null;
+	        }
+	        Slot slot = slots.iterator().next();
+	        
+	        if (candidateSlot == null) {
+	            candidateSlot = slot;
+	        }
+	        else if (!candidateSlot.equals(slot)) {
+	            return null;
+	        }
+	    }
+	    return candidateSlot;
+	}
+
+
+	@SuppressWarnings("deprecation")
+	public static Slot getDefaultBrowserSlot(OWLModel  owlModel) {
+	    String slotName = ApplicationProperties.getString(RenderingPanel.DEFAULT_BROWSER_SLOT_PROP);
+	    if (slotName == null) {
+	        return null;
+	    }
+	    return owlModel.getSlot(slotName);
+	}
+
+
+	public static void setDefaultBrowserSlot(OWLModel owlModel, Slot defaultSlot) {
+	    if (defaultSlot == null) {
+	        ApplicationProperties.setString(RenderingPanel.DEFAULT_BROWSER_SLOT_PROP, null);
+	    }
+	    else {
+	        ApplicationProperties.setString(RenderingPanel.DEFAULT_BROWSER_SLOT_PROP, defaultSlot.getName());
+	    }
+	}
     
 }
