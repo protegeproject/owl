@@ -1013,20 +1013,33 @@ public class OWLUI {
      * If none named types found, return null
      */
     @SuppressWarnings("deprecation")
-	public static Cls getOneNamedDirectTypeWithBrowserPattern(OWLIndividual instance) {
+	public static Cls getOneNamedDirectTypeWithBrowserPattern(RDFResource resource){
+    	Collection<Cls> types = resource.getProtegeTypes();
+    	if (resource instanceof RDFSNamedClass) { //optimization for classes
+    		if (types.size() == 1) {
+    			return types.iterator().next();
+    		}
+    	} else if (resource instanceof RDFProperty) {
+    		return types.size() > 0 ? types.iterator().next() : null;
+    	}
+    	
     	Cls directType = null;
-    	Collection<Cls> types = instance.getDirectTypes();
-		Project prj = instance.getProject();
-		BrowserSlotPattern defaultBP = instance.getOWLModel().getOWLThingClass().getBrowserSlotPattern();
+    	
+		Project prj = resource.getProject();
+		BrowserSlotPattern defaultBP = resource.getOWLModel().getOWLThingClass().getBrowserSlotPattern();
 		Cls namedCls = null;
 		Cls namedClsWithInheritedBP = null;
-		//try direct types
-		for (Cls t : types) {
+		
+		for (Cls t : types) { 		//try direct types
 			if (t instanceof RDFSNamedClass) {
 				namedCls = t;
-				if (prj.getDirectBrowserSlotPattern(t) != null) {
-					directType = t;
-					break;
+				BrowserSlotPattern directBp = prj.getDirectBrowserSlotPattern(t);
+				if (directBp != null) {
+					if ((resource instanceof RDFSNamedClass && !directBp.equals(defaultBP)) ||
+							resource instanceof OWLIndividual) {
+						directType = t;
+						break;
+					}
 				} else {
 					BrowserSlotPattern bp = prj.getInheritedBrowserSlotPattern(t);				
 					if (bp != null && !bp.equals(defaultBP)) {
@@ -1035,12 +1048,8 @@ public class OWLUI {
 				}
 			}
 		}
-		if (directType == null) {
-			directType = namedClsWithInheritedBP;
-		}
-		if (directType == null) {
-			directType = namedCls;
-		}
+		if (directType == null) { directType = namedClsWithInheritedBP;	}
+		if (directType == null) { directType = namedCls; }
 		return directType;
     }
     
