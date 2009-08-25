@@ -16,8 +16,8 @@ import edu.stanford.smi.protegex.owl.model.OWLOntology;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreModel;
-import edu.stanford.smi.protegex.owl.ui.menu.preferences.RenderingPanel;
 import edu.stanford.smi.protegex.owl.ui.metadatatab.OntologyURIPanel;
+import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
 
 public class FactoryUtils {
     
@@ -178,9 +178,9 @@ public class FactoryUtils {
 	}
 
 	public static void adjustBrowserTextBasedOnPreferences(OWLModel owlModel) {
-	    Slot slot  = RenderingPanel.getDefaultBrowserSlot(owlModel);
+	    Slot slot  = OWLUI.getDefaultBrowserSlot(owlModel);
 	    if (slot != null) {
-	        RenderingPanel.setCommonBrowserSlot(owlModel, slot);
+	        OWLUI.setCommonBrowserSlot(owlModel, slot);
 	    }
 	}
 }
