@@ -193,9 +193,8 @@ public class RenderingPanel extends JPanel {
         
         private void saveContents() {
             String lang = defaultLanguageField.getText();
-            if (lang != null && !lang.equals("")) {
-                ApplicationProperties.setString(DEFAULT_LANGUATE_PROPERTY, lang);
-            }
+            if (lang != null) {lang = lang.trim();}
+            ApplicationProperties.setString(DEFAULT_LANGUATE_PROPERTY, lang == null || lang.equals("") ? null : lang);
         }
     }
 }
