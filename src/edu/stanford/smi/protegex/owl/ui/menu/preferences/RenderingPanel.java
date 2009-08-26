@@ -2,6 +2,7 @@ package edu.stanford.smi.protegex.owl.ui.menu.preferences;
 
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.TreeSet;
@@ -11,10 +12,15 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
+import javax.swing.JEditorPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+import javax.swing.UIManager;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.text.html.HTMLDocument;
+import javax.swing.text.html.HTMLEditorKit;
 
 import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protege.util.ApplicationProperties;
@@ -23,6 +29,7 @@ import edu.stanford.smi.protegex.owl.model.NamespaceUtil;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLNames;
 import edu.stanford.smi.protegex.owl.model.OWLOntology;
+import edu.stanford.smi.protegex.owl.model.ProtegeNames;
 import edu.stanford.smi.protegex.owl.model.RDFNames;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.RDFSNames;
@@ -83,7 +90,7 @@ public class RenderingPanel extends JPanel {
     	globalSettingsPanel.setLayout(new BoxLayout(globalSettingsPanel, BoxLayout.PAGE_AXIS));
     	globalSettingsPanel.setBorder(BorderFactory.createTitledBorder("Global Settings"));
     	globalSettingsPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
-    	globalSettingsPanel.setMaximumSize(new Dimension(Short.MAX_VALUE, 160));
+    	globalSettingsPanel.setMaximumSize(new Dimension(Short.MAX_VALUE, 210));
     	
     	defaultRenderingPropertyBox = makePropertyComboBox(OWLUI.getDefaultBrowserSlot(owlModel));
     	defaultRenderingPropertyBox.setAlignmentX(Component.LEFT_ALIGNMENT);    	
@@ -93,13 +100,38 @@ public class RenderingPanel extends JPanel {
         defaultLanguageField = makeDefaultLanguageField();
         defaultLanguageField.setAlignmentX(Component.LEFT_ALIGNMENT);
         defaultLanguageField.getDocument().addDocumentListener(new  SetLanguageDocumentListener());    	
-        globalSettingsPanel.add(new LabeledComponent("Default language for all OWL files (en, pt, de, ...):", defaultLanguageField));
-                      
-        globalSettingsPanel.add(Box.createGlue());
+        globalSettingsPanel.add(new LabeledComponent("Global default language for all OWL files (en, pt, de, ...):", defaultLanguageField));
+        
         globalSettingsPanel.setToolTipText("<html>The global settings will apply to all ontologies open by an OWL file (and not to the ones open by a pprj file).<br>" +
         		"The global settings will be saved in the protege.properties file.<html>");
         
+        globalSettingsPanel.add(Box.createVerticalStrut(10));
+        globalSettingsPanel.add(getExplanationTextArea());       
+        
     	return globalSettingsPanel;
+    }
+    
+    private JComponent getExplanationTextArea() {
+    	JEditorPane pane = new JEditorPane();
+    	pane.setBorder(BorderFactory.createTitledBorder("Explanation"));
+    	pane.setEditable(false);
+    	pane.setOpaque(false);
+		pane.setEditorKit(new HTMLEditorKit());		
+		// add a CSS rule to force body tags to use the default label font
+		// instead of the value in javax.swing.text.html.default.csss
+		Font font = UIManager.getFont("Label.font");
+		String bodyRule = "body { font-family: " + font.getFamily() + "; " + "font-size: " + font.getSize() + "pt; }";
+		((HTMLDocument)pane.getDocument()).getStyleSheet().addRule(bodyRule);	
+
+    	String defaultLangInFile = getDefaultLanguageSetInFile();    	
+    	String text = "<html>" +
+    			"The global settings will apply to all ontologies open by an OWL file (and not to the ones open by a pprj file).<br>" +
+    			"The global language setting will overide the default language set in the ontology file.<br><br>" +
+    			"The current language set in the ontology file is:<b>" + (defaultLangInFile == null ? "(none)" : defaultLangInFile) + "</b>.</html>";
+    	
+    	pane.setText(text);
+    	
+    	return new JScrollPane(pane);
     }
     
     
@@ -143,6 +175,23 @@ public class RenderingPanel extends JPanel {
         return NamespaceUtil.getLocalName(displayedOntology.getName());
     }
     
+    private String getDefaultLanguageSetInFile() {
+    	 String defaultLanguage = null;
+         RDFProperty defaultLangProp = owlModel.getRDFProperty(ProtegeNames.getDefaultLanguageSlotName());
+         if (defaultLangProp != null) {
+             OWLOntology oi = owlModel.getDefaultOWLOntology();
+             if (oi != null) {
+                 Object value = oi.getPropertyValue(defaultLangProp);
+                 if (value instanceof String) {
+                 	String stringValue = (String) value;
+                 	if (stringValue != null && stringValue.length() > 0) {
+                 		defaultLanguage = stringValue;
+                 	}
+                 }
+             }
+         }
+         return defaultLanguage;
+    }
     
     /* ****************************************************************
      * Inner Classes
