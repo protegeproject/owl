@@ -16,7 +16,7 @@ public class OWLIndividualImpl extends PropertyValueImpl implements OWLIndividua
   // NOTE: equals() method defined in this class
 
   private String individualName, prefixedIndividualName;  
-  private Set<OWLClass> definingClasses, definingSuperclasses, definingEquivalentClasses, definingEquivalentClassSuperclasses;
+  private Set<OWLClass> definingClasses, definingSuperclasses, definingEquivalentClasses, definingEquivalentClassSuperclasses, classes;
   private Set<OWLIndividual> sameAsIndividuals;
 
   public OWLIndividualImpl(String individualName)
@@ -28,7 +28,7 @@ public class OWLIndividualImpl extends PropertyValueImpl implements OWLIndividua
   {
     initialize(individualName, prefixedIndividualName);
 
-    definingClasses.add(owlClass);
+    addDefiningClass(owlClass);
   } // OWLIndividualImpl
 
   public OWLIndividualImpl(String individualName, String prefixedIndividualName) 
@@ -36,10 +36,14 @@ public class OWLIndividualImpl extends PropertyValueImpl implements OWLIndividua
     initialize(individualName, prefixedIndividualName);
   } // OWLIndividualImpl
 
-  public void addDefiningClass(OWLClass definingClass) { definingClasses.add(definingClass); }
-  public void addDefiningSuperclass(OWLClass definingSuperclass) { definingSuperclasses.add(definingSuperclass); }
-  public void addDefiningEquivalentClass(OWLClass definingEquivalentClass) { definingEquivalentClasses.add(definingEquivalentClass); }
-  public void addDefiningEquivalentClassSuperclass(OWLClass definingEquivalentClassSuperclass) { definingEquivalentClassSuperclasses.add(definingEquivalentClassSuperclass); }
+  public void addDefiningClass(OWLClass definingClass) 
+  { definingClasses.add(definingClass); classes.add(definingClass); }
+  public void addDefiningSuperclass(OWLClass definingSuperclass) 
+  { definingSuperclasses.add(definingSuperclass); classes.add(definingSuperclass); }
+  public void addDefiningEquivalentClass(OWLClass definingEquivalentClass) 
+  { definingEquivalentClasses.add(definingEquivalentClass); classes.add(definingEquivalentClass); }
+  public void addDefiningEquivalentClassSuperclass(OWLClass definingEquivalentClassSuperclass) 
+  { definingEquivalentClassSuperclasses.add(definingEquivalentClassSuperclass); classes.add(definingEquivalentClassSuperclass); }
 
   public void addSameAsIndividual(OWLIndividual sameAsIndividual) { sameAsIndividuals.add(sameAsIndividual); }
 
@@ -50,6 +54,13 @@ public class OWLIndividualImpl extends PropertyValueImpl implements OWLIndividua
   public Set<OWLClass> getDefiningEquivalentClasses() { return definingEquivalentClasses; }
   public Set<OWLClass> getDefiningEquivalentClassSuperclasses() { return definingEquivalentClassSuperclasses; }
   public Set<OWLIndividual> getSameAsIndividuals() { return sameAsIndividuals; }
+
+  public boolean hasClass(String className) 
+  {
+    for (OWLClass owlClass : classes) if (owlClass.getClassName().equals(className)) return true;
+
+    return false;
+  } // hasClass
   
   public String getRepresentation() { return getPrefixedIndividualName(); }
 
@@ -98,6 +109,7 @@ public class OWLIndividualImpl extends PropertyValueImpl implements OWLIndividua
     definingEquivalentClasses = new HashSet<OWLClass>();
     sameAsIndividuals = new HashSet<OWLIndividual>();
     definingEquivalentClassSuperclasses = new HashSet<OWLClass>();
+    classes = new HashSet<OWLClass>();
   } // initialize
 
 } // OWLIndividualImpl

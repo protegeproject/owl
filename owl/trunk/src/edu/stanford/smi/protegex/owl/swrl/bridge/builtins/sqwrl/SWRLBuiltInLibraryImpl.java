@@ -1,6 +1,7 @@
 
 // TODO: a lot of cut-and-paste repetition here needs to be fixed.
 // TODO: replace set operators min, max with least, greatest?
+// TODO: need to optimize sorted sets so that they are not resorted unnecessarily
 
 package edu.stanford.smi.protegex.owl.swrl.bridge.builtins.sqwrl;
 
@@ -506,7 +507,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
   public boolean greatestN(List<BuiltInArgument> arguments) throws BuiltInException 
   { 
     String collectionID = getCollectionIDInOperation(arguments, 1, 3); // Does argument checking
-    long n = SWRLBuiltInUtil.getArgumentAsALong(2, arguments);
+    int n = SWRLBuiltInUtil.getArgumentAsAPositiveInteger(2, arguments);
     Set<BuiltInArgument> set;
     boolean result = false;
 
@@ -520,7 +521,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
 
       for (int i = set.size() - 1; i >= set.size() - n && i >= 0; i--) greatestNSet.add(array[i]);
 
-      SWRLBuiltInUtil.processResultArgument(arguments, 0, argumentFactory, greatestNSet);
+      result = SWRLBuiltInUtil.processResultArgument(arguments, 0, argumentFactory, greatestNSet);
     } // if
 
     return result;
@@ -529,7 +530,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
   public boolean notGreatestN(List<BuiltInArgument> arguments) throws BuiltInException 
   { 
     String collectionID = getCollectionIDInOperation(arguments, 1, 3); // Does argument checking
-    long n = SWRLBuiltInUtil.getArgumentAsALong(2, arguments);
+    int n = SWRLBuiltInUtil.getArgumentAsAPositiveInteger(2, arguments);
     Set<BuiltInArgument> set;
     boolean result = false;
 
@@ -542,16 +543,8 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
       Set<BuiltInArgument> notGreatestNSet = new HashSet<BuiltInArgument>();
 
       for (int i = 0; i < set.size() - n; i++) notGreatestNSet.add(array[i]);
-      
-      if (SWRLBuiltInUtil.isUnboundArgument(0, arguments)) {
-        MultiArgument multiArgument = argumentFactory.createMultiArgument(SWRLBuiltInUtil.getVariableName(0, arguments), SWRLBuiltInUtil.getPrefixedVariableName(0, arguments));
-        for (BuiltInArgument argument : notGreatestNSet) multiArgument.addArgument(argument);
-        arguments.set(0, multiArgument);
-        result = !multiArgument.hasNoArguments();
-      } else {
-        BuiltInArgument argument1 = arguments.get(0);
-        result = notGreatestNSet.contains(argument1);
-      } //if
+
+      result = SWRLBuiltInUtil.processResultArgument(arguments, 0, argumentFactory, notGreatestNSet);
     } // if
 
     return result;
@@ -560,7 +553,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
   public boolean leastN(List<BuiltInArgument> arguments) throws BuiltInException 
   { 
     String collectionID = getCollectionIDInOperation(arguments, 1, 3); // Does argument checking
-    long n = SWRLBuiltInUtil.getArgumentAsALong(2, arguments);
+    int n = SWRLBuiltInUtil.getArgumentAsAPositiveInteger(2, arguments);
     Set<BuiltInArgument> set;
     boolean result = false;
 
@@ -574,15 +567,30 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
 
       for (int i = 0; i < n && i < set.size(); i++) leastNSet.add(array[i]);
       
-      if (SWRLBuiltInUtil.isUnboundArgument(0, arguments)) {
-        MultiArgument multiArgument = argumentFactory.createMultiArgument(SWRLBuiltInUtil.getVariableName(0, arguments), SWRLBuiltInUtil.getPrefixedVariableName(0, arguments));
-        for (BuiltInArgument argument : leastNSet) multiArgument.addArgument(argument);
-        arguments.set(0, multiArgument);
-        result = !multiArgument.hasNoArguments();
-      } else {
-        BuiltInArgument argument1 = arguments.get(0);
-        result = leastNSet.contains(argument1);
-      } //if
+      result = SWRLBuiltInUtil.processResultArgument(arguments, 0, argumentFactory, leastNSet);
+    } // if
+
+    return result;
+  } // leastN
+
+  public boolean notLeastN(List<BuiltInArgument> arguments) throws BuiltInException 
+  { 
+    String collectionID = getCollectionIDInOperation(arguments, 1, 3); // Does argument checking
+    int n = SWRLBuiltInUtil.getArgumentAsAPositiveInteger(2, arguments);
+    Set<BuiltInArgument> set;
+    boolean result = false;
+
+    if (isSet(collectionID)) set = sets.get(collectionID);
+      else throw new BuiltInException("internal error: no collection found for ID '" + collectionID + "'");
+    
+    if (!set.isEmpty()) {
+      SortedSet<BuiltInArgument> sortedSet = new TreeSet<BuiltInArgument>(set);
+      BuiltInArgument array[] = (BuiltInArgument[])sortedSet.toArray(new BuiltInArgument[sortedSet.size()]);
+      Set<BuiltInArgument> notLeastNSet = new HashSet<BuiltInArgument>();
+
+      for (int i = n - 1; i < set.size(); i++) notLeastNSet.add(array[i]);
+      
+      result = SWRLBuiltInUtil.processResultArgument(arguments, 0, argumentFactory, notLeastNSet);
     } // if
 
     return result;
@@ -675,7 +683,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
 
     return result;
   } // getResult
- 
+
   private void throwInternalSQWRLException(String message) throws BuiltInException
   {
     throw new BuiltInException("internal SQWRL engine exception: " + message);

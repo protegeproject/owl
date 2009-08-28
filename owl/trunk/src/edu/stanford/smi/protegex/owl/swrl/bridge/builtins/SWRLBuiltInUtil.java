@@ -384,6 +384,15 @@ public class SWRLBuiltInUtil
     return getArgumentAsALiteral(argumentNumber, arguments).getInt(); // Will throw DatatypeConversionException if invalid.
   } // getArgumentAsAnInteger
 
+  public static int getArgumentAsAPositiveInteger(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException
+  {
+    int i = getArgumentAsALiteral(argumentNumber, arguments).getInt(); // Will throw DatatypeConversionException if invalid.
+
+    if (i < 0) throw new InvalidBuiltInArgumentException(argumentNumber, makeInvalidArgumentTypeMessage(arguments.get(argumentNumber),
+                                                                                                        "expecting positive integer"));
+    return i;
+  } // getArgumentAsAPositiveInteger
+
   // Shorts
 
   public static boolean isArgumentAShort(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException
@@ -494,6 +503,16 @@ public class SWRLBuiltInUtil
   {
     return getArgumentAsALiteral(argumentNumber, arguments).getLong(); // Will throw DatatypeConversionException if invalid.
   } // getArgumentAsALong
+
+  public static long getArgumentAsAPositiveLong(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException
+  {
+    long l = getArgumentAsALiteral(argumentNumber, arguments).getLong(); // Will throw DatatypeConversionException if invalid.
+
+    if (l < 0) throw new InvalidBuiltInArgumentException(argumentNumber, makeInvalidArgumentTypeMessage(arguments.get(argumentNumber),
+                                                                                                        "expecting positive long"));
+
+    return l;                                                                                                       
+  } // getArgumentAsAPositiveLong
 
   // Floats
 
@@ -882,7 +901,42 @@ public class SWRLBuiltInUtil
     return processResultArgument(arguments, argumentNumber, argumentFactory, argumentFactory.createDatatypeValueArgument(resultArgument));
   } // processResultArgument
 
+  public static String getOWLDatatypePropertyValueAsAString(SWRLRuleEngineBridge bridge, String individualName, String propertyName)
+    throws BuiltInException
+  {
+    Set<OWLPropertyAssertionAxiom> axioms = bridge.getOWLPropertyAssertionAxioms(individualName, propertyName);
+    OWLPropertyAssertionAxiom axiom;
+    OWLDatatypeValue value;
+    
+    axiom = axioms.toArray(new OWLPropertyAssertionAxiom[0])[0];
+
+    if (!(axiom instanceof OWLDatatypePropertyAssertionAxiom))
+      throw new BuiltInException("property '" + propertyName + "' is not an OWL datavalued property assertion axiom");
+
+    value = ((OWLDatatypePropertyAssertionAxiom)axiom).getObject();  
+
+    return value.getString();
+  } // getOWLDatatypePropertyValueAsAString
+
+  public static int getOWLDatatypePropertyValueAsAnInteger(SWRLRuleEngineBridge bridge, String individualName, String propertyName)
+    throws BuiltInException
+  {
+    Set<OWLPropertyAssertionAxiom> axioms = bridge.getOWLPropertyAssertionAxioms(individualName, propertyName);
+    OWLPropertyAssertionAxiom axiom;
+    OWLDatatypeValue value;
+
+    axiom = axioms.toArray(new OWLPropertyAssertionAxiom[0])[0];
+
+    if (!(axiom instanceof OWLDatatypePropertyAssertionAxiom))
+      throw new BuiltInException("property '" + propertyName + "' is not an OWL datavalued property assertion axiom");
+
+    value = ((OWLDatatypePropertyAssertionAxiom)axiom).getObject();  
+
+    return value.getInt();
+  } // getOWLDatatypePropertyValueAsInteget
+
   private static boolean nextMultiArgumentCounts(List<Integer> multiArgumentCounts, List<Integer> multiArgumentSizes)
+    throws BuiltInException
   {
     if (multiArgumentSizes.isEmpty()) return true;
     
@@ -926,5 +980,7 @@ public class SWRLBuiltInUtil
 
     return result;
   } // getMultiArgumentIndexes
+
+  
 
 } // SWRLBuiltInUtil

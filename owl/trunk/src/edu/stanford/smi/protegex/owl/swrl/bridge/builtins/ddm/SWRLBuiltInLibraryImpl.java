@@ -76,7 +76,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
 
       individuals = mapper.mapOWLClass(owlClass);
       
-      //if (!individuals.isEmpty()) getInvokingBridge().createOWLIndividuals(individuals);
+      //if (!individuals.isEmpty()) getInvokingBridge().injectOWLIndividuals(individuals);
       if (isUnboundIndividualArgument) {
         MultiArgument multiArgument = argumentFactory.createMultiArgument(SWRLBuiltInUtil.getVariableName(1, arguments), SWRLBuiltInUtil.getPrefixedVariableName(1, arguments));
         for (OWLIndividual individual : individuals) multiArgument.addArgument(individual);
@@ -123,7 +123,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
       else if (hasSubject && !hasObject) axioms = mapper.mapOWLObjectProperty(owlProperty, subjectOWLIndividual);
       else axioms = mapper.mapOWLObjectProperty(owlProperty, subjectOWLIndividual, objectOWLIndividual);
       
-      if (!axioms.isEmpty()) getInvokingBridge().createOWLObjectPropertyAssertionAxioms(axioms);
+      if (!axioms.isEmpty()) getInvokingBridge().injectOWLObjectPropertyAssertionAxioms(axioms);
 
     } catch (SWRLRuleEngineBridgeException e) {
       throw new BuiltInException("error mapping OWL object property '" + propertyName + "': " + e.getMessage());
@@ -169,7 +169,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
       else if (!hasSubject && hasValue) axioms = mapper.mapOWLDatatypeProperty(owlProperty, value);
       else axioms = mapper.mapOWLDatatypeProperty(owlProperty, subjectOWLIndividual, value);
       
-      if (!axioms.isEmpty()) getInvokingBridge().createOWLDatatypePropertyAssertionAxioms(axioms);
+      if (!axioms.isEmpty()) getInvokingBridge().injectOWLDatatypePropertyAssertionAxioms(axioms);
     } catch (SWRLRuleEngineBridgeException e) {
       throw new BuiltInException("error mapping OWL datatype property '" + propertyName + "': " + e.getMessage());
     } // try

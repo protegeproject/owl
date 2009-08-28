@@ -285,7 +285,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
       if (getIsInConsequent()) {
         if (SWRLBuiltInUtil.isArgumentAString(0, arguments)) {
           String className = SWRLOWLUtil.getFullName(getInvokingBridge().getOWLModel(), SWRLBuiltInUtil.getArgumentAsAString(0, arguments));
-          if (!getInvokingBridge().isClass(className)) getInvokingBridge().createOWLClass(className);
+          if (!getInvokingBridge().isOWLClass(className)) getInvokingBridge().injectOWLClass(className);
         } else SWRLBuiltInUtil.checkThatArgumentIsAClass(0, arguments);
         result = true;
       } else {
@@ -297,7 +297,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
           result = !multiArgument.hasNoArguments();
         } else {
           String className = SWRLBuiltInUtil.getArgumentAsAClassName(0, arguments);
-          result = SWRLOWLUtil.isClass(getInvokingBridge().getOWLModel(), className, false);
+          result = getInvokingBridge().isOWLClass(className);
         } // if
       } // if
     } catch (SWRLOWLUtilException e) {
@@ -1028,7 +1028,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
 
         if (SWRLBuiltInUtil.isArgumentAString(2, arguments)) {
           onClassName = SWRLOWLUtil.getFullName(getInvokingBridge().getOWLModel(), SWRLBuiltInUtil.getArgumentAsAString(2, arguments));
-          if (!getInvokingBridge().isClass(onClassName)) getInvokingBridge().createOWLClass(onClassName);
+          if (!getInvokingBridge().isOWLClass(onClassName)) getInvokingBridge().injectOWLClass(onClassName);
         } else onClassName = SWRLBuiltInUtil.getArgumentAsAClassName(2, arguments);
 
         if (SWRLOWLUtil.isObjectProperty(getInvokingBridge().getOWLModel(), onPropertyName)) onProperty = OWLFactory.createOWLObjectProperty(onPropertyName);
@@ -1036,7 +1036,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
 
         someValuesFrom = OWLFactory.createOWLSomeValuesFrom(OWLFactory.createOWLClass(restrictionName), onProperty, OWLFactory.createOWLClass(onClassName));
 
-        // getInvokingBridge().createOWLRestriction(someValuesFrom); // TODO
+        // getInvokingBridge().injectOWLRestriction(someValuesFrom); // TODO
         if (someValuesFrom != null) throw new BuiltInNotImplementedException();
       } else {
         onClassName = SWRLBuiltInUtil.getArgumentAsAClassName(2, arguments);
@@ -1137,14 +1137,14 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
 
         if (SWRLBuiltInUtil.isArgumentAString(1, arguments)) {
           superclassName = SWRLOWLUtil.getFullName(getInvokingBridge().getOWLModel(), SWRLBuiltInUtil.getArgumentAsAString(1, arguments));
-          if (!getInvokingBridge().isClass(superclassName)) getInvokingBridge().createOWLClass(superclassName);
+          if (!getInvokingBridge().isOWLClass(superclassName)) getInvokingBridge().injectOWLClass(superclassName);
         } else superclassName = SWRLBuiltInUtil.getArgumentAsAClassName(1, arguments);
 
         if (SWRLBuiltInUtil.isArgumentAString(0, arguments)) 
           className = SWRLOWLUtil.getFullName(getInvokingBridge().getOWLModel(), SWRLBuiltInUtil.getArgumentAsAString(0, arguments));
         else className = SWRLBuiltInUtil.getArgumentAsAClassName(0, arguments);
 
-        if (!getInvokingBridge().isClass(className)) getInvokingBridge().createOWLClass(className, superclassName);
+        if (!getInvokingBridge().isOWLClass(className)) getInvokingBridge().injectOWLClass(className, superclassName);
         result = true;
       } else {
         className = SWRLBuiltInUtil.getArgumentAsAClassName(1, arguments);

@@ -7,11 +7,6 @@ import edu.stanford.smi.protegex.owl.swrl.bridge.*;
 import edu.stanford.smi.protegex.owl.swrl.bridge.builtins.*;
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.*;
 
-import edu.stanford.smi.protegex.owl.swrl.util.*;
-import edu.stanford.smi.protegex.owl.swrl.exceptions.*;
-
-import edu.stanford.smi.protegex.owl.model.OWLModel;
-
 import edu.stanford.smi.protegex.owl.swrl.bridge.xsd.DateTime;
 
 import java.util.*;
@@ -150,8 +145,6 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
       } //if
     } catch (TemporalException e) {
       throw new BuiltInException(e.getMessage());
-    } catch (SWRLOWLUtilException e) {
-      throw new BuiltInException(e.getMessage());
     } // try
 
     return result;
@@ -254,11 +247,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
       int granularity = getArgumentAsAGranularity(3, arguments);
       Instant operationResult = getArgumentAsAnInstant(1, arguments, granularity);
 
-      System.err.println("temporal:add before: " + operationResult.toString());
-
       operationResult.addGranuleCount(granuleCount, granularity);
-
-      System.err.println("temporal:add after: " + operationResult.toString());
 
       if (SWRLBuiltInUtil.isUnboundArgument(0, arguments)) {
         arguments.set(0, argumentFactory.createDatatypeValueArgument(new DateTime(operationResult.toString()))); // Bind the result to the first parameter
@@ -268,8 +257,6 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
         result = (argument1.equals(operationResult, Temporal.FINEST));
       } //if
     } catch (TemporalException e) {
-      throw new BuiltInException(e.getMessage());
-    } catch (SWRLOWLUtilException e) {
       throw new BuiltInException(e.getMessage());
     } // try
 
@@ -308,8 +295,6 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
       else throw new BuiltInException("internal error - unknown temporal operator '" + operation + "'");
     } catch (TemporalException e) {
       throw new BuiltInException(e.getMessage());
-    } catch (SWRLOWLUtilException e) {
-      throw new BuiltInException(e.getMessage());
     } // try
 
     return result;
@@ -317,7 +302,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
 
   private Period getTwoInstantArgumentsAsAPeriod(int firstArgumentNumber, int secondArgumentNumber, 
                                                  List<BuiltInArgument> arguments, int granularity) 
-    throws BuiltInException, TemporalException, SWRLOWLUtilException
+    throws BuiltInException, TemporalException
   {
     Instant i1, i2;
     Period result;
@@ -333,9 +318,8 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
   } // getTwoInstantArgumentsAsAPeriod
 
   private Period getArgumentAsAPeriod(int argumentNumber, List<BuiltInArgument> arguments, int granularity) 
-    throws BuiltInException, TemporalException, SWRLOWLUtilException
+    throws BuiltInException, TemporalException
   {
-    OWLModel owlModel = getInvokingBridge().getOWLModel();
     Period result = null;
 
     if (SWRLBuiltInUtil.isArgumentALiteral(argumentNumber, arguments)) {
@@ -343,11 +327,11 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
       result = new Period(temporal, datetimeString, datetimeString, granularity);
     } else if (SWRLBuiltInUtil.isArgumentAnIndividual(argumentNumber, arguments)) {
       String individualName = SWRLBuiltInUtil.getArgumentAsAnIndividualName(argumentNumber, arguments);
-      if (SWRLOWLUtil.isIndividualOfClass(owlModel, individualName, ValidInstantClassName)) {
-        Instant instant = getValidInstant(owlModel, individualName, granularity);
+      if (getInvokingBridge().isOWLIndividualOfClass(individualName, ValidInstantClassName)) {
+        Instant instant = getValidInstant(individualName, granularity);
         result = new Period(temporal, instant, granularity);
-      } else if (SWRLOWLUtil.isIndividualOfClass(owlModel, individualName,  ValidPeriodClassName)) {
-        result = getValidPeriod(owlModel, individualName, granularity);
+      } else if (getInvokingBridge().isOWLIndividualOfClass(individualName,  ValidPeriodClassName)) {
+        result = getValidPeriod(individualName, granularity);
       } else throw new InvalidBuiltInArgumentException(argumentNumber, "individual '" + individualName + "' is not a " +
                                                        ValidInstantClassName + " or " + ValidPeriodClassName);
     } else throw new InvalidBuiltInArgumentException(argumentNumber, "expecting an XSD datetime or " +
@@ -357,9 +341,8 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
   } // getArgumentAsAPeriod
 
   private Instant getArgumentAsAnInstant(int argumentNumber, List<BuiltInArgument> arguments, int granularity) 
-    throws BuiltInException, TemporalException, SWRLOWLUtilException
+    throws BuiltInException, TemporalException
   {
-    OWLModel owlModel = getInvokingBridge().getOWLModel();
     Instant result = null;
 
     if (SWRLBuiltInUtil.isArgumentALiteral(argumentNumber, arguments)) {
@@ -367,8 +350,8 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
       result = new Instant(temporal, datetimeString, granularity);
     } else if (SWRLBuiltInUtil.isArgumentAnIndividual(argumentNumber, arguments)) {
       String individualName = SWRLBuiltInUtil.getArgumentAsAnIndividualName(argumentNumber, arguments);
-      if (SWRLOWLUtil.isIndividualOfClass(owlModel, individualName, ValidInstantClassName)) {
-        result = getValidInstant(owlModel, individualName, granularity);
+      if (getInvokingBridge().isOWLIndividualOfClass(individualName, ValidInstantClassName)) {
+        result = getValidInstant(individualName, granularity);
       } else throw new InvalidBuiltInArgumentException(argumentNumber, "individual '" + individualName + "' is not a " + ValidInstantClassName);
     } else throw new InvalidBuiltInArgumentException(argumentNumber, "expecting an XSD datetime or " + ValidInstantClassName + " individual" +
                                                      ", got '" + arguments.get(argumentNumber) + "'");
@@ -376,9 +359,8 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
   } // getArgumentAsAnInstant
 
   private int getArgumentAsAGranularity(int argumentNumber, List<BuiltInArgument> arguments) 
-    throws TemporalException, BuiltInException, SWRLOWLUtilException
+    throws TemporalException, BuiltInException
   {
-    OWLModel owlModel = getInvokingBridge().getOWLModel();
     String granularityName;
     int granularity = -1;
 
@@ -387,7 +369,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
       granularity = Temporal.getIntegerGranularityRepresentation(granularityName);
     } else if (SWRLBuiltInUtil.isArgumentAnIndividual(argumentNumber, arguments)) {
       String individualName = SWRLBuiltInUtil.getArgumentAsAnIndividualName(argumentNumber, arguments);
-      if (SWRLOWLUtil.isIndividualOfClass(owlModel, individualName, GranularityClassName)) {
+      if (getInvokingBridge().isOWLIndividualOfClass(individualName, GranularityClassName)) {
         int hashIndex = individualName.indexOf('#');
         if (hashIndex == -1) granularityName = individualName;
         else granularityName = individualName.substring(hashIndex + 1, individualName.length());
@@ -399,9 +381,8 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
     return granularity;
   } // getArgumentAsAGranularity
 
-  private boolean isArgumentAGranularity(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException, SWRLOWLUtilException
+  private boolean isArgumentAGranularity(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException
   {
-    OWLModel owlModel = getInvokingBridge().getOWLModel();
     String granularityName;
     boolean result = false;
 
@@ -410,34 +391,32 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
       result = Temporal.isValidGranularityString(granularityName);
     } else if (SWRLBuiltInUtil.isArgumentAnIndividual(argumentNumber, arguments)) {
       String individualName = SWRLBuiltInUtil.getArgumentAsAnIndividualName(argumentNumber, arguments);
-      result = SWRLOWLUtil.isIndividualOfClass(owlModel, individualName, GranularityClassName);
+      result = getInvokingBridge().isOWLIndividualOfClass(individualName, GranularityClassName);
     } // if
 
     return result;
   } // isArgumentAGranularity
 
-  private Instant getValidInstant(OWLModel owlModel, String individualName, int granularity) 
-    throws BuiltInException, TemporalException, SWRLOWLUtilException
+  private Instant getValidInstant(String individualName, int granularity) 
+    throws BuiltInException, TemporalException
   {
-    String datetimeString = SWRLOWLUtil.getDatavaluedPropertyValueAsString(owlModel, individualName, HasTimePropertyName);
+    String datetimeString = SWRLBuiltInUtil.getOWLDatatypePropertyValueAsAString(getInvokingBridge(), individualName, HasTimePropertyName);
 
     return new Instant(temporal, datetimeString, granularity);
   } // getValidInstant
 
-  private Period getValidPeriod(OWLModel owlModel, String individualName, int granularity) 
-    throws BuiltInException, TemporalException, SWRLOWLUtilException
+  private Period getValidPeriod(String individualName, int granularity) 
+    throws BuiltInException, TemporalException
   {
-    String startDatetimeString = SWRLOWLUtil.getDatavaluedPropertyValueAsString(owlModel, individualName, HasStartTimePropertyName);
-    String finishDatetimeString = SWRLOWLUtil.getDatavaluedPropertyValueAsString(owlModel, individualName, HasFinishTimePropertyName);
+    String startDatetimeString = SWRLBuiltInUtil.getOWLDatatypePropertyValueAsAString(getInvokingBridge(), individualName, HasStartTimePropertyName);
+    String finishDatetimeString = SWRLBuiltInUtil.getOWLDatatypePropertyValueAsAString(getInvokingBridge(), individualName, HasFinishTimePropertyName);
 
     return new Period(temporal, startDatetimeString, finishDatetimeString, granularity);
   } // getValidPeriod
 
-  private int getGranularity(OWLModel owlModel, String individualName) 
-    throws BuiltInException, TemporalException, SWRLOWLUtilException
+  private int getGranularity(String individualName) throws BuiltInException
   {
-    return SWRLOWLUtil.getDatavaluedPropertyValueAsInteger(owlModel, individualName, HasGranularityPropertyName);
+    return SWRLBuiltInUtil.getOWLDatatypePropertyValueAsAnInteger(getInvokingBridge(), individualName, HasGranularityPropertyName);
   } // getGranularity
 
 } // SWRLBuiltInLibraryImpl
-

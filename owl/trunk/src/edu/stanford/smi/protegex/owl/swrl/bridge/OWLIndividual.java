@@ -17,4 +17,7 @@ public interface OWLIndividual extends OWLObject, OWLPropertyValue, IndividualAr
   Set<OWLClass> getDefiningEquivalentClasses();
   Set<OWLClass> getDefiningEquivalentClassSuperclasses();
   Set<OWLIndividual> getSameAsIndividuals();
+
+  void addDefiningClass(OWLClass owlClass);
+  boolean hasClass(String className);
 } // OWLIndividual

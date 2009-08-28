@@ -52,7 +52,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
       if (classInvocationMap.containsKey(createInvocationPattern)) owlClass = classInvocationMap.get(createInvocationPattern);
       else {
         try {
-          owlClass = getInvokingBridge().createOWLAnonymousClass();
+          owlClass = getInvokingBridge().injectOWLAnonymousClass();
         } catch (SWRLRuleEngineBridgeException e) {
           throw new BuiltInException("error calling bridge to create OWL class: " + e.getMessage());
         } // 
@@ -81,7 +81,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
       if (individualInvocationMap.containsKey(createInvocationPattern)) owlIndividual = individualInvocationMap.get(createInvocationPattern);
       else {
         try {
-          owlIndividual = getInvokingBridge().createOWLIndividual();
+          owlIndividual = getInvokingBridge().injectOWLIndividual();
         } catch (SWRLRuleEngineBridgeException e) {
           throw new BuiltInException("error calling bridge to create OWL individual: " + e.getMessage());
         } // 
@@ -97,7 +97,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
   public boolean makeOWLThing(List<BuiltInArgument> arguments) throws BuiltInException
   {
     return makeOWLIndividual(arguments);
-  } // createOWLThing
+  } // makeOWLThing
 
   // For backwards compatability
   public boolean createOWLThing(List<BuiltInArgument> arguments) throws BuiltInException

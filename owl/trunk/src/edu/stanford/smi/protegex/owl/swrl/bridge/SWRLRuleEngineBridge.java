@@ -20,52 +20,54 @@ public interface SWRLRuleEngineBridge extends SWRLRuleEngine, SQWRLQueryEngine
   void resetRuleEngine() throws SWRLRuleEngineBridgeException;
   void runRuleEngine() throws SWRLRuleEngineBridgeException;
 
-  void defineRule(SWRLRule rule) throws SWRLRuleEngineBridgeException;
-  void defineClass(OWLClass owlClass) throws SWRLRuleEngineBridgeException;
-  void defineIndividual(OWLIndividual owlIndividual) throws SWRLRuleEngineBridgeException;
-  void defineAxiom(OWLAxiom axiom) throws SWRLRuleEngineBridgeException;
-  void defineRestriction(OWLRestriction restriction) throws SWRLRuleEngineBridgeException;
+  // The define methods must be implemented by a target rule engine.
+  void defineSWRLRule(SWRLRule rule) throws SWRLRuleEngineBridgeException;
+  void defineOWLClass(OWLClass owlClass) throws SWRLRuleEngineBridgeException;
+  void defineOWLIndividual(OWLIndividual owlIndividual) throws SWRLRuleEngineBridgeException;
+  void defineOWLAxiom(OWLAxiom axiom) throws SWRLRuleEngineBridgeException;
+  void defineOWLRestriction(OWLRestriction restriction) throws SWRLRuleEngineBridgeException;
 
-  // The infer methods can be used by rule engines to assert axioms that they infer into the bridge
-  void inferPropertyAssertionAxiom(OWLPropertyAssertionAxiom owlPropertyAssertionAxiom) throws SWRLRuleEngineBridgeException;
-  void inferIndividual(OWLIndividual owlIndividual) throws SWRLRuleEngineBridgeException;
+  // The infer methods can be used by a terget rule engines to assert axioms that they infer into the bridge.
+  void inferOWLPropertyAssertionAxiom(OWLPropertyAssertionAxiom owlPropertyAssertionAxiom) throws SWRLRuleEngineBridgeException;
+  void inferOWLIndividual(OWLIndividual owlIndividual, OWLClass owlClass) throws SWRLRuleEngineBridgeException;
   
-  // TODO: change names to 'inject'
-  // The create methods can be used by built-ins to assert new axioms into a bridge and also reflect them in the underlying engine
-  OWLClass createOWLAnonymousClass() throws SWRLRuleEngineBridgeException;
-  void createOWLClass(String className) throws SWRLRuleEngineBridgeException;
-  void createOWLClass(String className, String superclassName) throws SWRLRuleEngineBridgeException;
-  OWLIndividual createOWLIndividual() throws SWRLRuleEngineBridgeException;
-  void createOWLIndividual(OWLIndividual owlIndividual) throws SWRLRuleEngineBridgeException;
-  OWLIndividual createOWLIndividual(OWLClass owlClass) throws SWRLRuleEngineBridgeException;
-  void createOWLIndividuals(Set<OWLIndividual> individuals) throws SWRLRuleEngineBridgeException;
-  void createOWLAxiom(OWLAxiom axiom) throws SWRLRuleEngineBridgeException;
-
-  // TODO: merge these into createOWLAxiom().
-  OWLDatatypePropertyAssertionAxiom createOWLDatatypePropertyAssertionAxiom(OWLIndividual subject, OWLProperty property, OWLDatatypeValue object) 
-    throws SWRLRuleEngineBridgeException;
-  OWLDatatypePropertyAssertionAxiom createOWLDatatypePropertyAssertionAxiom(OWLDatatypePropertyAssertionAxiom axiom)
-    throws SWRLRuleEngineBridgeException;
-  void createOWLDatatypePropertyAssertionAxioms(Set<OWLDatatypePropertyAssertionAxiom> axioms) throws SWRLRuleEngineBridgeException;
-  OWLObjectPropertyAssertionAxiom createOWLObjectPropertyAssertionAxiom(OWLIndividual subject, OWLProperty property, OWLIndividual object) 
-    throws SWRLRuleEngineBridgeException;
-  OWLObjectPropertyAssertionAxiom createOWLObjectPropertyAssertionAxiom(OWLObjectPropertyAssertionAxiom axiom)
-    throws SWRLRuleEngineBridgeException;
-  OWLClassAssertionAxiom createOWLClassAssertionAxiom(OWLIndividual individual, OWLClass description) throws SWRLRuleEngineBridgeException;
-  void createOWLObjectPropertyAssertionAxioms(Set<OWLObjectPropertyAssertionAxiom> axioms) throws SWRLRuleEngineBridgeException;
-  void createOWLSubClassAxiom(OWLClass subClass, OWLClass superClass) throws SWRLRuleEngineBridgeException;
-  void createOWLClassPropertyAssertionAxiom(OWLIndividual subject, OWLProperty property, OWLClass object) throws SWRLRuleEngineBridgeException; 
-
-  boolean isClass(String className);
-
-  boolean isInjectedAnonymousClass(String className);
-  boolean isInjectedClass(String className);
-  boolean isInjectedIndividual(String individualName);
-  boolean isInjectedAxiom(OWLAxiom axiom);
-
   // Built-in invocation and argument binding 
   boolean invokeSWRLBuiltIn(String ruleName, String builtInName, int builtInIndex, boolean isInConsequent, List<BuiltInArgument> arguments) throws BuiltInException;
   void generateBuiltInBinding(String ruleName, String builtInName, int builtInIndex, List<BuiltInArgument> arguments) throws BuiltInException;
+  Set<OWLPropertyAssertionAxiom> getOWLPropertyAssertionAxioms(String individualName, String propertyName) throws BuiltInException;
+
+  // The inject methods can be used by built-ins to inject new axioms into a bridge, which will also reflect them in the underlying engine.
+  OWLClass injectOWLAnonymousClass() throws SWRLRuleEngineBridgeException;
+  void injectOWLClass(String className) throws SWRLRuleEngineBridgeException;
+  void injectOWLClass(String className, String superclassName) throws SWRLRuleEngineBridgeException;
+  OWLIndividual injectOWLIndividual() throws SWRLRuleEngineBridgeException;
+  void injectOWLIndividual(OWLIndividual owlIndividual) throws SWRLRuleEngineBridgeException;
+  OWLIndividual injectOWLIndividual(OWLClass owlClass) throws SWRLRuleEngineBridgeException;
+  void injectOWLIndividuals(Set<OWLIndividual> individuals) throws SWRLRuleEngineBridgeException;
+  void injectOWLAxiom(OWLAxiom axiom) throws SWRLRuleEngineBridgeException;
+  OWLDatatypePropertyAssertionAxiom injectOWLDatatypePropertyAssertionAxiom(OWLIndividual subject, OWLProperty property, OWLDatatypeValue object) 
+    throws SWRLRuleEngineBridgeException;
+  OWLDatatypePropertyAssertionAxiom injectOWLDatatypePropertyAssertionAxiom(OWLDatatypePropertyAssertionAxiom axiom)
+    throws SWRLRuleEngineBridgeException;
+  void injectOWLDatatypePropertyAssertionAxioms(Set<OWLDatatypePropertyAssertionAxiom> axioms) throws SWRLRuleEngineBridgeException;
+  OWLObjectPropertyAssertionAxiom injectOWLObjectPropertyAssertionAxiom(OWLIndividual subject, OWLProperty property, OWLIndividual object) 
+    throws SWRLRuleEngineBridgeException;
+  OWLObjectPropertyAssertionAxiom injectOWLObjectPropertyAssertionAxiom(OWLObjectPropertyAssertionAxiom axiom)
+    throws SWRLRuleEngineBridgeException;
+  OWLClassAssertionAxiom injectOWLClassAssertionAxiom(OWLIndividual individual, OWLClass description) throws SWRLRuleEngineBridgeException;
+  void injectOWLObjectPropertyAssertionAxioms(Set<OWLObjectPropertyAssertionAxiom> axioms) throws SWRLRuleEngineBridgeException;
+  void injectOWLSubClassAxiom(OWLClass subClass, OWLClass superClass) throws SWRLRuleEngineBridgeException;
+  void injectOWLClassPropertyAssertionAxiom(OWLIndividual subject, OWLProperty property, OWLClass object) throws SWRLRuleEngineBridgeException; 
+
+  boolean isOWLClass(String className);
+  boolean isOWLProperty(String propertyName);
+  boolean isOWLIndividual(String individualName);
+  boolean isOWLIndividualOfClass(String individualName, String className);
+
+  boolean isInjectedOWLAnonymousClass(String className);
+  boolean isInjectedOWLClass(String className);
+  boolean isInjectedOWLIndividual(String individualName);
+  boolean isInjectedOWLAxiom(OWLAxiom axiom);
 
   // Mapper to non OWL storage formats
   void setMapper(Mapper mapper);
