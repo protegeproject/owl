@@ -11,8 +11,6 @@ import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.BuiltInException;
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.SWRLRuleEngineBridgeException;
 import edu.stanford.smi.protegex.owl.swrl.bridge.builtins.AbstractSWRLBuiltInLibrary;
 import edu.stanford.smi.protegex.owl.swrl.bridge.builtins.SWRLBuiltInUtil;
-import edu.stanford.smi.protegex.owl.swrl.util.SWRLOWLUtil;
-import edu.stanford.smi.protegex.owl.swrl.exceptions.SWRLOWLUtilException;
 
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 
@@ -112,7 +110,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
           
           while (elementIterator.hasNext()) {
             Object o = elementIterator.next();
-            OWLIndividual xmlElement = getInvokingBridge().createOWLIndividual(OWLFactory.createOWLClass(XMLBridgeMapper.XMLElementMappingOWLClassName));
+            OWLIndividual xmlElement = getInvokingBridge().injectOWLIndividual(OWLFactory.createOWLClass(XMLBridgeMapper.XMLElementMappingOWLClassName));
             Element element;
             
             if (!(o instanceof Element)) 
@@ -166,7 +164,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
         
         while (elementIterator.hasNext()) {
           Object o = elementIterator.next();
-          OWLIndividual xmlElement = getInvokingBridge().createOWLIndividual(OWLFactory.createOWLClass(XMLBridgeMapper.XMLElementMappingOWLClassName));
+          OWLIndividual xmlElement = getInvokingBridge().injectOWLIndividual(OWLFactory.createOWLClass(XMLBridgeMapper.XMLElementMappingOWLClassName));
           Element element;
           
           if (!(o instanceof Element)) 
@@ -227,7 +225,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
     if (SWRLBuiltInUtil.isArgumentAnIndividual(argumentNumber, arguments)) {
       String individualName = SWRLBuiltInUtil.getArgumentAsAnIndividualName(argumentNumber, arguments);
       
-      if (isIndividualOfClass(individualName, XMLBridgeMapper.XMLDocumentMappingOWLClassName)) {
+      if (getInvokingBridge().isOWLIndividualOfClass(individualName, XMLBridgeMapper.XMLDocumentMappingOWLClassName)) {
       } else throw new InvalidBuiltInArgumentException(argumentNumber, "individual '" + individualName + "' is not a " +
                                                        XMLBridgeMapper.XMLDocumentMappingOWLClassName);
 
@@ -246,7 +244,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
     if (SWRLBuiltInUtil.isArgumentAnIndividual(argumentNumber, arguments)) {
       String individualName = SWRLBuiltInUtil.getArgumentAsAnIndividualName(argumentNumber, arguments);
       
-      if (isIndividualOfClass(individualName, XMLBridgeMapper.XMLElementMappingOWLClassName)) {
+      if (getInvokingBridge().isOWLIndividualOfClass(individualName, XMLBridgeMapper.XMLElementMappingOWLClassName)) {
       } else throw new InvalidBuiltInArgumentException(argumentNumber, "individual '" + individualName + "' is not a " +
                                                        XMLBridgeMapper.XMLElementMappingOWLClassName);
 
@@ -257,17 +255,5 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
                                                      ", got '" + arguments.get(argumentNumber) + "'");
     return element;
   } // getArgumentAsAnElement
-
-  private boolean isIndividualOfClass(String individualName, String className) throws BuiltInException
-  {
-    boolean result = false;
-
-    try {
-      result = SWRLOWLUtil.isIndividualOfClass(getInvokingBridge().getOWLModel(), individualName, className);
-    } catch (SWRLOWLUtilException e) {
-      throw new BuiltInException("internal XML processing error: " + e.getMessage());
-    } // try
-    return result;
-  } // isIndividualOfClass
 
 } // SWRLBuiltInLibraryImpl

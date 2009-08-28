@@ -101,7 +101,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
           property = OWLConversionFactory.createOWLDatatypeProperty(getInvokingBridge().getOWLModel(), propertyName);
           axiom = OWLFactory.createOWLDatatypePropertyAssertionAxiom(subject, property, value);
         } // if
-        getInvokingBridge().createOWLAxiom(axiom);
+        getInvokingBridge().injectOWLAxiom(axiom);
       } else {
         if (propertyValueSupplied) {
           propertyValue = SWRLBuiltInUtil.getArgumentAsAPropertyValue(2, arguments);
@@ -274,14 +274,14 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
 
         if (SWRLBuiltInUtil.isArgumentAString(1, arguments)) { 
           className = SWRLOWLUtil.getFullName(getInvokingBridge().getOWLModel(), SWRLBuiltInUtil.getArgumentAsAString(1, arguments));;
-          if (!getInvokingBridge().isClass(className)) getInvokingBridge().createOWLClass(className);
+          if (!getInvokingBridge().isOWLClass(className)) getInvokingBridge().injectOWLClass(className);
         } else className = SWRLBuiltInUtil.getArgumentAsAClassName(1, arguments);
 
         owlClass  = OWLFactory.createOWLClass(className);
         owlIndividual = OWLFactory.createOWLIndividual(individualName);
         axiom = OWLFactory.createOWLClassAssertionAxiom(owlIndividual, owlClass);
 
-        getInvokingBridge().createOWLAxiom(axiom);
+        getInvokingBridge().injectOWLAxiom(axiom);
       } else {
         if (isUnboundArgument) {
           MultiArgument multiArgument = argumentFactory.createMultiArgument(SWRLBuiltInUtil.getVariableName(1, arguments), SWRLBuiltInUtil.getPrefixedVariableName(1, arguments));

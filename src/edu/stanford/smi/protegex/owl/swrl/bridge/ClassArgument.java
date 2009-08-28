@@ -7,4 +7,5 @@ package edu.stanford.smi.protegex.owl.swrl.bridge;
 public interface ClassArgument extends ClassDescriptionArgument, BuiltInArgument
 {
   String getClassName();
+  String getPrefixedClassName();
 } // ClassArgument

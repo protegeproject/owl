@@ -7,4 +7,5 @@ package edu.stanford.smi.protegex.owl.swrl.bridge;
 public interface PropertyArgument extends BuiltInArgument
 {
   String getPropertyName();
+  String getPrefixedPropertyName();
 } // PropertyArgument
