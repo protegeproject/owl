@@ -37,6 +37,7 @@
   <swrl:Builtin rdf:ID="notGreatestN"/>
   <swrl:Builtin rdf:ID="least"/>
   <swrl:Builtin rdf:ID="leastN"/>
+  <swrl:Builtin rdf:ID="notLeastN"/>
 </rdf:RDF>
 
 <!-- Created with Protege (with OWL Plugin 3.4, Build 124)  http://protege.stanford.edu -->
