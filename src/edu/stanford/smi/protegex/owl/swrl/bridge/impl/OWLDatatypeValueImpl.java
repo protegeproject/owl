@@ -28,7 +28,7 @@ public class OWLDatatypeValueImpl extends BuiltInArgumentImpl implements OWLData
 
   public OWLDatatypeValueImpl(Object o) throws DatatypeConversionException
   { 
-    if (!((o instanceof Number) || (o instanceof String) || (o instanceof PrimitiveXSDType)))
+    if (!((o instanceof Number) || (o instanceof String) || (o instanceof Boolean) || (o instanceof PrimitiveXSDType)))
       throw new DatatypeConversionException("cannot convert value of type '" + o.getClass().getCanonicalName() + "' to OWLDatatypeValue"); 
 
     value = o;

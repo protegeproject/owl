@@ -27,7 +27,7 @@ import java.util.ArrayList;
  */
 public class OWLConversionFactory
 {
-  public static OWLClass createOWLClass(edu.stanford.smi.protegex.owl.model.OWLModel owlModel) throws OWLFactoryException 
+  public static OWLClass createOWLClass(edu.stanford.smi.protegex.owl.model.OWLModel owlModel) 
   { 
     String anonymousName = SWRLOWLUtil.getNextAnonymousResourceName(owlModel);
 
@@ -189,26 +189,26 @@ public class OWLConversionFactory
   } // createOWLDatatypeValue
 
   public static OWLDatatypeValue createOWLDatatypeValue(edu.stanford.smi.protegex.owl.model.OWLModel owlModel, 
-     edu.stanford.smi.protegex.owl.model.RDFSLiteral literal) throws OWLFactoryException 
+                                                        edu.stanford.smi.protegex.owl.model.RDFSLiteral literal) throws OWLFactoryException 
   { 
     edu.stanford.smi.protegex.owl.model.RDFSDatatype datatype = literal.getDatatype();
     OWLDatatypeValueImpl owlDatatypeValueImpl = null;
 
     try {
       if ((datatype == owlModel.getXSDint()) || (datatype == owlModel.getXSDinteger()))
-        owlDatatypeValueImpl = new OWLDatatypeValueImpl(Integer.valueOf(literal.getInt()));
+        owlDatatypeValueImpl = new OWLDatatypeValueImpl(literal.getInt());
       else if (datatype == owlModel.getXSDshort()) 
-        owlDatatypeValueImpl = new OWLDatatypeValueImpl(Short.valueOf(literal.getShort()));
+        owlDatatypeValueImpl = new OWLDatatypeValueImpl(literal.getShort());
       else if (datatype == owlModel.getXSDlong()) 
-        owlDatatypeValueImpl = new OWLDatatypeValueImpl(Long.valueOf(literal.getLong()));
+        owlDatatypeValueImpl = new OWLDatatypeValueImpl(literal.getLong());
       else if (datatype == owlModel.getXSDboolean()) 
-      owlDatatypeValueImpl = new OWLDatatypeValueImpl(Boolean.valueOf(literal.getBoolean()));
+        owlDatatypeValueImpl = new OWLDatatypeValueImpl(literal.getBoolean());
       else if (datatype == owlModel.getXSDfloat()) 
-        owlDatatypeValueImpl = new OWLDatatypeValueImpl(Float.valueOf(literal.getFloat()));
+        owlDatatypeValueImpl = new OWLDatatypeValueImpl(literal.getFloat());
       else if (datatype == owlModel.getXSDdouble()) 
-      owlDatatypeValueImpl = new OWLDatatypeValueImpl(Double.valueOf(literal.getDouble()));
+      owlDatatypeValueImpl = new OWLDatatypeValueImpl(literal.getDouble());
       else if ((datatype == owlModel.getXSDstring())) 
-        owlDatatypeValueImpl = new OWLDatatypeValueImpl(String.valueOf(literal.getString()));
+        owlDatatypeValueImpl = new OWLDatatypeValueImpl(literal.getString());
       else if ((datatype == owlModel.getXSDtime())) 
         owlDatatypeValueImpl = new OWLDatatypeValueImpl(new Time(literal.getString()));
       else if ((datatype == owlModel.getXSDanyURI())) 
@@ -226,7 +226,8 @@ public class OWLConversionFactory
       else throw new OWLFactoryException("cannot create an OWLDatatypeValue object for RDFS literal '" + literal.getString()
                                        + "' of type '" + datatype + "'");
     } catch (DatatypeConversionException e) {
-      throw new OWLFactoryException("error creating an OWLDatatypeValue object for RDFS literal '" + literal.getString() + "': " + e.getMessage());
+      throw new OWLFactoryException("error creating an OWLDatatypeValue object for RDFS literal value '" + literal.getString() + 
+                                    "' with type '" + datatype.getName() + "': " + e.getMessage());
     } // try
 
     return owlDatatypeValueImpl;

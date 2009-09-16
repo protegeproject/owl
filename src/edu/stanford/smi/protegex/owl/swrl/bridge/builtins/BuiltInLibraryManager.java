@@ -34,7 +34,7 @@ public abstract class BuiltInLibraryManager
    ** rule engine. The built-in name should be the fully qualified name of the built-in (e.g.,
    ** http://www.w3.org/2003/11/swrlb#lessThanOrEqual).
    */
-  public static boolean invokeSWRLBuiltIn(SWRLRuleEngineBridge bridge, String ruleName, String builtInName, int builtInIndex, 
+  public static boolean invokeSWRLBuiltIn(SWRLBuiltInBridge bridge, String ruleName, String builtInName, int builtInIndex, 
                                           boolean isInConsequent, List<BuiltInArgument> arguments) 
     throws BuiltInException
   {
@@ -65,7 +65,7 @@ public abstract class BuiltInLibraryManager
 
   private static Set<String> getBuiltInLibraryPrefixes() { return builtInLibraries.keySet(); }
 
-  private static SWRLBuiltInLibrary loadBuiltInLibrary(SWRLRuleEngineBridge bridge, String ruleName, String prefix, String implementationClassName)
+  private static SWRLBuiltInLibrary loadBuiltInLibrary(SWRLBuiltInBridge bridge, String ruleName, String prefix, String implementationClassName)
     throws BuiltInException
   {
     SWRLBuiltInLibrary library;
@@ -80,7 +80,7 @@ public abstract class BuiltInLibraryManager
     return library;
   } // loadBuiltInLibrary
 
-  private static String getPrefix(SWRLRuleEngineBridge bridge, String builtInName) 
+  private static String getPrefix(SWRLBuiltInBridge bridge, String builtInName) 
   {
     int hashIndex = builtInName.indexOf('#');
 
@@ -108,7 +108,7 @@ public abstract class BuiltInLibraryManager
   /**
    ** Invoke the reset() method for each registered built-in library.
    */
-  private static void invokeBuiltInLibraryResetMethod(SWRLRuleEngineBridge bridge, SWRLBuiltInLibrary library) throws BuiltInException
+  private static void invokeBuiltInLibraryResetMethod(SWRLBuiltInBridge bridge, SWRLBuiltInLibrary library) throws BuiltInException
   {
     try {
       library.invokeResetMethod(bridge);
@@ -117,7 +117,7 @@ public abstract class BuiltInLibraryManager
     } // try
   } // invokeBuiltInLibraryResetMethod
   
-  public static void invokeAllBuiltInLibrariesResetMethod(SWRLRuleEngineBridge bridge) throws SWRLRuleEngineBridgeException
+  public static void invokeAllBuiltInLibrariesResetMethod(SWRLBuiltInBridge bridge) throws SWRLRuleEngineBridgeException
   {
     for (SWRLBuiltInLibrary library : builtInLibraries.values()) invokeBuiltInLibraryResetMethod(bridge, library);
   } // invokeAllBuiltInLibrariesResetMethod

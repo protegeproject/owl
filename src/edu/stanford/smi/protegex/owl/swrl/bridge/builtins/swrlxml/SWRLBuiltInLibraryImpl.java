@@ -8,7 +8,6 @@ import edu.stanford.smi.protegex.owl.swrl.bridge.MultiArgument;
 import edu.stanford.smi.protegex.owl.swrl.bridge.OWLIndividual;
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.InvalidBuiltInArgumentException;
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.BuiltInException;
-import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.SWRLRuleEngineBridgeException;
 import edu.stanford.smi.protegex.owl.swrl.bridge.builtins.AbstractSWRLBuiltInLibrary;
 import edu.stanford.smi.protegex.owl.swrl.bridge.builtins.SWRLBuiltInUtil;
 
@@ -124,8 +123,6 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
           if (!owlElements.isEmpty()) elementMappings.put(path, owlElements);
         } catch (JDOMException e) {
           throw new BuiltInException("JDOM error processing XML path '" + path + "': " + e.getMessage());
-        } catch (SWRLRuleEngineBridgeException e) {
-          throw new BuiltInException("error creating individual when processing XML path '" + path + "': " + e.getMessage());
         } // try
       } else owlElements = elementMappings.get(path);
 
@@ -177,8 +174,6 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
         } // while
       } catch (JDOMException e) {
         throw new BuiltInException("JDOM error processing XML path '" + path + "': " + e.getMessage());
-      } catch (SWRLRuleEngineBridgeException e) {
-        throw new BuiltInException("error creating individual when processing XML path '" + path + "': " + e.getMessage());
       } // try
       
       if (owlElements.isEmpty()) result = false;

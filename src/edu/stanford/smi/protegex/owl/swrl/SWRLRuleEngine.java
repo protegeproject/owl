@@ -1,10 +1,13 @@
 
 package edu.stanford.smi.protegex.owl.swrl;
 
-import edu.stanford.smi.protegex.owl.swrl.bridge.*;
-import edu.stanford.smi.protegex.owl.swrl.exceptions.*;
+import edu.stanford.smi.protegex.owl.swrl.bridge.OWLAxiom;
+import edu.stanford.smi.protegex.owl.swrl.bridge.SWRLRule;
+import edu.stanford.smi.protegex.owl.swrl.bridge.OWLClass;
+import edu.stanford.smi.protegex.owl.swrl.bridge.OWLIndividual;
+import edu.stanford.smi.protegex.owl.swrl.exceptions.SWRLRuleEngineException;
 
-import java.util.*;
+import java.util.Set;
 
 /**
  ** This interface defines the methods that must be provided by a SWRL rule engine.
@@ -23,20 +26,13 @@ public interface SWRLRuleEngine
    ** engine will be reset.
    */
   void importSWRLRulesAndOWLKnowledge() throws SWRLRuleEngineException;
-
-  int getNumberOfImportedAxioms();
-  Set<OWLAxiom> getImportedAxioms();
+  void importSWRLRulesAndOWLKnowledge(String ruleGroupName) throws SWRLRuleEngineException;
+  void importSWRLRulesAndOWLKnowledge(Set<String> ruleGroupNames) throws SWRLRuleEngineException;
 
   /**
    ** Run the rule engine.
    */
   void run() throws SWRLRuleEngineException;
-
-  int getNumberOfInferredAxioms();
-  Set<OWLAxiom> getInferredAxioms();
-
-  int getNumberOfInjectedAxioms();
-  Set<OWLAxiom> getInjectedAxioms();
 
   /**
    ** Write knowledge inferred by rule engine back to OWL.
@@ -49,6 +45,25 @@ public interface SWRLRuleEngine
    */
   void reset() throws SWRLRuleEngineException;
 
-  SWRLRule getRule(String ruleName) throws InvalidRuleNameException;
+  // Convenience methods to display bridge activity
+  int getNumberOfImportedAxioms();
+  int getNumberOfInferredAxioms();
+  int getNumberOfInjectedAxioms();
+  int getNumberOfImportedSWRLRules();
+  int getNumberOfImportedClasses();
+  int getNumberOfImportedIndividuals();
+  int getNumberOfInferredIndividuals();
+  int getNumberOfInjectedClasses();
+  int getNumberOfInjectedIndividuals();
 
+  Set<OWLAxiom> getImportedAxioms();
+  Set<OWLAxiom> getInferredAxioms();
+  Set<OWLAxiom> getInjectedAxioms();
+
+  Set<SWRLRule> getImportedSWRLRules();
+  Set<OWLClass> getImportedClasses();
+  Set<OWLIndividual> getImportedIndividuals();
+  Set<OWLIndividual> getInferredIndividuals();
+  Set<OWLClass> getInjectedClasses();
+  Set<OWLIndividual> getInjectedIndividuals();
 } // SWRLRuleEngine

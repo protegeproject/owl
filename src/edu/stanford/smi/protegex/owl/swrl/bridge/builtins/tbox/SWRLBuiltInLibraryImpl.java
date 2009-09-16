@@ -302,8 +302,6 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
       } // if
     } catch (SWRLOWLUtilException e) {
       throw new BuiltInException(e.getMessage());
-    } catch (SWRLRuleEngineBridgeException e) {
-      throw new BuiltInException(e.getMessage());
     } // try
 
     return result;
@@ -1042,11 +1040,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
         onClassName = SWRLBuiltInUtil.getArgumentAsAClassName(2, arguments);
         throw new BuiltInNotImplementedException();
       } // if
-    } catch (OWLFactoryException e) {
-      throw new BuiltInException(e.getMessage());
     } catch (SWRLOWLUtilException e) {
-      throw new BuiltInException(e.getMessage());
-    } catch (SWRLRuleEngineBridgeException e) {
       throw new BuiltInException(e.getMessage());
     } // try
 
@@ -1166,8 +1160,6 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
         } // if
       } // if
     } catch (SWRLOWLUtilException e) {
-      throw new BuiltInException(e.getMessage());
-    } catch (SWRLRuleEngineBridgeException e) {
       throw new BuiltInException(e.getMessage());
     } // try
 

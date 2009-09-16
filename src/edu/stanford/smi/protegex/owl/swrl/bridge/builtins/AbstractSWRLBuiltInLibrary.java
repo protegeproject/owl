@@ -20,7 +20,7 @@ public abstract class AbstractSWRLBuiltInLibrary implements SWRLBuiltInLibrary
   // implementation. The invokingRuleName, invokingBuiltInIndex, and isInConsequent variables are valid only when a built-in currently being
   // invoked so should only be retrieved through their asociated accessor methods from within a built-in; the invokingBridge method is valid
   // only in built-ins and in the reset method.
-  private SWRLRuleEngineBridge invokingBridge;
+  private SWRLBuiltInBridge invokingBridge;
   private String invokingRuleName = "";
   private int invokingBuiltInIndex = -1;
   private boolean isInConsequent = false;
@@ -29,7 +29,7 @@ public abstract class AbstractSWRLBuiltInLibrary implements SWRLBuiltInLibrary
 
   public String getLibraryName() { return libraryName; }
 
-  public SWRLRuleEngineBridge getInvokingBridge() throws BuiltInException
+  public SWRLBuiltInBridge getInvokingBridge() throws BuiltInException
   {
     if (invokingBridge == null) 
       throw new BuiltInException("invalid call to getInvokingBridge - should only be called from within a built-in");
@@ -63,7 +63,7 @@ public abstract class AbstractSWRLBuiltInLibrary implements SWRLBuiltInLibrary
 
   public abstract void reset() throws BuiltInException;
 
-  public void invokeResetMethod(SWRLRuleEngineBridge bridge) throws BuiltInException
+  public void invokeResetMethod(SWRLBuiltInBridge bridge) throws BuiltInException
   {
     synchronized (this) {
       invokingBridge = bridge;
@@ -74,7 +74,7 @@ public abstract class AbstractSWRLBuiltInLibrary implements SWRLBuiltInLibrary
     } // synchronized
   } // invokeResetMethod
 
-  public boolean invokeBuiltInMethod(Method method, SWRLRuleEngineBridge bridge, String ruleName, 
+  public boolean invokeBuiltInMethod(Method method, SWRLBuiltInBridge bridge, String ruleName, 
                                      String prefix, String builtInMethodName, int builtInIndex, boolean isInConsequent,
                                      List<BuiltInArgument> arguments) 
     throws BuiltInException
