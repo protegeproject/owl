@@ -1,7 +1,7 @@
   
 package edu.stanford.smi.protegex.owl.swrl.bridge.exceptions;
 
-public class MapperException extends SWRLRuleEngineBridgeException
+public class MapperException extends SWRLBuiltInBridgeException
 {
   public MapperException(String message) { super(message); }
 

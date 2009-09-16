@@ -51,11 +51,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
 
       if (classInvocationMap.containsKey(createInvocationPattern)) owlClass = classInvocationMap.get(createInvocationPattern);
       else {
-        try {
-          owlClass = getInvokingBridge().injectOWLAnonymousClass();
-        } catch (SWRLRuleEngineBridgeException e) {
-          throw new BuiltInException("error calling bridge to create OWL class: " + e.getMessage());
-        } // 
+        owlClass = getInvokingBridge().injectOWLAnonymousClass();
         classInvocationMap.put(createInvocationPattern, owlClass);
       } // if
       arguments.set(0, owlClass); // Bind the result to the first parameter      
@@ -80,11 +76,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
 
       if (individualInvocationMap.containsKey(createInvocationPattern)) owlIndividual = individualInvocationMap.get(createInvocationPattern);
       else {
-        try {
-          owlIndividual = getInvokingBridge().injectOWLIndividual();
-        } catch (SWRLRuleEngineBridgeException e) {
-          throw new BuiltInException("error calling bridge to create OWL individual: " + e.getMessage());
-        } // 
+        owlIndividual = getInvokingBridge().injectOWLIndividual();
         individualInvocationMap.put(createInvocationPattern, owlIndividual);
       } // if
       arguments.set(0, owlIndividual); // Bind the result to the first parameter      
@@ -111,10 +103,16 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
     SWRLBuiltInUtil.checkNumberOfArgumentsAtLeast(2, arguments.size());
     
     String builtInName = SWRLBuiltInUtil.getArgumentAsAnIndividualName(0, arguments);
+    boolean result = false;
 
-    return getInvokingBridge().invokeSWRLBuiltIn(getInvokingRuleName(), builtInName, getInvokingBuiltInIndex(), getIsInConsequent(),
-                                                 arguments.subList(1, arguments.size()));
+    try {
+      result = getInvokingBridge().invokeSWRLBuiltIn(getInvokingRuleName(), builtInName, getInvokingBuiltInIndex(), getIsInConsequent(),
+                                                     arguments.subList(1, arguments.size()));
+    } catch (SWRLRuleEngineBridgeException e) {
+      throw new BuiltInException("error invoking built-in '" + builtInName + "' from built-in: " + e.getMessage());
+    } // try
 
+    return result;
   } // invokeSWRLBuiltIn
 
 

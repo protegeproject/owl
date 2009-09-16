@@ -1,5 +1,4 @@
 
-
 // TODO: lot of repetition in methods. Clean up.
 // TODO :has prefix
 
@@ -67,6 +66,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
     return result;
   } // isIndividual
 
+  // TODO: this needs serious cleanup.
   /**
    ** Returns true if the individual named by the first argument has a property specified by the second argument with the value specified by
    ** the third argument. If the third argument in unbound, bind it to all the values for this property for the specified individual.
@@ -146,8 +146,6 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
     } catch (SWRLOWLUtilException e) {
       throw new BuiltInException(e.getMessage());
     } catch (OWLFactoryException e) {
-      throw new BuiltInException(e.getMessage());
-    } catch (SWRLRuleEngineBridgeException e) {
       throw new BuiltInException(e.getMessage());
     } // try
 
@@ -295,8 +293,6 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
         } // if
       } // if
     } catch (SWRLOWLUtilException e) {
-      throw new BuiltInException(e.getMessage());
-    } catch (SWRLRuleEngineBridgeException e) {
       throw new BuiltInException(e.getMessage());
     } // try
 

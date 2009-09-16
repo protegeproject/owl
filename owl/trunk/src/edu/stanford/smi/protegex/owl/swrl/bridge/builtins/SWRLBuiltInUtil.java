@@ -1,12 +1,30 @@
 
 package edu.stanford.smi.protegex.owl.swrl.bridge.builtins;
 
-import edu.stanford.smi.protegex.owl.swrl.bridge.*;
-import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.*;
+import edu.stanford.smi.protegex.owl.swrl.bridge.SWRLBuiltInBridge;
+import edu.stanford.smi.protegex.owl.swrl.bridge.OWLClass;
+import edu.stanford.smi.protegex.owl.swrl.bridge.OWLIndividual;
+import edu.stanford.smi.protegex.owl.swrl.bridge.OWLProperty;
+import edu.stanford.smi.protegex.owl.swrl.bridge.OWLDatatypeValue;
+import edu.stanford.smi.protegex.owl.swrl.bridge.OWLPropertyAssertionAxiom;
+import edu.stanford.smi.protegex.owl.swrl.bridge.OWLObjectPropertyAssertionAxiom;
+import edu.stanford.smi.protegex.owl.swrl.bridge.OWLDatatypePropertyAssertionAxiom;
+import edu.stanford.smi.protegex.owl.swrl.bridge.ArgumentFactory;
+import edu.stanford.smi.protegex.owl.swrl.bridge.BuiltInArgument;
+import edu.stanford.smi.protegex.owl.swrl.bridge.MultiArgument;
+import edu.stanford.smi.protegex.owl.swrl.bridge.Argument;
+import edu.stanford.smi.protegex.owl.swrl.bridge.ClassArgument;
+import edu.stanford.smi.protegex.owl.swrl.bridge.PropertyArgument;
+import edu.stanford.smi.protegex.owl.swrl.bridge.IndividualArgument;
+import edu.stanford.smi.protegex.owl.swrl.bridge.DatatypeValueArgument;
 
-import edu.stanford.smi.protegex.owl.swrl.bridge.impl.*;
+import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.BuiltInException;
+import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.InvalidBuiltInArgumentException;
+import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.InvalidBuiltInArgumentNumberException;
 
-import java.util.*;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Set;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
@@ -747,7 +765,7 @@ public class SWRLBuiltInUtil
   /**
    ** Create a string that represents a unique invocation pattern for a built-in for a bridge/rule/built-in/argument combination.  
    */
-  public static String createInvocationPattern(SWRLRuleEngineBridge invokingBridge, String invokingRuleName, int invokingBuiltInIndex,
+  public static String createInvocationPattern(SWRLBuiltInBridge invokingBridge, String invokingRuleName, int invokingBuiltInIndex,
                                                boolean isInConsequent, List<BuiltInArgument> arguments) throws BuiltInException
   {
     String pattern = "" + invokingBridge.hashCode() + "." + invokingRuleName + "." + invokingBuiltInIndex + "." + isInConsequent;
@@ -771,32 +789,6 @@ public class SWRLBuiltInUtil
     } // for
   } // checkForUnboundArguments
 
-  public static void generateBuiltInBindings(SWRLRuleEngineBridge bridge, String ruleName, String builtInName, int builtInIndex,
-                                             List<BuiltInArgument> arguments)
-    throws BuiltInException
-  {
-    List<Integer> multiArgumentIndexes = getMultiArgumentIndexes(arguments);
-    
-    if (multiArgumentIndexes.isEmpty()) 
-      bridge.generateBuiltInBinding(ruleName, builtInName, builtInIndex, arguments); // No multi-arguments - do a simple bind
-    else {
-      List<Integer> multiArgumentCounts = new ArrayList<Integer>();
-      List<Integer> multiArgumentSizes = new ArrayList<Integer>();
-      List<BuiltInArgument> argumentsPattern;
-
-      for (int i = 0; i < multiArgumentIndexes.size(); i++) multiArgumentCounts.add(Integer.valueOf(0));
-      for (int i = 0; i < multiArgumentIndexes.size(); i++) {
-        MultiArgument multiArgument = (MultiArgument)arguments.get(multiArgumentIndexes.get(i).intValue());
-        multiArgumentSizes.add(Integer.valueOf(multiArgument.getNumberOfArguments()));
-      } // for
-
-      do {
-        argumentsPattern = generateArgumentsPattern(arguments, multiArgumentCounts);
-        bridge.generateBuiltInBinding(ruleName, builtInName, builtInIndex, argumentsPattern); // Call the rule engine method.
-      } while (!nextMultiArgumentCounts(multiArgumentCounts, multiArgumentSizes));
-    } // if
-  } // generateBuiltInBindings
-
   public static List<BuiltInArgument> copyArguments(List<BuiltInArgument> arguments) throws BuiltInException
   {
     return new ArrayList<BuiltInArgument>(arguments);
@@ -809,7 +801,7 @@ public class SWRLBuiltInUtil
 
     checkArgumentNumber(argumentNumber, arguments);
 
-    if (isUnboundArgument(0, arguments)) {
+    if (isUnboundArgument(argumentNumber, arguments)) {
       MultiArgument multiArgument = argumentFactory.createMultiArgument(SWRLBuiltInUtil.getVariableName(argumentNumber, arguments), SWRLBuiltInUtil.getPrefixedVariableName(argumentNumber, arguments));
       for (BuiltInArgument argument : resultArguments) multiArgument.addArgument(argument);
       arguments.set(argumentNumber, multiArgument);
@@ -835,7 +827,7 @@ public class SWRLBuiltInUtil
       result = true;
     } else {
       BuiltInArgument argument = arguments.get(argumentNumber);
-      result = (argument.equals(resultArgument));
+      result = argument.equals(resultArgument);
     } //if
     
     return result;
@@ -901,7 +893,7 @@ public class SWRLBuiltInUtil
     return processResultArgument(arguments, argumentNumber, argumentFactory, argumentFactory.createDatatypeValueArgument(resultArgument));
   } // processResultArgument
 
-  public static String getOWLDatatypePropertyValueAsAString(SWRLRuleEngineBridge bridge, String individualName, String propertyName)
+  public static String getOWLDatatypePropertyValueAsAString(SWRLBuiltInBridge bridge, String individualName, String propertyName)
     throws BuiltInException
   {
     Set<OWLPropertyAssertionAxiom> axioms = bridge.getOWLPropertyAssertionAxioms(individualName, propertyName);
@@ -918,7 +910,7 @@ public class SWRLBuiltInUtil
     return value.getString();
   } // getOWLDatatypePropertyValueAsAString
 
-  public static int getOWLDatatypePropertyValueAsAnInteger(SWRLRuleEngineBridge bridge, String individualName, String propertyName)
+  public static int getOWLDatatypePropertyValueAsAnInteger(SWRLBuiltInBridge bridge, String individualName, String propertyName)
     throws BuiltInException
   {
     Set<OWLPropertyAssertionAxiom> axioms = bridge.getOWLPropertyAssertionAxioms(individualName, propertyName);
@@ -934,53 +926,5 @@ public class SWRLBuiltInUtil
 
     return value.getInt();
   } // getOWLDatatypePropertyValueAsInteget
-
-  private static boolean nextMultiArgumentCounts(List<Integer> multiArgumentCounts, List<Integer> multiArgumentSizes)
-    throws BuiltInException
-  {
-    if (multiArgumentSizes.isEmpty()) return true;
-    
-    if (nextMultiArgumentCounts(multiArgumentCounts.subList(1, multiArgumentCounts.size()), 
-                                multiArgumentSizes.subList(1, multiArgumentSizes.size()))) {
-      // No more permutations of rest of list so increment this count and if we are not at the end set rest of the list to begin at 0 again.
-      int count = multiArgumentCounts.get(0).intValue();
-      int size = multiArgumentSizes.get(0).intValue();
-      
-      if (++count == size) return true;
-
-      multiArgumentCounts.set(0, Integer.valueOf(count));
-
-      for (int i = 1; i < multiArgumentCounts.size(); i++) multiArgumentCounts.set(i, Integer.valueOf(0));
-    } // if
-    return false;
-  } // nextMultiArgumentCounts
-
-  private static List<BuiltInArgument> generateArgumentsPattern(List<BuiltInArgument> arguments, List<Integer> multiArgumentCounts)
-  {
-    List<BuiltInArgument> result = new ArrayList<BuiltInArgument>();
-    int multiArgumentIndex = 0;
-
-    for (BuiltInArgument argument: arguments) {
-      if (argument instanceof MultiArgument) {
-        MultiArgument multiArgument = (MultiArgument)argument;
-        result.add(multiArgument.getArguments().get((multiArgumentCounts.get(multiArgumentIndex).intValue())));
-        multiArgumentIndex++;
-      } else result.add(argument);
-    } // for
-
-    return result;
-  } // generateArgumentsPattern
-    
-  private static List<Integer> getMultiArgumentIndexes(List<BuiltInArgument> arguments)
-  {
-    List<Integer> result = new ArrayList<Integer>();
-
-    for (int i = 0; i < arguments.size(); i++) 
-      if (arguments.get(i) instanceof MultiArgument) result.add(Integer.valueOf(i));
-
-    return result;
-  } // getMultiArgumentIndexes
-
-  
 
 } // SWRLBuiltInUtil
