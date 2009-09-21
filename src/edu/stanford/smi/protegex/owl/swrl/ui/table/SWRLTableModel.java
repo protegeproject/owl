@@ -1,5 +1,21 @@
 package edu.stanford.smi.protegex.owl.swrl.ui.table;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+
+import javax.swing.Icon;
+import javax.swing.SwingUtilities;
+import javax.swing.table.AbstractTableModel;
+
+import edu.stanford.smi.protege.event.KnowledgeBaseAdapter;
+import edu.stanford.smi.protege.event.KnowledgeBaseEvent;
+import edu.stanford.smi.protege.event.KnowledgeBaseListener;
+import edu.stanford.smi.protege.model.KnowledgeBase;
 import edu.stanford.smi.protege.util.Disposable;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.model.NamespaceUtil;
@@ -12,13 +28,8 @@ import edu.stanford.smi.protegex.owl.model.event.ClassListener;
 import edu.stanford.smi.protegex.owl.swrl.model.SWRLFactory;
 import edu.stanford.smi.protegex.owl.swrl.model.SWRLImp;
 import edu.stanford.smi.protegex.owl.swrl.model.SWRLNames;
-import edu.stanford.smi.protegex.owl.swrl.parser.SWRLParser;
 import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
 import edu.stanford.smi.protegex.owl.ui.owltable.SymbolTableModel;
-
-import javax.swing.*;
-import javax.swing.table.AbstractTableModel;
-import java.util.*;
 
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
@@ -32,7 +43,7 @@ public class SWRLTableModel extends AbstractTableModel implements Disposable, Sy
 
   public final static int COL_COUNT = 3;
   
-  private List imps = new ArrayList();
+  private List<SWRLImp> imps = new ArrayList<SWRLImp>();
   private RDFResource rdfResource;
   private OWLModel owlModel;
   private SWRLFactory factory;
@@ -41,9 +52,11 @@ public class SWRLTableModel extends AbstractTableModel implements Disposable, Sy
   {
     this.owlModel = owlModel;
     factory = new SWRLFactory(owlModel);
-    imps.addAll(factory.getImps());
+    for (Object o : factory.getImps()) {
+        if (o instanceof  SWRLImp)  imps.add((SWRLImp) o);
+    }
     sortImps();
-    initClsListener();
+    initListeners();
   } // SWRLTableModel
 
   public SWRLTableModel(RDFResource resource) 
@@ -53,13 +66,13 @@ public class SWRLTableModel extends AbstractTableModel implements Disposable, Sy
     factory = new SWRLFactory(owlModel);
     addReferencingImps(resource);
     sortImps();
-    initClsListener();
+    initListeners();
   } // SWRLTableModel
   
-  public void dispose() { owlModel.getRDFSNamedClass(SWRLNames.Cls.IMP).removeClassListener(clsListener); }
+
   public int getColumnCount() { return COL_COUNT; }
   public Icon getIcon(RDFResource resource) { return ProtegeUI.getIcon(resource);  }
-  public SWRLImp getImp(int row) { return (SWRLImp)imps.get(row); }
+  public SWRLImp getImp(int row) { return imps.get(row); }
   public void setImp(int row, SWRLImp imp) { imps.remove(row); imps.add(row, imp); }
   public RDFProperty getPredicate(int row) { return null; }
   public RDFResource getRDFResource(int row) { return getImp(row); }
@@ -68,6 +81,12 @@ public class SWRLTableModel extends AbstractTableModel implements Disposable, Sy
   public int getRowCount() { return imps.size(); }
   public int indexOf(SWRLImp imp) { return imps.indexOf(imp); }
 
+  public void dispose() { 
+      owlModel.getRDFSNamedClass(SWRLNames.Cls.IMP).removeClassListener(clsListener); 
+      ((KnowledgeBase) owlModel).removeKnowledgeBaseListener(kbListener);
+  }
+  
+  
   public Class getColumnClass(int column) 
   {
     if (column == COL_ENABLED) return Boolean.class;
@@ -188,7 +207,10 @@ public class SWRLTableModel extends AbstractTableModel implements Disposable, Sy
     return i;
   }
   
-  private void initClsListener() { owlModel.getRDFSNamedClass(SWRLNames.Cls.IMP).addClassListener(clsListener); }
+  private void initListeners() { 
+      owlModel.getRDFSNamedClass(SWRLNames.Cls.IMP).addClassListener(clsListener); 
+      ((KnowledgeBase) owlModel).addKnowledgeBaseListener(kbListener);
+  }
   
   private boolean isSuitable(SWRLImp imp) {
     if (rdfResource == null) {
@@ -218,10 +240,8 @@ public class SWRLTableModel extends AbstractTableModel implements Disposable, Sy
   
 
   private void sortImps() {
-    Collections.sort(imps, new Comparator() {
-        public int compare(Object o1, Object o2) {
-          SWRLImp a = (SWRLImp) o1;
-          SWRLImp b = (SWRLImp) o2;
+    Collections.sort(imps, new Comparator<SWRLImp>() {
+        public int compare(SWRLImp a, SWRLImp b) {
           return a.getName().compareToIgnoreCase(b.getName());
         }
       });
@@ -238,6 +258,17 @@ public class SWRLTableModel extends AbstractTableModel implements Disposable, Sy
           });
       }
       public void instanceRemoved(RDFSClass cls, RDFResource instance) { perhapsRemove((SWRLImp) instance);  }
+    };
+    
+  private KnowledgeBaseListener kbListener = new KnowledgeBaseAdapter() 
+    {
+      @Override
+      public void frameReplaced(KnowledgeBaseEvent event) {
+          if (event.getNewFrame() instanceof SWRLImp) {
+              perhapsRemove((SWRLImp) event.getFrame());
+              perhapsAdd((SWRLImp) event.getNewFrame());
+          }
+      };
     };
 
 } // SWRLTableModel
