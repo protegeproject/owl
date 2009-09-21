@@ -1,28 +1,34 @@
 
 package edu.stanford.smi.protegex.owl.swrl.ui.table;
 
-import edu.stanford.smi.protege.model.Instance;
-import edu.stanford.smi.protege.util.Disposable;
-import edu.stanford.smi.protegex.owl.model.*;
-import edu.stanford.smi.protegex.owl.swrl.model.SWRLImp;
-import edu.stanford.smi.protegex.owl.swrl.model.SWRLIndividual;
-import edu.stanford.smi.protegex.owl.swrl.ui.code.SWRLSymbolPanel;
-import edu.stanford.smi.protegex.owl.swrl.ui.icons.SWRLIcons;
-import edu.stanford.smi.protegex.owl.ui.ResourceRenderer;
-import edu.stanford.smi.protegex.owl.ui.code.SymbolEditorComponent;
-import edu.stanford.smi.protegex.owl.ui.code.SymbolErrorDisplay;
-import edu.stanford.smi.protegex.owl.ui.owltable.SymbolTable;
-
-import javax.swing.*;
-import javax.swing.table.*;
-import java.awt.event.*;
-import javax.swing.event.ListSelectionEvent;
+import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Set;
 
+import javax.swing.AbstractAction;
+import javax.swing.Icon;
+import javax.swing.JPopupMenu;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.table.TableColumn;
+
+import edu.stanford.smi.protege.event.KnowledgeBaseAdapter;
+import edu.stanford.smi.protege.event.KnowledgeBaseEvent;
+import edu.stanford.smi.protege.model.KnowledgeBase;
+import edu.stanford.smi.protege.util.Disposable;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.model.RDFProperty;
+import edu.stanford.smi.protegex.owl.model.RDFResource;
+import edu.stanford.smi.protegex.owl.model.RDFSLiteral;
 import edu.stanford.smi.protegex.owl.swrl.bridge.BridgePluginManager;
+import edu.stanford.smi.protegex.owl.swrl.model.SWRLImp;
+import edu.stanford.smi.protegex.owl.swrl.model.SWRLIndividual;
+import edu.stanford.smi.protegex.owl.swrl.ui.code.SWRLSymbolPanel;
+import edu.stanford.smi.protegex.owl.swrl.ui.icons.SWRLIcons;
+import edu.stanford.smi.protegex.owl.ui.code.SymbolEditorComponent;
+import edu.stanford.smi.protegex.owl.ui.code.SymbolErrorDisplay;
+import edu.stanford.smi.protegex.owl.ui.owltable.SymbolTable;
 
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
