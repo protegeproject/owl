@@ -11,7 +11,6 @@ import javax.swing.tree.TreePath;
 
 import edu.stanford.smi.protege.util.LazyTreeNode;
 import edu.stanford.smi.protege.util.LazyTreeRoot;
-import edu.stanford.smi.protege.util.StringUtilities;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
 import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
@@ -24,20 +23,29 @@ import edu.stanford.smi.protegex.owl.ui.subsumption.TooltippedSelectableTree;
 import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
 
 /**
- * @author Holger Knublauch  <holger@knublauch.com>
+ * @author Holger Knublauch <holger@knublauch.com>
  */
 public class ClassTree extends TooltippedSelectableTree implements TripleSelectable, HostResourceDisplay {
 
     public ClassTree(Action doubleClickAction, LazyTreeRoot root) {
         super(doubleClickAction, root);
         setCellRenderer(new ResourceRenderer() {
-        	@Override
-        	public void setMainText(String text) {        	
-        		super.setMainText(StringUtilities.unquote(text));
-        	}
+            @Override
+            public void setMainText(String text) {
+                super.setMainText(removeAllQuotes(text));
+            }
         });
     }
 
+    private static final char SINGLE_QUOTE = '\'';
+
+    private String removeAllQuotes(String text) {
+        if (text != null && text.length() > 0 && text.charAt(0) == SINGLE_QUOTE
+                && text.charAt(text.length() - 1) == SINGLE_QUOTE) {
+            return text.replaceAll("'", "");
+        }
+        return text;
+    }
 
     public List getPrototypeTriples() {
         List triples = new ArrayList();
@@ -53,13 +61,11 @@ public class ClassTree extends TooltippedSelectableTree implements TripleSelecta
         return triples;
     }
 
-
     public List getSelectedTriples() {
         List results = new ArrayList();
         TreePath[] paths = getSelectionPaths();
         if (paths != null) {
-            for (int i = 0; i < paths.length; i++) {
-                TreePath path = paths[i];
+            for (TreePath path : paths) {
                 if (path.getPathCount() > 1 && path.getLastPathComponent() instanceof LazyTreeNode) {
                     LazyTreeNode node = (LazyTreeNode) path.getLastPathComponent();
                     Object subject = node.getUserObject();
@@ -82,19 +88,16 @@ public class ClassTree extends TooltippedSelectableTree implements TripleSelecta
         return results;
     }
 
-
     public void setSelectedTriples(Collection triples) {
         // TODO
     }
 
-
     public boolean displayHostResource(RDFResource resource) {
-    	return OWLUI.setSelectedNodeInTree(this, resource);
+        return OWLUI.setSelectedNodeInTree(this, resource);
     }
 
     public Collection getRoots() {
         return (Collection) ((LazyTreeRoot) getModel().getRoot()).getUserObject();
     }
 
-  
 }
