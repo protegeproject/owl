@@ -139,9 +139,12 @@ public class SWRLRuleSlotWidget extends AbstractSlotWidget {
 
 	public boolean commitChanges() {
 		SWRLImp swrlimp = (SWRLImp) getInstance();
-
+		
 		if (swrlimp == null) {
 			return true;
+		}
+		if (swrlimp.isDeleted()) {
+		    return true;
 		}
 
 		try {			
