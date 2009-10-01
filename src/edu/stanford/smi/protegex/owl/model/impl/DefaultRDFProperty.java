@@ -260,7 +260,28 @@ public class DefaultRDFProperty extends DefaultSlot implements RDFProperty {
 
     public Collection getUnionDomain(boolean includingSuperproperties) {
         if (includingSuperproperties) {
-            return getKnowledgeBase().getDomain(this);
+            Collection domain = getKnowledgeBase().getDirectDomain(this);
+            if (domain == null) {
+                for (Object o : getSuperproperties(true)) {
+                    if (o instanceof RDFProperty) {
+                        RDFProperty p = (RDFProperty) o;
+                        Collection superPropertyDomain = getKnowledgeBase().getDirectDomain(this);
+                        if (domain != null && superPropertyDomain != null ) {
+                            if (domain.containsAll(superPropertyDomain)) {
+                                domain = superPropertyDomain; // smaller is better - suprised?
+                            }
+                            else if (!superPropertyDomain.containsAll(domain)) {
+                                domain = null;  // two incompatible domains is too many.
+                                break;
+                            }
+                        }
+                        else if (superPropertyDomain != null) {
+                            domain = superPropertyDomain;
+                        }
+                    }
+                }
+            }
+            return domain;
         }
         else {
             return getKnowledgeBase().getDirectDomain(this);
