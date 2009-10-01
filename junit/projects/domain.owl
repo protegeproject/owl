@@ -24,6 +24,29 @@
   <owl:ObjectProperty rdf:ID="r">
     <rdfs:subPropertyOf rdf:resource="#q"/>
   </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="v">
+    <rdfs:subPropertyOf>
+      <owl:ObjectProperty rdf:ID="u"/>
+    </rdfs:subPropertyOf>
+    <rdfs:domain rdf:resource="#A"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="x">
+    <rdfs:domain>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#A"/>
+          <owl:Class rdf:about="#B"/>
+          <owl:Class rdf:about="#C"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:domain>
+    <rdfs:subPropertyOf>
+      <owl:ObjectProperty rdf:about="#p"/>
+    </rdfs:subPropertyOf>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="w">
+    <rdfs:subPropertyOf rdf:resource="#v"/>
+  </owl:ObjectProperty>
   <owl:ObjectProperty rdf:ID="s">
     <rdfs:subPropertyOf>
       <owl:ObjectProperty rdf:about="#p"/>
@@ -46,4 +69,4 @@
   </owl:ObjectProperty>
 </rdf:RDF>
 
-<!-- Created with Protege (with OWL Plugin 3.4.2, Build 549)  http://protege.stanford.edu -->
+<!-- Created with Protege (with OWL Plugin 3.4.2, Build 550)  http://protege.stanford.edu -->
