@@ -68,6 +68,10 @@ public interface RDFProperty extends ProtegeSlot, RDFResource, Deprecatable {
     /**
      * Gets the values of the rdfs:domain property.
      * Note that in most cases, this is only one value (possibly a union class).
+     * If multiple domains are returned, these domains are to be interpreted in the
+     * owl sense.  That is the intersection (not the union) of the returned classes is a 
+     * domain of this  property.  Therefore each of the returned values is also a domain
+     * of this property.
      *
      * @param includingSuperproperties true to also consider superproperties
      * @return the values of rdfs:domain
