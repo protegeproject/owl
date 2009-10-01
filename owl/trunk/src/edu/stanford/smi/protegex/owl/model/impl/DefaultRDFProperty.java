@@ -20,6 +20,7 @@ import edu.stanford.smi.protege.model.ValueType;
 import edu.stanford.smi.protegex.owl.model.NamespaceUtil;
 import edu.stanford.smi.protegex.owl.model.OWLDataRange;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
 import edu.stanford.smi.protegex.owl.model.OWLNames;
 import edu.stanford.smi.protegex.owl.model.OWLProperty;
 import edu.stanford.smi.protegex.owl.model.OWLUnionClass;
@@ -257,35 +258,41 @@ public class DefaultRDFProperty extends DefaultSlot implements RDFProperty {
         return getKnowledgeBase().getDirectDomain(this);
     }
 
-
+    // Tania will know who wrote this code //;o)
+    @SuppressWarnings("unchecked")
     public Collection getUnionDomain(boolean includingSuperproperties) {
-        if (includingSuperproperties) {
-            Collection domain = getKnowledgeBase().getDirectDomain(this);
-            if (domain == null) {
-                for (Object o : getSuperproperties(true)) {
-                    if (o instanceof RDFProperty) {
-                        RDFProperty p = (RDFProperty) o;
-                        Collection superPropertyDomain = getKnowledgeBase().getDirectDomain(this);
-                        if (domain != null && superPropertyDomain != null ) {
-                            if (domain.containsAll(superPropertyDomain)) {
-                                domain = superPropertyDomain; // smaller is better - suprised?
-                            }
-                            else if (!superPropertyDomain.containsAll(domain)) {
-                                domain = null;  // two incompatible domains is too many.
-                                break;
-                            }
-                        }
-                        else if (superPropertyDomain != null) {
-                            domain = superPropertyDomain;
-                        }
+        Collection domain = getKnowledgeBase().getDirectDomain(this);
+        OWLNamedClass thing = getOWLModel().getOWLThingClass();
+        
+        if (domain == null || domain.isEmpty()) {
+            domain = Collections.singleton(thing);  // domain.isEmpty() should probably not mean that this property is inconsistent.
+        }
+        if (includingSuperproperties) { // what a mess!
+            Collection originalDomain = domain;
+            
+            for (Object o : getSuperproperties(true)) {
+                if (o instanceof RDFProperty) {
+                    RDFProperty p = (RDFProperty) o;
+                    Collection superPropertyDomain = getKnowledgeBase().getDirectDomain(p);
+                    if (superPropertyDomain == null || superPropertyDomain.isEmpty() || 
+                            (superPropertyDomain.size() == 1  && superPropertyDomain.contains(thing))) {
+                        continue; // superPropertyDomain.isEmpty() should probably not mean that this property is inconsistent
+                    }
+                    else if (domain.size() == 1 && domain.contains(thing)) {
+                        domain = superPropertyDomain;
+                    }
+                    else if (domain.containsAll(superPropertyDomain)) {
+                        domain = superPropertyDomain; // smaller is better - suprised?
+                    }
+                    else if (!superPropertyDomain.containsAll(domain)) { // two incompatible domains is too many to do unions.
+                        domain = originalDomain;  // what to do?
+                        break;
                     }
                 }
             }
-            return domain;
+            
         }
-        else {
-            return getKnowledgeBase().getDirectDomain(this);
-        }
+        return domain;
     }
 
 
