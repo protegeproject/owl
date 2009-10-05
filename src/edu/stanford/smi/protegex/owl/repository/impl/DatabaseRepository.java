@@ -25,6 +25,7 @@ import edu.stanford.smi.protege.storage.database.DatabaseFrameDb;
 import edu.stanford.smi.protege.storage.database.DatabaseFrameDbFactory;
 import edu.stanford.smi.protege.storage.database.DatabaseProperty;
 import edu.stanford.smi.protege.storage.database.DefaultDatabaseFrameDb;
+import edu.stanford.smi.protege.storage.database.IdleConnectionNarrowFrameStore;
 import edu.stanford.smi.protege.storage.database.ValueCachingNarrowFrameStore;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.database.DatabaseFactoryUtils;
@@ -200,12 +201,13 @@ public class DatabaseRepository implements Repository {
 	    DatabaseFrameDb dbFrameStore = DatabaseFrameDbFactory.createDatabaseFrameDb(DefaultDatabaseFrameDb.class);
 	    dbFrameStore.initialize(owlModel.getOWLJavaFactory(), getDriver(), getUrl(), getUser(), getPassword(), table, true);
 	    ValueCachingNarrowFrameStore valueCache = new ValueCachingNarrowFrameStore(dbFrameStore);
-	    valueCache.setName(ontologyName.toString());
+	    IdleConnectionNarrowFrameStore nfs = new IdleConnectionNarrowFrameStore(valueCache);
+	    nfs.setName(ontologyName.toString());
 	    TripleStoreModel tripleStoreModel = owlModel.getTripleStoreModel();
 	    TripleStore importedTripleStore = null;
 	    TripleStore importingTripleStore = tripleStoreModel.getActiveTripleStore();
 	    try {
-	        importedTripleStore = tripleStoreModel.createActiveImportedTripleStore(valueCache);
+	        importedTripleStore = tripleStoreModel.createActiveImportedTripleStore(nfs);
 	        Collection errors = new ArrayList();
 	        DatabaseFactoryUtils.readOWLOntologyFromDatabase(owlModel, importedTripleStore);
 	        FactoryUtils.loadEncodedNamespaceFromModel(owlModel, importedTripleStore, errors);
