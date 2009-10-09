@@ -4,6 +4,7 @@ import edu.stanford.smi.protegex.owl.repository.Repository;
 import edu.stanford.smi.protegex.owl.repository.impl.ForcedURLRetrievalRepository;
 import edu.stanford.smi.protegex.owl.repository.impl.HTTPRepository;
 import edu.stanford.smi.protegex.owl.repository.util.OntologyNameExtractor;
+import edu.stanford.smi.protegex.owl.repository.util.URLInputSource;
 
 import java.net.URI;
 import java.net.URL;
@@ -28,13 +29,13 @@ public class URLImportEntry extends AbstractImportEntry {
 
 	public boolean isPossibleToImport() {
 		try {
-			OntologyNameExtractor extractor = new OntologyNameExtractor(url.openConnection().getInputStream(), url);
+			OntologyNameExtractor extractor = new OntologyNameExtractor(new URLInputSource(url));
 			URI uri = extractor.getOntologyName();
 			if(uri != null) {
 				setRepository(new HTTPRepository(url));
 			}
 			else {
-				if(extractor.isRDFRootElementPresent()) {
+				if(extractor.isPossiblyValidOntology()) {
 					uri = new URI(url.toString());
 					setRepository(new ForcedURLRetrievalRepository(url));
 				} else {

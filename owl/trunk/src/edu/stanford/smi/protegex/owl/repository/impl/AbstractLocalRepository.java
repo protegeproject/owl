@@ -17,6 +17,7 @@ import java.util.Map;
 
 import edu.stanford.smi.protege.exception.OntologyLoadException;
 import edu.stanford.smi.protege.util.Log;
+import edu.stanford.smi.protegex.owl.repository.util.FileInputSource;
 import edu.stanford.smi.protegex.owl.repository.util.OntologyNameExtractor;
 import edu.stanford.smi.protegex.owl.repository.util.RepositoryUtil;
 
@@ -162,8 +163,7 @@ public abstract class AbstractLocalRepository extends AbstractStreamBasedReposit
                         throws IOException {
                 }
             }));
-            FileInputStream fis = new FileInputStream(file);
-            OntologyNameExtractor extractor = new OntologyNameExtractor(fis, file.toURI().toURL());
+            OntologyNameExtractor extractor = new OntologyNameExtractor(new FileInputSource(file));
             ontologyName = extractor.getOntologyName();
             System.setErr(oldErr);
         } catch (Exception e) {

@@ -1,13 +1,12 @@
 package edu.stanford.smi.protegex.owl.repository.impl;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URI;
 import java.util.logging.Logger;
 
 import edu.stanford.smi.protege.util.Log;
+import edu.stanford.smi.protegex.owl.repository.util.FileInputSource;
 import edu.stanford.smi.protegex.owl.repository.util.OntologyNameExtractor;
 
 /**
@@ -76,9 +75,7 @@ public class LocalFolderRepository extends AbstractLocalRepository {
 
     private void checkFile(File file) throws IOException {
         if (file.getName().endsWith(".owl") && file.isFile()) {
-            InputStream is = new FileInputStream(file);
-	        file.toURL();
-            OntologyNameExtractor extractor = new OntologyNameExtractor(is, file.toURI().toURL());
+            OntologyNameExtractor extractor = new OntologyNameExtractor(new FileInputSource(file));
             if (extractor.getOntologyName() != null) {
                 URI name = extractor.getOntologyName();
                 putOntology(name, file);

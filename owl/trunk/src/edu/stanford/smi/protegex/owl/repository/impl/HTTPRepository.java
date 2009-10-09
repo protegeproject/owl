@@ -19,6 +19,7 @@ import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.jena.parser.ProtegeOWLParser;
 import edu.stanford.smi.protegex.owl.repository.factory.RepositoryFactory;
 import edu.stanford.smi.protegex.owl.repository.util.OntologyNameExtractor;
+import edu.stanford.smi.protegex.owl.repository.util.URLInputSource;
 
 /**
  * User: matthewhorridge<br>
@@ -73,13 +74,9 @@ public class HTTPRepository extends AbstractStreamBasedRepositoryImpl {
                         throws IOException {
                 }
             }));
-            InputStream is = ProtegeOWLParser.getInputStream(ontologyURL);
-            OntologyNameExtractor extractor = new OntologyNameExtractor(is, ontologyURL);
+            OntologyNameExtractor extractor = new OntologyNameExtractor(new URLInputSource(ontologyURL));
             ontologyName = extractor.getOntologyName();
             System.setErr(oldErr);
-        }
-        catch (OntologyLoadException e) {
-        	Log.getLogger().warning("Could not get ontology from URL: " + ontologyURL);
         } catch (IOException e) {
         	Log.getLogger().warning("Could not get ontology from URL: " + ontologyURL);
 		}

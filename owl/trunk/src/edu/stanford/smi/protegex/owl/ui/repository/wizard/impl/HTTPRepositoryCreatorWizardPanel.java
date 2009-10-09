@@ -1,21 +1,23 @@
 package edu.stanford.smi.protegex.owl.ui.repository.wizard.impl;
 
+import java.awt.BorderLayout;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+
+import javax.swing.JOptionPane;
+import javax.swing.JTextField;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+
 import edu.stanford.smi.protege.util.LabeledComponent;
 import edu.stanford.smi.protege.util.WizardPage;
 import edu.stanford.smi.protegex.owl.repository.Repository;
 import edu.stanford.smi.protegex.owl.repository.impl.HTTPRepository;
 import edu.stanford.smi.protegex.owl.repository.util.OntologyNameExtractor;
+import edu.stanford.smi.protegex.owl.repository.util.URLInputSource;
 import edu.stanford.smi.protegex.owl.ui.repository.wizard.RepositoryCreatorWizardPanel;
 import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
-
-import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-import java.awt.*;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
 
 /**
  * User: matthewhorridge<br>
@@ -70,11 +72,9 @@ public class HTTPRepositoryCreatorWizardPanel extends RepositoryCreatorWizardPan
             String errorMessage = null;
             try {
                 URL url = new URL(urlField.getText());
-                InputStream is = url.openStream();
-                OntologyNameExtractor extractor = new OntologyNameExtractor(is, url);
+                OntologyNameExtractor extractor = new OntologyNameExtractor(new URLInputSource(url));
                 extractor.getOntologyName();
-                is.close();
-                if (extractor.isRDFRootElementPresent()) {
+                if (extractor.isPossiblyValidOntology()) {
                     return new HTTPRepository(url);
                 }
                 else {
