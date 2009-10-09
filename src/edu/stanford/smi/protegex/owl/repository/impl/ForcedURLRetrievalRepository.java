@@ -14,6 +14,7 @@ import edu.stanford.smi.protege.exception.OntologyLoadException;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.jena.parser.ProtegeOWLParser;
 import edu.stanford.smi.protegex.owl.repository.util.OntologyNameExtractor;
+import edu.stanford.smi.protegex.owl.repository.util.URLInputSource;
 
 /**
  * User: matthewhorridge<br>
@@ -50,9 +51,8 @@ public class ForcedURLRetrievalRepository extends AbstractStreamBasedRepositoryI
 
     public void refresh() {
         try {
-            InputStream is = ProtegeOWLParser.getInputStream(url);
-            OntologyNameExtractor extractor = new OntologyNameExtractor(is, url);
-            if (extractor.isRDFRootElementPresent()) {
+            OntologyNameExtractor extractor = new OntologyNameExtractor(new URLInputSource(url));
+            if (extractor.isPossiblyValidOntology()) {
                 actualOntologyName = extractor.getOntologyName();
                 try {
                     uri = new URI(url.toString());
@@ -64,10 +64,6 @@ public class ForcedURLRetrievalRepository extends AbstractStreamBasedRepositoryI
             else {
                 uri = null;
             }
-
-        }
-        catch (OntologyLoadException e) {
-            uri = null;
         } catch (IOException e) {
         	uri = null;
 		}

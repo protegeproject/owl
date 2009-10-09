@@ -25,6 +25,7 @@ import com.enterprisedt.net.ftp.FTPException;
 import edu.stanford.smi.protege.exception.OntologyLoadException;
 import edu.stanford.smi.protege.util.LabeledComponent;
 import edu.stanford.smi.protege.util.Log;
+import edu.stanford.smi.protegex.owl.repository.util.FileInputSource;
 import edu.stanford.smi.protegex.owl.repository.util.OntologyNameExtractor;
 
 /**
@@ -111,8 +112,7 @@ public class FTPRepository extends AbstractStreamBasedRepositoryImpl {
             FileOutputStream fos = new FileOutputStream(localCopy);
             ftpClient.get(fos, f.getName());
             ftpClient.quit();
-            FileInputStream fis = new FileInputStream(localCopy);
-            OntologyNameExtractor extractor = new OntologyNameExtractor(fis, localCopy.toURI().toURL());
+            OntologyNameExtractor extractor = new OntologyNameExtractor(new FileInputSource(localCopy));
             ontologyName = extractor.getOntologyName();
             log.info("ftp get = " + extractor.getOntologyName());
         }

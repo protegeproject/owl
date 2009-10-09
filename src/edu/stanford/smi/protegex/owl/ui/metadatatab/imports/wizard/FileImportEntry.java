@@ -1,11 +1,11 @@
 package edu.stanford.smi.protegex.owl.ui.metadatatab.imports.wizard;
 
+import java.io.File;
+
 import edu.stanford.smi.protegex.owl.repository.Repository;
 import edu.stanford.smi.protegex.owl.repository.impl.LocalFileRepository;
+import edu.stanford.smi.protegex.owl.repository.util.FileInputSource;
 import edu.stanford.smi.protegex.owl.repository.util.OntologyNameExtractor;
-
-import java.io.File;
-import java.io.FileInputStream;
 
 /**
  * User: matthewhorridge<br>
@@ -27,8 +27,8 @@ public class FileImportEntry extends AbstractImportEntry {
 
 	public boolean isPossibleToImport() {
 		try {
-			OntologyNameExtractor nameExtractor = new OntologyNameExtractor(new FileInputStream(file), file.toURI().toURL());
-			if(nameExtractor.isRDFRootElementPresent() == false) {
+			OntologyNameExtractor nameExtractor = new OntologyNameExtractor(new FileInputSource(file));
+			if(nameExtractor.isPossiblyValidOntology() == false) {
 				throw new IllegalArgumentException("The document pointed to by " + file + " does not " +
 				                                   "appear to contain a valid RDF/XML representation of an ontology.");
 			}

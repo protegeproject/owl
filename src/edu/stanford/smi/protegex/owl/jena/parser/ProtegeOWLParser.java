@@ -42,6 +42,7 @@ import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreUtil;
 import edu.stanford.smi.protegex.owl.repository.impl.AbstractStreamBasedRepositoryImpl;
+import edu.stanford.smi.protegex.owl.repository.util.InputStreamSource;
 import edu.stanford.smi.protegex.owl.repository.util.OntologyNameExtractor;
 import edu.stanford.smi.protegex.owl.repository.util.XMLBaseExtractor;
 import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
@@ -442,17 +443,17 @@ public class ProtegeOWLParser {
 		return is;
 	}
 
-	private URI getXMLBaseForMerge(URI ontologyURI) throws OntologyLoadException {
+	private URI getXMLBaseForMerge(final URI ontologyURI) throws OntologyLoadException {
 		URI xmlBase = ontologyURI;
 		try {
-			OntologyNameExtractor one = new OntologyNameExtractor(getInputStreamForMerge(ontologyURI), ontologyURI.toURL());
-			xmlBase = one.getOntologyName();
-			if (!one.isRDFRootElementPresent()) {
-				throw new OntologyLoadException(null, "Document at location " + ontologyURI + " is not a valid OWL/RDF file.");
-			}
-		} catch (MalformedURLException e) {
-			throw new OntologyLoadException(e);
-		} catch (IOException e) {
+		    URI uri = XMLBaseExtractor.getXMLBase(getInputStreamForMerge(ontologyURI));
+		    if (uri != null) {
+		        xmlBase = uri;
+		    }
+		    else {
+		        xmlBase = ontologyURI;
+		    }
+		} catch (Throwable e) {
 			throw new OntologyLoadException(e);
 		}
 		return xmlBase;
