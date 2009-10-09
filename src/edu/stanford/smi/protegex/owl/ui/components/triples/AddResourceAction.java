@@ -1,5 +1,6 @@
 package edu.stanford.smi.protegex.owl.ui.components.triples;
 
+import edu.stanford.smi.protegex.owl.model.OWLDatatypeProperty;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
@@ -41,11 +42,14 @@ public class AddResourceAction extends ResourceSelectionAction {
     public Collection getSelectableResources() {
         TriplesTableModel tableModel = table.getTableModel();
         OWLModel owlModel = tableModel.getOWLModel();
-        Collection properties = new ArrayList();
+        Collection<RDFProperty> properties = new ArrayList<RDFProperty>();
         Collection allowedProperties = getAllowedProperties(owlModel);
         for (Iterator it = allowedProperties.iterator(); it.hasNext();) {
             RDFProperty property = (RDFProperty) it.next();
             if (property.isVisible() && property.hasObjectRange() && !property.isSystem()) {
+                properties.add(property);
+            }
+            else if (property.isAnnotationProperty() && !(property instanceof OWLDatatypeProperty)) {
                 properties.add(property);
             }
         }
@@ -63,7 +67,8 @@ public class AddResourceAction extends ResourceSelectionAction {
         TriplesTableModel tableModel = table.getTableModel();
         OWLModel owlModel = tableModel.getOWLModel();
         RDFProperty property = (RDFProperty) resource;
-        if (property.hasObjectRange()) {
+        if (property.hasObjectRange() || 
+                (property.isAnnotationProperty() && !(property instanceof OWLDatatypeProperty))) {
             owlModel.getRDFUntypedResourcesClass().setVisible(true);
             Collection unionRangeClasses = property.getUnionRangeClasses();
             if(unionRangeClasses.isEmpty()) {

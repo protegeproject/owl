@@ -3,7 +3,6 @@ package edu.stanford.smi.protegex.owl.ui.menu.preferences;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
 import edu.stanford.smi.protegex.owl.ui.actions.AbstractOWLModelAction;
-import edu.stanford.smi.protegex.owl.ui.actions.OWLModelAction;
 import edu.stanford.smi.protegex.owl.ui.actions.OWLModelActionConstants;
 import edu.stanford.smi.protegex.owl.ui.dialogs.ModalDialogFactory;
 
