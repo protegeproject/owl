@@ -9,6 +9,7 @@ import java.awt.image.RGBImageFilter;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -23,6 +24,8 @@ import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLAllValuesFrom;
  * @author Holger Knublauch  <holger@knublauch.com>
  */
 public class OWLIcons {
+    private static final Logger log = Log.getLogger(OWLIcons.class);
+    
 
     public final static String STYLE_DEFAULT = "Default";
 
@@ -487,7 +490,7 @@ public class OWLIcons {
                 return url;
             }
         }
-        System.err.println("[OWLIcons] Error: Could not find icon " + STYLE_MULTICOLORED + baseIconName);
+        log.warning("[OWLIcons] Error: Could not find icon " + STYLE_MULTICOLORED + baseIconName);
         return null;
     }
 
