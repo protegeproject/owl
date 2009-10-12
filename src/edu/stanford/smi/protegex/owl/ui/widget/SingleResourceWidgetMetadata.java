@@ -11,19 +11,10 @@ public class SingleResourceWidgetMetadata implements OWLWidgetMetadata {
         if (cls instanceof OWLNamedClass) {
             OWLNamedClass namedClass = (OWLNamedClass) cls;
             if (property instanceof OWLObjectProperty ||
-                    namedClass.getAllValuesFrom(property) instanceof RDFSClass) {
+                    property.getRange() instanceof RDFSClass ||
+                    namedClass.getAllValuesFrom(property) instanceof RDFSClass ||
+                    property.isPureAnnotationProperty()) {
                 if (cls.isFunctionalProperty(property)) {
-                    return DEFAULT;
-                }
-                else {
-                    return SUITABLE;
-                }
-            }
-        }
-        else {
-            if (property instanceof OWLObjectProperty ||
-                    property.getRange() instanceof RDFSClass) {
-                if (property.isFunctional()) {
                     return DEFAULT;
                 }
                 else {

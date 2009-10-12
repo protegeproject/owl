@@ -32,7 +32,8 @@ public class MultiLiteralWidgetMetadata implements OWLWidgetMetadata {
 
 
     public boolean isSuitableWidget(RDFSNamedClass cls, RDFProperty property) {
-        return OWLWidgetUtil.isDatatypeProperty(cls, property) &&
-                !OWLWidgetUtil.isFunctionalProperty(cls, property);
+        return property.isPureAnnotationProperty() || 
+            (OWLWidgetUtil.isDatatypeProperty(cls, property) &&
+                !OWLWidgetUtil.isFunctionalProperty(cls, property));
     }
 }
