@@ -10,18 +10,18 @@ import java.util.Set;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
-import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.DefaultSlot;
 import edu.stanford.smi.protege.model.FrameID;
 import edu.stanford.smi.protege.model.KnowledgeBase;
 import edu.stanford.smi.protege.model.Model;
 import edu.stanford.smi.protege.model.Slot;
-import edu.stanford.smi.protege.model.ValueType;
 import edu.stanford.smi.protegex.owl.model.NamespaceUtil;
 import edu.stanford.smi.protegex.owl.model.OWLDataRange;
+import edu.stanford.smi.protegex.owl.model.OWLDatatypeProperty;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
 import edu.stanford.smi.protegex.owl.model.OWLNames;
+import edu.stanford.smi.protegex.owl.model.OWLObjectProperty;
 import edu.stanford.smi.protegex.owl.model.OWLProperty;
 import edu.stanford.smi.protegex.owl.model.OWLUnionClass;
 import edu.stanford.smi.protegex.owl.model.RDFObject;
@@ -332,6 +332,12 @@ public class DefaultRDFProperty extends DefaultSlot implements RDFProperty {
 
     public boolean isAnnotationProperty() {
         return hasProtegeType(getOWLModel().getOWLAnnotationPropertyClass());
+    }
+    
+    public boolean isPureAnnotationProperty() {
+        return isAnnotationProperty() && 
+                    !(this instanceof OWLDatatypeProperty) && 
+                    !(this instanceof OWLObjectProperty);
     }
 
 

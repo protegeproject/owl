@@ -28,6 +28,6 @@ public class SingleLiteralWidgetMetadata implements OWLWidgetMetadata {
 
 
     public boolean isSuitableWidget(RDFSNamedClass cls, RDFProperty property) {
-        return OWLWidgetUtil.isDatatypeProperty(cls, property);
+        return property.isPureAnnotationProperty() || OWLWidgetUtil.isDatatypeProperty(cls, property);
     }
 }

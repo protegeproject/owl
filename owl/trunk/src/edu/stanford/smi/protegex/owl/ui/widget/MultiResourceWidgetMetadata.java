@@ -11,11 +11,16 @@ import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
 public class MultiResourceWidgetMetadata implements OWLWidgetMetadata {
 
     public int getSuitability(RDFSNamedClass cls, RDFProperty property) {
-        if (!(property instanceof OWLDatatypeProperty) &&
-                !(property.getRange() instanceof RDFSDatatype) &&
-                !OWLWidgetUtil.isFunctionalProperty(cls, property)) {
+        if (property.isPureAnnotationProperty()) {
             return DEFAULT;
         }
-        return NOT_SUITABLE;
+        else if (!(property instanceof OWLDatatypeProperty) &&
+                        !(property.getRange() instanceof RDFSDatatype) &&
+                        !OWLWidgetUtil.isFunctionalProperty(cls, property)) {
+            return DEFAULT;
+        }
+        else {
+            return NOT_SUITABLE;
+        }
     }
 }
