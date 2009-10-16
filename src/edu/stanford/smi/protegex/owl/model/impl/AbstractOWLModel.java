@@ -2264,15 +2264,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
         getProtegeClassificationStatusProperty().setVisible(false);
         getProtegeInferredSuperclassesProperty().setVisible(false);
         getProtegeInferredSubclassesProperty().setVisible(false);
-        getOWLOntologyClass().setVisible(false);
-
-        if (project.isMultiUserClient()) {
-            FrameStoreManager fsm = getFrameStoreManager();
-            if (fsm.getFrameStoreFromClass(LocalClassificationFrameStore.class) == null) {
-                int position = getFrameStores().size() - 1;
-                fsm.insertFrameStore(new LocalClassificationFrameStore(this), position);
-            }
-        }        
+        getOWLOntologyClass().setVisible(false);      
     }
 
     
