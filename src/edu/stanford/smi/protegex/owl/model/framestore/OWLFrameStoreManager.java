@@ -23,6 +23,7 @@ public class OWLFrameStoreManager extends FrameStoreManager {
     private RangeUpdateFrameStore rangeUpdateFrameStore;
     private OwlSubclassFrameStore owlSubclassFrameStore;
     private TypeUpdateFrameStore typeUpdateFrameStore;
+    private LocalClassificationFrameStore localClassificationFrameStore;
     
     private List<FrameStore> frameStores = new ArrayList<FrameStore>();
 
@@ -44,6 +45,7 @@ public class OWLFrameStoreManager extends FrameStoreManager {
         for (FrameStore fs : frameStores) {
             insertFrameStore(fs);
         }
+        insertFrameStore(localClassificationFrameStore = new LocalClassificationFrameStore(owlModel), frameStores.size());
     }
     
     /*
@@ -95,5 +97,16 @@ public class OWLFrameStoreManager extends FrameStoreManager {
         return rangeUpdateFrameStore;
     }
 
+    public OwlSubclassFrameStore getOwlSubclassFrameStore() {
+        return owlSubclassFrameStore;
+    }
+
+    public TypeUpdateFrameStore getTypeUpdateFrameStore() {
+        return typeUpdateFrameStore;
+    }
+
+    public LocalClassificationFrameStore getLocalClassificationFrameStore() {
+        return localClassificationFrameStore;
+    }
     
 }
