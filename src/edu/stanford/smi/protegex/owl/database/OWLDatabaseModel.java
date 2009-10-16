@@ -94,7 +94,6 @@ public class OWLDatabaseModel
         OntModelSpec spec = new OntModelSpec(OntModelSpec.OWL_DL_MEM);
         spec.setReasoner(reasoner);
         OntModel m = Jena.cloneOntModel(getOntModel(), spec);
-        //m.getBaseModel().write(System.out, ModelLoader.langXMLAbbrev, getNamespaceManager().getDefaultNamespace());
         return m;
     }
 
@@ -109,18 +108,6 @@ public class OWLDatabaseModel
         namespaceManager.setModifiable(RDFNames.RDF_PREFIX, false);
         namespaceManager.setModifiable(RDFSNames.RDFS_PREFIX, false);
         namespaceManager.setModifiable(RDFNames.XSD_PREFIX, false);
-    }
-
-
-    @Override
-    public void setProject(Project project) {
-        super.setProject(project);
-
-        FrameStoreManager fsm = getFrameStoreManager();
-        if (fsm.getFrameStoreFromClass(LocalClassificationFrameStore.class) == null) {
-            int position = getFrameStores().size() - 1;
-            fsm.insertFrameStore(new LocalClassificationFrameStore(this), position);
-        }
     }
 
 }
