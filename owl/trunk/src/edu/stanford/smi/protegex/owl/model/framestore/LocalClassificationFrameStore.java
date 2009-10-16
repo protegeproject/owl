@@ -1,7 +1,16 @@
 package edu.stanford.smi.protegex.owl.model.framestore;
 
-import edu.stanford.smi.protege.event.FrameEvent;
-import edu.stanford.smi.protege.event.FrameListener;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Map.Entry;
+
 import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.Frame;
 import edu.stanford.smi.protege.model.KnowledgeBase;
@@ -12,9 +21,6 @@ import edu.stanford.smi.protege.model.framestore.FrameStoreAdapter;
 import edu.stanford.smi.protege.util.SimpleStringMatcher;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.ProtegeNames;
-
-import java.util.*;
-import java.util.Map.Entry;
 
 /**
  * A FrameStore that intercepts any access to those slots that store the
@@ -29,22 +35,29 @@ public class LocalClassificationFrameStore extends FrameStoreAdapter {
     /**
      * Slot -> instancesMap
      */
-    private Map<Slot, Map<Frame, List>> slotsMap = new HashMap<Slot, Map<Frame, List>>();
+    private Map<Slot, Map<Frame, List>> slotsMap = null;
 
 
     public LocalClassificationFrameStore(OWLModel owlModel) {
         this.owlModel = owlModel;
-        slotsMap.put(owlModel.getRDFProperty(ProtegeNames.Slot.CLASSIFICATION_STATUS), new HashMap<Frame, List>());
-        slotsMap.put(owlModel.getRDFProperty(ProtegeNames.Slot.INFERRED_TYPE), new HashMap<Frame, List>());
-        slotsMap.put(owlModel.getRDFProperty(ProtegeNames.Slot.INFERRED_SUBCLASSES), new HashMap<Frame, List>());
-        slotsMap.put(owlModel.getRDFProperty(ProtegeNames.Slot.INFERRED_SUPERCLASSES), new HashMap<Frame, List>());
     }
-
-
+    
+    @SuppressWarnings("unchecked")
+    private Map<Slot, Map<Frame, List>> getSlotsMap() {
+        if (slotsMap == null) {
+            slotsMap = new HashMap<Slot, Map<Frame, List>>();
+            slotsMap.put(owlModel.getRDFProperty(ProtegeNames.Slot.CLASSIFICATION_STATUS), new HashMap<Frame, List>());
+            slotsMap.put(owlModel.getRDFProperty(ProtegeNames.Slot.INFERRED_TYPE), new HashMap<Frame, List>());
+            slotsMap.put(owlModel.getRDFProperty(ProtegeNames.Slot.INFERRED_SUBCLASSES), new HashMap<Frame, List>());
+            slotsMap.put(owlModel.getRDFProperty(ProtegeNames.Slot.INFERRED_SUPERCLASSES), new HashMap<Frame, List>());
+        }
+        return slotsMap;
+    }
+    
     public void deleteCls(Cls cls) {
-        for (Iterator<Slot> it = slotsMap.keySet().iterator(); it.hasNext();) {
+        for (Iterator<Slot> it = getSlotsMap().keySet().iterator(); it.hasNext();) {
             Slot slot = it.next();
-            Map<Frame, List> instancesMap = slotsMap.get(slot);
+            Map<Frame, List> instancesMap = getSlotsMap().get(slot);
             instancesMap.remove(cls);
             for (Iterator<Frame> jt = new ArrayList<Frame>(instancesMap.keySet()).iterator(); 
                  jt.hasNext();) {
@@ -62,7 +75,7 @@ public class LocalClassificationFrameStore extends FrameStoreAdapter {
 
 
     public List getDirectOwnSlotValues(Frame frame, Slot slot) {
-        final Map<Frame,List> instancesMap = slotsMap.get(slot);
+        final Map<Frame,List> instancesMap = getSlotsMap().get(slot);
         if (instancesMap != null) {
             final List values = instancesMap.get(frame);
             if (values == null) {
@@ -79,7 +92,7 @@ public class LocalClassificationFrameStore extends FrameStoreAdapter {
     
     @Override
     public Collection getOwnSlotValues(Frame frame, Slot slot) {
-        final Map<Frame,List> instancesMap = slotsMap.get(slot);
+        final Map<Frame,List> instancesMap = getSlotsMap().get(slot);
         if (instancesMap != null) {
             final List values = instancesMap.get(frame);
             if (values == null) {
@@ -96,7 +109,7 @@ public class LocalClassificationFrameStore extends FrameStoreAdapter {
 
 
     public int getDirectOwnSlotValuesCount(Frame frame, Slot slot) {
-        final Map<Frame, List> instancesMap = slotsMap.get(slot);
+        final Map<Frame, List> instancesMap = getSlotsMap().get(slot);
         if (instancesMap != null) {
             return getDirectOwnSlotValues(frame, slot).size();
         }
@@ -118,7 +131,7 @@ public class LocalClassificationFrameStore extends FrameStoreAdapter {
 
 
     public Set getFramesWithDirectOwnSlotValue(Slot slot, Object value) {
-        final Map<Frame, List> instancesMap = slotsMap.get(slot);
+        final Map<Frame, List> instancesMap = getSlotsMap().get(slot);
         if (instancesMap != null) {
             final Set<Frame> result = new HashSet<Frame>();
             for (Iterator<Frame> it = instancesMap.keySet().iterator(); it.hasNext();) {
@@ -139,7 +152,7 @@ public class LocalClassificationFrameStore extends FrameStoreAdapter {
     @Override
     public Set<Frame> getFramesWithMatchingDirectOwnSlotValue(Slot slot, String regexp,
                                                        int maxMatches) {
-        final Map<Frame, List> instancesMap = slotsMap.get(slot);
+        final Map<Frame, List> instancesMap = getSlotsMap().get(slot);
         if (instancesMap != null) {
             SimpleStringMatcher matcher = new SimpleStringMatcher(regexp);
             final Set<Frame> result = new HashSet<Frame>();
@@ -160,7 +173,7 @@ public class LocalClassificationFrameStore extends FrameStoreAdapter {
     }
 
     public void setDirectOwnSlotValues(Frame frame, Slot slot, Collection values) {
-        final Map<Frame, List> instancesMap = slotsMap.get(slot);
+        final Map<Frame, List> instancesMap = getSlotsMap().get(slot);
         if (instancesMap != null) {
             if (values.isEmpty()) {
                 instancesMap.remove(frame);
