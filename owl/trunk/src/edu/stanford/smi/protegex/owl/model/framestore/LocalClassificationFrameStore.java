@@ -54,6 +54,14 @@ public class LocalClassificationFrameStore extends FrameStoreAdapter {
         return slotsMap;
     }
     
+    public static boolean isLocalClassificationProperty(Slot s) {
+    	String name = s.getName();
+    	return name.equals(ProtegeNames.Slot.CLASSIFICATION_STATUS) ||
+    			name.equals(ProtegeNames.Slot.INFERRED_TYPE) ||
+    			name.equals(ProtegeNames.Slot.INFERRED_SUBCLASSES) ||
+    			name.equals(ProtegeNames.Slot.INFERRED_SUPERCLASSES);
+    }
+    
     public void deleteCls(Cls cls) {
         for (Iterator<Slot> it = getSlotsMap().keySet().iterator(); it.hasNext();) {
             Slot slot = it.next();
