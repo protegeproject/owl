@@ -45,7 +45,9 @@ public class OWLFrameStoreManager extends FrameStoreManager {
         for (FrameStore fs : frameStores) {
             insertFrameStore(fs);
         }
-        insertFrameStore(localClassificationFrameStore = new LocalClassificationFrameStore(owlModel), frameStores.size());
+        int lastPostion = getFrameStores().size() - 1;
+        insertFrameStore(localClassificationFrameStore = new LocalClassificationFrameStore(owlModel), 
+        				 lastPostion);
     }
     
     /*
