@@ -101,9 +101,6 @@ public class DefaultRDFSNamedClass extends AbstractRDFSClass implements RDFSName
 
     public RDFIndividual createRDFIndividual(String name) {
         String fullName = OWLUtil.getInternalFullName(getOWLModel(), name);
-        if (fullName == null) {
-            throw new RuntimeException("Invalid name supplied " + name);
-        }
         return (RDFIndividual) createInstance(fullName);
     }
 
