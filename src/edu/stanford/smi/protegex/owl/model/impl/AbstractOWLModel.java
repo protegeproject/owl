@@ -104,7 +104,6 @@ import edu.stanford.smi.protegex.owl.model.factory.AlreadyImportedException;
 import edu.stanford.smi.protegex.owl.model.factory.FactoryUtils;
 import edu.stanford.smi.protegex.owl.model.factory.OWLJavaFactory;
 import edu.stanford.smi.protegex.owl.model.framestore.FacetUpdateFrameStore;
-import edu.stanford.smi.protegex.owl.model.framestore.LocalClassificationFrameStore;
 import edu.stanford.smi.protegex.owl.model.framestore.OWLFrameStore;
 import edu.stanford.smi.protegex.owl.model.framestore.OWLFrameStoreManager;
 import edu.stanford.smi.protegex.owl.model.project.DefaultOWLProject;
@@ -705,9 +704,6 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
             name = createUniqueNewFrameName(DEFAULT_DATATYPE_PROPERTY_NAME);
         }
         String fullName =  OWLUtil.getInternalFullName(this, name);
-        if (fullName == null) {
-            throw new RuntimeException("Invalid name for datatype supplied " + name);
-        }
         OWLDatatypeProperty slot = (OWLDatatypeProperty) createSlot(fullName, metaCls, loadDefaults);
 
         ((Slot) slot).setAllowsMultipleValues(true);
@@ -788,9 +784,6 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     public synchronized Instance createInstance(String name, Collection directTypes) {
          // TT: should we ignore the loadDefaults for non-system classes?
         String fullName = OWLUtil.getInternalFullName(this, name);
-        if (fullName == null) {
-            throw new RuntimeException("Bad name provided " + name);
-        }
         return createInstance(new FrameID(fullName), directTypes, loadDefaults);
     }
 
@@ -925,18 +918,12 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
     public OWLNamedClass createOWLNamedClass(String name, boolean loadDefaults) {
         String fullName = OWLUtil.getInternalFullName(this, name);
-        if (fullName == null) {
-            throw new RuntimeException("Invalid name supplied " + name);
-        }
         return (OWLNamedClass) createCls(fullName, getRootClses(), getOWLNamedClassClass(), loadDefaults);
     }
 
 
     public OWLNamedClass createOWLNamedClass(String name, OWLNamedClass metaCls) {
         String fullName = OWLUtil.getInternalFullName(this, name);
-        if (fullName == null) {
-            throw new RuntimeException("Invalid name supplied " + name);
-        }
         return (OWLNamedClass) createCls(fullName, getRootClses(), metaCls, loadDefaults);
     }
 
@@ -961,9 +948,6 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
             name = createUniqueNewFrameName(DEFAULT_OBJECT_PROPERTY_NAME);
         }
         String fullName = OWLUtil.getInternalFullName(this, name);
-        if (fullName == null) {
-            throw new RuntimeException("Invalid name supplied " + name);
-        }
         OWLObjectProperty result = (OWLObjectProperty) createSlot(fullName, metaCls, loadDefaults);
 
         ((Slot) result).setAllowsMultipleValues(true);
@@ -1007,18 +991,12 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
     public RDFSNamedClass createRDFSNamedClass(String name, boolean loadDefaults) {
         String fullName = OWLUtil.getInternalFullName(this, name);
-        if (fullName == null) {
-            throw new RuntimeException("Invalid name supplied " + name);
-        }
         return (RDFSNamedClass) createCls(fullName, getRootClses(), getRDFSNamedClassClass(), loadDefaults);
     }
 
 
     public RDFSNamedClass createRDFSNamedClass(String name, Collection parents, RDFSClass rdfType) {
         String fullName = OWLUtil.getInternalFullName(this, name);
-        if (fullName == null) {
-            throw new RuntimeException("Invalid name supplied " + name);
-        }
         return (RDFSNamedClass) createCls(fullName, parents, rdfType);
     }
 
@@ -1044,9 +1022,6 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
             name = createUniqueNewFrameName(DEFAULT_PROPERTY_NAME);
         }
         String fullName = OWLUtil.getInternalFullName(this, name);
-        if (fullName == null) {
-            throw new RuntimeException("Invalid name supplied " + name);
-        }
         RDFProperty property = (RDFProperty) createSlot(fullName, getRDFPropertyClass(), loadDefaults);
         ((Slot) property).setValueType(ValueType.ANY);
         ((Slot) property).setAllowsMultipleValues(true);
@@ -1079,18 +1054,12 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
     public RDFSNamedClass createSubclass(String name, RDFSNamedClass superclass) {
         String fullName = OWLUtil.getInternalFullName(this, name);
-        if (fullName == null) {
-            throw new RuntimeException("Invalid name supplied " + name);
-        }
         return (RDFSNamedClass) createCls(fullName, Collections.singleton(superclass));
     }
 
 
     public RDFSNamedClass createSubclass(String name, Collection superclasses) {
         String fullName = OWLUtil.getInternalFullName(this, name);
-        if (fullName == null) {
-            throw new RuntimeException("Invalid name supplied " + name);
-        }
         return (RDFSNamedClass) createCls(fullName, superclasses);
     }
 
@@ -1122,9 +1091,6 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     	Collection<Cls> metaClses = new ArrayList<Cls>(superProperty.getProtegeTypes());
     	Cls firstMetaCls = CollectionUtilities.getFirstItem(metaClses);
         String fullName = OWLUtil.getInternalFullName(this, name);
-        if (fullName == null) {
-            throw new RuntimeException("Invalid name supplied " + name);
-        }
         Slot slot = createSlot(fullName, firstMetaCls, Collections.singleton(superProperty), true);        	
         metaClses.remove(firstMetaCls);
         for (Iterator iterator = metaClses.iterator(); iterator.hasNext();) {
