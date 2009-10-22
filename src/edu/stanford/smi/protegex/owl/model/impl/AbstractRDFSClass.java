@@ -99,8 +99,11 @@ public abstract class AbstractRDFSClass extends DefaultCls implements RDFSClass 
 
 
     public RDFResource createInstance(String name) {
-        name = OWLUtil.getInternalFullName(getOWLModel(), name);
-        return (RDFResource) getKnowledgeBase().createInstance(name, this);
+        String fullName = OWLUtil.getInternalFullName(getOWLModel(), name);
+        if (fullName == null) {
+            throw new RuntimeException("Invalid name supplied to create resource " + name);
+        }
+        return (RDFResource) getKnowledgeBase().createInstance(fullName, this);
     }
 
 

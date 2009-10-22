@@ -87,7 +87,11 @@ public class DefaultOWLNamedClass extends DefaultRDFSNamedClass implements OWLNa
 
 
     public OWLIndividual createOWLIndividual(String name) {
-        return (OWLIndividual) createInstance(OWLUtil.getInternalFullName(getOWLModel(), name));
+        String fullName = OWLUtil.getInternalFullName(getOWLModel(), name);
+        if (fullName == null) {
+            throw new RuntimeException("Invalid name supplied " + name);
+        }
+        return (OWLIndividual) createInstance(fullName);
     }
 
 
