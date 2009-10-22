@@ -8,11 +8,12 @@ import edu.stanford.smi.protegex.owl.model.*;
 public class SingleResourceWidgetMetadata implements OWLWidgetMetadata {
 
     public int getSuitability(RDFSNamedClass cls, RDFProperty property) {
-        if (cls instanceof OWLNamedClass) {
-            OWLNamedClass namedClass = (OWLNamedClass) cls;
+        if (cls instanceof RDFSNamedClass) {
+            RDFSNamedClass namedClass = (RDFSNamedClass) cls;
             if (property instanceof OWLObjectProperty ||
                     property.getRange() instanceof RDFSClass ||
-                    namedClass.getAllValuesFrom(property) instanceof RDFSClass ||
+                    ((namedClass instanceof OWLNamedClass) 
+                            && ((OWLNamedClass) namedClass).getAllValuesFrom(property) instanceof RDFSClass) ||
                     property.isPureAnnotationProperty()) {
                 if (cls.isFunctionalProperty(property)) {
                     return DEFAULT;
