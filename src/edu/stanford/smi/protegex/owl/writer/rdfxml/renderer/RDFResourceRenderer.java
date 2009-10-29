@@ -6,6 +6,8 @@ import java.util.Iterator;
 import java.util.TreeSet;
 import java.util.logging.Level;
 
+import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
+
 import edu.stanford.smi.protege.ui.FrameComparator;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.model.NamespaceUtil;
@@ -40,6 +42,7 @@ import edu.stanford.smi.protegex.owl.model.RDFSDatatype;
 import edu.stanford.smi.protegex.owl.model.RDFSLiteral;
 import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
 import edu.stanford.smi.protegex.owl.model.RDFSNames;
+import edu.stanford.smi.protegex.owl.model.impl.XMLSchemaDatatypes;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 import edu.stanford.smi.protegex.owl.model.visitor.OWLModelVisitorAdapter;
 import edu.stanford.smi.protegex.owl.model.visitor.Visitable;
@@ -400,7 +403,7 @@ public class RDFResourceRenderer extends OWLModelVisitorAdapter {
         try {
             writeRestrictionStart(cardinalityBase);
             writer.writeStartElement(Util.getPrefixedName(keyWord, tripleStore));
-            writer.writeAttribute(RDFNames.Slot.DATATYPE, Vocab.INT_DATATYPE);
+            writer.writeAttribute(RDFNames.Slot.DATATYPE, XSDDatatype.XSDnonNegativeInteger.getURI());
             writer.writeTextContent(Integer.toString(cardinalityBase.getCardinality()));
             writer.writeEndElement(); // end of restriction type/filler
             insertProperties(cardinalityBase);
