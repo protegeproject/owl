@@ -21,6 +21,7 @@ import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.Frame;
 import edu.stanford.smi.protege.model.Instance;
 import edu.stanford.smi.protege.model.Project;
+import edu.stanford.smi.protege.server.framestore.RemoteClientFrameStore;
 import edu.stanford.smi.protege.util.CollectionUtilities;
 import edu.stanford.smi.protege.util.ComponentFactory;
 import edu.stanford.smi.protege.util.FrameWithBrowserText;
@@ -32,11 +33,13 @@ import edu.stanford.smi.protege.util.SelectionListener;
 import edu.stanford.smi.protege.util.WaitCursor;
 import edu.stanford.smi.protegex.owl.database.OWLDatabaseModel;
 import edu.stanford.smi.protegex.owl.model.OWLAllDifferent;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLOntology;
 import edu.stanford.smi.protegex.owl.model.RDFIndividual;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
 import edu.stanford.smi.protegex.owl.model.RDFSClass;
 import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
+import edu.stanford.smi.protegex.owl.server.metaproject.OwlMetaProjectConstants;
 import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
 import edu.stanford.smi.protegex.owl.ui.actions.ResourceActionManager;
 import edu.stanford.smi.protegex.owl.ui.cls.OWLClassesTab;
@@ -238,8 +241,15 @@ public class OWLIndividualsTab extends AbstractTabWidget implements NavigationHi
     }
 
 
+    @SuppressWarnings("unchecked")
     public static boolean isSuitable(Project p, Collection errors) {
-        return OWLClassesTab.isSuitable(p, errors);
+        if (!(p.getKnowledgeBase() instanceof OWLModel)) {
+            errors.add("This tab can only be used with OWL projects.");
+            return false;
+        }
+        else {
+            return true;
+        }
     }
 
 

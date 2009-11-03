@@ -1,12 +1,35 @@
 package edu.stanford.smi.protegex.owl.ui.cls;
 
-import edu.stanford.smi.protege.model.*;
+import java.awt.Component;
+import java.awt.Container;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
+
+import javax.swing.JComponent;
+import javax.swing.JSplitPane;
+import javax.swing.JTree;
+
+import edu.stanford.smi.protege.model.Cls;
+import edu.stanford.smi.protege.model.Instance;
+import edu.stanford.smi.protege.model.KnowledgeBase;
+import edu.stanford.smi.protege.model.Model;
+import edu.stanford.smi.protege.model.Project;
+import edu.stanford.smi.protege.model.Reference;
+import edu.stanford.smi.protege.server.framestore.RemoteClientFrameStore;
 import edu.stanford.smi.protege.ui.ProjectView;
 import edu.stanford.smi.protege.util.CollectionUtilities;
 import edu.stanford.smi.protege.util.Selectable;
 import edu.stanford.smi.protege.util.SelectionEvent;
 import edu.stanford.smi.protege.util.SelectionListener;
-import edu.stanford.smi.protegex.owl.model.*;
+import edu.stanford.smi.protegex.owl.model.OWLAnonymousClass;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
+import edu.stanford.smi.protegex.owl.model.RDFResource;
+import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
+import edu.stanford.smi.protegex.owl.model.RDFSNames;
+import edu.stanford.smi.protegex.owl.server.metaproject.OwlMetaProjectConstants;
 import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
 import edu.stanford.smi.protegex.owl.ui.clsdesc.DisjointClassesWidget;
 import edu.stanford.smi.protegex.owl.ui.conditions.ConditionsWidget;
@@ -19,13 +42,6 @@ import edu.stanford.smi.protegex.owl.ui.subsumption.ChangedClassesPanel;
 import edu.stanford.smi.protegex.owl.ui.subsumption.InferredSubsumptionTreePanel;
 import edu.stanford.smi.protegex.owl.ui.widget.AbstractTabWidget;
 import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
-
-import javax.swing.*;
-import java.awt.*;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
 
 /**
  * A tab for editing OWL/RDF classes, consisting of a class hierarchy tree and a resource display.
@@ -242,9 +258,16 @@ public class OWLClassesTab extends AbstractTabWidget
     }
 
 
+    @SuppressWarnings("unchecked")
     public static boolean isSuitable(Project p, Collection errors) {
         if (!(p.getKnowledgeBase() instanceof OWLModel)) {
             errors.add("This tab can only be used with OWL projects.");
+            return false;
+        }
+        else if (p.isMultiUserClient() &&
+                !RemoteClientFrameStore.isOperationAllowed(p.getKnowledgeBase(), 
+                                                           OwlMetaProjectConstants.USE_OWL_CLASSES_TAB)) {
+            errors.add("Don't have permission to access the owl classes tab");
             return false;
         }
         else {

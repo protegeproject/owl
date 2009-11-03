@@ -12,9 +12,11 @@ import edu.stanford.smi.protege.widget.AbstractSlotWidget;
 import edu.stanford.smi.protege.widget.ClsWidget;
 import edu.stanford.smi.protege.widget.FormWidget;
 import edu.stanford.smi.protege.widget.SlotWidget;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLProperty;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
+import edu.stanford.smi.protegex.owl.server.metaproject.OwlMetaProjectConstants;
 import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
 import edu.stanford.smi.protegex.owl.ui.actions.ResourceActionManager;
 import edu.stanford.smi.protegex.owl.ui.cls.OWLClassesTab;
@@ -89,8 +91,21 @@ public class OWLPropertiesTab extends AbstractTabWidget implements NavigationHis
     }
 
 
+    @SuppressWarnings("unchecked")
     public static boolean isSuitable(Project p, Collection errors) {
-        return OWLClassesTab.isSuitable(p, errors);
+        if (!(p.getKnowledgeBase() instanceof OWLModel)) {
+            errors.add("This tab can only be used with OWL projects.");
+            return false;
+        }
+        else if (p.isMultiUserClient() &&
+                !RemoteClientFrameStore.isOperationAllowed(p.getKnowledgeBase(), 
+                                                           OwlMetaProjectConstants.USE_PROPERTY_TAB)) {
+            errors.add("Don't have permission to access the owl properties tab");
+            return false;
+        }
+        else {
+            return true;
+        }
     }
 
 
