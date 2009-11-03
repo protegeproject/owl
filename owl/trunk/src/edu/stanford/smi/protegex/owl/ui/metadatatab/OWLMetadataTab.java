@@ -20,6 +20,7 @@ import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protege.util.SelectionEvent;
 import edu.stanford.smi.protege.util.SelectionListener;
 import edu.stanford.smi.protegex.owl.model.NamespaceUtil;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLOntology;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
 import edu.stanford.smi.protegex.owl.model.impl.OWLUtil;
@@ -157,8 +158,15 @@ public class OWLMetadataTab extends AbstractTabWidget implements HostResourceDis
         return "Metadata" + "(" + NamespaceUtil.getLocalName(displayedOntology.getName()) + ")";
     }
 
+    @SuppressWarnings("unchecked")
     public static boolean isSuitable(Project p, Collection errors) {
-        return OWLClassesTab.isSuitable(p, errors);
+        if (!(p.getKnowledgeBase() instanceof OWLModel)) {
+            errors.add("This tab can only be used with OWL projects.");
+            return false;
+        }
+        else {
+            return true;
+        }
     }
 
 
