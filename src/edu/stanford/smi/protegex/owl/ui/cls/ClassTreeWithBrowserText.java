@@ -23,12 +23,15 @@ import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
 
 public class ClassTreeWithBrowserText extends ClassTree {
     private static final long serialVersionUID = -841459836070720483L;
-    
+
+    private OWLModel owlModel = null;
+
     public ClassTreeWithBrowserText(OWLModel owlModel, Action doubleClickAction, ClassTreeWithBrowserTextRoot root) {
-        super(doubleClickAction, root);      
+        super(doubleClickAction, root);
+        this.owlModel = owlModel;
         setCellRenderer(new ResourceRendererWithBrowserText(owlModel));
     }
-    
+
     /*
      * Get selection as a collection of Cls
      */
@@ -37,54 +40,55 @@ public class ClassTreeWithBrowserText extends ClassTree {
         Collection<Cls> selectedClses = new TreeSet<Cls>();
         Collection sel = ComponentUtilities.getSelection(this);
         for (Object object : sel) {
-            if (object instanceof FrameWithBrowserText) {                
-                FrameWithBrowserText fbt = (FrameWithBrowserText)object;
+            if (object instanceof FrameWithBrowserText) {
+                FrameWithBrowserText fbt = (FrameWithBrowserText) object;
                 Frame frame = fbt.getFrame();
                 if (frame instanceof Cls) {
                     selectedClses.add((Cls) frame);
-                }//TODO: what to do about the other ones?
+                }// TODO: what to do about the other ones?
             }
         }
         return selectedClses;
     }
-    
-    
+
     public void setSelectedCls(Cls cls) {
-    	 if (!getSelection().contains(cls) && !cls.isDeleted()) {
-    		 SelectableTree tree = this;
-             if (cls instanceof RDFResource) {                 
-                 if (tree instanceof ClassTreeWithBrowserText) {
-                     Collection path = (Collection) CollectionUtilities.getFirstItem(OWLUI.getPathsToRoot((RDFResource) cls));
-                     Collection<FrameWithBrowserText> fbtPath = new ArrayList<FrameWithBrowserText>();
-                     for (Object object : path) {
-                         if (object instanceof Frame) {
-                             fbtPath.add(new FrameWithBrowserText((Frame)object));
-                         }
-                     }
-                     setSelectedObjectPath(tree, fbtPath);              
-                 } else {
-                     OWLUI.setSelectedNodeInTree(tree, (RDFResource) cls);
-                 }
-             }
-             else {
-                 Collection path = ModelUtilities.getPathToRoot(cls);
-                 setSelectedObjectPath(tree, path);
-             }
-         }
+        if (!getSelection().contains(cls) && !cls.isDeleted()) {
+            SelectableTree tree = this;
+            if (cls instanceof RDFResource) {
+                if (tree instanceof ClassTreeWithBrowserText) {
+                    Collection path = (Collection) CollectionUtilities.getFirstItem(OWLUI
+                            .getPathsToRoot((RDFResource) cls));
+                    Collection<FrameWithBrowserText> fbtPath = new ArrayList<FrameWithBrowserText>();
+                    if (path == null) {
+                        fbtPath.add(new FrameWithBrowserText((Frame) owlModel.getOWLThingClass()));
+                    } else {
+                        for (Object object : path) {
+                            if (object instanceof Frame) {
+                                fbtPath.add(new FrameWithBrowserText((Frame) object));
+                            }
+                        }
+                    }
+                    setSelectedObjectPath(tree, fbtPath);
+                } else {
+                    OWLUI.setSelectedNodeInTree(tree, (RDFResource) cls);
+                }
+            } else {
+                Collection path = ModelUtilities.getPathToRoot(cls);
+                setSelectedObjectPath(tree, path);
+            }
+        }
     }
-    
-    protected void setSelectedObjectPath(final JTree tree, Collection objectPath) {    	
-        final TreePath path = ComponentUtilities.getTreePath(tree, objectPath);        
-        
+
+    protected void setSelectedObjectPath(final JTree tree, Collection objectPath) {
+        final TreePath path = ComponentUtilities.getTreePath(tree, objectPath);
+
         if (path != null) {
-        	final WaitCursor cursor = new WaitCursor(tree);       	
-            tree.scrollPathToVisible(path);          
+            final WaitCursor cursor = new WaitCursor(tree);
+            tree.scrollPathToVisible(path);
             tree.setSelectionPath(path);
             cursor.hide();
             tree.updateUI();
         }
     }
-
-    
 
 }
