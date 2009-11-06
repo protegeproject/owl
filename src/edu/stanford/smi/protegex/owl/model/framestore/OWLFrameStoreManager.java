@@ -6,6 +6,7 @@ import java.util.List;
 import edu.stanford.smi.protege.model.framestore.DeleteSimplificationFrameStore;
 import edu.stanford.smi.protege.model.framestore.FrameStore;
 import edu.stanford.smi.protege.model.framestore.FrameStoreManager;
+import edu.stanford.smi.protege.util.ApplicationProperties;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
 
@@ -13,6 +14,7 @@ import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
  * @author Holger Knublauch  <holger@knublauch.com>
  */
 public class OWLFrameStoreManager extends FrameStoreManager {
+	public static final String USE_PROTEGE_READ_ONLY_FRAME_STORE="use.protege.read.only.flag";
     
     private OWLModel  owlModel;
     
@@ -24,6 +26,7 @@ public class OWLFrameStoreManager extends FrameStoreManager {
     private OwlSubclassFrameStore owlSubclassFrameStore;
     private TypeUpdateFrameStore typeUpdateFrameStore;
     private LocalClassificationFrameStore localClassificationFrameStore;
+    private ProtegeReadOnlyFrameStore protegeReadOnlyFrameStore;
     
     private List<FrameStore> frameStores = new ArrayList<FrameStore>();
 
@@ -34,13 +37,19 @@ public class OWLFrameStoreManager extends FrameStoreManager {
     }
     
     private void initializeOwlFrameStores() {
+    	// Core Owl Frame Stores
         addFrameStore(owlFrameStore = new OWLFrameStore((AbstractOWLModel) owlModel));
         addFrameStore(duplicateValuesFrameStore = new DuplicateValuesFrameStore());
         addFrameStore(domainUpdateFrameStore = new DomainUpdateFrameStore(owlModel));
         addFrameStore(facetUpdateFrameStore = new FacetUpdateFrameStore(owlModel));
         addFrameStore(rangeUpdateFrameStore = new RangeUpdateFrameStore(owlModel));
         addFrameStore(owlSubclassFrameStore = new OwlSubclassFrameStore(owlModel));
-        addFrameStore(typeUpdateFrameStore = new TypeUpdateFrameStore(owlModel));  // this goes at the end so that the others see the swizzle.
+        addFrameStore(typeUpdateFrameStore = new TypeUpdateFrameStore(owlModel));  // this goes near the end so that the others see the swizzle.
+        
+        protegeReadOnlyFrameStore = new ProtegeReadOnlyFrameStore(owlModel);
+        if (ApplicationProperties.getBooleanProperty(USE_PROTEGE_READ_ONLY_FRAME_STORE, false)) {
+        	addFrameStore(protegeReadOnlyFrameStore);
+        }
         
         for (FrameStore fs : frameStores) {
             insertFrameStore(fs);
@@ -110,5 +119,9 @@ public class OWLFrameStoreManager extends FrameStoreManager {
     public LocalClassificationFrameStore getLocalClassificationFrameStore() {
         return localClassificationFrameStore;
     }
+    
+    public ProtegeReadOnlyFrameStore getProtegeReadOnlyFrameStore() {
+		return protegeReadOnlyFrameStore;
+	}
     
 }

@@ -196,10 +196,11 @@ public class ChangedClassesTableModel extends AbstractTableModel implements Disp
         refill(true);
     }
 
-    public void refill(boolean refillByCls) {
+    @SuppressWarnings("unchecked")
+	public void refill(boolean refillByCls) {
 
         items = new ArrayList<ChangedClassItem>();
-        itemsByCls = new Hashtable();
+        itemsByCls = new Hashtable<OWLNamedClass, ChangedClassItem>();
 
         for (Iterator it = owlModel.getChangedInferredClasses().iterator(); it.hasNext();) {
             OWLNamedClass cls = (OWLNamedClass) it.next();
