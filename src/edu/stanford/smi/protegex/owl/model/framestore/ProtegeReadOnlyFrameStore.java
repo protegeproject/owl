@@ -2,6 +2,7 @@ package edu.stanford.smi.protegex.owl.model.framestore;
 
 import java.util.Collection;
 
+import edu.stanford.smi.protege.exception.ModificationException;
 import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.Facet;
 import edu.stanford.smi.protege.model.Frame;
@@ -38,7 +39,7 @@ public class ProtegeReadOnlyFrameStore extends FrameStoreAdapter {
 		}
 		for (Object value : values) {
 			if (value instanceof Boolean && ((Boolean) value).booleanValue()) {
-				throw new IllegalAccessError("Not allowed to modify readonly entities");
+				throw new ModificationException("Not allowed to modify readonly entities");
 			}
 		}
 	}
