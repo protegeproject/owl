@@ -284,7 +284,7 @@ public class JenaCreator {
     }
 
 
-    private void addSuperclasses(RDFSNamedClass rdfsClass, OntClass ontClass) {
+    protected void addSuperclasses(RDFSNamedClass rdfsClass, OntClass ontClass) {
         Collection superClasses = rdfsClass.getPureSuperclasses();
         if (inferred && (rdfsClass instanceof OWLNamedClass)) {
             OWLNamedClass namedCls = (OWLNamedClass) rdfsClass;
@@ -328,7 +328,7 @@ public class JenaCreator {
     }
 
 
-    private void createAdditionalAnonymousSuperclassesOfIncludedClass(OWLNamedClass namedCls) {
+    protected void createAdditionalAnonymousSuperclassesOfIncludedClass(OWLNamedClass namedCls) {
         OntClass ontClass = ontModel.getOntClass(namedCls.getURI());
         for (Iterator it = namedCls.getSuperclasses(false).iterator(); it.hasNext();) {
             Cls superCls = (Cls) it.next();
@@ -834,7 +834,7 @@ public class JenaCreator {
         return individuals.iterator();
     }
 
-    private OntClass getOntClass(RDFSClass rdfsClass) {
+    protected OntClass getOntClass(RDFSClass rdfsClass) {
         if (rdfsClass instanceof RDFSNamedClass) {
             if (rdfsClass.isIncluded()) {
                 Resource resource = ontModel.getResource(rdfsClass.getURI());
