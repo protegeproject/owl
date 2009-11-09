@@ -38,12 +38,11 @@ import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
 import edu.stanford.smi.protegex.owl.model.factory.AlreadyImportedException;
 import edu.stanford.smi.protegex.owl.model.factory.FactoryUtils;
+import edu.stanford.smi.protegex.owl.model.framestore.OWLFrameStoreManager;
 import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreUtil;
 import edu.stanford.smi.protegex.owl.repository.impl.AbstractStreamBasedRepositoryImpl;
-import edu.stanford.smi.protegex.owl.repository.util.InputStreamSource;
-import edu.stanford.smi.protegex.owl.repository.util.OntologyNameExtractor;
 import edu.stanford.smi.protegex.owl.repository.util.XMLBaseExtractor;
 import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
 
@@ -260,6 +259,10 @@ public class ProtegeOWLParser {
 	    boolean eventsEnabled = owlModel.setGenerateEventsEnabled(false);
 	    boolean isExpandShortNamesEnabled = owlModel.isExpandShortNameInMethods();
 	    owlModel.setExpandShortNameInMethods(false);
+	    
+	    OWLFrameStoreManager frameStoreManager = owlModel.getFrameStoreManager();
+	    boolean protegeReadOnlyFrameStoreEnabled = frameStoreManager.setEnabled(frameStoreManager.getProtegeReadOnlyFrameStore(), false);
+	    
 	    try {
 	        tripleProcessor = ((AbstractOWLModel) owlModel).getGlobalParserCache().getTripleProcessor();
 
@@ -313,6 +316,7 @@ public class ProtegeOWLParser {
 	    finally {
 	        owlModel.setGenerateEventsEnabled(eventsEnabled);
 	        owlModel.setExpandShortNameInMethods(isExpandShortNamesEnabled);
+	        frameStoreManager.setEnabled(frameStoreManager.getProtegeReadOnlyFrameStore(), protegeReadOnlyFrameStoreEnabled);
 	    }
 	}
 
