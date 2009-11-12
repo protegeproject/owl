@@ -1,9 +1,13 @@
 package edu.stanford.smi.protegex.owl.writer.rdfxml.rdfwriter.tests;
 
+import edu.stanford.smi.protege.util.ApplicationProperties;
+import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.model.*;
 import edu.stanford.smi.protegex.owl.model.impl.OWLUtil;
+import edu.stanford.smi.protegex.owl.writer.rdfxml.renderer.RDFResourceRenderer;
 
 import java.util.ArrayList;
+import java.util.logging.Level;
 
 /**
  * User: matthewhorridge<br>
@@ -33,6 +37,7 @@ public class RDFXMLWriterTestCase extends AbstractRDFXMLWriterTestCases {
 
     protected void setUp()
             throws Exception {
+        Log.setLoggingLevel(AbstractRDFXMLWriterTestCases.class, Level.FINE);
         super.setUp();
         clsA = owlModel.createOWLNamedClass("A");
         clsB = owlModel.createOWLNamedClass("B");
@@ -136,21 +141,23 @@ public class RDFXMLWriterTestCase extends AbstractRDFXMLWriterTestCases {
         doCheck();
     }
 
-
+   
     public void testMinCardinality() {
         clsA.addSuperclass(owlModel.createOWLMinCardinality(propP, 3));
+        RDFResourceRenderer.setRenderCardinalityAsInt(true);
         doCheck();
     }
 
-
     public void testCardinality() {
         clsA.addSuperclass(owlModel.createOWLCardinality(propP, 3));
+        RDFResourceRenderer.setRenderCardinalityAsInt(true);
         doCheck();
     }
 
 
     public void testMaxCardinality() {
         clsA.addSuperclass(owlModel.createOWLMaxCardinality(propP, 3));
+        RDFResourceRenderer.setRenderCardinalityAsInt(true);
         doCheck();
     }
 
@@ -159,6 +166,7 @@ public class RDFXMLWriterTestCase extends AbstractRDFXMLWriterTestCases {
         OWLMinCardinality cardinality = owlModel.createOWLMinCardinality(propP, 3);
         cardinality.setValuesFrom(clsA);
         clsA.addSuperclass(cardinality);
+        RDFResourceRenderer.setRenderCardinalityAsInt(true);
         doCheck();
     }
 
@@ -167,6 +175,7 @@ public class RDFXMLWriterTestCase extends AbstractRDFXMLWriterTestCases {
         OWLCardinality cardinality = owlModel.createOWLCardinality(propP, 3);
         cardinality.setValuesFrom(clsA);
         clsA.addSuperclass(cardinality);
+        RDFResourceRenderer.setRenderCardinalityAsInt(true);
         doCheck();
     }
 
@@ -175,6 +184,7 @@ public class RDFXMLWriterTestCase extends AbstractRDFXMLWriterTestCases {
         OWLMaxCardinality cardinality = owlModel.createOWLMaxCardinality(propP, 3);
         cardinality.setValuesFrom(clsA);
         clsA.addSuperclass(cardinality);
+        RDFResourceRenderer.setRenderCardinalityAsInt(true);
         doCheck();
     }
 

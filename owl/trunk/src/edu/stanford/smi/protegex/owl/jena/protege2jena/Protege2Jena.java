@@ -102,7 +102,7 @@ public class Protege2Jena {
 
 
     private void copyTriples(TripleStore tripleStore, Model model) {
-        Iterator it = tripleStore.listTriples();
+        Iterator<Triple> it = tripleStore.listTriples();
         while (it.hasNext()) {
             Triple triple = (Triple) it.next();
             Statement stmt = null;
