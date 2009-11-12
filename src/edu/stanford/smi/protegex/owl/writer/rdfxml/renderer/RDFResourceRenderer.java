@@ -9,6 +9,7 @@ import java.util.logging.Level;
 import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
 
 import edu.stanford.smi.protege.ui.FrameComparator;
+import edu.stanford.smi.protege.util.ApplicationProperties;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.model.NamespaceUtil;
 import edu.stanford.smi.protegex.owl.model.OWLAllDifferent;
@@ -66,7 +67,8 @@ import edu.stanford.smi.protegex.owl.writer.xml.XMLWriter;
  * written out as well.
  */
 public class RDFResourceRenderer extends OWLModelVisitorAdapter {
-
+    private static boolean renderCardinalityAsInt = false;
+    
     private Visitable resource;
 
     private XMLWriter writer;
@@ -87,6 +89,10 @@ public class RDFResourceRenderer extends OWLModelVisitorAdapter {
         this.tripleStore = tripleStore;
         this.writer = writer;
         this.sort = sort;
+    }
+    
+    public static void setRenderCardinalityAsInt(boolean renderCardinalityAsInt) {
+        RDFResourceRenderer.renderCardinalityAsInt = renderCardinalityAsInt;
     }
 
     public void write() {
@@ -403,7 +409,7 @@ public class RDFResourceRenderer extends OWLModelVisitorAdapter {
         try {
             writeRestrictionStart(cardinalityBase);
             writer.writeStartElement(Util.getPrefixedName(keyWord, tripleStore));
-            writer.writeAttribute(RDFNames.Slot.DATATYPE, XSDDatatype.XSDnonNegativeInteger.getURI());
+            writer.writeAttribute(RDFNames.Slot.DATATYPE, renderCardinalityAsInt ? XSDDatatype.XSDint.getURI() : XSDDatatype.XSDnonNegativeInteger.getURI());
             writer.writeTextContent(Integer.toString(cardinalityBase.getCardinality()));
             writer.writeEndElement(); // end of restriction type/filler
             insertProperties(cardinalityBase);
