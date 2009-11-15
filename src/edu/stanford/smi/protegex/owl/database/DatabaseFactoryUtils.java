@@ -33,33 +33,29 @@ import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreModel;
 
 /**
- * This class is for internal use only.  It is used during the loading, saving and importing
- * of database models.
+ * This class is for internal use only. It is used during the loading, saving
+ * and importing of database models.
  * 
  * @author tredmond
- *
+ * 
  */
 public class DatabaseFactoryUtils {
     public static transient final Logger log = Log.getLogger(DatabaseFactoryUtils.class);
-    
-    
 
-    
     public static boolean readOWLOntologyFromDatabase(OWLModel owlModel, TripleStore tripleStore) {
         NarrowFrameStore nfs = tripleStore.getNarrowFrameStore();
         OWLSystemFrames systemFrames = owlModel.getSystemFrames();
         RDFProperty owlOntologyPointerProperty = systemFrames.getOwlOntologyPointerProperty();
         RDFIndividual owlOntologyPointerInstance = getOwlOntologyPointerInstance(owlModel, nfs);
         if (owlOntologyPointerInstance != null) {
-            OWLOntology  ontology = (OWLOntology) owlOntologyPointerInstance.getPropertyValue(owlOntologyPointerProperty);
+            OWLOntology ontology = getOwlOntology(nfs, owlOntologyPointerInstance, owlOntologyPointerProperty);
             tripleStore.setName(ontology.getName());
             return true;
-        }
-        else {
+        } else {
             return false;
         }
     }
-    
+
     public static void writeOWLOntologyToDatabase(OWLModel owlModel, TripleStore tripleStore) {
         TripleStoreModel tripleStoreModel = owlModel.getTripleStoreModel();
         TripleStore activeTripleStore = tripleStoreModel.getActiveTripleStore();
@@ -70,22 +66,32 @@ public class DatabaseFactoryUtils {
             RDFProperty owlOntologyPointerProperty = systemFrames.getOwlOntologyPointerProperty();
             RDFIndividual owlOntologyPointerInstance = getOwlOntologyPointerInstance(owlModel, nfs);
             if (owlOntologyPointerInstance == null) {
-                owlOntologyPointerInstance = (RDFIndividual) systemFrames.getOwlOntologyPointerClass().createInstance(null);
+                owlOntologyPointerInstance = (RDFIndividual) systemFrames.getOwlOntologyPointerClass().createInstance(
+                        null);
             }
             owlOntologyPointerInstance.setPropertyValue(owlOntologyPointerProperty, tripleStore.getOWLOntology());
-        }
-        finally {
+        } finally {
             tripleStoreModel.setActiveTripleStore(activeTripleStore);
         }
     }
-    
-    private static  RDFIndividual getOwlOntologyPointerInstance(OWLModel owlModel, NarrowFrameStore nfs) {
+
+    private static RDFIndividual getOwlOntologyPointerInstance(OWLModel owlModel, NarrowFrameStore nfs) {
         OWLSystemFrames systemFrames = owlModel.getSystemFrames();
         RDFSNamedClass owlOntologyPointerClass = systemFrames.getOwlOntologyPointerClass();
         for (Object o : nfs.getValues(owlOntologyPointerClass, systemFrames.getDirectInstancesSlot(), null, false)) {
             return (RDFIndividual) o;
         }
         return null;
+    }
+
+    private static OWLOntology getOwlOntology(NarrowFrameStore nfs, RDFIndividual owlOntologyPointerInstance,
+            RDFProperty owlOntologyPointerProperty) {
+        List values = nfs.getValues(owlOntologyPointerInstance, owlOntologyPointerProperty, null, false);
+        if (values.size() > 1) {
+            log.severe("Found more than one ontology name in database!"
+                    + " Please check that the database table is not corrupted. Values: " + values);
+        }
+        return (OWLOntology) (values != null && values.size() > 0 ? values.iterator().next() : null);
     }
 
     @SuppressWarnings("unchecked")
@@ -95,54 +101,51 @@ public class DatabaseFactoryUtils {
         OWLOntology ontology = activeTripleStore.getOWLOntology();
         for (String imprt : ontology.getImports()) {
             try {
-                 ((AbstractOWLModel) owlModel).loadImportedAssertions(URIUtilities.createURI(imprt));
-            }
-            catch (AmalgamatedLoadException e) {
+                ((AbstractOWLModel) owlModel).loadImportedAssertions(URIUtilities.createURI(imprt));
+            } catch (AmalgamatedLoadException e) {
                 errors.addAll(e.getErrorList());
-            }
-            catch (OntologyLoadException e) {
+            } catch (OntologyLoadException e) {
                 errors.add(e);
             }
         }
     }
 
-	public static String getOntologyFromTable(Class<? extends DatabaseFrameDb> databaseFrameDbClass, 
-	                                          String driver, String url, 
-	                                          String username, String password, String table) throws SQLException {
-	    DatabaseFrameDb frameDb = null;
-		try {
-			FrameFactory factory = new OWLJavaFactory( null );
-			frameDb = DatabaseFrameDbFactory.createDatabaseFrameDb(databaseFrameDbClass);
-			frameDb.initialize( factory, driver, url, username, password, table, false );
-			Frame owlOntologyPointerCls = new DefaultRDFSNamedClass( null, new FrameID(
-					OWLNames.Cls.OWL_ONTOLOGY_POINTER_CLASS ) );
-			Slot directInstances = new DefaultSlot( null, Model.SlotID.DIRECT_INSTANCES );
-			Slot owlOntologyPointerSlot = new DefaultRDFProperty( null, new FrameID(
-					OWLNames.Slot.OWL_ONTOLOGY_POINTER_PROPERTY ) );
-			List<?> intermediate = frameDb.getValues( owlOntologyPointerCls, directInstances, null,
-					false );
-			for( Object o : intermediate ) {
-				if( o instanceof Frame ) {
-					Frame f = (Frame) o;
-					List<?> values = frameDb.getValues( f, owlOntologyPointerSlot, null, false );
-					for( Object v : values ) {
-						if( v instanceof OWLOntology )
-							return ((OWLOntology) v).getName();
-					}
-				}
-			}
-		} catch( RuntimeException e ) {
-			Throwable cause = e.getCause();
-			if( (cause != null) && (cause instanceof SQLException) )
-				throw (SQLException)cause;
-			else
-				throw e;
-		}
-		finally {
-		    if (frameDb != null) {
-		        frameDb.close();
-		    }
-		}
-		return null;
-	}
+    public static String getOntologyFromTable(Class<? extends DatabaseFrameDb> databaseFrameDbClass, String driver,
+            String url, String username, String password, String table) throws SQLException {
+        DatabaseFrameDb frameDb = null;
+        try {
+            FrameFactory factory = new OWLJavaFactory(null);
+            frameDb = DatabaseFrameDbFactory.createDatabaseFrameDb(databaseFrameDbClass);
+            frameDb.initialize(factory, driver, url, username, password, table, false);
+            Frame owlOntologyPointerCls = new DefaultRDFSNamedClass(null, new FrameID(
+                    OWLNames.Cls.OWL_ONTOLOGY_POINTER_CLASS));
+            Slot directInstances = new DefaultSlot(null, Model.SlotID.DIRECT_INSTANCES);
+            Slot owlOntologyPointerSlot = new DefaultRDFProperty(null, new FrameID(
+                    OWLNames.Slot.OWL_ONTOLOGY_POINTER_PROPERTY));
+            List<?> intermediate = frameDb.getValues(owlOntologyPointerCls, directInstances, null, false);
+            for (Object o : intermediate) {
+                if (o instanceof Frame) {
+                    Frame f = (Frame) o;
+                    List<?> values = frameDb.getValues(f, owlOntologyPointerSlot, null, false);
+                    for (Object v : values) {
+                        if (v instanceof OWLOntology) {
+                            return ((OWLOntology) v).getName();
+                        }
+                    }
+                }
+            }
+        } catch (RuntimeException e) {
+            Throwable cause = e.getCause();
+            if ((cause != null) && (cause instanceof SQLException)) {
+                throw (SQLException) cause;
+            } else {
+                throw e;
+            }
+        } finally {
+            if (frameDb != null) {
+                frameDb.close();
+            }
+        }
+        return null;
+    }
 }
