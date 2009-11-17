@@ -1,12 +1,13 @@
 package edu.stanford.smi.protegex.owl.resource;
 
-import edu.stanford.smi.protege.util.FileUtilities;
-import edu.stanford.smi.protege.util.Log;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Properties;
+
+import edu.stanford.smi.protege.resource.Text;
+import edu.stanford.smi.protege.util.FileUtilities;
+import edu.stanford.smi.protege.util.Log;
 
 /**
  * @author Nick Drummond, Medical Informatics Group, University of Manchester
@@ -32,11 +33,11 @@ public final class OWLText {
     }
 
     public static String getBuildInfo() {
-        return "Build " + getBuildNumber();
+        return Text.getBuildInfo();
     }
 
-    public static int getBuildNumber() {
-        return Integer.parseInt(props.getProperty("build.number", "?"));
+    public static String getBuildNumber() {
+        return Text.getBuildNumber();
     }
 
     public static String getStatus() {
@@ -44,11 +45,16 @@ public final class OWLText {
     }
 
     public static String getVersion() {
-        return props.getProperty("build.version", "?");
+        return Text.getVersion();
     }
 
+    /**
+     * This method is deprecated. The latest compatible build version is not maintained.
+     * @return 0
+     */
+    @Deprecated
     public static int getLatestCompatibleBuild(){
-        return Integer.parseInt(props.getProperty("build.compatible.latest", "1"));
+        return Integer.parseInt(props.getProperty("build.compatible.latest", "0"));
     }
 
     public static URL getAboutURL() {
