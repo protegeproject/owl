@@ -63,7 +63,7 @@ public class OWLBackwardsCompatibilityProjectFixups implements ProjectFixupPlugi
     public static final String OWL_DATABASE_INCLUSION = "parser_namespace_database_inclusion_version";
     
     public static void insertVersionData(PropertyList sources) {
-        sources.setInteger(OWL_BUILD_PROPERTY, OWLText.getBuildNumber());
+        sources.setString(OWL_BUILD_PROPERTY, OWLText.getBuildNumber());
         sources.setString(OWL_MAJOR_BUILD_PROPERTY, OWLText.getVersion());
         sources.setBoolean(OWL_DATABASE_INCLUSION, true);
     }
