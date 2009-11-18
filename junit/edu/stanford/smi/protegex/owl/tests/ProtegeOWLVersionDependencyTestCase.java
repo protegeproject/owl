@@ -1,14 +1,14 @@
 package edu.stanford.smi.protegex.owl.tests;
 
-import com.hp.hpl.jena.Jena;
-import edu.stanford.smi.protege.resource.Text;
-import edu.stanford.smi.protege.util.FileUtilities;
-import edu.stanford.smi.protegex.owl.ProtegeOWL;
-import junit.framework.TestCase;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
+
+import junit.framework.TestCase;
+import edu.stanford.smi.protege.resource.Text;
+import edu.stanford.smi.protege.util.FileUtilities;
+import edu.stanford.smi.protegex.owl.ProtegeOWL;
+import edu.stanford.smi.protegex.owl.resource.OWLText;
 
 public class ProtegeOWLVersionDependencyTestCase extends TestCase {
 
@@ -23,6 +23,7 @@ public class ProtegeOWLVersionDependencyTestCase extends TestCase {
     private static String protege_version = "build.version";
 
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
         try {
@@ -41,10 +42,7 @@ public class ProtegeOWLVersionDependencyTestCase extends TestCase {
      * @todo Compare actual vs. expected versions
      */
     public void testShowVersionDependencies() throws Exception {
-    	//TT - the Jena minor and major are not used anymore
-        //assertEquals(jena_major, Jena.MAJOR_VERSION, props.getProperty(jena_major));
-        //assertEquals(jena_minor, Jena.MINOR_VERSION, props.getProperty(jena_minor));
-        assertEquals(protege_version, Text.getVersion(), props.getProperty(protege_version));
+        assertEquals(protege_version, Text.getVersion(), OWLText.getVersion());
     }
 
 }
