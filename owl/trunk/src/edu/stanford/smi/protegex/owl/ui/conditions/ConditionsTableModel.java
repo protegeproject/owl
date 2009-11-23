@@ -217,9 +217,9 @@ implements ConditionsTableConstants, OWLTableModel {
 								if (other.getFiller() instanceof RDFSClass) {
 									RDFSClass otherFiller = (RDFSClass) other.getFiller();
 									if (otherFiller.equals(filler) ||
-											otherFiller.isSubclassOf(filler)) {
+											filler.getSubclasses(true).contains(otherFiller)) {
 										return;  // Don't add if OWLSomeValuesFrom with a subclass exists
-									} else if (filler.isSubclassOf(otherFiller)) {
+									} else if (otherFiller.getSubclasses(true).contains(filler)) {
 										it.remove();
 									}
 								}
@@ -245,12 +245,14 @@ implements ConditionsTableConstants, OWLTableModel {
 							RDFSClass existingFiller = (RDFSClass) existingRestriction.getFiller();
 							RDFSClass newRestrictionFiller = (RDFSClass) newRestriction.getFiller();
 
-							if (   ( existingFiller.equals(newRestrictionFiller) ||
-									existingFiller.isSubclassOf(newRestrictionFiller) ) &&
-									!existingSourceCls.equals(newSourceClass) ||
-									existingFiller.getBrowserText().equals(newRestrictionFiller.getBrowserText()) ) {
+							if ((existingFiller.equals(newRestrictionFiller) || newRestrictionFiller.getSubclasses(true).contains(existingFiller))
+							        &&
+							        !existingSourceCls.equals(newSourceClass)) {
+							    return;
+							}
+							else if (existingFiller.getBrowserText().equals(newRestrictionFiller.getBrowserText()) ) {
 								return;
-							} else if (newRestrictionFiller.isSubclassOf(existingFiller)) {
+							} else if (existingFiller.getSubclasses(true).contains(newRestrictionFiller)) {
 								it.remove();
 							}
 						}
