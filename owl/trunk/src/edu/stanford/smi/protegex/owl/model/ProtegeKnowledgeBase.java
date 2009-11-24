@@ -346,7 +346,6 @@ public interface ProtegeKnowledgeBase extends KnowledgeBase {
 
 
     /**
-     * @return
      * @deprecated not supported in OWL
      */
     @Deprecated

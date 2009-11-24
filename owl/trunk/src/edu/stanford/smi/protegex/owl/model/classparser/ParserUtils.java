@@ -80,7 +80,6 @@ public class ParserUtils {
    * @param name the string which is either an rdfs label or a name.
    * @param isProperty if true search for an rdf property, if false look for an rdfs class.  If null
    *            return whatever is found.
-   * @return
    * @throws AmbiguousNameException
    */
   @SuppressWarnings("unchecked")
@@ -289,8 +288,6 @@ public class ParserUtils {
    * The routine will work backwards to the quote just before the 'C'.
    * 
    * @param text
-   * @param pos
-   * @return
    */
   public static int findSplittingPoint(String text) {
       if (countQuotes(text) % 2 == 1) {

@@ -72,7 +72,6 @@ public class TripleStoreUtil {
      * @param subject
      * @param slot
      * @param object
-     * @return
      */
     public static TripleStore getTripleStoreOf(RDFResource subject, Slot slot, Object object) {
         return new GetTripleStoreOfTripleJob(subject, slot, object).execute();
