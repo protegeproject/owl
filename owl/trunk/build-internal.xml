@@ -47,15 +47,6 @@
 		<exec executable = "cmd.exe" dir = "${batch.files}" os = "${os}">
 			<arg line = "/c merge_license_with_source ../${project.name}/build/src"/>
 		</exec>
-
-		<!-- increment the build number -->
-		<propertyfile file = "./build/src/edu/stanford/smi/protegex/owl/resource/files/build.properties">
-			<entry key = "build.number" default = "01" type = "int" operation = "+" pattern = "000"/>
-			<entry key = "build.number.previous" default = "00" type = "int" operation = "+" pattern = "000"/>
-		</propertyfile>
-		<exec executable = "cmd.exe" dir = "${batch.files}" os = "${os}">
-			<arg line = "/c commit modified-by-automatic-build ../${project.name}/build/src/edu/stanford/smi/protegex/owl/resource/files/build.properties"/>
-		</exec>
 	</target>
 	
 	<!-- =================================================================== -->
@@ -144,10 +135,10 @@
 		<property file = "${build.dir}/src/edu/stanford/smi/protegex/owl/resource/files/build.properties"/>
 		
 		<javadoc destdir = "${build.javadoc}" 
-		              doctitle = "${name} ${build.version} ${build.status}" 
-		              header = "${name} ${build.version} ${build.status}" 
-		              footer = "${name} ${build.version} ${build.status}" 
-		              windowtitle = "${name} ${build.version} ${build.status}" 
+		              doctitle = "${name} ${version} ${status}" 
+		              header = "${name} ${version} ${status}" 
+		              footer = "${name} ${version} ${status}" 
+		              windowtitle = "${name} ${version} ${status}" 
 		              author = "true" 
 		              source = "1.5"
 		              maxmemory = "256M">
