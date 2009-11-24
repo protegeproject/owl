@@ -86,7 +86,6 @@ public abstract class AbstractSingleConceptWithConceptCollectionResultTask exten
      * This method must be implemented by concrete subclasses.
      * It will be called by the run method.   
      *
-     * @param doc The base <code>Document</code> for the query.
      * @throws ProtegeReasonerException
      */
     public abstract Collection getQueryResults() throws ProtegeReasonerException;

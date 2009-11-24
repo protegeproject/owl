@@ -51,7 +51,7 @@ public class OntologyNameExtractor {
      * should obtain the name of an ontology which can be
      * read via the specified input stream.
      *
-     * @param is The input stream from which the ontology
+     * @param source The input stream from which the ontology
      *           can be read.
      */
     public OntologyNameExtractor(InputStreamSource source) {

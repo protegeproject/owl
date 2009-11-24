@@ -245,7 +245,6 @@ public class OWLDateWidget extends AbstractPropertyWidget {
      * @param cls
      * @param slot
      * @param facet
-     * @return
      * @deprecated
      */
     @Deprecated

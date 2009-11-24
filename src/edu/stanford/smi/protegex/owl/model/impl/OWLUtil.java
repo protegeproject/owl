@@ -214,7 +214,6 @@ public class OWLUtil {
     /**
      * @param owlModel
      * @param expression
-     * @return
      * @deprecated use CloneFactory and ResourceCopier instead
      */
     @Deprecated

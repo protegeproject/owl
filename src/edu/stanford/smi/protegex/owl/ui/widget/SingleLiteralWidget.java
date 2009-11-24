@@ -28,7 +28,6 @@ public class SingleLiteralWidget extends AbstractPropertyValuesWidget {
      * @param cls
      * @param slot
      * @param facet
-     * @return
      * @deprecated
      */
     public static boolean isSuitable(Cls cls, Slot slot, Facet facet) {

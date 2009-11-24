@@ -640,7 +640,7 @@ public class Jena {
     
     //backward compatibility
     /**
-     * @deprecated - Use {@link prepareWriter(RDFWriter writer, String language, String namespace, String xmlBase)}  
+     * @deprecated - Use {@link #prepareWriter(RDFWriter writer, String language, String namespace, String xmlBase)}  
      */
     @Deprecated
     public static void prepareWriter(RDFWriter writer, String language, String namespace) {

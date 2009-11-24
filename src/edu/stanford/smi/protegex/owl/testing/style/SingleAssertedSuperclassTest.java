@@ -13,7 +13,7 @@ import java.util.List;
  * Normalisation rule - classes should only have a single asserted named superclass
  * (ie be a pure tree)
  *
- * @@TODO Provide an untangling wizard to allow users to fix this
+ * @TODO Provide an untangling wizard to allow users to fix this
  *
  * @author Nick Drummond, Medical Informatics Group, University of Manchester
  *         06-Feb-2006

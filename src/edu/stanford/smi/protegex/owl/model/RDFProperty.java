@@ -219,8 +219,6 @@ public interface RDFProperty extends ProtegeSlot, RDFResource, Deprecatable {
      * Checks whether this can take only primitive, datatype values.
      * This is true if the range of this (or its superproperties) only consists
      * of RDFSDatatype or an OWLDataRange, or if this is an owl:DatatypeProperty.
-     *
-     * @return
      */
     boolean hasDatatypeRange();
 
@@ -229,8 +227,6 @@ public interface RDFProperty extends ProtegeSlot, RDFResource, Deprecatable {
      * Checks whether this can take only object/reference values.
      * This is true if the range of this (or its superproperties) only consists
      * of RDFSClasses (or if this is an owl:ObjectProperty).
-     *
-     * @return
      */
     boolean hasObjectRange();
 
@@ -258,7 +254,6 @@ public interface RDFProperty extends ProtegeSlot, RDFResource, Deprecatable {
      * Checks whether this property is a real annotation property.  This means
      * that it is an annotation property that is not declaraed as a Datatype Property or 
      * an Object Property.
-     * @return
      */
     boolean isPureAnnotationProperty();
 

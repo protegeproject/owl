@@ -302,7 +302,7 @@ public interface ProtegeReasoner extends Disposable {
 	 * through the datatype property <code>datatypeProperty</code>.
 	 * 
 	 * @param subject - An <code>OWLIndividual</code>
-	 * @param objectProperty - A <code>OWLDatatypeProperty</code>
+	 * @param datatypeProperty - An <code>OWLDatatypeProperty</code>
 	 * @return A <code>Collection</code> of values that are related
 	 * 			to the <code>subject</code> individual through <code>datatypeProperty</code> 
 	 * @throws ProtegeReasonerException
