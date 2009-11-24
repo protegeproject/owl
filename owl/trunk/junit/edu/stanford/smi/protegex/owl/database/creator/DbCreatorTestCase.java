@@ -2,6 +2,8 @@ package edu.stanford.smi.protegex.owl.database.creator;
 
 import java.io.File;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Logger;
 
 import edu.stanford.smi.protege.exception.OntologyLoadException;
@@ -9,6 +11,7 @@ import edu.stanford.smi.protege.test.APITestCase;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.jena.creator.notont.AbstractCreatorTestCase;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.repository.Repository;
 import edu.stanford.smi.protegex.owl.repository.impl.LocalFolderRepository;
 
 
@@ -121,6 +124,28 @@ public class DbCreatorTestCase extends AbstractCreatorTestCase {
             checkIsDatabaseModel(owlModel, IMPORTED_BASE);
             
             creator.getProject().dispose();
+        }
+    }
+    
+    @SuppressWarnings("unchecked")
+    public void testCreatorWithRepository() throws OntologyLoadException {
+        for (DBType dbt : DBType.values()) {
+            APITestCase.setDBType(dbt);
+            if (!APITestCase.dbConfigured()) {
+                continue;
+            }
+            String dbImportsFileTable = "JunitDbImportsFiles";
+            List errors = new ArrayList();
+            Repository repository = new LocalFolderRepository(new File("junit/projects/creator"));
+            OwlDatabaseFromFileCreator initialCreator = new OwlDatabaseFromFileCreator();
+            configureDbCreator(initialCreator);
+            initialCreator.setTable(dbImportsFileTable);
+            initialCreator.setOntologySource(new File("junit/projects/creator/DbImportsFile.owl").toURI().toString());
+            initialCreator.addRepository(repository);
+            initialCreator.create(errors);
+            assertTrue(errors.isEmpty());
+            
+            
         }
     }
 }
