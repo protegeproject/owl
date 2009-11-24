@@ -135,8 +135,10 @@ public class DbCreatorTestCase extends AbstractCreatorTestCase {
                 continue;
             }
             String dbImportsFileTable = "JunitDbImportsFiles";
+            String distinguishingClass = "http://protege.stanford.edu/ontologies/ChAO/changes.rdfs#ClassFromFileVersion";
             List errors = new ArrayList();
             Repository repository = new LocalFolderRepository(new File("junit/projects/creator"));
+            
             OwlDatabaseFromFileCreator initialCreator = new OwlDatabaseFromFileCreator();
             configureDbCreator(initialCreator);
             initialCreator.setTable(dbImportsFileTable);
@@ -144,7 +146,17 @@ public class DbCreatorTestCase extends AbstractCreatorTestCase {
             initialCreator.addRepository(repository);
             initialCreator.create(errors);
             assertTrue(errors.isEmpty());
-            
+            assertTrue(initialCreator.getOwlModel().getOWLNamedClass(distinguishingClass) != null);
+            initialCreator.getProject().dispose();
+
+            OwlDatabaseCreator creator = new OwlDatabaseCreator(false);
+            configureDbCreator(creator);
+            creator.setTable(dbImportsFileTable);
+            creator.addRepository(repository);
+            creator.create(errors);
+            assertTrue(errors.isEmpty());
+            assertTrue(creator.getOwlModel().getOWLNamedClass(distinguishingClass) != null);
+            creator.getProject().dispose();
             
         }
     }
