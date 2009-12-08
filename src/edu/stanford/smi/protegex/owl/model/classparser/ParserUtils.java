@@ -29,7 +29,7 @@ import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
 public class ParserUtils {
     public final static String RESTRICTIONS_CAN_USE_BROWSER_TEXT="protege.owl.edit.restrictions.with.browser.text";
     public final static String SINGLE_QUOTE_STRING = "'";
-    public final static String[] SUBSTRINGS_REQUIRING_QUOTES = {" ", ";", " "};
+    public final static String[] SUBSTRINGS_REQUIRING_QUOTES = {" ", ";", " ", "#"};
     public final static char[] INITIAL_CHARACTERS_REQUIRING_QUOTES = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
     
     private static boolean editUsingBrowserText = ApplicationProperties.getBooleanProperty(RESTRICTIONS_CAN_USE_BROWSER_TEXT, true);
