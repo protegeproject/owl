@@ -1,7 +1,7 @@
-; Mon May 11 12:32:08 PDT 2009
+; Wed Dec 09 14:51:29 PST 2009
 ; 
-;+ (version "3.4")
-;+ (build "Build 533")
+;+ (version "3.4.2")
+;+ (build "Build 557")
 
 ([metaproject_Class0] of  Project
 
@@ -32,37 +32,43 @@
 
 	(group [metaproject_Instance_0])
 	(name "Guest")
-	(password "guest"))
+	(password "d03d8784f1da325584a812a0ce3981de")
+	(salt "e66ea2acb7c8fc90"))
 
 ([metaproject_Instance_10003] of  User
 
 	(group [metaproject_Instance_0])
 	(name "Jennifer Vendetti")
-	(password "jenny"))
+	(password "15d94090978b5c1455993bfb27d0d025")
+	(salt "e8eac99676e8b03c"))
 
 ([metaproject_Instance_10004] of  User
 
 	(group [metaproject_Instance_0])
 	(name "Natasha Noy")
-	(password "natalia"))
+	(password "c336968ce31d053af17661eb5776407c")
+	(salt "f2124ba59e4f421f"))
 
 ([metaproject_Instance_10005] of  User
 
 	(group [metaproject_Instance_0])
 	(name "Ray Fergerson")
-	(password "claudia"))
+	(password "15fe1fbe6f1bc0bba038eae5d7ce65fe")
+	(salt "67e111869f7679fb"))
 
 ([metaproject_Instance_10006] of  User
 
 	(group [metaproject_Instance_0])
 	(name "Tania Tudorache")
-	(password "tania"))
+	(password "0f87c825a1c4fff0a2a3f2b9e9fe92c8")
+	(salt "9161c4502bbc97f1"))
 
 ([metaproject_Instance_10007] of  User
 
 	(group [metaproject_Instance_0])
 	(name "Timothy Redmond")
-	(password "timothy"))
+	(password "8a37325032a7f3d0a9c6ffc0265702ca")
+	(salt "7cf0afa377215370"))
 
 ([metaproject_Instance_10008] of  GroupOperation
 
