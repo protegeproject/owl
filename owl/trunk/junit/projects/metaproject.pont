@@ -1,7 +1,7 @@
-; Mon May 11 12:32:08 PDT 2009
+; Wed Dec 09 14:51:29 PST 2009
 ; 
-;+ (version "3.4")
-;+ (build "Build 533")
+;+ (version "3.4.2")
+;+ (build "Build 557")
 
 
 (defclass %3ACLIPS_TOP_LEVEL_SLOT_CLASS "Fake class to save top-level slot information"
@@ -47,13 +47,17 @@
 		(type INSTANCE)
 ;+		(allowed-classes Operation)
 		(create-accessor read-write))
-	(multislot allowedGroupOperation
-		(type INSTANCE)
-;+		(allowed-classes GroupOperation)
+	(single-slot salt
+		(type STRING)
+;+		(cardinality 0 1)
 		(create-accessor read-write))
 	(single-slot description
 		(type STRING)
 ;+		(cardinality 0 1)
+		(create-accessor read-write))
+	(multislot allowedGroupOperation
+		(type INSTANCE)
+;+		(allowed-classes GroupOperation)
 		(create-accessor read-write)))
 
 (defclass User
@@ -66,6 +70,10 @@
 	(multislot group
 		(type INSTANCE)
 ;+		(allowed-classes Group)
+		(create-accessor read-write))
+	(single-slot salt
+		(type STRING)
+;+		(cardinality 0 1)
 		(create-accessor read-write))
 	(single-slot description
 		(type STRING)
@@ -120,13 +128,13 @@
 (defclass PolicyControlledObject
 	(is-a USER)
 	(role concrete)
-	(multislot allowedGroupOperation
-		(type INSTANCE)
-;+		(allowed-classes GroupOperation)
-		(create-accessor read-write))
 	(single-slot description
 		(type STRING)
 ;+		(cardinality 0 1)
+		(create-accessor read-write))
+	(multislot allowedGroupOperation
+		(type INSTANCE)
+;+		(allowed-classes GroupOperation)
 		(create-accessor read-write))
 	(single-slot name_
 		(type STRING)
