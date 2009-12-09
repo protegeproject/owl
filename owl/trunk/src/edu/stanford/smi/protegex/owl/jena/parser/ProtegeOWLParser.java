@@ -259,14 +259,14 @@ public class ProtegeOWLParser {
 	    boolean eventsEnabled = owlModel.setGenerateEventsEnabled(false);
 	    boolean isExpandShortNamesEnabled = owlModel.isExpandShortNameInMethods();
 	    owlModel.setExpandShortNameInMethods(false);
-	    
+
 	    OWLFrameStoreManager frameStoreManager = owlModel.getFrameStoreManager();
 	    boolean protegeReadOnlyFrameStoreEnabled = frameStoreManager.setEnabled(frameStoreManager.getProtegeReadOnlyFrameStore(), false);
-	    
+
 	    try {
 	        tripleProcessor = ((AbstractOWLModel) owlModel).getGlobalParserCache().getTripleProcessor();
 
-	        Log.getLogger().info("Loading triples from: " + ontologyURI);
+	        Log.getLogger().info("Loading triples for: " + ontologyURI);
 
 	        ARP arp = createARP(tripleStore);
 
