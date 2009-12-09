@@ -17,6 +17,7 @@ import com.hp.hpl.jena.ontology.EnumeratedClass;
 import com.hp.hpl.jena.ontology.HasValueRestriction;
 import com.hp.hpl.jena.ontology.Individual;
 import com.hp.hpl.jena.ontology.OntClass;
+import com.hp.hpl.jena.ontology.OntDocumentManager;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntModelSpec;
 import com.hp.hpl.jena.ontology.OntProperty;
@@ -89,6 +90,10 @@ public class JenaCreator {
     private int classProgressCount;
 
     private boolean forReasoning;
+    
+    private boolean processImports = true;
+    
+    private Set<String> ignoreImports = new HashSet<String>();
 
     private boolean inferred;
 
@@ -167,6 +172,25 @@ public class JenaCreator {
         systemOwnSlots.add(owlModel.getRDFProperty(OWLNames.Slot.OWL_ONTOLOGY_POINTER_PROPERTY));
     }
 
+    public boolean getProcessImports()  {
+        return processImports;
+    }
+    
+    public void setProcessImports(boolean processImports) {
+        this.processImports = processImports;
+    }
+    
+    public void addIgnoreImport(String uri) {
+        ignoreImports.add(uri);
+    }
+    
+    public void removeIgnoreImport(String uri) {
+        ignoreImports.remove(uri);
+    }
+    
+    public Set<String> listIgnoreImports() {
+        return ignoreImports;
+    }
 
     private void addDisjointClasses(OWLNamedClass namedCls, OntClass ontClass) {
         for (Iterator it = namedCls.getDisjointClasses().iterator(); it.hasNext();) {
@@ -201,12 +225,33 @@ public class JenaCreator {
     }
 
 
-    private void addImports(OWLOntology oi, Ontology ontology) {      
-        ontModel.getDocumentManager().addIgnoreImport(owlModel.getDefaultOWLOntology().getName());      
-        for (Iterator it = oi.getImports().iterator(); it.hasNext();) {
-            String uri = (String) it.next();
+    private void addImports(OWLOntology oi, Ontology ontology) {
+        OntDocumentManager documentManager = ontModel.getDocumentManager();
+        configureImportsStrategy(documentManager);
+        for (Iterator<String> it = oi.getImports().iterator(); it.hasNext();) {
+            String uri = it.next();
             ontology.addImport(ontModel.getResource(uri));
-            ontModel.getDocumentManager().loadImport(ontModel, uri);
+            documentManager.loadImport(ontModel, uri);
+        }
+    }
+    
+    // Note that the documentManager is an instance - so previous settings must be cleared.
+    @SuppressWarnings("unchecked")
+    private void configureImportsStrategy(OntDocumentManager documentManager) {
+        documentManager.setProcessImports(processImports);
+        if (processImports) {
+            Set<String> originalIgnoreImports = new HashSet<String>();
+            for (Iterator it = documentManager.listIgnoredImports(); it.hasNext();) {
+                String uri = (String) it.next();
+                originalIgnoreImports.add(uri);
+            }
+            for (String uri : originalIgnoreImports)  {
+                documentManager.removeIgnoreImport(uri);
+            }
+            for (String uri : ignoreImports) {
+                documentManager.addIgnoreImport(uri);
+            }
+            documentManager.addIgnoreImport(owlModel.getDefaultOWLOntology().getName());
         }
     }
 

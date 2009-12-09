@@ -167,17 +167,9 @@ public class InferredSubsumptionTreePanel extends SubsumptionTreePanel {
             if (baseURI.endsWith("#")) {
                 baseURI = baseURI.substring(0, baseURI.length() - 1);
             }
-            /*ExtractorEngine engine = new ExtractorEngine(owlModel);
-            int all = ExtractorEngine.CLASSES | ExtractorEngine.PROPERTIES | ExtractorEngine.INDIVIDUALS;
-            engine.setExtractTypes(all);
-            engine.setExtractLogic(ExtractorEngine.CLASSES | ExtractorEngine.PROPERTIES);
-            engine.setExtractAnnotations(all);
-            engine.setExtractPropertyValues(all);
-            engine.setBaseURI(baseURI);
-            engine.setUseInferredRelationships(true);
-            engine.setOutputFile(file);*/
-            OntModel ontModel = new JenaCreator(owlModel, false, true, clses,
-                                                new ModalProgressBarManager("Preparing File")).createOntModel();
+            JenaCreator jenaCreator = new JenaCreator(owlModel, false, true, clses,
+                                                      new ModalProgressBarManager("Preparing File"));
+            OntModel ontModel = jenaCreator.createOntModel();
             try {
                 //engine.run();
                 final String ns = owlModel.getNamespaceManager().getDefaultNamespace();
