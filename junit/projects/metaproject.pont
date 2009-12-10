@@ -1,4 +1,4 @@
-; Wed Dec 09 14:51:29 PST 2009
+; Wed Dec 09 22:01:17 PST 2009
 ; 
 ;+ (version "3.4.2")
 ;+ (build "Build 557")
@@ -30,6 +30,18 @@
 		(type STRING)
 ;+		(cardinality 0 1)
 		(create-accessor read-write))
+	(single-slot description
+		(type STRING)
+;+		(cardinality 0 1)
+		(create-accessor read-write))
+	(single-slot email
+		(type STRING)
+;+		(cardinality 0 1)
+		(create-accessor read-write))
+	(single-slot lastAccess
+		(type STRING)
+;+		(cardinality 0 1)
+		(create-accessor read-write))
 	(single-slot location
 		(type STRING)
 ;+		(cardinality 0 1)
@@ -43,15 +55,15 @@
 ;+		(allowed-classes Group)
 ;+		(inverse-slot member)
 		(create-accessor read-write))
+	(single-slot lastLogin
+		(type STRING)
+;+		(cardinality 0 1)
+		(create-accessor read-write))
 	(multislot allowedOperation
 		(type INSTANCE)
 ;+		(allowed-classes Operation)
 		(create-accessor read-write))
 	(single-slot salt
-		(type STRING)
-;+		(cardinality 0 1)
-		(create-accessor read-write))
-	(single-slot description
 		(type STRING)
 ;+		(cardinality 0 1)
 		(create-accessor read-write))
@@ -71,6 +83,14 @@
 		(type INSTANCE)
 ;+		(allowed-classes Group)
 		(create-accessor read-write))
+	(single-slot lastLogin
+		(type STRING)
+;+		(cardinality 0 1)
+		(create-accessor read-write))
+	(single-slot lastAccess
+		(type STRING)
+;+		(cardinality 0 1)
+		(create-accessor read-write))
 	(single-slot salt
 		(type STRING)
 ;+		(cardinality 0 1)
@@ -79,19 +99,7 @@
 		(type STRING)
 ;+		(cardinality 0 1)
 		(create-accessor read-write))
-	(single-slot name_
-		(type STRING)
-;+		(cardinality 0 1)
-		(create-accessor read-write)))
-
-(defclass Group "Groups of users for the convenience of the policy administrator.  If a group is called World then it will implicitly be assumed that it  includes every user."
-	(is-a USER)
-	(role concrete)
-	(multislot member
-		(type INSTANCE)
-;+		(allowed-classes User)
-		(create-accessor read-write))
-	(single-slot description
+	(single-slot email
 		(type STRING)
 ;+		(cardinality 0 1)
 		(create-accessor read-write))
@@ -111,6 +119,18 @@
 		(type STRING)
 ;+		(cardinality 0 1)
 		(create-accessor read-write)))
+
+(defclass GroupAppliedOperation
+	(is-a Operation)
+	(role concrete))
+
+(defclass ProjectAppliedOperation
+	(is-a Operation)
+	(role concrete))
+
+(defclass ServerAppliedOperation
+	(is-a Operation)
+	(role concrete))
 
 (defclass GroupOperation
 	(is-a USER)
@@ -160,4 +180,12 @@
 	(single-slot location
 		(type STRING)
 ;+		(cardinality 0 1)
+		(create-accessor read-write)))
+
+(defclass Group "Groups of users for the convenience of the policy administrator.  If a group is called World then it will implicitly be assumed that it  includes every user."
+	(is-a PolicyControlledObject)
+	(role concrete)
+	(multislot member
+		(type INSTANCE)
+;+		(allowed-classes User)
 		(create-accessor read-write)))

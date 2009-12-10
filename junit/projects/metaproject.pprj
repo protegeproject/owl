@@ -1,4 +1,4 @@
-; Wed Dec 09 14:51:29 PST 2009
+; Wed Dec 09 22:01:17 PST 2009
 ; 
 ;+ (version "3.4.2")
 ;+ (build "Build 557")
@@ -6,14 +6,14 @@
 ([BROWSER_SLOT_NAMES] of  Property_List
 
 	(properties
-		[metaproject_ProjectKB_Class15]
-		[metaproject_ProjectKB_Class16]
-		[metaproject_ProjectKB_Class17]
-		[metaproject_ProjectKB_Class18]
-		[metaproject_ProjectKB_Class19]
-		[metaproject_ProjectKB_Class20]
-		[metaproject_ProjectKB_Class21]
-		[metaproject_ProjectKB_Class22]))
+		[metaproject_ProjectKB_Class20004]
+		[metaproject_ProjectKB_Class20005]
+		[metaproject_ProjectKB_Class20006]
+		[metaproject_ProjectKB_Class20007]
+		[metaproject_ProjectKB_Class20008]
+		[metaproject_ProjectKB_Class20009]
+		[metaproject_ProjectKB_Class20010]
+		[metaproject_ProjectKB_Class20011]))
 
 ([CLSES_TAB] of  Widget
 
@@ -425,7 +425,7 @@
 	(x 0)
 	(y 120))
 
-([KB_785747_Class0] of  Map
+([KB_289842_Class3] of  Map
 )
 
 ([metaproject_ProjectKB_Class1] of  Widget
@@ -435,6 +435,48 @@
 	(widget_class_name "edu.stanford.smi.protegex.changes.changesKBViewTab.ChangesKBViewTab"))
 
 ([metaproject_ProjectKB_Class10] of  Property_List
+)
+
+([metaproject_ProjectKB_Class10004] of  Widget
+
+	(height 60)
+	(is_hidden FALSE)
+	(name "lastLogin")
+	(property_list [metaproject_ProjectKB_Class10005])
+	(widget_class_name "edu.stanford.smi.protege.widget.TextFieldWidget")
+	(width 200)
+	(x 0)
+	(y 520))
+
+([metaproject_ProjectKB_Class10005] of  Property_List
+)
+
+([metaproject_ProjectKB_Class10006] of  Widget
+
+	(height 60)
+	(is_hidden FALSE)
+	(name "lastAccess")
+	(property_list [metaproject_ProjectKB_Class10007])
+	(widget_class_name "edu.stanford.smi.protege.widget.TextFieldWidget")
+	(width 200)
+	(x 0)
+	(y 460))
+
+([metaproject_ProjectKB_Class10007] of  Property_List
+)
+
+([metaproject_ProjectKB_Class10008] of  Widget
+
+	(height 60)
+	(is_hidden FALSE)
+	(name "email")
+	(property_list [metaproject_ProjectKB_Class10009])
+	(widget_class_name "edu.stanford.smi.protege.widget.TextFieldWidget")
+	(width 200)
+	(x 0)
+	(y 400))
+
+([metaproject_ProjectKB_Class10009] of  Property_List
 )
 
 ([metaproject_ProjectKB_Class11] of  Widget
@@ -460,64 +502,64 @@
 	(name "vertical_stretcher")
 	(string_value "<<none>>"))
 
-([metaproject_ProjectKB_Class15] of  String
+([metaproject_ProjectKB_Class2] of  Property_List
+)
+
+([metaproject_ProjectKB_Class20004] of  String
 
 	(name ":INSTANCE-ANNOTATION")
 	(string_value "%3AANNOTATION-TEXT"))
 
-([metaproject_ProjectKB_Class16] of  String
+([metaproject_ProjectKB_Class20005] of  String
 
 	(name "GroupOperation")
 	(string_value "{GrpOp%28}allowedGroup{%29}"))
 
-([metaproject_ProjectKB_Class17] of  String
+([metaproject_ProjectKB_Class20006] of  String
 
 	(name ":META-CLASS")
 	(string_value "%3ANAME"))
 
-([metaproject_ProjectKB_Class18] of  String
+([metaproject_ProjectKB_Class20007] of  String
 
 	(name "User")
 	(string_value "name"))
 
-([metaproject_ProjectKB_Class19] of  String
+([metaproject_ProjectKB_Class20008] of  String
 
 	(name "Project")
 	(string_value "name"))
 
-([metaproject_ProjectKB_Class2] of  Property_List
-)
-
-([metaproject_ProjectKB_Class20] of  String
+([metaproject_ProjectKB_Class20009] of  String
 
 	(name "Operation")
 	(string_value "name"))
 
-([metaproject_ProjectKB_Class21] of  String
+([metaproject_ProjectKB_Class20010] of  String
 
 	(name "Group")
 	(string_value "name"))
 
-([metaproject_ProjectKB_Class22] of  String
+([metaproject_ProjectKB_Class20011] of  String
 
 	(name ":PAL-CONSTRAINT")
 	(string_value "%3APAL-NAME"))
 
-([metaproject_ProjectKB_Class23] of  Map_Entry
+([metaproject_ProjectKB_Class20012] of  Map_Entry
 
 	(key "suppress_instance_counting")
 	(key_class "java.lang.String")
 	(value "false")
 	(value_class "java.lang.String"))
 
-([metaproject_ProjectKB_Class24] of  Map_Entry
+([metaproject_ProjectKB_Class20013] of  Map_Entry
 
 	(key "change_tracking_active")
 	(key_class "java.lang.String")
 	(value "false")
 	(value_class "java.lang.String"))
 
-([metaproject_ProjectKB_Class25] of  Map_Entry
+([metaproject_ProjectKB_Class20014] of  Map_Entry
 
 	(key "add_name_on_instance_form")
 	(key_class "java.lang.String")
@@ -678,30 +720,6 @@
 	(boolean_value FALSE)
 	(name "ButtonDisplayed-View References to Value  "))
 
-([nci_metaproject_ProjectKB_Instance_0] of  Widget
-
-	(is_hidden TRUE)
-	(property_list [nci_metaproject_ProjectKB_Instance_1])
-	(widget_class_name "TGViztab.TGVizTab"))
-
-([nci_metaproject_ProjectKB_Instance_1] of  Property_List
-)
-
-([nci_metaproject_ProjectKB_Instance_10] of  Widget
-
-	(is_hidden TRUE)
-	(property_list [nci_metaproject_ProjectKB_Instance_11])
-	(widget_class_name "nl.uva.psy.swi.beangenerator.OntologyBeanGeneratorTab"))
-
-([nci_metaproject_ProjectKB_Instance_10050] of  Widget
-
-	(is_hidden TRUE)
-	(property_list [nci_metaproject_ProjectKB_Instance_10051])
-	(widget_class_name "uk.ac.man.cs.mig.coode.debugger.test.DebuggerTestTab"))
-
-([nci_metaproject_ProjectKB_Instance_10051] of  Property_List
-)
-
 ([nci_metaproject_ProjectKB_Instance_10052] of  Widget
 
 	(is_hidden TRUE)
@@ -709,51 +727,6 @@
 	(widget_class_name "edu.stanford.smi.protegex.owl.ui.cls.OWLClassesTab"))
 
 ([nci_metaproject_ProjectKB_Instance_10053] of  Property_List
-)
-
-([nci_metaproject_ProjectKB_Instance_10054] of  Widget
-
-	(is_hidden TRUE)
-	(property_list [nci_metaproject_ProjectKB_Instance_10055])
-	(widget_class_name "org.algernon.kb.okbc.protege.plugins.AlgernonTab"))
-
-([nci_metaproject_ProjectKB_Instance_10055] of  Property_List
-)
-
-([nci_metaproject_ProjectKB_Instance_10056] of  Widget
-
-	(is_hidden TRUE)
-	(property_list [nci_metaproject_ProjectKB_Instance_10057])
-	(widget_class_name "edu.stanford.smi.protegex.widget.pal.PalQueriesTab"))
-
-([nci_metaproject_ProjectKB_Instance_10057] of  Property_List
-)
-
-([nci_metaproject_ProjectKB_Instance_10058] of  Widget
-
-	(is_hidden TRUE)
-	(property_list [nci_metaproject_ProjectKB_Instance_10059])
-	(widget_class_name "edu.stanford.smi.RemoteKBTab.UMLSTab"))
-
-([nci_metaproject_ProjectKB_Instance_10059] of  Property_List
-)
-
-([nci_metaproject_ProjectKB_Instance_10060] of  Widget
-
-	(is_hidden TRUE)
-	(property_list [nci_metaproject_ProjectKB_Instance_10061])
-	(widget_class_name "InternalKBTab"))
-
-([nci_metaproject_ProjectKB_Instance_10061] of  Property_List
-)
-
-([nci_metaproject_ProjectKB_Instance_10062] of  Widget
-
-	(is_hidden TRUE)
-	(property_list [nci_metaproject_ProjectKB_Instance_10063])
-	(widget_class_name "uk.ac.man.cs.mig.coode.owlviz.ui.OWLVizTab"))
-
-([nci_metaproject_ProjectKB_Instance_10063] of  Property_List
 )
 
 ([nci_metaproject_ProjectKB_Instance_10082] of  Widget
@@ -1241,66 +1214,6 @@
 	(name ":Visible:Slot:Index1")
 	(string_value "member"))
 
-([nci_metaproject_ProjectKB_Instance_10271] of  Integer
-
-	(integer_value 456)
-	(name "PAL_TAB_DIVIDER_LOCATION"))
-
-([nci_metaproject_ProjectKB_Instance_10272] of  Integer
-
-	(integer_value 198)
-	(name "CONSTRAINT_CONTROL_PANEL_TOP_DIVIDER_LOCATION"))
-
-([nci_metaproject_ProjectKB_Instance_10273] of  Integer
-
-	(integer_value 198)
-	(name "CONSTRAINT_CONTROL_PANEL_BOTTOM_DIVIDER_LOCATION"))
-
-([nci_metaproject_ProjectKB_Instance_11] of  Property_List
-)
-
-([nci_metaproject_ProjectKB_Instance_12] of  Widget
-
-	(is_hidden TRUE)
-	(property_list [nci_metaproject_ProjectKB_Instance_13])
-	(widget_class_name "edu.stanford.smi.protege.keywordsearch.StringSearch"))
-
-([nci_metaproject_ProjectKB_Instance_13] of  Property_List
-)
-
-([nci_metaproject_ProjectKB_Instance_14] of  Widget
-
-	(is_hidden TRUE)
-	(property_list [nci_metaproject_ProjectKB_Instance_15])
-	(widget_class_name "edu.stanford.smi.RemoteKBTab.WordNetTab"))
-
-([nci_metaproject_ProjectKB_Instance_15] of  Property_List
-)
-
-([nci_metaproject_ProjectKB_Instance_16] of  Widget
-
-	(is_hidden TRUE)
-	(property_list [nci_metaproject_ProjectKB_Instance_17])
-	(widget_class_name "com.dcx.mixer.ui.MappedMixerTab"))
-
-([nci_metaproject_ProjectKB_Instance_17] of  Property_List
-)
-
-([nci_metaproject_ProjectKB_Instance_18] of  Widget
-
-	(is_hidden TRUE)
-	(property_list [nci_metaproject_ProjectKB_Instance_19])
-	(widget_class_name "edu.stanford.smi.protegex.psm.PSMTab"))
-
-([nci_metaproject_ProjectKB_Instance_19] of  Property_List
-)
-
-([nci_metaproject_ProjectKB_Instance_2] of  Widget
-
-	(is_hidden TRUE)
-	(property_list [nci_metaproject_ProjectKB_Instance_3])
-	(widget_class_name "ca.uvic.cs.protege.phonetics.PhoneticsTab"))
-
 ([nci_metaproject_ProjectKB_Instance_20] of  Widget
 
 	(is_hidden TRUE)
@@ -1427,15 +1340,6 @@
 ([nci_metaproject_ProjectKB_Instance_25] of  Property_List
 )
 
-([nci_metaproject_ProjectKB_Instance_26] of  Widget
-
-	(is_hidden TRUE)
-	(property_list [nci_metaproject_ProjectKB_Instance_27])
-	(widget_class_name "ezpal.EZPalTab"))
-
-([nci_metaproject_ProjectKB_Instance_27] of  Property_List
-)
-
 ([nci_metaproject_ProjectKB_Instance_28] of  Widget
 
 	(is_hidden TRUE)
@@ -1445,100 +1349,6 @@
 ([nci_metaproject_ProjectKB_Instance_29] of  Property_List
 )
 
-([nci_metaproject_ProjectKB_Instance_3] of  Property_List
-)
-
-([nci_metaproject_ProjectKB_Instance_30] of  Widget
-
-	(is_hidden TRUE)
-	(property_list [nci_metaproject_ProjectKB_Instance_31])
-	(widget_class_name "edu.stanford.smi.protegex.fctab.FacetConstraintsTab"))
-
-([nci_metaproject_ProjectKB_Instance_31] of  Property_List
-)
-
-([nci_metaproject_ProjectKB_Instance_32] of  Widget
-
-	(is_hidden TRUE)
-	(property_list [nci_metaproject_ProjectKB_Instance_33])
-	(widget_class_name "edu.stanford.smi.protegex.xml.tab.XMLTab"))
-
-([nci_metaproject_ProjectKB_Instance_33] of  Property_List
-)
-
-([nci_metaproject_ProjectKB_Instance_34] of  Widget
-
-	(is_hidden TRUE)
-	(property_list [nci_metaproject_ProjectKB_Instance_35])
-	(widget_class_name "edu.stanford.smi.protegex.prompt.PromptTab"))
-
-([nci_metaproject_ProjectKB_Instance_35] of  Property_List
-)
-
-([nci_metaproject_ProjectKB_Instance_36] of  Widget
-
-	(is_hidden FALSE)
-	(property_list [nci_metaproject_ProjectKB_Instance_37])
-	(widget_class_name "edu.stanford.smi.protegex.widget.pal.PalConstraintsTab"))
-
-([nci_metaproject_ProjectKB_Instance_37] of  Property_List
-
-	(properties
-		[nci_metaproject_ProjectKB_Instance_10271]
-		[nci_metaproject_ProjectKB_Instance_10272]
-		[nci_metaproject_ProjectKB_Instance_10273]))
-
-([nci_metaproject_ProjectKB_Instance_38] of  Widget
-
-	(is_hidden TRUE)
-	(property_list [nci_metaproject_ProjectKB_Instance_39])
-	(widget_class_name "DataGenieTab.DataGenieTab"))
-
-([nci_metaproject_ProjectKB_Instance_39] of  Property_List
-)
-
-([nci_metaproject_ProjectKB_Instance_4] of  Widget
-
-	(is_hidden TRUE)
-	(property_list [nci_metaproject_ProjectKB_Instance_5])
-	(widget_class_name "dfki.protege.ontoviz_tab.OntovizTab"))
-
-([nci_metaproject_ProjectKB_Instance_40] of  Widget
-
-	(is_hidden TRUE)
-	(property_list [nci_metaproject_ProjectKB_Instance_41])
-	(widget_class_name "edu.stanford.smi.protege.widget.instance_tree.KnowledgeTreeTab"))
-
-([nci_metaproject_ProjectKB_Instance_41] of  Property_List
-)
-
-([nci_metaproject_ProjectKB_Instance_42] of  Widget
-
-	(is_hidden FALSE)
-	(property_list [nci_metaproject_ProjectKB_Instance_43])
-	(widget_class_name "edu.stanford.smi.protege.widget.instance_tree.InstanceTreeTab"))
-
-([nci_metaproject_ProjectKB_Instance_43] of  Property_List
-)
-
-([nci_metaproject_ProjectKB_Instance_44] of  Widget
-
-	(is_hidden TRUE)
-	(property_list [nci_metaproject_ProjectKB_Instance_45])
-	(widget_class_name "com.dcx.ricek.protege.ontoquery.OntoQueryTab"))
-
-([nci_metaproject_ProjectKB_Instance_45] of  Property_List
-)
-
-([nci_metaproject_ProjectKB_Instance_46] of  Widget
-
-	(is_hidden TRUE)
-	(property_list [nci_metaproject_ProjectKB_Instance_47])
-	(widget_class_name "ca.uvic.csr.shrimp.jambalaya.JambalayaTab"))
-
-([nci_metaproject_ProjectKB_Instance_47] of  Property_List
-)
-
 ([nci_metaproject_ProjectKB_Instance_48] of  Widget
 
 	(is_hidden TRUE)
@@ -1546,9 +1356,6 @@
 	(widget_class_name "edu.stanford.smi.protegex.owl.ui.individuals.OWLIndividualsTab"))
 
 ([nci_metaproject_ProjectKB_Instance_49] of  Property_List
-)
-
-([nci_metaproject_ProjectKB_Instance_5] of  Property_List
 )
 
 ([nci_metaproject_ProjectKB_Instance_50] of  Boolean
@@ -1570,24 +1377,6 @@
 
 	(boolean_value FALSE)
 	(name "ButtonDisplayed-Delete Instance"))
-
-([nci_metaproject_ProjectKB_Instance_6] of  Widget
-
-	(is_hidden TRUE)
-	(property_list [nci_metaproject_ProjectKB_Instance_7])
-	(widget_class_name "JessTab.JessTab"))
-
-([nci_metaproject_ProjectKB_Instance_7] of  Property_List
-)
-
-([nci_metaproject_ProjectKB_Instance_8] of  Widget
-
-	(is_hidden TRUE)
-	(property_list [nci_metaproject_ProjectKB_Instance_9])
-	(widget_class_name "script.ProtegeScriptTab"))
-
-([nci_metaproject_ProjectKB_Instance_9] of  Property_List
-)
 
 ([PAL_FORM_WIDGET] of  Widget
 
@@ -1748,9 +1537,9 @@
 ([projects_ProjectKB_00052] of  Map
 
 	(entries
-		[metaproject_ProjectKB_Class23]
-		[metaproject_ProjectKB_Class24]
-		[metaproject_ProjectKB_Class25]))
+		[metaproject_ProjectKB_Class20012]
+		[metaproject_ProjectKB_Class20013]
+		[metaproject_ProjectKB_Class20014]))
 
 ([projects_ProjectKB_00053] of  Widget
 
@@ -1771,7 +1560,10 @@
 		[projects_ProjectKB_00095]
 		[projects_ProjectKB_00097]
 		[projects_ProjectKB_00099]
-		[metaproject_ProjectKB_Class11]))
+		[metaproject_ProjectKB_Class11]
+		[metaproject_ProjectKB_Class10004]
+		[metaproject_ProjectKB_Class10006]
+		[metaproject_ProjectKB_Class10008]))
 
 ([projects_ProjectKB_00085] of  Widget
 
