@@ -10,6 +10,7 @@
   xml:base="http://swrl.stanford.edu/ontologies/built-ins/3.4/rdfb.owl">
   <owl:Ontology rdf:about=""/>
   <swrl:Builtin rdf:ID="hasLabel"/>
+  <swrl:Builtin rdf:ID="hasLabelLanguage"/>
   <swrl:Builtin rdf:ID="isResource"/>
   <swrl:Builtin rdf:ID="isProperty"/>
   <swrl:Builtin rdf:ID="isList"/>
