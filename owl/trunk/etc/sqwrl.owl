@@ -20,7 +20,6 @@
   <swrl:Builtin rdf:ID="avg"/>
   <swrl:Builtin rdf:ID="sum"/>
   <swrl:Builtin rdf:ID="median"/>
-  <swrl:Builtin rdf:ID="makeSet"/>
   <swrl:Builtin rdf:ID="element"/>
   <swrl:Builtin rdf:ID="size"/>
   <swrl:Builtin rdf:ID="isEmpty"/>
@@ -38,6 +37,8 @@
   <swrl:Builtin rdf:ID="least"/>
   <swrl:Builtin rdf:ID="leastN"/>
   <swrl:Builtin rdf:ID="notLeastN"/>
+  <swrl:Builtin rdf:ID="makeSet"/>
+  <swrl:Builtin rdf:ID="groupBy"/>
 </rdf:RDF>
 
 <!-- Created with Protege (with OWL Plugin 3.4, Build 124)  http://protege.stanford.edu -->
