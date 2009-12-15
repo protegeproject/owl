@@ -100,7 +100,7 @@ public class InferredSubsumptionTreePanel extends SubsumptionTreePanel {
         try {
             owlModel.beginTransaction("Assert change for " + cls.getBrowserText());
             ccp.getTableModel().assertChange(cls);
-            owlModel.commitTransaction();           
+            owlModel.commitTransaction();
         }
         catch (Exception ex) {
         	owlModel.rollbackTransaction();
@@ -144,7 +144,7 @@ public class InferredSubsumptionTreePanel extends SubsumptionTreePanel {
             setSelectedClass((RDFSClass) resource);
         }
     }
-    
+
     @Override
 	public void setSelectedClass(RDFSClass cls) {
     	OWLUI.setSelectedNodeInTree((SelectableTree) getTree(), cls, getOWLModel().getSystemFrames().getProtegeInferredSuperclassesProperty());
@@ -164,6 +164,9 @@ public class InferredSubsumptionTreePanel extends SubsumptionTreePanel {
                 }
             }
             String baseURI = owlModel.getNamespaceManager().getDefaultNamespace();
+            if (baseURI == null) {
+                baseURI = owlModel.getDefaultOWLOntology().getName();
+            }
             if (baseURI.endsWith("#")) {
                 baseURI = baseURI.substring(0, baseURI.length() - 1);
             }
