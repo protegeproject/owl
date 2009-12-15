@@ -304,7 +304,7 @@ public class OWLConversionFactoryImpl implements OWLConversionFactory
                                          + "' of type '" + datatype + "'");
     } catch (DatatypeConversionException e) {
       throw new OWLConversionFactoryException("error creating an OWLDataValue object for RDFS literal value '" + literal.getString() + 
-                                    "' with type '" + datatype.getName() + "': " + e.getMessage());
+                                    "' with type " + datatype.getName() + ": " + e.getMessage());
     } // try
 
     return owlDatatypeValueImpl;
@@ -316,7 +316,7 @@ public class OWLConversionFactoryImpl implements OWLConversionFactory
     String prefixedClassName = (atom.getClassPredicate() != null) ? atom.getClassPredicate().getPrefixedName() : null;
     ClassAtomImpl classAtomImpl = new ClassAtomImpl(classURI, prefixedClassName);
 
-    if (classURI == null) throw new OWLConversionFactoryException("empty class name in SWRLClassAtom: " + atom);
+    if (classURI == null) throw new OWLConversionFactoryException("empty class name in SWRLClassAtom: " + atom.getBrowserText());
 
     classAtomImpl.addReferencedClassName(classURI);
     
@@ -346,7 +346,7 @@ public class OWLConversionFactoryImpl implements OWLConversionFactory
       classAtomImpl.setArgument1(argument1);
       classAtomImpl.addReferencedPropertyName(propertyName);
     } else throw new OWLConversionFactoryException("unexpected argument to class atom '" + atom.getBrowserText() + "'; expecting " +
-                                         "variable or individual, got instance of '" + atom.getArgument1().getClass() + "'");
+    		                                        "variable or individual, got instance of '" + atom.getArgument1().getClass() + "'");
 
     return classAtomImpl;
   } // convertClassAtom
@@ -358,7 +358,8 @@ public class OWLConversionFactoryImpl implements OWLConversionFactory
     String prefixedPropertyName = (atom.getPropertyPredicate() != null) ? atom.getPropertyPredicate().getPrefixedName() : null;
     IndividualPropertyAtomImpl individualPropertyAtomImpl = new IndividualPropertyAtomImpl(propertyURI, prefixedPropertyName);
 
-    if (propertyURI == null) throw new OWLConversionFactoryException("empty property name in SWRLIndividualPropertyAtom '" + atom + "'");
+    if (propertyURI == null) 
+    	throw new OWLConversionFactoryException("empty property name in SWRLIndividualPropertyAtom: " + atom.getBrowserText());
     
     individualPropertyAtomImpl.addReferencedPropertyName(propertyURI);
 
@@ -411,7 +412,8 @@ public class OWLConversionFactoryImpl implements OWLConversionFactory
     String prefixedPropertyName = (atom.getPropertyPredicate() != null) ? atom.getPropertyPredicate().getPrefixedName() : null;
     DatavaluedPropertyAtomImpl datavaluedPropertyAtomImpl = new DatavaluedPropertyAtomImpl(propertyURI, prefixedPropertyName);
 
-    if (propertyURI == null) throw new OWLConversionFactoryException("empty property name in SWRLDatavaluedPropertyAtom '" + atom.getBrowserText() + "'");
+    if (propertyURI == null) 
+    	throw new OWLConversionFactoryException("empty property name in SWRLDatavaluedPropertyAtom: " + atom.getBrowserText());
 
     datavaluedPropertyAtomImpl.addReferencedPropertyName(propertyURI);
 
@@ -519,7 +521,7 @@ public class OWLConversionFactoryImpl implements OWLConversionFactory
     List<BuiltInArgument> arguments = new ArrayList<BuiltInArgument>();
     RDFList rdfList = atom.getArguments();
 
-    if (builtInName == null) throw new OWLConversionFactoryException("empty built-in name in SWRLBuiltinAtom: " + atom);
+    if (builtInName == null) throw new OWLConversionFactoryException("empty built-in name in SWRLBuiltinAtom: " + atom.getBrowserText());
 
     Iterator iterator = rdfList.getValues().iterator();
     while (iterator.hasNext()) {
@@ -569,7 +571,7 @@ public class OWLConversionFactoryImpl implements OWLConversionFactory
     edu.stanford.smi.protegex.owl.model.OWLIndividual subjectIndividual;
     edu.stanford.smi.protegex.owl.model.OWLNamedClass objectClass = null;
     
-    if (property == null) throw new OWLConversionFactoryException("invalid property name '" + propertyURI + "'");
+    if (property == null) throw new OWLConversionFactoryException("invalid property name: " + propertyURI);
     
     subjectIndividual = SWRLOWLUtil.getOWLIndividual(owlModel, subjectIndividualName);
     if (subjectIndividual == null) throw new OWLConversionFactoryException("invalid individual name '" + subjectIndividualName + "'");
@@ -688,7 +690,7 @@ public class OWLConversionFactoryImpl implements OWLConversionFactory
       atom = convertBuiltInAtom((SWRLBuiltinAtom)swrlAtom);
     } else if (swrlAtom instanceof SWRLDataRangeAtom) 
       atom = convertDataRangeAtom((SWRLDataRangeAtom)swrlAtom);
-    else throw new OWLConversionFactoryException("invalid SWRL atom '" + swrlAtom.getBrowserText() + "'");
+    else throw new OWLConversionFactoryException("invalid SWRL atom: " + swrlAtom.getBrowserText());
 
     return atom;
   } // convertSWRLAtom
