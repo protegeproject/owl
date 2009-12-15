@@ -19,8 +19,8 @@ import java.awt.event.KeyEvent;
 public class SWRLTextField extends SymbolTextField {
 
     private final static char[][] charMap = {
-            {'^', SWRLParser.AND_CHAR}
-            //{'&', SWRLParser.AND_CHAR},
+            {'^', SWRLParser.AND_CHAR},
+            {'.', SWRLParser.RING_CHAR},
             //{'>', SWRLParser.IMP_CHAR}
     };
 

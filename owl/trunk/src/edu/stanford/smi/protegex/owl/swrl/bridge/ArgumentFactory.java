@@ -1,15 +1,10 @@
 
 package edu.stanford.smi.protegex.owl.swrl.bridge;
 
+import java.util.List;
+
 import edu.stanford.smi.protegex.owl.swrl.bridge.impl.ArgumentFactoryImpl;
-
-import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.DatatypeConversionException;
-import edu.stanford.smi.protegex.owl.swrl.bridge.xsd.PrimitiveXSDType;
-
-import java.math.BigDecimal;
-import java.math.BigInteger;
-
-import java.util.*;
+import edu.stanford.smi.protegex.owl.swrl.bridge.xsd.XSDType;
 
 public abstract class ArgumentFactory
 {
@@ -29,9 +24,7 @@ public abstract class ArgumentFactory
   public abstract DatatypeValueArgument createDatatypeValueArgument(double d);
   public abstract DatatypeValueArgument createDatatypeValueArgument(short s); 
   public abstract DatatypeValueArgument createDatatypeValueArgument(Byte b);
-  public abstract DatatypeValueArgument createDatatypeValueArgument(BigDecimal bd);
-  public abstract DatatypeValueArgument createDatatypeValueArgument(BigInteger bi);
-  public abstract DatatypeValueArgument createDatatypeValueArgument(PrimitiveXSDType xsd);
+  public abstract DatatypeValueArgument createDatatypeValueArgument(XSDType xsd);
 
   public abstract DatatypeValueArgument createDatatypeValueArgument(OWLDatatypeValue datatypeValue);
 

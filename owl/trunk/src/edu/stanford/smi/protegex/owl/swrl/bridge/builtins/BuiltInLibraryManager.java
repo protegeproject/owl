@@ -1,13 +1,21 @@
 
 package edu.stanford.smi.protegex.owl.swrl.bridge.builtins;
 
-import edu.stanford.smi.protegex.owl.swrl.bridge.*;
-import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.*;
+import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.HashMap;
+import java.util.List;
 
-import java.util.*;
-import java.lang.reflect.*;
-import java.net.URLClassLoader;
-import java.net.URL;
+import edu.stanford.smi.protegex.owl.swrl.bridge.BuiltInArgument;
+import edu.stanford.smi.protegex.owl.swrl.bridge.SWRLBuiltInBridge;
+import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.BuiltInException;
+import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.BuiltInLibraryException;
+import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.IncompatibleBuiltInClassException;
+import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.IncompatibleBuiltInMethodException;
+import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.SWRLRuleEngineBridgeException;
+import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.UnresolvedBuiltInClassException;
+import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.UnresolvedBuiltInMethodException;
 
 /**
  ** This class manages the dynamic loading of SWRL built-in libraries and the invocation of built-ins in those libraries. A library is
@@ -49,24 +57,8 @@ public abstract class BuiltInLibraryManager
     return library.invokeBuiltInMethod(method, bridge, ruleName, prefix, builtInMethodName, builtInIndex, isInConsequent, arguments);
   } // invokeSWRLBuiltIn
 
-  /**
-   ** Find the implementation class for a built-in library. Returns null if it does not find anything. A library will only be valid after it
-   ** is loaded.
-   */
-  private static SWRLBuiltInLibrary getBuiltInLibraryByPrefix(String prefix) throws InvalidBuiltInLibraryNameException
-  {
-    SWRLBuiltInLibrary swrlBuiltInLibrary = null;
-
-    if (builtInLibraries.containsKey(prefix)) swrlBuiltInLibrary = (SWRLBuiltInLibrary)builtInLibraries.get(prefix);
-    else throw new InvalidBuiltInLibraryNameException(prefix);
-
-    return swrlBuiltInLibrary;
-  } // getBuiltInLibraryByPrefix
-
-  private static Set<String> getBuiltInLibraryPrefixes() { return builtInLibraries.keySet(); }
-
   private static SWRLBuiltInLibrary loadBuiltInLibrary(SWRLBuiltInBridge bridge, String ruleName, String prefix, String implementationClassName)
-    throws BuiltInException
+    throws BuiltInLibraryException
   {
     SWRLBuiltInLibrary library;
 
@@ -108,12 +100,12 @@ public abstract class BuiltInLibraryManager
   /**
    ** Invoke the reset() method for each registered built-in library.
    */
-  private static void invokeBuiltInLibraryResetMethod(SWRLBuiltInBridge bridge, SWRLBuiltInLibrary library) throws BuiltInException
+  private static void invokeBuiltInLibraryResetMethod(SWRLBuiltInBridge bridge, SWRLBuiltInLibrary library) throws BuiltInLibraryException
   {
     try {
       library.invokeResetMethod(bridge);
     } catch (Exception e) {
-      throw new BuiltInException("error calling 'reset' method in built-in library '" + library.getClass().getName() + "'");
+      throw new BuiltInLibraryException("error calling 'reset' method in built-in library '" + library.getClass().getName() + "'");
     } // try
   } // invokeBuiltInLibraryResetMethod
   
@@ -136,8 +128,9 @@ public abstract class BuiltInLibraryManager
     return method;
   } // resolveBuiltInMethod
 
+  // TODO: need to get constructor of library to catch exeptions it may throw.
   private static SWRLBuiltInLibrary loadBuiltInLibraryImpl(String ruleName, String prefix, String className) 
-    throws UnresolvedBuiltInClassException, IncompatibleBuiltInClassException
+    throws UnresolvedBuiltInClassException, IncompatibleBuiltInClassException, BuiltInLibraryException
   {
     Class swrlBuiltInLibraryClass;
     SWRLBuiltInLibrary swrlBuiltInLibrary;
@@ -152,8 +145,14 @@ public abstract class BuiltInLibraryManager
 
     try {
       swrlBuiltInLibrary = (SWRLBuiltInLibrary)swrlBuiltInLibraryClass.newInstance();
-    } catch (Exception e) {
-      throw new UnresolvedBuiltInClassException(ruleName, prefix, e.getMessage());
+    } catch (InstantiationException e) {
+      throw new IncompatibleBuiltInClassException(ruleName, prefix, className, e.getMessage());
+    } catch (ExceptionInInitializerError e) {
+      throw new IncompatibleBuiltInClassException(ruleName, prefix, className, e.getMessage());
+    } catch (IllegalAccessException e) {
+      throw new IncompatibleBuiltInClassException(ruleName, prefix, className, e.getMessage());
+    } catch (SecurityException e) {
+      throw new IncompatibleBuiltInClassException(ruleName, prefix, className, e.getMessage());
     } // try
 
     return swrlBuiltInLibrary;

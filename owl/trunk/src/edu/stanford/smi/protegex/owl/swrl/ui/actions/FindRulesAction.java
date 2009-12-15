@@ -1,5 +1,8 @@
 package edu.stanford.smi.protegex.owl.swrl.ui.actions;
 
+import java.awt.event.ActionEvent;
+import java.util.Collection;
+
 import edu.stanford.smi.protege.model.FrameSlotCombination;
 import edu.stanford.smi.protege.util.AllowableAction;
 import edu.stanford.smi.protege.util.Selectable;
@@ -7,9 +10,6 @@ import edu.stanford.smi.protegex.owl.model.RDFResource;
 import edu.stanford.smi.protegex.owl.swrl.ui.icons.SWRLIcons;
 import edu.stanford.smi.protegex.owl.swrl.ui.table.SWRLResultsPanel;
 import edu.stanford.smi.protegex.owl.ui.results.ResultsPanelManager;
-
-import java.awt.event.ActionEvent;
-import java.util.Collection;
 
 /**
  * An Action to search for SWRL rules for the selected frame.

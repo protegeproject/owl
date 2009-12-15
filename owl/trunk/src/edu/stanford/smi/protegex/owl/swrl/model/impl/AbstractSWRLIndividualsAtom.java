@@ -1,13 +1,12 @@
 package edu.stanford.smi.protegex.owl.swrl.model.impl;
 
+import java.util.Set;
+
 import edu.stanford.smi.protege.model.FrameID;
 import edu.stanford.smi.protege.model.KnowledgeBase;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
-import edu.stanford.smi.protegex.owl.swrl.model.SWRLDifferentIndividualsAtom;
-import edu.stanford.smi.protegex.owl.swrl.model.SWRLNames;
 import edu.stanford.smi.protegex.owl.swrl.model.SWRLIndividualsAtom;
-
-import java.util.Set;
+import edu.stanford.smi.protegex.owl.swrl.model.SWRLNames;
 
 public abstract class AbstractSWRLIndividualsAtom extends DefaultSWRLAtom implements SWRLIndividualsAtom {
 

@@ -1,10 +1,12 @@
 
 package edu.stanford.smi.protegex.owl.swrl.bridge.builtins.temporal;
 
-import edu.stanford.smi.protegex.owl.swrl.bridge.builtins.temporal.exceptions.*;
+import edu.stanford.smi.protegex.owl.swrl.bridge.builtins.temporal.exceptions.TemporalException;
 
-import java.sql.*;
-import java.util.*;
+import java.sql.Timestamp;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  ** Class that represents a single instant in time.

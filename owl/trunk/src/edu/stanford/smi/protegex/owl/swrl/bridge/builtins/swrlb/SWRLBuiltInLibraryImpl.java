@@ -3,19 +3,29 @@
 
 package edu.stanford.smi.protegex.owl.swrl.bridge.builtins.swrlb;
 
-import edu.stanford.smi.protegex.owl.swrl.bridge.*;
-import edu.stanford.smi.protegex.owl.swrl.bridge.builtins.*;
-import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.*;
-
-import edu.stanford.smi.protegex.owl.swrl.bridge.xsd.*;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.List;
+import java.util.StringTokenizer;
+import java.util.TimeZone;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.axis.types.*;
 
-import java.text.*;
-import java.util.*;
-import java.util.regex.*;
-import java.lang.Math.*;
+import edu.stanford.smi.protegex.owl.swrl.bridge.ArgumentFactory;
+import edu.stanford.smi.protegex.owl.swrl.bridge.BuiltInArgument;
+import edu.stanford.smi.protegex.owl.swrl.bridge.MultiArgument;
+import edu.stanford.smi.protegex.owl.swrl.bridge.builtins.AbstractSWRLBuiltInLibrary;
+import edu.stanford.smi.protegex.owl.swrl.bridge.builtins.SWRLBuiltInUtil;
+import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.BuiltInException;
+import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.BuiltInNotImplementedException;
+import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.InvalidBuiltInArgumentException;
+import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.InvalidBuiltInNameException;
+import edu.stanford.smi.protegex.owl.swrl.bridge.xsd.XSDTimeUtil;
 
 /**
  ** Implementations library for the core SWRL built-in methods. These built-ins are defined <a
@@ -32,16 +42,8 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
 
   private ArgumentFactory argumentFactory;
 
-  private static String dateFormatString = "y-M-d'T'h:m:sZ";
   private DateFormat dateFormat;
-  private Calendar calendar2, calendar3;
 
-  private static String SWRLB_GREATER_THAN = SWRLBPrefix + "greaterThan";
-  private static String SWRLB_LESS_THAN = SWRLBPrefix + "lessThan";
-  private static String SWRLB_EQUAL = SWRLBPrefix + "equal";
-  private static String SWRLB_NOT_EQUAL = SWRLBPrefix + "notEqual";
-  private static String SWRLB_LESS_THAN_OR_EQUAL = SWRLBPrefix + "lessThanOrEqual";
-  private static String SWRLB_GREATER_THAN_OR_EQUAL = SWRLBPrefix + "greaterThanOrEqual";
   private static String SWRLB_ADD = SWRLBPrefix + "add";
   private static String SWRLB_SUBTRACT = SWRLBPrefix + "subtract";
   private static String SWRLB_MULTIPLY = SWRLBPrefix + "multiply";
@@ -652,6 +654,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
     return SWRLBuiltInUtil.processResultArgument(arguments, 0, argumentFactory, duration.toString());
   } // yearMonthDuration
 
+  @SuppressWarnings("deprecation")
   public boolean dayTimeDuration(List<BuiltInArgument> arguments) throws BuiltInException
   {
     SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(5, arguments.size());
@@ -1146,7 +1149,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
       operationResult = argument2 % argument3;
     } else if (builtInName.equalsIgnoreCase(SWRLB_POW)) {
       argument3 = SWRLBuiltInUtil.getArgumentAsADouble(2, arguments);
-      operationResult = (int)java.lang.Math.pow(argument2, argument3);
+      operationResult = java.lang.Math.pow(argument2, argument3);
     } else if (builtInName.equalsIgnoreCase(SWRLB_UNARY_PLUS)) operationResult = argument2;
     else if (builtInName.equalsIgnoreCase(SWRLB_UNARY_MINUS)) operationResult = -argument2;
     else if (builtInName.equalsIgnoreCase(SWRLB_ABS)) operationResult = java.lang.Math.abs(argument2);

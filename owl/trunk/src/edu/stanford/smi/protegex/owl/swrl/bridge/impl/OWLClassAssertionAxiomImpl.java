@@ -2,9 +2,8 @@
 package edu.stanford.smi.protegex.owl.swrl.bridge.impl;
 
 import edu.stanford.smi.protegex.owl.swrl.bridge.OWLClass;
-import edu.stanford.smi.protegex.owl.swrl.bridge.OWLDescription;
-import edu.stanford.smi.protegex.owl.swrl.bridge.OWLIndividual;
 import edu.stanford.smi.protegex.owl.swrl.bridge.OWLClassAssertionAxiom;
+import edu.stanford.smi.protegex.owl.swrl.bridge.OWLIndividual;
 
 public class OWLClassAssertionAxiomImpl implements OWLClassAssertionAxiom
 {

@@ -1,14 +1,14 @@
 package edu.stanford.smi.protegex.owl.swrl.ui.actions;
 
+import java.awt.Component;
+import java.awt.event.ActionEvent;
+
 import edu.stanford.smi.protegex.owl.model.RDFResource;
 import edu.stanford.smi.protegex.owl.swrl.model.SWRLImp;
 import edu.stanford.smi.protegex.owl.swrl.ui.code.SWRLTextAreaPanel;
 import edu.stanford.smi.protegex.owl.swrl.ui.icons.SWRLIcons;
 import edu.stanford.smi.protegex.owl.ui.actions.ResourceAction;
 import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
-
-import java.awt.*;
-import java.awt.event.ActionEvent;
 
 /**
  * A ResourceAction to edit a SWRLImp in a multi-line editor.

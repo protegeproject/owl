@@ -1,5 +1,8 @@
 package edu.stanford.smi.protegex.owl.swrl.model.impl;
 
+import java.util.Iterator;
+import java.util.Set;
+
 import edu.stanford.smi.protege.model.FrameID;
 import edu.stanford.smi.protege.model.Instance;
 import edu.stanford.smi.protege.model.KnowledgeBase;
@@ -9,12 +12,11 @@ import edu.stanford.smi.protegex.owl.model.RDFObject;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultRDFList;
 import edu.stanford.smi.protegex.owl.model.visitor.OWLModelVisitor;
 import edu.stanford.smi.protegex.owl.swrl.model.SWRLAtomList;
+import edu.stanford.smi.protegex.owl.swrl.model.SWRLBuiltin;
+import edu.stanford.smi.protegex.owl.swrl.model.SWRLBuiltinAtom;
 import edu.stanford.smi.protegex.owl.swrl.model.SWRLIndividual;
-import edu.stanford.smi.protegex.owl.swrl.model.impl.SWRLUtil;
 import edu.stanford.smi.protegex.owl.swrl.parser.SWRLParser;
-
-import java.util.Iterator;
-import java.util.Set;
+import edu.stanford.smi.protegex.owl.swrl.sqwrl.SQWRLNames;
 
 public class DefaultSWRLAtomList extends DefaultRDFList implements SWRLAtomList 
 {
@@ -27,15 +29,39 @@ public class DefaultSWRLAtomList extends DefaultRDFList implements SWRLAtomList
   public String getBrowserText() 
   {
     String s = "";
+    boolean atomProcessed = false;
+    boolean setBuildEncountered = false;
+    boolean setOperationEncountered = false;
 
     if (getValues() != null) {
       Iterator iterator = getValues().iterator();
       while (iterator.hasNext()) {
-        Instance instance = (Instance)iterator.next();
-        s += SWRLUtil.getSWRLBrowserText((RDFObject)instance, "ATOM");
-        if (iterator.hasNext()) s += "  " + SWRLParser.AND_CHAR + "  ";
+    	Instance instance = (Instance)iterator.next();
+        if (instance instanceof SWRLBuiltinAtom) {
+        	SWRLBuiltin builtIn = ((SWRLBuiltinAtom)instance).getBuiltin();
+        	if (builtIn == null) {
+        		if (atomProcessed) s += "  " + SWRLParser.AND_CHAR + "  ";
+                s += SWRLUtil.getSWRLBrowserText((RDFObject)instance, "BUILTIN ATOM");
+        	} else {
+        		String builtInName = builtIn.getPrefixedName();
+        		if (SQWRLNames.getSetBuildBuiltInNames().contains(builtInName) && !setBuildEncountered && atomProcessed) {
+        			setBuildEncountered = true;
+        			s += "  " + SWRLParser.RING_CHAR + "  " + SWRLUtil.getSWRLBrowserText((RDFObject)instance, "ATOM");
+        		} else if (SQWRLNames.getSetOperationBuiltInNames().contains(builtInName) && !setOperationEncountered && atomProcessed) {
+        			setOperationEncountered = true;
+        			s += "  " + SWRLParser.RING_CHAR + "  " + SWRLUtil.getSWRLBrowserText((RDFObject)instance, "ATOM");
+        		} else {
+        			if(atomProcessed) s += "  " + SWRLParser.AND_CHAR + "  ";
+        			s += SWRLUtil.getSWRLBrowserText((RDFObject)instance, "BUILTIN ATOM");
+        		} // if
+        	} // if
+        } else {
+        	if (atomProcessed) s += "  " + SWRLParser.AND_CHAR + "  ";
+            s += SWRLUtil.getSWRLBrowserText((RDFObject)instance, "ATOM");
+        } // if
+        atomProcessed = true;
       } // while
-    } else s += "<DELETED_ATOM_LIST>";
+  } else s += "<DELETED_ATOM_LIST>";
     
     return s;
   } // getBrowserText

@@ -1,10 +1,15 @@
 
 package edu.stanford.smi.protegex.owl.swrl.bridge.impl;
 
-import edu.stanford.smi.protegex.owl.swrl.bridge.*;
-import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
-import java.util.*;
+import edu.stanford.smi.protegex.owl.swrl.bridge.BuiltInArgument;
+import edu.stanford.smi.protegex.owl.swrl.bridge.BuiltInAtom;
+import edu.stanford.smi.protegex.owl.swrl.bridge.OWLDatatypeValue;
+import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.BuiltInException;
 
 /**
  ** Class representing a SWRL built-in atom
@@ -14,7 +19,7 @@ public class BuiltInAtomImpl extends AtomImpl implements BuiltInAtom
   private String builtInName, builtInPrefixedName;
   private List<BuiltInArgument> arguments; 
   private int builtInIndex = -1; // Index of this built-in atom in rule body; left-to-right, first built-in index is 0, second in 1, and so on
-  private boolean sqwrlVariablesUsed = false, isASQWRLMakeCollection = false;
+  private boolean sqwrlVariablesUsed = false, isSQWRLMakeSet = false;
   
   public BuiltInAtomImpl(String builtInName, String builtInPrefixedName, List<BuiltInArgument> arguments)
   {
@@ -42,8 +47,8 @@ public class BuiltInAtomImpl extends AtomImpl implements BuiltInAtom
 
   public boolean usesSQWRLVariables() { return sqwrlVariablesUsed; } 
   public void setUsesSQWRLVariables() { sqwrlVariablesUsed = true; }
-  public boolean isSQWRLMakeCollection() { return isASQWRLMakeCollection; }
-  public void setIsSQWRLMakeCollection() { isASQWRLMakeCollection = true; }
+  public boolean isSQWRLMakeSet() { return isSQWRLMakeSet; }
+  public void setIsSQWRLMakeSet() { isSQWRLMakeSet = true; }
 
   public boolean usesAtLeastOneVariableOf(Set<String> variableNames) throws BuiltInException
   { 

@@ -1,13 +1,11 @@
 
 package edu.stanford.smi.protegex.owl.swrl.bridge;
 
-import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.SWRLRuleEngineBridgeException;
+import java.util.Set;
 
 import edu.stanford.smi.protegex.owl.swrl.sqwrl.ObjectValue;
 
-import java.util.Set;
-
-public interface OWLIndividual extends OWLObject, OWLPropertyValue, IndividualArgument, ObjectValue
+public interface OWLIndividual extends OWLEntity, OWLPropertyValue, IndividualArgument, ObjectValue
 {
   String getIndividualName();
   String getPrefixedIndividualName();

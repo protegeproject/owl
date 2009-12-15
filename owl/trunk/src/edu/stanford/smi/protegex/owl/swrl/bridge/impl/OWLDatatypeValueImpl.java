@@ -1,16 +1,22 @@
 
 package edu.stanford.smi.protegex.owl.swrl.bridge.impl;
 
-import edu.stanford.smi.protegex.owl.swrl.bridge.*;
-import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.*;
-import edu.stanford.smi.protegex.owl.swrl.bridge.xsd.*;
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.io.*;
+import edu.stanford.smi.protegex.owl.swrl.bridge.OWLDatatypeValue;
+import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.DatatypeConversionException;
+import edu.stanford.smi.protegex.owl.swrl.bridge.xsd.XSDAnyURI;
+import edu.stanford.smi.protegex.owl.swrl.bridge.xsd.XSDDate;
+import edu.stanford.smi.protegex.owl.swrl.bridge.xsd.XSDDateTime;
+import edu.stanford.smi.protegex.owl.swrl.bridge.xsd.XSDDuration;
+import edu.stanford.smi.protegex.owl.swrl.bridge.xsd.XSDTime;
+import edu.stanford.smi.protegex.owl.swrl.bridge.xsd.XSDType;
 
 /**
- ** Implementation of an OWLDatatypeValue object that represents Java and XML Schema primitve datatype literals.
+ ** Implementation of an OWLDatatypeValue object that represents Java and XML Schema primitive data literals.
  */
 public class OWLDatatypeValueImpl extends BuiltInArgumentImpl implements OWLDatatypeValue, Externalizable {
   private Object value; // This value object should implement Comparable.
@@ -24,50 +30,33 @@ public class OWLDatatypeValueImpl extends BuiltInArgumentImpl implements OWLData
   public OWLDatatypeValueImpl(float f) { value = Float.valueOf(f); }
   public OWLDatatypeValueImpl(double d) { value = Double.valueOf(d); }
   public OWLDatatypeValueImpl(short s) { value = Short.valueOf(s); }
-  public OWLDatatypeValueImpl(PrimitiveXSDType value) { this.value = value; }
+  public OWLDatatypeValueImpl(XSDType value) { this.value = value; }
 
   public OWLDatatypeValueImpl(Object o) throws DatatypeConversionException
   { 
-    if (!((o instanceof Number) || (o instanceof String) || (o instanceof Boolean) || (o instanceof PrimitiveXSDType)))
+    if (!((o instanceof Number) || (o instanceof String) || (o instanceof Boolean) || (o instanceof XSDType)))
       throw new DatatypeConversionException("cannot convert value of type '" + o.getClass().getCanonicalName() + "' to OWLDatatypeValue"); 
 
     value = o;
   } // OWLDatatypeValueImpl
 
-  // Java String type
   public boolean isString() { return value instanceof String; }
-
   public boolean isBoolean() { return value instanceof Boolean; }
-
-  // Java Number types
   public boolean isNumeric() { return value instanceof Number; }
-
   public boolean isInteger() { return value instanceof Integer; }
   public boolean isLong() { return value instanceof Long; }
   public boolean isFloat() { return value instanceof Float; }
   public boolean isDouble() { return value instanceof Double; }
   public boolean isShort() { return value instanceof Short; }
   public boolean isByte() { return value instanceof Byte; }
-  public boolean isBigDecimal() { return value instanceof BigDecimal; }
-  public boolean isBigInteger() { return value instanceof BigInteger; }
   
-  // Primitive XSD types
-  public boolean isPrimitiveXSDType() { return value instanceof PrimitiveXSDType; }
-
-  public boolean isTime() { return value instanceof Time; }
-  public boolean isDate() { return value instanceof Date; }
-  public boolean isDateTime() { return value instanceof DateTime; }
-  public boolean isDuration() { return value instanceof Duration;}
-  public boolean isAnyURI() { return value instanceof AnyURI; }
-  public boolean isBase64Binary() { return value instanceof Base64Binary; }
-  public boolean isHexBinary() { return value instanceof HexBinary; }
-  public boolean isGMonth() { return value instanceof GMonth; }
-  public boolean isGYear() { return value instanceof GYear; }
-  public boolean isGYearMonth() { return value instanceof GYearMonth; }
-  public boolean isGDay() { return value instanceof GDay; }
-  public boolean isGMonthDay() { return value instanceof GMonthDay; }
-  public boolean isNOTATION() { return value instanceof NOTATION; }
-  public boolean isQName() { return value instanceof QName; }
+  // XSD types
+  public boolean isXSDType() { return value instanceof XSDType; }
+  public boolean isXSDTime() { return value instanceof XSDTime; }
+  public boolean isXSDDate() { return value instanceof XSDDate; }
+  public boolean isXSDDateTime() { return value instanceof XSDDateTime; }
+  public boolean isXSDDuration() { return value instanceof XSDDuration;}
+  public boolean isXSDAnyURI() { return value instanceof XSDAnyURI; }
 
   public String getString() throws DatatypeConversionException 
   { 
@@ -83,11 +72,11 @@ public class OWLDatatypeValueImpl extends BuiltInArgumentImpl implements OWLData
     return (Number)value; 
   } // getNumber
 
-  public PrimitiveXSDType getPrimitiveXSDType() throws DatatypeConversionException 
+  public XSDType getSDType() throws DatatypeConversionException 
   { 
-    if (!isPrimitiveXSDType()) 
-      throw new DatatypeConversionException("cannot convert value of type '" + value.getClass().getCanonicalName() + "' to PrimitiveXSDType"); 
-    return (PrimitiveXSDType)value; 
+    if (!isXSDType()) 
+      throw new DatatypeConversionException("cannot convert value of type '" + value.getClass().getCanonicalName() + "' to XSDType"); 
+    return (XSDType)value; 
   } // getPrimitiveXSDType
 
   public boolean getBoolean() throws DatatypeConversionException 
@@ -152,35 +141,6 @@ public class OWLDatatypeValueImpl extends BuiltInArgumentImpl implements OWLData
     return result;
   } // getDouble
 
-  public BigDecimal getBigDecimal() throws DatatypeConversionException 
-  {
-    BigDecimal result = null;
-
-    if (isBigDecimal()) result = (BigDecimal)value;
-    else if (isBigInteger()) result = new BigDecimal((BigInteger)value);
-    if (isDouble()) result = new BigDecimal(getDouble());
-    else if (isFloat()) result = new BigDecimal(getDouble());
-    else if (isInteger()) result = new BigDecimal(getDouble());
-    else if (isLong()) result = new BigDecimal(getDouble());
-    else if (isShort()) result = new BigDecimal(getDouble());
-    else throw new DatatypeConversionException("cannot convert value of type '" + value.getClass().getCanonicalName() + "' to BigDecimal"); 
-
-    return result;
-  } // getBigDecimal
-
-  public BigInteger getBigInteger() throws DatatypeConversionException 
-  {
-    BigInteger result = null;
-
-    if (isBigInteger()) result = (BigInteger)value;
-    else if (isInteger()) result = BigInteger.valueOf(getLong());
-    else if (isLong()) result = BigInteger.valueOf(getLong());
-    else if (isShort()) result = BigInteger.valueOf(getLong());
-    else throw new DatatypeConversionException("cannot convert value of type '" + value.getClass().getCanonicalName() + "' to BigInteger"); 
-
-    return result;
-  } // getBigInteger
-
   public short getShort() throws DatatypeConversionException 
   { 
     if (!isShort()) 
@@ -194,107 +154,6 @@ public class OWLDatatypeValueImpl extends BuiltInArgumentImpl implements OWLData
       throw new DatatypeConversionException("cannot convert value of type '" + value.getClass().getCanonicalName() + "' to byte"); 
     return ((java.lang.Byte)value).byteValue();
   } // getByte
-
-  // Primitive XSD Types
-
-  public Time getTime() throws DatatypeConversionException 
-  {
-    if (!isTime()) 
-      throw new DatatypeConversionException("cannot convert value of type '" + value.getClass().getName() + "' to Time"); 
-    return (Time)value;
-  } // getTime
-
-  public Date getDate() throws DatatypeConversionException 
-  {
-    if (!isDate()) 
-      throw new DatatypeConversionException("cannot convert value of type '" + value.getClass().getName() + "' to Date"); 
-    return (Date)value;
-  } // getDate
-
-  public DateTime getDateTime() throws DatatypeConversionException 
-  { 
-    if (!isDateTime()) 
-      throw new DatatypeConversionException("cannot convert value of type '" + value.getClass().getName() + "' to DateTime"); 
-
-    return (DateTime)value;
-  } // getDateTime
-
-  public Duration getDuration() throws DatatypeConversionException
-  {
-    if (!isDuration()) 
-      throw new DatatypeConversionException("cannot convert value of type '" + value.getClass().getName() + "' to Duration"); 
-    return  (Duration)value; 
-  } // getDuration
-
-  public AnyURI getAnyURI() throws DatatypeConversionException 
-  {
-    if (!isAnyURI()) 
-      throw new DatatypeConversionException("cannot convert value of type '" + value.getClass().getName() + "' to AnyURI"); 
-    return (AnyURI)value;
-  } // getAnyURI
-
-  public HexBinary getHexBinary() throws DatatypeConversionException 
-  {
-    if (!isHexBinary()) 
-      throw new DatatypeConversionException("cannot convert value of type '" + value.getClass().getName() + "' to HexBinary"); 
-    return (HexBinary)value;
-  } // getHexBinary
-
-  public Base64Binary getBase64Binary() throws DatatypeConversionException 
-  {
-    if (!isBase64Binary()) 
-      throw new DatatypeConversionException("cannot convert value of type '" + value.getClass().getName() + "' to Base64Binary"); 
-    return (Base64Binary)value;
-  } // getBase64Binary
-
-  public GDay getGDay() throws DatatypeConversionException 
-  {
-    if (!isGDay()) 
-      throw new DatatypeConversionException("cannot convert value of type '" + value.getClass().getName() + "' to GDay"); 
-    return (GDay)value;
-  } // getGDay
-
-  public GYearMonth getGYearMonth() throws DatatypeConversionException 
-  {
-    if (!isGYearMonth()) 
-      throw new DatatypeConversionException("cannot convert value of type '" + value.getClass().getName() + "' to GYearMonth"); 
-    return (GYearMonth)value;
-  } // getGYearMonth
-
-  public GMonth getGMonth() throws DatatypeConversionException 
-  {
-    if (!isGMonth()) 
-      throw new DatatypeConversionException("cannot convert value of type '" + value.getClass().getName() + "' to GMonth"); 
-    return (GMonth)value;
-  } // getGMonth
-
-  public GMonthDay getGMonthDay() throws DatatypeConversionException 
-  {
-    if (!isGMonthDay()) 
-      throw new DatatypeConversionException("cannot convert value of type '" + value.getClass().getName() + "' to GMonthDay"); 
-    return (GMonthDay)value;
-  } // getGMonthDay
-
-  public GYear getGYear() throws DatatypeConversionException 
-  {
-    if (!isGYear()) 
-      throw new DatatypeConversionException("cannot convert value of type '" + value.getClass().getName() + "' to GYear"); 
-    return (GYear)value;
-  } // getGYear
-
-  public NOTATION getNOTATION() throws DatatypeConversionException 
-  {
-    if (!isNOTATION()) 
-      throw new DatatypeConversionException("cannot convert value of type '" + value.getClass().getName() + "' to NOTATION"); 
-    return (NOTATION)value;
-  } // getNOTATION
-
-  public QName getQName() throws DatatypeConversionException 
-  {
-    if (!isQName()) 
-      throw new DatatypeConversionException("cannot convert value of type '" + value.getClass().getName() + "' to QName"); 
-    return (QName)value;
-  } // getQName
 
   // The caller can decide to quote or not.
   public String toString() 

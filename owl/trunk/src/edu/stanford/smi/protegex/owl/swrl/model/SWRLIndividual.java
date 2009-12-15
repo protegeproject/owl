@@ -1,8 +1,8 @@
 package edu.stanford.smi.protegex.owl.swrl.model;
 
-import edu.stanford.smi.protegex.owl.model.OWLIndividual;
-
 import java.util.Set;
+
+import edu.stanford.smi.protegex.owl.model.OWLIndividual;
 
 /**
  * The common base interface of all SWRL related classes.

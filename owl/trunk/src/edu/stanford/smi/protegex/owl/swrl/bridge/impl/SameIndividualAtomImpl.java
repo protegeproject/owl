@@ -1,10 +1,8 @@
 
 package edu.stanford.smi.protegex.owl.swrl.bridge.impl;
 
-import edu.stanford.smi.protegex.owl.swrl.bridge.*;
-import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.*;
-
-import edu.stanford.smi.protegex.owl.swrl.model.SWRLSameIndividualAtom;
+import edu.stanford.smi.protegex.owl.swrl.bridge.AtomArgument;
+import edu.stanford.smi.protegex.owl.swrl.bridge.SameIndividualAtom;
 
 /*
 ** Class representing a SWRL same individual atom

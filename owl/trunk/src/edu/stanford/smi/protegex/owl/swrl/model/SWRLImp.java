@@ -1,8 +1,8 @@
 package edu.stanford.smi.protegex.owl.swrl.model;
 
-import edu.stanford.smi.protegex.owl.swrl.parser.SWRLParseException;
-
 import java.util.Set;
+
+import edu.stanford.smi.protegex.owl.swrl.parser.SWRLParseException;
 
 /**
  * @author Martin O'Connor  <moconnor@smi.stanford.edu>

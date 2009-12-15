@@ -3,7 +3,6 @@ package edu.stanford.smi.protegex.owl.swrl.model.impl;
 
 import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
 
-import edu.stanford.smi.protegex.owl.jena.parser.ParserUtil;
 import edu.stanford.smi.protegex.owl.model.NamespaceManager;
 import edu.stanford.smi.protegex.owl.model.NamespaceUtil;
 import edu.stanford.smi.protegex.owl.model.OWLDataRange;
@@ -65,7 +64,8 @@ public class SWRLUtil
     else if (o instanceof RDFSClass 
                || o instanceof RDFIndividual 
                || o instanceof RDFProperty) {
-        s += ParserUtils.quoteIfNeeded(((RDFResource) o).getBrowserText()); 
+    	String bt = ((RDFResource) o).getBrowserText(); // TODO: test should go away when quoteIfNeeded is fixed
+    	s += bt.startsWith("'") ? bt : ParserUtils.quoteIfNeeded(bt);
     }
     else if (o instanceof OWLDataRange) s += ((OWLDataRange)o).getBrowserText();
     else if (o instanceof RDFResource) s += ((RDFResource)o).getBrowserText();

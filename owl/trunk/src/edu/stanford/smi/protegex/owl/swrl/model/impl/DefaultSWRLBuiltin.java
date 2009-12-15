@@ -1,13 +1,13 @@
 package edu.stanford.smi.protegex.owl.swrl.model.impl;
 
+import java.util.Set;
+
+import javax.swing.Icon;
+
 import edu.stanford.smi.protege.model.FrameID;
 import edu.stanford.smi.protege.model.KnowledgeBase;
-import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLIndividual;
 import edu.stanford.smi.protegex.owl.swrl.model.SWRLBuiltin;
 import edu.stanford.smi.protegex.owl.swrl.ui.icons.SWRLIcons;
-
-import javax.swing.*;
-import java.util.Set;
 
 public class DefaultSWRLBuiltin extends AbstractSWRLIndividual implements SWRLBuiltin {
 

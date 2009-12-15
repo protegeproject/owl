@@ -1,11 +1,8 @@
 
 package edu.stanford.smi.protegex.owl.swrl.bridge.xsd;
 
-import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.DatatypeConversionException;
-
 import edu.stanford.smi.protegex.owl.model.XSDNames;
-
-import java.net.URI;
+import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.DatatypeConversionException;
 
 public class XSDDate extends XSDType
 {

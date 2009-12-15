@@ -1,20 +1,17 @@
 
 package edu.stanford.smi.protegex.owl.swrl.bridge.builtins.swrlxml;
 
-import edu.stanford.smi.protegex.owl.model.OWLModel;
-import edu.stanford.smi.protegex.owl.swrl.util.SWRLOWLUtil;
-import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
-import edu.stanford.smi.protegex.owl.swrl.bridge.builtins.swrlxml.XMLProcessor;
-import edu.stanford.smi.protegex.owl.swrl.bridge.builtins.swrlxml.XMLMapper;
-import edu.stanford.smi.protegex.owl.model.util.ImportHelper;
-import edu.stanford.smi.protegex.owl.swrl.model.SWRLNames;
-import edu.stanford.smi.protege.exception.OntologyLoadException;
-
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import java.io.*;
-import org.jdom.*;
+import org.jdom.Document;
+
+import edu.stanford.smi.protege.exception.OntologyLoadException;
+import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.model.util.ImportHelper;
+import edu.stanford.smi.protegex.owl.swrl.model.SWRLNames;
+import edu.stanford.smi.protegex.owl.swrl.util.SWRLOWLUtil;
 
 public class MapXML2OWL
 {

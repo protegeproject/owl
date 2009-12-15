@@ -1,11 +1,16 @@
 
 package edu.stanford.smi.protegex.owl.swrl.bridge.builtins.swrlx;
 
-import edu.stanford.smi.protegex.owl.swrl.bridge.*;
-import edu.stanford.smi.protegex.owl.swrl.bridge.builtins.*;
-import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.*;
+import java.util.HashMap;
+import java.util.List;
 
-import java.util.*;
+import edu.stanford.smi.protegex.owl.swrl.bridge.BuiltInArgument;
+import edu.stanford.smi.protegex.owl.swrl.bridge.OWLClass;
+import edu.stanford.smi.protegex.owl.swrl.bridge.OWLIndividual;
+import edu.stanford.smi.protegex.owl.swrl.bridge.builtins.AbstractSWRLBuiltInLibrary;
+import edu.stanford.smi.protegex.owl.swrl.bridge.builtins.SWRLBuiltInUtil;
+import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.BuiltInException;
+import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.SWRLRuleEngineBridgeException;
 
 /**
  ** Implementations library for SWRL Extensions built-in methods. See <a
@@ -16,17 +21,12 @@ import java.util.*;
 public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
 {
   private static String SWRLXLibraryName = "SWRLExtensionsBuiltIns";
-
-  private ArgumentFactory argumentFactory;
-
   private HashMap<String, OWLClass> classInvocationMap;
   private HashMap<String, OWLIndividual> individualInvocationMap;
 
   public SWRLBuiltInLibraryImpl() 
   { 
     super(SWRLXLibraryName); 
-
-    argumentFactory = ArgumentFactory.getFactory();
   } // SWRLBuiltInLibraryImpl
 
   public void reset() 

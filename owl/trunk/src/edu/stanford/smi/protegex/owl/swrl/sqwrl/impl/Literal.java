@@ -1,20 +1,10 @@
 
 package edu.stanford.smi.protegex.owl.swrl.sqwrl.impl;
 
-import edu.stanford.smi.protegex.owl.swrl.sqwrl.*;
-import edu.stanford.smi.protegex.owl.swrl.sqwrl.exceptions.*;
-import edu.stanford.smi.protegex.owl.swrl.bridge.*;
-import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.DatatypeConversionException;
-import edu.stanford.smi.protegex.owl.swrl.bridge.xsd.*;
-import edu.stanford.smi.protegex.owl.swrl.bridge.impl.*;
-
-import edu.stanford.smi.protegex.owl.model.OWLModel;
-import edu.stanford.smi.protegex.owl.model.RDFSLiteral;
-
-import java.math.BigDecimal;
-import java.math.BigInteger;
-
-import java.io.*;
+import edu.stanford.smi.protegex.owl.swrl.bridge.impl.OWLDatatypeValueImpl;
+import edu.stanford.smi.protegex.owl.swrl.bridge.xsd.XSDType;
+import edu.stanford.smi.protegex.owl.swrl.sqwrl.DatatypeValue;
+import edu.stanford.smi.protegex.owl.swrl.sqwrl.ResultValue;
 
 public class Literal extends OWLDatatypeValueImpl implements ResultValue, DatatypeValue
 {
@@ -26,6 +16,5 @@ public class Literal extends OWLDatatypeValueImpl implements ResultValue, Dataty
   public Literal(long l) { super(l); }
   public Literal(float f) { super(f); }
   public Literal(double d) { super(d); }
-  public Literal(PrimitiveXSDType value) { super(value); }
-  //  public Literal(OWLModel owlModel, RDFSLiteral literal) throws DatatypeConversionException { super(owlModel, literal); }
+  public Literal(XSDType value) { super(value); }
 } // Literal

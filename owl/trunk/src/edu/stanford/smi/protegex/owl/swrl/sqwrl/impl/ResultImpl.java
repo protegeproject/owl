@@ -5,6 +5,7 @@ import edu.stanford.smi.protegex.owl.swrl.sqwrl.*;
 import edu.stanford.smi.protegex.owl.swrl.sqwrl.exceptions.*;
 
 import edu.stanford.smi.protegex.owl.swrl.bridge.*;
+import edu.stanford.smi.protegex.owl.swrl.bridge.impl.OWLFactoryImpl;
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.*;
 
 import java.util.*;
@@ -41,17 +42,17 @@ import java.io.Serializable;
  ** result.configured();<>p<p>
  **
  ** result.openRow();<p>
- ** result.addData(new OWLFactory.createOWLIndividual("Fred"));<p>
+ ** result.addData(new OWLFactory.getOWLIndividual("Fred"));<p>
  ** result.addData(new Literal(27));<p>
  ** result.closeRow();<p><p>
  **
  ** result.openRow();<p>
- ** result.addData(new OWLFactory.createOWLIndividual("Joe"));<p>
+ ** result.addData(new OWLFactory.getOWLIndividual("Joe"));<p>
  ** result.addData(new Literal(34));<p>
  ** result.closeRow();<p><p>
  **
  ** result.openRow();<p>
- ** result.addData(new OWLFactory.createOWLIndividual("Joe"));<p>
+ ** result.addData(new OWLFactory.getOWLIndividual("Joe"));<p>
  ** result.addData(new Literal(21));<p>
  ** result.closeRow();<p><p>
  ** 
@@ -83,6 +84,7 @@ public class ResultImpl implements ResultGenerator, SQWRLResult, Serializable
   private HashMap<String, List<ResultValue>> columnVectorMap; // Maps column names to a vector of ResultValue objects for that column
   private int numberOfColumns, rowIndex, rowDataColumnIndex;
   private boolean isConfigured, isPrepared, isRowOpen, isOrdered, isAscending, isDistinct, hasAggregates;
+  private OWLFactory owlFactory;
 
   public ResultImpl() 
   {
@@ -117,6 +119,8 @@ public class ResultImpl implements ResultGenerator, SQWRLResult, Serializable
     // The following variables will not be externally valid until prepared() is called.
     rowIndex = -1; // If there are no rows in the final result, it will remain at -1.
     rows = new ArrayList<List<ResultValue>>();
+
+    owlFactory = new OWLFactoryImpl();
   } // prepare
 
   public void addColumns(List<String> columnNames) throws SQWRLException
@@ -730,7 +734,7 @@ public class ResultImpl implements ResultGenerator, SQWRLResult, Serializable
       sum = sum.add(value);
     } // for
 
-    return OWLFactory.createOWLDatatypeValue(sum);
+    return owlFactory.getOWLDataValue(sum);
   } // sum
 
   // We return a BigDecimal object for the moment.
@@ -756,19 +760,19 @@ public class ResultImpl implements ResultGenerator, SQWRLResult, Serializable
       sum = sum.add(value);
     } // for
 
-    return OWLFactory.createOWLDatatypeValue(sum.divide(new BigDecimal(count), BigDecimal.ROUND_DOWN));
+    return owlFactory.getOWLDataValue(sum.divide(new BigDecimal(count), BigDecimal.ROUND_DOWN));
   } // sum
 
   private DatatypeValue count(List<ResultValue> values) throws SQWRLException
   {
-    return OWLFactory.createOWLDatatypeValue(values.size());
+    return owlFactory.getOWLDataValue(values.size());
   } // count
 
   private DatatypeValue countDistinct(List<ResultValue> values) throws SQWRLException
   {
     Set<ResultValue> distinctValues = new HashSet<ResultValue>(values);
 
-    return OWLFactory.createOWLDatatypeValue(distinctValues.size());
+    return owlFactory.getOWLDataValue(distinctValues.size());
   } // countDistinct
 
   // TODO: linear search is not very efficient. 

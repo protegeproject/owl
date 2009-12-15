@@ -1,10 +1,10 @@
 
 package edu.stanford.smi.protegex.owl.swrl.bridge;
 
-import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.SWRLRuleEngineBridgeException;
-import edu.stanford.smi.protegex.owl.swrl.sqwrl.impl.ResultImpl;
+import java.util.List;
+import java.util.Set;
 
-import java.util.*;
+import edu.stanford.smi.protegex.owl.swrl.sqwrl.impl.ResultImpl;
 
 /**
  ** Interface representing a SWRL rule
@@ -24,7 +24,7 @@ public interface SWRLRule
   void appendAtomsToBody(List<Atom> atom);
 
   boolean isSQWRL();
-  boolean usesSQWRLCollections();
+  boolean usesSQWRLSets();
   ResultImpl getSQWRLResult();
 
   List<Atom> getSQWRLPhase1BodyAtoms();

@@ -19,7 +19,7 @@ import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.SWRLRuleEngineBridge
  */
 public class BridgeFactory
 {
-    private static transient final Logger log = Log.getLogger(BridgeFactory.class);
+  private static transient final Logger log = Log.getLogger(BridgeFactory.class);
   private static HashMap<String, BridgeCreator> registeredBridges;
 
   static {

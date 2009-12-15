@@ -30,7 +30,7 @@ public interface BuiltInAtom extends Atom
 
   boolean usesSQWRLVariables();
   void setUsesSQWRLVariables();
-  boolean isSQWRLMakeCollection();
-  void setIsSQWRLMakeCollection();
+  boolean isSQWRLMakeSet();
+  void setIsSQWRLMakeSet();
 } // BuiltInAtom
 

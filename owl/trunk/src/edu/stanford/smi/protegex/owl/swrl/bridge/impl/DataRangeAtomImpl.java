@@ -1,10 +1,10 @@
 
 package edu.stanford.smi.protegex.owl.swrl.bridge.impl;
 
-import edu.stanford.smi.protegex.owl.swrl.bridge.*;
-import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.*;
-
 import java.util.Set;
+
+import edu.stanford.smi.protegex.owl.swrl.bridge.DataRangeAtom;
+import edu.stanford.smi.protegex.owl.swrl.bridge.OWLDatatypeValue;
 
 /*
 ** Class representing a SWRL data range atom
