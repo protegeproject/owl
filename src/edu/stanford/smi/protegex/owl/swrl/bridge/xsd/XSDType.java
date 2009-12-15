@@ -1,10 +1,9 @@
 
 package edu.stanford.smi.protegex.owl.swrl.bridge.xsd;
 
-import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.DatatypeConversionException;
-
-import java.net.URI;
 import java.net.URISyntaxException;
+
+import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.DatatypeConversionException;
 
 public abstract class XSDType implements Comparable
 {

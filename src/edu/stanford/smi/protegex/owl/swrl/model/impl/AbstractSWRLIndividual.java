@@ -1,14 +1,13 @@
 
 package edu.stanford.smi.protegex.owl.swrl.model.impl;
 
+import java.util.Set;
+
 import edu.stanford.smi.protege.model.FrameID;
 import edu.stanford.smi.protege.model.KnowledgeBase;
-
 import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLIndividual;
 import edu.stanford.smi.protegex.owl.model.visitor.OWLModelVisitor;
 import edu.stanford.smi.protegex.owl.swrl.model.SWRLIndividual;
-
-import java.util.Set;
 
 public abstract class AbstractSWRLIndividual extends DefaultOWLIndividual implements SWRLIndividual
 {

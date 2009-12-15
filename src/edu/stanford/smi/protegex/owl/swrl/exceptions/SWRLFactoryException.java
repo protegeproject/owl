@@ -1,11 +1,10 @@
 
 package edu.stanford.smi.protegex.owl.swrl.exceptions;
 
-public class SWRLFactoryException extends Exception
-{
-  public SWRLFactoryException(String message) 
-  { 
-    super(message);
-  } // SWRLFactoryException
+import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.OWLConversionFactoryException;
 
+public class SWRLFactoryException extends OWLConversionFactoryException
+{
+  public SWRLFactoryException(String message) { super(message); } 
+  public SWRLFactoryException(String message, Throwable cause) { super(message, cause); }
 } // SWRLFactoryException

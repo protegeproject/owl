@@ -1,8 +1,6 @@
 
 package edu.stanford.smi.protegex.owl.swrl.bridge;
 
-import edu.stanford.smi.protegex.owl.swrl.sqwrl.SQWRLResult;
-
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.SWRLBuiltInBridgeException;
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.SWRLRuleEngineBridgeException;
 
@@ -23,26 +21,23 @@ public interface SWRLBuiltInBridge
 {
   // The inject methods can be used by built-ins to inject new axioms into a bridge, which will also reflect them in the underlying
   // engine. Eventually subsume all these methods into injectOWLAxiom.
-  OWLClass injectOWLAnonymousClass() throws SWRLBuiltInBridgeException;
-  void injectOWLClass(String className) throws SWRLBuiltInBridgeException;
-  void injectOWLClass(String className, String superclassName) throws SWRLBuiltInBridgeException;
-  OWLIndividual injectOWLIndividual() throws SWRLBuiltInBridgeException;
-  void injectOWLIndividual(OWLIndividual owlIndividual) throws SWRLBuiltInBridgeException;
-  OWLIndividual injectOWLIndividual(OWLClass owlClass) throws SWRLBuiltInBridgeException;
-  void injectOWLIndividuals(Set<OWLIndividual> individuals) throws SWRLBuiltInBridgeException;
   void injectOWLAxiom(OWLAxiom axiom) throws SWRLBuiltInBridgeException;
 
+  OWLClass injectOWLAnonymousClass() throws SWRLBuiltInBridgeException;
+  void injectOWLClass(String className) throws SWRLBuiltInBridgeException;
+  OWLIndividual injectOWLIndividual() throws SWRLBuiltInBridgeException;
+  void injectOWLIndividual(OWLIndividual owlIndividual) throws SWRLBuiltInBridgeException;
+  OWLIndividual injectOWLIndividualOfClass(OWLClass owlClass) throws SWRLBuiltInBridgeException;
+  void injectOWLIndividuals(Set<OWLIndividual> individuals) throws SWRLBuiltInBridgeException;
+
   boolean isOWLClass(String className);
-  boolean isOWLProperty(String propertyName);
+  boolean isOWLObjectProperty(String propertyName);
+  boolean isOWLDataProperty(String propertyName);
   boolean isOWLIndividual(String individualName);
   boolean isOWLIndividualOfClass(String individualName, String className);
+  Set<OWLIndividual> getOWLIndividuals();
 
   Set<OWLPropertyAssertionAxiom> getOWLPropertyAssertionAxioms(String individualName, String propertyName) throws SWRLBuiltInBridgeException;
-
-  // Mapper to non OWL storage formats
-  void setMapper(Mapper mapper);
-  boolean hasMapper();
-  Mapper getMapper();
 
   /**
    * Invoke a SWRL built-in. Should not be called by built-ins in general; provided (perhaps temporarily) for specialized invocation
@@ -57,5 +52,6 @@ public interface SWRLBuiltInBridge
    */
   SWRLRule getSWRLRule(String ruleName) throws SWRLBuiltInBridgeException;
 
-  OWLModel getOWLModel(); // TODO: This Protege-OWL API dependency should be removed.
+  OWLFactory getOWLFactory();
+  OWLModel getOWLModel(); // TODO: Protege-OWL dependency - remove
 } // SWRLBuiltInBridge

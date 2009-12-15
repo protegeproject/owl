@@ -3,14 +3,6 @@ package edu.stanford.smi.protegex.owl.swrl.sqwrl;
 
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.DatatypeConversionException;
 
-import edu.stanford.smi.protegex.owl.swrl.bridge.xsd.*;
-
-import edu.stanford.smi.protegex.owl.model.OWLModel;
-import edu.stanford.smi.protegex.owl.model.RDFSLiteral;
-
-import java.math.BigDecimal;
-import java.math.BigInteger;
-
 public interface DatatypeValue extends ResultValue
 {
   // Java types
@@ -26,8 +18,13 @@ public interface DatatypeValue extends ResultValue
   boolean isDouble();
   boolean isShort();
   boolean isByte();
-  boolean isBigDecimal();
-  boolean isBigInteger();
+  
+  boolean isXSDType();
+  boolean isXSDTime();
+  boolean isXSDDate();
+  boolean isXSDDateTime();
+  boolean isXSDDuration();
+  boolean isXSDAnyURI();
 
   String getString() throws DatatypeConversionException;
 
@@ -39,41 +36,7 @@ public interface DatatypeValue extends ResultValue
   double getDouble() throws DatatypeConversionException;
   short getShort() throws DatatypeConversionException;
   byte getByte() throws DatatypeConversionException;
-  BigDecimal getBigDecimal() throws DatatypeConversionException;
-  BigInteger getBigInteger() throws DatatypeConversionException;
   Number getNumber() throws DatatypeConversionException;
-
-  // Primitive XML Schema types not covered by Java types.
-  boolean isPrimitiveXSDType();
-
-  boolean isTime();
-  boolean isDate();
-  boolean isDuration();
-  boolean isDateTime();
-  boolean isAnyURI();
-  boolean isBase64Binary();
-  boolean isGDay();
-  boolean isGMonth();
-  boolean isGYear();
-  boolean isHexBinary();
-  boolean isGMonthDay();
-  boolean isGYearMonth();
-  boolean isNOTATION();
-  boolean isQName();
-
-  Time getTime() throws DatatypeConversionException;
-  Date getDate() throws DatatypeConversionException;
-  Duration getDuration() throws DatatypeConversionException;
-  AnyURI getAnyURI() throws DatatypeConversionException;
-  Base64Binary getBase64Binary() throws DatatypeConversionException;
-  HexBinary getHexBinary() throws DatatypeConversionException;
-  GDay getGDay() throws DatatypeConversionException;
-  GMonth getGMonth() throws DatatypeConversionException;
-  GYear getGYear() throws DatatypeConversionException;
-  GMonthDay getGMonthDay() throws DatatypeConversionException;
-  GYearMonth getGYearMonth() throws DatatypeConversionException;
-  NOTATION getNOTATION() throws DatatypeConversionException;
-  QName getQName() throws DatatypeConversionException;
 
   String toString();
 } // DatatypeValue

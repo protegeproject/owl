@@ -1,10 +1,10 @@
 
 package edu.stanford.smi.protegex.owl.swrl.bridge.impl;
 
-import edu.stanford.smi.protegex.owl.swrl.bridge.*;
-import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.*;
+import java.util.HashSet;
+import java.util.Set;
 
-import java.util.*;
+import edu.stanford.smi.protegex.owl.swrl.bridge.OWLProperty;
 
 /**
  ** Class representing an OWL property
@@ -38,6 +38,7 @@ public abstract class OWLPropertyImpl extends BuiltInArgumentImpl implements OWL
   public void setEquivalentPropertyNames(Set<String> equivalentPropertyNames) { this.equivalentPropertyNames = equivalentPropertyNames; }
   public void setEquivalentPropertySuperPropertyNames(Set<String> equivalentPropertySuperPropertyNames) { this.equivalentPropertySuperPropertyNames = equivalentPropertySuperPropertyNames; }
 
+  public String getURI() { return propertyURI; }
   public String getPropertyName() { return propertyURI; }
   public String getPrefixedPropertyName() { return prefixedPropertyName; }
   public Set<String> getDomainClassNames() { return domainClassNames; }

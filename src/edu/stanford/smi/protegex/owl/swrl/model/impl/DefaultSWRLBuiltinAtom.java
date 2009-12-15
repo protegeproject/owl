@@ -1,5 +1,7 @@
 package edu.stanford.smi.protegex.owl.swrl.model.impl;
 
+import java.util.Set;
+
 import edu.stanford.smi.protege.model.FrameID;
 import edu.stanford.smi.protege.model.KnowledgeBase;
 import edu.stanford.smi.protegex.owl.model.RDFList;
@@ -9,9 +11,6 @@ import edu.stanford.smi.protegex.owl.model.RDFUntypedResource;
 import edu.stanford.smi.protegex.owl.swrl.model.SWRLBuiltin;
 import edu.stanford.smi.protegex.owl.swrl.model.SWRLBuiltinAtom;
 import edu.stanford.smi.protegex.owl.swrl.model.SWRLNames;
-import edu.stanford.smi.protegex.owl.swrl.model.impl.SWRLUtil;
-
-import java.util.Set;
 
 public class DefaultSWRLBuiltinAtom extends DefaultSWRLAtom implements SWRLBuiltinAtom 
 {

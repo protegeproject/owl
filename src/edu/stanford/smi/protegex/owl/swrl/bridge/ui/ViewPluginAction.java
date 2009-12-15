@@ -1,20 +1,18 @@
 
 package edu.stanford.smi.protegex.owl.swrl.bridge.ui;
 
-import edu.stanford.smi.protegex.owl.swrl.bridge.BridgePluginManager;
-
-import edu.stanford.smi.protegex.owl.swrl.ui.tab.SWRLTab;
-
-import edu.stanford.smi.protege.util.SelectionEvent;
-import edu.stanford.smi.protege.util.SelectionListener;
-import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
-import edu.stanford.smi.protegex.owl.model.OWLModel;
-
-import javax.swing.*;
 import java.awt.event.ActionEvent;
+
+import javax.swing.AbstractAction;
+import javax.swing.Icon;
+
+import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.swrl.bridge.BridgePluginManager;
+import edu.stanford.smi.protegex.owl.swrl.ui.tab.SWRLTab;
 
 public class ViewPluginAction extends AbstractAction 
 {
+  private static final long serialVersionUID = 2115603073256549503L;
   private String pluginName;
   private OWLModel owlModel;
   private SWRLTab swrlTab;

@@ -1,32 +1,28 @@
 
 package edu.stanford.smi.protegex.owl.swrl.bridge.builtins;
 
-import edu.stanford.smi.protegex.owl.swrl.bridge.SWRLBuiltInBridge;
-import edu.stanford.smi.protegex.owl.swrl.bridge.OWLClass;
-import edu.stanford.smi.protegex.owl.swrl.bridge.OWLIndividual;
-import edu.stanford.smi.protegex.owl.swrl.bridge.OWLProperty;
-import edu.stanford.smi.protegex.owl.swrl.bridge.OWLDatatypeValue;
-import edu.stanford.smi.protegex.owl.swrl.bridge.OWLPropertyAssertionAxiom;
-import edu.stanford.smi.protegex.owl.swrl.bridge.OWLObjectPropertyAssertionAxiom;
-import edu.stanford.smi.protegex.owl.swrl.bridge.OWLDatatypePropertyAssertionAxiom;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
+import edu.stanford.smi.protegex.owl.swrl.bridge.Argument;
 import edu.stanford.smi.protegex.owl.swrl.bridge.ArgumentFactory;
 import edu.stanford.smi.protegex.owl.swrl.bridge.BuiltInArgument;
-import edu.stanford.smi.protegex.owl.swrl.bridge.MultiArgument;
-import edu.stanford.smi.protegex.owl.swrl.bridge.Argument;
 import edu.stanford.smi.protegex.owl.swrl.bridge.ClassArgument;
-import edu.stanford.smi.protegex.owl.swrl.bridge.PropertyArgument;
-import edu.stanford.smi.protegex.owl.swrl.bridge.IndividualArgument;
 import edu.stanford.smi.protegex.owl.swrl.bridge.DatatypeValueArgument;
-
+import edu.stanford.smi.protegex.owl.swrl.bridge.IndividualArgument;
+import edu.stanford.smi.protegex.owl.swrl.bridge.MultiArgument;
+import edu.stanford.smi.protegex.owl.swrl.bridge.OWLClass;
+import edu.stanford.smi.protegex.owl.swrl.bridge.OWLDatatypePropertyAssertionAxiom;
+import edu.stanford.smi.protegex.owl.swrl.bridge.OWLDatatypeValue;
+import edu.stanford.smi.protegex.owl.swrl.bridge.OWLIndividual;
+import edu.stanford.smi.protegex.owl.swrl.bridge.OWLProperty;
+import edu.stanford.smi.protegex.owl.swrl.bridge.OWLPropertyAssertionAxiom;
+import edu.stanford.smi.protegex.owl.swrl.bridge.PropertyArgument;
+import edu.stanford.smi.protegex.owl.swrl.bridge.SWRLBuiltInBridge;
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.BuiltInException;
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.InvalidBuiltInArgumentException;
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.InvalidBuiltInArgumentNumberException;
-
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Set;
-import java.math.BigDecimal;
-import java.math.BigInteger;
 
 /**
  ** Class containing argument processing utility methods that can be used in built-in method implementations.
@@ -426,18 +422,6 @@ public class SWRLBuiltInUtil
   } // getArgumentAsAShort
 
   // BigDecimal
-
-  public static BigDecimal getArgumentAsABigDecimal(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException
-  {
-    return getArgumentAsALiteral(argumentNumber, arguments).getBigDecimal(); // Will throw DatatypeConversionException if invalid.
-  } // getArgumentAsABigDecimal
-
-  // BigInteger
-
-  public static BigInteger getArgumentAsABigInteger(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException
-  {
-    return getArgumentAsALiteral(argumentNumber, arguments).getBigInteger(); // Will throw DatatypeConversionException if invalid.
-  } // getArgumentAsABigInteger
 
   public static boolean isArgumentALiteral(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException
   {
@@ -900,14 +884,14 @@ public class SWRLBuiltInUtil
     OWLPropertyAssertionAxiom axiom;
     OWLDatatypeValue value;
     
-    axiom = axioms.toArray(new OWLPropertyAssertionAxiom[0])[0];
+    axiom = axioms.toArray(new OWLPropertyAssertionAxiom[0])[0]; // Pick the first one
 
     if (!(axiom instanceof OWLDatatypePropertyAssertionAxiom))
       throw new BuiltInException("property '" + propertyName + "' is not an OWL datavalued property assertion axiom");
 
     value = ((OWLDatatypePropertyAssertionAxiom)axiom).getObject();  
 
-    return value.getString();
+    return value.toString();
   } // getOWLDatatypePropertyValueAsAString
 
   public static int getOWLDatatypePropertyValueAsAnInteger(SWRLBuiltInBridge bridge, String individualName, String propertyName)

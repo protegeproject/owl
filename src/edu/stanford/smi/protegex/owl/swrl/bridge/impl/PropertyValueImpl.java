@@ -1,9 +1,7 @@
 
 package edu.stanford.smi.protegex.owl.swrl.bridge.impl;
 
-import edu.stanford.smi.protegex.owl.swrl.bridge.*;
-
-import java.util.*;
+import edu.stanford.smi.protegex.owl.swrl.bridge.Argument;
 
 /**
  ** Class representing an OWL property value

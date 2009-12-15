@@ -1,8 +1,6 @@
 
 package edu.stanford.smi.protegex.owl.swrl.bridge;
 
-import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.*;
-
 import java.util.List;
 
 /**

@@ -1,10 +1,10 @@
 
 package edu.stanford.smi.protegex.owl.swrl.bridge.builtins.temporal;
 
-import edu.stanford.smi.protegex.owl.swrl.bridge.builtins.temporal.exceptions.*;
-
 import java.text.SimpleDateFormat;
-import java.sql.*;
+import java.sql.Timestamp;
+
+import edu.stanford.smi.protegex.owl.swrl.bridge.builtins.temporal.exceptions.TemporalException;
 
 /**
  **  A class supporting processing of datetime strings represented in the standard JDBC format 'y-M-d h:m:s.S'.
@@ -30,7 +30,7 @@ public class JDBCDatetimeStringProcessor extends DatetimeStringProcessor
     super(_dateFormat, _delimiters, _gTokenIndex, _datetimeRoundDownPadding, _datetimeRoundUpPadding);
   } // JDBCDatetimeStringProcessor
 
-  protected String constructDatetimeString(long milliseconds) throws TemporalException
+  protected String constructDatetimeStringFromMillisecondsFrom1970Count(long milliseconds) throws TemporalException
   {
     Timestamp timestamp = new Timestamp(milliseconds);
 

@@ -1,13 +1,28 @@
 
 package edu.stanford.smi.protegex.owl.swrl.bridge.builtins.ddm;
 
-import edu.stanford.smi.protegex.owl.swrl.ddm.*;
-import edu.stanford.smi.protegex.owl.swrl.bridge.*;
-import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.*;
-import edu.stanford.smi.protegex.owl.swrl.bridge.builtins.*;
+import java.sql.SQLException;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
-import java.util.*;
-import java.sql.*;
+import edu.stanford.smi.protegex.owl.swrl.bridge.ArgumentFactory;
+import edu.stanford.smi.protegex.owl.swrl.bridge.BuiltInArgument;
+import edu.stanford.smi.protegex.owl.swrl.bridge.Mapper;
+import edu.stanford.smi.protegex.owl.swrl.bridge.MultiArgument;
+import edu.stanford.smi.protegex.owl.swrl.bridge.OWLAxiom;
+import edu.stanford.smi.protegex.owl.swrl.bridge.OWLClass;
+import edu.stanford.smi.protegex.owl.swrl.bridge.OWLDatatypePropertyAssertionAxiom;
+import edu.stanford.smi.protegex.owl.swrl.bridge.OWLDatatypeValue;
+import edu.stanford.smi.protegex.owl.swrl.bridge.OWLIndividual;
+import edu.stanford.smi.protegex.owl.swrl.bridge.OWLObjectPropertyAssertionAxiom;
+import edu.stanford.smi.protegex.owl.swrl.bridge.OWLProperty;
+import edu.stanford.smi.protegex.owl.swrl.bridge.builtins.AbstractSWRLBuiltInLibrary;
+import edu.stanford.smi.protegex.owl.swrl.bridge.builtins.SWRLBuiltInUtil;
+import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.BuiltInException;
+import edu.stanford.smi.protegex.owl.swrl.ddm.DDMFactory;
+import edu.stanford.smi.protegex.owl.swrl.ddm.Database;
+import edu.stanford.smi.protegex.owl.swrl.ddm.DatabaseConnection;
 
 /**
  */
@@ -52,8 +67,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
   public boolean mapOWLClass(List<BuiltInArgument> arguments) throws BuiltInException 
   { 
     boolean result = false, isUnboundIndividualArgument;
-    OWLClass owlClass;
-    OWLIndividual owlIndividual = null;
+    OWLClass owlClass = null;
     Set<OWLIndividual> individuals = new HashSet<OWLIndividual>();
     String className;
     Mapper mapper;
@@ -62,17 +76,14 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
 
     className = SWRLBuiltInUtil.getArgumentAsAClassName(0, arguments);
 
-    if (!getInvokingBridge().hasMapper()) return false;
-
     isUnboundIndividualArgument = SWRLBuiltInUtil.isUnboundArgument(1, arguments);
 
     if (!isUnboundIndividualArgument) throw new BuiltInException("bound arguments not yet implemented, class = '" + className + "'");
 
-    owlClass = OWLFactory.createOWLClass(className);
+    owlClass = getInvokingBridge().getOWLFactory().getOWLClass(className);
     
-    mapper = getInvokingBridge().getMapper();
-    if (!mapper.isMapped(owlClass)) return false;
-    
+    mapper = null;
+   
     individuals = mapper.mapOWLClass(owlClass);
     
     //if (!individuals.isEmpty()) getInvokingBridge().injectOWLIndividuals(individuals);
@@ -88,7 +99,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
 
   public boolean mapOWLObjectProperty(List<BuiltInArgument> arguments) throws BuiltInException 
   { 
-    boolean result = false, hasSubject, hasObject;
+    boolean hasSubject, hasObject;
     OWLProperty owlProperty;
     OWLIndividual subjectOWLIndividual = null, objectOWLIndividual = null;
     Set<OWLObjectPropertyAssertionAxiom> axioms = new HashSet<OWLObjectPropertyAssertionAxiom>();
@@ -100,17 +111,22 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
 
     propertyName = SWRLBuiltInUtil.getArgumentAsAPropertyName(0, arguments);
 
-    if (!getInvokingBridge().hasMapper()) return false;
-
     hasSubject = (arguments.size() > 1);
     hasObject = (arguments.size() > 2);
 
-    owlProperty = OWLFactory.createOWLObjectProperty(propertyName);
+    owlProperty = getInvokingBridge().getOWLFactory().getOWLObjectProperty(propertyName);
     
-    if (hasSubject) subjectOWLIndividual = OWLFactory.createOWLIndividual(SWRLBuiltInUtil.getArgumentAsAnIndividualName(1, arguments));
-    if (hasObject) objectOWLIndividual = OWLFactory.createOWLIndividual(SWRLBuiltInUtil.getArgumentAsAnIndividualName(2, arguments));
+    if (hasSubject) {
+      String subjectIndividualName = SWRLBuiltInUtil.getArgumentAsAnIndividualName(1, arguments);
+      subjectOWLIndividual = getInvokingBridge().getOWLFactory().getOWLIndividual(subjectIndividualName);
+    } // if
+
+    if (hasObject) {
+      String objectIndividualName = SWRLBuiltInUtil.getArgumentAsAnIndividualName(2, arguments);
+      objectOWLIndividual = getInvokingBridge().getOWLFactory().getOWLIndividual(objectIndividualName);
+    } // if    
     
-    mapper = getInvokingBridge().getMapper();
+    mapper = null;
     
     if (!mapper.isMapped(owlProperty)) return false;
     
@@ -125,7 +141,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
 
   public boolean mapOWLDatatypeProperty(List<BuiltInArgument> arguments) throws BuiltInException 
   { 
-    boolean result = false, hasSubject, hasValue;
+    boolean hasSubject, hasValue;
     OWLProperty owlProperty;
     OWLIndividual subjectOWLIndividual = null;
     OWLDatatypeValue value = null;
@@ -138,20 +154,21 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
 
     propertyName = SWRLBuiltInUtil.getArgumentAsAPropertyName(0, arguments);
 
-    if (!getInvokingBridge().hasMapper()) return false;
-
     hasSubject = (arguments.size() > 1) && SWRLBuiltInUtil.isArgumentAnIndividual(1, arguments);
     hasValue = (arguments.size() > 2 || (arguments.size() > 1 && SWRLBuiltInUtil.isArgumentADatatypeValue(1, arguments)));
 
-    owlProperty = OWLFactory.createOWLDatatypeProperty(propertyName);
+    owlProperty = getInvokingBridge().getOWLFactory().getOWLDataProperty(propertyName);
     
-    if (hasSubject) subjectOWLIndividual = OWLFactory.createOWLIndividual(SWRLBuiltInUtil.getArgumentAsAnIndividualName(1, arguments));
+    if (hasSubject) {
+      String subjectIndividualName = SWRLBuiltInUtil.getArgumentAsAnIndividualName(1, arguments);
+      subjectOWLIndividual = getInvokingBridge().getOWLFactory().getOWLIndividual(SWRLBuiltInUtil.getArgumentAsAnIndividualName(1, arguments));
+    } // if
     if (hasValue) {
       if (hasSubject) value = SWRLBuiltInUtil.getArgumentAsAnOWLDatatypeValue(2, arguments);
       else value = SWRLBuiltInUtil.getArgumentAsAnOWLDatatypeValue(1, arguments);
     } // if
     
-    mapper = getInvokingBridge().getMapper();
+    mapper = null;
     
     if (!mapper.isMapped(owlProperty)) return false;
     

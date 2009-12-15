@@ -1,15 +1,16 @@
 
 package edu.stanford.smi.protegex.owl.swrl.bridge.builtins.temporal;
 
-import edu.stanford.smi.protegex.owl.swrl.bridge.builtins.temporal.exceptions.*;
+import java.util.List;
 
-import edu.stanford.smi.protegex.owl.swrl.bridge.*;
-import edu.stanford.smi.protegex.owl.swrl.bridge.builtins.*;
-import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.*;
-
-import edu.stanford.smi.protegex.owl.swrl.bridge.xsd.DateTime;
-
-import java.util.*;
+import edu.stanford.smi.protegex.owl.swrl.bridge.ArgumentFactory;
+import edu.stanford.smi.protegex.owl.swrl.bridge.BuiltInArgument;
+import edu.stanford.smi.protegex.owl.swrl.bridge.builtins.AbstractSWRLBuiltInLibrary;
+import edu.stanford.smi.protegex.owl.swrl.bridge.builtins.SWRLBuiltInUtil;
+import edu.stanford.smi.protegex.owl.swrl.bridge.builtins.temporal.exceptions.TemporalException;
+import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.BuiltInException;
+import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.InvalidBuiltInArgumentException;
+import edu.stanford.smi.protegex.owl.swrl.bridge.xsd.XSDDateTime;
 
 /**
  ** Implementation library for SWRL temporal built-ins. See <a href="http://protege.cim3.net/cgi-bin/wiki.pl?SWRLTemporalBuiltIns">here</a>
@@ -22,18 +23,9 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
   public static final String Prefix = "temporal:";
   public static final String Namespace = "http://swrl.stanford.edu/ontologies/built-ins/3.3/temporal.owl#";
   
-  private static String TemporalDuration = Prefix + "duration";
-  private static String TemporalDurationLessThan = Prefix + "durationLessThan";
-  private static String TemporalDurationLessOrEqualTo = Prefix + "durationLessThanOrEqualTo";
-  private static String TemporalDurationEqualTo = Prefix + "durationEqualTo";
-  private static String TemporalDurationGreaterThan = Prefix + "durationGreaterThan";
-  private static String TemporalDurationGreaterThanOrEqualTo = Prefix + "durationGreaterThanOrEqualTo";
   private static String TemporalEquals = Prefix + "equals";
   private static String TemporalAfter = Prefix + "after";
   private static String TemporalBefore = Prefix + "before";
-
-  private static String TemporalAdd = Prefix + "add";
-
   private static String TemporalMeets = Prefix + "meets";
   private static String TemporalMetBy = Prefix + "metBy";
   private static String TemporalOverlaps = Prefix + "overlaps";
@@ -49,7 +41,6 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
   private static String ValidInstantClassName = Namespace + "ValidInstant";
   private static String ValidPeriodClassName = Namespace + "ValidPeriod";
   private static String GranularityClassName = Namespace + "Granularity";
-  private static String HasGranularityPropertyName = Namespace + "hasGranularity";
   private static String HasTimePropertyName = Namespace + "hasTime";
   private static String HasStartTimePropertyName = Namespace + "hasStartTime";
   private static String HasFinishTimePropertyName = Namespace + "hasFinishTime";
@@ -250,7 +241,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
       operationResult.addGranuleCount(granuleCount, granularity);
 
       if (SWRLBuiltInUtil.isUnboundArgument(0, arguments)) {
-        arguments.set(0, argumentFactory.createDatatypeValueArgument(new DateTime(operationResult.toString()))); // Bind the result to the first parameter
+        arguments.set(0, argumentFactory.createDatatypeValueArgument(new XSDDateTime(operationResult.toString()))); // Bind the result to the first parameter
         result = true;
       } else {
         Instant argument1 = getArgumentAsAnInstant(0, arguments, granularity);
@@ -413,10 +404,5 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
 
     return new Period(temporal, startDatetimeString, finishDatetimeString, granularity);
   } // getValidPeriod
-
-  private int getGranularity(String individualName) throws BuiltInException
-  {
-    return SWRLBuiltInUtil.getOWLDatatypePropertyValueAsAnInteger(getInvokingBridge(), individualName, HasGranularityPropertyName);
-  } // getGranularity
 
 } // SWRLBuiltInLibraryImpl

@@ -1,8 +1,10 @@
 
 package edu.stanford.smi.protegex.owl.swrl.bridge.impl;
 
-import edu.stanford.smi.protegex.owl.swrl.bridge.*;
-import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.*;
+import edu.stanford.smi.protegex.owl.swrl.bridge.OWLDatatypePropertyAssertionAxiom;
+import edu.stanford.smi.protegex.owl.swrl.bridge.OWLDatatypeValue;
+import edu.stanford.smi.protegex.owl.swrl.bridge.OWLIndividual;
+import edu.stanford.smi.protegex.owl.swrl.bridge.OWLProperty;
 
 public class OWLDatatypePropertyAssertionAxiomImpl extends OWLPropertyAssertionAxiomImpl implements OWLDatatypePropertyAssertionAxiom
 {

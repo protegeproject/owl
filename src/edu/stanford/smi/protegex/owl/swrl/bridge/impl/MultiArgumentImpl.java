@@ -1,10 +1,11 @@
 
 package edu.stanford.smi.protegex.owl.swrl.bridge.impl;
 
-import edu.stanford.smi.protegex.owl.swrl.bridge.*;
-import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.*;
+import java.util.ArrayList;
+import java.util.List;
 
-import java.util.*;
+import edu.stanford.smi.protegex.owl.swrl.bridge.BuiltInArgument;
+import edu.stanford.smi.protegex.owl.swrl.bridge.MultiArgument;
 
 /**
  ** A class used to bind multiple arguments to a built-in argument

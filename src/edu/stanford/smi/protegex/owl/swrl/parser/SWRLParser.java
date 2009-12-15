@@ -43,7 +43,8 @@ public class SWRLParser
 {
   public final static char AND_CHAR = '\u2227';   // ^
   public final static char IMP_CHAR = '\u2192';   // >
-  public final static String delimiters = " ?\n\t()[],\"'" + AND_CHAR + IMP_CHAR; // Note space.
+  public final static char RING_CHAR = '\u02da';   // >
+  public final static String delimiters = " ?\n\t()[],\"'" + AND_CHAR + IMP_CHAR + RING_CHAR; // Note space.
 
   private OWLModel owlModel;
   private SWRLFactory swrlFactory;
@@ -118,7 +119,7 @@ public class SWRLParser
     do {
       if (justProcessedAtom) {
         if (inHead) message = "Expecting '" + AND_CHAR + "'";
-        else message = "Expecting '" + IMP_CHAR + "' or '" + AND_CHAR + "'";
+        else message = "Expecting '" + IMP_CHAR + "' or '" + AND_CHAR + "' or " + RING_CHAR + "'.";
       } else {
         if (inHead) message = "Expecting atom.";
         else message = "Expecting atom or '" + IMP_CHAR + "'.";
@@ -133,8 +134,11 @@ public class SWRLParser
       } else if (token.equals("-")) {        
         continue; // Ignore "->" while we build up IMP_CHAR.
       } else if (token.equals("" + AND_CHAR) || token.equals("^")) {
-        if (!justProcessedAtom) throw new SWRLParseException("'" + AND_CHAR + "' may occur only after an atom.");
-        justProcessedAtom = false;
+          if (!justProcessedAtom) throw new SWRLParseException("'" + AND_CHAR + "' may occur only after an atom.");
+          justProcessedAtom = false;
+      } else if (token.equals("" + RING_CHAR) || token.equals(".")) {
+          if (inHead || !justProcessedAtom) throw new SWRLParseException("'" + RING_CHAR + "' may occur only after a body atom.");
+          justProcessedAtom = false;
       } else {
         atom = parseAtom(token);
         atLeastOneAtom = true;

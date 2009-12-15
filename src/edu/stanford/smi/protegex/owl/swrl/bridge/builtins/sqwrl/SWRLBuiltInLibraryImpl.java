@@ -5,18 +5,36 @@
 
 package edu.stanford.smi.protegex.owl.swrl.bridge.builtins.sqwrl;
 
-import edu.stanford.smi.protegex.owl.swrl.exceptions.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
-import edu.stanford.smi.protegex.owl.swrl.sqwrl.*;
-import edu.stanford.smi.protegex.owl.swrl.sqwrl.impl.*;
-import edu.stanford.smi.protegex.owl.swrl.sqwrl.exceptions.*;
-
-import edu.stanford.smi.protegex.owl.swrl.bridge.*;
-import edu.stanford.smi.protegex.owl.swrl.bridge.builtins.*;
-import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.*;
-
-import java.math.BigDecimal;
-import java.util.*;
+import edu.stanford.smi.protegex.owl.swrl.bridge.Argument;
+import edu.stanford.smi.protegex.owl.swrl.bridge.ArgumentFactory;
+import edu.stanford.smi.protegex.owl.swrl.bridge.BuiltInArgument;
+import edu.stanford.smi.protegex.owl.swrl.bridge.ClassArgument;
+import edu.stanford.smi.protegex.owl.swrl.bridge.DatatypeValueArgument;
+import edu.stanford.smi.protegex.owl.swrl.bridge.IndividualArgument;
+import edu.stanford.smi.protegex.owl.swrl.bridge.OWLClass;
+import edu.stanford.smi.protegex.owl.swrl.bridge.OWLDatatypeValue;
+import edu.stanford.smi.protegex.owl.swrl.bridge.OWLIndividual;
+import edu.stanford.smi.protegex.owl.swrl.bridge.OWLProperty;
+import edu.stanford.smi.protegex.owl.swrl.bridge.PropertyArgument;
+import edu.stanford.smi.protegex.owl.swrl.bridge.builtins.AbstractSWRLBuiltInLibrary;
+import edu.stanford.smi.protegex.owl.swrl.bridge.builtins.SWRLBuiltInUtil;
+import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.BuiltInException;
+import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.InvalidBuiltInArgumentException;
+import edu.stanford.smi.protegex.owl.swrl.sqwrl.ClassValue;
+import edu.stanford.smi.protegex.owl.swrl.sqwrl.DatatypeValue;
+import edu.stanford.smi.protegex.owl.swrl.sqwrl.ObjectValue;
+import edu.stanford.smi.protegex.owl.swrl.sqwrl.PropertyValue;
+import edu.stanford.smi.protegex.owl.swrl.sqwrl.SQWRLNames;
+import edu.stanford.smi.protegex.owl.swrl.sqwrl.impl.ResultImpl;
 
 /**
  ** Implementation library for SQWRL query built-ins. See <a href="http://protege.cim3.net/cgi-bin/wiki.pl?SQWRL">here</a> for documentation
@@ -25,23 +43,18 @@ import java.util.*;
 public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
 {
   private Map<String, Set<BuiltInArgument>> sets;
-
   private Map<String, Integer> collectionGroupElementNumbersMap; // Collection name to number of elements in group (which may be 0)
-
   private Set<String> invocationPatterns;
-
-  public SWRLBuiltInLibraryImpl() { super(SQWRLNames.SQWRLBuiltInLibraryName); }
-
   private ArgumentFactory argumentFactory;
+  
+  public SWRLBuiltInLibraryImpl() { super(SQWRLNames.SQWRLBuiltInLibraryName); }
   
   public void reset()
   {
     sets = new HashMap<String, Set<BuiltInArgument>>();
 
     invocationPatterns = new HashSet<String>();
-
     collectionGroupElementNumbersMap = new HashMap<String, Integer>(); 
-
     argumentFactory = ArgumentFactory.getFactory();
   } // reset
   
@@ -677,12 +690,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
   {
     return getInvokingBridge().getSWRLRule(queryName).getSQWRLResult();
   } // getResult
-
-  private void throwInternalSQWRLException(String message) throws BuiltInException
-  {
-    throw new BuiltInException("internal SQWRL engine exception: " + message);
-  } // throwInternalSQWRLException
-
+  
   private void checkThatElementIsNumeric(BuiltInArgument element) throws BuiltInException
   {
     if (!(element instanceof DatatypeValue) || !((DatatypeValue)element).isNumeric()) 

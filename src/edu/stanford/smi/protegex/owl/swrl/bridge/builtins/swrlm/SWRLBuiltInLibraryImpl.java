@@ -1,13 +1,15 @@
 
 package edu.stanford.smi.protegex.owl.swrl.bridge.builtins.swrlm;
 
-import edu.stanford.smi.protegex.owl.swrl.bridge.*;
-import edu.stanford.smi.protegex.owl.swrl.bridge.builtins.*;
-import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.*;
+import java.util.List;
 
-import java.util.*;
+import org.nfunk.jep.JEP;
 
-import org.nfunk.jep.JEP; // Expecting JEP 2.4.0; may work with other versions but has not been tested.
+import edu.stanford.smi.protegex.owl.swrl.bridge.ArgumentFactory;
+import edu.stanford.smi.protegex.owl.swrl.bridge.BuiltInArgument;
+import edu.stanford.smi.protegex.owl.swrl.bridge.builtins.AbstractSWRLBuiltInLibrary;
+import edu.stanford.smi.protegex.owl.swrl.bridge.builtins.SWRLBuiltInUtil;
+import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.BuiltInException;
 
 /**
  ** Implementations library for SWRL mathematical built-in methods. See <a
@@ -90,7 +92,6 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
   */ 
   public boolean eval(List<BuiltInArgument> arguments) throws BuiltInException
   {
-    List<BuiltInArgument> variables;
     double value;
     String expression;
     boolean result;

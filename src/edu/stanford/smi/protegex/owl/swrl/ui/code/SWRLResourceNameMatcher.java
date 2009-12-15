@@ -10,7 +10,6 @@ import edu.stanford.smi.protegex.owl.model.RDFResource;
 import edu.stanford.smi.protegex.owl.swrl.model.SWRLNames;
 import edu.stanford.smi.protegex.owl.swrl.model.SWRLVariable;
 import edu.stanford.smi.protegex.owl.ui.code.OWLResourceNameMatcher;
-import edu.stanford.smi.protegex.owl.ui.code.SymbolTextField;
 
 public class SWRLResourceNameMatcher extends OWLResourceNameMatcher
 {

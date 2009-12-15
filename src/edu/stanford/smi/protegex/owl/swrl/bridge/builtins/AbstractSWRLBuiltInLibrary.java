@@ -29,41 +29,41 @@ public abstract class AbstractSWRLBuiltInLibrary implements SWRLBuiltInLibrary
 
   public String getLibraryName() { return libraryName; }
 
-  public SWRLBuiltInBridge getInvokingBridge() throws BuiltInException
+  public SWRLBuiltInBridge getInvokingBridge() throws BuiltInLibraryException
   {
     if (invokingBridge == null) 
-      throw new BuiltInException("invalid call to getInvokingBridge - should only be called from within a built-in");
+      throw new BuiltInLibraryException("invalid call to getInvokingBridge - should only be called from within a built-in");
 
     return invokingBridge;
   } // getInvokingBridge
 
-  public String getInvokingRuleName() throws BuiltInException
+  public String getInvokingRuleName() throws BuiltInLibraryException
   {
     if (invokingRuleName.equals("")) 
-      throw new BuiltInException("invalid call to getInvokingRuleName - should only be called from within a built-in");
+      throw new BuiltInLibraryException("invalid call to getInvokingRuleName - should only be called from within a built-in");
 
     return invokingRuleName;
   } // getInvokingRuleName
 
-  public int getInvokingBuiltInIndex() throws BuiltInException
+  public int getInvokingBuiltInIndex() throws BuiltInLibraryException
   {
     if (invokingBuiltInIndex == -1) 
-      throw new BuiltInException("invalid call to getInvokingBuiltInIndex - should only be called from within a built-in");
+      throw new BuiltInLibraryException("invalid call to getInvokingBuiltInIndex - should only be called from within a built-in");
 
     return invokingBuiltInIndex;
   } // getInvokingBuiltInIndex
 
-  public boolean getIsInConsequent() throws BuiltInException
+  public boolean getIsInConsequent() throws BuiltInLibraryException
   {
     if (invokingBridge == null) 
-      throw new BuiltInException("invalid call to getIsInConsequent - should only be called from within a built-in");
+      throw new BuiltInLibraryException("invalid call to getIsInConsequent - should only be called from within a built-in");
 
     return isInConsequent;
   } // getIsInConsequent
 
-  public abstract void reset() throws BuiltInException;
+  public abstract void reset() throws BuiltInLibraryException;
 
-  public void invokeResetMethod(SWRLBuiltInBridge bridge) throws BuiltInException
+  public void invokeResetMethod(SWRLBuiltInBridge bridge) throws BuiltInLibraryException
   {
     synchronized (this) {
       invokingBridge = bridge;
@@ -97,8 +97,8 @@ public abstract class AbstractSWRLBuiltInLibrary implements SWRLBuiltInLibrary
         } else throw new BuiltInException("unknown exception thrown by built-in method '" + builtInName + "' in rule '" + 
                                           ruleName + "': " + e.toString(), e);
       } catch (Exception e) { // Should be one of IllegalAccessException or IllegalArgumentException
-        throw new BuiltInException("internal bridge exception when invoking built-in method '" + builtInName + "' in rule '" + 
-                                   ruleName + "': " + e.getMessage(), e);        
+        throw new BuiltInLibraryException("internal bridge exception when invoking built-in method '" + builtInName + "' in rule '" + 
+                                          ruleName + "': " + e.getMessage(), e);        
       } // try
       
       invokingBridge = null; invokingRuleName = ""; invokingBuiltInIndex = -1; this.isInConsequent = false;

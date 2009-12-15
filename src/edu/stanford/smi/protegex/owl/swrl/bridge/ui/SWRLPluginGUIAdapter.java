@@ -1,10 +1,9 @@
 
 package edu.stanford.smi.protegex.owl.swrl.bridge.ui;
 
-import edu.stanford.smi.protegex.owl.model.OWLModel;
+import java.awt.Container;
 
-import javax.swing.*;
-import java.awt.*;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
 
 /**
  ** This interface must be implemented by a plugin to provide a mechanism to create screen real estate on the SWTLTab for its GUI. A plugin

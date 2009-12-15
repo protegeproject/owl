@@ -1,10 +1,10 @@
 
 package edu.stanford.smi.protegex.owl.swrl.bridge.impl;
 
-import edu.stanford.smi.protegex.owl.swrl.bridge.*;
-import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.*;
+import java.util.HashSet;
+import java.util.Set;
 
-import java.util.*;
+import edu.stanford.smi.protegex.owl.swrl.bridge.OWLClass;
 
 /**
  ** Class representing an OWL named class
@@ -12,20 +12,20 @@ import java.util.*;
 public class OWLClassImpl extends BuiltInArgumentImpl implements OWLClass
 {
   // equals() method defined in this class.
-  private String className, prefixedClassName;
+  private String classURI, prefixedClassName;
   private Set<String> superclassNames, directSuperClassNames, directSubClassNames, equivalentClassNames, equivalentClassSuperclassNames;
     
   // Constructor used when creating a OWLClass object to pass as a built-in argument 
-  public OWLClassImpl(String className)
+  public OWLClassImpl(String classURI)
   {
-    initialize(className, className);
+    initialize(classURI, classURI);
   } // OWLClassImpl
 
   // Constructor used when creating a OWLClass object from a built-in
-  public OWLClassImpl(String className, String superclassName)
+  public OWLClassImpl(String classURI, String superclassURI)
   {
-    initialize(className, className);
-    superclassNames.add(superclassName);
+    initialize(classURI, superclassURI);
+    superclassNames.add(superclassURI);
   } // OWLClassImpl
 
   public void setSuperclassNames(Set<String> superclassNames) { this.superclassNames = superclassNames; }
@@ -34,7 +34,8 @@ public class OWLClassImpl extends BuiltInArgumentImpl implements OWLClass
   public void setEquivalentClassNames(Set<String> equivalentClassNames) { this.equivalentClassNames = equivalentClassNames; }
   public void setEquivalentClassSuperclassNames(Set<String> equivalentClassSuperclassNames) { this.equivalentClassSuperclassNames = equivalentClassSuperclassNames; }
 
-  public String getClassName() { return className; }
+  public String getURI() { return classURI; }
+  public String getClassName() { return classURI; }
   public String getPrefixedClassName() { return prefixedClassName; }
   public Set<String> getSuperclassNames() { return superclassNames; }
   public Set<String> getDirectSuperClassNames() { return directSuperClassNames; }
@@ -79,12 +80,12 @@ public class OWLClassImpl extends BuiltInArgumentImpl implements OWLClass
 
   public int compareTo(Object o)
   {
-    return className.compareTo(((OWLClassImpl)o).getClassName());
+    return classURI.compareTo(((OWLClassImpl)o).getClassName());
   } // compareTo
 
-  private void initialize(String className, String prefixedClassName)
+  private void initialize(String classURI, String prefixedClassName)
   {
-    this.className = className;
+    this.classURI = classURI;
     this.prefixedClassName = prefixedClassName;
     superclassNames = new HashSet<String>();
     directSuperClassNames = new HashSet<String>();

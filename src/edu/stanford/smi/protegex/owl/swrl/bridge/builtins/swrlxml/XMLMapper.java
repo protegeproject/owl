@@ -1,24 +1,30 @@
 
 package edu.stanford.smi.protegex.owl.swrl.bridge.builtins.swrlxml;
 
-import edu.stanford.smi.protegex.owl.model.*;
-
-import edu.stanford.smi.protegex.owl.swrl.util.SWRLOWLUtil;
-import edu.stanford.smi.protegex.owl.swrl.exceptions.SWRLOWLUtilException;
-import edu.stanford.smi.protegex.owl.model.util.ImportHelper;
-import edu.stanford.smi.protegex.owl.swrl.model.SWRLNames;
-import edu.stanford.smi.protege.exception.OntologyLoadException;
-
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
-import org.jdom.*;
-import org.jdom.output.*;
-import org.jdom.input.*;
-import org.jdom.filter.*;
+import org.jdom.Attribute;
+import org.jdom.Document;
+import org.jdom.Element;
+import org.jdom.Namespace;
+import org.jdom.Text;
+import org.jdom.filter.ContentFilter;
+import org.jdom.filter.Filter;
 
-import java.io.*;
-import java.util.*;
+import edu.stanford.smi.protege.exception.OntologyLoadException;
+import edu.stanford.smi.protegex.owl.model.OWLIndividual;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
+import edu.stanford.smi.protegex.owl.model.OWLProperty;
+import edu.stanford.smi.protegex.owl.model.RDFResource;
+import edu.stanford.smi.protegex.owl.model.util.ImportHelper;
+import edu.stanford.smi.protegex.owl.swrl.exceptions.SWRLOWLUtilException;
+import edu.stanford.smi.protegex.owl.swrl.model.SWRLNames;
+import edu.stanford.smi.protegex.owl.swrl.util.SWRLOWLUtil;
 
 public class XMLMapper
 {
@@ -45,23 +51,19 @@ public class XMLMapper
   private OWLProperty rootElementProperty, elementsProperty, subElementsProperty, nameProperty, namespacePrefixProperty, 
     namespaceURIProperty, contentProperty, valueProperty, attributesProperty;
 
-  public XMLMapper(OWLModel owlModel) throws XMLMapperException
+  public XMLMapper(OWLModel owlModel)
   {
     this.owlModel = owlModel;
 
-    try {
-      rootElementProperty = SWRLOWLUtil.createOWLObjectProperty(owlModel, XMLDocumentHasRootElementPropertyName);
-      elementsProperty = SWRLOWLUtil.createOWLObjectProperty(owlModel, XMLDocumentHasElementsPropertyName);
-      nameProperty = SWRLOWLUtil.createOWLDatatypeProperty(owlModel, XMLHasNamePropertyName);
-      namespacePrefixProperty = SWRLOWLUtil.createOWLDatatypeProperty(owlModel, XMLHasNamespacePrefixPropertyName);
-      namespaceURIProperty = SWRLOWLUtil.createOWLDatatypeProperty(owlModel, XMLHasNamespaceURIPropertyName);
-      contentProperty = SWRLOWLUtil.createOWLDatatypeProperty(owlModel, XMLElementHasContentPropertyName);
-      subElementsProperty = SWRLOWLUtil.createOWLObjectProperty(owlModel, XMLElementHasSubElementsPropertyName);
-      valueProperty = SWRLOWLUtil.createOWLDatatypeProperty(owlModel, XMLAttributeHasValuePropertyName);
-      attributesProperty = SWRLOWLUtil.createOWLObjectProperty(owlModel, XMLElementHasAttributesPropertyName);
-    } catch (SWRLOWLUtilException e) {
-      throw new XMLMapperException("error initializing XMLMapper: " + e.getMessage());
-    } // try
+    rootElementProperty = SWRLOWLUtil.createOWLObjectProperty(owlModel, XMLDocumentHasRootElementPropertyName);
+    elementsProperty = SWRLOWLUtil.createOWLObjectProperty(owlModel, XMLDocumentHasElementsPropertyName);
+    nameProperty = SWRLOWLUtil.createOWLDatatypeProperty(owlModel, XMLHasNamePropertyName);
+    namespacePrefixProperty = SWRLOWLUtil.createOWLDatatypeProperty(owlModel, XMLHasNamespacePrefixPropertyName);
+    namespaceURIProperty = SWRLOWLUtil.createOWLDatatypeProperty(owlModel, XMLHasNamespaceURIPropertyName);
+    contentProperty = SWRLOWLUtil.createOWLDatatypeProperty(owlModel, XMLElementHasContentPropertyName);
+    subElementsProperty = SWRLOWLUtil.createOWLObjectProperty(owlModel, XMLElementHasSubElementsPropertyName);
+    valueProperty = SWRLOWLUtil.createOWLDatatypeProperty(owlModel, XMLAttributeHasValuePropertyName);
+    attributesProperty = SWRLOWLUtil.createOWLObjectProperty(owlModel, XMLElementHasAttributesPropertyName);
   } // XMLMapper
 
   public Document xmlDocument2Document() throws XMLMapperException

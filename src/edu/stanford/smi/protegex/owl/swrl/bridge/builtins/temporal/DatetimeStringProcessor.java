@@ -1,13 +1,11 @@
 
 package edu.stanford.smi.protegex.owl.swrl.bridge.builtins.temporal;
 
-import edu.stanford.smi.protegex.owl.swrl.bridge.builtins.temporal.exceptions.*;
-
+import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.StringTokenizer;
-import java.util.Arrays;
-import java.text.ParsePosition;
-import java.sql.Timestamp;
+
+import edu.stanford.smi.protegex.owl.swrl.bridge.builtins.temporal.exceptions.TemporalException;
 
 /**
  **  A class supporting processing of datetime strings. This class will be specialized by subclasses to deal with different datetimes
@@ -31,7 +29,7 @@ public abstract class DatetimeStringProcessor
     this.datetimeRoundDownPadding = (String[])datetimeRoundDownPadding.clone();
   } // DatetimeStringProcessor
 
-  protected abstract String constructDatetimeString(long milliseconds) throws TemporalException;
+  protected abstract String constructDatetimeStringFromMillisecondsFrom1970Count(long milliseconds) throws TemporalException;
 
   /**
    ** Take a granule count (from the beginning of calendar time, i.e., January 1st 1 C.E) at any granularity and convert it to a datetime
@@ -51,7 +49,7 @@ public abstract class DatetimeStringProcessor
     // The java.sql.Timestamp constructor will correctly deal with negative milliseconds.
     granuleCountInMilliSeconds -= Temporal.millisecondsTo1970;
 
-    return constructDatetimeString(granuleCountInMilliSeconds); // Call subclass.
+    return constructDatetimeStringFromMillisecondsFrom1970Count(granuleCountInMilliSeconds); // Call subclass. 
   } // granuleCount2DatetimeString
 
   /** Take a full-specification datetime string (which will have the granularity of milliseconds), discard any information that is finer
@@ -87,7 +85,6 @@ public abstract class DatetimeStringProcessor
   {
     String localDatetimeString;
     String result = "";
-    int i;
 
     localDatetimeString = datetimeString.trim();
     localDatetimeString = stripDatetimeString(localDatetimeString, granularity);
@@ -110,8 +107,8 @@ public abstract class DatetimeStringProcessor
   {
     StringTokenizer tokenizer;
     String token;
-    long yearCount, monthCount;
-    int granularity, numberOfTokens, daysInMonth;
+    long yearCount, monthCount, daysInMonth;
+    int granularity, numberOfTokens;
     String result;
     String localDatetimeString = datetimeString.trim();
 

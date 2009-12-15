@@ -1,12 +1,11 @@
 
 package edu.stanford.smi.protegex.owl.swrl.bridge.impl;
 
-import edu.stanford.smi.protegex.owl.swrl.bridge.*;
-import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.*;
+import java.util.HashSet;
+import java.util.Set;
 
-import edu.stanford.smi.protegex.owl.swrl.exceptions.*;
-
-import java.util.*;
+import edu.stanford.smi.protegex.owl.swrl.bridge.OWLClass;
+import edu.stanford.smi.protegex.owl.swrl.bridge.OWLIndividual;
 
 /**
  ** Class representing an OWL individual. 
@@ -47,6 +46,7 @@ public class OWLIndividualImpl extends PropertyValueImpl implements OWLIndividua
 
   public void addSameAsIndividual(OWLIndividual sameAsIndividual) { sameAsIndividuals.add(sameAsIndividual); }
 
+  public String getURI() { return individualName; }
   public String getIndividualName() { return individualName; }
   public String getPrefixedIndividualName() { return prefixedIndividualName; }
   public Set<OWLClass> getDefiningClasses() { return definingClasses; }

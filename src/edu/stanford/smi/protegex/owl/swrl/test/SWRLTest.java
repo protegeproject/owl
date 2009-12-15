@@ -86,7 +86,7 @@ public class SWRLTest
       //grandpaRule_B.setHead(headA);
       
     }
-    catch (java.lang.Exception e) {
+    catch (Throwable e) {
       e.printStackTrace();
     }
   } // main

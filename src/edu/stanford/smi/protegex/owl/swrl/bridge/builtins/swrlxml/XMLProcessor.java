@@ -1,14 +1,20 @@
 
 package edu.stanford.smi.protegex.owl.swrl.bridge.builtins.swrlxml;
 
-import org.jdom.*;
-import org.jdom.output.*;
-import org.jdom.input.*;
-import org.jdom.filter.*;
+import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.StringReader;
+import java.net.MalformedURLException;
+import java.net.URL;
 
-import java.io.*;
-import java.util.*;
-import java.net.*;
+import org.jdom.Document;
+import org.jdom.input.SAXBuilder;
+import org.jdom.output.Format;
+import org.jdom.output.XMLOutputter;
 
 public class XMLProcessor
 {

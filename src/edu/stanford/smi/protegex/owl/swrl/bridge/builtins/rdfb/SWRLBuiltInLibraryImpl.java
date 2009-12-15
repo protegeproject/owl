@@ -1,11 +1,17 @@
 
 package edu.stanford.smi.protegex.owl.swrl.bridge.builtins.rdfb;
 
-import edu.stanford.smi.protegex.owl.swrl.bridge.*;
-import edu.stanford.smi.protegex.owl.swrl.bridge.builtins.*;
-import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.*;
+import java.util.List;
 
-import java.util.*;
+import edu.stanford.smi.protegex.owl.swrl.bridge.ArgumentFactory;
+import edu.stanford.smi.protegex.owl.swrl.bridge.BuiltInArgument;
+import edu.stanford.smi.protegex.owl.swrl.bridge.MultiArgument;
+import edu.stanford.smi.protegex.owl.swrl.bridge.builtins.AbstractSWRLBuiltInLibrary;
+import edu.stanford.smi.protegex.owl.swrl.bridge.builtins.SWRLBuiltInUtil;
+import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.BuiltInException;
+import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.BuiltInNotImplementedException;
+import edu.stanford.smi.protegex.owl.swrl.exceptions.SWRLOWLUtilException;
+import edu.stanford.smi.protegex.owl.swrl.util.SWRLOWLUtil;
 
 /**
  ** Implementations library for RDFB built-in methods. See <a href="http://protege.cim3.net/cgi-bin/wiki.pl?RDFBuiltIns">here</a> for
@@ -16,19 +22,76 @@ import java.util.*;
 public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
 {
   private static String SWRLRDFLibraryName = "SWRLRDFBuiltIns";
-
   private ArgumentFactory argumentFactory;
 
   public SWRLBuiltInLibraryImpl() 
   { 
     super(SWRLRDFLibraryName); 
-
+    
     argumentFactory = ArgumentFactory.getFactory();
   } // SWRLBuiltInLibraryImpl
 
   public void reset() 
   {
   } // reset
+
+  /**
+   ** Returns true if the RDF resource named by the first argument has any label identified by the second
+   ** argument. If the second argument is unbound, bind it to labels of the resource.
+   */
+  public boolean hasLabel(List<BuiltInArgument> arguments) throws BuiltInException
+  {
+    boolean isUnboundArgument = SWRLBuiltInUtil.isUnboundArgument(1, arguments);   
+    String resourceName;
+    boolean result = false;
+
+    SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(2, arguments.size());
+    SWRLBuiltInUtil.checkThatArgumentIsAClassPropertyOrIndividual(0, arguments);
+
+    resourceName = SWRLBuiltInUtil.getArgumentAsAResourceName(0, arguments);
+
+    if (isUnboundArgument) {
+    	MultiArgument multiArgument = argumentFactory.createMultiArgument(SWRLBuiltInUtil.getVariableName(1, arguments), SWRLBuiltInUtil.getPrefixedVariableName(1, arguments));
+    	for (String label : SWRLOWLUtil.getRDFSLabels(getInvokingBridge().getOWLModel(), resourceName))
+    		multiArgument.addArgument(argumentFactory.createDatatypeValueArgument(label));
+    	arguments.set(1, multiArgument);
+    	result = !multiArgument.hasNoArguments();
+    } else { // Bound argument
+    	String label = SWRLBuiltInUtil.getArgumentAsAString(1, arguments);
+    	result = SWRLOWLUtil.getRDFSLabels(getInvokingBridge().getOWLModel(), resourceName).contains(label);
+    } // if
+    
+    return result;
+  } // hasLabel
+
+  /**
+   ** Returns true if the RDF resource named by the first argument has any label language identified by the second
+   ** argument. If the second argument is unbound, bind it to label languages of the resource.
+   */
+  public boolean hasLabelLanguage(List<BuiltInArgument> arguments) throws BuiltInException
+  {
+    boolean isUnboundArgument = SWRLBuiltInUtil.isUnboundArgument(1, arguments);   
+    String resourceName;
+    boolean result = false;
+
+    SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(2, arguments.size());
+    SWRLBuiltInUtil.checkThatArgumentIsAClassPropertyOrIndividual(0, arguments);
+
+    resourceName = SWRLBuiltInUtil.getArgumentAsAResourceName(0, arguments);
+
+    if (isUnboundArgument) {
+     	MultiArgument multiArgument = argumentFactory.createMultiArgument(SWRLBuiltInUtil.getVariableName(1, arguments), SWRLBuiltInUtil.getPrefixedVariableName(1, arguments));
+    	for (String language : SWRLOWLUtil.getRDFSLabelLanguages(getInvokingBridge().getOWLModel(), resourceName))
+    		multiArgument.addArgument(argumentFactory.createDatatypeValueArgument(language));
+    	arguments.set(1, multiArgument);
+    	result = !multiArgument.hasNoArguments();
+    } else { // Bound argument
+    	String language = SWRLBuiltInUtil.getArgumentAsAString(1, arguments);
+    	result = SWRLOWLUtil.getRDFSLabelLanguages(getInvokingBridge().getOWLModel(), resourceName).contains(language);
+    } // if
+    
+    return result;
+  } // hasLabelLanguage
 
   /**
    ** isClass(c)

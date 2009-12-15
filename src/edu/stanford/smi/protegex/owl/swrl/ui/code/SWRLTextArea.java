@@ -48,6 +48,7 @@ public class SWRLTextArea extends SymbolTextArea
   {
     text = text.replaceAll("" + SWRLParser.AND_CHAR + "  ", "" + SWRLParser.AND_CHAR + "\n");
     text = text.replaceAll("" + SWRLParser.IMP_CHAR, "\n  " + SWRLParser.IMP_CHAR);
+    text = text.replaceAll("" + SWRLParser.RING_CHAR, "\n  " + SWRLParser.RING_CHAR);
     
     return text;
   } // reformatText
@@ -66,7 +67,6 @@ public class SWRLTextArea extends SymbolTextArea
     updateErrorDisplay();
     closeComboBox();
   } // acceptSelectedFrame
-  
-  
+    
 
 } // SWRLTextArea

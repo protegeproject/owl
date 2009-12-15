@@ -1,10 +1,7 @@
 
 package edu.stanford.smi.protegex.owl.swrl.bridge.impl;
 
-import edu.stanford.smi.protegex.owl.swrl.bridge.*;
-import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.*;
-
-import java.util.*;
+import edu.stanford.smi.protegex.owl.swrl.bridge.OWLDatatypeProperty;
 
 public  class OWLDatatypePropertyImpl extends OWLPropertyImpl implements OWLDatatypeProperty
 {

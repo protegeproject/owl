@@ -1,14 +1,18 @@
 
 package edu.stanford.smi.protegex.owl.swrl.bridge.impl;
 
-import edu.stanford.smi.protegex.owl.swrl.bridge.*;
-import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.DatatypeConversionException;
-import edu.stanford.smi.protegex.owl.swrl.bridge.xsd.PrimitiveXSDType;
+import java.util.List;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
-
-import java.util.*;
+import edu.stanford.smi.protegex.owl.swrl.bridge.ArgumentFactory;
+import edu.stanford.smi.protegex.owl.swrl.bridge.BuiltInArgument;
+import edu.stanford.smi.protegex.owl.swrl.bridge.ClassArgument;
+import edu.stanford.smi.protegex.owl.swrl.bridge.DatatypePropertyArgument;
+import edu.stanford.smi.protegex.owl.swrl.bridge.DatatypeValueArgument;
+import edu.stanford.smi.protegex.owl.swrl.bridge.IndividualArgument;
+import edu.stanford.smi.protegex.owl.swrl.bridge.MultiArgument;
+import edu.stanford.smi.protegex.owl.swrl.bridge.OWLDatatypeValue;
+import edu.stanford.smi.protegex.owl.swrl.bridge.ObjectPropertyArgument;
+import edu.stanford.smi.protegex.owl.swrl.bridge.xsd.XSDType;
 
 public class ArgumentFactoryImpl extends ArgumentFactory
 {
@@ -28,9 +32,7 @@ public class ArgumentFactoryImpl extends ArgumentFactory
   public DatatypeValueArgument createDatatypeValueArgument(double d){ return new OWLDatatypeValueImpl(d); }
   public DatatypeValueArgument createDatatypeValueArgument(short s) { return new OWLDatatypeValueImpl(s); }
   public DatatypeValueArgument createDatatypeValueArgument(Byte b) { return new OWLDatatypeValueImpl(b); }
-  public DatatypeValueArgument createDatatypeValueArgument(BigDecimal bd) { return new OWLDatatypeValueImpl(bd); }
-  public DatatypeValueArgument createDatatypeValueArgument(BigInteger bi) { return new OWLDatatypeValueImpl(bi); }
-  public DatatypeValueArgument createDatatypeValueArgument(PrimitiveXSDType xsd) { return new OWLDatatypeValueImpl(xsd); }
+  public DatatypeValueArgument createDatatypeValueArgument(XSDType xsd) { return new OWLDatatypeValueImpl(xsd); }
 
   public DatatypeValueArgument createDatatypeValueArgument(OWLDatatypeValue datatypeValue) { return datatypeValue; }
 

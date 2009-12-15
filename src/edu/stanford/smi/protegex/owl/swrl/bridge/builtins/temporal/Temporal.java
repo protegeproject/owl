@@ -1,13 +1,16 @@
 
 package edu.stanford.smi.protegex.owl.swrl.bridge.builtins.temporal;
 
-import edu.stanford.smi.protegex.owl.swrl.bridge.builtins.temporal.exceptions.*;
+import edu.stanford.smi.protegex.owl.swrl.bridge.builtins.temporal.exceptions.TemporalException;
 
 // TODO: Some code in here is really awful (e.g., convertGranuleCount). Need to fix.
 // TODO: replace granularity integer definitions with enums
 
-import java.sql.*;
-import java.util.*;
+import java.sql.Timestamp;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.GregorianCalendar;
+import java.util.Calendar;
 import java.lang.Math;
 import java.text.SimpleDateFormat;
 
@@ -42,7 +45,7 @@ public class Temporal
   public static final long millisecondsToGregorianChangeDate = 12219292800000L;
 
   // 10-day discontinuity between October 4, 1582 and October 15, 1582.
-  public static final long millisecondsInGregorianDiscontinuity = 10 * 24 * 60 * 60 * 1000L;
+  public static final long millisecondsInGregorianDiscontinuity = 864000000L; // 10 * 24 * 60 * 60 * 1000L;
 
   // The following table is used to convert an integral number of granules at one granularity (the y axis) to an integral number of granules
   // at another granularity (the x axis). If the source granularity is finer than the target granularity we divide by the number in the
@@ -63,7 +66,7 @@ public class Temporal
   private static final String[] stringGranularityRepresentation = { "years","months","days","hours","minutes","seconds","milliseconds" };
 
   // Individual routines will adjust February for leap years.
-  private static final int[] days_in_month = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
+  private static final long[] days_in_month = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
 
   // Days up until a month. Routine convertMonth2Granularity will adjust for leap years.
   private static final long[] days_to_month = {
@@ -205,20 +208,32 @@ public class Temporal
     checkGranularity(granularity);
 
     years = datetimeStringProcessor.getYears(datetimeString);
-
+    if(years < 1) throw new TemporalException("years must be 1 or greater in datetime: " + datetimeString);
+        
     months = datetimeStringProcessor.getMonths(datetimeString) - 1;
+    if(months < 0) throw new TemporalException("months must be 1 or greater in datetime: " + datetimeString);
+    
     days = datetimeStringProcessor.getDays(datetimeString) - 1;
+    if(days < 0) throw new TemporalException("days must be 1 or greater in datetime: " + datetimeString);
+    
     hours = datetimeStringProcessor.getHours(datetimeString);
+    if(hours < 0) throw new TemporalException("hours must be 0 or greater in datetime: " + datetimeString);
+    
     minutes = datetimeStringProcessor.getMinutes(datetimeString);
+    if(minutes < 0) throw new TemporalException("minutes must be 0 or greater in datetime: " + datetimeString);
+    
     seconds = datetimeStringProcessor.getSeconds(datetimeString);
+    if(seconds < 0) throw new TemporalException("seconds must be 0 or greater in datetime: " + datetimeString);
+    
     milliseconds = datetimeStringProcessor.getMilliseconds(datetimeString);
+    if(milliseconds < 0) throw new TemporalException("milliseconds must be 0 or greater in datetime: " + datetimeString);
 
     resultGranuleCount = convertGranuleCount(years, YEARS, granularity) + convertGranuleCount(months, MONTHS, granularity) +
       convertGranuleCount(days, DAYS, granularity) + convertGranuleCount(hours, HOURS, granularity) +
       convertGranuleCount(minutes, MINUTES, granularity) + convertGranuleCount(seconds, SECONDS, granularity) +
       convertGranuleCount(milliseconds, MILLISECONDS, granularity);
 
-    if ((months > 1) && isLeapYear(years)) resultGranuleCount += conversion_table[granularity][DAYS];
+    if ((months > 1) && isLeapYear(years)) resultGranuleCount += conversion_table[granularity][DAYS]; // 1 == February
 
     return resultGranuleCount;
   } // datetimeString2GranuleCount
@@ -227,8 +242,7 @@ public class Temporal
    ** Convert a granule count from one granularity to another. 
    */
   public static long convertGranuleCount(long granuleCount, int from_granularity, int to_granularity) throws TemporalException
-  {
-    long result, dayCount, monthCount, localGranuleCount, leapOffsetGranuleCount = 0;
+  {    long result, dayCount, monthCount, localGranuleCount, leapOffsetGranuleCount = 0;
 
     checkGranularity(from_granularity);
     checkGranularity(to_granularity);
@@ -262,7 +276,7 @@ public class Temporal
     return result;
   } // convertGranuleCount
 
-  public static int getDaysInMonth(long monthCount) throws TemporalException
+  public static long getDaysInMonth(long monthCount) throws TemporalException
   {
     checkMonthCount(monthCount);
 
@@ -563,15 +577,11 @@ public class Temporal
   // Calculate the number of extra leap granules at a specific granularity up until the start of a year. Optimize. TODO: Very inefficient.
   private static long leapGranulesUpToYear(long yearCount, int granularity) throws TemporalException
   {
-    int leapDays = 0;
+    long leapDays = 0;
 
     checkGranularity(granularity);
 
-    for (int i = 0; i < yearCount; i++) {
-      if (isLeapYear(i)) {
-	leapDays++;  
-      } // if
-    } // for
+    for (long i = 0; i < yearCount; i++) if (isLeapYear(i)) leapDays++; // isLeap year takes care of Gregorian discontinuity
 
     return leapDays * conversion_table[DAYS][granularity];    
   } // leapGranulesUpToYear
@@ -583,7 +593,7 @@ public class Temporal
 
     checkGranularity(granularity);
 
-    yearCount = monthCount / 12; // yearCount is zero-indexed.
+    yearCount = monthCount / 12; 
 
     leapGranules = leapGranulesUpToYear(yearCount, granularity);
 
@@ -606,12 +616,12 @@ public class Temporal
 
     if (granularity == YEARS) leapYearCount = leapGranulesUpToYear(granuleCount, YEARS);
     else if (granuleCount == MONTHS) leapYearCount = leapGranulesUpToMonth(granuleCount, YEARS);
-    else { // DAYS or finer.a
+    else { // DAYS or finer.
 
       cumulativeGranuleCount = 0;
       granulesInYear = conversion_table[YEARS][granularity];
       granulesInDay = conversion_table[DAYS][granularity];
-      yearCount = -1;
+      yearCount = 0;
       do {
 	yearCount++;
 	cumulativeGranuleCount += granulesInYear;
