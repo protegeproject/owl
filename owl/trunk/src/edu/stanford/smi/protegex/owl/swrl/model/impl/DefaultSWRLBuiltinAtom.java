@@ -48,12 +48,13 @@ public class DefaultSWRLBuiltinAtom extends DefaultSWRLAtom implements SWRLBuilt
 
   public String getBrowserText() 
   {
-    SWRLBuiltin builtIn;
+    SWRLBuiltin builtIn = getBuiltin();
     RDFList list = getArguments();
     Object propertyValue = getPropertyValue(getOWLModel().getRDFProperty(SWRLNames.Slot.BUILTIN));
     String s = "";
-    
-    s = SWRLUtil.getSWRLBrowserText(propertyValue, "BUILTIN");
+
+    if (builtIn == null && propertyValue != null) s = "<DELETED_BUILTIN [" + SWRLUtil.getSWRLBrowserText(propertyValue, "BUILTIN") + "]>";
+    else s = SWRLUtil.getSWRLBrowserText(propertyValue, "BUILTIN");
 
     s += "(";
 
