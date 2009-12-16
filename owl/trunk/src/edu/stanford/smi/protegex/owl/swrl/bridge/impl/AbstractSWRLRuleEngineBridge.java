@@ -21,10 +21,7 @@ import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.RDFSClass;
 import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
 import edu.stanford.smi.protegex.owl.swrl.bridge.Atom;
-import edu.stanford.smi.protegex.owl.swrl.bridge.AtomArgument;
 import edu.stanford.smi.protegex.owl.swrl.bridge.BuiltInArgument;
-import edu.stanford.smi.protegex.owl.swrl.bridge.DatatypeValueArgument;
-import edu.stanford.smi.protegex.owl.swrl.bridge.IndividualArgument;
 import edu.stanford.smi.protegex.owl.swrl.bridge.MultiArgument;
 import edu.stanford.smi.protegex.owl.swrl.bridge.OWLAxiom;
 import edu.stanford.smi.protegex.owl.swrl.bridge.OWLClass;
@@ -45,7 +42,6 @@ import edu.stanford.smi.protegex.owl.swrl.bridge.SWRLBuiltInBridge;
 import edu.stanford.smi.protegex.owl.swrl.bridge.SWRLRule;
 import edu.stanford.smi.protegex.owl.swrl.bridge.SWRLRuleEngineBridge;
 import edu.stanford.smi.protegex.owl.swrl.bridge.TargetSWRLRuleEngine;
-import edu.stanford.smi.protegex.owl.swrl.bridge.VariableAtomArgument;
 import edu.stanford.smi.protegex.owl.swrl.bridge.builtins.BuiltInLibraryManager;
 import edu.stanford.smi.protegex.owl.swrl.bridge.builtins.SWRLBuiltInUtil;
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.BuiltInException;
@@ -426,7 +422,7 @@ public abstract class AbstractSWRLRuleEngineBridge implements SWRLRuleEngineBrid
    */
   public OWLIndividual injectOWLIndividual() throws SWRLBuiltInBridgeException
   {
-    String individualURI = SWRLOWLUtil.createNewResourceName(owlModel, "SWRLInjected");
+    String individualURI = conversionFactory.createNewResourceName("SWRLInjected");
     OWLClass owlClass = injectedOWLFactory.getOWLClass(edu.stanford.smi.protegex.owl.model.OWLNames.Cls.THING);
     OWLIndividual owlIndividual = injectedOWLFactory.getOWLIndividual(individualURI);
     owlIndividual.addDefiningClass(owlClass);
@@ -445,7 +441,7 @@ public abstract class AbstractSWRLRuleEngineBridge implements SWRLRuleEngineBrid
 
   public OWLIndividual injectOWLIndividualOfClass(OWLClass owlClass) throws SWRLBuiltInBridgeException
   {
-    String individualURI = SWRLOWLUtil.createNewResourceName(owlModel, "SWRLInjected");
+    String individualURI = conversionFactory.createNewResourceName("SWRLInjected");
     OWLIndividual owlIndividual = injectedOWLFactory.getOWLIndividual(individualURI);
     owlIndividual.addDefiningClass(owlClass);
 

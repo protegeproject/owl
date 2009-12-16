@@ -1,5 +1,5 @@
 
-// TODO: several string methods are not implemented.  TODO: built-ins for date, time, duration, URIs, and lists are not implemented.
+// TODO: built-ins for URIs, and lists are not implemented.
 
 package edu.stanford.smi.protegex.owl.swrl.bridge.builtins.swrlb;
 
@@ -33,15 +33,14 @@ import edu.stanford.smi.protegex.owl.swrl.bridge.xsd.XSDTimeUtil;
  ** href="http://protege.cim3.net/cgi-bin/wiki.pl?CoreSWRLBuiltIns">here</a>.
  **
  ** See <a href="http://protege.cim3.net/cgi-bin/wiki.pl?SWRLBuiltInBridge">here</a> for documentation on defining SWRL built-in libraries.
+ **
+ ** Built-ins for lists and URIs not yet implemented.
  */
 public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
 {
   private static String SWRLBLibraryName = "SWRLCoreBuiltIns";
-
   private static String SWRLBPrefix = "swrlb:";
-
   private ArgumentFactory argumentFactory;
-
   private DateFormat dateFormat;
 
   private static String SWRLB_ADD = SWRLBPrefix + "add";

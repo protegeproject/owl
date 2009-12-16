@@ -39,7 +39,7 @@ public class OWLDatatypePropertyAssertionAxiomImpl extends OWLPropertyAssertionA
   { 
     String result = "" + getProperty() + "(" + getSubject() + ", ";
 
-    if (object.isString()) result += "\"" + object + "\"";
+    if (object.isString() || object.isXSDType()) result += "\"" + object + "\"";
     else result += "" + object;
 
     result += ")"; 
