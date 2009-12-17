@@ -1,8 +1,10 @@
 
 package edu.stanford.smi.protegex.owl.swrl.bridge.builtins.temporal;
 
-import java.text.SimpleDateFormat;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.GregorianCalendar;
+import java.util.TimeZone;
 
 import edu.stanford.smi.protegex.owl.swrl.bridge.builtins.temporal.exceptions.TemporalException;
 
@@ -13,6 +15,7 @@ public class JDBCDatetimeStringProcessor extends DatetimeStringProcessor
 {
   private static SimpleDateFormat _dateFormat = new SimpleDateFormat("y-M-d h:m:s.S");
   private static String _delimiters = " -:."; // Note the space.
+  private GregorianCalendar gc = new GregorianCalendar();
 
   // The number of tokens (including delimeters) necessary to strip a datetime to a specified granularity.
   private static int[] _gTokenIndex = { 1, 3, 5, 7, 9, 11, 13 }; // 1=YEARS, 3=MONTHS etc.
@@ -30,11 +33,14 @@ public class JDBCDatetimeStringProcessor extends DatetimeStringProcessor
     super(_dateFormat, _delimiters, _gTokenIndex, _datetimeRoundDownPadding, _datetimeRoundUpPadding);
   } // JDBCDatetimeStringProcessor
 
-  protected String constructDatetimeStringFromMillisecondsFrom1970Count(long milliseconds) throws TemporalException
+  protected String constructDatetimeStringFromMillisecondsFrom1970Count(long millisecondsFrom1970) throws TemporalException
   {
-    Timestamp timestamp = new Timestamp(milliseconds);
-
-    return timestamp.toString(); // Returns in JDBC format.
+	  Timestamp ts= new Timestamp(millisecondsFrom1970);
+	  TimeZone tz = gc.getTimeZone();
+	    
+	  if (tz.inDaylightTime(ts)) ts = new Timestamp(millisecondsFrom1970 - 3600000);
+	       
+	  return ts.toString(); // Returns in JDBC format.
   } // constructDatetimeString
 
 } // JDBCDatetimeStringProcessor
