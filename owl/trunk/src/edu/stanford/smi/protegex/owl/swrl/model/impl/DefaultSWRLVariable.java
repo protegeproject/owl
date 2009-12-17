@@ -11,9 +11,7 @@ import edu.stanford.smi.protegex.owl.swrl.model.SWRLVariable;
 import edu.stanford.smi.protegex.owl.swrl.ui.icons.SWRLIcons;
 
 public class DefaultSWRLVariable extends AbstractSWRLIndividual implements SWRLVariable {
-    private static final long serialVersionUID = -1961560060080726149L;
-
-
+	
     public DefaultSWRLVariable(KnowledgeBase kb, FrameID id) {
         super(kb, id);
     }
@@ -24,7 +22,8 @@ public class DefaultSWRLVariable extends AbstractSWRLIndividual implements SWRLV
 
     @Override
     public String getBrowserText() {
-        return "?" + NamespaceUtil.getPrefixedName(getOWLModel(), getName());
+        //return "?" + NamespaceUtil.getPrefixedName(getOWLModel(), getName());
+    	return "?" + NamespaceUtil.getLocalName(getName());
     }
 
 
