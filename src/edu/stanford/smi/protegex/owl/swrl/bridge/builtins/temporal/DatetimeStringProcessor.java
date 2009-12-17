@@ -8,7 +8,7 @@ import java.util.StringTokenizer;
 import edu.stanford.smi.protegex.owl.swrl.bridge.builtins.temporal.exceptions.TemporalException;
 
 /**
- **  A class supporting processing of datetime strings. This class will be specialized by subclasses to deal with different datetimes
+ **  A class supporting processing of datetime strings. This class will be specialized by subclasses to deal with different datetime
  **  formats, e.g., XSD and JDBC datetimes.
  */
 public abstract class DatetimeStringProcessor
