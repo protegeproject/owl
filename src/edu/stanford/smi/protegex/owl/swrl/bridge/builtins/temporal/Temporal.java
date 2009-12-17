@@ -1,18 +1,11 @@
 
 package edu.stanford.smi.protegex.owl.swrl.bridge.builtins.temporal;
 
-import edu.stanford.smi.protegex.owl.swrl.bridge.builtins.temporal.exceptions.TemporalException;
-
-// TODO: Some code in here is really awful (e.g., convertGranuleCount). Need to fix.
-// TODO: replace granularity integer definitions with enums
-
 import java.sql.Timestamp;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.GregorianCalendar;
 import java.util.Calendar;
-import java.lang.Math;
-import java.text.SimpleDateFormat;
+import java.util.GregorianCalendar;
+
+import edu.stanford.smi.protegex.owl.swrl.bridge.builtins.temporal.exceptions.TemporalException;
 
 /** 
  ** A class that supports temporal operations using the Gregorian calendar. In instance of this class is supplied with a
@@ -242,7 +235,7 @@ public class Temporal
    ** Convert a granule count from one granularity to another. 
    */
   public static long convertGranuleCount(long granuleCount, int from_granularity, int to_granularity) throws TemporalException
-  {    long result, dayCount, monthCount, localGranuleCount, leapOffsetGranuleCount = 0;
+  {    long result, localGranuleCount, leapOffsetGranuleCount = 0;
 
     checkGranularity(from_granularity);
     checkGranularity(to_granularity);
