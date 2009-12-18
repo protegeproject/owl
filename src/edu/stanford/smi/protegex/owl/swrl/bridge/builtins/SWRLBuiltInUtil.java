@@ -747,7 +747,7 @@ public class SWRLBuiltInUtil
   } // getArgumentAsAPropertyValue
 
   /**
-   ** Create a string that represents a unique invocation pattern for a built-in for a bridge/rule/built-in/argument combination.  
+   ** Create a string that represents a unique invocation pattern for a built-in for a bridge/rule/built-in/arguments combination.  
    */
   public static String createInvocationPattern(SWRLBuiltInBridge invokingBridge, String invokingRuleName, int invokingBuiltInIndex,
                                                boolean isInConsequent, List<BuiltInArgument> arguments) throws BuiltInException

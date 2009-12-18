@@ -132,6 +132,11 @@ public class Period
   {
     return getFinishGranuleCount(granularity) < p2.getStartGranuleCount(granularity);
   } // before
+  
+  public boolean before(Period p2) throws TemporalException
+  {
+    return getFinishGranuleCount(Temporal.FINEST) < p2.getStartGranuleCount(Temporal.FINEST);
+  } // before
 
   public boolean starts_before(Period p2, int granularity) throws TemporalException
   {
