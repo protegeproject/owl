@@ -3,6 +3,7 @@ package edu.stanford.smi.protegex.owl.swrl.bridge.builtins.temporal;
 
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
 
@@ -38,7 +39,7 @@ public class JDBCDatetimeStringProcessor extends DatetimeStringProcessor
 	  Timestamp ts= new Timestamp(millisecondsFrom1970);
 	  TimeZone tz = gc.getTimeZone();
 	    
-	  if (tz.inDaylightTime(ts)) ts = new Timestamp(millisecondsFrom1970 - 3600000);
+	  if (tz.inDaylightTime(ts)) ts = new Timestamp(millisecondsFrom1970 - Calendar.DST_OFFSET);
 	       
 	  return ts.toString(); // Returns in JDBC format.
   } // constructDatetimeString

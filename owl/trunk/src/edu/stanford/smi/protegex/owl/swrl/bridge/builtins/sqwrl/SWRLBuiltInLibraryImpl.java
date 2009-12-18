@@ -43,8 +43,7 @@ import edu.stanford.smi.protegex.owl.swrl.sqwrl.impl.ResultImpl;
 public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
 {
   private Map<String, Set<BuiltInArgument>> sets;
-  private Map<String, Integer> collectionGroupElementNumbersMap; // Collection name to number of elements in group (which may be 0)
-  private Set<String> invocationPatterns;
+  private Map<String, Integer> setGroupElementNumbersMap; // Set name to number of elements in group (which may be 0)
   private ArgumentFactory argumentFactory;
   
   public SWRLBuiltInLibraryImpl() { super(SQWRLNames.SQWRLBuiltInLibraryName); }
@@ -52,9 +51,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
   public void reset()
   {
     sets = new HashMap<String, Set<BuiltInArgument>>();
-
-    invocationPatterns = new HashSet<String>();
-    collectionGroupElementNumbersMap = new HashMap<String, Integer>(); 
+    setGroupElementNumbersMap = new HashMap<String, Integer>(); 
     argumentFactory = ArgumentFactory.getFactory();
   } // reset
   
@@ -116,51 +113,49 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
 
   public boolean makeSet(List<BuiltInArgument> arguments) throws BuiltInException
   {
-    String collectionID = getCollectionIDInMake(arguments); // Get unique ID for collection; does argument checking
-    String invocationPattern  = SWRLBuiltInUtil.createInvocationPattern(getInvokingBridge(), getInvokingRuleName(), 
-                                                                        getInvokingBuiltInIndex(), getIsInConsequent(),
-                                                                        arguments.subList(1, arguments.size()));
+	  String setID = getSetIDInMake(arguments); // Get unique ID for set; does argument checking
+	    String setName = getSetName(arguments, 0);
+	    BuiltInArgument value = arguments.get(1); // The second argument is always the value
+	    Set<BuiltInArgument> set;
+	    
+    System.err.println("sqwrl.makeSet: setID: " + setID);
+    System.err.println("sqwrl.makeSet: setName: " + setName);
+    System.err.println("sqwrl.makeSet: arguments: " + arguments);
 
-    //System.err.println("sqwrl.makeSet: arguments: " + arguments);
-    //System.err.println("sqwrl.makeSet: invocationPattern: " + invocationPattern);
-    //System.err.println("sqwrl.makeSet: collectionID: " + collectionID);
-
-    if (!invocationPatterns.contains(invocationPattern)) {
-      BuiltInArgument value = arguments.get(arguments.size() - 1); // The last argument is always the value
-      Set<BuiltInArgument> set; 
-
-      if (sets.containsKey(collectionID)) set = sets.get(collectionID);
-      else { 
-        String collectionName = getCollectionName(arguments, 0);
-        int numberOfGroupElements = arguments.size() == 2 ? 0 : arguments.size() - 2;
-        collectionGroupElementNumbersMap.put(collectionName, numberOfGroupElements);
-        set = new HashSet<BuiltInArgument>(); sets.put(collectionID, set); 
-        
-        //System.err.println("making new set with ID '" + collectionID + "', number of group elements " + numberOfGroupElements);
-      } // if
-
-      set.add(value);
-
-      //System.err.println("adding value '" + value + "' to set '" + collectionID + "'");
-
-      invocationPatterns.add(invocationPattern);
+    if (sets.containsKey(setID)) set = sets.get(setID);
+    else {  
+        set = new HashSet<BuiltInArgument>(); sets.put(setID, set); 
+        System.err.println("making new set with name =" + setName + ", ID =" + setID);
     } // if
-    
-    if (SWRLBuiltInUtil.isUnboundArgument(0, arguments)) arguments.set(0, argumentFactory.createDatatypeValueArgument(collectionID));
+
+    set.add(value);
+    System.err.println("adding value '" + value + "' to set: " + setID);
+
+    if (SWRLBuiltInUtil.isUnboundArgument(0, arguments)) arguments.set(0, argumentFactory.createDatatypeValueArgument(setID));
 
     return true;
   } // makeSet
+  
+  public boolean groupBy(List<BuiltInArgument> arguments) throws BuiltInException
+  {
+	String setName = getSetName(arguments, 0);
+	int numberOfGroupArguments = arguments.size() - 2;
+    
+	if (!setGroupElementNumbersMap.containsKey(setName)) setGroupElementNumbersMap.put(setName, numberOfGroupArguments);
+	
+	return true; // Pre-processing in DefaultSWRLRule will take care of grouping variables.
+  } // groupBy
 
   public boolean isEmpty(List<BuiltInArgument> arguments) throws BuiltInException
   {
-    String collectionID = getCollectionIDInOperation(arguments, 0, 1); // Does argument checking
+    String setID = getSetIDInOperation(arguments, 0, 1); // Does argument checking
     boolean result = false;
     
     // System.err.println("isEmpty: arguments: " + arguments);
-    // System.err.println("isEmpty: collectionID: " + collectionID);
+    // System.err.println("isEmpty: setID: " + setID);
 
-    if (sets.containsKey(collectionID)) result = sets.get(collectionID).size() == 0;
-    else throw new BuiltInException("internal error: no collection found for ID '" + collectionID + "'");
+    if (sets.containsKey(setID)) result = sets.get(setID).size() == 0;
+    else throw new BuiltInException("internal error: no set found for ID: " + setID);
 
     return result;
   } // isEmpty
@@ -172,11 +167,11 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
 
   public boolean size(List<BuiltInArgument> arguments) throws BuiltInException
   {
-    String collectionID = getCollectionIDInOperation(arguments, 1, 2); // Does argument checking
-    long size = getSet(collectionID).size(); // Checks set ID validity
+    String setID = getSetIDInOperation(arguments, 1, 2); // Does argument checking
+    long size = getSet(setID).size(); // Checks set ID validity
 
-    // System.err.println("size: arguments: " + arguments);
-    // System.err.println("size: collectionID: " + collectionID);
+    System.err.println("size: arguments: " + arguments);
+    System.err.println("size: setID: " + setID);
 
     return SWRLBuiltInUtil.processResultArgument(arguments, 0, argumentFactory, size);
   } // size
@@ -199,16 +194,16 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
       
       result = true;
     } else { // Set operator
-      String collectionID = getCollectionIDInOperation(arguments, 1, 2); // Does argument checking
+      String setID = getSetIDInOperation(arguments, 1, 2); // Does argument checking
       Set<BuiltInArgument> set;
       OWLDatatypeValue minValue = null, value;
       
-      set = getSet(collectionID); // Check collectionID validity
+      set = getSet(setID); // Check setID validity
       
       if (set.isEmpty()) result = false;
       else {
         for (BuiltInArgument element : set) {
-          checkThatElementIsNumeric(element);
+          hatElementIsNumeric(element);
           value = (OWLDatatypeValue)element;
           
           if (minValue == null) minValue = value;
@@ -242,14 +237,14 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
 
       result = true;
     } else { // set operator
-      String collectionID = getCollectionIDInOperation(arguments, 1, 2); // Does argument checking
-      Set<BuiltInArgument> set = getSet(collectionID); // Checks collectionID validity
+      String setID = getSetIDInOperation(arguments, 1, 2); // Does argument checking
+      Set<BuiltInArgument> set = getSet(setID); // Checks setID validity
       
       if (set.isEmpty()) result = false;
       else {
         OWLDatatypeValue maxValue = null, value;
         for (BuiltInArgument element : set) {
-          checkThatElementIsNumeric(element);
+          hatElementIsNumeric(element);
           value = (OWLDatatypeValue)element;
           
           if (maxValue == null) maxValue = value;
@@ -280,14 +275,14 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
       
       result = true;
     } else { // set operator
-      String collectionID = getCollectionIDInOperation(arguments, 1, 2); // Does argument checking
-      Set<BuiltInArgument> set = getSet(collectionID); // Checks collectionID validity
+      String setID = getSetIDInOperation(arguments, 1, 2); // Does argument checking
+      Set<BuiltInArgument> set = getSet(setID); // Checks setID validity
       
       if (set.isEmpty()) result = false;
       else {
         float sumValue = 0, value;
         for (BuiltInArgument element : set) {
-          checkThatElementIsNumeric(element);
+          hatElementIsNumeric(element);
           value = SWRLBuiltInUtil.getArgumentAsAFloat(element);
           sumValue += value;
         } // for
@@ -315,14 +310,14 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
       if (argument instanceof OWLDatatypeValue && ((OWLDatatypeValue)argument).isNumeric()) resultImpl.addRowData((DatatypeValue)argument);
       else throw new InvalidBuiltInArgumentException(0, "expecting numeric literal, got '" + argument + "'");
     } else { // set operator
-      String collectionID = getCollectionIDInOperation(arguments, 1, 2); // Does argument checking
-      Set<BuiltInArgument> set = getSet(collectionID); // Checks collectionID validity
+      String setID = getSetIDInOperation(arguments, 1, 2); // Does argument checking
+      Set<BuiltInArgument> set = getSet(setID); // Checks setID validity
       
       if (set.isEmpty()) result = false;
       else {
         float avgValue, sumValue = 0, value;
         for (BuiltInArgument element : set) {
-          checkThatElementIsNumeric(element);
+          hatElementIsNumeric(element);
           value = SWRLBuiltInUtil.getArgumentAsAFloat(element);
           sumValue += value;
         } // for
@@ -342,8 +337,8 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
     if (getIsInConsequent()) {
       throw new BuiltInException("not implemented");
     } else { // set operator
-      String collectionID = getCollectionIDInOperation(arguments, 1, 2); // Does argument checking
-      Set<BuiltInArgument> set = getSet(collectionID); // Checks collectionID validity
+      String setID = getSetIDInOperation(arguments, 1, 2); // Does argument checking
+      Set<BuiltInArgument> set = getSet(setID); // Checks setID validity
       
       if (set.isEmpty()) result = false;
       else {
@@ -352,7 +347,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
         float medianValue, value;
 
         for (BuiltInArgument element : set) {
-          checkThatElementIsNumeric(element);
+          hatElementIsNumeric(element);
           value = SWRLBuiltInUtil.getArgumentAsAFloat(element);
           valueArray[count++] = value;
         } // for
@@ -373,34 +368,34 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
   { 
     // System.err.println("intersection.arguments: " + arguments);
 
-    String collectionIDResult = getCollectionIDInOperation(arguments, 0, 3); // Does argument checking
-    String collectionName1 = getCollectionName(arguments, 1); 
-    String collectionName2 = getCollectionName(arguments, 2);
-    int collection1NumberOfGroupElements = getCollectionNumberOfGroupElements(collectionName1);
-    int collection2NumberOfGroupElements = getCollectionNumberOfGroupElements(collectionName2);
-    String collectionID1 = getCollectionIDInOperation(arguments, 1, 3, 0, collection1NumberOfGroupElements); // Does argument checking
-    String collectionID2 = getCollectionIDInOperation(arguments, 2, 3, 0 + collection1NumberOfGroupElements, collection2NumberOfGroupElements); // Does argument checking
+    String setIDResult = getSetIDInOperation(arguments, 0, 3); // Does argument checking
+    String setName1 = getSetName(arguments, 1); 
+    String setName2 = getSetName(arguments, 2);
+    int set1NumberOfGroupElements = getSetNumberOfGroupElements(setName1);
+    int set2NumberOfGroupElements = getSetNumberOfGroupElements(setName2);
+    String setID1 = getSetIDInOperation(arguments, 1, 3, 0, set1NumberOfGroupElements); // Does argument checking
+    String setID2 = getSetIDInOperation(arguments, 2, 3, set1NumberOfGroupElements, set2NumberOfGroupElements); // Does argument checking
 
-    // System.err.println("intersection.collectionName1: " + collectionName1);
-    // System.err.println("intersection.collectionName2: " + collectionName2);
+    // System.err.println("intersection.setName1: " + setName1);
+    // System.err.println("intersection.setName2: " + setName2);
     // 
-    // System.err.println("intersection.collection1NumberOfGroupElements: " + collection1NumberOfGroupElements);
-    // System.err.println("intersection.collection2NumberOfGroupElements: " + collection2NumberOfGroupElements);
+    // System.err.println("intersection.set1NumberOfGroupElements: " + set1NumberOfGroupElements);
+    // System.err.println("intersection.set2NumberOfGroupElements: " + set2NumberOfGroupElements);
     // 
-    // System.err.println("intersection.collectionID1: " + collectionID1);
-    // System.err.println("intersection.collectionID2: " + collectionID2);
+    // System.err.println("intersection.setID1: " + setID1);
+    // System.err.println("intersection.setID2: " + setID2);
 
-    Set<BuiltInArgument> set1 = sets.get(collectionID1);
+    Set<BuiltInArgument> set1 = sets.get(setID1);
     // System.err.println("intersection.set1: " + set1);
-    Set<BuiltInArgument> set2 = sets.get(collectionID2);
+    Set<BuiltInArgument> set2 = sets.get(setID2);
     // System.err.println("intersection.set2: " + set2);
     Set<BuiltInArgument> intersection = new HashSet<BuiltInArgument>(set1);
 
     intersection.retainAll(set2);
 
-    if (!sets.containsKey(collectionIDResult)) sets.put(collectionIDResult, intersection);
+    if (!sets.containsKey(setIDResult)) sets.put(setIDResult, intersection);
 
-    if (SWRLBuiltInUtil.isUnboundArgument(0, arguments)) arguments.set(0, argumentFactory.createDatatypeValueArgument(collectionIDResult));
+    if (SWRLBuiltInUtil.isUnboundArgument(0, arguments)) arguments.set(0, argumentFactory.createDatatypeValueArgument(setIDResult));
 
     return true;
   } // intersection
@@ -409,34 +404,34 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
   { 
     // System.err.println("union.arguments: " + arguments);
 
-    String collectionIDResult = getCollectionIDInOperation(arguments, 0, 3); // Does argument checking
-    String collectionName1 = getCollectionName(arguments, 1); 
-    String collectionName2 = getCollectionName(arguments, 2);
-    int collection1NumberOfGroupElements = getCollectionNumberOfGroupElements(collectionName1);
-    int collection2NumberOfGroupElements = getCollectionNumberOfGroupElements(collectionName2);
-    String collectionID1 = getCollectionIDInOperation(arguments, 1, 3, 0, collection1NumberOfGroupElements); // Does argument checking
-    String collectionID2 = getCollectionIDInOperation(arguments, 2, 3, 0 + collection1NumberOfGroupElements, collection2NumberOfGroupElements); // Does argument checking
+    String setIDResult = getSetIDInOperation(arguments, 0, 3); // Does argument checking
+    String setName1 = getSetName(arguments, 1); 
+    String setName2 = getSetName(arguments, 2);
+    int set1NumberOfGroupElements = getSetNumberOfGroupElements(setName1);
+    int set2NumberOfGroupElements = getSetNumberOfGroupElements(setName2);
+    String setID1 = getSetIDInOperation(arguments, 1, 3, 0, set1NumberOfGroupElements); // Does argument checking
+    String setID2 = getSetIDInOperation(arguments, 2, 3, 0 + set1NumberOfGroupElements, set2NumberOfGroupElements); // Does argument checking
 
-    // System.err.println("union.collectionName1: " + collectionName1);
-    // System.err.println("union.collectionName2: " + collectionName2);
+    // System.err.println("union.setName1: " + setName1);
+    // System.err.println("union.setName2: " + setName2);
 
-    // System.err.println("union.collection1NumberOfGroupElements: " + collection1NumberOfGroupElements);
-    // System.err.println("union.collection2NumberOfGroupElements: " + collection2NumberOfGroupElements);
+    // System.err.println("union.set1NumberOfGroupElements: " + set1NumberOfGroupElements);
+    // System.err.println("union.set2NumberOfGroupElements: " + set2NumberOfGroupElements);
     // 
-    // System.err.println("union.collectionID1: " + collectionID1);
-    // System.err.println("union.collectionID2: " + collectionID2);
+    // System.err.println("union.setID1: " + setID1);
+    // System.err.println("union.setID2: " + setID2);
 
-    Set<BuiltInArgument> set1 = sets.get(collectionID1);
+    Set<BuiltInArgument> set1 = sets.get(setID1);
     // System.err.println("union.set1: " + set1);
-    Set<BuiltInArgument> set2 = sets.get(collectionID2);
+    Set<BuiltInArgument> set2 = sets.get(setID2);
     // System.err.println("union.set2: " + set2);
     Set<BuiltInArgument> union = new HashSet<BuiltInArgument>(set1);
 
     union.addAll(set2);
 
-    if (!sets.containsKey(collectionIDResult)) sets.put(collectionIDResult, union);
+    if (!sets.containsKey(setIDResult)) sets.put(setIDResult, union);
 
-    if (SWRLBuiltInUtil.isUnboundArgument(0, arguments)) arguments.set(0, argumentFactory.createDatatypeValueArgument(collectionIDResult));
+    if (SWRLBuiltInUtil.isUnboundArgument(0, arguments)) arguments.set(0, argumentFactory.createDatatypeValueArgument(setIDResult));
 
     return true;
   } // union
@@ -445,50 +440,50 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
   { 
     // System.err.println("difference.arguments: " + arguments);
 
-    String collectionIDResult = getCollectionIDInOperation(arguments, 0, 3); // Does argument checking
-    String collectionName1 = getCollectionName(arguments, 1); 
-    String collectionName2 = getCollectionName(arguments, 2);
-    int collection1NumberOfGroupElements = getCollectionNumberOfGroupElements(collectionName1);
-    int collection2NumberOfGroupElements = getCollectionNumberOfGroupElements(collectionName2);
-    String collectionID1 = getCollectionIDInOperation(arguments, 1, 3, 0, collection1NumberOfGroupElements); // Does argument checking
-    String collectionID2 = getCollectionIDInOperation(arguments, 2, 3, 0 + collection1NumberOfGroupElements, collection2NumberOfGroupElements); // Does argument checking
+    String setIDResult = getSetIDInOperation(arguments, 0, 3); // Does argument checking
+    String setName1 = getSetName(arguments, 1); 
+    String setName2 = getSetName(arguments, 2);
+    int set1NumberOfGroupElements = getSetNumberOfGroupElements(setName1);
+    int set2NumberOfGroupElements = getSetNumberOfGroupElements(setName2);
+    String setID1 = getSetIDInOperation(arguments, 1, 3, 0, set1NumberOfGroupElements); // Does argument checking
+    String setID2 = getSetIDInOperation(arguments, 2, 3, 0 + set1NumberOfGroupElements, set2NumberOfGroupElements); // Does argument checking
 
-    // System.err.println("difference.collectionName1: " + collectionName1);
-    // System.err.println("difference.collectionName2: " + collectionName2);
+    // System.err.println("difference.setName1: " + setName1);
+    // System.err.println("difference.setName2: " + setName2);
     // 
-    // System.err.println("difference.collection1NumberOfGroupElements: " + collection1NumberOfGroupElements);
-    // System.err.println("difference.collection2NumberOfGroupElements: " + collection2NumberOfGroupElements);
+    // System.err.println("difference.set1NumberOfGroupElements: " + set1NumberOfGroupElements);
+    // System.err.println("difference.set2NumberOfGroupElements: " + set2NumberOfGroupElements);
     // 
-    // System.err.println("difference.collectionID1: " + collectionID1);
-    // System.err.println("difference.collectionID2: " + collectionID2);
+    // System.err.println("difference.setID1: " + setID1);
+    // System.err.println("difference.setID2: " + setID2);
 
-    Set<BuiltInArgument> set1 = sets.get(collectionID1);
+    Set<BuiltInArgument> set1 = sets.get(setID1);
     // System.err.println("difference.set1: " + set1);
-    Set<BuiltInArgument> set2 = sets.get(collectionID2);
+    Set<BuiltInArgument> set2 = sets.get(setID2);
     // System.err.println("difference.set2: " + set2);
     Set<BuiltInArgument> difference = new HashSet<BuiltInArgument>(set1);
 
     difference.removeAll(set2);
 
-    if (!sets.containsKey(collectionIDResult)) sets.put(collectionIDResult, difference);
+    if (!sets.containsKey(setIDResult)) sets.put(setIDResult, difference);
 
-    if (SWRLBuiltInUtil.isUnboundArgument(0, arguments)) arguments.set(0, argumentFactory.createDatatypeValueArgument(collectionIDResult));
+    if (SWRLBuiltInUtil.isUnboundArgument(0, arguments)) arguments.set(0, argumentFactory.createDatatypeValueArgument(setIDResult));
 
     return true;
   } // difference
 
   public boolean contains(List<BuiltInArgument> arguments) throws BuiltInException 
   { 
-    String collectionID = getCollectionIDInOperation(arguments, 0, 2); // Does argument checking
+    String setID = getSetIDInOperation(arguments, 0, 2); // Does argument checking
     boolean result = false;
 
     // System.err.println("sqwrl.contains: arguments: " + arguments);
     
-    if (isSet(collectionID)) {
+    if (isSet(setID)) {
       BuiltInArgument element = arguments.get(1);
       // System.err.println("sqwrl.contains: element: " + element);
-      result = sets.get(collectionID).contains(element);
-    } else throw new BuiltInException("internal error: no collection found for ID '" + collectionID + "'");
+      result = sets.get(setID).contains(element);
+    } else throw new BuiltInException("internal error: no set found for ID '" + setID + "'");
     
     return result;
   } // contains
@@ -500,12 +495,12 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
 
   public boolean greatest(List<BuiltInArgument> arguments) throws BuiltInException 
   { 
-    String collectionID = getCollectionIDInOperation(arguments, 1, 2); // Does argument checking
+    String setID = getSetIDInOperation(arguments, 1, 2); // Does argument checking
     Set<BuiltInArgument> set;
     boolean result = false;
 
-    if (isSet(collectionID)) set = sets.get(collectionID);
-      else throw new BuiltInException("internal error: no collection found for ID '" + collectionID + "'");
+    if (isSet(setID)) set = sets.get(setID);
+      else throw new BuiltInException("internal error: no set found for ID '" + setID + "'");
     
     if (!set.isEmpty()) {
       SortedSet<BuiltInArgument> sortedSet = new TreeSet<BuiltInArgument>(set);
@@ -519,13 +514,13 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
 
   public boolean greatestN(List<BuiltInArgument> arguments) throws BuiltInException 
   { 
-    String collectionID = getCollectionIDInOperation(arguments, 1, 3); // Does argument checking
+    String setID = getSetIDInOperation(arguments, 1, 3); // Does argument checking
     int n = SWRLBuiltInUtil.getArgumentAsAPositiveInteger(2, arguments);
     Set<BuiltInArgument> set;
     boolean result = false;
 
-    if (isSet(collectionID)) set = sets.get(collectionID);
-      else throw new BuiltInException("internal error: no collection found for ID '" + collectionID + "'");
+    if (isSet(setID)) set = sets.get(setID);
+      else throw new BuiltInException("internal error: no set found for ID '" + setID + "'");
     
     if (!set.isEmpty()) {
       SortedSet<BuiltInArgument> sortedSet = new TreeSet<BuiltInArgument>(set);
@@ -542,13 +537,13 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
  
   public boolean notGreatestN(List<BuiltInArgument> arguments) throws BuiltInException 
   { 
-    String collectionID = getCollectionIDInOperation(arguments, 1, 3); // Does argument checking
+    String setID = getSetIDInOperation(arguments, 1, 3); // Does argument checking
     int n = SWRLBuiltInUtil.getArgumentAsAPositiveInteger(2, arguments);
     Set<BuiltInArgument> set;
     boolean result = false;
 
-    if (isSet(collectionID)) set = sets.get(collectionID);
-      else throw new BuiltInException("internal error: no collection found for ID '" + collectionID + "'");
+    if (isSet(setID)) set = sets.get(setID);
+      else throw new BuiltInException("internal error: no set found for ID '" + setID + "'");
     
     if (!set.isEmpty()) {
       SortedSet<BuiltInArgument> sortedSet = new TreeSet<BuiltInArgument>(set);
@@ -565,13 +560,13 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
 
   public boolean leastN(List<BuiltInArgument> arguments) throws BuiltInException 
   { 
-    String collectionID = getCollectionIDInOperation(arguments, 1, 3); // Does argument checking
+    String setID = getSetIDInOperation(arguments, 1, 3); // Does argument checking
     int n = SWRLBuiltInUtil.getArgumentAsAPositiveInteger(2, arguments);
     Set<BuiltInArgument> set;
     boolean result = false;
 
-    if (isSet(collectionID)) set = sets.get(collectionID);
-      else throw new BuiltInException("internal error: no collection found for ID '" + collectionID + "'");
+    if (isSet(setID)) set = sets.get(setID);
+      else throw new BuiltInException("internal error: no set found for ID '" + setID + "'");
     
     if (!set.isEmpty()) {
       SortedSet<BuiltInArgument> sortedSet = new TreeSet<BuiltInArgument>(set);
@@ -588,13 +583,13 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
 
   public boolean notLeastN(List<BuiltInArgument> arguments) throws BuiltInException 
   { 
-    String collectionID = getCollectionIDInOperation(arguments, 1, 3); // Does argument checking
+    String setID = getSetIDInOperation(arguments, 1, 3); // Does argument checking
     int n = SWRLBuiltInUtil.getArgumentAsAPositiveInteger(2, arguments);
     Set<BuiltInArgument> set;
     boolean result = false;
 
-    if (isSet(collectionID)) set = sets.get(collectionID);
-      else throw new BuiltInException("internal error: no collection found for ID '" + collectionID + "'");
+    if (isSet(setID)) set = sets.get(setID);
+      else throw new BuiltInException("internal error: no set found for ID '" + setID + "'");
     
     if (!set.isEmpty()) {
       SortedSet<BuiltInArgument> sortedSet = new TreeSet<BuiltInArgument>(set);
@@ -611,12 +606,12 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
 
   public boolean least(List<BuiltInArgument> arguments) throws BuiltInException 
   { 
-    String collectionID = getCollectionIDInOperation(arguments, 1, 2); // Does argument checking
+    String setID = getSetIDInOperation(arguments, 1, 2); // Does argument checking
     Set<BuiltInArgument> set;
     boolean result = false;
 
-    if (isSet(collectionID)) set = sets.get(collectionID);
-      else throw new BuiltInException("internal error: no collection found for ID '" + collectionID + "'");
+    if (isSet(setID)) set = sets.get(setID);
+      else throw new BuiltInException("internal error: no set found for ID '" + setID + "'");
 
     if (!set.isEmpty()) {
       SortedSet<BuiltInArgument> sortedSet = new TreeSet<BuiltInArgument>(set);
@@ -630,77 +625,87 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
 
   // Internal methods
 
-  private boolean isSet(String collectionID) { return sets.containsKey(collectionID); }
+  private boolean isSet(String setID) { return sets.containsKey(setID); }
 
-  private String getCollectionName(List<BuiltInArgument> arguments, int collectionArgumentNumber) throws BuiltInException
+  private String getSetName(List<BuiltInArgument> arguments, int setArgumentNumber) throws BuiltInException
   {
     String ruleName = getInvokingRuleName();
-    String collectionName = SWRLBuiltInUtil.getVariableName(collectionArgumentNumber, arguments); 
-    return ruleName + ":" + collectionName;
-  } // getCollectionName
+    String setName = SWRLBuiltInUtil.getVariableName(setArgumentNumber, arguments); 
+    return ruleName + ":" + setName;
+  } // getSetName
 
-  private int getCollectionNumberOfGroupElements(String collectionName) throws BuiltInException
+  private int getSetNumberOfGroupElements(String setName) throws BuiltInException
   {
-    if (!collectionGroupElementNumbersMap.containsKey(collectionName)) 
-      throw new BuiltInException("internal error: invalid collection name '" + collectionName + "'; no group element number found");
+    if (!setGroupElementNumbersMap.containsKey(setName)) 
+      throw new BuiltInException("internal error: invalid set name '" + setName + "'; no group element number found");
 
-    return collectionGroupElementNumbersMap.get(collectionName);
-  } // getCollectionNumberOfGroupElements
+    return setGroupElementNumbersMap.get(setName);
+  } // getSetNumberOfGroupElements
 
-  private String getCollectionIDInMake(List<BuiltInArgument> arguments) throws BuiltInException
+  private String getSetIDInMake(List<BuiltInArgument> arguments) throws BuiltInException
+  {
+	SWRLBuiltInUtil.checkNumberOfArgumentsAtLeast(2, arguments.size());
+	
+    String ruleName = getInvokingRuleName();
+    String setName = SWRLBuiltInUtil.getVariableName(0, arguments); // Always the first argument for a set
+    int numberOfGroupArguments = arguments.size() - 2;
+    boolean hasGroupPattern  = numberOfGroupArguments != 0;
+    String groupPattern = !hasGroupPattern ? "" : SWRLBuiltInUtil.createInvocationPattern(getInvokingBridge(), ruleName, 0, false,
+                                                                                          arguments.subList(2, arguments.size() - 1));
+    if (hasGroupPattern) {
+    	if (!setGroupElementNumbersMap.containsKey(setName)) setGroupElementNumbersMap.put(setName, numberOfGroupArguments);
+    	else if (setGroupElementNumbersMap.get(setName) != numberOfGroupArguments) {
+    		throw new BuiltInException("internal error: inconsistent number of group elements for set: " + setName);
+    	} //if
+    } // if
+	                           
+    return ruleName + ":" + setName + ":" + groupPattern;
+  } // getSetIDInMake
+
+  private String getSetIDInOperation(List<BuiltInArgument> arguments, int setArgumentIndex, int numberOfCoreArguments) throws BuiltInException
   {
     String ruleName = getInvokingRuleName();
-    String collectionName = SWRLBuiltInUtil.getVariableName(0, arguments); // Always the first argument for a collection
-    boolean hasInvocationPattern  = (arguments.size() > 2);
-    String invocationPattern = !hasInvocationPattern ? "" : SWRLBuiltInUtil.createInvocationPattern(getInvokingBridge(), ruleName, 0, false,
-                                                                                                    arguments.subList(1, arguments.size() - 1));
-    return ruleName + ":" + collectionName + ":" + invocationPattern;
-  } // getCollectionIDInMake
+    String setName = SWRLBuiltInUtil.getVariableName(setArgumentIndex, arguments);
+    boolean hasGroupPattern  = (arguments.size() > numberOfCoreArguments);
+    String groupPattern = "";
 
-  private String getCollectionIDInOperation(List<BuiltInArgument> arguments, int collectionArgumentNumber, int coreArgumentNumber) 
-    throws BuiltInException
-  {
-    return getCollectionIDInOperation(arguments, collectionArgumentNumber, coreArgumentNumber, -1, 0);
-  } // getCollectionIDInOperation
+    if (hasGroupPattern) {
+    	groupPattern = SWRLBuiltInUtil.createInvocationPattern(getInvokingBridge(), ruleName, 0, false, 
+    			                                               arguments.subList(numberOfCoreArguments, arguments.size() - 1));
+    } // if
 
-  // A groupArgumentStart of -1 indicates that all group arguments are relevant
-  private String getCollectionIDInOperation(List<BuiltInArgument> arguments, int collectionArgumentNumber, 
-                                            int coreArgumentNumber, int groupArgumentOffset, int numberOfRelevantGroupArguments) 
+    return ruleName + ":" + setName + ":" + groupPattern;
+  } // getSetIDInOperation
+
+  private String getSetIDInOperation(List<BuiltInArgument> arguments, int setArgumentNumber, 
+                                     int coreArgumentNumber, int groupArgumentOffset, int numberOfRelevantGroupArguments) 
    throws BuiltInException
   {
     String ruleName = getInvokingRuleName();
-    String collectionName = SWRLBuiltInUtil.getVariableName(collectionArgumentNumber, arguments);
-    boolean hasInvocationPattern  = (arguments.size() > coreArgumentNumber);
-    String invocationPattern = "";
+    String setName = SWRLBuiltInUtil.getVariableName(setArgumentNumber, arguments);
+    String groupPattern = SWRLBuiltInUtil.createInvocationPattern(getInvokingBridge(), ruleName, 0, false, 
+                                                                  arguments.subList(coreArgumentNumber + groupArgumentOffset, 
+                                                                  coreArgumentNumber + groupArgumentOffset + numberOfRelevantGroupArguments)); 
 
-    if (hasInvocationPattern) {
-      if (groupArgumentOffset > -1)
-        invocationPattern = SWRLBuiltInUtil.createInvocationPattern(getInvokingBridge(), ruleName, 0, false, 
-                                                                    arguments.subList(coreArgumentNumber + groupArgumentOffset, 
-                                                                                      coreArgumentNumber + groupArgumentOffset + numberOfRelevantGroupArguments));
-      else
-        invocationPattern = SWRLBuiltInUtil.createInvocationPattern(getInvokingBridge(), ruleName, 0, false, 
-                                                                    arguments.subList(coreArgumentNumber, arguments.size()));
-    } // if
-
-    return ruleName + ":" + collectionName + ":" + invocationPattern;
+    return ruleName + ":" + setName + ":" + groupPattern;
   } // getCollectionIDInOperation
 
+  
   private ResultImpl getResult(String queryName) throws BuiltInException
   {
     return getInvokingBridge().getSWRLRule(queryName).getSQWRLResult();
   } // getResult
   
-  private void checkThatElementIsNumeric(BuiltInArgument element) throws BuiltInException
+  private void hatElementIsNumeric(BuiltInArgument element) throws BuiltInException
   {
     if (!(element instanceof DatatypeValue) || !((DatatypeValue)element).isNumeric()) 
       throw new BuiltInException("may only be applied to sets with numeric data values");
-  } // checkThatElementIsNumeric
+  } // hatElementIsNumeric
 
-  private Set getSet(String collectionID) throws BuiltInException
+  private Set<BuiltInArgument> getSet(String setID) throws BuiltInException
   {
-    if (!isSet(collectionID)) throw new BuiltInException("internal error: no collection found for ID '" + collectionID + "'");
-    return sets.get(collectionID);
-  } // checkThatCollectionIsSet
+    if (!isSet(setID)) throw new BuiltInException("internal error: no set found for ID: " + setID);
+    return sets.get(setID);
+  } // getSet
 
 } // SWRLBuiltInLibraryImpl
