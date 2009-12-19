@@ -10,6 +10,7 @@ import edu.stanford.smi.protegex.owl.swrl.bridge.BuiltInArgument;
 import edu.stanford.smi.protegex.owl.swrl.bridge.BuiltInAtom;
 import edu.stanford.smi.protegex.owl.swrl.bridge.OWLDatatypeValue;
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.BuiltInException;
+import edu.stanford.smi.protegex.owl.swrl.sqwrl.SQWRLNames;
 
 /**
  ** Class representing a SWRL built-in atom
@@ -19,7 +20,7 @@ public class BuiltInAtomImpl extends AtomImpl implements BuiltInAtom
   private String builtInName, builtInPrefixedName;
   private List<BuiltInArgument> arguments; 
   private int builtInIndex = -1; // Index of this built-in atom in rule body; left-to-right, first built-in index is 0, second in 1, and so on
-  private boolean sqwrlVariablesUsed = false, isSQWRLMakeSet = false;
+  private boolean sqwrlSetResultsUsed = false;
   
   public BuiltInAtomImpl(String builtInName, String builtInPrefixedName, List<BuiltInArgument> arguments)
   {
@@ -45,10 +46,10 @@ public class BuiltInAtomImpl extends AtomImpl implements BuiltInAtom
   public int getBuiltInIndex() { return builtInIndex; }
   public void setBuiltInIndex(int builtInIndex) { this.builtInIndex = builtInIndex; }
 
-  public boolean usesSQWRLVariables() { return sqwrlVariablesUsed; } 
-  public void setUsesSQWRLVariables() { sqwrlVariablesUsed = true; }
-  public boolean isSQWRLMakeSet() { return isSQWRLMakeSet; }
-  public void setIsSQWRLMakeSet() { isSQWRLMakeSet = true; }
+  public boolean usesSQWRLSetResults() { return sqwrlSetResultsUsed; } 
+  public void setUsesSQWRLSetResults() { sqwrlSetResultsUsed = true; }
+  public boolean isSQWRLMakeSet() { return builtInName.equals(SQWRLNames.MakeSet); }
+  public boolean isSQWRLGroupBy() { return builtInName.equals(SQWRLNames.GroupBy); }
 
   public boolean usesAtLeastOneVariableOf(Set<String> variableNames) throws BuiltInException
   { 

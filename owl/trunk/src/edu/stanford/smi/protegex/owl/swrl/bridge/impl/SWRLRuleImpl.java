@@ -65,7 +65,10 @@ public class SWRLRuleImpl implements SWRLRule
     List<Atom> result = new ArrayList<Atom>();
 
     for (Atom atom : bodyAtoms) {
-      if ((atom instanceof BuiltInAtom) && ((BuiltInAtom)atom).usesSQWRLVariables()) continue;
+      if (atom instanceof BuiltInAtom) {
+    	BuiltInAtom builtInAtom = (BuiltInAtom)atom;	
+    	if (builtInAtom.usesSQWRLSetResults() || builtInAtom.isSQWRLGroupBy()) continue;
+      } // if
       result.add(atom);
     } // for
 
@@ -77,7 +80,10 @@ public class SWRLRuleImpl implements SWRLRule
     List<Atom> result = new ArrayList<Atom>();
 
     for (Atom atom : bodyAtoms) {
-      if ((atom instanceof BuiltInAtom) && ((BuiltInAtom)atom).isSQWRLMakeSet()) continue;
+    	if (atom instanceof BuiltInAtom) {
+    	  BuiltInAtom builtInAtom = (BuiltInAtom)atom;
+    	  if (builtInAtom.isSQWRLMakeSet() || builtInAtom.isSQWRLGroupBy()) continue;
+      } // if
       result.add(atom);
     } // for
 
@@ -159,7 +165,7 @@ public class SWRLRuleImpl implements SWRLRule
     for (Atom atom : atoms) {
       if (atom instanceof BuiltInAtom) {
         BuiltInAtom builtInAtom = (BuiltInAtom)atom;
-        if (builtInNames.contains(builtInAtom.getBuiltInPrefixedName())) result.add(builtInAtom);
+        if (builtInNames.contains(builtInAtom.getBuiltInName())) result.add(builtInAtom);
         } // if
     } // for
     return result;
@@ -216,7 +222,7 @@ public class SWRLRuleImpl implements SWRLRule
      preprocessBuiltInIndexes();
 
      for (BuiltInAtom builtInAtom : getBuiltInAtomsFromHead(SQWRLNames.getHeadBuiltInNames())) {
-       String builtInName = builtInAtom.getBuiltInPrefixedName();
+       String builtInName = builtInAtom.getBuiltInName();
        hasSQWRLBuiltIns = true;
        
        for (BuiltInArgument argument : builtInAtom.getArguments()) {
@@ -285,23 +291,21 @@ public class SWRLRuleImpl implements SWRLRule
       String setName = builtInAtom.getArgumentVariableName(0); // First argument is the set name
 
       hasSQWRLSetBuiltIns = true;
-      builtInAtom.setIsSQWRLMakeSet();
 
       if (builtInAtom.getBuiltInName().equals(SQWRLNames.MakeSet)) {
-    	if (builtInAtom.getNumberOfArguments() < 2) throw new SQWRLException("makeSet built-in must have at least two arguments");
+    	if (builtInAtom.getNumberOfArguments() != 2) throw new SQWRLException("makeSet must have two arguments");
         if (!setNames.contains(setName)) setNames.add(setName);
-
       } else if (builtInAtom.getBuiltInName().equals(SQWRLNames.GroupBy)) {
         List<BuiltInArgument> builtInArguments = builtInAtom.getArguments();
-        List<BuiltInArgument> groupArguments = builtInArguments.subList(1, builtInArguments.size() - 1);
+        List<BuiltInArgument> groupArguments = builtInArguments.subList(1, builtInArguments.size());
 
-        if (builtInAtom.getNumberOfArguments() < 2) throw new SQWRLException("groupBy built-in must have at least two arguments");
+        if (builtInAtom.getNumberOfArguments() < 2) throw new SQWRLException("groupBy must have at least two arguments");
         if (!setNames.contains(setName)) throw new SQWRLException("groupBy applied to undefined set ?" + setName);
-        if (setGroupArgumentsMap.containsKey(setName)) throw new SQWRLException("group specified more than once for same set ?" + setName);
+        if (setGroupArgumentsMap.containsKey(setName)) throw new SQWRLException("groupBy specified more than once for same set ?" + setName);
         
         setGroupArgumentsMap.put(setName, groupArguments); // Store group arguments
 
-        System.err.println("found group argument for set ?" + setName + " and it is " + groupArguments);
+        System.err.println("found group arguments " + groupArguments + " for set " + setName);
       } // if          
     } // for
   } // preprocessSQWRLSetBuildBuiltIns
@@ -314,50 +318,34 @@ public class SWRLRuleImpl implements SWRLRule
     Set<String> cascadedUnboundVariableNames = new HashSet<String>();
 
     for (BuiltInAtom builtInAtom : getBuiltInAtomsFromBody()) {
-      String builtInName = builtInAtom.getBuiltInPrefixedName();
-      if (SQWRLNames.isSetOperationBuiltIn(builtInName)) {
-        Set<String> argumentsVariableNames;
-
-        if (builtInAtom.getNumberOfArguments() < 1) throw new SQWRLException("set-operation built-ins must have at least one argument");
-
-        hasSQWRLSetBuiltIns = true;
-        
-        if (builtInName.equals(SQWRLNames.MakeSet)) { // Process set make operator
-          String createdSetName = builtInAtom.getArgumentVariableName(0); // Created set is always first argument
-          if (setNames.contains(createdSetName)) throw new SQWRLException("set '" + createdSetName + "' can only be created once");
-          setNames.add(createdSetName);
-          setGroupArgumentsMap.put(createdSetName, new ArrayList<BuiltInArgument>());
-
-          argumentsVariableNames = builtInAtom.getArgumentsVariableNamesExceptFirst(); // Exclude created set
-        } else {
-          argumentsVariableNames = builtInAtom.getArgumentsVariableNames();
-        } // if
+      String builtInName = builtInAtom.getBuiltInName();
+      String builtInPrefixedName = builtInAtom.getBuiltInPrefixedName();
+      if (builtInName.equals(SQWRLNames.MakeSet) || SQWRLNames.isSetOperationBuiltIn(builtInName)) {
+        Set<String> argumentsVariableNames = builtInAtom.getArgumentsVariableNames();
 
         for (String variableName : argumentsVariableNames) {
-          if (setGroupArgumentsMap.containsKey(variableName)) { // Variable refers to a set with a group
-            //System.err.println("appending arguments from variable '" + variableName + "' for built-in '" + builtInName + "': " + setGroupArgumentsMap.get(variableName));
+          if (setNames.contains(variableName) && setGroupArgumentsMap.containsKey(variableName)) { // Variable refers to a grouped set
             List<BuiltInArgument> setGroupArguments = setGroupArgumentsMap.get(variableName);
             builtInAtom.addArguments(setGroupArguments); // Append each set's group arguments to built-in
-
-            // The set generated by an built-in that creates a set will get groups from all the input sets to the built-in
-            if (SQWRLNames.isCreateSetOperationBuiltIn(builtInName)) { 
-              String createdSetName = builtInAtom.getArgumentVariableName(0); 
-              if (!setGroupArgumentsMap.containsKey(createdSetName)) 
-                throw new SQWRLException("internal error: set '" + createdSetName + "' has no group set");
-              setGroupArgumentsMap.get(createdSetName).addAll(setGroupArguments);
-            } // if
+            
+            System.err.println("appending group arguments " + setGroupArgumentsMap.get(variableName) +  
+            		            " in built-in " + builtInPrefixedName + " for set " + variableName);
           } // if
         } // for
-
-        builtInAtom.setUsesSQWRLVariables();
-        //System.err.println("adding unbound variables for built-in '" + builtInName + "': " + builtInAtom.getUnboundArgumentVariableNames());
-        cascadedUnboundVariableNames.addAll(builtInAtom.getUnboundArgumentVariableNames());
+        
+        if (builtInAtom.hasUnboundArguments()) { // Keep track of built-in's unbound arguments so that we can mark dependent built-ins
+          Set<String> unboundVariableNames = builtInAtom.getUnboundArgumentVariableNames();
+          System.err.println("adding unbound variables " + unboundVariableNames + " for built-in " + builtInPrefixedName);
+          cascadedUnboundVariableNames.addAll(unboundVariableNames);
+        } // if
       } else if (!SQWRLNames.isSQWRLBuiltIn(builtInName)) {
         // Mark later non SQWRL built-ins that (directly or indirectly) use variables bound by set operation built-ins
         if (builtInAtom.usesAtLeastOneVariableOf(cascadedUnboundVariableNames)) {
-          builtInAtom.setUsesSQWRLVariables();
-          //System.err.println("marking built-in as using SQWRL variables '" + builtInAtom + "'");
-          cascadedUnboundVariableNames.addAll(builtInAtom.getUnboundArgumentVariableNames()); // Record its unbound variables.
+          builtInAtom.setUsesSQWRLSetResults(); // Mark this built-in as dependent on set built-in bindings
+          System.err.println("marking built-in " + builtInPrefixedName + " as using SQWRL set bindings");
+          if (builtInAtom.hasUnboundArguments()) { // Cascade the dependency from this built-in to others using its arguments
+            cascadedUnboundVariableNames.addAll(builtInAtom.getUnboundArgumentVariableNames()); // Record its unbound variables too.
+          } // if
         } // if
       } // if
     } // for

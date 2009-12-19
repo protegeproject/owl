@@ -10,7 +10,20 @@ public class SQWRLNames
 {
   public static String SQWRLBuiltInLibraryName = "SQWRLBuiltIns";
 
-  public static final String SQWRLPrefix = "sqwrl";
+  public static final String SQWRLNamespace = "http://sqwrl.stanford.edu/ontologies/built-ins/3.4/sqwrl.owl#";
+
+  public static final String Select = SQWRLNamespace + "select";
+  public static final String SelectDistinct = SQWRLNamespace + "selectDistinct";
+  public static final String Count = SQWRLNamespace + "count";
+  public static final String CountDistinct = SQWRLNamespace + "countDistinct";
+  public static final String Avg = SQWRLNamespace + "avg";
+  public static final String Min = SQWRLNamespace + "min";
+  public static final String Max = SQWRLNamespace + "max";
+  public static final String Sum = SQWRLNamespace + "sum";
+  public static final String Median = SQWRLNamespace + "median";
+  public static final String OrderBy = SQWRLNamespace + "orderBy";
+  public static final String OrderByDescending = SQWRLNamespace + "orderByDescending";
+  public static final String ColumnNames = SQWRLNamespace + "columnNames";
 
   public static final String MinAggregateFunction = "min"; 
   public static final String MaxAggregateFunction = "max"; 
@@ -20,41 +33,23 @@ public class SQWRLNames
   public static final String CountAggregateFunction = "count"; 
   public static final String CountDistinctAggregateFunction = "countDistinct"; 
 
-  public static final String Select = SQWRLPrefix + ":" + "select";
-  public static final String SelectDistinct = SQWRLPrefix + ":" + "selectDistinct";
-  public static final String Count = SQWRLPrefix + ":" + "count";
-  public static final String CountDistinct = SQWRLPrefix + ":" + "countDistinct";
-  public static final String Avg = SQWRLPrefix + ":" + "avg";
-  public static final String Min = SQWRLPrefix + ":" + "min";
-  public static final String Max = SQWRLPrefix + ":" + "max";
-  public static final String Sum = SQWRLPrefix + ":" + "sum";
-  public static final String Median = SQWRLPrefix + ":" + "median";
-  public static final String OrderBy = SQWRLPrefix + ":" + "orderBy";
-  public static final String OrderByDescending = SQWRLPrefix + ":" + "orderByDescending";
-  public static final String ColumnNames = SQWRLPrefix + ":" + "columnNames";
-
-  public static final String MakeSet = SQWRLPrefix + ":" + "makeSet";
-  public static final String GroupBy = SQWRLPrefix + ":" + "groupBy";
-
   // Set operations
-  public static final String Size = SQWRLPrefix + ":" + "size";
-  public static final String IsEmpty = SQWRLPrefix + ":" + "isEmpty";
-  public static final String NotIsEmpty = SQWRLPrefix + ":" + "notIsEmpty";
-
-  public static final String Intersection = SQWRLPrefix + ":" + "intersection";
-  public static final String Union = SQWRLPrefix + ":" + "union";
-  public static final String Difference = SQWRLPrefix + ":" + "difference";
-  public static final String Contains = SQWRLPrefix + ":" + "contains";
-
-  public static final String Greatest = SQWRLPrefix + ":" + "greatest";
-  public static final String GreatestN = SQWRLPrefix + ":" + "greatestN";
-  public static final String NotGreatestN = SQWRLPrefix + ":" + "notGreatestN";
-  public static final String Least = SQWRLPrefix + ":" + "least";
-  public static final String LeastN = SQWRLPrefix + ":" + "leastN";
-
-
-  public static final String NotIntersects = SQWRLPrefix + ":" + "notIntersects";
-  public static final String NotContains = SQWRLPrefix + ":" + "notContains";
+  public static final String MakeSet = SQWRLNamespace + "makeSet";
+  public static final String GroupBy = SQWRLNamespace + "groupBy";
+  public static final String Size = SQWRLNamespace + "size";
+  public static final String IsEmpty = SQWRLNamespace + "isEmpty";
+  public static final String NotIsEmpty = SQWRLNamespace + "notIsEmpty";
+  public static final String Intersection = SQWRLNamespace + "intersection";
+  public static final String Union = SQWRLNamespace + "union";
+  public static final String Difference = SQWRLNamespace + "difference";
+  public static final String Contains = SQWRLNamespace + "contains";
+  public static final String Greatest = SQWRLNamespace + "greatest";
+  public static final String GreatestN = SQWRLNamespace + "greatestN";
+  public static final String NotGreatestN = SQWRLNamespace + "notGreatestN";
+  public static final String Least = SQWRLNamespace + "least";
+  public static final String LeastN = SQWRLNamespace + "leastN";
+  public static final String NotIntersects = SQWRLNamespace + "notIntersects";
+  public static final String NotContains = SQWRLNamespace + "notContains";
 
   private static final String headBuiltInNamesArray[] 
      = { Select, SelectDistinct, Count, CountDistinct, Avg, Min, Max, Sum, OrderBy, OrderByDescending, ColumnNames };
