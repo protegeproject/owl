@@ -9,7 +9,7 @@ import java.util.List;
 /**
  ** Interface representing a SWRL built-in atom
  */
-public interface BuiltInAtom extends Atom
+public interface BuiltInAtom  extends Atom
 {
   String getBuiltInName();
   String getBuiltInPrefixedName();
@@ -24,13 +24,14 @@ public interface BuiltInAtom extends Atom
   boolean hasUnboundArguments();
   Set<String> getUnboundArgumentVariableNames() throws BuiltInException;
   String getArgumentVariableName(int argumentNumber) throws BuiltInException;
+  String getArgumentVariablePrefixedName(int argumentNumber) throws BuiltInException;
   Set<String> getArgumentsVariableNames() throws BuiltInException;
   Set<String> getArgumentsVariableNamesExceptFirst() throws BuiltInException;
   void addArguments(List<BuiltInArgument> additionalArguments);
 
-  boolean usesSQWRLVariables();
-  void setUsesSQWRLVariables();
+  boolean usesSQWRLSetResults();
+  void setUsesSQWRLSetResults();
   boolean isSQWRLMakeSet();
-  void setIsSQWRLMakeSet();
+  boolean isSQWRLGroupBy();
 } // BuiltInAtom
 

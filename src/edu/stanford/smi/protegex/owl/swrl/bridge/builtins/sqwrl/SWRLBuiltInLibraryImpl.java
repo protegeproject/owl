@@ -36,9 +36,11 @@ import edu.stanford.smi.protegex.owl.swrl.sqwrl.PropertyValue;
 import edu.stanford.smi.protegex.owl.swrl.sqwrl.SQWRLNames;
 import edu.stanford.smi.protegex.owl.swrl.sqwrl.impl.ResultImpl;
 
-/**
- ** Implementation library for SQWRL query built-ins. See <a href="http://protege.cim3.net/cgi-bin/wiki.pl?SQWRL">here</a> for documentation
- ** on this built-in library.
+/*
+ * Implementation library for SQWRL built-ins. See <a href="http://protege.cim3.net/cgi-bin/wiki.pl?SQWRL">here</a> for documentation
+ * on this built-in library.
+ *
+ *  
  */
 public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
 {
@@ -113,10 +115,10 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
 
   public boolean makeSet(List<BuiltInArgument> arguments) throws BuiltInException
   {
-	  String setID = getSetIDInMake(arguments); // Get unique ID for set; does argument checking
-	    String setName = getSetName(arguments, 0);
-	    BuiltInArgument value = arguments.get(1); // The second argument is always the value
-	    Set<BuiltInArgument> set;
+	String setID = getSetIDInMake(arguments); // Get unique ID for set; does argument checking
+	String setName = getSetName(arguments, 0);
+	BuiltInArgument value = arguments.get(1); // The second argument is always the value
+	Set<BuiltInArgument> set;
 	    
     System.err.println("sqwrl.makeSet: setID: " + setID);
     System.err.println("sqwrl.makeSet: setName: " + setName);
@@ -125,11 +127,11 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
     if (sets.containsKey(setID)) set = sets.get(setID);
     else {  
         set = new HashSet<BuiltInArgument>(); sets.put(setID, set); 
-        System.err.println("making new set with name =" + setName + ", ID =" + setID);
+        System.err.println("making new set with name " + setName + ", ID " + setID);
     } // if
 
     set.add(value);
-    System.err.println("adding value '" + value + "' to set: " + setID);
+    System.err.println("adding value " + value + " to set " + setID);
 
     if (SWRLBuiltInUtil.isUnboundArgument(0, arguments)) arguments.set(0, argumentFactory.createDatatypeValueArgument(setID));
 
@@ -138,12 +140,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
   
   public boolean groupBy(List<BuiltInArgument> arguments) throws BuiltInException
   {
-	String setName = getSetName(arguments, 0);
-	int numberOfGroupArguments = arguments.size() - 2;
-    
-	if (!setGroupElementNumbersMap.containsKey(setName)) setGroupElementNumbersMap.put(setName, numberOfGroupArguments);
-	
-	return true; // Pre-processing in DefaultSWRLRule will take care of grouping variables.
+	return true; // Should never be invoked - is a directive only and is processed in SWRLRule
   } // groupBy
 
   public boolean isEmpty(List<BuiltInArgument> arguments) throws BuiltInException
@@ -155,7 +152,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
     // System.err.println("isEmpty: setID: " + setID);
 
     if (sets.containsKey(setID)) result = sets.get(setID).size() == 0;
-    else throw new BuiltInException("internal error: no set found for ID: " + setID);
+    else throw new BuiltInException("internal error: no set found for ID " + setID);
 
     return result;
   } // isEmpty
@@ -651,11 +648,11 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
     int numberOfGroupArguments = arguments.size() - 2;
     boolean hasGroupPattern  = numberOfGroupArguments != 0;
     String groupPattern = !hasGroupPattern ? "" : SWRLBuiltInUtil.createInvocationPattern(getInvokingBridge(), ruleName, 0, false,
-                                                                                          arguments.subList(2, arguments.size() - 1));
+                                                                                          arguments.subList(2, arguments.size()));
     if (hasGroupPattern) {
     	if (!setGroupElementNumbersMap.containsKey(setName)) setGroupElementNumbersMap.put(setName, numberOfGroupArguments);
     	else if (setGroupElementNumbersMap.get(setName) != numberOfGroupArguments) {
-    		throw new BuiltInException("internal error: inconsistent number of group elements for set: " + setName);
+    		throw new BuiltInException("internal error: inconsistent number of group elements for set " + setName);
     	} //if
     } // if
 	                           
@@ -671,7 +668,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
 
     if (hasGroupPattern) {
     	groupPattern = SWRLBuiltInUtil.createInvocationPattern(getInvokingBridge(), ruleName, 0, false, 
-    			                                               arguments.subList(numberOfCoreArguments, arguments.size() - 1));
+    			                                               arguments.subList(numberOfCoreArguments, arguments.size()));
     } // if
 
     return ruleName + ":" + setName + ":" + groupPattern;
@@ -704,7 +701,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
 
   private Set<BuiltInArgument> getSet(String setID) throws BuiltInException
   {
-    if (!isSet(setID)) throw new BuiltInException("internal error: no set found for ID: " + setID);
+    if (!isSet(setID)) throw new BuiltInException("internal error: no set found for ID " + setID);
     return sets.get(setID);
   } // getSet
 
