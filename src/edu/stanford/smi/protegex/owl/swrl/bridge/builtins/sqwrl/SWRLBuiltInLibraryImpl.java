@@ -272,10 +272,10 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
       
       if (set.isEmpty()) result = false;
       else {
-        float sumValue = 0, value;
+        double sumValue = 0, value;
         for (BuiltInArgument element : set) {
           checkThatElementIsComparable(element);
-          value = getArgumentAsAFloat(element);
+          value = getArgumentAsADouble(element);
           sumValue += value;
         } // for
         
@@ -307,10 +307,10 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
       
       if (set.isEmpty()) result = false;
       else {
-        float avgValue, sumValue = 0, value;
+        double avgValue, sumValue = 0, value;
         for (BuiltInArgument element : set) {
           checkThatElementIsComparable(element);
-          value = getArgumentAsAFloat(element);
+          value = getArgumentAsADouble(element);
           sumValue += value;
         } // for
         avgValue = sumValue / set.size();
@@ -334,13 +334,13 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
       
       if (set.isEmpty()) result = false;
       else {
-        float[] valueArray = new float[set.size()];
+        double[] valueArray = new double[set.size()];
         int count = 0, middle = set.size() / 2;
-        float medianValue, value;
+        double medianValue, value;
 
         for (BuiltInArgument element : set) {
           checkThatElementIsComparable(element);
-          value = getArgumentAsAFloat(element);
+          value = getArgumentAsADouble(element);
           valueArray[count++] = value;
         } // for
         
@@ -624,6 +624,10 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
     boolean hasGroupPattern  = numberOfGroupArguments != 0;
     String groupPattern = !hasGroupPattern ? "" : createInvocationPattern(getInvokingBridge(), ruleName, 0, false,
                                                                                           arguments.subList(2, arguments.size()));
+    
+    if (isBoundArgument(0, arguments) && !setGroupElementNumbersMap.containsKey(setName)) // Set variable already used in non set context  
+    	throw new BuiltInException("set variable ?" + arguments.get(0).getPrefixedVariableName() + " already used in non set context");
+    
     if (hasGroupPattern) {
     	if (!setGroupElementNumbersMap.containsKey(setName)) setGroupElementNumbersMap.put(setName, numberOfGroupArguments);
     	else if (setGroupElementNumbersMap.get(setName) != numberOfGroupArguments) {

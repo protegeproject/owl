@@ -10,6 +10,7 @@ public interface BuiltInArgument extends Argument
 {
   boolean isVariable();
   boolean isUnbound();
+  boolean isBound();
   String getVariableName() throws BuiltInException;
   String getPrefixedVariableName() throws BuiltInException;
   void setVariableName(String variableName, String prefixedVariableName);

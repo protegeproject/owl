@@ -72,6 +72,7 @@ public class BuiltInArgumentImpl implements BuiltInArgument
 
   public void setUnbound() { isArgumentUnbound = true; }
   public boolean isUnbound() { return isArgumentUnbound; }
+  public boolean isBound() { return !isArgumentUnbound; }
 
   public String toString()
   {
