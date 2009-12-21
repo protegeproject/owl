@@ -760,6 +760,13 @@ public boolean isUnboundArgument(int argumentNumber, List<BuiltInArgument> argum
   return arguments.get(argumentNumber).isUnbound();
 } // isUnboundArgument
 
+public boolean isBoundArgument(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException
+{
+  checkArgumentNumber(argumentNumber, arguments);
+
+  return arguments.get(argumentNumber).isBound();
+} // isBoundArgument
+
 /**
  ** Get 0-offset position of first unbound argument; return -1 if no unbound arguments are found.
  */
