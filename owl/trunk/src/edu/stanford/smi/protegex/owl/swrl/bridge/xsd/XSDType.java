@@ -34,7 +34,7 @@ public abstract class XSDType implements Comparable
     try {
       uri = new java.net.URI(uriString);
     } catch (URISyntaxException e) {
-      throw new DatatypeConversionException("invalid URI '" + uri + "' associated with value '" + content + "'");
+      throw new DatatypeConversionException("invalid URI " + uri + " associated with value " + content + "");
     } // try
   } // setURI
 

@@ -22,9 +22,9 @@ public class XSDDuration extends XSDType
 
   protected void validate() throws DatatypeConversionException
   {
-    if (getContent() == null) throw new DatatypeConversionException("null content for Duration literal");
+    if (getContent() == null) throw new DatatypeConversionException("null content for XSD:duration literal");
 
-    if (!XSDTimeUtil.isValidXSDDuration(getContent())) throw new DatatypeConversionException("invalid xsd:Duration '" + getContent() + "'");
+    if (!XSDTimeUtil.isValidXSDDuration(getContent())) throw new DatatypeConversionException("invalid xsd:Duration: " + getContent());
   }  // validate
 
 } // XSDDuration

@@ -253,6 +253,11 @@ public class OWLConversionFactoryImpl implements OWLConversionFactory
     else throw new OWLConversionFactoryException("unsupported OWL axiom: " + axiom);
   } // putOWLAxiom
 
+  public boolean isValidURI(String uri)
+  {
+    return SWRLOWLUtil.isValidURI(uri); 
+  } // isValidURI
+  
   private OWLIndividual convertOWLIndividual(edu.stanford.smi.protegex.owl.model.OWLIndividual individual) throws OWLConversionFactoryException 
   { 
     return getOWLIndividual(individual.getName()); 

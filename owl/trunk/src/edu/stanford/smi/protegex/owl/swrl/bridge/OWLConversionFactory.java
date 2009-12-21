@@ -1,12 +1,12 @@
 
 package edu.stanford.smi.protegex.owl.swrl.bridge;
 
-import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.OWLConversionFactoryException;
+import java.util.Set;
+
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.BuiltInException;
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.DatatypeConversionException;
+import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.OWLConversionFactoryException;
 import edu.stanford.smi.protegex.owl.swrl.sqwrl.exceptions.SQWRLException;
-
-import java.util.*;
 
 /**
  * Interface to insert and get OWLAPI-like entities into and from a Protege-OWL model.
@@ -32,7 +32,7 @@ public interface OWLConversionFactory
   boolean isOWLIndividualOfClass(String individualName, String className);
   boolean isSWRLBuiltIn(String builtInName);
   String createNewResourceName(String prefix);
-  
+  boolean isValidURI(String uri);
   void putOWLClass(OWLClass owlClass) throws OWLConversionFactoryException;
   void putOWLIndividual(OWLIndividual owlIndividual) throws OWLConversionFactoryException;
   void putOWLAxiom(OWLAxiom axiom) throws OWLConversionFactoryException;

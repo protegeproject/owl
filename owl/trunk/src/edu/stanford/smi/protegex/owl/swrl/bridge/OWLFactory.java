@@ -18,9 +18,12 @@ public interface OWLFactory
 
   OWLClass getOWLClass();
   OWLClass getOWLClass(String classURI);
+  
   OWLIndividual getOWLIndividual(String individualURI);
+  
   OWLObjectProperty getOWLObjectProperty(String propertyURI);
   OWLDatatypeProperty getOWLDataProperty(String propertyURI);
+  
   OWLDatatypeValue getOWLDataValue(Object o) throws DatatypeConversionException; // TODO: get rid of this
   OWLDatatypeValue getOWLDataValue(String s);
   OWLDatatypeValue getOWLDataValue(Number n);

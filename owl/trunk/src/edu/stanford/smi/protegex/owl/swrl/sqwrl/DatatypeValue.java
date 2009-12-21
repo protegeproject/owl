@@ -25,6 +25,8 @@ public interface DatatypeValue extends ResultValue
   boolean isXSDDateTime();
   boolean isXSDDuration();
   boolean isXSDAnyURI();
+  
+  boolean isComparable();
 
   String getString() throws DatatypeConversionException;
 

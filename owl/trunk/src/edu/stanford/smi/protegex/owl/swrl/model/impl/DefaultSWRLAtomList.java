@@ -43,7 +43,7 @@ public class DefaultSWRLAtomList extends DefaultRDFList implements SWRLAtomList
         		if (atomProcessed) s += "  " + SWRLParser.AND_CHAR + "  ";
                 s += SWRLUtil.getSWRLBrowserText((RDFObject)instance, "BUILTIN ATOM");
         	} else {
-        		String builtInName = builtIn.getPrefixedName();
+        		String builtInName = builtIn.getName();
         		if (SQWRLNames.getSetBuildBuiltInNames().contains(builtInName) && !setBuildEncountered && atomProcessed) {
         			setBuildEncountered = true;
         			s += "  " + SWRLParser.RING_CHAR + "  " + SWRLUtil.getSWRLBrowserText((RDFObject)instance, "ATOM");

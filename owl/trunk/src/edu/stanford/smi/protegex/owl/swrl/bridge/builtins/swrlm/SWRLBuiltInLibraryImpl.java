@@ -8,7 +8,6 @@ import org.nfunk.jep.JEP;
 import edu.stanford.smi.protegex.owl.swrl.bridge.ArgumentFactory;
 import edu.stanford.smi.protegex.owl.swrl.bridge.BuiltInArgument;
 import edu.stanford.smi.protegex.owl.swrl.bridge.builtins.AbstractSWRLBuiltInLibrary;
-import edu.stanford.smi.protegex.owl.swrl.bridge.builtins.SWRLBuiltInUtil;
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.BuiltInException;
 
 /**
@@ -46,15 +45,15 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
     boolean result;
     double argument1, argument2;
 
-    SWRLBuiltInUtil.checkNumberOfArgumentsAtLeast(2, arguments.size());
+    checkNumberOfArgumentsAtLeast(2, arguments.size());
 
-    argument2 = SWRLBuiltInUtil.getArgumentAsADouble(1, arguments);
+    argument2 = getArgumentAsADouble(1, arguments);
 
-    if (SWRLBuiltInUtil.isUnboundArgument(0, arguments)) {
+    if (isUnboundArgument(0, arguments)) {
       arguments.set(0, argumentFactory.createDatatypeValueArgument(java.lang.Math.sqrt(argument2)));
       result = true;
     } else {
-      argument1 = SWRLBuiltInUtil.getArgumentAsADouble(0, arguments);
+      argument1 = getArgumentAsADouble(0, arguments);
       result = argument1 == java.lang.Math.sqrt(argument2);
     } // if
     
@@ -70,15 +69,15 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
     boolean result;
     double argument1, argument2;
 
-    SWRLBuiltInUtil.checkNumberOfArgumentsAtLeast(2, arguments.size());
+    checkNumberOfArgumentsAtLeast(2, arguments.size());
 
-    argument2 = SWRLBuiltInUtil.getArgumentAsADouble(1, arguments);
+    argument2 = getArgumentAsADouble(1, arguments);
 
-    if (SWRLBuiltInUtil.isUnboundArgument(0, arguments)) {
+    if (isUnboundArgument(0, arguments)) {
       arguments.set(0, argumentFactory.createDatatypeValueArgument(java.lang.Math.log(argument2)));
       result = true;
     } else {
-      argument1 = SWRLBuiltInUtil.getArgumentAsADouble(0, arguments);
+      argument1 = getArgumentAsADouble(0, arguments);
       result = argument1 == java.lang.Math.log(argument2);
     } // if
     
@@ -96,19 +95,19 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
     String expression;
     boolean result;
 
-    SWRLBuiltInUtil.checkNumberOfArgumentsAtLeast(2, arguments.size());
+    checkNumberOfArgumentsAtLeast(2, arguments.size());
 
-    expression = SWRLBuiltInUtil.getArgumentAsAString(1, arguments);
+    expression = getArgumentAsAString(1, arguments);
 
     if (arguments.size() > 2) {
       List<BuiltInArgument> variableArguments = arguments.subList(2, arguments.size());
 
-      SWRLBuiltInUtil.checkForUnboundArguments(variableArguments, "unexpected unbound expression argument");
-      SWRLBuiltInUtil.checkForNonVariableArguments(variableArguments, "unexpected non variable argument");
+      checkForUnboundArguments(variableArguments, "unexpected unbound expression argument");
+      checkForNonVariableArguments(variableArguments, "unexpected non variable argument");
 
       for (BuiltInArgument argument : variableArguments) { 
         String prefixedVariableName = argument.getPrefixedVariableName(); // We will have already checked that they are all variables
-        double variableValue = SWRLBuiltInUtil.getArgumentAsADouble(argument);
+        double variableValue = getArgumentAsADouble(argument);
         getJEP().addVariable(prefixedVariableName, variableValue);
       } // for
     } // if
@@ -118,11 +117,11 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
     value = getJEP().getValue();
     if (getJEP().hasError()) throw new BuiltInException("exception parsing expression '" + expression + "': " + getJEP().getErrorInfo());
 
-    if (SWRLBuiltInUtil.isUnboundArgument(0, arguments)) {
+    if (isUnboundArgument(0, arguments)) {
       arguments.set(0, argumentFactory.createDatatypeValueArgument(value));
       result = true;
     } else {
-      result = value == SWRLBuiltInUtil.getArgumentAsADouble(0, arguments);
+      result = value == getArgumentAsADouble(0, arguments);
     } // if
     
     return result;

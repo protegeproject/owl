@@ -7,10 +7,8 @@ import edu.stanford.smi.protegex.owl.swrl.bridge.ArgumentFactory;
 import edu.stanford.smi.protegex.owl.swrl.bridge.BuiltInArgument;
 import edu.stanford.smi.protegex.owl.swrl.bridge.MultiArgument;
 import edu.stanford.smi.protegex.owl.swrl.bridge.builtins.AbstractSWRLBuiltInLibrary;
-import edu.stanford.smi.protegex.owl.swrl.bridge.builtins.SWRLBuiltInUtil;
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.BuiltInException;
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.BuiltInNotImplementedException;
-import edu.stanford.smi.protegex.owl.swrl.exceptions.SWRLOWLUtilException;
 import edu.stanford.smi.protegex.owl.swrl.util.SWRLOWLUtil;
 
 /**
@@ -41,23 +39,23 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
    */
   public boolean hasLabel(List<BuiltInArgument> arguments) throws BuiltInException
   {
-    boolean isUnboundArgument = SWRLBuiltInUtil.isUnboundArgument(1, arguments);   
+    boolean isUnboundArgument = isUnboundArgument(1, arguments);   
     String resourceName;
     boolean result = false;
 
-    SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(2, arguments.size());
-    SWRLBuiltInUtil.checkThatArgumentIsAClassPropertyOrIndividual(0, arguments);
+    checkNumberOfArgumentsEqualTo(2, arguments.size());
+    checkThatArgumentIsAClassPropertyOrIndividual(0, arguments);
 
-    resourceName = SWRLBuiltInUtil.getArgumentAsAResourceName(0, arguments);
+    resourceName = getArgumentAsAResourceName(0, arguments);
 
     if (isUnboundArgument) {
-    	MultiArgument multiArgument = argumentFactory.createMultiArgument(SWRLBuiltInUtil.getVariableName(1, arguments), SWRLBuiltInUtil.getPrefixedVariableName(1, arguments));
+    	MultiArgument multiArgument = argumentFactory.createMultiArgument(getVariableName(1, arguments), getPrefixedVariableName(1, arguments));
     	for (String label : SWRLOWLUtil.getRDFSLabels(getInvokingBridge().getOWLModel(), resourceName))
     		multiArgument.addArgument(argumentFactory.createDatatypeValueArgument(label));
     	arguments.set(1, multiArgument);
     	result = !multiArgument.hasNoArguments();
     } else { // Bound argument
-    	String label = SWRLBuiltInUtil.getArgumentAsAString(1, arguments);
+    	String label = getArgumentAsAString(1, arguments);
     	result = SWRLOWLUtil.getRDFSLabels(getInvokingBridge().getOWLModel(), resourceName).contains(label);
     } // if
     
@@ -70,23 +68,23 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
    */
   public boolean hasLabelLanguage(List<BuiltInArgument> arguments) throws BuiltInException
   {
-    boolean isUnboundArgument = SWRLBuiltInUtil.isUnboundArgument(1, arguments);   
+    boolean isUnboundArgument = isUnboundArgument(1, arguments);   
     String resourceName;
     boolean result = false;
 
-    SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(2, arguments.size());
-    SWRLBuiltInUtil.checkThatArgumentIsAClassPropertyOrIndividual(0, arguments);
+    checkNumberOfArgumentsEqualTo(2, arguments.size());
+    checkThatArgumentIsAClassPropertyOrIndividual(0, arguments);
 
-    resourceName = SWRLBuiltInUtil.getArgumentAsAResourceName(0, arguments);
+    resourceName = getArgumentAsAResourceName(0, arguments);
 
     if (isUnboundArgument) {
-     	MultiArgument multiArgument = argumentFactory.createMultiArgument(SWRLBuiltInUtil.getVariableName(1, arguments), SWRLBuiltInUtil.getPrefixedVariableName(1, arguments));
+     	MultiArgument multiArgument = argumentFactory.createMultiArgument(getVariableName(1, arguments), getPrefixedVariableName(1, arguments));
     	for (String language : SWRLOWLUtil.getRDFSLabelLanguages(getInvokingBridge().getOWLModel(), resourceName))
     		multiArgument.addArgument(argumentFactory.createDatatypeValueArgument(language));
     	arguments.set(1, multiArgument);
     	result = !multiArgument.hasNoArguments();
     } else { // Bound argument
-    	String language = SWRLBuiltInUtil.getArgumentAsAString(1, arguments);
+    	String language = getArgumentAsAString(1, arguments);
     	result = SWRLOWLUtil.getRDFSLabelLanguages(getInvokingBridge().getOWLModel(), resourceName).contains(language);
     } // if
     

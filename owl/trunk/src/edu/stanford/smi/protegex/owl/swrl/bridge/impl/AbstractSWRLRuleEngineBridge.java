@@ -43,7 +43,6 @@ import edu.stanford.smi.protegex.owl.swrl.bridge.SWRLRule;
 import edu.stanford.smi.protegex.owl.swrl.bridge.SWRLRuleEngineBridge;
 import edu.stanford.smi.protegex.owl.swrl.bridge.TargetSWRLRuleEngine;
 import edu.stanford.smi.protegex.owl.swrl.bridge.builtins.BuiltInLibraryManager;
-import edu.stanford.smi.protegex.owl.swrl.bridge.builtins.SWRLBuiltInUtil;
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.BuiltInException;
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.DatatypeConversionException;
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.InvalidBuiltInNameException;
@@ -356,7 +355,7 @@ public abstract class AbstractSWRLRuleEngineBridge implements SWRLRuleEngineBrid
   public boolean invokeSWRLBuiltIn(String ruleName, String builtInName, int builtInIndex, boolean isInConsequent, List<BuiltInArgument> arguments)
     throws BuiltInException
   {
-    boolean hasUnboundArguments = SWRLBuiltInUtil.hasUnboundArguments(arguments);
+    boolean hasUnboundArguments = hasUnboundArguments(arguments);
     boolean result;
 
     if (!conversionFactory.isSWRLBuiltIn(builtInName)) throw new InvalidBuiltInNameException(ruleName, builtInName);
@@ -364,7 +363,8 @@ public abstract class AbstractSWRLRuleEngineBridge implements SWRLRuleEngineBrid
     result = BuiltInLibraryManager.invokeSWRLBuiltIn(this, ruleName, builtInName, builtInIndex, isInConsequent, arguments);
     
     if (result && hasUnboundArguments) {
-      SWRLBuiltInUtil.checkForUnboundArguments(ruleName, builtInName, arguments); // Ensure it did not leave any arguments unbound if it evaluated to true
+      if(hasUnboundArguments(arguments))
+        throw new BuiltInException("built-in " + builtInName + " in rule " + ruleName + " has unbound arguments");
       generateBuiltInBindings(ruleName, builtInName, builtInIndex, arguments); // Generate all possible bindings.
     } // if
 
@@ -380,7 +380,7 @@ public abstract class AbstractSWRLRuleEngineBridge implements SWRLRuleEngineBrid
     else throw new SWRLBuiltInBridgeException("error inject OWLDeclarationAxiom; unknown entity type '" + owlEntity.getClass() + "'");
   } // injectOWLDeclarationAxiom
 
-  public OWLClass injectOWLAnonymousClass() throws SWRLBuiltInBridgeException
+  public OWLClass injectOWLClass() throws SWRLBuiltInBridgeException
   {
     OWLClass owlClass = injectedOWLFactory.getOWLClass();
     String className = owlClass.getClassName();
@@ -980,8 +980,8 @@ public abstract class AbstractSWRLRuleEngineBridge implements SWRLRuleEngineBrid
 
   private void checkOWLClassURI(String classURI) throws SWRLBuiltInBridgeException
   {
-    if (!SWRLOWLUtil.isValidURI(classURI)) 
-      throw new SWRLBuiltInBridgeException("attempt to inject class with invalid URI '" + classURI + "'");
+    if (!conversionFactory.isValidURI(classURI))
+      throw new SWRLBuiltInBridgeException("attempt to inject class with invalid URI " + classURI);
   } // checkOWLClassURI
 
   private void cacheOWLPropertyAssertionAxiom(OWLPropertyAssertionAxiom axiom)
@@ -1122,4 +1122,12 @@ public abstract class AbstractSWRLRuleEngineBridge implements SWRLRuleEngineBrid
     return result;
   } // generateArgumentsPattern  
 
+  public boolean hasUnboundArguments(List<BuiltInArgument> arguments)
+  {
+    for (BuiltInArgument argument : arguments) if (argument.isUnbound()) return true;
+
+    return false;
+  } // hasUnboundArguments
+
+  
 } // AbstractSWRLRuleEngineBridge
