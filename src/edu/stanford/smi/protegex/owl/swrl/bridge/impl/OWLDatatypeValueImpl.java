@@ -57,6 +57,8 @@ public class OWLDatatypeValueImpl extends BuiltInArgumentImpl implements OWLData
   public boolean isXSDDateTime() { return value instanceof XSDDateTime; }
   public boolean isXSDDuration() { return value instanceof XSDDuration;}
   public boolean isXSDAnyURI() { return value instanceof XSDAnyURI; }
+  
+  public boolean isComparable() { return isNumeric() || isString() || isXSDTime() || isXSDDateTime() || isXSDDuration(); }
 
   public String getString() throws DatatypeConversionException 
   { 

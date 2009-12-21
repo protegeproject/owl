@@ -7,8 +7,10 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.GregorianCalendar;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Set;
 
 import junit.framework.Assert;
 
@@ -173,8 +175,8 @@ public class XMLSchemaDatatypes {
     }
 
 
-    public static List<String> getSlotSymbols() {
-        List<String> values = new ArrayList<String>();
+    public static Set<String> getSlotSymbols() {
+        Set<String> values = new HashSet<String>();
         for (Enumeration<String> enu = uri2ValueTypeHashtable.keys(); enu.hasMoreElements();) {
             String str = enu.nextElement();
             values.add(str);

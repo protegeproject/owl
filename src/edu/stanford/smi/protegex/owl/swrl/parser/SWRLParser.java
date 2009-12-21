@@ -4,13 +4,13 @@
 package edu.stanford.smi.protegex.owl.swrl.parser;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Set;
 import java.util.StringTokenizer;
 
 import edu.stanford.smi.protegex.owl.model.NamespaceUtil;
@@ -43,15 +43,15 @@ public class SWRLParser
 {
   public final static char AND_CHAR = '\u2227';   // ^
   public final static char IMP_CHAR = '\u2192';   // >
-  public final static char RING_CHAR = '\u02da';   // >
+  public final static char RING_CHAR = '\u02da';   // .
   public final static String delimiters = " ?\n\t()[],\"'" + AND_CHAR + IMP_CHAR + RING_CHAR; // Note space.
 
   private OWLModel owlModel;
   private SWRLFactory swrlFactory;
   private boolean parseOnly;
   private Tokenizer tokenizer;
-  private Collection xmlSchemaSymbols = XMLSchemaDatatypes.getSlotSymbols();
-  private HashSet variables;
+  private Set<String> xmlSchemaSymbols = XMLSchemaDatatypes.getSlotSymbols();
+  private Set<String> variables;
   private boolean inHead = false;
 
   private Map<String, RDFResource> cachedRDFResources;
@@ -61,7 +61,7 @@ public class SWRLParser
     this.owlModel = owlModel;
     swrlFactory = new SWRLFactory(owlModel);
     parseOnly = true;
-    variables = new HashSet();
+    variables = new HashSet<String>();
     cachedRDFResources = new HashMap<String, RDFResource>();
   } // SWRLParser
 
@@ -118,26 +118,26 @@ public class SWRLParser
     
     do {
       if (justProcessedAtom) {
-        if (inHead) message = "Expecting '" + AND_CHAR + "'";
-        else message = "Expecting '" + IMP_CHAR + "' or '" + AND_CHAR + "' or " + RING_CHAR + "'.";
+        if (inHead) message = "Expecting " + AND_CHAR;
+        else message = "Expecting " + IMP_CHAR + " or " + AND_CHAR + " or " + RING_CHAR + ".";
       } else {
         if (inHead) message = "Expecting atom.";
-        else message = "Expecting atom or '" + IMP_CHAR + "'.";
+        else message = "Expecting atom or " + IMP_CHAR + ".";
       } // if
       
       token = getNextNonSpaceToken(message);
       
       if (token.equals("" + IMP_CHAR) || token.equals("->")) { // A rule can have an empty body.
-        if (inHead) throw new SWRLParseException("Second occurence of '" + IMP_CHAR + "'.");
+        if (inHead) throw new SWRLParseException("Second occurence of " + IMP_CHAR + ".");
         inHead = true; 
         justProcessedAtom = false;
       } else if (token.equals("-")) {        
         continue; // Ignore "->" while we build up IMP_CHAR.
       } else if (token.equals("" + AND_CHAR) || token.equals("^")) {
-          if (!justProcessedAtom) throw new SWRLParseException("'" + AND_CHAR + "' may occur only after an atom.");
+          if (!justProcessedAtom) throw new SWRLParseException(AND_CHAR + " may occur only after an atom.");
           justProcessedAtom = false;
       } else if (token.equals("" + RING_CHAR) || token.equals(".")) {
-          if (inHead || !justProcessedAtom) throw new SWRLParseException("'" + RING_CHAR + "' may occur only after a body atom.");
+          if (inHead || !justProcessedAtom) throw new SWRLParseException(RING_CHAR + " may occur only in query body.");
           justProcessedAtom = false;
       } else {
         atom = parseAtom(token);
@@ -167,7 +167,7 @@ public class SWRLParser
   private SWRLAtom parseAtom(String identifier) throws SWRLParseException 
   {
     SWRLAtom atom = null;
-    List enumeratedList = null;
+    List<RDFObject> enumeratedList = null;
     boolean isEnumeratedList = false;
     
     if (identifier.startsWith("[")) { // A data range with an enumerated literal list
@@ -236,17 +236,7 @@ public class SWRLParser
     if (parseOnly) throw new SWRLIncompleteRuleException(errorMessage);
     else throw new SWRLParseException(errorMessage); // Should not get here
   } // getNextNonSpaceToken
-
-  private boolean hasMoreNonSpaceTokens() 
-  {
-    if (!tokenizer.hasMoreTokens()) return false;
-    while (tokenizer.hasMoreTokens()) {
-      String token = tokenizer.nextToken();
-      if (!(token.equals(" ") || token.equals("\n") || token.equals("\t"))) return true;
-    } // while
-    return false;  
-  } // hasMoreNonSpaceTokens
-
+  
   private SWRLAtom parseSameAsAtomParameters() throws SWRLParseException 
   {
     RDFResource iObject1, iObject2;
@@ -350,7 +340,7 @@ public class SWRLParser
   {
     SWRLBuiltin builtin;
     SWRLAtom atom = null;
-    List objects = parseObjectList(); // Swallows ')'
+    List<RDFObject> objects = parseObjectList(); // Swallows ')'
 
     if (!parseOnly) {
       builtin = swrlFactory.getBuiltin(NamespaceUtil.getFullName(owlModel, identifier));
@@ -378,12 +368,12 @@ public class SWRLParser
     return atom;
   } // parseXSDDatatypeParameters
 
-  private SWRLAtom parseEnumeratedListParameters(List enumeratedList)
+  private SWRLAtom parseEnumeratedListParameters(List<RDFObject> enumeratedList)
     throws SWRLParseException {
     RDFObject dObject;
     SWRLAtom atom = null;
     Object literalValue;
-    Iterator iterator;
+    Iterator<RDFObject> iterator;
     
     dObject = parseDObject();
     
@@ -404,12 +394,12 @@ public class SWRLParser
   } // parseEnumeratedListParameters
 
   // Parse a list of variables and literals.
-  private List parseDObjectList() throws SWRLParseException 
+  private List<RDFObject> parseDObjectList() throws SWRLParseException 
   {
     RDFObject dObject;
-    List dObjects = null;
+    List<RDFObject> dObjects = null;
     
-    if (!parseOnly) dObjects = new ArrayList();
+    if (!parseOnly) dObjects = new ArrayList<RDFObject>();
     
     dObject = parseDObject();   
     if (!parseOnly) dObjects.add(dObject);
@@ -425,12 +415,12 @@ public class SWRLParser
   } // parseDObjectList
 
   // Parse a list of variables, literals and individual names. 
-  private List parseObjectList() throws SWRLParseException 
+  private List<RDFObject> parseObjectList() throws SWRLParseException 
   {
     RDFObject object;
-    List objects = null;
+    List<RDFObject> objects = null;
     
-    if (!parseOnly) objects = new ArrayList();
+    if (!parseOnly) objects = new ArrayList<RDFObject>();
     
     object = parseObject();   
     if (!parseOnly) objects.add(object);
@@ -527,19 +517,15 @@ public class SWRLParser
       } // if
     } else { // Is it an integer, float, long or double then?
       try {
-        int integerValue = Integer.parseInt(parsedString);
         if (!parseOnly) parsedEntity = owlModel.createRDFSLiteral(parsedString, owlModel.getXSDint());
       } catch (NumberFormatException e1) {
         try {
-          float floatValue = Float.parseFloat(parsedString);
           if (!parseOnly) parsedEntity = owlModel.createRDFSLiteral(parsedString, owlModel.getXSDfloat());
         } catch (NumberFormatException e3) {
           try {
-            double doubleValue = Double.parseDouble(parsedString);
             if (!parseOnly) parsedEntity = owlModel.createRDFSLiteral(parsedString, owlModel.getXSDdouble());
           } catch (NumberFormatException e4) {
             try { 
-              long longValue = Long.parseLong(parsedString);
               if (!parseOnly) parsedEntity = owlModel.createRDFSLiteral(parsedString, owlModel.getXSDlong());
             } catch (Exception e5) { 
               String errorMessage = "Invalid literal '" + parsedString + "'.";
@@ -713,8 +699,6 @@ public class SWRLParser
 
     return resource;
   } // getRDFResource
-
-  private void clearRDFResourceCache() { cachedRDFResources = new HashMap<String, RDFResource>(); }
   
   private static class Tokenizer 
   {

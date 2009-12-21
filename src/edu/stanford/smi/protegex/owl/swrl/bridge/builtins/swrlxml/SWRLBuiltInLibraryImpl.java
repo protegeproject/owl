@@ -19,7 +19,6 @@ import edu.stanford.smi.protegex.owl.swrl.bridge.MultiArgument;
 import edu.stanford.smi.protegex.owl.swrl.bridge.OWLClass;
 import edu.stanford.smi.protegex.owl.swrl.bridge.OWLIndividual;
 import edu.stanford.smi.protegex.owl.swrl.bridge.builtins.AbstractSWRLBuiltInLibrary;
-import edu.stanford.smi.protegex.owl.swrl.bridge.builtins.SWRLBuiltInUtil;
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.BuiltInException;
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.BuiltInLibraryException;
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.InvalidBuiltInArgumentException;
@@ -67,11 +66,11 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
   { 
     boolean result = false;
 
-    SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(2, arguments.size());
-    SWRLBuiltInUtil.checkForUnboundNonFirstArguments(arguments);
+    checkNumberOfArgumentsEqualTo(2, arguments.size());
+    checkForUnboundNonFirstArguments(arguments);
 
-    if (SWRLBuiltInUtil.isUnboundArgument(0, arguments)) {
-      String inputXMLStreamName = SWRLBuiltInUtil.getArgumentAsAString(1, arguments);
+    if (isUnboundArgument(0, arguments)) {
+      String inputXMLStreamName = getArgumentAsAString(1, arguments);
       OWLIndividual xmlDocument = null;
       Document doc;
 
@@ -99,12 +98,12 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
   {
     boolean result = false;
 
-    SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(3, arguments.size());
-    SWRLBuiltInUtil.checkForUnboundNonFirstArguments(arguments);
+    checkNumberOfArgumentsEqualTo(3, arguments.size());
+    checkForUnboundNonFirstArguments(arguments);
 
-    if (SWRLBuiltInUtil.isUnboundArgument(0, arguments)) {
+    if (isUnboundArgument(0, arguments)) {
       Document doc = getArgumentAsADocument(1, arguments);
-      String path = SWRLBuiltInUtil.getArgumentAsAString(2, arguments);
+      String path = getArgumentAsAString(2, arguments);
       Set<OWLIndividual> owlElements;
 
       if (!elementMappings.containsKey(path)) {
@@ -138,8 +137,8 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
         arguments.set(0, (OWLIndividual)owlElements.toArray()[0]); // Bind the single individual to the first parameter
         result = true;
       } else {
-        MultiArgument multiArgument = argumentFactory.createMultiArgument(SWRLBuiltInUtil.getVariableName(0, arguments), 
-                                                                          SWRLBuiltInUtil.getPrefixedVariableName(0, arguments));
+        MultiArgument multiArgument = argumentFactory.createMultiArgument(getVariableName(0, arguments), 
+                                                                          getPrefixedVariableName(0, arguments));
         for (OWLIndividual xmlElement : owlElements) 
           multiArgument.addArgument(argumentFactory.createIndividualArgument(xmlElement.getIndividualName()));
         arguments.set(0, multiArgument);
@@ -153,12 +152,12 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
   {
     boolean result = false;
 
-    SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(3, arguments.size());
-    SWRLBuiltInUtil.checkForUnboundNonFirstArguments(arguments);
+    checkNumberOfArgumentsEqualTo(3, arguments.size());
+    checkForUnboundNonFirstArguments(arguments);
 
-    if (SWRLBuiltInUtil.isUnboundArgument(0, arguments)) {
+    if (isUnboundArgument(0, arguments)) {
       Element parent = getArgumentAsAnElement(1, arguments);
-      String path = SWRLBuiltInUtil.getArgumentAsAString(2, arguments);
+      String path = getArgumentAsAString(2, arguments);
       Set<OWLIndividual> owlElements;
 
       try {
@@ -188,8 +187,8 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
         arguments.set(0, (OWLIndividual)owlElements.toArray()[0]); // Bind the single individual to the first parameter
         result = true;
       } else {
-        MultiArgument multiArgument = argumentFactory.createMultiArgument(SWRLBuiltInUtil.getVariableName(0, arguments), 
-                                                                          SWRLBuiltInUtil.getPrefixedVariableName(0, arguments));
+        MultiArgument multiArgument = argumentFactory.createMultiArgument(getVariableName(0, arguments), 
+                                                                          getPrefixedVariableName(0, arguments));
         for (OWLIndividual xmlElement : owlElements) 
           multiArgument.addArgument(argumentFactory.createIndividualArgument(xmlElement.getIndividualName()));
         arguments.set(0, multiArgument);
@@ -204,12 +203,12 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
   {
     boolean result = false;
 
-    SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(3, arguments.size());
-    SWRLBuiltInUtil.checkForUnboundNonFirstArguments(arguments);
+    checkNumberOfArgumentsEqualTo(3, arguments.size());
+    checkForUnboundNonFirstArguments(arguments);
 
-    if (SWRLBuiltInUtil.isUnboundArgument(0, arguments)) {
+    if (isUnboundArgument(0, arguments)) {
       Element element = getArgumentAsAnElement(1, arguments);
-      String attributeName = SWRLBuiltInUtil.getArgumentAsAString(2, arguments);
+      String attributeName = getArgumentAsAString(2, arguments);
       String attributeValue = element.getAttributeValue(attributeName);
 
       if (attributeValue != null) {
@@ -224,8 +223,8 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
   {
     Document document = null;
 
-    if (SWRLBuiltInUtil.isArgumentAnIndividual(argumentNumber, arguments)) {
-      String individualName = SWRLBuiltInUtil.getArgumentAsAnIndividualName(argumentNumber, arguments);
+    if (isArgumentAnIndividual(argumentNumber, arguments)) {
+      String individualName = getArgumentAsAnIndividualName(argumentNumber, arguments);
       
       if (getInvokingBridge().isOWLIndividualOfClass(individualName, XMLBridgeMapper.XMLDocumentMappingOWLClassName)) {
       } else throw new InvalidBuiltInArgumentException(argumentNumber, "individual '" + individualName + "' is not a " +
@@ -243,8 +242,8 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
   {
     Element element = null;
 
-    if (SWRLBuiltInUtil.isArgumentAnIndividual(argumentNumber, arguments)) {
-      String individualName = SWRLBuiltInUtil.getArgumentAsAnIndividualName(argumentNumber, arguments);
+    if (isArgumentAnIndividual(argumentNumber, arguments)) {
+      String individualName = getArgumentAsAnIndividualName(argumentNumber, arguments);
       
       if (getInvokingBridge().isOWLIndividualOfClass(individualName, XMLBridgeMapper.XMLElementMappingOWLClassName)) {
       } else throw new InvalidBuiltInArgumentException(argumentNumber, "individual '" + individualName + "' is not a " +

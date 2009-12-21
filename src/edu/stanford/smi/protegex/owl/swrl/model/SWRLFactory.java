@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import edu.stanford.smi.protegex.owl.model.OWLDatatypeProperty;
@@ -31,7 +32,6 @@ public class SWRLFactory
 {
   private OWLModel owlModel;
   private SWRLSystemFrames systemFrames;
-
 
   public SWRLFactory(OWLModel owlModel) 
   {
@@ -66,7 +66,7 @@ public class SWRLFactory
     return parser.parse(expression, imp);
   } // createImp
 
-  public SWRLImp createImp(SWRLAtom headAtom, Collection bodyAtoms) {
+  public SWRLImp createImp(SWRLAtom headAtom, List<SWRLAtom> bodyAtoms) {
     SWRLAtomList head = createAtomList(Collections.singleton(headAtom));
     SWRLAtomList body = createAtomList(bodyAtoms);
     return createImp(head, body);
@@ -281,8 +281,8 @@ public class SWRLFactory
     RDFResource resource = owlModel.getRDFResource(name);
     SWRLImp result = null;
 
-    if (resource instanceof SWRLImp) result = (SWRLImp) resource;
-    else throw new SWRLFactoryException("invalid attempt to cast " + name + " into SWRLBuiltin (real type is " + resource.getProtegeType() + ")");
+    if (resource instanceof SWRLImp) result = (SWRLImp)resource;
+    else throw new SWRLFactoryException("invalid attempt to cast " + name + " into SWRLImp");
 
     return result;
   } // getImp

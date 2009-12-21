@@ -182,7 +182,7 @@ public Icon getIcon() {
   }
 
   @Override
-public void getReferencedInstances(Set set) 
+  public void getReferencedInstances(Set set) 
   {
     SWRLAtomList head = getHead();
     if (head != null) {

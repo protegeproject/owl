@@ -23,7 +23,7 @@ public interface SWRLBuiltInBridge
   // engine. Eventually subsume all these methods into injectOWLAxiom.
   void injectOWLAxiom(OWLAxiom axiom) throws SWRLBuiltInBridgeException;
 
-  OWLClass injectOWLAnonymousClass() throws SWRLBuiltInBridgeException;
+  OWLClass injectOWLClass() throws SWRLBuiltInBridgeException;
   void injectOWLClass(String className) throws SWRLBuiltInBridgeException;
   OWLIndividual injectOWLIndividual() throws SWRLBuiltInBridgeException;
   void injectOWLIndividual(OWLIndividual owlIndividual) throws SWRLBuiltInBridgeException;

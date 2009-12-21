@@ -6,7 +6,6 @@ import java.util.List;
 import edu.stanford.smi.protegex.owl.swrl.bridge.ArgumentFactory;
 import edu.stanford.smi.protegex.owl.swrl.bridge.BuiltInArgument;
 import edu.stanford.smi.protegex.owl.swrl.bridge.builtins.AbstractSWRLBuiltInLibrary;
-import edu.stanford.smi.protegex.owl.swrl.bridge.builtins.SWRLBuiltInUtil;
 import edu.stanford.smi.protegex.owl.swrl.bridge.builtins.temporal.exceptions.TemporalException;
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.BuiltInException;
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.InvalidBuiltInArgumentException;
@@ -112,8 +111,8 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
     Period period;
     Instant i1, i2;
 
-    SWRLBuiltInUtil.checkNumberOfArgumentsInRange(3, 4, arguments.size());
-    SWRLBuiltInUtil.checkForUnboundNonFirstArguments(arguments);
+    checkNumberOfArgumentsInRange(3, 4, arguments.size());
+    checkForUnboundNonFirstArguments(arguments);
 
     try {
       if (numberOfArguments == 3) {
@@ -127,11 +126,11 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
         operationResult = i1.duration(i2, granularity);
       } // if
 
-      if (SWRLBuiltInUtil.isUnboundArgument(0, arguments)) {
+      if (isUnboundArgument(0, arguments)) {
         arguments.set(0, argumentFactory.createDatatypeValueArgument(operationResult)); // Bind the result to the first parameter
         result = true;
       } else {
-        long argument1 = SWRLBuiltInUtil.getArgumentAsALong(0, arguments);
+        long argument1 = getArgumentAsALong(0, arguments);
         result = (argument1 == operationResult);
       } //if
     } catch (TemporalException e) {
@@ -143,80 +142,80 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
 
   public boolean durationLessThan(List<BuiltInArgument> arguments) throws BuiltInException
   {
-    SWRLBuiltInUtil.checkNumberOfArgumentsInRange(3, 4, arguments.size());
-    SWRLBuiltInUtil.checkForUnboundArguments(arguments);
+    checkNumberOfArgumentsInRange(3, 4, arguments.size());
+    checkForUnboundArguments(arguments);
     long argument1, operationResult;
-    List<BuiltInArgument> newArguments = SWRLBuiltInUtil.copyArguments(arguments);
+    List<BuiltInArgument> newArguments = copyArguments(arguments);
     
-    argument1 = SWRLBuiltInUtil.getArgumentAsALong(0, arguments);
+    argument1 = getArgumentAsALong(0, arguments);
 
     newArguments.get(0).setUnbound();
     duration(newArguments);
-    operationResult = SWRLBuiltInUtil.getArgumentAsALong(0, newArguments);
+    operationResult = getArgumentAsALong(0, newArguments);
 
     return argument1 < operationResult;
   } // durationLessThan    
 
   public boolean durationLessThanOrEqualTo(List<BuiltInArgument> arguments) throws BuiltInException
   {
-    SWRLBuiltInUtil.checkNumberOfArgumentsInRange(3, 4, arguments.size());
-    SWRLBuiltInUtil.checkForUnboundArguments(arguments);
+    checkNumberOfArgumentsInRange(3, 4, arguments.size());
+    checkForUnboundArguments(arguments);
     long argument1, operationResult;
-    List<BuiltInArgument> newArguments = SWRLBuiltInUtil.copyArguments(arguments);
+    List<BuiltInArgument> newArguments = copyArguments(arguments);
     
-    argument1 = SWRLBuiltInUtil.getArgumentAsALong(0, arguments);
+    argument1 = getArgumentAsALong(0, arguments);
 
     newArguments.get(0).setUnbound();
     duration(newArguments);
-    operationResult = SWRLBuiltInUtil.getArgumentAsALong(0, newArguments);
+    operationResult = getArgumentAsALong(0, newArguments);
 
     return argument1 <= operationResult;
   } // durationLessThanOrEqualTo
 
   public boolean durationEqualTo(List<BuiltInArgument> arguments) throws BuiltInException
   {
-    SWRLBuiltInUtil.checkNumberOfArgumentsInRange(3, 4, arguments.size());
-    SWRLBuiltInUtil.checkForUnboundArguments(arguments);
+    checkNumberOfArgumentsInRange(3, 4, arguments.size());
+    checkForUnboundArguments(arguments);
     long argument1, operationResult;
-    List<BuiltInArgument> newArguments = SWRLBuiltInUtil.copyArguments(arguments);
+    List<BuiltInArgument> newArguments = copyArguments(arguments);
     
-    argument1 = SWRLBuiltInUtil.getArgumentAsALong(0, arguments);
+    argument1 = getArgumentAsALong(0, arguments);
 
     newArguments.get(0).setUnbound();
     duration(newArguments);
-    operationResult = SWRLBuiltInUtil.getArgumentAsALong(0, newArguments);
+    operationResult = getArgumentAsALong(0, newArguments);
 
     return argument1 == operationResult;
   } // durationLessThan    
 
   public boolean durationGreaterThan(List<BuiltInArgument> arguments) throws BuiltInException
   {
-    SWRLBuiltInUtil.checkNumberOfArgumentsInRange(3, 4, arguments.size());
-    SWRLBuiltInUtil.checkForUnboundArguments(arguments);
+    checkNumberOfArgumentsInRange(3, 4, arguments.size());
+    checkForUnboundArguments(arguments);
     long argument1, operationResult;
-    List<BuiltInArgument> newArguments = SWRLBuiltInUtil.copyArguments(arguments);
+    List<BuiltInArgument> newArguments = copyArguments(arguments);
     
-    argument1 = SWRLBuiltInUtil.getArgumentAsALong(0, arguments);
+    argument1 = getArgumentAsALong(0, arguments);
 
     newArguments.get(0).setUnbound();
     duration(newArguments);
-    operationResult = SWRLBuiltInUtil.getArgumentAsALong(0, newArguments);
+    operationResult = getArgumentAsALong(0, newArguments);
 
     return argument1 > operationResult;
   } // durationGreaterThan
 
   public boolean durationGreaterThanOrEqualTo(List<BuiltInArgument> arguments) throws BuiltInException
   {
-    SWRLBuiltInUtil.checkNumberOfArgumentsInRange(3, 4, arguments.size());
-    SWRLBuiltInUtil.checkForUnboundArguments(arguments);
+    checkNumberOfArgumentsInRange(3, 4, arguments.size());
+    checkForUnboundArguments(arguments);
     long argument1, operationResult;
-    List<BuiltInArgument> newArguments = SWRLBuiltInUtil.copyArguments(arguments);
+    List<BuiltInArgument> newArguments = copyArguments(arguments);
     
-    argument1 = SWRLBuiltInUtil.getArgumentAsALong(0, arguments);
+    argument1 = getArgumentAsALong(0, arguments);
 
     newArguments.get(0).setUnbound();
     duration(newArguments);
-    operationResult = SWRLBuiltInUtil.getArgumentAsALong(0, newArguments);
+    operationResult = getArgumentAsALong(0, newArguments);
 
     return argument1 >= operationResult;
   } // durationGreaterThanOrEqualTo
@@ -230,17 +229,17 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
   {
     boolean result = false;
 
-    SWRLBuiltInUtil.checkNumberOfArgumentsEqualTo(4, arguments.size());
-    SWRLBuiltInUtil.checkForUnboundNonFirstArguments(arguments);
+    checkNumberOfArgumentsEqualTo(4, arguments.size());
+    checkForUnboundNonFirstArguments(arguments);
 
     try {
-      long granuleCount = SWRLBuiltInUtil.getArgumentAsAnInteger(2, arguments);
+      long granuleCount = getArgumentAsAnInteger(2, arguments);
       int granularity = getArgumentAsAGranularity(3, arguments);
       Instant operationResult = getArgumentAsAnInstant(1, arguments, granularity);
 
       operationResult.addGranuleCount(granuleCount, granularity);
 
-      if (SWRLBuiltInUtil.isUnboundArgument(0, arguments)) {
+      if (isUnboundArgument(0, arguments)) {
         arguments.set(0, argumentFactory.createDatatypeValueArgument(new XSDDateTime(operationResult.toString()))); // Bind the result to the first parameter
         result = true;
       } else {
@@ -259,8 +258,8 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
     boolean result = false;
     int numberOfArguments = arguments.size();
 
-    SWRLBuiltInUtil.checkNumberOfArgumentsInRange(2, 4, numberOfArguments);
-    SWRLBuiltInUtil.checkForUnboundArguments(arguments);
+    checkNumberOfArgumentsInRange(2, 4, numberOfArguments);
+    checkForUnboundArguments(arguments);
 
     try {
       boolean hasGranularityArgument = isArgumentAGranularity(numberOfArguments - 1, arguments);
@@ -313,11 +312,11 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
   {
     Period result = null;
 
-    if (SWRLBuiltInUtil.isArgumentALiteral(argumentNumber, arguments)) {
-      String datetimeString = SWRLBuiltInUtil.getArgumentAsAString(argumentNumber, arguments);
+    if (isArgumentALiteral(argumentNumber, arguments)) {
+      String datetimeString = getArgumentAsAString(argumentNumber, arguments);
       result = new Period(temporal, datetimeString, datetimeString, granularity);
-    } else if (SWRLBuiltInUtil.isArgumentAnIndividual(argumentNumber, arguments)) {
-      String individualName = SWRLBuiltInUtil.getArgumentAsAnIndividualName(argumentNumber, arguments);
+    } else if (isArgumentAnIndividual(argumentNumber, arguments)) {
+      String individualName = getArgumentAsAnIndividualName(argumentNumber, arguments);
       if (getInvokingBridge().isOWLIndividualOfClass(individualName, ValidInstantClassName)) {
         Instant instant = getValidInstant(individualName, granularity);
         result = new Period(temporal, instant, granularity);
@@ -336,11 +335,11 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
   {
     Instant result = null;
 
-    if (SWRLBuiltInUtil.isArgumentALiteral(argumentNumber, arguments)) {
-      String datetimeString = SWRLBuiltInUtil.getArgumentAsAString(argumentNumber, arguments);
+    if (isArgumentALiteral(argumentNumber, arguments)) {
+      String datetimeString = getArgumentAsAString(argumentNumber, arguments);
       result = new Instant(temporal, datetimeString, granularity);
-    } else if (SWRLBuiltInUtil.isArgumentAnIndividual(argumentNumber, arguments)) {
-      String individualName = SWRLBuiltInUtil.getArgumentAsAnIndividualName(argumentNumber, arguments);
+    } else if (isArgumentAnIndividual(argumentNumber, arguments)) {
+      String individualName = getArgumentAsAnIndividualName(argumentNumber, arguments);
       if (getInvokingBridge().isOWLIndividualOfClass(individualName, ValidInstantClassName)) {
         result = getValidInstant(individualName, granularity);
       } else throw new InvalidBuiltInArgumentException(argumentNumber, "individual '" + individualName + "' is not a " + ValidInstantClassName);
@@ -355,11 +354,11 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
     String granularityName;
     int granularity = -1;
 
-    if (SWRLBuiltInUtil.isArgumentALiteral(argumentNumber, arguments)) {
-      granularityName = SWRLBuiltInUtil.getArgumentAsAString(argumentNumber, arguments);
+    if (isArgumentALiteral(argumentNumber, arguments)) {
+      granularityName = getArgumentAsAString(argumentNumber, arguments);
       granularity = Temporal.getIntegerGranularityRepresentation(granularityName);
-    } else if (SWRLBuiltInUtil.isArgumentAnIndividual(argumentNumber, arguments)) {
-      String individualName = SWRLBuiltInUtil.getArgumentAsAnIndividualName(argumentNumber, arguments);
+    } else if (isArgumentAnIndividual(argumentNumber, arguments)) {
+      String individualName = getArgumentAsAnIndividualName(argumentNumber, arguments);
       if (getInvokingBridge().isOWLIndividualOfClass(individualName, GranularityClassName)) {
         int hashIndex = individualName.indexOf('#');
         if (hashIndex == -1) granularityName = individualName;
@@ -377,11 +376,11 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
     String granularityName;
     boolean result = false;
 
-    if (SWRLBuiltInUtil.isArgumentALiteral(argumentNumber, arguments)) {
-      granularityName = SWRLBuiltInUtil.getArgumentAsAString(argumentNumber, arguments);
+    if (isArgumentALiteral(argumentNumber, arguments)) {
+      granularityName = getArgumentAsAString(argumentNumber, arguments);
       result = Temporal.isValidGranularityString(granularityName);
-    } else if (SWRLBuiltInUtil.isArgumentAnIndividual(argumentNumber, arguments)) {
-      String individualName = SWRLBuiltInUtil.getArgumentAsAnIndividualName(argumentNumber, arguments);
+    } else if (isArgumentAnIndividual(argumentNumber, arguments)) {
+      String individualName = getArgumentAsAnIndividualName(argumentNumber, arguments);
       result = getInvokingBridge().isOWLIndividualOfClass(individualName, GranularityClassName);
     } // if
 
@@ -391,7 +390,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
   private Instant getValidInstant(String individualName, int granularity) 
     throws BuiltInException, TemporalException
   {
-    String datetimeString = SWRLBuiltInUtil.getOWLDatatypePropertyValueAsAString(getInvokingBridge(), individualName, HasTimePropertyName);
+    String datetimeString = getOWLDatatypePropertyValueAsAString(getInvokingBridge(), individualName, HasTimePropertyName);
 
     return new Instant(temporal, datetimeString, granularity);
   } // getValidInstant
@@ -399,8 +398,8 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
   private Period getValidPeriod(String individualName, int granularity) 
     throws BuiltInException, TemporalException
   {
-    String startDatetimeString = SWRLBuiltInUtil.getOWLDatatypePropertyValueAsAString(getInvokingBridge(), individualName, HasStartTimePropertyName);
-    String finishDatetimeString = SWRLBuiltInUtil.getOWLDatatypePropertyValueAsAString(getInvokingBridge(), individualName, HasFinishTimePropertyName);
+    String startDatetimeString = getOWLDatatypePropertyValueAsAString(getInvokingBridge(), individualName, HasStartTimePropertyName);
+    String finishDatetimeString = getOWLDatatypePropertyValueAsAString(getInvokingBridge(), individualName, HasFinishTimePropertyName);
 
     return new Period(temporal, startDatetimeString, finishDatetimeString, granularity);
   } // getValidPeriod
