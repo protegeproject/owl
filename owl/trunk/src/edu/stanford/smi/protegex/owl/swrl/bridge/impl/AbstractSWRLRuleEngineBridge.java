@@ -1041,24 +1041,17 @@ public abstract class AbstractSWRLRuleEngineBridge implements SWRLRuleEngineBrid
     } // try
   } // exportOWLAxiom
 
-  private void exportBuiltInBinding(String ruleName, String builtInName, int builtInIndex, List<BuiltInArgument> arguments) 
-    throws BuiltInException
-  {
-    try {
-      defineBuiltInBinding(ruleName, builtInName, builtInIndex, arguments);
-    } catch (SWRLRuleEngineBridgeException e) {
-      throw new BuiltInException("error exporting built-in binding: " + e.getMessage());
-    } // try
-  } // exportBuiltInBinding
-
+  // This method is called with a list of arguments that contain the results of a built-in that bound at least one of its
+  // arguments. Some argument positions may contain multi-arguments, indicating that there is more than one pattern. If so, the 
+  // method generates the cross product of all possible results.
   private void generateBuiltInBindings(String ruleName, String builtInName, int builtInIndex, List<BuiltInArgument> arguments)
     throws BuiltInException
   {
     List<Integer> multiArgumentIndexes = getMultiArgumentIndexes(arguments);
     
-    if (multiArgumentIndexes.isEmpty()) 
-      exportBuiltInBinding(ruleName, builtInName, builtInIndex, arguments); // No multi-arguments - do a simple bind
-    else {
+    if (multiArgumentIndexes.isEmpty()) // No multi-arguments - do a simple bind.
+      exportBuiltInBinding(ruleName, builtInName, builtInIndex, arguments); 
+    else { // Generate cross product of all possible bindings.
       List<Integer> multiArgumentCounts = new ArrayList<Integer>();
       List<Integer> multiArgumentSizes = new ArrayList<Integer>();
       List<BuiltInArgument> argumentsPattern;
@@ -1076,6 +1069,7 @@ public abstract class AbstractSWRLRuleEngineBridge implements SWRLRuleEngineBrid
     } // if
   } // generateBuiltInBindings
 
+  //Find indices of multi-arguments (if any) in a list of arguments.
   private List<Integer> getMultiArgumentIndexes(List<BuiltInArgument> arguments)
   {
     List<Integer> result = new ArrayList<Integer>();
@@ -1085,6 +1079,17 @@ public abstract class AbstractSWRLRuleEngineBridge implements SWRLRuleEngineBrid
 
     return result;
   } // getMultiArgumentIndexes
+
+  // Export a particular binding pattern to a target rule engine.  
+  private void exportBuiltInBinding(String ruleName, String builtInName, int builtInIndex, List<BuiltInArgument> arguments) 
+    throws BuiltInException
+  {
+    try {
+      defineBuiltInBinding(ruleName, builtInName, builtInIndex, arguments);
+    } catch (SWRLRuleEngineBridgeException e) {
+      throw new BuiltInException("error exporting built-in binding: " + e.getMessage());
+    } // try
+  } // exportBuiltInBinding
 
   private static boolean nextMultiArgumentCounts(List<Integer> multiArgumentCounts, List<Integer> multiArgumentSizes)
     throws BuiltInException
