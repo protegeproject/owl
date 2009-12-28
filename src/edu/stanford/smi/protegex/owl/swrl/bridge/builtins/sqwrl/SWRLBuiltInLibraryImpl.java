@@ -130,7 +130,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
     set.add(element);
     // System.err.println("adding element " + element + " to set " + setID);
 
-    if (isUnboundArgument(0, arguments)) arguments.set(0, argumentFactory.createDatatypeValueArgument(setID));
+    if (isUnboundArgument(0, arguments)) arguments.get(0).setBuiltInResult(argumentFactory.createDatatypeValueArgument(setID));
 
     return true;
   } // makeSet
@@ -399,7 +399,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
 
 	    if (!sets.containsKey(setIDResult)) sets.put(setIDResult, intersection);
 
-	    if (isUnboundArgument(0, arguments)) arguments.set(0, argumentFactory.createDatatypeValueArgument(setIDResult));
+	    if (isUnboundArgument(0, arguments)) arguments.get(0).setBuiltInResult(argumentFactory.createDatatypeValueArgument(setIDResult));
 
 	    return true;
    } // intersection
@@ -424,7 +424,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
 
 	    if (!sets.containsKey(setIDResult)) sets.put(setIDResult, union);
 
-	    if (isUnboundArgument(0, arguments)) arguments.set(0, argumentFactory.createDatatypeValueArgument(setIDResult));
+	    if (isUnboundArgument(0, arguments)) arguments.get(0).setBuiltInResult(argumentFactory.createDatatypeValueArgument(setIDResult));
 
 	    return true;
   } // union
@@ -449,7 +449,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
 
 	  if (!sets.containsKey(setIDResult)) sets.put(setIDResult, difference);
 
-	  if (isUnboundArgument(0, arguments)) arguments.set(0, argumentFactory.createDatatypeValueArgument(setIDResult));
+	  if (isUnboundArgument(0, arguments)) arguments.get(0).setBuiltInResult(argumentFactory.createDatatypeValueArgument(setIDResult));
 
 	  return true;
   } // difference

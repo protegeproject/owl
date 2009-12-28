@@ -56,7 +56,6 @@ public class SQWRLNames
   public static final String Intersects = SQWRLNamespace + "intersects";
   public static final String NotIntersects = SQWRLNamespace + "notIntersects";
   
-  
   private static final String headBuiltInNamesArray[] 
      = { Select, SelectDistinct, Count, CountDistinct, Avg, Min, Max, Sum, OrderBy, OrderByDescending, ColumnNames };
 

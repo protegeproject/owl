@@ -88,7 +88,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
         } // try
       } else xmlDocument = documentMappings.get(inputXMLStreamName);
 
-      arguments.set(0, xmlDocument); // Bind the result to the first parameter
+      arguments.get(0).setBuiltInResult(xmlDocument); // Bind the result to the first parameter
       result = true;
     } // if
     return result;
@@ -134,7 +134,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
 
       if (owlElements.isEmpty()) result = false;
       else if (owlElements.size() == 1) {
-        arguments.set(0, (OWLIndividual)owlElements.toArray()[0]); // Bind the single individual to the first parameter
+        arguments.get(0).setBuiltInResult((OWLIndividual)owlElements.toArray()[0]); // Bind the single individual to the first parameter
         result = true;
       } else {
         MultiArgument multiArgument = argumentFactory.createMultiArgument(getVariableName(0, arguments), 
@@ -184,7 +184,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
       
       if (owlElements.isEmpty()) result = false;
       else if (owlElements.size() == 1) {
-        arguments.set(0, (OWLIndividual)owlElements.toArray()[0]); // Bind the single individual to the first parameter
+        arguments.get(0).setBuiltInResult((OWLIndividual)owlElements.toArray()[0]); // Bind the single individual to the first parameter
         result = true;
       } else {
         MultiArgument multiArgument = argumentFactory.createMultiArgument(getVariableName(0, arguments), 
@@ -212,7 +212,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
       String attributeValue = element.getAttributeValue(attributeName);
 
       if (attributeValue != null) {
-        arguments.set(0, argumentFactory.createDatatypeValueArgument(attributeValue));
+        arguments.get(0).setBuiltInResult(argumentFactory.createDatatypeValueArgument(attributeValue));
         result = true;
       } // if
     } // if

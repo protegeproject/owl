@@ -931,7 +931,7 @@ public boolean processResultArgument(List<BuiltInArgument> arguments, int argume
   checkArgumentNumber(argumentNumber, arguments);
 
   if (isUnboundArgument(argumentNumber, arguments)) {
-    arguments.set(argumentNumber, resultArgument); 
+    arguments.get(argumentNumber).setBuiltInResult(resultArgument); 
     result = true;
   } else {
     BuiltInArgument argument = arguments.get(argumentNumber);
@@ -948,7 +948,7 @@ public boolean processResultArgument(List<BuiltInArgument> arguments, int argume
   checkArgumentNumber(argumentNumber, arguments);
 
   if (isUnboundArgument(argumentNumber, arguments)) {
-    arguments.set(argumentNumber, argumentFactory.createDatatypeValueArgument(resultArgument));
+    arguments.get(argumentNumber).setBuiltInResult(argumentFactory.createDatatypeValueArgument(resultArgument));
     result = true;
   } else {
     OWLDatatypeValue argument = getArgumentAsAnOWLDatatypeValue(argumentNumber, arguments);

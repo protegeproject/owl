@@ -26,8 +26,18 @@ public class MultiArgumentImpl extends BuiltInArgumentImpl implements MultiArgum
     this.arguments = arguments;
   } // MultiArgumentImpl
 
-  public void addArgument(BuiltInArgument argument) { arguments.add(argument); }
-  public void setArguments(List<BuiltInArgument> arguments) { this.arguments = arguments; }
+  public void addArgument(BuiltInArgument argument) 
+  { 
+	argument.setVariableName(getVariableName(), getPrefixedVariableName());
+	arguments.add(argument);
+  } // addArguments
+  
+  public void setArguments(List<BuiltInArgument> arguments) 
+  { 
+	  for (BuiltInArgument argument : arguments) argument.setVariableName(getVariableName(), getPrefixedVariableName());
+	  this.arguments = arguments; 
+  } // setArguments
+  
   public List<BuiltInArgument> getArguments() { return arguments; }
   public int getNumberOfArguments() { return arguments.size(); }
   public boolean hasNoArguments() { return arguments.size() == 0; }

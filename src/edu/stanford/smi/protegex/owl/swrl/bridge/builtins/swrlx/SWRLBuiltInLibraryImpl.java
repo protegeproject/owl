@@ -53,7 +53,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
         owlClass = getInvokingBridge().injectOWLClass();
         classInvocationMap.put(createInvocationPattern, owlClass);
       } // if
-      arguments.set(0, owlClass); // Bind the result to the first parameter      
+      arguments.get(0).setBuiltInResult(owlClass); // Bind the result to the first parameter      
     } // if
     
     return true;
@@ -78,7 +78,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
         owlIndividual = getInvokingBridge().injectOWLIndividual();
         individualInvocationMap.put(createInvocationPattern, owlIndividual);
       } // if
-      arguments.set(0, owlIndividual); // Bind the result to the first parameter      
+      arguments.get(0).setBuiltInResult(owlIndividual); // Bind the result to the first parameter      
     } // if
     
     return true;

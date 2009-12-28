@@ -231,7 +231,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
     try {
       if (isUnboundArgument) {
         uri = SWRLOWLUtil.getURI(getInvokingBridge().getOWLModel(), resourceName);
-        arguments.set(1, argumentFactory.createDatatypeValueArgument(uri));
+        arguments.get(1).setBuiltInResult(argumentFactory.createDatatypeValueArgument(uri));
         result = true;
       } else { // Bound argument
         uri = getArgumentAsAString(1, arguments);
@@ -279,7 +279,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
           MultiArgument multiArgument = argumentFactory.createMultiArgument(getVariableName(1, arguments), getPrefixedVariableName(1, arguments));
           for (OWLNamedClass cls: SWRLOWLUtil.getClassesOfIndividual(getInvokingBridge().getOWLModel(), individualName)) 
             multiArgument.addArgument(argumentFactory.createClassArgument(cls.getName()));
-          arguments.set(1, multiArgument);
+          arguments.get(1).setBuiltInResult(multiArgument);
           result = !multiArgument.hasNoArguments();
         } else { // Bound argument
           String className = getArgumentAsAClassName(1, arguments);
@@ -311,7 +311,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
     try {
       if (hasUnboundNumberOfPropertyValuesArgument) {
         numberOfPropertyValues = SWRLOWLUtil.getNumberOfPropertyValues(getInvokingBridge().getOWLModel(), individualName, propertyName, true);
-        arguments.set(0, argumentFactory.createDatatypeValueArgument(numberOfPropertyValues));
+        arguments.get(0).setBuiltInResult(argumentFactory.createDatatypeValueArgument(numberOfPropertyValues));
         result = true;
       } else {
         numberOfPropertyValues = getArgumentAsAnInteger(0, arguments);

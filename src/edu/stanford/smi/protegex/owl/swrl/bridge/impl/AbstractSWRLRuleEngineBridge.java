@@ -180,9 +180,9 @@ public abstract class AbstractSWRLRuleEngineBridge implements SWRLRuleEngineBrid
   private void exportSWRLRulesAndOWLKnowledge() throws SWRLRuleEngineBridgeException, OWLConversionFactoryException
   {
     exportClasses(); // Classes should be exported before rules because rules usually use class definitions.
-    exportSWRLRules();
     exportIndividuals();
     exportAxioms();
+    exportSWRLRules();
   } // exportSWRLRulesAndOWLKnowledge
 
    /**
