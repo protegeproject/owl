@@ -1,8 +1,8 @@
  
 package edu.stanford.smi.protegex.owl.swrl.bridge.impl;
 
-import edu.stanford.smi.protegex.owl.swrl.bridge.*;
-import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.*;
+import edu.stanford.smi.protegex.owl.swrl.bridge.BuiltInArgument;
+import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.BuiltInException;
 
 /**
  ** Class representing argument to built-ins
@@ -17,8 +17,8 @@ public class BuiltInArgumentImpl implements BuiltInArgument
 
   public BuiltInArgumentImpl()
   {
-    variableName = null;
-    prefixedVariableName = null;
+    variableName = "";
+    prefixedVariableName = "";
     isAVariable = false;
     builtInResult = null; 
     isArgumentUnbound = false;
@@ -42,16 +42,16 @@ public class BuiltInArgumentImpl implements BuiltInArgument
     isAVariable = true;
   } // setVariableName
 
-  public String getVariableName() throws BuiltInException
+  public String getVariableName() 
   {
-    if (!isVariable()) throw new BuiltInException("attempt to get variable name of non variable argument '" + this.toString() + "'");
+    //if (!isVariable()) throw new BuiltInException("attempt to get variable name of non variable argument '" + this.toString() + "'");
     
     return variableName;
   } // getVariableName
 
-  public String getPrefixedVariableName() throws BuiltInException
+  public String getPrefixedVariableName() 
   {
-    if (!isVariable()) throw new BuiltInException("attempt to get prefixed variable name of non variable argument '" + this.toString() + "'");
+    //if (!isVariable()) throw new BuiltInException("attempt to get prefixed variable name of non variable argument '" + this.toString() + "'");
     
     return prefixedVariableName;
   } // getPrefixedVariableName
@@ -59,13 +59,15 @@ public class BuiltInArgumentImpl implements BuiltInArgument
   public void setBuiltInResult(BuiltInArgument builtInResult) throws BuiltInException
   { 
     if (!isUnbound()) throw new BuiltInException("attempt to bind value to bound argument '" + this.toString() + "'");
+    
+    isArgumentUnbound = false;
 
     this.builtInResult = builtInResult; 
   } // setBuiltInResult
 
-  public BuiltInArgument getBuiltInResult() throws BuiltInException
+  public BuiltInArgument getBuiltInResult()
   { 
-    if (!isUnbound()) throw new BuiltInException("attempt to retrieve binding from a non bound argument '" + this.toString() + "'");
+    //if (!isUnbound()) throw new BuiltInException("attempt to retrieve binding from a non bound argument '" + this.toString() + "'");
 
     return builtInResult; 
   } // getBuiltInResult
@@ -73,6 +75,7 @@ public class BuiltInArgumentImpl implements BuiltInArgument
   public void setUnbound() { isArgumentUnbound = true; }
   public boolean isUnbound() { return isArgumentUnbound; }
   public boolean isBound() { return !isArgumentUnbound; }
+  public boolean hasBuiltInResult() { return builtInResult != null; }
 
   public String toString()
   {

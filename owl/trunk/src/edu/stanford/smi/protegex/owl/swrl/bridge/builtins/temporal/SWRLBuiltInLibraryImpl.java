@@ -127,7 +127,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
       } // if
 
       if (isUnboundArgument(0, arguments)) {
-        arguments.set(0, argumentFactory.createDatatypeValueArgument(operationResult)); // Bind the result to the first parameter
+        arguments.get(0).setBuiltInResult(argumentFactory.createDatatypeValueArgument(operationResult)); // Bind the result to the first parameter
         result = true;
       } else {
         long argument1 = getArgumentAsALong(0, arguments);
@@ -240,7 +240,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
       operationResult.addGranuleCount(granuleCount, granularity);
 
       if (isUnboundArgument(0, arguments)) {
-        arguments.set(0, argumentFactory.createDatatypeValueArgument(new XSDDateTime(operationResult.toString()))); // Bind the result to the first parameter
+        arguments.get(0).setBuiltInResult(argumentFactory.createDatatypeValueArgument(new XSDDateTime(operationResult.toString()))); // Bind the result to the first parameter
         result = true;
       } else {
         Instant argument1 = getArgumentAsAnInstant(0, arguments, granularity);

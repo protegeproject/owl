@@ -1,8 +1,7 @@
 
 package edu.stanford.smi.protegex.owl.swrl.bridge.impl;
 
-import edu.stanford.smi.protegex.owl.swrl.bridge.*;
-import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.*;
+import edu.stanford.smi.protegex.owl.swrl.bridge.VariableBuiltInArgument;
 
 /**
  ** Interface representing a variable argument to a built-in
@@ -13,15 +12,7 @@ public class VariableBuiltInArgumentImpl extends BuiltInArgumentImpl implements 
 
   public String toString() 
   {
-    String result = "";
-
-    try {
-      result = "?" + getPrefixedVariableName();
-    } catch (BuiltInException e) {
-      result = "INVALID VariableBuiltInArgument: " + e.getMessage();
-    } // try
-
-    return result;
+    return "?" + getPrefixedVariableName();
   } // toString      
       
 } // VariableBuiltInArgumentImpl

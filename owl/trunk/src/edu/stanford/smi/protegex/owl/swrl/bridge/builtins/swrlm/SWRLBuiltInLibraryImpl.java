@@ -50,7 +50,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
     argument2 = getArgumentAsADouble(1, arguments);
 
     if (isUnboundArgument(0, arguments)) {
-      arguments.set(0, argumentFactory.createDatatypeValueArgument(java.lang.Math.sqrt(argument2)));
+      arguments.get(0).setBuiltInResult(argumentFactory.createDatatypeValueArgument(java.lang.Math.sqrt(argument2)));
       result = true;
     } else {
       argument1 = getArgumentAsADouble(0, arguments);
@@ -74,7 +74,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
     argument2 = getArgumentAsADouble(1, arguments);
 
     if (isUnboundArgument(0, arguments)) {
-      arguments.set(0, argumentFactory.createDatatypeValueArgument(java.lang.Math.log(argument2)));
+      arguments.get(0).setBuiltInResult(argumentFactory.createDatatypeValueArgument(java.lang.Math.log(argument2)));
       result = true;
     } else {
       argument1 = getArgumentAsADouble(0, arguments);
@@ -118,7 +118,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
     if (getJEP().hasError()) throw new BuiltInException("exception parsing expression '" + expression + "': " + getJEP().getErrorInfo());
 
     if (isUnboundArgument(0, arguments)) {
-      arguments.set(0, argumentFactory.createDatatypeValueArgument(value));
+      arguments.get(0).setBuiltInResult(argumentFactory.createDatatypeValueArgument(value));
       result = true;
     } else {
       result = value == getArgumentAsADouble(0, arguments);
