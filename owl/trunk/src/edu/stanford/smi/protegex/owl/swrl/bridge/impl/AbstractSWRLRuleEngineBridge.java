@@ -45,7 +45,6 @@ import edu.stanford.smi.protegex.owl.swrl.bridge.TargetSWRLRuleEngine;
 import edu.stanford.smi.protegex.owl.swrl.bridge.builtins.BuiltInLibraryManager;
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.BuiltInException;
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.DatatypeConversionException;
-import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.InvalidBuiltInNameException;
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.OWLConversionFactoryException;
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.OWLFactoryException;
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.SWRLBuiltInBridgeException;
@@ -356,11 +355,7 @@ public abstract class AbstractSWRLRuleEngineBridge implements SWRLRuleEngineBrid
     throws BuiltInException
   {
     boolean hasUnboundArguments = hasUnboundArguments(arguments);
-    boolean result;
-
-    if (!conversionFactory.isSWRLBuiltIn(builtInName)) throw new InvalidBuiltInNameException(ruleName, builtInName);
-
-    result = BuiltInLibraryManager.invokeSWRLBuiltIn(this, ruleName, builtInName, builtInIndex, isInConsequent, arguments);
+    boolean result = BuiltInLibraryManager.invokeSWRLBuiltIn(this, ruleName, builtInName, builtInIndex, isInConsequent, arguments);
     
     if (result && hasUnboundArguments) {
       if(hasUnboundArguments(arguments))
@@ -1044,6 +1039,9 @@ public abstract class AbstractSWRLRuleEngineBridge implements SWRLRuleEngineBrid
   // This method is called with a list of arguments that contain the results of a built-in that bound at least one of its
   // arguments. Some argument positions may contain multi-arguments, indicating that there is more than one pattern. If so, the 
   // method generates the cross product of all possible results.
+  //
+  // Warning: this mechanism is incorrect and only works properly when a single argument is unbound. If two or more
+  // arguments are unbound and contain multi-arguments then the cross product is not correct. TODO: need to fix. 
   private void generateBuiltInBindings(String ruleName, String builtInName, int builtInIndex, List<BuiltInArgument> arguments)
     throws BuiltInException
   {
