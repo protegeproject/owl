@@ -1,11 +1,14 @@
 package edu.stanford.smi.protegex.owl.swrl.model.impl.tests;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
+import edu.stanford.smi.protegex.owl.swrl.model.SWRLAtom;
 import edu.stanford.smi.protegex.owl.swrl.model.SWRLClassAtom;
 import edu.stanford.smi.protegex.owl.swrl.model.SWRLImp;
 import edu.stanford.smi.protegex.owl.swrl.model.SWRLVariable;
-
-import java.util.Collections;
 
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
@@ -18,7 +21,11 @@ public class DeleteImpTestCase extends AbstractSWRLTestCase {
         SWRLVariable x = factory.createVariable("x");
         SWRLClassAtom headAtom = factory.createClassAtom(cls, x);
         SWRLClassAtom bodyAtom = factory.createClassAtom(cls, x);
-        SWRLImp imp = factory.createImp(headAtom, Collections.singleton(bodyAtom));
+        List<SWRLAtom> list = new ArrayList<SWRLAtom>();
+        list.add(bodyAtom);
+        //TODO: Martin, please take a look. Maybe interface should be changed
+        SWRLImp imp = factory.createImp(headAtom, list);
+        //SWRLImp imp = factory.createImp(headAtom, Collections.singleton(bodyAtom));
         imp.deleteImp();
         assertEquals(oldFrameCount, owlModel.getFrameCount());
         assertTrue(x.isDeleted());
@@ -32,7 +39,11 @@ public class DeleteImpTestCase extends AbstractSWRLTestCase {
         String otherImpText = otherImp.getBrowserText();
         SWRLClassAtom headAtom = factory.createClassAtom(cls, x);
         SWRLClassAtom bodyAtom = factory.createClassAtom(cls, x);
-        SWRLImp imp = factory.createImp(headAtom, Collections.singleton(bodyAtom));
+        List<SWRLAtom> list = new ArrayList<SWRLAtom>();
+        list.add(bodyAtom);
+        //TODO: Martin, please take a look. Maybe interface should be changed
+        SWRLImp imp = factory.createImp(headAtom, list);
+        //SWRLImp imp = factory.createImp(headAtom, Collections.singleton(bodyAtom));
         imp.deleteImp();
         assertFalse(x.isDeleted());
         assertEquals(otherImpText, otherImp.getBrowserText());
