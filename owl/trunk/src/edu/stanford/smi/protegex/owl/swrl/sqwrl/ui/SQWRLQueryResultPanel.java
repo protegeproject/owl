@@ -139,9 +139,9 @@ public class SQWRLQueryResultPanel extends JPanel
             
             while (result.hasNext()) {
               for (int i = 0; i < numberOfColumns; i++) {
-                ResultValue value = result.getValue(i);
+                SQWRLResultValue value = result.getValue(i);
                 if (i != 0) writer.write(", ");
-                if (value instanceof DatatypeValue && ((DatatypeValue)value).isString()) writer.write("\"" + value + "\"");
+                if (value instanceof DataValue && ((DataValue)value).isString()) writer.write("\"" + value + "\"");
                 else writer.write("" + value);
               } // for
               writer.write("\n");
@@ -212,12 +212,12 @@ public class SQWRLQueryResultPanel extends JPanel
       String representation = "";
       
       try { 
-        ResultValue value = (result == null) ? null : result.getValue(column, row);
+        SQWRLResultValue value = (result == null) ? null : result.getValue(column, row);
         if (value instanceof ObjectValue) {
           ObjectValue objectValue = (ObjectValue)value;
           representation += objectValue.getPrefixedIndividualName();
-        } else if (value instanceof DatatypeValue) {
-          DatatypeValue datatypeValue = (DatatypeValue)value;
+        } else if (value instanceof DataValue) {
+          DataValue datatypeValue = (DataValue)value;
           representation += datatypeValue.toString();
         } else if (value instanceof ClassValue) {
           ClassValue classValue = (ClassValue)value;

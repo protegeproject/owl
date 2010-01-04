@@ -1,22 +1,22 @@
 
 package edu.stanford.smi.protegex.owl.swrl.bridge.impl;
 
-import edu.stanford.smi.protegex.owl.swrl.bridge.OWLDatatypePropertyAssertionAxiom;
-import edu.stanford.smi.protegex.owl.swrl.bridge.OWLDatatypeValue;
+import edu.stanford.smi.protegex.owl.swrl.bridge.OWLDataPropertyAssertionAxiom;
+import edu.stanford.smi.protegex.owl.swrl.bridge.OWLDataValue;
 import edu.stanford.smi.protegex.owl.swrl.bridge.OWLIndividual;
 import edu.stanford.smi.protegex.owl.swrl.bridge.OWLProperty;
 
-public class OWLDatatypePropertyAssertionAxiomImpl extends OWLPropertyAssertionAxiomImpl implements OWLDatatypePropertyAssertionAxiom
+public class OWLDatatypePropertyAssertionAxiomImpl extends OWLPropertyAssertionAxiomImpl implements OWLDataPropertyAssertionAxiom
 {
-  private OWLDatatypeValue object;
+  private OWLDataValue object;
 
-  public OWLDatatypePropertyAssertionAxiomImpl(OWLIndividual subject, OWLProperty property, OWLDatatypeValue object)
+  public OWLDatatypePropertyAssertionAxiomImpl(OWLIndividual subject, OWLProperty property, OWLDataValue object)
   {
     super(subject, property);
     this.object = object;
   } // OWLDatatypePropertyAssertionAxiomImpl
 
-  public OWLDatatypeValue getObject() { return object; }
+  public OWLDataValue getObject() { return object; }
 
   public boolean equals(Object obj)
   {

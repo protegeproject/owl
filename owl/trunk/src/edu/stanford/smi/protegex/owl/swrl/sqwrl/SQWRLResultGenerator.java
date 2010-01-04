@@ -8,7 +8,7 @@ import java.util.List;
 /**
  ** Interface to configure a result and add data to it. See the Result class for detailed comments.
  */
-public interface ResultGenerator
+public interface SQWRLResultGenerator
 {  
   void initialize();
   
@@ -27,9 +27,9 @@ public interface ResultGenerator
   boolean isConfigured();
   void configured() throws ResultException;
   
-  void addRow(List<ResultValue> resultValues) throws ResultException;
+  void addRow(List<SQWRLResultValue> resultValues) throws ResultException;
   void openRow() throws ResultException;
-  void addRowData(ResultValue value) throws ResultException;
+  void addRowData(SQWRLResultValue value) throws ResultException;
   void closeRow() throws ResultException;
   
   boolean isRowOpen();

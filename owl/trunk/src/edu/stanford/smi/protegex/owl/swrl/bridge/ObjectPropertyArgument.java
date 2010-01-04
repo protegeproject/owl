@@ -6,4 +6,4 @@ package edu.stanford.smi.protegex.owl.swrl.bridge;
  */
 public interface ObjectPropertyArgument extends PropertyArgument
 {
-} // Object
+} // ObjectPropertyArgument

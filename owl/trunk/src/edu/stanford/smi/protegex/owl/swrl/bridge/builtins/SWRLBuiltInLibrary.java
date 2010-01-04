@@ -7,7 +7,7 @@ import java.util.Set;
 
 import edu.stanford.smi.protegex.owl.swrl.bridge.BuiltInArgument;
 import edu.stanford.smi.protegex.owl.swrl.bridge.OWLClass;
-import edu.stanford.smi.protegex.owl.swrl.bridge.OWLDatatypeValue;
+import edu.stanford.smi.protegex.owl.swrl.bridge.OWLDataValue;
 import edu.stanford.smi.protegex.owl.swrl.bridge.OWLIndividual;
 import edu.stanford.smi.protegex.owl.swrl.bridge.OWLProperty;
 import edu.stanford.smi.protegex.owl.swrl.bridge.SWRLBuiltInBridge;
@@ -85,7 +85,7 @@ public interface SWRLBuiltInLibrary
 	String getArgumentAsAClassName(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException; 
 	OWLClass getArgumentAsAnOWLClass(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException; 
 	OWLProperty getArgumentAsAnOWLProperty(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException; 
-	OWLDatatypeValue getArgumentAsAnOWLDatatypeValue(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException; 
+	OWLDataValue getArgumentAsAnOWLDatatypeValue(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException; 
 	String getArgumentAsAResourceName(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException; 
 	String getArgumentAsAPropertyName(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException; 
 	void checkArgumentNumber(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException; 
@@ -105,8 +105,8 @@ public interface SWRLBuiltInLibrary
 	boolean isArgumentAClassPropertyOrIndividual(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException; 
 	boolean isArgumentAClass(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException; 
 	void checkThatArgumentIsAClass(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException; 
-	OWLDatatypeValue getArgumentAsALiteral(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException; 
-	OWLDatatypeValue getArgumentAsALiteral(BuiltInArgument argument) throws BuiltInException; 
+	OWLDataValue getArgumentAsALiteral(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException; 
+	OWLDataValue getArgumentAsALiteral(BuiltInArgument argument) throws BuiltInException; 
 	void checkThatArgumentIsALong(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException; 
 	boolean isArgumentALong(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException; 
 	long getArgumentAsALong(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException; 
@@ -139,7 +139,6 @@ public interface SWRLBuiltInLibrary
 	void checkForNonVariableArguments(List<BuiltInArgument> arguments, String message) throws BuiltInException; 
 	void checkForUnboundNonFirstArguments(List<BuiltInArgument> arguments) throws BuiltInException; 
 	String getVariableName(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException; 
-	String getPrefixedVariableName(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException; 
 
 	/**
 	 ** Take an bound Argument object with types ClassArgument, PropertyArgument, IndividualArgument, or DatatypeValueArgument and return it as a
@@ -164,7 +163,7 @@ public interface SWRLBuiltInLibrary
 	boolean processResultArgument(List<BuiltInArgument> arguments, int argumentNumber,
                                   BuiltInArgument resultArgument) throws BuiltInException; 
 	boolean processResultArgument(List<BuiltInArgument> arguments, int argumentNumber,
-                                  OWLDatatypeValue resultArgument) throws BuiltInException; 
+                                  OWLDataValue resultArgument) throws BuiltInException; 
 	boolean processResultArgument(List<BuiltInArgument> arguments, int argumentNumber,
                                   short resultArgument) throws BuiltInException; 
 	boolean processResultArgument(List<BuiltInArgument> arguments, int argumentNumber, 

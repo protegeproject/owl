@@ -7,7 +7,7 @@ import java.util.Set;
 
 // A named OWL class
 
-public interface OWLClass extends OWLDescription, OWLEntity, ClassArgument, ClassValue, AtomArgument // AtomArgument is for SWRL Full
+public interface OWLClass extends OWLDescription, OWLEntity, ClassArgument, ClassValue
 {
   String getClassName();
   String getPrefixedClassName();

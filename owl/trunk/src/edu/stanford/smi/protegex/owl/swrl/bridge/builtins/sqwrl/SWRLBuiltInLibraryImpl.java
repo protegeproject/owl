@@ -18,10 +18,10 @@ import edu.stanford.smi.protegex.owl.swrl.bridge.Argument;
 import edu.stanford.smi.protegex.owl.swrl.bridge.ArgumentFactory;
 import edu.stanford.smi.protegex.owl.swrl.bridge.BuiltInArgument;
 import edu.stanford.smi.protegex.owl.swrl.bridge.ClassArgument;
-import edu.stanford.smi.protegex.owl.swrl.bridge.DatatypeValueArgument;
+import edu.stanford.smi.protegex.owl.swrl.bridge.DataValueArgument;
 import edu.stanford.smi.protegex.owl.swrl.bridge.IndividualArgument;
 import edu.stanford.smi.protegex.owl.swrl.bridge.OWLClass;
-import edu.stanford.smi.protegex.owl.swrl.bridge.OWLDatatypeValue;
+import edu.stanford.smi.protegex.owl.swrl.bridge.OWLDataValue;
 import edu.stanford.smi.protegex.owl.swrl.bridge.OWLIndividual;
 import edu.stanford.smi.protegex.owl.swrl.bridge.OWLProperty;
 import edu.stanford.smi.protegex.owl.swrl.bridge.PropertyArgument;
@@ -29,7 +29,7 @@ import edu.stanford.smi.protegex.owl.swrl.bridge.builtins.AbstractSWRLBuiltInLib
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.BuiltInException;
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.InvalidBuiltInArgumentException;
 import edu.stanford.smi.protegex.owl.swrl.sqwrl.ClassValue;
-import edu.stanford.smi.protegex.owl.swrl.sqwrl.DatatypeValue;
+import edu.stanford.smi.protegex.owl.swrl.sqwrl.DataValue;
 import edu.stanford.smi.protegex.owl.swrl.sqwrl.ObjectValue;
 import edu.stanford.smi.protegex.owl.swrl.sqwrl.PropertyValue;
 import edu.stanford.smi.protegex.owl.swrl.sqwrl.SQWRLNames;
@@ -67,7 +67,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
 
     int argumentIndex = 0;
     for (BuiltInArgument argument : arguments) {
-      if (argument instanceof DatatypeValueArgument) result.addRowData((DatatypeValue)argument);
+      if (argument instanceof DataValueArgument) result.addRowData((DataValue)argument);
       else if (argument instanceof IndividualArgument) result.addRowData((ObjectValue)argument);
       else if (argument instanceof ClassArgument) result.addRowData((ClassValue)argument);
       else if (argument instanceof PropertyArgument) result.addRowData((PropertyValue)argument);
@@ -94,7 +94,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
 
     if (!result.isRowOpen()) result.openRow();
     
-    if (argument instanceof OWLDatatypeValue) result.addRowData((DatatypeValue)argument);
+    if (argument instanceof OWLDataValue) result.addRowData((DataValue)argument);
     else if (argument instanceof OWLIndividual) result.addRowData((ObjectValue)argument);
     else if (argument instanceof OWLClass) result.addRowData((ClassValue)argument);
     else if (argument instanceof OWLProperty) result.addRowData((PropertyValue)argument);
@@ -130,7 +130,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
     set.add(element);
     // System.err.println("adding element " + element + " to set " + setID);
 
-    if (isUnboundArgument(0, arguments)) arguments.get(0).setBuiltInResult(argumentFactory.createDatatypeValueArgument(setID));
+    if (isUnboundArgument(0, arguments)) arguments.get(0).setBuiltInResult(argumentFactory.createDataValueArgument(setID));
 
     return true;
   } // makeSet
@@ -182,7 +182,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
       
       if (!resultImpl.isRowOpen()) resultImpl.openRow();
       
-      if (argument instanceof OWLDatatypeValue && ((OWLDatatypeValue)argument).isNumeric()) resultImpl.addRowData((DatatypeValue)argument);
+      if (argument instanceof OWLDataValue && ((OWLDataValue)argument).isNumeric()) resultImpl.addRowData((DataValue)argument);
       else throw new InvalidBuiltInArgumentException(0, "expecting numeric literal, got '" + argument + "'");
       
       result = true;
@@ -192,11 +192,11 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
       
       if (set.isEmpty()) result = false;
       else {
-    	OWLDatatypeValue minValue = null;
+    	OWLDataValue minValue = null;
         
     	for (BuiltInArgument element : set) {
           checkThatElementIsComparable(element);
-          OWLDatatypeValue value = (OWLDatatypeValue)element;
+          OWLDataValue value = (OWLDataValue)element;
           
           if (minValue == null) minValue = value;
           else if (value.compareTo(minValue) < 0) minValue = value; // TODO: fix this - can cause difficult-to-find class casts
@@ -224,7 +224,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
       
       if (!resultImpl.isRowOpen()) resultImpl.openRow();
       
-      if (argument instanceof OWLDatatypeValue && ((OWLDatatypeValue)argument).isNumeric()) resultImpl.addRowData((DatatypeValue)argument);
+      if (argument instanceof OWLDataValue && ((OWLDataValue)argument).isNumeric()) resultImpl.addRowData((DataValue)argument);
       else throw new InvalidBuiltInArgumentException(0, "expecting numeric literal, got '" + argument + "'");
 
       result = true;
@@ -234,10 +234,10 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
       
       if (set.isEmpty()) result = false;
       else {
-        OWLDatatypeValue maxValue = null, value;
+        OWLDataValue maxValue = null, value;
         for (BuiltInArgument element : set) {
           checkThatElementIsComparable(element);
-          value = (OWLDatatypeValue)element;
+          value = (OWLDataValue)element;
           
           if (maxValue == null) maxValue = value;
           else if (value.compareTo(maxValue) > 0) maxValue = value; // TODO: fix this - can cause difficult-to-find class casts
@@ -262,7 +262,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
       
       if (!resultImpl.isRowOpen()) resultImpl.openRow();
       
-      if (argument instanceof OWLDatatypeValue && ((OWLDatatypeValue)argument).isNumeric()) resultImpl.addRowData((DatatypeValue)argument);
+      if (argument instanceof OWLDataValue && ((OWLDataValue)argument).isNumeric()) resultImpl.addRowData((DataValue)argument);
       else throw new InvalidBuiltInArgumentException(0, "expecting numeric literal, got '" + argument + "'");
       
       result = true;
@@ -299,7 +299,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
       
       if (!resultImpl.isRowOpen()) resultImpl.openRow();
       
-      if (argument instanceof OWLDatatypeValue && ((OWLDatatypeValue)argument).isNumeric()) resultImpl.addRowData((DatatypeValue)argument);
+      if (argument instanceof OWLDataValue && ((OWLDataValue)argument).isNumeric()) resultImpl.addRowData((DataValue)argument);
       else throw new InvalidBuiltInArgumentException(0, "expecting numeric literal, got '" + argument + "'");
     } else { // SQWRL set operator
       String setID = getSetIDInSingleSetOperation(arguments, 1, 2); // Does argument checking
@@ -399,7 +399,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
 
 	    if (!sets.containsKey(setIDResult)) sets.put(setIDResult, intersection);
 
-	    if (isUnboundArgument(0, arguments)) arguments.get(0).setBuiltInResult(argumentFactory.createDatatypeValueArgument(setIDResult));
+	    if (isUnboundArgument(0, arguments)) arguments.get(0).setBuiltInResult(argumentFactory.createDataValueArgument(setIDResult));
 
 	    return true;
    } // intersection
@@ -424,7 +424,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
 
 	    if (!sets.containsKey(setIDResult)) sets.put(setIDResult, union);
 
-	    if (isUnboundArgument(0, arguments)) arguments.get(0).setBuiltInResult(argumentFactory.createDatatypeValueArgument(setIDResult));
+	    if (isUnboundArgument(0, arguments)) arguments.get(0).setBuiltInResult(argumentFactory.createDataValueArgument(setIDResult));
 
 	    return true;
   } // union
@@ -449,7 +449,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
 
 	  if (!sets.containsKey(setIDResult)) sets.put(setIDResult, difference);
 
-	  if (isUnboundArgument(0, arguments)) arguments.get(0).setBuiltInResult(argumentFactory.createDatatypeValueArgument(setIDResult));
+	  if (isUnboundArgument(0, arguments)) arguments.get(0).setBuiltInResult(argumentFactory.createDataValueArgument(setIDResult));
 
 	  return true;
   } // difference
@@ -626,7 +626,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
                                                                                           arguments.subList(2, arguments.size()));
     
     if (isBoundArgument(0, arguments) && !setGroupElementNumbersMap.containsKey(setName)) // Set variable already used in non set context  
-    	throw new BuiltInException("set variable ?" + arguments.get(0).getPrefixedVariableName() + " already used in non set context");
+    	throw new BuiltInException("set variable ?" + arguments.get(0).getVariableName() + " already used in non set context");
     
     if (hasGroupPattern) {
     	if (!setGroupElementNumbersMap.containsKey(setName)) setGroupElementNumbersMap.put(setName, numberOfGroupArguments);
@@ -684,7 +684,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
   
   private void checkThatElementIsComparable(BuiltInArgument element) throws BuiltInException
   {
-    if (!(element instanceof DatatypeValue) || !((DatatypeValue)element).isComparable())
+    if (!(element instanceof DataValue) || !((DataValue)element).isComparable())
       throw new BuiltInException("may only be applied to sets with comparable elements");
   } // checkThatElementIsNumeric
 

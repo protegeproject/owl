@@ -8,12 +8,11 @@ import edu.stanford.smi.protegex.owl.swrl.bridge.VariableAtomArgument;
  */
 public class VariableAtomArgumentImpl implements VariableAtomArgument
 {
-  private String variableName, prefixedVariableName;
+  private String variableName;
 
-  public VariableAtomArgumentImpl(String variableName, String prefixedVariableName) { this.variableName = variableName; this.prefixedVariableName = prefixedVariableName; }
+  public VariableAtomArgumentImpl(String variableName) { this.variableName = variableName; }
 
   public String getVariableName() { return variableName; }
-  public String getPrefixedVariableName() { return prefixedVariableName; }
 
-  public String toString() { return "?" + getPrefixedVariableName(); }
+  public String toString() { return "?" + getVariableName(); }
 } // VariableAtomArgumentImpl

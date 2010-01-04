@@ -50,7 +50,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
     argument2 = getArgumentAsADouble(1, arguments);
 
     if (isUnboundArgument(0, arguments)) {
-      arguments.get(0).setBuiltInResult(argumentFactory.createDatatypeValueArgument(java.lang.Math.sqrt(argument2)));
+      arguments.get(0).setBuiltInResult(argumentFactory.createDataValueArgument(java.lang.Math.sqrt(argument2)));
       result = true;
     } else {
       argument1 = getArgumentAsADouble(0, arguments);
@@ -74,7 +74,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
     argument2 = getArgumentAsADouble(1, arguments);
 
     if (isUnboundArgument(0, arguments)) {
-      arguments.get(0).setBuiltInResult(argumentFactory.createDatatypeValueArgument(java.lang.Math.log(argument2)));
+      arguments.get(0).setBuiltInResult(argumentFactory.createDataValueArgument(java.lang.Math.log(argument2)));
       result = true;
     } else {
       argument1 = getArgumentAsADouble(0, arguments);
@@ -106,9 +106,9 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
       checkForNonVariableArguments(variableArguments, "unexpected non variable argument");
 
       for (BuiltInArgument argument : variableArguments) { 
-        String prefixedVariableName = argument.getPrefixedVariableName(); // We will have already checked that they are all variables
+        String variableName = argument.getVariableName(); // We will have already checked that they are all variables
         double variableValue = getArgumentAsADouble(argument);
-        getJEP().addVariable(prefixedVariableName, variableValue);
+        getJEP().addVariable(variableName, variableValue);
       } // for
     } // if
 
@@ -118,7 +118,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
     if (getJEP().hasError()) throw new BuiltInException("exception parsing expression '" + expression + "': " + getJEP().getErrorInfo());
 
     if (isUnboundArgument(0, arguments)) {
-      arguments.get(0).setBuiltInResult(argumentFactory.createDatatypeValueArgument(value));
+      arguments.get(0).setBuiltInResult(argumentFactory.createDataValueArgument(value));
       result = true;
     } else {
       result = value == getArgumentAsADouble(0, arguments);

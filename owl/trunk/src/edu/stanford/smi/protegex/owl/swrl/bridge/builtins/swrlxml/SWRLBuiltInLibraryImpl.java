@@ -137,12 +137,11 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
         arguments.get(0).setBuiltInResult((OWLIndividual)owlElements.toArray()[0]); // Bind the single individual to the first parameter
         result = true;
       } else {
-        MultiArgument multiArgument = argumentFactory.createMultiArgument(getVariableName(0, arguments), 
-                                                                          getPrefixedVariableName(0, arguments));
+        MultiArgument multiArgument = argumentFactory.createMultiArgument(getVariableName(0, arguments));
         for (OWLIndividual xmlElement : owlElements) 
           multiArgument.addArgument(argumentFactory.createIndividualArgument(xmlElement.getIndividualName()));
-        arguments.set(0, multiArgument);
         result = !multiArgument.hasNoArguments();
+        arguments.set(0, multiArgument);
       } // if
     } // if
     return result;
@@ -187,8 +186,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
         arguments.get(0).setBuiltInResult((OWLIndividual)owlElements.toArray()[0]); // Bind the single individual to the first parameter
         result = true;
       } else {
-        MultiArgument multiArgument = argumentFactory.createMultiArgument(getVariableName(0, arguments), 
-                                                                          getPrefixedVariableName(0, arguments));
+        MultiArgument multiArgument = argumentFactory.createMultiArgument(getVariableName(0, arguments));
         for (OWLIndividual xmlElement : owlElements) 
           multiArgument.addArgument(argumentFactory.createIndividualArgument(xmlElement.getIndividualName()));
         arguments.set(0, multiArgument);
@@ -212,7 +210,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
       String attributeValue = element.getAttributeValue(attributeName);
 
       if (attributeValue != null) {
-        arguments.get(0).setBuiltInResult(argumentFactory.createDatatypeValueArgument(attributeValue));
+        arguments.get(0).setBuiltInResult(argumentFactory.createDataValueArgument(attributeValue));
         result = true;
       } // if
     } // if
@@ -260,7 +258,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
   private OWLClass getXMLElementOWLClass() throws BuiltInException
   {
     if (xmlElementOWLClass == null) {
-      xmlElementOWLClass = getInvokingBridge().getOWLFactory().getOWLClass(XMLBridgeMapper.XMLElementMappingOWLClassName);
+      xmlElementOWLClass = getInvokingBridge().getOWLDataFactory().getOWLClass(XMLBridgeMapper.XMLElementMappingOWLClassName);
     } //  if
 
     return xmlElementOWLClass;

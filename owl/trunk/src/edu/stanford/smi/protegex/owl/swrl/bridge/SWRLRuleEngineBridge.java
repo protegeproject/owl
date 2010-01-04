@@ -28,6 +28,5 @@ public interface SWRLRuleEngineBridge extends SWRLRuleEngine, SQWRLQueryEngine
   boolean isOWLDataProperty(String propertyURI);
   boolean isOWLIndividual(String individualURI);
 
-  OWLFactory getOWLFactory();
-  OWLModel getOWLModel(); // TODO: Protege-OWL dependency - remove
+  OWLDataFactory getOWLDataFactory();
 } // SWRLRuleEngineBridge

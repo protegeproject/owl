@@ -8,7 +8,7 @@ import java.util.Set;
 
 import edu.stanford.smi.protegex.owl.swrl.bridge.BuiltInArgument;
 import edu.stanford.smi.protegex.owl.swrl.bridge.BuiltInAtom;
-import edu.stanford.smi.protegex.owl.swrl.bridge.OWLDatatypeValue;
+import edu.stanford.smi.protegex.owl.swrl.bridge.OWLDataValue;
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.BuiltInException;
 import edu.stanford.smi.protegex.owl.swrl.sqwrl.SQWRLNames;
 
@@ -99,16 +99,6 @@ public class BuiltInAtomImpl extends AtomImpl implements BuiltInAtom
     return arguments.get(argumentNumber).getVariableName();
   } // getArgumentVariableName
 
-  public String getArgumentVariablePrefixedName(int argumentNumber) throws BuiltInException
-  {
-    checkArgumentNumber(argumentNumber);
-
-    if (!arguments.get(argumentNumber).isVariable())
-      throw new BuiltInException("expecting a variable for (0-offset) argument #" + argumentNumber);
-    
-    return arguments.get(argumentNumber).getPrefixedVariableName();
-  } // getArgumentVariableName
-
   public Set<String> getArgumentsVariableNames() throws BuiltInException
   {
     Set<String> result = new HashSet<String>();
@@ -145,7 +135,7 @@ public class BuiltInAtomImpl extends AtomImpl implements BuiltInAtom
 
     for (BuiltInArgument argument : getArguments()) {
       if (!isFirst) result += ", ";
-      if (argument instanceof OWLDatatypeValue && ((OWLDatatypeValue)argument).isString())
+      if (argument instanceof OWLDataValue && ((OWLDataValue)argument).isString())
         result += "\"" + argument + "\"";
       else result += "" + argument;
       isFirst = false;

@@ -49,9 +49,9 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
     resourceName = getArgumentAsAResourceName(0, arguments);
 
     if (isUnboundArgument) {
-    	MultiArgument multiArgument = argumentFactory.createMultiArgument(getVariableName(1, arguments), getPrefixedVariableName(1, arguments));
+    	MultiArgument multiArgument = argumentFactory.createMultiArgument(getVariableName(1, arguments));
     	for (String label : SWRLOWLUtil.getRDFSLabels(getInvokingBridge().getOWLModel(), resourceName))
-    		multiArgument.addArgument(argumentFactory.createDatatypeValueArgument(label));
+    		multiArgument.addArgument(argumentFactory.createDataValueArgument(label));
     	arguments.set(1, multiArgument);
     	result = !multiArgument.hasNoArguments();
     } else { // Bound argument
@@ -78,9 +78,9 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
     resourceName = getArgumentAsAResourceName(0, arguments);
 
     if (isUnboundArgument) {
-     	MultiArgument multiArgument = argumentFactory.createMultiArgument(getVariableName(1, arguments), getPrefixedVariableName(1, arguments));
+     	MultiArgument multiArgument = argumentFactory.createMultiArgument(getVariableName(1, arguments));
     	for (String language : SWRLOWLUtil.getRDFSLabelLanguages(getInvokingBridge().getOWLModel(), resourceName))
-    		multiArgument.addArgument(argumentFactory.createDatatypeValueArgument(language));
+    		multiArgument.addArgument(argumentFactory.createDataValueArgument(language));
     	arguments.set(1, multiArgument);
     	result = !multiArgument.hasNoArguments();
     } else { // Bound argument
