@@ -30,11 +30,11 @@ import edu.stanford.smi.protegex.owl.swrl.bridge.OWLClass;
 import edu.stanford.smi.protegex.owl.swrl.bridge.OWLClassAssertionAxiom;
 import edu.stanford.smi.protegex.owl.swrl.bridge.OWLClassPropertyAssertionAxiom;
 import edu.stanford.smi.protegex.owl.swrl.bridge.OWLConversionFactory;
-import edu.stanford.smi.protegex.owl.swrl.bridge.OWLDatatypeProperty;
-import edu.stanford.smi.protegex.owl.swrl.bridge.OWLDatatypePropertyAssertionAxiom;
-import edu.stanford.smi.protegex.owl.swrl.bridge.OWLDatatypeValue;
+import edu.stanford.smi.protegex.owl.swrl.bridge.OWLDataProperty;
+import edu.stanford.smi.protegex.owl.swrl.bridge.OWLDataPropertyAssertionAxiom;
+import edu.stanford.smi.protegex.owl.swrl.bridge.OWLDataValue;
 import edu.stanford.smi.protegex.owl.swrl.bridge.OWLDifferentIndividualsAxiom;
-import edu.stanford.smi.protegex.owl.swrl.bridge.OWLFactory;
+import edu.stanford.smi.protegex.owl.swrl.bridge.OWLDataFactory;
 import edu.stanford.smi.protegex.owl.swrl.bridge.OWLIndividual;
 import edu.stanford.smi.protegex.owl.swrl.bridge.OWLObjectProperty;
 import edu.stanford.smi.protegex.owl.swrl.bridge.OWLObjectPropertyAssertionAxiom;
@@ -47,7 +47,7 @@ import edu.stanford.smi.protegex.owl.swrl.bridge.SWRLRule;
 import edu.stanford.smi.protegex.owl.swrl.bridge.SameIndividualAtom;
 import edu.stanford.smi.protegex.owl.swrl.bridge.VariableAtomArgument;
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.BuiltInException;
-import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.DatatypeConversionException;
+import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.DataValueConversionException;
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.InvalidPropertyNameException;
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.OWLConversionFactoryException;
 import edu.stanford.smi.protegex.owl.swrl.bridge.xsd.XSDAnyURI;
@@ -75,9 +75,9 @@ public class OWLConversionFactoryImpl implements OWLConversionFactory
 {
   private OWLModel owlModel;
   private SWRLFactory swrlFactory;
-  private OWLFactory owlFactory;
+  private OWLDataFactory owlFactory;
 
-  public OWLConversionFactoryImpl(OWLModel owlModel, OWLFactory owlFactory) 
+  public OWLConversionFactoryImpl(OWLModel owlModel, OWLDataFactory owlFactory) 
   { 
     this.owlModel = owlModel; 
     swrlFactory = new SWRLFactory(owlModel);
@@ -144,16 +144,16 @@ public class OWLConversionFactoryImpl implements OWLConversionFactory
   { 
     edu.stanford.smi.protegex.owl.model.OWLNamedClass owlNamedClass = SWRLOWLUtil.createOWLNamedClass(owlModel, classURI);
     String prefixedClassName = owlNamedClass.getPrefixedName();
-    OWLClassImpl owlClassImpl = new OWLClassImpl(classURI, prefixedClassName);
+    OWLClassImpl owlClass = new OWLClassImpl(classURI, prefixedClassName);
 
     if (!classURI.equals(OWLNames.Cls.THING)) {
-      owlClassImpl.setSuperclassNames(SWRLOWLUtil.rdfResources2Names(owlNamedClass.getNamedSuperclasses(true)));
-      owlClassImpl.setDirectSuperClassNames(SWRLOWLUtil.rdfResources2Names(owlNamedClass.getNamedSuperclasses()));
-      owlClassImpl.setDirectSubClassNames(SWRLOWLUtil.rdfResources2Names(owlNamedClass.getNamedSubclasses()));
-      owlClassImpl.setEquivalentClassNames(SWRLOWLUtil.rdfResources2OWLNamedClassNames(owlNamedClass.getEquivalentClasses()));
+      owlClass.setSuperclassNames(SWRLOWLUtil.rdfResources2Names(owlNamedClass.getNamedSuperclasses(true)));
+      owlClass.setDirectSuperClassNames(SWRLOWLUtil.rdfResources2Names(owlNamedClass.getNamedSuperclasses()));
+      owlClass.setDirectSubClassNames(SWRLOWLUtil.rdfResources2Names(owlNamedClass.getNamedSubclasses()));
+      owlClass.setEquivalentClassNames(SWRLOWLUtil.rdfResources2OWLNamedClassNames(owlNamedClass.getEquivalentClasses()));
       Set<String> equivalentClassSuperclassNames = new HashSet<String>();
 
-      for (String equivalentClassName : owlClassImpl.getEquivalentClassNames()) {
+      for (String equivalentClassName : owlClass.getEquivalentClassNames()) {
         edu.stanford.smi.protegex.owl.model.OWLNamedClass equivalentClass = SWRLOWLUtil.getOWLNamedClass(owlModel, equivalentClassName);
        
         Iterator equivalentClassSuperClassesIterator = equivalentClass.getNamedSuperclasses(true).iterator();
@@ -166,45 +166,45 @@ public class OWLConversionFactoryImpl implements OWLConversionFactory
         } /// while
       } // for
 
-      owlClassImpl.setEquivalentClassSuperclassNames(equivalentClassSuperclassNames);
+      owlClass.setEquivalentClassSuperclassNames(equivalentClassSuperclassNames);
     } // if
 
-    return owlClassImpl;
+    return owlClass;
   } // getOWLClass
 
   public OWLIndividual getOWLIndividual(String individualURI) throws OWLConversionFactoryException
   { 
     edu.stanford.smi.protegex.owl.model.OWLIndividual individual = SWRLOWLUtil.createOWLIndividual(owlModel, individualURI);
-    OWLIndividualImpl owlIndividualImpl = new OWLIndividualImpl(individualURI, individual.getPrefixedName());
+    OWLIndividualImpl owlIndividual = new OWLIndividualImpl(individualURI, individual.getPrefixedName());
 
-    buildDefiningClasses(owlIndividualImpl, individual);
-    buildDefiningSuperclasses(owlIndividualImpl, individual);
-    buildDefiningEquivalentClasses(owlIndividualImpl, individual);
-    buildSameAsIndividuals(owlIndividualImpl, individual);
+    buildDefiningClasses(owlIndividual, individual);
+    buildDefiningSuperclasses(owlIndividual, individual);
+    buildDefiningEquivalentClasses(owlIndividual, individual);
+    buildSameAsIndividuals(owlIndividual, individual);
 
-    return owlIndividualImpl; 
+    return owlIndividual; 
   } // getOWLIndividual
 
   public OWLObjectProperty getOWLObjectProperty(String propertyURI) throws OWLConversionFactoryException
   {
     edu.stanford.smi.protegex.owl.model.OWLObjectProperty property = SWRLOWLUtil.createOWLObjectProperty(owlModel, propertyURI);
     String prefixedPropertyName = property.getPrefixedName();
-    OWLObjectPropertyImpl owlObjectPropertyImpl = new OWLObjectPropertyImpl(propertyURI, prefixedPropertyName);
+    OWLObjectPropertyImpl owlObjectProperty = new OWLObjectPropertyImpl(propertyURI, prefixedPropertyName);
 
-    initializeProperty(owlObjectPropertyImpl, property);
+    initializeProperty(owlObjectProperty, property);
 
-    return owlObjectPropertyImpl;
+    return owlObjectProperty;
   } // getOWLObjectProperty
 
-  public OWLDatatypeProperty getOWLDataProperty(String propertyURI) throws OWLConversionFactoryException
+  public OWLDataProperty getOWLDataProperty(String propertyURI) throws OWLConversionFactoryException
   { 
     edu.stanford.smi.protegex.owl.model.OWLDatatypeProperty property = SWRLOWLUtil.createOWLDatatypeProperty(owlModel, propertyURI);
     String prefixedPropertyName = property.getPrefixedName();
-    OWLDatatypePropertyImpl owlDatatypePropertyImpl = new OWLDatatypePropertyImpl(propertyURI, prefixedPropertyName);
+    OWLDataPropertyImpl owlDataProperty = new OWLDataPropertyImpl(propertyURI, prefixedPropertyName);
 
-    initializeProperty(owlDatatypePropertyImpl, property);
+    initializeProperty(owlDataProperty, property);
 
-    return owlDatatypePropertyImpl;
+    return owlDataProperty;
   } // getOWLDataProperty
 
   public void putOWLClass(OWLClass owlClass) throws OWLConversionFactoryException
@@ -245,7 +245,7 @@ public class OWLConversionFactoryImpl implements OWLConversionFactory
   {
     if (axiom instanceof OWLClassAssertionAxiom) write2OWLModel((OWLClassAssertionAxiom)axiom);
     else if (axiom instanceof OWLClassPropertyAssertionAxiom) write2OWLModel((OWLClassPropertyAssertionAxiom)axiom);
-    else if (axiom instanceof OWLDatatypePropertyAssertionAxiom) write2OWLModel((OWLDatatypePropertyAssertionAxiom)axiom);
+    else if (axiom instanceof OWLDataPropertyAssertionAxiom) write2OWLModel((OWLDataPropertyAssertionAxiom)axiom);
     else if (axiom instanceof OWLObjectPropertyAssertionAxiom) write2OWLModel((OWLObjectPropertyAssertionAxiom)axiom);
     else if (axiom instanceof OWLPropertyPropertyAssertionAxiom) write2OWLModel((OWLPropertyPropertyAssertionAxiom)axiom);
     else if (axiom instanceof OWLSomeValuesFrom) write2OWLModel((OWLSomeValuesFrom)axiom);
@@ -257,103 +257,88 @@ public class OWLConversionFactoryImpl implements OWLConversionFactory
   {
     return SWRLOWLUtil.isValidURI(uri); 
   } // isValidURI
-  
-  private OWLIndividual convertOWLIndividual(edu.stanford.smi.protegex.owl.model.OWLIndividual individual) throws OWLConversionFactoryException 
-  { 
-    return getOWLIndividual(individual.getName()); 
-  } // convertOWLIndividual
 
-  private OWLObjectProperty getOWLObjectProperty(edu.stanford.smi.protegex.owl.model.OWLObjectProperty property) throws OWLConversionFactoryException 
-  { 
-    return getOWLObjectProperty(property.getName()); 
-  } // getOWLObjectProperty
-
-  private OWLDatatypeProperty convertOWLDataProperty(edu.stanford.smi.protegex.owl.model.OWLDatatypeProperty property) throws OWLConversionFactoryException 
-  { 
-    return getOWLDataProperty(property.getName()); 
-  } // convertOWLDatatypeProperty
-
-  private OWLDatatypeValue convertOWLDataValue(edu.stanford.smi.protegex.owl.model.RDFSLiteral literal) throws OWLConversionFactoryException 
+  private OWLDataValue convertOWLDataValue(edu.stanford.smi.protegex.owl.model.RDFSLiteral literal) throws OWLConversionFactoryException 
   { 
     edu.stanford.smi.protegex.owl.model.RDFSDatatype datatype = literal.getDatatype();
-    OWLDatatypeValueImpl owlDatatypeValueImpl = null;
+    OWLDataValueImpl owlDataValue = null;
 
     try {
       if ((datatype == owlModel.getXSDint()) || (datatype == owlModel.getXSDinteger()))
-        owlDatatypeValueImpl = new OWLDatatypeValueImpl(literal.getInt());
+        owlDataValue = new OWLDataValueImpl(literal.getInt());
       else if (datatype == owlModel.getXSDshort()) 
-        owlDatatypeValueImpl = new OWLDatatypeValueImpl(literal.getShort());
+        owlDataValue = new OWLDataValueImpl(literal.getShort());
       else if (datatype == owlModel.getXSDlong()) 
-        owlDatatypeValueImpl = new OWLDatatypeValueImpl(literal.getLong());
+        owlDataValue = new OWLDataValueImpl(literal.getLong());
       else if (datatype == owlModel.getXSDboolean()) 
-        owlDatatypeValueImpl = new OWLDatatypeValueImpl(literal.getBoolean());
+        owlDataValue = new OWLDataValueImpl(literal.getBoolean());
       else if (datatype == owlModel.getXSDfloat()) 
-        owlDatatypeValueImpl = new OWLDatatypeValueImpl(literal.getFloat());
+        owlDataValue = new OWLDataValueImpl(literal.getFloat());
       else if (datatype == owlModel.getXSDdouble()) 
-      owlDatatypeValueImpl = new OWLDatatypeValueImpl(literal.getDouble());
+      owlDataValue = new OWLDataValueImpl(literal.getDouble());
       else if ((datatype == owlModel.getXSDstring())) 
-        owlDatatypeValueImpl = new OWLDatatypeValueImpl(literal.getString());
+        owlDataValue = new OWLDataValueImpl(literal.getString());
       else if ((datatype == owlModel.getXSDtime())) 
-        owlDatatypeValueImpl = new OWLDatatypeValueImpl(new XSDTime(literal.getString()));
+        owlDataValue = new OWLDataValueImpl(new XSDTime(literal.getString()));
       else if ((datatype == owlModel.getXSDanyURI())) 
-        owlDatatypeValueImpl = new OWLDatatypeValueImpl(new XSDAnyURI(literal.getString()));
+        owlDataValue = new OWLDataValueImpl(new XSDAnyURI(literal.getString()));
       else if ((datatype == owlModel.getXSDbyte())) 
-        owlDatatypeValueImpl = new OWLDatatypeValueImpl(Byte.valueOf(literal.getString()));
+        owlDataValue = new OWLDataValueImpl(Byte.valueOf(literal.getString()));
       else if ((datatype == owlModel.getXSDduration())) 
-        owlDatatypeValueImpl = new OWLDatatypeValueImpl(new XSDDuration(literal.getString()));
+        owlDataValue = new OWLDataValueImpl(new XSDDuration(literal.getString()));
       else if ((datatype == owlModel.getXSDdateTime())) 
-        owlDatatypeValueImpl = new OWLDatatypeValueImpl(new XSDDateTime(literal.getString()));
+        owlDataValue = new OWLDataValueImpl(new XSDDateTime(literal.getString()));
       else if ((datatype == owlModel.getXSDdate())) 
-        owlDatatypeValueImpl = new OWLDatatypeValueImpl(new XSDDate(literal.getString()));
+        owlDataValue = new OWLDataValueImpl(new XSDDate(literal.getString()));
       else throw new OWLConversionFactoryException("cannot create an OWLDataValue object for RDFS literal '" + literal.getString()
                                          + "' of type '" + datatype + "'");
-    } catch (DatatypeConversionException e) {
+    } catch (DataValueConversionException e) {
       throw new OWLConversionFactoryException("error creating an OWLDataValue object for RDFS literal value '" + literal.getString() + 
                                     "' with type " + datatype.getName() + ": " + e.getMessage());
     } // try
 
-    return owlDatatypeValueImpl;
+    return owlDataValue;
   } // convertOWLDataValue
 
   private ClassAtom convertClassAtom(edu.stanford.smi.protegex.owl.swrl.model.SWRLClassAtom atom) throws OWLConversionFactoryException 
   { 
     String classURI = (atom.getClassPredicate() != null) ? atom.getClassPredicate().getName() : null;
     String prefixedClassName = (atom.getClassPredicate() != null) ? atom.getClassPredicate().getPrefixedName() : null;
-    ClassAtomImpl classAtomImpl = new ClassAtomImpl(classURI, prefixedClassName);
+    ClassAtomImpl classAtom = new ClassAtomImpl(classURI, prefixedClassName);
 
     if (classURI == null) throw new OWLConversionFactoryException("empty class name in SWRLClassAtom: " + atom.getBrowserText());
 
-    classAtomImpl.addReferencedClassName(classURI);
+    classAtom.addReferencedClassName(classURI);
     
     if (atom.getArgument1() instanceof edu.stanford.smi.protegex.owl.swrl.model.SWRLVariable) {
       edu.stanford.smi.protegex.owl.swrl.model.SWRLVariable variable = (edu.stanford.smi.protegex.owl.swrl.model.SWRLVariable)atom.getArgument1();
-      VariableAtomArgument argument1 = owlFactory.getSWRLVariableAtomArgument(variable.getName(), variable.getPrefixedName());
-      classAtomImpl.setArgument1(argument1);
-      classAtomImpl.addReferencedVariableName(variable.getName());
+      VariableAtomArgument argument1 = owlFactory.getSWRLVariableAtomArgument(variable.getPrefixedName());
+      classAtom.setArgument1(argument1);
+      classAtom.addReferencedVariableName(variable.getPrefixedName());
     } else if (atom.getArgument1() instanceof edu.stanford.smi.protegex.owl.model.OWLIndividual) {
       String individualName = ((edu.stanford.smi.protegex.owl.model.OWLIndividual)atom.getArgument1()).getName();
       OWLIndividual argument1 = owlFactory.getOWLIndividual(individualName);
-      classAtomImpl.setArgument1(argument1);
-      classAtomImpl.addReferencedIndividualName(argument1.getIndividualName());
+      classAtom.setArgument1(argument1);
+      classAtom.addReferencedIndividualName(argument1.getIndividualName());
     } else if (atom.getArgument1() instanceof edu.stanford.smi.protegex.owl.model.OWLNamedClass) {
       String className = ((edu.stanford.smi.protegex.owl.model.OWLNamedClass)atom.getArgument1()).getName();
       OWLClass argument1 = owlFactory.getOWLClass(className);
-      classAtomImpl.setArgument1(argument1);
-      classAtomImpl.addReferencedClassName(className);
+      classAtom.setArgument1(argument1);
+      classAtom.addReferencedClassName(className);
     } else if (atom.getArgument1() instanceof edu.stanford.smi.protegex.owl.model.OWLObjectProperty) {
       String propertyName = ((edu.stanford.smi.protegex.owl.model.OWLObjectProperty)atom.getArgument1()).getName();
       OWLObjectProperty argument1 = owlFactory.getOWLObjectProperty(propertyName);
-      classAtomImpl.setArgument1(argument1);
-      classAtomImpl.addReferencedPropertyName(propertyName);
+      classAtom.setArgument1(argument1);
+      classAtom.addReferencedPropertyName(propertyName);
     } else if (atom.getArgument1() instanceof edu.stanford.smi.protegex.owl.model.OWLDatatypeProperty) {
       String propertyName = ((edu.stanford.smi.protegex.owl.model.OWLDatatypeProperty)atom.getArgument1()).getName();
-      OWLDatatypeProperty argument1 = owlFactory.getOWLDataProperty(propertyName);
-      classAtomImpl.setArgument1(argument1);
-      classAtomImpl.addReferencedPropertyName(propertyName);
+      OWLDataProperty argument1 = owlFactory.getOWLDataProperty(propertyName);
+      classAtom.setArgument1(argument1);
+      classAtom.addReferencedPropertyName(propertyName);
     } else throw new OWLConversionFactoryException("unexpected argument to class atom '" + atom.getBrowserText() + "'; expecting " +
     		                                        "variable or individual, got instance of '" + atom.getArgument1().getClass() + "'");
 
-    return classAtomImpl;
+    return classAtom;
   } // convertClassAtom
 
   private IndividualPropertyAtom convertIndividualPropertyAtom(edu.stanford.smi.protegex.owl.swrl.model.SWRLIndividualPropertyAtom atom)
@@ -361,53 +346,53 @@ public class OWLConversionFactoryImpl implements OWLConversionFactory
   { 
     String propertyURI = (atom.getPropertyPredicate() != null) ? atom.getPropertyPredicate().getName() : null;
     String prefixedPropertyName = (atom.getPropertyPredicate() != null) ? atom.getPropertyPredicate().getPrefixedName() : null;
-    IndividualPropertyAtomImpl individualPropertyAtomImpl = new IndividualPropertyAtomImpl(propertyURI, prefixedPropertyName);
+    IndividualPropertyAtomImpl individualPropertyAtom = new IndividualPropertyAtomImpl(propertyURI, prefixedPropertyName);
 
     if (propertyURI == null) 
     	throw new OWLConversionFactoryException("empty property name in SWRLIndividualPropertyAtom: " + atom.getBrowserText());
     
-    individualPropertyAtomImpl.addReferencedPropertyName(propertyURI);
+    individualPropertyAtom.addReferencedPropertyName(propertyURI);
 
     if (atom.getArgument1() instanceof edu.stanford.smi.protegex.owl.swrl.model.SWRLVariable) {
       edu.stanford.smi.protegex.owl.swrl.model.SWRLVariable variable = (edu.stanford.smi.protegex.owl.swrl.model.SWRLVariable)atom.getArgument1();
-      VariableAtomArgument argument1 = owlFactory.getSWRLVariableAtomArgument(variable.getName(), variable.getPrefixedName());
-      individualPropertyAtomImpl.setArgument1(argument1);
-      individualPropertyAtomImpl.addReferencedVariableName(variable.getName());
+      VariableAtomArgument argument1 = owlFactory.getSWRLVariableAtomArgument(variable.getPrefixedName());
+      individualPropertyAtom.setArgument1(argument1);
+      individualPropertyAtom.addReferencedVariableName(variable.getPrefixedName());
     } else if (atom.getArgument1() instanceof edu.stanford.smi.protegex.owl.model.OWLIndividual) {
       edu.stanford.smi.protegex.owl.model.OWLIndividual individual = (edu.stanford.smi.protegex.owl.model.OWLIndividual)atom.getArgument1();
       OWLIndividual argument1 = owlFactory.getOWLIndividual(individual.getName());
-      individualPropertyAtomImpl.setArgument1(argument1);
-      individualPropertyAtomImpl.addReferencedIndividualName(argument1.getIndividualName());
+      individualPropertyAtom.setArgument1(argument1);
+      individualPropertyAtom.addReferencedIndividualName(argument1.getIndividualName());
     } else throw new OWLConversionFactoryException("unexpected first argument to individual property atom '" + atom.getBrowserText() + 
                                          "' - expecting variable or individual, got instance of " + atom.getArgument1().getClass());
 
     if (atom.getArgument2() instanceof edu.stanford.smi.protegex.owl.swrl.model.SWRLVariable) {
       edu.stanford.smi.protegex.owl.swrl.model.SWRLVariable variable = (edu.stanford.smi.protegex.owl.swrl.model.SWRLVariable)atom.getArgument2();
-      VariableAtomArgument argument2 = owlFactory.getSWRLVariableAtomArgument(variable.getName(), variable.getPrefixedName());
-      individualPropertyAtomImpl.setArgument2(argument2);
-      individualPropertyAtomImpl.addReferencedVariableName(variable.getName());
+      VariableAtomArgument argument2 = owlFactory.getSWRLVariableAtomArgument(variable.getPrefixedName());
+      individualPropertyAtom.setArgument2(argument2);
+      individualPropertyAtom.addReferencedVariableName(variable.getPrefixedName());
     } else if (atom.getArgument2() instanceof edu.stanford.smi.protegex.owl.model.OWLIndividual) {
       edu.stanford.smi.protegex.owl.model.OWLIndividual individual = (edu.stanford.smi.protegex.owl.model.OWLIndividual)atom.getArgument2();
       OWLIndividual argument2 = owlFactory.getOWLIndividual(individual.getName());
-      individualPropertyAtomImpl.setArgument2(argument2);
-      individualPropertyAtomImpl.addReferencedIndividualName(argument2.getIndividualName());
+      individualPropertyAtom.setArgument2(argument2);
+      individualPropertyAtom.addReferencedIndividualName(argument2.getIndividualName());
     } else if (atom.getArgument2() instanceof edu.stanford.smi.protegex.owl.model.OWLNamedClass) {
       edu.stanford.smi.protegex.owl.model.OWLNamedClass cls = (edu.stanford.smi.protegex.owl.model.OWLNamedClass)atom.getArgument2();
       OWLClass argument2 = owlFactory.getOWLClass(cls.getName());
-      individualPropertyAtomImpl.setArgument2(argument2);
-      individualPropertyAtomImpl.addReferencedClassName(argument2.getClassName());
+      individualPropertyAtom.setArgument2(argument2);
+      individualPropertyAtom.addReferencedClassName(argument2.getClassName());
     } else if (atom.getArgument2() instanceof edu.stanford.smi.protegex.owl.model.OWLProperty) {
       edu.stanford.smi.protegex.owl.model.OWLProperty property = (edu.stanford.smi.protegex.owl.model.OWLProperty)atom.getArgument2();
       OWLProperty argument2;
       String propertyName = ((edu.stanford.smi.protegex.owl.model.OWLObjectProperty)property).getName();
       if (property.isObjectProperty()) argument2 = owlFactory.getOWLObjectProperty(propertyName);
       else  argument2 = owlFactory.getOWLDataProperty(propertyName);
-      individualPropertyAtomImpl.setArgument2(argument2);
-      individualPropertyAtomImpl.addReferencedPropertyName(propertyName);
+      individualPropertyAtom.setArgument2(argument2);
+      individualPropertyAtom.addReferencedPropertyName(propertyName);
     } else throw new OWLConversionFactoryException("unexpected second argument to individual property atom '" + atom.getBrowserText() + 
                                          "' - expecting variable or individual, got instance of " + atom.getArgument2().getClass());
 
-    return individualPropertyAtomImpl; 
+    return individualPropertyAtom; 
   } // convertIndividualPropertyAtom
 
   private DatavaluedPropertyAtom convertDatavaluedPropertyAtom(edu.stanford.smi.protegex.owl.swrl.model.SWRLDatavaluedPropertyAtom atom) 
@@ -415,114 +400,114 @@ public class OWLConversionFactoryImpl implements OWLConversionFactory
   { 
     String propertyURI = (atom.getPropertyPredicate() != null) ? atom.getPropertyPredicate().getName() : null;
     String prefixedPropertyName = (atom.getPropertyPredicate() != null) ? atom.getPropertyPredicate().getPrefixedName() : null;
-    DatavaluedPropertyAtomImpl datavaluedPropertyAtomImpl = new DatavaluedPropertyAtomImpl(propertyURI, prefixedPropertyName);
+    DatavaluedPropertyAtomImpl datavaluedPropertyAtom = new DatavaluedPropertyAtomImpl(propertyURI, prefixedPropertyName);
 
     if (propertyURI == null) 
     	throw new OWLConversionFactoryException("empty property name in SWRLDatavaluedPropertyAtom: " + atom.getBrowserText());
 
-    datavaluedPropertyAtomImpl.addReferencedPropertyName(propertyURI);
+    datavaluedPropertyAtom.addReferencedPropertyName(propertyURI);
 
     if (atom.getArgument1() instanceof edu.stanford.smi.protegex.owl.swrl.model.SWRLVariable) {
       edu.stanford.smi.protegex.owl.swrl.model.SWRLVariable variable = (edu.stanford.smi.protegex.owl.swrl.model.SWRLVariable)atom.getArgument1();
-      VariableAtomArgument argument1 = owlFactory.getSWRLVariableAtomArgument(variable.getName(), variable.getPrefixedName());
-      datavaluedPropertyAtomImpl.setArgument1(argument1);
-      datavaluedPropertyAtomImpl.addReferencedVariableName(variable.getName());
+      VariableAtomArgument argument1 = owlFactory.getSWRLVariableAtomArgument(variable.getPrefixedName());
+      datavaluedPropertyAtom.setArgument1(argument1);
+      datavaluedPropertyAtom.addReferencedVariableName(variable.getPrefixedName());
     } else if (atom.getArgument1() instanceof edu.stanford.smi.protegex.owl.model.OWLIndividual) {
       edu.stanford.smi.protegex.owl.model.OWLIndividual individual = (edu.stanford.smi.protegex.owl.model.OWLIndividual)atom.getArgument1();
       OWLIndividual argument1 = owlFactory.getOWLIndividual(individual.getName());
-      datavaluedPropertyAtomImpl.setArgument1(argument1);
-      datavaluedPropertyAtomImpl.addReferencedIndividualName(argument1.getIndividualName());
+      datavaluedPropertyAtom.setArgument1(argument1);
+      datavaluedPropertyAtom.addReferencedIndividualName(argument1.getIndividualName());
     } else throw new OWLConversionFactoryException("unexpected argument first to datavalued property atom '" + atom.getBrowserText() + 
                                          "' - expecting variable or individual, got instance of " + atom.getArgument1().getClass());
 
     if (atom.getArgument2() instanceof edu.stanford.smi.protegex.owl.swrl.model.SWRLVariable) {
       edu.stanford.smi.protegex.owl.swrl.model.SWRLVariable variable = (edu.stanford.smi.protegex.owl.swrl.model.SWRLVariable)atom.getArgument2();
-      VariableAtomArgument argument2 = owlFactory.getSWRLVariableAtomArgument(variable.getName(), variable.getPrefixedName());
-      datavaluedPropertyAtomImpl.setArgument2(argument2);
-      datavaluedPropertyAtomImpl.addReferencedVariableName(variable.getName());
+      VariableAtomArgument argument2 = owlFactory.getSWRLVariableAtomArgument(variable.getPrefixedName());
+      datavaluedPropertyAtom.setArgument2(argument2);
+      datavaluedPropertyAtom.addReferencedVariableName(variable.getPrefixedName());
     } else if (atom.getArgument2() instanceof RDFSLiteral) {
-      OWLDatatypeValue argument2 = convertOWLDataValue((RDFSLiteral)atom.getArgument2());
-      datavaluedPropertyAtomImpl.setArgument2(argument2);
+      OWLDataValue argument2 = convertOWLDataValue((RDFSLiteral)atom.getArgument2());
+      datavaluedPropertyAtom.setArgument2(argument2);
     } else throw new OWLConversionFactoryException("unexpected second to datavalued property atom '" + atom.getBrowserText()  + 
                                          "' - expecting variable or literal, got instance of " + atom.getArgument2().getClass());
     
-    return datavaluedPropertyAtomImpl; 
+    return datavaluedPropertyAtom; 
   } // convertDatavaluedPropertyAtom
 
   private SameIndividualAtom convertSameIndividualAtom(edu.stanford.smi.protegex.owl.swrl.model.SWRLSameIndividualAtom atom) throws OWLConversionFactoryException 
   { 
-    SameIndividualAtomImpl sameIndividualAtomImpl = new SameIndividualAtomImpl();
+    SameIndividualAtomImpl sameIndividualAtom = new SameIndividualAtomImpl();
 
     if (atom.getArgument1() instanceof edu.stanford.smi.protegex.owl.swrl.model.SWRLVariable) {
       edu.stanford.smi.protegex.owl.swrl.model.SWRLVariable variable = (edu.stanford.smi.protegex.owl.swrl.model.SWRLVariable)atom.getArgument1();
-      VariableAtomArgument argument1 = owlFactory.getSWRLVariableAtomArgument(variable.getName(), variable.getPrefixedName());
-      sameIndividualAtomImpl.setArgument1(argument1);
-      sameIndividualAtomImpl.addReferencedVariableName(variable.getName());
+      VariableAtomArgument argument1 = owlFactory.getSWRLVariableAtomArgument(variable.getPrefixedName());
+      sameIndividualAtom.setArgument1(argument1);
+      sameIndividualAtom.addReferencedVariableName(variable.getPrefixedName());
     } else if (atom.getArgument1() instanceof edu.stanford.smi.protegex.owl.model.OWLIndividual) {
       edu.stanford.smi.protegex.owl.model.OWLIndividual individual = (edu.stanford.smi.protegex.owl.model.OWLIndividual)atom.getArgument1();
       OWLIndividual argument1 = owlFactory.getOWLIndividual(individual.getName());
-      sameIndividualAtomImpl.setArgument1(argument1);
-      sameIndividualAtomImpl.addReferencedIndividualName(individual.getName());
+      sameIndividualAtom.setArgument1(argument1);
+      sameIndividualAtom.addReferencedIndividualName(individual.getName());
     } else throw new OWLConversionFactoryException("unexpected first argument to atom '" + atom.getBrowserText() + 
                                          "' - expecting variable or individual, got instance of " + atom.getArgument1().getClass() + ".");
 
     if (atom.getArgument2() instanceof edu.stanford.smi.protegex.owl.swrl.model.SWRLVariable) {
       edu.stanford.smi.protegex.owl.swrl.model.SWRLVariable variable = (edu.stanford.smi.protegex.owl.swrl.model.SWRLVariable)atom.getArgument2();
-      VariableAtomArgument argument2 = owlFactory.getSWRLVariableAtomArgument(variable.getName(), variable.getPrefixedName());
-      sameIndividualAtomImpl.setArgument2(argument2);
-      sameIndividualAtomImpl.addReferencedVariableName(variable.getName());
+      VariableAtomArgument argument2 = owlFactory.getSWRLVariableAtomArgument(variable.getPrefixedName());
+      sameIndividualAtom.setArgument2(argument2);
+      sameIndividualAtom.addReferencedVariableName(variable.getPrefixedName());
     } else if (atom.getArgument2() instanceof edu.stanford.smi.protegex.owl.model.OWLIndividual) {
       edu.stanford.smi.protegex.owl.model.OWLIndividual individual = (edu.stanford.smi.protegex.owl.model.OWLIndividual)atom.getArgument2();
       OWLIndividual argument2 = owlFactory.getOWLIndividual(individual.getName());
-      sameIndividualAtomImpl.setArgument2(argument2);
-      sameIndividualAtomImpl.addReferencedIndividualName(individual.getName());
+      sameIndividualAtom.setArgument2(argument2);
+      sameIndividualAtom.addReferencedIndividualName(individual.getName());
     } else throw new OWLConversionFactoryException("unexpected second argument to atom '" + atom.getBrowserText() + 
                                          "' - expecting variable or individual, got instance of " + atom.getArgument2().getClass() + ".");
 
 
-    return sameIndividualAtomImpl; 
+    return sameIndividualAtom; 
   } // convertSameIndividualAtom
 
   private DifferentIndividualsAtom convertDifferentIndividualsAtom(edu.stanford.smi.protegex.owl.swrl.model.SWRLDifferentIndividualsAtom atom) 
     throws OWLConversionFactoryException 
   { 
-    DifferentIndividualsAtomImpl differentIndividualsAtomImpl = new DifferentIndividualsAtomImpl();
+    DifferentIndividualsAtomImpl differentIndividualsAtom = new DifferentIndividualsAtomImpl();
 
     if (atom.getArgument1() instanceof edu.stanford.smi.protegex.owl.swrl.model.SWRLVariable) {
       edu.stanford.smi.protegex.owl.swrl.model.SWRLVariable variable = (edu.stanford.smi.protegex.owl.swrl.model.SWRLVariable)atom.getArgument1();
-      VariableAtomArgument argument1 = owlFactory.getSWRLVariableAtomArgument(variable.getName(), variable.getPrefixedName());
-      differentIndividualsAtomImpl.setArgument1(argument1);
-      differentIndividualsAtomImpl.addReferencedVariableName(variable.getName());
+      VariableAtomArgument argument1 = owlFactory.getSWRLVariableAtomArgument(variable.getPrefixedName());
+      differentIndividualsAtom.setArgument1(argument1);
+      differentIndividualsAtom.addReferencedVariableName(variable.getPrefixedName());
     } else if (atom.getArgument1() instanceof edu.stanford.smi.protegex.owl.model.OWLIndividual) {
       edu.stanford.smi.protegex.owl.model.OWLIndividual individual = (edu.stanford.smi.protegex.owl.model.OWLIndividual)atom.getArgument1();
       OWLIndividual argument1 = owlFactory.getOWLIndividual(individual.getName());
-      differentIndividualsAtomImpl.setArgument1(argument1);
-      differentIndividualsAtomImpl.addReferencedIndividualName(individual.getName());
+      differentIndividualsAtom.setArgument1(argument1);
+      differentIndividualsAtom.addReferencedIndividualName(individual.getName());
     } else throw new OWLConversionFactoryException("unexpected first argument to atom '" + atom.getBrowserText() + 
                                          "' - expecting variable or individual, got instance of " + atom.getArgument1().getClass() + ".");
 
     if (atom.getArgument2() instanceof edu.stanford.smi.protegex.owl.swrl.model.SWRLVariable) {
       edu.stanford.smi.protegex.owl.swrl.model.SWRLVariable variable = (edu.stanford.smi.protegex.owl.swrl.model.SWRLVariable)atom.getArgument2();
-      VariableAtomArgument argument2 = owlFactory.getSWRLVariableAtomArgument(variable.getName(), variable.getPrefixedName());
-      differentIndividualsAtomImpl.setArgument2(argument2);
-      differentIndividualsAtomImpl.addReferencedVariableName(variable.getName());
+      VariableAtomArgument argument2 = owlFactory.getSWRLVariableAtomArgument(variable.getPrefixedName());
+      differentIndividualsAtom.setArgument2(argument2);
+      differentIndividualsAtom.addReferencedVariableName(variable.getPrefixedName());
     } else if (atom.getArgument2() instanceof edu.stanford.smi.protegex.owl.model.OWLIndividual) {
       edu.stanford.smi.protegex.owl.model.OWLIndividual individual = (edu.stanford.smi.protegex.owl.model.OWLIndividual)atom.getArgument2();
       OWLIndividual argument2 = owlFactory.getOWLIndividual(individual.getName());
-      differentIndividualsAtomImpl.setArgument2(argument2);
-      differentIndividualsAtomImpl.addReferencedIndividualName(individual.getName());
+      differentIndividualsAtom.setArgument2(argument2);
+      differentIndividualsAtom.addReferencedIndividualName(individual.getName());
     } else throw new OWLConversionFactoryException("unexpected second argument to atom '" + atom.getBrowserText() + 
                                          "' - expecting variable or individual, got instance of " + atom.getArgument2().getClass() + ".");
 
 
-    return differentIndividualsAtomImpl; 
+    return differentIndividualsAtom; 
   } // convertDifferentIndividualsAtom
 
   private BuiltInAtom convertBuiltInAtom(edu.stanford.smi.protegex.owl.swrl.model.SWRLBuiltinAtom atom) throws OWLConversionFactoryException  
   { 
     String builtInName = (atom.getBuiltin() != null) ? atom.getBuiltin().getName() : null;
     String builtInPrefixedName = (atom.getBuiltin() != null) ? atom.getBuiltin().getPrefixedName() : null;
-    BuiltInAtomImpl builtInAtomImpl = new BuiltInAtomImpl(builtInName, builtInPrefixedName); 
+    BuiltInAtomImpl builtInAtom = new BuiltInAtomImpl(builtInName, builtInPrefixedName); 
     List<BuiltInArgument> arguments = new ArrayList<BuiltInArgument>();
     RDFList rdfList = atom.getArguments();
 
@@ -533,31 +518,31 @@ public class OWLConversionFactoryImpl implements OWLConversionFactory
       Object o = iterator.next();
       if (o instanceof edu.stanford.smi.protegex.owl.swrl.model.SWRLVariable) {
         edu.stanford.smi.protegex.owl.swrl.model.SWRLVariable variable = (edu.stanford.smi.protegex.owl.swrl.model.SWRLVariable)o;
-        arguments.add(owlFactory.getSWRLVariableBuiltInArgument(variable.getName(), variable.getPrefixedName()));
-        builtInAtomImpl.addReferencedVariableName(variable.getName());
+        arguments.add(owlFactory.getSWRLVariableBuiltInArgument(variable.getPrefixedName()));
+        builtInAtom.addReferencedVariableName(variable.getPrefixedName());
       } else if (o instanceof edu.stanford.smi.protegex.owl.model.OWLIndividual) {
         edu.stanford.smi.protegex.owl.model.OWLIndividual individual = (edu.stanford.smi.protegex.owl.model.OWLIndividual)o;
         arguments.add(getOWLIndividual(individual.getName()));
-        builtInAtomImpl.addReferencedIndividualName(individual.getName());
+        builtInAtom.addReferencedIndividualName(individual.getName());
       } else  if (o instanceof edu.stanford.smi.protegex.owl.model.OWLNamedClass) {
         edu.stanford.smi.protegex.owl.model.OWLNamedClass cls = (edu.stanford.smi.protegex.owl.model.OWLNamedClass)o;
         arguments.add(getOWLClass(cls.getName()));
-        builtInAtomImpl.addReferencedClassName(cls.getName());
+        builtInAtom.addReferencedClassName(cls.getName());
       } else  if (o instanceof edu.stanford.smi.protegex.owl.model.OWLProperty) {
         edu.stanford.smi.protegex.owl.model.OWLProperty property = (edu.stanford.smi.protegex.owl.model.OWLProperty)o;
         String propertyName = ((edu.stanford.smi.protegex.owl.model.OWLObjectProperty)property).getName();
       if (property.isObjectProperty()) arguments.add(owlFactory.getOWLObjectProperty(propertyName));
       else  arguments.add(owlFactory.getOWLDataProperty(propertyName));
-      builtInAtomImpl.addReferencedPropertyName(propertyName);
+      builtInAtom.addReferencedPropertyName(propertyName);
       } else  if (o instanceof RDFSLiteral) arguments.add(convertOWLDataValue((RDFSLiteral)o));
       else  if (o instanceof Number) arguments.add(owlFactory.getOWLDataValue((Number)o));
       else  if (o instanceof String) arguments.add(owlFactory.getOWLDataValue((String)o));
       else throw new OWLConversionFactoryException("unknown type for argument '" + o + "' to built-in '" + builtInPrefixedName + "'");
     } // while
 
-    builtInAtomImpl.setBuiltInArguments(arguments);
+    builtInAtom.setBuiltInArguments(arguments);
 
-    return builtInAtomImpl; 
+    return builtInAtom; 
   } // convertBuiltInAtom
 
   private void write2OWLModel(OWLClassAssertionAxiom axiom) throws OWLConversionFactoryException
@@ -586,8 +571,7 @@ public class OWLConversionFactoryImpl implements OWLConversionFactory
     if (!subjectIndividual.hasPropertyValue(property, objectClass, false)) subjectIndividual.addPropertyValue(property, objectClass);
   } // write2OWLModel
 
-  private void write2OWLModel(OWLDatatypePropertyAssertionAxiom axiom) 
-   throws OWLConversionFactoryException
+  private void write2OWLModel(OWLDataPropertyAssertionAxiom axiom) throws OWLConversionFactoryException
   {
     edu.stanford.smi.protegex.owl.model.OWLIndividual subjectIndividual;
     String propertyURI = axiom.getProperty().getPropertyName();
@@ -704,13 +688,13 @@ public class OWLConversionFactoryImpl implements OWLConversionFactory
   // property.  TODO: This is incredibly inefficient.
 
   public Set<OWLPropertyAssertionAxiom> getOWLPropertyAssertionAxioms(String propertyURI) 
-    throws OWLConversionFactoryException, DatatypeConversionException
+    throws OWLConversionFactoryException, DataValueConversionException
   {
     return getOWLPropertyAssertionAxioms(null, propertyURI);
   } // getOWLPropertyAssertionAxioms
 
   public Set<OWLPropertyAssertionAxiom> getOWLPropertyAssertionAxioms(String subjectURI, String propertyURI) 
-    throws OWLConversionFactoryException, DatatypeConversionException
+    throws OWLConversionFactoryException, DataValueConversionException
   {
     Set<OWLPropertyAssertionAxiom> propertyAssertions = new HashSet<OWLPropertyAssertionAxiom>();
     edu.stanford.smi.protegex.owl.model.OWLProperty property = SWRLOWLUtil.getOWLProperty(owlModel, propertyURI);
@@ -756,8 +740,8 @@ public class OWLConversionFactoryImpl implements OWLConversionFactory
         } else { // DatatypeProperty
           OWLIndividual subjectOWLIndividual = owlFactory.getOWLIndividual(subjectIndividual.getName());
           RDFSLiteral literal = owlModel.asRDFSLiteral(object);
-          OWLDatatypeValue datatypeValue = convertOWLDataValue(literal);
-          OWLDatatypeProperty datatypeProperty = owlFactory.getOWLDataProperty(propertyURI);
+          OWLDataValue datatypeValue = convertOWLDataValue(literal);
+          OWLDataProperty datatypeProperty = owlFactory.getOWLDataProperty(propertyURI);
           axiom = owlFactory.getOWLDataPropertyAssertionAxiom(subjectOWLIndividual, datatypeProperty, datatypeValue);
           propertyAssertions.add(axiom);
         } // if
@@ -866,5 +850,3 @@ public class OWLConversionFactoryImpl implements OWLConversionFactory
   } // buildSameAsIndividuals
 
 } // OWLConversionFactoryImpl
-
-

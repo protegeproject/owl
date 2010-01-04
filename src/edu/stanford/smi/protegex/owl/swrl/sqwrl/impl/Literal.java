@@ -1,12 +1,12 @@
 
 package edu.stanford.smi.protegex.owl.swrl.sqwrl.impl;
 
-import edu.stanford.smi.protegex.owl.swrl.bridge.impl.OWLDatatypeValueImpl;
+import edu.stanford.smi.protegex.owl.swrl.bridge.impl.OWLDataValueImpl;
 import edu.stanford.smi.protegex.owl.swrl.bridge.xsd.XSDType;
-import edu.stanford.smi.protegex.owl.swrl.sqwrl.DatatypeValue;
-import edu.stanford.smi.protegex.owl.swrl.sqwrl.ResultValue;
+import edu.stanford.smi.protegex.owl.swrl.sqwrl.DataValue;
+import edu.stanford.smi.protegex.owl.swrl.sqwrl.SQWRLResultValue;
 
-public class Literal extends OWLDatatypeValueImpl implements ResultValue, DatatypeValue
+public class Literal extends OWLDataValueImpl implements SQWRLResultValue, DataValue
 {
   public Literal() { super(); } 
   public Literal(String s) { super(s); } 

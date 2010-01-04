@@ -8,11 +8,11 @@ import edu.stanford.smi.protegex.owl.swrl.bridge.VariableBuiltInArgument;
  */
 public class VariableBuiltInArgumentImpl extends BuiltInArgumentImpl implements VariableBuiltInArgument
 {
-  public VariableBuiltInArgumentImpl(String variableName, String prefixedVariableName) { super(variableName, prefixedVariableName); }
+  public VariableBuiltInArgumentImpl(String variableName) { super(variableName); }
 
   public String toString() 
   {
-    return "?" + getPrefixedVariableName();
+    return "?" + getVariableName();
   } // toString      
       
 } // VariableBuiltInArgumentImpl

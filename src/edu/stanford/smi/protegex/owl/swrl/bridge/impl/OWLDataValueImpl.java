@@ -6,36 +6,37 @@ import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 
-import edu.stanford.smi.protegex.owl.swrl.bridge.OWLDatatypeValue;
-import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.DatatypeConversionException;
+import edu.stanford.smi.protegex.owl.swrl.bridge.OWLDataValue;
+import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.DataValueConversionException;
 import edu.stanford.smi.protegex.owl.swrl.bridge.xsd.XSDAnyURI;
 import edu.stanford.smi.protegex.owl.swrl.bridge.xsd.XSDDate;
 import edu.stanford.smi.protegex.owl.swrl.bridge.xsd.XSDDateTime;
 import edu.stanford.smi.protegex.owl.swrl.bridge.xsd.XSDDuration;
 import edu.stanford.smi.protegex.owl.swrl.bridge.xsd.XSDTime;
 import edu.stanford.smi.protegex.owl.swrl.bridge.xsd.XSDType;
+import edu.stanford.smi.protegex.owl.swrl.sqwrl.DataValue;
 
 /**
  ** Implementation of an OWLDatatypeValue object that represents Java and XML Schema primitive data literals.
  */
-public class OWLDatatypeValueImpl extends BuiltInArgumentImpl implements OWLDatatypeValue, Externalizable {
+public class OWLDataValueImpl extends BuiltInArgumentImpl implements OWLDataValue, DataValue, Comparable, Externalizable {
   private Object value; // This value object should implement Comparable.
 
-  public OWLDatatypeValueImpl() { value = null; } 
-  public OWLDatatypeValueImpl(String s) { value = s; } 
-  public OWLDatatypeValueImpl(Number n) { value = n; }
-  public OWLDatatypeValueImpl(boolean b) { value = Boolean.valueOf(b); }
-  public OWLDatatypeValueImpl(int i) { value = Integer.valueOf(i); }
-  public OWLDatatypeValueImpl(long l) { value = Long.valueOf(l); }
-  public OWLDatatypeValueImpl(float f) { value = Float.valueOf(f); }
-  public OWLDatatypeValueImpl(double d) { value = Double.valueOf(d); }
-  public OWLDatatypeValueImpl(short s) { value = Short.valueOf(s); }
-  public OWLDatatypeValueImpl(XSDType value) { this.value = value; }
+  public OWLDataValueImpl() { value = null; } 
+  public OWLDataValueImpl(String s) { value = s; } 
+  public OWLDataValueImpl(Number n) { value = n; }
+  public OWLDataValueImpl(boolean b) { value = Boolean.valueOf(b); }
+  public OWLDataValueImpl(int i) { value = Integer.valueOf(i); }
+  public OWLDataValueImpl(long l) { value = Long.valueOf(l); }
+  public OWLDataValueImpl(float f) { value = Float.valueOf(f); }
+  public OWLDataValueImpl(double d) { value = Double.valueOf(d); }
+  public OWLDataValueImpl(short s) { value = Short.valueOf(s); }
+  public OWLDataValueImpl(XSDType value) { this.value = value; }
 
-  public OWLDatatypeValueImpl(Object o) throws DatatypeConversionException
+  public OWLDataValueImpl(Object o) throws DataValueConversionException
   { 
     if (!((o instanceof Number) || (o instanceof String) || (o instanceof Boolean) || (o instanceof XSDType)))
-      throw new DatatypeConversionException("cannot convert value of type '" + o.getClass().getCanonicalName() + "' to OWLDatatypeValue"); 
+      throw new DataValueConversionException("cannot convert value of type '" + o.getClass().getCanonicalName() + "' to OWLDatatypeValue"); 
 
     value = o;
   } // OWLDatatypeValueImpl
@@ -60,61 +61,61 @@ public class OWLDatatypeValueImpl extends BuiltInArgumentImpl implements OWLData
   
   public boolean isComparable() { return isNumeric() || isString() || isXSDTime() || isXSDDateTime() || isXSDDuration(); }
 
-  public String getString() throws DatatypeConversionException 
+  public String getString() throws DataValueConversionException 
   { 
     if (!isString()) 
-      throw new DatatypeConversionException("cannot convert value of type '" + value.getClass().getCanonicalName() + "' to String"); 
+      throw new DataValueConversionException("cannot convert value of type '" + value.getClass().getCanonicalName() + "' to String"); 
     return (String)value; 
   } // getString
 
-  public Number getNumber() throws DatatypeConversionException 
+  public Number getNumber() throws DataValueConversionException 
   { 
     if (!isNumeric()) 
-      throw new DatatypeConversionException("cannot convert value of type '" + value.getClass().getCanonicalName() + "' to Number"); 
+      throw new DataValueConversionException("cannot convert value of type '" + value.getClass().getCanonicalName() + "' to Number"); 
     return (Number)value; 
   } // getNumber
 
-  public XSDType getSDType() throws DatatypeConversionException 
+  public XSDType getSDType() throws DataValueConversionException 
   { 
     if (!isXSDType()) 
-      throw new DatatypeConversionException("cannot convert value of type '" + value.getClass().getCanonicalName() + "' to XSDType"); 
+      throw new DataValueConversionException("cannot convert value of type '" + value.getClass().getCanonicalName() + "' to XSDType"); 
     return (XSDType)value; 
   } // getPrimitiveXSDType
 
-  public boolean getBoolean() throws DatatypeConversionException 
+  public boolean getBoolean() throws DataValueConversionException 
   { 
     if (!isBoolean()) 
-      throw new DatatypeConversionException("cannot convert value of type '" + value.getClass().getCanonicalName() + "' to boolean"); 
+      throw new DataValueConversionException("cannot convert value of type '" + value.getClass().getCanonicalName() + "' to boolean"); 
 
     return ((Boolean)value).booleanValue(); 
   } // getBoolean
 
-  public int getInt() throws DatatypeConversionException 
+  public int getInt() throws DataValueConversionException 
   {
     int result = 0;
 
     if (isInteger()) result = ((Integer)value).intValue(); 
     else if (isShort()) result = (int)((Short)value).shortValue();
-    else throw new DatatypeConversionException("cannot convert value of type '" + value.getClass().getCanonicalName() + "' to int"); 
+    else throw new DataValueConversionException("cannot convert value of type '" + value.getClass().getCanonicalName() + "' to int"); 
 
     return result;
   } // getInt
 
-  public long getLong() throws DatatypeConversionException 
+  public long getLong() throws DataValueConversionException 
   { 
     long result = 0;
 
     if (isLong()) result = ((Long)value).longValue(); 
     else if (isInteger()) result = (long)((Integer)value).intValue();
     else if (isShort()) result = (long)((Short)value).shortValue();
-    else throw new DatatypeConversionException("cannot convert value of type '" + value.getClass().getCanonicalName() + "' to long"); 
+    else throw new DataValueConversionException("cannot convert value of type '" + value.getClass().getCanonicalName() + "' to long"); 
 
     return result;
   } // getLong
 
   // Some precision loss possible going from integer and long to
   // float. cf. http://www.particle.kth.se/~lindsey/JavaCourse/Book/Part1/Java/Chapter02/castsMixing.html
-  public float getFloat() throws DatatypeConversionException 
+  public float getFloat() throws DataValueConversionException 
   { 
     float result = 0;
 
@@ -122,14 +123,14 @@ public class OWLDatatypeValueImpl extends BuiltInArgumentImpl implements OWLData
     else if (isInteger()) result = (float)((Integer)value).intValue();
     else if (isLong()) result = (float)((Long)value).longValue();
     else if (isShort()) result = (float)((Short)value).shortValue();
-    else throw new DatatypeConversionException("cannot convert value of type '" + value.getClass().getCanonicalName() + "' to float"); 
+    else throw new DataValueConversionException("cannot convert value of type '" + value.getClass().getCanonicalName() + "' to float"); 
 
     return result;
   } // getFloat
 
   // Some precision loss possible going from long to
   // double. cf. http://www.particle.kth.se/~lindsey/JavaCourse/Book/Part1/Java/Chapter02/castsMixing.html
-  public double getDouble() throws DatatypeConversionException 
+  public double getDouble() throws DataValueConversionException 
   { 
     double result = 0.0;
 
@@ -138,22 +139,22 @@ public class OWLDatatypeValueImpl extends BuiltInArgumentImpl implements OWLData
     else if (isInteger()) result = (double)((Integer)value).intValue();
     else if (isLong()) result = (double)((Long)value).longValue();
     else if (isShort()) result = (double)((Short)value).shortValue();
-    else throw new DatatypeConversionException("cannot convert value of type '" + value.getClass().getCanonicalName() + "' to double"); 
+    else throw new DataValueConversionException("cannot convert value of type '" + value.getClass().getCanonicalName() + "' to double"); 
 
     return result;
   } // getDouble
 
-  public short getShort() throws DatatypeConversionException 
+  public short getShort() throws DataValueConversionException 
   { 
     if (!isShort()) 
-      throw new DatatypeConversionException("cannot convert value of type '" + value.getClass().getCanonicalName() + "' to short"); 
+      throw new DataValueConversionException("cannot convert value of type '" + value.getClass().getCanonicalName() + "' to short"); 
     return ((Short)value).shortValue(); 
   } // getShort
 
-  public byte getByte() throws DatatypeConversionException 
+  public byte getByte() throws DataValueConversionException 
   {
     if (!isByte()) 
-      throw new DatatypeConversionException("cannot convert value of type '" + value.getClass().getCanonicalName() + "' to byte"); 
+      throw new DataValueConversionException("cannot convert value of type '" + value.getClass().getCanonicalName() + "' to byte"); 
     return ((java.lang.Byte)value).byteValue();
   } // getByte
 
@@ -171,7 +172,7 @@ public class OWLDatatypeValueImpl extends BuiltInArgumentImpl implements OWLData
   {
     if(this == obj) return true;
     if((obj == null) || (obj.getClass() != this.getClass())) return false;
-    OWLDatatypeValueImpl info = (OWLDatatypeValueImpl)obj;
+    OWLDataValueImpl info = (OWLDataValueImpl)obj;
     return (value != null && info.value != null && value.toString().equals(info.value.toString()));
   } // equals
 
@@ -184,7 +185,7 @@ public class OWLDatatypeValueImpl extends BuiltInArgumentImpl implements OWLData
 
   public int compareTo(Object o)
   {
-    return  ((Comparable)value).compareTo(((OWLDatatypeValueImpl)o).getValue()); // Will throw a ClassCastException if o's class does not implement Comparable.
+    return  ((Comparable)value).compareTo(((OWLDataValueImpl)o).getValue()); // Will throw a ClassCastException if o's class does not implement Comparable.
   } // compareTo
 
   public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException

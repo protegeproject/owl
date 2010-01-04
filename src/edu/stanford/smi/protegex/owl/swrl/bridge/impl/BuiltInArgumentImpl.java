@@ -10,7 +10,7 @@ import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.BuiltInException;
 public class BuiltInArgumentImpl implements BuiltInArgument
 {
   // There is an equals methods defined for this class.
-  private String variableName, prefixedVariableName;
+  private String variableName;
   private boolean isAVariable;
   private BuiltInArgument builtInResult; // Used to store result of binding for unbound arguments
   private boolean isArgumentUnbound;
@@ -18,16 +18,14 @@ public class BuiltInArgumentImpl implements BuiltInArgument
   public BuiltInArgumentImpl()
   {
     variableName = "";
-    prefixedVariableName = "";
     isAVariable = false;
     builtInResult = null; 
     isArgumentUnbound = false;
   } // ArgumentImpl
 
-  public BuiltInArgumentImpl(String variableName, String prefixedVariableName) 
+  public BuiltInArgumentImpl(String variableName) 
   {
     this.variableName = variableName;
-    this.prefixedVariableName = prefixedVariableName;
     isAVariable = true;
     builtInResult = null; 
     isArgumentUnbound = false;
@@ -35,10 +33,9 @@ public class BuiltInArgumentImpl implements BuiltInArgument
 
   public boolean isVariable() { return isAVariable; }
 
-  public void setVariableName(String variableName, String prefixedVariableName)
+  public void setVariableName(String variableName)
   {
     this.variableName = variableName;
-    this.prefixedVariableName = prefixedVariableName;
     isAVariable = true;
   } // setVariableName
 
@@ -48,13 +45,6 @@ public class BuiltInArgumentImpl implements BuiltInArgument
     
     return variableName;
   } // getVariableName
-
-  public String getPrefixedVariableName() 
-  {
-    //if (!isVariable()) throw new BuiltInException("attempt to get prefixed variable name of non variable argument '" + this.toString() + "'");
-    
-    return prefixedVariableName;
-  } // getPrefixedVariableName
 
   public void setBuiltInResult(BuiltInArgument builtInResult) throws BuiltInException
   { 
@@ -89,7 +79,6 @@ public class BuiltInArgumentImpl implements BuiltInArgument
     if((obj == null) || (obj.getClass() != this.getClass())) return false;
     BuiltInArgumentImpl impl = (BuiltInArgumentImpl)obj;
     return (((variableName == impl.variableName || variableName != null && variableName.equals(impl.variableName))) &&
-            ((prefixedVariableName == impl.prefixedVariableName || prefixedVariableName != null && prefixedVariableName.equals(impl.prefixedVariableName))) &&
             (isAVariable == impl.isAVariable) &&
             (isArgumentUnbound == impl.isArgumentUnbound) &&
             ((builtInResult == impl.builtInResult) || (builtInResult != null && builtInResult.equals(impl.builtInResult))));
@@ -99,7 +88,6 @@ public class BuiltInArgumentImpl implements BuiltInArgument
   {
     int hash = 78;
     hash = hash + (null == variableName ? 0 : variableName.hashCode());
-    hash = hash + (null == prefixedVariableName ? 0 : prefixedVariableName.hashCode());
     hash = hash + (isAVariable ? 0 : 1);
     hash = hash + (null == builtInResult ? 0 : builtInResult.hashCode());
     hash = hash + (isArgumentUnbound ? 0 : 1);

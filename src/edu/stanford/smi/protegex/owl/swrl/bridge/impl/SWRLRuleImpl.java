@@ -12,10 +12,10 @@ import edu.stanford.smi.protegex.owl.swrl.bridge.Atom;
 import edu.stanford.smi.protegex.owl.swrl.bridge.BuiltInArgument;
 import edu.stanford.smi.protegex.owl.swrl.bridge.BuiltInAtom;
 import edu.stanford.smi.protegex.owl.swrl.bridge.ClassAtom;
-import edu.stanford.smi.protegex.owl.swrl.bridge.OWLDatatypeValue;
+import edu.stanford.smi.protegex.owl.swrl.bridge.OWLDataValue;
 import edu.stanford.smi.protegex.owl.swrl.bridge.SWRLRule;
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.BuiltInException;
-import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.DatatypeConversionException;
+import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.DataValueConversionException;
 import edu.stanford.smi.protegex.owl.swrl.sqwrl.SQWRLNames;
 import edu.stanford.smi.protegex.owl.swrl.sqwrl.exceptions.SQWRLException;
 import edu.stanford.smi.protegex.owl.swrl.sqwrl.impl.ResultImpl;
@@ -187,7 +187,7 @@ public class SWRLRuleImpl implements SWRLRule
     for (Atom atom : getBodyAtoms()) referencedVariableNames.addAll(atom.getReferencedVariableNames());
   } // buildReferencedVariableNames
 
-  private void processSQWRLBuiltIns() throws DatatypeConversionException, SQWRLException, BuiltInException
+  private void processSQWRLBuiltIns() throws DataValueConversionException, SQWRLException, BuiltInException
   {
     Map<String, List<BuiltInArgument>> setGroupArgumentsMap = new HashMap<String, List<BuiltInArgument>>(); 
     Set<String> setNames = new HashSet<String>();
@@ -215,7 +215,7 @@ public class SWRLRuleImpl implements SWRLRule
     for (BuiltInAtom builtInAtom : getBuiltInAtomsFromHead()) builtInAtom.setBuiltInIndex(builtInIndex++);
   } // preprocessBuiltInIndexes
 
-  private void preprocessSQWRLHeadBuiltIns() throws DatatypeConversionException, SQWRLException, BuiltInException
+  private void preprocessSQWRLHeadBuiltIns() throws DataValueConversionException, SQWRLException, BuiltInException
   {
      List<String> selectedVariableNames = new ArrayList<String>();
 
@@ -231,7 +231,7 @@ public class SWRLRuleImpl implements SWRLRule
          int argumentIndex = 0, columnIndex;
 
          if (isArgumentAVariable) {
-           variableName = argument.getPrefixedVariableName(); selectedVariableNames.add(variableName);
+           variableName = argument.getVariableName(); selectedVariableNames.add(variableName);
          } // if
          
          if (builtInName.equalsIgnoreCase(SQWRLNames.Select)) {
@@ -273,8 +273,8 @@ public class SWRLRuleImpl implements SWRLRule
            if (columnIndex != -1) sqwrlResult.addOrderByColumn(columnIndex, false);
            else throw new SQWRLException("variable ?" + variableName + " must be selected before it can be ordered");
          } else if (builtInName.equalsIgnoreCase(SQWRLNames.ColumnNames)) {
-           if (argument instanceof OWLDatatypeValue && ((OWLDatatypeValue)argument).isString()) {
-             OWLDatatypeValue literal = (OWLDatatypeValue)argument; sqwrlResult.addColumnDisplayName(literal.getString());
+           if (argument instanceof OWLDataValue && ((OWLDataValue)argument).isString()) {
+             OWLDataValue literal = (OWLDataValue)argument; sqwrlResult.addColumnDisplayName(literal.getString());
            } else throw new SQWRLException("only string literals allowed as column names - found '" + argument + "'");
          } // if
          argumentIndex++;

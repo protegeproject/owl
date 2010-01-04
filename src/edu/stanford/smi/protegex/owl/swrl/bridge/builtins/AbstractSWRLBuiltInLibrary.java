@@ -11,12 +11,12 @@ import edu.stanford.smi.protegex.owl.swrl.bridge.Argument;
 import edu.stanford.smi.protegex.owl.swrl.bridge.ArgumentFactory;
 import edu.stanford.smi.protegex.owl.swrl.bridge.BuiltInArgument;
 import edu.stanford.smi.protegex.owl.swrl.bridge.ClassArgument;
-import edu.stanford.smi.protegex.owl.swrl.bridge.DatatypeValueArgument;
+import edu.stanford.smi.protegex.owl.swrl.bridge.DataValueArgument;
 import edu.stanford.smi.protegex.owl.swrl.bridge.IndividualArgument;
 import edu.stanford.smi.protegex.owl.swrl.bridge.MultiArgument;
 import edu.stanford.smi.protegex.owl.swrl.bridge.OWLClass;
-import edu.stanford.smi.protegex.owl.swrl.bridge.OWLDatatypePropertyAssertionAxiom;
-import edu.stanford.smi.protegex.owl.swrl.bridge.OWLDatatypeValue;
+import edu.stanford.smi.protegex.owl.swrl.bridge.OWLDataPropertyAssertionAxiom;
+import edu.stanford.smi.protegex.owl.swrl.bridge.OWLDataValue;
 import edu.stanford.smi.protegex.owl.swrl.bridge.OWLIndividual;
 import edu.stanford.smi.protegex.owl.swrl.bridge.OWLProperty;
 import edu.stanford.smi.protegex.owl.swrl.bridge.OWLPropertyAssertionAxiom;
@@ -341,7 +341,7 @@ public void checkThatArgumentIsALiteral(int argumentNumber, List<BuiltInArgument
 {
   checkArgumentNumber(argumentNumber, arguments);
 
-  if (!(arguments.get(argumentNumber) instanceof DatatypeValueArgument)) 
+  if (!(arguments.get(argumentNumber) instanceof DataValueArgument)) 
     throw new InvalidBuiltInArgumentException(argumentNumber,
                                               makeInvalidArgumentTypeMessage(arguments.get(argumentNumber), "literal"));
 } // checkThatArgumentIsALiteral
@@ -349,7 +349,7 @@ public void checkThatArgumentIsALiteral(int argumentNumber, List<BuiltInArgument
 public void checkThatArgumentIsALiteral(BuiltInArgument argument) throws BuiltInException
 {
 
-  if (!(argument instanceof DatatypeValueArgument)) throw new InvalidBuiltInArgumentException(makeInvalidArgumentTypeMessage(argument, "literal"));
+  if (!(argument instanceof DataValueArgument)) throw new InvalidBuiltInArgumentException(makeInvalidArgumentTypeMessage(argument, "literal"));
 } // checkThatArgumentIsALiteral
 
 public void checkThatArgumentIsNumeric(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException
@@ -382,7 +382,7 @@ public boolean isArgumentADatatypeValue(int argumentNumber, List<BuiltInArgument
 {
   checkArgumentNumber(argumentNumber, arguments);
 
-  return arguments.get(argumentNumber) instanceof DatatypeValueArgument;
+  return arguments.get(argumentNumber) instanceof DataValueArgument;
 } // isArgumentADatatypeValue
 
 public void checkThatArgumentIsAnIndividual(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException
@@ -443,11 +443,11 @@ public OWLProperty getArgumentAsAnOWLProperty(int argumentNumber, List<BuiltInAr
   return (OWLProperty)arguments.get(argumentNumber);
 } // getArgumentAsAnOWLProperty
 
-public OWLDatatypeValue getArgumentAsAnOWLDatatypeValue(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException
+public OWLDataValue getArgumentAsAnOWLDatatypeValue(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException
 {
   checkThatArgumentIsAnOWLDatatypeValue(argumentNumber, arguments);
 
-  return (OWLDatatypeValue)arguments.get(argumentNumber);
+  return (OWLDataValue)arguments.get(argumentNumber);
 } // getArgumentAsAnOWLDatatypeValue
 
 public String getArgumentAsAResourceName(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException
@@ -545,7 +545,7 @@ public boolean isArgumentALiteral(int argumentNumber, List<BuiltInArgument> argu
 {
   checkThatArgumentIsBound(argumentNumber, arguments);
 
-  return (arguments.get(argumentNumber) instanceof DatatypeValueArgument);
+  return (arguments.get(argumentNumber) instanceof DataValueArgument);
 } // isArgumentALiteral
 
 public boolean isArgumentAProperty(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException
@@ -589,18 +589,18 @@ public void checkThatArgumentIsAClass(int argumentNumber, List<BuiltInArgument> 
                                               makeInvalidArgumentTypeMessage(arguments.get(argumentNumber), "class"));
 } // checkThatArgumentIsAClass
 
-public OWLDatatypeValue getArgumentAsALiteral(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException
+public OWLDataValue getArgumentAsALiteral(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException
 {
   checkThatArgumentIsALiteral(argumentNumber, arguments);
 
-  return (OWLDatatypeValue)arguments.get(argumentNumber);
+  return (OWLDataValue)arguments.get(argumentNumber);
 } // getArgumentAsALiteral
 
-public OWLDatatypeValue getArgumentAsALiteral(BuiltInArgument argument) throws BuiltInException
+public OWLDataValue getArgumentAsALiteral(BuiltInArgument argument) throws BuiltInException
 {
   checkThatArgumentIsALiteral(argument);
 
-  return (OWLDatatypeValue)argument;
+  return (OWLDataValue)argument;
 } // getArgumentAsALiteral
 
 // Longs
@@ -808,13 +808,6 @@ public String getVariableName(int argumentNumber, List<BuiltInArgument> argument
   return arguments.get(argumentNumber).getVariableName(); // Will throw an exception if it does not contain a variable name
 } // getVariableName
 
-public String getPrefixedVariableName(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException
-{
-  checkArgumentNumber(argumentNumber, arguments);
-
-  return arguments.get(argumentNumber).getPrefixedVariableName(); // Will throw an exception if it does not contain a variable name
-} // getPrefixedVariableName
-
 private String makeInvalidArgumentTypeMessage(BuiltInArgument argument, String expectedTypeName) throws BuiltInException
 {
   String message = "expecting " + expectedTypeName + ", got ";
@@ -829,8 +822,8 @@ private String makeInvalidArgumentTypeMessage(BuiltInArgument argument, String e
     } else if (argument instanceof IndividualArgument) {
       IndividualArgument individualArgument = (IndividualArgument)argument;
       message += "individual with name '" + individualArgument.getIndividualName() + "'";
-    } else if (argument instanceof DatatypeValueArgument) {
-      DatatypeValueArgument literal = (DatatypeValueArgument)argument;
+    } else if (argument instanceof DataValueArgument) {
+      DataValueArgument literal = (DataValueArgument)argument;
       message += "literal with value '" + literal.toString() + "'";
     } else message += "unknown type '" + argument.getClass().getName() + "'";
   } // if
@@ -861,8 +854,8 @@ public Object getArgumentAsAPropertyValue(int argumentNumber, List<BuiltInArgume
   } else if (argument instanceof IndividualArgument) {
     IndividualArgument individualArgument = (IndividualArgument)argument;
     result = individualArgument.getIndividualName();
-  } else if (argument instanceof OWLDatatypeValue) {
-    OWLDatatypeValue literal = (OWLDatatypeValue)argument;
+  } else if (argument instanceof OWLDataValue) {
+    OWLDataValue literal = (OWLDataValue)argument;
     if (literal.isNumeric()) result = literal.getNumber();
     else if (literal.isString()) result = literal.getString();
     else throw new BuiltInException("literal with value '" + literal.toString() + "' not supported - strings and number literals only");
@@ -911,7 +904,7 @@ public boolean processResultArgument(List<BuiltInArgument> arguments, int argume
   checkArgumentNumber(argumentNumber, arguments);
 
   if (isUnboundArgument(argumentNumber, arguments)) {
-    MultiArgument multiArgument = argumentFactory.createMultiArgument(getVariableName(argumentNumber, arguments), getPrefixedVariableName(argumentNumber, arguments));
+    MultiArgument multiArgument = argumentFactory.createMultiArgument(getVariableName(argumentNumber, arguments));
     for (BuiltInArgument argument : resultArguments) multiArgument.addArgument(argument);
     arguments.set(argumentNumber, multiArgument);
     result = !multiArgument.hasNoArguments();
@@ -941,17 +934,17 @@ public boolean processResultArgument(List<BuiltInArgument> arguments, int argume
   return result;
 } // processResultArgument
 
-public boolean processResultArgument(List<BuiltInArgument> arguments, int argumentNumber, OWLDatatypeValue resultArgument) throws BuiltInException
+public boolean processResultArgument(List<BuiltInArgument> arguments, int argumentNumber, OWLDataValue resultArgument) throws BuiltInException
 {
   boolean result = false;
 
   checkArgumentNumber(argumentNumber, arguments);
 
   if (isUnboundArgument(argumentNumber, arguments)) {
-    arguments.get(argumentNumber).setBuiltInResult(argumentFactory.createDatatypeValueArgument(resultArgument));
+    arguments.get(argumentNumber).setBuiltInResult(argumentFactory.createDataValueArgument(resultArgument));
     result = true;
   } else {
-    OWLDatatypeValue argument = getArgumentAsAnOWLDatatypeValue(argumentNumber, arguments);
+    OWLDataValue argument = getArgumentAsAnOWLDatatypeValue(argumentNumber, arguments);
     result = argument.equals(resultArgument);
   } //if
   
@@ -961,43 +954,43 @@ public boolean processResultArgument(List<BuiltInArgument> arguments, int argume
 public boolean processResultArgument(List<BuiltInArgument> arguments, int argumentNumber, short resultArgument) 
   throws BuiltInException
 {
-  return processResultArgument(arguments, argumentNumber, argumentFactory.createDatatypeValueArgument(resultArgument));
+  return processResultArgument(arguments, argumentNumber, argumentFactory.createDataValueArgument(resultArgument));
 } // processResultArgument
 
 public boolean processResultArgument(List<BuiltInArgument> arguments, int argumentNumber, 
                                      int resultArgument) throws BuiltInException
 {
-  return processResultArgument(arguments, argumentNumber, argumentFactory.createDatatypeValueArgument(resultArgument));
+  return processResultArgument(arguments, argumentNumber, argumentFactory.createDataValueArgument(resultArgument));
 } // processResultArgument
 
 public boolean processResultArgument(List<BuiltInArgument> arguments, int argumentNumber, 
                                      long resultArgument) throws BuiltInException
 {
-  return processResultArgument(arguments, argumentNumber, argumentFactory.createDatatypeValueArgument(resultArgument));
+  return processResultArgument(arguments, argumentNumber, argumentFactory.createDataValueArgument(resultArgument));
 } // processResultArgument
 
 public boolean processResultArgument(List<BuiltInArgument> arguments, int argumentNumber, 
                                      float resultArgument) throws BuiltInException
 {
-  return processResultArgument(arguments, argumentNumber, argumentFactory.createDatatypeValueArgument(resultArgument));
+  return processResultArgument(arguments, argumentNumber, argumentFactory.createDataValueArgument(resultArgument));
 } // processResultArgument
 
 public boolean processResultArgument(List<BuiltInArgument> arguments, int argumentNumber, 
                                      double resultArgument) throws BuiltInException
 {
-  return processResultArgument(arguments, argumentNumber, argumentFactory.createDatatypeValueArgument(resultArgument));
+  return processResultArgument(arguments, argumentNumber, argumentFactory.createDataValueArgument(resultArgument));
 } // processResultArgument
 
 public boolean processResultArgument(List<BuiltInArgument> arguments, int argumentNumber, 
                                      byte resultArgument) throws BuiltInException
 {
-  return processResultArgument(arguments, argumentNumber, argumentFactory.createDatatypeValueArgument(resultArgument));
+  return processResultArgument(arguments, argumentNumber, argumentFactory.createDataValueArgument(resultArgument));
 } // processResultArgument
 
 public boolean processResultArgument(List<BuiltInArgument> arguments, int argumentNumber, 
                                      String resultArgument) throws BuiltInException
 {
-  return processResultArgument(arguments, argumentNumber, argumentFactory.createDatatypeValueArgument(resultArgument));
+  return processResultArgument(arguments, argumentNumber, argumentFactory.createDataValueArgument(resultArgument));
 } // processResultArgument
 
 public String getOWLDatatypePropertyValueAsAString(SWRLBuiltInBridge bridge, String individualName, String propertyName)
@@ -1005,14 +998,14 @@ public String getOWLDatatypePropertyValueAsAString(SWRLBuiltInBridge bridge, Str
 {
   Set<OWLPropertyAssertionAxiom> axioms = bridge.getOWLPropertyAssertionAxioms(individualName, propertyName);
   OWLPropertyAssertionAxiom axiom;
-  OWLDatatypeValue value;
+  OWLDataValue value;
   
   axiom = axioms.toArray(new OWLPropertyAssertionAxiom[0])[0]; // Pick the first one
 
-  if (!(axiom instanceof OWLDatatypePropertyAssertionAxiom))
+  if (!(axiom instanceof OWLDataPropertyAssertionAxiom))
     throw new BuiltInException("property '" + propertyName + "' is not an OWL datavalued property assertion axiom");
 
-  value = ((OWLDatatypePropertyAssertionAxiom)axiom).getObject();  
+  value = ((OWLDataPropertyAssertionAxiom)axiom).getObject();  
 
   return value.toString();
 } // getOWLDatatypePropertyValueAsAString
@@ -1022,14 +1015,14 @@ public int getOWLDatatypePropertyValueAsAnInteger(SWRLBuiltInBridge bridge, Stri
 {
   Set<OWLPropertyAssertionAxiom> axioms = bridge.getOWLPropertyAssertionAxioms(individualName, propertyName);
   OWLPropertyAssertionAxiom axiom;
-  OWLDatatypeValue value;
+  OWLDataValue value;
 
   axiom = axioms.toArray(new OWLPropertyAssertionAxiom[0])[0];
 
-  if (!(axiom instanceof OWLDatatypePropertyAssertionAxiom))
+  if (!(axiom instanceof OWLDataPropertyAssertionAxiom))
     throw new BuiltInException("property '" + propertyName + "' is not an OWL datavalued property assertion axiom");
 
-  value = ((OWLDatatypePropertyAssertionAxiom)axiom).getObject();  
+  value = ((OWLDataPropertyAssertionAxiom)axiom).getObject();  
 
   return value.getInt();
 } // getOWLDatatypePropertyValueAsInteger

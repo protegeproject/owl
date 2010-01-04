@@ -16,10 +16,10 @@ public interface Mapper
   Set<OWLIndividual> mapOWLClass(OWLClass owlClass) throws MapperException;
   Set<OWLIndividual> mapOWLClass(OWLClass owlClass, OWLIndividual owlIndividual) throws MapperException;
 
-  Set<OWLDatatypePropertyAssertionAxiom> mapOWLDatatypeProperty(OWLProperty owlProperty) throws MapperException;
-  Set<OWLDatatypePropertyAssertionAxiom> mapOWLDatatypeProperty(OWLProperty owlProperty, OWLIndividual subject) throws MapperException;
-  Set<OWLDatatypePropertyAssertionAxiom> mapOWLDatatypeProperty(OWLProperty owlProperty, OWLDatatypeValue value) throws MapperException;
-  Set<OWLDatatypePropertyAssertionAxiom> mapOWLDatatypeProperty(OWLProperty owlProperty, OWLIndividual subject, OWLDatatypeValue value) 
+  Set<OWLDataPropertyAssertionAxiom> mapOWLDatatypeProperty(OWLProperty owlProperty) throws MapperException;
+  Set<OWLDataPropertyAssertionAxiom> mapOWLDatatypeProperty(OWLProperty owlProperty, OWLIndividual subject) throws MapperException;
+  Set<OWLDataPropertyAssertionAxiom> mapOWLDatatypeProperty(OWLProperty owlProperty, OWLDataValue value) throws MapperException;
+  Set<OWLDataPropertyAssertionAxiom> mapOWLDatatypeProperty(OWLProperty owlProperty, OWLIndividual subject, OWLDataValue value) 
     throws MapperException;
 
   Set<OWLObjectPropertyAssertionAxiom> mapOWLObjectProperty(OWLProperty owlProperty) throws MapperException;

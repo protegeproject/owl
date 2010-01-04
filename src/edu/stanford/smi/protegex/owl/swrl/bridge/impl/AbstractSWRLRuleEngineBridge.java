@@ -27,12 +27,12 @@ import edu.stanford.smi.protegex.owl.swrl.bridge.OWLAxiom;
 import edu.stanford.smi.protegex.owl.swrl.bridge.OWLClass;
 import edu.stanford.smi.protegex.owl.swrl.bridge.OWLClassAssertionAxiom;
 import edu.stanford.smi.protegex.owl.swrl.bridge.OWLConversionFactory;
-import edu.stanford.smi.protegex.owl.swrl.bridge.OWLDatatypePropertyAssertionAxiom;
-import edu.stanford.smi.protegex.owl.swrl.bridge.OWLDatatypeValue;
+import edu.stanford.smi.protegex.owl.swrl.bridge.OWLDataPropertyAssertionAxiom;
+import edu.stanford.smi.protegex.owl.swrl.bridge.OWLDataValue;
 import edu.stanford.smi.protegex.owl.swrl.bridge.OWLDeclarationAxiom;
 import edu.stanford.smi.protegex.owl.swrl.bridge.OWLDifferentIndividualsAxiom;
 import edu.stanford.smi.protegex.owl.swrl.bridge.OWLEntity;
-import edu.stanford.smi.protegex.owl.swrl.bridge.OWLFactory;
+import edu.stanford.smi.protegex.owl.swrl.bridge.OWLDataFactory;
 import edu.stanford.smi.protegex.owl.swrl.bridge.OWLIndividual;
 import edu.stanford.smi.protegex.owl.swrl.bridge.OWLObjectPropertyAssertionAxiom;
 import edu.stanford.smi.protegex.owl.swrl.bridge.OWLProperty;
@@ -44,7 +44,7 @@ import edu.stanford.smi.protegex.owl.swrl.bridge.SWRLRuleEngineBridge;
 import edu.stanford.smi.protegex.owl.swrl.bridge.TargetSWRLRuleEngine;
 import edu.stanford.smi.protegex.owl.swrl.bridge.builtins.BuiltInLibraryManager;
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.BuiltInException;
-import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.DatatypeConversionException;
+import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.DataValueConversionException;
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.OWLConversionFactoryException;
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.OWLFactoryException;
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.SWRLBuiltInBridgeException;
@@ -62,7 +62,7 @@ import edu.stanford.smi.protegex.owl.swrl.util.SWRLOWLUtil;
  */
 public abstract class AbstractSWRLRuleEngineBridge implements SWRLRuleEngineBridge, SWRLBuiltInBridge, TargetSWRLRuleEngine
 {
-  protected OWLFactory activeOWLFactory, injectedOWLFactory;
+  protected OWLDataFactory activeOWLFactory, injectedOWLFactory;
   protected OWLConversionFactory conversionFactory;
   protected OWLModel owlModel; 
 
@@ -123,8 +123,6 @@ public abstract class AbstractSWRLRuleEngineBridge implements SWRLRuleEngineBrid
     ruleGroupNames.add(ruleGroupName);
     importSWRLRulesAndOWLKnowledge(ruleGroupNames);
   } // importSWRLRulesAndOWLKnowledge
-
-  // TODO: this needs to be more principled
 
   /**
    ** Load rules from all the named rule groups and associated knowledge from OWL into bridge. All existing bridge rules and knowledge will
@@ -276,12 +274,12 @@ public abstract class AbstractSWRLRuleEngineBridge implements SWRLRuleEngineBrid
 
   public SWRLRule getSWRLRule(String ruleName) throws SWRLBuiltInBridgeException
   {
-    if (!importedSWRLRules.containsKey(ruleName)) throw new SWRLBuiltInBridgeException("invalid rule name '" + ruleName + "'");
+    if (!importedSWRLRules.containsKey(ruleName)) throw new SWRLBuiltInBridgeException("invalid rule name: " + ruleName);
 
     return importedSWRLRules.get(ruleName);
   } // getRule
 
-  public OWLFactory getOWLFactory() { return activeOWLFactory; }
+  public OWLDataFactory getOWLDataFactory() { return activeOWLFactory; }
   public OWLModel getOWLModel() { return owlModel; } // TODO: Protege  dependency - remove
 
   // Convenience methods to display bridge activity
@@ -372,7 +370,7 @@ public abstract class AbstractSWRLRuleEngineBridge implements SWRLRuleEngineBrid
 
     if (owlEntity instanceof OWLClass) injectOWLClass(owlEntity.getURI());
     else if (owlEntity instanceof OWLIndividual) injectOWLIndividual((OWLIndividual)owlEntity);
-    else throw new SWRLBuiltInBridgeException("error inject OWLDeclarationAxiom; unknown entity type '" + owlEntity.getClass() + "'");
+    else throw new SWRLBuiltInBridgeException("error injecting OWLDeclarationAxiom - unknown entity type: " + owlEntity.getClass());
   } // injectOWLDeclarationAxiom
 
   public OWLClass injectOWLClass() throws SWRLBuiltInBridgeException
@@ -399,7 +397,7 @@ public abstract class AbstractSWRLRuleEngineBridge implements SWRLRuleEngineBrid
     } // if
   } // injectOWLClass
 
-  public void injectOWLSubClassAxiom(OWLSubClassAxiom axiom) throws SWRLBuiltInBridgeException
+  private void injectOWLSubClassAxiom(OWLSubClassAxiom axiom) throws SWRLBuiltInBridgeException
   {
     String subclassURI = axiom.getSubClass().getURI();
     String superclassURI = axiom.getSuperClass().getURI();
@@ -449,21 +447,16 @@ public abstract class AbstractSWRLRuleEngineBridge implements SWRLRuleEngineBrid
     return owlIndividual;
   } // injectOWLIndividualOfClass
 
-  public void injectOWLIndividuals(Set<OWLIndividual> individuals) throws SWRLBuiltInBridgeException
-  {
-    for (OWLIndividual owlIndividual : individuals) injectOWLIndividual(owlIndividual);
-  } // injectOWLIndividuals
-
-  public OWLDatatypePropertyAssertionAxiom injectOWLDatatypePropertyAssertionAxiom(OWLIndividual subject, OWLProperty property,
-                                                                                   OWLDatatypeValue object) 
+  public OWLDataPropertyAssertionAxiom injectOWLDataPropertyAssertionAxiom(OWLIndividual subject, OWLProperty property,
+                                                                           OWLDataValue object) 
     throws SWRLBuiltInBridgeException
   {
-    OWLDatatypePropertyAssertionAxiom axiom = injectedOWLFactory.getOWLDataPropertyAssertionAxiom(subject, property, object);
+    OWLDataPropertyAssertionAxiom axiom = injectedOWLFactory.getOWLDataPropertyAssertionAxiom(subject, property, object);
     injectOWLDatatypePropertyAssertionAxiom(axiom);
     return axiom;
-  } // injectOWLDatatypePropertyAssertionAxiom
+  } // injectOWLDataPropertyAssertionAxiom
 
-  public void injectOWLDatatypePropertyAssertionAxiom(OWLDatatypePropertyAssertionAxiom axiom) 
+  public void injectOWLDatatypePropertyAssertionAxiom(OWLDataPropertyAssertionAxiom axiom) 
     throws SWRLBuiltInBridgeException
   {
     if (!injectedAxioms.contains(axiom)) {
@@ -474,11 +467,11 @@ public abstract class AbstractSWRLRuleEngineBridge implements SWRLRuleEngineBrid
     exportOWLAxiom(axiom); // Export the axiom to the rule engine.
   } // injectOWLDatatypePropertyAssertionAxiom
 
-  public void injectOWLDatatypePropertyAssertionAxioms(Set<OWLDatatypePropertyAssertionAxiom> axioms)
+  public void injectOWLDataPropertyAssertionAxioms(Set<OWLDataPropertyAssertionAxiom> axioms)
     throws SWRLBuiltInBridgeException
   {
-    for (OWLDatatypePropertyAssertionAxiom axiom : axioms) injectOWLDatatypePropertyAssertionAxiom(axiom);
-  } // injectOWLDatatypePropertyAssertionAxioms
+    for (OWLDataPropertyAssertionAxiom axiom : axioms) injectOWLDatatypePropertyAssertionAxiom(axiom);
+  } // injectOWLDataPropertyAssertionAxioms
 
   public void injectOWLObjectPropertyAssertionAxiom(OWLObjectPropertyAssertionAxiom axiom)
     throws SWRLBuiltInBridgeException
@@ -517,18 +510,18 @@ public abstract class AbstractSWRLRuleEngineBridge implements SWRLRuleEngineBrid
   
   public boolean isOWLDataProperty(String propertyName) 
   { 
-	return importedDatatypePropertyNames.contains(propertyName) || conversionFactory.isOWLDataProperty(propertyName);
+	  return importedDatatypePropertyNames.contains(propertyName) || conversionFactory.isOWLDataProperty(propertyName);
   } // isOWLDataProperty
   
   public boolean isOWLProperty(String propertyName) 
   { 
-	return importedObjectPropertyNames.contains(propertyName) || importedDatatypePropertyNames.contains(propertyName) ||
-	       conversionFactory.isOWLProperty(propertyName);
+	  return importedObjectPropertyNames.contains(propertyName) || importedDatatypePropertyNames.contains(propertyName) ||
+	         conversionFactory.isOWLProperty(propertyName);
   } // isOWLProperty
   
   public boolean isOWLIndividual(String individualName) 
   { 
-	return allOWLIndividuals.containsKey(individualName) || conversionFactory.isOWLIndividual(individualName);
+	  return allOWLIndividuals.containsKey(individualName) || conversionFactory.isOWLIndividual(individualName);
   } // isOWLIndividual
   
   public boolean isOWLIndividualOfClass(String individualName, String classURI)
@@ -556,7 +549,7 @@ public abstract class AbstractSWRLRuleEngineBridge implements SWRLRuleEngineBrid
     	Set<OWLPropertyAssertionAxiom> result = null;
     	try {
     	  result = conversionFactory.getOWLPropertyAssertionAxioms(individualName, propertyName);
-    	} catch (DatatypeConversionException e) {
+    	} catch (DataValueConversionException e) {
       	  throw new SWRLBuiltInBridgeException("error getting property assertion axiom for individual '" + individualName + 
       			                                "', property '" + propertyName + "': " + e.getMessage(), e); 
         } catch (OWLConversionFactoryException e) {
@@ -627,7 +620,6 @@ public abstract class AbstractSWRLRuleEngineBridge implements SWRLRuleEngineBrid
 
     if (rdfsClass != null) {
       instances.addAll(rdfsClass.getInstances(true));
-      instances.addAll(rdfsClass.getInferredInstances(true));
     } // if
 
     Iterator iterator = instances.iterator();
@@ -1067,7 +1059,7 @@ public abstract class AbstractSWRLRuleEngineBridge implements SWRLRuleEngineBrid
     } // if
   } // generateBuiltInBindings
 
-  //Find indices of multi-arguments (if any) in a list of arguments.
+  // Find indices of multi-arguments (if any) in a list of arguments.
   private List<Integer> getMultiArgumentIndexes(List<BuiltInArgument> arguments)
   {
     List<Integer> result = new ArrayList<Integer>();
@@ -1097,8 +1089,8 @@ public abstract class AbstractSWRLRuleEngineBridge implements SWRLRuleEngineBrid
     if (nextMultiArgumentCounts(multiArgumentCounts.subList(1, multiArgumentCounts.size()), 
                                 multiArgumentSizes.subList(1, multiArgumentSizes.size()))) {
       // No more permutations of rest of list so increment this count and if we are not at the end set rest of the list to begin at 0 again.
-      int count = multiArgumentCounts.get(0).intValue();
-      int size = multiArgumentSizes.get(0).intValue();
+      int count = multiArgumentCounts.get(0);
+      int size = multiArgumentSizes.get(0);
       
       if (++count == size) return true;
 
@@ -1131,6 +1123,5 @@ public abstract class AbstractSWRLRuleEngineBridge implements SWRLRuleEngineBrid
 
     return false;
   } // hasUnboundArguments
-
   
 } // AbstractSWRLRuleEngineBridge

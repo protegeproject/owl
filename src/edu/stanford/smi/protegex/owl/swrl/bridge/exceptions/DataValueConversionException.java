@@ -3,9 +3,9 @@ package edu.stanford.smi.protegex.owl.swrl.bridge.exceptions;
 
 import edu.stanford.smi.protegex.owl.swrl.sqwrl.exceptions.SQWRLException;
 
-public class DatatypeConversionException extends SQWRLException
+public class DataValueConversionException extends SQWRLException
 {
-  public DatatypeConversionException(String message)
+  public DataValueConversionException(String message)
   { 
     super(message);
   } // DatatypeConversionException

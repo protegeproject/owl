@@ -14,27 +14,27 @@ public class MultiArgumentImpl extends BuiltInArgumentImpl implements MultiArgum
 {
   private List<BuiltInArgument> arguments;
 
-  public MultiArgumentImpl(String variableName, String prefixedVariableName)
+  public MultiArgumentImpl(String variableName)
   {
-    super(variableName, prefixedVariableName);
+    super(variableName);
     arguments = new ArrayList<BuiltInArgument>();
   } // MultiArgumentImpl
 
-  public MultiArgumentImpl(String variableName, String prefixedVariableName, List<BuiltInArgument> arguments)
+  public MultiArgumentImpl(String variableName, List<BuiltInArgument> arguments)
   {
-    super(variableName, prefixedVariableName);
+    super(variableName);
     this.arguments = arguments;
   } // MultiArgumentImpl
 
   public void addArgument(BuiltInArgument argument) 
   { 
-	argument.setVariableName(getVariableName(), getPrefixedVariableName());
+	argument.setVariableName(getVariableName());
 	arguments.add(argument);
   } // addArguments
   
   public void setArguments(List<BuiltInArgument> arguments) 
   { 
-	  for (BuiltInArgument argument : arguments) argument.setVariableName(getVariableName(), getPrefixedVariableName());
+	  for (BuiltInArgument argument : arguments) argument.setVariableName(getVariableName());
 	  this.arguments = arguments; 
   } // setArguments
   

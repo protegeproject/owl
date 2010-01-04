@@ -23,7 +23,7 @@ public class RelationalMapper implements Mapper, MapperGenerator
   private Map<String, OWLDatatypePropertyMap> datatypePropertyMaps;
   private Set<Database> databases;
   private Map<Database, DatabaseConnection> databaseConnections;
-  private OWLFactory owlFactory;
+  private OWLDataFactory owlFactory;
 
   public RelationalMapper(SQWRLQueryEngine queryEngine) throws MapperException
   {
@@ -182,8 +182,8 @@ public class RelationalMapper implements Mapper, MapperGenerator
     throw new MapperException("not implemented");
   } // mapOWLbjectProperty
 
-  public Set<OWLDatatypePropertyAssertionAxiom> mapOWLDatatypeProperty(OWLProperty owlProperty, OWLIndividual subjectOWLIndividual,
-                                                                       OWLDatatypeValue objectOWLDatatypeValue) 
+  public Set<OWLDataPropertyAssertionAxiom> mapOWLDatatypeProperty(OWLProperty owlProperty, OWLIndividual subjectOWLIndividual,
+                                                                       OWLDataValue objectOWLDatatypeValue) 
     throws MapperException
   {
     String propertyName = owlProperty.getPropertyName();
@@ -193,7 +193,7 @@ public class RelationalMapper implements Mapper, MapperGenerator
     String subjectPrimaryKeyColumnName = primaryKey.getPrimaryKeyColumns().iterator().next().getColumnName();
     String subjectTableName = primaryKey.getBaseTable().getTableName();
     Database database = primaryKey.getBaseTable().getDatabase();
-    Set<OWLDatatypePropertyAssertionAxiom> result = new HashSet<OWLDatatypePropertyAssertionAxiom>();
+    Set<OWLDataPropertyAssertionAxiom> result = new HashSet<OWLDataPropertyAssertionAxiom>();
     boolean hasSubject = (subjectOWLIndividual != null);
     boolean hasObject = (objectOWLDatatypeValue != null);
     DatabaseConnection databaseConnection;
@@ -219,8 +219,8 @@ public class RelationalMapper implements Mapper, MapperGenerator
       
       while (rs.next()) {
         OWLIndividual subject = owlFactory.getOWLIndividual(rs.getString(subjectPrimaryKeyColumnName));
-        OWLDatatypeValue value = owlFactory.getOWLDataValue(rs.getFloat(valueColumnName)); // TODO: float only
-        OWLDatatypePropertyAssertionAxiom axiom = owlFactory.getOWLDataPropertyAssertionAxiom(subject, owlProperty, value);
+        OWLDataValue value = owlFactory.getOWLDataValue(rs.getFloat(valueColumnName)); // TODO: float only
+        OWLDataPropertyAssertionAxiom axiom = owlFactory.getOWLDataPropertyAssertionAxiom(subject, owlProperty, value);
         result.add(axiom);
       } // while
       rs.close();
@@ -233,7 +233,7 @@ public class RelationalMapper implements Mapper, MapperGenerator
     return result;
   } // mapOWLDatatypeProperty
 
-  public Set<OWLDatatypePropertyAssertionAxiom> mapOWLDatatypeProperty(OWLProperty owlProperty,
+  public Set<OWLDataPropertyAssertionAxiom> mapOWLDatatypeProperty(OWLProperty owlProperty,
                                                                        OWLIndividual subjectOWLIndividual)
 
     throws MapperException
@@ -241,15 +241,15 @@ public class RelationalMapper implements Mapper, MapperGenerator
     return mapOWLDatatypeProperty(owlProperty, subjectOWLIndividual, null);
   } // mapOWLDatatypeProperty
 
-  public Set<OWLDatatypePropertyAssertionAxiom> mapOWLDatatypeProperty(OWLProperty owlProperty,
-                                                                       OWLDatatypeValue objectOWLDatatypeValue)
+  public Set<OWLDataPropertyAssertionAxiom> mapOWLDatatypeProperty(OWLProperty owlProperty,
+                                                                       OWLDataValue objectOWLDatatypeValue)
 
     throws MapperException
   {
     return mapOWLDatatypeProperty(owlProperty, null, objectOWLDatatypeValue);
   } // mapOWLDatatypeProperty
 
-  public Set<OWLDatatypePropertyAssertionAxiom> mapOWLDatatypeProperty(OWLProperty owlProperty) throws MapperException
+  public Set<OWLDataPropertyAssertionAxiom> mapOWLDatatypeProperty(OWLProperty owlProperty) throws MapperException
   {
     return mapOWLDatatypeProperty(owlProperty, null, null);
   } // mapOWLDatatypeProperty
@@ -313,20 +313,20 @@ public class RelationalMapper implements Mapper, MapperGenerator
     Database database;
     PrimaryKey primaryKey;
     OWLDatatypePropertyMap datatypePropertyMap;
-    OWLDatatypeProperty owlDatatypeProperty;
+    OWLDataProperty owlDatatypeProperty;
 
     SQWRLResult result = queryEngine.getSQWRLResult("ddm:OWLDatatypePropertyMap-Query");
     if (result != null) {
       while (result.hasNext()) {
         String propertyName = result.getPropertyValue("?ddm:owlDatatypeProperty").getPropertyName();
-        String schemaName  = result.getDatatypeValue("?ddm:schemaName").getString();
-        String tableName  = result.getDatatypeValue("?ddm:tableName").getString();
-        String keyColumnName  = result.getDatatypeValue("?ddm:keyColumnName").getString();
-        String valueColumnName  = result.getDatatypeValue("?ddm:valueColumnName").getString();
-        String jdbcDriverName  = result.getDatatypeValue("?ddm:jdbcDriverName").getString();
-        String databaseName  = result.getDatatypeValue("?ddm:databaseName").getString();
-        String serverName  = result.getDatatypeValue("?ddm:serverName").getString();
-        int portNumber  = result.getDatatypeValue("?ddm:portNumber").getInt();
+        String schemaName  = result.getDataValue("?ddm:schemaName").getString();
+        String tableName  = result.getDataValue("?ddm:tableName").getString();
+        String keyColumnName  = result.getDataValue("?ddm:keyColumnName").getString();
+        String valueColumnName  = result.getDataValue("?ddm:valueColumnName").getString();
+        String jdbcDriverName  = result.getDataValue("?ddm:jdbcDriverName").getString();
+        String databaseName  = result.getDataValue("?ddm:databaseName").getString();
+        String serverName  = result.getDataValue("?ddm:serverName").getString();
+        int portNumber  = result.getDataValue("?ddm:portNumber").getInt();
 
         owlDatatypeProperty = owlFactory.getOWLDataProperty(propertyName);
 

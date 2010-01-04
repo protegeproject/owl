@@ -13,7 +13,7 @@ import org.jdom.Text;
 import org.jdom.filter.ContentFilter;
 import org.jdom.filter.Filter;
 
-import edu.stanford.smi.protegex.owl.swrl.bridge.OWLFactory;
+import edu.stanford.smi.protegex.owl.swrl.bridge.OWLDataFactory;
 import edu.stanford.smi.protegex.owl.swrl.bridge.OWLIndividual;
 import edu.stanford.smi.protegex.owl.swrl.bridge.OWLProperty;
 import edu.stanford.smi.protegex.owl.swrl.bridge.SWRLBuiltInBridge;
@@ -47,7 +47,7 @@ public class XMLBridgeMapper
   private OWLProperty rootElementProperty, elementsProperty, subElementsProperty, nameProperty, namespacePrefixProperty, namespaceURIProperty, 
     contentProperty, valueProperty, attributesProperty;
 
-  private OWLFactory owlFactory;
+  private OWLDataFactory owlFactory;
 
   public XMLBridgeMapper() 
   {

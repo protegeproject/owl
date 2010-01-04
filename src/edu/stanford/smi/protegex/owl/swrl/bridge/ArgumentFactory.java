@@ -13,21 +13,21 @@ public abstract class ArgumentFactory
   public abstract ClassArgument createClassArgument(String className);
   public abstract IndividualArgument createIndividualArgument(String individualName);
   public abstract ObjectPropertyArgument createObjectPropertyArgument(String propertyName);
-  public abstract DatatypePropertyArgument createDatatypePropertyArgument(String propertyName);
+  public abstract DataPropertyArgument createDataPropertyArgument(String propertyName);
 
-  public abstract DatatypeValueArgument createDatatypeValueArgument(String s);
-  public abstract DatatypeValueArgument createDatatypeValueArgument(Number n);
-  public abstract DatatypeValueArgument createDatatypeValueArgument(boolean b);
-  public abstract DatatypeValueArgument createDatatypeValueArgument(int i);
-  public abstract DatatypeValueArgument createDatatypeValueArgument(long l);
-  public abstract DatatypeValueArgument createDatatypeValueArgument(float f);
-  public abstract DatatypeValueArgument createDatatypeValueArgument(double d);
-  public abstract DatatypeValueArgument createDatatypeValueArgument(short s); 
-  public abstract DatatypeValueArgument createDatatypeValueArgument(Byte b);
-  public abstract DatatypeValueArgument createDatatypeValueArgument(XSDType xsd);
+  public abstract DataValueArgument createDataValueArgument(String s);
+  public abstract DataValueArgument createDataValueArgument(Number n);
+  public abstract DataValueArgument createDataValueArgument(boolean b);
+  public abstract DataValueArgument createDataValueArgument(int i);
+  public abstract DataValueArgument createDataValueArgument(long l);
+  public abstract DataValueArgument createDataValueArgument(float f);
+  public abstract DataValueArgument createDataValueArgument(double d);
+  public abstract DataValueArgument createDataValueArgument(short s); 
+  public abstract DataValueArgument createDataValueArgument(Byte b);
+  public abstract DataValueArgument createDataValueArgument(XSDType xsd);
 
-  public abstract DatatypeValueArgument createDatatypeValueArgument(OWLDatatypeValue datatypeValue);
+  public abstract DataValueArgument createDataValueArgument(OWLDataValue dataValue);
 
-  public abstract MultiArgument createMultiArgument(String variableName, String prefixedVariableName);
-  public abstract MultiArgument createMultiArgument(String variableName, String prefixedVariableName, List<BuiltInArgument> arguments);
+  public abstract MultiArgument createMultiArgument(String variableName);
+  public abstract MultiArgument createMultiArgument(String variableName, List<BuiltInArgument> arguments);
 } // ArgumentFactory

@@ -20,7 +20,7 @@ import java.util.List;
 public interface SWRLBuiltInBridge
 {
   // The inject methods can be used by built-ins to inject new axioms into a bridge, which will also reflect them in the underlying
-  // engine. Eventually subsume all these methods into injectOWLAxiom.
+  // engine. Eventually collapse all inject methods into injectOWLAxiom.
   void injectOWLAxiom(OWLAxiom axiom) throws SWRLBuiltInBridgeException;
 
   OWLClass injectOWLClass() throws SWRLBuiltInBridgeException;
@@ -28,7 +28,6 @@ public interface SWRLBuiltInBridge
   OWLIndividual injectOWLIndividual() throws SWRLBuiltInBridgeException;
   void injectOWLIndividual(OWLIndividual owlIndividual) throws SWRLBuiltInBridgeException;
   OWLIndividual injectOWLIndividualOfClass(OWLClass owlClass) throws SWRLBuiltInBridgeException;
-  void injectOWLIndividuals(Set<OWLIndividual> individuals) throws SWRLBuiltInBridgeException;
 
   boolean isOWLClass(String className);
   boolean isOWLObjectProperty(String propertyName);
@@ -52,6 +51,6 @@ public interface SWRLBuiltInBridge
    */
   SWRLRule getSWRLRule(String ruleName) throws SWRLBuiltInBridgeException;
 
-  OWLFactory getOWLFactory();
+  OWLDataFactory getOWLDataFactory();
   OWLModel getOWLModel(); // TODO: Protege-OWL dependency - remove
 } // SWRLBuiltInBridge

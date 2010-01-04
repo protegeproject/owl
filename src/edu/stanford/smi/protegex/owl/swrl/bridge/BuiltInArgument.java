@@ -12,8 +12,7 @@ public interface BuiltInArgument extends Argument
   boolean isUnbound();
   boolean isBound();
   String getVariableName();
-  String getPrefixedVariableName();
-  void setVariableName(String variableName, String prefixedVariableName);
+  void setVariableName(String variableName);
   void setUnbound();
   void setBuiltInResult(BuiltInArgument builtInResult) throws BuiltInException;
   BuiltInArgument getBuiltInResult();

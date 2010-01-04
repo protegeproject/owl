@@ -16,13 +16,13 @@ import edu.stanford.smi.protegex.owl.swrl.bridge.OWLClass;
 import edu.stanford.smi.protegex.owl.swrl.bridge.OWLClassAssertionAxiom;
 import edu.stanford.smi.protegex.owl.swrl.bridge.OWLClassPropertyAssertionAxiom;
 import edu.stanford.smi.protegex.owl.swrl.bridge.OWLConversionFactory;
-import edu.stanford.smi.protegex.owl.swrl.bridge.OWLDatatypeProperty;
-import edu.stanford.smi.protegex.owl.swrl.bridge.OWLDatatypePropertyAssertionAxiom;
-import edu.stanford.smi.protegex.owl.swrl.bridge.OWLDatatypeValue;
+import edu.stanford.smi.protegex.owl.swrl.bridge.OWLDataProperty;
+import edu.stanford.smi.protegex.owl.swrl.bridge.OWLDataPropertyAssertionAxiom;
+import edu.stanford.smi.protegex.owl.swrl.bridge.OWLDataValue;
 import edu.stanford.smi.protegex.owl.swrl.bridge.OWLDeclarationAxiom;
 import edu.stanford.smi.protegex.owl.swrl.bridge.OWLDifferentIndividualsAxiom;
 import edu.stanford.smi.protegex.owl.swrl.bridge.OWLEntity;
-import edu.stanford.smi.protegex.owl.swrl.bridge.OWLFactory;
+import edu.stanford.smi.protegex.owl.swrl.bridge.OWLDataFactory;
 import edu.stanford.smi.protegex.owl.swrl.bridge.OWLIndividual;
 import edu.stanford.smi.protegex.owl.swrl.bridge.OWLObjectProperty;
 import edu.stanford.smi.protegex.owl.swrl.bridge.OWLObjectPropertyAssertionAxiom;
@@ -35,18 +35,18 @@ import edu.stanford.smi.protegex.owl.swrl.bridge.SWRLRule;
 import edu.stanford.smi.protegex.owl.swrl.bridge.VariableAtomArgument;
 import edu.stanford.smi.protegex.owl.swrl.bridge.VariableBuiltInArgument;
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.BuiltInException;
-import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.DatatypeConversionException;
+import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.DataValueConversionException;
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.OWLConversionFactoryException;
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.OWLFactoryException;
 import edu.stanford.smi.protegex.owl.swrl.bridge.xsd.XSDType;
 import edu.stanford.smi.protegex.owl.swrl.sqwrl.exceptions.SQWRLException;
 
-public class OWLFactoryImpl implements OWLFactory
+public class OWLFactoryImpl implements OWLDataFactory
 {
   private Map<String, OWLClass> classes = new HashMap<String, OWLClass>();
   private Map<String, OWLIndividual> individuals = new HashMap<String, OWLIndividual>();
   private Map<String, OWLObjectProperty> objectProperties = new HashMap<String, OWLObjectProperty>();
-  private Map<String, OWLDatatypeProperty> dataProperties = new HashMap<String, OWLDatatypeProperty>();
+  private Map<String, OWLDataProperty> dataProperties = new HashMap<String, OWLDataProperty>();
 
   private OWLModel owlModel;
   private OWLConversionFactory conversionFactory;
@@ -142,9 +142,9 @@ public class OWLFactoryImpl implements OWLFactory
     return property; 
   } // getOWLObjectProperty
 
-  public OWLDatatypeProperty getOWLDataProperty(String propertyURI)
+  public OWLDataProperty getOWLDataProperty(String propertyURI)
   {
-    OWLDatatypeProperty property;
+    OWLDataProperty property;
     
     if (dataProperties.containsKey(propertyURI)) property = dataProperties.get(propertyURI);
     else {
@@ -152,29 +152,29 @@ public class OWLFactoryImpl implements OWLFactory
         try {
           property = conversionFactory.getOWLDataProperty(propertyURI);
         } catch (OWLConversionFactoryException e) {
-          property = new OWLDatatypePropertyImpl(propertyURI); 
+          property = new OWLDataPropertyImpl(propertyURI); 
         } // try
-      } else property = new OWLDatatypePropertyImpl(propertyURI); 
+      } else property = new OWLDataPropertyImpl(propertyURI); 
       dataProperties.put(propertyURI, property);
     } // if
     
     return property; 
   } // getOWLDataProperty
 
-  public OWLDatatypeValue getOWLDataValue(String s) { return new OWLDatatypeValueImpl(s); }
-  public OWLDatatypeValue getOWLDataValue(Number n) { return new OWLDatatypeValueImpl(n); }
-  public OWLDatatypeValue getOWLDataValue(boolean b){ return new OWLDatatypeValueImpl(b); }
-  public OWLDatatypeValue getOWLDataValue(int i) { return new OWLDatatypeValueImpl(i); }
-  public OWLDatatypeValue getOWLDataValue(long l) { return new OWLDatatypeValueImpl(l); }
-  public OWLDatatypeValue getOWLDataValue(float f) { return new OWLDatatypeValueImpl(f); }
-  public OWLDatatypeValue getOWLDataValue(double d){ return new OWLDatatypeValueImpl(d); }
-  public OWLDatatypeValue getOWLDataValue(short s) { return new OWLDatatypeValueImpl(s); }
-  public OWLDatatypeValue getOWLDataValue(Byte b) { return new OWLDatatypeValueImpl(b); }
-  public OWLDatatypeValue getOWLDataValue(XSDType xsd) { return new OWLDatatypeValueImpl(xsd); }
-  public OWLDatatypeValue getOWLDataValue(Object o) throws DatatypeConversionException { return new OWLDatatypeValueImpl(o); } 
+  public OWLDataValue getOWLDataValue(String s) { return new OWLDataValueImpl(s); }
+  public OWLDataValue getOWLDataValue(Number n) { return new OWLDataValueImpl(n); }
+  public OWLDataValue getOWLDataValue(boolean b){ return new OWLDataValueImpl(b); }
+  public OWLDataValue getOWLDataValue(int i) { return new OWLDataValueImpl(i); }
+  public OWLDataValue getOWLDataValue(long l) { return new OWLDataValueImpl(l); }
+  public OWLDataValue getOWLDataValue(float f) { return new OWLDataValueImpl(f); }
+  public OWLDataValue getOWLDataValue(double d){ return new OWLDataValueImpl(d); }
+  public OWLDataValue getOWLDataValue(short s) { return new OWLDataValueImpl(s); }
+  public OWLDataValue getOWLDataValue(Byte b) { return new OWLDataValueImpl(b); }
+  public OWLDataValue getOWLDataValue(XSDType xsd) { return new OWLDataValueImpl(xsd); }
+  public OWLDataValue getOWLDataValue(Object o) throws DataValueConversionException { return new OWLDataValueImpl(o); } 
 
   // OWL axioms
-  public OWLDatatypePropertyAssertionAxiom getOWLDataPropertyAssertionAxiom(OWLIndividual subject, OWLProperty property, OWLDatatypeValue object) { return new OWLDatatypePropertyAssertionAxiomImpl(subject, property, object); }
+  public OWLDataPropertyAssertionAxiom getOWLDataPropertyAssertionAxiom(OWLIndividual subject, OWLProperty property, OWLDataValue object) { return new OWLDatatypePropertyAssertionAxiomImpl(subject, property, object); }
   public OWLObjectPropertyAssertionAxiom getOWLObjectPropertyAssertionAxiom(OWLIndividual subject, OWLProperty property, OWLIndividual object)  { return new OWLObjectPropertyAssertionAxiomImpl(subject, property, object); }
   public OWLDifferentIndividualsAxiom getOWLDifferentIndividualsAxiom(OWLIndividual individual1, OWLIndividual individual2) { return new OWLDifferentIndividualsAxiomImpl(individual1, individual2); }
   public OWLDifferentIndividualsAxiom getOWLDifferentIndividualsAxiom(Set<OWLIndividual> individuals) { return new OWLDifferentIndividualsAxiomImpl(individuals); }
@@ -188,9 +188,9 @@ public class OWLFactoryImpl implements OWLFactory
   public OWLSomeValuesFrom getOWLSomeValuesFrom(OWLClass owlClass, OWLProperty onProperty, OWLClass someValuesFrom)  { return new OWLSomeValuesFromImpl(owlClass, onProperty, someValuesFrom); } // TODO: should be OWLDescription
 
   // Arguments to atoms and built-ins
-  public VariableAtomArgument getSWRLVariableAtomArgument(String variableURI, String prefixedVariableName) { return new VariableAtomArgumentImpl(variableURI, prefixedVariableName); }
-  public VariableBuiltInArgument getSWRLVariableBuiltInArgument(String variableURI, String prefixedVariableName) { return new VariableBuiltInArgumentImpl(variableURI, prefixedVariableName); }
-  public BuiltInArgument getSWRLBuiltInArgument(String variableURI, String prefixedVariableName) { return new BuiltInArgumentImpl(variableURI, prefixedVariableName); }
+  public VariableAtomArgument getSWRLVariableAtomArgument(String variableName) { return new VariableAtomArgumentImpl(variableName); }
+  public VariableBuiltInArgument getSWRLVariableBuiltInArgument(String variableName) { return new VariableBuiltInArgumentImpl(variableName); }
+  public BuiltInArgument getSWRLBuiltInArgument(String variableName) { return new BuiltInArgumentImpl(variableName); }
 
   public BuiltInAtom getSWRLBuiltInAtom(String builtInURI, String builtInPrefixedName, List<BuiltInArgument> arguments) 
   { 
