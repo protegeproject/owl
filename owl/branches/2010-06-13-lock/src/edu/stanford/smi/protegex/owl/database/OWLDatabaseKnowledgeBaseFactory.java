@@ -10,6 +10,7 @@ import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.Instance;
 import edu.stanford.smi.protege.model.KnowledgeBase;
 import edu.stanford.smi.protege.model.Slot;
+import edu.stanford.smi.protege.model.framestore.FrameStoreManager;
 import edu.stanford.smi.protege.storage.database.DatabaseFrameDb;
 import edu.stanford.smi.protege.storage.database.DatabaseKnowledgeBaseFactory;
 import edu.stanford.smi.protege.util.Log;
@@ -152,7 +153,7 @@ public class OWLDatabaseKnowledgeBaseFactory extends DatabaseKnowledgeBaseFactor
             super.saveKnowledgeBase(kb, sources, errors);
             RepositoryFileManager.saveProjectRepositories(owlModel);
             if (owlModel instanceof JenaOWLModel) {
-                kb.insertFrameStore(owlModel.getOWLFrameStore(), 0);
+                kb.insertFrameStore(owlModel.getOWLFrameStore(), FrameStoreManager.AFTER_SYNCHRONIZATION_FS);
             }
         }
         else {

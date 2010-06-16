@@ -6,7 +6,6 @@ import java.util.List;
 import edu.stanford.smi.protege.model.framestore.DeleteSimplificationFrameStore;
 import edu.stanford.smi.protege.model.framestore.FrameStore;
 import edu.stanford.smi.protege.model.framestore.FrameStoreManager;
-import edu.stanford.smi.protege.util.ApplicationProperties;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.impl.AbstractOWLModel;
 
@@ -46,7 +45,7 @@ public class OWLFrameStoreManager extends FrameStoreManager {
         for (FrameStore fs : frameStores) {
             insertFrameStore(fs);
         }
-        int lastPostion = getFrameStores().size() - 1;
+        int lastPostion = getFrameStores().size() + AFTER_SYNCHRONIZATION_FS - 1;
         insertFrameStore(localClassificationFrameStore = new LocalClassificationFrameStore(owlModel), 
         				 lastPostion);
     }

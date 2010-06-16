@@ -37,7 +37,7 @@ public class SetActiveOntologyJob extends ProtegeJob {
             FrameStore toInsert = (FrameStore) Proxy.newProxyInstance(OWLModel.class.getClassLoader(), 
                                                                       new Class [] { FrameStore.class },
                                                                       activeOntologyHandler);
-            fsm.insertFrameStore(toInsert, 1);
+            fsm.insertFrameStore(toInsert, FrameStoreManager.AFTER_SYNCHRONIZATION_AND_LOCALIZATION_FS);
         }
         activeOntologyHandler.setActiveOntology(ontology);
         return true;
