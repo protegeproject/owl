@@ -29,22 +29,19 @@ public class OwlStateMachine implements ServerCacheStateMachine {
     this.fs = fs;
     this.kb = model;
     OWLSystemFrames systemFrames = model.getSystemFrames();
-    synchronized (model) {
-      addTransition(OwlState.Start, systemFrames.getDirectSuperclassesSlot(), OwlState.OwlExpr);
+    addTransition(OwlState.Start, systemFrames.getDirectSuperclassesSlot(), OwlState.OwlExpr);
       
-      addTransition(OwlState.Start, systemFrames.getOwlEquivalentClassProperty(), OwlState.OwlExpr);
+    addTransition(OwlState.Start, systemFrames.getOwlEquivalentClassProperty(), OwlState.OwlExpr);
       
       
-      addTransition(OwlState.OwlExpr, systemFrames.getOwlIntersectionOfProperty(), OwlState.RDFList);
-      addTransition(OwlState.OwlExpr, systemFrames.getDirectSuperclassesSlot(), OwlState.End);
-      addTransition(OwlState.OwlExpr, systemFrames.getOwlSomeValuesFromProperty(), OwlState.End);
-      
-      addTransition(OwlState.RDFList, systemFrames.getRdfRestProperty(), OwlState.RDFList);
-      addTransition(OwlState.RDFList, systemFrames.getRdfFirstProperty(), OwlState.OwlExpr);
-      
-      addTransition(OwlState.Start, systemFrames.getDirectInstancesSlot(), OwlState.UserIndividual);
-
-    }
+    addTransition(OwlState.OwlExpr, systemFrames.getOwlIntersectionOfProperty(), OwlState.RDFList);
+    addTransition(OwlState.OwlExpr, systemFrames.getDirectSuperclassesSlot(), OwlState.End);
+    addTransition(OwlState.OwlExpr, systemFrames.getOwlSomeValuesFromProperty(), OwlState.End);
+    
+    addTransition(OwlState.RDFList, systemFrames.getRdfRestProperty(), OwlState.RDFList);
+    addTransition(OwlState.RDFList, systemFrames.getRdfFirstProperty(), OwlState.OwlExpr);
+    
+    addTransition(OwlState.Start, systemFrames.getDirectInstancesSlot(), OwlState.UserIndividual);
   }
   
   private void addTransition(OwlState start, Slot slot, OwlState end) {
@@ -68,10 +65,14 @@ public class OwlStateMachine implements ServerCacheStateMachine {
         return null;
     }
     OwlState endState = transitionMap.get(new StateAndSlot((OwlState) state, slot));
-    synchronized (kb) {
+    try {
+      kb.getReaderLock().lock();
       if (endState != null && OwlState.allowTransition(fs, (OwlState) state, beginningFrame,  endState, endingFrame)) {
         return endState;
       }
+    }
+    finally {
+      kb.getReaderLock().unlock();
     }
     return null;
   }

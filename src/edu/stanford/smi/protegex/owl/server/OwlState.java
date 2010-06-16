@@ -25,8 +25,12 @@ public enum OwlState implements ServerCachedState {
   }
   
   private static boolean isOWLAnonymous(FrameStore fs, Frame f) {
-      synchronized (f.getKnowledgeBase()) {
+      try {
+          f.getKnowledgeBase().getReaderLock().lock();
           return fs.getFrameName(f).startsWith("@");
+      }
+      finally {
+          f.getKnowledgeBase().getReaderLock().unlock();
       }
   }
 }

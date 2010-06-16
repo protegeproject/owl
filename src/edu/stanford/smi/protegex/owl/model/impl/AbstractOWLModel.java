@@ -474,7 +474,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     }
 
     @Override
-    public synchronized SWRLSystemFrames getSystemFrames() {
+    public  SWRLSystemFrames getSystemFrames() {
         return (SWRLSystemFrames) super.getSystemFrames();
     }
 
@@ -661,7 +661,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     }
 
     @Override
-    public synchronized Cls createCls(FrameID id,
+    public  Cls createCls(FrameID id,
                                       Collection directSuperclasses,
                                       Collection directTypes,
                                       boolean loadDefaults) {
@@ -785,20 +785,20 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     }
 
     @Override
-    public synchronized Instance createInstance(String name, Cls directType) {
+    public  Instance createInstance(String name, Cls directType) {
     	// TT: should we ignore the loadDefaults for non-system classes?
     	return createInstance(new FrameID(name), CollectionUtilities.createCollection(directType), loadDefaults);
     }
 
     @Override
-    public synchronized Instance createInstance(String name, Collection directTypes) {
+    public  Instance createInstance(String name, Collection directTypes) {
          // TT: should we ignore the loadDefaults for non-system classes?
         String fullName = OWLUtil.getInternalFullName(this, name);
         return createInstance(new FrameID(fullName), directTypes, loadDefaults);
     }
 
     @Override
-    public synchronized Instance createInstance(FrameID id, Collection directTypes, boolean initializeDefaults) {
+    public  Instance createInstance(FrameID id, Collection directTypes, boolean initializeDefaults) {
         if (id == null || id.getName() == null) {
             if (isDefaultAnonymousType(directTypes)) {
                 id = new FrameID(getNextAnonymousResourceName());
@@ -1226,7 +1226,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
 
     @Override
-	public synchronized String getBrowserText(Instance instance) {
+	public  String getBrowserText(Instance instance) {
     	if (!(instance instanceof RDFResource)) {
 			return super.getBrowserText(instance);
 		}
@@ -2258,7 +2258,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
 
     @Override
-	public synchronized Instance setDirectType(Instance instance, Cls type) {
+	public  Instance setDirectType(Instance instance, Cls type) {
         if (instance instanceof OWLProperty && type != null) {
             deleteRestrictionsDependingOnPropertyType((OWLProperty) instance, type);
         }
@@ -2484,7 +2484,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
 
 
     @Override
-	public synchronized boolean isSlotMetaCls(Cls cls) {
+	public  boolean isSlotMetaCls(Cls cls) {
         return getRDFPropertyClass().equals(cls) || hasSuperclass(cls, getRootSlotMetaCls());
     }
 
@@ -3656,7 +3656,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     }
 
     @Override
-    public synchronized void dispose() {
+    public  void dispose() {
         detachDefaultLanguageListener();
 
     	super.dispose();
