@@ -1,6 +1,6 @@
 revision=19136
-p=http://smi-protege.stanford.edu/repos/protege/owl
-svn diff ${p}/trunk@${revision} ${p}/branches/2010-06-13-lock
+powl=http://smi-protege.stanford.edu/repos/protege/owl
+svn diff ${powl}/trunk@${revision} ${powl}/branches/2010-06-13-lock
 failed1=src/edu/stanford/smi/protegex/owl/model/impl/AbstractOWLModel.java
-svn diff ${p}/trunk/${failed1}@${revision} ${p}/branches/2010-06-13-lock/${failed1}
+svn diff ${powl}/trunk/${failed1}@${revision} ${powl}/branches/2010-06-13-lock/${failed1}
 
