@@ -1,6 +1,10 @@
 revision=19136
-powl=http://smi-protege.stanford.edu/repos/protege/owl
-svn diff ${powl}/trunk@${revision} ${powl}/branches/2010-06-13-lock
+source=http://smi-protege.stanford.edu/repos/protege/owl/trunk
+target=http://smi-protege.stanford.edu/repos/protege/owl/branches/2010-06-13-lock
+
+svn merge ${source}@${revision} ${source}
+
+svn diff ${source}@${revision} ${target} > /tmp/owl.patch
 failed1=src/edu/stanford/smi/protegex/owl/model/impl/AbstractOWLModel.java
-svn diff ${powl}/trunk/${failed1}@${revision} ${powl}/branches/2010-06-13-lock/${failed1}
+svn diff ${source}/${failed1}@${revision} ${target}/${failed1}
 
