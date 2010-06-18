@@ -200,8 +200,8 @@ public class DatabaseRepository implements Repository {
 	    String table = ontologyToTable.get(ontologyName);
 	    DatabaseFrameDb dbFrameStore = DatabaseFrameDbFactory.createDatabaseFrameDb(DefaultDatabaseFrameDb.class);
 	    dbFrameStore.initialize(owlModel.getOWLJavaFactory(), getDriver(), getUrl(), getUser(), getPassword(), table, true);
-	    ValueCachingNarrowFrameStore valueCache = new ValueCachingNarrowFrameStore(dbFrameStore);
-	    IdleConnectionNarrowFrameStore nfs = new IdleConnectionNarrowFrameStore(valueCache);
+	    IdleConnectionNarrowFrameStore icnfs = new IdleConnectionNarrowFrameStore(dbFrameStore);
+	    ValueCachingNarrowFrameStore nfs = new ValueCachingNarrowFrameStore(icnfs);
 	    nfs.setName(ontologyName.toString());
 	    TripleStoreModel tripleStoreModel = owlModel.getTripleStoreModel();
 	    TripleStore importedTripleStore = null;
