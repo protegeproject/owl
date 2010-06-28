@@ -1,0 +1,3 @@
+source=http://smi-protege.stanford.edu/repos/protege/owl/trunk
+revision=19313
+target=http://smi-protege.stanford.edu/repos/protege/owl/branches/2010-06-24-deferred-writes
