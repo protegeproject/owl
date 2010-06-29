@@ -1,4 +1,4 @@
-revision=19136
+revision=19333
 source=http://smi-protege.stanford.edu/repos/protege/owl/trunk
 target=http://smi-protege.stanford.edu/repos/protege/owl/branches/2010-06-13-lock
 
@@ -8,3 +8,11 @@ svn diff ${source}@${revision} ${target} > /tmp/owl.patch
 failed1=src/edu/stanford/smi/protegex/owl/model/impl/AbstractOWLModel.java
 svn diff ${source}/${failed1}@${revision} ${target}/${failed1}
 
+
+History:
+src/edu/stanford/smi/protegex/owl/ui/conditions/AddCoveringAxiomAction.java
+r19280 | tudorache | 2010-06-23 18:52:41 -0700 (Wed, 23 Jun 2010) | 1 line
+Changed paths:
+   M /owl/branches/2010-06-13-lock/src/edu/stanford/smi/protegex/owl/ui/conditions/AddCoveringAxiomAction.java
+
+optimzed the add covering axiom action. merged from head 19279
