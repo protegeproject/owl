@@ -135,7 +135,7 @@ public class OWLOntologyImpl implements OWLOntology
     } // while
 
     return result;
-  } // getSWRLRules
+  } 
 
   public SWRLRule createSWRLRule(String ruleName, String ruleText) throws OWLConversionFactoryException, SWRLParseException
   {
@@ -164,6 +164,11 @@ public class OWLOntologyImpl implements OWLOntology
     } // while 
 
     return new SWRLRuleImpl(imp.getPrefixedName(), bodyAtoms, headAtoms);
+  } 
+
+  public void deleteSWRLRule(String ruleURI) throws OWLConversionFactoryException
+  {
+    swrlFactory.deleteImp(ruleURI);
   } 
 
   public OWLClass createOWLClass() 
@@ -304,7 +309,8 @@ public class OWLOntologyImpl implements OWLOntology
     Collection instances = new ArrayList();
     Set<OWLNamedIndividual> result = new HashSet<OWLNamedIndividual>();
 
-    if (rdfsClass != null) instances.addAll(rdfsClass.getInstances(true));
+    if (rdfsClass != null) 
+    	instances.addAll(rdfsClass.getInstances(true));
 
     Iterator iterator = instances.iterator();
     while (iterator.hasNext()) {
@@ -315,13 +321,13 @@ public class OWLOntologyImpl implements OWLOntology
       } 
     } // while
     return result;
-  } // getAllOWLIndividualsOfClass  
+  }  
   
   public boolean couldBeOWLNamedClass(String classURI)
   {
-	 RDFResource resource= SWRLOWLUtil.getRDFResource(owlModel, classURI);
+	   RDFResource resource= SWRLOWLUtil.getRDFResource(owlModel, classURI);
 	 
-	 return (resource == null || resource instanceof OWLNamedClass);
+	   return (resource == null || resource instanceof OWLNamedClass);
   }
   
   public String uri2PrefixedName(String uri)
