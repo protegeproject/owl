@@ -239,7 +239,7 @@ public class SWRLFactory
     Set<String> ruleGroupNames = new HashSet<String>();
     ruleGroupNames.add(ruleGroupName);
     return getImps(ruleGroupNames, true); 
-  } // getEnabledImps
+  }
 
   // If the ruleGroupNames is empty, return all imps.
   private Collection<SWRLImp> getImps(Set<String> ruleGroupNames, boolean isEnabled) 
@@ -262,7 +262,12 @@ public class SWRLFactory
     for (SWRLImp imp : getImps()) {
       imp.deleteImp();
     } // for
-  } // deleteImps
+  } 
+  
+  public void deleteImp(String name) throws SWRLFactoryException
+  {
+  	getImp(name).deleteImp();
+  }
 
   public void replaceImps(OWLModel sourceOWLModel) throws SWRLFactoryException
   {
@@ -296,7 +301,7 @@ public class SWRLFactory
 
     return result;
   } // getImp
-
+  
   public boolean hasImp(String name)
   {
     RDFResource resource = owlModel.getRDFResource(name);
