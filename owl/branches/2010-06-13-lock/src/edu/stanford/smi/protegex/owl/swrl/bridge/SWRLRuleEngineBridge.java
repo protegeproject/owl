@@ -8,10 +8,13 @@ import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.SWRLRuleEngineBridge
 import edu.stanford.smi.protegex.owl.swrl.owlapi.OWLAxiom;
 import edu.stanford.smi.protegex.owl.swrl.owlapi.OWLDataFactory;
 import edu.stanford.smi.protegex.owl.swrl.owlapi.PrefixManager;
+import edu.stanford.smi.protegex.owl.swrl.owlapi.SWRLAtom;
+import edu.stanford.smi.protegex.owl.swrl.owlapi.SWRLBuiltInAtom;
+import edu.stanford.smi.protegex.owl.swrl.owlapi.SWRLRule;
 
 /**
  * The SWRL Rule Engine Bridge defines the interface seen by a target implementation of a SWRL rule engine. The implementation uses this
- * interface primarily to infer axioms and to invoke built-ins.
+ * interface primarily to infer axioms and to invoke built-ins. 
  *
  * Detailed documentation for this mechanism can be found <a href="http://protege.cim3.net/cgi-bin/wiki.pl?SWRLRuleEngineBridgeFAQ">here</a>.
  */
@@ -42,10 +45,10 @@ public interface SWRLRuleEngineBridge
   // SQWRL-related functionality
   boolean isSQWRLQuery(SWRLRule query);
   boolean usesSQWRLCollections(SWRLRule query);
-  List<Atom> getSQWRLPhase1BodyAtoms(SWRLRule query);
-  List<Atom> getSQWRLPhase2BodyAtoms(SWRLRule query);
-  List<BuiltInAtom> getBuiltInAtomsFromHead(SWRLRule query, Set<String> builtInNames);
-  List<BuiltInAtom> getBuiltInAtomsFromBody(SWRLRule query, Set<String> builtInNames);
+  List<SWRLAtom> getSQWRLPhase1BodyAtoms(SWRLRule query);
+  List<SWRLAtom> getSQWRLPhase2BodyAtoms(SWRLRule query);
+  List<SWRLBuiltInAtom> getBuiltInAtomsFromHead(SWRLRule query, Set<String> builtInNames);
+  List<SWRLBuiltInAtom> getBuiltInAtomsFromBody(SWRLRule query, Set<String> builtInNames);
   
   // TODO: temporary
   String uri2PrefixedName(String uri);

@@ -4,11 +4,11 @@ package edu.stanford.smi.protegex.owl.swrl;
 import java.util.Set;
 
 import edu.stanford.smi.protegex.owl.swrl.bridge.OWLDataValueFactory;
-import edu.stanford.smi.protegex.owl.swrl.bridge.SWRLRule;
 import edu.stanford.smi.protegex.owl.swrl.exceptions.SWRLRuleEngineException;
 import edu.stanford.smi.protegex.owl.swrl.owlapi.OWLAxiom;
 import edu.stanford.smi.protegex.owl.swrl.owlapi.OWLClass;
 import edu.stanford.smi.protegex.owl.swrl.owlapi.OWLNamedIndividual;
+import edu.stanford.smi.protegex.owl.swrl.owlapi.SWRLRule;
 import edu.stanford.smi.protegex.owl.swrl.sqwrl.SQWRLQueryEngine;
 
 /**
@@ -25,10 +25,16 @@ public interface SWRLRuleEngine extends SQWRLQueryEngine
   void infer() throws SWRLRuleEngineException;
 
   /**
-   * Load rules and knowledge from OWL into bridge. All existing bridge rules and knowledge will first be cleared and the associated rule
+   * Load rules and relevant knowledge from OWL into bridge. All existing bridge rules and knowledge will first be cleared and the associated rule
    * engine will be reset.
    */
   void importSWRLRulesAndOWLKnowledge() throws SWRLRuleEngineException;
+
+  /**
+   * Load specific query, all enabled rules, and relevant knowledge from OWL into bridge. All existing bridge rules and knowledge will first be cleared and the associated rule
+   * engine will be reset.
+   */
+  void importSQWRLQueryAndOWLKnowledge(String queryName) throws SWRLRuleEngineException;
 
   /**
    * Run the rule engine.
