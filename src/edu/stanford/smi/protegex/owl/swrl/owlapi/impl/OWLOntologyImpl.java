@@ -20,6 +20,7 @@ import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
 import edu.stanford.smi.protegex.owl.model.RDFSClass;
 import edu.stanford.smi.protegex.owl.model.RDFSLiteral;
+import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
 import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreModel;
 import edu.stanford.smi.protegex.owl.swrl.bridge.ArgumentFactory;
 import edu.stanford.smi.protegex.owl.swrl.bridge.BuiltInArgument;
@@ -116,13 +117,11 @@ public class OWLOntologyImpl implements OWLOntology {
 		return SWRLOWLUtil.isOWLDataProperty(owlModel, propertyURI);
 	}
 
-	public boolean containsIndividualInSignature(String individualURI,
-			boolean includesImportsClosure) {
+	public boolean containsIndividualInSignature(String individualURI, boolean includesImportsClosure) {
 		return SWRLOWLUtil.isOWLIndividual(owlModel, individualURI);
 	}
 
-	public boolean isOWLNamedIndividualOfClass(String individualURI,
-			String classURI) {
+	public boolean isOWLNamedIndividualOfClass(String individualURI, String classURI) {
 		return SWRLOWLUtil.isOWLIndividualOfType(owlModel, individualURI, classURI);
 	}
 
@@ -156,32 +155,26 @@ public class OWLOntologyImpl implements OWLOntology {
 		return getSWRLRule(ruleName);
 	}
 
-	public SWRLRule getSWRLRule(String ruleName)
-			throws OWLConversionFactoryException {
+	public SWRLRule getSWRLRule(String ruleName) throws OWLConversionFactoryException 
+	{
 		List<SWRLAtom> bodyAtoms = new ArrayList<SWRLAtom>();
 		List<SWRLAtom> headAtoms = new ArrayList<SWRLAtom>();
-		edu.stanford.smi.protegex.owl.swrl.model.SWRLImp imp = swrlFactory
-				.getImp(ruleName);
+		edu.stanford.smi.protegex.owl.swrl.model.SWRLImp imp = swrlFactory.getImp(ruleName);
 
-		if (imp == null)
-			throw new OWLConversionFactoryException("invalid rule name: " + ruleName);
+		if (imp == null) throw new OWLConversionFactoryException("invalid rule name: " + ruleName);
 
-		if (imp.getBody() != null && imp.getBody().getValues() != null
-				&& !imp.getBody().getValues().isEmpty()) {
+		if (imp.getBody() != null && imp.getBody().getValues() != null && !imp.getBody().getValues().isEmpty()) {
 			Iterator iterator = imp.getBody().getValues().iterator();
 			while (iterator.hasNext()) {
-				edu.stanford.smi.protegex.owl.swrl.model.SWRLAtom swrlAtom = (edu.stanford.smi.protegex.owl.swrl.model.SWRLAtom) iterator
-						.next();
+				edu.stanford.smi.protegex.owl.swrl.model.SWRLAtom swrlAtom = (edu.stanford.smi.protegex.owl.swrl.model.SWRLAtom)iterator.next();
 				bodyAtoms.add(convertSWRLAtom(swrlAtom));
 			} // while
 		} // if
 
-		if (imp.getHead() != null && imp.getHead().getValues() != null
-				&& !imp.getHead().getValues().isEmpty()) {
+		if (imp.getHead() != null && imp.getHead().getValues() != null && !imp.getHead().getValues().isEmpty()) {
 			Iterator iterator = imp.getHead().getValues().iterator();
 			while (iterator.hasNext()) {
-				edu.stanford.smi.protegex.owl.swrl.model.SWRLAtom swrlAtom = (edu.stanford.smi.protegex.owl.swrl.model.SWRLAtom) iterator
-						.next();
+				edu.stanford.smi.protegex.owl.swrl.model.SWRLAtom swrlAtom = (edu.stanford.smi.protegex.owl.swrl.model.SWRLAtom)iterator.next();
 				headAtoms.add(convertSWRLAtom(swrlAtom));
 			} // while
 		} // if
@@ -189,8 +182,8 @@ public class OWLOntologyImpl implements OWLOntology {
 		return new SWRLRuleImpl(imp.getPrefixedName(), bodyAtoms, headAtoms);
 	}
 
-	public void deleteSWRLRule(String ruleURI)
-			throws OWLConversionFactoryException {
+	public void deleteSWRLRule(String ruleURI) throws OWLConversionFactoryException 
+	{
 		swrlFactory.deleteImp(ruleURI);
 	}
 
@@ -347,13 +340,10 @@ public class OWLOntologyImpl implements OWLOntology {
 			write2OWLModel((OWLSomeValuesFrom) axiom);
 		else if (axiom instanceof OWLSubClassAxiom)
 			write2OWLModel((OWLSubClassAxiom) axiom);
-		else
-			throw new OWLConversionFactoryException("unsupported OWL axiom: " + axiom);
-	} // putOWLAxiom
-
-	public boolean isValidURI(String uri) {
-		return SWRLOWLUtil.isValidURI(uri);
+		else throw new OWLConversionFactoryException("unsupported OWL axiom: " + axiom);
 	}
+
+	public boolean isValidURI(String uri) {	return SWRLOWLUtil.isValidURI(uri);	}
 
 	public Set<OWLNamedIndividual> getAllOWLIndividualsOfClass(String classURI)
 			throws OWLConversionFactoryException {
@@ -1014,189 +1004,162 @@ public class OWLOntologyImpl implements OWLOntology {
 	// every subject/predicate combination for a particular OWL
 	// property. TODO: This is incredibly inefficient.
 
-	public Set<OWLPropertyAssertionAxiom> getOWLPropertyAssertionAxioms(
-			String propertyURI) throws OWLConversionFactoryException,
-			DataValueConversionException {
+	public Set<OWLPropertyAssertionAxiom> getOWLPropertyAssertionAxioms(String propertyURI) 
+	  throws OWLConversionFactoryException, DataValueConversionException {
 		return getOWLPropertyAssertionAxioms(null, propertyURI);
-	} // getOWLPropertyAssertionAxioms
+	} 
 
-	public Set<OWLPropertyAssertionAxiom> getOWLPropertyAssertionAxioms(
-			String subjectURI, String propertyURI)
-			throws OWLConversionFactoryException, DataValueConversionException {
+  private void calculateTransitiveSubAndEquivalentPropertyClosure(edu.stanford.smi.protegex.owl.model.OWLProperty property, 
+                                                                  Set<edu.stanford.smi.protegex.owl.model.OWLProperty> closure)
+  {
+  	Set<edu.stanford.smi.protegex.owl.model.OWLProperty> properties = new HashSet<edu.stanford.smi.protegex.owl.model.OWLProperty>();
+  	
+  	properties.add(property);
+  	calculateTransitiveSubAndEquivalentPropertyClosure(properties, closure);
+  }
+  
+  private void calculateTransitiveSubAndEquivalentPropertyClosure(Set<edu.stanford.smi.protegex.owl.model.OWLProperty> properties, 
+      Set<edu.stanford.smi.protegex.owl.model.OWLProperty> closure)
+  {
+		for (edu.stanford.smi.protegex.owl.model.OWLProperty property : properties) {
+			if (!closure.contains(property)) {
+				closure.add(property);
+				calculateTransitiveSubAndEquivalentPropertyClosure(SWRLOWLUtil.getSubPropertiesOf(owlModel, property), closure);
+				calculateTransitiveSubAndEquivalentPropertyClosure(SWRLOWLUtil.getEquivalentPropertiesOf(owlModel, property), closure);
+			} // if
+		} // for
+  } 
+
+	public Set<OWLPropertyAssertionAxiom> getOWLPropertyAssertionAxioms(String subjectURI, String propertyURI)
+			throws OWLConversionFactoryException, DataValueConversionException 
+  {
 		Set<OWLPropertyAssertionAxiom> propertyAssertions = new HashSet<OWLPropertyAssertionAxiom>();
-		edu.stanford.smi.protegex.owl.model.OWLProperty property = SWRLOWLUtil
-				.getOWLProperty(owlModel, propertyURI);
-		edu.stanford.smi.protegex.owl.model.OWLIndividual subject = (subjectURI == null) ? null
-				: SWRLOWLUtil.getOWLIndividual(owlModel, subjectURI);
-		OWLPropertyAssertionAxiom axiom;
-
-		if (property == null)
-			throw new InvalidPropertyNameException(propertyURI);
-
+		edu.stanford.smi.protegex.owl.model.OWLProperty property = SWRLOWLUtil.getOWLProperty(owlModel, propertyURI);
+		edu.stanford.smi.protegex.owl.model.OWLIndividual subject = (subjectURI == null) ? null	: SWRLOWLUtil.getOWLIndividual(owlModel, subjectURI);
 		TripleStoreModel tsm = owlModel.getTripleStoreModel();
-		Iterator<RDFResource> it = tsm.listSubjects(property);
-		while (it.hasNext()) {
-			RDFResource localSubject = it.next();
+		List<edu.stanford.smi.protegex.owl.model.RDFResource> subjects = new ArrayList<edu.stanford.smi.protegex.owl.model.RDFResource>();
+		Set<edu.stanford.smi.protegex.owl.model.OWLProperty> expandedProperties = new HashSet<edu.stanford.smi.protegex.owl.model.OWLProperty>();
+		
+		if (property == null)	throw new InvalidPropertyNameException(propertyURI);
+		
+		calculateTransitiveSubAndEquivalentPropertyClosure(property, expandedProperties);
+		
+		for (TripleStore ts : tsm.getTripleStores()) {
+			for (RDFProperty localProperty : expandedProperties) {
+				Iterator<RDFResource> si = ts.listSubjects(localProperty);
+				while (si.hasNext()) subjects.add(si.next());
+			} // for
+		} // for
+		
+		for (RDFResource localSubject : subjects) {
+			
 			if (!(localSubject instanceof edu.stanford.smi.protegex.owl.model.OWLIndividual))
-				continue; // Deal only with OWL individuals (could return metaclass, for
-									// example)
+				continue; // Deal only with OWL individuals (could return metaclass, for example)
 			if (subject != null && !localSubject.getURI().equals(subject.getURI()))
 				continue; // If subject supplied, ensure it is same
-			edu.stanford.smi.protegex.owl.model.OWLIndividual subjectIndividual = (edu.stanford.smi.protegex.owl.model.OWLIndividual) localSubject;
-
-			for (Object object : localSubject.getPropertyValues(property)) {
-
+			edu.stanford.smi.protegex.owl.model.OWLIndividual subjectIndividual = (edu.stanford.smi.protegex.owl.model.OWLIndividual)localSubject;
+	
+			for (Object object : localSubject.getPropertyValues(property, true)) {
+				OWLPropertyAssertionAxiom axiom;
+				
 				if (property.hasObjectRange()) { // Object property
-					OWLObjectProperty objectProperty = owlFactory
-							.getOWLObjectProperty(propertyURI);
-
+					OWLObjectProperty objectProperty = owlFactory.getOWLObjectProperty(propertyURI);
+	
 					if (object instanceof edu.stanford.smi.protegex.owl.model.OWLIndividual) {
 						edu.stanford.smi.protegex.owl.model.OWLIndividual objectIndividual = (edu.stanford.smi.protegex.owl.model.OWLIndividual) object;
-						OWLNamedIndividual subjectOWLIndividual = owlFactory
-								.getOWLIndividual(subjectIndividual.getURI());
-						OWLNamedIndividual objectOWLIndividual = owlFactory
-								.getOWLIndividual(objectIndividual.getURI());
-						axiom = owlFactory.getOWLObjectPropertyAssertionAxiom(
-								subjectOWLIndividual, objectProperty, objectOWLIndividual);
+						OWLNamedIndividual subjectOWLIndividual = owlFactory.getOWLIndividual(subjectIndividual.getURI());
+						OWLNamedIndividual objectOWLIndividual = owlFactory.getOWLIndividual(objectIndividual.getURI());
+						axiom = owlFactory.getOWLObjectPropertyAssertionAxiom(subjectOWLIndividual, objectProperty, objectOWLIndividual);
 						propertyAssertions.add(axiom);
-					} else if (object instanceof edu.stanford.smi.protegex.owl.model.OWLNamedClass) { // This
-																																														// will
-																																														// be
-																																														// OWL
-																																														// Full
+					} else if (object instanceof edu.stanford.smi.protegex.owl.model.OWLNamedClass) { // This	will be OWL Full
 						edu.stanford.smi.protegex.owl.model.OWLNamedClass objectClass = (edu.stanford.smi.protegex.owl.model.OWLNamedClass) object;
-						OWLNamedIndividual subjectOWLIndividual = owlFactory
-								.getOWLIndividual(subjectIndividual.getURI());
-						OWLClass objectPropertyClassValue = owlFactory
-								.getOWLClass(objectClass.getURI());
-						axiom = owlFactory.getOWLClassPropertyAssertionAxiom(
-								subjectOWLIndividual, objectProperty, objectPropertyClassValue);
+						OWLNamedIndividual subjectOWLIndividual = owlFactory.getOWLIndividual(subjectIndividual.getURI());
+						OWLClass objectPropertyClassValue = owlFactory.getOWLClass(objectClass.getURI());
+						axiom = owlFactory.getOWLClassPropertyAssertionAxiom(subjectOWLIndividual, objectProperty, objectPropertyClassValue);
 						propertyAssertions.add(axiom);
-					} else if (object instanceof edu.stanford.smi.protegex.owl.model.OWLProperty) { // This
-																																													// will
-																																													// be
-																																													// OWL
-																																													// Full
+					} else if (object instanceof edu.stanford.smi.protegex.owl.model.OWLProperty) { // This will be OWL Full
 						edu.stanford.smi.protegex.owl.model.OWLProperty objectPropertyValue = (edu.stanford.smi.protegex.owl.model.OWLProperty) object;
-						OWLNamedIndividual subjectOWLIndividual = owlFactory
-								.getOWLIndividual(subjectIndividual.getURI());
+						OWLNamedIndividual subjectOWLIndividual = owlFactory.getOWLIndividual(subjectIndividual.getURI());
 						OWLProperty objectPropertyPropertyValue;
 						if (objectPropertyValue.isObjectProperty())
-							objectPropertyPropertyValue = owlFactory
-									.getOWLObjectProperty(objectPropertyValue.getURI());
+							objectPropertyPropertyValue = owlFactory.getOWLObjectProperty(objectPropertyValue.getURI());
 						else
-							objectPropertyPropertyValue = owlFactory
-									.getOWLDataProperty(objectPropertyValue.getURI());
-						axiom = owlFactory.getOWLPropertyPropertyAssertionAxiom(
-								subjectOWLIndividual, objectProperty,
-								objectPropertyPropertyValue);
+							objectPropertyPropertyValue = owlFactory.getOWLDataProperty(objectPropertyValue.getURI());
+						axiom = owlFactory.getOWLPropertyPropertyAssertionAxiom(subjectOWLIndividual, objectProperty,	objectPropertyPropertyValue);
 						propertyAssertions.add(axiom);
 					} // if
 				} else { // DataProperty
-					OWLNamedIndividual subjectOWLIndividual = owlFactory
-							.getOWLIndividual(subjectIndividual.getURI());
+					OWLNamedIndividual subjectOWLIndividual = owlFactory.getOWLIndividual(subjectIndividual.getURI());
 					RDFSLiteral rdfsLiteral = owlModel.asRDFSLiteral(object);
-					OWLLiteral literal = convertRDFSLiteral2OWLLiteral(owlModel,
-							rdfsLiteral);
-					OWLDataProperty dataProperty = owlFactory
-							.getOWLDataProperty(propertyURI);
-					axiom = owlFactory.getOWLDataPropertyAssertionAxiom(
-							subjectOWLIndividual, dataProperty, literal);
+					OWLLiteral literal = convertRDFSLiteral2OWLLiteral(owlModel, rdfsLiteral);
+					OWLDataProperty dataProperty = owlFactory.getOWLDataProperty(propertyURI);
+					axiom = owlFactory.getOWLDataPropertyAssertionAxiom(subjectOWLIndividual, dataProperty, literal);
 					propertyAssertions.add(axiom);
 				} // if
 			} // for
 		} // while
 
 		return propertyAssertions;
-	} // getOWLPropertyAssertionAxioms
+	} 
 
-	// TODO: This is incredibly inefficient. Need to use method in the OWLModel to
-	// get individuals with a particular property.
-	public Set<OWLSameIndividualAxiom> getSameIndividualAxioms()
-			throws OWLConversionFactoryException {
+	public Set<OWLSameIndividualAxiom> getSameIndividualAxioms() throws OWLConversionFactoryException 
+	{
 		RDFProperty sameAsProperty = SWRLOWLUtil.getOWLSameAsProperty(owlModel);
-		RDFSClass owlThingCls = SWRLOWLUtil.getOWLThingClass(owlModel);
 		Set<OWLSameIndividualAxiom> result = new HashSet<OWLSameIndividualAxiom>();
 
-		Iterator individualsIterator1 = owlThingCls.getInstances(true).iterator();
+		Iterator individualsIterator1 = owlModel.listSubjects(sameAsProperty);
 		while (individualsIterator1.hasNext()) {
 			Object object1 = individualsIterator1.next();
 			if (!(object1 instanceof edu.stanford.smi.protegex.owl.model.OWLIndividual))
-				continue; // Deal only with OWL individuals (could return metaclass, for
-									// example)
-			edu.stanford.smi.protegex.owl.model.OWLIndividual individual1 = (edu.stanford.smi.protegex.owl.model.OWLIndividual) object1;
-			if (individual1.hasPropertyValue(sameAsProperty)) {
-				Collection individuals = (Collection) individual1
-						.getPropertyValues(sameAsProperty);
-				Iterator individualsIterator2 = individuals.iterator();
-				while (individualsIterator2.hasNext()) {
-					Object object2 = individualsIterator2.next();
-					if (!(object2 instanceof edu.stanford.smi.protegex.owl.model.OWLIndividual))
-						continue;
-					edu.stanford.smi.protegex.owl.model.OWLIndividual individual2 = (edu.stanford.smi.protegex.owl.model.OWLIndividual) object2;
-					result.add(owlFactory.getOWLSameIndividualAxiom(owlFactory
-							.getOWLIndividual(individual1.getURI()), owlFactory
-							.getOWLIndividual(individual2.getURI())));
-				} // while
-			} // if
-		} // while
+				continue; // Deal only with OWL individuals (could return metaclass, for example)
+			edu.stanford.smi.protegex.owl.model.OWLIndividual individual1 = (edu.stanford.smi.protegex.owl.model.OWLIndividual)object1;
+			Collection individuals = (Collection)individual1.getPropertyValues(sameAsProperty);
+			Iterator individualsIterator2 = individuals.iterator();
+			while (individualsIterator2.hasNext()) {
+				Object object2 = individualsIterator2.next();
+				if (!(object2 instanceof edu.stanford.smi.protegex.owl.model.OWLIndividual)) continue;
+				edu.stanford.smi.protegex.owl.model.OWLIndividual individual2 = (edu.stanford.smi.protegex.owl.model.OWLIndividual) object2;
+				result.add(owlFactory.getOWLSameIndividualAxiom(owlFactory.getOWLIndividual(individual1.getURI()), owlFactory.getOWLIndividual(individual2.getURI())));
+			} // while
+		} //while
 		return result;
-	} // getOWLSameIndividualAxioms
+	}
 
-	public Set<OWLDifferentIndividualsAxiom> getOWLDifferentIndividualsAxioms()
-			throws OWLConversionFactoryException {
-		RDFProperty differentFromProperty = SWRLOWLUtil
-				.getOWLDifferentFromProperty(owlModel);
-		RDFSClass owlThingCls = SWRLOWLUtil.getOWLThingClass(owlModel);
+	public Set<OWLDifferentIndividualsAxiom> getOWLDifferentIndividualsAxioms()	throws OWLConversionFactoryException {
+		RDFProperty differentFromProperty = SWRLOWLUtil.getOWLDifferentFromProperty(owlModel);
 		Set<OWLDifferentIndividualsAxiom> result = new HashSet<OWLDifferentIndividualsAxiom>();
 		Collection allDifferents = SWRLOWLUtil.getOWLAllDifferents(owlModel);
 
-		Iterator individualsIterator1 = owlThingCls.getInstances(true).iterator();
+		Iterator individualsIterator1 = owlModel.listSubjects(differentFromProperty);
 		while (individualsIterator1.hasNext()) {
 			Object object1 = individualsIterator1.next();
-			if (!(object1 instanceof OWLNamedIndividual))
-				continue; // Deal only with OWL individuals (could return metaclass, for
-									// example)
+			if (!(object1 instanceof OWLNamedIndividual))	continue; // Deal only with OWL individuals (could return metaclass, for example)
 			edu.stanford.smi.protegex.owl.model.OWLIndividual individual1 = (edu.stanford.smi.protegex.owl.model.OWLIndividual) object1;
-			if (individual1.hasPropertyValue(differentFromProperty)) {
-				Collection individuals = (Collection) individual1
-						.getPropertyValues(differentFromProperty);
-				Iterator individualsIterator2 = individuals.iterator();
-				while (individualsIterator2.hasNext()) {
-					Object object2 = individualsIterator2.next();
-					if (!(object2 instanceof edu.stanford.smi.protegex.owl.model.OWLIndividual))
-						continue;
-					edu.stanford.smi.protegex.owl.model.OWLIndividual individual2 = (edu.stanford.smi.protegex.owl.model.OWLIndividual) object2;
-					result.add(owlFactory.getOWLDifferentIndividualsAxiom(owlFactory
-							.getOWLIndividual(individual1.getURI()), owlFactory
-							.getOWLIndividual(individual2.getURI())));
-				} // while
-			} // if
+			Collection individuals = (Collection) individual1.getPropertyValues(differentFromProperty);
+			Iterator individualsIterator2 = individuals.iterator();
+			while (individualsIterator2.hasNext()) {
+				Object object2 = individualsIterator2.next();
+				if (!(object2 instanceof edu.stanford.smi.protegex.owl.model.OWLIndividual)) continue;
+				edu.stanford.smi.protegex.owl.model.OWLIndividual individual2 = (edu.stanford.smi.protegex.owl.model.OWLIndividual) object2;
+				result.add(owlFactory.getOWLDifferentIndividualsAxiom(owlFactory.getOWLIndividual(individual1.getURI()), owlFactory.getOWLIndividual(individual2.getURI())));
+			} // while
 		} // while
 
 		if (!allDifferents.isEmpty()) {
 			Iterator allDifferentsIterator = allDifferents.iterator();
 			while (allDifferentsIterator.hasNext()) {
-				OWLAllDifferent owlAllDifferent = (OWLAllDifferent) allDifferentsIterator
-						.next();
+				OWLAllDifferent owlAllDifferent = (OWLAllDifferent)allDifferentsIterator.next();
 
 				if (owlAllDifferent.getDistinctMembers().size() != 0) {
 					OWLDifferentIndividualsAxiom axiom;
 					Set<OWLNamedIndividual> individuals = new HashSet<OWLNamedIndividual>();
 
-					Iterator individualsIterator = owlAllDifferent.getDistinctMembers()
-							.iterator();
+					Iterator individualsIterator = owlAllDifferent.getDistinctMembers().iterator();
 					while (individualsIterator.hasNext()) {
-						RDFIndividual individual = (RDFIndividual) individualsIterator
-								.next();
-						if (individual instanceof edu.stanford.smi.protegex.owl.model.OWLIndividual) { // Ignore
-																																														// non
-																																														// OWL
-																																														// individuals
-							String individualURI = ((edu.stanford.smi.protegex.owl.model.OWLIndividual) individual)
-									.getURI();
-							OWLNamedIndividual owlIndividual = owlFactory
-									.getOWLIndividual(individualURI);
+						RDFIndividual individual = (RDFIndividual) individualsIterator.next();
+						if (individual instanceof edu.stanford.smi.protegex.owl.model.OWLIndividual) { // Ignore OWL individuals
+							String individualURI = ((edu.stanford.smi.protegex.owl.model.OWLIndividual)individual).getURI();
+							OWLNamedIndividual owlIndividual = owlFactory.getOWLIndividual(individualURI);
 							individuals.add(owlIndividual);
 						} // if
 					} // while
@@ -1207,71 +1170,57 @@ public class OWLOntologyImpl implements OWLOntology {
 		} // if
 
 		return result;
-	} // getOWLDifferentIndividualsAxioms
+	}
 
-	private void initializeProperty(OWLPropertyImpl owlPropertyImpl,
-			edu.stanford.smi.protegex.owl.model.OWLProperty property)
-			throws OWLConversionFactoryException {
-		for (String domainClassURI : SWRLOWLUtil
-				.rdfResources2OWLNamedClassURIs(property.getUnionDomain()))
+	private void initializeProperty(OWLPropertyImpl owlPropertyImpl,edu.stanford.smi.protegex.owl.model.OWLProperty property)
+		throws OWLConversionFactoryException 
+	{
+		for (String domainClassURI : SWRLOWLUtil.rdfResources2OWLNamedClassURIs(property.getUnionDomain()))
 			owlPropertyImpl.addDomainClass(getOWLClass(domainClassURI));
-		for (String rangeClassURI : SWRLOWLUtil
-				.rdfResources2OWLNamedClassURIs(property.getUnionRangeClasses()))
+		for (String rangeClassURI : SWRLOWLUtil.rdfResources2OWLNamedClassURIs(property.getUnionRangeClasses()))
 			owlPropertyImpl.addRangeClass(getOWLClass(rangeClassURI));
-		for (String superPropertyURI : SWRLOWLUtil
-				.rdfResources2OWLPropertyURIs(property.getSuperproperties(false)))
+		for (String superPropertyURI : SWRLOWLUtil.rdfResources2OWLPropertyURIs(property.getSuperproperties(false)))
 			if (property.isObjectProperty())
-				owlPropertyImpl
-						.addSuperProperty(getOWLObjectProperty(superPropertyURI));
+				owlPropertyImpl.addSuperProperty(getOWLObjectProperty(superPropertyURI));
 			else
 				owlPropertyImpl.addSuperProperty(getOWLDataProperty(superPropertyURI));
-		for (String subPropertyURI : SWRLOWLUtil
-				.rdfResources2OWLPropertyURIs(property.getSubproperties(false)))
+		for (String subPropertyURI : SWRLOWLUtil.rdfResources2OWLPropertyURIs(property.getSubproperties(false)))
 			if (property.isObjectProperty())
 				owlPropertyImpl.addSubProperty(getOWLObjectProperty(subPropertyURI));
 			else
 				owlPropertyImpl.addSubProperty(getOWLDataProperty(subPropertyURI));
-		for (String equivalentPropertyURI : SWRLOWLUtil
-				.rdfResources2OWLPropertyURIs(property.getEquivalentProperties()))
+		for (String equivalentPropertyURI : SWRLOWLUtil.rdfResources2OWLPropertyURIs(property.getEquivalentProperties()))
 			if (property.isObjectProperty())
-				owlPropertyImpl
-						.addEquivalentProperty(getOWLObjectProperty(equivalentPropertyURI));
+				owlPropertyImpl.addEquivalentProperty(getOWLObjectProperty(equivalentPropertyURI));
 			else
-				owlPropertyImpl
-						.addEquivalentProperty(getOWLDataProperty(equivalentPropertyURI));
+				owlPropertyImpl.addEquivalentProperty(getOWLDataProperty(equivalentPropertyURI));
 	}
 
-	private void buildDefiningClasses(OWLIndividualImpl owlIndividualImpl,
-			edu.stanford.smi.protegex.owl.model.OWLIndividual individual)
-			throws OWLConversionFactoryException {
+	private void buildDefiningClasses(OWLIndividualImpl owlIndividualImpl, edu.stanford.smi.protegex.owl.model.OWLIndividual individual)
+			throws OWLConversionFactoryException 
+	{
 		for (Object o : individual.getRDFTypes()) {
 			RDFSClass cls = (RDFSClass) o;
-			if (!cls.isAnonymous()
-					&& cls instanceof edu.stanford.smi.protegex.owl.model.OWLNamedClass) {
-				String classURI = ((edu.stanford.smi.protegex.owl.model.OWLNamedClass) cls)
-						.getURI();
+			if (!cls.isAnonymous() && cls instanceof edu.stanford.smi.protegex.owl.model.OWLNamedClass) {
+				String classURI = ((edu.stanford.smi.protegex.owl.model.OWLNamedClass)cls).getURI();
 				owlIndividualImpl.addType(getOWLClass(classURI));
 			} // if
 		} // for
 	}
 
-	private void buildSameAsIndividuals(OWLIndividualImpl owlIndividualImpl,
-			edu.stanford.smi.protegex.owl.model.OWLIndividual individual)
-			throws OWLConversionFactoryException {
-		edu.stanford.smi.protegex.owl.model.RDFProperty sameAsProperty = SWRLOWLUtil
-				.getOWLSameAsProperty(owlModel);
+	private void buildSameAsIndividuals(OWLIndividualImpl owlIndividualImpl, edu.stanford.smi.protegex.owl.model.OWLIndividual individual)
+			throws OWLConversionFactoryException 
+	{
+		edu.stanford.smi.protegex.owl.model.RDFProperty sameAsProperty = SWRLOWLUtil.getOWLSameAsProperty(owlModel);
 
 		if (individual.hasPropertyValue(sameAsProperty)) {
-			Collection individuals = (Collection) individual
-					.getPropertyValues(sameAsProperty);
+			Collection individuals = (Collection)individual.getPropertyValues(sameAsProperty);
 			Iterator individualsIterator = individuals.iterator();
 			while (individualsIterator.hasNext()) {
 				Object object = individualsIterator.next();
-				if (!(object instanceof edu.stanford.smi.protegex.owl.model.OWLIndividual))
-					continue;
+				if (!(object instanceof edu.stanford.smi.protegex.owl.model.OWLIndividual)) continue;
 				edu.stanford.smi.protegex.owl.model.OWLIndividual sameAsIndividual = (edu.stanford.smi.protegex.owl.model.OWLIndividual) object;
-				owlIndividualImpl.addSameAsIndividual(owlFactory
-						.getOWLIndividual(sameAsIndividual.getURI()));
+				owlIndividualImpl.addSameAsIndividual(owlFactory.getOWLIndividual(sameAsIndividual.getURI()));
 			} // while
 		} // if
 	}
@@ -1280,8 +1229,7 @@ public class OWLOntologyImpl implements OWLOntology {
 			OWLIndividualImpl owlIndividualImpl,
 			edu.stanford.smi.protegex.owl.model.OWLIndividual individual)
 			throws OWLConversionFactoryException {
-		edu.stanford.smi.protegex.owl.model.RDFProperty differentFromProperty = SWRLOWLUtil
-				.getOWLDifferentFromProperty(owlModel);
+		edu.stanford.smi.protegex.owl.model.RDFProperty differentFromProperty = SWRLOWLUtil.getOWLDifferentFromProperty(owlModel);
 
 		if (individual.hasPropertyValue(differentFromProperty)) {
 			Collection individuals = (Collection) individual

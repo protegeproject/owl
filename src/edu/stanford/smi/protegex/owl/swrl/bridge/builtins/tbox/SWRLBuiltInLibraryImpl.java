@@ -1178,7 +1178,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
 
     try {
       if (subPropertyArgumentUnbound) {
-        List<edu.stanford.smi.protegex.owl.model.OWLProperty> subProperties;
+        Set<edu.stanford.smi.protegex.owl.model.OWLProperty> subProperties;
         if (transitive) subProperties = SWRLOWLUtil.getSubPropertiesOf(getOWLModel(), propertyURI);
         else subProperties = SWRLOWLUtil.getDirectSubPropertiesOf(getOWLModel(), propertyURI);
         if (!subProperties.isEmpty()) {
@@ -1214,7 +1214,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
 
     try {
       if (superPropertyArgumentUnbound) {
-        List<edu.stanford.smi.protegex.owl.model.OWLProperty> superProperties;
+        Set<edu.stanford.smi.protegex.owl.model.OWLProperty> superProperties;
         if (transitive) superProperties = SWRLOWLUtil.getSuperPropertiesOf(getOWLModel(), propertyURI);
         else superProperties = SWRLOWLUtil.getDirectSuperPropertiesOf(getOWLModel(), propertyURI);
         if (!superProperties.isEmpty()) {

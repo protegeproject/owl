@@ -1739,63 +1739,162 @@ public class SWRLOWLUtil
                         "' is not a Collection");
 
     return result;
-  } // getDatavaluedPropertyValueAsCollection
+  }
 
   public static List<OWLNamedClass> getDirectSubClassesOf(OWLModel owlModel, String className) throws SWRLOWLUtilException
   { 
     OWLNamedClass cls = getNamedClass(owlModel, className);
 
-    return new ArrayList<OWLNamedClass>(cls.getNamedSubclasses(false));
-  } // getDirectSubClassesOf
+    return getDirectSubClassesOf(owlModel, cls);
+  }
 
   public static List<OWLNamedClass> getSubClassesOf(OWLModel owlModel, String className) throws SWRLOWLUtilException
   { 
     OWLNamedClass cls = getNamedClass(owlModel, className);
 
-    return new ArrayList<OWLNamedClass>(cls.getNamedSubclasses(true));
-  } // getSubClassesOf
+    return getSubClassesOf(owlModel, cls);
+  }
 
   public static List<OWLNamedClass> getDirectSuperClassesOf(OWLModel owlModel, String className) throws SWRLOWLUtilException
   { 
     OWLNamedClass cls = getNamedClass(owlModel, className);
 
-    return new ArrayList<OWLNamedClass>(cls.getNamedSuperclasses(false));
-  } // getDirectSuperClassesOf
+    return getDirectSuperClassesOf(owlModel, cls);
+  }
 
   public static List<OWLNamedClass> getSuperClassesOf(OWLModel owlModel, String className) throws SWRLOWLUtilException
   { 
     OWLNamedClass cls = getNamedClass(owlModel, className);
 
-    return new ArrayList<OWLNamedClass>(cls.getNamedSuperclasses(true));
-  } // getSuperClassesOf
+    return getSuperClassesOf(owlModel, cls);
+  }
 
-  public static List<OWLProperty> getDirectSubPropertiesOf(OWLModel owlModel, String propertyName) throws SWRLOWLUtilException
+  public static List<OWLNamedClass> getSubClassesOf(OWLModel owlModel, OWLNamedClass cls) 
+  { 
+  	List<OWLNamedClass> result = new ArrayList<OWLNamedClass>();
+  	
+  	for (Object o : cls.getSubclasses(true)) 
+  		if (o instanceof OWLNamedClass)
+  			result.add((OWLNamedClass)o);
+  	
+  	return result;
+  } 
+
+  public static List<OWLNamedClass> getDirectSubClassesOf(OWLModel owlModel, OWLNamedClass cls) 
+  { 
+  	List<OWLNamedClass> result = new ArrayList<OWLNamedClass>();
+  	
+  	for (Object o : cls.getSubclasses(false)) 
+  		if (o instanceof OWLNamedClass)
+  			result.add((OWLNamedClass)o);
+  	
+  	return result;
+  } 
+
+  public static List<OWLNamedClass> getSuperClassesOf(OWLModel owlModel, OWLNamedClass cls) 
+  { 
+  	List<OWLNamedClass> result = new ArrayList<OWLNamedClass>();
+  	
+  	for (Object o : cls.getSuperclasses(true)) 
+  		if (o instanceof OWLNamedClass)
+  			result.add((OWLNamedClass)o);
+  	
+  	return result;
+  } 
+
+  public static List<OWLNamedClass> getDirectSuperClassesOf(OWLModel owlModel, OWLNamedClass cls) 
+  { 
+  	List<OWLNamedClass> result = new ArrayList<OWLNamedClass>();
+  	
+  	for (Object o : cls.getSuperclasses(false)) 
+  		if (o instanceof OWLNamedClass)
+  			result.add((OWLNamedClass)o);
+  	
+  	return result;
+  } 
+
+  public static Set<OWLProperty> getDirectSubPropertiesOf(OWLModel owlModel, String propertyName) throws SWRLOWLUtilException
   { 
     OWLProperty property = getOWLProperty(owlModel, propertyName);
 
-    return new ArrayList<OWLProperty>(property.getSubproperties(false));
-  } // getDirectSubPropertiesOf
+    return getDirectSubPropertiesOf(owlModel, property);
+  } 
 
-  public static List<OWLProperty> getSubPropertiesOf(OWLModel owlModel, String propertyName) throws SWRLOWLUtilException
+  public static Set<OWLProperty> getSubPropertiesOf(OWLModel owlModel, String propertyName) throws SWRLOWLUtilException
   { 
     OWLProperty property = getOWLProperty(owlModel, propertyName);
 
-    return new ArrayList<OWLProperty>(property.getSubproperties(true));
-  } // getSubPropertiesOf
+    return getSubPropertiesOf(owlModel, property);
+  } 
 
-  public static List<OWLProperty> getDirectSuperPropertiesOf(OWLModel owlModel, String propertyName) throws SWRLOWLUtilException
+  public static Set<OWLProperty> getDirectSuperPropertiesOf(OWLModel owlModel, String propertyName) throws SWRLOWLUtilException
   { 
     OWLProperty property = getOWLProperty(owlModel, propertyName);
 
-    return new ArrayList<OWLProperty>(property.getSuperproperties(false));
-  } // getDirectSuperPropertiesOf
+    return getDirectSuperPropertiesOf(owlModel, property);
+  }
 
-  public static List<OWLProperty> getSuperPropertiesOf(OWLModel owlModel, String propertyName) throws SWRLOWLUtilException
+  public static Set<OWLProperty> getSuperPropertiesOf(OWLModel owlModel, String propertyName) throws SWRLOWLUtilException
   { 
     OWLProperty property = getOWLProperty(owlModel, propertyName);
 
-    return new ArrayList<OWLProperty>(property.getSuperproperties(true));
-  } // getSuperPropertiesOf
+    return getSuperPropertiesOf(owlModel, property);
+  }
+
+  public static Set<OWLProperty> getSubPropertiesOf(OWLModel owlModel, OWLProperty property) 
+  { 
+  	Set<OWLProperty> result = new HashSet<OWLProperty>();
+  	
+  	for (Object o : property.getSubproperties(true)) 
+  		if (o instanceof OWLProperty)
+  			result.add((OWLProperty)o);
+  	
+  	return result;
+  }
+
+  public static Set<OWLProperty> getEquivalentPropertiesOf(OWLModel owlModel, OWLProperty property)
+  { 
+  	Set<OWLProperty> result = new HashSet<OWLProperty>();
+  	
+  	for (Object o : property.getEquivalentProperties()) 
+  		if (o instanceof OWLProperty)
+  			result.add((OWLProperty)o);
+  	
+  	return result;
+  }
+
+  public static Set<OWLProperty> getDirectSubPropertiesOf(OWLModel owlModel, OWLProperty property) throws SWRLOWLUtilException
+  { 
+  	Set<OWLProperty> result = new HashSet<OWLProperty>();
+  	
+  	for (Object o : property.getSubproperties(false)) 
+  		if (o instanceof OWLProperty)
+  			result.add((OWLProperty)o);
+  	
+  	return result;
+  }
+
+  public static Set<OWLProperty> getSuperPropertiesOf(OWLModel owlModel, OWLProperty property) throws SWRLOWLUtilException
+  { 
+  	Set<OWLProperty> result = new HashSet<OWLProperty>();
+  	
+  	for (Object o : property.getSuperproperties(true)) 
+  		if (o instanceof OWLProperty)
+  			result.add((OWLProperty)o);
+  	
+  	return result;
+  }
+
+  public static Set<OWLProperty> getDirectSuperPropertiesOf(OWLModel owlModel, OWLProperty property) throws SWRLOWLUtilException
+  { 
+  	Set<OWLProperty> result = new HashSet<OWLProperty>();
+  	
+  	for (Object o : property.getSuperproperties(false)) 
+  		if (o instanceof OWLProperty)
+  			result.add((OWLProperty)o);
+  	
+  	return result;
+  }
 
   public static Set<OWLProperty> getDomainProperties(OWLModel owlModel, String className, boolean transitive) throws SWRLOWLUtilException
   {
@@ -1917,27 +2016,46 @@ public class SWRLOWLUtil
   public static OWLNamedClass getOWLThingClass(OWLModel owlModel) 
   {
     return owlModel.getOWLThingClass();
-  } // getOWLThingClass
+  }
 
   public static RDFProperty getOWLSameAsProperty(OWLModel owlModel)
   {
     return owlModel.getOWLSameAsProperty();
-  } // getOWLSameAsProperty
+  }
+
+
+  public static void makeSameAs(OWLModel owlModel, String individualName1, String individualName2) throws SWRLOWLUtilException
+  {
+  	OWLIndividual individual1 = getOWLIndividual(owlModel, individualName1);
+  	OWLIndividual individual2 = getOWLIndividual(owlModel, individualName2);
+  	
+  	individual1.addPropertyValue(getOWLSameAsProperty(owlModel), individual2);
+  	individual2.addPropertyValue(getOWLSameAsProperty(owlModel), individual1);
+  }
+
+  public static void makeDifferentFrom(OWLModel owlModel, String individualName1, String individualName2) throws SWRLOWLUtilException
+  {
+  	OWLIndividual individual1 = getOWLIndividual(owlModel, individualName1);
+  	OWLIndividual individual2 = getOWLIndividual(owlModel, individualName2);
+  	
+  	individual1.addPropertyValue(getOWLDifferentFromProperty(owlModel), individual2);
+  	individual2.addPropertyValue(getOWLDifferentFromProperty(owlModel), individual1);
+  }
 
   public static Collection getOWLAllDifferents(OWLModel owlModel)
   {
     return owlModel.getOWLAllDifferents();
-  } // getOWLAllDifferents
+  }
 
   public static RDFProperty getOWLDifferentFromProperty(OWLModel owlModel)
   {
     return owlModel.getOWLDifferentFromProperty();
-  } // getOWLDifferentFromProperty
+  }
 
   public static OWLProperty getOWLProperty(OWLModel owlModel, String propertyName)
   {
     return owlModel.getOWLProperty(propertyName);
-  } // getOWLProperty
+  }
 
   public static OWLProperty getOWLProperty(OWLModel owlModel, String propertyName, boolean mustExist) throws SWRLOWLUtilException
   {
@@ -1948,10 +2066,10 @@ public class SWRLOWLUtil
     return property;
   } 
 
-  public static OWLIndividual getOWLIndividual(OWLModel owlModel, String individualName)
+  public static OWLIndividual getOWLIndividual(OWLModel owlModel, String individualName) throws SWRLOWLUtilException
   {
     return owlModel.getOWLIndividual(individualName);
-  } // getOWLIndividual
+  } 
 
   public static RDFSNamedClass getRDFSNamedClass(OWLModel owlModel, String className)
   {

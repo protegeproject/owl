@@ -109,7 +109,8 @@ public class DefaultSWRLBridge implements SWRLRuleEngineBridge, SWRLBuiltInBridg
   { 
     if (!inferredOWLAxioms.contains(axiom)) {
       inferredOWLAxioms.add(axiom); 
-      if (axiom instanceof OWLPropertyAssertionAxiom) cacheOWLPropertyAssertionAxiom((OWLPropertyAssertionAxiom)axiom);
+      if (axiom instanceof OWLPropertyAssertionAxiom) 
+      	cacheOWLPropertyAssertionAxiom((OWLPropertyAssertionAxiom)axiom);
       else if (axiom instanceof OWLClassAssertionAxiom) {
         OWLClassAssertionAxiom owlClassAssertionAxiom = (OWLClassAssertionAxiom)axiom;
         inferOWLIndividual(owlClassAssertionAxiom.getIndividual(), owlClassAssertionAxiom.getDescription());
