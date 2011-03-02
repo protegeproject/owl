@@ -123,7 +123,7 @@ public abstract class DefaultOWLAxiomConvertor extends DefaultConvertor implemen
     
     definingClasses.add(axiom.getDescription());
 
-    calculateTransitiveClassClosure(axiom.getIndividual().getTypes(), definingClasses);
+    calculateTransitiveSuperAndEquivalentClassClosure(axiom.getIndividual().getTypes(), definingClasses);
     
     for (OWLClass owlClass : definingClasses) {
       String classURI = owlClass.getURI();
@@ -145,9 +145,10 @@ public abstract class DefaultOWLAxiomConvertor extends DefaultConvertor implemen
   }
 
   // TODO: Here, we go beyond just declaring the supplied property assertion axiom but also declare the transitive closure of
-  // the properties and consider the same as relationships for the subject individuals.
+  // the equivalent and super properties and consider the same as relationships for the subject individuals.
   // This should not be happening here and should be taken care of by the generateOWLSubPropertyAssertion 
   // and generateOWLEquivalentPropertyAssertion methods. However, the SWRLAndSQWRLProcessor class does not currently generate these axioms.
+  // Currently, the OWLOntology.getPropertyAssertionAxioms(propertyURI) call already considers equivalent and sub-property relationships. 
   public void generateOWLDataPropertyAssertionAxiom(OWLDataPropertyAssertionAxiom axiom) throws TargetSWRLRuleEngineException
   {
     OWLProperty property = axiom.getProperty();
@@ -157,7 +158,7 @@ public abstract class DefaultOWLAxiomConvertor extends DefaultConvertor implemen
     OWLLiteral objectLiteral = axiom.getObject();
 
     definingProperties.add(property);
-    calculateTransitivePropertyClosure(property.getSuperProperties(), definingProperties);
+    calculateTransitiveSuperAndEquivalentPropertyClosure(property.getSuperProperties(), definingProperties);
 
     subjectIndividuals.add(subjectIndividual);
     subjectIndividuals.addAll(subjectIndividual.getSameIndividuals());
@@ -172,9 +173,10 @@ public abstract class DefaultOWLAxiomConvertor extends DefaultConvertor implemen
   } 
 
   // TODO: Here, we go beyond just declaring the supplied property assertion axiom but also declare the transitive closure of
-  // the properties and consider the same as relationships for both subject and object individuals. 
+  // the equivalent and super properties and consider the same as relationships for both subject and object individuals. 
   // This should not be happening here and should be taken care of by the generateOWLSubPropertyAssertion 
   // and generateOWLEquivalentPropertyAssertion methods. However, the SWRLAndSQWRLProcessor class does not currently generate these axioms.
+  // Currently, the OWLOntology.getPropertyAssertionAxioms(propertyURI) call already considers equivalent and sub-property relationships.
   public void generateOWLObjectPropertyAssertionAxiom(OWLObjectPropertyAssertionAxiom axiom) throws TargetSWRLRuleEngineException
   {
     OWLProperty property = axiom.getProperty();
@@ -185,7 +187,7 @@ public abstract class DefaultOWLAxiomConvertor extends DefaultConvertor implemen
     Set<OWLNamedIndividual> objectIndividuals = new HashSet<OWLNamedIndividual>();
 
     definingProperties.add(property);
-    calculateTransitivePropertyClosure(property.getTypes(), definingProperties);
+    calculateTransitiveSuperAndEquivalentPropertyClosure(property.getTypes(), definingProperties);
 
     subjectIndividuals.add(subjectIndividual);
     subjectIndividuals.addAll(subjectIndividual.getSameIndividuals());
@@ -215,7 +217,7 @@ public abstract class DefaultOWLAxiomConvertor extends DefaultConvertor implemen
     Set<String> objectClassURIs = new HashSet<String>();
 
     definingProperties.add(property);
-    calculateTransitivePropertyClosure(property.getTypes(), definingProperties);
+    calculateTransitiveSuperAndEquivalentPropertyClosure(property.getTypes(), definingProperties);
 
     subjectIndividuals.add(subjectIndividual);
     subjectIndividuals.addAll(subjectIndividual.getSameIndividuals());
@@ -243,7 +245,7 @@ public abstract class DefaultOWLAxiomConvertor extends DefaultConvertor implemen
     Set<String> objectPropertyURIs = new HashSet<String>();
 
     definingProperties.add(property);
-    calculateTransitivePropertyClosure(property.getTypes(), definingProperties);
+    calculateTransitiveSuperAndEquivalentPropertyClosure(property.getTypes(), definingProperties);
 
     subjectIndividuals.add(subjectIndividual);
     subjectIndividuals.addAll(subjectIndividual.getSameIndividuals());
@@ -306,24 +308,24 @@ public abstract class DefaultOWLAxiomConvertor extends DefaultConvertor implemen
     // TODO: we do nothing for the moment because generateOWLClassAssertionAxiomRepresentation effectively takes care of this axiom.
   }
   
-  private void calculateTransitiveClassClosure(Set<OWLClass> classes, Set<OWLClass> closure)
+  private void calculateTransitiveSuperAndEquivalentClassClosure(Set<OWLClass> classes, Set<OWLClass> closure)
   {
 		for (OWLClass cls : classes) {
 			if (!closure.contains(cls)) {
 				closure.add(cls);
-				calculateTransitiveClassClosure(cls.getSuperClasses(), closure);
-				calculateTransitiveClassClosure(cls.getEquivalentClasses(), closure);
+				calculateTransitiveSuperAndEquivalentClassClosure(cls.getSuperClasses(), closure);
+				calculateTransitiveSuperAndEquivalentClassClosure(cls.getEquivalentClasses(), closure);
 			} // if
 		} // for
   } 
 
-  private void calculateTransitivePropertyClosure(Set<OWLProperty> properties, Set<OWLProperty> closure)
+  private void calculateTransitiveSuperAndEquivalentPropertyClosure(Set<OWLProperty> properties, Set<OWLProperty> closure)
   {
 		for (OWLProperty property : properties) {
 			if (!closure.contains(property)) {
 				closure.add(property);
-				calculateTransitivePropertyClosure(property.getSuperProperties(), closure);
-				calculateTransitivePropertyClosure(property.getEquivalentProperties(), closure);
+				calculateTransitiveSuperAndEquivalentPropertyClosure(property.getSuperProperties(), closure);
+				calculateTransitiveSuperAndEquivalentPropertyClosure(property.getEquivalentProperties(), closure);
 			} // if
 		} // for
   } 

@@ -27,6 +27,7 @@ public interface OWLOntology
   Set<OWLSameIndividualAxiom> getSameIndividualAxioms() throws OWLConversionFactoryException;
   Set<OWLDifferentIndividualsAxiom> getOWLDifferentIndividualsAxioms() throws OWLConversionFactoryException;
 
+  // Considers sub property and equivalence relationships 
   Set<OWLPropertyAssertionAxiom> getOWLPropertyAssertionAxioms(String individualURI, String propertyURI) throws OWLConversionFactoryException, DataValueConversionException;
   Set<OWLPropertyAssertionAxiom> getOWLPropertyAssertionAxioms(String propertyURI) throws OWLConversionFactoryException, DataValueConversionException;
 
