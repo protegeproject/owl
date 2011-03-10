@@ -67,6 +67,7 @@ public class BridgePluginManager
       log.info("Jess rule engine load failed: could not find jess.Rete - or an error occured on initialization");     
     } // try
 
+    /*
     try { // TODO:  Hack until we can do a proper class load with the manifest
       Class.forName("edu.stanford.smi.protegex.owl.swrl.bridge.drools.DroolsSWRLRuleEngine");
       Class.forName("edu.stanford.smi.protegex.owl.swrl.bridge.drools.ui.SWRLDroolsTab");
@@ -74,6 +75,7 @@ public class BridgePluginManager
     } catch (ClassNotFoundException e) {
       log.info("Drools rule engine load failed: could not find Drools JARs - or an error occured on initialization");     
     } // try
+    */
 
     if (ruleEngineFound) {
 	    try { // TODO:  Hack until we can do a proper class load with the manifest
