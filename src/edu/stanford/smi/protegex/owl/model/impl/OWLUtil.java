@@ -66,7 +66,7 @@ import edu.stanford.smi.protegex.owl.util.OWLFrameStoreUtils;
  * A collection of static utility methods for OWL classes. Many of them are used
  * to "simulate" the multiple inheritance between the various implementations of
  * RDFResource.
- * 
+ *
  * @author Holger Knublauch <holger@knublauch.com>
  */
 public class OWLUtil {
@@ -196,7 +196,7 @@ public class OWLUtil {
     /**
      * Creates a copy of a given class and also copies the annotation property
      * values.
-     * 
+     *
      * @param cls
      *            the class to clone
      * @return a clone of cls or cls itself if it is a named class
@@ -290,7 +290,7 @@ public class OWLUtil {
     /**
      * Gets all paths from a given class to the root. This is needed if the user
      * requests to see all occurances of a class in a tree.
-     * 
+     *
      * @param cls
      *            the Cls to find all paths to
      * @return a Collection of List objects, with each List starting at cls
@@ -981,7 +981,7 @@ public class OWLUtil {
 
     /**
      * Renames an ontology. Returns a new ontology object with the new name.
-     * 
+     *
      * @param owlModel
      *            - the OWL model
      * @param oldOntology
@@ -1002,7 +1002,7 @@ public class OWLUtil {
     /**
      * Ensures that the triple store and the renamed ontology have the same
      * name.
-     * 
+     *
      * @param owlModel
      *            - the OWL model
      * @param oldName
@@ -1021,7 +1021,9 @@ public class OWLUtil {
             return;
         }
 
-        ts.setName(newOntology.getName());
+        String newOntologyName = newOntology.getName();
+        ts.setName(newOntologyName);
+        ts.setOriginalXMLBase(newOntologyName);
 
         if (ts.equals(tsm.getTopTripleStore())) {
             //reset the model ontology cache - this will ensure that ontology and triplestore have the same name
