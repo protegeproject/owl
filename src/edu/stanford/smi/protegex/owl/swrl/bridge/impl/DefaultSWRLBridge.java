@@ -7,11 +7,11 @@ import java.util.Map;
 import java.util.Set;
 
 import edu.stanford.smi.protegex.owl.swrl.bridge.BuiltInArgument;
+import edu.stanford.smi.protegex.owl.swrl.bridge.OWLAxiomProcessor;
 import edu.stanford.smi.protegex.owl.swrl.bridge.OWLDataValue;
 import edu.stanford.smi.protegex.owl.swrl.bridge.OWLDataValueFactory;
 import edu.stanford.smi.protegex.owl.swrl.bridge.SWRLBuiltInBridge;
 import edu.stanford.smi.protegex.owl.swrl.bridge.SWRLBuiltInBridgeController;
-import edu.stanford.smi.protegex.owl.swrl.bridge.OWLAxiomProcessor;
 import edu.stanford.smi.protegex.owl.swrl.bridge.SWRLRuleEngineBridge;
 import edu.stanford.smi.protegex.owl.swrl.bridge.SWRLRuleEngineBridgeController;
 import edu.stanford.smi.protegex.owl.swrl.bridge.TargetSWRLRuleEngine;

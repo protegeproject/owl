@@ -4,7 +4,6 @@ package edu.stanford.smi.protegex.owl.swrl.bridge.impl;
 import java.util.HashSet;
 import java.util.Set;
 
-import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
 import edu.stanford.smi.protegex.owl.swrl.SWRLRuleEngine;
 import edu.stanford.smi.protegex.owl.swrl.bridge.OWLAxiomProcessor;
 import edu.stanford.smi.protegex.owl.swrl.bridge.OWLDataValueFactory;
@@ -268,7 +267,7 @@ public class DefaultSWRLRuleEngine implements SWRLRuleEngine
   {
   	Set<OWLClass> result = new HashSet<OWLClass>();
   	for (OWLDeclarationAxiom axiom : owlAxiomProcessor.getReferencedOWLClassDeclarationsAxioms()) {
-  		if (axiom.getEntity() instanceof OWLNamedClass)
+  		if (axiom.getEntity() instanceof OWLClass)
   			result.add((OWLClass)axiom.getEntity());
   	} // for
   	return result;
