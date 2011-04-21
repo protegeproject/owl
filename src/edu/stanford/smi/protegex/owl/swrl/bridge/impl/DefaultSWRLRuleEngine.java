@@ -4,6 +4,7 @@ package edu.stanford.smi.protegex.owl.swrl.bridge.impl;
 import java.util.HashSet;
 import java.util.Set;
 
+import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
 import edu.stanford.smi.protegex.owl.swrl.SWRLRuleEngine;
 import edu.stanford.smi.protegex.owl.swrl.bridge.OWLAxiomProcessor;
 import edu.stanford.smi.protegex.owl.swrl.bridge.OWLDataValueFactory;
@@ -267,7 +268,8 @@ public class DefaultSWRLRuleEngine implements SWRLRuleEngine
   {
   	Set<OWLClass> result = new HashSet<OWLClass>();
   	for (OWLDeclarationAxiom axiom : owlAxiomProcessor.getReferencedOWLClassDeclarationsAxioms()) {
-  		result.add((OWLClass)axiom.getEntity());
+  		if (axiom.getEntity() instanceof OWLNamedClass)
+  			result.add((OWLClass)axiom.getEntity());
   	} // for
   	return result;
   }
@@ -276,8 +278,9 @@ public class DefaultSWRLRuleEngine implements SWRLRuleEngine
   {
   	Set<OWLNamedIndividual> result = new HashSet<OWLNamedIndividual>();
   	
-  	for (OWLDeclarationAxiom axiom : owlAxiomProcessor.getReferencedOWLClassDeclarationsAxioms()) {
-  		result.add((OWLNamedIndividual)axiom.getEntity());
+  	for (OWLDeclarationAxiom axiom : owlAxiomProcessor.getReferencedOWLIndividualDeclarationAxioms()) {
+  		if (axiom.getEntity() instanceof OWLNamedIndividual)
+  			result.add((OWLNamedIndividual)axiom.getEntity());
   	} // for
   	return result;
   }
