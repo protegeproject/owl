@@ -73,6 +73,9 @@ public interface SWRLRuleEngine extends SQWRLQueryEngine
   Set<OWLNamedIndividual> getReclassifiedOWLIndividuals();
   Set<OWLNamedIndividual> getInjectedOWLIndividuals();
 
+  String getTargetRuleEngineName();
+  String getTargetRuleEngineVersion();
+
   // TODO: temporary
   String uri2PrefixedName(String uri);
   String name2URI(String prefixedName);

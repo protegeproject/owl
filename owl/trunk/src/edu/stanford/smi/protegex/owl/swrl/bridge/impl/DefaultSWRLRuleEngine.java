@@ -307,6 +307,7 @@ public class DefaultSWRLRuleEngine implements SWRLRuleEngine
   public OWLDataValueFactory getOWLDataValueFactory() { return owlDataValueFactory; }
   
   public String getTargetRuleEngineName() { return targetRuleEngine.getName(); }
+  public String getTargetRuleEngineVersion() { return targetRuleEngine.getVersion(); }
 
   private void importSQWRLQuery(String queryName) throws SWRLRuleEngineException
   {

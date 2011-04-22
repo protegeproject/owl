@@ -20,7 +20,12 @@ public interface TargetSWRLRuleEngine
 	 * Return the name of the target rule engine.
 	 */
 	String getName(); 
-	
+
+	/*
+	 * Return version information of the target rule engine.
+	 */
+	String getVersion(); 
+
   /**
    * Initialize the target engine. Supply it with the bridge.
    */
