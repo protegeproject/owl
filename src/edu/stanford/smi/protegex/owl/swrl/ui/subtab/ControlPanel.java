@@ -50,6 +50,7 @@ public class ControlPanel extends JPanel
 
     add(BorderLayout.SOUTH, buttonsPanel);
 
+    textArea.append("Using the " + ruleEngineName + " rule engine, version " + ruleEngine.getTargetRuleEngineVersion() + ".\n");
     textArea.append("Press the \"OWL+SWRL->" + ruleEngineName +"\" button to transfer SWRL rules and relevant OWL knowledge to the rule engine.\n");
     textArea.append("Press the \"Run " + ruleEngineName +"\" button to run the rule engine.\n");
     textArea.append("Press the \"" + ruleEngineName + "->OWL\" button to transfer the inferred rule engine knowledge to OWL knowledge.\n\n");
