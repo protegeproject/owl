@@ -386,6 +386,7 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
             TripleStoreModel tripleStoreModel = getTripleStoreModel();
             for (TripleStore tripleStore : tripleStoreModel.getTripleStores()) {
                 if (tripleStore.getIOAddresses().contains(ontologyName.toString())) {
+                    log.info(ontologyName.toString() + " already imported as triple store " + tripleStore.getName());
                     return new URI(tripleStore.getName());
                 }
             }
