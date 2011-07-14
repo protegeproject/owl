@@ -23,6 +23,8 @@ import java.util.Map;
  */
 public class ProgressDisplayDialog extends JDialog implements TaskProgressDisplay {
 
+    private static final long serialVersionUID = -3732900819838480521L;
+
     private static final int DISPLAY_DELAY = 3000;
 
     private Box box;
@@ -216,6 +218,8 @@ public class ProgressDisplayDialog extends JDialog implements TaskProgressDispla
     }
 
     private class ProgressPanel extends JPanel implements TaskDisplay {
+
+        private static final long serialVersionUID = -5710782039645228802L;
 
         private JLabel titleLabel;
 

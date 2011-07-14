@@ -14,6 +14,7 @@ import edu.stanford.smi.protege.util.FileField;
  */
 public class JenaFilePanel extends JPanel {
 
+    private static final long serialVersionUID = -3806090237244175900L;
     private FileField owlFileField;
     private JCheckBox useNativeWriterChechBox;
 

@@ -13,6 +13,8 @@ import java.io.File;
  */
 public class JavaCodeGeneratorPanel extends JPanel {
 
+    private static final long serialVersionUID = 3706024179518110486L;
+
     private JCheckBox abstractCheckBox;
 
     private JTextField factoryClassNameTextField;
@@ -63,6 +65,8 @@ public class JavaCodeGeneratorPanel extends JPanel {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         LabeledComponent lc = new LabeledComponent("Root output folder", rootFolderTextField);
         lc.addHeaderButton(new AbstractAction("Select folder...", Icons.getAddIcon()) {
+            private static final long serialVersionUID = 2754013804198315963L;
+
             public void actionPerformed(ActionEvent e) {
                 selectFolder();
             }

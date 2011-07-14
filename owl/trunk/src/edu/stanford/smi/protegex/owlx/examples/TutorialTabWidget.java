@@ -23,6 +23,7 @@ import java.util.Vector;
  */
 public class TutorialTabWidget extends AbstractTabWidget {
 
+    private static final long serialVersionUID = -9095025320373335161L;
     private JList list;
 
 
@@ -42,6 +43,8 @@ public class TutorialTabWidget extends AbstractTabWidget {
         // Fill the tab component
         LabeledComponent lc = new LabeledComponent("Added Classes", new JScrollPane(list));
         lc.addHeaderButton(new AbstractAction("View selected class", Icons.getViewIcon()) {
+            private static final long serialVersionUID = 1400492280420807014L;
+
             public void actionPerformed(ActionEvent e) {
                 viewSelectedCls();
             }

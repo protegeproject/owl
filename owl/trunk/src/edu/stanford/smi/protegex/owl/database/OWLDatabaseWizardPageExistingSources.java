@@ -4,6 +4,7 @@ import edu.stanford.smi.protege.util.Wizard;
 
 public class OWLDatabaseWizardPageExistingSources extends OWLDatabaseWizardPage {
     
+    private static final long serialVersionUID = 2096627635871958140L;
     private boolean fileToDatabase = false;
 
     public OWLDatabaseWizardPageExistingSources(Wizard wizard, OWLDatabasePlugin plugin) {
