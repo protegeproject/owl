@@ -21,6 +21,8 @@ import java.net.URI;
  */
 public class JenaKnowledgeBaseSourcesEditor extends KnowledgeBaseSourcesEditor {
 
+    private static final long serialVersionUID = 3974294657555722203L;
+
     public static final String EXTENSION = "owl";
 
     private URIField owlFileURIField;

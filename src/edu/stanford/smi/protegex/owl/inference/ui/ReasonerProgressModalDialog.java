@@ -26,6 +26,8 @@ import java.util.HashMap;
  */
 public class ReasonerProgressModalDialog extends JDialog {
 
+    private static final long serialVersionUID = -2509778702014504734L;
+
     private JButton okButton;
 
     private JButton cancelButton;

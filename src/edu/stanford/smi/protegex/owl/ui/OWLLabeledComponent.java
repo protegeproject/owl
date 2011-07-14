@@ -14,6 +14,9 @@ import java.awt.*;
 public class OWLLabeledComponent extends LabeledComponent {
 
 
+    private static final long serialVersionUID = -7058443751321097659L;
+
+
     public OWLLabeledComponent(String label, Component c) {
         super(label, c);
     }

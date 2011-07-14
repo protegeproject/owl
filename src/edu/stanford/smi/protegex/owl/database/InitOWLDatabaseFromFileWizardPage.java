@@ -15,6 +15,8 @@ import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
  */
 public class InitOWLDatabaseFromFileWizardPage extends WizardPage {
 
+    private static final long serialVersionUID = -2234031363650243817L;
+
     private CreateOWLDatabaseFromFileProjectPlugin plugin;
 
     private URIField uriField;

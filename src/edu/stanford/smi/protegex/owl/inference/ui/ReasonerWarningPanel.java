@@ -19,6 +19,9 @@ import java.util.Collection;
  */
 public class ReasonerWarningPanel extends OWLTestResultsPanel {
 
+    private static final long serialVersionUID = -7797829456653341870L;
+
+
     /**
      * Constructs a ReasonerWarningPanel
      *

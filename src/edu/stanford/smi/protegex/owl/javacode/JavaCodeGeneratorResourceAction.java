@@ -22,6 +22,9 @@ import edu.stanford.smi.protegex.owl.ui.dialogs.ModalDialogFactory;
  */
 public class JavaCodeGeneratorResourceAction extends ResourceAction {
 
+    private static final long serialVersionUID = -3545349747404645380L;
+
+
     public JavaCodeGeneratorResourceAction() {
         super("Generate Protege-OWL Java Code for class...", Icons.getBlankIcon(),
                 ExtractTaxonomyAction.GROUP);

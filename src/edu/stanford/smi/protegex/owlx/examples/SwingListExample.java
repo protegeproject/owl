@@ -40,6 +40,8 @@ public class SwingListExample {
 
     private static class ListPanel extends JPanel implements Disposable {
 
+        private static final long serialVersionUID = -3004789529589202212L;
+
         private OWLNamedClass destinationClass;
 
         private JList list;
@@ -77,6 +79,8 @@ public class SwingListExample {
             // Wrap the list together with a button bar
             OWLLabeledComponent lc = new OWLLabeledComponent("Destinations", new JScrollPane(list));
             lc.addHeaderButton(new AbstractAction("Add Destination...", OWLIcons.getAddIcon(OWLIcons.RDF_INDIVIDUAL)) {
+                private static final long serialVersionUID = 5718620565773628276L;
+
                 public void actionPerformed(ActionEvent e) {
                     addDestination();
                 }
