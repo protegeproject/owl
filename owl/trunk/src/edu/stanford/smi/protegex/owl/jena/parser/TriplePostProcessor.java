@@ -479,7 +479,10 @@ class TriplePostProcessor extends AbstractStatefulTripleProcessor {
         NamespaceManager names = owlModel.getNamespaceManager();
         String namespace = names.getDefaultNamespace();
         if (namespace == null && owlModel.getDefaultOWLOntology() != null) {
-            namespace = owlModel.getDefaultOWLOntology().getName() + "#";
+            namespace = owlModel.getDefaultOWLOntology().getName();
+            if (!namespace.endsWith("#")) {
+                namespace = namespace + "#";
+            }
         }
         String axiomPrefix = namespace + "Axiom";
         int counter = 0;
