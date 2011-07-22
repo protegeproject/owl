@@ -140,8 +140,9 @@ public class FacetUpdateFrameStore extends FrameStoreAdapter {
 
 
 	private void copyFacetValuesIntoOWLNamedClass(OWLRestriction restriction) {
-		if (restriction.getSubclasses(false).size() == 1) {
-			RDFSNamedClass namedCls = (RDFSNamedClass) restriction.getSubclasses(false).toArray()[0];
+	    Object[] restrictedClasses = restriction.getSubclasses(false).toArray();
+		if (restrictedClasses.length == 1 && restrictedClasses[0] instanceof RDFSNamedClass) {
+			RDFSNamedClass namedCls = (RDFSNamedClass) restrictedClasses[0];
 			copyFacetValuesIntoOWLNamedClass(namedCls, restriction);
 		}
 	}
