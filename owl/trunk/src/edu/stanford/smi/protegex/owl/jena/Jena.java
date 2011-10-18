@@ -438,7 +438,7 @@ public class Jena {
         //}
         for (Iterator it = ontModel.getSubGraphs().iterator(); it.hasNext();) {
             Graph graph = (Graph) it.next();
-            if (graph.contains(resource.getNode(), predicate.getNode(), object.getNode())) {
+            if (graph.contains(resource.asNode(), predicate.asNode(), object.asNode())) {
                 return graph;
             }
         }
@@ -524,10 +524,10 @@ public class Jena {
 
 
     public static boolean isImportedResource(OntModel ontModel, Model owlFullModel, OntResource ontResource) {
-        final Node subjectNode = ontResource.getNode();
-        final Node predicateNode = RDF.type.getNode();
+        final Node subjectNode = ontResource.asNode();
+        final Node predicateNode = RDF.type.asNode();
         if (ontResource.getRDFType() != null) {
-            final Node objectNode = ontResource.getRDFType().getNode();
+            final Node objectNode = ontResource.getRDFType().asNode();
             final Model baseModel = ontModel.getBaseModel();
             if (baseModel.getGraph().contains(subjectNode, predicateNode, objectNode)) {
                 return false;
@@ -728,12 +728,12 @@ public class Jena {
         List stmts = new ArrayList();
 
         // Add the statements that mention old as a subject
-        for (Iterator i = graph.find(old.getNode(), null, null); i.hasNext();) {
+        for (Iterator i = graph.find(old.asNode(), null, null); i.hasNext();) {
             stmts.add(i.next());
         }
 
         // Add the statements that mention old an an object
-        for (Iterator i = graph.find(null, null, old.getNode()); i.hasNext();) {
+        for (Iterator i = graph.find(null, null, old.asNode()); i.hasNext();) {
             stmts.add(i.next());
         }
 
@@ -741,10 +741,10 @@ public class Jena {
         for (Iterator i = stmts.iterator(); i.hasNext();) {
             Triple triple = (Triple) i.next();
             graph.delete(triple);
-            Node subj = triple.getSubject().equals(old.getNode()) ?
-                    newResource.getNode() : triple.getSubject();
-            Node obj = triple.getObject().equals(old.getNode()) ?
-                    newResource.getNode() : triple.getObject();
+            Node subj = triple.getSubject().equals(old.asNode()) ?
+                    newResource.asNode() : triple.getSubject();
+            Node obj = triple.getObject().equals(old.asNode()) ?
+                    newResource.asNode() : triple.getObject();
             graph.add(new Triple(subj, triple.getPredicate(), obj));
         }
     }

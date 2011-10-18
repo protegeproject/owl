@@ -477,12 +477,12 @@ public class JenaNormalizer {
             if (equivalentClass != null) {
                 if (Jena.isImportedResource(ontModel, owlFullModel, ontClass)) {
                     Graph homeGraph = Jena.getHomeGraph(ontModel, ontClass);
-                    homeGraph.add(new Triple(ontClass.asNode(), OWL.equivalentClass.getNode(), equivalentClass.getNode()));
+                    homeGraph.add(new Triple(ontClass.asNode(), OWL.equivalentClass.asNode(), equivalentClass.asNode()));
                     for (Iterator ss = Jena.set(equivalentClass.listProperties()).iterator(); ss.hasNext();) {
                         Statement statement = (Statement) ss.next();
                         ontModel.remove(statement);
-                        Node subject = statement.getSubject().getNode();
-                        Node predicate = statement.getPredicate().getNode();
+                        Node subject = statement.getSubject().asNode();
+                        Node predicate = statement.getPredicate().asNode();
                         Node object = statement.getObject() == null ? null : statement.getObject().asNode();
                         Triple triple = new Triple(subject, predicate, object);
                         homeGraph.add(triple);
@@ -644,12 +644,12 @@ public class JenaNormalizer {
                     if (Jena.isImportedResource(ontModel, owlFullModel, annotationProperty)) {
                         graph = getHomeGraph(annotationProperty);
                     }
-                    graph.add(new Triple(annotationProperty.getNode(), RDF.type.getNode(), OWL.DatatypeProperty.getNode()));
+                    graph.add(new Triple(annotationProperty.asNode(), RDF.type.asNode(), OWL.DatatypeProperty.asNode()));
                     XSDDatatype datatype = XSDDatatype.XSDstring;
                     if (annotationProperty.getURI().equals(ProtegeNames.PROTEGE_OWL_NAMESPACE + ProtegeNames.READ_ONLY)) {
                         datatype = XSDDatatype.XSDboolean;
                     }
-                    graph.add(new Triple(annotationProperty.getNode(), RDFS.range.getNode(), ontModel.getResource(datatype.getURI()).getNode()));
+                    graph.add(new Triple(annotationProperty.asNode(), RDFS.range.asNode(), ontModel.getResource(datatype.getURI()).asNode()));
                     if (log.isLoggable(Level.FINE)) {
                         log.fine("Made annotationProperty " +   annotationProperty.getURI() + " a datatype property with range " + datatype);
                     }
@@ -678,7 +678,7 @@ public class JenaNormalizer {
         Resource object = resource.getRDFType();
         for (Iterator it = ontModel.getSubGraphs().iterator(); it.hasNext();) {
             Graph graph = (Graph) it.next();
-            if (graph.contains(resource.getNode(), predicate.getNode(), object.getNode())) {
+            if (graph.contains(resource.asNode(), predicate.asNode(), object.asNode())) {
                 return graph;
             }
         }

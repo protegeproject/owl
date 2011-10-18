@@ -64,7 +64,7 @@ public class JenaMemoryTripleWriter implements TripleWriter {
 
 
     public void addImport(String uri) {
-        addTriple(defaultOntologyNode, OWL.imports.getNode(), Node.create(uri));
+        addTriple(defaultOntologyNode, OWL.imports.asNode(), Node.createURI(uri));
     }
 
 
@@ -95,7 +95,7 @@ public class JenaMemoryTripleWriter implements TripleWriter {
             return Node.createAnon(anonId);
         }
         else {
-            return Node.create(resource.getURI());
+            return Node.createURI(resource.getURI());
         }
     }
 
@@ -122,8 +122,8 @@ public class JenaMemoryTripleWriter implements TripleWriter {
 
 
     public void init(String baseURI) {
-        defaultOntologyNode = Node.create(baseURI);
-        addTriple(defaultOntologyNode, RDF.type.getNode(), OWL.Ontology.getNode());
+        defaultOntologyNode = Node.createURI(baseURI);
+        addTriple(defaultOntologyNode, RDF.type.asNode(), OWL.Ontology.asNode());
     }
 
 
