@@ -202,8 +202,8 @@ public class SWRLOWLUtil
   } 
 
   // TODO: case sensitivity option
-  public static OWLNamedClass createOWLNamedClassUsingLabelAnnotation(OWLModel owlModel, String labelText, boolean allowDuplicates)
-  throws SWRLOWLUtilException
+  public static OWLNamedClass createOWLNamedClassWithRDFSLabel(OWLModel owlModel, String namespace, String labelText, String language, boolean allowDuplicates)
+    throws SWRLOWLUtilException
 	{
 	  OWLNamedClass cls = null;
 	  Collection resources = owlModel.getMatchingResources(owlModel.getRDFSLabelProperty(), "*" + labelText, -1);
@@ -212,14 +212,19 @@ public class SWRLOWLUtil
 	    for (Object resource : resources) {
 	      if (resource instanceof OWLNamedClass) { 
 	        OWLNamedClass candidateClass = (OWLNamedClass)resource; 
+	        
+	        if (!candidateClass.getNamespace().equals(namespace)) continue; // TODO: need more principled way of comparing namespaces
+	        
 	        // Verify that label is really labelText. Wildcard needed above to get around language encoding causes possible multiple match
 	        for (Object value : candidateClass.getPropertyValues(owlModel.getRDFSLabelProperty())) { 
 	          if (value instanceof String) {
 	            String stringValue = (String)value;
-	            if (stringValue.equalsIgnoreCase(labelText)) return candidateClass; // Pick the first matching one
+	            if ((language == null || language.equals("")) && stringValue.equalsIgnoreCase(labelText)) 
+	            	return candidateClass; // Pick the first matching one
 	          } else if (value instanceof RDFSLiteral) {
 	            RDFSLiteral literalValue = (RDFSLiteral)value;
-	            if (literalValue.getString().equalsIgnoreCase(labelText)) return candidateClass; // Pick the first matching one
+	            if (literalValue.getLanguage() == language &&	literalValue.getString().equalsIgnoreCase(labelText)) 
+	            	return candidateClass; // Pick the first matching one
 	          } // if
 	        } // for
 	      } // if        
@@ -228,12 +233,12 @@ public class SWRLOWLUtil
 	  
 	  if (cls == null) cls = owlModel.createOWLNamedClass(null); // We may not have found a matching class above.
 	
-	  if (!cls.hasPropertyValue(owlModel.getRDFSLabelProperty(), labelText)) cls.addPropertyValue(owlModel.getRDFSLabelProperty(), labelText);
-	
+	  addRDFSLabel(cls, labelText, language);
+	  
 	  return cls;
 	}
   
-  public static OWLObjectProperty createOWLObjectPropertyUsingLabelAnnotation(OWLModel owlModel, String labelText, boolean allowDuplicates)
+  public static OWLObjectProperty createOWLObjectPropertyUsingLabelAnnotation(OWLModel owlModel, String namespace, String labelText, String language, boolean allowDuplicates)
     throws SWRLOWLUtilException
   {
     OWLObjectProperty property = null;
@@ -243,14 +248,18 @@ public class SWRLOWLUtil
       for (Object resource : resources) {
         if (resource instanceof OWLNamedClass) { 
           OWLObjectProperty candidateProperty = (OWLObjectProperty)resource; 
+          
+          if (!candidateProperty.getNamespace().equals(namespace)) continue; 
+          
           // Verify that label is really labelText. Wildcard needed above to get around language encoding causes possible multiple match
           for (Object value : candidateProperty.getPropertyValues(owlModel.getRDFSLabelProperty())) { 
             if (value instanceof String) {
               String stringValue = (String)value;
-              if (stringValue.equalsIgnoreCase(labelText)) return candidateProperty; // Pick the first matching one
+              if ((language == null || language.equals("")) && stringValue.equalsIgnoreCase(labelText)) return candidateProperty; // Pick the first matching one
             } else if (value instanceof RDFSLiteral) {
               RDFSLiteral literalValue = (RDFSLiteral)value;
-              if (literalValue.getString().equalsIgnoreCase(labelText)) return candidateProperty; // Pick the first matching one
+              if (literalValue.getLanguage() == language &&
+              		literalValue.getString().equalsIgnoreCase(labelText)) return candidateProperty; // Pick the first matching one
             } // if
           } // for
         } // if        
@@ -259,12 +268,12 @@ public class SWRLOWLUtil
     
     if (property == null) property = owlModel.createOWLObjectProperty(null); // We may not have found a matching property above.
 
-    if (!property.hasPropertyValue(owlModel.getRDFSLabelProperty(), labelText)) property.addPropertyValue(owlModel.getRDFSLabelProperty(), labelText);
+    addRDFSLabel(property, labelText, language);
 
     return property;
   }
 
-  public static OWLDatatypeProperty createOWLDataPropertyUsingLabelAnnotation(OWLModel owlModel, String labelText, boolean allowDuplicates)
+  public static OWLDatatypeProperty createOWLDataPropertyUsingLabelAnnotation(OWLModel owlModel, String namespace, String labelText, String language, boolean allowDuplicates)
     throws SWRLOWLUtilException
   {
     OWLDatatypeProperty property = null;
@@ -273,15 +282,19 @@ public class SWRLOWLUtil
     if (!allowDuplicates && resources != null && !resources.isEmpty()) {
       for (Object resource : resources) {
         if (resource instanceof OWLNamedClass) { 
-          OWLDatatypeProperty candidateProperty = (OWLDatatypeProperty)resource; 
+          OWLDatatypeProperty candidateProperty = (OWLDatatypeProperty)resource;
+          
+          if (!candidateProperty.getNamespace().equals(namespace)) continue; // TODO: need more principled way of comparing namespaces
+          
           // Verify that label is really labelText. Wildcard needed above to get around language encoding causes possible multiple match
           for (Object value : candidateProperty.getPropertyValues(owlModel.getRDFSLabelProperty())) { 
             if (value instanceof String) {
               String stringValue = (String)value;
-              if (stringValue.equalsIgnoreCase(labelText)) return candidateProperty; // Pick the first matching one
+              if ((language == null || language.equals("")) & stringValue.equalsIgnoreCase(labelText)) return candidateProperty; // Pick the first matching one
             } else if (value instanceof RDFSLiteral) {
               RDFSLiteral literalValue = (RDFSLiteral)value;
-              if (literalValue.getString().equalsIgnoreCase(labelText)) return candidateProperty; // Pick the first matching one
+              if (literalValue.getLanguage() == language &&
+              			literalValue.getString().equalsIgnoreCase(labelText)) return candidateProperty; // Pick the first matching one
             } // if
           } // for
         } // if        
@@ -290,12 +303,12 @@ public class SWRLOWLUtil
     
     if (property == null) property = owlModel.createOWLDatatypeProperty(null); // We may not have found a matching property above.
 
-    if (!property.hasPropertyValue(owlModel.getRDFSLabelProperty(), labelText)) property.addPropertyValue(owlModel.getRDFSLabelProperty(), labelText);
+    addRDFSLabel(property, labelText, language);
 
     return property;
   }
 
-  public static OWLIndividual createOWLIndividualUsingLabelAnnotation(OWLModel owlModel, String labelText, boolean allowDuplicates) 
+  public static OWLIndividual createOWLIndividualWithRDFSLabel(OWLModel owlModel, String namespace, String labelText, String language, boolean allowDuplicates) 
    throws SWRLOWLUtilException
   {
     OWLIndividual individual = null;
@@ -305,14 +318,18 @@ public class SWRLOWLUtil
       for (Object resource : resources) {
         if (resource instanceof OWLNamedClass) { 
           OWLIndividual candidateIndividual = (OWLIndividual)resource; 
+          
+          if (!candidateIndividual.getNamespace().equals(namespace)) continue; // TODO: need more principled way of comparing namespaces
+          
           // Verify that label is really labelText. Wildcard needed above to get around language encoding causes possible multiple match
           for (Object value : candidateIndividual.getPropertyValues(owlModel.getRDFSLabelProperty())) { 
             if (value instanceof String) {
               String stringValue = (String)value;
-              if (stringValue.equalsIgnoreCase(labelText)) return candidateIndividual; // Pick the first matching one
+              if ((language == null || language.equals("")) && stringValue.equalsIgnoreCase(labelText)) return candidateIndividual; // Pick the first matching one
             } else if (value instanceof RDFSLiteral) {
               RDFSLiteral literalValue = (RDFSLiteral)value;
-              if (literalValue.getString().equalsIgnoreCase(labelText)) return candidateIndividual; // Pick the first matching one
+              if (literalValue.getLanguage() == language && 
+              		literalValue.getString().equalsIgnoreCase(labelText)) return candidateIndividual; // Pick the first matching one
             } // if
           } // for
         } // if        
@@ -321,7 +338,7 @@ public class SWRLOWLUtil
     
     if (individual == null) individual = createOWLIndividual(owlModel); // We may not have found a matching individual above.
 
-    if (!individual.hasPropertyValue(owlModel.getRDFSLabelProperty(), labelText)) individual.addPropertyValue(owlModel.getRDFSLabelProperty(), labelText);
+    addRDFSLabel(individual, labelText, language);
 
     return individual;
   }
@@ -653,7 +670,6 @@ public class SWRLOWLUtil
 	{
 	  RDFResource subject = null;
 	  RDFProperty property = getRDFProperty(owlModel, propertyRDFID);
-	  RDFSLiteral value = owlModel.createRDFSLiteral(propertyValue, language);
 	  
 	  if (subjectRDFID.startsWith("'")) subjectRDFID = subjectRDFID.substring(1, subjectRDFID.length() - 1); 
 	
@@ -665,8 +681,15 @@ public class SWRLOWLUtil
 	  if (property == null) throwException("invalid or unknown property name " + propertyRDFID);
 	  if (propertyValue == null) throwException("null value for property " + propertyRDFID + " for subject " + subjectRDFID);
 	  
-	  if (!subject.hasPropertyValue(property, value)) 
-	  	subject.addPropertyValue(property, value); 
+	  if (language == null || language.equals("")) {
+	  	String value = propertyValue;
+	  	if (!subject.hasPropertyValue(property, value)) 
+	  		subject.addPropertyValue(property, value);
+	  } else {
+	  	RDFSLiteral value = owlModel.createRDFSLiteral(propertyValue, language);
+	  	if (!subject.hasPropertyValue(property, value)) 
+	  		subject.addPropertyValue(property, value);	  	
+	  }
 	} 
 
   public static void addDataPropertyValue(OWLModel owlModel, String subjectRDFID, String propertyRDFID, String propertyValue, String datatypeName) 
@@ -803,18 +826,50 @@ public class SWRLOWLUtil
     		if (label instanceof RDFSLiteral) {
     			RDFSLiteral literal = (RDFSLiteral)label;	
     			result.add(literal.getLanguage());
-    		} // if
-    	} // for
-    } // if
+    		}
+    	}
+    } 
     return result;
   }
   
-  public static void addRDFSLabel(RDFResource resource, String labelText) 
+  public static void addRDFSLabel(RDFResource resource, String labelText, String language) 
   {
-    if (!resource.hasPropertyValue(resource.getOWLModel().getRDFSLabelProperty(), labelText)) 
-    	resource.addPropertyValue(resource.getOWLModel().getRDFSLabelProperty(), labelText);
+	if (!hasRDFSLabel(resource, labelText, language))
+			resource.addLabel(labelText, language);
   } 
 
+  public static boolean hasRDFSLabel(RDFResource resource, String labelText, String language) 
+  {
+  	for (Object o : resource.getLabels()) { // First see if we already have this label.
+  		if (o instanceof String) { // No language associated with label value
+  			String s = (String)o;
+  			if ((language == null || language.equals("")) && s.equals(labelText)) 
+  				return true;
+  		} else if (o instanceof RDFSLiteral) { // Value and language
+  			RDFSLiteral literal = (RDFSLiteral)o;
+  			if (literal.getString().equals(labelText) && literal.getLanguage().equals(language)) 
+  				return true;
+  		}
+  	}
+    return false;
+  } 
+
+  public static boolean hasRDFSLabelIgnoringLanguage(OWLModel owlModel, RDFResource resource, String labelText)
+  {
+  	for (Object o : resource.getLabels()) { // First see if we already have this label.
+  		if (o instanceof String) { // No language associated with label value
+  			String s = (String)o;
+  			if (s.equals(labelText)) 
+  				return true;
+  		} else if (o instanceof RDFSLiteral) { // Value and language
+  			RDFSLiteral literal = (RDFSLiteral)o;
+  			if (literal.getString().equals(labelText)) 
+  				return true;
+  		}
+  	}
+  	return false;
+  }
+  
   public static OWLSomeValuesFrom getOWLSomeValuesFrom(OWLModel owlModel, String classRDFID) throws SWRLOWLUtilException
   {
     return (OWLSomeValuesFrom)owlModel.getOWLSomeValuesFromRestrictionClass().createInstance(classRDFID);    
@@ -823,7 +878,6 @@ public class SWRLOWLUtil
   public static OWLIndividual getOWLIndividual(OWLModel owlModel, OWLNamedClass cls, boolean mustExist, int mustHaveExactlyN)
     throws SWRLOWLUtilException
   {
-    OWLIndividual individual = null;
     Collection instances;
     Object firstInstance;
 
@@ -1340,6 +1394,11 @@ public class SWRLOWLUtil
   public static String getNextAnonymousResourceName(OWLModel owlModel)
   {
     return owlModel.getNextAnonymousResourceName();
+  } 
+
+  public static boolean isOWLNamedEntity(OWLModel owlModel, String name)
+  {
+    return isOWLNamedClass(owlModel, name) || isOWLProperty(owlModel, name) || isOWLIndividual(owlModel, name); 
   } 
 
   public static boolean isOWLNamedClass(OWLModel owlModel, String classRDFID, boolean mustExist) throws SWRLOWLUtilException
