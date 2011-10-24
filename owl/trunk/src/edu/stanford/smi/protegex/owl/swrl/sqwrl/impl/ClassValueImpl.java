@@ -15,7 +15,7 @@ public class ClassValueImpl implements ClassValue
 	public int compareTo(SQWRLResultValue o)
   {
     return classURI.compareTo(((ClassValueImpl)o).getURI());
-  } // compareTo
+  }
 	
 	public String toString() { return classURI; }
 }
