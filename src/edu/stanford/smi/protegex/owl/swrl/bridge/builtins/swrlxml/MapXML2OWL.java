@@ -33,20 +33,20 @@ public class MapXML2OWL
       owlModel = SWRLOWLUtil.createJenaOWLModel();
       owlModel.setGenerateEventsEnabled(false);
       addSWRLXMLImport(owlModel);
-      mapper = new edu.stanford.smi.protegex.owl.swrl.bridge.builtins.swrlxml.XMLMapper(owlModel);
-      mapper.document2XMLDocument(doc);
+      mapper = new XMLMapper(owlModel);
+      mapper.document2OWLDocument(doc);
       SWRLOWLUtil.writeJenaOWLModel2File(owlModel, owlFilename);
     } catch (Exception e) {
       System.err.println("error mapping XML document with URI '" + xmlURI + "': " + e.getMessage());
       e.printStackTrace();
-    } // try
-  } // main
+    } 
+  } 
 
   private static void Usage()
   {
     System.err.println("Usage: MapXML2OWL <xmlURI> <owlFilename>");
     System.exit(1);
-  } // Usage
+  } 
 
   private static void addSWRLXMLImport(OWLModel owlModel) 
   {
@@ -65,9 +65,6 @@ public class MapXML2OWL
     } catch (OntologyLoadException e) {
       System.err.println("error loading SWRLXML ontology: " + e.getMessage());
       System.exit(-1);
-    } // try
-
-
-  } // addSWRLXMLImport
-
-} // MapXML2OWL
+    }
+  } 
+} 
