@@ -14,7 +14,7 @@ public abstract class PropertyValueImpl implements PropertyValue
 	public int compareTo(SQWRLResultValue o)
   {
     return getURI().compareTo(((PropertyValueImpl)o).getURI());
-  } // compareTo
+  }
 	
 	public String toString() { return propertyURI; }
 }

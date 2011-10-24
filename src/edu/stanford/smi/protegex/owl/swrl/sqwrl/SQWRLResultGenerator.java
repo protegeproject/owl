@@ -33,4 +33,4 @@ public interface SQWRLResultGenerator
   boolean isRowOpen();
   boolean isPrepared();
   void prepared() throws ResultException;
-} // SQWRLResultGenerator
+}
