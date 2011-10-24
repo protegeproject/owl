@@ -30,13 +30,29 @@
   <owl:Class rdf:ID="ExtendedProposition">
     <rdfs:subClassOf rdf:resource="#Proposition"/>
   </owl:Class>
-  <owl:Class rdf:ID="Duration"/>
+  <owl:Class rdf:ID="Duration">
+    <rdfs:subClassOf rdf:resource="#Entity"/>
+  </owl:Class>
   <owl:Class rdf:ID="ValidPeriod">
     <rdfs:subClassOf rdf:resource="#ValidTime"/>
   </owl:Class>
-  <owl:ObjectProperty rdf:ID="hasGranularity">
-    <rdfs:range rdf:resource="#Granularity"/>
+  <owl:ObjectProperty rdf:ID="hasValidTime">
+    <rdfs:domain rdf:resource="#ExtendedProposition"/>
+    <rdfs:range rdf:resource="#ValidTime"/>
+  </owl:ObjectProperty>
+  <owl:DatatypeProperty rdf:ID="hasCount">
+    <rdfs:domain rdf:resource="#Duration"/>
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+  </owl:DatatypeProperty>
+  <owl:FunctionalProperty rdf:ID="hasFinishTime">
+    <rdfs:domain rdf:resource="#ValidPeriod"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#dateTime"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="hasGranularity">
+    <rdfs:range rdf:resource="#Granularity"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
     <rdfs:domain>
       <owl:Class>
         <owl:unionOf rdf:parseType="Collection">
@@ -45,30 +61,16 @@
         </owl:unionOf>
       </owl:Class>
     </rdfs:domain>
-  </owl:ObjectProperty>
-  <owl:ObjectProperty rdf:ID="hasValidTime">
-    <rdfs:domain rdf:resource="#ExtendedProposition"/>
-    <rdfs:range rdf:resource="#ValidTime"/>
-  </owl:ObjectProperty>
-  <owl:DatatypeProperty rdf:ID="hasFinishTime">
-    <rdfs:domain rdf:resource="#ValidPeriod"/>
-    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
-    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#dateTime"/>
-  </owl:DatatypeProperty>
-  <owl:DatatypeProperty rdf:ID="hasTime">
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="hasTime">
     <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#dateTime"/>
     <rdfs:domain rdf:resource="#ValidInstant"/>
-    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
-  </owl:DatatypeProperty>
-  <owl:DatatypeProperty rdf:ID="hasStartTime">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="hasStartTime">
     <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#dateTime"/>
     <rdfs:domain rdf:resource="#ValidPeriod"/>
-    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
-  </owl:DatatypeProperty>
-  <owl:FunctionalProperty rdf:ID="hasCount">
-    <rdfs:domain rdf:resource="#Duration"/>
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
-    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
   </owl:FunctionalProperty>
   <swrl:Builtin rdf:ID="notEquals"/>
   <swrl:Builtin rdf:ID="notIntersects"/>
@@ -79,8 +81,8 @@
   <swrl:Builtin rdf:ID="intersects"/>
   <swrl:Builtin rdf:ID="finishedBy"/>
   <swrl:Builtin rdf:ID="notDurationLessThanOrEqualTo"/>
-  <swrl:Builtin rdf:ID="notFinishedBy"/>
   <swrl:Builtin rdf:ID="notStartedBy"/>
+  <swrl:Builtin rdf:ID="notFinishedBy"/>
   <swrl:Builtin rdf:ID="starts"/>
   <swrl:Builtin rdf:ID="notContains"/>
   <Granularity rdf:ID="Hours"/>
