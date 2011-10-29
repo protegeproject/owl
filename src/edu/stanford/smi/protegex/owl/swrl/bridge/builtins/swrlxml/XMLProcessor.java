@@ -20,8 +20,8 @@ import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 
-/*
- * Class that provides some simple XML processing functionality. 
+/**
+ * Class that provides some simple XML processing functionality.
  */
 public class XMLProcessor
 {
@@ -32,7 +32,7 @@ public class XMLProcessor
 		serializer = new XMLOutputter(Format.getPrettyFormat());
 	}
 
-	/*
+	/**
 	 * Method that writes an XML file from an instance of a Document.
 	 */
 	public void generateXMLFile(Document doc, String outputXMLFileName) throws XMLProcessorException
@@ -50,7 +50,7 @@ public class XMLProcessor
 		}
 	}
 
-	/*
+	/**
 	 * Method that returns XML string representing an instance of a Document.
 	 */
 	public String generateXMLString(Document doc) throws XMLProcessorException
@@ -69,7 +69,7 @@ public class XMLProcessor
 		return outputStream.toString();
 	}
 
-	/*
+	/**
 	 * Method that reads a simple XML file and generates an instance of a Document from it.
 	 */
 	public Document processXMLStream(String inputXMLStreamName) throws XMLProcessorException
@@ -87,7 +87,7 @@ public class XMLProcessor
 		return doc;
 	}
 
-	/*
+	/**
 	 * Method that reads an XML string and generates an instance of a Document from it.
 	 */
 	public Document processXMLString(String inputXMLString) throws XMLProcessorException
@@ -128,7 +128,7 @@ public class XMLProcessor
 		return new ArrayList<Attribute>(element.getAttributes());
 	}
 
-	public List<Element> getSubElements(Element element) 
+	public List<Element> getSubElements(Element element)
 	{
 		List<Element> result = new ArrayList<Element>();
 
@@ -137,7 +137,7 @@ public class XMLProcessor
 				result.add((Element)o);
 
 		return result;
-	} 
+	}
 
 	public boolean isSchema(Element element)
 	{
@@ -331,7 +331,7 @@ public class XMLProcessor
 	{
 		return getAttributeValue(element, "default");
 	}
-	
+
 	public String getFixedAttributeValue(Element element) throws XMLMapperException
 	{
 		return getAttributeValue(element, "fixed");
