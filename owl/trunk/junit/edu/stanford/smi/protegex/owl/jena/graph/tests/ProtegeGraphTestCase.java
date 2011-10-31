@@ -25,7 +25,7 @@ public class ProtegeGraphTestCase extends AbstractJenaTestCase {
         ProtegeGraph graph = new ProtegeGraph(owlModel, owlModel.getTripleStoreModel().getActiveTripleStore());
         assertTrue(graph.contains(
                 Node.createURI(c.getURI()),
-                OWL.versionInfo.getNode(),
+                OWL.versionInfo.asNode(),
                 Node.createLiteral("Test", null, XMLSchemaDatatypes.getRDFDatatype(owlModel.getXSDstring()))));
     }
 
@@ -35,8 +35,8 @@ public class ProtegeGraphTestCase extends AbstractJenaTestCase {
         ProtegeGraph graph = new ProtegeGraph(owlModel, owlModel.getTripleStoreModel().getActiveTripleStore());
         assertTrue(graph.contains(
                 Node.createURI(c.getURI()),
-                RDF.type.getNode(),
-                OWL.Class.getNode()));
+                RDF.type.asNode(),
+                OWL.Class.asNode()));
     }
 
 
@@ -58,7 +58,7 @@ public class ProtegeGraphTestCase extends AbstractJenaTestCase {
         Iterator it = graph.find(
                 null,
                 null,
-                OWL.Class.getNode());
+                OWL.Class.asNode());
         assertTrue(it.hasNext());
         Triple triple = (Triple) it.next();
         assertEquals(c.getURI(), triple.getSubject().getURI());
@@ -72,7 +72,7 @@ public class ProtegeGraphTestCase extends AbstractJenaTestCase {
         ProtegeGraph graph = new ProtegeGraph(owlModel, owlModel.getTripleStoreModel().getActiveTripleStore());
         Iterator it = graph.find(
                 null,
-                RDF.type.getNode(),
+                RDF.type.asNode(),
                 null);
         while (it.hasNext()) {
           Triple triple = (Triple) it.next();
@@ -122,7 +122,7 @@ public class ProtegeGraphTestCase extends AbstractJenaTestCase {
         ProtegeGraph graph = new ProtegeGraph(owlModel, owlModel.getTripleStoreModel().getActiveTripleStore());
         Iterator it = graph.find(
                 Node.createURI(c.getURI()),
-                RDF.type.getNode(),
+                RDF.type.asNode(),
                 null);
         assertTrue(it.hasNext());
         Triple triple = (Triple) it.next();
@@ -141,7 +141,7 @@ public class ProtegeGraphTestCase extends AbstractJenaTestCase {
         ProtegeGraph graph = new ProtegeGraph(owlModel, owlModel.getTripleStoreModel().getActiveTripleStore());
         Iterator it = graph.find(
                 null,
-                OWL.minCardinality.getNode(),
+                OWL.minCardinality.asNode(),
                 null);
         assertTrue(it.hasNext());
         Triple triple = (Triple) it.next();
