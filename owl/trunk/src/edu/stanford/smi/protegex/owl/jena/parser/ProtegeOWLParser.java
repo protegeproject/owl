@@ -7,10 +7,10 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -396,7 +396,7 @@ public class ProtegeOWLParser {
 
 	private void processImports(TripleStore tripleStore) throws OntologyLoadException {
 		Set<String> thisOntoImports = OWLImportsCache.getOWLImportsURI(tripleStore.getName());
-		    for (String import_ : thisOntoImports) {
+		    for (String import_ : new TreeSet<String>(thisOntoImports)) {
 		        URI u = ((AbstractOWLModel) owlModel).loadImportedAssertions(URIUtilities.createURI(import_));
 		        if (u == null) {
 		            ((AbstractOWLModel) owlModel).addParserError(new MessageError("Could not import ontology from " + import_));
