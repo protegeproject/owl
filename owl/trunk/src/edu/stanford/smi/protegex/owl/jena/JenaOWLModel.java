@@ -142,9 +142,6 @@ public class JenaOWLModel extends AbstractOWLModel implements OntModelProvider {
 
     public int getOWLSpecies() {
         OntModel ontModel = Protege2Jena.createOntModel(this);
-        //JenaCreator creator = new JenaCreator(this, false, null,
-        //        inUI ? new ModalProgressBarManager("Preparing Ontology") : null);
-        //OntModel ontModel = creator.createOntModelWithoutOWLFullModel();
         return Jena.getOWLSpecies(ontModel);
     }
 
