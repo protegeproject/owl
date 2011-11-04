@@ -39,10 +39,10 @@ public class ValidatorAction extends AbstractOWLModelAction {
 
 
     public void run(OWLModel owlModel) {
-        Set imports = owlModel.getAllImports();
-        Map map = new HashMap();
-        for (Iterator it = imports.iterator(); it.hasNext();) {
-            String uriString = (String) it.next();
+        Set<String> imports = owlModel.getAllImports();
+        Map<URI, String> map = new HashMap<URI, String>();
+        for (Iterator<String> it = imports.iterator(); it.hasNext();) {
+            String uriString = it.next();
             try {
                 URI uri = new URI(uriString);
                 Repository rep = owlModel.getRepositoryManager().getRepository(uri);
@@ -60,9 +60,9 @@ public class ValidatorAction extends AbstractOWLModelAction {
                     "The species validation does not use these imports\n" +
                     "and therefore the following result may be wrong.  The following\n" +
                     "URI aliases are used:\n";
-            for (Iterator it = map.keySet().iterator(); it.hasNext();) {
-                Object key = it.next();
-                Object alias = map.get(key);
+            for (Iterator<URI> it = map.keySet().iterator(); it.hasNext();) {
+                URI key = it.next();
+                String alias = map.get(key);
                 str += "- " + key + "\n   has alias " + alias + "\n";
             }
             ProtegeUI.getModalDialogFactory().showMessageDialog(owlModel, str, "Warning");
@@ -78,29 +78,6 @@ public class ValidatorAction extends AbstractOWLModelAction {
     private void performAction(OWLModel owlModel) {
         OntModelProvider ontModelProvider = (OntModelProvider) owlModel;
         String msg = Jena.getOWLSpeciesString(ontModelProvider.getOWLSpecies());
-        /*if (msg.equalsIgnoreCase(Jena.OWL_FULL)) {
-            final OntModel owldlOntModel = ontModelProvider.getOWLDLOntModel();
-            final String s = getSubLanguage(owldlOntModel);
-            if (s.equalsIgnoreCase(Jena.OWL_FULL)) {
-                msg += ",\nand Protege is currently not able to convert it to DL.";
-            }
-            else {
-                msg += ",\nbut Protege can convert it to OWL " + s + ".\n\nWould you like to save the converted model to a file?";
-                if (JOptionPane.showConfirmDialog(parent,
-                        "The OWL sublanguage of this ontology is OWL " + msg, "OWL Sublanguage",
-                        JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE) == JOptionPane.YES_OPTION) {
-                    if (fileChooser == null) {
-                        fileChooser = new JFileChooser(".");
-                    }
-                    if (fileChooser.showSaveDialog(parent) == JFileChooser.APPROVE_OPTION) {
-                        File file = fileChooser.getSelectedFile();
-                        Jena.saveOntModel(file, owldlOntModel,
-                                "A converted version of this ontology has been\nsaved as " + file);
-                    }
-                }
-                return;
-            }
-        } */
         ProtegeUI.getModalDialogFactory().showMessageDialog(owlModel,
                 "The OWL sublanguage of this ontology is OWL " + msg,
                 "OWL Sublanguage");
