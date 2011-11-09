@@ -1,6 +1,4 @@
 
-// TODO: a lot of cut-and-paste repetition here needs to be fixed.
-
 package edu.stanford.smi.protegex.owl.swrl.bridge.builtins.sqwrl;
 
 import java.util.ArrayList;
@@ -36,1051 +34,1330 @@ import edu.stanford.smi.protegex.owl.swrl.sqwrl.impl.SQWRLResultImpl;
 /**
  * Implementation library for SQWRL built-ins. See <a href="http://protege.cim3.net/cgi-bin/wiki.pl?SQWRL">here</a> for documentation.
  * 
- * Unlike other built-in libraries, this library needs to be preprocessed. cf. SWRLProcessor.java.
+ * Unlike other built-in libraries, this library needs to be preprocessed by a SQWRL-aware processor.
  */
 public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
 {
-  private Map<String, Collection<BuiltInArgument>> collections;
-  private Map<String, Integer> collectionGroupElementNumbersMap; // Collection name to number of elements in group (which will be 0 for ungrouped collections)
-  private SQWRLResultValueFactory resultValueFactory;
-  
-  public SWRLBuiltInLibraryImpl() 
-  { 
-  	super(SQWRLNames.SQWRLBuiltInLibraryName);
-  	
-  	resultValueFactory = new SQWRLResultValueFactory();
-  }
-  
-  public void reset()
-  {
-    collections = new HashMap<String, Collection<BuiltInArgument>>();
-    collectionGroupElementNumbersMap = new HashMap<String, Integer>();
-  }
-  
-  public boolean select(List<BuiltInArgument> arguments) throws BuiltInException
-  {
-  	checkThatInConsequent();
-    checkForUnboundArguments(arguments);
-    checkNumberOfArgumentsAtLeast(1, arguments.size());
-    SQWRLResultImpl result = getSQWRLUnpreparedResult(getInvokingRuleName());
+	private Map<String, Map<String, Collection<BuiltInArgument>>> collections; // Collection name to IDs to collection map
 
-    if (!result.isRowOpen()) result.openRow();
+	private Map<String, Integer> collectionGroupElementNumbersMap; // Collection name to number of elements in group (which will be 0 for ungrouped collections)
 
-    int argumentIndex = 0;
-    for (BuiltInArgument argument : arguments) {
-      if (argument instanceof SWRLLiteralArgument) {
-      	DataValue dataValue = ((SWRLLiteralArgument)argument).getLiteral();
-      	result.addRowData(dataValue);
-      } else if (argument instanceof SWRLIndividualArgument) {
-      	SWRLIndividualArgument individualArgument = (SWRLIndividualArgument)argument;
-      	IndividualValue individualValue =  resultValueFactory.createIndividualValue(individualArgument.getURI());
-      	result.addRowData(individualValue);
-      } else if (argument instanceof ClassArgument) {
-      	ClassArgument classArgument = (ClassArgument)argument;
-      	ClassValue classValue =  resultValueFactory.createClassValue(classArgument.getURI());
-      	result.addRowData(classValue);
-      } else if (argument instanceof ObjectPropertyArgument) { 
-      	ObjectPropertyArgument objectPropertyArgument = (ObjectPropertyArgument)argument;
-      	ObjectPropertyValue objectPropertyValue =  resultValueFactory.createObjectPropertyValue(objectPropertyArgument.getURI());
-      	result.addRowData(objectPropertyValue); 
-      } else if (argument instanceof DataPropertyArgument) { 
-       	DataPropertyArgument dataPropertyArgument = (DataPropertyArgument)argument;
-       	DataPropertyValue dataPropertyValue =  resultValueFactory.createDataPropertyValue(dataPropertyArgument.getURI());
-       	result.addRowData(dataPropertyValue);
-      } else if (argument instanceof CollectionArgument) {
-      	throw new InvalidBuiltInArgumentException(argumentIndex, "collections cannot be selected");
-      } else throw new InvalidBuiltInArgumentException(argumentIndex, "unknown type " + argument.getClass());
-      argumentIndex++;
-    } // for
-    
-    return false;
-  }
+	private Set<String> setNames, bagNames;
 
-  // Preprocessed to signal that duplicates should be removed from result
-  public boolean selectDistinct(List<BuiltInArgument> arguments) throws BuiltInException
-  {
-  	checkThatInConsequent();
-  	
-    return select(arguments);
-  }
-  
-  public boolean count(List<BuiltInArgument> arguments) throws BuiltInException
-  {
-  	checkThatInConsequent();
-    checkForUnboundArguments(arguments);
-    checkNumberOfArgumentsEqualTo(1, arguments.size());
+	private SQWRLResultValueFactory resultValueFactory;
 
-    SQWRLResultImpl result = getSQWRLUnpreparedResult(getInvokingRuleName());
-    BuiltInArgument argument = arguments.get(0);
+	public SWRLBuiltInLibraryImpl()
+	{
+		super(SQWRLNames.SQWRLBuiltInLibraryName);
 
-    if (!result.isRowOpen()) result.openRow();
-    
-    if (argument instanceof SWRLLiteralArgument) {
-    	DataValue dataValue = ((SWRLLiteralArgument)argument).getLiteral();
-    	result.addRowData(dataValue);
-    } else if (argument instanceof SWRLIndividualArgument) {
-    	SWRLIndividualArgument individualArgument = (SWRLIndividualArgument)argument;
-    	IndividualValue individualValue =  resultValueFactory.createIndividualValue(individualArgument.getURI());
-    	result.addRowData(individualValue);
-    } else if (argument instanceof ClassArgument) {
-    	ClassArgument classArgument = (ClassArgument)argument;
-    	ClassValue classValue =  resultValueFactory.createClassValue(classArgument.getURI());
-    	result.addRowData(classValue);
-    } else if (argument instanceof ObjectPropertyArgument) { 
-    	ObjectPropertyArgument objectPropertyArgument = (ObjectPropertyArgument)argument;
-    	ObjectPropertyValue objectPropertyValue =  resultValueFactory.createObjectPropertyValue(objectPropertyArgument.getURI());
-    	result.addRowData(objectPropertyValue); 
-    } else if (argument instanceof DataPropertyArgument) { 
-     	DataPropertyArgument dataPropertyArgument = (DataPropertyArgument)argument;
-     	DataPropertyValue dataPropertyValue =  resultValueFactory.createDataPropertyValue(dataPropertyArgument.getURI());
-     	result.addRowData(dataPropertyValue);
-    } else if (argument instanceof CollectionArgument) {
-    	throw new InvalidBuiltInArgumentException(0, "collections cannot be counted");
-    } else throw new InvalidBuiltInArgumentException(0, "unknown type " + argument.getClass());
-    
-    return false;
-  }
-  
-  // Preprocessed so nothing to do
-  public boolean countDistinct(List<BuiltInArgument> arguments) throws BuiltInException
-  {
-	  checkThatInConsequent();
-    return count(arguments);
-  }
+		resultValueFactory = new SQWRLResultValueFactory();
+	}
 
-  // These built-ins are preprocessed by SWRLProcessor so nothing to do
-  public boolean columnNames(List<BuiltInArgument> arguments) throws BuiltInException { checkThatInConsequent(); return true; } 
-  public boolean orderBy(List<BuiltInArgument> arguments) throws BuiltInException { checkThatInConsequent(); return true; } 
-  public boolean orderByDescending(List<BuiltInArgument> arguments) throws BuiltInException { checkThatInConsequent(); return true; }
-  public boolean limit(List<BuiltInArgument> arguments) throws BuiltInException { checkThatInConsequent(); return true; }
+	public void reset()
+	{
+		collections = new HashMap<String, Map<String, Collection<BuiltInArgument>>>();
+		collectionGroupElementNumbersMap = new HashMap<String, Integer>();
+		setNames = new HashSet<String>();
+		bagNames = new HashSet<String>();
+	}
 
-  public boolean makeSet(List<BuiltInArgument> arguments) throws BuiltInException
-  {
-	  String collectionID = getCollectionIDInMake(arguments); // Get unique ID for set; does argument checking
-	  BuiltInArgument element = arguments.get(1); // The second argument is always the value
-	  Collection<BuiltInArgument> set;
-	
-	  checkThatInAntecedent();
-	  checkForUnboundNonFirstArguments(arguments);
-	    
-    if (collections.containsKey(collectionID)) 
-    	set = collections.get(collectionID);
-    else {  
-      set = new HashSet<BuiltInArgument>(); collections.put(collectionID, set); 
-    } // if
+	public boolean select(List<BuiltInArgument> arguments) throws BuiltInException
+	{
+		checkThatInConsequent();
+		checkForUnboundArguments(arguments);
+		checkNumberOfArgumentsAtLeastOne(arguments);
+		SQWRLResultImpl result = getSQWRLUnpreparedResult(getInvokingRuleName());
 
-    set.add(element);
-      
-    if (isUnboundArgument(0, arguments)) 
-    	arguments.get(0).setBuiltInResult(createCollectionArgument(collectionID));
+		if (!result.isRowOpen())
+			result.openRow();
 
-    return true;
-  }
+		int argumentIndex = 0;
+		for (BuiltInArgument argument : arguments) {
+			if (argument instanceof SWRLLiteralArgument) {
+				DataValue dataValue = ((SWRLLiteralArgument)argument).getLiteral();
+				result.addRowData(dataValue);
+			} else if (argument instanceof SWRLIndividualArgument) {
+				SWRLIndividualArgument individualArgument = (SWRLIndividualArgument)argument;
+				IndividualValue individualValue = resultValueFactory.createIndividualValue(individualArgument.getURI());
+				result.addRowData(individualValue);
+			} else if (argument instanceof ClassArgument) {
+				ClassArgument classArgument = (ClassArgument)argument;
+				ClassValue classValue = resultValueFactory.createClassValue(classArgument.getURI());
+				result.addRowData(classValue);
+			} else if (argument instanceof ObjectPropertyArgument) {
+				ObjectPropertyArgument objectPropertyArgument = (ObjectPropertyArgument)argument;
+				ObjectPropertyValue objectPropertyValue = resultValueFactory.createObjectPropertyValue(objectPropertyArgument.getURI());
+				result.addRowData(objectPropertyValue);
+			} else if (argument instanceof DataPropertyArgument) {
+				DataPropertyArgument dataPropertyArgument = (DataPropertyArgument)argument;
+				DataPropertyValue dataPropertyValue = resultValueFactory.createDataPropertyValue(dataPropertyArgument.getURI());
+				result.addRowData(dataPropertyValue);
+			} else if (argument instanceof CollectionArgument) {
+				throw new InvalidBuiltInArgumentException(argumentIndex, "collections cannot be selected");
+			} else
+				throw new InvalidBuiltInArgumentException(argumentIndex, "unknown type " + argument.getClass());
+			argumentIndex++;
+		}
 
-  public boolean makeBag(List<BuiltInArgument> arguments) throws BuiltInException
-  {
-		String collectionID = getCollectionIDInMake(arguments); // Get unique ID for bag; does argument checking
-		BuiltInArgument element = arguments.get(1); // The second argument is always the value
-		Collection<BuiltInArgument> bag;	
-		
+		return false;
+	}
+
+	// Preprocessed to signal that duplicates should be removed from result
+	public boolean selectDistinct(List<BuiltInArgument> arguments) throws BuiltInException
+	{
+		checkThatInConsequent();
+
+		return select(arguments);
+	}
+
+	public boolean count(List<BuiltInArgument> arguments) throws BuiltInException
+	{
+		checkThatInConsequent();
+		checkForUnboundArguments(arguments);
+		checkNumberOfArgumentsEqualTo(1, arguments.size());
+
+		SQWRLResultImpl result = getSQWRLUnpreparedResult(getInvokingRuleName());
+		BuiltInArgument argument = arguments.get(0);
+
+		if (!result.isRowOpen())
+			result.openRow();
+
+		if (argument instanceof SWRLLiteralArgument) {
+			DataValue dataValue = ((SWRLLiteralArgument)argument).getLiteral();
+			result.addRowData(dataValue);
+		} else if (argument instanceof SWRLIndividualArgument) {
+			SWRLIndividualArgument individualArgument = (SWRLIndividualArgument)argument;
+			IndividualValue individualValue = resultValueFactory.createIndividualValue(individualArgument.getURI());
+			result.addRowData(individualValue);
+		} else if (argument instanceof ClassArgument) {
+			ClassArgument classArgument = (ClassArgument)argument;
+			ClassValue classValue = resultValueFactory.createClassValue(classArgument.getURI());
+			result.addRowData(classValue);
+		} else if (argument instanceof ObjectPropertyArgument) {
+			ObjectPropertyArgument objectPropertyArgument = (ObjectPropertyArgument)argument;
+			ObjectPropertyValue objectPropertyValue = resultValueFactory.createObjectPropertyValue(objectPropertyArgument.getURI());
+			result.addRowData(objectPropertyValue);
+		} else if (argument instanceof DataPropertyArgument) {
+			DataPropertyArgument dataPropertyArgument = (DataPropertyArgument)argument;
+			DataPropertyValue dataPropertyValue = resultValueFactory.createDataPropertyValue(dataPropertyArgument.getURI());
+			result.addRowData(dataPropertyValue);
+		} else if (argument instanceof CollectionArgument) {
+			throw new InvalidBuiltInArgumentException(0, "collections cannot be counted");
+		} else
+			throw new InvalidBuiltInArgumentException(0, "unknown type " + argument.getClass());
+
+		return false;
+	}
+
+	// This built-in is preprocessed by SWRLProcessor so there is nothing to do here
+	public boolean countDistinct(List<BuiltInArgument> arguments) throws BuiltInException
+	{
+		checkThatInConsequent();
+		return count(arguments);
+	}
+
+	// These built-in is preprocessed by SWRLProcessor so there is nothing to do here
+	public boolean columnNames(List<BuiltInArgument> arguments) throws BuiltInException
+	{
+		checkThatInConsequent();
+		return true;
+	}
+
+	public boolean orderBy(List<BuiltInArgument> arguments) throws BuiltInException
+	{
+		checkThatInConsequent();
+		return true;
+	}
+
+	public boolean orderByDescending(List<BuiltInArgument> arguments) throws BuiltInException
+	{
+		checkThatInConsequent();
+		return true;
+	}
+
+	public boolean limit(List<BuiltInArgument> arguments) throws BuiltInException
+	{
+		checkThatInConsequent();
+		return true;
+	}
+
+	/*********************************************************************************************************************
+	 * 
+	 * SQWRL collection operators
+	 * 
+	 *********************************************************************************************************************/
+
+	public boolean makeSet(List<BuiltInArgument> arguments) throws BuiltInException
+	{
 		checkThatInAntecedent();
 		checkForUnboundNonFirstArguments(arguments);
-  	
-    if (collections.containsKey(collectionID)) bag = collections.get(collectionID);
-    else {  
-      bag = new ArrayList<BuiltInArgument>(); collections.put(collectionID, bag); 
-    } // if
 
-    bag.add(element);
+		final int resultCollectionArgumentNumber = 0, elementArgumentNumber = 1;
+		String collectionName = getCollectionName(arguments, resultCollectionArgumentNumber);
+		String collectionGroupID = getCollectionGroupIDInMake(arguments); // Get unique ID for collection group (if any); does argument checking
+		BuiltInArgument element = arguments.get(elementArgumentNumber);
+		Collection<BuiltInArgument> set;
 
-    if (isUnboundArgument(0, arguments)) arguments.get(0).setBuiltInResult(createCollectionArgument(collectionID));
+		if (isCollection(collectionName, collectionGroupID))
+			set = getCollection(collectionName, collectionGroupID);
+		else
+			set = createSet(collectionName, collectionGroupID);
 
-    return true;
-  }
+		set.add(element);
 
-  // Preprocesed by SWRLProcessor so nothing to do
-  public boolean groupBy(List<BuiltInArgument> arguments) throws BuiltInException
-  {
-	  checkThatInAntecedent();
-	
-	  return true;
-  }
+		if (isUnboundArgument(resultCollectionArgumentNumber, arguments))
+			arguments.get(resultCollectionArgumentNumber).setBuiltInResult(createCollectionArgument(collectionName, collectionGroupID));
 
-  public boolean isEmpty(List<BuiltInArgument> arguments) throws BuiltInException
-  {
-  	final int sourceCollectionArgumentNumber = 0, numberOfArguments = 1;
-  	Collection<BuiltInArgument> collection = getCollectionInSingleCollectionOperation(arguments, sourceCollectionArgumentNumber, numberOfArguments);
-
-    return collection.size() == 0;    
-   }
-
-  public boolean notEmpty(List<BuiltInArgument> arguments) throws BuiltInException
-  {
-    return !isEmpty(arguments);
-  }
-
-  public boolean size(List<BuiltInArgument> arguments) throws BuiltInException
-  {
-  	final int resultArgumentNumber = 0, sourceCollectionArgumentNumber = 1, numberOfArguments = 2;
-  	Collection<BuiltInArgument> collection = getCollectionInSingleCollectionOperation(arguments, sourceCollectionArgumentNumber, numberOfArguments);
-    
-    return processResultArgument(arguments, resultArgumentNumber, collection.size());
-  }
-
-  public boolean min(List<BuiltInArgument> arguments) throws BuiltInException
-  {
-    boolean result = false;
-
-    if (getIsInConsequent()) { // Simple SQWRL aggregation operator
-      checkForUnboundArguments(arguments);
-      checkNumberOfArgumentsEqualTo(1, arguments.size());
-      
-      SQWRLResultImpl resultImpl = getSQWRLUnpreparedResult(getInvokingRuleName());
-      BuiltInArgument argument = arguments.get(0);
-      
-      if (!resultImpl.isRowOpen()) resultImpl.openRow();
-      
-      if (argument instanceof SWRLLiteralArgument && ((SWRLLiteralArgument)argument).getLiteral().isNumeric()) {
-      	DataValue dataValue = ((SWRLLiteralArgument)argument).getLiteral();
-      	resultImpl.addRowData(dataValue);
-      } else throw new InvalidBuiltInArgumentException(0, "expecting numeric literal, got " + argument);
-      
-      result = true;
-    } else result = least(arguments); // Redirect to SQWRL collection operator
-    
-    return result;
-  } 
-
-  public boolean max(List<BuiltInArgument> arguments) throws BuiltInException
-  {
-    boolean result = false;
-
-    if (getIsInConsequent()) { // Simple SQWRL aggregation operator
-      checkForUnboundArguments(arguments);
-      checkNumberOfArgumentsEqualTo(1, arguments.size());
-      
-      SQWRLResultImpl resultImpl = getSQWRLUnpreparedResult(getInvokingRuleName());
-      BuiltInArgument argument = arguments.get(0);
-      
-      if (!resultImpl.isRowOpen()) resultImpl.openRow();
-      
-      if (argument instanceof SWRLLiteralArgument && ((SWRLLiteralArgument)argument).getLiteral().isNumeric()) {
-      	DataValue dataValue = ((SWRLLiteralArgument)argument).getLiteral();
-      	resultImpl.addRowData(dataValue);
-      } else throw new InvalidBuiltInArgumentException(0, "expecting numeric literal, got: " + argument);
-
-      result = true;
-    } else result = greatest(arguments); // Redirect to SQWRL collection operator
-     
-    return result;
-  } 
-
-  public boolean sum(List<BuiltInArgument> arguments) throws BuiltInException
-  {
-  	final int resultArgumentNumber = 0, sourceCollectionArgumentNumber = 1, numberOfArguments = 2;
-    boolean result = false;
-
-    if (getIsInConsequent()) { // Simple SQWRL aggregation operator
-      checkForUnboundArguments(arguments);
-      checkNumberOfArgumentsEqualTo(1, arguments.size());
-      
-      SQWRLResultImpl resultImpl = getSQWRLUnpreparedResult(getInvokingRuleName());
-      BuiltInArgument argument = arguments.get(resultArgumentNumber);
-      
-      if (!resultImpl.isRowOpen()) resultImpl.openRow();
-      
-      if (argument instanceof SWRLLiteralArgument && ((SWRLLiteralArgument)argument).getLiteral().isNumeric()) {
-      	DataValue dataValue = ((SWRLLiteralArgument)argument).getLiteral();
-      	resultImpl.addRowData(dataValue);
-      } else throw new InvalidBuiltInArgumentException(resultArgumentNumber, "expecting numeric literal, got: " + argument);
-      
-      result = true;
-    } else { // SQWRL collection operator
-    	Collection<BuiltInArgument> collection = getCollectionInSingleCollectionOperation(arguments, sourceCollectionArgumentNumber, numberOfArguments);
-
-      if (collection.isEmpty()) result = false;
-      else {
-        double sumValue = 0, value;
-        for (BuiltInArgument element : collection) {
-          checkThatElementIsComparable(element);
-          value = getArgumentAsADouble(element);
-          sumValue += value;
-        } // for
-        
-        result = processResultArgument(arguments, resultArgumentNumber, sumValue);
-      } // if
-    } // if
-
-    return result;
-  }
-
-  public boolean avg(List<BuiltInArgument> arguments) throws BuiltInException
-  {
-  	final int resultArgumentNumber = 0, sourceCollectionArgumentNumber = 1, numberOfArguments = 2;
-    boolean result = false;
-
-    if (getIsInConsequent()) { // Simple SQWRL aggregation operator
-      checkForUnboundArguments(arguments);
-      checkNumberOfArgumentsEqualTo(1, arguments.size());
-      
-      SQWRLResultImpl resultImpl = getSQWRLUnpreparedResult(getInvokingRuleName());
-      Argument argument = arguments.get(0);
-      
-      if (!resultImpl.isRowOpen()) resultImpl.openRow();
-      
-      if (argument instanceof SWRLLiteralArgument && ((SWRLLiteralArgument)argument).getLiteral().isNumeric()) {
-      	DataValue dataValue = ((SWRLLiteralArgument)argument).getLiteral();
-      	resultImpl.addRowData(dataValue);
-      } else throw new InvalidBuiltInArgumentException(resultArgumentNumber, "expecting numeric literal, got: " + argument);
-    } else { // SQWRL collection operator
-     	Collection<BuiltInArgument> collection = getCollectionInSingleCollectionOperation(arguments, sourceCollectionArgumentNumber, numberOfArguments);
-     	
-      if (collection.isEmpty()) result = false;
-      else {
-        double avgValue, sumValue = 0, value;
-        for (BuiltInArgument element : collection) {
-          checkThatElementIsComparable(element);
-          value = getArgumentAsADouble(element);
-          sumValue += value;
-        } // for
-        avgValue = sumValue / collection.size();
-        
-        result = processResultArgument(arguments, resultArgumentNumber, avgValue);
-      } // if
-    } // if
-
-    return result;
-  } 
-
-  public boolean median(List<BuiltInArgument> arguments) throws BuiltInException 
-  { 
-  	final int resultArgumentNumber = 0, sourceCollectionArgumentNumber = 1, numberOfArguments = 2;
-    boolean result = false;;
-
-    if (getIsInConsequent()) { // Simple SQWRL aggregation operator
-      throw new BuiltInException("not implemented");
-    } else { // SQWRL collection operator
-     	Collection<BuiltInArgument> collection = getCollectionInSingleCollectionOperation(arguments, sourceCollectionArgumentNumber, numberOfArguments);
-     	
-      if (collection.isEmpty()) result = false;
-      else {
-        double[] valueArray = new double[collection.size()];
-        int count = 0, middle = collection.size() / 2;
-        double medianValue, value;
-
-        for (BuiltInArgument element : collection) {
-          checkThatElementIsComparable(element);
-          value = getArgumentAsADouble(element);
-          valueArray[count++] = value;
-        } // for
-        
-        Arrays.sort(valueArray);
-
-        if (collection.size() % 2 == 1) medianValue = valueArray[middle];
-        else medianValue = (valueArray[middle - 1] + valueArray[middle]) / 2;
-        
-        result = processResultArgument(arguments, resultArgumentNumber, medianValue);
-      } // if
-    } // if
-
-    return result;
-  }
-
-  public boolean intersects(List<BuiltInArgument> arguments) throws BuiltInException 
-  { 
-  	String collectionName1 = getCollectionName(arguments, 0); 
-    String collectionName2 = getCollectionName(arguments, 1);
-    int collection1NumberOfGroupElements = getNumberOfGroupElements(collectionName1);
-    int collection2NumberOfGroupElements = getNumberOfGroupElements(collectionName2);
-    final int numberOfArguments = 2;
-    String collectionID1 = getCollectionIDInMultiCollectionOperation(arguments, 0, numberOfArguments, 0, collection1NumberOfGroupElements); // Does argument checking
-    String collectionID2 = getCollectionIDInMultiCollectionOperation(arguments, 1, numberOfArguments, collection1NumberOfGroupElements, collection2NumberOfGroupElements); // Does argument checking
-    Collection<BuiltInArgument> collection1 = getCollection(collectionID1);
-    Collection<BuiltInArgument> collection2 = getCollection(collectionID2);
-
-    return !Collections.disjoint(collection1, collection2);
-  } 
-
-  public boolean notIntersects(List<BuiltInArgument> arguments) throws BuiltInException
-  { 
-	  return !intersects(arguments);
-  }
-
-  public boolean contains(List<BuiltInArgument> arguments) throws BuiltInException 
-  { 
-    final int numberOfArguments = 2;
-  	String collectionName1 = getCollectionName(arguments, 0); 
-    String collectionName2 = getCollectionName(arguments, 1);
-    int collection1NumberOfGroupElements = getNumberOfGroupElements(collectionName1);
-    int collection2NumberOfGroupElements = getNumberOfGroupElements(collectionName2);
-    String collectionID1 = getCollectionIDInMultiCollectionOperation(arguments, 0, numberOfArguments, 0, collection1NumberOfGroupElements); // Does argument checking
-    String collectionID2 = getCollectionIDInMultiCollectionOperation(arguments, 1, numberOfArguments, collection1NumberOfGroupElements, collection2NumberOfGroupElements); // Does argument checking
-    Collection<BuiltInArgument> collection1 = getCollection(collectionID1);
-    Collection<BuiltInArgument> collection2 = getCollection(collectionID2);
-
-    return collection1.containsAll(collection2);
-  }
-
-  public boolean notContains(List<BuiltInArgument> arguments) throws BuiltInException
-  { 
-	  return !contains(arguments);
-  }
-  
-  public boolean element(List<BuiltInArgument> arguments) throws BuiltInException 
-  { 
-  	final int resultArgumentNumber = 0, sourceCollectionArgumentNumber = 1, numberOfArguments = 2;
-    Collection<BuiltInArgument> collection = getCollectionInSingleCollectionOperation(arguments, sourceCollectionArgumentNumber, numberOfArguments); 
-    
-    return processResultArgument(arguments, resultArgumentNumber, collection);
-  }
-
-  public boolean notElement(List<BuiltInArgument> arguments) throws BuiltInException 
-  { 
-    return !element(arguments);
-  } 
-
-  public boolean equal(List<BuiltInArgument> arguments) throws BuiltInException 
-  { 
-  	String collectionName1 = getCollectionName(arguments, 0); 
-    String collectionName2 = getCollectionName(arguments, 1);
-    int collection1NumberOfGroupElements = getNumberOfGroupElements(collectionName1);
-    int collection2NumberOfGroupElements = getNumberOfGroupElements(collectionName2);
-    final int numberOfArguments = 2;
-    String collectionID1 = getCollectionIDInMultiCollectionOperation(arguments, 0, numberOfArguments, 0, collection1NumberOfGroupElements); // Does argument checking
-    String collectionID2 = getCollectionIDInMultiCollectionOperation(arguments, 1, numberOfArguments, collection1NumberOfGroupElements, collection2NumberOfGroupElements); // Does argument checking
-  	boolean result;
-	
-  	if (collectionID1.equals(collectionID2)) result = true; // The same collection was passed
-	  else { // Different collection - compare them
-	  	Collection<BuiltInArgument> collection1 = getCollection(collectionID1);
-	  	Collection<BuiltInArgument> collection2 = getCollection(collectionID2);
-      result = collection1.equals(collection2); // Remember, sets and lists will not be equal
-	  } // if
-  	
-  	return result;
-	} // if
-
-  public boolean notEqual(List<BuiltInArgument> arguments) throws BuiltInException 
-  { 
-    return !equal(arguments);
-  } 
-
-  // Alias definitions
-  public boolean nthLast(List<BuiltInArgument> arguments) throws BuiltInException { return nthGreatest(arguments); }
-  public boolean notNthLast(List<BuiltInArgument> arguments) throws BuiltInException { return notNthGreatest(arguments); }
-  public boolean nthLastSlice(List<BuiltInArgument> arguments) throws BuiltInException { return nthGreatestSlice(arguments); }
-  public boolean notNthLastSlice(List<BuiltInArgument> arguments) throws BuiltInException { return notNthGreatestSlice(arguments); }
-  public boolean last(List<BuiltInArgument> arguments) throws BuiltInException { return greatest(arguments); }
-  public boolean notLast(List<BuiltInArgument> arguments) throws BuiltInException { return notGreatest(arguments); }
-  public boolean lastN(List<BuiltInArgument> arguments) throws BuiltInException { return greatestN(arguments); }
-  public boolean notLastN(List<BuiltInArgument> arguments) throws BuiltInException { return notGreatestN(arguments); }
-  public boolean first(List<BuiltInArgument> arguments) throws BuiltInException { return least(arguments); }
-  public boolean notFirst(List<BuiltInArgument> arguments) throws BuiltInException { return notLeast(arguments); }
-  public boolean firstN(List<BuiltInArgument> arguments) throws BuiltInException { return leastN(arguments); }
-  public boolean notFirstN(List<BuiltInArgument> arguments) throws BuiltInException { return notLeastN(arguments); }
-
-  public boolean nth(List<BuiltInArgument> arguments) throws BuiltInException 
-  { 
-  	final int resultArgumentNumber = 0, sourceCollectionArgumentNumber = 1, nArgumentNumber = 2, numberOfArguments = 3;
-    boolean result = false;
-  	
-  	if (getIsInConsequent()) result = true; // Post processed - ignore
-  	else {
-  		List<BuiltInArgument> sortedList = getSortedListInSingleCollectionOperation(arguments, sourceCollectionArgumentNumber, numberOfArguments);
-      int n = getArgumentAsAPositiveInteger(nArgumentNumber, arguments) - 1; // 1-offset for user, 0 for processing
-
-      if (!sortedList.isEmpty()) {
-
-      	if (n >= 0 && n < sortedList.size()) {
-      		BuiltInArgument nth = sortedList.get(n);
-      		result = processResultArgument(arguments, resultArgumentNumber, nth);
-      	} else result = false;
-      } // if
-  	} // if
-
-    return result;
-  } 
-    
-  public boolean greatest(List<BuiltInArgument> arguments) throws BuiltInException 
-  { 
-  	final int resultArgumentNumber = 0, sourceCollectionArgumentNumber = 1, numberOfArguments = 2;
-    boolean result = false;
-  	
-  	if (getIsInConsequent()) result = true; // Post processed - ignore
-  	else {
-  		List<BuiltInArgument> sortedList = getSortedListInSingleCollectionOperation(arguments, sourceCollectionArgumentNumber, numberOfArguments);
-    
-      if (!sortedList.isEmpty()) {
-        BuiltInArgument greatest = sortedList.get(sortedList.size() - 1);
-        result = processResultArgument(arguments, resultArgumentNumber, greatest);
-      } // if
-  	} // if
-
-    return result;
-  } 
-
-  public boolean nthGreatest(List<BuiltInArgument> arguments) throws BuiltInException 
-  { 
-  	final int resultArgumentNumber = 0, sourceCollectionArgumentNumber = 1, numberOfArguments = 3;
-    boolean result = false;
-  	
-  	if (getIsInConsequent()) result = true; // Post processed - ignore
-  	else {
-  		List<BuiltInArgument> sortedList = getSortedListInSingleCollectionOperation(arguments, sourceCollectionArgumentNumber, numberOfArguments);
-      int n = getArgumentAsAPositiveInteger(2, arguments);
-
-      if (!sortedList.isEmpty() && n > 0 && n <= sortedList.size()) {
-      	BuiltInArgument nthGreatest = sortedList.get(sortedList.size() - n);
-      	result = processResultArgument(arguments, resultArgumentNumber, nthGreatest);
-      } else result = false;
-  	} // if
-
-    return result;
-  } 
-
-  public boolean least(List<BuiltInArgument> arguments) throws BuiltInException 
-  { 
-  	final int resultArgumentNumber = 0, sourceCollectionArgumentNumber = 1, numberOfArguments = 2;
-    boolean result = false;
-  	
-  	if (getIsInConsequent()) result = true; // Post processed - ignore
-  	else {
-  		List<BuiltInArgument> sortedList = getSortedListInSingleCollectionOperation(arguments, sourceCollectionArgumentNumber, numberOfArguments);
-    
-      if (!sortedList.isEmpty()) {
-        BuiltInArgument least = sortedList.get(0);
-        result = processResultArgument(arguments, resultArgumentNumber, least);
-      } // if
-  	} // if
-
-    return result;
-  }
-
-  // Operators that create collections from two collection operands
-  
-  public boolean intersection(List<BuiltInArgument> arguments) throws BuiltInException 
-  { 
-	  String collectionName1 = getCollectionName(arguments, 1); 
-	  String collectionName2 = getCollectionName(arguments, 2);
-	  int collection1NumberOfGroupElements = getNumberOfGroupElements(collectionName1);
-	  int collection2NumberOfGroupElements = getNumberOfGroupElements(collectionName2);
-	  int collectionResultNumberOfGroupElements = collection1NumberOfGroupElements + collection2NumberOfGroupElements;
-	  final int numberOfArguments = 3;
-	  String resultCollectionID = getCollectionIDInMultiCollectionOperation(arguments, 0, numberOfArguments, 0, collectionResultNumberOfGroupElements); // Does argument checking
-	  String collectionID1 = getCollectionIDInMultiCollectionOperation(arguments, 1, numberOfArguments, 0, collection1NumberOfGroupElements); // Does argument checking
-	  String collectionID2 = getCollectionIDInMultiCollectionOperation(arguments, 2, numberOfArguments, 0 + collection1NumberOfGroupElements, collection2NumberOfGroupElements); // Does argument checking
-	  Collection<BuiltInArgument> collection1 = getCollection(collectionID1);
-	  Collection<BuiltInArgument> collection2 = getCollection(collectionID2);
-	  Collection<BuiltInArgument> intersection = new HashSet<BuiltInArgument>(collection1);
-	    
-	  intersection.retainAll(collection2);
-
-	  if (!collections.containsKey(resultCollectionID)) collections.put(resultCollectionID, intersection);
-
-	  if (isUnboundArgument(0, arguments)) arguments.get(0).setBuiltInResult(createCollectionArgument(resultCollectionID));
-
-	  return true;
-   }
-
-  public boolean append(List<BuiltInArgument> arguments) throws BuiltInException 
-  { 
-		String collectionName1 = getCollectionName(arguments, 1); 
-		String collectionName2 = getCollectionName(arguments, 2);
-		int collection1NumberOfGroupElements = getNumberOfGroupElements(collectionName1);
-		int collection2NumberOfGroupElements = getNumberOfGroupElements(collectionName2);
-		int resultCollectionNumberOfGroupElements = collection1NumberOfGroupElements + collection2NumberOfGroupElements;
-		final int numberOfArguments = 3;
-		String collectionID1 = getCollectionIDInMultiCollectionOperation(arguments, 1, numberOfArguments, 0, collection1NumberOfGroupElements); // Does argument checking
-		String collectionID2 = getCollectionIDInMultiCollectionOperation(arguments, 2, numberOfArguments, 0 + collection1NumberOfGroupElements, collection2NumberOfGroupElements); // Does argument checking
-		String resultCollectionID = getCollectionIDInMultiCollectionOperation(arguments, 0, numberOfArguments, 0, resultCollectionNumberOfGroupElements); // Does argument checking
-		Collection<BuiltInArgument> collection1 = getCollection(collectionID1);
-		Collection<BuiltInArgument> collection2 = getCollection(collectionID2);
-		List<BuiltInArgument> resultCollection = new ArrayList<BuiltInArgument>(collection1);
-		
-		resultCollection.addAll(collection2);
-		
-		if (!collections.containsKey(resultCollectionID)) collections.put(resultCollectionID, resultCollection);
-		
-		if (isUnboundArgument(0, arguments)) arguments.get(0).setBuiltInResult(createCollectionArgument(resultCollectionID));
-		
 		return true;
-	} 
+	}
 
-  public boolean union(List<BuiltInArgument> arguments) throws BuiltInException 
-  { 
-		String collectionName1 = getCollectionName(arguments, 1); 
-		String collectionName2 = getCollectionName(arguments, 2);
-		int collection1NumberOfGroupElements = getNumberOfGroupElements(collectionName1);
-		int collection2NumberOfGroupElements = getNumberOfGroupElements(collectionName2);
-		int resultCollectionNumberOfGroupElements = collection1NumberOfGroupElements + collection2NumberOfGroupElements;
-		final int numberOfArguments = 3;
-		String collectionID1 = getCollectionIDInMultiCollectionOperation(arguments, 1, numberOfArguments, 0, collection1NumberOfGroupElements); // Does argument checking
-		String collectionID2 = getCollectionIDInMultiCollectionOperation(arguments, 2, numberOfArguments, 0 + collection1NumberOfGroupElements, collection2NumberOfGroupElements); // Does argument checking
-		String resultCollectionID = getCollectionIDInMultiCollectionOperation(arguments, 0, numberOfArguments, 0, resultCollectionNumberOfGroupElements); // Does argument checking
-		Collection<BuiltInArgument> collection1 = getCollection(collectionID1);
-		Collection<BuiltInArgument> collection2 = getCollection(collectionID2);
-		Set<BuiltInArgument> union = new HashSet<BuiltInArgument>(collection1);
-		
-		union.addAll(collection2);
-		
-		if (!collections.containsKey(resultCollectionID)) collections.put(resultCollectionID, union);
-		
-		if (isUnboundArgument(0, arguments)) arguments.get(0).setBuiltInResult(createCollectionArgument(resultCollectionID));
-		
-		return true;
-	} 
-
-  public boolean difference(List<BuiltInArgument> arguments) throws BuiltInException 
-  { 
-		String collectionName1 = getCollectionName(arguments, 1); 
-		String collectionName2 = getCollectionName(arguments, 2);
-		int collection1NumberOfGroupElements = getNumberOfGroupElements(collectionName1);
-		int collection2NumberOfGroupElements = getNumberOfGroupElements(collectionName2);
-		int collectionResultNumberOfGroupElements = collection1NumberOfGroupElements + collection2NumberOfGroupElements;
-		final int numberOfArguments = 3;
-		String resultCollectionID = getCollectionIDInMultiCollectionOperation(arguments, 0, numberOfArguments, 0, collectionResultNumberOfGroupElements); // Does argument checking
-		String collectionID1 = getCollectionIDInMultiCollectionOperation(arguments, 1, numberOfArguments, 0, collection1NumberOfGroupElements); // Does argument checking
-		String collectionID2 = getCollectionIDInMultiCollectionOperation(arguments, 2, numberOfArguments, 0 + collection1NumberOfGroupElements, collection2NumberOfGroupElements); // Does argument checking
-		Collection<BuiltInArgument> collection1 = getCollection(collectionID1);
-		Collection<BuiltInArgument> collection2 = getCollection(collectionID2);
-		Collection<BuiltInArgument> difference = new HashSet<BuiltInArgument>(collection1);
-		
-		difference.removeAll(collection2);
-	
-		if (!collections.containsKey(resultCollectionID)) collections.put(resultCollectionID, difference);
-		
-		if (isUnboundArgument(0, arguments)) arguments.get(0).setBuiltInResult(createCollectionArgument(resultCollectionID));
-		
-		return true;
-  }
-
-  // Operators that create collections from a single collection operand
-  
-  public boolean notNthGreatest(List<BuiltInArgument> arguments) throws BuiltInException 
-  { 
-  	final int resultArgumentNumber = 0, sourceCollectionArgumentNumber = 1, numberOfArguments = 3;
-    boolean result = false;
-  	
-  	if (getIsInConsequent()) result = true; // Post processed - ignore
-  	else {
-  		List<BuiltInArgument> sortedList = getSortedListInSingleCollectionOperation(arguments, sourceCollectionArgumentNumber, numberOfArguments);
-      int n = getArgumentAsAPositiveInteger(2, arguments);
-
-      if (!sortedList.isEmpty() && n > 0 && n <= sortedList.size())	sortedList.remove(sortedList.size() - n);
-      	
-      result = processSingleCollectionOperationListResult(arguments, resultArgumentNumber, sourceCollectionArgumentNumber, numberOfArguments, sortedList); 
-  	} // if
-
-    return result;
-  } 
-
-  public boolean nthSlice(List<BuiltInArgument> arguments) throws BuiltInException 
-  { 
-  	final int resultArgumentNumber = 0, sourceCollectionArgumentNumber = 1, numberOfArguments = 4;
-    boolean result = false;
-  	
-  	if (getIsInConsequent()) result = true; // Post processed - ignore
-  	else {
-  		List<BuiltInArgument> sortedList = getSortedListInSingleCollectionOperation(arguments, sourceCollectionArgumentNumber, numberOfArguments);
-      int n = getArgumentAsAPositiveInteger(2, arguments)  - 1; // 1-offset for user, 0 for processing
-      int sliceSize = getArgumentAsAPositiveInteger(3, arguments);
-      List<BuiltInArgument> slice = new ArrayList<BuiltInArgument>();
-
-      if (!sortedList.isEmpty() && n >= 0) {      
-    		int startIndex = n;
-    		int finishIndex = n + sliceSize - 1;
-      	for (int index = startIndex; index <= finishIndex && index < sortedList.size(); index++) slice.add(sortedList.get(index));
-      } // if
-      	 
-      result = processSingleCollectionOperationListResult(arguments, resultArgumentNumber, sourceCollectionArgumentNumber, numberOfArguments, slice);
-  	} // if
-
-    return result;
-  } 
-  
-  public boolean notNthSlice(List<BuiltInArgument> arguments) throws BuiltInException 
-  { 
-  	final int resultArgumentNumber = 0, sourceCollectionArgumentNumber = 1, numberOfArguments = 4;
-    boolean result = false;
-  	
-  	if (getIsInConsequent()) result = true; // Post processed - ignore
-  	else {
-  		List<BuiltInArgument> sortedList = getSortedListInSingleCollectionOperation(arguments, sourceCollectionArgumentNumber, numberOfArguments);
-      int n = getArgumentAsAPositiveInteger(2, arguments) - 1; // 1-offset for user, 0 for processing
-      int sliceSize = getArgumentAsAPositiveInteger(3, arguments);
-      List<BuiltInArgument> notSlice = new ArrayList<BuiltInArgument>();
-
-      if (!sortedList.isEmpty() && n >= 0 && n < sortedList.size()) {
-    		int startIndex = n;
-    		int finishIndex = n + sliceSize - 1;
-      	for (int index = 0; index < sortedList.size(); index++) 
-      	  if (index < startIndex || index > finishIndex) notSlice.add(sortedList.get(index));
-      } // if
-      	     	
-      result = processSingleCollectionOperationListResult(arguments, resultArgumentNumber, sourceCollectionArgumentNumber, numberOfArguments, notSlice);
-  	} // if
-
-    return result;
-  }
-
-  public boolean nthGreatestSlice(List<BuiltInArgument> arguments) throws BuiltInException 
-  { 
-  	final int resultArgumentNumber = 0, sourceCollectionArgumentNumber = 1, numberOfArguments = 4;
-    boolean result = false;
-  	
-  	if (getIsInConsequent()) result = true; // Post processed - ignore
-  	else {
-  		List<BuiltInArgument> sortedList = getSortedListInSingleCollectionOperation(arguments, sourceCollectionArgumentNumber, numberOfArguments);
-      int n = getArgumentAsAPositiveInteger(2, arguments);
-      List<BuiltInArgument> slice = new ArrayList<BuiltInArgument>();
-      int sliceSize = getArgumentAsAPositiveInteger(3, arguments);
-      
-      if (!sortedList.isEmpty() && n > 0) {
-      	int startIndex = sortedList.size() - n;
-    		int finishIndex = startIndex + sliceSize - 1;
-    		if (startIndex < 0) startIndex = 0;
-    		for (int index = startIndex; index <= finishIndex && index < sortedList.size(); index++) slice.add(sortedList.get(index));
-      } // if
-      	
-      result = processSingleCollectionOperationListResult(arguments, resultArgumentNumber, sourceCollectionArgumentNumber, numberOfArguments, slice);
-  	} // if
-
-    return result;
-  } 
-
-  public boolean notNthGreatestSlice(List<BuiltInArgument> arguments) throws BuiltInException 
-  { 
-  	final int resultArgumentNumber = 0, sourceCollectionArgumentNumber = 1, numberOfArguments = 4;
-    boolean result = false;
-  	
-  	if (getIsInConsequent()) result = true; // Post processed - ignore
-  	else {
-  		List<BuiltInArgument> sortedList = getSortedListInSingleCollectionOperation(arguments, sourceCollectionArgumentNumber, numberOfArguments);
-      int n = getArgumentAsAPositiveInteger(2, arguments);
-      int sliceSize = getArgumentAsAPositiveInteger(3, arguments);
-      List<BuiltInArgument> slice = new ArrayList<BuiltInArgument>();
-
-      if (!sortedList.isEmpty() && n > 0 && n <= sortedList.size()) {
-    		int startIndex = sortedList.size() - n;
-    		int finishIndex = startIndex + sliceSize - 1;
-    		for (int index = 0; index < sortedList.size(); index++) 
-    			if (index < startIndex || index > finishIndex) slice.add(sortedList.get(index));
-      } // if
-    	   
-      result = processSingleCollectionOperationListResult(arguments, resultArgumentNumber, sourceCollectionArgumentNumber, numberOfArguments, slice);
-  	} // if
-  	
-    return result;
-  } 
-
-  public boolean notNth(List<BuiltInArgument> arguments) throws BuiltInException 
-  { 
-  	final int resultArgumentNumber = 0, sourceCollectionArgumentNumber = 1, numberOfArguments = 3;
-    boolean result = false;
-  	
-  	if (getIsInConsequent()) result = true; // Post processed - ignore
-  	else {
-  		List<BuiltInArgument> sortedList = getSortedListInSingleCollectionOperation(arguments, sourceCollectionArgumentNumber, numberOfArguments);
-      int n = getArgumentAsAPositiveInteger(2, arguments) - 1;  // 1-offset for user, 0 for processing
-    
-      if (!sortedList.isEmpty() && n >= 0 && n < sortedList.size()) sortedList.remove(n);
-
-      result = processSingleCollectionOperationListResult(arguments, resultArgumentNumber, sourceCollectionArgumentNumber, numberOfArguments, sortedList);
-  	} // if
-
-    return result;
-  } 
-  
-  public boolean notGreatest(List<BuiltInArgument> arguments) throws BuiltInException 
-  { 
-  	final int resultArgumentNumber = 0, sourceCollectionArgumentNumber = 1, numberOfArguments = 2;
-    boolean result = false;
-  	
-  	if (getIsInConsequent()) result = true; // Post processed - ignore
-  	else {
-  		List<BuiltInArgument> sortedList = getSortedListInSingleCollectionOperation(arguments, sourceCollectionArgumentNumber, numberOfArguments);
-    
-      if (!sortedList.isEmpty()) sortedList.remove(sortedList.size() - 1);
-
-      result = processSingleCollectionOperationListResult(arguments, resultArgumentNumber, sourceCollectionArgumentNumber, numberOfArguments, sortedList);
-  	} // if
-
-    return result;
-  } 
-
-  public boolean greatestN(List<BuiltInArgument> arguments) throws BuiltInException 
-  { 
-  	final int resultArgumentNumber = 0, sourceCollectionArgumentNumber = 1, numberOfArguments = 3;
-    boolean result = false;
-  	
-  	if (getIsInConsequent()) result = true; // Post processed - ignore
-  	else {
-  		List<BuiltInArgument> sortedList = getSortedListInSingleCollectionOperation(arguments, sourceCollectionArgumentNumber, numberOfArguments);
-  	  int n = getArgumentAsAPositiveInteger(2, arguments);
-  	  List<BuiltInArgument> greatestN = new ArrayList<BuiltInArgument>();
-    
-  	  if (!sortedList.isEmpty() && n > 0) {
-  	  	int startIndex = sortedList.size() - n;
-  	  	if (startIndex < 0) startIndex = 0;
-        for (int i = startIndex; i < sortedList.size(); i++) greatestN.add(sortedList.get(i));
-  	  } // if
-	
-  	  result = processSingleCollectionOperationListResult(arguments, resultArgumentNumber, sourceCollectionArgumentNumber, numberOfArguments, greatestN);
-  	} // if
-
-    return result;
-  }
- 
-  public boolean notGreatestN(List<BuiltInArgument> arguments) throws BuiltInException 
-  { 
-  	final int resultArgumentNumber = 0, sourceCollectionArgumentNumber = 1, numberOfArguments = 3;
-    boolean result = false;
-  	
-  	if (getIsInConsequent()) result = true; // Post processed - ignore
-  	else {
-  		List<BuiltInArgument> sortedList = getSortedListInSingleCollectionOperation(arguments, sourceCollectionArgumentNumber, numberOfArguments);
-      int n = getArgumentAsAPositiveInteger(2, arguments);
-      List<BuiltInArgument> notGreatestN = new ArrayList<BuiltInArgument>();
-      
-      if (!sortedList.isEmpty() && n > 0) {
-  	  	int startIndex = sortedList.size() - n;
-	  	  if (startIndex < 0) startIndex = 0;
-        for (int i = 0; i < startIndex; i++) notGreatestN.add(sortedList.get(i));
-      } // if
-	
-      result = processSingleCollectionOperationListResult(arguments, resultArgumentNumber, sourceCollectionArgumentNumber, numberOfArguments, notGreatestN);
-  	} // if
-
-    return result;
-  }
-
-  public boolean notLeast(List<BuiltInArgument> arguments) throws BuiltInException 
-  { 
-  	final int resultArgumentNumber = 0, sourceCollectionArgumentNumber = 1, numberOfArguments = 2;
-    boolean result = false;
-  	
-  	if (getIsInConsequent()) result = true; // Post processed - ignore
-  	else {
-  		List<BuiltInArgument> sortedList = getSortedListInSingleCollectionOperation(arguments, sourceCollectionArgumentNumber, numberOfArguments);
-    
-      if (!sortedList.isEmpty()) sortedList.remove(0);
-	
-      result = processSingleCollectionOperationListResult(arguments, resultArgumentNumber, sourceCollectionArgumentNumber, numberOfArguments, sortedList);
-  	} // if
-
-    return result;
-  } 
-
-  public boolean leastN(List<BuiltInArgument> arguments) throws BuiltInException 
-  { 
-  	final int resultArgumentNumber = 0, sourceCollectionArgumentNumber = 1, numberOfArguments = 3;
-    boolean result = false;
-  	
-  	if (getIsInConsequent()) result = true; // Post processed - ignore
-  	else {
-  		List<BuiltInArgument> sortedList = getSortedListInSingleCollectionOperation(arguments, sourceCollectionArgumentNumber, numberOfArguments);
-      int n = getArgumentAsAPositiveInteger(2, arguments) - 1;
-      List<BuiltInArgument> leastN = new ArrayList<BuiltInArgument>();
- 
-      for (int i = 0; i <= n && i < sortedList.size(); i++) leastN.add(sortedList.get(i));
-      	
-      result = processSingleCollectionOperationListResult(arguments, resultArgumentNumber, sourceCollectionArgumentNumber, numberOfArguments, leastN);
-  	} // if
-
-    return result;
-  } 
-
-  public boolean notLeastN(List<BuiltInArgument> arguments) throws BuiltInException 
-  { 
-  	final int resultArgumentNumber = 0, sourceCollectionArgumentNumber = 1, numberOfArguments = 3;
-    boolean result = false;
-  	
-  	if (getIsInConsequent()) result = true; // Post processed - ignore
-  	else {
-  		List<BuiltInArgument> sortedList = getSortedListInSingleCollectionOperation(arguments, sourceCollectionArgumentNumber, numberOfArguments);
-      int n = getArgumentAsAPositiveInteger(2, arguments);
-      List<BuiltInArgument> notLeastN = new ArrayList<BuiltInArgument>();
-
-      for (int i = n; i >= 0 && i < sortedList.size(); i++) notLeastN.add(sortedList.get(i));
-      	
-      result = processSingleCollectionOperationListResult(arguments, resultArgumentNumber, sourceCollectionArgumentNumber, numberOfArguments, notLeastN);
-  	} // if
-
-    return result;
-  } 
-
-  // Internal methods
-
-  private boolean isCollection(String collectionID) { return collections.containsKey(collectionID); }
-
-  private String getCollectionName(List<BuiltInArgument> arguments, int collectionArgumentNumber) throws BuiltInException
-  {
-    String queryName = getInvokingRuleName();
-    String collectionName = getVariableName(collectionArgumentNumber, arguments); 
-    return queryName + ":" + collectionName;
-  }
-
-  private int getNumberOfGroupElements(String collectionName) throws BuiltInException
-  {
-    if (!collectionGroupElementNumbersMap.containsKey(collectionName)) 
-      throw new BuiltInException("internal error: invalid collection name " + collectionName + "; no group element number found");
-
-    return collectionGroupElementNumbersMap.get(collectionName);
-  }
-
-  private String getCollectionIDInMake(List<BuiltInArgument> arguments) throws BuiltInException
-  {
-	  checkNumberOfArgumentsAtLeast(2, arguments.size());
-	
-    String queryName = getInvokingRuleName();
-    String collectionName = getCollectionName(arguments, 0); // The collection is always the first argument.
-    int numberOfGroupArguments = arguments.size() - 2;
-    boolean hasGroupPattern  = numberOfGroupArguments != 0;
-    String groupPattern = !hasGroupPattern ? "" : createInvocationPattern(getBuiltInBridge(), queryName, 0, false,
-                                                                          arguments.subList(2, arguments.size()));
-    String collectionID;
-    
-    if (isBoundArgument(0, arguments) && !collectionGroupElementNumbersMap.containsKey(collectionName)) // Collection variable already used in non collection context  
-    	throw new BuiltInException("collection variable ?" + arguments.get(0).getVariableName() + " already used in non collection context");
-    
-    if (hasGroupPattern) {
-    	if (!collectionGroupElementNumbersMap.containsKey(collectionName)) collectionGroupElementNumbersMap.put(collectionName, numberOfGroupArguments);
-    	else if (collectionGroupElementNumbersMap.get(collectionName) != numberOfGroupArguments) {
-    		throw new BuiltInException("internal error: inconsistent number of group elements for collection " + collectionName);
-    	} //if
-    	collectionID = collectionName + ":" + groupPattern;
-    } else {
-    	if (collectionGroupElementNumbersMap.containsKey(collectionName)) {
-    		if (collectionGroupElementNumbersMap.get(collectionName) != 0) {
-        		throw new BuiltInException("internal error: inconsistent number of group elements for collection " + collectionName);
-    		}
-    	} else collectionGroupElementNumbersMap.put(collectionName, 0);
-    	collectionID = collectionName;
-    } // if
-	                           
-    return collectionID;
-  }
-
-  private String getCollectionIDInSingleCollectionOperation(List<BuiltInArgument> arguments, int collectionArgumentNumber, int coreArgumentNumber) 
-    throws BuiltInException
-  {
-    String queryName = getInvokingRuleName();
-    String collectionName = getCollectionName(arguments, collectionArgumentNumber);
-    boolean hasGroupPattern  = (arguments.size() > coreArgumentNumber);
-    String collectionID;
-
-    checkThatInAntecedent();
-    
-    if (hasGroupPattern)
-    	collectionID = collectionName + ":" + createInvocationPattern(getBuiltInBridge(), queryName, 0, false, arguments.subList(coreArgumentNumber, arguments.size()));
-    else
-    	collectionID = collectionName;
-
-    return collectionID;
-  }
-
-  private String getCollectionIDInMultiCollectionOperation(List<BuiltInArgument> arguments, int collectionArgumentNumber, 
-                                             	             int coreArgumentNumber, int groupArgumentOffset, int numberOfRelevantGroupArguments) 
-   throws BuiltInException
-  {
-    String queryName = getInvokingRuleName();
-    String collectionName = getCollectionName(arguments, collectionArgumentNumber);
-    boolean hasGroupPattern  = numberOfRelevantGroupArguments != 0;
-    String collectionID;
-    
-    checkThatInAntecedent();
-    
-    if (!collectionGroupElementNumbersMap.containsKey(collectionName)) collectionGroupElementNumbersMap.put(collectionName, numberOfRelevantGroupArguments);
-    
-    if (hasGroupPattern)
-      collectionID = collectionName + ":" + createInvocationPattern(getBuiltInBridge(), queryName, 0, false, 
-      				                                                      arguments.subList(coreArgumentNumber + groupArgumentOffset, 
-      				                                                      coreArgumentNumber + groupArgumentOffset + numberOfRelevantGroupArguments));
-    else collectionID = collectionName;
-    
-    return collectionID;
-  }
-  
-  private boolean processSingleCollectionOperationListResult(List<BuiltInArgument> arguments, 
-  																													 int resultCollectionArgumentNumber, int sourceCollectionArgumentNumber, 
-  																													 int numberOfArguments, List<BuiltInArgument> resultList)
-    throws BuiltInException
-  {
-  	String sourceCollectionName = getCollectionName(arguments, sourceCollectionArgumentNumber);
-  	String resultListName = getCollectionName(arguments, resultCollectionArgumentNumber);
-  	String resultListID = getCollectionIDInSingleCollectionOperation(arguments, resultCollectionArgumentNumber, numberOfArguments);
-  	
-	  if (!collections.containsKey(resultListID)) 
-	  	collections.put(resultListID, resultList);
-	  
-	  if (!collectionGroupElementNumbersMap.containsKey(resultListName)) // Give it the same number of group elements as the source collection
-	  	collectionGroupElementNumbersMap.put(resultListName, getNumberOfGroupElements(sourceCollectionName));
-	
-	  return processListResultArgument(arguments, resultCollectionArgumentNumber, resultListID, resultList);
-  }
-
-	private boolean processListResultArgument(List<BuiltInArgument> arguments, int resultArgumentNumber, 
-											                     String resultListID, List<BuiltInArgument> resultList) 
-	  throws BuiltInException
+	public boolean makeBag(List<BuiltInArgument> arguments) throws BuiltInException
 	{
-	  boolean result = false;
-	
-	  checkArgumentNumber(resultArgumentNumber, arguments);
-	
-	  if (isUnboundArgument(resultArgumentNumber, arguments)) {
-	    arguments.get(resultArgumentNumber).setBuiltInResult(createCollectionArgument(resultListID));
-	    result = true;
-	  } else {
-	  	Collection<BuiltInArgument> collection = getCollection(resultListID);
-	  	result = collection.equals(resultList); // Remember, sets and lists will not be equal 
-	  } //if
-	  
-	  return result;
-	} 
+		checkThatInAntecedent();
+		checkForUnboundNonFirstArguments(arguments);
 
-  private SQWRLResultImpl getSQWRLUnpreparedResult(String queryURI) throws BuiltInException
-  {
-    return getBuiltInBridge().getSQWRLUnpreparedResult(queryURI);
-  }
+		final int resultCollectionArgumentNumber = 0, elementArgumentNumber = 1;
+		String collectionName = getCollectionName(arguments, resultCollectionArgumentNumber);
+		String collectionGroupID = getCollectionGroupIDInMake(arguments); // Get unique ID for bag; does argument checking
+		BuiltInArgument element = arguments.get(elementArgumentNumber);
+		Collection<BuiltInArgument> bag;
 
-  private void checkThatElementIsComparable(BuiltInArgument element) throws BuiltInException
-  {
-    if (!(element instanceof SWRLLiteralArgument) || !((SWRLLiteralArgument)element).getLiteral().isComparable())
-      throw new BuiltInException("may only be applied to collections with comparable elements");
-  }
-  
-  private Collection<BuiltInArgument> getCollectionInSingleCollectionOperation(List<BuiltInArgument> arguments, int sourceCollectionArgumentNumber, int numberOfArguments)
-    throws BuiltInException
-  {
-  	String collectionID = getCollectionIDInSingleCollectionOperation(arguments, sourceCollectionArgumentNumber, numberOfArguments);
+		if (isCollection(collectionName, collectionGroupID))
+			bag = getCollection(collectionName, collectionGroupID);
+		else
+			bag = createBag(collectionName, collectionGroupID);
 
-  	return getCollection(collectionID);	
-  }
+		bag.add(element);
 
-  private List<BuiltInArgument> getSortedListInSingleCollectionOperation(List<BuiltInArgument> arguments, int sourceCollectionArgumentNumber, 
-  								                                                       int numberOfArguments)
-    throws BuiltInException
-  {
-  	String collectionID = getCollectionIDInSingleCollectionOperation(arguments, sourceCollectionArgumentNumber, numberOfArguments);
-	
-  	return getSortedList(collectionID);
-  }
+		if (isUnboundArgument(resultCollectionArgumentNumber, arguments))
+			arguments.get(resultCollectionArgumentNumber).setBuiltInResult(createCollectionArgument(collectionName, collectionGroupID));
 
-  // We do not cache because only one built-in will typically perform an operation on a particular collection per query. 
-  // Note: currently implementations may modify the returned collection.
-  private List<BuiltInArgument> getSortedList(String collectionID) throws BuiltInException
-  {
-    Collection<BuiltInArgument> collection = getCollection(collectionID);
-    List<BuiltInArgument> result = new ArrayList<BuiltInArgument>(collection);
-    Collections.sort(result);
-  	
-  	return result;
-  }
-  
-  private Collection<BuiltInArgument> getCollection(String collectionID) throws BuiltInException
-  {
-    if (!isCollection(collectionID)) 
-    	throw new BuiltInException("argument " + collectionID + " does not refer to a collection");
-    return collections.get(collectionID);
-  } 
+		return true;
+	}
+
+	// Preprocesed so nothing to do here
+	public boolean groupBy(List<BuiltInArgument> arguments) throws BuiltInException
+	{
+		checkThatInAntecedent();
+
+		return true;
+	}
+
+	/*********************************************************************************************************************
+	 * 
+	 * SQWRL operators that work with a single collection and return a value or an element or evaluate to true or false
+	 * 
+	 *********************************************************************************************************************/
+
+	public boolean isEmpty(List<BuiltInArgument> arguments) throws BuiltInException
+	{
+		checkThatInAntecedent();
+
+		final int sourceCollectionArgumentNumber = 0, numberOfCoreArguments = 1;
+		Collection<BuiltInArgument> collection = getCollectionInSingleCollectionOperation(arguments, sourceCollectionArgumentNumber, numberOfCoreArguments);
+
+		return collection.size() == 0;
+	}
+
+	public boolean notEmpty(List<BuiltInArgument> arguments) throws BuiltInException
+	{
+		checkThatInAntecedent();
+
+		return !isEmpty(arguments);
+	}
+
+	public boolean size(List<BuiltInArgument> arguments) throws BuiltInException
+	{
+		checkThatInAntecedent();
+
+		final int resultArgumentNumber = 0, sourceCollectionArgumentNumber = 1, numberOfCoreArguments = 2;
+		Collection<BuiltInArgument> collection = getCollectionInSingleCollectionOperation(arguments, sourceCollectionArgumentNumber, numberOfCoreArguments);
+
+		return processResultArgument(arguments, resultArgumentNumber, collection.size());
+	}
+
+	public boolean element(List<BuiltInArgument> arguments) throws BuiltInException
+	{
+		checkThatInAntecedent();
+
+		final int resultArgumentNumber = 0, sourceCollectionArgumentNumber = 1, numberOfCoreArguments = 2;
+
+		Collection<BuiltInArgument> collection = getCollectionInSingleCollectionOperation(arguments, sourceCollectionArgumentNumber, numberOfCoreArguments);
+
+		return processResultArgument(arguments, resultArgumentNumber, collection);
+	}
+
+	public boolean notElement(List<BuiltInArgument> arguments) throws BuiltInException
+	{
+		checkThatInAntecedent();
+
+		return !element(arguments);
+	}
+
+	public boolean min(List<BuiltInArgument> arguments) throws BuiltInException
+	{
+		final int resultArgumentNumber = 0, numberOfConsequentArguments = 1;
+		boolean result = false;
+
+		if (getIsInConsequent()) { // Simple SQWRL aggregation operator
+			checkForUnboundArguments(arguments);
+			checkNumberOfArgumentsEqualTo(numberOfConsequentArguments, arguments.size());
+
+			SQWRLResultImpl resultImpl = getSQWRLUnpreparedResult(getInvokingRuleName());
+			BuiltInArgument argument = arguments.get(resultArgumentNumber);
+
+			if (!resultImpl.isRowOpen())
+				resultImpl.openRow();
+
+			if (argument instanceof SWRLLiteralArgument && ((SWRLLiteralArgument)argument).getLiteral().isNumeric()) {
+				DataValue dataValue = ((SWRLLiteralArgument)argument).getLiteral();
+				resultImpl.addRowData(dataValue);
+			} else
+				throw new InvalidBuiltInArgumentException(resultArgumentNumber, "expecting numeric literal, got " + argument);
+
+			result = true;
+		} else
+			result = least(arguments); // Redirect to SQWRL collection operator
+
+		return result;
+	}
+
+	public boolean max(List<BuiltInArgument> arguments) throws BuiltInException
+	{
+		final int resultArgumentNumber = 0, numberOfConsequentArguments = 1;
+		boolean result = false;
+
+		if (getIsInConsequent()) { // Simple SQWRL aggregation operator
+			checkForUnboundArguments(arguments);
+			checkNumberOfArgumentsEqualTo(numberOfConsequentArguments, arguments.size());
+
+			SQWRLResultImpl resultImpl = getSQWRLUnpreparedResult(getInvokingRuleName());
+			BuiltInArgument argument = arguments.get(resultArgumentNumber);
+
+			if (!resultImpl.isRowOpen())
+				resultImpl.openRow();
+
+			if (argument instanceof SWRLLiteralArgument && ((SWRLLiteralArgument)argument).getLiteral().isNumeric()) {
+				DataValue dataValue = ((SWRLLiteralArgument)argument).getLiteral();
+				resultImpl.addRowData(dataValue);
+			} else
+				throw new InvalidBuiltInArgumentException(resultArgumentNumber, "expecting numeric literal, got: " + argument);
+
+			result = true;
+		} else
+			result = greatest(arguments); // Redirect to SQWRL collection operator
+
+		return result;
+	}
+
+	public boolean sum(List<BuiltInArgument> arguments) throws BuiltInException
+	{
+		final int resultArgumentNumber = 0, sourceCollectionArgumentNumber = 1, numberOfCoreAntecedentArguments = 2, numberOfConsequentArguments = 1;
+		boolean result = false;
+
+		if (getIsInConsequent()) { // Simple SQWRL aggregation operator
+			checkForUnboundArguments(arguments);
+			checkNumberOfArgumentsEqualTo(numberOfConsequentArguments, arguments.size());
+
+			SQWRLResultImpl resultImpl = getSQWRLUnpreparedResult(getInvokingRuleName());
+			BuiltInArgument argument = arguments.get(resultArgumentNumber);
+
+			if (!resultImpl.isRowOpen())
+				resultImpl.openRow();
+
+			if (argument instanceof SWRLLiteralArgument && ((SWRLLiteralArgument)argument).getLiteral().isNumeric()) {
+				DataValue dataValue = ((SWRLLiteralArgument)argument).getLiteral();
+				resultImpl.addRowData(dataValue);
+			} else
+				throw new InvalidBuiltInArgumentException(resultArgumentNumber, "expecting numeric literal, got: " + argument);
+
+			result = true;
+		} else { // SQWRL collection operator
+			Collection<BuiltInArgument> collection = getCollectionInSingleCollectionOperation(arguments, sourceCollectionArgumentNumber,
+					numberOfCoreAntecedentArguments);
+
+			if (collection.isEmpty())
+				result = false;
+			else {
+				double sumValue = 0, value;
+				for (BuiltInArgument element : collection) {
+					checkThatElementIsComparable(element);
+					value = getArgumentAsADouble(element);
+					sumValue += value;
+				}
+
+				result = processResultArgument(arguments, resultArgumentNumber, sumValue);
+			}
+		}
+
+		return result;
+	}
+
+	public boolean avg(List<BuiltInArgument> arguments) throws BuiltInException
+	{
+		final int resultArgumentNumber = 0, sourceCollectionArgumentNumber = 1, numberOfCoreAntecedentArguments = 2, numberOfConsequentArguments = 1;
+		boolean result = false;
+
+		if (getIsInConsequent()) { // Simple SQWRL aggregation operator
+			checkForUnboundArguments(arguments);
+			checkNumberOfArgumentsEqualTo(numberOfConsequentArguments, arguments.size());
+
+			SQWRLResultImpl resultImpl = getSQWRLUnpreparedResult(getInvokingRuleName());
+			Argument argument = arguments.get(0);
+
+			if (!resultImpl.isRowOpen())
+				resultImpl.openRow();
+
+			if (argument instanceof SWRLLiteralArgument && ((SWRLLiteralArgument)argument).getLiteral().isNumeric()) {
+				DataValue dataValue = ((SWRLLiteralArgument)argument).getLiteral();
+				resultImpl.addRowData(dataValue);
+			} else
+				throw new InvalidBuiltInArgumentException(resultArgumentNumber, "expecting numeric literal, got: " + argument);
+		} else { // SQWRL collection operator
+			Collection<BuiltInArgument> collection = getCollectionInSingleCollectionOperation(arguments, sourceCollectionArgumentNumber,
+					numberOfCoreAntecedentArguments);
+
+			if (collection.isEmpty())
+				result = false;
+			else {
+				double avgValue, sumValue = 0, value;
+				for (BuiltInArgument element : collection) {
+					checkThatElementIsComparable(element);
+					value = getArgumentAsADouble(element);
+					sumValue += value;
+				}
+				avgValue = sumValue / collection.size();
+
+				result = processResultArgument(arguments, resultArgumentNumber, avgValue);
+			}
+		}
+
+		return result;
+	}
+
+	public boolean median(List<BuiltInArgument> arguments) throws BuiltInException
+	{
+		final int resultArgumentNumber = 0, sourceCollectionArgumentNumber = 1, numberOfCoreConsequentArguments = 2;
+		boolean result = false;
+
+		if (getIsInConsequent()) { // Simple SQWRL aggregation operator
+			throw new BuiltInException("not implemented");
+		} else { // SQWRL collection operator
+			Collection<BuiltInArgument> collection = getCollectionInSingleCollectionOperation(arguments, sourceCollectionArgumentNumber,
+					numberOfCoreConsequentArguments);
+
+			if (collection.isEmpty())
+				result = false;
+			else {
+				double[] valueArray = new double[collection.size()];
+				int count = 0, middle = collection.size() / 2;
+				double medianValue, value;
+
+				for (BuiltInArgument element : collection) {
+					checkThatElementIsComparable(element);
+					value = getArgumentAsADouble(element);
+					valueArray[count++] = value;
+				}
+
+				Arrays.sort(valueArray);
+
+				if (collection.size() % 2 == 1)
+					medianValue = valueArray[middle];
+				else
+					medianValue = (valueArray[middle - 1] + valueArray[middle]) / 2;
+
+				result = processResultArgument(arguments, resultArgumentNumber, medianValue);
+			}
+		}
+
+		return result;
+	}
+
+	public boolean nth(List<BuiltInArgument> arguments) throws BuiltInException
+	{
+		final int resultArgumentNumber = 0, sourceCollectionArgumentNumber = 1, nArgumentNumber = 2, numberOfCoreArguments = 3;
+		boolean result = false;
+
+		if (getIsInConsequent())
+			result = true; // Post processed - ignore
+		else {
+			List<BuiltInArgument> sortedList = getSortedListInSingleOperandCollectionOperation(arguments, sourceCollectionArgumentNumber, numberOfCoreArguments);
+			int n = getArgumentAsAPositiveInteger(nArgumentNumber, arguments) - 1; // 1-offset for user, 0 for processing
+
+			if (!sortedList.isEmpty()) {
+				if (n >= 0 && n < sortedList.size()) {
+					BuiltInArgument nth = sortedList.get(n);
+					result = processResultArgument(arguments, resultArgumentNumber, nth);
+				} else
+					result = false;
+			}
+		}
+
+		return result;
+	}
+
+	public boolean greatest(List<BuiltInArgument> arguments) throws BuiltInException
+	{
+		final int resultArgumentNumber = 0, sourceCollectionArgumentNumber = 1, numberOfCoreArguments = 2;
+		boolean result = false;
+
+		if (getIsInConsequent())
+			result = true; // Post processed - ignore
+		else {
+			List<BuiltInArgument> sortedList = getSortedListInSingleOperandCollectionOperation(arguments, sourceCollectionArgumentNumber, numberOfCoreArguments);
+
+			if (!sortedList.isEmpty()) {
+				BuiltInArgument greatest = sortedList.get(sortedList.size() - 1);
+				result = processResultArgument(arguments, resultArgumentNumber, greatest);
+			}
+		}
+
+		return result;
+	}
+
+	public boolean nthGreatest(List<BuiltInArgument> arguments) throws BuiltInException
+	{
+		final int resultArgumentNumber = 0, sourceCollectionArgumentNumber = 1, nArgumentNumber = 2, numberOfCoreArguments = 3;
+		boolean result = false;
+
+		if (getIsInConsequent())
+			result = true; // Post processed - ignore
+		else {
+			List<BuiltInArgument> sortedList = getSortedListInSingleOperandCollectionOperation(arguments, sourceCollectionArgumentNumber, numberOfCoreArguments);
+			int n = getArgumentAsAPositiveInteger(nArgumentNumber, arguments);
+
+			if (!sortedList.isEmpty() && n > 0 && n <= sortedList.size()) {
+				BuiltInArgument nthGreatest = sortedList.get(sortedList.size() - n);
+				result = processResultArgument(arguments, resultArgumentNumber, nthGreatest);
+			} else
+				result = false;
+		}
+
+		return result;
+	}
+
+	public boolean least(List<BuiltInArgument> arguments) throws BuiltInException
+	{
+		checkThatInAntecedent();
+
+		final int resultArgumentNumber = 0, sourceCollectionArgumentNumber = 1, numberOfCoreArguments = 2;
+		boolean result = false;
+
+		if (getIsInConsequent())
+			result = true; // Post processed - ignore
+		else {
+			List<BuiltInArgument> sortedList = getSortedListInSingleOperandCollectionOperation(arguments, sourceCollectionArgumentNumber, numberOfCoreArguments);
+
+			if (!sortedList.isEmpty()) {
+				BuiltInArgument least = sortedList.get(resultArgumentNumber);
+				result = processResultArgument(arguments, resultArgumentNumber, least);
+			}
+		}
+
+		return result;
+	}
+
+	/*********************************************************************************************************************
+	 * 
+	 * SQWRL operators that work with a single collection and return a collection
+	 * 
+	 *********************************************************************************************************************/
+
+	public boolean notNthGreatest(List<BuiltInArgument> arguments) throws BuiltInException
+	{
+		final int resultCollectionArgumentNumber = 0, sourceCollectionArgumentNumber = 1, nArgumentNumber = 2, numberOfCoreArguments = 3;
+
+		if (getIsInConsequent())
+			return true; // Non collection operator that is post processed - ignore
+		else {
+			List<BuiltInArgument> sortedList = getSortedListInSingleOperandCollectionOperation(arguments, sourceCollectionArgumentNumber, numberOfCoreArguments);
+			int n = getArgumentAsAPositiveInteger(nArgumentNumber, arguments);
+
+			if (!sortedList.isEmpty() && n > 0 && n <= sortedList.size())
+				sortedList.remove(sortedList.size() - n);
+
+			return processSingleOperandCollectionOperationListResult(arguments, resultCollectionArgumentNumber, sourceCollectionArgumentNumber,
+					numberOfCoreArguments, sortedList);
+		}
+	}
+
+	public boolean nthSlice(List<BuiltInArgument> arguments) throws BuiltInException
+	{
+		final int resultCollectionArgumentNumber = 0, sourceCollectionArgumentNumber = 1, nArgumentNumber = 2, sliceSizeArgumentNumber = 3, numberOfCoreArguments = 4;
+
+		if (getIsInConsequent())
+			return true; // Non collection operator that is post processed - ignore
+		else {
+			List<BuiltInArgument> sortedList = getSortedListInSingleOperandCollectionOperation(arguments, sourceCollectionArgumentNumber, numberOfCoreArguments);
+			int n = getArgumentAsAPositiveInteger(nArgumentNumber, arguments) - 1; // 1-offset for user, 0 for processing
+			int sliceSize = getArgumentAsAPositiveInteger(sliceSizeArgumentNumber, arguments);
+			List<BuiltInArgument> slice = new ArrayList<BuiltInArgument>();
+
+			if (!sortedList.isEmpty() && n >= 0) {
+				int startIndex = n;
+				int finishIndex = n + sliceSize - 1;
+				for (int index = startIndex; index <= finishIndex && index < sortedList.size(); index++)
+					slice.add(sortedList.get(index));
+			}
+
+			return processSingleOperandCollectionOperationListResult(arguments, resultCollectionArgumentNumber, sourceCollectionArgumentNumber,
+					numberOfCoreArguments, slice);
+		}
+	}
+
+	public boolean notNthSlice(List<BuiltInArgument> arguments) throws BuiltInException
+	{
+		final int resultCollectionArgumentNumber = 0, sourceCollectionArgumentNumber = 1, nArgumentNumber = 2, sliceSizeArgumentNumber = 3, numberOfCoreArguments = 4;
+
+		if (getIsInConsequent())
+			return true; // Non collection operator that is post processed - ignore
+		else {
+			List<BuiltInArgument> sortedList = getSortedListInSingleOperandCollectionOperation(arguments, sourceCollectionArgumentNumber, numberOfCoreArguments);
+			int n = getArgumentAsAPositiveInteger(nArgumentNumber, arguments) - 1; // 1-offset for user, 0 for processing
+			int sliceSize = getArgumentAsAPositiveInteger(sliceSizeArgumentNumber, arguments);
+			List<BuiltInArgument> notSlice = new ArrayList<BuiltInArgument>();
+
+			if (!sortedList.isEmpty() && n >= 0 && n < sortedList.size()) {
+				int startIndex = n;
+				int finishIndex = n + sliceSize - 1;
+				for (int index = 0; index < sortedList.size(); index++)
+					if (index < startIndex || index > finishIndex)
+						notSlice.add(sortedList.get(index));
+			}
+
+			return processSingleOperandCollectionOperationListResult(arguments, resultCollectionArgumentNumber, sourceCollectionArgumentNumber,
+					numberOfCoreArguments, notSlice);
+		}
+	}
+
+	public boolean nthGreatestSlice(List<BuiltInArgument> arguments) throws BuiltInException
+	{
+		final int resultCollectionArgumentNumber = 0, sourceCollectionArgumentNumber = 1, nArgumentNumber = 2, sliceSizeArgumentNumber = 3, numberOfCoreArguments = 4;
+
+		if (getIsInConsequent())
+			return true; // Non collection operator that is post processed - ignore
+		else {
+			List<BuiltInArgument> sortedList = getSortedListInSingleOperandCollectionOperation(arguments, sourceCollectionArgumentNumber, numberOfCoreArguments);
+			int n = getArgumentAsAPositiveInteger(nArgumentNumber, arguments);
+			List<BuiltInArgument> slice = new ArrayList<BuiltInArgument>();
+			int sliceSize = getArgumentAsAPositiveInteger(sliceSizeArgumentNumber, arguments);
+
+			if (!sortedList.isEmpty() && n > 0) {
+				int startIndex = sortedList.size() - n;
+				int finishIndex = startIndex + sliceSize - 1;
+				if (startIndex < 0)
+					startIndex = 0;
+				for (int index = startIndex; index <= finishIndex && index < sortedList.size(); index++)
+					slice.add(sortedList.get(index));
+			}
+
+			return processSingleOperandCollectionOperationListResult(arguments, resultCollectionArgumentNumber, sourceCollectionArgumentNumber,
+					numberOfCoreArguments, slice);
+		}
+	}
+
+	public boolean notNthGreatestSlice(List<BuiltInArgument> arguments) throws BuiltInException
+	{
+		final int resultCollectionArgumentNumber = 0, sourceCollectionArgumentNumber = 1, nArgumentNumber = 2, sliceSizeArgumentNumber = 3, numberOfCoreArguments = 4;
+
+		if (getIsInConsequent())
+			return true; // Non collection operator that is post processed - ignore
+		else {
+			List<BuiltInArgument> sortedList = getSortedListInSingleOperandCollectionOperation(arguments, sourceCollectionArgumentNumber, numberOfCoreArguments);
+			int n = getArgumentAsAPositiveInteger(nArgumentNumber, arguments);
+			int sliceSize = getArgumentAsAPositiveInteger(sliceSizeArgumentNumber, arguments);
+			List<BuiltInArgument> slice = new ArrayList<BuiltInArgument>();
+
+			if (!sortedList.isEmpty() && n > 0 && n <= sortedList.size()) {
+				int startIndex = sortedList.size() - n;
+				int finishIndex = startIndex + sliceSize - 1;
+				for (int index = 0; index < sortedList.size(); index++)
+					if (index < startIndex || index > finishIndex)
+						slice.add(sortedList.get(index));
+			}
+
+			return processSingleOperandCollectionOperationListResult(arguments, resultCollectionArgumentNumber, sourceCollectionArgumentNumber,
+					numberOfCoreArguments, slice);
+		}
+	}
+
+	public boolean notNth(List<BuiltInArgument> arguments) throws BuiltInException
+	{
+		final int resultCollectionArgumentNumber = 0, sourceCollectionArgumentNumber = 1, nArgumentNumber = 2, numberOfCoreArguments = 3;
+
+		if (getIsInConsequent())
+			return true; // Non collection operator that is post processed - ignore
+		else {
+			List<BuiltInArgument> sortedList = getSortedListInSingleOperandCollectionOperation(arguments, sourceCollectionArgumentNumber, numberOfCoreArguments);
+			int n = getArgumentAsAPositiveInteger(nArgumentNumber, arguments) - 1; // 1-offset for user, 0 for processing
+
+			if (!sortedList.isEmpty() && n >= 0 && n < sortedList.size())
+				sortedList.remove(n);
+
+			return processSingleOperandCollectionOperationListResult(arguments, resultCollectionArgumentNumber, sourceCollectionArgumentNumber,
+					numberOfCoreArguments, sortedList);
+		}
+	}
+
+	public boolean notGreatest(List<BuiltInArgument> arguments) throws BuiltInException
+	{
+		final int resultCollectionArgumentNumber = 0, sourceCollectionArgumentNumber = 1, numberOfCoreArguments = 2;
+
+		if (getIsInConsequent())
+			return true; // Non collection operator that is post processed - ignore
+		else {
+			List<BuiltInArgument> sortedList = getSortedListInSingleOperandCollectionOperation(arguments, sourceCollectionArgumentNumber, numberOfCoreArguments);
+
+			if (!sortedList.isEmpty())
+				sortedList.remove(sortedList.size() - 1);
+
+			return processSingleOperandCollectionOperationListResult(arguments, resultCollectionArgumentNumber, sourceCollectionArgumentNumber,
+					numberOfCoreArguments, sortedList);
+		}
+	}
+
+	public boolean greatestN(List<BuiltInArgument> arguments) throws BuiltInException
+	{
+		final int resultCollectionArgumentNumber = 0, sourceCollectionArgumentNumber = 1, nArgumentNumber = 2, numberOfCoreArguments = 3;
+
+		if (getIsInConsequent())
+			return true; // Non collection operator that is post processed - ignore
+		else {
+			List<BuiltInArgument> sortedList = getSortedListInSingleOperandCollectionOperation(arguments, sourceCollectionArgumentNumber, numberOfCoreArguments);
+			int n = getArgumentAsAPositiveInteger(nArgumentNumber, arguments);
+			List<BuiltInArgument> greatestN = new ArrayList<BuiltInArgument>();
+
+			if (!sortedList.isEmpty() && n > 0) {
+				int startIndex = sortedList.size() - n;
+				if (startIndex < 0)
+					startIndex = 0;
+				for (int i = startIndex; i < sortedList.size(); i++)
+					greatestN.add(sortedList.get(i));
+			}
+
+			return processSingleOperandCollectionOperationListResult(arguments, resultCollectionArgumentNumber, sourceCollectionArgumentNumber,
+					numberOfCoreArguments, greatestN);
+		}
+	}
+
+	public boolean notGreatestN(List<BuiltInArgument> arguments) throws BuiltInException
+	{
+		final int resultCollectionArgumentNumber = 0, sourceCollectionArgumentNumber = 1, nArgumentNumber = 2, numberOfCoreArguments = 3;
+
+		if (getIsInConsequent())
+			return true; // Non collection operator that is post processed - ignore
+		else {
+			List<BuiltInArgument> sortedList = getSortedListInSingleOperandCollectionOperation(arguments, sourceCollectionArgumentNumber, numberOfCoreArguments);
+			int n = getArgumentAsAPositiveInteger(nArgumentNumber, arguments);
+			List<BuiltInArgument> notGreatestN = new ArrayList<BuiltInArgument>();
+
+			if (!sortedList.isEmpty() && n > 0) {
+				int startIndex = sortedList.size() - n;
+				if (startIndex < 0)
+					startIndex = 0;
+				for (int i = 0; i < startIndex; i++)
+					notGreatestN.add(sortedList.get(i));
+			}
+
+			return processSingleOperandCollectionOperationListResult(arguments, resultCollectionArgumentNumber, sourceCollectionArgumentNumber,
+					numberOfCoreArguments, notGreatestN);
+		}
+	}
+
+	public boolean notLeast(List<BuiltInArgument> arguments) throws BuiltInException
+	{
+		final int resultCollectionArgumentNumber = 0, sourceCollectionArgumentNumber = 1, numberOfCoreArguments = 2;
+
+		if (getIsInConsequent())
+			return true; // Non collection operator that is post processed - ignore
+		else {
+			List<BuiltInArgument> sortedList = getSortedListInSingleOperandCollectionOperation(arguments, sourceCollectionArgumentNumber, numberOfCoreArguments);
+
+			if (!sortedList.isEmpty())
+				sortedList.remove(0); // Remove the first (least) element; if there are multiple element with same least value, they will not be removed
+
+			return processSingleOperandCollectionOperationListResult(arguments, resultCollectionArgumentNumber, sourceCollectionArgumentNumber,
+					numberOfCoreArguments, sortedList);
+		}
+	}
+
+	public boolean leastN(List<BuiltInArgument> arguments) throws BuiltInException
+	{
+		final int resultCollectionArgumentNumber = 0, sourceCollectionArgumentNumber = 1, nArgumentNumber = 2, numberOfCoreArguments = 3;
+
+		if (getIsInConsequent())
+			return true; // Non collection operator that is post processed - ignore
+		else {
+			List<BuiltInArgument> sortedList = getSortedListInSingleOperandCollectionOperation(arguments, sourceCollectionArgumentNumber, numberOfCoreArguments);
+			int n = getArgumentAsAPositiveInteger(nArgumentNumber, arguments) - 1;
+			List<BuiltInArgument> leastN = new ArrayList<BuiltInArgument>();
+
+			for (int i = 0; i <= n && i < sortedList.size(); i++)
+				leastN.add(sortedList.get(i));
+
+			return processSingleOperandCollectionOperationListResult(arguments, resultCollectionArgumentNumber, sourceCollectionArgumentNumber,
+					numberOfCoreArguments, leastN);
+		}
+	}
+
+	public boolean notLeastN(List<BuiltInArgument> arguments) throws BuiltInException
+	{
+		final int resultCollectionArgumentNumber = 0, sourceCollectionArgumentNumber = 1, nArgumentNumber = 2, numberOfCoreArguments = 3;
+
+		if (getIsInConsequent())
+			return true; // Non collection operator that is post processed - ignore
+		else {
+			List<BuiltInArgument> sortedList = getSortedListInSingleOperandCollectionOperation(arguments, sourceCollectionArgumentNumber, numberOfCoreArguments);
+			int n = getArgumentAsAPositiveInteger(nArgumentNumber, arguments);
+			List<BuiltInArgument> notLeastN = new ArrayList<BuiltInArgument>();
+
+			for (int i = n; i >= 0 && i < sortedList.size(); i++)
+				notLeastN.add(sortedList.get(i));
+
+			return processSingleOperandCollectionOperationListResult(arguments, resultCollectionArgumentNumber, sourceCollectionArgumentNumber,
+					numberOfCoreArguments, notLeastN);
+		}
+	}
+
+	/*********************************************************************************************************************
+	 * 
+	 * SQWRL operators that work with two collections and return an element or evaluate to true or false
+	 * 
+	 *********************************************************************************************************************/
+
+	public boolean intersects(List<BuiltInArgument> arguments) throws BuiltInException
+	{
+		checkThatInAntecedent();
+
+		final int collection1ArgumentNumber = 0, collection2ArgumentNumber = 1, numberOfCoreArguments = 2;
+		String collection1Name = getCollectionName(arguments, collection1ArgumentNumber);
+		String collection2Name = getCollectionName(arguments, collection2ArgumentNumber);
+		int collection1NumberOfGroupElements = getNumberOfGroupElements(collection1Name);
+		int collection2NumberOfGroupElements = getNumberOfGroupElements(collection2Name);
+		String collection1GroupID = getCollectionGroupIDInMultiOperandCollectionOperation(arguments, collection1ArgumentNumber, numberOfCoreArguments, 0,
+				collection1NumberOfGroupElements);
+		String collection2GroupID = getCollectionGroupIDInMultiOperandCollectionOperation(arguments, collection2ArgumentNumber, numberOfCoreArguments,
+				collection1NumberOfGroupElements, collection2NumberOfGroupElements);
+		Collection<BuiltInArgument> collection1 = getCollection(collection1Name, collection1GroupID);
+		Collection<BuiltInArgument> collection2 = getCollection(collection2Name, collection2GroupID);
+
+		return !Collections.disjoint(collection1, collection2);
+	}
+
+	public boolean notIntersects(List<BuiltInArgument> arguments) throws BuiltInException
+	{
+		checkThatInAntecedent();
+		
+		return !intersects(arguments);
+	}
+
+	public boolean contains(List<BuiltInArgument> arguments) throws BuiltInException
+	{
+		checkThatInAntecedent();
+		
+		final int collection1ArgumentNumber = 0, collection2ArgumentNumber = 1, numberOfCoreArguments = 2;
+		String collection1Name = getCollectionName(arguments, collection1ArgumentNumber);
+		String collection2Name = getCollectionName(arguments, collection2ArgumentNumber);
+		int collection1NumberOfGroupElements = getNumberOfGroupElements(collection1Name);
+		int collection2NumberOfGroupElements = getNumberOfGroupElements(collection2Name);
+		String collection1GroupID = getCollectionGroupIDInMultiOperandCollectionOperation(arguments, collection1ArgumentNumber, numberOfCoreArguments, 0,
+				collection1NumberOfGroupElements);
+		String collection2GroupID = getCollectionGroupIDInMultiOperandCollectionOperation(arguments, collection2ArgumentNumber, numberOfCoreArguments,
+				collection1NumberOfGroupElements, collection2NumberOfGroupElements);
+		Collection<BuiltInArgument> collection1 = getCollection(collection1Name, collection1GroupID);
+		Collection<BuiltInArgument> collection2 = getCollection(collection2Name, collection2GroupID);
+
+		return collection1.containsAll(collection2);
+	}
+
+	public boolean notContains(List<BuiltInArgument> arguments) throws BuiltInException
+	{
+		checkThatInAntecedent();
+		
+		return !contains(arguments);
+	}
+
+	public boolean equal(List<BuiltInArgument> arguments) throws BuiltInException
+	{
+		checkThatInAntecedent();
+		
+		final int collection1ArgumentNumber = 0, collection2ArgumentNumber = 1, numberOfCoreArguments = 2;
+		String collection1Name = getCollectionName(arguments, collection1ArgumentNumber);
+		String collection2Name = getCollectionName(arguments, collection2ArgumentNumber);
+		int collection1NumberOfGroupElements = getNumberOfGroupElements(collection1Name);
+		int collection2NumberOfGroupElements = getNumberOfGroupElements(collection2Name);
+		String collection1GroupID = getCollectionGroupIDInMultiOperandCollectionOperation(arguments, collection1ArgumentNumber, numberOfCoreArguments, 0,
+				collection1NumberOfGroupElements);
+		String collection2GroupID = getCollectionGroupIDInMultiOperandCollectionOperation(arguments, collection2ArgumentNumber, numberOfCoreArguments,
+				collection1NumberOfGroupElements, collection2NumberOfGroupElements);
+
+		if (collection1GroupID.equals(collection2GroupID))
+			return true; // The same collection was passed
+		else { // Different collections - compare them
+			Collection<BuiltInArgument> collection1 = getCollection(collection1Name, collection1GroupID);
+			Collection<BuiltInArgument> collection2 = getCollection(collection2Name, collection2GroupID);
+			return collection1.equals(collection2); // Remember, sets and lists will not be equal
+		}
+	}
+
+	public boolean notEqual(List<BuiltInArgument> arguments) throws BuiltInException
+	{
+		checkThatInAntecedent();
+		
+		return !equal(arguments);
+	}
+
+	/*********************************************************************************************************************
+	 * 
+	 * SQWRL operators that work with two collections and return a collection
+	 * 
+	 *********************************************************************************************************************/
+
+	public boolean intersection(List<BuiltInArgument> arguments) throws BuiltInException
+	{
+		checkThatInAntecedent();
+		
+		final int resultCollectionArgumentNumber = 0, collection1ArgumentNumber = 1, collection2ArgumentNumber = 2, numberOfCoreArguments = 3;
+		String resultCollectionName = getCollectionName(arguments, resultCollectionArgumentNumber);
+		String collection1Name = getCollectionName(arguments, collection1ArgumentNumber);
+		String collection2Name = getCollectionName(arguments, collection2ArgumentNumber);
+		int collection1NumberOfGroupElements = getNumberOfGroupElements(collection1Name);
+		int collection2NumberOfGroupElements = getNumberOfGroupElements(collection2Name);
+		int collectionResultNumberOfGroupElements = collection1NumberOfGroupElements + collection2NumberOfGroupElements;
+		String resultCollectionGroupID = getCollectionGroupIDInMultiOperandCollectionOperation(arguments, resultCollectionArgumentNumber, numberOfCoreArguments, 0,
+				collectionResultNumberOfGroupElements);
+		String collection1GroupID = getCollectionGroupIDInMultiOperandCollectionOperation(arguments, collection1ArgumentNumber, numberOfCoreArguments, 0,
+				collection1NumberOfGroupElements);
+		String collection2GroupID = getCollectionGroupIDInMultiOperandCollectionOperation(arguments, collection2ArgumentNumber, numberOfCoreArguments,
+				0 + collection1NumberOfGroupElements, collection2NumberOfGroupElements);
+		Collection<BuiltInArgument> collection1 = getCollection(collection1Name, collection1GroupID);
+		Collection<BuiltInArgument> collection2 = getCollection(collection2Name, collection2GroupID);
+		Collection<BuiltInArgument> intersection = new HashSet<BuiltInArgument>(collection1);
+
+		intersection.retainAll(collection2);
+
+		if (!isCollection(resultCollectionName, resultCollectionGroupID))
+			recordCollection(resultCollectionName, resultCollectionGroupID, intersection);
+
+		if (isUnboundArgument(resultCollectionArgumentNumber, arguments))
+			arguments.get(resultCollectionArgumentNumber).setBuiltInResult(createCollectionArgument(resultCollectionName, resultCollectionGroupID));
+
+		return true;
+	}
+
+	public boolean append(List<BuiltInArgument> arguments) throws BuiltInException
+	{
+		checkThatInAntecedent();
+		
+		final int resultCollectionArgumentNumber = 0, collection1ArgumentNumber = 1, collection2ArgumentNumber = 2, numberOfCoreArguments = 3;
+		String resultCollectionName = getCollectionName(arguments, resultCollectionArgumentNumber);
+		String collection1Name = getCollectionName(arguments, collection1ArgumentNumber);
+		String collection2Name = getCollectionName(arguments, collection2ArgumentNumber);
+		int collection1NumberOfGroupElements = getNumberOfGroupElements(collection1Name);
+		int collection2NumberOfGroupElements = getNumberOfGroupElements(collection2Name);
+		int resultCollectionNumberOfGroupElements = collection1NumberOfGroupElements + collection2NumberOfGroupElements;
+		String collection1GroupID = getCollectionGroupIDInMultiOperandCollectionOperation(arguments, collection1ArgumentNumber, numberOfCoreArguments, 0,
+				collection1NumberOfGroupElements);
+		String collection2GroupID = getCollectionGroupIDInMultiOperandCollectionOperation(arguments, collection2ArgumentNumber, numberOfCoreArguments,
+				0 + collection1NumberOfGroupElements, collection2NumberOfGroupElements);
+		String resultCollectionGroupID = getCollectionGroupIDInMultiOperandCollectionOperation(arguments, resultCollectionArgumentNumber, numberOfCoreArguments, 0,
+				resultCollectionNumberOfGroupElements);
+		Collection<BuiltInArgument> collection1 = getCollection(collection1Name, collection1GroupID);
+		Collection<BuiltInArgument> collection2 = getCollection(collection2Name, collection2GroupID);
+		List<BuiltInArgument> resultCollection = new ArrayList<BuiltInArgument>(collection1);
+
+		resultCollection.addAll(collection2);
+
+		if (!isCollection(resultCollectionName, resultCollectionGroupID))
+			recordCollection(resultCollectionName, resultCollectionGroupID, resultCollection);
+
+		if (isUnboundArgument(resultCollectionArgumentNumber, arguments))
+			arguments.get(resultCollectionArgumentNumber).setBuiltInResult(createCollectionArgument(resultCollectionName, resultCollectionGroupID));
+
+		return true;
+	}
+
+	public boolean union(List<BuiltInArgument> arguments) throws BuiltInException
+	{
+		checkThatInAntecedent();
+		
+		final int resultCollectionArgumentNumber = 0, collection1ArgumentNumber = 1, collection2ArgumentNumber = 2, numberOfCoreArguments = 3;
+		String resultCollectionName = getCollectionName(arguments, resultCollectionArgumentNumber);
+		String collection1Name = getCollectionName(arguments, collection1ArgumentNumber);
+		String collection2Name = getCollectionName(arguments, collection2ArgumentNumber);
+		int collection1NumberOfGroupElements = getNumberOfGroupElements(collection1Name);
+		int collection2NumberOfGroupElements = getNumberOfGroupElements(collection2Name);
+		int resultCollectionNumberOfGroupElements = collection1NumberOfGroupElements + collection2NumberOfGroupElements;
+		String collection1GroupID = getCollectionGroupIDInMultiOperandCollectionOperation(arguments, collection1ArgumentNumber, numberOfCoreArguments, 0,
+				collection1NumberOfGroupElements);
+		String collection2GroupID = getCollectionGroupIDInMultiOperandCollectionOperation(arguments, collection2ArgumentNumber, numberOfCoreArguments,
+				0 + collection1NumberOfGroupElements, collection2NumberOfGroupElements);
+		String resultCollectionGroupID = getCollectionGroupIDInMultiOperandCollectionOperation(arguments, resultCollectionArgumentNumber, numberOfCoreArguments, 0,
+				resultCollectionNumberOfGroupElements);
+		Collection<BuiltInArgument> collection1 = getCollection(collection1Name, collection1GroupID);
+		Collection<BuiltInArgument> collection2 = getCollection(collection2Name, collection2GroupID);
+		Set<BuiltInArgument> union = new HashSet<BuiltInArgument>(collection1);
+
+		union.addAll(collection2);
+
+		if (!isCollection(resultCollectionName, resultCollectionGroupID))
+			recordCollection(resultCollectionName, resultCollectionGroupID, union);
+
+		if (isUnboundArgument(resultCollectionArgumentNumber, arguments))
+			arguments.get(resultCollectionArgumentNumber).setBuiltInResult(createCollectionArgument(resultCollectionName, resultCollectionGroupID));
+
+		return true;
+	}
+
+	public boolean difference(List<BuiltInArgument> arguments) throws BuiltInException
+	{
+		checkThatInAntecedent();
+		
+		final int resultCollectionArgumentNumber = 0, collection1ArgumentNumber = 1, collection2ArgumentNumber = 2, numberOfCoreArguments = 3;
+		String resultCollectionName = getCollectionName(arguments, resultCollectionArgumentNumber);
+		String collection1Name = getCollectionName(arguments, collection1ArgumentNumber);
+		String collection2Name = getCollectionName(arguments, collection2ArgumentNumber);
+		int collection1NumberOfGroupElements = getNumberOfGroupElements(collection1Name);
+		int collection2NumberOfGroupElements = getNumberOfGroupElements(collection2Name);
+		int collectionResultNumberOfGroupElements = collection1NumberOfGroupElements + collection2NumberOfGroupElements;
+		String resultCollectionGroupID = getCollectionGroupIDInMultiOperandCollectionOperation(arguments, resultCollectionArgumentNumber, numberOfCoreArguments, 0,
+				collectionResultNumberOfGroupElements);
+		String collection1GroupID = getCollectionGroupIDInMultiOperandCollectionOperation(arguments, collection1ArgumentNumber, numberOfCoreArguments, 0,
+				collection1NumberOfGroupElements);
+		String collection2GroupID = getCollectionGroupIDInMultiOperandCollectionOperation(arguments, collection2ArgumentNumber, numberOfCoreArguments,
+				0 + collection1NumberOfGroupElements, collection2NumberOfGroupElements);
+		Collection<BuiltInArgument> collection1 = getCollection(collection1Name, collection1GroupID);
+		Collection<BuiltInArgument> collection2 = getCollection(collection2Name, collection2GroupID);
+		Collection<BuiltInArgument> difference = new HashSet<BuiltInArgument>(collection1);
+
+		difference.removeAll(collection2);
+
+		if (!isCollection(resultCollectionName, resultCollectionGroupID))
+			recordCollection(resultCollectionName, resultCollectionGroupID, difference);
+
+		if (isUnboundArgument(resultCollectionArgumentNumber, arguments))
+			arguments.get(resultCollectionArgumentNumber).setBuiltInResult(createCollectionArgument(resultCollectionName, resultCollectionGroupID));
+
+		return true;
+	}
+
+	/*********************************************************************************************************************
+	 * 
+	 * Alias definitions for SQWRL operators
+	 * 
+	 *********************************************************************************************************************/
+
+	public boolean nthLast(List<BuiltInArgument> arguments) throws BuiltInException
+	{
+		return nthGreatest(arguments);
+	}
+
+	public boolean notNthLast(List<BuiltInArgument> arguments) throws BuiltInException
+	{
+		return notNthGreatest(arguments);
+	}
+
+	public boolean nthLastSlice(List<BuiltInArgument> arguments) throws BuiltInException
+	{
+		return nthGreatestSlice(arguments);
+	}
+
+	public boolean notNthLastSlice(List<BuiltInArgument> arguments) throws BuiltInException
+	{
+		return notNthGreatestSlice(arguments);
+	}
+
+	public boolean last(List<BuiltInArgument> arguments) throws BuiltInException
+	{
+		return greatest(arguments);
+	}
+
+	public boolean notLast(List<BuiltInArgument> arguments) throws BuiltInException
+	{
+		return notGreatest(arguments);
+	}
+
+	public boolean lastN(List<BuiltInArgument> arguments) throws BuiltInException
+	{
+		return greatestN(arguments);
+	}
+
+	public boolean notLastN(List<BuiltInArgument> arguments) throws BuiltInException
+	{
+		return notGreatestN(arguments);
+	}
+
+	public boolean first(List<BuiltInArgument> arguments) throws BuiltInException
+	{
+		return least(arguments);
+	}
+
+	public boolean notFirst(List<BuiltInArgument> arguments) throws BuiltInException
+	{
+		return notLeast(arguments);
+	}
+
+	public boolean firstN(List<BuiltInArgument> arguments) throws BuiltInException
+	{
+		return leastN(arguments);
+	}
+
+	public boolean notFirstN(List<BuiltInArgument> arguments) throws BuiltInException
+	{
+		return notLeastN(arguments);
+	}
+
+	/*********************************************************************************************************************
+	 * 
+	 * Internal methods
+	 * 
+	 *********************************************************************************************************************/
+
+	private String getCollectionGroupIDInMake(List<BuiltInArgument> arguments) throws BuiltInException
+	{
+		// The collection is the first argument, the element is the second; subsequent arguments (if any) are group elements
+		final int collectionArgumentNumber = 0, numberOfCoreArguments = 2;
+		checkNumberOfArgumentsAtLeast(numberOfCoreArguments, arguments.size());
+
+		String queryName = getInvokingRuleName();
+		String collectionName = getCollectionName(arguments, collectionArgumentNumber);
+		int numberOfGroupArguments = arguments.size() - numberOfCoreArguments;
+		boolean hasGroupPattern = numberOfGroupArguments != 0;
+		String groupPattern = !hasGroupPattern ? "" : createInvocationPattern(getBuiltInBridge(), queryName, 0, false, arguments.subList(2, arguments.size()));
+
+		if (isBoundArgument(collectionArgumentNumber, arguments) && !collectionGroupElementNumbersMap.containsKey(collectionName)) {
+			// Collection variable already used in non collection context
+			throw new BuiltInException("collection variable ?" + arguments.get(collectionArgumentNumber).getVariableName()
+					+ " already used in non collection context");
+		}
+
+		if (hasGroupPattern) {
+			if (!collectionGroupElementNumbersMap.containsKey(collectionName))
+				collectionGroupElementNumbersMap.put(collectionName, numberOfGroupArguments);
+			else if (collectionGroupElementNumbersMap.get(collectionName) != numberOfGroupArguments) {
+				throw new BuiltInException("internal error: inconsistent number of group elements for collection " + collectionName);
+			}
+			return groupPattern;
+		} else {
+			if (collectionGroupElementNumbersMap.containsKey(collectionName)) {
+				if (collectionGroupElementNumbersMap.get(collectionName) != 0) {
+					throw new BuiltInException("internal error: inconsistent number of group elements for collection " + collectionName);
+				}
+			} else
+				collectionGroupElementNumbersMap.put(collectionName, 0);
+			return "";
+		}
+	}
+
+	private String getCollectionGroupIDInSingleCollectionOperation(List<BuiltInArgument> arguments, int collectionArgumentNumber, int coreNumberOfArguments)
+			throws BuiltInException
+	{
+		String queryName = getInvokingRuleName();
+
+		checkThatInAntecedent();
+
+		if ((arguments.size() > coreNumberOfArguments)) // Is grouped
+			return createInvocationPattern(getBuiltInBridge(), queryName, 0, false, arguments.subList(coreNumberOfArguments, arguments.size()));
+		else
+			return "";
+	}
+
+	private String getCollectionGroupIDInMultiOperandCollectionOperation(List<BuiltInArgument> arguments, int collectionArgumentNumber,
+																																				int coreNumberOfArguments, int groupArgumentOffset, int numberOfRelevantGroupArguments)
+			throws BuiltInException
+	{
+		String queryName = getInvokingRuleName();
+		String collectionName = getCollectionName(arguments, collectionArgumentNumber);
+
+		checkThatInAntecedent();
+
+		if (!collectionGroupElementNumbersMap.containsKey(collectionName))
+			collectionGroupElementNumbersMap.put(collectionName, numberOfRelevantGroupArguments);
+
+		if (numberOfRelevantGroupArguments != 0) // Is grouped
+			return createInvocationPattern(getBuiltInBridge(), queryName, 0, false,
+					arguments.subList(coreNumberOfArguments + groupArgumentOffset, coreNumberOfArguments + groupArgumentOffset + numberOfRelevantGroupArguments));
+		else
+			return "";
+	}
+
+	private boolean processSingleOperandCollectionOperationListResult(List<BuiltInArgument> arguments, int resultCollectionArgumentNumber,
+																																		int sourceCollectionArgumentNumber, int numberOfCoreArguments,
+																																		Collection<BuiltInArgument> resultList) throws BuiltInException
+	{
+		String sourceCollectionName = getCollectionName(arguments, sourceCollectionArgumentNumber);
+		String resultCollectionName = getCollectionName(arguments, resultCollectionArgumentNumber);
+		String resultCollectionGroupID = getCollectionGroupIDInSingleCollectionOperation(arguments, resultCollectionArgumentNumber, numberOfCoreArguments);
+
+		if (!isCollection(resultCollectionName, resultCollectionGroupID))
+			recordCollection(resultCollectionName, resultCollectionGroupID, resultList);
+
+		if (!collectionGroupElementNumbersMap.containsKey(resultCollectionName)) // Give it the same number of group elements as the source collection
+			collectionGroupElementNumbersMap.put(resultCollectionName, getNumberOfGroupElements(sourceCollectionName));
+
+		return processListResultArgument(arguments, resultCollectionArgumentNumber, resultCollectionName, resultCollectionGroupID, resultList);
+	}
+
+	private boolean processListResultArgument(List<BuiltInArgument> arguments, int resultArgumentNumber, String resultListName, String resultListID,
+																						Collection<BuiltInArgument> resultList) throws BuiltInException
+	{
+		checkArgumentNumber(resultArgumentNumber, arguments);
+
+		if (isUnboundArgument(resultArgumentNumber, arguments)) {
+			arguments.get(resultArgumentNumber).setBuiltInResult(createCollectionArgument(resultListName, resultListID));
+			return true;
+		} else {
+			Collection<BuiltInArgument> collection = getCollection(resultListName, resultListID);
+			return collection.equals(resultList); // Remember, sets and lists will not be equal
+		}
+	}
+
+	private SQWRLResultImpl getSQWRLUnpreparedResult(String queryURI) throws BuiltInException
+	{
+		return getBuiltInBridge().getSQWRLUnpreparedResult(queryURI);
+	}
+
+	private void checkThatElementIsComparable(BuiltInArgument element) throws BuiltInException
+	{
+		if (!(element instanceof SWRLLiteralArgument) || !((SWRLLiteralArgument)element).getLiteral().isComparable())
+			throw new BuiltInException("may only be applied to collections with comparable elements");
+	}
+
+	private Collection<BuiltInArgument> getCollectionInSingleCollectionOperation(List<BuiltInArgument> arguments, int sourceCollectionArgumentNumber,
+																																								int coreNumberOfArguments) throws BuiltInException
+	{
+		String collectionName = getCollectionName(arguments, sourceCollectionArgumentNumber);
+		String collectionGroupID = getCollectionGroupIDInSingleCollectionOperation(arguments, sourceCollectionArgumentNumber, coreNumberOfArguments);
+
+		return getCollection(collectionName, collectionGroupID);
+	}
+
+	private List<BuiltInArgument> getSortedListInSingleOperandCollectionOperation(List<BuiltInArgument> arguments, int sourceCollectionArgumentNumber,
+																																								int coreNumberOfArguments) throws BuiltInException
+	{
+		String collectionName = getCollectionName(arguments, sourceCollectionArgumentNumber);
+		String collectionGroupID = getCollectionGroupIDInSingleCollectionOperation(arguments, sourceCollectionArgumentNumber, coreNumberOfArguments);
+
+		return getSortedList(collectionName, collectionGroupID);
+	}
+
+	// We do not cache because only one built-in will typically perform an operation on a particular collection per query.
+	// Note: currently implementations may modify the returned collection.
+	private List<BuiltInArgument> getSortedList(String collectionName, String collectionGroupID) throws BuiltInException
+	{
+		Collection<BuiltInArgument> collection = getCollection(collectionName, collectionGroupID);
+		List<BuiltInArgument> result = new ArrayList<BuiltInArgument>(collection);
+		Collections.sort(result);
+
+		return result;
+	}
+
+	private List<BuiltInArgument> createBag(String collectionName, String collectionGroupID) throws BuiltInException
+	{
+		List<BuiltInArgument> bag = new ArrayList<BuiltInArgument>();
+		recordCollection(collectionName, collectionGroupID, bag);
+		bagNames.add(collectionName);
+		return bag;
+	}
+
+	private Set<BuiltInArgument> createSet(String collectionName, String collectionGroupID) throws BuiltInException
+	{
+		Set<BuiltInArgument> set = new HashSet<BuiltInArgument>();
+		recordCollection(collectionName, collectionGroupID, set);
+		return set;
+	}
+
+	private String getCollectionName(List<BuiltInArgument> arguments, int collectionArgumentNumber) throws BuiltInException
+	{
+		String queryName = getInvokingRuleName();
+		String collectionName = getVariableName(collectionArgumentNumber, arguments);
+		return queryName + ":" + collectionName;
+	}
+
+	private int getNumberOfGroupElements(String collectionName) throws BuiltInException
+	{
+		if (!collectionGroupElementNumbersMap.containsKey(collectionName))
+			throw new BuiltInException("internal error: invalid collection name " + collectionName + "; no group element number found");
+
+		return collectionGroupElementNumbersMap.get(collectionName);
+	}
+
+	// An ungrouped collection will have a collectionGroupID of the empty string so will not be partitioned.
+	private void recordCollection(String collectionName, String collectionGroupID, Collection<BuiltInArgument> collection) throws BuiltInException
+	{
+		if (!isCollection(collectionName)) {
+			if (isBag(collection))
+				bagNames.add(collectionName);
+			else if (isSet(collection))
+				setNames.add(collectionName);
+			else
+				throw new BuiltInException("internal error: collection " + collectionName + " with group ID " + collectionGroupID + " is neither a bag or a set");
+
+			collections.put(collectionName, new HashMap<String, Collection<BuiltInArgument>>());
+		}
+
+		if (!isCollection(collectionName, collectionGroupID)) {
+			if (isBag(collectionName) && !isBag(collection))
+				throw new BuiltInException("attempt to add non bag elements to bag " + collectionName + "; group ID=" + collectionGroupID);
+
+			if (isSet(collectionName) && !isSet(collection))
+				throw new BuiltInException("attempt to add non set elements to set " + collectionName + "; group ID=" + collectionGroupID);
+
+			collections.get(collectionName).put(collectionGroupID, collection);
+		}
+	}
+
+	private Collection<BuiltInArgument> getCollection(String collectionName, String collectionGroupID) throws BuiltInException
+	{
+		if (!isCollection(collectionName, collectionGroupID))
+			throw new BuiltInException("argument " + collectionName + " with group ID " + collectionGroupID + " does not refer to a collection");
+
+		return collections.get(collectionName).get(collectionGroupID);
+	}
+
+	private boolean isCollection(String collectionName, String collectionGroupID)
+	{
+		return collections.containsKey(collectionName) && collections.get(collectionName).containsKey(collectionGroupID);
+	}
+
+	private boolean isSet(String collectionName)
+	{
+		return setNames.contains(collectionName);
+	}
+
+	private boolean isBag(String collectionName)
+	{
+		return bagNames.contains(collectionName);
+	}
+
+	private boolean isCollection(String collectionName) throws BuiltInException
+	{
+		return collections.containsKey(collectionName);
+	}
+
+	private boolean isBag(Collection<BuiltInArgument> collection)
+	{
+		return (collection instanceof List<?>);
+	}
+
+	private boolean isSet(Collection<BuiltInArgument> collection)
+	{
+		return (collection instanceof Set<?>);
+	}
+
+	@SuppressWarnings("unused")
+	private Collection<BuiltInArgument> ungroupCollection(String collectionName) throws BuiltInException
+	{
+		if (!isCollection(collectionName))
+			throw new BuiltInException(collectionName + "is not a collection");
+		else {
+			Collection<BuiltInArgument> ungroupedCollection = isSet(collectionName) ? new HashSet<BuiltInArgument>() : new ArrayList<BuiltInArgument>();
+
+			for (String collectionGroupID : collections.get(collectionName).keySet()) {
+				ungroupedCollection.addAll(collections.get(collectionName).get(collectionGroupID));
+			}
+			return ungroupedCollection;
+		}
+	}
+
 }
