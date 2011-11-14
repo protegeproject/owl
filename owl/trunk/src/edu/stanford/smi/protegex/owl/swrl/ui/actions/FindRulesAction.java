@@ -31,7 +31,7 @@ public class FindRulesAction extends AllowableAction {
 
 
     public void actionPerformed(ActionEvent e) {
-        Collection sel = getSelection();
+        Collection<?> sel = getSelection();
         if (sel.size() == 1) {
             Object next = sel.iterator().next();
             RDFResource findInstance = null;

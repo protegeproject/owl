@@ -23,7 +23,7 @@ public class SWRLResourceNameMatcher extends OWLResourceNameMatcher
   {
   	if (leftString.endsWith("?")) {
   		Set<RDFResource> resources = new HashSet<RDFResource>();
-  		for (Iterator it = owlModel.getOWLNamedClass(SWRLNames.Cls.VARIABLE).getInstances(true).iterator(); it.hasNext();) {
+  		for (Iterator<?> it = owlModel.getOWLNamedClass(SWRLNames.Cls.VARIABLE).getInstances(true).iterator(); it.hasNext();) {
   			SWRLVariable var = (SWRLVariable)it.next();
   			if (var.getName().startsWith(prefix)) resources.add(var);
   		} // for

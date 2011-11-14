@@ -11,13 +11,12 @@ import edu.stanford.smi.protegex.owl.swrl.bridge.DataPropertyArgument;
 import edu.stanford.smi.protegex.owl.swrl.bridge.MultiArgument;
 import edu.stanford.smi.protegex.owl.swrl.bridge.ObjectPropertyArgument;
 import edu.stanford.smi.protegex.owl.swrl.bridge.SWRLBuiltInBridge;
-import edu.stanford.smi.protegex.owl.swrl.bridge.SWRLRuleEngineBridge;
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.BuiltInException;
-import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.SWRLBuiltInLibraryException;
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.InvalidBuiltInArgumentNumberException;
+import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.SWRLBuiltInLibraryException;
 import edu.stanford.smi.protegex.owl.swrl.bridge.xsd.XSDType;
-import edu.stanford.smi.protegex.owl.swrl.owlapi.SWRLLiteralArgument;
 import edu.stanford.smi.protegex.owl.swrl.owlapi.SWRLIndividualArgument;
+import edu.stanford.smi.protegex.owl.swrl.owlapi.SWRLLiteralArgument;
 import edu.stanford.smi.protegex.owl.swrl.sqwrl.DataValue;
 
 /** 

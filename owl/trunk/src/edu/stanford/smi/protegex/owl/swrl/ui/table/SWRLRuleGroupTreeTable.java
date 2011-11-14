@@ -6,7 +6,6 @@ import java.awt.event.MouseEvent;
 
 import javax.swing.AbstractAction;
 import javax.swing.JPopupMenu;
-import javax.swing.table.TableColumn;
 import javax.swing.tree.TreePath;
 
 import org.jdesktop.swingx.JXTreeTable;

@@ -11,7 +11,6 @@ import edu.stanford.smi.protegex.owl.model.OWLDatatypeProperty;
 import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
 import edu.stanford.smi.protegex.owl.model.OWLObjectProperty;
 import edu.stanford.smi.protegex.owl.model.RDFObject;
-import edu.stanford.smi.protegex.owl.model.RDFSDatatype;
 import edu.stanford.smi.protegex.owl.model.RDFSLiteral;
 import edu.stanford.smi.protegex.owl.swrl.model.SWRLAtomList;
 import edu.stanford.smi.protegex.owl.swrl.model.SWRLBuiltin;
@@ -29,7 +28,7 @@ public class SWRLFactoryTest {
 
 
     public static void main(String[] args) throws Exception {
-        Collection errors = new ArrayList();
+        Collection<?> errors = new ArrayList<Object>();
         OwlProjectFromUriCreator creator = new OwlProjectFromUriCreator();
         creator.setOntologyUri("http://protege.stanford.edu/plugins/owl/testdata/importSWRL.owl");
         creator.create(errors);

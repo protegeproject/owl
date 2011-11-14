@@ -43,7 +43,7 @@ public class DefaultSWRLAtomList extends DefaultRDFList implements SWRLAtomList
     if (isInHead) s += "\n";
     
     if (getValues() != null) {
-      Iterator iterator = getValues().iterator();
+      Iterator<?> iterator = getValues().iterator();
       while (iterator.hasNext()) {
     	  Instance instance = (Instance)iterator.next();
   			atomText = SWRLUtil.getSWRLBrowserText((RDFObject)instance, "ATOM");

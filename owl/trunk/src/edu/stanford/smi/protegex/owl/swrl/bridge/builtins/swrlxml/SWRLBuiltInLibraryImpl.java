@@ -103,7 +103,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
 			if (!elementMappings.containsKey(path)) {
 				try {
 					XPath xPath = XPath.newInstance(path);
-					Iterator elementIterator = xPath.selectNodes(doc).iterator();
+					Iterator<?> elementIterator = xPath.selectNodes(doc).iterator();
 					owlElements = new HashSet<OWLNamedIndividual>();
 
 					while (elementIterator.hasNext()) {
@@ -158,7 +158,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
 
 			try {
 				XPath xPath = XPath.newInstance(path);
-				Iterator elementIterator = xPath.selectNodes(parent).iterator();
+				Iterator<?> elementIterator = xPath.selectNodes(parent).iterator();
 				owlElements = new HashSet<OWLNamedIndividual>();
 
 				while (elementIterator.hasNext()) {
