@@ -22,89 +22,92 @@ import edu.stanford.smi.protegex.owl.swrl.ui.table.SWRLTablePanel;
 import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
 
 /**
- * A tab widget that holds the <a href="http://protege.cim3.net/cgi-bin/wiki.pl?SWRLEditorFAQ">SWRL Editor</a> and other plugins that work
- * with SWRL rules. This tab serves as the entry point to all of the GUI-based software components that work with SWRL in Protege-OWL. <p>
- *
+ * A tab widget that holds the <a href="http://protege.cim3.net/cgi-bin/wiki.pl?SWRLEditorFAQ">SWRL Editor</a> and other plugins that work with SWRL rules. This
+ * tab serves as the entry point to all of the GUI-based software components that work with SWRL in Protege-OWL.
+ * <p>
+ * 
  * Documentation is available at <a href="http://protege.cim3.net/cgi-bin/wiki.pl?SWRLTab">here</a>.
  */
 public class SWRLTab extends AbstractTabWidget
 {
-  private SWRLTablePanel panel = null;
+	private SWRLTablePanel panel = null;
 
-  public void initialize() 
-  {
-  	setLabel("SWRL Rules");
-  	setIcon(SWRLIcons.getImpsIcon());
+	public void initialize()
+	{
+		setLabel("SWRL Rules");
+		setIcon(SWRLIcons.getImpsIcon());
 
-  	activateSWRL();
-  	panel = new SWRLTablePanel((OWLModel)getKnowledgeBase(), null, this);
-	    	
-  	add(panel);
-  } 
+		activateSWRL();
+		panel = new SWRLTablePanel((OWLModel)getKnowledgeBase(), null, this);
 
-  private void activateSWRL()
-  {
-    OWLModel owlModel = (OWLModel) getKnowledgeBase();
-  
-    try {
-      if (owlModel.getProject().isMultiUserClient()) return;
-      
-      owlModel.getNamespaceManager().setPrefix(new URI(SWRLNames.SWRLA_NAMESPACE), SWRLNames.SWRLA_PREFIX);
-      owlModel.getNamespaceManager().setPrefix(new URI(SWRLNames.SQWRL_NAMESPACE), SWRLNames.SQWRL_PREFIX);
+		add(panel);
+	}
 
-      ImportHelper importHelper = new ImportHelper(owlModel);
-      boolean importsAdded  = false;
+	private void activateSWRL()
+	{
+		OWLModel owlModel = (OWLModel)getKnowledgeBase();
 
-      if (!ApplicationProperties.getBooleanProperty(SWRLNames.EXCLUDE_STANDARD_IMPORTS, false)) {
-        importsAdded |= addImport(owlModel, SWRLNames.SWRLA_IMPORT, importHelper);
-        importsAdded |= addImport(owlModel, SWRLNames.SQWRL_IMPORT, importHelper);
+		try {
+			if (owlModel.getProject().isMultiUserClient())
+				return;
 
-        importHelper.importOntologies(false);
-      } // if
+			owlModel.getNamespaceManager().setPrefix(new URI(SWRLNames.SWRLA_NAMESPACE), SWRLNames.SWRLA_PREFIX);
+			owlModel.getNamespaceManager().setPrefix(new URI(SWRLNames.SQWRL_NAMESPACE), SWRLNames.SQWRL_PREFIX);
 
-      // Make ":TO" and ":FROM" visible for dynamic expansion.
-      owlModel.getSystemFrames().getToSlot().setVisible(true);
-      owlModel.getSystemFrames().getFromSlot().setVisible(true);
-      SWRLProjectPlugin.setSWRLClassesAndPropertiesVisible(getProject(), false);
-      SWRLProjectPlugin.adjustWidgets(getProject());
+			ImportHelper importHelper = new ImportHelper(owlModel);
+			boolean importsAdded = false;
 
-      if (importsAdded)  {
-    	  ProjectView prjView = ProjectManager.getProjectManager().getCurrentProjectView();
-    	  if (prjView != null) prjView.reloadAllTabsExcept(this);
-      }
+			if (!ApplicationProperties.getBooleanProperty(SWRLNames.EXCLUDE_STANDARD_IMPORTS, false)) {
+				importsAdded |= addImport(owlModel, SWRLNames.SWRLA_IMPORT, importHelper);
+				importsAdded |= addImport(owlModel, SWRLNames.SQWRL_IMPORT, importHelper);
 
-    } catch (Exception ex) {
-      ProtegeUI.getModalDialogFactory().showErrorMessageDialog(owlModel, "Could not activate SWRLTab: " + ex +
-                                                               "\n. Your project might be in an inconsistent state now.");
-      Log.getLogger().log(Level.SEVERE, "Exception caught", ex);
-    } // try
-  } 
+				importHelper.importOntologies(false);
+			} // if
 
-  private boolean addImport(OWLModel owlModel, String importUri, ImportHelper importHelper) throws URISyntaxException 
-  {
-  	if  (owlModel.getTripleStoreModel().getTripleStore(importUri) == null) {
-  		importHelper.addImport(new URI(importUri));
-  		return true;
-   }
-  	return false;
-  }
+			// Make ":TO" and ":FROM" visible for dynamic expansion.
+			owlModel.getSystemFrames().getToSlot().setVisible(true);
+			owlModel.getSystemFrames().getFromSlot().setVisible(true);
+			SWRLProjectPlugin.setSWRLClassesAndPropertiesVisible(getProject(), false);
+			SWRLProjectPlugin.adjustWidgets(getProject());
 
-  public void reconfigure()
-  {
-    if (panel != null) {
-      remove(panel);
-      setLayout(new BorderLayout());
-      add(panel);
-    } // if
-  } 
+			if (importsAdded) {
+				ProjectView prjView = ProjectManager.getProjectManager().getCurrentProjectView();
+				if (prjView != null)
+					prjView.reloadAllTabsExcept(this);
+			}
 
-  public static boolean isSuitable(Project p, Collection errors)
-  {
-    if (p.getKnowledgeBase() instanceof OWLModel) {
-      return true;
-    } else {
-      errors.add("This tab can only be used with OWL projects.");
-      return false;
-    } // if
-  } 
-} // SWRLTab
+		} catch (Exception ex) {
+			ProtegeUI.getModalDialogFactory().showErrorMessageDialog(owlModel,
+					"Could not activate SWRLTab: " + ex + "\n. Your project might be in an inconsistent state now.");
+			Log.getLogger().log(Level.SEVERE, "Exception caught", ex);
+		}
+	}
+
+	private boolean addImport(OWLModel owlModel, String importUri, ImportHelper importHelper) throws URISyntaxException
+	{
+		if (owlModel.getTripleStoreModel().getTripleStore(importUri) == null) {
+			importHelper.addImport(new URI(importUri));
+			return true;
+		}
+		return false;
+	}
+
+	public void reconfigure()
+	{
+		if (panel != null) {
+			remove(panel);
+			setLayout(new BorderLayout());
+			add(panel);
+		} // if
+	}
+
+	public static boolean isSuitable(Project p, Collection<Object> errors)
+	{
+		if (p.getKnowledgeBase() instanceof OWLModel) {
+			return true;
+		} else {
+			errors.add("This tab can only be used with OWL projects.");
+			return false;
+		} 
+	}
+}

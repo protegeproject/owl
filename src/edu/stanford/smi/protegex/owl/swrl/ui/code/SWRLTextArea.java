@@ -6,7 +6,6 @@ import edu.stanford.smi.protege.model.Frame;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.swrl.parser.SWRLIncompleteRuleException;
 import edu.stanford.smi.protegex.owl.swrl.parser.SWRLParser;
-import edu.stanford.smi.protegex.owl.ui.code.SymbolErrorDisplay;
 import edu.stanford.smi.protegex.owl.ui.code.SymbolTextArea;
 import edu.stanford.smi.protegex.owl.ui.code.SymbolTextField;
 

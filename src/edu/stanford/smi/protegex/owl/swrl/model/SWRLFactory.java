@@ -505,15 +505,14 @@ public class SWRLFactory
 		else throw new RuntimeException("unknowl SWRL atom type " + atom1.getLocalName());
 	}
 	
-	@SuppressWarnings("unchecked") // To deal with groady non generics Protege-OWL API
 	private boolean areBuiltInAtomsEqual(SWRLBuiltinAtom atom1, SWRLBuiltinAtom atom2)
 	{
 	   if (!atom1.getBuiltin().getURI().equals(atom2.getBuiltin().getURI())) return false;   
 	    RDFList rdfList1 = atom1.getArguments();
 	    RDFList rdfList2 = atom2.getArguments();
 
-	    Iterator iterator1 = rdfList1.getValues().iterator();
-	    Iterator iterator2 = rdfList2.getValues().iterator();
+	    Iterator<?> iterator1 = rdfList1.getValues().iterator();
+	    Iterator<?> iterator2 = rdfList2.getValues().iterator();
 	    while (iterator1.hasNext()) {
 	    	if (!iterator2.hasNext()) return false;
 	    	
@@ -563,7 +562,6 @@ public class SWRLFactory
 		throw new RuntimeException("data range atoms not implemented");
 	}
 
-	@SuppressWarnings("unchecked") // To deal with groady non generics Protege-OWL API
   private boolean areAtomArgumentsEqual(Object argument1, Object argument2)
   {
     if (argument1 instanceof RDFResource) {

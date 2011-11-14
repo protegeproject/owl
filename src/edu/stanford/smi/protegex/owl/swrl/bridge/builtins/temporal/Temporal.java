@@ -4,7 +4,6 @@ package edu.stanford.smi.protegex.owl.swrl.bridge.builtins.temporal;
 import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
-import java.util.TimeZone;
 
 import edu.stanford.smi.protegex.owl.swrl.bridge.builtins.temporal.exceptions.TemporalException;
 

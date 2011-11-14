@@ -71,7 +71,7 @@ public class SWRLJavaFactory extends OWLJavaFactory {
         String typeClsName = type.getName();
         Class<? extends SimpleInstance> c = classMap.get(typeClsName);
         if (c == null) {
-            Iterator supers = type.getSuperclasses().iterator();
+            Iterator<?> supers = type.getSuperclasses().iterator();
             while (c == null && supers.hasNext()) {
                 Frame frame = (Frame) supers.next();
                 c = classMap.get(frame.getName());

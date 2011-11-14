@@ -26,7 +26,7 @@ public class EnableSWRLTabAction extends AbstractOWLModelAction {
     }
 
     @Override
-    public Class getIconResourceClass() {    
+    public Class<?> getIconResourceClass() {    
     	return SWRLIcons.class;
     }
 
