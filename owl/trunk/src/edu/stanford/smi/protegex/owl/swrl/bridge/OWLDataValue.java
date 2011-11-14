@@ -1,15 +1,15 @@
 
 package edu.stanford.smi.protegex.owl.swrl.bridge;
 
-import edu.stanford.smi.protegex.owl.swrl.owlapi.OWLLiteral;
-import edu.stanford.smi.protegex.owl.swrl.owlapi.OWLPropertyValue;
-import edu.stanford.smi.protegex.owl.swrl.owlapi.OWLTypedLiteral;
+import edu.stanford.smi.protegex.owl.swrl.portability.OWLLiteralReference;
+import edu.stanford.smi.protegex.owl.swrl.portability.OWLPropertyValueReference;
+import edu.stanford.smi.protegex.owl.swrl.portability.OWLTypedLiteralReference;
 import edu.stanford.smi.protegex.owl.swrl.sqwrl.exceptions.DataValueConversionException;
 
 /**
  * Convenience wrapper around OWLAPI classes OWLLiteral and OWLDataType
  */
-public interface OWLDataValue extends OWLPropertyValue, OWLLiteral, OWLTypedLiteral 
+public interface OWLDataValue extends OWLPropertyValueReference, OWLLiteralReference, OWLTypedLiteralReference 
 {
   // Java types
   boolean isString();

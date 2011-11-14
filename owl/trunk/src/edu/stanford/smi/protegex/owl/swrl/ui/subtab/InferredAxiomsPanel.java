@@ -11,12 +11,12 @@ import javax.swing.table.AbstractTableModel;
 
 import edu.stanford.smi.protegex.owl.swrl.SWRLRuleEngine;
 import edu.stanford.smi.protegex.owl.swrl.bridge.OWLDataValue;
-import edu.stanford.smi.protegex.owl.swrl.bridge.OWLPropertyPropertyAssertionAxiom;
-import edu.stanford.smi.protegex.owl.swrl.owlapi.OWLAxiom;
-import edu.stanford.smi.protegex.owl.swrl.owlapi.OWLClassPropertyAssertionAxiom;
-import edu.stanford.smi.protegex.owl.swrl.owlapi.OWLDataPropertyAssertionAxiom;
-import edu.stanford.smi.protegex.owl.swrl.owlapi.OWLObjectPropertyAssertionAxiom;
-import edu.stanford.smi.protegex.owl.swrl.owlapi.OWLPropertyAssertionAxiom;
+import edu.stanford.smi.protegex.owl.swrl.bridge.OWLPropertyPropertyAssertionAxiomReference;
+import edu.stanford.smi.protegex.owl.swrl.portability.OWLAxiomReference;
+import edu.stanford.smi.protegex.owl.swrl.portability.OWLClassPropertyAssertionAxiomReference;
+import edu.stanford.smi.protegex.owl.swrl.portability.OWLDataPropertyAssertionAxiomReference;
+import edu.stanford.smi.protegex.owl.swrl.portability.OWLObjectPropertyAssertionAxiomReference;
+import edu.stanford.smi.protegex.owl.swrl.portability.OWLPropertyAssertionAxiomReference;
 
 public class InferredAxiomsPanel extends JPanel 
 {
@@ -54,25 +54,25 @@ public class InferredAxiomsPanel extends JPanel
 
       if (row < 0 || row >= getRowCount()) result = new String("OUT OF BOUNDS");
       else {
-        OWLAxiom axiom = (OWLAxiom)ruleEngine.getInferredOWLAxioms().toArray()[row];
+        OWLAxiomReference axiom = (OWLAxiomReference)ruleEngine.getInferredOWLAxioms().toArray()[row];
 
-        if (axiom instanceof OWLPropertyAssertionAxiom) {
-          OWLPropertyAssertionAxiom propertyAssertionAxiom = (OWLPropertyAssertionAxiom)axiom;
+        if (axiom instanceof OWLPropertyAssertionAxiomReference) {
+          OWLPropertyAssertionAxiomReference propertyAssertionAxiom = (OWLPropertyAssertionAxiomReference)axiom;
           result = propertyAssertionAxiom.getProperty().getURI() + "(" + propertyAssertionAxiom.getSubject().getURI() + ", ";
           
-          if (axiom instanceof OWLObjectPropertyAssertionAxiom) {
-            OWLObjectPropertyAssertionAxiom objectAxiom = (OWLObjectPropertyAssertionAxiom)axiom;
+          if (axiom instanceof OWLObjectPropertyAssertionAxiomReference) {
+            OWLObjectPropertyAssertionAxiomReference objectAxiom = (OWLObjectPropertyAssertionAxiomReference)axiom;
             result += ruleEngine.uri2PrefixedName(objectAxiom.getObject().getURI());
-          } else if (axiom instanceof OWLDataPropertyAssertionAxiom) {
-            OWLDataPropertyAssertionAxiom dataAxiom = (OWLDataPropertyAssertionAxiom)axiom;
+          } else if (axiom instanceof OWLDataPropertyAssertionAxiomReference) {
+            OWLDataPropertyAssertionAxiomReference dataAxiom = (OWLDataPropertyAssertionAxiomReference)axiom;
             OWLDataValue dataValue = ruleEngine.getOWLDataValueFactory().getOWLDataValue(dataAxiom.getObject());
             if (dataValue.isString() || dataValue.isXSDType()) result += "\"" + dataAxiom.getObject() + "\"";
             else result += dataAxiom.getObject();
-          } else if (axiom instanceof OWLClassPropertyAssertionAxiom) {
-            OWLClassPropertyAssertionAxiom classAxiom = (OWLClassPropertyAssertionAxiom)axiom;
+          } else if (axiom instanceof OWLClassPropertyAssertionAxiomReference) {
+            OWLClassPropertyAssertionAxiomReference classAxiom = (OWLClassPropertyAssertionAxiomReference)axiom;
             result += ruleEngine.uri2PrefixedName(classAxiom.getObject().getURI());
-          } else if (axiom instanceof OWLPropertyPropertyAssertionAxiom) {
-            OWLPropertyPropertyAssertionAxiom propertyAxiom = (OWLPropertyPropertyAssertionAxiom)axiom;
+          } else if (axiom instanceof OWLPropertyPropertyAssertionAxiomReference) {
+            OWLPropertyPropertyAssertionAxiomReference propertyAxiom = (OWLPropertyPropertyAssertionAxiomReference)axiom;
             result += ruleEngine.uri2PrefixedName(propertyAxiom.getObject().getURI());
           } // if
           result += ")";

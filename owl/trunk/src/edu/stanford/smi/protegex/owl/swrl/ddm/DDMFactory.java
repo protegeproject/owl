@@ -2,8 +2,8 @@
 package edu.stanford.smi.protegex.owl.swrl.ddm;
 
 import edu.stanford.smi.protegex.owl.swrl.ddm.impl.*;
-import edu.stanford.smi.protegex.owl.swrl.owlapi.OWLClass;
-import edu.stanford.smi.protegex.owl.swrl.owlapi.OWLProperty;
+import edu.stanford.smi.protegex.owl.swrl.portability.OWLClassReference;
+import edu.stanford.smi.protegex.owl.swrl.portability.OWLPropertyReference;
 
 
 import java.util.*;
@@ -55,14 +55,14 @@ public class DDMFactory
     return new ForeignKeyImpl(baseTable, keyColumns, referencedTable); 
   } // createForeignKey
 
-  public static OWLClassMap createOWLClassMap(OWLClass owlClass, PrimaryKey primaryKey) { return new OWLClassMapImpl(owlClass, primaryKey); }
+  public static OWLClassMap createOWLClassMap(OWLClassReference owlClass, PrimaryKey primaryKey) { return new OWLClassMapImpl(owlClass, primaryKey); }
 
-  public static OWLObjectPropertyMap createOWLObjectPropertyMap(OWLProperty owlProperty, PrimaryKey primaryKey, ForeignKey foreignKey)
+  public static OWLObjectPropertyMap createOWLObjectPropertyMap(OWLPropertyReference owlProperty, PrimaryKey primaryKey, ForeignKey foreignKey)
   {
     return new OWLObjectPropertyMapImpl(owlProperty, primaryKey, foreignKey);
   } // OWLObjectPropertyMap
       
-  public static OWLDatatypePropertyMap createOWLDatatypePropertyMap(OWLProperty owlProperty, PrimaryKey primaryKey, Column valueColumn)
+  public static OWLDatatypePropertyMap createOWLDatatypePropertyMap(OWLPropertyReference owlProperty, PrimaryKey primaryKey, Column valueColumn)
   {
     return new OWLDatatypePropertyMapImpl(owlProperty, primaryKey, valueColumn);
   } // createOWLDatatypePropertyMap

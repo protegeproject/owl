@@ -9,8 +9,8 @@ import javax.swing.JViewport;
 import javax.swing.table.AbstractTableModel;
 
 import edu.stanford.smi.protegex.owl.swrl.SWRLRuleEngine;
-import edu.stanford.smi.protegex.owl.swrl.owlapi.OWLClass;
-import edu.stanford.smi.protegex.owl.swrl.owlapi.OWLNamedIndividual;
+import edu.stanford.smi.protegex.owl.swrl.portability.OWLClassReference;
+import edu.stanford.smi.protegex.owl.swrl.portability.OWLNamedIndividualReference;
 
 public class ImportedIndividualDeclarationsPanel extends JPanel 
 {
@@ -47,8 +47,8 @@ public class ImportedIndividualDeclarationsPanel extends JPanel
 
       if (row < 0 || row >= getRowCount()) result = new String("OUT OF BOUNDS");
       else {
-        OWLNamedIndividual owlIndividual = (OWLNamedIndividual)ruleEngine.getImportedOWLIndividuals().toArray()[row];
-        for (OWLClass owlClass : owlIndividual.getTypes()) 
+        OWLNamedIndividualReference owlIndividual = (OWLNamedIndividualReference)ruleEngine.getImportedOWLIndividuals().toArray()[row];
+        for (OWLClassReference owlClass : owlIndividual.getTypes()) 
           result += ruleEngine.uri2PrefixedName(owlClass.getURI()) + "(" + ruleEngine.uri2PrefixedName(owlIndividual.getURI()) + ") ";
       } // if
 

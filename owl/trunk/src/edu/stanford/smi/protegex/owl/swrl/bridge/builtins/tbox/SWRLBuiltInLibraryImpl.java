@@ -78,9 +78,9 @@ import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.BuiltInNotImplemente
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.OWLConversionFactoryException;
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.SWRLBuiltInLibraryException;
 import edu.stanford.smi.protegex.owl.swrl.exceptions.SWRLOWLUtilException;
-import edu.stanford.smi.protegex.owl.swrl.owlapi.OWLDataFactory;
-import edu.stanford.smi.protegex.owl.swrl.owlapi.OWLProperty;
-import edu.stanford.smi.protegex.owl.swrl.owlapi.OWLSomeValuesFrom;
+import edu.stanford.smi.protegex.owl.swrl.portability.OWLDataFactory;
+import edu.stanford.smi.protegex.owl.swrl.portability.OWLPropertyReference;
+import edu.stanford.smi.protegex.owl.swrl.portability.OWLSomeValuesFrom;
 import edu.stanford.smi.protegex.owl.swrl.util.SWRLOWLUtil;
 
 /**
@@ -1020,7 +1020,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
       if (getIsInConsequent()) {
         OWLDataFactory owlFactory = getBuiltInBridge().getOWLDataFactory();
         OWLSomeValuesFrom someValuesFrom;
-        OWLProperty onProperty;
+        OWLPropertyReference onProperty;
 
         if (isArgumentAString(2, arguments)) {
           onClassURI = SWRLOWLUtil.getFullName(getOWLModel(), getArgumentAsAString(2, arguments));

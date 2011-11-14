@@ -5,12 +5,12 @@ import java.util.List;
 import java.util.Set;
 
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.SWRLRuleEngineBridgeException;
-import edu.stanford.smi.protegex.owl.swrl.owlapi.OWLAxiom;
-import edu.stanford.smi.protegex.owl.swrl.owlapi.OWLDataFactory;
-import edu.stanford.smi.protegex.owl.swrl.owlapi.PrefixManager;
-import edu.stanford.smi.protegex.owl.swrl.owlapi.SWRLAtom;
-import edu.stanford.smi.protegex.owl.swrl.owlapi.SWRLBuiltInAtom;
-import edu.stanford.smi.protegex.owl.swrl.owlapi.SWRLRule;
+import edu.stanford.smi.protegex.owl.swrl.portability.OWLAxiomReference;
+import edu.stanford.smi.protegex.owl.swrl.portability.OWLDataFactory;
+import edu.stanford.smi.protegex.owl.swrl.portability.PrefixManager;
+import edu.stanford.smi.protegex.owl.swrl.portability.SWRLAtomReference;
+import edu.stanford.smi.protegex.owl.swrl.portability.SWRLBuiltInAtomReference;
+import edu.stanford.smi.protegex.owl.swrl.portability.SWRLRuleReference;
 
 /**
  * The SWRL Rule Engine Bridge defines the interface seen by a target implementation of a SWRL rule engine. The implementation uses this
@@ -25,7 +25,7 @@ public interface SWRLRuleEngineBridge
 	/**
    * The infer method can be used by a target rule engines to assert axioms that they infer into the bridge.
    */
-  void inferOWLAxiom(OWLAxiom axiom) throws SWRLRuleEngineBridgeException;
+  void inferOWLAxiom(OWLAxiomReference axiom) throws SWRLRuleEngineBridgeException;
   
   /**
    * This method can be used by a target rule engines to invoke built-ins. If the invoked built-in generates an argument binding, the bridge will call the 
@@ -43,12 +43,12 @@ public interface SWRLRuleEngineBridge
   OWLDataValueFactory getOWLDataValueFactory();
   
   // SQWRL-related functionality
-  boolean isSQWRLQuery(SWRLRule query);
-  boolean usesSQWRLCollections(SWRLRule query);
-  List<SWRLAtom> getSQWRLPhase1BodyAtoms(SWRLRule query);
-  List<SWRLAtom> getSQWRLPhase2BodyAtoms(SWRLRule query);
-  List<SWRLBuiltInAtom> getBuiltInAtomsFromHead(SWRLRule query, Set<String> builtInNames);
-  List<SWRLBuiltInAtom> getBuiltInAtomsFromBody(SWRLRule query, Set<String> builtInNames);
+  boolean isSQWRLQuery(SWRLRuleReference query);
+  boolean usesSQWRLCollections(SWRLRuleReference query);
+  List<SWRLAtomReference> getSQWRLPhase1BodyAtoms(SWRLRuleReference query);
+  List<SWRLAtomReference> getSQWRLPhase2BodyAtoms(SWRLRuleReference query);
+  List<SWRLBuiltInAtomReference> getBuiltInAtomsFromHead(SWRLRuleReference query, Set<String> builtInNames);
+  List<SWRLBuiltInAtomReference> getBuiltInAtomsFromBody(SWRLRuleReference query, Set<String> builtInNames);
   
   // TODO: temporary
   String uri2PrefixedName(String uri);

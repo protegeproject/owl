@@ -6,12 +6,12 @@ import java.util.Set;
 
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.SWRLBuiltInBridgeException;
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.SWRLRuleEngineBridgeException;
-import edu.stanford.smi.protegex.owl.swrl.owlapi.OWLAxiom;
-import edu.stanford.smi.protegex.owl.swrl.owlapi.OWLClass;
-import edu.stanford.smi.protegex.owl.swrl.owlapi.OWLDataFactory;
-import edu.stanford.smi.protegex.owl.swrl.owlapi.OWLNamedIndividual;
-import edu.stanford.smi.protegex.owl.swrl.owlapi.OWLOntology;
-import edu.stanford.smi.protegex.owl.swrl.owlapi.OWLPropertyAssertionAxiom;
+import edu.stanford.smi.protegex.owl.swrl.portability.OWLAxiomReference;
+import edu.stanford.smi.protegex.owl.swrl.portability.OWLClassReference;
+import edu.stanford.smi.protegex.owl.swrl.portability.OWLDataFactory;
+import edu.stanford.smi.protegex.owl.swrl.portability.OWLNamedIndividualReference;
+import edu.stanford.smi.protegex.owl.swrl.portability.OWLOntology;
+import edu.stanford.smi.protegex.owl.swrl.portability.OWLPropertyAssertionAxiomReference;
 import edu.stanford.smi.protegex.owl.swrl.sqwrl.exceptions.SQWRLException;
 import edu.stanford.smi.protegex.owl.swrl.sqwrl.impl.SQWRLResultImpl;
 
@@ -29,14 +29,14 @@ public interface SWRLBuiltInBridge
 
   // The inject methods can be used by built-ins to inject new axioms into a bridge, which will also reflect them in the underlying
   // engine. Eventually collapse all inject methods into injectOWLAxiom.
-  void injectOWLAxiom(OWLAxiom axiom) throws SWRLBuiltInBridgeException;
+  void injectOWLAxiom(OWLAxiomReference axiom) throws SWRLBuiltInBridgeException;
 
   // TODO: the following methods should be subsumed by injectOWLAxiom
-  OWLClass injectOWLClassDeclaration() throws SWRLBuiltInBridgeException;
+  OWLClassReference injectOWLClassDeclaration() throws SWRLBuiltInBridgeException;
   void injectOWLClassDeclaration(String className) throws SWRLBuiltInBridgeException;
-  OWLNamedIndividual injectOWLIndividualDeclaration() throws SWRLBuiltInBridgeException;
-  void injectOWLIndividualDeclaration(OWLNamedIndividual owlIndividual) throws SWRLBuiltInBridgeException;
-  OWLNamedIndividual injectOWLIndividualDeclaration(OWLClass owlClass) throws SWRLBuiltInBridgeException;
+  OWLNamedIndividualReference injectOWLIndividualDeclaration() throws SWRLBuiltInBridgeException;
+  void injectOWLIndividualDeclaration(OWLNamedIndividualReference owlIndividual) throws SWRLBuiltInBridgeException;
+  OWLNamedIndividualReference injectOWLIndividualDeclaration(OWLClassReference owlClass) throws SWRLBuiltInBridgeException;
 
   boolean isOWLClass(String classURI);
   boolean isOWLObjectProperty(String propertyURI);
@@ -44,9 +44,9 @@ public interface SWRLBuiltInBridge
   boolean isOWLIndividual(String individualURI);
   boolean isOWLIndividualOfClass(String individualURI, String classURI);
   
-  Set<OWLNamedIndividual> getOWLIndividuals();
+  Set<OWLNamedIndividualReference> getOWLIndividuals();
 
-  Set<OWLPropertyAssertionAxiom> getOWLPropertyAssertionAxioms(String individualURI, String propertyURI) throws SWRLBuiltInBridgeException;
+  Set<OWLPropertyAssertionAxiomReference> getOWLPropertyAssertionAxioms(String individualURI, String propertyURI) throws SWRLBuiltInBridgeException;
 
   SQWRLResultImpl getSQWRLUnpreparedResult(String queryURI) throws SQWRLException;
 

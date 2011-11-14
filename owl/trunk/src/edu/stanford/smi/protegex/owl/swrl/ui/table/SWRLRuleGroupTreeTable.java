@@ -11,7 +11,7 @@ import javax.swing.tree.TreePath;
 import org.jdesktop.swingx.JXTreeTable;
 import org.jdesktop.swingx.treetable.DefaultMutableTreeTableNode;
 
-import edu.stanford.smi.protegex.owl.swrl.owlapi.SWRLRule;
+import edu.stanford.smi.protegex.owl.swrl.portability.SWRLRuleReference;
 
 public class SWRLRuleGroupTreeTable extends JXTreeTable
 {
@@ -68,8 +68,8 @@ public class SWRLRuleGroupTreeTable extends JXTreeTable
 				if (defNode.getUserObject() instanceof SWRLRuleGroup) {
 					SWRLRuleGroup ruleGroup = (SWRLRuleGroup)defNode.getUserObject();
 					System.err.println("RuleGroup.name: " + ruleGroup.getGroupName());
-				} else if (defNode.getUserObject() instanceof SWRLRule) {
-					SWRLRule rule = (SWRLRule)defNode.getUserObject();
+				} else if (defNode.getUserObject() instanceof SWRLRuleReference) {
+					SWRLRuleReference rule = (SWRLRuleReference)defNode.getUserObject();
 					System.err.println("Rule.name: " + rule.getURI());
 				} // if
 			} // if         

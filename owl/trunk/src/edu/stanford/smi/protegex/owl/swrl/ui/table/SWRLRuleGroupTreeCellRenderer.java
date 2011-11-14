@@ -4,7 +4,7 @@ package edu.stanford.smi.protegex.owl.swrl.ui.table;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import org.jdesktop.swingx.treetable.DefaultMutableTreeTableNode;
 
-import edu.stanford.smi.protegex.owl.swrl.owlapi.SWRLRule;
+import edu.stanford.smi.protegex.owl.swrl.portability.SWRLRuleReference;
 
 public class SWRLRuleGroupTreeCellRenderer extends DefaultTreeCellRenderer
 {
@@ -15,8 +15,8 @@ public class SWRLRuleGroupTreeCellRenderer extends DefaultTreeCellRenderer
         
 		if (value instanceof DefaultMutableTreeTableNode) {
 			DefaultMutableTreeTableNode node = (DefaultMutableTreeTableNode)value;
-			if (node.getUserObject() instanceof SWRLRule) {
-				SWRLRule rule = (SWRLRule)node.getUserObject();
+			if (node.getUserObject() instanceof SWRLRuleReference) {
+				SWRLRuleReference rule = (SWRLRuleReference)node.getUserObject();
 				setText(rule.getRuleText());
 			} else if (node.getUserObject() instanceof SWRLRuleGroup) {
 				SWRLRuleGroup ruleGroup = (SWRLRuleGroup)node.getUserObject();

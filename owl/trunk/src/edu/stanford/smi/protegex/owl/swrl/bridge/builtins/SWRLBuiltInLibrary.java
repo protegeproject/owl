@@ -15,8 +15,8 @@ import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.BuiltInException;
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.InvalidBuiltInArgumentNumberException;
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.SWRLBuiltInLibraryException;
 import edu.stanford.smi.protegex.owl.swrl.bridge.xsd.XSDType;
-import edu.stanford.smi.protegex.owl.swrl.owlapi.SWRLIndividualArgument;
-import edu.stanford.smi.protegex.owl.swrl.owlapi.SWRLLiteralArgument;
+import edu.stanford.smi.protegex.owl.swrl.portability.SWRLIndividualArgumentReference;
+import edu.stanford.smi.protegex.owl.swrl.portability.SWRLLiteralArgumentReference;
 import edu.stanford.smi.protegex.owl.swrl.sqwrl.DataValue;
 
 /** 
@@ -88,7 +88,7 @@ public interface SWRLBuiltInLibrary
 	boolean isArgumentAnIndividual(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException;  
 	void checkThatArgumentIsAnIndividual(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException;
 	String getArgumentAsAnIndividualURI(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException; 
-  SWRLIndividualArgument getArgumentAsAnIndividual(int argumentNumber,	List<BuiltInArgument> arguments) throws BuiltInException; 
+  SWRLIndividualArgumentReference getArgumentAsAnIndividual(int argumentNumber,	List<BuiltInArgument> arguments) throws BuiltInException; 
 	
   // Property argument handling
   boolean isArgumentAProperty(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException;
@@ -198,7 +198,7 @@ public interface SWRLBuiltInLibrary
 	boolean processResultArgument(List<BuiltInArgument> arguments, int resultArgumentNumber,
                                 BuiltInArgument resultArgument) throws BuiltInException; 
 	boolean processResultArgument(List<BuiltInArgument> arguments, int resultArgumentNumber,
-                                SWRLLiteralArgument resultArgument) throws BuiltInException; 
+                                SWRLLiteralArgumentReference resultArgument) throws BuiltInException; 
 	boolean processResultArgument(List<BuiltInArgument> arguments, int resultArgumentNumber,
                                 short resultArgument) throws BuiltInException; 
 	boolean processResultArgument(List<BuiltInArgument> arguments, int resultArgumentNumber, 
@@ -216,19 +216,19 @@ public interface SWRLBuiltInLibrary
 	
 	// Argument creation handling
   ClassArgument createClassArgument(String classURI);
-  SWRLIndividualArgument createIndividualArgument(String individualURI);
+  SWRLIndividualArgumentReference createIndividualArgument(String individualURI);
   ObjectPropertyArgument createObjectPropertyArgument(String propertyURI);
   DataPropertyArgument createDataPropertyArgument(String propertyURI);
 
-  SWRLLiteralArgument createDataValueArgument(String s);
-  SWRLLiteralArgument createDataValueArgument(boolean b);
-  SWRLLiteralArgument createDataValueArgument(int i);
-  SWRLLiteralArgument createDataValueArgument(long l);
-  SWRLLiteralArgument createDataValueArgument(float f);
-  SWRLLiteralArgument createDataValueArgument(double d);
-  SWRLLiteralArgument createDataValueArgument(short s); 
-  SWRLLiteralArgument createDataValueArgument(Byte b);
-  SWRLLiteralArgument createDataValueArgument(XSDType xsd);
+  SWRLLiteralArgumentReference createDataValueArgument(String s);
+  SWRLLiteralArgumentReference createDataValueArgument(boolean b);
+  SWRLLiteralArgumentReference createDataValueArgument(int i);
+  SWRLLiteralArgumentReference createDataValueArgument(long l);
+  SWRLLiteralArgumentReference createDataValueArgument(float f);
+  SWRLLiteralArgumentReference createDataValueArgument(double d);
+  SWRLLiteralArgumentReference createDataValueArgument(short s); 
+  SWRLLiteralArgumentReference createDataValueArgument(Byte b);
+  SWRLLiteralArgumentReference createDataValueArgument(XSDType xsd);
 
   MultiArgument createMultiArgument();
   MultiArgument createMultiArgument(List<BuiltInArgument> arguments);

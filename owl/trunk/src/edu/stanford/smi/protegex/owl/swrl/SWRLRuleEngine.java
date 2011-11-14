@@ -5,10 +5,10 @@ import java.util.Set;
 
 import edu.stanford.smi.protegex.owl.swrl.bridge.OWLDataValueFactory;
 import edu.stanford.smi.protegex.owl.swrl.exceptions.SWRLRuleEngineException;
-import edu.stanford.smi.protegex.owl.swrl.owlapi.OWLAxiom;
-import edu.stanford.smi.protegex.owl.swrl.owlapi.OWLClass;
-import edu.stanford.smi.protegex.owl.swrl.owlapi.OWLNamedIndividual;
-import edu.stanford.smi.protegex.owl.swrl.owlapi.SWRLRule;
+import edu.stanford.smi.protegex.owl.swrl.portability.OWLAxiomReference;
+import edu.stanford.smi.protegex.owl.swrl.portability.OWLClassReference;
+import edu.stanford.smi.protegex.owl.swrl.portability.OWLNamedIndividualReference;
+import edu.stanford.smi.protegex.owl.swrl.portability.SWRLRuleReference;
 import edu.stanford.smi.protegex.owl.swrl.sqwrl.SQWRLQueryEngine;
 
 /**
@@ -63,15 +63,15 @@ public interface SWRLRuleEngine extends SQWRLQueryEngine
   int getNumberOfInjectedOWLClasses();
   int getNumberOfInjectedOWLIndividuals();
 
-  Set<OWLAxiom> getImportedOWLAxioms();
-  Set<OWLAxiom> getInferredOWLAxioms();
-  Set<OWLAxiom> getInjectedOWLAxioms();
-  Set<SWRLRule> getImportedSWRLRules();
-  Set<OWLClass> getImportedOWLClasses();
-  Set<OWLClass> getInjectedOWLClasses();
-  Set<OWLNamedIndividual> getImportedOWLIndividuals();
-  Set<OWLNamedIndividual> getReclassifiedOWLIndividuals();
-  Set<OWLNamedIndividual> getInjectedOWLIndividuals();
+  Set<OWLAxiomReference> getImportedOWLAxioms();
+  Set<OWLAxiomReference> getInferredOWLAxioms();
+  Set<OWLAxiomReference> getInjectedOWLAxioms();
+  Set<SWRLRuleReference> getImportedSWRLRules();
+  Set<OWLClassReference> getImportedOWLClasses();
+  Set<OWLClassReference> getInjectedOWLClasses();
+  Set<OWLNamedIndividualReference> getImportedOWLIndividuals();
+  Set<OWLNamedIndividualReference> getReclassifiedOWLIndividuals();
+  Set<OWLNamedIndividualReference> getInjectedOWLIndividuals();
 
   String getTargetRuleEngineName();
   String getTargetRuleEngineVersion();

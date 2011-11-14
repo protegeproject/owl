@@ -23,8 +23,8 @@ import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.InvalidBuiltInArgume
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.InvalidBuiltInArgumentNumberException;
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.SWRLBuiltInLibraryException;
 import edu.stanford.smi.protegex.owl.swrl.bridge.xsd.XSDType;
-import edu.stanford.smi.protegex.owl.swrl.owlapi.SWRLLiteralArgument;
-import edu.stanford.smi.protegex.owl.swrl.owlapi.SWRLIndividualArgument;
+import edu.stanford.smi.protegex.owl.swrl.portability.SWRLIndividualArgumentReference;
+import edu.stanford.smi.protegex.owl.swrl.portability.SWRLLiteralArgumentReference;
 import edu.stanford.smi.protegex.owl.swrl.sqwrl.DataValue;
 import edu.stanford.smi.protegex.owl.swrl.sqwrl.exceptions.DataValueConversionException;
 
@@ -375,7 +375,7 @@ public abstract class AbstractSWRLBuiltInLibrary implements SWRLBuiltInLibrary
 	public void checkThatArgumentIsADataValue(BuiltInArgument argument) throws BuiltInException
 	{
 
-		if (!(argument instanceof SWRLLiteralArgument))
+		if (!(argument instanceof SWRLLiteralArgumentReference))
 			throw new InvalidBuiltInArgumentException(makeInvalidArgumentTypeMessage(argument, "data value"));
 	} // checkThatArgumentIsADataValue
 
@@ -400,14 +400,14 @@ public abstract class AbstractSWRLBuiltInLibrary implements SWRLBuiltInLibrary
 	{
 		checkArgumentNumber(argumentNumber, arguments);
 
-		return arguments.get(argumentNumber) instanceof SWRLIndividualArgument;
+		return arguments.get(argumentNumber) instanceof SWRLIndividualArgumentReference;
 	} // isArgumentAnIndividual
 
 	public boolean isArgumentADatatypeValue(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException
 	{
 		checkArgumentNumber(argumentNumber, arguments);
 
-		return arguments.get(argumentNumber) instanceof SWRLLiteralArgument;
+		return arguments.get(argumentNumber) instanceof SWRLLiteralArgumentReference;
 	} // isArgumentADatatypeValue
 
 	public void checkThatArgumentIsAnIndividual(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException
@@ -428,14 +428,14 @@ public abstract class AbstractSWRLBuiltInLibrary implements SWRLBuiltInLibrary
 	{
 		checkThatArgumentIsAnIndividual(argumentNumber, arguments);
 
-		return ((SWRLIndividualArgument)arguments.get(argumentNumber)).getURI();
+		return ((SWRLIndividualArgumentReference)arguments.get(argumentNumber)).getURI();
 	} // getArgumentAsAnIndividualURI
 
-	public SWRLIndividualArgument getArgumentAsAnIndividual(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException
+	public SWRLIndividualArgumentReference getArgumentAsAnIndividual(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException
 	{
 		checkThatArgumentIsAnIndividual(argumentNumber, arguments);
 
-		return (SWRLIndividualArgument)arguments.get(argumentNumber);
+		return (SWRLIndividualArgumentReference)arguments.get(argumentNumber);
 	} // getArgumentAsAnIndividual
 
 	public String getArgumentAsAClassURI(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException
@@ -484,7 +484,7 @@ public abstract class AbstractSWRLBuiltInLibrary implements SWRLBuiltInLibrary
 		else if (isArgumentAProperty(argumentNumber, arguments))
 			uri = ((PropertyArgument)arguments.get(argumentNumber)).getURI();
 		else if (isArgumentAnIndividual(argumentNumber, arguments))
-			uri = ((SWRLIndividualArgument)arguments.get(argumentNumber)).getURI();
+			uri = ((SWRLIndividualArgumentReference)arguments.get(argumentNumber)).getURI();
 
 		return uri;
 	} // getArgumentAsAResourceURI
@@ -575,7 +575,7 @@ public abstract class AbstractSWRLBuiltInLibrary implements SWRLBuiltInLibrary
 	{
 		checkThatArgumentIsBound(argumentNumber, arguments);
 
-		return (arguments.get(argumentNumber) instanceof SWRLLiteralArgument);
+		return (arguments.get(argumentNumber) instanceof SWRLLiteralArgumentReference);
 	} // isArgumentADataValue
 
 	public boolean isArgumentAProperty(int argumentNumber, List<BuiltInArgument> arguments) throws BuiltInException
@@ -645,14 +645,14 @@ public abstract class AbstractSWRLBuiltInLibrary implements SWRLBuiltInLibrary
 	{
 		checkThatArgumentIsADataValue(argumentNumber, arguments);
 
-		return ((SWRLLiteralArgument)arguments.get(argumentNumber)).getLiteral();
+		return ((SWRLLiteralArgumentReference)arguments.get(argumentNumber)).getLiteral();
 	} // getArgumentAsADataValue
 
 	public DataValue getArgumentAsADataValue(BuiltInArgument argument) throws BuiltInException
 	{
 		checkThatArgumentIsADataValue(argument);
 
-		return ((SWRLLiteralArgument)argument).getLiteral();
+		return ((SWRLLiteralArgumentReference)argument).getLiteral();
 	} // getArgumentAsADataValue
 
 	// Longs
@@ -879,11 +879,11 @@ public abstract class AbstractSWRLBuiltInLibrary implements SWRLBuiltInLibrary
 			} else if (argument instanceof PropertyArgument) {
 				PropertyArgument propertyArgument = (PropertyArgument)argument;
 				message += "property with URI " + propertyArgument.getURI();
-			} else if (argument instanceof SWRLIndividualArgument) {
-				SWRLIndividualArgument individualArgument = (SWRLIndividualArgument)argument;
+			} else if (argument instanceof SWRLIndividualArgumentReference) {
+				SWRLIndividualArgumentReference individualArgument = (SWRLIndividualArgumentReference)argument;
 				message += "individual with URI " + individualArgument.getURI();
-			} else if (argument instanceof SWRLLiteralArgument) {
-				SWRLLiteralArgument dataValue = (SWRLLiteralArgument)argument;
+			} else if (argument instanceof SWRLLiteralArgumentReference) {
+				SWRLLiteralArgumentReference dataValue = (SWRLLiteralArgumentReference)argument;
 				message += "data value with value " + dataValue.toString();
 			} else
 				message += "unknown type " + argument.getClass();
@@ -912,10 +912,10 @@ public abstract class AbstractSWRLBuiltInLibrary implements SWRLBuiltInLibrary
 		} else if (argument instanceof PropertyArgument) {
 			PropertyArgument propertyArgument = (PropertyArgument)argument;
 			result = propertyArgument.getURI();
-		} else if (argument instanceof SWRLIndividualArgument) {
-			SWRLIndividualArgument individualArgument = (SWRLIndividualArgument)argument;
+		} else if (argument instanceof SWRLIndividualArgumentReference) {
+			SWRLIndividualArgumentReference individualArgument = (SWRLIndividualArgumentReference)argument;
 			result = individualArgument.getURI();
-		} else if (argument instanceof SWRLLiteralArgument) {
+		} else if (argument instanceof SWRLLiteralArgumentReference) {
 			DataValue dataValue = getArgumentAsADataValue(argument);
 			if (dataValue.isNumeric())
 				result = dataValue.getNumber();
@@ -1006,7 +1006,7 @@ public abstract class AbstractSWRLBuiltInLibrary implements SWRLBuiltInLibrary
 		return result;
 	}
 
-	public boolean processResultArgument(List<BuiltInArgument> arguments, int resultArgumentNumber, SWRLLiteralArgument resultArgument) throws BuiltInException
+	public boolean processResultArgument(List<BuiltInArgument> arguments, int resultArgumentNumber, SWRLLiteralArgumentReference resultArgument) throws BuiltInException
 	{
 		boolean result = false;
 
@@ -1063,7 +1063,7 @@ public abstract class AbstractSWRLBuiltInLibrary implements SWRLBuiltInLibrary
 		return argumentFactory.createClassArgument(classURI);
 	}
 
-	public SWRLIndividualArgument createIndividualArgument(String individualURI)
+	public SWRLIndividualArgumentReference createIndividualArgument(String individualURI)
 	{
 		return argumentFactory.createIndividualArgument(individualURI);
 	}
@@ -1078,57 +1078,57 @@ public abstract class AbstractSWRLBuiltInLibrary implements SWRLBuiltInLibrary
 		return argumentFactory.createDataPropertyArgument(propertyURI);
 	}
 
-	public SWRLLiteralArgument createDataValueArgument(DataValue dataValue)
+	public SWRLLiteralArgumentReference createDataValueArgument(DataValue dataValue)
 	{
 		return argumentFactory.createDataValueArgument(dataValue);
 	}
 	
-	public SWRLLiteralArgument createDataValueArgument(String s)
+	public SWRLLiteralArgumentReference createDataValueArgument(String s)
 	{
 		return argumentFactory.createDataValueArgument(s);
 	}
 	
-	public SWRLLiteralArgument createDataValueArgument(boolean b)
+	public SWRLLiteralArgumentReference createDataValueArgument(boolean b)
 	{
 		return argumentFactory.createDataValueArgument(b);
 	}
 	
-	public SWRLLiteralArgument createDataValueArgument(int i)
+	public SWRLLiteralArgumentReference createDataValueArgument(int i)
 	{
 		return argumentFactory.createDataValueArgument(i);
 	}
 	
-	public SWRLLiteralArgument createDataValueArgument(long l)
+	public SWRLLiteralArgumentReference createDataValueArgument(long l)
 	{
 		return argumentFactory.createDataValueArgument(l);
 	}
 	
-	public SWRLLiteralArgument createDataValueArgument(float f)
+	public SWRLLiteralArgumentReference createDataValueArgument(float f)
 	{
 		return argumentFactory.createDataValueArgument(f);
 	}
 	
-	public SWRLLiteralArgument createDataValueArgument(double d)
+	public SWRLLiteralArgumentReference createDataValueArgument(double d)
 	{
 		return argumentFactory.createDataValueArgument(d);
 	}
 	
-	public SWRLLiteralArgument createDataValueArgument(short s)
+	public SWRLLiteralArgumentReference createDataValueArgument(short s)
 	{
 		return argumentFactory.createDataValueArgument(s);
 	}
 	
-	public SWRLLiteralArgument createDataValueArgument(Byte b)
+	public SWRLLiteralArgumentReference createDataValueArgument(Byte b)
 	{
 		return argumentFactory.createDataValueArgument(b);
 	}
 	
-	public SWRLLiteralArgument createDataValueArgument(XSDType xsd)
+	public SWRLLiteralArgumentReference createDataValueArgument(XSDType xsd)
 	{
 		return argumentFactory.createDataValueArgument(xsd);
 	}
 	
-	public SWRLLiteralArgument createDataValueArgument(Object o) throws DataValueConversionException
+	public SWRLLiteralArgumentReference createDataValueArgument(Object o) throws DataValueConversionException
 	{
 		return argumentFactory.createDataValueArgument(o);
 	}

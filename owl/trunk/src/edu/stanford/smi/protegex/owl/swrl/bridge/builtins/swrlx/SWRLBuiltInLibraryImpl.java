@@ -8,8 +8,8 @@ import edu.stanford.smi.protegex.owl.swrl.bridge.BuiltInArgument;
 import edu.stanford.smi.protegex.owl.swrl.bridge.builtins.AbstractSWRLBuiltInLibrary;
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.BuiltInException;
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.SWRLRuleEngineBridgeException;
-import edu.stanford.smi.protegex.owl.swrl.owlapi.OWLClass;
-import edu.stanford.smi.protegex.owl.swrl.owlapi.OWLNamedIndividual;
+import edu.stanford.smi.protegex.owl.swrl.portability.OWLClassReference;
+import edu.stanford.smi.protegex.owl.swrl.portability.OWLNamedIndividualReference;
 
 /**
  * Implementations library for SWRL Extensions built-in methods. See <a
@@ -20,8 +20,8 @@ import edu.stanford.smi.protegex.owl.swrl.owlapi.OWLNamedIndividual;
 public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
 {
   private static String SWRLXLibraryName = "SWRLExtensionsBuiltIns";
-  private HashMap<String, OWLClass> classInvocationMap;
-  private HashMap<String, OWLNamedIndividual> individualInvocationMap;
+  private HashMap<String, OWLClassReference> classInvocationMap;
+  private HashMap<String, OWLNamedIndividualReference> individualInvocationMap;
 
   public SWRLBuiltInLibraryImpl() 
   { 
@@ -30,8 +30,8 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
 
   public void reset() 
   {
-    classInvocationMap = new HashMap<String, OWLClass>();
-    individualInvocationMap = new HashMap<String, OWLNamedIndividual>();
+    classInvocationMap = new HashMap<String, OWLClassReference>();
+    individualInvocationMap = new HashMap<String, OWLNamedIndividualReference>();
   } // reset
 
   /**
@@ -43,7 +43,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
     checkNumberOfArgumentsAtLeast(2, arguments.size());
 
     if (isUnboundArgument(0, arguments)) {
-      OWLClass owlClass = null;
+      OWLClassReference owlClass = null;
       String createInvocationPattern 
         = createInvocationPattern(getBuiltInBridge(), getInvokingRuleName(), getInvokingBuiltInIndex(), getIsInConsequent(),
                                   arguments.subList(1, arguments.size()));
@@ -68,7 +68,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
     checkNumberOfArgumentsAtLeast(2, arguments.size());
 
     if (isUnboundArgument(0, arguments)) {
-      OWLNamedIndividual owlIndividual = null;
+      OWLNamedIndividualReference owlIndividual = null;
       String createInvocationPattern 
         = createInvocationPattern(getBuiltInBridge(), getInvokingRuleName(), getInvokingBuiltInIndex(), getIsInConsequent(),
                                   arguments.subList(1, arguments.size()));

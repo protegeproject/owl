@@ -18,8 +18,8 @@ import edu.stanford.smi.protegex.owl.swrl.bridge.impl.DefaultSWRLRuleEngine;
 import edu.stanford.smi.protegex.owl.swrl.bridge.impl.OWLAxiomProcessorImpl;
 import edu.stanford.smi.protegex.owl.swrl.exceptions.SWRLRuleEngineException;
 import edu.stanford.smi.protegex.owl.swrl.model.SWRLNames;
-import edu.stanford.smi.protegex.owl.swrl.owlapi.OWLOntology;
-import edu.stanford.smi.protegex.owl.swrl.owlapi.impl.OWLOntologyImpl;
+import edu.stanford.smi.protegex.owl.swrl.portability.OWLOntology;
+import edu.stanford.smi.protegex.owl.swrl.portability.p3.P3OWLOntology;
 
 /**
  * Factory to create instances of bridges
@@ -80,7 +80,7 @@ public class SWRLRuleEngineFactory
     if (registeredSWRLRuleEngines.containsKey(pluginName)) {
 
       try {
-      	OWLOntology activeOntology = new OWLOntologyImpl(owlModel);
+      	OWLOntology activeOntology = new P3OWLOntology(owlModel);
       	OWLAxiomProcessor owlAxiomProcessor = new OWLAxiomProcessorImpl(activeOntology); 
       	bridge = new DefaultSWRLBridge(activeOntology, owlAxiomProcessor);
         targetRuleEngine = registeredSWRLRuleEngines.get(pluginName).create(bridge);
