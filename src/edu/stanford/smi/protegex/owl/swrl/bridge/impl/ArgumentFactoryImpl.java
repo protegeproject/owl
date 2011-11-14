@@ -10,21 +10,21 @@ import edu.stanford.smi.protegex.owl.swrl.bridge.DataPropertyArgument;
 import edu.stanford.smi.protegex.owl.swrl.bridge.MultiArgument;
 import edu.stanford.smi.protegex.owl.swrl.bridge.ObjectPropertyArgument;
 import edu.stanford.smi.protegex.owl.swrl.bridge.xsd.XSDType;
-import edu.stanford.smi.protegex.owl.swrl.owlapi.SWRLLiteralArgument;
-import edu.stanford.smi.protegex.owl.swrl.owlapi.SWRLIndividualArgument;
-import edu.stanford.smi.protegex.owl.swrl.owlapi.SWRLVariable;
-import edu.stanford.smi.protegex.owl.swrl.owlapi.impl.SWRLLiteralArgumentImpl;
-import edu.stanford.smi.protegex.owl.swrl.owlapi.impl.SWRLIndividualArgumentImpl;
-import edu.stanford.smi.protegex.owl.swrl.owlapi.impl.SWRLVariableImpl;
+import edu.stanford.smi.protegex.owl.swrl.portability.SWRLIndividualArgumentReference;
+import edu.stanford.smi.protegex.owl.swrl.portability.SWRLLiteralArgumentReference;
+import edu.stanford.smi.protegex.owl.swrl.portability.SWRLVariableReference;
+import edu.stanford.smi.protegex.owl.swrl.portability.p3.P3SWRLIndividualArgumentReference;
+import edu.stanford.smi.protegex.owl.swrl.portability.p3.P3SWRLLiteralArgumentReference;
+import edu.stanford.smi.protegex.owl.swrl.portability.p3.P3SWRLVariableReference;
 import edu.stanford.smi.protegex.owl.swrl.sqwrl.DataValue;
 import edu.stanford.smi.protegex.owl.swrl.sqwrl.exceptions.DataValueConversionException;
 import edu.stanford.smi.protegex.owl.swrl.sqwrl.impl.DataValueImpl;
 
 public class ArgumentFactoryImpl extends ArgumentFactory
 {
-	public SWRLVariable createVariableArgument(String variableName)
+	public SWRLVariableReference createVariableArgument(String variableName)
 	{
-		return new SWRLVariableImpl(variableName);
+		return new P3SWRLVariableReference(variableName);
 	}
 
 	public ClassArgument createClassArgument(String classURI)
@@ -42,69 +42,69 @@ public class ArgumentFactoryImpl extends ArgumentFactory
 		return new DataPropertyArgumentImpl(propertyURI);
 	}
 
-	public SWRLIndividualArgument createIndividualArgument(String individualURI)
+	public SWRLIndividualArgumentReference createIndividualArgument(String individualURI)
 	{
-		return new SWRLIndividualArgumentImpl(individualURI);
+		return new P3SWRLIndividualArgumentReference(individualURI);
 	}
 
-	public SWRLLiteralArgument createDataValueArgument(DataValue dataValue)
+	public SWRLLiteralArgumentReference createDataValueArgument(DataValue dataValue)
 	{
-		return new SWRLLiteralArgumentImpl(dataValue);
+		return new P3SWRLLiteralArgumentReference(dataValue);
 	}
 
-	public SWRLLiteralArgument createDataValueArgument(String s)
+	public SWRLLiteralArgumentReference createDataValueArgument(String s)
 	{
-		return new SWRLLiteralArgumentImpl(new DataValueImpl(s));
+		return new P3SWRLLiteralArgumentReference(new DataValueImpl(s));
 	}
 
-	public SWRLLiteralArgument createDataValueArgument(boolean b)
+	public SWRLLiteralArgumentReference createDataValueArgument(boolean b)
 	{
-		return new SWRLLiteralArgumentImpl(new DataValueImpl(b));
+		return new P3SWRLLiteralArgumentReference(new DataValueImpl(b));
 	}
 
-	public SWRLLiteralArgument createDataValueArgument(Boolean b)
+	public SWRLLiteralArgumentReference createDataValueArgument(Boolean b)
 	{
-		return new SWRLLiteralArgumentImpl(new DataValueImpl(b));
+		return new P3SWRLLiteralArgumentReference(new DataValueImpl(b));
 	}
 
-	public SWRLLiteralArgument createDataValueArgument(int i)
+	public SWRLLiteralArgumentReference createDataValueArgument(int i)
 	{
-		return new SWRLLiteralArgumentImpl(new DataValueImpl(i));
+		return new P3SWRLLiteralArgumentReference(new DataValueImpl(i));
 	}
 
-	public SWRLLiteralArgument createDataValueArgument(long l)
+	public SWRLLiteralArgumentReference createDataValueArgument(long l)
 	{
-		return new SWRLLiteralArgumentImpl(new DataValueImpl(l));
+		return new P3SWRLLiteralArgumentReference(new DataValueImpl(l));
 	}
 
-	public SWRLLiteralArgument createDataValueArgument(float f)
+	public SWRLLiteralArgumentReference createDataValueArgument(float f)
 	{
-		return new SWRLLiteralArgumentImpl(new DataValueImpl(f));
+		return new P3SWRLLiteralArgumentReference(new DataValueImpl(f));
 	}
 
-	public SWRLLiteralArgument createDataValueArgument(double d)
+	public SWRLLiteralArgumentReference createDataValueArgument(double d)
 	{
-		return new SWRLLiteralArgumentImpl(new DataValueImpl(d));
+		return new P3SWRLLiteralArgumentReference(new DataValueImpl(d));
 	}
 
-	public SWRLLiteralArgument createDataValueArgument(short s)
+	public SWRLLiteralArgumentReference createDataValueArgument(short s)
 	{
-		return new SWRLLiteralArgumentImpl(new DataValueImpl(s));
+		return new P3SWRLLiteralArgumentReference(new DataValueImpl(s));
 	}
 
-	public SWRLLiteralArgument createDataValueArgument(Byte b)
+	public SWRLLiteralArgumentReference createDataValueArgument(Byte b)
 	{
-		return new SWRLLiteralArgumentImpl(new DataValueImpl(b));
+		return new P3SWRLLiteralArgumentReference(new DataValueImpl(b));
 	}
 
-	public SWRLLiteralArgument createDataValueArgument(XSDType xsd)
+	public SWRLLiteralArgumentReference createDataValueArgument(XSDType xsd)
 	{
-		return new SWRLLiteralArgumentImpl(new DataValueImpl(xsd));
+		return new P3SWRLLiteralArgumentReference(new DataValueImpl(xsd));
 	}
 
-	public SWRLLiteralArgument createDataValueArgument(Object o) throws DataValueConversionException
+	public SWRLLiteralArgumentReference createDataValueArgument(Object o) throws DataValueConversionException
 	{
-		return new SWRLLiteralArgumentImpl(new DataValueImpl(o));
+		return new P3SWRLLiteralArgumentReference(new DataValueImpl(o));
 	}
 
 	public MultiArgument createMultiArgument()

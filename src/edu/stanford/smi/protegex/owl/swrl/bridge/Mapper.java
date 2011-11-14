@@ -4,31 +4,31 @@ package edu.stanford.smi.protegex.owl.swrl.bridge;
 import java.util.Set;
 
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.MapperException;
-import edu.stanford.smi.protegex.owl.swrl.owlapi.OWLClass;
-import edu.stanford.smi.protegex.owl.swrl.owlapi.OWLDataPropertyAssertionAxiom;
-import edu.stanford.smi.protegex.owl.swrl.owlapi.OWLNamedIndividual;
-import edu.stanford.smi.protegex.owl.swrl.owlapi.OWLObjectPropertyAssertionAxiom;
-import edu.stanford.smi.protegex.owl.swrl.owlapi.OWLProperty;
+import edu.stanford.smi.protegex.owl.swrl.portability.OWLClassReference;
+import edu.stanford.smi.protegex.owl.swrl.portability.OWLDataPropertyAssertionAxiomReference;
+import edu.stanford.smi.protegex.owl.swrl.portability.OWLNamedIndividualReference;
+import edu.stanford.smi.protegex.owl.swrl.portability.OWLObjectPropertyAssertionAxiomReference;
+import edu.stanford.smi.protegex.owl.swrl.portability.OWLPropertyReference;
 
 public interface Mapper
 {
-  boolean isMapped(OWLClass owlClass);
-  boolean isMapped(OWLProperty owlProperty);
+  boolean isMapped(OWLClassReference owlClass);
+  boolean isMapped(OWLPropertyReference owlProperty);
 
   void open() throws MapperException;
   void close() throws MapperException;
 
-  Set<OWLNamedIndividual> mapOWLClass(OWLClass owlClass) throws MapperException;
-  Set<OWLNamedIndividual> mapOWLClass(OWLClass owlClass, OWLNamedIndividual owlIndividual) throws MapperException;
+  Set<OWLNamedIndividualReference> mapOWLClass(OWLClassReference owlClass) throws MapperException;
+  Set<OWLNamedIndividualReference> mapOWLClass(OWLClassReference owlClass, OWLNamedIndividualReference owlIndividual) throws MapperException;
 
-  Set<OWLDataPropertyAssertionAxiom> mapOWLDataProperty(OWLProperty owlProperty) throws MapperException;
-  Set<OWLDataPropertyAssertionAxiom> mapOWLDataProperty(OWLProperty owlProperty, OWLNamedIndividual subject) throws MapperException;
-  Set<OWLDataPropertyAssertionAxiom> mapOWLDataProperty(OWLProperty owlProperty, OWLDataValue value) throws MapperException;
-  Set<OWLDataPropertyAssertionAxiom> mapOWLDataProperty(OWLProperty owlProperty, OWLNamedIndividual subject, OWLDataValue value) 
+  Set<OWLDataPropertyAssertionAxiomReference> mapOWLDataProperty(OWLPropertyReference owlProperty) throws MapperException;
+  Set<OWLDataPropertyAssertionAxiomReference> mapOWLDataProperty(OWLPropertyReference owlProperty, OWLNamedIndividualReference subject) throws MapperException;
+  Set<OWLDataPropertyAssertionAxiomReference> mapOWLDataProperty(OWLPropertyReference owlProperty, OWLDataValue value) throws MapperException;
+  Set<OWLDataPropertyAssertionAxiomReference> mapOWLDataProperty(OWLPropertyReference owlProperty, OWLNamedIndividualReference subject, OWLDataValue value) 
     throws MapperException;
 
-  Set<OWLObjectPropertyAssertionAxiom> mapOWLObjectProperty(OWLProperty owlProperty) throws MapperException;
-  Set<OWLObjectPropertyAssertionAxiom> mapOWLObjectProperty(OWLProperty owlProperty, OWLNamedIndividual subject) throws MapperException;
-  Set<OWLObjectPropertyAssertionAxiom> mapOWLObjectProperty(OWLProperty owlProperty, OWLNamedIndividual subject, OWLNamedIndividual object) 
+  Set<OWLObjectPropertyAssertionAxiomReference> mapOWLObjectProperty(OWLPropertyReference owlProperty) throws MapperException;
+  Set<OWLObjectPropertyAssertionAxiomReference> mapOWLObjectProperty(OWLPropertyReference owlProperty, OWLNamedIndividualReference subject) throws MapperException;
+  Set<OWLObjectPropertyAssertionAxiomReference> mapOWLObjectProperty(OWLPropertyReference owlProperty, OWLNamedIndividualReference subject, OWLNamedIndividualReference object) 
     throws MapperException;
 } // Mapper

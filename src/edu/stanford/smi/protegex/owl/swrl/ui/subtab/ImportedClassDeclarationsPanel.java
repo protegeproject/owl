@@ -9,7 +9,7 @@ import javax.swing.JViewport;
 import javax.swing.table.AbstractTableModel;
 
 import edu.stanford.smi.protegex.owl.swrl.SWRLRuleEngine;
-import edu.stanford.smi.protegex.owl.swrl.owlapi.OWLClass;
+import edu.stanford.smi.protegex.owl.swrl.portability.OWLClassReference;
 
 public class ImportedClassDeclarationsPanel extends JPanel 
 {
@@ -47,7 +47,7 @@ public class ImportedClassDeclarationsPanel extends JPanel
 
       if (row < 0 || row >= getRowCount()) result = new String("OUT OF BOUNDS");
       else {
-    	  String classURI =  ruleEngine.getImportedOWLClasses().toArray(new OWLClass[0])[row].getURI();
+    	  String classURI =  ruleEngine.getImportedOWLClasses().toArray(new OWLClassReference[0])[row].getURI();
     	  result =  ruleEngine.uri2PrefixedName(classURI);
       } // if
 

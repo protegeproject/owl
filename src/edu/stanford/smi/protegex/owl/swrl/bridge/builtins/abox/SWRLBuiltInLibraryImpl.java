@@ -16,13 +16,13 @@ import edu.stanford.smi.protegex.owl.swrl.bridge.builtins.AbstractSWRLBuiltInLib
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.BuiltInException;
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.OWLConversionFactoryException;
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.SWRLBuiltInLibraryException;
-import edu.stanford.smi.protegex.owl.swrl.owlapi.OWLClass;
-import edu.stanford.smi.protegex.owl.swrl.owlapi.OWLClassAssertionAxiom;
-import edu.stanford.smi.protegex.owl.swrl.owlapi.OWLNamedIndividual;
-import edu.stanford.smi.protegex.owl.swrl.owlapi.OWLProperty;
-import edu.stanford.smi.protegex.owl.swrl.owlapi.OWLPropertyAssertionAxiom;
-import edu.stanford.smi.protegex.owl.swrl.owlapi.SWRLIndividualArgument;
-import edu.stanford.smi.protegex.owl.swrl.owlapi.impl.OWLOntologyImpl;
+import edu.stanford.smi.protegex.owl.swrl.portability.OWLClassAssertionAxiomReference;
+import edu.stanford.smi.protegex.owl.swrl.portability.OWLClassReference;
+import edu.stanford.smi.protegex.owl.swrl.portability.OWLNamedIndividualReference;
+import edu.stanford.smi.protegex.owl.swrl.portability.OWLPropertyReference;
+import edu.stanford.smi.protegex.owl.swrl.portability.OWLPropertyAssertionAxiomReference;
+import edu.stanford.smi.protegex.owl.swrl.portability.SWRLIndividualArgumentReference;
+import edu.stanford.smi.protegex.owl.swrl.portability.p3.P3OWLOntology;
 import edu.stanford.smi.protegex.owl.swrl.sqwrl.DataValue;
 import edu.stanford.smi.protegex.owl.swrl.util.SWRLOWLUtil;
 
@@ -54,8 +54,8 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
 
     if (isUnboundArgument) {
       MultiArgument multiArgument = createMultiArgument();
-      for (OWLNamedIndividual individual : getBuiltInBridge().getOWLIndividuals()) {
-      	SWRLIndividualArgument argument = createIndividualArgument(individual.getURI());
+      for (OWLNamedIndividualReference individual : getBuiltInBridge().getOWLIndividuals()) {
+      	SWRLIndividualArgumentReference argument = createIndividualArgument(individual.getURI());
       	multiArgument.addArgument(argument);
       } // for
       arguments.get(0).setBuiltInResult(multiArgument);
@@ -90,13 +90,13 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
       isObjectProperty = getBuiltInBridge().isOWLObjectProperty(propertyURI);
 
       if (getIsInConsequent()) {
-        OWLNamedIndividual subject = getBuiltInBridge().getOWLDataFactory().getOWLIndividual(individualURI);
-        OWLProperty property;
-        OWLPropertyAssertionAxiom axiom;
+        OWLNamedIndividualReference subject = getBuiltInBridge().getOWLDataFactory().getOWLIndividual(individualURI);
+        OWLPropertyReference property;
+        OWLPropertyAssertionAxiomReference axiom;
 
         if (isObjectProperty) {
-          SWRLIndividualArgument argument = getArgumentAsAnIndividual(2, arguments);
-          OWLNamedIndividual value = getBuiltInBridge().getOWLDataFactory().getOWLIndividual(argument.getURI());
+          SWRLIndividualArgumentReference argument = getArgumentAsAnIndividual(2, arguments);
+          OWLNamedIndividualReference value = getBuiltInBridge().getOWLDataFactory().getOWLIndividual(argument.getURI());
           property = getBuiltInBridge().getOWLDataFactory().getOWLObjectProperty(propertyURI);
           axiom = getBuiltInBridge().getOWLDataFactory().getOWLObjectPropertyAssertionAxiom(subject, property, value);
         } else {
@@ -136,7 +136,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
             for (Object value : SWRLOWLUtil.getDatavaluedPropertyValues(getOWLModel(), individualURI, propertyURI)) {
               if (value instanceof edu.stanford.smi.protegex.owl.model.RDFSLiteral) {
                 edu.stanford.smi.protegex.owl.model.RDFSLiteral literal = (edu.stanford.smi.protegex.owl.model.RDFSLiteral)value;
-                multiArgument.addArgument(OWLOntologyImpl.convertRDFSLiteral2DataValueArgument(getOWLModel(), literal));
+                multiArgument.addArgument(P3OWLOntology.convertRDFSLiteral2DataValueArgument(getOWLModel(), literal));
               } else {
                 multiArgument.addArgument(createDataValueArgument(value));
               } // if
@@ -264,9 +264,9 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
     try {
       if (getIsInConsequent()) {
         String classURI;
-        OWLClass owlClass;
-        OWLNamedIndividual owlIndividual;
-        OWLClassAssertionAxiom axiom;
+        OWLClassReference owlClass;
+        OWLNamedIndividualReference owlIndividual;
+        OWLClassAssertionAxiomReference axiom;
 
         if (isArgumentAString(1, arguments)) { 
           classURI = SWRLOWLUtil.getFullName(getOWLModel(), getArgumentAsAString(1, arguments));;

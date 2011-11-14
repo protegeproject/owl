@@ -1,6 +1,6 @@
 package edu.stanford.smi.protegex.owl.swrl.bridge;
 
-import edu.stanford.smi.protegex.owl.swrl.owlapi.OWLDataFactory;
+import edu.stanford.smi.protegex.owl.swrl.portability.OWLDataFactory;
 
 public class DefaultConvertor implements Convertor {
 	

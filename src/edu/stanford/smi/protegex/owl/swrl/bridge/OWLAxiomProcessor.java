@@ -5,11 +5,11 @@ import java.util.List;
 import java.util.Set;
 
 import edu.stanford.smi.protegex.owl.swrl.exceptions.SWRLRuleEngineException;
-import edu.stanford.smi.protegex.owl.swrl.owlapi.OWLAxiom;
-import edu.stanford.smi.protegex.owl.swrl.owlapi.OWLDeclarationAxiom;
-import edu.stanford.smi.protegex.owl.swrl.owlapi.SWRLAtom;
-import edu.stanford.smi.protegex.owl.swrl.owlapi.SWRLBuiltInAtom;
-import edu.stanford.smi.protegex.owl.swrl.owlapi.SWRLRule;
+import edu.stanford.smi.protegex.owl.swrl.portability.OWLAxiomReference;
+import edu.stanford.smi.protegex.owl.swrl.portability.OWLDeclarationAxiomReference;
+import edu.stanford.smi.protegex.owl.swrl.portability.SWRLAtomReference;
+import edu.stanford.smi.protegex.owl.swrl.portability.SWRLBuiltInAtomReference;
+import edu.stanford.smi.protegex.owl.swrl.portability.SWRLRuleReference;
 import edu.stanford.smi.protegex.owl.swrl.sqwrl.exceptions.SQWRLException;
 import edu.stanford.smi.protegex.owl.swrl.sqwrl.impl.SQWRLResultImpl;
 
@@ -31,12 +31,12 @@ public interface OWLAxiomProcessor
 	int getNumberOfReferencedOWLPropertyDeclarationAxioms();
   int getNumberOfReferencedOWLIndividualDeclarationAxioms();
   
-  Set<SWRLRule> getReferencedSWRLRules();
-  Set<OWLDeclarationAxiom> getReferencedOWLDeclarationAxioms();
-  Set<OWLDeclarationAxiom> getReferencedOWLClassDeclarationsAxioms();
-  Set<OWLDeclarationAxiom> getReferencedOWLPropertyDeclarationAxioms();
-  Set<OWLDeclarationAxiom> getReferencedOWLIndividualDeclarationAxioms();
-  Set<OWLAxiom> getReferencedOWLAxioms();
+  Set<SWRLRuleReference> getReferencedSWRLRules();
+  Set<OWLDeclarationAxiomReference> getReferencedOWLDeclarationAxioms();
+  Set<OWLDeclarationAxiomReference> getReferencedOWLClassDeclarationsAxioms();
+  Set<OWLDeclarationAxiomReference> getReferencedOWLPropertyDeclarationAxioms();
+  Set<OWLDeclarationAxiomReference> getReferencedOWLIndividualDeclarationAxioms();
+  Set<OWLAxiomReference> getReferencedOWLAxioms();
 
   boolean isReferencedOWLClass(String uri);
   boolean isReferencedOWLIndividual(String uri);
@@ -47,27 +47,27 @@ public interface OWLAxiomProcessor
 	Set<String> getReferencedOWLPropertyURIs();
 	Set<String> getReferencedOWLIndividualURIs();
 	
-	Set<String> getReferencedOWLClassURIs(SWRLRule ruleOrQuery);
-	Set<String> getReferencedOWLPropertyURIs(SWRLRule ruleOrQuery);
-	Set<String> getReferencedOWLIndividualURIs(SWRLRule ruleOrQuery);
+	Set<String> getReferencedOWLClassURIs(SWRLRuleReference ruleOrQuery);
+	Set<String> getReferencedOWLPropertyURIs(SWRLRuleReference ruleOrQuery);
+	Set<String> getReferencedOWLIndividualURIs(SWRLRuleReference ruleOrQuery);
 
-  SWRLRule getSWRLRule(String ruleURI) throws SWRLRuleEngineException;
+  SWRLRuleReference getSWRLRule(String ruleURI) throws SWRLRuleEngineException;
 
   boolean isSQWRLQuery(String uri);
-  SWRLRule getSQWRLQuery(String queryURI) throws SQWRLException;
-  Set<SWRLRule> getSQWRLQueries() throws SQWRLException;
+  SWRLRuleReference getSQWRLQuery(String queryURI) throws SQWRLException;
+  Set<SWRLRuleReference> getSQWRLQueries() throws SQWRLException;
   Set<String> getSQWRLQueryNames() throws SQWRLException;
 
-  List<SWRLBuiltInAtom> getBuiltInAtomsFromHead(SWRLRule ruleOrQuery);
-  List<SWRLBuiltInAtom> getBuiltInAtomsFromHead(SWRLRule ruleOrQuery, Set<String> builtInNames);
-  List<SWRLBuiltInAtom> getBuiltInAtomsFromBody(SWRLRule ruleOrQuery);
-  List<SWRLBuiltInAtom> getBuiltInAtomsFromBody(SWRLRule ruleOrQuery, Set<String> builtInNames);
+  List<SWRLBuiltInAtomReference> getBuiltInAtomsFromHead(SWRLRuleReference ruleOrQuery);
+  List<SWRLBuiltInAtomReference> getBuiltInAtomsFromHead(SWRLRuleReference ruleOrQuery, Set<String> builtInNames);
+  List<SWRLBuiltInAtomReference> getBuiltInAtomsFromBody(SWRLRuleReference ruleOrQuery);
+  List<SWRLBuiltInAtomReference> getBuiltInAtomsFromBody(SWRLRuleReference ruleOrQuery, Set<String> builtInNames);
 
   SQWRLResultImpl getSQWRLResult(String uri) throws SQWRLException;
   SQWRLResultImpl getSQWRLUnpreparedResult(String uri) throws SQWRLException;
-  List<SWRLAtom> getSQWRLPhase1BodyAtoms(SWRLRule query);
-  List<SWRLAtom> getSQWRLPhase2BodyAtoms(SWRLRule query);
-  boolean usesSQWRLCollections(SWRLRule query);
+  List<SWRLAtomReference> getSQWRLPhase1BodyAtoms(SWRLRuleReference query);
+  List<SWRLAtomReference> getSQWRLPhase2BodyAtoms(SWRLRuleReference query);
+  boolean usesSQWRLCollections(SWRLRuleReference query);
   
   String getRuleGroupName(String uri);
   void setRuleGroupName(String uri, String ruleGroupName);

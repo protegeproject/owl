@@ -7,8 +7,8 @@ import org.jdesktop.swingx.treetable.DefaultMutableTreeTableNode;
 import org.jdesktop.swingx.treetable.DefaultTreeTableModel;
 
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.OWLFactoryException;
-import edu.stanford.smi.protegex.owl.swrl.owlapi.OWLDataFactory;
-import edu.stanford.smi.protegex.owl.swrl.owlapi.SWRLRule;
+import edu.stanford.smi.protegex.owl.swrl.portability.OWLDataFactory;
+import edu.stanford.smi.protegex.owl.swrl.portability.SWRLRuleReference;
 
 public class SWRLRuleGroupTreeTableModel extends DefaultTreeTableModel
 {
@@ -17,7 +17,7 @@ public class SWRLRuleGroupTreeTableModel extends DefaultTreeTableModel
 	public static final int RuleTextColumn = 2;
 	private static final int NumberOfColumns = 3;
 	private DefaultMutableTreeTableNode rootNode;
-	private Set<SWRLRule> rules;
+	private Set<SWRLRuleReference> rules;
 
 	public SWRLRuleGroupTreeTableModel(OWLDataFactory owlFactory) throws OWLFactoryException
 	{
@@ -27,7 +27,7 @@ public class SWRLRuleGroupTreeTableModel extends DefaultTreeTableModel
 		addRules(rules);
 	}
 
-	public void addRule(SWRLRule rule)
+	public void addRule(SWRLRuleReference rule)
 	{
 		boolean existingGroupFound = false;
 
@@ -51,9 +51,9 @@ public class SWRLRuleGroupTreeTableModel extends DefaultTreeTableModel
 		}
 	}
 
-	public void addRules(Set<SWRLRule> rules)
+	public void addRules(Set<SWRLRuleReference> rules)
 	{
-		for (SWRLRule rule : rules)
+		for (SWRLRuleReference rule : rules)
 			addRule(rule);
 	}
 
@@ -87,8 +87,8 @@ public class SWRLRuleGroupTreeTableModel extends DefaultTreeTableModel
 
 		if (node instanceof DefaultMutableTreeTableNode) {
 			DefaultMutableTreeTableNode defNode = (DefaultMutableTreeTableNode)node;
-			if (defNode.getUserObject() instanceof SWRLRule) {
-				SWRLRule rule = (SWRLRule)defNode.getUserObject();
+			if (defNode.getUserObject() instanceof SWRLRuleReference) {
+				SWRLRuleReference rule = (SWRLRuleReference)defNode.getUserObject();
 				switch (column) {
 				case IsEnabledColumn:
 					result = rule.isEnabled();
@@ -118,7 +118,7 @@ public class SWRLRuleGroupTreeTableModel extends DefaultTreeTableModel
 
 		if (node instanceof DefaultMutableTreeTableNode) {
 			DefaultMutableTreeTableNode defNode = (DefaultMutableTreeTableNode)node;
-			if (defNode.getUserObject() instanceof SWRLRule) {
+			if (defNode.getUserObject() instanceof SWRLRuleReference) {
 				// SWRLRule rule = (SWRLRule)defNode.getUserObject();
 				switch (column) {
 				case IsEnabledColumn:
@@ -145,8 +145,8 @@ public class SWRLRuleGroupTreeTableModel extends DefaultTreeTableModel
 	{
 		if (node instanceof DefaultMutableTreeTableNode) {
 			DefaultMutableTreeTableNode defNode = (DefaultMutableTreeTableNode)node;
-			if (defNode.getUserObject() instanceof SWRLRule) {
-				SWRLRule rule = (SWRLRule)defNode.getUserObject();
+			if (defNode.getUserObject() instanceof SWRLRuleReference) {
+				SWRLRuleReference rule = (SWRLRuleReference)defNode.getUserObject();
 				switch (column) {
 				case IsEnabledColumn:
 					System.err.println("rule enable toggled");

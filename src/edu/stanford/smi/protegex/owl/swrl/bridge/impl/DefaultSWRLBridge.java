@@ -21,25 +21,25 @@ import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.OWLConversionFactory
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.SWRLBuiltInBridgeException;
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.SWRLRuleEngineBridgeException;
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.TargetSWRLRuleEngineException;
-import edu.stanford.smi.protegex.owl.swrl.owlapi.OWLAxiom;
-import edu.stanford.smi.protegex.owl.swrl.owlapi.OWLClass;
-import edu.stanford.smi.protegex.owl.swrl.owlapi.OWLClassAssertionAxiom;
-import edu.stanford.smi.protegex.owl.swrl.owlapi.OWLDataFactory;
-import edu.stanford.smi.protegex.owl.swrl.owlapi.OWLDataPropertyAssertionAxiom;
-import edu.stanford.smi.protegex.owl.swrl.owlapi.OWLDeclarationAxiom;
-import edu.stanford.smi.protegex.owl.swrl.owlapi.OWLEntity;
-import edu.stanford.smi.protegex.owl.swrl.owlapi.OWLNamedIndividual;
-import edu.stanford.smi.protegex.owl.swrl.owlapi.OWLObjectPropertyAssertionAxiom;
-import edu.stanford.smi.protegex.owl.swrl.owlapi.OWLOntology;
-import edu.stanford.smi.protegex.owl.swrl.owlapi.OWLProperty;
-import edu.stanford.smi.protegex.owl.swrl.owlapi.OWLPropertyAssertionAxiom;
-import edu.stanford.smi.protegex.owl.swrl.owlapi.OWLSubClassAxiom;
-import edu.stanford.smi.protegex.owl.swrl.owlapi.PrefixManager;
-import edu.stanford.smi.protegex.owl.swrl.owlapi.SWRLAtom;
-import edu.stanford.smi.protegex.owl.swrl.owlapi.SWRLBuiltInAtom;
-import edu.stanford.smi.protegex.owl.swrl.owlapi.SWRLRule;
-import edu.stanford.smi.protegex.owl.swrl.owlapi.impl.OWLDataFactoryImpl;
-import edu.stanford.smi.protegex.owl.swrl.owlapi.impl.PrefixManagerImpl;
+import edu.stanford.smi.protegex.owl.swrl.portability.OWLAxiomReference;
+import edu.stanford.smi.protegex.owl.swrl.portability.OWLClassAssertionAxiomReference;
+import edu.stanford.smi.protegex.owl.swrl.portability.OWLClassReference;
+import edu.stanford.smi.protegex.owl.swrl.portability.OWLDataFactory;
+import edu.stanford.smi.protegex.owl.swrl.portability.OWLDataPropertyAssertionAxiomReference;
+import edu.stanford.smi.protegex.owl.swrl.portability.OWLDeclarationAxiomReference;
+import edu.stanford.smi.protegex.owl.swrl.portability.OWLEntityReference;
+import edu.stanford.smi.protegex.owl.swrl.portability.OWLNamedIndividualReference;
+import edu.stanford.smi.protegex.owl.swrl.portability.OWLObjectPropertyAssertionAxiomReference;
+import edu.stanford.smi.protegex.owl.swrl.portability.OWLOntology;
+import edu.stanford.smi.protegex.owl.swrl.portability.OWLPropertyReference;
+import edu.stanford.smi.protegex.owl.swrl.portability.OWLPropertyAssertionAxiomReference;
+import edu.stanford.smi.protegex.owl.swrl.portability.OWLSubClassAxiomReference;
+import edu.stanford.smi.protegex.owl.swrl.portability.PrefixManager;
+import edu.stanford.smi.protegex.owl.swrl.portability.SWRLAtomReference;
+import edu.stanford.smi.protegex.owl.swrl.portability.SWRLBuiltInAtomReference;
+import edu.stanford.smi.protegex.owl.swrl.portability.SWRLRuleReference;
+import edu.stanford.smi.protegex.owl.swrl.portability.p3.P3OWLDataFactory;
+import edu.stanford.smi.protegex.owl.swrl.portability.p3.P3PrefixManager;
 import edu.stanford.smi.protegex.owl.swrl.sqwrl.exceptions.DataValueConversionException;
 import edu.stanford.smi.protegex.owl.swrl.sqwrl.exceptions.SQWRLException;
 import edu.stanford.smi.protegex.owl.swrl.sqwrl.impl.SQWRLResultImpl;
@@ -57,15 +57,15 @@ public class DefaultSWRLBridge implements SWRLRuleEngineBridge, SWRLBuiltInBridg
 	private OWLDataValueFactory dataValueFactory;
   private PrefixManager prefixManager;
 	
-  private Map<String, OWLNamedIndividual> inferredOWLIndividualDeclarations;
-  private Set<OWLAxiom> inferredOWLAxioms; 
+  private Map<String, OWLNamedIndividualReference> inferredOWLIndividualDeclarations;
+  private Set<OWLAxiomReference> inferredOWLAxioms; 
 
-  private HashMap<String, OWLClass> injectedOWLClassDeclarations;
-  private HashMap<String, OWLNamedIndividual> injectedOWLIndividualDeclarations;
-  private Set<OWLAxiom> injectedOWLAxioms;
+  private HashMap<String, OWLClassReference> injectedOWLClassDeclarations;
+  private HashMap<String, OWLNamedIndividualReference> injectedOWLIndividualDeclarations;
+  private Set<OWLAxiomReference> injectedOWLAxioms;
 
-  private Map<String, Map<String, Set<OWLPropertyAssertionAxiom>>> allOWLPropertyAssertionAxioms; // individualURI <propertyURI, axiom>
-  private Map<String, OWLNamedIndividual> allOWLIndividualDeclarations; 
+  private Map<String, Map<String, Set<OWLPropertyAssertionAxiomReference>>> allOWLPropertyAssertionAxioms; // individualURI <propertyURI, axiom>
+  private Map<String, OWLNamedIndividualReference> allOWLIndividualDeclarations; 
 
 	public DefaultSWRLBridge(OWLOntology activeOntology, OWLAxiomProcessor owlAxiomProcessor) throws SWRLBuiltInBridgeException 
 	{
@@ -73,10 +73,10 @@ public class DefaultSWRLBridge implements SWRLRuleEngineBridge, SWRLBuiltInBridg
 		this.owlAxiomProcessor = owlAxiomProcessor;
 		this.targetRuleEngine = null;
       
-    dataFactory = new OWLDataFactoryImpl(activeOntology);
-    injectedOWLFactory = new OWLDataFactoryImpl();   
+    dataFactory = new P3OWLDataFactory(activeOntology);
+    injectedOWLFactory = new P3OWLDataFactory();   
     dataValueFactory = OWLDataValueFactory.create();
-    prefixManager = new PrefixManagerImpl(activeOntology);
+    prefixManager = new P3PrefixManager(activeOntology);
     
     initialize();
       
@@ -93,32 +93,32 @@ public class DefaultSWRLBridge implements SWRLRuleEngineBridge, SWRLBuiltInBridg
 
   public boolean isInjectedOWLClass(String classURI) { return injectedOWLClassDeclarations.containsKey(classURI); }
   public boolean isInjectedOWLIndividual(String individualURI) { return injectedOWLIndividualDeclarations.containsKey(individualURI); }
-  public boolean isInjectedOWLAxiom(OWLAxiom axiom) { return injectedOWLAxioms.contains(axiom); }
+  public boolean isInjectedOWLAxiom(OWLAxiomReference axiom) { return injectedOWLAxioms.contains(axiom); }
 
-  public Set<OWLClass> getInjectedOWLClassDeclarations() { return new HashSet<OWLClass>(injectedOWLClassDeclarations.values()); }
-  public Set<OWLNamedIndividual> getInjectedOWLIndividualDeclarations() { return new HashSet<OWLNamedIndividual>(injectedOWLIndividualDeclarations.values()); }
-  public Set<OWLAxiom> getInjectedOWLAxioms() { return injectedOWLAxioms; }
+  public Set<OWLClassReference> getInjectedOWLClassDeclarations() { return new HashSet<OWLClassReference>(injectedOWLClassDeclarations.values()); }
+  public Set<OWLNamedIndividualReference> getInjectedOWLIndividualDeclarations() { return new HashSet<OWLNamedIndividualReference>(injectedOWLIndividualDeclarations.values()); }
+  public Set<OWLAxiomReference> getInjectedOWLAxioms() { return injectedOWLAxioms; }
 
-  public Set<OWLAxiom> getInferredOWLAxioms() { return inferredOWLAxioms; }
-  public Set<OWLNamedIndividual> getInferredOWLIndividuals() { return new HashSet<OWLNamedIndividual>(inferredOWLIndividualDeclarations.values()); }
+  public Set<OWLAxiomReference> getInferredOWLAxioms() { return inferredOWLAxioms; }
+  public Set<OWLNamedIndividualReference> getInferredOWLIndividuals() { return new HashSet<OWLNamedIndividualReference>(inferredOWLIndividualDeclarations.values()); }
   public int getNumberOfInferredOWLAxioms() { return inferredOWLAxioms.size(); }
   public int getNumberOfInferredOWLIndividuals() { return inferredOWLIndividualDeclarations.size(); }
-	public boolean isSQWRLQuery(SWRLRule query ) { return owlAxiomProcessor.isSQWRLQuery(query.getURI()); }
+	public boolean isSQWRLQuery(SWRLRuleReference query ) { return owlAxiomProcessor.isSQWRLQuery(query.getURI()); }
 	
-  public void inferOWLAxiom(OWLAxiom axiom) throws SWRLRuleEngineBridgeException
+  public void inferOWLAxiom(OWLAxiomReference axiom) throws SWRLRuleEngineBridgeException
   { 
     if (!inferredOWLAxioms.contains(axiom)) {
       inferredOWLAxioms.add(axiom); 
-      if (axiom instanceof OWLPropertyAssertionAxiom) 
-      	cacheOWLPropertyAssertionAxiom((OWLPropertyAssertionAxiom)axiom);
-      else if (axiom instanceof OWLClassAssertionAxiom) {
-        OWLClassAssertionAxiom owlClassAssertionAxiom = (OWLClassAssertionAxiom)axiom;
+      if (axiom instanceof OWLPropertyAssertionAxiomReference) 
+      	cacheOWLPropertyAssertionAxiom((OWLPropertyAssertionAxiomReference)axiom);
+      else if (axiom instanceof OWLClassAssertionAxiomReference) {
+        OWLClassAssertionAxiomReference owlClassAssertionAxiom = (OWLClassAssertionAxiomReference)axiom;
         inferOWLIndividual(owlClassAssertionAxiom.getIndividual(), owlClassAssertionAxiom.getDescription());
       } // if
     } // if
   }
   
-  private void inferOWLIndividual(OWLNamedIndividual owlIndividual, OWLClass owlClass) throws SWRLRuleEngineBridgeException 
+  private void inferOWLIndividual(OWLNamedIndividualReference owlIndividual, OWLClassReference owlClass) throws SWRLRuleEngineBridgeException 
   {
     String individualURI = owlIndividual.getURI();
 
@@ -138,22 +138,22 @@ public class DefaultSWRLBridge implements SWRLRuleEngineBridge, SWRLBuiltInBridg
 	  return BuiltInLibraryManager.invokeSWRLBuiltIn(targetRuleEngine, this, ruleName, builtInName, builtInIndex, isInConsequent, arguments); 
  	}
 			
-	public List<SWRLBuiltInAtom> getBuiltInAtomsFromBody(SWRLRule ruleOrQuery, Set<String> builtInNames) 
+	public List<SWRLBuiltInAtomReference> getBuiltInAtomsFromBody(SWRLRuleReference ruleOrQuery, Set<String> builtInNames) 
     { return owlAxiomProcessor.getBuiltInAtomsFromBody(ruleOrQuery, builtInNames); }
 	
-	public List<SWRLBuiltInAtom> getBuiltInAtomsFromHead(SWRLRule ruleOrQuery, Set<String> builtInNames) 
+	public List<SWRLBuiltInAtomReference> getBuiltInAtomsFromHead(SWRLRuleReference ruleOrQuery, Set<String> builtInNames) 
     { return owlAxiomProcessor.getBuiltInAtomsFromHead(ruleOrQuery, builtInNames); }
 	  
   // The inject methods can be used by built-ins to inject new axioms into a bridge, which will also reflect them in the underlying
   // engine. Eventually collapse all inject methods into injectOWLAxiom.
-  public void injectOWLAxiom(OWLAxiom axiom) throws SWRLBuiltInBridgeException
+  public void injectOWLAxiom(OWLAxiomReference axiom) throws SWRLBuiltInBridgeException
   {
     if (!injectedOWLAxioms.contains(axiom)) {
       injectedOWLAxioms.add(axiom);
 
-      if (axiom instanceof OWLPropertyAssertionAxiom) cacheOWLPropertyAssertionAxiom((OWLPropertyAssertionAxiom)axiom);
-      else if (axiom instanceof OWLDeclarationAxiom) injectOWLDeclarationAxiom((OWLDeclarationAxiom)axiom);
-      else if (axiom instanceof OWLSubClassAxiom) injectOWLSubClassAxiom((OWLSubClassAxiom)axiom);
+      if (axiom instanceof OWLPropertyAssertionAxiomReference) cacheOWLPropertyAssertionAxiom((OWLPropertyAssertionAxiomReference)axiom);
+      else if (axiom instanceof OWLDeclarationAxiomReference) injectOWLDeclarationAxiom((OWLDeclarationAxiomReference)axiom);
+      else if (axiom instanceof OWLSubClassAxiomReference) injectOWLSubClassAxiom((OWLSubClassAxiomReference)axiom);
 
       exportOWLAxiom(axiom); // Export the axiom to the rule engine.
     } // if
@@ -169,18 +169,18 @@ public class DefaultSWRLBridge implements SWRLRuleEngineBridge, SWRLBuiltInBridg
   	return activeOntology.prefixedName2URI(prefixedName);
   }
 
-  private void injectOWLDeclarationAxiom(OWLDeclarationAxiom axiom) throws SWRLBuiltInBridgeException
+  private void injectOWLDeclarationAxiom(OWLDeclarationAxiomReference axiom) throws SWRLBuiltInBridgeException
   {
-    OWLEntity owlEntity = axiom.getEntity();
+    OWLEntityReference owlEntity = axiom.getEntity();
 
-    if (owlEntity instanceof OWLClass) injectOWLClassDeclaration(owlEntity.getURI());
-    else if (owlEntity instanceof OWLNamedIndividual) injectOWLIndividualDeclaration((OWLNamedIndividual)owlEntity);
+    if (owlEntity instanceof OWLClassReference) injectOWLClassDeclaration(owlEntity.getURI());
+    else if (owlEntity instanceof OWLNamedIndividualReference) injectOWLIndividualDeclaration((OWLNamedIndividualReference)owlEntity);
     else throw new SWRLBuiltInBridgeException("error injecting OWLDeclarationAxiom - unknown entity type: " + owlEntity.getClass());
   }
 
-  public OWLClass injectOWLClassDeclaration() throws SWRLBuiltInBridgeException
+  public OWLClassReference injectOWLClassDeclaration() throws SWRLBuiltInBridgeException
   {
-    OWLClass owlClass = activeOntology.createOWLClass();
+    OWLClassReference owlClass = activeOntology.createOWLClass();
     String classURI = owlClass.getURI();
 
     if (!injectedOWLClassDeclarations.containsKey(classURI)) {
@@ -196,13 +196,13 @@ public class DefaultSWRLBridge implements SWRLRuleEngineBridge, SWRLBuiltInBridg
     checkOWLClassURI(classURI);
 
     if (!injectedOWLClassDeclarations.containsKey(classURI)) {
-      OWLClass owlClass = injectedOWLFactory.getOWLClass(classURI);
+      OWLClassReference owlClass = injectedOWLFactory.getOWLClass(classURI);
       injectedOWLClassDeclarations.put(classURI, owlClass);
       exportOWLClassDeclaration(owlClass); // Export the individual to the rule engine
     } // if
   }
 
-  private void injectOWLSubClassAxiom(OWLSubClassAxiom axiom) throws SWRLBuiltInBridgeException
+  private void injectOWLSubClassAxiom(OWLSubClassAxiomReference axiom) throws SWRLBuiltInBridgeException
   {
     String subclassURI = axiom.getSubClass().getURI();
     String superclassURI = axiom.getSuperClass().getURI();
@@ -218,17 +218,17 @@ public class DefaultSWRLBridge implements SWRLRuleEngineBridge, SWRLBuiltInBridg
    * individual is not injected at this point - instead an object is generated for the individual in the bridge and the individual is
    * exported to the rule engine. The individual is given a unique name that can be used later if an OWL individual is injected for it.
    */
-  public OWLNamedIndividual injectOWLIndividualDeclaration() throws SWRLBuiltInBridgeException
+  public OWLNamedIndividualReference injectOWLIndividualDeclaration() throws SWRLBuiltInBridgeException
   {
     String individualURI = activeOntology.createNewResourceURI("SWRLInjected");
-    OWLClass owlClass = injectedOWLFactory.getOWLClass(edu.stanford.smi.protegex.owl.model.OWLNames.Cls.THING);
-    OWLNamedIndividual owlIndividual = injectedOWLFactory.getOWLIndividual(individualURI);
+    OWLClassReference owlClass = injectedOWLFactory.getOWLClass(edu.stanford.smi.protegex.owl.model.OWLNames.Cls.THING);
+    OWLNamedIndividualReference owlIndividual = injectedOWLFactory.getOWLIndividual(individualURI);
     owlIndividual.addType(owlClass);
     injectOWLIndividualDeclaration(owlIndividual);
     return owlIndividual;
   }
     
-  public void injectOWLIndividualDeclaration(OWLNamedIndividual owlIndividual) throws SWRLBuiltInBridgeException
+  public void injectOWLIndividualDeclaration(OWLNamedIndividualReference owlIndividual) throws SWRLBuiltInBridgeException
   {
     if (!injectedOWLIndividualDeclarations.containsKey(owlIndividual.getURI())) {
       injectedOWLIndividualDeclarations.put(owlIndividual.getURI(), owlIndividual); 
@@ -237,10 +237,10 @@ public class DefaultSWRLBridge implements SWRLRuleEngineBridge, SWRLBuiltInBridg
     } // if
   } 
 
-  public OWLNamedIndividual injectOWLIndividualDeclaration(OWLClass owlClass) throws SWRLBuiltInBridgeException
+  public OWLNamedIndividualReference injectOWLIndividualDeclaration(OWLClassReference owlClass) throws SWRLBuiltInBridgeException
   {
     String individualURI = activeOntology.createNewResourceURI("SWRLInjected");
-    OWLNamedIndividual owlIndividual = injectedOWLFactory.getOWLIndividual(individualURI);
+    OWLNamedIndividualReference owlIndividual = injectedOWLFactory.getOWLIndividual(individualURI);
     owlIndividual.addType(owlClass);
 
     if (!owlAxiomProcessor.isReferencedOWLClass(owlClass.getURI())) exportOWLClassDeclaration(owlClass);
@@ -252,16 +252,16 @@ public class DefaultSWRLBridge implements SWRLRuleEngineBridge, SWRLBuiltInBridg
     return owlIndividual;
   } 
   
-  public OWLDataPropertyAssertionAxiom injectOWLDataPropertyAssertionAxiom(OWLNamedIndividual subject, OWLProperty property,
+  public OWLDataPropertyAssertionAxiomReference injectOWLDataPropertyAssertionAxiom(OWLNamedIndividualReference subject, OWLPropertyReference property,
                                                                            OWLDataValue object) 
     throws SWRLBuiltInBridgeException
   {
-    OWLDataPropertyAssertionAxiom axiom = injectedOWLFactory.getOWLDataPropertyAssertionAxiom(subject, property, object);
+    OWLDataPropertyAssertionAxiomReference axiom = injectedOWLFactory.getOWLDataPropertyAssertionAxiom(subject, property, object);
     injectOWLDatatypePropertyAssertionAxiom(axiom);
     return axiom;
   }
 
-  public void injectOWLDatatypePropertyAssertionAxiom(OWLDataPropertyAssertionAxiom axiom) 
+  public void injectOWLDatatypePropertyAssertionAxiom(OWLDataPropertyAssertionAxiomReference axiom) 
     throws SWRLBuiltInBridgeException
   {
     if (!injectedOWLAxioms.contains(axiom)) {
@@ -272,13 +272,13 @@ public class DefaultSWRLBridge implements SWRLRuleEngineBridge, SWRLBuiltInBridg
     exportOWLAxiom(axiom); // Export the axiom to the rule engine.
   }
 
-  public void injectOWLDataPropertyAssertionAxioms(Set<OWLDataPropertyAssertionAxiom> axioms)
+  public void injectOWLDataPropertyAssertionAxioms(Set<OWLDataPropertyAssertionAxiomReference> axioms)
     throws SWRLBuiltInBridgeException
   {
-    for (OWLDataPropertyAssertionAxiom axiom : axioms) injectOWLDatatypePropertyAssertionAxiom(axiom);
+    for (OWLDataPropertyAssertionAxiomReference axiom : axioms) injectOWLDatatypePropertyAssertionAxiom(axiom);
   }
 
-  public void injectOWLObjectPropertyAssertionAxiom(OWLObjectPropertyAssertionAxiom axiom)
+  public void injectOWLObjectPropertyAssertionAxiom(OWLObjectPropertyAssertionAxiomReference axiom)
     throws SWRLBuiltInBridgeException
   {
     if (!injectedOWLAxioms.contains(axiom)) {
@@ -315,7 +315,7 @@ public class DefaultSWRLBridge implements SWRLRuleEngineBridge, SWRLBuiltInBridg
     boolean result = false; 
     
     if (allOWLIndividualDeclarations.containsKey(individualURI)) {
-      OWLNamedIndividual owlIndividual = allOWLIndividualDeclarations.get(individualURI);
+      OWLNamedIndividualReference owlIndividual = allOWLIndividualDeclarations.get(individualURI);
       result = owlIndividual.hasType(classURI);
     } // if
 
@@ -324,17 +324,17 @@ public class DefaultSWRLBridge implements SWRLRuleEngineBridge, SWRLBuiltInBridg
     return result;
   } 
   
-  public Set<OWLNamedIndividual> getOWLIndividuals() { return new HashSet<OWLNamedIndividual>(allOWLIndividualDeclarations.values()); }
+  public Set<OWLNamedIndividualReference> getOWLIndividuals() { return new HashSet<OWLNamedIndividualReference>(allOWLIndividualDeclarations.values()); }
 
-  public Set<OWLPropertyAssertionAxiom> getOWLPropertyAssertionAxioms(String individualURI, String propertyURI) 
+  public Set<OWLPropertyAssertionAxiomReference> getOWLPropertyAssertionAxioms(String individualURI, String propertyURI) 
     throws SWRLBuiltInBridgeException
   {
 	  if (allOWLPropertyAssertionAxioms.containsKey(individualURI)) {
-	    Map<String, Set<OWLPropertyAssertionAxiom>> propertyAxiomsMap = allOWLPropertyAssertionAxioms.get(individualURI);
+	    Map<String, Set<OWLPropertyAssertionAxiomReference>> propertyAxiomsMap = allOWLPropertyAssertionAxioms.get(individualURI);
 	    if (propertyAxiomsMap.containsKey(propertyURI)) return propertyAxiomsMap.get(propertyURI);
-	    else return new HashSet<OWLPropertyAssertionAxiom>();
+	    else return new HashSet<OWLPropertyAssertionAxiomReference>();
 	  } else {
-	  	Set<OWLPropertyAssertionAxiom> result = null;
+	  	Set<OWLPropertyAssertionAxiomReference> result = null;
 	  	try {
 	  	  result = activeOntology.getOWLPropertyAssertionAxioms(individualURI, propertyURI);
 	  	} catch (DataValueConversionException e) {
@@ -355,56 +355,56 @@ public class DefaultSWRLBridge implements SWRLRuleEngineBridge, SWRLBuiltInBridg
   public boolean isSQWRLQuery(String uri) { return owlAxiomProcessor.isSQWRLQuery(uri); }
   public SQWRLResultImpl getSQWRLResult(String uri) throws SQWRLException { return owlAxiomProcessor.getSQWRLResult(uri); }
   public SQWRLResultImpl getSQWRLUnpreparedResult(String uri) throws SQWRLException { return owlAxiomProcessor.getSQWRLUnpreparedResult(uri); }
-  public List<SWRLAtom> getSQWRLPhase1BodyAtoms(SWRLRule query) { return owlAxiomProcessor.getSQWRLPhase1BodyAtoms(query); }
-  public List<SWRLAtom> getSQWRLPhase2BodyAtoms(SWRLRule query) { return owlAxiomProcessor.getSQWRLPhase2BodyAtoms(query); }
-  public boolean usesSQWRLCollections(SWRLRule query) { return owlAxiomProcessor.usesSQWRLCollections(query); }
+  public List<SWRLAtomReference> getSQWRLPhase1BodyAtoms(SWRLRuleReference query) { return owlAxiomProcessor.getSQWRLPhase1BodyAtoms(query); }
+  public List<SWRLAtomReference> getSQWRLPhase2BodyAtoms(SWRLRuleReference query) { return owlAxiomProcessor.getSQWRLPhase2BodyAtoms(query); }
+  public boolean usesSQWRLCollections(SWRLRuleReference query) { return owlAxiomProcessor.usesSQWRLCollections(query); }
 
   private void initialize()
   {  
-    inferredOWLIndividualDeclarations = new HashMap<String, OWLNamedIndividual>(); 
-    inferredOWLAxioms = new HashSet<OWLAxiom>(); 
+    inferredOWLIndividualDeclarations = new HashMap<String, OWLNamedIndividualReference>(); 
+    inferredOWLAxioms = new HashSet<OWLAxiomReference>(); 
 
-    allOWLPropertyAssertionAxioms = new HashMap<String, Map<String, Set<OWLPropertyAssertionAxiom>>>();
-    allOWLIndividualDeclarations = new HashMap<String, OWLNamedIndividual>();
+    allOWLPropertyAssertionAxioms = new HashMap<String, Map<String, Set<OWLPropertyAssertionAxiomReference>>>();
+    allOWLIndividualDeclarations = new HashMap<String, OWLNamedIndividualReference>();
 
-    injectedOWLClassDeclarations = new HashMap<String, OWLClass>();
-    injectedOWLIndividualDeclarations = new HashMap<String, OWLNamedIndividual>();
-    injectedOWLAxioms = new HashSet<OWLAxiom>();
+    injectedOWLClassDeclarations = new HashMap<String, OWLClassReference>();
+    injectedOWLIndividualDeclarations = new HashMap<String, OWLNamedIndividualReference>();
+    injectedOWLAxioms = new HashSet<OWLAxiomReference>();
   }
 
-  private void cacheOWLPropertyAssertionAxiom(OWLPropertyAssertionAxiom axiom)
+  private void cacheOWLPropertyAssertionAxiom(OWLPropertyAssertionAxiomReference axiom)
   {
     String subjectURI = axiom.getSubject().getURI();
     String propertyURI = axiom.getProperty().getURI();
-    Map<String, Set<OWLPropertyAssertionAxiom>> propertyAxiomsMap;
-    Set<OWLPropertyAssertionAxiom> axiomSet;
+    Map<String, Set<OWLPropertyAssertionAxiomReference>> propertyAxiomsMap;
+    Set<OWLPropertyAssertionAxiomReference> axiomSet;
 
     if (allOWLPropertyAssertionAxioms.containsKey(subjectURI)) 
       propertyAxiomsMap = allOWLPropertyAssertionAxioms.get(subjectURI);
     else {
-      propertyAxiomsMap = new HashMap<String, Set<OWLPropertyAssertionAxiom>>();
+      propertyAxiomsMap = new HashMap<String, Set<OWLPropertyAssertionAxiomReference>>();
       allOWLPropertyAssertionAxioms.put(subjectURI, propertyAxiomsMap);
     } // if
 
     if (propertyAxiomsMap.containsKey(propertyURI)) axiomSet = propertyAxiomsMap.get(propertyURI);
     else {
-      axiomSet = new HashSet<OWLPropertyAssertionAxiom>();
+      axiomSet = new HashSet<OWLPropertyAssertionAxiomReference>();
       propertyAxiomsMap.put(propertyURI, axiomSet);
     } // if
     
     axiomSet.add(axiom);     
   }
 
-  public void cacheOWLIndividual(OWLNamedIndividual owlIndividual)
+  public void cacheOWLIndividual(OWLNamedIndividualReference owlIndividual)
   {
     String individualURI = owlIndividual.getURI();
 
     if (!allOWLIndividualDeclarations.containsKey(individualURI)) allOWLIndividualDeclarations.put(individualURI, owlIndividual);
   }  
 
-  public void cacheOWLIndividuals(Set<OWLNamedIndividual> individuals)
+  public void cacheOWLIndividuals(Set<OWLNamedIndividualReference> individuals)
   {
-    for (OWLNamedIndividual individual: individuals) cacheOWLIndividual(individual);
+    for (OWLNamedIndividualReference individual: individuals) cacheOWLIndividual(individual);
   }
 
   private void checkOWLClassURI(String classURI) throws SWRLBuiltInBridgeException
@@ -413,19 +413,19 @@ public class DefaultSWRLBridge implements SWRLRuleEngineBridge, SWRLBuiltInBridg
     	throw new SWRLBuiltInBridgeException("attempt to inject class with invalid URI " + classURI);
   }
 
-  private void exportOWLClassDeclaration(OWLClass owlClass) throws SWRLBuiltInBridgeException
+  private void exportOWLClassDeclaration(OWLClassReference owlClass) throws SWRLBuiltInBridgeException
   {
-    OWLDeclarationAxiom axiom = dataFactory.getOWLDeclarationAxiom(owlClass);
+    OWLDeclarationAxiomReference axiom = dataFactory.getOWLDeclarationAxiom(owlClass);
     exportOWLAxiom(axiom);
   } 
 
-  private void exportOWLIndividualDeclaration(OWLNamedIndividual owlIndividual) throws SWRLBuiltInBridgeException
+  private void exportOWLIndividualDeclaration(OWLNamedIndividualReference owlIndividual) throws SWRLBuiltInBridgeException
   {
-  	OWLDeclarationAxiom axiom = dataFactory.getOWLDeclarationAxiom(owlIndividual);
+  	OWLDeclarationAxiomReference axiom = dataFactory.getOWLDeclarationAxiom(owlIndividual);
     exportOWLAxiom(axiom);
    } 
 
-  private void exportOWLAxiom(OWLAxiom owlAxiom) throws SWRLBuiltInBridgeException
+  private void exportOWLAxiom(OWLAxiomReference owlAxiom) throws SWRLBuiltInBridgeException
   {
     try {
       targetRuleEngine.defineOWLAxiom(owlAxiom);

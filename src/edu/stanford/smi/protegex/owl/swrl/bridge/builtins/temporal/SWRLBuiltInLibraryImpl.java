@@ -13,11 +13,11 @@ import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.BuiltInException;
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.InvalidBuiltInArgumentException;
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.SWRLBuiltInLibraryException;
 import edu.stanford.smi.protegex.owl.swrl.bridge.xsd.XSDDateTime;
-import edu.stanford.smi.protegex.owl.swrl.owlapi.OWLDataPropertyAssertionAxiom;
-import edu.stanford.smi.protegex.owl.swrl.owlapi.OWLLiteral;
-import edu.stanford.smi.protegex.owl.swrl.owlapi.OWLNamedIndividual;
-import edu.stanford.smi.protegex.owl.swrl.owlapi.OWLObjectPropertyAssertionAxiom;
-import edu.stanford.smi.protegex.owl.swrl.owlapi.OWLPropertyAssertionAxiom;
+import edu.stanford.smi.protegex.owl.swrl.portability.OWLDataPropertyAssertionAxiomReference;
+import edu.stanford.smi.protegex.owl.swrl.portability.OWLLiteralReference;
+import edu.stanford.smi.protegex.owl.swrl.portability.OWLNamedIndividualReference;
+import edu.stanford.smi.protegex.owl.swrl.portability.OWLObjectPropertyAssertionAxiomReference;
+import edu.stanford.smi.protegex.owl.swrl.portability.OWLPropertyAssertionAxiomReference;
 
 /**
  * Implementation library for SWRL temporal built-ins. See <a href="http://protege.cim3.net/cgi-bin/wiki.pl?SWRLTemporalBuiltIns">here</a>
@@ -452,16 +452,16 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
   private String getObjectPropertyValueAsURI(SWRLBuiltInBridge bridge, String individualURI, String propertyURI)
     throws BuiltInException
   {
-   Set<OWLPropertyAssertionAxiom> axioms = bridge.getOWLPropertyAssertionAxioms(individualURI, propertyURI);
-   OWLPropertyAssertionAxiom axiom;
-   OWLNamedIndividual subject;
+   Set<OWLPropertyAssertionAxiomReference> axioms = bridge.getOWLPropertyAssertionAxioms(individualURI, propertyURI);
+   OWLPropertyAssertionAxiomReference axiom;
+   OWLNamedIndividualReference subject;
 
-   axiom = axioms.toArray(new OWLPropertyAssertionAxiom[0])[0]; // Pick the first one
+   axiom = axioms.toArray(new OWLPropertyAssertionAxiomReference[0])[0]; // Pick the first one
 
-   if (!(axiom instanceof OWLObjectPropertyAssertionAxiom))
+   if (!(axiom instanceof OWLObjectPropertyAssertionAxiomReference))
      throw new BuiltInException("property " + propertyURI + " does not refer to an OWL object property assertion axiom");
 
-   subject = ((OWLObjectPropertyAssertionAxiom)axiom).getObject();
+   subject = ((OWLObjectPropertyAssertionAxiomReference)axiom).getObject();
 
    return subject.getURI();
  } 
@@ -469,16 +469,16 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
   private String getDataPropertyValueAsAString(SWRLBuiltInBridge bridge, String individualURI, String propertyURI)
   	throws BuiltInException
   {
-  	Set<OWLPropertyAssertionAxiom> axioms = bridge.getOWLPropertyAssertionAxioms(individualURI, propertyURI);
-	   OWLPropertyAssertionAxiom axiom;
-	   OWLLiteral value;
+  	Set<OWLPropertyAssertionAxiomReference> axioms = bridge.getOWLPropertyAssertionAxioms(individualURI, propertyURI);
+	   OWLPropertyAssertionAxiomReference axiom;
+	   OWLLiteralReference value;
 	
-	   axiom = axioms.toArray(new OWLPropertyAssertionAxiom[0])[0]; // Pick the first one
+	   axiom = axioms.toArray(new OWLPropertyAssertionAxiomReference[0])[0]; // Pick the first one
 	
-	   if (!(axiom instanceof OWLDataPropertyAssertionAxiom))
+	   if (!(axiom instanceof OWLDataPropertyAssertionAxiomReference))
 	     throw new BuiltInException("property " + propertyURI + " does not refer to an OWL datavalued property assertion axiom");
 	
-	   value = ((OWLDataPropertyAssertionAxiom)axiom).getObject();
+	   value = ((OWLDataPropertyAssertionAxiomReference)axiom).getObject();
 	
 	   return value.toString();
 	 } 
@@ -487,17 +487,17 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
   private int getDataPropertyValueAsAnInteger(SWRLBuiltInBridge bridge, String individualURI, String propertyURI)
     throws BuiltInException
   {
-    Set<OWLPropertyAssertionAxiom> axioms = bridge.getOWLPropertyAssertionAxioms(individualURI, propertyURI);
-    OWLPropertyAssertionAxiom axiom;
-    OWLLiteral literal;
+    Set<OWLPropertyAssertionAxiomReference> axioms = bridge.getOWLPropertyAssertionAxioms(individualURI, propertyURI);
+    OWLPropertyAssertionAxiomReference axiom;
+    OWLLiteralReference literal;
     OWLDataValue dataValue;
 
-    axiom = axioms.toArray(new OWLPropertyAssertionAxiom[0])[0];
+    axiom = axioms.toArray(new OWLPropertyAssertionAxiomReference[0])[0];
 
-    if (!(axiom instanceof OWLDataPropertyAssertionAxiom))
+    if (!(axiom instanceof OWLDataPropertyAssertionAxiomReference))
       throw new BuiltInException("property " + propertyURI + " does not refer to an OWL datavalued property assertion axiom");
 
-    literal = ((OWLDataPropertyAssertionAxiom)axiom).getObject();
+    literal = ((OWLDataPropertyAssertionAxiomReference)axiom).getObject();
 
     dataValue = getBuiltInBridge().getOWLDataValueFactory().getOWLDataValue(literal);
     

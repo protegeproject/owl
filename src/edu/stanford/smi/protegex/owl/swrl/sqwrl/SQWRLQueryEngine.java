@@ -3,8 +3,8 @@ package edu.stanford.smi.protegex.owl.swrl.sqwrl;
 
 import java.util.Set;
 
-import edu.stanford.smi.protegex.owl.swrl.owlapi.SWRLRule;
 import edu.stanford.smi.protegex.owl.swrl.parser.SWRLParseException;
+import edu.stanford.smi.protegex.owl.swrl.portability.SWRLRuleReference;
 import edu.stanford.smi.protegex.owl.swrl.sqwrl.exceptions.SQWRLException;
 
 /**
@@ -50,7 +50,7 @@ public interface SQWRLQueryEngine
   /**
    * Get all the enabled SQWRL queries in the ontology.
    */
-  Set<SWRLRule> getSQWRLQueries() throws SQWRLException;
+  Set<SWRLRuleReference> getSQWRLQueries() throws SQWRLException;
   
   /**
    * Get the names of the enabled SQWRL queries in the ontology.

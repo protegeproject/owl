@@ -2,7 +2,7 @@ package edu.stanford.smi.protegex.owl.swrl.bridge;
 
 import edu.stanford.smi.protegex.owl.swrl.bridge.impl.OWLDataValueFactoryImpl;
 import edu.stanford.smi.protegex.owl.swrl.bridge.xsd.XSDType;
-import edu.stanford.smi.protegex.owl.swrl.owlapi.OWLLiteral;
+import edu.stanford.smi.protegex.owl.swrl.portability.OWLLiteralReference;
 import edu.stanford.smi.protegex.owl.swrl.sqwrl.DataValue;
 import edu.stanford.smi.protegex.owl.swrl.sqwrl.exceptions.DataValueConversionException;
 
@@ -13,7 +13,7 @@ public abstract class OWLDataValueFactory
 {
 	public static OWLDataValueFactory create() { return new OWLDataValueFactoryImpl(); }
 	
-	public abstract OWLDataValue getOWLDataValue(OWLLiteral literal);
+	public abstract OWLDataValue getOWLDataValue(OWLLiteralReference literal);
 	public abstract OWLDataValue getOWLDataValue(DataValue dataValue);
 	public abstract OWLDataValue getOWLDataValue(String s);
 	public abstract OWLDataValue getOWLDataValue(boolean b);

@@ -17,24 +17,24 @@ import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.OWLFactoryException;
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.SWRLBuiltInBridgeException;
 import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.SWRLRuleEngineBridgeException;
 import edu.stanford.smi.protegex.owl.swrl.exceptions.SWRLRuleEngineException;
-import edu.stanford.smi.protegex.owl.swrl.owlapi.OWLAxiom;
-import edu.stanford.smi.protegex.owl.swrl.owlapi.OWLClass;
-import edu.stanford.smi.protegex.owl.swrl.owlapi.OWLClassAssertionAxiom;
-import edu.stanford.smi.protegex.owl.swrl.owlapi.OWLDataFactory;
-import edu.stanford.smi.protegex.owl.swrl.owlapi.OWLDeclarationAxiom;
-import edu.stanford.smi.protegex.owl.swrl.owlapi.OWLDifferentIndividualsAxiom;
-import edu.stanford.smi.protegex.owl.swrl.owlapi.OWLNamedIndividual;
-import edu.stanford.smi.protegex.owl.swrl.owlapi.OWLObjectPropertyAssertionAxiom;
-import edu.stanford.smi.protegex.owl.swrl.owlapi.OWLOntology;
-import edu.stanford.smi.protegex.owl.swrl.owlapi.OWLProperty;
-import edu.stanford.smi.protegex.owl.swrl.owlapi.OWLPropertyAssertionAxiom;
-import edu.stanford.smi.protegex.owl.swrl.owlapi.OWLSameIndividualAxiom;
-import edu.stanford.smi.protegex.owl.swrl.owlapi.SWRLAtom;
-import edu.stanford.smi.protegex.owl.swrl.owlapi.SWRLBuiltInAtom;
-import edu.stanford.smi.protegex.owl.swrl.owlapi.SWRLClassAtom;
-import edu.stanford.smi.protegex.owl.swrl.owlapi.SWRLLiteralArgument;
-import edu.stanford.smi.protegex.owl.swrl.owlapi.SWRLRule;
-import edu.stanford.smi.protegex.owl.swrl.owlapi.impl.OWLDataFactoryImpl;
+import edu.stanford.smi.protegex.owl.swrl.portability.OWLAxiomReference;
+import edu.stanford.smi.protegex.owl.swrl.portability.OWLClassAssertionAxiomReference;
+import edu.stanford.smi.protegex.owl.swrl.portability.OWLClassReference;
+import edu.stanford.smi.protegex.owl.swrl.portability.OWLDataFactory;
+import edu.stanford.smi.protegex.owl.swrl.portability.OWLDeclarationAxiomReference;
+import edu.stanford.smi.protegex.owl.swrl.portability.OWLDifferentIndividualsAxiomReference;
+import edu.stanford.smi.protegex.owl.swrl.portability.OWLNamedIndividualReference;
+import edu.stanford.smi.protegex.owl.swrl.portability.OWLObjectPropertyAssertionAxiomReference;
+import edu.stanford.smi.protegex.owl.swrl.portability.OWLOntology;
+import edu.stanford.smi.protegex.owl.swrl.portability.OWLPropertyReference;
+import edu.stanford.smi.protegex.owl.swrl.portability.OWLPropertyAssertionAxiomReference;
+import edu.stanford.smi.protegex.owl.swrl.portability.OWLSameIndividualAxiomReference;
+import edu.stanford.smi.protegex.owl.swrl.portability.SWRLAtomReference;
+import edu.stanford.smi.protegex.owl.swrl.portability.SWRLBuiltInAtomReference;
+import edu.stanford.smi.protegex.owl.swrl.portability.SWRLClassAtomReference;
+import edu.stanford.smi.protegex.owl.swrl.portability.SWRLLiteralArgumentReference;
+import edu.stanford.smi.protegex.owl.swrl.portability.SWRLRuleReference;
+import edu.stanford.smi.protegex.owl.swrl.portability.p3.P3OWLDataFactory;
 import edu.stanford.smi.protegex.owl.swrl.sqwrl.SQWRLNames;
 import edu.stanford.smi.protegex.owl.swrl.sqwrl.exceptions.DataValueConversionException;
 import edu.stanford.smi.protegex.owl.swrl.sqwrl.exceptions.InvalidQueryNameException;
@@ -46,7 +46,7 @@ public class OWLAxiomProcessorImpl implements OWLAxiomProcessor
 	private OWLOntology activeOntology;
 	private OWLDataFactory dataFactory;
 
-	private HashMap<String, SWRLRule> rules, queries;
+	private HashMap<String, SWRLRuleReference> rules, queries;
 
 	private Map<String, Set<String>> referencedOWLClassURIMap, referencedOWLPropertyURIMap, referencedOWLIndividualURIMap;
 	private Map<String, Set<String>> referencedVariableNameMap;
@@ -56,29 +56,29 @@ public class OWLAxiomProcessorImpl implements OWLAxiomProcessor
 	private Map<String, Boolean> hasSQWRLBuiltInsMap, hasSQWRLCollectionBuiltInsMap, enabledMap;
 	private Map<String, Map<String, List<BuiltInArgument>>> collectionGroupArgumentsMap;
 
-	private HashMap<String, SWRLRule> referencedSWRLRules;
-	private HashMap<String, OWLDeclarationAxiom> referencedOWLDeclarationAxioms;
-	private HashMap<String, OWLDeclarationAxiom> referencedOWLClassDeclarationAxioms;
-	private HashMap<String, OWLDeclarationAxiom> referencedOWLPropertyDeclarationAxioms;
-	private HashMap<String, OWLDeclarationAxiom> referencedOWLIndividualDeclarationAxioms;
+	private HashMap<String, SWRLRuleReference> referencedSWRLRules;
+	private HashMap<String, OWLDeclarationAxiomReference> referencedOWLDeclarationAxioms;
+	private HashMap<String, OWLDeclarationAxiomReference> referencedOWLClassDeclarationAxioms;
+	private HashMap<String, OWLDeclarationAxiomReference> referencedOWLPropertyDeclarationAxioms;
+	private HashMap<String, OWLDeclarationAxiomReference> referencedOWLIndividualDeclarationAxioms;
 	private Set<String> referencedOWLObjectPropertyURIs, referencedOWLDataPropertyURIs;
-	private Set<OWLAxiom> referencedOWLAxioms;
+	private Set<OWLAxiomReference> referencedOWLAxioms;
 
 	// All entities
-	private Map<String, Map<String, Set<OWLPropertyAssertionAxiom>>> allOWLPropertyAssertionAxioms; // individualURI <propertyURI, axiom>
-	private Map<String, OWLNamedIndividual> allOWLIndividuals;
+	private Map<String, Map<String, Set<OWLPropertyAssertionAxiomReference>>> allOWLPropertyAssertionAxioms; // individualURI <propertyURI, axiom>
+	private Map<String, OWLNamedIndividualReference> allOWLIndividuals;
 
 	public OWLAxiomProcessorImpl(OWLOntology activeOntology)
 	{
 		this.activeOntology = activeOntology;
-		this.dataFactory = new OWLDataFactoryImpl(activeOntology);
+		this.dataFactory = new P3OWLDataFactory(activeOntology);
 		reset();
 	}
 
 	public void reset()
 	{
-		rules = new HashMap<String, SWRLRule>();
-		queries = new HashMap<String, SWRLRule>();
+		rules = new HashMap<String, SWRLRuleReference>();
+		queries = new HashMap<String, SWRLRuleReference>();
 
 		referencedOWLClassURIMap = new HashMap<String, Set<String>>();
 		referencedOWLPropertyURIMap = new HashMap<String, Set<String>>();
@@ -94,20 +94,20 @@ public class OWLAxiomProcessorImpl implements OWLAxiomProcessor
 
 		collectionGroupArgumentsMap = new HashMap<String, Map<String, List<BuiltInArgument>>>();
 
-		referencedSWRLRules = new HashMap<String, SWRLRule>();
+		referencedSWRLRules = new HashMap<String, SWRLRuleReference>();
 
-		referencedOWLDeclarationAxioms = new HashMap<String, OWLDeclarationAxiom>();
-		referencedOWLClassDeclarationAxioms = new HashMap<String, OWLDeclarationAxiom>();
-		referencedOWLPropertyDeclarationAxioms = new HashMap<String, OWLDeclarationAxiom>();
-		referencedOWLIndividualDeclarationAxioms = new HashMap<String, OWLDeclarationAxiom>();
+		referencedOWLDeclarationAxioms = new HashMap<String, OWLDeclarationAxiomReference>();
+		referencedOWLClassDeclarationAxioms = new HashMap<String, OWLDeclarationAxiomReference>();
+		referencedOWLPropertyDeclarationAxioms = new HashMap<String, OWLDeclarationAxiomReference>();
+		referencedOWLIndividualDeclarationAxioms = new HashMap<String, OWLDeclarationAxiomReference>();
 
-		referencedOWLAxioms = new HashSet<OWLAxiom>();
+		referencedOWLAxioms = new HashSet<OWLAxiomReference>();
 		referencedOWLObjectPropertyURIs = new HashSet<String>();
 		referencedOWLDataPropertyURIs = new HashSet<String>();
-		referencedOWLAxioms = new HashSet<OWLAxiom>();
+		referencedOWLAxioms = new HashSet<OWLAxiomReference>();
 
-		allOWLPropertyAssertionAxioms = new HashMap<String, Map<String, Set<OWLPropertyAssertionAxiom>>>();
-		allOWLIndividuals = new HashMap<String, OWLNamedIndividual>();
+		allOWLPropertyAssertionAxioms = new HashMap<String, Map<String, Set<OWLPropertyAssertionAxiomReference>>>();
+		allOWLIndividuals = new HashMap<String, OWLNamedIndividualReference>();
 	}
 
 	public void processSWRLRules() throws SWRLRuleEngineException
@@ -124,11 +124,11 @@ public class OWLAxiomProcessorImpl implements OWLAxiomProcessor
 		importReferencedOWLKnowledge();
 	}
 
-	private void importSWRLRuleOrSQWRLQuery(SWRLRule ruleOrQuery) throws BuiltInException
+	private void importSWRLRuleOrSQWRLQuery(SWRLRuleReference ruleOrQuery) throws BuiltInException
 	{
-		for (SWRLAtom atom : ruleOrQuery.getBodyAtoms())
+		for (SWRLAtomReference atom : ruleOrQuery.getBodyAtoms())
 			processSWRLAtom(ruleOrQuery, atom, false);
-		for (SWRLAtom atom : ruleOrQuery.getHeadAtoms())
+		for (SWRLAtomReference atom : ruleOrQuery.getHeadAtoms())
 			processSWRLAtom(ruleOrQuery, atom, true);
 
 		buildReferencedVariableNames(ruleOrQuery);
@@ -147,7 +147,7 @@ public class OWLAxiomProcessorImpl implements OWLAxiomProcessor
 		importReferencedOWLKnowledge();
 	}
 
-	public SWRLRule getSQWRLQuery(String queryURI) throws SQWRLException
+	public SWRLRuleReference getSQWRLQuery(String queryURI) throws SQWRLException
 	{
 		if (!queries.containsKey(queryURI))
 			throw new SQWRLException("invalid query name " + queryURI);
@@ -155,7 +155,7 @@ public class OWLAxiomProcessorImpl implements OWLAxiomProcessor
 		return queries.get(queryURI);
 	}
 
-	public SWRLRule getSWRLRule(String ruleURI) throws SWRLRuleEngineException
+	public SWRLRuleReference getSWRLRule(String ruleURI) throws SWRLRuleEngineException
 	{
 		if (!referencedSWRLRules.containsKey(ruleURI))
 			throw new SWRLRuleEngineException("invalid rule name " + ruleURI);
@@ -193,34 +193,34 @@ public class OWLAxiomProcessorImpl implements OWLAxiomProcessor
 		return referencedOWLAxioms.size();
 	}
 
-	public Set<SWRLRule> getReferencedSWRLRules()
+	public Set<SWRLRuleReference> getReferencedSWRLRules()
 	{
-		return new HashSet<SWRLRule>(referencedSWRLRules.values());
+		return new HashSet<SWRLRuleReference>(referencedSWRLRules.values());
 	}
 
-	public Set<OWLDeclarationAxiom> getReferencedOWLDeclarationAxioms()
+	public Set<OWLDeclarationAxiomReference> getReferencedOWLDeclarationAxioms()
 	{
-		return new HashSet<OWLDeclarationAxiom>(referencedOWLDeclarationAxioms.values());
+		return new HashSet<OWLDeclarationAxiomReference>(referencedOWLDeclarationAxioms.values());
 	}
 
-	public Set<OWLDeclarationAxiom> getReferencedOWLClassDeclarationsAxioms()
+	public Set<OWLDeclarationAxiomReference> getReferencedOWLClassDeclarationsAxioms()
 	{
-		return new HashSet<OWLDeclarationAxiom>(referencedOWLClassDeclarationAxioms.values());
+		return new HashSet<OWLDeclarationAxiomReference>(referencedOWLClassDeclarationAxioms.values());
 	}
 
-	public Set<OWLDeclarationAxiom> getReferencedOWLPropertyDeclarationAxioms()
+	public Set<OWLDeclarationAxiomReference> getReferencedOWLPropertyDeclarationAxioms()
 	{
-		return new HashSet<OWLDeclarationAxiom>(referencedOWLPropertyDeclarationAxioms.values());
+		return new HashSet<OWLDeclarationAxiomReference>(referencedOWLPropertyDeclarationAxioms.values());
 	}
 
-	public Set<OWLDeclarationAxiom> getReferencedOWLIndividualDeclarationAxioms()
+	public Set<OWLDeclarationAxiomReference> getReferencedOWLIndividualDeclarationAxioms()
 	{
-		return new HashSet<OWLDeclarationAxiom>(referencedOWLIndividualDeclarationAxioms.values());
+		return new HashSet<OWLDeclarationAxiomReference>(referencedOWLIndividualDeclarationAxioms.values());
 	}
 
-	public Set<OWLAxiom> getReferencedOWLAxioms()
+	public Set<OWLAxiomReference> getReferencedOWLAxioms()
 	{
-		return new HashSet<OWLAxiom>(referencedOWLAxioms);
+		return new HashSet<OWLAxiomReference>(referencedOWLAxioms);
 	}
 
 	public boolean isReferencedOWLClass(String uri)
@@ -243,9 +243,9 @@ public class OWLAxiomProcessorImpl implements OWLAxiomProcessor
 		return referencedOWLDataPropertyURIs.contains(uri);
 	}
 
-	public Set<OWLNamedIndividual> getAllOWLIndividuals()
+	public Set<OWLNamedIndividualReference> getAllOWLIndividuals()
 	{
-		return new HashSet<OWLNamedIndividual>(allOWLIndividuals.values());
+		return new HashSet<OWLNamedIndividualReference>(allOWLIndividuals.values());
 	}
 
 	public boolean isSQWRLQuery(String uri)
@@ -254,7 +254,7 @@ public class OWLAxiomProcessorImpl implements OWLAxiomProcessor
 				|| (hasSQWRLCollectionBuiltInsMap.containsKey(uri) && hasSQWRLCollectionBuiltInsMap.get(uri));
 	}
 
-	public boolean usesSQWRLCollections(SWRLRule ruleOrQuery)
+	public boolean usesSQWRLCollections(SWRLRuleReference ruleOrQuery)
 	{
 		String uri = ruleOrQuery.getURI();
 
@@ -328,17 +328,17 @@ public class OWLAxiomProcessorImpl implements OWLAxiomProcessor
 		return result;
 	}
 
-	public Set<String> getReferencedOWLClassURIs(SWRLRule ruleOrQuery)
+	public Set<String> getReferencedOWLClassURIs(SWRLRuleReference ruleOrQuery)
 	{
 		return referencedOWLClassURIMap.get(ruleOrQuery.getURI());
 	}
 
-	public Set<String> getReferencedOWLPropertyURIs(SWRLRule ruleOrQuery)
+	public Set<String> getReferencedOWLPropertyURIs(SWRLRuleReference ruleOrQuery)
 	{
 		return referencedOWLPropertyURIMap.get(ruleOrQuery.getURI());
 	}
 
-	public Set<String> getReferencedOWLIndividualURIs(SWRLRule ruleOrQuery)
+	public Set<String> getReferencedOWLIndividualURIs(SWRLRuleReference ruleOrQuery)
 	{
 		return referencedOWLIndividualURIMap.get(ruleOrQuery.getURI());
 	}
@@ -372,24 +372,24 @@ public class OWLAxiomProcessorImpl implements OWLAxiomProcessor
 		return sqwrlResultMap.get(uri);
 	}
 
-	public boolean isSQWRLQuery(SWRLRule ruleOrQuery)
+	public boolean isSQWRLQuery(SWRLRuleReference ruleOrQuery)
 	{
 		return !getBuiltInAtomsFromHead(ruleOrQuery, SQWRLNames.getSQWRLBuiltInNames()).isEmpty()
 				|| !getBuiltInAtomsFromBody(ruleOrQuery, SQWRLNames.getSQWRLBuiltInNames()).isEmpty();
 	}
 
-	public boolean hasSQWRLCollectionBuiltIns(SWRLRule ruleOrQuery)
+	public boolean hasSQWRLCollectionBuiltIns(SWRLRuleReference ruleOrQuery)
 	{
 		return !getBuiltInAtomsFromBody(ruleOrQuery, SQWRLNames.getCollectionMakeBuiltInNames()).isEmpty();
 	}
 
-	public List<SWRLAtom> getSQWRLPhase1BodyAtoms(SWRLRule query)
+	public List<SWRLAtomReference> getSQWRLPhase1BodyAtoms(SWRLRuleReference query)
 	{
-		List<SWRLAtom> result = new ArrayList<SWRLAtom>();
+		List<SWRLAtomReference> result = new ArrayList<SWRLAtomReference>();
 
-		for (SWRLAtom atom : query.getBodyAtoms()) {
-			if (atom instanceof SWRLBuiltInAtom) {
-				SWRLBuiltInAtom builtInAtom = (SWRLBuiltInAtom)atom;
+		for (SWRLAtomReference atom : query.getBodyAtoms()) {
+			if (atom instanceof SWRLBuiltInAtomReference) {
+				SWRLBuiltInAtomReference builtInAtom = (SWRLBuiltInAtomReference)atom;
 				if (builtInAtom.usesSQWRLCollectionResults() || builtInAtom.isSQWRLGroupCollection())
 					continue;
 			}
@@ -399,13 +399,13 @@ public class OWLAxiomProcessorImpl implements OWLAxiomProcessor
 		return result;
 	}
 
-	public List<SWRLAtom> getSQWRLPhase2BodyAtoms(SWRLRule query)
+	public List<SWRLAtomReference> getSQWRLPhase2BodyAtoms(SWRLRuleReference query)
 	{
-		List<SWRLAtom> result = new ArrayList<SWRLAtom>();
+		List<SWRLAtomReference> result = new ArrayList<SWRLAtomReference>();
 
-		for (SWRLAtom atom : query.getBodyAtoms()) {
-			if (atom instanceof SWRLBuiltInAtom) {
-				SWRLBuiltInAtom builtInAtom = (SWRLBuiltInAtom)atom;
+		for (SWRLAtomReference atom : query.getBodyAtoms()) {
+			if (atom instanceof SWRLBuiltInAtomReference) {
+				SWRLBuiltInAtomReference builtInAtom = (SWRLBuiltInAtomReference)atom;
 				if (builtInAtom.isSQWRLMakeCollection() || builtInAtom.isSQWRLGroupCollection())
 					continue;
 			}
@@ -415,12 +415,12 @@ public class OWLAxiomProcessorImpl implements OWLAxiomProcessor
 		return result;
 	}
 
-	public Set<SWRLRule> getSQWRLQueries() throws SQWRLException
+	public Set<SWRLRuleReference> getSQWRLQueries() throws SQWRLException
 	{
-		Set<SWRLRule> sqwrlQueries = new HashSet<SWRLRule>();
+		Set<SWRLRuleReference> sqwrlQueries = new HashSet<SWRLRuleReference>();
 
 		try {
-			for (SWRLRule ruleOrQuery : dataFactory.getSWRLRules())
+			for (SWRLRuleReference ruleOrQuery : dataFactory.getSWRLRules())
 				if (isSQWRLQuery(ruleOrQuery))
 					sqwrlQueries.add(ruleOrQuery);
 		} catch (OWLFactoryException e) {
@@ -435,7 +435,7 @@ public class OWLAxiomProcessorImpl implements OWLAxiomProcessor
 		Set<String> sqwrlQueryNames = new HashSet<String>();
 
 		try {
-			for (SWRLRule ruleOrQuery : dataFactory.getSWRLRules())
+			for (SWRLRuleReference ruleOrQuery : dataFactory.getSWRLRules())
 				if (isSQWRLQuery(ruleOrQuery))
 					sqwrlQueryNames.add(ruleOrQuery.getURI());
 		} catch (OWLFactoryException e) {
@@ -448,7 +448,7 @@ public class OWLAxiomProcessorImpl implements OWLAxiomProcessor
 	private void importSWRLRules() throws SWRLRuleEngineException
 	{
 		try {
-			for (SWRLRule rule : dataFactory.getSWRLRules())
+			for (SWRLRuleReference rule : dataFactory.getSWRLRules())
 				if (!isSQWRLQuery(rule))
 					importSWRLRule(rule); // Ignore SQWRL queries
 		} catch (OWLFactoryException e) {
@@ -456,7 +456,7 @@ public class OWLAxiomProcessorImpl implements OWLAxiomProcessor
 		} // try
 	}
 
-	private void importSWRLRule(SWRLRule rule) throws SWRLRuleEngineBridgeException
+	private void importSWRLRule(SWRLRuleReference rule) throws SWRLRuleEngineBridgeException
 	{
 		try {
 			referencedSWRLRules.put(rule.getURI(), rule);
@@ -471,7 +471,7 @@ public class OWLAxiomProcessorImpl implements OWLAxiomProcessor
 	private void importSQWRLQuery(String queryName) throws SWRLRuleEngineException
 	{
 		try {
-			for (SWRLRule rule : dataFactory.getSWRLRules()) {
+			for (SWRLRuleReference rule : dataFactory.getSWRLRules()) {
 				if (isSQWRLQuery(rule) && !rule.getURI().equals(queryName))
 					continue; // Ignore SQWRL queries apart from the named one
 				importSWRLRule(rule);
@@ -502,18 +502,18 @@ public class OWLAxiomProcessorImpl implements OWLAxiomProcessor
 	 * Find all built-in atoms with unbound arguments and tell them which of their arguments are unbound. See <a
 	 * href="http://protege.cim3.net/cgi-bin/wiki.pl?SWRLBuiltInBridge#nid88T">here</a> for a discussion of the role of this method.
 	 */
-	private void processUnboundBuiltInArguments(SWRLRule ruleOrQuery)
+	private void processUnboundBuiltInArguments(SWRLRuleReference ruleOrQuery)
 	{
-		List<SWRLBuiltInAtom> bodyBuiltInAtoms = new ArrayList<SWRLBuiltInAtom>();
-		List<SWRLAtom> bodyNonBuiltInAtoms = new ArrayList<SWRLAtom>();
-		List<SWRLAtom> finalBodyAtoms = new ArrayList<SWRLAtom>();
+		List<SWRLBuiltInAtomReference> bodyBuiltInAtoms = new ArrayList<SWRLBuiltInAtomReference>();
+		List<SWRLAtomReference> bodyNonBuiltInAtoms = new ArrayList<SWRLAtomReference>();
+		List<SWRLAtomReference> finalBodyAtoms = new ArrayList<SWRLAtomReference>();
 		Set<String> variableNamesUsedByNonBuiltInBodyAtoms = new HashSet<String>(); // By definition, these will always be bound.
 		Set<String> variableNamesBoundByBuiltIns = new HashSet<String>(); // Names of variables bound by built-ins in this rule
 
 		// Process the body atoms and build up list of (1) built-in body atoms, and (2) the variables used by non-built body in atoms.
-		for (SWRLAtom atom : ruleOrQuery.getBodyAtoms()) {
-			if (atom instanceof SWRLBuiltInAtom)
-				bodyBuiltInAtoms.add((SWRLBuiltInAtom)atom);
+		for (SWRLAtomReference atom : ruleOrQuery.getBodyAtoms()) {
+			if (atom instanceof SWRLBuiltInAtomReference)
+				bodyBuiltInAtoms.add((SWRLBuiltInAtomReference)atom);
 			else {
 				bodyNonBuiltInAtoms.add(atom);
 				variableNamesUsedByNonBuiltInBodyAtoms.addAll(atom.getReferencedVariableNames());
@@ -521,7 +521,7 @@ public class OWLAxiomProcessorImpl implements OWLAxiomProcessor
 		}
 
 		// Process the body built-in atoms and determine if they bind any of their arguments.
-		for (SWRLBuiltInAtom builtInAtom : bodyBuiltInAtoms) { // Read through built-in arguments and determine which are unbound.
+		for (SWRLBuiltInAtomReference builtInAtom : bodyBuiltInAtoms) { // Read through built-in arguments and determine which are unbound.
 			for (BuiltInArgument argument : builtInAtom.getArguments()) {
 				if (argument.isVariable()) {
 					String argumentVariableName = argument.getVariableName();
@@ -545,18 +545,18 @@ public class OWLAxiomProcessorImpl implements OWLAxiomProcessor
 
 	// For every built-in, record the variables it depends from preceding atoms (directly and indirectly).
 	// Should be called after processBuiltInArguments and processSQWRLArguments.
-	private void processBuiltInArgumentDependencies(SWRLRule ruleOrQuery) throws BuiltInException
+	private void processBuiltInArgumentDependencies(SWRLRuleReference ruleOrQuery) throws BuiltInException
 	{
 		Map<String, Set<Set<String>>> pathMap = new HashMap<String, Set<Set<String>>>();
 		Set<String> rootVariableNames = new HashSet<String>();
 
-		for (SWRLAtom atom : ruleOrQuery.getBodyAtoms()) {
+		for (SWRLAtomReference atom : ruleOrQuery.getBodyAtoms()) {
 			Set<String> thisAtomReferencedVariableNames = new HashSet<String>(atom.getReferencedVariableNames());
 
 			buildPaths(atom, rootVariableNames, pathMap);
 
-			if (atom instanceof SWRLBuiltInAtom) {
-				SWRLBuiltInAtom builtInAtom = (SWRLBuiltInAtom)atom;
+			if (atom instanceof SWRLBuiltInAtomReference) {
+				SWRLBuiltInAtomReference builtInAtom = (SWRLBuiltInAtomReference)atom;
 
 				if (builtInAtom.isSQWRLGroupCollection())
 					continue;
@@ -597,7 +597,7 @@ public class OWLAxiomProcessorImpl implements OWLAxiomProcessor
 	 * Note: Sets of sets in Java require care because of hash code issues. The enclosed set should not be modified or the outer set may return inconsistent
 	 * results.
 	 */
-	private void buildPaths(SWRLAtom atom, Set<String> rootVariableNames, Map<String, Set<Set<String>>> pathMap)
+	private void buildPaths(SWRLAtomReference atom, Set<String> rootVariableNames, Map<String, Set<Set<String>>> pathMap)
 	{
 		Set<String> currentAtomReferencedVariableNames = atom.getReferencedVariableNames();
 		Set<String> matchingRootVariableNames;
@@ -705,14 +705,14 @@ public class OWLAxiomProcessorImpl implements OWLAxiomProcessor
 	/**
 	 * Build up a list of body class atoms and non class, non built-in atoms.
 	 */
-	private List<SWRLAtom> processBodyNonBuiltInAtoms(List<SWRLAtom> bodyNonBuiltInAtoms)
+	private List<SWRLAtomReference> processBodyNonBuiltInAtoms(List<SWRLAtomReference> bodyNonBuiltInAtoms)
 	{
-		List<SWRLAtom> bodyClassAtoms = new ArrayList<SWRLAtom>();
-		List<SWRLAtom> bodyNonClassNonBuiltInAtoms = new ArrayList<SWRLAtom>();
-		List<SWRLAtom> result = new ArrayList<SWRLAtom>();
+		List<SWRLAtomReference> bodyClassAtoms = new ArrayList<SWRLAtomReference>();
+		List<SWRLAtomReference> bodyNonClassNonBuiltInAtoms = new ArrayList<SWRLAtomReference>();
+		List<SWRLAtomReference> result = new ArrayList<SWRLAtomReference>();
 
-		for (SWRLAtom atom : bodyNonBuiltInAtoms) {
-			if (atom instanceof SWRLClassAtom)
+		for (SWRLAtomReference atom : bodyNonBuiltInAtoms) {
+			if (atom instanceof SWRLClassAtomReference)
 				bodyClassAtoms.add(atom);
 			else
 				bodyNonClassNonBuiltInAtoms.add(atom);
@@ -725,14 +725,14 @@ public class OWLAxiomProcessorImpl implements OWLAxiomProcessor
 	}
 
 	// TODO: too long- refactor
-	private void processSQWRLHeadBuiltIns(SWRLRule query) throws DataValueConversionException, SQWRLException, BuiltInException
+	private void processSQWRLHeadBuiltIns(SWRLRuleReference query) throws DataValueConversionException, SQWRLException, BuiltInException
 	{
 		List<String> selectedVariableNames = new ArrayList<String>();
 		SQWRLResultImpl sqwrlResult = sqwrlResultMap.get(query.getURI());
 
 		processBuiltInIndexes(query);
 
-		for (SWRLBuiltInAtom builtInAtom : getBuiltInAtomsFromHead(query, SQWRLNames.getHeadBuiltInNames())) {
+		for (SWRLBuiltInAtomReference builtInAtom : getBuiltInAtomsFromHead(query, SQWRLNames.getHeadBuiltInNames())) {
 			String builtInName = builtInAtom.getPredicate();
 			hasSQWRLBuiltInsMap.put(query.getURI(), true);
 
@@ -819,8 +819,8 @@ public class OWLAxiomProcessorImpl implements OWLAxiomProcessor
 						else
 							throw new SQWRLException("variable ?" + variableName + " must be selected before it can be ordered");
 					} else if (builtInName.equalsIgnoreCase(SQWRLNames.ColumnNames)) {
-						if (argument instanceof SWRLLiteralArgument && ((SWRLLiteralArgument)argument).getLiteral().isString()) {
-							SWRLLiteralArgument dataValueArgument = (SWRLLiteralArgument)argument;
+						if (argument instanceof SWRLLiteralArgumentReference && ((SWRLLiteralArgumentReference)argument).getLiteral().isString()) {
+							SWRLLiteralArgumentReference dataValueArgument = (SWRLLiteralArgumentReference)argument;
 							sqwrlResult.addColumnDisplayName(dataValueArgument.getLiteral().getString());
 						} else
 							throw new SQWRLException("only string literals allowed as column names - found " + argument);
@@ -852,8 +852,8 @@ public class OWLAxiomProcessorImpl implements OWLAxiomProcessor
 					BuiltInArgument nArgument = builtInAtom.getArguments().get(0);
 					int n;
 
-					if (nArgument instanceof SWRLLiteralArgument && ((SWRLLiteralArgument)nArgument).getLiteral().isLong()) {
-						n = (int)((SWRLLiteralArgument)nArgument).getLiteral().getLong();
+					if (nArgument instanceof SWRLLiteralArgumentReference && ((SWRLLiteralArgumentReference)nArgument).getLiteral().isLong()) {
+						n = (int)((SWRLLiteralArgumentReference)nArgument).getLiteral().getLong();
 						if (n < 1)
 							throw new SQWRLException("nth argument to slicing operator " + builtInName + " must be a positive integer");
 					} else
@@ -880,8 +880,8 @@ public class OWLAxiomProcessorImpl implements OWLAxiomProcessor
 						BuiltInArgument sliceArgument = builtInAtom.getArguments().get(1);
 						int sliceSize;
 
-						if (sliceArgument instanceof SWRLLiteralArgument && ((SWRLLiteralArgument)sliceArgument).getLiteral().isLong()) {
-							sliceSize = (int)((SWRLLiteralArgument)sliceArgument).getLiteral().getLong();
+						if (sliceArgument instanceof SWRLLiteralArgumentReference && ((SWRLLiteralArgumentReference)sliceArgument).getLiteral().isLong()) {
+							sliceSize = (int)((SWRLLiteralArgumentReference)sliceArgument).getLiteral().getLong();
 							if (sliceSize < 1)
 								throw new SQWRLException("slice size argument to slicing operator " + builtInName + " must be a positive integer");
 						} else
@@ -904,7 +904,7 @@ public class OWLAxiomProcessorImpl implements OWLAxiomProcessor
 		}
 	}
 
-	private void processSQWRLBuiltIns(SWRLRule query) throws DataValueConversionException, SQWRLException, BuiltInException
+	private void processSQWRLBuiltIns(SWRLRuleReference query) throws DataValueConversionException, SQWRLException, BuiltInException
 	{
 		Set<String> collectionNames = new HashSet<String>();
 		Set<String> cascadedUnboundVariableNames = new HashSet<String>();
@@ -926,9 +926,9 @@ public class OWLAxiomProcessorImpl implements OWLAxiomProcessor
 	}
 
 	// Process all make collection built-ins.
-	private void processSQWRLCollectionMakeBuiltIns(SWRLRule query, Set<String> collectionNames) throws SQWRLException, BuiltInException
+	private void processSQWRLCollectionMakeBuiltIns(SWRLRuleReference query, Set<String> collectionNames) throws SQWRLException, BuiltInException
 	{
-		for (SWRLBuiltInAtom builtInAtom : getBuiltInAtomsFromBody(query, SQWRLNames.getCollectionMakeBuiltInNames())) {
+		for (SWRLBuiltInAtomReference builtInAtom : getBuiltInAtomsFromBody(query, SQWRLNames.getCollectionMakeBuiltInNames())) {
 			String collectionName = builtInAtom.getArgumentVariableName(0); // First argument is the collection name
 			hasSQWRLCollectionBuiltInsMap.put(query.getURI(), true);
 
@@ -939,9 +939,9 @@ public class OWLAxiomProcessorImpl implements OWLAxiomProcessor
 
 	// We store the group arguments for each collection specified in the make operation; these arguments are later appended to the collection
 	// operation built-ins
-	private void processSQWRLCollectionGroupByBuiltIns(SWRLRule ruleOrQuery, Set<String> collectionNames) throws SQWRLException, BuiltInException
+	private void processSQWRLCollectionGroupByBuiltIns(SWRLRuleReference ruleOrQuery, Set<String> collectionNames) throws SQWRLException, BuiltInException
 	{
-		for (SWRLBuiltInAtom builtInAtom : getBuiltInAtomsFromBody(ruleOrQuery, SQWRLNames.getCollectionGroupByBuiltInNames())) {
+		for (SWRLBuiltInAtomReference builtInAtom : getBuiltInAtomsFromBody(ruleOrQuery, SQWRLNames.getCollectionGroupByBuiltInNames())) {
 			String collectionName = builtInAtom.getArgumentVariableName(0); // The first argument is the collection name.
 			List<BuiltInArgument> builtInArguments = builtInAtom.getArguments();
 			List<BuiltInArgument> groupArguments = builtInArguments.subList(1, builtInArguments.size());
@@ -970,9 +970,9 @@ public class OWLAxiomProcessorImpl implements OWLAxiomProcessor
 		}
 	}
 
-	private void processSQWRLCollectionMakeGroupArguments(SWRLRule ruleOrQuery, Set<String> collectionNames) throws SQWRLException, BuiltInException
+	private void processSQWRLCollectionMakeGroupArguments(SWRLRuleReference ruleOrQuery, Set<String> collectionNames) throws SQWRLException, BuiltInException
 	{
-		for (SWRLBuiltInAtom builtInAtom : getBuiltInAtomsFromBody(ruleOrQuery, SQWRLNames.getCollectionMakeBuiltInNames())) {
+		for (SWRLBuiltInAtomReference builtInAtom : getBuiltInAtomsFromBody(ruleOrQuery, SQWRLNames.getCollectionMakeBuiltInNames())) {
 			String collectionName = builtInAtom.getArgumentVariableName(0); // First argument is the collection name
 			Map<String, List<BuiltInArgument>> collectionGroupArguments;
 			String uri = ruleOrQuery.getURI();
@@ -992,10 +992,10 @@ public class OWLAxiomProcessorImpl implements OWLAxiomProcessor
 		}
 	}
 
-	private void processSQWRLCollectionOperationBuiltIns(SWRLRule ruleOrQuery, Set<String> collectionNames, Set<String> cascadedUnboundVariableNames)
+	private void processSQWRLCollectionOperationBuiltIns(SWRLRuleReference ruleOrQuery, Set<String> collectionNames, Set<String> cascadedUnboundVariableNames)
 		throws SQWRLException, BuiltInException
 	{
-		for (SWRLBuiltInAtom builtInAtom : getBuiltInAtomsFromBody(ruleOrQuery, SQWRLNames.getCollectionOperationBuiltInNames())) {
+		for (SWRLBuiltInAtomReference builtInAtom : getBuiltInAtomsFromBody(ruleOrQuery, SQWRLNames.getCollectionOperationBuiltInNames())) {
 			List<BuiltInArgument> allOperandCollectionGroupArguments = new ArrayList<BuiltInArgument>(); // The group arguments from the operand collections
 			Map<String, List<BuiltInArgument>> collectionGroupArguments;
 			String uri = ruleOrQuery.getURI();
@@ -1041,10 +1041,10 @@ public class OWLAxiomProcessorImpl implements OWLAxiomProcessor
 		}
 	}
 
-	private void processBuiltInsThatUseSQWRLCollectionOperationResults(SWRLRule ruleOrQuery, Set<String> cascadedUnboundVariableNames)
+	private void processBuiltInsThatUseSQWRLCollectionOperationResults(SWRLRuleReference ruleOrQuery, Set<String> cascadedUnboundVariableNames)
 		throws SQWRLException, BuiltInException
 	{
-		for (SWRLBuiltInAtom builtInAtom : getBuiltInAtomsFromBody(ruleOrQuery)) {
+		for (SWRLBuiltInAtomReference builtInAtom : getBuiltInAtomsFromBody(ruleOrQuery)) {
 			if (!builtInAtom.isSQWRLBuiltIn()) { // Mark later non SQWRL built-ins that (directly or indirectly) use variables bound by collection operation
 																						// built-ins.
 				if (builtInAtom.usesAtLeastOneVariableOf(cascadedUnboundVariableNames)) {
@@ -1056,11 +1056,11 @@ public class OWLAxiomProcessorImpl implements OWLAxiomProcessor
 		}
 	}
 
-	private void buildReferencedVariableNames(SWRLRule ruleOrQuery)
+	private void buildReferencedVariableNames(SWRLRuleReference ruleOrQuery)
 	{
 		String uri = ruleOrQuery.getURI();
 
-		for (SWRLAtom atom : ruleOrQuery.getBodyAtoms())
+		for (SWRLAtomReference atom : ruleOrQuery.getBodyAtoms())
 			if (referencedVariableNameMap.containsKey(uri))
 				referencedVariableNameMap.get(uri).addAll(atom.getReferencedVariableNames());
 			else
@@ -1070,13 +1070,13 @@ public class OWLAxiomProcessorImpl implements OWLAxiomProcessor
 	/**
 	 * Give each built-in a unique index proceeding from left to right.
 	 */
-	private void processBuiltInIndexes(SWRLRule ruleOrQuery)
+	private void processBuiltInIndexes(SWRLRuleReference ruleOrQuery)
 	{
 		int builtInIndex = 0;
 
-		for (SWRLBuiltInAtom builtInAtom : getBuiltInAtomsFromBody(ruleOrQuery))
+		for (SWRLBuiltInAtomReference builtInAtom : getBuiltInAtomsFromBody(ruleOrQuery))
 			builtInAtom.setBuiltInIndex(builtInIndex++);
-		for (SWRLBuiltInAtom builtInAtom : getBuiltInAtomsFromHead(ruleOrQuery))
+		for (SWRLBuiltInAtomReference builtInAtom : getBuiltInAtomsFromHead(ruleOrQuery))
 			builtInAtom.setBuiltInIndex(builtInIndex++);
 	}
 
@@ -1088,7 +1088,7 @@ public class OWLAxiomProcessorImpl implements OWLAxiomProcessor
 		return false;
 	}
 
-	private void processSWRLAtom(SWRLRule ruleOrQuery, SWRLAtom atom, boolean isConsequent)
+	private void processSWRLAtom(SWRLRuleReference ruleOrQuery, SWRLAtomReference atom, boolean isConsequent)
 	{
 		String uri = ruleOrQuery.getURI();
 
@@ -1111,13 +1111,13 @@ public class OWLAxiomProcessorImpl implements OWLAxiomProcessor
 				referencedOWLIndividualURIMap.put(uri, atom.getReferencedIndividualURIs());
 	}
 
-	private List<SWRLBuiltInAtom> getBuiltInAtoms(List<SWRLAtom> atoms, Set<String> builtInNames)
+	private List<SWRLBuiltInAtomReference> getBuiltInAtoms(List<SWRLAtomReference> atoms, Set<String> builtInNames)
 	{
-		List<SWRLBuiltInAtom> result = new ArrayList<SWRLBuiltInAtom>();
+		List<SWRLBuiltInAtomReference> result = new ArrayList<SWRLBuiltInAtomReference>();
 
-		for (SWRLAtom atom : atoms) {
-			if (atom instanceof SWRLBuiltInAtom) {
-				SWRLBuiltInAtom builtInAtom = (SWRLBuiltInAtom)atom;
+		for (SWRLAtomReference atom : atoms) {
+			if (atom instanceof SWRLBuiltInAtomReference) {
+				SWRLBuiltInAtomReference builtInAtom = (SWRLBuiltInAtomReference)atom;
 				if (builtInNames.contains(builtInAtom.getPredicate()))
 					result.add(builtInAtom);
 			}
@@ -1125,33 +1125,33 @@ public class OWLAxiomProcessorImpl implements OWLAxiomProcessor
 		return result;
 	}
 
-	private List<SWRLBuiltInAtom> getBuiltInAtoms(List<SWRLAtom> atoms)
+	private List<SWRLBuiltInAtomReference> getBuiltInAtoms(List<SWRLAtomReference> atoms)
 	{
-		List<SWRLBuiltInAtom> result = new ArrayList<SWRLBuiltInAtom>();
+		List<SWRLBuiltInAtomReference> result = new ArrayList<SWRLBuiltInAtomReference>();
 
-		for (SWRLAtom atom : atoms)
-			if (atom instanceof SWRLBuiltInAtom)
-				result.add((SWRLBuiltInAtom)atom);
+		for (SWRLAtomReference atom : atoms)
+			if (atom instanceof SWRLBuiltInAtomReference)
+				result.add((SWRLBuiltInAtomReference)atom);
 
 		return result;
 	}
 
-	public List<SWRLBuiltInAtom> getBuiltInAtomsFromHead(SWRLRule ruleOrQuery)
+	public List<SWRLBuiltInAtomReference> getBuiltInAtomsFromHead(SWRLRuleReference ruleOrQuery)
 	{
 		return getBuiltInAtoms(ruleOrQuery.getHeadAtoms());
 	}
 
-	public List<SWRLBuiltInAtom> getBuiltInAtomsFromHead(SWRLRule ruleOrQuery, Set<String> builtInNames)
+	public List<SWRLBuiltInAtomReference> getBuiltInAtomsFromHead(SWRLRuleReference ruleOrQuery, Set<String> builtInNames)
 	{
 		return getBuiltInAtoms(ruleOrQuery.getHeadAtoms(), builtInNames);
 	}
 
-	public List<SWRLBuiltInAtom> getBuiltInAtomsFromBody(SWRLRule ruleOrQuery)
+	public List<SWRLBuiltInAtomReference> getBuiltInAtomsFromBody(SWRLRuleReference ruleOrQuery)
 	{
 		return getBuiltInAtoms(ruleOrQuery.getBodyAtoms());
 	}
 
-	public List<SWRLBuiltInAtom> getBuiltInAtomsFromBody(SWRLRule ruleOrQuery, Set<String> builtInNames)
+	public List<SWRLBuiltInAtomReference> getBuiltInAtomsFromBody(SWRLRuleReference ruleOrQuery, Set<String> builtInNames)
 	{
 		return getBuiltInAtoms(ruleOrQuery.getBodyAtoms(), builtInNames);
 	}
@@ -1162,9 +1162,9 @@ public class OWLAxiomProcessorImpl implements OWLAxiomProcessor
 			importOWLClassDeclarationAxiom(classURI);
 	}
 
-	private void importOWLClassDeclarationAxioms(Set<OWLClass> classes) throws SWRLRuleEngineBridgeException
+	private void importOWLClassDeclarationAxioms(Set<OWLClassReference> classes) throws SWRLRuleEngineBridgeException
 	{
-		for (OWLClass owlClass : classes)
+		for (OWLClassReference owlClass : classes)
 			importOWLClassDeclarationAxiom(owlClass.getURI());
 	}
 
@@ -1172,10 +1172,10 @@ public class OWLAxiomProcessorImpl implements OWLAxiomProcessor
 	{
 		try {
 			if (activeOntology.couldBeOWLNamedClass(classURI)) {
-				OWLClass owlClass = activeOntology.getOWLClass(classURI);
+				OWLClassReference owlClass = activeOntology.getOWLClass(classURI);
 
 				if (!referencedOWLClassDeclarationAxioms.containsKey(classURI)) {
-					OWLDeclarationAxiom axiom = dataFactory.getOWLDeclarationAxiom(owlClass);
+					OWLDeclarationAxiomReference axiom = dataFactory.getOWLDeclarationAxiom(owlClass);
 					referencedOWLDeclarationAxioms.put(classURI, axiom);
 					referencedOWLClassDeclarationAxioms.put(classURI, axiom);
 					referencedOWLAxioms.add(axiom);
@@ -1198,7 +1198,7 @@ public class OWLAxiomProcessorImpl implements OWLAxiomProcessor
 	private void importAllOWLIndividualsOfClass(String classURI) throws SWRLRuleEngineBridgeException
 	{
 		try {
-			for (OWLNamedIndividual individual : activeOntology.getAllOWLIndividualsOfClass(classURI)) {
+			for (OWLNamedIndividualReference individual : activeOntology.getAllOWLIndividualsOfClass(classURI)) {
 				importOWLIndividualDeclarationAxiom(individual.getURI());
 				importOWLClassAssertionAxiom(classURI, individual.getURI());
 			}
@@ -1209,9 +1209,9 @@ public class OWLAxiomProcessorImpl implements OWLAxiomProcessor
 
 	private void importOWLClassAssertionAxiom(String classURI, String individualURI) throws SWRLRuleEngineBridgeException
 	{
-		OWLClass cls = dataFactory.getOWLClass(classURI);
-		OWLNamedIndividual individual = dataFactory.getOWLIndividual(individualURI);
-		OWLClassAssertionAxiom axiom = dataFactory.getOWLClassAssertionAxiom(individual, cls);
+		OWLClassReference cls = dataFactory.getOWLClass(classURI);
+		OWLNamedIndividualReference individual = dataFactory.getOWLIndividual(individualURI);
+		OWLClassAssertionAxiomReference axiom = dataFactory.getOWLClassAssertionAxiom(individual, cls);
 		referencedOWLAxioms.add(axiom);
 	}
 
@@ -1221,25 +1221,25 @@ public class OWLAxiomProcessorImpl implements OWLAxiomProcessor
 			importOWLPropertyAssertionAxioms(propertyURI);
 	}
 
-	private void importOWLPropertyAssertionAxioms(Set<OWLProperty> properties) throws SWRLRuleEngineBridgeException
+	private void importOWLPropertyAssertionAxioms(Set<OWLPropertyReference> properties) throws SWRLRuleEngineBridgeException
 	{
-		for (OWLProperty property : properties)
+		for (OWLPropertyReference property : properties)
 			importOWLPropertyAssertionAxioms(property.getURI());
 	}
 
 	private void importOWLPropertyAssertionAxioms(String propertyURI) throws SWRLRuleEngineBridgeException
 	{
 		if (!(referencedOWLObjectPropertyURIs.contains(propertyURI) || referencedOWLDataPropertyURIs.contains(propertyURI))) {
-			Set<OWLPropertyAssertionAxiom> axioms = null;
+			Set<OWLPropertyAssertionAxiomReference> axioms = null;
 
 			try {
 				if (!referencedOWLPropertyDeclarationAxioms.containsKey(propertyURI)) {
 					if (activeOntology.containsDataPropertyInSignature(propertyURI, true)) {
-						OWLDeclarationAxiom axiom = dataFactory.getOWLDeclarationAxiom(activeOntology.getOWLDataProperty(propertyURI));
+						OWLDeclarationAxiomReference axiom = dataFactory.getOWLDeclarationAxiom(activeOntology.getOWLDataProperty(propertyURI));
 						referencedOWLPropertyDeclarationAxioms.put(propertyURI, axiom);
 						referencedOWLDeclarationAxioms.put(propertyURI, axiom);
 					} else if (activeOntology.containsObjectPropertyInSignature(propertyURI, true)) {
-						OWLDeclarationAxiom axiom = dataFactory.getOWLDeclarationAxiom(activeOntology.getOWLObjectProperty(propertyURI));
+						OWLDeclarationAxiomReference axiom = dataFactory.getOWLDeclarationAxiom(activeOntology.getOWLObjectProperty(propertyURI));
 						referencedOWLPropertyDeclarationAxioms.put(propertyURI, axiom);
 						referencedOWLDeclarationAxioms.put(propertyURI, axiom);
 					} else
@@ -1253,16 +1253,16 @@ public class OWLAxiomProcessorImpl implements OWLAxiomProcessor
 
 			referencedOWLAxioms.addAll(axioms);
 
-			for (OWLPropertyAssertionAxiom axiom : axioms) {
+			for (OWLPropertyAssertionAxiomReference axiom : axioms) {
 				String subjectURI = axiom.getSubject().getURI();
-				OWLProperty property = axiom.getProperty();
+				OWLPropertyReference property = axiom.getProperty();
 
 				cacheOWLPropertyAssertionAxiom(axiom);
 
 				addReferencedIndividualURI(subjectURI);
 
-				if (axiom instanceof OWLObjectPropertyAssertionAxiom) {
-					OWLObjectPropertyAssertionAxiom objectPropertyAssertionAxiom = (OWLObjectPropertyAssertionAxiom)axiom;
+				if (axiom instanceof OWLObjectPropertyAssertionAxiomReference) {
+					OWLObjectPropertyAssertionAxiomReference objectPropertyAssertionAxiom = (OWLObjectPropertyAssertionAxiomReference)axiom;
 					String objectURI = objectPropertyAssertionAxiom.getObject().getURI();
 					addReferencedIndividualURI(objectURI);
 					referencedOWLObjectPropertyURIs.add(propertyURI);
@@ -1278,31 +1278,31 @@ public class OWLAxiomProcessorImpl implements OWLAxiomProcessor
 		}
 	}
 
-	private void cacheOWLPropertyAssertionAxiom(OWLPropertyAssertionAxiom axiom)
+	private void cacheOWLPropertyAssertionAxiom(OWLPropertyAssertionAxiomReference axiom)
 	{
 		String subjectURI = axiom.getSubject().getURI();
 		String propertyURI = axiom.getProperty().getURI();
-		Map<String, Set<OWLPropertyAssertionAxiom>> propertyAxiomsMap;
-		Set<OWLPropertyAssertionAxiom> axiomSet;
+		Map<String, Set<OWLPropertyAssertionAxiomReference>> propertyAxiomsMap;
+		Set<OWLPropertyAssertionAxiomReference> axiomSet;
 
 		if (allOWLPropertyAssertionAxioms.containsKey(subjectURI))
 			propertyAxiomsMap = allOWLPropertyAssertionAxioms.get(subjectURI);
 		else {
-			propertyAxiomsMap = new HashMap<String, Set<OWLPropertyAssertionAxiom>>();
+			propertyAxiomsMap = new HashMap<String, Set<OWLPropertyAssertionAxiomReference>>();
 			allOWLPropertyAssertionAxioms.put(subjectURI, propertyAxiomsMap);
 		}
 
 		if (propertyAxiomsMap.containsKey(propertyURI))
 			axiomSet = propertyAxiomsMap.get(propertyURI);
 		else {
-			axiomSet = new HashSet<OWLPropertyAssertionAxiom>();
+			axiomSet = new HashSet<OWLPropertyAssertionAxiomReference>();
 			propertyAxiomsMap.put(propertyURI, axiomSet);
 		}
 
 		axiomSet.add(axiom);
 	}
 
-	private void cacheOWLIndividual(OWLNamedIndividual owlIndividual)
+	private void cacheOWLIndividual(OWLNamedIndividualReference owlIndividual)
 	{
 		String individualURI = owlIndividual.getURI();
 
@@ -1310,9 +1310,9 @@ public class OWLAxiomProcessorImpl implements OWLAxiomProcessor
 			allOWLIndividuals.put(individualURI, owlIndividual);
 	}
 
-	private void cacheOWLIndividuals(Set<OWLNamedIndividual> individuals)
+	private void cacheOWLIndividuals(Set<OWLNamedIndividualReference> individuals)
 	{
-		for (OWLNamedIndividual individual : individuals)
+		for (OWLNamedIndividualReference individual : individuals)
 			cacheOWLIndividual(individual);
 	}
 
@@ -1325,8 +1325,8 @@ public class OWLAxiomProcessorImpl implements OWLAxiomProcessor
 	private void importOWLIndividualDeclarationAxiom(String individualURI) throws SWRLRuleEngineBridgeException
 	{
 		if (!referencedOWLIndividualDeclarationAxioms.containsKey(individualURI)) {
-			OWLNamedIndividual owlIndividual = dataFactory.getOWLIndividual(individualURI);
-			OWLDeclarationAxiom axiom = dataFactory.getOWLDeclarationAxiom(owlIndividual);
+			OWLNamedIndividualReference owlIndividual = dataFactory.getOWLIndividual(individualURI);
+			OWLDeclarationAxiomReference axiom = dataFactory.getOWLDeclarationAxiom(owlIndividual);
 			referencedOWLIndividualDeclarationAxioms.put(individualURI, axiom);
 			referencedOWLDeclarationAxioms.put(individualURI, axiom);
 			cacheOWLIndividual(owlIndividual);
@@ -1386,7 +1386,7 @@ public class OWLAxiomProcessorImpl implements OWLAxiomProcessor
 	private void importOWLSameIndividualAxioms() throws SWRLRuleEngineBridgeException
 	{
 		try {
-			for (OWLSameIndividualAxiom axiom : activeOntology.getSameIndividualAxioms()) {
+			for (OWLSameIndividualAxiomReference axiom : activeOntology.getSameIndividualAxioms()) {
 				referencedOWLAxioms.add(axiom);
 				cacheOWLIndividuals(axiom.getIndividuals());
 			}
@@ -1398,7 +1398,7 @@ public class OWLAxiomProcessorImpl implements OWLAxiomProcessor
 	private void importOWLDifferentIndividualsAxioms() throws SWRLRuleEngineBridgeException
 	{
 		try {
-			for (OWLDifferentIndividualsAxiom axiom : activeOntology.getOWLDifferentIndividualsAxioms()) {
+			for (OWLDifferentIndividualsAxiomReference axiom : activeOntology.getOWLDifferentIndividualsAxioms()) {
 				referencedOWLAxioms.add(axiom);
 				cacheOWLIndividuals(axiom.getIndividuals());
 			}
