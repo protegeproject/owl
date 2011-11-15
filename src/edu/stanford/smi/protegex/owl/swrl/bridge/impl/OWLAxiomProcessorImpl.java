@@ -1164,8 +1164,8 @@ public class OWLAxiomProcessorImpl implements OWLAxiomProcessor
 
 	private void importOWLClassDeclarationAxioms(Set<OWLClassReference> classes) throws SWRLRuleEngineBridgeException
 	{
-		for (OWLClassReference owlClass : classes)
-			importOWLClassDeclarationAxiom(owlClass.getURI());
+		for (OWLClassReference cls : classes)
+			importOWLClassDeclarationAxiom(cls.getURI());
 	}
 
 	private void importOWLClassDeclarationAxiom(String classURI) throws SWRLRuleEngineBridgeException
