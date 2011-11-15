@@ -1,32 +1,33 @@
 
 package edu.stanford.smi.protegex.owl.swrl.portability.p3;
 
+import edu.stanford.smi.protegex.owl.swrl.portability.OWLObjectPropertyReference;
 import edu.stanford.smi.protegex.owl.swrl.portability.SWRLArgumentReference;
 import edu.stanford.smi.protegex.owl.swrl.portability.SWRLObjectPropertyAtomReference;
 
 public class P3SWRLObjectPropertyAtomReference extends P3SWRLBinaryAtomReference implements SWRLObjectPropertyAtomReference
 {
-	private String propertyURI;
+	private OWLObjectPropertyReference property;
 
-	public P3SWRLObjectPropertyAtomReference(String propertyURI, SWRLArgumentReference argument1, SWRLArgumentReference argument2)
+	public P3SWRLObjectPropertyAtomReference(OWLObjectPropertyReference property, SWRLArgumentReference argument1, SWRLArgumentReference argument2)
 	{
 		super(argument1, argument2);
-		this.propertyURI = propertyURI;
+		this.property = property;
 	}
 
-	public P3SWRLObjectPropertyAtomReference(String propertyURI)
+	public P3SWRLObjectPropertyAtomReference(OWLObjectPropertyReference property)
 	{
-		this.propertyURI = propertyURI;
+		this.property = property;
 	}
 
-	public String getPropertyURI()
+	public OWLObjectPropertyReference getProperty()
 	{
-		return propertyURI;
+		return property;
 	}
 
 	public String toString()
 	{
-		return getPropertyURI() + "(" + getFirstArgument() + ", " + getSecondArgument() + ")";
+		return getProperty().getURI() + "(" + getFirstArgument() + ", " + getSecondArgument() + ")";
 	}
 
 }

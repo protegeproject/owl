@@ -3,7 +3,7 @@ package edu.stanford.smi.protegex.owl.swrl.portability;
 
 public interface SWRLDataPropertyAtomReference extends SWRLAtomReference
 {
-	String getPropertyURI();
+	OWLDataPropertyReference getProperty();
 
 	SWRLArgumentReference getFirstArgument();
 
