@@ -243,7 +243,7 @@ public class DefaultSWRLBridge implements SWRLRuleEngineBridge, SWRLBuiltInBridg
     OWLNamedIndividualReference owlIndividual = injectedOWLFactory.getOWLIndividual(individualURI);
     owlIndividual.addType(owlClass);
 
-    if (!owlAxiomProcessor.isReferencedOWLClass(owlClass.getURI())) exportOWLClassDeclaration(owlClass);
+    if (!owlAxiomProcessor.isRelevantOWLClass(owlClass.getURI())) exportOWLClassDeclaration(owlClass);
    
     injectedOWLIndividualDeclarations.put(individualURI, owlIndividual); 
     cacheOWLIndividual(owlIndividual);
@@ -291,23 +291,23 @@ public class DefaultSWRLBridge implements SWRLRuleEngineBridge, SWRLBuiltInBridg
 
   public boolean isOWLClass(String classURI) 
   { 
-	 return owlAxiomProcessor.isReferencedOWLClass(classURI) || injectedOWLClassDeclarations.containsKey(classURI) ||
+	 return owlAxiomProcessor.isRelevantOWLClass(classURI) || injectedOWLClassDeclarations.containsKey(classURI) ||
 	        activeOntology.containsClassInSignature(classURI, true);
   }
   
   public boolean isOWLObjectProperty(String propertyURI) 
   { 
-	  return owlAxiomProcessor.isReferencedOWLObjectProperty(propertyURI) || activeOntology.containsObjectPropertyInSignature(propertyURI, true);
+	  return owlAxiomProcessor.isRelevantOWLObjectProperty(propertyURI) || activeOntology.containsObjectPropertyInSignature(propertyURI, true);
   }
   
   public boolean isOWLDataProperty(String propertyURI) 
   { 
-	  return owlAxiomProcessor.isReferencedOWLDataProperty(propertyURI) || activeOntology.containsDataPropertyInSignature(propertyURI, true);
+	  return owlAxiomProcessor.isRelevantOWLDataProperty(propertyURI) || activeOntology.containsDataPropertyInSignature(propertyURI, true);
   }
 
   public boolean isOWLIndividual(String individualURI) 
   { 
-	  return owlAxiomProcessor.isReferencedOWLIndividual(individualURI) || activeOntology.containsIndividualInSignature(individualURI, true);
+	  return owlAxiomProcessor.isRelevantOWLIndividual(individualURI) || activeOntology.containsIndividualInSignature(individualURI, true);
   }
   
   public boolean isOWLIndividualOfClass(String individualURI, String classURI)

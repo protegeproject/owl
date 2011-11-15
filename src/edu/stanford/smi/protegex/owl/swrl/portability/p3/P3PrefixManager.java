@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.Set;
 
 import edu.stanford.smi.protegex.owl.model.NamespaceManager;
-import edu.stanford.smi.protegex.owl.swrl.portability.IRI;
 import edu.stanford.smi.protegex.owl.swrl.portability.OWLOntology;
 import edu.stanford.smi.protegex.owl.swrl.portability.PrefixManager;
 
@@ -33,16 +32,6 @@ public class P3PrefixManager implements PrefixManager
 	public String getPrefix(String prefixName)
 	{
 		return namespaceManager.getPrefix(prefixName);
-	}
-
-	public IRI getIRI(String prefixIRI)
-	{
-		return new IRI(prefixIRI);
-	}
-
-	public String getPrefixIRI(IRI iri)
-	{
-		return iri.toString();
 	}
 
 	public Set<String> getPrefixNames()

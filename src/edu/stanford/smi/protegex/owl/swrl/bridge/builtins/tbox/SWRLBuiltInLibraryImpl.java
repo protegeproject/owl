@@ -80,7 +80,7 @@ import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.SWRLBuiltInLibraryEx
 import edu.stanford.smi.protegex.owl.swrl.exceptions.SWRLOWLUtilException;
 import edu.stanford.smi.protegex.owl.swrl.portability.OWLDataFactory;
 import edu.stanford.smi.protegex.owl.swrl.portability.OWLPropertyReference;
-import edu.stanford.smi.protegex.owl.swrl.portability.OWLSomeValuesFrom;
+import edu.stanford.smi.protegex.owl.swrl.portability.OWLSomeValuesFromReference;
 import edu.stanford.smi.protegex.owl.swrl.util.SWRLOWLUtil;
 
 /**
@@ -1019,7 +1019,7 @@ public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
     try {
       if (getIsInConsequent()) {
         OWLDataFactory owlFactory = getBuiltInBridge().getOWLDataFactory();
-        OWLSomeValuesFrom someValuesFrom;
+        OWLSomeValuesFromReference someValuesFrom;
         OWLPropertyReference onProperty;
 
         if (isArgumentAString(2, arguments)) {

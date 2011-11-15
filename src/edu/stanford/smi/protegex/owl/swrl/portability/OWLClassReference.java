@@ -5,8 +5,9 @@ import java.util.Set;
 
 public interface OWLClassReference extends OWLDescriptionReference, OWLEntityReference
 {
-	Set<OWLClassReference> getTypes();
 	Set<OWLClassReference> getSuperClasses();
+
 	Set<OWLClassReference> getSubClasses();
-  Set<OWLClassReference> getEquivalentClasses();
+
+	Set<OWLClassReference> getEquivalentClasses();
 }

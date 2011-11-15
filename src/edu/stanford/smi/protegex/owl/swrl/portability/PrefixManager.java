@@ -14,9 +14,5 @@ public interface PrefixManager
 
 	Map<String, String> getPrefixName2PrefixMap();
 
-	IRI getIRI(String prefixIRI);
-
-	String getPrefixIRI(IRI iri);
-
 	Set<String> getPrefixNames();
 }

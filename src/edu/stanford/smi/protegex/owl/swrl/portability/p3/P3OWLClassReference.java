@@ -38,11 +38,6 @@ public class P3OWLClassReference implements OWLClassReference
 		return classURI;
 	}
 
-	public Set<OWLClassReference> getTypes()
-	{
-		return superClasses;
-	}
-
 	public Set<OWLClassReference> getSuperClasses()
 	{
 		return superClasses;
