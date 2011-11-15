@@ -54,7 +54,7 @@ public interface OWLOntology
 
 	boolean isSWRLBuiltIn(String builtInURI);
 
-	boolean couldBeOWLNamedClass(String classURI);
+	boolean isOWLNamedClass(String classURI);
 
 	boolean isValidURI(String uri);
 

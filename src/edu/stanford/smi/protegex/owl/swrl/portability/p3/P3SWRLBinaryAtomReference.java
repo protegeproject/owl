@@ -1,23 +1,25 @@
 
 package edu.stanford.smi.protegex.owl.swrl.portability.p3;
 
+import edu.stanford.smi.protegex.owl.swrl.portability.OWLPropertyReference;
 import edu.stanford.smi.protegex.owl.swrl.portability.SWRLArgumentReference;
 import edu.stanford.smi.protegex.owl.swrl.portability.SWRLBinaryAtomReference;
 
 public class P3SWRLBinaryAtomReference extends P3SWRLAtomReference implements SWRLBinaryAtomReference
 {
-	private String propertyURI;
+	private OWLPropertyReference property;
 	private SWRLArgumentReference argument1, argument2;
 
-	public P3SWRLBinaryAtomReference(String propertyURI)
+	public P3SWRLBinaryAtomReference(OWLPropertyReference property)
 	{
-		this.propertyURI = propertyURI;
+		this.property = property;
 		this.argument1 = null;
 		this.argument2 = null;
 	}
 
 	public P3SWRLBinaryAtomReference()
 	{
+		this.property = null;
 		this.argument1 = null;
 		this.argument2 = null;
 	}
@@ -27,9 +29,9 @@ public class P3SWRLBinaryAtomReference extends P3SWRLAtomReference implements SW
 		return 2;
 	}
 
-	public String getPropertyURI()
+	public OWLPropertyReference getProperty()
 	{
-		return propertyURI;
+		return property;
 	}
 
 	public void setArgument1(SWRLArgumentReference argument1)

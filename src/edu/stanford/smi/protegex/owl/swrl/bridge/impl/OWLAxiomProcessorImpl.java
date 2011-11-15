@@ -1171,7 +1171,7 @@ public class OWLAxiomProcessorImpl implements OWLAxiomProcessor
 	private void importOWLClassDeclarationAxiom(String classURI) throws SWRLRuleEngineBridgeException
 	{
 		try {
-			if (activeOntology.couldBeOWLNamedClass(classURI)) {
+			if (activeOntology.isOWLNamedClass(classURI)) {
 				OWLClassReference owlClass = activeOntology.getOWLClass(classURI);
 
 				if (!relevantOWLClassDeclarationAxioms.containsKey(classURI)) {
