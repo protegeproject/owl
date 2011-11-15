@@ -43,7 +43,7 @@ public interface OWLDataFactory
 
 	OWLSubClassAxiomReference getOWLSubClassAxiom(OWLClassReference subClass, OWLClassReference superClass);
 
-	OWLSomeValuesFrom getOWLSomeValuesFrom(OWLClassReference owlClass, OWLPropertyReference onProperty, OWLClassReference someValuesFrom);
+	OWLSomeValuesFromReference getOWLSomeValuesFrom(OWLClassReference owlClass, OWLPropertyReference onProperty, OWLClassReference someValuesFrom);
 
 	OWLDeclarationAxiomReference getOWLDeclarationAxiom(OWLEntityReference owlEntity);
 

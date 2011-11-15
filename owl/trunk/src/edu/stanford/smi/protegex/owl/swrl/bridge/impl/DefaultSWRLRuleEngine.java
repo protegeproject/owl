@@ -68,9 +68,9 @@ public class DefaultSWRLRuleEngine implements SWRLRuleEngine
   {
   	owlAxiomProcessor.processSWRLRules();
   	
-  	exportOWLDeclarationAxioms2TargetRuleEngine(owlAxiomProcessor.getReferencedOWLDeclarationAxioms()); 	
-    exportOWLAxioms2TargetRuleEngine(owlAxiomProcessor.getReferencedOWLAxioms()); 
-    exportSWRLRules2TargetRuleEngine(owlAxiomProcessor.getReferencedSWRLRules());
+  	exportOWLDeclarationAxioms2TargetRuleEngine(owlAxiomProcessor.getRelevantOWLDeclarationAxioms()); 	
+    exportOWLAxioms2TargetRuleEngine(owlAxiomProcessor.getRelevantOWLAxioms()); 
+    exportSWRLRules2TargetRuleEngine(owlAxiomProcessor.getSWRLRules());
   }
 
   /**
@@ -82,9 +82,9 @@ public class DefaultSWRLRuleEngine implements SWRLRuleEngine
   	owlAxiomProcessor.processSWRLRules();
   	owlAxiomProcessor.processSQWRLQuery(queryName);
   	
-  	exportOWLDeclarationAxioms2TargetRuleEngine(owlAxiomProcessor.getReferencedOWLDeclarationAxioms()); 	
-    exportOWLAxioms2TargetRuleEngine(owlAxiomProcessor.getReferencedOWLAxioms()); 
-    exportSWRLRules2TargetRuleEngine(owlAxiomProcessor.getReferencedSWRLRules());
+  	exportOWLDeclarationAxioms2TargetRuleEngine(owlAxiomProcessor.getRelevantOWLDeclarationAxioms()); 	
+    exportOWLAxioms2TargetRuleEngine(owlAxiomProcessor.getRelevantOWLAxioms()); 
+    exportSWRLRules2TargetRuleEngine(owlAxiomProcessor.getSWRLRules());
   }
 
   /**
@@ -261,12 +261,12 @@ public class DefaultSWRLRuleEngine implements SWRLRuleEngine
   public boolean isInjectedOWLAxiom(OWLAxiomReference axiom) { return builtInBridgeController.isInjectedOWLAxiom(axiom); }
 
   // Convenience methods to display the contents of the bridge
-  public Set<SWRLRuleReference> getImportedSWRLRules() { return owlAxiomProcessor.getReferencedSWRLRules(); }
+  public Set<SWRLRuleReference> getImportedSWRLRules() { return owlAxiomProcessor.getSWRLRules(); }
   
   public Set<OWLClassReference> getImportedOWLClasses() 
   {
   	Set<OWLClassReference> result = new HashSet<OWLClassReference>();
-  	for (OWLDeclarationAxiomReference axiom : owlAxiomProcessor.getReferencedOWLClassDeclarationsAxioms()) {
+  	for (OWLDeclarationAxiomReference axiom : owlAxiomProcessor.getRelevantOWLClassDeclarationsAxioms()) {
   		if (axiom.getEntity() instanceof OWLClassReference)
   			result.add((OWLClassReference)axiom.getEntity());
   	} // for
@@ -277,14 +277,14 @@ public class DefaultSWRLRuleEngine implements SWRLRuleEngine
   {
   	Set<OWLNamedIndividualReference> result = new HashSet<OWLNamedIndividualReference>();
   	
-  	for (OWLDeclarationAxiomReference axiom : owlAxiomProcessor.getReferencedOWLIndividualDeclarationAxioms()) {
+  	for (OWLDeclarationAxiomReference axiom : owlAxiomProcessor.getRelevantOWLIndividualDeclarationAxioms()) {
   		if (axiom.getEntity() instanceof OWLNamedIndividualReference)
   			result.add((OWLNamedIndividualReference)axiom.getEntity());
   	} // for
   	return result;
   }
   
-  public Set<OWLAxiomReference> getImportedOWLAxioms() { return owlAxiomProcessor.getReferencedOWLAxioms(); }
+  public Set<OWLAxiomReference> getImportedOWLAxioms() { return owlAxiomProcessor.getRelevantOWLAxioms(); }
 
   public Set<OWLNamedIndividualReference> getReclassifiedOWLIndividuals(){ return ruleEngineBridgeController.getInferredOWLIndividuals(); }
   public Set<OWLAxiomReference> getInferredOWLAxioms() { return ruleEngineBridgeController.getInferredOWLAxioms(); }
@@ -314,8 +314,8 @@ public class DefaultSWRLRuleEngine implements SWRLRuleEngine
   	owlAxiomProcessor.processSQWRLQuery(queryName);
   	
   	exportSQWRLQuery2TargetRuleEngine(owlAxiomProcessor.getSQWRLQuery(queryName));
-  	exportOWLDeclarationAxioms2TargetRuleEngine(owlAxiomProcessor.getReferencedOWLDeclarationAxioms());  
-  	exportOWLAxioms2TargetRuleEngine(owlAxiomProcessor.getReferencedOWLAxioms());
+  	exportOWLDeclarationAxioms2TargetRuleEngine(owlAxiomProcessor.getRelevantOWLDeclarationAxioms());  
+  	exportOWLAxioms2TargetRuleEngine(owlAxiomProcessor.getRelevantOWLAxioms());
   } 
   
   private void exportSWRLRules2TargetRuleEngine(Set<SWRLRuleReference> rules) throws SWRLRuleEngineException

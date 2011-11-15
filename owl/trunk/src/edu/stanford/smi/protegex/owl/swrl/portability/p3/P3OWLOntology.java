@@ -60,7 +60,7 @@ import edu.stanford.smi.protegex.owl.swrl.portability.OWLOntology;
 import edu.stanford.smi.protegex.owl.swrl.portability.OWLPropertyReference;
 import edu.stanford.smi.protegex.owl.swrl.portability.OWLPropertyAssertionAxiomReference;
 import edu.stanford.smi.protegex.owl.swrl.portability.OWLSameIndividualAxiomReference;
-import edu.stanford.smi.protegex.owl.swrl.portability.OWLSomeValuesFrom;
+import edu.stanford.smi.protegex.owl.swrl.portability.OWLSomeValuesFromReference;
 import edu.stanford.smi.protegex.owl.swrl.portability.OWLSubClassAxiomReference;
 import edu.stanford.smi.protegex.owl.swrl.portability.SWRLAtomReference;
 import edu.stanford.smi.protegex.owl.swrl.portability.SWRLBuiltInAtomReference;
@@ -231,13 +231,13 @@ public class P3OWLOntology implements OWLOntology
 
 	public OWLNamedIndividualReference getOWLIndividual(String individualURI) throws OWLConversionFactoryException
 	{
-		OWLIndividualImpl owlIndividual;
+		P3OWLNamedIndividualReference owlIndividual;
 
 		if (individuals.containsKey(individualURI))
 			return individuals.get(individualURI);
 		else {
 			edu.stanford.smi.protegex.owl.model.OWLIndividual individual = SWRLOWLUtil.createOWLIndividual(owlModel, individualURI);
-			owlIndividual = new OWLIndividualImpl(individualURI);
+			owlIndividual = new P3OWLNamedIndividualReference(individualURI);
 			individuals.put(individualURI, owlIndividual);
 
 			buildDefiningClasses(owlIndividual, individual);
@@ -337,8 +337,8 @@ public class P3OWLOntology implements OWLOntology
 			write2OWLModel((OWLObjectPropertyAssertionAxiomReference)axiom);
 		else if (axiom instanceof OWLPropertyPropertyAssertionAxiomReference)
 			write2OWLModel((OWLPropertyPropertyAssertionAxiomReference)axiom);
-		else if (axiom instanceof OWLSomeValuesFrom)
-			write2OWLModel((OWLSomeValuesFrom)axiom);
+		else if (axiom instanceof OWLSomeValuesFromReference)
+			write2OWLModel((OWLSomeValuesFromReference)axiom);
 		else if (axiom instanceof OWLSubClassAxiomReference)
 			write2OWLModel((OWLSubClassAxiomReference)axiom);
 		else
@@ -843,7 +843,7 @@ public class P3OWLOntology implements OWLOntology
 			subjectIndividual.addPropertyValue(property, objectProperty);
 	}
 
-	private void write2OWLModel(OWLSomeValuesFrom axiom) throws OWLConversionFactoryException
+	private void write2OWLModel(OWLSomeValuesFromReference axiom) throws OWLConversionFactoryException
 	{
 		edu.stanford.smi.protegex.owl.model.OWLSomeValuesFrom someValuesFrom = SWRLOWLUtil.getOWLSomeValuesFrom(owlModel, axiom.asOWLClass().getURI());
 		edu.stanford.smi.protegex.owl.model.OWLProperty property = SWRLOWLUtil.getOWLProperty(owlModel, axiom.getProperty().getURI());
@@ -1092,7 +1092,7 @@ public class P3OWLOntology implements OWLOntology
 				owlPropertyImpl.addEquivalentProperty(getOWLDataProperty(equivalentPropertyURI));
 	}
 
-	private void buildDefiningClasses(OWLIndividualImpl owlIndividualImpl, edu.stanford.smi.protegex.owl.model.OWLIndividual individual)
+	private void buildDefiningClasses(P3OWLNamedIndividualReference owlIndividualImpl, edu.stanford.smi.protegex.owl.model.OWLIndividual individual)
 		throws OWLConversionFactoryException
 	{
 		for (Object o : individual.getRDFTypes()) {
@@ -1104,7 +1104,7 @@ public class P3OWLOntology implements OWLOntology
 		} 
 	}
 
-	private void buildSameAsIndividuals(OWLIndividualImpl owlIndividualImpl, edu.stanford.smi.protegex.owl.model.OWLIndividual individual)
+	private void buildSameAsIndividuals(P3OWLNamedIndividualReference owlIndividualImpl, edu.stanford.smi.protegex.owl.model.OWLIndividual individual)
 		throws OWLConversionFactoryException
 	{
 		edu.stanford.smi.protegex.owl.model.RDFProperty sameAsProperty = SWRLOWLUtil.getOWLSameAsProperty(owlModel);
@@ -1122,7 +1122,7 @@ public class P3OWLOntology implements OWLOntology
 		} 
 	}
 
-	private void buildDifferentFromIndividuals(OWLIndividualImpl owlIndividualImpl, edu.stanford.smi.protegex.owl.model.OWLIndividual individual)
+	private void buildDifferentFromIndividuals(P3OWLNamedIndividualReference owlIndividualImpl, edu.stanford.smi.protegex.owl.model.OWLIndividual individual)
 		throws OWLConversionFactoryException
 	{
 		edu.stanford.smi.protegex.owl.model.RDFProperty differentFromProperty = SWRLOWLUtil.getOWLDifferentFromProperty(owlModel);

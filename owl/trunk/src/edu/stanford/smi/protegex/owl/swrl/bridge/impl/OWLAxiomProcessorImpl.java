@@ -48,7 +48,7 @@ public class OWLAxiomProcessorImpl implements OWLAxiomProcessor
 
 	private HashMap<String, SWRLRuleReference> rules, queries;
 
-	private Map<String, Set<String>> referencedOWLClassURIMap, referencedOWLPropertyURIMap, referencedOWLIndividualURIMap;
+	private Map<String, Set<String>> relevantOWLClassURIMap, relevantOWLPropertyURIMap, relevantOWLIndividualURIMap;
 	private Map<String, Set<String>> referencedVariableNameMap;
 
 	private Map<String, SQWRLResultImpl> sqwrlResultMap;
@@ -56,13 +56,13 @@ public class OWLAxiomProcessorImpl implements OWLAxiomProcessor
 	private Map<String, Boolean> hasSQWRLBuiltInsMap, hasSQWRLCollectionBuiltInsMap, enabledMap;
 	private Map<String, Map<String, List<BuiltInArgument>>> collectionGroupArgumentsMap;
 
-	private HashMap<String, SWRLRuleReference> referencedSWRLRules;
-	private HashMap<String, OWLDeclarationAxiomReference> referencedOWLDeclarationAxioms;
-	private HashMap<String, OWLDeclarationAxiomReference> referencedOWLClassDeclarationAxioms;
-	private HashMap<String, OWLDeclarationAxiomReference> referencedOWLPropertyDeclarationAxioms;
-	private HashMap<String, OWLDeclarationAxiomReference> referencedOWLIndividualDeclarationAxioms;
-	private Set<String> referencedOWLObjectPropertyURIs, referencedOWLDataPropertyURIs;
-	private Set<OWLAxiomReference> referencedOWLAxioms;
+	private HashMap<String, SWRLRuleReference> swrlRules;
+	private HashMap<String, OWLDeclarationAxiomReference> relevantOWLDeclarationAxioms;
+	private HashMap<String, OWLDeclarationAxiomReference> relevantOWLClassDeclarationAxioms;
+	private HashMap<String, OWLDeclarationAxiomReference> relevantOWLPropertyDeclarationAxioms;
+	private HashMap<String, OWLDeclarationAxiomReference> relevantOWLIndividualDeclarationAxioms;
+	private Set<String> relevantOWLObjectPropertyURIs, relevantOWLDataPropertyURIs;
+	private Set<OWLAxiomReference> relevantOWLAxioms;
 
 	// All entities
 	private Map<String, Map<String, Set<OWLPropertyAssertionAxiomReference>>> allOWLPropertyAssertionAxioms; // individualURI <propertyURI, axiom>
@@ -80,9 +80,9 @@ public class OWLAxiomProcessorImpl implements OWLAxiomProcessor
 		rules = new HashMap<String, SWRLRuleReference>();
 		queries = new HashMap<String, SWRLRuleReference>();
 
-		referencedOWLClassURIMap = new HashMap<String, Set<String>>();
-		referencedOWLPropertyURIMap = new HashMap<String, Set<String>>();
-		referencedOWLIndividualURIMap = new HashMap<String, Set<String>>();
+		relevantOWLClassURIMap = new HashMap<String, Set<String>>();
+		relevantOWLPropertyURIMap = new HashMap<String, Set<String>>();
+		relevantOWLIndividualURIMap = new HashMap<String, Set<String>>();
 		referencedVariableNameMap = new HashMap<String, Set<String>>();
 
 		sqwrlResultMap = new HashMap<String, SQWRLResultImpl>();
@@ -94,17 +94,17 @@ public class OWLAxiomProcessorImpl implements OWLAxiomProcessor
 
 		collectionGroupArgumentsMap = new HashMap<String, Map<String, List<BuiltInArgument>>>();
 
-		referencedSWRLRules = new HashMap<String, SWRLRuleReference>();
+		swrlRules = new HashMap<String, SWRLRuleReference>();
 
-		referencedOWLDeclarationAxioms = new HashMap<String, OWLDeclarationAxiomReference>();
-		referencedOWLClassDeclarationAxioms = new HashMap<String, OWLDeclarationAxiomReference>();
-		referencedOWLPropertyDeclarationAxioms = new HashMap<String, OWLDeclarationAxiomReference>();
-		referencedOWLIndividualDeclarationAxioms = new HashMap<String, OWLDeclarationAxiomReference>();
+		relevantOWLDeclarationAxioms = new HashMap<String, OWLDeclarationAxiomReference>();
+		relevantOWLClassDeclarationAxioms = new HashMap<String, OWLDeclarationAxiomReference>();
+		relevantOWLPropertyDeclarationAxioms = new HashMap<String, OWLDeclarationAxiomReference>();
+		relevantOWLIndividualDeclarationAxioms = new HashMap<String, OWLDeclarationAxiomReference>();
 
-		referencedOWLAxioms = new HashSet<OWLAxiomReference>();
-		referencedOWLObjectPropertyURIs = new HashSet<String>();
-		referencedOWLDataPropertyURIs = new HashSet<String>();
-		referencedOWLAxioms = new HashSet<OWLAxiomReference>();
+		relevantOWLAxioms = new HashSet<OWLAxiomReference>();
+		relevantOWLObjectPropertyURIs = new HashSet<String>();
+		relevantOWLDataPropertyURIs = new HashSet<String>();
+		relevantOWLAxioms = new HashSet<OWLAxiomReference>();
 
 		allOWLPropertyAssertionAxioms = new HashMap<String, Map<String, Set<OWLPropertyAssertionAxiomReference>>>();
 		allOWLIndividuals = new HashMap<String, OWLNamedIndividualReference>();
@@ -157,90 +157,90 @@ public class OWLAxiomProcessorImpl implements OWLAxiomProcessor
 
 	public SWRLRuleReference getSWRLRule(String ruleURI) throws SWRLRuleEngineException
 	{
-		if (!referencedSWRLRules.containsKey(ruleURI))
+		if (!swrlRules.containsKey(ruleURI))
 			throw new SWRLRuleEngineException("invalid rule name " + ruleURI);
 
-		return referencedSWRLRules.get(ruleURI);
+		return swrlRules.get(ruleURI);
 	}
 
 	public int getNumberOfReferencedSWRLRules()
 	{
-		return referencedSWRLRules.values().size();
+		return swrlRules.values().size();
 	}
 
 	public int getNumberOfReferencedOWLDeclarationAxioms()
 	{
-		return referencedOWLDeclarationAxioms.values().size();
+		return relevantOWLDeclarationAxioms.values().size();
 	}
 
 	public int getNumberOfReferencedOWLClassDeclarationAxioms()
 	{
-		return referencedOWLClassDeclarationAxioms.values().size();
+		return relevantOWLClassDeclarationAxioms.values().size();
 	}
 
 	public int getNumberOfReferencedOWLPropertyDeclarationAxioms()
 	{
-		return referencedOWLPropertyDeclarationAxioms.values().size();
+		return relevantOWLPropertyDeclarationAxioms.values().size();
 	}
 
 	public int getNumberOfReferencedOWLIndividualDeclarationAxioms()
 	{
-		return referencedOWLIndividualDeclarationAxioms.values().size();
+		return relevantOWLIndividualDeclarationAxioms.values().size();
 	}
 
 	public int getNumberOfReferencedOWLAxioms()
 	{
-		return referencedOWLAxioms.size();
+		return relevantOWLAxioms.size();
 	}
 
-	public Set<SWRLRuleReference> getReferencedSWRLRules()
+	public Set<SWRLRuleReference> getSWRLRules()
 	{
-		return new HashSet<SWRLRuleReference>(referencedSWRLRules.values());
+		return new HashSet<SWRLRuleReference>(swrlRules.values());
 	}
 
-	public Set<OWLDeclarationAxiomReference> getReferencedOWLDeclarationAxioms()
+	public Set<OWLDeclarationAxiomReference> getRelevantOWLDeclarationAxioms()
 	{
-		return new HashSet<OWLDeclarationAxiomReference>(referencedOWLDeclarationAxioms.values());
+		return new HashSet<OWLDeclarationAxiomReference>(relevantOWLDeclarationAxioms.values());
 	}
 
-	public Set<OWLDeclarationAxiomReference> getReferencedOWLClassDeclarationsAxioms()
+	public Set<OWLDeclarationAxiomReference> getRelevantOWLClassDeclarationsAxioms()
 	{
-		return new HashSet<OWLDeclarationAxiomReference>(referencedOWLClassDeclarationAxioms.values());
+		return new HashSet<OWLDeclarationAxiomReference>(relevantOWLClassDeclarationAxioms.values());
 	}
 
-	public Set<OWLDeclarationAxiomReference> getReferencedOWLPropertyDeclarationAxioms()
+	public Set<OWLDeclarationAxiomReference> getRelevantOWLPropertyDeclarationAxioms()
 	{
-		return new HashSet<OWLDeclarationAxiomReference>(referencedOWLPropertyDeclarationAxioms.values());
+		return new HashSet<OWLDeclarationAxiomReference>(relevantOWLPropertyDeclarationAxioms.values());
 	}
 
-	public Set<OWLDeclarationAxiomReference> getReferencedOWLIndividualDeclarationAxioms()
+	public Set<OWLDeclarationAxiomReference> getRelevantOWLIndividualDeclarationAxioms()
 	{
-		return new HashSet<OWLDeclarationAxiomReference>(referencedOWLIndividualDeclarationAxioms.values());
+		return new HashSet<OWLDeclarationAxiomReference>(relevantOWLIndividualDeclarationAxioms.values());
 	}
 
-	public Set<OWLAxiomReference> getReferencedOWLAxioms()
+	public Set<OWLAxiomReference> getRelevantOWLAxioms()
 	{
-		return new HashSet<OWLAxiomReference>(referencedOWLAxioms);
+		return new HashSet<OWLAxiomReference>(relevantOWLAxioms);
 	}
 
-	public boolean isReferencedOWLClass(String uri)
+	public boolean isRelevantOWLClass(String uri)
 	{
-		return referencedOWLClassDeclarationAxioms.containsKey(uri);
+		return relevantOWLClassDeclarationAxioms.containsKey(uri);
 	}
 
-	public boolean isReferencedOWLIndividual(String uri)
+	public boolean isRelevantOWLIndividual(String uri)
 	{
-		return referencedOWLIndividualDeclarationAxioms.containsKey(uri);
+		return relevantOWLIndividualDeclarationAxioms.containsKey(uri);
 	}
 
-	public boolean isReferencedOWLObjectProperty(String uri)
+	public boolean isRelevantOWLObjectProperty(String uri)
 	{
-		return referencedOWLObjectPropertyURIs.contains(uri);
+		return relevantOWLObjectPropertyURIs.contains(uri);
 	}
 
-	public boolean isReferencedOWLDataProperty(String uri)
+	public boolean isRelevantOWLDataProperty(String uri)
 	{
-		return referencedOWLDataPropertyURIs.contains(uri);
+		return relevantOWLDataPropertyURIs.contains(uri);
 	}
 
 	public Set<OWLNamedIndividualReference> getAllOWLIndividuals()
@@ -286,22 +286,22 @@ public class OWLAxiomProcessorImpl implements OWLAxiomProcessor
 		// TODO: set annotation
 	}
 
-	public Set<String> getReferencedOWLClassURIs()
+	public Set<String> getRelevantOWLClassURIs()
 	{
 		Set<String> result = new HashSet<String>();
 
-		for (Set<String> referencedOWLClassURIs : referencedOWLClassURIMap.values())
-			result.addAll(referencedOWLClassURIs);
+		for (Set<String> relevantOWLClassURIs : relevantOWLClassURIMap.values())
+			result.addAll(relevantOWLClassURIs);
 
 		return result;
 	}
 
-	public Set<String> getReferencedOWLPropertyURIs()
+	public Set<String> getRelevantOWLPropertyURIs()
 	{
 		Set<String> result = new HashSet<String>();
 
-		for (Set<String> referencedOWLPropertyURIs : referencedOWLPropertyURIMap.values())
-			result.addAll(referencedOWLPropertyURIs);
+		for (Set<String> relevantOWLPropertyURIs : relevantOWLPropertyURIMap.values())
+			result.addAll(relevantOWLPropertyURIs);
 
 		return result;
 	}
@@ -309,38 +309,38 @@ public class OWLAxiomProcessorImpl implements OWLAxiomProcessor
 	public void addReferencedIndividualURI(String uri)
 	{
 		// Use the empty string to index indirectly referenced URIs
-		if (referencedOWLIndividualURIMap.containsKey(""))
-			referencedOWLIndividualURIMap.get("").add(uri);
+		if (relevantOWLIndividualURIMap.containsKey(""))
+			relevantOWLIndividualURIMap.get("").add(uri);
 		else {
 			Set<String> uris = new HashSet<String>();
 			uris.add(uri);
-			referencedOWLIndividualURIMap.put("", uris);
+			relevantOWLIndividualURIMap.put("", uris);
 		}
 	}
 
-	public Set<String> getReferencedOWLIndividualURIs()
+	public Set<String> getRelevantOWLIndividualURIs()
 	{
 		Set<String> result = new HashSet<String>();
 
-		for (Set<String> referencedOWLIndividualURIs : referencedOWLIndividualURIMap.values())
-			result.addAll(referencedOWLIndividualURIs);
+		for (Set<String> relevantOWLIndividualURIs : relevantOWLIndividualURIMap.values())
+			result.addAll(relevantOWLIndividualURIs);
 
 		return result;
 	}
 
-	public Set<String> getReferencedOWLClassURIs(SWRLRuleReference ruleOrQuery)
+	public Set<String> getRelevantOWLClassURIs(SWRLRuleReference ruleOrQuery)
 	{
-		return referencedOWLClassURIMap.get(ruleOrQuery.getURI());
+		return relevantOWLClassURIMap.get(ruleOrQuery.getURI());
 	}
 
-	public Set<String> getReferencedOWLPropertyURIs(SWRLRuleReference ruleOrQuery)
+	public Set<String> getRelevantOWLPropertyURIs(SWRLRuleReference ruleOrQuery)
 	{
-		return referencedOWLPropertyURIMap.get(ruleOrQuery.getURI());
+		return relevantOWLPropertyURIMap.get(ruleOrQuery.getURI());
 	}
 
-	public Set<String> getReferencedOWLIndividualURIs(SWRLRuleReference ruleOrQuery)
+	public Set<String> getRelevantOWLIndividualURIs(SWRLRuleReference ruleOrQuery)
 	{
-		return referencedOWLIndividualURIMap.get(ruleOrQuery.getURI());
+		return relevantOWLIndividualURIMap.get(ruleOrQuery.getURI());
 	}
 
 	/**
@@ -459,7 +459,7 @@ public class OWLAxiomProcessorImpl implements OWLAxiomProcessor
 	private void importSWRLRule(SWRLRuleReference rule) throws SWRLRuleEngineBridgeException
 	{
 		try {
-			referencedSWRLRules.put(rule.getURI(), rule);
+			swrlRules.put(rule.getURI(), rule);
 			importSWRLRuleOrSQWRLQuery(rule);
 		} catch (SQWRLException e) {
 			throw new SWRLRuleEngineBridgeException("SQWRL error importing rules: " + e.getMessage());
@@ -484,16 +484,16 @@ public class OWLAxiomProcessorImpl implements OWLAxiomProcessor
 	private void importReferencedOWLKnowledge() throws SWRLRuleEngineBridgeException
 	{
 		// Import all (directly or indirectly) referenced classes.
-		importOWLClassDeclarationAxiomsByName(getReferencedOWLClassURIs());
+		importOWLClassDeclarationAxiomsByName(getRelevantOWLClassURIs());
 
 		// Import property assertion axioms for (directly or indirectly) referenced properties
-		importOWLPropertyAssertionAxiomsByName(getReferencedOWLPropertyURIs());
+		importOWLPropertyAssertionAxiomsByName(getRelevantOWLPropertyURIs());
 
 		// Import all directly referenced individuals.
-		importOWLIndividualsByName(getReferencedOWLIndividualURIs());
+		importOWLIndividualsByName(getRelevantOWLIndividualURIs());
 
 		// Import all individuals that are members of imported classes.
-		importAllOWLIndividualsOfClassesByName(getReferencedOWLClassURIs());
+		importAllOWLIndividualsOfClassesByName(getRelevantOWLClassURIs());
 
 		importOWLAxioms(); // Import axioms
 	}
@@ -1093,22 +1093,22 @@ public class OWLAxiomProcessorImpl implements OWLAxiomProcessor
 		String uri = ruleOrQuery.getURI();
 
 		if (atom.hasReferencedClasses())
-			if (referencedOWLClassURIMap.containsKey(uri))
-				referencedOWLClassURIMap.get(uri).addAll(atom.getReferencedClassURIs());
+			if (relevantOWLClassURIMap.containsKey(uri))
+				relevantOWLClassURIMap.get(uri).addAll(atom.getReferencedClassURIs());
 			else
-				referencedOWLClassURIMap.put(uri, atom.getReferencedClassURIs());
+				relevantOWLClassURIMap.put(uri, atom.getReferencedClassURIs());
 
 		if (atom.hasReferencedProperties())
-			if (referencedOWLPropertyURIMap.containsKey(uri))
-				referencedOWLPropertyURIMap.get(uri).addAll(atom.getReferencedPropertyURIs());
+			if (relevantOWLPropertyURIMap.containsKey(uri))
+				relevantOWLPropertyURIMap.get(uri).addAll(atom.getReferencedPropertyURIs());
 			else
-				referencedOWLPropertyURIMap.put(uri, atom.getReferencedPropertyURIs());
+				relevantOWLPropertyURIMap.put(uri, atom.getReferencedPropertyURIs());
 
 		if (atom.hasReferencedIndividuals())
-			if (referencedOWLIndividualURIMap.containsKey(uri))
-				referencedOWLIndividualURIMap.get(uri).addAll(atom.getReferencedIndividualURIs());
+			if (relevantOWLIndividualURIMap.containsKey(uri))
+				relevantOWLIndividualURIMap.get(uri).addAll(atom.getReferencedIndividualURIs());
 			else
-				referencedOWLIndividualURIMap.put(uri, atom.getReferencedIndividualURIs());
+				relevantOWLIndividualURIMap.put(uri, atom.getReferencedIndividualURIs());
 	}
 
 	private List<SWRLBuiltInAtomReference> getBuiltInAtoms(List<SWRLAtomReference> atoms, Set<String> builtInNames)
@@ -1174,11 +1174,11 @@ public class OWLAxiomProcessorImpl implements OWLAxiomProcessor
 			if (activeOntology.couldBeOWLNamedClass(classURI)) {
 				OWLClassReference owlClass = activeOntology.getOWLClass(classURI);
 
-				if (!referencedOWLClassDeclarationAxioms.containsKey(classURI)) {
+				if (!relevantOWLClassDeclarationAxioms.containsKey(classURI)) {
 					OWLDeclarationAxiomReference axiom = dataFactory.getOWLDeclarationAxiom(owlClass);
-					referencedOWLDeclarationAxioms.put(classURI, axiom);
-					referencedOWLClassDeclarationAxioms.put(classURI, axiom);
-					referencedOWLAxioms.add(axiom);
+					relevantOWLDeclarationAxioms.put(classURI, axiom);
+					relevantOWLClassDeclarationAxioms.put(classURI, axiom);
+					relevantOWLAxioms.add(axiom);
 					importOWLClassDeclarationAxioms(owlClass.getSuperClasses());
 					importOWLClassDeclarationAxioms(owlClass.getSubClasses());
 					importOWLClassDeclarationAxioms(owlClass.getEquivalentClasses());
@@ -1212,7 +1212,7 @@ public class OWLAxiomProcessorImpl implements OWLAxiomProcessor
 		OWLClassReference cls = dataFactory.getOWLClass(classURI);
 		OWLNamedIndividualReference individual = dataFactory.getOWLIndividual(individualURI);
 		OWLClassAssertionAxiomReference axiom = dataFactory.getOWLClassAssertionAxiom(individual, cls);
-		referencedOWLAxioms.add(axiom);
+		relevantOWLAxioms.add(axiom);
 	}
 
 	private void importOWLPropertyAssertionAxiomsByName(Set<String> propertyURIs) throws SWRLRuleEngineBridgeException
@@ -1229,19 +1229,19 @@ public class OWLAxiomProcessorImpl implements OWLAxiomProcessor
 
 	private void importOWLPropertyAssertionAxioms(String propertyURI) throws SWRLRuleEngineBridgeException
 	{
-		if (!(referencedOWLObjectPropertyURIs.contains(propertyURI) || referencedOWLDataPropertyURIs.contains(propertyURI))) {
+		if (!(relevantOWLObjectPropertyURIs.contains(propertyURI) || relevantOWLDataPropertyURIs.contains(propertyURI))) {
 			Set<OWLPropertyAssertionAxiomReference> axioms = null;
 
 			try {
-				if (!referencedOWLPropertyDeclarationAxioms.containsKey(propertyURI)) {
+				if (!relevantOWLPropertyDeclarationAxioms.containsKey(propertyURI)) {
 					if (activeOntology.containsDataPropertyInSignature(propertyURI, true)) {
 						OWLDeclarationAxiomReference axiom = dataFactory.getOWLDeclarationAxiom(activeOntology.getOWLDataProperty(propertyURI));
-						referencedOWLPropertyDeclarationAxioms.put(propertyURI, axiom);
-						referencedOWLDeclarationAxioms.put(propertyURI, axiom);
+						relevantOWLPropertyDeclarationAxioms.put(propertyURI, axiom);
+						relevantOWLDeclarationAxioms.put(propertyURI, axiom);
 					} else if (activeOntology.containsObjectPropertyInSignature(propertyURI, true)) {
 						OWLDeclarationAxiomReference axiom = dataFactory.getOWLDeclarationAxiom(activeOntology.getOWLObjectProperty(propertyURI));
-						referencedOWLPropertyDeclarationAxioms.put(propertyURI, axiom);
-						referencedOWLDeclarationAxioms.put(propertyURI, axiom);
+						relevantOWLPropertyDeclarationAxioms.put(propertyURI, axiom);
+						relevantOWLDeclarationAxioms.put(propertyURI, axiom);
 					} else
 						throw new SWRLRuleEngineBridgeException("referenced property " + propertyURI + " not in active ontology");
 				}
@@ -1251,7 +1251,7 @@ public class OWLAxiomProcessorImpl implements OWLAxiomProcessor
 				throw new SWRLBuiltInBridgeException("error importing OWL property assertion axiom for property " + propertyURI + " :" + e);
 			} // try
 
-			referencedOWLAxioms.addAll(axioms);
+			relevantOWLAxioms.addAll(axioms);
 
 			for (OWLPropertyAssertionAxiomReference axiom : axioms) {
 				String subjectURI = axiom.getSubject().getURI();
@@ -1265,9 +1265,9 @@ public class OWLAxiomProcessorImpl implements OWLAxiomProcessor
 					OWLObjectPropertyAssertionAxiomReference objectPropertyAssertionAxiom = (OWLObjectPropertyAssertionAxiomReference)axiom;
 					String objectURI = objectPropertyAssertionAxiom.getObject().getURI();
 					addReferencedIndividualURI(objectURI);
-					referencedOWLObjectPropertyURIs.add(propertyURI);
+					relevantOWLObjectPropertyURIs.add(propertyURI);
 				} else
-					referencedOWLDataPropertyURIs.add(propertyURI);
+					relevantOWLDataPropertyURIs.add(propertyURI);
 
 				importOWLClassDeclarationAxioms(property.getDomainClasses());
 				importOWLClassDeclarationAxioms(property.getRangeClasses());
@@ -1324,11 +1324,11 @@ public class OWLAxiomProcessorImpl implements OWLAxiomProcessor
 
 	private void importOWLIndividualDeclarationAxiom(String individualURI) throws SWRLRuleEngineBridgeException
 	{
-		if (!referencedOWLIndividualDeclarationAxioms.containsKey(individualURI)) {
+		if (!relevantOWLIndividualDeclarationAxioms.containsKey(individualURI)) {
 			OWLNamedIndividualReference owlIndividual = dataFactory.getOWLIndividual(individualURI);
 			OWLDeclarationAxiomReference axiom = dataFactory.getOWLDeclarationAxiom(owlIndividual);
-			referencedOWLIndividualDeclarationAxioms.put(individualURI, axiom);
-			referencedOWLDeclarationAxioms.put(individualURI, axiom);
+			relevantOWLIndividualDeclarationAxioms.put(individualURI, axiom);
+			relevantOWLDeclarationAxioms.put(individualURI, axiom);
 			cacheOWLIndividual(owlIndividual);
 			importOWLClassDeclarationAxioms(owlIndividual.getTypes());
 		}
@@ -1387,7 +1387,7 @@ public class OWLAxiomProcessorImpl implements OWLAxiomProcessor
 	{
 		try {
 			for (OWLSameIndividualAxiomReference axiom : activeOntology.getSameIndividualAxioms()) {
-				referencedOWLAxioms.add(axiom);
+				relevantOWLAxioms.add(axiom);
 				cacheOWLIndividuals(axiom.getIndividuals());
 			}
 		} catch (OWLConversionFactoryException e) {
@@ -1399,7 +1399,7 @@ public class OWLAxiomProcessorImpl implements OWLAxiomProcessor
 	{
 		try {
 			for (OWLDifferentIndividualsAxiomReference axiom : activeOntology.getOWLDifferentIndividualsAxioms()) {
-				referencedOWLAxioms.add(axiom);
+				relevantOWLAxioms.add(axiom);
 				cacheOWLIndividuals(axiom.getIndividuals());
 			}
 		} catch (OWLConversionFactoryException e) {

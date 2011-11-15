@@ -29,7 +29,7 @@ import edu.stanford.smi.protegex.owl.swrl.portability.OWLObjectPropertyAssertion
 import edu.stanford.smi.protegex.owl.swrl.portability.OWLOntology;
 import edu.stanford.smi.protegex.owl.swrl.portability.OWLPropertyReference;
 import edu.stanford.smi.protegex.owl.swrl.portability.OWLSameIndividualAxiomReference;
-import edu.stanford.smi.protegex.owl.swrl.portability.OWLSomeValuesFrom;
+import edu.stanford.smi.protegex.owl.swrl.portability.OWLSomeValuesFromReference;
 import edu.stanford.smi.protegex.owl.swrl.portability.OWLSubClassAxiomReference;
 import edu.stanford.smi.protegex.owl.swrl.portability.OWLTypedLiteralReference;
 import edu.stanford.smi.protegex.owl.swrl.portability.SWRLBuiltInAtomReference;
@@ -123,10 +123,10 @@ public class P3OWLDataFactory implements OWLDataFactory
 				try {
 					owlIndividual = activeOntology.getOWLIndividual(individualURI);
 				} catch (OWLConversionFactoryException e) {
-					owlIndividual = new OWLIndividualImpl(individualURI);
+					owlIndividual = new P3OWLNamedIndividualReference(individualURI);
 				} // try
 			} else
-				owlIndividual = new OWLIndividualImpl(individualURI);
+				owlIndividual = new P3OWLNamedIndividualReference(individualURI);
 			individuals.put(individualURI, owlIndividual);
 		} // if
 
@@ -185,7 +185,7 @@ public class P3OWLDataFactory implements OWLDataFactory
 	public OWLObjectPropertyAssertionAxiomReference getOWLObjectPropertyAssertionAxiom(OWLNamedIndividualReference subject, OWLPropertyReference property,
 																																											OWLNamedIndividualReference object)
 	{
-		return new OWLObjectPropertyAssertionAxiomImpl(subject, property, object);
+		return new P3OWLObjectPropertyAssertionAxiomReference(subject, property, object);
 	}
 
 	public OWLDifferentIndividualsAxiomReference getOWLDifferentIndividualsAxiom(OWLNamedIndividualReference individual1, OWLNamedIndividualReference individual2)
@@ -230,7 +230,7 @@ public class P3OWLDataFactory implements OWLDataFactory
 		return new P3OWLDeclarationAxiomReference(owlEntity);
 	}
 
-	public OWLSomeValuesFrom getOWLSomeValuesFrom(OWLClassReference owlClass, OWLPropertyReference onProperty, OWLClassReference someValuesFrom)
+	public OWLSomeValuesFromReference getOWLSomeValuesFrom(OWLClassReference owlClass, OWLPropertyReference onProperty, OWLClassReference someValuesFrom)
 	{
 		return new P3OWLSomeValuesFromReference(owlClass, onProperty, someValuesFrom);
 	} 

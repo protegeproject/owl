@@ -3,9 +3,9 @@ package edu.stanford.smi.protegex.owl.swrl.portability.p3;
 
 import edu.stanford.smi.protegex.owl.swrl.portability.OWLClassReference;
 import edu.stanford.smi.protegex.owl.swrl.portability.OWLPropertyReference;
-import edu.stanford.smi.protegex.owl.swrl.portability.OWLSomeValuesFrom;
+import edu.stanford.smi.protegex.owl.swrl.portability.OWLSomeValuesFromReference;
 
-public class P3OWLSomeValuesFromReference extends P3OWLRestrictionReference implements OWLSomeValuesFrom
+public class P3OWLSomeValuesFromReference extends P3OWLRestrictionReference implements OWLSomeValuesFromReference
 {
 	private OWLClassReference someValuesFrom;
 
