@@ -9,7 +9,6 @@ public interface SWRLRuleReference extends OWLAxiomReference, OWLEntityReference
 
 	List<SWRLAtomReference> getBodyAtoms();
 
-	// TODO: these will not be in the OWLAPI.
 	void setBodyAtoms(List<SWRLAtomReference> atom);
 
 	void appendAtomsToBody(List<SWRLAtomReference> atom);
