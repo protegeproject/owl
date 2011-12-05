@@ -469,6 +469,7 @@ public class OWLMenuProjectPlugin extends ProjectPluginAdapter {
         }
         makeVisibleIfSubclassesExist(owlModel.getRDFListClass(), systemFrames);
         makeVisibleIfSubclassesExist(owlModel.getOWLDataRangeClass(), systemFrames);
+        // Subclasses should not exist - if this is relevant it is a bad Protege thing
         makeVisibleIfSubclassesExist(owlModel.getRDFSNamedClass(RDFSNames.Cls.LITERAL), systemFrames);
         makeVisibleIfSubclassesExist(owlModel.getOWLNothing(), systemFrames);
         makeVisibleIfSubclassesExist(owlModel.getRDFSNamedClass(RDFNames.Cls.STATEMENT), systemFrames);
