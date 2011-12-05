@@ -15,21 +15,7 @@ import java.net.URI;
  */
 public class CreateRDFLiteralValuesTestCase extends AbstractProtege2JenaTestCase {
 
-    public void testRDFValueInRDFLiteral() throws Exception {
-        loadTestOntology(new URI("http://www.daml.org/2004/04/swrl/swrl.owl"));
-        OWLNamedClass datavaluedPropertyAtomCls = (OWLNamedClass) owlModel.getOWLNamedClass("swrl:DatavaluedPropertyAtom");
-        assertNotNull(datavaluedPropertyAtomCls);
-        RDFProperty argument2Property = (RDFProperty) owlModel.getRDFProperty("swrl:argument2");
-        assertNotNull(argument2Property);
-        RDFResource atom = (RDFResource) datavaluedPropertyAtomCls.createInstance("atom");
-        Cls literalCls = owlModel.getRDFSNamedClass(RDFSNames.Cls.LITERAL);
-        Instance literal = literalCls.createDirectInstance("myLiteral");
-        Slot valueSlot = owlModel.getSlot(RDFNames.Slot.VALUE);
-        final String value = "aldi";
-        literal.setDirectOwnSlotValue(valueSlot, value);
-        atom.addPropertyValue(argument2Property, literal);
-        // Should do some testing here
-    }
+
 
 
     public void testValuesOfImportedProperties() throws Exception {
