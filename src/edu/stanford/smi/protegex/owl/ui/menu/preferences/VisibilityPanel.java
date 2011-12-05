@@ -59,7 +59,6 @@ public class VisibilityPanel extends JComponent {
                 owlModel.getRDFSNamedClass(RDFNames.Cls.ALT),
                 owlModel.getRDFSNamedClass(RDFNames.Cls.BAG),
                 owlModel.getRDFSNamedClass(RDFNames.Cls.SEQ),
-                owlModel.getRDFSNamedClass(RDFSNames.Cls.LITERAL),
                 owlModel.getRDFSNamedClass(RDFNames.Cls.STATEMENT),
                 owlModel.getRDFSNamedClass(OWLNames.Cls.ALL_DIFFERENT),
                 owlModel.getOWLNothing(),
