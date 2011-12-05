@@ -26,24 +26,6 @@ import edu.stanford.smi.protegex.owl.model.RDFSNames;
 public class CreateRDFLiteralValuesTestCase extends AbstractJenaCreatorTestCase {
     private static final transient Logger log = Log.getLogger(CreateRDFLiteralValuesTestCase.class);
 
-    public void testRDFValueInRDFLiteral() throws Exception {
-        loadTestOntology(new URI("http://www.daml.org/2004/04/swrl/swrl.owl"));
-        String defaultNamespace = owlModel.getNamespaceManager().getDefaultNamespace();
-        
-        OWLNamedClass datavaluedPropertyAtomCls = (OWLNamedClass) owlModel.getCls(getFullName("swrl:DatavaluedPropertyAtom"));
-        assertNotNull(datavaluedPropertyAtomCls);
-        RDFProperty argument2Property = (RDFProperty) owlModel.getSlot(getFullName("swrl:argument2"));
-        assertNotNull(argument2Property);
-        RDFResource atom = datavaluedPropertyAtomCls.createInstance(defaultNamespace + "atom");
-        Cls literalCls = owlModel.getCls(RDFSNames.Cls.LITERAL);
-        Instance literal = literalCls.createDirectInstance(defaultNamespace  + "myLiteral");
-        Slot valueSlot = owlModel.getSlot(RDFNames.Slot.VALUE);
-        final String value = "aldi";
-        literal.setDirectOwnSlotValue(valueSlot, value);
-        atom.addPropertyValue(argument2Property, literal);
-        // Should do some testing here
-    }
-
 
     public void testValuesOfImportedProperties() throws Exception {
         log.setLevel(Level.FINE);
