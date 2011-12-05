@@ -3108,13 +3108,15 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     public RDFSNamedClass getOWLAllDifferentClass() {
         return getSystemFrames().getOwlAllDifferentClass();
     }
-
+    
     /**
      * @return the rdfsLiteralClass
+     * @deprecated This is based on a wrong premise - there is no such class.  Using this method can cause problems.
      */
     public RDFSNamedClass getRDFSLiteralClass() {
         return getSystemFrames().getRdfsLiteralClass();
     }
+
 
     /**
      * @return the rdfsContainerClass
