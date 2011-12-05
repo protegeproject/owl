@@ -8,6 +8,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.hp.hpl.jena.datatypes.RDFDatatype;
 import com.hp.hpl.jena.datatypes.TypeMapper;
 import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
 
@@ -109,7 +110,6 @@ public abstract class OWLSystemFrames extends SystemFrames {
     private OWLNamedClass owlNothingClass;
     private RDFSNamedClass rdfListClass;
     private RDFSNamedClass owlAllDifferentClass;
-    private RDFSNamedClass rdfsLiteralClass;
     private RDFSNamedClass rdfsContainerClass;
     private RDFSNamedClass rdfAltClass;
     private RDFSNamedClass rdfBagClass;
@@ -182,6 +182,7 @@ public abstract class OWLSystemFrames extends SystemFrames {
     private OWLDatatypeProperty palDescriptionSlot;
     private OWLDatatypeProperty palNameSlot;
     private OWLDatatypeProperty palRangeSlot;
+    
     /* 
      * Instance Declarations
      */
@@ -292,7 +293,6 @@ public abstract class OWLSystemFrames extends SystemFrames {
         owlNothingClass = createOWLNamedClass(OWLNames.Cls.NOTHING);
         rdfListClass = createRDFSNamedClass(RDFNames.Cls.LIST);
         owlAllDifferentClass = createRDFSNamedClass(OWLNames.Cls.ALL_DIFFERENT);
-        rdfsLiteralClass = createRDFSNamedClass(RDFSNames.Cls.LITERAL);
         rdfsContainerClass = createRDFSNamedClass(RDFSNames.Cls.CONTAINER);
         rdfAltClass = createRDFSNamedClass(RDFNames.Cls.ALT);
         rdfBagClass = createRDFSNamedClass(RDFNames.Cls.BAG);
@@ -375,11 +375,12 @@ public abstract class OWLSystemFrames extends SystemFrames {
     }
     
     
-    @SuppressWarnings("unchecked")
     private void createRDFSDatatypes() {
+        createRDFSDatatype(RDFSNames.LITERAL);
+
         createRDFSDatatype(RDFNames.XML_LITERAL);
         TypeMapper typeMapper = TypeMapper.getInstance();
-        Iterator it = typeMapper.listTypes();
+        Iterator<RDFDatatype> it = typeMapper.listTypes();
         while (it.hasNext()) {
             com.hp.hpl.jena.datatypes.RDFDatatype type = (com.hp.hpl.jena.datatypes.RDFDatatype) it.next();
             String uri = type.getURI();
@@ -592,7 +593,6 @@ public abstract class OWLSystemFrames extends SystemFrames {
                     assertTypeAndSubclasses(owlNothingClass,      owlNamedClassClass, new Cls[] {}),
                     assertTypeAndSubclasses(rdfListClass,         rdfsNamedClassClass, new Cls[] {}),
                     assertTypeAndSubclasses(owlAllDifferentClass, rdfsNamedClassClass, new Cls[] {}),
-                    assertTypeAndSubclasses(rdfsLiteralClass,     rdfsNamedClassClass, new Cls[] {}),
                     assertTypeAndSubclasses(rdfsContainerClass,   rdfsNamedClassClass, new Cls[] {
                             assertTypeAndSubclasses(rdfAltClass, rdfsNamedClassClass, new Cls[] { }),
                             assertTypeAndSubclasses(rdfBagClass, rdfsNamedClassClass, new Cls[] { }),
@@ -1341,12 +1341,13 @@ public abstract class OWLSystemFrames extends SystemFrames {
     public RDFSNamedClass getOwlAllDifferentClass() {
         return owlAllDifferentClass;
     }
-
+    
     /**
      * @return the rdfsLiteralClass
+     * @deprecated This is based on a wrong premise.  This is not a class.  Using this can cause serious problems.
      */
     public RDFSNamedClass getRdfsLiteralClass() {
-        return rdfsLiteralClass;
+        return new DefaultRDFSNamedClass(owlModel, new FrameID(RDFSNames.LITERAL));
     }
 
     /**
