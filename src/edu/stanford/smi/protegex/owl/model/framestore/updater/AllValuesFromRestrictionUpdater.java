@@ -183,6 +183,7 @@ public class AllValuesFromRestrictionUpdater extends QuantifierRestrictionUpdate
         RDFResource filler = restriction.getFiller();
         if (filler instanceof RDFSClass) {
             RDFSClass quantifierClass = (RDFSClass) filler;
+            // this code looks seriously wrong?  LITERAL is a datatype?
             if (RDFSNames.Cls.LITERAL.equals(quantifierClass.getName())) {
                 newValueType = ValueType.ANY;
             }
