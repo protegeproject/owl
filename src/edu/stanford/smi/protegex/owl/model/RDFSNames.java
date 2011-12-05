@@ -20,8 +20,11 @@ public interface RDFSNames {
         final static String CONTAINER = RDFS_NAMESPACE + "Container";
 
         final static String DATATYPE = RDFS_NAMESPACE + "Datatype";
-
-        final static String LITERAL = RDFS_NAMESPACE + "Literal";
+        
+        /**
+         * @deprecated This is not a class.  Use RDFSNames.LITERAL instead.
+         */
+        final static String LITERAL = RDFSNames.LITERAL;
 
         final static String NAMED_CLASS = RDFS_NAMESPACE + "Class";
     }
@@ -57,6 +60,8 @@ public interface RDFSNames {
 
         final static String SUB_PROPERTY_OF = RDFS_NAMESPACE + "subPropertyOf";
     }
+    
+    final static String LITERAL = RDFS_NAMESPACE + "Literal";
 
     final static String RDFS_PREFIX = "rdfs";
 }
