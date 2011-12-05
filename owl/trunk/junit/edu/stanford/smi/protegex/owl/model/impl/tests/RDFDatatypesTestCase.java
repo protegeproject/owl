@@ -14,7 +14,7 @@ public class RDFDatatypesTestCase extends AbstractJenaTestCase {
 
     public void testDefaultTypes() {
         Collection types = owlModel.getRDFSDatatypes();
-        assertEquals(43, types.size());
+        assertEquals(44, types.size());
         for (Iterator it = types.iterator(); it.hasNext();) {
             RDFSDatatype datatype = (RDFSDatatype) it.next();
             assertTrue(datatype.isSystem());
