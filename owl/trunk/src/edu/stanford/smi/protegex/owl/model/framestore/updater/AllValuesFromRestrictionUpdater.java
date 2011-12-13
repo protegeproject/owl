@@ -6,6 +6,8 @@ import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
+
 import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.Facet;
 import edu.stanford.smi.protege.model.Model;
@@ -203,8 +205,11 @@ public class AllValuesFromRestrictionUpdater extends QuantifierRestrictionUpdate
                     newValueType = ValueType.STRING;
                 }
                 else {
-                    String uri = XMLSchemaDatatypes.getXSDDatatype(datatype).getURI();
-                    newValueType = XMLSchemaDatatypes.getValueType(uri);
+                    XSDDatatype xsdDatatype = XMLSchemaDatatypes.getXSDDatatype(datatype);
+                    if (xsdDatatype != null) {
+                        String uri = xsdDatatype.getURI();
+                        newValueType = XMLSchemaDatatypes.getValueType(uri);
+                    }
                 }
             }
         }
