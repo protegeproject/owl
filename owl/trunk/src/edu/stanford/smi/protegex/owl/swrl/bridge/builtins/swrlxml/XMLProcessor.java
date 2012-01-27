@@ -1,4 +1,4 @@
-package edu.stanford.smi.protegex.owl.swrl.bridge.builtins.swrlxml;
+package org.protege.swrltab.bridge.builtins.swrlxml;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
