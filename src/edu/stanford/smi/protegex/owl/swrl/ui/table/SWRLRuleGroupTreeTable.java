@@ -1,4 +1,4 @@
-package edu.stanford.smi.protegex.owl.swrl.ui.table;
+package org.protege.swrltab.ui.table;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
@@ -10,8 +10,7 @@ import javax.swing.tree.TreePath;
 
 import org.jdesktop.swingx.JXTreeTable;
 import org.jdesktop.swingx.treetable.DefaultMutableTreeTableNode;
-
-import edu.stanford.smi.protegex.owl.swrl.portability.SWRLRuleReference;
+import org.protege.swrlapi.adapters.axioms.SWRLRuleAdapter;
 
 public class SWRLRuleGroupTreeTable extends JXTreeTable
 {
@@ -68,11 +67,11 @@ public class SWRLRuleGroupTreeTable extends JXTreeTable
 				if (defNode.getUserObject() instanceof SWRLRuleGroup) {
 					SWRLRuleGroup ruleGroup = (SWRLRuleGroup)defNode.getUserObject();
 					System.err.println("RuleGroup.name: " + ruleGroup.getGroupName());
-				} else if (defNode.getUserObject() instanceof SWRLRuleReference) {
-					SWRLRuleReference rule = (SWRLRuleReference)defNode.getUserObject();
-					System.err.println("Rule.name: " + rule.getURI());
-				} // if
-			} // if         
+				} else if (defNode.getUserObject() instanceof SWRLRuleAdapter) {
+					SWRLRuleAdapter rule = (SWRLRuleAdapter)defNode.getUserObject();
+					System.err.println("Rule.name: " + rule.getName());
+				} 
+			}         
 		} 
 	} 
 } 
