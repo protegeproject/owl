@@ -1,22 +1,38 @@
 package edu.stanford.smi.protegex.owl.ui.importstree;
 
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+
+import javax.swing.Action;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.SwingConstants;
+import javax.swing.tree.TreePath;
+
 import edu.stanford.smi.protege.resource.Colors;
 import edu.stanford.smi.protege.resource.Icons;
 import edu.stanford.smi.protege.resource.LocalizedText;
 import edu.stanford.smi.protege.resource.ResourceKey;
 import edu.stanford.smi.protege.ui.HeaderComponent;
 import edu.stanford.smi.protege.ui.ProjectManager;
-import edu.stanford.smi.protege.util.*;
-import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
+import edu.stanford.smi.protege.util.AllowableAction;
+import edu.stanford.smi.protege.util.CollectionUtilities;
+import edu.stanford.smi.protege.util.ComponentFactory;
+import edu.stanford.smi.protege.util.Disposable;
+import edu.stanford.smi.protege.util.Wizard;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLOntology;
 import edu.stanford.smi.protegex.owl.model.ProtegeNames;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultOWLOntology;
 import edu.stanford.smi.protegex.owl.model.impl.OWLUtil;
-import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
-import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreModel;
-import edu.stanford.smi.protegex.owl.model.triplestore.TripleStoreUtil;
 import edu.stanford.smi.protegex.owl.model.util.ImportHelper;
 import edu.stanford.smi.protegex.owl.repository.Repository;
 import edu.stanford.smi.protegex.owl.swrl.ui.SWRLProjectPlugin;
@@ -30,15 +46,6 @@ import edu.stanford.smi.protegex.owl.ui.metadatatab.imports.wizard.AddedPrefixes
 import edu.stanford.smi.protegex.owl.ui.metadatatab.imports.wizard.ImportEntry;
 import edu.stanford.smi.protegex.owl.ui.metadatatab.imports.wizard.ImportWizard;
 import edu.stanford.smi.protegex.owl.ui.results.HostResourceDisplay;
-
-import javax.swing.*;
-import javax.swing.tree.TreePath;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
 
 /**
  * @author Holger Knublauch  <holger@knublauch.com>
