@@ -1,5 +1,5 @@
 
-package edu.stanford.smi.protegex.owl.swrl.bridge.builtins.swrlxml;
+package org.protege.swrltab.bridge.builtins.swrlxml;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -11,7 +11,7 @@ import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.util.ImportHelper;
 import edu.stanford.smi.protegex.owl.swrl.model.SWRLNames;
-import edu.stanford.smi.protegex.owl.swrl.util.SWRLOWLUtil;
+import edu.stanford.smi.protegex.owl.swrl.util.P3OWLUtil;
 
 public class MapXML2OWL
 {
@@ -20,7 +20,7 @@ public class MapXML2OWL
     String xmlURI = "", owlFilename = "";
     Document doc;
     JenaOWLModel owlModel;
-    edu.stanford.smi.protegex.owl.swrl.bridge.builtins.swrlxml.XMLMapper  mapper;
+    org.protege.swrltab.bridge.builtins.swrlxml.XMLMapper  mapper;
     XMLProcessor processor = new XMLProcessor();
 
     if (args.length == 2) {
@@ -30,12 +30,12 @@ public class MapXML2OWL
 
     try {
       doc = processor.processXMLStream(xmlURI);
-      owlModel = SWRLOWLUtil.createJenaOWLModel();
+      owlModel = P3OWLUtil.createJenaOWLModel();
       owlModel.setGenerateEventsEnabled(false);
       addSWRLXMLImport(owlModel);
       mapper = new XMLMapper(owlModel);
       mapper.document2OWLDocument(doc);
-      SWRLOWLUtil.writeJenaOWLModel2File(owlModel, owlFilename);
+      P3OWLUtil.writeJenaOWLModel2File(owlModel, owlFilename);
     } catch (Exception e) {
       System.err.println("error mapping XML document with URI '" + xmlURI + "': " + e.getMessage());
       e.printStackTrace();

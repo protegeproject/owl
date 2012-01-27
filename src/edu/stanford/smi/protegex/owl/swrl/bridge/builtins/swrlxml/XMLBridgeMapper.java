@@ -1,5 +1,8 @@
-package edu.stanford.smi.protegex.owl.swrl.bridge.builtins.swrlxml;
 
+package org.protege.swrltab.bridge.builtins.swrlxml;
+
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Set;
 
 import org.jdom.Attribute;
@@ -9,17 +12,25 @@ import org.jdom.Namespace;
 import org.jdom.Text;
 import org.jdom.filter.ContentFilter;
 import org.jdom.filter.Filter;
+import org.protege.swrlapi.adapters.OWLClassAdapter;
+import org.protege.swrlapi.adapters.OWLDataPropertyAdapter;
+import org.protege.swrlapi.adapters.OWLLiteralFactory;
+import org.protege.swrlapi.adapters.OWLNamedIndividualAdapter;
+import org.protege.swrlapi.adapters.OWLObjectAdapterFactory;
+import org.protege.swrlapi.adapters.OWLObjectPropertyAdapter;
+import org.protege.swrlapi.adapters.axioms.OWLClassAssertionAxiomAdapter;
+import org.protege.swrlapi.adapters.axioms.OWLClassDeclarationAxiomAdapter;
+import org.protege.swrlapi.adapters.axioms.OWLDataPropertyAssertionAxiomAdapter;
+import org.protege.swrlapi.adapters.axioms.OWLIndividualDeclarationAxiomAdapter;
+import org.protege.swrlapi.adapters.axioms.OWLObjectPropertyAssertionAxiomAdapter;
+import org.protege.swrlapi.adapters.impl.DefaultOWLObjectAdapterFactory;
+import org.protege.swrlapi.adapters.impl.OWLLiteralFactoryImpl;
+import org.protege.swrlapi.core.SWRLBuiltInBridge;
+import org.protege.swrlapi.exceptions.SWRLBuiltInBridgeException;
 
-import edu.stanford.smi.protegex.owl.swrl.bridge.OWLDataValueFactory;
-import edu.stanford.smi.protegex.owl.swrl.bridge.SWRLBuiltInBridge;
-import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.OWLFactoryException;
-import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.SWRLBuiltInBridgeException;
-import edu.stanford.smi.protegex.owl.swrl.exceptions.SWRLOWLUtilException;
-import edu.stanford.smi.protegex.owl.swrl.portability.OWLDataFactory;
-import edu.stanford.smi.protegex.owl.swrl.portability.OWLNamedIndividualReference;
-import edu.stanford.smi.protegex.owl.swrl.portability.OWLPropertyReference;
-import edu.stanford.smi.protegex.owl.swrl.portability.p3.P3OWLDataFactory;
-import edu.stanford.smi.protegex.owl.swrl.util.SWRLOWLUtil;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.swrl.util.P3OWLUtil;
+import edu.stanford.smi.protegex.owl.swrl.util.P3OWLUtilException;
 
 public class XMLBridgeMapper
 {
@@ -42,29 +53,33 @@ public class XMLBridgeMapper
 	public static final String XMLAttributeOWLClassName = SWRLXMLNamespace + "XMLAttribute";
 	public static final String XMLAttributeHasValuePropertyName = SWRLXMLNamespace + "hasValue";
 
-	private OWLPropertyReference rootElementProperty, elementsProperty, subElementsProperty, nameProperty, namespacePrefixProperty, namespaceURIProperty, contentProperty,
-			valueProperty, attributesProperty;
+	private OWLObjectPropertyAdapter rootElementProperty, elementsProperty, subElementsProperty, attributesProperty;
 
-	private OWLDataFactory owlDataFactory;
-	private OWLDataValueFactory owlDataValueFactory;
+	private OWLDataPropertyAdapter nameProperty, namespacePrefixProperty, namespaceURIProperty, contentProperty, valueProperty;
+
+	private OWLObjectAdapterFactory objectAdapterFactory;
+	private OWLLiteralFactory literalReferenceFactory;
 
 	private XMLProcessor xmlProcessor;
 
-	public XMLBridgeMapper()
+	private OWLModel owlModel;
+
+	public XMLBridgeMapper(SWRLBuiltInBridge bridge, OWLModel owlModel) throws XMLBridgeMapperException
 	{
-		this.owlDataFactory = new P3OWLDataFactory();
-		this.owlDataValueFactory = OWLDataValueFactory.create();
+		this.owlModel = owlModel;
+		this.objectAdapterFactory = new DefaultOWLObjectAdapterFactory(bridge.getActiveOntology());
+		this.literalReferenceFactory = new OWLLiteralFactoryImpl();
 		this.xmlProcessor = new XMLProcessor();
 
-		rootElementProperty = owlDataFactory.getOWLObjectProperty(XMLDocumentHasRootElementPropertyName);
-		elementsProperty = owlDataFactory.getOWLObjectProperty(XMLDocumentHasElementsPropertyName);
-		nameProperty = owlDataFactory.getOWLDataProperty(XMLHasNamePropertyName);
-		namespacePrefixProperty = owlDataFactory.getOWLDataProperty(XMLHasNamespacePrefixPropertyName);
-		namespaceURIProperty = owlDataFactory.getOWLDataProperty(XMLHasNamespaceURIPropertyName);
-		contentProperty = owlDataFactory.getOWLDataProperty(XMLElementHasContentPropertyName);
-		subElementsProperty = owlDataFactory.getOWLObjectProperty(XMLElementHasSubElementsPropertyName);
-		valueProperty = owlDataFactory.getOWLDataProperty(XMLAttributeHasValuePropertyName);
-		attributesProperty = owlDataFactory.getOWLObjectProperty(XMLElementHasAttributesPropertyName);
+		rootElementProperty = objectAdapterFactory.getOWLObjectProperty(createURI(XMLDocumentHasRootElementPropertyName));
+		elementsProperty = objectAdapterFactory.getOWLObjectProperty(createURI(XMLDocumentHasElementsPropertyName));
+		nameProperty = objectAdapterFactory.getOWLDataProperty(createURI(XMLHasNamePropertyName));
+		namespacePrefixProperty = objectAdapterFactory.getOWLDataProperty(createURI(XMLHasNamespacePrefixPropertyName));
+		namespaceURIProperty = objectAdapterFactory.getOWLDataProperty(createURI(XMLHasNamespaceURIPropertyName));
+		contentProperty = objectAdapterFactory.getOWLDataProperty(createURI(XMLElementHasContentPropertyName));
+		subElementsProperty = objectAdapterFactory.getOWLObjectProperty(createURI(XMLElementHasSubElementsPropertyName));
+		valueProperty = objectAdapterFactory.getOWLDataProperty(createURI(XMLAttributeHasValuePropertyName));
+		attributesProperty = objectAdapterFactory.getOWLObjectProperty(createURI(XMLElementHasAttributesPropertyName));
 	}
 
 	public Document owlDocument2Document(SWRLBuiltInBridge bridge) throws XMLBridgeMapperException
@@ -76,10 +91,9 @@ public class XMLBridgeMapper
 		Document doc = new Document();
 
 		try {
-			owlDocumentClass = SWRLOWLUtil.getNamedClass(bridge.getActiveOntology().getOWLModel(), XMLDocumentOWLClassName);
-			owlDocumentIndividual = SWRLOWLUtil.getOWLIndividual(bridge.getActiveOntology().getOWLModel(), owlDocumentClass, true, 1);
-			propertyValue = SWRLOWLUtil.getObjectPropertyValue(bridge.getActiveOntology().getOWLModel(), owlDocumentIndividual,
-					XMLDocumentHasRootElementPropertyName, false);
+			owlDocumentClass = P3OWLUtil.getNamedClass(getOWLModel(), XMLDocumentOWLClassName);
+			owlDocumentIndividual = P3OWLUtil.getOWLIndividual(owlDocumentClass, true, 1);
+			propertyValue = P3OWLUtil.getObjectPropertyValue(getOWLModel(), owlDocumentIndividual, XMLDocumentHasRootElementPropertyName, false);
 
 			if (propertyValue == null)
 				throw new XMLBridgeMapperException("no document root element specified");
@@ -89,48 +103,43 @@ public class XMLBridgeMapper
 				throw new XMLBridgeMapperException("invalid document root element '" + propertyValue + "'");
 
 			owlElement2Element(doc, bridge, owlRootElementIndividual, null);
-		} catch (SWRLOWLUtilException e) {
+		} catch (P3OWLUtilException e) {
 			throw new XMLBridgeMapperException("error mapping OWL XML ontology to Document: " + e.getMessage());
 		}
 
 		return doc;
 	}
 
-	public OWLNamedIndividualReference document2OWLDocument(Document doc, SWRLBuiltInBridge bridge) throws XMLBridgeMapperException
+	public OWLNamedIndividualAdapter document2OWLDocument(Document doc, SWRLBuiltInBridge bridge) throws XMLBridgeMapperException
 	{
 		Element rootElement = doc.getRootElement();
-		OWLNamedIndividualReference owlDocumentIndividual;
+		OWLNamedIndividualAdapter owlDocumentIndividual;
 
 		if (xmlProcessor.isSchema(rootElement))
 			throw new XMLBridgeMapperException("not expecting 'schema' root element");
 
 		try {
-			owlDocumentIndividual = bridge.injectOWLIndividualDeclaration(owlDataFactory.getOWLClass(XMLDocumentOWLClassName));
+			owlDocumentIndividual = injectOWLNamedIndividualOfClass(bridge, objectAdapterFactory.getOWLClass(createURI(XMLDocumentOWLClassName)));
 			element2OWLElement(doc, bridge, owlDocumentIndividual, null, rootElement);
 		} catch (SWRLBuiltInBridgeException e) {
 			throw new XMLBridgeMapperException("bridge error mapping Document to OWL XML ontology: " + e.getMessage());
-		} catch (OWLFactoryException e) {
-			throw new XMLBridgeMapperException("OWL factory error mapping Document to OWL XML ontology: " + e.getMessage());
 		}
 
 		return owlDocumentIndividual;
 	}
 
 	private void owlElement2Element(Document doc, SWRLBuiltInBridge bridge, edu.stanford.smi.protegex.owl.model.OWLIndividual owlElementIndividal,
-																	Element parentElement) throws XMLBridgeMapperException, SWRLOWLUtilException
+																	Element parentElement) throws XMLBridgeMapperException, P3OWLUtilException
 	{
-		String elementName = SWRLOWLUtil.getDatavaluedPropertyValueAsString(bridge.getActiveOntology().getOWLModel(), owlElementIndividal, XMLHasNamePropertyName,
-				true);
-		String elementNamespacePrefix = SWRLOWLUtil.getDatavaluedPropertyValueAsString(bridge.getActiveOntology().getOWLModel(), owlElementIndividal,
-				XMLHasNamespacePrefixPropertyName, false, "");
-		String elementNamespaceURI = SWRLOWLUtil.getDatavaluedPropertyValueAsString(bridge.getActiveOntology().getOWLModel(), owlElementIndividal,
-				XMLHasNamespaceURIPropertyName, false, "");
-		Set<edu.stanford.smi.protegex.owl.model.RDFResource> attributes = SWRLOWLUtil.getObjectPropertyValues(bridge.getActiveOntology().getOWLModel(),
-				owlElementIndividal, XMLElementHasAttributesPropertyName, false);
-		Set<edu.stanford.smi.protegex.owl.model.RDFResource> subElements = SWRLOWLUtil.getObjectPropertyValues(bridge.getActiveOntology().getOWLModel(),
-				owlElementIndividal, XMLElementHasSubElementsPropertyName, false);
-		String content = SWRLOWLUtil.getDatavaluedPropertyValueAsString(bridge.getActiveOntology().getOWLModel(), owlElementIndividal,
-				XMLElementHasContentPropertyName, false, "");
+		String elementName = P3OWLUtil.getDatavaluedPropertyValueAsString(getOWLModel(), owlElementIndividal, XMLHasNamePropertyName, true);
+		String elementNamespacePrefix = P3OWLUtil.getDatavaluedPropertyValueAsString(getOWLModel(), owlElementIndividal, XMLHasNamespacePrefixPropertyName, false,
+				"");
+		String elementNamespaceURI = P3OWLUtil.getDatavaluedPropertyValueAsString(getOWLModel(), owlElementIndividal, XMLHasNamespaceURIPropertyName, false, "");
+		Set<edu.stanford.smi.protegex.owl.model.RDFResource> attributes = P3OWLUtil.getObjectPropertyValues(getOWLModel(), owlElementIndividal,
+				XMLElementHasAttributesPropertyName, false);
+		Set<edu.stanford.smi.protegex.owl.model.RDFResource> subElements = P3OWLUtil.getObjectPropertyValues(getOWLModel(), owlElementIndividal,
+				XMLElementHasSubElementsPropertyName, false);
+		String content = P3OWLUtil.getDatavaluedPropertyValueAsString(getOWLModel(), owlElementIndividal, XMLElementHasContentPropertyName, false, "");
 		Element element = xmlProcessor.createElement(doc, parentElement, elementName);
 
 		element.setNamespace(Namespace.getNamespace(elementNamespacePrefix, elementNamespaceURI));
@@ -148,31 +157,30 @@ public class XMLBridgeMapper
 		for (edu.stanford.smi.protegex.owl.model.RDFResource value : attributes) {
 			if (value instanceof edu.stanford.smi.protegex.owl.model.OWLIndividual) {
 				edu.stanford.smi.protegex.owl.model.OWLIndividual owlAttributeIndividual = (edu.stanford.smi.protegex.owl.model.OWLIndividual)value;
-				owlAttribute2Attribute(doc, bridge, owlAttributeIndividual, element);
+				owlAttribute2Attribute(owlAttributeIndividual, element);
 			}
 		}
 	}
 
-	private void owlAttribute2Attribute(Document doc, SWRLBuiltInBridge bridge, edu.stanford.smi.protegex.owl.model.OWLIndividual owlAttributeIndividual,
-																			Element element) throws XMLBridgeMapperException, SWRLOWLUtilException
+	private void owlAttribute2Attribute(edu.stanford.smi.protegex.owl.model.OWLIndividual owlAttributeIndividual, Element element)
+		throws XMLBridgeMapperException, P3OWLUtilException
 	{
-		String attributeName = SWRLOWLUtil.getDatavaluedPropertyValueAsString(bridge.getActiveOntology().getOWLModel(), owlAttributeIndividual,
-				XMLHasNamePropertyName, true);
-		String attributeValue = SWRLOWLUtil.getDatavaluedPropertyValueAsString(bridge.getActiveOntology().getOWLModel(), owlAttributeIndividual,
-				XMLAttributeHasValuePropertyName, true);
-		String attributeNamespacePrefix = SWRLOWLUtil.getDatavaluedPropertyValueAsString(bridge.getActiveOntology().getOWLModel(), owlAttributeIndividual,
-				XMLHasNamespacePrefixPropertyName, false, "");
-		String attributeNamespaceURI = SWRLOWLUtil.getDatavaluedPropertyValueAsString(bridge.getActiveOntology().getOWLModel(), owlAttributeIndividual,
-				XMLHasNamespaceURIPropertyName, false, "");
+		String attributeName = P3OWLUtil.getDatavaluedPropertyValueAsString(getOWLModel(), owlAttributeIndividual, XMLHasNamePropertyName, true);
+		String attributeValue = P3OWLUtil.getDatavaluedPropertyValueAsString(getOWLModel(), owlAttributeIndividual, XMLAttributeHasValuePropertyName, true);
+		String attributeNamespacePrefix = P3OWLUtil.getDatavaluedPropertyValueAsString(getOWLModel(), owlAttributeIndividual, XMLHasNamespacePrefixPropertyName,
+				false, "");
+		String attributeNamespaceURI = P3OWLUtil.getDatavaluedPropertyValueAsString(getOWLModel(), owlAttributeIndividual, XMLHasNamespaceURIPropertyName, false,
+				"");
 
 		xmlProcessor.setAttribute(element, attributeName, attributeValue, attributeNamespacePrefix, attributeNamespaceURI);
 	}
 
-	private void element2OWLElement(Document doc, SWRLBuiltInBridge bridge, OWLNamedIndividualReference owlDocumentIndividual,
-																	OWLNamedIndividualReference parentOWLElementIndividual, Element element)
-			throws XMLBridgeMapperException, SWRLBuiltInBridgeException, OWLFactoryException
+	private void element2OWLElement(Document doc, SWRLBuiltInBridge bridge, OWLNamedIndividualAdapter owlDocumentIndividual,
+																	OWLNamedIndividualAdapter parentOWLElementIndividual, Element element)
+		throws XMLBridgeMapperException, SWRLBuiltInBridgeException
 	{
-		OWLNamedIndividualReference owlElementIndividual = bridge.injectOWLIndividualDeclaration(owlDataFactory.getOWLClass(XMLElementOWLClassName));
+		OWLNamedIndividualAdapter owlElementIndividual = injectOWLNamedIndividualOfClass(bridge,
+				objectAdapterFactory.getOWLClass(createURI(XMLElementOWLClassName)));
 		String elementName = element.getName();
 		String elementNamespacePrefix = element.getNamespace().getPrefix();
 		String elementNamespaceURI = element.getNamespace().getURI();
@@ -180,55 +188,98 @@ public class XMLBridgeMapper
 		String content = "";
 
 		if (parentOWLElementIndividual == null)
-			bridge.injectOWLAxiom(owlDataFactory.getOWLObjectPropertyAssertionAxiom(owlDocumentIndividual, rootElementProperty, owlElementIndividual));
+			bridge.injectOWLAxiom(objectAdapterFactory.getOWLObjectPropertyAssertionAxiom(owlDocumentIndividual, rootElementProperty, owlElementIndividual));
 		else
-			bridge.injectOWLAxiom(owlDataFactory.getOWLObjectPropertyAssertionAxiom(parentOWLElementIndividual, subElementsProperty, owlElementIndividual));
+			bridge.injectOWLAxiom(objectAdapterFactory.getOWLObjectPropertyAssertionAxiom(parentOWLElementIndividual, subElementsProperty, owlElementIndividual));
 
-		bridge.injectOWLAxiom(owlDataFactory.getOWLObjectPropertyAssertionAxiom(owlDocumentIndividual, elementsProperty, owlElementIndividual));
+		bridge.injectOWLAxiom(objectAdapterFactory.getOWLObjectPropertyAssertionAxiom(owlDocumentIndividual, elementsProperty, owlElementIndividual));
 
-		bridge
-				.injectOWLAxiom(owlDataFactory.getOWLDataPropertyAssertionAxiom(owlElementIndividual, nameProperty, owlDataValueFactory.getOWLDataValue(elementName)));
+		bridge.injectOWLAxiom(objectAdapterFactory.getOWLDataPropertyAssertionAxiom(owlElementIndividual, nameProperty,
+				literalReferenceFactory.getOWLLiteral(elementName)));
 
-		bridge.injectOWLAxiom(owlDataFactory.getOWLDataPropertyAssertionAxiom(owlElementIndividual, namespacePrefixProperty,
-				owlDataValueFactory.getOWLDataValue(elementNamespacePrefix)));
+		bridge.injectOWLAxiom(objectAdapterFactory.getOWLDataPropertyAssertionAxiom(owlElementIndividual, namespacePrefixProperty,
+				literalReferenceFactory.getOWLLiteral(elementNamespacePrefix)));
 
-		bridge.injectOWLAxiom(owlDataFactory.getOWLDataPropertyAssertionAxiom(owlElementIndividual, namespaceURIProperty,
-				owlDataValueFactory.getOWLDataValue(elementNamespaceURI)));
+		bridge.injectOWLAxiom(objectAdapterFactory.getOWLDataPropertyAssertionAxiom(owlElementIndividual, namespaceURIProperty,
+				literalReferenceFactory.getOWLLiteral(elementNamespaceURI)));
 
 		for (Object o : element.getContent(textFilter)) {
 			Text text = (Text)o;
 			content += text.getValue();
 		}
 
-		bridge.injectOWLAxiom(owlDataFactory.getOWLDataPropertyAssertionAxiom(owlElementIndividual, contentProperty, owlDataValueFactory.getOWLDataValue(content)));
+		bridge.injectOWLAxiom(objectAdapterFactory.getOWLDataPropertyAssertionAxiom(owlElementIndividual, contentProperty,
+				literalReferenceFactory.getOWLLiteral(content)));
 
 		for (Attribute attribute : xmlProcessor.getAttributes(element))
-			attribute2OWLAttribute(doc, bridge, owlElementIndividual, attribute);
+			attribute2OWLAttribute(bridge, owlElementIndividual, attribute);
 
 		for (Element subElement : xmlProcessor.getSubElements(element))
 			element2OWLElement(doc, bridge, owlDocumentIndividual, owlElementIndividual, subElement);
 	}
 
-	private void attribute2OWLAttribute(Document doc, SWRLBuiltInBridge bridge, OWLNamedIndividualReference owlElementIndividual, Attribute attribute)
-			throws XMLBridgeMapperException, SWRLBuiltInBridgeException, OWLFactoryException
+	private void attribute2OWLAttribute(SWRLBuiltInBridge bridge, OWLNamedIndividualAdapter owlElementIndividual, Attribute attribute)
+		throws XMLBridgeMapperException, SWRLBuiltInBridgeException
 	{
-		OWLNamedIndividualReference owlAttributeIndividual = bridge.injectOWLIndividualDeclaration(owlDataFactory.getOWLClass(XMLAttributeOWLClassName));
 		String attributeName = attribute.getName();
 		String attributeValue = attribute.getValue();
 		String attributeNamespacePrefix = attribute.getNamespace().getPrefix();
 		String attributeNamespaceURI = attribute.getNamespace().getURI();
+		OWLClassAdapter attributeClass = objectAdapterFactory.getOWLClass(createURI(XMLAttributeOWLClassName));
+		OWLNamedIndividualAdapter attributeIndividual = objectAdapterFactory.getOWLNamedIndividual();
+		OWLClassDeclarationAxiomAdapter classDeclarationAxiom;
+		OWLIndividualDeclarationAxiomAdapter individualDeclarationAxiom;
+		OWLDataPropertyAssertionAxiomAdapter dataPropertyAssertionAxiom;
+		OWLObjectPropertyAssertionAxiomAdapter objectPropertyAssertionAxiom;
 
-		bridge.injectOWLAxiom(owlDataFactory.getOWLDataPropertyAssertionAxiom(owlAttributeIndividual, nameProperty, owlDataValueFactory.getOWLDataValue(attributeName)));
+		classDeclarationAxiom = objectAdapterFactory.getOWLClassDeclarationAxiom(attributeClass);
+		bridge.injectOWLAxiom(classDeclarationAxiom);
 
-		bridge
-				.injectOWLAxiom(owlDataFactory.getOWLDataPropertyAssertionAxiom(owlAttributeIndividual, valueProperty, owlDataValueFactory.getOWLDataValue(attributeValue)));
+		individualDeclarationAxiom = objectAdapterFactory.getOWLIndividualDeclarationAxiom(attributeIndividual);
+		bridge.injectOWLAxiom(individualDeclarationAxiom);
 
-		bridge.injectOWLAxiom(owlDataFactory.getOWLDataPropertyAssertionAxiom(owlAttributeIndividual, namespacePrefixProperty,
-				owlDataValueFactory.getOWLDataValue(attributeNamespacePrefix)));
+		dataPropertyAssertionAxiom = objectAdapterFactory.getOWLDataPropertyAssertionAxiom(attributeIndividual, nameProperty,
+				literalReferenceFactory.getOWLLiteral(attributeName));
+		bridge.injectOWLAxiom(dataPropertyAssertionAxiom);
 
-		bridge.injectOWLAxiom(owlDataFactory.getOWLDataPropertyAssertionAxiom(owlAttributeIndividual, namespaceURIProperty,
-				owlDataValueFactory.getOWLDataValue(attributeNamespaceURI)));
+		dataPropertyAssertionAxiom = objectAdapterFactory.getOWLDataPropertyAssertionAxiom(attributeIndividual, valueProperty,
+				literalReferenceFactory.getOWLLiteral(attributeValue));
+		bridge.injectOWLAxiom(dataPropertyAssertionAxiom);
 
-		bridge.injectOWLAxiom(owlDataFactory.getOWLObjectPropertyAssertionAxiom(owlElementIndividual, attributesProperty, owlAttributeIndividual));
+		dataPropertyAssertionAxiom = objectAdapterFactory.getOWLDataPropertyAssertionAxiom(attributeIndividual, namespacePrefixProperty,
+				literalReferenceFactory.getOWLLiteral(attributeNamespacePrefix));
+		bridge.injectOWLAxiom(dataPropertyAssertionAxiom);
+
+		dataPropertyAssertionAxiom = objectAdapterFactory.getOWLDataPropertyAssertionAxiom(attributeIndividual, namespaceURIProperty,
+				literalReferenceFactory.getOWLLiteral(attributeNamespaceURI));
+		bridge.injectOWLAxiom(dataPropertyAssertionAxiom);
+
+		objectPropertyAssertionAxiom = objectAdapterFactory.getOWLObjectPropertyAssertionAxiom(owlElementIndividual, attributesProperty, attributeIndividual);
+		bridge.injectOWLAxiom(objectPropertyAssertionAxiom);
+	}
+
+	private URI createURI(String fullName) throws XMLBridgeMapperException
+	{
+		try {
+			return new URI(fullName);
+		} catch (URISyntaxException e) {
+			throw new XMLBridgeMapperException("error converting " + fullName + " to URI: " + e.getMessage());
+		}
+	}
+
+	private OWLNamedIndividualAdapter injectOWLNamedIndividualOfClass(SWRLBuiltInBridge bridge, OWLClassAdapter cls) throws SWRLBuiltInBridgeException
+	{
+		OWLNamedIndividualAdapter individual = bridge.getOWLAdapterFactory().getOWLNamedIndividual();
+		OWLIndividualDeclarationAxiomAdapter declarationAxiom = bridge.getOWLAdapterFactory().getOWLIndividualDeclarationAxiom(individual);
+		OWLClassAssertionAxiomAdapter classAssertionAxiom = bridge.getOWLAdapterFactory().getOWLClassAssertionAxiom(individual, cls);
+		bridge.injectOWLAxiom(declarationAxiom);
+		bridge.injectOWLAxiom(classAssertionAxiom);
+
+		return individual;
+	}
+
+	private OWLModel getOWLModel()
+	{
+		return owlModel;
 	}
 }

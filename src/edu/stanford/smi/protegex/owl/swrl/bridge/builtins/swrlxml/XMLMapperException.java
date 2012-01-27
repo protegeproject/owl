@@ -1,5 +1,5 @@
 
-package edu.stanford.smi.protegex.owl.swrl.bridge.builtins.swrlxml;
+package org.protege.swrltab.bridge.builtins.swrlxml;
 
 public class XMLMapperException extends Exception
 {

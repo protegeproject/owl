@@ -1,7 +1,12 @@
 
-package edu.stanford.smi.protegex.owl.swrl.bridge.builtins.swrlxml;
+package org.protege.swrltab.bridge.builtins.swrlxml;
 
-public class XMLBridgeMapperException extends Exception
+import org.protege.swrlapi.exceptions.BuiltInException;
+
+public class XMLBridgeMapperException extends BuiltInException
 {
-  public XMLBridgeMapperException(String message) { super (message); }
-} // XMLBridgeMapperException
+	public XMLBridgeMapperException(String message)
+	{
+		super(message);
+	}
+}
