@@ -12,12 +12,12 @@ import edu.stanford.smi.protegex.owl.model.RDFObject;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
 import edu.stanford.smi.protegex.owl.model.impl.DefaultRDFList;
 import edu.stanford.smi.protegex.owl.model.visitor.OWLModelVisitor;
+import edu.stanford.smi.protegex.owl.swrl.model.SQWRLNames;
 import edu.stanford.smi.protegex.owl.swrl.model.SWRLAtomList;
 import edu.stanford.smi.protegex.owl.swrl.model.SWRLBuiltin;
 import edu.stanford.smi.protegex.owl.swrl.model.SWRLBuiltinAtom;
 import edu.stanford.smi.protegex.owl.swrl.model.SWRLIndividual;
 import edu.stanford.smi.protegex.owl.swrl.parser.SWRLParser;
-import edu.stanford.smi.protegex.owl.swrl.sqwrl.SQWRLNames;
 
 public class DefaultSWRLAtomList extends DefaultRDFList implements SWRLAtomList 
 {
