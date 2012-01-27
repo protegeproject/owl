@@ -1,14 +1,14 @@
 
-package edu.stanford.smi.protegex.owl.swrl.ui.table;
+package org.protege.swrltab.ui.table;
 
 import java.util.Set;
 
 import org.jdesktop.swingx.treetable.DefaultMutableTreeTableNode;
 import org.jdesktop.swingx.treetable.DefaultTreeTableModel;
+import org.protege.swrlapi.adapters.axioms.SWRLRuleAdapter;
+import org.protege.swrlapi.exceptions.TargetAPIException;
+import org.protege.swrlapi.extractors.TargetAPIOWLAxiomExtractor;
 
-import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.OWLFactoryException;
-import edu.stanford.smi.protegex.owl.swrl.portability.OWLDataFactory;
-import edu.stanford.smi.protegex.owl.swrl.portability.SWRLRuleReference;
 
 public class SWRLRuleGroupTreeTableModel extends DefaultTreeTableModel
 {
@@ -17,17 +17,18 @@ public class SWRLRuleGroupTreeTableModel extends DefaultTreeTableModel
 	public static final int RuleTextColumn = 2;
 	private static final int NumberOfColumns = 3;
 	private DefaultMutableTreeTableNode rootNode;
-	private Set<SWRLRuleReference> rules;
+	private Set<SWRLRuleAdapter> rules;
 
-	public SWRLRuleGroupTreeTableModel(OWLDataFactory owlFactory) throws OWLFactoryException
+	public SWRLRuleGroupTreeTableModel(TargetAPIOWLAxiomExtractor activeOntology) throws TargetAPIException
 	{
 		rootNode = new DefaultMutableTreeTableNode(new SWRLRuleGroup()); // Not visible; dummy rule group
 		setRoot(rootNode);
-		rules = owlFactory.getSWRLRules();
+		rules = activeOntology.getSWRLRules();
 		addRules(rules);
 	}
 
-	public void addRule(SWRLRuleReference rule)
+	@SuppressWarnings("unused")
+	public void addRule(SWRLRuleAdapter rule)
 	{
 		boolean existingGroupFound = false;
 
@@ -35,25 +36,29 @@ public class SWRLRuleGroupTreeTableModel extends DefaultTreeTableModel
 			if (getChild(rootNode, i) instanceof DefaultMutableTreeTableNode) {
 				DefaultMutableTreeTableNode defNode = (DefaultMutableTreeTableNode)getChild(rootNode, i);
 				if (defNode.getUserObject() instanceof SWRLRuleGroup) {
+					/*
 					SWRLRuleGroup ruleGroup = (SWRLRuleGroup)defNode.getUserObject();
 					if (rule.getRuleGroupName().equals(ruleGroup.getGroupName())) {
 						defNode.add(new DefaultMutableTreeTableNode(rule));
 						existingGroupFound = true;
 					}
+					*/
 				}
 			}
 		}
 
 		if (!existingGroupFound) {
+			/*
 			DefaultMutableTreeTableNode groupNode = new DefaultMutableTreeTableNode(new SWRLRuleGroup(rule.getRuleGroupName(), true));
 			groupNode.add(new DefaultMutableTreeTableNode(rule));
 			rootNode.add(groupNode);
+			*/
 		}
 	}
 
-	public void addRules(Set<SWRLRuleReference> rules)
+	public void addRules(Set<SWRLRuleAdapter> newRules)
 	{
-		for (SWRLRuleReference rule : rules)
+		for (SWRLRuleAdapter rule : newRules)
 			addRule(rule);
 	}
 
@@ -76,7 +81,7 @@ public class SWRLRuleGroupTreeTableModel extends DefaultTreeTableModel
 		case RuleTextColumn:
 			result = "Expression";
 			break;
-		} 
+		}
 
 		return result;
 	}
@@ -87,8 +92,8 @@ public class SWRLRuleGroupTreeTableModel extends DefaultTreeTableModel
 
 		if (node instanceof DefaultMutableTreeTableNode) {
 			DefaultMutableTreeTableNode defNode = (DefaultMutableTreeTableNode)node;
-			if (defNode.getUserObject() instanceof SWRLRuleReference) {
-				SWRLRuleReference rule = (SWRLRuleReference)defNode.getUserObject();
+			if (defNode.getUserObject() instanceof SWRLRuleAdapter) {
+				SWRLRuleAdapter rule = (SWRLRuleAdapter)defNode.getUserObject();
 				switch (column) {
 				case IsEnabledColumn:
 					result = rule.isEnabled();
@@ -118,7 +123,7 @@ public class SWRLRuleGroupTreeTableModel extends DefaultTreeTableModel
 
 		if (node instanceof DefaultMutableTreeTableNode) {
 			DefaultMutableTreeTableNode defNode = (DefaultMutableTreeTableNode)node;
-			if (defNode.getUserObject() instanceof SWRLRuleReference) {
+			if (defNode.getUserObject() instanceof SWRLRuleAdapter) {
 				// SWRLRule rule = (SWRLRule)defNode.getUserObject();
 				switch (column) {
 				case IsEnabledColumn:
@@ -135,7 +140,7 @@ public class SWRLRuleGroupTreeTableModel extends DefaultTreeTableModel
 				case IsEnabledColumn:
 					result = true;
 					break;
-				} 
+				}
 			}
 		}
 		return result;
@@ -145,8 +150,8 @@ public class SWRLRuleGroupTreeTableModel extends DefaultTreeTableModel
 	{
 		if (node instanceof DefaultMutableTreeTableNode) {
 			DefaultMutableTreeTableNode defNode = (DefaultMutableTreeTableNode)node;
-			if (defNode.getUserObject() instanceof SWRLRuleReference) {
-				SWRLRuleReference rule = (SWRLRuleReference)defNode.getUserObject();
+			if (defNode.getUserObject() instanceof SWRLRuleAdapter) {
+				SWRLRuleAdapter rule = (SWRLRuleAdapter)defNode.getUserObject();
 				switch (column) {
 				case IsEnabledColumn:
 					System.err.println("rule enable toggled");
@@ -155,7 +160,7 @@ public class SWRLRuleGroupTreeTableModel extends DefaultTreeTableModel
 					break;
 				case RuleTextColumn:
 					System.err.println("rule text changed: " + value);
-					rule.setRuleText(value.toString());
+					//rule.setRuleText(value.toString());
 					defNode.setUserObject(rule);
 					break;
 				} // switch
@@ -172,7 +177,7 @@ public class SWRLRuleGroupTreeTableModel extends DefaultTreeTableModel
 					ruleGroup.setIsEnabled((Boolean)value);
 					defNode.setUserObject(ruleGroup);
 					break;
-				} 
+				}
 			}
 		}
 	}

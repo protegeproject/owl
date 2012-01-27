@@ -1,4 +1,4 @@
-package edu.stanford.smi.protegex.owl.swrl.ui.table;
+package org.protege.swrltab.ui.table;
 
 public class SWRLRuleGroup implements Comparable<SWRLRuleGroup>
 {
