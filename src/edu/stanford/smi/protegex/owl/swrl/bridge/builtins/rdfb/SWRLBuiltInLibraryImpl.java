@@ -1,145 +1,136 @@
 
-package edu.stanford.smi.protegex.owl.swrl.bridge.builtins.rdfb;
+package org.protege.swrltab.bridge.builtins.rdfb;
 
+import java.net.URI;
 import java.util.List;
 
+import org.protege.swrlapi.arguments.SWRLBuiltInArgument;
+import org.protege.swrlapi.arguments.SWRLMultiArgument;
+import org.protege.swrlapi.builtins.AbstractSWRLBuiltInLibrary;
+import org.protege.swrlapi.exceptions.BuiltInException;
+import org.protege.swrlapi.exceptions.BuiltInNotImplementedException;
+
 import edu.stanford.smi.protegex.owl.model.OWLModel;
-import edu.stanford.smi.protegex.owl.swrl.bridge.BuiltInArgument;
-import edu.stanford.smi.protegex.owl.swrl.bridge.MultiArgument;
-import edu.stanford.smi.protegex.owl.swrl.bridge.builtins.AbstractSWRLBuiltInLibrary;
-import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.BuiltInException;
-import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.BuiltInNotImplementedException;
-import edu.stanford.smi.protegex.owl.swrl.bridge.exceptions.SWRLBuiltInLibraryException;
-import edu.stanford.smi.protegex.owl.swrl.util.SWRLOWLUtil;
+import edu.stanford.smi.protegex.owl.swrl.util.P3OWLUtil;
 
 /**
- ** Implementations library for RDFB built-in methods. See <a href="http://protege.cim3.net/cgi-bin/wiki.pl?RDFBuiltIns">here</a> for
- ** documentation on this library.
- **
- ** See <a href="http://protege.cim3.net/cgi-bin/wiki.pl?SWRLBuiltInBridge">here</a> for documentation on defining SWRL built-in libraries.
+ * Implementations library for RDFB built-in methods. See <a href="http://protege.cim3.net/cgi-bin/wiki.pl?RDFBuiltIns">here</a> for documentation on this
+ * library.
+ * <p>
+ * See <a href="http://protege.cim3.net/cgi-bin/wiki.pl?SWRLBuiltInBridge">here</a> for documentation on defining SWRL built-in libraries.
  */
 public class SWRLBuiltInLibraryImpl extends AbstractSWRLBuiltInLibrary
 {
-  private static String SWRLRDFLibraryName = "SWRLRDFBuiltIns";
-  
-  public SWRLBuiltInLibraryImpl() 
-  { 
-    super(SWRLRDFLibraryName); 
-  } // SWRLBuiltInLibraryImpl
+	private static String SWRLRDFLibraryName = "SWRLRDFBuiltIns";
 
-  public void reset() 
-  {
-  } // reset
+	public SWRLBuiltInLibraryImpl()
+	{
+		super(SWRLRDFLibraryName);
+	}
 
-  /**
-   ** Returns true if the RDF resource named by the first argument has any label identified by the second
-   ** argument. If the second argument is unbound, bind it to labels of the resource.
-   */
-  public boolean hasLabel(List<BuiltInArgument> arguments) throws BuiltInException
-  {
-    boolean isUnboundArgument = isUnboundArgument(1, arguments);
-    boolean hasLanguage = (arguments.size() == 3);
-    String language;
-    String resourceName;
-    boolean result = false;
+	public void reset()
+	{
+	}
 
-    checkNumberOfArgumentsAtLeast(2, arguments.size());
-    checkThatArgumentIsAClassPropertyOrIndividual(0, arguments);
+	/**
+	 * Returns true if the RDF resource named by the first argument has any label identified by the second argument. If the second argument is unbound, bind it to
+	 * labels of the resource.
+	 */
+	public boolean hasLabel(List<SWRLBuiltInArgument> arguments) throws BuiltInException
+	{
+		boolean isUnboundArgument = isUnboundArgument(1, arguments);
+		boolean hasLanguage = (arguments.size() == 3);
+		String language;
+		URI resourceURI;
+		boolean result = false;
 
-    resourceName = getArgumentAsAURI(0, arguments);
-    language = hasLanguage ? getArgumentAsAString(2, arguments) : "";
-    
-    if (isUnboundArgument) {
-    	MultiArgument multiArgument = createMultiArgument();
-    	for (String label : SWRLOWLUtil.getRDFSLabels(getOWLModel(), resourceName, language))
-    		multiArgument.addArgument(createDataValueArgument(label));
-    	arguments.get(1).setBuiltInResult(multiArgument);
-    	result = !multiArgument.hasNoArguments();
-    } else { // Bound argument
-    	String label = getArgumentAsAString(1, arguments);
-    	result = SWRLOWLUtil.getRDFSLabels(getOWLModel(), resourceName, language).contains(label);
-    } // if
-    
-    return result;
-  } // hasLabel
+		checkNumberOfArgumentsAtLeast(2, arguments.size());
+		checkThatArgumentIsAClassPropertyOrIndividual(0, arguments);
 
-  /**
-   ** Returns true if the RDF resource named by the first argument has any label language identified by the second
-   ** argument. If the second argument is unbound, bind it to label languages of the resource.
-   */
-  public boolean hasLabelLanguage(List<BuiltInArgument> arguments) throws BuiltInException
-  {
-    boolean isUnboundArgument = isUnboundArgument(1, arguments);   
-    String resourceName;
-    boolean result = false;
+		resourceURI = getArgumentAsAURI(0, arguments);
+		language = hasLanguage ? getArgumentAsAString(2, arguments) : "";
 
-    checkNumberOfArgumentsEqualTo(2, arguments.size());
-    checkThatArgumentIsAClassPropertyOrIndividual(0, arguments);
+		if (isUnboundArgument) {
+			SWRLMultiArgument multiArgument = createMultiArgument();
+			for (String label : P3OWLUtil.getRDFSLabels(getOWLModel(), resourceURI, language))
+				multiArgument.addArgument(createLiteralArgument(label));
+			arguments.get(1).setBuiltInResult(multiArgument);
+			result = !multiArgument.hasNoArguments();
+		} else { // Bound argument
+			String label = getArgumentAsAString(1, arguments);
+			result = P3OWLUtil.getRDFSLabels(getOWLModel(), resourceURI, language).contains(label);
+		}
 
-    resourceName = getArgumentAsAURI(0, arguments);
+		return result;
+	}
 
-    if (isUnboundArgument) {
-     	MultiArgument multiArgument = createMultiArgument();
-    	for (String language : SWRLOWLUtil.getRDFSLabelLanguages(getOWLModel(), resourceName))
-    		multiArgument.addArgument(createDataValueArgument(language));
-    	arguments.get(1).setBuiltInResult(multiArgument);
-    	result = !multiArgument.hasNoArguments();
-    } else { // Bound argument
-    	String language = getArgumentAsAString(1, arguments);
-    	result = SWRLOWLUtil.getRDFSLabelLanguages(getOWLModel(), resourceName).contains(language);
-    } // if
-    
-    return result;
-  } // hasLabelLanguage
+	/**
+	 * Returns true if the RDF resource named by the first argument has any label language identified by the second argument. If the second argument is unbound,
+	 * bind it to label languages of the resource.
+	 */
+	public boolean hasLabelLanguage(List<SWRLBuiltInArgument> arguments) throws BuiltInException
+	{
+		boolean isUnboundArgument = isUnboundArgument(1, arguments);
+		URI resourceURI;
+		boolean result = false;
 
-  /**
-   ** isClass(c)
-   */
-  public boolean isClass(List<BuiltInArgument> arguments) throws BuiltInException
-  {
-    boolean result = false;
+		checkNumberOfArgumentsEqualTo(2, arguments.size());
+		checkThatArgumentIsAClassPropertyOrIndividual(0, arguments);
 
-    if (!result) throw new BuiltInNotImplementedException();
+		resourceURI = getArgumentAsAURI(0, arguments);
 
-    return result;
-  } // isClass
+		if (isUnboundArgument) {
+			SWRLMultiArgument multiArgument = createMultiArgument();
+			for (String language : P3OWLUtil.getRDFSLabelLanguages(getOWLModel(), resourceURI))
+				multiArgument.addArgument(createLiteralArgument(language));
+			arguments.get(1).setBuiltInResult(multiArgument);
+			result = !multiArgument.hasNoArguments();
+		} else { // Bound argument
+			String language = getArgumentAsAString(1, arguments);
+			result = P3OWLUtil.getRDFSLabelLanguages(getOWLModel(), resourceURI).contains(language);
+		}
 
-  /**
-   ** isList(l)
-   */
-  public boolean isList(List<BuiltInArgument> arguments) throws BuiltInException
-  {
-    boolean result = false;
+		return result;
+	}
 
-    if (!result) throw new BuiltInNotImplementedException();
+	/**
+	 * isClass(c)
+	 */
+	@SuppressWarnings("unused")
+	public boolean isClass(List<SWRLBuiltInArgument> arguments) throws BuiltInException
+	{
+		throw new BuiltInNotImplementedException();
+	}
 
-    return result;
-  } // isList
+	/**
+	 * isList(l)
+	 */
+	@SuppressWarnings("unused")
+	public boolean isList(List<SWRLBuiltInArgument> arguments) throws BuiltInException
+	{
+		throw new BuiltInNotImplementedException();
+	}
 
-  /**
-   ** isProperty(p)
-   */
-  public boolean isProperty(List<BuiltInArgument> arguments) throws BuiltInException
-  {
-    boolean result = false;
+	/**
+	 * isProperty(p)
+	 */
+	@SuppressWarnings("unused")
+	public boolean isProperty(List<SWRLBuiltInArgument> arguments) throws BuiltInException
+	{
+		throw new BuiltInNotImplementedException();
+	}
 
-    if (!result) throw new BuiltInNotImplementedException();
+	/**
+	 * isResource(r)
+	 */
+	@SuppressWarnings("unused")
+	public boolean isResource(List<SWRLBuiltInArgument> arguments) throws BuiltInException
+	{
+		throw new BuiltInNotImplementedException();
+	}
 
-    return result;
-  } // isProperty
-
-  /**
-   ** isResource(r)
-   */
-  public boolean isResource(List<BuiltInArgument> arguments) throws BuiltInException
-  {
-    boolean result = false;
-
-    if (!result) throw new BuiltInNotImplementedException();
-
-    return result;
-  } 
-  
-  private OWLModel getOWLModel() throws SWRLBuiltInLibraryException { return getBuiltInBridge().getActiveOntology().getOWLModel(); }
-
+	private OWLModel getOWLModel()
+	{
+		return null;
+	}
 }
