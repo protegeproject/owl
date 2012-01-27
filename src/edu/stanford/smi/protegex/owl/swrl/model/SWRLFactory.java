@@ -21,7 +21,6 @@ import edu.stanford.smi.protegex.owl.model.RDFSClass;
 import edu.stanford.smi.protegex.owl.model.RDFSLiteral;
 import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
 import edu.stanford.smi.protegex.owl.swrl.SWRLSystemFrames;
-import edu.stanford.smi.protegex.owl.swrl.exceptions.SWRLFactoryException;
 import edu.stanford.smi.protegex.owl.swrl.parser.SWRLParseException;
 import edu.stanford.smi.protegex.owl.swrl.parser.SWRLParser;
 
