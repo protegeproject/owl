@@ -1,4 +1,4 @@
-; Thu Jan 26 11:47:40 PST 2012
+; Fri Feb 03 16:34:07 PST 2012
 ; 
 ;+ (version "3.4.8")
 ;+ (build "Build 626")
@@ -484,9 +484,6 @@
 ([KB_140180_Instance_9] of  Property_List
 )
 
-([KB_159464_Class3] of  Map
-)
-
 ([KB_221055_Instance_10] of  Widget
 
 	(height 0)
@@ -967,6 +964,9 @@
 	(name "http://www.w3.org/2002/07/owl#ObjectProperty")
 	(property_list [XY_Instance_462])
 	(widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.OWLFormWidget"))
+
+([KB_709685_Class3] of  Map
+)
 
 ([KB_713803_Instance_10] of  Widget
 
