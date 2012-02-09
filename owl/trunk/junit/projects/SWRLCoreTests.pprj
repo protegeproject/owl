@@ -1,4 +1,4 @@
-; Thu Feb 09 08:56:42 PST 2012
+; Thu Feb 09 15:00:36 PST 2012
 ; 
 ;+ (version "3.4.8")
 ;+ (build "Build 626")
@@ -951,7 +951,7 @@
 ([KB_635552_Instance_9] of  Property_List
 )
 
-([KB_677702_Class3] of  Map
+([KB_688738_Class3] of  Map
 )
 
 ([KB_691299_Instance_398] of  Widget
