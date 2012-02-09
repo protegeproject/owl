@@ -1,4 +1,4 @@
-// TODO: Jess rule engine and SWRL query tab are loaded explicitly here. We need a discovery mechanism using the manifest.
+// TODO: Jess and Drools rule engine and SWRL query tab are loaded explicitly here. We need a discovery mechanism using the manifest.
 // TODO: A bit sloppy. GUI code should be refactored to ui subdirectory.
 
 package edu.stanford.smi.protegex.owl.swrl;
@@ -203,11 +203,11 @@ public class SWRLTabPluginManager
 
 	public static class SWRLTabPluginRegistrationRecord
 	{
-		private String pluginName;
-		private String ruleEngineName;
-		private String toolTip;
-		private SWRLPluginGUIAdapter guiAdapter;
-		private Icon icon;
+		private final String pluginName;
+		private final String ruleEngineName;
+		private final String toolTip;
+		private final SWRLPluginGUIAdapter guiAdapter;
+		private final Icon icon;
 		private OWLModel owlModel;
 
 		public SWRLTabPluginRegistrationRecord(String pluginName, String ruleEngineName, String toolTip, Icon icon, SWRLPluginGUIAdapter guiAdapter)
@@ -227,37 +227,37 @@ public class SWRLTabPluginManager
 
 		public String getPluginName()
 		{
-			return pluginName;
+			return this.pluginName;
 		}
 
 		public String getRuleEngineName()
 		{
-			return ruleEngineName;
+			return this.ruleEngineName;
 		}
 
 		public String getToolTip()
 		{
-			return toolTip;
+			return this.toolTip;
 		}
 
 		public SWRLPluginGUIAdapter getGUIAdapter()
 		{
-			return guiAdapter;
+			return this.guiAdapter;
 		}
 
 		public Icon getIcon()
 		{
-			return icon;
+			return this.icon;
 		}
 
 		public OWLModel getOWLModel()
 		{
-			return owlModel;
+			return this.owlModel;
 		}
 
 		public boolean hasOWLModel()
 		{
-			return owlModel != null;
+			return this.owlModel != null;
 		}
 	}
 
