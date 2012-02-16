@@ -972,10 +972,10 @@ public class P3OWLUtil
 		addType(owlModel, resourceURI.toString(), classURI.toString());
 	}
 
-	public static void addType(OWLIndividual individual, OWLClass cls) throws P3OWLUtilException
+	public static void addType(RDFResource resource, OWLClass cls)
 	{
-		if (!individual.hasRDFType(cls, true))
-			individual.addRDFType(cls);
+		if (!resource.hasRDFType(cls, true))
+			resource.addRDFType(cls);
 	}
 
 	public static void removeType(OWLIndividual individual, OWLClass cls) throws P3OWLUtilException
