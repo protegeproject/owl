@@ -1785,6 +1785,70 @@ public class P3OWLUtil
 		return getOWLClassesOfIndividual(owlModel, individualName, true);
 	}
 
+	public static Set<OWLNamedClass> getOWLClasses(OWLModel owlModel)
+	{
+		Set<OWLNamedClass> classes = new HashSet<OWLNamedClass>();
+
+		for (Object o : owlModel.getRDFSClasses()) {
+			if (o instanceof OWLNamedClass) {
+				classes.add((OWLNamedClass)o);
+			}
+		}
+		return classes;
+	}
+
+	public static Set<OWLIndividual> getOWLIndividuals(OWLModel owlModel)
+	{
+		Set<OWLIndividual> individuals = new HashSet<OWLIndividual>();
+
+		for (Object o : owlModel.getOWLIndividuals()) {
+			if (o instanceof OWLIndividual) {
+				OWLIndividual owlIndividual = (OWLIndividual)o;
+				if (!owlIndividual.isAnonymous())
+					individuals.add(owlIndividual);
+			}
+		}
+		return individuals;
+	}
+
+	public static Set<OWLObjectProperty> getOWLObjectProperties(OWLModel owlModel)
+	{
+		Set<OWLObjectProperty> properties = new HashSet<OWLObjectProperty>();
+
+		for (Object o : owlModel.getRDFProperties()) {
+			if (o instanceof OWLObjectProperty) {
+				OWLObjectProperty property = (OWLObjectProperty)o;
+				if (!property.isAnnotationProperty())
+					properties.add((OWLObjectProperty)o);
+			}
+		}
+		return properties;
+	}
+
+	public static Set<OWLDatatypeProperty> getOWLDatatypeProperties(OWLModel owlModel)
+	{
+		Set<OWLDatatypeProperty> properties = new HashSet<OWLDatatypeProperty>();
+
+		for (Object o : owlModel.getRDFProperties()) {
+			if (o instanceof OWLDatatypeProperty) {
+				OWLDatatypeProperty property = (OWLDatatypeProperty)o;
+				if (!property.isAnnotationProperty())
+					properties.add((OWLDatatypeProperty)o);
+			}
+		}
+		return properties;
+	}
+
+	public static Set<RDFProperty> getOWLAnnotationProperties(OWLModel owlModel)
+	{
+		Set<RDFProperty> properties = new HashSet<RDFProperty>();
+
+		for (RDFProperty property : owlModel.getOWLAnnotationProperties())
+			properties.add(property);
+
+		return properties;
+	}
+
 	public static Set<OWLNamedClass> getOWLClassesOfIndividual(OWLModel owlModel, URI individualURI) throws P3OWLUtilException
 	{
 		return getOWLClassesOfIndividual(owlModel, individualURI.toString());
@@ -2851,7 +2915,7 @@ public class P3OWLUtil
 	{
 		return owlModel.getOWLDisjointWithProperty();
 	}
-	
+
 	public static RDFProperty getOWLEquivalentClassProperty(OWLModel owlModel)
 	{
 		return owlModel.getOWLEquivalentClassProperty();
