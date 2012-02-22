@@ -1,8 +1,9 @@
 package edu.stanford.smi.protegex.owl.swrl.ui.icons;
 
-import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 
-import javax.swing.*;
+import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
 
 /**
  * A singleton that provides access to the SWRL specific icons.
@@ -83,6 +84,10 @@ public class SWRLIcons {
 
 
     public static Icon getImpsIcon() {
-        return getImageIcon("SWRLImps");
-    }
-} // SWRLIcons
+      return getImageIcon("SWRLImps");
+  }
+
+    public static Icon getOWL2RLIcon() {
+      return getImageIcon("OWL2RL");
+  }
+}
