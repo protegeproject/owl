@@ -1785,13 +1785,25 @@ public class P3OWLUtil
 		return getOWLClassesOfIndividual(owlModel, individualName, true);
 	}
 
-	public static Set<OWLNamedClass> getOWLClasses(OWLModel owlModel)
+	public static Set<OWLNamedClass> getOWLNamedClasses(OWLModel owlModel)
 	{
 		Set<OWLNamedClass> classes = new HashSet<OWLNamedClass>();
 
 		for (Object o : owlModel.getRDFSClasses()) {
 			if (o instanceof OWLNamedClass) {
 				classes.add((OWLNamedClass)o);
+			}
+		}
+		return classes;
+	}
+
+	public static Set<OWLClass> getOWLClasses(OWLModel owlModel)
+	{
+		Set<OWLClass> classes = new HashSet<OWLClass>();
+
+		for (Object o : owlModel.getRDFSClasses()) {
+			if (o instanceof OWLClass) {
+				classes.add((OWLClass)o);
 			}
 		}
 		return classes;
