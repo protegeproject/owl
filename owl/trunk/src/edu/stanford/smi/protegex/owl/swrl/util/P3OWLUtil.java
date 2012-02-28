@@ -2959,8 +2959,11 @@ public class P3OWLUtil
 		OWLIndividual individual1 = getOWLIndividual(owlModel, individualName1);
 		OWLIndividual individual2 = getOWLIndividual(owlModel, individualName2);
 
-		individual1.addPropertyValue(getOWLSameAsProperty(owlModel), individual2);
-		individual2.addPropertyValue(getOWLSameAsProperty(owlModel), individual1);
+		if (!individual1.hasPropertyValue(getOWLSameAsProperty(owlModel), individual2))
+			individual1.addPropertyValue(getOWLSameAsProperty(owlModel), individual2);
+
+		if (!individual2.hasPropertyValue(getOWLSameAsProperty(owlModel), individual1))
+			individual2.addPropertyValue(getOWLSameAsProperty(owlModel), individual1);
 	}
 
 	public static void makeSameAs(OWLModel owlModel, URI individual1URI, URI individual2URI) throws P3OWLUtilException
@@ -2973,8 +2976,10 @@ public class P3OWLUtil
 		OWLIndividual individual1 = getOWLIndividual(owlModel, individualName1);
 		OWLIndividual individual2 = getOWLIndividual(owlModel, individualName2);
 
-		individual1.addPropertyValue(getOWLDifferentFromProperty(owlModel), individual2);
-		individual2.addPropertyValue(getOWLDifferentFromProperty(owlModel), individual1);
+		if (!individual1.hasPropertyValue(getOWLDifferentFromProperty(owlModel), individual2))
+			individual1.addPropertyValue(getOWLDifferentFromProperty(owlModel), individual2);
+		if (!individual2.hasPropertyValue(getOWLDifferentFromProperty(owlModel), individual1))
+			individual2.addPropertyValue(getOWLDifferentFromProperty(owlModel), individual1);
 	}
 
 	public static void makeDifferentFrom(OWLModel owlModel, URI individual1URI, URI individual2URI) throws P3OWLUtilException
