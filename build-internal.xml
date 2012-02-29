@@ -167,14 +167,14 @@
 	<!-- Zips up all source code, resources, and api documentation. -->
 	<!-- =================================================================== -->
 	<target name = "dist" depends = "init">
-		<zip zipfile = "${dist.dir}/protege-owl-src-${version}.zip" update = "no">
+		<zip zipfile = "${dist.dir}/protege-owl-src-${version}-${status}.zip" update = "no">
 			<zipfileset dir = "${build.src}" prefix = "Protege-OWL ${version}/src"/>
 			<zipfileset dir = "${build.javadoc}" prefix = "Protege-OWL ${version}/docs/apidocs"/>
 			<zipfileset dir = "${etc.dir}" prefix = "Protege-OWL ${version}/etc"/>
 			<zipfileset dir = "${lib.dir}" includes = "*.jar" prefix = "Protege-OWL ${version}/lib"/>
 			<zipfileset dir = "." includes = "build.xml,local.properties.template,junit.properties.template,junit-logging.properties," prefix = "Protege-OWL ${version}"/>
 		</zip>
-		<zip zipfile = "${dist.dir}/protege-owl-bin-${version}.zip" update = "no">
+		<zip zipfile = "${dist.dir}/protege-owl-bin-${version}-${status}.zip" update = "no">
 			<zipfileset dir = "${dist.dir}" includes = "protege-owl.jar"/>
 			<zipfileset dir = "${lib.dir}"/>
 			<zipfileset dir = "${etc.dir}" excludes = "doap.rdf"/>
