@@ -253,26 +253,26 @@ public class P3SWRLTabPluginManager
 
 	public static void loadPlugins()
 	{
-		boolean ruleEngineFound = false;
+		boolean pluginFound = false;
 
 		try {
 			Class.forName("jess.Rete");
-			Class.forName("org.protege.swrlapi.jess.ui.P3SWRLJessTab");
-			ruleEngineFound = true;
+			Class.forName("org.protege.swrlapi.jess.ui.P3SWRLTabJessPlugin");
+			pluginFound = true;
 		} catch (ClassNotFoundException e) {
 			log.info("Jess rule engine load failed: could not find jess.Rete - or an error occured on initialization: " + e.getMessage());
 		}
 
 		try {
-			Class.forName("org.protege.swrlapi.drools.ui.P3SWRLDroolsTab");
-			ruleEngineFound = true;
+			Class.forName("org.protege.swrlapi.drools.ui.P3SWRLTabDroolsPlugin");
+			pluginFound = true;
 		} catch (ClassNotFoundException e) {
 			log.info("Drools rule engine load failed: could not find Drools JARs - or an error occured on initialization: " + e.getMessage());
 		}
 
-		if (ruleEngineFound) {
+		if (pluginFound) {
 			try {
-				Class.forName("org.protege.swrltab.p3.ui.P3SQWRLQueryTab");
+				Class.forName("org.protege.swrltab.p3.ui.P3SWRLTabSQWRLPlugin");
 			} catch (ClassNotFoundException e) {
 				log.info("SQWRLQueryTab load failed: an error occured on initialization: " + e.getMessage());
 			}
