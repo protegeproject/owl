@@ -16,7 +16,7 @@ import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
 
 public class ViewRuleAction extends AbstractAction
 {
-	private SWRLTable table;
+	private final SWRLTable table;
 
 	public ViewRuleAction(SWRLTable table)
 	{
@@ -33,13 +33,13 @@ public class ViewRuleAction extends AbstractAction
 
 	public void actionPerformed(ActionEvent e)
 	{
-		final SWRLImp imp = table.getSelectedImp();
+		final SWRLImp imp = this.table.getSelectedImp();
 		OWLModel owlModel = imp.getOWLModel();
-		if (SWRLTextAreaPanel.showEditDialog(table, owlModel, imp)) {
+		if (SWRLTextAreaPanel.showEditDialog(this.table, owlModel, imp)) {
 			SwingUtilities.invokeLater(new Runnable() {
 				public void run()
 				{
-					table.setSelectedRow(imp);
+					ViewRuleAction.this.table.setSelectedRow(imp);
 				}
 			});
 		}
@@ -47,6 +47,6 @@ public class ViewRuleAction extends AbstractAction
 
 	private void updateEnabled()
 	{
-		setEnabled(table.getSelectedImp() != null && table.getSelectedImp().isEditable());
+		setEnabled(this.table.getSelectedImp() != null && this.table.getSelectedImp().isEditable());
 	}
 }

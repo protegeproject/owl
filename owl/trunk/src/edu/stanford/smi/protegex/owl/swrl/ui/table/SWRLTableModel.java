@@ -38,19 +38,19 @@ public class SWRLTableModel extends AbstractTableModel implements Disposable, Sy
 
 	public final static int COL_COUNT = 3;
 
-	private List<SWRLImp> imps = new ArrayList<SWRLImp>();
+	private final List<SWRLImp> imps = new ArrayList<SWRLImp>();
 	private RDFResource rdfResource;
-	private OWLModel owlModel;
-	private SWRLFactory factory;
+	private final OWLModel owlModel;
+	private final SWRLFactory factory;
 
 	public SWRLTableModel(OWLModel owlModel)
 	{
 		this.owlModel = owlModel;
-		factory = new SWRLFactory(owlModel);
+		this.factory = new SWRLFactory(owlModel);
 
-		for (Object o : factory.getImps())
+		for (Object o : this.factory.getImps())
 			if (o instanceof SWRLImp)
-				imps.add((SWRLImp)o);
+				this.imps.add((SWRLImp)o);
 
 		sortImps();
 		initListeners();
@@ -59,8 +59,8 @@ public class SWRLTableModel extends AbstractTableModel implements Disposable, Sy
 	public SWRLTableModel(RDFResource resource)
 	{
 		this.rdfResource = resource;
-		owlModel = resource.getOWLModel();
-		factory = new SWRLFactory(owlModel);
+		this.owlModel = resource.getOWLModel();
+		this.factory = new SWRLFactory(this.owlModel);
 		addReferencingImps();
 		sortImps();
 		initListeners();
@@ -78,13 +78,13 @@ public class SWRLTableModel extends AbstractTableModel implements Disposable, Sy
 
 	public SWRLImp getImp(int row)
 	{
-		return imps.get(row);
+		return this.imps.get(row);
 	}
 
 	public void setImp(int row, SWRLImp imp)
 	{
-		imps.remove(row);
-		imps.add(row, imp);
+		this.imps.remove(row);
+		this.imps.add(row, imp);
 	}
 
 	public RDFProperty getPredicate(int row)
@@ -109,20 +109,21 @@ public class SWRLTableModel extends AbstractTableModel implements Disposable, Sy
 
 	public int getRowCount()
 	{
-		return imps.size();
+		return this.imps.size();
 	}
 
 	public int indexOf(SWRLImp imp)
 	{
-		return imps.indexOf(imp);
+		return this.imps.indexOf(imp);
 	}
 
 	public void dispose()
 	{
-		owlModel.getRDFSNamedClass(SWRLNames.Cls.IMP).removeClassListener(clsListener);
-		((KnowledgeBase)owlModel).removeKnowledgeBaseListener(kbListener);
+		this.owlModel.getRDFSNamedClass(SWRLNames.Cls.IMP).removeClassListener(this.clsListener);
+		((KnowledgeBase)this.owlModel).removeKnowledgeBaseListener(this.kbListener);
 	}
 
+	@Override
 	public Class<?> getColumnClass(int column)
 	{
 		if (column == COL_ENABLED)
@@ -131,6 +132,7 @@ public class SWRLTableModel extends AbstractTableModel implements Disposable, Sy
 			return super.getColumnClass(column);
 	}
 
+	@Override
 	public String getColumnName(int column)
 	{
 		if (column == COL_ENABLED)
@@ -148,13 +150,14 @@ public class SWRLTableModel extends AbstractTableModel implements Disposable, Sy
 		if (columnIndex == getSymbolColumnIndex())
 			return getImp(rowIndex).getBrowserText();
 		else if (columnIndex == COL_NAME)
-			return NamespaceUtil.getPrefixedName(owlModel, getImp(rowIndex).getName());
+			return NamespaceUtil.getPrefixedName(this.owlModel, getImp(rowIndex).getName());
 		else if (columnIndex == COL_ENABLED)
 			return new Boolean(getImp(rowIndex).isEnabled());
 		else
 			return null;
 	}
 
+	@Override
 	public boolean isCellEditable(int rowIndex, int columnIndex)
 	{
 		if (columnIndex == COL_ENABLED)
@@ -166,6 +169,7 @@ public class SWRLTableModel extends AbstractTableModel implements Disposable, Sy
 			return false;
 	}
 
+	@Override
 	public void setValueAt(Object aValue, int rowIndex, int columnIndex)
 	{
 		SWRLImp imp = getImp(rowIndex);
@@ -175,7 +179,7 @@ public class SWRLTableModel extends AbstractTableModel implements Disposable, Sy
 				imp.setExpression(text);
 				if (!isSuitable(imp)) {
 					ProtegeUI.getModalDialogFactory().showMessageDialog(
-							owlModel,
+							this.owlModel,
 							"The replacing rule no longer fits the selection\n" + "criteria of this rules list, and will therefore no\n"
 									+ "longer be visible here.  But no reason to panic: It\n" + "should still show up on the SWRL tab.");
 				}
@@ -184,18 +188,18 @@ public class SWRLTableModel extends AbstractTableModel implements Disposable, Sy
 			}
 		} else if (columnIndex == COL_NAME) {
 			String newName = (String)aValue;
-			if (owlModel.isValidResourceName(newName, imp)) {
-				RDFResource resource = owlModel.getRDFResource(newName);
+			if (this.owlModel.isValidResourceName(newName, imp)) {
+				RDFResource resource = this.owlModel.getRDFResource(newName);
 				if (resource != null) {
 					if (!imp.equals(resource)) {
-						ProtegeUI.getModalDialogFactory().showErrorMessageDialog(owlModel, "The name " + newName + " is already used in this ontology.");
+						ProtegeUI.getModalDialogFactory().showErrorMessageDialog(this.owlModel, "The name " + newName + " is already used in this ontology.");
 					}
 				} else {
 					imp = (SWRLImp)imp.rename(newName);
 					setImp(rowIndex, imp);
 				}
 			} else
-				ProtegeUI.getModalDialogFactory().showErrorMessageDialog(owlModel, newName + " is not a valid rule name.");
+				ProtegeUI.getModalDialogFactory().showErrorMessageDialog(this.owlModel, newName + " is not a valid rule name.");
 		} else if (columnIndex == COL_ENABLED) {
 			Boolean enabled = (Boolean)aValue;
 			if (enabled.booleanValue())
@@ -207,16 +211,16 @@ public class SWRLTableModel extends AbstractTableModel implements Disposable, Sy
 
 	public void setRowOf(SWRLImp imp, int index)
 	{
-		int oldIndex = imps.indexOf(imp);
-		imps.remove(oldIndex);
+		int oldIndex = this.imps.indexOf(imp);
+		this.imps.remove(oldIndex);
 		fireTableRowsDeleted(oldIndex, oldIndex);
-		imps.add(index, imp);
+		this.imps.add(index, imp);
 		fireTableRowsInserted(index, index);
 	}
 
 	public void enableAll()
 	{
-		for (SWRLImp imp : imps)
+		for (SWRLImp imp : this.imps)
 			imp.enable();
 
 		fireTableRowsUpdated(0, getRowCount());
@@ -224,7 +228,7 @@ public class SWRLTableModel extends AbstractTableModel implements Disposable, Sy
 
 	public void disableAll()
 	{
-		for (SWRLImp imp : imps)
+		for (SWRLImp imp : this.imps)
 			imp.disable();
 
 		fireTableRowsUpdated(0, getRowCount());
@@ -232,16 +236,16 @@ public class SWRLTableModel extends AbstractTableModel implements Disposable, Sy
 
 	private void addReferencingImps()
 	{
-		for (SWRLImp imp : factory.getImps())
+		for (SWRLImp imp : this.factory.getImps())
 			if (isSuitable(imp))
-				imps.add(imp);
-	} 
+				this.imps.add(imp);
+	}
 
 	private int getRowFor(SWRLImp imp)
 	{
 		final String impName = imp.getName();
 		int i = 0;
-		while (i < imps.size() && impName.compareToIgnoreCase(getImp(i).getName()) >= 0) {
+		while (i < this.imps.size() && impName.compareToIgnoreCase(getImp(i).getName()) >= 0) {
 			i++;
 		}
 		return i;
@@ -249,17 +253,17 @@ public class SWRLTableModel extends AbstractTableModel implements Disposable, Sy
 
 	private void initListeners()
 	{
-		owlModel.getRDFSNamedClass(SWRLNames.Cls.IMP).addClassListener(clsListener);
-		((KnowledgeBase)owlModel).addKnowledgeBaseListener(kbListener);
+		this.owlModel.getRDFSNamedClass(SWRLNames.Cls.IMP).addClassListener(this.clsListener);
+		((KnowledgeBase)this.owlModel).addKnowledgeBaseListener(this.kbListener);
 	}
 
 	private boolean isSuitable(SWRLImp imp)
 	{
-		if (rdfResource == null) {
+		if (this.rdfResource == null) {
 			return true;
 		} else {
 			Set<RDFResource> set = imp.getReferencedInstances();
-			return set.contains(rdfResource);
+			return set.contains(this.rdfResource);
 		}
 	}
 
@@ -267,23 +271,23 @@ public class SWRLTableModel extends AbstractTableModel implements Disposable, Sy
 	{
 		if (isSuitable(imp)) {
 			int row = getRowFor(imp);
-			imps.add(row, imp);
+			this.imps.add(row, imp);
 			fireTableRowsInserted(row, row);
 		}
 	}
 
 	private void perhapsRemove(SWRLImp imp)
 	{
-		int row = imps.indexOf(imp);
+		int row = this.imps.indexOf(imp);
 		if (row >= 0) {
-			imps.remove(row);
+			this.imps.remove(row);
 			fireTableRowsDeleted(row, row);
 		}
 	}
 
 	private void sortImps()
 	{
-		Collections.sort(imps, new Comparator<SWRLImp>() {
+		Collections.sort(this.imps, new Comparator<SWRLImp>() {
 			public int compare(SWRLImp a, SWRLImp b)
 			{
 				return a.getName().compareToIgnoreCase(b.getName());
@@ -291,7 +295,8 @@ public class SWRLTableModel extends AbstractTableModel implements Disposable, Sy
 		});
 	}
 
-	private ClassListener clsListener = new ClassAdapter() {
+	private final ClassListener clsListener = new ClassAdapter() {
+		@Override
 		public void instanceAdded(RDFSClass cls, RDFResource instance)
 		{
 			final SWRLImp newImp = (SWRLImp)instance;
@@ -303,13 +308,14 @@ public class SWRLTableModel extends AbstractTableModel implements Disposable, Sy
 			});
 		}
 
+		@Override
 		public void instanceRemoved(RDFSClass cls, RDFResource instance)
 		{
 			perhapsRemove((SWRLImp)instance);
 		}
 	};
 
-	private KnowledgeBaseListener kbListener = new KnowledgeBaseAdapter() {
+	private final KnowledgeBaseListener kbListener = new KnowledgeBaseAdapter() {
 		@Override
 		public void frameReplaced(KnowledgeBaseEvent event)
 		{

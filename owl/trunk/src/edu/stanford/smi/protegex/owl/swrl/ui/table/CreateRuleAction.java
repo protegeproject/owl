@@ -15,26 +15,26 @@ import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
 
 public class CreateRuleAction extends AbstractAction
 {
-	private OWLModel owlModel;
-	private SWRLTable table;
-	private SWRLFactory factory;
+	private final OWLModel owlModel;
+	private final SWRLTable table;
+	private final SWRLFactory factory;
 
 	public CreateRuleAction(SWRLTable table, OWLModel owlModel)
 	{
 		super("Create new rule...", OWLIcons.getCreateIcon(SWRLIcons.IMP, SWRLIcons.class));
 		this.owlModel = owlModel;
 		this.table = table;
-		factory = new SWRLFactory(owlModel);
+		this.factory = new SWRLFactory(owlModel);
 	}
 
 	public void actionPerformed(ActionEvent e)
 	{
-		final SWRLImp newImp = factory.createImp();
-		if (SWRLTextAreaPanel.showEditDialog(table, owlModel, newImp)) {
+		final SWRLImp newImp = this.factory.createImp();
+		if (SWRLTextAreaPanel.showEditDialog(this.table, this.owlModel, newImp)) {
 			SwingUtilities.invokeLater(new Runnable() {
 				public void run()
 				{
-					table.setSelectedRow(newImp);
+					CreateRuleAction.this.table.setSelectedRow(newImp);
 				}
 			});
 		} else

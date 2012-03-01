@@ -1,3 +1,4 @@
+
 package edu.stanford.smi.protegex.owl.swrl.ui.actions;
 
 import java.awt.Component;
@@ -12,24 +13,26 @@ import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
 
 /**
  * A ResourceAction to edit a SWRLImp in a multi-line editor.
- *
- * @author Holger Knublauch  <holger@knublauch.com>
+ * 
+ * @author Holger Knublauch <holger@knublauch.com>
  */
-public class EditRuleAction extends ResourceAction {
+public class EditRuleAction extends ResourceAction
+{
 
-    public EditRuleAction() {
-        super("Edit rule in multi-line editor...",
-                OWLIcons.getViewIcon(SWRLIcons.IMP, SWRLIcons.class));
-    }
+	public EditRuleAction()
+	{
+		super("Edit rule in multi-line editor...", OWLIcons.getViewIcon(SWRLIcons.IMP, SWRLIcons.class));
+	}
 
+	public void actionPerformed(ActionEvent e)
+	{
+		SWRLImp oldImp = (SWRLImp)getResource();
+		SWRLTextAreaPanel.showEditDialog(getComponent(), getOWLModel(), oldImp);
+	}
 
-    public void actionPerformed(ActionEvent e) {
-        SWRLImp oldImp = (SWRLImp) getResource();
-        SWRLTextAreaPanel.showEditDialog(getComponent(), getOWLModel(), oldImp);
-    }
-
-
-    public boolean isSuitable(Component component, RDFResource resource) {
-        return resource instanceof SWRLImp;
-    }
+	@Override
+	public boolean isSuitable(Component component, RDFResource resource)
+	{
+		return resource instanceof SWRLImp;
+	}
 }

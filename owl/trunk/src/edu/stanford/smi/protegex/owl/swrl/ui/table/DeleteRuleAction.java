@@ -13,7 +13,7 @@ import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
 
 public class DeleteRuleAction extends AbstractAction
 {
-	private SWRLTable table;
+	private final SWRLTable table;
 
 	public DeleteRuleAction(SWRLTable table)
 	{
@@ -30,12 +30,12 @@ public class DeleteRuleAction extends AbstractAction
 
 	public void actionPerformed(ActionEvent e)
 	{
-		SWRLImp imp = table.getSelectedImp();
+		SWRLImp imp = this.table.getSelectedImp();
 		imp.deleteImp();
 	}
 
 	private void updateEnabled()
 	{
-		setEnabled(table.getSelectedRowCount() == 1);
+		setEnabled(this.table.getSelectedRowCount() == 1);
 	}
 }

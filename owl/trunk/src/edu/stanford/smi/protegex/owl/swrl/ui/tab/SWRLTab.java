@@ -22,8 +22,8 @@ import edu.stanford.smi.protegex.owl.swrl.ui.table.SWRLTablePanel;
 import edu.stanford.smi.protegex.owl.ui.ProtegeUI;
 
 /**
- * A tab widget that holds the <a href="http://protege.cim3.net/cgi-bin/wiki.pl?SWRLEditorFAQ">SWRL Editor</a> and other plugins that work with SWRL rules. This
- * tab serves as the entry point to all of the GUI-based software components that work with SWRL in Protege-OWL.
+ * A Protege-OWL tab widget that contains the SWRLTab GUI. This tab serves as the entry point to all of the GUI-based software components that work with SWRL in
+ * Protege-OWL.
  * <p>
  * Documentation is available <a href="http://protege.cim3.net/cgi-bin/wiki.pl?SWRLTab">here</a>.
  */

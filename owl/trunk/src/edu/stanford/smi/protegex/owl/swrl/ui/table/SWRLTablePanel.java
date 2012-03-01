@@ -11,7 +11,7 @@ import edu.stanford.smi.protege.util.Disposable;
 import edu.stanford.smi.protege.util.LabeledComponent;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
-import edu.stanford.smi.protegex.owl.swrl.SWRLTabPluginManager;
+import edu.stanford.smi.protegex.owl.swrl.P3SWRLTabPluginManager;
 import edu.stanford.smi.protegex.owl.swrl.ui.actions.ViewPluginAction;
 import edu.stanford.smi.protegex.owl.swrl.ui.tab.SWRLTab;
 import edu.stanford.smi.protegex.owl.ui.OWLLabeledComponent;
@@ -34,7 +34,7 @@ public class SWRLTablePanel extends JPanel implements Disposable
 		LabeledComponent lc = initialize(owlModel, resource);
 
 		// Iterate through all registered rule engine and add an enable button for each one.
-		for (SWRLTabPluginManager.SWRLTabPluginRegistrationRecord registration : SWRLTabPluginManager.getRegisteredPlugins()) {
+		for (P3SWRLTabPluginManager.SWRLTabPluginRegistrationRecord registration : P3SWRLTabPluginManager.getRegisteredPlugins()) {
 			lc.addHeaderButton(new ViewPluginAction(registration.getPluginName(), registration.getToolTip(), registration.getPluginIcon(), swrlTab, owlModel));
 			add(BorderLayout.CENTER, lc);
 		}

@@ -31,6 +31,7 @@ import edu.stanford.smi.protegex.owl.ui.metadata.NameDocumentationWidget;
 public class SWRLProjectPlugin extends ProjectPluginAdapter
 {
 
+	@Override
 	public void afterLoad(Project p)
 	{
 		adjustGUI(p);
