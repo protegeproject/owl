@@ -10,7 +10,6 @@ import java.util.HashMap;
 import java.util.logging.Logger;
 
 import javax.swing.Icon;
-import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -23,7 +22,7 @@ import edu.stanford.smi.protege.util.ApplicationProperties;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.swrl.model.SWRLNames;
-import edu.stanford.smi.protegex.owl.swrl.ui.SWRLPluginGUIAdapter;
+import edu.stanford.smi.protegex.owl.swrl.ui.P3SWRLTabPlugin;
 import edu.stanford.smi.protegex.owl.swrl.ui.tab.SWRLTab;
 
 /**
@@ -61,14 +60,14 @@ public class SWRLTabPluginManager
 
 		try { // TODO: Hack until we can do a proper class load with the manifest
 			Class.forName("jess.Rete");
-			Class.forName("org.protege.swrlapi.jess.ui.P3JessSubTab");
+			Class.forName("org.protege.swrlapi.jess.ui.P3SWRLJessTab");
 			ruleEngineFound = true;
 		} catch (ClassNotFoundException e) {
 			log.info("Jess rule engine load failed: could not find jess.Rete - or an error occured on initialization: " + e.getMessage());
 		}
 
 		try { // TODO: Hack until we can do a proper class load with the manifest
-			Class.forName("org.protege.swrlapi.drools.ui.P3DroolsSubTab");
+			Class.forName("org.protege.swrlapi.drools.ui.P3SWRLDroolsTab");
 			ruleEngineFound = true;
 		} catch (ClassNotFoundException e) {
 			log.info("Drools rule engine load failed: could not find Drools JARs - or an error occured on initialization: " + e.getMessage());
@@ -82,7 +81,7 @@ public class SWRLTabPluginManager
 			}
 		}
 	}
-	
+
 	public static String getSelectedRuleName()
 	{
 		return selectedRuleName;
@@ -119,27 +118,28 @@ public class SWRLTabPluginManager
 	}
 
 	/**
-	 *  This method is called by each plugin as it is loaded to inform the SWRLTab of its presence. 
+	 * This method is called by each plugin as it is loaded to inform the SWRLTab of its presence.
 	 */
-	public static void registerPlugin(String pluginName, String ruleEngineName, String toolTip, ImageIcon icon, SWRLPluginGUIAdapter guiAdapter)
+	public static void registerPlugin(String pluginName, String ruleEngineName, String toolTip, Icon pluginIcon, Icon ruleEngineIcon, Icon reasonerIcon,
+																		P3SWRLTabPlugin swrlPluginSubTab)
 	{
 		if (registeredPlugins.containsKey(pluginName))
 			registeredPlugins.remove(pluginName);
-		registeredPlugins.put(pluginName, new SWRLTabPluginRegistrationRecord(pluginName, ruleEngineName, toolTip, icon, guiAdapter));
+		registeredPlugins.put(pluginName, new SWRLTabPluginRegistrationRecord(pluginName, ruleEngineName, toolTip, pluginIcon, ruleEngineIcon, reasonerIcon,
+				swrlPluginSubTab));
 		log.info("Plugin '" + pluginName + "' registered with the SWRLTab plugin manager.");
 	}
 
 	/**
-	 *  This method is called by each plugin as it is loaded to inform the SWRLTab of its presence. The application-default rule engine is picked. 
+	 * This method is called by each plugin as it is loaded to inform the SWRLTab of its presence. The application-default rule engine is picked.
 	 */
-	public static void registerPlugin(String pluginName, String toolTip, ImageIcon icon, SWRLPluginGUIAdapter guiAdapter)
+	public static void registerPlugin(String pluginName, String toolTip, Icon pluginIcon, Icon ruleEngineIcon, Icon reasonerIcon, P3SWRLTabPlugin swrlRuleEngineSubTab)
 	{
 		String defaultRuleEngineName = ApplicationProperties.getString(SWRLNames.DEFAULT_RULE_ENGINE, "Jess");
-		
-		registerPlugin(pluginName, defaultRuleEngineName, toolTip, icon, guiAdapter);
+
+		registerPlugin(pluginName, defaultRuleEngineName, toolTip, pluginIcon, ruleEngineIcon, reasonerIcon, swrlRuleEngineSubTab);
 	}
-	
-	
+
 	public static void unregisterPlugin(String pluginName)
 	{
 		if (registeredPlugins.containsKey(pluginName)) {
@@ -156,7 +156,8 @@ public class SWRLTabPluginManager
 
 				if (registeredPlugins.containsKey(pluginName)) {
 					SWRLTabPluginRegistrationRecord registrationRecord = registeredPlugins.get(pluginName);
-					Container pluginGUI = registrationRecord.getGUIAdapter().createPluginContainer(owlModel, pluginName, registrationRecord.getRuleEngineName());
+					Container pluginGUI = registrationRecord.getSWRLPluginSubTab().createSWRLPluginGUI(owlModel, pluginName, registrationRecord.getRuleEngineName(),
+							registrationRecord.getRuleEngineIcon(), registrationRecord.getReasonerIcon());
 
 					registrationRecord.setOWLModel(owlModel); // Set the owlModel so that we can unregister ourselves on deactivation.
 
@@ -185,7 +186,7 @@ public class SWRLTabPluginManager
 
 			if (registeredPlugins.containsKey(pluginName)) {
 				SWRLTabPluginRegistrationRecord registration = registeredPlugins.get(pluginName);
-				Container pluginGUI = registration.getGUIAdapter().getPluginContainer();
+				Container pluginGUI = registration.getSWRLPluginSubTab().getSWRLPluginGUI();
 				SWRLTab swrlTab = (SWRLTab)pluginGUI.getParent();
 				if (swrlTab != null) {
 					swrlTab.setVisible(false);
@@ -206,17 +207,22 @@ public class SWRLTabPluginManager
 		private final String pluginName;
 		private final String ruleEngineName;
 		private final String toolTip;
-		private final SWRLPluginGUIAdapter guiAdapter;
-		private final Icon icon;
+		private final P3SWRLTabPlugin swrlPluginSubTab;
+		private final Icon pluginIcon;
+		private final Icon ruleEngineIcon;
+		private final Icon reasonerIcon;
 		private OWLModel owlModel;
 
-		public SWRLTabPluginRegistrationRecord(String pluginName, String ruleEngineName, String toolTip, Icon icon, SWRLPluginGUIAdapter guiAdapter)
+		public SWRLTabPluginRegistrationRecord(String pluginName, String ruleEngineName, String toolTip, Icon pluginIcon, Icon ruleEngineIcon, Icon reasonerIcon,
+				P3SWRLTabPlugin swrlPluginSubTab)
 		{
 			this.pluginName = pluginName;
 			this.ruleEngineName = ruleEngineName;
 			this.toolTip = toolTip;
-			this.guiAdapter = guiAdapter;
-			this.icon = icon;
+			this.swrlPluginSubTab = swrlPluginSubTab;
+			this.pluginIcon = pluginIcon;
+			this.ruleEngineIcon = ruleEngineIcon;
+			this.reasonerIcon = reasonerIcon;
 			this.owlModel = null; // An OWL model is supplied when a GUI associated with the plugin is activated.
 		}
 
@@ -240,14 +246,24 @@ public class SWRLTabPluginManager
 			return this.toolTip;
 		}
 
-		public SWRLPluginGUIAdapter getGUIAdapter()
+		public P3SWRLTabPlugin getSWRLPluginSubTab()
 		{
-			return this.guiAdapter;
+			return this.swrlPluginSubTab;
 		}
 
-		public Icon getIcon()
+		public Icon getPluginIcon()
 		{
-			return this.icon;
+			return this.pluginIcon;
+		}
+
+		public Icon getRuleEngineIcon()
+		{
+			return this.ruleEngineIcon;
+		}
+
+		public Icon getReasonerIcon()
+		{
+			return this.reasonerIcon;
 		}
 
 		public OWLModel getOWLModel()

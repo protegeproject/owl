@@ -3,11 +3,13 @@ package edu.stanford.smi.protegex.owl.swrl.ui;
 
 import java.awt.Container;
 
+import javax.swing.Icon;
+
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 
 /**
- * This interface must be implemented by a plugin to provide a mechanism to create screen real estate in the Protege-OWL SWRLTab for the plugin's GUI. A plugin
- * registers itself with the bridge using the registerPlugin method of the P3SWRLTabPluginManager class. In addition to a plugin display name, a tool tip
+ * This interface must be implemented by a SWRLTab plugin to provide a mechanism to create screen real estate in the Protege-OWL SWRLTab for the plugin's GUI. A
+ * plugin registers itself with the bridge using the registerPlugin method of the P3SWRLTabPluginManager class. In addition to a plugin display name, a tool tip
  * string, and an icon, this method is expecting an instance of a class that implements this interface. The plugin manager uses this implementation to get the
  * GUI for the plugin, which will be displayed in the SWRLTab when the plugin is activated.
  * <p>
@@ -16,9 +18,9 @@ import edu.stanford.smi.protegex.owl.model.OWLModel;
  * <p>
  * See <a href="http://protege.cim3.net/cgi-bin/wiki.pl?SWRLRuleEngineBridgeFAQ#nid6QJ">here</a> for a discussion on using this interface.
  */
-public interface SWRLPluginGUIAdapter
+public interface P3SWRLTabPlugin
 {
-	Container createPluginContainer(OWLModel owlModel, String pluginName, String ruleEngineName);
+	Container createSWRLPluginGUI(OWLModel owlModel, String pluginName, String ruleEngineName, Icon ruleEngineIcon, Icon reasonerIcon);
 
-	Container getPluginContainer();
+	Container getSWRLPluginGUI();
 }
