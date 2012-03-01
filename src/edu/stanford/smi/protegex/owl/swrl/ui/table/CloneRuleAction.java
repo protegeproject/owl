@@ -15,10 +15,9 @@ import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
 
 public class CloneRuleAction extends AbstractAction
 {
-	private SWRLTable table;
+	private final SWRLTable table;
 
-	@SuppressWarnings("unused")
-	public CloneRuleAction(SWRLTable table, OWLModel owlModel)
+	public CloneRuleAction(SWRLTable table, @SuppressWarnings("unused") OWLModel owlModel)
 	{
 		super("Clone selected rule", OWLIcons.getAddIcon(SWRLIcons.IMP, SWRLIcons.class));
 		this.table = table;
@@ -33,18 +32,18 @@ public class CloneRuleAction extends AbstractAction
 
 	public void actionPerformed(ActionEvent e)
 	{
-		SWRLImp imp = table.getSelectedImp();
+		SWRLImp imp = this.table.getSelectedImp();
 		final SWRLImp c = imp.createClone();
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run()
 			{
-				table.setSelectedRow(c);
+				CloneRuleAction.this.table.setSelectedRow(c);
 			}
 		});
 	}
 
 	private void updateEnabled()
 	{
-		setEnabled(table.getSelectedRowCount() == 1);
+		setEnabled(this.table.getSelectedRowCount() == 1);
 	}
 }

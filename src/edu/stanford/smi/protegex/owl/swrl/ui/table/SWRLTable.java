@@ -17,7 +17,7 @@ import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
 import edu.stanford.smi.protegex.owl.model.RDFSLiteral;
-import edu.stanford.smi.protegex.owl.swrl.SWRLTabPluginManager;
+import edu.stanford.smi.protegex.owl.swrl.P3SWRLTabPluginManager;
 import edu.stanford.smi.protegex.owl.swrl.model.SWRLImp;
 import edu.stanford.smi.protegex.owl.swrl.model.SWRLIndividual;
 import edu.stanford.smi.protegex.owl.swrl.ui.code.SWRLSymbolPanel;
@@ -111,7 +111,7 @@ public class SWRLTable extends SymbolTable implements Disposable
 
 		if (selectedRow != -1) {
 			String selectedRuleName = (String)tableModel.getValueAt(selectedRow, SWRLTableModel.COL_NAME);
-			SWRLTabPluginManager.setSelectedRuleName(selectedRuleName);
+			P3SWRLTabPluginManager.setSelectedRuleName(selectedRuleName);
 		}
 	}
 

@@ -7,7 +7,7 @@ import javax.swing.AbstractAction;
 import javax.swing.Icon;
 
 import edu.stanford.smi.protegex.owl.model.OWLModel;
-import edu.stanford.smi.protegex.owl.swrl.SWRLTabPluginManager;
+import edu.stanford.smi.protegex.owl.swrl.P3SWRLTabPluginManager;
 import edu.stanford.smi.protegex.owl.swrl.ui.tab.SWRLTab;
 
 public class ViewPluginAction extends AbstractAction
@@ -28,9 +28,9 @@ public class ViewPluginAction extends AbstractAction
 
 	public void actionPerformed(ActionEvent e)
 	{
-		if (SWRLTabPluginManager.isVisible(pluginName))
-			SWRLTabPluginManager.hidePlugin(pluginName);
+		if (P3SWRLTabPluginManager.isVisible(pluginName))
+			P3SWRLTabPluginManager.hidePlugin(pluginName);
 		else
-			SWRLTabPluginManager.showPlugin(pluginName, swrlTab, owlModel);
+			P3SWRLTabPluginManager.showPlugin(pluginName, swrlTab, owlModel);
 	}
 }
