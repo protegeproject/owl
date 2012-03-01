@@ -104,12 +104,13 @@ public class P3SWRLTabPluginManager
 	}
 
 	/**
-	 * This method is called by each plugin as it is loaded to inform the SWRLTab of its presence. The application-default rule engine is picked.
+	 * This method is called by each plugin as it is loaded to inform the SWRLTab of its presence. The application-default rule engine is picked. If no default is
+	 * specified, the Drools rule engine is selected.
 	 */
 	public static void registerPlugin(String pluginName, String toolTip, Icon pluginIcon, Icon ruleEngineIcon, Icon reasonerIcon,
 																		P3SWRLTabPlugin swrlRuleEngineSubTab)
 	{
-		String defaultRuleEngineName = ApplicationProperties.getString(SWRLNames.DEFAULT_RULE_ENGINE, "Jess");
+		String defaultRuleEngineName = ApplicationProperties.getString(SWRLNames.DEFAULT_RULE_ENGINE, "Drools");
 
 		registerPlugin(pluginName, defaultRuleEngineName, toolTip, pluginIcon, ruleEngineIcon, reasonerIcon, swrlRuleEngineSubTab);
 	}
