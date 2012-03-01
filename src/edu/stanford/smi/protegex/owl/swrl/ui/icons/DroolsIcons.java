@@ -11,6 +11,11 @@ public class DroolsIcons {
       return getImageIcon("Drools");
     } 
 
+  	public static ImageIcon getReasonerIcon()
+  	{
+  		return getImageIcon("OWL2RL");
+  	}
+
     public static ImageIcon getImageIcon(String name) {
       return OWLIcons.getImageIcon(name, DroolsIcons.class);
     }

@@ -35,7 +35,7 @@ public class SWRLTablePanel extends JPanel implements Disposable
 
 		// Iterate through all registered rule engine and add an enable button for each one.
 		for (SWRLTabPluginManager.SWRLTabPluginRegistrationRecord registration : SWRLTabPluginManager.getRegisteredPlugins()) {
-			lc.addHeaderButton(new ViewPluginAction(registration.getPluginName(), registration.getToolTip(), registration.getIcon(), swrlTab, owlModel));
+			lc.addHeaderButton(new ViewPluginAction(registration.getPluginName(), registration.getToolTip(), registration.getPluginIcon(), swrlTab, owlModel));
 			add(BorderLayout.CENTER, lc);
 		}
 	}
