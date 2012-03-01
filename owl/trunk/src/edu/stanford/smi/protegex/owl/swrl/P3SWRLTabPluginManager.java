@@ -251,7 +251,7 @@ public class P3SWRLTabPluginManager
 		}
 	}
 
-	private static void loadPlugins()
+	public static void loadPlugins()
 	{
 		boolean ruleEngineFound = false;
 
