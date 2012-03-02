@@ -17,7 +17,6 @@ import edu.stanford.smi.protegex.owl.ui.actions.OWLModelActionConstants;
 
 public class EnableSWRLTabAction extends AbstractOWLModelAction
 {
-
 	private static final String SWRL_TAB_JAVA_CLASS_NAME = SWRLTab.class.getName();
 
 	public final static String GROUP = OWLModelActionConstants.QUERY_GROUP;

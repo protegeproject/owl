@@ -35,7 +35,7 @@ public class P3SWRLTabPluginManager
 {
 	private static transient final Logger log = Log.getLogger(P3SWRLTabPluginManager.class);
 
-	private static HashMap<String, SWRLTabPluginRegistrationRecord> registeredPlugins = new HashMap<String, SWRLTabPluginRegistrationRecord>();
+	private static HashMap<String, P3SWRLTabPluginRegistrationRecord> registeredPlugins = new HashMap<String, P3SWRLTabPluginRegistrationRecord>();
 	private static String visiblePluginName = "";
 	private static String selectedRuleName = "";
 
@@ -70,7 +70,7 @@ public class P3SWRLTabPluginManager
 		selectedRuleName = ruleName;
 	}
 
-	public static Collection<SWRLTabPluginRegistrationRecord> getRegisteredPlugins()
+	public static Collection<P3SWRLTabPluginRegistrationRecord> getRegisteredPlugins()
 	{
 		return registeredPlugins.values();
 	}
@@ -94,12 +94,12 @@ public class P3SWRLTabPluginManager
 	 * This method is called by each plugin as it is loaded to inform the SWRLTab of its presence.
 	 */
 	public static void registerPlugin(String pluginName, String ruleEngineName, String toolTip, Icon pluginIcon, Icon ruleEngineIcon, Icon reasonerIcon,
-																		P3SWRLTabPlugin swrlTabPlugin)
+																		P3SWRLTabPlugin plugin)
 	{
 		if (registeredPlugins.containsKey(pluginName))
 			registeredPlugins.remove(pluginName);
-		registeredPlugins.put(pluginName, new SWRLTabPluginRegistrationRecord(pluginName, ruleEngineName, toolTip, pluginIcon, ruleEngineIcon, reasonerIcon,
-				swrlTabPlugin));
+		registeredPlugins.put(pluginName, new P3SWRLTabPluginRegistrationRecord(pluginName, ruleEngineName, toolTip, pluginIcon, ruleEngineIcon, reasonerIcon,
+				plugin));
 		log.info("Plugin '" + pluginName + "' registered with the SWRLTab plugin manager.");
 	}
 
@@ -107,12 +107,11 @@ public class P3SWRLTabPluginManager
 	 * This method is called by each plugin as it is loaded to inform the SWRLTab of its presence. The application-default rule engine is picked. If no default is
 	 * specified, the Drools rule engine is selected.
 	 */
-	public static void registerPlugin(String pluginName, String toolTip, Icon pluginIcon, Icon ruleEngineIcon, Icon reasonerIcon,
-																		P3SWRLTabPlugin swrlRuleEngineSubTab)
+	public static void registerPlugin(String pluginName, String toolTip, Icon pluginIcon, Icon ruleEngineIcon, Icon reasonerIcon, P3SWRLTabPlugin plugin)
 	{
 		String defaultRuleEngineName = ApplicationProperties.getString(SWRLNames.DEFAULT_RULE_ENGINE, "Drools");
 
-		registerPlugin(pluginName, defaultRuleEngineName, toolTip, pluginIcon, ruleEngineIcon, reasonerIcon, swrlRuleEngineSubTab);
+		registerPlugin(pluginName, defaultRuleEngineName, toolTip, pluginIcon, ruleEngineIcon, reasonerIcon, plugin);
 	}
 
 	public static void unregisterPlugin(String pluginName)
@@ -130,7 +129,7 @@ public class P3SWRLTabPluginManager
 			if (hidePlugin(visiblePluginName)) { // Hide may fail if user does not confirm it.
 
 				if (registeredPlugins.containsKey(pluginName)) {
-					SWRLTabPluginRegistrationRecord registrationRecord = registeredPlugins.get(pluginName);
+					P3SWRLTabPluginRegistrationRecord registrationRecord = registeredPlugins.get(pluginName);
 					Container pluginGUI = registrationRecord.getSWRLTabPlugin().createSWRLPluginGUI(owlModel, pluginName, registrationRecord.getRuleEngineName(),
 							registrationRecord.getRuleEngineIcon(), registrationRecord.getReasonerIcon());
 
@@ -148,108 +147,6 @@ public class P3SWRLTabPluginManager
 			}
 		}
 		owlModel.getProject().addProjectListener(projectListener);
-	}
-
-	private static boolean hidePlugin(String pluginName, boolean force)
-	{
-		if (isVisible(pluginName)) {
-
-			if (!force
-					&& (JOptionPane.showConfirmDialog(null, "Do you really want to close the " + pluginName + " plugin?", "Disable " + pluginName,
-							JOptionPane.YES_NO_OPTION) != JOptionPane.YES_OPTION))
-				return false;
-
-			if (registeredPlugins.containsKey(pluginName)) {
-				SWRLTabPluginRegistrationRecord registration = registeredPlugins.get(pluginName);
-				Container pluginGUI = registration.getSWRLTabPlugin().getSWRLPluginGUI();
-				SWRLTab swrlTab = (SWRLTab)pluginGUI.getParent();
-				if (swrlTab != null) {
-					swrlTab.setVisible(false);
-					swrlTab.remove(pluginGUI);
-					swrlTab.reconfigure();
-					swrlTab.setVisible(true);
-				}
-				if (registration.hasOWLModel())
-					registration.getOWLModel().getProject().removeProjectListener(projectListener);
-				visiblePluginName = "";
-			}
-		}
-		return true;
-	}
-
-	public static class SWRLTabPluginRegistrationRecord
-	{
-		private final String pluginName;
-		private final String ruleEngineName;
-		private final String toolTip;
-		private final P3SWRLTabPlugin swrlTabPlugin;
-		private final Icon pluginIcon;
-		private final Icon ruleEngineIcon;
-		private final Icon reasonerIcon;
-		private OWLModel owlModel;
-
-		public SWRLTabPluginRegistrationRecord(String pluginName, String ruleEngineName, String toolTip, Icon pluginIcon, Icon ruleEngineIcon, Icon reasonerIcon,
-				P3SWRLTabPlugin swrlTabPlugin)
-		{
-			this.pluginName = pluginName;
-			this.ruleEngineName = ruleEngineName;
-			this.toolTip = toolTip;
-			this.swrlTabPlugin = swrlTabPlugin;
-			this.pluginIcon = pluginIcon;
-			this.ruleEngineIcon = ruleEngineIcon;
-			this.reasonerIcon = reasonerIcon;
-			this.owlModel = null; // An OWL model is supplied when a GUI associated with the plugin is activated.
-		}
-
-		public void setOWLModel(OWLModel owlModel)
-		{
-			this.owlModel = owlModel;
-		}
-
-		public String getPluginName()
-		{
-			return this.pluginName;
-		}
-
-		public String getRuleEngineName()
-		{
-			return this.ruleEngineName;
-		}
-
-		public String getToolTip()
-		{
-			return this.toolTip;
-		}
-
-		public P3SWRLTabPlugin getSWRLTabPlugin()
-		{
-			return this.swrlTabPlugin;
-		}
-
-		public Icon getPluginIcon()
-		{
-			return this.pluginIcon;
-		}
-
-		public Icon getRuleEngineIcon()
-		{
-			return this.ruleEngineIcon;
-		}
-
-		public Icon getReasonerIcon()
-		{
-			return this.reasonerIcon;
-		}
-
-		public OWLModel getOWLModel()
-		{
-			return this.owlModel;
-		}
-
-		public boolean hasOWLModel()
-		{
-			return this.owlModel != null;
-		}
 	}
 
 	public static void loadPlugins()
@@ -278,6 +175,33 @@ public class P3SWRLTabPluginManager
 				log.info("SQWRLQueryTab load failed: an error occured on initialization: " + e.getMessage());
 			}
 		}
+	}
+
+	private static boolean hidePlugin(String pluginName, boolean force)
+	{
+		if (isVisible(pluginName)) {
+
+			if (!force
+					&& (JOptionPane.showConfirmDialog(null, "Do you really want to close the " + pluginName + " plugin?", "Disable " + pluginName,
+							JOptionPane.YES_NO_OPTION) != JOptionPane.YES_OPTION))
+				return false;
+
+			if (registeredPlugins.containsKey(pluginName)) {
+				P3SWRLTabPluginRegistrationRecord registration = registeredPlugins.get(pluginName);
+				Container pluginGUI = registration.getSWRLTabPlugin().getSWRLPluginGUI();
+				SWRLTab swrlTab = (SWRLTab)pluginGUI.getParent();
+				if (swrlTab != null) {
+					swrlTab.setVisible(false);
+					swrlTab.remove(pluginGUI);
+					swrlTab.reconfigure();
+					swrlTab.setVisible(true);
+				}
+				if (registration.hasOWLModel())
+					registration.getOWLModel().getProject().removeProjectListener(projectListener);
+				visiblePluginName = "";
+			}
+		}
+		return true;
 	}
 
 	private static void makeTextPanel(SWRLTab swrlTab, String text)

@@ -12,17 +12,18 @@ import edu.stanford.smi.protege.util.LabeledComponent;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
 import edu.stanford.smi.protegex.owl.swrl.P3SWRLTabPluginManager;
+import edu.stanford.smi.protegex.owl.swrl.P3SWRLTabPluginRegistrationRecord;
 import edu.stanford.smi.protegex.owl.swrl.ui.actions.ViewPluginAction;
 import edu.stanford.smi.protegex.owl.swrl.ui.tab.SWRLTab;
 import edu.stanford.smi.protegex.owl.ui.OWLLabeledComponent;
 
 /**
- * A JPanel consisting of a SWRLTable and buttons to create and delete rules. It may have buttons to activate/deactivate any registered rule engined.
+ * A JPanel consisting of a SWRLTable and buttons to view, clone, create and delete rules. It may also have buttons to activate/deactivate any registered rule
+ * engines.
  */
 public class SWRLTablePanel extends JPanel implements Disposable
 {
 	private SWRLTable table;
-	private SWRLTableModel tableModel;
 
 	public SWRLTablePanel(OWLModel owlModel, RDFResource resource)
 	{
@@ -34,7 +35,7 @@ public class SWRLTablePanel extends JPanel implements Disposable
 		LabeledComponent lc = initialize(owlModel, resource);
 
 		// Iterate through all registered rule engine and add an enable button for each one.
-		for (P3SWRLTabPluginManager.SWRLTabPluginRegistrationRecord registration : P3SWRLTabPluginManager.getRegisteredPlugins()) {
+		for (P3SWRLTabPluginRegistrationRecord registration : P3SWRLTabPluginManager.getRegisteredPlugins()) {
 			lc.addHeaderButton(new ViewPluginAction(registration.getPluginName(), registration.getToolTip(), registration.getPluginIcon(), swrlTab, owlModel));
 			add(BorderLayout.CENTER, lc);
 		}
@@ -42,34 +43,25 @@ public class SWRLTablePanel extends JPanel implements Disposable
 
 	public void dispose()
 	{
-		if (table != null)
-			table.dispose();
+		if (this.table != null)
+			this.table.dispose();
 	}
 
 	private LabeledComponent initialize(OWLModel owlModel, RDFResource RDFResource)
 	{
-		tableModel = RDFResource == null ? new SWRLTableModel(owlModel) : new SWRLTableModel(RDFResource);
-		table = new SWRLTable(tableModel, owlModel);
+		SWRLTableModel tableModel = RDFResource == null ? new SWRLTableModel(owlModel) : new SWRLTableModel(RDFResource);
 
-		/*
-		 * Start of test group OWLDataFactory owlFactory = new OWLDataFactoryImpl(owlModel); SWRLRuleGroupTreeTableModel model = null;
-		 * 
-		 * try { model = new SWRLRuleGroupTreeTableModel(owlFactory); } catch (OWLFactoryException e) {
-		 * ProtegeUI.getModalDialogFactory().showErrorMessageDialog(owlModel, "Could not activate SWRLTab: " + e +
-		 * "\n. Your project might be in an inconsistent state now."); Log.getLogger().log(Level.SEVERE, "Exception caught", e); }
-		 * 
-		 * SWRLRuleGroupTreeTable table = new SWRLRuleGroupTreeTable(model);
-		 */// End of test group
+		this.table = new SWRLTable(tableModel, owlModel);
 
-		JScrollPane scrollPane = new JScrollPane(table);
+		JScrollPane scrollPane = new JScrollPane(this.table);
 		JViewport viewPort = scrollPane.getViewport();
-		viewPort.setBackground(table.getBackground());
+		viewPort.setBackground(this.table.getBackground());
 
 		LabeledComponent lc = new OWLLabeledComponent("SWRL Rules", scrollPane);
-		lc.addHeaderButton(new ViewRuleAction(table));
-		lc.addHeaderButton(new CreateRuleAction(table, owlModel));
-		lc.addHeaderButton(new CloneRuleAction(table, owlModel));
-		lc.addHeaderButton(new DeleteRuleAction(table));
+		lc.addHeaderButton(new ViewRuleAction(this.table));
+		lc.addHeaderButton(new CreateRuleAction(this.table, owlModel));
+		lc.addHeaderButton(new CloneRuleAction(this.table, owlModel));
+		lc.addHeaderButton(new DeleteRuleAction(this.table));
 
 		setLayout(new BorderLayout());
 		add(BorderLayout.CENTER, lc);
