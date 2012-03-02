@@ -20,7 +20,7 @@ import edu.stanford.smi.protegex.owl.model.OWLModel;
  * <p>
  * See <a href="http://protege.cim3.net/cgi-bin/wiki.pl?SWRLRuleEngineBridgeFAQ#nid6QJ">here</a> for a discussion on using this interface.
  */
-public interface P3SWRLTabPlugin
+public interface P3SWRLTabPluginCreator
 {
 	Container createSWRLPluginGUI(OWLModel owlModel, String pluginName, String ruleEngineName, Icon ruleEngineIcon, Icon reasonerIcon);
 
