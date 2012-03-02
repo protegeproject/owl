@@ -113,7 +113,7 @@ public class SWRLProjectPlugin extends ProjectPluginAdapter
 	{
 		WidgetDescriptor swrlTabDescriptor = p.getTabWidgetDescriptor(SWRLTab.class.getName());
 		swrlTabDescriptor.setVisible(true);
-	} // addSWRLTab
+	}
 
 	public static boolean isSWRLPresent(Project project)
 	{
@@ -122,7 +122,7 @@ public class SWRLProjectPlugin extends ProjectPluginAdapter
 		if (!(kb instanceof OWLModel))
 			return false;
 		return isSWRLPresent((OWLModel)kb);
-	} // isSWRLPresent
+	}
 
 	public static boolean isSWRLPresent(OWLModel owlModel)
 	{
