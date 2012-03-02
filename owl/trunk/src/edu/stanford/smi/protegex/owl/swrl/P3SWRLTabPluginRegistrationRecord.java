@@ -3,21 +3,21 @@ package edu.stanford.smi.protegex.owl.swrl;
 import javax.swing.Icon;
 
 import edu.stanford.smi.protegex.owl.model.OWLModel;
-import edu.stanford.smi.protegex.owl.swrl.ui.P3SWRLTabPlugin;
+import edu.stanford.smi.protegex.owl.swrl.ui.P3SWRLTabPluginCreator;
 
 public class P3SWRLTabPluginRegistrationRecord
 {
 	private final String pluginName;
 	private final String ruleEngineName;
 	private final String toolTip;
-	private final P3SWRLTabPlugin swrlTabPlugin;
+	private final P3SWRLTabPluginCreator swrlTabPlugin;
 	private final Icon pluginIcon;
 	private final Icon ruleEngineIcon;
 	private final Icon reasonerIcon;
 	private OWLModel owlModel;
 
 	public P3SWRLTabPluginRegistrationRecord(String pluginName, String ruleEngineName, String toolTip, Icon pluginIcon, Icon ruleEngineIcon, Icon reasonerIcon,
-			P3SWRLTabPlugin swrlTabPlugin)
+			P3SWRLTabPluginCreator swrlTabPlugin)
 	{
 		this.pluginName = pluginName;
 		this.ruleEngineName = ruleEngineName;
@@ -49,7 +49,7 @@ public class P3SWRLTabPluginRegistrationRecord
 		return this.toolTip;
 	}
 
-	public P3SWRLTabPlugin getSWRLTabPlugin()
+	public P3SWRLTabPluginCreator getSWRLTabPlugin()
 	{
 		return this.swrlTabPlugin;
 	}

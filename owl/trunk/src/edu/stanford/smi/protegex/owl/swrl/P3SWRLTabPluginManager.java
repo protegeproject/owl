@@ -22,7 +22,7 @@ import edu.stanford.smi.protege.util.ApplicationProperties;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.swrl.model.SWRLNames;
-import edu.stanford.smi.protegex.owl.swrl.ui.P3SWRLTabPlugin;
+import edu.stanford.smi.protegex.owl.swrl.ui.P3SWRLTabPluginCreator;
 import edu.stanford.smi.protegex.owl.swrl.ui.tab.SWRLTab;
 
 /**
@@ -94,7 +94,7 @@ public class P3SWRLTabPluginManager
 	 * This method is called by each plugin as it is loaded to inform the SWRLTab of its presence.
 	 */
 	public static void registerPlugin(String pluginName, String ruleEngineName, String toolTip, Icon pluginIcon, Icon ruleEngineIcon, Icon reasonerIcon,
-																		P3SWRLTabPlugin plugin)
+																		P3SWRLTabPluginCreator plugin)
 	{
 		if (registeredPlugins.containsKey(pluginName))
 			registeredPlugins.remove(pluginName);
@@ -107,7 +107,7 @@ public class P3SWRLTabPluginManager
 	 * This method is called by each plugin as it is loaded to inform the SWRLTab of its presence. The application-default rule engine is picked. If no default is
 	 * specified, the Drools rule engine is selected.
 	 */
-	public static void registerPlugin(String pluginName, String toolTip, Icon pluginIcon, Icon ruleEngineIcon, Icon reasonerIcon, P3SWRLTabPlugin plugin)
+	public static void registerPlugin(String pluginName, String toolTip, Icon pluginIcon, Icon ruleEngineIcon, Icon reasonerIcon, P3SWRLTabPluginCreator plugin)
 	{
 		String defaultRuleEngineName = ApplicationProperties.getString(SWRLNames.DEFAULT_RULE_ENGINE, "Drools");
 
@@ -155,14 +155,14 @@ public class P3SWRLTabPluginManager
 
 		try {
 			Class.forName("jess.Rete");
-			Class.forName("org.protege.swrlapi.jess.ui.P3SWRLTabJessPlugin");
+			Class.forName("org.protege.swrlapi.jess.ui.P3SWRLTabJessPluginCreator");
 			pluginFound = true;
 		} catch (ClassNotFoundException e) {
 			log.info("Jess rule engine load failed: could not find jess.Rete - or an error occured on initialization: " + e.getMessage());
 		}
 
 		try {
-			Class.forName("org.protege.swrlapi.drools.ui.P3SWRLTabDroolsPlugin");
+			Class.forName("org.protege.swrlapi.drools.ui.P3SWRLTabDroolsPluginCreator");
 			pluginFound = true;
 		} catch (ClassNotFoundException e) {
 			log.info("Drools rule engine load failed: could not find Drools JARs - or an error occured on initialization: " + e.getMessage());
@@ -170,7 +170,7 @@ public class P3SWRLTabPluginManager
 
 		if (pluginFound) {
 			try {
-				Class.forName("org.protege.swrltab.p3.ui.P3SWRLTabSQWRLPlugin");
+				Class.forName("org.protege.swrltab.p3.ui.P3SWRLTabSQWRLPluginCreator");
 			} catch (ClassNotFoundException e) {
 				log.info("SQWRLQueryTab load failed: an error occured on initialization: " + e.getMessage());
 			}
