@@ -103,12 +103,6 @@
 			</fileset>
 		</copy>
 
-		<copy todir = "${build.dest}/edu/stanford/smi/protegex/owl/swrl/sqwrl/ui/icons">
-			<fileset dir = "${build.src}/edu/stanford/smi/protegex/owl/swrl/sqwrl/ui/icons">
-				<include name = "**/*.gif"/>
-			</fileset>
-		</copy>
-
 		<copy todir = "${build.dest}/edu/stanford/smi/protegex/owl/jena">
 			<fileset dir = "${build.src}/edu/stanford/smi/protegex/owl/jena">
 				<include name = "**/*.pprj"/>
