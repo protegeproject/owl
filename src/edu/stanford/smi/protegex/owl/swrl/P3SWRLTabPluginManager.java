@@ -155,14 +155,14 @@ public class P3SWRLTabPluginManager
 
 		try {
 			Class.forName("jess.Rete");
-			Class.forName("org.protege.swrlapi.jess.ui.P3SWRLTabJessPluginCreator");
+			Class.forName("org.protege.swrltab.p3.ui.P3SWRLTabJessPluginCreator");
 			pluginFound = true;
 		} catch (ClassNotFoundException e) {
 			log.info("Jess rule engine load failed: could not find jess.Rete - or an error occured on initialization: " + e.getMessage());
 		}
 
 		try {
-			Class.forName("org.protege.swrlapi.drools.ui.P3SWRLTabDroolsPluginCreator");
+			Class.forName("org.protege.swrltab.p3.ui.P3SWRLTabDroolsPluginCreator");
 			pluginFound = true;
 		} catch (ClassNotFoundException e) {
 			log.info("Drools rule engine load failed: could not find Drools JARs - or an error occured on initialization: " + e.getMessage());
