@@ -1301,12 +1301,17 @@ public class P3OWLUtil
 		return isOWLDirectSubClassOf(owlModel, subClassURI.toString(), classURI.toString(), mustExist);
 	}
 
-	public static boolean isOWLSubClassOf(OWLModel owlModel, String subClassName, String className, boolean mustExist) throws P3OWLUtilException
+	public static boolean isOWLSubClassOf(OWLModel owlModel, String subClassName, String superClassName, boolean mustExist) throws P3OWLUtilException
 	{
 		OWLNamedClass subClass = getOWLNamedClass(owlModel, subClassName, mustExist);
-		OWLNamedClass cls = getOWLNamedClass(owlModel, className, mustExist);
+		OWLNamedClass superClass = getOWLNamedClass(owlModel, superClassName, mustExist);
 
-		return (subClass != null && cls != null && cls.getSubclasses(true).contains(subClass)); // TODO: uses deprecated getSubclasses
+		return isOWLSubClassOf(subClass, superClass);
+	}
+
+	public static boolean isOWLSubClassOf(OWLClass subClass, OWLClass superClass)
+	{
+		return (subClass != null && superClass != null && subClass.getSuperclasses(true).contains(superClass));
 	}
 
 	public static boolean isOWLSubClassOf(OWLModel owlModel, URI subClassURI, URI classURI, boolean mustExist) throws P3OWLUtilException
@@ -1319,7 +1324,7 @@ public class P3OWLUtil
 		OWLClass subClass = getOWLClass(owlModel, subClassName);
 		OWLClass superClass = getOWLClass(owlModel, superClassName);
 
-		subClass.addSuperclass(superClass);
+		addOWLSuperClass(subClass, superClass);
 	}
 
 	public static void addOWLSuperClass(OWLModel owlModel, URI subClassURI, URI superClassURI) throws P3OWLUtilException
@@ -1329,7 +1334,8 @@ public class P3OWLUtil
 
 	public static void addOWLSuperClass(OWLClass subClass, OWLClass superClass)
 	{
-		subClass.addSuperclass(superClass);
+		if (!isOWLSubClassOf(subClass, superClass))
+			subClass.addSuperclass(superClass);
 	}
 
 	public static void addRDFSSuperClass(RDFSClass subClass, RDFSClass superClass)
