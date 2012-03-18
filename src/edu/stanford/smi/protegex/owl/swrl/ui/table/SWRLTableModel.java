@@ -143,7 +143,7 @@ public class SWRLTableModel extends AbstractTableModel implements Disposable, Sy
 			return "Expression";
 		else
 			return null;
-	} // getColumnName
+	}
 
 	public Object getValueAt(int rowIndex, int columnIndex)
 	{
@@ -206,8 +206,8 @@ public class SWRLTableModel extends AbstractTableModel implements Disposable, Sy
 				imp.enable();
 			else
 				imp.disable();
-		} // if
-	} // setValueAt
+		} 
+	} 
 
 	public void setRowOf(SWRLImp imp, int index)
 	{

@@ -56,8 +56,8 @@ public class DefaultSWRLImp extends AbstractSWRLIndividual implements SWRLImp
 
 	private void updateEnabledAndGroupInformation()
 	{
-		isRuleEnabled = getIsRuleEnabledAnnotation();
-		ruleGroups = getRuleGroupAnnotations();
+		this.isRuleEnabled = getIsRuleEnabledAnnotation();
+		this.ruleGroups = getRuleGroupAnnotations();
 	}
 
 	public SWRLImp createClone()
@@ -69,7 +69,7 @@ public class DefaultSWRLImp extends AbstractSWRLIndividual implements SWRLImp
 		try {
 			return parser.parse(text);
 		} catch (SWRLParseException ex) {
-			log.log(Level.SEVERE, "Shouldn't Happen ", ex);
+			this.log.log(Level.SEVERE, "Shouldn't Happen ", ex);
 			return null; // Should not happen
 		} // try
 	}
@@ -248,7 +248,7 @@ public class DefaultSWRLImp extends AbstractSWRLIndividual implements SWRLImp
 	public boolean isEnabled()
 	{
 		updateEnabledAndGroupInformation();
-		return isRuleEnabled;
+		return this.isRuleEnabled;
 	}
 
 	public void enable()
@@ -270,7 +270,7 @@ public class DefaultSWRLImp extends AbstractSWRLIndividual implements SWRLImp
 			OWLDatatypeProperty ruleEnabledProperty = getRuleEnabledProperty();
 			if (ruleEnabledProperty != null)
 				setPropertyValue(ruleEnabledProperty, Boolean.TRUE);
-			isRuleEnabled = true;
+			this.isRuleEnabled = true;
 		} else {
 			OWLObjectProperty ruleGroupProperty = getRuleGroupProperty();
 			OWLDatatypeProperty ruleGroupEnabledProperty = getRuleGroupEnabledProperty();
@@ -279,10 +279,10 @@ public class DefaultSWRLImp extends AbstractSWRLIndividual implements SWRLImp
 				if (ruleGroupIndividual != null && ruleGroupProperty != null) {
 					addPropertyValue(ruleGroupProperty, ruleGroupIndividual);
 					ruleGroupIndividual.addPropertyValue(ruleGroupEnabledProperty, Boolean.TRUE);
-				} // if
-				ruleGroups.put(ruleGroupName, Boolean.TRUE);
-			} // for
-		} // if
+				}
+				this.ruleGroups.put(ruleGroupName, Boolean.TRUE);
+			} 
+		} 
 	}
 
 	public void disable()
@@ -305,7 +305,7 @@ public class DefaultSWRLImp extends AbstractSWRLIndividual implements SWRLImp
 			OWLDatatypeProperty ruleEnabledProperty = getRuleEnabledProperty();
 			if (ruleEnabledProperty != null)
 				setPropertyValue(ruleEnabledProperty, Boolean.FALSE);
-			isRuleEnabled = false;
+			this.isRuleEnabled = false;
 		} else {
 			OWLObjectProperty ruleGroupProperty = getRuleGroupProperty();
 			OWLDatatypeProperty ruleGroupEnabledProperty = getRuleGroupEnabledProperty();
@@ -315,7 +315,7 @@ public class DefaultSWRLImp extends AbstractSWRLIndividual implements SWRLImp
 					addPropertyValue(ruleGroupProperty, ruleGroupIndividual);
 					ruleGroupIndividual.addPropertyValue(ruleGroupEnabledProperty, Boolean.FALSE);
 				} // if
-				ruleGroups.put(ruleGroupName, Boolean.FALSE);
+				this.ruleGroups.put(ruleGroupName, Boolean.FALSE);
 			} // for
 		} // if
 	}
@@ -323,13 +323,13 @@ public class DefaultSWRLImp extends AbstractSWRLIndividual implements SWRLImp
 	public Set<String> getRuleGroupNames()
 	{
 		updateEnabledAndGroupInformation();
-		return ruleGroups.keySet();
+		return this.ruleGroups.keySet();
 	}
 
 	public boolean isInRuleGroup(String name)
 	{
 		updateEnabledAndGroupInformation();
-		return ruleGroups.containsKey(name);
+		return this.ruleGroups.containsKey(name);
 	}
 
 	public boolean isInRuleGroups(Set<String> names)
@@ -337,7 +337,7 @@ public class DefaultSWRLImp extends AbstractSWRLIndividual implements SWRLImp
 		updateEnabledAndGroupInformation();
 
 		for (String name : names)
-			if (ruleGroups.containsKey(name))
+			if (this.ruleGroups.containsKey(name))
 				return true;
 		return false;
 	}
@@ -365,7 +365,7 @@ public class DefaultSWRLImp extends AbstractSWRLIndividual implements SWRLImp
 			if (ruleGroupIndividual != null && ruleGroupProperty != null) {
 				addPropertyValue(ruleGroupProperty, ruleGroupIndividual);
 				ruleGroupIndividual.addPropertyValue(ruleGroupEnabledProperty, Boolean.TRUE);
-				ruleGroups.put(name, Boolean.TRUE);
+				this.ruleGroups.put(name, Boolean.TRUE);
 				result = true;
 			} // if
 		} // if
@@ -391,7 +391,7 @@ public class DefaultSWRLImp extends AbstractSWRLIndividual implements SWRLImp
 			if (individual != null) {
 				if (ruleGroupProperty != null) {
 					removePropertyValue(ruleGroupProperty, individual);
-					ruleGroups.remove(name);
+					this.ruleGroups.remove(name);
 					result = true;
 				} // if
 			} // if
