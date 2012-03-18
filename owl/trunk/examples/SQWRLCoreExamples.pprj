@@ -1,4 +1,4 @@
-; Fri Mar 16 08:12:18 PDT 2012
+; Sun Mar 18 10:16:00 PDT 2012
 ; 
 ;+ (version "3.5")
 ;+ (build "Build 635")
@@ -7013,7 +7013,7 @@
 ([KB_183529_Class999] of  Property_List
 )
 
-([KB_261834_Class0] of  Map
+([KB_256891_Class0] of  Map
 )
 
 ([KB_301165_Instance_1013] of  Widget
@@ -7519,10 +7519,10 @@
 		"http://www.w3.org/2003/11/swrl#builtin"
 		"http://www.w3.org/2001/XMLSchema#decimal"
 		"http://www.w3.org/2003/11/swrl#AtomList"
-		"http://www.w3.org/2002/07/owl#equivalentProperty"
-		"http://www.w3.org/2003/11/swrl#classPredicate"
 		"http://www.w3.org/2000/01/rdf-schema#Literal"
 		"http://www.w3.org/2000/01/rdf-schema#seeAlso"
+		"http://www.w3.org/2002/07/owl#equivalentProperty"
+		"http://www.w3.org/2003/11/swrl#classPredicate"
 		"http://www.w3.org/2000/01/rdf-schema#label"
 		"http://www.w3.org/2001/XMLSchema#long"
 		"http://www.w3.org/2002/07/owl#SomeValuesFromRestriction"
