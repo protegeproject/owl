@@ -363,7 +363,7 @@ public class SWRLFactory
 			} // while
 		} // if
 		return result;
-	} // getReferencedImps
+	} 
 
 	public void enableAll()
 	{
