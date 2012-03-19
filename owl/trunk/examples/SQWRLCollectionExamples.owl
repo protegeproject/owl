@@ -948,7 +948,7 @@ See http://protege.cim3.net/cgi-bin/wiki.pl?SQWRL for documentation on SQWRL.</r
                               <rdf:List>
                                 <rdf:rest>
                                   <rdf:List>
-                                    <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#long"
+                                    <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
                                     >3</rdf:first>
                                     <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
                                   </rdf:List>
@@ -1398,7 +1398,7 @@ See http://protege.cim3.net/cgi-bin/wiki.pl?SQWRL for documentation on SQWRL.</r
                                                   <rdf:List>
                                                     <rdf:first
                                                      rdf:datatype=
-                                                    "http://www.w3.org/2001/XMLSchema#long"
+                                                    "http://www.w3.org/2001/XMLSchema#int"
                                                     >2</rdf:first>
                                                     <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
                                                   </rdf:List>
@@ -1472,7 +1472,7 @@ See http://protege.cim3.net/cgi-bin/wiki.pl?SQWRL for documentation on SQWRL.</r
                                               <rdf:List>
                                                 <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
                                                 <rdf:first rdf:datatype=
-                                                "http://www.w3.org/2001/XMLSchema#long"
+                                                "http://www.w3.org/2001/XMLSchema#int"
                                                 >2</rdf:first>
                                               </rdf:List>
                                             </rdf:rest>
@@ -1819,13 +1819,13 @@ See http://protege.cim3.net/cgi-bin/wiki.pl?SQWRL for documentation on SQWRL.</r
                                             <rdf:rest>
                                               <rdf:List>
                                                 <rdf:first rdf:datatype=
-                                                "http://www.w3.org/2001/XMLSchema#long"
+                                                "http://www.w3.org/2001/XMLSchema#int"
                                                 >1</rdf:first>
                                                 <rdf:rest>
                                                   <rdf:List>
                                                     <rdf:first
                                                      rdf:datatype=
-                                                    "http://www.w3.org/2001/XMLSchema#long"
+                                                    "http://www.w3.org/2001/XMLSchema#int"
                                                     >2</rdf:first>
                                                     <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
                                                   </rdf:List>
@@ -2052,7 +2052,7 @@ See http://protege.cim3.net/cgi-bin/wiki.pl?SQWRL for documentation on SQWRL.</r
                                 <rdf:first rdf:resource="http://swrl.stanford.edu/3.4.4/SQWRLExamples.owl#s"/>
                                 <rdf:rest>
                                   <rdf:List>
-                                    <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#long"
+                                    <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
                                     >3</rdf:first>
                                     <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
                                   </rdf:List>
@@ -2334,7 +2334,7 @@ See http://protege.cim3.net/cgi-bin/wiki.pl?SQWRL for documentation on SQWRL.</r
                         <rdf:rest>
                           <rdf:List>
                             <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
-                            <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#long"
+                            <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
                             >3</rdf:first>
                           </rdf:List>
                         </rdf:rest>
@@ -2352,7 +2352,7 @@ See http://protege.cim3.net/cgi-bin/wiki.pl?SQWRL for documentation on SQWRL.</r
                     <rdf:rest>
                       <rdf:List>
                         <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
-                        <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#long"
+                        <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
                         >3</rdf:first>
                       </rdf:List>
                     </rdf:rest>
@@ -2372,7 +2372,7 @@ See http://protege.cim3.net/cgi-bin/wiki.pl?SQWRL for documentation on SQWRL.</r
                 <rdf:rest>
                   <rdf:List>
                     <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
-                    <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#long"
+                    <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
                     >1</rdf:first>
                   </rdf:List>
                 </rdf:rest>
@@ -2916,7 +2916,7 @@ See http://protege.cim3.net/cgi-bin/wiki.pl?SQWRL for documentation on SQWRL.</r
         <rdf:rest>
           <rdf:List>
             <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
-            <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#long"
+            <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
             >2</rdf:first>
           </rdf:List>
         </rdf:rest>
@@ -2938,7 +2938,7 @@ See http://protege.cim3.net/cgi-bin/wiki.pl?SQWRL for documentation on SQWRL.</r
     <rdf:first rdf:resource="http://swrl.stanford.edu/3.4.4/SQWRLExamples.owl#bDDI"/>
     <rdf:rest>
       <rdf:List>
-        <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#long"
+        <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
         >2</rdf:first>
         <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
       </rdf:List>
@@ -3402,7 +3402,7 @@ See http://protege.cim3.net/cgi-bin/wiki.pl?SQWRL for documentation on SQWRL.</r
                                                           <rdf:List>
                                                             <rdf:first
                                                              rdf:datatype=
-                                                            "http://www.w3.org/2001/XMLSchema#long"
+                                                            "http://www.w3.org/2001/XMLSchema#int"
                                                             >10</rdf:first>
                                                             <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
                                                           </rdf:List>
@@ -3797,12 +3797,12 @@ See http://protege.cim3.net/cgi-bin/wiki.pl?SQWRL for documentation on SQWRL.</r
                                     <rdf:rest>
                                       <rdf:List>
                                         <rdf:first rdf:datatype=
-                                        "http://www.w3.org/2001/XMLSchema#long"
+                                        "http://www.w3.org/2001/XMLSchema#int"
                                         >2</rdf:first>
                                         <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
                                       </rdf:List>
                                     </rdf:rest>
-                                    <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#long"
+                                    <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
                                     >2</rdf:first>
                                   </rdf:List>
                                 </rdf:rest>
@@ -4237,7 +4237,7 @@ See http://protege.cim3.net/cgi-bin/wiki.pl?SQWRL for documentation on SQWRL.</r
                               <rdf:List>
                                 <rdf:rest>
                                   <rdf:List>
-                                    <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#long"
+                                    <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
                                     >2</rdf:first>
                                     <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
                                   </rdf:List>
@@ -4263,7 +4263,7 @@ See http://protege.cim3.net/cgi-bin/wiki.pl?SQWRL for documentation on SQWRL.</r
                                       <rdf:List>
                                         <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
                                         <rdf:first rdf:datatype=
-                                        "http://www.w3.org/2001/XMLSchema#long"
+                                        "http://www.w3.org/2001/XMLSchema#int"
                                         >4</rdf:first>
                                       </rdf:List>
                                     </rdf:rest>
@@ -4853,7 +4853,7 @@ See http://protege.cim3.net/cgi-bin/wiki.pl?SQWRL for documentation on SQWRL.</r
                                         <rdf:rest>
                                           <rdf:List>
                                             <rdf:first rdf:datatype=
-                                            "http://www.w3.org/2001/XMLSchema#long"
+                                            "http://www.w3.org/2001/XMLSchema#int"
                                             >2</rdf:first>
                                             <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
                                           </rdf:List>
@@ -5025,7 +5025,7 @@ See http://protege.cim3.net/cgi-bin/wiki.pl?SQWRL for documentation on SQWRL.</r
                     <swrl:arguments>
                       <rdf:List>
                         <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
-                        <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#long"
+                        <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
                         >1</rdf:first>
                       </rdf:List>
                     </swrl:arguments>
@@ -5431,7 +5431,7 @@ See http://protege.cim3.net/cgi-bin/wiki.pl?SQWRL for documentation on SQWRL.</r
                                             <rdf:rest>
                                               <rdf:List>
                                                 <rdf:first rdf:datatype=
-                                                "http://www.w3.org/2001/XMLSchema#long"
+                                                "http://www.w3.org/2001/XMLSchema#int"
                                                 >2</rdf:first>
                                                 <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
                                               </rdf:List>
@@ -5481,7 +5481,7 @@ See http://protege.cim3.net/cgi-bin/wiki.pl?SQWRL for documentation on SQWRL.</r
                                                     <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
                                                     <rdf:first
                                                      rdf:datatype=
-                                                    "http://www.w3.org/2001/XMLSchema#long"
+                                                    "http://www.w3.org/2001/XMLSchema#int"
                                                     >2</rdf:first>
                                                   </rdf:List>
                                                 </rdf:rest>
@@ -5741,7 +5741,7 @@ See http://protege.cim3.net/cgi-bin/wiki.pl?SQWRL for documentation on SQWRL.</r
                                               <rdf:List>
                                                 <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
                                                 <rdf:first rdf:datatype=
-                                                "http://www.w3.org/2001/XMLSchema#long"
+                                                "http://www.w3.org/2001/XMLSchema#int"
                                                 >2</rdf:first>
                                               </rdf:List>
                                             </rdf:rest>
@@ -5889,11 +5889,11 @@ See http://protege.cim3.net/cgi-bin/wiki.pl?SQWRL for documentation on SQWRL.</r
                                       <rdf:List>
                                         <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
                                         <rdf:first rdf:datatype=
-                                        "http://www.w3.org/2001/XMLSchema#long"
+                                        "http://www.w3.org/2001/XMLSchema#int"
                                         >2</rdf:first>
                                       </rdf:List>
                                     </rdf:rest>
-                                    <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#long"
+                                    <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
                                     >3</rdf:first>
                                   </rdf:List>
                                 </rdf:rest>
@@ -6161,7 +6161,7 @@ See http://protege.cim3.net/cgi-bin/wiki.pl?SQWRL for documentation on SQWRL.</r
                                 <rdf:rest>
                                   <rdf:List>
                                     <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
-                                    <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#long"
+                                    <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
                                     >2</rdf:first>
                                   </rdf:List>
                                 </rdf:rest>
@@ -6967,13 +6967,13 @@ See http://protege.cim3.net/cgi-bin/wiki.pl?SQWRL for documentation on SQWRL.</r
                                                   <rdf:List>
                                                     <rdf:first
                                                      rdf:datatype=
-                                                    "http://www.w3.org/2001/XMLSchema#long"
+                                                    "http://www.w3.org/2001/XMLSchema#int"
                                                     >2</rdf:first>
                                                     <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
                                                   </rdf:List>
                                                 </rdf:rest>
                                                 <rdf:first rdf:datatype=
-                                                "http://www.w3.org/2001/XMLSchema#long"
+                                                "http://www.w3.org/2001/XMLSchema#int"
                                                 >1</rdf:first>
                                               </rdf:List>
                                             </rdf:rest>
@@ -7427,7 +7427,7 @@ See http://protege.cim3.net/cgi-bin/wiki.pl?SQWRL for documentation on SQWRL.</r
                                             <rdf:rest>
                                               <rdf:List>
                                                 <rdf:first rdf:datatype=
-                                                "http://www.w3.org/2001/XMLSchema#long"
+                                                "http://www.w3.org/2001/XMLSchema#int"
                                                 >2</rdf:first>
                                                 <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
                                               </rdf:List>
@@ -7800,7 +7800,7 @@ See http://protege.cim3.net/cgi-bin/wiki.pl?SQWRL for documentation on SQWRL.</r
                                       <rdf:List>
                                         <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
                                         <rdf:first rdf:datatype=
-                                        "http://www.w3.org/2001/XMLSchema#long"
+                                        "http://www.w3.org/2001/XMLSchema#int"
                                         >1</rdf:first>
                                       </rdf:List>
                                     </rdf:rest>
@@ -7984,7 +7984,7 @@ See http://protege.cim3.net/cgi-bin/wiki.pl?SQWRL for documentation on SQWRL.</r
                                       <rdf:List>
                                         <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
                                         <rdf:first rdf:datatype=
-                                        "http://www.w3.org/2001/XMLSchema#long"
+                                        "http://www.w3.org/2001/XMLSchema#int"
                                         >2</rdf:first>
                                       </rdf:List>
                                     </rdf:rest>
@@ -8138,7 +8138,7 @@ See http://protege.cim3.net/cgi-bin/wiki.pl?SQWRL for documentation on SQWRL.</r
                                 <rdf:first rdf:resource="http://swrl.stanford.edu/3.4.4/SQWRLExamples.owl#s"/>
                                 <rdf:rest>
                                   <rdf:List>
-                                    <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#long"
+                                    <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
                                     >3</rdf:first>
                                     <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
                                   </rdf:List>
@@ -8926,7 +8926,7 @@ See http://protege.cim3.net/cgi-bin/wiki.pl?SQWRL for documentation on SQWRL.</r
                                 <swrl:builtin rdf:resource="http://sqwrl.stanford.edu/ontologies/built-ins/3.4/sqwrl.owl#size"/>
                                 <swrl:arguments>
                                   <rdf:List>
-                                    <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#long"
+                                    <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
                                     >2</rdf:first>
                                     <rdf:rest>
                                       <rdf:List>
@@ -9386,7 +9386,7 @@ See http://protege.cim3.net/cgi-bin/wiki.pl?SQWRL for documentation on SQWRL.</r
                                 <rdf:first rdf:resource="http://swrl.stanford.edu/3.4.4/SQWRLExamples.owl#s"/>
                                 <rdf:rest>
                                   <rdf:List>
-                                    <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#long"
+                                    <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
                                     >3</rdf:first>
                                     <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
                                   </rdf:List>
@@ -9427,7 +9427,7 @@ See http://protege.cim3.net/cgi-bin/wiki.pl?SQWRL for documentation on SQWRL.</r
                   <rdf:List>
                     <rdf:rest>
                       <rdf:List>
-                        <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#long"
+                        <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
                         >2</rdf:first>
                         <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
                       </rdf:List>
@@ -9445,7 +9445,7 @@ See http://protege.cim3.net/cgi-bin/wiki.pl?SQWRL for documentation on SQWRL.</r
                       <rdf:List>
                         <rdf:rest>
                           <rdf:List>
-                            <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#long"
+                            <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
                             >3</rdf:first>
                             <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
                           </rdf:List>
@@ -9487,7 +9487,7 @@ See http://protege.cim3.net/cgi-bin/wiki.pl?SQWRL for documentation on SQWRL.</r
               <rdf:List>
                 <rdf:rest>
                   <rdf:List>
-                    <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#long"
+                    <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
                     >1</rdf:first>
                     <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
                   </rdf:List>
@@ -9577,7 +9577,7 @@ See http://protege.cim3.net/cgi-bin/wiki.pl?SQWRL for documentation on SQWRL.</r
                                                     <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
                                                     <rdf:first
                                                      rdf:datatype=
-                                                    "http://www.w3.org/2001/XMLSchema#long"
+                                                    "http://www.w3.org/2001/XMLSchema#int"
                                                     >2</rdf:first>
                                                   </rdf:List>
                                                 </rdf:rest>
@@ -9648,7 +9648,7 @@ See http://protege.cim3.net/cgi-bin/wiki.pl?SQWRL for documentation on SQWRL.</r
                                               <rdf:List>
                                                 <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
                                                 <rdf:first rdf:datatype=
-                                                "http://www.w3.org/2001/XMLSchema#long"
+                                                "http://www.w3.org/2001/XMLSchema#int"
                                                 >2</rdf:first>
                                               </rdf:List>
                                             </rdf:rest>
@@ -9961,7 +9961,7 @@ See http://protege.cim3.net/cgi-bin/wiki.pl?SQWRL for documentation on SQWRL.</r
                         <rdf:rest>
                           <rdf:List>
                             <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
-                            <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#long"
+                            <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
                             >17</rdf:first>
                           </rdf:List>
                         </rdf:rest>
