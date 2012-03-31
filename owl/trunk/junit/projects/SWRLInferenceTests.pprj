@@ -1,4 +1,4 @@
-; Sat Mar 31 09:48:44 PDT 2012
+; Sat Mar 31 09:59:54 PDT 2012
 ; 
 ;+ (version "3.5")
 ;+ (build "Build 635")
@@ -6,11 +6,11 @@
 ([BROWSER_SLOT_NAMES] of  Property_List
 
 	(properties
-		[SWRLInferenceTests_ProjectKB_Class12]
-		[SWRLInferenceTests_ProjectKB_Class13]
-		[SWRLInferenceTests_ProjectKB_Class14]
-		[SWRLInferenceTests_ProjectKB_Class15]
-		[SWRLInferenceTests_ProjectKB_Class16]))
+		[SWRLInferenceTests_ProjectKB_Class20]
+		[SWRLInferenceTests_ProjectKB_Class21]
+		[SWRLInferenceTests_ProjectKB_Class22]
+		[SWRLInferenceTests_ProjectKB_Class23]
+		[SWRLInferenceTests_ProjectKB_Class24]))
 
 ([CLSES_TAB] of  Widget
 
@@ -748,9 +748,9 @@
 ([KB_325529_Class0] of  Map
 
 	(entries
-		[SWRLInferenceTests_ProjectKB_Class17]
-		[SWRLInferenceTests_ProjectKB_Class18]
-		[SWRLInferenceTests_ProjectKB_Class19]))
+		[SWRLInferenceTests_ProjectKB_Class25]
+		[SWRLInferenceTests_ProjectKB_Class26]
+		[SWRLInferenceTests_ProjectKB_Class27]))
 
 ([KB_325529_Class4] of  String
 
@@ -1175,9 +1175,6 @@
 	(widget_class_name "edu.stanford.smi.protege.widget.instance_tree.InstanceTreeTab"))
 
 ([KB_487418_Class90] of  Property_List
-)
-
-([KB_561701_Class3] of  Map
 )
 
 ([KB_632156_Instance_0] of  String
@@ -3428,6 +3425,9 @@
 	(name "http://www.w3.org/2002/07/owl#Ontology")
 	(property_list [XY_Instance_195])
 	(widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.OWLFormWidget"))
+
+([KB_783823_Class3] of  Map
+)
 
 ([KB_865583_Instance_10] of  Widget
 
@@ -5760,9 +5760,9 @@
 	(browser_slot_names [BROWSER_SLOT_NAMES])
 	(customized_instance_widgets
 		[KB_713803_Instance_477]
-		[KB_313796_Instance_852]
-		[KB_691299_Instance_398]
 		[PAL_FORM_WIDGET]
+		[KB_691299_Instance_398]
+		[KB_313796_Instance_852]
 		[Instance_581]
 		[KB_713803_Instance_693]
 		[KB_487418_Class59]
@@ -5785,8 +5785,8 @@
 		[KB_938545_Instance_329]
 		[KB_764103_Instance_545]
 		[KB_301165_Instance_1013]
-		[KB_713803_Instance_390]
-		[Instance_443])
+		[Instance_443]
+		[KB_713803_Instance_390])
 	(default_cls_metaclass "http://www.w3.org/2002/07/owl#Class")
 	(default_facet_metaclass ":STANDARD-FACET")
 	(default_instance_widget_class_name "edu.stanford.smi.protegex.owl.ui.widget.OWLFormWidget")
@@ -5800,8 +5800,8 @@
 		":MODIFIER"
 		"http://protege.stanford.edu/plugins/owl/protege#SLOT-CONSTRAINTS"
 		"http://www.w3.org/2000/01/rdf-schema#Container"
-		":SLOT-NUMERIC-MINIMUM"
 		"http://www.w3.org/2001/XMLSchema#integer"
+		":SLOT-NUMERIC-MINIMUM"
 		"http://www.w3.org/2003/11/swrl#DatavaluedPropertyAtom"
 		"http://www.w3.org/1999/02/22-rdf-syntax-ns#Statement"
 		":NUMERIC-MAXIMUM"
@@ -5839,22 +5839,22 @@
 		"http://www.w3.org/2002/07/owl#equivalentClass"
 		"http://www.w3.org/2002/07/owl#FunctionalProperty"
 		"http://protege.stanford.edu/plugins/owl/protege#inferredSubclassOf"
-		":PAL-DESCRIPTION"
 		"http://www.w3.org/2003/11/swrl#SameIndividualAtom"
-		"http://www.w3.org/2001/XMLSchema#anyURI"
-		"http://www.w3.org/2002/07/owl#AnonymousClass"
+		":PAL-DESCRIPTION"
 		"http://www.w3.org/2002/07/owl#MinCardinalityRestriction"
+		"http://www.w3.org/2002/07/owl#AnonymousClass"
+		"http://www.w3.org/2001/XMLSchema#anyURI"
 		"http://www.w3.org/2001/XMLSchema#nonNegativeInteger"
 		":CLASS"
 		"http://www.w3.org/2002/07/owl#complementOf"
 		":ROLE"
-		":DOCUMENTATION-IN-FRAME"
-		"http://www.w3.org/2002/07/owl#IntersectionClass"
 		"http://www.w3.org/2002/07/owl#TransitiveProperty"
+		"http://www.w3.org/2002/07/owl#IntersectionClass"
+		":DOCUMENTATION-IN-FRAME"
 		"http://www.w3.org/2000/01/rdf-schema#range"
 		"http://www.w3.org/2001/XMLSchema#gYearMonth"
-		":CREATOR"
 		"http://www.w3.org/2002/07/owl#ComplementClass"
+		":CREATOR"
 		":ASSOCIATED-FACET"
 		":DOCUMENTATION"
 		":DIRECT-SUPERCLASSES"
@@ -5866,29 +5866,29 @@
 		":MODIFICATION-TIMESTAMP"
 		"http://www.w3.org/2001/XMLSchema#gYear"
 		"http://www.w3.org/2001/XMLSchema#gMonthDay"
-		"http://www.w3.org/1999/02/22-rdf-syntax-ns#value"
 		"http://www.w3.org/2001/XMLSchema#normalizedString"
+		"http://www.w3.org/1999/02/22-rdf-syntax-ns#value"
 		"http://www.w3.org/2001/XMLSchema#nonPositiveInteger"
 		"http://www.w3.org/2002/07/owl#someValuesFrom"
 		"http://protege.stanford.edu/plugins/owl/protege#classificationStatus"
 		"http://protege.stanford.edu/plugins/owl/protege#inferredSuperclassOf"
-		"http://www.w3.org/2000/01/rdf-schema#subPropertyOf"
 		"http://www.w3.org/1999/02/22-rdf-syntax-ns#List"
+		"http://www.w3.org/2000/01/rdf-schema#subPropertyOf"
 		"http://www.w3.org/2003/11/swrl#DifferentIndividualsAtom"
 		"http://www.w3.org/2003/11/swrl#dataRange"
 		"http://www.w3.org/2002/07/owl#AllDifferent"
 		"http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"
 		"http://www.w3.org/2003/11/swrl#Variable"
 		":DIRECT-INSTANCES"
-		"http://www.w3.org/2002/07/owl#unionOf"
 		"http://protege.stanford.edu/plugins/owl/protege#DIRECTED-BINARY-RELATION"
+		"http://www.w3.org/2002/07/owl#unionOf"
 		":SLOT"
 		"http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate"
 		"http://www.w3.org/2002/07/owl#minCardinality"
 		"http://www.w3.org/2002/07/owl#allValuesFrom"
 		":INVERSE"
-		"http://www.w3.org/2003/11/swrl#DataRangeAtom"
 		"http://www.w3.org/2002/07/owl#priorVersion"
+		"http://www.w3.org/2003/11/swrl#DataRangeAtom"
 		"http://www.w3.org/2001/XMLSchema#token"
 		"http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"
 		":DIRECT-TEMPLATE-SLOTS"
@@ -5985,8 +5985,8 @@
 		"http://www.w3.org/2003/11/swrl#argument2"
 		"http://www.w3.org/2003/11/swrl#argument1"
 		":FACET"
-		":SLOT-VALUES"
 		"http://www.w3.org/2002/07/owl#intersectionOf"
+		":SLOT-VALUES"
 		"http://www.w3.org/2002/07/owl#Nothing"
 		"http://www.w3.org/2002/07/owl#hasValue")
 	(journaling_enabled FALSE)
@@ -6090,46 +6090,46 @@
 ([SWRLInferenceTests_ProjectKB_Class11] of  Property_List
 )
 
-([SWRLInferenceTests_ProjectKB_Class12] of  String
-
-	(name ":INSTANCE-ANNOTATION")
-	(string_value "%3AANNOTATION-TEXT"))
-
-([SWRLInferenceTests_ProjectKB_Class13] of  String
+([SWRLInferenceTests_ProjectKB_Class20] of  String
 
 	(name "http://www.w3.org/2002/07/owl#Class")
 	(string_value "%3ANAME"))
 
-([SWRLInferenceTests_ProjectKB_Class14] of  String
+([SWRLInferenceTests_ProjectKB_Class21] of  String
 
-	(name ":PAL-CONSTRAINT")
-	(string_value "%3APAL-NAME"))
+	(name ":INSTANCE-ANNOTATION")
+	(string_value "%3AANNOTATION-TEXT"))
 
-([SWRLInferenceTests_ProjectKB_Class15] of  String
+([SWRLInferenceTests_ProjectKB_Class22] of  String
 
 	(name ":META-CLASS")
 	(string_value "%3ANAME"))
 
-([SWRLInferenceTests_ProjectKB_Class16] of  String
+([SWRLInferenceTests_ProjectKB_Class23] of  String
+
+	(name ":PAL-CONSTRAINT")
+	(string_value "%3APAL-NAME"))
+
+([SWRLInferenceTests_ProjectKB_Class24] of  String
 
 	(name "http://www.w3.org/2002/07/owl#Thing")
 	(string_value "%3ANAME"))
 
-([SWRLInferenceTests_ProjectKB_Class17] of  Map_Entry
+([SWRLInferenceTests_ProjectKB_Class25] of  Map_Entry
 
 	(key "add_name_on_instance_form")
 	(key_class "java.lang.String")
 	(value "false")
 	(value_class "java.lang.String"))
 
-([SWRLInferenceTests_ProjectKB_Class18] of  Map_Entry
+([SWRLInferenceTests_ProjectKB_Class26] of  Map_Entry
 
 	(key "change_tracking_active")
 	(key_class "java.lang.String")
 	(value "false")
 	(value_class "java.lang.String"))
 
-([SWRLInferenceTests_ProjectKB_Class19] of  Map_Entry
+([SWRLInferenceTests_ProjectKB_Class27] of  Map_Entry
 
 	(key "suppress_instance_counting")
 	(key_class "java.lang.String")
