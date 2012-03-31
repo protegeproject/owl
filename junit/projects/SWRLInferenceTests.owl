@@ -20,6 +20,17 @@
   </owl:Ontology>
   <owl:Class rdf:ID="Building"/>
   <owl:Class rdf:ID="Prescription"/>
+  <owl:Class rdf:ID="TallSolidBuilding">
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Class rdf:ID="TallThing"/>
+          <owl:Class rdf:about="#Building"/>
+          <owl:Class rdf:ID="SolidThing"/>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+  </owl:Class>
   <owl:Class rdf:ID="Man">
     <owl:equivalentClass>
       <owl:Class>
@@ -31,17 +42,6 @@
     </owl:equivalentClass>
   </owl:Class>
   <owl:Class rdf:ID="SweetFruit"/>
-  <owl:Class rdf:ID="TallThing"/>
-  <owl:Class rdf:ID="TallBuilding">
-    <owl:equivalentClass>
-      <owl:Class>
-        <owl:intersectionOf rdf:parseType="Collection">
-          <owl:Class rdf:about="#Building"/>
-          <owl:Class rdf:about="#TallThing"/>
-        </owl:intersectionOf>
-      </owl:Class>
-    </owl:equivalentClass>
-  </owl:Class>
   <owl:Class rdf:ID="NonSweetFruit"/>
   <owl:Class rdf:about="#Male">
     <rdfs:subClassOf rdf:resource="#Person"/>
@@ -59,37 +59,16 @@
       </owl:Class>
     </owl:equivalentClass>
   </owl:Class>
-  <owl:ObjectProperty rdf:ID="hasDriver">
-    <owl:inverseOf>
-      <owl:ObjectProperty rdf:ID="drives"/>
-    </owl:inverseOf>
-  </owl:ObjectProperty>
-  <owl:ObjectProperty rdf:ID="hasAunt">
-    <rdfs:range rdf:resource="#Female"/>
-    <rdfs:domain rdf:resource="#Person"/>
-  </owl:ObjectProperty>
-  <owl:ObjectProperty rdf:ID="hasFather">
-    <rdfs:range rdf:resource="#Male"/>
-    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
-    <rdfs:domain rdf:resource="#Person"/>
-  </owl:ObjectProperty>
   <owl:ObjectProperty rdf:ID="flowsInto">
     <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >&lt;p style="margin-top: 0"&gt;&#xD;
       TODO: Should be irrefelxive.&#xD;
     &lt;/p&gt;</rdfs:comment>
   </owl:ObjectProperty>
-  <owl:ObjectProperty rdf:ID="hasSibling">
-    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#TransitiveProperty"/>
-    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#SymmetricProperty"/>
-    <owl:inverseOf rdf:resource="#hasSibling"/>
-  </owl:ObjectProperty>
-  <owl:ObjectProperty rdf:ID="hasBrother">
-    <rdfs:subPropertyOf rdf:resource="#hasSibling"/>
-    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#TransitiveProperty"/>
-    <owl:disjointWith>
-      <owl:ObjectProperty rdf:ID="hasSister"/>
-    </owl:disjointWith>
+  <owl:ObjectProperty rdf:ID="hasDriver">
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:ID="drives"/>
+    </owl:inverseOf>
   </owl:ObjectProperty>
   <owl:ObjectProperty rdf:ID="hasPart"/>
   <owl:ObjectProperty rdf:ID="proper_part_of">
@@ -101,57 +80,90 @@
   <owl:ObjectProperty rdf:ID="partOf">
     <owl:equivalentProperty rdf:resource="#hasPart"/>
   </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="hasAunt">
+    <rdfs:range rdf:resource="#Female"/>
+    <rdfs:domain rdf:resource="#Person"/>
+  </owl:ObjectProperty>
   <owl:ObjectProperty rdf:ID="hasUncle">
     <rdfs:range rdf:resource="#Male"/>
     <rdfs:domain rdf:resource="#Person"/>
   </owl:ObjectProperty>
-  <owl:ObjectProperty rdf:ID="hasPrescription">
-    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#InverseFunctionalProperty"/>
-    <rdfs:domain rdf:resource="#Person"/>
-  </owl:ObjectProperty>
-  <owl:ObjectProperty rdf:about="#hasSister">
-    <rdfs:subPropertyOf rdf:resource="#hasSibling"/>
-    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#TransitiveProperty"/>
-  </owl:ObjectProperty>
   <owl:ObjectProperty rdf:about="#drives">
     <owl:inverseOf rdf:resource="#hasDriver"/>
   </owl:ObjectProperty>
-  <owl:DatatypeProperty rdf:ID="hasBMI">
+  <owl:DatatypeProperty rdf:ID="hasBodyMassIndex">
     <rdfs:subPropertyOf>
       <owl:DatatypeProperty rdf:ID="hasMeasurement"/>
     </rdfs:subPropertyOf>
-    <owl:equivalentProperty>
-      <owl:DatatypeProperty rdf:ID="hasBodyMassIndex"/>
-    </owl:equivalentProperty>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="hasAge">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+    <rdfs:subPropertyOf rdf:resource="#hasMeasurement"/>
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+  </owl:DatatypeProperty>
+  <owl:TransitiveProperty rdf:ID="hasBrother">
+    <rdfs:subPropertyOf>
+      <owl:SymmetricProperty rdf:ID="hasSibling"/>
+    </rdfs:subPropertyOf>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+    <owl:disjointWith>
+      <owl:TransitiveProperty rdf:ID="hasSister"/>
+    </owl:disjointWith>
+  </owl:TransitiveProperty>
+  <owl:TransitiveProperty rdf:about="#hasSister">
+    <rdfs:subPropertyOf>
+      <owl:SymmetricProperty rdf:about="#hasSibling"/>
+    </rdfs:subPropertyOf>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+  </owl:TransitiveProperty>
+  <owl:SymmetricProperty rdf:about="#hasSibling">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#TransitiveProperty"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+    <owl:inverseOf rdf:resource="#hasSibling"/>
+  </owl:SymmetricProperty>
+  <owl:FunctionalProperty rdf:ID="hasBMI">
+    <rdfs:subPropertyOf rdf:resource="#hasMeasurement"/>
+    <owl:equivalentProperty rdf:resource="#hasBodyMassIndex"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
     <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
     <rdfs:domain rdf:resource="#Person"/>
-  </owl:DatatypeProperty>
-  <owl:DatatypeProperty rdf:ID="hasHeight">
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="hasHeight">
     <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
-    <rdfs:subPropertyOf rdf:resource="#hasMeasurement"/>
-    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
-  </owl:DatatypeProperty>
-  <owl:DatatypeProperty rdf:about="#hasBodyMassIndex">
-    <rdfs:subPropertyOf rdf:resource="#hasMeasurement"/>
-  </owl:DatatypeProperty>
-  <owl:FunctionalProperty rdf:ID="hasAge">
-    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
     <rdfs:subPropertyOf rdf:resource="#hasMeasurement"/>
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
   </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="hasFather">
+    <rdfs:range rdf:resource="#Male"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+    <rdfs:domain rdf:resource="#Person"/>
+  </owl:FunctionalProperty>
+  <owl:InverseFunctionalProperty rdf:ID="hasPrescription">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+    <rdfs:domain rdf:resource="#Person"/>
+  </owl:InverseFunctionalProperty>
   <swrl:Imp rdf:ID="test-table6-cls-int1-rule">
     <swrl:head>
       <swrl:AtomList>
+        <rdf:rest>
+          <swrl:AtomList>
+            <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+            <rdf:first>
+              <swrl:ClassAtom>
+                <swrl:classPredicate rdf:resource="#SolidThing"/>
+                <swrl:argument1>
+                  <Building rdf:ID="b1"/>
+                </swrl:argument1>
+              </swrl:ClassAtom>
+            </rdf:first>
+          </swrl:AtomList>
+        </rdf:rest>
         <rdf:first>
           <swrl:ClassAtom>
-            <swrl:argument1>
-              <Building rdf:ID="b1"/>
-            </swrl:argument1>
+            <swrl:argument1 rdf:resource="#b1"/>
             <swrl:classPredicate rdf:resource="#TallThing"/>
           </swrl:ClassAtom>
         </rdf:first>
-        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
       </swrl:AtomList>
     </swrl:head>
     <swrl:body>
@@ -171,17 +183,17 @@
           <swrl:BuiltinAtom>
             <swrl:arguments>
               <rdf:List>
-                <rdf:first>
-                  <Person rdf:ID="i50"/>
-                </rdf:first>
                 <rdf:rest>
                   <rdf:List>
+                    <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
                     <rdf:first>
                       <Person rdf:ID="i51"/>
                     </rdf:first>
-                    <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
                   </rdf:List>
                 </rdf:rest>
+                <rdf:first>
+                  <Person rdf:ID="i50"/>
+                </rdf:first>
               </rdf:List>
             </swrl:arguments>
             <swrl:builtin rdf:resource="http://sqwrl.stanford.edu/ontologies/built-ins/3.4/sqwrl.owl#select"/>
@@ -194,9 +206,9 @@
       <swrl:AtomList>
         <rdf:first>
           <swrl:IndividualPropertyAtom>
-            <swrl:propertyPredicate rdf:resource="#hasSibling"/>
-            <swrl:argument2 rdf:resource="#i51"/>
             <swrl:argument1 rdf:resource="#i50"/>
+            <swrl:argument2 rdf:resource="#i51"/>
+            <swrl:propertyPredicate rdf:resource="#hasSibling"/>
           </swrl:IndividualPropertyAtom>
         </rdf:first>
         <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
@@ -206,8 +218,10 @@
   <swrl:Imp rdf:ID="test-table4-eq-sym-query">
     <swrl:head>
       <swrl:AtomList>
+        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <rdf:first>
           <swrl:BuiltinAtom>
+            <swrl:builtin rdf:resource="http://sqwrl.stanford.edu/ontologies/built-ins/3.4/sqwrl.owl#select"/>
             <swrl:arguments>
               <rdf:List>
                 <rdf:first>
@@ -223,18 +237,16 @@
                 </rdf:rest>
               </rdf:List>
             </swrl:arguments>
-            <swrl:builtin rdf:resource="http://sqwrl.stanford.edu/ontologies/built-ins/3.4/sqwrl.owl#select"/>
           </swrl:BuiltinAtom>
         </rdf:first>
-        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
       </swrl:AtomList>
     </swrl:head>
     <swrl:body>
       <swrl:AtomList>
         <rdf:first>
           <swrl:SameIndividualAtom>
-            <swrl:argument1 rdf:resource="#i5"/>
             <swrl:argument2 rdf:resource="#i4"/>
+            <swrl:argument1 rdf:resource="#i5"/>
           </swrl:SameIndividualAtom>
         </rdf:first>
         <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
@@ -251,18 +263,18 @@
     </swrl:body>
     <swrl:head>
       <swrl:AtomList>
-        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <rdf:first>
           <swrl:IndividualPropertyAtom>
-            <swrl:propertyPredicate rdf:resource="#hasUncle"/>
-            <swrl:argument1>
-              <Person rdf:ID="i33"/>
-            </swrl:argument1>
             <swrl:argument2>
               <Person rdf:ID="i34"/>
             </swrl:argument2>
+            <swrl:argument1>
+              <Person rdf:ID="i33"/>
+            </swrl:argument1>
+            <swrl:propertyPredicate rdf:resource="#hasUncle"/>
           </swrl:IndividualPropertyAtom>
         </rdf:first>
+        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
       </swrl:AtomList>
     </swrl:head>
     <swrla:isRuleEnabled rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
@@ -272,41 +284,41 @@
   <swrl:Imp rdf:ID="test-table5-prp-trp-query">
     <swrl:head>
       <swrl:AtomList>
-        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <rdf:first>
           <swrl:BuiltinAtom>
-            <swrl:builtin rdf:resource="http://sqwrl.stanford.edu/ontologies/built-ins/3.4/sqwrl.owl#select"/>
             <swrl:arguments>
               <rdf:List>
-                <rdf:rest>
-                  <rdf:List>
-                    <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
-                    <rdf:first>
-                      <Person rdf:ID="i47"/>
-                    </rdf:first>
-                  </rdf:List>
-                </rdf:rest>
                 <rdf:first>
                   <Person rdf:ID="i45"/>
                 </rdf:first>
+                <rdf:rest>
+                  <rdf:List>
+                    <rdf:first>
+                      <Person rdf:ID="i47"/>
+                    </rdf:first>
+                    <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                  </rdf:List>
+                </rdf:rest>
               </rdf:List>
             </swrl:arguments>
+            <swrl:builtin rdf:resource="http://sqwrl.stanford.edu/ontologies/built-ins/3.4/sqwrl.owl#select"/>
           </swrl:BuiltinAtom>
         </rdf:first>
+        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
       </swrl:AtomList>
     </swrl:head>
     <swrla:isRuleEnabled rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
     >true</swrla:isRuleEnabled>
     <swrl:body>
       <swrl:AtomList>
-        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <rdf:first>
           <swrl:IndividualPropertyAtom>
+            <swrl:propertyPredicate rdf:resource="#hasSibling"/>
             <swrl:argument2 rdf:resource="#i47"/>
             <swrl:argument1 rdf:resource="#i45"/>
-            <swrl:propertyPredicate rdf:resource="#hasSibling"/>
           </swrl:IndividualPropertyAtom>
         </rdf:first>
+        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
       </swrl:AtomList>
     </swrl:body>
     <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
@@ -317,16 +329,16 @@
     >true</swrla:isRuleEnabled>
     <swrl:head>
       <swrl:AtomList>
+        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <rdf:first>
           <swrl:IndividualPropertyAtom>
-            <swrl:propertyPredicate rdf:resource="#flowsInto"/>
-            <swrl:argument1>
+            <swrl:argument2>
               <Person rdf:ID="i40"/>
-            </swrl:argument1>
-            <swrl:argument2 rdf:resource="#i40"/>
+            </swrl:argument2>
+            <swrl:argument1 rdf:resource="#i40"/>
+            <swrl:propertyPredicate rdf:resource="#flowsInto"/>
           </swrl:IndividualPropertyAtom>
         </rdf:first>
-        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
       </swrl:AtomList>
     </swrl:head>
     <swrl:body>
@@ -339,7 +351,7 @@
         <rdf:first>
           <swrl:ClassAtom>
             <swrl:argument1 rdf:resource="#b1"/>
-            <swrl:classPredicate rdf:resource="#TallBuilding"/>
+            <swrl:classPredicate rdf:resource="#TallSolidBuilding"/>
           </swrl:ClassAtom>
         </rdf:first>
         <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
@@ -347,18 +359,18 @@
     </swrl:body>
     <swrl:head>
       <swrl:AtomList>
+        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <rdf:first>
           <swrl:BuiltinAtom>
-            <swrl:builtin rdf:resource="http://sqwrl.stanford.edu/ontologies/built-ins/3.4/sqwrl.owl#select"/>
             <swrl:arguments>
               <rdf:List>
                 <rdf:first rdf:resource="#b1"/>
                 <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
               </rdf:List>
             </swrl:arguments>
+            <swrl:builtin rdf:resource="http://sqwrl.stanford.edu/ontologies/built-ins/3.4/sqwrl.owl#select"/>
           </swrl:BuiltinAtom>
         </rdf:first>
-        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
       </swrl:AtomList>
     </swrl:head>
     <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
@@ -369,7 +381,6 @@
   <swrl:Imp rdf:ID="test-table4-eq-ref-dp-query">
     <swrl:head>
       <swrl:AtomList>
-        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <rdf:first>
           <swrl:BuiltinAtom>
             <swrl:builtin rdf:resource="http://sqwrl.stanford.edu/ontologies/built-ins/3.4/sqwrl.owl#select"/>
@@ -381,17 +392,18 @@
             </swrl:arguments>
           </swrl:BuiltinAtom>
         </rdf:first>
+        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
       </swrl:AtomList>
     </swrl:head>
     <swrl:body>
       <swrl:AtomList>
+        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <rdf:first>
           <swrl:SameIndividualAtom>
             <swrl:argument2 rdf:resource="#i4"/>
             <swrl:argument1 rdf:resource="#i4"/>
           </swrl:SameIndividualAtom>
         </rdf:first>
-        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
       </swrl:AtomList>
     </swrl:body>
     <swrla:isRuleEnabled rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
@@ -406,13 +418,13 @@
         <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <rdf:first>
           <swrl:IndividualPropertyAtom>
-            <swrl:propertyPredicate rdf:resource="#hasUncle"/>
             <swrl:argument1>
               <Person rdf:ID="i30"/>
             </swrl:argument1>
             <swrl:argument2>
               <Person rdf:ID="i31"/>
             </swrl:argument2>
+            <swrl:propertyPredicate rdf:resource="#hasUncle"/>
           </swrl:IndividualPropertyAtom>
         </rdf:first>
       </swrl:AtomList>
@@ -426,6 +438,7 @@
   <swrl:Imp rdf:ID="test-table5-eqp1-dp-rule">
     <swrl:head>
       <swrl:AtomList>
+        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <rdf:first>
           <swrl:DatavaluedPropertyAtom>
             <swrl:propertyPredicate rdf:resource="#hasBMI"/>
@@ -436,7 +449,6 @@
             </swrl:argument1>
           </swrl:DatavaluedPropertyAtom>
         </rdf:first>
-        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
       </swrl:AtomList>
     </swrl:head>
     <swrla:isRuleEnabled rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
@@ -455,10 +467,10 @@
           <swrl:DatavaluedPropertyAtom>
             <swrl:argument2 rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
             >23.4</swrl:argument2>
+            <swrl:propertyPredicate rdf:resource="#hasBodyMassIndex"/>
             <swrl:argument1>
               <Person rdf:ID="i56"/>
             </swrl:argument1>
-            <swrl:propertyPredicate rdf:resource="#hasBodyMassIndex"/>
           </swrl:DatavaluedPropertyAtom>
         </rdf:first>
       </swrl:AtomList>
@@ -492,8 +504,8 @@
             <swrl:builtin rdf:resource="http://sqwrl.stanford.edu/ontologies/built-ins/3.4/sqwrl.owl#select"/>
             <swrl:arguments>
               <rdf:List>
-                <rdf:first rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
                 <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                <rdf:first rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
               </rdf:List>
             </swrl:arguments>
           </swrl:BuiltinAtom>
@@ -508,7 +520,6 @@
       <swrl:AtomList>
         <rdf:rest>
           <swrl:AtomList>
-            <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
             <rdf:first>
               <swrl:IndividualPropertyAtom>
                 <swrl:propertyPredicate rdf:resource="#hasFather"/>
@@ -520,15 +531,16 @@
                 </swrl:argument1>
               </swrl:IndividualPropertyAtom>
             </rdf:first>
+            <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
           </swrl:AtomList>
         </rdf:rest>
         <rdf:first>
           <swrl:IndividualPropertyAtom>
             <swrl:propertyPredicate rdf:resource="#hasFather"/>
-            <swrl:argument1 rdf:resource="#i35"/>
             <swrl:argument2>
               <Person rdf:ID="i36"/>
             </swrl:argument2>
+            <swrl:argument1 rdf:resource="#i35"/>
           </swrl:IndividualPropertyAtom>
         </rdf:first>
       </swrl:AtomList>
@@ -544,6 +556,7 @@
     >sf</rdfs:comment>
     <swrl:body>
       <swrl:AtomList>
+        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <rdf:first>
           <swrl:ClassAtom>
             <swrl:argument1>
@@ -552,13 +565,13 @@
             <swrl:classPredicate rdf:resource="#Fruit"/>
           </swrl:ClassAtom>
         </rdf:first>
-        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
       </swrl:AtomList>
     </swrl:body>
     <swrla:isRuleEnabled rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
     >true</swrla:isRuleEnabled>
     <swrl:head>
       <swrl:AtomList>
+        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <rdf:first>
           <swrl:BuiltinAtom>
             <swrl:builtin rdf:resource="http://sqwrl.stanford.edu/ontologies/built-ins/3.4/sqwrl.owl#select"/>
@@ -570,7 +583,6 @@
             </swrl:arguments>
           </swrl:BuiltinAtom>
         </rdf:first>
-        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
       </swrl:AtomList>
     </swrl:head>
   </swrl:Imp>
@@ -595,18 +607,18 @@
     </swrl:head>
     <swrl:body>
       <swrl:AtomList>
+        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <rdf:first>
           <swrl:BuiltinAtom>
-            <swrl:builtin rdf:resource="http://swrl.stanford.edu/ontologies/built-ins/3.3/tbox.owl#isClass"/>
             <swrl:arguments>
               <rdf:List>
                 <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
                 <rdf:first rdf:resource="http://www.w3.org/2002/07/owl#Nothing"/>
               </rdf:List>
             </swrl:arguments>
+            <swrl:builtin rdf:resource="http://swrl.stanford.edu/ontologies/built-ins/3.3/tbox.owl#isClass"/>
           </swrl:BuiltinAtom>
         </rdf:first>
-        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
       </swrl:AtomList>
     </swrl:body>
   </swrl:Imp>
@@ -618,7 +630,6 @@
     >true</swrla:isRuleEnabled>
     <swrl:head>
       <swrl:AtomList>
-        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <rdf:first>
           <swrl:ClassAtom>
             <swrl:classPredicate rdf:resource="#Person"/>
@@ -627,6 +638,7 @@
             </swrl:argument1>
           </swrl:ClassAtom>
         </rdf:first>
+        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
       </swrl:AtomList>
     </swrl:head>
   </swrl:Imp>
@@ -647,10 +659,10 @@
           <swrl:AtomList>
             <rdf:first>
               <swrl:SameIndividualAtom>
+                <swrl:argument1 rdf:resource="#i7"/>
                 <swrl:argument2>
                   <Person rdf:ID="i8"/>
                 </swrl:argument2>
-                <swrl:argument1 rdf:resource="#i7"/>
               </swrl:SameIndividualAtom>
             </rdf:first>
             <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
@@ -670,12 +682,12 @@
         <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <rdf:first>
           <swrl:DatavaluedPropertyAtom>
+            <swrl:propertyPredicate rdf:resource="#hasAge"/>
+            <swrl:argument2 rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+            >44</swrl:argument2>
             <swrl:argument1>
               <Person rdf:ID="i15"/>
             </swrl:argument1>
-            <swrl:argument2 rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
-            >44</swrl:argument2>
-            <swrl:propertyPredicate rdf:resource="#hasAge"/>
           </swrl:DatavaluedPropertyAtom>
         </rdf:first>
       </swrl:AtomList>
@@ -691,9 +703,9 @@
                 <rdf:first rdf:resource="#i15"/>
                 <rdf:rest>
                   <rdf:List>
-                    <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
                     <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
                     >44</rdf:first>
+                    <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
                   </rdf:List>
                 </rdf:rest>
               </rdf:List>
@@ -712,19 +724,19 @@
       <swrl:AtomList>
         <rdf:first>
           <swrl:BuiltinAtom>
+            <swrl:builtin rdf:resource="http://sqwrl.stanford.edu/ontologies/built-ins/3.4/sqwrl.owl#select"/>
             <swrl:arguments>
               <rdf:List>
-                <rdf:first rdf:resource="#i51"/>
                 <rdf:rest>
                   <rdf:List>
-                    <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
                     <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
                     >34.0</rdf:first>
+                    <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
                   </rdf:List>
                 </rdf:rest>
+                <rdf:first rdf:resource="#i51"/>
               </rdf:List>
             </swrl:arguments>
-            <swrl:builtin rdf:resource="http://sqwrl.stanford.edu/ontologies/built-ins/3.4/sqwrl.owl#select"/>
           </swrl:BuiltinAtom>
         </rdf:first>
         <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
@@ -754,13 +766,13 @@
         <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <rdf:first>
           <swrl:BuiltinAtom>
-            <swrl:builtin rdf:resource="http://sqwrl.stanford.edu/ontologies/built-ins/3.4/sqwrl.owl#select"/>
             <swrl:arguments>
               <rdf:List>
-                <rdf:first rdf:resource="#i1"/>
                 <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                <rdf:first rdf:resource="#i1"/>
               </rdf:List>
             </swrl:arguments>
+            <swrl:builtin rdf:resource="http://sqwrl.stanford.edu/ontologies/built-ins/3.4/sqwrl.owl#select"/>
           </swrl:BuiltinAtom>
         </rdf:first>
       </swrl:AtomList>
@@ -772,8 +784,8 @@
         <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <rdf:first>
           <swrl:SameIndividualAtom>
-            <swrl:argument1 rdf:resource="#i1"/>
             <swrl:argument2 rdf:resource="#i1"/>
+            <swrl:argument1 rdf:resource="#i1"/>
           </swrl:SameIndividualAtom>
         </rdf:first>
       </swrl:AtomList>
@@ -786,30 +798,30 @@
     >true</swrla:isRuleEnabled>
     <swrl:head>
       <swrl:AtomList>
-        <rdf:first>
-          <swrl:SameIndividualAtom>
-            <swrl:argument1>
-              <Person rdf:ID="i17"/>
-            </swrl:argument1>
-            <swrl:argument2>
-              <Person rdf:ID="i18"/>
-            </swrl:argument2>
-          </swrl:SameIndividualAtom>
-        </rdf:first>
         <rdf:rest>
           <swrl:AtomList>
-            <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
             <rdf:first>
               <swrl:IndividualPropertyAtom>
-                <swrl:propertyPredicate rdf:resource="#hasSibling"/>
+                <swrl:argument2>
+                  <Person rdf:ID="i17"/>
+                </swrl:argument2>
                 <swrl:argument1>
                   <Person rdf:ID="i16"/>
                 </swrl:argument1>
-                <swrl:argument2 rdf:resource="#i17"/>
+                <swrl:propertyPredicate rdf:resource="#hasSibling"/>
               </swrl:IndividualPropertyAtom>
             </rdf:first>
+            <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
           </swrl:AtomList>
         </rdf:rest>
+        <rdf:first>
+          <swrl:SameIndividualAtom>
+            <swrl:argument2>
+              <Person rdf:ID="i18"/>
+            </swrl:argument2>
+            <swrl:argument1 rdf:resource="#i17"/>
+          </swrl:SameIndividualAtom>
+        </rdf:first>
       </swrl:AtomList>
     </swrl:head>
     <swrl:body>
@@ -823,18 +835,18 @@
     >i54, i55</rdfs:comment>
     <swrl:body>
       <swrl:AtomList>
-        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <rdf:first>
           <swrl:IndividualPropertyAtom>
-            <swrl:propertyPredicate rdf:resource="#partOf"/>
-            <swrl:argument1>
-              <Person rdf:ID="i54"/>
-            </swrl:argument1>
             <swrl:argument2>
               <Person rdf:ID="i55"/>
             </swrl:argument2>
+            <swrl:argument1>
+              <Person rdf:ID="i54"/>
+            </swrl:argument1>
+            <swrl:propertyPredicate rdf:resource="#partOf"/>
           </swrl:IndividualPropertyAtom>
         </rdf:first>
+        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
       </swrl:AtomList>
     </swrl:body>
     <swrl:head>
@@ -844,13 +856,13 @@
           <swrl:BuiltinAtom>
             <swrl:arguments>
               <rdf:List>
+                <rdf:first rdf:resource="#i54"/>
                 <rdf:rest>
                   <rdf:List>
                     <rdf:first rdf:resource="#i55"/>
                     <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
                   </rdf:List>
                 </rdf:rest>
-                <rdf:first rdf:resource="#i54"/>
               </rdf:List>
             </swrl:arguments>
             <swrl:builtin rdf:resource="http://sqwrl.stanford.edu/ontologies/built-ins/3.4/sqwrl.owl#select"/>
@@ -864,6 +876,7 @@
     >p2, p3</rdfs:comment>
     <swrl:head>
       <swrl:AtomList>
+        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <rdf:first>
           <swrl:BuiltinAtom>
             <swrl:builtin rdf:resource="http://sqwrl.stanford.edu/ontologies/built-ins/3.4/sqwrl.owl#select"/>
@@ -871,10 +884,10 @@
               <rdf:List>
                 <rdf:rest>
                   <rdf:List>
+                    <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
                     <rdf:first>
                       <Person rdf:ID="i3"/>
                     </rdf:first>
-                    <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
                   </rdf:List>
                 </rdf:rest>
                 <rdf:first>
@@ -884,17 +897,10 @@
             </swrl:arguments>
           </swrl:BuiltinAtom>
         </rdf:first>
-        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
       </swrl:AtomList>
     </swrl:head>
     <swrl:body>
       <swrl:AtomList>
-        <rdf:first>
-          <swrl:SameIndividualAtom>
-            <swrl:argument2 rdf:resource="#i2"/>
-            <swrl:argument1 rdf:resource="#i2"/>
-          </swrl:SameIndividualAtom>
-        </rdf:first>
         <rdf:rest>
           <swrl:AtomList>
             <rdf:first>
@@ -906,6 +912,12 @@
             <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
           </swrl:AtomList>
         </rdf:rest>
+        <rdf:first>
+          <swrl:SameIndividualAtom>
+            <swrl:argument2 rdf:resource="#i2"/>
+            <swrl:argument1 rdf:resource="#i2"/>
+          </swrl:SameIndividualAtom>
+        </rdf:first>
       </swrl:AtomList>
     </swrl:body>
     <swrla:isRuleEnabled rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
@@ -918,12 +930,12 @@
         <rdf:first>
           <swrl:IndividualPropertyAtom>
             <swrl:propertyPredicate rdf:resource="#hasSibling"/>
-            <swrl:argument2>
-              <Person rdf:ID="i42"/>
-            </swrl:argument2>
             <swrl:argument1>
               <Person rdf:ID="i41"/>
             </swrl:argument1>
+            <swrl:argument2>
+              <Person rdf:ID="i42"/>
+            </swrl:argument2>
           </swrl:IndividualPropertyAtom>
         </rdf:first>
       </swrl:AtomList>
@@ -934,7 +946,6 @@
     <swrla:isRuleEnabled rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
     >true</swrla:isRuleEnabled>
   </swrl:Imp>
-  <swrl:AtomList/>
   <swrl:Imp rdf:ID="test-table5-prp-dom-dp-query">
     <swrl:body>
       <swrl:AtomList>
@@ -956,13 +967,13 @@
         <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <rdf:first>
           <swrl:BuiltinAtom>
-            <swrl:builtin rdf:resource="http://sqwrl.stanford.edu/ontologies/built-ins/3.4/sqwrl.owl#select"/>
             <swrl:arguments>
               <rdf:List>
                 <rdf:first rdf:resource="#i32"/>
                 <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
               </rdf:List>
             </swrl:arguments>
+            <swrl:builtin rdf:resource="http://sqwrl.stanford.edu/ontologies/built-ins/3.4/sqwrl.owl#select"/>
           </swrl:BuiltinAtom>
         </rdf:first>
       </swrl:AtomList>
@@ -978,10 +989,10 @@
         <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <rdf:first>
           <swrl:DatavaluedPropertyAtom>
-            <swrl:propertyPredicate rdf:resource="#hasAge"/>
             <swrl:argument1 rdf:resource="#i4"/>
             <swrl:argument2 rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
             >33</swrl:argument2>
+            <swrl:propertyPredicate rdf:resource="#hasAge"/>
           </swrl:DatavaluedPropertyAtom>
         </rdf:first>
       </swrl:AtomList>
@@ -993,6 +1004,7 @@
   <swrl:Imp rdf:ID="test-table4-eq-rep-s-c-query">
     <swrl:head>
       <swrl:AtomList>
+        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <rdf:first>
           <swrl:BuiltinAtom>
             <swrl:arguments>
@@ -1006,18 +1018,17 @@
             <swrl:builtin rdf:resource="http://sqwrl.stanford.edu/ontologies/built-ins/3.4/sqwrl.owl#select"/>
           </swrl:BuiltinAtom>
         </rdf:first>
-        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
       </swrl:AtomList>
     </swrl:head>
     <swrl:body>
       <swrl:AtomList>
-        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <rdf:first>
           <swrl:ClassAtom>
-            <swrl:argument1 rdf:resource="#i9"/>
             <swrl:classPredicate rdf:resource="#Person"/>
+            <swrl:argument1 rdf:resource="#i9"/>
           </swrl:ClassAtom>
         </rdf:first>
+        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
       </swrl:AtomList>
     </swrl:body>
     <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
@@ -1033,27 +1044,27 @@
       <swrl:AtomList>
         <rdf:rest>
           <swrl:AtomList>
+            <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
             <rdf:first>
               <swrl:IndividualPropertyAtom>
-                <swrl:argument2>
-                  <Prescription rdf:ID="prescription1"/>
-                </swrl:argument2>
                 <swrl:propertyPredicate rdf:resource="#hasPrescription"/>
                 <swrl:argument1>
                   <Person rdf:ID="i39"/>
                 </swrl:argument1>
+                <swrl:argument2>
+                  <Prescription rdf:ID="prescription1"/>
+                </swrl:argument2>
               </swrl:IndividualPropertyAtom>
             </rdf:first>
-            <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
           </swrl:AtomList>
         </rdf:rest>
         <rdf:first>
           <swrl:IndividualPropertyAtom>
+            <swrl:propertyPredicate rdf:resource="#hasPrescription"/>
+            <swrl:argument2 rdf:resource="#prescription1"/>
             <swrl:argument1>
               <Person rdf:ID="i38"/>
             </swrl:argument1>
-            <swrl:argument2 rdf:resource="#prescription1"/>
-            <swrl:propertyPredicate rdf:resource="#hasPrescription"/>
           </swrl:IndividualPropertyAtom>
         </rdf:first>
       </swrl:AtomList>
@@ -1066,8 +1077,8 @@
       <swrl:AtomList>
         <rdf:first>
           <swrl:ClassAtom>
-            <swrl:argument1 rdf:resource="#i34"/>
             <swrl:classPredicate rdf:resource="#Male"/>
+            <swrl:argument1 rdf:resource="#i34"/>
           </swrl:ClassAtom>
         </rdf:first>
         <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
@@ -1082,13 +1093,13 @@
         <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <rdf:first>
           <swrl:BuiltinAtom>
+            <swrl:builtin rdf:resource="http://sqwrl.stanford.edu/ontologies/built-ins/3.4/sqwrl.owl#select"/>
             <swrl:arguments>
               <rdf:List>
-                <rdf:first rdf:resource="#i34"/>
                 <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                <rdf:first rdf:resource="#i34"/>
               </rdf:List>
             </swrl:arguments>
-            <swrl:builtin rdf:resource="http://sqwrl.stanford.edu/ontologies/built-ins/3.4/sqwrl.owl#select"/>
           </swrl:BuiltinAtom>
         </rdf:first>
       </swrl:AtomList>
@@ -1105,8 +1116,8 @@
         <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <rdf:first>
           <swrl:SameIndividualAtom>
-            <swrl:argument2 rdf:resource="#i5"/>
             <swrl:argument1 rdf:resource="#i4"/>
+            <swrl:argument2 rdf:resource="#i5"/>
           </swrl:SameIndividualAtom>
         </rdf:first>
       </swrl:AtomList>
@@ -1120,25 +1131,25 @@
     >true</swrla:isRuleEnabled>
     <swrl:head>
       <swrl:AtomList>
-        <rdf:first>
-          <swrl:SameIndividualAtom>
-            <swrl:argument1 rdf:resource="#i9"/>
-            <swrl:argument2>
-              <Person rdf:ID="i10"/>
-            </swrl:argument2>
-          </swrl:SameIndividualAtom>
-        </rdf:first>
         <rdf:rest>
           <swrl:AtomList>
+            <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
             <rdf:first>
               <swrl:ClassAtom>
-                <swrl:argument1 rdf:resource="#i10"/>
+                <swrl:argument1>
+                  <Person rdf:ID="i10"/>
+                </swrl:argument1>
                 <swrl:classPredicate rdf:resource="#Person"/>
               </swrl:ClassAtom>
             </rdf:first>
-            <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
           </swrl:AtomList>
         </rdf:rest>
+        <rdf:first>
+          <swrl:SameIndividualAtom>
+            <swrl:argument1 rdf:resource="#i9"/>
+            <swrl:argument2 rdf:resource="#i10"/>
+          </swrl:SameIndividualAtom>
+        </rdf:first>
       </swrl:AtomList>
     </swrl:head>
   </swrl:Imp>
@@ -1147,15 +1158,15 @@
     >true</swrla:isRuleEnabled>
     <swrl:body>
       <swrl:AtomList>
-        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <rdf:first>
           <swrl:ClassAtom>
             <swrl:argument1>
-              <TallBuilding rdf:ID="b2"/>
+              <TallSolidBuilding rdf:ID="b2"/>
             </swrl:argument1>
             <swrl:classPredicate rdf:resource="#Building"/>
           </swrl:ClassAtom>
         </rdf:first>
+        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
       </swrl:AtomList>
     </swrl:body>
     <swrl:head>
@@ -1163,13 +1174,13 @@
         <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <rdf:first>
           <swrl:BuiltinAtom>
+            <swrl:builtin rdf:resource="http://sqwrl.stanford.edu/ontologies/built-ins/3.4/sqwrl.owl#select"/>
             <swrl:arguments>
               <rdf:List>
                 <rdf:first rdf:resource="#b2"/>
                 <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
               </rdf:List>
             </swrl:arguments>
-            <swrl:builtin rdf:resource="http://sqwrl.stanford.edu/ontologies/built-ins/3.4/sqwrl.owl#select"/>
           </swrl:BuiltinAtom>
         </rdf:first>
       </swrl:AtomList>
@@ -1182,7 +1193,6 @@
     >true</swrla:isRuleEnabled>
     <swrl:head>
       <swrl:AtomList>
-        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <rdf:first>
           <swrl:BuiltinAtom>
             <swrl:builtin rdf:resource="http://sqwrl.stanford.edu/ontologies/built-ins/3.4/sqwrl.owl#select"/>
@@ -1199,6 +1209,7 @@
             </swrl:arguments>
           </swrl:BuiltinAtom>
         </rdf:first>
+        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
       </swrl:AtomList>
     </swrl:head>
     <swrl:body>
@@ -1206,8 +1217,8 @@
         <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <rdf:first>
           <swrl:SameIndividualAtom>
-            <swrl:argument1 rdf:resource="#i36"/>
             <swrl:argument2 rdf:resource="#i37"/>
+            <swrl:argument1 rdf:resource="#i36"/>
           </swrl:SameIndividualAtom>
         </rdf:first>
       </swrl:AtomList>
@@ -1240,33 +1251,33 @@
   <swrl:Imp rdf:ID="test-table7-cax-eqc1-query">
     <swrl:body>
       <swrl:AtomList>
+        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <rdf:first>
           <swrl:ClassAtom>
-            <swrl:classPredicate rdf:resource="#Man"/>
             <swrl:argument1>
               <Person rdf:ID="i71"/>
             </swrl:argument1>
+            <swrl:classPredicate rdf:resource="#Man"/>
           </swrl:ClassAtom>
         </rdf:first>
-        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
       </swrl:AtomList>
     </swrl:body>
     <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >i71</rdfs:comment>
     <swrl:head>
       <swrl:AtomList>
+        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <rdf:first>
           <swrl:BuiltinAtom>
             <swrl:arguments>
               <rdf:List>
-                <rdf:first rdf:resource="#i71"/>
                 <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                <rdf:first rdf:resource="#i71"/>
               </rdf:List>
             </swrl:arguments>
             <swrl:builtin rdf:resource="http://sqwrl.stanford.edu/ontologies/built-ins/3.4/sqwrl.owl#select"/>
           </swrl:BuiltinAtom>
         </rdf:first>
-        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
       </swrl:AtomList>
     </swrl:head>
     <swrla:isRuleEnabled rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
@@ -1275,23 +1286,23 @@
   <swrl:Imp rdf:ID="test-table4-eq-rep-o-op-query">
     <swrl:head>
       <swrl:AtomList>
+        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <rdf:first>
           <swrl:BuiltinAtom>
-            <swrl:builtin rdf:resource="http://sqwrl.stanford.edu/ontologies/built-ins/3.4/sqwrl.owl#select"/>
             <swrl:arguments>
               <rdf:List>
                 <rdf:first rdf:resource="#i16"/>
                 <rdf:rest>
                   <rdf:List>
-                    <rdf:first rdf:resource="#i18"/>
                     <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                    <rdf:first rdf:resource="#i18"/>
                   </rdf:List>
                 </rdf:rest>
               </rdf:List>
             </swrl:arguments>
+            <swrl:builtin rdf:resource="http://sqwrl.stanford.edu/ontologies/built-ins/3.4/sqwrl.owl#select"/>
           </swrl:BuiltinAtom>
         </rdf:first>
-        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
       </swrl:AtomList>
     </swrl:head>
     <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
@@ -1300,53 +1311,53 @@
     >true</swrla:isRuleEnabled>
     <swrl:body>
       <swrl:AtomList>
+        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <rdf:first>
           <swrl:IndividualPropertyAtom>
-            <swrl:argument1 rdf:resource="#i16"/>
             <swrl:argument2 rdf:resource="#i18"/>
+            <swrl:argument1 rdf:resource="#i16"/>
             <swrl:propertyPredicate rdf:resource="#hasSibling"/>
           </swrl:IndividualPropertyAtom>
         </rdf:first>
-        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
       </swrl:AtomList>
     </swrl:body>
   </swrl:Imp>
   <swrl:Imp rdf:ID="test-table5-pro-spo1-op-query">
     <swrl:head>
       <swrl:AtomList>
-        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <rdf:first>
           <swrl:BuiltinAtom>
+            <swrl:builtin rdf:resource="http://sqwrl.stanford.edu/ontologies/built-ins/3.4/sqwrl.owl#select"/>
             <swrl:arguments>
               <rdf:List>
-                <rdf:first>
-                  <Person rdf:ID="i48"/>
-                </rdf:first>
                 <rdf:rest>
                   <rdf:List>
-                    <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
                     <rdf:first>
                       <Person rdf:ID="i49"/>
                     </rdf:first>
+                    <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
                   </rdf:List>
                 </rdf:rest>
+                <rdf:first>
+                  <Person rdf:ID="i48"/>
+                </rdf:first>
               </rdf:List>
             </swrl:arguments>
-            <swrl:builtin rdf:resource="http://sqwrl.stanford.edu/ontologies/built-ins/3.4/sqwrl.owl#select"/>
           </swrl:BuiltinAtom>
         </rdf:first>
+        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
       </swrl:AtomList>
     </swrl:head>
     <swrl:body>
       <swrl:AtomList>
-        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <rdf:first>
           <swrl:IndividualPropertyAtom>
+            <swrl:argument1 rdf:resource="#i48"/>
             <swrl:argument2 rdf:resource="#i49"/>
             <swrl:propertyPredicate rdf:resource="#hasSibling"/>
-            <swrl:argument1 rdf:resource="#i48"/>
           </swrl:IndividualPropertyAtom>
         </rdf:first>
+        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
       </swrl:AtomList>
     </swrl:body>
     <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
@@ -1360,15 +1371,15 @@
     </swrl:body>
     <swrl:head>
       <swrl:AtomList>
-        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <rdf:first>
           <swrl:DatavaluedPropertyAtom>
-            <swrl:argument1 rdf:resource="#i50"/>
             <swrl:argument2 rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
             >45</swrl:argument2>
             <swrl:propertyPredicate rdf:resource="#hasAge"/>
+            <swrl:argument1 rdf:resource="#i50"/>
           </swrl:DatavaluedPropertyAtom>
         </rdf:first>
+        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
       </swrl:AtomList>
     </swrl:head>
     <swrla:isRuleEnabled rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
@@ -1383,13 +1394,13 @@
             <swrl:builtin rdf:resource="http://sqwrl.stanford.edu/ontologies/built-ins/3.4/sqwrl.owl#select"/>
             <swrl:arguments>
               <rdf:List>
+                <rdf:first rdf:resource="#i6"/>
                 <rdf:rest>
                   <rdf:List>
                     <rdf:first rdf:resource="#i8"/>
                     <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
                   </rdf:List>
                 </rdf:rest>
-                <rdf:first rdf:resource="#i6"/>
               </rdf:List>
             </swrl:arguments>
           </swrl:BuiltinAtom>
@@ -1417,26 +1428,26 @@
       <swrl:AtomList>
         <rdf:rest>
           <swrl:AtomList>
-            <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
             <rdf:first>
               <swrl:IndividualPropertyAtom>
                 <swrl:propertyPredicate rdf:resource="#hasSibling"/>
-                <swrl:argument1>
-                  <Person rdf:ID="i11"/>
-                </swrl:argument1>
                 <swrl:argument2>
                   <Person rdf:ID="i13"/>
                 </swrl:argument2>
+                <swrl:argument1>
+                  <Person rdf:ID="i11"/>
+                </swrl:argument1>
               </swrl:IndividualPropertyAtom>
             </rdf:first>
+            <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
           </swrl:AtomList>
         </rdf:rest>
         <rdf:first>
           <swrl:SameIndividualAtom>
-            <swrl:argument1 rdf:resource="#i11"/>
             <swrl:argument2>
               <Person rdf:ID="i12"/>
             </swrl:argument2>
+            <swrl:argument1 rdf:resource="#i11"/>
           </swrl:SameIndividualAtom>
         </rdf:first>
       </swrl:AtomList>
@@ -1451,25 +1462,25 @@
   <swrl:Imp rdf:ID="test-table7-cax-dw-rule">
     <swrl:head>
       <swrl:AtomList>
+        <rdf:rest>
+          <swrl:AtomList>
+            <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+            <rdf:first>
+              <swrl:ClassAtom>
+                <swrl:argument1>
+                  <Person rdf:ID="i73"/>
+                </swrl:argument1>
+                <swrl:classPredicate rdf:resource="#Female"/>
+              </swrl:ClassAtom>
+            </rdf:first>
+          </swrl:AtomList>
+        </rdf:rest>
         <rdf:first>
           <swrl:ClassAtom>
-            <swrl:argument1>
-              <Person rdf:ID="i73"/>
-            </swrl:argument1>
+            <swrl:argument1 rdf:resource="#i73"/>
             <swrl:classPredicate rdf:resource="#Male"/>
           </swrl:ClassAtom>
         </rdf:first>
-        <rdf:rest>
-          <swrl:AtomList>
-            <rdf:first>
-              <swrl:ClassAtom>
-                <swrl:classPredicate rdf:resource="#Female"/>
-                <swrl:argument1 rdf:resource="#i73"/>
-              </swrl:ClassAtom>
-            </rdf:first>
-            <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
-          </swrl:AtomList>
-        </rdf:rest>
       </swrl:AtomList>
     </swrl:head>
     <swrl:body>
@@ -1483,6 +1494,7 @@
       <swrl:AtomList>
         <rdf:first>
           <swrl:BuiltinAtom>
+            <swrl:builtin rdf:resource="http://sqwrl.stanford.edu/ontologies/built-ins/3.4/sqwrl.owl#select"/>
             <swrl:arguments>
               <rdf:List>
                 <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
@@ -1491,7 +1503,6 @@
                 </rdf:first>
               </rdf:List>
             </swrl:arguments>
-            <swrl:builtin rdf:resource="http://sqwrl.stanford.edu/ontologies/built-ins/3.4/sqwrl.owl#select"/>
           </swrl:BuiltinAtom>
         </rdf:first>
         <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
@@ -1499,13 +1510,13 @@
     </swrl:head>
     <swrl:body>
       <swrl:AtomList>
-        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <rdf:first>
           <swrl:ClassAtom>
-            <swrl:classPredicate rdf:resource="#Person"/>
             <swrl:argument1 rdf:resource="#i70"/>
+            <swrl:classPredicate rdf:resource="#Person"/>
           </swrl:ClassAtom>
         </rdf:first>
+        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
       </swrl:AtomList>
     </swrl:body>
     <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
@@ -1513,12 +1524,12 @@
     <swrla:isRuleEnabled rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
     >true</swrla:isRuleEnabled>
   </swrl:Imp>
+  <swrl:AtomList/>
   <swrl:Imp rdf:ID="test-table5-spo1-dp-query">
     <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >i50, 45</rdfs:comment>
     <swrl:body>
       <swrl:AtomList>
-        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <rdf:first>
           <swrl:DatavaluedPropertyAtom>
             <swrl:propertyPredicate rdf:resource="#hasMeasurement"/>
@@ -1527,18 +1538,18 @@
             >45</swrl:argument2>
           </swrl:DatavaluedPropertyAtom>
         </rdf:first>
+        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
       </swrl:AtomList>
     </swrl:body>
     <swrla:isRuleEnabled rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
     >true</swrla:isRuleEnabled>
     <swrl:head>
       <swrl:AtomList>
+        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <rdf:first>
           <swrl:BuiltinAtom>
-            <swrl:builtin rdf:resource="http://sqwrl.stanford.edu/ontologies/built-ins/3.4/sqwrl.owl#select"/>
             <swrl:arguments>
               <rdf:List>
-                <rdf:first rdf:resource="#i50"/>
                 <rdf:rest>
                   <rdf:List>
                     <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
@@ -1546,47 +1557,48 @@
                     >45</rdf:first>
                   </rdf:List>
                 </rdf:rest>
+                <rdf:first rdf:resource="#i50"/>
               </rdf:List>
             </swrl:arguments>
+            <swrl:builtin rdf:resource="http://sqwrl.stanford.edu/ontologies/built-ins/3.4/sqwrl.owl#select"/>
           </swrl:BuiltinAtom>
         </rdf:first>
-        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
       </swrl:AtomList>
     </swrl:head>
   </swrl:Imp>
   <swrl:Imp rdf:ID="test-table5-prp-ifp-query">
     <swrl:head>
       <swrl:AtomList>
-        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <rdf:first>
           <swrl:BuiltinAtom>
             <swrl:builtin rdf:resource="http://sqwrl.stanford.edu/ontologies/built-ins/3.4/sqwrl.owl#select"/>
             <swrl:arguments>
               <rdf:List>
-                <rdf:first rdf:resource="#i38"/>
                 <rdf:rest>
                   <rdf:List>
-                    <rdf:first rdf:resource="#i39"/>
                     <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                    <rdf:first rdf:resource="#i39"/>
                   </rdf:List>
                 </rdf:rest>
+                <rdf:first rdf:resource="#i38"/>
               </rdf:List>
             </swrl:arguments>
           </swrl:BuiltinAtom>
         </rdf:first>
+        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
       </swrl:AtomList>
     </swrl:head>
     <swrla:isRuleEnabled rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
     >true</swrla:isRuleEnabled>
     <swrl:body>
       <swrl:AtomList>
+        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <rdf:first>
           <swrl:SameIndividualAtom>
             <swrl:argument1 rdf:resource="#i38"/>
             <swrl:argument2 rdf:resource="#i39"/>
           </swrl:SameIndividualAtom>
         </rdf:first>
-        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
       </swrl:AtomList>
     </swrl:body>
     <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
@@ -1599,7 +1611,6 @@
     >true</swrla:isRuleEnabled>
     <swrl:body>
       <swrl:AtomList>
-        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <rdf:first>
           <swrl:IndividualPropertyAtom>
             <swrl:propertyPredicate rdf:resource="#hasPart"/>
@@ -1609,6 +1620,7 @@
             </swrl:argument2>
           </swrl:IndividualPropertyAtom>
         </rdf:first>
+        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
       </swrl:AtomList>
     </swrl:body>
     <swrl:head>
@@ -1618,13 +1630,13 @@
             <swrl:builtin rdf:resource="http://sqwrl.stanford.edu/ontologies/built-ins/3.4/sqwrl.owl#select"/>
             <swrl:arguments>
               <rdf:List>
-                <rdf:first rdf:resource="#i51"/>
                 <rdf:rest>
                   <rdf:List>
-                    <rdf:first rdf:resource="#i52"/>
                     <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                    <rdf:first rdf:resource="#i52"/>
                   </rdf:List>
                 </rdf:rest>
+                <rdf:first rdf:resource="#i51"/>
               </rdf:List>
             </swrl:arguments>
           </swrl:BuiltinAtom>
@@ -1640,10 +1652,10 @@
       <swrl:AtomList>
         <rdf:first>
           <swrl:DatavaluedPropertyAtom>
+            <swrl:propertyPredicate rdf:resource="#hasBMI"/>
+            <swrl:argument1 rdf:resource="#i32"/>
             <swrl:argument2 rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
             >23.4</swrl:argument2>
-            <swrl:argument1 rdf:resource="#i32"/>
-            <swrl:propertyPredicate rdf:resource="#hasBMI"/>
           </swrl:DatavaluedPropertyAtom>
         </rdf:first>
         <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
@@ -1661,14 +1673,14 @@
     </swrl:body>
     <swrl:head>
       <swrl:AtomList>
-        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <rdf:first>
           <swrl:IndividualPropertyAtom>
-            <swrl:propertyPredicate rdf:resource="#hasBrother"/>
             <swrl:argument1 rdf:resource="#i48"/>
             <swrl:argument2 rdf:resource="#i49"/>
+            <swrl:propertyPredicate rdf:resource="#hasBrother"/>
           </swrl:IndividualPropertyAtom>
         </rdf:first>
+        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
       </swrl:AtomList>
     </swrl:head>
   </swrl:Imp>
@@ -1679,14 +1691,14 @@
     </swrl:body>
     <swrl:head>
       <swrl:AtomList>
+        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <rdf:first>
           <swrl:IndividualPropertyAtom>
-            <swrl:propertyPredicate rdf:resource="#hasBrother"/>
             <swrl:argument2 rdf:resource="#i51"/>
             <swrl:argument1 rdf:resource="#i50"/>
+            <swrl:propertyPredicate rdf:resource="#hasBrother"/>
           </swrl:IndividualPropertyAtom>
         </rdf:first>
-        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
       </swrl:AtomList>
     </swrl:head>
     <swrla:isRuleEnabled rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
@@ -1698,8 +1710,8 @@
         <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <rdf:first>
           <swrl:ClassAtom>
+            <swrl:classPredicate rdf:resource="#TallSolidBuilding"/>
             <swrl:argument1 rdf:resource="#b2"/>
-            <swrl:classPredicate rdf:resource="#TallBuilding"/>
           </swrl:ClassAtom>
         </rdf:first>
       </swrl:AtomList>
@@ -1710,11 +1722,9 @@
       <swrl:AtomList/>
     </swrl:body>
   </swrl:Imp>
-  <swrl:AtomList/>
   <swrl:Imp rdf:ID="test-table5-prp-eqp1-op-rule">
     <swrl:head>
       <swrl:AtomList>
-        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <rdf:first>
           <swrl:IndividualPropertyAtom>
             <swrl:argument2 rdf:resource="#i52"/>
@@ -1722,6 +1732,7 @@
             <swrl:propertyPredicate rdf:resource="#partOf"/>
           </swrl:IndividualPropertyAtom>
         </rdf:first>
+        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
       </swrl:AtomList>
     </swrl:head>
     <swrla:isRuleEnabled rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
@@ -1734,11 +1745,11 @@
   <swrl:Imp rdf:ID="test-table5-eqp2-dp-query">
     <swrl:head>
       <swrl:AtomList>
-        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <rdf:first>
           <swrl:BuiltinAtom>
             <swrl:arguments>
               <rdf:List>
+                <rdf:first rdf:resource="#i56"/>
                 <rdf:rest>
                   <rdf:List>
                     <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
@@ -1746,25 +1757,25 @@
                     <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
                   </rdf:List>
                 </rdf:rest>
-                <rdf:first rdf:resource="#i56"/>
               </rdf:List>
             </swrl:arguments>
             <swrl:builtin rdf:resource="http://sqwrl.stanford.edu/ontologies/built-ins/3.4/sqwrl.owl#select"/>
           </swrl:BuiltinAtom>
         </rdf:first>
+        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
       </swrl:AtomList>
     </swrl:head>
     <swrl:body>
       <swrl:AtomList>
+        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <rdf:first>
           <swrl:DatavaluedPropertyAtom>
+            <swrl:argument1 rdf:resource="#i56"/>
             <swrl:argument2 rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
             >23.4</swrl:argument2>
-            <swrl:argument1 rdf:resource="#i56"/>
             <swrl:propertyPredicate rdf:resource="#hasBMI"/>
           </swrl:DatavaluedPropertyAtom>
         </rdf:first>
-        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
       </swrl:AtomList>
     </swrl:body>
     <swrla:isRuleEnabled rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
@@ -1796,7 +1807,6 @@
     >i60, i59</rdfs:comment>
     <swrl:body>
       <swrl:AtomList>
-        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <rdf:first>
           <swrl:IndividualPropertyAtom>
             <swrl:argument2>
@@ -1808,12 +1818,14 @@
             <swrl:propertyPredicate rdf:resource="#drives"/>
           </swrl:IndividualPropertyAtom>
         </rdf:first>
+        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
       </swrl:AtomList>
     </swrl:body>
     <swrla:isRuleEnabled rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
     >true</swrla:isRuleEnabled>
     <swrl:head>
       <swrl:AtomList>
+        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <rdf:first>
           <swrl:BuiltinAtom>
             <swrl:arguments>
@@ -1830,7 +1842,6 @@
             <swrl:builtin rdf:resource="http://sqwrl.stanford.edu/ontologies/built-ins/3.4/sqwrl.owl#select"/>
           </swrl:BuiltinAtom>
         </rdf:first>
-        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
       </swrl:AtomList>
     </swrl:head>
   </swrl:Imp>
@@ -1839,6 +1850,7 @@
     >i62, i61</rdfs:comment>
     <swrl:body>
       <swrl:AtomList>
+        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <rdf:first>
           <swrl:IndividualPropertyAtom>
             <swrl:propertyPredicate rdf:resource="#hasDriver"/>
@@ -1846,21 +1858,21 @@
             <swrl:argument1 rdf:resource="#i62"/>
           </swrl:IndividualPropertyAtom>
         </rdf:first>
-        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
       </swrl:AtomList>
     </swrl:body>
     <swrla:isRuleEnabled rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
     >true</swrla:isRuleEnabled>
     <swrl:head>
       <swrl:AtomList>
+        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <rdf:first>
           <swrl:BuiltinAtom>
             <swrl:arguments>
               <rdf:List>
                 <rdf:rest>
                   <rdf:List>
-                    <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
                     <rdf:first rdf:resource="#i61"/>
+                    <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
                   </rdf:List>
                 </rdf:rest>
                 <rdf:first rdf:resource="#i62"/>
@@ -1869,7 +1881,6 @@
             <swrl:builtin rdf:resource="http://sqwrl.stanford.edu/ontologies/built-ins/3.4/sqwrl.owl#select"/>
           </swrl:BuiltinAtom>
         </rdf:first>
-        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
       </swrl:AtomList>
     </swrl:head>
   </swrl:Imp>
@@ -1881,42 +1892,43 @@
     </swrl:body>
     <swrl:head>
       <swrl:AtomList>
-        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <rdf:first>
           <swrl:DatavaluedPropertyAtom>
-            <swrl:propertyPredicate rdf:resource="#hasBMI"/>
             <swrl:argument1 rdf:resource="#i51"/>
             <swrl:argument2 rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
             >34.0</swrl:argument2>
+            <swrl:propertyPredicate rdf:resource="#hasBMI"/>
           </swrl:DatavaluedPropertyAtom>
         </rdf:first>
+        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
       </swrl:AtomList>
     </swrl:head>
   </swrl:Imp>
+  <swrl:AtomList/>
   <swrl:Imp rdf:ID="test-table4-eq-rep-s-dp-rule">
     <swrl:head>
       <swrl:AtomList>
-        <rdf:first>
-          <swrl:SameIndividualAtom>
-            <swrl:argument2 rdf:resource="#i15"/>
-            <swrl:argument1>
-              <Person rdf:ID="i14"/>
-            </swrl:argument1>
-          </swrl:SameIndividualAtom>
-        </rdf:first>
         <rdf:rest>
           <swrl:AtomList>
             <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
             <rdf:first>
               <swrl:DatavaluedPropertyAtom>
-                <swrl:argument1 rdf:resource="#i14"/>
-                <swrl:propertyPredicate rdf:resource="#hasAge"/>
+                <swrl:argument1>
+                  <Person rdf:ID="i14"/>
+                </swrl:argument1>
                 <swrl:argument2 rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
                 >44</swrl:argument2>
+                <swrl:propertyPredicate rdf:resource="#hasAge"/>
               </swrl:DatavaluedPropertyAtom>
             </rdf:first>
           </swrl:AtomList>
         </rdf:rest>
+        <rdf:first>
+          <swrl:SameIndividualAtom>
+            <swrl:argument2 rdf:resource="#i15"/>
+            <swrl:argument1 rdf:resource="#i14"/>
+          </swrl:SameIndividualAtom>
+        </rdf:first>
       </swrl:AtomList>
     </swrl:head>
     <swrla:isRuleEnabled rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
@@ -1928,9 +1940,9 @@
   <swrl:Imp rdf:ID="test-table5-prp-symp-query">
     <swrl:head>
       <swrl:AtomList>
-        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <rdf:first>
           <swrl:BuiltinAtom>
+            <swrl:builtin rdf:resource="http://sqwrl.stanford.edu/ontologies/built-ins/3.4/sqwrl.owl#select"/>
             <swrl:arguments>
               <rdf:List>
                 <rdf:rest>
@@ -1942,21 +1954,21 @@
                 <rdf:first rdf:resource="#i42"/>
               </rdf:List>
             </swrl:arguments>
-            <swrl:builtin rdf:resource="http://sqwrl.stanford.edu/ontologies/built-ins/3.4/sqwrl.owl#select"/>
           </swrl:BuiltinAtom>
         </rdf:first>
+        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
       </swrl:AtomList>
     </swrl:head>
     <swrl:body>
       <swrl:AtomList>
+        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <rdf:first>
           <swrl:IndividualPropertyAtom>
-            <swrl:propertyPredicate rdf:resource="#hasSibling"/>
-            <swrl:argument1 rdf:resource="#i42"/>
             <swrl:argument2 rdf:resource="#i41"/>
+            <swrl:argument1 rdf:resource="#i42"/>
+            <swrl:propertyPredicate rdf:resource="#hasSibling"/>
           </swrl:IndividualPropertyAtom>
         </rdf:first>
-        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
       </swrl:AtomList>
     </swrl:body>
     <swrla:isRuleEnabled rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
@@ -1985,13 +1997,13 @@
     >true</swrla:isRuleEnabled>
     <swrl:body>
       <swrl:AtomList>
+        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <rdf:first>
           <swrl:ClassAtom>
             <swrl:classPredicate rdf:resource="#Person"/>
             <swrl:argument1 rdf:resource="#i30"/>
           </swrl:ClassAtom>
         </rdf:first>
-        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
       </swrl:AtomList>
     </swrl:body>
     <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
@@ -2005,27 +2017,27 @@
     </swrl:body>
     <swrl:head>
       <swrl:AtomList>
-        <rdf:rest>
-          <swrl:AtomList>
-            <rdf:first>
-              <swrl:IndividualPropertyAtom>
-                <swrl:propertyPredicate rdf:resource="#hasSibling"/>
-                <swrl:argument2 rdf:resource="#i47"/>
-                <swrl:argument1>
-                  <Person rdf:ID="i46"/>
-                </swrl:argument1>
-              </swrl:IndividualPropertyAtom>
-            </rdf:first>
-            <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
-          </swrl:AtomList>
-        </rdf:rest>
         <rdf:first>
           <swrl:IndividualPropertyAtom>
             <swrl:propertyPredicate rdf:resource="#hasSibling"/>
-            <swrl:argument2 rdf:resource="#i46"/>
+            <swrl:argument2>
+              <Person rdf:ID="i46"/>
+            </swrl:argument2>
             <swrl:argument1 rdf:resource="#i45"/>
           </swrl:IndividualPropertyAtom>
         </rdf:first>
+        <rdf:rest>
+          <swrl:AtomList>
+            <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+            <rdf:first>
+              <swrl:IndividualPropertyAtom>
+                <swrl:argument1 rdf:resource="#i46"/>
+                <swrl:argument2 rdf:resource="#i47"/>
+                <swrl:propertyPredicate rdf:resource="#hasSibling"/>
+              </swrl:IndividualPropertyAtom>
+            </rdf:first>
+          </swrl:AtomList>
+        </rdf:rest>
       </swrl:AtomList>
     </swrl:head>
   </swrl:Imp>
@@ -2037,6 +2049,7 @@
     </swrl:body>
     <swrl:head>
       <swrl:AtomList>
+        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <rdf:first>
           <swrl:ClassAtom>
             <swrl:argument1>
@@ -2045,21 +2058,20 @@
             <swrl:classPredicate rdf:resource="#Man"/>
           </swrl:ClassAtom>
         </rdf:first>
-        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
       </swrl:AtomList>
     </swrl:head>
   </swrl:Imp>
   <swrl:Imp rdf:ID="test-table5-prp-inv1-rule">
     <swrl:head>
       <swrl:AtomList>
+        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <rdf:first>
           <swrl:IndividualPropertyAtom>
-            <swrl:propertyPredicate rdf:resource="#hasDriver"/>
-            <swrl:argument1 rdf:resource="#i59"/>
             <swrl:argument2 rdf:resource="#i60"/>
+            <swrl:argument1 rdf:resource="#i59"/>
+            <swrl:propertyPredicate rdf:resource="#hasDriver"/>
           </swrl:IndividualPropertyAtom>
         </rdf:first>
-        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
       </swrl:AtomList>
     </swrl:head>
     <swrl:body>
@@ -2077,8 +2089,8 @@
         <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <rdf:first>
           <swrl:ClassAtom>
-            <swrl:argument1 rdf:resource="#i70"/>
             <swrl:classPredicate rdf:resource="#Male"/>
+            <swrl:argument1 rdf:resource="#i70"/>
           </swrl:ClassAtom>
         </rdf:first>
       </swrl:AtomList>
@@ -2091,14 +2103,14 @@
     >true</swrla:isRuleEnabled>
     <swrl:body>
       <swrl:AtomList>
+        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <rdf:first>
           <swrl:IndividualPropertyAtom>
-            <swrl:propertyPredicate rdf:resource="#hasSibling"/>
-            <swrl:argument1 rdf:resource="#i12"/>
             <swrl:argument2 rdf:resource="#i13"/>
+            <swrl:argument1 rdf:resource="#i12"/>
+            <swrl:propertyPredicate rdf:resource="#hasSibling"/>
           </swrl:IndividualPropertyAtom>
         </rdf:first>
-        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
       </swrl:AtomList>
     </swrl:body>
     <swrl:head>
@@ -2106,18 +2118,18 @@
         <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <rdf:first>
           <swrl:BuiltinAtom>
+            <swrl:builtin rdf:resource="http://sqwrl.stanford.edu/ontologies/built-ins/3.4/sqwrl.owl#select"/>
             <swrl:arguments>
               <rdf:List>
-                <rdf:first rdf:resource="#i12"/>
                 <rdf:rest>
                   <rdf:List>
                     <rdf:first rdf:resource="#i13"/>
                     <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
                   </rdf:List>
                 </rdf:rest>
+                <rdf:first rdf:resource="#i12"/>
               </rdf:List>
             </swrl:arguments>
-            <swrl:builtin rdf:resource="http://sqwrl.stanford.edu/ontologies/built-ins/3.4/sqwrl.owl#select"/>
           </swrl:BuiltinAtom>
         </rdf:first>
       </swrl:AtomList>
@@ -2134,8 +2146,8 @@
         <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <rdf:first>
           <swrl:IndividualPropertyAtom>
-            <swrl:argument1 rdf:resource="#i54"/>
             <swrl:argument2 rdf:resource="#i55"/>
+            <swrl:argument1 rdf:resource="#i54"/>
             <swrl:propertyPredicate rdf:resource="#hasPart"/>
           </swrl:IndividualPropertyAtom>
         </rdf:first>
@@ -2150,9 +2162,9 @@
         <rdf:first>
           <swrl:DatavaluedPropertyAtom>
             <swrl:propertyPredicate rdf:resource="#hasBodyMassIndex"/>
-            <swrl:argument1 rdf:resource="#i53"/>
             <swrl:argument2 rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
             >23.4</swrl:argument2>
+            <swrl:argument1 rdf:resource="#i53"/>
           </swrl:DatavaluedPropertyAtom>
         </rdf:first>
       </swrl:AtomList>
@@ -2163,24 +2175,24 @@
     >i53, 23.4</rdfs:comment>
     <swrl:head>
       <swrl:AtomList>
-        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <rdf:first>
           <swrl:BuiltinAtom>
-            <swrl:builtin rdf:resource="http://sqwrl.stanford.edu/ontologies/built-ins/3.4/sqwrl.owl#select"/>
             <swrl:arguments>
               <rdf:List>
                 <rdf:first rdf:resource="#i53"/>
                 <rdf:rest>
                   <rdf:List>
-                    <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
                     <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
                     >23.4</rdf:first>
+                    <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
                   </rdf:List>
                 </rdf:rest>
               </rdf:List>
             </swrl:arguments>
+            <swrl:builtin rdf:resource="http://sqwrl.stanford.edu/ontologies/built-ins/3.4/sqwrl.owl#select"/>
           </swrl:BuiltinAtom>
         </rdf:first>
+        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
       </swrl:AtomList>
     </swrl:head>
   </swrl:Imp>
@@ -2191,13 +2203,13 @@
     >i72</rdfs:comment>
     <swrl:body>
       <swrl:AtomList>
-        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <rdf:first>
           <swrl:ClassAtom>
-            <swrl:argument1 rdf:resource="#i72"/>
             <swrl:classPredicate rdf:resource="#Male"/>
+            <swrl:argument1 rdf:resource="#i72"/>
           </swrl:ClassAtom>
         </rdf:first>
+        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
       </swrl:AtomList>
     </swrl:body>
     <swrl:head>
@@ -2205,13 +2217,13 @@
         <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <rdf:first>
           <swrl:BuiltinAtom>
-            <swrl:builtin rdf:resource="http://sqwrl.stanford.edu/ontologies/built-ins/3.4/sqwrl.owl#select"/>
             <swrl:arguments>
               <rdf:List>
-                <rdf:first rdf:resource="#i72"/>
                 <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                <rdf:first rdf:resource="#i72"/>
               </rdf:List>
             </swrl:arguments>
+            <swrl:builtin rdf:resource="http://sqwrl.stanford.edu/ontologies/built-ins/3.4/sqwrl.owl#select"/>
           </swrl:BuiltinAtom>
         </rdf:first>
       </swrl:AtomList>
@@ -2222,13 +2234,13 @@
     >true</swrla:isRuleEnabled>
     <swrl:head>
       <swrl:AtomList>
+        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
         <rdf:first>
           <swrl:ClassAtom>
-            <swrl:classPredicate rdf:resource="#Male"/>
             <swrl:argument1 rdf:resource="#i71"/>
+            <swrl:classPredicate rdf:resource="#Male"/>
           </swrl:ClassAtom>
         </rdf:first>
-        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
       </swrl:AtomList>
     </swrl:head>
     <swrl:body>
