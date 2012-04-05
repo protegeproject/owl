@@ -13,9 +13,9 @@ import edu.stanford.smi.protegex.owl.swrl.ui.tab.SWRLTab;
 public class ViewPluginAction extends AbstractAction
 {
 	private static final long serialVersionUID = 2115603073256549503L;
-	private String pluginName;
-	private OWLModel owlModel;
-	private SWRLTab swrlTab;
+	private final String pluginName;
+	private final OWLModel owlModel;
+	private final SWRLTab swrlTab;
 
 	public ViewPluginAction(String pluginName, String tip, Icon icon, SWRLTab swrlTab, OWLModel owlModel)
 	{
@@ -28,9 +28,9 @@ public class ViewPluginAction extends AbstractAction
 
 	public void actionPerformed(ActionEvent e)
 	{
-		if (P3SWRLTabPluginManager.isVisible(pluginName))
-			P3SWRLTabPluginManager.hidePlugin(pluginName);
+		if (P3SWRLTabPluginManager.isVisible(this.pluginName))
+			P3SWRLTabPluginManager.hidePlugin(this.pluginName);
 		else
-			P3SWRLTabPluginManager.showPlugin(pluginName, swrlTab, owlModel);
+			P3SWRLTabPluginManager.showPlugin(this.pluginName, this.swrlTab, this.owlModel);
 	}
 }

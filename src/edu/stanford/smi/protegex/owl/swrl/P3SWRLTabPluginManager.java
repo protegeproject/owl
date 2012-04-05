@@ -50,7 +50,7 @@ public class P3SWRLTabPluginManager
 		}
 	};
 
-	// TODO Hack: manually load SWRLTab plugins until we can do a proper class load with the manifest
+	// TODO Hack: manually load SWRLTab plugins until we implement a proper class load with the manifest
 	static {
 		loadPlugins();
 	}
