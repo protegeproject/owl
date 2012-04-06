@@ -1,4 +1,4 @@
-// TODO: Jess and Drools rule engine and SWRL query tab are loaded explicitly here. We need a discovery mechanism using the manifest.
+// TODO: Jess and Drools rule engine and SQWRL query tab are loaded explicitly here. We need a discovery mechanism using the manifest.
 // TODO: A bit sloppy. GUI code should be refactored to ui subdirectory.
 
 package edu.stanford.smi.protegex.owl.swrl;
@@ -28,11 +28,13 @@ import edu.stanford.smi.protegex.owl.swrl.ui.tab.SWRLTab;
 /**
  * This class provides mechanisms for Protege-OWL SWRLTab plugins to register themselves and to get screen real estate in the SWRLTab.
  * <p>
+ * The {@link #setSelectedRuleName(String)} method is used by the {@link SWRLTable} to indicate the currently selected rule in the {@link SWRLTab}. The
+ * {@link #getSelectedRuleName()} call can be used by plugins to determine which rule is selected. 
+ * <p>
  * Documentation on using this class can be found <a
  * href="http://protege.stanford.edu/download/prerelease_javadoc_owl/edu/stanford/smi/protegex/owl/swrl/bridge/BridgePluginManager.html">here</a>.
  */
-public class P3SWRLTabPluginManager
-{
+public class P3SWRLTabPluginManager {
 	private static transient final Logger log = Log.getLogger(P3SWRLTabPluginManager.class);
 
 	private static HashMap<String, P3SWRLTabPluginRegistrationRecord> registeredPlugins = new HashMap<String, P3SWRLTabPluginRegistrationRecord>();
@@ -43,7 +45,7 @@ public class P3SWRLTabPluginManager
 		@Override
 		public void projectClosed(ProjectEvent event)
 		{
-			Project project = (Project)event.getSource();
+			Project project = (Project) event.getSource();
 			project.removeProjectListener(projectListener);
 			visiblePluginName = "";
 			selectedRuleName = "";
@@ -94,7 +96,7 @@ public class P3SWRLTabPluginManager
 	 * This method is called by each plugin as it is loaded to inform the SWRLTab of its presence.
 	 */
 	public static void registerPlugin(String pluginName, String ruleEngineName, String toolTip, Icon pluginIcon, Icon ruleEngineIcon, Icon reasonerIcon,
-																		P3SWRLTabPluginCreator plugin)
+			P3SWRLTabPluginCreator plugin)
 	{
 		if (registeredPlugins.containsKey(pluginName))
 			registeredPlugins.remove(pluginName);
@@ -168,7 +170,7 @@ public class P3SWRLTabPluginManager
 			log.info("Drools rule engine load failed: could not find Drools JARs - or an error occured on initialization: " + e.getMessage());
 		}
 
-		if (pluginFound) {
+		if (pluginFound) { // We only load the SQWRL plugin if there is a rule engine present to execute the queries.
 			try {
 				Class.forName("org.protege.swrltab.p3.ui.P3SWRLTabSQWRLPluginCreator");
 			} catch (ClassNotFoundException e) {
@@ -189,7 +191,7 @@ public class P3SWRLTabPluginManager
 			if (registeredPlugins.containsKey(pluginName)) {
 				P3SWRLTabPluginRegistrationRecord registration = registeredPlugins.get(pluginName);
 				Container pluginGUI = registration.getSWRLTabPlugin().getSWRLPluginGUI();
-				SWRLTab swrlTab = (SWRLTab)pluginGUI.getParent();
+				SWRLTab swrlTab = (SWRLTab) pluginGUI.getParent();
 				if (swrlTab != null) {
 					swrlTab.setVisible(false);
 					swrlTab.remove(pluginGUI);
