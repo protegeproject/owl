@@ -11,13 +11,9 @@ public interface SWRLClassAtom extends SWRLAtom {
 
     RDFResource getArgument1();
 
-
     void setArgument1(RDFResource iObject);
-
 
     RDFSClass getClassPredicate();
 
-
     void setClassPredicate(RDFSClass aClass);
-
-} // SWRLBuiltinAtom
+}
