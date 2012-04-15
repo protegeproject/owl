@@ -33,10 +33,6 @@ import edu.stanford.smi.protegex.owl.swrl.model.SWRLImp;
 import edu.stanford.smi.protegex.owl.swrl.model.SWRLNames;
 import edu.stanford.smi.protegex.owl.swrl.model.SWRLVariable;
 
-/**
- * @author Martin O'Connor <moconnor@smi.stanford.edu>
- * @author Holger Knublauch <holger@knublauch.com>
- */
 public class SWRLParser
 {
 	public final static char AND_CHAR = '\u2227'; // ^
@@ -46,10 +42,10 @@ public class SWRLParser
 
 	private final OWLModel owlModel;
 	private final SWRLFactory swrlFactory;
-	private boolean parseOnly;
-	private Tokenizer tokenizer;
 	private final Set<String> xmlSchemaSymbols = XMLSchemaDatatypes.getSlotSymbols();
 	private final Set<String> variables;
+	private boolean parseOnly;
+	private Tokenizer tokenizer;
 	private boolean inHead = false;
 
 	private final Map<String, RDFResource> cachedRDFResources;
@@ -68,11 +64,12 @@ public class SWRLParser
 		this.parseOnly = parseOnly;
 	}
 
-	// This parser will throw a SWRLParseException if it finds errors in the supplied rule. If the rule is correct but incomplete, a
-	// SWRLIncompleteRuleException (which is a subclass of SWRLParseException) will be thrown.
-	//
-	// If parseOnly is true, only checking is performed - no OWL individuals are created; if it is false, individuals are created.
-
+	/**
+	 * This parser will throw a {@link SWRLParseException} if it finds errors in the supplied rule. If the rule is correct but incomplete, a
+	 * {@link SWRLIncompleteRuleExceptionP (which is a subclass of {@link SWRLParseException}) will be thrown.
+	 * 
+	 * If {@link #parseOnly} is true, only checking is performed - no SWRL rules are created; if it is false, individuals are created.
+	 */
 	public SWRLImp parse(String rule) throws SWRLParseException
 	{
 		return parse(rule, null);
@@ -95,7 +92,7 @@ public class SWRLParser
 			head.setInHead(true);
 			body = this.swrlFactory.createAtomList();
 			head.setInHead(false);
-		} // if
+		} 
 
 		if (!this.parseOnly && !this.tokenizer.hasMoreTokens())
 			throw new SWRLParseException("Empty rule.");
@@ -111,7 +108,7 @@ public class SWRLParser
 					message = "Expecting atom.";
 				else
 					message = "Expecting atom or " + IMP_CHAR + ".";
-			} // if
+			} 
 
 			token = getNextNonSpaceToken(message);
 
@@ -138,9 +135,9 @@ public class SWRLParser
 						head.append(atom);
 					else
 						body.append(atom);
-				} // if
+				} 
 				justProcessedAtom = true;
-			} // if
+			} 
 		} while (this.tokenizer.hasMoreTokens());
 
 		if (!this.parseOnly) {
@@ -151,7 +148,7 @@ public class SWRLParser
 			else {
 				imp.setHead(head);
 				imp.setBody(body);
-			} // if
+			} 
 		} else
 			imp = null;
 
@@ -191,7 +188,7 @@ public class SWRLParser
 		if (identifier.startsWith("[")) { // A data range with an enumerated literal list
 			enumeratedList = parseDObjectList();
 			isEnumeratedList = true;
-		} // if
+		} 
 
 		if (isEnumeratedList)
 			checkAndSkipToken("(", "Expecting parameters enclosed in parentheses for data range atom.");
@@ -237,7 +234,7 @@ public class SWRLParser
 				throw new SWRLIncompleteRuleException(errorMessage);
 			else
 				throw new SWRLParseException(errorMessage);
-		} 
+		}
 
 		while (this.tokenizer.hasMoreTokens()) {
 			token = this.tokenizer.nextToken("\"");
@@ -246,7 +243,7 @@ public class SWRLParser
 			else
 				checkAndSkipToken("\"", "Expected \" to close string.");
 			return token;
-		} 
+		}
 
 		if (this.parseOnly)
 			throw new SWRLIncompleteRuleException(errorMessage);
@@ -264,13 +261,13 @@ public class SWRLParser
 				throw new SWRLIncompleteRuleException(errorMessage);
 			else
 				throw new SWRLParseException(errorMessage);
-		} 
+		}
 
 		while (this.tokenizer.hasMoreTokens()) {
 			token = this.tokenizer.nextToken();
 			if (!(token.equals(" ") || token.equals("\n") || token.equals("\t")))
 				return token;
-		} 
+		}
 
 		if (this.parseOnly)
 			throw new SWRLIncompleteRuleException(errorMessage);
@@ -322,7 +319,7 @@ public class SWRLParser
 		if (!this.parseOnly) {
 			OWLNamedClass aClass = ParserUtils.getOWLClassFromName(this.owlModel, identifier);
 			atom = this.swrlFactory.createClassAtom(aClass, iObject);
-		} // if
+		} 
 
 		checkAndSkipToken(")", "Expecting closing parenthesis for parameter for ClassAtom '" + identifier + "'.");
 
@@ -343,7 +340,7 @@ public class SWRLParser
 			if (objectProperty == null)
 				throw new SWRLParseException("no datatype property found for IndividualPropertyAtom: " + identifier);
 			atom = this.swrlFactory.createIndividualPropertyAtom(objectProperty, iObject1, iObject2);
-		} // if
+		} 
 
 		checkAndSkipToken(")", "Expecting closing parenthesis after second parameter of IndividualPropertyAtom '" + identifier + "'.");
 
@@ -377,7 +374,7 @@ public class SWRLParser
 		if (!this.parseOnly) {
 			datatypeProperty = ParserUtils.getOWLDatatypePropertyFromName(this.owlModel, identifier);
 			atom = this.swrlFactory.createDatavaluedPropertyAtom(datatypeProperty, iObject, dObject);
-		} // if
+		} 
 
 		return atom;
 	}
@@ -391,7 +388,7 @@ public class SWRLParser
 		if (!this.parseOnly) {
 			builtin = this.swrlFactory.getBuiltin(NamespaceUtil.getFullName(this.owlModel, identifier));
 			atom = this.swrlFactory.createBuiltinAtom(builtin, objects.iterator());
-		} // if
+		} 
 
 		return atom;
 	}
@@ -415,7 +412,7 @@ public class SWRLParser
 				dataRange.addPropertyValue(oneOfProperty, literalValue);
 			} // while
 			atom = this.swrlFactory.createDataRangeAtom(dataRange, dObject);
-		} // if
+		} 
 		checkAndSkipToken(")", "Expecting closing parenthesis after parameter in DataRangeAtom.");
 
 		return atom;
@@ -442,7 +439,7 @@ public class SWRLParser
 			token = getNextNonSpaceToken("Expecting ',' or ')'.");
 			if (!(token.equals(",") || token.equals(")")))
 				throw new SWRLParseException("Expecting ',' or ')', got '" + token + "'.");
-		} // if
+		} 
 		return dObjects;
 	}
 
@@ -467,7 +464,7 @@ public class SWRLParser
 			token = getNextNonSpaceToken("Expecting ',' or ')'.");
 			if (!(token.equals(",") || token.equals(")")))
 				throw new SWRLParseException("Expecting ',' or ')', got '" + token + "'.");
-		} 
+		}
 		return objects;
 	}
 
@@ -491,7 +488,7 @@ public class SWRLParser
 					parsedEntity = getOWLProperty(parsedString);
 			} else
 				parsedEntity = parseLiteral(parsedString);
-		} 
+		}
 
 		return parsedEntity;
 	}
@@ -518,7 +515,7 @@ public class SWRLParser
 			} // SWRL Full
 			else if (this.tokenizer.hasMoreTokens())
 				throw new SWRLParseException("Invalid entity name: '" + parsedString + "'.");
-		} 
+		}
 		return parsedEntity;
 	}
 
@@ -547,7 +544,7 @@ public class SWRLParser
 				this.variables.add(variableName);
 			else if (!this.variables.contains(variableName))
 				throw new SWRLParseException("Variable ?" + variableName + " referred to in consequent is not present in antecedent.");
-		} 
+		}
 
 		if (!this.parseOnly)
 			parsedEntity = getSWRLVariable(variableName);
@@ -563,7 +560,7 @@ public class SWRLParser
 			String stringValue = getNextStringToken("Expected a string.");
 			if (!this.parseOnly)
 				parsedEntity = this.owlModel.createRDFSLiteral(stringValue, this.owlModel.getXSDstring());
-		} 
+		}
 		// According to the XSD spec, xsd:boolean's have the lexical space: {true, false, 1, 0}. We don't allow {1, 0} since these are parsed
 		// as XSDints.
 		else if (parsedString.startsWith("t") || parsedString.startsWith("T") || parsedString.startsWith("f") || parsedString.startsWith("F")) {
@@ -584,7 +581,7 @@ public class SWRLParser
 					Integer.parseInt(parsedString); // Check it
 					if (!this.parseOnly)
 						parsedEntity = this.owlModel.createRDFSLiteral(parsedString, this.owlModel.getXSDint());
-				} 
+				}
 			} catch (NumberFormatException e) {
 				String errorMessage = "Invalid literal " + parsedString + ".";
 				if (this.parseOnly)
@@ -631,8 +628,8 @@ public class SWRLParser
 			char c = s.charAt(i);
 			if (!(Character.isJavaIdentifierPart(c) || c == ':' || c == '-' || c == '#' || c == '/' || c == '.')) {
 				return false;
-			} // if
-		} // for
+			} 
+		} 
 		return true;
 	}
 
@@ -762,7 +759,7 @@ public class SWRLParser
 			else {
 				resource = ParserUtils.getRDFResourceFromName(this.owlModel, resourceName);
 				this.cachedRDFResources.put(resourceName, resource); // May be null
-			} // if
+			} 
 		} else
 			resource = ParserUtils.getRDFResourceFromName(this.owlModel, resourceName);
 
@@ -801,5 +798,4 @@ public class SWRLParser
 			return buffer.toString();
 		}
 	}
-
 }
