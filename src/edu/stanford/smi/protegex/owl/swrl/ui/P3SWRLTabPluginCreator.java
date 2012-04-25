@@ -11,8 +11,8 @@ import edu.stanford.smi.protegex.owl.swrl.P3SWRLTabPluginManager;
 import edu.stanford.smi.protegex.owl.swrl.ui.tab.SWRLTab;
 
 /**
- * This interface must thus be implemented by a SWRLTab plugin to create a Java Swing {@link Container} that represents the plugin's GUI. Thus GUI will be
- * activated in the SWRLTab the provide a means of interacting with the plugin.
+ * This Protege-OWL-specific interface must be implemented by a SWRLTab plugin to create a Java Swing {@link Container} that represents the plugin's GUI. Thus
+ * GUI will be activated and gear screen real estate in the SWRLTab tab and provide a means of interacting with the plugin.
  * <p>
  * Each plugin should register itself with the bridge using the
  * {@link P3SWRLTabPluginManager#registerPlugin(String, String, Icon, Icon, Icon, P3SWRLTabPluginCreator)} method of the {@link P3SWRLTabPluginManager} class.
