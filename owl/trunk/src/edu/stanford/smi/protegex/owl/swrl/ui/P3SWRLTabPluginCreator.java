@@ -1,3 +1,4 @@
+
 package edu.stanford.smi.protegex.owl.swrl.ui;
 
 import java.awt.Component;
@@ -24,7 +25,8 @@ import edu.stanford.smi.protegex.owl.swrl.ui.tab.SWRLTab;
  * <p>
  * See <a href= "http://protege.cim3.net/cgi-bin/wiki.pl?SWRLRuleEngineBridgeFAQ#nid6QJ" >here</a> for a discussion on using this interface.
  */
-public interface P3SWRLTabPluginCreator {
+public interface P3SWRLTabPluginCreator
+{
 	Container createSWRLPluginGUI(OWLModel owlModel, String pluginName, String ruleEngineName, Icon ruleEngineIcon, Icon reasonerIcon);
 
 	Container getSWRLPluginGUI();
