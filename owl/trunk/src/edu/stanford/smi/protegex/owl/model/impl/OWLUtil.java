@@ -11,6 +11,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.JComponent;
 
@@ -70,6 +71,7 @@ import edu.stanford.smi.protegex.owl.util.OWLFrameStoreUtils;
  * @author Holger Knublauch <holger@knublauch.com>
  */
 public class OWLUtil {
+    public static final Logger LOGGER = Log.getLogger(OWLUtil.class);
 
     public static void addIsDefinedBy(Instance source, Instance instance) {
         OWLModel owlModel = (OWLModel) source.getKnowledgeBase();
@@ -718,16 +720,22 @@ public class OWLUtil {
     }
 
     public static Collection getRDFProperties(RDFResource resource) {
-        Collection result = new ArrayList();
+        Collection<RDFProperty> result = new ArrayList<RDFProperty>();
         final OWLModel owlModel = resource.getOWLModel();
         final Collection properties = new ArrayList(owlModel.getRDFProperties());
         if (!(resource instanceof RDFProperty)) {
             properties.remove(owlModel.getRDFSSubPropertyOfProperty());
         }
         for (Iterator it = properties.iterator(); it.hasNext();) {
-            RDFProperty property = (RDFProperty) it.next();
-            if (resource.getPropertyValueCount(property) > 0) {
-                result.add(property);
+            Object o = it.next();
+            if (!(o instanceof RDFProperty)) {
+                LOGGER.warning("Looking at properties \"of\" " + resource + " and found non-property " + o);
+            }
+            else {
+                RDFProperty property = (RDFProperty) o;
+                if (resource.getPropertyValueCount(property) > 0) {
+                    result.add(property);
+                }
             }
         }
         return result;
