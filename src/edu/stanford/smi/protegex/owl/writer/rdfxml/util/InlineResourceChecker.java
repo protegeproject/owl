@@ -1,6 +1,16 @@
 package edu.stanford.smi.protegex.owl.writer.rdfxml.util;
 
-import edu.stanford.smi.protegex.owl.model.*;
+import edu.stanford.smi.protegex.owl.model.OWLDatatypeProperty;
+import edu.stanford.smi.protegex.owl.model.OWLIndividual;
+import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
+import edu.stanford.smi.protegex.owl.model.OWLObjectProperty;
+import edu.stanford.smi.protegex.owl.model.OWLOntology;
+import edu.stanford.smi.protegex.owl.model.RDFExternalResource;
+import edu.stanford.smi.protegex.owl.model.RDFIndividual;
+import edu.stanford.smi.protegex.owl.model.RDFProperty;
+import edu.stanford.smi.protegex.owl.model.RDFSDatatype;
+import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
+import edu.stanford.smi.protegex.owl.model.RDFUntypedResource;
 import edu.stanford.smi.protegex.owl.model.visitor.OWLModelVisitorAdapter;
 
 /**
@@ -45,16 +55,19 @@ public class InlineResourceChecker extends OWLModelVisitorAdapter {
     }
 
 
+    @Override
     public void visitOWLOntology(OWLOntology owlOntology) {
         canInline = true;
     }
 
 
+    @Override
     public void visitOWLDatatypeProperty(OWLDatatypeProperty owlDatatypeProperty) {
         canInline = true;
     }
 
 
+    @Override
     public void visitOWLIndividual(OWLIndividual owlIndividual) {
         if (owlIndividual.getOWLModel().isAnonymousResourceName(owlIndividual.getName()) == false) {
             canInline = true;
@@ -62,16 +75,19 @@ public class InlineResourceChecker extends OWLModelVisitorAdapter {
     }
 
 
-	public void visitRDFDatatype(RDFSDatatype rdfsDatatype) {
+	@Override
+    public void visitRDFDatatype(RDFSDatatype rdfsDatatype) {
 		canInline = rdfsDatatype.isAnonymous() == false;
 	}
 
 
+    @Override
     public void visitOWLNamedClass(OWLNamedClass owlNamedClass) {
         canInline = true;
     }
 
 
+    @Override
     public void visitOWLObjectProperty(OWLObjectProperty owlObjectProperty) {
         canInline = true;
     }
@@ -82,6 +98,7 @@ public class InlineResourceChecker extends OWLModelVisitorAdapter {
     }
 
 
+    @Override
     public void visitRDFIndividual(RDFIndividual rdfIndividual) {
         if (rdfIndividual.getOWLModel().isAnonymousResourceName(rdfIndividual.getName()) == false) {
             canInline = true;
@@ -89,13 +106,22 @@ public class InlineResourceChecker extends OWLModelVisitorAdapter {
     }
 
 
+    @Override
     public void visitRDFProperty(RDFProperty rdfProperty) {
         canInline = true;
     }
 
 
+    @Override
     public void visitRDFSNamedClass(RDFSNamedClass rdfsNamedClass) {
         canInline = true;
+    }
+
+    @Override
+    public void visitRDFUntypedResource(RDFUntypedResource rdfUntypedResource) {
+        if (rdfUntypedResource.getOWLModel().isAnonymousResourceName(rdfUntypedResource.getName()) == false) {
+            canInline = true;
+        }
     }
 }
 
