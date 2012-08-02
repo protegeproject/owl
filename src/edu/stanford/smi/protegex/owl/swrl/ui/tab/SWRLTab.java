@@ -100,7 +100,7 @@ public class SWRLTab extends AbstractTabWidget
 		}
 	}
 
-	public static boolean isSuitable(Project p, Collection<Object> errors)
+	public static boolean isSuitable(Project p, Collection errors)
 	{
 		if (p.getKnowledgeBase() instanceof OWLModel) {
 			return true;
