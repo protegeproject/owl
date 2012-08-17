@@ -143,7 +143,7 @@ public class JenaExportPlugin implements ExportPlugin {
 
     }
 
-    private void exportWithNativeWriter(OWLModel oldOWLModel, URI exportFileURI, Collection errors) {
+    public void exportWithNativeWriter(OWLModel oldOWLModel, URI exportFileURI, Collection errors) {
         Log.getLogger().info("Started native export of " + getProjectName(oldOWLModel) + " on " + new Date());
         long t0 = System.currentTimeMillis();
 
