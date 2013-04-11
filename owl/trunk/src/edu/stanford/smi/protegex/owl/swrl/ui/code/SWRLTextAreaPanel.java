@@ -26,7 +26,7 @@ import edu.stanford.smi.protegex.owl.ui.dialogs.ModalDialogFactory;
 
 /**
  * A panel which can be used to edit an OWL expression in a multi-line dialog.
- * 
+ *
  * @author Holger Knublauch <holger@knublauch.com>
  */
 public class SWRLTextAreaPanel extends JPanel implements ModalDialogFactory.CloseCallback
@@ -75,8 +75,9 @@ public class SWRLTextAreaPanel extends JPanel implements ModalDialogFactory.Clos
 					return false;
 				}
 			}
-		} else
-			return true;
+		} else {
+            return true;
+        }
 	}
 
 	public SWRLImp getResultAsImp()
@@ -99,8 +100,9 @@ public class SWRLTextAreaPanel extends JPanel implements ModalDialogFactory.Clos
 
 	public static boolean showEditDialog(Component parent, OWLModel owlModel, SWRLImp imp)
 	{
-		if (imp == null)
-			return false;
+		if (imp == null) {
+            return false;
+        }
 
 		InstanceDisplay instanceDisplay = new InstanceDisplay(owlModel.getProject(), false, false);
 		instanceDisplay.setInstance(imp);
@@ -176,7 +178,7 @@ public class SWRLTextAreaPanel extends JPanel implements ModalDialogFactory.Clos
 		frame.setTitle(SWRL_RULE_PANEL_TITLE);
 
 		ComponentUtilities.pack(frame);
-		ComponentUtilities.center(frame);
+		ComponentUtilities.centerInMainWindow(frame);
 		frame.setVisible(true);
 
 		return frame;

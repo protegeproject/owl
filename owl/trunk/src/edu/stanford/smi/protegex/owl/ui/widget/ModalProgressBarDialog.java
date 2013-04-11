@@ -3,11 +3,18 @@
  */
 package edu.stanford.smi.protegex.owl.ui.widget;
 
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.Frame;
+import java.awt.Rectangle;
+
+import javax.swing.BorderFactory;
+import javax.swing.JComponent;
+import javax.swing.JDialog;
+import javax.swing.JProgressBar;
+
 import edu.stanford.smi.protege.util.ComponentUtilities;
 import edu.stanford.smi.protege.util.LabeledComponent;
-
-import javax.swing.*;
-import java.awt.*;
 
 /**
  * @author Daniel Stoeckli <stoeckli@smi.stanford.edu>
@@ -40,12 +47,12 @@ public class ModalProgressBarDialog extends JDialog implements Runnable {
         labeledComponent = new LabeledComponent("-------------------------------------------", progressBar);
         contentPane.add(BorderLayout.CENTER, labeledComponent);
         contentPane.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        ComponentUtilities.center(this);
+        ComponentUtilities.centerInMainWindow(this);
     }
 
 
     public void run() {
-        show();
+        setVisible(true);
     }
 
 
