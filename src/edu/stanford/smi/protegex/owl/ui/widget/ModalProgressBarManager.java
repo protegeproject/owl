@@ -60,7 +60,7 @@ public class ModalProgressBarManager implements ProgressDisplay {
     public void start() {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                dialog.show();
+                dialog.setVisible(true);
             }
         });
     }

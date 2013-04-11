@@ -75,6 +75,7 @@ class ModalDialog extends JDialog implements Disposable {
 
     private class WindowCloseListener extends WindowAdapter {
 
+        @Override
         public void windowClosing(WindowEvent event) {
             int option = OPTION_CANCEL;
             if (!_enableCloseButton) {
@@ -147,6 +148,7 @@ class ModalDialog extends JDialog implements Disposable {
         };
         JButton button = ComponentFactory.createButton(action);
         button.addKeyListener(new KeyAdapter() {
+            @Override
             public void keyPressed(KeyEvent event) {
                 switch (event.getKeyCode()) {
                     case KeyEvent.VK_ENTER:
@@ -202,11 +204,11 @@ class ModalDialog extends JDialog implements Disposable {
         return _currentDialog;
     }
 
-    
+
     private void getFocus(final Component component) {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                component.requestFocusInWindow();                
+                component.requestFocusInWindow();
             }
         });
     }
@@ -249,7 +251,8 @@ class ModalDialog extends JDialog implements Disposable {
         layoutWidgets();
 
         pack();
-        ComponentUtilities.center(this);
+        //ComponentUtilities.center(this);
+        ComponentUtilities.centerInMainWindow(this);
         if (componentToFocus == null) {
         	getFocus(); //focuses the button
         } else {
@@ -280,7 +283,7 @@ class ModalDialog extends JDialog implements Disposable {
         return showDialog(parent, panel, title, mode, callback, true);
     }
 
-    
+
     public static int showDialog(Component parent, Component panel, String title, int mode, ModalDialogFactory.CloseCallback callback,
             boolean enableCloseButton) {
     	return showDialog(parent, panel, title, mode, callback, enableCloseButton, null);
@@ -343,6 +346,6 @@ class ModalDialog extends JDialog implements Disposable {
                 }
             }
         };
-    }    
-  
+    }
+
 }
