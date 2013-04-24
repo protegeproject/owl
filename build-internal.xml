@@ -1,7 +1,7 @@
 <?xml version = "1.0" encoding = "UTF-8"?>
 <project name = "owl" default = "init" basedir = ".">
 
-	<property file = "../global.properties"/>
+	<property file = "../_ant_files/global.properties"/>
 
 	<property name = "project.name" value = "owl"/>
 	<property name = "build.dir" value = "./build"/>
@@ -59,7 +59,7 @@
 		          debuglevel = "lines" 
 		          optimize = "on" 
 		          includeAntRuntime = "no" 
-		          source = "1.5" 
+		          source = "1.6" 
 		          fork = "yes" 
 		          memoryInitialSize = "200m" 
 		          memoryMaximumSize = "200m">
@@ -126,15 +126,15 @@
 	<!-- =================================================================== -->
 	<target name = "javadoc" depends = "init" unless = "testbuild">
 
-		<property file = "${build.dir}/src/edu/stanford/smi/protegex/owl/resource/files/build.properties"/>
+		<property file = "C:/build_svn/protege-core/build/src/edu/stanford/smi/protege/resource/files/build.properties"/>
 		
 		<javadoc destdir = "${build.javadoc}" 
-		              doctitle = "${name} ${version} ${status}" 
-		              header = "${name} ${version} ${status}" 
-		              footer = "${name} ${version} ${status}" 
-		              windowtitle = "${name} ${version} ${status}" 
+		              doctitle = "Protege-OWL ${build.version} ${build.status}" 
+		              header = "Protege-OWL ${build.version} ${build.status}" 
+		              footer = "Protege-OWL ${build.version} ${build.status}" 
+		              windowtitle = "Protege-OWL ${build.version} ${build.status}" 
 		              author = "true" 
-		              source = "1.5"
+		              source = "1.6"
 		              maxmemory = "256M">
 			<bottom><![CDATA[
 					<small>
@@ -181,8 +181,11 @@
 	<!-- =================================================================== -->
 	<target name = "clean" depends = "init">
 		<delete dir = "${build.dir}"/>
-		<delete dir = "${build.javadoc}"/>
+		<delete dir = "${docs.dir}"/>
 		<delete dir = "${dist.dir}"/>
+		<delete dir = "${etc.dir}"/>
+		<delete dir = "${lib.dir}"/>
+		<delete dir = "./examples"/>
 	</target>
 
 	<!-- =================================================================== -->
