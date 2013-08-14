@@ -9,7 +9,6 @@ import edu.stanford.smi.protege.exception.OntologyLoadException;
 import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protegex.owl.jena.creator.OwlProjectFromUriCreator;
-import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
 import edu.stanford.smi.protegex.owl.model.RDFSNamedClass;
 import edu.stanford.smi.protegex.owl.model.RDFSNames;
 import edu.stanford.smi.protegex.owl.tests.AbstractJenaTestCase;
@@ -30,18 +29,22 @@ public class FindTestCase extends AbstractJenaTestCase {
     Find findAlg;
 
     SearchListener searchResultListener = new SearchAdapter() {
+        @Override
         public void resultsUpdatedEvent(int numResults, Find source) {
         }
 
+        @Override
         public void searchCompleteEvent(int numResults, Find source) {
             complete = true;
         }
 
+        @Override
         public void searchCancelledEvent(Find source) {
             fail();
             complete = true;
         }
 
+        @Override
         public void searchStartedEvent(Find source) {
         }
     };
@@ -98,7 +101,7 @@ public class FindTestCase extends AbstractJenaTestCase {
         try {
             java.util.Collection errors = new ArrayList();
             OwlProjectFromUriCreator creator = new OwlProjectFromUriCreator();
-            creator.setOntologyUri("http://www.co-ode.org/ontologies/pizza/2005/10/18/pizza.owl");
+            creator.setOntologyUri("http://owl.cs.manchester.ac.uk/co-ode-files/ontologies/pizza.owl");
             creator.create(errors);
             if (!errors.isEmpty()) {
                 fail();
