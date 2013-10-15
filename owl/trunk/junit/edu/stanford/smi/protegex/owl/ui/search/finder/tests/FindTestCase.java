@@ -101,7 +101,9 @@ public class FindTestCase extends AbstractJenaTestCase {
         try {
             java.util.Collection errors = new ArrayList();
             OwlProjectFromUriCreator creator = new OwlProjectFromUriCreator();
-            creator.setOntologyUri("http://owl.cs.manchester.ac.uk/co-ode-files/ontologies/pizza.owl");
+            // TT: 2013/10/15: original URL not working anymore
+            //creator.setOntologyUri("http://owl.cs.manchester.ac.uk/co-ode-files/ontologies/pizza.owl"); /
+            creator.setOntologyUri("http://smi-protege.stanford.edu/svn/*checkout*/owl/trunk/examples/pizza.owl");
             creator.create(errors);
             if (!errors.isEmpty()) {
                 fail();
