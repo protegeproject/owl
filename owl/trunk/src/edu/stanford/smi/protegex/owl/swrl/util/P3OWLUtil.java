@@ -1,4 +1,3 @@
-
 package edu.stanford.smi.protegex.owl.swrl.util;
 
 import java.io.File;
@@ -158,7 +157,8 @@ public class P3OWLUtil
 		return owlModel.createOWLNamedClass(null);
 	}
 
-	public static OWLObjectProperty createOWLObjectProperty(OWLModel owlModel, String propertyName) throws P3OWLUtilException
+	public static OWLObjectProperty createOWLObjectProperty(OWLModel owlModel, String propertyName)
+			throws P3OWLUtilException
 	{
 		OWLObjectProperty property = owlModel.getOWLObjectProperty(propertyName);
 
@@ -181,7 +181,8 @@ public class P3OWLUtil
 		return owlModel.createOWLObjectProperty(null);
 	}
 
-	public static OWLDatatypeProperty createOWLDatatypeProperty(OWLModel owlModel, String propertyName) throws P3OWLUtilException
+	public static OWLDatatypeProperty createOWLDatatypeProperty(OWLModel owlModel, String propertyName)
+			throws P3OWLUtilException
 	{
 		OWLDatatypeProperty property = owlModel.getOWLDatatypeProperty(propertyName);
 
@@ -194,12 +195,14 @@ public class P3OWLUtil
 		return property;
 	}
 
-	public static OWLDatatypeProperty createOWLDatatypeProperty(OWLModel owlModel, URI propertyURI) throws P3OWLUtilException
+	public static OWLDatatypeProperty createOWLDatatypeProperty(OWLModel owlModel, URI propertyURI)
+			throws P3OWLUtilException
 	{
 		return createOWLDatatypeProperty(owlModel, propertyURI.toString());
 	}
 
-	public static RDFProperty createOWLAnnotationProperty(OWLModel owlModel, String propertyName) throws P3OWLUtilException
+	public static RDFProperty createOWLAnnotationProperty(OWLModel owlModel, String propertyName)
+			throws P3OWLUtilException
 	{
 		RDFProperty property = owlModel.getRDFProperty(propertyName);
 
@@ -219,7 +222,8 @@ public class P3OWLUtil
 		return createOWLAnnotationProperty(owlModel, propertyURI.toString());
 	}
 
-	public static RDFSNamedClass createRDFSNamedClassUsingLabelAnnotation(OWLModel owlModel, String labelText, boolean allowDuplicates)
+	public static RDFSNamedClass createRDFSNamedClassUsingLabelAnnotation(OWLModel owlModel, String labelText,
+			boolean allowDuplicates)
 	{
 		RDFSNamedClass cls = null;
 		Collection<?> resources = owlModel.getMatchingResources(owlModel.getRDFSLabelProperty(), "*" + labelText, -1);
@@ -228,7 +232,8 @@ public class P3OWLUtil
 			for (Object resource : resources) {
 				if (resource instanceof OWLNamedClass) {
 					RDFSNamedClass candidateClass = (OWLNamedClass)resource;
-					// Verify that label is really labelText. Wildcard needed above to get around language encoding causes possible multiple match
+					// Verify that label is really labelText. Wildcard needed above to get around language encoding causes
+					// possible multiple match
 					for (Object value : candidateClass.getPropertyValues(owlModel.getRDFSLabelProperty())) {
 						if (value instanceof String) {
 							String stringValue = (String)value;
@@ -253,8 +258,8 @@ public class P3OWLUtil
 	}
 
 	// TODO: case sensitivity option
-	public static OWLNamedClass createOWLNamedClassWithRDFSLabel(OWLModel owlModel, String namespace, String labelText, String language, boolean allowDuplicates)
-		throws P3OWLUtilException
+	public static OWLNamedClass createOWLNamedClassWithRDFSLabel(OWLModel owlModel, String namespace, String labelText,
+			String language, boolean allowDuplicates) throws P3OWLUtilException
 	{
 		OWLNamedClass cls = null;
 		Collection<?> resources = owlModel.getMatchingResources(owlModel.getRDFSLabelProperty(), "*" + labelText, -1);
@@ -267,7 +272,8 @@ public class P3OWLUtil
 					if (!candidateClass.getNamespace().equals(namespace))
 						continue; // TODO: need more principled way of comparing namespaces
 
-					// Verify that label is really labelText. Wildcard needed above to get around language encoding causes possible multiple match
+					// Verify that label is really labelText. Wildcard needed above to get around language encoding causes
+					// possible multiple match
 					for (Object value : candidateClass.getPropertyValues(owlModel.getRDFSLabelProperty())) {
 						if (value instanceof String) {
 							String stringValue = (String)value;
@@ -290,8 +296,8 @@ public class P3OWLUtil
 		return cls;
 	}
 
-	public static OWLObjectProperty createOWLObjectPropertyUsingLabelAnnotation(OWLModel owlModel, String namespace, String labelText, String language,
-																																							boolean allowDuplicates) throws P3OWLUtilException
+	public static OWLObjectProperty createOWLObjectPropertyUsingLabelAnnotation(OWLModel owlModel, String namespace,
+			String labelText, String language, boolean allowDuplicates) throws P3OWLUtilException
 	{
 		OWLObjectProperty property = null;
 		Collection<?> resources = owlModel.getMatchingResources(owlModel.getRDFSLabelProperty(), "*" + labelText, -1);
@@ -304,7 +310,8 @@ public class P3OWLUtil
 					if (!candidateProperty.getNamespace().equals(namespace))
 						continue;
 
-					// Verify that label is really labelText. Wildcard needed above to get around language encoding causes possible multiple match
+					// Verify that label is really labelText. Wildcard needed above to get around language encoding causes
+					// possible multiple match
 					for (Object value : candidateProperty.getPropertyValues(owlModel.getRDFSLabelProperty())) {
 						if (value instanceof String) {
 							String stringValue = (String)value;
@@ -327,8 +334,8 @@ public class P3OWLUtil
 		return property;
 	}
 
-	public static OWLDatatypeProperty createOWLDataPropertyUsingLabelAnnotation(OWLModel owlModel, String namespace, String labelText, String language,
-																																							boolean allowDuplicates) throws P3OWLUtilException
+	public static OWLDatatypeProperty createOWLDataPropertyUsingLabelAnnotation(OWLModel owlModel, String namespace,
+			String labelText, String language, boolean allowDuplicates) throws P3OWLUtilException
 	{
 		OWLDatatypeProperty property = null;
 		Collection<?> resources = owlModel.getMatchingResources(owlModel.getRDFSLabelProperty(), "*" + labelText, -1);
@@ -341,7 +348,8 @@ public class P3OWLUtil
 					if (!candidateProperty.getNamespace().equals(namespace))
 						continue; // TODO: need more principled way of comparing namespaces
 
-					// Verify that label is really labelText. Wildcard needed above to get around language encoding causes possible multiple match
+					// Verify that label is really labelText. Wildcard needed above to get around language encoding causes
+					// possible multiple match
 					for (Object value : candidateProperty.getPropertyValues(owlModel.getRDFSLabelProperty())) {
 						if (value instanceof String) {
 							String stringValue = (String)value;
@@ -364,8 +372,8 @@ public class P3OWLUtil
 		return property;
 	}
 
-	public static OWLIndividual createOWLIndividualWithRDFSLabel(OWLModel owlModel, String namespace, String labelText, String language, boolean allowDuplicates)
-		throws P3OWLUtilException
+	public static OWLIndividual createOWLIndividualWithRDFSLabel(OWLModel owlModel, String namespace, String labelText,
+			String language, boolean allowDuplicates) throws P3OWLUtilException
 	{
 		OWLIndividual individual = null;
 		Collection<?> resources = owlModel.getMatchingResources(owlModel.getRDFSLabelProperty(), "*" + labelText, -1);
@@ -378,7 +386,8 @@ public class P3OWLUtil
 					if (!candidateIndividual.getNamespace().equals(namespace))
 						continue; // TODO: need more principled way of comparing namespaces
 
-					// Verify that label is really labelText. Wildcard needed above to get around language encoding causes possible multiple match
+					// Verify that label is really labelText. Wildcard needed above to get around language encoding causes
+					// possible multiple match
 					for (Object value : candidateIndividual.getPropertyValues(owlModel.getRDFSLabelProperty())) {
 						if (value instanceof String) {
 							String stringValue = (String)value;
@@ -401,7 +410,8 @@ public class P3OWLUtil
 		return individual;
 	}
 
-	public static Set<OWLIndividual> getMatchingIndividuals(OWLModel owlModel, String propertyName, String matchString) throws P3OWLUtilException
+	public static Set<OWLIndividual> getMatchingIndividuals(OWLModel owlModel, String propertyName, String matchString)
+			throws P3OWLUtilException
 	{
 		RDFProperty property = getOWLProperty(owlModel, propertyName, true);
 		Collection<?> matchingResources = owlModel.getMatchingResources(property, matchString, -1);
@@ -414,8 +424,8 @@ public class P3OWLUtil
 		return matchingIndividuals;
 	}
 
-	public static Set<OWLIndividual> getMatchingIndividualsOfClass(OWLModel owlModel, String className, String propertyName, String matchString)
-		throws P3OWLUtilException
+	public static Set<OWLIndividual> getMatchingIndividualsOfClass(OWLModel owlModel, String className,
+			String propertyName, String matchString) throws P3OWLUtilException
 	{
 		Set<OWLIndividual> matchingIndividuals = new HashSet<OWLIndividual>();
 
@@ -513,7 +523,8 @@ public class P3OWLUtil
 		return (RDFSClass)resource;
 	}
 
-	public static OWLClass getOWLClassDescription(OWLModel owlModel, String descriptionClassName) throws P3OWLUtilException
+	public static OWLClass getOWLClassDescription(OWLModel owlModel, String descriptionClassName)
+			throws P3OWLUtilException
 	{
 		RDFResource resource = owlModel.getRDFResource(descriptionClassName);
 
@@ -543,7 +554,8 @@ public class P3OWLUtil
 		return createIndividualOfClass(owlModel, className, null);
 	}
 
-	public static OWLIndividual createIndividualOfClass(OWLModel owlModel, String className, String individualName) throws P3OWLUtilException
+	public static OWLIndividual createIndividualOfClass(OWLModel owlModel, String className, String individualName)
+			throws P3OWLUtilException
 	{
 		OWLNamedClass cls = getNamedClass(owlModel, className);
 
@@ -555,7 +567,8 @@ public class P3OWLUtil
 		return createIndividualOfClass(owlModel, cls, null);
 	}
 
-	public static OWLIndividual createIndividualOfClass(OWLModel owlModel, OWLClass cls, String individualName) throws P3OWLUtilException
+	public static OWLIndividual createIndividualOfClass(OWLModel owlModel, OWLClass cls, String individualName)
+			throws P3OWLUtilException
 	{
 		RDFResource resource = null;
 		OWLIndividual individual = null;
@@ -573,7 +586,8 @@ public class P3OWLUtil
 				if (!individual.hasRDFType(cls, true))
 					individual.addRDFType(cls);
 			} else
-				throwException("could not create individual " + individualName + " because another resource of that name already exists");
+				throwException("could not create individual " + individualName
+						+ " because another resource of that name already exists");
 		}
 
 		return individual;
@@ -611,7 +625,8 @@ public class P3OWLUtil
 		RDFResource cls = owlModel.getRDFResource(className);
 		RDFResource individual = owlModel.getRDFResource(individualName);
 
-		return (cls instanceof OWLNamedClass) && (individual instanceof OWLIndividual) && individual.hasRDFType((OWLNamedClass)cls, true);
+		return (cls instanceof OWLNamedClass) && (individual instanceof OWLIndividual)
+				&& individual.hasRDFType((OWLNamedClass)cls, true);
 	}
 
 	public static boolean isOWLIndividualOfType(OWLModel owlModel, String individualName, OWLNamedClass cls)
@@ -625,7 +640,8 @@ public class P3OWLUtil
 	{
 		RDFResource individual = owlModel.getRDFResource(individualName);
 
-		return (individual instanceof OWLIndividual) && individual.hasRDFType(getOWLThingClass(individual.getOWLModel()), false);
+		return (individual instanceof OWLIndividual)
+				&& individual.hasRDFType(getOWLThingClass(individual.getOWLModel()), false);
 	}
 
 	public static void setType(OWLModel owlModel, String individualName, String className) throws P3OWLUtilException
@@ -637,7 +653,8 @@ public class P3OWLUtil
 			individual.setRDFType(cls);
 	}
 
-	public static void addObjectPropertyValue(OWLModel owlModel, String subjectName, String propertyName, String objectName) throws P3OWLUtilException
+	public static void addObjectPropertyValue(OWLModel owlModel, String subjectName, String propertyName,
+			String objectName) throws P3OWLUtilException
 	{
 		RDFResource subject = null;
 		OWLProperty property = getOWLProperty(owlModel, propertyName);
@@ -650,7 +667,8 @@ public class P3OWLUtil
 		else if (isOWLClass(owlModel, subjectName))
 			subject = getOWLClass(owlModel, subjectName);
 		else
-			throw new P3OWLUtilException("invalid or unknown subject name " + subjectName + "; must be OWLClass or OWLIndividual");
+			throw new P3OWLUtilException("invalid or unknown subject name " + subjectName
+					+ "; must be OWLClass or OWLIndividual");
 
 		if (subject == null)
 			throwException("invalid or unknown subject name " + subjectName);
@@ -669,15 +687,16 @@ public class P3OWLUtil
 				if (!subject.hasPropertyValue(property, objectClass))
 					subject.addPropertyValue(property, objectClass);
 			} else
-				throw new P3OWLUtilException("invalid property value " + objectName + " for object property " + propertyName + " for subject " + subjectName
-						+ "; value must be class or individual");
+				throw new P3OWLUtilException("invalid property value " + objectName + " for object property " + propertyName
+						+ " for subject " + subjectName + "; value must be class or individual");
 
 		} else
-			throw new P3OWLUtilException("invalid property value " + objectName + " for object property " + propertyName + " for subject " + subjectName
-					+ "; value must be a data property value");
+			throw new P3OWLUtilException("invalid property value " + objectName + " for object property " + propertyName
+					+ " for subject " + subjectName + "; value must be a data property value");
 	}
 
-	public static void addStringDataPropertyValue(OWLModel owlModel, String subjectName, String propertyName, String propertyValue) throws P3OWLUtilException
+	public static void addStringDataPropertyValue(OWLModel owlModel, String subjectName, String propertyName,
+			String propertyValue) throws P3OWLUtilException
 	{
 		OWLProperty property = getOWLProperty(owlModel, propertyName);
 		RDFResource subject = null;
@@ -701,8 +720,8 @@ public class P3OWLUtil
 			subject.addPropertyValue(property, propertyValue);
 	}
 
-	public static void addDataPropertyValueWithLanguage(OWLModel owlModel, String subjectName, String propertyName, String propertyValue, String language)
-		throws P3OWLUtilException
+	public static void addDataPropertyValueWithLanguage(OWLModel owlModel, String subjectName, String propertyName,
+			String propertyValue, String language) throws P3OWLUtilException
 	{
 		RDFResource subject = null;
 		OWLProperty property = getOWLProperty(owlModel, propertyName);
@@ -716,7 +735,8 @@ public class P3OWLUtil
 		else if (isOWLClass(owlModel, subjectName))
 			subject = getOWLClass(owlModel, subjectName);
 		else
-			throw new P3OWLUtilException("invalid or unknown subject name " + subjectName + "; must be OWLClass or OWLIndividual");
+			throw new P3OWLUtilException("invalid or unknown subject name " + subjectName
+					+ "; must be OWLClass or OWLIndividual");
 
 		if (subject == null)
 			throwException("invalid or unknown subject name " + subjectName);
@@ -729,8 +749,8 @@ public class P3OWLUtil
 			subject.addPropertyValue(property, value);
 	}
 
-	public static void addAnnotationObjectPropertyValue(OWLModel owlModel, String subjectName, String propertyName, String propertyValue)
-		throws P3OWLUtilException
+	public static void addAnnotationObjectPropertyValue(OWLModel owlModel, String subjectName, String propertyName,
+			String propertyValue) throws P3OWLUtilException
 	{
 		RDFResource subject = null;
 		RDFProperty property = getRDFProperty(owlModel, propertyName);
@@ -742,8 +762,13 @@ public class P3OWLUtil
 			subject = getOWLIndividual(owlModel, subjectName);
 		else if (isOWLClass(owlModel, subjectName))
 			subject = getOWLClass(owlModel, subjectName);
+		else if (isOWLDataProperty(owlModel, subjectName))
+			subject = getOWLDataProperty(owlModel, subjectName);
+		else if (isOWLObjectProperty(owlModel, subjectName))
+			subject = getOWLObjectProperty(owlModel, subjectName);
 		else
-			throw new P3OWLUtilException("invalid or unknown subject name " + subjectName + "; must be OWLClass or OWLIndividual");
+			throw new P3OWLUtilException("invalid or unknown subject name " + subjectName
+					+ "; must be OWL class, individual, or property");
 
 		if (subject == null)
 			throwException("invalid or unknown subject name " + subjectName);
@@ -761,11 +786,12 @@ public class P3OWLUtil
 			if (!subject.hasPropertyValue(property, objectClass))
 				subject.addPropertyValue(property, objectClass);
 		} else
-			throw new P3OWLUtilException("invalid object property value " + propertyValue + " for annotation property " + propertyName + " for subject "
-					+ subjectName + "; value must be class or individual");
+			throw new P3OWLUtilException("invalid object property value " + propertyValue + " for annotation property "
+					+ propertyName + " for subject " + subjectName + "; value must be class or individual");
 	}
 
-	public static void addAnnotationPropertyValue(OWLModel owlModel, String subjectName, String propertyName, String propertyValue) throws P3OWLUtilException
+	public static void addAnnotationPropertyValue(OWLModel owlModel, String subjectName, String propertyName,
+			String propertyValue) throws P3OWLUtilException
 	{
 		RDFResource subject = null;
 		RDFProperty property = owlModel.getRDFProperty(propertyName);
@@ -800,8 +826,8 @@ public class P3OWLUtil
 		}
 	}
 
-	public static void addAnnotationStringDataPropertyValue(OWLModel owlModel, String subjectName, String propertyName, String propertyValue)
-		throws P3OWLUtilException
+	public static void addAnnotationStringDataPropertyValue(OWLModel owlModel, String subjectName, String propertyName,
+			String propertyValue) throws P3OWLUtilException
 	{
 		RDFResource subject = null;
 		RDFProperty property = getRDFProperty(owlModel, propertyName);
@@ -824,14 +850,15 @@ public class P3OWLUtil
 			subject.addPropertyValue(property, propertyValue);
 	}
 
-	public static void addRDFSLabelPropertyValueWithLanguage(OWLModel owlModel, String subjectName, String propertyValue, String language)
-		throws P3OWLUtilException
+	public static void addRDFSLabelPropertyValueWithLanguage(OWLModel owlModel, String subjectName, String propertyValue,
+			String language) throws P3OWLUtilException
 	{
-		addAnnotationDataPropertyValueWithLanguage(owlModel, subjectName, owlModel.getRDFSLabelProperty().getURI(), propertyValue, language);
+		addAnnotationDataPropertyValueWithLanguage(owlModel, subjectName, owlModel.getRDFSLabelProperty().getURI(),
+				propertyValue, language);
 	}
 
-	public static void addAnnotationDataPropertyValueWithLanguage(OWLModel owlModel, String subjectName, String propertyName, String propertyValue,
-																																String language) throws P3OWLUtilException
+	public static void addAnnotationDataPropertyValueWithLanguage(OWLModel owlModel, String subjectName,
+			String propertyName, String propertyValue, String language) throws P3OWLUtilException
 	{
 		RDFResource subject = null;
 		RDFProperty property = getRDFProperty(owlModel, propertyName);
@@ -843,8 +870,13 @@ public class P3OWLUtil
 			subject = getOWLIndividual(owlModel, subjectName);
 		else if (isOWLClass(owlModel, subjectName))
 			subject = getOWLClass(owlModel, subjectName);
+		else if (isOWLDataProperty(owlModel, subjectName))
+			subject = getOWLDataProperty(owlModel, subjectName);
+		else if (isOWLObjectProperty(owlModel, subjectName))
+			subject = getOWLObjectProperty(owlModel, subjectName);
 		else
-			throw new P3OWLUtilException("invalid or unknown subject name " + subjectName + "; must be OWLClass or OWLIndividual");
+			throw new P3OWLUtilException("invalid or unknown subject name " + subjectName
+					+ "; must be OWL class, individual, or property");
 
 		if (subject == null)
 			throwException("invalid or unknown subject name " + subjectName);
@@ -864,8 +896,8 @@ public class P3OWLUtil
 		}
 	}
 
-	public static void addDataPropertyValue(OWLModel owlModel, String subjectName, String propertyName, String propertyValue, String datatypeName)
-		throws P3OWLUtilException
+	public static void addDataPropertyValue(OWLModel owlModel, String subjectName, String propertyName,
+			String propertyValue, String datatypeName) throws P3OWLUtilException
 	{
 		RDFResource subject = null;
 		OWLProperty property = getOWLProperty(owlModel, propertyName);
@@ -878,7 +910,8 @@ public class P3OWLUtil
 		else if (isOWLClass(owlModel, subjectName))
 			subject = getOWLClass(owlModel, subjectName);
 		else
-			throw new P3OWLUtilException("invalid or unknown subject name " + subjectName + "; must be OWLClass or OWLIndividual");
+			throw new P3OWLUtilException("invalid or unknown subject name " + subjectName
+					+ "; must be OWLClass or OWLIndividual");
 
 		if (subject == null)
 			throwException("invalid or unknown subject name " + subjectName);
@@ -888,8 +921,8 @@ public class P3OWLUtil
 			throwException("null value for property " + propertyName + " for subject " + subjectName);
 
 		if (property.isObjectProperty())
-			throw new P3OWLUtilException("attempt to assign data property with value " + propertyValue + " and type " + datatypeName + " to annotation property "
-					+ propertyName + " on individual " + subjectName);
+			throw new P3OWLUtilException("attempt to assign data property with value " + propertyValue + " and type "
+					+ datatypeName + " to annotation property " + propertyName + " on individual " + subjectName);
 
 		RDFSDatatype datatype = getRDFSDatatype(owlModel, datatypeName);
 
@@ -908,8 +941,8 @@ public class P3OWLUtil
 		}
 	}
 
-	public static void addAnnotationDataPropertyValue(OWLModel owlModel, String subjectName, String propertyName, String propertyValue, String datatypeName)
-		throws P3OWLUtilException
+	public static void addAnnotationDataPropertyValue(OWLModel owlModel, String subjectName, String propertyName,
+			String propertyValue, String datatypeName) throws P3OWLUtilException
 	{
 		RDFResource subject = null;
 		RDFProperty property = getRDFProperty(owlModel, propertyName);
@@ -922,7 +955,8 @@ public class P3OWLUtil
 		else if (isOWLClass(owlModel, subjectName))
 			subject = getOWLClass(owlModel, subjectName);
 		else
-			throw new P3OWLUtilException("invalid or unknown subject name " + subjectName + "; must be OWLClass or OWLIndividual");
+			throw new P3OWLUtilException("invalid or unknown subject name " + subjectName
+					+ "; must be OWLClass or OWLIndividual");
 
 		if (subject == null)
 			throwException("invalid or unknown subject name " + subjectName);
@@ -961,7 +995,8 @@ public class P3OWLUtil
 		else if (isOWLClass(owlModel, resourceName))
 			resource = getOWLClass(owlModel, resourceName);
 		else
-			throw new P3OWLUtilException("invalid or unknown resource name " + resourceName + "; must be name ow OWL class or individual");
+			throw new P3OWLUtilException("invalid or unknown resource name " + resourceName
+					+ "; must be name ow OWL class or individual");
 
 		if (!resource.hasProtegeType(cls, true))
 			resource.addProtegeType(cls);
@@ -1096,7 +1131,8 @@ public class P3OWLUtil
 		return (OWLSomeValuesFrom)owlModel.getOWLSomeValuesFromRestrictionClass().createInstance(classURI.toString());
 	}
 
-	public static OWLIndividual getOWLIndividual(OWLNamedClass cls, boolean mustExist, int mustHaveExactlyN) throws P3OWLUtilException
+	public static OWLIndividual getOWLIndividual(OWLNamedClass cls, boolean mustExist, int mustHaveExactlyN)
+			throws P3OWLUtilException
 	{
 		Collection<?> instances;
 		Object firstInstance;
@@ -1104,8 +1140,8 @@ public class P3OWLUtil
 		if (mustExist && cls.getInstanceCount(true) == 0)
 			throwException("no individuals of class " + cls.getPrefixedName() + " in ontology");
 		else if (cls.getInstanceCount(true) != mustHaveExactlyN)
-			throwException("expecting exactly " + mustHaveExactlyN + " individuals of class " + cls.getPrefixedName() + " in ontology - got "
-					+ cls.getInstanceCount(true) + "");
+			throwException("expecting exactly " + mustHaveExactlyN + " individuals of class " + cls.getPrefixedName()
+					+ " in ontology - got " + cls.getInstanceCount(true) + "");
 
 		instances = cls.getInstances(true);
 
@@ -1132,7 +1168,8 @@ public class P3OWLUtil
 		return individuals;
 	}
 
-	public static Set<OWLIndividual> getOWLIndividualsOfClass(OWLModel owlModel, String className) throws P3OWLUtilException
+	public static Set<OWLIndividual> getOWLIndividualsOfClass(OWLModel owlModel, String className)
+			throws P3OWLUtilException
 	{
 		OWLNamedClass cls = getNamedClass(owlModel, className);
 
@@ -1161,12 +1198,14 @@ public class P3OWLUtil
 		return getOWLProperty(owlModel, propertyName, true);
 	}
 
-	public static OWLDatatypeProperty getOWLDataProperty(OWLModel owlModel, String propertyName) throws P3OWLUtilException
+	public static OWLDatatypeProperty getOWLDataProperty(OWLModel owlModel, String propertyName)
+			throws P3OWLUtilException
 	{
 		return getOWLDataProperty(owlModel, propertyName, true);
 	}
 
-	public static OWLDatatypeProperty getOWLDataProperty(OWLModel owlModel, String propertyName, boolean mustExist) throws P3OWLUtilException
+	public static OWLDatatypeProperty getOWLDataProperty(OWLModel owlModel, String propertyName, boolean mustExist)
+			throws P3OWLUtilException
 	{
 		OWLDatatypeProperty property = owlModel.getOWLDatatypeProperty(propertyName);
 		if (mustExist && property == null)
@@ -1175,7 +1214,8 @@ public class P3OWLUtil
 		return property;
 	}
 
-	public static OWLObjectProperty getOWLObjectProperty(OWLModel owlModel, String propertyName, boolean mustExist) throws P3OWLUtilException
+	public static OWLObjectProperty getOWLObjectProperty(OWLModel owlModel, String propertyName, boolean mustExist)
+			throws P3OWLUtilException
 	{
 		OWLObjectProperty property = owlModel.getOWLObjectProperty(propertyName);
 
@@ -1211,7 +1251,8 @@ public class P3OWLUtil
 		return getOWLDatatypeProperty(owlModel, propertyURI.toString());
 	}
 
-	public static boolean isOWLEquivalentProperty(OWLModel owlModel, String propertyName1, String propertyName2, boolean mustExist) throws P3OWLUtilException
+	public static boolean isOWLEquivalentProperty(OWLModel owlModel, String propertyName1, String propertyName2,
+			boolean mustExist) throws P3OWLUtilException
 	{
 		OWLProperty property1 = getOWLProperty(owlModel, propertyName1, mustExist);
 		OWLProperty property2 = getOWLProperty(owlModel, propertyName2, mustExist);
@@ -1219,7 +1260,8 @@ public class P3OWLUtil
 		return (property1 != null && property2 != null && property1.getEquivalentProperties().contains(property2));
 	}
 
-	public static boolean isOWLEquivalentClass(OWLModel owlModel, String className1, String className2, boolean mustExist) throws P3OWLUtilException
+	public static boolean isOWLEquivalentClass(OWLModel owlModel, String className1, String className2, boolean mustExist)
+			throws P3OWLUtilException
 	{
 		OWLNamedClass class1 = getOWLNamedClass(owlModel, className1, mustExist);
 		OWLNamedClass class2 = getOWLNamedClass(owlModel, className2, mustExist);
@@ -1227,7 +1269,8 @@ public class P3OWLUtil
 		return (class1 != null && class2 != null && class1.hasEquivalentClass(class2));
 	}
 
-	public static boolean isOWLDisjointClass(OWLModel owlModel, String className1, String className2, boolean mustExist) throws P3OWLUtilException
+	public static boolean isOWLDisjointClass(OWLModel owlModel, String className1, String className2, boolean mustExist)
+			throws P3OWLUtilException
 	{
 		OWLNamedClass class1 = getOWLNamedClass(owlModel, className1, mustExist);
 		OWLNamedClass class2 = getOWLNamedClass(owlModel, className2, mustExist);
@@ -1235,7 +1278,8 @@ public class P3OWLUtil
 		return (class1 != null && class2 != null && class1.getDisjointClasses().contains(class2));
 	}
 
-	public static boolean isOWLSubPropertyOf(OWLModel owlModel, String subPropertyName, String propertyName, boolean mustExist) throws P3OWLUtilException
+	public static boolean isOWLSubPropertyOf(OWLModel owlModel, String subPropertyName, String propertyName,
+			boolean mustExist) throws P3OWLUtilException
 	{
 		OWLProperty subProperty = getOWLProperty(owlModel, subPropertyName, mustExist);
 		OWLProperty property = getOWLProperty(owlModel, propertyName, mustExist);
@@ -1243,39 +1287,48 @@ public class P3OWLUtil
 		return (subProperty != null && property != null && subProperty.isSubpropertyOf(property, true));
 	}
 
-	public static boolean isOWLSubPropertyOf(OWLModel owlModel, URI subPropertyURI, URI propertyURI, boolean mustExist) throws P3OWLUtilException
+	public static boolean isOWLSubPropertyOf(OWLModel owlModel, URI subPropertyURI, URI propertyURI, boolean mustExist)
+			throws P3OWLUtilException
 	{
 		return isOWLSubPropertyOf(owlModel, subPropertyURI.toString(), propertyURI.toString(), mustExist);
 	}
 
-	public static boolean isOWLSuperPropertyOf(OWLModel owlModel, String superPropertyName, String propertyName, boolean mustExist) throws P3OWLUtilException
+	public static boolean isOWLSuperPropertyOf(OWLModel owlModel, String superPropertyName, String propertyName,
+			boolean mustExist) throws P3OWLUtilException
 	{
 		OWLProperty superProperty = getOWLProperty(owlModel, superPropertyName, mustExist);
 		OWLProperty property = getOWLProperty(owlModel, propertyName, mustExist);
 
-		return (superProperty != null && property != null && property.isSubpropertyOf(superProperty, true)); // No isSuperpropertyOf call
+		return (superProperty != null && property != null && property.isSubpropertyOf(superProperty, true)); // No
+																																																					// isSuperpropertyOf
+																																																					// call
 	}
 
-	public static boolean isOWLSuperPropertyOf(OWLModel owlModel, URI superPropertyURI, URI propertyURI, boolean mustExist) throws P3OWLUtilException
+	public static boolean isOWLSuperPropertyOf(OWLModel owlModel, URI superPropertyURI, URI propertyURI, boolean mustExist)
+			throws P3OWLUtilException
 	{
 		return isOWLSuperPropertyOf(owlModel, superPropertyURI.toString(), propertyURI.toString(), mustExist);
 	}
 
-	public static boolean isOWLDirectSuperPropertyOf(OWLModel owlModel, String superPropertyName, String propertyName, boolean mustExist)
-		throws P3OWLUtilException
+	public static boolean isOWLDirectSuperPropertyOf(OWLModel owlModel, String superPropertyName, String propertyName,
+			boolean mustExist) throws P3OWLUtilException
 	{
 		OWLProperty superProperty = getOWLProperty(owlModel, superPropertyName, mustExist);
 		OWLProperty property = getOWLProperty(owlModel, propertyName, mustExist);
 
-		return (superProperty != null && property != null && property.isSubpropertyOf(superProperty, false)); // No isSuperpropertyOf call
+		return (superProperty != null && property != null && property.isSubpropertyOf(superProperty, false)); // No
+																																																					// isSuperpropertyOf
+																																																					// call
 	}
 
-	public static boolean isOWLDirectSuperPropertyOf(OWLModel owlModel, URI superPropertyURI, URI propertyURI, boolean mustExist) throws P3OWLUtilException
+	public static boolean isOWLDirectSuperPropertyOf(OWLModel owlModel, URI superPropertyURI, URI propertyURI,
+			boolean mustExist) throws P3OWLUtilException
 	{
 		return isOWLDirectSuperPropertyOf(owlModel, superPropertyURI.toString(), propertyURI.toString(), mustExist);
 	}
 
-	public static boolean isOWLDirectSubPropertyOf(OWLModel owlModel, String subPropertyName, String propertyName, boolean mustExist) throws P3OWLUtilException
+	public static boolean isOWLDirectSubPropertyOf(OWLModel owlModel, String subPropertyName, String propertyName,
+			boolean mustExist) throws P3OWLUtilException
 	{
 		OWLProperty subProperty = getOWLProperty(owlModel, subPropertyName, mustExist);
 		OWLProperty property = getOWLProperty(owlModel, propertyName, mustExist);
@@ -1283,12 +1336,14 @@ public class P3OWLUtil
 		return (subProperty != null && property != null && subProperty.isSubpropertyOf(property, false));
 	}
 
-	public static boolean isOWLDirectSubPropertyOf(OWLModel owlModel, URI subPropertyURI, URI propertyURI, boolean mustExist) throws P3OWLUtilException
+	public static boolean isOWLDirectSubPropertyOf(OWLModel owlModel, URI subPropertyURI, URI propertyURI,
+			boolean mustExist) throws P3OWLUtilException
 	{
 		return isOWLDirectSubPropertyOf(owlModel, subPropertyURI.toString(), propertyURI.toString(), mustExist);
 	}
 
-	public static boolean isOWLDirectSubClassOf(OWLModel owlModel, String subClassName, String className, boolean mustExist) throws P3OWLUtilException
+	public static boolean isOWLDirectSubClassOf(OWLModel owlModel, String subClassName, String className,
+			boolean mustExist) throws P3OWLUtilException
 	{
 		OWLNamedClass subClass = getOWLNamedClass(owlModel, subClassName, mustExist);
 		OWLNamedClass cls = getOWLNamedClass(owlModel, className, mustExist);
@@ -1296,12 +1351,14 @@ public class P3OWLUtil
 		return (subClass != null && cls != null && subClass.isSubclassOf(cls));
 	}
 
-	public static boolean isOWLDirectSubClassOf(OWLModel owlModel, URI subClassURI, URI classURI, boolean mustExist) throws P3OWLUtilException
+	public static boolean isOWLDirectSubClassOf(OWLModel owlModel, URI subClassURI, URI classURI, boolean mustExist)
+			throws P3OWLUtilException
 	{
 		return isOWLDirectSubClassOf(owlModel, subClassURI.toString(), classURI.toString(), mustExist);
 	}
 
-	public static boolean isOWLSubClassOf(OWLModel owlModel, String subClassName, String superClassName, boolean mustExist) throws P3OWLUtilException
+	public static boolean isOWLSubClassOf(OWLModel owlModel, String subClassName, String superClassName, boolean mustExist)
+			throws P3OWLUtilException
 	{
 		OWLNamedClass subClass = getOWLNamedClass(owlModel, subClassName, mustExist);
 		OWLNamedClass superClass = getOWLNamedClass(owlModel, superClassName, mustExist);
@@ -1314,12 +1371,14 @@ public class P3OWLUtil
 		return (subClass != null && superClass != null && subClass.getSuperclasses(true).contains(superClass));
 	}
 
-	public static boolean isOWLSubClassOf(OWLModel owlModel, URI subClassURI, URI classURI, boolean mustExist) throws P3OWLUtilException
+	public static boolean isOWLSubClassOf(OWLModel owlModel, URI subClassURI, URI classURI, boolean mustExist)
+			throws P3OWLUtilException
 	{
 		return isOWLSubClassOf(owlModel, subClassURI.toString(), classURI.toString(), mustExist);
 	}
 
-	public static void addOWLSuperClass(OWLModel owlModel, String subClassName, String superClassName) throws P3OWLUtilException
+	public static void addOWLSuperClass(OWLModel owlModel, String subClassName, String superClassName)
+			throws P3OWLUtilException
 	{
 		OWLClass subClass = getOWLClass(owlModel, subClassName);
 		OWLClass superClass = getOWLClass(owlModel, superClassName);
@@ -1343,7 +1402,8 @@ public class P3OWLUtil
 		subClass.addSuperclass(superClass);
 	}
 
-	public static boolean isOWLDirectSuperClassOf(OWLModel owlModel, String superClassName, String className, boolean mustExist) throws P3OWLUtilException
+	public static boolean isOWLDirectSuperClassOf(OWLModel owlModel, String superClassName, String className,
+			boolean mustExist) throws P3OWLUtilException
 	{
 		OWLNamedClass superClass = getOWLNamedClass(owlModel, superClassName, mustExist);
 		OWLNamedClass cls = getOWLNamedClass(owlModel, className, mustExist);
@@ -1351,17 +1411,20 @@ public class P3OWLUtil
 		return (superClass != null && cls != null && cls.isSubclassOf(superClass)); // No isSuperclassOf call
 	}
 
-	public static boolean isOWLDirectSuperClassOf(OWLModel owlModel, URI superClassURI, URI classURI, boolean mustExist) throws P3OWLUtilException
+	public static boolean isOWLDirectSuperClassOf(OWLModel owlModel, URI superClassURI, URI classURI, boolean mustExist)
+			throws P3OWLUtilException
 	{
 		return isOWLDirectSuperClassOf(owlModel, superClassURI.toString(), classURI.toString(), mustExist);
 	}
 
-	public static boolean isOWLSuperClassOf(OWLModel owlModel, String superClassName, String className) throws P3OWLUtilException
+	public static boolean isOWLSuperClassOf(OWLModel owlModel, String superClassName, String className)
+			throws P3OWLUtilException
 	{
 		return isOWLSuperClassOf(owlModel, superClassName, className, true);
 	}
 
-	public static boolean isOWLSuperClassOf(OWLModel owlModel, String superClassName, String className, boolean mustExist) throws P3OWLUtilException
+	public static boolean isOWLSuperClassOf(OWLModel owlModel, String superClassName, String className, boolean mustExist)
+			throws P3OWLUtilException
 	{
 		OWLNamedClass superClass = getOWLNamedClass(owlModel, superClassName, mustExist);
 		OWLNamedClass cls = getOWLNamedClass(owlModel, className, mustExist);
@@ -1369,7 +1432,8 @@ public class P3OWLUtil
 		return (superClass != null && cls != null && cls.getSuperclasses(true).contains(superClass));
 	}
 
-	public static boolean isOWLSuperClassOf(OWLModel owlModel, URI superClassURI, URI classURI, boolean mustExist) throws P3OWLUtilException
+	public static boolean isOWLSuperClassOf(OWLModel owlModel, URI superClassURI, URI classURI, boolean mustExist)
+			throws P3OWLUtilException
 	{
 		return isOWLSuperClassOf(owlModel, superClassURI.toString(), classURI.toString(), mustExist);
 	}
@@ -1379,7 +1443,8 @@ public class P3OWLUtil
 		return getNumberOfOWLIndividualsOfClass(owlModel, className, true);
 	}
 
-	public static int getNumberOfOWLIndividualsOfClass(OWLModel owlModel, String className, boolean mustExist) throws P3OWLUtilException
+	public static int getNumberOfOWLIndividualsOfClass(OWLModel owlModel, String className, boolean mustExist)
+			throws P3OWLUtilException
 	{
 		OWLNamedClass cls = getOWLNamedClass(owlModel, className, mustExist);
 		int numberOfIndividuals = 0;
@@ -1390,7 +1455,8 @@ public class P3OWLUtil
 		return numberOfIndividuals;
 	}
 
-	public static int getNumberOfDirectOWLInstancesOfClass(OWLModel owlModel, String className, boolean mustExist) throws P3OWLUtilException
+	public static int getNumberOfDirectOWLInstancesOfClass(OWLModel owlModel, String className, boolean mustExist)
+			throws P3OWLUtilException
 	{
 		OWLNamedClass cls = getOWLNamedClass(owlModel, className, mustExist);
 		int numberOfIndividuals = 0;
@@ -1401,14 +1467,16 @@ public class P3OWLUtil
 		return numberOfIndividuals;
 	} // getNumberOfDirectInstancesOfClass
 
-	public static boolean isConsistentOWLClass(OWLModel owlModel, String className, boolean mustExist) throws P3OWLUtilException
+	public static boolean isConsistentOWLClass(OWLModel owlModel, String className, boolean mustExist)
+			throws P3OWLUtilException
 	{
 		OWLNamedClass cls = getOWLNamedClass(owlModel, className, mustExist);
 
 		return cls != null && cls.isConsistent();
 	}
 
-	public static Set<OWLNamedClass> getOWLDomainClasses(OWLModel owlModel, String propertyName) throws P3OWLUtilException
+	public static Set<OWLNamedClass> getOWLDomainClasses(OWLModel owlModel, String propertyName)
+			throws P3OWLUtilException
 	{
 		return getOWLDomainClasses(owlModel, propertyName, true, true);
 	}
@@ -1418,28 +1486,32 @@ public class P3OWLUtil
 		return getOWLDomainClasses(owlModel, propertyURI.toString());
 	}
 
-	public static Set<OWLNamedClass> getOWLDomainClasses(OWLModel owlModel, String propertyName, boolean mustExist) throws P3OWLUtilException
+	public static Set<OWLNamedClass> getOWLDomainClasses(OWLModel owlModel, String propertyName, boolean mustExist)
+			throws P3OWLUtilException
 	{
 		return getOWLDomainClasses(owlModel, propertyName, mustExist, true);
 	}
 
-	public static Set<OWLNamedClass> getDirectOWLDomainClasses(OWLModel owlModel, String propertyName) throws P3OWLUtilException
+	public static Set<OWLNamedClass> getDirectOWLDomainClasses(OWLModel owlModel, String propertyName)
+			throws P3OWLUtilException
 	{
 		return getOWLDomainClasses(owlModel, propertyName, true, false);
 	}
 
-	public static Set<OWLNamedClass> getDirectOWLDomainClasses(OWLModel owlModel, URI propertyURI) throws P3OWLUtilException
+	public static Set<OWLNamedClass> getDirectOWLDomainClasses(OWLModel owlModel, URI propertyURI)
+			throws P3OWLUtilException
 	{
 		return getDirectOWLDomainClasses(owlModel, propertyURI.toString());
 	}
 
-	public static Set<OWLNamedClass> getDirectOWLDomainClasses(OWLModel owlModel, String propertyName, boolean mustExist) throws P3OWLUtilException
+	public static Set<OWLNamedClass> getDirectOWLDomainClasses(OWLModel owlModel, String propertyName, boolean mustExist)
+			throws P3OWLUtilException
 	{
 		return getOWLDomainClasses(owlModel, propertyName, mustExist, false);
 	}
 
-	private static Set<OWLNamedClass> getOWLDomainClasses(OWLModel owlModel, String propertyName, boolean mustExist, boolean includingSuperproperties)
-		throws P3OWLUtilException
+	private static Set<OWLNamedClass> getOWLDomainClasses(OWLModel owlModel, String propertyName, boolean mustExist,
+			boolean includingSuperproperties) throws P3OWLUtilException
 	{
 		OWLProperty property = getOWLProperty(owlModel, propertyName, mustExist);
 		Set<OWLNamedClass> result = new HashSet<OWLNamedClass>();
@@ -1479,26 +1551,31 @@ public class P3OWLUtil
 		return getOWLRangeClasses(owlModel, propertyURI.toString());
 	}
 
-	public static Set<OWLNamedClass> getOWLDirectRangeClasses(OWLModel owlModel, String propertyName, boolean mustExist) throws P3OWLUtilException
+	public static Set<OWLNamedClass> getOWLDirectRangeClasses(OWLModel owlModel, String propertyName, boolean mustExist)
+			throws P3OWLUtilException
 	{
 		return getOWLRangeClasses(owlModel, propertyName, mustExist);
 	}
 
-	public static Set<OWLNamedClass> getOWLDirectRangeClasses(OWLModel owlModel, String propertyName) throws P3OWLUtilException
+	public static Set<OWLNamedClass> getOWLDirectRangeClasses(OWLModel owlModel, String propertyName)
+			throws P3OWLUtilException
 	{
 		return getOWLRangeClasses(owlModel, propertyName, true);
 	}
 
-	public static Set<OWLNamedClass> getOWLDirectRangeClasses(OWLModel owlModel, URI propertyURI) throws P3OWLUtilException
+	public static Set<OWLNamedClass> getOWLDirectRangeClasses(OWLModel owlModel, URI propertyURI)
+			throws P3OWLUtilException
 	{
 		return getOWLDirectRangeClasses(owlModel, propertyURI.toString());
 	}
 
-	private static Set<OWLNamedClass> getOWLRangeClasses(OWLModel owlModel, String propertyName, boolean mustExist) throws P3OWLUtilException
+	private static Set<OWLNamedClass> getOWLRangeClasses(OWLModel owlModel, String propertyName, boolean mustExist)
+			throws P3OWLUtilException
 	{
 		OWLProperty property = getOWLProperty(owlModel, propertyName, mustExist);
 		Set<OWLNamedClass> result = new HashSet<OWLNamedClass>();
-		Collection<?> rangeClasses = property.getUnionRangeClasses(); // TODO: no includingSuperproperties argument supported
+		Collection<?> rangeClasses = property.getUnionRangeClasses(); // TODO: no includingSuperproperties argument
+																																	// supported
 		Iterator<?> iterator;
 
 		if (rangeClasses == null)
@@ -1514,7 +1591,8 @@ public class P3OWLUtil
 		return result;
 	}
 
-	public static boolean isInOWLPropertyDomain(OWLModel owlModel, String propertyName, String className, boolean mustExist) throws P3OWLUtilException
+	public static boolean isInOWLPropertyDomain(OWLModel owlModel, String propertyName, String className,
+			boolean mustExist) throws P3OWLUtilException
 	{
 		OWLProperty property = getOWLProperty(owlModel, propertyName, mustExist);
 		OWLNamedClass cls = getOWLNamedClass(owlModel, className, mustExist);
@@ -1522,12 +1600,14 @@ public class P3OWLUtil
 		return (property != null && cls != null && property.getDomains(true).contains(cls));
 	}
 
-	public static boolean isInOWLPropertyDomain(OWLModel owlModel, URI propertyURI, URI classURI, boolean mustExist) throws P3OWLUtilException
+	public static boolean isInOWLPropertyDomain(OWLModel owlModel, URI propertyURI, URI classURI, boolean mustExist)
+			throws P3OWLUtilException
 	{
 		return isInOWLPropertyDomain(owlModel, propertyURI.toString(), classURI.toString(), mustExist);
 	}
 
-	public static boolean isInDirectOWLPropertyDomain(OWLModel owlModel, String propertyName, String className, boolean mustExist) throws P3OWLUtilException
+	public static boolean isInDirectOWLPropertyDomain(OWLModel owlModel, String propertyName, String className,
+			boolean mustExist) throws P3OWLUtilException
 	{
 		OWLProperty property = getOWLProperty(owlModel, propertyName, mustExist);
 		OWLNamedClass cls = getOWLNamedClass(owlModel, className, mustExist);
@@ -1535,12 +1615,14 @@ public class P3OWLUtil
 		return (property != null && cls != null && property.getDomains(false).contains(cls));
 	}
 
-	public static boolean isInDirectOWLPropertyDomain(OWLModel owlModel, URI propertyURI, URI classURI, boolean mustExist) throws P3OWLUtilException
+	public static boolean isInDirectOWLPropertyDomain(OWLModel owlModel, URI propertyURI, URI classURI, boolean mustExist)
+			throws P3OWLUtilException
 	{
 		return isInDirectOWLPropertyDomain(owlModel, propertyURI.toString(), classURI.toString(), mustExist);
 	}
 
-	public static boolean isInPropertyRange(OWLModel owlModel, String propertyName, String className, boolean mustExist) throws P3OWLUtilException
+	public static boolean isInPropertyRange(OWLModel owlModel, String propertyName, String className, boolean mustExist)
+			throws P3OWLUtilException
 	{
 		OWLProperty property = getOWLProperty(owlModel, propertyName, mustExist);
 		OWLNamedClass cls = getOWLNamedClass(owlModel, className, mustExist);
@@ -1548,12 +1630,14 @@ public class P3OWLUtil
 		return (property != null && cls != null && property.getRanges(true).contains(cls));
 	}
 
-	public static boolean isInPropertyRange(OWLModel owlModel, URI propertyURI, URI classURI, boolean mustExist) throws P3OWLUtilException
+	public static boolean isInPropertyRange(OWLModel owlModel, URI propertyURI, URI classURI, boolean mustExist)
+			throws P3OWLUtilException
 	{
 		return isInPropertyRange(owlModel, propertyURI.toString(), classURI.toString(), mustExist);
 	}
 
-	public static boolean isInDirectPropertyRange(OWLModel owlModel, String propertyName, String className, boolean mustExist) throws P3OWLUtilException
+	public static boolean isInDirectPropertyRange(OWLModel owlModel, String propertyName, String className,
+			boolean mustExist) throws P3OWLUtilException
 	{
 		OWLProperty property = getOWLProperty(owlModel, propertyName, mustExist);
 		OWLNamedClass cls = getOWLNamedClass(owlModel, className, mustExist);
@@ -1561,19 +1645,22 @@ public class P3OWLUtil
 		return (property != null && cls != null && property.getRanges(false).contains(cls));
 	}
 
-	public static boolean isInDirectPropertyRange(OWLModel owlModel, URI propertyURI, URI classURI, boolean mustExist) throws P3OWLUtilException
+	public static boolean isInDirectPropertyRange(OWLModel owlModel, URI propertyURI, URI classURI, boolean mustExist)
+			throws P3OWLUtilException
 	{
 		return isInDirectPropertyRange(owlModel, propertyURI.toString(), classURI.toString(), mustExist);
 	}
 
-	public static boolean isOWLObjectProperty(OWLModel owlModel, String propertyName, boolean mustExist) throws P3OWLUtilException
+	public static boolean isOWLObjectProperty(OWLModel owlModel, String propertyName, boolean mustExist)
+			throws P3OWLUtilException
 	{
 		OWLProperty property = getOWLProperty(owlModel, propertyName, mustExist);
 
 		return (property != null && property.isObjectProperty());
 	}
 
-	public static boolean isOWLObjectProperty(OWLModel owlModel, URI propertyURI, boolean mustExist) throws P3OWLUtilException
+	public static boolean isOWLObjectProperty(OWLModel owlModel, URI propertyURI, boolean mustExist)
+			throws P3OWLUtilException
 	{
 		return isOWLObjectProperty(owlModel, propertyURI.toString(), mustExist);
 	}
@@ -1602,14 +1689,16 @@ public class P3OWLUtil
 		return isOWLObjectProperty(owlModel, propertyURI.toString());
 	}
 
-	public static boolean isOWLDataProperty(OWLModel owlModel, String propertyName, boolean mustExist) throws P3OWLUtilException
+	public static boolean isOWLDataProperty(OWLModel owlModel, String propertyName, boolean mustExist)
+			throws P3OWLUtilException
 	{
 		OWLProperty property = getOWLProperty(owlModel, propertyName, mustExist);
 
 		return (property != null && !property.isObjectProperty());
 	}
 
-	public static boolean isOWLDataProperty(OWLModel owlModel, URI propertyURI, boolean mustExist) throws P3OWLUtilException
+	public static boolean isOWLDataProperty(OWLModel owlModel, URI propertyURI, boolean mustExist)
+			throws P3OWLUtilException
 	{
 		return isOWLDataProperty(owlModel, propertyURI.toString(), mustExist);
 	}
@@ -1646,7 +1735,8 @@ public class P3OWLUtil
 		return isOWLDataProperty(owlModel, propertyURI.toString());
 	}
 
-	public static boolean isOWLTransitiveProperty(OWLModel owlModel, String propertyName, boolean mustExist) throws P3OWLUtilException
+	public static boolean isOWLTransitiveProperty(OWLModel owlModel, String propertyName, boolean mustExist)
+			throws P3OWLUtilException
 	{
 		OWLProperty property = getOWLProperty(owlModel, propertyName, mustExist);
 
@@ -1663,38 +1753,44 @@ public class P3OWLUtil
 		return isOWLTransitiveProperty(owlModel, propertyURI.toString());
 	}
 
-	public static boolean isOWLSymmetricProperty(OWLModel owlModel, String propertyName, boolean mustExist) throws P3OWLUtilException
+	public static boolean isOWLSymmetricProperty(OWLModel owlModel, String propertyName, boolean mustExist)
+			throws P3OWLUtilException
 	{
 		OWLProperty property = getOWLProperty(owlModel, propertyName, mustExist);
 
 		return (property != null && property instanceof OWLObjectProperty && ((OWLObjectProperty)property).isSymmetric());
 	}
 
-	public static boolean isOWLSymmetricProperty(OWLModel owlModel, URI propertyURI, boolean mustExist) throws P3OWLUtilException
+	public static boolean isOWLSymmetricProperty(OWLModel owlModel, URI propertyURI, boolean mustExist)
+			throws P3OWLUtilException
 	{
 		return isOWLSymmetricProperty(owlModel, propertyURI.toString(), mustExist);
 	}
 
-	public static boolean isOWLFunctionalProperty(OWLModel owlModel, String propertyName, boolean mustExist) throws P3OWLUtilException
+	public static boolean isOWLFunctionalProperty(OWLModel owlModel, String propertyName, boolean mustExist)
+			throws P3OWLUtilException
 	{
 		OWLProperty property = getOWLProperty(owlModel, propertyName, mustExist);
 
 		return property != null && property.isFunctional();
 	}
 
-	public static boolean isOWLFunctionalProperty(OWLModel owlModel, URI propertyURI, boolean mustExist) throws P3OWLUtilException
+	public static boolean isOWLFunctionalProperty(OWLModel owlModel, URI propertyURI, boolean mustExist)
+			throws P3OWLUtilException
 	{
 		return isOWLFunctionalProperty(owlModel, propertyURI.toString(), mustExist);
 	}
 
-	public static boolean isAnnotationProperty(OWLModel owlModel, String propertyName, boolean mustExist) throws P3OWLUtilException
+	public static boolean isAnnotationProperty(OWLModel owlModel, String propertyName, boolean mustExist)
+			throws P3OWLUtilException
 	{
 		OWLProperty property = getOWLProperty(owlModel, propertyName, mustExist);
 
 		return property != null && property.isAnnotationProperty();
 	}
 
-	public static boolean isAnnotationProperty(OWLModel owlModel, URI propertyURI, boolean mustExist) throws P3OWLUtilException
+	public static boolean isAnnotationProperty(OWLModel owlModel, URI propertyURI, boolean mustExist)
+			throws P3OWLUtilException
 	{
 		return isAnnotationProperty(owlModel, propertyURI.toString(), mustExist);
 	}
@@ -1706,14 +1802,16 @@ public class P3OWLUtil
 		return property != null && property.isAnnotationProperty();
 	}
 
-	public static boolean isInverseFunctionalProperty(OWLModel owlModel, String propertyName, boolean mustExist) throws P3OWLUtilException
+	public static boolean isInverseFunctionalProperty(OWLModel owlModel, String propertyName, boolean mustExist)
+			throws P3OWLUtilException
 	{
 		OWLProperty property = getOWLProperty(owlModel, propertyName, mustExist);
 
 		return property != null && property.isInverseFunctional();
 	}
 
-	public static boolean isInverseFunctionalProperty(OWLModel owlModel, URI propertyURI, boolean mustExist) throws P3OWLUtilException
+	public static boolean isInverseFunctionalProperty(OWLModel owlModel, URI propertyURI, boolean mustExist)
+			throws P3OWLUtilException
 	{
 		return isInverseFunctionalProperty(owlModel, propertyURI.toString(), mustExist);
 	}
@@ -1738,7 +1836,8 @@ public class P3OWLUtil
 		return getIndividual(owlModel, individualURI.toString());
 	}
 
-	public static OWLIndividual getOWLIndividual(OWLModel owlModel, String individualName, boolean mustExist) throws P3OWLUtilException
+	public static OWLIndividual getOWLIndividual(OWLModel owlModel, String individualName, boolean mustExist)
+			throws P3OWLUtilException
 	{
 		RDFResource resource = owlModel.getRDFResource(individualName);
 
@@ -1754,7 +1853,8 @@ public class P3OWLUtil
 			return null;
 	}
 
-	public static OWLNamedClass getOWLNamedClass(OWLModel owlModel, String className, boolean mustExist) throws P3OWLUtilException
+	public static OWLNamedClass getOWLNamedClass(OWLModel owlModel, String className, boolean mustExist)
+			throws P3OWLUtilException
 	{
 		RDFResource resource = owlModel.getRDFResource(className);
 
@@ -1786,7 +1886,8 @@ public class P3OWLUtil
 			return null;
 	}
 
-	public static Set<OWLNamedClass> getOWLClassesOfIndividual(OWLModel owlModel, String individualName) throws P3OWLUtilException
+	public static Set<OWLNamedClass> getOWLClassesOfIndividual(OWLModel owlModel, String individualName)
+			throws P3OWLUtilException
 	{
 		return getOWLClassesOfIndividual(owlModel, individualName, true);
 	}
@@ -1867,12 +1968,14 @@ public class P3OWLUtil
 		return properties;
 	}
 
-	public static Set<OWLNamedClass> getOWLClassesOfIndividual(OWLModel owlModel, URI individualURI) throws P3OWLUtilException
+	public static Set<OWLNamedClass> getOWLClassesOfIndividual(OWLModel owlModel, URI individualURI)
+			throws P3OWLUtilException
 	{
 		return getOWLClassesOfIndividual(owlModel, individualURI.toString());
 	}
 
-	public static Set<OWLNamedClass> getOWLClassesOfIndividual(OWLModel owlModel, String individualName, boolean mustExist) throws P3OWLUtilException
+	public static Set<OWLNamedClass> getOWLClassesOfIndividual(OWLModel owlModel, String individualName, boolean mustExist)
+			throws P3OWLUtilException
 	{
 		OWLIndividual individual = getOWLIndividual(owlModel, individualName, mustExist);
 
@@ -1912,7 +2015,8 @@ public class P3OWLUtil
 		return isOWLNamedClass(owlModel, name) || isOWLProperty(owlModel, name) || isOWLIndividual(owlModel, name);
 	}
 
-	public static boolean isOWLNamedClass(OWLModel owlModel, String className, boolean mustExist) throws P3OWLUtilException
+	public static boolean isOWLNamedClass(OWLModel owlModel, String className, boolean mustExist)
+			throws P3OWLUtilException
 	{
 		return (getOWLNamedClass(owlModel, className, mustExist) != null);
 	}
@@ -1924,7 +2028,8 @@ public class P3OWLUtil
 		return resource instanceof OWLProperty;
 	}
 
-	public static boolean isOWLProperty(OWLModel owlModel, String propertyName, boolean mustExist) throws P3OWLUtilException
+	public static boolean isOWLProperty(OWLModel owlModel, String propertyName, boolean mustExist)
+			throws P3OWLUtilException
 	{
 		return (getOWLProperty(owlModel, propertyName, mustExist) != null);
 	}
@@ -1982,14 +2087,17 @@ public class P3OWLUtil
 		return properties;
 	}
 
-	public static boolean isIndividual(OWLModel owlModel, String individualName, boolean mustExist) throws P3OWLUtilException
+	public static boolean isIndividual(OWLModel owlModel, String individualName, boolean mustExist)
+			throws P3OWLUtilException
 	{
 		return (getOWLIndividual(owlModel, individualName, mustExist) != null);
 	}
 
-	public static boolean isSWRLVariable(OWLModel owlModel, String individualName, boolean mustExist) throws P3OWLUtilException
+	public static boolean isSWRLVariable(OWLModel owlModel, String individualName, boolean mustExist)
+			throws P3OWLUtilException
 	{
-		return (getOWLIndividual(owlModel, individualName, mustExist) != null && getOWLIndividual(owlModel, individualName, mustExist) instanceof SWRLVariable);
+		return (getOWLIndividual(owlModel, individualName, mustExist) != null && getOWLIndividual(owlModel, individualName,
+				mustExist) instanceof SWRLVariable);
 	}
 
 	public static boolean isIndividual(OWLModel owlModel, String individualName) throws P3OWLUtilException
@@ -2002,20 +2110,25 @@ public class P3OWLUtil
 		return isIndividual(owlModel, individualURI.toString());
 	}
 
-	public static int getNumberOfPropertyValues(OWLModel owlModel, String individualName, String propertyName, boolean mustExist) throws P3OWLUtilException
+	public static int getNumberOfPropertyValues(OWLModel owlModel, String individualName, String propertyName,
+			boolean mustExist) throws P3OWLUtilException
 	{
-		OWLProperty property = getOWLProperty(owlModel, propertyName, mustExist); // Will throw an exception if mustExist is true.
-		OWLIndividual individual = getOWLIndividual(owlModel, individualName, mustExist); // Will throw an exception if mustExist is true.
+		OWLProperty property = getOWLProperty(owlModel, propertyName, mustExist); // Will throw an exception if mustExist is
+																																							// true.
+		OWLIndividual individual = getOWLIndividual(owlModel, individualName, mustExist); // Will throw an exception if
+																																											// mustExist is true.
 
 		return individual.getPropertyValues(property).size();
 	}
 
-	public static int getNumberOfPropertyValues(OWLModel owlModel, URI individualURI, URI propertyURI, boolean mustExist) throws P3OWLUtilException
+	public static int getNumberOfPropertyValues(OWLModel owlModel, URI individualURI, URI propertyURI, boolean mustExist)
+			throws P3OWLUtilException
 	{
 		return getNumberOfPropertyValues(owlModel, individualURI.toString(), propertyURI.toString(), mustExist);
 	}
 
-	public static Set<OWLProperty> getOWLPropertiesOfIndividual(OWLModel owlModel, String individualName) throws P3OWLUtilException
+	public static Set<OWLProperty> getOWLPropertiesOfIndividual(OWLModel owlModel, String individualName)
+			throws P3OWLUtilException
 	{
 		OWLIndividual individual = getOWLIndividual(owlModel, individualName, true);
 		HashSet<OWLProperty> properties = new HashSet<OWLProperty>();
@@ -2031,12 +2144,14 @@ public class P3OWLUtil
 		return properties;
 	}
 
-	public static Set<OWLProperty> getOWLPropertiesOfIndividual(OWLModel owlModel, URI individualURI) throws P3OWLUtilException
+	public static Set<OWLProperty> getOWLPropertiesOfIndividual(OWLModel owlModel, URI individualURI)
+			throws P3OWLUtilException
 	{
 		return getOWLPropertiesOfIndividual(owlModel, individualURI.toString());
 	}
 
-	public static Set<OWLProperty> getPossibleOWLPropertiesOfIndividual(OWLModel owlModel, String individualName) throws P3OWLUtilException
+	public static Set<OWLProperty> getPossibleOWLPropertiesOfIndividual(OWLModel owlModel, String individualName)
+			throws P3OWLUtilException
 	{
 		OWLIndividual individual = getOWLIndividual(owlModel, individualName, true);
 		HashSet<OWLProperty> properties = new HashSet<OWLProperty>();
@@ -2062,11 +2177,13 @@ public class P3OWLUtil
 		return resource.getURI();
 	}
 
-	public static int getNumberOfOWLPropertyValues(OWLModel owlModel, String individualName, String propertyName, Object propertyValue, boolean mustExist)
-		throws P3OWLUtilException
+	public static int getNumberOfOWLPropertyValues(OWLModel owlModel, String individualName, String propertyName,
+			Object propertyValue, boolean mustExist) throws P3OWLUtilException
 	{
-		OWLProperty property = getOWLProperty(owlModel, propertyName, mustExist); // Will throw an exception if mustExist is true
-		OWLIndividual individual = getOWLIndividual(owlModel, individualName, mustExist); // Will throw an exception if mustExist is true
+		OWLProperty property = getOWLProperty(owlModel, propertyName, mustExist); // Will throw an exception if mustExist is
+																																							// true
+		OWLIndividual individual = getOWLIndividual(owlModel, individualName, mustExist); // Will throw an exception if
+																																											// mustExist is true
 		int numberOfPropertyValues = 0;
 
 		if (propertyValue == null)
@@ -2087,7 +2204,8 @@ public class P3OWLUtil
 		return numberOfPropertyValues;
 	}
 
-	public static void addOWLPropertyValue(OWLModel owlModel, String resourceName, String propertyName, Object propertyValue) throws P3OWLUtilException
+	public static void addOWLPropertyValue(OWLModel owlModel, String resourceName, String propertyName,
+			Object propertyValue) throws P3OWLUtilException
 	{
 		OWLProperty property = owlModel.getOWLProperty(propertyName);
 		RDFResource resource = owlModel.getRDFResource(resourceName);
@@ -2103,7 +2221,8 @@ public class P3OWLUtil
 			resource.addPropertyValue(property, propertyValue);
 	}
 
-	public static void addOWLPropertyValue(OWLModel owlModel, OWLIndividual individual, String propertyName, Object propertyValue) throws P3OWLUtilException
+	public static void addOWLPropertyValue(OWLModel owlModel, OWLIndividual individual, String propertyName,
+			Object propertyValue) throws P3OWLUtilException
 	{
 		OWLProperty property = owlModel.getOWLProperty(propertyName);
 
@@ -2118,98 +2237,108 @@ public class P3OWLUtil
 			individual.addPropertyValue(property, propertyValue);
 	}
 
-	public static void addPropertyValue(OWLIndividual individual, OWLProperty property, Object propertyValue) throws P3OWLUtilException
+	public static void addPropertyValue(OWLIndividual individual, OWLProperty property, Object propertyValue)
+			throws P3OWLUtilException
 	{
 		if (individual == null)
 			throwException("null individual name");
 		if (property == null)
 			throwException("null property for individual " + individual.getPrefixedName());
 		if (propertyValue == null)
-			throwException("null value for property " + property.getPrefixedName() + " for OWL individual " + individual.getPrefixedName());
+			throwException("null value for property " + property.getPrefixedName() + " for OWL individual "
+					+ individual.getPrefixedName());
 
 		if (!individual.hasPropertyValue(property, propertyValue))
 			individual.addPropertyValue(property, propertyValue);
 	}
 
-	public static RDFResource getObjectPropertyValue(OWLIndividual individual, OWLProperty property) throws P3OWLUtilException
+	public static RDFResource getObjectPropertyValue(OWLIndividual individual, OWLProperty property)
+			throws P3OWLUtilException
 	{
 		Object o = individual.getPropertyValue(property);
 
 		if (!(o instanceof RDFResource))
-			throw new P3OWLUtilException("value " + o + " of object property " + property.getPrefixedName() + " associated with individual "
-					+ individual.getPrefixedName() + " is not a valid object value");
+			throw new P3OWLUtilException("value " + o + " of object property " + property.getPrefixedName()
+					+ " associated with individual " + individual.getPrefixedName() + " is not a valid object value");
 
 		return (RDFResource)o;
 	}
 
-	public static Set<RDFResource> getObjectPropertyValues(OWLModel owlModel, String individualName, String propertyName) throws P3OWLUtilException
+	public static Set<RDFResource> getObjectPropertyValues(OWLModel owlModel, String individualName, String propertyName)
+			throws P3OWLUtilException
 	{
 		return getObjectPropertyValues(owlModel, individualName, propertyName, true);
 	}
 
-	public static Set<RDFResource> getObjectPropertyValues(OWLModel owlModel, OWLIndividual individual, String propertyName) throws P3OWLUtilException
+	public static Set<RDFResource> getObjectPropertyValues(OWLModel owlModel, OWLIndividual individual,
+			String propertyName) throws P3OWLUtilException
 	{
 		return getObjectPropertyValues(owlModel, individual.getName(), propertyName, true);
 	}
 
-	public static Set<OWLIndividual> getOWLObjectPropertyIndividualValues(OWLModel owlModel, OWLIndividual individual, String propertyName,
-																																				String expectedInstanceClassName) throws P3OWLUtilException
+	public static Set<OWLIndividual> getOWLObjectPropertyIndividualValues(OWLModel owlModel, OWLIndividual individual,
+			String propertyName, String expectedInstanceClassName) throws P3OWLUtilException
 	{
 		Set<OWLIndividual> individuals = new HashSet<OWLIndividual>();
 
 		for (RDFResource value : getObjectPropertyValues(owlModel, individual, propertyName)) {
 			if (!(value instanceof OWLIndividual))
-				throw new P3OWLUtilException("value " + value + " for property " + propertyName + " associated with individual " + individual.getPrefixedName()
-						+ " is not an OWL individual");
+				throw new P3OWLUtilException("value " + value + " for property " + propertyName
+						+ " associated with individual " + individual.getPrefixedName() + " is not an OWL individual");
 
 			OWLIndividual individualValue = (OWLIndividual)value;
 			if (!isOWLIndividualOfClass(owlModel, individualValue, expectedInstanceClassName))
-				throw new P3OWLUtilException("object " + individual.getPrefixedName() + " value for property " + propertyName + " associated with individual "
-						+ individual.getPrefixedName() + " is not of type " + expectedInstanceClassName);
+				throw new P3OWLUtilException("object " + individual.getPrefixedName() + " value for property " + propertyName
+						+ " associated with individual " + individual.getPrefixedName() + " is not of type "
+						+ expectedInstanceClassName);
 
 			individuals.add(individualValue);
 		}
 		return individuals;
 	}
 
-	public static OWLIndividual getOWLObjectPropertyIndividualValue(OWLModel owlModel, OWLIndividual individual, String propertyName,
-																																	String expectedInstanceClassName) throws P3OWLUtilException
+	public static OWLIndividual getOWLObjectPropertyIndividualValue(OWLModel owlModel, OWLIndividual individual,
+			String propertyName, String expectedInstanceClassName) throws P3OWLUtilException
 	{
 		RDFResource value = getObjectPropertyValue(owlModel, individual, propertyName);
 
 		if (!(value instanceof OWLIndividual))
-			throw new P3OWLUtilException("invalid value for " + propertyName + " property associated with individual " + individual.getPrefixedName() + "; found "
-					+ value + ", expecting individual");
+			throw new P3OWLUtilException("invalid value for " + propertyName + " property associated with individual "
+					+ individual.getPrefixedName() + "; found " + value + ", expecting individual");
 		OWLIndividual individualValue = (OWLIndividual)value;
 		if (!isOWLIndividualOfClass(owlModel, individualValue, expectedInstanceClassName))
-			throw new P3OWLUtilException("object " + individualValue.getPrefixedName() + " value for property " + propertyName + " associated with individual "
-					+ individual.getPrefixedName() + " is not of type " + expectedInstanceClassName);
+			throw new P3OWLUtilException("object " + individualValue.getPrefixedName() + " value for property "
+					+ propertyName + " associated with individual " + individual.getPrefixedName() + " is not of type "
+					+ expectedInstanceClassName);
 
 		return individualValue;
 	}
 
-	public static OWLProperty getOWLObjectPropertyPropertyValue(OWLModel owlModel, OWLIndividual individual, String propertyName) throws P3OWLUtilException
+	public static OWLProperty getOWLObjectPropertyPropertyValue(OWLModel owlModel, OWLIndividual individual,
+			String propertyName) throws P3OWLUtilException
 	{
 		RDFResource value = getObjectPropertyValue(owlModel, individual, propertyName);
 
 		if (!(value instanceof OWLProperty))
-			throw new P3OWLUtilException("invalid type for " + propertyName + " property associated with individual " + individual.getPrefixedName() + "; found "
-					+ value + ", expecting property");
+			throw new P3OWLUtilException("invalid type for " + propertyName + " property associated with individual "
+					+ individual.getPrefixedName() + "; found " + value + ", expecting property");
 
 		return (OWLProperty)value;
 	}
 
-	public static Set<RDFResource> getObjectPropertyValues(OWLModel owlModel, OWLIndividual individual, String propertyName, boolean mustExist)
-		throws P3OWLUtilException
+	public static Set<RDFResource> getObjectPropertyValues(OWLModel owlModel, OWLIndividual individual,
+			String propertyName, boolean mustExist) throws P3OWLUtilException
 	{
 		return getObjectPropertyValues(owlModel, individual.getName(), propertyName, mustExist);
 	}
 
-	public static Set<RDFResource> getObjectPropertyValues(OWLModel owlModel, String individualName, String propertyName, boolean mustExist)
-		throws P3OWLUtilException
+	public static Set<RDFResource> getObjectPropertyValues(OWLModel owlModel, String individualName, String propertyName,
+			boolean mustExist) throws P3OWLUtilException
 	{
-		OWLIndividual individual = getOWLIndividual(owlModel, individualName, mustExist); // Will throw an exception if mustExist is true.
-		OWLProperty property = getOWLProperty(owlModel, propertyName, mustExist); // Will throw an exception if mustExist is true.
+		OWLIndividual individual = getOWLIndividual(owlModel, individualName, mustExist); // Will throw an exception if
+																																											// mustExist is true.
+		OWLProperty property = getOWLProperty(owlModel, propertyName, mustExist); // Will throw an exception if mustExist is
+																																							// true.
 		Set<RDFResource> result = new HashSet<RDFResource>();
 
 		if (individual != null && property != null) {
@@ -2223,35 +2352,41 @@ public class P3OWLUtil
 		return result;
 	}
 
-	public static Set<RDFResource> getObjectPropertyValues(OWLModel owlModel, URI individualURI, URI propertyURI, boolean mustExist) throws P3OWLUtilException
+	public static Set<RDFResource> getObjectPropertyValues(OWLModel owlModel, URI individualURI, URI propertyURI,
+			boolean mustExist) throws P3OWLUtilException
 	{
 		return getObjectPropertyValues(owlModel, individualURI.toString(), propertyURI.toString(), mustExist);
 	}
 
-	public static Set<RDFResource> getObjectPropertyValues(OWLModel owlModel, URI individualURI, URI propertyURI) throws P3OWLUtilException
+	public static Set<RDFResource> getObjectPropertyValues(OWLModel owlModel, URI individualURI, URI propertyURI)
+			throws P3OWLUtilException
 	{
 		return getObjectPropertyValues(owlModel, individualURI, propertyURI, true);
 	}
 
-	public static RDFResource getObjectPropertyValue(OWLModel owlModel, OWLIndividual individual, String propertyName) throws P3OWLUtilException
+	public static RDFResource getObjectPropertyValue(OWLModel owlModel, OWLIndividual individual, String propertyName)
+			throws P3OWLUtilException
 	{
 		return getObjectPropertyValue(owlModel, individual, propertyName, true);
 	}
 
-	public static RDFResource getObjectPropertyValue(OWLModel owlModel, OWLIndividual individual, String propertyName, boolean mustExist)
-		throws P3OWLUtilException
+	public static RDFResource getObjectPropertyValue(OWLModel owlModel, OWLIndividual individual, String propertyName,
+			boolean mustExist) throws P3OWLUtilException
 	{
 		return getObjectPropertyValue(owlModel, individual.getName(), propertyName, mustExist);
 	}
 
-	public static RDFResource getObjectPropertyValue(OWLModel owlModel, String individualName, String propertyName) throws P3OWLUtilException
+	public static RDFResource getObjectPropertyValue(OWLModel owlModel, String individualName, String propertyName)
+			throws P3OWLUtilException
 	{
 		return getObjectPropertyValue(owlModel, individualName, propertyName, true);
 	}
 
-	public static RDFResource getObjectPropertyValue(OWLModel owlModel, String individualName, String propertyName, boolean mustExist) throws P3OWLUtilException
+	public static RDFResource getObjectPropertyValue(OWLModel owlModel, String individualName, String propertyName,
+			boolean mustExist) throws P3OWLUtilException
 	{
-		OWLIndividual individual = getOWLIndividual(owlModel, individualName, mustExist); // Will throw an exception if mustExist is true.
+		OWLIndividual individual = getOWLIndividual(owlModel, individualName, mustExist); // Will throw an exception if
+																																											// mustExist is true.
 		OWLProperty property = getOWLProperty(owlModel, propertyName, true);
 		Object propertyValue = (property == null && individual == null ? null : individual.getPropertyValue(property));
 
@@ -2260,13 +2395,14 @@ public class P3OWLUtil
 		}
 
 		if (!(propertyValue instanceof RDFResource))
-			throw new P3OWLUtilException("value " + propertyValue + " of object property " + propertyName + " associated with individual "
-					+ individual.getPrefixedName() + " is not a valid object value");
+			throw new P3OWLUtilException("value " + propertyValue + " of object property " + propertyName
+					+ " associated with individual " + individual.getPrefixedName() + " is not a valid object value");
 
 		return (RDFResource)propertyValue;
 	}
 
-	public static RDFResource getObjectPropertyValue(OWLModel owlModel, URI individualURI, URI propertyURI, boolean mustExist)
+	public static RDFResource getObjectPropertyValue(OWLModel owlModel, URI individualURI, URI propertyURI,
+			boolean mustExist)
 	{
 		return getObjectPropertyValue(owlModel, individualURI, propertyURI, mustExist);
 	}
@@ -2276,15 +2412,19 @@ public class P3OWLUtil
 		return getObjectPropertyValue(owlModel, individualURI, propertyURI, true);
 	}
 
-	public static Object getDatavaluedPropertyValue(OWLModel owlModel, String individualName, String propertyName) throws P3OWLUtilException
+	public static Object getDatavaluedPropertyValue(OWLModel owlModel, String individualName, String propertyName)
+			throws P3OWLUtilException
 	{
 		return getDatavaluedPropertyValue(owlModel, individualName, propertyName, true);
 	}
 
-	public static Object getDatavaluedPropertyValue(OWLModel owlModel, String individualName, String propertyName, boolean mustExist) throws P3OWLUtilException
+	public static Object getDatavaluedPropertyValue(OWLModel owlModel, String individualName, String propertyName,
+			boolean mustExist) throws P3OWLUtilException
 	{
-		OWLIndividual individual = getOWLIndividual(owlModel, individualName, mustExist); // Will throw an exception if mustExist is true.
-		OWLProperty property = getOWLProperty(owlModel, propertyName, mustExist); // Will throw an exception if mustExist is true.
+		OWLIndividual individual = getOWLIndividual(owlModel, individualName, mustExist); // Will throw an exception if
+																																											// mustExist is true.
+		OWLProperty property = getOWLProperty(owlModel, propertyName, mustExist); // Will throw an exception if mustExist is
+																																							// true.
 		Object propertyValue = (individual == null || property == null) ? null : individual.getPropertyValue(property);
 
 		if (mustExist && propertyValue == null)
@@ -2293,20 +2433,20 @@ public class P3OWLUtil
 		return propertyValue;
 	}
 
-	public static Object getDatavaluedPropertyValue(OWLModel owlModel, OWLIndividual individual, String propertyName, boolean mustExist)
-		throws P3OWLUtilException
+	public static Object getDatavaluedPropertyValue(OWLModel owlModel, OWLIndividual individual, String propertyName,
+			boolean mustExist) throws P3OWLUtilException
 	{
 		return getDatavaluedPropertyValue(owlModel, individual.getName(), propertyName, mustExist);
 	}
 
-	public static Object getDatavaluedPropertyValue(OWLModel owlModel, OWLIndividual individual, OWLProperty property, boolean mustExist)
-		throws P3OWLUtilException
+	public static Object getDatavaluedPropertyValue(OWLModel owlModel, OWLIndividual individual, OWLProperty property,
+			boolean mustExist) throws P3OWLUtilException
 	{
 		return getDatavaluedPropertyValue(owlModel, individual.getName(), property.getName(), mustExist);
 	}
 
-	public static Set<Object> getDatavaluedPropertyValues(OWLModel owlModel, OWLIndividual individual, String propertyName, boolean mustExist)
-		throws P3OWLUtilException
+	public static Set<Object> getDatavaluedPropertyValues(OWLModel owlModel, OWLIndividual individual,
+			String propertyName, boolean mustExist) throws P3OWLUtilException
 	{
 		OWLProperty property = getOWLProperty(owlModel, propertyName, true);
 		Collection<?> propertyValues = (property == null ? null : individual.getPropertyValues(property));
@@ -2328,26 +2468,28 @@ public class P3OWLUtil
 		return result;
 	}
 
-	public static Set<Object> getDatavaluedPropertyValues(OWLModel owlModel, String individualName, String propertyName, boolean mustExist)
-		throws P3OWLUtilException
+	public static Set<Object> getDatavaluedPropertyValues(OWLModel owlModel, String individualName, String propertyName,
+			boolean mustExist) throws P3OWLUtilException
 	{
 		OWLIndividual individual = getIndividual(owlModel, individualName);
 
 		return getDatavaluedPropertyValues(owlModel, individual, propertyName, mustExist);
 	}
 
-	public static Set<Object> getDatavaluedPropertyValues(OWLModel owlModel, String individualName, String propertyName) throws P3OWLUtilException
+	public static Set<Object> getDatavaluedPropertyValues(OWLModel owlModel, String individualName, String propertyName)
+			throws P3OWLUtilException
 	{
 		return getDatavaluedPropertyValues(owlModel, individualName, propertyName, true);
 	}
 
-	public static Set<Object> getDatavaluedPropertyValues(OWLModel owlModel, URI individualURI, URI propertyURI) throws P3OWLUtilException
+	public static Set<Object> getDatavaluedPropertyValues(OWLModel owlModel, URI individualURI, URI propertyURI)
+			throws P3OWLUtilException
 	{
 		return getDatavaluedPropertyValues(owlModel, individualURI.toString(), propertyURI.toString());
 	}
 
-	public static int getOWLDatavaluedPropertyValueAsInteger(OWLModel owlModel, OWLIndividual individual, String propertyName, boolean mustExist)
-		throws P3OWLUtilException
+	public static int getOWLDatavaluedPropertyValueAsInteger(OWLModel owlModel, OWLIndividual individual,
+			String propertyName, boolean mustExist) throws P3OWLUtilException
 	{
 		String s = getDatavaluedPropertyValueAsString(owlModel, individual, propertyName, mustExist);
 		int result = -1;
@@ -2355,30 +2497,33 @@ public class P3OWLUtil
 		try {
 			result = Integer.parseInt(s);
 		} catch (NumberFormatException e) {
-			throwException("cannot convert property value " + s + " of property " + propertyName + " associated with individual " + individual.getPrefixedName()
-					+ " to integer");
+			throwException("cannot convert property value " + s + " of property " + propertyName
+					+ " associated with individual " + individual.getPrefixedName() + " to integer");
 		}
 		return result;
 	}
 
-	public static int getDatavaluedPropertyValueAsInteger(OWLModel owlModel, String individualName, String propertyName, boolean mustExist)
-		throws P3OWLUtilException
+	public static int getDatavaluedPropertyValueAsInteger(OWLModel owlModel, String individualName, String propertyName,
+			boolean mustExist) throws P3OWLUtilException
 	{
-		return getOWLDatavaluedPropertyValueAsInteger(owlModel, getIndividual(owlModel, individualName), propertyName, mustExist);
+		return getOWLDatavaluedPropertyValueAsInteger(owlModel, getIndividual(owlModel, individualName), propertyName,
+				mustExist);
 	}
 
-	public static int getOWLDatavaluedPropertyValueAsInteger(OWLModel owlModel, OWLIndividual individual, String propertyName) throws P3OWLUtilException
+	public static int getOWLDatavaluedPropertyValueAsInteger(OWLModel owlModel, OWLIndividual individual,
+			String propertyName) throws P3OWLUtilException
 	{
 		return getOWLDatavaluedPropertyValueAsInteger(owlModel, individual, propertyName, true);
 	}
 
-	public static int getDatavaluedPropertyValueAsInteger(OWLModel owlModel, String individualName, String propertyName) throws P3OWLUtilException
+	public static int getDatavaluedPropertyValueAsInteger(OWLModel owlModel, String individualName, String propertyName)
+			throws P3OWLUtilException
 	{
 		return getOWLDatavaluedPropertyValueAsInteger(owlModel, getIndividual(owlModel, individualName), propertyName, true);
 	}
 
-	public static long getOWLDatavaluedPropertyValueAsLong(OWLModel owlModel, OWLIndividual individual, String propertyName, boolean mustExist)
-		throws P3OWLUtilException
+	public static long getOWLDatavaluedPropertyValueAsLong(OWLModel owlModel, OWLIndividual individual,
+			String propertyName, boolean mustExist) throws P3OWLUtilException
 	{
 		String s = getDatavaluedPropertyValueAsString(owlModel, individual, propertyName, mustExist);
 		long result = -1;
@@ -2386,35 +2531,39 @@ public class P3OWLUtil
 		try {
 			result = Long.parseLong(s);
 		} catch (NumberFormatException e) {
-			throw new P3OWLUtilException("cannot convert property value " + s + " of property " + propertyName + " associated with individual "
-					+ individual.getPrefixedName() + " to long");
+			throw new P3OWLUtilException("cannot convert property value " + s + " of property " + propertyName
+					+ " associated with individual " + individual.getPrefixedName() + " to long");
 		}
 		return result;
 	}
 
-	public static long getDatavaluedPropertyValueAsLong(OWLModel owlModel, String individualName, String propertyName, boolean mustExist)
-		throws P3OWLUtilException
+	public static long getDatavaluedPropertyValueAsLong(OWLModel owlModel, String individualName, String propertyName,
+			boolean mustExist) throws P3OWLUtilException
 	{
-		return getOWLDatavaluedPropertyValueAsLong(owlModel, getIndividual(owlModel, individualName), propertyName, mustExist);
+		return getOWLDatavaluedPropertyValueAsLong(owlModel, getIndividual(owlModel, individualName), propertyName,
+				mustExist);
 	}
 
-	public static long getDatavaluedPropertyValueAsLong(OWLModel owlModel, OWLIndividual individual, String propertyName) throws P3OWLUtilException
+	public static long getDatavaluedPropertyValueAsLong(OWLModel owlModel, OWLIndividual individual, String propertyName)
+			throws P3OWLUtilException
 	{
 		return getOWLDatavaluedPropertyValueAsLong(owlModel, individual, propertyName, true);
 	}
 
-	public static long getDatavaluedPropertyValueAsLong(OWLModel owlModel, String individualName, String propertyName) throws P3OWLUtilException
+	public static long getDatavaluedPropertyValueAsLong(OWLModel owlModel, String individualName, String propertyName)
+			throws P3OWLUtilException
 	{
 		return getOWLDatavaluedPropertyValueAsLong(owlModel, getIndividual(owlModel, individualName), propertyName, true);
 	}
 
-	public static String getDatavaluedPropertyValueAsString(OWLModel owlModel, OWLIndividual individual, String propertyName) throws P3OWLUtilException
+	public static String getDatavaluedPropertyValueAsString(OWLModel owlModel, OWLIndividual individual,
+			String propertyName) throws P3OWLUtilException
 	{
 		return getDatavaluedPropertyValueAsString(owlModel, individual, propertyName, true);
 	}
 
-	public static String getDatavaluedPropertyValueAsString(OWLModel owlModel, OWLIndividual individual, String propertyName, boolean mustExist)
-		throws P3OWLUtilException
+	public static String getDatavaluedPropertyValueAsString(OWLModel owlModel, OWLIndividual individual,
+			String propertyName, boolean mustExist) throws P3OWLUtilException
 	{
 		OWLProperty property = getOWLProperty(owlModel, propertyName, mustExist);
 
@@ -2424,25 +2573,28 @@ public class P3OWLUtil
 		return getDatavaluedPropertyValueAsString(owlModel, individual, property, mustExist);
 	}
 
-	public static String getDatavaluedPropertyValueAsString(OWLModel owlModel, String individualName, String propertyName, boolean mustExist, String defaultValue)
-		throws P3OWLUtilException
+	public static String getDatavaluedPropertyValueAsString(OWLModel owlModel, String individualName,
+			String propertyName, boolean mustExist, String defaultValue) throws P3OWLUtilException
 	{
-		return getDatavaluedPropertyValueAsString(owlModel, getIndividual(owlModel, individualName), propertyName, mustExist, defaultValue);
+		return getDatavaluedPropertyValueAsString(owlModel, getIndividual(owlModel, individualName), propertyName,
+				mustExist, defaultValue);
 	}
 
-	public static String getDatavaluedPropertyValueAsString(OWLModel owlModel, String individualName, String propertyName) throws P3OWLUtilException
+	public static String getDatavaluedPropertyValueAsString(OWLModel owlModel, String individualName, String propertyName)
+			throws P3OWLUtilException
 	{
 		return getDatavaluedPropertyValueAsString(owlModel, getIndividual(owlModel, individualName), propertyName, true);
 	}
 
-	public static String getDatavaluedPropertyValueAsString(OWLModel owlModel, String individualName, String propertyName, boolean mustExist)
-		throws P3OWLUtilException
+	public static String getDatavaluedPropertyValueAsString(OWLModel owlModel, String individualName,
+			String propertyName, boolean mustExist) throws P3OWLUtilException
 	{
-		return getDatavaluedPropertyValueAsString(owlModel, getIndividual(owlModel, individualName), propertyName, mustExist);
+		return getDatavaluedPropertyValueAsString(owlModel, getIndividual(owlModel, individualName), propertyName,
+				mustExist);
 	}
 
-	public static String getDatavaluedPropertyValueAsString(OWLModel owlModel, OWLIndividual individual, String propertyName, boolean mustExist,
-																													String defaultValue) throws P3OWLUtilException
+	public static String getDatavaluedPropertyValueAsString(OWLModel owlModel, OWLIndividual individual,
+			String propertyName, boolean mustExist, String defaultValue) throws P3OWLUtilException
 	{
 		OWLProperty property = getOWLProperty(owlModel, propertyName, mustExist);
 		String propertValueAsString;
@@ -2455,8 +2607,8 @@ public class P3OWLUtil
 		return propertValueAsString == null ? defaultValue : propertValueAsString;
 	}
 
-	public static String getDatavaluedPropertyValueAsString(OWLModel owlModel, OWLIndividual individual, OWLProperty property, boolean mustExist)
-		throws P3OWLUtilException
+	public static String getDatavaluedPropertyValueAsString(OWLModel owlModel, OWLIndividual individual,
+			OWLProperty property, boolean mustExist) throws P3OWLUtilException
 	{
 		Object propertyValue = getDatavaluedPropertyValue(owlModel, individual, property, mustExist);
 		String result = null;
@@ -2476,19 +2628,21 @@ public class P3OWLUtil
 		return result;
 	}
 
-	public static Boolean getDatavaluedPropertyValueAsBoolean(OWLModel owlModel, String individualName, String propertyName, boolean mustExist)
-		throws P3OWLUtilException
+	public static Boolean getDatavaluedPropertyValueAsBoolean(OWLModel owlModel, String individualName,
+			String propertyName, boolean mustExist) throws P3OWLUtilException
 	{
-		return getDatavaluedPropertyValueAsBoolean(owlModel, getIndividual(owlModel, individualName), propertyName, mustExist);
+		return getDatavaluedPropertyValueAsBoolean(owlModel, getIndividual(owlModel, individualName), propertyName,
+				mustExist);
 	}
 
-	public static Boolean getDatavaluedPropertyValueAsBoolean(OWLModel owlModel, String individualName, String propertyName) throws P3OWLUtilException
+	public static Boolean getDatavaluedPropertyValueAsBoolean(OWLModel owlModel, String individualName,
+			String propertyName) throws P3OWLUtilException
 	{
 		return getDatavaluedPropertyValueAsBoolean(owlModel, getIndividual(owlModel, individualName), propertyName, true);
 	}
 
-	public static Boolean getDatavaluedPropertyValueAsBoolean(OWLModel owlModel, OWLIndividual individual, String propertyName, boolean mustExist)
-		throws P3OWLUtilException
+	public static Boolean getDatavaluedPropertyValueAsBoolean(OWLModel owlModel, OWLIndividual individual,
+			String propertyName, boolean mustExist) throws P3OWLUtilException
 	{
 		Object propertyValue = getDatavaluedPropertyValue(owlModel, individual, propertyName, mustExist);
 
@@ -2496,14 +2650,15 @@ public class P3OWLUtil
 			return null;
 
 		if (!(propertyValue instanceof Boolean)) {
-			throwException("property value for " + propertyName + " associated with individual " + individual.getPrefixedName() + " is not a Boolean");
+			throwException("property value for " + propertyName + " associated with individual "
+					+ individual.getPrefixedName() + " is not a Boolean");
 		}
 
 		return (Boolean)propertyValue;
 	}
 
-	public static Boolean getDatavaluedPropertyValueAsBoolean(OWLModel owlModel, OWLIndividual individual, OWLProperty property, boolean mustExist)
-		throws P3OWLUtilException
+	public static Boolean getDatavaluedPropertyValueAsBoolean(OWLModel owlModel, OWLIndividual individual,
+			OWLProperty property, boolean mustExist) throws P3OWLUtilException
 	{
 		Object propertyValue = getDatavaluedPropertyValue(owlModel, individual, property, mustExist);
 
@@ -2511,24 +2666,26 @@ public class P3OWLUtil
 			return null;
 
 		if (!(propertyValue instanceof Boolean))
-			throwException("property value for " + property.getPrefixedName() + " in individual " + individual.getPrefixedName() + " is not a Boolean");
+			throwException("property value for " + property.getPrefixedName() + " in individual "
+					+ individual.getPrefixedName() + " is not a Boolean");
 
 		return (Boolean)propertyValue;
 	}
 
-	public static Collection<?> getDatavaluedPropertyValueAsCollection(OWLModel owlModel, OWLIndividual individual, String propertyName)
-		throws P3OWLUtilException
+	public static Collection<?> getDatavaluedPropertyValueAsCollection(OWLModel owlModel, OWLIndividual individual,
+			String propertyName) throws P3OWLUtilException
 	{
 		return getDatavaluedPropertyValueAsCollection(owlModel, individual, propertyName, true);
 	}
 
-	public static Collection<?> getDatavaluedPropertyValueAsCollection(OWLModel owlModel, String individualName, String propertyName) throws P3OWLUtilException
+	public static Collection<?> getDatavaluedPropertyValueAsCollection(OWLModel owlModel, String individualName,
+			String propertyName) throws P3OWLUtilException
 	{
 		return getDatavaluedPropertyValueAsCollection(owlModel, getIndividual(owlModel, individualName), propertyName, true);
 	}
 
-	public static Collection<?> getDatavaluedPropertyValueAsCollection(OWLModel owlModel, OWLIndividual individual, String propertyName, boolean mustExist)
-		throws P3OWLUtilException
+	public static Collection<?> getDatavaluedPropertyValueAsCollection(OWLModel owlModel, OWLIndividual individual,
+			String propertyName, boolean mustExist) throws P3OWLUtilException
 	{
 		Object propertyValue = getDatavaluedPropertyValue(owlModel, individual, propertyName, mustExist);
 		Collection<Object> result = new ArrayList<Object>();
@@ -2542,13 +2699,14 @@ public class P3OWLUtil
 			for (Object o : ((Collection<?>)propertyValue))
 				result.add(o);
 		} else
-			throwException("property value for " + propertyName + " associated with individual " + individual.getPrefixedName() + " is not a Collection or a literal");
+			throwException("property value for " + propertyName + " associated with individual "
+					+ individual.getPrefixedName() + " is not a Collection or a literal");
 
 		return result;
 	}
 
-	public static Collection<?> getDatavaluedPropertyValueAsCollection(OWLModel owlModel, OWLIndividual individual, OWLProperty property, boolean mustExist)
-		throws P3OWLUtilException
+	public static Collection<?> getDatavaluedPropertyValueAsCollection(OWLModel owlModel, OWLIndividual individual,
+			OWLProperty property, boolean mustExist) throws P3OWLUtilException
 	{
 		Object propertyValue = getDatavaluedPropertyValue(owlModel, individual, property, mustExist);
 		Collection<Object> result = new ArrayList<Object>();
@@ -2562,13 +2720,14 @@ public class P3OWLUtil
 			for (Object o : ((Collection<?>)propertyValue))
 				result.add(o);
 		} else
-			throwException("value for property " + property.getPrefixedName() + " associated with individual " + individual.getPrefixedName()
-					+ " is not a Collection or a literal");
+			throwException("value for property " + property.getPrefixedName() + " associated with individual "
+					+ individual.getPrefixedName() + " is not a Collection or a literal");
 
 		return result;
 	}
 
-	public static List<OWLNamedClass> getDirectSubClassesOf(OWLModel owlModel, String className) throws P3OWLUtilException
+	public static List<OWLNamedClass> getDirectSubClassesOf(OWLModel owlModel, String className)
+			throws P3OWLUtilException
 	{
 		OWLNamedClass cls = getNamedClass(owlModel, className);
 
@@ -2592,7 +2751,8 @@ public class P3OWLUtil
 		return getSubClassesOf(owlModel, classURI.toString());
 	}
 
-	public static List<OWLNamedClass> getDirectSuperClassesOf(OWLModel owlModel, String className) throws P3OWLUtilException
+	public static List<OWLNamedClass> getDirectSuperClassesOf(OWLModel owlModel, String className)
+			throws P3OWLUtilException
 	{
 		OWLNamedClass cls = getNamedClass(owlModel, className);
 
@@ -2660,7 +2820,8 @@ public class P3OWLUtil
 		return result;
 	}
 
-	public static Set<OWLProperty> getDirectSubPropertiesOf(OWLModel owlModel, String propertyName) throws P3OWLUtilException
+	public static Set<OWLProperty> getDirectSubPropertiesOf(OWLModel owlModel, String propertyName)
+			throws P3OWLUtilException
 	{
 		OWLProperty property = getOWLProperty(owlModel, propertyName);
 
@@ -2684,14 +2845,16 @@ public class P3OWLUtil
 		return getSubPropertiesOf(owlModel, propertyURI.toString());
 	}
 
-	public static Set<OWLProperty> getDirectSuperPropertiesOf(OWLModel owlModel, String propertyName) throws P3OWLUtilException
+	public static Set<OWLProperty> getDirectSuperPropertiesOf(OWLModel owlModel, String propertyName)
+			throws P3OWLUtilException
 	{
 		OWLProperty property = getOWLProperty(owlModel, propertyName);
 
 		return getDirectSuperPropertiesOf(property);
 	}
 
-	public static Set<OWLProperty> getDirectSuperPropertiesOf(OWLModel owlModel, URI propertyURI) throws P3OWLUtilException
+	public static Set<OWLProperty> getDirectSuperPropertiesOf(OWLModel owlModel, URI propertyURI)
+			throws P3OWLUtilException
 	{
 		return getDirectSuperPropertiesOf(owlModel, propertyURI.toString());
 	}
@@ -2763,13 +2926,15 @@ public class P3OWLUtil
 		return result;
 	}
 
-	public static Set<OWLProperty> getDomainProperties(OWLModel owlModel, String className, boolean transitive) throws P3OWLUtilException
+	public static Set<OWLProperty> getDomainProperties(OWLModel owlModel, String className, boolean transitive)
+			throws P3OWLUtilException
 	{
 		OWLClass cls = getClass(owlModel, className);
 		Set<OWLProperty> result = new HashSet<OWLProperty>();
 		Collection<?> domainProperties = cls.getUnionDomainProperties(transitive);
 
-		// TODO: bug in Property.getUnionDomain that causes it to return non RDFResource objects so we need to work around it.
+		// TODO: bug in Property.getUnionDomain that causes it to return non RDFResource objects so we need to work around
+		// it.
 		// for (RDFResource resource : resources) result.add(resource.getName());
 
 		if (domainProperties != null) {
@@ -2783,7 +2948,8 @@ public class P3OWLUtil
 		return result;
 	}
 
-	public static Set<OWLProperty> getDomainProperties(OWLModel owlModel, URI classURI, boolean transitive) throws P3OWLUtilException
+	public static Set<OWLProperty> getDomainProperties(OWLModel owlModel, URI classURI, boolean transitive)
+			throws P3OWLUtilException
 	{
 		return getDomainProperties(owlModel, classURI.toString(), transitive);
 	}
@@ -2870,7 +3036,8 @@ public class P3OWLUtil
 		return getRDFSDatatype(owlModel, datatypeURI.toString());
 	}
 
-	public static RDFSLiteral createRDFSLiteral(OWLModel owlModel, String value, RDFSDatatype datatype) throws P3OWLUtilException
+	public static RDFSLiteral createRDFSLiteral(OWLModel owlModel, String value, RDFSDatatype datatype)
+			throws P3OWLUtilException
 	{
 		RDFSLiteral literal = owlModel.createRDFSLiteral(value, datatype);
 
@@ -2960,7 +3127,8 @@ public class P3OWLUtil
 		}
 	}
 
-	public static void makeSameAs(OWLModel owlModel, String individualName1, String individualName2) throws P3OWLUtilException
+	public static void makeSameAs(OWLModel owlModel, String individualName1, String individualName2)
+			throws P3OWLUtilException
 	{
 		OWLIndividual individual1 = getOWLIndividual(owlModel, individualName1);
 		OWLIndividual individual2 = getOWLIndividual(owlModel, individualName2);
@@ -2977,7 +3145,8 @@ public class P3OWLUtil
 		makeSameAs(owlModel, individual1URI.toString(), individual2URI.toString());
 	}
 
-	public static void makeDifferentFrom(OWLModel owlModel, String individualName1, String individualName2) throws P3OWLUtilException
+	public static void makeDifferentFrom(OWLModel owlModel, String individualName1, String individualName2)
+			throws P3OWLUtilException
 	{
 		OWLIndividual individual1 = getOWLIndividual(owlModel, individualName1);
 		OWLIndividual individual2 = getOWLIndividual(owlModel, individualName2);
@@ -2988,7 +3157,8 @@ public class P3OWLUtil
 			individual2.addPropertyValue(getOWLDifferentFromProperty(owlModel), individual1);
 	}
 
-	public static void makeDifferentFrom(OWLModel owlModel, URI individual1URI, URI individual2URI) throws P3OWLUtilException
+	public static void makeDifferentFrom(OWLModel owlModel, URI individual1URI, URI individual2URI)
+			throws P3OWLUtilException
 	{
 		makeDifferentFrom(owlModel, individual1URI.toString(), individual2URI.toString());
 	}
@@ -3028,7 +3198,8 @@ public class P3OWLUtil
 		return owlModel.getRDFProperty(propertyName);
 	}
 
-	public static OWLProperty getOWLProperty(OWLModel owlModel, String propertyName, boolean mustExist) throws P3OWLUtilException
+	public static OWLProperty getOWLProperty(OWLModel owlModel, String propertyName, boolean mustExist)
+			throws P3OWLUtilException
 	{
 		OWLProperty property = owlModel.getOWLProperty(propertyName);
 
@@ -3064,7 +3235,8 @@ public class P3OWLUtil
 	public static boolean isSWRLBuiltIn(OWLModel owlModel, String builtInName)
 	{
 		RDFResource resource = owlModel.getRDFResource(builtInName);
-		return resource != null && resource.getProtegeType().getName().equals(edu.stanford.smi.protegex.owl.swrl.model.SWRLNames.Cls.BUILTIN);
+		return resource != null
+				&& resource.getProtegeType().getName().equals(edu.stanford.smi.protegex.owl.swrl.model.SWRLNames.Cls.BUILTIN);
 	}
 
 	public static boolean isValidClassName(OWLModel owlModel, String className)
@@ -3111,7 +3283,8 @@ public class P3OWLUtil
 	}
 
 	// Name can be rdf:ID or other annotation property (e.g., rdfs:label)
-	public static OWLDatatypeProperty getOWLDataPropertyFromName(OWLModel owlModel, String name) throws P3OWLUtilException
+	public static OWLDatatypeProperty getOWLDataPropertyFromName(OWLModel owlModel, String name)
+			throws P3OWLUtilException
 	{
 		String id = ParserUtils.dequoteIdentifier(name);
 		OWLDatatypeProperty property = null;
@@ -3128,7 +3301,8 @@ public class P3OWLUtil
 	}
 
 	// Name can be rdf:ID or other annotation property (e.g., rdfs:label)
-	public static OWLObjectProperty getOWLObjectPropertyFromName(OWLModel owlModel, String name) throws P3OWLUtilException
+	public static OWLObjectProperty getOWLObjectPropertyFromName(OWLModel owlModel, String name)
+			throws P3OWLUtilException
 	{
 		String id = ParserUtils.dequoteIdentifier(name);
 		OWLObjectProperty property = null;
