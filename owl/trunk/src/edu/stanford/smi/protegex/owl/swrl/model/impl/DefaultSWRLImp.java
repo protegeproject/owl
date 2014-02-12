@@ -1,4 +1,3 @@
-
 package edu.stanford.smi.protegex.owl.swrl.model.impl;
 
 import java.util.Collection;
@@ -60,6 +59,7 @@ public class DefaultSWRLImp extends AbstractSWRLIndividual implements SWRLImp
 		this.ruleGroups = getRuleGroupAnnotations();
 	}
 
+	@Override
 	public SWRLImp createClone()
 	{
 		String text = getBrowserText();
@@ -105,10 +105,9 @@ public class DefaultSWRLImp extends AbstractSWRLIndividual implements SWRLImp
 					if (isEnabled != null)
 						enabled = (Boolean)isEnabled;
 					result.put(ruleGroupIndividual.getLocalName(), enabled);
-				} // while
-			} // if
-		} // if
-
+				}
+			}
+		}
 		return result;
 	}
 
@@ -138,12 +137,14 @@ public class DefaultSWRLImp extends AbstractSWRLIndividual implements SWRLImp
 		}
 	}
 
+	@Override
 	public void deleteImp()
 	{
 		deleteHeadAndBody();
 		delete();
 	}
 
+	@Override
 	public SWRLAtomList getHead()
 	{
 		Object propertyValue = getPropertyValue(getOWLModel().getRDFProperty(SWRLNames.Slot.HEAD));
@@ -162,6 +163,7 @@ public class DefaultSWRLImp extends AbstractSWRLIndividual implements SWRLImp
 		return atomList;
 	}
 
+	@Override
 	public SWRLAtomList getBody()
 	{
 		Object propertyValue = getPropertyValue(getOWLModel().getRDFProperty(SWRLNames.Slot.BODY));
@@ -180,11 +182,13 @@ public class DefaultSWRLImp extends AbstractSWRLIndividual implements SWRLImp
 		return atomList;
 	}
 
+	@Override
 	public void setBody(SWRLAtomList swrlAtomList)
 	{
 		setPropertyValue(getOWLModel().getRDFProperty(SWRLNames.Slot.BODY), swrlAtomList);
 	}
 
+	@Override
 	public void setHead(SWRLAtomList swrlAtomList)
 	{
 		setPropertyValue(getOWLModel().getRDFProperty(SWRLNames.Slot.HEAD), swrlAtomList);
@@ -196,6 +200,7 @@ public class DefaultSWRLImp extends AbstractSWRLIndividual implements SWRLImp
 		return isEditable() ? SWRLIcons.getImpIcon() : OWLIcons.getReadOnlyIcon(SWRLIcons.getImpIcon(), "RoundedBoxFrame");
 	}
 
+	@Override
 	public Set<RDFResource> getReferencedInstances()
 	{
 		Set<RDFResource> set = new HashSet<RDFResource>();
@@ -236,6 +241,7 @@ public class DefaultSWRLImp extends AbstractSWRLIndividual implements SWRLImp
 		return s;
 	}
 
+	@Override
 	public void setExpression(String parsableText) throws SWRLParseException
 	{
 		SWRLParser parser = new SWRLParser(getOWLModel());
@@ -245,17 +251,20 @@ public class DefaultSWRLImp extends AbstractSWRLIndividual implements SWRLImp
 		parser.parse(parsableText, this);
 	}
 
+	@Override
 	public boolean isEnabled()
 	{
 		updateEnabledAndGroupInformation();
 		return this.isRuleEnabled;
 	}
 
+	@Override
 	public void enable()
 	{
 		enable(new HashSet<String>());
 	}
 
+	@Override
 	public void enable(String ruleGroupName)
 	{
 		Set<String> ruleGroupNames = new HashSet<String>();
@@ -263,6 +272,7 @@ public class DefaultSWRLImp extends AbstractSWRLIndividual implements SWRLImp
 		enable(ruleGroupNames);
 	}
 
+	@Override
 	public void enable(Set<String> ruleGroupNames)
 	{
 		updateEnabledAndGroupInformation();
@@ -281,15 +291,17 @@ public class DefaultSWRLImp extends AbstractSWRLIndividual implements SWRLImp
 					ruleGroupIndividual.addPropertyValue(ruleGroupEnabledProperty, Boolean.TRUE);
 				}
 				this.ruleGroups.put(ruleGroupName, Boolean.TRUE);
-			} 
-		} 
+			}
+		}
 	}
 
+	@Override
 	public void disable()
 	{
 		disable(new HashSet<String>());
 	}
 
+	@Override
 	public void disable(String ruleGroupName)
 	{
 		Set<String> ruleGroupNames = new HashSet<String>();
@@ -297,6 +309,7 @@ public class DefaultSWRLImp extends AbstractSWRLIndividual implements SWRLImp
 		disable(ruleGroupNames);
 	}
 
+	@Override
 	public void disable(Set<String> ruleGroupNames)
 	{
 		updateEnabledAndGroupInformation();
@@ -320,18 +333,21 @@ public class DefaultSWRLImp extends AbstractSWRLIndividual implements SWRLImp
 		} // if
 	}
 
+	@Override
 	public Set<String> getRuleGroupNames()
 	{
 		updateEnabledAndGroupInformation();
 		return this.ruleGroups.keySet();
 	}
 
+	@Override
 	public boolean isInRuleGroup(String name)
 	{
 		updateEnabledAndGroupInformation();
 		return this.ruleGroups.containsKey(name);
 	}
 
+	@Override
 	public boolean isInRuleGroups(Set<String> names)
 	{
 		updateEnabledAndGroupInformation();
@@ -345,6 +361,7 @@ public class DefaultSWRLImp extends AbstractSWRLIndividual implements SWRLImp
 	/**
 	 * Add a rule group name to a rule. Returns true on success. Make the group enabled by default.
 	 */
+	@Override
 	public boolean addRuleGroup(String name)
 	{
 		OWLNamedClass ruleGroupClass = getRuleGroupClass();
@@ -376,6 +393,7 @@ public class DefaultSWRLImp extends AbstractSWRLIndividual implements SWRLImp
 	/**
 	 * Remove a rule group name from a rule. Returns true on success.
 	 */
+	@Override
 	public boolean removeRuleGroup(String name)
 	{
 		OWLNamedClass ruleGroupClass = getRuleGroupClass();

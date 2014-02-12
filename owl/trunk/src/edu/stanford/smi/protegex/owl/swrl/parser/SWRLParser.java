@@ -65,10 +65,12 @@ public class SWRLParser
 	}
 
 	/**
-	 * This parser will throw a {@link SWRLParseException} if it finds errors in the supplied rule. If the rule is correct but incomplete, a
-	 * {@link SWRLIncompleteRuleExceptionP (which is a subclass of {@link SWRLParseException}) will be thrown.
+	 * This parser will throw a {@link SWRLParseException} if it finds errors in the supplied rule. If the rule is correct
+	 * but incomplete, a {@link SWRLIncompleteRuleExceptionP (which is a subclass of {@link SWRLParseException}) will be
+	 * thrown.
 	 * 
-	 * If {@link #parseOnly} is true, only checking is performed - no SWRL rules are created; if it is false, individuals are created.
+	 * If {@link #parseOnly} is true, only checking is performed - no SWRL rules are created; if it is false, individuals
+	 * are created.
 	 */
 	public SWRLImp parse(String rule) throws SWRLParseException
 	{
@@ -92,7 +94,7 @@ public class SWRLParser
 			head.setInHead(true);
 			body = this.swrlFactory.createAtomList();
 			head.setInHead(false);
-		} 
+		}
 
 		if (!this.parseOnly && !this.tokenizer.hasMoreTokens())
 			throw new SWRLParseException("Empty rule.");
@@ -108,7 +110,7 @@ public class SWRLParser
 					message = "Expecting atom.";
 				else
 					message = "Expecting atom or " + IMP_CHAR + ".";
-			} 
+			}
 
 			token = getNextNonSpaceToken(message);
 
@@ -135,9 +137,9 @@ public class SWRLParser
 						head.append(atom);
 					else
 						body.append(atom);
-				} 
+				}
 				justProcessedAtom = true;
-			} 
+			}
 		} while (this.tokenizer.hasMoreTokens());
 
 		if (!this.parseOnly) {
@@ -148,7 +150,7 @@ public class SWRLParser
 			else {
 				imp.setHead(head);
 				imp.setBody(body);
-			} 
+			}
 		} else
 			imp = null;
 
@@ -156,7 +158,8 @@ public class SWRLParser
 	}
 
 	/**
-	 * If the rule is correct and incomplete return 'true'; if the rule has errors or is correct and complete, return 'false'.
+	 * If the rule is correct and incomplete return 'true'; if the rule has errors or is correct and complete, return
+	 * 'false'.
 	 */
 	public boolean isCorrectAndIncomplete(String rule)
 	{
@@ -177,7 +180,8 @@ public class SWRLParser
 		return result;
 	}
 
-	// public static String getParsableRuleString(String unicodeRule) { return unicodeRule.replace(AND_CHAR, '^').replace(IMP_CHAR, '>'); }
+	// public static String getParsableRuleString(String unicodeRule) { return unicodeRule.replace(AND_CHAR,
+	// '^').replace(IMP_CHAR, '>'); }
 
 	private SWRLAtom parseAtom(String identifier) throws SWRLParseException
 	{
@@ -188,7 +192,7 @@ public class SWRLParser
 		if (identifier.startsWith("[")) { // A data range with an enumerated literal list
 			enumeratedList = parseDObjectList();
 			isEnumeratedList = true;
-		} 
+		}
 
 		if (isEnumeratedList)
 			checkAndSkipToken("(", "Expecting parameters enclosed in parentheses for data range atom.");
@@ -319,7 +323,7 @@ public class SWRLParser
 		if (!this.parseOnly) {
 			OWLNamedClass aClass = ParserUtils.getOWLClassFromName(this.owlModel, identifier);
 			atom = this.swrlFactory.createClassAtom(aClass, iObject);
-		} 
+		}
 
 		checkAndSkipToken(")", "Expecting closing parenthesis for parameter for ClassAtom '" + identifier + "'.");
 
@@ -340,9 +344,10 @@ public class SWRLParser
 			if (objectProperty == null)
 				throw new SWRLParseException("no datatype property found for IndividualPropertyAtom: " + identifier);
 			atom = this.swrlFactory.createIndividualPropertyAtom(objectProperty, iObject1, iObject2);
-		} 
+		}
 
-		checkAndSkipToken(")", "Expecting closing parenthesis after second parameter of IndividualPropertyAtom '" + identifier + "'.");
+		checkAndSkipToken(")", "Expecting closing parenthesis after second parameter of IndividualPropertyAtom '"
+				+ identifier + "'.");
 
 		return atom;
 	}
@@ -356,7 +361,8 @@ public class SWRLParser
 		String token, errorMessage = "Expecting literal qualification symbol '#' or closing parenthesis after second parameter of DatavaluedPropertyAtom' ";
 
 		iObject = parseIObject();
-		checkAndSkipToken(",", "Expecting comma-separated second parameter for DatavaluedPropertyAtom '" + identifier + "'.");
+		checkAndSkipToken(",", "Expecting comma-separated second parameter for DatavaluedPropertyAtom '" + identifier
+				+ "'.");
 		dObject = parseDObject();
 
 		token = getNextNonSpaceToken(errorMessage + identifier + "'.");
@@ -374,7 +380,7 @@ public class SWRLParser
 		if (!this.parseOnly) {
 			datatypeProperty = ParserUtils.getOWLDatatypePropertyFromName(this.owlModel, identifier);
 			atom = this.swrlFactory.createDatavaluedPropertyAtom(datatypeProperty, iObject, dObject);
-		} 
+		}
 
 		return atom;
 	}
@@ -388,7 +394,7 @@ public class SWRLParser
 		if (!this.parseOnly) {
 			builtin = this.swrlFactory.getBuiltin(NamespaceUtil.getFullName(this.owlModel, identifier));
 			atom = this.swrlFactory.createBuiltinAtom(builtin, objects.iterator());
-		} 
+		}
 
 		return atom;
 	}
@@ -410,9 +416,9 @@ public class SWRLParser
 			while (iterator.hasNext()) {
 				literalValue = iterator.next();
 				dataRange.addPropertyValue(oneOfProperty, literalValue);
-			} // while
+			}
 			atom = this.swrlFactory.createDataRangeAtom(dataRange, dObject);
-		} 
+		}
 		checkAndSkipToken(")", "Expecting closing parenthesis after parameter in DataRangeAtom.");
 
 		return atom;
@@ -439,7 +445,7 @@ public class SWRLParser
 			token = getNextNonSpaceToken("Expecting ',' or ')'.");
 			if (!(token.equals(",") || token.equals(")")))
 				throw new SWRLParseException("Expecting ',' or ')', got '" + token + "'.");
-		} 
+		}
 		return dObjects;
 	}
 
@@ -543,7 +549,8 @@ public class SWRLParser
 			if (!this.inHead)
 				this.variables.add(variableName);
 			else if (!this.variables.contains(variableName))
-				throw new SWRLParseException("Variable ?" + variableName + " referred to in consequent is not present in antecedent.");
+				throw new SWRLParseException("Variable ?" + variableName
+						+ " referred to in consequent is not present in antecedent.");
 		}
 
 		if (!this.parseOnly)
@@ -561,9 +568,11 @@ public class SWRLParser
 			if (!this.parseOnly)
 				parsedEntity = this.owlModel.createRDFSLiteral(stringValue, this.owlModel.getXSDstring());
 		}
-		// According to the XSD spec, xsd:boolean's have the lexical space: {true, false, 1, 0}. We don't allow {1, 0} since these are parsed
+		// According to the XSD spec, xsd:boolean's have the lexical space: {true, false, 1, 0}. We don't allow {1, 0} since
+		// these are parsed
 		// as XSDints.
-		else if (parsedString.startsWith("t") || parsedString.startsWith("T") || parsedString.startsWith("f") || parsedString.startsWith("F")) {
+		else if (parsedString.startsWith("t") || parsedString.startsWith("T") || parsedString.startsWith("f")
+				|| parsedString.startsWith("F")) {
 			if (this.tokenizer.hasMoreTokens()) {
 				if (parsedString.equalsIgnoreCase("true") || parsedString.equalsIgnoreCase("false")) {
 					if (!this.parseOnly)
@@ -628,8 +637,8 @@ public class SWRLParser
 			char c = s.charAt(i);
 			if (!(Character.isJavaIdentifierPart(c) || c == ':' || c == '-' || c == '#' || c == '/' || c == '.')) {
 				return false;
-			} 
-		} 
+			}
+		}
 		return true;
 	}
 
@@ -640,7 +649,8 @@ public class SWRLParser
 		RDFResource resource = getRDFResource(variableName);
 
 		if ((resource != null) && !(resource instanceof SWRLVariable))
-			throw new SWRLParseException("Invalid variable name " + variableName + ". Cannot use name of existing OWL class, property, or individual.");
+			throw new SWRLParseException("Invalid variable name " + variableName
+					+ ". Cannot use name of existing OWL class, property, or individual.");
 	}
 
 	private boolean isOWLClassName(String identifier) throws SWRLParseException
@@ -759,7 +769,7 @@ public class SWRLParser
 			else {
 				resource = ParserUtils.getRDFResourceFromName(this.owlModel, resourceName);
 				this.cachedRDFResources.put(resourceName, resource); // May be null
-			} 
+			}
 		} else
 			resource = ParserUtils.getRDFResourceFromName(this.owlModel, resourceName);
 
