@@ -1,4 +1,3 @@
-
 package edu.stanford.smi.protegex.owl.swrl.model;
 
 import java.util.ArrayList;
@@ -132,7 +131,8 @@ public class SWRLFactory
 
 	public SWRLDataRangeAtom createDataRangeAtom(OWLDataRange dataRange, RDFObject dObject)
 	{
-		SWRLDataRangeAtom swrlDataRangeAtom = (SWRLDataRangeAtom)this.systemFrames.getDataRangeAtomCls().createAnonymousInstance();
+		SWRLDataRangeAtom swrlDataRangeAtom = (SWRLDataRangeAtom)this.systemFrames.getDataRangeAtomCls()
+				.createAnonymousInstance();
 
 		swrlDataRangeAtom.setArgument1(dObject);
 		swrlDataRangeAtom.setDataRange(dataRange);
@@ -140,10 +140,11 @@ public class SWRLFactory
 		return swrlDataRangeAtom;
 	} // createDataRangeAtom
 
-	public SWRLDatavaluedPropertyAtom createDatavaluedPropertyAtom(OWLDatatypeProperty datatypeSlot, RDFResource iObject, RDFObject dObject)
+	public SWRLDatavaluedPropertyAtom createDatavaluedPropertyAtom(OWLDatatypeProperty datatypeSlot, RDFResource iObject,
+			RDFObject dObject)
 	{
-		SWRLDatavaluedPropertyAtom swrlDatavaluedPropertyAtom = (SWRLDatavaluedPropertyAtom)this.systemFrames.getDataValuedPropertyAtomCls()
-				.createAnonymousInstance();
+		SWRLDatavaluedPropertyAtom swrlDatavaluedPropertyAtom = (SWRLDatavaluedPropertyAtom)this.systemFrames
+				.getDataValuedPropertyAtomCls().createAnonymousInstance();
 
 		swrlDatavaluedPropertyAtom.setPropertyPredicate(datatypeSlot);
 		swrlDatavaluedPropertyAtom.setArgument1(iObject);
@@ -153,11 +154,13 @@ public class SWRLFactory
 
 	} // createDatavaluedPropertyAtom
 
-	public SWRLIndividualPropertyAtom createIndividualPropertyAtom(OWLObjectProperty objectSlot, RDFResource iObject1, RDFResource iObject2)
+	public SWRLIndividualPropertyAtom createIndividualPropertyAtom(OWLObjectProperty objectSlot, RDFResource iObject1,
+			RDFResource iObject2)
 	{
 		SWRLIndividualPropertyAtom swrlIndividualPropertyAtom;
 
-		swrlIndividualPropertyAtom = (SWRLIndividualPropertyAtom)this.systemFrames.getIndividualPropertyAtomCls().createAnonymousInstance();
+		swrlIndividualPropertyAtom = (SWRLIndividualPropertyAtom)this.systemFrames.getIndividualPropertyAtomCls()
+				.createAnonymousInstance();
 
 		swrlIndividualPropertyAtom.setPropertyPredicate(objectSlot);
 		swrlIndividualPropertyAtom.setArgument1(iObject1);
@@ -170,7 +173,8 @@ public class SWRLFactory
 	{
 		SWRLDifferentIndividualsAtom swrlDifferentIndividualsAtom;
 
-		swrlDifferentIndividualsAtom = (SWRLDifferentIndividualsAtom)this.systemFrames.getDifferentIndividualsAtomCls().createAnonymousInstance();
+		swrlDifferentIndividualsAtom = (SWRLDifferentIndividualsAtom)this.systemFrames.getDifferentIndividualsAtomCls()
+				.createAnonymousInstance();
 		swrlDifferentIndividualsAtom.setArgument1(argument1);
 		swrlDifferentIndividualsAtom.setArgument2(argument2);
 
@@ -181,7 +185,8 @@ public class SWRLFactory
 	{
 		SWRLSameIndividualAtom swrlSameIndividualAtom;
 
-		swrlSameIndividualAtom = (SWRLSameIndividualAtom)this.systemFrames.getSameIndividualAtomCls().createAnonymousInstance();
+		swrlSameIndividualAtom = (SWRLSameIndividualAtom)this.systemFrames.getSameIndividualAtomCls()
+				.createAnonymousInstance();
 		swrlSameIndividualAtom.setArgument1(argument1);
 		swrlSameIndividualAtom.setArgument2(argument2);
 
@@ -204,7 +209,8 @@ public class SWRLFactory
 		if (resource instanceof SWRLBuiltin) {
 			return (SWRLBuiltin)resource;
 		} else {
-			System.err.println("[SWRLFactory]  Invalid attempt to cast " + name + " into SWRLBuiltin (real type is " + resource.getProtegeType() + ")");
+			System.err.println("[SWRLFactory]  Invalid attempt to cast " + name + " into SWRLBuiltin (real type is "
+					+ resource.getProtegeType() + ")");
 			return null;
 		}
 	} // getBuiltin
@@ -311,7 +317,8 @@ public class SWRLFactory
 		if (resource instanceof SWRLImp || resource == null)
 			result = (SWRLImp)resource;
 		else
-			throw new SWRLFactoryException("invalid attempt to cast " + name + " into SWRLImp (real type is " + resource.getProtegeType() + ")");
+			throw new SWRLFactoryException("invalid attempt to cast " + name + " into SWRLImp (real type is "
+					+ resource.getProtegeType() + ")");
 
 		return result;
 	} // getImp
@@ -360,10 +367,10 @@ public class SWRLFactory
 				Set<RDFResource> resources = imp.getReferencedInstances();
 				if (resources.contains(rdfResource) && !result.contains(imp))
 					result.add(imp);
-			} // while
-		} // if
+			}
+		}
 		return result;
-	} 
+	}
 
 	public void enableAll()
 	{
@@ -401,19 +408,23 @@ public class SWRLFactory
 
 	public static boolean isSWRLFilteredResource(RDFResource resource)
 	{
-		return (resource instanceof SWRLAtomList) || (resource instanceof SWRLBuiltinAtom) || (resource instanceof SWRLClassAtom)
-				|| (resource instanceof SWRLDataRangeAtom) || (resource instanceof SWRLDatavaluedPropertyAtom) || (resource instanceof SWRLDifferentIndividualsAtom)
-				|| (resource instanceof SWRLImp) || (resource instanceof SWRLIndividualPropertyAtom) || (resource instanceof SWRLSameIndividualAtom)
-				|| (resource instanceof SWRLAtom) || (resource instanceof SWRLVariable);
+		return (resource instanceof SWRLAtomList) || (resource instanceof SWRLBuiltinAtom)
+				|| (resource instanceof SWRLClassAtom) || (resource instanceof SWRLDataRangeAtom)
+				|| (resource instanceof SWRLDatavaluedPropertyAtom) || (resource instanceof SWRLDifferentIndividualsAtom)
+				|| (resource instanceof SWRLImp) || (resource instanceof SWRLIndividualPropertyAtom)
+				|| (resource instanceof SWRLSameIndividualAtom) || (resource instanceof SWRLAtom)
+				|| (resource instanceof SWRLVariable);
 	}
 
 	// Add SWRLBuiltin to list above.
 	public static boolean isSWRLResource(RDFResource resource)
 	{
-		return (resource instanceof SWRLAtomList) || (resource instanceof SWRLBuiltinAtom) || (resource instanceof SWRLClassAtom)
-				|| (resource instanceof SWRLDataRangeAtom) || (resource instanceof SWRLDatavaluedPropertyAtom) || (resource instanceof SWRLDifferentIndividualsAtom)
-				|| (resource instanceof SWRLImp) || (resource instanceof SWRLIndividualPropertyAtom) || (resource instanceof SWRLSameIndividualAtom)
-				|| (resource instanceof SWRLBuiltin) || (resource instanceof SWRLAtom) || (resource instanceof SWRLVariable);
+		return (resource instanceof SWRLAtomList) || (resource instanceof SWRLBuiltinAtom)
+				|| (resource instanceof SWRLClassAtom) || (resource instanceof SWRLDataRangeAtom)
+				|| (resource instanceof SWRLDatavaluedPropertyAtom) || (resource instanceof SWRLDifferentIndividualsAtom)
+				|| (resource instanceof SWRLImp) || (resource instanceof SWRLIndividualPropertyAtom)
+				|| (resource instanceof SWRLSameIndividualAtom) || (resource instanceof SWRLBuiltin)
+				|| (resource instanceof SWRLAtom) || (resource instanceof SWRLVariable);
 	}
 
 	private void enableStatusUpdate(Set<String> ruleGroupNames, boolean enable)
@@ -424,7 +435,7 @@ public class SWRLFactory
 					imp.enable();
 				else
 					imp.disable();
-			} 
+			}
 		}
 	}
 
@@ -537,9 +548,11 @@ public class SWRLFactory
 			return (atom2 instanceof SWRLDifferentIndividualsAtom)
 					&& areDifferentIndividualsAtomsEqual((SWRLDifferentIndividualsAtom)atom1, (SWRLDifferentIndividualsAtom)atom2);
 		else if (atom1 instanceof SWRLSameIndividualAtom)
-			return (atom2 instanceof SWRLSameIndividualAtom) && areSameIndividualAtomsEqual((SWRLSameIndividualAtom)atom1, (SWRLSameIndividualAtom)atom2);
+			return (atom2 instanceof SWRLSameIndividualAtom)
+					&& areSameIndividualAtomsEqual((SWRLSameIndividualAtom)atom1, (SWRLSameIndividualAtom)atom2);
 		else if (atom1 instanceof SWRLDataRangeAtom)
-			return (atom2 instanceof SWRLDataRangeAtom) && areDataRangeAtomsEqual((SWRLDataRangeAtom)atom1, (SWRLDataRangeAtom)atom2);
+			return (atom2 instanceof SWRLDataRangeAtom)
+					&& areDataRangeAtomsEqual((SWRLDataRangeAtom)atom1, (SWRLDataRangeAtom)atom2);
 		else
 			throw new RuntimeException("unknowl SWRL atom type " + atom1.getLocalName());
 	}
@@ -569,29 +582,35 @@ public class SWRLFactory
 
 	private boolean areClassAtomsEqual(SWRLClassAtom atom1, SWRLClassAtom atom2)
 	{
-		return atom1.getClassPredicate().getURI().equals(atom2.getClassPredicate().getURI()) && areAtomArgumentsEqual(atom1.getArgument1(), atom2.getArgument1());
+		return atom1.getClassPredicate().getURI().equals(atom2.getClassPredicate().getURI())
+				&& areAtomArgumentsEqual(atom1.getArgument1(), atom2.getArgument1());
 	}
 
 	private boolean areIndividualPropertyAtomsEqual(SWRLIndividualPropertyAtom atom1, SWRLIndividualPropertyAtom atom2)
 	{
 		return atom1.getPropertyPredicate().getURI().equals(atom2.getPropertyPredicate().getURI())
-				&& areAtomArgumentsEqual(atom1.getArgument1(), atom2.getArgument1()) && areAtomArgumentsEqual(atom1.getArgument2(), atom2.getArgument2());
+				&& areAtomArgumentsEqual(atom1.getArgument1(), atom2.getArgument1())
+				&& areAtomArgumentsEqual(atom1.getArgument2(), atom2.getArgument2());
 	}
 
 	private boolean areDatavaluedPropertyAtomsEqual(SWRLDatavaluedPropertyAtom atom1, SWRLDatavaluedPropertyAtom atom2)
 	{
 		return atom1.getPropertyPredicate().getURI().equals(atom2.getPropertyPredicate().getURI())
-				&& areAtomArgumentsEqual(atom1.getArgument1(), atom2.getArgument1()) && areAtomArgumentsEqual(atom1.getArgument2(), atom2.getArgument2());
+				&& areAtomArgumentsEqual(atom1.getArgument1(), atom2.getArgument1())
+				&& areAtomArgumentsEqual(atom1.getArgument2(), atom2.getArgument2());
 	}
 
 	private boolean areSameIndividualAtomsEqual(SWRLSameIndividualAtom atom1, SWRLSameIndividualAtom atom2)
 	{
-		return areAtomArgumentsEqual(atom1.getArgument1(), atom2.getArgument1()) && areAtomArgumentsEqual(atom1.getArgument2(), atom2.getArgument2());
+		return areAtomArgumentsEqual(atom1.getArgument1(), atom2.getArgument1())
+				&& areAtomArgumentsEqual(atom1.getArgument2(), atom2.getArgument2());
 	}
 
-	private boolean areDifferentIndividualsAtomsEqual(SWRLDifferentIndividualsAtom atom1, SWRLDifferentIndividualsAtom atom2)
+	private boolean areDifferentIndividualsAtomsEqual(SWRLDifferentIndividualsAtom atom1,
+			SWRLDifferentIndividualsAtom atom2)
 	{
-		return areAtomArgumentsEqual(atom1.getArgument1(), atom2.getArgument1()) && areAtomArgumentsEqual(atom1.getArgument2(), atom2.getArgument2());
+		return areAtomArgumentsEqual(atom1.getArgument1(), atom2.getArgument1())
+				&& areAtomArgumentsEqual(atom1.getArgument2(), atom2.getArgument2());
 	}
 
 	private boolean areDataRangeAtomsEqual(SWRLDataRangeAtom atom1, SWRLDataRangeAtom atom2)
