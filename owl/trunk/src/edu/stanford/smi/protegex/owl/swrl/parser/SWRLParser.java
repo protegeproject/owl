@@ -585,7 +585,7 @@ public class SWRLParser
 				if (parsedString.contains(".")) {
 					Float.parseFloat(parsedString); // Check it
 					if (!this.parseOnly)
-						parsedEntity = this.owlModel.createRDFSLiteral(parsedString, this.owlModel.getXSDfloat());
+						parsedEntity = this.owlModel.createRDFSLiteral(parsedString, this.owlModel.getXSDdouble());
 				} else {
 					Integer.parseInt(parsedString); // Check it
 					if (!this.parseOnly)
