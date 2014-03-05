@@ -173,8 +173,7 @@ public class SWRLParser
 		} catch (SWRLParseException e) {
 			if (e instanceof SWRLIncompleteRuleException)
 				result = true;
-		} // catch
-
+		}
 		setParseOnly(oldParseOnly);
 
 		return result;
@@ -499,35 +498,31 @@ public class SWRLParser
 		return parsedEntity;
 	}
 
-	// Parse a variable or an individual name. For SWRL Full, also allow class and property names.
 	private RDFResource parseIObject() throws SWRLParseException
-	{
+	{ // Parse a variable or an individual name. For SWRL Full, also allow class and property names.
 		RDFResource parsedEntity = null;
 		String parsedString = getNextNonSpaceToken("Expecting variable or individual name.");
 
 		if (parsedString.equals("?"))
 			parsedEntity = parseVariable();
-		else { // The entity is an
+		else {
 			if (isValidIndividualName(parsedString)) {
 				if (!this.parseOnly)
 					parsedEntity = getOWLIndividual(parsedString);
-			} else if (isValidOWLNamedClassName(parsedString)) {
+			} else if (isValidOWLNamedClassName(parsedString)) { // SWRL Full
 				if (!this.parseOnly)
 					parsedEntity = getOWLNamedClass(parsedString);
-			} // SWRL Full
-			else if (isValidOWLPropertyName(parsedString)) {
+			} else if (isValidOWLPropertyName(parsedString)) { // SWRL Full
 				if (!this.parseOnly)
 					parsedEntity = getOWLProperty(parsedString);
-			} // SWRL Full
-			else if (this.tokenizer.hasMoreTokens())
+			} else if (this.tokenizer.hasMoreTokens())
 				throw new SWRLParseException("Invalid entity name: '" + parsedString + "'.");
 		}
 		return parsedEntity;
 	}
 
-	// Parse a variable or a literal.
 	private RDFObject parseDObject() throws SWRLParseException
-	{
+	{ // Parse a variable or a literal.
 		RDFObject parsedEntity = null;
 		String parsedString = getNextNonSpaceToken("Expecting variable or literal.");
 
@@ -569,8 +564,7 @@ public class SWRLParser
 				parsedEntity = this.owlModel.createRDFSLiteral(stringValue, this.owlModel.getXSDstring());
 		}
 		// According to the XSD spec, xsd:boolean's have the lexical space: {true, false, 1, 0}. We don't allow {1, 0} since
-		// these are parsed
-		// as XSDints.
+		// these are parsed as XSDints.
 		else if (parsedString.startsWith("t") || parsedString.startsWith("T") || parsedString.startsWith("f")
 				|| parsedString.startsWith("F")) {
 			if (this.tokenizer.hasMoreTokens()) {
@@ -599,7 +593,6 @@ public class SWRLParser
 					throw new SWRLParseException(errorMessage);
 			}
 		}
-
 		return parsedEntity;
 	}
 
