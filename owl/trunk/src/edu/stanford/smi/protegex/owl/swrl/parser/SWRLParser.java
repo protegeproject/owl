@@ -3,60 +3,45 @@
 package edu.stanford.smi.protegex.owl.swrl.parser;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.Set;
-import java.util.StringTokenizer;
 
-import edu.stanford.smi.protegex.owl.model.NamespaceUtil;
 import edu.stanford.smi.protegex.owl.model.OWLDataRange;
 import edu.stanford.smi.protegex.owl.model.OWLDatatypeProperty;
-import edu.stanford.smi.protegex.owl.model.OWLIndividual;
 import edu.stanford.smi.protegex.owl.model.OWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
 import edu.stanford.smi.protegex.owl.model.OWLObjectProperty;
-import edu.stanford.smi.protegex.owl.model.OWLProperty;
 import edu.stanford.smi.protegex.owl.model.RDFObject;
 import edu.stanford.smi.protegex.owl.model.RDFProperty;
 import edu.stanford.smi.protegex.owl.model.RDFResource;
-import edu.stanford.smi.protegex.owl.model.classparser.ParserUtils;
-import edu.stanford.smi.protegex.owl.model.impl.XMLSchemaDatatypes;
 import edu.stanford.smi.protegex.owl.swrl.model.SWRLAtom;
 import edu.stanford.smi.protegex.owl.swrl.model.SWRLAtomList;
 import edu.stanford.smi.protegex.owl.swrl.model.SWRLBuiltin;
+import edu.stanford.smi.protegex.owl.swrl.model.SWRLBuiltinAtom;
+import edu.stanford.smi.protegex.owl.swrl.model.SWRLClassAtom;
+import edu.stanford.smi.protegex.owl.swrl.model.SWRLDataRangeAtom;
+import edu.stanford.smi.protegex.owl.swrl.model.SWRLDifferentIndividualsAtom;
 import edu.stanford.smi.protegex.owl.swrl.model.SWRLFactory;
 import edu.stanford.smi.protegex.owl.swrl.model.SWRLImp;
-import edu.stanford.smi.protegex.owl.swrl.model.SWRLNames;
+import edu.stanford.smi.protegex.owl.swrl.model.SWRLIndividualPropertyAtom;
+import edu.stanford.smi.protegex.owl.swrl.model.SWRLSameIndividualAtom;
 import edu.stanford.smi.protegex.owl.swrl.model.SWRLVariable;
 
 public class SWRLParser
 {
-	public final static char AND_CHAR = '\u2227'; // ^
-	public final static char IMP_CHAR = '\u2192'; // >
-	public final static char RING_CHAR = '\u02da'; // .
-	public final static String delimiters = " ?\n\t()[],\"'" + AND_CHAR + IMP_CHAR + RING_CHAR; // Note space.
-
-	private final OWLModel owlModel;
+	private final SWRLParserSupport swrlParserSupport;
 	private final SWRLFactory swrlFactory;
-	private final Set<String> xmlSchemaSymbols = XMLSchemaDatatypes.getSlotSymbols();
-	private final Set<String> variables;
+	private final Set<String> swrlVariables;
 	private boolean parseOnly;
-	private Tokenizer tokenizer;
-	private boolean inHead = false;
-
-	private final Map<String, RDFResource> cachedRDFResources;
 
 	public SWRLParser(OWLModel owlModel)
 	{
-		this.owlModel = owlModel;
+		this.swrlParserSupport = new SWRLParserSupport(owlModel);
 		this.swrlFactory = new SWRLFactory(owlModel);
+		this.swrlVariables = new HashSet<String>();
 		this.parseOnly = true;
-		this.variables = new HashSet<String>();
-		this.cachedRDFResources = new HashMap<String, RDFResource>();
 	}
 
 	public void setParseOnly(boolean parseOnly)
@@ -66,102 +51,101 @@ public class SWRLParser
 
 	/**
 	 * This parser will throw a {@link SWRLParseException} if it finds errors in the supplied rule. If the rule is correct
-	 * but incomplete, a {@link SWRLIncompleteRuleExceptionP (which is a subclass of {@link SWRLParseException}) will be
+	 * but incomplete, a {@link SWRLIncompleteRuleException} (which is a subclass of {@link SWRLParseException}) will be
 	 * thrown.
 	 * 
 	 * If {@link #parseOnly} is true, only checking is performed - no SWRL rules are created; if it is false, individuals
 	 * are created.
 	 */
-	public SWRLImp parse(String rule) throws SWRLParseException
+	public SWRLImp parse(String ruleText) throws SWRLParseException
 	{
-		return parse(rule, null);
+		return parse(ruleText, null);
 	}
 
-	public SWRLImp parse(String rule, SWRLImp imp) throws SWRLParseException
+	public SWRLImp parse(String ruleText, SWRLImp imp) throws SWRLParseException
 	{
-		String token, message;
+		SWRLTokenizer tokenizer = new SWRLTokenizer(ruleText.trim());
+		String currentToken, message;
 		SWRLAtomList head = null, body = null;
-		SWRLAtom atom = null;
-		boolean atLeastOneAtom = false, justProcessedAtom = true;
+		boolean atLeastOneAtom = false, justProcessedAtom = true, isInHead = false;
 
-		this.inHead = false;
-
-		this.variables.clear();
-		this.tokenizer = new Tokenizer(rule.trim());
+		this.swrlVariables.clear();
 
 		if (!this.parseOnly) {
-			head = this.swrlFactory.createAtomList();
+			head = getSWRLFactory().createAtomList();
 			head.setInHead(true);
-			body = this.swrlFactory.createAtomList();
-			head.setInHead(false);
+			body = getSWRLFactory().createAtomList();
+			body.setInHead(false);
 		}
 
-		if (!this.parseOnly && !this.tokenizer.hasMoreTokens())
-			throw new SWRLParseException("Empty rule.");
+		if (!this.parseOnly && !tokenizer.hasMoreTokens())
+			throw new SWRLParseException("Empty rule");
 
 		do {
 			if (justProcessedAtom) {
-				if (this.inHead)
-					message = "Expecting " + AND_CHAR;
+				if (isInHead)
+					message = "Expecting " + SWRLTokenizer.AND_CHAR;
 				else
-					message = "Expecting " + IMP_CHAR + " or " + AND_CHAR + " or " + RING_CHAR + ".";
+					message = "Expecting " + SWRLTokenizer.IMP_CHAR + " or " + SWRLTokenizer.AND_CHAR + " or "
+							+ SWRLTokenizer.RING_CHAR;
 			} else {
-				if (this.inHead)
-					message = "Expecting atom.";
+				if (isInHead)
+					message = "Expecting atom";
 				else
-					message = "Expecting atom or " + IMP_CHAR + ".";
+					message = "Expecting atom or " + SWRLTokenizer.IMP_CHAR;
 			}
 
-			token = getNextNonSpaceToken(message);
+			currentToken = tokenizer.getNextNonSpaceToken(message, parseOnly);
 
-			if (token.equals("" + IMP_CHAR) || token.equals("->")) { // A rule can have an empty body.
-				if (this.inHead)
-					throw new SWRLParseException("Second occurence of " + IMP_CHAR + ".");
-				this.inHead = true;
+			if (currentToken.equals("" + SWRLTokenizer.IMP_CHAR) || currentToken.equals("->")) { // A rule can have an empty
+																																														// body.
+				if (isInHead)
+					throw new SWRLParseException("Second occurence of " + SWRLTokenizer.IMP_CHAR);
+				isInHead = true;
 				justProcessedAtom = false;
-			} else if (token.equals("-")) {
+			} else if (currentToken.equals("-")) {
 				continue; // Ignore "->" while we build up IMP_CHAR.
-			} else if (token.equals("" + AND_CHAR) || token.equals("^")) {
+			} else if (currentToken.equals("" + SWRLTokenizer.AND_CHAR) || currentToken.equals("^")) {
 				if (!justProcessedAtom)
-					throw new SWRLParseException(AND_CHAR + " may occur only after an atom.");
+					throw new SWRLParseException(SWRLTokenizer.AND_CHAR + " may occur only after an atom");
 				justProcessedAtom = false;
-			} else if (token.equals("" + RING_CHAR) || token.equals(".")) {
-				if (this.inHead || !justProcessedAtom)
-					throw new SWRLParseException(RING_CHAR + " may occur only in query body.");
+			} else if (currentToken.equals("" + SWRLTokenizer.RING_CHAR) || currentToken.equals(".")) {
+				if (isInHead || !justProcessedAtom)
+					throw new SWRLParseException(SWRLTokenizer.RING_CHAR + " may occur only in query body");
 				justProcessedAtom = false;
 			} else {
-				atom = parseAtom(token);
+				String predicate = currentToken;
+				SWRLAtom atom = parseSWRLAtom(predicate, tokenizer, isInHead);
 				atLeastOneAtom = true;
 				if (!this.parseOnly) {
-					if (this.inHead)
+					if (isInHead)
 						head.append(atom);
 					else
 						body.append(atom);
 				}
 				justProcessedAtom = true;
 			}
-		} while (this.tokenizer.hasMoreTokens());
+		} while (tokenizer.hasMoreTokens());
 
 		if (!this.parseOnly) {
 			if (!atLeastOneAtom)
-				throw new SWRLParseException("Incomplete rule - no antecedent or consequent.");
+				throw new SWRLParseException("Incomplete SWRL rule - no antecedent or consequent");
 			if (imp == null)
-				imp = this.swrlFactory.createImp(head, body);
+				imp = getSWRLFactory().createImp(head, body);
 			else {
 				imp.setHead(head);
 				imp.setBody(body);
 			}
+			return imp;
 		} else
-			imp = null;
-
-		return imp;
+			return null;
 	}
 
 	/**
 	 * If the rule is correct and incomplete return 'true'; if the rule has errors or is correct and complete, return
 	 * 'false'.
 	 */
-	public boolean isCorrectAndIncomplete(String rule)
+	public boolean isSWRLRuleCorrectAndIncomplete(String ruleText)
 	{
 		boolean oldParseOnly = this.parseOnly;
 		boolean result = false;
@@ -169,7 +153,7 @@ public class SWRLParser
 		setParseOnly(true);
 
 		try {
-			parse(rule);
+			parse(ruleText);
 		} catch (SWRLParseException e) {
 			if (e instanceof SWRLIncompleteRuleException)
 				result = true;
@@ -179,626 +163,373 @@ public class SWRLParser
 		return result;
 	}
 
-	// public static String getParsableRuleString(String unicodeRule) { return unicodeRule.replace(AND_CHAR,
-	// '^').replace(IMP_CHAR, '>'); }
-
-	private SWRLAtom parseAtom(String identifier) throws SWRLParseException
+	private SWRLAtom parseSWRLAtom(String predicate, SWRLTokenizer tokenizer, boolean isInHead) throws SWRLParseException
 	{
-		SWRLAtom atom = null;
-		List<RDFObject> enumeratedList = null;
-		boolean isEnumeratedList = false;
-
-		if (identifier.startsWith("[")) { // A data range with an enumerated literal list
-			enumeratedList = parseDObjectList();
-			isEnumeratedList = true;
-		}
-
-		if (isEnumeratedList)
-			checkAndSkipToken("(", "Expecting parameters enclosed in parentheses for data range atom.");
-		else
-			checkAndSkipToken("(", "Expecting parameters enclosed in parentheses for atom " + identifier + ".");
-
-		if (isEnumeratedList)
-			atom = parseEnumeratedListParameters(enumeratedList);
-		else if (isSameAs(identifier))
-			atom = parseSameAsAtomParameters();
-		else if (isDifferentFrom(identifier))
-			atom = parseDifferentFromAtomParameters();
-		else if (isOWLClassName(identifier))
-			atom = parseClassAtomParameters(identifier);
-		else if (isOWLObjectPropertyName(identifier))
-			atom = parseIndividualPropertyAtomParameters(identifier);
-		else if (isOWLDatatypePropertyName(identifier))
-			atom = parseDatavaluedPropertyAtomParameters(identifier);
-		else if (isSWRLBuiltinName(identifier))
-			atom = parseBuiltinParameters(identifier);
-		else
-			throw new SWRLParseException("Invalid atom name " + identifier + ".");
-
-		return atom;
+		if (isSWRLSameAsPredicate(predicate)) {
+			tokenizer.checkAndSkipToken("(", "Expecting parentheses-enclosed arguments for sameAs atom", parseOnly);
+			return parseSWRLSameAsAtomArguments(tokenizer, isInHead);
+		} else if (isSWRLDifferentFromPredicate(predicate)) {
+			tokenizer.checkAndSkipToken("(", "Expecting parentheses-enclosed arguments for differentFrom atom", parseOnly);
+			return parseSWRLDifferentFromAtomArguments(tokenizer, isInHead);
+		} else if (isSWRLClassPredicate(predicate)) {
+			tokenizer.checkAndSkipToken("(", "Expecting parentheses-enclosed arguments for class atom", parseOnly);
+			return parseSWRLClassAtomArguments(predicate, tokenizer, isInHead);
+		} else if (isSWRLObjectPropertyPredicate(predicate)) {
+			tokenizer.checkAndSkipToken("(", "Expecting parentheses-enclosed arguments for object property atom", parseOnly);
+			return parseSWRLIndividualPropertyAtomArguments(predicate, tokenizer, isInHead);
+		} else if (isSWRLDataPropertyPredicate(predicate)) {
+			tokenizer.checkAndSkipToken("(", "Expecting parentheses-enclosed arguments for data property atom", parseOnly);
+			return parseSWRLDataPropertyAtomArguments(predicate, tokenizer, isInHead);
+		} else if (isSWRLBuiltInPredicate(predicate)) {
+			tokenizer.checkAndSkipToken("(", "Expecting parentheses-enclosed arguments for built-in atom", parseOnly);
+			return parseSWRLBuiltinAtomArguments(predicate, tokenizer, isInHead);
+		} else if (isSWRLDataRangePredicate(predicate)) {
+			List<RDFObject> enumeratedList = parseDObjectList(tokenizer, isInHead);
+			tokenizer.checkAndSkipToken("(", "Expecting parentheses-enclosed arguments for data range atom", parseOnly);
+			return parseSWRLDataRangeAtomArguments(enumeratedList, tokenizer, isInHead);
+		} else
+			throw new SWRLParseException("Invalid predicate " + predicate);
 	}
 
-	private void checkAndSkipToken(String skipToken, String unexpectedTokenMessage) throws SWRLParseException
+	private SWRLSameIndividualAtom parseSWRLSameAsAtomArguments(SWRLTokenizer tokenizer, boolean isInHead)
+			throws SWRLParseException
 	{
-		String token = getNextNonSpaceToken(unexpectedTokenMessage);
+		RDFResource iObject1 = parseIObject(tokenizer, isInHead);
+		tokenizer.checkAndSkipToken(",", "Expecting comma-separated second argument for same as atom", parseOnly);
+		RDFResource iObject2 = parseIObject(tokenizer, isInHead);
 
-		if (!token.equalsIgnoreCase(skipToken))
-			throw new SWRLParseException("Expecting " + skipToken + ", got " + token + "; " + unexpectedTokenMessage);
+		tokenizer.checkAndSkipToken(")", "Expecting closing parenthesis after second argument to same as atom", parseOnly);
+
+		return this.parseOnly ? null : getSWRLFactory().createSameIndividualAtom(iObject1, iObject2);
 	}
 
-	// TODO: Does not deal with escaped quotation characters.
-	private String getNextStringToken(String noTokenMessage) throws SWRLParseException
+	private SWRLDifferentIndividualsAtom parseSWRLDifferentFromAtomArguments(SWRLTokenizer tokenizer, boolean isInHead)
+			throws SWRLParseException
 	{
-		String token = "";
-		String errorMessage = "Incomplete rule. " + noTokenMessage;
+		RDFResource iObject1 = parseIObject(tokenizer, isInHead);
+		tokenizer.checkAndSkipToken(",", "Expecting comma-separated second argument for different from atom", parseOnly);
+		RDFResource iObject2 = parseIObject(tokenizer, isInHead);
 
-		if (!this.tokenizer.hasMoreTokens()) {
-			if (this.parseOnly)
-				throw new SWRLIncompleteRuleException(errorMessage);
-			else
-				throw new SWRLParseException(errorMessage);
-		}
+		tokenizer.checkAndSkipToken(")", "Only two arguments allowed in different from atom", parseOnly);
 
-		while (this.tokenizer.hasMoreTokens()) {
-			token = this.tokenizer.nextToken("\"");
-			if (token.equals("\""))
-				token = ""; // Empty string
-			else
-				checkAndSkipToken("\"", "Expected \" to close string.");
-			return token;
-		}
-
-		if (this.parseOnly)
-			throw new SWRLIncompleteRuleException(errorMessage);
-		else
-			throw new SWRLParseException(errorMessage); // Should not get here
+		return this.parseOnly ? null : getSWRLFactory().createDifferentIndividualsAtom(iObject1, iObject2);
 	}
 
-	private String getNextNonSpaceToken(String noTokenMessage) throws SWRLParseException
+	private SWRLClassAtom parseSWRLClassAtomArguments(String predicate, SWRLTokenizer tokenizer, boolean isInHead)
+			throws SWRLParseException
 	{
-		String token = "";
-		String errorMessage = "Incomplete rule. " + noTokenMessage;
+		RDFResource iObject = parseIObject(tokenizer, isInHead);
 
-		if (!this.tokenizer.hasMoreTokens()) {
-			if (this.parseOnly)
-				throw new SWRLIncompleteRuleException(errorMessage);
-			else
-				throw new SWRLParseException(errorMessage);
-		}
-
-		while (this.tokenizer.hasMoreTokens()) {
-			token = this.tokenizer.nextToken();
-			if (!(token.equals(" ") || token.equals("\n") || token.equals("\t")))
-				return token;
-		}
-
-		if (this.parseOnly)
-			throw new SWRLIncompleteRuleException(errorMessage);
-		else
-			throw new SWRLParseException(errorMessage); // Should not get here
-	}
-
-	private SWRLAtom parseSameAsAtomParameters() throws SWRLParseException
-	{
-		RDFResource iObject1, iObject2;
-		SWRLAtom atom = null;
-
-		iObject1 = parseIObject();
-		checkAndSkipToken(",", "Expecting comma-separated second parameter for SameAsAtom.");
-		iObject2 = parseIObject();
-
-		if (!this.parseOnly)
-			atom = this.swrlFactory.createSameIndividualAtom(iObject1, iObject2);
-
-		checkAndSkipToken(")", "Expecting closing parenthesis after second parameters in SameAsAtom");
-
-		return atom;
-	}
-
-	private SWRLAtom parseDifferentFromAtomParameters() throws SWRLParseException
-	{
-		RDFResource iObject1, iObject2;
-		SWRLAtom atom = null;
-
-		iObject1 = parseIObject();
-		checkAndSkipToken(",", "Expecting comma-separated second parameters for DifferentFromAtom");
-		iObject2 = parseIObject();
-
-		if (!this.parseOnly)
-			atom = this.swrlFactory.createDifferentIndividualsAtom(iObject1, iObject2);
-
-		checkAndSkipToken(")", "Only two parameters allowed for DifferentFromAtom");
-
-		return atom;
-	}
-
-	private SWRLAtom parseClassAtomParameters(String identifier) throws SWRLParseException
-	{
-		RDFResource iObject;
-		SWRLAtom atom = null;
-
-		iObject = parseIObject();
+		tokenizer.checkAndSkipToken(")", "Expecting closing parenthesis for argument for class atom " + predicate,
+				parseOnly);
 
 		if (!this.parseOnly) {
-			OWLNamedClass aClass = ParserUtils.getOWLClassFromName(this.owlModel, identifier);
-			atom = this.swrlFactory.createClassAtom(aClass, iObject);
-		}
-
-		checkAndSkipToken(")", "Expecting closing parenthesis for parameter for ClassAtom '" + identifier + "'.");
-
-		return atom;
+			OWLNamedClass cls = swrlParserSupport.getOWLClass(predicate);
+			if (cls == null)
+				throw new SWRLParseException("no OWL class " + predicate + " found for class atom");
+			return getSWRLFactory().createClassAtom(cls, iObject);
+		} else
+			return null;
 	}
 
-	private SWRLAtom parseIndividualPropertyAtomParameters(String identifier) throws SWRLParseException
+	private SWRLIndividualPropertyAtom parseSWRLIndividualPropertyAtomArguments(String predicate,
+			SWRLTokenizer tokenizer, boolean isInHead) throws SWRLParseException
 	{
-		RDFResource iObject1, iObject2;
-		SWRLAtom atom = null;
+		RDFResource iObject1 = parseIObject(tokenizer, isInHead);
+		tokenizer.checkAndSkipToken(",", "Expecting comma-separated second argument for object property atom " + predicate,
+				parseOnly);
+		RDFResource iObject2 = parseIObject(tokenizer, isInHead);
 
-		iObject1 = parseIObject();
-		checkAndSkipToken(",", "Expecting comma-separated second parameter for IndividualPropertyAtom '" + identifier + "'");
-		iObject2 = parseIObject();
+		tokenizer.checkAndSkipToken(")", "Expecting closing parenthesis after second argument of object property atom "
+				+ predicate, parseOnly);
 
 		if (!this.parseOnly) {
-			OWLObjectProperty objectProperty = ParserUtils.getOWLObjectPropertyFromName(this.owlModel, identifier);
+			OWLObjectProperty objectProperty = swrlParserSupport.getOWLObjectProperty(predicate);
 			if (objectProperty == null)
-				throw new SWRLParseException("no datatype property found for IndividualPropertyAtom: " + identifier);
-			atom = this.swrlFactory.createIndividualPropertyAtom(objectProperty, iObject1, iObject2);
-		}
-
-		checkAndSkipToken(")", "Expecting closing parenthesis after second parameter of IndividualPropertyAtom '"
-				+ identifier + "'.");
-
-		return atom;
+				throw new SWRLParseException("no object property " + predicate + " found for object property atom");
+			return getSWRLFactory().createIndividualPropertyAtom(objectProperty, iObject1, iObject2);
+		} else
+			return null;
 	}
 
-	private SWRLAtom parseDatavaluedPropertyAtomParameters(String identifier) throws SWRLParseException
+	private SWRLAtom parseSWRLDataPropertyAtomArguments(String predicate, SWRLTokenizer tokenizer, boolean isInHead)
+			throws SWRLParseException
 	{
-		RDFResource iObject;
-		RDFObject dObject;
-		SWRLAtom atom = null;
-		OWLDatatypeProperty datatypeProperty;
-		String token, errorMessage = "Expecting literal qualification symbol '#' or closing parenthesis after second parameter of DatavaluedPropertyAtom' ";
+		String errorMessage = "Expecting literal qualification symbol '#' or closing parenthesis after second argument of data property argument ";
 
-		iObject = parseIObject();
-		checkAndSkipToken(",", "Expecting comma-separated second parameter for DatavaluedPropertyAtom '" + identifier
-				+ "'.");
-		dObject = parseDObject();
+		RDFResource iObject = parseIObject(tokenizer, isInHead);
+		tokenizer.checkAndSkipToken(",", "Expecting comma-separated second parameter for data property atom " + predicate,
+				parseOnly);
+		RDFObject dObject = parseDObject(tokenizer, isInHead);
 
-		token = getNextNonSpaceToken(errorMessage + identifier + "'.");
+		String token = tokenizer.getNextNonSpaceToken(errorMessage + predicate, parseOnly);
 
-		if (token.equals("#")) { // Literal qualification.
-			token = getNextNonSpaceToken("Expecting XML Schema datatype.");
-			if (this.tokenizer.hasMoreTokens() && !isXSDDatatype(token))
-				throw new SWRLParseException("Invalid XML Schema datatype name: '" + token + "'.");
-			if (!this.parseOnly)
-				dObject = this.owlModel.createRDFSLiteral(dObject.getBrowserText(), token);
-			checkAndSkipToken(")", "Expecting closing parenthesis after second parameter of DatavaluedPropertyAtom");
+		if (token.equals("#")) { // Literal qualification
+			String datatypeToken = tokenizer.getNextNonSpaceToken("Expecting XML Schema datatype", parseOnly);
+			if (tokenizer.hasMoreTokens() && !isXSDDatatypePredicate(datatypeToken))
+				throw new SWRLParseException("Invalid XML Schema datatype " + datatypeToken);
+			if (!this.parseOnly) {
+				String datatypeName = datatypeToken;
+				String rawValue = dObject.getBrowserText();
+				dObject = swrlParserSupport.getOWLLiteral(rawValue, datatypeName);
+			}
+			tokenizer.checkAndSkipToken(")", "Expecting closing parenthesis after second argument of data property atom",
+					parseOnly);
 		} else if (!token.equals(")"))
-			throw new SWRLParseException(errorMessage + identifier + "'.");
+			throw new SWRLParseException(errorMessage + predicate);
 
 		if (!this.parseOnly) {
-			datatypeProperty = ParserUtils.getOWLDatatypePropertyFromName(this.owlModel, identifier);
-			atom = this.swrlFactory.createDatavaluedPropertyAtom(datatypeProperty, iObject, dObject);
-		}
-
-		return atom;
+			OWLDatatypeProperty datatypeProperty = swrlParserSupport.getOWLDataProperty(predicate);
+			return getSWRLFactory().createDatavaluedPropertyAtom(datatypeProperty, iObject, dObject);
+		} else
+			return null;
 	}
 
-	private SWRLAtom parseBuiltinParameters(String identifier) throws SWRLParseException
+	private SWRLBuiltinAtom parseSWRLBuiltinAtomArguments(String predicate, SWRLTokenizer tokenizer, boolean isInHead)
+			throws SWRLParseException
 	{
-		SWRLBuiltin builtin;
-		SWRLAtom atom = null;
-		List<RDFObject> objects = parseObjectList(); // Swallows ')'
+		List<RDFObject> arguments = parseObjectList(tokenizer, isInHead); // Swallows ')'
 
 		if (!this.parseOnly) {
-			builtin = this.swrlFactory.getBuiltin(NamespaceUtil.getFullName(this.owlModel, identifier));
-			atom = this.swrlFactory.createBuiltinAtom(builtin, objects.iterator());
-		}
-
-		return atom;
+			SWRLBuiltin builtin = swrlParserSupport.getSWRLBuiltIn(predicate);
+			return getSWRLFactory().createBuiltinAtom(builtin, arguments.iterator());
+		} else
+			return null;
 	}
 
-	private SWRLAtom parseEnumeratedListParameters(List<RDFObject> enumeratedList) throws SWRLParseException
+	private SWRLDataRangeAtom parseSWRLDataRangeAtomArguments(List<RDFObject> enumeratedList, SWRLTokenizer tokenizer,
+			boolean isInHead) throws SWRLParseException
 	{
-		RDFObject dObject;
-		SWRLAtom atom = null;
-		Object literalValue;
-		Iterator<RDFObject> iterator;
-
-		dObject = parseDObject();
+		RDFObject dObject = parseDObject(tokenizer, isInHead);
+		tokenizer.checkAndSkipToken(")", "Expecting closing parenthesis after argument in data range atom", parseOnly);
 
 		if (!this.parseOnly) {
-			OWLDataRange dataRange = this.owlModel.createOWLDataRange();
-			RDFProperty oneOfProperty = this.owlModel.getOWLOneOfProperty();
+			OWLDataRange dataRange = swrlParserSupport.getOWLDataRange();
+			RDFProperty oneOfProperty = swrlParserSupport.getOWLOneOfProperty();
 
-			iterator = enumeratedList.iterator();
+			Iterator<RDFObject> iterator = enumeratedList.iterator();
 			while (iterator.hasNext()) {
-				literalValue = iterator.next();
+				Object literalValue = iterator.next();
 				dataRange.addPropertyValue(oneOfProperty, literalValue);
 			}
-			atom = this.swrlFactory.createDataRangeAtom(dataRange, dObject);
-		}
-		checkAndSkipToken(")", "Expecting closing parenthesis after parameter in DataRangeAtom.");
-
-		return atom;
+			return getSWRLFactory().createDataRangeAtom(dataRange, dObject);
+		} else
+			return null;
 	}
 
-	// Parse a list of variables and literals.
-	private List<RDFObject> parseDObjectList() throws SWRLParseException
+	private SWRLVariable parseSWRLVariable(SWRLTokenizer tokenizer, boolean isInHead) throws SWRLParseException
 	{
-		RDFObject dObject;
-		List<RDFObject> dObjects = null;
+		String variableName = tokenizer.getNextNonSpaceToken("Expecting variable name", parseOnly);
+		swrlParserSupport.checkThatSWRLVariableNameIsValid(variableName);
 
-		if (!this.parseOnly)
-			dObjects = new ArrayList<RDFObject>();
-
-		dObject = parseDObject();
-		if (!this.parseOnly)
-			dObjects.add(dObject);
-
-		String token = getNextNonSpaceToken("Expecting additional comma-separated variables or literals or closing parenthesis.");
-		while (token.equals(",")) {
-			dObject = parseDObject();
-			if (!this.parseOnly)
-				dObjects.add(dObject);
-			token = getNextNonSpaceToken("Expecting ',' or ')'.");
-			if (!(token.equals(",") || token.equals(")")))
-				throw new SWRLParseException("Expecting ',' or ')', got '" + token + "'.");
-		}
-		return dObjects;
-	}
-
-	// Parse a list of variables, literals and individual names.
-	private List<RDFObject> parseObjectList() throws SWRLParseException
-	{
-		RDFObject object;
-		List<RDFObject> objects = null;
-
-		if (!this.parseOnly)
-			objects = new ArrayList<RDFObject>();
-
-		object = parseObject();
-		if (!this.parseOnly)
-			objects.add(object);
-
-		String token = getNextNonSpaceToken("Expecting additional comma-separated variables, literals or individual names or closing parenthesis.");
-		while (token.equals(",")) {
-			object = parseObject();
-			if (!this.parseOnly)
-				objects.add(object);
-			token = getNextNonSpaceToken("Expecting ',' or ')'.");
-			if (!(token.equals(",") || token.equals(")")))
-				throw new SWRLParseException("Expecting ',' or ')', got '" + token + "'.");
-		}
-		return objects;
-	}
-
-	// Parse a variable, literal or an individual name.
-	private RDFObject parseObject() throws SWRLParseException
-	{
-		RDFObject parsedEntity = null;
-		String parsedString = getNextNonSpaceToken("Expecting variable or individual name or literal.");
-
-		if (parsedString.equals("?"))
-			parsedEntity = parseVariable();
-		else { // The entity is an individual name or literal
-			if (isValidIndividualName(parsedString)) {
-				if (!this.parseOnly)
-					parsedEntity = getOWLIndividual(parsedString);
-			} else if (isValidOWLNamedClassName(parsedString)) {
-				if (!this.parseOnly)
-					parsedEntity = getOWLNamedClass(parsedString);
-			} else if (isValidOWLPropertyName(parsedString)) {
-				if (!this.parseOnly)
-					parsedEntity = getOWLProperty(parsedString);
-			} else
-				parsedEntity = parseLiteral(parsedString);
+		if (tokenizer.hasMoreTokens()) {
+			if (!isInHead)
+				this.swrlVariables.add(variableName);
+			else if (!this.swrlVariables.contains(variableName))
+				throw new SWRLParseException("Variable ?" + variableName + " used in consequent is not present in antecedent");
 		}
 
-		return parsedEntity;
-	}
-
-	private RDFResource parseIObject() throws SWRLParseException
-	{ // Parse a variable or an individual name. For SWRL Full, also allow class and property names.
-		RDFResource parsedEntity = null;
-		String parsedString = getNextNonSpaceToken("Expecting variable or individual name.");
-
-		if (parsedString.equals("?"))
-			parsedEntity = parseVariable();
-		else {
-			if (isValidIndividualName(parsedString)) {
-				if (!this.parseOnly)
-					parsedEntity = getOWLIndividual(parsedString);
-			} else if (isValidOWLNamedClassName(parsedString)) { // SWRL Full
-				if (!this.parseOnly)
-					parsedEntity = getOWLNamedClass(parsedString);
-			} else if (isValidOWLPropertyName(parsedString)) { // SWRL Full
-				if (!this.parseOnly)
-					parsedEntity = getOWLProperty(parsedString);
-			} else if (this.tokenizer.hasMoreTokens())
-				throw new SWRLParseException("Invalid entity name: '" + parsedString + "'.");
-		}
-		return parsedEntity;
-	}
-
-	private RDFObject parseDObject() throws SWRLParseException
-	{ // Parse a variable or a literal.
-		RDFObject parsedEntity = null;
-		String parsedString = getNextNonSpaceToken("Expecting variable or literal.");
-
-		if (parsedString.equals("?"))
-			parsedEntity = parseVariable();
+		if (!this.parseOnly)
+			return swrlParserSupport.getSWRLVariable(variableName);
 		else
-			parsedEntity = parseLiteral(parsedString);
-
-		return parsedEntity;
+			return null;
 	}
 
-	private RDFResource parseVariable() throws SWRLParseException
+	private RDFObject parseOWLLiteral(String rawLiteral, SWRLTokenizer tokenizer) throws SWRLParseException
 	{
-		RDFResource parsedEntity = null;
-		String variableName = getNextNonSpaceToken("Expected variable name");
-		checkThatVariableNameIsValid(variableName);
-
-		if (this.tokenizer.hasMoreTokens()) {
-			if (!this.inHead)
-				this.variables.add(variableName);
-			else if (!this.variables.contains(variableName))
-				throw new SWRLParseException("Variable ?" + variableName
-						+ " referred to in consequent is not present in antecedent.");
-		}
-
-		if (!this.parseOnly)
-			parsedEntity = getSWRLVariable(variableName);
-
-		return parsedEntity;
-	}
-
-	private RDFObject parseLiteral(String parsedString) throws SWRLParseException
-	{
-		RDFObject parsedEntity = null;
-
-		if (parsedString.equals("\"")) { // The parsed entity is a string
-			String stringValue = getNextStringToken("Expected a string.");
+		if (rawLiteral.equals("\"")) { // The parsed entity is a string
+			String stringValue = tokenizer.getNextStringToken("Expected a string", parseOnly);
 			if (!this.parseOnly)
-				parsedEntity = this.owlModel.createRDFSLiteral(stringValue, this.owlModel.getXSDstring());
-		}
-		// According to the XSD spec, xsd:boolean's have the lexical space: {true, false, 1, 0}. We don't allow {1, 0} since
-		// these are parsed as XSDints.
-		else if (parsedString.startsWith("t") || parsedString.startsWith("T") || parsedString.startsWith("f")
-				|| parsedString.startsWith("F")) {
-			if (this.tokenizer.hasMoreTokens()) {
-				if (parsedString.equalsIgnoreCase("true") || parsedString.equalsIgnoreCase("false")) {
+				return swrlParserSupport.getOWLXSDStringLiteral(stringValue);
+			else
+				return null;
+		} else if (rawLiteral.startsWith("t") || rawLiteral.startsWith("T") || rawLiteral.startsWith("f")
+				|| rawLiteral.startsWith("F")) {
+			// According to the XSD Specification, xsd:boolean's have the lexical space: {true, false, 1, 0}. We don't allow
+			// {1, 0} since these are parsed as xsd:ints.
+			if (tokenizer.hasMoreTokens()) {
+				if (rawLiteral.equalsIgnoreCase("true") || rawLiteral.equalsIgnoreCase("false")) {
 					if (!this.parseOnly)
-						parsedEntity = this.owlModel.createRDFSLiteral(parsedString, this.owlModel.getXSDboolean());
+						return swrlParserSupport.getOWLXSDBooleanLiteral(rawLiteral);
+					else
+						return null;
 				} else
-					throw new SWRLParseException("Invalid literal " + parsedString + ".");
-			}
+					throw new SWRLParseException("Invalid OWL literal " + rawLiteral);
+			} else
+				return null;
 		} else { // Is it an integer, float, long or double then?
 			try {
-				if (parsedString.contains(".")) {
-					Float.parseFloat(parsedString); // Check it
+				if (rawLiteral.contains(".")) {
+					Double.parseDouble(rawLiteral); // Check it
 					if (!this.parseOnly)
-						parsedEntity = this.owlModel.createRDFSLiteral(parsedString, this.owlModel.getXSDdouble());
+						return swrlParserSupport.getOWLXSDDoubleLiteral(rawLiteral);
+					else
+						return null;
 				} else {
-					Integer.parseInt(parsedString); // Check it
+					Integer.parseInt(rawLiteral); // Check it
 					if (!this.parseOnly)
-						parsedEntity = this.owlModel.createRDFSLiteral(parsedString, this.owlModel.getXSDint());
+						return swrlParserSupport.getOWLXSDIntLiteral(rawLiteral);
+					else
+						return null;
 				}
 			} catch (NumberFormatException e) {
-				String errorMessage = "Invalid literal " + parsedString + ".";
+				String errorMessage = "Invalid OWL literal " + rawLiteral;
 				if (this.parseOnly)
 					throw new SWRLIncompleteRuleException(errorMessage);
 				else
 					throw new SWRLParseException(errorMessage);
 			}
 		}
+	}
+
+	private List<RDFObject> parseDObjectList(SWRLTokenizer tokenizer, boolean isInHead) throws SWRLParseException
+	{ // Parse a list of variables and literals
+		List<RDFObject> dObjects = null;
+
+		if (!this.parseOnly)
+			dObjects = new ArrayList<RDFObject>();
+
+		RDFObject dObject = parseDObject(tokenizer, isInHead);
+		if (!this.parseOnly)
+			dObjects.add(dObject);
+
+		String token = tokenizer.getNextNonSpaceToken(
+				"Expecting additional comma-separated variables or literals or closing parenthesis", parseOnly);
+		while (token.equals(",")) {
+			dObject = parseDObject(tokenizer, isInHead);
+			if (!this.parseOnly)
+				dObjects.add(dObject);
+			token = tokenizer.getNextNonSpaceToken("Expecting ',' or ')'", parseOnly);
+			if (!(token.equals(",") || token.equals(")")))
+				throw new SWRLParseException("Expecting ',' or ')', got " + token);
+		}
+		return dObjects;
+	}
+
+	private List<RDFObject> parseObjectList(SWRLTokenizer tokenizer, boolean isInHead) throws SWRLParseException
+	{ // Parse a list of SWRL variables, OWL literals and OWL named individuals
+		List<RDFObject> objects = null;
+
+		if (!this.parseOnly)
+			objects = new ArrayList<RDFObject>();
+
+		RDFObject object = parseObject(tokenizer, isInHead);
+		if (!this.parseOnly)
+			objects.add(object);
+
+		String token = tokenizer.getNextNonSpaceToken(
+				"Expecting additional comma-separated variables, literals or individual names or closing parenthesis",
+				parseOnly);
+		while (token.equals(",")) {
+			object = parseObject(tokenizer, isInHead);
+			if (!this.parseOnly)
+				objects.add(object);
+			token = tokenizer.getNextNonSpaceToken("Expecting ',' or ')'", parseOnly);
+			if (!(token.equals(",") || token.equals(")")))
+				throw new SWRLParseException("Expecting ',' or ')', got'" + token);
+		}
+		return objects;
+	}
+
+	private RDFObject parseObject(SWRLTokenizer tokenizer, boolean isInHead) throws SWRLParseException
+	{ // Parse a SWRL variable, OWL literal or an OWL named individual
+		RDFObject parsedEntity = null;
+		String parsedString = tokenizer.getNextNonSpaceToken("Expecting variable or individual name or literal", parseOnly);
+
+		if (parsedString.equals("?"))
+			parsedEntity = parseSWRLVariable(tokenizer, isInHead);
+		else { // The entity is an individual name or literal
+			if (swrlParserSupport.isValidOWLIndividualName(parsedString)) {
+				if (!this.parseOnly)
+					parsedEntity = swrlParserSupport.getOWLNamedIndividual(parsedString);
+			} else if (swrlParserSupport.isValidOWLClassName(parsedString)) {
+				if (!this.parseOnly)
+					parsedEntity = swrlParserSupport.getOWLClass(parsedString);
+			} else if (swrlParserSupport.isValidOWLPropertyName(parsedString)) {
+				if (!this.parseOnly)
+					parsedEntity = swrlParserSupport.getOWLProperty(parsedString);
+			} else
+				parsedEntity = parseOWLLiteral(parsedString, tokenizer);
+		}
 		return parsedEntity;
 	}
 
-	private boolean isSameAs(String identifier) throws SWRLParseException
-	{
-		return identifier.equalsIgnoreCase("sameAs");
-	}
+	private RDFResource parseIObject(SWRLTokenizer tokenizer, boolean isInHead) throws SWRLParseException
+	{ // Parse a SWRL variable or an OWL named individual. For SWRL Full, also allow OWL class, property and datatype
+		// names.
+		String parsedString = tokenizer.getNextNonSpaceToken("Expecting variable or individual name", parseOnly);
+		RDFResource parsedEntity = null;
 
-	private boolean isDifferentFrom(String identifier) throws SWRLParseException
-	{
-		return identifier.equalsIgnoreCase("differentFrom");
-	}
-
-	private boolean isXSDDatatype(String identifier) throws SWRLParseException
-	{
-		return (identifier.startsWith("xsd:") && this.xmlSchemaSymbols.contains(identifier.substring(4)));
-	}
-
-	private void checkThatIdentifierIsValid(String identifier) throws SWRLParseException
-	{
-		if (!isValidIdentifier(identifier))
-			throw new SWRLParseException("Invalid identifier " + identifier + ".");
-	}
-
-	// Possible valid identifiers include 'http://swrl.stanford.edu/ontolgies/built-ins/3.3/swrlx.owl#createIndividual'.
-	private boolean isValidIdentifier(String s)
-	{
-		if (s.length() == 0)
-			return false;
-
-		if (!Character.isJavaIdentifierStart(s.charAt(0)) && s.charAt(0) != ':')
-			return false; // HACK to deal with ":TO" and ":FROM".
-
-		for (int i = 1; i < s.length(); i++) {
-			char c = s.charAt(i);
-			if (!(Character.isJavaIdentifierPart(c) || c == ':' || c == '-' || c == '#' || c == '/' || c == '.')) {
-				return false;
-			}
+		if (parsedString.equals("?"))
+			parsedEntity = parseSWRLVariable(tokenizer, isInHead);
+		else {
+			if (swrlParserSupport.isValidOWLIndividualName(parsedString)) {
+				if (!this.parseOnly)
+					parsedEntity = swrlParserSupport.getOWLNamedIndividual(parsedString);
+			} else if (swrlParserSupport.isValidOWLClassName(parsedString)) { // SWRL Full
+				if (!this.parseOnly)
+					parsedEntity = swrlParserSupport.getOWLClass(parsedString);
+			} else if (swrlParserSupport.isValidOWLPropertyName(parsedString)) { // SWRL Full
+				if (!this.parseOnly)
+					parsedEntity = swrlParserSupport.getOWLProperty(parsedString);
+			} else if (tokenizer.hasMoreTokens())
+				throw new SWRLParseException("Invalid entity name " + parsedString);
 		}
-		return true;
+		return parsedEntity;
 	}
 
-	private void checkThatVariableNameIsValid(String variableName) throws SWRLParseException
-	{
-		checkThatIdentifierIsValid(variableName);
+	private RDFObject parseDObject(SWRLTokenizer tokenizer, boolean isInHead) throws SWRLParseException
+	{ // Parse a SWRL variable or an OWL literal
+		String parsedString = tokenizer.getNextNonSpaceToken("Expecting variable or literal", parseOnly);
 
-		RDFResource resource = getRDFResource(variableName);
-
-		if ((resource != null) && !(resource instanceof SWRLVariable))
-			throw new SWRLParseException("Invalid variable name " + variableName
-					+ ". Cannot use name of existing OWL class, property, or individual.");
-	}
-
-	private boolean isOWLClassName(String identifier) throws SWRLParseException
-	{
-		return ParserUtils.getOWLClassFromName(this.owlModel, identifier) != null;
-	}
-
-	private boolean isOWLObjectPropertyName(String identifier) throws SWRLParseException
-	{
-		return ParserUtils.getOWLObjectPropertyFromName(this.owlModel, identifier) != null;
-	}
-
-	private boolean isOWLDatatypePropertyName(String identifier) throws SWRLParseException
-	{
-		return ParserUtils.getOWLDatatypePropertyFromName(this.owlModel, identifier) != null;
-	}
-
-	private boolean isSWRLBuiltinName(String identifier) throws SWRLParseException
-	{
-		RDFResource resource = getRDFResource(identifier);
-		return resource != null && resource.getProtegeType().getName().equals(SWRLNames.Cls.BUILTIN);
-	}
-
-	private boolean isValidIndividualName(String name) throws SWRLParseException
-	{
-		try {
-			return ParserUtils.getOWLIndividualFromName(this.owlModel, name) != null;
-		} catch (Throwable t) {
-			return false;
-		}
-	}
-
-	private boolean isValidOWLNamedClassName(String name) throws SWRLParseException
-	{
-		try {
-			RDFResource resource = getRDFResource(name);
-
-			if (resource == null)
-				return false;
-
-			if (resource instanceof OWLNamedClass)
-				return true;
-			else
-				return false;
-		} catch (Throwable t) {
-			return false;
-		} // try
-	}
-
-	private boolean isValidOWLPropertyName(String name) throws SWRLParseException
-	{
-		try {
-			RDFResource resource = getRDFResource(name);
-
-			if (resource == null)
-				return false;
-
-			if (resource instanceof OWLProperty)
-				return true;
-			else
-				return false;
-		} catch (Throwable t) {
-			return false;
-		}
-	}
-
-	private OWLIndividual getOWLIndividual(String name) throws SWRLParseException
-	{
-		OWLIndividual resource = ParserUtils.getOWLIndividualFromName(this.owlModel, name);
-
-		if (resource == null)
-			throw new SWRLParseException(name + " is not a valid individual name");
-
-		return resource;
-	}
-
-	private OWLNamedClass getOWLNamedClass(String name) throws SWRLParseException
-	{
-		OWLNamedClass resource = ParserUtils.getOWLClassFromName(this.owlModel, name);
-
-		if (resource == null)
-			throw new SWRLParseException(name + " is not a valid class name");
-
-		return resource;
-	}
-
-	private OWLProperty getOWLProperty(String name) throws SWRLParseException
-	{
-		RDFProperty resource = ParserUtils.getRDFPropertyFromName(this.owlModel, name);
-
-		if (resource == null || !(resource instanceof OWLProperty))
-			throw new SWRLParseException(name + " is not a valid property name");
-
-		return (OWLProperty)resource;
-	}
-
-	private SWRLVariable getSWRLVariable(String name) throws SWRLParseException
-	{
-		RDFResource resource = this.owlModel.getRDFResource(NamespaceUtil.getFullName(this.owlModel, name));
-
-		if (resource instanceof SWRLVariable)
-			return (SWRLVariable)resource;
-		else if (resource == null)
-			return this.swrlFactory.createVariable(NamespaceUtil.getFullName(this.owlModel, name));
+		if (parsedString.equals("?"))
+			return parseSWRLVariable(tokenizer, isInHead);
 		else
-			throw new SWRLParseException(name + " cannot be used as a variable name");
+			return parseOWLLiteral(parsedString, tokenizer);
 	}
 
-	private RDFResource getRDFResource(String resourceName)
+	private boolean isSWRLDataRangePredicate(String predicate)
 	{
-		RDFResource resource;
-
-		if (this.parseOnly) {
-			if (this.cachedRDFResources.containsKey(resourceName))
-				resource = this.cachedRDFResources.get(resourceName);
-			else {
-				resource = ParserUtils.getRDFResourceFromName(this.owlModel, resourceName);
-				this.cachedRDFResources.put(resourceName, resource); // May be null
-			}
-		} else
-			resource = ParserUtils.getRDFResourceFromName(this.owlModel, resourceName);
-
-		return resource;
+		return predicate.startsWith("[");
 	}
 
-	private static class Tokenizer
+	private boolean isSWRLSameAsPredicate(String predicate)
 	{
-		private final StringTokenizer internalTokenizer;
+		return predicate.equalsIgnoreCase("sameAs");
+	}
 
-		public Tokenizer(String input)
-		{
-			this.internalTokenizer = new StringTokenizer(input, delimiters, true);
-		}
+	private boolean isSWRLDifferentFromPredicate(String predicate)
+	{
+		return predicate.equalsIgnoreCase("differentFrom");
+	}
 
-		public boolean hasMoreTokens()
-		{
-			return this.internalTokenizer.hasMoreTokens();
-		}
+	private boolean isSWRLClassPredicate(String identifier)
+	{
+		return swrlParserSupport.isOWLClass(identifier);
+	}
 
-		public String nextToken(String myDelimiters)
-		{
-			return this.internalTokenizer.nextToken(myDelimiters);
-		}
+	private boolean isSWRLObjectPropertyPredicate(String identifier)
+	{
+		return swrlParserSupport.isOWLObjectProperty(identifier);
+	}
 
-		public String nextToken() throws NoSuchElementException
-		{
-			String token = this.internalTokenizer.nextToken(delimiters);
-			if (!token.equals("'"))
-				return token;
+	private boolean isSWRLDataPropertyPredicate(String identifier)
+	{
+		return swrlParserSupport.isOWLDataProperty(identifier);
+	}
 
-			StringBuffer buffer = new StringBuffer();
-			while (this.internalTokenizer.hasMoreTokens() && !(token = this.internalTokenizer.nextToken()).equals("'")) {
-				buffer.append(token);
-			}
-			return buffer.toString();
-		}
+	private boolean isSWRLBuiltInPredicate(String identifier)
+	{
+		return swrlParserSupport.isSWRLBuiltIn(identifier);
+	}
+
+	private boolean isXSDDatatypePredicate(String predicate)
+	{
+		return swrlParserSupport.isXSDDatatype(predicate);
+	}
+
+	private SWRLFactory getSWRLFactory()
+	{
+		return this.swrlFactory;
 	}
 }
