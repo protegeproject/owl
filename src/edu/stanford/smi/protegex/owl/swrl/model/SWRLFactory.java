@@ -25,7 +25,7 @@ import edu.stanford.smi.protegex.owl.swrl.parser.SWRLParser;
 
 /**
  * A utility class that can (and should) be used to create and access SWRL related objects in an ontology.
- * 
+ * <p>
  * See <a href="http://protege.cim3.net/cgi-bin/wiki.pl?SWRLFactoryFAQ">here</a> for documentation on using this class.
  */
 public class SWRLFactory
@@ -64,7 +64,7 @@ public class SWRLFactory
 		SWRLImp imp = createImpWithGivenName(name);
 		parser.setParseOnly(false);
 		return parser.parse(expression, imp);
-	} // createImp
+	}
 
 	public SWRLImp createImp(SWRLAtom headAtom, List<SWRLAtom> bodyAtoms)
 	{
@@ -81,12 +81,12 @@ public class SWRLFactory
 		head.setInHead(true);
 		head.setInHead(false);
 		return swrlImp;
-	} // SWRLImp
+	}
 
 	public SWRLAtomList createAtomList()
 	{
 		return (SWRLAtomList)this.systemFrames.getAtomListCls().createAnonymousInstance();
-	} // createAtomList
+	}
 
 	public SWRLAtomList createAtomList(Collection<SWRLAtom> atoms)
 	{
@@ -102,7 +102,7 @@ public class SWRLFactory
 	{
 		RDFList li = this.owlModel.createRDFList(arguments);
 		return createBuiltinAtom(swrlBuiltin, li);
-	} // createBuiltinAtom
+	}
 
 	public SWRLBuiltinAtom createBuiltinAtom(SWRLBuiltin swrlBuiltin, RDFList arguments)
 	{
@@ -114,7 +114,7 @@ public class SWRLFactory
 		swrlBuiltinAtom.setArguments(arguments);
 
 		return swrlBuiltinAtom;
-	} // createBuiltinAtom
+	}
 
 	public SWRLClassAtom createClassAtom(RDFSNamedClass aClass, RDFResource iObject)
 	{
@@ -126,8 +126,7 @@ public class SWRLFactory
 		swrlClassAtom.setArgument1(iObject);
 
 		return swrlClassAtom;
-
-	} // createClassAtom
+	}
 
 	public SWRLDataRangeAtom createDataRangeAtom(OWLDataRange dataRange, RDFObject dObject)
 	{
@@ -138,7 +137,7 @@ public class SWRLFactory
 		swrlDataRangeAtom.setDataRange(dataRange);
 
 		return swrlDataRangeAtom;
-	} // createDataRangeAtom
+	}
 
 	public SWRLDatavaluedPropertyAtom createDatavaluedPropertyAtom(OWLDatatypeProperty datatypeSlot, RDFResource iObject,
 			RDFObject dObject)
@@ -152,7 +151,7 @@ public class SWRLFactory
 
 		return swrlDatavaluedPropertyAtom;
 
-	} // createDatavaluedPropertyAtom
+	}
 
 	public SWRLIndividualPropertyAtom createIndividualPropertyAtom(OWLObjectProperty objectSlot, RDFResource iObject1,
 			RDFResource iObject2)
@@ -167,7 +166,7 @@ public class SWRLFactory
 		swrlIndividualPropertyAtom.setArgument2(iObject2);
 
 		return swrlIndividualPropertyAtom;
-	} // createIndividualPropertyAtom
+	}
 
 	public SWRLDifferentIndividualsAtom createDifferentIndividualsAtom(RDFResource argument1, RDFResource argument2)
 	{
@@ -179,7 +178,7 @@ public class SWRLFactory
 		swrlDifferentIndividualsAtom.setArgument2(argument2);
 
 		return swrlDifferentIndividualsAtom;
-	} // createDifferentIndividualsAtom
+	}
 
 	public SWRLSameIndividualAtom createSameIndividualAtom(RDFResource argument1, RDFResource argument2)
 	{
@@ -191,17 +190,17 @@ public class SWRLFactory
 		swrlSameIndividualAtom.setArgument2(argument2);
 
 		return swrlSameIndividualAtom;
-	} // createSameIndividualAtom
+	}
 
 	public SWRLVariable createVariable(String name)
 	{
 		return (SWRLVariable)this.owlModel.getRDFSNamedClass(SWRLNames.Cls.VARIABLE).createInstance(name);
-	} // createVariable
+	}
 
 	public SWRLBuiltin createBuiltin(String name)
 	{
 		return (SWRLBuiltin)this.owlModel.getRDFSNamedClass(SWRLNames.Cls.BUILTIN).createInstance(name);
-	} // createBuiltin
+	}
 
 	public SWRLBuiltin getBuiltin(String name)
 	{
@@ -213,7 +212,7 @@ public class SWRLFactory
 					+ resource.getProtegeType() + ")");
 			return null;
 		}
-	} // getBuiltin
+	}
 
 	public Collection<SWRLBuiltin> getBuiltins()
 	{
@@ -236,7 +235,7 @@ public class SWRLFactory
 				imps.add((SWRLImp)o);
 
 		return imps;
-	} // getImps
+	}
 
 	public Collection<SWRLImp> getEnabledImps()
 	{
@@ -287,7 +286,7 @@ public class SWRLFactory
 	{
 		deleteImps();
 		copyImps(sourceOWLModel);
-	} // replaceImps
+	}
 
 	public void copyImps(OWLModel sourceOWLModel) throws SWRLFactoryException
 	{
@@ -321,14 +320,14 @@ public class SWRLFactory
 					+ resource.getProtegeType() + ")");
 
 		return result;
-	} // getImp
+	}
 
 	public boolean hasImp(String name)
 	{
 		RDFResource resource = this.owlModel.getRDFResource(name);
 
 		return (resource != null) && (resource instanceof SWRLImp);
-	} // hasImp
+	}
 
 	public String getNewImpName()
 	{
@@ -527,7 +526,7 @@ public class SWRLFactory
 
 			if (!areAtomsEqual(atom1, atom2))
 				return false;
-		} // for
+		}
 
 		return !iterator2.hasNext();
 	}

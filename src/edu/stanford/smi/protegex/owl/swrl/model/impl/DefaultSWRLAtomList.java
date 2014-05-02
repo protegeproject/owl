@@ -16,7 +16,7 @@ import edu.stanford.smi.protegex.owl.swrl.model.SWRLAtomList;
 import edu.stanford.smi.protegex.owl.swrl.model.SWRLBuiltin;
 import edu.stanford.smi.protegex.owl.swrl.model.SWRLBuiltinAtom;
 import edu.stanford.smi.protegex.owl.swrl.model.SWRLIndividual;
-import edu.stanford.smi.protegex.owl.swrl.parser.SWRLParser;
+import edu.stanford.smi.protegex.owl.swrl.parser.SWRLTokenizer;
 
 public class DefaultSWRLAtomList extends DefaultRDFList implements SWRLAtomList
 {
@@ -71,10 +71,10 @@ public class DefaultSWRLAtomList extends DefaultRDFList implements SWRLAtomList
 										.isSQWRLCollectionGroupByBuiltIn(builtInName)) && !collectionBuiltInEncountered) {
 							collectionBuiltInEncountered = true;
 							if (currentColumn + 2 >= maxColumnWidth) {
-								sb.append("\n" + SWRLParser.RING_CHAR + "  ");
+								sb.append("\n" + SWRLTokenizer.RING_CHAR + "  ");
 								currentColumn = 2;
 							} else {
-								sb.append(" " + SWRLParser.RING_CHAR + " \n");
+								sb.append(" " + SWRLTokenizer.RING_CHAR + " \n");
 								currentColumn = 0;
 							}
 
@@ -88,10 +88,10 @@ public class DefaultSWRLAtomList extends DefaultRDFList implements SWRLAtomList
 								&& !collectionOperationEncountered && atomProcessed) {
 							collectionOperationEncountered = true;
 							if (currentColumn + 2 >= maxColumnWidth) {
-								sb.append("\n" + SWRLParser.RING_CHAR + "  ");
+								sb.append("\n" + SWRLTokenizer.RING_CHAR + "  ");
 								currentColumn = 3;
 							} else {
-								sb.append(" " + SWRLParser.RING_CHAR + " \n");
+								sb.append(" " + SWRLTokenizer.RING_CHAR + " \n");
 								currentColumn = 0;
 							}
 
@@ -104,10 +104,10 @@ public class DefaultSWRLAtomList extends DefaultRDFList implements SWRLAtomList
 						} else { // Non SQWRL make/group/operation built-in
 							if (atomProcessed) {
 								if (currentColumn + 2 >= maxColumnWidth) {
-									sb.append("\n" + SWRLParser.AND_CHAR + "  ");
+									sb.append("\n" + SWRLTokenizer.AND_CHAR + "  ");
 									currentColumn = 2;
 								} else {
-									sb.append(" " + SWRLParser.AND_CHAR + " ");
+									sb.append(" " + SWRLTokenizer.AND_CHAR + " ");
 									currentColumn += 3;
 								}
 							}
@@ -123,10 +123,10 @@ public class DefaultSWRLAtomList extends DefaultRDFList implements SWRLAtomList
 				} else { // Not a built-in atom
 					if (atomProcessed) {
 						if (currentColumn + 2 >= maxColumnWidth) {
-							sb.append("\n" + SWRLParser.AND_CHAR + "  ");
+							sb.append("\n" + SWRLTokenizer.AND_CHAR + "  ");
 							currentColumn = 2;
 						} else {
-							sb.append(" " + SWRLParser.AND_CHAR + " ");
+							sb.append(" " + SWRLTokenizer.AND_CHAR + " ");
 							currentColumn += 3;
 						}
 					}

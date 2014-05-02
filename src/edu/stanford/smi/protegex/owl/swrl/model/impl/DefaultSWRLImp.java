@@ -32,6 +32,7 @@ import edu.stanford.smi.protegex.owl.swrl.model.SWRLIndividual;
 import edu.stanford.smi.protegex.owl.swrl.model.SWRLNames;
 import edu.stanford.smi.protegex.owl.swrl.parser.SWRLParseException;
 import edu.stanford.smi.protegex.owl.swrl.parser.SWRLParser;
+import edu.stanford.smi.protegex.owl.swrl.parser.SWRLTokenizer;
 import edu.stanford.smi.protegex.owl.swrl.ui.icons.SWRLIcons;
 import edu.stanford.smi.protegex.owl.ui.icons.OWLIcons;
 
@@ -234,7 +235,7 @@ public class DefaultSWRLImp extends AbstractSWRLIndividual implements SWRLImp
 			s += EMPTY_RULE_TEXT;
 		} else {
 			s += SWRLUtil.getSWRLBrowserText(body, "BODY");
-			s += " " + SWRLParser.IMP_CHAR + " ";
+			s += " " + SWRLTokenizer.IMP_CHAR + " ";
 			s += SWRLUtil.getSWRLBrowserText(head, "HEAD");
 		} // if
 

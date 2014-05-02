@@ -114,7 +114,7 @@ public class SWRLRuleSlotWidget extends AbstractSlotWidget
 		if (newRule.equals(oldRule))
 			return SWRL_RULE_LABEL;
 		else
-			return (this.parser.isCorrectAndIncomplete(newRule) ? SWRL_RULE_INCOMPLETE_LABEL : SWRL_RULE_LABEL);
+			return (this.parser.isSWRLRuleCorrectAndIncomplete(newRule) ? SWRL_RULE_INCOMPLETE_LABEL : SWRL_RULE_LABEL);
 
 	}
 
