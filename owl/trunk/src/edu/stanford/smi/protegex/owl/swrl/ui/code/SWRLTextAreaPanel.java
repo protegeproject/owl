@@ -1,4 +1,3 @@
-
 package edu.stanford.smi.protegex.owl.swrl.ui.code;
 
 import java.awt.BorderLayout;
@@ -26,15 +25,15 @@ import edu.stanford.smi.protegex.owl.ui.dialogs.ModalDialogFactory;
 
 /**
  * A panel which can be used to edit an OWL expression in a multi-line dialog.
- *
+ * 
  * @author Holger Knublauch <holger@knublauch.com>
  */
 public class SWRLTextAreaPanel extends JPanel implements ModalDialogFactory.CloseCallback
 {
 	private static final String SWRL_RULE_PANEL_TITLE = "SWRL Rule";
-	private OWLModel owlModel;
-	private SWRLSymbolPanel symbolPanel;
-	private SWRLTextArea textArea;
+	private final OWLModel owlModel;
+	private final SWRLSymbolPanel symbolPanel;
+	private final SWRLTextArea textArea;
 
 	public SWRLTextAreaPanel(OWLModel owlModel)
 	{
@@ -59,6 +58,7 @@ public class SWRLTextAreaPanel extends JPanel implements ModalDialogFactory.Clos
 		symbolPanel.setSymbolEditor(textArea);
 	}
 
+	@Override
 	public boolean canClose(int result)
 	{
 		if (result == ModalDialogFactory.OPTION_OK) {
@@ -68,7 +68,7 @@ public class SWRLTextAreaPanel extends JPanel implements ModalDialogFactory.Clos
 			} else {
 				try {
 					SWRLParser parser = new SWRLParser(owlModel);
-					parser.parse(uniCodeText);
+					parser.parseSWRLRule(uniCodeText, true);
 					return true;
 				} catch (Exception ex) {
 					symbolPanel.displayError(ex);
@@ -76,8 +76,8 @@ public class SWRLTextAreaPanel extends JPanel implements ModalDialogFactory.Clos
 				}
 			}
 		} else {
-            return true;
-        }
+			return true;
+		}
 	}
 
 	public SWRLImp getResultAsImp()
@@ -85,8 +85,7 @@ public class SWRLTextAreaPanel extends JPanel implements ModalDialogFactory.Clos
 		try {
 			String uniCodeText = textArea.getText();
 			SWRLParser parser = new SWRLParser(owlModel);
-			parser.setParseOnly(false);
-			return parser.parse(uniCodeText);
+			return parser.parseSWRLRule(uniCodeText, false);
 		} catch (Exception ex) {
 			Log.getLogger().warning("Error at parsing SWRL rule " + (textArea == null ? "" : textArea.getText()));
 			return null;
@@ -101,8 +100,8 @@ public class SWRLTextAreaPanel extends JPanel implements ModalDialogFactory.Clos
 	public static boolean showEditDialog(Component parent, OWLModel owlModel, SWRLImp imp)
 	{
 		if (imp == null) {
-            return false;
-        }
+			return false;
+		}
 
 		InstanceDisplay instanceDisplay = new InstanceDisplay(owlModel.getProject(), false, false);
 		instanceDisplay.setInstance(imp);
@@ -123,8 +122,10 @@ public class SWRLTextAreaPanel extends JPanel implements ModalDialogFactory.Clos
 			{
 
 				if (hasChangedRule(display)) {
-					int ret = ModalDialog.showMessageDialog(display, "Rule has not been saved, probably because rule is invalid.\n"
-							+ "If you continue changes will be lost.\n\n" + "Do you want to continue?", "Rule not saved", ModalDialog.MODE_YES_NO);
+					int ret = ModalDialog.showMessageDialog(display,
+							"Rule has not been saved, probably because rule is invalid.\n"
+									+ "If you continue changes will be lost.\n\n" + "Do you want to continue?", "Rule not saved",
+							ModalDialog.MODE_YES_NO);
 
 					if (ret == ModalDialog.OPTION_NO) {
 						return;

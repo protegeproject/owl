@@ -54,16 +54,14 @@ public class SWRLFactory
 	public SWRLImp createImp(String expression) throws SWRLParseException
 	{
 		SWRLParser parser = new SWRLParser(this.owlModel);
-		parser.setParseOnly(false);
-		return parser.parse(expression);
+		return parser.parseSWRLRule(expression, false);
 	}
 
 	public SWRLImp createImp(String name, String expression) throws SWRLParseException
 	{
 		SWRLParser parser = new SWRLParser(this.owlModel);
 		SWRLImp imp = createImpWithGivenName(name);
-		parser.setParseOnly(false);
-		return parser.parse(expression, imp);
+		return parser.parseSWRLRule(expression, imp, false);
 	}
 
 	public SWRLImp createImp(SWRLAtom headAtom, List<SWRLAtom> bodyAtoms)

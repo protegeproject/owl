@@ -1,4 +1,3 @@
-
 package edu.stanford.smi.protegex.owl.swrl.ui.table;
 
 import java.awt.BorderLayout;
@@ -34,7 +33,7 @@ public class SWRLSymbolEditor extends SymbolEditorComponent
 	protected void parseExpression() throws Exception
 	{
 		SWRLParser parser = new SWRLParser(getModel());
-		parser.parse(this.textField.getText());
+		parser.parseSWRLRule(this.textField.getText(), true);
 	}
 
 	@Override

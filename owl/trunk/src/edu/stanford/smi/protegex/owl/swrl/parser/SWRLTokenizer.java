@@ -1,6 +1,8 @@
 package edu.stanford.smi.protegex.owl.swrl.parser;
 
+import java.util.HashSet;
 import java.util.NoSuchElementException;
+import java.util.Set;
 import java.util.StringTokenizer;
 
 public class SWRLTokenizer
@@ -12,9 +14,29 @@ public class SWRLTokenizer
 
 	private final StringTokenizer internalTokenizer;
 
-	public SWRLTokenizer(String input)
+	private final Set<String> swrlVariables;
+	private final boolean parseOnly;
+
+	public SWRLTokenizer(String input, boolean parseOnly)
 	{
 		this.internalTokenizer = new StringTokenizer(input, delimiters, true);
+		this.swrlVariables = new HashSet<String>();
+		this.parseOnly = parseOnly;
+	}
+
+	public boolean isParseOnly()
+	{
+		return this.parseOnly;
+	}
+
+	public boolean hasVariable(String variableName)
+	{
+		return this.swrlVariables.contains(variableName);
+	}
+
+	public void addVariable(String variableName)
+	{
+		this.swrlVariables.add(variableName);
 	}
 
 	public boolean hasMoreTokens()
@@ -40,7 +62,7 @@ public class SWRLTokenizer
 		return buffer.toString();
 	}
 
-	public String getNextNonSpaceToken(String noTokenMessage, boolean parseOnly) throws SWRLParseException
+	public String getNextNonSpaceToken(String noTokenMessage) throws SWRLParseException
 	{
 		String token = "";
 		String errorMessage = "Incomplete rule. " + noTokenMessage;
@@ -64,17 +86,16 @@ public class SWRLTokenizer
 			throw new SWRLParseException(errorMessage); // Should not get here
 	}
 
-	public void checkAndSkipToken(String skipToken, String unexpectedTokenMessage, boolean parseOnly)
-			throws SWRLParseException
+	public void checkAndSkipToken(String skipToken, String unexpectedTokenMessage) throws SWRLParseException
 	{
-		String token = getNextNonSpaceToken(unexpectedTokenMessage, parseOnly);
+		String token = getNextNonSpaceToken(unexpectedTokenMessage);
 
 		if (!token.equalsIgnoreCase(skipToken))
 			throw new SWRLParseException("Expecting " + skipToken + ", got " + token + "; " + unexpectedTokenMessage);
 	}
 
 	// TODO: Does not deal with escaped quotation characters.
-	public String getNextStringToken(String noTokenMessage, boolean parseOnly) throws SWRLParseException
+	public String getNextStringToken(String noTokenMessage) throws SWRLParseException
 	{
 		String token = "";
 		String errorMessage = "Incomplete rule. " + noTokenMessage;
@@ -91,7 +112,7 @@ public class SWRLTokenizer
 			if (token.equals("\""))
 				token = ""; // Empty string
 			else
-				checkAndSkipToken("\"", "Expected \" to close string.", parseOnly);
+				checkAndSkipToken("\"", "Expected \" to close string.");
 			return token;
 		}
 

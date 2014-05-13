@@ -37,15 +37,15 @@ public class SWRLTextField extends SymbolTextField
 		SWRLParser parser = new SWRLParser(getOWLModel());
 
 		if (isInSaveTestMode()) {
-			parser.parse(uniCodeText);
+			parser.parseSWRLRule(uniCodeText, true);
 		} else {
 			try {
-				parser.parse(uniCodeText);
+				parser.parseSWRLRule(uniCodeText, true);
 			} catch (SWRLIncompleteRuleException e) {
 				// Ignore incomplete rules during non save mode parsing
-			} // try
-		} // if
-	} // checkUniCodeExpression
+			}
+		}
+	}
 
 	public static void initKeymap(JTextComponent textComponent)
 	{
