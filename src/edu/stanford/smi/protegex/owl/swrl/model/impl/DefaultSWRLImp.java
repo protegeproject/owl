@@ -66,13 +66,12 @@ public class DefaultSWRLImp extends AbstractSWRLIndividual implements SWRLImp
 		String text = getBrowserText();
 		OWLModel owlModel = (OWLModel)getKnowledgeBase();
 		SWRLParser parser = new SWRLParser(owlModel);
-		parser.setParseOnly(false);
 		try {
-			return parser.parse(text);
+			return parser.parseSWRLRule(text, false);
 		} catch (SWRLParseException ex) {
 			this.log.log(Level.SEVERE, "Shouldn't Happen ", ex);
 			return null; // Should not happen
-		} // try
+		}
 	}
 
 	private boolean getIsRuleEnabledAnnotation()
@@ -246,10 +245,9 @@ public class DefaultSWRLImp extends AbstractSWRLIndividual implements SWRLImp
 	public void setExpression(String parsableText) throws SWRLParseException
 	{
 		SWRLParser parser = new SWRLParser(getOWLModel());
-		parser.parse(parsableText);
+		parser.parseSWRLRule(parsableText, true);
 		deleteHeadAndBody();
-		parser.setParseOnly(false);
-		parser.parse(parsableText, this);
+		parser.parseSWRLRule(parsableText, this, false);
 	}
 
 	@Override
