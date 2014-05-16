@@ -94,10 +94,8 @@ public class SWRLTokenizer
 			throw new SWRLParseException("Expecting " + skipToken + ", got " + token + "; " + unexpectedTokenMessage);
 	}
 
-	// TODO: Does not deal with escaped quotation characters.
 	public String getNextStringToken(String noTokenMessage) throws SWRLParseException
-	{
-		String token = "";
+	{ // TODO Does not deal with escaped quotation characters
 		String errorMessage = "Incomplete rule. " + noTokenMessage;
 
 		if (!hasMoreTokens()) {
@@ -108,7 +106,7 @@ public class SWRLTokenizer
 		}
 
 		while (hasMoreTokens()) {
-			token = nextToken("\"");
+			String token = nextToken("\"");
 			if (token.equals("\""))
 				token = ""; // Empty string
 			else
