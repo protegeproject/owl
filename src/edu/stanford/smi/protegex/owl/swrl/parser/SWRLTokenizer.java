@@ -44,27 +44,8 @@ public class SWRLTokenizer
 		return this.internalTokenizer.hasMoreTokens();
 	}
 
-	public String nextToken(String myDelimiters)
+	public String getNextToken(String noTokenMessage) throws SWRLParseException
 	{
-		return this.internalTokenizer.nextToken(myDelimiters);
-	}
-
-	public String nextToken() throws NoSuchElementException
-	{
-		String token = this.internalTokenizer.nextToken(delimiters);
-		if (!token.equals("'"))
-			return token;
-
-		StringBuffer buffer = new StringBuffer();
-		while (this.internalTokenizer.hasMoreTokens() && !(token = this.internalTokenizer.nextToken()).equals("'")) {
-			buffer.append(token);
-		}
-		return buffer.toString();
-	}
-
-	public String getNextNonSpaceToken(String noTokenMessage) throws SWRLParseException
-	{
-		String token = "";
 		String errorMessage = "Incomplete rule. " + noTokenMessage;
 
 		if (!hasMoreTokens()) {
@@ -75,7 +56,7 @@ public class SWRLTokenizer
 		}
 
 		while (hasMoreTokens()) {
-			token = nextToken();
+			String token = nextToken();
 			if (!(token.equals(" ") || token.equals("\n") || token.equals("\t")))
 				return token;
 		}
@@ -88,7 +69,7 @@ public class SWRLTokenizer
 
 	public void checkAndSkipToken(String skipToken, String unexpectedTokenMessage) throws SWRLParseException
 	{
-		String token = getNextNonSpaceToken(unexpectedTokenMessage);
+		String token = getNextToken(unexpectedTokenMessage);
 
 		if (!token.equalsIgnoreCase(skipToken))
 			throw new SWRLParseException("Expecting " + skipToken + ", got " + token + "; " + unexpectedTokenMessage);
@@ -119,4 +100,23 @@ public class SWRLTokenizer
 		else
 			throw new SWRLParseException(errorMessage); // Should not get here
 	}
+
+	private String nextToken(String myDelimiters)
+	{
+		return this.internalTokenizer.nextToken(myDelimiters);
+	}
+
+	private String nextToken() throws NoSuchElementException
+	{
+		String token = this.internalTokenizer.nextToken(delimiters);
+		if (!token.equals("'"))
+			return token;
+
+		StringBuffer buffer = new StringBuffer();
+		while (this.internalTokenizer.hasMoreTokens() && !(token = this.internalTokenizer.nextToken()).equals("'")) {
+			buffer.append(token);
+		}
+		return buffer.toString();
+	}
+
 }
