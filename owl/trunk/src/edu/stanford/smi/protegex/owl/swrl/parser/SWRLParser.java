@@ -79,7 +79,7 @@ public class SWRLParser
 			else
 				message = isInHead ? "Expecting atom" : "Expecting atom or " + SWRLTokenizer.IMP_CHAR;
 
-			String currentToken = tokenizer.getNextNonSpaceToken(message);
+			String currentToken = tokenizer.getNextToken(message);
 
 			if (currentToken.equals("" + SWRLTokenizer.IMP_CHAR) || currentToken.equals("->")) { // An empty body is ok
 				if (isInHead)
@@ -241,7 +241,7 @@ public class SWRLParser
 
 	private SWRLVariable parseSWRLVariable(SWRLTokenizer tokenizer, boolean isInHead) throws SWRLParseException
 	{
-		String variableName = tokenizer.getNextNonSpaceToken("Expecting variable name");
+		String variableName = tokenizer.getNextToken("Expecting variable name");
 		swrlParserSupport.checkThatSWRLVariableNameIsValid(variableName);
 
 		if (tokenizer.hasMoreTokens()) {
@@ -263,12 +263,12 @@ public class SWRLParser
 			dObjects.add(dObject);
 
 		String token = tokenizer
-				.getNextNonSpaceToken("Expecting additional comma-separated variables or literals or closing parenthesis");
+				.getNextToken("Expecting additional comma-separated variables or literals or closing parenthesis");
 		while (token.equals(",")) {
 			dObject = parseDObject(tokenizer, isInHead);
 			if (!tokenizer.isParseOnly())
 				dObjects.add(dObject);
-			token = tokenizer.getNextNonSpaceToken("Expecting ',' or ')'");
+			token = tokenizer.getNextToken("Expecting ',' or ')'");
 			if (!(token.equals(",") || token.equals(")")))
 				throw new SWRLParseException("Expecting ',' or ')', got " + token);
 		}
@@ -285,12 +285,12 @@ public class SWRLParser
 			objects.add(object);
 
 		String token = tokenizer
-				.getNextNonSpaceToken("Expecting additional comma-separated variables, literals, OWL entity names or closing parenthesis");
+				.getNextToken("Expecting additional comma-separated variables, literals, OWL entity names or closing parenthesis");
 		while (token.equals(",")) {
 			object = parseObject(tokenizer, isInHead);
 			if (!tokenizer.isParseOnly())
 				objects.add(object);
-			token = tokenizer.getNextNonSpaceToken("Expecting ',' or ')'");
+			token = tokenizer.getNextToken("Expecting ',' or ')'");
 			if (!(token.equals(",") || token.equals(")")))
 				throw new SWRLParseException("Expecting ',' or ')', got'" + token);
 		}
@@ -299,7 +299,7 @@ public class SWRLParser
 
 	private RDFObject parseObject(SWRLTokenizer tokenizer, boolean isInHead) throws SWRLParseException
 	{ // Parse a SWRL variable, OWL literal, or an OWL named entity
-		String token = tokenizer.getNextNonSpaceToken("Expecting variable, literal, or OWL entity name");
+		String token = tokenizer.getNextToken("Expecting variable, literal, or OWL entity name");
 
 		if (token.equals("?"))
 			return parseSWRLVariable(tokenizer, isInHead);
@@ -319,7 +319,7 @@ public class SWRLParser
 
 	private RDFResource parseIObject(SWRLTokenizer tokenizer, boolean isInHead) throws SWRLParseException
 	{ // Parse a SWRL variable or an OWL named individual. For SWRL Full, also allow OWL class and property names.
-		String token = tokenizer.getNextNonSpaceToken("Expecting variable or OWL entity name");
+		String token = tokenizer.getNextToken("Expecting variable or OWL entity name");
 
 		if (token.equals("?"))
 			return parseSWRLVariable(tokenizer, isInHead);
@@ -345,7 +345,7 @@ public class SWRLParser
 
 	private RDFObject parseDObject(SWRLTokenizer tokenizer, boolean isInHead) throws SWRLParseException
 	{ // Parse a SWRL variable or an OWL literal
-		String token = tokenizer.getNextNonSpaceToken("Expecting variable or literal");
+		String token = tokenizer.getNextToken("Expecting variable or literal");
 
 		return token.equals("?") ? parseSWRLVariable(tokenizer, isInHead) : parseOWLLiteral(token, tokenizer);
 	}
