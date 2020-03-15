@@ -15,7 +15,6 @@ import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import junit.framework.Assert;
 import edu.stanford.smi.protege.event.FrameAdapter;
 import edu.stanford.smi.protege.event.FrameEvent;
 import edu.stanford.smi.protege.event.FrameListener;
@@ -137,6 +136,7 @@ import edu.stanford.smi.protegex.owl.ui.widget.OWLUI;
 import edu.stanford.smi.protegex.owl.ui.widget.OWLWidgetMapper;
 import edu.stanford.smi.protegex.owl.util.OWLBrowserSlotPattern;
 import edu.stanford.smi.protegex.owl.writer.rdfxml.util.ProtegeWriterSettings;
+import junit.framework.Assert;
 
 
 /**
@@ -798,7 +798,8 @@ public abstract class AbstractOWLModel extends DefaultKnowledgeBase
     @Override
     public synchronized Instance createInstance(String name, Cls directType) {
     	// TT: should we ignore the loadDefaults for non-system classes?
-    	return createInstance(new FrameID(name), CollectionUtilities.createCollection(directType), loadDefaults);
+    	String fullName = OWLUtil.getInternalFullName(this, name);
+    	return createInstance(new FrameID(fullName), CollectionUtilities.createCollection(directType), loadDefaults);
     }
 
     @Override
